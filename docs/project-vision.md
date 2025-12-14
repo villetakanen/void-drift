@@ -186,35 +186,32 @@ Strict adherence to project rules.
 - [ ] Add Visual Feedback for touches (Joystick/Overlay).
 - [ ] Prevent default touch behaviors (Scrolling/Zooming).
 
-### Phase 3: The Network (Lobby) - [Next v0.0.3]
+### Phase 3: Asset Gallery & Design System [Planned v0.0.3]
+
+- [ ] Implement `/#gallery` hidden route.
+- [ ] Refactor procedural assets (Ship, Asteroids) into pure functions.
+- [ ] Create interactive workbench for standardizing "The Vibe" (Colors, Typography).
+- [ ] Add controls to test physics assets in isolation.
+
+### Phase 4: The Network (Lobby) - [Planned v0.0.4]
 
 - Firebase Auth (Anon).
-    
 - Create Lobby / Join Lobby logic.
-    
 - URL parsing to join specific lobby IDs.
-    
 
-### Phase 4: Multiplayer Sync
+### Phase 5: Multiplayer Sync
 
 - Hook up the physics loop to Firestore `onSnapshot`.
-    
 - Implement "Lerp" (Linear Interpolation) so enemy ships don't teleport, but slide to their new network positions.
-    
 
-### Phase 5: Combat & Juice
+### Phase 6: Combat & Juice
 
 - Add Auto-fire logic.
-    
 - Add Antimatter Bomb.
-    
 - Add "Zoom" camera controller.
-    
 - Add Particle effects and Screen Shake.
-    
 
-### Phase 6: Persistence
+### Phase 7: Persistence
 
 - Save kills to Global Leaderboard.
-    
 - Polish UI.
