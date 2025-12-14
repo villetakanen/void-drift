@@ -46,18 +46,22 @@ Players pilot ships using only differential thrust (Left/Right engines) in a gra
 
 The ship has two main engines and one special ability.
 
-- **Input (Desktop):** `A` (Left Thruster), `D` (Right Thruster), `Space` (Antimatter Bomb).
-    
-- **Input (Mobile):** Touch Left Screen Half (Left Thruster), Touch Right Screen Half (Right Thruster), Double Tap Both (Antimatter Bomb).
-    
-- **Logic:**
-    
-    - Hold Left: Ship rotates Right (pushed by left engine).
-        
-    - Hold Right: Ship rotates Left (pushed by right engine).
-        
-    - Hold Both: Ship moves Forward.
-        
+- **Input (Desktop - Implemented):**
+    - `A` / `Left Arrow`: Rotate Left + Partial Thrust (Spiraling turn).
+    - `D` / `Right Arrow`: Rotate Right + Partial Thrust (Spiraling turn).
+    - `A` + `D`: Full Forward Thrust.
+    - `Space`: Antimatter Bomb.
+
+- **Input (Mobile - Planned 0.0.2):**
+    - **Tap Left Half:** Rotate Left + Partial Thrust.
+    - **Tap Right Half:** Rotate Right + Partial Thrust.
+    - **Tap Both Halves:** Full Forward Thrust.
+    - **Double Tap (Anywhere/Both):** Antimatter Bomb.
+
+- **Physics Logic (Tuned):**
+    - **Drift:** Ships have low drag (0.5/sec) and preserve momentum.
+    - **Max Speed:** Capped at 500px/s to ensure playability.
+    - **Rotation:** Differential thrust creates a spiraling motion if only one engine is used.
 
 ### 4.2 Combat & Weapons
 
@@ -167,20 +171,22 @@ Strict adherence to project rules.
 
 ## 7. Implementation Roadmap
 
-### Phase 1: The engine (Vibe Check)
+### Phase 1: The Engine (Vibe Check) - [COMPLETED v0.0.1]
 
-- Set up Svelte + Canvas.
-    
-- Implement the "Ship" with differential thrust physics.
-    
-- Add the Sun and Gravity math.
-    
-- Implement Screen Wrapping.
-    
-- _Milestone:_ A ship flying around a sun with satisfying inertia.
-    
+- [x] Set up Svelte + Canvas.
+- [x] Implement the "Ship" with differential thrust physics.
+- [x] Implement Screen Wrapping.
+- [x] Tuning: Single-engine thrust spirals, Max Speed cap, Inertia Damping.
+- _Outcome:_ A playable tech demo with satisfying drift physics.
 
-### Phase 2: The Network (Lobby)
+### Phase 2: Mobile Controls (Alpha) - [CURRENT v0.0.2]
+
+- [ ] Implement Touch Inputs (Split screen tapping).
+- [ ] Ensure Portrait Mode playability.
+- [ ] Add Visual Feedback for touches (Joystick/Overlay).
+- [ ] Prevent default touch behaviors (Scrolling/Zooming).
+
+### Phase 3: The Network (Lobby) - [Next v0.0.3]
 
 - Firebase Auth (Anon).
     
@@ -189,14 +195,14 @@ Strict adherence to project rules.
 - URL parsing to join specific lobby IDs.
     
 
-### Phase 3: Multiplayer Sync
+### Phase 4: Multiplayer Sync
 
 - Hook up the physics loop to Firestore `onSnapshot`.
     
 - Implement "Lerp" (Linear Interpolation) so enemy ships don't teleport, but slide to their new network positions.
     
 
-### Phase 4: Combat & Juice
+### Phase 5: Combat & Juice
 
 - Add Auto-fire logic.
     
@@ -207,7 +213,7 @@ Strict adherence to project rules.
 - Add Particle effects and Screen Shake.
     
 
-### Phase 5: Persistence
+### Phase 6: Persistence
 
 - Save kills to Global Leaderboard.
     
