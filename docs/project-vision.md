@@ -17,27 +17,25 @@ Players pilot ships using only differential thrust (Left/Right engines) in a gra
 - **Physics:** "Floaty" but responsive. Heavy inertia. Wrapping borders (Pac-man topology) preserve velocity.
     
 
-## 3. Tech Stack & Constraints
+## 3. Tech Stack & Architecture
 
+We utilize a **Monorepo** architecture to separate the core game engine from the web presentation layer.
+
+- **Workspace Manager:** PNPM Workspaces.
 - **Language:** TypeScript (Strict).
-    
-- **Runtime/Bundler:** Vite.
-    
-- **Framework:** Svelte 5 (No SvelteKit - Single Page App architecture).
-    
-- **Data Validation:** Zod (Runtime schema validation for game state).
-    
-- **Linting/Formatting:** Biome.
-    
-- **Backend-as-a-Service:** Firebase (Free Tier).
-    
-    - **Auth:** Anonymous & Custom Token (if needed).
-        
-    - **Database:** Firestore (State synchronization and Leaderboards).
-        
+
+### 3.1. `packages/engine` (The Core)
+- **Responsibility:** Pure game logic, Physics, Canvas Rendering, Input normalization.
+- **Dependencies:** Minimal. No framework code (Svelte/React) in the core logic if possible.
+- **Validation:** Zod (Runtime schema validation for game state).
+
+### 3.2. `apps/web` (The Site)
+- **Framework:** **Astro** (Static Routing & Layouts) + **Svelte 5** (Interactive Islands).
+- **Bundler:** Vite (via Astro).
 - **Styling:** Native CSS (Scoped Svelte styles). **No Tailwind.**
-    
-- **Rendering:** HTML5 Canvas API (for the game loop) + DOM (for UI overlay).
+- **Backend-as-a-Service:** Firebase (Free Tier).
+    - **Auth:** Anonymous & Custom Token.
+    - **Database:** Firestore (State sync & Leaderboards).
     
 
 ## 4. Gameplay Mechanics
@@ -138,35 +136,28 @@ Strict adherence to project rules.
     - _Note:_ Since we can't use complex `orderBy` on the fly without indices, we will fetch the top list or update a single "HighScores" document if traffic allows, or fetch all scores (if low user count) and sort client-side.
         
 
-## 6. Directory Scaffolding
-
+## 6. Directory Scaffolding (Monorepo)
 ```
 /
-├── biome.json              # Linter config
-├── vite.config.ts
-├── index.html
-├── src/
-│   ├── main.ts             # Entry point
-│   ├── App.svelte          # Root component (handles routing via conditional rendering)
-│   ├── assets/             # Sounds, Sprites (if any, mostly procedural)
-│   ├── lib/
-│   │   ├── config.ts       # Constants (Gravity constants, Ship speed, Zoom levels)
-│   │   ├── firebase.ts     # Firebase Init, Auth, Firestore wrappers
-│   │   ├── store.ts        # Svelte stores (user, lobby state, loading)
-│   │   ├── schemas/
-│   │   │   ├── common.ts   # Vector logic, Math helpers
-│   │   │   └── game.ts     # Zod definitions for Game State
-│   │   ├── engine/
-│   │   │   ├── Loop.ts     # Main RAF loop
-│   │   │   ├── Physics.ts  # Gravity, Collision, Wrapping logic
-│   │   │   ├── Renderer.ts # Canvas drawing, Zoom logic, Particle system
-│   │   │   ├── Input.ts    # Keyboard/Touch normalization
-│   │   │   └── Audio.ts    # Synth sound generator
-│   │   └── ui/
-│   │       ├── Lobby.svelte        # Invite link generation, Player list
-│   │       ├── GameHUD.svelte      # Health bars, Cooldowns, Zoom indicator
-│   │       ├── Joystick.svelte     # Visual feedback for mobile touch
-│   │       └── Leaderboard.svelte  # Global kills tracker
+├── pnpm-workspace.yaml
+├── package.json        
+├── packages/
+│   └── engine/         # The Core Logic
+│       ├── src/
+│       │   ├── lib/
+│       │   │   ├── engine/   # Physics, Loop, Renderer
+│       │   │   ├── schemas/  # Zod definitions
+│       │   │   └── config.ts
+│       │   └── index.ts      # Public API Exports
+│       └── package.json
+├── apps/
+│   └── web/            # The Production Site
+│       ├── src/
+│       │   ├── components/   # Svelte UI (HUD, Lobby)
+│       │   ├── pages/
+│       │   │   ├── index.astro       # Game Route
+│       │   │   └── gallery.astro     # Workbench Route
+│       └── package.json
 ```
 
 ## 7. Implementation Roadmap
