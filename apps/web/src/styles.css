@@ -1,0 +1,63 @@
+:root {
+	/* Theme: Void Industrial (Dark Sci-Fi) */
+	--color-void: #050510;
+	/* Deepest Black/Blue */
+	--color-void-light: #0a0a1f;
+	/* Surface / Panels */
+
+	/* Foreground */
+	--color-text: #FFFFFF;
+	/* Starlight White */
+	--color-text-dim: #888888;
+	/* Muted Text */
+
+	/* Functional Palette (Raw Material Spec) */
+	--color-acid-lime: #D4FF00;
+	/* Accent / New */
+	--color-android-green: #3DDC84;
+	/* Success */
+	--color-caution-tape: #FFE600;
+	/* Warning */
+	--color-red: #FF3333;
+	/* Error */
+
+	/* Mappings */
+	--color-neon-blue: var(--color-acid-lime);
+	/* Primary Action overrides Neon Blue */
+	--color-neon-orange: var(--color-caution-tape);
+	--color-neon-green: var(--color-android-green);
+
+	/* Spacing & Shape relative to 4px grid */
+	--spacing-xs: 4px;
+	--spacing-sm: 8px;
+	--spacing-md: 16px;
+	--spacing-lg: 32px;
+	--spacing-xl: 64px;
+
+	--radius-sm: 2px;
+}
+
+body {
+	background: var(--color-void);
+	color: var(--color-text);
+	font-family: 'Noto Sans Math', sans-serif;
+	margin: 0;
+	overflow: hidden;
+	/* Important for game canvas */
+}
+
+/* Scrollbar aesthetic for webkit */
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+	background: var(--color-void);
+}
+
+::-webkit-scrollbar-thumb {
+	background: var(--color-void-light);
+	border: 1px solid var(--color-text-dim);
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: var(--color-text-dim);
+}
