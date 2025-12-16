@@ -2,9 +2,11 @@
     import Canvas from "./Canvas.svelte";
     import Controls from "./Controls.svelte";
     import Logo from "./Logo.svelte";
+    import { drawShip } from "@void-drift/engine";
 
     // State
     let activeAsset = $state("dashboard");
+    let shipRotation = $state(0);
 
     const ASSETS = [
         { id: "dashboard", label: "Dashboard" },
@@ -18,9 +20,23 @@
         ctx.fillStyle = "#0a0a1f";
         ctx.fillRect(0, 0, 600, 400);
 
-        ctx.fillStyle = "#00f0ff";
+        ctx.fillStyle = "#D4FF00"; // Acid Lime
         ctx.font = "20px 'Noto Sans Math'";
         ctx.fillText("Select an asset from the left.", 20, 40);
+    }
+
+    function drawShipPreview(ctx: CanvasRenderingContext2D) {
+        // Center the ship
+        const centerX = ctx.canvas.width / 2;
+        const centerY = ctx.canvas.height / 2;
+
+        drawShip(ctx, {
+            x: centerX,
+            y: centerY,
+            rotation: shipRotation * (Math.PI / 180), // Convert deg to rad
+            size: 2, // Scale up for visibility
+            color: "#D4FF00", // Acid Lime
+        });
     }
 </script>
 
@@ -52,9 +68,10 @@
             {#if activeAsset === "dashboard"}
                 <Canvas width={600} height={400} draw={drawDashboard} />
             {:else if activeAsset === "ship"}
-                <div class="placeholder">Ship Viewer Coming Soon</div>
+                <Canvas width={600} height={400} draw={drawShipPreview} />
             {:else if activeAsset === "typography"}
                 <div class="design-system-preview">
+                    <!-- ... (Typography content remains same) ... -->
                     <section>
                         <h3>Typography: Noto Sans Math</h3>
                         <h1>Heading 1 (Void · Drift)</h1>
@@ -119,9 +136,22 @@
     <!-- 3. Inspector (Right Sidebar) -->
     <aside class="inspector">
         <Controls title="Parameters">
-            <p style="opacity: 0.5; font-size: 0.8rem;">
-                Select an asset to view controls.
-            </p>
+            {#if activeAsset === "ship"}
+                <div class="control-group">
+                    <label for="rotation">Rotation ({shipRotation}°)</label>
+                    <input
+                        type="range"
+                        id="rotation"
+                        min="0"
+                        max="360"
+                        bind:value={shipRotation}
+                    />
+                </div>
+            {:else}
+                <p style="opacity: 0.5; font-size: 0.8rem;">
+                    Select an asset to view controls.
+                </p>
+            {/if}
         </Controls>
     </aside>
 </div>
@@ -178,9 +208,9 @@
     }
 
     button.active {
-        color: var(--color-neon-blue);
-        border: 1px solid rgba(0, 240, 255, 0.3);
-        background: rgba(0, 240, 255, 0.1);
+        color: var(--color-acid-lime);
+        border: 1px solid rgba(212, 255, 0, 0.3);
+        background: rgba(212, 255, 0, 0.1);
     }
 
     /* Stage */
@@ -270,5 +300,23 @@
         align-items: center;
         justify-content: center;
         font-weight: bold;
+    }
+
+    /* Controls Styling */
+    .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    label {
+        color: var(--color-text-dim);
+        font-size: 0.9rem;
+    }
+
+    input[type="range"] {
+        width: 100%;
+        accent-color: var(--color-acid-lime);
     }
 </style>

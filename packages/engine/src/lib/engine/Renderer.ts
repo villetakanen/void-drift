@@ -1,4 +1,5 @@
 import type { GameObject } from "./Physics";
+import { drawShip } from "../renderers/ship";
 
 export class Renderer {
     private ctx: CanvasRenderingContext2D;
@@ -25,25 +26,11 @@ export class Renderer {
     }
 
     drawShip(ship: GameObject) {
-        const { ctx } = this;
-        ctx.save();
-        ctx.translate(ship.pos.x, ship.pos.y);
-        ctx.rotate(ship.rotation);
-
-        // Ship Shape (Paper Airplane)
-        ctx.strokeStyle = "#00ffcc";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(10, 0); // Nose
-        ctx.lineTo(-8, 8); // Back Right
-        ctx.lineTo(-4, 0); // Engine Indent
-        ctx.lineTo(-8, -8); // Back Left
-        ctx.closePath();
-        ctx.stroke();
-
-        // Thrust Flames (if needed, logic can pass thrust state later)
-        // For now just draw the ship
-
-        ctx.restore();
+        drawShip(this.ctx, {
+            x: ship.pos.x,
+            y: ship.pos.y,
+            rotation: ship.rotation,
+            color: "#00ffcc" // Default game color
+        });
     }
 }
