@@ -10,13 +10,15 @@ To ensure a consistent competitive experience across different screen sizes and 
 - **Canvas:** Renders at internal resolution (e.g., 1920x1080) and scales via CSS transfer.
 - **Camera Logic:**
   - `Camera.pos`: Interpolated focus point (center of all ships).
+  - `Camera.smoothing`: Hard-locked (1.0) to ship center. Movement conveyed via starfield parallax.
   - `Camera.zoom`: Dynamic zoom based on bounding box of action.
 - **HUD:** Overlays the canvas (HTML/Svelte layer).
+- **Starfield:** World-space procedural stars to provide movement cues.
 
 ### Anti-Patterns
-- **Do NOT** allow the canvas to stretch to fill the window indiscriminately; this gives ultrawide users an unfair view advantage.
-- **Do NOT** put HUD elements inside the Canvas rendering loop (hard to accessible/style). Use HTML overlays.
-- **Do NOT** hard-lock the camera to the player; it should feel "floaty" and smooth (damped spring).
+- **Do NOT** allow the canvas to stretch to fill the window indiscriminately.
+- **Do NOT** put HUD elements inside the Canvas rendering loop.
+- **Do:** Lock the camera to the player center for consistent feedback (parralax stars provide movement cues).
 
 ## Contract
 
@@ -27,7 +29,7 @@ To ensure a consistent competitive experience across different screen sizes and 
 - [ ] Game Logo (`$\emptyset \cdot \Delta$`) is visible in the top-left or top-center of the HUD.
 
 ### Regression Guardrails
-- **Aspect Ratio:** Must remain strictly 16:9 on all devices.
+- **Topology:** Circular Arena (Radius 1200px). Crossing the boundary wraps to the antipodal point (opposite side).
 - **Performance:** Camera math must run every frame without allocation.
 
 ### Scenarios

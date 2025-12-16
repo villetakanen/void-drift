@@ -8,19 +8,25 @@ Planets supply the "Terrain" of the void. Unlike Stars, they are persistent obst
 ### Architecture
 - **Data Model:**
   ```typescript
+
   interface Planet {
-    x: number;
-    y: number;
+    pos: Vec2;
+    orbitCenter: Vec2;
+    orbitRadius: number; // Distance from center
+    orbitSpeed: number;  // Radians per second
+    orbitAngle: number;  // Current angle
     radius: number;
-    gravity: number; // Smaller than Star
-    color: string;   // e.g. "Rock" or "Gas" palette
-    type: 'rock' | 'gas';
+    mass: number;
+    color: string;
   }
   ```
 - **Physics:**
-  - Gravity: Same `applyGravity` logic as Star but usually weaker.
-  - Collision: Elastic collision (bounce) or Crash depending on speed. For "Rock Planet", standard elastic bounce + damage is preferred.
-- **Rendering:** `drawPlanet` (Procedural texture/crater generation).
+  - Gravity: Inverse square law (8x radius influence).
+  - Collision: Elastic bounce (restitution 0.8).
+  - Motion: Planets orbit the central star.
+- **Rendering:** Flat Vector Style (Solid Color).
+  - Visualize orbit path with faint line.
+  - Draw planet as simple circle (no gradients/textures to match aesthetic).
 
 ### Anti-Patterns
 - **Do NOT** use expensive noise algorithms (Perlin) every frame. Pre-render to an offscreen canvas or use simple geometric rendering (craters = circles).

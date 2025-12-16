@@ -1,8 +1,9 @@
 # PBI-014: Rock Planet Implementation
 
-**Status:** TODO
+**Status:** DONE
 **Priority:** Medium
 **Parent:** Phase 4 (QoL)
+**Completed:** 2024
 
 ## 1. Context
 To demonstrate the "Newtonian Chaos" vision, we need obstacles. The "Rock Planet" serves as a static gravity well and collision hazard.
@@ -30,7 +31,24 @@ To demonstrate the "Newtonian Chaos" vision, we need obstacles. The "Rock Planet
 - Spawn 1-2 Planets in the default game arena (hardcoded positions is fine for now).
 
 ## 3. Acceptance Criteria
-- [ ] At least one Planet appears in the game.
-- [ ] Flying near it pulls the ship (gravity).
-- [ ] Crashing into it bounces the ship off.
-- [ ] Planet looks distinct from the Star (not glowing/pulsing).
+- [x] At least one Planet appears in the game.
+- [x] Flying near it pulls the ship (gravity).
+- [x] Crashing into it bounces the ship off.
+- [x] Planet looks distinct from the Star (not glowing/pulsing).
+
+## 4. Implementation Notes
+
+### Physics
+- **Defined `Planet` Interface:** Includes orbital properties (`orbitCenter`, `orbitRadius`, `orbitSpeed`).
+- **Gravity:** Inverse square law logic similar to Star, but scaled by mass. Influence radius is **8x** physical radius.
+- **Collision:** Simple elastic bounce with `restitution = 0.8`.
+- **Orbital Mechanics:** Planets update their position every frame based on angular velocity.
+
+### Rendering
+- **Flat Vector Style:** Removed gradients/craters in favor of clean, solid colors (Slate Blue) to match the "vector arcade" aesthetic.
+- **Orbit Visualization:** Renders a faint white line (`rgba(255,255,255,0.05)`) to show the path.
+- **Dimensions:** Planet is relatively small (Radius = 20px) but has a large gravity impact.
+
+### Configuration
+- **Single Planet:** Currently spawning 1 Slate Blue planet at `R=700`.
+- **Speed:** Drifts very slowly (`speed=0.05`) to act as a semi-static hazard.

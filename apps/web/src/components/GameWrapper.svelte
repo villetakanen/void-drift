@@ -7,21 +7,29 @@
     updateShip,
     Vec2,
     Renderer,
+    Camera,
     type Star,
+    type Planet,
   } from "@void-drift/engine";
 
   let canvas: HTMLCanvasElement;
+  let container: HTMLDivElement;
   let renderer: Renderer | undefined;
   let input: Input | undefined;
   let loop: GameLoop | undefined;
+  let camera: Camera | undefined;
 
   // Reactivity for UI
   let leftActive = $state(false);
   let rightActive = $state(false);
   let showRotateOverlay = $state(false);
 
+  // 16:9 Logical Resolution
+  const LOGICAL_WIDTH = 1920;
+  const LOGICAL_HEIGHT = 1080;
+
   const ship = {
-    pos: new Vec2(0, 0),
+    pos: new Vec2(LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2),
     vel: new Vec2(0, 0),
     acc: new Vec2(0, 0),
     rotation: -Math.PI / 2,
@@ -29,55 +37,130 @@
   };
 
   let star: Star | undefined = $state(undefined);
+  let planets: Planet[] = $state([]);
 
   function update(dt: number) {
-    if (!renderer || !input) return;
+    if (!renderer || !input || !camera) return;
 
     // Sync Input State to UI (for feedback)
     leftActive = input.state.leftThruster;
     rightActive = input.state.rightThruster;
 
-    // Physics
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    updateShip(ship, input.state, dt, width, height, star);
+    // Physics (using logical viewport dimensions)
+    updateShip(
+      ship,
+      input.state,
+      dt,
+      LOGICAL_WIDTH,
+      LOGICAL_HEIGHT,
+      star,
+      planets,
+    );
+
+    // Update Camera to follow ship
+    camera.setTarget(ship.pos.x, ship.pos.y);
+    camera.update(dt);
 
     // Render
     renderer.clear();
+
+    // Begin camera transform
+    renderer.beginCamera(camera);
+
+    // Draw Background Stars (World Space)
+    renderer.drawBackground();
+
+    // Draw Arena Boundary
+    renderer.drawArenaBoundary(1200);
 
     // Draw Star (if exists)
     if (star) {
       renderer.drawStar(star, performance.now());
     }
 
+    // Draw Planets
+    for (const planet of planets) {
+      renderer.drawPlanet(planet);
+    }
+
+    // Draw Ship
     renderer.drawShip(ship);
+
+    // End camera transform
+    renderer.endCamera();
   }
 
   onMount(() => {
-    const rx = window.innerWidth / 2;
-    const ry = window.innerHeight / 2;
+    // Initialize Camera with 16:9 viewport
+    camera = new Camera({
+      viewportWidth: LOGICAL_WIDTH,
+      viewportHeight: LOGICAL_HEIGHT,
+      smoothing: 1.0,
+    });
 
     // Position Ship slightly offset
-    ship.pos.set(rx - 300, ry);
+    ship.pos.set(LOGICAL_WIDTH / 2 - 300, LOGICAL_HEIGHT / 2);
 
     // Create a Star in the center
     star = {
-      pos: new Vec2(rx, ry),
+      pos: new Vec2(LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2),
       radius: 40,
       influenceRadius: 300,
-      mass: 500, // Tunable gravity strength
+      mass: 500,
       color: "#FFA500", // Orange
     };
 
+    // Create Planets
+    planets = [
+      {
+        pos: new Vec2(0, 0),
+        orbitCenter: new Vec2(LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2),
+        orbitRadius: 700,
+        orbitSpeed: 0.05,
+        orbitAngle: 0,
+        radius: 20,
+        mass: 250,
+        color: "#6666CC", // Slate Blue
+      },
+    ];
+
+    // Initialize Renderer with logical resolution
     renderer = new Renderer(canvas);
+    renderer.resize(LOGICAL_WIDTH, LOGICAL_HEIGHT);
+
+    // Initialize Input
     input = new Input();
 
     const onResize = () => {
-      renderer?.resize(window.innerWidth, window.innerHeight);
-      // Requirement: Game must be Landscape.
-      // If Height > Width (Portrait), show overlay.
+      if (!container) return;
+
+      // Calculate scaling to fit 16:9 within window
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      const windowRatio = windowWidth / windowHeight;
+      const targetRatio = 16 / 9;
+
+      let width: number;
+      let height: number;
+
+      if (windowRatio > targetRatio) {
+        // Window is wider - fit to height
+        height = windowHeight;
+        width = height * targetRatio;
+      } else {
+        // Window is taller - fit to width
+        width = windowWidth;
+        height = width / targetRatio;
+      }
+
+      // Apply to container
+      container.style.width = `${width}px`;
+      container.style.height = `${height}px`;
+
+      // Check for portrait orientation warning
       showRotateOverlay = window.innerHeight > window.innerWidth;
     };
+
     window.addEventListener("resize", onResize);
     onResize();
 
@@ -92,20 +175,29 @@
   });
 </script>
 
-<canvas bind:this={canvas} class="game-canvas"></canvas>
+<div class="viewport-wrapper">
+  <div class="game-container" bind:this={container}>
+    <canvas bind:this={canvas} class="game-canvas"></canvas>
 
-<!-- Touch Zone Feedback -->
-<div class="zone-feedback left" class:active={leftActive}></div>
-<div class="zone-feedback right" class:active={rightActive}></div>
+    <!-- Touch Zone Feedback -->
+    <div class="zone-feedback left" class:active={leftActive}></div>
+    <div class="zone-feedback right" class:active={rightActive}></div>
 
-<!-- UI Overlay -->
-<div class="ui-overlay">
-  <div class="controls-hint desktop-only">WASD / Arrows to Thrust</div>
-  <div class="controls-hint mobile-only">Tap Sides to Thrust</div>
-</div>
+    <!-- HUD Overlay -->
+    <div class="hud-overlay">
+      <!-- Logo -->
+      <div class="logo">∅·Δ</div>
 
-<div class="version-display">
-  α {__APP_VERSION__}
+      <!-- Controls Hint (Bottom) -->
+      <div class="controls-hint">
+        <div class="desktop-only">WASD / Arrows to Thrust</div>
+        <div class="mobile-only">Tap Sides to Thrust</div>
+      </div>
+
+      <!-- Version Display -->
+      <div class="version-display">α {__APP_VERSION__}</div>
+    </div>
+  </div>
 </div>
 
 <!-- Orientation Warning -->
@@ -117,32 +209,73 @@
 {/if}
 
 <style>
-  .game-canvas {
-    display: block;
+  .viewport-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100vw;
     height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-void);
+    overflow: hidden;
   }
 
-  .ui-overlay {
+  .game-container {
+    position: relative;
+    /* Dimensions set dynamically by JS to maintain 16:9 */
+    background: var(--color-void);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+  }
+
+  .game-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    image-rendering: crisp-edges;
+  }
+
+  /* HUD Overlay */
+  .hud-overlay {
     position: absolute;
-    bottom: 20px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .logo {
+    position: absolute;
+    top: var(--spacing-md);
+    left: var(--spacing-md);
+    font-family: "Noto Sans Math", sans-serif;
+    font-size: 48px;
+    font-weight: 300;
+    color: var(--color-neon-blue);
+    text-shadow: 0 0 10px var(--color-neon-blue);
+    letter-spacing: 4px;
+  }
+
+  .controls-hint {
+    position: absolute;
+    bottom: var(--spacing-md);
     width: 100%;
     text-align: center;
-    pointer-events: none;
     color: var(--color-text-dim);
     font-family: "Noto Sans Math", sans-serif;
-    z-index: 10;
+    font-size: 14px;
   }
 
   .version-display {
     position: absolute;
-    bottom: 10px;
-    right: 10px;
+    bottom: var(--spacing-sm);
+    right: var(--spacing-md);
     color: var(--color-text-dim);
     font-family: "Noto Sans Math", sans-serif;
     font-size: 12px;
-    pointer-events: none;
-    z-index: 10;
   }
 
   /* Feedback Zones */
@@ -155,16 +288,19 @@
     transition: background 0.1s;
     z-index: 5;
   }
+
   .zone-feedback.left {
     left: 0;
     border-right: 1px solid rgba(255, 255, 255, 0.05);
   }
+
   .zone-feedback.right {
     right: 0;
   }
+
   .zone-feedback.active {
     background: rgba(255, 255, 255, 0.05);
-    box-shadow: inset 0 0 50px rgba(0, 240, 255, 0.2);
+    box-shadow: inset 0 0 50px rgba(212, 255, 0, 0.2);
   }
 
   /* Orientation Overlay */
@@ -183,6 +319,7 @@
     color: var(--color-text);
     font-family: "Noto Sans Math", sans-serif;
   }
+
   .rotate-overlay h1 {
     color: var(--color-neon-blue);
     text-transform: uppercase;
@@ -201,6 +338,19 @@
     }
     .mobile-only {
       display: block;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .logo {
+      font-size: 32px;
+      top: var(--spacing-sm);
+      left: var(--spacing-sm);
+    }
+
+    .controls-hint {
+      font-size: 12px;
+      bottom: var(--spacing-sm);
     }
   }
 </style>
