@@ -1,6 +1,10 @@
 import { defineConfig } from 'astro/config';
 import svelte from '@astrojs/svelte';
 import path from 'path';
+import { readFileSync } from 'fs';
+
+const rootPackage = JSON.parse(readFileSync(path.resolve('../../package.json'), 'utf-8'));
+
 
 // https://astro.build/config
 export default defineConfig({
@@ -12,7 +16,8 @@ export default defineConfig({
       }
     },
     define: {
-      __APP_VERSION__: JSON.stringify('0.0.1')
+      __APP_VERSION__: JSON.stringify(rootPackage.version)
     }
+
   }
 });

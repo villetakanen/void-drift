@@ -1,5 +1,7 @@
-import type { GameObject } from "./Physics";
+import { type GameObject, type Star } from "./Physics";
 import { drawShip } from "../renderers/ship";
+import { drawStar } from "../assets/star";
+
 
 export class Renderer {
     private ctx: CanvasRenderingContext2D;
@@ -21,9 +23,10 @@ export class Renderer {
     }
 
     clear() {
-        this.ctx.fillStyle = "var(--color-void, #000)";
+        this.ctx.fillStyle = "#050510"; // --color-void
         this.ctx.fillRect(0, 0, this.width, this.height);
     }
+
 
     drawShip(ship: GameObject) {
         drawShip(this.ctx, {
@@ -33,4 +36,16 @@ export class Renderer {
             color: "#00ffcc" // Default game color
         });
     }
+
+    drawStar(star: Star, time: number) {
+        drawStar(this.ctx, {
+            x: star.pos.x,
+            y: star.pos.y,
+            radius: star.radius,
+            color: star.color,
+            time: time,
+            pulseSpeed: 1.0
+        });
+    }
 }
+

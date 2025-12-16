@@ -53,6 +53,15 @@ export interface GameObject {
 	radius: number;
 }
 
+export interface Star {
+	pos: Vec2;
+	radius: number;       // Physical radius
+	influenceRadius: number; // Gravity well radius
+	mass: number;         // Gravity strength factor
+	color: string;
+}
+
+
 import { CONFIG } from "../config";
 import type { InputState } from "./Input";
 
@@ -62,7 +71,9 @@ export function updateShip(
 	dt: number,
 	width: number,
 	height: number,
+	star?: Star, // Optional star integration
 ) {
+
 	// 1. Rotation & Variable Thrust (Differential)
 	// Left Engine -> Rotate Right + 50% Thrust
 	// Right Engine -> Rotate Left + 50% Thrust
@@ -85,10 +96,34 @@ export function updateShip(
 		const thrustY = Math.sin(ship.rotation) * CONFIG.THRUST_FORCE * thrustMultiplier;
 		ship.acc.x += thrustX;
 		ship.acc.y += thrustY;
+		ship.acc.x += thrustX;
+		ship.acc.y += thrustY;
 	}
 
-	// 2. Integration
+	// 2. Gravity Well (Star)
+	// Apply force if within influence radius
+	if (star) {
+		const distVec = star.pos.clone().sub(ship.pos);
+		const dist = distVec.mag();
+
+		if (dist < star.influenceRadius && dist > star.radius) {
+			// Normalize direction
+			distVec.normalize();
+
+			// Simple Gravity: Force = Mass / Dist (Linear-ish feel for game)
+			// Or Inverse Square: Force = Mass / (Dist * Dist)
+			// Let's try a tuned linear pull that gets stronger closer in.
+			// Normalized Dist (0 at star, 1 at edge)
+			const normalizedDist = dist / star.influenceRadius;
+			const strength = star.mass * (1 - normalizedDist);
+
+			ship.acc.add(distVec.mult(strength));
+		}
+	}
+
+	// 3. Integration
 	// vel += acc * dt
+
 	const dVel = ship.acc.clone().mult(dt);
 	ship.vel.add(dVel);
 

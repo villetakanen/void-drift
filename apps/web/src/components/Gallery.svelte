@@ -2,7 +2,7 @@
     import Canvas from "./Canvas.svelte";
     import Controls from "./Controls.svelte";
     import Logo from "./Logo.svelte";
-    import { drawShip } from "@void-drift/engine";
+    import { drawShip, drawStar } from "@void-drift/engine";
 
     // State
     let activeAsset = $state("dashboard");
@@ -11,9 +11,30 @@
     const ASSETS = [
         { id: "dashboard", label: "Dashboard" },
         { id: "ship", label: "Ship" },
-        { id: "asteroid", label: "Asteroid" },
+        { id: "star", label: "Star" },
         { id: "typography", label: "Typography" },
     ];
+
+    // Star State
+    let starParams = $state({
+        radius: 40,
+        color: "#FFA500", // Orange
+        pulseSpeed: 1.0,
+    });
+    let starTime = $state(0);
+
+    // Animation Loop for Star
+    $effect(() => {
+        if (activeAsset === "star") {
+            let handle: number;
+            const loop = (t: number) => {
+                starTime = t;
+                handle = requestAnimationFrame(loop);
+            };
+            handle = requestAnimationFrame(loop);
+            return () => cancelAnimationFrame(handle);
+        }
+    });
 
     /* Mock Draw Function */
     function drawDashboard(ctx: CanvasRenderingContext2D) {
@@ -23,6 +44,20 @@
         ctx.fillStyle = "#D4FF00"; // Acid Lime
         ctx.font = "20px 'Noto Sans Math'";
         ctx.fillText("Select an asset from the left.", 20, 40);
+    }
+
+    function drawStarPreview(ctx: CanvasRenderingContext2D) {
+        const cx = ctx.canvas.width / 2;
+        const cy = ctx.canvas.height / 2;
+
+        drawStar(ctx, {
+            x: cx,
+            y: cy,
+            radius: starParams.radius,
+            color: starParams.color,
+            time: starTime,
+            pulseSpeed: starParams.pulseSpeed,
+        });
     }
 
     function drawShipPreview(ctx: CanvasRenderingContext2D) {
@@ -69,6 +104,8 @@
                 <Canvas width={600} height={400} draw={drawDashboard} />
             {:else if activeAsset === "ship"}
                 <Canvas width={600} height={400} draw={drawShipPreview} />
+            {:else if activeAsset === "star"}
+                <Canvas width={600} height={400} draw={drawStarPreview} />
             {:else if activeAsset === "typography"}
                 <div class="design-system-preview">
                     <!-- ... (Typography content remains same) ... -->
@@ -145,6 +182,40 @@
                         min="0"
                         max="360"
                         bind:value={shipRotation}
+                    />
+                </div>
+            {:else if activeAsset === "star"}
+                <div class="control-group">
+                    <label for="star-radius"
+                        >Radius ({starParams.radius}px)</label
+                    >
+                    <input
+                        type="range"
+                        id="star-radius"
+                        min="10"
+                        max="200"
+                        bind:value={starParams.radius}
+                    />
+                </div>
+                <div class="control-group">
+                    <label for="star-speed"
+                        >Pulse Speed ({starParams.pulseSpeed}x)</label
+                    >
+                    <input
+                        type="range"
+                        id="star-speed"
+                        min="0.1"
+                        max="5.0"
+                        step="0.1"
+                        bind:value={starParams.pulseSpeed}
+                    />
+                </div>
+                <div class="control-group">
+                    <label for="star-color">Color</label>
+                    <input
+                        type="color"
+                        id="star-color"
+                        bind:value={starParams.color}
                     />
                 </div>
             {:else}

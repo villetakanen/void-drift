@@ -4,7 +4,7 @@
 The **Asset Gallery** is a hidden developer tool accessible via `/#gallery`. It serves as a workbench to develop, test, and tune procedural graphics and UI components in isolation from the main game loop.
 
 ## 2. Goals
-1.  **Visual Verification**: Instantly view assets (ships, asteroids, effects) and UI components (buttons, HUDs) without navigating gameplay.
+1.  **Visual Verification**: Instantly view assets (ships, stars, effects) and UI components (buttons, HUDs) without navigating gameplay.
 2.  **Parameter Tuning**: Tweak procedural generation parameters (colors, dimensions, variance) in real-time.
 3.  **Design System Compliance**: Ensure all UI elements adhere to the "Void" aesthetic (managed by @Designer).
 4.  **Performance**: Isolate heavy rendering logic for profiling.
@@ -27,7 +27,7 @@ src/
     assets/           # Procedural drawing logic (Pure Functions)
       index.ts        # Exports
       ship.ts         # drawShip(ctx, state)
-      asteroid.ts     # drawAsteroid(ctx, seed)
+      star.ts         # drawStar(ctx, params)
       grid.ts         # drawBackgroundGrid(ctx)
     debug/
       Gallery.svelte  # Main Workbench Container

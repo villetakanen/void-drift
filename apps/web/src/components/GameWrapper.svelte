@@ -7,6 +7,7 @@
     updateShip,
     Vec2,
     Renderer,
+    type Star,
   } from "@void-drift/engine";
 
   let canvas: HTMLCanvasElement;
@@ -27,6 +28,8 @@
     radius: CONFIG.SHIP_RADIUS,
   };
 
+  let star: Star | undefined = $state(undefined);
+
   function update(dt: number) {
     if (!renderer || !input) return;
 
@@ -37,15 +40,34 @@
     // Physics
     const width = window.innerWidth;
     const height = window.innerHeight;
-    updateShip(ship, input.state, dt, width, height);
+    updateShip(ship, input.state, dt, width, height, star);
 
     // Render
     renderer.clear();
+
+    // Draw Star (if exists)
+    if (star) {
+      renderer.drawStar(star, performance.now());
+    }
+
     renderer.drawShip(ship);
   }
 
   onMount(() => {
-    ship.pos.set(window.innerWidth / 2, window.innerHeight / 2);
+    const rx = window.innerWidth / 2;
+    const ry = window.innerHeight / 2;
+
+    // Position Ship slightly offset
+    ship.pos.set(rx - 300, ry);
+
+    // Create a Star in the center
+    star = {
+      pos: new Vec2(rx, ry),
+      radius: 40,
+      influenceRadius: 300,
+      mass: 500, // Tunable gravity strength
+      color: "#FFA500", // Orange
+    };
 
     renderer = new Renderer(canvas);
     input = new Input();
