@@ -206,3 +206,20 @@ Strict adherence to project rules.
 
 - Save kills to Global Leaderboard.
 - Polish UI.
+
+## 8. Current State & Known Deviations
+
+As of the "Asset Gallery" implementation (Phase 3), the project has diverged slightly from the original vision during the Monorepo migration.
+
+### 8.1 Repository Structure
+- **Vision:** Clean Monorepo with `apps/web` and `packages/engine`.
+- **Reality:** While `apps/` and `packages/` exist and are functional, the **Root Directory** still contains legacy artifacts (`src/`, `index.html`, `vite.config.ts`) from the initial Phase 1 prototype. These are currently redundant or confusing.
+
+### 8.2 Tech Stack
+- **Vision:** `packages/engine` should be pure Logic/Types (No Framework).
+- **Reality:** `packages/engine` currently depends on **Svelte 5** (Runes) to share Store logic and Zod schemas easily with the frontend. This is accepted for now to speed up development but may need decoupling later.
+
+### 8.3 Documentation
+- **Vision:** Specs should be the source of truth.
+- **Reality:** Several specs (e.g., `scaffold-project.md`) describe the pre-migration "Single Repo" structure and are currently outdated. `design-system-core.md` is mostly correct but implementation details may span between the old root `src` and new `apps/web/src`.
+

@@ -1,88 +1,45 @@
-# Specification: Project Scaffolding & Initialization
+# Feature: Project Structure & Scaffolding
 
-**Feature:** Initial Repository Setup
-**Status:** DRAFT
-**Owner:** @Lead
-**Implementer:** @Dev
+## Blueprint
 
-## 1. Goal
-Initialize the `void-drift` repository with the core technology stack and directory structure defined in the Project Vision. This provides the blank canvas for the Game Engine implementation.
+### Context
+This specification defines the foundational architecture of the `void-drift` repository. We utilize a **Monorepo** structure to strictly separate the Game Engine (logic) from the Web Application (presentation). This separation ensures that the core physics and game loop remain framework-agnostic and testable, while the frontend can evolve independently.
 
-## 2. Technical Stack Checklist (Strict)
-- **Runtime:** `pnpm` (User Preference).
-- **Bundler:** Vite.
-- **Framework:** Svelte 5 (Runes Mode). *Ensure `svelte` version is `^5.0.0`*.
-- **Language:** TypeScript.
-- **Linting:** Biome.
-- **Styling:** Vanilla CSS (No Tailwind).
+### Architecture
+- **Package Manager:** `pnpm` (with workspaces enabled).
+- **Structure:**
+  - `apps/web`: The consumer application (Astro + Svelte 5).
+  - `packages/engine`: The shared library (`@void-drift/engine`) containing physics, input, and render logic.
+- **Dependencies:** 
+  - `apps/web` depends on `packages/engine`.
+  - `packages/engine` has minimal dependencies (Svelte, Zod, Firebase).
 
-## 3. Implementation Steps
+### Anti-Patterns
+- **Do NOT** put source code in the root directory (Context Amnesia risk).
+- **Do NOT** allow `packages/engine` to import from `apps/web` (Circular Dependency).
+- **Do NOT** use `npm` or `yarn` lockfiles; strictly enforce `pnpm-lock.yaml`.
 
-### 3.1. Initialize Vite Project
-1. Run `pnpm create vite . --template svelte-ts` in the root.
-2. Upgrade Svelte to Version 5:
-   - `pnpm add -D svelte@next` (or latest stable Svelte 5).
-   - Update `svelte.config.js` or `vite.config.ts` if specific Svelte 5 flags are required (usually standard vite plugin works).
-3. Install Core Dependencies:
-   - `pnpm add zod firebase`
-   - `pnpm add -D @biomejs/biome`
+## Contract
 
-### 3.2. Configure Tooling
-1. **Biome:**
-   - Run `npx @biomejs/biome init`.
-   - Configure `biome.json` to enable formatting and linting suitable for Svelte/TS.
-2. **TypeScript:**
-   - Ensure `tsconfig.json` has `"strict": true`.
+### Definition of Done
+- [ ] `pnpm dev` at the root starts the `apps/web` development server.
+- [ ] `pnpm -r build` successfully builds both `packages/engine` and `apps/web`.
+- [ ] `packages/engine` exports a strongly typed `GameLoop` class.
+- [ ] Root directory contains only configuration files (`package.json`, `pnpm-workspace.yaml`, `biome.json`).
 
-### 3.3. Directory Structure
-Create the following folder hierarchy (pruning default Vite files like `Counter.svelte` or `lib/Counter.ts`):
+### Regression Guardrails
+- **Zero-Root-Code:** No `.ts`, `.js`, `.html`, or `.css` files allowed in root (except config).
+- **Linting:** `pnpm -r check` must pass without errors (Biome).
+- **Type Safety:** All workspace references must use `workspace:*` or specific versions.
 
-```text
-/
-├── src/
-│   ├── main.ts             # Entry point
-│   ├── App.svelte          # Root component
-│   ├── app.css             # Global reset / variables
-│   ├── assets/             # (Empty for now)
-│   ├── lib/
-│   │   ├── config.ts       # Constants (Create empty file)
-│   │   ├── firebase.ts     # Firebase Init (Create empty file)
-│   │   ├── store.ts        # State Management (Create empty file)
-│   │   ├── schemas/
-│   │   │   ├── common.ts
-│   │   │   └── game.ts
-│   │   ├── engine/
-│   │   │   ├── Loop.ts
-│   │   │   ├── Physics.ts
-│   │   │   ├── Renderer.ts
-│   │   │   ├── Input.ts
-│   │   │   └── Audio.ts
-│   │   └── ui/
-│   │       ├── Lobby.svelte
-│   │       ├── GameHUD.svelte
-│   │       ├── Joystick.svelte
-│   │       └── Leaderboard.svelte
-```
+### Scenarios
+**Scenario: Developer Setup**
+- Given a fresh clone of the repository
+- When the developer runs `pnpm install`
+- Then all dependencies for `apps/web` and `packages/engine` are installed
+- And `pnpm dev` successfully starts the game at `localhost:4321`
 
-### 3.4. Clean Up
-- Clear the contents of `App.svelte` to just render a simple "VOID DRIFT INITIALIZED" `<h1>`.
-- Clear `app.css` and add a basic dark background reset:
-  ```css
-  :root {
-    --color-void: #050510;
-    --color-text: #ffffff;
-  }
-  body {
-    background: var(--color-void);
-    color: var(--color-text);
-    margin: 0;
-    overflow: hidden; /* Important for game canvas */
-  }
-  ```
-
-## 4. Verification
-1. Run `pnpm install`.
-2. Run `pnpm dev`.
-3. Open browser.
-4. Verify "VOID DRIFT INITIALIZED" is visible on a dark background.
-5. Run `npx @biomejs/biome check .` and ensure no errors.
+**Scenario: Dependency Isolation**
+- Given I am working in `packages/engine`
+- When I try to import a UI component from `apps/web`
+- Then the build or IDE should flag this as an error (cannot resolve path)
