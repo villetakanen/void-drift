@@ -1,26 +1,13 @@
 {
-  "name": "void-drift",
+  "name": "void-drift-monorepo",
   "private": true,
-  "version": "0.0.2",
-  "type": "module",
+  "version": "0.0.3",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "check": "pnpm -r check"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.8",
-    "@sveltejs/vite-plugin-svelte": "^6.2.1",
-    "@tsconfig/svelte": "^5.0.6",
-    "@types/node": "^24.10.1",
-    "svelte": "5.0.0-next.272",
-    "svelte-check": "^4.3.4",
-    "typescript": "~5.9.3",
-    "vite": "^7.2.4"
-  },
-  "dependencies": {
-    "firebase": "^12.6.0",
-    "zod": "^4.1.13"
+    "typescript": "^5.0.0"
   }
 }
