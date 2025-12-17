@@ -1,0 +1,9 @@
+---
+import LabLayout from "../../layouts/LabLayout.astro";
+import LabStar from "../../components/lab/LabStar.svelte";
+---
+
+<LabLayout title="Star Workbench">
+    <!-- @ts-ignore -->
+    <LabStar client:only="svelte" />
+</LabLayout>

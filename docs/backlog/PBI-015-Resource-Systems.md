@@ -1,6 +1,6 @@
 # PBI-015: Resource HUD Design System
 
-**Status:** TODO  
+**Status:** DONE  
 **Priority:** HIGH  
 **Estimate:** 5 Story Points  
 **Phase:** 5 (Survival Core - Design)  
@@ -30,7 +30,7 @@ This is the first PBI for Phase 5 (Survival Core). Before implementing resource 
 - ✅ Phase 4 complete (Design System tokens exist)
 - ✅ Gallery workbench functional at `/gallery`
 - ❌ PBI-016 (Resource Logic) — Blocked until this is complete
-- ❌ PBI-019 (Lab Refactor) — This PBI blocks PBI-015 (we need the /lab structure first)
+- ✅ PBI-019 (Lab Refactor) — This PBI blocks PBI-015 (we need the /lab structure first)
 
 ---
 
@@ -38,53 +38,53 @@ This is the first PBI for Phase 5 (Survival Core). Before implementing resource 
 
 ### Resource Bars (Hull & Fuel)
 
-- [ ] Two bar designs created: Hull (blue theme) and Fuel (lime theme)
-- [ ] Bar states designed:
+- [x] Two bar designs created: Hull (blue theme) and Fuel (lime theme)
+- [x] Bar states designed:
   - 100-50%: Normal (full color)
   - 49-25%: Warning (yellow/orange color)
   - 24-0%: Danger (red color with pulsing)
-- [ ] Bar fill animates smoothly (CSS transition)
-- [ ] Label overlays percentage text (e.g., "HULL 82%")
-- [ ] Label remains readable on all fill levels (text shadow)
-- [ ] Bar dimensions: ~200px width × 24px height (mobile-friendly)
+- [x] Bar fill animates smoothly (CSS transition)
+- [x] Label overlays percentage text (e.g., "HULL 82%")
+- [x] Label remains readable on all fill levels (text shadow)
+- [x] Bar dimensions: ~200px width × 24px height (mobile-friendly)
 
 ### Warning Visual States
 
-- [ ] Color progression defined:
+- [x] Color progression defined:
   - Normal: `--color-neon-blue` (hull), `--color-acid-lime` (fuel)
   - Warning: `--color-warning` (new token if needed)
   - Danger: `--color-danger`
-- [ ] Pulsing animation for danger state (< 25%)
-- [ ] Optional: Low resource sound trigger point defined (for Phase 7)
+- [x] Pulsing animation for danger state (< 25%)
+- [x] Optional: Low resource sound trigger point defined (for Phase 7)
 
 ### Death Cause Iconography
 
-- [ ] Three death icons designed (16×16px or 24×24px):
+- [x] Three death icons designed (16×16px or 24×24px):
   - `STAR` — Sun/star symbol (☀ or custom)
   - `HULL` — Crack/damage symbol (⚠ or shield with crack)
   - `FUEL` — Empty tank/droplet (🪫 or gas pump)
-- [ ] Icons rendered in `/gallery` with labels
-- [ ] Icons use Design System colors
-- [ ] Icons work at small sizes (readable on mobile)
+- [x] Icons rendered in `/gallery` with labels
+- [x] Icons use Design System colors
+- [x] Icons work at small sizes (readable on mobile)
 
 ### Timer Display Design
 
-- [ ] Timer format defined: `XXX.Xs` (e.g., "142.3s")
-- [ ] Font styling: Monospace/tabular-nums to prevent layout shift
-- [ ] Size: Large enough to read during gameplay (~1.25rem)
-- [ ] Color: White with dark shadow for readability
-- [ ] Position mockup: Top-right of HUD
+- [x] Timer format defined: `XXX.Xs` (e.g., "142.3s")
+- [x] Font styling: Monospace/tabular-nums to prevent layout shift
+- [x] Size: Large enough to read during gameplay (~1.25rem)
+- [x] Color: White with dark shadow for readability
+- [x] Position mockup: Top-right of HUD
 
 ### Gallery/Lab Integration
 
-- [ ] New lab route: `/lab/resources`
-- [ ] All components rendered in isolation with controls:
+- [x] New lab route: `/lab/resources`
+- [x] All components rendered in isolation with controls:
   - Hull bar with slider (0-100%)
   - Fuel bar with slider (0-100%)
   - Death icons (all three displayed)
   - Timer display (static examples: 0.0s, 42.3s, 142.3s)
-- [ ] Components exported as reusable functions
-- [ ] No game logic—pure visual rendering
+- [x] Components exported as reusable functions
+- [x] No game logic—pure visual rendering
 
 ---
 

@@ -1,0 +1,9 @@
+---
+import LabLayout from "../../layouts/LabLayout.astro";
+import LabShip from "../../components/lab/LabShip.svelte";
+---
+
+<LabLayout title="Ship Workbench">
+    <!-- @ts-ignore -->
+    <LabShip client:only="svelte" />
+</LabLayout>

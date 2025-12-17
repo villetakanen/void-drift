@@ -6,3 +6,5 @@ export * from "./lib/engine/Renderer";
 export * from "./lib/engine/Camera";
 export * from "./lib/renderers/ship";
 export * from "./lib/assets/star";
+export * from "./lib/assets/resource-bar";
+export * from "./lib/assets/death-icons";
