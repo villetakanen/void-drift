@@ -170,39 +170,52 @@ Strict adherence to project rules.
 - [x] Tuning: Single-engine thrust spirals, Max Speed cap, Inertia Damping.
 - _Outcome:_ A playable tech demo with satisfying drift physics.
 
-### Phase 2: Mobile Controls (Alpha) - [CURRENT v0.0.2]
+### Phase 2: Mobile Controls (Alpha) - [COMPLETED v0.0.2]
+- [x] Spli-Screen Touch Inputs.
+- [x] Touch Visual Feedback.
 
-- [ ] Implement Touch Inputs (Split screen tapping).
-- [ ] Ensure Portrait Mode playability.
-- [ ] Add Visual Feedback for touches (Joystick/Overlay).
-- [ ] Prevent default touch behaviors (Scrolling/Zooming).
+### Phase 3: Asset Gallery & Design System - [COMPLETED v0.0.3]
+- [x] Internal Workbench (`/#gallery`).
+- [x] Procedural Asset Refactor.
 
-### Phase 3: Asset Gallery & Design System [Planned v0.0.3]
+### Phase 4: QoL & Polish (The "Game Feel") - [Planned v0.0.4]
+- **Goal:** Improve playability and presentation before network code.
+- **Game Container:** Constrain gameplay to a fixed 16:9 div (e.g., "Full HD" ratio) to prevent window-edge bugs.
+- **HUD:** Display Game Logo in the UI pane.
+- **Content:** Add "Rock Planet" asset (gravity well + collision).
+- **Camera:** Ensure camera respects the new aspect-ratio container.
 
-- [ ] Implement `/#gallery` hidden route.
-- [ ] Refactor procedural assets (Ship, Asteroids) into pure functions.
-- [ ] Create interactive workbench for standardizing "The Vibe" (Colors, Typography).
-- [ ] Add controls to test physics assets in isolation.
-
-### Phase 4: The Network (Lobby) - [Planned v0.0.4]
-
+### Phase 5: The Network (Lobby) - [Planned v0.0.5]
 - Firebase Auth (Anon).
 - Create Lobby / Join Lobby logic.
 - URL parsing to join specific lobby IDs.
 
-### Phase 5: Multiplayer Sync
-
+### Phase 6: Multiplayer Sync
 - Hook up the physics loop to Firestore `onSnapshot`.
-- Implement "Lerp" (Linear Interpolation) so enemy ships don't teleport, but slide to their new network positions.
+- Implement "Lerp" (Linear Interpolation).
 
-### Phase 6: Combat & Juice
-
+### Phase 7: Combat & Juice
 - Add Auto-fire logic.
 - Add Antimatter Bomb.
 - Add "Zoom" camera controller.
-- Add Particle effects and Screen Shake.
 
-### Phase 7: Persistence
-
+### Phase 8: Persistence
 - Save kills to Global Leaderboard.
 - Polish UI.
+
+## 8. Current State & Known Deviations
+
+As of the "Asset Gallery" implementation (Phase 3), the project has diverged slightly from the original vision during the Monorepo migration.
+
+### 8.1 Repository Structure
+- **Vision:** Clean Monorepo with `apps/web` and `packages/engine`.
+- **Reality:** While `apps/` and `packages/` exist and are functional, the **Root Directory** still contains legacy artifacts (`src/`, `index.html`, `vite.config.ts`) from the initial Phase 1 prototype. These are currently redundant or confusing.
+
+### 8.2 Tech Stack
+- **Vision:** `packages/engine` should be pure Logic/Types (No Framework).
+- **Reality:** `packages/engine` currently depends on **Svelte 5** (Runes) to share Store logic and Zod schemas easily with the frontend. This is accepted for now to speed up development but may need decoupling later.
+
+### 8.3 Documentation
+- **Vision:** Specs should be the source of truth.
+- **Reality:** Several specs (e.g., `scaffold-project.md`) describe the pre-migration "Single Repo" structure and are currently outdated. `design-system-core.md` is mostly correct but implementation details may span between the old root `src` and new `apps/web/src`.
+

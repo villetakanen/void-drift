@@ -54,6 +54,8 @@
 
 - **Language:** TypeScript 5+ (Strict Mode).
     
+- **Architecture:** Monorepo (pnpm workspaces).
+    
 - **Core Framework:** Svelte 5 (Runes mode preferred).
     
 - **Build System:** Vite.
@@ -71,7 +73,7 @@
 
 - **Tier 1 (ALWAYS):**
     
-    - **Single File Mandate (Immersive):** If generating a demo, put everything in one file. If working on the repo, use the file structure defined in `project_brief.md`.
+    - **Single File Mandate (Immersive):** If generating a demo, put everything in one file. If working on the repo, use the file structure defined in `project_brief.md` or `AGENTS.md`.
         
     - **Strict Types:** No `any`. If a type is unknown, use `unknown` and narrow it.
         
@@ -94,10 +96,10 @@
 
 |Action|Command|Note|
 |---|---|---|
-|**Dev**|`npm run dev`|Starts Vite server|
-|**Build**|`npm run build`|Outputs to `dist/`|
-|**Lint**|`npx @biomejs/biome check --apply .`|Fixes formatting/linting|
-|**Preview**|`npm run preview`|Test production build|
+|**Dev (Web)**|`pnpm dev`|Starts the web app (Astro/Svelte)|
+|**Build**|`pnpm -r build`|Builds all packages|
+|**Lint**|`pnpm -r check`|Runs Biome check across workspace|
+|**Preview**|`pnpm --filter web preview`|Test production build of web app|
 
 ## 5. Coding Standards
 
@@ -134,26 +136,25 @@
 
 ```yaml
 root:
+  - package.json   # Workspace Root
+  - pnpm-workspace.yaml
   - biome.json
-  - vite.config.ts
-  - index.html
-  - AGENTS.md      # This file
-  - package.json
-  - tsconfig.json
+  - AGENTS.md
   - docs:
     - vision.md
-    - specs:       # Feature specifications
-    - backlog:     # Planned PBI items
-  - src:
-    - main.ts
-    - App.svelte
-    - app.css
-    - assets: []
-    - lib:
-      - config.ts
-      - firebase.ts
-      - store.ts
-      - schemas:
-      - engine:
-      - ui:
+    - specs:
+    - backlog:
+  - packages:
+    - engine:      # @void-drift/engine
+      - src:
+        - index.ts # Public Exports
+        - lib:
+          - engine: (Loop, Physics, Renderer)
+          - schemas: (Zod)
+  - apps:
+    - web:         # The Astro + Svelte Site
+      - src:
+        - pages: (Astro Routes)
+        - components: (Svelte UI)
+        - styles.css (Design System Tokens)
 ```

@@ -2,8 +2,8 @@ export const CONFIG = {
 	// Physics
 	SHIP_DRAG: 0.5, // Damping factor per second (vel -= vel * DRAG * dt)
 	ROTATION_SPEED: 3.0, // Radians per second
-	THRUST_FORCE: 200.0, // Pixels per second squared
-	MAX_SPEED: 500.0, // Max pixels per second
+	THRUST_FORCE: 400.0, // Pixels per second squared
+	MAX_SPEED: 800.0, // Max pixels per second
 
 	// Game
 	SHIP_RADIUS: 16,

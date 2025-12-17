@@ -61,6 +61,17 @@ export interface Star {
 	color: string;
 }
 
+export interface Planet {
+	pos: Vec2;           // Current position (calculated from orbit)
+	orbitCenter: Vec2;   // Center of orbit (usually star)
+	orbitRadius: number; // Distance from center
+	orbitSpeed: number;  // Radians per second
+	orbitAngle: number;  // Current angle
+	radius: number;      // Physical size
+	mass: number;        // Gravity strength
+	color: string;       // Hex color
+}
+
 
 import { CONFIG } from "../config";
 import type { InputState } from "./Input";
@@ -71,7 +82,8 @@ export function updateShip(
 	dt: number,
 	width: number,
 	height: number,
-	star?: Star, // Optional star integration
+	star?: Star,
+	planets: Planet[] = [],
 ) {
 
 	// 1. Rotation & Variable Thrust (Differential)
@@ -94,8 +106,6 @@ export function updateShip(
 	if (thrustMultiplier > 0) {
 		const thrustX = Math.cos(ship.rotation) * CONFIG.THRUST_FORCE * thrustMultiplier;
 		const thrustY = Math.sin(ship.rotation) * CONFIG.THRUST_FORCE * thrustMultiplier;
-		ship.acc.x += thrustX;
-		ship.acc.y += thrustY;
 		ship.acc.x += thrustX;
 		ship.acc.y += thrustY;
 	}
@@ -121,19 +131,72 @@ export function updateShip(
 		}
 	}
 
-	// 3. Integration
+	// 3. Planet Interaction (Gravity + Collision)
+	for (const planet of planets) {
+		// Update Planet Position (Orbit)
+		planet.orbitAngle += planet.orbitSpeed * dt;
+		planet.pos.x = planet.orbitCenter.x + Math.cos(planet.orbitAngle) * planet.orbitRadius;
+		planet.pos.y = planet.orbitCenter.y + Math.sin(planet.orbitAngle) * planet.orbitRadius;
+
+		const dx = planet.pos.x - ship.pos.x;
+		const dy = planet.pos.y - ship.pos.y;
+		const distSq = dx * dx + dy * dy;
+		const dist = Math.sqrt(distSq);
+
+		// Gravity (Weaker than star, but constant pull nearby)
+		// Influence radius approx 8x planet radius
+		const influenceRadius = planet.radius * 8;
+
+		if (dist < influenceRadius && dist > planet.radius + ship.radius) {
+			const strength = (planet.mass / distSq) * 1000; // Inverse square approximation
+			const gravityX = (dx / dist) * strength;
+			const gravityY = (dy / dist) * strength;
+			ship.acc.x += gravityX;
+			ship.acc.y += gravityY;
+		}
+
+		// Collision (Elastic Bounce)
+		const minDist = planet.radius + ship.radius;
+		if (dist < minDist) {
+			// Resolve overlap
+			const overlap = minDist - dist;
+			const nx = dx / dist; // Vector pointing towards planet
+			const ny = dy / dist;
+
+			// Push ship out
+			ship.pos.x -= nx * overlap;
+			ship.pos.y -= ny * overlap;
+
+			// Reflect Velocity
+			// V' = V - 2(V . N)N
+			// We want N to be the normal of the reflection surface (pointing OUT from planet)
+			// So normal = -n
+			const normalX = -nx;
+			const normalY = -ny;
+
+			const dot = ship.vel.x * normalX + ship.vel.y * normalY;
+
+			// Restitution (bounciness)
+			const restitution = 0.8;
+
+			ship.vel.x = (ship.vel.x - 2 * dot * normalX) * restitution;
+			ship.vel.y = (ship.vel.y - 2 * dot * normalY) * restitution;
+		}
+	}
+
+	// 4. Integration
 	// vel += acc * dt
 
 	const dVel = ship.acc.clone().mult(dt);
 	ship.vel.add(dVel);
 
-	// 3. Inertia Damping (Drag)
+	// 5. Inertia Damping (Drag)
 	// Approx nonlinear drag: vel -= vel * DRAG * dt
 	// Or VEL *= (1 - DRAG * dt)
 	const dragFactor = 1 - CONFIG.SHIP_DRAG * dt;
 	ship.vel.mult(Math.max(0, dragFactor)); // Prevent negative reversal if low FPS
 
-	// 4. Max Speed Cap
+	// 6. Max Speed Cap
 	if (ship.vel.mag() > CONFIG.MAX_SPEED) {
 		ship.vel.normalize().mult(CONFIG.MAX_SPEED);
 	}
@@ -144,10 +207,21 @@ export function updateShip(
 
 	ship.acc.set(0, 0);
 
-	// 4. Wrapping
-	if (ship.pos.x > width) ship.pos.x = 0;
-	else if (ship.pos.x < 0) ship.pos.x = width;
+	// 7. Wrapping (Circular Arena - R=1200)
+	const centerX = width / 2;
+	const centerY = height / 2;
+	const dx = ship.pos.x - centerX;
+	const dy = ship.pos.y - centerY;
+	const distSq = dx * dx + dy * dy;
+	const radiusSq = 1200 * 1200;
 
-	if (ship.pos.y > height) ship.pos.y = 0;
-	else if (ship.pos.y < 0) ship.pos.y = height;
+	if (distSq > radiusSq) {
+		// Antipodal Wrap: Teleport to opposite side
+		// Preserve velocity (so it points inward from the other side)
+
+		// To prevent getting stuck in a loop due to floating point precision,
+		// wrap slightly inside the circle (0.99)
+		ship.pos.x = centerX - dx * 0.99;
+		ship.pos.y = centerY - dy * 0.99;
+	}
 }
