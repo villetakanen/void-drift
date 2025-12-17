@@ -1,6 +1,6 @@
 # PBI-016: Resource Logic & HUD Integration
 
-**Status:** TODO  
+**Status:** DONE  
 **Priority:** HIGH  
 **Estimate:** 8 Story Points  
 **Phase:** 5 (Survival Core - Logic)  
@@ -35,51 +35,51 @@ This is the second PBI for Phase 5 (Survival Core). It implements the actual res
 ## Acceptance Criteria
 
 ### Hull System
-- [ ] Ship starts with 100% hull on game initialization
-- [ ] Planet collision deducts 7% hull per impact
-- [ ] Hull damage is applied during existing collision detection logic
-- [ ] Sun proximity burns hull based on distance zones:
+- [x] Ship starts with 100% hull on game initialization
+- [x] Planet collision deducts 7% hull per impact
+- [x] Hull damage is applied during existing collision detection logic
+- [x] Sun proximity burns hull based on distance zones:
   - Zone 1 (< 150px): 1.5% per second
   - Zone 2 (150-250px): 0.5% per second
   - Zone 3 (250-350px): 0.1% per second
   - Zone 4 (> 350px): No damage
-- [ ] Star contact (distance < star.radius) sets hull to 0 immediately
-- [ ] Hull value is clamped to [0, 100] range
-- [ ] Hull updates are frame-rate independent (use deltaTime)
+- [x] Star contact (distance < star.radius) sets hull to 0 immediately
+- [x] Hull value is clamped to [0, 100] range
+- [x] Hull updates are frame-rate independent (use deltaTime)
 
 ### Fuel System
-- [ ] Ship starts with 100% fuel on game initialization
-- [ ] Thrusting (any engine) consumes 1.5% fuel per second
-- [ ] Single-engine thrust (left OR right) uses same rate as dual-engine
-- [ ] Sun proximity refuels based on distance zones:
+- [x] Ship starts with 100% fuel on game initialization
+- [x] Thrusting (any engine) consumes 1.5% fuel per second
+- [x] Single-engine thrust (left OR right) uses same rate as dual-engine
+- [x] Sun proximity refuels based on distance zones:
   - Zone 1 (< 150px): +4.0% per second
   - Zone 2 (150-250px): +2.0% per second
   - Zone 3 (250-350px): +0.5% per second
   - Zone 4 (> 350px): No refuel
-- [ ] Fuel value is clamped to [0, 100] range
-- [ ] Fuel updates are frame-rate independent (use deltaTime)
-- [ ] Fuel cannot regenerate above 100%
+- [x] Fuel value is clamped to [0, 100] range
+- [x] Fuel updates are frame-rate independent (use deltaTime)
+- [x] Fuel cannot regenerate above 100%
 
 ### Data Model
-- [ ] `ResourcesSchema` defined in Zod with hull/fuel validation
-- [ ] `GameState` schema includes resources object
-- [ ] Resources exported from `@void-drift/engine` package
-- [ ] All resource mutations go through validated update functions
+- [x] `ResourcesSchema` defined in Zod with hull/fuel validation
+- [x] `GameState` schema includes resources object
+- [x] Resources exported from `@void-drift/engine` package
+- [x] All resource mutations go through validated update functions
 
 ### Physics Integration
-- [ ] `updateFuel()` function added to physics loop
-- [ ] `updateHull()` function added to physics loop
-- [ ] Resource updates occur AFTER input processing, BEFORE collision detection
-- [ ] Sun distance calculation reuses existing gravity well code
-- [ ] No new object allocations in update loops (performance)
+- [x] `updateFuel()` function added to physics loop
+- [x] `updateHull()` function added to physics loop
+- [x] Resource updates occur AFTER input processing, BEFORE collision detection
+- [x] Sun distance calculation reuses existing gravity well code
+- [x] No new object allocations in update loops (performance)
 
 ### HUD Integration
-- [ ] Hull bar displayed in game HUD (uses PBI-015 design)
-- [ ] Fuel bar displayed in game HUD (uses PBI-015 design)
-- [ ] Bars update every frame (smooth animation)
-- [ ] Color states work correctly (normal/warning/danger)
-- [ ] Percentage labels display current values
-- [ ] HUD visible during gameplay, hidden during menu
+- [x] Hull bar displayed in game HUD (uses PBI-015 design)
+- [x] Fuel bar displayed in game HUD (uses PBI-015 design)
+- [x] Bars update every frame (smooth animation)
+- [x] Color states work correctly (normal/warning/danger)
+- [x] Percentage labels display current values
+- [x] HUD visible during gameplay, hidden during menu
 
 ---
 
@@ -309,18 +309,18 @@ applyPlanetCollisionDamage(gameState.resources);
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] Zod schema validates resources correctly
-- [ ] Physics loop calls `updateFuel()` and `updateHull()` every frame
-- [ ] Planet collisions trigger hull damage
-- [ ] Sun proximity zones work as specified (tested with console.log)
-- [ ] HUD displays hull/fuel bars correctly
-- [ ] Color states transition correctly (normal/warning/danger)
-- [ ] Zero TypeScript errors (`pnpm -r check`)
-- [ ] Performance: updateFuel + updateHull < 0.5ms combined
-- [ ] No garbage collection pauses introduced
-- [ ] Manual testing complete (see checklist below)
-- [ ] Code reviewed and approved
+- [x] All acceptance criteria met
+- [x] Zod schema validates resources correctly
+- [x] Physics loop calls `updateFuel()` and `updateHull()` every frame
+- [x] Planet collisions trigger hull damage
+- [x] Sun proximity zones work as specified (tested with console.log)
+- [x] HUD displays hull/fuel bars correctly
+- [x] Color states transition correctly (normal/warning/danger)
+- [x] Zero TypeScript errors (`pnpm -r check`)
+- [x] Performance: updateFuel + updateHull < 0.5ms combined
+- [x] No garbage collection pauses introduced
+- [x] Manual testing complete (see checklist below)
+- [x] Code reviewed and approved
 
 ---
 

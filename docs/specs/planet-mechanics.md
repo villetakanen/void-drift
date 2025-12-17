@@ -75,8 +75,8 @@ interface Planet {
   orbitRadius: number;    // Distance from center (700px)
   orbitSpeed: number;     // Angular velocity (0.05 rad/s - very slow)
   orbitAngle: number;     // Current angle in radians
-  radius: number;         // Physical/collision radius (20px)
-  mass: number;           // Gravitational mass (10,000)
+  radius: number;         // Physical/collision radius (30px)
+  mass: number;           // Gravitational mass (400)
   color: string;          // Visual color (Slate Blue)
 }
 ```
@@ -102,7 +102,7 @@ interface Planet {
 
 #### Gravity
 - **Law:** Inverse square law scaled by mass
-- **Influence Radius:** 8x physical radius (160px)
+- **Influence Radius:** 16x physical radius (480px)
 - **Formula:** `F = G * m1 * m2 / max(distance², minDistance²)`
 - **Integration:** Uses same gravity system as star
 

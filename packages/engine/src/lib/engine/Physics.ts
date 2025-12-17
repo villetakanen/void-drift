@@ -73,8 +73,73 @@ export interface Planet {
 }
 
 
-import { CONFIG } from "../config";
+import { CONFIG, SURVIVAL_CONFIG } from "../config";
 import type { InputState } from "./Input";
+import type { Resources } from "../schemas/game-state";
+
+export function updateFuel(
+	resources: Resources,
+	isThrusting: boolean,
+	distanceToSun: number,
+	deltaTime: number
+): void {
+	const dt = deltaTime; // Already in seconds
+
+	// Consumption
+	if (isThrusting) {
+		resources.fuel -= SURVIVAL_CONFIG.FUEL_CONSUMPTION_RATE * dt;
+	}
+
+	// Regeneration (sun proximity)
+	let regenRate = 0;
+	if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_1_RADIUS) {
+		regenRate = SURVIVAL_CONFIG.FUEL_REGEN_ZONE_1;
+	} else if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_2_RADIUS) {
+		regenRate = SURVIVAL_CONFIG.FUEL_REGEN_ZONE_2;
+	} else if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_3_RADIUS) {
+		regenRate = SURVIVAL_CONFIG.FUEL_REGEN_ZONE_3;
+	}
+
+	resources.fuel += regenRate * dt;
+
+	// Clamp
+	resources.fuel = Math.max(0, Math.min(100, resources.fuel));
+}
+
+export function updateHull(
+	resources: Resources,
+	distanceToSun: number,
+	sunRadius: number,
+	deltaTime: number
+): void {
+	const dt = deltaTime;
+
+	// Star contact = instant death
+	if (distanceToSun < sunRadius) {
+		resources.hull = 0;
+		return;
+	}
+
+	// Sun proximity burn
+	let burnRate = 0;
+	if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_1_RADIUS) {
+		burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_1;
+	} else if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_2_RADIUS) {
+		burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_2;
+	} else if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_3_RADIUS) {
+		burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_3;
+	}
+
+	resources.hull -= burnRate * dt;
+
+	// Clamp
+	resources.hull = Math.max(0, Math.min(100, resources.hull));
+}
+
+export function applyPlanetCollisionDamage(resources: Resources): void {
+	resources.hull -= SURVIVAL_CONFIG.PLANET_COLLISION_DAMAGE;
+	resources.hull = Math.max(0, resources.hull);
+}
 
 export function updateShip(
 	ship: GameObject,
@@ -84,6 +149,7 @@ export function updateShip(
 	height: number,
 	star?: Star,
 	planets: Planet[] = [],
+	resources?: Resources,
 ) {
 
 	// 1. Rotation & Variable Thrust (Differential)
@@ -92,14 +158,17 @@ export function updateShip(
 	// Both -> 100% Thrust, No Rotate (impulses cancel out rotation)
 
 	let thrustMultiplier = 0.0;
+	let isThrusting = false;
 
 	if (input.leftThruster) {
 		ship.rotation += CONFIG.ROTATION_SPEED * dt;
 		thrustMultiplier += 0.5;
+		isThrusting = true;
 	}
 	if (input.rightThruster) {
 		ship.rotation -= CONFIG.ROTATION_SPEED * dt;
 		thrustMultiplier += 0.5;
+		isThrusting = true;
 	}
 
 	// Apply Thrust
@@ -144,8 +213,8 @@ export function updateShip(
 		const dist = Math.sqrt(distSq);
 
 		// Gravity (Weaker than star, but constant pull nearby)
-		// Influence radius approx 8x planet radius
-		const influenceRadius = planet.radius * 8;
+		// Influence radius approx 16x planet radius
+		const influenceRadius = planet.radius * 16;
 
 		if (dist < influenceRadius && dist > planet.radius + ship.radius) {
 			const strength = (planet.mass / distSq) * 1000; // Inverse square approximation
@@ -181,6 +250,10 @@ export function updateShip(
 
 			ship.vel.x = (ship.vel.x - 2 * dot * normalX) * restitution;
 			ship.vel.y = (ship.vel.y - 2 * dot * normalY) * restitution;
+
+			if (resources) {
+				applyPlanetCollisionDamage(resources);
+			}
 		}
 	}
 

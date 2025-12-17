@@ -68,9 +68,9 @@ The **Star** acts as the central anchor of the arena. It provides both a lethal 
 ```typescript
 interface Star {
   pos: Vec2;           // Position (960, 540 - arena center)
-  radius: number;      // Visual/collision radius (30px)
-  influenceRadius: number;  // Gravity range (300px, 10x visual radius)
-  mass: number;        // Gravitational mass (500,000)
+  radius: number;      // Visual/collision radius (40px)
+  influenceRadius: number;  // Gravity range (350px)
+  mass: number;        // Gravitational mass (600)
   color: string;       // '#ffaa00' (orange/yellow)
 }
 ```
@@ -78,6 +78,7 @@ interface Star {
 ### Rendering (`packages/engine/src/lib/assets/star.ts`)
 - **Core:** Solid circle using star color
 - **Glow Layers:** 3 concentric circles with decreasing opacity
+- **Fuel Zone:** Faint dashed circle at fuel regen threshold
 - **Animation:** Outer rings pulse using `Math.sin(time * 2)` for breathing effect
 - **Blend Mode:** `lighter` for additive glow effect
 - **Performance:** Zero allocations per frame (reuses colors/radii)
@@ -122,4 +123,4 @@ interface Star {
 
 **Star System Status: OPERATIONAL** ⭐  
 **Location:** Arena center (960, 540)  
-**Gravity:** Active with 300px influence radius
+**Gravity:** Active with 350px influence radius

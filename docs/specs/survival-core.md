@@ -77,15 +77,15 @@ MENU ──[first input]──> PLAYING ──[death]──> GAME_OVER ──[re
 // Pseudo-code for sun refuel zones
 const distanceToSun = Math.hypot(ship.x - sun.x, ship.y - sun.y);
 
-if (distanceToSun < 150) {
+if (distanceToSun < 100) {
   // ZONE 1: High Risk / High Reward
   fuelRegenRate = 4.0; // % per second
   hullDamageRate = 1.5; // % per second
-} else if (distanceToSun < 250) {
+} else if (distanceToSun < 170) {
   // ZONE 2: Medium Risk / Medium Reward
   fuelRegenRate = 2.0;
   hullDamageRate = 0.5;
-} else if (distanceToSun < 350) {
+} else if (distanceToSun < 240) {
   // ZONE 3: Low Risk / Low Reward
   fuelRegenRate = 0.5;
   hullDamageRate = 0.1;
@@ -378,12 +378,12 @@ export function applyControls(
 ```
 ┌─────────────────────────────────────────┐
 │  ∅·Δ                          123.4s    │ ← Logo + Timer
-│  ████████░░ HULL 82%                    │ ← Hull Bar
-│  ███████████░ FUEL 91%                  │ ← Fuel Bar
-│                                         │
-│          [Game Canvas Here]             │
 │                                         │
 │                                         │
+│                                         │
+│                                         │
+│  ███████████░ FUEL 91%                  │ ← Fuel Bar (Stacked on Hull)
+│  ████████░░ HULL 82%                    │ ← Hull Bar (Bottom Left)
 └─────────────────────────────────────────┘
 ```
 

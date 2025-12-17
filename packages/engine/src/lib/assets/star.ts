@@ -5,10 +5,22 @@ export interface DrawStarOptions {
     color: string;
     time: number; // millisecond timestamp to drive animation
     pulseSpeed?: number; // Optional scaling factor for speed (default 1)
+    fuelZoneRadius?: number; // Optional radius for fuel regen zone visualization
 }
 
 export function drawStar(ctx: CanvasRenderingContext2D, options: DrawStarOptions) {
-    const { x, y, radius, color, time, pulseSpeed = 1.0 } = options;
+    const { x, y, radius, color, time, pulseSpeed = 1.0, fuelZoneRadius } = options;
+
+    // Draw Fuel Regen Zone (Behind star)
+    if (fuelZoneRadius) {
+        ctx.beginPath();
+        ctx.arc(x, y, fuelZoneRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(212, 255, 0, 0.2)"; // Fuel Color #D4FF00 at 20% opacity
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 5]); // Dashed line to differentiate from other visuals
+        ctx.stroke();
+        ctx.setLineDash([]); // Reset
+    }
 
     // Draw Core
     ctx.fillStyle = color;

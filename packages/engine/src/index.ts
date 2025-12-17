@@ -8,3 +8,4 @@ export * from "./lib/renderers/ship";
 export * from "./lib/assets/star";
 export * from "./lib/assets/resource-bar";
 export * from "./lib/assets/death-icons";
+export * from "./lib/schemas/game-state";

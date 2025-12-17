@@ -10,7 +10,12 @@
     Camera,
     type Star,
     type Planet,
+    SURVIVAL_CONFIG,
+    updateFuel,
+    updateHull,
+    type GameState,
   } from "@void-drift/engine";
+  import HUD from "./HUD.svelte";
 
   let canvas: HTMLCanvasElement;
   let container: HTMLDivElement;
@@ -36,6 +41,13 @@
     radius: CONFIG.SHIP_RADIUS,
   };
 
+  let state: GameState = $state({
+    resources: {
+      hull: SURVIVAL_CONFIG.INITIAL_HULL,
+      fuel: SURVIVAL_CONFIG.INITIAL_FUEL,
+    },
+  });
+
   let star: Star | undefined = $state(undefined);
   let planets: Planet[] = $state([]);
 
@@ -55,7 +67,24 @@
       LOGICAL_HEIGHT,
       star,
       planets,
+      state.resources,
     );
+
+    // Resource Updates
+    if (star) {
+      const dx = ship.pos.x - star.pos.x;
+      const dy = ship.pos.y - star.pos.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      updateFuel(
+        state.resources,
+        input.state.leftThruster || input.state.rightThruster,
+        dist,
+        dt,
+      );
+
+      updateHull(state.resources, dist, star.radius, dt);
+    }
 
     // Update Camera to follow ship
     camera.setTarget(ship.pos.x, ship.pos.y);
@@ -99,14 +128,14 @@
     });
 
     // Position Ship slightly offset
-    ship.pos.set(LOGICAL_WIDTH / 2 - 300, LOGICAL_HEIGHT / 2);
+    ship.pos.set(LOGICAL_WIDTH / 2 - 500, LOGICAL_HEIGHT / 2);
 
     // Create a Star in the center
     star = {
       pos: new Vec2(LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2),
       radius: 40,
-      influenceRadius: 300,
-      mass: 500,
+      influenceRadius: 350,
+      mass: 600,
       color: "#FFA500", // Orange
     };
 
@@ -118,8 +147,8 @@
         orbitRadius: 700,
         orbitSpeed: 0.05,
         orbitAngle: 0,
-        radius: 20,
-        mass: 250,
+        radius: 30,
+        mass: 400,
         color: "#6666CC", // Slate Blue
       },
     ];
@@ -185,6 +214,8 @@
 
     <!-- HUD Overlay -->
     <div class="hud-overlay">
+      <HUD {state} />
+
       <!-- Logo -->
       <div class="logo">∅·Δ</div>
 
