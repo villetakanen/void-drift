@@ -1,65 +1,67 @@
-# Feature: Internal Asset Gallery (Workbench)
+# Feature: Internal Asset Lab (Workbench)
 
-**Status:** ✅ COMPLETED (2024)  
-**Current Version:** 0.0.4
+**Status:** IN PROGRESS  
+**Current Version:** 0.0.5 (Refactor from Gallery)
 
 ## Blueprint
 
 ### Context
-To decouple asset development from gameplay logic, we have implemented a "Workbench" route at `/gallery`. This allows designers and developers to tune procedural generation parameters (like ship colors, star pulses, or particle physics) in real-time without navigating the game loop or networking stack.
+To decouple asset development from gameplay logic, we have implemented a "Lab" route at `/lab`. This allows designers and developers to tune procedural generation parameters (like ship colors, star pulses, or particle physics) in real-time, in isolated environments, without navigating the game loop or networking stack.
 
-**Achievement:** Clean separation of developer tools from production game via Astro file-system routing.
+**Achievement:** Clean separation of developer tools from production game via Astro file-system routing, with granular addressability for each asset.
 
 ### Architecture
-- **Route:** `/gallery` (File-system routing via Astro).
-- **Location:** `apps/web/src/pages/gallery.astro`
+- **Base Route:** `/lab` (Index of all experiments).
+- **Sub-Routes:**
+  - `/lab/ship`: Ship rendering workspace.
+  - `/lab/star`: Star rendering workspace.
+  - `/lab/[...asset]`: Future assets.
+- **Location:** `apps/web/src/pages/lab/**/*.astro`
 - **Components:**
-  - `Gallery.svelte`: Main workbench container (`apps/web/src/components/Gallery.svelte`).
-  - Individual asset renderers imported from `@void-drift/engine`.
+  - `LabLayout.astro`: Common shell for lab pages (navigation).
+  - Specific rendering components (e.g., `LabShip.svelte`, `LabStar.svelte`).
 - **Asset API:** Pure functions accepting `ctx` and `props`.
   - `drawShip(ctx, props)` → `packages/engine/src/lib/renderers/ship.ts`
   - `drawStar(ctx, props)` → `packages/engine/src/lib/assets/star.ts`
 
 ### Anti-Patterns
-- **Do NOT** load the full `GameLoop` in the Gallery. Only the `Renderer` or specific draw functions should run.
-- **Do NOT** hardcode gallery assets; they should be the exact same functions used in production.
-- **Do NOT** bundle the Gallery route in production builds (tree-shaken automatically by Astro).
+- **Do NOT** load the full `GameLoop` in the Lab. Only the `Renderer` or specific draw functions should run.
+- **Do NOT** hardcode lab assets; they should be the exact same functions used in production.
+- **Do NOT** bundle the Lab routes in production builds (tree-shaken automatically by Astro or excluded via build config).
 
 ## Contract
 
 ### Definition of Done
-- [x] Visiting `/gallery` loads the Workbench UI.
-- [x] `drawShip` and `drawStar` can be rendered in isolation.
-- [x] Gallery uses the same render functions as production game (no duplication).
-- [x] Gallery route is completely separate from game route (no hash routing).
+- [ ] Visiting `/lab` loads the Lab Index.
+- [ ] Visiting `/lab/ship` loads the Ship Workbench.
+- [ ] Lab uses the same render functions as production game (no duplication).
+- [ ] Lab routes are completely separate from game route.
 
 ### Regression Guardrails
 - **Performance:** Inspector updates must not trigger full-page reloads.
-- **Isolation:** Crashes in the Gallery must not affect the main Game Loop entry point.
-- **Build Safety:** Gallery should not increase production bundle size (route-based code splitting).
+- **Isolation:** Crashes in the Lab must not affect the main Game Loop entry point.
+- **Build Safety:** Lab should not increase production bundle size.
 
 ### Scenarios
 
-**Scenario: Accessing Gallery** ✅
-- Given I navigate to `localhost:4321/gallery`
+**Scenario: Accessing Lab Index**
+- Given I navigate to `localhost:4321/lab`
 - When the page loads
-- Then the Gallery UI appears
-- And I see canvas previews of game assets
-- **Status:** VERIFIED - Works as specified
+- Then I see a list of links to available asset workbenches
+- **Status:** PENDING
 
-**Scenario: Asset Isolation** ✅
-- Given I am viewing the Gallery
-- When an asset render function throws an error
-- Then the Gallery shows an error state
-- But the main game at `/` remains unaffected
-- **Status:** VERIFIED - Routes are completely isolated
+**Scenario: Deep Linking to Asset**
+- Given I share a link `localhost:4321/lab/ship`
+- When a developer opens it
+- Then they are taken directly to the Ship workbench
+- And they don't have to scroll through a giant gallery
+- **Status:** PENDING
 
-**Scenario: Shared Rendering Logic** ✅
+**Scenario: Shared Rendering Logic**
 - Given the `drawShip` function in `packages/engine/src/lib/renderers/ship.ts`
-- When it is imported by both Gallery and GameWrapper
+- When it is imported by both Lab and GameWrapper
 - Then both render identical ship visuals
-- And changes to the function affect both contexts
-- **Status:** VERIFIED - Zero code duplication
+- **Status:** PENDING
 
 ## Current Implementation
 
@@ -68,34 +70,20 @@ To decouple asset development from gameplay logic, we have implemented a "Workbe
 apps/web/src/
 ├── pages/
 │   ├── index.astro        → Game (/)
-│   └── gallery.astro      → Workbench (/gallery)
+│   └── lab/
+│       ├── index.astro    → Lab Index (/lab)
+│       └── ship.astro     → Ship Workbench (/lab/ship)
 └── components/
-    └── Gallery.svelte     → Gallery UI component
-
-packages/engine/src/
-├── lib/
-│   ├── renderers/
-│   │   └── ship.ts        → drawShip() function
-│   └── assets/
-│       └── star.ts        → drawStar() function
+    └── lab/               → Lab-specific wrappers
+        └── LabShip.svelte
 ```
-
-### Asset Functions
-All procedural drawing functions are exported from `@void-drift/engine`:
-- `drawShip(ctx: CanvasRenderingContext2D, props: ShipDrawProps)`
-- `drawStar(ctx: CanvasRenderingContext2D, star: Star, time: number)`
-
-These functions are consumed by:
-1. **Game:** `GameWrapper.svelte` → Renders during gameplay
-2. **Gallery:** `Gallery.svelte` → Renders in isolation for tuning
 
 ### Future Enhancements
 - [ ] Add real-time parameter sliders (color, size, animation speed)
 - [ ] Add "Export" functionality to save asset configurations
 - [ ] Add screenshot/recording capability for asset documentation
-- [ ] Add physics visualization (gravity wells, collision bounds)
 
 ---
 
-**Gallery Status: OPERATIONAL** 🎨  
-**Access:** Navigate to `/gallery` during development
+**Lab Status: UNDER CONSTRUCTION** 🚧  
+**Access:** Navigate to `/lab` during development

@@ -30,6 +30,7 @@ This is the first PBI for Phase 5 (Survival Core). Before implementing resource 
 - ✅ Phase 4 complete (Design System tokens exist)
 - ✅ Gallery workbench functional at `/gallery`
 - ❌ PBI-016 (Resource Logic) — Blocked until this is complete
+- ❌ PBI-019 (Lab Refactor) — This PBI blocks PBI-015 (we need the /lab structure first)
 
 ---
 
@@ -74,9 +75,9 @@ This is the first PBI for Phase 5 (Survival Core). Before implementing resource 
 - [ ] Color: White with dark shadow for readability
 - [ ] Position mockup: Top-right of HUD
 
-### Gallery Integration
+### Gallery/Lab Integration
 
-- [ ] New gallery section: "HUD Elements"
+- [ ] New lab route: `/lab/resources`
 - [ ] All components rendered in isolation with controls:
   - Hull bar with slider (0-100%)
   - Fuel bar with slider (0-100%)
