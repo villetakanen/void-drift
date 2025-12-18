@@ -1,4 +1,5 @@
-export type DeathCause = 'STAR' | 'HULL' | 'FUEL';
+// death-icons.ts
+import type { DeathCause } from '../schemas/game-state';
 
 /**
  * Draw death cause icon (for leaderboard/Game Over screen)
@@ -22,9 +23,9 @@ export function drawDeathIcon(
             // Draw cracked shield icon
             drawHullIcon(ctx, size);
             break;
-        case 'FUEL':
+        case 'POWER':
             // Draw empty droplet/tank icon
-            drawFuelIcon(ctx, size);
+            drawPowerIcon(ctx, size);
             break;
     }
 
@@ -80,11 +81,11 @@ function drawHullIcon(ctx: CanvasRenderingContext2D, size: number): void {
     ctx.stroke();
 }
 
-function drawFuelIcon(ctx: CanvasRenderingContext2D, size: number): void {
+function drawPowerIcon(ctx: CanvasRenderingContext2D, size: number): void {
     const halfSize = size / 2;
 
-    // Droplet shape
-    ctx.fillStyle = '#00c8ff'; // Neon blue
+    // Droplet shape (now representing power/energy)
+    ctx.fillStyle = '#D4FF00'; // Acid Lime (Power Color)
     ctx.beginPath();
     ctx.arc(0, halfSize * 0.2, halfSize * 0.6, 0, Math.PI * 2);
     ctx.fill();

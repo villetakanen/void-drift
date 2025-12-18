@@ -1,7 +1,7 @@
 export interface ResourceBarProps {
     value: number;        // 0-100
     maxValue: number;     // Usually 100
-    label: string;        // "HULL" or "FUEL"
+    label: string;        // "HULL" or "POWER"
     colorNormal: string;  // CSS color for 50-100%
     colorWarning: string; // CSS color for 25-49%
     colorDanger: string;  // CSS color for 0-24%

@@ -11,11 +11,16 @@
     type Star,
     type Planet,
     SURVIVAL_CONFIG,
-    updateFuel,
+    updatePower,
     updateHull,
     type GameState,
+    checkDeath,
+    handleDeath,
+    updateTimer,
+    createInitialGameState,
   } from "@void-drift/engine";
   import HUD from "./HUD.svelte";
+  import GameOver from "./GameOver.svelte";
 
   let canvas: HTMLCanvasElement;
   let container: HTMLDivElement;
@@ -41,12 +46,7 @@
     radius: CONFIG.SHIP_RADIUS,
   };
 
-  let state: GameState = $state({
-    resources: {
-      hull: SURVIVAL_CONFIG.INITIAL_HULL,
-      fuel: SURVIVAL_CONFIG.INITIAL_FUEL,
-    },
-  });
+  let state: GameState = $state(createInitialGameState());
 
   let star: Star | undefined = $state(undefined);
   let planets: Planet[] = $state([]);
@@ -57,6 +57,11 @@
     // Sync Input State to UI (for feedback)
     leftActive = input.state.leftThruster;
     rightActive = input.state.rightThruster;
+
+    // Timer & Game Status
+    updateTimer(state, input.state.leftThruster || input.state.rightThruster);
+
+    if (state.status === "GAME_OVER") return; // Freeze physics
 
     // Physics (using logical viewport dimensions)
     updateShip(
@@ -76,14 +81,17 @@
       const dy = ship.pos.y - star.pos.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
-      updateFuel(
-        state.resources,
-        input.state.leftThruster || input.state.rightThruster,
-        dist,
-        dt,
-      );
+      updatePower(state.resources, dist, dt);
 
       updateHull(state.resources, dist, star.radius, dt);
+
+      // Death Check
+      if (state.status === "PLAYING") {
+        const deathCause = checkDeath(state, ship, star);
+        if (deathCause) {
+          handleDeath(state, deathCause, ship);
+        }
+      }
     }
 
     // Update Camera to follow ship
@@ -190,6 +198,19 @@
       showRotateOverlay = window.innerHeight > window.innerWidth;
     };
 
+    function restartGame() {
+      state = createInitialGameState();
+      ship.pos.set(LOGICAL_WIDTH / 2 - 500, LOGICAL_HEIGHT / 2);
+      ship.vel.set(0, 0);
+      ship.acc.set(0, 0);
+      ship.rotation = -Math.PI / 2;
+
+      // Reset Planets
+      if (planets.length > 0) {
+        planets[0].orbitAngle = 0;
+      }
+    }
+
     window.addEventListener("resize", onResize);
     onResize();
 
@@ -227,6 +248,11 @@
 
       <!-- Version Display -->
       <div class="version-display">α {__APP_VERSION__}</div>
+
+      <!-- Game Over Modal -->
+      {#if state.status === "GAME_OVER"}
+        <GameOver {state} onRestart={restartGame} />
+      {/if}
     </div>
   </div>
 </div>

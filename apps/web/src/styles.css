@@ -39,7 +39,7 @@
 	/* Resource HUD Tokens */
 	--color-resource-hull: #00c8ff;
 	/* Neon Blue */
-	--color-resource-fuel: var(--color-acid-lime);
+	--color-resource-power: var(--color-acid-lime);
 	--color-resource-warning: #FFAA00;
 	/* Orange */
 	--color-resource-danger: var(--color-red);

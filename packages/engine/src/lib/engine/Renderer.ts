@@ -120,7 +120,7 @@ export class Renderer {
         color: star.color,
         time: time,
         pulseSpeed: 1.0,
-        fuelZoneRadius: SURVIVAL_CONFIG.SUN_ZONE_3_RADIUS,
+        powerZoneRadius: SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS,
       });
     });
   }

@@ -77,33 +77,30 @@ import { CONFIG, SURVIVAL_CONFIG } from "../config";
 import type { InputState } from "./Input";
 import type { Resources } from "../schemas/game-state";
 
-export function updateFuel(
+export function updatePower(
 	resources: Resources,
-	isThrusting: boolean,
 	distanceToSun: number,
 	deltaTime: number
 ): void {
 	const dt = deltaTime; // Already in seconds
 
-	// Consumption
-	if (isThrusting) {
-		resources.fuel -= SURVIVAL_CONFIG.FUEL_CONSUMPTION_RATE * dt;
-	}
+	// Consumption - Constant Decay 1%/sec
+	resources.power -= SURVIVAL_CONFIG.POWER_CONSUMPTION_RATE * dt;
 
 	// Regeneration (sun proximity)
 	let regenRate = 0;
-	if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_1_RADIUS) {
-		regenRate = SURVIVAL_CONFIG.FUEL_REGEN_ZONE_1;
-	} else if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_2_RADIUS) {
-		regenRate = SURVIVAL_CONFIG.FUEL_REGEN_ZONE_2;
-	} else if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_3_RADIUS) {
-		regenRate = SURVIVAL_CONFIG.FUEL_REGEN_ZONE_3;
+	if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_1_RADIUS) {
+		regenRate = SURVIVAL_CONFIG.POWER_REGEN_ZONE_1;
+	} else if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_2_RADIUS) {
+		regenRate = SURVIVAL_CONFIG.POWER_REGEN_ZONE_2;
+	} else if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS) {
+		regenRate = SURVIVAL_CONFIG.POWER_REGEN_ZONE_3;
 	}
 
-	resources.fuel += regenRate * dt;
+	resources.power += regenRate * dt;
 
 	// Clamp
-	resources.fuel = Math.max(0, Math.min(100, resources.fuel));
+	resources.power = Math.max(0, Math.min(100, resources.power));
 }
 
 export function updateHull(
@@ -122,11 +119,11 @@ export function updateHull(
 
 	// Sun proximity burn
 	let burnRate = 0;
-	if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_1_RADIUS) {
+	if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_1_RADIUS) {
 		burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_1;
-	} else if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_2_RADIUS) {
+	} else if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_2_RADIUS) {
 		burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_2;
-	} else if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_3_RADIUS) {
+	} else if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS) {
 		burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_3;
 	}
 

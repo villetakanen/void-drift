@@ -1,6 +1,6 @@
 # PBI-017: Timer & Death Logic
 
-**Status:** TODO  
+**Status:** DONE
 **Priority:** HIGH  
 **Estimate:** 5 Story Points  
 **Phase:** 5 (Survival Core - Game Loop)  
@@ -23,7 +23,7 @@ This is the third PBI for Phase 5 (Survival Core). It builds on PBI-016 (Resourc
 **The Three Death Conditions:**
 1. **STAR:** Ship touches star surface (instant death)
 2. **HULL:** Hull reaches 0% (collision/burn damage)
-3. **FUEL:** Fuel reaches 0% (can't maneuver)
+3. **POWER:** Power reaches 0% (can't maneuver or sustain life support)
 
 **This Completes v0.1.0:**
 - v0.0.5: Resource HUD Design ✅
@@ -41,70 +41,70 @@ This is the third PBI for Phase 5 (Survival Core). It builds on PBI-016 (Resourc
 ## Acceptance Criteria
 
 ### Game State Machine
-- [ ] Four states defined: `MENU`, `PLAYING`, `GAME_OVER`, `SETTINGS`
-- [ ] Valid transitions enforced:
+- [x] Four states defined: `MENU`, `PLAYING`, `GAME_OVER`, `SETTINGS`
+- [x] Valid transitions enforced:
   - `MENU → PLAYING` (on first input)
   - `PLAYING → GAME_OVER` (on death)
   - `GAME_OVER → MENU` (on restart)
   - `ANY → SETTINGS` (navigation)
-- [ ] State stored in `GameState` schema
-- [ ] Physics pauses during `MENU` and `GAME_OVER` states
-- [ ] No invalid state transitions possible
+- [x] State stored in `GameState` schema
+- [x] Physics pauses during `MENU` and `GAME_OVER` states
+- [x] No invalid state transitions possible
 
 ### Timer System
-- [ ] Timer starts at 0.0 seconds
-- [ ] Timer begins counting on first input (not page load)
-- [ ] Timer increments using `Date.now()` delta (frame-rate independent)
-- [ ] Timer displays in HUD with 1 decimal place (e.g., `42.3s`)
-- [ ] Timer freezes on death (preserves final time)
-- [ ] Final time displayed on Game Over screen with 2 decimal places (e.g., `42.35s`)
-- [ ] Timer resets to 0.0 on restart
+- [x] Timer starts at 0.0 seconds
+- [x] Timer begins counting on first input (not page load)
+- [x] Timer increments using `Date.now()` delta (frame-rate independent)
+- [x] Timer displays in HUD with 1 decimal place (e.g., `42.3s`)
+- [x] Timer freezes on death (preserves final time)
+- [x] Final time displayed on Game Over screen with 2 decimal places (e.g., `42.35s`)
+- [x] Timer resets to 0.0 on restart
 
 ### Death Detection
-- [ ] `checkDeath()` function runs every frame during `PLAYING` state
-- [ ] Death check occurs AFTER all physics updates
-- [ ] Priority order enforced: STAR > HULL > FUEL
-  - If ship touches star, cause is `STAR` (even if hull/fuel also 0)
+- [x] `checkDeath()` function runs every frame during `PLAYING` state
+- [x] Death check occurs AFTER all physics updates
+- [x] Priority order enforced: STAR > HULL > POWER
+  - If ship touches star, cause is `STAR` (even if hull/power also 0)
   - If hull = 0 but not touching star, cause is `HULL`
-  - If fuel = 0 but hull > 0, cause is `FUEL`
-- [ ] Death cause stored in `GameState.deathCause`
-- [ ] Ship momentum frozen on death (velocityX/velocityY = 0)
-- [ ] Death triggers state transition to `GAME_OVER`
+  - If power = 0 but hull > 0, cause is `POWER`
+- [x] Death cause stored in `GameState.deathCause`
+- [x] Ship momentum frozen on death (velocityX/velocityY = 0)
+- [x] Death triggers state transition to `GAME_OVER`
 
 ### HUD Updates
-- [ ] Timer displayed in top-right corner
-- [ ] Timer updates every frame (smooth animation)
-- [ ] Timer font uses tabular-nums (fixed width for no layout shift)
-- [ ] Timer visible during `PLAYING` state only
-- [ ] Timer color: white (no warnings)
+- [x] Timer displayed in top-right corner
+- [x] Timer updates every frame (smooth animation)
+- [x] Timer font uses tabular-nums (fixed width for no layout shift)
+- [x] Timer visible during `PLAYING` state only
+- [x] Timer color: white (no warnings)
 
 ### Game Over Screen
-- [ ] Modal overlay covers entire viewport
-- [ ] Dark background (rgba(10, 10, 15, 0.95))
-- [ ] "MISSION FAILED" heading in danger color
-- [ ] Survival time displayed: "You survived X.XX seconds"
-- [ ] Death cause displayed with icon (from PBI-015) + descriptive text:
+- [x] Modal overlay covers entire viewport
+- [x] Dark background (rgba(10, 10, 15, 0.95))
+- [x] "MISSION FAILED" heading in danger color
+- [x] Survival time displayed: "You survived X.XX seconds"
+- [x] Death cause displayed with icon (from PBI-015) + descriptive text:
   - `STAR` → "Incinerated by the star"
   - `HULL` → "Hull failure"
-  - `FUEL` → "Out of fuel"
-- [ ] "Try Again" button (primary CTA)
-- [ ] "View Leaderboard" link (secondary, routes to `/leaderboard` - Phase 6)
-- [ ] Fade-in animation (0.3s)
-- [ ] Keyboard accessible (Tab navigation, Enter to restart)
+  - `POWER` → "Out of power"
+- [x] "Try Again" button (primary CTA)
+- [x] "View Leaderboard" link (secondary, routes to `/leaderboard` - Phase 6)
+- [x] Fade-in animation (0.3s)
+- [x] Keyboard accessible (Tab navigation, Enter to restart)
 
 ### Restart Flow
-- [ ] "Try Again" button resets all game state:
+- [x] "Try Again" button resets all game state:
   - Ship position → spawn point (center of arena)
   - Ship velocity → (0, 0)
   - Ship rotation → 0 (facing right)
   - Hull → 100%
-  - Fuel → 100%
+  - Power → 100%
   - Timer → 0.0s
   - Death cause → null
-- [ ] Planets reset to initial orbit positions
-- [ ] State transitions: `GAME_OVER → MENU`
-- [ ] Game starts on next input (not immediately)
-- [ ] No memory leaks (canvas cleared, event listeners reset)
+- [x] Planets reset to initial orbit positions
+- [x] State transitions: `GAME_OVER → MENU`
+- [x] Game starts on next input (not immediately)
+- [x] No memory leaks (canvas cleared, event listeners reset)
 
 ---
 
@@ -460,18 +460,18 @@ Add timer to existing HUD component from PBI-016:
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] Game state machine enforces valid transitions
-- [ ] Timer starts on first input (not page load)
-- [ ] Timer displays correctly in HUD
-- [ ] Death detection checks all three conditions in priority order
-- [ ] Game Over screen shows correct time and death cause with icon
-- [ ] Restart button resets all state correctly
-- [ ] Zero TypeScript errors (`pnpm -r check`)
-- [ ] No memory leaks (tested with Chrome DevTools Memory profiler)
-- [ ] Keyboard navigation works (Tab, Enter)
-- [ ] Mobile tested (touch interactions)
-- [ ] Code reviewed and approved
+- [x] All acceptance criteria met
+- [x] Game state machine enforces valid transitions
+- [x] Timer starts on first input (not page load)
+- [x] Timer displays correctly in HUD
+- [x] Death detection checks all three conditions in priority order
+- [x] Game Over screen shows correct time and death cause with icon
+- [x] Restart button resets all state correctly
+- [x] Zero TypeScript errors (`pnpm -r check`)
+- [x] No memory leaks (tested with Chrome DevTools Memory profiler)
+- [x] Keyboard navigation works (Tab, Enter)
+- [x] Mobile tested (touch interactions)
+- [x] Code reviewed and approved
 
 ---
 

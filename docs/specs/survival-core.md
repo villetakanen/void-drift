@@ -37,7 +37,7 @@ import { z } from 'zod';
 
 export const ResourcesSchema = z.object({
   hull: z.number().min(0).max(100),     // Percentage (100% = full health)
-  fuel: z.number().min(0).max(100),     // Percentage (100% = full tank)
+  power: z.number().min(0).max(100),     // Percentage (100% = full battery)
 });
 
 export const GameStateSchema = z.object({
@@ -45,11 +45,11 @@ export const GameStateSchema = z.object({
   startTime: z.number().nullable(),     // Unix timestamp (ms)
   elapsedTime: z.number(),               // Seconds (float)
   resources: ResourcesSchema,
-  deathCause: z.enum(['STAR', 'HULL', 'FUEL']).nullable(),
+  deathCause: z.enum(['STAR', 'HULL', 'POWER']).nullable(),
 });
 
 export type GameState = z.infer<typeof GameStateSchema>;
-export type DeathCause = 'STAR' | 'HULL' | 'FUEL';
+export type DeathCause = 'STAR' | 'HULL' | 'POWER';
 ```
 
 **State Transitions:**
@@ -63,13 +63,12 @@ MENU ──[first input]──> PLAYING ──[death]──> GAME_OVER ──[re
 
 ---
 
-#### 2. Fuel System
+#### 2. Power System
 
 **Consumption:**
-- Fuel depletes when thrusting (left/right/both engines)
-- Consumption rate: **1.5% per second** of active thrust
-- Single-engine thrust (left OR right): 1.5% per second
-- Dual-engine thrust (left AND right): 1.5% per second (same rate, encourages forward momentum)
+- Power depletes constantly at a fixed rate
+- Consumption rate: **1.0% per second** (constant decay)
+- Life support and basic systems consume power regardless of thrusting
 
 **Regeneration (Sun Proximity):**
 
@@ -79,7 +78,7 @@ const distanceToSun = Math.hypot(ship.x - sun.x, ship.y - sun.y);
 
 if (distanceToSun < 100) {
   // ZONE 1: High Risk / High Reward
-  fuelRegenRate = 4.0; // % per second
+  powerRegenRate = 4.0; // % per second
   hullDamageRate = 1.5; // % per second
 } else if (distanceToSun < 170) {
   // ZONE 2: Medium Risk / Medium Reward
@@ -97,7 +96,7 @@ if (distanceToSun < 100) {
 ```
 
 **Implementation Location:**
-- `packages/engine/src/lib/engine/physics.ts` — Add `updateFuel()` method
+- `packages/engine/src/lib/engine/physics.ts` — Add `updatePower()` method
 - Call in main game loop after `applyGravity()`, before `applyVelocity()`
 
 ---
@@ -127,7 +126,7 @@ if (distanceToSun < 100) {
 **Implementation Location:**
 - `packages/engine/src/lib/engine/physics.ts` — Add `updateHull()` method
 - Planet collision: Hook into existing `handlePlanetCollision()`
-- Sun damage: Call in `updateHull()` alongside fuel regen logic
+- Sun damage: Call in `updateHull()` alongside power regen logic
 
 ---
 
@@ -151,9 +150,9 @@ function checkDeath(state: GameState, ship: Ship, sun: Star): DeathCause | null 
     return 'HULL';
   }
   
-  // 3. Fuel depletion (can't maneuver)
-  if (state.resources.fuel <= 0) {
-    return 'FUEL';
+  // 3. Power depletion (life support failure)
+  if (state.resources.power <= 0) {
+    return 'POWER';
   }
   
   return null;
@@ -382,7 +381,7 @@ export function applyControls(
 │                                         │
 │                                         │
 │                                         │
-│  ███████████░ FUEL 91%                  │ ← Fuel Bar (Stacked on Hull)
+│  ███████████░ POWER 91%                 │ ← Power Bar (Stacked on Hull)
 │  ████████░░ HULL 82%                    │ ← Hull Bar (Bottom Left)
 └─────────────────────────────────────────┘
 ```
@@ -397,7 +396,7 @@ export function applyControls(
   let { state }: { state: GameState } = $props();
   
   const hullPercent = $derived(state.resources.hull);
-  const fuelPercent = $derived(state.resources.fuel);
+  const powerPercent = $derived(state.resources.power);
   const timeDisplay = $derived(
     state.status === 'PLAYING' 
       ? `${state.elapsedTime.toFixed(1)}s`
@@ -410,9 +409,9 @@ export function applyControls(
     'var(--color-neon-blue)'
   );
   
-  const fuelColor = $derived(
-    fuelPercent < 25 ? 'var(--color-danger)' :
-    fuelPercent < 50 ? 'var(--color-warning)' :
+  const powerColor = $derived(
+    powerPercent < 25 ? 'var(--color-danger)' :
+    powerPercent < 50 ? 'var(--color-warning)' :
     'var(--color-acid-lime)'
   );
 </script>
@@ -429,8 +428,8 @@ export function applyControls(
   </div>
   
   <div class="resource-bar">
-    <div class="bar-fill" style:width="{fuelPercent}%" style:background-color={fuelColor}></div>
-    <span class="bar-label">FUEL {fuelPercent.toFixed(0)}%</span>
+    <div class="bar-fill" style:width="{powerPercent}%" style:background-color={powerColor}></div>
+    <span class="bar-label">POWER {powerPercent.toFixed(0)}%</span>
   </div>
 </div>
 
@@ -527,7 +526,7 @@ export function applyControls(
   const deathMessages = {
     STAR: 'Incinerated by the star',
     HULL: 'Hull failure',
-    FUEL: 'Out of fuel',
+    POWER: 'Out of power',
   };
   
   const message = $derived(
@@ -646,23 +645,23 @@ export function applyControls(
 ### Definition of Done
 
 **Core Gameplay:**
-- [x] Player starts with 100% hull and 100% fuel
-- [x] Thrusting consumes 1.5% fuel per second
-- [x] Sun proximity refuels based on distance zones (4 zones defined)
+- [x] Player starts with 100% hull and 100% power
+- [x] Power consumes 1.0% per second (constant decay)
+- [x] Sun proximity refuels power based on distance zones (4 zones defined)
 - [x] Sun proximity burns hull based on distance zones
 - [x] Planet collisions deduct 7% hull with visual feedback
 - [x] Star contact triggers instant death (`STAR` cause)
 - [x] Hull = 0% triggers death (`HULL` cause)
-- [x] Fuel = 0% triggers death (`FUEL` cause)
+- [x] Power = 0% triggers death (`POWER` cause)
 
 **UI/UX:**
 - [x] HUD displays hull bar (color-coded: green/yellow/red)
-- [x] HUD displays fuel bar (color-coded: green/yellow/red)
+- [x] HUD displays power bar (color-coded: green/yellow/red)
 - [x] HUD displays timer (1 decimal place, updates smoothly)
 - [x] Timer starts on first input, not page load
 - [x] Game Over screen shows final time (2 decimal places)
 - [x] Game Over screen shows death cause with descriptive text
-- [x] Restart button resets all state (ship, hull, fuel, timer, arena)
+- [x] Restart button resets all state (ship, hull, power, timer, arena)
 
 **Settings:**
 - [x] `/settings` route exists and is accessible
@@ -684,17 +683,17 @@ export function applyControls(
 ### Regression Guardrails
 
 **Performance:**
-- `updateFuel()` + `updateHull()` must execute < 0.5ms combined
+- `updatePower()` + `updateHull()` must execute < 0.5ms combined
 - HUD re-renders only when values change (Svelte reactivity)
 - No garbage collection pauses > 5ms during gameplay
 
 **Physics Integrity:**
-- Fuel/hull updates must occur AFTER input but BEFORE collision detection
+- Power/hull updates must occur AFTER input but BEFORE collision detection
 - Death detection must occur AFTER all physics updates
 - Timer must be monotonically increasing (no backwards jumps)
 
 **State Safety:**
-- `hull` and `fuel` clamped to [0, 100] range
+- `hull` and `power` clamped to [0, 100] range
 - `elapsedTime` must be ≥ 0
 - `deathCause` must be null during `PLAYING` state
 
@@ -702,10 +701,10 @@ export function applyControls(
 
 ### Scenarios
 
-**Scenario 1: Fuel Depletion Death** ✅ TO VERIFY
-- **Given:** Player is flying with 5% fuel remaining
-- **When:** Player thrusts for 4 seconds without refueling
-- **Then:** Fuel reaches 0%, death is triggered with cause `FUEL`, Game Over screen displays "Out of fuel"
+**Scenario 1: Power Depletion Death** ✅ TO VERIFY
+- **Given:** Player is flying with 5% power remaining
+- **When:** Player flies for 5 seconds without refueling
+- **Then:** Power reaches 0%, death is triggered with cause `POWER`, Game Over screen displays "Out of power"
 
 ---
 
@@ -717,16 +716,16 @@ export function applyControls(
 ---
 
 **Scenario 3: Star Contact Instant Death** ✅ TO VERIFY
-- **Given:** Player is maneuvering near the star with 80% hull and 60% fuel
+- **Given:** Player is maneuvering near the star with 80% hull and 60% power
 - **When:** Player's ship position enters the star's radius (distanceToSun < star.radius)
-- **Then:** Death is triggered immediately with cause `STAR`, ignoring current hull/fuel values, Game Over screen displays "Incinerated by the star"
+- **Then:** Death is triggered immediately with cause `STAR`, ignoring current hull/power values, Game Over screen displays "Incinerated by the star"
 
 ---
 
 **Scenario 4: Sun Refuel Zone Strategy** ✅ TO VERIFY
-- **Given:** Player has 30% fuel and 100% hull
+- **Given:** Player has 30% power and 100% hull
 - **When:** Player enters Zone 2 (150-250px from sun) for 10 seconds
-- **Then:** Fuel increases by ~20% (2% per second × 10s), hull decreases by ~5% (0.5% per second × 10s), player survives and can continue
+- **Then:** Power increases by ~20% (2% per second × 10s), hull decreases by ~5% (0.5% per second × 10s), player survives and can continue
 
 ---
 
@@ -745,9 +744,9 @@ export function applyControls(
 ---
 
 **Scenario 7: Restart Flow Cleanup** ✅ TO VERIFY
-- **Given:** Player has died with 15% hull, 0% fuel, after 85.23 seconds
+- **Given:** Player has died with 15% hull, 0% power, after 85.23 seconds
 - **When:** Player clicks "Try Again" on Game Over screen
-- **Then:** Game transitions to MENU state, then PLAYING on first input, ship resets to spawn position with 100% hull and 100% fuel, timer resets to 0.0s, planet positions reset to initial orbit
+- **Then:** Game transitions to MENU state, then PLAYING on first input, ship resets to spawn position with 100% hull and 100% power, timer resets to 0.0s, planet positions reset to initial orbit
 
 ---
 
@@ -758,13 +757,13 @@ export function applyControls(
 **Week 1: Core Systems**
 - [ ] Create `game-state.ts` schema with Zod validation
 - [ ] Implement game state machine (MENU → PLAYING → GAME_OVER)
-- [ ] Add `updateFuel()` to physics loop with consumption logic
+- [ ] Add `updatePower()` to physics loop with consumption logic
 - [ ] Add `updateHull()` to physics loop with planet collision hook
 - [ ] Implement sun proximity zones (refuel + burn calculations)
 - [ ] Add `checkDeath()` with three fail states
 
 **Week 2: UI Components**
-- [ ] Build HUD component with hull/fuel bars
+- [ ] Build HUD component with hull/power bars
 - [ ] Implement timer display with deltaTime tracking
 - [ ] Create Game Over screen component
 - [ ] Add restart flow logic
@@ -778,11 +777,11 @@ export function applyControls(
 - [ ] Test settings persistence across sessions
 
 **Week 4: Polish & Testing**
-- [ ] Tune fuel consumption rate (playtest for ~60-90s initial runs)
+- [ ] Tune power consumption rate (playtest for ~60-90s initial runs)
 - [ ] Tune sun zone distances (risk/reward balance)
 - [ ] Add screen shake on planet collision
 - [ ] Add red vignette at low hull (< 25%)
-- [ ] Performance audit (fuel/hull updates < 0.5ms)
+- [ ] Performance audit (power/hull updates < 0.5ms)
 - [ ] Cross-browser testing (Chrome, Firefox, Safari)
 - [ ] Mobile testing (touch + inverted controls)
 
@@ -796,7 +795,7 @@ export function applyControls(
 export const SURVIVAL_CONFIG = {
   // Starting values
   INITIAL_HULL: 100,
-  INITIAL_FUEL: 100,
+  INITIAL_POWER: 100,
   
   // Fuel system
   FUEL_CONSUMPTION_RATE: 1.5, // % per second of thrust

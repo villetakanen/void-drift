@@ -1,7 +1,7 @@
 # Phase 5: Survival Core — Implementation Roadmap
 
 **Versions:** v0.0.5 → v0.0.6 → v0.0.7 → v0.1.0  
-**Status:** 🚧 PLANNED  
+**Status:** 🚧 IN PROGRESS
 **Goal:** Transform physics sandbox into complete single-player survival game
 
 ---
@@ -68,8 +68,8 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 **Depends On:** PBI-015 (designs must be complete)
 
 **What It Does:**
-- Implement hull/fuel tracking logic (Zod schemas)
-- Fuel consumption (1.5%/s), sun refuel (4 zones), hull burn
+- Implement hull/power tracking logic (Zod schemas)
+- Power consumption (1.0%/s constant), sun refuel (4 zones), hull burn
 - Planet collision damage (-7% per hit)
 - Integrate designed HUD bars into game (Svelte components)
 - Physics loop integration (updateFuel, updateHull)
@@ -81,7 +81,7 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 - `apps/web/src/components/HUD.svelte` — EDIT (add bars using PBI-015 designs)
 
 **Success Criteria:**
-- Hull/fuel tracked correctly (100% → 0%)
+- Hull/power tracked correctly (100% → 0%)
 - Sun zones work (refuel + burn rates)
 - HUD bars display in-game with correct colors
 - Resources clamp to [0, 100]
@@ -120,12 +120,12 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 **Priority:** HIGH  
 **Estimate:** 5 Story Points  
 **Owner:** @Dev  
-**Depends On:** PBI-015 (death icons), PBI-016 (hull/fuel values)
+**Depends On:** PBI-015 (death icons), PBI-016 (hull/power values)
 
 **What It Does:**
 - Game state machine (MENU → PLAYING → GAME_OVER)
 - Timer system (starts on first input, Date.now() delta)
-- Death detection (STAR > HULL > FUEL priority)
+- Death detection (STAR > HULL > POWER priority)
 - Game Over screen (time + death icon + message)
 - Restart flow (reset all state)
 - HUD timer display
@@ -155,21 +155,21 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 **Focus:** Design-first — create and iterate on visual components in gallery
 
 **Days 1-2: Resource Bar Design**
-- [ ] Create `resource-bar.ts` with canvas drawing functions
-- [ ] Design 3 color states (normal/warning/danger)
-- [ ] Add to gallery with slider controls
-- [ ] Get visual feedback from team
+- [x] Create `resource-bar.ts` with canvas drawing functions
+- [x] Design 3 color states (normal/warning/danger)
+- [x] Add to gallery with slider controls
+- [x] Get visual feedback from team
 
 **Days 3-4: Icons & Timer Design**
-- [ ] Create `death-icons.ts` with STAR/HULL/FUEL designs
-- [ ] Test icons at multiple sizes (16px, 24px)
-- [ ] Define timer display format and styling
-- [ ] Add all to gallery for review
+- [x] Create `death-icons.ts` with STAR/HULL/POWER designs
+- [x] Test icons at multiple sizes (16px, 24px)
+- [x] Define timer display format and styling
+- [x] Add all to gallery for review
 
 **Day 5: Design System Updates & Review**
-- [ ] Update CSS tokens if needed (warning colors, etc.)
-- [ ] Final visual review and approval
-- [ ] Document component APIs for PBI-016
+- [x] Update CSS tokens if needed (warning colors, etc.)
+- [x] Final visual review and approval
+- [x] Document component APIs for PBI-016
 
 **Milestone:** All HUD designs complete in gallery, ready for integration
 
@@ -179,20 +179,20 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 **Focus:** Implement resource tracking and integrate designed HUD
 
 **Days 1-2: Schema & Physics**
-- [ ] Create `game-state.ts` with ResourcesSchema (Zod)
-- [ ] Add SURVIVAL_CONFIG constants
-- [ ] Implement `updateFuel()` and `updateHull()`
+- [x] Create `game-state.ts` with ResourcesSchema (Zod)
+- [x] Add SURVIVAL_CONFIG constants
+- [x] Implement `updatePower()` and `updateHull()`
 
 **Days 3-4: HUD Integration**
-- [ ] Create Svelte version of resource bars (using PBI-015 designs)
-- [ ] Integrate into HUD component
-- [ ] Wire up to physics loop
-- [ ] Test color state transitions
+- [x] Create Svelte version of resource bars (using PBI-015 designs)
+- [x] Integrate into HUD component
+- [x] Wire up to physics loop
+- [x] Test color state transitions
 
 **Day 5: Testing & Tuning**
-- [ ] Manual testing (fuel consumption, sun zones, collisions)
-- [ ] Performance profiling (< 0.5ms target)
-- [ ] Initial tuning pass
+- [x] Manual testing (power consumption, sun zones, collisions)
+- [x] Performance profiling (< 0.5ms target)
+- [x] Initial tuning pass
 
 **Milestone:** Resources functional with visual HUD integration
 
@@ -202,18 +202,18 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 **Focus:** Complete game loop and add settings (parallel work)
 
 **Days 1-2: State Machine & Death Detection**
-- [ ] Extend GameState with status, timer, deathCause
-- [ ] Implement `checkDeath()` with priority order
-- [ ] Implement `updateTimer()` with Date.now() delta
+- [x] Extend GameState with status, timer, deathCause
+- [x] Implement `checkDeath()` with priority order
+- [x] Implement `updateTimer()` with Date.now() delta
 
 **Days 3-4: Game Over Screen + Settings (Parallel)**
-- [ ] Create GameOver.svelte (using PBI-015 death icons)
-- [ ] Add timer to HUD
+- [x] Create GameOver.svelte (using PBI-015 death icons)
+- [x] Add timer to HUD
 - [ ] **Parallel:** Create `/settings` route + control inversion
 
 **Day 5: Integration & Testing**
-- [ ] Test all death conditions
-- [ ] Test restart flow (memory leaks)
+- [x] Test all death conditions
+- [x] Test restart flow (memory leaks)
 - [ ] Test settings persistence
 - [ ] Test control inversion
 

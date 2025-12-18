@@ -4,7 +4,7 @@
     let { state }: { state: GameState } = $props();
 
     const hullPercent = $derived(state.resources.hull);
-    const fuelPercent = $derived(state.resources.fuel);
+    const powerPercent = $derived(state.resources.power);
 
     const hullColor = $derived(
         hullPercent < 25
@@ -14,16 +14,28 @@
               : "var(--color-resource-hull)",
     );
 
-    const fuelColor = $derived(
-        fuelPercent < 25
+    const powerColor = $derived(
+        powerPercent < 25
             ? "var(--color-resource-danger)"
-            : fuelPercent < 50
+            : powerPercent < 50
               ? "var(--color-resource-warning)"
-              : "var(--color-resource-fuel)",
+              : "var(--color-resource-power)",
     );
+    const timeDisplay = $derived(
+        state.status === "PLAYING"
+            ? `${state.elapsedTime.toFixed(1)}s`
+            : state.elapsedTime > 0
+              ? `${state.elapsedTime.toFixed(1)}s`
+              : "0.0s",
+    );
+    const isPlaying = $derived(state.status === "PLAYING");
 </script>
 
 <div class="hud">
+    {#if isPlaying || state.elapsedTime > 0}
+        <div class="timer">{timeDisplay}</div>
+    {/if}
+
     <div class="resource-bar">
         <div
             class="bar-fill"
@@ -36,10 +48,10 @@
     <div class="resource-bar">
         <div
             class="bar-fill"
-            style:width="{fuelPercent}%"
-            style:background-color={fuelColor}
+            style:width="{powerPercent}%"
+            style:background-color={powerColor}
         ></div>
-        <span class="bar-label">FUEL {fuelPercent.toFixed(0)}%</span>
+        <span class="bar-label">POWER {powerPercent.toFixed(0)}%</span>
     </div>
 </div>
 
@@ -84,5 +96,18 @@
         color: var(--color-text);
         text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
         font-weight: bold;
+    }
+
+    .timer {
+        position: fixed;
+        top: var(--spacing-sm);
+        right: var(--spacing-sm);
+        font-size: 1.25rem;
+        color: var(--color-text);
+        font-variant-numeric: tabular-nums;
+        font-family: monospace;
+        text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+        z-index: 100;
+        pointer-events: none;
     }
 </style>

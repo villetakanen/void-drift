@@ -11,7 +11,7 @@
 ## User Story
 
 **As a** player  
-**I want** hull and fuel resources that deplete and regenerate based on my actions  
+**I want** hull and power resources that deplete and regenerate based on my actions  
 **So that** I must balance risk/reward decisions (sun proximity refuels but damages hull)
 
 ---
@@ -21,7 +21,7 @@
 This is the second PBI for Phase 5 (Survival Core). It implements the actual resource tracking logic and integrates the designed HUD elements (from PBI-015) into the game.
 
 **The Core Tension:**
-- Player needs fuel to maneuver → Must approach sun
+- Player needs power to maneuver and survive → Must approach sun
 - Sun proximity refuels ship → But burns hull
 - Longer survival → More sun visits → More accumulated risk
 
@@ -47,27 +47,26 @@ This is the second PBI for Phase 5 (Survival Core). It implements the actual res
 - [x] Hull value is clamped to [0, 100] range
 - [x] Hull updates are frame-rate independent (use deltaTime)
 
-### Fuel System
-- [x] Ship starts with 100% fuel on game initialization
-- [x] Thrusting (any engine) consumes 1.5% fuel per second
-- [x] Single-engine thrust (left OR right) uses same rate as dual-engine
+### Power System
+- [x] Ship starts with 100% power on game initialization
+- [x] Power consumes 1.0% per second (constant decay)
 - [x] Sun proximity refuels based on distance zones:
   - Zone 1 (< 150px): +4.0% per second
   - Zone 2 (150-250px): +2.0% per second
   - Zone 3 (250-350px): +0.5% per second
   - Zone 4 (> 350px): No refuel
-- [x] Fuel value is clamped to [0, 100] range
-- [x] Fuel updates are frame-rate independent (use deltaTime)
-- [x] Fuel cannot regenerate above 100%
+- [x] Power value is clamped to [0, 100] range
+- [x] Power updates are frame-rate independent (use deltaTime)
+- [x] Power cannot regenerate above 100%
 
 ### Data Model
-- [x] `ResourcesSchema` defined in Zod with hull/fuel validation
+- [x] `ResourcesSchema` defined in Zod with hull/power validation
 - [x] `GameState` schema includes resources object
 - [x] Resources exported from `@void-drift/engine` package
 - [x] All resource mutations go through validated update functions
 
 ### Physics Integration
-- [x] `updateFuel()` function added to physics loop
+- [x] `updatePower()` function added to physics loop
 - [x] `updateHull()` function added to physics loop
 - [x] Resource updates occur AFTER input processing, BEFORE collision detection
 - [x] Sun distance calculation reuses existing gravity well code
@@ -75,7 +74,7 @@ This is the second PBI for Phase 5 (Survival Core). It implements the actual res
 
 ### HUD Integration
 - [x] Hull bar displayed in game HUD (uses PBI-015 design)
-- [x] Fuel bar displayed in game HUD (uses PBI-015 design)
+- [x] Power bar displayed in game HUD (uses PBI-015 design)
 - [x] Bars update every frame (smooth animation)
 - [x] Color states work correctly (normal/warning/danger)
 - [x] Percentage labels display current values
@@ -94,7 +93,7 @@ import { z } from 'zod';
 
 export const ResourcesSchema = z.object({
   hull: z.number().min(0).max(100),
-  fuel: z.number().min(0).max(100),
+  power: z.number().min(0).max(100),
 });
 
 export type Resources = z.infer<typeof ResourcesSchema>;
@@ -148,7 +147,7 @@ Add two new functions:
 import { SURVIVAL_CONFIG } from '../config';
 import type { Resources } from '../schemas/game-state';
 
-export function updateFuel(
+export function updatePower(
   resources: Resources,
   isThrusting: boolean,
   distanceToSun: number,
@@ -157,9 +156,8 @@ export function updateFuel(
   const dt = deltaTime / 1000; // Convert ms to seconds
   
   // Consumption
-  if (isThrusting) {
-    resources.fuel -= SURVIVAL_CONFIG.FUEL_CONSUMPTION_RATE * dt;
-  }
+  // Constant decay
+  resources.power -= SURVIVAL_CONFIG.POWER_CONSUMPTION_RATE * dt;
   
   // Regeneration (sun proximity)
   let regenRate = 0;
@@ -171,10 +169,10 @@ export function updateFuel(
     regenRate = SURVIVAL_CONFIG.FUEL_REGEN_ZONE_3;
   }
   
-  resources.fuel += regenRate * dt;
+  resources.power += regenRate * dt;
   
   // Clamp
-  resources.fuel = Math.max(0, Math.min(100, resources.fuel));
+  resources.power = Math.max(0, Math.min(100, resources.power));
 }
 
 export function updateHull(
@@ -238,7 +236,7 @@ applyPlanetCollisionDamage(gameState.resources);
   let { state }: { state: GameState } = $props();
   
   const hullPercent = $derived(state.resources.hull);
-  const fuelPercent = $derived(state.resources.fuel);
+  const powerPercent = $derived(state.resources.power);
   
   const hullColor = $derived(
     hullPercent < 25 ? 'var(--color-danger)' :
@@ -246,9 +244,9 @@ applyPlanetCollisionDamage(gameState.resources);
     'var(--color-neon-blue)'
   );
   
-  const fuelColor = $derived(
-    fuelPercent < 25 ? 'var(--color-danger)' :
-    fuelPercent < 50 ? 'var(--color-warning)' :
+  const powerColor = $derived(
+    powerPercent < 25 ? 'var(--color-danger)' :
+    powerPercent < 50 ? 'var(--color-warning)' :
     'var(--color-acid-lime)'
   );
 </script>
@@ -260,8 +258,8 @@ applyPlanetCollisionDamage(gameState.resources);
   </div>
   
   <div class="resource-bar">
-    <div class="bar-fill" style:width="{fuelPercent}%" style:background-color={fuelColor}></div>
-    <span class="bar-label">FUEL {fuelPercent.toFixed(0)}%</span>
+    <div class="bar-fill" style:width="{powerPercent}%" style:background-color={powerColor}></div>
+    <span class="bar-label">POWER {powerPercent.toFixed(0)}%</span>
   </div>
 </div>
 
@@ -311,13 +309,13 @@ applyPlanetCollisionDamage(gameState.resources);
 
 - [x] All acceptance criteria met
 - [x] Zod schema validates resources correctly
-- [x] Physics loop calls `updateFuel()` and `updateHull()` every frame
+- [x] Physics loop calls `updatePower()` and `updateHull()` every frame
 - [x] Planet collisions trigger hull damage
 - [x] Sun proximity zones work as specified (tested with console.log)
-- [x] HUD displays hull/fuel bars correctly
+- [x] HUD displays hull/power bars correctly
 - [x] Color states transition correctly (normal/warning/danger)
 - [x] Zero TypeScript errors (`pnpm -r check`)
-- [x] Performance: updateFuel + updateHull < 0.5ms combined
+- [x] Performance: updatePower + updateHull < 0.5ms combined
 - [x] No garbage collection pauses introduced
 - [x] Manual testing complete (see checklist below)
 - [x] Code reviewed and approved
@@ -328,14 +326,14 @@ applyPlanetCollisionDamage(gameState.resources);
 
 ### Manual Tests
 
-**Fuel Consumption:**
+**Power Consumption:**
 - [ ] Start game with 100% fuel
 - [ ] Thrust continuously for 10 seconds
 - [ ] Verify fuel is at ~85% (15% consumed at 1.5%/s)
 - [ ] Verify fuel bar shows correct percentage
 - [ ] Verify fuel bar turns yellow at < 50%
 
-**Fuel Regeneration (Zone 1):**
+**Power Regeneration (Zone 1):**
 - [ ] Reduce fuel to 50% (via thrusting)
 - [ ] Position ship < 150px from sun
 - [ ] Wait 5 seconds without thrusting
@@ -401,7 +399,7 @@ This PBI does NOT include:
 - ✅ PBI-014 (Rock Planet) — DONE
 
 **Blocks:**
-- PBI-017 (Timer & Death Logic) — Needs resources.hull and resources.fuel
+- PBI-017 (Timer & Death Logic) — Needs resources.hull and resources.power
 
 **Parallel Work:**
 - PBI-018 (Settings Route) — Can develop independently
@@ -412,7 +410,7 @@ This PBI does NOT include:
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| Fuel consumption too fast | Players die in < 30s | Tuning constants in `config.ts`, playtest with 5 users |
+| Power consumption too fast | Players die in < 30s | Tuning constants in `config.ts`, playtest with 5 users |
 | Sun zones too punishing | Players avoid sun entirely | Adjust regen/burn ratio, make Zone 2 more rewarding |
 | Performance regression | FPS drops below 60 | Profile with Chrome DevTools, optimize distance calculations |
 | Hull damage feels unfair | Negative player feedback | Add visual warning when entering burn zones (Phase 7) |
@@ -440,7 +438,7 @@ This PBI does NOT include:
 
 **Future Enhancements (Post-v0.0.6):**
 - Visual indicators for sun zones (colored rings)
-- Audio feedback for fuel regen (sizzle sound)
+- Audio feedback for power regen (sizzle sound)
 - Particle effects for hull damage (sparks)
 - Hull repair pickups (rare spawn near planets)
 
