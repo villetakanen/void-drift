@@ -1,7 +1,7 @@
 # Product Pivot Summary: Mode A First Strategy
 
 **Date:** 2025-01-XX  
-**Version:** Post-v0.0.4 → v0.1.0 Planning  
+**Version:** v0.1.0 ✅ SHIPPED  
 **Decision:** Ship single-player survival game (Mode A) before multiplayer (Mode B)
 
 ---
@@ -128,74 +128,52 @@ Restart
 
 ---
 
-## Phase 5: Survival Core (v0.1.0)
+## Phase 5: Survival Core (v0.1.0) ✅ COMPLETE
 
 **Goal:** Transform physics sandbox into complete single-player game
 
-### Three PBIs (16 Story Points Total)
+### Six PBIs (26 Story Points Total) — ALL COMPLETE
 
-#### PBI-015: Resource Systems (8 SP)
-- Hull & Fuel tracking (100% → 0%)
-- Fuel consumption (1.5%/s when thrusting)
+#### PBI-015: Resource HUD Design (5 SP) ✅
+- Hull & Power bar designs with 3 color states
+- Death cause iconography (STAR/HULL/POWER)
+- Timer display format
+- Gallery integration with sliders
+
+#### PBI-016: Resource Logic (8 SP) ✅
+- Hull & Power tracking (100% → 0%)
+- Power consumption (constant drain, scales with thrust)
 - Sun proximity zones (4 zones: refuel + burn)
 - Planet collision damage (-7% hull)
 - Star contact instant death
 
-**Key Files:**
-- `packages/engine/src/lib/schemas/game-state.ts` — NEW
-- `packages/engine/src/lib/engine/physics.ts` — EDIT
-- `packages/engine/src/lib/config.ts` — EDIT
-
----
-
-#### PBI-016: Timer & Death Logic (5 SP)
+#### PBI-017: Timer & Death Logic (5 SP) ✅
 - Timer system (starts on first input)
 - Game state machine (MENU → PLAYING → GAME_OVER)
-- Death detection (STAR > HULL > FUEL priority)
-- HUD timer display (1 decimal: `42.3s`)
+- Death detection (STAR > HULL > POWER priority)
+- HUD timer display
 - Game Over screen (time + death cause)
 - Restart flow (reset all state)
 
-**Key Files:**
-- `packages/engine/src/lib/engine/game-loop.ts` — EDIT
-- `apps/web/src/components/HUD.svelte` — EDIT
-- `apps/web/src/components/GameOver.svelte` — NEW
-
----
-
-#### PBI-017: Settings Route (3 SP)
+#### PBI-018: Settings Route (3 SP) ✅
 - `/settings` Astro page
 - Control inversion toggle (swap left/right)
-- localStorage persistence (`void-drift:settings`)
+- Nanostores with localStorage persistence
 - Immediate application (no restart needed)
 
-**Key Files:**
-- `apps/web/src/pages/settings.astro` — NEW
-- `apps/web/src/components/Settings.svelte` — NEW
-- `apps/web/src/lib/settings.ts` — NEW
-- `packages/engine/src/lib/engine/input.ts` — EDIT
+#### PBI-019: Lab Refactor (3 SP) ✅
+- Restructured gallery/lab component organization
+
+#### PBI-020: Menu Overlay (2 SP) ✅
+- Menu overlay with TAP TO START
+- Settings link for navigation
+- `--color-overlay` design token
+
+**Result:** v0.1.0 shipped successfully
 
 ---
 
-### Implementation Timeline
-
-**Week 1:** Resource Systems (PBI-015)
-- Schema, config, physics integration
-
-**Week 2:** Timer & Death Logic (PBI-016)
-- State machine, HUD, Game Over screen
-
-**Week 3:** Settings Route (PBI-017)
-- Settings page, control inversion
-
-**Week 4:** Polish & Testing
-- Tuning, QA, performance audit
-
-**Target:** v0.1.0 shipped in 3-4 weeks
-
----
-
-## Success Metrics (v0.1.0)
+## Success Metrics (v0.1.0) ✅ VERIFIED
 
 ### Technical
 - ✅ 60 FPS on desktop + mobile
@@ -207,11 +185,13 @@ Restart
 - ✅ 60-90s average survival time (balanced difficulty)
 - ✅ All three death causes occur naturally
 - ✅ Sun approach feels risky but necessary
+- ✅ Power consumption scales with thrust (50%/75% boost)
 
 ### UX
 - ✅ Controls responsive (< 50ms latency)
 - ✅ Timer always visible and accurate
-- ✅ Settings persist across sessions
+- ✅ Settings persist across sessions (nanostores)
+- ✅ Menu overlay with clear start action
 
 ---
 
@@ -378,10 +358,10 @@ Zone 4 (> 350px): Safe Zone
 ## Approval & Sign-Off
 
 **Product Vision:** ✅ APPROVED  
-**Phase 5 Scope:** ✅ APPROVED  
-**PBI Breakdown:** ✅ APPROVED  
+**Phase 5 Scope:** ✅ COMPLETE  
+**PBI Breakdown:** ✅ ALL SHIPPED  
 
-**Next Step:** Begin PBI-015 implementation (Resource Systems)
+**Next Step:** Phase 6 — High Score System (v0.2.0)
 
 ---
 

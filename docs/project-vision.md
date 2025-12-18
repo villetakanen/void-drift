@@ -241,46 +241,47 @@ const HighScoreSchema = z.object({
 
 ---
 
-### 🚧 Phase 5: Survival Core — PLANNED (4 releases)
+### ✅ Phase 5: Survival Core — COMPLETE (v0.1.0)
 
 **Goal:** Implement Mode A's core gameplay loop (timer → death → restart) with full resource management and player settings.
 
-#### v0.0.5: Resource HUD Design — PBI-015 (5 SP)
+#### v0.0.5: Resource HUD Design — PBI-015 (5 SP) ✅
 **Goal:** Design visual components in gallery before integration
-- [ ] Hull bar design (3 color states: normal/warning/danger)
-- [ ] Fuel bar design (3 color states: normal/warning/danger)
-- [ ] Death cause iconography (STAR/HULL/FUEL symbols)
-- [ ] Timer display format (tabular-nums font)
-- [ ] Gallery integration with sliders for testing
-- [ ] Design System tokens updated
+- [x] Hull bar design (3 color states: normal/warning/danger)
+- [x] Power bar design (3 color states: normal/warning/danger)
+- [x] Death cause iconography (STAR/HULL/POWER symbols)
+- [x] Timer display format (tabular-nums font)
+- [x] Gallery integration with sliders for testing
+- [x] Design System tokens updated
 
-#### v0.0.6: Resource Logic & HUD Integration — PBI-016 (8 SP)
+#### v0.0.6: Resource Logic & HUD Integration — PBI-016 (8 SP) ✅
 **Goal:** Implement resource tracking and integrate designed HUD elements
-- [ ] Hull system (100% → 0%, planet damage -7%, sun burn)
-- [ ] Fuel system (100% → 0%, consumption 1.5%/s, sun refuel)
-- [ ] Sun proximity zones (4 zones with refuel/burn rates)
-- [ ] Physics integration (updateFuel, updateHull)
-- [ ] HUD bars display in-game (color-coded warnings)
-- [ ] Zod schemas for resources
+- [x] Hull system (100% → 0%, planet damage -7%, sun burn)
+- [x] Power system (100% → 0%, constant consumption, sun refuel)
+- [x] Sun proximity zones (4 zones with refuel/burn rates)
+- [x] Physics integration (updatePower, updateHull)
+- [x] HUD bars display in-game (color-coded warnings)
+- [x] Zod schemas for resources
 
-#### v0.0.7: Settings Route — PBI-018 (3 SP)
+#### v0.0.7: Settings Route — PBI-018 (3 SP) ✅
 **Goal:** Player settings with control customization
-- [ ] `/settings` Astro page
-- [ ] Control inversion toggle (swap left/right engines)
-- [ ] LocalStorage persistence
-- [ ] Settings apply immediately (no restart)
-- [ ] Keyboard accessible
+- [x] `/settings` Astro page
+- [x] Control inversion toggle (swap left/right engines)
+- [x] Nanostores with localStorage persistence
+- [x] Settings apply immediately (no restart)
+- [x] Keyboard accessible
 
-#### v0.1.0: Timer & Death Logic — PBI-017 (5 SP)
+#### v0.1.0: Timer & Death Logic — PBI-017 + PBI-020 (7 SP) ✅
 **Goal:** Complete game loop with timer, death conditions, Game Over screen
-- [ ] Game state machine (MENU → PLAYING → GAME_OVER)
-- [ ] Timer system (starts on first input)
-- [ ] Death detection (STAR > HULL > FUEL priority)
-- [ ] Game Over screen (time + death cause + icon)
-- [ ] Restart flow (reset all state)
-- [ ] HUD timer display
+- [x] Game state machine (MENU → PLAYING → GAME_OVER)
+- [x] Timer system (starts on first input)
+- [x] Death detection (STAR > HULL > POWER priority)
+- [x] Game Over screen (time + death cause + icon)
+- [x] Menu overlay with TAP TO START + Settings link
+- [x] Restart flow (reset all state)
+- [x] HUD timer display
 
-**Phase 5 Total:** 21 Story Points, 3-4 weeks
+**Phase 5 Total:** 26 Story Points — COMPLETE
 
 ---
 
@@ -399,13 +400,15 @@ Planned features:
 - ✅ Camera update < 1ms
 - ✅ Physics step < 2ms
 
-### 7.2 What's Missing (Mode A)
+### 7.2 What's Complete (Mode A)
 
-**Phase 5 (Survival Core) — v0.0.5 → v0.1.0:**
-- [ ] v0.0.5: Resource HUD design (bars, icons, timer format) in gallery
-- [ ] v0.0.6: Hull/fuel tracking logic + HUD integration
-- [ ] v0.0.7: Settings page with control inversion toggle
-- [ ] v0.1.0: Timer system + death detection + Game Over screen
+**Phase 5 (Survival Core) — v0.1.0:** ✅ COMPLETE
+- [x] v0.0.5: Resource HUD design (bars, icons, timer format) in gallery
+- [x] v0.0.6: Hull/power tracking logic + HUD integration
+- [x] v0.0.7: Settings page with control inversion toggle
+- [x] v0.1.0: Timer system + death detection + Game Over screen + Menu overlay
+
+### 7.3 What's Next (Mode A)
 
 **Phase 6 (High Score System) — v0.2.0:**
 - [ ] Initials entry UI
@@ -415,7 +418,7 @@ Planned features:
 **Phase 7 (Content & Polish) — v0.3.0:**
 - [ ] Sound effects
 - [ ] More planets (variety)
-- [ ] Visual feedback (hull damage effects, fuel regen glow)
+- [ ] Visual feedback (hull damage effects, power regen glow)
 
 ---
 
@@ -601,7 +604,7 @@ Likely metrics:
 - **v0.0.1 (2024):** Initial vision document. Multiplayer-first approach.
 - **v0.0.4 (2024):** Updated with monorepo structure, Phase 1-4 completion.
 - **v0.0.5 (2025):** **PIVOT:** Mode A (single-player survival) becomes Goal 1. Mode B (multiplayer) deferred. Phase 5 split into 4 incremental releases (v0.0.5 → v0.1.0): HUD Design → Resource Logic → Settings → Death/Timer. Design-first approach with gallery iteration.
-- **v0.1.0 (2025):** Phase 5 complete with fuel/hull systems, Settings route, and full game loop (timer + death detection). Version numbering aligned to semantic versioning (0.1.0 → 1.0.0 for launch).
+- **v0.1.0 (2025):** **Phase 5 COMPLETE.** Full survival gameplay with hull/power systems, settings (nanostores + localStorage), menu overlay, game state machine (MENU → PLAYING → GAME_OVER), and restart flow. Ready for Phase 6 (High Score System).
 
 ---
 
