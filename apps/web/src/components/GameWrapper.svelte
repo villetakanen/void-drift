@@ -10,7 +10,19 @@
     Camera,
     type Star,
     type Planet,
+    SURVIVAL_CONFIG,
+    updatePower,
+    updateHull,
+    type GameState,
+    checkDeath,
+    handleDeath,
+    updateTimer,
+    createInitialGameState,
   } from "@void-drift/engine";
+  import HUD from "./HUD.svelte";
+  import GameOver from "./GameOver.svelte";
+  import MenuOverlay from "./MenuOverlay.svelte";
+  import { settings } from "../lib/stores/settings";
 
   let canvas: HTMLCanvasElement;
   let container: HTMLDivElement;
@@ -36,26 +48,87 @@
     radius: CONFIG.SHIP_RADIUS,
   };
 
+  let state: GameState = $state(createInitialGameState());
+
   let star: Star | undefined = $state(undefined);
   let planets: Planet[] = $state([]);
+
+  function startGame() {
+    state.status = "PLAYING";
+    state.startTime = Date.now();
+  }
+
+  function restartGame() {
+    // Reset game state
+    state.status = "MENU";
+    state.startTime = null;
+    state.elapsedTime = 0;
+    state.resources.hull = 100;
+    state.resources.power = 100;
+    state.deathCause = null;
+
+    // Reset ship
+    ship.pos.set(LOGICAL_WIDTH / 2 - 500, LOGICAL_HEIGHT / 2);
+    ship.vel.set(0, 0);
+    ship.acc.set(0, 0);
+    ship.rotation = -Math.PI / 2;
+
+    // Reset Planets
+    if (planets.length > 0) {
+      planets[0].orbitAngle = 0;
+    }
+  }
 
   function update(dt: number) {
     if (!renderer || !input || !camera) return;
 
-    // Sync Input State to UI (for feedback)
-    leftActive = input.state.leftThruster;
-    rightActive = input.state.rightThruster;
+    // Get effective input (with potential inversion from settings)
+    const effectiveInput = input.getEffectiveState($settings.invertControls);
+
+    // Sync Input State to UI (for feedback) - show effective (inverted) state
+    leftActive = effectiveInput.leftThruster;
+    rightActive = effectiveInput.rightThruster;
+
+    // Timer update (only during PLAYING)
+    if (state.status === "PLAYING") {
+      updateTimer(state);
+    }
+
+    if (state.status !== "PLAYING") return; // Only run physics during PLAYING
 
     // Physics (using logical viewport dimensions)
     updateShip(
       ship,
-      input.state,
+      effectiveInput,
       dt,
       LOGICAL_WIDTH,
       LOGICAL_HEIGHT,
       star,
       planets,
+      state.resources,
     );
+
+    // Resource Updates
+    if (star) {
+      const dx = ship.pos.x - star.pos.x;
+      const dy = ship.pos.y - star.pos.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      updatePower(state.resources, dist, dt, {
+        left: effectiveInput.leftThruster,
+        right: effectiveInput.rightThruster,
+      });
+
+      updateHull(state.resources, dist, star.radius, dt);
+
+      // Death Check
+      if (state.status === "PLAYING") {
+        const deathCause = checkDeath(state, ship, star);
+        if (deathCause) {
+          handleDeath(state, deathCause, ship);
+        }
+      }
+    }
 
     // Update Camera to follow ship
     camera.setTarget(ship.pos.x, ship.pos.y);
@@ -99,14 +172,14 @@
     });
 
     // Position Ship slightly offset
-    ship.pos.set(LOGICAL_WIDTH / 2 - 300, LOGICAL_HEIGHT / 2);
+    ship.pos.set(LOGICAL_WIDTH / 2 - 500, LOGICAL_HEIGHT / 2);
 
     // Create a Star in the center
     star = {
       pos: new Vec2(LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2),
       radius: 40,
-      influenceRadius: 300,
-      mass: 500,
+      influenceRadius: 350,
+      mass: 600,
       color: "#FFA500", // Orange
     };
 
@@ -118,8 +191,8 @@
         orbitRadius: 700,
         orbitSpeed: 0.05,
         orbitAngle: 0,
-        radius: 20,
-        mass: 250,
+        radius: 30,
+        mass: 400,
         color: "#6666CC", // Slate Blue
       },
     ];
@@ -185,6 +258,8 @@
 
     <!-- HUD Overlay -->
     <div class="hud-overlay">
+      <HUD {state} />
+
       <!-- Logo -->
       <div class="logo">∅·Δ</div>
 
@@ -196,6 +271,16 @@
 
       <!-- Version Display -->
       <div class="version-display">α {__APP_VERSION__}</div>
+
+      <!-- Menu Overlay -->
+      {#if state.status === "MENU"}
+        <MenuOverlay onStart={startGame} />
+      {/if}
+
+      <!-- Game Over Modal -->
+      {#if state.status === "GAME_OVER"}
+        <GameOver {state} onRestart={restartGame} />
+      {/if}
     </div>
   </div>
 </div>

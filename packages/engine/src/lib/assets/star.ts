@@ -5,10 +5,22 @@ export interface DrawStarOptions {
     color: string;
     time: number; // millisecond timestamp to drive animation
     pulseSpeed?: number; // Optional scaling factor for speed (default 1)
+    powerZoneRadius?: number; // Optional radius for power regen zone visualization
 }
 
-export function drawStar(ctx: CanvasRenderingContext2D, options: DrawStarOptions) {
-    const { x, y, radius, color, time, pulseSpeed = 1.0 } = options;
+export function drawStar(ctx: CanvasRenderingContext2D, options: DrawStarOptions): void {
+    const { x, y, radius, color, time, pulseSpeed = 1.0, powerZoneRadius } = options;
+
+    // Draw Power Regen Zone (Behind star)
+    if (powerZoneRadius) {
+        ctx.beginPath();
+        ctx.arc(x, y, powerZoneRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(0, 200, 255, 0.2)"; // Power Color #00c8ff at 20% opacity
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 5]); // Dashed line to differentiate from other visuals
+        ctx.stroke();
+        ctx.setLineDash([]); // Reset
+    }
 
     // Draw Core
     ctx.fillStyle = color;

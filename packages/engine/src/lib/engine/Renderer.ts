@@ -2,6 +2,7 @@ import type { GameObject, Star } from "./Physics";
 import type { Camera } from "./Camera";
 import { drawShip } from "../renderers/ship";
 import { drawStar } from "../assets/star";
+import { SURVIVAL_CONFIG } from "../config";
 
 export class Renderer {
   private ctx: CanvasRenderingContext2D;
@@ -119,6 +120,7 @@ export class Renderer {
         color: star.color,
         time: time,
         pulseSpeed: 1.0,
+        powerZoneRadius: SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS,
       });
     });
   }

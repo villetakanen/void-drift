@@ -1,0 +1,9 @@
+---
+import LabLayout from "../../layouts/LabLayout.astro";
+import LabResourcesUI from "../../components/lab/LabResources.svelte";
+---
+
+<LabLayout title="Resources">
+    <!-- @ts-ignore -->
+    <LabResourcesUI client:only="svelte" />
+</LabLayout>

@@ -1,45 +1,89 @@
-# Feature: Internal Asset Gallery (Workbench)
+# Feature: Internal Asset Lab (Workbench)
+
+**Status:** IN PROGRESS  
+**Current Version:** 0.0.5 (Refactor from Gallery)
 
 ## Blueprint
 
 ### Context
-To decouple asset development from gameplay logic, we require a hidden "Workbench" route (`/#gallery`). This allows designers and developers to tune procedural generation parameters (like ship colors, star pulses, or particle physics) in real-time without navigating the game loop or networking stack.
+To decouple asset development from gameplay logic, we have implemented a "Lab" route at `/lab`. This allows designers and developers to tune procedural generation parameters (like ship colors, star pulses, or particle physics) in real-time, in isolated environments, without navigating the game loop or networking stack.
+
+**Achievement:** Clean separation of developer tools from production game via Astro file-system routing, with granular addressability for each asset.
 
 ### Architecture
-- **Route:** `/#gallery` (Hash-based routing in `App.svelte`).
+- **Base Route:** `/lab` (Index of all experiments).
+- **Sub-Routes:**
+  - `/lab/ship`: Ship rendering workspace.
+  - `/lab/star`: Star rendering workspace.
+  - `/lab/[...asset]`: Future assets.
+- **Location:** `apps/web/src/pages/lab/**/*.astro`
 - **Components:**
-  - `Gallery.svelte`: Main container.
-  - `Inspector.svelte`: UI for tweaking values (sliders, color pickers).
+  - `LabLayout.astro`: Common shell for lab pages (navigation).
+  - Specific rendering components (e.g., `LabShip.svelte`, `LabStar.svelte`).
 - **Asset API:** Pure functions accepting `ctx` and `props`.
-  - `drawShip(ctx, props)`
-  - `drawStar(ctx, props)`
+  - `drawShip(ctx, props)` → `packages/engine/src/lib/renderers/ship.ts`
+  - `drawStar(ctx, props)` → `packages/engine/src/lib/assets/star.ts`
 
 ### Anti-Patterns
-- **Do NOT** load the full `GameLoop` in the Gallery. Only the `Renderer` or specific draw functions should run.
-- **Do NOT** hardcode gallery assets; they should be the exact same functions used in production.
-- **Do NOT** allow the Gallery to be visible in the public production build (unless behind a feature flag or dev route).
+- **Do NOT** load the full `GameLoop` in the Lab. Only the `Renderer` or specific draw functions should run.
+- **Do NOT** hardcode lab assets; they should be the exact same functions used in production.
+- **Do NOT** bundle the Lab routes in production builds (tree-shaken automatically by Astro or excluded via build config).
 
 ## Contract
 
 ### Definition of Done
-- [ ] Visiting `/#gallery` loads the Workbench UI.
-- [ ] Validating that `drawShip` and `drawStar` can be rendered in isolation.
-- [ ] Changing a slider in the Inspector visibly updates the asset in real-time.
+- [ ] Visiting `/lab` loads the Lab Index.
+- [ ] Visiting `/lab/ship` loads the Ship Workbench.
+- [ ] Lab uses the same render functions as production game (no duplication).
+- [ ] Lab routes are completely separate from game route.
 
 ### Regression Guardrails
 - **Performance:** Inspector updates must not trigger full-page reloads.
-- **Isolation:** Crashes in the Gallery must not affect the main Game Loop entry point.
+- **Isolation:** Crashes in the Lab must not affect the main Game Loop entry point.
+- **Build Safety:** Lab should not increase production bundle size.
 
 ### Scenarios
-**Scenario: Tuning Ship Color**
-- Given I am on `/#gallery`
-- And the Ship asset is selected
-- When I change the `primaryColor` picker to Red
-- Then the rendered Ship immediately turns Red
-- And the change does NOT require a page refresh
 
-**Scenario: Validating Physics Bounds**
-- Given I am inspecting the `Star` asset
-- When I enable "Debug View"
-- Then the `influenceRadius` circle is visible
-- And I can visually confirm its size relative to the star core
+**Scenario: Accessing Lab Index**
+- Given I navigate to `localhost:4321/lab`
+- When the page loads
+- Then I see a list of links to available asset workbenches
+- **Status:** PENDING
+
+**Scenario: Deep Linking to Asset**
+- Given I share a link `localhost:4321/lab/ship`
+- When a developer opens it
+- Then they are taken directly to the Ship workbench
+- And they don't have to scroll through a giant gallery
+- **Status:** PENDING
+
+**Scenario: Shared Rendering Logic**
+- Given the `drawShip` function in `packages/engine/src/lib/renderers/ship.ts`
+- When it is imported by both Lab and GameWrapper
+- Then both render identical ship visuals
+- **Status:** PENDING
+
+## Current Implementation
+
+### File Structure
+```
+apps/web/src/
+├── pages/
+│   ├── index.astro        → Game (/)
+│   └── lab/
+│       ├── index.astro    → Lab Index (/lab)
+│       └── ship.astro     → Ship Workbench (/lab/ship)
+└── components/
+    └── lab/               → Lab-specific wrappers
+        └── LabShip.svelte
+```
+
+### Future Enhancements
+- [ ] Add real-time parameter sliders (color, size, animation speed)
+- [ ] Add "Export" functionality to save asset configurations
+- [ ] Add screenshot/recording capability for asset documentation
+
+---
+
+**Lab Status: UNDER CONSTRUCTION** 🚧  
+**Access:** Navigate to `/lab` during development

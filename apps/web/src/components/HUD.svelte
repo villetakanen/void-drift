@@ -1,0 +1,113 @@
+<script lang="ts">
+    import type { GameState } from "@void-drift/engine";
+
+    let { state }: { state: GameState } = $props();
+
+    const hullPercent = $derived(state.resources.hull);
+    const powerPercent = $derived(state.resources.power);
+
+    const hullColor = $derived(
+        hullPercent < 25
+            ? "var(--color-resource-danger)"
+            : hullPercent < 50
+              ? "var(--color-resource-warning)"
+              : "var(--color-resource-hull)",
+    );
+
+    const powerColor = $derived(
+        powerPercent < 25
+            ? "var(--color-resource-danger)"
+            : powerPercent < 50
+              ? "var(--color-resource-warning)"
+              : "var(--color-resource-power)",
+    );
+    const timeDisplay = $derived(
+        state.status === "PLAYING"
+            ? `${state.elapsedTime.toFixed(1)}s`
+            : state.elapsedTime > 0
+              ? `${state.elapsedTime.toFixed(1)}s`
+              : "0.0s",
+    );
+    const isPlaying = $derived(state.status === "PLAYING");
+</script>
+
+<div class="hud">
+    {#if isPlaying || state.elapsedTime > 0}
+        <div class="timer">{timeDisplay}</div>
+    {/if}
+
+    <div class="resource-bar">
+        <div
+            class="bar-fill"
+            style:width="{hullPercent}%"
+            style:background-color={hullColor}
+        ></div>
+        <span class="bar-label">HULL {hullPercent.toFixed(0)}%</span>
+    </div>
+
+    <div class="resource-bar">
+        <div
+            class="bar-fill"
+            style:width="{powerPercent}%"
+            style:background-color={powerColor}
+        ></div>
+        <span class="bar-label">POWER {powerPercent.toFixed(0)}%</span>
+    </div>
+</div>
+
+<style>
+    .hud {
+        position: absolute;
+        top: auto;
+        bottom: var(--spacing-sm);
+        left: var(--spacing-sm);
+        pointer-events: none;
+        z-index: 100;
+        display: flex;
+        flex-direction: column-reverse;
+        gap: var(--spacing-xs);
+    }
+
+    .resource-bar {
+        position: relative;
+        width: 200px;
+        height: 24px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--color-resource-hull);
+        overflow: hidden;
+    }
+
+    .bar-fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        transition:
+            width 0.1s linear,
+            background-color 0.3s ease;
+    }
+
+    .bar-label {
+        position: relative;
+        display: block;
+        text-align: center;
+        line-height: 24px;
+        font-size: 0.875rem;
+        color: var(--color-text);
+        text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+        font-weight: bold;
+    }
+
+    .timer {
+        position: fixed;
+        top: var(--spacing-sm);
+        right: var(--spacing-sm);
+        font-size: 1.25rem;
+        color: var(--color-text);
+        font-variant-numeric: tabular-nums;
+        font-family: monospace;
+        text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+        z-index: 100;
+        pointer-events: none;
+    }
+</style>

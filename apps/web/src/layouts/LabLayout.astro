@@ -1,0 +1,140 @@
+---
+import Logo from "../components/Logo.svelte";
+import "../styles.css";
+
+const { title } = Astro.props;
+const currentPath = Astro.url.pathname;
+
+const LINKS = [
+    { href: "/lab", label: "Dashboard", exact: true },
+    { href: "/lab/ship", label: "Ship", exact: false },
+    { href: "/lab/star", label: "Star", exact: false },
+    { href: "/lab/typography", label: "Typography", exact: false },
+    { href: "/lab/resources", label: "Resources", exact: false },
+    { href: "/", label: "← Back to Game", exact: true },
+];
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+        <!-- Google Fonts: Noto Sans Math -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Noto+Sans+Math&display=swap"
+            rel="stylesheet"
+        />
+
+        <title>{title} | Void·Drift Lab</title>
+    </head>
+    <body>
+        <div class="lab-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="brand">
+                    <Logo />
+                </div>
+                <nav>
+                    {
+                        LINKS.map((link) => {
+                            const isActive = link.exact
+                                ? currentPath === link.href
+                                : currentPath.startsWith(link.href) &&
+                                  link.href !== "/lab"; // Avoid /lab matching everything
+
+                            return (
+                                <a
+                                    href={link.href}
+                                    class:list={[{ active: isActive }]}
+                                >
+                                    {link.label}
+                                </a>
+                            );
+                        })
+                    }
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="content">
+                <slot />
+            </main>
+        </div>
+    </body>
+</html>
+
+<style>
+    :global(body) {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: var(--color-void);
+        color: var(--color-text);
+        font-family: "Noto Sans Math", sans-serif;
+    }
+
+    .lab-layout {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        height: 100vh;
+        width: 100vw;
+    }
+
+    /* Sidebar Styles (Ported from Gallery.svelte) */
+    .sidebar {
+        background: var(--color-void-light);
+        border-right: 1px solid var(--color-text-dim);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .brand {
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid var(--color-text-dim);
+    }
+
+    nav {
+        display: flex;
+        flex-direction: column;
+        padding: 1rem;
+        gap: 0.5rem;
+    }
+
+    a {
+        text-decoration: none;
+        color: var(--color-text-dim);
+        padding: 0.75rem 1rem;
+        text-align: left;
+        border-radius: var(--radius-sm);
+        text-transform: uppercase;
+        font-family: inherit;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+        display: block;
+    }
+
+    a:hover {
+        color: var(--color-text);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    a.active {
+        color: var(--color-acid-lime);
+        border: 1px solid rgba(212, 255, 0, 0.3);
+        background: rgba(212, 255, 0, 0.1);
+    }
+
+    .content {
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+</style>
