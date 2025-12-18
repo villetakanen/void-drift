@@ -21,6 +21,7 @@
   } from "@void-drift/engine";
   import HUD from "./HUD.svelte";
   import GameOver from "./GameOver.svelte";
+  import MenuOverlay from "./MenuOverlay.svelte";
   import { settings } from "../lib/stores/settings";
 
   let canvas: HTMLCanvasElement;
@@ -52,6 +53,11 @@
   let star: Star | undefined = $state(undefined);
   let planets: Planet[] = $state([]);
 
+  function startGame() {
+    state.status = "PLAYING";
+    state.startTime = Date.now();
+  }
+
   function update(dt: number) {
     if (!renderer || !input || !camera) return;
 
@@ -62,13 +68,12 @@
     leftActive = effectiveInput.leftThruster;
     rightActive = effectiveInput.rightThruster;
 
-    // Timer & Game Status
-    updateTimer(
-      state,
-      effectiveInput.leftThruster || effectiveInput.rightThruster,
-    );
+    // Timer update (only during PLAYING)
+    if (state.status === "PLAYING") {
+      updateTimer(state);
+    }
 
-    if (state.status === "GAME_OVER") return; // Freeze physics
+    if (state.status !== "PLAYING") return; // Only run physics during PLAYING
 
     // Physics (using logical viewport dimensions)
     updateShip(
@@ -255,6 +260,11 @@
 
       <!-- Version Display -->
       <div class="version-display">α {__APP_VERSION__}</div>
+
+      <!-- Menu Overlay -->
+      {#if state.status === "MENU"}
+        <MenuOverlay onStart={startGame} />
+      {/if}
 
       <!-- Game Over Modal -->
       {#if state.status === "GAME_OVER"}

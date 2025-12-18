@@ -1,71 +1,75 @@
 :root {
-	/* Theme: Void Industrial (Dark Sci-Fi) */
-	--color-void: #050510;
-	/* Deepest Black/Blue */
-	--color-void-light: #0a0a1f;
-	/* Surface / Panels */
+  /* Theme: Void Industrial (Dark Sci-Fi) */
+  --color-void: #050510;
+  /* Deepest Black/Blue */
+  --color-void-light: #0a0a1f;
+  /* Surface / Panels */
 
-	/* Foreground */
-	--color-text: #FFFFFF;
-	/* Starlight White */
-	--color-text-dim: #888888;
-	/* Muted Text */
+  /* Foreground */
+  --color-text: #ffffff;
+  /* Starlight White */
+  --color-text-dim: #888888;
+  /* Muted Text */
 
-	/* Functional Palette (Raw Material Spec) */
-	--color-acid-lime: #D4FF00;
-	/* Accent / New */
-	--color-android-green: #3DDC84;
-	/* Success */
-	--color-caution-tape: #FFE600;
-	/* Warning */
-	--color-red: #FF3333;
-	/* Error */
+  /* Functional Palette (Raw Material Spec) */
+  --color-acid-lime: #d4ff00;
+  /* Accent / New */
+  --color-android-green: #3ddc84;
+  /* Success */
+  --color-caution-tape: #ffe600;
+  /* Warning */
+  --color-red: #ff3333;
+  /* Error */
 
-	/* Mappings */
-	--color-neon-blue: var(--color-acid-lime);
-	/* Primary Action overrides Neon Blue */
-	--color-neon-orange: var(--color-caution-tape);
-	--color-neon-green: var(--color-android-green);
+  /* Mappings */
+  --color-neon-blue: var(--color-acid-lime);
+  /* Primary Action overrides Neon Blue */
+  --color-neon-orange: var(--color-caution-tape);
+  --color-neon-green: var(--color-android-green);
 
-	/* Spacing & Shape relative to 4px grid */
-	--spacing-xs: 4px;
-	--spacing-sm: 8px;
-	--spacing-md: 16px;
-	--spacing-lg: 32px;
-	--spacing-xl: 64px;
+  /* Spacing & Shape relative to 4px grid */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 32px;
+  --spacing-xl: 64px;
 
-	--radius-sm: 2px;
+  --radius-sm: 2px;
 
-	/* Resource HUD Tokens */
-	--color-resource-hull: #00c8ff;
-	/* Neon Blue */
-	--color-resource-power: var(--color-acid-lime);
-	--color-resource-warning: #FFAA00;
-	/* Orange */
-	--color-resource-danger: var(--color-red);
+  /* Resource HUD Tokens */
+  --color-resource-hull: #00c8ff;
+  /* Neon Blue */
+  --color-resource-power: var(--color-acid-lime);
+  --color-resource-warning: #ffaa00;
+  /* Orange */
+  --color-resource-danger: var(--color-red);
+
+  /* Overlay */
+  --color-overlay: rgba(5, 5, 16, 0.9);
+  /* Semi-transparent void for modal overlays */
 }
 
 body {
-	background: var(--color-void);
-	color: var(--color-text);
-	font-family: 'Noto Sans Math', sans-serif;
-	margin: 0;
-	overflow: hidden;
-	/* Important for game canvas */
+  background: var(--color-void);
+  color: var(--color-text);
+  font-family: "Noto Sans Math", sans-serif;
+  margin: 0;
+  overflow: hidden;
+  /* Important for game canvas */
 }
 
 /* Scrollbar aesthetic for webkit */
 ::-webkit-scrollbar {
-	width: 8px;
-	height: 8px;
-	background: var(--color-void);
+  width: 8px;
+  height: 8px;
+  background: var(--color-void);
 }
 
 ::-webkit-scrollbar-thumb {
-	background: var(--color-void-light);
-	border: 1px solid var(--color-text-dim);
+  background: var(--color-void-light);
+  border: 1px solid var(--color-text-dim);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: var(--color-text-dim);
+  background: var(--color-text-dim);
 }

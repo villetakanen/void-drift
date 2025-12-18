@@ -435,7 +435,7 @@ Once v0.1.0 ships:
 3. [PBI-017: Timer & Death Logic](./backlog/PBI-017-Timer-Death-Logic.md) — v0.1.0 ✅
 4. [PBI-018: Settings Route](./backlog/PBI-018-Settings-Route.md) — v0.0.7 ✅
 5. [PBI-019: Lab Refactor](./backlog/PBI-019-Lab-Refactor.md) — v0.0.5 ✅
-6. [PBI-020: Menu Overlay](./backlog/PBI-020-Menu-Overlay.md) — v0.1.0
+6. [PBI-020: Menu Overlay](./backlog/PBI-020-Menu-Overlay.md) — v0.1.0 ✅
 
 ### Related Specs
 - [Game Engine Phase 1](./specs/game-engine-phase1.md) — Physics foundation
