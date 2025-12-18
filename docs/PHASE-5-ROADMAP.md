@@ -23,7 +23,7 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 - Provides accessibility options (control inversion)
 
 **Duration:** 3-4 weeks  
-**Story Points:** 21 total (5 + 8 + 3 + 5)
+**Story Points:** 26 total (5 + 8 + 3 + 5 + 3 + 2)
 
 ---
 
@@ -146,6 +146,40 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 - Requires resource logic (PBI-016) to be complete
 - Uses death icons from PBI-015
 - Completes the full game loop
+
+---
+
+### v0.1.0: PBI-020 — Menu Overlay
+**Priority:** HIGH  
+**Estimate:** 2 Story Points  
+**Owner:** @Dev  
+**Depends On:** PBI-017 (game state machine), PBI-018 (settings page)
+
+**What It Does:**
+- Menu overlay visible in MENU state
+- "TAP TO START" button to begin game
+- Settings link for navigation to `/settings`
+- Keyboard and touch accessible
+- New `--color-overlay` design token
+
+**Key Files:**
+- `apps/web/src/components/MenuOverlay.svelte` — NEW
+- `apps/web/src/components/GameWrapper.svelte` — EDIT (render overlay, startGame function)
+- `apps/web/src/styles.css` — EDIT (add --color-overlay token)
+- `apps/web/src/components/GameOver.svelte` — EDIT (use overlay token)
+- `packages/engine/src/lib/engine/game-loop.ts` — EDIT (remove auto-start from updateTimer)
+
+**Success Criteria:**
+- Menu overlay displays in MENU state
+- Start button and any-key starts game
+- Settings link navigates correctly
+- Keyboard accessible (Tab, Enter, Space)
+- Mobile touch works
+
+**Why Needed:**
+- Players need a way to access settings from the game
+- Provides intentional game start (not accidental input)
+- Completes the user-facing game loop
 
 ---
 
@@ -396,10 +430,12 @@ Once v0.1.0 ships:
 - [AGENTS.md](../AGENTS.md) — Agent roles and coding standards
 
 ### PBIs (Execution Order)
-1. [PBI-015: Resource HUD Design](./backlog/PBI-015-Resource-HUD-Design.md) — v0.0.5
-2. [PBI-016: Resource Logic](./backlog/PBI-016-Resource-Logic.md) — v0.0.6
-3. [PBI-017: Timer & Death Logic](./backlog/PBI-017-Timer-Death-Logic.md) — v0.1.0
-4. [PBI-018: Settings Route](./backlog/PBI-018-Settings-Route.md) — v0.0.7 (parallel)
+1. [PBI-015: Resource HUD Design](./backlog/PBI-015-Resource-HUD-Design.md) — v0.0.5 ✅
+2. [PBI-016: Resource Logic](./backlog/PBI-016-Resource-Logic.md) — v0.0.6 ✅
+3. [PBI-017: Timer & Death Logic](./backlog/PBI-017-Timer-Death-Logic.md) — v0.1.0 ✅
+4. [PBI-018: Settings Route](./backlog/PBI-018-Settings-Route.md) — v0.0.7 ✅
+5. [PBI-019: Lab Refactor](./backlog/PBI-019-Lab-Refactor.md) — v0.0.5 ✅
+6. [PBI-020: Menu Overlay](./backlog/PBI-020-Menu-Overlay.md) — v0.1.0
 
 ### Related Specs
 - [Game Engine Phase 1](./specs/game-engine-phase1.md) — Physics foundation
