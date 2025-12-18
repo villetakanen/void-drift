@@ -2,7 +2,7 @@ export class Vec2 {
   constructor(
     public x: number,
     public y: number,
-  ) {}
+  ) { }
 
   add(v: Vec2): Vec2 {
     this.x += v.x;
@@ -165,14 +165,19 @@ export function updateShip(
   let thrustMultiplier = 0.0;
   let isThrusting = false;
 
-  if (input.leftThruster) {
-    ship.rotation += CONFIG.ROTATION_SPEED * dt;
-    thrustMultiplier += 0.5;
+  if (input.leftThruster && input.rightThruster) {
+    // Both active: Standard thrust, no rotation
+    thrustMultiplier = 1.0;
     isThrusting = true;
-  }
-  if (input.rightThruster) {
+  } else if (input.leftThruster) {
+    // Left only: Rotate + Double Thrust (was 0.5)
+    ship.rotation += CONFIG.ROTATION_SPEED * dt;
+    thrustMultiplier = 1.0;
+    isThrusting = true;
+  } else if (input.rightThruster) {
+    // Right only: Rotate + Double Thrust (was 0.5)
     ship.rotation -= CONFIG.ROTATION_SPEED * dt;
-    thrustMultiplier += 0.5;
+    thrustMultiplier = 1.0;
     isThrusting = true;
   }
 

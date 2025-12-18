@@ -1,9 +1,9 @@
 export const CONFIG = {
   // Physics
-  SHIP_DRAG: 0.5, // Damping factor per second (vel -= vel * DRAG * dt)
-  ROTATION_SPEED: 3.0, // Radians per second
+  SHIP_DRAG: 0.25, // Damping factor per second (vel -= vel * DRAG * dt)
+  ROTATION_SPEED: 2.25, // Radians per second
   THRUST_FORCE: 400.0, // Pixels per second squared
-  MAX_SPEED: 800.0, // Max pixels per second
+  MAX_SPEED: 1000.0, // Max pixels per second
 
   // Game
   SHIP_RADIUS: 16,
@@ -14,8 +14,8 @@ export const SURVIVAL_CONFIG = {
   INITIAL_HULL: 100,
   INITIAL_POWER: 100,
   POWER_CONSUMPTION_RATE: 1.0,
-  POWER_CONSUMPTION_SINGLE_THRUST: 1.5, // 50% more when one thruster active
-  POWER_CONSUMPTION_DUAL_THRUST: 1.75, // 75% more when both thrusters active
+  POWER_CONSUMPTION_SINGLE_THRUST: 2.0,
+  POWER_CONSUMPTION_DUAL_THRUST: 2.75,
 
   POWER_ZONE_1_RADIUS: 100,
   POWER_ZONE_2_RADIUS: 170,
