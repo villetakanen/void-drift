@@ -58,12 +58,6 @@
     state.startTime = Date.now();
   }
 
-  $effect(() => {
-    if (input) {
-      input.paused = state.status !== "PLAYING";
-    }
-  });
-
   function restartGame() {
     // Reset game state
     state.status = "MENU";
@@ -120,7 +114,10 @@
       const dy = ship.pos.y - star.pos.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
-      updatePower(state.resources, dist, dt);
+      updatePower(state.resources, dist, dt, {
+        left: effectiveInput.leftThruster,
+        right: effectiveInput.rightThruster,
+      });
 
       updateHull(state.resources, dist, star.radius, dt);
 
@@ -206,7 +203,6 @@
 
     // Initialize Input
     input = new Input();
-    input.paused = state.status !== "PLAYING";
 
     const onResize = () => {
       if (!container) return;
