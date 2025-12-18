@@ -1,6 +1,6 @@
 # PBI-018: Settings Route with Control Inversion
 
-**Status:** TODO  
+**Status:** DONE  
 **Priority:** MEDIUM  
 **Estimate:** 3 Story Points  
 **Phase:** 5 (Survival Core)  
@@ -39,39 +39,39 @@ This is the fourth PBI for Phase 5 (Survival Core). It's independent of other Ph
 ## Acceptance Criteria
 
 ### Settings Route
-- [ ] `/settings` Astro page exists and is accessible
-- [ ] Page has consistent Layout with game (same header/footer if applicable)
-- [ ] Page displays "Settings" heading
-- [ ] Page has "Back to Game" button/link (navigates to `/`)
-- [ ] Page is mobile-responsive (readable on 320px width)
+- [x] `/settings` Astro page exists and is accessible
+- [x] Page has consistent Layout with game (same header/footer if applicable)
+- [x] Page displays "Settings" heading
+- [x] Page has "Back to Game" button/link (navigates to `/`)
+- [x] Page is mobile-responsive (readable on 320px width)
 
 ### Control Inversion Toggle
-- [ ] Toggle/checkbox UI element labeled "Invert Controls"
-- [ ] Subtitle/hint text: "Swap left/right engine controls"
-- [ ] Toggle state reflects current setting from localStorage
-- [ ] Clicking toggle saves immediately to localStorage
-- [ ] Toggle is keyboard accessible (Space/Enter to activate)
-- [ ] Toggle has visual feedback (checked/unchecked states)
+- [x] Toggle/checkbox UI element labeled "Invert Controls"
+- [x] Subtitle/hint text: "Swap left/right engine controls"
+- [x] Toggle state reflects current setting from localStorage
+- [x] Clicking toggle saves immediately to localStorage
+- [x] Toggle is keyboard accessible (Space/Enter to activate)
+- [x] Toggle has visual feedback (checked/unchecked states)
 
 ### LocalStorage Persistence
-- [ ] Settings saved to localStorage key: `void-drift:settings`
-- [ ] Settings object validated with Zod schema
-- [ ] Default value: `{ invertControls: false }`
-- [ ] Settings load on game initialization
-- [ ] Invalid/corrupt localStorage data falls back to defaults
-- [ ] Settings persist across browser sessions
-- [ ] Settings are browser-specific (not synced)
+- [x] Settings saved to localStorage key: `void-drift:settings`
+- [x] Settings object validated with Zod schema
+- [x] Default value: `{ invertControls: false }`
+- [x] Settings load on game initialization
+- [x] Invalid/corrupt localStorage data falls back to defaults
+- [x] Settings persist across browser sessions
+- [x] Settings are browser-specific (not synced)
 
 ### Input System Integration
-- [ ] Input handler accepts `invertControls` boolean parameter
-- [ ] When `invertControls = true`:
+- [x] Input handler accepts `invertControls` boolean parameter
+- [x] When `invertControls = true`:
   - Left input activates right engine
   - Right input activates left engine
-- [ ] When `invertControls = false`:
+- [x] When `invertControls = false`:
   - Left input activates left engine (normal)
   - Right input activates right engine (normal)
-- [ ] Control inversion applies to both keyboard and touch inputs
-- [ ] Settings apply immediately (no restart required)
+- [x] Control inversion applies to both keyboard and touch inputs
+- [x] Settings apply immediately (no restart required)
 
 ---
 
@@ -364,16 +364,16 @@ applyControls(ship, inputState, settings.invertControls);
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] `/settings` route is accessible and functional
-- [ ] Settings component renders correctly
-- [ ] Control inversion toggle works (visual state updates)
-- [ ] localStorage saves/loads correctly
-- [ ] Invalid localStorage data handled gracefully (fallback to defaults)
-- [ ] Settings apply immediately in-game (no restart needed)
-- [ ] Keyboard navigation works (Tab, Space, Enter)
-- [ ] Mobile responsive (tested on 320px width)
-- [ ] Zero TypeScript errors (`pnpm -r check`)
+- [x] All acceptance criteria met
+- [x] `/settings` route is accessible and functional
+- [x] Settings component renders correctly
+- [x] Control inversion toggle works (visual state updates)
+- [x] localStorage saves/loads correctly
+- [x] Invalid localStorage data handled gracefully (fallback to defaults)
+- [x] Settings apply immediately in-game (no restart needed)
+- [x] Keyboard navigation works (Tab, Space, Enter)
+- [x] Mobile responsive (tested on 320px width)
+- [x] Zero TypeScript errors (`pnpm -r check`)
 - [ ] Cross-browser tested (Chrome, Firefox, Safari)
 - [ ] Code reviewed and approved
 

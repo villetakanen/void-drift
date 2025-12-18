@@ -14,3 +14,4 @@ export * from "./lib/engine/game-loop";
 
 // Schemas
 export * from "./lib/schemas/game-state";
+export * from "./lib/schemas/settings";

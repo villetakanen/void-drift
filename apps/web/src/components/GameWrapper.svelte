@@ -21,6 +21,7 @@
   } from "@void-drift/engine";
   import HUD from "./HUD.svelte";
   import GameOver from "./GameOver.svelte";
+  import { settings } from "../lib/stores/settings";
 
   let canvas: HTMLCanvasElement;
   let container: HTMLDivElement;
@@ -54,19 +55,25 @@
   function update(dt: number) {
     if (!renderer || !input || !camera) return;
 
-    // Sync Input State to UI (for feedback)
-    leftActive = input.state.leftThruster;
-    rightActive = input.state.rightThruster;
+    // Get effective input (with potential inversion from settings)
+    const effectiveInput = input.getEffectiveState($settings.invertControls);
+
+    // Sync Input State to UI (for feedback) - show effective (inverted) state
+    leftActive = effectiveInput.leftThruster;
+    rightActive = effectiveInput.rightThruster;
 
     // Timer & Game Status
-    updateTimer(state, input.state.leftThruster || input.state.rightThruster);
+    updateTimer(
+      state,
+      effectiveInput.leftThruster || effectiveInput.rightThruster,
+    );
 
     if (state.status === "GAME_OVER") return; // Freeze physics
 
     // Physics (using logical viewport dimensions)
     updateShip(
       ship,
-      input.state,
+      effectiveInput,
       dt,
       LOGICAL_WIDTH,
       LOGICAL_HEIGHT,
