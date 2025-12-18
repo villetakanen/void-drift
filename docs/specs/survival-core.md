@@ -32,7 +32,7 @@ Phase 5 transforms the physics sandbox into a complete single-player survival ga
 **Data Model:**
 
 ```typescript
-// packages/engine/src/lib/schemas/game-state.ts
+// packages/mode-a/src/lib/schemas/game-state.ts
 import { z } from 'zod';
 
 export const ResourcesSchema = z.object({
@@ -72,32 +72,61 @@ MENU ──[first input]──> PLAYING ──[death]──> GAME_OVER ──[re
 
 **Regeneration (Sun Proximity):**
 
+**Config Location:** `packages/mode-a/src/lib/config.ts`
+
 ```typescript
-// Pseudo-code for sun refuel zones
+// Zone radii and rates are config params, not hardcoded
+const { POWER_ZONE_1_RADIUS, POWER_ZONE_2_RADIUS, POWER_ZONE_3_RADIUS,
+        POWER_REGEN_ZONE_1, POWER_REGEN_ZONE_2, POWER_REGEN_ZONE_3,
+        HULL_BURN_ZONE_1, HULL_BURN_ZONE_2, HULL_BURN_ZONE_3 } = SURVIVAL_CONFIG;
+
 const distanceToSun = Math.hypot(ship.x - sun.x, ship.y - sun.y);
 
-if (distanceToSun < 100) {
+// Base rates from config (modified by sun type multipliers)
+let basePowerRegen = 0;
+let baseHullBurn = 0;
+
+if (distanceToSun < POWER_ZONE_1_RADIUS) {
   // ZONE 1: High Risk / High Reward
-  powerRegenRate = 4.0; // % per second
-  hullDamageRate = 1.5; // % per second
-} else if (distanceToSun < 170) {
+  basePowerRegen = POWER_REGEN_ZONE_1;
+  baseHullBurn = HULL_BURN_ZONE_1;
+} else if (distanceToSun < POWER_ZONE_2_RADIUS) {
   // ZONE 2: Medium Risk / Medium Reward
-  fuelRegenRate = 2.0;
-  hullDamageRate = 0.5;
-} else if (distanceToSun < 240) {
+  basePowerRegen = POWER_REGEN_ZONE_2;
+  baseHullBurn = HULL_BURN_ZONE_2;
+} else if (distanceToSun < POWER_ZONE_3_RADIUS) {
   // ZONE 3: Low Risk / Low Reward
-  fuelRegenRate = 0.5;
-  hullDamageRate = 0.1;
+  basePowerRegen = POWER_REGEN_ZONE_3;
+  baseHullBurn = HULL_BURN_ZONE_3;
 } else {
   // ZONE 4: No refuel, no burn (gravity only)
-  fuelRegenRate = 0;
-  hullDamageRate = 0;
+  basePowerRegen = 0;
+  baseHullBurn = 0;
 }
+
+// Apply sun type multipliers (see star_mechanics.md for SUN_CONFIG)
+const powerRegenRate = basePowerRegen * sun.powerMultiplier;
+const hullDamageRate = baseHullBurn * sun.burnMultiplier;
 ```
 
+**Sun Type Effects:**
+
+| Sun Type | Power Multiplier | Burn Multiplier | Strategy |
+|----------|------------------|-----------------|----------|
+| Red Giant | < 1.0x | < 1.0x | Safe but slow refuel |
+| Yellow Dwarf | 1.0x | 1.0x | Balanced risk/reward |
+| Blue Dwarf | > 1.0x | > 1.0x | Fast refuel but dangerous |
+
 **Implementation Location:**
-- `packages/engine/src/lib/engine/physics.ts` — Add `updatePower()` method
+- `packages/mode-a/src/lib/physics.ts` — `updatePower()` method
+- `packages/core/src/lib/physics/Physics.ts` — Shared physics (gravity, collision)
 - Call in main game loop after `applyGravity()`, before `applyVelocity()`
+
+**Imports:**
+```typescript
+import { updatePower, SURVIVAL_CONFIG } from '@void-drift/mode-a';
+import { Ship } from '@void-drift/core';
+```
 
 ---
 
@@ -124,8 +153,8 @@ if (distanceToSun < 100) {
 - Hull damage is permanent (encourages conservative play)
 
 **Implementation Location:**
-- `packages/engine/src/lib/engine/physics.ts` — Add `updateHull()` method
-- Planet collision: Hook into existing `handlePlanetCollision()`
+- `packages/mode-a/src/lib/physics.ts` — `updateHull()` method
+- `packages/core/src/lib/physics/Physics.ts` — Planet collision detection
 - Sun damage: Call in `updateHull()` alongside power regen logic
 
 ---
@@ -135,7 +164,10 @@ if (distanceToSun < 100) {
 **Three Fail States:**
 
 ```typescript
-// packages/engine/src/lib/engine/game-loop.ts
+// packages/mode-a/src/lib/death.ts
+import type { Ship, Star } from '@void-drift/core';
+import type { GameState, DeathCause } from './schemas/game-state';
+
 function checkDeath(state: GameState, ship: Ship, sun: Star): DeathCause | null {
   // Priority order matters (star > hull > fuel)
   
@@ -197,7 +229,7 @@ function updateTimer(state: GameState) {
 - Game Over: `123.45s` (2 decimal places, final time)
 
 **Implementation Location:**
-- `packages/engine/src/lib/engine/game-loop.ts` — Add `updateTimer()` call
+- `packages/mode-a/src/lib/game-loop.ts` — `updateTimer()` function
 - `apps/web/src/components/HUD.svelte` — Display timer using `$derived`
 
 ---
@@ -344,7 +376,7 @@ import Settings from '../components/Settings.svelte';
 **Control Inversion Logic:**
 
 ```typescript
-// packages/engine/src/lib/engine/input.ts
+// packages/core/src/lib/entities/Input.ts
 export function applyControls(
   ship: Ship, 
   input: InputState, 
@@ -787,42 +819,46 @@ export function applyControls(
 
 ---
 
-### Tuning Constants
+### Config Structure
+
+**Config Location:** `packages/mode-a/src/lib/config.ts`
 
 ```typescript
-// packages/engine/src/lib/config.ts
-
 export const SURVIVAL_CONFIG = {
   // Starting values
-  INITIAL_HULL: 100,
-  INITIAL_POWER: 100,
+  INITIAL_HULL: number,        // Starting hull percentage
+  INITIAL_POWER: number,       // Starting power percentage
   
-  // Fuel system
-  FUEL_CONSUMPTION_RATE: 1.5, // % per second of thrust
+  // Power consumption
+  POWER_CONSUMPTION_RATE: number,         // Base drain % per second
+  POWER_CONSUMPTION_SINGLE_THRUST: number, // Drain when one engine active
+  POWER_CONSUMPTION_DUAL_THRUST: number,   // Drain when both engines active
   
-  // Sun zones (distance from center in pixels)
-  SUN_ZONE_1_RADIUS: 150,
-  SUN_ZONE_2_RADIUS: 250,
-  SUN_ZONE_3_RADIUS: 350,
+  // Sun zones (distance from sun center in pixels)
+  POWER_ZONE_1_RADIUS: number,  // High risk/reward zone
+  POWER_ZONE_2_RADIUS: number,  // Medium risk/reward zone
+  POWER_ZONE_3_RADIUS: number,  // Low risk/reward zone
   
-  // Fuel regen rates (% per second)
-  FUEL_REGEN_ZONE_1: 4.0,
-  FUEL_REGEN_ZONE_2: 2.0,
-  FUEL_REGEN_ZONE_3: 0.5,
+  // Power regen rates (% per second, before sun type multiplier)
+  POWER_REGEN_ZONE_1: number,
+  POWER_REGEN_ZONE_2: number,
+  POWER_REGEN_ZONE_3: number,
   
-  // Hull damage rates (% per second)
-  HULL_BURN_ZONE_1: 1.5,
-  HULL_BURN_ZONE_2: 0.5,
-  HULL_BURN_ZONE_3: 0.1,
+  // Hull damage rates (% per second, before sun type multiplier)
+  HULL_BURN_ZONE_1: number,
+  HULL_BURN_ZONE_2: number,
+  HULL_BURN_ZONE_3: number,
   
   // Collision damage
-  PLANET_COLLISION_DAMAGE: 7, // % hull per hit
+  PLANET_COLLISION_DAMAGE: number,  // % hull per collision
   
   // Visual thresholds
-  WARNING_THRESHOLD: 25, // % (yellow warning)
-  DANGER_THRESHOLD: 10,  // % (red warning + screen effects)
+  WARNING_THRESHOLD: number,   // % for yellow warning state
+  DANGER_THRESHOLD: number,    // % for red danger state
 } as const;
 ```
+
+**Note:** Actual values are tunable and defined in the config file, not in specs. Values are balanced through playtesting.
 
 ---
 
@@ -830,16 +866,25 @@ export const SURVIVAL_CONFIG = {
 
 ```
 void-drift/
-├── packages/engine/src/
+├── packages/core/src/
+│   ├── lib/
+│   │   ├── physics/
+│   │   │   └── Physics.ts            # Shared physics (gravity, collision)
+│   │   ├── entities/
+│   │   │   ├── Input.ts              # Input handling with invertControls
+│   │   │   └── Ship.ts               # Ship entity
+│   │   ├── assets/                   # Procedural drawing functions
+│   │   └── config.ts                 # PHYSICS constants
+│   └── index.ts                      # Public exports
+│
+├── packages/mode-a/src/
 │   ├── lib/
 │   │   ├── schemas/
-│   │   │   └── game-state.ts         # NEW: GameState, Resources schemas
-│   │   ├── engine/
-│   │   │   ├── game-loop.ts          # EDIT: Add state machine, checkDeath()
-│   │   │   ├── physics.ts            # EDIT: Add updateFuel(), updateHull()
-│   │   │   └── input.ts              # EDIT: Add invertControls param
-│   │   └── config.ts                 # EDIT: Add SURVIVAL_CONFIG
-│   └── index.ts                      # EDIT: Export GameState types
+│   │   │   └── game-state.ts         # GameState, Resources, DeathCause
+│   │   ├── game-loop.ts              # Survival game loop, updateTimer()
+│   │   ├── death.ts                  # checkDeath(), handleDeath()
+│   │   └── config.ts                 # SURVIVAL_CONFIG
+│   └── index.ts                      # Public exports
 │
 ├── apps/web/src/
 │   ├── pages/

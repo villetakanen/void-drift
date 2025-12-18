@@ -152,6 +152,112 @@ This specification defines the "Experience Model" for Void Drift. It establishes
 - **Preconnect:** Reduces DNS lookup time for Google Fonts
 - **Subset:** Full Unicode math symbols loaded for logo rendering
 
+## Button System
+
+### Button Tokens
+
+**Token Location:** `apps/web/src/styles.css` (in `:root`)
+
+```css
+:root {
+  /* Button sizing - values tunable */
+  --button-padding-x: <spacing-token>;
+  --button-padding-y: <spacing-token>;
+  --button-min-height: <size>;          /* Minimum 44px for touch targets */
+  --button-border-width: <size>;
+  --button-border-radius: <size>;
+  
+  /* Button transitions - values tunable */
+  --button-transition: <transition>;
+}
+```
+
+**Note:** Actual values defined in styles.css, not in specs. Design tokens reference existing spacing tokens where possible.
+
+### Button Classes
+
+#### Base Button (`.btn`)
+All buttons share common styles:
+```css
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--button-padding-y) var(--button-padding-x);
+  min-height: var(--button-min-height);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-base);
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--button-transition);
+  border-radius: var(--button-border-radius);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--color-neon-blue);
+  outline-offset: 2px;
+}
+```
+
+#### Ghost Button (`.btn-ghost`)
+Transparent background with neon border - primary interactive style:
+```css
+.btn-ghost {
+  background: transparent;
+  color: var(--color-neon-blue);
+  border: var(--button-border-width) solid var(--color-neon-blue);
+}
+
+.btn-ghost:hover {
+  background: rgba(0, 240, 255, 0.1);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+}
+```
+
+#### Filled Button (`.btn-filled`)
+Solid background for primary actions:
+```css
+.btn-filled {
+  background: var(--color-neon-blue);
+  color: var(--color-void);
+  border: var(--button-border-width) solid var(--color-neon-blue);
+}
+
+.btn-filled:hover {
+  background: transparent;
+  color: var(--color-neon-blue);
+}
+```
+
+#### Link Button (`.btn-link`)
+Text-only style for navigation:
+```css
+.btn-link {
+  background: transparent;
+  color: var(--color-text);
+  border: none;
+  padding: var(--spacing-sm);
+  min-height: auto;
+}
+
+.btn-link:hover {
+  color: var(--color-neon-blue);
+}
+```
+
+### Usage Guidelines
+- **Ghost buttons:** Default for most UI actions (Start Game, Settings)
+- **Filled buttons:** Primary calls-to-action (Try Again after death)
+- **Link buttons:** Navigation and secondary actions (Back to Game)
+- **Minimum touch target:** 44x44px for accessibility
+
+### Migration Status
+- [ ] Add button tokens to `apps/web/src/styles.css`
+- [ ] Add global `.btn` classes to `apps/web/src/styles.css`
+- [ ] Refactor `MenuOverlay.svelte` to use `.btn .btn-ghost`
+- [ ] Refactor `GameOver.svelte` to use `.btn .btn-filled`
+- [ ] Refactor `Settings.svelte` to use `.btn .btn-link`
+
 ## Future Enhancements
 - [ ] Add animation tokens (duration, easing curves)
 - [ ] Add shadow/glow effect tokens for consistent visual effects

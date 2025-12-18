@@ -48,7 +48,7 @@ We use [nanostores](https://github.com/nanostores/nanostores) with the `@nanosto
 ### Settings Schema
 
 ```typescript
-// packages/engine/src/lib/schemas/settings.ts
+// packages/mode-a/src/lib/schemas/settings.ts
 import { z } from 'zod';
 
 export const SettingsSchema = z.object({
@@ -85,7 +85,7 @@ void-drift:settings
 ```typescript
 // apps/web/src/lib/stores/settings.ts
 import { persistentAtom } from '@nanostores/persistent';
-import { SettingsSchema, DEFAULT_SETTINGS, type Settings } from '@void-drift/engine';
+import { SettingsSchema, DEFAULT_SETTINGS, type Settings } from '@void-drift/mode-a';
 
 export const settings = persistentAtom<Settings>(
   'void-drift:settings',
@@ -206,9 +206,9 @@ pnpm add nanostores @nanostores/persistent @nanostores/svelte
 ## File Structure
 
 ```
-packages/engine/src/lib/
+packages/mode-a/src/lib/
 └── schemas/
-    └── settings.ts          # Zod schema + defaults (shared)
+    └── settings.ts          # Zod schema + defaults (mode-a specific)
 
 apps/web/src/
 ├── lib/

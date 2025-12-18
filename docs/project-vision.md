@@ -143,15 +143,27 @@
 ```
 void-drift/
 ├── packages/
-│   └── engine/              # @void-drift/engine
-│       ├── src/
-│       │   ├── lib/
-│       │   │   ├── engine/  # GameLoop, Physics, Camera
-│       │   │   ├── assets/  # Procedural draw functions
-│       │   │   ├── schemas/ # Zod validation (Mode B)
-│       │   │   └── audio/   # Web Audio API wrappers
-│       │   └── index.ts     # Public exports
-│       └── package.json
+│   ├── core/                # @void-drift/core (shared)
+│   │   └── src/lib/
+│   │       ├── physics/     # Newtonian motion, gravity, collision
+│   │       ├── entities/    # Ship, Star, Planet (data + behavior)
+│   │       ├── assets/      # Procedural draw functions
+│   │       ├── schemas/     # Core schemas (Position, Velocity, etc.)
+│   │       └── config.ts    # PHYSICS constants
+│   │
+│   ├── mode-a/              # @void-drift/mode-a (survival)
+│   │   └── src/lib/
+│   │       ├── schemas/     # GameState, Resources, DeathCause
+│   │       ├── game-loop.ts # Survival-specific loop
+│   │       ├── death.ts     # Death detection
+│   │       └── config.ts    # SURVIVAL_CONFIG
+│   │
+│   └── mode-b/              # @void-drift/mode-b (multiplayer, future)
+│       └── src/lib/
+│           ├── schemas/     # Lobby, Player, Weapon
+│           ├── sync.ts      # Firestore state sync
+│           └── config.ts    # COMBAT_CONFIG
+│
 ├── apps/
 │   └── web/                 # The Astro + Svelte site
 │       ├── src/
@@ -163,6 +175,11 @@ void-drift/
 │       └── package.json
 └── pnpm-workspace.yaml
 ```
+
+**Package Ownership:**
+- `core` — Shared physics, entities, assets used by all modes
+- `mode-a` — Survival-specific logic (VOID DRIFT)
+- `mode-b` — Multiplayer-specific logic (VOID BRAWL, future)
 
 ### 5.2 Frontend Stack
 

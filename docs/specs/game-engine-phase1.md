@@ -15,13 +15,13 @@ Implement the core game loop and physics engine to prove the "high inertia / dri
 - **Physics:** deterministic simple Newtonian physics (Velocity += Acceleration).
 - **Architecture:** Decouple `Update` (Physics) from `Draw` (Render).
 
-## 3. Data Structures (`packages/engine/src/lib/schemas/game.ts` & `packages/engine/src/lib/engine/Physics.ts`)
+## 3. Data Structures (`packages/core/src/lib/schemas/` & `packages/core/src/lib/physics/Physics.ts`)
 
 ### 3.1. Primitives
 *Note: Although we use Zod for network boundaries, inside the hot loop we use raw classes/structs for speed.*
 
 ```typescript
-// packages/engine/src/lib/engine/Physics.ts
+// packages/core/src/lib/physics/Physics.ts
 export class Vec2 {
   constructor(public x: number, public y: number) {}
   // Methods: add, sub, mult, mag, normalize (mutate self where possible)
@@ -40,13 +40,13 @@ export interface GameObject {
 
 ## 4. Implementation Steps
 
-### 4.1. The Loop (`packages/engine/src/lib/engine/Loop.ts`) ✅
+### 4.1. The Loop (`packages/core/src/lib/entities/Loop.ts`) ✅
 Create a class `GameLoop` that handles:
 - `requestAnimationFrame`
 - Delta time calculation (`dt`).
 - Fixed timestep for Physics (e.g., 60Hz) vs Unlocked Frame Rate for Render.
 
-### 4.2. Input Handling (`packages/engine/src/lib/engine/Input.ts`) ✅
+### 4.2. Input Handling (`packages/core/src/lib/entities/Input.ts`) ✅
 - Listen for `keydown` / `keyup` (Codes: `KeyA`, `KeyD`, `Space`).
 - Normalize inputs into a simple state object:
   ```typescript
@@ -57,7 +57,7 @@ Create a class `GameLoop` that handles:
   }
   ```
 
-### 4.3. Physics Logic (`packages/engine/src/lib/engine/Physics.ts`) ✅
+### 4.3. Physics Logic (`packages/core/src/lib/physics/Physics.ts`) ✅
 Implement `updateShip(ship: GameObject, input: InputState, dt: number)`:
 1. **Rotation:**
    - If `leftThruster`: `rotation += ROT_SPEED * dt`
@@ -75,7 +75,7 @@ Implement `updateShip(ship: GameObject, input: InputState, dt: number)`:
    - If `pos.x < 0` -> `pos.x = width`
    - Same for Y.
 
-### 4.4. Rendering (`packages/engine/src/lib/engine/Renderer.ts`) ✅
+### 4.4. Rendering (`packages/core/src/lib/entities/Renderer.ts`) ✅
 - Clear Canvas.
 - Save Context.
 - Translate to `ship.pos`.
@@ -90,7 +90,7 @@ Implement `updateShip(ship: GameObject, input: InputState, dt: number)`:
 - Handle window resize (maintain aspect ratio, letterbox as needed).
 - **Current Implementation:** Uses Astro + Svelte 5 (Runes) architecture.
 
-## 5. Tuning Constants (`packages/engine/src/lib/config.ts`) ✅
+## 5. Tuning Constants (`packages/core/src/lib/config.ts`) ✅
 Start with these values and tweak for "Vibe":
 - `SHIP_DRAG`: 0.98 (Air resistance factor per frame, or 0.5 per second).
 - `ROTATION_SPEED`: 3.0 (Radians per second).
@@ -118,12 +118,12 @@ Start with these values and tweak for "Vibe":
 ### Performance Achievements
 - **60 FPS:** Maintained on desktop and modern mobile devices.
 - **Zero GC:** No object allocation in render loop.
-- **Bundle Size:** Engine package remains lightweight (~50KB uncompressed).
+- **Bundle Size:** Core package remains lightweight (~50KB uncompressed).
 
 ### Architecture Evolution
-- Engine consumed as TypeScript source (no intermediate build step).
-- Vite alias resolves `@void-drift/engine` to `packages/engine/src/index.ts`.
-- Clean separation between game logic (engine) and presentation (web app).
+- Packages consumed as TypeScript source (no intermediate build step).
+- Vite alias resolves `@void-drift/core` and `@void-drift/mode-a` to package sources.
+- Clean separation between shared logic (core), mode-specific logic (mode-a), and presentation (web app).
 
 ---
 

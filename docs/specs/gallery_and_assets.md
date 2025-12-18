@@ -21,8 +21,8 @@ To decouple asset development from gameplay logic, we have implemented a "Lab" r
   - `LabLayout.astro`: Common shell for lab pages (navigation).
   - Specific rendering components (e.g., `LabShip.svelte`, `LabStar.svelte`).
 - **Asset API:** Pure functions accepting `ctx` and `props`.
-  - `drawShip(ctx, props)` → `packages/engine/src/lib/renderers/ship.ts`
-  - `drawStar(ctx, props)` → `packages/engine/src/lib/assets/star.ts`
+  - `drawShip(ctx, props)` → `packages/core/src/lib/assets/ship.ts`
+  - `drawStar(ctx, props)` → `packages/core/src/lib/assets/star.ts`
 
 ### Anti-Patterns
 - **Do NOT** load the full `GameLoop` in the Lab. Only the `Renderer` or specific draw functions should run.
@@ -78,10 +78,75 @@ apps/web/src/
         └── LabShip.svelte
 ```
 
+## Lab Stats View
+
+### Purpose
+Display game-relevant statistics for each entity in the Lab, allowing designers and developers to understand the gameplay implications of visual parameters.
+
+### Stats Panel Component
+```typescript
+interface LabStatsProps {
+  entity: 'ship' | 'star' | 'planet';
+  config: EntityConfig;
+}
+```
+
+### Ship Stats View (`/lab/ship`)
+| Stat | Value | Source |
+|------|-------|--------|
+| Mass | `ship.mass` | Physics weight |
+| Thrust | `ship.thrust` | Acceleration force |
+| Max Speed | `ship.maxSpeed` | Velocity cap |
+| Turn Rate | `ship.turnRate` | Rotation speed |
+| Hitbox Radius | `ship.radius` | Collision detection |
+
+### Star Stats View (`/lab/star`)
+| Stat | Value | Source |
+|------|-------|--------|
+| Type | `star.type` | RED_GIANT / YELLOW_DWARF / BLUE_DWARF |
+| Radius | `star.radius` | Visual/collision size |
+| Mass | `star.mass` | Gravity strength |
+| Influence Radius | `star.influenceRadius` | Gravity range |
+| Power Multiplier | `star.powerMultiplier` | Fuel regen rate |
+| Burn Multiplier | `star.burnMultiplier` | Hull damage rate |
+| Color | `star.color` | Core color swatch |
+
+### Planet Stats View (`/lab/planet`)
+| Stat | Value | Source |
+|------|-------|--------|
+| Radius | `planet.radius` | Visual/collision size |
+| Orbit Radius | `planet.orbitRadius` | Distance from sun |
+| Orbit Speed | `planet.orbitSpeed` | Angular velocity |
+| Color | `planet.color` | Surface color swatch |
+
+### UI Layout
+```
+┌─────────────────────────────────────┐
+│  [Canvas Preview]                   │
+│                                     │
+│     ☀️ Sun Visualization            │
+│                                     │
+├─────────────────────────────────────┤
+│  Stats                              │
+│  ─────                              │
+│  Type:        YELLOW_DWARF          │
+│  Radius:      40px                  │
+│  Mass:        600                   │
+│  Influence:   350px                 │
+│  Power:       1.0x                  │
+│  Burn:        1.0x                  │
+└─────────────────────────────────────┘
+```
+
+### Implementation Location
+- Component: `apps/web/src/components/lab/LabStats.svelte`
+- Integration: Each lab page imports and configures LabStats
+
 ### Future Enhancements
 - [ ] Add real-time parameter sliders (color, size, animation speed)
 - [ ] Add "Export" functionality to save asset configurations
 - [ ] Add screenshot/recording capability for asset documentation
+- [ ] Add comparison view (side-by-side entity configs)
 
 ---
 

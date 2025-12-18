@@ -19,7 +19,7 @@ To support both competitive Desktop play and accessible Mobile play, inputs must
     fire: boolean;
   }
   ```
-- **Store:** `packages/engine/src/lib/engine/Input.ts` (Svelte 5 Store with Runes).
+- **Store:** `packages/core/src/lib/entities/Input.ts` (Input manager class).
 - **Mapping:**
   - Desktop: WASD / Arrows.
   - Mobile: Split-screen Touch Zones.
@@ -32,7 +32,7 @@ To support both competitive Desktop play and accessible Mobile play, inputs must
 ## Contract
 
 ### Definition of Done
-- [x] `InputState` interface is defined in `packages/engine`.
+- [x] `InputState` interface is defined in `packages/core`.
 - [x] Desktop keys (A/D or Arrow keys) correctly toggle `leftThruster`/`rightThruster`.
 - [x] Desktop keys (A+D or both arrows) trigger forward thrust.
 - [x] Mobile touch zones (Left/Right half) correctly toggle `leftThruster`/`rightThruster`.
@@ -67,8 +67,8 @@ To support both competitive Desktop play and accessible Mobile play, inputs must
 
 ## Current Implementation
 
-### Input Manager (`packages/engine/src/lib/engine/Input.ts`)
-- **Architecture:** Svelte 5 store using `$state` rune for reactive input state
+### Input Manager (`packages/core/src/lib/entities/Input.ts`)
+- **Architecture:** Framework-agnostic input manager class
 - **Event Listeners:** Registered on window for keyboard, on canvas for touch
 - **State Management:** Boolean flags for `leftThruster`, `rightThruster`, `fire`
 
