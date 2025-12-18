@@ -58,6 +58,33 @@
     state.startTime = Date.now();
   }
 
+  $effect(() => {
+    if (input) {
+      input.paused = state.status !== "PLAYING";
+    }
+  });
+
+  function restartGame() {
+    // Reset game state
+    state.status = "MENU";
+    state.startTime = null;
+    state.elapsedTime = 0;
+    state.resources.hull = 100;
+    state.resources.power = 100;
+    state.deathCause = null;
+
+    // Reset ship
+    ship.pos.set(LOGICAL_WIDTH / 2 - 500, LOGICAL_HEIGHT / 2);
+    ship.vel.set(0, 0);
+    ship.acc.set(0, 0);
+    ship.rotation = -Math.PI / 2;
+
+    // Reset Planets
+    if (planets.length > 0) {
+      planets[0].orbitAngle = 0;
+    }
+  }
+
   function update(dt: number) {
     if (!renderer || !input || !camera) return;
 
@@ -179,6 +206,7 @@
 
     // Initialize Input
     input = new Input();
+    input.paused = state.status !== "PLAYING";
 
     const onResize = () => {
       if (!container) return;
@@ -209,19 +237,6 @@
       // Check for portrait orientation warning
       showRotateOverlay = window.innerHeight > window.innerWidth;
     };
-
-    function restartGame() {
-      state = createInitialGameState();
-      ship.pos.set(LOGICAL_WIDTH / 2 - 500, LOGICAL_HEIGHT / 2);
-      ship.vel.set(0, 0);
-      ship.acc.set(0, 0);
-      ship.rotation = -Math.PI / 2;
-
-      // Reset Planets
-      if (planets.length > 0) {
-        planets[0].orbitAngle = 0;
-      }
-    }
 
     window.addEventListener("resize", onResize);
     onResize();

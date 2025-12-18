@@ -21,6 +21,7 @@ This specification defines the "Experience Model" for Void Drift. It establishes
 - **Do NOT** use hardcoded hex values in components (e.g., `#00f0ff`); always use `var(--color-neon-blue)`.
 - **Do NOT** use Tailwind or other utility classes; use semantic CSS.
 - **Do NOT** use image assets for the logo; use HTML entities for sharp scaling.
+- **Do NOT** use `var(--color-primary)` - this token does not exist. Use `var(--color-neon-blue)` for primary accent color.
 
 ## Contract
 

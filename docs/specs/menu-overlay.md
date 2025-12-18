@@ -1,6 +1,6 @@
 # Menu Overlay Specification
 
-**Status:** DRAFT  
+**Status:** IMPLEMENTED  
 **Phase:** 5 (Survival Core)  
 **Related PBI:** PBI-018 (Settings), PBI-017 (Game State)
 
@@ -64,6 +64,10 @@ Add to `styles.css`:
 ```
 
 This token should also be used by `GameOver.svelte` (currently uses hardcoded `rgba(10, 10, 15, 0.95)`).
+
+### Important: pointer-events
+
+Since overlays render inside `.hud-overlay` which has `pointer-events: none`, all modal overlays (MenuOverlay, GameOver) must set `pointer-events: auto` on their root element to be interactive.
 
 ### Typography
 

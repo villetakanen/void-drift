@@ -66,6 +66,7 @@
     justify-content: center;
     z-index: 1000;
     animation: fadeIn 0.3s ease;
+    pointer-events: auto;
   }
 
   @keyframes fadeIn {
@@ -101,7 +102,7 @@
   }
 
   strong {
-    color: var(--color-primary);
+    color: var(--color-neon-blue);
     font-variant-numeric: tabular-nums;
   }
 
@@ -144,7 +145,7 @@
   }
 
   .primary {
-    background: var(--color-primary);
+    background: var(--color-neon-blue);
     color: var(--color-void);
     border: none;
     font-weight: 600;
@@ -156,12 +157,12 @@
 
   .secondary {
     background: transparent;
-    color: var(--color-primary);
-    border: 2px solid var(--color-primary);
+    color: var(--color-neon-blue);
+    border: 2px solid var(--color-neon-blue);
   }
 
   .secondary:hover {
-    background: rgba(0, 200, 255, 0.1);
+    background: rgba(212, 255, 0, 0.1);
   }
 
   /* Mobile */

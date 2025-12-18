@@ -11,6 +11,8 @@ export class Input {
     fire: false,
   };
 
+  public paused = false;
+
   /**
    * Returns the effective input state with optional control inversion.
    * When inverted, left/right thruster inputs are swapped.
@@ -49,6 +51,7 @@ export class Input {
   }
 
   private handleKey(e: KeyboardEvent) {
+    if (this.paused) return;
     const isDown = e.type === "keydown";
     switch (e.code) {
       case "KeyA":
@@ -67,6 +70,7 @@ export class Input {
   }
 
   private handleTouch(e: TouchEvent) {
+    if (this.paused) return;
     // Prevent default browser zooming/scrolling
     if (e.cancelable) e.preventDefault();
 

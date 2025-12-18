@@ -71,6 +71,7 @@
         justify-content: center;
         z-index: 100;
         cursor: pointer;
+        pointer-events: auto;
     }
 
     .menu-content {
