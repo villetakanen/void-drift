@@ -13,6 +13,7 @@
 Phase 6 prepares the codebase for future Mode B (multiplayer) while completing Mode A with a global leaderboard. The phase is split into two tracks:
 
 **Track A: Foundation (v0.1.x)**
+- **PBI-031: Vitest Setup & Unit Testing** (Mandatory prerequisite)
 - Package restructure (core + mode-a separation)
 - QoL improvements and polish
 
@@ -344,7 +345,8 @@ const { data: scores } = await supabase
 
 ## Implementation Strategy
 
-### v0.1.1: Package Restructure
+### v0.1.1: Testing & Package Restructure
+- **PBI-031:** Vitest Setup & Unit Testing (Mandatory)
 - **PBI-021:** Split engine → core + mode-a
 - Pure refactor, no functional changes
 - **Critical for v0.2.0:** Enables Mode A to have Supabase dependencies
@@ -446,6 +448,7 @@ create table matches (
 ### PBIs (Execution Order)
 
 **Track A (Foundation):**
+0. [PBI-031: Vitest Setup & Unit Testing](./backlog/PBI-031-Vitest-Setup.md) — v0.1.1 (PREREQUISITE)
 1. [PBI-021: Package Restructure](./backlog/PBI-021-Package-Restructure.md) — v0.1.1
 2. [PBI-022: Button Design System](./backlog/PBI-022-Button-Design-System.md) — v0.1.2
 3. [PBI-023: Sun Scale System](./backlog/PBI-023-Sun-Scale-System.md) — v0.1.3

@@ -5,9 +5,12 @@
   "scripts": {
     "dev": "pnpm --filter web dev",
     "build": "pnpm --filter web build",
-    "check": "pnpm -r check"
+    "check": "pnpm -r check",
+    "test": "vitest run"
   },
   "devDependencies": {
-    "typescript": "^5.0.0"
+    "@vitest/ui": "^4.0.16",
+    "typescript": "^5.0.0",
+    "vitest": "^4.0.16"
   }
 }
