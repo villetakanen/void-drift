@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { GameState } from "@void-drift/engine";
+    import type { GameState } from "@void-drift/mode-a";
 
     let { state }: { state: GameState } = $props();
 

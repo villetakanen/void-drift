@@ -1,5 +1,5 @@
 // death-icons.ts
-import type { DeathCause } from '../schemas/game-state';
+import type { DeathCause } from '../schemas/common';
 
 /**
  * Draw death cause icon (for leaderboard/Game Over screen)

@@ -1,6 +1,6 @@
-import type { GameObject, Star } from "./Physics";
-import type { Camera } from "./Camera";
-import { drawShip } from "../renderers/ship";
+import type { GameObject, Star } from "../physics/Physics";
+import type { Camera } from "../physics/Camera";
+import { drawShip } from "../assets/ship";
 import { drawStar } from "../assets/star";
 import { SURVIVAL_CONFIG } from "../config";
 

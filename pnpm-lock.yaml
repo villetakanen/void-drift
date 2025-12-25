@@ -26,9 +26,12 @@ importers:
       '@nanostores/persistent':
         specifier: ^1.2.0
         version: 1.2.0(nanostores@1.1.0)
-      '@void-drift/engine':
-        specifier: workspace:^
-        version: link:../../packages/engine
+      '@void-drift/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@void-drift/mode-a':
+        specifier: workspace:*
+        version: link:../../packages/mode-a
       astro:
         specifier: ^5.16.5
         version: 5.16.5(@types/node@24.10.3)(rollup@4.53.3)(typescript@5.9.3)(yaml@2.8.2)
@@ -45,6 +48,12 @@ importers:
       '@astrojs/check':
         specifier: ^0.9.6
         version: 0.9.6(prettier@3.7.4)(typescript@5.9.3)
+
+  packages/core:
+    dependencies:
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
 
   packages/engine:
     dependencies:
@@ -79,6 +88,15 @@ importers:
       vite:
         specifier: ^7.2.4
         version: 7.2.7(@types/node@24.10.3)(yaml@2.8.2)
+
+  packages/mode-a:
+    dependencies:
+      '@void-drift/core':
+        specifier: workspace:*
+        version: link:../core
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
 
 packages:
 

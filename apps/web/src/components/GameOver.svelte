@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { GameState } from "@void-drift/engine";
-  import { drawDeathIcon } from "@void-drift/engine";
+  import type { GameState } from "@void-drift/mode-a";
+  import { drawDeathIcon } from "@void-drift/core";
 
   let {
     state,

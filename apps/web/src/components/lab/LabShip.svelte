@@ -1,7 +1,7 @@
 <script lang="ts">
     import Canvas from "../Canvas.svelte";
     import Controls from "../Controls.svelte";
-    import { drawShip } from "@void-drift/engine";
+    import { drawShip } from "@void-drift/core";
 
     let shipRotation = $state(0);
 

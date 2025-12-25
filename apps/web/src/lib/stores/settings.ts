@@ -1,5 +1,5 @@
 import { persistentAtom } from '@nanostores/persistent';
-import { SettingsSchema, DEFAULT_SETTINGS, type Settings } from '@void-drift/engine';
+import { type Settings, SettingsSchema, DEFAULT_SETTINGS } from '@void-drift/mode-a';
 
 export const settings = persistentAtom<Settings>(
     'void-drift:settings',

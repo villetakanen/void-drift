@@ -1,0 +1,17 @@
+{
+    "name": "@void-drift/mode-a",
+    "version": "0.1.1",
+    "type": "module",
+    "main": "./src/index.ts",
+    "types": "./src/index.ts",
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "scripts": {
+        "test": "vitest run"
+    },
+    "dependencies": {
+        "@void-drift/core": "workspace:*",
+        "zod": "^3.23.8"
+    }
+}

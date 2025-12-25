@@ -12,7 +12,8 @@ export default defineConfig({
   vite: {
     resolve: {
       alias: {
-        '@void-drift/engine': path.resolve('../../packages/engine/src')
+        '@void-drift/core': path.resolve('../../packages/core/src'),
+        '@void-drift/mode-a': path.resolve('../../packages/mode-a/src')
       }
     },
     define: {

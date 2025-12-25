@@ -1,5 +1,6 @@
 import type { GameState, DeathCause } from "../schemas/game-state";
-import type { GameObject, Star } from "./Physics";
+import { SURVIVAL_CONFIG } from "@void-drift/core";
+import type { GameObject, Star } from "@void-drift/core";
 
 export function checkDeath(
   state: GameState,
@@ -48,5 +49,41 @@ export function updateTimer(state: GameState): void {
   // Update elapsed time during gameplay
   if (state.status === "PLAYING" && state.startTime !== null) {
     state.elapsedTime = (Date.now() - state.startTime) / 1000;
+  }
+}
+
+export class GameLoop {
+  private running = false;
+  private lastTime = 0;
+  private callback: (dt: number) => void;
+
+  constructor(callback: (dt: number) => void) {
+    this.callback = callback;
+  }
+
+  start() {
+    if (this.running) return;
+    this.running = true;
+    this.lastTime = performance.now();
+    requestAnimationFrame(this.loop.bind(this));
+  }
+
+  stop() {
+    this.running = false;
+  }
+
+  private loop(time: number) {
+    if (!this.running) return;
+
+    // Calculate Delta Time in Seconds
+    const dt = (time - this.lastTime) / 1000;
+    this.lastTime = time;
+
+    // Cap dt to prevent huge jumps (e.g. if tab was backgrounded)
+    const safeDt = Math.min(dt, 0.1);
+
+    this.callback(safeDt);
+
+    requestAnimationFrame(this.loop.bind(this));
   }
 }

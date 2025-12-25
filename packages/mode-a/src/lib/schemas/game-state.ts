@@ -1,18 +1,12 @@
 import { z } from 'zod';
-
-export const ResourcesSchema = z.object({
-    hull: z.number().min(0).max(100),
-    power: z.number().min(0).max(100),
-});
-
-export type Resources = z.infer<typeof ResourcesSchema>;
+import { ResourcesSchema, DeathCauseSchema } from '@void-drift/core';
 
 export const GameStateSchema = z.object({
     status: z.enum(['MENU', 'PLAYING', 'GAME_OVER', 'SETTINGS']),
     startTime: z.number().nullable(), // Unix timestamp (ms)
     elapsedTime: z.number(),          // Seconds (float)
     resources: ResourcesSchema,
-    deathCause: z.enum(['STAR', 'HULL', 'POWER']).nullable(),
+    deathCause: DeathCauseSchema.nullable(),
 });
 
 export type GameState = z.infer<typeof GameStateSchema>;

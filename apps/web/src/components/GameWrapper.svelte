@@ -3,8 +3,6 @@
   import {
     CONFIG,
     Input,
-    GameLoop,
-    updateShip,
     Vec2,
     Renderer,
     Camera,
@@ -13,12 +11,16 @@
     SURVIVAL_CONFIG,
     updatePower,
     updateHull,
+    updateShip,
+  } from "@void-drift/core";
+  import {
+    GameLoop,
     type GameState,
     checkDeath,
     handleDeath,
     updateTimer,
     createInitialGameState,
-  } from "@void-drift/engine";
+  } from "@void-drift/mode-a";
   import HUD from "./HUD.svelte";
   import GameOver from "./GameOver.svelte";
   import MenuOverlay from "./MenuOverlay.svelte";

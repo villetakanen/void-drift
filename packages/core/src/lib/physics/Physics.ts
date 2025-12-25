@@ -73,8 +73,8 @@ export interface Planet {
 }
 
 import { CONFIG, SURVIVAL_CONFIG } from "../config";
-import type { InputState } from "./Input";
-import type { Resources } from "../schemas/game-state";
+import type { InputState } from "../entities/Input";
+import type { Resources } from "../schemas/common";
 
 export function updatePower(
   resources: Resources,
