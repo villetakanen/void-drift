@@ -1,6 +1,6 @@
 import type { GameState, DeathCause } from "../schemas/game-state";
-import { SURVIVAL_CONFIG } from "@void-drift/core";
-import type { GameObject, Star } from "@void-drift/core";
+import { SURVIVAL_CONFIG, SUN_CONFIG, Vec2 } from "@void-drift/core";
+import type { GameObject, Star, SunType } from "@void-drift/core";
 
 export function checkDeath(
   state: GameState,
@@ -50,6 +50,27 @@ export function updateTimer(state: GameState): void {
   if (state.status === "PLAYING" && state.startTime !== null) {
     state.elapsedTime = (Date.now() - state.startTime) / 1000;
   }
+}
+
+export function getRandomSunType(): SunType {
+  const types: SunType[] = ["RED_GIANT", "YELLOW_DWARF", "BLUE_DWARF"];
+  return types[Math.floor(Math.random() * types.length)];
+}
+
+export function createStar(type: SunType, x: number, y: number): Star {
+  const config = SUN_CONFIG[type];
+  return {
+    type,
+    pos: new Vec2(x, y),
+    radius: config.radius,
+    influenceRadius: config.radius * 9, // Tuned for better feel
+    mass: config.mass,
+    color: config.color,
+    glowColor: config.glowColor,
+    powerMultiplier: config.powerMultiplier,
+    burnMultiplier: config.burnMultiplier,
+    pulseSpeed: config.pulseSpeed,
+  };
 }
 
 export class GameLoop {

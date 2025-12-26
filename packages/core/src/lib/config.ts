@@ -31,3 +31,33 @@ export const SURVIVAL_CONFIG = {
 
     PLANET_COLLISION_DAMAGE: 7,
 } as const;
+
+export const SUN_CONFIG = {
+    RED_GIANT: {
+        radius: 80,
+        color: '#ff4400',
+        glowColor: '#ff0000',
+        mass: 400,
+        powerMultiplier: 0.5,
+        burnMultiplier: 0.5,
+        pulseSpeed: 0.5,
+    },
+    YELLOW_DWARF: {
+        radius: 40,
+        color: '#ffaa00',
+        glowColor: '#ffaa00',
+        mass: 600,
+        powerMultiplier: 1.0,
+        burnMultiplier: 1.0,
+        pulseSpeed: 1.0,
+    },
+    BLUE_DWARF: {
+        radius: 20,
+        color: '#00ccff',
+        glowColor: '#ffffff',
+        mass: 1200,
+        powerMultiplier: 2.0,
+        burnMultiplier: 2.0,
+        pulseSpeed: 2.0,
+    },
+} as const;

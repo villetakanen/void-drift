@@ -3,6 +3,7 @@ export * from './lib/physics/Camera';
 export * from './lib/entities/Input';
 export * from './lib/entities/Renderer';
 export * from './lib/schemas/common';
+export * from './lib/schemas/sun';
 export * from './lib/config';
 
 // Assets

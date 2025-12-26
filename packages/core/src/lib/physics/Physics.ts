@@ -59,6 +59,11 @@ export interface Star {
   influenceRadius: number; // Gravity well radius
   mass: number; // Gravity strength factor
   color: string;
+  glowColor: string;
+  type: SunType;
+  powerMultiplier: number;
+  burnMultiplier: number;
+  pulseSpeed: number;
 }
 
 export interface Planet {
@@ -75,10 +80,12 @@ export interface Planet {
 import { CONFIG, SURVIVAL_CONFIG } from "../config";
 import type { InputState } from "../entities/Input";
 import type { Resources } from "../schemas/common";
+import type { SunType } from "../schemas/sun";
 
 export function updatePower(
   resources: Resources,
   distanceToSun: number,
+  sun: Star,
   deltaTime: number,
   thrustState: { left: boolean; right: boolean } = {
     left: false,
@@ -97,16 +104,17 @@ export function updatePower(
   resources.power -= consumptionRate * dt;
 
   // Regeneration (sun proximity)
+  const radiusScale = sun.radius / 40; // 40 = baseline (yellow dwarf)
   let regenRate = 0;
-  if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_1_RADIUS) {
+  if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_1_RADIUS * radiusScale) {
     regenRate = SURVIVAL_CONFIG.POWER_REGEN_ZONE_1;
-  } else if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_2_RADIUS) {
+  } else if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_2_RADIUS * radiusScale) {
     regenRate = SURVIVAL_CONFIG.POWER_REGEN_ZONE_2;
-  } else if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS) {
+  } else if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS * radiusScale) {
     regenRate = SURVIVAL_CONFIG.POWER_REGEN_ZONE_3;
   }
 
-  resources.power += regenRate * dt;
+  resources.power += regenRate * sun.powerMultiplier * dt;
 
   // Clamp
   resources.power = Math.max(0, Math.min(100, resources.power));
@@ -115,28 +123,29 @@ export function updatePower(
 export function updateHull(
   resources: Resources,
   distanceToSun: number,
-  sunRadius: number,
+  sun: Star,
   deltaTime: number,
 ): void {
   const dt = deltaTime;
 
   // Star contact = instant death
-  if (distanceToSun < sunRadius) {
+  if (distanceToSun < sun.radius) {
     resources.hull = 0;
     return;
   }
 
   // Sun proximity burn
+  const radiusScale = sun.radius / 40; // 40 = baseline (yellow dwarf)
   let burnRate = 0;
-  if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_1_RADIUS) {
+  if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_1_RADIUS * radiusScale) {
     burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_1;
-  } else if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_2_RADIUS) {
+  } else if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_2_RADIUS * radiusScale) {
     burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_2;
-  } else if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS) {
+  } else if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS * radiusScale) {
     burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_3;
   }
 
-  resources.hull -= burnRate * dt;
+  resources.hull -= burnRate * sun.burnMultiplier * dt;
 
   // Clamp
   resources.hull = Math.max(0, Math.min(100, resources.hull));

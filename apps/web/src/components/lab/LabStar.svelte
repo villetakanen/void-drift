@@ -1,14 +1,49 @@
 <script lang="ts">
     import Canvas from "../Canvas.svelte";
     import Controls from "../Controls.svelte";
-    import { drawStar } from "@void-drift/core";
+    import { drawStar, SUN_CONFIG, type SunType } from "@void-drift/core";
 
     // Star State
-    let starParams = $state({
-        radius: 40,
-        color: "#FFA500", // Orange
-        pulseSpeed: 1.0,
+    let selectedType: SunType = $state("YELLOW_DWARF");
+    let interpolator = $state(1.0); // 0 = Red, 1 = Yellow, 2 = Blue
+
+    const starParams = $derived.by(() => {
+        const presets = [
+            SUN_CONFIG.RED_GIANT,
+            SUN_CONFIG.YELLOW_DWARF,
+            SUN_CONFIG.BLUE_DWARF,
+        ];
+
+        if (interpolator === 0) return presets[0];
+        if (interpolator === 1) return presets[1];
+        if (interpolator === 2) return presets[2];
+
+        const idx = Math.floor(interpolator);
+        const nextIdx = Math.min(idx + 1, presets.length - 1);
+        const t = interpolator - idx;
+
+        const p1 = presets[idx];
+        const p2 = presets[nextIdx];
+
+        // Linear interpolation for numeric values
+        const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+        // Color interpolation (simplified: pick closest or use CSS colors if needed)
+        // For simplicity in a lab, we'll just lerp the numbers and pick the color of the closest preset
+        const closestIdx = Math.round(interpolator);
+
+        return {
+            type: presets[closestIdx].type,
+            radius: lerp(p1.radius, p2.radius, t),
+            mass: lerp(p1.mass, p2.mass, t),
+            powerMultiplier: lerp(p1.powerMultiplier, p2.powerMultiplier, t),
+            burnMultiplier: lerp(p1.burnMultiplier, p2.burnMultiplier, t),
+            pulseSpeed: lerp(p1.pulseSpeed, p2.pulseSpeed, t),
+            color: presets[closestIdx].color,
+            glowColor: presets[closestIdx].glowColor,
+        };
     });
+
     let starTime = $state(0);
 
     // Animation Loop for Star
@@ -31,8 +66,10 @@
             y: cy,
             radius: starParams.radius,
             color: starParams.color,
+            glowColor: starParams.glowColor,
             time: starTime,
             pulseSpeed: starParams.pulseSpeed,
+            powerZoneRadius: 240, // Show max zone
         });
     }
 </script>
@@ -48,37 +85,75 @@
     </div>
 
     <aside class="inspector">
-        <Controls title="Parameters">
+        <Controls title="Presets">
             <div class="control-group">
-                <label for="star-radius">Radius ({starParams.radius}px)</label>
-                <input
-                    type="range"
-                    id="star-radius"
-                    min="10"
-                    max="200"
-                    bind:value={starParams.radius}
-                />
-            </div>
-            <div class="control-group">
-                <label for="star-speed"
-                    >Pulse Speed ({starParams.pulseSpeed}x)</label
+                <label for="sun-type">Sun Type</label>
+                <select
+                    id="sun-type"
+                    bind:value={selectedType}
+                    onchange={() => {
+                        if (selectedType === "RED_GIANT") interpolator = 0;
+                        if (selectedType === "YELLOW_DWARF") interpolator = 1;
+                        if (selectedType === "BLUE_DWARF") interpolator = 2;
+                    }}
                 >
-                <input
-                    type="range"
-                    id="star-speed"
-                    min="0.1"
-                    max="5.0"
-                    step="0.1"
-                    bind:value={starParams.pulseSpeed}
-                />
+                    <option value="RED_GIANT">Red Giant</option>
+                    <option value="YELLOW_DWARF">Yellow Dwarf</option>
+                    <option value="BLUE_DWARF">Blue Dwarf</option>
+                </select>
             </div>
             <div class="control-group">
-                <label for="star-color">Color</label>
+                <label for="sun-lerp">Smooth Tune (Red → Blue)</label>
                 <input
-                    type="color"
-                    id="star-color"
-                    bind:value={starParams.color}
+                    type="range"
+                    id="sun-lerp"
+                    min="0"
+                    max="2"
+                    step="0.01"
+                    bind:value={interpolator}
+                    oninput={() => {
+                        if (interpolator < 0.5) selectedType = "RED_GIANT";
+                        else if (interpolator < 1.5)
+                            selectedType = "YELLOW_DWARF";
+                        else selectedType = "BLUE_DWARF";
+                    }}
                 />
+            </div>
+        </Controls>
+
+        <Controls title="Parameters (Read-only)">
+            <div class="control-group">
+                <label>Radius: {starParams.radius}px</label>
+            </div>
+            <div class="control-group">
+                <label>Mass: {starParams.mass}</label>
+            </div>
+            <div class="control-group">
+                <label>Power Multiplier: {starParams.powerMultiplier}x</label>
+            </div>
+            <div class="control-group">
+                <label>Burn Multiplier: {starParams.burnMultiplier}x</label>
+            </div>
+            <div class="control-group">
+                <label>Pulse Speed: {starParams.pulseSpeed}x</label>
+            </div>
+            <div class="control-group">
+                <label
+                    >Color: <span
+                        class="swatch"
+                        style:background={starParams.color}
+                    ></span>
+                    {starParams.color}</label
+                >
+            </div>
+            <div class="control-group">
+                <label
+                    >Glow: <span
+                        class="swatch"
+                        style:background={starParams.glowColor}
+                    ></span>
+                    {starParams.glowColor}</label
+                >
             </div>
         </Controls>
     </aside>
@@ -149,5 +224,22 @@
     input[type="range"] {
         width: 100%;
         accent-color: var(--color-acid-lime);
+    }
+
+    select {
+        width: 100%;
+        padding: 0.5rem;
+        background: var(--color-void);
+        color: var(--color-text);
+        border: 1px solid var(--color-text-dim);
+        font-family: inherit;
+    }
+
+    .swatch {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border: 1px solid var(--color-text-dim);
+        vertical-align: middle;
     }
 </style>
