@@ -1,0 +1,116 @@
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--button-padding-y) var(--button-padding-x);
+    font-family: inherit;
+    font-size: var(--button-font-size);
+    font-weight: var(--button-font-weight);
+    line-height: 1;
+    min-height: var(--button-min-height);
+    border-radius: var(--button-border-radius);
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--button-transition);
+    border: none;
+    /* Borders are handled by clip-path and backgrounds */
+
+    /* Reset and alignment fixes */
+    margin: 0;
+    box-sizing: border-box;
+    appearance: none;
+    vertical-align: middle;
+    position: relative;
+    z-index: 1;
+
+    /* Futuristic Cut-off Corners */
+    clip-path: polygon(var(--button-cut-size) 0%,
+            100% 0%,
+            100% calc(100% - var(--button-cut-size)),
+            calc(100% - var(--button-cut-size)) 100%,
+            0% 100%,
+            0% var(--button-cut-size));
+}
+
+.btn:focus-visible {
+    outline: 2px solid var(--color-neon-blue);
+    outline-offset: 4px;
+    /* Offset more to clear the cut corners */
+}
+
+/* Ghost variant (default) */
+.btn-ghost {
+    background: var(--color-neon-blue);
+    color: var(--color-neon-blue);
+}
+
+.btn-ghost::before {
+    content: "";
+    position: absolute;
+    inset: var(--button-border-width);
+    background: var(--color-void);
+    clip-path: inherit;
+    z-index: -1;
+    transition: background 0.15s ease;
+}
+
+.btn-ghost:hover {
+    color: var(--color-void);
+}
+
+.btn-ghost:hover::before {
+    background: var(--color-neon-blue);
+}
+
+/* Filled variant */
+.btn-filled {
+    background: var(--color-neon-blue);
+    color: var(--color-void);
+}
+
+.btn-filled:hover {
+    filter: brightness(1.2);
+}
+
+/* Link variant */
+.btn-link {
+    background: transparent;
+    border: none;
+    color: var(--color-neon-blue);
+    padding: var(--spacing-sm);
+    min-height: auto;
+    clip-path: none;
+    /* No cut for simple links */
+}
+
+.btn-link::before {
+    display: none;
+}
+
+.btn-link:hover {
+    color: var(--color-text);
+}
+
+/* Danger variant */
+.btn-danger {
+    background: var(--color-red);
+    color: var(--color-red);
+}
+
+.btn-danger::before {
+    content: "";
+    position: absolute;
+    inset: var(--button-border-width);
+    background: var(--color-void);
+    clip-path: inherit;
+    z-index: -1;
+    transition: background 0.15s ease;
+}
+
+.btn-danger:hover {
+    color: var(--color-text);
+}
+
+.btn-danger:hover::before {
+    background: var(--color-red);
+}

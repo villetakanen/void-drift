@@ -28,6 +28,7 @@
 - **Procedural Assets:** Since external assets are avoided, this agent must define the "drawing instructions" (Canvas API calls) for ships, planets, and particles in src/lib/assets/.
 - **Read-Only System:** Once the Design System is established, the @Dev agent must consume it, not modify it.
 - **No Magic Numbers:** Reject hardcoded hex values or pixel sizes in components. Use the token system (e.g., var(--color-neon-blue), var(--spacing-md)).
+- **Lab First:** Any changes or additions to the Design System (tokens, global classes, shared components) MUST be documented and showcased in the Lab (`/lab`).
         
 ## 1.3. Full-Stack Game Developer (@Dev)
 
@@ -46,7 +47,8 @@
   - **Bandwidth:** Sync only deltas or essential state. Use flat data structures.
 - Frontend & UI:
   - **Svelte 5:** Use Runes ($state, $derived, $effect) exclusively.
-  - **Styling:** Use native CSS in <style> blocks. No Tailwind.
+  - **Styling:** Use native CSS in <style> blocks or external CSS files. No Tailwind.
+  - **No Component Bloat:** Avoid Svelte wrappers for base HTML elements (e.g., `<Button>`, `<Link>`). Use global CSS classes instead.
   - **Mobile First:** Ensure all interactions work via Touch events (min 44px targets).
   - **Routing:** Use simple conditional rendering or hash-based routing.
 
@@ -145,16 +147,24 @@ root:
     - specs:
     - backlog:
   - packages:
-    - engine:      # @void-drift/engine
+    - core:        # @void-drift/core (Shared)
       - src:
-        - index.ts # Public Exports
+        - index.ts
         - lib:
-          - engine: (Loop, Physics, Renderer)
-          - schemas: (Zod)
+          - physics: (Vec2, Camera)
+          - entities: (Input, Renderer)
+          - assets: (procedural drawing)
+          - styles: (bespoke CSS files, tokens)
+    - mode-a:      # @void-drift/mode-a (Survival Mode)
+      - src:
+        - index.ts
+        - lib:
+          - game-loop.ts
+          - schemas: (game state, settings)
   - apps:
     - web:         # The Astro + Svelte Site
       - src:
         - pages: (Astro Routes)
         - components: (Svelte UI)
-        - styles.css (Design System Tokens)
+        - styles.css (Global imports & page-specific styles)
 ```

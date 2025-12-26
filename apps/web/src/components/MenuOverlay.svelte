@@ -53,11 +53,11 @@
     onclick={handleOverlayClick}
 >
     <div class="menu-content">
-        <button bind:this={startButton} class="start-button" onclick={onStart}>
+        <button bind:this={startButton} class="btn btn-ghost" onclick={onStart}>
             TAP TO START
         </button>
 
-        <a href="/settings" class="settings-link">Settings</a>
+        <a href="/settings" class="btn btn-link">Settings</a>
     </div>
 </div>
 
@@ -82,51 +82,5 @@
         cursor: default;
     }
 
-    .start-button {
-        background: transparent;
-        border: 2px solid var(--color-neon-blue);
-        color: var(--color-neon-blue);
-        padding: var(--spacing-md) var(--spacing-xl);
-        font-size: 1.25rem;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        cursor: pointer;
-        font-family: inherit;
-        transition:
-            background 0.15s ease,
-            color 0.15s ease;
-        min-height: 44px;
-    }
-
-    .start-button:hover {
-        background: var(--color-neon-blue);
-        color: var(--color-void);
-    }
-
-    .start-button:focus-visible {
-        outline: 2px solid var(--color-neon-blue);
-        outline-offset: 4px;
-    }
-
-    .settings-link {
-        color: var(--color-text-dim);
-        text-decoration: none;
-        font-size: 0.875rem;
-        transition: color 0.15s ease;
-        padding: var(--spacing-sm);
-        min-height: 44px;
-        display: flex;
-        align-items: center;
-        pointer-events: auto;
-    }
-
-    .settings-link:hover {
-        color: var(--color-text);
-    }
-
-    .settings-link:focus-visible {
-        outline: 2px solid var(--color-neon-blue);
-        outline-offset: 2px;
-    }
+    /* Start button specific overrides if any (none needed currently) */
 </style>

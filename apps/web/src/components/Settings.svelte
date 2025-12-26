@@ -43,7 +43,7 @@
     </section>
 
     <footer>
-        <a href="/" class="back-button">Back to Game</a>
+        <a href="/" class="btn btn-ghost">Back to Game</a>
     </footer>
 </div>
 
@@ -133,31 +133,6 @@
     footer {
         margin-top: auto;
         padding-top: var(--spacing-xl);
-    }
-
-    .back-button {
-        display: inline-block;
-        padding: var(--spacing-sm) var(--spacing-md);
-        background: transparent;
-        color: var(--color-neon-blue);
-        text-decoration: none;
-        border: 1px solid var(--color-neon-blue);
-        border-radius: var(--radius-sm);
-        font-weight: 500;
-        font-size: 1rem;
-        transition:
-            background 0.15s ease,
-            color 0.15s ease;
-    }
-
-    .back-button:hover {
-        background: var(--color-neon-blue);
-        color: var(--color-void);
-    }
-
-    .back-button:focus-visible {
-        outline: 2px solid var(--color-neon-blue);
-        outline-offset: 2px;
     }
 
     @media (max-width: 640px) {

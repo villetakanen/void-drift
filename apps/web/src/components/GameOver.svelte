@@ -50,8 +50,8 @@
     </div>
 
     <div class="actions">
-      <button onclick={onRestart} class="primary"> Try Again </button>
-      <a href="/leaderboard" class="secondary"> View Leaderboard </a>
+      <button onclick={onRestart} class="btn btn-filled"> Try Again </button>
+      <a href="/leaderboard" class="btn btn-ghost"> View Leaderboard </a>
     </div>
   </div>
 </div>
@@ -130,39 +130,6 @@
     gap: var(--spacing-md);
     justify-content: center;
     flex-wrap: wrap;
-  }
-
-  button,
-  a {
-    padding: var(--spacing-sm) var(--spacing-lg);
-    font-size: 1.125rem;
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-    font-family: inherit;
-    transition: filter 0.2s ease;
-  }
-
-  .primary {
-    background: var(--color-neon-blue);
-    color: var(--color-void);
-    border: none;
-    font-weight: 600;
-  }
-
-  .primary:hover {
-    filter: brightness(1.2);
-  }
-
-  .secondary {
-    background: transparent;
-    color: var(--color-neon-blue);
-    border: 2px solid var(--color-neon-blue);
-  }
-
-  .secondary:hover {
-    background: rgba(212, 255, 0, 0.1);
   }
 
   /* Mobile */
