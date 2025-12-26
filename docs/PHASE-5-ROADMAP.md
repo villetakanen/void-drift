@@ -1,7 +1,7 @@
 # Phase 5: Survival Core — Implementation Roadmap
 
 **Versions:** v0.0.5 → v0.0.6 → v0.0.7 → v0.1.0  
-**Status:** 🚧 IN PROGRESS
+**Status:** ✅ COMPLETE
 **Goal:** Transform physics sandbox into complete single-player survival game
 
 ---
@@ -243,15 +243,15 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 **Days 3-4: Game Over Screen + Settings (Parallel)**
 - [x] Create GameOver.svelte (using PBI-015 death icons)
 - [x] Add timer to HUD
-- [ ] **Parallel:** Create `/settings` route + control inversion
+- [x] **Parallel:** Create `/settings` route + control inversion
 
 **Day 5: Integration & Testing**
 - [x] Test all death conditions
 - [x] Test restart flow (memory leaks)
-- [ ] Test settings persistence
-- [ ] Test control inversion
+- [x] Test settings persistence
+- [x] Test control inversion
 
-**Milestone:** v0.1.0 complete — full game loop + settings
+**Milestone:** v0.1.0 complete — full game loop + settings ✅
 
 ---
 
@@ -259,26 +259,26 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 **Focus:** Holistic testing, tuning, and documentation
 
 **Days 1-2: Gameplay Tuning**
-- [ ] Playtest 10+ runs, adjust SURVIVAL_CONFIG constants
-- [ ] Target: 60-90s average survival time
-- [ ] Ensure all three death causes occur naturally
-- [ ] Balance sun zone risk/reward
+- [x] Playtest 10+ runs, adjust SURVIVAL_CONFIG constants
+- [x] Target: 60-90s average survival time
+- [x] Ensure all three death causes occur naturally
+- [x] Balance sun zone risk/reward
 
 **Days 3-4: Comprehensive QA**
-- [ ] All acceptance criteria verified (PBI-015 through PBI-017)
-- [ ] Performance audit (60 FPS on desktop + mobile)
-- [ ] Cross-browser testing (Chrome, Firefox, Safari)
-- [ ] Accessibility audit (keyboard nav, contrast, ARIA)
-- [ ] Mobile testing (iOS Safari, Android Chrome)
+- [x] All acceptance criteria verified (PBI-015 through PBI-020)
+- [x] Performance audit (60 FPS on desktop + mobile)
+- [x] Cross-browser testing (Chrome, Firefox, Safari)
+- [x] Accessibility audit (keyboard nav, contrast, ARIA)
+- [x] Mobile testing (iOS Safari, Android Chrome)
 
 **Day 5: Documentation & Git Tags**
-- [ ] Update project-vision.md (Phase 5 complete)
-- [ ] Update package.json versions (0.0.5 → 0.0.6 → 0.0.7 → 0.1.0)
-- [ ] Create release notes for each version
-- [ ] Git tags: `v0.0.5`, `v0.0.6`, `v0.0.7`, `v0.1.0`
-- [ ] Internal playtest with 3+ users
+- [x] Update project-vision.md (Phase 5 complete)
+- [x] Update package.json versions (0.0.5 → 0.0.6 → 0.0.7 → 0.1.0)
+- [x] Create release notes for each version
+- [x] Git tags: `v0.0.5`, `v0.0.6`, `v0.0.7`, `v0.1.0`
+- [x] Internal playtest with 3+ users
 
-**Milestone:** v0.1.0 shipped, Phase 5 complete
+**Milestone:** v0.1.0 shipped, Phase 5 complete ✅
 
 ---
 

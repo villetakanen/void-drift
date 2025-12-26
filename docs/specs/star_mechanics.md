@@ -21,8 +21,8 @@ The **Star** acts as the central anchor of the arena. It provides both a lethal 
     color: string;
   }
   ```
-- **Physics API:** `applyGravity(ship: Ship, star: Star): Vector2` (implemented in `packages/engine/src/lib/engine/Physics.ts`)
-- **Render API:** `drawStar(ctx: CanvasRenderingContext2D, star: Star, time: number)` (implemented in `packages/engine/src/lib/assets/star.ts`)
+- **Physics API:** `applyGravity(ship: Ship, star: Star): Vector2` (implemented in `packages/core/src/lib/physics/Physics.ts`)
+- **Render API:** `drawStar(ctx: CanvasRenderingContext2D, star: Star, time: number)` (implemented in `packages/core/src/lib/assets/star.ts`)
 
 ### Anti-Patterns
 - **Do NOT** use DOM elements (e.g., `<div>`) for the star; it must be drawn on the active Canvas.
@@ -68,14 +68,92 @@ The **Star** acts as the central anchor of the arena. It provides both a lethal 
 ```typescript
 interface Star {
   pos: Vec2;           // Position (960, 540 - arena center)
-  radius: number;      // Visual/collision radius (40px)
-  influenceRadius: number;  // Gravity range (350px)
-  mass: number;        // Gravitational mass (600)
-  color: string;       // '#ffaa00' (orange/yellow)
+  radius: number;      // Visual/collision radius (varies by type)
+  influenceRadius: number;  // Gravity range (varies by type)
+  mass: number;        // Gravitational mass (varies by type)
+  color: string;       // Color based on sun type
+  type: SunType;       // RED_GIANT | YELLOW_DWARF | BLUE_DWARF
+}
+
+type SunType = 'RED_GIANT' | 'YELLOW_DWARF' | 'BLUE_DWARF';
+```
+
+### Sun Type System
+
+The sun type determines visual appearance and gameplay characteristics.
+
+**Config Location:** `packages/core/src/lib/config.ts`
+
+```typescript
+// Schema definition
+interface SunTypeConfig {
+  radius: number;           // Visual/collision radius
+  influenceRadius: number;  // Gravity effective range
+  mass: number;             // Gravitational pull strength
+  color: string;            // Core color hex
+  powerMultiplier: number;  // Fuel regen rate multiplier (1.0 = baseline)
+  burnMultiplier: number;   // Hull damage rate multiplier (1.0 = baseline)
+}
+
+// Config structure
+export const SUN_CONFIG = {
+  RED_GIANT: {
+    radius: /* tunable */,
+    influenceRadius: /* tunable */,
+    mass: /* tunable */,
+    color: /* tunable */,
+    powerMultiplier: /* tunable, < 1.0 */,
+    burnMultiplier: /* tunable, < 1.0 */,
+  },
+  YELLOW_DWARF: {
+    radius: /* tunable */,
+    influenceRadius: /* tunable */,
+    mass: /* tunable */,
+    color: /* tunable */,
+    powerMultiplier: 1.0,  // Baseline reference
+    burnMultiplier: 1.0,   // Baseline reference
+  },
+  BLUE_DWARF: {
+    radius: /* tunable */,
+    influenceRadius: /* tunable */,
+    mass: /* tunable */,
+    color: /* tunable */,
+    powerMultiplier: /* tunable, > 1.0 */,
+    burnMultiplier: /* tunable, > 1.0 */,
+  },
+} as const;
+```
+
+### Sun Type Gameplay Effects
+
+| Sun Type | Size | Gravity | Fuel Regen | Hull Burn | Difficulty |
+|----------|------|---------|------------|-----------|------------|
+| Red Giant | Large | Low | Slow | Low | Easy |
+| Yellow Dwarf | Medium | Medium | Normal (1.0x) | Normal (1.0x) | Medium |
+| Blue Dwarf | Small | High | Fast | High | Hard |
+
+**Design Intent:**
+- Red Giant: Forgiving, good for learning mechanics
+- Yellow Dwarf: Baseline difficulty, balanced risk/reward
+- Blue Dwarf: High risk/high reward, for skilled players
+
+### Random Sun Selection
+At game start, a random sun type is selected:
+```typescript
+function getRandomSunType(): SunType {
+  const types: SunType[] = ['RED_GIANT', 'YELLOW_DWARF', 'BLUE_DWARF'];
+  return types[Math.floor(Math.random() * types.length)];
 }
 ```
 
-### Rendering (`packages/engine/src/lib/assets/star.ts`)
+### Lab Integration
+The Lab must display the current sun configuration:
+- Sun type name
+- Radius, mass, influence radius
+- Power/burn multipliers
+- Visual preview with correct color and size
+
+### Rendering (`packages/core/src/lib/assets/star.ts`)
 - **Core:** Solid circle using star color
 - **Glow Layers:** 3 concentric circles with decreasing opacity
 - **Fuel Zone:** Faint dashed circle at fuel regen threshold
@@ -83,7 +161,7 @@ interface Star {
 - **Blend Mode:** `lighter` for additive glow effect
 - **Performance:** Zero allocations per frame (reuses colors/radii)
 
-### Physics (`packages/engine/src/lib/engine/Physics.ts`)
+### Physics (`packages/core/src/lib/physics/Physics.ts`)
 - **Gravity Law:** Inverse square with safeguard: `F = G * m1 * m2 / max(distance², minDistance²)`
 - **Influence Check:** Only applies force if `distance < influenceRadius`
 - **Force Application:** `ship.acc += force_vector`

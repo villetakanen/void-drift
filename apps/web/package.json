@@ -12,7 +12,8 @@
   "dependencies": {
     "@astrojs/svelte": "^7.2.3",
     "@nanostores/persistent": "^1.2.0",
-    "@void-drift/engine": "workspace:^",
+    "@void-drift/core": "workspace:*",
+    "@void-drift/mode-a": "workspace:*",
     "astro": "^5.16.5",
     "nanostores": "^1.1.0",
     "svelte": "^5.46.0",

@@ -1,0 +1,125 @@
+---
+import LabLayout from "../../layouts/LabLayout.astro";
+---
+
+<LabLayout title="Buttons">
+    <div class="stage-header">
+        <h2>Buttons</h2>
+    </div>
+
+    <div class="stage-content">
+        <section class="variant-section">
+            <h3>Filled (Primary)</h3>
+            <div class="demo-grid">
+                <div class="demo-item">
+                    <label>button</label>
+                    <button class="btn btn-filled">Action Button</button>
+                </div>
+                <div class="demo-item">
+                    <label>a href</label>
+                    <a href="#" class="btn btn-filled" onclick="return false;"
+                        >Link Button</a
+                    >
+                </div>
+            </div>
+        </section>
+
+        <section class="variant-section">
+            <h3>Ghost (Secondary)</h3>
+            <div class="demo-grid">
+                <div class="demo-item">
+                    <label>button</label>
+                    <button class="btn btn-ghost">Action Button</button>
+                </div>
+                <div class="demo-item">
+                    <label>a href</label>
+                    <a href="#" class="btn btn-ghost" onclick="return false;"
+                        >Link Button</a
+                    >
+                </div>
+            </div>
+        </section>
+
+        <section class="variant-section">
+            <h3>Link (Navigation)</h3>
+            <div class="demo-grid">
+                <div class="demo-item">
+                    <label>button</label>
+                    <button class="btn btn-link">Action Button</button>
+                </div>
+                <div class="demo-item">
+                    <label>a href</label>
+                    <a href="#" class="btn btn-link" onclick="return false;"
+                        >Link Button</a
+                    >
+                </div>
+            </div>
+        </section>
+
+        <section class="variant-section">
+            <h3>Danger</h3>
+            <div class="demo-grid">
+                <div class="demo-item">
+                    <label>button</label>
+                    <button class="btn btn-danger">Delete Everything</button>
+                </div>
+                <div class="demo-item">
+                    <label>a href</label>
+                    <a href="#" class="btn btn-danger" onclick="return false;"
+                        >Abandon Mission</a
+                    >
+                </div>
+            </div>
+        </section>
+    </div>
+</LabLayout>
+
+<style>
+    .stage-header {
+        padding: 1rem 2rem;
+        border-bottom: 1px solid var(--color-text-dim);
+    }
+
+    h2 {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--color-text-dim);
+        text-transform: uppercase;
+    }
+
+    .stage-content {
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 3rem;
+        overflow-y: auto;
+    }
+
+    .variant-section h3 {
+        color: var(--color-text-dim);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        margin-bottom: 1.5rem;
+        border-left: 2px solid var(--color-neon-blue);
+        padding-left: 0.75rem;
+    }
+
+    .demo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 2rem;
+        align-items: flex-end;
+    }
+
+    .demo-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .demo-item label {
+        font-size: 0.75rem;
+        color: var(--color-text-dim);
+        font-family: monospace;
+    }
+</style>

@@ -29,7 +29,7 @@ Planets supply the "Terrain" of the void. Unlike Stars, they are persistent obst
   - Gravity: Inverse square law (8x radius influence).
   - Collision: Elastic bounce (restitution 0.8).
   - Motion: Planets orbit the central star.
-- **Rendering:** Flat Vector Style (Solid Color).
+- **Rendering:** Flat Vector Style (Solid Color) in `packages/core/src/lib/assets/planet.ts`.
   - Visualize orbit path with faint line.
   - Draw planet as simple circle (no gradients/textures to match aesthetic).
 
@@ -86,7 +86,7 @@ interface Planet {
 - **Color:** Slate Blue to match arcade vector art style
 - **Orbit Path:** Faint white line (`rgba(255,255,255,0.05)`) shows orbital trajectory
 - **Size:** Relatively small (20px radius) but large gravity influence
-- **Location:** `packages/engine/src/lib/engine/Physics.ts` (rendering logic integrated)
+- **Location:** `packages/core/src/lib/assets/planet.ts` (rendering), `packages/core/src/lib/physics/Physics.ts` (physics)
 
 ### Physics
 

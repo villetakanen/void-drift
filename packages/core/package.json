@@ -1,0 +1,17 @@
+{
+    "name": "@void-drift/core",
+    "version": "0.1.1",
+    "type": "module",
+    "main": "./src/index.ts",
+    "types": "./src/index.ts",
+    "exports": {
+        ".": "./src/index.ts",
+        "./styles/*": "./src/lib/styles/*"
+    },
+    "scripts": {
+        "test": "vitest run"
+    },
+    "dependencies": {
+        "zod": "^3.23.8"
+    }
+}

@@ -8,7 +8,7 @@ The Camera system provides smooth, cinematic tracking of game entities within a 
 ### Architecture
 
 #### Camera Class
-- **Location:** `packages/engine/src/lib/engine/Camera.ts`
+- **Location:** `packages/core/src/lib/physics/Camera.ts`
 - **Responsibility:** Transform world coordinates to screen space with smooth interpolation
 - **Key Properties:**
   - `pos: Vec2` - Current camera center in world space

@@ -1,7 +1,7 @@
 <script lang="ts">
     import Canvas from "../Canvas.svelte";
     import Controls from "../Controls.svelte";
-    import { drawResourceBar, drawDeathIcon } from "@void-drift/engine";
+    import { drawResourceBar, drawDeathIcon } from "@void-drift/core";
 
     // State
     let hullValue = $state(100);

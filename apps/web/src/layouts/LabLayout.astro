@@ -1,5 +1,8 @@
 ---
 import Logo from "../components/Logo.svelte";
+import "@void-drift/core/styles/reset.css";
+import "@void-drift/core/styles/tokens.css";
+import "@void-drift/core/styles/buttons.css";
 import "../styles.css";
 
 const { title } = Astro.props;
@@ -11,6 +14,7 @@ const LINKS = [
     { href: "/lab/star", label: "Star", exact: false },
     { href: "/lab/typography", label: "Typography", exact: false },
     { href: "/lab/resources", label: "Resources", exact: false },
+    { href: "/lab/buttons", label: "Buttons", exact: false },
     { href: "/", label: "← Back to Game", exact: true },
 ];
 ---

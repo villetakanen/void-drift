@@ -1,7 +1,7 @@
 <script lang="ts">
     import Canvas from "../Canvas.svelte";
     import Controls from "../Controls.svelte";
-    import { drawStar } from "@void-drift/engine";
+    import { drawStar } from "@void-drift/core";
 
     // Star State
     let starParams = $state({

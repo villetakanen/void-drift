@@ -1,7 +1,9 @@
 # Specification: Monorepo Migration & Architecture
 
-**Status:** ✅ COMPLETED (2024)  
+**Status:** ✅ COMPLETED (2024), 📝 UPDATED for v0.2.0 package split  
 **Outcome:** SUCCESSFUL - Clean monorepo structure operational
+
+> **Note (v0.2.0):** The original `packages/engine` is being split into `packages/core` + `packages/mode-a` per PBI-021. This document reflects the planned structure.
 
 ## 1. Overview
 This specification documented the transition of "Void Drift" from a monolithic single-page application (SPA) into a **Monorepo** structure. The migration is now complete.
@@ -24,39 +26,71 @@ We will use `pnpm workspaces`.
 ├── pnpm-workspace.yaml
 ├── package.json        # Root scripts (turbo/build orchestration)
 ├── packages/
-│   └── engine/         # The Core Logic (Physics, Renderer, Audio, Input)
-│       ├── src/
-│       │   ├── lib/    # Pure math, physics, canvas draw functions
-│       │   └── index.ts # Extracts: GameLoop class, drawShip(), Types
-│       └── package.json
+│   ├── core/           # @void-drift/core - Shared physics, entities, assets
+│   │   └── src/lib/
+│   │       ├── physics/    # Newtonian motion, gravity, collision
+│   │       ├── entities/   # Ship, Star, Planet, Input
+│   │       ├── assets/     # Procedural draw functions
+│   │       ├── schemas/    # Core schemas (Position, Velocity, etc.)
+│   │       └── config.ts   # PHYSICS constants
+│   │
+│   ├── mode-a/         # @void-drift/mode-a - Survival game logic
+│   │   └── src/lib/
+│   │       ├── schemas/    # GameState, Resources, DeathCause
+│   │       ├── game-loop.ts
+│   │       ├── death.ts
+│   │       └── config.ts   # SURVIVAL_CONFIG
+│   │
+│   └── mode-b/         # @void-drift/mode-b - Multiplayer (future)
+│       └── src/lib/
+│           ├── schemas/    # Lobby, Player, Weapon
+│           └── sync.ts     # Firestore state sync
+│
 ├── apps/
 │   └── web/            # The Production Site (Astro + Svelte)
 │       ├── src/
 │       │   ├── components/ # Svelte UI Components
 │       │   ├── layouts/    # Astro Layouts
 │       │   ├── pages/
-│       │   │   ├── index.astro       # The Game (Imports Engine)
-│       │   │   └── gallery.astro     # The Workbench (Imports Engine Assets)
+│       │   │   ├── index.astro       # The Game (Imports core + mode-a)
+│       │   │   └── lab/              # The Workbench (Imports core assets)
 │       └── package.json
 ```
 
-### 3.2 `packages/engine`
-This is the heart of Void Drift. It should be "UI Agnostic".
-- **Responsibility**: Physics simulation, Input normalization, Canvas rendering logic (pure functions), Game Loop timing.
-- **Exports**:
-  - `GameLoop` (class)
-  - `Renderer` (class)
-  - `Input` (class)
-  - `drawShip`, `drawAsteroid` (pure functions)
-  - `CONFIG` (constants)
+**Package Ownership:**
+- `core` — Shared code used by all game modes (physics, entities, assets)
+- `mode-a` — VOID DRIFT survival-specific logic (resources, death, timer)
+- `mode-b` — VOID BRAWL multiplayer-specific logic (future)
 
-### 3.3 `apps/web` (Astro)
+### 3.2 `packages/core`
+Shared game logic used by all modes. Should be "UI Agnostic".
+- **Responsibility**: Physics simulation, Input normalization, Canvas rendering logic (pure functions), entity management.
+- **Exports**:
+  - `Ship`, `Star`, `Planet` (entity classes)
+  - `Camera`, `Renderer` (rendering)
+  - `Input` (input handling)
+  - `applyGravity`, `handleCollision` (physics functions)
+  - `drawShip`, `drawStar`, `drawPlanet` (asset functions)
+  - `PHYSICS_CONFIG` (constants)
+
+### 3.3 `packages/mode-a`
+Survival game logic specific to VOID DRIFT.
+- **Responsibility**: Game state, resources, death detection, timer.
+- **Exports**:
+  - `GameState`, `Resources`, `DeathCause` (schemas)
+  - `updatePower`, `updateHull` (resource functions)
+  - `checkDeath`, `handleDeath` (death logic)
+  - `updateTimer` (timer logic)
+  - `SURVIVAL_CONFIG` (constants)
+- **Depends on**: `@void-drift/core`
+
+### 3.4 `apps/web` (Astro)
 A static-first site that rehydrates Svelte components.
 - **Framework**: Astro + Svelte Integration.
 - **Routing**: File-system based (`src/pages/*`).
 - **Pages**:
-  - `/`: Mounts the `<GameWrapper />` Svelte component which initializes the `GameLoop` from `packages/engine`.
-  - `/gallery`: Mounts the `<Gallery />` Svelte component which imports `drawShip` and allows parameter tuning.
+  - `/`: Mounts the `<GameWrapper />` Svelte component which initializes the game using `@void-drift/core` and `@void-drift/mode-a`.
+  - `/lab`: Mounts asset workbench components which import from `@void-drift/core`.
 
 ## 4. Migration Strategy (COMPLETED)
 
@@ -96,7 +130,9 @@ A static-first site that rehydrates Svelte components.
 
 ## 6. Current State (Post-Migration)
 
-### Directory Structure
+> **v0.2.0 Update:** Package structure is being updated from single `engine` to `core` + `mode-a` split. See PBI-021 for migration details.
+
+### Directory Structure (Target v0.2.0)
 ```
 void-drift/
 ├── pnpm-workspace.yaml    ✅
@@ -108,34 +144,44 @@ void-drift/
 │   ├── backlog/
 │   └── project-vision.md
 ├── packages/
-│   └── engine/             ✅ @void-drift/engine
-│       ├── src/
-│       │   ├── lib/
-│       │   │   ├── engine/    (Loop, Physics, Renderer, Camera, Input, Audio)
-│       │   │   ├── schemas/   (Zod validation)
-│       │   │   ├── assets/    (star.ts)
-│       │   │   ├── renderers/ (ship.ts)
-│       │   │   ├── config.ts
-│       │   │   ├── store.ts
-│       │   │   └── firebase.ts
-│       │   └── index.ts       (Public API)
-│       └── package.json
+│   ├── core/               ✅ @void-drift/core (shared)
+│   │   └── src/lib/
+│   │       ├── physics/       (Physics, Camera, collision)
+│   │       ├── entities/      (Ship, Star, Planet, Input, Renderer)
+│   │       ├── assets/        (drawShip, drawStar, drawPlanet, etc.)
+│   │       ├── schemas/       (core Zod schemas)
+│   │       └── config.ts      (PHYSICS_CONFIG)
+│   │
+│   └── mode-a/             ✅ @void-drift/mode-a (survival)
+│       └── src/lib/
+│           ├── schemas/       (GameState, Resources, DeathCause)
+│           ├── game-loop.ts   (survival loop, timer)
+│           ├── death.ts       (checkDeath, handleDeath)
+│           └── config.ts      (SURVIVAL_CONFIG)
+│
 └── apps/
     └── web/                ✅ Production Site
         ├── src/
-        │   ├── components/    (GameWrapper, Gallery, Controls, Logo, Canvas)
+        │   ├── components/    (GameWrapper, HUD, GameOver, Settings, etc.)
         │   ├── layouts/       (Layout.astro)
-        │   ├── pages/         (index.astro, gallery.astro)
+        │   ├── pages/         (index.astro, settings.astro, lab/)
+        │   ├── lib/           (stores/settings.ts)
         │   └── styles.css     (Design System Tokens)
         ├── astro.config.mjs
         └── package.json
 ```
 
-### Engine Package (`@void-drift/engine`)
+### Core Package (`@void-drift/core`)
 - **Build Strategy:** Consumed as TypeScript source via Vite alias (no intermediate build).
-- **Exports:** GameLoop, Renderer, Camera, Physics, Input, Audio, Zod schemas, config constants.
-- **Dependencies:** Svelte 5 (Runes), Zod, Firebase.
-- **Location:** `packages/engine/src/`
+- **Exports:** Ship, Star, Planet, Camera, Renderer, Input, Physics functions, asset drawing functions.
+- **Dependencies:** Zod.
+- **Location:** `packages/core/src/`
+
+### Mode-A Package (`@void-drift/mode-a`)
+- **Build Strategy:** Consumed as TypeScript source via Vite alias (no intermediate build).
+- **Exports:** GameState, Resources, DeathCause schemas, updatePower, updateHull, checkDeath, SURVIVAL_CONFIG.
+- **Dependencies:** `@void-drift/core`, Zod.
+- **Location:** `packages/mode-a/src/`
 
 ### Web Application (`apps/web`)
 - **Framework:** Astro + Svelte 5 (Runes).
@@ -145,30 +191,33 @@ void-drift/
 
 ## 7. Known Deviations from Original Plan
 
-### Engine/Svelte Coupling
-- **Vision:** `packages/engine` should be pure Logic/Types (Framework-agnostic).
-- **Reality:** `packages/engine` currently depends on Svelte 5 (Runes) for reactive stores.
-- **Rationale:** Accepted for rapid prototyping. Facilitates easy sharing of game state between engine and UI.
-- **Future:** May decouple if we need to consume engine from non-Svelte contexts (mobile native, CLI tools, etc.).
+### Core/Svelte Decoupling
+- **Vision:** `packages/core` should be pure Logic/Types (Framework-agnostic).
+- **Reality:** `packages/core` is now framework-agnostic (no Svelte dependency).
+- **Rationale:** Clean separation allows core physics to be used in any context.
+- **Mode-A:** Also framework-agnostic. Svelte reactivity lives in `apps/web` only.
 
 ### Build Strategy
-- **Vision:** `packages/engine` compiles to distributable JS/TS declarations.
+- **Vision:** Packages compile to distributable JS/TS declarations.
 - **Reality:** Consumed directly as TypeScript source via Vite alias.
-- **Rationale:** Simplifies development. Astro's Vite config resolves `@void-drift/engine` to `../../packages/engine/src`.
-- **Trade-off:** Web app cannot use pre-built engine (acceptable for monorepo workflow).
+- **Rationale:** Simplifies development. Astro's Vite config resolves `@void-drift/core` and `@void-drift/mode-a` to source.
+- **Trade-off:** Web app cannot use pre-built packages (acceptable for monorepo workflow).
 
 ## 8. Lessons Learned
 
-1. **Workspace Protocol Works:** Using `"@void-drift/engine": "workspace:*"` in `apps/web/package.json` correctly resolves to local package.
-2. **Vite Aliases Essential:** Astro config needs explicit alias to resolve bare imports: `@void-drift/engine → ../../packages/engine/src/index.ts`.
+1. **Workspace Protocol Works:** Using `"@void-drift/core": "workspace:*"` in `apps/web/package.json` correctly resolves to local package.
+2. **Vite Aliases Essential:** Astro config needs explicit alias to resolve bare imports: `@void-drift/core → ../../packages/core/src/index.ts`.
 3. **No Root Code:** Keeping root directory clean prevents "context amnesia" where agents forget which app they're working in.
-4. **Gallery Separation:** Moving gallery to its own route (`/gallery`) eliminated hash-routing hacks and improved developer experience.
+4. **Lab Separation:** Moving lab to its own route (`/lab`) eliminated hash-routing hacks and improved developer experience.
+5. **Package Split Benefits:** Separating core from mode-specific logic prevents cross-contamination between game modes.
 
 ## 9. Maintenance Notes
 
-- **Adding New Engine Exports:** Update `packages/engine/src/index.ts` to export new APIs.
+- **Adding New Core Exports:** Update `packages/core/src/index.ts` to export new APIs.
+- **Adding New Mode-A Exports:** Update `packages/mode-a/src/index.ts` to export new APIs.
 - **Adding New Routes:** Create new `.astro` files in `apps/web/src/pages/`.
-- **Shared Types:** Define in `packages/engine/src/lib/schemas/` using Zod for runtime validation.
+- **Core Schemas:** Define in `packages/core/src/lib/schemas/` for shared types.
+- **Mode-A Schemas:** Define in `packages/mode-a/src/lib/schemas/` for survival-specific types.
 - **Design Tokens:** Maintain in `apps/web/src/styles.css` (single source of truth for CSS variables).
 
 ---
