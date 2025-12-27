@@ -30,21 +30,26 @@ Currently the sun has fixed properties:
 
 This PBI introduces a **sun scale system** where the sun type affects gameplay:
 
-| Type | Size | Gravity | Power Regen | Hull Burn | Color |
-|------|------|---------|-------------|-----------|-------|
-| Red Giant | Large | Low | Low | Low | Deep Red |
-| Yellow Dwarf | Medium | Medium | Medium | Medium | Yellow/Orange |
-| Blue Dwarf | Small | High | High | High | Blue/White |
+| Class | Size (1-100) | Radius | Gravity | Power Regen | Hull Burn | Example |
+|-------|--------------|--------|---------|-------------|-----------|---------|
+| O | 90 - 100 | XL | XL | XL | XL | Alnitak |
+| B | 75 - 89 | L | L | L | L | Rigel |
+| A | 60 - 74 | M | M | M | M | Vega |
+| F | 45 - 59 | S | S | S | S | Procyon |
+| G | 30 - 44 | XS | XS | XS | XS | The Sun |
+| K | 15 - 29 | XXS | XXS | XXS | XXS | Arcturus |
+| M | 1 - 14 | Tiny | Tiny | Tiny | Tiny | Proxima Centauri |
 
-**Risk/Reward:** Blue dwarfs are dangerous but efficient for refueling. Red giants are safer but require longer exposure.
+**Risk/Reward:** Class O stars are massive, hot, and extremely dangerous, offering high-speed refueling at the cost of intense hull damage. Class M stars are small, cool, and relatively safe, but require much longer exposure to refuel.
 
 ---
 
 ## Acceptance Criteria
 
 ### Sun Type Definition
-- [ ] Define `SunType` enum: `RED_GIANT`, `YELLOW_DWARF`, `BLUE_DWARF`
+- [ ] Define `SunType` enum: `O`, `B`, `A`, `F`, `G`, `K`, `M`
 - [ ] Define `SunConfig` interface with all scalable properties:
+  - `size` - standard size rating (1-100)
   - `radius` - visual/collision size
   - `color` - primary color
   - `glowColor` - outer glow color
@@ -54,11 +59,11 @@ This PBI introduces a **sun scale system** where the sun type affects gameplay:
   - `pulseSpeed` - animation speed
 
 ### Sun Presets
-- [ ] `RED_GIANT`: large radius, low gravity, low power multiplier, low burn multiplier, deep red
-- [ ] `YELLOW_DWARF`: medium radius, baseline gravity (1.0x), baseline power (1.0x), baseline burn (1.0x), orange
-- [ ] `BLUE_DWARF`: small radius, high gravity, high power multiplier, high burn multiplier, blue-white
+- [ ] `O`: XL radius, XL gravity, XL power/burn multipliers
+- [ ] `G`: Medium radius (baseline), baseline gravity/power/burn (1.0x)
+- [ ] `M`: Tiny radius, Low gravity, Low power/burn multipliers
 
-**Note:** Exact values defined in `SUN_CONFIG`, tuned through playtesting.
+**Note:** Seven presets based on stellar classification (OBAFGKM).
 
 ### Game Integration
 - [ ] Random sun type selected on game start (equal probability)
@@ -68,16 +73,17 @@ This PBI introduces a **sun scale system** where the sun type affects gameplay:
 
 ### Lab Integration
 - [ ] Add sun type selector to `/lab` (dropdown or radio buttons)
-- [ ] Preview all three sun types with live rendering
+- [ ] Preview all seven sun types with live rendering
+- [ ] Canvas fills available space in the layout for better visualization
 - [ ] Show current stats (radius, gravity, power, burn multipliers)
 - [ ] Slider to smoothly interpolate between types (for tuning)
 
 ### Visual Updates
 - [ ] `drawStar()` accepts full `SunConfig` for rendering
 - [ ] Each sun type has distinct visual identity:
-  - Red Giant: slow pulse, large soft glow
-  - Yellow Dwarf: medium pulse (current behavior)
-  - Blue Dwarf: fast pulse, intense compact glow
+  - Class O: intense pulse, brilliant blue-white glow, huge size
+  - Class G: medium pulse (baseline), yellow-orange glow
+  - Class M: very slow pulse, deep red glow, compact size
 
 ---
 
@@ -89,11 +95,12 @@ This PBI introduces a **sun scale system** where the sun type affects gameplay:
 // packages/core/src/lib/schemas/sun.ts
 import { z } from 'zod';
 
-export const SunTypeSchema = z.enum(['RED_GIANT', 'YELLOW_DWARF', 'BLUE_DWARF']);
+export const SunTypeSchema = z.enum(['O', 'B', 'A', 'F', 'G', 'K', 'M']);
 export type SunType = z.infer<typeof SunTypeSchema>;
 
 export const SunConfigSchema = z.object({
   type: SunTypeSchema,
+  size: z.number().int().min(1).max(100),
   radius: z.number().positive(),
   color: z.string(),
   glowColor: z.string(),
@@ -110,36 +117,40 @@ export type SunConfig = z.infer<typeof SunConfigSchema>;
 ```typescript
 // packages/core/src/lib/config.ts
 export const SUN_CONFIG: Record<SunType, SunTypeConfig> = {
-  RED_GIANT: {
-    type: 'RED_GIANT',
-    radius: /* large, tunable */,
-    color: /* deep red hex */,
-    glowColor: /* red glow hex */,
-    mass: /* low gravity */,
-    powerMultiplier: /* < 1.0 */,
-    burnMultiplier: /* < 1.0 */,
-    pulseSpeed: /* slow */,
+  O: {
+    type: 'O',
+    size: 100,
+    radius: 105,
+    color: '#00ffff',
+    glowColor: '#ffffff',
+    mass: 3000,
+    powerMultiplier: 4.5,
+    burnMultiplier: 6.5,
+    pulseSpeed: 4.5,
   },
-  YELLOW_DWARF: {
-    type: 'YELLOW_DWARF',
-    radius: /* medium, baseline */,
-    color: /* orange hex */,
-    glowColor: /* orange glow hex */,
-    mass: /* baseline gravity */,
+  G: {
+    type: 'G',
+    size: 40,
+    radius: 35,
+    color: '#ffaa00',
+    glowColor: '#ffaa00',
+    mass: 600,
     powerMultiplier: 1.0,  // Baseline
     burnMultiplier: 1.0,   // Baseline
     pulseSpeed: 1.0,       // Baseline
   },
-  BLUE_DWARF: {
-    type: 'BLUE_DWARF',
-    radius: /* small, tunable */,
-    color: /* blue-white hex */,
-    glowColor: /* blue glow hex */,
-    mass: /* high gravity */,
-    powerMultiplier: /* > 1.0 */,
-    burnMultiplier: /* > 1.0 */,
-    pulseSpeed: /* fast */,
+  M: {
+    type: 'M',
+    size: 1,
+    radius: 15,
+    color: '#ff4400',
+    glowColor: '#ff0000',
+    mass: 150,
+    powerMultiplier: 0.4,
+    burnMultiplier: 0.3,
+    pulseSpeed: 0.3,
   },
+  // ... and others
 } as const;
 ```
 
@@ -149,20 +160,19 @@ export const SUN_CONFIG: Record<SunType, SunTypeConfig> = {
 
 ```typescript
 // packages/mode-a/src/lib/game-loop.ts
-import { SUN_PRESETS, type SunType } from '@void-drift/core';
+import { SUN_CONFIG, type SunType } from '@void-drift/core';
 
 export function getRandomSunType(): SunType {
-  const types: SunType[] = ['RED_GIANT', 'YELLOW_DWARF', 'BLUE_DWARF'];
+  const types: SunType[] = ["O", "B", "A", "F", "G", "K", "M"];
   return types[Math.floor(Math.random() * types.length)];
 }
 
-export function createStar(sunType: SunType) {
-  const config = SUN_PRESETS[sunType];
+export function createStar(type: SunType, x: number, y: number): Star {
+  const config = SUN_CONFIG[type];
   return {
     ...config,
-    x: ARENA_CENTER_X,
-    y: ARENA_CENTER_Y,
-    influenceRadius: config.radius * 8, // Gravity influence scales with size
+    pos: new Vec2(x, y),
+    influenceRadius: config.radius * 9, // Tunable scaling
   };
 }
 ```
@@ -170,16 +180,16 @@ export function createStar(sunType: SunType) {
 ### Physics Integration
 
 ```typescript
-// packages/mode-a/src/lib/physics.ts
+// packages/core/src/lib/physics/Physics.ts
 export function updatePower(
   resources: Resources,
   distanceToSun: number,
-  sunConfig: SunConfig,
+  sun: Star,
   deltaTime: number,
   thrustState: { left: boolean; right: boolean }
 ): void {
   // Scale zone radii proportionally to sun radius
-  const radiusScale = sunConfig.radius / 40; // 40 = baseline (yellow dwarf)
+  const radiusScale = sun.radius / 40; // 40 = nominal baseline
   const zone1 = SURVIVAL_CONFIG.POWER_ZONE_1_RADIUS * radiusScale;
   const zone2 = SURVIVAL_CONFIG.POWER_ZONE_2_RADIUS * radiusScale;
   const zone3 = SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS * radiusScale;
@@ -194,7 +204,7 @@ export function updatePower(
   }
   
   // Apply sun type multiplier
-  regenRate *= sunConfig.powerMultiplier;
+  regenRate *= sun.powerMultiplier;
   
   // ... rest of power logic
 }
@@ -205,19 +215,21 @@ export function updatePower(
 ```typescript
 // packages/core/src/lib/assets/star.ts
 export interface DrawStarOptions {
-  x: number;
-  y: number;
-  config: SunConfig;
-  time: number;
-  powerZoneRadius?: number;
+    x: number;
+    y: number;
+    radius: number;
+    color: string;
+    glowColor: string;
+    time: number;
+    pulseSpeed?: number;
+    powerZoneRadius?: number;
 }
 
 export function drawStar(ctx: CanvasRenderingContext2D, options: DrawStarOptions): void {
-  const { x, y, config, time, powerZoneRadius } = options;
-  const { radius, color, pulseSpeed } = config;
+  const { x, y, radius, color, glowColor, time, pulseSpeed } = options;
   
   // Use config values for rendering
-  // ... existing logic with config.color, config.pulseSpeed, etc.
+  // ... existing logic with color, pulseSpeed, etc.
 }
 ```
 

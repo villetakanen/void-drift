@@ -24,9 +24,9 @@ The lab (`/lab`) currently shows visual previews of assets but doesn't display t
 2. Cross-reference config files for actual values
 3. Mentally map how values affect gameplay
 
-This PBI adds a **stats panel** to each lab entity that shows:
-- Physical properties (radius, mass, speed)
-- Gameplay properties (damage, gravity influence, zone radii)
+This PBI adds a **stats panel** to the inspector sidebar of each lab entity that shows:
+- Physical properties (radius, mass, size rating)
+- Gameplay properties (damage, gravity influence, multipliers)
 - Derived values (influence radius, zone boundaries)
 
 ---
@@ -48,8 +48,9 @@ This PBI adds a **stats panel** to each lab entity that shows:
 - [ ] Drag: damping factor
 
 ### Sun Stats
-- [ ] Type: RED_GIANT / YELLOW_DWARF / BLUE_DWARF
-- [ ] Radius: visual/collision size
+- [ ] Class: O / B / A / F / G / K / M
+- [ ] Size Rating: 1 - 100
+- [ ] Radius: visual/collision size in pixels
 - [ ] Mass: gravity strength factor
 - [ ] Power Multiplier: regen rate modifier
 - [ ] Burn Multiplier: hull damage modifier
@@ -103,28 +104,29 @@ This PBI adds a **stats panel** to each lab entity that shows:
 
 <style>
   .stats-panel {
-    background: var(--color-void-light);
-    border: 1px solid var(--color-neon-blue);
-    border-radius: var(--radius-sm);
-    padding: var(--spacing-md);
-    font-family: monospace;
+    background: transparent;
+    padding: 0;
+    font-family: inherit; /* Use design system font */
     font-size: 0.875rem;
   }
   
   .stat-group {
+    border-top: 1px solid var(--color-void-light);
+    padding-top: var(--spacing-sm);
     margin-bottom: var(--spacing-md);
   }
   
-  .stat-group:last-child {
-    margin-bottom: 0;
+  .stat-group:first-child {
+    border-top: none;
+    padding-top: 0;
   }
   
   h4 {
-    color: var(--color-neon-blue);
-    font-size: 0.75rem;
+    color: var(--color-text-dim);
+    font-size: 0.7rem;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: var(--spacing-sm);
+    letter-spacing: 0.15em;
+    margin-bottom: var(--spacing-xs);
   }
   
   dl {
@@ -139,11 +141,13 @@ This PBI adds a **stats panel** to each lab entity that shows:
   
   dt {
     color: var(--color-text-dim);
+    font-size: 0.85rem;
   }
   
   dd {
-    color: var(--color-text);
+    color: var(--color-neon-blue);
     margin: 0;
+    font-family: monospace;
     font-variant-numeric: tabular-nums;
   }
 </style>
@@ -184,42 +188,42 @@ This PBI adds a **stats panel** to each lab entity that shows:
 ```svelte
 <script>
   import LabStats from './LabStats.svelte';
-  import { SUN_PRESETS, SURVIVAL_CONFIG } from '@void-drift/core';
+  import { SUN_CONFIG, SURVIVAL_CONFIG } from '@void-drift/core';
   
-  let sunType = $state('YELLOW_DWARF');
+  let sunType = $state('G');
   
   const sunStats = $derived(() => {
-    const config = SUN_PRESETS[sunType];
+    const config = SUN_CONFIG[sunType];
     const radiusScale = config.radius / 40;
     
     return [
       {
-        label: 'Type',
+        label: 'Classification',
         stats: [
-          { key: 'Class', value: sunType.replace('_', ' ') },
+          { key: 'Class', value: config.type },
+          { key: 'Rating', value: config.size, unit: '/ 100' },
         ]
       },
       {
         label: 'Physical',
         stats: [
-          { key: 'Radius', value: config.radius, unit: 'px' },
+          { key: 'Radius', value: config.radius.toFixed(1), unit: 'px' },
           { key: 'Mass', value: config.mass },
-          { key: 'Pulse Speed', value: config.pulseSpeed.toFixed(1), unit: 'x' },
+          { key: 'Pulse', value: config.pulseSpeed.toFixed(1), unit: 'x' },
         ]
       },
       {
         label: 'Gameplay',
         stats: [
-          { key: 'Power Mult', value: config.powerMultiplier.toFixed(1), unit: 'x' },
-          { key: 'Burn Mult', value: config.burnMultiplier.toFixed(1), unit: 'x' },
+          { key: 'Power', value: config.powerMultiplier.toFixed(1), unit: 'x' },
+          { key: 'Burn', value: config.burnMultiplier.toFixed(1), unit: 'x' },
         ]
       },
       {
-        label: 'Zones (scaled)',
+        label: 'Zones (Scaled)',
         stats: [
-          { key: 'Zone 1', value: Math.round(SURVIVAL_CONFIG.POWER_ZONE_1_RADIUS * radiusScale), unit: 'px' },
-          { key: 'Zone 2', value: Math.round(SURVIVAL_CONFIG.POWER_ZONE_2_RADIUS * radiusScale), unit: 'px' },
-          { key: 'Zone 3', value: Math.round(SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS * radiusScale), unit: 'px' },
+          { key: 'Inner', value: Math.round(SURVIVAL_CONFIG.POWER_ZONE_1_RADIUS * radiusScale), unit: 'px' },
+          { key: 'Outer', value: Math.round(SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS * radiusScale), unit: 'px' },
         ]
       }
     ];

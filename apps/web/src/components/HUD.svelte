@@ -31,13 +31,21 @@
     const isPlaying = $derived(state.status === "PLAYING");
 
     const sunLabel = $derived(
-        state.sunType === "RED_GIANT"
-            ? "RED GIANT"
-            : state.sunType === "YELLOW_DWARF"
-              ? "YELLOW DWARF"
-              : state.sunType === "BLUE_DWARF"
-                ? "BLUE DWARF"
-                : "",
+        state.sunType === "O"
+            ? "CLASS O (BLUE)"
+            : state.sunType === "B"
+              ? "CLASS B (BLUE-WHITE)"
+              : state.sunType === "A"
+                ? "CLASS A (WHITE)"
+                : state.sunType === "F"
+                  ? "CLASS F (YELLOW-WHITE)"
+                  : state.sunType === "G"
+                    ? "CLASS G (YELLOW)"
+                    : state.sunType === "K"
+                      ? "CLASS K (ORANGE)"
+                      : state.sunType === "M"
+                        ? "CLASS M (RED)"
+                        : "",
     );
 </script>
 

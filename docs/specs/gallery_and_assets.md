@@ -97,19 +97,20 @@ interface LabStatsProps {
 | Mass | `ship.mass` | Physics weight |
 | Thrust | `ship.thrust` | Acceleration force |
 | Max Speed | `ship.maxSpeed` | Velocity cap |
-| Turn Rate | `ship.turnRate` | Rotation speed |
+| Deceleration | `ship.decel` | Passive drag |
 | Hitbox Radius | `ship.radius` | Collision detection |
 
 ### Star Stats View (`/lab/star`)
 | Stat | Value | Source |
 |------|-------|--------|
-| Type | `star.type` | RED_GIANT / YELLOW_DWARF / BLUE_DWARF |
+| Class | `star.type` | O / B / A / F / G / K / M |
+| Size Rating | `star.size` | Normalized scale (1 - 100) |
 | Radius | `star.radius` | Visual/collision size |
 | Mass | `star.mass` | Gravity strength |
-| Influence Radius | `star.influenceRadius` | Gravity range |
-| Power Multiplier | `star.powerMultiplier` | Fuel regen rate |
-| Burn Multiplier | `star.burnMultiplier` | Hull damage rate |
-| Color | `star.color` | Core color swatch |
+| Gravity Range | `star.influenceRadius` | Gravitational well depth |
+| Power Mult | `star.powerMultiplier` | Fuel regen efficiency |
+| Burn Mult | `star.burnMultiplier` | Proximity damage rate |
+| Zone 1/2/3 | `star.zones` | Scaled regen/burn boundaries |
 
 ### Planet Stats View (`/lab/planet`)
 | Stat | Value | Source |
@@ -119,23 +120,21 @@ interface LabStatsProps {
 | Orbit Speed | `planet.orbitSpeed` | Angular velocity |
 | Color | `planet.color` | Surface color swatch |
 
-### UI Layout
+### UI Layout (Inspector Sidebar)
 ```
-┌─────────────────────────────────────┐
-│  [Canvas Preview]                   │
-│                                     │
-│     ☀️ Sun Visualization            │
-│                                     │
-├─────────────────────────────────────┤
-│  Stats                              │
-│  ─────                              │
-│  Type:        YELLOW_DWARF          │
-│  Radius:      40px                  │
-│  Mass:        600                   │
-│  Influence:   350px                 │
-│  Power:       1.0x                  │
-│  Burn:        1.0x                  │
-└─────────────────────────────────────┘
+┌─────────────────────┬───────────────────┐
+│                     │  INSPECTOR        │
+│                     ├───────────────────┤
+│                     │  [ Presets ]      │
+│                     │  > Class G (Sun)  │
+│  [ Canvas Preview ] │                   │
+│                     ├───────────────────┤
+│                     │  [ Stats ]        │
+│                     │  Size:    40      │
+│                     │  Radius:  35px    │
+│                     │  Mass:    600     │
+│                     │  Zones:   ...     │
+└─────────────────────┴───────────────────┘
 ```
 
 ### Implementation Location

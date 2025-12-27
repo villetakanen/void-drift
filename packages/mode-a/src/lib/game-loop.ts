@@ -53,7 +53,7 @@ export function updateTimer(state: GameState): void {
 }
 
 export function getRandomSunType(): SunType {
-  const types: SunType[] = ["RED_GIANT", "YELLOW_DWARF", "BLUE_DWARF"];
+  const types: SunType[] = ["O", "B", "A", "F", "G", "K", "M"];
   return types[Math.floor(Math.random() * types.length)];
 }
 

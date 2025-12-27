@@ -188,8 +188,8 @@
     // Position Ship slightly offset
     ship.pos.set(LOGICAL_WIDTH / 2 - 500, LOGICAL_HEIGHT / 2);
 
-    // Create an initial Star for the menu (Yellow Dwarf)
-    const initialSunType = "YELLOW_DWARF";
+    // Create an initial Star for the menu (Class G)
+    const initialSunType = "G";
     state.sunType = initialSunType;
     star = createGameStar(
       initialSunType,

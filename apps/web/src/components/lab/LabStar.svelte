@@ -4,19 +4,22 @@
     import { drawStar, SUN_CONFIG, type SunType } from "@void-drift/core";
 
     // Star State
-    let selectedType: SunType = $state("YELLOW_DWARF");
-    let interpolator = $state(1.0); // 0 = Red, 1 = Yellow, 2 = Blue
+    let selectedType: SunType = $state("G");
+    let interpolator = $state(4.0); // 0=O, 1=B, 2=A, 3=F, 4=G, 5=K, 6=M
 
     const starParams = $derived.by(() => {
         const presets = [
-            SUN_CONFIG.RED_GIANT,
-            SUN_CONFIG.YELLOW_DWARF,
-            SUN_CONFIG.BLUE_DWARF,
+            SUN_CONFIG.O,
+            SUN_CONFIG.B,
+            SUN_CONFIG.A,
+            SUN_CONFIG.F,
+            SUN_CONFIG.G,
+            SUN_CONFIG.K,
+            SUN_CONFIG.M,
         ];
 
-        if (interpolator === 0) return presets[0];
-        if (interpolator === 1) return presets[1];
-        if (interpolator === 2) return presets[2];
+        if (interpolator <= 0) return presets[0];
+        if (interpolator >= 6) return presets[6];
 
         const idx = Math.floor(interpolator);
         const nextIdx = Math.min(idx + 1, presets.length - 1);
@@ -28,12 +31,12 @@
         // Linear interpolation for numeric values
         const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
-        // Color interpolation (simplified: pick closest or use CSS colors if needed)
-        // For simplicity in a lab, we'll just lerp the numbers and pick the color of the closest preset
+        // Color interpolation (simplified: pick closest)
         const closestIdx = Math.round(interpolator);
 
         return {
             type: presets[closestIdx].type,
+            size: Math.round(lerp(p1.size, p2.size, t)),
             radius: lerp(p1.radius, p2.radius, t),
             mass: lerp(p1.mass, p2.mass, t),
             powerMultiplier: lerp(p1.powerMultiplier, p2.powerMultiplier, t),
@@ -45,6 +48,8 @@
     });
 
     let starTime = $state(0);
+    let stageWidth = $state(600);
+    let stageHeight = $state(400);
 
     // Animation Loop for Star
     $effect(() => {
@@ -79,8 +84,16 @@
         <div class="stage-header">
             <h2>Preview: STAR</h2>
         </div>
-        <div class="stage-content">
-            <Canvas width={600} height={400} draw={drawStarPreview} />
+        <div
+            class="stage-content"
+            bind:clientWidth={stageWidth}
+            bind:clientHeight={stageHeight}
+        >
+            <Canvas
+                width={stageWidth}
+                height={stageHeight}
+                draw={drawStarPreview}
+            />
         </div>
     </div>
 
@@ -92,30 +105,47 @@
                     id="sun-type"
                     bind:value={selectedType}
                     onchange={() => {
-                        if (selectedType === "RED_GIANT") interpolator = 0;
-                        if (selectedType === "YELLOW_DWARF") interpolator = 1;
-                        if (selectedType === "BLUE_DWARF") interpolator = 2;
+                        const types: SunType[] = [
+                            "O",
+                            "B",
+                            "A",
+                            "F",
+                            "G",
+                            "K",
+                            "M",
+                        ];
+                        interpolator = types.indexOf(selectedType);
                     }}
                 >
-                    <option value="RED_GIANT">Red Giant</option>
-                    <option value="YELLOW_DWARF">Yellow Dwarf</option>
-                    <option value="BLUE_DWARF">Blue Dwarf</option>
+                    <option value="O">Class O (Blue)</option>
+                    <option value="B">Class B (Blue-White)</option>
+                    <option value="A">Class A (White)</option>
+                    <option value="F">Class F (Yellow-White)</option>
+                    <option value="G">Class G (Yellow)</option>
+                    <option value="K">Class K (Orange)</option>
+                    <option value="M">Class M (Red)</option>
                 </select>
             </div>
             <div class="control-group">
-                <label for="sun-lerp">Smooth Tune (Red → Blue)</label>
+                <label for="sun-lerp">Smooth Tune (Class O → M)</label>
                 <input
                     type="range"
                     id="sun-lerp"
                     min="0"
-                    max="2"
+                    max="6"
                     step="0.01"
                     bind:value={interpolator}
                     oninput={() => {
-                        if (interpolator < 0.5) selectedType = "RED_GIANT";
-                        else if (interpolator < 1.5)
-                            selectedType = "YELLOW_DWARF";
-                        else selectedType = "BLUE_DWARF";
+                        const types: SunType[] = [
+                            "O",
+                            "B",
+                            "A",
+                            "F",
+                            "G",
+                            "K",
+                            "M",
+                        ];
+                        selectedType = types[Math.round(interpolator)];
                     }}
                 />
             </div>
@@ -123,7 +153,10 @@
 
         <Controls title="Parameters (Read-only)">
             <div class="control-group">
-                <label>Radius: {starParams.radius}px</label>
+                <label>Size Rating (1-100): {starParams.size}</label>
+            </div>
+            <div class="control-group">
+                <label>Radius: {starParams.radius.toFixed(1)}px</label>
             </div>
             <div class="control-group">
                 <label>Mass: {starParams.mass}</label>
