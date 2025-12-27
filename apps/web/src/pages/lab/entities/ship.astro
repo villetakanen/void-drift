@@ -1,0 +1,10 @@
+---
+import LabLayout from "../../../layouts/LabLayout.astro";
+import LabShipMain from "../../../components/lab/LabShipMain.svelte";
+import LabShipInspector from "../../../components/lab/LabShipInspector.svelte";
+---
+
+<LabLayout title="Ship">
+    <LabShipMain client:only="svelte" />
+    <LabShipInspector slot="inspector" client:only="svelte" />
+</LabLayout>

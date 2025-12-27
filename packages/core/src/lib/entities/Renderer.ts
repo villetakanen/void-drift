@@ -118,8 +118,9 @@ export class Renderer {
         y: star.pos.y + offY,
         radius: star.radius,
         color: star.color,
+        glowColor: star.glowColor,
         time: time,
-        pulseSpeed: 1.0,
+        pulseSpeed: star.pulseSpeed,
         powerZoneRadius: SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS,
       });
     });

@@ -1,0 +1,10 @@
+---
+import LabLayout from "../../../layouts/LabLayout.astro";
+import LabStarMain from "../../../components/lab/LabStarMain.svelte";
+import LabStarInspector from "../../../components/lab/LabStarInspector.svelte";
+---
+
+<LabLayout title="Star">
+    <LabStarMain client:only="svelte" />
+    <LabStarInspector slot="inspector" client:only="svelte" />
+</LabLayout>

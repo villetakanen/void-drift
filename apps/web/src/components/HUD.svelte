@@ -29,11 +29,32 @@
               : "0.0s",
     );
     const isPlaying = $derived(state.status === "PLAYING");
+
+    const sunLabel = $derived(
+        state.sunType === "O"
+            ? "CLASS O (BLUE)"
+            : state.sunType === "B"
+              ? "CLASS B (BLUE-WHITE)"
+              : state.sunType === "A"
+                ? "CLASS A (WHITE)"
+                : state.sunType === "F"
+                  ? "CLASS F (YELLOW-WHITE)"
+                  : state.sunType === "G"
+                    ? "CLASS G (YELLOW)"
+                    : state.sunType === "K"
+                      ? "CLASS K (ORANGE)"
+                      : state.sunType === "M"
+                        ? "CLASS M (RED)"
+                        : "",
+    );
 </script>
 
 <div class="hud">
     {#if isPlaying || state.elapsedTime > 0}
-        <div class="timer">{timeDisplay}</div>
+        <div class="timer">
+            <span class="sun-indicator">{sunLabel}</span>
+            <span class="time">{timeDisplay}</span>
+        </div>
     {/if}
 
     <div class="resource-bar">
@@ -102,12 +123,26 @@
         position: fixed;
         top: var(--spacing-sm);
         right: var(--spacing-sm);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: var(--spacing-xs);
+        z-index: 100;
+        pointer-events: none;
+    }
+
+    .sun-indicator {
+        font-size: 0.75rem;
+        color: var(--color-text-dim);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    .time {
         font-size: 1.25rem;
         color: var(--color-text);
         font-variant-numeric: tabular-nums;
         font-family: monospace;
         text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
-        z-index: 100;
-        pointer-events: none;
     }
 </style>

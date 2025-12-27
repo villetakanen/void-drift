@@ -14,12 +14,14 @@
     updateShip,
   } from "@void-drift/core";
   import {
+    updateTimer,
+    createInitialGameState,
+    getRandomSunType,
+    createStar as createGameStar,
     GameLoop,
     type GameState,
     checkDeath,
     handleDeath,
-    updateTimer,
-    createInitialGameState,
   } from "@void-drift/mode-a";
   import HUD from "./HUD.svelte";
   import GameOver from "./GameOver.svelte";
@@ -56,6 +58,11 @@
   let planets: Planet[] = $state([]);
 
   function startGame() {
+    // Select Sun Type
+    const sunType = getRandomSunType();
+    state.sunType = sunType;
+    star = createGameStar(sunType, LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2);
+
     state.status = "PLAYING";
     state.startTime = Date.now();
   }
@@ -68,6 +75,11 @@
     state.resources.hull = 100;
     state.resources.power = 100;
     state.deathCause = null;
+
+    // Reset Sun
+    const sunType = getRandomSunType();
+    state.sunType = sunType;
+    star = createGameStar(sunType, LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2);
 
     // Reset ship
     ship.pos.set(LOGICAL_WIDTH / 2 - 500, LOGICAL_HEIGHT / 2);
@@ -116,12 +128,12 @@
       const dy = ship.pos.y - star.pos.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
-      updatePower(state.resources, dist, dt, {
+      updatePower(state.resources, dist, star, dt, {
         left: effectiveInput.leftThruster,
         right: effectiveInput.rightThruster,
       });
 
-      updateHull(state.resources, dist, star.radius, dt);
+      updateHull(state.resources, dist, star, dt);
 
       // Death Check
       if (state.status === "PLAYING") {
@@ -176,14 +188,14 @@
     // Position Ship slightly offset
     ship.pos.set(LOGICAL_WIDTH / 2 - 500, LOGICAL_HEIGHT / 2);
 
-    // Create a Star in the center
-    star = {
-      pos: new Vec2(LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2),
-      radius: 40,
-      influenceRadius: 350,
-      mass: 600,
-      color: "#FFA500", // Orange
-    };
+    // Create an initial Star for the menu (Class G)
+    const initialSunType = "G";
+    state.sunType = initialSunType;
+    star = createGameStar(
+      initialSunType,
+      LOGICAL_WIDTH / 2,
+      LOGICAL_HEIGHT / 2,
+    );
 
     // Create Planets
     planets = [

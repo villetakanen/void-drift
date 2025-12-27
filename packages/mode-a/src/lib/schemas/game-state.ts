@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ResourcesSchema, DeathCauseSchema } from '@void-drift/core';
+import { ResourcesSchema, DeathCauseSchema, SunTypeSchema } from '@void-drift/core';
 
 export const GameStateSchema = z.object({
     status: z.enum(['MENU', 'PLAYING', 'GAME_OVER', 'SETTINGS']),
@@ -7,6 +7,7 @@ export const GameStateSchema = z.object({
     elapsedTime: z.number(),          // Seconds (float)
     resources: ResourcesSchema,
     deathCause: DeathCauseSchema.nullable(),
+    sunType: SunTypeSchema.nullable(),
 });
 
 export type GameState = z.infer<typeof GameStateSchema>;
@@ -23,5 +24,6 @@ export function createInitialGameState(): GameState {
             power: 100,
         },
         deathCause: null,
+        sunType: null,
     };
 }

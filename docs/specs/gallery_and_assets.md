@@ -1,154 +1,76 @@
 # Feature: Internal Asset Lab (Workbench)
 
-**Status:** IN PROGRESS  
-**Current Version:** 0.0.5 (Refactor from Gallery)
+**Status:** ACTIVE  
+**Current Version:** 0.1.0
 
 ## Blueprint
 
 ### Context
 To decouple asset development from gameplay logic, we have implemented a "Lab" route at `/lab`. This allows designers and developers to tune procedural generation parameters (like ship colors, star pulses, or particle physics) in real-time, in isolated environments, without navigating the game loop or networking stack.
 
-**Achievement:** Clean separation of developer tools from production game via Astro file-system routing, with granular addressability for each asset.
+**Achievement:** Clean separation of developer tools from production game via Astro file-system routing, with granular addressability for each asset and a robust 3-column grid layout.
 
 ### Architecture
 - **Base Route:** `/lab` (Index of all experiments).
 - **Sub-Routes:**
-  - `/lab/ship`: Ship rendering workspace.
-  - `/lab/star`: Star rendering workspace.
-  - `/lab/[...asset]`: Future assets.
-- **Location:** `apps/web/src/pages/lab/**/*.astro`
-- **Components:**
-  - `LabLayout.astro`: Common shell for lab pages (navigation).
-  - Specific rendering components (e.g., `LabShip.svelte`, `LabStar.svelte`).
-- **Asset API:** Pure functions accepting `ctx` and `props`.
-  - `drawShip(ctx, props)` → `packages/core/src/lib/assets/ship.ts`
-  - `drawStar(ctx, props)` → `packages/core/src/lib/assets/star.ts`
+  - **Entity Labs:** `/lab/entities/ship`, `/lab/entities/star`, `/lab/entities/planet`.
+  - **System Labs:** `/lab/resources`, `/lab/typography`, `/lab/buttons`.
+- **Location:**
+  - Entities: `apps/web/src/pages/lab/entities/*.astro`
+  - Systems: `apps/web/src/pages/lab/*.astro`
+
+### Entity Template
+To ensure consistency, all **Entity Labs** follow a primary template:
+1.  **3-Column Grid**: 
+    - **Nav Rail (SSG)**: Global navigation.
+    - **Stage (Mixed)**: Static Header + Interactive Svelte Main.
+    - **Inspector (CSR)**: Parameter controls and Real-time Stats.
+
+### Asset API
+Pure functions accepting `ctx` and `props`.
+- `drawShip(ctx, props)` → `packages/core/src/lib/assets/ship.ts`
+- `drawStar(ctx, props)` → `packages/core/src/lib/assets/star.ts`
+- `drawPlanet(ctx, props)` → `packages/core/src/lib/assets/planet.ts`
+- `drawResourceBar(ctx, props)` → `packages/core/src/lib/assets/resource-bar.ts`
 
 ### Anti-Patterns
+- **Do NOT** use `LabStats` in System Labs (e.g., Resources). Systems should have their own tailored debug views.
 - **Do NOT** load the full `GameLoop` in the Lab. Only the `Renderer` or specific draw functions should run.
-- **Do NOT** hardcode lab assets; they should be the exact same functions used in production.
-- **Do NOT** bundle the Lab routes in production builds (tree-shaken automatically by Astro or excluded via build config).
+- **Do NOT** bundle the Lab routes in production builds.
 
 ## Contract
 
 ### Definition of Done
-- [ ] Visiting `/lab` loads the Lab Index.
-- [ ] Visiting `/lab/ship` loads the Ship Workbench.
-- [ ] Lab uses the same render functions as production game (no duplication).
-- [ ] Lab routes are completely separate from game route.
+- [x] Visiting `/lab` loads the Lab Index.
+- [x] Visiting `/lab/entities/ship` loads the Ship Workbench.
+- [x] Lab uses the same render functions as production game (no duplication).
+- [x] Lab routes are completely separate from game route.
 
 ### Regression Guardrails
-- **Performance:** Inspector updates must not trigger full-page reloads.
+- **Performance:** Inspector updates must not trigger full-page reloads (Isolated CSR).
 - **Isolation:** Crashes in the Lab must not affect the main Game Loop entry point.
 - **Build Safety:** Lab should not increase production bundle size.
 
-### Scenarios
+## UI Layout (The "workbench" Grid)
+The Lab uses a CSS Grid layout to maximize screen real estate and separate concerns.
 
-**Scenario: Accessing Lab Index**
-- Given I navigate to `localhost:4321/lab`
-- When the page loads
-- Then I see a list of links to available asset workbenches
-- **Status:** PENDING
-
-**Scenario: Deep Linking to Asset**
-- Given I share a link `localhost:4321/lab/ship`
-- When a developer opens it
-- Then they are taken directly to the Ship workbench
-- And they don't have to scroll through a giant gallery
-- **Status:** PENDING
-
-**Scenario: Shared Rendering Logic**
-- Given the `drawShip` function in `packages/engine/src/lib/renderers/ship.ts`
-- When it is imported by both Lab and GameWrapper
-- Then both render identical ship visuals
-- **Status:** PENDING
-
-## Current Implementation
-
-### File Structure
-```
-apps/web/src/
-├── pages/
-│   ├── index.astro        → Game (/)
-│   └── lab/
-│       ├── index.astro    → Lab Index (/lab)
-│       └── ship.astro     → Ship Workbench (/lab/ship)
-└── components/
-    └── lab/               → Lab-specific wrappers
-        └── LabShip.svelte
+**Grid Structure:**
+```text
+| logo (SSG)      | page-title (SSG)       | inspector (CSR) |
+| tray (SSG)      | main (CSR)             | inspector (CSR) |
 ```
 
-## Lab Stats View
-
-### Purpose
-Display game-relevant statistics for each entity in the Lab, allowing designers and developers to understand the gameplay implications of visual parameters.
-
-### Stats Panel Component
-```typescript
-interface LabStatsProps {
-  entity: 'ship' | 'star' | 'planet';
-  config: EntityConfig;
-}
-```
-
-### Ship Stats View (`/lab/ship`)
-| Stat | Value | Source |
-|------|-------|--------|
-| Mass | `ship.mass` | Physics weight |
-| Thrust | `ship.thrust` | Acceleration force |
-| Max Speed | `ship.maxSpeed` | Velocity cap |
-| Turn Rate | `ship.turnRate` | Rotation speed |
-| Hitbox Radius | `ship.radius` | Collision detection |
-
-### Star Stats View (`/lab/star`)
-| Stat | Value | Source |
-|------|-------|--------|
-| Type | `star.type` | RED_GIANT / YELLOW_DWARF / BLUE_DWARF |
-| Radius | `star.radius` | Visual/collision size |
-| Mass | `star.mass` | Gravity strength |
-| Influence Radius | `star.influenceRadius` | Gravity range |
-| Power Multiplier | `star.powerMultiplier` | Fuel regen rate |
-| Burn Multiplier | `star.burnMultiplier` | Hull damage rate |
-| Color | `star.color` | Core color swatch |
-
-### Planet Stats View (`/lab/planet`)
-| Stat | Value | Source |
-|------|-------|--------|
-| Radius | `planet.radius` | Visual/collision size |
-| Orbit Radius | `planet.orbitRadius` | Distance from sun |
-| Orbit Speed | `planet.orbitSpeed` | Angular velocity |
-| Color | `planet.color` | Surface color swatch |
-
-### UI Layout
-```
-┌─────────────────────────────────────┐
-│  [Canvas Preview]                   │
-│                                     │
-│     ☀️ Sun Visualization            │
-│                                     │
-├─────────────────────────────────────┤
-│  Stats                              │
-│  ─────                              │
-│  Type:        YELLOW_DWARF          │
-│  Radius:      40px                  │
-│  Mass:        600                   │
-│  Influence:   350px                 │
-│  Power:       1.0x                  │
-│  Burn:        1.0x                  │
-└─────────────────────────────────────┘
-```
-
-### Implementation Location
-- Component: `apps/web/src/components/lab/LabStats.svelte`
-- Integration: Each lab page imports and configures LabStats
-
-### Future Enhancements
-- [ ] Add real-time parameter sliders (color, size, animation speed)
-- [ ] Add "Export" functionality to save asset configurations
-- [ ] Add screenshot/recording capability for asset documentation
-- [ ] Add comparison view (side-by-side entity configs)
+**Columns:**
+1.  **Nav Rail (250px):** `logo` (Brand) + `tray` (Navigation Links).
+    *   *Tech:* Astro (Static).
+2.  **Stage (1fr):** `page-title` (Header) + `main` (Interactive Canvas/Preview).
+    *   *Tech:* Header is Astro (Static). Main is Svelte (Client-side).
+    *   *Scrolling:* `main` scrolls-y if content overflows (unless it's a fixed Canvas).
+3.  **Inspector (300px):** `side-pane` (Controls + Stats).
+    *   *Tech:* Svelte (Client-side) via isolated island.
+    *   *Scrolling:* Scrolls-y independently.
 
 ---
 
-**Lab Status: UNDER CONSTRUCTION** 🚧  
+**Lab Status: ACTIVE** 🚀  
 **Access:** Navigate to `/lab` during development
