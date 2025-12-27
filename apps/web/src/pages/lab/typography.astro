@@ -1,9 +1,18 @@
 ---
 import LabLayout from "../../layouts/LabLayout.astro";
-import LabTypography from "../../components/lab/LabTypography.svelte";
+import LabTypographyMain from "../../components/lab/LabTypographyMain.svelte";
+import Controls from "../../components/Controls.svelte";
 ---
 
 <LabLayout title="Typography & Tokens">
-    <!-- @ts-ignore -->
-    <LabTypography client:only="svelte" />
+    <LabTypographyMain client:only="svelte" />
+
+    <Controls slot="inspector" title="Details">
+        <p
+            style="padding: 1rem; color: var(--color-text-dim); font-size: 0.9rem;"
+        >
+            This page displays the core design tokens including typography and
+            color palette.
+        </p>
+    </Controls>
 </LabLayout>

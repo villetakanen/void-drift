@@ -3,11 +3,7 @@ import LabLayout from "../../layouts/LabLayout.astro";
 ---
 
 <LabLayout title="Buttons">
-    <div class="stage-header">
-        <h2>Buttons</h2>
-    </div>
-
-    <div class="stage-content">
+    <div class="demo-shell">
         <section class="variant-section">
             <h3>Filled (Primary)</h3>
             <div class="demo-grid">
@@ -75,24 +71,19 @@ import LabLayout from "../../layouts/LabLayout.astro";
 </LabLayout>
 
 <style>
-    .stage-header {
-        padding: 1rem 2rem;
-        border-bottom: 1px solid var(--color-text-dim);
-    }
-
-    h2 {
-        margin: 0;
-        font-size: 1rem;
-        color: var(--color-text-dim);
-        text-transform: uppercase;
-    }
-
-    .stage-content {
+    .demo-shell {
         padding: 2rem;
         display: flex;
         flex-direction: column;
         gap: 3rem;
-        overflow-y: auto;
+        background-image:
+            linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+            linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0.05) 1px,
+                transparent 1px
+            );
+        background-size: 20px 20px;
     }
 
     .variant-section h3 {

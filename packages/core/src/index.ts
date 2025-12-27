@@ -9,6 +9,7 @@ export * from './lib/config';
 // Assets
 export * from './lib/assets/ship';
 export * from './lib/assets/star';
+export * from './lib/assets/planet';
 export * from './lib/assets/resource-bar';
 export * from './lib/assets/death-icons';
 

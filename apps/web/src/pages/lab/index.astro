@@ -4,51 +4,19 @@ import Canvas from "../../components/Canvas.svelte";
 ---
 
 <LabLayout title="Dashboard">
-    <div class="stage-header">
-        <h2>Dashboard</h2>
-    </div>
-
-    <div class="stage-content">
-        <!-- Dashboard Canvas (Purely Decorative for now) -->
-        <Canvas
-            client:only="svelte"
-            width={600}
-            height={400}
-            draw={(ctx) => {
-                ctx.fillStyle = "#0a0a1f";
-                ctx.fillRect(0, 0, 600, 400);
-
-                ctx.fillStyle = "#D4FF00"; // Acid Lime
-                ctx.font = "20px 'Noto Sans Math'";
-                ctx.fillText("Select an asset from the left sidebar.", 20, 60);
-
-                ctx.font = "16px 'Noto Sans Math'";
-                ctx.fillStyle = "#888";
-                ctx.fillText("← Navigate to workbenches", 20, 90);
-            }}
-        />
+    <div class="dashboard-shell">
+        <p>Select an asset from the left sidebar to begin tuning.</p>
+        <div class="hint">← Use the nav rail to navigate</div>
     </div>
 </LabLayout>
 
 <style>
-    .stage-header {
-        padding: 1rem 2rem;
-        border-bottom: 1px solid var(--color-text-dim);
-    }
-
-    h2 {
-        margin: 0;
-        font-size: 1rem;
-        color: var(--color-text-dim);
-        text-transform: uppercase;
-    }
-
-    .stage-content {
+    .dashboard-shell {
         flex: 1;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        /* Grid background effect */
         background-image:
             linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
             linear-gradient(
@@ -57,5 +25,17 @@ import Canvas from "../../components/Canvas.svelte";
                 transparent 1px
             );
         background-size: 20px 20px;
+        color: var(--color-text-dim);
+    }
+
+    p {
+        color: var(--color-acid-lime);
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .hint {
+        font-size: 0.9rem;
+        opacity: 0.6;
     }
 </style>
