@@ -8,6 +8,7 @@ const rootPackage = JSON.parse(readFileSync(path.resolve('../../package.json'), 
 
 // https://astro.build/config
 export default defineConfig({
+  envDir: '../../',
   integrations: [svelte()],
   vite: {
     resolve: {

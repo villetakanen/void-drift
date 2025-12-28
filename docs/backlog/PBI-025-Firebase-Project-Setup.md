@@ -1,12 +1,7 @@
 # PBI-025: Firebase Project Setup
 
-**Status:** TODO  
-**Priority:** HIGH  
-**Estimate:** 2 Story Points  
-**Phase:** 6 (High Scores)  
-**Target Version:** v0.2.0
-
----
+**Status:** REJECTED  
+**Reason:** Architecture pivot to Supabase (see PBI-026). Firebase implementation abandoned in favor of PostgreSQL/Supabase for better leaderboard querying and free tier benefits.
 
 ## User Story
 

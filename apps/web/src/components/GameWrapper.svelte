@@ -22,6 +22,7 @@
     type GameState,
     checkDeath,
     handleDeath,
+    ensureAnonymousSession,
   } from "@void-drift/mode-a";
   import HUD from "./HUD.svelte";
   import GameOver from "./GameOver.svelte";
@@ -178,6 +179,11 @@
   }
 
   onMount(() => {
+    // Ensure user is authenticated before game starts
+    ensureAnonymousSession().catch((error: unknown) => {
+      console.error("Failed to authenticate:", error);
+    });
+
     // Initialize Camera with 16:9 viewport
     camera = new Camera({
       viewportWidth: LOGICAL_WIDTH,
