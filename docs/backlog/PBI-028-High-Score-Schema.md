@@ -1,6 +1,6 @@
 # PBI-028: High Score Schema + Submission
 
-**Status:** TODO  
+**Status:** DONE  
 **Priority:** HIGH  
 **Estimate:** 3 Story Points  
 **Phase:** 6 (High Scores)  
