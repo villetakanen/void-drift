@@ -1,10 +1,10 @@
 <script lang="ts">
     import type { GameState } from "@void-drift/mode-a";
 
-    let { state }: { state: GameState } = $props();
+    let { gameState }: { gameState: GameState } = $props();
 
-    const hullPercent = $derived(state.resources.hull);
-    const powerPercent = $derived(state.resources.power);
+    const hullPercent = $derived(gameState.resources.hull);
+    const powerPercent = $derived(gameState.resources.power);
 
     const hullColor = $derived(
         hullPercent < 25
@@ -22,35 +22,35 @@
               : "var(--color-resource-power)",
     );
     const timeDisplay = $derived(
-        state.status === "PLAYING"
-            ? `${state.elapsedTime.toFixed(1)}s`
-            : state.elapsedTime > 0
-              ? `${state.elapsedTime.toFixed(1)}s`
+        gameState.status === "PLAYING"
+            ? `${gameState.elapsedTime.toFixed(1)}s`
+            : gameState.elapsedTime > 0
+              ? `${gameState.elapsedTime.toFixed(1)}s`
               : "0.0s",
     );
-    const isPlaying = $derived(state.status === "PLAYING");
+    const isPlaying = $derived(gameState.status === "PLAYING");
 
     const sunLabel = $derived(
-        state.sunType === "O"
+        gameState.sunType === "O"
             ? "CLASS O (BLUE)"
-            : state.sunType === "B"
+            : gameState.sunType === "B"
               ? "CLASS B (BLUE-WHITE)"
-              : state.sunType === "A"
+              : gameState.sunType === "A"
                 ? "CLASS A (WHITE)"
-                : state.sunType === "F"
+                : gameState.sunType === "F"
                   ? "CLASS F (YELLOW-WHITE)"
-                  : state.sunType === "G"
+                  : gameState.sunType === "G"
                     ? "CLASS G (YELLOW)"
-                    : state.sunType === "K"
+                    : gameState.sunType === "K"
                       ? "CLASS K (ORANGE)"
-                      : state.sunType === "M"
+                      : gameState.sunType === "M"
                         ? "CLASS M (RED)"
                         : "",
     );
 </script>
 
 <div class="hud">
-    {#if isPlaying || state.elapsedTime > 0}
+    {#if isPlaying || gameState.elapsedTime > 0}
         <div class="timer">
             <span class="sun-indicator">{sunLabel}</span>
             <span class="time">{timeDisplay}</span>

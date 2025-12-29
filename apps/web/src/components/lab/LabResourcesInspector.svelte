@@ -1,6 +1,8 @@
 <script lang="ts">
     import Controls from "../Controls.svelte";
     import { resourcesParams } from "./resources-state.svelte";
+
+    let { ...props }: { [key: string]: any } = $props();
 </script>
 
 <Controls title="Simulation">

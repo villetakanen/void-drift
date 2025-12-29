@@ -3,6 +3,8 @@
     import { drawResourceBar, drawDeathIcon } from "@void-drift/core";
     import { resourcesParams } from "./resources-state.svelte";
 
+    let { ...props }: { [key: string]: any } = $props();
+
     const COLORS = {
         hull: "#00c8ff",
         fuel: "#D4FF00",
@@ -37,14 +39,14 @@
         const startX = 30;
         drawDeathIcon(ctx, startX, 40, 32, "STAR");
         drawDeathIcon(ctx, startX + spacing, 40, 32, "HULL");
-        drawDeathIcon(ctx, startX + spacing * 2, 40, 32, "FUEL");
+        drawDeathIcon(ctx, startX + spacing * 2, 40, 32, "POWER");
 
         ctx.fillStyle = "#888";
         ctx.font = "10px sans-serif";
         ctx.textAlign = "center";
         ctx.fillText("STAR", startX, 70);
         ctx.fillText("HULL", startX + spacing, 70);
-        ctx.fillText("FUEL", startX + spacing * 2, 70);
+        ctx.fillText("POWER", startX + spacing * 2, 70);
     }
 </script>
 

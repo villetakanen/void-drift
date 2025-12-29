@@ -1,6 +1,6 @@
 # PBI-026: Supabase Project Setup
 
-**Status:** TODO  
+**Status:** DONE  
 **Priority:** HIGH  
 **Estimate:** 2 Story Points  
 **Phase:** 6 (High Scores)  

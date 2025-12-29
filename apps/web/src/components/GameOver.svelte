@@ -1,14 +1,29 @@
 <script lang="ts">
   import type { GameState } from "@void-drift/mode-a";
   import { drawDeathIcon } from "@void-drift/core";
+  import InitialsEntry from "./InitialsEntry.svelte";
 
   let {
-    state,
+    gameState,
     onRestart,
   }: {
-    state: GameState;
+    gameState: GameState;
     onRestart: () => void;
   } = $props();
+
+  let showInitialsEntry = $state(false);
+
+  function handleSubmitScore() {
+    showInitialsEntry = true;
+  }
+
+  function handleSubmitSuccess() {
+    window.location.href = "/leaderboard";
+  }
+
+  function handleCancel() {
+    showInitialsEntry = false;
+  }
 
   const deathMessages: Record<string, string> = {
     STAR: "Incinerated by the star",
@@ -17,19 +32,19 @@
   };
 
   const causeMessage = $derived(
-    state.deathCause ? deathMessages[state.deathCause] : "Unknown",
+    gameState.deathCause ? deathMessages[gameState.deathCause] : "Unknown",
   );
 
-  const finalTime = $derived(state.elapsedTime.toFixed(2));
+  const finalTime = $derived(gameState.elapsedTime.toFixed(2));
 
   // Render death icon on canvas
-  let iconCanvas: HTMLCanvasElement;
+  let iconCanvas = $state<HTMLCanvasElement>();
   $effect(() => {
-    if (iconCanvas && state.deathCause) {
+    if (iconCanvas && gameState.deathCause) {
       const ctx = iconCanvas.getContext("2d");
       if (ctx) {
         ctx.clearRect(0, 0, 32, 32);
-        drawDeathIcon(ctx, 16, 16, 24, state.deathCause);
+        drawDeathIcon(ctx, 16, 16, 24, gameState.deathCause);
       }
     }
   });
@@ -37,22 +52,34 @@
 
 <div class="overlay" role="dialog" aria-modal="true">
   <div class="card">
-    <h1>MISSION FAILED</h1>
+    {#if showInitialsEntry && gameState.deathCause}
+      <InitialsEntry
+        seconds={gameState.elapsedTime}
+        deathCause={gameState.deathCause}
+        onSubmitSuccess={handleSubmitSuccess}
+        onCancel={handleCancel}
+      />
+    {:else}
+      <h1>MISSION FAILED</h1>
 
-    <p class="time">
-      You survived <strong>{finalTime}s</strong>
-    </p>
+      <p class="time">
+        You survived <strong>{finalTime}s</strong>
+      </p>
 
-    <div class="cause-container">
-      <canvas bind:this={iconCanvas} width="32" height="32" class="death-icon"
-      ></canvas>
-      <p class="cause">{causeMessage}</p>
-    </div>
+      <div class="cause-container">
+        <canvas bind:this={iconCanvas} width="32" height="32" class="death-icon"
+        ></canvas>
+        <p class="cause">{causeMessage}</p>
+      </div>
 
-    <div class="actions">
-      <button onclick={onRestart} class="btn btn-filled"> Try Again </button>
-      <a href="/leaderboard" class="btn btn-ghost"> View Leaderboard </a>
-    </div>
+      <div class="actions">
+        <button onclick={handleSubmitScore} class="btn btn-filled">
+          Submit Score
+        </button>
+        <button onclick={onRestart} class="btn btn-ghost"> Try Again </button>
+        <a href="/leaderboard" class="btn btn-ghost"> View Leaderboard </a>
+      </div>
+    {/if}
   </div>
 </div>
 

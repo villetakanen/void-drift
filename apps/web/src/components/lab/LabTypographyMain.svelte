@@ -1,3 +1,7 @@
+<script lang="ts">
+    let { ...props }: { [key: string]: any } = $props();
+</script>
+
 <div class="design-system-preview">
     <section>
         <h3>Typography: Noto Sans Math</h3>

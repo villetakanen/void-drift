@@ -8,18 +8,26 @@ const rootPackage = JSON.parse(readFileSync(path.resolve('../../package.json'), 
 
 // https://astro.build/config
 export default defineConfig({
+  envDir: '../../',
   integrations: [svelte()],
   vite: {
     resolve: {
       alias: {
         '@void-drift/core/styles': path.resolve('../../packages/core/src/lib/styles'),
         '@void-drift/core': path.resolve('../../packages/core/src'),
+        '@void-drift/mode-a/supabase': path.resolve('../../packages/mode-a/src/lib/supabase.ts'),
         '@void-drift/mode-a': path.resolve('../../packages/mode-a/src')
       }
     },
     define: {
       __APP_VERSION__: JSON.stringify(rootPackage.version)
+    },
+    ssr: {
+      noExternal: ['@void-drift/mode-a']
     }
-
+  },
+  server: {
+    port: 4321,
+    host: true
   }
 });

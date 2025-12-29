@@ -3,6 +3,8 @@
     import { drawStar, SUN_CONFIG } from "@void-drift/core";
     import { starParamsState } from "./star-state.svelte";
 
+    let { ...props }: { [key: string]: any } = $props();
+
     let stageWidth = $state(600);
     let stageHeight = $state(400);
     let starTime = $state(0);

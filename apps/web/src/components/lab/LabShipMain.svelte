@@ -3,6 +3,8 @@
     import { drawShip } from "@void-drift/core";
     import { shipParams } from "./ship-state.svelte";
 
+    let { ...props }: { [key: string]: any } = $props();
+
     let stageWidth = $state(600);
     let stageHeight = $state(400);
 

@@ -1,6 +1,6 @@
 # PBI-029: Initials Entry UI
 
-**Status:** TODO  
+**Status:** DONE  
 **Priority:** HIGH  
 **Estimate:** 5 Story Points  
 **Phase:** 6 (High Scores)  

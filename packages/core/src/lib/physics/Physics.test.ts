@@ -25,6 +25,11 @@ describe('Vec2', () => {
 
 describe('updatePower', () => {
     let resources: { hull: number; power: number };
+    const mockSun: any = {
+        radius: 40,
+        powerMultiplier: 1,
+        burnMultiplier: 1
+    };
 
     beforeEach(() => {
         resources = { hull: 100, power: 100 };
@@ -33,7 +38,7 @@ describe('updatePower', () => {
     it('should consume power over time', () => {
         const dt = 1; // 1 second
         // Far from sun, no thrust
-        updatePower(resources, 1000, dt);
+        updatePower(resources, 1000, mockSun, dt);
         expect(resources.power).toBe(100 - SURVIVAL_CONFIG.POWER_CONSUMPTION_RATE);
     });
 
@@ -41,18 +46,18 @@ describe('updatePower', () => {
         resources.power = 50;
         const dt = 1;
         // Inside Zone 1
-        updatePower(resources, SURVIVAL_CONFIG.POWER_ZONE_1_RADIUS - 10, dt);
+        updatePower(resources, SURVIVAL_CONFIG.POWER_ZONE_1_RADIUS - 10, mockSun, dt);
         const expected = 50 - SURVIVAL_CONFIG.POWER_CONSUMPTION_RATE + SURVIVAL_CONFIG.POWER_REGEN_ZONE_1;
         expect(resources.power).toBe(expected);
     });
 
     it('should clamp power between 0 and 100', () => {
         resources.power = 99;
-        updatePower(resources, SURVIVAL_CONFIG.POWER_ZONE_1_RADIUS - 10, 10);
+        updatePower(resources, SURVIVAL_CONFIG.POWER_ZONE_1_RADIUS - 10, mockSun, 10);
         expect(resources.power).toBe(100);
 
         resources.power = 0.5;
-        updatePower(resources, 1000, 10);
+        updatePower(resources, 1000, mockSun, 10);
         expect(resources.power).toBe(0);
     });
 });
