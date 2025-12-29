@@ -8,6 +8,8 @@
     } from "@void-drift/core";
     import { starParamsState } from "./star-state.svelte";
 
+    let { ...props }: { [key: string]: any } = $props();
+
     const starParams = $derived.by(() => {
         const presets = [
             SUN_CONFIG.O,

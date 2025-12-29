@@ -1,6 +1,6 @@
 # PBI-030: Leaderboard Display
 
-**Status:** TODO  
+**Status:** DONE  
 **Priority:** HIGH  
 **Estimate:** 3 Story Points  
 **Phase:** 6 (High Scores)  

@@ -53,7 +53,7 @@
     radius: CONFIG.SHIP_RADIUS,
   };
 
-  let state: GameState = $state(createInitialGameState());
+  let gameState: GameState = $state(createInitialGameState());
 
   let star: Star | undefined = $state(undefined);
   let planets: Planet[] = $state([]);
@@ -61,25 +61,25 @@
   function startGame() {
     // Select Sun Type
     const sunType = getRandomSunType();
-    state.sunType = sunType;
+    gameState.sunType = sunType;
     star = createGameStar(sunType, LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2);
 
-    state.status = "PLAYING";
-    state.startTime = Date.now();
+    gameState.status = "PLAYING";
+    gameState.startTime = Date.now();
   }
 
   function restartGame() {
     // Reset game state
-    state.status = "MENU";
-    state.startTime = null;
-    state.elapsedTime = 0;
-    state.resources.hull = 100;
-    state.resources.power = 100;
-    state.deathCause = null;
+    gameState.status = "MENU";
+    gameState.startTime = null;
+    gameState.elapsedTime = 0;
+    gameState.resources.hull = 100;
+    gameState.resources.power = 100;
+    gameState.deathCause = null;
 
     // Reset Sun
     const sunType = getRandomSunType();
-    state.sunType = sunType;
+    gameState.sunType = sunType;
     star = createGameStar(sunType, LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2);
 
     // Reset ship
@@ -105,11 +105,11 @@
     rightActive = effectiveInput.rightThruster;
 
     // Timer update (only during PLAYING)
-    if (state.status === "PLAYING") {
-      updateTimer(state);
+    if (gameState.status === "PLAYING") {
+      updateTimer(gameState);
     }
 
-    if (state.status !== "PLAYING") return; // Only run physics during PLAYING
+    if (gameState.status !== "PLAYING") return; // Only run physics during PLAYING
 
     // Physics (using logical viewport dimensions)
     updateShip(
@@ -120,7 +120,7 @@
       LOGICAL_HEIGHT,
       star,
       planets,
-      state.resources,
+      gameState.resources,
     );
 
     // Resource Updates
@@ -129,18 +129,18 @@
       const dy = ship.pos.y - star.pos.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
-      updatePower(state.resources, dist, star, dt, {
+      updatePower(gameState.resources, dist, star, dt, {
         left: effectiveInput.leftThruster,
         right: effectiveInput.rightThruster,
       });
 
-      updateHull(state.resources, dist, star, dt);
+      updateHull(gameState.resources, dist, star, dt);
 
       // Death Check
-      if (state.status === "PLAYING") {
-        const deathCause = checkDeath(state, ship, star);
+      if (gameState.status === "PLAYING") {
+        const deathCause = checkDeath(gameState, ship, star);
         if (deathCause) {
-          handleDeath(state, deathCause, ship);
+          handleDeath(gameState, deathCause, ship);
         }
       }
     }
@@ -196,7 +196,7 @@
 
     // Create an initial Star for the menu (Class G)
     const initialSunType = "G";
-    state.sunType = initialSunType;
+    gameState.sunType = initialSunType;
     star = createGameStar(
       initialSunType,
       LOGICAL_WIDTH / 2,
@@ -278,7 +278,7 @@
 
     <!-- HUD Overlay -->
     <div class="hud-overlay">
-      <HUD {state} />
+      <HUD {gameState} />
 
       <!-- Logo -->
       <div class="logo">∅·Δ</div>
@@ -293,13 +293,13 @@
       <div class="version-display">α {__APP_VERSION__}</div>
 
       <!-- Menu Overlay -->
-      {#if state.status === "MENU"}
+      {#if gameState.status === "MENU"}
         <MenuOverlay onStart={startGame} />
       {/if}
 
       <!-- Game Over Modal -->
-      {#if state.status === "GAME_OVER"}
-        <GameOver {state} onRestart={restartGame} />
+      {#if gameState.status === "GAME_OVER"}
+        <GameOver {gameState} onRestart={restartGame} />
       {/if}
     </div>
   </div>

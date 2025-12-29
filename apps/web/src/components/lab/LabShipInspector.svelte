@@ -4,6 +4,8 @@
     import { CONFIG } from "@void-drift/core";
     import { shipParams } from "./ship-state.svelte";
 
+    let { ...props }: { [key: string]: any } = $props();
+
     const shipStatsGroups = [
         {
             label: "Physical",

@@ -50,7 +50,9 @@
     role="dialog"
     aria-modal="true"
     aria-label="Game menu"
+    tabindex="-1"
     onclick={handleOverlayClick}
+    onkeydown={handleKeydown}
 >
     <div class="menu-content">
         <button bind:this={startButton} class="btn btn-ghost" onclick={onStart}>
