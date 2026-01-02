@@ -1,6 +1,6 @@
 # PBI-033: Visual Juice (Screen Shake & Impact Feedback)
 
-**Status:** TODO  
+**Status:** DONE  
 **Priority:** MEDIUM  
 **Estimate:** 3 Story Points  
 **Phase:** 7 (Content & Polish)  

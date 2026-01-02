@@ -8,10 +8,18 @@
     Camera,
     type Star,
     type Planet,
-    SURVIVAL_CONFIG,
+    ScreenShake,
     updatePower,
     updateHull,
     updateShip,
+    SURVIVAL_CONFIG,
+    createDamageFlash,
+    triggerDamageFlash,
+    updateDamageFlash,
+    type Particle,
+    createParticle,
+    createCollisionBurst,
+    getThrustHue,
   } from "@void-drift/core";
   import {
     updateTimer,
@@ -35,6 +43,9 @@
   let input: Input | undefined;
   let loop: GameLoop | undefined;
   let camera: Camera | undefined;
+  let shake: ScreenShake | undefined;
+  let damageFlash = createDamageFlash();
+  let particles: Particle[] = [];
 
   // Reactivity for UI
   let leftActive = $state(false);
@@ -92,6 +103,12 @@
     if (planets.length > 0) {
       planets[0].orbitAngle = 0;
     }
+
+    // Reset Particles
+    particles = [];
+
+    // Reset Shake
+    shake?.reset();
   }
 
   function update(dt: number) {
@@ -121,6 +138,24 @@
       star,
       planets,
       gameState.resources,
+      (type, magnitude, data) => {
+        if (shake) {
+          const trauma =
+            type === "planet"
+              ? SURVIVAL_CONFIG.TRAUMA_VALUES.planetCollision
+              : 0.1;
+          shake.addTrauma(trauma * magnitude);
+        }
+        if (type === "planet") {
+          triggerDamageFlash(damageFlash, 0.8 * magnitude, 0.2);
+
+          // Create collision burst particles
+          if (data?.color && data?.x !== undefined && data?.y !== undefined) {
+            const burst = createCollisionBurst(data.x, data.y, 10, data.color);
+            particles.push(...burst);
+          }
+        }
+      },
     );
 
     // Resource Updates
@@ -144,6 +179,62 @@
         }
       }
     }
+
+    // Particle Update & Thrust Emission
+    // Eject particles opposite to thrust
+    if (effectiveInput.leftThruster || effectiveInput.rightThruster) {
+      // Emit logic roughly based on ship rotation
+      // For now, simple single emitter
+      // Hue based on speed
+      const speed = ship.vel.mag();
+      const hue = getThrustHue(speed, gameState.resources.power);
+      const opposite = ship.rotation + Math.PI;
+      // Spread
+      const angle = opposite + (Math.random() - 0.5) * 0.5;
+      const blastSpeed = 150 + Math.random() * 50;
+
+      const vx = Math.cos(angle) * blastSpeed + ship.vel.x * 0.2;
+      const vy = Math.sin(angle) * blastSpeed + ship.vel.y * 0.2;
+
+      // Emit from rear of ship (use ship radius for offset)
+      const rearOffset = ship.radius + 2;
+      particles.push(
+        createParticle(
+          ship.pos.x - Math.cos(ship.rotation) * rearOffset,
+          ship.pos.y - Math.sin(ship.rotation) * rearOffset,
+          vx,
+          vy,
+          hue,
+          0.5,
+        ),
+      );
+    }
+
+    // Update Particles
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.life -= dt / p.maxLife;
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      if (p.life <= 0) {
+        particles.splice(i, 1);
+      }
+    }
+
+    // Cap particle count to prevent unbounded growth
+    const MAX_PARTICLES = 100;
+    if (particles.length > MAX_PARTICLES) {
+      particles.splice(0, particles.length - MAX_PARTICLES);
+    }
+
+    // Update Screen Shake
+    if (shake) {
+      const shakeOffset = shake.update(dt);
+      camera.setOffset(shakeOffset.x, shakeOffset.y);
+    }
+
+    // Update Damage Flash
+    updateDamageFlash(damageFlash, dt);
 
     // Update Camera to follow ship
     camera.setTarget(ship.pos.x, ship.pos.y);
@@ -171,8 +262,19 @@
       renderer.drawPlanet(planet);
     }
 
+    // Draw Particles
+    renderer.drawParticles(particles);
+
     // Draw Ship
-    renderer.drawShip(ship);
+    const hullPercent = gameState.resources.hull;
+    let shipTint = "#ffffff";
+    if (hullPercent <= 25) shipTint = "#ff3333";
+    else if (hullPercent <= 50) shipTint = "#ffaa00";
+
+    renderer.drawShip(ship, shipTint);
+
+    // Draw Flash
+    renderer.drawDamageFlash(damageFlash);
 
     // End camera transform
     renderer.endCamera();
@@ -184,12 +286,17 @@
       console.error("Failed to authenticate:", error);
     });
 
-    // Initialize Camera with 16:9 viewport
     camera = new Camera({
       viewportWidth: LOGICAL_WIDTH,
       viewportHeight: LOGICAL_HEIGHT,
       smoothing: 1.0,
     });
+
+    // Initialize Screen Shake
+    shake = new ScreenShake(SURVIVAL_CONFIG.SCREEN_SHAKE);
+
+    // Reset Flash
+    damageFlash = createDamageFlash();
 
     // Position Ship slightly offset
     ship.pos.set(LOGICAL_WIDTH / 2 - 500, LOGICAL_HEIGHT / 2);

@@ -45,6 +45,16 @@ export class Camera {
 	}
 
 	/**
+	 * Set a temporary offset (e.g., for screen shake).
+	 * This offset is applied on top of the calculated view position.
+	 */
+	setOffset(x: number, y: number): void {
+		this.computedOffset = new Vec2(x, y);
+	}
+
+	private computedOffset: Vec2 = new Vec2(0, 0);
+
+	/**
 	 * Update camera position with smooth interpolation.
 	 * Call this every frame before rendering.
 	 */
@@ -76,8 +86,8 @@ export class Camera {
 	 */
 	getViewOffset(): { x: number; y: number } {
 		return {
-			x: this.pos.x - this.viewportWidth / 2,
-			y: this.pos.y - this.viewportHeight / 2,
+			x: this.pos.x - this.viewportWidth / 2 + this.computedOffset.x,
+			y: this.pos.y - this.viewportHeight / 2 + this.computedOffset.y,
 		};
 	}
 

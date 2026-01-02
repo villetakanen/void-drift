@@ -13,6 +13,11 @@ export * from './lib/assets/planet';
 export * from './lib/assets/resource-bar';
 export * from './lib/assets/death-icons';
 
+// Effects
+export * from './lib/effects/screen-shake';
+export * from './lib/effects/damage-feedback';
+export * from './lib/effects/particles';
+
 // Svelte Components
 export { default as Joystick } from './lib/ui/Joystick.svelte';
 
