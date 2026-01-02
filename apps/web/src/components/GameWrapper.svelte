@@ -222,7 +222,7 @@
     renderer.resize(LOGICAL_WIDTH, LOGICAL_HEIGHT);
 
     // Initialize Input
-    input = new Input();
+    input = new Input(canvas);
 
     const onResize = () => {
       if (!container) return;
