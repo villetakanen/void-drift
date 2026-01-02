@@ -1,7 +1,19 @@
 <script lang="ts">
-    let { onStart }: { onStart: () => void } = $props();
+    import { requestFullscreen } from "@void-drift/core";
+
+    let {
+        onStart,
+        container,
+    }: { onStart: () => void; container?: HTMLElement } = $props();
 
     let startButton: HTMLButtonElement;
+
+    async function handleStart() {
+        if (container) {
+            await requestFullscreen(container);
+        }
+        onStart();
+    }
 
     function handleKeydown(event: KeyboardEvent) {
         // Ignore navigation and modifier keys
@@ -24,7 +36,7 @@
             return;
         }
 
-        onStart();
+        handleStart();
     }
 
     function handleOverlayClick(event: MouseEvent) {
@@ -32,7 +44,7 @@
         if ((event.target as Element).closest(".settings-link")) {
             return;
         }
-        onStart();
+        handleStart();
     }
 
     $effect(() => {
@@ -55,7 +67,11 @@
     onkeydown={handleKeydown}
 >
     <div class="menu-content">
-        <button bind:this={startButton} class="btn btn-ghost" onclick={onStart}>
+        <button
+            bind:this={startButton}
+            class="btn btn-ghost"
+            onclick={handleStart}
+        >
             TAP TO START
         </button>
 

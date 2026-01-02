@@ -294,7 +294,7 @@
 
       <!-- Menu Overlay -->
       {#if gameState.status === "MENU"}
-        <MenuOverlay onStart={startGame} />
+        <MenuOverlay onStart={startGame} {container} />
       {/if}
 
       <!-- Game Over Modal -->
@@ -319,7 +319,7 @@
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;

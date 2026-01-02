@@ -113,6 +113,24 @@ Phase 7 shifts focus from infrastructure (architecture/high scores) to **User Ex
 
 ---
 
+#### PBI-036: Mobile UX Fidelity
+**Priority:** HIGH
+**Estimate:** 2 Story Points
+**Target Version:** v0.2.1
+
+**What It Does:**
+- Implement Fullscreen API to hide browser chrome on start.
+- Add PWA meta tags for "Standalone" feel on iOS/Android.
+- Use dynamic viewport units (`dvh`) for consistent height.
+
+**Success Criteria:**
+- Game fills 100% of mobile screen without address bar.
+- No layout shifts when browser UI toggles.
+
+**Link:** [PBI-036: Mobile UX Fidelity](./backlog/PBI-036-Mobile-UX-Fidelity.md)
+
+---
+
 ## Dependencies
 
 - **PBI-032 (Multi-Planet)** must be completed before visual tuning, as it changes the play space.

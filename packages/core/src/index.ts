@@ -15,3 +15,6 @@ export * from './lib/assets/death-icons';
 
 // Svelte Components
 export { default as Joystick } from './lib/ui/Joystick.svelte';
+
+// UI Utilities
+export * from './lib/ui/fullscreen';
