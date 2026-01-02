@@ -2,7 +2,7 @@ export class Vec2 {
   constructor(
     public x: number,
     public y: number,
-  ) { }
+  ) {}
 
   add(v: Vec2): Vec2 {
     this.x += v.x;
@@ -108,9 +108,15 @@ export function updatePower(
   let regenRate = 0;
   if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_1_RADIUS * radiusScale) {
     regenRate = SURVIVAL_CONFIG.POWER_REGEN_ZONE_1;
-  } else if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_2_RADIUS * radiusScale) {
+  } else if (
+    distanceToSun <
+    SURVIVAL_CONFIG.POWER_ZONE_2_RADIUS * radiusScale
+  ) {
     regenRate = SURVIVAL_CONFIG.POWER_REGEN_ZONE_2;
-  } else if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS * radiusScale) {
+  } else if (
+    distanceToSun <
+    SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS * radiusScale
+  ) {
     regenRate = SURVIVAL_CONFIG.POWER_REGEN_ZONE_3;
   }
 
@@ -139,9 +145,15 @@ export function updateHull(
   let burnRate = 0;
   if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_1_RADIUS * radiusScale) {
     burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_1;
-  } else if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_2_RADIUS * radiusScale) {
+  } else if (
+    distanceToSun <
+    SURVIVAL_CONFIG.POWER_ZONE_2_RADIUS * radiusScale
+  ) {
     burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_2;
-  } else if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS * radiusScale) {
+  } else if (
+    distanceToSun <
+    SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS * radiusScale
+  ) {
     burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_3;
   }
 
@@ -165,6 +177,11 @@ export function updateShip(
   star?: Star,
   planets: Planet[] = [],
   resources?: Resources,
+  onCollision?: (
+    type: "planet" | "star",
+    magnitude: number,
+    data?: { color?: string; x?: number; y?: number },
+  ) => void,
 ) {
   // 1. Rotation & Variable Thrust (Differential)
   // Left Engine -> Rotate Right + 50% Thrust
@@ -276,6 +293,14 @@ export function updateShip(
 
       if (resources) {
         applyPlanetCollisionDamage(resources);
+      }
+
+      if (onCollision) {
+        onCollision("planet", 1.0, {
+          color: planet.color,
+          x: ship.pos.x,
+          y: ship.pos.y,
+        });
       }
     }
   }

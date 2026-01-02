@@ -30,6 +30,18 @@ export const SURVIVAL_CONFIG = {
     HULL_BURN_ZONE_3: 0.1,
 
     PLANET_COLLISION_DAMAGE: 7,
+
+    SCREEN_SHAKE: {
+        maxOffset: 4, // pixels
+        decay: 2.0, // trauma units per second
+        frequency: 30, // Hz
+    },
+
+    TRAUMA_VALUES: {
+        planetCollision: 0.6, // High impact
+        sunProximity: 0.3, // Medium (when entering danger zone)
+        boost: 0.1, // Low (subtle feedback on thrust)
+    },
 } as const;
 
 export const SUN_CONFIG = {

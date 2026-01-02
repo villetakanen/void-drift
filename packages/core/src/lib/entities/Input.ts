@@ -27,8 +27,11 @@ export class Input {
   }
 
   private activeTouches = new Map<number, "left" | "right">();
+  private targetElement?: HTMLElement;
 
-  constructor() {
+  constructor(targetElement?: HTMLElement) {
+    this.targetElement = targetElement;
+
     // Keyboard
     window.addEventListener("keydown", this.handleKey.bind(this));
     window.addEventListener("keyup", this.handleKey.bind(this));
@@ -67,6 +70,12 @@ export class Input {
   }
 
   private handleTouch(e: TouchEvent) {
+    // If a target element is defined, ignore touches that didn't originate from it
+    // This allows UI elements overlaid on top (like menus) to receive clicks
+    if (this.targetElement && e.target !== this.targetElement) {
+      return;
+    }
+
     // Prevent default browser zooming/scrolling
     if (e.cancelable) e.preventDefault();
 

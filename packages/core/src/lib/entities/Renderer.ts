@@ -3,13 +3,19 @@ import type { Camera } from "../physics/Camera";
 import { drawShip } from "../assets/ship";
 import { drawStar } from "../assets/star";
 import { SURVIVAL_CONFIG } from "../config";
+import {
+  type DamageFlash,
+  renderDamageFlash,
+} from "../effects/damage-feedback";
+import { type Particle, getParticleAlpha } from "../effects/particles";
 
 export class Renderer {
   private ctx: CanvasRenderingContext2D;
   private width = 0;
   private height = 0;
 
-  private stars: Array<{ x: number; y: number; size: number; alpha: number }> = [];
+  private stars: Array<{ x: number; y: number; size: number; alpha: number }> =
+    [];
 
   constructor(canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext("2d");
@@ -63,7 +69,12 @@ export class Renderer {
     this.ctx.stroke();
   }
 
-  private cameraBounds: { minX: number; maxX: number; minY: number; maxY: number } | null = null;
+  private cameraBounds: {
+    minX: number;
+    maxX: number;
+    minY: number;
+    maxY: number;
+  } | null = null;
 
   /**
    * Begin camera-space rendering.
@@ -96,53 +107,93 @@ export class Renderer {
    * Helper to draw an object (and its ghosts if visible)
    * Note: Ghost rendering disabled for Circular Arena topology (no seamless tiling).
    */
-  private renderWrapped(x: number, y: number, radius: number, draw: (offX: number, offY: number) => void) {
+  private renderWrapped(
+    x: number,
+    y: number,
+    radius: number,
+    draw: (offX: number, offY: number) => void,
+  ) {
     draw(0, 0);
   }
 
-  drawShip(ship: GameObject) {
+  drawShip(ship: GameObject, tint?: string) {
     this.renderWrapped(ship.pos.x, ship.pos.y, ship.radius, (offX, offY) => {
       drawShip(this.ctx, {
         x: ship.pos.x + offX,
         y: ship.pos.y + offY,
         rotation: ship.rotation,
-        color: "#00ffcc",
+        color: tint ?? "#00ffcc",
       });
     });
   }
 
   drawStar(star: Star, time: number) {
-    this.renderWrapped(star.pos.x, star.pos.y, star.radius * 4, (offX, offY) => { // Use larger radius for star glow
-      drawStar(this.ctx, {
-        x: star.pos.x + offX,
-        y: star.pos.y + offY,
-        radius: star.radius,
-        color: star.color,
-        glowColor: star.glowColor,
-        time: time,
-        pulseSpeed: star.pulseSpeed,
-        powerZoneRadius: SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS,
-      });
-    });
+    this.renderWrapped(
+      star.pos.x,
+      star.pos.y,
+      star.radius * 4,
+      (offX, offY) => {
+        // Use larger radius for star glow
+        drawStar(this.ctx, {
+          x: star.pos.x + offX,
+          y: star.pos.y + offY,
+          radius: star.radius,
+          color: star.color,
+          glowColor: star.glowColor,
+          time: time,
+          pulseSpeed: star.pulseSpeed,
+          powerZoneRadius: SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS,
+        });
+      },
+    );
   }
 
-  drawPlanet(planet: any) { // Using any to avoid circular dependency import issues if Planet isn't exported from here
+  drawPlanet(planet: any) {
+    // Using any to avoid circular dependency import issues if Planet isn't exported from here
     // Draw Orbit Path (Faint)
     this.ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
     this.ctx.lineWidth = 1;
     this.ctx.beginPath();
-    this.ctx.arc(planet.orbitCenter.x, planet.orbitCenter.y, planet.orbitRadius, 0, Math.PI * 2);
+    this.ctx.arc(
+      planet.orbitCenter.x,
+      planet.orbitCenter.y,
+      planet.orbitRadius,
+      0,
+      Math.PI * 2,
+    );
     this.ctx.stroke();
 
-    this.renderWrapped(planet.pos.x, planet.pos.y, planet.radius, (offX, offY) => {
-      const cx = planet.pos.x + offX;
-      const cy = planet.pos.y + offY;
+    this.renderWrapped(
+      planet.pos.x,
+      planet.pos.y,
+      planet.radius,
+      (offX, offY) => {
+        const cx = planet.pos.x + offX;
+        const cy = planet.pos.y + offY;
 
-      // Draw Planet Body
-      this.ctx.fillStyle = planet.color;
-      this.ctx.beginPath();
-      this.ctx.arc(cx, cy, planet.radius, 0, Math.PI * 2);
-      this.ctx.fill();
-    });
+        // Draw Planet Body
+        this.ctx.fillStyle = planet.color;
+        this.ctx.beginPath();
+        this.ctx.arc(cx, cy, planet.radius, 0, Math.PI * 2);
+        this.ctx.fill();
+      },
+    );
+  }
+
+  drawDamageFlash(flash: DamageFlash) {
+    renderDamageFlash(this.ctx, flash, this.width, this.height);
+  }
+
+  drawParticles(particles: Particle[]) {
+    this.ctx.save();
+    for (const p of particles) {
+      this.renderWrapped(p.x, p.y, p.size, (offX, offY) => {
+        this.ctx.fillStyle = `hsla(${p.hue}, 100%, 50%, ${getParticleAlpha(p.life)})`;
+        this.ctx.beginPath();
+        this.ctx.arc(p.x + offX, p.y + offY, p.size, 0, Math.PI * 2);
+        this.ctx.fill();
+      });
+    }
+    this.ctx.restore();
   }
 }
