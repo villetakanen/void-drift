@@ -2,17 +2,17 @@
 
 **Versions:** v0.2.x → v0.3.0
 **Status:** 🚧 PLANNING
-**Goal:** Add gameplay variety with multiple planets and enhance "game feel" with visual juice and audio.
+**Goal:** Add gameplay variety with multiple planets and enhance "game feel" with visual juice.
 
 ---
 
 ## Executive Summary
 
-Phase 7 shifts focus from infrastructure (architecture/high scores) to **User Experience**. We will transform the arena from a static single-planet system to a dynamic multi-planetary system, and implement the "Juice" philosophy defined in the project vision (screen shake, particles, sound).
+Phase 7 shifts focus from infrastructure (architecture/high scores) to **User Experience**. We will transform the arena from a static single-planet system to a dynamic multi-planetary system, and implement the "Juice" philosophy defined in the project vision (screen shake, particles).
 
 **Why This Matters:**
 - **Variety:** Multiple planets create shifting gravity landscapes, forcing players to adapt navigation strategies.
-- **Immersion:** Audio and visual feedback (Screen Shake, Sound FX) turn a "tech demo" into a "game".
+- **Immersion:** Visual feedback (Screen Shake, Particles) turn a "tech demo" into a "game".
 - **Retention:** "Juice" makes the core loop satisfying significantly increasing "one more run" appeal.
 
 ---
@@ -67,25 +67,11 @@ Phase 7 shifts focus from infrastructure (architecture/high scores) to **User Ex
 ---
 
 #### PBI-034: Audio System (Web Audio API)
-**Priority:** HIGH
+**Priority:** LOW (DEFERRED)
 **Estimate:** 8 Story Points
-**Target Version:** v0.3.0
+**Target Version:** v0.4.0 (Phase 8)
 
-**What It Does:**
-- Implement a `SoundManager` class using the Web Audio API.
-- **Procedural Audio Generation:**
-    - **Thrust:** Noise node + Lowpass filter (modulated by throttle).
-    - **Collision:** Sawtooth/Square wave decay (retro explosion sound).
-    - **Get Ready:** Simple arpeggio or chime on start.
-    - **Death:** Noise burst.
-- **Settings Integration:** Add "Mute" and "Volume" to Settings page.
-- **No External Assets:** All sounds synthesized at runtime to keep bundle size small.
-
-**Success Criteria:**
-- Sounds play on user interaction (resolves AudioContext restriction).
-- Thrust sound modulates with input.
-- Audio matches the "Neon/Retro" aesthetic.
-- Can be muted via Settings.
+**Status:** Moved to Phase 8 to focus on visual polish first.
 
 **Link:** [PBI-034: Audio System](./backlog/PBI-034-Audio-System.md)
 
@@ -134,7 +120,7 @@ Phase 7 shifts focus from infrastructure (architecture/high scores) to **User Ex
 ## Dependencies
 
 - **PBI-032 (Multi-Planet)** must be completed before visual tuning, as it changes the play space.
-- **PBI-034 (Audio)** is the largest task and can proceed in parallel with Track A.
+- **PBI-034 (Audio)** has been deferred to Phase 8.
 
 ---
 
@@ -145,8 +131,8 @@ Phase 7 shifts focus from infrastructure (architecture/high scores) to **User Ex
 - **Feedback:** Damage is instantly recognized via visual/audio cues (improving reaction times).
 
 ### Technical
-- **Performance:** Adding 2 planets and audio processing does not dip FPS below 60.
-- **Bundle Size:** Remains small (no MP3/WAV files added).
+- **Performance:** Adding 2 planets does not dip FPS below 60.
+- **Bundle Size:** Remains small (no new heavy assets).
 
 ---
 
