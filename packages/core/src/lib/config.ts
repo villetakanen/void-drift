@@ -10,6 +10,17 @@ export const CONFIG = {
     FIELD_OF_VIEW: 2.0, // Camera zoom level (1.0 = normal)
 } as const;
 
+/** Planet type definitions for visual styling */
+export const PLANET_TYPES = {
+    rock: { id: 'rock', name: 'Rock', color: '#8B7355' },
+    gas: { id: 'gas', name: 'Gas', color: '#6B4C9A' },
+    ocean: { id: 'ocean', name: 'Ocean', color: '#4A90C2' },
+    desert: { id: 'desert', name: 'Desert', color: '#C4A35A' },
+    ice: { id: 'ice', name: 'Ice', color: '#A8D8E8' },
+} as const;
+
+export type PlanetTypeId = keyof typeof PLANET_TYPES;
+
 export const SURVIVAL_CONFIG = {
     INITIAL_HULL: 100,
     INITIAL_POWER: 100,
@@ -41,6 +52,16 @@ export const SURVIVAL_CONFIG = {
         planetCollision: 0.6, // High impact
         sunProximity: 0.3, // Medium (when entering danger zone)
         boost: 0.1, // Low (subtle feedback on thrust)
+    },
+
+    // Planet spawning configuration (PBI-038)
+    PLANET_SPAWN_CONFIG: {
+        minCount: 0,
+        maxCount: 5,
+        orbitRange: { min: 200, max: 1000 },
+        radiusRange: { min: 10, max: 100 },
+        speedRange: { min: 0.02, max: 0.15 },
+        ringProbability: 0.2, // 20% chance
     },
 } as const;
 

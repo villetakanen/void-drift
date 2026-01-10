@@ -1,4 +1,5 @@
 export * from './lib/physics/Physics';
+export * from './lib/physics/planets';
 export * from './lib/physics/Camera';
 export * from './lib/entities/Input';
 export * from './lib/entities/Renderer';

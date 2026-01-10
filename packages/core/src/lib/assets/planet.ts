@@ -3,13 +3,30 @@ export interface DrawPlanetOptions {
     y: number;
     radius: number;
     color: string;
+    hasRing?: boolean;
 }
 
 export function drawPlanet(ctx: CanvasRenderingContext2D, options: DrawPlanetOptions) {
-    const { x, y, radius, color } = options;
+    const { x, y, radius, color, hasRing } = options;
 
     ctx.save();
     ctx.translate(x, y);
+
+    // Ring System (PBI-039)
+    if (hasRing) {
+        const ringInner = radius * 1.4;
+        const ringOuter = radius * 2.1;
+
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.globalAlpha = 0.4;
+        ctx.lineWidth = (ringOuter - ringInner) * 0.6;
+        ctx.beginPath();
+        // Tilted ellipse for the ring
+        ctx.ellipse(0, 0, (ringInner + ringOuter) / 2, (ringInner + ringOuter) / 4, Math.PI / 6, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+    }
 
     // Planet Body
     ctx.beginPath();

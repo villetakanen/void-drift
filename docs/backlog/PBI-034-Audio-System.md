@@ -1,11 +1,11 @@
 # PBI-034: Audio System (Web Audio API)
 
-**Status:** TODO  
-**Priority:** HIGH  
+**Status:** DEFERRED
+**Priority:** MEDIUM
 **Estimate:** 8 Story Points  
-**Phase:** 7 (Content & Polish)  
-**Target Version:** v0.3.0  
-**Epic:** [Phase 7: Content & Polish](../PHASE-7-ROADMAP.md)
+**Phase:** 8 (Polish & Audio)  
+**Target Version:** v0.4.0  
+**Epic:** [Phase 8: Polish & Audio](../PHASE-8-ROADMAP.md)
 
 ---
 

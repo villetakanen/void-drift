@@ -20,6 +20,8 @@
     createParticle,
     createCollisionBurst,
     getThrustHue,
+    initializePlanets,
+    resetPlanets,
   } from "@void-drift/core";
   import {
     updateTimer,
@@ -99,10 +101,8 @@
     ship.acc.set(0, 0);
     ship.rotation = -Math.PI / 2;
 
-    // Reset Planets
-    if (planets.length > 0) {
-      planets[0].orbitAngle = 0;
-    }
+    // Reset Planets to initial orbital positions
+    resetPlanets(planets);
 
     // Reset Particles
     particles = [];
@@ -310,19 +310,8 @@
       LOGICAL_HEIGHT / 2,
     );
 
-    // Create Planets
-    planets = [
-      {
-        pos: new Vec2(0, 0),
-        orbitCenter: new Vec2(LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2),
-        orbitRadius: 700,
-        orbitSpeed: 0.05,
-        orbitAngle: 0,
-        radius: 30,
-        mass: 400,
-        color: "#6666CC", // Slate Blue
-      },
-    ];
+    // Create Planets from config (PBI-032: Multi-Planet System)
+    planets = initializePlanets(LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2);
 
     // Initialize Renderer with logical resolution
     renderer = new Renderer(canvas);

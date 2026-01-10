@@ -11,22 +11,62 @@ Planets supply the "Terrain" of the void. Unlike Stars, they are persistent obst
 **Achievement:** Orbiting rock planet with gravity well and elastic collision mechanics operational.
 
 ### Architecture
-- **Data Model:**
+
+#### Planet Type System
+
+| Type | ID | Color | Description |
+|------|----|-------|-------------|
+| Rock | `rock` | `#8B7355` | Brown rocky surface, cratered terrain |
+| Gas | `gas` | `#6B4C9A` | Purple gas giant, swirling atmosphere |
+| Ocean | `ocean` | `#4A90C2` | Blue water world |
+| Desert | `desert` | `#C4A35A` | Sandy tan, arid surface |
+| Ice | `ice` | `#A8D8E8` | Light blue frozen world |
+
+#### Data Model
   ```typescript
+  type PlanetType = 'rock' | 'gas' | 'ocean' | 'desert' | 'ice';
 
   interface Planet {
     pos: Vec2;
     orbitCenter: Vec2;
-    orbitRadius: number; // Distance from center
+    orbitRadius: number; // Distance from center (200-1000px)
     orbitSpeed: number;  // Radians per second
     orbitAngle: number;  // Current angle
-    radius: number;
+    radius: number;      // Planet size (10-100px)
     mass: number;
     color: string;
+    type: PlanetType;    // Visual type category
+    hasRing: boolean;    // Ring system around planet
   }
   ```
+
+#### Dynamic Spawning
+
+Each new game generates 0-5 planets randomly using the following parameter ranges:
+
+| Parameter | Range | Notes |
+|-----------|-------|-------|
+| Count | 0-5 | Random per game session |
+| Orbit Radius | 200-1000px | Distance from star center |
+| Planet Radius | 10-100px | Physical size |
+| Orbit Speed | ±0.02-0.15 rad/s | Sign determines direction |
+| Type | rock/gas/ocean/desert/ice | Random selection |
+| Ring | 20% probability | Visual ring system |
+
+**Non-Overlap Constraint:**
+Planets cannot overlap at any point in their orbits. For two planets with radii `r1` and `r2`:
+- Minimum orbit separation: `(r1 * 4) + (r2 * 4)`
+- Star exclusion zone: orbit radius ≥ 200px
+
+**Spawn Algorithm:**
+1. Generate random planet count (0-5)
+2. For each planet, generate random parameters
+3. Validate orbit doesn't conflict with existing planets
+4. Retry with different orbit if conflict detected (max 10 attempts)
+5. Skip planet if no valid placement found
+
 - **Physics:**
-  - Gravity: Inverse square law (8x radius influence).
+  - Gravity: Inverse square law, influence radius is **mass-based** (capped at `radius * 8`).
   - Collision: Elastic bounce (restitution 0.8).
   - Motion: Planets orbit the central star.
 - **Rendering:** Flat Vector Style (Solid Color) in `packages/core/src/lib/assets/planet.ts`.
@@ -129,22 +169,20 @@ interface Planet {
 - **Contrast:** Easily distinguishable from star (no glow/pulse)
 
 ## Known Limitations
-- **Spawning:** Hardcoded positions (no dynamic spawn system yet)
-- **Gallery:** Not yet integrated into workbench for parameter tuning
-- **Planet Types:** Only one visual style (future: gas giants, ice worlds)
 - **Ship Damage:** No health system (collision bounces but doesn't damage)
+- **Rings:** Ring rendering is visual-only (no collision)
 
 ## Future Enhancements
-- [ ] Add multiple planet types (gas giant, ice world, lava planet)
 - [ ] Add planet rotation animation
 - [ ] Add surface detail (procedural craters, terrain)
-- [ ] Add dynamic spawning system
-- [ ] Integrate into gallery workbench for tuning
 - [ ] Add ship damage on high-velocity impacts
 - [ ] Add atmospheric drag near large planets
+- [ ] Ring collision detection
 
 ---
 
 **Planet System Status: OPERATIONAL** 🪐  
-**Count:** 1 orbiting rock planet  
-**Gravity Influence:** 160px radius
+**Dynamic Spawning:** 0-5 planets per game  
+**Types:** rock, gas, ocean, desert, ice  
+**Lab:** Parameter exploration at `/lab/entities/planet`
+
