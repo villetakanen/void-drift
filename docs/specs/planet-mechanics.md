@@ -69,9 +69,6 @@ Planets cannot overlap at any point in their orbits. For two planets with radii 
   - Gravity: Inverse square law, influence radius is **mass-based** (capped at `radius * 8`).
   - Collision: Elastic bounce (restitution 0.8).
   - Motion: Planets orbit the central star.
-
-> [!WARNING]
-> **Implementation Discrepancy:** Current code uses `radius * 16` for gravity influence (see `Physics.ts:257`). Spec requires mass-based calculation with `radius * 8` max.
 - **Rendering:** Flat Vector Style (Solid Color) in `packages/core/src/lib/assets/planet.ts`.
   - Visualize orbit path with faint line.
   - Draw planet as simple circle (no gradients/textures to match aesthetic).

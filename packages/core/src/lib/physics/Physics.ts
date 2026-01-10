@@ -2,7 +2,7 @@ export class Vec2 {
   constructor(
     public x: number,
     public y: number,
-  ) {}
+  ) { }
 
   add(v: Vec2): Vec2 {
     this.x += v.x;
@@ -252,9 +252,14 @@ export function updateShip(
     const distSq = dx * dx + dy * dy;
     const dist = Math.sqrt(distSq);
 
-    // Gravity (Weaker than star, but constant pull nearby)
-    // Influence radius approx 16x planet radius
-    const influenceRadius = planet.radius * 16;
+    // Gravity influence is mass-based, capped at radius * 8
+    const massInfluence = Math.sqrt(planet.mass) * 10; // Tuned factor
+    const maxInfluence = planet.radius * 8;
+    const minInfluence = planet.radius * 2;
+    const influenceRadius = Math.max(
+      minInfluence,
+      Math.min(massInfluence, maxInfluence),
+    );
 
     if (dist < influenceRadius && dist > planet.radius + ship.radius) {
       const strength = (planet.mass / distSq) * 1000; // Inverse square approximation
