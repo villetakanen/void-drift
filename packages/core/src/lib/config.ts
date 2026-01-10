@@ -54,39 +54,15 @@ export const SURVIVAL_CONFIG = {
         boost: 0.1, // Low (subtle feedback on thrust)
     },
 
-    // Multi-planet configuration (PBI-032)
-    PLANETS: [
-        {
-            id: 'rock',
-            name: 'The Rock',
-            radius: 40,
-            mass: 1000,
-            color: '#8B7355',
-            orbitRadius: 700,
-            orbitSpeed: 0.05,    // Slow, steady orbit
-            orbitPhase: 0,
-        },
-        {
-            id: 'gas',
-            name: 'The Gas',
-            radius: 30,
-            mass: 1200,
-            color: '#6B4C9A',
-            orbitRadius: 550,
-            orbitSpeed: 0.08,    // Faster orbit
-            orbitPhase: Math.PI / 2,  // 90° offset
-        },
-        {
-            id: 'moon',
-            name: 'The Moon',
-            radius: 20,
-            mass: 600,
-            color: '#D0D0D0',
-            orbitRadius: 400,
-            orbitSpeed: -0.12,   // Retrograde (clockwise)
-            orbitPhase: Math.PI, // 180° offset
-        },
-    ],
+    // Planet spawning configuration (PBI-038)
+    PLANET_SPAWN_CONFIG: {
+        minCount: 0,
+        maxCount: 5,
+        orbitRange: { min: 200, max: 1000 },
+        radiusRange: { min: 10, max: 100 },
+        speedRange: { min: 0.02, max: 0.15 },
+        ringProbability: 0.2, // 20% chance
+    },
 } as const;
 
 export const SUN_CONFIG = {

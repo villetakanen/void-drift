@@ -1,7 +1,8 @@
-import type { GameObject, Star } from "../physics/Physics";
+import type { GameObject, Star, Planet } from "../physics/Physics";
 import type { Camera } from "../physics/Camera";
 import { drawShip } from "../assets/ship";
 import { drawStar } from "../assets/star";
+import { drawPlanet } from "../assets/planet";
 import { SURVIVAL_CONFIG } from "../config";
 import {
   type DamageFlash,
@@ -24,11 +25,9 @@ export class Renderer {
     this.resize(canvas.width, canvas.height);
 
     // Generate static background stars
-    // Spread them within a square covering the R=1200 circle (2400x2400)
-    // Add some buffer for overscan
     for (let i = 0; i < 200; i++) {
       this.stars.push({
-        x: (Math.random() - 0.5) * 3000 + 1920 / 2, // Centered around logical center
+        x: (Math.random() - 0.5) * 3000 + 1920 / 2,
         y: (Math.random() - 0.5) * 3000 + 1080 / 2,
         size: Math.random() * 2 + 0.5,
         alpha: Math.random() * 0.5 + 0.1,
@@ -76,15 +75,10 @@ export class Renderer {
     maxY: number;
   } | null = null;
 
-  /**
-   * Begin camera-space rendering.
-   * Call this before drawing game objects.
-   */
   beginCamera(camera: Camera) {
     this.ctx.save();
     camera.applyTransform(this.ctx);
 
-    // Cache camera bounds for wrapping checks
     const offset = camera.getViewOffset();
     this.cameraBounds = {
       minX: offset.x,
@@ -94,19 +88,11 @@ export class Renderer {
     };
   }
 
-  /**
-   * End camera-space rendering.
-   * Call this after drawing all game objects.
-   */
   endCamera() {
     this.ctx.restore();
     this.cameraBounds = null;
   }
 
-  /**
-   * Helper to draw an object (and its ghosts if visible)
-   * Note: Ghost rendering disabled for Circular Arena topology (no seamless tiling).
-   */
   private renderWrapped(
     x: number,
     y: number,
@@ -133,7 +119,6 @@ export class Renderer {
       star.pos.y,
       star.radius * 4,
       (offX, offY) => {
-        // Use larger radius for star glow
         drawStar(this.ctx, {
           x: star.pos.x + offX,
           y: star.pos.y + offY,
@@ -148,8 +133,7 @@ export class Renderer {
     );
   }
 
-  drawPlanet(planet: any) {
-    // Using any to avoid circular dependency import issues if Planet isn't exported from here
+  drawPlanet(planet: Planet) {
     // Draw Orbit Path (Faint)
     this.ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
     this.ctx.lineWidth = 1;
@@ -168,14 +152,13 @@ export class Renderer {
       planet.pos.y,
       planet.radius,
       (offX, offY) => {
-        const cx = planet.pos.x + offX;
-        const cy = planet.pos.y + offY;
-
-        // Draw Planet Body
-        this.ctx.fillStyle = planet.color;
-        this.ctx.beginPath();
-        this.ctx.arc(cx, cy, planet.radius, 0, Math.PI * 2);
-        this.ctx.fill();
+        drawPlanet(this.ctx, {
+          x: planet.pos.x + offX,
+          y: planet.pos.y + offY,
+          radius: planet.radius,
+          color: planet.color,
+          hasRing: planet.hasRing,
+        });
       },
     );
   }

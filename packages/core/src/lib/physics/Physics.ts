@@ -72,9 +72,12 @@ export interface Planet {
   orbitRadius: number; // Distance from center
   orbitSpeed: number; // Radians per second
   orbitAngle: number; // Current angle
+  initialAngle: number; // Starting angle for resets
   radius: number; // Physical size
   mass: number; // Gravity strength
   color: string; // Hex color
+  type: string; // Visual type (rock, gas, ocean, etc.)
+  hasRing: boolean; // Visual ring system
 }
 
 import { CONFIG, SURVIVAL_CONFIG } from "../config";
