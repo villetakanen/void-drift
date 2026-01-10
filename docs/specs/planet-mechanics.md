@@ -11,18 +11,32 @@ Planets supply the "Terrain" of the void. Unlike Stars, they are persistent obst
 **Achievement:** Orbiting rock planet with gravity well and elastic collision mechanics operational.
 
 ### Architecture
-- **Data Model:**
+
+#### Planet Type System
+
+| Type | ID | Color | Description |
+|------|----|-------|-------------|
+| Rock | `rock` | `#8B7355` | Brown rocky surface, cratered terrain |
+| Gas | `gas` | `#6B4C9A` | Purple gas giant, swirling atmosphere |
+| Ocean | `ocean` | `#4A90C2` | Blue water world |
+| Desert | `desert` | `#C4A35A` | Sandy tan, arid surface |
+| Ice | `ice` | `#A8D8E8` | Light blue frozen world |
+
+#### Data Model
   ```typescript
+  type PlanetType = 'rock' | 'gas' | 'ocean' | 'desert' | 'ice';
 
   interface Planet {
     pos: Vec2;
     orbitCenter: Vec2;
-    orbitRadius: number; // Distance from center
+    orbitRadius: number; // Distance from center (200-1000px)
     orbitSpeed: number;  // Radians per second
     orbitAngle: number;  // Current angle
-    radius: number;
+    radius: number;      // Planet size (10-100px)
     mass: number;
     color: string;
+    type: PlanetType;    // Visual type category
+    hasRing: boolean;    // Ring system around planet
   }
   ```
 - **Physics:**

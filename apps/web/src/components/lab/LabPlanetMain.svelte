@@ -1,12 +1,22 @@
 <script lang="ts">
     import Canvas from "../Canvas.svelte";
-    import { drawPlanet, SURVIVAL_CONFIG } from "@void-drift/core";
-    import { planetParamsState } from "./planet-state.svelte";
+    import { drawPlanet } from "@void-drift/core";
+    import {
+        planetLabState,
+        sliderToOrbit,
+        sliderToSize,
+        getPlanetColor,
+    } from "./planet-state.svelte";
 
     let { ...props }: { [key: string]: any } = $props();
     let stageWidth = $state(600);
     let stageHeight = $state(400);
     let elapsedTime = $state(0);
+
+    // Derived values from sliders
+    const orbitRadius = $derived(sliderToOrbit(planetLabState.orbitSlider));
+    const planetRadius = $derived(sliderToSize(planetLabState.sizeSlider));
+    const planetColor = $derived(getPlanetColor());
 
     // Animation Loop
     $effect(() => {
@@ -15,8 +25,8 @@
         const loop = (t: number) => {
             const dt = (t - lastTime) / 1000;
             lastTime = t;
-            if (planetParamsState.animating) {
-                elapsedTime += dt * planetParamsState.timeScale;
+            if (planetLabState.animating) {
+                elapsedTime += dt * planetLabState.timeScale;
             }
             handle = requestAnimationFrame(loop);
         };
@@ -24,75 +34,94 @@
         return () => cancelAnimationFrame(handle);
     });
 
+    function drawRing(
+        ctx: CanvasRenderingContext2D,
+        x: number,
+        y: number,
+        radius: number,
+        color: string,
+    ) {
+        const ringInner = radius * 1.3;
+        const ringOuter = radius * 1.8;
+
+        ctx.strokeStyle = color;
+        ctx.globalAlpha = 0.4;
+        ctx.lineWidth = (ringOuter - ringInner) * 0.7;
+        ctx.beginPath();
+        ctx.ellipse(
+            x,
+            y,
+            (ringInner + ringOuter) / 2,
+            (ringInner + ringOuter) / 4,
+            0,
+            0,
+            Math.PI * 2,
+        );
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+    }
+
     function drawPlanetPreview(ctx: CanvasRenderingContext2D) {
         const cx = ctx.canvas.width / 2;
         const cy = ctx.canvas.height / 2;
 
-        // Draw central star placeholder (small circle)
+        // Scale to fit canvas (use 40% of smaller dimension as max orbit)
+        const scale = (Math.min(stageWidth, stageHeight) * 0.4) / 1000;
+        const scaledOrbit = orbitRadius * scale;
+        const scaledRadius = Math.max(planetRadius * scale, 8); // Min 8px visible
+
+        // Draw central star placeholder
         ctx.fillStyle = "#ffaa00";
         ctx.beginPath();
         ctx.arc(cx, cy, 15, 0, Math.PI * 2);
         ctx.fill();
 
-        // Draw all planets
-        for (let i = 0; i < SURVIVAL_CONFIG.PLANETS.length; i++) {
-            const cfg = SURVIVAL_CONFIG.PLANETS[i];
-            const isSelected = i === planetParamsState.selectedPlanetIndex;
+        // Calculate current orbital position
+        const angle = 0.05 * elapsedTime; // Fixed orbit speed for preview
+        const px = cx + Math.cos(angle) * scaledOrbit;
+        const py = cy + Math.sin(angle) * scaledOrbit;
 
-            // Calculate current orbital position
-            const angle = cfg.orbitPhase + cfg.orbitSpeed * elapsedTime;
-
-            // Scale orbit radius to fit canvas (use 40% of smaller dimension)
-            const scale = (Math.min(stageWidth, stageHeight) * 0.4) / 700;
-            const orbitRadius = cfg.orbitRadius * scale;
-
-            const px = cx + Math.cos(angle) * orbitRadius;
-            const py = cy + Math.sin(angle) * orbitRadius;
-
-            // Draw orbit path
-            if (planetParamsState.showOrbits) {
-                ctx.strokeStyle = isSelected
-                    ? "rgba(255, 255, 255, 0.3)"
-                    : "rgba(255, 255, 255, 0.1)";
-                ctx.lineWidth = isSelected ? 2 : 1;
-                ctx.setLineDash([5, 5]);
-                ctx.beginPath();
-                ctx.arc(cx, cy, orbitRadius, 0, Math.PI * 2);
-                ctx.stroke();
-                ctx.setLineDash([]);
-            }
-
-            // Draw planet
-            const planetRadius = cfg.radius * scale * 1.5; // Scale up for visibility
-            drawPlanet(ctx, {
-                x: px,
-                y: py,
-                radius: Math.max(planetRadius, 8), // Minimum 8px
-                color: cfg.color,
-            });
-
-            // Draw selection ring
-            if (isSelected) {
-                ctx.strokeStyle = "var(--color-acid-lime, #d4ff00)";
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.arc(px, py, Math.max(planetRadius, 8) + 6, 0, Math.PI * 2);
-                ctx.stroke();
-            }
-
-            // Draw planet name label
-            ctx.fillStyle = isSelected ? "#ffffff" : "rgba(255, 255, 255, 0.6)";
-            ctx.font = isSelected ? "bold 12px sans-serif" : "11px sans-serif";
-            ctx.textAlign = "center";
-            ctx.fillText(cfg.name, px, py + Math.max(planetRadius, 8) + 18);
+        // Draw orbit path
+        if (planetLabState.showOrbit) {
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.arc(cx, cy, scaledOrbit, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.setLineDash([]);
         }
 
-        // Draw direction indicators
-        ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-        ctx.font = "10px sans-serif";
+        // Draw ring behind planet (if enabled)
+        if (planetLabState.hasRing) {
+            drawRing(ctx, px, py, scaledRadius, planetColor);
+        }
+
+        // Draw planet
+        drawPlanet(ctx, {
+            x: px,
+            y: py,
+            radius: scaledRadius,
+            color: planetColor,
+        });
+
+        // Draw selection indicator
+        ctx.strokeStyle = "var(--color-acid-lime, #d4ff00)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(px, py, scaledRadius + 6, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Draw info labels
+        ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+        ctx.font = "11px sans-serif";
         ctx.textAlign = "left";
-        ctx.fillText("↺ Counter-clockwise: The Rock, The Gas", 10, 20);
-        ctx.fillText("↻ Clockwise (Retrograde): The Moon", 10, 35);
+        ctx.fillText(`Orbit: ${orbitRadius.toFixed(0)}px`, 10, 20);
+        ctx.fillText(`Radius: ${planetRadius.toFixed(0)}px`, 10, 35);
+        ctx.fillText(`Type: ${planetLabState.planetType}`, 10, 50);
+        if (planetLabState.hasRing) {
+            ctx.fillText("Ring: ON", 10, 65);
+        }
     }
 </script>
 

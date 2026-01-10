@@ -10,6 +10,17 @@ export const CONFIG = {
     FIELD_OF_VIEW: 2.0, // Camera zoom level (1.0 = normal)
 } as const;
 
+/** Planet type definitions for visual styling */
+export const PLANET_TYPES = {
+    rock: { id: 'rock', name: 'Rock', color: '#8B7355' },
+    gas: { id: 'gas', name: 'Gas', color: '#6B4C9A' },
+    ocean: { id: 'ocean', name: 'Ocean', color: '#4A90C2' },
+    desert: { id: 'desert', name: 'Desert', color: '#C4A35A' },
+    ice: { id: 'ice', name: 'Ice', color: '#A8D8E8' },
+} as const;
+
+export type PlanetTypeId = keyof typeof PLANET_TYPES;
+
 export const SURVIVAL_CONFIG = {
     INITIAL_HULL: 100,
     INITIAL_POWER: 100,
