@@ -1,8 +1,8 @@
 # PBI-038: Dynamic Planet Spawning
 
-**Status:** TODO  
-**Priority:** HIGH  
-**Estimate:** 3 Story Points  
+**Status:** DONE
+**Priority:** HIGH
+**Estimate:** 3 Story Points
 **Target Version:** v0.2.4
 
 ---
@@ -51,12 +51,12 @@ For each planet:
 
 ## Acceptance Criteria
 
-- [ ] `PLANET_SPAWN_CONFIG` replaces `SURVIVAL_CONFIG.PLANETS`
-- [ ] `generatePlanets()` function creates 0-5 random planets
-- [ ] Non-overlap validation prevents orbit collisions
-- [ ] Each planet uses random type from `PLANET_TYPES`
-- [ ] 20% of planets have rings
-- [ ] Game restart generates new planet set
+- [x] `PLANET_SPAWN_CONFIG` replaces `SURVIVAL_CONFIG.PLANETS`
+- [x] `initializePlanets()` creates 0-5 random planets
+- [x] Non-overlap validation prevents orbit collisions
+- [x] Each planet uses random type from `PLANET_TYPES`
+- [x] 20% of planets have rings
+- [x] Game restart generates new planet set
 
 ---
 
@@ -77,8 +77,8 @@ No changes (already calls `initializePlanets()`).
 
 ## Definition of Done
 
-- [ ] Dynamic planet generation working
-- [ ] Planet count varies between runs (0-5)
-- [ ] No visual overlap between planets
-- [ ] Type/ring randomization working
-- [ ] Type check passes
+- [x] Dynamic planet generation working
+- [x] Planet count varies between runs (0-5)
+- [x] No visual overlap between planets
+- [x] Type/ring randomization working
+- [x] Type check passes

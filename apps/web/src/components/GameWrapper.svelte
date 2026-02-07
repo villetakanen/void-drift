@@ -21,7 +21,6 @@
     createCollisionBurst,
     getThrustHue,
     initializePlanets,
-    resetPlanets,
   } from "@void-drift/core";
   import {
     updateTimer,
@@ -101,8 +100,8 @@
     ship.acc.set(0, 0);
     ship.rotation = -Math.PI / 2;
 
-    // Reset Planets to initial orbital positions
-    resetPlanets(planets);
+    // Generate fresh planets for new game
+    planets = initializePlanets(LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2);
 
     // Reset Particles
     particles = [];

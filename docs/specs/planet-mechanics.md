@@ -153,9 +153,9 @@ interface Planet {
 - **Normal:** Calculated as `(ship.pos - planet.pos).normalize()`
 
 ### Configuration
-- **Current Setup:** 1 Slate Blue planet orbiting at R=700
-- **Spawning:** Hardcoded in game initialization (future: configurable via gallery)
-- **Variability:** System supports multiple planets with different orbits
+- **Current Setup:** 0-5 dynamically spawned planets per game (PBI-038)
+- **Spawning:** `initializePlanets()` in `packages/core/src/lib/physics/planets.ts`
+- **Variability:** Random count, type, orbit, size, speed, and ring per game restart
 
 ## Performance Characteristics
 - **Render Time:** ~0.15ms per planet (circle + orbit line)
