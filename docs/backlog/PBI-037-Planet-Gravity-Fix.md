@@ -1,8 +1,8 @@
 # PBI-037: Planet Gravity Mass-Based Calculation
 
-**Status:** TODO  
-**Priority:** HIGH  
-**Estimate:** 1 Story Point  
+**Status:** DONE
+**Priority:** HIGH
+**Estimate:** 1 Story Point
 **Target Version:** v0.2.4
 
 ---
@@ -25,10 +25,10 @@ Current implementation uses `radius * 16` for gravity influence. Spec requires m
 
 ## Acceptance Criteria
 
-- [ ] Gravity influence radius calculated from mass (formula: `sqrt(mass) * factor`)
-- [ ] Maximum influence radius capped at `radius * 8`
-- [ ] Minimum influence radius is `radius * 2` (ensures close gravity)
-- [ ] Physics tests updated to verify mass-based gravity
+- [x] Gravity influence radius calculated from mass (formula: `sqrt(mass) * 10`)
+- [x] Maximum influence radius capped at `radius * 8`
+- [x] Minimum influence radius is `radius * 2` (ensures close gravity)
+- [x] Physics tests updated to verify mass-based gravity
 
 ---
 
@@ -51,7 +51,7 @@ const influenceRadius = Math.max(minInfluence, Math.min(massInfluence, maxInflue
 
 ## Definition of Done
 
-- [ ] Gravity formula updated in Physics.ts
-- [ ] Unit test verifies mass-based influence
-- [ ] Spec discrepancy warning removed from planet-mechanics.md
-- [ ] Type check passes
+- [x] Gravity formula updated in Physics.ts
+- [x] Unit test verifies mass-based influence (5 tests)
+- [x] Spec discrepancy warning removed from planet-mechanics.md
+- [x] Type check passes

@@ -142,9 +142,9 @@ interface Planet {
 
 #### Gravity
 - **Law:** Inverse square law scaled by mass
-- **Influence Radius:** 16x physical radius (480px)
-- **Formula:** `F = G * m1 * m2 / max(distance², minDistance²)`
-- **Integration:** Uses same gravity system as star
+- **Influence Radius:** Mass-based: `sqrt(mass) * 10`, clamped to `[radius * 2, radius * 8]`
+- **Formula:** `strength = (mass / dist²) * 1000`
+- **Integration:** Multi-body gravity via vector addition with star
 
 #### Collision
 - **Detection:** Distance check `|ship.pos - planet.pos| < (ship.radius + planet.radius)`
