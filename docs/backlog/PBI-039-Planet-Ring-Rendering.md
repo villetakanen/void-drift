@@ -1,8 +1,8 @@
 # PBI-039: Planet Ring Rendering
 
-**Status:** TODO  
-**Priority:** MEDIUM  
-**Estimate:** 1 Story Point  
+**Status:** DONE
+**Priority:** MEDIUM
+**Estimate:** 1 Story Point
 **Target Version:** v0.2.4
 
 ---
@@ -25,10 +25,10 @@ The Planet interface now includes `hasRing: boolean`. Ring rendering is implemen
 
 ## Acceptance Criteria
 
-- [ ] `drawPlanet()` function supports optional ring rendering
-- [ ] Rings render as tilted ellipse behind planet
-- [ ] Ring color matches planet color at 40% opacity
-- [ ] Ring is visual-only (no collision)
+- [x] `drawPlanet()` function supports optional ring rendering
+- [x] Rings render as tilted ellipse behind planet
+- [x] Ring color matches planet color at 40% opacity
+- [x] Ring is visual-only (no collision)
 
 ---
 
@@ -63,6 +63,6 @@ export function drawPlanet(
 
 ## Definition of Done
 
-- [ ] Ring rendering in `drawPlanet()`
-- [ ] Rings visible in game when planet has `hasRing: true`
-- [ ] Type check passes
+- [x] Ring rendering in `drawPlanet()`
+- [x] Rings visible in game when planet has `hasRing: true`
+- [x] Type check passes
