@@ -22,7 +22,8 @@ export type SubmitHighScoreResult =
  * @returns Success with scoreId, or error message
  */
 export async function submitHighScore(
-    submission: HighScoreSubmission
+    submission: HighScoreSubmission,
+    signal?: AbortSignal,
 ): Promise<SubmitHighScoreResult> {
     try {
         // 1. Get current user session
@@ -61,6 +62,7 @@ export async function submitHighScore(
         // 5. Insert to Supabase
         const { data, error: insertError } = await supabase
             .from('highscores')
+            .abortSignal(signal ?? new AbortController().signal)
             .insert({
                 user_id: validated.data.userId,
                 initials: validated.data.initials,

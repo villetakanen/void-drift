@@ -22,6 +22,9 @@
     let uidHashPreview = $state<string | null>(null);
     let isSubmitting = $state(false);
     let errorMessage = $state<string | null>(null);
+    let submitController = $state<AbortController | null>(null);
+
+    const SUBMIT_TIMEOUT_MS = 8000;
 
     const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
@@ -64,26 +67,29 @@
 
     // Keyboard handling
     function handleKeydown(event: KeyboardEvent) {
-        if (isSubmitting) return;
-
         switch (event.key) {
             case "ArrowUp":
+                if (isSubmitting) return;
                 event.preventDefault();
                 incrementLetter();
                 break;
             case "ArrowDown":
+                if (isSubmitting) return;
                 event.preventDefault();
                 decrementLetter();
                 break;
             case "ArrowLeft":
+                if (isSubmitting) return;
                 event.preventDefault();
                 moveLeft();
                 break;
             case "ArrowRight":
+                if (isSubmitting) return;
                 event.preventDefault();
                 moveRight();
                 break;
             case "Enter":
+                if (isSubmitting) return;
                 event.preventDefault();
                 if (isFormValid) {
                     handleSubmit();
@@ -91,7 +97,7 @@
                 break;
             case "Escape":
                 event.preventDefault();
-                onCancel();
+                cancelSubmitting();
                 break;
         }
     }
@@ -102,21 +108,57 @@
 
         isSubmitting = true;
         errorMessage = null;
+        submitController = new AbortController();
 
         const initials = letters.join("");
 
-        const result = await submitHighScore({
-            initials,
-            seconds: Math.floor(seconds),
-            deathCause,
-        });
+        const timeoutId = window.setTimeout(() => {
+            submitController?.abort();
+        }, SUBMIT_TIMEOUT_MS);
 
-        if (result.success) {
-            onSubmitSuccess();
-        } else {
+        try {
+            const result = await submitHighScore(
+                {
+                    initials,
+                    seconds: Math.floor(seconds),
+                    deathCause,
+                },
+                submitController.signal,
+            );
+
+            if (result.success) {
+                onSubmitSuccess();
+                return;
+            }
+
             errorMessage = result.error;
+        } catch (error) {
+            if (error instanceof DOMException && error.name === "AbortError") {
+                errorMessage =
+                    "Score submission timed out. Supabase may be unavailable. Try again or cancel.";
+            } else {
+                errorMessage =
+                    error instanceof Error
+                        ? error.message
+                        : "Score submission failed. Please try again.";
+            }
+        } finally {
+            clearTimeout(timeoutId);
+            submitController = null;
             isSubmitting = false;
         }
+    }
+
+    function cancelSubmitting() {
+        if (isSubmitting) {
+            submitController?.abort();
+            errorMessage = "Score submission cancelled.";
+            isSubmitting = false;
+            submitController = null;
+            return;
+        }
+
+        onCancel();
     }
 
     // Computed
@@ -181,10 +223,9 @@
     <div class="actions">
         <button
             class="btn btn-ghost"
-            onclick={onCancel}
-            disabled={isSubmitting}
+            onclick={cancelSubmitting}
         >
-            Cancel
+            {isSubmitting ? "Cancel Submit" : "Cancel"}
         </button>
 
         <button

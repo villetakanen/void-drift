@@ -8,7 +8,7 @@
         getPlanetColor,
         getPlanetTypeOptions,
     } from "./planet-state.svelte";
-    import type { PlanetTypeId } from "@void-drift/core";
+    import { getPlanetInfluenceRadius, type PlanetTypeId } from "@void-drift/core";
 
     let { ...props }: { [key: string]: any } = $props();
 
@@ -21,7 +21,9 @@
 
     // Calculate derived physics values
     const mass = $derived(Math.round(planetRadius * 10)); // Mass scales with size
-    const gravityInfluence = $derived(Math.round(planetRadius * 8)); // 8x radius
+    const gravityInfluence = $derived(
+        Math.round(getPlanetInfluenceRadius({ radius: planetRadius, mass })),
+    );
 
     const planetStatsGroups = $derived([
         {
@@ -122,6 +124,15 @@
         <label>
             <input type="checkbox" bind:checked={planetLabState.showOrbit} />
             Show Orbit Path
+        </label>
+    </div>
+    <div class="control-group">
+        <label>
+            <input
+                type="checkbox"
+                bind:checked={planetLabState.showGravityWell}
+            />
+            Show Gravity Well
         </label>
     </div>
     <div class="control-group">

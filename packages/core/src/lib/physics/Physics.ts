@@ -80,6 +80,23 @@ export interface Planet {
   hasRing: boolean; // Visual ring system
 }
 
+export interface CollisionEventData {
+  color?: string;
+  x?: number;
+  y?: number;
+  impactSpeed?: number;
+}
+
+export function getPlanetInfluenceRadius(planet: {
+  radius: number;
+  mass: number;
+}): number {
+  const massInfluence = Math.sqrt(planet.mass) * 10;
+  const maxInfluence = planet.radius * 8;
+  const minInfluence = planet.radius * 2;
+  return Math.max(minInfluence, Math.min(massInfluence, maxInfluence));
+}
+
 import { CONFIG, SURVIVAL_CONFIG } from "../config";
 import type { InputState } from "../entities/Input";
 import type { Resources } from "../schemas/common";
@@ -183,7 +200,7 @@ export function updateShip(
   onCollision?: (
     type: "planet" | "star",
     magnitude: number,
-    data?: { color?: string; x?: number; y?: number },
+    data?: CollisionEventData,
   ) => void,
 ) {
   // 1. Rotation & Variable Thrust (Differential)
@@ -256,13 +273,7 @@ export function updateShip(
     const dist = Math.sqrt(distSq);
 
     // Gravity influence is mass-based, capped at radius * 8
-    const massInfluence = Math.sqrt(planet.mass) * 10; // Tuned factor
-    const maxInfluence = planet.radius * 8;
-    const minInfluence = planet.radius * 2;
-    const influenceRadius = Math.max(
-      minInfluence,
-      Math.min(massInfluence, maxInfluence),
-    );
+    const influenceRadius = getPlanetInfluenceRadius(planet);
 
     if (dist < influenceRadius && dist > planet.radius + ship.radius) {
       const strength = (planet.mass / distSq) * 1000; // Inverse square approximation
@@ -275,6 +286,9 @@ export function updateShip(
     // Collision (Elastic Bounce)
     const minDist = planet.radius + ship.radius;
     if (dist < minDist) {
+      const impactSpeed = Math.hypot(ship.vel.x, ship.vel.y);
+      const impactMagnitude = Math.max(0.1, Math.min(1, impactSpeed / 550));
+
       // Resolve overlap
       const overlap = minDist - dist;
       const nx = dx / dist; // Vector pointing towards planet
@@ -304,10 +318,11 @@ export function updateShip(
       }
 
       if (onCollision) {
-        onCollision("planet", 1.0, {
+        onCollision("planet", impactMagnitude, {
           color: planet.color,
           x: ship.pos.x,
           y: ship.pos.y,
+          impactSpeed,
         });
       }
     }

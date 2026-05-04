@@ -47,6 +47,19 @@
   let shake: ScreenShake | undefined;
   let damageFlash = createDamageFlash();
   let particles: Particle[] = [];
+  let hullHitFlash = 0;
+  const TRAUMA_MOBILE_CAP = 0.75;
+  const TRAUMA_DESKTOP_CAP = 1.0;
+  let traumaCap = TRAUMA_DESKTOP_CAP;
+
+  function blendTint(baseHex: string, overlayHex: string, amount: number): string {
+    const clamped = Math.max(0, Math.min(1, amount));
+    const parse = (hex: string, start: number) => Number.parseInt(hex.slice(start, start + 2), 16);
+    const r = Math.round(parse(baseHex, 1) * (1 - clamped) + parse(overlayHex, 1) * clamped);
+    const g = Math.round(parse(baseHex, 3) * (1 - clamped) + parse(overlayHex, 3) * clamped);
+    const b = Math.round(parse(baseHex, 5) * (1 - clamped) + parse(overlayHex, 5) * clamped);
+    return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+  }
 
   // Reactivity for UI
   let leftActive = $state(false);
@@ -108,6 +121,7 @@
 
     // Reset Shake
     shake?.reset();
+    hullHitFlash = 0;
   }
 
   function update(dt: number) {
@@ -143,10 +157,14 @@
             type === "planet"
               ? SURVIVAL_CONFIG.TRAUMA_VALUES.planetCollision
               : 0.1;
-          shake.addTrauma(trauma * magnitude);
+          const scaledTrauma = Math.min(traumaCap, trauma * magnitude);
+          shake.addTrauma(scaledTrauma);
         }
         if (type === "planet") {
-          triggerDamageFlash(damageFlash, 0.8 * magnitude, 0.2);
+          const flashIntensity = Math.min(1, 0.35 + magnitude * 0.65);
+          const flashDuration = 0.08 + magnitude * 0.2;
+          triggerDamageFlash(damageFlash, flashIntensity, flashDuration);
+          hullHitFlash = Math.max(hullHitFlash, flashIntensity);
 
           // Create collision burst particles
           if (data?.color && data?.x !== undefined && data?.y !== undefined) {
@@ -234,6 +252,7 @@
 
     // Update Damage Flash
     updateDamageFlash(damageFlash, dt);
+    hullHitFlash = Math.max(0, hullHitFlash - dt * 5.5);
 
     // Update Camera to follow ship
     camera.setTarget(ship.pos.x, ship.pos.y);
@@ -269,6 +288,7 @@
     let shipTint = "#ffffff";
     if (hullPercent <= 25) shipTint = "#ff3333";
     else if (hullPercent <= 50) shipTint = "#ffaa00";
+    shipTint = blendTint(shipTint, "#ffd6d6", hullHitFlash);
 
     renderer.drawShip(ship, shipTint);
 
@@ -293,6 +313,9 @@
 
     // Initialize Screen Shake
     shake = new ScreenShake(SURVIVAL_CONFIG.SCREEN_SHAKE);
+    traumaCap = window.matchMedia("(pointer: coarse)").matches
+      ? TRAUMA_MOBILE_CAP
+      : TRAUMA_DESKTOP_CAP;
 
     // Reset Flash
     damageFlash = createDamageFlash();

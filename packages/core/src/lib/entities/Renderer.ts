@@ -1,5 +1,6 @@
 import type { GameObject, Star, Planet } from "../physics/Physics";
 import type { Camera } from "../physics/Camera";
+import { getPlanetInfluenceRadius } from "../physics/Physics";
 import { drawShip } from "../assets/ship";
 import { drawStar } from "../assets/star";
 import { drawPlanet } from "../assets/planet";
@@ -161,6 +162,15 @@ export class Renderer {
         });
       },
     );
+
+    const gravityRadius = getPlanetInfluenceRadius(planet);
+    this.ctx.strokeStyle = "rgba(120, 220, 255, 0.2)";
+    this.ctx.lineWidth = 1;
+    this.ctx.setLineDash([6, 6]);
+    this.ctx.beginPath();
+    this.ctx.arc(planet.pos.x, planet.pos.y, gravityRadius, 0, Math.PI * 2);
+    this.ctx.stroke();
+    this.ctx.setLineDash([]);
   }
 
   drawDamageFlash(flash: DamageFlash) {
