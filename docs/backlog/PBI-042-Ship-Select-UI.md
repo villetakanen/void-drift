@@ -39,3 +39,11 @@
 - [ ] Mobile touch targets meet 44px minimum.
 - [ ] Keyboard navigation works on desktop menu.
 - [ ] Type check and build pass.
+
+---
+
+## Related Documents
+
+- [PBI-041: Ship Profile Schemas & Runtime Config](./PBI-041-Ship-Profile-Schemas.md)
+- [PBI-043: Procedural Ship Variants (3)](./PBI-043-Procedural-Ship-Variants.md)
+- [PBI-045: Ship Lab Chassis Preview](./PBI-045-Ship-Lab-Chassis-Preview.md)

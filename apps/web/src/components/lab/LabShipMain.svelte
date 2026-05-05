@@ -1,6 +1,10 @@
 <script lang="ts">
     import Canvas from "../Canvas.svelte";
     import { drawShip } from "@void-drift/core";
+    import {
+        SHIP_PROFILE_BY_ID,
+        type ShipProfileId,
+    } from "@void-drift/mode-a";
     import { shipParams } from "./ship-state.svelte";
 
     let { ...props }: { [key: string]: any } = $props();
@@ -11,13 +15,15 @@
     function drawShipPreview(ctx: CanvasRenderingContext2D) {
         const cx = ctx.canvas.width / 2;
         const cy = ctx.canvas.height / 2;
+        const profile = SHIP_PROFILE_BY_ID[shipParams.profileId as ShipProfileId];
 
         drawShip(ctx, {
             x: cx,
             y: cy,
             rotation: shipParams.rotation * (Math.PI / 180),
             size: 2,
-            color: "#D4FF00",
+            color: profile.tint,
+            variant: profile.id,
         });
     }
 </script>

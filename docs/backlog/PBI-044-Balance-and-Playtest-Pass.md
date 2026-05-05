@@ -39,3 +39,12 @@
 - [ ] Scout/Balanced/Tank all viable in short test sessions.
 - [ ] Camera zoom defaults and bounds finalized.
 - [ ] `pnpm -r check` and `pnpm -r build` pass.
+
+---
+
+## Related Documents
+
+- [PBI-040: Camera Zoom System](./PBI-040-Camera-Zoom-System.md)
+- [PBI-042: Ship Select UI + Persistence](./PBI-042-Ship-Select-UI.md)
+- [PBI-043: Procedural Ship Variants (3)](./PBI-043-Procedural-Ship-Variants.md)
+- [PBI-045: Ship Lab Chassis Preview](./PBI-045-Ship-Lab-Chassis-Preview.md)

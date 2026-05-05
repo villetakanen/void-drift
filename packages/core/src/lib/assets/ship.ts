@@ -4,10 +4,11 @@ export interface DrawShipOptions {
     rotation: number;
     color?: string;
     size?: number;
+    variant?: "scout" | "balanced" | "tank";
 }
 
 export function drawShip(ctx: CanvasRenderingContext2D, options: DrawShipOptions) {
-    const { x, y, rotation, color = "#00ffcc", size = 1 } = options;
+    const { x, y, rotation, color = "#00ffcc", size = 1, variant = "balanced" } = options;
 
     ctx.save();
     ctx.translate(x, y);
@@ -24,6 +25,22 @@ export function drawShip(ctx: CanvasRenderingContext2D, options: DrawShipOptions
     ctx.lineTo(-8, -8); // Back Left
     ctx.closePath();
     ctx.stroke();
+
+    if (variant === "scout") {
+        ctx.beginPath();
+        ctx.moveTo(-2, 0);
+        ctx.lineTo(-12, 0);
+        ctx.stroke();
+    }
+
+    if (variant === "tank") {
+        ctx.beginPath();
+        ctx.moveTo(-7, 5.5);
+        ctx.lineTo(-11, 3);
+        ctx.moveTo(-7, -5.5);
+        ctx.lineTo(-11, -3);
+        ctx.stroke();
+    }
 
     ctx.restore();
 }

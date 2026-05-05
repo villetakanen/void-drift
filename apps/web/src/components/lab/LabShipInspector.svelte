@@ -2,35 +2,79 @@
     import Controls from "../Controls.svelte";
     import LabStats from "./LabStats.svelte";
     import { CONFIG } from "@void-drift/core";
+    import {
+        DEFAULT_SHIP_PROFILE_ID,
+        SHIP_PROFILE_BY_ID,
+        SHIP_PROFILES,
+        type ShipProfileId,
+    } from "@void-drift/mode-a";
     import { shipParams } from "./ship-state.svelte";
 
     let { ...props }: { [key: string]: any } = $props();
 
-    const shipStatsGroups = [
+    if (!shipParams.profileId) {
+        shipParams.profileId = DEFAULT_SHIP_PROFILE_ID;
+    }
+
+    const selectedProfile = $derived(
+        SHIP_PROFILE_BY_ID[shipParams.profileId as ShipProfileId],
+    );
+
+    const shipStatsGroups = $derived([
         {
             label: "Physical",
             stats: [
                 { key: "Radius", value: CONFIG.SHIP_RADIUS, unit: "px" },
                 { key: "Max Speed", value: CONFIG.MAX_SPEED, unit: "px/s" },
-                { key: "Mass", value: 1.0 },
+                {
+                    key: "Hull Multiplier",
+                    value: selectedProfile.hullMultiplier.toFixed(2),
+                },
             ],
         },
         {
             label: "Movement",
             stats: [
-                { key: "Thrust", value: CONFIG.THRUST_FORCE, unit: "px/s²" },
                 {
-                    key: "Rotation",
-                    value: CONFIG.ROTATION_SPEED.toFixed(2),
-                    unit: "rad/s",
+                    key: "Thrust",
+                    value: selectedProfile.thrustMultiplier.toFixed(2),
+                    unit: "x",
                 },
-                { key: "Drag", value: CONFIG.SHIP_DRAG, unit: "/s" },
+                {
+                    key: "Turn",
+                    value: selectedProfile.turnMultiplier.toFixed(2),
+                    unit: "x",
+                },
+                {
+                    key: "Power Drain",
+                    value: selectedProfile.powerDrainMultiplier.toFixed(2),
+                    unit: "x",
+                },
             ],
         },
-    ];
+        {
+            label: "Camera",
+            stats: [
+                {
+                    key: "Default Zoom",
+                    value: selectedProfile.zoomDefault.toFixed(2),
+                    unit: "x",
+                },
+            ],
+        },
+    ]);
 </script>
 
 <Controls title="Parameters">
+    <div class="control-group">
+        <label for="ship-profile">Chassis</label>
+        <select id="ship-profile" bind:value={shipParams.profileId}>
+            {#each SHIP_PROFILES as profile}
+                <option value={profile.id}>{profile.name}</option>
+            {/each}
+        </select>
+    </div>
+
     <div class="control-group">
         <label for="rotation">Rotation ({shipParams.rotation}°)</label>
         <input
@@ -60,8 +104,20 @@
         font-size: 0.9rem;
     }
 
+    select {
+        width: 100%;
+        min-height: 44px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        background: rgba(5, 5, 16, 0.7);
+        color: var(--color-text);
+        padding: 0.5rem;
+        font: inherit;
+    }
+
     input[type="range"] {
         width: 100%;
         accent-color: var(--color-acid-lime);
+        min-height: 44px;
     }
 </style>
