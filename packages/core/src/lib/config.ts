@@ -54,6 +54,46 @@ export const SURVIVAL_CONFIG = {
         boost: 0.1, // Low (subtle feedback on thrust)
     },
 
+    // Deterministic multi-planet roster for Mode A (PBI-032)
+    PLANETS: [
+        {
+            id: 'rock',
+            name: 'The Rock',
+            orbitRadius: 700,
+            orbitSpeed: 0.05,
+            orbitPhase: 0,
+            radius: 30,
+            mass: 400,
+            color: '#8B7355',
+            type: 'rock',
+            hasRing: false,
+        },
+        {
+            id: 'gas',
+            name: 'The Gas',
+            orbitRadius: 460,
+            orbitSpeed: 0.095,
+            orbitPhase: Math.PI * 0.65,
+            radius: 45,
+            mass: 1200,
+            color: '#6B4C9A',
+            type: 'gas',
+            hasRing: true,
+        },
+        {
+            id: 'moon',
+            name: 'The Moon',
+            orbitRadius: 300,
+            orbitSpeed: -0.13,
+            orbitPhase: Math.PI * 1.2,
+            radius: 18,
+            mass: 220,
+            color: '#D0D0D0',
+            type: 'rock',
+            hasRing: false,
+        },
+    ],
+
     // Planet spawning configuration (PBI-038)
     PLANET_SPAWN_CONFIG: {
         minCount: 0,

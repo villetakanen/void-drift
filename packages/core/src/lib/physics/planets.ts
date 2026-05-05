@@ -1,19 +1,40 @@
 /**
- * Planet factory and management functions for multi-planet system (PBI-038)
+ * Planet factory and management functions
  */
 import { Vec2, type Planet } from './Physics';
 import { SURVIVAL_CONFIG, PLANET_TYPES } from '../config';
 
 /**
- * Creates Planet runtime state dynamically (PBI-038)
+ * Creates deterministic Planet runtime state for Mode A (PBI-032)
  * @param centerX - Center X coordinate (typically star position)
  * @param centerY - Center Y coordinate (typically star position)
  */
 export function initializePlanets(centerX: number, centerY: number): Planet[] {
+    return SURVIVAL_CONFIG.PLANETS.map((config) => ({
+        pos: new Vec2(
+            centerX + Math.cos(config.orbitPhase) * config.orbitRadius,
+            centerY + Math.sin(config.orbitPhase) * config.orbitRadius,
+        ),
+        orbitCenter: new Vec2(centerX, centerY),
+        orbitRadius: config.orbitRadius,
+        orbitSpeed: config.orbitSpeed,
+        orbitAngle: config.orbitPhase,
+        initialAngle: config.orbitPhase,
+        radius: config.radius,
+        mass: config.mass,
+        color: config.color,
+        type: config.type,
+        hasRing: config.hasRing,
+    }));
+}
+
+/**
+ * Creates random Planet runtime state for experimentation and stress testing.
+ */
+export function initializeRandomPlanets(centerX: number, centerY: number): Planet[] {
     const cfg = SURVIVAL_CONFIG.PLANET_SPAWN_CONFIG;
     const count = Math.floor(Math.random() * (cfg.maxCount - cfg.minCount + 1)) + cfg.minCount;
     const planets: Planet[] = [];
-
     const typeOptions = Object.values(PLANET_TYPES);
 
     for (let i = 0; i < count; i++) {
@@ -28,12 +49,11 @@ export function initializePlanets(centerX: number, centerY: number): Planet[] {
                 const type = typeOptions[Math.floor(Math.random() * typeOptions.length)];
                 const orbitSpeed = (cfg.speedRange.min + Math.random() * (cfg.speedRange.max - cfg.speedRange.min)) * (Math.random() > 0.5 ? 1 : -1);
                 const orbitPhase = Math.random() * Math.PI * 2;
-                const hasRing = Math.random() < cfg.ringProbability;
 
                 planet = {
                     pos: new Vec2(
                         centerX + Math.cos(orbitPhase) * orbitRadius,
-                        centerY + Math.sin(orbitPhase) * orbitRadius
+                        centerY + Math.sin(orbitPhase) * orbitRadius,
                     ),
                     orbitCenter: new Vec2(centerX, centerY),
                     orbitRadius,
@@ -41,10 +61,10 @@ export function initializePlanets(centerX: number, centerY: number): Planet[] {
                     orbitAngle: orbitPhase,
                     initialAngle: orbitPhase,
                     radius,
-                    mass: Math.round(radius * 10), // Proportional to size
+                    mass: Math.round(radius * 10),
                     color: type.color,
                     type: type.id,
-                    hasRing,
+                    hasRing: Math.random() < cfg.ringProbability,
                 };
                 break;
             }
@@ -56,7 +76,6 @@ export function initializePlanets(centerX: number, centerY: number): Planet[] {
         }
     }
 
-    // Sort by orbit radius to make rendering/path visualization logical
     return planets.sort((a, b) => b.orbitRadius - a.orbitRadius);
 }
 
