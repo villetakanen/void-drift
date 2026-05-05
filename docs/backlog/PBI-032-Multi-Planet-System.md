@@ -1,6 +1,6 @@
 # PBI-032: Multi-Planet System
 
-**Status:** TODO  
+**Status:** DONE  
 **Priority:** HIGH  
 **Estimate:** 5 Story Points  
 **Phase:** 7 (Content & Polish)  
