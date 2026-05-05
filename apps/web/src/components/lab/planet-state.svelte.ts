@@ -31,6 +31,7 @@ export const planetLabState = $state({
     // Animation controls
     animating: true,
     showOrbit: true,
+    showGravityWell: true,
     timeScale: 1.0,
 });
 

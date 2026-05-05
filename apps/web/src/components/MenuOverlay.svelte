@@ -4,7 +4,8 @@
     let {
         onStart,
         container,
-    }: { onStart: () => void; container?: HTMLElement } = $props();
+    }: { onStart: (enablePerf?: boolean) => void; container?: HTMLElement } =
+        $props();
 
     let startButton: HTMLButtonElement;
 
@@ -13,6 +14,13 @@
             await requestFullscreen(container);
         }
         onStart();
+    }
+
+    async function handleStartPerf() {
+        if (container) {
+            await requestFullscreen(container);
+        }
+        onStart(true);
     }
 
     function handleKeydown(event: KeyboardEvent) {
@@ -32,7 +40,10 @@
         }
 
         // Don't start if focused on settings link
-        if (document.activeElement?.classList.contains("settings-link")) {
+        if (
+            document.activeElement?.classList.contains("settings-link") ||
+            document.activeElement?.classList.contains("perf-link")
+        ) {
             return;
         }
 
@@ -40,8 +51,16 @@
     }
 
     function handleOverlayClick(event: MouseEvent) {
+        // Ignore clicks inside the menu content itself
+        if ((event.target as Element).closest(".menu-content")) {
+            return;
+        }
+
         // Don't start if clicking the settings link
-        if ((event.target as Element).closest(".settings-link")) {
+        if (
+            (event.target as Element).closest(".settings-link") ||
+            (event.target as Element).closest(".perf-link")
+        ) {
             return;
         }
         handleStart();
@@ -75,7 +94,11 @@
             TAP TO START
         </button>
 
-        <a href="/settings" class="btn btn-link">Settings</a>
+        <button class="btn btn-link perf-link" onclick={handleStartPerf}>
+            Start with Perf HUD
+        </button>
+
+        <a href="/settings" class="btn btn-link settings-link">Settings</a>
     </div>
 </div>
 

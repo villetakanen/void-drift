@@ -18,6 +18,7 @@ export * from './lib/assets/death-icons';
 export * from './lib/effects/screen-shake';
 export * from './lib/effects/damage-feedback';
 export * from './lib/effects/particles';
+export * from './lib/debug/PerformanceMonitor';
 
 // Svelte Components
 export { default as Joystick } from './lib/ui/Joystick.svelte';

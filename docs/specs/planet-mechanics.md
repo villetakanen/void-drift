@@ -142,9 +142,9 @@ interface Planet {
 
 #### Gravity
 - **Law:** Inverse square law scaled by mass
-- **Influence Radius:** 16x physical radius (480px)
-- **Formula:** `F = G * m1 * m2 / max(distance², minDistance²)`
-- **Integration:** Uses same gravity system as star
+- **Influence Radius:** Mass-based: `sqrt(mass) * 10`, clamped to `[radius * 2, radius * 8]`
+- **Formula:** `strength = (mass / dist²) * 1000`
+- **Integration:** Multi-body gravity via vector addition with star
 
 #### Collision
 - **Detection:** Distance check `|ship.pos - planet.pos| < (ship.radius + planet.radius)`
@@ -153,9 +153,9 @@ interface Planet {
 - **Normal:** Calculated as `(ship.pos - planet.pos).normalize()`
 
 ### Configuration
-- **Current Setup:** 1 Slate Blue planet orbiting at R=700
-- **Spawning:** Hardcoded in game initialization (future: configurable via gallery)
-- **Variability:** System supports multiple planets with different orbits
+- **Current Setup:** 0-5 dynamically spawned planets per game (PBI-038)
+- **Spawning:** `initializePlanets()` in `packages/core/src/lib/physics/planets.ts`
+- **Variability:** Random count, type, orbit, size, speed, and ring per game restart
 
 ## Performance Characteristics
 - **Render Time:** ~0.15ms per planet (circle + orbit line)

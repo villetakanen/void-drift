@@ -1,6 +1,6 @@
 <script lang="ts">
     import Canvas from "../Canvas.svelte";
-    import { drawPlanet } from "@void-drift/core";
+    import { drawPlanet, getPlanetInfluenceRadius } from "@void-drift/core";
     import {
         planetLabState,
         sliderToOrbit,
@@ -17,6 +17,10 @@
     const orbitRadius = $derived(sliderToOrbit(planetLabState.orbitSlider));
     const planetRadius = $derived(sliderToSize(planetLabState.sizeSlider));
     const planetColor = $derived(getPlanetColor());
+    const planetMass = $derived(planetRadius * 10);
+    const gravityInfluence = $derived(
+        getPlanetInfluenceRadius({ radius: planetRadius, mass: planetMass }),
+    );
 
     // Animation Loop
     $effect(() => {
@@ -69,6 +73,7 @@
         const scale = (Math.min(stageWidth, stageHeight) * 0.4) / 1000;
         const scaledOrbit = orbitRadius * scale;
         const scaledRadius = Math.max(planetRadius * scale, 8); // Min 8px visible
+        const scaledGravity = gravityInfluence * scale;
 
         // Draw central star placeholder
         ctx.fillStyle = "#ffaa00";
@@ -88,6 +93,16 @@
             ctx.setLineDash([5, 5]);
             ctx.beginPath();
             ctx.arc(cx, cy, scaledOrbit, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        if (planetLabState.showGravityWell) {
+            ctx.strokeStyle = "rgba(120, 220, 255, 0.35)";
+            ctx.lineWidth = 1;
+            ctx.setLineDash([6, 6]);
+            ctx.beginPath();
+            ctx.arc(px, py, scaledGravity, 0, Math.PI * 2);
             ctx.stroke();
             ctx.setLineDash([]);
         }
@@ -118,9 +133,10 @@
         ctx.textAlign = "left";
         ctx.fillText(`Orbit: ${orbitRadius.toFixed(0)}px`, 10, 20);
         ctx.fillText(`Radius: ${planetRadius.toFixed(0)}px`, 10, 35);
-        ctx.fillText(`Type: ${planetLabState.planetType}`, 10, 50);
+        ctx.fillText(`Gravity: ${gravityInfluence.toFixed(0)}px`, 10, 50);
+        ctx.fillText(`Type: ${planetLabState.planetType}`, 10, 65);
         if (planetLabState.hasRing) {
-            ctx.fillText("Ring: ON", 10, 65);
+            ctx.fillText("Ring: ON", 10, 80);
         }
     }
 </script>

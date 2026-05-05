@@ -21,7 +21,8 @@
     createCollisionBurst,
     getThrustHue,
     initializePlanets,
-    resetPlanets,
+    PerformanceMonitor,
+    type PerformanceSnapshot,
   } from "@void-drift/core";
   import {
     updateTimer,
@@ -48,6 +49,28 @@
   let shake: ScreenShake | undefined;
   let damageFlash = createDamageFlash();
   let particles: Particle[] = [];
+  let hullHitFlash = 0;
+  let perfMonitor: PerformanceMonitor | undefined;
+  let perfStats: PerformanceSnapshot = $state({
+    fps: 0,
+    frameTimeMs: 0,
+    physicsMs: 0,
+    renderMs: 0,
+    particleCount: 0,
+  });
+  let showPerfOverlay = $state(false);
+  const TRAUMA_MOBILE_CAP = 0.75;
+  const TRAUMA_DESKTOP_CAP = 1.0;
+  let traumaCap = TRAUMA_DESKTOP_CAP;
+
+  function blendTint(baseHex: string, overlayHex: string, amount: number): string {
+    const clamped = Math.max(0, Math.min(1, amount));
+    const parse = (hex: string, start: number) => Number.parseInt(hex.slice(start, start + 2), 16);
+    const r = Math.round(parse(baseHex, 1) * (1 - clamped) + parse(overlayHex, 1) * clamped);
+    const g = Math.round(parse(baseHex, 3) * (1 - clamped) + parse(overlayHex, 3) * clamped);
+    const b = Math.round(parse(baseHex, 5) * (1 - clamped) + parse(overlayHex, 5) * clamped);
+    return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+  }
 
   // Reactivity for UI
   let leftActive = $state(false);
@@ -71,7 +94,16 @@
   let star: Star | undefined = $state(undefined);
   let planets: Planet[] = $state([]);
 
-  function startGame() {
+  function startGame(enablePerf = showPerfOverlay) {
+    showPerfOverlay = enablePerf;
+    const url = new URL(window.location.href);
+    if (showPerfOverlay) {
+      url.searchParams.set("perf", "1");
+    } else {
+      url.searchParams.delete("perf");
+    }
+    window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+
     // Select Sun Type
     const sunType = getRandomSunType();
     gameState.sunType = sunType;
@@ -101,18 +133,22 @@
     ship.acc.set(0, 0);
     ship.rotation = -Math.PI / 2;
 
-    // Reset Planets to initial orbital positions
-    resetPlanets(planets);
+    // Generate fresh planets for new game
+    planets = initializePlanets(LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2);
 
     // Reset Particles
     particles = [];
 
     // Reset Shake
     shake?.reset();
+    hullHitFlash = 0;
   }
 
   function update(dt: number) {
     if (!renderer || !input || !camera) return;
+    const frameStart = performance.now();
+    perfMonitor?.beginFrame(frameStart);
+    perfMonitor?.beginPhysics(frameStart);
 
     // Get effective input (with potential inversion from settings)
     const effectiveInput = input.getEffectiveState($settings.invertControls);
@@ -144,10 +180,14 @@
             type === "planet"
               ? SURVIVAL_CONFIG.TRAUMA_VALUES.planetCollision
               : 0.1;
-          shake.addTrauma(trauma * magnitude);
+          const scaledTrauma = Math.min(traumaCap, trauma * magnitude);
+          shake.addTrauma(scaledTrauma);
         }
         if (type === "planet") {
-          triggerDamageFlash(damageFlash, 0.8 * magnitude, 0.2);
+          const flashIntensity = Math.min(1, 0.35 + magnitude * 0.65);
+          const flashDuration = 0.08 + magnitude * 0.2;
+          triggerDamageFlash(damageFlash, flashIntensity, flashDuration);
+          hullHitFlash = Math.max(hullHitFlash, flashIntensity);
 
           // Create collision burst particles
           if (data?.color && data?.x !== undefined && data?.y !== undefined) {
@@ -235,10 +275,13 @@
 
     // Update Damage Flash
     updateDamageFlash(damageFlash, dt);
+    hullHitFlash = Math.max(0, hullHitFlash - dt * 5.5);
 
     // Update Camera to follow ship
     camera.setTarget(ship.pos.x, ship.pos.y);
     camera.update(dt);
+    perfMonitor?.endPhysics(performance.now());
+    perfMonitor?.beginRender(performance.now());
 
     // Render
     renderer.clear();
@@ -270,6 +313,7 @@
     let shipTint = "#ffffff";
     if (hullPercent <= 25) shipTint = "#ff3333";
     else if (hullPercent <= 50) shipTint = "#ffaa00";
+    shipTint = blendTint(shipTint, "#ffd6d6", hullHitFlash);
 
     renderer.drawShip(ship, shipTint);
 
@@ -278,6 +322,14 @@
 
     // End camera transform
     renderer.endCamera();
+
+    const frameEnd = performance.now();
+    perfMonitor?.endRender(frameEnd);
+    perfMonitor?.endFrame(frameEnd);
+
+    if (showPerfOverlay && perfMonitor) {
+      perfStats = perfMonitor.getSnapshot(particles.length);
+    }
   }
 
   onMount(() => {
@@ -294,6 +346,11 @@
 
     // Initialize Screen Shake
     shake = new ScreenShake(SURVIVAL_CONFIG.SCREEN_SHAKE);
+    perfMonitor = new PerformanceMonitor();
+    showPerfOverlay = new URLSearchParams(window.location.search).has("perf");
+    traumaCap = window.matchMedia("(pointer: coarse)").matches
+      ? TRAUMA_MOBILE_CAP
+      : TRAUMA_DESKTOP_CAP;
 
     // Reset Flash
     damageFlash = createDamageFlash();
@@ -393,6 +450,16 @@
         <MenuOverlay onStart={startGame} {container} />
       {/if}
 
+      {#if showPerfOverlay}
+        <div class="perf-overlay" aria-live="off">
+          <div>FPS: {perfStats.fps}</div>
+          <div>Frame: {perfStats.frameTimeMs}ms</div>
+          <div>Physics: {perfStats.physicsMs}ms</div>
+          <div>Render: {perfStats.renderMs}ms</div>
+          <div>Particles: {perfStats.particleCount}</div>
+        </div>
+      {/if}
+
       <!-- Game Over Modal -->
       {#if gameState.status === "GAME_OVER"}
         <GameOver {gameState} onRestart={restartGame} />
@@ -477,6 +544,22 @@
     color: var(--color-text-dim);
     font-family: "Noto Sans Math", sans-serif;
     font-size: 12px;
+  }
+
+  .perf-overlay {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    padding: var(--spacing-sm);
+    font-family: "Noto Sans Math", sans-serif;
+    font-size: 12px;
+    line-height: 1.35;
+    color: var(--color-neon-blue);
+    background: rgba(5, 5, 16, 0.72);
+    border: 1px solid rgba(0, 255, 204, 0.35);
+    border-radius: 6px;
+    text-shadow: 0 0 8px rgba(0, 255, 204, 0.45);
+    pointer-events: none;
   }
 
   /* Feedback Zones */

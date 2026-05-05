@@ -41,3 +41,10 @@ This project is a Monorepo managed by `pnpm`:
 
 - [Project Vision](./docs/project-vision.md)
 - [Agent Guidelines](./AGENTS.md)
+
+## OpenCode Config
+
+This repo includes an OpenCode project config at `opencode.json`.
+
+- MCP server: `ASDLC` (remote)
+- URL: `https://asdlc.io/mcp`

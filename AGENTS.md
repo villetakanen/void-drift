@@ -4,6 +4,10 @@
 
 ## 1.Agent Identity & Personas
 
+### Skill Registry
+
+- `@Spec` -> `.agents/skills/spec.md` (create, reverse-engineer, and update living feature specs)
+
 ### 1.1. Lead Developer / System Architect (@Lead)
 
 **Trigger:** When asked about solution design, specifications, planning, data modeling, or project organization.

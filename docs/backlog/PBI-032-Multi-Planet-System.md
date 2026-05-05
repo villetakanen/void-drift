@@ -6,6 +6,7 @@
 **Phase:** 7 (Content & Polish)  
 **Target Version:** v0.2.1  
 **Epic:** [Phase 7: Content & Polish](../PHASE-7-ROADMAP.md)
+**Spec:** [Multi-Planet System](../specs/multi-planet-system.md)
 
 ---
 
