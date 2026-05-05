@@ -1,6 +1,6 @@
 # PBI-035: Mobile Performance Audit
 
-**Status:** IN PROGRESS  
+**Status:** DONE  
 **Priority:** LOW  
 **Estimate:** 3 Story Points  
 **Phase:** 7 (Content & Polish)  
@@ -24,7 +24,7 @@
 ### Tester Notes
 
 - Desktop sanity check: performance reported as stable/good during local testing.
-- Next validation target: mobile online session with Perf HUD enabled from startup menu.
+- Mobile online validation: stable at 58+ FPS even with heavy effects enabled.
 
 ---
 

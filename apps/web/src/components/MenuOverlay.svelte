@@ -7,6 +7,9 @@
     }: { onStart: (enablePerf?: boolean) => void; container?: HTMLElement } =
         $props();
 
+    const showPerfStartButton =
+        import.meta.env.PUBLIC_ENABLE_PERF_START_BUTTON === "true";
+
     let startButton: HTMLButtonElement;
 
     async function handleStart() {
@@ -94,9 +97,11 @@
             TAP TO START
         </button>
 
-        <button class="btn btn-link perf-link" onclick={handleStartPerf}>
-            Start with Perf HUD
-        </button>
+        {#if showPerfStartButton}
+            <button class="btn btn-link perf-link" onclick={handleStartPerf}>
+                Start with Perf HUD
+            </button>
+        {/if}
 
         <a href="/settings" class="btn btn-link settings-link">Settings</a>
     </div>
