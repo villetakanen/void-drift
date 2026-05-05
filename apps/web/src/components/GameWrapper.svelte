@@ -21,6 +21,8 @@
     createCollisionBurst,
     getThrustHue,
     initializePlanets,
+    PerformanceMonitor,
+    type PerformanceSnapshot,
   } from "@void-drift/core";
   import {
     updateTimer,
@@ -48,6 +50,15 @@
   let damageFlash = createDamageFlash();
   let particles: Particle[] = [];
   let hullHitFlash = 0;
+  let perfMonitor: PerformanceMonitor | undefined;
+  let perfStats: PerformanceSnapshot = $state({
+    fps: 0,
+    frameTimeMs: 0,
+    physicsMs: 0,
+    renderMs: 0,
+    particleCount: 0,
+  });
+  let showPerfOverlay = $state(false);
   const TRAUMA_MOBILE_CAP = 0.75;
   const TRAUMA_DESKTOP_CAP = 1.0;
   let traumaCap = TRAUMA_DESKTOP_CAP;
@@ -83,7 +94,16 @@
   let star: Star | undefined = $state(undefined);
   let planets: Planet[] = $state([]);
 
-  function startGame() {
+  function startGame(enablePerf = showPerfOverlay) {
+    showPerfOverlay = enablePerf;
+    const url = new URL(window.location.href);
+    if (showPerfOverlay) {
+      url.searchParams.set("perf", "1");
+    } else {
+      url.searchParams.delete("perf");
+    }
+    window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+
     // Select Sun Type
     const sunType = getRandomSunType();
     gameState.sunType = sunType;
@@ -126,6 +146,9 @@
 
   function update(dt: number) {
     if (!renderer || !input || !camera) return;
+    const frameStart = performance.now();
+    perfMonitor?.beginFrame(frameStart);
+    perfMonitor?.beginPhysics(frameStart);
 
     // Get effective input (with potential inversion from settings)
     const effectiveInput = input.getEffectiveState($settings.invertControls);
@@ -257,6 +280,8 @@
     // Update Camera to follow ship
     camera.setTarget(ship.pos.x, ship.pos.y);
     camera.update(dt);
+    perfMonitor?.endPhysics(performance.now());
+    perfMonitor?.beginRender(performance.now());
 
     // Render
     renderer.clear();
@@ -297,6 +322,14 @@
 
     // End camera transform
     renderer.endCamera();
+
+    const frameEnd = performance.now();
+    perfMonitor?.endRender(frameEnd);
+    perfMonitor?.endFrame(frameEnd);
+
+    if (showPerfOverlay && perfMonitor) {
+      perfStats = perfMonitor.getSnapshot(particles.length);
+    }
   }
 
   onMount(() => {
@@ -313,6 +346,8 @@
 
     // Initialize Screen Shake
     shake = new ScreenShake(SURVIVAL_CONFIG.SCREEN_SHAKE);
+    perfMonitor = new PerformanceMonitor();
+    showPerfOverlay = new URLSearchParams(window.location.search).has("perf");
     traumaCap = window.matchMedia("(pointer: coarse)").matches
       ? TRAUMA_MOBILE_CAP
       : TRAUMA_DESKTOP_CAP;
@@ -415,6 +450,16 @@
         <MenuOverlay onStart={startGame} {container} />
       {/if}
 
+      {#if showPerfOverlay}
+        <div class="perf-overlay" aria-live="off">
+          <div>FPS: {perfStats.fps}</div>
+          <div>Frame: {perfStats.frameTimeMs}ms</div>
+          <div>Physics: {perfStats.physicsMs}ms</div>
+          <div>Render: {perfStats.renderMs}ms</div>
+          <div>Particles: {perfStats.particleCount}</div>
+        </div>
+      {/if}
+
       <!-- Game Over Modal -->
       {#if gameState.status === "GAME_OVER"}
         <GameOver {gameState} onRestart={restartGame} />
@@ -499,6 +544,22 @@
     color: var(--color-text-dim);
     font-family: "Noto Sans Math", sans-serif;
     font-size: 12px;
+  }
+
+  .perf-overlay {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    padding: var(--spacing-sm);
+    font-family: "Noto Sans Math", sans-serif;
+    font-size: 12px;
+    line-height: 1.35;
+    color: var(--color-neon-blue);
+    background: rgba(5, 5, 16, 0.72);
+    border: 1px solid rgba(0, 255, 204, 0.35);
+    border-radius: 6px;
+    text-shadow: 0 0 8px rgba(0, 255, 204, 0.45);
+    pointer-events: none;
   }
 
   /* Feedback Zones */

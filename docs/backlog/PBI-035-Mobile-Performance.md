@@ -1,11 +1,30 @@
 # PBI-035: Mobile Performance Audit
 
-**Status:** TODO  
+**Status:** IN PROGRESS  
 **Priority:** LOW  
 **Estimate:** 3 Story Points  
 **Phase:** 7 (Content & Polish)  
 **Target Version:** v0.3.1  
 **Epic:** [Phase 7: Content & Polish](../PHASE-7-ROADMAP.md)
+
+---
+
+## Implementation Progress (2026-05-05)
+
+- Added lightweight runtime instrumentation via `packages/core/src/lib/debug/PerformanceMonitor.ts`.
+- Wired frame/physics/render timing hooks into `apps/web/src/components/GameWrapper.svelte`.
+- Added opt-in in-game performance overlay (enable with `?perf` in URL) showing:
+  - FPS
+  - Frame time (ms)
+  - Physics time (ms)
+  - Render time (ms)
+  - Particle count
+- This establishes a measurable baseline for device profiling before deeper optimizations.
+
+### Tester Notes
+
+- Desktop sanity check: performance reported as stable/good during local testing.
+- Next validation target: mobile online session with Perf HUD enabled from startup menu.
 
 ---
 
