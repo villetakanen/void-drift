@@ -2,6 +2,10 @@
 
 > Void Drift: A minimalist multiplayer canvas game built with Svelte and Firebase.
 
+## Active direction (2026-10-28)
+
+Read `docs/rebuild-charter.md` for current product intent and `docs/specs/voice-led-factory.md` for the factory target contract. The owner has retired the old backlog and phase roadmaps as work-selection authority. Use them only as historical evidence. Development is voice-led, with browser/Lab checkpoints and evidence-based repository status reporting. Firebase remains the selected backend; existing Supabase code requires a planned migration.
+
 ## 1.Agent Identity & Personas
 
 ### Skill Registry
