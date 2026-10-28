@@ -11,7 +11,7 @@ export const studies = z.array(studySchema).parse([
 	{
 		slug: "buttons",
 		title: "Buttons & action composition",
-		status: "accepted",
+		status: "integrated",
 		question:
 			"How should game-state navigation and data actions share a clear button hierarchy across the application and Lab?",
 	},

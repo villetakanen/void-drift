@@ -52,11 +52,7 @@ async function save() {
 		>
 		<label><input type="checkbox" bind:checked={narrow}> Narrow panel</label>
 	</div>
-	<div
-		class="examples"
-		class:narrow
-		class:vertical={arrangement === "vertical"}
-	>
+	<div class="examples" class:narrow>
 		<article>
 			<p class="tag">GAME / STATE NAVIGATION</p>
 			<h3>
@@ -74,8 +70,12 @@ async function save() {
 				Start and Continue are primary navigation actions. Setup and mode
 				selection are supporting destinations in the same game flow.
 			</p>
-			<div class="actions editor">
-				<div class="pair">
+			<div
+				class="actions button-group"
+				class:button-group--vertical={arrangement === "vertical"}
+				class:button-group--strip={arrangement === "strip"}
+			>
+				<div class="button-group__section">
 					<button
 						type="button"
 						class="btn btn-ghost"
@@ -120,7 +120,11 @@ async function save() {
 				save/revert pattern. Save keeps its position through idle, busy, and
 				saved states.
 			</p>
-			<div class="actions editor">
+			<div
+				class="actions button-group"
+				class:button-group--vertical={arrangement === "vertical"}
+				class:button-group--strip={arrangement === "strip"}
+			>
 				<button
 					type="button"
 					class="btn btn-ghost"
@@ -131,7 +135,7 @@ async function save() {
 				>
 					Edit example
 				</button>
-				<div class="pair">
+				<div class="button-group__section">
 					<button
 						type="button"
 						class="btn btn-ghost"
@@ -161,8 +165,12 @@ async function save() {
 				The same button styling and hierarchy serve developer tools. Transport
 				belongs together; reset is a separate operation.
 			</p>
-			<div class="actions tools">
-				<div class="pair">
+			<div
+				class="actions button-group"
+				class:button-group--vertical={arrangement === "vertical"}
+				class:button-group--strip={arrangement === "strip"}
+			>
+				<div class="button-group__section">
 					<button
 						type="button"
 						class="btn btn-ghost"
@@ -244,7 +252,7 @@ async function save() {
 <dialog bind:this={dialog}>
 	<h2>Discard example changes?</h2>
 	<p>This only changes the demonstration message.</p>
-	<form method="dialog" class="actions decision">
+	<form method="dialog" class="actions button-group button-group--strip">
 		<button type="submit" class="btn btn-ghost">Keep editing</button
 		><button
 			type="submit"
@@ -303,90 +311,19 @@ h3 {
 	color: var(--color-text-dim);
 }
 .actions {
-	--_group-spacing: var(--spacing-sm);
-	box-sizing: border-box;
-	display: flex;
-	gap: var(--_group-spacing);
-	align-items: center;
 	margin-top: var(--spacing-lg);
-	background: var(--color-void);
-	padding: var(--_group-spacing);
-}
-.decision {
-	justify-content: flex-end;
-}
-.tools,
-.editor {
-	justify-content: space-between;
-}
-.pair {
-	display: flex;
-	gap: var(--_group-spacing);
-}
-button {
-	min-width: 120px;
-}
-button.btn-filled {
-	min-width: 172px;
-}
-/* Study-only state aids; shape, colors, and hover come from shared buttons.css. */
-button:focus-visible {
-	outline: 2px solid var(--color-text);
-	outline-offset: -5px;
-}
-button[aria-pressed="true"] {
-	box-shadow: inset 0 -4px var(--color-acid-lime);
 }
 
-button:disabled {
-	opacity: 0.45;
-	cursor: not-allowed;
-}
 .feedback {
 	border-left: 3px solid var(--color-acid-lime);
 	padding: var(--spacing-md);
 	min-height: 70px;
 }
-.vertical .actions {
-	--_group-spacing: var(--spacing-sm);
-	display: flex;
-	flex-direction: column;
-	align-items: stretch;
-	width: min(100%, 320px);
-	margin-inline: auto;
-	background: transparent;
-}
-.vertical .pair {
-	display: contents;
-}
-.vertical .actions button {
-	width: 100%;
-	min-width: 0;
-}
-
 dialog {
 	max-width: min(520px, 90vw);
 	margin: auto;
 }
 dialog::backdrop {
 	background: var(--color-overlay);
-}
-@container (max-width: 580px) {
-	.actions,
-	.pair {
-		display: grid;
-		grid-auto-flow: row;
-		grid-template-columns: 1fr;
-		width: 100%;
-	}
-	button.btn {
-		width: 100%;
-		min-width: 0;
-	}
-}
-@media (prefers-reduced-motion: reduce) {
-	button:active:not(:disabled) {
-		transform: none;
-	}
 }
 </style>

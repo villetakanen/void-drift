@@ -60,30 +60,38 @@ examples and flight trials. Use `.agents/skills/design-study/SKILL.md` for this 
 Study-local experiments do not establish shared design rules. See
 [design studies](specs/design-studies.md) for acceptance and promotion boundaries.
 
-## Application-wide button intent
+## Application-wide buttons
 
-Owner direction, 2026-10-28: game startup, pause/continue, setup, and mode-selection
-screens represent game states. Their navigation buttons may be primary actions.
-Player-facing data actions include saving ship designs, saving settings, reverting
-edits, and resetting forms. Hierarchy follows the current goal, not the technical
-category of navigation versus mutation. Links represent URL destinations; buttons
-perform in-app state transitions and commands.
+The accepted study at `/lab/studies/buttons` records the rationale; `/lab/buttons`
+is the canonical interactive reference. Shared definitions are in core
+`styles/buttons.css`, with foundations in `styles/tokens.css`.
 
-Game screens, player tools, settings, and Lab tooling share one button styling and
-hierarchy. Context determines grouping and availability, not a separate Lab visual
-language. Exact placement, appearance, and state treatments remain exploratory in
-`/lab/studies/buttons`; revision 2 records this clarification. Shared styles have not
-yet been changed to match the study.
+Game startup, pause/continue, setup, and mode-selection buttons navigate game states.
+Player actions save designs/settings or reset data. Hierarchy follows the current
+user goal, so navigation can be primary. Use links for URL navigation and buttons
+for in-app state transitions or commands. Settings currently persist on change;
+this promotion does not introduce a new save flow or a ship designer.
 
-Button-container direction (study revision 4): vertical groups place equal-width
-buttons one below another on a transparent container, typically for game-state
-screens. Horizontal action strips use a constant solid background and anchored
-groups for supporting and main actions. Both use the existing shared button
-appearance. Exact spacing, order, and narrow-strip adaptation remain under review;
-these container patterns are demonstrated in the study, not yet integrated.
+Use `.button-group.button-group--vertical` for transparent equal-width menu groups.
+Use `.button-group.button-group--strip` for anchored groups on a solid void surface;
+put related actions in `.button-group__section`. Strip hosts use
+`.button-group-frame` for container queries. Both modes use 8px padding and minimum
+gaps; strips stack below 580px of host width and retain the solid background.
+Vertical groups have a private 320px maximum width. Preserve meaningful DOM/tab order.
 
-Spacing direction (study revision 6): each button container has equal outer padding
-and minimum button gap, regardless of background transparency. The study maps
-vertical and strip spacing to `--spacing-sm` (8px), after the owner found
-16px vertical spacing too loose. Anchoring can add flexible space between groups without
-reducing that minimum. Production integration remains pending.
+Buttons retain angled corners, lime filled/ghost variants, and red consequences.
+Shared states include an inset focus ring, disabled opacity with suppressed hover,
+selected indication, and reduced-motion behavior. Busy buttons must be disabled by
+the owning interaction; ARIA alone does not prevent activation. Link buttons retain
+44px minimum targets. Native game engine touch controls remain specialized controls.
+
+Public foundations express shared control/state/motion values; `--_name` properties
+own component composition per architecture.md. Existing `--button-*` names remain
+compatibility aliases. Do not reuse unrelated tokens merely because numbers match.
+
+Implemented consumers: game start/pause/run-complete groups, flight Lab commands,
+settings navigation, leaderboard action strip, canonical Lab, and study examples.
+The audit retains original findings and explicitly records promotion decisions.
+
+Retrospective evidence: the owner valued the situation-first explanation. Review
+that lesson at the end of the factory loop before changing standing skill guidance.

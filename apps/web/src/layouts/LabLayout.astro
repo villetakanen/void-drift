@@ -5,7 +5,7 @@ import "@void-drift/core/styles/tokens.css";
 import "@void-drift/core/styles/buttons.css";
 import "../styles.css";
 
-const { title } = Astro.props;
+const { title, wide = false } = Astro.props;
 const currentPath = Astro.url.pathname;
 
 const LINKS = [
@@ -34,7 +34,7 @@ const LINKS = [
 		<title>{title} | Void·Drift Lab</title>
 	</head>
 	<body>
-		<div class="lab-grid">
+		<div class:list={["lab-grid", { wide }]}>
 			<!-- Column 1: Nav Rail -->
 			<aside class="nav-rail">
 				<div class="logo-area">
@@ -66,7 +66,7 @@ const LINKS = [
 			</main>
 
 			<!-- Column 3: Inspector (Spans both rows) -->
-			<aside class="inspector-rail">
+			<aside class="inspector-rail" hidden={wide}>
 				<slot name="inspector" />
 			</aside>
 		</div>
@@ -180,5 +180,27 @@ a.active {
 	color: var(--color-acid-lime);
 	border: 1px solid rgba(212, 255, 0, 0.3);
 	background: rgba(212, 255, 0, 0.1);
+}
+.lab-grid.wide {
+	grid-template-columns: 250px minmax(0, 1fr);
+	grid-template-areas: "nav header" "nav main";
+}
+.wide .inspector-rail {
+	display: none;
+}
+@media (max-width: 800px) {
+	.lab-grid.wide {
+		grid-template-columns: 1fr;
+		grid-template-rows: auto auto minmax(0, 1fr);
+		grid-template-areas: "nav" "header" "main";
+	}
+	.wide .logo-area {
+		display: none;
+	}
+	.wide .tray {
+		flex-direction: row;
+		flex-wrap: wrap;
+		padding: var(--spacing-sm);
+	}
 }
 </style>

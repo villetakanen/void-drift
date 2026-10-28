@@ -37,13 +37,13 @@
 }
 .flight-header a,
 .flight-inspector a {
-	min-height: var(--button-min-height);
+	min-height: var(--control-min-height);
 	display: inline-flex;
 	align-items: center;
 }
-.flight-inspector a,
-.flight-card a,
-.flight-header nav a {
+.flight-inspector a:not(.btn),
+.flight-card a:not(.btn),
+.flight-header nav a:not(.btn) {
 	color: var(--color-text-dim);
 	font-size: var(--font-small);
 }
@@ -136,7 +136,7 @@
 	border: var(--flight-border);
 	border-radius: var(--radius-sm);
 	padding: var(--spacing-sm);
-	min-height: var(--button-min-height);
+	min-height: var(--control-min-height);
 	width: 100%;
 	box-sizing: border-box;
 }
@@ -216,15 +216,6 @@
 	min-height: var(--flight-textarea-height);
 	font-size: var(--font-small);
 }
-.inspector-actions {
-	display: flex;
-	flex-wrap: wrap;
-	gap: var(--spacing-sm);
-}
-.inspector-actions .btn {
-	font-size: var(--font-small);
-	padding: var(--spacing-sm);
-}
 .flight-message {
 	position: fixed;
 	bottom: var(--spacing-md);
@@ -263,7 +254,7 @@
 }
 @media (max-height: 500px) {
 	.flight-header {
-		min-height: var(--button-min-height);
+		min-height: var(--control-min-height);
 		padding: var(--spacing-xs) var(--spacing-md);
 	}
 	.flight-card {

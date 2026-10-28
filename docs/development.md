@@ -90,3 +90,11 @@ grandfathered. CI fetches full history and runs the same check through
 `pnpm verify`, including commits that bypassed local hooks. A shallow local
 checkout must fetch the missing history before this check can pass.
 The hook does not run the full game suite, bump versions, tag, or publish.
+
+## Button study promotion — 2026-10-28
+
+The accepted button study is implemented in shared core styles and `/lab/buttons`.
+Browser checks cover shared token propagation, group spacing and equal widths,
+responsive strip stacking, keyboard focus, disabled/busy states, and reduced motion.
+The flight screenshot baseline was inspected and updated for the intended pause-menu
+button composition and 44px link-button target; no screenshot tolerance changed.

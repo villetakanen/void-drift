@@ -1,6 +1,6 @@
 # Design studies
 
-Status: button pilot accepted by the owner; promotion authorized and pending.
+Status: button pilot accepted and integrated; canonical reference at /lab/buttons.
 
 ## Context
 
@@ -97,3 +97,18 @@ button cut geometry, width constraints, and transition composition can be privat
 shared palette, spacing, typography, focus, accessibility, and motion remain public
 concerns. The study renames its own spacing alias to `--_group-spacing`. Production
 `--button-*` migration remains proposed, pending consumer review. No visual change.
+
+## Promotion completed
+
+Core buttons.css supplies both 8px container patterns and shared states. tokens.css
+defines control/state/motion foundations, while --_ properties own composition.
+Compatibility --button-* aliases remain. The study consumes production patterns
+and retains its original audit with a promotion record. /lab/buttons demonstrates
+both patterns, hierarchy, state transitions, and token ownership. Application menus,
+flight Lab, leaderboard, and settings navigation use those definitions. Specialized
+engine touch controls retain their gameplay-specific presentation.
+
+Browser coverage checks equal vertical widths, token-driven padding/gaps, narrow-strip
+stacking, focus and keyboard activation, disabled/busy states, and reduced motion.
+The prior 120px/172px study minimum widths were dropped in favor of content sizing.
+No persistence contracts or simulation constants changed.

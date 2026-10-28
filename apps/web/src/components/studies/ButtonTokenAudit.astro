@@ -1,11 +1,11 @@
 <section aria-labelledby="token-audit-title">
 	<h2 id="token-audit-title">04 / Design-token audit</h2>
 	<p>
-		Revision 8 source audit: shared <code>tokens.css</code>, shared
+		Pre-promotion snapshot (revision 8): shared <code>tokens.css</code>, shared
 		<code>buttons.css</code>, and the study’s button examples. Values below
-		describe the current implementation, including study overrides. The local
-		spacing alias is now private; other token changes remain proposals. No
-		visual values have changed.
+		describe the implementation reviewed during the study, including its
+		original overrides. The promotion record below identifies which proposals
+		were implemented; the tables retain the original audit evidence.
 	</p>
 	<p>
 		<strong>Backed</strong>
@@ -45,6 +45,44 @@
 		derive its pseudo-element inset from a public border-width token. The naming
 		convention documents ownership; CSS itself does not enforce privacy.
 	</p>
+
+	<section>
+		<h3>Promotion record · 28 October 2026</h3>
+		<p>
+			The <a href="/lab/buttons">canonical button Lab</a> now uses shared button
+			and group styles. Both this study and the application consume those
+			definitions. The tables below retain the original audit evidence rather
+			than rewriting the reasoning after integration.
+		</p>
+		<ul>
+			<li>
+				Implemented public foundations: control height, control font
+				size/weight, border width, focus color/width/inset, disabled opacity,
+				hover brightness, selected indicator width, and motion duration/easing.
+			</li>
+			<li>
+				Implemented private composition: button
+				padding/radius/cut/inset/line-height/transition aliases; group spacing
+				and vertical maximum width. Existing public button aliases are retained
+				for compatibility.
+			</li>
+			<li>
+				Shared behavior: inset focus, disabled hover suppression, selected
+				indicator, 44px minimum link-button target, and reduced-motion
+				transitions. Busy behavior remains the caller’s responsibility.
+			</li>
+			<li>
+				Removed study-only 120px/172px minimum widths. Horizontal buttons size
+				to content; vertical buttons fill their shared container. No generic
+				width tokens were added.
+			</li>
+			<li>
+				The 580px container threshold remains a documented private layout rule.
+				Dialog dimensions, demonstration delays, preview widths, and feedback
+				framing stay outside the button contract.
+			</li>
+		</ul>
+	</section>
 
 	<h3>Button geometry and typography · shared buttons.css</h3>
 	<section

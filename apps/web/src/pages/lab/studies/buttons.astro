@@ -12,7 +12,7 @@ if (!study) throw new Error("Missing buttons study metadata");
 	<section>
 		<h2>01 / Situations before styling</h2>
 		<p>
-			Revision 8 · 28 October 2026 · Purpose and shared-language direction
+			Revision 9 · 28 October 2026 · Purpose and shared-language direction
 			clarified by the owner. Study accepted by the owner; integration is the
 			next step.
 		</p>
@@ -53,7 +53,7 @@ if (!study) throw new Error("Missing buttons study metadata");
 	<ButtonStudy client:load />
 	<ButtonTokenAudit />
 	<section>
-		<h2>05 / Recommendation for discussion</h2>
+		<h2>05 / Accepted direction</h2>
 		<p>
 			Use a shared primary, secondary, and destructive hierarchy across game
 			screens, player tools, settings, and the Lab. The primary button advances
@@ -74,9 +74,9 @@ if (!study) throw new Error("Missing buttons study metadata");
 			strips. Action order remains under review.
 		</p>
 		<p>
-			<strong>Review question:</strong>
-			Do the vertical group and anchored strip provide the right containers for
-			game screens and form actions?
+			<strong>Accepted outcome:</strong>
+			vertical groups and anchored strips form the shared container vocabulary
+			for game screens, forms, and Lab tools.
 		</p>
 	</section>
 	<section>
@@ -138,19 +138,23 @@ if (!study) throw new Error("Missing buttons study metadata");
 				changes.
 			</li>
 			<li>
-				Open: placement, action order, density, and context-specific reset
-				confirmation.
+				Future screen-specific work: action order and reset confirmation follow
+				each workflow; they do not block this shared baseline.
 			</li>
 			<li>
 				Acceptance: owner approved the completed study and authorized
-				integration. Integration: not started.
+				integration. Integration: shared tokens, buttons, groups, canonical Lab,
+				and existing application screens.
 			</li>
 		</ul>
 		<p>
-			After visual acceptance, reconcile shared button styles and action-group
-			patterns, update the canonical button Lab, and integrate relevant screens.
-			The application-wide intent is documented in the experience-design
-			guidance; these prototype styles are not yet production rules.
+			Implemented in <a href="/lab/buttons">the canonical button Lab</a>,
+			<a href="/">game startup, pause, and run-complete screens</a>,
+			<a href="/lab/flight">flight Lab actions</a>,
+			<a href="/settings">settings navigation</a>, and
+			<a href="/leaderboard">leaderboard actions</a>. Future ship-designer
+			screens should consume the same shared primitives. The audit preserves the
+			pre-promotion values and records integration decisions.
 		</p>
 	</section>
 </StudyLayout>

@@ -49,18 +49,34 @@
 	--color-overlay: rgba(5, 5, 16, 0.9);
 	/* Semi-transparent void for modal overlays */
 
-	/* Button Tokens */
+	/* Shared control, state and motion foundations */
+	--control-min-height: 44px;
+	--font-control-size: 1rem;
+	--font-weight-medium: 500;
+	--border-width-control: 2px;
+	--focus-ring-width: 2px;
+	--focus-ring-offset-inset: -5px;
+	--color-focus-ring: var(--color-text);
+	--state-disabled-opacity: 0.45;
+	--state-hover-brightness: 1.2;
+	--state-selected-indicator-width: var(--spacing-xs);
+	--duration-fast: 150ms;
+	--ease-standard: ease;
+
+	/* Compatibility aliases: consumers may migrate without losing existing values. */
 	--button-padding-x: var(--spacing-lg);
 	--button-padding-y: var(--spacing-sm);
-	--button-font-size: 1rem;
-	--button-font-weight: 500;
-	--button-border-width: 2px;
-	--button-min-height: 44px;
+	--button-font-size: var(--font-control-size);
+	--button-font-weight: var(--font-weight-medium);
+	--button-border-width: var(--border-width-control);
+	--button-min-height: var(--control-min-height);
 	--button-cut-size: 10px;
 	--button-border-radius: var(--radius-sm);
 	--button-transition:
-		background 0.15s ease, color 0.15s ease, border-color 0.15s ease,
-		filter 0.15s ease;
+		background var(--duration-fast) var(--ease-standard),
+		color var(--duration-fast) var(--ease-standard),
+		border-color var(--duration-fast) var(--ease-standard),
+		filter var(--duration-fast) var(--ease-standard);
 }
 
 :root {

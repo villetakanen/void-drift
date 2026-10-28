@@ -368,9 +368,11 @@ onMount(() => {
 									? "TANK / Heavy hull. Efficient engines. Deliberate turns."
 									: "BALANCED / Steady thrust. Predictable handling."}
 						</div>
-						<button type="button" class="btn btn-filled" onclick={start}>
-							TAP TO START
-						</button>
+						<div class="button-group button-group--vertical">
+							<button type="button" class="btn btn-filled" onclick={start}>
+								TAP TO START
+							</button>
+						</div>
 						<p class="control-copy">
 							A + D / ← + → · Both engines thrust forward
 						</p>
@@ -402,36 +404,45 @@ onMount(() => {
 								oninput={() => {
 									initials = initials.toUpperCase().replace(/[^A-Z]/g, "");
 								}}
-							><button
-								type="button"
-								class="btn btn-filled"
-								disabled={saving ||
-									scoreSaved ||
-									!scoresAvailable() ||
-									!/^[A-Z]{3}$/.test(initials)}
-								onclick={save}
 							>
-								{saving ? "Saving…" : scoreSaved ? "Saved" : "Submit Score"}
-							</button>
+							<div class="button-group button-group--vertical">
+								<button
+									type="button"
+									class="btn btn-filled"
+									disabled={saving ||
+										scoreSaved ||
+										!scoresAvailable() ||
+										!/^[A-Z]{3}$/.test(initials)}
+									onclick={save}
+								>
+									{saving ? "Saving…" : scoreSaved ? "Saved" : "Submit Score"}
+								</button>
+							</div>
 							{#if !scoresAvailable()}
 								<p>Shared scores are unavailable in this local session.</p>
 							{/if}
 						{/if}
-						<button
-							type="button"
-							class="btn btn-ghost"
-							onclick={() => reset(false)}
-						>
-							Try Again
-						</button><a href="/leaderboard">View Leaderboard</a>
+						<div class="button-group button-group--vertical">
+							<button
+								type="button"
+								class="btn btn-ghost"
+								onclick={() => reset(false)}
+							>
+								Try Again
+							</button><a class="btn btn-ghost" href="/leaderboard"
+								>View Leaderboard</a
+							>
+						</div>
 					</div>
 				</div>
 			{:else if paused}
 				<div class="pause-banner">
-					<span>PAUSED</span
-					><button type="button" class="btn btn-ghost" onclick={togglePause}>
-						Resume
-					</button>
+					<span>PAUSED</span>
+					<div class="button-group button-group--vertical">
+						<button type="button" class="btn btn-filled" onclick={togglePause}>
+							Resume
+						</button>
+					</div>
 				</div>
 			{/if}
 			<div class="flight-controls">
@@ -553,7 +564,7 @@ onMount(() => {
 					step="0.5"
 					bind:value={tuning.camera.smoothing}
 				>
-				<div class="inspector-actions">
+				<div class="button-group button-group--vertical">
 					<button type="button" class="btn btn-filled" onclick={apply}>
 						Apply & reset
 					</button><button type="button" class="btn btn-ghost" onclick={step}>
@@ -583,7 +594,7 @@ onMount(() => {
 					bind:value={json}
 					spellcheck="false"
 				></textarea>
-				<div class="inspector-actions">
+				<div class="button-group button-group--vertical">
 					<button
 						type="button"
 						class="btn btn-ghost"

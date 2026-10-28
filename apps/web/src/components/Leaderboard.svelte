@@ -62,15 +62,16 @@ onMount(() => {
 			</tbody>
 		</table>
 	{/if}
-	<div class="inspector-actions">
-		<a class="btn btn-filled" href="/">Fly again</a
-		><button
-			type="button"
-			class="btn btn-ghost"
-			onclick={load}
-			disabled={loading}
-		>
-			Refresh
-		</button>
+	<div class="button-group-frame">
+		<div class="button-group button-group--strip">
+			<button
+				type="button"
+				class="btn btn-ghost"
+				onclick={load}
+				disabled={loading}
+			>
+				Refresh
+			</button><a class="btn btn-filled" href="/">Fly again</a>
+		</div>
 	</div>
 </main>

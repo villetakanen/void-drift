@@ -79,5 +79,7 @@ intended. Audit existing consumers before renaming a public property.
 Study audits distinguish existing public tokens, proposed private composition,
 missing shared foundations, and structural CSS/fixtures. Record derivations and
 ownership, rather than demanding a public token for every value. Existing global
-`--button-*` tokens remain legacy public names until a deliberate migration; the
-button study currently applies the convention to its local `--_group-spacing` alias.
+`--button-*` names remain compatibility aliases. Shared buttons now own private
+composition properties; shared button groups own `--_group-spacing` and
+`--_stack-max`. The canonical `/lab/buttons` and application consume these same
+definitions from core styles/buttons.css.

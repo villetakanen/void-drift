@@ -42,8 +42,10 @@ function handleKeydown(event: KeyboardEvent) {
 		</label>
 	</section>
 
-	<footer>
-		<a href="/" class="btn btn-ghost">Back to Game</a>
+	<footer class="button-group-frame">
+		<div class="button-group button-group--strip">
+			<a href="/" class="btn btn-ghost">Back to Game</a>
+		</div>
 	</footer>
 </div>
 
