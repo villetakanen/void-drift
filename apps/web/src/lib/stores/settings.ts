@@ -9,7 +9,10 @@ export const settings = persistentAtom<Settings>(
         decode: (str) => {
             try {
                 const parsed = JSON.parse(str);
-                return SettingsSchema.parse(parsed);
+                return SettingsSchema.parse({
+                    ...DEFAULT_SETTINGS,
+                    ...parsed,
+                });
             } catch {
                 return DEFAULT_SETTINGS;
             }

@@ -103,13 +103,18 @@ export class Renderer {
     draw(0, 0);
   }
 
-  drawShip(ship: GameObject, tint?: string) {
+  drawShip(
+    ship: GameObject,
+    tint?: string,
+    variant: "scout" | "balanced" | "tank" = "balanced",
+  ) {
     this.renderWrapped(ship.pos.x, ship.pos.y, ship.radius, (offX, offY) => {
       drawShip(this.ctx, {
         x: ship.pos.x + offX,
         y: ship.pos.y + offY,
         rotation: ship.rotation,
         color: tint ?? "#00ffcc",
+        variant,
       });
     });
   }

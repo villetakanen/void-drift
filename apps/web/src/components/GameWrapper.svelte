@@ -34,6 +34,9 @@
     checkDeath,
     handleDeath,
     ensureAnonymousSession,
+    DEFAULT_SHIP_PROFILE_ID,
+    SHIP_PROFILE_BY_ID,
+    type ShipProfileId,
   } from "@void-drift/mode-a";
   import HUD from "./HUD.svelte";
   import GameOver from "./GameOver.svelte";
@@ -93,8 +96,14 @@
 
   let star: Star | undefined = $state(undefined);
   let planets: Planet[] = $state([]);
+  let activeShipProfileId: ShipProfileId = $state(DEFAULT_SHIP_PROFILE_ID);
+
+  function syncActiveShipProfile() {
+    activeShipProfileId = $settings.selectedShipId;
+  }
 
   function startGame(enablePerf = showPerfOverlay) {
+    syncActiveShipProfile();
     showPerfOverlay = enablePerf;
     const url = new URL(window.location.href);
     if (showPerfOverlay) {
@@ -114,6 +123,7 @@
   }
 
   function restartGame() {
+    syncActiveShipProfile();
     // Reset game state
     gameState.status = "MENU";
     gameState.startTime = null;
@@ -309,13 +319,14 @@
     renderer.drawParticles(particles);
 
     // Draw Ship
+    const activeShipProfile = SHIP_PROFILE_BY_ID[activeShipProfileId];
     const hullPercent = gameState.resources.hull;
-    let shipTint = "#ffffff";
+    let shipTint = activeShipProfile.tint;
     if (hullPercent <= 25) shipTint = "#ff3333";
     else if (hullPercent <= 50) shipTint = "#ffaa00";
     shipTint = blendTint(shipTint, "#ffd6d6", hullHitFlash);
 
-    renderer.drawShip(ship, shipTint);
+    renderer.drawShip(ship, shipTint, activeShipProfile.id);
 
     // Draw Flash
     renderer.drawDamageFlash(damageFlash);
@@ -348,6 +359,7 @@
     shake = new ScreenShake(SURVIVAL_CONFIG.SCREEN_SHAKE);
     perfMonitor = new PerformanceMonitor();
     showPerfOverlay = new URLSearchParams(window.location.search).has("perf");
+    syncActiveShipProfile();
     traumaCap = window.matchMedia("(pointer: coarse)").matches
       ? TRAUMA_MOBILE_CAP
       : TRAUMA_DESKTOP_CAP;
