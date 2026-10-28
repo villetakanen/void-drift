@@ -14,6 +14,7 @@ Voice-led development of a procedural space survival game and its software facto
 - Read only the context needed for the task; follow the owner's latest decisions.
 
 - Design exploration: use `.agents/skills/design-study/SKILL.md`.
+- Loop closure: use `.agents/skills/close-loop/SKILL.md` to collect evidence only.
 
 ## Working method
 
@@ -48,4 +49,5 @@ Voice-led development of a procedural space survival game and its software facto
 - Report failed, skipped, and unavailable checks explicitly; never count them as passes.
 - Repair failures without weakening contracts just to make checks green.
 - Human experience review assesses feel and fidelity separately from automated correctness.
-- Record evidence-backed lesson candidates; obtain review before making them standing rules.
+- A finding is not a signal. Keep loop evidence collection separate from interpretation.
+- Review proposed lessons separately before making them standing rules.
