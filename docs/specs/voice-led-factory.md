@@ -123,3 +123,12 @@ flight Lab and Firebase implementation in [playable-alpha.md](playable-alpha.md)
 The required command now includes Svelte diagnostics, rules tests and two-player
 emulator competition. See [development](../development.md) for current coverage.
 Checkboxes above remain a review checklist, not an assertion of human acceptance.
+
+## Commit-message gate — 2026-10-28
+
+Conventional Commit syntax is checked locally by Lefthook and commitlint.
+The short commit-messages skill guides semantic classification and breaking-change
+disclosure. The factory's `pnpm verify` also checks committed history after the
+documented adoption baseline; CI uses a full checkout. Malformed messages must
+fail both paths, while older history remains unchanged. Hooks do not prepare
+releases or publish. Meaning and compatibility still require diff review.

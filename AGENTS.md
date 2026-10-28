@@ -8,6 +8,7 @@ Voice-led development of a procedural space survival game and its software facto
 - Structure, simulation, or data changes: `docs/architecture.md`.
 - Visuals, controls, camera, or feedback: `docs/design.md`.
 - Tooling and verification: `docs/development.md` and `docs/specs/voice-led-factory.md`.
+- Before committing, follow `.agents/skills/commit-messages/SKILL.md`.
 - Feature work: read the relevant spec in `docs/specs/`; use `.agents/skills/spec.md` to author specs.
 - Old backlog and phase roadmaps are historical evidence, not active assignments.
 - Read only the context needed for the task; follow the owner's latest decisions.

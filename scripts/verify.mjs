@@ -47,6 +47,7 @@ const report = {
 
 for (const name of [
 	"check:contracts",
+	"check:commits",
 	"lint",
 	"check:types",
 	"test",

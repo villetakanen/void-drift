@@ -74,3 +74,19 @@ Firebase console; rules changes require redeploying the reviewed previous rules.
 Client-reported scores support casual competition only. Human gameplay review,
 physical mobile performance and protected-branch enforcement are not automated passes.
 Historical backlog items are not new assignments.
+
+## Commit messages
+
+Follow `.agents/skills/commit-messages/SKILL.md` before committing.
+`pnpm install` installs the Lefthook commit-msg hook through the prepare script.
+Run `pnpm exec lefthook install` if lifecycle scripts were disabled.
+The hook runs commitlint using `commitlint.config.mjs`; it rejects malformed
+messages without changing files. It checks syntax, not whether the selected type
+or breaking-change declaration accurately describes the diff.
+
+`pnpm check:commits` checks all commits after adoption baseline
+`841c975deee6f53db6b663f6a08047f8f8704e06` through HEAD. Older history is
+grandfathered. CI fetches full history and runs the same check through
+`pnpm verify`, including commits that bypassed local hooks. A shallow local
+checkout must fetch the missing history before this check can pass.
+The hook does not run the full game suite, bump versions, tag, or publish.
