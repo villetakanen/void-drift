@@ -34,6 +34,7 @@
     });
 
     async function loadUidHashPreview() {
+        if (!supabase) return;
         const {
             data: { session },
         } = await supabase.auth.getSession();

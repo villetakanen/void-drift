@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { supabase } from "@void-drift/mode-a/supabase";
+    import { supabase, LEADERBOARD_UNAVAILABLE } from "@void-drift/mode-a/supabase";
     import { onMount } from "svelte";
 
     type HighScoreRow = {
@@ -28,6 +28,7 @@
         error = null;
 
         try {
+            if (!supabase) throw new Error(LEADERBOARD_UNAVAILABLE);
             // Get current user ID for highlighting
             const {
                 data: { session },

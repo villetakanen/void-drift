@@ -92,3 +92,22 @@ Inspected working tree: branch `feat/0-4-0`, HEAD `ac6abe4`, with pre-existing u
 ## First bounded implementation
 
 Establish the verification command and baseline coverage, isolate local boot from live services, and prove a browser can select a ship, start flight, and restart. Retain existing flight constants. Additional test dependencies require the owner's approval before installation. Ship behavior differences, camera design, and Firebase competition follow as separately reviewable increments.
+
+## Factory foundation delivered — 2026-10-28
+
+- Owner approved Playwright and Biome installation, and the context split into a minimal
+  `AGENTS.md`, `docs/architecture.md`, and `docs/design.md`.
+- `pnpm verify` runs contracts, strict Biome checks, Astro/workspace types, unit tests,
+  build, and browser smoke tests; it retains per-stage logs and working-tree evidence.
+- `docs/development.md` describes exact setup, coverage, and remaining gaps.
+- Local game and Lab boot now tolerate absent legacy backend credentials; shared
+  scores explicitly report unavailability. Firebase migration remains outstanding.
+- Initial Chromium checks exercise all three ship selections, start/input feedback,
+  changed Lab drawing, and unavailable shared scores. They do not yet verify trajectories,
+  touch, or game-over/restart; those remain open acceptance criteria.
+- An oversized `AGENTS.md` was injected temporarily: the contract gate rejected it,
+  then passed after restoration. This verifies the entry-point size gate, not all gates.
+- Explicit workspace type checking exposed a broken game-state import and an invalid
+  legacy score-query method order; both were repaired without changing flight constants.
+- Existing lint debt is intentionally visible as a failing stage, rather than waived.
+  The full factory definition of done above remains open.

@@ -1,0 +1,17 @@
+{
+	"extends": "./apps/web/tsconfig.json",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@void-drift/core": ["packages/core/src/index.ts"],
+			"@void-drift/mode-a": ["packages/mode-a/src/index.ts"]
+		},
+		"noEmit": true
+	},
+	"include": [
+		"packages/**/*.ts",
+		"apps/web/src/**/*.ts",
+		"apps/web/src/vite-env.d.ts"
+	],
+	"exclude": ["node_modules", "**/dist"]
+}

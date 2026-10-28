@@ -8,23 +8,28 @@ Void Drift is a multiplayer, top-down space brawler that prioritizes "game feel"
 
 This project is a Monorepo managed by `pnpm`:
 
-- **`packages/engine`**: The core game logic, physics, and renderer. Framework-agnostic (mostly) but currently leverages Svelte 5 stores.
+- **`packages/core`**: Shared physics, input, rendering, procedural assets, and styles.
+- **`packages/mode-a`**: Survival rules, ship profiles, schemas, and backend integration.
 - **`apps/web`**: The production website built with Astro and Svelte 5.
 
 ## Quick Start
 
 1. **Install Dependencies**
+
    ```bash
    pnpm install
    ```
 
 2. **Run Development Server**
+
    ```bash
    pnpm dev
    ```
+
    This starts the Astro dev server for `apps/web` at `http://localhost:4321`.
 
 3. **Build**
+
    ```bash
    pnpm -r build
    ```
@@ -39,8 +44,14 @@ This project is a Monorepo managed by `pnpm`:
 
 ## Documentation
 
-- [Project Vision](./docs/project-vision.md)
+- [Rebuild Charter](./docs/rebuild-charter.md)
+- [Architecture](./docs/architecture.md)
+- [Experience Design](./docs/design.md)
+- [Development and Verification](./docs/development.md)
 - [Agent Guidelines](./AGENTS.md)
+
+Run `pnpm verify` for the combined checks and a local evidence report. The rebuild
+starts with known legacy lint/type debt; see the development guide for current coverage.
 
 ## OpenCode Config
 
