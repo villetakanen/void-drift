@@ -1,0 +1,28 @@
+---
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+---
+
+<StudyLayout>
+	{studies.map((study) => (
+		<article>
+			<p>{study.status}</p>
+			<h2>
+				<a href={`/lab/studies/${study.slug}`}>{study.title} →</a>
+			</h2>
+			<p>{study.question}</p>
+		</article>
+	))}
+	<p>
+		Exploratory → accepted by the owner → integrated into shared implementation.
+		Acceptance does not imply implementation.
+	</p>
+</StudyLayout>
+<style>
+article {
+	border: var(--flight-border);
+	padding: var(--spacing-lg);
+	margin-bottom: var(--spacing-lg);
+	background: var(--color-void-light);
+}
+</style>

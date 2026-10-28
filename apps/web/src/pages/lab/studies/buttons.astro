@@ -1,0 +1,156 @@
+---
+import ButtonStudy from "../../../components/studies/ButtonStudy.svelte";
+import ButtonTokenAudit from "../../../components/studies/ButtonTokenAudit.astro";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((item) => item.slug === "buttons");
+if (!study) throw new Error("Missing buttons study metadata");
+---
+
+<StudyLayout study={study}>
+	<section>
+		<h2>01 / Situations before styling</h2>
+		<p>
+			Revision 8 · 28 October 2026 · Purpose and shared-language direction
+			clarified by the owner. Study accepted by the owner; integration is the
+			next step.
+		</p>
+		<ul>
+			<li>
+				<strong>Game-state navigation:</strong>
+				startup, pause, continue, setup, and mode selection are screens or modal
+				states of the game. Their buttons move the player between states. Start
+				game and Continue can be the primary action; navigation is not
+				inherently secondary.
+			</li>
+			<li>
+				<strong>Application state actions:</strong>
+				players save ship designs, save settings, revert edits, or reset forms.
+				These actions operate on application data rather than primarily changing
+				the screen. Saving and resetting need clear outcomes and availability
+				states.
+			</li>
+			<li>
+				<strong>The Lab uses the same language:</strong>
+				developer tools inherit the application’s button styling and hierarchy.
+				Group controls by purpose within their context; do not invent a separate
+				visual system for tooling.
+			</li>
+		</ul>
+		<p>
+			Hierarchy follows the player’s immediate goal, not whether an action is
+			navigation or persistence. HTML semantics follow behavior: links for URL
+			destinations, buttons for in-app state transitions and commands.
+		</p>
+		<p>
+			Observed baseline: <a href="/lab/buttons">current button gallery</a> and
+			<a href="/lab/flight">flight trials</a>. The game-state, save, and replay
+			examples below are local fixtures; they do not change the game or persist
+			data.
+		</p>
+	</section>
+	<ButtonStudy client:load />
+	<ButtonTokenAudit />
+	<section>
+		<h2>05 / Recommendation for discussion</h2>
+		<p>
+			Use a shared primary, secondary, and destructive hierarchy across game
+			screens, player tools, settings, and the Lab. The primary button advances
+			the main goal: Start game, Continue game, Save settings, or Save blueprint
+			depending on context.
+		</p>
+		<p>
+			Compose navigation as a deliberate group with a clear main path and
+			supporting destinations. Compose data actions around a stable save
+			location, with revert/reset separated by consequence. Apply those same
+			rules to Lab tools.
+		</p>
+		<p>
+			The two compositions are a transparent vertical group with equal-width
+			buttons and an anchored action strip with a solid background. Examples now
+			use the application’s shared angled-corner button styles and colors.
+			Padding now matches the button gap: 8px in both vertical groups and
+			strips. Action order remains under review.
+		</p>
+		<p>
+			<strong>Review question:</strong>
+			Do the vertical group and anchored strip provide the right containers for
+			game screens and form actions?
+		</p>
+	</section>
+	<section>
+		<h2>06 / Decision record &amp; integration</h2>
+		<ul>
+			<li>
+				Revision 1 explored generic confirmation dialogs, Lab commands, and
+				blueprint saving, with anchored and equal-width alternatives.
+			</li>
+			<li>
+				Owner correction, revision 2: “dialog buttons” primarily navigate the
+				game’s startup, pause, setup, and mode states. A generic discard
+				confirmation was the wrong lead example.
+			</li>
+			<li>
+				Owner direction: application actions include saving player ship designs
+				and settings, and resetting forms. Lab tooling follows the same styling
+				and hierarchy across the application.
+			</li>
+			<li>
+				Revised examples lead with game-state navigation, then player data
+				actions, then Lab reuse. Confirmation remains only a supporting
+				consequence example.
+			</li>
+			<li>
+				Revision 3: owner requested the existing angled corners and colors.
+				Examples now import shared button styles; layout remains the subject of
+				comparison.
+			</li>
+			<li>
+				Retrospective note for the end of this loop: the owner found the
+				situation-first explanation useful. Preserve this evidence for review
+				before changing workflow guidance.
+			</li>
+			<li>
+				Revision 4: owner defined two containers: transparent vertical groups
+				with equal-width buttons, and solid-background horizontal strips using
+				anchored groups. These replace the equal-width strip alternative.
+				Narrow-strip stacking is a provisional responsive behavior.
+			</li>
+			<li>
+				Revision 5: owner requested equal spacing around and between buttons,
+				including transparent containers. Normal vertical spacing maps to the
+				existing 16px token; minimal strip spacing maps to 8px.
+			</li>
+			<li>
+				Revision 6: owner found 16px vertical spacing too loose. Reduce vertical
+				padding and gaps together to 8px; strip spacing stays at 8px.
+			</li>
+			<li>
+				Revision 7: owner endorsed the baseline and documentation, and requested
+				a complete token inventory before promotion. Audit flags hard-coded
+				values and component-specific tokens; additions remain proposals.
+			</li>
+			<li>
+				Revision 8: owner established --_name for private component tokens.
+				Audit now separates private composition from missing shared foundations;
+				the local group-spacing alias adopts the convention without visual
+				changes.
+			</li>
+			<li>
+				Open: placement, action order, density, and context-specific reset
+				confirmation.
+			</li>
+			<li>
+				Acceptance: owner approved the completed study and authorized
+				integration. Integration: not started.
+			</li>
+		</ul>
+		<p>
+			After visual acceptance, reconcile shared button styles and action-group
+			patterns, update the canonical button Lab, and integrate relevant screens.
+			The application-wide intent is documented in the experience-design
+			guidance; these prototype styles are not yet production rules.
+		</p>
+	</section>
+</StudyLayout>

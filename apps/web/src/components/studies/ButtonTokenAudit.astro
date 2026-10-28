@@ -1,0 +1,567 @@
+<section aria-labelledby="token-audit-title">
+	<h2 id="token-audit-title">04 / Design-token audit</h2>
+	<p>
+		Revision 8 source audit: shared <code>tokens.css</code>, shared
+		<code>buttons.css</code>, and the study’s button examples. Values below
+		describe the current implementation, including study overrides. The local
+		spacing alias is now private; other token changes remain proposals. No
+		visual values have changed.
+	</p>
+	<p>
+		<strong>Backed</strong>
+		means a reusable system token is used. <strong>Component-only</strong> means
+		a token exists but its base value belongs only to buttons; this is not
+		automatically a missing system token.
+		<strong>Missing</strong>
+		flags a hard-coded design choice.
+		<strong>Mixed</strong>
+		contains both tokens and literals.
+		<strong>Domain-only</strong>
+		borrows a flight-specific token.
+		<strong>Structural</strong>
+		describes layout mechanics;
+		<strong>Fixture</strong>
+		describes demonstration inputs.
+	</p>
+	<p>
+		Token names proposed below are candidates for discussion, not accepted
+		additions. Tokenize intentional visual values; keep flex/grid alignment,
+		0/100% geometry, resets, pseudo-element layering, and native interaction
+		semantics as CSS rules. A matching number is not sufficient reason to reuse
+		an unrelated token. Values in rem are shown as authored, not assumed pixel
+		equivalents.
+	</p>
+	<p>
+		<strong>Private composition</strong>
+		uses <code>--_name</code>, declared on the owning component rather than
+		<code>:root</code>. Local aliases, derived values, and implementation
+		details can stay private. Shared visual decisions remain public tokens. The
+		promotion notes below distinguish the two; a private proposal is not a
+		missing design-system token.
+	</p>
+	<p>
+		For example, <code>--_group-spacing: var(--spacing-sm)</code> supplies both
+		padding and gap. A button can privately alias system padding and radius, or
+		derive its pseudo-element inset from a public border-width token. The naming
+		convention documents ownership; CSS itself does not enforce privacy.
+	</p>
+
+	<h3>Button geometry and typography · shared buttons.css</h3>
+	<section
+		class="table-scroll"
+		aria-label="Button geometry and typography · shared buttons.css"
+	>
+		<table>
+			<thead>
+				<tr>
+					<th scope="col">Property</th>
+					<th scope="col">Current value</th>
+					<th scope="col">Source / token chain</th>
+					<th scope="col">Coverage</th>
+					<th scope="col">Promotion note</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Horizontal / vertical padding</td>
+					<td>32px / 8px</td>
+					<td>
+						--button-padding-x → --spacing-lg; --button-padding-y → --spacing-sm
+					</td>
+					<td>Backed → private alias</td>
+					<td>
+						Propose button-owned --_padding-x: var(--spacing-lg) and
+						--_padding-y: var(--spacing-sm). No new public spacing tokens
+						needed; audit --button-* consumers before renaming.
+					</td>
+				</tr>
+				<tr>
+					<td>Minimum height</td>
+					<td>44px</td>
+					<td>--button-min-height</td>
+					<td>Component-only</td>
+					<td>
+						Propose --control-min-height; alias existing button token to it.
+					</td>
+				</tr>
+				<tr>
+					<td>Font family</td>
+					<td>system-ui, sans-serif in this study</td>
+					<td>inherit → --font-display (StudyLayout)</td>
+					<td>Backed</td>
+					<td>Inherited: other hosts can currently supply a different font.</td>
+				</tr>
+				<tr>
+					<td>Font size</td>
+					<td>1rem</td>
+					<td>--button-font-size</td>
+					<td>Component-only</td>
+					<td>
+						Propose --font-control-size; --font-body is 0.95rem, not equivalent.
+					</td>
+				</tr>
+				<tr>
+					<td>Font weight</td>
+					<td>500</td>
+					<td>--button-font-weight</td>
+					<td>Component-only</td>
+					<td>Propose --font-weight-medium.</td>
+				</tr>
+				<tr>
+					<td>Line height</td>
+					<td>1</td>
+					<td>Literal in .btn</td>
+					<td>Private candidate</td>
+					<td>
+						Propose button-owned --_line-height: 1 for single-line label
+						composition. It need not become a global typography rule; revisit if
+						shared across controls.
+					</td>
+				</tr>
+				<tr>
+					<td>Outline shell thickness</td>
+					<td>2px</td>
+					<td>--button-border-width</td>
+					<td>Shared foundation + private alias</td>
+					<td>
+						Keep the visible 2px border weight as a shared decision (proposed
+						--border-width-control). Privately derive --_outline-inset from it
+						to construct the ghost/danger pseudo-element.
+					</td>
+				</tr>
+				<tr>
+					<td>Corner radius</td>
+					<td>2px</td>
+					<td>--button-border-radius → --radius-sm</td>
+					<td>Backed → private alias</td>
+					<td>
+						Propose --_radius: var(--radius-sm) on .btn; no new public radius
+						token needed.
+					</td>
+				</tr>
+				<tr>
+					<td>Angled corner cut</td>
+					<td>10px</td>
+					<td>--button-cut-size</td>
+					<td>Private candidate</td>
+					<td>
+						Propose button-owned --_cut-size: 10px while this geometry is
+						specific to buttons. Promote a shared cut-size only when multiple
+						surface types intentionally share that shape contract.
+					</td>
+				</tr>
+				<tr>
+					<td>Secondary / primary minimum width</td>
+					<td>120px / 172px</td>
+					<td>Study literals</td>
+					<td>Private candidate</td>
+					<td>
+						Propose --_min-width: 120px and a filled-variant override of 172px
+						if these composition constraints are retained. Remove them if
+						content should determine width. Do not add generic control widths
+						without shared use.
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</section>
+	<h3>Variants and colors · shared buttons.css</h3>
+	<section
+		class="table-scroll"
+		aria-label="Variants and colors · shared buttons.css"
+	>
+		<table>
+			<thead>
+				<tr>
+					<th scope="col">Property</th>
+					<th scope="col">Current value</th>
+					<th scope="col">Source / token chain</th>
+					<th scope="col">Coverage</th>
+					<th scope="col">Promotion note</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Primary fill / text</td>
+					<td>#eeff41 / #050510</td>
+					<td>--color-neon-blue → --color-acid-lime / --color-void</td>
+					<td>Backed</td>
+					<td>The neon-blue alias resolves to lime, despite its name.</td>
+				</tr>
+				<tr>
+					<td>Ghost outline and text / interior</td>
+					<td>#eeff41 / #050510</td>
+					<td>--color-neon-blue → --color-acid-lime / --color-void</td>
+					<td>Backed</td>
+					<td>Hover fills lime and changes text to void.</td>
+				</tr>
+				<tr>
+					<td>Danger outline and text / interior</td>
+					<td>#ff3333 / #050510</td>
+					<td>--color-red / --color-void</td>
+					<td>Backed</td>
+					<td>Hover fills red; text becomes --color-text (#fffff0).</td>
+				</tr>
+				<tr>
+					<td>Link variant</td>
+					<td>transparent; lime → ivory on hover; 8px padding</td>
+					<td>
+						transparent literal; --color-neon-blue; --color-text; --spacing-sm
+					</td>
+					<td>Backed + structural</td>
+					<td>
+						Existing shared colors and 8px spacing apply. Transparent fill, no
+						cut, and automatic height are variant composition rules; no
+						additional public token needed.
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</section>
+	<h3>Interaction states · shared styles versus study overrides</h3>
+	<section
+		class="table-scroll"
+		aria-label="Interaction states · shared styles versus study overrides"
+	>
+		<table>
+			<thead>
+				<tr>
+					<th scope="col">Property</th>
+					<th scope="col">Current value</th>
+					<th scope="col">Source / token chain</th>
+					<th scope="col">Coverage</th>
+					<th scope="col">Promotion note</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Primary hover brightness</td>
+					<td>1.2</td>
+					<td>Literal in shared .btn-filled:hover</td>
+					<td>Missing</td>
+					<td>Propose --state-hover-brightness.</td>
+				</tr>
+				<tr>
+					<td>Transition</td>
+					<td>150ms ease: background, color, border-color, filter</td>
+					<td>
+						--button-transition; pseudo-elements repeat 0.15s ease literally
+					</td>
+					<td>Shared foundation + private composition</td>
+					<td>
+						Public --duration-fast: 150ms and --ease-standard: ease encode
+						shared motion. Privately compose --_transition from those values and
+						the button-specific property list; pseudo-elements reuse the same
+						foundations.
+					</td>
+				</tr>
+				<tr>
+					<td>Production keyboard focus</td>
+					<td>2px lime outline, +4px offset</td>
+					<td>--color-neon-blue; literal 2px / 4px</td>
+					<td>Mixed</td>
+					<td>
+						Propose shared focus width/offset tokens. Existing cut clipping
+						requires review.
+					</td>
+				</tr>
+				<tr>
+					<td>Study keyboard focus</td>
+					<td>2px ivory outline, −5px offset</td>
+					<td>--color-text; literal 2px / −5px</td>
+					<td>Mixed</td>
+					<td>
+						Overrides production. Propose --focus-ring-width: 2px and
+						--focus-ring-offset-inset: −5px; review before adoption.
+					</td>
+				</tr>
+				<tr>
+					<td>Selected / pressed toggle indicator</td>
+					<td>inset 0 −4px lime shadow</td>
+					<td>--color-acid-lime; literal 4px thickness</td>
+					<td>Mixed</td>
+					<td>
+						Propose --state-selected-indicator-width: 4px. The inset shadow is a
+						study-local aid.
+					</td>
+				</tr>
+				<tr>
+					<td>Disabled / busy appearance</td>
+					<td>opacity 0.45; not-allowed cursor</td>
+					<td>Study literal</td>
+					<td>Missing</td>
+					<td>
+						Propose --state-disabled-opacity: 0.45. Busy uses the same disabled
+						state; no separate loading animation.
+					</td>
+				</tr>
+				<tr>
+					<td>Pressed / reduced motion</td>
+					<td>
+						No explicit active transform; reduced-motion rule sets transform:
+						none
+					</td>
+					<td>Study CSS</td>
+					<td>Structural</td>
+					<td>
+						The current reduced-motion override is inert: there is no active
+						transform to cancel. Shared hover transitions are not disabled by
+						it; review at promotion.
+					</td>
+				</tr>
+				<tr>
+					<td>Busy demonstration delay</td>
+					<td>900ms</td>
+					<td>Local save fixture</td>
+					<td>Fixture</td>
+					<td>Not a design token or promised application latency.</td>
+				</tr>
+			</tbody>
+		</table>
+	</section>
+	<h3>Group containers · both layout modes</h3>
+	<section
+		class="table-scroll"
+		aria-label="Group containers · both layout modes"
+	>
+		<table>
+			<thead>
+				<tr>
+					<th scope="col">Property</th>
+					<th scope="col">Current value</th>
+					<th scope="col">Source / token chain</th>
+					<th scope="col">Coverage</th>
+					<th scope="col">Promotion note</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Padding on all sides / button gap</td>
+					<td>8px / 8px</td>
+					<td>--_group-spacing → --spacing-sm</td>
+					<td>Backed + private</td>
+					<td>
+						Implemented: container-owned --_group-spacing: var(--spacing-sm).
+						Padding, gap, and nested pairs use this private alias. Vertical
+						pairs flatten into the container.
+					</td>
+				</tr>
+				<tr>
+					<td>Vertical background</td>
+					<td>transparent</td>
+					<td>Literal</td>
+					<td>Structural / private optional</td>
+					<td>
+						Transparent is the absence of a surface, not a new palette color.
+						Keep the literal or use a private --_background for variant
+						composition; no public --surface-transparent token is needed.
+					</td>
+				</tr>
+				<tr>
+					<td>Vertical width</td>
+					<td>min(100%, 320px)</td>
+					<td>Study literal 320px</td>
+					<td>Private candidate</td>
+					<td>
+						Propose group-owned --_stack-max: 320px for this composition.
+						Promote a layout-width token only if it becomes an intentional
+						shared layout contract.
+					</td>
+				</tr>
+				<tr>
+					<td>Strip background</td>
+					<td>#050510</td>
+					<td>--color-void</td>
+					<td>Backed</td>
+					<td>Constant solid fill in wide and narrow modes.</td>
+				</tr>
+				<tr>
+					<td>Container spacing from preceding content</td>
+					<td>32px</td>
+					<td>--spacing-lg</td>
+					<td>Backed</td>
+					<td>Separate from internal padding.</td>
+				</tr>
+				<tr>
+					<td>Anchoring and equal widths</td>
+					<td>
+						space-between; trailing decision pair; vertical stretch and 100%
+						widths
+					</td>
+					<td>CSS layout rules</td>
+					<td>Structural</td>
+					<td>
+						Flexible space between anchored groups may exceed 8px. Equal width
+						is a relationship, not a numerical token.
+					</td>
+				</tr>
+				<tr>
+					<td>Narrow-strip threshold</td>
+					<td>580px container width</td>
+					<td>Study @container literal</td>
+					<td>Private layout rule</td>
+					<td>
+						The 580px threshold belongs to this group’s composition, not
+						automatically to global breakpoints. Keep it documented locally.
+						Native CSS variables cannot be used directly in query conditions, so
+						do not promise a --_ variable will drive this query.
+					</td>
+				</tr>
+				<tr>
+					<td>Narrow arrangement</td>
+					<td>one 1fr column; 100% width; button minimum width 0</td>
+					<td>CSS layout rules</td>
+					<td>Structural</td>
+					<td>
+						Strip retains its background and 8px padding; vertical group remains
+						transparent.
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</section>
+	<h3>Surrounding demonstration surfaces · not button definitions</h3>
+	<section
+		class="table-scroll"
+		aria-label="Surrounding demonstration surfaces · not button definitions"
+	>
+		<table>
+			<thead>
+				<tr>
+					<th scope="col">Property</th>
+					<th scope="col">Current value</th>
+					<th scope="col">Source / token chain</th>
+					<th scope="col">Coverage</th>
+					<th scope="col">Promotion note</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Example cards / dialog</td>
+					<td>background #0a0a1f; text #fffff0; 32px padding</td>
+					<td>--color-void-light; --color-text; --spacing-lg</td>
+					<td>Backed</td>
+					<td>Study framing, distinct from action-strip fill.</td>
+				</tr>
+				<tr>
+					<td>Card / dialog / selector border</td>
+					<td>1px solid #ffffff24</td>
+					<td>--flight-border</td>
+					<td>Domain-only</td>
+					<td>
+						Existing token belongs to flight. Propose a shared --border-subtle
+						if this surface treatment is adopted.
+					</td>
+				</tr>
+				<tr>
+					<td>Example gaps / controls spacing</td>
+					<td>16px; label gap 8px</td>
+					<td>--spacing-md; --spacing-sm</td>
+					<td>Backed</td>
+					<td>Study presentation spacing.</td>
+				</tr>
+				<tr>
+					<td>Example heading</td>
+					<td>1.5rem; 16px block margin</td>
+					<td>--font-large; --spacing-md</td>
+					<td>Backed</td>
+					<td>Study presentation typography.</td>
+				</tr>
+				<tr>
+					<td>Captions</td>
+					<td>0.75rem monospace; #888888</td>
+					<td>--font-small; --font-flight; --color-text-dim</td>
+					<td>Domain-only</td>
+					<td>
+						Promote a neutral --font-mono alias if this family serves all tools.
+					</td>
+				</tr>
+				<tr>
+					<td>Narrow preview width</td>
+					<td>360px</td>
+					<td>Study literal</td>
+					<td>Fixture</td>
+					<td>A test viewport, not a production component dimension.</td>
+				</tr>
+				<tr>
+					<td>Selector height / padding</td>
+					<td>44px / 8px</td>
+					<td>Literal height; --spacing-sm padding</td>
+					<td>Mixed</td>
+					<td>Use proposed --control-min-height for the selector too.</td>
+				</tr>
+				<tr>
+					<td>Dialog max width</td>
+					<td>min(520px, 90vw)</td>
+					<td>Study literals</td>
+					<td>Private candidate / separate study</td>
+					<td>
+						If retained, use dialog-owned --_max-width: 520px and
+						--_viewport-limit: 90vw. Public dialog layout tokens require an
+						intentional shared contract; confirm in the dialog study.
+					</td>
+				</tr>
+				<tr>
+					<td>Dialog backdrop</td>
+					<td>rgba(5, 5, 16, 0.9)</td>
+					<td>--color-overlay</td>
+					<td>Backed</td>
+					<td>Opaque-enough overlay token; alpha is part of the token.</td>
+				</tr>
+				<tr>
+					<td>Feedback block</td>
+					<td>3px lime edge; 16px padding; 70px minimum height</td>
+					<td>Literal 3px / 70px; --color-acid-lime; --spacing-md</td>
+					<td>Study framing</td>
+					<td>
+						The 3px edge and 70px minimum are local study framing, not missing
+						button-system tokens. Prefer content-driven height; any reusable
+						feedback component may privately own its geometry while using shared
+						color/spacing.
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</section>
+	<p>
+		<strong>Promotion checkpoint:</strong>
+		resolve missing shared foundations, classify component-owned values,
+		reconcile production versus study focus and disabled states, and verify both
+		layouts against the final tokens before moving the pattern into the
+		canonical Lab. The page shell/navigation typography and this audit table are
+		research-document framing, outside this button-pattern inventory.
+	</p>
+</section>
+<style>
+h3 {
+	font-size: var(--font-body);
+	margin-block: var(--spacing-lg) var(--spacing-md);
+}
+.table-scroll {
+	overflow-x: auto;
+	margin-bottom: var(--spacing-lg);
+}
+table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--font-small);
+}
+th,
+td {
+	text-align: left;
+	vertical-align: top;
+	padding: var(--spacing-sm);
+	border-bottom: var(--flight-border);
+	line-height: 1.6;
+}
+th {
+	color: var(--color-acid-lime);
+}
+td {
+	min-width: 10rem;
+	overflow-wrap: anywhere;
+}
+code {
+	color: var(--color-acid-lime);
+}
+</style>

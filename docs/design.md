@@ -52,3 +52,38 @@ and shareable URL configuration. Asset inspectors remain available in `/lab`.
 Use fixed viewport, seed, and simulation time for visual evidence. Keep capture
 environments explicit. Review visual baseline changes; never silently refresh images
 to hide regressions. Show accepted design changes in the real game as well as the Lab.
+
+## Exploratory studies
+
+`/lab/studies` holds proposals and decision records, distinct from canonical Lab
+examples and flight trials. Use `.agents/skills/design-study/SKILL.md` for this loop.
+Study-local experiments do not establish shared design rules. See
+[design studies](specs/design-studies.md) for acceptance and promotion boundaries.
+
+## Application-wide button intent
+
+Owner direction, 2026-10-28: game startup, pause/continue, setup, and mode-selection
+screens represent game states. Their navigation buttons may be primary actions.
+Player-facing data actions include saving ship designs, saving settings, reverting
+edits, and resetting forms. Hierarchy follows the current goal, not the technical
+category of navigation versus mutation. Links represent URL destinations; buttons
+perform in-app state transitions and commands.
+
+Game screens, player tools, settings, and Lab tooling share one button styling and
+hierarchy. Context determines grouping and availability, not a separate Lab visual
+language. Exact placement, appearance, and state treatments remain exploratory in
+`/lab/studies/buttons`; revision 2 records this clarification. Shared styles have not
+yet been changed to match the study.
+
+Button-container direction (study revision 4): vertical groups place equal-width
+buttons one below another on a transparent container, typically for game-state
+screens. Horizontal action strips use a constant solid background and anchored
+groups for supporting and main actions. Both use the existing shared button
+appearance. Exact spacing, order, and narrow-strip adaptation remain under review;
+these container patterns are demonstrated in the study, not yet integrated.
+
+Spacing direction (study revision 6): each button container has equal outer padding
+and minimum button gap, regardless of background transparency. The study maps
+vertical and strip spacing to `--spacing-sm` (8px), after the owner found
+16px vertical spacing too loose. Anchoring can add flexible space between groups without
+reducing that minimum. Production integration remains pending.

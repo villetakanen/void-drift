@@ -132,3 +132,11 @@ disclosure. The factory's `pnpm verify` also checks committed history after the
 documented adoption baseline; CI uses a full checkout. Malformed messages must
 fail both paths, while older history remains unchanged. Hooks do not prepare
 releases or publish. Meaning and compatibility still require diff review.
+
+## Design-study experiment — 2026-10-28
+
+Conversation can branch into an exploratory [design study](design-studies.md) before
+implementation. `/lab/studies` indexes stable review pages. The button pilot explores
+situations and action composition first. Owner acceptance and production integration
+are separate states; studies preserve decision rationale. The first iteration and
+promotion remain to be exercised with the owner.

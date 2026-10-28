@@ -53,3 +53,31 @@ migration documents remain historical; scores are not migrated.
 Record significant architecture decisions with context and consequences. Keep current
 implementation and planned targets distinct. Read relevant feature specs on demand;
 historical roadmaps do not define current architecture requirements.
+
+## Design tokens and component-private values
+
+Owner decision, 2026-10-28: public design-system tokens express shared visual
+contracts (palette, spacing, typography, control accessibility, motion and states).
+Components may also own private custom properties named `--_name`. These are not
+part of the public design-token API and need not be promoted merely because they
+are CSS variables.
+
+Declare private properties on the owning component/container selector, not `:root`.
+Use them for component composition, local aliases, and values derived from system
+tokens, for example `--_group-spacing: var(--spacing-sm)` used for both padding and
+gap. A button's radius alias or pseudo-element inset may be private while its shared
+shape or border foundation remains public. Component-only constants can be private
+when they encode implementation rather than a cross-application design decision.
+Do not hide shared color, spacing, typography, focus or accessibility choices behind
+private literals to avoid defining their system contract.
+
+CSS does not enforce privacy: custom properties still inherit and can be overridden.
+The underscore is an ownership convention. Consumers must not depend on or override
+private properties; expose a public token or explicit variant when customization is
+intended. Audit existing consumers before renaming a public property.
+
+Study audits distinguish existing public tokens, proposed private composition,
+missing shared foundations, and structural CSS/fixtures. Record derivations and
+ownership, rather than demanding a public token for every value. Existing global
+`--button-*` tokens remain legacy public names until a deliberate migration; the
+button study currently applies the convention to its local `--_group-spacing` alias.

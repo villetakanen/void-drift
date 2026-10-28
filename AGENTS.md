@@ -13,6 +13,8 @@ Voice-led development of a procedural space survival game and its software facto
 - Old backlog and phase roadmaps are historical evidence, not active assignments.
 - Read only the context needed for the task; follow the owner's latest decisions.
 
+- Design exploration: use `.agents/skills/design-study/SKILL.md`.
+
 ## Working method
 
 - Translate conversational requests into a small, explicit acceptance contract.
