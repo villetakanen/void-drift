@@ -3,6 +3,10 @@
 Status: implemented alpha gates; human experience review remains open. Created 2026-10-28.
 Authority: [rebuild charter](../rebuild-charter.md).
 
+Loop 1 outcome and learning: [alpha retrospective](../factory-experiment-alpha.md).
+The owner gave positive overall experience feedback after release; detailed balance
+and physical-device performance assessments remain open.
+
 ## Context
 
 The owner develops through conversational speech transcripts and browser inspection. The factory must turn that input into traceable changes and trustworthy evidence without requiring manual IDE operation.
