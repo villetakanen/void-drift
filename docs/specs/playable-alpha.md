@@ -69,9 +69,9 @@ reject fractional/out-of-range counts; exercise snapping in both directions,
 threshold stability, coordinate round-trips, and existing keyboard/touch controls.
 Human review of reorientation and preferred level count remains pending.
 
-## Player navigation and version labels
+## Player navigation and version labels — patch 0.3.2
 
 Player-facing navigation exposes play, scores and settings. Flight Lab is a developer
 tool reached directly at `/lab/flight` or through the Lab navigation, with a return
-link to play. Game and leaderboard labels use the web package version (0.3.1),
+link to play. Game and leaderboard labels use the web package version (0.3.2),
 independently of the internal `alpha-1` scoring challenge identifier.
