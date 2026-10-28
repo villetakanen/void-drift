@@ -14,6 +14,7 @@ import {
 	submitHighScore,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
+import { version } from "../../package.json";
 import { settings } from "../lib/stores/settings";
 
 let { lab = false }: { lab?: boolean } = $props();
@@ -306,10 +307,12 @@ onMount(() => {
 >
 	<header class="flight-header">
 		<a href="/" class="brand">VOID<span>·</span>DRIFT</a>
-		<span class="edition">{lab ? "FLIGHT LAB" : "SURVIVAL / ALPHA 1"}</span>
+		<span class="edition">{lab ? "FLIGHT LAB" : `SURVIVAL / ${version}`}</span>
 		<nav aria-label="Flight navigation">
-			<a href={lab ? "/" : "/lab/flight"}>{lab ? "Play" : "Flight Lab"}</a
-			><a href="/leaderboard">Scores</a><a href="/settings">Settings</a>
+			{#if lab}
+				<a href="/">Play</a>
+			{/if}
+			<a href="/leaderboard">Scores</a><a href="/settings">Settings</a>
 		</nav>
 	</header>
 	<div class="flight-layout">

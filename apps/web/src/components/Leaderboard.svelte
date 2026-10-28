@@ -5,6 +5,7 @@ let _props: { slot?: string; "client:only"?: string; "client:load"?: boolean } =
 
 import { type HighScore, loadHighScores } from "@void-drift/mode-a";
 import { onMount } from "svelte";
+import { version } from "../../package.json";
 
 let rows = $state<HighScore[]>([]);
 let loading = $state(true);
@@ -26,7 +27,7 @@ onMount(() => {
 </script>
 <main class="score-page">
 	<a href="/" class="brand">VOID·DRIFT</a>
-	<p class="eyebrow">ALPHA 1 / G CLASS</p>
+	<p class="eyebrow">{version} / G CLASS</p>
 	<h1>The longest orbit.</h1>
 	<p>One personal best per ship. A shared challenge for every pilot.</p>
 	<p class="control-copy">

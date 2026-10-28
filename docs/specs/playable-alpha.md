@@ -68,3 +68,10 @@ Acceptance: test counts 4 and 11 through apply, preview, export and shareable li
 reject fractional/out-of-range counts; exercise snapping in both directions,
 threshold stability, coordinate round-trips, and existing keyboard/touch controls.
 Human review of reorientation and preferred level count remains pending.
+
+## Player navigation and version labels
+
+Player-facing navigation exposes play, scores and settings. Flight Lab is a developer
+tool reached directly at `/lab/flight` or through the Lab navigation, with a return
+link to play. Game and leaderboard labels use the web package version (0.3.1),
+independently of the internal `alpha-1` scoring challenge identifier.
