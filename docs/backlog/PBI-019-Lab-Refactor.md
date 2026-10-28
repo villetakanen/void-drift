@@ -28,6 +28,7 @@ The current `/gallery` is a single page that renders everything. As we add more 
 ## Acceptance Criteria
 
 ### Routing Structure
+
 - [x] Rename/Move `/gallery` logic to a new `/lab` base route.
 - [x] `/lab` (Index): Lists all available experiments/workbenches.
 - [x] `/lab/ship`: Dedicated page for Ship rendering tuning.
@@ -35,12 +36,14 @@ The current `/gallery` is a single page that renders everything. As we add more 
 - [x] `/lab/ui-kit`: (Optional) dedicated page for general UI tokens if needed.
 
 ### Lab Layout
+
 - [x] Create a `LabLayout.astro` (or similar shared layout) that provides navigation between lab pages.
 - [x] Ensure "Back to Lab Index" link exists on all sub-pages.
 
 ### Migration
+
 - [x] Refactor existing `Gallery.svelte` functionality:
-    - Extract Ship viewing logic into `apps/web/src/components/lab/LabShip.svelte` (or similar).
+  - Extract Ship viewing logic into `apps/web/src/components/lab/LabShip.svelte` (or similar).
     - Extract Star viewing logic into `apps/web/src/components/lab/LabStar.svelte`.
 - [x] Ensure the old `/gallery` route is removed or redirects to `/lab`.
 
@@ -55,7 +58,7 @@ The current `/gallery` is a single page that renders everything. As we add more 
 
 2.  **Refactor Components:**
     - Split `Gallery.svelte` into smaller, focused components:
-        - `LabShipViewer.svelte`
+      - `LabShipViewer.svelte`
         - `LabStarViewer.svelte`
 
 3.  **Update Navigation:**

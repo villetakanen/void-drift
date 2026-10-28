@@ -1,3 +1,5 @@
+> Historical specification. Current alpha behavior is defined in [playable-alpha.md](playable-alpha.md).
+
 # Feature: Leaderboard System (High Scores)
 
 **Status:** PLANNED  
@@ -35,11 +37,11 @@ Mode A's survival gameplay needs a competitive element to drive replayability. T
 
 #### Firebase Services
 
-| Service | Purpose |
-|---------|---------|
+| Service        | Purpose                                |
+| -------------- | -------------------------------------- |
 | Anonymous Auth | Generate stable UID per device/session |
-| Firestore | Store and query high scores |
-| Security Rules | Validate writes, prevent tampering |
+| Firestore      | Store and query high scores            |
+| Security Rules | Validate writes, prevent tampering     |
 
 #### Firestore Schema
 
@@ -47,15 +49,21 @@ Mode A's survival gameplay needs a competitive element to drive replayability. T
 
 ```typescript
 // packages/mode-a/src/lib/schemas/highscore.ts
-import { z } from 'zod';
+import { z } from "zod";
 
 export const HighScoreSchema = z.object({
-  initials: z.string().length(3).regex(/^[A-Z]{3}$/),
-  uidHash: z.string().length(6).regex(/^[A-F0-9]{6}$/),
-  seconds: z.number().min(0).max(999999),
-  deathCause: z.enum(['STAR', 'HULL', 'POWER']),
-  timestamp: z.number(),       // Unix ms
-  userId: z.string(),          // Raw UID for security rules
+	initials: z
+		.string()
+		.length(3)
+		.regex(/^[A-Z]{3}$/),
+	uidHash: z
+		.string()
+		.length(6)
+		.regex(/^[A-F0-9]{6}$/),
+	seconds: z.number().min(0).max(999999),
+	deathCause: z.enum(["STAR", "HULL", "POWER"]),
+	timestamp: z.number(), // Unix ms
+	userId: z.string(), // Raw UID for security rules
 });
 
 export type HighScore = z.infer<typeof HighScoreSchema>;
@@ -64,12 +72,12 @@ export type HighScore = z.infer<typeof HighScoreSchema>;
 **Document Structure:**
 ```json
 {
-  "initials": "ACE",
-  "uidHash": "A3F8B2",
-  "seconds": 142.35,
-  "deathCause": "HULL",
-  "timestamp": 1703001234567,
-  "userId": "abc123xyz..."
+	"initials": "ACE",
+	"uidHash": "A3F8B2",
+	"seconds": 142.35,
+	"deathCause": "HULL",
+	"timestamp": 1703001234567,
+	"userId": "abc123xyz..."
 }
 ```
 
@@ -78,12 +86,14 @@ export type HighScore = z.infer<typeof HighScoreSchema>;
 ```typescript
 // packages/mode-a/src/lib/auth/hash.ts
 export async function generateUidHash(uid: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(uid);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  return hashHex.substring(0, 6).toUpperCase();
+	const encoder = new TextEncoder();
+	const data = encoder.encode(uid);
+	const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+	const hashArray = Array.from(new Uint8Array(hashBuffer));
+	const hashHex = hashArray
+		.map((b) => b.toString(16).padStart(2, "0"))
+		.join("");
+	return hashHex.substring(0, 6).toUpperCase();
 }
 ```
 
@@ -113,12 +123,14 @@ export async function generateUidHash(uid: string): Promise<string> {
 ### Definition of Done
 
 #### Authentication
+
 - [ ] Firebase project configured with Anonymous Auth enabled
 - [ ] User automatically signed in anonymously on first visit
 - [ ] Auth state persists across page refreshes
 - [ ] UID available before score submission
 
 #### Initials Entry
+
 - [ ] 3-letter input with arcade-style UI
 - [ ] Keyboard input (A-Z only, auto-uppercase)
 - [ ] On-screen letter buttons for mobile
@@ -127,6 +139,7 @@ export async function generateUidHash(uid: string): Promise<string> {
 - [ ] Default initials: `AAA`
 
 #### Score Submission
+
 - [ ] Score submitted on initials confirmation
 - [ ] Includes: initials, uidHash, seconds, deathCause, timestamp, userId
 - [ ] Firestore write succeeds within 2 seconds
@@ -134,6 +147,7 @@ export async function generateUidHash(uid: string): Promise<string> {
 - [ ] Validation matches Zod schema
 
 #### Leaderboard Display
+
 - [ ] Route: `/leaderboard`
 - [ ] Displays top 20 scores sorted by seconds (descending)
 - [ ] Shows: rank, initials, uidHash, time, death cause icon
@@ -143,6 +157,7 @@ export async function generateUidHash(uid: string): Promise<string> {
 - [ ] Link back to game
 
 #### Security Rules
+
 - [ ] Read: Anyone can read highscores
 - [ ] Create: Only authenticated users, userId must match auth.uid
 - [ ] Update/Delete: Denied (scores are immutable)
@@ -336,6 +351,7 @@ service cloud.firestore {
 ## Implementation Order (PBIs)
 
 ### PBI-025: Firebase Project Setup (2 SP)
+
 - Create Firebase project
 - Enable Anonymous Auth
 - Configure Firestore
@@ -343,6 +359,7 @@ service cloud.firestore {
 - Deploy security rules
 
 ### PBI-026: Anonymous Auth Flow (3 SP)
+
 - Initialize Firebase in app
 - Implement auto-signin on load
 - Persist auth state
@@ -350,6 +367,7 @@ service cloud.firestore {
 - Add UID hash generation
 
 ### PBI-027: Initials Entry UI (3 SP)
+
 - Create InitialsEntry.svelte component
 - 3-letter display with cursor
 - On-screen keyboard (A-Z + backspace)
@@ -357,6 +375,7 @@ service cloud.firestore {
 - Submit/skip buttons
 
 ### PBI-028: Score Submission (3 SP)
+
 - Create highscore Zod schema
 - Implement Firestore write helper
 - Wire initials entry to submission
@@ -364,6 +383,7 @@ service cloud.firestore {
 - Add retry mechanism
 
 ### PBI-029: Leaderboard Display (3 SP)
+
 - Create `/leaderboard` route
 - Implement Firestore query (top N, sorted)
 - Build Leaderboard.svelte component

@@ -40,22 +40,22 @@ Update `drawPlanet()` to accept optional `hasRing` parameter:
 
 ```typescript
 export function drawPlanet(
-  ctx: CanvasRenderingContext2D,
-  options: {
-    x: number;
-    y: number;
-    radius: number;
-    color: string;
-    hasRing?: boolean;
-  }
+	ctx: CanvasRenderingContext2D,
+	options: {
+		x: number;
+		y: number;
+		radius: number;
+		color: string;
+		hasRing?: boolean;
+	},
 ): void {
-  // Draw ring behind planet if enabled
-  if (options.hasRing) {
-    drawRing(ctx, options.x, options.y, options.radius, options.color);
-  }
-  
-  // Draw planet (existing code)
-  // ...
+	// Draw ring behind planet if enabled
+	if (options.hasRing) {
+		drawRing(ctx, options.x, options.y, options.radius, options.color);
+	}
+
+	// Draw planet (existing code)
+	// ...
 }
 ```
 

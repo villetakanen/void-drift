@@ -96,12 +96,12 @@ This is the first PBI for Phase 5 (Survival Core). Before implementing resource 
 
 ```typescript
 export interface ResourceBarProps {
-  value: number;        // 0-100
-  maxValue: number;     // Usually 100
-  label: string;        // "HULL" or "FUEL"
-  colorNormal: string;  // CSS color for 50-100%
-  colorWarning: string; // CSS color for 25-49%
-  colorDanger: string;  // CSS color for 0-24%
+	value: number; // 0-100
+	maxValue: number; // Usually 100
+	label: string; // "HULL" or "FUEL"
+	colorNormal: string; // CSS color for 50-100%
+	colorWarning: string; // CSS color for 25-49%
+	colorDanger: string; // CSS color for 0-24%
 }
 
 /**
@@ -109,53 +109,53 @@ export interface ResourceBarProps {
  * For use in gallery/workbench only (Svelte version for game HUD)
  */
 export function drawResourceBar(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-  props: ResourceBarProps
+	ctx: CanvasRenderingContext2D,
+	x: number,
+	y: number,
+	width: number,
+	height: number,
+	props: ResourceBarProps,
 ): void {
-  const percentage = (props.value / props.maxValue) * 100;
-  
-  // Determine color based on percentage
-  let fillColor = props.colorNormal;
-  if (percentage < 25) {
-    fillColor = props.colorDanger;
-  } else if (percentage < 50) {
-    fillColor = props.colorWarning;
-  }
-  
-  // Background
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-  ctx.fillRect(x, y, width, height);
-  
-  // Border
-  ctx.strokeStyle = props.colorNormal;
-  ctx.lineWidth = 1;
-  ctx.strokeRect(x, y, width, height);
-  
-  // Fill
-  const fillWidth = (props.value / props.maxValue) * width;
-  ctx.fillStyle = fillColor;
-  ctx.fillRect(x, y, fillWidth, height);
-  
-  // Label text
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 12px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  
-  // Text shadow for readability
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-  ctx.shadowBlur = 4;
-  
-  const text = `${props.label} ${Math.round(percentage)}%`;
-  ctx.fillText(text, x + width / 2, y + height / 2);
-  
-  // Reset shadow
-  ctx.shadowColor = 'transparent';
-  ctx.shadowBlur = 0;
+	const percentage = (props.value / props.maxValue) * 100;
+
+	// Determine color based on percentage
+	let fillColor = props.colorNormal;
+	if (percentage < 25) {
+		fillColor = props.colorDanger;
+	} else if (percentage < 50) {
+		fillColor = props.colorWarning;
+	}
+
+	// Background
+	ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+	ctx.fillRect(x, y, width, height);
+
+	// Border
+	ctx.strokeStyle = props.colorNormal;
+	ctx.lineWidth = 1;
+	ctx.strokeRect(x, y, width, height);
+
+	// Fill
+	const fillWidth = (props.value / props.maxValue) * width;
+	ctx.fillStyle = fillColor;
+	ctx.fillRect(x, y, fillWidth, height);
+
+	// Label text
+	ctx.fillStyle = "#ffffff";
+	ctx.font = "bold 12px sans-serif";
+	ctx.textAlign = "center";
+	ctx.textBaseline = "middle";
+
+	// Text shadow for readability
+	ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+	ctx.shadowBlur = 4;
+
+	const text = `${props.label} ${Math.round(percentage)}%`;
+	ctx.fillText(text, x + width / 2, y + height / 2);
+
+	// Reset shadow
+	ctx.shadowColor = "transparent";
+	ctx.shadowBlur = 0;
 }
 ```
 
@@ -166,114 +166,114 @@ export function drawResourceBar(
 **File:** `packages/engine/src/lib/assets/death-icons.ts`
 
 ```typescript
-export type DeathCause = 'STAR' | 'HULL' | 'FUEL';
+export type DeathCause = "STAR" | "HULL" | "FUEL";
 
 /**
  * Draw death cause icon (for leaderboard/Game Over screen)
  */
 export function drawDeathIcon(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  size: number,
-  cause: DeathCause
+	ctx: CanvasRenderingContext2D,
+	x: number,
+	y: number,
+	size: number,
+	cause: DeathCause,
 ): void {
-  ctx.save();
-  ctx.translate(x, y);
-  
-  switch (cause) {
-    case 'STAR':
-      // Draw star/sun icon (8-pointed star)
-      drawStarIcon(ctx, size);
-      break;
-    case 'HULL':
-      // Draw cracked shield icon
-      drawHullIcon(ctx, size);
-      break;
-    case 'FUEL':
-      // Draw empty droplet/tank icon
-      drawFuelIcon(ctx, size);
-      break;
-  }
-  
-  ctx.restore();
+	ctx.save();
+	ctx.translate(x, y);
+
+	switch (cause) {
+		case "STAR":
+			// Draw star/sun icon (8-pointed star)
+			drawStarIcon(ctx, size);
+			break;
+		case "HULL":
+			// Draw cracked shield icon
+			drawHullIcon(ctx, size);
+			break;
+		case "FUEL":
+			// Draw empty droplet/tank icon
+			drawFuelIcon(ctx, size);
+			break;
+	}
+
+	ctx.restore();
 }
 
 function drawStarIcon(ctx: CanvasRenderingContext2D, size: number): void {
-  const points = 8;
-  const outerRadius = size / 2;
-  const innerRadius = outerRadius * 0.5;
-  
-  ctx.fillStyle = '#ffaa00'; // Warning color
-  ctx.beginPath();
-  
-  for (let i = 0; i < points * 2; i++) {
-    const radius = i % 2 === 0 ? outerRadius : innerRadius;
-    const angle = (Math.PI / points) * i;
-    const x = Math.cos(angle) * radius;
-    const y = Math.sin(angle) * radius;
-    
-    if (i === 0) {
-      ctx.moveTo(x, y);
-    } else {
-      ctx.lineTo(x, y);
-    }
-  }
-  
-  ctx.closePath();
-  ctx.fill();
+	const points = 8;
+	const outerRadius = size / 2;
+	const innerRadius = outerRadius * 0.5;
+
+	ctx.fillStyle = "#ffaa00"; // Warning color
+	ctx.beginPath();
+
+	for (let i = 0; i < points * 2; i++) {
+		const radius = i % 2 === 0 ? outerRadius : innerRadius;
+		const angle = (Math.PI / points) * i;
+		const x = Math.cos(angle) * radius;
+		const y = Math.sin(angle) * radius;
+
+		if (i === 0) {
+			ctx.moveTo(x, y);
+		} else {
+			ctx.lineTo(x, y);
+		}
+	}
+
+	ctx.closePath();
+	ctx.fill();
 }
 
 function drawHullIcon(ctx: CanvasRenderingContext2D, size: number): void {
-  const halfSize = size / 2;
-  
-  // Shield outline
-  ctx.strokeStyle = '#ff0064'; // Danger color
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(0, -halfSize);
-  ctx.lineTo(halfSize, 0);
-  ctx.lineTo(0, halfSize);
-  ctx.lineTo(-halfSize, 0);
-  ctx.closePath();
-  ctx.stroke();
-  
-  // Crack through shield
-  ctx.strokeStyle = '#ff0064';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(-halfSize * 0.7, -halfSize * 0.3);
-  ctx.lineTo(0, 0);
-  ctx.lineTo(halfSize * 0.7, halfSize * 0.3);
-  ctx.stroke();
+	const halfSize = size / 2;
+
+	// Shield outline
+	ctx.strokeStyle = "#ff0064"; // Danger color
+	ctx.lineWidth = 2;
+	ctx.beginPath();
+	ctx.moveTo(0, -halfSize);
+	ctx.lineTo(halfSize, 0);
+	ctx.lineTo(0, halfSize);
+	ctx.lineTo(-halfSize, 0);
+	ctx.closePath();
+	ctx.stroke();
+
+	// Crack through shield
+	ctx.strokeStyle = "#ff0064";
+	ctx.lineWidth = 2;
+	ctx.beginPath();
+	ctx.moveTo(-halfSize * 0.7, -halfSize * 0.3);
+	ctx.lineTo(0, 0);
+	ctx.lineTo(halfSize * 0.7, halfSize * 0.3);
+	ctx.stroke();
 }
 
 function drawFuelIcon(ctx: CanvasRenderingContext2D, size: number): void {
-  const halfSize = size / 2;
-  
-  // Droplet shape
-  ctx.fillStyle = '#00c8ff'; // Neon blue
-  ctx.beginPath();
-  ctx.arc(0, halfSize * 0.2, halfSize * 0.6, 0, Math.PI * 2);
-  ctx.fill();
-  
-  // Top point of droplet
-  ctx.beginPath();
-  ctx.moveTo(0, -halfSize);
-  ctx.lineTo(-halfSize * 0.3, halfSize * 0.2);
-  ctx.lineTo(halfSize * 0.3, halfSize * 0.2);
-  ctx.closePath();
-  ctx.fill();
-  
-  // Empty indicator (X through droplet)
-  ctx.strokeStyle = '#ff0064';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(-halfSize * 0.5, -halfSize * 0.5);
-  ctx.lineTo(halfSize * 0.5, halfSize * 0.5);
-  ctx.moveTo(halfSize * 0.5, -halfSize * 0.5);
-  ctx.lineTo(-halfSize * 0.5, halfSize * 0.5);
-  ctx.stroke();
+	const halfSize = size / 2;
+
+	// Droplet shape
+	ctx.fillStyle = "#00c8ff"; // Neon blue
+	ctx.beginPath();
+	ctx.arc(0, halfSize * 0.2, halfSize * 0.6, 0, Math.PI * 2);
+	ctx.fill();
+
+	// Top point of droplet
+	ctx.beginPath();
+	ctx.moveTo(0, -halfSize);
+	ctx.lineTo(-halfSize * 0.3, halfSize * 0.2);
+	ctx.lineTo(halfSize * 0.3, halfSize * 0.2);
+	ctx.closePath();
+	ctx.fill();
+
+	// Empty indicator (X through droplet)
+	ctx.strokeStyle = "#ff0064";
+	ctx.lineWidth = 2;
+	ctx.beginPath();
+	ctx.moveTo(-halfSize * 0.5, -halfSize * 0.5);
+	ctx.lineTo(halfSize * 0.5, halfSize * 0.5);
+	ctx.moveTo(halfSize * 0.5, -halfSize * 0.5);
+	ctx.lineTo(-halfSize * 0.5, halfSize * 0.5);
+	ctx.stroke();
 }
 ```
 
@@ -287,60 +287,59 @@ Add new section to existing gallery:
 
 ```svelte
 <section id="hud-elements">
-  <h2>HUD Elements</h2>
-  
-  <div class="demo-grid">
-    <!-- Hull Bar States -->
-    <div class="demo-item">
-      <h3>Hull Bar (100%)</h3>
-      <canvas id="hull-bar-full" width="220" height="40"></canvas>
-      <input type="range" min="0" max="100" value="100" 
-             oninput={updateHullBar} />
-    </div>
-    
-    <div class="demo-item">
-      <h3>Hull Bar (35% - Warning)</h3>
-      <canvas id="hull-bar-warning" width="220" height="40"></canvas>
-    </div>
-    
-    <div class="demo-item">
-      <h3>Hull Bar (15% - Danger)</h3>
-      <canvas id="hull-bar-danger" width="220" height="40"></canvas>
-    </div>
-    
-    <!-- Fuel Bar States -->
-    <div class="demo-item">
-      <h3>Fuel Bar (100%)</h3>
-      <canvas id="fuel-bar-full" width="220" height="40"></canvas>
-    </div>
-    
-    <div class="demo-item">
-      <h3>Fuel Bar (40% - Warning)</h3>
-      <canvas id="fuel-bar-warning" width="220" height="40"></canvas>
-    </div>
-    
-    <div class="demo-item">
-      <h3>Fuel Bar (10% - Danger)</h3>
-      <canvas id="fuel-bar-danger" width="220" height="40"></canvas>
-    </div>
-    
-    <!-- Death Icons -->
-    <div class="demo-item">
-      <h3>Death Icons</h3>
-      <canvas id="death-icons" width="200" height="80"></canvas>
-      <p>STAR | HULL | FUEL</p>
-    </div>
-    
-    <!-- Timer Display -->
-    <div class="demo-item">
-      <h3>Timer Display</h3>
-      <div class="timer-examples">
-        <span class="timer">0.0s</span>
-        <span class="timer">42.3s</span>
-        <span class="timer">142.3s</span>
-      </div>
-    </div>
-  </div>
+	<h2>HUD Elements</h2>
+
+	<div class="demo-grid">
+		<!-- Hull Bar States -->
+		<div class="demo-item">
+			<h3>Hull Bar (100%)</h3>
+			<canvas id="hull-bar-full" width="220" height="40"></canvas>
+			<input type="range" min="0" max="100" value="100" oninput={updateHullBar}>
+		</div>
+
+		<div class="demo-item">
+			<h3>Hull Bar (35% - Warning)</h3>
+			<canvas id="hull-bar-warning" width="220" height="40"></canvas>
+		</div>
+
+		<div class="demo-item">
+			<h3>Hull Bar (15% - Danger)</h3>
+			<canvas id="hull-bar-danger" width="220" height="40"></canvas>
+		</div>
+
+		<!-- Fuel Bar States -->
+		<div class="demo-item">
+			<h3>Fuel Bar (100%)</h3>
+			<canvas id="fuel-bar-full" width="220" height="40"></canvas>
+		</div>
+
+		<div class="demo-item">
+			<h3>Fuel Bar (40% - Warning)</h3>
+			<canvas id="fuel-bar-warning" width="220" height="40"></canvas>
+		</div>
+
+		<div class="demo-item">
+			<h3>Fuel Bar (10% - Danger)</h3>
+			<canvas id="fuel-bar-danger" width="220" height="40"></canvas>
+		</div>
+
+		<!-- Death Icons -->
+		<div class="demo-item">
+			<h3>Death Icons</h3>
+			<canvas id="death-icons" width="200" height="80"></canvas>
+			<p>STAR | HULL | FUEL</p>
+		</div>
+
+		<!-- Timer Display -->
+		<div class="demo-item">
+			<h3>Timer Display</h3>
+			<div class="timer-examples">
+				<span class="timer">0.0s</span>
+				<span class="timer">42.3s</span>
+				<span class="timer">142.3s</span>
+			</div>
+		</div>
+	</div>
 </section>
 
 <style>
@@ -375,17 +374,17 @@ Add new color tokens if needed:
 
 ```css
 :root {
-  /* Existing tokens... */
-  
-  /* Resource state colors */
-  --color-resource-normal: var(--color-neon-blue);
-  --color-resource-warning: #ffaa00;  /* Orange/yellow */
-  --color-resource-danger: var(--color-danger);
-  
-  /* Optional: HUD specific */
-  --hud-bar-height: 24px;
-  --hud-bar-width: 200px;
-  --hud-border-width: 1px;
+	/* Existing tokens... */
+
+	/* Resource state colors */
+	--color-resource-normal: var(--color-neon-blue);
+	--color-resource-warning: #ffaa00; /* Orange/yellow */
+	--color-resource-danger: var(--color-danger);
+
+	/* Optional: HUD specific */
+	--hud-bar-height: 24px;
+	--hud-bar-width: 200px;
+	--hud-border-width: 1px;
 }
 ```
 
@@ -480,22 +479,26 @@ This PBI does NOT include:
 ## Design Decisions
 
 ### Bar Fill Direction
+
 - Left-to-right (standard convention)
 - Fill color overlays background
 - Smooth transition on value change (CSS or lerp in canvas)
 
 ### Warning Thresholds
+
 - < 50%: Warning (gives player time to react)
 - < 25%: Danger (critical state, needs immediate action)
 - Thresholds configurable via props (easy to tune later)
 
 ### Icon Style
+
 - Flat vector shapes (matches game aesthetic)
 - Minimal detail (readable at small sizes)
 - Consistent line weights (2px for outlines)
 - Use Design System colors (not custom per-icon)
 
 ### Timer Format
+
 - Seconds with 1 decimal place during gameplay: `42.3s`
 - 2 decimal places on Game Over screen: `42.35s`
 - No minutes:seconds format (keeps it simple, survival time is short)

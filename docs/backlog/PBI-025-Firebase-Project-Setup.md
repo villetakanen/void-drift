@@ -22,25 +22,30 @@ This is the foundational PBI for the leaderboard system. It sets up the Firebase
 ## Acceptance Criteria
 
 ### Firebase Project
+
 - [ ] Firebase project created in Firebase Console
 - [ ] Project name follows convention: `void-drift` or `void-drift-prod`
 - [ ] Blaze plan enabled (required for some features, free tier sufficient)
 
 ### Authentication
+
 - [ ] Anonymous Authentication enabled in Firebase Console
 - [ ] No other auth providers enabled (keep minimal)
 
 ### Firestore
+
 - [ ] Firestore database created in production mode
 - [ ] Database location selected (prefer `us-central1` or nearest region)
 - [ ] Security rules deployed (see below)
 
 ### Environment Variables
+
 - [ ] `.env.example` created with placeholder keys
 - [ ] `.env.local` added to `.gitignore` (if not already)
 - [ ] Environment variables documented in README or CONTRIBUTING
 
 ### Security Rules
+
 - [ ] `firestore.rules` file created in project root
 - [ ] Rules deployed to Firebase
 - [ ] Rules tested in Firebase Console Rules Playground
@@ -100,9 +105,9 @@ service cloud.firestore {
 
 ```json
 {
-  "firestore": {
-    "rules": "firestore.rules"
-  }
+	"firestore": {
+		"rules": "firestore.rules"
+	}
 }
 ```
 
@@ -122,11 +127,13 @@ service cloud.firestore {
 ## Testing Checklist
 
 ### Firebase Console
+
 - [ ] Can access project dashboard
 - [ ] Anonymous Auth shows in Authentication > Sign-in method
 - [ ] Firestore shows empty `highscores` collection (or ready for first write)
 
 ### Security Rules Playground
+
 - [ ] Unauthenticated read of `/highscores/test` → ALLOWED
 - [ ] Unauthenticated create of `/highscores/test` → DENIED
 - [ ] Authenticated create with matching userId → ALLOWED

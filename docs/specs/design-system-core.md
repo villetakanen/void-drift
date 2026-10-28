@@ -6,11 +6,13 @@
 ## Blueprint
 
 ### Context
+
 This specification defines the "Experience Model" for Void Drift. It establishes the core visual axioms—Logo, Typography, and Color—that drive the application's "Vibe" (Newtonian Chaos / Utilitarian Sci-Fi). These rules ensure consistency across the game HUD, menus, and marketing pages.
 
 **Achievement:** Full design token system operational with CSS variables defining all colors, spacing, and typography.
 
 ### Architecture
+
 - **Tech Stack:** Vanilla CSS Variables (Tokens).
 - **Location:** `apps/web/src/styles.css` (Single Source of Truth).
 - **Font:** Noto Sans Math (Google Fonts, loaded via CDN).
@@ -18,6 +20,7 @@ This specification defines the "Experience Model" for Void Drift. It establishes
 - **Implementation:** Zero hardcoded colors in components; all use `var(--token-name)`.
 
 ### Anti-Patterns
+
 - **Do NOT** use hardcoded hex values in components (e.g., `#00f0ff`); always use `var(--color-neon-blue)`.
 - **Do NOT** use Tailwind or other utility classes; use semantic CSS.
 - **Do NOT** use image assets for the logo; use HTML entities for sharp scaling.
@@ -26,6 +29,7 @@ This specification defines the "Experience Model" for Void Drift. It establishes
 ## Contract
 
 ### Definition of Done
+
 - [x] Global CSS file exists at `apps/web/src/styles.css`.
 - [x] CSS Variables for all defined colors are present in `:root`.
 - [x] Font "Noto Sans Math" loads correctly via Google Fonts.
@@ -33,11 +37,13 @@ This specification defines the "Experience Model" for Void Drift. It establishes
 - [x] All UI components use design tokens (no hardcoded hex values).
 
 ### Regression Guardrails
+
 - **Performance:** No Layout Thrashing from heavy CSS effects.
 - **Accessibility:** Text colors must meet AA contrast ratio against `--color-void`.
 - **Consistency:** All new UI components must use the defined design tokens.
 
 ### Scenarios
+
 **Scenario: Logo Rendering** ✅
 - Given the Logo component in `apps/web/src/components/Logo.svelte`
 - When rendered in the HUD
@@ -65,41 +71,45 @@ This specification defines the "Experience Model" for Void Drift. It establishes
 ### Design Tokens (`apps/web/src/styles.css`)
 
 #### Color Palette
+
 ```css
 :root {
-  --color-void: #050510;           /* Deep space background */
-  --color-neon-blue: #00f0ff;      /* Primary accent (cyan) */
-  --color-neon-pink: #ff00ff;      /* Secondary accent (magenta) */
-  --color-acid-lime: #d4ff00;      /* Tertiary accent (lime) */
-  --color-text: #e0e0e0;           /* Primary text (light gray) */
-  --color-text-dim: #808080;       /* Secondary text (mid gray) */
-  --color-warning: #ff6600;        /* Warning state (orange) */
+	--color-void: #050510; /* Deep space background */
+	--color-neon-blue: #00f0ff; /* Primary accent (cyan) */
+	--color-neon-pink: #ff00ff; /* Secondary accent (magenta) */
+	--color-acid-lime: #d4ff00; /* Tertiary accent (lime) */
+	--color-text: #e0e0e0; /* Primary text (light gray) */
+	--color-text-dim: #808080; /* Secondary text (mid gray) */
+	--color-warning: #ff6600; /* Warning state (orange) */
 }
 ```
 
 #### Spacing System
+
 ```css
 :root {
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
+	--spacing-xs: 4px;
+	--spacing-sm: 8px;
+	--spacing-md: 16px;
+	--spacing-lg: 24px;
+	--spacing-xl: 32px;
 }
 ```
 
 #### Typography
+
 ```css
 :root {
-  --font-primary: 'Noto Sans Math', sans-serif;
-  --font-size-small: 12px;
-  --font-size-base: 16px;
-  --font-size-large: 24px;
-  --font-size-logo: 48px;
+	--font-primary: "Noto Sans Math", sans-serif;
+	--font-size-small: 12px;
+	--font-size-base: 16px;
+	--font-size-large: 24px;
+	--font-size-logo: 48px;
 }
 ```
 
 ### Logo Component (`apps/web/src/components/Logo.svelte`)
+
 - **Glyphs:** ∅ (U+2205 Empty Set) · (U+00B7 Middle Dot) Δ (U+0394 Greek Delta)
 - **Font:** Noto Sans Math ensures mathematical symbols render correctly
 - **Styling:** Neon blue color with text-shadow glow
@@ -127,27 +137,32 @@ This specification defines the "Experience Model" for Void Drift. It establishes
 ```css
 /* ❌ BAD - Hardcoded values */
 .element {
-  color: #00f0ff;
-  margin: 16px;
+	color: #00f0ff;
+	margin: 16px;
 }
 
 /* ✅ GOOD - Using tokens */
 .element {
-  color: var(--color-neon-blue);
-  margin: var(--spacing-md);
+	color: var(--color-neon-blue);
+	margin: var(--spacing-md);
 }
 ```
 
 ## Font Loading
 
 ### Google Fonts CDN
+
 ```html
 <!-- apps/web/src/layouts/Layout.astro -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Math&display=swap" rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Noto+Sans+Math&display=swap"
+	rel="stylesheet"
+>
 ```
 
 ### Performance
+
 - **Font Display:** `swap` strategy prevents FOIT (Flash of Invisible Text)
 - **Preconnect:** Reduces DNS lookup time for Google Fonts
 - **Subset:** Full Unicode math symbols loaded for logo rendering
@@ -177,81 +192,87 @@ This specification defines the "Experience Model" for Void Drift. It establishes
 ### Button Classes
 
 #### Base Button (`.btn`)
+
 All buttons share common styles:
 ```css
 .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--button-padding-y) var(--button-padding-x);
-  min-height: var(--button-min-height);
-  font-family: var(--font-primary);
-  font-size: var(--font-size-base);
-  text-decoration: none;
-  cursor: pointer;
-  transition: var(--button-transition);
-  border-radius: var(--button-border-radius);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--button-padding-y) var(--button-padding-x);
+	min-height: var(--button-min-height);
+	font-family: var(--font-primary);
+	font-size: var(--font-size-base);
+	text-decoration: none;
+	cursor: pointer;
+	transition: var(--button-transition);
+	border-radius: var(--button-border-radius);
 }
 
 .btn:focus-visible {
-  outline: 2px solid var(--color-neon-blue);
-  outline-offset: 2px;
+	outline: 2px solid var(--color-neon-blue);
+	outline-offset: 2px;
 }
 ```
 
 #### Ghost Button (`.btn-ghost`)
+
 Transparent background with neon border - primary interactive style:
 ```css
 .btn-ghost {
-  background: transparent;
-  color: var(--color-neon-blue);
-  border: var(--button-border-width) solid var(--color-neon-blue);
+	background: transparent;
+	color: var(--color-neon-blue);
+	border: var(--button-border-width) solid var(--color-neon-blue);
 }
 
 .btn-ghost:hover {
-  background: rgba(0, 240, 255, 0.1);
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+	background: rgba(0, 240, 255, 0.1);
+	box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
 }
 ```
 
 #### Filled Button (`.btn-filled`)
+
 Solid background for primary actions:
 ```css
 .btn-filled {
-  background: var(--color-neon-blue);
-  color: var(--color-void);
-  border: var(--button-border-width) solid var(--color-neon-blue);
+	background: var(--color-neon-blue);
+	color: var(--color-void);
+	border: var(--button-border-width) solid var(--color-neon-blue);
 }
 
 .btn-filled:hover {
-  background: transparent;
-  color: var(--color-neon-blue);
+	background: transparent;
+	color: var(--color-neon-blue);
 }
 ```
 
 #### Link Button (`.btn-link`)
+
 Text-only style for navigation:
 ```css
 .btn-link {
-  background: transparent;
-  color: var(--color-text);
-  border: none;
-  padding: var(--spacing-sm);
-  min-height: auto;
+	background: transparent;
+	color: var(--color-text);
+	border: none;
+	padding: var(--spacing-sm);
+	min-height: auto;
 }
 
 .btn-link:hover {
-  color: var(--color-neon-blue);
+	color: var(--color-neon-blue);
 }
 ```
 
 ### Usage Guidelines
+
 - **Ghost buttons:** Default for most UI actions (Start Game, Settings)
 - **Filled buttons:** Primary calls-to-action (Try Again after death)
 - **Link buttons:** Navigation and secondary actions (Back to Game)
 - **Minimum touch target:** 44x44px for accessibility
 
 ### Migration Status
+
 - [ ] Add button tokens to `apps/web/src/styles.css`
 - [ ] Add global `.btn` classes to `apps/web/src/styles.css`
 - [ ] Refactor `MenuOverlay.svelte` to use `.btn .btn-ghost`
@@ -259,6 +280,7 @@ Text-only style for navigation:
 - [ ] Refactor `Settings.svelte` to use `.btn .btn-link`
 
 ## Future Enhancements
+
 - [ ] Add animation tokens (duration, easing curves)
 - [ ] Add shadow/glow effect tokens for consistent visual effects
 - [ ] Add breakpoint tokens for responsive design

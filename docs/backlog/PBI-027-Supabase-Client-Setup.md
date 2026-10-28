@@ -27,22 +27,26 @@ This PBI implements the Supabase client initialization and anonymous authenticat
 ## Acceptance Criteria
 
 ### Package Installation
+
 - [ ] `@supabase/supabase-js` installed as dependency
 - [ ] Package version documented (use latest stable)
 - [ ] TypeScript types available
 
 ### Client Initialization
+
 - [ ] Create `packages/mode-a/src/lib/supabase.ts`
 - [ ] Supabase client initialized with environment variables
 - [ ] Client exported for use in components
 
 ### Authentication
+
 - [ ] Implement `ensureAnonymousSession()` helper
 - [ ] Auto-signin on first visit
 - [ ] Session persists across page refreshes
 - [ ] Session accessible via `supabase.auth.getSession()`
 
 ### Error Handling
+
 - [ ] Handle missing environment variables gracefully
 - [ ] Log errors to console (dev mode only)
 - [ ] Fail gracefully if Supabase is unreachable
@@ -67,7 +71,7 @@ pnpm add @supabase/supabase-js
 **File:** `packages/mode-a/src/lib/supabase.ts`
 
 ```typescript
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 // Environment variables (exposed via Astro's PUBLIC_ prefix)
 const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
@@ -75,19 +79,23 @@ const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
 // Validate environment variables
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    'Missing Supabase environment variables. Check .env.local for PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY.'
-  );
+	throw new Error(
+		"Missing Supabase environment variables. Check .env.local for PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY.",
+	);
 }
 
 // Initialize Supabase client
-export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false, // Not using OAuth
-  },
-});
+export const supabase: SupabaseClient = createClient(
+	supabaseUrl,
+	supabaseAnonKey,
+	{
+		auth: {
+			autoRefreshToken: true,
+			persistSession: true,
+			detectSessionInUrl: false, // Not using OAuth
+		},
+	},
+);
 
 /**
  * Ensures the user has an anonymous session.
@@ -96,25 +104,27 @@ export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKe
  * @returns The current session (existing or newly created)
  */
 export async function ensureAnonymousSession() {
-  // Check for existing session
-  const { data: { session } } = await supabase.auth.getSession();
+	// Check for existing session
+	const {
+		data: { session },
+	} = await supabase.auth.getSession();
 
-  if (session) {
-    console.log('[Supabase Auth] Existing session found:', session.user.id);
-    return session;
-  }
+	if (session) {
+		console.log("[Supabase Auth] Existing session found:", session.user.id);
+		return session;
+	}
 
-  // No session - create anonymous user
-  console.log('[Supabase Auth] No session found, signing in anonymously...');
-  const { data, error } = await supabase.auth.signInAnonymously();
+	// No session - create anonymous user
+	console.log("[Supabase Auth] No session found, signing in anonymously...");
+	const { data, error } = await supabase.auth.signInAnonymously();
 
-  if (error) {
-    console.error('[Supabase Auth] Anonymous signin failed:', error.message);
-    throw error;
-  }
+	if (error) {
+		console.error("[Supabase Auth] Anonymous signin failed:", error.message);
+		throw error;
+	}
 
-  console.log('[Supabase Auth] Anonymous session created:', data.user?.id);
-  return data.session;
+	console.log("[Supabase Auth] Anonymous session created:", data.user?.id);
+	return data.session;
 }
 ```
 
@@ -129,33 +139,33 @@ export async function ensureAnonymousSession() {
 // This file can be auto-generated with `supabase gen types typescript`
 
 export type Database = {
-  public: {
-    Tables: {
-      highscores: {
-        Row: {
-          id: string;
-          user_id: string;
-          initials: string;
-          uid_hash: string;
-          seconds: number;
-          death_cause: 'STAR' | 'HULL' | 'POWER';
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          initials: string;
-          uid_hash: string;
-          seconds: number;
-          death_cause: 'STAR' | 'HULL' | 'POWER';
-          created_at?: string;
-        };
-        Update: {
-          // Updates not allowed (immutable scores)
-        };
-      };
-    };
-  };
+	public: {
+		Tables: {
+			highscores: {
+				Row: {
+					id: string;
+					user_id: string;
+					initials: string;
+					uid_hash: string;
+					seconds: number;
+					death_cause: "STAR" | "HULL" | "POWER";
+					created_at: string;
+				};
+				Insert: {
+					id?: string;
+					user_id: string;
+					initials: string;
+					uid_hash: string;
+					seconds: number;
+					death_cause: "STAR" | "HULL" | "POWER";
+					created_at?: string;
+				};
+				Update: {
+					// Updates not allowed (immutable scores)
+				};
+			};
+		};
+	};
 };
 ```
 
@@ -168,17 +178,17 @@ export type Database = {
 **File:** `apps/web/src/components/GameWrapper.svelte` (example usage)
 
 ```typescript
-import { ensureAnonymousSession } from '@void-drift/mode-a/supabase';
-import { onMount } from 'svelte';
+import { ensureAnonymousSession } from "@void-drift/mode-a/supabase";
+import { onMount } from "svelte";
 
 onMount(async () => {
-  // Ensure user is authenticated before game starts
-  try {
-    await ensureAnonymousSession();
-  } catch (error) {
-    console.error('Failed to authenticate:', error);
-    // Optionally show error UI
-  }
+	// Ensure user is authenticated before game starts
+	try {
+		await ensureAnonymousSession();
+	} catch (error) {
+		console.error("Failed to authenticate:", error);
+		// Optionally show error UI
+	}
 });
 ```
 
@@ -206,11 +216,13 @@ onMount(async () => {
 ## Testing Checklist
 
 ### Installation
+
 - [ ] `pnpm install` succeeds
 - [ ] `pnpm -r build` succeeds
 - [ ] No missing dependency errors
 
 ### Authentication Flow
+
 - [ ] Open app in incognito/private window
 - [ ] Check browser console for "[Supabase Auth] No session found, signing in anonymously..."
 - [ ] Verify "[Supabase Auth] Anonymous session created: [UUID]"
@@ -219,12 +231,14 @@ onMount(async () => {
 - [ ] Same UUID should appear after refresh (session persisted)
 
 ### Error Handling
+
 - [ ] Temporarily remove `.env.local`
 - [ ] Verify error: "Missing Supabase environment variables"
 - [ ] Restore `.env.local`
 - [ ] Verify app works again
 
 ### TypeScript
+
 - [ ] `pnpm -r check` shows zero errors
 - [ ] Import `supabase` in a component without errors
 - [ ] Import `ensureAnonymousSession` in a component without errors

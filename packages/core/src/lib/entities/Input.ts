@@ -1,129 +1,104 @@
 export interface InputState {
-  leftThruster: boolean;
-  rightThruster: boolean;
-  fire: boolean;
+	leftThruster: boolean;
+	rightThruster: boolean;
+	fire: boolean;
 }
-
 export class Input {
-  public state: InputState = {
-    leftThruster: false,
-    rightThruster: false,
-    fire: false,
-  };
-
-  /**
-   * Returns the effective input state with optional control inversion.
-   * When inverted, left/right thruster inputs are swapped.
-   */
-  getEffectiveState(invertControls: boolean = false): InputState {
-    if (!invertControls) {
-      return this.state;
-    }
-    return {
-      leftThruster: this.state.rightThruster,
-      rightThruster: this.state.leftThruster,
-      fire: this.state.fire,
-    };
-  }
-
-  private activeTouches = new Map<number, "left" | "right">();
-  private targetElement?: HTMLElement;
-
-  constructor(targetElement?: HTMLElement) {
-    this.targetElement = targetElement;
-
-    // Keyboard
-    window.addEventListener("keydown", this.handleKey.bind(this));
-    window.addEventListener("keyup", this.handleKey.bind(this));
-
-    // Touch
-    window.addEventListener("touchstart", this.handleTouch.bind(this), {
-      passive: false,
-    });
-    window.addEventListener("touchmove", this.handleTouch.bind(this), {
-      passive: false,
-    });
-    window.addEventListener("touchend", this.handleTouch.bind(this), {
-      passive: false,
-    });
-    window.addEventListener("touchcancel", this.handleTouch.bind(this), {
-      passive: false,
-    });
-  }
-
-  private handleKey(e: KeyboardEvent) {
-    const isDown = e.type === "keydown";
-    switch (e.code) {
-      case "KeyA":
-      case "ArrowLeft":
-        this.state.leftThruster = isDown;
-        break;
-      case "KeyD":
-      case "ArrowRight":
-        this.state.rightThruster = isDown;
-        break;
-      case "Space":
-      case "Enter":
-        this.state.fire = isDown;
-        break;
-    }
-  }
-
-  private handleTouch(e: TouchEvent) {
-    // If a target element is defined, ignore touches that didn't originate from it
-    // This allows UI elements overlaid on top (like menus) to receive clicks
-    if (this.targetElement && e.target !== this.targetElement) {
-      return;
-    }
-
-    // Prevent default browser zooming/scrolling
-    if (e.cancelable) e.preventDefault();
-
-    const halfWidth = window.innerWidth / 2;
-
-    // Reset loop
-    // Note: Touch events like 'touchmove' list ALL active touches.
-    // 'touchstart' lists all + changed.
-    // We can just rebuild state from e.touches every frame for simplicity.
-
-    let leftActive = false;
-    let rightActive = false;
-
-    // Iterate all active touches currently on screen
-    for (let i = 0; i < e.touches.length; i++) {
-      const t = e.touches[i];
-      if (t.clientX < halfWidth) {
-        leftActive = true;
-      } else {
-        rightActive = true;
-      }
-    }
-
-    this.state.leftThruster = leftActive;
-    this.state.rightThruster = rightActive;
-
-    // Double tap logic for Fire could be added here,
-    // but for now relying on Spacebar/Enter for Desktop
-    // and maybe 'Both Fingers' for Thrust covers the main movement.
-    // Spec said Double Tap = Fire.
-
-    // Implementing simple double tap detection?
-    // Let's stick to movement first as per PBI requirements prioritization.
-    // Actually PBI 2.1 says: Tape Left -> Rotate Left, Right -> Rotate Right, Both -> Thrust.
-    // This is covered by:
-    // leftThruster = true -> Physics handles rotation/thrust
-    // rightThruster = true -> Physics handles rotation/thrust
-    // Both true -> Physics handles forward thrust.
-    // So the Input mapping above is correct.
-    // Fire (Antimatter) is an extra.
-  }
-
-  destroy() {
-    window.removeEventListener("keydown", this.handleKey.bind(this));
-    window.removeEventListener("keyup", this.handleKey.bind(this));
-    window.removeEventListener("touchstart", this.handleTouch.bind(this));
-    window.removeEventListener("touchmove", this.handleTouch.bind(this));
-    window.removeEventListener("touchend", this.handleTouch.bind(this));
-    window.removeEventListener("touchcancel", this.handleTouch.bind(this));
-  }
+	readonly state: InputState = {
+		leftThruster: false,
+		rightThruster: false,
+		fire: false,
+	};
+	private effective: InputState = {
+		leftThruster: false,
+		rightThruster: false,
+		fire: false,
+	};
+	private keys = new Set<string>();
+	private pointers = new Map<number, "left" | "right">();
+	constructor(private targetElement?: HTMLElement) {
+		window.addEventListener("keydown", this.handleKey);
+		window.addEventListener("keyup", this.handleKey);
+		window.addEventListener("blur", this.reset);
+		document.addEventListener("visibilitychange", this.visibility);
+		targetElement?.addEventListener("pointerdown", this.pointerDown);
+		targetElement?.addEventListener("pointerup", this.pointerUp);
+		targetElement?.addEventListener("pointercancel", this.pointerUp);
+		targetElement?.addEventListener("lostpointercapture", this.pointerUp);
+	}
+	private handleKey = (event: KeyboardEvent) => {
+		if (
+			event.target instanceof HTMLElement &&
+			event.target.closest("input,select,textarea")
+		)
+			return;
+		if (
+			!["KeyA", "KeyD", "ArrowLeft", "ArrowRight", "ArrowUp", "KeyW"].includes(
+				event.code,
+			)
+		)
+			return;
+		event.preventDefault();
+		if (event.type === "keydown") this.keys.add(event.code);
+		else this.keys.delete(event.code);
+		this.sync();
+	};
+	private pointerDown = (event: PointerEvent) => {
+		if (!this.targetElement) return;
+		const rect = this.targetElement.getBoundingClientRect();
+		this.targetElement.setPointerCapture(event.pointerId);
+		this.setPointer(
+			event.pointerId,
+			event.clientX < rect.left + rect.width / 2 ? "left" : "right",
+		);
+	};
+	private pointerUp = (event: PointerEvent) =>
+		this.setPointer(event.pointerId, null);
+	private visibility = () => {
+		if (document.hidden) this.reset();
+	};
+	setPointer(id: number, side: "left" | "right" | null) {
+		if (side) this.pointers.set(id, side);
+		else this.pointers.delete(id);
+		this.sync();
+	}
+	private sync() {
+		const both = this.keys.has("ArrowUp") || this.keys.has("KeyW");
+		this.state.leftThruster =
+			both || this.keys.has("KeyA") || this.keys.has("ArrowLeft");
+		this.state.rightThruster =
+			both || this.keys.has("KeyD") || this.keys.has("ArrowRight");
+		for (const side of this.pointers.values()) {
+			if (side === "left") this.state.leftThruster = true;
+			else this.state.rightThruster = true;
+		}
+	}
+	reset = () => {
+		this.keys.clear();
+		this.pointers.clear();
+		this.sync();
+	};
+	getEffectiveState(invert = false) {
+		this.effective.leftThruster = invert
+			? this.state.rightThruster
+			: this.state.leftThruster;
+		this.effective.rightThruster = invert
+			? this.state.leftThruster
+			: this.state.rightThruster;
+		return this.effective;
+	}
+	destroy() {
+		this.reset();
+		window.removeEventListener("keydown", this.handleKey);
+		window.removeEventListener("keyup", this.handleKey);
+		window.removeEventListener("blur", this.reset);
+		document.removeEventListener("visibilitychange", this.visibility);
+		this.targetElement?.removeEventListener("pointerdown", this.pointerDown);
+		this.targetElement?.removeEventListener("pointerup", this.pointerUp);
+		this.targetElement?.removeEventListener("pointercancel", this.pointerUp);
+		this.targetElement?.removeEventListener(
+			"lostpointercapture",
+			this.pointerUp,
+		);
+	}
 }

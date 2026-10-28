@@ -6,6 +6,7 @@
 ## Blueprint
 
 ### Context
+
 Ship selection is being added for v0.4.0 with three chassis profiles (`scout`, `balanced`, `tank`).
 To keep balancing fast and deterministic, the Lab must support direct chassis preview and stat inspection without starting gameplay.
 
@@ -60,6 +61,7 @@ This is display-only and does not alter runtime config.
 ### UI Contract
 
 #### Chassis Selector
+
 - label: `Chassis`
 - options: `Scout`, `Balanced`, `Tank`
 - default: `Balanced`
@@ -78,6 +80,7 @@ Formatting:
 - zoom displayed to 2 decimals
 
 ### Anti-Patterns
+
 - Do not hardcode a second profile list in Lab components.
 - Do not introduce gameplay-only state machine logic into Lab.
 - Do not use external assets for variant previews.
@@ -85,6 +88,7 @@ Formatting:
 ## Contract
 
 ### Definition of Done
+
 - [ ] `/lab/entities/ship` can switch between all 3 chassis.
 - [ ] Stat panel updates with the selected chassis profile.
 - [ ] Preview visuals change by chassis in the same way as gameplay renderer.
@@ -92,6 +96,7 @@ Formatting:
 - [ ] `pnpm -r check` and `pnpm -r build` pass.
 
 ### Regression Guardrails
+
 - **Parity:** Lab and gameplay read the same profile source.
 - **Performance:** No frame-time regression caused by Lab preview plumbing.
 - **UX:** Mobile interactions remain reliable and touch-safe.

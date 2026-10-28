@@ -1,0 +1,24 @@
+rules_version = '2';
+service cloud.firestore {
+ match /databases/{database}/documents {
+  match /artifacts/{appId}/scores/{scoreId} {
+   function valid() {
+    let d = request.resource.data;
+    return appId == 'void-drift' && request.auth != null
+     && d.keys().hasAll(['initials','seconds','deathCause','shipId','challenge','userId'])
+     && d.keys().hasOnly(['initials','seconds','deathCause','shipId','challenge','userId'])
+     && d.userId == request.auth.uid
+     && d.shipId in ['scout','balanced','tank']
+     && scoreId == request.auth.uid + '_' + d.shipId
+     && d.initials is string && d.initials.matches('^[A-Z]{3}$')
+     && d.seconds is int && d.seconds >= 1 && d.seconds <= 3600
+     && d.deathCause in ['STAR','HULL','POWER'] && d.challenge == 'alpha-1';
+   }
+   allow get: if appId == 'void-drift' && request.auth != null;
+   allow list: if appId == 'void-drift' && request.auth != null && request.query.limit <= 20;
+   allow create: if valid();
+   allow update: if valid() && resource.data.userId == request.auth.uid && request.resource.data.seconds > resource.data.seconds;
+   allow delete: if false;
+  }
+ }
+}

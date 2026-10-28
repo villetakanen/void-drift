@@ -38,15 +38,16 @@ to versioned configuration. Feel and fidelity require human playtesting.
 ## Camera and arena
 
 The owner's Star Control 2 reference includes both automatic framing/zoom and arena
-edge wrapping. Develop these together using Lab trials. Exact framing subjects,
-zoom limits, smoothing, and wrap transitions remain to be selected through examples.
+edge wrapping. Develop these together using Lab trials. The alpha frames the ship and central star, zooms out immediately, smooths zoom-in,
+and snaps after antipodal circular wrapping. Padding and response are tunable in the Lab.
 Keep spatial relationships legible and avoid disorienting traversal across the arena.
 
 ## Lab practice
 
 The Lab is an experience-design surface, not just an asset gallery. Its trials should
 use production systems and expose relevant parameters, reset/replay, and shareable
-configuration. These capabilities are targets; existing inspectors are the starting point.
+configuration. `/lab/flight` implements tuning, pause/step/reset, fixed replay, JSON import/export
+and shareable URL configuration. Asset inspectors remain available in `/lab`.
 
 Use fixed viewport, seed, and simulation time for visual evidence. Keep capture
 environments explicit. Review visual baseline changes; never silently refresh images

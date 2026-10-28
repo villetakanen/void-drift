@@ -35,6 +35,7 @@ Transform the v0.0.4 physics sandbox into a complete single-player survival game
 ## 🗺️ Implementation Order
 
 ### Week 1: PBI-015 (Resource Systems)
+
 **Goal:** Hull & fuel working, no UI yet
 
 ```bash
@@ -58,6 +59,7 @@ git checkout -b feature/pbi-015-resources
 ---
 
 ### Week 2: PBI-016 (Timer & Death)
+
 **Goal:** Complete game loop (start → die → restart)
 
 ```bash
@@ -81,6 +83,7 @@ git checkout -b feature/pbi-016-timer-death
 ---
 
 ### Week 3: PBI-017 (Settings)
+
 **Goal:** Control inversion toggle with persistence
 
 ```bash
@@ -103,6 +106,7 @@ git checkout -b feature/pbi-017-settings
 ---
 
 ### Week 4: Polish & Testing
+
 **Goal:** Tuning, QA, performance audit
 
 ```bash
@@ -125,19 +129,19 @@ git checkout -b feature/phase-5-polish
 
 ```typescript
 export const SURVIVAL_CONFIG = {
-  // Adjust these based on playtesting
-  FUEL_CONSUMPTION_RATE: 1.5,     // %/s (try 1.0-2.0)
-  
-  SUN_ZONE_1_RADIUS: 150,          // px (try 120-180)
-  SUN_ZONE_2_RADIUS: 250,          // px (try 200-300)
-  
-  FUEL_REGEN_ZONE_1: 4.0,          // %/s (try 3.0-5.0)
-  FUEL_REGEN_ZONE_2: 2.0,          // %/s (try 1.5-2.5)
-  
-  HULL_BURN_ZONE_1: 1.5,           // %/s (try 1.0-2.0)
-  HULL_BURN_ZONE_2: 0.5,           // %/s (try 0.3-0.7)
-  
-  PLANET_COLLISION_DAMAGE: 7,      // % (try 5-10)
+	// Adjust these based on playtesting
+	FUEL_CONSUMPTION_RATE: 1.5, // %/s (try 1.0-2.0)
+
+	SUN_ZONE_1_RADIUS: 150, // px (try 120-180)
+	SUN_ZONE_2_RADIUS: 250, // px (try 200-300)
+
+	FUEL_REGEN_ZONE_1: 4.0, // %/s (try 3.0-5.0)
+	FUEL_REGEN_ZONE_2: 2.0, // %/s (try 1.5-2.5)
+
+	HULL_BURN_ZONE_1: 1.5, // %/s (try 1.0-2.0)
+	HULL_BURN_ZONE_2: 0.5, // %/s (try 0.3-0.7)
+
+	PLANET_COLLISION_DAMAGE: 7, // % (try 5-10)
 } as const;
 ```
 
@@ -170,30 +174,35 @@ pnpm --filter web preview
 ## 🐛 Common Issues & Solutions
 
 ### Issue: Fuel/Hull not updating
+
 **Cause:** `updateFuel()` not called in game loop  
 **Fix:** Ensure it's called AFTER input processing, BEFORE collision detection
 
 ---
 
 ### Issue: Timer jumps backwards
+
 **Cause:** Using frame count instead of `Date.now()` delta  
 **Fix:** Use `Date.now() - startTime` for elapsed time
 
 ---
 
 ### Issue: Death priority wrong
+
 **Cause:** Checking conditions in wrong order  
 **Fix:** Priority must be STAR > HULL > FUEL (use if/else, not separate ifs)
 
 ---
 
 ### Issue: Settings don't apply without reload
+
 **Cause:** Settings loaded once at init  
 **Fix:** Load settings in game loop OR use Svelte reactive store
 
 ---
 
 ### Issue: Performance drops below 60 FPS
+
 **Cause:** Object allocation in render loop  
 **Fix:** Reuse objects, avoid `new Vector2()` every frame
 
@@ -201,13 +210,13 @@ pnpm --filter web preview
 
 ## 📊 Performance Targets
 
-| Metric | Target | How to Measure |
-|--------|--------|----------------|
-| FPS | 60 | Chrome DevTools → Performance tab |
-| `updateFuel()` | < 0.3ms | `console.time()` / `console.timeEnd()` |
-| `updateHull()` | < 0.2ms | Same as above |
-| `checkDeath()` | < 0.1ms | Same as above |
-| Memory | No leaks | DevTools → Memory → Heap snapshots |
+| Metric         | Target   | How to Measure                         |
+| -------------- | -------- | -------------------------------------- |
+| FPS            | 60       | Chrome DevTools → Performance tab      |
+| `updateFuel()` | < 0.3ms  | `console.time()` / `console.timeEnd()` |
+| `updateHull()` | < 0.2ms  | Same as above                          |
+| `checkDeath()` | < 0.1ms  | Same as above                          |
+| Memory         | No leaks | DevTools → Memory → Heap snapshots     |
 
 ---
 

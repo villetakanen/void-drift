@@ -1,6 +1,6 @@
 # Voice-led development factory
 
-Status: target contract, not yet implemented. Created 2026-10-28.
+Status: implemented alpha gates; human experience review remains open. Created 2026-10-28.
 Authority: [rebuild charter](../rebuild-charter.md).
 
 ## Context
@@ -111,3 +111,11 @@ Establish the verification command and baseline coverage, isolate local boot fro
   legacy score-query method order; both were repaired without changing flight constants.
 - Existing lint debt is intentionally visible as a failing stage, rather than waived.
   The full factory definition of done above remains open.
+
+## Alpha implementation — 2026-10-28
+
+The historical baseline above is superseded by the shared fixed-step simulation,
+flight Lab and Firebase implementation in [playable-alpha.md](playable-alpha.md).
+The required command now includes Svelte diagnostics, rules tests and two-player
+emulator competition. See [development](../development.md) for current coverage.
+Checkboxes above remain a review checklist, not an assertion of human acceptance.

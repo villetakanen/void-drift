@@ -34,6 +34,7 @@ This PBI adds a menu overlay that:
 ## Acceptance Criteria
 
 ### Menu Overlay Display
+
 - [x] Overlay visible when game is in `MENU` state
 - [x] Overlay hidden when game is in `PLAYING` state
 - [x] Overlay hidden when game is in `GAME_OVER` state
@@ -41,6 +42,7 @@ This PBI adds a menu overlay that:
 - [x] Existing logo and version display remain visible
 
 ### Visual Design
+
 - [x] Semi-transparent background using `var(--color-overlay)` token
 - [x] "TAP TO START" button centered on screen
 - [x] Button uses ghost style (transparent bg, neon-blue border)
@@ -48,22 +50,26 @@ This PBI adds a menu overlay that:
 - [x] Settings link uses dim text color, brightens on hover
 
 ### Start Game Interaction
+
 - [x] Click/tap "TAP TO START" button → game starts
 - [x] Press any key (except Tab, Escape, modifiers) → game starts
 - [x] Tap anywhere on overlay (mobile) → game starts
 - [x] Game transitions to `PLAYING` state and timer begins
 
 ### Settings Navigation
+
 - [x] "Settings" link navigates to `/settings`
 - [x] Returning from `/settings` shows menu overlay (MENU state)
 
 ### Keyboard Accessibility
+
 - [x] Tab cycles focus between start button and settings link
 - [x] Enter/Space activates focused element
 - [x] Focus ring visible on focused elements
 - [x] Start button receives focus on overlay mount
 
 ### Mobile Support
+
 - [x] Touch targets minimum 44px
 - [x] Tapping overlay background starts game
 - [x] Settings link remains tappable (doesn't start game)
@@ -115,24 +121,20 @@ This PBI adds a menu overlay that:
   });
 </script>
 
-<div 
-  class="menu-overlay" 
-  role="dialog" 
-  aria-modal="true" 
-  aria-label="Game menu"
-  onclick={handleOverlayClick}
+<div
+	class="menu-overlay"
+	role="dialog"
+	aria-modal="true"
+	aria-label="Game menu"
+	onclick={handleOverlayClick}
 >
-  <div class="menu-content">
-    <button 
-      bind:this={startButton}
-      class="start-button"
-      onclick={onStart}
-    >
-      TAP TO START
-    </button>
-    
-    <a href="/settings" class="settings-link">Settings</a>
-  </div>
+	<div class="menu-content">
+		<button bind:this={startButton} class="start-button" onclick={onStart}>
+			TAP TO START
+		</button>
+
+		<a href="/settings" class="settings-link">Settings</a>
+	</div>
 </div>
 
 <style>
@@ -236,6 +238,7 @@ Update to use `var(--color-overlay)` instead of hardcoded `rgba(10, 10, 15, 0.95
 ## Testing Checklist
 
 ### Visual
+
 - [ ] Overlay covers viewport
 - [ ] Game canvas visible behind overlay
 - [ ] Start button styled correctly (ghost button)
@@ -243,6 +246,7 @@ Update to use `var(--color-overlay)` instead of hardcoded `rgba(10, 10, 15, 0.95
 - [ ] Logo and version visible through overlay
 
 ### Start Game
+
 - [ ] Click start button → game starts, overlay disappears
 - [ ] Press Space → game starts
 - [ ] Press Enter → game starts
@@ -251,16 +255,19 @@ Update to use `var(--color-overlay)` instead of hardcoded `rgba(10, 10, 15, 0.95
 - [ ] Escape key does NOT start game
 
 ### Settings Navigation
+
 - [ ] Click settings link → navigates to /settings
 - [ ] Tab to settings link, press Enter → navigates
 - [ ] Return from settings → menu overlay visible
 
 ### Mobile
+
 - [ ] Tap start button → game starts
 - [ ] Tap overlay background → game starts
 - [ ] Tap settings link → navigates (does NOT start game)
 
 ### State Transitions
+
 - [ ] Game loads → MENU state → overlay visible
 - [ ] Start game → PLAYING state → overlay hidden
 - [ ] Die → GAME_OVER state → GameOver modal (not menu)

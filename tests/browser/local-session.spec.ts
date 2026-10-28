@@ -21,9 +21,9 @@ test("local game starts with each ship and responds to keyboard input", async ({
 		await page.getByRole("button", { name: "TAP TO START" }).click();
 		await expect(page.getByRole("dialog", { name: "Game menu" })).toBeHidden();
 		await page.keyboard.down("ArrowLeft");
-		await expect(page.locator(".zone-feedback.left")).toHaveClass(/active/);
+		await expect(page.locator(".engine.left")).toHaveClass(/active/);
 		await page.keyboard.up("ArrowLeft");
-		await expect(page.locator(".zone-feedback.left")).not.toHaveClass(/active/);
+		await expect(page.locator(".engine.left")).not.toHaveClass(/active/);
 		await expect(page.locator(".timer .time")).not.toHaveText("0.0s");
 	}
 	expect(errors).toEqual([]);

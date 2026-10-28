@@ -1,3 +1,5 @@
+> Historical specification. Current alpha behavior is defined in [playable-alpha.md](playable-alpha.md).
+
 # Feature: Camera Zoom + Ship Select (v0.4.0)
 
 **Status:** PLANNED  
@@ -6,6 +8,7 @@
 ## Blueprint
 
 ### Context
+
 v0.4.0 focuses on two UX upgrades that directly improve replayability and readability:
 - **Camera Zoom:** players can tune world scale for comfort and tactical awareness.
 - **Ship Select (3 variants):** players can choose a handling profile that matches playstyle.
@@ -22,14 +25,14 @@ Create schema and typed config in `packages/mode-a/src/lib/schemas/ship-profile.
 import { z } from "zod";
 
 export const ShipProfileSchema = z.object({
-  id: z.enum(["scout", "balanced", "tank"]),
-  name: z.string().min(1),
-  thrustMultiplier: z.number().positive(),
-  turnMultiplier: z.number().positive(),
-  hullMultiplier: z.number().positive(),
-  powerDrainMultiplier: z.number().positive(),
-  zoomDefault: z.number().positive(),
-  tint: z.string(),
+	id: z.enum(["scout", "balanced", "tank"]),
+	name: z.string().min(1),
+	thrustMultiplier: z.number().positive(),
+	turnMultiplier: z.number().positive(),
+	hullMultiplier: z.number().positive(),
+	powerDrainMultiplier: z.number().positive(),
+	zoomDefault: z.number().positive(),
+	tint: z.string(),
 });
 
 export type ShipProfile = z.infer<typeof ShipProfileSchema>;
@@ -80,13 +83,14 @@ Keep allocation-free render behavior in frame loop.
 
 ### Initial Ship Profiles
 
-| Ship | ID | Strength | Tradeoff |
-|------|----|----------|----------|
-| Scout | `scout` | Fast turn + thrust | Lower hull |
-| Balanced | `balanced` | Even stats | No specialization |
-| Tank | `tank` | Higher hull resilience | Slower turn/thrust |
+| Ship     | ID         | Strength               | Tradeoff           |
+| -------- | ---------- | ---------------------- | ------------------ |
+| Scout    | `scout`    | Fast turn + thrust     | Lower hull         |
+| Balanced | `balanced` | Even stats             | No specialization  |
+| Tank     | `tank`     | Higher hull resilience | Slower turn/thrust |
 
 ### Anti-Patterns
+
 - Do not instantiate temporary objects in render/update loops.
 - Do not zoom HUD text/elements with world camera transform.
 - Do not allow ship stats outside schema bounds.
@@ -94,6 +98,7 @@ Keep allocation-free render behavior in frame loop.
 ## Contract
 
 ### Definition of Done
+
 - [ ] Players can choose 1 of 3 ships before starting a run.
 - [ ] Selected ship changes handling feel in first 10 seconds of play.
 - [ ] Camera zoom works on desktop and mobile with smooth interpolation.
@@ -101,6 +106,7 @@ Keep allocation-free render behavior in frame loop.
 - [ ] 60 FPS remains stable on target mobile profile under heavy effects.
 
 ### Regression Guardrails
+
 - **Physics:** Existing collision/gravity behavior remains deterministic.
 - **UX:** Touch controls remain usable (min 44px targets).
 - **Performance:** No measurable regressions compared to v0.3.0 baseline.

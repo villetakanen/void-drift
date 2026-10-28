@@ -34,6 +34,7 @@ This PBI splits `engine` into:
 ## Acceptance Criteria
 
 ### Package Split
+
 - [x] `packages/engine` removed
 - [x] `packages/core` created with package name `@void-drift/core`
 - [x] `packages/mode-a` created with package name `@void-drift/mode-a`
@@ -41,6 +42,7 @@ This PBI splits `engine` into:
 - [x] `mode-a` depends on `core` in package.json
 
 ### Core Package (`@void-drift/core`)
+
 Contains shared code used by any game mode:
 - [ ] `src/lib/physics/` — Newtonian motion, gravity, collision detection
 - [ ] `src/lib/entities/` — Ship, Star, Planet data structures and behavior
@@ -50,6 +52,7 @@ Contains shared code used by any game mode:
 - [ ] `src/index.ts` — Public exports
 
 ### Mode-A Package (`@void-drift/mode-a`)
+
 Contains survival-specific code:
 - [ ] `src/lib/schemas/` — GameState, Resources, DeathCause, Settings schemas
 - [ ] `src/lib/game-loop.ts` — Survival game loop with timer, death detection
@@ -58,11 +61,13 @@ Contains survival-specific code:
 - [ ] `src/index.ts` — Public exports
 
 ### Import Updates
+
 - [ ] All `@void-drift/engine` imports in `apps/web` updated
 - [ ] Imports use correct package (`core` vs `mode-a`)
 - [ ] No circular dependencies introduced
 
 ### Build & Test
+
 - [ ] `pnpm -r build` succeeds
 - [ ] `pnpm -r check` has zero TypeScript errors
 - [ ] Game runs identically to v0.1.0 (manual verification)
@@ -74,23 +79,23 @@ Contains survival-specific code:
 
 ### Current → Core
 
-| Current Path | New Path |
-|-------------|----------|
-| `engine/src/lib/engine/Physics.ts` | `core/src/lib/physics/Physics.ts` |
-| `engine/src/lib/engine/Camera.ts` | `core/src/lib/physics/Camera.ts` |
-| `engine/src/lib/engine/Input.ts` | `core/src/lib/entities/Input.ts` |
-| `engine/src/lib/engine/Renderer.ts` | `core/src/lib/entities/Renderer.ts` |
-| `engine/src/lib/assets/*` | `core/src/lib/assets/*` |
-| `engine/src/lib/config.ts` (PHYSICS only) | `core/src/lib/config.ts` |
+| Current Path                              | New Path                            |
+| ----------------------------------------- | ----------------------------------- |
+| `engine/src/lib/engine/Physics.ts`        | `core/src/lib/physics/Physics.ts`   |
+| `engine/src/lib/engine/Camera.ts`         | `core/src/lib/physics/Camera.ts`    |
+| `engine/src/lib/engine/Input.ts`          | `core/src/lib/entities/Input.ts`    |
+| `engine/src/lib/engine/Renderer.ts`       | `core/src/lib/entities/Renderer.ts` |
+| `engine/src/lib/assets/*`                 | `core/src/lib/assets/*`             |
+| `engine/src/lib/config.ts` (PHYSICS only) | `core/src/lib/config.ts`            |
 
 ### Current → Mode-A
 
-| Current Path | New Path |
-|-------------|----------|
-| `engine/src/lib/schemas/game-state.ts` | `mode-a/src/lib/schemas/game-state.ts` |
-| `engine/src/lib/schemas/settings.ts` | `mode-a/src/lib/schemas/settings.ts` |
-| `engine/src/lib/engine/game-loop.ts` | `mode-a/src/lib/game-loop.ts` |
-| `engine/src/lib/config.ts` (SURVIVAL only) | `mode-a/src/lib/config.ts` |
+| Current Path                               | New Path                               |
+| ------------------------------------------ | -------------------------------------- |
+| `engine/src/lib/schemas/game-state.ts`     | `mode-a/src/lib/schemas/game-state.ts` |
+| `engine/src/lib/schemas/settings.ts`       | `mode-a/src/lib/schemas/settings.ts`   |
+| `engine/src/lib/engine/game-loop.ts`       | `mode-a/src/lib/game-loop.ts`          |
+| `engine/src/lib/config.ts` (SURVIVAL only) | `mode-a/src/lib/config.ts`             |
 
 ---
 
@@ -105,17 +110,17 @@ mkdir -p packages/core/src/lib/{physics,entities,assets,schemas}
 **package.json:**
 ```json
 {
-  "name": "@void-drift/core",
-  "version": "0.1.1",
-  "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
-  "exports": {
-    ".": "./src/index.ts"
-  },
-  "dependencies": {
-    "zod": "^3.x"
-  }
+	"name": "@void-drift/core",
+	"version": "0.1.1",
+	"type": "module",
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"dependencies": {
+		"zod": "^3.x"
+	}
 }
 ```
 
@@ -128,18 +133,18 @@ mkdir -p packages/mode-a/src/lib/schemas
 **package.json:**
 ```json
 {
-  "name": "@void-drift/mode-a",
-  "version": "0.1.1",
-  "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
-  "exports": {
-    ".": "./src/index.ts"
-  },
-  "dependencies": {
-    "@void-drift/core": "workspace:*",
-    "zod": "^3.x"
-  }
+	"name": "@void-drift/mode-a",
+	"version": "0.1.1",
+	"type": "module",
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"dependencies": {
+		"@void-drift/core": "workspace:*",
+		"zod": "^3.x"
+	}
 }
 ```
 
@@ -151,10 +156,10 @@ Already includes `packages/*`, so new packages are auto-discovered.
 
 ```json
 {
-  "dependencies": {
-    "@void-drift/core": "workspace:*",
-    "@void-drift/mode-a": "workspace:*"
-  }
+	"dependencies": {
+		"@void-drift/core": "workspace:*",
+		"@void-drift/mode-a": "workspace:*"
+	}
 }
 ```
 
@@ -162,13 +167,13 @@ Already includes `packages/*`, so new packages are auto-discovered.
 
 **Before:**
 ```typescript
-import { Ship, updatePower, SURVIVAL_CONFIG } from '@void-drift/engine';
+import { Ship, updatePower, SURVIVAL_CONFIG } from "@void-drift/engine";
 ```
 
 **After:**
 ```typescript
-import { Ship } from '@void-drift/core';
-import { updatePower, SURVIVAL_CONFIG } from '@void-drift/mode-a';
+import { Ship } from "@void-drift/core";
+import { updatePower, SURVIVAL_CONFIG } from "@void-drift/mode-a";
 ```
 
 ---
@@ -191,11 +196,13 @@ import { updatePower, SURVIVAL_CONFIG } from '@void-drift/mode-a';
 ## Testing Checklist
 
 ### Build Verification
+
 - [ ] `pnpm install` succeeds
 - [ ] `pnpm -r build` succeeds
 - [ ] `pnpm -r check` has zero errors
 
 ### Runtime Verification
+
 - [ ] Game loads without console errors
 - [ ] Menu overlay displays
 - [ ] Start game works
@@ -210,6 +217,7 @@ import { updatePower, SURVIVAL_CONFIG } from '@void-drift/mode-a';
 - [ ] Control inversion works
 
 ### Gallery Verification
+
 - [ ] `/gallery` route loads
 - [ ] All asset previews render
 - [ ] Resource bar sliders work
@@ -218,12 +226,12 @@ import { updatePower, SURVIVAL_CONFIG } from '@void-drift/mode-a';
 
 ## Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Circular dependency | Build fails | Careful planning of what goes where |
-| Missing export | Runtime error | Comprehensive import updates |
-| Type errors | Build fails | Run `pnpm -r check` frequently during refactor |
-| Broken functionality | User-facing bug | Manual testing of all features |
+| Risk                 | Impact          | Mitigation                                     |
+| -------------------- | --------------- | ---------------------------------------------- |
+| Circular dependency  | Build fails     | Careful planning of what goes where            |
+| Missing export       | Runtime error   | Comprehensive import updates                   |
+| Type errors          | Build fails     | Run `pnpm -r check` frequently during refactor |
+| Broken functionality | User-facing bug | Manual testing of all features                 |
 
 ---
 

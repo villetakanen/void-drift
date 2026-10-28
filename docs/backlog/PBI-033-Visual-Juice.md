@@ -44,73 +44,77 @@ This PBI implements the "juice" philosophy from the project vision—transformin
 **File:** `packages/core/src/lib/effects/screen-shake.ts`
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 export const ScreenShakeConfigSchema = z.object({
-  maxOffset: z.number().positive(), // Max pixel displacement at trauma=1.0
-  decay: z.number().min(0).max(1), // Trauma decay per second
-  frequency: z.number().positive(), // Shake oscillation speed
+	maxOffset: z.number().positive(), // Max pixel displacement at trauma=1.0
+	decay: z.number().min(0).max(1), // Trauma decay per second
+	frequency: z.number().positive(), // Shake oscillation speed
 });
 
 export type ScreenShakeConfig = z.infer<typeof ScreenShakeConfigSchema>;
 
 export class ScreenShake {
-  private trauma = 0; // 0.0 to 1.0
-  private time = 0;
-  
-  constructor(private config: ScreenShakeConfig) {}
+	private trauma = 0; // 0.0 to 1.0
+	private time = 0;
 
-  /**
-   * Add trauma to the shake system.
-   * @param amount - Trauma amount (0.0 to 1.0). Values > 1.0 are clamped.
-   */
-  addTrauma(amount: number): void {
-    this.trauma = Math.min(1.0, this.trauma + amount);
-  }
+	constructor(private config: ScreenShakeConfig) {}
 
-  /**
-   * Update shake state and return current offset.
-   * @param deltaTime - Time since last update (seconds)
-   * @returns Offset { x, y } in pixels
-   */
-  update(deltaTime: number): { x: number; y: number } {
-    // Decay trauma
-    this.trauma = Math.max(0, this.trauma - this.config.decay * deltaTime);
-    
-    // Early exit if no trauma
-    if (this.trauma === 0) {
-      return { x: 0, y: 0 };
-    }
+	/**
+	 * Add trauma to the shake system.
+	 * @param amount - Trauma amount (0.0 to 1.0). Values > 1.0 are clamped.
+	 */
+	addTrauma(amount: number): void {
+		this.trauma = Math.min(1.0, this.trauma + amount);
+	}
 
-    // Advance time for oscillation
-    this.time += deltaTime;
+	/**
+	 * Update shake state and return current offset.
+	 * @param deltaTime - Time since last update (seconds)
+	 * @returns Offset { x, y } in pixels
+	 */
+	update(deltaTime: number): { x: number; y: number } {
+		// Decay trauma
+		this.trauma = Math.max(0, this.trauma - this.config.decay * deltaTime);
 
-    // Calculate shake using Perlin-like noise simulation
-    // Use trauma^2 for smoother falloff (small traumas barely shake)
-    const intensity = this.trauma * this.trauma;
-    
-    const offsetX = Math.sin(this.time * this.config.frequency) * 
-                    this.config.maxOffset * intensity;
-    const offsetY = Math.cos(this.time * this.config.frequency * 1.3) * 
-                    this.config.maxOffset * intensity;
+		// Early exit if no trauma
+		if (this.trauma === 0) {
+			return { x: 0, y: 0 };
+		}
 
-    return { x: offsetX, y: offsetY };
-  }
+		// Advance time for oscillation
+		this.time += deltaTime;
 
-  /**
-   * Get current trauma level (for debugging/UI).
-   */
-  getTrauma(): number {
-    return this.trauma;
-  }
+		// Calculate shake using Perlin-like noise simulation
+		// Use trauma^2 for smoother falloff (small traumas barely shake)
+		const intensity = this.trauma * this.trauma;
 
-  /**
-   * Reset trauma to zero (for game restart).
-   */
-  reset(): void {
-    this.trauma = 0;
-    this.time = 0;
-  }
+		const offsetX =
+			Math.sin(this.time * this.config.frequency) *
+			this.config.maxOffset *
+			intensity;
+		const offsetY =
+			Math.cos(this.time * this.config.frequency * 1.3) *
+			this.config.maxOffset *
+			intensity;
+
+		return { x: offsetX, y: offsetY };
+	}
+
+	/**
+	 * Get current trauma level (for debugging/UI).
+	 */
+	getTrauma(): number {
+		return this.trauma;
+	}
+
+	/**
+	 * Reset trauma to zero (for game restart).
+	 */
+	reset(): void {
+		this.trauma = 0;
+		this.time = 0;
+	}
 }
 ```
 
@@ -119,19 +123,19 @@ export class ScreenShake {
 ```typescript
 // packages/mode-a/src/lib/config.ts
 export const SURVIVAL_CONFIG = {
-  // ... existing config
-  
-  SCREEN_SHAKE: {
-    maxOffset: 4, // pixels
-    decay: 2.0, // trauma units per second
-    frequency: 30, // Hz
-  },
-  
-  TRAUMA_VALUES: {
-    planetCollision: 0.6, // High impact
-    sunProximity: 0.3, // Medium (when entering danger zone)
-    boost: 0.1, // Low (subtle feedback on thrust)
-  },
+	// ... existing config
+
+	SCREEN_SHAKE: {
+		maxOffset: 4, // pixels
+		decay: 2.0, // trauma units per second
+		frequency: 30, // Hz
+	},
+
+	TRAUMA_VALUES: {
+		planetCollision: 0.6, // High impact
+		sunProximity: 0.3, // Medium (when entering danger zone)
+		boost: 0.1, // Low (subtle feedback on thrust)
+	},
 };
 ```
 
@@ -148,54 +152,51 @@ export const SURVIVAL_CONFIG = {
 
 ```typescript
 export interface DamageFlash {
-  active: boolean;
-  intensity: number; // 0.0 to 1.0
-  duration: number; // seconds remaining
+	active: boolean;
+	intensity: number; // 0.0 to 1.0
+	duration: number; // seconds remaining
 }
 
 export function createDamageFlash(): DamageFlash {
-  return { active: false, intensity: 0, duration: 0 };
+	return { active: false, intensity: 0, duration: 0 };
 }
 
 export function triggerDamageFlash(
-  flash: DamageFlash,
-  intensity: number,
-  duration: number
+	flash: DamageFlash,
+	intensity: number,
+	duration: number,
 ): void {
-  flash.active = true;
-  flash.intensity = intensity;
-  flash.duration = duration;
+	flash.active = true;
+	flash.intensity = intensity;
+	flash.duration = duration;
 }
 
-export function updateDamageFlash(
-  flash: DamageFlash,
-  deltaTime: number
-): void {
-  if (!flash.active) return;
+export function updateDamageFlash(flash: DamageFlash, deltaTime: number): void {
+	if (!flash.active) return;
 
-  flash.duration -= deltaTime;
-  
-  if (flash.duration <= 0) {
-    flash.active = false;
-    flash.intensity = 0;
-  } else {
-    // Exponential decay for smoother fade
-    flash.intensity *= 0.95;
-  }
+	flash.duration -= deltaTime;
+
+	if (flash.duration <= 0) {
+		flash.active = false;
+		flash.intensity = 0;
+	} else {
+		// Exponential decay for smoother fade
+		flash.intensity *= 0.95;
+	}
 }
 
 export function renderDamageFlash(
-  ctx: CanvasRenderingContext2D,
-  flash: DamageFlash,
-  width: number,
-  height: number
+	ctx: CanvasRenderingContext2D,
+	flash: DamageFlash,
+	width: number,
+	height: number,
 ): void {
-  if (!flash.active || flash.intensity < 0.01) return;
+	if (!flash.active || flash.intensity < 0.01) return;
 
-  ctx.save();
-  ctx.fillStyle = `rgba(255, 50, 50, ${flash.intensity * 0.3})`;
-  ctx.fillRect(0, 0, width, height);
-  ctx.restore();
+	ctx.save();
+	ctx.fillStyle = `rgba(255, 50, 50, ${flash.intensity * 0.3})`;
+	ctx.fillRect(0, 0, width, height);
+	ctx.restore();
 }
 ```
 
@@ -204,13 +205,13 @@ export function renderDamageFlash(
 ```typescript
 // apps/web/src/components/Game.svelte
 function getShipTint(hullPercentage: number): string {
-  if (hullPercentage > 50) {
-    return '#FFFFFF'; // Normal (white)
-  } else if (hullPercentage > 25) {
-    return '#FFAA00'; // Warning (orange)
-  } else {
-    return '#FF3333'; // Danger (red)
-  }
+	if (hullPercentage > 50) {
+		return "#FFFFFF"; // Normal (white)
+	} else if (hullPercentage > 25) {
+		return "#FFAA00"; // Warning (orange)
+	} else {
+		return "#FF3333"; // Danger (red)
+	}
 }
 
 // In render loop
@@ -231,83 +232,85 @@ drawShip(ctx, ship.x, ship.y, ship.rotation, shipTint);
 
 ```typescript
 export interface Particle {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  life: number; // 0.0 to 1.0
-  maxLife: number; // seconds
-  hue: number; // 0 to 360
-  size: number; // radius in pixels
+	x: number;
+	y: number;
+	vx: number;
+	vy: number;
+	life: number; // 0.0 to 1.0
+	maxLife: number; // seconds
+	hue: number; // 0 to 360
+	size: number; // radius in pixels
 }
 
 export function createParticle(
-  x: number,
-  y: number,
-  vx: number,
-  vy: number,
-  hue: number,
-  life: number,
-  size = 2
+	x: number,
+	y: number,
+	vx: number,
+	vy: number,
+	hue: number,
+	life: number,
+	size = 2,
 ): Particle {
-  return { x, y, vx, vy, life: 1.0, maxLife: life, hue, size };
+	return { x, y, vx, vy, life: 1.0, maxLife: life, hue, size };
 }
 
 // Eased alpha for smoother fades
 export function getParticleAlpha(life: number): number {
-  // Quadratic ease-out: starts fast, ends slow
-  return life * (2 - life);
+	// Quadratic ease-out: starts fast, ends slow
+	return life * (2 - life);
 }
 
 // Color shift based on velocity
 export function getThrustHue(speed: number, powerPercent: number): number {
-  // Blue (200) at low speed/power → Cyan (180) → Green (120) at high
-  const baseHue = 200;
-  const speedFactor = Math.min(speed / 500, 1.0); // 500 = max speed
-  const powerFactor = powerPercent / 100;
-  
-  return baseHue - (speedFactor * 80) - ((1 - powerFactor) * 20);
+	// Blue (200) at low speed/power → Cyan (180) → Green (120) at high
+	const baseHue = 200;
+	const speedFactor = Math.min(speed / 500, 1.0); // 500 = max speed
+	const powerFactor = powerPercent / 100;
+
+	return baseHue - speedFactor * 80 - (1 - powerFactor) * 20;
 }
 
 // Collision burst particles
 export function createCollisionBurst(
-  x: number,
-  y: number,
-  count: number,
-  color: string
+	x: number,
+	y: number,
+	count: number,
+	color: string,
 ): Particle[] {
-  const particles: Particle[] = [];
-  const hue = colorToHue(color); // Extract hue from planet color
+	const particles: Particle[] = [];
+	const hue = colorToHue(color); // Extract hue from planet color
 
-  for (let i = 0; i < count; i++) {
-    const angle = (Math.PI * 2 * i) / count;
-    const speed = 50 + Math.random() * 100;
-    const vx = Math.cos(angle) * speed;
-    const vy = Math.sin(angle) * speed;
-    
-    particles.push(createParticle(
-      x,
-      y,
-      vx,
-      vy,
-      hue + (Math.random() * 40 - 20), // Hue variance ±20°
-      0.5 + Math.random() * 0.3, // 0.5-0.8s lifetime
-      3 + Math.random() * 2 // 3-5px size
-    ));
-  }
+	for (let i = 0; i < count; i++) {
+		const angle = (Math.PI * 2 * i) / count;
+		const speed = 50 + Math.random() * 100;
+		const vx = Math.cos(angle) * speed;
+		const vy = Math.sin(angle) * speed;
 
-  return particles;
+		particles.push(
+			createParticle(
+				x,
+				y,
+				vx,
+				vy,
+				hue + (Math.random() * 40 - 20), // Hue variance ±20°
+				0.5 + Math.random() * 0.3, // 0.5-0.8s lifetime
+				3 + Math.random() * 2, // 3-5px size
+			),
+		);
+	}
+
+	return particles;
 }
 
 function colorToHue(hexColor: string): number {
-  // Convert hex to HSL and extract hue
-  // Simplified: map common planet colors to hues
-  const colorMap: Record<string, number> = {
-    '#8B7355': 30,  // Brown (The Rock)
-    '#6B4C9A': 270, // Purple (The Gas)
-    '#D0D0D0': 0,   // Gray (The Moon) - use white sparks
-  };
-  return colorMap[hexColor] ?? 0;
+	// Convert hex to HSL and extract hue
+	// Simplified: map common planet colors to hues
+	const colorMap: Record<string, number> = {
+		"#8B7355": 30, // Brown (The Rock)
+		"#6B4C9A": 270, // Purple (The Gas)
+		"#D0D0D0": 0, // Gray (The Moon) - use white sparks
+	};
+	return colorMap[hexColor] ?? 0;
 }
 ```
 
@@ -323,20 +326,20 @@ export { ScreenShakeConfigSchema, type ScreenShakeConfig, ScreenShake };
 
 // packages/core/src/lib/effects/damage-feedback.ts
 export {
-  type DamageFlash,
-  createDamageFlash,
-  triggerDamageFlash,
-  updateDamageFlash,
-  renderDamageFlash,
+	type DamageFlash,
+	createDamageFlash,
+	triggerDamageFlash,
+	updateDamageFlash,
+	renderDamageFlash,
 };
 
 // packages/core/src/lib/effects/particles.ts
 export {
-  type Particle,
-  createParticle,
-  getParticleAlpha,
-  getThrustHue,
-  createCollisionBurst,
+	type Particle,
+	createParticle,
+	getParticleAlpha,
+	getThrustHue,
+	createCollisionBurst,
 };
 ```
 
@@ -375,6 +378,7 @@ renderDamageFlash(ctx, flash, width, height);
 ## Acceptance Criteria
 
 ### Screen Shake
+
 - [x] Trauma-based shake system implemented
 - [x] Collision adds trauma (0.6 for planets)
 - [x] Trauma decays over time (2.0 units/second)
@@ -384,12 +388,14 @@ renderDamageFlash(ctx, flash, width, height);
 - [x] No shake when trauma = 0 (performance optimization)
 
 ### Hull Damage Feedback
+
 - [x] Red flash on collision (200ms duration)
 - [x] Ship tint changes at <50% hull (orange) and <25% hull (red)
 - [x] Flash intensity matches damage severity
 - [x] Visual feedback visible without checking HUD
 
 ### Particle Polish
+
 - [x] Thrust particles fade with eased alpha (quadratic ease-out)
 - [x] Thrust color shifts with speed (blue → cyan → green)
 - [x] Thrust color dims as power depletes
@@ -397,6 +403,7 @@ renderDamageFlash(ctx, flash, width, height);
 - [x] Burst particles match planet color (±20° hue variance)
 
 ### Performance
+
 - [x] Screen shake adds < 0.1ms to render time
 - [x] Damage flash adds < 0.1ms to render time
 - [x] Particle updates remain < 1ms with 100+ particles
@@ -488,6 +495,7 @@ renderDamageFlash(ctx, flash, width, height);
 ## Testing Checklist
 
 ### Screen Shake
+
 - [ ] Collision with planet triggers visible shake
 - [ ] Shake intensity feels proportional to impact
 - [ ] Shake decays smoothly (not abrupt stop)
@@ -496,6 +504,7 @@ renderDamageFlash(ctx, flash, width, height);
 - [ ] Shake doesn't cause motion sickness (test with 5+ people)
 
 ### Damage Flash
+
 - [ ] Red flash visible on collision
 - [ ] Flash duration ~200ms
 - [ ] Flash fades smoothly (not abrupt)
@@ -503,6 +512,7 @@ renderDamageFlash(ctx, flash, width, height);
 - [ ] Flash doesn't obscure critical game elements
 
 ### Ship Tint
+
 - [ ] Ship white at >50% hull
 - [ ] Ship orange at 26-50% hull
 - [ ] Ship red at 1-25% hull
@@ -510,6 +520,7 @@ renderDamageFlash(ctx, flash, width, height);
 - [ ] Tint visible against all backgrounds
 
 ### Particle Polish
+
 - [ ] Thrust particles fade smoothly (no "pop" disappearance)
 - [ ] Thrust color blue at low speed
 - [ ] Thrust color green at high speed
@@ -519,6 +530,7 @@ renderDamageFlash(ctx, flash, width, height);
 - [ ] Burst particles disperse radially
 
 ### Performance
+
 - [ ] 60 FPS with shake + flash + 50 particles (desktop)
 - [ ] 60 FPS with shake + flash + 50 particles (mobile)
 - [ ] No frame drops during heavy collision sequence

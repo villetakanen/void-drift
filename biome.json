@@ -18,7 +18,12 @@
 			"!artifacts",
 			"!playwright-report",
 			"!test-results",
-			"!pnpm-lock.yaml"
+			"!pnpm-lock.yaml",
+			"!.agents",
+			"!firebase-debug.log",
+			"!firestore-debug.log",
+			"!ui-debug.log",
+			"!.firebase"
 		]
 	},
 	"formatter": {
@@ -42,6 +47,12 @@
 			"source": {
 				"organizeImports": "on"
 			}
+		}
+	},
+	"html": {
+		"experimentalFullSupportEnabled": true,
+		"formatter": {
+			"enabled": true
 		}
 	}
 }

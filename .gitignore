@@ -31,3 +31,6 @@ dist-ssr
 artifacts/
 playwright-report/
 test-results/
+
+.firebase/
+*-debug.log

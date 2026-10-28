@@ -221,11 +221,14 @@ match /artifacts/{appId}/public/data/highscores/{scoreId} {
 **Example (Mode A):**
 ```typescript
 const HighScoreSchema = z.object({
-  initials: z.string().length(3).regex(/^[A-Z]{3}$/),
-  uidHash: z.string().length(6),
-  seconds: z.number().positive().max(999999),
-  timestamp: z.number(),
-  userId: z.string()
+	initials: z
+		.string()
+		.length(3)
+		.regex(/^[A-Z]{3}$/),
+	uidHash: z.string().length(6),
+	seconds: z.number().positive().max(999999),
+	timestamp: z.number(),
+	userId: z.string(),
 });
 ```
 
@@ -234,22 +237,26 @@ const HighScoreSchema = z.object({
 ## 6. Implementation Roadmap
 
 ### ✅ Phase 1: The Engine (Vibe Check) — COMPLETED v0.0.1
+
 - [x] Svelte + Canvas setup
 - [x] Ship with differential thrust physics
 - [x] Screen wrapping (Pac-Man topology)
 - [x] Tuning: Spiral turns, max speed, inertia damping
 
 ### ✅ Phase 2: Mobile Controls — COMPLETED v0.0.2
+
 - [x] Split-screen touch inputs
 - [x] Touch visual feedback
 - [x] Portrait mode warning
 
 ### ✅ Phase 3: Asset Gallery & Design System — COMPLETED v0.0.3
+
 - [x] Internal workbench at `/gallery`
 - [x] Procedural asset refactor (ship, star)
 - [x] Design System tokens in CSS
 
 ### ✅ Phase 4: QoL & Polish — COMPLETED v0.0.4
+
 - [x] 16:9 constrained viewport
 - [x] Camera system (smooth tracking, world↔screen conversions)
 - [x] Central star (gravity + death on contact)
@@ -263,6 +270,7 @@ const HighScoreSchema = z.object({
 **Goal:** Implement Mode A's core gameplay loop (timer → death → restart) with full resource management and player settings.
 
 #### v0.0.5: Resource HUD Design — PBI-015 (5 SP) ✅
+
 **Goal:** Design visual components in gallery before integration
 - [x] Hull bar design (3 color states: normal/warning/danger)
 - [x] Power bar design (3 color states: normal/warning/danger)
@@ -272,6 +280,7 @@ const HighScoreSchema = z.object({
 - [x] Design System tokens updated
 
 #### v0.0.6: Resource Logic & HUD Integration — PBI-016 (8 SP) ✅
+
 **Goal:** Implement resource tracking and integrate designed HUD elements
 - [x] Hull system (100% → 0%, planet damage -7%, sun burn)
 - [x] Power system (100% → 0%, constant consumption, sun refuel)
@@ -281,6 +290,7 @@ const HighScoreSchema = z.object({
 - [x] Zod schemas for resources
 
 #### v0.0.7: Settings Route — PBI-018 (3 SP) ✅
+
 **Goal:** Player settings with control customization
 - [x] `/settings` Astro page
 - [x] Control inversion toggle (swap left/right engines)
@@ -289,6 +299,7 @@ const HighScoreSchema = z.object({
 - [x] Keyboard accessible
 
 #### v0.1.0: Timer & Death Logic — PBI-017 + PBI-020 (7 SP) ✅
+
 **Goal:** Complete game loop with timer, death conditions, Game Over screen
 - [x] Game state machine (MENU → PLAYING → GAME_OVER)
 - [x] Timer system (starts on first input)
@@ -603,9 +614,10 @@ Likely metrics:
    - **Current Lean:** Procedural (aligns with asset philosophy).
 
 10. **Visual Feedback:**
-   - Should hull damage show cracks/sparks on ship sprite?
-   - Should low fuel dim the engine glow?
-   - **Current Lean:** Subtle effects that don't obscure gameplay.
+
+- Should hull damage show cracks/sparks on ship sprite?
+- Should low fuel dim the engine glow?
+- **Current Lean:** Subtle effects that don't obscure gameplay.
 
 ### Mode B (Future)
 

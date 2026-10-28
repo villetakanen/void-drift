@@ -1,48 +1,29 @@
-/**
- * Request fullscreen mode for a specific element.
- * Handles cross-browser prefixes for Safari/iOS support.
- */
+type FullscreenElement = HTMLElement & {
+	webkitRequestFullscreen?: () => Promise<void>;
+};
+type FullscreenDocument = Document & {
+	webkitFullscreenElement?: Element;
+	webkitExitFullscreen?: () => Promise<void>;
+};
 export async function requestFullscreen(element: HTMLElement): Promise<void> {
-    try {
-        if (element.requestFullscreen) {
-            await element.requestFullscreen();
-        } else if ((element as any).webkitRequestFullscreen) {
-            /* Safari/iOS support */
-            await (element as any).webkitRequestFullscreen();
-        } else if ((element as any).msRequestFullscreen) {
-            /* IE11 support */
-            await (element as any).msRequestFullscreen();
-        }
-    } catch (err) {
-        console.warn("Fullscreen request failed:", err);
-    }
+	try {
+		const target = element as FullscreenElement;
+		if (target.requestFullscreen) await target.requestFullscreen();
+		else await target.webkitRequestFullscreen?.();
+	} catch (error) {
+		console.warn("Fullscreen unavailable:", error);
+	}
 }
-
-/**
- * Check if the document is currently in fullscreen mode.
- */
 export function isFullscreen(): boolean {
-    return !!(
-        document.fullscreenElement ||
-        (document as any).webkitFullscreenElement ||
-        (document as any).mozFullScreenElement ||
-        (document as any).msFullscreenElement
-    );
+	const target = document as FullscreenDocument;
+	return Boolean(target.fullscreenElement || target.webkitFullscreenElement);
 }
-
-/**
- * Exit fullscreen mode.
- */
 export async function exitFullscreen(): Promise<void> {
-    try {
-        if (document.exitFullscreen) {
-            await document.exitFullscreen();
-        } else if ((document as any).webkitExitFullscreen) {
-            await (document as any).webkitExitFullscreen();
-        } else if ((document as any).msExitFullscreen) {
-            await (document as any).msExitFullscreen();
-        }
-    } catch (err) {
-        console.warn("Exit fullscreen failed:", err);
-    }
+	try {
+		const target = document as FullscreenDocument;
+		if (target.exitFullscreen) await target.exitFullscreen();
+		else await target.webkitExitFullscreen?.();
+	} catch (error) {
+		console.warn("Fullscreen exit unavailable:", error);
+	}
 }

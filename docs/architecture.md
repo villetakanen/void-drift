@@ -5,21 +5,15 @@ Read for changes to structure, simulation, or data flow. Product scope belongs i
 
 ## Current implementation
 
-- pnpm workspace; TypeScript, Astro routes, Svelte 5, and Vite.
-- `packages/core/src/lib/`: physics, input, camera, renderer, procedural assets,
-  effects, shared styles, and common schemas.
-- `packages/mode-a/src/lib/`: survival rules, game loop, ship configuration,
-  state/settings schemas, and the legacy Supabase integration.
-- `apps/web/src/`: Astro pages, Svelte orchestration/UI, settings persistence,
-  and Lab views. `GameWrapper.svelte` currently coordinates simulation and rendering.
-- `packages/mode-a/src/schemas/highscore.ts`: legacy score data contract.
-- Production is currently a static Astro build. Package dependencies and scripts
-  are authoritative in their respective `package.json` files.
-
-Current limitations: simulation uses variable frame deltas and global time/randomness;
-ship profile flight values are not yet passed into physics; camera translation exists
-but automatic framing/zoom is unfinished. Legacy explicit `any` and hot-loop allocation
-remain cleanup work, not examples to follow.
+- pnpm workspace; strict TypeScript, Astro routes, Svelte 5 and Vite.
+- Core owns physics, camera, input, procedural drawing and shared styles.
+- Mode A owns the fixed 60 Hz `Simulation`, seeded trials, ship profiles and Firebase boundary.
+- `FlightDeck.svelte` composes the same systems for the game and `/lab/flight`.
+- Replay takes validated settings and ordered input/tick chunks. Rendering reads state;
+  simulation time drives orbits and animation. Camera zoom frames the ship and star,
+  with an explicit snap when crossing the circular arena boundary.
+- `packages/mode-a/src/schemas/highscore.ts` defines the strict score contract.
+- Production is a static Astro build; package manifests own dependency versions.
 
 ## Agreed boundaries
 
@@ -38,18 +32,21 @@ remain cleanup work, not examples to follow.
   introduced, interpolate snapshots and reconcile meaningful disagreement; send
   essential state. Arena wraps and resets have explicit transition contracts.
 
-## Backend transition
+## Backend and trust
 
-Firebase Auth and Firestore are the selected target. Supabase remains the current
-implementation until a separately verified migration replaces it.
+Firebase Auth (anonymous) and Firestore replace the legacy Supabase runtime.
+The new `void-drift-alpha` project uses Spark, with no billing upgrade. Old SQL and
+migration documents remain historical; scores are not migrated.
 
-- Put Firestore documents under `artifacts/{appId}/...`.
-- Validate incoming data and test security rules for allowed and rejected access.
-- Treat clients as untrusted. Client schema validation does not prove score integrity.
-- Decide score verification, versioning, and migration needs before deployment.
-- Local game/Lab boot and deterministic checks must work without live credentials.
-  Report unavailable shared scores honestly; label test fixtures as fixtures.
-- Keep live service checks separate from repeatable local verification.
+- Documents live at `artifacts/void-drift/scores/{uid}_{shipId}`.
+- A user retains one personal best per ship for challenge `alpha-1` (seed 2026).
+- Zod checks network data; tested Firestore rules enforce ownership, exact fields,
+  bounds, challenge identity and increasing scores. Queries are bounded to 20 rows.
+- Scores are **client-reported casual competition**, not cheat-resistant records.
+  An attacker can fabricate a plausible score; no server simulation or rate limiting exists.
+- Lab tuning is unranked. Only stock game configuration offers submission.
+- No credentials are needed for local flight/Lab; unavailable scores are explicit.
+- Auth/Firestore emulator competition is a separate gate from live release checks.
 
 ## Change discipline
 

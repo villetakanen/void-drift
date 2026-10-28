@@ -38,27 +38,27 @@ Web browsers require a **User Gesture** (click/tap) to enter fullscreen mode. We
 
 ```typescript
 export async function requestFullscreen(element: HTMLElement): Promise<void> {
-  try {
-    if (element.requestFullscreen) {
-      await element.requestFullscreen();
-    } else if ((element as any).webkitRequestFullscreen) {
-      /* Safari/iOS support */
-      await (element as any).webkitRequestFullscreen();
-    } else if ((element as any).msRequestFullscreen) {
-      await (element as any).msRequestFullscreen();
-    }
-  } catch (err) {
-    console.warn("Fullscreen request failed:", err);
-  }
+	try {
+		if (element.requestFullscreen) {
+			await element.requestFullscreen();
+		} else if ((element as any).webkitRequestFullscreen) {
+			/* Safari/iOS support */
+			await (element as any).webkitRequestFullscreen();
+		} else if ((element as any).msRequestFullscreen) {
+			await (element as any).msRequestFullscreen();
+		}
+	} catch (err) {
+		console.warn("Fullscreen request failed:", err);
+	}
 }
 
 export function isFullscreen(): boolean {
-  return !!(
-    document.fullscreenElement ||
-    (document as any).webkitFullscreenElement ||
-    (document as any).mozFullScreenElement ||
-    (document as any).msFullscreenElement
-  );
+	return !!(
+		document.fullscreenElement ||
+		(document as any).webkitFullscreenElement ||
+		(document as any).mozFullScreenElement ||
+		(document as any).msFullscreenElement
+	);
 }
 ```
 
@@ -87,18 +87,18 @@ Use modern CSS units to ensure the game container always fills exactly the avail
 
 ```css
 :root {
-  /* Use dvh (Dynamic Viewport Height) for the game container */
-  --game-height: 100dvh;
+	/* Use dvh (Dynamic Viewport Height) for the game container */
+	--game-height: 100dvh;
 }
 
 #game-container {
-  height: var(--game-height);
-  width: 100vw;
-  overflow: hidden;
-  position: fixed;
-  top: 0;
-  left: 0;
-  background: #000;
+	height: var(--game-height);
+	width: 100vw;
+	overflow: hidden;
+	position: fixed;
+	top: 0;
+	left: 0;
+	background: #000;
 }
 ```
 
@@ -107,16 +107,19 @@ Use modern CSS units to ensure the game container always fills exactly the avail
 ## Acceptance Criteria
 
 ### Fullscreen Logic
+
 - [ ] Game enters fullscreen mode when "Start Game" is clicked.
 - [ ] Logic handles Safari (webkit) and standard Fullscreen API.
 - [ ] Utility function `requestFullscreen` provided in `@void-drift/core`.
 
 ### Meta Tags & Branding
+
 - [ ] iOS "Add to Home Screen" renders without Safari UI.
 - [ ] Status bar is set to `black-translucent`.
 - [ ] Android theme color set to match the Void aesthetic (#000000).
 
 ### Layout Consistency
+
 - [ ] The game container uses `100dvh` (or fallback) to prevent gaps.
 - [ ] No "jumping" or resizing artifacts when address bar hides/shows.
 - [ ] Scroll is disabled on the body to prevent "bounce" on iOS Safari.
@@ -126,20 +129,24 @@ Use modern CSS units to ensure the game container always fills exactly the avail
 ## Technical Implementation
 
 ### Step 1: Core Utility (20 min)
+
 - Create `packages/core/src/lib/ui/fullscreen.ts`.
 - Export from `packages/core/src/index.ts`.
 
 ### Step 2: UI Integration (30 min)
+
 - Update `apps/web/src/components/MenuOverlay.svelte`.
 - Add `onclick` handler to the Start button that calls `requestFullscreen(gameContainer)`.
 
 ### Step 3: CSS & Meta (20 min)
+
 - Update `Layout.astro` with PWA meta tags.
 - Update global CSS to use `dvh` units for the main viewport.
 
 ---
 
 ## Related Documents
+
 - [Phase 7 Roadmap](../PHASE-7-ROADMAP.md)
 - [PBI-035: Mobile Performance Audit](./PBI-035-Mobile-Performance.md)
 - [Project Vision](../project-vision.md)

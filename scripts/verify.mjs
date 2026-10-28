@@ -52,6 +52,8 @@ for (const name of [
 	"test",
 	"build",
 	"test:browser",
+	"test:rules",
+	"test:competition",
 ]) {
 	console.log(`Running ${name}…`);
 	const started = Date.now();

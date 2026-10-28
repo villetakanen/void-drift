@@ -1,132 +1,82 @@
 import { Vec2 } from "./Physics";
-
 export interface CameraOptions {
-	/** Smoothing factor (0 = instant, 1 = no movement) */
 	smoothing?: number;
-	/** Fixed viewport width (logical units) */
 	viewportWidth?: number;
-	/** Fixed viewport height (logical units) */
 	viewportHeight?: number;
 }
-
-/**
- * Camera Director - Smooth tracking for the game viewport.
- * Maintains a fixed 16:9 aspect ratio and interpolates to follow targets.
- */
 export class Camera {
-	/** Current camera position (center of view) */
-	public pos: Vec2;
-
-	/** Target position to follow */
-	private target: Vec2;
-
-	/** Smoothing factor (0 = instant snap, higher = more lag) */
-	private smoothing: number;
-
-	/** Logical viewport dimensions (game units) */
+	public pos = new Vec2(960, 540);
+	public zoom = 1;
 	public viewportWidth: number;
 	public viewportHeight: number;
-
+	private target = new Vec2(960, 540);
+	private targetZoom = 1;
+	private smoothing: number;
+	private offset = new Vec2(0, 0);
+	private view = { x: 0, y: 0 };
 	constructor(options: CameraOptions = {}) {
-		this.pos = new Vec2(0, 0);
-		this.target = new Vec2(0, 0);
-		this.smoothing = options.smoothing ?? 1.0;
-
-		// Default to 1920x1080 logical resolution (16:9)
-		this.viewportWidth = options.viewportWidth ?? 1920;
-		this.viewportHeight = options.viewportHeight ?? 1080;
+		this.smoothing = options.smoothing ?? 4;
+		this.viewportWidth = options.viewportWidth ?? 1280;
+		this.viewportHeight = options.viewportHeight ?? 720;
 	}
-
-	/**
-	 * Set the target position for the camera to follow.
-	 */
-	setTarget(x: number, y: number): void {
+	setTarget(x: number, y: number) {
 		this.target.set(x, y);
 	}
-
-	/**
-	 * Set a temporary offset (e.g., for screen shake).
-	 * This offset is applied on top of the calculated view position.
-	 */
-	setOffset(x: number, y: number): void {
-		this.computedOffset = new Vec2(x, y);
+	setOffset(x: number, y: number) {
+		this.offset.set(x, y);
 	}
-
-	private computedOffset: Vec2 = new Vec2(0, 0);
-
-	/**
-	 * Update camera position with smooth interpolation.
-	 * Call this every frame before rendering.
-	 */
-	update(dt: number): void {
-		// Damped spring interpolation
-		const dx = this.target.x - this.pos.x;
-		const dy = this.target.y - this.pos.y;
-		const distSq = dx * dx + dy * dy;
-
-		// Teleport Detection:
-		// If the visual distance is too large (e.g. ship wrapped to other side),
-		// snap the camera instantly to prevent a disorienting "pan across the universe".
-		// Threshold: 1000px roughly half a screen width, indicating a warp.
-		if (distSq > 1000 * 1000) {
+	frame(
+		shipX: number,
+		shipY: number,
+		starX: number,
+		starY: number,
+		padding: number,
+		smoothing: number,
+		snap = false,
+	) {
+		this.smoothing = smoothing;
+		this.target.set((shipX + starX) / 2, (shipY + starY) / 2);
+		this.targetZoom = Math.min(
+			1.6,
+			this.viewportWidth / (Math.abs(shipX - starX) + padding * 2),
+			this.viewportHeight / (Math.abs(shipY - starY) + padding * 2),
+		);
+		if (snap) {
 			this.pos.set(this.target.x, this.target.y);
-			return;
+			this.zoom = this.targetZoom;
 		}
-
-		// Frame-rate independent smoothing
-		const factor = Math.min(1, this.smoothing * dt * 60);
-
-		this.pos.x += dx * factor;
-		this.pos.y += dy * factor;
 	}
-
-	/**
-	 * Get the world-to-screen transform offset.
-	 * Returns the top-left corner of the viewport in world space.
-	 */
-	getViewOffset(): { x: number; y: number } {
-		return {
-			x: this.pos.x - this.viewportWidth / 2 + this.computedOffset.x,
-			y: this.pos.y - this.viewportHeight / 2 + this.computedOffset.y,
-		};
+	update(dt: number) {
+		const amount = 1 - Math.exp(-this.smoothing * dt);
+		this.pos.x += (this.target.x - this.pos.x) * amount;
+		this.pos.y += (this.target.y - this.pos.y) * amount;
+		// Zoom out immediately enough to retain targets, ease into a closer view.
+		this.zoom =
+			this.targetZoom < this.zoom
+				? this.targetZoom
+				: this.zoom + (this.targetZoom - this.zoom) * amount;
 	}
-
-	/**
-	 * Convert world coordinates to screen coordinates.
-	 */
-	worldToScreen(worldX: number, worldY: number): { x: number; y: number } {
+	getViewOffset() {
+		this.view.x =
+			this.pos.x - this.viewportWidth / (2 * this.zoom) + this.offset.x;
+		this.view.y =
+			this.pos.y - this.viewportHeight / (2 * this.zoom) + this.offset.y;
+		return this.view;
+	}
+	worldToScreen(x: number, y: number) {
 		const offset = this.getViewOffset();
-		return {
-			x: worldX - offset.x,
-			y: worldY - offset.y,
-		};
+		return { x: (x - offset.x) * this.zoom, y: (y - offset.y) * this.zoom };
 	}
-
-	/**
-	 * Convert screen coordinates to world coordinates.
-	 */
-	screenToWorld(screenX: number, screenY: number): { x: number; y: number } {
+	screenToWorld(x: number, y: number) {
 		const offset = this.getViewOffset();
-		return {
-			x: screenX + offset.x,
-			y: screenY + offset.y,
-		};
+		return { x: x / this.zoom + offset.x, y: y / this.zoom + offset.y };
 	}
-
-	/**
-	 * Apply camera transform to the rendering context.
-	 * Call this before rendering game objects.
-	 */
-	applyTransform(ctx: CanvasRenderingContext2D): void {
+	applyTransform(ctx: CanvasRenderingContext2D) {
 		const offset = this.getViewOffset();
+		ctx.scale(this.zoom, this.zoom);
 		ctx.translate(-offset.x, -offset.y);
 	}
-
-	/**
-	 * Reset the camera transform.
-	 * Call this after rendering to restore the context state.
-	 */
-	resetTransform(ctx: CanvasRenderingContext2D): void {
+	resetTransform(ctx: CanvasRenderingContext2D) {
 		ctx.setTransform(1, 0, 0, 1, 0, 0);
 	}
 }

@@ -35,6 +35,7 @@ This PBI centralizes button styles into the design system.
 ## Acceptance Criteria
 
 ### Design Tokens
+
 - [ ] Add button-specific tokens to `styles.css`:
   - `--button-padding-x`, `--button-padding-y`
   - `--button-font-size`
@@ -43,6 +44,7 @@ This PBI centralizes button styles into the design system.
   - `--button-transition`
 
 ### Button Variants
+
 - [ ] **Ghost Button** (default): Transparent background, neon-blue border
   - Normal: transparent bg, neon-blue border + text
   - Hover: neon-blue bg, void text
@@ -57,6 +59,7 @@ This PBI centralizes button styles into the design system.
   - Focus: underline or outline
 
 ### Global Styles
+
 - [ ] Add `.btn`, `.btn-ghost`, `.btn-filled`, `.btn-link` classes to `styles.css`
 - [ ] All button classes include:
   - `cursor: pointer`
@@ -66,12 +69,14 @@ This PBI centralizes button styles into the design system.
   - Focus-visible states
 
 ### Component Updates
+
 - [ ] `GameOver.svelte`: Replace `.primary`/`.secondary` with `.btn-filled`/`.btn-ghost`
 - [ ] `MenuOverlay.svelte`: Replace `.start-button` with `.btn-ghost`
 - [ ] `Settings.svelte`: Replace `.back-button` with `.btn-ghost`
 - [ ] Remove duplicated button CSS from all components
 
 ### Accessibility
+
 - [ ] All buttons have visible focus indicators
 - [ ] Focus indicators use `focus-visible` (not `focus`)
 - [ ] Minimum touch target 44x44px maintained
@@ -85,15 +90,16 @@ This PBI centralizes button styles into the design system.
 ```css
 /* apps/web/src/styles.css */
 :root {
-  /* Button Tokens */
-  --button-padding-x: var(--spacing-lg);
-  --button-padding-y: var(--spacing-sm);
-  --button-font-size: 1rem;
-  --button-font-weight: 500;
-  --button-border-width: 2px;
-  --button-min-height: 44px;
-  --button-border-radius: var(--radius-sm);
-  --button-transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+	/* Button Tokens */
+	--button-padding-x: var(--spacing-lg);
+	--button-padding-y: var(--spacing-sm);
+	--button-font-size: 1rem;
+	--button-font-weight: 500;
+	--button-border-width: 2px;
+	--button-min-height: 44px;
+	--button-border-radius: var(--radius-sm);
+	--button-transition:
+		background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 ```
 
@@ -102,60 +108,60 @@ This PBI centralizes button styles into the design system.
 ```css
 /* Base button reset */
 .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--button-padding-y) var(--button-padding-x);
-  font-family: inherit;
-  font-size: var(--button-font-size);
-  font-weight: var(--button-font-weight);
-  line-height: 1;
-  min-height: var(--button-min-height);
-  border-radius: var(--button-border-radius);
-  cursor: pointer;
-  text-decoration: none;
-  transition: var(--button-transition);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--button-padding-y) var(--button-padding-x);
+	font-family: inherit;
+	font-size: var(--button-font-size);
+	font-weight: var(--button-font-weight);
+	line-height: 1;
+	min-height: var(--button-min-height);
+	border-radius: var(--button-border-radius);
+	cursor: pointer;
+	text-decoration: none;
+	transition: var(--button-transition);
 }
 
 .btn:focus-visible {
-  outline: 2px solid var(--color-neon-blue);
-  outline-offset: 2px;
+	outline: 2px solid var(--color-neon-blue);
+	outline-offset: 2px;
 }
 
 /* Ghost variant (default) */
 .btn-ghost {
-  background: transparent;
-  border: var(--button-border-width) solid var(--color-neon-blue);
-  color: var(--color-neon-blue);
+	background: transparent;
+	border: var(--button-border-width) solid var(--color-neon-blue);
+	color: var(--color-neon-blue);
 }
 
 .btn-ghost:hover {
-  background: var(--color-neon-blue);
-  color: var(--color-void);
+	background: var(--color-neon-blue);
+	color: var(--color-void);
 }
 
 /* Filled variant */
 .btn-filled {
-  background: var(--color-neon-blue);
-  border: var(--button-border-width) solid var(--color-neon-blue);
-  color: var(--color-void);
+	background: var(--color-neon-blue);
+	border: var(--button-border-width) solid var(--color-neon-blue);
+	color: var(--color-void);
 }
 
 .btn-filled:hover {
-  filter: brightness(1.2);
+	filter: brightness(1.2);
 }
 
 /* Link variant */
 .btn-link {
-  background: transparent;
-  border: none;
-  color: var(--color-text-dim);
-  padding: var(--spacing-sm);
-  min-height: auto;
+	background: transparent;
+	border: none;
+	color: var(--color-text-dim);
+	padding: var(--spacing-sm);
+	min-height: auto;
 }
 
 .btn-link:hover {
-  color: var(--color-text);
+	color: var(--color-text);
 }
 ```
 
@@ -205,6 +211,7 @@ This PBI centralizes button styles into the design system.
 ## Testing Checklist
 
 ### Visual Regression
+
 - [ ] GameOver buttons look identical to before
 - [ ] MenuOverlay start button looks identical
 - [ ] Settings back button looks identical
@@ -212,11 +219,13 @@ This PBI centralizes button styles into the design system.
 - [ ] Focus states visible on keyboard navigation
 
 ### Accessibility
+
 - [ ] Tab through all buttons - focus ring visible
 - [ ] Touch target at least 44x44px (inspect with DevTools)
 - [ ] Works with keyboard (Enter/Space activates)
 
 ### Mobile
+
 - [ ] Buttons tappable on mobile
 - [ ] No layout issues on small screens
 

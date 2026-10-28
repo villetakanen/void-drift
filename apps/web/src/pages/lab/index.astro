@@ -1,41 +1,36 @@
 ---
 import LabLayout from "../../layouts/LabLayout.astro";
-import Canvas from "../../components/Canvas.svelte";
 ---
 
 <LabLayout title="Dashboard">
-    <div class="dashboard-shell">
-        <p>Select an asset from the left sidebar to begin tuning.</p>
-        <div class="hint">← Use the nav rail to navigate</div>
-    </div>
+	<div class="dashboard-shell">
+		<p>Select an asset from the left sidebar to begin tuning.</p>
+		<div class="hint">← Use the nav rail to navigate</div>
+	</div>
 </LabLayout>
 
 <style>
-    .dashboard-shell {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        background-image:
-            linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-            linear-gradient(
-                90deg,
-                rgba(255, 255, 255, 0.05) 1px,
-                transparent 1px
-            );
-        background-size: 20px 20px;
-        color: var(--color-text-dim);
-    }
+.dashboard-shell {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	background-image:
+		linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+	background-size: 20px 20px;
+	color: var(--color-text-dim);
+}
 
-    p {
-        color: var(--color-acid-lime);
-        font-size: 1.25rem;
-        margin-bottom: 0.5rem;
-    }
+p {
+	color: var(--color-acid-lime);
+	font-size: 1.25rem;
+	margin-bottom: 0.5rem;
+}
 
-    .hint {
-        font-size: 0.9rem;
-        opacity: 0.6;
-    }
+.hint {
+	font-size: 0.9rem;
+	opacity: 0.6;
+}
 </style>

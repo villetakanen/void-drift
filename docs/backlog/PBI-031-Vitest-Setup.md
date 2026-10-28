@@ -27,15 +27,18 @@ Phase 6 involves major architectural changes (Package Restructure, Supabase inte
 ## Acceptance Criteria
 
 ### Tooling Setup
+
 - [ ] `vitest` installed as a devDependency in the root.
 - [ ] `pnpm test` script added to root `package.json` to run all tests across the workspace.
 - [ ] Vitest configured for TypeScript support.
 
 ### Package Integration
+
 - [ ] Each new package (`@void-drift/core`, `@void-drift/mode-a`) has a `test` script in its `package.json`.
 - [ ] `vitest.config.ts` created if specific package configuration is needed.
 
 ### Verification
+
 - [ ] At least one meaningful unit test implemented for core physics or logic.
 - [ ] CI/Build process fails if tests fail (to be integrated into Phase 6 workflow).
 
@@ -44,14 +47,17 @@ Phase 6 involves major architectural changes (Package Restructure, Supabase inte
 ## Technical Implementation
 
 ### 1. Installation
+
 ```bash
 pnpm add -wD vitest @vitest/ui
 ```
 
 ### 2. Configuration (`vitest.config.ts`)
+
 Standard configuration for workspace projects.
 
 ### 3. Root Script
+
 ```json
 "scripts": {
   "test": "pnpm -r test"
@@ -61,6 +67,7 @@ Standard configuration for workspace projects.
 ---
 
 ## Definition of Done
+
 - [ ] Vitest is installed and functional.
 - [ ] `pnpm test` successfully executes across the workspace.
 - [ ] A sample test exists and passes.
@@ -69,6 +76,7 @@ Standard configuration for workspace projects.
 ---
 
 ## Sign-Off
+
 **Specification Author:** @Lead  
 **Assigned To:** @Dev  
 **Approved:** ⏳ Pending

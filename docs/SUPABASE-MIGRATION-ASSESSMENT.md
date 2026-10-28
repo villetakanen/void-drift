@@ -68,6 +68,7 @@ The architecture team's recommendation to pivot from Firebase to Supabase is **t
 ## Migration Strategy
 
 ### Phase 1: Foundation (v0.1.1 - v0.1.3)
+
 **Goal:** Prepare architecture for backend integration
 
 **PBI-021: Package Restructure (v0.1.1)**
@@ -86,9 +87,11 @@ The architecture team's recommendation to pivot from Firebase to Supabase is **t
 ---
 
 ### Phase 2: Supabase Integration (v0.2.0)
+
 **Goal:** Implement high score system with Supabase
 
 #### PBI-026: Supabase Project Setup (NEW)
+
 **Replaces:** PBI-025 Firebase Project Setup  
 **Priority:** HIGH  
 **Estimate:** 2 Story Points
@@ -134,6 +137,7 @@ create policy "Users can submit scores"
 ---
 
 #### PBI-027: Supabase Client Setup (NEW)
+
 **Priority:** HIGH  
 **Estimate:** 3 Story Points
 
@@ -146,7 +150,7 @@ create policy "Users can submit scores"
 **Implementation:**
 ```typescript
 // packages/mode-a/src/lib/supabase.ts
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
@@ -155,17 +159,20 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Auto-signin on first visit
 export async function ensureAnonymousSession() {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) {
-    await supabase.auth.signInAnonymously();
-  }
-  return session;
+	const {
+		data: { session },
+	} = await supabase.auth.getSession();
+	if (!session) {
+		await supabase.auth.signInAnonymously();
+	}
+	return session;
 }
 ```
 
 ---
 
 #### PBI-028: High Score Schema + Submission (NEW)
+
 **Priority:** HIGH  
 **Estimate:** 3 Story Points
 
@@ -178,14 +185,14 @@ export async function ensureAnonymousSession() {
 **Schema:**
 ```typescript
 // packages/mode-a/src/schemas/highscore.ts
-import { z } from 'zod';
+import { z } from "zod";
 
 export const HighScoreSchema = z.object({
-  initials: z.string().regex(/^[A-Z]{3}$/),
-  uidHash: z.string().length(6),
-  seconds: z.number().int().positive().max(999999),
-  deathCause: z.enum(['STAR', 'HULL', 'POWER']),
-  userId: z.string().uuid(),
+	initials: z.string().regex(/^[A-Z]{3}$/),
+	uidHash: z.string().length(6),
+	seconds: z.number().int().positive().max(999999),
+	deathCause: z.enum(["STAR", "HULL", "POWER"]),
+	userId: z.string().uuid(),
 });
 
 export type HighScore = z.infer<typeof HighScoreSchema>;
@@ -194,6 +201,7 @@ export type HighScore = z.infer<typeof HighScoreSchema>;
 ---
 
 #### PBI-029: Initials Entry UI (NEW)
+
 **Priority:** HIGH  
 **Estimate:** 5 Story Points
 
@@ -213,6 +221,7 @@ Game Over → InitialsEntry (if top 20) → Submitting... → Leaderboard
 ---
 
 #### PBI-030: Leaderboard Display (NEW)
+
 **Priority:** HIGH  
 **Estimate:** 3 Story Points
 
@@ -227,10 +236,10 @@ Game Over → InitialsEntry (if top 20) → Submitting... → Leaderboard
 **Query:**
 ```typescript
 const { data: scores } = await supabase
-  .from('highscores')
-  .select('*')
-  .order('seconds', { ascending: true })
-  .limit(20);
+	.from("highscores")
+	.select("*")
+	.order("seconds", { ascending: true })
+	.limit(20);
 ```
 
 ---
@@ -272,37 +281,37 @@ create table matches (
 ```typescript
 // Broadcast every 50-66ms
 type ShipUpdateEvent = {
-  type: 'ship_update';
-  payload: {
-    player_id: string;
-    timestamp: number;
-    position: { x: number; y: number };
-    velocity: { x: number; y: number };
-    rotation: number;
-    input_state: { thrust: boolean; turn_left: boolean };
-  };
+	type: "ship_update";
+	payload: {
+		player_id: string;
+		timestamp: number;
+		position: { x: number; y: number };
+		velocity: { x: number; y: number };
+		rotation: number;
+		input_state: { thrust: boolean; turn_left: boolean };
+	};
 };
 ```
 
 **Client-Side Interpolation (Pseudocode):**
 ```typescript
 function onReceiveUpdate(payload) {
-  enemyShip.targetPos = payload.position;
-  enemyShip.targetVel = payload.velocity;
-  enemyShip.lastUpdate = now();
+	enemyShip.targetPos = payload.position;
+	enemyShip.targetVel = payload.velocity;
+	enemyShip.lastUpdate = now();
 }
 
 function gameLoop(deltaTime) {
-  // 1. Dead Reckoning: Predict where enemy is NOW
-  const timeSinceUpdate = now() - enemyShip.lastUpdate;
-  const predictedPos = {
-    x: enemyShip.targetPos.x + enemyShip.targetVel.x * timeSinceUpdate,
-    y: enemyShip.targetPos.y + enemyShip.targetVel.y * timeSinceUpdate,
-  };
+	// 1. Dead Reckoning: Predict where enemy is NOW
+	const timeSinceUpdate = now() - enemyShip.lastUpdate;
+	const predictedPos = {
+		x: enemyShip.targetPos.x + enemyShip.targetVel.x * timeSinceUpdate,
+		y: enemyShip.targetPos.y + enemyShip.targetVel.y * timeSinceUpdate,
+	};
 
-  // 2. Smooth Lerp: Visual sprite moves toward predicted position
-  visualSprite.x = lerp(visualSprite.x, predictedPos.x, 0.1);
-  visualSprite.y = lerp(visualSprite.y, predictedPos.y, 0.1);
+	// 2. Smooth Lerp: Visual sprite moves toward predicted position
+	visualSprite.x = lerp(visualSprite.x, predictedPos.x, 0.1);
+	visualSprite.y = lerp(visualSprite.y, predictedPos.y, 0.1);
 }
 ```
 
@@ -317,32 +326,34 @@ function gameLoop(deltaTime) {
 
 ### Technical Risks
 
-| Risk | Probability | Impact | Mitigation |
-|------|-------------|--------|------------|
-| Supabase Realtime rate limits | MEDIUM | MEDIUM | Optimize packet rate (15Hz max), batch updates |
-| PostgreSQL query performance | LOW | LOW | Indexed `ORDER BY seconds`, top 20 limit |
-| Anonymous auth abuse | MEDIUM | MEDIUM | Rate limit submissions (1/min per user), validate schema |
-| Latency spikes in multiplayer | MEDIUM | HIGH | Dead reckoning + interpolation (already planned) |
-| RLS policy bypass | LOW | CRITICAL | Thorough testing in RLS Playground, penetration testing |
+| Risk                          | Probability | Impact   | Mitigation                                               |
+| ----------------------------- | ----------- | -------- | -------------------------------------------------------- |
+| Supabase Realtime rate limits | MEDIUM      | MEDIUM   | Optimize packet rate (15Hz max), batch updates           |
+| PostgreSQL query performance  | LOW         | LOW      | Indexed `ORDER BY seconds`, top 20 limit                 |
+| Anonymous auth abuse          | MEDIUM      | MEDIUM   | Rate limit submissions (1/min per user), validate schema |
+| Latency spikes in multiplayer | MEDIUM      | HIGH     | Dead reckoning + interpolation (already planned)         |
+| RLS policy bypass             | LOW         | CRITICAL | Thorough testing in RLS Playground, penetration testing  |
 
 ### Migration Risks
 
-| Risk | Probability | Impact | Mitigation |
-|------|-------------|--------|------------|
-| Scope creep to multiplayer | HIGH | HIGH | Defer Mode B to Phase 9+ (post-v1.0.0) |
-| Team Firebase expertise loss | LOW | LOW | Firebase never implemented—zero knowledge loss |
-| Environment variable confusion | MEDIUM | LOW | Clear `.env.example`, documentation |
+| Risk                           | Probability | Impact | Mitigation                                     |
+| ------------------------------ | ----------- | ------ | ---------------------------------------------- |
+| Scope creep to multiplayer     | HIGH        | HIGH   | Defer Mode B to Phase 9+ (post-v1.0.0)         |
+| Team Firebase expertise loss   | LOW         | LOW    | Firebase never implemented—zero knowledge loss |
+| Environment variable confusion | MEDIUM      | LOW    | Clear `.env.example`, documentation            |
 
 ---
 
 ## Cost Comparison
 
 ### Firebase Free Tier
+
 - **Firestore:** 1GB storage, 50K reads/day
 - **Auth:** Unlimited
 - **Realtime Database:** 1GB storage, 100 simultaneous connections
 
 ### Supabase Free Tier
+
 - **PostgreSQL:** 500MB storage, unlimited queries
 - **Auth:** 50K active users/month
 - **Realtime:** 200 concurrent connections, 2GB bandwidth/month
@@ -391,6 +402,7 @@ function gameLoop(deltaTime) {
 ## Success Metrics
 
 ### v0.2.0 Launch Criteria
+
 - [ ] Player can submit initials after death
 - [ ] Leaderboard displays top 20 scores
 - [ ] Scores persist across sessions
@@ -399,6 +411,7 @@ function gameLoop(deltaTime) {
 - [ ] Leaderboard loads in <2 seconds
 
 ### Technical Validation
+
 - [ ] RLS policies tested in Supabase SQL Editor
 - [ ] No console errors during auth flow
 - [ ] Session persists across page refreshes
@@ -410,6 +423,7 @@ function gameLoop(deltaTime) {
 ## Appendix: File Changes Required
 
 ### New Files (Supabase)
+
 - `docs/SUPABASE-MIGRATION-ASSESSMENT.md` ← This document
 - `docs/backlog/PBI-026-Supabase-Project-Setup.md`
 - `docs/backlog/PBI-027-Supabase-Client-Setup.md`
@@ -423,6 +437,7 @@ function gameLoop(deltaTime) {
 - `apps/web/src/pages/leaderboard.astro`
 
 ### Modified Files
+
 - `docs/PHASE-6-ROADMAP.md` (replace Firebase sections)
 - `packages/engine/package.json` (remove firebase, add @supabase/supabase-js — after PBI-021)
 - `apps/web/src/components/GameOver.svelte` (integrate InitialsEntry flow)
@@ -430,6 +445,7 @@ function gameLoop(deltaTime) {
 - `.gitignore` (ensure .env.local ignored)
 
 ### Deleted Files
+
 - `docs/backlog/PBI-025-Firebase-Project-Setup.md` (replaced by PBI-026)
 - `packages/engine/src/lib/firebase.ts` (empty placeholder, replaced by supabase.ts in mode-a)
 

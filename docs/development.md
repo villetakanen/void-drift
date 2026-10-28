@@ -1,12 +1,11 @@
 # Development and verification
 
-Use conversation to request changes, inspect evidence, and review the game/Lab.
-An IDE is optional. Read [architecture](architecture.md) for implementation boundaries
-and [design](design.md) for experience changes.
+Develop through conversation and browser inspection; an IDE is optional.
+Product contracts live in [playable alpha](specs/playable-alpha.md).
 
 ## Setup
 
-Use Node 22 or newer and pnpm 10.33.0 (pinned in `package.json`).
+Use Node 22+, pnpm 10.33.0 and Java 21 (Firebase emulators).
 
 ```sh
 pnpm install --frozen-lockfile
@@ -14,51 +13,64 @@ pnpm exec playwright install chromium
 pnpm dev
 ```
 
-Open `http://localhost:4321` for the game and `/lab` for design examples. Missing
-Supabase credentials permit local game/Lab use; shared scores show unavailable.
-Existing configured sessions still use the legacy backend pending the Firebase migration.
+Open `http://localhost:4321` for play, `/lab/flight` for flight trials and `/lab` for
+asset examples. Backend configuration is optional for local flight. Copy the public
+Firebase keys from `.env.example` into ignored `.env.local` to enable shared scores.
+Set `JAVA_HOME` and put its `bin` on `PATH` if Java is not installed system-wide.
 
-## Checks
+## Required gates
+
+`pnpm verify` runs every stage, retains individual results and exits nonzero on any
+failure or source change during verification. It never auto-fixes source.
+
+| Command                 | Evidence                                                                                               |
+| ----------------------- | ------------------------------------------------------------------------------------------------------ |
+| `pnpm check:contracts`  | Agent guide below 80 lines and context links exist                                                     |
+| `pnpm lint`             | Biome formatting/imports/recommended rules, warnings fail                                              |
+| `pnpm check:types`      | Astro, Svelte and workspace TypeScript, warnings fail                                                  |
+| `pnpm test`             | Physics, stock profile effects, replay, death/reset, camera/wrap                                       |
+| `pnpm build`            | Static production build                                                                                |
+| `pnpm test:browser`     | Real keyboard movement, multi-touch/cancel, pause, replay, import, death/restart and visual comparison |
+| `pnpm test:rules`       | Firestore emulator allowed/rejected access cases                                                       |
+| `pnpm test:competition` | Two browser identities submit completed runs; third reads both scores via emulators                    |
+
+Browser tests own ports 4322/4323; emulators use 8080/9099. Offline browser tests
+blank live configuration and block external requests. Competition uses `demo-void-drift`,
+never the live project. GitHub Actions runs these same gates with Java 21 and Chromium.
+
+`artifacts/verification/latest.json` records revision, dirty state, source fingerprint,
+environment, commands and logs. Ignored reports/traces/screenshots remain inspectable
+with `pnpm exec playwright show-report`. A later source change invalidates evidence.
+Commit identity and deployment identity are separate from passing working-tree checks.
+
+## Visual review and experience
+
+The graphics baseline is a fixed viewport, seed and 450-tick paused replay. Text overlays
+are hidden for cross-platform canvas comparison. Its initial image was agent-inspected;
+human assessment of fidelity and fun remains pending. Update a baseline only after
+reviewing the intended visual change, then repeat the comparison without update mode.
+Automated tests do not prove sustained 60 FPS or difficulty balance on a physical phone.
+
+## Release
+
+The selected Firebase project is `void-drift-alpha` (Spark), database `(default)` in
+`eur3`. Anonymous authentication must be enabled. Do not upgrade billing or Identity
+Platform to work around setup failures. Public web configuration is local, not committed.
+
+After successful verification and an authorized commit/push:
 
 ```sh
-pnpm verify
+pnpm build
+pnpm exec firebase deploy --only firestore,hosting --project void-drift-alpha
 ```
 
-This runs every stage, records individual results, and exits unsuccessfully if any
-stage fails or source files change during verification. It never auto-fixes source.
+Hosting serves `apps/web/dist`. Verify game, Lab, authentication and score reads at
+`https://void-drift-alpha.web.app`. Record revision and deployment result separately;
+passing local tests alone do not mean released. Hosting rollback is available in the
+Firebase console; rules changes require redeploying the reviewed previous rules.
 
-| Stage                  | Scope                                                                                        |
-| ---------------------- | -------------------------------------------------------------------------------------------- |
-| `pnpm check:contracts` | Agent guide under 80 lines; referenced context paths exist                                   |
-| `pnpm lint`            | Biome formatting, imports, and recommended rules; warnings fail                              |
-| `pnpm check:types`     | Astro diagnostics plus explicit workspace TypeScript checking                                |
-| `pnpm test`            | Unit tests in packages                                                                       |
-| `pnpm build`           | Production static build                                                                      |
-| `pnpm test:browser`    | Chromium: local ship selection/start/input feedback, Lab drawing changes, unavailable scores |
+## Known limits
 
-Browser tests launch their own local server on port 4322, blank backend credentials,
-and block external browser requests. They do not reuse a potentially stale server.
-Failures retain traces/screenshots; the Lab test attaches a drawing capture.
-Run `pnpm exec playwright show-report` to inspect browser evidence.
-
-`artifacts/verification/latest.json` records commands, statuses, log paths, revision,
-working-tree state, environment, and a source fingerprint including nonignored new files.
-Logs and browser artifacts are local ignored output. Evidence describes the tested
-working tree; a later change requires fresh verification. It is not deployment evidence.
-
-GitHub Actions is configured to run the same command and upload evidence even on failure.
-It only runs after an explicitly authorized push; branch protection is not configured here.
-
-## Adoption status
-
-This is an initial, deliberately strict gate. Existing lint and type failures remain
-visible until repaired; it is not a fully green baseline. New tooling files are checked
-separately during introduction. A failed legacy stage does not suppress other stages.
-
-The browser checks currently cover UI input feedback, not proof of a specific ship
-trajectory. Deterministic simulation/replay, touch cancellation, game-over/restart,
-camera framing/wrap, Firebase rules, and visual regression baselines still need their
-own contracts and checks. Captured Lab images are evidence, not approved golden images.
-
-Do not turn off rules or auto-update visual baselines to conceal failures. Repair
-legacy debt in reviewable increments, preserving the owner's pre-existing changes.
+Client-reported scores support casual competition only. Human gameplay review,
+physical mobile performance and protected-branch enforcement are not automated passes.
+Historical backlog items are not new assignments.

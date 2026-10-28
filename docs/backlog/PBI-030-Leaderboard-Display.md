@@ -30,28 +30,33 @@ This PBI implements the leaderboard display page that shows the top 20 high scor
 ## Acceptance Criteria
 
 ### Route Creation
+
 - [ ] Create `/leaderboard` route in Astro
 - [ ] Accessible from GameOver screen
 - [ ] Accessible from main menu
 
 ### Data Display
+
 - [ ] Display top 20 scores from Supabase
 - [ ] Show: Rank, Initials, UID Hash, Time, Death Cause
 - [ ] Highlight current player's score (if in top 20)
 - [ ] Scores ordered by time (ascending)
 
 ### Loading States
+
 - [ ] Show loading spinner while fetching data
 - [ ] Handle empty state (no scores yet)
 - [ ] Handle error state (network failure)
 
 ### Formatting
+
 - [ ] Time displayed as MM:SS format
 - [ ] Death cause icons/colors (STAR = red, HULL = orange, POWER = blue)
 - [ ] Rank displayed as #1, #2, etc.
 - [ ] Current player's score highlighted
 
 ### Navigation
+
 - [ ] "Play Again" button → returns to game
 - [ ] "Back to Menu" button → returns to main menu
 - [ ] Link from GameOver screen after submission
@@ -71,7 +76,7 @@ import Leaderboard from '../components/Leaderboard.svelte';
 ---
 
 <Layout title="Leaderboard - Void Drift">
-  <Leaderboard client:load />
+	<Leaderboard client:load />
 </Layout>
 ```
 
@@ -159,76 +164,70 @@ import Leaderboard from '../components/Leaderboard.svelte';
 </script>
 
 <div class="leaderboard-page">
-  <header>
-    <h1>Global Leaderboard</h1>
-    <p class="subtitle">Top 20 Longest Survival Times</p>
-  </header>
+	<header>
+		<h1>Global Leaderboard</h1>
+		<p class="subtitle">Top 20 Longest Survival Times</p>
+	</header>
 
-  {#if isLoading}
-    <div class="loading">
-      <div class="spinner"></div>
-      <p>Loading leaderboard...</p>
-    </div>
-  {:else if error}
-    <div class="error">
-      <p>Failed to load leaderboard</p>
-      <p class="error-message">{error}</p>
-      <button class="btn btn-filled" onclick={loadLeaderboard}>
-        Retry
-      </button>
-    </div>
-  {:else if scores.length === 0}
-    <div class="empty">
-      <p>No scores yet!</p>
-      <p class="empty-hint">Be the first to submit a score.</p>
-      <a href="/" class="btn btn-filled">Play Game</a>
-    </div>
-  {:else}
-    <div class="leaderboard">
-      <table>
-        <thead>
-          <tr>
-            <th class="rank-col">Rank</th>
-            <th class="player-col">Player</th>
-            <th class="time-col">Time</th>
-            <th class="death-col">Death</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each scores as score, index}
-            <tr class:highlight={score.user_id === currentUserId}>
-              <td class="rank-col">
-                #{index + 1}
-              </td>
-              <td class="player-col">
-                <span class="initials">{score.initials}</span>
-                <span class="uid-hash">_{score.uid_hash}</span>
-              </td>
-              <td class="time-col">
-                {formatTime(score.seconds)}
-              </td>
-              <td class="death-col">
-                <span
-                  class="death-badge"
-                  style="color: {getDeathCauseColor(score.death_cause)}"
-                  title={score.death_cause}
-                >
-                  {getDeathCauseIcon(score.death_cause)} {score.death_cause}
-                </span>
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-    </div>
+	{#if isLoading}
+		<div class="loading">
+			<div class="spinner"></div>
+			<p>Loading leaderboard...</p>
+		</div>
+	{:else if error}
+		<div class="error">
+			<p>Failed to load leaderboard</p>
+			<p class="error-message">{error}</p>
+			<button class="btn btn-filled" onclick={loadLeaderboard}>Retry</button>
+		</div>
+	{:else if scores.length === 0}
+		<div class="empty">
+			<p>No scores yet!</p>
+			<p class="empty-hint">Be the first to submit a score.</p>
+			<a href="/" class="btn btn-filled">Play Game</a>
+		</div>
+	{:else}
+		<div class="leaderboard">
+			<table>
+				<thead>
+					<tr>
+						<th class="rank-col">Rank</th>
+						<th class="player-col">Player</th>
+						<th class="time-col">Time</th>
+						<th class="death-col">Death</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each scores as score, index}
+						<tr class:highlight={score.user_id === currentUserId}>
+							<td class="rank-col">#{index + 1}</td>
+							<td class="player-col">
+								<span class="initials">{score.initials}</span>
+								<span class="uid-hash">_{score.uid_hash}</span>
+							</td>
+							<td class="time-col">
+								{formatTime(score.seconds)}
+							</td>
+							<td class="death-col">
+								<span
+									class="death-badge"
+									style="color: {getDeathCauseColor(score.death_cause)}"
+									title={score.death_cause}
+								>
+									{getDeathCauseIcon(score.death_cause)} {score.death_cause}
+								</span>
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
 
-    <div class="actions">
-      <a href="/" class="btn btn-filled">Play Again</a>
-      <button class="btn btn-ghost" onclick={loadLeaderboard}>
-        Refresh
-      </button>
-    </div>
-  {/if}
+		<div class="actions">
+			<a href="/" class="btn btn-filled">Play Again</a>
+			<button class="btn btn-ghost" onclick={loadLeaderboard}>Refresh</button>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -426,12 +425,14 @@ import Leaderboard from '../components/Leaderboard.svelte';
 ## Testing Checklist
 
 ### Data Fetching
+
 - [ ] Leaderboard loads on page load
 - [ ] Shows top 20 scores only
 - [ ] Scores ordered by time (ascending)
 - [ ] Tie-breaker uses `created_at` (earlier = higher rank)
 
 ### Display Formatting
+
 - [ ] Rank displays as #1, #2, etc.
 - [ ] Initials + UID hash displayed correctly
 - [ ] Time formatted as MM:SS (e.g., 123 seconds = "2:03")
@@ -439,23 +440,27 @@ import Leaderboard from '../components/Leaderboard.svelte';
 - [ ] STAR = red, HULL = orange, POWER = blue
 
 ### Highlighting
+
 - [ ] Submit a score
 - [ ] Navigate to `/leaderboard`
 - [ ] Verify your score is highlighted (if in top 20)
 - [ ] Verify no highlight if not in top 20
 
 ### Loading States
+
 - [ ] Initial load shows spinner
 - [ ] Data loads and spinner disappears
 - [ ] Refresh button shows spinner during reload
 
 ### Empty State
+
 - [ ] Clear all scores from Supabase
 - [ ] Navigate to `/leaderboard`
 - [ ] Verify "No scores yet" message
 - [ ] Verify "Play Game" button works
 
 ### Error State
+
 - [ ] Disconnect network
 - [ ] Navigate to `/leaderboard`
 - [ ] Verify error message displays
@@ -464,11 +469,13 @@ import Leaderboard from '../components/Leaderboard.svelte';
 - [ ] Verify data loads successfully
 
 ### Navigation
+
 - [ ] "Play Again" button navigates to `/`
 - [ ] "Refresh" button reloads data
 - [ ] Back button returns to previous page
 
 ### Mobile
+
 - [ ] Test on mobile viewport (320px wide)
 - [ ] Table scrolls horizontally if needed
 - [ ] Text remains readable

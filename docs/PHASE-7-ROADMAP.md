@@ -22,6 +22,7 @@ Phase 7 shifts focus from infrastructure (architecture/high scores) to **User Ex
 ### Track A: Gameplay Variety (v0.2.x)
 
 #### PBI-032: Multi-Planet System
+
 **Priority:** HIGH
 **Estimate:** 5 Story Points
 **Target Version:** v0.2.1
@@ -30,9 +31,7 @@ Phase 7 shifts focus from infrastructure (architecture/high scores) to **User Ex
 - Refactor `SURVIVAL_CONFIG` to support an array of planets instead of a single object.
 - Update `packages/core/.../physics` to calculate gravity and collisions for `N` planets.
 - Configure 3 specific planets for the default mode:
-    1. **The Rock:** Existing large planet, slow orbit.
-    2. **The Gas:** Medium planet, faster orbit, larger gravity well.
-    3. **The Moon:** Small, fast, erratic orbit (optional: retrograde).
+  1. **The Rock:** Existing large planet, slow orbit. 2. **The Gas:** Medium planet, faster orbit, larger gravity well. 3. **The Moon:** Small, fast, erratic orbit (optional: retrograde).
 
 **Success Criteria:**
 - Physics engine handles multiple gravity sources correctly (vector addition).
@@ -46,13 +45,14 @@ Phase 7 shifts focus from infrastructure (architecture/high scores) to **User Ex
 ### Track B: The "Juice" (v0.3.0)
 
 #### PBI-033: Visual Juice (Screen Shake & Impacts)
+
 **Priority:** MEDIUM
 **Estimate:** 3 Story Points
 **Target Version:** v0.2.2
 
 **What It Does:**
 - Implement a **Screen Shake** system controlled by a "trauma" value that decays over time.
-    - Impact = High trauma.
+  - Impact = High trauma.
     - Near miss / Boost = Low trauma.
 - **Hull Damage Feedback:** Visual flash or color shift on ship when taking damage.
 - **Particle Refinement:** smoother fades, color variance based on speed/source.
@@ -67,6 +67,7 @@ Phase 7 shifts focus from infrastructure (architecture/high scores) to **User Ex
 ---
 
 #### PBI-034: Audio System (Web Audio API)
+
 **Priority:** LOW (DEFERRED)
 **Estimate:** 8 Story Points
 **Target Version:** v0.4.0 (Phase 8)
@@ -80,6 +81,7 @@ Phase 7 shifts focus from infrastructure (architecture/high scores) to **User Ex
 ### Track C: Optimization (v0.3.x)
 
 #### PBI-035: Mobile Performance Audit
+
 **Priority:** LOW
 **Estimate:** 3 Story Points
 **Target Version:** v0.3.1
@@ -87,7 +89,7 @@ Phase 7 shifts focus from infrastructure (architecture/high scores) to **User Ex
 **What It Does:**
 - Profile the game on mid-range devices (iPhone 12 / Pixel 5 class).
 - Optimize canvas rendering:
-    - Use offscreen canvas for static background elements (stars, grid).
+  - Use offscreen canvas for static background elements (stars, grid).
     - Reduce particle count on mobile if needed.
     - Optimize collision detection spatial partitioning (if necessary).
 
@@ -100,6 +102,7 @@ Phase 7 shifts focus from infrastructure (architecture/high scores) to **User Ex
 ---
 
 #### PBI-036: Mobile UX Fidelity
+
 **Priority:** HIGH
 **Estimate:** 2 Story Points
 **Target Version:** v0.2.1
@@ -127,10 +130,12 @@ Phase 7 shifts focus from infrastructure (architecture/high scores) to **User Ex
 ## Success Metrics
 
 ### Gameplay
+
 - **Variety:** Players encounter different orbital configurations each run (due to planet speeds).
 - **Feedback:** Damage is instantly recognized via visual/audio cues (improving reaction times).
 
 ### Technical
+
 - **Performance:** Adding 2 planets does not dip FPS below 60.
 - **Bundle Size:** Remains small (no new heavy assets).
 

@@ -7,9 +7,11 @@
 **Current Version:** 0.0.4
 
 ## 1. Goal
+
 Implement the core game loop and physics engine to prove the "high inertia / drift" gameplay feel. The player must be able to fly a ship using differential thrust controls on a wrapped canvas.
 
 ## 2. Technical Constraints
+
 - **Performance:** Zero garbage collection in the main loop. Reuse vectors/objects.
 - **Rendering:** `CanvasRenderingContext2D` (No WebGL for now, keeping it simple/retro).
 - **Physics:** deterministic simple Newtonian physics (Velocity += Acceleration).
@@ -18,21 +20,25 @@ Implement the core game loop and physics engine to prove the "high inertia / dri
 ## 3. Data Structures (`packages/core/src/lib/schemas/` & `packages/core/src/lib/physics/Physics.ts`)
 
 ### 3.1. Primitives
-*Note: Although we use Zod for network boundaries, inside the hot loop we use raw classes/structs for speed.*
+
+_Note: Although we use Zod for network boundaries, inside the hot loop we use raw classes/structs for speed._
 
 ```typescript
 // packages/core/src/lib/physics/Physics.ts
 export class Vec2 {
-  constructor(public x: number, public y: number) {}
-  // Methods: add, sub, mult, mag, normalize (mutate self where possible)
+	constructor(
+		public x: number,
+		public y: number,
+	) {}
+	// Methods: add, sub, mult, mag, normalize (mutate self where possible)
 }
 
 export interface GameObject {
-  pos: Vec2;
-  vel: Vec2;
-  acc: Vec2;
-  rotation: number; // Radians, 0 = Facing East
-  radius: number;
+	pos: Vec2;
+	vel: Vec2;
+	acc: Vec2;
+	rotation: number; // Radians, 0 = Facing East
+	radius: number;
 }
 ```
 
@@ -41,14 +47,17 @@ export interface GameObject {
 ## 4. Implementation Steps
 
 ### 4.1. The Loop (`packages/core/src/lib/entities/Loop.ts`) ✅
+
 Create a class `GameLoop` that handles:
 - `requestAnimationFrame`
 - Delta time calculation (`dt`).
 - Fixed timestep for Physics (e.g., 60Hz) vs Unlocked Frame Rate for Render.
 
 ### 4.2. Input Handling (`packages/core/src/lib/entities/Input.ts`) ✅
+
 - Listen for `keydown` / `keyup` (Codes: `KeyA`, `KeyD`, `Space`).
 - Normalize inputs into a simple state object:
+
   ```typescript
   {
     leftThruster: boolean;  // A
@@ -58,11 +67,12 @@ Create a class `GameLoop` that handles:
   ```
 
 ### 4.3. Physics Logic (`packages/core/src/lib/physics/Physics.ts`) ✅
+
 Implement `updateShip(ship: GameObject, input: InputState, dt: number)`:
 1. **Rotation:**
    - If `leftThruster`: `rotation += ROT_SPEED * dt`
    - If `rightThruster`: `rotation -= ROT_SPEED * dt`
-   *Note: Differential thrust usually means Left Engine pushes Right side -> Turn Right.*
+     _Note: Differential thrust usually means Left Engine pushes Right side -> Turn Right._
 2. **Thrust:**
    - If `leftThruster && rightThruster`: Apply force vector in direction of `rotation`.
    - `acc = forwardVector * THRUST_POWER`
@@ -76,6 +86,7 @@ Implement `updateShip(ship: GameObject, input: InputState, dt: number)`:
    - Same for Y.
 
 ### 4.4. Rendering (`packages/core/src/lib/entities/Renderer.ts`) ✅
+
 - Clear Canvas.
 - Save Context.
 - Translate to `ship.pos`.
@@ -85,18 +96,21 @@ Implement `updateShip(ship: GameObject, input: InputState, dt: number)`:
 - Restore Context.
 
 ### 4.5. Integration (`apps/web/src/components/GameWrapper.svelte`) ✅
+
 - Mount `<canvas>` with 16:9 viewport constraint.
 - Initialize `GameLoop` on component mount.
 - Handle window resize (maintain aspect ratio, letterbox as needed).
 - **Current Implementation:** Uses Astro + Svelte 5 (Runes) architecture.
 
 ## 5. Tuning Constants (`packages/core/src/lib/config.ts`) ✅
+
 Start with these values and tweak for "Vibe":
 - `SHIP_DRAG`: 0.98 (Air resistance factor per frame, or 0.5 per second).
 - `ROTATION_SPEED`: 3.0 (Radians per second).
 - `THRUST_FORCE`: 100.0 (Pixels/sec^2).
 
 ## 6. Verification ✅
+
 1. ✅ Open App at `localhost:4321`.
 2. ✅ Press 'A': Ship spins Clockwise (differential thrust).
 3. ✅ Press 'D': Ship spins Counter-Clockwise.
@@ -109,6 +123,7 @@ Start with these values and tweak for "Vibe":
 ## 7. Post-Implementation Notes
 
 ### Additional Features Implemented
+
 - **Camera System:** Added `Camera` class for smooth viewport tracking (PBI-013).
 - **Circular Arena:** Changed from rectangular wrapping to circular topology (R=1200px).
 - **Starfield:** Procedural background stars for parallax movement cues.
@@ -116,11 +131,13 @@ Start with these values and tweak for "Vibe":
 - **Design System:** Full CSS token system in `apps/web/src/styles.css`.
 
 ### Performance Achievements
+
 - **60 FPS:** Maintained on desktop and modern mobile devices.
 - **Zero GC:** No object allocation in render loop.
 - **Bundle Size:** Core package remains lightweight (~50KB uncompressed).
 
 ### Architecture Evolution
+
 - Packages consumed as TypeScript source (no intermediate build step).
 - Vite alias resolves `@void-drift/core` and `@void-drift/mode-a` to package sources.
 - Clean separation between shared logic (core), mode-specific logic (mode-a), and presentation (web app).

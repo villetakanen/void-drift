@@ -25,14 +25,14 @@ Current system uses 3 hardcoded planets from `SURVIVAL_CONFIG.PLANETS`. This PBI
 
 ## Parameter Ranges
 
-| Parameter | Range | Notes |
-|-----------|-------|-------|
-| Count | 0-5 | Random per game |
-| Orbit Radius | 200-1000px | Must not overlap |
-| Planet Radius | 10-100px | Physical size |
-| Orbit Speed | ±0.02-0.15 rad/s | Sign = direction |
-| Type | rock/gas/ocean/desert/ice | Random |
-| Ring | 20% probability | Visual only |
+| Parameter     | Range                     | Notes            |
+| ------------- | ------------------------- | ---------------- |
+| Count         | 0-5                       | Random per game  |
+| Orbit Radius  | 200-1000px                | Must not overlap |
+| Planet Radius | 10-100px                  | Physical size    |
+| Orbit Speed   | ±0.02-0.15 rad/s          | Sign = direction |
+| Type          | rock/gas/ocean/desert/ice | Random           |
+| Ring          | 20% probability           | Visual only      |
 
 ---
 
@@ -63,14 +63,17 @@ For each planet:
 ## Technical Implementation
 
 ### config.ts
+
 Add `PLANET_SPAWN_CONFIG` with ranges.
 
 ### planets.ts
+
 - Refactor `initializePlanets()` to call `generatePlanets()`
 - Add `generateRandomPlanet()` helper
 - Add `validatePlacement()` helper
 
 ### GameWrapper.svelte
+
 No changes (already calls `initializePlanets()`).
 
 ---
