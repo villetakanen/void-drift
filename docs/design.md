@@ -38,9 +38,9 @@ to versioned configuration. Feel and fidelity require human playtesting.
 ## Camera and arena
 
 The owner's Star Control 2 reference includes both automatic framing/zoom and arena
-edge wrapping. Develop these together using Lab trials. The alpha frames the ship and central star, zooms out immediately, smooths zoom-in,
+edge wrapping. Develop these together using Lab trials. The alpha frames the ship and central star, snaps between five zoom levels in both directions,
 and snaps after antipodal circular wrapping. Padding and response are tunable in the Lab.
-Keep spatial relationships legible and avoid disorienting traversal across the arena.
+Zoom jumps intentionally invite reorientation; world-space effects remain attached to the scene.
 
 ## Lab practice
 

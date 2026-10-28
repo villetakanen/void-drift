@@ -124,3 +124,35 @@ test("landscape touch engines support simultaneous activation, cancellation and 
 	).toBeVisible();
 	await context.close();
 });
+
+test("Lab configures, previews and shares stepped zoom at a fixed Full HD resolution", async ({
+	page,
+}) => {
+	await page.goto("/lab/flight");
+	const deck = page.locator(".flight-page");
+	await expect(page.locator("canvas")).toHaveAttribute("width", "1920");
+	await expect(page.locator("canvas")).toHaveAttribute("height", "1080");
+	for (const count of [4, 11]) {
+		await page.getByLabel("Zoom levels:").fill(String(count));
+		await page.getByRole("button", { name: "Apply & reset" }).click();
+		await expect(deck).toHaveAttribute("data-zoom-steps", String(count));
+		await page
+			.getByRole("button", { name: "Replay trial", exact: true })
+			.click();
+		const tick = await deck.getAttribute("data-ticks");
+		const position = await deck.getAttribute("data-x");
+		for (let i = 0; i < count; i++) {
+			await page.getByLabel("Preview zoom").selectOption(String(i));
+			await expect(deck).toHaveAttribute("data-zoom-level", String(i));
+			await expect(deck).toHaveAttribute("data-ticks", tick ?? "");
+			await expect(deck).toHaveAttribute("data-x", position ?? "");
+		}
+		await page.getByRole("button", { name: "Export JSON" }).click();
+		expect(
+			JSON.parse(await page.getByLabel("Trial configuration").inputValue())
+				.camera.zoomSteps,
+		).toBe(count);
+		await page.getByRole("link", { name: "Open shareable trial" }).click();
+		await expect(deck).toHaveAttribute("data-zoom-steps", String(count));
+	}
+});

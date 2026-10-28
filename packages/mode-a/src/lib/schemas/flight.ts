@@ -10,6 +10,7 @@ export const FlightSettingsSchema = z.object({
 		powerDrainMultiplier: z.number().min(0.5).max(2),
 	}),
 	camera: z.object({
+		zoomSteps: z.number().int().min(4).max(11).default(5),
 		padding: z.number().min(80).max(400),
 		smoothing: z.number().min(1).max(12),
 	}),

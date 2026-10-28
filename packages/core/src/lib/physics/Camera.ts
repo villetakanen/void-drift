@@ -7,6 +7,8 @@ export interface CameraOptions {
 export class Camera {
 	public pos = new Vec2(960, 540);
 	public zoom = 1;
+	public zoomLevel = 0;
+	public zoomLevels: number[] = [];
 	public viewportWidth: number;
 	public viewportHeight: number;
 	private target = new Vec2(960, 540);
@@ -16,8 +18,8 @@ export class Camera {
 	private view = { x: 0, y: 0 };
 	constructor(options: CameraOptions = {}) {
 		this.smoothing = options.smoothing ?? 4;
-		this.viewportWidth = options.viewportWidth ?? 1280;
-		this.viewportHeight = options.viewportHeight ?? 720;
+		this.viewportWidth = options.viewportWidth ?? 1920;
+		this.viewportHeight = options.viewportHeight ?? 1080;
 	}
 	setTarget(x: number, y: number) {
 		this.target.set(x, y);
@@ -33,28 +35,49 @@ export class Camera {
 		padding: number,
 		smoothing: number,
 		snap = false,
+		zoomSteps = 5,
+		previewLevel: number | null = null,
 	) {
 		this.smoothing = smoothing;
 		this.target.set((shipX + starX) / 2, (shipY + starY) / 2);
-		this.targetZoom = Math.min(
-			1.6,
+		const fit = Math.min(
 			this.viewportWidth / (Math.abs(shipX - starX) + padding * 2),
 			this.viewportHeight / (Math.abs(shipY - starY) + padding * 2),
 		);
-		if (snap) {
-			this.pos.set(this.target.x, this.target.y);
-			this.zoom = this.targetZoom;
+		// The widest view contains the full 1200-unit-radius arena. Levels are
+		// evenly spaced by scale ratio, from the whole system to close flight.
+		const minimum =
+			Math.min(this.viewportWidth, this.viewportHeight) / (2400 + padding * 2);
+		if (
+			this.zoomLevels.length !== zoomSteps ||
+			this.zoomLevels[0] !== minimum
+		) {
+			this.zoomLevels = Array.from(
+				{ length: zoomSteps },
+				(_, i) => minimum * (1.6 / minimum) ** (i / (zoomSteps - 1)),
+			);
+			snap = true;
 		}
+		let level = 0;
+		for (let i = 1; i < this.zoomLevels.length; i++) {
+			// Require 8% spare room to zoom back in; zoom out as soon as needed.
+			const margin = !snap && i > this.zoomLevel ? 1.08 : 1;
+			if (this.zoomLevels[i] * margin <= fit) level = i;
+		}
+		if (previewLevel !== null)
+			level = Math.max(0, Math.min(zoomSteps - 1, previewLevel));
+		if (previewLevel === 0) this.target.set(starX, starY);
+		this.targetZoom = this.zoomLevels[level];
+		if (snap || level !== this.zoomLevel) {
+			this.pos.set(this.target.x, this.target.y);
+		}
+		this.zoomLevel = level;
+		this.zoom = this.targetZoom;
 	}
 	update(dt: number) {
 		const amount = 1 - Math.exp(-this.smoothing * dt);
 		this.pos.x += (this.target.x - this.pos.x) * amount;
 		this.pos.y += (this.target.y - this.pos.y) * amount;
-		// Zoom out immediately enough to retain targets, ease into a closer view.
-		this.zoom =
-			this.targetZoom < this.zoom
-				? this.targetZoom
-				: this.zoom + (this.targetZoom - this.zoom) * amount;
 	}
 	getViewOffset() {
 		this.view.x =

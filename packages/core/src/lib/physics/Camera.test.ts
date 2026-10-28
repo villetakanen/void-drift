@@ -30,3 +30,37 @@ it("reframes immediately on a wrap instead of panning across the arena", () => {
 	c.frame(-230, 540, 960, 540, 160, 4, true);
 	expect(c.pos.x).toBe(365);
 });
+
+it("snaps only to configured levels in both directions without aging world effects", () => {
+	for (let count = 4; count <= 11; count++) {
+		const c = new Camera();
+		const visited = new Set<number>();
+		for (const distance of [0, 300, 600, 900, 1190, 900, 600, 300, 0]) {
+			c.frame(960, 540 + distance, 960, 540, 160, 4, false, count);
+			const zoom = c.zoom;
+			c.update(1 / 60);
+			expect(c.zoom).toBe(zoom);
+			expect(c.zoomLevels).toHaveLength(count);
+			expect(c.zoomLevels).toContain(zoom);
+			visited.add(zoom);
+			const effect = c.worldToScreen(1000, 600);
+			expect(c.screenToWorld(effect.x, effect.y)).toEqual({ x: 1000, y: 600 });
+		}
+		expect(visited.size).toBeGreaterThan(1);
+	}
+});
+
+it("holds the wider level near a threshold and previews every level", () => {
+	const c = new Camera();
+	c.frame(960, 540, 960, 540, 160, 4, true);
+	const threshold = c.zoomLevels[3];
+	const distance = c.viewportHeight / threshold - 320;
+	c.frame(960, 540 + distance + 1, 960, 540, 160, 4);
+	const wider = c.zoom;
+	c.frame(960, 540 + distance - 1, 960, 540, 160, 4);
+	expect(c.zoom).toBe(wider);
+	for (let i = 0; i < 5; i++) {
+		c.frame(960, 540, 960, 540, 160, 4, false, 5, i);
+		expect(c.zoom).toBe(c.zoomLevels[i]);
+	}
+});

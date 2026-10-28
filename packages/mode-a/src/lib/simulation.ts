@@ -24,7 +24,7 @@ export function stockSettings(id: ShipProfileId = "balanced"): FlightSettings {
 	return FlightSettingsSchema.parse({
 		seed: CHALLENGE_SEED,
 		profile: SHIP_PROFILE_BY_ID[id],
-		camera: { padding: 160, smoothing: 4 },
+		camera: { padding: 160, smoothing: 4, zoomSteps: 5 },
 	});
 }
 export class Simulation {

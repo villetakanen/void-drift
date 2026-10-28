@@ -24,7 +24,7 @@ Firebase Auth and Firestore replace Supabase. Paths are
 - Keyboard A/D or arrows activate differential engines; both produce forward thrust.
 - Landscape touch buttons support simultaneous presses, release/cancel and blur reset.
 - Start, pause/resume, death and restart work without page reload or service credentials.
-- Camera frames ship and star, fits their extents with padding, smooths zoom, and snaps
+- Camera frames ship and star, fits their extents with padding, snaps between discrete zoom levels, and snaps
   framing at antipodal arena wrap while preserving ship velocity.
 - Flight Lab shares production flight, offers tuning, seed, restart, pause, step,
   deterministic scripted replay, and JSON import/export with validation errors.
@@ -44,3 +44,27 @@ inward momentum; the camera immediately reframes without a long pan.
 Given invalid Lab JSON, importing it shows an error and preserves the current trial.
 Given Firebase is absent, the game remains playable and shared scores explain their
 unavailability. Given valid configuration, separate anonymous players can compete.
+
+## Stepped zoom — patch 0.3.1
+
+Game and Lab render a fixed 1920×1080 logical view, scaled proportionally to fit.
+The shared camera defaults to five geometrically spaced levels from whole-system
+view (the 1200-unit-radius arena plus padding) to 1.6× close view. Automatic framing
+selects the closest level that fits ship and star with padding. Both zoom directions
+snap immediately, recentering on their midpoint; panning between changes remains
+smooth. Zoom-in requires 8% spare room to prevent threshold flicker. Wraps reset
+framing immediately. This supersedes the earlier continuous zoom behavior.
+
+FlightSettingsSchema validates an integer zoomSteps from 4 through 11; older JSON
+and trial links without it default to five. Lab exposes the count with Apply & reset,
+active level/scale, and an immediate manual preview of every level while paused or
+flying. Preview is Lab-only and resets to automatic on reset/import/replay. JSON
+and shareable links retain the configured count. Invalid imports preserve the trial.
+
+Trails remain world-space samples, transformed together with the ship and planets.
+Changing zoom does not clear trails, advance simulation time, or restart effects.
+
+Acceptance: test counts 4 and 11 through apply, preview, export and shareable links;
+reject fractional/out-of-range counts; exercise snapping in both directions,
+threshold stability, coordinate round-trips, and existing keyboard/touch controls.
+Human review of reorientation and preferred level count remains pending.

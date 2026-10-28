@@ -32,6 +32,9 @@ let power = $state(100);
 let x = $state(460);
 let y = $state(540);
 let zoom = $state(1);
+let zoomLevel = $state(0);
+let activeZoomSteps = $state(5);
+let previewLevel = $state(-1);
 let ticks = $state(0);
 let left = $state(false);
 let right = $state(false);
@@ -60,6 +63,7 @@ let trailY = new Float64Array(80);
 let trailCount = 0;
 function reset(start = false) {
 	input?.reset();
+	previewLevel = -1;
 	simulation = new Simulation(lab ? tuning : stockSettings(chosen));
 	if (start) simulation.start();
 	paused = false;
@@ -80,6 +84,8 @@ function frameCamera(snap = false) {
 		c.padding,
 		c.smoothing,
 		snap,
+		c.zoomSteps,
+		lab && previewLevel >= 0 ? previewLevel : null,
 	);
 }
 function sync() {
@@ -93,6 +99,8 @@ function sync() {
 	wraps = simulation.wraps;
 	cause = simulation.state.deathCause ?? "";
 	zoom = camera?.zoom ?? 1;
+	zoomLevel = camera?.zoomLevel ?? 0;
+	activeZoomSteps = simulation.settings.camera.zoomSteps;
 }
 function selectShip(value: string) {
 	chosen = ShipProfileIdSchema.parse(value);
@@ -205,7 +213,7 @@ onMount(() => {
 		}
 	}
 	renderer = new Renderer(canvas);
-	renderer.resize(1280, 720);
+	renderer.resize(1920, 1080);
 	camera = new Camera();
 	input = new Input(canvas);
 	reset();
@@ -293,6 +301,8 @@ onMount(() => {
 	data-y={y.toFixed(4)}
 	data-ticks={ticks}
 	data-zoom={zoom.toFixed(4)}
+	data-zoom-level={zoomLevel}
+	data-zoom-steps={activeZoomSteps}
 >
 	<header class="flight-header">
 		<a href="/" class="brand">VOID<span>·</span>DRIFT</a>
@@ -489,6 +499,41 @@ onMount(() => {
 						bind:value={tuning.profile[key as "thrustMultiplier"]}
 					>
 				{/each}
+				<h3>Solar system zoom</h3>
+				<p>Fixed 1920 × 1080 · 16:9. Zoom snaps; trails stay in space.</p>
+				<label for="zoom-steps">Zoom levels: {tuning.camera.zoomSteps}</label>
+				<input
+					id="zoom-steps"
+					type="range"
+					min="4"
+					max="11"
+					step="1"
+					bind:value={tuning.camera.zoomSteps}
+				>
+				<label for="zoom-preview">Preview zoom</label>
+				<select
+					id="zoom-preview"
+					bind:value={previewLevel}
+					onchange={() => {
+						frameCamera(true);
+						sync();
+					}}
+				>
+					<option value={-1}>Automatic framing</option>
+					{#each Array(activeZoomSteps) as _, i}
+						<option value={i}>
+							Level {i + 1}{i === 0
+								? " · Whole system"
+								: i === activeZoomSteps - 1
+									? " · Close"
+									: ""}
+						</option>
+					{/each}
+				</select>
+				<p>
+					Apply & reset to change the number of levels. Preview any level while
+					paused or flying.
+				</p>
 				<label for="padding">Camera padding</label>
 				<input
 					id="padding"
@@ -496,7 +541,7 @@ onMount(() => {
 					min="80"
 					max="400"
 					bind:value={tuning.camera.padding}
-				><label for="smoothing">Camera response</label>
+				><label for="smoothing">Camera pan response</label>
 				<input
 					id="smoothing"
 					type="range"
@@ -525,7 +570,8 @@ onMount(() => {
 					</button>
 				</div>
 				<output
-					>Tick {ticks} · Zoom {zoom.toFixed(2)} · Wraps {wraps}<br>Position
+					>Tick {ticks} · Level {zoomLevel + 1}/{activeZoomSteps}
+					· Zoom {zoom.toFixed(2)} · Wraps {wraps}<br>Position
 					{x.toFixed(1)}, {y.toFixed(1)}</output
 				>
 				<label for="trial-json">Trial configuration</label
