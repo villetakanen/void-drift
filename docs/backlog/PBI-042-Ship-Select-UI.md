@@ -1,11 +1,11 @@
 # PBI-042: Ship Select UI + Persistence
 
-**Status:** TODO  
+**Status:** DONE  
 **Priority:** HIGH  
 **Estimate:** 3 Story Points  
 **Phase:** 8 (Gameplay Expansion)  
 **Target Version:** v0.4.0  
-**Spec:** [Camera Zoom + Ship Select (v0.4.0)](../specs/ship-select-and-camera-zoom-v0.4.0.md)
+**Spec:** [Ship Select UI + Persistence](../specs/ship-select-ui-persistence.md)
 
 ---
 
@@ -19,10 +19,10 @@
 
 ## Acceptance Criteria
 
-- [ ] Menu overlay includes ship selection for 3 variants.
-- [ ] Selected ship is clearly highlighted with short stat summary.
-- [ ] Choice persists across reload using settings store.
-- [ ] Restart/new game uses selected ship profile reliably.
+- [x] Menu overlay includes ship selection for 3 variants.
+- [x] Selected ship is clearly highlighted with short stat summary.
+- [x] Choice persists across reload using settings store.
+- [x] Restart/new game uses selected ship profile reliably.
 
 ---
 
@@ -36,14 +36,15 @@
 
 ## Definition of Done
 
-- [ ] Mobile touch targets meet 44px minimum.
-- [ ] Keyboard navigation works on desktop menu.
-- [ ] Type check and build pass.
+- [x] Mobile touch targets meet 44px minimum.
+- [x] Keyboard navigation works on desktop menu.
+- [x] Type check and build pass.
 
 ---
 
 ## Related Documents
 
+- [Ship Select UI + Persistence Spec](../specs/ship-select-ui-persistence.md)
 - [PBI-041: Ship Profile Schemas & Runtime Config](./PBI-041-Ship-Profile-Schemas.md)
 - [PBI-043: Procedural Ship Variants (3)](./PBI-043-Procedural-Ship-Variants.md)
 - [PBI-045: Ship Lab Chassis Preview](./PBI-045-Ship-Lab-Chassis-Preview.md)
