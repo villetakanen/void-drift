@@ -6,7 +6,9 @@ import StudyLayout from "../../../layouts/StudyLayout.astro";
 <StudyLayout>
 	{studies.map((study) => (
 		<article>
-			<p>{study.status}</p>
+			<p>
+				{study.phase} · {study.status}
+			</p>
 			<h2>
 				<a href={`/lab/studies/${study.slug}`}>{study.title} →</a>
 			</h2>
@@ -14,8 +16,10 @@ import StudyLayout from "../../../layouts/StudyLayout.astro";
 		</article>
 	))}
 	<p>
-		Exploratory → accepted by the owner → integrated into shared implementation.
-		Acceptance does not imply implementation.
+		Work moves through purpose → exploration → integration, with human review
+		throughout. Status records exploratory → accepted → integrated into shared
+		implementation. Acceptance does not imply implementation. Closed studies
+		retain their evidence; consult their closure record for the final outcome.
 	</p>
 </StudyLayout>
 <style>

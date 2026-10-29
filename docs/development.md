@@ -98,3 +98,8 @@ Browser checks cover shared token propagation, group spacing and equal widths,
 responsive strip stacking, keyboard focus, disabled/busy states, and reduced motion.
 The flight screenshot baseline was inspected and updated for the intended pause-menu
 button composition and 44px link-button target; no screenshot tolerance changed.
+
+## Factory building lessons
+
+See [the numbered lessons index](factory-building-lessons/README.md) for the
+modernization record, phased design-study improvement, and evaluation protocol.

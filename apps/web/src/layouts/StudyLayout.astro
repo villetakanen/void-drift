@@ -24,12 +24,14 @@ const { study } = Astro.props;
 		<main>
 			<header>
 				<p class="eyebrow">
-					{study ? `STUDY / ${study.status}` : "DESIGN FACTORY"}
+					{study
+						? `STUDY / ${study.phase} / ${study.status}`
+						: "DESIGN FACTORY"}
 				</p>
 				<h1>{study?.title ?? "Design studies"}</h1>
 				<p class="intro">
 					{study?.question ??
-						"Working proposals, conversations, and the decisions behind our interface."}
+						"Purpose, exploration, and integration: developing the game and its design system."}
 				</p>
 			</header>
 			<slot />
@@ -84,6 +86,13 @@ h1 {
 :global(main p),
 :global(main li) {
 	line-height: 1.65;
+}
+:global(main section > p) {
+	max-width: 70ch;
+	margin-block: 0 var(--spacing-md);
+}
+:global(main section > h3) {
+	margin-block: var(--spacing-lg) var(--spacing-sm);
 }
 :global(main a) {
 	color: var(--color-acid-lime);

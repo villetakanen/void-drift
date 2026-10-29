@@ -140,3 +140,13 @@ implementation. `/lab/studies` indexes stable review pages. The button pilot exp
 situations and action composition first. Owner acceptance and production integration
 are separate states; studies preserve decision rationale. The first iteration and
 promotion remain to be exercised with the owner.
+
+## Phased design inquiry — 2026-10-29
+
+Design studies develop purpose, explore solutions, then integrate accepted choices.
+Human judgment participates in framing and each substantive iteration as well as
+acceptance. Unknowns are investigation inputs, not necessarily missing requirements.
+The [study contract](design-studies.md) owns this workflow;
+[factory building lessons](../factory-building-lessons/README.md) record its rationale
+and pending evaluation. The button pilot is integrated; the planetary attempts failed
+and do not establish a validated replacement workflow.
