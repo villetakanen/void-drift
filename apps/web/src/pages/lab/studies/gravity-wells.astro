@@ -37,15 +37,16 @@ const study = studies.find((entry) => entry.slug === "gravity-wells");
 			nearby. That experience should guide the eventual size and force rules.
 		</p>
 		<p>
-			Framing agreed on 29 October 2026: a useful close pass, readable danger,
-			and shared rules for suns and planets. Force curves and sizes remain open.
+			We want useful close passes, readable danger, and shared rules for suns
+			and planets. The comparisons below establish the force curve and an
+			initial strength range; physical sizing stays outside this study.
 		</p>
 	</section>
 	<section aria-labelledby="carry-away">
 		<h2 id="carry-away">02 / What does the ship carry away?</h2>
 		<p>
 			A bend in the trail can look like a slingshot even when the ship leaves
-			slower. This first comparison isolates the current stationary sun against
+			slower. This first comparison isolates the original stationary sun against
 			the same launch without a sun. The hypothesis is that inward acceleration
 			alone may not deliver the useful exit advantage we want.
 		</p>
@@ -82,12 +83,12 @@ const study = studies.find((entry) => entry.slug === "gravity-wells");
 				>Review: interesting loops at low speed, too little influence at useful
 				flight speeds.</strong
 			>
-			On 29 October, the designer observed that low speeds create appealing
-			loops, but gravity already feels irrelevant at an entry speed of 325. The
-			aim offset was not recorded, so this is an experience judgment, not a
-			universal numerical threshold. It identifies a prerequisite for the
-			slingshot: the well must meaningfully bend a ship moving at gameplay
-			speeds. Retained exit speed remains unresolved.
+			We found appealing loops at low speeds, but little visible influence at an
+			entry speed of 325 with the original tuning. The aim offset was not
+			recorded, so this is an experience judgment, not a universal numerical
+			threshold. It identifies a prerequisite for the slingshot: the well must
+			meaningfully bend a ship moving at gameplay speeds. Retained exit speed
+			remains unresolved.
 		</p>
 		<p>
 			A faster ship spends less time under the pull and needs more acceleration
@@ -96,34 +97,29 @@ const study = studies.find((entry) => entry.slug === "gravity-wells");
 			across entry speeds remains useful, but the propulsion decision below now
 			takes priority over tuning well strength, reach, and curve shape.
 		</p>
-		<h3>Agreed direction / Engines limit thrust, not momentum</h3>
+		<h3>Engines limit thrust, not momentum</h3>
 		<p>
-			On 29 October, the designer established that each of the three ships has
-			two engines. Their effectiveness should depend on push direction relative
-			to the ship’s motion, replacing passive drag. Gravity-earned speed should
-			not be clipped by an arbitrary ship speed cap. These principles are agreed
-			for the study. Demo 02.1 now defaults to no drag and no speed cap, with
-			the original model available through its comparison checkbox. Production
-			behavior was unchanged at this checkpoint; see 03 for integration.
+			Each of our three ships has two engines. Their effectiveness depends on
+			push direction relative to motion, replacing passive drag. Gravity-earned
+			speed should not be clipped by an arbitrary speed cap. Demo 02.1 preserves
+			the original resistance model for comparison; section 03 describes the
+			engine response now used in the game.
 		</p>
 		<p>
-			The exact response to forward, sideways, and opposing thrust remains to be
-			explored, including how speed affects each engine’s useful push and how
-			steering and braking remain controllable. Removing a cap permits whatever
-			acceleration an encounter supplies; it does not itself make a stationary
-			gravity well a source of unlimited net energy. The next investigation is
-			propulsion and coasting, with the baseline retained. Gravity strength and
-			the mechanism for retaining slingshot gains remain unresolved.
+			Removing a cap lets gravity change speed without artificial clipping. It
+			does not make a stationary well a source of unlimited net energy. We still
+			need effective steering and braking at high speed; the initial engine
+			estimate is carried into the alpha for later playtesting.
 		</p>
 	</section>
 	<section aria-labelledby="curve-study">
 		<h2 id="curve-study">02.2 / A steep center and a quiet edge</h2>
 		<p>
-			The designer requested inverse-square falloff with zero pull at the
-			border. Pure inverse-square gravity has no finite border. This candidate
-			uses a(r) = μ × (1/r² − 1/R²) inside radius R, and zero outside. Distance
-			r is measured from the body’s center. This is a game adaptation:
-			continuous at the border, though its slope changes there.
+			We use inverse-square falloff with zero pull at the border. Pure
+			inverse-square gravity has no finite border. This candidate uses a(r) = μ
+			× (1/r² − 1/R²) inside radius R, and zero outside. Distance r is measured
+			from the body’s center. This is a game adaptation: continuous at the
+			border, though its slope changes there.
 		</p>
 		<p>
 			The comparison matches both curves at half the existing well radius,
@@ -133,11 +129,10 @@ const study = studies.find((entry) => entry.slug === "gravity-wells");
 			curve; inspect the tighter inner turn and the quieter outer approach.
 		</p>
 		<p>
-			Review on 29 October: the designer finds the new distance-dependent curves
-			much better, but the close-in pull still too weak for fun. Strength is now
+			The new distance-dependent curves give us the shapes we want, but the
+			original strength leaves the close-in pull too weak. Strength is now
 			adjustable from 0.25× to 8× without changing the body or well radius. Keep
-			entry speed and aim fixed while adjusting it. The spoken speed reference
-			was ambiguous, so no precise preferred speed is recorded.
+			entry speed and aim fixed while adjusting it.
 		</p>
 		<GravityEncounter
 			label="Gravity curve comparison"
@@ -145,10 +140,10 @@ const study = studies.find((entry) => entry.slug === "gravity-wells");
 			client:load
 		/>
 		<p>
-			Sun direction settled on 29 October: the designer likes the bounded
-			inverse-square curve and selects a 4×–10× strength range. The earlier
-			slider exposed up to 8×; the upper end remains a target to verify.
-			Production integration was pending at this exploration checkpoint; see 03.
+			We chose the bounded inverse-square curve and a solar strength range of
+			4×–10× because it produces the close-pass shapes we want. The comparison
+			slider reaches 8×, so 8×–10× remains unverified here. The game starts at
+			4×; section 03 records the initial settings.
 		</p>
 	</section>
 	<section aria-labelledby="planet-study">
@@ -177,89 +172,51 @@ const study = studies.find((entry) => entry.slug === "gravity-wells");
 		</p>
 	</section>
 	<section aria-labelledby="next">
-		<h2 id="next">03 / Bounded integration agreement</h2>
+		<h2 id="next">03 / What we carry into the game</h2>
 		<p>
-			On 29 October 2026, the designer agreed that the gravity model is
-			established and explicitly authorized committing and pushing this study
-			phase, then continuing with bounded integration. Apply the bounded
-			inverse-square law to suns and planets, remove passive drag and the hard
-			speed cap, and estimate directional engine effectiveness. Retain existing
-			physical sizes and well reaches, using provisional strengths from the
-			study. New sizing rules, refined planet ranges, and visual danger cues do
-			not block this improvement.
+			Use bounded inverse-square gravity for suns and planets, with zero pull at
+			the well boundary. Remove passive drag and the hard speed cap, and make
+			engine effectiveness depend on push direction. The comparisons show why
+			these changes belong together: resistance was masking the well's influence
+			and removing speed gained during a pass.
 		</p>
 		<p>
-			The sun direction is 4×–10×. Planet physical size is out of scope; gravity
-			strength and reach need not be proportional to it. Ship-specific
-			maneuvering, braking, and powered escape are the focused integration
-			checks. Passing automation does not establish flight feel. Production
-			integration was not yet delivered by the study checkpoint; publishing a
-			deployment is not part of this authorization.
+			Keep existing body sizes and well reaches for this integration. Planet
+			strength and reach are independent of physical size. New sizing rules,
+			refined planet ranges, and visual danger cues can wait; they are not
+			needed to bring this improvement into the game.
 		</p>
-		<h3>Readiness assessment for this bounded scope</h3>
-		<ul>
-			<li>
-				Purpose — Ready: the close-pass reward and danger framing in 01 is
-				agreed.
-			</li>
-			<li>
-				Investigation — Conditional: 02.1–02.3 demonstrate coasting and well
-				behavior; estimate engines and check all three ships during integration.
-			</li>
-			<li>
-				Alternatives and reasoning — Ready: preserved drag and curve comparisons
-				support the selected model.
-			</li>
-			<li>
-				Evidence fit — Conditional: repeatable trajectories support motion
-				claims; verify powered controls automatically in the shared simulation.
-				Human playtesting is out of integration scope and follows on the built
-				alpha.
-			</li>
-			<li>
-				Cumulative agreement — Ready: preserve no drag/cap, two engines,
-				independent planet parameters, and the selected sun range.
-			</li>
-			<li>
-				Design coherence — Conditional: test steering, braking, collisions, and
-				escape with the combined systems before calling the integration
-				complete.
-			</li>
-			<li>
-				Remaining uncertainty — Conditional: engine scale and planet strength
-				remain provisional; revise after flight review. Reach rules and visual
-				cues are deferred.
-			</li>
-			<li>
-				Integration implications — Ready: update shared physics, production
-				simulation, canonical Flight Lab, contracts, and behavioral tests
-				together; retain the study baselines.
-			</li>
-		</ul>
+		<h3>What the study establishes</h3>
 		<p>
-			Outcome: bounded integration authorized by the designer in chat. Human
-			review is explicitly outside this integration scope. Playtesting happens
-			afterward on the built alpha; it is not an integration acceptance gate.
-			Revisit provisional engine and strength choices using that later evidence.
+			The preserved coasting and curve comparisons support the gravity model and
+			the 4×–10× solar direction. They show trajectory behavior, not how the
+			combined game feels to play. Engine effectiveness and planet strength
+			remain initial estimates. Automated checks cover steering, braking,
+			contact, and escape in the shared simulation.
+		</p>
+		<p>
+			Playtesting happens after integration, on the built alpha. That is where
+			we will judge control, difficulty, and the reward of a close pass, then
+			revisit the provisional engine and strength settings. It is outside this
+			study and is not a prerequisite for integration.
 		</p>
 		<h3>Implemented in the shared flight simulation</h3>
 		<p>
-			The game and <a href="/lab/flight">Flight Lab</a> now use the accepted
-			bounded inverse-square wells, no passive drag or speed cap, and two
-			directional engines per ship. Initial estimates are 4× solar strength,
-			planetary acceleration 300 units/s² at half reach, and engine
-			half-effectiveness at 600 units/s along the push. Opposing and
-			perpendicular thrust remain fully effective. Existing sizes and reaches
-			are preserved.
+			The game and <a href="/lab/flight">Flight Lab</a> now use bounded
+			inverse-square wells, no passive drag or speed cap, and two directional
+			engines per ship. Initial estimates are 4× solar strength, planetary
+			acceleration 300 units/s² at half reach, and engine half-effectiveness at
+			600 units/s along the push. Opposing and perpendicular thrust remain fully
+			effective. Existing sizes and reaches are preserved.
 		</p>
 		<p>
 			Four physics substeps per replay tick resolve close passes. Automated
 			checks cover coasting, braking and outward escape across all three ships,
 			differential steering, contact, and deterministic replay. New scores are
-			isolated in the gravity-1 challenge. Backend verification remains
-			unavailable locally without Java; the updated rules must accompany a
-			future deployment. The local build is available for the later alpha
-			playtest; no human playtest result is claimed.
+			isolated in the gravity-1 challenge. Score-rule and two-player leaderboard
+			checks also pass for release 0.3.4; the updated rules accompany the game.
+			The local build is available for the later alpha playtest; no human
+			playtest result is claimed.
 		</p>
 	</section>
 </StudyLayout>

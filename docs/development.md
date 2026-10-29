@@ -109,5 +109,6 @@ modernization record, phased design-study improvement, and evaluation protocol.
 The 450-tick flight screenshot baseline was inspected and updated for the intended
 trajectory and camera framing changes from directional engines and stronger wells.
 No visual tolerance changed. Human review is out of this integration's scope and
-will happen afterward on the built alpha. Java is unavailable in the current local
-environment, so Firestore rules and competition checks remain unverified locally.
+will happen afterward on the built alpha. The initial integration lacked Java for backend checks. Release 0.3.4 verification
+used a temporary Temurin Java 21 runtime: all gates passed, including nine
+Firestore rule tests and the two-player competition test.
