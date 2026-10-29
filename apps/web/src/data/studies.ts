@@ -10,6 +10,14 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
 	{
+		slug: "gravity-wells",
+		title: "Gravity wells: temptation and danger",
+		status: "accepted",
+		phase: "integration",
+		question:
+			"How can sun and planet gravity reward a deliberate close pass while making the risk of going deeper readable?",
+	},
+	{
 		slug: "buttons",
 		title: "Buttons & action composition",
 		status: "integrated",

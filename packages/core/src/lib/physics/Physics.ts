@@ -80,6 +80,15 @@ export interface Planet {
 	hasRing: boolean; // Visual ring system
 }
 
+/** Shared circular motion for runtime bodies and design-study observations. */
+export function updatePlanetOrbit(planet: Planet, dt: number): void {
+	planet.orbitAngle += planet.orbitSpeed * dt;
+	planet.pos.x =
+		planet.orbitCenter.x + Math.cos(planet.orbitAngle) * planet.orbitRadius;
+	planet.pos.y =
+		planet.orbitCenter.y + Math.sin(planet.orbitAngle) * planet.orbitRadius;
+}
+
 export interface CollisionEventData {
 	color?: string;
 	x?: number;
@@ -97,7 +106,31 @@ export function getPlanetInfluenceRadius(planet: {
 	return Math.max(minInfluence, Math.min(massInfluence, maxInfluence));
 }
 
+import { z } from "zod";
 import { CONFIG, SURVIVAL_CONFIG } from "../config";
+
+export const FlightResistanceSchema = z.object({
+	drag: z.number().finite().nonnegative(),
+	speedLimit: z.number().finite().positive().nullable(),
+});
+export type FlightResistance = z.infer<typeof FlightResistanceSchema>;
+
+export const WellCurveSchema = z.enum(["linear", "inverse-square"]);
+export type WellCurve = z.infer<typeof WellCurveSchema>;
+
+/** Study comparison: both curves have acceleration strength / 2 at reach / 2. */
+export function wellAcceleration(
+	distance: number,
+	reach: number,
+	strength: number,
+	curve: WellCurve,
+): number {
+	if (distance <= 0 || distance >= reach) return 0;
+	return curve === "inverse-square"
+		? (strength / 6) * ((reach / distance) ** 2 - 1)
+		: strength * (1 - distance / reach);
+}
+
 import type { InputState } from "../entities/Input";
 import type { Resources } from "../schemas/common";
 import type { SunType } from "../schemas/sun";
@@ -205,6 +238,11 @@ export function updateShip(
 		data?: CollisionEventData,
 	) => void,
 	tuning = { thrustMultiplier: 1, turnMultiplier: 1, hullMultiplier: 1 },
+	resistance: FlightResistance = {
+		drag: CONFIG.SHIP_DRAG,
+		speedLimit: CONFIG.MAX_SPEED,
+	},
+	wellCurve: WellCurve = "linear",
 ) {
 	// 1. Rotation & Variable Thrust (Differential)
 	// Left Engine -> Rotate Right + 50% Thrust
@@ -252,12 +290,12 @@ export function updateShip(
 			// Normalize direction
 			distVec.normalize();
 
-			// Simple Gravity: Force = Mass / Dist (Linear-ish feel for game)
-			// Or Inverse Square: Force = Mass / (Dist * Dist)
-			// Let's try a tuned linear pull that gets stronger closer in.
-			// Normalized Dist (0 at star, 1 at edge)
-			const normalizedDist = dist / star.influenceRadius;
-			const strength = star.mass * (1 - normalizedDist);
+			const strength = wellAcceleration(
+				dist,
+				star.influenceRadius,
+				star.mass,
+				wellCurve,
+			);
 
 			ship.acc.add(distVec.mult(strength));
 		}
@@ -266,11 +304,7 @@ export function updateShip(
 	// 3. Planet Interaction (Gravity + Collision)
 	for (const planet of planets) {
 		// Update Planet Position (Orbit)
-		planet.orbitAngle += planet.orbitSpeed * dt;
-		planet.pos.x =
-			planet.orbitCenter.x + Math.cos(planet.orbitAngle) * planet.orbitRadius;
-		planet.pos.y =
-			planet.orbitCenter.y + Math.sin(planet.orbitAngle) * planet.orbitRadius;
+		updatePlanetOrbit(planet, dt);
 
 		const dx = planet.pos.x - ship.pos.x;
 		const dy = planet.pos.y - ship.pos.y;
@@ -346,12 +380,15 @@ export function updateShip(
 	// 5. Inertia Damping (Drag)
 	// Approx nonlinear drag: vel -= vel * DRAG * dt
 	// Or VEL *= (1 - DRAG * dt)
-	const dragFactor = 1 - CONFIG.SHIP_DRAG * dt;
+	const dragFactor = 1 - resistance.drag * dt;
 	ship.vel.mult(Math.max(0, dragFactor)); // Prevent negative reversal if low FPS
 
 	// 6. Max Speed Cap
-	if (ship.vel.mag() > CONFIG.MAX_SPEED) {
-		ship.vel.normalize().mult(CONFIG.MAX_SPEED);
+	if (
+		resistance.speedLimit !== null &&
+		ship.vel.mag() > resistance.speedLimit
+	) {
+		ship.vel.normalize().mult(resistance.speedLimit);
 	}
 
 	// pos += vel * dt

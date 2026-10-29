@@ -1,0 +1,251 @@
+---
+import GravityEncounter from "../../../components/studies/gravity/GravityEncounter.svelte";
+import PlanetEncounter from "../../../components/studies/gravity/PlanetEncounter.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((entry) => entry.slug === "gravity-wells");
+---
+
+<StudyLayout study={study}>
+	<section aria-labelledby="situation">
+		<h2 id="situation">01 / The close pass should be a temptation</h2>
+		<p>
+			Imagine approaching a sun with room to pass safely outside it. Cutting
+			closer should offer an exciting alternative: bend the ship’s path, gather
+			speed, and escape with a useful advantage. Cut too close, and that same
+			pull can make escape difficult or impossible before heat destroys the
+			ship. A planet poses the same temptation, with impact replacing solar
+			burn.
+		</p>
+		<p>
+			The central tension is a rewarding pass beside a dangerous commitment. A
+			well’s reach, inward growth of pull, and visible cues should help players
+			learn that distinction. Escape also depends on approach speed, direction,
+			and the ship’s thrust; a drawn ring cannot universally promise safety.
+			Shared rules should explain differences between bodies without making
+			every encounter identical.
+		</p>
+		<p>
+			There is a useful physics distinction: an unpowered pass around a
+			stationary body gains speed on approach and gives it back on departure at
+			equal distance. Real gravity assists exchange energy with a moving body (<a
+				href="https://science.nasa.gov/mission/cassini/gravity-assists/"
+				>NASA</a
+			>). For the desired solar slingshot, we therefore need to investigate what
+			useful speed the player carries away, alongside the thrill of accelerating
+			nearby. That experience should guide the eventual size and force rules.
+		</p>
+		<p>
+			Framing agreed on 29 October 2026: a useful close pass, readable danger,
+			and shared rules for suns and planets. Force curves and sizes remain open.
+		</p>
+	</section>
+	<section aria-labelledby="carry-away">
+		<h2 id="carry-away">02 / What does the ship carry away?</h2>
+		<p>
+			A bend in the trail can look like a slingshot even when the ship leaves
+			slower. This first comparison isolates the current stationary sun against
+			the same launch without a sun. The hypothesis is that inward acceleration
+			alone may not deliver the useful exit advantage we want.
+		</p>
+		<p>
+			Start with the default pass, then reduce the aim offset to approach the
+			center more closely. Compare peak and exit speed; scrub the replay to see
+			where acceleration becomes a difficult departure. Change entry speed to
+			see why distance alone cannot define the risk.
+		</p>
+		<h3>02.1 / Coasting with and without resistance</h3>
+		<p>
+			The demo now removes passive drag and the speed cap. Toggle the original
+			baseline at the same speed and aim to compare. Engines remain off in both
+			cases: this tests momentum preservation, not the pending directional
+			engine response.
+		</p>
+		<GravityEncounter client:load />
+		<p>
+			Original baseline (checkbox enabled): at entry speed 500 and aim offset
+			80: the solar pass peaks at 539, then exits at 317 units/s; the no-sun
+			reference exits at 346. The nearby acceleration is real, but this pass
+			does not retain a speed reward. A direct approach at offset 0 ends in sun
+			contact. These are observations of this fixture, not a verdict on gameplay
+			feel.
+		</p>
+		<p>
+			This diagnoses the existing rule rather than choosing a replacement. A
+			faster exit than the no-sun reference can still be slower than entry. A
+			powered escape and a moving planet need separate comparisons before we
+			generalize this result to all wells.
+		</p>
+		<p class="invitation">
+			<strong
+				>Review: interesting loops at low speed, too little influence at useful
+				flight speeds.</strong
+			>
+			On 29 October, the designer observed that low speeds create appealing
+			loops, but gravity already feels irrelevant at an entry speed of 325. The
+			aim offset was not recorded, so this is an experience judgment, not a
+			universal numerical threshold. It identifies a prerequisite for the
+			slingshot: the well must meaningfully bend a ship moving at gameplay
+			speeds. Retained exit speed remains unresolved.
+		</p>
+		<p>
+			A faster ship spends less time under the pull and needs more acceleration
+			to bend through the same radius. Simply increasing strength could also
+			make the appealing slow loops lethal. Comparing trajectory influence
+			across entry speeds remains useful, but the propulsion decision below now
+			takes priority over tuning well strength, reach, and curve shape.
+		</p>
+		<h3>Agreed direction / Engines limit thrust, not momentum</h3>
+		<p>
+			On 29 October, the designer established that each of the three ships has
+			two engines. Their effectiveness should depend on push direction relative
+			to the ship’s motion, replacing passive drag. Gravity-earned speed should
+			not be clipped by an arbitrary ship speed cap. These principles are agreed
+			for the study. Demo 02.1 now defaults to no drag and no speed cap, with
+			the original model available through its comparison checkbox. Production
+			behavior has not changed; directional engine response is still pending.
+		</p>
+		<p>
+			The exact response to forward, sideways, and opposing thrust remains to be
+			explored, including how speed affects each engine’s useful push and how
+			steering and braking remain controllable. Removing a cap permits whatever
+			acceleration an encounter supplies; it does not itself make a stationary
+			gravity well a source of unlimited net energy. The next investigation is
+			propulsion and coasting, with the baseline retained. Gravity strength and
+			the mechanism for retaining slingshot gains remain unresolved.
+		</p>
+	</section>
+	<section aria-labelledby="curve-study">
+		<h2 id="curve-study">02.2 / A steep center and a quiet edge</h2>
+		<p>
+			The designer requested inverse-square falloff with zero pull at the
+			border. Pure inverse-square gravity has no finite border. This candidate
+			uses a(r) = μ × (1/r² − 1/R²) inside radius R, and zero outside. Distance
+			r is measured from the body’s center. This is a game adaptation:
+			continuous at the border, though its slope changes there.
+		</p>
+		<p>
+			The comparison matches both curves at half the existing well radius,
+			keeping reach and the body unchanged. That reference is an experimental
+			control, not an accepted strength rule. The surface ends a pass before the
+			formula’s central singularity. Try the same entry speed and aim with each
+			curve; inspect the tighter inner turn and the quieter outer approach.
+		</p>
+		<p>
+			Review on 29 October: the designer finds the new distance-dependent curves
+			much better, but the close-in pull still too weak for fun. Strength is now
+			adjustable from 0.25× to 8× without changing the body or well radius. Keep
+			entry speed and aim fixed while adjusting it. The spoken speed reference
+			was ambiguous, so no precise preferred speed is recorded.
+		</p>
+		<GravityEncounter
+			label="Gravity curve comparison"
+			curveStudy={true}
+			client:load
+		/>
+		<p>
+			Sun direction settled on 29 October: the designer likes the bounded
+			inverse-square curve and selects a 4×–10× strength range. The earlier
+			slider exposed up to 8×; the upper end remains a target to verify.
+			Production integration and directional engines remain pending.
+		</p>
+	</section>
+	<section aria-labelledby="planet-study">
+		<h2 id="planet-study">02.3 / A small planet, a moving well</h2>
+		<p>
+			Physical size is out of scope: this trial fixes a small rock planet at
+			radius 20. Strength and reach are independent controls, with no
+			proportional relationship to that radius. The sun result stays preserved
+			above.
+		</p>
+		<p>
+			Compare the same launch around a stationary planet and an orbiting one.
+			First keep strength and reach fixed and reverse orbital direction: does
+			the encounter give a useful speed gain, or take speed away? Then tune the
+			well. The hypothesis is that planetary motion can make the slingshot
+			reward depend on approach side.
+		</p>
+		<PlanetEncounter client:load />
+		<p class="invitation">
+			<strong
+				>Which approaches produce the useful turn and exit-speed reward you want
+				from a planet?</strong
+			>
+			Physical size stays fixed while we investigate strength, reach, and
+			motion.
+		</p>
+	</section>
+	<section aria-labelledby="next">
+		<h2 id="next">03 / Bounded integration agreement</h2>
+		<p>
+			On 29 October 2026, the designer agreed that the gravity model is
+			established and explicitly authorized committing and pushing this study
+			phase, then continuing with bounded integration. Apply the bounded
+			inverse-square law to suns and planets, remove passive drag and the hard
+			speed cap, and estimate directional engine effectiveness. Retain existing
+			physical sizes and well reaches, using provisional strengths from the
+			study. New sizing rules, refined planet ranges, and visual danger cues do
+			not block this improvement.
+		</p>
+		<p>
+			The sun direction is 4×–10×. Planet physical size is out of scope; gravity
+			strength and reach need not be proportional to it. Ship-specific
+			maneuvering, braking, and powered escape are the focused integration
+			checks. Passing automation does not establish flight feel. Production
+			integration is not yet delivered by this checkpoint; publishing a
+			deployment is not part of this authorization.
+		</p>
+		<h3>Readiness assessment for this bounded scope</h3>
+		<ul>
+			<li>
+				Purpose — Ready: the close-pass reward and danger framing in 01 is
+				agreed.
+			</li>
+			<li>
+				Investigation — Conditional: 02.1–02.3 demonstrate coasting and well
+				behavior; estimate engines and check all three ships during integration.
+			</li>
+			<li>
+				Alternatives and reasoning — Ready: preserved drag and curve comparisons
+				support the selected model.
+			</li>
+			<li>
+				Evidence fit — Conditional: repeatable trajectories support motion
+				claims; assess powered control and feel in the real game and Flight Lab.
+			</li>
+			<li>
+				Cumulative agreement — Ready: preserve no drag/cap, two engines,
+				independent planet parameters, and the selected sun range.
+			</li>
+			<li>
+				Design coherence — Conditional: test steering, braking, collisions, and
+				escape with the combined systems before calling the integration
+				complete.
+			</li>
+			<li>
+				Remaining uncertainty — Conditional: engine scale and planet strength
+				remain provisional; revise after flight review. Reach rules and visual
+				cues are deferred.
+			</li>
+			<li>
+				Integration implications — Ready: update shared physics, production
+				simulation, canonical Flight Lab, contracts, and behavioral tests
+				together; retain the study baselines.
+			</li>
+		</ul>
+		<p>
+			Outcome: bounded integration authorized by the designer in chat. Review
+			the provisional engine and strength choices after playable evidence;
+			return to exploration only if that evidence exposes a problem.
+		</p>
+	</section>
+</StudyLayout>
+
+<style>
+.invitation {
+	border-left: var(--flight-border);
+	border-left-color: var(--color-acid-lime);
+	padding-left: var(--spacing-md);
+}
+</style>
