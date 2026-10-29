@@ -103,3 +103,11 @@ button composition and 44px link-button target; no screenshot tolerance changed.
 
 See [the numbered lessons index](factory-building-lessons/README.md) for the
 modernization record, phased design-study improvement, and evaluation protocol.
+
+## Gravity integration — 2026-10-29
+
+The 450-tick flight screenshot baseline was inspected and updated for the intended
+trajectory and camera framing changes from directional engines and stronger wells.
+No visual tolerance changed. Human review is out of this integration's scope and
+will happen afterward on the built alpha. Java is unavailable in the current local
+environment, so Firestore rules and competition checks remain unverified locally.

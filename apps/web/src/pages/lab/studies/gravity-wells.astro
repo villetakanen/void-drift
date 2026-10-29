@@ -59,8 +59,8 @@ const study = studies.find((entry) => entry.slug === "gravity-wells");
 		<p>
 			The demo now removes passive drag and the speed cap. Toggle the original
 			baseline at the same speed and aim to compare. Engines remain off in both
-			cases: this tests momentum preservation, not the pending directional
-			engine response.
+			cases: this tests momentum preservation, not the directional engine
+			response.
 		</p>
 		<GravityEncounter client:load />
 		<p>
@@ -104,7 +104,7 @@ const study = studies.find((entry) => entry.slug === "gravity-wells");
 			not be clipped by an arbitrary ship speed cap. These principles are agreed
 			for the study. Demo 02.1 now defaults to no drag and no speed cap, with
 			the original model available through its comparison checkbox. Production
-			behavior has not changed; directional engine response is still pending.
+			behavior was unchanged at this checkpoint; see 03 for integration.
 		</p>
 		<p>
 			The exact response to forward, sideways, and opposing thrust remains to be
@@ -148,7 +148,7 @@ const study = studies.find((entry) => entry.slug === "gravity-wells");
 			Sun direction settled on 29 October: the designer likes the bounded
 			inverse-square curve and selects a 4×–10× strength range. The earlier
 			slider exposed up to 8×; the upper end remains a target to verify.
-			Production integration and directional engines remain pending.
+			Production integration was pending at this exploration checkpoint; see 03.
 		</p>
 	</section>
 	<section aria-labelledby="planet-study">
@@ -193,7 +193,7 @@ const study = studies.find((entry) => entry.slug === "gravity-wells");
 			strength and reach need not be proportional to it. Ship-specific
 			maneuvering, braking, and powered escape are the focused integration
 			checks. Passing automation does not establish flight feel. Production
-			integration is not yet delivered by this checkpoint; publishing a
+			integration was not yet delivered by the study checkpoint; publishing a
 			deployment is not part of this authorization.
 		</p>
 		<h3>Readiness assessment for this bounded scope</h3>
@@ -212,7 +212,9 @@ const study = studies.find((entry) => entry.slug === "gravity-wells");
 			</li>
 			<li>
 				Evidence fit — Conditional: repeatable trajectories support motion
-				claims; assess powered control and feel in the real game and Flight Lab.
+				claims; verify powered controls automatically in the shared simulation.
+				Human playtesting is out of integration scope and follows on the built
+				alpha.
 			</li>
 			<li>
 				Cumulative agreement — Ready: preserve no drag/cap, two engines,
@@ -235,9 +237,29 @@ const study = studies.find((entry) => entry.slug === "gravity-wells");
 			</li>
 		</ul>
 		<p>
-			Outcome: bounded integration authorized by the designer in chat. Review
-			the provisional engine and strength choices after playable evidence;
-			return to exploration only if that evidence exposes a problem.
+			Outcome: bounded integration authorized by the designer in chat. Human
+			review is explicitly outside this integration scope. Playtesting happens
+			afterward on the built alpha; it is not an integration acceptance gate.
+			Revisit provisional engine and strength choices using that later evidence.
+		</p>
+		<h3>Implemented in the shared flight simulation</h3>
+		<p>
+			The game and <a href="/lab/flight">Flight Lab</a> now use the accepted
+			bounded inverse-square wells, no passive drag or speed cap, and two
+			directional engines per ship. Initial estimates are 4× solar strength,
+			planetary acceleration 300 units/s² at half reach, and engine
+			half-effectiveness at 600 units/s along the push. Opposing and
+			perpendicular thrust remain fully effective. Existing sizes and reaches
+			are preserved.
+		</p>
+		<p>
+			Four physics substeps per replay tick resolve close passes. Automated
+			checks cover coasting, braking and outward escape across all three ships,
+			differential steering, contact, and deterministic replay. New scores are
+			isolated in the gravity-1 challenge. Backend verification remains
+			unavailable locally without Java; the updated rules must accompany a
+			future deployment. The local build is available for the later alpha
+			playtest; no human playtest result is claimed.
 		</p>
 	</section>
 </StudyLayout>

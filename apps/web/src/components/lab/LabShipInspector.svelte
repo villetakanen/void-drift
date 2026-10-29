@@ -6,6 +6,7 @@ let _props: { slot?: string; "client:only"?: string; "client:load"?: boolean } =
 import { CONFIG } from "@void-drift/core";
 import {
 	DEFAULT_SHIP_PROFILE_ID,
+	GRAVITY_FLIGHT,
 	SHIP_PROFILE_BY_ID,
 	SHIP_PROFILES,
 	type ShipProfileId,
@@ -27,7 +28,11 @@ const shipStatsGroups = $derived([
 		label: "Physical",
 		stats: [
 			{ key: "Radius", value: CONFIG.SHIP_RADIUS, unit: "px" },
-			{ key: "Max Speed", value: CONFIG.MAX_SPEED, unit: "px/s" },
+			{
+				key: "Engine taper scale",
+				value: GRAVITY_FLIGHT.engineSpeedScale,
+				unit: "px/s",
+			},
 			{
 				key: "Hull Multiplier",
 				value: selectedProfile.hullMultiplier.toFixed(2),

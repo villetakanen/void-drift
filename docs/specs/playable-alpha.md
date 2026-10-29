@@ -7,15 +7,15 @@ Status: implementation in progress, 2026-10-28. Scope approved in the voice-led 
 `packages/mode-a/src/lib/simulation.ts` owns a fixed 60 Hz survival simulation.
 Game and Flight Lab share this simulation and the core renderer/input/camera.
 `schemas/flight.ts` validates Lab settings and replay inputs; ship tuning uses the
-existing ship-profile schema. Keep gravity and drag unchanged.
+existing ship-profile schema. Gravity and engines follow the accepted 29 October gravity study integration below.
 
-All ranked runs use challenge `alpha-1`, seed 2026, a G-class star, and stock profiles.
+All ranked runs use challenge `gravity-1`, seed 2026, a G-class star, and stock profiles.
 Scoring is casual client-reported survival time, clearly labeled: Firestore rules
 validate ownership, shape, version and bounds, but do not prove an honest simulation.
 Each anonymous player keeps one best score per ship. Different balance versions
 use separate boards. Lab runs and imported tuning cannot submit ranked scores.
 Firebase Auth and Firestore replace Supabase. Paths are
-`artifacts/{appId}/scores/{uid}_{shipId}`. Offline play remains available.
+`artifacts/{appId}/scores/{challenge}_{uid}_{shipId}`. Offline play remains available.
 
 ## Contract
 
@@ -75,3 +75,29 @@ Player-facing navigation exposes play, scores and settings. Flight Lab is a deve
 tool reached directly at `/lab/flight` or through the Lab navigation, with a return
 link to play. Game and leaderboard labels use the web package version (0.3.2),
 independently of the internal `alpha-1` scoring challenge identifier.
+
+## Gravity well integration — 29 October 2026
+
+Game and Flight Lab use four physics substeps per 60 Hz replay tick. Suns and
+planets use a bounded inverse-square pull: strength / 6 × ((reach / distance)² − 1),
+zero at and beyond reach. Existing body sizes and reaches are preserved. The G sun
+starts at 4× its previous strength (accepted range 4×–10×). Planets use independent
+well strength 600, equivalent to acceleration 300 at half reach; this is provisional.
+
+All three ships have two engines, each supplying half of combined thrust. The
+forward component of velocity along the push direction reduces effectiveness by
+1 / (1 + (max(0, velocity · direction) / 600)²). Braking and perpendicular thrust
+retain full effectiveness. Profile multipliers remain. There is no passive drag
+or hard speed cap; gravity is independent of engine taper. The 600 units/s engine
+scale is an initial estimate, not a maximum velocity or established play balance.
+
+Legacy study comparisons retain their explicit old resistance/curve configuration.
+New scores use gravity-1 and separate document IDs; existing alpha-1 records remain.
+A deployment must include the updated rules before new scores can be submitted.
+Existing replay inputs are deterministic under this revision but trajectories differ
+from alpha-1; cross-version replay equivalence is not promised.
+
+Automated correctness checks cover directional thrust, coasting, steering, escape,
+collision and replay. Human review is explicitly outside integration scope and
+happens afterward on the built alpha. Study trajectories cannot establish playtest
+results. Physical sizing, new reach rules and visual danger cues are deferred.

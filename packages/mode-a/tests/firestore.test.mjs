@@ -114,3 +114,15 @@ test("reads require authentication and a bounded list query", async () => {
 		),
 	);
 });
+
+test("new gravity scores are isolated from legacy personal bests", async () => {
+	await assertSucceeds(setDoc(ref(), score));
+	const current = { ...score, challenge: "gravity-1", seconds: 20 };
+	const target = ref("pilot", "gravity-1_pilot_balanced");
+	await assertSucceeds(setDoc(target, current));
+	await assertSucceeds(setDoc(target, { ...current, seconds: 25 }));
+	await assertFails(setDoc(target, { ...current, seconds: 10 }));
+	await assertFails(setDoc(ref(), { ...current, seconds: 100 }));
+	await assertFails(setDoc(target, { ...score, seconds: 100 }));
+	await assertFails(setDoc(ref("rival", "gravity-1_pilot_balanced"), current));
+});

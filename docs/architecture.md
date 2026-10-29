@@ -38,8 +38,8 @@ Firebase Auth (anonymous) and Firestore replace the legacy Supabase runtime.
 The new `void-drift-alpha` project uses Spark, with no billing upgrade. Old SQL and
 migration documents remain historical; scores are not migrated.
 
-- Documents live at `artifacts/void-drift/scores/{uid}_{shipId}`.
-- A user retains one personal best per ship for challenge `alpha-1` (seed 2026).
+- Documents live at `artifacts/void-drift/scores/gravity-1_{uid}_{shipId}`.
+- A user retains one personal best per ship for challenge `gravity-1` (seed 2026). Legacy alpha-1 records retain their old IDs.
 - Zod checks network data; tested Firestore rules enforce ownership, exact fields,
   bounds, challenge identity and increasing scores. Queries are bounded to 20 rows.
 - Scores are **client-reported casual competition**, not cheat-resistant records.

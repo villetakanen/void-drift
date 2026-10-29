@@ -66,7 +66,13 @@ export interface Star {
 	pulseSpeed: number;
 }
 
+export const PlanetWellSchema = z.object({
+	reach: z.number().finite().positive(),
+	strength: z.number().finite().positive(),
+});
+
 export interface Planet {
+	well?: z.infer<typeof PlanetWellSchema>; // Explicit independent well parameters when integrated.
 	pos: Vec2; // Current position (calculated from orbit)
 	orbitCenter: Vec2; // Center of orbit (usually star)
 	orbitRadius: number; // Distance from center
@@ -99,7 +105,9 @@ export interface CollisionEventData {
 export function getPlanetInfluenceRadius(planet: {
 	radius: number;
 	mass: number;
+	well?: { reach: number; strength: number };
 }): number {
+	if (planet.well) return planet.well.reach;
 	const massInfluence = Math.sqrt(planet.mass) * 10;
 	const maxInfluence = planet.radius * 8;
 	const minInfluence = planet.radius * 2;
@@ -114,6 +122,23 @@ export const FlightResistanceSchema = z.object({
 	speedLimit: z.number().finite().positive().nullable(),
 });
 export type FlightResistance = z.infer<typeof FlightResistanceSchema>;
+export const GravityFlightSchema = z.object({
+	engineSpeedScale: z.number().finite().positive(),
+	sunMultiplier: z.number().min(4).max(10),
+	planetStrength: z.number().finite().positive(),
+});
+/** Along-motion thrust fades; braking and transverse thrust retain full effectiveness. */
+export function engineEffectiveness(
+	velocity: Vec2,
+	direction: Vec2,
+	speedScale: number,
+): number {
+	const along = Math.max(
+		0,
+		velocity.x * direction.x + velocity.y * direction.y,
+	);
+	return 1 / (1 + (along / speedScale) ** 2);
+}
 
 export const WellCurveSchema = z.enum(["linear", "inverse-square"]);
 export type WellCurve = z.infer<typeof WellCurveSchema>;
@@ -243,6 +268,7 @@ export function updateShip(
 		speedLimit: CONFIG.MAX_SPEED,
 	},
 	wellCurve: WellCurve = "linear",
+	engineSpeedScale: number | null = null,
 ) {
 	// 1. Rotation & Variable Thrust (Differential)
 	// Left Engine -> Rotate Right + 50% Thrust
@@ -264,6 +290,15 @@ export function updateShip(
 		thrustMultiplier = 1.0;
 	}
 
+	// Integrated two-engine model: each supplies half the combined thrust.
+	if (engineSpeedScale !== null && thrustMultiplier > 0) {
+		if (!(input.leftThruster && input.rightThruster)) thrustMultiplier *= 0.5;
+		thrustMultiplier *= engineEffectiveness(
+			ship.vel,
+			new Vec2(Math.cos(ship.rotation), Math.sin(ship.rotation)),
+			engineSpeedScale,
+		);
+	}
 	// Apply Thrust
 	if (thrustMultiplier > 0) {
 		const thrustX =
@@ -315,7 +350,14 @@ export function updateShip(
 		const influenceRadius = getPlanetInfluenceRadius(planet);
 
 		if (dist < influenceRadius && dist > planet.radius + ship.radius) {
-			const strength = (planet.mass / distSq) * 1000; // Inverse square approximation
+			const strength = planet.well
+				? wellAcceleration(
+						dist,
+						planet.well.reach,
+						planet.well.strength,
+						"inverse-square",
+					)
+				: (planet.mass / distSq) * 1000;
 			const gravityX = (dx / dist) * strength;
 			const gravityY = (dy / dist) * strength;
 			ship.acc.x += gravityX;

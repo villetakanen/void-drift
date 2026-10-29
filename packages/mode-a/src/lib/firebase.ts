@@ -14,6 +14,7 @@ import {
 } from "firebase/firestore";
 import { z } from "zod";
 import {
+	CHALLENGE,
 	type HighScore,
 	HighScoreSchema,
 	type HighScoreSubmission,
@@ -79,7 +80,7 @@ export async function loadHighScores(): Promise<HighScore[]> {
 			const rows = await getDocs(
 				query(
 					collection(db, "artifacts", "void-drift", "scores"),
-					where("challenge", "==", "alpha-1"),
+					where("challenge", "==", CHALLENGE),
 					orderBy("seconds", "desc"),
 					limit(20),
 				),
@@ -105,7 +106,7 @@ export async function submitHighScore(
 					"artifacts",
 					"void-drift",
 					"scores",
-					`${user.uid}_${score.shipId}`,
+					`${score.challenge}_${user.uid}_${score.shipId}`,
 				);
 				await runTransaction(db, async (transaction) => {
 					const previous = await transaction.get(reference);

@@ -236,16 +236,16 @@ $effect(() => {
 		Fixture: stock G sun (radius {star.radius}, reach {star.influenceRadius},
 		strength {star.mass * (curveStudy ? strengthMultiplier : 1)}), stock core
 		flight tuning, 60 steps/s, up to 12 s. Shared solar gravity calculation and
-		solar hull damage are reused. The selected curve is study-only; the
-		production game retains its original linear pull. Drag and the speed cap are
-		disabled by default; the comparison checkbox restores both original rules.
-		Both engines are off, so directional engine effectiveness is not exercised
-		here. The reference removes the entire sun, including heat. Both exits are
-		measured at the starting radius; elapsed times may differ. No planets, power
-		depletion, steering, camera motion, or arena wrapping occur in this
-		encounter. Paths stop at exit or death; “still inside” does not prove escape
-		is impossible. The dots and trails are measurement graphics, not proposed
-		game visuals.
+		solar hull damage are reused. This preserves the exploration fixture; the
+		game now uses the accepted inverse-square curve at 4× solar strength. Drag
+		and the speed cap are disabled by default; the comparison checkbox restores
+		both original rules. Both engines are off, so directional engine
+		effectiveness is not exercised here. The reference removes the entire sun,
+		including heat. Both exits are measured at the starting radius; elapsed
+		times may differ. No planets, power depletion, steering, camera motion, or
+		arena wrapping occur in this encounter. Paths stop at exit or death; “still
+		inside” does not prove escape is impossible. The dots and trails are
+		measurement graphics, not proposed game visuals.
 	</p>
 </section>
 

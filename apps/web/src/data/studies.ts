@@ -12,7 +12,7 @@ export const studies = z.array(studySchema).parse([
 	{
 		slug: "gravity-wells",
 		title: "Gravity wells: temptation and danger",
-		status: "accepted",
+		status: "integrated",
 		phase: "integration",
 		question:
 			"How can sun and planet gravity reward a deliberate close pass while making the risk of going deeper readable?",

@@ -92,3 +92,65 @@ describe("flight contract", () => {
 		expect(a.state.resources.hull).toBeLessThan(b.state.resources.hull);
 	});
 });
+
+describe("integrated gravity flight", () => {
+	for (const id of ["scout", "balanced", "tank"] as const) {
+		it(`${id} coasts above the old cap and brakes with full thrust`, () => {
+			const s = new Simulation(stockSettings(id));
+			s.planets.length = 0;
+			s.ship.pos.set(1500, 540);
+			s.ship.vel.set(1500, 0);
+			s.start();
+			s.step(idle);
+			expect(s.ship.vel.x).toBe(1500);
+			s.ship.rotation = Math.PI;
+			s.step(both);
+			expect(s.ship.vel.x).toBeCloseTo(
+				1500 - (400 * s.settings.profile.thrustMultiplier) / 60,
+				6,
+			);
+		});
+		it(`${id} can power outward from the outer solar well`, () => {
+			const s = new Simulation(stockSettings(id));
+			s.planets.length = 0;
+			s.ship.pos.set(1210, 540);
+			s.ship.rotation = 0;
+			s.start();
+			for (let tick = 0; tick < 120; tick++) s.step(both);
+			expect(s.state.status).toBe("PLAYING");
+			expect(s.ship.pos.x - 960).toBeGreaterThan(s.star.influenceRadius);
+			expect(s.ship.vel.x).toBeGreaterThan(0);
+		});
+	}
+	it("ends solar contact and resolves planetary contact with damage", () => {
+		const sun = new Simulation();
+		sun.start();
+		sun.ship.pos.set(1000, 540);
+		sun.step(idle);
+		expect(sun.state.deathCause).toBe("STAR");
+		const s = new Simulation();
+		s.start();
+		const planet = s.planets[0];
+		s.planets.splice(1);
+		planet.orbitCenter.set(1500, 540);
+		planet.orbitRadius = 0;
+		planet.orbitSpeed = 0;
+		s.ship.pos.set(1500 - planet.radius - 15, 540);
+		s.ship.vel.set(100, 0);
+		s.step(idle);
+		expect(s.ship.vel.x).toBeLessThan(0);
+		expect(s.state.resources.hull).toBeLessThan(100);
+		expect(s.ship.pos.x).toBeLessThanOrEqual(
+			1500 - planet.radius - s.ship.radius,
+		);
+	});
+	it("retains planet reaches independently of physical size", () => {
+		const s = new Simulation();
+		for (const p of s.planets) {
+			const reach = p.well?.reach;
+			p.radius *= 2;
+			expect(p.well?.reach).toBe(reach);
+			expect(p.well?.strength).toBe(600);
+		}
+	});
+});

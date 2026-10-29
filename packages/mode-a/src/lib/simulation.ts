@@ -1,7 +1,10 @@
 import type { GameObject, InputState } from "@void-drift/core";
 import {
 	CONFIG,
+	GravityFlightSchema,
+	getPlanetInfluenceRadius,
 	initializePlanets,
+	PlanetWellSchema,
 	updateHull,
 	updatePower,
 	updateShip,
@@ -18,7 +21,12 @@ import { createInitialGameState } from "./schemas/game-state";
 import type { ShipProfileId } from "./schemas/ship-profile";
 
 export const STEP = 1 / 60;
-export const CHALLENGE = "alpha-1";
+export { CHALLENGE } from "../schemas/highscore";
+export const GRAVITY_FLIGHT = GravityFlightSchema.parse({
+	engineSpeedScale: 600,
+	sunMultiplier: 4,
+	planetStrength: 600,
+});
 export const CHALLENGE_SEED = 2026;
 export function stockSettings(id: ShipProfileId = "balanced"): FlightSettings {
 	return FlightSettingsSchema.parse({
@@ -44,7 +52,14 @@ export class Simulation {
 	private thrust = { left: false, right: false };
 	constructor(settings: unknown = stockSettings()) {
 		this.settings = FlightSettingsSchema.parse(settings);
-		// The seed changes orbit phase, never gravity or drag.
+		this.star.mass *= GRAVITY_FLIGHT.sunMultiplier;
+		for (const planet of this.planets) {
+			planet.well = PlanetWellSchema.parse({
+				reach: getPlanetInfluenceRadius(planet),
+				strength: GRAVITY_FLIGHT.planetStrength,
+			});
+		}
+		// Seed changes orbit phase, not flight tuning.
 		const phase = ((this.settings.seed % 360) / 180) * Math.PI;
 		for (const planet of this.planets) {
 			planet.orbitAngle += phase;
@@ -63,18 +78,29 @@ export class Simulation {
 		if (this.state.status !== "PLAYING") return;
 		const beforeX = this.ship.pos.x;
 		const beforeY = this.ship.pos.y;
-		updateShip(
-			this.ship,
-			input,
-			STEP,
-			1920,
-			1080,
-			this.star,
-			this.planets,
-			this.state.resources,
-			undefined,
-			this.settings.profile,
-		);
+		// Four substeps resolve stronger close passes without changing the replay tick rate.
+		for (let substep = 0; substep < 4; substep++) {
+			updateShip(
+				this.ship,
+				input,
+				STEP / 4,
+				1920,
+				1080,
+				this.star,
+				this.planets,
+				this.state.resources,
+				undefined,
+				this.settings.profile,
+				{ drag: 0, speedLimit: null },
+				"inverse-square",
+				GRAVITY_FLIGHT.engineSpeedScale,
+			);
+			if (
+				Math.hypot(this.ship.pos.x - 960, this.ship.pos.y - 540) <
+				this.star.radius + this.ship.radius
+			)
+				break;
+		}
 		if (Math.hypot(this.ship.pos.x - beforeX, this.ship.pos.y - beforeY) > 1200)
 			this.wraps++;
 		const distance = Math.hypot(this.ship.pos.x - 960, this.ship.pos.y - 540);

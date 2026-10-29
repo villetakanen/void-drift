@@ -9,15 +9,16 @@ service cloud.firestore {
      && d.keys().hasOnly(['initials','seconds','deathCause','shipId','challenge','userId'])
      && d.userId == request.auth.uid
      && d.shipId in ['scout','balanced','tank']
-     && scoreId == request.auth.uid + '_' + d.shipId
+     && ((d.challenge == 'alpha-1' && scoreId == request.auth.uid + '_' + d.shipId)
+      || (d.challenge == 'gravity-1' && scoreId == 'gravity-1_' + request.auth.uid + '_' + d.shipId))
      && d.initials is string && d.initials.matches('^[A-Z]{3}$')
      && d.seconds is int && d.seconds >= 1 && d.seconds <= 3600
-     && d.deathCause in ['STAR','HULL','POWER'] && d.challenge == 'alpha-1';
+     && d.deathCause in ['STAR','HULL','POWER'];
    }
    allow get: if appId == 'void-drift' && request.auth != null;
    allow list: if appId == 'void-drift' && request.auth != null && request.query.limit <= 20;
    allow create: if valid();
-   allow update: if valid() && resource.data.userId == request.auth.uid && request.resource.data.seconds > resource.data.seconds;
+   allow update: if valid() && request.resource.data.challenge == resource.data.challenge && resource.data.userId == request.auth.uid && request.resource.data.seconds > resource.data.seconds;
    allow delete: if false;
   }
  }
