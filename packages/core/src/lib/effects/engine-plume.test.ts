@@ -56,3 +56,23 @@ it("release preserves live surfaces until expiry and continuous emission stays b
 	for (let i = 0; i < 1000; i++) plume.step(1 / 60, body, 1, 1);
 	expect(plume.count).toBeLessThanOrEqual(80);
 });
+
+it("mounted emitters retain the shared fading lifecycle with bounded five-engine emission", () => {
+	const plume = new EnginePlume(),
+		body = ship();
+	const emitters = Array.from({ length: 5 }, (_, i) => ({
+		x: -10,
+		y: i * 5,
+		angle: i * 0.1,
+		output: 1,
+	}));
+	for (let i = 0; i < 1000; i++) plume.stepMounted(1 / 60, body, emitters);
+	expect(plume.count).toBeGreaterThan(80);
+	expect(plume.count).toBeLessThanOrEqual(200);
+	for (const emitter of emitters) emitter.output = 0;
+	const count = plume.count;
+	plume.stepMounted(0, body, emitters);
+	expect(plume.count).toBe(count);
+	plume.stepMounted(0.65, body, emitters);
+	expect(plume.count).toBe(0);
+});

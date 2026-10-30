@@ -172,3 +172,19 @@ They cannot generate thrust from energy they do not have. In test flight, holdin
 controls while empty can use newly received solar energy without requiring a
 button release. Test flight also completes every simulation substep during star
 contact, keeping movement and resource timing consistent while death is suppressed.
+
+### Preserve established flight effects and gravity
+
+Custom builds retain the accepted 0.3.5 filled, glowing engine surfaces from core
+`EnginePlume`: residue remains in world space, fades after release, freezes with
+simulation pause, and clears on reset. Fixed outline flame substitutes are removed.
+Every installed active engine emits at its own drawn nozzle and mounting angle;
+aft engines use their own delivered thrust rather than borrowing side output.
+Output is scaled by available energy as well as speed taper. The core effect now
+accepts mounted emitters while its stock path preserves the accepted appearance.
+
+Custom survival shares the existing star, planets, inverse-square wells and zero
+flight drag with stock survival. Build mass changes engine response, not gravitational
+acceleration. The deliberately small-sun/no-planet test fixture remains distinct.
+The agreed builder limits (ion 500, fission 350) supersede the old stock engine cutoff
+for custom builds only; they do not clamp gravity-assisted velocity.

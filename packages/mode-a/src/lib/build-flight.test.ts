@@ -131,3 +131,44 @@ describe("ship builder contract", () => {
 		expect(a.state).toEqual(b.state);
 	});
 });
+
+it("preserves established gravity and overspeed coasting for assembled ships", () => {
+	const stock = new Simulation(stockSettings());
+	const assembled = new Simulation({
+		...stockSettings(),
+		loadout: defaultLoadout("balanced"),
+	});
+	expect(assembled.star).toEqual(stock.star);
+	expect(assembled.planets).toEqual(stock.planets);
+	for (const sim of [stock, assembled]) {
+		sim.ship.pos.set(600, 300);
+		sim.ship.vel.set(0, 1100);
+		sim.start();
+	}
+	for (let tick = 0; tick < 60; tick++) {
+		stock.step(idle);
+		assembled.step(idle);
+		expect(assembled.ship).toEqual(stock.ship);
+	}
+	expect(assembled.ship.vel.mag()).toBeGreaterThan(500);
+});
+
+it("emits shared fading surfaces for every active installed engine", () => {
+	const loadout = defaultLoadout("tank");
+	loadout.aft = ["ion", "rail", "fission"];
+	const sim = new Simulation({
+		...stockSettings("tank"),
+		loadout,
+		testFlight: true,
+	});
+	sim.ship.pos.set(1800, 540);
+	sim.start();
+	sim.step(both);
+	expect(sim.plume.count).toBe(4);
+	sim.step(idle);
+	expect(sim.plume.count).toBe(4);
+	for (let i = 0; i < 40; i++) sim.step(idle);
+	expect(sim.plume.count).toBe(0);
+	sim.step({ ...idle, leftThruster: true });
+	expect(sim.plume.count).toBe(1);
+});

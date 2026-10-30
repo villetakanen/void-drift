@@ -13,6 +13,7 @@ import {
 	Vec2,
 } from "@void-drift/core";
 import { applyBuildEngines, buildDrain, solarCharge } from "./build-flight";
+import { buildPlumeEmitters } from "./build-renderer";
 import { SHIP_PROFILE_BY_ID } from "./config";
 import { createStar } from "./game-loop";
 import {
@@ -52,12 +53,16 @@ export class Simulation {
 	readonly planets = initializePlanets(960, 540);
 	readonly state = createInitialGameState();
 	readonly plume = new EnginePlume();
-	engineOutput = { left: 0, right: 0 };
+	engineOutput = { left: 0, right: 0, aft: [] as number[] };
+	private readonly buildEmitters;
 	ticks = 0;
 	wraps = 0;
 	private thrust = { left: false, right: false };
 	constructor(settings: unknown = stockSettings()) {
 		this.settings = FlightSettingsSchema.parse(settings);
+		this.buildEmitters = this.settings.loadout
+			? buildPlumeEmitters(this.settings.loadout)
+			: [];
 		this.star.mass *= GRAVITY_FLIGHT.sunMultiplier;
 		for (const planet of this.planets) {
 			planet.well = PlanetWellSchema.parse({
@@ -157,12 +162,25 @@ export class Simulation {
 			this.engineOutput.left = input.leftThruster ? delivered / substeps : 0;
 			this.engineOutput.right = input.rightThruster ? delivered / substeps : 0;
 		}
-		this.plume.step(
-			STEP,
-			this.ship,
-			this.engineOutput.left,
-			this.engineOutput.right,
-		);
+		if (this.settings.loadout) {
+			const outputs = [
+				this.engineOutput.left,
+				this.engineOutput.right,
+				...this.engineOutput.aft.filter((_, index) => {
+					const id = this.settings.loadout?.aft[index];
+					return id === "ion" || id === "fission";
+				}),
+			];
+			for (const [index, emitter] of this.buildEmitters.entries())
+				emitter.output = outputs[index] * engineFraction;
+			this.plume.stepMounted(STEP, this.ship, this.buildEmitters);
+		} else
+			this.plume.step(
+				STEP,
+				this.ship,
+				this.engineOutput.left,
+				this.engineOutput.right,
+			);
 		if (Math.hypot(this.ship.pos.x - beforeX, this.ship.pos.y - beforeY) > 1200)
 			this.wraps++;
 		const distance = Math.hypot(this.ship.pos.x - 960, this.ship.pos.y - 540);

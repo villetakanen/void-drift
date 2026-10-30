@@ -1,4 +1,6 @@
+import type { PlumeEmitter } from "@void-drift/core";
 import { CHASSIS, type Loadout, PARTS, type PartId } from "./schemas/loadout";
+export const BUILD_FLIGHT_SCALE = 0.65;
 export interface BuildMount {
 	key: string;
 	label: string;
@@ -66,7 +68,6 @@ export function drawBuild(
 	rotation: number,
 	scale = 1,
 	selected = "",
-	engines = { left: 0, right: 0 },
 ) {
 	const c = CHASSIS[build.chassis];
 	ctx.save();
@@ -128,21 +129,6 @@ export function drawBuild(
 			ctx.lineTo(-8, 4);
 			ctx.lineTo(-5, 3);
 			ctx.stroke();
-			const firing =
-				mount.key === "left"
-					? engines.left
-					: mount.key === "right"
-						? engines.right
-						: engines.left && engines.right
-							? 1
-							: 0;
-			if (firing) {
-				ctx.beginPath();
-				ctx.moveTo(-8, -3);
-				ctx.lineTo(-14 - firing * 8, 0);
-				ctx.lineTo(-8, 3);
-				ctx.stroke();
-			}
 		}
 		if (mount.key === selected) {
 			ctx.strokeStyle = "#ffffff";
@@ -151,4 +137,16 @@ export function drawBuild(
 		ctx.restore();
 	}
 	ctx.restore();
+}
+
+/** Emission uses the same mount/nozzle geometry as the ship drawing. */
+export function buildPlumeEmitters(build: Loadout): PlumeEmitter[] {
+	return buildMounts(build)
+		.filter((mount) => mount.part && PARTS[mount.part].category === "E")
+		.map((mount) => ({
+			x: (mount.x - 8 * Math.cos(mount.angle)) * BUILD_FLIGHT_SCALE,
+			y: (mount.y - 8 * Math.sin(mount.angle)) * BUILD_FLIGHT_SCALE,
+			angle: mount.angle,
+			output: 0,
+		}));
 }

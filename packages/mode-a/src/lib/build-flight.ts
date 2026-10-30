@@ -37,7 +37,8 @@ export function applyBuildEngines(
 	dt: number,
 	powered: boolean,
 ) {
-	if (!powered) return { left: 0, right: 0 };
+	const output = { left: 0, right: 0, aft: build.aft.map(() => 0) };
+	if (!powered) return output;
 	const stats = buildStats(build),
 		chassis = CHASSIS[build.chassis],
 		engine = PARTS[build.side];
@@ -48,7 +49,6 @@ export function applyBuildEngines(
 		(Number(input.leftThruster) - Number(input.rightThruster)) *
 		stats.turnRate *
 		dt;
-	const output = { left: 0, right: 0 };
 	// Simultaneous mirrored engines are combined to avoid sequential impulse bias.
 	if (active === 2) {
 		const fraction = engineImpulse(
@@ -60,9 +60,9 @@ export function applyBuildEngines(
 		);
 		output.left = fraction;
 		output.right = fraction;
-		for (const id of build.aft) {
+		for (const [index, id] of build.aft.entries()) {
 			if (id && PARTS[id].category === "E")
-				engineImpulse(
+				output.aft[index] = engineImpulse(
 					ship,
 					ship.rotation,
 					PARTS[id].thrust / stats.mass,

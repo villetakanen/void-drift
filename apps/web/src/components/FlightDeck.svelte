@@ -1,6 +1,7 @@
 <script lang="ts">
 import { Camera, Input, Renderer } from "@void-drift/core";
 import {
+	BUILD_FLIGHT_SCALE,
 	buildStats,
 	CHALLENGE,
 	drawBuild,
@@ -250,7 +251,7 @@ onMount(() => {
 		renderer.drawArenaBoundary(1200);
 		renderer.drawStar(simulation.star, simulation.ticks * STEP * 1000);
 		for (const planet of simulation.planets) renderer.drawPlanet(planet);
-		if (context && !loadout) simulation.plume.draw(context);
+		if (context) simulation.plume.draw(context);
 		if (loadout && context)
 			drawBuild(
 				context,
@@ -258,9 +259,7 @@ onMount(() => {
 				simulation.ship.pos.x,
 				simulation.ship.pos.y,
 				simulation.ship.rotation,
-				0.65,
-				"",
-				simulation.engineOutput,
+				BUILD_FLIGHT_SCALE,
 			);
 		else
 			renderer.drawShip(

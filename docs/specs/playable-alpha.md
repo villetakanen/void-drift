@@ -121,3 +121,10 @@ flight behaviour; recorded scores are not migrated by this change.
 The canonical working example is `/lab/flight`; preserved comparisons and rationale
 remain at `/lab/studies/engine-effects`. Human full-scene feel and physical-device
 performance still need review.
+
+### Builder continuity — 0.4.0
+
+The assembled ship path uses the same accepted EnginePlume surfaces and lifecycle,
+with emitters placed at the fitted side and aft nozzles. It does not substitute line
+flames or disable the shared effect. Stock emitter geometry and gravity remain
+unchanged; the ship-builder spec owns custom engine output and test-fixture rules.

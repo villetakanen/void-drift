@@ -2,7 +2,13 @@ import type { GameObject } from "../physics/Physics";
 
 export const ENGINE_CUTOFF = 750;
 const LIFETIME = 0.65;
-const CAPACITY = 80;
+const CAPACITY_PER_ENGINE = 40;
+export interface PlumeEmitter {
+	x: number;
+	y: number;
+	angle: number;
+	output: number;
+}
 type Surface = {
 	x: number;
 	y: number;
@@ -20,32 +26,40 @@ export class EnginePlume {
 		return this.surfaces.length;
 	}
 	step(dt: number, ship: GameObject, left: number, right: number) {
+		this.stepMounted(
+			dt,
+			ship,
+			[-1, 1].map((side) => ({
+				x: -8,
+				y: side * 5,
+				angle: (-side * Math.PI) / 15,
+				output: side === -1 ? left : right,
+			})),
+		);
+	}
+	stepMounted(dt: number, ship: GameObject, emitters: readonly PlumeEmitter[]) {
 		for (const surface of this.surfaces) {
 			surface.age += dt;
 			surface.x += surface.vx * dt;
 			surface.y += surface.vy * dt;
 		}
 		this.surfaces = this.surfaces.filter((surface) => surface.age < LIFETIME);
-		for (const side of [-1, 1]) {
-			const output = side === -1 ? left : right;
-			if (output <= 0) continue;
-			const angle = ship.rotation - (side * Math.PI) / 15;
+		const cos = Math.cos(ship.rotation),
+			sin = Math.sin(ship.rotation);
+		for (const emitter of emitters) {
+			if (emitter.output <= 0) continue;
+			const angle = ship.rotation + emitter.angle;
 			this.surfaces.push({
-				x:
-					ship.pos.x -
-					8 * Math.cos(ship.rotation) -
-					side * 5 * Math.sin(ship.rotation),
-				y:
-					ship.pos.y -
-					8 * Math.sin(ship.rotation) +
-					side * 5 * Math.cos(ship.rotation),
+				x: ship.pos.x + emitter.x * cos - emitter.y * sin,
+				y: ship.pos.y + emitter.x * sin + emitter.y * cos,
 				vx: ship.vel.x * 0.8 - 45 * Math.cos(angle),
 				vy: ship.vel.y * 0.8 - 45 * Math.sin(angle),
 				angle,
 				age: 0,
-				size: Math.sqrt(Math.min(1, output)),
+				size: Math.sqrt(Math.min(1, emitter.output)),
 			});
 		}
+		const CAPACITY = CAPACITY_PER_ENGINE * Math.max(2, emitters.length);
 		if (this.surfaces.length > CAPACITY)
 			this.surfaces.splice(0, this.surfaces.length - CAPACITY);
 	}
