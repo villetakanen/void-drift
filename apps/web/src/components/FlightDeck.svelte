@@ -388,7 +388,7 @@ onMount(() => {
 						<div class="button-group button-group--vertical">
 							{#if !lab}
 								<a class="btn btn-filled" href="/builder"
-									>Build your ship · 0.4.0</a
+									>Build your ship · {version}</a
 								>
 							{/if}
 							<button type="button" class="btn btn-filled" onclick={start}>

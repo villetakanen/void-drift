@@ -11,6 +11,7 @@ import {
 	type ShipProfileId,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
+import { version } from "../../package.json";
 import FlightDeck from "./FlightDeck.svelte";
 
 let { lab = false }: { lab?: boolean } = $props();
@@ -93,7 +94,7 @@ function choose(id: ShipProfileId) {
 			><span
 				>{lab
 					? "SHIP BUILDER LAB / SHARED SYSTEMS"
-					: "SHIPYARD / 0.4.0 ALPHA"}</span
+					: `SHIPYARD / ${version}`}</span
 			><a href="/lab/flight">Flight Lab</a>
 		</header>
 		<div class="heading">
