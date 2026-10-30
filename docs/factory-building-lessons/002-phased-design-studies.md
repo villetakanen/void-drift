@@ -236,3 +236,30 @@ The designer approved separating it. The assessment now lives at
 preserved. The study retains a concise next step and review link. Future reviews
 use separate records; chat presents the conclusion and required human judgment.
 This relocation does not accept the proposal or authorize integration.
+
+## Adopted — four bounded harness changes
+
+30 October 2026. The designer approved all four proposals after review of the
+closure evidence and requested that they be implemented and marked done.
+
+- [x] Bound a broad study by one decision, with adjacent questions explicitly outside
+  the cycle. Basis: the designer's scope diagnosis in the
+  [planet-purpose retrospective](../factory-experiment-planet-purpose-scope.md).
+- [x] Recommend taking an independently usable accepted result through readiness
+  and integration planning before exploring another subject; honor a direction to
+  continue. Basis: accepted Fighter followed by unresolved Scout exploration in the
+  [silhouette evidence](../loop-evidence/2026-10-30-ship-silhouettes.md).
+- [x] Identify the exact accepted visual variant and settled properties, and carry
+  that reference and provisional choices into the plan. Basis: Fighter 02.9 and the
+  lifecycle-versus-tuning distinction in the
+  [engine-effects evidence](../loop-evidence/2026-10-30-engine-effects.md).
+- [x] Assess alpha readiness against the intended delivery, explaining concrete
+  blockers while allowing tuning and configurability to remain provisional. Basis:
+  the explicit alpha-scope correction in the engine-effects evidence.
+
+Implemented in the [design-study skill](../../.agents/skills/design-study/SKILL.md)
+and [study specification](../specs/design-studies.md). Done means the harness edits
+are adopted and implemented, not that their effectiveness has been validated.
+The partial-result recommendation remains a workflow hypothesis; the records do
+not establish why the Scout iterations failed. No fresh study or behavioral trial
+was run for these edits. AGENTS.md and evidence-only close-loop remain unchanged.

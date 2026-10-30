@@ -31,6 +31,10 @@ or boundaries need the designer's judgment; contribute reasoning before asking.
 Do not require the designer to resolve mechanics that the study should investigate.
 Seek agreement on sufficient purpose to explore, not a complete solution.
 
+For a broad subject, propose one design decision this cycle can settle and name
+adjacent questions left outside it. Ground the boundary in the supplied intent;
+do not require the designer to decompose the topic first.
+
 Current implementation describes available means and feasibility, not desired intent.
 Inspect production and Lab when useful for the current inquiry; do not anchor a future
 experience to alpha shortcomings. Research missing knowledge when it helps; cite it
@@ -59,6 +63,14 @@ explicit reason. If the designer challenges the frame, return to purpose and ide
 what changed rather than polishing the same artifact. Recommend only with supporting
 reasoning; never manufacture evidence or acceptance.
 
+When an independently usable result is accepted within a broader study, recommend
+taking that result through parts 03 and 04 before exploring the next subject.
+Keep the remaining scope explicit and honor a direction to continue exploration.
+
+When a visual example is accepted, identify its exact variant and the properties
+the designer settled. Carry that reference into the integration plan alongside
+anything still provisional.
+
 Protect the current investigation's question. Before polishing or repurposing a demo,
 check whether the change advances that question. If it diverts the study, push back
 briefly: explain the useful observation and recommend resolving its design implication
@@ -79,6 +91,10 @@ reusable systems, required changes, dependencies, risks, and unresolved design c
 Explain what is feasible now and what requires adaptation or further evidence. This is
 a technical and contextual feasibility assessment, not the study-quality rubric or an
 implementation approval gate. Keep accepted choices distinct from tuning hypotheses.
+
+Assess readiness for the intended delivery. For an alpha trial, distinguish blockers
+to implementing and learning from the chosen design from tuning or configurability
+that can remain provisional; explain the consequence of each blocker.
 
 ## 04 / Integration — how and why to implement it
 

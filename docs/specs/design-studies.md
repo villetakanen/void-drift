@@ -91,6 +91,10 @@ reasoning rather than narrating the request or agent actions. Ask a focused ques
 for designer judgment within that discussion when needed. Do not populate future
 alternatives, recommendations, integration plans, readiness tables, or history panels.
 
+For a broad subject, propose one design decision this cycle can settle and name
+adjacent questions left outside it. Ground the boundary in the supplied intent;
+do not require the designer to decompose the topic first.
+
 Keep the first explanation brief: normally two or three short paragraphs, or a
 short introduction and a compact list of purposes. Aim for roughly 150–250 words
 including the invitation; this is an editing target, not a quota or reason to omit
@@ -209,6 +213,16 @@ do not overwrite the evidence while tuning toward a desired outcome. On an overr
 record the deliberate change and whether the previous question remains unresolved.
 These observations belong to this cycle; they do not bind a future cycle automatically.
 
+When an independently usable result is accepted within a broader study, recommend
+taking that result through parts 03 and 04 before exploring the next subject.
+Keep the remaining scope explicit and honor a direction to continue exploration.
+Completing that result does not complete the unresolved scope of the original brief.
+
+When a visual example is accepted, identify its exact variant and the properties
+the designer settled. Carry that reference into the integration plan alongside
+anything still provisional. Acceptance of a lifecycle, for example, need not settle
+its final visual tuning.
+
 ## Study-quality evaluation — separate from readiness
 
 Evaluate whether the study succeeded, using the eight criteria below. Store ratings
@@ -238,6 +252,10 @@ Part 03 should explain current-system fit, dependencies, constraints, risks, and
 adaptations required by the conclusion. Part 04 should state what changes, why, in
 what order, and how fidelity and correctness will be checked. Unresolved design choices
 remain explicit; return a named question to part 02 when more exploration is needed.
+
+Assess readiness for the intended delivery. For an alpha trial, distinguish blockers
+to implementing and learning from the chosen design from tuning or configurability
+that can remain provisional; explain the consequence of each blocker.
 
 ## Scenarios
 
