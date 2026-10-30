@@ -101,3 +101,23 @@ Automated correctness checks cover directional thrust, coasting, steering, escap
 collision and replay. Human review is explicitly outside integration scope and
 happens afterward on the built alpha. Study trajectories cannot establish playtest
 results. Physical sizing, new reach rules and visual danger cues are deferred.
+
+## Engine effects alpha — 30 October 2026
+
+The game and flight Lab now use the Engine Effects study's complete glowing surfaces
+instead of the position-line trace and attached flame. Core owns the drawing and
+bounded surface collection; simulation time advances it, so pause freezes the effect,
+reset creates an empty collection, and wrapping never joins distant emissions.
+Release stops new emissions while existing surfaces drift and fade over 0.65 seconds.
+
+The shared alpha cutoff is 750 units/s along the ship's facing direction, with a
+linear taper. Each engine supplies half the combined thrust; plume area follows its
+actual engine contribution, excluding gravity. Faster existing velocity is preserved;
+braking and sideways thrust remain possible. This is not a total-speed ceiling.
+Gravity and drag constants are unchanged. Angle, size, lifetime and cutoff are working
+values, not a final product contract. Existing replay inputs now produce the updated
+flight behaviour; recorded scores are not migrated by this change.
+
+The canonical working example is `/lab/flight`; preserved comparisons and rationale
+remain at `/lab/studies/engine-effects`. Human full-scene feel and physical-device
+performance still need review.

@@ -59,16 +59,12 @@ const coast = [
 		fire: false as const,
 	},
 ];
-let trailX = new Float64Array(80);
-let trailY = new Float64Array(80);
-let trailCount = 0;
 function reset(start = false) {
 	input?.reset();
 	previewLevel = -1;
 	simulation = new Simulation(lab ? tuning : stockSettings(chosen));
 	if (start) simulation.start();
 	paused = false;
-	trailCount = 0;
 	scoreSaved = false;
 	message = "";
 	frameCamera(true);
@@ -130,15 +126,8 @@ function advance(state: {
 }) {
 	const before = simulation.wraps;
 	simulation.step(state);
-	if (before !== simulation.wraps) trailCount = 0;
 	frameCamera(before !== simulation.wraps);
 	camera.update(STEP);
-	if (simulation.state.status === "PLAYING") {
-		const i = trailCount % 80;
-		trailX[i] = simulation.ship.pos.x;
-		trailY[i] = simulation.ship.pos.y;
-		trailCount++;
-	}
 }
 function trial(coasting = false) {
 	reset(true);
@@ -242,32 +231,7 @@ onMount(() => {
 		renderer.drawArenaBoundary(1200);
 		renderer.drawStar(simulation.star, simulation.ticks * STEP * 1000);
 		for (const planet of simulation.planets) renderer.drawPlanet(planet);
-		if (context) {
-			context.strokeStyle = simulation.settings.profile.tint;
-			context.lineWidth = 2;
-			context.globalAlpha = 0.35;
-			context.beginPath();
-			const count = Math.min(80, trailCount);
-			for (let n = 0; n < count; n++) {
-				const i = (trailCount - count + n) % 80;
-				if (n === 0) context.moveTo(trailX[i], trailY[i]);
-				else context.lineTo(trailX[i], trailY[i]);
-			}
-			context.stroke();
-			context.globalAlpha = 1;
-			if (left || right) {
-				context.save();
-				context.translate(x, y);
-				context.rotate(simulation.ship.rotation);
-				context.fillStyle = simulation.settings.profile.tint;
-				context.beginPath();
-				context.moveTo(-8, -4);
-				context.lineTo(-22 - (simulation.ticks % 4) * 2, 0);
-				context.lineTo(-8, 4);
-				context.fill();
-				context.restore();
-			}
-		}
+		if (context) simulation.plume.draw(context);
 		renderer.drawShip(
 			simulation.ship,
 			simulation.settings.profile.tint,

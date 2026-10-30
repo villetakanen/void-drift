@@ -1,6 +1,8 @@
 import type { GameObject, InputState } from "@void-drift/core";
 import {
 	CONFIG,
+	ENGINE_CUTOFF,
+	EnginePlume,
 	GravityFlightSchema,
 	getPlanetInfluenceRadius,
 	initializePlanets,
@@ -47,6 +49,8 @@ export class Simulation {
 	readonly star = createStar("G", 960, 540);
 	readonly planets = initializePlanets(960, 540);
 	readonly state = createInitialGameState();
+	readonly plume = new EnginePlume();
+	engineOutput = { left: 0, right: 0 };
 	ticks = 0;
 	wraps = 0;
 	private thrust = { left: false, right: false };
@@ -78,9 +82,11 @@ export class Simulation {
 		if (this.state.status !== "PLAYING") return;
 		const beforeX = this.ship.pos.x;
 		const beforeY = this.ship.pos.y;
+		let delivered = 0;
+		let substeps = 0;
 		// Four substeps resolve stronger close passes without changing the replay tick rate.
 		for (let substep = 0; substep < 4; substep++) {
-			updateShip(
+			delivered += updateShip(
 				this.ship,
 				input,
 				STEP / 4,
@@ -94,13 +100,23 @@ export class Simulation {
 				{ drag: 0, speedLimit: null },
 				"inverse-square",
 				GRAVITY_FLIGHT.engineSpeedScale,
+				ENGINE_CUTOFF,
 			);
+			substeps++;
 			if (
 				Math.hypot(this.ship.pos.x - 960, this.ship.pos.y - 540) <
 				this.star.radius + this.ship.radius
 			)
 				break;
 		}
+		this.engineOutput.left = input.leftThruster ? delivered / substeps : 0;
+		this.engineOutput.right = input.rightThruster ? delivered / substeps : 0;
+		this.plume.step(
+			STEP,
+			this.ship,
+			this.engineOutput.left,
+			this.engineOutput.right,
+		);
 		if (Math.hypot(this.ship.pos.x - beforeX, this.ship.pos.y - beforeY) > 1200)
 			this.wraps++;
 		const distance = Math.hypot(this.ship.pos.x - 960, this.ship.pos.y - 540);

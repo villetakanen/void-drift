@@ -12,7 +12,7 @@ export const studies = z.array(studySchema).parse([
 	{
 		slug: "engine-effects",
 		title: "Engine Effects",
-		status: "accepted",
+		status: "integrated",
 		phase: "integration",
 		question:
 			"How can engine effects turn flying into a flashy graphic performance through shaped surfaces, glow, and fluid transformation?",

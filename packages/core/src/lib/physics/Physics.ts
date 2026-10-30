@@ -269,6 +269,7 @@ export function updateShip(
 	},
 	wellCurve: WellCurve = "linear",
 	engineSpeedScale: number | null = null,
+	engineCutoff: number | null = null,
 ) {
 	// 1. Rotation & Variable Thrust (Differential)
 	// Left Engine -> Rotate Right + 50% Thrust
@@ -290,14 +291,27 @@ export function updateShip(
 		thrustMultiplier = 1.0;
 	}
 
-	// Integrated two-engine model: each supplies half the combined thrust.
-	if (engineSpeedScale !== null && thrustMultiplier > 0) {
-		if (!(input.leftThruster && input.rightThruster)) thrustMultiplier *= 0.5;
-		thrustMultiplier *= engineEffectiveness(
+	let deliveredFraction = thrustMultiplier;
+	if (engineCutoff !== null && thrustMultiplier > 0) {
+		const along =
+			ship.vel.x * Math.cos(ship.rotation) +
+			ship.vel.y * Math.sin(ship.rotation);
+		const active = Number(input.leftThruster) + Number(input.rightThruster);
+		const full = (CONFIG.THRUST_FORCE * tuning.thrustMultiplier * active) / 2;
+		const taper = Math.max(0, 1 - Math.max(0, along) / engineCutoff);
+		deliveredFraction =
+			full > 0
+				? Math.min(taper, Math.max(0, engineCutoff - along) / (full * dt))
+				: 0;
+		thrustMultiplier = (active / 2) * deliveredFraction;
+	} else if (engineSpeedScale !== null && thrustMultiplier > 0) {
+		deliveredFraction = engineEffectiveness(
 			ship.vel,
 			new Vec2(Math.cos(ship.rotation), Math.sin(ship.rotation)),
 			engineSpeedScale,
 		);
+		thrustMultiplier *= deliveredFraction;
+		if (!(input.leftThruster && input.rightThruster)) thrustMultiplier *= 0.5;
 	}
 	// Apply Thrust
 	if (thrustMultiplier > 0) {
@@ -457,4 +471,5 @@ export function updateShip(
 		ship.pos.x = centerX - (dx / distance) * 1190;
 		ship.pos.y = centerY - (dy / distance) * 1190;
 	}
+	return deliveredFraction;
 }
