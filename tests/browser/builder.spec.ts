@@ -83,3 +83,47 @@ test("corrupt browser storage recovers to flyable defaults", async ({
 		}),
 	).toBeVisible();
 });
+
+test("all chassis accept independent builds and custom survival returns after death", async ({
+	page,
+}) => {
+	await page.goto("/builder");
+	for (const [name, slots] of [
+		["Scout", 4],
+		["Fighter", 6],
+		["Heavy Corvette", 8],
+	] as const) {
+		await page
+			.getByRole("button", { name: new RegExp(`${name} ${slots} SLOTS`) })
+			.click();
+		await expect(
+			page.getByRole("region", { name: "Ship assembly" }).getByRole("button"),
+		).toHaveCount(slots);
+		await page.getByRole("button", { name: "Aft 1 · E/G/U: Empty" }).click();
+		await page.getByRole("button", { name: /Rail gun.*15 mass/ }).click();
+	}
+	await page.getByRole("button", { name: /Fighter 6 SLOTS/ }).click();
+	await expect(
+		page.getByRole("button", { name: "Aft 1 · E/G/U: Rail gun" }),
+	).toBeVisible();
+	await page.getByRole("button", { name: "Start survival" }).click();
+	await page.keyboard.down("a");
+	await page.keyboard.down("d");
+	await expect(page.locator(".flight-page")).toHaveAttribute(
+		"data-status",
+		"GAME_OVER",
+		{ timeout: 20000 },
+	);
+	await page.keyboard.up("a");
+	await page.keyboard.up("d");
+	await expect(page.getByRole("button", { name: "Submit Score" })).toHaveCount(
+		0,
+	);
+	await page
+		.getByRole("dialog", { name: "Run complete" })
+		.getByRole("button", { name: "Return to builder" })
+		.click();
+	await expect(
+		page.getByRole("button", { name: "Aft 1 · E/G/U: Rail gun" }),
+	).toBeVisible();
+});

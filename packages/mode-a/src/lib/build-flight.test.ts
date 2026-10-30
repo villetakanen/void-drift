@@ -107,6 +107,19 @@ describe("ship builder contract", () => {
 		b.step(idle);
 		expect(b.state.resources.power).toBeGreaterThan(0);
 	});
+	it("uses incoming charge with held controls and cannot thrust on unavailable energy", () => {
+		const sim = simulation(true);
+		sim.ship.pos.set(980, 540);
+		sim.state.resources.power = 0;
+		sim.step(both);
+		expect(sim.engineOutput.left).toBeGreaterThan(0);
+		expect(sim.state.resources.power).toBe(0);
+		expect(sim.state.status).toBe("PLAYING");
+		sim.ship.pos.set(1900, 540);
+		sim.step(both);
+		expect(sim.engineOutput.left).toBe(0);
+	});
+
 	it("replays assembled flight deterministically", () => {
 		const a = simulation(true),
 			b = simulation(true);

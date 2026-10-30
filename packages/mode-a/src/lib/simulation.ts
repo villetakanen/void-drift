@@ -92,6 +92,26 @@ export class Simulation {
 		if (this.state.status !== "PLAYING") return;
 		const beforeX = this.ship.pos.x;
 		const beforeY = this.ship.pos.y;
+		let engineFraction = 1;
+		if (this.settings.loadout) {
+			const stats = buildStats(this.settings.loadout);
+			const distance = Math.hypot(
+				this.ship.pos.x - this.star.pos.x,
+				this.ship.pos.y - this.star.pos.y,
+			);
+			const available = Math.max(
+				0,
+				Math.min(
+					stats.capacity,
+					this.state.resources.power +
+						(solarCharge(distance, this.star, stats.coils) - 3) * STEP,
+				),
+			);
+			const requested = (buildDrain(this.settings.loadout, input) - 3) * STEP;
+			const spent = Math.min(available, requested);
+			engineFraction = requested > 0 ? spent / requested : 0;
+			this.state.resources.power = available - spent;
+		}
 		let delivered = 0;
 		let substeps = 0;
 		// Four substeps resolve stronger close passes without changing the replay tick rate.
@@ -101,8 +121,8 @@ export class Simulation {
 					this.ship,
 					this.settings.loadout,
 					input,
-					STEP / 4,
-					this.state.resources.power > 0,
+					(STEP / 4) * engineFraction,
+					engineFraction > 0,
 				);
 			}
 			delivered += updateShip(
@@ -127,8 +147,9 @@ export class Simulation {
 			);
 			substeps++;
 			if (
+				!this.settings.testFlight &&
 				Math.hypot(this.ship.pos.x - 960, this.ship.pos.y - 540) <
-				this.star.radius + this.ship.radius
+					this.star.radius + this.ship.radius
 			)
 				break;
 		}
@@ -147,19 +168,7 @@ export class Simulation {
 		const distance = Math.hypot(this.ship.pos.x - 960, this.ship.pos.y - 540);
 		this.thrust.left = input.leftThruster;
 		this.thrust.right = input.rightThruster;
-		if (this.settings.loadout) {
-			const stats = buildStats(this.settings.loadout);
-			this.state.resources.power = Math.max(
-				0,
-				Math.min(
-					stats.capacity,
-					this.state.resources.power +
-						(solarCharge(distance, this.star, stats.coils) -
-							buildDrain(this.settings.loadout, input)) *
-							STEP,
-				),
-			);
-		} else
+		if (!this.settings.loadout)
 			updatePower(
 				this.state.resources,
 				distance,

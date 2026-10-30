@@ -163,3 +163,12 @@ Tuning values and the direct angular-response approximation remain provisional.
 Automated evidence covers fitting, persistence, corrupted storage, energy, control
 activation, mass effects, deterministic replay and repeated mixed-engine overspeed.
 Human assessment of fun and visual fidelity is still required.
+
+### Empty-energy correction
+
+Energy is budgeted before engine impulses: solar charging and fixed life support
+are applied first, then active engines share available energy proportionally.
+They cannot generate thrust from energy they do not have. In test flight, holding
+controls while empty can use newly received solar energy without requiring a
+button release. Test flight also completes every simulation substep during star
+contact, keeping movement and resource timing consistent while death is suppressed.
