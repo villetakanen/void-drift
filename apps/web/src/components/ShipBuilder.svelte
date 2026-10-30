@@ -76,7 +76,7 @@ function install(id: PartId | null) {
 	} else build[mount.group][mount.index] = id;
 }
 function choose(id: ShipProfileId) {
-	if (id !== "balanced") return;
+	if (id === "scout") return;
 	chosen = id;
 	selected = "left";
 }
@@ -116,8 +116,8 @@ function choose(id: ShipProfileId) {
 					class:btn-filled={chosen === id}
 					class:btn-ghost={chosen !== id}
 					aria-pressed={chosen === id}
-					disabled={id !== "balanced"}
-					aria-describedby={id !== "balanced" ? "pending-designs" : undefined}
+					disabled={id === "scout"}
+					aria-describedby={id === "scout" ? "pending-designs" : undefined}
 					onclick={() => choose(id as ShipProfileId)}
 				>
 					{chassis.name}<small
@@ -128,8 +128,7 @@ function choose(id: ShipProfileId) {
 			{/each}
 		</nav>
 		<p id="pending-designs">
-			Scout and Heavy Corvette designs are pending. Their saved builds are
-			retained.
+			Scout design is pending. Saved builds are retained.
 		</p>
 		<div class="workbench">
 			<section class="assembly" aria-label="Ship assembly">

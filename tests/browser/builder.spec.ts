@@ -28,7 +28,7 @@ test("fit, persist, fly, reset and return to an assembled ship", async ({
 	).toBeDisabled();
 	await expect(
 		page.getByRole("button", { name: /Heavy Corvette.*8 SLOTS/ }),
-	).toBeDisabled();
+	).toBeEnabled();
 	await page.reload();
 	await expect(
 		page.getByRole("button", { name: "Hull 1 · G/U: Energy storage" }),
@@ -153,5 +153,48 @@ test("preserves unavailable chassis saves and independently selects tight aft mo
 		.click();
 	await expect(
 		page.getByRole("button", { name: "Aft 1 · E/G/U: Rail gun" }),
+	).toBeVisible();
+});
+
+test("cruiser fits eight mounts, preserves Fighter and flies", async ({
+	page,
+}) => {
+	await page.goto("/lab/builder");
+	await page.getByRole("button", { name: /Heavy Corvette.*8 SLOTS/ }).click();
+	await page.getByRole("button", { name: "Hull 1 · G/U: Empty" }).click();
+	await page.getByRole("button", { name: /Rail gun.*15 mass/ }).click();
+	await page.getByRole("button", { name: "Aft 2 · E/G/U: Empty" }).click();
+	await page.getByRole("button", { name: /Ion engine.*10 mass/ }).click();
+	await page.getByRole("button", { name: /Fighter.*6 SLOTS/ }).click();
+	await expect(
+		page.getByRole("button", { name: "Hull 1 · G/U: Empty" }),
+	).toBeVisible();
+	await page.reload();
+	await page.getByRole("button", { name: /Heavy Corvette.*8 SLOTS/ }).click();
+	await expect(
+		page.getByRole("button", { name: "Hull 1 · G/U: Rail gun" }),
+	).toBeVisible();
+	await expect(
+		page.getByRole("button", { name: "Aft 2 · E/G/U: Ion engine" }),
+	).toBeVisible();
+	await page.setViewportSize({ width: 1440, height: 1100 });
+	await page.screenshot({
+		path: "artifacts/cruiser-builder.png",
+		fullPage: true,
+	});
+	await page.getByRole("button", { name: "Test flight", exact: true }).click();
+	await page.keyboard.down("a");
+	await page.keyboard.down("d");
+	await expect
+		.poll(async () =>
+			Number(await page.locator(".flight-page").getAttribute("data-ticks")),
+		)
+		.toBeGreaterThan(45);
+	await page.keyboard.up("a");
+	await page.keyboard.up("d");
+	await page.screenshot({ path: "artifacts/cruiser-flight.png" });
+	await page.getByRole("button", { name: "Return to builder" }).click();
+	await expect(
+		page.getByRole("button", { name: "Hull 1 · G/U: Rail gun" }),
 	).toBeVisible();
 });

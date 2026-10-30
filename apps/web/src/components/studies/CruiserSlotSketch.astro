@@ -1,0 +1,144 @@
+---
+import { buildMounts, defaultBuilds } from "@void-drift/mode-a";
+
+interface Props {
+	layout: "spine" | "shoulders";
+	windows: 2 | 3;
+	label: string;
+	bowCockpit?: boolean;
+	aft?: "row" | "center-forward" | "center-back";
+}
+const { layout, windows, label, bowCockpit = false, aft = "row" } = Astro.props;
+// Production mount identities/counts; positions are study fixtures.
+const mounts = buildMounts(defaultBuilds().tank).map((mount) => {
+	const hullPositions =
+		layout === "spine"
+			? [
+					[150, 142],
+					[150, 197],
+					[150, 252],
+				]
+			: [
+					[150, 142],
+					[122, 230],
+					[178, 230],
+				];
+	const position =
+		mount.group === "hull"
+			? hullPositions[mount.index]
+			: mount.group === "side"
+				? [mount.index === 0 ? 87 : 213, 330]
+				: [
+						112 + mount.index * 38,
+						aft === "row"
+							? 400
+							: (mount.index === 1) === (aft === "center-forward")
+								? 355
+								: 400,
+					];
+	return { ...mount, sx: position[0], sy: position[1] };
+});
+---
+
+<svg viewBox="0 0 300 460" role="img" aria-label={label}>
+	<title>{label}</title>
+	<text x="150" y="24" text-anchor="middle" class="direction">BOW ↑</text>
+	<path
+		class="hull"
+		d="M136 48 L164 48 L186 88 L199 185 L199 290 L215 320 L215 365 L202 420 L98 420 L85 365 L85 320 L101 290 L101 185 L114 88 Z"
+	/>
+	<path
+		class="armor"
+		d="M136 48 L125 97 L116 285 L101 325 L101 380 L112 400 M164 48 L175 97 L184 285 L199 325 L199 380 L188 400"
+	/>
+	<path class="seam" d="M125 97 L175 97 M116 285 L184 285 M101 380 L199 380" />
+	<g transform={bowCockpit ? "translate(0 -211)" : undefined}>
+		<path
+			class="bridge"
+			d="M127 282 L173 282 L182 299 L178 312 L122 312 L118 299 Z"
+		/>
+		{Array.from({ length: windows }, (_, index) => (
+			<path
+				class="window"
+				d={`M${123 + index * (54 / windows)} 291 h${54 / windows - 5} l3 10 h-${54 / windows - 5} Z`}
+			/>
+		))}
+	</g>
+	{bowCockpit &&
+		mounts
+			.filter((mount) => mount.group === "aft")
+			.map((mount) => (
+				<path class="exhaust-guide" d={`M${mount.sx} ${mount.sy + 19} V446`} />
+			))}
+	{mounts.map((mount) => (
+		<g
+			transform={`translate(${mount.sx} ${mount.sy}) rotate(${mount.group === "side" ? (mount.index === 0 ? -20 : 20) : 0})`}
+		>
+			<rect
+				class:list={["mount", mount.group]}
+				x="-15"
+				y="-18"
+				width="30"
+				height="36"
+				rx="2"
+			/>
+			<text text-anchor="middle" y="4">
+				{mount.group === "side"
+					? "E"
+					: `${mount.group === "hull" ? "H" : "A"}${mount.index + 1}`}
+			</text>
+		</g>
+	))}
+</svg>
+<style>
+svg {
+	display: block;
+	width: 100%;
+	max-height: 460px;
+}
+.hull {
+	fill: #1c2530;
+	stroke: #8896a5;
+	stroke-width: 2;
+}
+.armor {
+	fill: none;
+	stroke: #566777;
+	stroke-width: 3;
+}
+.seam {
+	fill: none;
+	stroke: #3a4a58;
+	stroke-width: 1.5;
+}
+.bridge {
+	fill: #394959;
+	stroke: #8896a5;
+}
+.window {
+	fill: #05080e;
+	stroke: #a7c5d2;
+	stroke-width: 0.7;
+}
+.mount {
+	fill: #111820;
+	stroke: var(--color-acid-lime);
+	stroke-width: 1.5;
+}
+.side {
+	stroke: #8cc9de;
+}
+text {
+	fill: var(--color-text);
+	font: 11px var(--font-flight);
+}
+.direction {
+	fill: var(--color-text-dim);
+}
+.exhaust-guide {
+	fill: none;
+	stroke: #8cc9de;
+	stroke-width: 1;
+	stroke-dasharray: 3 4;
+}
+</style>

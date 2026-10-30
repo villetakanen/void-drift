@@ -220,3 +220,27 @@ These are
 geometry-derived outcomes, not accepted handling targets. No gravity, friction,
 energy, or speed-limit constants changed. Human review must assess fidelity,
 fitting readability, collision fairness, and single/paired-engine handling.
+
+
+## Heavy cruiser integration — 2026-10-30
+
+The accepted Long bevel 08 and 02.6 bow layout from `/lab/studies/heavy-cruiser-slots`
+are implemented for the `tank` chassis. Fighter and Heavy Corvette can be selected;
+Scout remains pending. The display name and version-1 storage IDs/slot indices are
+preserved. Earlier Fighter-only selection notes above describe the prior state.
+
+`cruiser.ts` defines flat facets, the two black cockpit panes and a small armored
+bow platform. Production-local +x points forward: hull mounts (45.5,0), (0.5,0),
+(-12.5,0); aft (-37,-11), (-30.5,0), (-37,11); side (22.5,±13) at ∓34°.
+The left mount has y=-13 and angle +34°. Hull/aft footprints are 11×9 and side
+footprints 14×9, matching Fighter. Renderer, hit targets and plume emitters share
+these mounts. The stern channel is clipped transparently rather than painted over
+background objects. The conservative collision envelope encloses geometry and mount
+extents, including nozzle allowance, at the existing 0.65 drawing scale.
+
+Mass remains 140; length is the 51-unit forward extent including bow support, used
+in the existing squared-length turning approximation; turn-response gain remains 1.
+Gravity, friction, energy costs, thrust and speed limits are unchanged. Custom runs
+remain unranked. `/lab/builder` is the canonical assembly and test-flight example.
+Human review of bow support, fitted-part readability, exhaust clearance, turning and
+circular-collision fairness remains pending; automated checks do not establish feel.

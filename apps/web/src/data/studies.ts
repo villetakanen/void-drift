@@ -10,6 +10,14 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
 	{
+		slug: "heavy-cruiser-slots",
+		title: "Heavy cruiser: slots into silhouette",
+		status: "integrated",
+		phase: "integration",
+		question:
+			"How can eight mounts and a multi-window bridge make a slim, armored cruiser express overwhelming power?",
+	},
+	{
 		slug: "ship-silhouettes",
 		title: "Three ship silhouettes",
 		status: "closed",

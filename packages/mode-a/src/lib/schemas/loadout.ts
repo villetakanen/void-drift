@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CRUISER } from "../cruiser";
 import { FIGHTER } from "../fighter";
 import { ShipProfileIdSchema } from "./ship-profile";
 
@@ -61,9 +62,10 @@ export const CHASSIS = {
 		mass: 140,
 		hull: 3,
 		aft: 3,
-		angle: 20,
-		arm: 20,
-		length: 38,
+		angle: CRUISER.angle,
+		arm: CRUISER.arm,
+		sideX: CRUISER.sideX,
+		length: CRUISER.length,
 		width: 25,
 	}),
 };

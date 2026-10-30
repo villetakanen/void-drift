@@ -105,3 +105,15 @@ renderer and test flight. Scout/Corvette designer selection is disabled pending
 resolved designs; their saved builds and stock profiles remain available internally.
 The ship-builder spec records geometry-derived turning and collision limitations;
 human fidelity and handling review remains pending.
+
+
+## Heavy cruiser silhouette
+
+Long bevel 08 with the accepted forward-engine and bow-slot layout is implemented
+for Heavy Corvette (`tank`). The shared `cruiser.ts` definition preserves the slim
+faceted hull, two black forward cockpit panes, axial deck fittings and triangular
+aft mounts. A small armored nose platform supports the bow fitting. `/lab/builder`
+demonstrates the real renderer and flight systems. Fighter and Heavy Corvette are
+selectable; Scout remains pending. The earlier Fighter-only statement is superseded.
+Owner approval established the direction despite reservations about visual polish;
+human review of the delivered bow attachment and flight handling remains pending.

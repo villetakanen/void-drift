@@ -1,4 +1,5 @@
 import type { PlumeEmitter } from "@void-drift/core";
+import { CRUISER } from "./cruiser";
 import { FIGHTER } from "./fighter";
 import { CHASSIS, type Loadout, PARTS, type PartId } from "./schemas/loadout";
 export const BUILD_FLIGHT_SCALE = 0.65;
@@ -26,8 +27,8 @@ export function buildMounts(build: Loadout): BuildMount[] {
 			part: build.side,
 			group: "side",
 			index: 0,
-			width: build.chassis === "balanced" ? 14 : 10,
-			height: build.chassis === "balanced" ? 9 : 8,
+			width: build.chassis !== "scout" ? 14 : 10,
+			height: build.chassis !== "scout" ? 9 : 8,
 		},
 		{
 			key: "right",
@@ -38,35 +39,49 @@ export function buildMounts(build: Loadout): BuildMount[] {
 			part: build.side,
 			group: "side",
 			index: 1,
-			width: build.chassis === "balanced" ? 14 : 10,
-			height: build.chassis === "balanced" ? 9 : 8,
+			width: build.chassis !== "scout" ? 14 : 10,
+			height: build.chassis !== "scout" ? 9 : 8,
 		},
 		...build.hull.map(
 			(part, index): BuildMount => ({
 				key: `hull-${index}`,
 				label: `Hull ${index + 1} · G/U`,
-				x: build.chassis === "balanced" ? 2 - index * 12 : 9,
-				y: build.chassis === "balanced" ? 0 : (index - (c.hull - 1) / 2) * 10,
+				x:
+					build.chassis === "tank"
+						? CRUISER.hullMounts[index]
+						: build.chassis === "balanced"
+							? 2 - index * 12
+							: 9,
+				y: build.chassis !== "scout" ? 0 : (index - (c.hull - 1) / 2) * 10,
 				angle: 0,
 				part,
 				group: "hull",
 				index,
-				width: build.chassis === "balanced" ? 11 : 10,
-				height: build.chassis === "balanced" ? 9 : 8,
+				width: build.chassis !== "scout" ? 11 : 10,
+				height: build.chassis !== "scout" ? 9 : 8,
 			}),
 		),
 		...build.aft.map(
 			(part, index): BuildMount => ({
 				key: `aft-${index}`,
 				label: `Aft ${index + 1} · E/G/U`,
-				x: build.chassis === "balanced" ? -22 : -c.length * 0.6,
-				y: (index - (c.aft - 1) / 2) * (build.chassis === "balanced" ? 10 : 12),
+				x:
+					build.chassis === "tank"
+						? CRUISER.aftMounts[index][0]
+						: build.chassis === "balanced"
+							? -22
+							: -c.length * 0.6,
+				y:
+					build.chassis === "tank"
+						? CRUISER.aftMounts[index][1]
+						: (index - (c.aft - 1) / 2) *
+							(build.chassis === "balanced" ? 10 : 12),
 				angle: 0,
 				part,
 				group: "aft",
 				index,
-				width: build.chassis === "balanced" ? 11 : 10,
-				height: build.chassis === "balanced" ? 9 : 8,
+				width: build.chassis !== "scout" ? 11 : 10,
+				height: build.chassis !== "scout" ? 9 : 8,
 			}),
 		),
 	];
@@ -85,7 +100,20 @@ export function drawBuild(
 	ctx.translate(x, y);
 	ctx.rotate(rotation);
 	ctx.scale(scale, scale);
-	if (build.chassis === "balanced") {
+	if (build.chassis === "tank") {
+		// Clip out the stern channel without painting over the scene beneath it.
+		ctx.save();
+		ctx.beginPath();
+		ctx.rect(-100, -100, 200, 200);
+		CRUISER.notch.forEach(([x, y], i) => {
+			if (i === 0) ctx.moveTo(x, y);
+			else ctx.lineTo(x, y);
+		});
+		ctx.closePath();
+		ctx.clip("evenodd");
+		for (const facet of CRUISER.facets) polygon(ctx, facet.points, facet.color);
+		ctx.restore();
+	} else if (build.chassis === "balanced") {
 		for (const [index, point] of FIGHTER.hull.entries()) {
 			const next = FIGHTER.hull[(index + 1) % FIGHTER.hull.length];
 			polygon(
@@ -153,7 +181,7 @@ export function drawBuild(
 		);
 		if (mount.part === "rail" || mount.part === "laser") {
 			const barrel =
-				build.chassis === "balanced"
+				build.chassis !== "scout"
 					? mount.width / 2 + (mount.part === "rail" ? 1 : 0)
 					: mount.part === "rail"
 						? 18
@@ -231,6 +259,17 @@ function polygon(
 }
 /** Conservative circular collision envelope, including the accepted forward tip. */
 export function buildCollisionRadius(build: Loadout) {
+	if (build.chassis === "tank") {
+		const hull = Math.max(
+			...CRUISER.facets.flatMap((f) =>
+				f.points.map(([x, y]) => Math.hypot(x, y)),
+			),
+		);
+		const fittings = buildMounts(build).map(
+			(m) => Math.hypot(m.x, m.y) + Math.hypot(m.width / 2 + 3, m.height / 2),
+		);
+		return Math.max(hull, ...fittings) * BUILD_FLIGHT_SCALE;
+	}
 	return build.chassis === "balanced"
 		? FIGHTER.length * BUILD_FLIGHT_SCALE
 		: 16;
