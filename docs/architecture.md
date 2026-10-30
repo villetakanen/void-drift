@@ -83,3 +83,14 @@ ownership, rather than demanding a public token for every value. Existing global
 composition properties; shared button groups own `--_group-spacing` and
 `--_stack-max`. The canonical `/lab/buttons` and application consume these same
 definitions from core styles/buttons.css.
+
+## Ship builder alpha — 0.4.0
+
+`mode-a/lib/schemas/loadout.ts` validates chassis, parts and fixed-slot loadouts.
+`build-flight.ts` owns assembled propulsion and energy calculations; Simulation
+branches on an optional validated loadout while preserving legacy stock trials.
+`build-renderer.ts` draws the same procedural fittings in the builder and flight.
+`/builder` and `/lab/builder` compose the same ShipBuilder and FlightDeck components.
+Resource power is absolute nonnegative energy; runtime clamps it to build capacity.
+Custom runs are unranked and cannot use the stock score submission path.
+See [the ship-builder spec](specs/ship-builder.md) for provisional physics and tuning.

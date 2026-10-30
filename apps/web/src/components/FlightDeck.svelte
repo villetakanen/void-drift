@@ -1,9 +1,12 @@
 <script lang="ts">
 import { Camera, Input, Renderer } from "@void-drift/core";
 import {
+	buildStats,
 	CHALLENGE,
+	drawBuild,
 	type FlightSettings,
 	FlightSettingsSchema,
+	type Loadout,
 	SHIP_PROFILES,
 	type ShipProfileId,
 	ShipProfileIdSchema,
@@ -17,7 +20,17 @@ import { onMount } from "svelte";
 import { version } from "../../package.json";
 import { settings } from "../lib/stores/settings";
 
-let { lab = false }: { lab?: boolean } = $props();
+let {
+	lab = false,
+	loadout,
+	testFlight = false,
+	onReturn,
+}: {
+	lab?: boolean;
+	loadout?: Loadout;
+	testFlight?: boolean;
+	onReturn?: () => void;
+} = $props();
 let canvas: HTMLCanvasElement;
 let simulation: Simulation;
 let input: Input;
@@ -62,7 +75,13 @@ const coast = [
 function reset(start = false) {
 	input?.reset();
 	previewLevel = -1;
-	simulation = new Simulation(lab ? tuning : stockSettings(chosen));
+	simulation = new Simulation(
+		loadout
+			? { ...stockSettings(loadout.chassis), loadout, testFlight }
+			: lab
+				? tuning
+				: stockSettings(chosen),
+	);
 	if (start) simulation.start();
 	paused = false;
 	scoreSaved = false;
@@ -165,7 +184,7 @@ function importTrial() {
 	}
 }
 async function save() {
-	if (lab || status !== "GAME_OVER" || saving || scoreSaved) return;
+	if (lab || loadout || status !== "GAME_OVER" || saving || scoreSaved) return;
 	saving = true;
 	const result = await submitHighScore({
 		initials,
@@ -189,7 +208,7 @@ function release(event: PointerEvent) {
 	input?.setPointer(event.pointerId, null);
 }
 onMount(() => {
-	chosen = settings.get().selectedShipId;
+	chosen = loadout?.chassis ?? settings.get().selectedShipId;
 	tuning = stockSettings(chosen);
 	if (lab) {
 		const trialJSON = new URL(location.href).searchParams.get("trial");
@@ -206,7 +225,7 @@ onMount(() => {
 	renderer.resize(1920, 1080);
 	camera = new Camera();
 	input = new Input(canvas);
-	reset();
+	reset(Boolean(loadout));
 	let last = performance.now();
 	let accumulator = 0;
 	let frame = 0;
@@ -231,12 +250,24 @@ onMount(() => {
 		renderer.drawArenaBoundary(1200);
 		renderer.drawStar(simulation.star, simulation.ticks * STEP * 1000);
 		for (const planet of simulation.planets) renderer.drawPlanet(planet);
-		if (context) simulation.plume.draw(context);
-		renderer.drawShip(
-			simulation.ship,
-			simulation.settings.profile.tint,
-			chosen,
-		);
+		if (context && !loadout) simulation.plume.draw(context);
+		if (loadout && context)
+			drawBuild(
+				context,
+				loadout,
+				simulation.ship.pos.x,
+				simulation.ship.pos.y,
+				simulation.ship.rotation,
+				0.65,
+				"",
+				simulation.engineOutput,
+			);
+		else
+			renderer.drawShip(
+				simulation.ship,
+				simulation.settings.profile.tint,
+				chosen,
+			);
 		renderer.endCamera();
 		frame = requestAnimationFrame(draw);
 	}
@@ -271,8 +302,27 @@ onMount(() => {
 >
 	<header class="flight-header">
 		<a href="/" class="brand">VOID<span>·</span>DRIFT</a>
-		<span class="edition">{lab ? "FLIGHT LAB" : `SURVIVAL / ${version}`}</span>
-		<nav aria-label="Flight navigation">
+		<span class="edition"
+			>{loadout
+				? testFlight
+					? "BUILDER / TEST FLIGHT"
+					: "CUSTOM SURVIVAL / UNRANKED"
+				: lab
+					? "FLIGHT LAB"
+					: `SURVIVAL / ${version}`}</span
+		>
+		<nav class:build-nav={Boolean(loadout)} aria-label="Flight navigation">
+			{#if onReturn}
+				<button type="button" class="btn btn-link" onclick={onReturn}>
+					Return to builder
+				</button><button
+					type="button"
+					class="btn btn-link"
+					onclick={() => reset(true)}
+				>
+					Reset flight
+				</button>
+			{/if}
 			{#if lab}
 				<a href="/">Play</a>
 			{/if}
@@ -292,7 +342,11 @@ onMount(() => {
 				</div>
 				<div>
 					<small>POWER</small><strong>{power.toFixed(0)}%</strong
-					><progress aria-label="Power" max="100" value={power}></progress>
+					><progress
+						aria-label="Power"
+						max={loadout ? buildStats(loadout).capacity : 100}
+						value={power}
+					></progress>
 				</div>
 				<div class="timer">
 					<small>SURVIVAL</small
@@ -333,6 +387,11 @@ onMount(() => {
 									: "BALANCED / Steady thrust. Predictable handling."}
 						</div>
 						<div class="button-group button-group--vertical">
+							{#if !lab}
+								<a class="btn btn-filled" href="/builder"
+									>Build your ship · 0.4.0</a
+								>
+							{/if}
 							<button type="button" class="btn btn-filled" onclick={start}>
 								TAP TO START
 							</button>
@@ -359,7 +418,7 @@ onMount(() => {
 						</p>
 						<h1>{seconds.toFixed(1)} seconds.</h1>
 						<p>Every orbit teaches you something.</p>
-						{#if !lab}
+						{#if !lab && !loadout}
 							<label for="initials">Your initials</label>
 							<input
 								id="initials"
@@ -390,9 +449,9 @@ onMount(() => {
 							<button
 								type="button"
 								class="btn btn-ghost"
-								onclick={() => reset(false)}
+								onclick={() => (onReturn ? onReturn() : reset(false))}
 							>
-								Try Again
+								{onReturn ? "Return to builder" : "Try Again"}
 							</button><a class="btn btn-ghost" href="/leaderboard"
 								>View Leaderboard</a
 							>
@@ -428,7 +487,15 @@ onMount(() => {
 							{paused ? "Resume flight" : "Pause"}
 						</button>
 					{/if}
-					<small>{lab ? "UNRANKED TRIAL" : "G CLASS / SHARED CHALLENGE"}</small>
+					<small
+						>{loadout
+							? testFlight
+								? "TEST / NO GAME-OVER"
+								: "CUSTOM BUILD / UNRANKED"
+							: lab
+								? "UNRANKED TRIAL"
+								: "G CLASS / SHARED CHALLENGE"}</small
+					>
 				</div>
 				<button
 					type="button"
@@ -586,3 +653,11 @@ onMount(() => {
 		<p role="status" class="flight-message">{message}</p>
 	{/if}
 </div>
+
+<style>
+.build-nav {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-md);
+}
+</style>

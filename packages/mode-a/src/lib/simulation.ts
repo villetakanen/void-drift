@@ -12,6 +12,7 @@ import {
 	updateShip,
 	Vec2,
 } from "@void-drift/core";
+import { applyBuildEngines, buildDrain, solarCharge } from "./build-flight";
 import { SHIP_PROFILE_BY_ID } from "./config";
 import { createStar } from "./game-loop";
 import {
@@ -20,6 +21,7 @@ import {
 	ReplaySchema,
 } from "./schemas/flight";
 import { createInitialGameState } from "./schemas/game-state";
+import { buildStats } from "./schemas/loadout";
 import type { ShipProfileId } from "./schemas/ship-profile";
 
 export const STEP = 1 / 60;
@@ -73,6 +75,14 @@ export class Simulation {
 			);
 		}
 		this.state.sunType = "G";
+		if (this.settings.loadout)
+			this.state.resources.power = buildStats(this.settings.loadout).capacity;
+		if (this.settings.testFlight) {
+			this.planets.length = 0;
+			this.star.mass *= (12 / this.star.radius) ** 2;
+			this.star.radius = 12;
+			this.ship.pos.set(820, 540);
+		}
 	}
 	start() {
 		this.state.status = "PLAYING";
@@ -86,9 +96,20 @@ export class Simulation {
 		let substeps = 0;
 		// Four substeps resolve stronger close passes without changing the replay tick rate.
 		for (let substep = 0; substep < 4; substep++) {
+			if (this.settings.loadout) {
+				this.engineOutput = applyBuildEngines(
+					this.ship,
+					this.settings.loadout,
+					input,
+					STEP / 4,
+					this.state.resources.power > 0,
+				);
+			}
 			delivered += updateShip(
 				this.ship,
-				input,
+				this.settings.loadout
+					? { leftThruster: false, rightThruster: false, fire: false }
+					: input,
 				STEP / 4,
 				1920,
 				1080,
@@ -96,7 +117,9 @@ export class Simulation {
 				this.planets,
 				this.state.resources,
 				undefined,
-				this.settings.profile,
+				this.settings.loadout
+					? { ...this.settings.profile, hullMultiplier: 1 }
+					: this.settings.profile,
 				{ drag: 0, speedLimit: null },
 				"inverse-square",
 				GRAVITY_FLIGHT.engineSpeedScale,
@@ -109,8 +132,10 @@ export class Simulation {
 			)
 				break;
 		}
-		this.engineOutput.left = input.leftThruster ? delivered / substeps : 0;
-		this.engineOutput.right = input.rightThruster ? delivered / substeps : 0;
+		if (!this.settings.loadout) {
+			this.engineOutput.left = input.leftThruster ? delivered / substeps : 0;
+			this.engineOutput.right = input.rightThruster ? delivered / substeps : 0;
+		}
 		this.plume.step(
 			STEP,
 			this.ship,
@@ -122,20 +147,33 @@ export class Simulation {
 		const distance = Math.hypot(this.ship.pos.x - 960, this.ship.pos.y - 540);
 		this.thrust.left = input.leftThruster;
 		this.thrust.right = input.rightThruster;
-		updatePower(
-			this.state.resources,
-			distance,
-			this.star,
-			STEP,
-			this.thrust,
-			this.settings.profile.powerDrainMultiplier,
-		);
+		if (this.settings.loadout) {
+			const stats = buildStats(this.settings.loadout);
+			this.state.resources.power = Math.max(
+				0,
+				Math.min(
+					stats.capacity,
+					this.state.resources.power +
+						(solarCharge(distance, this.star, stats.coils) -
+							buildDrain(this.settings.loadout, input)) *
+							STEP,
+				),
+			);
+		} else
+			updatePower(
+				this.state.resources,
+				distance,
+				this.star,
+				STEP,
+				this.thrust,
+				this.settings.profile.powerDrainMultiplier,
+			);
 		updateHull(
 			this.state.resources,
 			distance,
 			this.star,
 			STEP,
-			this.settings.profile.hullMultiplier,
+			this.settings.loadout ? 1 : this.settings.profile.hullMultiplier,
 		);
 		this.ticks++;
 		this.state.elapsedTime = this.ticks * STEP;
@@ -147,7 +185,7 @@ export class Simulation {
 					: this.state.resources.power <= 0
 						? "POWER"
 						: null;
-		if (cause) {
+		if (cause && !this.settings.testFlight) {
 			this.state.status = "GAME_OVER";
 			this.state.deathCause = cause;
 		}

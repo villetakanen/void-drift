@@ -53,3 +53,13 @@ Consulted 2026-10-28:
 - [Agent Constitution](https://asdlc.io/patterns/agent-constitution/): keep operational boundaries explicit.
 - [Experience Modeling](https://asdlc.io/patterns/experience-modeling/): enforce shared visual definitions and show them in the Lab.
 - [Compound Loop](https://asdlc.io/patterns/compound-loop/): review lessons before adopting durable guidance.
+
+## Next phase — ship builder, 2026-10-30
+
+The owner authorizes a playable 0.4.0 alpha built from the agreed
+[ship-builder brief](specs/ship-builder.md), followed by focused design studies for
+amendments revealed through play. Player fitting now belongs in scope: fixed slots,
+visible parts, mass-based directional engines and energy tradeoffs. Desktop is the
+builder acceptance target; mobile sizing/layout is deferred. Weapons are static;
+purchasing parts and shooting for credits remain future scope. Custom survival is
+initially unranked, preserving the existing stock competition contract.
