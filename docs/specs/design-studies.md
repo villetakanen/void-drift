@@ -12,7 +12,7 @@ Each cycle develops understanding from its own brief and current established rea
 - `/lab/studies` lists studies; `/lab/studies/<slug>` provides a stable review URL.
 - `apps/web/src/data/studies.ts` validates metadata with Zod before rendering.
 - Pages develop numbered sections progressively. Phase/status metadata supports
-  navigation; it does not prescribe substantive headings or lifecycle reports.
+  navigation; subject-specific headings follow the four numbered parts.
 - Exploratory → accepted → integrated distinguishes owner acceptance from delivery.
   Agents record acceptance only when the owner explicitly settles the direction.
 - Experimental styles remain scoped to study components; fixture behavior is labeled.
@@ -29,16 +29,23 @@ including problem formulation; it must neither invent settled purpose nor requir
 the designer to supply the result of the inquiry. See the
 [factory lesson](../factory-building-lessons/002-phased-design-studies.md).
 
-| Phase       | Agent contribution                                                                         | Human participation and transition                                                                   |
-| ----------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
-| Purpose     | Synthesize intent, principles, relevant knowledge, a provisional problem, and unknowns.    | Challenge and agree on why and what matters; unresolved mechanics can move into exploration.         |
-| Exploration | Connect alternatives to purpose, hypotheses, investigations, and decisions they inform.    | Compare, critique, and settle choices incrementally; explicit design acceptance enables integration. |
-| Integration | Map accepted choices to shared definitions and application behavior, implement and verify. | Authorize integration and assess resulting experience; publication requires separate authorization.  |
+| Part                | Contribution                                                                             | Result                                                             |
+| ------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| 01 / Design problem | Establish intent, experience, principles, and uncertainty.                               | Shared problem worth investigating.                                |
+| 02 / Exploration    | Investigate alternatives with concrete examples; preserve iterations as 02.1, 02.2, etc. | Design conclusions and explicit remaining hypotheses.              |
+| 03 / Readiness      | Assess those conclusions against current systems and constraints.                        | Feasibility, dependencies, required adaptations, and risks.        |
+| 04 / Integration    | Document how and why to implement the conclusions.                                       | Sequenced implementation plan, affected systems, and verification. |
 
-Phase and status are different: purpose/exploration/integration describes the work;
-exploratory/accepted/integrated describes acceptance and delivery. Neither metadata
-nor passing checks establishes human agreement. Record the actual feedback and its
-scope. Existing authorization counts; do not insert redundant approval requests.
+These four parts are the study structure. Develop them progressively; do not fill
+future parts before there is evidence to support them. Integration here means planning,
+not execution or further exploration. Completing or accepting the study does not
+implicitly authorize implementation. Existing explicit implementation authorization
+still counts. Publication requires separate authorization.
+
+Phase metadata describes the current work; status describes acceptance and delivery.
+Only explicit design acceptance changes exploratory to accepted. Mark integrated only
+after implementation and verification, not after writing part 04. Human review of feel
+and fidelity is separate from automated correctness and from study-quality evaluation.
 
 An unknown calls for research or design investigation unless only the designer can
 supply the missing creative boundary. A mechanic’s role in play can be the
@@ -115,15 +122,13 @@ next question is sufficient; do not introduce a generic approval interview. Sile
 is not agreement. Unknown mechanics can remain the next section's investigation.
 
 Then fill section 02 with the next useful investigation and add one unfilled next
-section. Preserve settled sections and their current-cycle agreements. Repeat as
-needed; section count is not fixed and sections need not correspond one-to-one to
-phases. Revisit a settled section with an explicit reason when evidence challenges it.
+section. Preserve settled sections and their current-cycle agreements. Use subsections for iterations within each of the four parts. Revisit a settled section with an explicit reason when evidence challenges it.
 
-Purpose → exploration → integration guides the work, not the opening's headings.
+Design problem → exploration → readiness → integration planning defines the four parts.
 Use subject-specific prose. Distinguish intent, evidence, and hypotheses naturally
 without organizing the page by authorship labels. Cite research where it supports
 claims. Add decision records and integration material only when the cycle reaches
-them; the readiness rubric belongs at the exploration-to-integration boundary.
+them; the study-quality rubric remains a separate evaluation record.
 
 ### First-page form review
 
@@ -204,15 +209,15 @@ do not overwrite the evidence while tuning toward a desired outcome. On an overr
 record the deliberate change and whether the previous question remains unresolved.
 These observations belong to this cycle; they do not bind a future cycle automatically.
 
-## Design readiness review — before integration
+## Study-quality evaluation — separate from readiness
 
-Apply this rubric after exploration and before integrating a design. It assesses
-whether the design is grounded enough to carry into the application; implementation
-correctness and human review of the integrated experience remain separate checks.
-The agent prepares an evidence-backed assessment on the study page. The designer
-judges purpose, tradeoffs, and the resulting design; the agent cannot approve itself.
+Evaluate whether the study succeeded, using the eight criteria below. Store ratings
+and evidence in a separate linked record (for example `/lab/reviews/<study-slug>`).
+This rubric does not replace part 03: readiness assesses feasibility of the design
+conclusion in the current setting. Part 04 documents the implementation path.
+Neither the rubric nor a feasibility conclusion authorizes execution.
 
-| Criterion                  | Ready when                                                                             | Warning signs                                                                                   |
+| Criterion                  | Success evidence                                                                       | Warning signs                                                                                   |
 | -------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | Purpose                    | We share why the design matters, intended experience, and guiding principles.          | The rationale only describes the alpha or repeats the request.                                  |
 | Investigation              | Relevant research, comparisons, or experiments have advanced important unknowns.       | Unknowns become assumptions or questions repeatedly handed back to the designer.                |
@@ -223,37 +228,16 @@ judges purpose, tradeoffs, and the resulting design; the agent cannot approve it
 | Remaining uncertainty      | Unresolved questions, their consequences, and how to investigate them are explicit.    | Important unknowns are hidden or everything is claimed to be solved.                            |
 | Integration implications   | We can identify required changes, what to preserve, and how to assess design fidelity. | Integration requires inventing substantial design decisions that exploration has not addressed. |
 
-For every criterion record **Ready**, **Conditional**, or **Not ready**, a short
-rationale, and a link to supporting study material. Missing evidence is a gap, not
-a pass. Conditional requires a named condition, its consequence, and how and when
-it will be checked. Do not average scores: presentation cannot compensate for
-unsupported purpose or evidence. Full technical implementation planning is not
-required to assess integration implications.
+For every criterion record **Supported**, **Partial**, or **Unsupported**, with
+links to evidence and explicit gaps. Do not average ratings or infer human acceptance.
+Assess the study's reasoning and usefulness, not whether a future implementation has
+already passed its tests. Record the owner's judgment separately from the agent's
+assessment. Planned checks are not completed evidence.
 
-The designer's review establishes one of three outcomes:
-
-- **Ready for integration:** sufficient evidence and explicit acceptance of the design.
-- **Ready for bounded integration:** a named, limited implementation can resolve
-  remaining uncertainty. Record accepted scope, unresolved hypotheses, review points,
-  and conditions for reconsideration before proceeding. No Not ready criterion may
-  be ignored; resolve it or explicitly narrow the scope so it no longer applies.
-- **Return to exploration or purpose:** name the unresolved issue and next useful
-  investigation. A failed readiness review is useful direction, not a demand for
-  the designer to supply the missing design answer.
-
-Record the proposed assessment separately from the actual human decision, including
-its date, accepted scope, and conditions. An assessment alone does not change study
-status or authorize integration. Existing explicit acceptance and authorization
-count when they cover the assessed scope; do not ask redundantly. A bounded trial
-does not imply acceptance of unresolved design choices or readiness for publication.
-
-Suggested review record:
-
-- Study revision and scope assessed.
-- Eight criterion ratings, evidence links, and any conditions.
-- Agent recommendation and next investigation if needed.
-- Human decision and rationale, or explicitly pending.
-- Authorized integration scope, review points, and unresolved questions carried forward.
+Part 03 should explain current-system fit, dependencies, constraints, risks, and any
+adaptations required by the conclusion. Part 04 should state what changes, why, in
+what order, and how fidelity and correctness will be checked. Unresolved design choices
+remain explicit; return a named question to part 02 when more exploration is needed.
 
 ## Scenarios
 

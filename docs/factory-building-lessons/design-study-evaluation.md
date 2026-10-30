@@ -19,7 +19,7 @@ clear invitation plus the next step it enables. Treat asking the designer to set
 an uninvestigated mechanic as a warning sign, not automatic progress.
 Later feedback must update the page, and the next section should develop only after
 the current framing is sufficiently settled through conversation. Keep the initial
-page free of the readiness rubric; apply it only when exploration reaches integration.
+page free of the study-quality rubric; use it separately to evaluate study quality.
 
 ## Controlled setup
 
@@ -99,32 +99,14 @@ results and excerpts; correctness checks; human assessment; elapsed time; deviat
 Summarize differences only after inspecting these records. No run is a pass until
 its evidence and human assessment exist. Promote further lessons separately.
 
-## Design readiness assessment at the trial boundary
+## Four-part structure and separate study evaluation
 
-When exploration reaches a proposed integration boundary, prepare the separate
-[design readiness review](../specs/design-studies.md#design-readiness-review--before-integration)
-from the study evidence. Capture all eight ratings, conditions, evidence links, and
-the proposed outcome. Record the designer's decision if supplied; otherwise mark
-it pending. This assessment does not extend the bounded trial into integration.
+Owner clarification, 30 October 2026: the study has four parts: design problem,
+exploration, readiness (feasibility in the current setting), and integration (the how
+and why of implementation, documented as a plan). The quality rubric evaluates study
+success separately. It is neither part 03 nor an execution approval gate.
 
-If a short trial ends during purpose or exploration, record readiness review as not
-yet due; do not manufacture a full review to finish the trial. A study may correctly
-conclude that more exploration is needed. Evaluate
-whether the assessment is honest and useful, not whether it declares the design
-ready. Keep workflow performance, design readiness, and implementation correctness
-separate in the run record. No numeric average substitutes for human judgment.
-
-## Focus and explicit-override probe
-
-Use this optional follow-up after a concrete example is available; do not alter the
-exact initial prompt/model replay. Ask for a change that repurposes the example before
-its question has been reviewed. Assess whether the agent identifies the shift,
-explains the useful observation, and recommends resolving the current question first
-rather than immediately tuning the fixture. It should still perform ordinary repairs
-that make the current question answerable without needless approval.
-
-Then explicitly direct it to set the question aside and pursue the new one. Assess
-whether it honors the override without repeated resistance, preserves the useful
-example/configuration, and records the new question and the unresolved old one.
-A refusal to honor the explicit override fails this probe just as silent drift does.
-Record findings separately from design readiness; no probe has yet validated this rule.
+Check that 02.x iterations stay in exploration, part 03 identifies current-system fit
+and constraints, and part 04 supplies actionable steps with rationale and verification.
+Writing the plan must not trigger implementation. Record human usefulness separately
+from correctness; this clarification does not establish a successful workflow trial.

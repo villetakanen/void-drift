@@ -225,3 +225,14 @@ Written records remain diagnostic evidence; removed artifact references are labe
 The latest cycle's reported outcome was a working method with excessive study scope.
 No partial mechanics from that cycle are authorized for integration. This cleanup
 neither promotes those choices nor introduces another standing workflow rule.
+
+## Repair — separate readiness assessment from design content
+
+On 30 October 2026 the engine-effects page displayed the full readiness rubric as
+section 03. This followed our explicit instruction to put the assessment on the
+study page; that placement was a harness choice, not a designer requirement.
+The designer approved separating it. The assessment now lives at
+/lab/reviews/engine-effects, with its ratings, conditions, and pending decision
+preserved. The study retains a concise next step and review link. Future reviews
+use separate records; chat presents the conclusion and required human judgment.
+This relocation does not accept the proposal or authorize integration.

@@ -1,6 +1,6 @@
 ---
 name: design-study
-description: Develop design understanding through purpose, exploration, and integration; preserve human decisions and promote accepted results into the game and shared design system.
+description: Develop a four-part study through design problem, exploration, readiness, and integration planning; preserve human decisions and promote accepted results into the game and shared design system.
 ---
 
 # Design study
@@ -21,7 +21,7 @@ specific research need. Preserve current-cycle agreements as the discussion deve
 Keep old artifacts separate; prefer a new cycle-specific slug rather than importing
 old page content. If reusing a URL is necessary, archive the prior page first.
 
-## Purpose — why?
+## 01 / Design problem — why?
 
 Synthesize supplied intent and relevant knowledge into a provisional purpose,
 principles, design tension, and important unknowns. Distinguish designer statements,
@@ -36,7 +36,7 @@ Inspect production and Lab when useful for the current inquiry; do not anchor a 
 experience to alpha shortcomings. Research missing knowledge when it helps; cite it
 and distinguish synthesis from observations of this game.
 
-## Exploration — how?
+## 02 / Exploration — how?
 
 Once purpose is shared, deliver the smallest concrete example that makes the current
 question inspectable in the active page section, in this exploration round. Described
@@ -72,21 +72,29 @@ inquiry changes. Record observations and limits, not invented conclusions. Give 
 question a separate example or preserved variant instead of tuning away the comparison.
 Follow the specification's focus rule; it protects inquiry, not agent authority.
 
-## Integration — what changes?
+## 03 / Readiness — is the conclusion feasible here?
 
-Before integration, apply the design readiness rubric in docs/specs/design-studies.md.
-Prepare all eight ratings with evidence, explicit conditions, and a proposed outcome
-on the study page. The designer judges readiness; do not average ratings or approve
-your own assessment. Record the actual decision and scope, or mark review pending.
-For bounded integration, preserve unresolved hypotheses and explicit review points.
-Return to purpose or exploration when the evidence does not justify integration.
+Assess the design conclusion against current implementation and constraints. Identify
+reusable systems, required changes, dependencies, risks, and unresolved design choices.
+Explain what is feasible now and what requires adaptation or further evidence. This is
+a technical and contextual feasibility assessment, not the study-quality rubric or an
+implementation approval gate. Keep accepted choices distinct from tuning hypotheses.
 
-Only explicit design acceptance changes exploratory to accepted. Purpose agreement
-allows exploration; it is not acceptance of a solution. Accepted is not integrated.
-When integration is authorized, map accepted choices to shared definitions, game
-systems, canonical Lab examples, and relevant guidance/specs. Implement and verify
-those consequences. Retain rationale and integration links before marking integrated.
-Human review of feel and fidelity remains separate from automated correctness.
+## 04 / Integration — how and why to implement it
+
+Document the implementation path: affected shared definitions, game systems, canonical
+Lab examples, specifications, sequencing, dependencies, rationale, and verification.
+This part is a plan, not implementation or another exploration round. Name unresolved
+choices and planned review points without claiming they are resolved. Completing the
+study does not authorize execution; implement only when separately requested or already
+authorized. Accepted is not integrated; mark integrated only after actual delivery.
+
+## Study-quality evaluation — separate from the four parts
+
+Use the eight-criterion rubric in docs/specs/design-studies.md to assess whether the
+study succeeded. Keep evidence-backed ratings in a separate linked review record.
+Do not use the rubric as part 03, a feasibility assessment, or an authorization gate.
+Record human judgment separately from the agent assessment and automated checks.
 
 ## Working surface and evidence
 
@@ -109,10 +117,12 @@ Develop the current section through discussion. Update the page with useful reas
 and feedback in the same round, not just chat. Advance when conversation establishes
 shared purpose/scope and resolves framing objections; substantive agreement or a clear
 instruction to explore suffices. Do not ask generic approval questions or require
-unknown mechanics to be solved. Fill the next section and leave one next placeholder.
+unknown mechanics to be solved. Fill the next part when appropriate and leave one next placeholder, up to part 04.
 Preserve settled current-cycle sections; explain any reason to revisit them.
 
-Phases guide work, not page headings. Do not prefill lifecycle reports, integration
+The four numbered parts are design problem, exploration, readiness, and integration.
+Use 02.1, 02.2, and so on for exploration iterations; do not advance the main part
+number for each experiment. Develop parts progressively, with subject-specific titles. Do not prefill lifecycle reports, integration
 bookkeeping, or readiness assessments in the opening. Keep phase/status in supporting
 metadata. Review the first page against the specification's form checklist and inspect
 its rendering; record human usefulness separately. Keep URLs stable within a cycle.
