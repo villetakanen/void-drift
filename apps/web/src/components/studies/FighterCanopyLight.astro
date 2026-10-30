@@ -1,0 +1,148 @@
+---
+const hull = [
+	[48, 0],
+	[-18, -20],
+	[-25, -17],
+	[-19, 0],
+	[-25, 17],
+	[-18, 20],
+];
+const forms = [
+	{
+		name: "A / Solid spear",
+		note: "A single acid-lime pane, sharply tapered toward the nose.",
+		path: "M9 0 L-5 -3 L-8 0 L-5 3Z",
+		accent: "M7 0 L-4 -2 L-6 0 L-4 2Z",
+	},
+	{
+		name: "B / Clipped pane",
+		note: "A broad solid pane with clipped corners and a flat rear edge.",
+		path: "M8 0 L3 -4 L-7 -4 L-9 -2 L-9 2 L-7 4 L3 4Z",
+		accent: "M6 0 L2 -3 L-6 -3 L-7 -1 L-7 1 L-6 3 L2 3Z",
+	},
+	{
+		name: "C / Split canopy",
+		note: "Two bold panes divided by a narrow dark central mullion.",
+		path: "M9 0 L1 -4 L-8 -3 L-9 0 L-8 3 L1 4Z",
+		accent: "M6 -.7 L0 -3 L-6 -2.3 L-7 -.7Z M6 .7 L0 3 L-6 2.3 L-7 .7Z",
+	},
+	{
+		name: "D / Forward visor",
+		note: "A heavy bright brow across a dark cockpit body.",
+		path: "M9 0 L2 -4 L-8 -3 L-9 0 L-8 3 L2 4Z",
+		accent: "M7 0 L1 -3 L-2 -2.7 L2 0 L-2 2.7 L1 3Z",
+	},
+	{
+		name: "E / Side panels",
+		note: "Two strong side accents retain a dark pointed center.",
+		path: "M9 0 L0 -4 L-8 -3 L-9 0 L-8 3 L0 4Z",
+		accent: "M5 -1 L0 -3 L-7 -2.3 L-6 -1Z M5 1 L0 3 L-7 2.3 L-6 1Z",
+	},
+	{
+		name: "F / Short shield",
+		note: "A compact, nearly square canopy with one decisive forward point.",
+		path: "M6 0 L2 -4 L-5 -4 L-7 -2 L-7 2 L-5 4 L2 4Z",
+		accent: "M4 0 L1 -3 L-4 -3 L-5 -1 L-5 1 L-4 3 L1 3Z",
+	},
+].map((form) => ({ ...form, points: hull }));
+const palette = [
+	"#c8f4f0",
+	"#83c7d0",
+	"#437e99",
+	"#264d6b",
+	"#365d79",
+	"#6193a9",
+];
+---
+
+<div class="fleet">
+	{forms.map((form) => (
+		<figure>
+			<figcaption>
+				<h4>{form.name}</h4>
+				<p>{form.note}</p>
+			</figcaption>
+			<svg
+				viewBox="0 0 320 310"
+				role="img"
+				aria-label={`${form.name}, solid low-poly Fighter with forward high-contrast canopy, small turned ship and enlarged canopy detail`}
+			>
+				{[
+					{ x: 160, y: 155, scale: 2.5, angle: -90 },
+					{ x: 115, y: 270, scale: 0.65, angle: -45 },
+				].map((view) => (
+					<g
+						transform={`translate(${view.x} ${view.y}) scale(${view.scale}) rotate(${view.angle})`}
+					>
+						{form.points.map((point, index) => {
+							const next = form.points[(index + 1) % form.points.length];
+							const upper = (point[1] + next[1]) / 2 < 0;
+							return (
+								<polygon
+									points={`-3,0 ${point.join(",")} ${next.join(",")}`}
+									fill={palette[upper ? index % 3 : 3 + (index % 3)]}
+								/>
+							);
+						})}
+						<polygon points="38,0 -15,-4 -21,0 -15,4" fill="#a2d8df" />
+						<polygon points="38,0 -21,0 -15,4" fill="#51869e" />
+						<g transform="translate(18 0)">
+							<path d={form.path} fill="var(--color-void)" />
+							<path d={form.accent} fill="var(--color-acid-lime)" />
+						</g>
+					</g>
+				))}
+				<g transform="translate(235 270) scale(2.6) rotate(-90)">
+					<path d="M12 -7 L12 0 L-12 0 L-12 -13Z" fill="#c8f4f0" />
+					<path d="M12 0 L12 7 L-12 13 L-12 0Z" fill="#365d79" />
+
+					<path d={form.path} fill="var(--color-void)" />
+					<path d={form.accent} fill="var(--color-acid-lime)" />
+				</g>
+			</svg>
+		</figure>
+	))}
+</div>
+<style>
+.fleet {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-lg);
+	margin-block: var(--spacing-lg);
+}
+figure {
+	margin: 0;
+	min-width: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+}
+h4 {
+	margin-bottom: var(--spacing-sm);
+}
+p {
+	color: var(--color-text-dim);
+	font-size: var(--font-small);
+	min-height: 4.5em;
+}
+svg {
+	display: block;
+	width: 100%;
+}
+@media (max-width: 850px) {
+	.fleet {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 480px) {
+	.fleet {
+		grid-template-columns: 1fr;
+	}
+	svg {
+		max-width: 320px;
+		margin: auto;
+	}
+	p {
+		min-height: 0;
+	}
+}
+</style>

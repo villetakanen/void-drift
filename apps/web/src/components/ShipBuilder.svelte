@@ -57,7 +57,7 @@ $effect(() => {
 	const context = canvas?.getContext("2d");
 	if (context) {
 		context.clearRect(0, 0, 600, 540);
-		drawBuild(context, build, 300, 270, -Math.PI / 2, 4.4, selected);
+		drawBuild(context, build, 300, 325, -Math.PI / 2, 5.2, selected);
 	}
 });
 $effect(() => {
@@ -76,6 +76,7 @@ function install(id: PartId | null) {
 	} else build[mount.group][mount.index] = id;
 }
 function choose(id: ShipProfileId) {
+	if (id !== "balanced") return;
 	chosen = id;
 	selected = "left";
 }
@@ -115,6 +116,8 @@ function choose(id: ShipProfileId) {
 					class:btn-filled={chosen === id}
 					class:btn-ghost={chosen !== id}
 					aria-pressed={chosen === id}
+					disabled={id !== "balanced"}
+					aria-describedby={id !== "balanced" ? "pending-designs" : undefined}
 					onclick={() => choose(id as ShipProfileId)}
 				>
 					{chassis.name}<small
@@ -124,6 +127,10 @@ function choose(id: ShipProfileId) {
 				</button>
 			{/each}
 		</nav>
+		<p id="pending-designs">
+			Scout and Heavy Corvette designs are pending. Their saved builds are
+			retained.
+		</p>
 		<div class="workbench">
 			<section class="assembly" aria-label="Ship assembly">
 				<div class="panel-title">
@@ -143,8 +150,11 @@ function choose(id: ShipProfileId) {
 							type="button"
 							class="mount"
 							class:selected={mount.key === slot.key}
-							style:left={`${(300 + slot.y * 4.4) / 6}%`}
-							style:top={`${(270 - slot.x * 4.4) / 5.4}%`}
+							style:left={`${(300 + slot.y * 5.2) / 6}%`}
+							style:top={`${(325 - slot.x * 5.2) / 5.4}%`}
+							style:width={`${(slot.width * 5.2) / 6}%`}
+							style:height={`${(slot.height * 5.2) / 5.4}%`}
+							style:transform={`translate(-50%, -50%) rotate(${slot.angle - Math.PI / 2}rad)`}
 							aria-label={`${slot.label}: ${slot.part ? PARTS[slot.part].name : "Empty"}`}
 							aria-pressed={mount.key === slot.key}
 							onclick={() => (selected = slot.key)}
@@ -252,17 +262,22 @@ function choose(id: ShipProfileId) {
 					</div>
 					<div>
 						<dt>Single-side turning</dt>
-						<dd>{((stats.turnRate * 180) / Math.PI).toFixed(1)} °/s</dd>
+						<dd>
+							{((Math.abs(stats.turnRate) * 180) / Math.PI).toFixed(1)}
+							°/s
+						</dd>
 					</div>
 					<div>
 						<dt>Side mount angle / arm</dt>
-						<dd>{CHASSIS[chosen].angle}° / {CHASSIS[chosen].arm}</dd>
+						<dd>{CHASSIS[chosen].angle.toFixed(1)}° / {CHASSIS[chosen].arm}</dd>
 					</div>
 				</dl>
 				<p class="footnote">
 					¹ Energy/s, near → far, G-class sun.<br>² Full batteries, no solar
 					charging.<br>³ At rest, both controls, world units/s².<br>Intrinsic
 					battery and coil included. More mass slows acceleration and turning.
+					The side mounts turn left-engine input clockwise and right-engine
+					input counterclockwise.
 				</p>
 			</aside>
 		</div>
@@ -425,10 +440,10 @@ canvas {
 }
 .mount.selected {
 	border: 2px solid var(--color-acid-lime);
-	background: var(--color-flight-trail);
+	background: transparent;
 }
 .mount:hover {
-	background: var(--color-flight-trail);
+	background: transparent;
 }
 .mount:focus-visible {
 	outline: 3px solid var(--color-text);
@@ -508,5 +523,28 @@ footer p {
 }
 .actions button {
 	min-width: 180px;
+}
+
+@media (max-width: 1000px) {
+	.workbench {
+		grid-template-columns: minmax(0, 1fr);
+	}
+	.builder {
+		padding: 16px;
+	}
+	.chassis {
+		flex-wrap: wrap;
+	}
+	.chassis button {
+		min-width: 160px;
+	}
+	.heading,
+	header,
+	footer {
+		flex-wrap: wrap;
+	}
+	.actions {
+		flex-wrap: wrap;
+	}
 }
 </style>

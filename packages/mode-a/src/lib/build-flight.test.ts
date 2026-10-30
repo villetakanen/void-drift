@@ -1,6 +1,11 @@
 import { Vec2 } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { applyBuildEngines, buildDrain, engineImpulse } from "./build-flight";
+import {
+	BUILD_FLIGHT_SCALE,
+	buildMounts,
+	buildPlumeEmitters,
+} from "./build-renderer";
 import { buildStats, defaultLoadout, LoadoutSchema } from "./schemas/loadout";
 import { Simulation, stockSettings } from "./simulation";
 
@@ -67,7 +72,9 @@ describe("ship builder contract", () => {
 		expect(buildStats(heavy).acceleration).toBeLessThan(
 			buildStats(light).acceleration,
 		);
-		expect(buildStats(heavy).turnRate).toBeLessThan(buildStats(light).turnRate);
+		expect(Math.abs(buildStats(heavy).turnRate)).toBeLessThan(
+			Math.abs(buildStats(light).turnRate),
+		);
 	});
 	it("preserves slingshot overspeed while steering and permits full braking", () => {
 		const a = ship();
@@ -148,7 +155,8 @@ it("preserves established gravity and overspeed coasting for assembled ships", (
 	for (let tick = 0; tick < 60; tick++) {
 		stock.step(idle);
 		assembled.step(idle);
-		expect(assembled.ship).toEqual(stock.ship);
+		expect(assembled.ship.pos).toEqual(stock.ship.pos);
+		expect(assembled.ship.vel).toEqual(stock.ship.vel);
 	}
 	expect(assembled.ship.vel.mag()).toBeGreaterThan(500);
 });
@@ -171,4 +179,54 @@ it("emits shared fading surfaces for every active installed engine", () => {
 	expect(sim.plume.count).toBe(0);
 	sim.step({ ...idle, leftThruster: true });
 	expect(sim.plume.count).toBe(1);
+});
+
+it("uses accepted mount geometry for propulsion, estimates, nozzles and collision", () => {
+	const build = defaultLoadout("balanced");
+	const mounts = buildMounts(build);
+	expect(mounts.map(({ x, y }) => [x, y])).toEqual([
+		[-12, -15],
+		[-12, 15],
+		[2, 0],
+		[-10, 0],
+		[-22, -5],
+		[-22, 5],
+	]);
+	const emitters = buildPlumeEmitters(build);
+	for (const [i, emitter] of emitters.entries()) {
+		const mount = mounts[i];
+		expect(emitter.angle).toBeCloseTo(
+			((26 * Math.PI) / 180) * (i === 0 ? 1 : -1),
+		);
+		expect(emitter.x / BUILD_FLIGHT_SCALE).toBeCloseTo(
+			mount.x - 10 * Math.cos(mount.angle),
+		);
+		expect(emitter.y / BUILD_FLIGHT_SCALE).toBeCloseTo(
+			mount.y - 10 * Math.sin(mount.angle),
+		);
+	}
+	const stats = buildStats(build);
+	expect((stats.turnRate * 180) / Math.PI).toBeCloseTo(96.59096, 3);
+	expect(stats.acceleration).toBeCloseTo(339.70169, 3);
+	const forward = ship();
+	applyBuildEngines(forward, build, both, 1 / 60, true);
+	expect(forward.vel.x * 60).toBeCloseTo(stats.acceleration);
+	expect(forward.vel.y).toBe(0);
+	const left = ship(),
+		right = ship();
+	applyBuildEngines(left, build, { ...idle, leftThruster: true }, 1 / 60, true);
+	applyBuildEngines(
+		right,
+		build,
+		{ ...idle, rightThruster: true },
+		1 / 60,
+		true,
+	);
+	expect(left.rotation * 60).toBeCloseTo(stats.turnRate);
+	expect(left.rotation).toBeCloseTo(-right.rotation);
+	expect(left.vel.x).toBeCloseTo(right.vel.x);
+	expect(left.vel.y).toBeCloseTo(-right.vel.y);
+	expect(
+		new Simulation({ ...stockSettings(), loadout: build }).ship.radius,
+	).toBeCloseTo(31.2);
 });

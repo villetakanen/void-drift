@@ -1,0 +1,203 @@
+---
+// Study-only assemblies: forward cabin, paired shoulder drives, central bay,
+// rear drive. These surfaces suggest housings, not finished editable part art.
+const designs = [
+	{
+		name: "A / Runabout",
+		note: "A rounded cabin between close-set drives; a compact everyday spacecraft.",
+		cabin: 8.5,
+		cabinEnd: -5,
+		body: 8,
+		podX: 14,
+		podY: -11,
+		podW: 5,
+		podL: 24,
+		angle: 0,
+		wing: 8,
+		nose: 5,
+	},
+	{
+		name: "B / Interceptor",
+		note: "A narrow canopy, swept engine housings, and a lean fuselage.",
+		cabin: 6,
+		cabinEnd: -3,
+		body: 6,
+		podX: 15,
+		podY: -8,
+		podW: 4,
+		podL: 28,
+		angle: 15,
+		wing: 4,
+		nose: 2,
+	},
+	{
+		name: "C / Shuttle",
+		note: "A wide flight deck with short, stout shoulder engines and a squared stern.",
+		cabin: 10,
+		cabinEnd: -8,
+		body: 10,
+		podX: 17,
+		podY: -10,
+		podW: 5.5,
+		podL: 20,
+		angle: 0,
+		wing: 10,
+		nose: 7,
+	},
+	{
+		name: "D / Courier",
+		note: "A long bubble canopy and slim outboard drives on short swept supports.",
+		cabin: 7,
+		cabinEnd: 0,
+		body: 7,
+		podX: 19,
+		podY: -7,
+		podW: 3.8,
+		podL: 26,
+		angle: 8,
+		wing: 9,
+		nose: 4,
+	},
+	{
+		name: "E / Speeder",
+		note: "A low windscreen, broad engine shoulders, and a short exposed rear drive.",
+		cabin: 9,
+		cabinEnd: -12,
+		body: 8,
+		podX: 15,
+		podY: -9,
+		podW: 6,
+		podL: 25,
+		angle: 10,
+		wing: 5,
+		nose: 6,
+	},
+	{
+		name: "F / Pathfinder",
+		note: "A forward observation cabin and slim parallel engines tucked against the body.",
+		cabin: 9,
+		cabinEnd: -4,
+		body: 6.5,
+		podX: 12,
+		podY: -5,
+		podW: 3.5,
+		podL: 29,
+		angle: 0,
+		wing: 5,
+		nose: 3,
+	},
+];
+---
+
+<div class="designs">
+	{designs.map((d) => (
+		<figure>
+			<h4>{d.name}</h4>
+			<svg viewBox="0 0 240 300" role="img" aria-label={`${d.name}: ${d.note}`}>
+				{[
+					{ x: 120, y: 114, s: 3.1, r: 0 },
+					{ x: 120, y: 254, s: 0.75, r: -25 },
+				].map((v) => (
+					<g
+						transform={`translate(${v.x} ${v.y}) scale(${v.s}) rotate(${v.r})`}
+					>
+						{/* Broad, low supports connect the shoulder engines to the central bay. */}
+						<polygon
+							points={`${-d.podX},-10 -5,-16 5,-16 ${d.podX},-10 ${d.podX},${d.wing} 6,5 -6,5 ${-d.podX},${d.wing}`}
+							fill="#437e99"
+						/>
+						<polygon
+							points={`${-d.podX},-10 -5,-16 0,-6 ${-d.podX},${d.wing}`}
+							fill="#83c7d0"
+						/>
+						{/* The rear drive sits behind a separate, uninterrupted hull bay. */}
+						<path
+							d="M-5 16 L5 16 L6 27 L4 29.2 L-4 29.2 L-6 27Z"
+							fill="#365d79"
+						/>
+						<path d="M-5 16 L0 16 L0 27 L-6 27Z" fill="#83c7d0" />
+						<path d="M-4 26 L4 26 L4 29.2 L-4 29.2Z" fill="#071015" />
+						<polygon
+							points={`${-d.nose},-29.2 ${d.nose},-29.2 ${d.cabin},-23 ${d.body},13 5,22 -5,22 ${-d.body},13 ${-d.cabin},-23`}
+							fill="#83c7d0"
+						/>
+						<polygon
+							points={`${-d.nose},-29.2 0,-29.2 0,18 -5,22 ${-d.body},13 ${-d.cabin},-23`}
+							fill="#c8f4f0"
+						/>
+						<polygon
+							points={`${d.nose},-29.2 ${d.cabin},-23 ${d.body},13 5,22 3,16 4,-21`}
+							fill="#437e99"
+						/>
+						<polygon
+							points={`-4,${d.cabinEnd + 3} 4,${d.cabinEnd + 3} 4,15 0,18 -4,15`}
+							fill="#a2d8df"
+						/>
+						{/* A single curved dark canopy gives the faceted cabin an inhabited volume. */}
+						<path
+							d={`M ${-d.cabin * 0.7},${d.cabinEnd} L ${-d.cabin * 0.76},-20 Q ${-d.cabin * 0.7},-26 0,-26.5 Q ${d.cabin * 0.7},-26 ${d.cabin * 0.76},-20 L ${d.cabin * 0.7},${d.cabinEnd} Q 0,${d.cabinEnd + 3} ${-d.cabin * 0.7},${d.cabinEnd} Z`}
+							fill="#020609"
+						/>
+						{[-1, 1].map((side) => (
+							<g
+								transform={`translate(${side * d.podX} ${d.podY}) rotate(${-side * d.angle})`}
+							>
+								<polygon
+									points={`${-d.podW},${-d.podL / 2 + 4} ${-d.podW + 2},${-d.podL / 2} ${d.podW - 2},${-d.podL / 2} ${d.podW},${-d.podL / 2 + 4} ${d.podW},${d.podL / 2 - 2} ${d.podW - 1},${d.podL / 2} ${-d.podW + 1},${d.podL / 2} ${-d.podW},${d.podL / 2 - 2}`}
+									fill="#6193a9"
+								/>
+								<polygon
+									points={`${-d.podW},${-d.podL / 2 + 4} ${-d.podW + 2},${-d.podL / 2} 0,${-d.podL / 2} 0,${d.podL / 2 - 3} ${-d.podW},${d.podL / 2 - 2}`}
+									fill="#c8f4f0"
+								/>
+								<polygon
+									points={`${d.podW - 2},${-d.podL / 2} ${d.podW},${-d.podL / 2 + 4} ${d.podW},${d.podL / 2 - 2} ${d.podW - 2},${d.podL / 2 - 3}`}
+									fill="#264d6b"
+								/>
+								<path
+									d={`M${-d.podW + 1} ${d.podL / 2 - 3} H${d.podW - 1} V${d.podL / 2} H${-d.podW + 1}Z`}
+									fill="#071015"
+								/>
+							</g>
+						))}
+					</g>
+				))}
+			</svg>
+			<figcaption>{d.note}</figcaption>
+		</figure>
+	))}
+</div>
+<style>
+.designs {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-md);
+	margin: var(--spacing-lg) 0;
+}
+figure {
+	margin: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+}
+h4 {
+	margin: 0;
+}
+svg {
+	display: block;
+	width: 100%;
+}
+figcaption {
+	font-size: var(--font-small);
+	color: var(--color-text-dim);
+}
+@media (max-width: 850px) {
+	.designs {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 480px) {
+	.designs {
+		grid-template-columns: 1fr;
+	}
+}
+</style>

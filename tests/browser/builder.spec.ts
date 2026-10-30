@@ -23,15 +23,17 @@ test("fit, persist, fly, reset and return to an assembled ship", async ({
 			.getByRole("region", { name: "Ship assembly" })
 			.getByRole("button", { name: /Hull 1.*Energy storage/ }),
 	).toBeVisible();
-	await page.getByRole("button", { name: /Scout.*4 SLOTS/ }).click();
 	await expect(
-		page.getByRole("button", { name: "Hull 1 · G/U: Empty" }),
-	).toBeVisible();
-	await page.getByRole("button", { name: /Fighter.*6 SLOTS/ }).click();
+		page.getByRole("button", { name: /Scout.*4 SLOTS/ }),
+	).toBeDisabled();
+	await expect(
+		page.getByRole("button", { name: /Heavy Corvette.*8 SLOTS/ }),
+	).toBeDisabled();
 	await page.reload();
 	await expect(
 		page.getByRole("button", { name: "Hull 1 · G/U: Energy storage" }),
 	).toBeVisible();
+	await page.setViewportSize({ width: 1440, height: 1100 });
 	await page.screenshot({
 		path: "artifacts/builder-desktop.png",
 		fullPage: true,
@@ -84,28 +86,54 @@ test("corrupt browser storage recovers to flyable defaults", async ({
 	).toBeVisible();
 });
 
-test("all chassis accept independent builds and custom survival returns after death", async ({
+test("preserves unavailable chassis saves and independently selects tight aft mounts", async ({
 	page,
 }) => {
-	await page.goto("/builder");
-	for (const [name, slots] of [
-		["Scout", 4],
-		["Fighter", 6],
-		["Heavy Corvette", 8],
-	] as const) {
-		await page
-			.getByRole("button", { name: new RegExp(`${name} ${slots} SLOTS`) })
-			.click();
-		await expect(
-			page.getByRole("region", { name: "Ship assembly" }).getByRole("button"),
-		).toHaveCount(slots);
-		await page.getByRole("button", { name: "Aft 1 · E/G/U: Empty" }).click();
-		await page.getByRole("button", { name: /Rail gun.*15 mass/ }).click();
-	}
-	await page.getByRole("button", { name: /Fighter 6 SLOTS/ }).click();
+	const saved = {
+		scout: {
+			version: 1,
+			chassis: "scout",
+			side: "ion",
+			hull: ["battery"],
+			aft: ["rail"],
+		},
+		balanced: {
+			version: 1,
+			chassis: "balanced",
+			side: "fission",
+			hull: [null, null],
+			aft: [null, null],
+		},
+		tank: {
+			version: 1,
+			chassis: "tank",
+			side: "ion",
+			hull: ["coil", null, "laser"],
+			aft: ["ion", null, "fission"],
+		},
+	};
+	await page.goto("/lab/builder");
+	await page.evaluate(
+		(value) =>
+			localStorage.setItem("void-drift-builds-v1", JSON.stringify(value)),
+		saved,
+	);
+	await page.reload();
 	await expect(
-		page.getByRole("button", { name: "Aft 1 · E/G/U: Rail gun" }),
-	).toBeVisible();
+		page.getByRole("button", { name: /Fighter 6 SLOTS/ }),
+	).toHaveAttribute("aria-pressed", "true");
+	await page.getByRole("button", { name: "Aft 1 · E/G/U: Empty" }).click();
+	await page.getByRole("button", { name: /Rail gun.*15 mass/ }).click();
+	await page.getByRole("button", { name: "Aft 2 · E/G/U: Empty" }).focus();
+	await page.keyboard.press("Enter");
+	await page.getByRole("button", { name: /Ion engine.*10 mass/ }).click();
+	await page.reload();
+	const restored = await page.evaluate(() =>
+		JSON.parse(localStorage.getItem("void-drift-builds-v1") ?? "null"),
+	);
+	expect(restored.scout).toEqual(saved.scout);
+	expect(restored.tank).toEqual(saved.tank);
+	expect(restored.balanced.aft).toEqual(["rail", "ion"]);
 	await page.getByRole("button", { name: "Start survival" }).click();
 	await page.keyboard.down("a");
 	await page.keyboard.down("d");

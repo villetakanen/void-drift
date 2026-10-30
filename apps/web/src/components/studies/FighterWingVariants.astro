@@ -1,0 +1,176 @@
+---
+const forms = [
+	{
+		name: "A / Lance \u00b7 clipped tips",
+		note: "The Lance stays slender; small clipped rear corners give its wings a harder finish.",
+		points: [
+			[48, 0],
+			[-18, -20],
+			[-25, -17],
+			[-19, 0],
+			[-25, 17],
+			[-18, 20],
+		],
+	},
+	{
+		name: "B / Lance \u00b7 swept winglets",
+		note: "A small outward sweep adds rear-wing presence without competing with the nose.",
+		points: [
+			[48, 0],
+			[-4, -14],
+			[-20, -25],
+			[-25, -20],
+			[-19, 0],
+			[-25, 20],
+			[-20, 25],
+			[-4, 14],
+		],
+	},
+	{
+		name: "C / Lance\u2013Cutlass \u00b7 long sweep",
+		note: "The long Lance nose meets the Cutlass shoulders in one continuous leading edge.",
+		points: [
+			[48, 0],
+			[-12, -25],
+			[-27, -20],
+			[-22, 0],
+			[-27, 20],
+			[-12, 25],
+		],
+	},
+	{
+		name: "D / Cutlass \u00b7 tucked shoulders",
+		note: "A narrower Cutlass: compact shoulders and a clean, shallow rear cut.",
+		points: [
+			[44, 0],
+			[-10, -22],
+			[-26, -18],
+			[-22, 0],
+			[-26, 18],
+			[-10, 22],
+		],
+	},
+	{
+		name: "E / Cutlass \u00b7 small winglets",
+		note: "Short swept extensions widen only the rear shoulders; their tips stay behind the body.",
+		points: [
+			[44, 0],
+			[-5, -21],
+			[-16, -29],
+			[-27, -23],
+			[-23, 0],
+			[-27, 23],
+			[-16, 29],
+			[-5, 21],
+		],
+	},
+	{
+		name: "F / Cutlass \u00b7 angled shoulders",
+		note: "One extra change of angle joins a slim forebody to broad, clipped wings.",
+		points: [
+			[46, 0],
+			[2, -14],
+			[-10, -26],
+			[-26, -22],
+			[-23, 0],
+			[-26, 22],
+			[-10, 26],
+			[2, 14],
+		],
+	},
+];
+const palette = [
+	"#c8f4f0",
+	"#83c7d0",
+	"#437e99",
+	"#264d6b",
+	"#365d79",
+	"#6193a9",
+];
+---
+
+<div class="fleet">
+	{forms.map((form) => (
+		<figure>
+			<figcaption>
+				<h4>{form.name}</h4>
+				<p>{form.note}</p>
+			</figcaption>
+			<svg
+				viewBox="0 0 320 310"
+				role="img"
+				aria-label={`${form.name}, solid low-poly Fighter with small swept-wing variations and small turned silhouette`}
+			>
+				{[
+					{ x: 160, y: 155, scale: 2.5, angle: -90 },
+					{ x: 115, y: 270, scale: 0.65, angle: -45 },
+				].map((view) => (
+					<g
+						transform={`translate(${view.x} ${view.y}) scale(${view.scale}) rotate(${view.angle})`}
+					>
+						{form.points.map((point, index) => {
+							const next = form.points[(index + 1) % form.points.length];
+							const upper = (point[1] + next[1]) / 2 < 0;
+							return (
+								<polygon
+									points={`-3,0 ${point.join(",")} ${next.join(",")}`}
+									fill={palette[upper ? index % 3 : 3 + (index % 3)]}
+								/>
+							);
+						})}
+						<polygon points="38,0 -15,-4 -21,0 -15,4" fill="#a2d8df" />
+						<polygon points="38,0 -21,0 -15,4" fill="#51869e" />
+					</g>
+				))}
+				<polygon
+					points={form.points.map((p) => p.join(",")).join(" ")}
+					fill="#bdd6df"
+					transform="translate(230 270) scale(.65) rotate(-90)"
+				/>
+			</svg>
+		</figure>
+	))}
+</div>
+<style>
+.fleet {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-lg);
+	margin-block: var(--spacing-lg);
+}
+figure {
+	margin: 0;
+	min-width: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+}
+h4 {
+	margin-bottom: var(--spacing-sm);
+}
+p {
+	color: var(--color-text-dim);
+	font-size: var(--font-small);
+	min-height: 4.5em;
+}
+svg {
+	display: block;
+	width: 100%;
+}
+@media (max-width: 850px) {
+	.fleet {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 480px) {
+	.fleet {
+		grid-template-columns: 1fr;
+	}
+	svg {
+		max-width: 320px;
+		margin: auto;
+	}
+	p {
+		min-height: 0;
+	}
+}
+</style>

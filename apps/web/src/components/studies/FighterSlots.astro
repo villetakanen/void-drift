@@ -1,0 +1,151 @@
+---
+import { buildMounts } from "../../../../../packages/mode-a/src/lib/build-renderer";
+import { defaultLoadout } from "../../../../../packages/mode-a/src/lib/schemas/loadout";
+
+interface Props {
+	compact?: boolean;
+}
+const { compact = false } = Astro.props;
+const hull = [
+	[48, 0],
+	[-18, -20],
+	[-25, -17],
+	[-19, 0],
+	[-25, 17],
+	[-18, 20],
+];
+const palette = [
+	"#c8f4f0",
+	"#83c7d0",
+	"#437e99",
+	"#264d6b",
+	"#365d79",
+	"#6193a9",
+];
+const clipNormal = Math.atan2(7, 3);
+const sideAngle = (Math.atan2(20, 66) * 180) / Math.PI;
+// Real Fighter slot inventory, study-local positions and footprints.
+const mounts = buildMounts(defaultLoadout("balanced")).map((mount) => {
+	const sign = mount.index === 0 ? -1 : 1;
+	return {
+		...mount,
+		x:
+			mount.group === "side"
+				? compact
+					? -12
+					: -12
+				: mount.group === "hull"
+					? (compact ? 2 : 3) - mount.index * (compact ? 12 : 10)
+					: compact
+						? -22
+						: -18,
+		y:
+			mount.group === "side"
+				? sign * (compact ? 18 : 15.7)
+				: mount.group === "hull"
+					? 0
+					: sign * (compact ? 5 : 8),
+		degrees:
+			mount.group === "side"
+				? -sign * (compact ? (clipNormal * 180) / Math.PI : sideAngle)
+				: 0,
+	};
+});
+---
+
+<figure>
+	<svg
+		viewBox="0 0 640 560"
+		role="img"
+		aria-label="Lance fighter with black forward cockpit and six translucent slots: two stacked face slots behind the cockpit, two rearward side engines aligned to the hull edges, and two aft slots side by side."
+	>
+		<g transform="translate(320 320) scale(5.4) rotate(-90)">
+			{hull.map((point, index) => {
+				const next = hull[(index + 1) % hull.length];
+				const upper = (point[1] + next[1]) / 2 < 0;
+				return (
+					<polygon
+						points={`-3,0 ${point.join(",")} ${next.join(",")}`}
+						fill={palette[upper ? index % 3 : 3 + (index % 3)]}
+					/>
+				);
+			})}
+			<polygon points="38,0 -15,-4 -21,0 -15,4" fill="#a2d8df" />
+			<polygon points="38,0 -21,0 -15,4" fill="#51869e" />
+			<polygon
+				transform="translate(18 0)"
+				points="8,0 2,-3 -7,-3 -9,0 -7,3 2,3"
+				fill="#000000"
+			/>
+			{mounts.map((mount) => (
+				<g
+					transform={`translate(${mount.x} ${mount.y}) rotate(${mount.degrees})`}
+				>
+					<title>{mount.label}</title>
+					<rect
+						x={compact ? (mount.group === "side" ? -7 : -5.5) : -4}
+						y={compact ? -4.5 : -3}
+						width={compact ? (mount.group === "side" ? 14 : 11) : 8}
+						height={compact ? 9 : 6}
+						fill="#071015"
+						fill-opacity="0.38"
+						stroke="#e0ffff"
+						stroke-opacity="0.75"
+						stroke-width="0.28"
+					/>
+				</g>
+			))}
+		</g>
+		<g class="annotations">
+			<path d="M340 293 H463 V266 H489 M340 358 H463 V266" />
+			<text x="490" y="253">FACE SLOTS</text>
+			<text x="490" y="273" class="detail">Stacked on the deck</text>
+			<path d="M230 382 H160 V347 H50" />
+			<text x="50" y="315">SIDE ENGINES</text>
+			<text x="50" y="335" class="detail">
+				{compact ? "Rotated to clipped edges" : "Rearward · edge-aligned"}
+			</text>
+			<path d="M277 438 V477 H363 V438" />
+			<text x="320" y="508" text-anchor="middle">AFT SLOTS</text>
+			<text x="320" y="529" text-anchor="middle" class="detail">
+				{compact ? "Tight central pair" : "Paired across the stern"}
+			</text>
+		</g>
+	</svg>
+	<figcaption>
+		Translucent areas show empty mounting space. Hull facets remain visible
+		underneath.
+	</figcaption>
+</figure>
+<style>
+figure {
+	margin: var(--spacing-lg) 0;
+	border: var(--flight-border);
+	padding: var(--spacing-md);
+}
+svg {
+	display: block;
+	width: 100%;
+	max-width: 800px;
+	margin: auto;
+}
+.annotations {
+	fill: var(--color-text);
+	font-family: inherit;
+	font-size: 12px;
+}
+.annotations path {
+	fill: none;
+	stroke: var(--color-text-dim);
+	stroke-width: 1;
+}
+.detail {
+	fill: var(--color-text-dim);
+	font-size: 10px;
+}
+figcaption {
+	color: var(--color-text-dim);
+	font-size: var(--font-small);
+	text-align: center;
+}
+</style>

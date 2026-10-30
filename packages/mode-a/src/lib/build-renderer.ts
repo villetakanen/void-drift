@@ -1,4 +1,5 @@
 import type { PlumeEmitter } from "@void-drift/core";
+import { FIGHTER } from "./fighter";
 import { CHASSIS, type Loadout, PARTS, type PartId } from "./schemas/loadout";
 export const BUILD_FLIGHT_SCALE = 0.65;
 export interface BuildMount {
@@ -10,6 +11,8 @@ export interface BuildMount {
 	part: PartId | null;
 	group: "side" | "hull" | "aft";
 	index: number;
+	width: number;
+	height: number;
 }
 export function buildMounts(build: Loadout): BuildMount[] {
 	const c = CHASSIS[build.chassis];
@@ -17,45 +20,53 @@ export function buildMounts(build: Loadout): BuildMount[] {
 		{
 			key: "left",
 			label: "Left side · mirrored E",
-			x: 0,
+			x: c.sideX,
 			y: -c.arm,
 			angle: (c.angle * Math.PI) / 180,
 			part: build.side,
 			group: "side",
 			index: 0,
+			width: build.chassis === "balanced" ? 14 : 10,
+			height: build.chassis === "balanced" ? 9 : 8,
 		},
 		{
 			key: "right",
 			label: "Right side · mirrored E",
-			x: 0,
+			x: c.sideX,
 			y: c.arm,
 			angle: (-c.angle * Math.PI) / 180,
 			part: build.side,
 			group: "side",
 			index: 1,
+			width: build.chassis === "balanced" ? 14 : 10,
+			height: build.chassis === "balanced" ? 9 : 8,
 		},
 		...build.hull.map(
 			(part, index): BuildMount => ({
 				key: `hull-${index}`,
 				label: `Hull ${index + 1} · G/U`,
-				x: 9,
-				y: (index - (c.hull - 1) / 2) * 10,
+				x: build.chassis === "balanced" ? 2 - index * 12 : 9,
+				y: build.chassis === "balanced" ? 0 : (index - (c.hull - 1) / 2) * 10,
 				angle: 0,
 				part,
 				group: "hull",
 				index,
+				width: build.chassis === "balanced" ? 11 : 10,
+				height: build.chassis === "balanced" ? 9 : 8,
 			}),
 		),
 		...build.aft.map(
 			(part, index): BuildMount => ({
 				key: `aft-${index}`,
 				label: `Aft ${index + 1} · E/G/U`,
-				x: -c.length * 0.6,
-				y: (index - (c.aft - 1) / 2) * 12,
+				x: build.chassis === "balanced" ? -22 : -c.length * 0.6,
+				y: (index - (c.aft - 1) / 2) * (build.chassis === "balanced" ? 10 : 12),
 				angle: 0,
 				part,
 				group: "aft",
 				index,
+				width: build.chassis === "balanced" ? 11 : 10,
+				height: build.chassis === "balanced" ? 9 : 8,
 			}),
 		),
 	];
@@ -74,22 +85,46 @@ export function drawBuild(
 	ctx.translate(x, y);
 	ctx.rotate(rotation);
 	ctx.scale(scale, scale);
-	ctx.lineWidth = 1;
-	ctx.strokeStyle = "#d4ff00";
-	ctx.fillStyle = "#101b21";
-	ctx.beginPath();
-	ctx.moveTo(c.length, 0);
-	ctx.lineTo(-c.length * 0.65, -c.width);
-	ctx.lineTo(-c.length * 0.85, 0);
-	ctx.lineTo(-c.length * 0.65, c.width);
-	ctx.closePath();
-	ctx.fill();
-	ctx.stroke();
-	ctx.strokeStyle = "#537079";
-	ctx.beginPath();
-	ctx.moveTo(c.length * 0.6, 0);
-	ctx.lineTo(-c.length * 0.5, 0);
-	ctx.stroke();
+	if (build.chassis === "balanced") {
+		for (const [index, point] of FIGHTER.hull.entries()) {
+			const next = FIGHTER.hull[(index + 1) % FIGHTER.hull.length];
+			polygon(
+				ctx,
+				[[-3, 0], point, next],
+				FIGHTER.facets[
+					(point[1] + next[1]) / 2 < 0 ? index % 3 : 3 + (index % 3)
+				],
+			);
+		}
+		polygon(ctx, FIGHTER.ridge, "#a2d8df");
+		polygon(
+			ctx,
+			[
+				[38, 0],
+				[-21, 0],
+				[-15, 4],
+			],
+			"#51869e",
+		);
+		polygon(ctx, FIGHTER.cockpit, "#000000");
+	} else {
+		ctx.lineWidth = 1;
+		ctx.strokeStyle = "#d4ff00";
+		ctx.fillStyle = "#101b21";
+		ctx.beginPath();
+		ctx.moveTo(c.length, 0);
+		ctx.lineTo(-c.length * 0.65, -c.width);
+		ctx.lineTo(-c.length * 0.85, 0);
+		ctx.lineTo(-c.length * 0.65, c.width);
+		ctx.closePath();
+		ctx.fill();
+		ctx.stroke();
+		ctx.strokeStyle = "#537079";
+		ctx.beginPath();
+		ctx.moveTo(c.length * 0.6, 0);
+		ctx.lineTo(-c.length * 0.5, 0);
+		ctx.stroke();
+	}
 	for (const mount of buildMounts(build)) {
 		ctx.save();
 		ctx.translate(mount.x, mount.y);
@@ -101,13 +136,30 @@ export function drawBuild(
 					? PARTS[mount.part].category === "E"
 						? "#9af7ff"
 						: "#d4ff00"
-					: "#537079";
-		ctx.fillStyle = "#071015";
-		ctx.fillRect(-5, -4, 10, 8);
-		ctx.strokeRect(-5, -4, 10, 8);
+					: "#e0ffff";
+		ctx.fillStyle = mount.part ? "#071015" : "rgb(7 16 21 / 38%)";
+		ctx.lineWidth = 0.45;
+		ctx.fillRect(
+			-mount.width / 2,
+			-mount.height / 2,
+			mount.width,
+			mount.height,
+		);
+		ctx.strokeRect(
+			-mount.width / 2,
+			-mount.height / 2,
+			mount.width,
+			mount.height,
+		);
 		if (mount.part === "rail" || mount.part === "laser") {
-			ctx.fillRect(0, -2, mount.part === "rail" ? 18 : 10, 4);
-			ctx.strokeRect(0, -2, mount.part === "rail" ? 18 : 10, 4);
+			const barrel =
+				build.chassis === "balanced"
+					? mount.width / 2 + (mount.part === "rail" ? 1 : 0)
+					: mount.part === "rail"
+						? 18
+						: 10;
+			ctx.fillRect(0, -2, barrel, 4);
+			ctx.strokeRect(0, -2, barrel, 4);
 		} else if (mount.part === "coil") {
 			for (let i = -3; i <= 3; i += 3) {
 				ctx.beginPath();
@@ -124,15 +176,20 @@ export function drawBuild(
 		} else if (mount.part) {
 			ctx.strokeStyle = mount.part === "ion" ? "#9af7ff" : "#ffc56e";
 			ctx.beginPath();
-			ctx.moveTo(-5, -3);
-			ctx.lineTo(-8, -4);
-			ctx.lineTo(-8, 4);
-			ctx.lineTo(-5, 3);
+			ctx.moveTo(-mount.width / 2, -3);
+			ctx.lineTo(-nozzleOffset(mount), -4);
+			ctx.lineTo(-nozzleOffset(mount), 4);
+			ctx.lineTo(-mount.width / 2, 3);
 			ctx.stroke();
 		}
 		if (mount.key === selected) {
 			ctx.strokeStyle = "#ffffff";
-			ctx.strokeRect(-10, -8, 23, 16);
+			ctx.strokeRect(
+				-mount.width / 2 - 1,
+				-mount.height / 2 - 1,
+				mount.width + 2,
+				mount.height + 2,
+			);
 		}
 		ctx.restore();
 	}
@@ -144,9 +201,37 @@ export function buildPlumeEmitters(build: Loadout): PlumeEmitter[] {
 	return buildMounts(build)
 		.filter((mount) => mount.part && PARTS[mount.part].category === "E")
 		.map((mount) => ({
-			x: (mount.x - 8 * Math.cos(mount.angle)) * BUILD_FLIGHT_SCALE,
-			y: (mount.y - 8 * Math.sin(mount.angle)) * BUILD_FLIGHT_SCALE,
+			x:
+				(mount.x - nozzleOffset(mount) * Math.cos(mount.angle)) *
+				BUILD_FLIGHT_SCALE,
+			y:
+				(mount.y - nozzleOffset(mount) * Math.sin(mount.angle)) *
+				BUILD_FLIGHT_SCALE,
 			angle: mount.angle,
 			output: 0,
 		}));
+}
+
+export function nozzleOffset(mount: BuildMount) {
+	return mount.width / 2 + 3;
+}
+function polygon(
+	ctx: CanvasRenderingContext2D,
+	points: readonly (readonly [number, number])[],
+	color: string,
+) {
+	ctx.fillStyle = color;
+	ctx.beginPath();
+	points.forEach(([x, y], index) => {
+		if (index === 0) ctx.moveTo(x, y);
+		else ctx.lineTo(x, y);
+	});
+	ctx.closePath();
+	ctx.fill();
+}
+/** Conservative circular collision envelope, including the accepted forward tip. */
+export function buildCollisionRadius(build: Loadout) {
+	return build.chassis === "balanced"
+		? FIGHTER.length * BUILD_FLIGHT_SCALE
+		: 16;
 }

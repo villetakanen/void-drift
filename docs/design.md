@@ -95,3 +95,13 @@ The audit retains original findings and explicitly records promotion decisions.
 
 Retrospective evidence: the owner valued the situation-first explanation. Review
 that lesson at the end of the factory loop before changing standing skill guidance.
+
+## Fighter silhouette
+
+The accepted 02.9 clipped-tip Lance is now the shared custom Fighter in the designer
+and flight. Preserve its flat facets, black forward cockpit, stacked deck mounts,
+tight aft pair, and rotated side mounts. `/lab/builder` demonstrates the production
+renderer and test flight. Scout/Corvette designer selection is disabled pending
+resolved designs; their saved builds and stock profiles remain available internally.
+The ship-builder spec records geometry-derived turning and collision limitations;
+human fidelity and handling review remains pending.

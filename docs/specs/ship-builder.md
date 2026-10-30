@@ -188,3 +188,35 @@ flight drag with stock survival. Build mass changes engine response, not gravita
 acceleration. The deliberately small-sun/no-planet test fixture remains distinct.
 The agreed builder limits (ion 500, fission 350) supersede the old stock engine cutoff
 for custom builds only; they do not clamp gravity-assisted velocity.
+
+## Fighter silhouette integration — 2026-10-30
+
+The accepted 02.9 Lance from `/lab/studies/ship-silhouettes` is implemented in
+`fighter.ts` and the shared build renderer. The clipped hull, six flat facets,
+black forward cockpit, and mount arrangement retain the study geometry. Empty
+mounts are translucent; installed fittings use the existing cyan/lime/amber accents.
+Builder hit targets follow the actual mount dimensions and rotations.
+
+Only Fighter can be selected in the designer. Scout and Heavy Corvette remain in
+version-1 storage and validation; editing Fighter preserves their saved parts.
+Stock flight and scored profiles remain unchanged. `/lab/builder` is the canonical
+production example, including test flight and survival.
+
+Fighter mounts: side (-12, ±15) at ∓26°, hull (2,0)/(-10,0), aft (-22,±5).
+Side footprints are 14×9; hull/aft footprints are 11×9. Nozzles extend three units
+behind each fitting, and plume origins use that same offset. Drawing scale remains
+0.65. The conservative circular collision radius is 31.2 world units, enclosing
+the long nose; the circular approximation overestimates lateral extent and remains
+a human-review limitation. Scout/Corvette retain the previous radius.
+
+Signed side turning uses thrust × (arm × cos(angle) + sideX × sin(angle)) /
+(mass × length²), multiplied by the chassis turning-response gain. The owner retained the original production angle of 26° after finding the
+66.8° study orientation too widely rotated. The side pair then moved inward from ±18 to ±15 units at the owner’s request;
+fore–aft positions and footprints are unchanged.
+Left engine turns clockwise, right counterclockwise, paired inputs cancel.
+After flight feedback that this still turned too slowly, Fighter uses a 2.5×
+angular-response gain (other chassis retain 1×). Default fission turning is about 96.6°/s; paired acceleration is about 339.7 units/s².
+These are
+geometry-derived outcomes, not accepted handling targets. No gravity, friction,
+energy, or speed-limit constants changed. Human review must assess fidelity,
+fitting readability, collision fairness, and single/paired-engine handling.

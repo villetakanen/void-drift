@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { FIGHTER } from "../fighter";
 import { ShipProfileIdSchema } from "./ship-profile";
 
 export const EngineIdSchema = z.enum(["ion", "fission"]);
@@ -27,6 +28,8 @@ export const ChassisSchema = z.object({
 	aft: z.number().int().positive(),
 	angle: z.number().positive(),
 	arm: z.number().positive(),
+	sideX: z.number().default(0),
+	turnResponse: z.number().positive().default(1),
 	length: z.number().positive(),
 	width: z.number().positive(),
 });
@@ -46,10 +49,12 @@ export const CHASSIS = {
 		mass: 95,
 		hull: 2,
 		aft: 2,
-		angle: 26,
-		arm: 16,
-		length: 32,
-		width: 19,
+		angle: (FIGHTER.angle * 180) / Math.PI,
+		arm: FIGHTER.arm,
+		sideX: FIGHTER.sideX,
+		turnResponse: FIGHTER.turnResponse,
+		length: FIGHTER.length,
+		width: FIGHTER.width,
 	}),
 	tank: ChassisSchema.parse({
 		name: "Heavy Corvette",
@@ -197,7 +202,9 @@ export function buildStats(build: Loadout) {
 		drain: 3 + engineDraw,
 		acceleration: (2 * side.thrust * Math.cos(angle) + aftThrust) / mass,
 		turnRate:
-			(side.thrust * Math.cos(angle) * chassis.arm) /
+			(side.thrust *
+				chassis.turnResponse *
+				(Math.cos(angle) * chassis.arm + Math.sin(angle) * chassis.sideX)) /
 			(mass * chassis.length ** 2),
 		endurance: capacity / 3,
 		fullEndurance: capacity / (3 + engineDraw),

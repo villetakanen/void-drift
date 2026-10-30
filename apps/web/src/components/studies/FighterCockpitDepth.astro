@@ -1,0 +1,173 @@
+---
+const hull = [
+	[48, 0],
+	[-18, -20],
+	[-25, -17],
+	[-19, 0],
+	[-25, 17],
+	[-18, 20],
+];
+const forms = [
+	{
+		name: "A / 02.5 reference",
+		note: "The original dark forward cockpit, unchanged. Its location made the small ship feel real; its close-up treatment was disliked.",
+		treatment: "reference",
+		points: hull,
+	},
+	{
+		name: "B / Color inside depth",
+		note: "The dark recess remains dominant. A concentrated cyan surface inside it supplies the focal color.",
+		treatment: "recess",
+		points: hull,
+	},
+	{
+		name: "C / Colored canopy",
+		note: "Color occupies the canopy surface itself; its darker side follows the hull's existing light–dark split.",
+		treatment: "canopy",
+		points: hull,
+	},
+];
+const palette = [
+	"#c8f4f0",
+	"#83c7d0",
+	"#437e99",
+	"#264d6b",
+	"#365d79",
+	"#6193a9",
+];
+---
+
+<div class="fleet">
+	{forms.map((form) => (
+		<figure>
+			<figcaption>
+				<h4>{form.name}</h4>
+				<p>{form.note}</p>
+			</figcaption>
+			<svg
+				viewBox="0 0 320 310"
+				role="img"
+				aria-label={`${form.name}, solid low-poly Fighter with forward cockpit, large view, small turned view and magnified detail`}
+			>
+				{[
+					{ x: 160, y: 155, scale: 2.5, angle: -90 },
+					{ x: 115, y: 270, scale: 0.65, angle: -45 },
+				].map((view) => (
+					<g
+						transform={`translate(${view.x} ${view.y}) scale(${view.scale}) rotate(${view.angle})`}
+					>
+						{form.points.map((point, index) => {
+							const next = form.points[(index + 1) % form.points.length];
+							const upper = (point[1] + next[1]) / 2 < 0;
+							return (
+								<polygon
+									points={`-3,0 ${point.join(",")} ${next.join(",")}`}
+									fill={palette[upper ? index % 3 : 3 + (index % 3)]}
+								/>
+							);
+						})}
+						<polygon points="38,0 -15,-4 -21,0 -15,4" fill="#a2d8df" />
+						<polygon points="38,0 -21,0 -15,4" fill="#51869e" />
+						<g transform="translate(18 0)">
+							<polygon
+								points="8,0 2,-3 -7,-3 -9,0 -7,3 2,3"
+								fill={form.treatment === "canopy" ? "#00b9d7" : "#102c43"}
+							/>
+							{form.treatment === "reference" ? (
+								<>
+									<polygon points="6,0 1,-2 -6,-2 -7,0" fill="#32738c" />
+									<polygon points="6,0 -7,0 -6,2 1,2" fill="#18425d" />
+								</>
+							) : form.treatment === "recess" ? (
+								<>
+									<polygon points="6,0 1,-2 -6,-2 -7,0" fill="#20566a" />
+									<polygon points="6,0 -7,0 -6,2 1,2" fill="#11384d" />
+									<polygon
+										points="4,0 0,-1.2 -4,-1.2 -5,0 -4,.5 0,.5"
+										fill="#00edff"
+									/>
+								</>
+							) : (
+								<>
+									<polygon points="8,0 2,-3 -7,-3 -9,0" fill="#00edff" />
+									<polygon points="8,0 -9,0 -7,3 2,3" fill="#0086b2" />
+								</>
+							)}
+						</g>
+					</g>
+				))}
+				<g transform="translate(235 270) scale(2.6) rotate(-90)">
+					<path d="M12 -7 L12 0 L-12 0 L-12 -13Z" fill="#c8f4f0" />
+					<path d="M12 0 L12 7 L-12 13 L-12 0Z" fill="#365d79" />
+					<polygon
+						points="8,0 2,-3 -7,-3 -9,0 -7,3 2,3"
+						fill={form.treatment === "canopy" ? "#00b9d7" : "#102c43"}
+					/>
+					{form.treatment === "reference" ? (
+						<>
+							<polygon points="6,0 1,-2 -6,-2 -7,0" fill="#32738c" />
+							<polygon points="6,0 -7,0 -6,2 1,2" fill="#18425d" />
+						</>
+					) : form.treatment === "recess" ? (
+						<>
+							<polygon points="6,0 1,-2 -6,-2 -7,0" fill="#20566a" />
+							<polygon points="6,0 -7,0 -6,2 1,2" fill="#11384d" />
+							<polygon
+								points="4,0 0,-1.2 -4,-1.2 -5,0 -4,.5 0,.5"
+								fill="#00edff"
+							/>
+						</>
+					) : (
+						<>
+							<polygon points="8,0 2,-3 -7,-3 -9,0" fill="#00edff" />
+							<polygon points="8,0 -9,0 -7,3 2,3" fill="#0086b2" />
+						</>
+					)}
+				</g>
+			</svg>
+		</figure>
+	))}
+</div>
+<style>
+.fleet {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-lg);
+	margin-block: var(--spacing-lg);
+}
+figure {
+	margin: 0;
+	min-width: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+}
+h4 {
+	margin-bottom: var(--spacing-sm);
+}
+p {
+	color: var(--color-text-dim);
+	font-size: var(--font-small);
+	min-height: 4.5em;
+}
+svg {
+	display: block;
+	width: 100%;
+}
+@media (max-width: 850px) {
+	.fleet {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 480px) {
+	.fleet {
+		grid-template-columns: 1fr;
+	}
+	svg {
+		max-width: 320px;
+		margin: auto;
+	}
+	p {
+		min-height: 0;
+	}
+}
+</style>

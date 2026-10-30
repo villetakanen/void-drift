@@ -1,0 +1,126 @@
+---
+import { buildMounts, defaultLoadout } from "./ship-silhouette-reference";
+
+const mounts = buildMounts(defaultLoadout("balanced"));
+const forms = [
+	{
+		name: "A / Arrow",
+		note: "A long tip and uninterrupted sweep: the simplest aggressive direction.",
+		points: "40,0 -26,-26 -18,0 -26,26",
+	},
+	{
+		name: "B / Broad delta",
+		note: "A shorter, wider triangle trades needle-like speed for a heavier stance.",
+		points: "32,0 -26,-34 -22,0 -26,34",
+	},
+	{
+		name: "C / Barbed arrow",
+		note: "Cut-in shoulders separate the nose from two sharp, swept wing tips.",
+		points: "40,0 5,-12 -4,-12 -28,-33 -20,-9 -25,0 -20,9 -28,33 -4,12 5,12",
+	},
+	{
+		name: "D / Forward fangs",
+		note: "Two forward wing points echo the central nose, making a three-point threat.",
+		points: "40,0 0,-12 13,-29 -27,-25 -23,0 -27,25 13,29 0,12",
+	},
+	{
+		name: "E / Clipped wings",
+		note: "Angular breaks and blunt wing ends add a compact, mechanical character.",
+		points:
+			"38,0 7,-12 -13,-28 -25,-28 -25,-14 -20,0 -25,14 -25,28 -13,28 7,12",
+	},
+	{
+		name: "F / Braced arrow",
+		note: "Side rails frame the arrow: a nod to the previously liked TIE-like character, not a reconstruction.",
+		points:
+			"40,0 2,-10 2,-22 16,-22 9,-31 -27,-31 -27,-22 -10,-22 -10,-12 -24,0 -10,12 -10,22 -27,22 -27,31 9,31 16,22 2,22 2,10",
+	},
+];
+---
+
+<div class="forms">
+	{forms.map((form) => (
+		<figure>
+			<figcaption>
+				<h4>{form.name}</h4>
+				<p>{form.note}</p>
+			</figcaption>
+			<svg
+				viewBox="0 0 260 260"
+				role="img"
+				aria-label={`${form.name}: enlarged Fighter with fixed slots, plus small silhouettes at three orientations`}
+			>
+				<g transform="translate(130 110) scale(2.1) rotate(-90)">
+					<polygon
+						points={form.points}
+						fill="currentColor"
+						fill-opacity=".32"
+						stroke="currentColor"
+						stroke-width=".7"
+					/>
+					{mounts.map((mount) => (
+						<rect
+							x="-5"
+							y="-4"
+							width="10"
+							height="8"
+							fill="currentColor"
+							transform={`translate(${mount.x} ${mount.y}) rotate(${(mount.angle * 180) / Math.PI})`}
+						/>
+					))}
+				</g>
+				{[-90, -45, 0].map((angle, index) => (
+					<polygon
+						points={form.points}
+						fill="currentColor"
+						transform={`translate(${55 + index * 75} 229) scale(.6) rotate(${angle})`}
+					/>
+				))}
+			</svg>
+		</figure>
+	))}
+</div>
+<style>
+.forms {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-md);
+	margin-block: var(--spacing-lg);
+}
+figure {
+	margin: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+	min-width: 0;
+}
+h4 {
+	margin-bottom: var(--spacing-sm);
+}
+p {
+	color: var(--color-text-dim);
+	font-size: var(--font-small);
+	min-height: 7em;
+}
+svg {
+	width: 100%;
+	display: block;
+	color: var(--color-text);
+}
+@media (max-width: 800px) {
+	.forms {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 480px) {
+	.forms {
+		grid-template-columns: 1fr;
+	}
+	svg {
+		max-width: 300px;
+		margin: auto;
+	}
+	p {
+		min-height: 0;
+	}
+}
+</style>

@@ -1,0 +1,167 @@
+---
+const hull = [
+	[48, 0],
+	[-18, -20],
+	[-25, -17],
+	[-19, 0],
+	[-25, 17],
+	[-18, 20],
+];
+const shapes = [
+	{
+		name: "Lens",
+		path: "M8 0 Q0 -5 -8 -2 Q-10 0 -8 2 Q0 5 8 0Z",
+		note: "A smooth tapered lens follows the spine.",
+	},
+	{
+		name: "Kite",
+		path: "M8 0 L-3 -3 L-9 0 L-3 3Z",
+		note: "One clean pointed pane echoes the hull.",
+	},
+	{
+		name: "Visor",
+		path: "M7 0 L2 -3 L-7 -3 Q-10 0 -7 3 L2 3Z",
+		note: "A short broad pane makes the flight deck more visible.",
+	},
+];
+const forms = [false, true].flatMap((warm, row) =>
+	shapes.map((shape, index) => ({
+		...shape,
+		name: `${String.fromCharCode(65 + row * 3 + index)} / ${shape.name} · ${warm ? "amber glow" : "ice glass"}`,
+		note: `${shape.note} ${warm ? "Warm light separates it from the hull." : "A cool reflection keeps it within the ship palette."}`,
+		warm,
+		points: hull,
+		id: `canopy-${row}-${index}`,
+	})),
+);
+const palette = [
+	"#c8f4f0",
+	"#83c7d0",
+	"#437e99",
+	"#264d6b",
+	"#365d79",
+	"#6193a9",
+];
+---
+
+<div class="fleet">
+	{forms.map((form) => (
+		<figure>
+			<figcaption>
+				<h4>{form.name}</h4>
+				<p>{form.note}</p>
+			</figcaption>
+			<svg
+				viewBox="0 0 320 310"
+				role="img"
+				aria-label={`${form.name}, solid low-poly Fighter with forward luminous canopy, small turned ship and enlarged canopy detail`}
+			>
+				<defs>
+					<linearGradient id={form.id} x1="0" y1="0" x2="0.3" y2="1">
+						<stop stop-color={form.warm ? "#fff5bf" : "#f0ffff"} />
+						<stop offset=".45" stop-color={form.warm ? "#ffd77c" : "#76e1ef"} />
+						<stop offset="1" stop-color={form.warm ? "#c77b37" : "#27728f"} />
+					</linearGradient>
+					<filter
+						id={`${form.id}-glow`}
+						x="-80%"
+						y="-150%"
+						width="260%"
+						height="400%"
+					>
+						<feGaussianBlur stdDeviation="1.2" />
+					</filter>
+				</defs>
+
+				{[
+					{ x: 160, y: 155, scale: 2.5, angle: -90 },
+					{ x: 115, y: 270, scale: 0.65, angle: -45 },
+				].map((view) => (
+					<g
+						transform={`translate(${view.x} ${view.y}) scale(${view.scale}) rotate(${view.angle})`}
+					>
+						{form.points.map((point, index) => {
+							const next = form.points[(index + 1) % form.points.length];
+							const upper = (point[1] + next[1]) / 2 < 0;
+							return (
+								<polygon
+									points={`-3,0 ${point.join(",")} ${next.join(",")}`}
+									fill={palette[upper ? index % 3 : 3 + (index % 3)]}
+								/>
+							);
+						})}
+						<polygon points="38,0 -15,-4 -21,0 -15,4" fill="#a2d8df" />
+						<polygon points="38,0 -21,0 -15,4" fill="#51869e" />
+						<g transform="translate(18 0)">
+							{form.warm && (
+								<path
+									d={form.path}
+									fill="#ffcf70"
+									opacity=".65"
+									filter={`url(#${form.id}-glow)`}
+								/>
+							)}
+							<path d={form.path} fill={`url(#${form.id})`} />
+						</g>
+					</g>
+				))}
+				<g transform="translate(235 270) scale(2.6) rotate(-90)">
+					<path d="M12 -7 L12 0 L-12 0 L-12 -13Z" fill="#c8f4f0" />
+					<path d="M12 0 L12 7 L-12 13 L-12 0Z" fill="#365d79" />
+					{form.warm && (
+						<path
+							d={form.path}
+							fill="#ffcf70"
+							opacity=".65"
+							filter={`url(#${form.id}-glow)`}
+						/>
+					)}
+					<path d={form.path} fill={`url(#${form.id})`} />
+				</g>
+			</svg>
+		</figure>
+	))}
+</div>
+<style>
+.fleet {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-lg);
+	margin-block: var(--spacing-lg);
+}
+figure {
+	margin: 0;
+	min-width: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+}
+h4 {
+	margin-bottom: var(--spacing-sm);
+}
+p {
+	color: var(--color-text-dim);
+	font-size: var(--font-small);
+	min-height: 4.5em;
+}
+svg {
+	display: block;
+	width: 100%;
+}
+@media (max-width: 850px) {
+	.fleet {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 480px) {
+	.fleet {
+		grid-template-columns: 1fr;
+	}
+	svg {
+		max-width: 320px;
+		margin: auto;
+	}
+	p {
+		min-height: 0;
+	}
+}
+</style>

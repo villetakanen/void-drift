@@ -1,0 +1,207 @@
+---
+const forms = [
+	{
+		name: "A / Slipstream",
+		note: "Long hood, tucked cabin, close-set engines. The slim Swift idea rebuilt as a sporting craft.",
+		nose: 33,
+		noseWidth: 4,
+		shoulder: 9,
+		width: 9,
+		tail: -22,
+		cabin: -2,
+		engineX: -11,
+		engineY: 12,
+		engineLength: 20,
+		sweep: 0,
+	},
+	{
+		name: "B / Sprint",
+		note: "Short hood and a cockpit near the front. A tiny two-engine runabout, ready to dart away.",
+		nose: 24,
+		noseWidth: 5,
+		shoulder: 12,
+		width: 10,
+		tail: -20,
+		cabin: 4,
+		engineX: -7,
+		engineY: 14,
+		engineLength: 23,
+		sweep: 0,
+	},
+	{
+		name: "C / Riviera",
+		note: "A broad hood tapers into a narrow rear deck. Outboard engines give the cabin an open, airy stance.",
+		nose: 28,
+		noseWidth: 7,
+		shoulder: 12,
+		width: 12,
+		tail: -23,
+		cabin: 0,
+		engineX: -12,
+		engineY: 18,
+		engineLength: 19,
+		sweep: 0,
+	},
+	{
+		name: "D / Aero",
+		note: "A slender central cabin between swept engine pods. Light shoulders add a little racing attitude.",
+		nose: 30,
+		noseWidth: 3,
+		shoulder: 6,
+		width: 9,
+		tail: -22,
+		cabin: 0,
+		engineX: -9,
+		engineY: 16,
+		engineLength: 24,
+		sweep: 12,
+	},
+	{
+		name: "E / Club",
+		note: "A compact hood, wider cockpit deck, and short rear engine pods. A playful weekend roadster.",
+		nose: 23,
+		noseWidth: 6,
+		shoulder: 9,
+		width: 12,
+		tail: -18,
+		cabin: 1,
+		engineX: -10,
+		engineY: 15,
+		engineLength: 17,
+		sweep: 0,
+	},
+	{
+		name: "F / Stride",
+		note: "A low narrow hood with engines reaching toward the shoulders. Cabin and machinery read as one clean vehicle.",
+		nose: 31,
+		noseWidth: 4,
+		shoulder: 5,
+		width: 9,
+		tail: -24,
+		cabin: -4,
+		engineX: -5,
+		engineY: 13,
+		engineLength: 29,
+		sweep: 5,
+	},
+];
+---
+
+<div class="fleet">
+	{forms.map((f) => (
+		<figure>
+			<figcaption>
+				<h4>{f.name}</h4>
+				<p>{f.note}</p>
+			</figcaption>
+			<svg
+				viewBox="0 0 320 310"
+				role="img"
+				aria-label={`${f.name}, roadster Scout with distinct hood, black cockpit, and paired side engines, enlarged and small`}
+			>
+				{[
+					{ x: 160, y: 145, scale: 2.5, angle: -90 },
+					{ x: 160, y: 268, scale: 0.75, angle: -45 },
+				].map((v) => (
+					<g
+						transform={`translate(${v.x} ${v.y}) scale(${v.scale}) rotate(${v.angle})`}
+					>
+						{[-1, 1].map((sign) => (
+							<polygon
+								points={`-16,${sign * 5} -3,${sign * 6} ${f.engineX + 4},${sign * f.engineY} ${f.engineX - 6},${sign * f.engineY}`}
+								fill={sign < 0 ? "#83c7d0" : "#365d79"}
+							/>
+						))}
+						<polygon
+							points={`${f.nose},${-f.noseWidth} ${f.shoulder},${-f.width} ${f.tail + 5},${-f.width * 0.8} ${f.tail},-4 ${f.tail},4 ${f.tail + 5},${f.width * 0.8} ${f.shoulder},${f.width} ${f.nose},${f.noseWidth}`}
+							fill="#6193a9"
+						/>
+						<polygon
+							points={`${f.nose},${-f.noseWidth} ${f.shoulder},${-f.width} ${f.tail + 5},${-f.width * 0.8} ${f.tail},-4 ${f.tail + 4},-2 ${f.shoulder},${-f.width * 0.55} ${f.nose},${-f.noseWidth * 0.5}`}
+							fill="#c8f4f0"
+						/>
+						<polygon
+							points={`${f.nose},${f.noseWidth} ${f.shoulder},${f.width} ${f.tail + 5},${f.width * 0.8} ${f.tail},4 ${f.tail + 4},2 ${f.shoulder},${f.width * 0.55} ${f.nose},${f.noseWidth * 0.5}`}
+							fill="#365d79"
+						/>
+						<polygon
+							points={`${f.nose},${-f.noseWidth * 0.5} ${f.shoulder},${-f.width * 0.55} ${f.cabin + 5},-4 ${f.cabin + 5},4 ${f.shoulder},${f.width * 0.55} ${f.nose},${f.noseWidth * 0.5}`}
+							fill="#a2d8df"
+						/>
+						<polygon
+							transform={`translate(${f.cabin} 0)`}
+							points="5,-4 2,-5 -7,-4 -9,-2 -9,2 -7,4 2,5 5,4"
+							fill="#000000"
+						/>
+						{[-1, 1].map((sign) => (
+							<g
+								transform={`translate(${f.engineX} ${sign * f.engineY}) rotate(${-sign * f.sweep})`}
+							>
+								<polygon
+									points={`${f.engineLength / 2},-1 ${f.engineLength / 2 - 4},-3.5 ${-f.engineLength / 2},-3.5 ${-f.engineLength / 2},3.5 ${f.engineLength / 2 - 4},3.5 ${f.engineLength / 2},1`}
+									fill="#6193a9"
+								/>
+								<polygon
+									points={`${f.engineLength / 2},-1 ${f.engineLength / 2 - 4},-3.5 ${-f.engineLength / 2},-3.5 ${-f.engineLength / 2},-1`}
+									fill="#c8f4f0"
+								/>
+								<polygon
+									points={`${f.engineLength / 2},1 ${f.engineLength / 2 - 4},3.5 ${-f.engineLength / 2},3.5 ${-f.engineLength / 2},1`}
+									fill="#365d79"
+								/>
+								<path
+									d={`M${-f.engineLength / 2} -2.5 v5`}
+									stroke="#102c43"
+									stroke-width="1"
+								/>
+							</g>
+						))}
+					</g>
+				))}
+			</svg>
+		</figure>
+	))}
+</div>
+<style>
+.fleet {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-lg);
+	margin-block: var(--spacing-lg);
+}
+figure {
+	margin: 0;
+	min-width: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+}
+h4 {
+	margin-bottom: var(--spacing-sm);
+}
+p {
+	color: var(--color-text-dim);
+	font-size: var(--font-small);
+	min-height: 4.5em;
+}
+svg {
+	display: block;
+	width: 100%;
+}
+@media (max-width: 850px) {
+	.fleet {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 480px) {
+	.fleet {
+		grid-template-columns: 1fr;
+	}
+	svg {
+		max-width: 320px;
+		margin: auto;
+	}
+	p {
+		min-height: 0;
+	}
+}
+</style>

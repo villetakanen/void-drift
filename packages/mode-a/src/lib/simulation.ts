@@ -13,7 +13,7 @@ import {
 	Vec2,
 } from "@void-drift/core";
 import { applyBuildEngines, buildDrain, solarCharge } from "./build-flight";
-import { buildPlumeEmitters } from "./build-renderer";
+import { buildCollisionRadius, buildPlumeEmitters } from "./build-renderer";
 import { SHIP_PROFILE_BY_ID } from "./config";
 import { createStar } from "./game-loop";
 import {
@@ -63,6 +63,8 @@ export class Simulation {
 		this.buildEmitters = this.settings.loadout
 			? buildPlumeEmitters(this.settings.loadout)
 			: [];
+		if (this.settings.loadout)
+			this.ship.radius = buildCollisionRadius(this.settings.loadout);
 		this.star.mass *= GRAVITY_FLIGHT.sunMultiplier;
 		for (const planet of this.planets) {
 			planet.well = PlanetWellSchema.parse({

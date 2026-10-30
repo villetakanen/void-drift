@@ -1,0 +1,132 @@
+---
+import {
+	buildMounts,
+	CHASSIS,
+	defaultLoadout,
+} from "./ship-silhouette-reference";
+
+// Fixed composition sketches: real slot counts and angles, proposed hulls and side positions.
+const sketches = [
+	{
+		id: "scout",
+		intent: "Long spine · tucked engines",
+		hull: "34,0 -18,-8 -24,0 -18,8",
+		sideX: -9,
+		sideY: 12,
+	},
+	{
+		id: "balanced",
+		intent: "Wide shoulders · swept engines",
+		hull: "30,0 -18,-25 -12,0 -18,25",
+		sideX: -10,
+		sideY: 25,
+	},
+	{
+		id: "tank",
+		intent: "Broad body · parallel banks",
+		hull: "30,0 18,-24 -26,-24 -32,-15 -32,15 -26,24 18,24",
+		sideX: -5,
+		sideY: 30,
+	},
+] as const;
+---
+
+<div class="comparison">
+	{sketches.map((sketch) => {
+		const chassis = CHASSIS[sketch.id];
+		const mounts = buildMounts(defaultLoadout(sketch.id));
+		const currentHull = `${chassis.length},0 ${-chassis.length * 0.65},${-chassis.width} ${-chassis.length * 0.85},0 ${-chassis.length * 0.65},${chassis.width}`;
+		return (
+			<article>
+				<h4>{chassis.name}</h4>
+				<p>{sketch.intent}</p>
+				{[false, true].map((proposed) => (
+					<figure>
+						<figcaption>
+							{proposed ? "Composition proposal" : "Current arrangement"}
+						</figcaption>
+						<svg
+							viewBox="0 0 240 240"
+							role="img"
+							aria-label={`${chassis.name}: ${proposed ? sketch.intent : "current hull and mounts"}, enlarged and small`}
+						>
+							{[
+								{ x: 120, y: 90, scale: 2.1 },
+								{ x: 120, y: 201, scale: 0.65 },
+							].map((view) => (
+								<g
+									transform={`translate(${view.x} ${view.y}) scale(${view.scale}) rotate(-90)`}
+								>
+									<polygon
+										points={proposed ? sketch.hull : currentHull}
+										fill="currentColor"
+										opacity="0.22"
+										stroke="currentColor"
+										stroke-width="1"
+									/>
+									{mounts.map((mount) => {
+										const side = mount.group === "side";
+										const x = proposed && side ? sketch.sideX : mount.x;
+										const y =
+											proposed && side
+												? Math.sign(mount.y) * sketch.sideY
+												: mount.y;
+										return (
+											<rect
+												x="-5"
+												y="-4"
+												width="10"
+												height="8"
+												fill="currentColor"
+												transform={`translate(${x} ${y}) rotate(${(mount.angle * 180) / Math.PI})`}
+											/>
+										);
+									})}
+								</g>
+							))}
+						</svg>
+					</figure>
+				))}
+			</article>
+		);
+	})}
+</div>
+<style>
+.comparison {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-md);
+	margin-block: var(--spacing-lg);
+}
+article {
+	border: var(--flight-border);
+	padding: var(--spacing-md);
+	min-width: 0;
+}
+h4 {
+	font-size: var(--font-medium);
+	margin-bottom: var(--spacing-sm);
+}
+p,
+figcaption {
+	font-size: var(--font-small);
+	color: var(--color-text-dim);
+}
+figure {
+	margin: var(--spacing-md) 0 0;
+}
+svg {
+	width: 100%;
+	display: block;
+	color: var(--color-text);
+}
+@media (max-width: 620px) {
+	.comparison {
+		grid-template-columns: 1fr;
+	}
+	svg {
+		max-width: 280px;
+		margin: auto;
+	}
+}
+</style>

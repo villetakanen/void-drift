@@ -1,0 +1,138 @@
+---
+// Study-only hulls. Shared arrangement: cockpit forward, shoulder engines ahead
+// of the central hull bay, single aft engine. No slot overlay or part detailing.
+const forms = [
+	{
+		name: "A / Wasp",
+		note: "Small oval cabin, broad shoulders, a short tapered abdomen.",
+		outline:
+			"0,-29.2 9,-25 11,-17 21,-12 19,0 11,4 7,25 0,29.2 -7,25 -11,4 -19,0 -21,-12 -11,-17 -9,-25",
+		cockpit: "0,-26 5,-24 7,-20 7,-15 4,-11 -4,-11 -7,-15 -7,-20 -5,-24",
+		shoulder: 21,
+		waist: 8,
+	},
+	{
+		name: "B / Firefly",
+		note: "A rounder cabin and a compact, full body; friendly and quick.",
+		outline:
+			"0,-29.2 8,-27 13,-21 19,-15 21,-5 15,3 12,21 6,29.2 -6,29.2 -12,21 -15,3 -21,-5 -19,-15 -13,-21 -8,-27",
+		cockpit: "0,-25 6,-23 9,-18 8,-12 4,-8 -4,-8 -8,-12 -9,-18 -6,-23",
+		shoulder: 21,
+		waist: 12,
+	},
+	{
+		name: "C / Sprint",
+		note: "Low, wide windscreen and swept shoulders: the sports-car take.",
+		outline:
+			"-7,-29.2 7,-29.2 12,-23 14,-17 23,-9 18,4 10,1 9,24 5,29.2 -5,29.2 -9,24 -10,1 -18,4 -23,-9 -14,-17 -12,-23",
+		cockpit: "-7,-24 7,-24 10,-19 8,-13 -8,-13 -10,-19",
+		shoulder: 23,
+		waist: 10,
+	},
+	{
+		name: "D / Skimmer",
+		note: "A slim teardrop cabin with low swept fins and a narrow tail.",
+		outline:
+			"0,-29.2 8,-24 10,-15 22,-4 18,5 9,1 6,26 0,29.2 -6,26 -9,1 -18,5 -22,-4 -10,-15 -8,-24",
+		cockpit: "0,-26 5,-22 6,-16 4,-9 0,-6 -4,-9 -6,-16 -5,-22",
+		shoulder: 22,
+		waist: 7,
+	},
+	{
+		name: "E / Hornet",
+		note: "A compact bubble between strong forward engine shoulders.",
+		outline:
+			"0,-29.2 8,-26 10,-17 17,-21 22,-15 20,0 11,5 9,24 0,29.2 -9,24 -11,5 -20,0 -22,-15 -17,-21 -10,-17 -8,-26",
+		cockpit: "0,-25 5,-23 7,-19 7,-15 4,-11 -4,-11 -7,-15 -7,-19 -5,-23",
+		shoulder: 22,
+		waist: 10,
+	},
+	{
+		name: "F / Comet",
+		note: "One smooth capsule, a broad visor, and tucked-in shoulders.",
+		outline:
+			"0,-29.2 9,-26 14,-20 18,-13 18,-2 12,5 10,23 4,29.2 -4,29.2 -10,23 -12,5 -18,-2 -18,-13 -14,-20 -9,-26",
+		cockpit: "0,-25 7,-23 11,-18 10,-13 5,-10 -5,-10 -10,-13 -11,-18 -7,-23",
+		shoulder: 18,
+		waist: 11,
+	},
+];
+---
+
+<div class="forms">
+	{forms.map((form, i) => (
+		<figure>
+			<h4>{form.name}</h4>
+			<svg
+				viewBox="0 0 240 310"
+				role="img"
+				aria-label={`${form.name}. ${form.note}`}
+			>
+				<defs>
+					<clipPath id={`wasp-form-${i}`}>
+						<polygon points={form.outline} />
+					</clipPath>
+				</defs>
+				{[
+					{ x: 120, y: 120, scale: 3.1 },
+					{ x: 120, y: 266, scale: 0.7 },
+				].map((v) => (
+					<g transform={`translate(${v.x} ${v.y}) scale(${v.scale})`}>
+						<polygon points={form.outline} fill="#83c7d0" />
+						<g clip-path={`url(#wasp-form-${i})`}>
+							<polygon
+								points={`0,-33 -30,-33 -30,8 -${form.waist},5 0,-6`}
+								fill="#c8f4f0"
+							/>
+							<polygon
+								points={`0,-6 ${form.shoulder},-18 30,-4 30,33 0,33`}
+								fill="#365d79"
+							/>
+							<polygon
+								points={`0,-6 -${form.waist},5 -5,30 0,33 4,25`}
+								fill="#a2d8df"
+							/>
+						</g>
+						<polygon points={form.cockpit} fill="#000" />
+					</g>
+				))}
+			</svg>
+			<figcaption>{form.note}</figcaption>
+		</figure>
+	))}
+</div>
+<style>
+.forms {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-md);
+	margin: var(--spacing-lg) 0;
+}
+figure {
+	margin: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+	background: var(--color-bg);
+}
+h4 {
+	margin: 0;
+}
+svg {
+	display: block;
+	width: 100%;
+}
+figcaption {
+	font-size: var(--font-small);
+	color: var(--color-text-dim);
+}
+@media (max-width: 850px) {
+	.forms {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 480px) {
+	.forms {
+		grid-template-columns: 1fr;
+	}
+}
+</style>
