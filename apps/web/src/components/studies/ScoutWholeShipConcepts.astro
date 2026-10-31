@@ -1,0 +1,220 @@
+---
+import { buildMounts, defaultBuilds } from "@void-drift/mode-a";
+import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
+import { TRIDENT_STUDY } from "./scout-trident-reference";
+
+const mounts = buildMounts(defaultBuilds().scout);
+const concepts = [
+	{
+		name: "01 / Solid swept delta",
+		idea: "One compact armored wedge. The stern fitting is buried in the body; speed comes from the long swept edges, not separate blades.",
+		cockpit: -21,
+		deck: -7,
+		aft: 12,
+		side: 5,
+		arm: 12,
+		angle: 28,
+		planes: [
+			["0,-23 21,18 7,13 6,20 -6,20 -7,13 -21,18", 3],
+			["0,-23 -21,18 -9,9 -4,-8", 1],
+			["0,-23 21,18 9,9 4,-8", 4],
+			["0,-23 -4,-8 -6,20 0,17", 0],
+			["0,-23 4,-8 6,20 0,17", 5],
+		],
+	},
+	{
+		name: "02 / Swept crescent",
+		idea: "A tiny pilot pod leads a broad, bent wing. Engines move out along the shoulders; a continuous shallow stern carries the aft fitting.",
+		cockpit: -21,
+		deck: -7,
+		aft: 7,
+		side: 0,
+		arm: 16,
+		angle: 34,
+		planes: [
+			["0,-23 7,-9 17,-9 25,19 12,10 6,14 -6,14 -12,10 -25,19 -17,-9 -7,-9", 3],
+			["-7,-9 -17,-9 -25,19 -12,5 0,-2", 1],
+			["7,-9 17,-9 25,19 12,5 0,-2", 4],
+			["-17,-9 -12,5 -25,19", 2],
+			["0,-23 -7,-9 -6,14 0,10", 0],
+			["0,-23 7,-9 6,14 0,10", 5],
+		],
+	},
+	{
+		name: "03 / Twin runners",
+		idea: "Two slim engine hulls flank a cramped central cockpit-and-equipment capsule. Open channels replace a broad wing or pendant tail.",
+		cockpit: -21,
+		deck: -7,
+		aft: 8,
+		side: -2,
+		arm: 13,
+		angle: 14,
+		planes: [
+			["-3,-17 3,-17 7,-8 7,15 0,19 -7,15 -7,-8", 4],
+			["0,-20 -7,-8 -7,15 0,19", 0],
+			["0,-20 7,-8 7,15 0,19", 5],
+			["-12,-19 -7,-6 -7,6 -13,24 -19,13 -18,-3", 2],
+			["-12,-19 -13,7 -13,24 -19,13 -18,-3", 1],
+			["12,-19 7,-6 7,6 13,24 19,13 18,-3", 3],
+			["12,-19 13,7 13,24 19,13 18,-3", 5],
+			["-13,-3 -5,0 -5,4 -13,2", 1],
+			["13,-3 5,0 5,4 13,2", 4],
+		],
+	},
+	{
+		name: "04 / Forward-loaded dart",
+		idea: "Cockpit, deck fitting and engines form a dense forward cluster. One uninterrupted taper carries the aft fitting into a clipped, narrow stern.",
+		cockpit: -21,
+		deck: -7,
+		aft: 11,
+		side: -8,
+		arm: 11,
+		angle: 30,
+		planes: [
+			["0,-23 17,-10 13,4 6,23 -6,23 -13,4 -17,-10", 3],
+			["0,-23 -17,-10 -13,4 -6,23 -4,-3", 1],
+			["0,-23 17,-10 13,4 6,23 4,-3", 4],
+			["-17,-10 -10,-8 -6,23 -13,4", 2],
+			["0,-23 -4,-3 -3,23 0,20", 0],
+			["0,-23 4,-3 3,23 0,20", 5],
+		],
+	},
+	{
+		name: "05 / Barbed lifting body",
+		idea: "The whole hull is a thick swept wing, ending in two sharp corners and a central aft notch. The rear fitting sits before that notch, not on a tail.",
+		cockpit: -20,
+		deck: -6,
+		aft: 8,
+		side: 2,
+		arm: 12,
+		angle: 24,
+		planes: [
+			["0,-22 20,18 9,13 5,19 0,14 -5,19 -9,13 -20,18", 3],
+			["0,-22 -20,18 -9,13 0,4", 1],
+			["0,-22 20,18 9,13 0,4", 4],
+			["-20,18 -6,-8 -9,13", 2],
+			["0,-22 -6,-8 -5,19 0,14", 0],
+			["0,-22 6,-8 5,19 0,14", 5],
+		],
+	},
+	TRIDENT_STUDY,
+] as const;
+---
+
+<div class="whole-ships">
+	<label class="toggle"
+		><input type="checkbox" checked>
+		Show four mount footprints</label
+	>
+	<div class="cards">
+		{concepts.map((c) => (
+			<figure>
+				<figcaption>{c.name}</figcaption>
+				<svg
+					viewBox="-30 -34 60 72"
+					role="img"
+					aria-label={`${c.name}. ${c.idea} Nose up.`}
+				>
+					{c.planes.map(([points, color]) => (
+						<polygon points={points} fill={FIGHTER.facets[color]} />
+					))}
+					<circle cx="0" cy={c.cockpit} r="6.8" fill={FIGHTER.facets[2]} />
+					<circle cx="0" cy={c.cockpit} r="6" fill="#000000" />
+					<g class="mounts">
+						{mounts.map((m) => {
+							const x =
+								m.group === "side" ? (m.index === 0 ? -c.arm : c.arm) : 0;
+							const y =
+								m.group === "side"
+									? c.side
+									: m.group === "hull"
+										? c.deck
+										: c.aft;
+							const angle =
+								m.group === "side" ? (m.index === 0 ? c.angle : -c.angle) : 0;
+							return (
+								<g transform={`translate(${x} ${y}) rotate(${angle})`}>
+									<rect
+										x={-m.height / 2}
+										y={-m.width / 2}
+										width={m.height}
+										height={m.width}
+									/>
+									<text text-anchor="middle" y="1.3">
+										{m.group === "side" ? "E" : m.group === "hull" ? "H" : "A"}
+									</text>
+								</g>
+							);
+						})}
+					</g>
+				</svg>
+				<p>{c.idea}</p>
+			</figure>
+		))}
+	</div>
+</div>
+<style>
+.toggle {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-sm);
+	min-height: 44px;
+	margin-bottom: var(--spacing-md);
+	cursor: pointer;
+}
+input {
+	accent-color: var(--color-acid-lime);
+	width: 20px;
+	height: 20px;
+}
+input:focus-visible {
+	outline: 2px solid var(--color-acid-lime);
+	outline-offset: 4px;
+}
+.cards {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-md);
+}
+figure {
+	margin: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+}
+figcaption {
+	color: var(--color-acid-lime);
+	font: var(--font-small) var(--font-flight);
+}
+svg {
+	display: block;
+	width: 100%;
+	height: 310px;
+	margin-block: var(--spacing-md);
+}
+.mounts rect {
+	fill: #071015;
+	fill-opacity: 0.65;
+	stroke: #e0ffff;
+	stroke-width: 0.4;
+}
+.mounts text {
+	fill: #e0ffff;
+	font: 3.5px var(--font-flight);
+}
+.whole-ships:has(input:not(:checked)) .mounts {
+	display: none;
+}
+figure p {
+	margin: 0;
+}
+@media (max-width: 900px) {
+	.cards {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 580px) {
+	.cards {
+		grid-template-columns: 1fr;
+	}
+}
+</style>

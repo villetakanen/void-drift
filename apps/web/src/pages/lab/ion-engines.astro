@@ -1,0 +1,30 @@
+---
+import IonSizeComparison from "../../components/studies/IonSizeComparison.svelte";
+import IonSizesAccepted024 from "../../components/studies/IonSizesAccepted024.svelte";
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout>
+	<main style="max-width: 1100px; margin: auto; padding: var(--spacing-lg);">
+		<p>
+			<a href="/lab">← Lab</a>
+			· <a href="/lab/builder">Fit and fly engines</a>
+		</p>
+		<h1>Ion engines · shared FX</h1>
+		<p>
+			Production Light and Heavy ion marks, using the accepted motion and turn
+			sequence. Heavy follows Light’s output here to isolate visual fidelity;
+			fitted flight uses each engine’s actual output.
+		</p>
+		<IonSizeComparison label="Production ion effects" client:load />
+		<details>
+			<summary>Preserved approved reference · 02.4</summary>
+			<IonSizesAccepted024 label="Frozen ion reference" client:load />
+		</details>
+		<p>
+			<a href="/lab/studies/ion-engines-2026-10-31#integration"
+				>Design and integration record</a
+			>
+		</p>
+	</main>
+</Layout>

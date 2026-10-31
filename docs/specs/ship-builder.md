@@ -244,3 +244,112 @@ Gravity, friction, energy costs, thrust and speed limits are unchanged. Custom r
 remain unranked. `/lab/builder` is the canonical assembly and test-flight example.
 Human review of bow support, fitted-part readability, exhaust clearance, turning and
 circular-collision fairness remains pending; automated checks do not establish feel.
+
+## Scout Trident integration
+
+The accepted 02.5 / 06 hull and approved 02.6 screenshot arrangement from
+`/lab/studies/scout-firefly` are implemented in `scout.ts`, the shared renderer,
+chassis calculations and builder. All three chassis are now selectable. The old
+Fighter-only/Scout-pending notes above record earlier delivery states, not current
+restrictions. Keep `scout`, the four slot identities and version-1 saves unchanged.
+
+Production-local +x is forward. Side engines: (10.5,−6)/(10.5,6), angles +49°/−49°;
+H (1,0); A (−11.5,0); all footprints 10×8. H/A are reconstructed starting coordinates
+from the accepted screenshot, not claimed exact image measurements. The cockpit
+center is (21,0), black radius 6 and collar radius 6.8. All six flat hull planes,
+wing tips and continuous pointed keel retain the study geometry. Left/right turn
+signs, selected hit targets, mounted nozzles and plume origins share the same mounts.
+
+The old Scout-only rail/laser barrel lengths of 18/10 would overlap the compact
+cockpit and adjacent slot. Scout now uses the established mount-relative graphics:
+rail 6, laser 5 units from the fitting center, with unchanged part identities, mass
+and static/no-shooting behavior. H/A barrels remain clear of each other and the
+cockpit. The side footprints have a small accepted corner overlap; keyboard and
+center-point selection work independently. No slots or hull points moved to hide it.
+Aft engines are treated as deck/surface mounts with the existing rear nozzle at
+−19.5; the plume can overlay the keel toward −29. No stern notch is introduced.
+
+Scout mass stays 60, gain 1. The 27.8-unit forward cockpit-collar extent is the
+existing squared-length turning proxy, not the full hull length or physical
+inertia. At rest with only the default fission pair, total mass is 92, paired
+acceleration about 342.3 units/s² and single-side turn rate about 229.4°/s. These
+are provisional geometry-derived outcomes, not human-approved handling targets.
+The conservative circular collision radius encloses hull, collar and fitting
+extents at the unchanged 0.65 scale (about 20.73 world units for current fittings).
+It overestimates gaps between the knives; fairness needs human flight review.
+
+Both `/builder?chassis=scout` and `/lab/builder?chassis=scout` open the Scout directly.
+The optional `chassis` query is parsed with ShipProfileIdSchema; absent/invalid values
+keep the usual Fighter default. Other saved chassis remain intact when fitting Scout.
+Test flight, reset, return and custom unranked survival use the real shared systems.
+Keyboard and existing landscape simultaneous-touch/cancel/blur behavior are retained.
+Stock scored profiles, gravity, friction, energy, engine thrust and speed limits
+are unchanged. Human review of visual fidelity, exhaust and handling remains pending.
+
+## Slot language integration — 2026-10-31
+
+Approved slot types: Engine (E) accepts E parts; Weapon (W) accepts internal G
+weapons; Equipment (Q) accepts G/U; Universal (+) accepts all categories. Side
+mounts use Engine, hull mounts Equipment, aft mounts Universal. No current chassis
+needs a weapon-only mount. Internal part IDs/categories and version-1 saves remain.
+The left side is the selectable primary; right is a disabled linked secondary.
+Both still share one engine fitting. Link identity is independent of slot type.
+
+Slots are builder-only overlays. Empty fill is 35% acid lime with void-dark border;
+filled fill is 35% void-dark with acid-lime border. Linked dashed borders and their
+connector use the same occupancy-based color. The 54×64 reference fill, 4-unit gap
+and 1.5-unit border are defined at seven preview units per ship unit, separate from
+physical mount geometry. Empty E/W/Q/+ glyphs are 70% opacity. Number labels have
+ivory text and 35% dark backing; vertical type labels use border color without backing.
+Selection uses acid-lime corner brackets; keyboard focus remains distinct.
+
+Flight draws only hull and equipped items, no empty mount or builder adornments.
+Item casings, barrels and nozzles remain physical artwork. Builder item artwork
+is scaled to fit the slot interior; this does not alter flight scale, collisions,
+nozzle origins or thrust. /lab/builder is the canonical real-system example.
+Human review across all chassis remains required for label clearance and fidelity.
+
+
+## Engine identities integration — 2026-10-31
+
+Supersedes earlier engine, fitting-scale and mount-placement descriptions above.
+The four engines are Small ion (mass 10, thrust 12000, ceiling 500, draw 2/s),
+Heavy ion (20, 20000, 750, 3/s), Fusion (16, 48000 peak, 550, 3/s), and Plasma
+(24, 38000, 700, 5/s). Ion is immediate; fusion fires 0.18s each 0.45s cycle;
+plasma charges 0.6s then sustains. Input release or unavailable power resets timing.
+Charge/recovery consume held-input power. Timing is per mount and simulation-owned;
+fractional power scales impulse, not time. Steering follows actual side output.
+The catalog reports peak thrust and response; acceleration is peak, mass-dependent.
+
+Owner authorized deleting old builds: schema/storage version 2, no fission alias.
+Builder removes old v1 storage. Stock ranked profiles retain their existing rules;
+custom test flight and survival use these engines and remain unranked.
+
+Shared polygon artwork preserves accepted study variants. Editor uses full-size
+engines over a 70% hull, soft selection backlight, background then engine then frame,
+and fixed side/aft/hull layering. Link routes forward of the bow. Scout engines all
+sit below its hull in flight and align their fronts to slot tops in both modes.
+Fighter aft mounts move +5 in x; Scout aft -3; cruiser aft +3, side y ±12 and angle
+±39 degrees. Cruiser nose support rectangle is removed. Slot sizes/corners remain.
+No gravity/friction changes. Plume origins follow actual body outlets; the existing
+plume effect remains pending separate aesthetics work. HUD shows charge and pulse
+states. Player testing must establish balance, input feel and feedback readability.
+
+
+## Ion effects — 0.4.1
+
+The accepted Light/Heavy comparison in `/lab/studies/ion-engines-2026-10-31#sizes`
+is promoted to the core ion beam painter. `/lab/ion-engines` compares the shared
+renderer with a frozen approved reference; `/lab/builder` uses it in fitted flight.
+Only `ion` and `heavy-ion` emit the new styles. Per-mark identity preserves mixed
+loadouts and already-emitted residue. Fusion, plasma and untyped legacy exhaust
+retain the generic painter.
+
+Light keeps mint-cyan; Heavy has a cooler blue-cyan halo and residue, 1.4× beam
+length and 1.45× width. Both keep the near-white core and transparent ends.
+Complete marks overlap, inherit 80% ship velocity with 45 units/s backward drift,
+and fade quadratically over 0.65 seconds. Rotation affects new emissions only.
+Engine bodies, thrust, limits, mass, energy, controls, gravity and friction are
+unchanged by this ion-effects integration. The accepted demo shares Light's
+motion/output across both variants solely for visual comparison; real fitted
+flight retains each engine's existing output behavior.

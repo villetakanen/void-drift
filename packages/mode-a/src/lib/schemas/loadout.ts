@@ -1,16 +1,19 @@
 import { z } from "zod";
 import { CRUISER } from "../cruiser";
 import { FIGHTER } from "../fighter";
+import { SCOUT } from "../scout";
 import { ShipProfileIdSchema } from "./ship-profile";
 
-export const EngineIdSchema = z.enum(["ion", "fission"]);
+export const EngineIdSchema = z.enum(["ion", "heavy-ion", "fusion", "plasma"]);
 export const PartIdSchema = z.enum([
 	"rail",
 	"laser",
 	"battery",
 	"coil",
 	"ion",
-	"fission",
+	"heavy-ion",
+	"fusion",
+	"plasma",
 ]);
 export type PartId = z.infer<typeof PartIdSchema>;
 export const PartSchema = z.object({
@@ -21,7 +24,32 @@ export const PartSchema = z.object({
 	thrust: z.number().nonnegative(),
 	limit: z.number().nonnegative(),
 	draw: z.number().nonnegative(),
+	response: z.enum(["steady", "pulse", "delayed"]).default("steady"),
+	chargeSeconds: z.number().nonnegative().default(0),
+	pulsePeriod: z.number().positive().default(0.45),
+	pulseOn: z.number().positive().default(0.18),
 });
+export const SlotTypeSchema = z.enum([
+	"engine",
+	"weapon",
+	"equipment",
+	"universal",
+]);
+export type SlotType = z.infer<typeof SlotTypeSchema>;
+export const SLOT_TYPES = {
+	engine: { symbol: "E", label: "Engines" },
+	weapon: { symbol: "W", label: "Weapons" },
+	equipment: { symbol: "Q", label: "Equipment" },
+	universal: { symbol: "+", label: "Universal" },
+} as const;
+export function slotAccepts(type: SlotType, category: "E" | "G" | "U") {
+	return (
+		type === "universal" ||
+		(type === "equipment" && category !== "E") ||
+		(type === "weapon" && category === "G") ||
+		(type === "engine" && category === "E")
+	);
+}
 export const ChassisSchema = z.object({
 	name: z.string(),
 	mass: z.number().positive(),
@@ -37,13 +65,15 @@ export const ChassisSchema = z.object({
 export const CHASSIS = {
 	scout: ChassisSchema.parse({
 		name: "Scout",
-		mass: 60,
+		mass: SCOUT.mass,
 		hull: 1,
 		aft: 1,
-		angle: 32,
-		arm: 13,
-		length: 26,
-		width: 14,
+		angle: SCOUT.angle,
+		arm: SCOUT.arm,
+		sideX: SCOUT.sideX,
+		turnResponse: SCOUT.turnResponse,
+		length: SCOUT.length,
+		width: SCOUT.width,
 	}),
 	balanced: ChassisSchema.parse({
 		name: "Fighter",
@@ -108,26 +138,51 @@ export const PARTS = {
 	}),
 	ion: PartSchema.parse({
 		id: "ion",
-		name: "Ion engine",
+		name: "Small ion",
 		category: "E",
 		mass: 10,
 		thrust: 12000,
 		limit: 500,
 		draw: 2,
 	}),
-	fission: PartSchema.parse({
-		id: "fission",
-		name: "Fission engine",
+
+	"heavy-ion": PartSchema.parse({
+		id: "heavy-ion",
+		name: "Heavy ion",
+		category: "E",
+		mass: 20,
+		thrust: 20000,
+		limit: 750,
+		draw: 3,
+		response: "steady",
+		chargeSeconds: 0,
+	}),
+	fusion: PartSchema.parse({
+		id: "fusion",
+		name: "Fusion",
 		category: "E",
 		mass: 16,
-		thrust: 24000,
-		limit: 350,
+		thrust: 48000,
+		limit: 550,
 		draw: 3,
+		response: "pulse",
+		chargeSeconds: 0,
+	}),
+	plasma: PartSchema.parse({
+		id: "plasma",
+		name: "Plasma",
+		category: "E",
+		mass: 24,
+		thrust: 38000,
+		limit: 700,
+		draw: 5,
+		response: "delayed",
+		chargeSeconds: 0.6,
 	}),
 };
 export const LoadoutSchema = z
 	.object({
-		version: z.literal(1),
+		version: z.literal(2),
 		chassis: ShipProfileIdSchema,
 		side: EngineIdSchema,
 		hull: z.array(PartIdSchema.nullable()).max(3),
@@ -139,7 +194,9 @@ export const LoadoutSchema = z
 		if (
 			build.hull.length !== chassis.hull ||
 			build.aft.length !== chassis.aft ||
-			build.hull.some((id) => id && PARTS[id].category === "E")
+			build.hull.some(
+				(id) => id && !slotAccepts("equipment", PARTS[id].category),
+			)
 		) {
 			ctx.addIssue({
 				code: z.ZodIssueCode.custom,
@@ -150,9 +207,9 @@ export const LoadoutSchema = z
 export type Loadout = z.infer<typeof LoadoutSchema>;
 export function defaultLoadout(chassis: Loadout["chassis"]): Loadout {
 	return LoadoutSchema.parse({
-		version: 1,
+		version: 2,
 		chassis,
-		side: "fission",
+		side: "fusion",
 		hull: Array(CHASSIS[chassis].hull).fill(null),
 		aft: Array(CHASSIS[chassis].aft).fill(null),
 	});

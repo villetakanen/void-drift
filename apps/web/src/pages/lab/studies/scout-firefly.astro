@@ -1,0 +1,503 @@
+---
+import ScoutAggressiveHulls from "../../../components/studies/ScoutAggressiveHulls.astro";
+import ScoutJoinedStern from "../../../components/studies/ScoutJoinedStern.astro";
+import ScoutPackingComparison from "../../../components/studies/ScoutPackingComparison.astro";
+import ScoutSplitKnifeVariants from "../../../components/studies/ScoutSplitKnifeVariants.astro";
+import ScoutTridentPlacement from "../../../components/studies/ScoutTridentPlacement.svelte";
+import ScoutWholeShipConcepts from "../../../components/studies/ScoutWholeShipConcepts.astro";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((entry) => entry.slug === "scout-firefly");
+---
+
+<StudyLayout study={study}>
+	<section aria-labelledby="purpose">
+		<h2 id="purpose">01 / Small, cramped, and still angry</h2>
+		<p>
+			The Scout should return alongside the Fighter and Heavy as another angry
+			triangle, but not a scaled-down Fighter. The Fighter has a long, faceted
+			Lance silhouette; the Heavy stretches its hull around a larger complement
+			of fittings. The Scout’s opportunity is compression: a slightly smaller
+			craft whose cockpit, engines, and equipment seem to compete for every
+			available bit of hull. More firefly than paper plane: tightly packed, not
+			a literal insect silhouette.
+		</p>
+		<p>
+			Imagine fitting the Scout’s single deck slot and single aft slot while its
+			required side-engine pair is already installed. Even fully loaded, it
+			should remain one small, purposeful spacecraft—not a loose collection of
+			parts or a broad wing with equipment sprinkled over it. The aft slot will
+			likely need a tail: a way to make room for that fitting without spreading
+			the main body. Treat this as the leading placement hypothesis, not a
+			settled tail shape. A round cockpit could give the crowded body a focal
+			point against the sharp triangular hull; its shape also remains open.
+		</p>
+		<p>
+			This cycle should settle how hull, cockpit, and cramped fittings make that
+			identity readable together, both enlarged in the builder and at flight
+			size. Keep the existing slot complement; leave numerical handling balance
+			and new mechanics outside this visual decision. The tension to investigate
+			is how tightly we can pack the ship without losing its silhouette or the
+			ability to distinguish its fittings.
+		</p>
+		<p>
+			<strong
+				>The direction is a tightly packed machine, with a likely tail-mounted
+				aft slot.</strong
+			>
+			The first comparison in 02 should examine how that tail can carry the
+			fitting while keeping the whole ship compact and angry, rather than
+			stretching it into another long Fighter.
+		</p>
+	</section>
+	<section aria-labelledby="exploration">
+		<h2 id="exploration">02 / Packing before hull refinement</h2>
+		<h3>02.1 / Cockpit first or deck first?</h3>
+		<p>
+			Both sketches use one compact triangular body and a short tail carrying
+			the aft fitting. Only the round cockpit and deck slot exchange positions.
+			A gives the ship a leading cockpit and crowded equipment behind it; B lets
+			the deck fitting lead and nestles the pilot among the engines. Hide the
+			mounts to inspect the underlying silhouette.
+		</p>
+		<ScoutPackingComparison />
+		<p>
+			E = required mirrored side engines · H = gun/utility · A =
+			engine/gun/utility. Footprints come from the current Scout’s production
+			mounts: 8 across × 10 fore–aft units. Counts and fitting identities are
+			real; positions, 26° side angles, round cockpit and hull are study
+			fixtures. The envelope is 59 units long and 34 wide, versus the Fighter’s
+			73 × 40, shown at equal scale below the alternatives. The tail is included
+			in that length; this is not a size comparison distorted by different zoom
+			levels.
+		</p>
+		<p>
+			The flat palette is shared with the Fighter; these are spatial sketches,
+			not finished facets. Dashed guides show rearward engine axes, not plume
+			widths. Empty footprints cannot establish installed-part clearance,
+			flight-scale readability, collision or handling. Those remain later
+			checks, after the arrangement gives us a useful hull direction.
+		</p>
+		<p>
+			Owner direction: carry A’s leading cockpit forward. The cockpit may
+			protrude beyond the hull, and the assembly should be more cramped. The
+			first comparison remains unchanged above; B is not carried forward.
+		</p>
+		<h3 id="six-compact-hulls">
+			02.2 / Six razor bodies around the light-bulb cockpit
+		</h3>
+		<p>
+			The protruding light-bulb cockpit works; the previous bodies do not. This
+			revision keeps that cockpit and replaces the blunt shoulders and square
+			tails with long flat facets, sharp swept edges and pointed sterns. Spikes
+			should grow out of the hull’s planes, not look like decorations attached
+			to a rounded body. The original six are
+			<a href="/lab/studies/archive/scout-firefly-rounded-bodies"
+				>preserved separately</a
+			>.
+		</p>
+		<ScoutAggressiveHulls />
+		<p>
+			01 and 04 test swept rearward blades; 02 tests forward fangs. 03 is the
+			cleanest counter-triangle, with 05 adding barbed shoulders and 06
+			narrowing the idea into a kite and diamond. Hide the footprints to judge
+			those edges. All six now hold the cockpit and all four mount positions
+			identical: radius 6 at (0,−21), H at (0,−7), E at (±10.5,2), A at (0,17),
+			side angles ±26°. Production Scout footprints remain 8 × 10 units. Every
+			card uses the same drawing scale; only hull and tail geometry change.
+		</p>
+		<p>
+			These remain study-only flat-surface sketches using the Fighter palette.
+			The protruding cockpit tests silhouette, not a new cockpit mechanic.
+			Installed parts, attachment details, exhaust clearance and actual flight
+			size still need review; empty boxes do not establish that every loadout
+			fits.
+		</p>
+		<p>
+			Owner review: 04 / Split knives is close, but its diamond tail feels
+			wrong. Carry the split knife body into a focused comparison of tail-less
+			sterns, alternative tails and heavier wings. This chooses a basis for
+			refinement, not a final hull.
+		</p>
+		<h3 id="split-knife-variations">
+			02.3 / Six ways to finish the Split knives
+		</h3>
+		<p>
+			Keep the light-bulb cockpit and the deep cuts that separate the body from
+			its swept blades. 01 removes the separate tail; 02 replaces the diamond
+			with a clipped stinger; 03 tries a shorter counter-triangle. 04 and 05
+			give the wings more armor, with and without a tail. 06 makes the blades
+			longer than the central stern, so the knives—not a hanging tail—finish the
+			silhouette.
+		</p>
+		<ScoutSplitKnifeVariants />
+		<p>
+			All six use the same scale, radius-6 cockpit, deck position and mirrored
+			side-engine positions/angles from 02.2. Mount footprints remain 8 × 10.
+			“No tail” means no separate appendage, not removal of the aft slot: A
+			moves into an integral stern. Its fore–aft position varies from 12 to 15
+			units to match its support; H and the engine pair do not move. These are
+			study-only drawings, not simulated or fitted production ships.
+		</p>
+		<p>
+			Hide the footprints to compare the wing weight and stern shapes, then show
+			them to inspect where A sits. A fitting footprint is not its complete part
+			or plume: barrel, nozzle and exhaust clearance, attachment details and
+			flight-size readability remain unverified. The original Split knives and
+			its diamond tail remain above as the reference.
+		</p>
+		<p>
+			Owner review: all six are worse than the original 02.2 / 04 Split knives.
+			None is carried forward. Exploration is paused to recover the intended
+			body character; the original remains the closest reference, not an
+			accepted final design. The light-bulb cockpit remains settled.
+		</p>
+		<p>
+			The original’s swept outline, proportions and feeling of speed are the
+			qualities to preserve, confirmed in discussion. The light-bulb cockpit
+			also stays. The failed variations treated wings and tails as
+			interchangeable appendages instead of preserving that coherent, fast
+			silhouette. The owner confirmed the tail problem: it reads as a separate
+			ornament hanging behind the ship. The next comparison should preserve the
+			original’s outline and proportions while testing a more integrated stern.
+		</p>
+		<h3 id="joined-stern">02.4 / One hull, not a pendant</h3>
+		<p>
+			A preserves the original 02.2 / 04 exactly. B fills out only the pinched
+			upper tail so it meets the central body at full width. The cockpit, wing
+			outline, widest part of the tail, tail tip and all mount positions are
+			identical. This isolates the attachment problem rather than redesigning
+			the whole ship again. Hide the mount footprints to judge the connection.
+		</p>
+		<ScoutJoinedStern />
+		<p>
+			Same-scale study sketches using the original palette and Scout mount
+			footprints. This tests visual continuity only; neither version establishes
+			installed-part or exhaust clearance, collision, or flight handling. B is a
+			hypothesis, not an accepted replacement.
+		</p>
+		<p>
+			This comparison did not advance the study: changing the neck was an
+			irrelevant detail, not meaningful ideation. The owner clarified that the
+			answer is unknown and the study should help discover it, not require a
+			sketch of a solution or refine a prematurely fixed hull.
+		</p>
+		<p>
+			<strong
+				>Reframe the next inquiry around distinct whole-ship concepts:</strong
+			>
+			how can a tightly packed Scout combine the light-bulb cockpit with a
+			slick, swept, aggressive body that feels fast? Original Split knives
+			supplies promising qualities, not frozen vertices, wing dimensions or
+			mount coordinates. Body, wings and stern may be conceived together; the
+			aft slot remains required, but a separate tail is not mandatory. Preserve
+			the cockpit character, compactness and four-slot complement while
+			exploring materially different spatial ideas. The original remains a
+			reference; the later refinements establish no accepted hull direction.
+		</p>
+		<h3 id="whole-ship-ideas">
+			02.5 / Six whole-ship ideas, not six tail edits
+		</h3>
+		<p>
+			Each sketch starts from a different way to organize the whole spacecraft:
+			a solid delta, a swept crescent, twin runners, a forward-loaded dart, a
+			barbed lifting body or an integrated trident. The light-bulb cockpit,
+			compact packing and four slots remain. Body, wing, stern and equipment
+			placement are open together. Split knives contributes sweep and speed, not
+			a frozen outline to decorate.
+		</p>
+		<ScoutWholeShipConcepts />
+		<p>
+			All six use the same scale, radius-6 cockpit and the production Scout’s 8
+			× 10 mount footprints. E is the mirrored side pair, H the deck fitting and
+			A the aft fitting—even when there is no separate tail. Mount positions and
+			side angles are proposals specific to each concept. The wider crescent
+			also tests whether width can convey sweep without making the ship feel
+			large. These are original flat-polygon study sketches using the Fighter’s
+			palette, not production rendering or simulated flight. Fitted-part and
+			exhaust clearance, attachment details and handling remain untested.
+		</p>
+		<p>
+			<strong
+				>Which ideas contain something worth pursuing, and what is it?</strong
+			>
+			There need not be one winner: we can carry a useful spatial idea from one
+			and a sense of speed from another. Hide the footprints to inspect the
+			whole silhouettes, then show them to judge the packing.
+		</p>
+		<p>
+			<strong>Owner acceptance: 02.5 / 06 Integrated trident.</strong>
+			The hull direction is approved: retain its exact flat facets, swept outer
+			knives, continuous pointed central keel and protruding round cockpit. Slot
+			positions and side angles are explicitly the next investigation, not
+			settled by that approval. Acceptance is not production integration.
+		</p>
+		<h3 id="trident-placement">02.6 / Fit the accepted trident</h3>
+		<p>
+			The enlarged hull below consumes the exact same reference geometry as 02.5
+			/ 06. Select the mirrored side pair, H or A, then move it with the
+			sliders; arrow keys work too. Side position, separation and angle change
+			together for the pair. H and A can move independently, including across
+			the centerline. Reset restores the original sketch’s coordinates.
+		</p>
+		<ScoutTridentPlacement client:load />
+		<p>
+			Start by inspecting the side pair: does it sit on the wing roots, and do
+			its rearward axes point clear of the outer knives? Then check H’s
+			separation from the cockpit and A’s support on the central keel. The
+			original sketch values were H (0,−7), A (0,11), sides (±11,0) at ±26°.
+			Reset preserves those hypotheses for comparison; the accepted screenshot
+			layout below is the workbench’s default.
+		</p>
+		<p>
+			This is a spatial workbench, not a flight trial. Nozzle guides reuse the
+			production extension, but engine surfaces, wide plumes and gun barrels are
+			not drawn. Slot overlap, hull overhang and nozzle/hull intersections are
+			allowed so problems remain visible; there is no automatic clearance
+			verdict. Position and angle will affect force and steering leverage in
+			production, so visual approval alone cannot settle handling. Use the
+			coordinate table or copyable JSON to share a candidate placement.
+		</p>
+		<p>
+			Screenshot candidate: the owner supplied a trial with the side pair at
+			(±6,−10.5), angles ±49°. Those values are visible and exact. H at
+			approximately (0,−1) and A at approximately (0,11.5) are reconstructed
+			from the image, not measured coordinates. “Load accepted screenshot
+			layout” preserves this placement alongside the original reset point. The
+			workbench now opens on that accepted layout.
+			<a href="/study-references/scout-trident-placement.png"
+				>Inspect the supplied screenshot.</a
+			>
+			The owner subsequently approved keeping this layout and requested parts 03
+			and 04. This settles the spatial direction, not flight clearance or exact
+			H/A measurements.
+		</p>
+		<p>
+			The forward pair now sits around the cockpit base, with the engine axes
+			diverging sharply away from the wings. At this tight spacing, the inner
+			mount corners overlap slightly, and the outer forward corners sit near the
+			cockpit collar. Those are relationships to check with installed parts; the
+			aft engine guide still runs over the keel tip.
+		</p>
+		<p>
+			<strong>Accepted reference:</strong>
+			exact 02.5 / 06 hull and cockpit, with the 02.6 supplied screenshot’s
+			forward side pair and compact axial H/A arrangement. Preserve the swept
+			outline, proportions, flat facets, feeling of speed and cramped cockpit
+			cluster. Installed-part fidelity and handling remain human-review
+			questions, not claims of this study.
+		</p>
+	</section>
+	<section aria-labelledby="readiness">
+		<h2 id="readiness">
+			03 / Feasible as a shared Scout alpha, with fitting risks
+		</h2>
+		<p>
+			The existing Scout already has the required mirrored engine pair, one deck
+			slot, one aft slot, mass 60 and version-1 saved builds. The shared
+			builder, production Canvas renderer, mounted plumes, energy model and
+			flight simulation are reusable. At this readiness assessment, Scout
+			selection was disabled and production still drew its generic hull. The
+			adaptations below describe what the delivery needed; the implemented
+			result is recorded at the end of 04. No dependency, backend or new
+			gameplay mechanic was needed for the alpha trial.
+		</p>
+		<h3>Adaptations required for a meaningful trial</h3>
+		<ul>
+			<li>
+				<strong>Shared Scout geometry.</strong>
+				Promote the exact accepted polygons, palette, black circular cockpit and
+				collar into a typed mode-a definition. Give the Scout explicit mounts
+				consumed by drawing, builder hit targets and nozzle emitters. Do not
+				substitute the rejected diamond-tail designs or silently enlarge the 8 ×
+				10 footprints.
+			</li>
+			<li>
+				<strong>Actual fitting conflicts.</strong>
+				The inner side footprints slightly overlap at ±6 and 49°, and approach
+				the cockpit collar. The pre-integration Scout rail barrel extended 18
+				units forward: at H near −1 it can cross the cockpit; from A near 11.5
+				it can cross H. These are concrete risks from the production renderer,
+				not cleared by empty boxes. Inspect every compatible fitting and the
+				paired selection targets. A fidelity review is required before calling
+				the delivered assembly resolved. If accommodation requires changing the
+				accepted silhouette or spatial relationships, return that bounded
+				conflict for review instead of silently moving the mounts.
+			</li>
+			<li>
+				<strong>Nozzle and plume treatment.</strong>
+				The aft nozzle at about 19.5 lies over the keel that ends at 29.
+				Establish how a deck-mounted engine and its exhaust read over that
+				surface; inspect the forward pair’s full plumes near the wings. An
+				explicit surface-mount treatment may suffice; cutting a channel or
+				changing the keel is not already approved. Axis guides alone do not
+				establish clearance.
+			</li>
+			<li>
+				<strong>Coordinate and response connection.</strong>
+				Convert study (across, aft) to production (−aft, across). Set sideX
+				10.5, arm 6, angle 49°, with opposite left/right signs. Existing
+				force/turning calculations consume these values; the signed lever 6
+				cos(49°) + 10.5 sin(49°) is positive, so the existing steering direction
+				can be retained. This is not a handling approval.
+			</li>
+			<li>
+				<strong>Collision coverage.</strong>
+				The pre-integration Scout returned a fixed 16-unit radius. Replace that
+				approximation with a conservative envelope including the new hull,
+				circular cockpit/collar, mounts, nozzles and relevant fitted-part
+				extents at the existing 0.65 drawing scale. A circle overestimates the
+				empty spaces between the knives; collision fairness remains a
+				flight-review limitation.
+			</li>
+		</ul>
+		<h3>Blockers versus provisional alpha values</h3>
+		<p>
+			Shared geometry, correct mounts/nozzles, collision coverage and re-enabled
+			selection are prerequisites for testing this design at all. Actual part
+			and exhaust inspection is a prerequisite for claiming a faithful assembly,
+			but can happen in the production-backed alpha rather than through another
+			gallery. H −1 and A 11.5 are sufficient reconstructed starting values; the
+			accepted relationships matter more than claiming screenshot precision.
+		</p>
+		<p>
+			Keep mass 60, current engine thrust, energy draw and speed limits. Use
+			gain 1 initially, not the Fighter’s unrelated 2.5× tuning. Document the
+			rotational length proxy explicitly: the cockpit collar gives a 27.8-unit
+			forward extent; the aft keel and wing tips must still contribute to
+			collision independently. Length remains a handling approximation, not a
+			physical moment of inertia. Turning responsiveness, barrel treatment,
+			plume readability and circular-collision fairness need human review.
+			Gravity, friction, scoring and shooting behavior remain unchanged.
+		</p>
+	</section>
+	<section aria-labelledby="integration">
+		<h2 id="integration">
+			04 / Promote the accepted reference into builder and flight
+		</h2>
+		<p>
+			<strong
+				>Plan recorded before implementation; delivery was subsequently
+				authorized by the owner’s “integrate it to the app, make it
+				playable.”</strong
+			>
+			The accepted reference is 02.5 / 06 plus the approved 02.6 screenshot
+			layout, preserved in
+			<code>scout-trident-reference.ts</code>
+			and the supplied image. The delivery record below distinguishes actual
+			implementation from this preserved plan and from deployment.
+		</p>
+		<ul>
+			<li>
+				Left/right side centers: study (−6,−10.5)/(6,−10.5), rotations
+				+49°/−49°; production (10.5,−6)/(10.5,6), angles +49°/−49°.
+			</li>
+			<li>
+				H: study (0,−1), production (1,0); A: study (0,11.5), production
+				(−11.5,0). Both are axial, angle 0. Their fore–aft coordinates remain
+				reconstructed implementation starting points.
+			</li>
+			<li>
+				Footprints: study 8 across × 10 fore–aft, production 10 × 8. Cockpit:
+				study (0,−21), black radius 6, collar radius 6.8. Preserve all six
+				accepted hull planes and their flat colors.
+			</li>
+		</ul>
+		<ol>
+			<li>
+				<strong>Define shared geometry first.</strong>
+				Add
+				<code>packages/mode-a/src/lib/scout.ts</code>
+				with converted polygons, cockpit/collar, explicit mounts and documented
+				length convention. Keep the study’s original reference independent so
+				later shared changes cannot erase the accepted evidence. Reuse existing
+				Zod loadout/chassis contracts; if a data shape must change, update its
+				schema before consumers. No save-schema change is currently needed.
+			</li>
+			<li>
+				<strong>Connect rendering and calculations.</strong>
+				Update
+				<code>build-renderer.ts</code>, <code>schemas/loadout.ts</code> and
+				collision coverage. Make mounts, hit targets and plume emitters consume
+				the same values. Reuse <code>build-flight.ts</code> and
+				<code>simulation.ts</code>; change only assumptions that prevent this
+				geometry from working. Keep the four-slot identities and indices.
+			</li>
+			<li>
+				<strong>Make the alpha inspectable.</strong>
+				Re-enable Scout in
+				<code>apps/web/src/components/ShipBuilder.svelte</code>
+				and remove its pending-design notice. Preserve the
+				<code>scout</code>
+				ID,
+				<code>void-drift-builds-v1</code>
+				storage and independent Fighter/Heavy builds. Keep stock scored ships
+				and custom unranked survival separate.
+			</li>
+			<li>
+				<strong>Review real assemblies before declaring fidelity.</strong>
+				Use <a href="/lab/builder">/lab/builder</a> as the canonical shared
+				renderer and test-flight destination, alongside <code>/builder</code>.
+				Inspect empty mounts, both engine types, every H/A part, paired guns,
+				cockpit separation, ambiguous hit targets and all-engine plumes. Keep
+				the original hull unchanged while exposing any fitting conflict. Seek a
+				narrow review if resolving a conflict would alter accepted geometry.
+			</li>
+			<li>
+				<strong>Test, document and hand back for play.</strong>
+				Add Scout coverage to loadout/build-flight tests and browser builder
+				tests: storage preservation, geometry and nozzle alignment, collision
+				envelope, left/right signs, mirrored cancellation, single/paired/aft
+				thrust, energy exhaustion and mixed-engine overspeed. Verify keyboard
+				selection and existing landscape flight touch controls. Update
+				<code>docs/design.md</code>
+				and <code>docs/specs/ship-builder.md</code>
+				with delivered behavior and known limits, then run
+				<code>pnpm verify</code>
+				and report each failed or unavailable gate. Human review separately
+				assesses speed, cramped character, fitted readability and handling.
+			</li>
+		</ol>
+		<p>
+			Sequence: shared Scout definition → mounts/renderer/collision and chassis
+			calculations → selection and canonical Lab assembly → fitting/flight
+			review and tests → authoritative documentation. Do not tune away the
+			accepted silhouette to disguise a handling problem. Mark integrated only
+			after actual implementation and verification; publishing needs separate
+			authorization.
+		</p>
+		<p>
+			<strong>Implemented locally.</strong>
+			The exact Trident hull and cockpit, approved side pair and reconstructed
+			H/A coordinates are now shared by the app builder, canonical Lab and real
+			flight systems. All three chassis are selectable; saved IDs and builds are
+			preserved. Scout’s legacy long gun graphics now use the same
+			mount-relative barrel treatment as Fighter and Heavy, clearing the cockpit
+			without changing slots or silhouette. The aft engine is a deck/surface
+			mount; no keel notch was added.
+		</p>
+		<p>
+			<a href="/builder?chassis=scout">Play the integrated Scout in the app</a>
+			or
+			<a href="/lab/builder?chassis=scout"
+				>inspect and fly the same Scout in the Lab</a
+			>. Targeted unit/browser checks exercised geometry, nozzles, collision,
+			fittings, save preservation, keyboard flight, reset/return and landscape
+			two-touch/cancel/blur. Full repository gate results are recorded
+			separately in <code>artifacts/verification/latest.json</code>. Human
+			fidelity, close-packed engine fit, plume/keel appearance and handling
+			review remain pending. This is not a push, deployment or release claim.
+		</p>
+		<p>
+			<a href="/lab/reviews/scout-firefly">Separate study-quality review</a>
+			records the ideation failures, recovery, acceptance and remaining evidence
+			gaps. It is not this feasibility assessment or an implementation gate.
+		</p>
+	</section>
+</StudyLayout>
+<style>
+code {
+	overflow-wrap: anywhere;
+}
+</style>

@@ -17,9 +17,9 @@ describe("approved cruiser", () => {
 		expect(
 			mounts.filter((m) => m.group === "aft").map((m) => [m.x, m.y]),
 		).toEqual([
-			[-37, -11],
-			[-30.5, 0],
-			[-37, 11],
+			[-34, -11],
+			[-27.5, 0],
+			[-34, 11],
 		]);
 	});
 	it("encloses mount corners and places exhaust behind each nozzle", () => {

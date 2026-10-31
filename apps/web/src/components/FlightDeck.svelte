@@ -54,6 +54,7 @@ let ticks = $state(0);
 let left = $state(false);
 let right = $state(false);
 let cause = $state("");
+let engineFeedback = $state("");
 let wraps = $state(0);
 let json = $state("");
 let message = $state("");
@@ -106,6 +107,7 @@ function frameCamera(snap = false) {
 	);
 }
 function sync() {
+	engineFeedback = simulation.engineFeedback;
 	status = simulation.state.status;
 	seconds = simulation.state.elapsedTime;
 	hull = simulation.state.resources.hull;
@@ -352,6 +354,9 @@ onMount(() => {
 					><strong class="time">{seconds.toFixed(1)}s</strong>
 				</div>
 			</div>
+			{#if loadout && engineFeedback}
+				<p class="engine-feedback">{engineFeedback}</p>
+			{/if}
 			{#if status === "MENU"}
 				<div
 					class="flight-overlay"
@@ -654,6 +659,15 @@ onMount(() => {
 </div>
 
 <style>
+.engine-feedback {
+	position: absolute;
+	bottom: 100px;
+	left: 16px;
+	right: 16px;
+	pointer-events: none;
+	color: var(--color-acid-lime);
+	font-size: 12px;
+}
 .build-nav {
 	display: flex;
 	align-items: center;

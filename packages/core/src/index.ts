@@ -8,6 +8,7 @@ export * from "./lib/config";
 export * from "./lib/debug/PerformanceMonitor";
 export * from "./lib/effects/damage-feedback";
 export * from "./lib/effects/engine-plume";
+export * from "./lib/effects/ion-beam";
 export * from "./lib/effects/particles";
 // Effects
 export * from "./lib/effects/screen-shake";

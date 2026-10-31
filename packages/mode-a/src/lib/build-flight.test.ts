@@ -91,13 +91,13 @@ describe("ship builder contract", () => {
 	});
 	it("mixed engines and repeated sideways thrust cannot exceed the fastest powered limit", () => {
 		const build = defaultLoadout("balanced");
-		build.aft = ["ion", "fission"];
+		build.aft = ["ion", "fusion"];
 		const a = ship();
 		for (let i = 0; i < 30000; i++) {
 			a.rotation = Math.atan2(a.vel.y, a.vel.x) + Math.PI / 3;
 			applyBuildEngines(a, build, both, 1 / 60, true);
 		}
-		expect(a.vel.mag()).toBeLessThanOrEqual(500.000001);
+		expect(a.vel.mag()).toBeLessThanOrEqual(550.000001);
 	});
 	it("ends survival at empty energy but keeps damaged/empty test flights running", () => {
 		const a = simulation();
@@ -163,7 +163,7 @@ it("preserves established gravity and overspeed coasting for assembled ships", (
 
 it("emits shared fading surfaces for every active installed engine", () => {
 	const loadout = defaultLoadout("tank");
-	loadout.aft = ["ion", "rail", "fission"];
+	loadout.aft = ["ion", "rail", "fusion"];
 	const sim = new Simulation({
 		...stockSettings("tank"),
 		loadout,
@@ -189,8 +189,8 @@ it("uses accepted mount geometry for propulsion, estimates, nozzles and collisio
 		[-12, 15],
 		[2, 0],
 		[-10, 0],
-		[-22, -5],
-		[-22, 5],
+		[-17, -5],
+		[-17, 5],
 	]);
 	const emitters = buildPlumeEmitters(build);
 	for (const [i, emitter] of emitters.entries()) {
@@ -199,15 +199,15 @@ it("uses accepted mount geometry for propulsion, estimates, nozzles and collisio
 			((26 * Math.PI) / 180) * (i === 0 ? 1 : -1),
 		);
 		expect(emitter.x / BUILD_FLIGHT_SCALE).toBeCloseTo(
-			mount.x - 10 * Math.cos(mount.angle),
+			mount.x - 12 * Math.cos(mount.angle),
 		);
 		expect(emitter.y / BUILD_FLIGHT_SCALE).toBeCloseTo(
-			mount.y - 10 * Math.sin(mount.angle),
+			mount.y - 12 * Math.sin(mount.angle),
 		);
 	}
 	const stats = buildStats(build);
-	expect((stats.turnRate * 180) / Math.PI).toBeCloseTo(96.59096, 3);
-	expect(stats.acceleration).toBeCloseTo(339.70169, 3);
+	expect((stats.turnRate * 180) / Math.PI).toBeCloseTo(193.18192, 3);
+	expect(stats.acceleration).toBeCloseTo(679.40338, 3);
 	const forward = ship();
 	applyBuildEngines(forward, build, both, 1 / 60, true);
 	expect(forward.vel.x * 60).toBeCloseTo(stats.acceleration);

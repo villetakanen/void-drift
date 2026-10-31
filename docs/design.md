@@ -101,8 +101,9 @@ that lesson at the end of the factory loop before changing standing skill guidan
 The accepted 02.9 clipped-tip Lance is now the shared custom Fighter in the designer
 and flight. Preserve its flat facets, black forward cockpit, stacked deck mounts,
 tight aft pair, and rotated side mounts. `/lab/builder` demonstrates the production
-renderer and test flight. Scout/Corvette designer selection is disabled pending
-resolved designs; their saved builds and stock profiles remain available internally.
+renderer and test flight. The original Fighter-only selection restriction has
+been superseded by the Heavy and Scout integrations below; saved builds and stock
+profiles remain intact.
 The ship-builder spec records geometry-derived turning and collision limitations;
 human fidelity and handling review remains pending.
 
@@ -114,6 +115,54 @@ for Heavy Corvette (`tank`). The shared `cruiser.ts` definition preserves the sl
 faceted hull, two black forward cockpit panes, axial deck fittings and triangular
 aft mounts. A small armored nose platform supports the bow fitting. `/lab/builder`
 demonstrates the real renderer and flight systems. Fighter and Heavy Corvette are
-selectable; Scout remains pending. The earlier Fighter-only statement is superseded.
+selectable; Scout is also enabled by the integration below. The earlier
+Fighter-only statement is superseded.
 Owner approval established the direction despite reservations about visual polish;
 human review of the delivered bow attachment and flight handling remains pending.
+
+## Scout silhouette
+
+The accepted 02.5 / 06 Integrated trident and 02.6 screenshot placement from
+`/lab/studies/scout-firefly` are implemented for the custom Scout. Preserve its six
+flat planes, swept knives, continuous pointed keel and black round light-bulb
+cockpit with its thin collar. The forward side pair stays tightly packed at ±49°;
+H and A remain axial. All three chassis are selectable, with version-1 saves intact.
+`/lab/builder?chassis=scout` is the canonical shared renderer and playable test flight;
+`/builder?chassis=scout` opens the same build in the app.
+
+The Scout now uses the same mount-relative weapon graphics as Fighter/Heavy instead
+of its legacy oversized barrels, keeping fittings clear of the cockpit. The accepted
+side footprints overlap slightly; their centers and keyboard targets remain distinct.
+Engines are surface/deck-mounted: the aft exhaust can overlay the pointed keel,
+without cutting away accepted hull geometry. Human review of close-packed fittings,
+plumes, circular collision and fast turning remains pending. Gravity, friction and
+stock scored ships are unchanged.
+
+## Builder slot language
+
+Accepted study: /lab/studies/ship-slot-language. Slot overlays appear only in the
+builder; flight shows the hull and equipped items. Shared compatibility distinguishes
+Engine E, Weapon W, Equipment Q (weapons/utilities), and Universal +. Occupancy
+determines inverse acid-lime/void-dark fill and border treatment, with linked
+secondaries non-selectable and using the same border color for their connectors.
+The ship-builder spec owns exact appearance and fitting rules; /lab/builder uses
+the production renderer. The preserved study reference documents accepted intent.
+
+
+## Ion effects — 0.4.1
+
+The accepted Light/Heavy comparison in `/lab/studies/ion-engines-2026-10-31#sizes`
+is promoted to the core ion beam painter. `/lab/ion-engines` compares the shared
+renderer with a frozen approved reference; `/lab/builder` uses it in fitted flight.
+Only `ion` and `heavy-ion` emit the new styles. Per-mark identity preserves mixed
+loadouts and already-emitted residue. Fusion, plasma and untyped legacy exhaust
+retain the generic painter.
+
+Light keeps mint-cyan; Heavy has a cooler blue-cyan halo and residue, 1.4× beam
+length and 1.45× width. Both keep the near-white core and transparent ends.
+Complete marks overlap, inherit 80% ship velocity with 45 units/s backward drift,
+and fade quadratically over 0.65 seconds. Rotation affects new emissions only.
+Engine bodies, thrust, limits, mass, energy, controls, gravity and friction are
+unchanged by this ion-effects integration. The accepted demo shares Light's
+motion/output across both variants solely for visual comparison; real fitted
+flight retains each engine's existing output behavior.

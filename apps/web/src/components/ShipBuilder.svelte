@@ -6,9 +6,14 @@ import {
 	CHASSIS,
 	defaultBuilds,
 	drawBuild,
+	ENGINE_ART,
+	engineArtId,
 	PARTS,
 	type PartId,
 	type ShipProfileId,
+	ShipProfileIdSchema,
+	SLOT_STYLE,
+	slotAccepts,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import { version } from "../../package.json";
@@ -25,21 +30,18 @@ let canvas = $state<HTMLCanvasElement>();
 const build = $derived(builds[chosen]);
 const stats = $derived(buildStats(build));
 const mounts = $derived(buildMounts(build));
+const previewScale = $derived(chosen === "tank" ? 4.5 : 5.2);
+const previewY = $derived(chosen === "tank" ? 270 : 325);
 const mount = $derived(
 	mounts.find((item) => item.key === selected) ?? mounts[0],
 );
 const compatible = $derived(
-	Object.values(PARTS).filter((part) =>
-		mount.group === "side"
-			? part.category === "E"
-			: mount.group === "hull"
-				? part.category !== "E"
-				: true,
-	),
+	Object.values(PARTS).filter((part) => slotAccepts(mount.type, part.category)),
 );
 onMount(() => {
 	try {
-		const saved = localStorage.getItem("void-drift-builds-v1");
+		localStorage.removeItem("void-drift-builds-v1");
+		const saved = localStorage.getItem("void-drift-builds-v2");
 		if (saved) {
 			const parsed = BuildStoreSchema.safeParse(JSON.parse(saved));
 			if (parsed.success) builds = parsed.data;
@@ -51,19 +53,37 @@ onMount(() => {
 		notice =
 			"Browser storage is unavailable or unreadable. You can still build and fly.";
 	}
+	const requested = ShipProfileIdSchema.safeParse(
+		new URL(window.location.href).searchParams.get("chassis"),
+	);
+	if (requested.success) choose(requested.data);
 	ready = true;
 });
 $effect(() => {
 	const context = canvas?.getContext("2d");
-	if (context) {
+	if (context && canvas) {
 		context.clearRect(0, 0, 600, 540);
-		drawBuild(context, build, 300, 325, -Math.PI / 2, 5.2, selected);
+		const style = getComputedStyle(canvas);
+		drawBuild(
+			context,
+			build,
+			300,
+			previewY,
+			-Math.PI / 2,
+			previewScale,
+			selected,
+			{
+				dark: style.getPropertyValue("--color-void").trim(),
+				lime: style.getPropertyValue("--color-acid-lime").trim(),
+				ivory: style.getPropertyValue("--color-text").trim(),
+			},
+		);
 	}
 });
 $effect(() => {
 	if (ready) {
 		try {
-			localStorage.setItem("void-drift-builds-v1", JSON.stringify(builds));
+			localStorage.setItem("void-drift-builds-v2", JSON.stringify(builds));
 		} catch {
 			notice =
 				"Storage is unavailable. Changes are kept until this page closes.";
@@ -71,12 +91,19 @@ $effect(() => {
 	}
 });
 function install(id: PartId | null) {
+	if (mount.linkedTo || (id && !slotAccepts(mount.type, PARTS[id].category)))
+		return;
 	if (mount.group === "side") {
-		if (id === "ion" || id === "fission") build.side = id;
+		if (
+			id === "ion" ||
+			id === "heavy-ion" ||
+			id === "fusion" ||
+			id === "plasma"
+		)
+			build.side = id;
 	} else build[mount.group][mount.index] = id;
 }
 function choose(id: ShipProfileId) {
-	if (id === "scout") return;
 	chosen = id;
 	selected = "left";
 }
@@ -116,8 +143,6 @@ function choose(id: ShipProfileId) {
 					class:btn-filled={chosen === id}
 					class:btn-ghost={chosen !== id}
 					aria-pressed={chosen === id}
-					disabled={id === "scout"}
-					aria-describedby={id === "scout" ? "pending-designs" : undefined}
 					onclick={() => choose(id as ShipProfileId)}
 				>
 					{chassis.name}<small
@@ -127,9 +152,6 @@ function choose(id: ShipProfileId) {
 				</button>
 			{/each}
 		</nav>
-		<p id="pending-designs">
-			Scout design is pending. Saved builds are retained.
-		</p>
 		<div class="workbench">
 			<section class="assembly" aria-label="Ship assembly">
 				<div class="panel-title">
@@ -148,18 +170,19 @@ function choose(id: ShipProfileId) {
 						<button
 							type="button"
 							class="mount"
-							class:selected={mount.key === slot.key}
-							style:left={`${(300 + slot.y * 5.2) / 6}%`}
-							style:top={`${(325 - slot.x * 5.2) / 5.4}%`}
-							style:width={`${(slot.width * 5.2) / 6}%`}
-							style:height={`${(slot.height * 5.2) / 5.4}%`}
-							style:transform={`translate(-50%, -50%) rotate(${slot.angle - Math.PI / 2}rad)`}
+							disabled={Boolean(slot.linkedTo)}
+							title={slot.linkedTo
+								? "Linked to the left engine slot; edit the pair there"
+								: slot.label}
+							style:left={`${(300 + slot.y * previewScale) / 6}%`}
+							style:top={`${(previewY - slot.x * previewScale) / 5.4}%`}
+							style:width={`${(((SLOT_STYLE.width + 2 * SLOT_STYLE.gap) / SLOT_STYLE.referenceScale) * previewScale) / 6}%`}
+							style:height={`${(((SLOT_STYLE.height + 2 * SLOT_STYLE.gap) / SLOT_STYLE.referenceScale) * previewScale) / 5.4}%`}
+							style:transform={`translate(-50%, -50%) rotate(${slot.angle}rad)`}
 							aria-label={`${slot.label}: ${slot.part ? PARTS[slot.part].name : "Empty"}`}
 							aria-pressed={mount.key === slot.key}
 							onclick={() => (selected = slot.key)}
-						>
-							<span>{slot.part ? PARTS[slot.part].category : "+"}</span>
-						</button>
+						></button>
 					{/each}
 				</div>
 				<p class="assembly-note">
@@ -185,6 +208,28 @@ function choose(id: ShipProfileId) {
 							aria-pressed={mount.part === part.id}
 							onclick={() => install(part.id)}
 						>
+							{#if part.category === "E"}
+								<svg
+									viewBox="-18 -20 36 40"
+									width="72"
+									height="56"
+									aria-hidden="true"
+									style:color={part.id === "fusion"
+										? "#c6ff32"
+										: part.id === "plasma"
+											? "#ffb52e"
+											: "#29baff"}
+								>
+									<g transform="rotate(-90)">
+										{#each ENGINE_ART[engineArtId(part.id)][0] as face}
+											<polygon
+												points={face.points.map((p) => p.join(",")).join(" ")}
+												fill={face.color}
+											/>
+										{/each}
+									</g>
+								</svg>
+							{/if}
 							<span class="part-name"
 								>{part.name}<small
 									>{mount.part === part.id ? "FITTED" : part.category}</small
@@ -198,7 +243,7 @@ function choose(id: ShipProfileId) {
 							>
 							<small
 								>{part.category === "E"
-									? `${part.thrust.toLocaleString()} thrust · ${part.limit} speed limit`
+									? `${part.thrust.toLocaleString()} thrust · ${part.limit} powered ceiling · ${part.response === "pulse" ? "0.18s pulse / 0.45s cycle" : part.response === "delayed" ? "0.6s charge, then sustained" : "Immediate / steady"}`
 									: part.id === "battery"
 										? "+100 energy capacity"
 										: part.id === "coil"
@@ -256,7 +301,7 @@ function choose(id: ShipProfileId) {
 						<dd>{stats.fullEndurance.toFixed(1)} s</dd>
 					</div>
 					<div>
-						<dt>Forward acceleration³</dt>
+						<dt>Peak forward acceleration³</dt>
 						<dd>{stats.acceleration.toFixed(1)}</dd>
 					</div>
 					<div>
@@ -421,25 +466,12 @@ canvas {
 }
 .mount {
 	position: absolute;
-	transform: translate(-50%, -50%);
-	width: 42px;
-	height: 42px;
-	border: 1px dashed var(--color-resource-hull);
+	border: 0;
 	background: transparent;
-	color: var(--color-text);
 	cursor: pointer;
 }
-.mount span {
-	position: absolute;
-	right: -6px;
-	bottom: -9px;
-	background: var(--color-void-light);
-	font-size: 10px;
-	padding: 2px 4px;
-}
-.mount.selected {
-	border: 2px solid var(--color-acid-lime);
-	background: transparent;
+.mount:disabled {
+	cursor: default;
 }
 .mount:hover {
 	background: transparent;

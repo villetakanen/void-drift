@@ -1,6 +1,7 @@
 export * from "./lib/build-flight";
 export * from "./lib/build-renderer";
 export * from "./lib/config";
+export * from "./lib/engine-art";
 export * from "./lib/firebase";
 export * from "./lib/game-loop";
 export * from "./lib/schemas/flight";

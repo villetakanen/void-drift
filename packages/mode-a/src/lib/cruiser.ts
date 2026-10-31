@@ -17,9 +17,9 @@ const outline: Point[] = [
 /** Approved Long bevel 08, converted from the study's bow-up coordinates. */
 export const CRUISER = {
 	length: 51,
-	arm: 13,
+	arm: 12,
 	sideX: 22.5,
-	angle: 34,
+	angle: 39,
 	hullMounts: [45.5, 0.5, -12.5],
 	aftMounts: [
 		[-37, -11],
@@ -82,16 +82,6 @@ export const CRUISER = {
 					[0, -25],
 				],
 				color: FIGHTER.facets[5],
-			},
-			// Small armored bow platform supports H1 without moving the cockpit.
-			{
-				points: [
-					[-5.5, -51],
-					[5.5, -51],
-					[6, -40],
-					[-6, -40],
-				],
-				color: FIGHTER.facets[2],
 			},
 			{
 				points: [

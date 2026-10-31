@@ -10,6 +10,38 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
 	{
+		slug: "ion-engines-2026-10-31",
+		title: "Ion engines: precise, decisive, reliable",
+		status: "integrated",
+		phase: "integration",
+		question:
+			"How should Light and Heavy ion engines share a precise visual language?",
+	},
+	{
+		slug: "engine-identities",
+		title: "Engines: types and low-poly identities",
+		status: "integrated",
+		phase: "integration",
+		question:
+			"How can low-poly engine bodies express families, subtypes and architectural tradeoffs, both in the catalog and fitted to a ship?",
+	},
+	{
+		slug: "ship-slot-language",
+		title: "Ship slots: mounts, contents and intent",
+		status: "integrated",
+		phase: "integration",
+		question:
+			"How should a slot show what fits, what is installed and what the player can do while keeping the ship readable?",
+	},
+	{
+		slug: "scout-firefly",
+		title: "Scout: an angry little firefly",
+		status: "integrated",
+		phase: "integration",
+		question:
+			"How can a compact, tightly fitted Scout read as an angry little spacecraft rather than a miniature paper-plane Fighter?",
+	},
+	{
 		slug: "heavy-cruiser-slots",
 		title: "Heavy cruiser: slots into silhouette",
 		status: "integrated",

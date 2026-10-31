@@ -22,7 +22,7 @@ import {
 	ReplaySchema,
 } from "./schemas/flight";
 import { createInitialGameState } from "./schemas/game-state";
-import { buildStats } from "./schemas/loadout";
+import { buildStats, PARTS } from "./schemas/loadout";
 import type { ShipProfileId } from "./schemas/ship-profile";
 
 export const STEP = 1 / 60;
@@ -55,6 +55,7 @@ export class Simulation {
 	readonly plume = new EnginePlume();
 	engineOutput = { left: 0, right: 0, aft: [] as number[] };
 	private readonly buildEmitters;
+	private readonly engineTimers: Record<string, number> = {};
 	ticks = 0;
 	wraps = 0;
 	private thrust = { left: false, right: false };
@@ -90,6 +91,26 @@ export class Simulation {
 			this.star.radius = 12;
 			this.ship.pos.set(820, 540);
 		}
+	}
+	get engineFeedback() {
+		const build = this.settings.loadout;
+		if (!build) return "";
+		return Object.entries(this.engineTimers)
+			.filter(([, time]) => time > 0)
+			.map(([key, time]) => {
+				const id = key.startsWith("aft-")
+					? build.aft[Number(key.slice(4))]
+					: build.side;
+				if (!id) return "";
+				const part = PARTS[id];
+				if (part.response === "delayed" && time < part.chargeSeconds)
+					return `${key}: charging ${Math.floor((time / part.chargeSeconds) * 100)}%`;
+				if (part.response === "pulse")
+					return `${key}: ${time % part.pulsePeriod < part.pulseOn ? "pulse" : "recovering"}`;
+				return `${key}: firing`;
+			})
+			.filter(Boolean)
+			.join(" · ");
 	}
 	start() {
 		this.state.status = "PLAYING";
@@ -128,8 +149,10 @@ export class Simulation {
 					this.ship,
 					this.settings.loadout,
 					input,
-					(STEP / 4) * engineFraction,
+					STEP / 4,
 					engineFraction > 0,
+					this.engineTimers,
+					engineFraction,
 				);
 			}
 			delivered += updateShip(
@@ -170,7 +193,7 @@ export class Simulation {
 				this.engineOutput.right,
 				...this.engineOutput.aft.filter((_, index) => {
 					const id = this.settings.loadout?.aft[index];
-					return id === "ion" || id === "fission";
+					return !!id && PARTS[id].category === "E";
 				}),
 			];
 			for (const [index, emitter] of this.buildEmitters.entries())

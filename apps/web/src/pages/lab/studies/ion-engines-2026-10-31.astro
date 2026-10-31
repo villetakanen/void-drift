@@ -1,0 +1,273 @@
+---
+import IonFxAccepted023 from "../../../components/studies/IonFxAccepted023.svelte";
+import IonSizeComparison from "../../../components/studies/IonSizeComparison.svelte";
+import IonStreamStudy from "../../../components/studies/IonStreamStudy.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((entry) => entry.slug === "ion-engines-2026-10-31");
+---
+
+<StudyLayout study={study}>
+	<section aria-labelledby="problem">
+		<h2 id="problem">01 / A precise ion visual language</h2>
+		<p>
+			Ion is the dependable baseline engine: a narrow, strongly directed stream
+			and a clear start and stop. This study now focuses on how Light and Heavy
+			ion engines express that character through their bodies and effects.
+		</p>
+		<p>
+			The shared effects language uses luminous surfaces, gradients, glow and
+			overlap. Complete beam marks accumulate at the nozzle, drift in world
+			space, and fade after emission stops. The established ion color and the
+			accepted treatment in 02.3 anchor this comparison.
+		</p>
+		<p>
+			The original joint investigation of propulsion and appearance has pivoted
+			to visuals only. Flight behavior remains unresolved and outside the
+			current scope; the examples use motion only to reveal the effects.
+		</p>
+	</section>
+	<section aria-labelledby="exploration">
+		<h2 id="exploration">02 / The engine in use</h2>
+		<h3>02.1 / A narrow stream made of luminous surfaces</h3>
+		<p>
+			The first candidate concentrates the shared plume into a slender stream: a
+			bright center surrounded by soft colored edges, with overlapping surfaces
+			that stretch, drift and dissolve. Each nozzle has one directed emission.
+			During a turn, earlier exhaust keeps its place in the world while new
+			emission follows the engine. On release, fresh emission stops immediately
+			and the remaining light completes its fade.
+		</p>
+		<IonStreamStudy client:load />
+		<p>
+			The synchronized views isolate one proposal: compress surface width to 24%
+			of the current plume, retaining its length, palette, glow and 0.65-second
+			lifetime. Look at the stream’s connection to the nozzle, the separation
+			between two active engines, and the residue left during the turn. The
+			current output-driven sizing is retained, so the stream also contracts as
+			acceleration diminishes. These proportions are exploratory.
+		</p>
+		<p>
+			This fixture uses the production Fighter, a Small ion side pair, empty
+			optional mounts, real mount geometry, engine impulses, energy costs and
+			shared effect lifecycle. It starts at rest with full energy. Gravity,
+			charging and arena wrapping are omitted to isolate propulsion; the camera
+			and enlarged scale are study fixtures. This comparison examines appearance
+			in motion, not final handling, low-power behavior or gameplay-scale
+			clarity.
+		</p>
+		<h3 id="linear">02.2 / Parallel light, not a flare</h3>
+		<p>
+			The first comparison moved in the right direction, but its expanding,
+			tapered silhouette still reads as a plume. The refined direction is closer
+			to a lightsaber: a very straight beam with parallel sides, a bright core
+			and a compact colored halo. Precision comes from a stable width and clear
+			axis, rather than a narrow version of a cone.
+		</p>
+		<IonStreamStudy linear label="Linear ion beam comparison" client:load />
+		<p>
+			The earlier compressed plume remains on the left. On the right, a filled
+			light surface follows each active nozzle, with a rounded end and the same
+			effect palette. Output changes its length while its width stays constant.
+			The shared drifting surfaces remain as a faint wake, subordinate to the
+			beam instead of building a widening flare. The flight sequence and
+			physical conditions are unchanged from 02.1.
+		</p>
+		<p>
+			This version separated active light from residual exhaust: release cuts
+			the attached beam immediately while a faint wake finishes fading. Review
+			identified that split as contrary to the intended single effects language.
+			It is preserved here to make the correction in 02.3 inspectable.
+		</p>
+		<h3 id="fx">02.3 / The beam itself leaves a fading impression</h3>
+		<p>
+			Ion’s straight shape belongs inside the shared effects system. Each
+			simulation step deposits a complete luminous beam mark at the nozzle.
+			Successive marks overlap into the active stream; every mark then moves and
+			fades in world space. Releasing the engine stops new marks, leaving the
+			whole visible effect to finish fading. There is no separate attached beam
+			that disappears on release.
+		</p>
+		<IonFxAccepted023 fx label="Ion FX lifecycle comparison" client:load />
+		<p>
+			Both views now include one Small ion aft engine alongside the side pair.
+			All three beams keep straight sides and fade to transparency toward their
+			ends, including the core and halo. The aft engine uses its real mount,
+			thrust, mass and energy draw; it fires with the side pair and cuts out
+			during the single-engine turn.
+		</p>
+		<p>
+			Both views use the same updated mark and flight sequence. The first
+			retains 02.2’s attached-beam method; the second routes all its light
+			through the production effect’s emission history, motion and 0.65-second
+			fade. Shape is the study variation. The bright core, colored halo and
+			residue now share one lifecycle, accumulating like a luminous impression
+			that gradually clears.
+		</p>
+		<p>
+			<strong>Visuals accepted · 31 October 2026.</strong>
+			The approved reference is the second view, “02.3 · beam marks in the
+			shared FX system,” with one aft ion engine and the side pair. Acceptance
+			covers the complete emitted beam marks, established palette, bright core
+			and halo, transparent ends, overlapping world-space light and its fade
+			after release. The resulting appearance matches the intended visual
+			experience, including the spread of earlier emissions. The attached-beam
+			comparison is not the selected result.
+		</p>
+		<p>
+			This accepted example is preserved unchanged as the visual reference. Its
+			visual reference uses a 0.65-second lifetime, 80% inherited velocity, 45
+			units/s backward drift and a quadratic fade. The pictured acceleration,
+			speed ceiling, steering, power costs and control coupling are not approved
+			mechanics. Visual acceptance is separate from production integration.
+		</p>
+		<h3 id="sizes">02.4 / Light and Heavy, one visual family</h3>
+		<p>
+			<strong>Pivot · visuals only · 31 October 2026.</strong>
+			The propulsion and movement investigations after 02.3 were withdrawn:
+			their growing complexity was not advancing the study. The accepted 02.3
+			visuals remain the reference. Thrust, speed ceilings, mass, power and
+			handling are deferred.
+		</p>
+		<p>
+			Light keeps the accepted slender beam. Heavy pairs its established deeper
+			casing with a longer, slightly broader stream and a subtle cooler
+			blue-cyan tint. Light retains its approved mint-cyan. Both share a
+			near-white core, one precise axis and a transparent end, emitting complete
+			marks into the shared FX layer.
+		</p>
+		<IonSizeComparison client:load />
+		<p>
+			<strong>Accepted · 31 October 2026.</strong>
+			Light and Heavy beam proportions, their subtle color difference, rotation
+			and shared fading FX treatment are approved. Integration is limited to
+			these two ion variants.
+		</p>
+		<p>
+			Both Fighters use their real engine bodies and nozzle positions, with a
+			side pair and one aft engine. Light is the existing Small ion. Heavy’s
+			accepted beam is 1.4× as long and 1.45× as wide. Its colored halo and
+			fading marks shift toward blue-cyan; opacity, core color and fade lifetime
+			stay unchanged. Both views replay the motion, turn and output history from
+			accepted 02.3, preserving how its marks overlap and fade. Heavy follows
+			that same reference sequence to isolate appearance, not predict
+			performance.
+		</p>
+	</section>
+	<section aria-labelledby="readiness">
+		<h2 id="readiness">03 / Ready for an ion-only visual integration</h2>
+		<p>
+			<strong>Approved · 31 October 2026.</strong>
+			The Light and Heavy comparison in 02.4 is the accepted result, built on
+			the emitted beam marks from 02.3. Light retains mint-cyan; Heavy uses the
+			cooler blue-cyan tint and a beam 1.4× as long and 1.45× as wide. Both keep
+			the near-white core, transparent ends, overlap, world-space drift and
+			fade. Rotation must leave earlier emissions behind rather than rotating
+			the accumulated effect with the ship.
+		</p>
+		<p>
+			The current Canvas renderer, real nozzle geometry and shared EnginePlume
+			lifecycle already support the result. The study supplies the beam painter;
+			production still uses the generic plume painter. Integration is feasible
+			without new dependencies or a second effects layer.
+		</p>
+		<p>
+			The necessary adaptation is per-emission visual identity. Emitters and
+			their stored marks currently carry geometry and output, but no engine
+			style. Each new mark must retain its style so mixed loadouts and fading
+			residue render correctly. Selecting a painter for the whole ship would
+			incorrectly change other engines.
+		</p>
+		<p>
+			<strong
+				>Scope: only Small ion (Light, <code>ion</code>) and Heavy ion (<code
+					>heavy-ion</code
+				>).</strong
+			>
+			Fusion, plasma and untyped legacy exhaust retain their existing appearance
+			and behavior. Engine bodies and mounts are already shared and need no
+			redesign. Thrust, speed limits, mass, power, controls, gravity and
+			friction are outside this integration.
+		</p>
+		<p>
+			The accepted sequence establishes visual fidelity, not Heavy’s handling:
+			both views deliberately use Light’s motion and output history. Production
+			must retain each engine’s existing output calculation. The earlier failure
+			with constant speed and full output shows why the accepted replay must
+			remain a comparison reference. Gameplay-scale clarity and mixed-loadout
+			fidelity still need inspection during integration; they do not reopen
+			propulsion design.
+		</p>
+	</section>
+	<section aria-labelledby="integration">
+		<h2 id="integration">
+			04 / Promote the beam marks, preserve other engines
+		</h2>
+		<p>
+			The plan below is now implemented locally. The shared painter is used in
+			fitted flight and the <a href="/lab/ion-engines">canonical ion FX Lab</a>,
+			which also retains the frozen approved reference. Release verification and
+			publication are tracked separately.
+		</p>
+		<ol>
+			<li>
+				<strong>Preserve the reference.</strong>
+				Keep 02.3 and the approved 02.4 palette, proportions, motion and output
+				sequence inspectable. Capture forward flight, rotation and release at
+				fixed simulation ticks before switching the live example to shared
+				definitions.
+			</li>
+			<li>
+				<strong>Define the two ion styles in core.</strong>
+				Promote the study’s filled beam painter and named palette/proportion
+				definitions from <code>IonSizeComparison.svelte</code> into the core
+				effects module. Retain the existing generic painter as the default.
+				Define the style schema/type before extending emitter and stored-mark
+				contracts; core must not depend on Mode A’s part catalog.
+			</li>
+			<li>
+				<strong>Assign styles per nozzle.</strong>
+				In
+				<code>mode-a/lib/build-renderer.ts</code>, map only <code>ion</code> and
+				<code>heavy-ion</code>
+				to their new styles in <code>buildPlumeEmitters</code>. In
+				<code>core/lib/effects/engine-plume.ts</code>, copy that identity into
+				each emitted mark and select its painter at draw time. Missing identity,
+				fusion and plasma continue through the original painter. Keep the shared
+				lifetime, drift, capacity and output sizing intact.
+			</li>
+			<li>
+				<strong>Use the existing game path.</strong>
+				Keep Simulation’s emission and FlightDeck’s effects draw connected to
+				the same shared system. Update the canonical flight/builder Lab to
+				demonstrate Light, Heavy and a mixed ion/non-ion loadout. Preserve
+				existing physics and power delivery, including Heavy’s actual output in
+				gameplay.
+			</li>
+			<li>
+				<strong>Document and verify.</strong>
+				Record the accepted ion-only visual rules in
+				<code>docs/design.md</code>
+				and the relevant ship-builder specification when delivered. Verify
+				per-mark style retention, default fallback and mixed-engine isolation,
+				then run repository gates. Mark this study integrated only after
+				implementation and fidelity review.
+			</li>
+		</ol>
+		<p>
+			Visual review must compare the shared painter against the frozen accepted
+			sequence at the same ticks, scale, camera and output: forward thrust, the
+			four-second turn, shutdown at 5.25 seconds and the remaining fade. Check
+			Light and Heavy separately, then together with fusion or plasma. Non-ion
+			frames must match their pre-change baseline; changing a loadout or
+			stopping an engine must not recolor marks already emitted.
+		</p>
+		<p>
+			Inspect the result at gameplay zoom on Fighter, Scout and Heavy Corvette,
+			including close mounts, low output and release. Any necessary visual
+			tuning returns for review against the approved reference. No propulsion
+			tuning or changes to other engine families are included.
+		</p>
+	</section>
+</StudyLayout>
