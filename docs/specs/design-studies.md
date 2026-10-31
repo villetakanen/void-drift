@@ -88,7 +88,7 @@ Start with exactly one substantive numbered section and an unfilled next section
 Section 01 makes the subject understandable: explain relevant situations, why they
 matter, and the tension or uncertainty worth studying. Contribute actual design
 reasoning rather than narrating the request or agent actions. Ask a focused question
-for designer judgment within that discussion when needed. Do not populate future
+for designer judgment in chat when needed. Do not populate future
 alternatives, recommendations, integration plans, readiness tables, or history panels.
 
 For a broad subject, propose one design decision this cycle can settle and name
@@ -97,18 +97,17 @@ do not require the designer to decompose the topic first.
 
 Keep the first explanation brief: normally two or three short paragraphs, or a
 short introduction and a compact list of purposes. Aim for roughly 150–250 words
-including the invitation; this is an editing target, not a quota or reason to omit
+excluding the chat invitation; this is an editing target, not a quota or reason to omit
 essential meaning. Defer implementation inventories and secondary qualifications.
 Use one concrete situation to make the central tension understandable.
 
-End the current section with one clearly visible invitation to respond to the
-reasoning presented, followed by what that response enables next. For example,
-ask whether the described purpose captures the intended experience and what is
-missing, then explain the encounter or comparison that will follow. Put that same
-invitation in the chat handoff without repeating the whole page. Do not ask the
-designer to choose an unresolved mechanic merely to unlock the study; optional
-versus necessary gameplay roles may themselves need investigation. A focused
-invitation is a substantive design question, not a generic approval checkpoint.
+Keep the page as shared design documentation: explain the design, alternatives,
+decisions, and reasons. Put review questions and coordination in chat, with one
+focused invitation and the next step it enables. Page text should stand on its own
+for a teammate outside the conversation. Avoid agent/owner delivery narration;
+label historical conditions and link run-specific evidence instead of presenting
+old check results as current status. Necessary control labels remain on the page.
+Do not ask the designer to settle an uninvestigated mechanic merely to unlock work.
 
 The shared StudyLayout supplies readable paragraph spacing and a bounded prose
 width. Keep diagrams and interactive comparisons free to use the wider canvas.
@@ -143,7 +142,7 @@ Before presenting the initial page, inspect source and rendered output:
 - Content is grounded in this cycle and established reality, not inherited proposals.
 - Reasoning appears on the page; process vocabulary and attribution do not dominate.
 - The opening is brief, paragraphs are visibly separated, and lines are easy to read.
-- One visible invitation makes the next contribution and its consequence clear;
+- The chat handoff makes the next contribution and its consequence clear;
   it does not demand an answer the study is meant to investigate.
 
 Record rendering correctness separately from the designer's judgment of usefulness
@@ -168,7 +167,7 @@ Define the real objects consumed, relevant starting conditions, and controlled v
 reuse established systems where appropriate and label any fixture departures.
 
 Put the example in the active numbered section with a brief explanation of what to
-notice and one review question grounded in what is visible or usable. Deliver it in
+notice and its limits. Put one review question grounded in the example in chat. Deliver it in
 the same exploration round rather than ending with a promise to build it. If a real
 blocker prevents delivery, report the blocker and keep the investigation incomplete;
 do not substitute a prose-only preference interview or claim exploration is delivered.
@@ -221,7 +220,10 @@ Completing that result does not complete the unresolved scope of the original br
 When a visual example is accepted, identify its exact variant and the properties
 the designer settled. Carry that reference into the integration plan alongside
 anything still provisional. Acceptance of a lifecycle, for example, need not settle
-its final visual tuning.
+its final visual tuning. For motion, preserve the initial conditions, input/tick
+sequence, seed (or absence of randomness), and camera as part of the reference.
+Compare integration at representative firing, turning, and release/fade moments;
+a matching still frame alone does not establish fidelity through motion.
 
 ## Study-quality evaluation — separate from readiness
 

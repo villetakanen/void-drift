@@ -35,7 +35,8 @@ Keep a compact record another session can inspect without the full conversation:
 - Evidence gaps, including missing artifacts, temporary paths and retention limits.
 
 Summarize essential results in the tracked record; link large artifacts rather than
-copying them wholesale. Never include credentials, sign-in codes or secret environment
+copying them wholesale. Link verification reports and logs from their specific
+run directory, not the mutable latest.json convenience copy. Never include credentials, sign-in codes or secret environment
 values. Dates and revisions should make clear which observation belongs to which run.
 
 ## Interpretation boundary

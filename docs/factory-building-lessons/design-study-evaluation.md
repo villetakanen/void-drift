@@ -14,7 +14,7 @@ are not required reading. The scripted comparisons below remain optional future 
 
 Review the first page for one substantive numbered section 01 and an unfilled section
 02. Human review must assess explanation and progressive form separately from rendering.
-Check that the opening is short, has readable paragraph spacing, and ends with one
+Check that the opening is short, has readable paragraph spacing, and has a chat handoff with one
 clear invitation plus the next step it enables. Treat asking the designer to settle
 an uninvestigated mechanic as a warning sign, not automatic progress.
 Later feedback must update the page, and the next section should develop only after

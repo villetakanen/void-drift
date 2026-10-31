@@ -1,6 +1,12 @@
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+	mkdirSync,
+	mkdtempSync,
+	readFileSync,
+	renameSync,
+	writeFileSync,
+} from "node:fs";
 
 function git(...args) {
 	const result = spawnSync("git", args, { encoding: "utf8" });
@@ -32,8 +38,11 @@ function fingerprint() {
 	return hash.digest("hex");
 }
 
-const directory = "artifacts/verification";
-mkdirSync(directory, { recursive: true });
+const root = "artifacts/verification";
+mkdirSync(root, { recursive: true });
+const directory = mkdtempSync(
+	`${root}/${new Date().toISOString().replaceAll(":", "-")}-`,
+);
 const report = {
 	startedAt: new Date().toISOString(),
 	revision: git("rev-parse", "HEAD"),
@@ -85,11 +94,13 @@ report.sourceUnchanged = fingerprint() === report.sourceFingerprint;
 report.passed =
 	report.sourceUnchanged &&
 	report.steps.every((step) => step.status === "passed");
-writeFileSync(
-	`${directory}/latest.json`,
-	`${JSON.stringify(report, null, 2)}\n`,
-);
+const serialized = `${JSON.stringify(report, null, 2)}\n`;
+writeFileSync(`${directory}/report.json`, serialized);
+// Atomic convenience copy; each completed run retains its own report and logs.
+const latestTemporary = `${directory}/latest.tmp`;
+writeFileSync(latestTemporary, serialized);
+renameSync(latestTemporary, `${root}/latest.json`);
 console.log(
-	`Verification ${report.passed ? "PASSED" : "FAILED"}. Evidence: ${directory}/latest.json`,
+	`Verification ${report.passed ? "PASSED" : "FAILED"}. Evidence: ${directory}/report.json`,
 );
 process.exitCode = report.passed ? 0 : 1;

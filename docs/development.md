@@ -38,8 +38,12 @@ Browser tests own ports 4322/4323; emulators use 8080/9099. Offline browser test
 blank live configuration and block external requests. Competition uses `demo-void-drift`,
 never the live project. GitHub Actions runs these same gates with Java 21 and Chromium.
 
-`artifacts/verification/latest.json` records revision, dirty state, source fingerprint,
-environment, commands and logs. Ignored reports/traces/screenshots remain inspectable
+`artifacts/verification/<timestamp>-<unique-suffix>/report.json` records revision,
+dirty state, source fingerprint, environment, commands and run-local log paths.
+Every invocation gets a new directory, including failed runs; later runs do not
+overwrite earlier reports or logs. `latest.json` is an atomic convenience copy of
+the last completed report. Link the specific run from closure records. These ignored
+local artifacts are not a durable backup; retain essential outcomes in tracked notes. Ignored reports/traces/screenshots remain inspectable
 with `pnpm exec playwright show-report`. A later source change invalidates evidence.
 Commit identity and deployment identity are separate from passing working-tree checks.
 

@@ -49,6 +49,14 @@ function reset() {
 	timers = {};
 	plumes = variants.map(() => new EnginePlume());
 }
+// Inspection controls replay the existing sequence without wall-clock timing.
+function seek(target: number) {
+	playing = false;
+	reset();
+	for (let i = 0; i < target; i++) advance();
+	render(lightCanvas, 0);
+	render(heavyCanvas, 1);
+}
 function advance() {
 	if (ticks >= 420) {
 		playing = false;
@@ -148,7 +156,7 @@ onMount(() => {
 	};
 });
 </script>
-<section class="comparison" aria-label={label}>
+<section class="comparison" aria-label={label} data-tick={ticks}>
 	<div class="views">
 		<figure>
 			<figcaption>Light ion · accepted beam</figcaption>
@@ -177,6 +185,18 @@ onMount(() => {
 				: "On · emitting beam marks"}
 	</p>
 	<div class="controls">
+		<button type="button" class="btn btn-ghost" onclick={() => seek(45)}>
+			Firing · 0.75 s
+		</button>
+		<button type="button" class="btn btn-ghost" onclick={() => seek(270)}>
+			Turning · 4.5 s
+		</button>
+		<button type="button" class="btn btn-ghost" onclick={() => seek(330)}>
+			Released · 5.5 s
+		</button>
+		<button type="button" class="btn btn-ghost" onclick={() => seek(360)}>
+			Faded · 6 s
+		</button>
 		<button
 			type="button"
 			class="btn btn-primary"

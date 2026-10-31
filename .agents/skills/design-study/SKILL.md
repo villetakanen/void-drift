@@ -48,7 +48,7 @@ alternatives, research summaries, and plans to build later are insufficient. Use
 sketch, sequence, interactive composition, or repeatable simulation suited to the claim;
 do not ask the designer to choose between experiences they must merely imagine.
 Define consumed objects and conditions. Keep prose brief: what to notice, limitations,
-and one question grounded in the example. Follow the specification's exploration-entry
+and the uncertainty the example addresses. Put the review question in chat. Follow the specification's exploration-entry
 checks. Report actual blockers as incomplete work; explicit requests for conceptual
 discussion override this default. Do not overbuild a final solution to provide evidence.
 
@@ -69,7 +69,9 @@ Keep the remaining scope explicit and honor a direction to continue exploration.
 
 When a visual example is accepted, identify its exact variant and the properties
 the designer settled. Carry that reference into the integration plan alongside
-anything still provisional.
+anything still provisional. For motion, retain the input/tick sequence, initial
+conditions, seed (or explicit absence of randomness), and camera with the reference.
+Verify integration at representative firing, turning, and release/fade moments.
 
 Protect the current investigation's question. Before polishing or repurposing a demo,
 check whether the change advances that question. If it diverts the study, push back
@@ -123,11 +125,14 @@ the reusable form; historical studies are not required reading.
 
 Keep the opening short: normally two or three brief paragraphs or a compact purpose
 list, with one concrete situation. Follow the specification's editing target; defer
-implementation inventories and secondary qualifications. End with one visible,
-substantive invitation to respond to the framing and say what that enables next.
-Repeat the invitation briefly in the chat handoff. Do not turn an unknown mechanic
+implementation inventories and secondary qualifications. Put one substantive invitation in the chat handoff and explain what the response
+enables next. Keep review questions and coordination out of the study page. Do not turn an unknown mechanic
 into a prerequisite choice for the designer. Check paragraph spacing and reading
 width in the rendered page as well as section numbering.
+
+Write the page as shared design documentation: explain the design, alternatives,
+decisions, and reasons. Omit agent/owner delivery narration; distinguish historical
+conditions from current behavior and link run-specific evidence for check results.
 
 Develop the current section through discussion. Update the page with useful reasoning
 and feedback in the same round, not just chat. Advance when conversation establishes

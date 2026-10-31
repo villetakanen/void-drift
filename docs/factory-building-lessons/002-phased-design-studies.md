@@ -263,3 +263,24 @@ are adopted and implemented, not that their effectiveness has been validated.
 The partial-result recommendation remains a workflow hypothesis; the records do
 not establish why the Scout iterations failed. No fresh study or behavioral trial
 was run for these edits. AGENTS.md and evidence-only close-loop remain unchanged.
+
+## Adopted — documentation, replay references and retained evidence
+
+31 October 2026. After reviewing the slot-language and ion closure findings, the
+owner approved three small repairs:
+
+- Study pages explain the design, alternatives, decisions and reasons; review
+  questions and coordination belong in chat. The skill, specification and evaluation
+  protocol agree, and the slot study demonstrates the revised writing approach.
+- Motion references retain their replay conditions as well as appearance. The ion
+  Lab exposes firing, turning, released residue and faded checkpoints, with both
+  visual variants compared against the preserved painter at each moment.
+- Verification uses a unique directory for each run's report and stage logs.
+  `latest.json` remains a convenience copy; closure guidance links specific runs.
+
+Basis: [slot writing findings](../loop-evidence/2026-10-31-ship-slot-language.md)
+and [ion replay and artifact limits](../loop-evidence/2026-10-31-ion-engines.md).
+These are approved repairs, not proof of a general cause or improved study outcomes.
+The ion reference still consumes shared physics and plume lifecycle code; the test
+is not an independent baseline for those systems. Run folders remain ignored local
+artifacts, not durable backup. Fresh human assessment of the writing remains open.

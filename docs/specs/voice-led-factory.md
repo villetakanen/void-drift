@@ -43,6 +43,11 @@ New simulation/replay/network contracts require Zod schemas before game logic. F
 - [ ] Commit and release status reports distinguish working changes, local commit, pushed revision, and verified deployed revision. Unknown remote/deployment state is reported as unknown.
 - [ ] A factory experiment can be reconstructed from its intent, change, checks, human assessment, and resulting lesson candidate.
 
+Verification reports and stage logs are retained per invocation under
+`artifacts/verification/<timestamp>-<unique-suffix>/`; `latest.json` is only a
+convenience copy. Closure records link the specific run. This local retention does
+not back up artifacts or make browser traces immutable.
+
 ### Regression guardrails
 
 - Rules and tests change when intent changes, with a reason; passing results alone do not justify weakening a contract.
