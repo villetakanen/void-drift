@@ -1,4 +1,4 @@
 export const resourcesParams = $state({
-    hullValue: 100,
-    fuelValue: 100
+	hullValue: 100,
+	fuelValue: 100,
 });

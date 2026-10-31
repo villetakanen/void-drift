@@ -29,16 +29,19 @@ This PBI implements the high score data schema (Zod) and submission logic. It co
 ## Acceptance Criteria
 
 ### Schema Definition
+
 - [ ] Create `packages/mode-a/src/schemas/highscore.ts`
 - [ ] Zod schema validates high score data
 - [ ] TypeScript type exported from schema
 
 ### UID Hash Generation
+
 - [ ] Implement `generateUidHash(userId: string)` function
 - [ ] Uses SHA-256 hash → base64 → first 6 characters
 - [ ] Same userId always produces same hash (deterministic)
 
 ### Score Submission
+
 - [ ] Implement `submitHighScore()` function
 - [ ] Accepts: initials, seconds, deathCause
 - [ ] Auto-fills userId from current session
@@ -47,6 +50,7 @@ This PBI implements the high score data schema (Zod) and submission logic. It co
 - [ ] Returns success/error status
 
 ### Error Handling
+
 - [ ] Handle network errors gracefully
 - [ ] Handle RLS policy violations (user mismatch)
 - [ ] Handle validation errors (invalid initials, etc.)
@@ -61,7 +65,7 @@ This PBI implements the high score data schema (Zod) and submission logic. It co
 **File:** `packages/mode-a/src/schemas/highscore.ts`
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * High Score schema for leaderboard entries.
@@ -74,24 +78,20 @@ import { z } from 'zod';
  * - userId: Supabase auth user ID (UUID)
  */
 export const HighScoreSchema = z.object({
-  initials: z
-    .string()
-    .length(3, 'Initials must be exactly 3 characters')
-    .regex(/^[A-Z]{3}$/, 'Initials must be uppercase letters (A-Z)'),
-  uidHash: z
-    .string()
-    .length(6, 'UID hash must be 6 characters'),
-  seconds: z
-    .number()
-    .int('Seconds must be an integer')
-    .positive('Seconds must be positive')
-    .max(999999, 'Seconds cannot exceed 999,999'),
-  deathCause: z.enum(['STAR', 'HULL', 'POWER'], {
-    errorMap: () => ({ message: 'Death cause must be STAR, HULL, or POWER' }),
-  }),
-  userId: z
-    .string()
-    .uuid('User ID must be a valid UUID'),
+	initials: z
+		.string()
+		.length(3, "Initials must be exactly 3 characters")
+		.regex(/^[A-Z]{3}$/, "Initials must be uppercase letters (A-Z)"),
+	uidHash: z.string().length(6, "UID hash must be 6 characters"),
+	seconds: z
+		.number()
+		.int("Seconds must be an integer")
+		.positive("Seconds must be positive")
+		.max(999999, "Seconds cannot exceed 999,999"),
+	deathCause: z.enum(["STAR", "HULL", "POWER"], {
+		errorMap: () => ({ message: "Death cause must be STAR, HULL, or POWER" }),
+	}),
+	userId: z.string().uuid("User ID must be a valid UUID"),
 });
 
 export type HighScore = z.infer<typeof HighScoreSchema>;
@@ -100,7 +100,10 @@ export type HighScore = z.infer<typeof HighScoreSchema>;
  * Partial schema for score submission (userId auto-filled).
  * Used in the UI layer.
  */
-export const HighScoreSubmissionSchema = HighScoreSchema.omit({ userId: true, uidHash: true });
+export const HighScoreSubmissionSchema = HighScoreSchema.omit({
+	userId: true,
+	uidHash: true,
+});
 
 export type HighScoreSubmission = z.infer<typeof HighScoreSubmissionSchema>;
 ```
@@ -128,26 +131,26 @@ export type HighScoreSubmission = z.infer<typeof HighScoreSubmissionSchema>;
  * // => 'Xa3cD1'
  */
 export async function generateUidHash(userId: string): Promise<string> {
-  // Convert UUID string to Uint8Array
-  const encoder = new TextEncoder();
-  const data = encoder.encode(userId);
+	// Convert UUID string to Uint8Array
+	const encoder = new TextEncoder();
+	const data = encoder.encode(userId);
 
-  // Hash with SHA-256
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+	// Hash with SHA-256
+	const hashBuffer = await crypto.subtle.digest("SHA-256", data);
 
-  // Convert to base64
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashBase64 = btoa(String.fromCharCode(...hashArray));
+	// Convert to base64
+	const hashArray = Array.from(new Uint8Array(hashBuffer));
+	const hashBase64 = btoa(String.fromCharCode(...hashArray));
 
-  // Take first 6 characters (alphanumeric + some symbols)
-  // Replace URL-unsafe characters for cleaner display
-  const hash = hashBase64
-    .substring(0, 6)
-    .replace(/\+/g, 'x')
-    .replace(/\//g, 'y')
-    .replace(/=/g, 'z');
+	// Take first 6 characters (alphanumeric + some symbols)
+	// Replace URL-unsafe characters for cleaner display
+	const hash = hashBase64
+		.substring(0, 6)
+		.replace(/\+/g, "x")
+		.replace(/\//g, "y")
+		.replace(/=/g, "z");
 
-  return hash;
+	return hash;
 }
 ```
 
@@ -158,16 +161,19 @@ export async function generateUidHash(userId: string): Promise<string> {
 **File:** `packages/mode-a/src/lib/api/submit-high-score.ts`
 
 ```typescript
-import { supabase } from '../supabase';
-import { HighScoreSchema, type HighScoreSubmission } from '../schemas/highscore';
-import { generateUidHash } from '../utils/uid-hash';
+import { supabase } from "../supabase";
+import {
+	HighScoreSchema,
+	type HighScoreSubmission,
+} from "../schemas/highscore";
+import { generateUidHash } from "../utils/uid-hash";
 
 /**
  * Result of high score submission.
  */
 export type SubmitHighScoreResult =
-  | { success: true; scoreId: string }
-  | { success: false; error: string };
+	| { success: true; scoreId: string }
+	| { success: false; error: string };
 
 /**
  * Submits a high score to the leaderboard.
@@ -195,76 +201,82 @@ export type SubmitHighScoreResult =
  * }
  */
 export async function submitHighScore(
-  submission: HighScoreSubmission
+	submission: HighScoreSubmission,
 ): Promise<SubmitHighScoreResult> {
-  try {
-    // 1. Get current user session
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+	try {
+		// 1. Get current user session
+		const {
+			data: { session },
+			error: sessionError,
+		} = await supabase.auth.getSession();
 
-    if (sessionError || !session) {
-      return {
-        success: false,
-        error: 'Not authenticated. Please reload the page and try again.',
-      };
-    }
+		if (sessionError || !session) {
+			return {
+				success: false,
+				error: "Not authenticated. Please reload the page and try again.",
+			};
+		}
 
-    const userId = session.user.id;
+		const userId = session.user.id;
 
-    // 2. Generate UID hash
-    const uidHash = await generateUidHash(userId);
+		// 2. Generate UID hash
+		const uidHash = await generateUidHash(userId);
 
-    // 3. Build full high score object
-    const highScore = {
-      ...submission,
-      userId,
-      uidHash,
-    };
+		// 3. Build full high score object
+		const highScore = {
+			...submission,
+			userId,
+			uidHash,
+		};
 
-    // 4. Validate with Zod
-    const validated = HighScoreSchema.safeParse(highScore);
+		// 4. Validate with Zod
+		const validated = HighScoreSchema.safeParse(highScore);
 
-    if (!validated.success) {
-      const errors = validated.error.issues.map((issue) => issue.message).join(', ');
-      return {
-        success: false,
-        error: `Validation failed: ${errors}`,
-      };
-    }
+		if (!validated.success) {
+			const errors = validated.error.issues
+				.map((issue) => issue.message)
+				.join(", ");
+			return {
+				success: false,
+				error: `Validation failed: ${errors}`,
+			};
+		}
 
-    // 5. Insert to Supabase
-    const { data, error: insertError } = await supabase
-      .from('highscores')
-      .insert({
-        user_id: validated.data.userId,
-        initials: validated.data.initials,
-        uid_hash: validated.data.uidHash,
-        seconds: validated.data.seconds,
-        death_cause: validated.data.deathCause,
-      })
-      .select('id')
-      .single();
+		// 5. Insert to Supabase
+		const { data, error: insertError } = await supabase
+			.from("highscores")
+			.insert({
+				user_id: validated.data.userId,
+				initials: validated.data.initials,
+				uid_hash: validated.data.uidHash,
+				seconds: validated.data.seconds,
+				death_cause: validated.data.deathCause,
+			})
+			.select("id")
+			.single();
 
-    if (insertError) {
-      console.error('[submitHighScore] Insert failed:', insertError);
-      return {
-        success: false,
-        error: `Failed to submit score: ${insertError.message}`,
-      };
-    }
+		if (insertError) {
+			console.error("[submitHighScore] Insert failed:", insertError);
+			return {
+				success: false,
+				error: `Failed to submit score: ${insertError.message}`,
+			};
+		}
 
-    console.log('[submitHighScore] Score submitted successfully:', data.id);
+		console.log("[submitHighScore] Score submitted successfully:", data.id);
 
-    return {
-      success: true,
-      scoreId: data.id,
-    };
-  } catch (error) {
-    console.error('[submitHighScore] Unexpected error:', error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'An unexpected error occurred',
-    };
-  }
+		return {
+			success: true,
+			scoreId: data.id,
+		};
+	} catch (error) {
+		console.error("[submitHighScore] Unexpected error:", error);
+		return {
+			success: false,
+			error:
+				error instanceof Error ? error.message : "An unexpected error occurred",
+		};
+	}
 }
 ```
 
@@ -287,76 +299,80 @@ export async function submitHighScore(
 ## Testing Checklist
 
 ### Schema Validation
+
 ```typescript
-import { HighScoreSchema } from '@void-drift/mode-a/schemas/highscore';
+import { HighScoreSchema } from "@void-drift/mode-a/schemas/highscore";
 
 // Valid
 HighScoreSchema.parse({
-  initials: 'AAA',
-  uidHash: 'Xa3cD1',
-  seconds: 123,
-  deathCause: 'STAR',
-  userId: '550e8400-e29b-41d4-a716-446655440000',
+	initials: "AAA",
+	uidHash: "Xa3cD1",
+	seconds: 123,
+	deathCause: "STAR",
+	userId: "550e8400-e29b-41d4-a716-446655440000",
 });
 // => Success
 
 // Invalid initials (lowercase)
 HighScoreSchema.safeParse({
-  initials: 'aaa',
-  uidHash: 'Xa3cD1',
-  seconds: 123,
-  deathCause: 'STAR',
-  userId: '550e8400-e29b-41d4-a716-446655440000',
+	initials: "aaa",
+	uidHash: "Xa3cD1",
+	seconds: 123,
+	deathCause: "STAR",
+	userId: "550e8400-e29b-41d4-a716-446655440000",
 });
 // => { success: false, error: ... }
 
 // Invalid death cause
 HighScoreSchema.safeParse({
-  initials: 'AAA',
-  uidHash: 'Xa3cD1',
-  seconds: 123,
-  deathCause: 'EXPLOSION', // Not in enum
-  userId: '550e8400-e29b-41d4-a716-446655440000',
+	initials: "AAA",
+	uidHash: "Xa3cD1",
+	seconds: 123,
+	deathCause: "EXPLOSION", // Not in enum
+	userId: "550e8400-e29b-41d4-a716-446655440000",
 });
 // => { success: false, error: ... }
 ```
 
 ### UID Hash Generation
-```typescript
-import { generateUidHash } from '@void-drift/mode-a/utils/uid-hash';
 
-const userId = '550e8400-e29b-41d4-a716-446655440000';
+```typescript
+import { generateUidHash } from "@void-drift/mode-a/utils/uid-hash";
+
+const userId = "550e8400-e29b-41d4-a716-446655440000";
 
 const hash1 = await generateUidHash(userId);
 const hash2 = await generateUidHash(userId);
 
-console.assert(hash1 === hash2, 'Hash should be deterministic');
-console.assert(hash1.length === 6, 'Hash should be 6 characters');
+console.assert(hash1 === hash2, "Hash should be deterministic");
+console.assert(hash1.length === 6, "Hash should be 6 characters");
 ```
 
 ### Score Submission (Integration Test)
+
 ```typescript
-import { submitHighScore } from '@void-drift/mode-a/api/submit-high-score';
-import { ensureAnonymousSession } from '@void-drift/mode-a/supabase';
+import { submitHighScore } from "@void-drift/mode-a/api/submit-high-score";
+import { ensureAnonymousSession } from "@void-drift/mode-a/supabase";
 
 // Ensure authenticated
 await ensureAnonymousSession();
 
 // Submit score
 const result = await submitHighScore({
-  initials: 'TST',
-  seconds: 999,
-  deathCause: 'HULL',
+	initials: "TST",
+	seconds: 999,
+	deathCause: "HULL",
 });
 
-console.assert(result.success === true, 'Submission should succeed');
-console.log('Score ID:', result.scoreId);
+console.assert(result.success === true, "Submission should succeed");
+console.log("Score ID:", result.scoreId);
 
 // Verify in Supabase Dashboard → Table Editor → highscores
 // Should see new row with initials='TST', seconds=999, death_cause='HULL'
 ```
 
 ### Error Handling
+
 - [ ] Test with no auth session (should fail gracefully)
 - [ ] Test with invalid initials (should fail validation)
 - [ ] Test with negative seconds (should fail validation)

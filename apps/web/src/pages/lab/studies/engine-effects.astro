@@ -1,0 +1,291 @@
+---
+import EngineSketch from "../../../components/studies/engines/EngineEffects.svelte";
+import PlumeLifecycle from "../../../components/studies/engines/PlumeLifecycle.svelte";
+import TailComparison from "../../../components/studies/engines/TailComparison.svelte";
+import ThrustPlume from "../../../components/studies/engines/ThrustPlume.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((item) => item.slug === "engine-effects");
+---
+
+<StudyLayout study={study}>
+	<p>
+		<strong>Approved · 30 October 2026.</strong>
+		The owner accepted this alpha study and its implementation plan, and
+		authorized implementation after the study is committed and pushed. The
+		values remain provisional; approval does not claim completed implementation.
+	</p>
+	<p>
+		<strong>Alpha implementation · 30 October 2026.</strong>
+		The approved plan is now implemented locally in the shared game and
+		<a href="/lab/flight">flight Lab</a>: complete fading plumes, output-based
+		size, and the provisional 750 directional cutoff. The sections below
+		preserve the reasoning and pre-implementation assessment. Full-scene human
+		feel and device performance remain open.
+	</p>
+	<section aria-labelledby="engine-purpose">
+		<h2 id="engine-purpose">01 / Flying as a graphic effect</h2>
+		<p>
+			The visual reference is the late-nineties and early-two-thousands vector
+			art and effects era described in the brief: flashy, graphic, and sharply
+			composed. Here, “vector” means surfaces, glows, interpolation, and
+			effects, not a collection of lines pointing in different directions.
+			Simple forms can produce a rich spectacle through their shape, overlap,
+			light, and transformation. Simplicity belongs to the visual vocabulary; it
+			should not drain the result of energy.
+		</p>
+		<p>
+			Press one engine, add the second, then release both and drift. The
+			ambition is for that ordinary action to become a small graphic performance
+			on the ship and across the field. A possible direction is luminous
+			surfaces that swell, stretch, blend, and dissolve as the manoeuvre
+			develops. That is a hypothesis to explore, not a chosen effect. The
+			current shared flame and uniform position trace give us a functional
+			starting point, but do not establish the aesthetic we are aiming for.
+		</p>
+		<p>
+			The design problem remains: make engine activity immediate and leave a
+			playful, fading memory of flight. Its visual ambition now leads the
+			inquiry. We need to examine silhouette, filled area, gradients, glow, and
+			transitions together, including how effects overlap the hull and persist
+			in world space. That composition should inform later rendering layers and
+			implementation. The exact reference within this broad era still needs a
+			shared visual basis.
+		</p>
+		<p>
+			The study now moves into exploration with this aesthetic framing,
+			following the discussion of surfaces, glow, and interpolation.
+		</p>
+	</section>
+	<section aria-labelledby="engine-next">
+		<h2 id="engine-next">02.1 / One surface, three layers</h2>
+		<p>
+			The smallest hypothesis: a filled, curved plume with a bright core and
+			soft glow can provide enough graphic richness. Repeated impressions of
+			that surface remain in space, spread, and fade over 1.5 seconds. Toggle
+			glow to see how much comes from the shape and how much comes from light.
+		</p>
+		<EngineSketch client:load />
+		<p>
+			This sketch uses the production balanced ship, production engine physics,
+			and ship drawing: one second of left engine, two of both, then three of
+			release. The display follows the ship at a fixed enlarged scale. Gravity,
+			hazards, and arena wrapping are omitted to isolate the effects; engine
+			attachment positions, palette, and plumes are study proposals. This tests
+			visual character, not full-scene readability, final camera behaviour, or
+			performance on a phone.
+		</p>
+		<p>
+			<strong>Accepted visual direction · 30 October 2026.</strong>
+			The owner judged the style a substantial improvement and a match for the
+			intended aesthetic: glowing surfaces left behind and vanishing over time.
+			Keep this example as the reference for that quality. The straight-back
+			engine orientation is incomplete; exact colour, timing, and geometry have
+			not been settled, and this is not approval for production integration.
+		</p>
+	</section>
+	<section aria-labelledby="engine-direction">
+		<h2 id="engine-direction">
+			02.2 / A continuous tail through straight flight and turns
+		</h2>
+		<p>
+			The angled plumes read better, but the owner found that the residual
+			impressions neither follow the turn convincingly nor combine into a
+			unified flame in straight flight. The glowing surface style remains the
+			foundation; the tail is unresolved. This is a revision of the same
+			investigation.
+		</p>
+		<p>
+			This trial joins the emission history into a continuous, tapering surface.
+			Both engines feed one central tail; the turning engine feeds an angled
+			tail. The attached 12° plumes retain their previous shape, palette, and
+			glow.
+		</p>
+		<TailComparison client:load />
+		<p>
+			Both views use production balanced-ship engine physics and drawing,
+			starting at rest. Left continuously fires both engines; right continuously
+			fires one. A fixed-scale camera follows each ship without rotating.
+			Gravity, hazards, and wrapping are omitted by recentering the physics
+			fixture each tick. Residue moves backward at a proposed 70 units/s and
+			fades over 1.2 s; a distance fade over 145 units keeps the end visible
+			during acceleration. These are visual trial values. The joined central
+			tail is an artistic proposal, not a new force model. This does not
+			establish full-arena readability or phone performance.
+		</p>
+		<p>
+			<strong>Unresolved · preserved for comparison.</strong>
+			The owner found this better, but release exposes a flat cutoff on the
+			residue while the attached flame disappears instantly. The ribbon
+			construction feels overcomplicated and does not yet deliver the intended
+			arcade effect. No tail solution was accepted here; 02.3 investigates a
+			different rendering model.
+		</p>
+		<details>
+			<summary>Previous 02.2 reference · separate fading impressions</summary>
+			<p>
+				Preserved for comparison: the angled plumes were liked; their stamped
+				residue was not accepted.
+			</p>
+			<EngineSketch
+				client:visible
+				splayDegrees={12}
+				label="Previous angled plume and separate residue reference"
+			/>
+		</details>
+	</section>
+	<section aria-labelledby="plume-lifecycle">
+		<h2 id="plume-lifecycle">02.3 / The plume itself lives on</h2>
+		<p>
+			The previous model draws a flame attached to the ship and a separate
+			ribbon behind it. This trial removes that split. Each engine emits
+			complete, softly bounded glowing surfaces. They overlap into the flame,
+			drift, expand, and fade. Release stops new emission; even the newest
+			surface keeps its remaining lifetime, so there is no flame object to
+			switch off or ribbon to cut.
+		</p>
+		<PlumeLifecycle client:load />
+		<p>
+			Same straight and turning physics fixture and 12° engine directions as
+			02.2. The new surfaces have rounded, transparent boundaries and live for
+			0.65 seconds, retaining 80% of ship velocity at emission plus a backward
+			drift of 45 units/s. These are trial values, not accepted tuning. There is
+			no connected strip or distance cutoff. This tests motion and shutdown;
+			full-scene readability and physical-phone performance remain untested.
+		</p>
+		<p>
+			<strong>Accepted · 30 October 2026.</strong>
+			The owner confirmed this is the intended plume lifecycle. Preserve
+			complete emitted surfaces that remain alive after release, then drift and
+			fade. The next inquiry concerns sizing each engine’s plume by the thrust
+			it contributes.
+		</p>
+	</section>
+	<section aria-labelledby="thrust-plume">
+		<h2 id="thrust-plume">02.4 / Size follows delivered thrust</h2>
+		<p>
+			The accepted plume lifecycle stays intact. This trial asks whether the
+			amount of visible flame can explain what each engine contributes on a
+			simulation step. Here “power” means delivered thrust, not the ship’s
+			stored energy resource or total speed.
+		</p>
+		<p>
+			<strong>Owner direction · 30 October 2026:</strong>
+			engines should add no further thrust at roughly 750 units/s in the
+			direction they push. This trial uses 750 as the provisional cutoff, with a
+			simple linear taper from full contribution at rest to zero there. The
+			cutoff intent is agreed; the precise value and taper shape remain tuning
+			proposals. Already-faster motion is preserved. Braking and sideways thrust
+			remain available.
+		</p>
+		<ThrustPlume client:load />
+		<p>
+			The fixture measures the velocity impulse actually applied by the engine
+			update with the study-local cutoff and divides it between active engines.
+			Proposed mapping: plume area is proportional to that engine’s fraction of
+			full thrust, so length and width each scale by its square root. Each
+			surface keeps its emission size throughout its accepted fade. The
+			straight-flight, hazard-free fixture starts at rest; choose a starting
+			speed and restart to compare. The production game still uses its earlier
+			unbounded taper; only this study applies the new cutoff. Choose 750 or
+			1200 and restart: forward-facing engines should show zero contribution,
+			while a turn can restore it.
+		</p>
+		<p class="invitation">
+			<strong
+				>Does a shrinking plume make the engine’s declining contribution clear,
+				and does its growth through a turn feel right?</strong
+			>
+			This mapping is exploratory; the plume lifecycle from 02.3 is accepted.
+		</p>
+	</section>
+	<section aria-labelledby="readiness">
+		<h2 id="readiness">03 / Readiness — good enough to work with in alpha</h2>
+		<p>
+			The study gives us a workable direction: angled engines emit glowing
+			surfaces that keep drifting and fading after release. Their size follows
+			engine output. We can build this with the existing Canvas rendering and
+			flight systems; the examples already demonstrate the essential effect.
+		</p>
+		<p>
+			The game currently draws a separate flame and a line trail. The practical
+			work is to replace those with the studied effect and connect its size to
+			engine output. The approximate 750 cutoff currently lives in the example,
+			so the game’s engine calculation also needs that rule if we want the same
+			behaviour there. A shared constant is enough to start; this does not
+			require a new settings system.
+		</p>
+		<p>
+			<strong
+				>This is an alpha working direction, not a specification of the eventual
+				product.</strong
+			>
+			The cutoff, taper, plume size, angle, and lifetime can change as we use
+			it. We do not need to settle every detail first. The current directional
+			cutoff is a starting interpretation, not a promise of a total-speed
+			ceiling. Normal-scale readability and how the effect feels among planets
+			still need actual play.
+		</p>
+	</section>
+	<section aria-labelledby="integration">
+		<h2 id="integration">
+			04 / Integration — the smallest useful implementation
+		</h2>
+		<p>
+			The plan is to make the effect usable in ordinary flight and easy to
+			adjust. These are proposed implementation steps; no game behaviour is
+			changed by this document.
+		</p>
+		<ol>
+			<li>
+				<strong>Reuse the effect that worked.</strong>
+				Move the complete fading surfaces from the study into the shared flight
+				rendering, replacing the separate flame and line trail. Keep the angled
+				emissions and natural fade after release.
+			</li>
+			<li>
+				<strong>Connect appearance to engine output.</strong>
+				Use the engine’s contribution to size each plume and bring the
+				approximate 750 rule into the shared engine calculation. Start with the
+				study’s values as simple constants. Avoid deriving engine output from
+				velocity changes caused by gravity.
+			</li>
+			<li>
+				<strong>Make it behave coherently during play.</strong>
+				Age and remove surfaces with simulation time, freeze them on pause,
+				clear them on reset, and avoid streaks across arena wraps. Keep the Lab
+				and game on the same effect code so adjustments carry over.
+			</li>
+			<li>
+				<strong>Fly it and adjust.</strong>
+				Check straight flight, turns, release, and the cutoff in the actual
+				scene, with focused correctness checks for the changed behaviour. Look
+				for distracting glow, disappearing detail, or obvious performance
+				problems. Record what we implemented and what remains provisional; use
+				the result to guide the next change.
+			</li>
+		</ol>
+		<p>
+			The intended result is a useful alpha version we can judge through play.
+			More configuration, a general effects framework, and final tuning are not
+			prerequisites. Preserve the study examples so we can compare changes
+			against the visual quality we liked.
+		</p>
+	</section>
+	<aside aria-label="Study evaluation">
+		<p>
+			<a href="/lab/reviews/engine-effects"
+				>Separate study-quality evaluation</a
+			>
+			— assesses the evidence and usefulness of this study, not implementation
+			readiness or permission to execute the plan.
+		</p>
+	</aside>
+</StudyLayout>
+<style>
+.invitation {
+	border-left: 2px solid var(--color-acid-lime);
+	padding-left: var(--spacing-md);
+}
+</style>

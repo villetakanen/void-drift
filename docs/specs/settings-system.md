@@ -49,16 +49,16 @@ We use [nanostores](https://github.com/nanostores/nanostores) with the `@nanosto
 
 ```typescript
 // packages/mode-a/src/lib/schemas/settings.ts
-import { z } from 'zod';
+import { z } from "zod";
 
 export const SettingsSchema = z.object({
-  invertControls: z.boolean(),
+	invertControls: z.boolean(),
 });
 
 export type Settings = z.infer<typeof SettingsSchema>;
 
 export const DEFAULT_SETTINGS: Settings = {
-  invertControls: false,
+	invertControls: false,
 };
 ```
 
@@ -72,7 +72,7 @@ void-drift:settings
 
 ```json
 {
-  "invertControls": false
+	"invertControls": false
 }
 ```
 
@@ -84,23 +84,27 @@ void-drift:settings
 
 ```typescript
 // apps/web/src/lib/stores/settings.ts
-import { persistentAtom } from '@nanostores/persistent';
-import { SettingsSchema, DEFAULT_SETTINGS, type Settings } from '@void-drift/mode-a';
+import { persistentAtom } from "@nanostores/persistent";
+import {
+	SettingsSchema,
+	DEFAULT_SETTINGS,
+	type Settings,
+} from "@void-drift/mode-a";
 
 export const settings = persistentAtom<Settings>(
-  'void-drift:settings',
-  DEFAULT_SETTINGS,
-  {
-    encode: JSON.stringify,
-    decode: (str) => {
-      try {
-        const parsed = JSON.parse(str);
-        return SettingsSchema.parse(parsed);
-      } catch {
-        return DEFAULT_SETTINGS;
-      }
-    },
-  }
+	"void-drift:settings",
+	DEFAULT_SETTINGS,
+	{
+		encode: JSON.stringify,
+		decode: (str) => {
+			try {
+				const parsed = JSON.parse(str);
+				return SettingsSchema.parse(parsed);
+			} catch {
+				return DEFAULT_SETTINGS;
+			}
+		},
+	},
 );
 ```
 
@@ -114,22 +118,22 @@ export const settings = persistentAtom<Settings>(
   const $settings = useStore(settings);
 </script>
 
-<input 
-  type="checkbox" 
-  checked={$settings.invertControls}
-  onchange={() => settings.set({ ...$settings, invertControls: !$settings.invertControls })}
-/>
+<input
+	type="checkbox"
+	checked={$settings.invertControls}
+	onchange={() => settings.set({ ...$settings, invertControls: !$settings.invertControls })}
+>
 ```
 
 ### Usage in Engine (non-reactive read)
 
 ```typescript
-import { settings } from '../lib/stores/settings';
+import { settings } from "../lib/stores/settings";
 
 // Get current value (snapshot)
 const currentSettings = settings.get();
 if (currentSettings.invertControls) {
-  // swap controls
+	// swap controls
 }
 ```
 
@@ -139,21 +143,21 @@ if (currentSettings.invertControls) {
 
 ### v0.1.0 Settings
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
+| Key              | Type    | Default | Description                     |
+| ---------------- | ------- | ------- | ------------------------------- |
 | `invertControls` | boolean | `false` | Swap left/right engine controls |
 
 ### Future Settings (Post-v0.1.0)
 
 These are **not** in scope for v0.1.0 but inform the extensible design:
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| `soundEnabled` | boolean | `true` | Master sound toggle |
-| `musicVolume` | number | `0.7` | Music volume (0-1) |
-| `sfxVolume` | number | `0.8` | SFX volume (0-1) |
-| `showFPS` | boolean | `false` | Debug FPS counter |
-| `touchSensitivity` | number | `1.0` | Touch control sensitivity |
+| Key                | Type    | Default | Description               |
+| ------------------ | ------- | ------- | ------------------------- |
+| `soundEnabled`     | boolean | `true`  | Master sound toggle       |
+| `musicVolume`      | number  | `0.7`   | Music volume (0-1)        |
+| `sfxVolume`        | number  | `0.8`   | SFX volume (0-1)          |
+| `showFPS`          | boolean | `false` | Debug FPS counter         |
+| `touchSensitivity` | number  | `1.0`   | Touch control sensitivity |
 
 ---
 
@@ -161,26 +165,26 @@ These are **not** in scope for v0.1.0 but inform the extensible design:
 
 When `invertControls` is `true`:
 
-| Input | Normal Behavior | Inverted Behavior |
-|-------|-----------------|-------------------|
-| Left key / Left touch | Left engine fires | Right engine fires |
-| Right key / Right touch | Right engine fires | Left engine fires |
-| Both keys / Both touch | Both engines fire | Both engines fire (unchanged) |
+| Input                   | Normal Behavior    | Inverted Behavior             |
+| ----------------------- | ------------------ | ----------------------------- |
+| Left key / Left touch   | Left engine fires  | Right engine fires            |
+| Right key / Right touch | Right engine fires | Left engine fires             |
+| Both keys / Both touch  | Both engines fire  | Both engines fire (unchanged) |
 
 **Implementation in Input handler:**
 
 ```typescript
 export function applyInputToShip(
-  input: InputState,
-  ship: Ship,
-  invertControls: boolean
+	input: InputState,
+	ship: Ship,
+	invertControls: boolean,
 ): void {
-  const left = invertControls ? input.rightThruster : input.leftThruster;
-  const right = invertControls ? input.leftThruster : input.rightThruster;
-  
-  // Apply thrust based on swapped values
-  if (left) ship.fireLeftThruster();
-  if (right) ship.fireRightThruster();
+	const left = invertControls ? input.rightThruster : input.leftThruster;
+	const right = invertControls ? input.leftThruster : input.rightThruster;
+
+	// Apply thrust based on swapped values
+	if (left) ship.fireLeftThruster();
+	if (right) ship.fireRightThruster();
 }
 ```
 
@@ -195,11 +199,11 @@ export function applyInputToShip(
 pnpm add nanostores @nanostores/persistent @nanostores/svelte
 ```
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `nanostores` | ^0.11 | Core atom store |
-| `@nanostores/persistent` | ^0.10 | localStorage persistence |
-| `@nanostores/svelte` | ^0.5 | Svelte integration (`useStore`) |
+| Package                  | Version | Purpose                         |
+| ------------------------ | ------- | ------------------------------- |
+| `nanostores`             | ^0.11   | Core atom store                 |
+| `@nanostores/persistent` | ^0.10   | localStorage persistence        |
+| `@nanostores/svelte`     | ^0.5    | Svelte integration (`useStore`) |
 
 ---
 

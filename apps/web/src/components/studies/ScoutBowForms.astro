@@ -1,0 +1,189 @@
+---
+const forms = [
+	{
+		name: "A / Skim",
+		note: "A slim central deck with close-set floats. The lightest continuation of Slipstream.",
+		tail: -22,
+		rear: 6,
+		beam: 11,
+		podY: 13,
+		podX: -5,
+		length: 30,
+		sweep: 0,
+	},
+	{
+		name: "B / Wake",
+		note: "Long floats run beside the forward cabin, making one compact, integrated fast boat.",
+		tail: -24,
+		rear: 7,
+		beam: 11,
+		podY: 13,
+		podX: 0,
+		length: 38,
+		sweep: 0,
+	},
+	{
+		name: "C / Rill",
+		note: "A shorter body and tucked engines put the broad cockpit in charge of the silhouette.",
+		tail: -16,
+		rear: 7,
+		beam: 12,
+		podY: 14,
+		podX: -5,
+		length: 24,
+		sweep: 0,
+	},
+	{
+		name: "D / Spray",
+		note: "A narrow stern and slightly spread floats suggest a light craft skimming across the surface.",
+		tail: -23,
+		rear: 5,
+		beam: 11,
+		podY: 15,
+		podX: -5,
+		length: 31,
+		sweep: 10,
+	},
+	{
+		name: "E / Runabout",
+		note: "A wider rear deck and short side pods give the little boat a planted, playful stance.",
+		tail: -20,
+		rear: 10,
+		beam: 12,
+		podY: 16,
+		podX: -8,
+		length: 22,
+		sweep: 0,
+	},
+	{
+		name: "F / Foil",
+		note: "Long, close engine rails cradle the cockpit and taper behind it. The strongest Stride influence.",
+		tail: -25,
+		rear: 5,
+		beam: 10,
+		podY: 12,
+		podX: -2,
+		length: 40,
+		sweep: 4,
+	},
+];
+---
+
+<div class="fleet">
+	{forms.map((f) => (
+		<figure>
+			<figcaption>
+				<h4>{f.name}</h4>
+				<p>{f.note}</p>
+			</figcaption>
+			<svg
+				viewBox="0 0 320 310"
+				role="img"
+				aria-label={`${f.name}: small Scout with a black hexagonal cockpit at the bow, trailing deck and twin float-like engines, large and small views`}
+			>
+				{[
+					{ x: 160, y: 145, scale: 2.5, angle: -90 },
+					{ x: 160, y: 268, scale: 0.75, angle: -45 },
+				].map((v) => (
+					<g
+						transform={`translate(${v.x} ${v.y}) scale(${v.scale}) rotate(${v.angle})`}
+					>
+						{[-1, 1].map((sign) => (
+							<polygon
+								points={`3,${sign * 5} -13,${sign * 5} -13,${sign * f.podY} 3,${sign * f.podY}`}
+								fill={sign < 0 ? "#83c7d0" : "#365d79"}
+							/>
+						))}
+						<polygon
+							points={`26,-5 19,${-f.beam} 5,${-f.beam} ${f.tail},${-f.rear} ${f.tail},${f.rear} 5,${f.beam} 19,${f.beam} 26,5`}
+							fill="#6193a9"
+						/>
+						<polygon
+							points={`26,-5 19,${-f.beam} 5,${-f.beam} ${f.tail},${-f.rear} ${f.tail},${-f.rear * 0.5} 6,-7 19,-8 24,-4`}
+							fill="#c8f4f0"
+						/>
+						<polygon
+							points={`26,5 19,${f.beam} 5,${f.beam} ${f.tail},${f.rear} ${f.tail},${f.rear * 0.5} 6,7 19,8 24,4`}
+							fill="#365d79"
+						/>
+						<polygon
+							points={`7,-6 ${f.tail},${-f.rear * 0.5} ${f.tail},0 6,0`}
+							fill="#a2d8df"
+						/>
+						<polygon
+							points={`7,6 ${f.tail},${f.rear * 0.5} ${f.tail},0 6,0`}
+							fill="#51869e"
+						/>
+						<polygon points="24,-4 24,4 18,8 8,5 8,-5 18,-8" fill="#000000" />
+						{[-1, 1].map((sign) => (
+							<g
+								transform={`translate(${f.podX} ${sign * f.podY}) rotate(${-sign * f.sweep})`}
+							>
+								<polygon
+									points={`${f.length / 2},-1 ${f.length / 2 - 4},-3 ${-f.length / 2},-3 ${-f.length / 2},3 ${f.length / 2 - 4},3 ${f.length / 2},1`}
+									fill="#6193a9"
+								/>
+								<polygon
+									points={`${f.length / 2},-1 ${f.length / 2 - 4},-3 ${-f.length / 2},-3 ${-f.length / 2},-1`}
+									fill="#c8f4f0"
+								/>
+								<polygon
+									points={`${f.length / 2},1 ${f.length / 2 - 4},3 ${-f.length / 2},3 ${-f.length / 2},1`}
+									fill="#365d79"
+								/>
+								<path
+									d={`M${-f.length / 2} -2 v4`}
+									stroke="#102c43"
+									stroke-width="1"
+								/>
+							</g>
+						))}
+					</g>
+				))}
+			</svg>
+		</figure>
+	))}
+</div>
+<style>
+.fleet {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-lg);
+	margin-block: var(--spacing-lg);
+}
+figure {
+	margin: 0;
+	min-width: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+}
+h4 {
+	margin-bottom: var(--spacing-sm);
+}
+p {
+	color: var(--color-text-dim);
+	font-size: var(--font-small);
+	min-height: 4.5em;
+}
+svg {
+	display: block;
+	width: 100%;
+}
+@media (max-width: 850px) {
+	.fleet {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 480px) {
+	.fleet {
+		grid-template-columns: 1fr;
+	}
+	svg {
+		max-width: 320px;
+		margin: auto;
+	}
+	p {
+		min-height: 0;
+	}
+}
+</style>

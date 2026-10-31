@@ -1,0 +1,354 @@
+---
+import { buildMounts, defaultBuilds } from "@void-drift/mode-a";
+import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
+
+interface Props {
+	paleStruts?: boolean;
+}
+const { paleStruts = false } = Astro.props;
+const prefix = paleStruts ? "fusion-pale" : "fusion-body";
+type Point = readonly [number, number];
+const points = (v: readonly Point[]) => v.map((p) => p.join(",")).join(" ");
+const mounts = buildMounts(defaultBuilds().balanced)
+	.map((m) => (m.group === "aft" ? { ...m, x: m.x - 5 } : m))
+	.filter((m) => m.group !== "hull");
+const injector: Point[] = [
+	[10, 0],
+	[7, -3],
+	[2, -3],
+	[0, 0],
+	[2, 3],
+	[7, 3],
+];
+const concepts: {
+	name: string;
+	idea: string;
+	chamber: Point[];
+	ridge: Point;
+	outlet: Point[];
+	blue: Point[];
+}[] = [
+	{
+		name: "01 / Neck and vessel",
+		idea: "A small forward injector feeds a broad reaction vessel through a visible narrow neck. The rear opening belongs to the chamber.",
+		chamber: [
+			[-3, 0],
+			[-5, -4.5],
+			[-10, -4.5],
+			[-13, -2.5],
+			[-13, 2.5],
+			[-10, 4.5],
+			[-5, 4.5],
+		],
+		ridge: [-8, 0],
+		outlet: [
+			[-10, -3],
+			[-13, -2.5],
+			[-13, 2.5],
+			[-10, 3],
+		],
+		blue: [
+			[-12.5, -1.8],
+			[-11.5, -1.8],
+			[-11.5, 1.8],
+			[-12.5, 1.8],
+		],
+	},
+	{
+		name: "02 / Braced chamber",
+		idea: "Two exposed struts connect the injector to a short, wide chamber. Open space between them makes the two assemblies explicit.",
+		chamber: [
+			[-4, 0],
+			[-6, -4.8],
+			[-10, -4.8],
+			[-12, -3],
+			[-12, 3],
+			[-10, 4.8],
+			[-6, 4.8],
+		],
+		ridge: [-8, 0],
+		outlet: [
+			[-10, -3.5],
+			[-12, -3],
+			[-12, 3],
+			[-10, 3.5],
+		],
+		blue: [
+			[-11.5, -2.2],
+			[-10.7, -2.2],
+			[-10.7, 2.2],
+			[-11.5, 2.2],
+		],
+	},
+	{
+		name: "03 / Open reaction cup",
+		idea: "A feed stalk terminates in an aft-facing faceted cup. A recessed bright core and dark rim suggest a contained pulse released rearward.",
+		chamber: [
+			[-3, 0],
+			[-6, -3],
+			[-12, -4.5],
+			[-13, -3],
+			[-13, 3],
+			[-12, 4.5],
+			[-6, 3],
+		],
+		ridge: [-7, 0],
+		outlet: [
+			[-8, 0],
+			[-12, -3.5],
+			[-13, -2.5],
+			[-13, 2.5],
+			[-12, 3.5],
+		],
+		blue: [
+			[-10, -1.3],
+			[-11, -2],
+			[-12, -1.3],
+			[-12, 1.3],
+			[-11, 2],
+			[-10, 1.3],
+		],
+	},
+];
+const colors = [
+	{ name: "Reactor green", value: "#65ff45" },
+	{ name: "Acid chartreuse", value: "#c6ff32" },
+	{ name: "Sulfur yellow", value: "#f4ed48" },
+];
+// Match 02.2's fixed 210° sun, with +x model-forward rotated up on screen.
+function shade(base: readonly number[], angle: number, slope = 0.85) {
+	const amount =
+		0.42 +
+		1.05 * Math.max(0, Math.cos(angle - (210 * Math.PI) / 180) * slope + 0.25);
+	return `rgb(${base.map((v) => Math.round(Math.min(255, v * amount))).join(",")})`;
+}
+function faceColor(p: Point, q: Point, angle: number, base: readonly number[]) {
+	return shade(base, angle + Math.atan2((p[1] + q[1]) / 2, (p[0] + q[0]) / 2));
+}
+---
+
+<div class:list={["concepts", { single: paleStruts }]}>
+	{concepts
+		.map((concept, index) => ({ concept, index }))
+		.filter(({ index }) => !paleStruts || index === 1)
+		.map(({ concept, index }) => (
+			<article style="color: #c6ff32">
+				<h4>{concept.name}</h4>
+				<svg
+					viewBox="-40 -56 80 102"
+					role="img"
+					aria-label={`${concept.name} fitted to all four Fighter engine mounts`}
+				>
+					<defs>
+						{[0, ...mounts.map((m) => m.angle)].map((angle, pose) => (
+							<g id={`${prefix}-${index}-${pose}`}>
+								{index === 1 ? (
+									<>
+										<polygon
+											points="2,-2.7 -7,-2.7 -7,-1.8 2,-1.8"
+											fill={
+												paleStruts
+													? shade([190, 209, 213], angle - Math.PI, 0.25)
+													: "#555b62"
+											}
+										/>
+										<polygon
+											points="2,1.8 -7,1.8 -7,2.7 2,2.7"
+											fill={
+												paleStruts
+													? shade([190, 209, 213], angle, 0.25)
+													: "#252a30"
+											}
+										/>
+									</>
+								) : (
+									<polygon points="2,-1 -7,-1 -7,1 2,1" fill="#42484f" />
+								)}
+								{injector.map((p, i) => (
+									<polygon
+										points={points([
+											[5, 0],
+											p,
+											injector[(i + 1) % injector.length],
+										])}
+										fill={faceColor(
+											p,
+											injector[(i + 1) % injector.length],
+											angle - Math.PI / 2,
+											[64, 68, 74],
+										)}
+									/>
+								))}
+								{concept.chamber.map((p, i) => (
+									<polygon
+										points={points([
+											concept.ridge,
+											p,
+											concept.chamber[(i + 1) % concept.chamber.length],
+										])}
+										fill={faceColor(
+											[p[0] + 8, p[1]],
+											[
+												concept.chamber[(i + 1) % concept.chamber.length][0] +
+													8,
+												concept.chamber[(i + 1) % concept.chamber.length][1],
+											],
+											angle - Math.PI / 2,
+											[64, 68, 74],
+										)}
+									/>
+								))}
+								<polygon points={points(concept.outlet)} fill="#12171e" />
+								<polygon points={points(concept.blue)} fill="currentColor" />
+							</g>
+						))}
+					</defs>
+					<g transform="rotate(-90)">
+						{mounts.map(
+							(m, pose) =>
+								m.group === "side" && (
+									<use
+										href={`#${prefix}-${index}-${pose + 1}`}
+										transform={`translate(${m.x} ${m.y}) rotate(${(m.angle * 180) / Math.PI})`}
+									/>
+								),
+						)}
+						{FIGHTER.hull.map((p, i) => (
+							<polygon
+								points={points([
+									[-3, 0],
+									p,
+									FIGHTER.hull[(i + 1) % FIGHTER.hull.length],
+								])}
+								fill={faceColor(
+									p,
+									FIGHTER.hull[(i + 1) % FIGHTER.hull.length],
+									-Math.PI / 2,
+									[105, 160, 177],
+								)}
+							/>
+						))}
+						<polygon
+							points={points(FIGHTER.ridge)}
+							fill={shade([130, 185, 195], -Math.PI / 2, 0.2)}
+						/>
+						<polygon points={points(FIGHTER.cockpit)} fill="#030609" />
+						{mounts.map(
+							(m, pose) =>
+								m.group === "aft" && (
+									<use
+										href={`#${prefix}-${index}-${pose + 1}`}
+										transform={`translate(${m.x + 5} ${m.y}) rotate(${(m.angle * 180) / Math.PI})`}
+									/>
+								),
+						)}
+					</g>
+				</svg>
+				<div class="detail">
+					<svg
+						viewBox="-16 -16 32 34"
+						role="img"
+						aria-label={`${concept.name} enlarged injector and reaction chamber`}
+					>
+						<use href={`#${prefix}-${index}-0`} transform="rotate(-90)" />
+					</svg>
+					<p>{concept.idea}</p>
+				</div>
+			</article>
+		))}
+</div>
+{!paleStruts && (
+	<div class="colors">
+		{colors.map((color) => (
+			<figure style={`color: ${color.value}`}>
+				<svg
+					viewBox="-16 -16 32 34"
+					role="img"
+					aria-label={`${color.name} on neck and vessel fusion engine`}
+				>
+					<use href="#fusion-body-0-0" transform="rotate(-90)" />
+				</svg>
+				<figcaption>
+					{color.name} <span>{color.value}</span>
+				</figcaption>
+			</figure>
+		))}
+	</div>
+)}
+<style>
+.concepts.single {
+	grid-template-columns: 1fr;
+	max-width: 620px;
+}
+.concepts {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-lg);
+	margin-block: var(--spacing-lg);
+}
+article {
+	border: var(--flight-border);
+	background: var(--color-void-light);
+	padding: var(--spacing-md);
+}
+h4 {
+	min-height: 2.7em;
+	color: var(--color-text);
+	margin: 0;
+	font-size: 1.1rem;
+}
+svg {
+	width: 100%;
+	height: 340px;
+	display: block;
+}
+.detail {
+	display: grid;
+	grid-template-columns: 90px 1fr;
+	gap: var(--spacing-md);
+	align-items: center;
+}
+.detail svg {
+	height: 130px;
+}
+p {
+	color: var(--color-text);
+	margin: 0;
+	font-size: var(--font-body);
+}
+@media (max-width: 900px) {
+	.detail {
+		grid-template-columns: 1fr;
+	}
+}
+@media (max-width: 620px) {
+	.concepts {
+		grid-template-columns: 1fr;
+	}
+}
+
+.colors {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-md);
+}
+.colors figure {
+	margin: 0;
+	text-align: center;
+	border: var(--flight-border);
+	padding: var(--spacing-md);
+}
+.colors svg {
+	height: 150px;
+}
+.colors span {
+	display: block;
+	font: var(--font-small) var(--font-flight);
+	margin-top: var(--spacing-sm);
+}
+@media (max-width: 500px) {
+	.colors {
+		grid-template-columns: 1fr;
+	}
+}
+</style>

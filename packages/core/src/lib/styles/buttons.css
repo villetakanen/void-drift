@@ -1,116 +1,189 @@
 .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--button-padding-y) var(--button-padding-x);
-    font-family: inherit;
-    font-size: var(--button-font-size);
-    font-weight: var(--button-font-weight);
-    line-height: 1;
-    min-height: var(--button-min-height);
-    border-radius: var(--button-border-radius);
-    cursor: pointer;
-    text-decoration: none;
-    transition: var(--button-transition);
-    border: none;
-    /* Borders are handled by clip-path and backgrounds */
+	--_padding-x: var(--button-padding-x);
+	--_padding-y: var(--button-padding-y);
+	--_line-height: 1;
+	--_cut-size: var(--button-cut-size);
+	--_radius: var(--button-border-radius);
+	--_outline-inset: var(--button-border-width);
+	--_transition: var(--button-transition);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--_padding-y) var(--_padding-x);
+	font-family: inherit;
+	font-size: var(--button-font-size);
+	font-weight: var(--button-font-weight);
+	line-height: var(--_line-height);
+	min-height: var(--button-min-height);
+	border-radius: var(--_radius);
+	cursor: pointer;
+	text-decoration: none;
+	transition: var(--_transition);
+	border: none;
+	/* Borders are handled by clip-path and backgrounds */
 
-    /* Reset and alignment fixes */
-    margin: 0;
-    box-sizing: border-box;
-    appearance: none;
-    vertical-align: middle;
-    position: relative;
-    z-index: 1;
+	/* Reset and alignment fixes */
+	margin: 0;
+	box-sizing: border-box;
+	appearance: none;
+	vertical-align: middle;
+	position: relative;
+	z-index: 1;
 
-    /* Futuristic Cut-off Corners */
-    clip-path: polygon(var(--button-cut-size) 0%,
-            100% 0%,
-            100% calc(100% - var(--button-cut-size)),
-            calc(100% - var(--button-cut-size)) 100%,
-            0% 100%,
-            0% var(--button-cut-size));
+	/* Futuristic Cut-off Corners */
+	clip-path: polygon(
+		var(--_cut-size) 0%,
+		100% 0%,
+		100% calc(100% - var(--_cut-size)),
+		calc(100% - var(--_cut-size)) 100%,
+		0% 100%,
+		0% var(--_cut-size)
+	);
 }
 
 .btn:focus-visible {
-    outline: 2px solid var(--color-neon-blue);
-    outline-offset: 4px;
-    /* Offset more to clear the cut corners */
+	outline: var(--focus-ring-width) solid var(--color-focus-ring);
+	outline-offset: var(--focus-ring-offset-inset);
 }
 
 /* Ghost variant (default) */
 .btn-ghost {
-    background: var(--color-neon-blue);
-    color: var(--color-neon-blue);
+	background: var(--color-neon-blue);
+	color: var(--color-neon-blue);
 }
 
 .btn-ghost::before {
-    content: "";
-    position: absolute;
-    inset: var(--button-border-width);
-    background: var(--color-void);
-    clip-path: inherit;
-    z-index: -1;
-    transition: background 0.15s ease;
+	content: "";
+	position: absolute;
+	inset: var(--_outline-inset);
+	background: var(--color-void);
+	clip-path: inherit;
+	z-index: -1;
+	transition: background var(--duration-fast) var(--ease-standard);
 }
 
-.btn-ghost:hover {
-    color: var(--color-void);
+.btn-ghost:hover:not(:disabled):not([aria-disabled="true"]) {
+	color: var(--color-void);
 }
 
-.btn-ghost:hover::before {
-    background: var(--color-neon-blue);
+.btn-ghost:hover:not(:disabled):not([aria-disabled="true"])::before {
+	background: var(--color-neon-blue);
 }
 
 /* Filled variant */
 .btn-filled {
-    background: var(--color-neon-blue);
-    color: var(--color-void);
+	background: var(--color-neon-blue);
+	color: var(--color-void);
 }
 
-.btn-filled:hover {
-    filter: brightness(1.2);
+.btn-filled:hover:not(:disabled):not([aria-disabled="true"]) {
+	filter: brightness(var(--state-hover-brightness));
 }
 
 /* Link variant */
 .btn-link {
-    background: transparent;
-    border: none;
-    color: var(--color-neon-blue);
-    padding: var(--spacing-sm);
-    min-height: auto;
-    clip-path: none;
-    /* No cut for simple links */
+	background: transparent;
+	border: none;
+	color: var(--color-neon-blue);
+	padding: var(--spacing-sm);
+	min-height: var(--control-min-height);
+	clip-path: none;
+	/* No cut for simple links */
 }
 
 .btn-link::before {
-    display: none;
+	display: none;
 }
 
-.btn-link:hover {
-    color: var(--color-text);
+.btn-link:hover:not(:disabled):not([aria-disabled="true"]) {
+	color: var(--color-text);
 }
 
 /* Danger variant */
 .btn-danger {
-    background: var(--color-red);
-    color: var(--color-red);
+	background: var(--color-red);
+	color: var(--color-red);
 }
 
 .btn-danger::before {
-    content: "";
-    position: absolute;
-    inset: var(--button-border-width);
-    background: var(--color-void);
-    clip-path: inherit;
-    z-index: -1;
-    transition: background 0.15s ease;
+	content: "";
+	position: absolute;
+	inset: var(--_outline-inset);
+	background: var(--color-void);
+	clip-path: inherit;
+	z-index: -1;
+	transition: background var(--duration-fast) var(--ease-standard);
 }
 
-.btn-danger:hover {
-    color: var(--color-text);
+.btn-danger:hover:not(:disabled):not([aria-disabled="true"]) {
+	color: var(--color-text);
 }
 
-.btn-danger:hover::before {
-    background: var(--color-red);
+.btn-danger:hover:not(:disabled):not([aria-disabled="true"])::before {
+	background: var(--color-red);
+}
+
+.btn:disabled,
+.btn[aria-disabled="true"] {
+	opacity: var(--state-disabled-opacity);
+	cursor: not-allowed;
+}
+.btn[aria-pressed="true"] {
+	box-shadow: inset 0 calc(-1 * var(--state-selected-indicator-width))
+		var(--color-acid-lime);
+}
+/* aria-disabled communicates state; callers must also suppress link activation. */
+.button-group-frame {
+	container-type: inline-size;
+}
+.button-group {
+	--_group-spacing: var(--spacing-sm);
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	gap: var(--_group-spacing);
+	padding: var(--_group-spacing);
+}
+.button-group__section {
+	display: contents;
+}
+.button-group--vertical {
+	--_stack-max: 320px;
+	flex-direction: column;
+	align-items: stretch;
+	width: min(100%, var(--_stack-max));
+	margin-inline: auto;
+	background: transparent;
+}
+.button-group--vertical > .button-group--vertical .btn {
+	width: 100%;
+	min-width: 0;
+}
+.button-group--strip {
+	justify-content: space-between;
+	background: var(--color-void);
+}
+.button-group__section {
+	display: flex;
+	align-items: center;
+	gap: var(--_group-spacing);
+}
+/* Private composition threshold, not a global device breakpoint. Host owns containment. */
+@container (max-width: 580px) {
+	.button-group--strip,
+	.button-group--strip > .button-group__section {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		width: 100%;
+	}
+	.button-group--strip .btn {
+		width: 100%;
+		min-width: 0;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.btn,
+	.btn::before {
+		transition: none;
+	}
 }

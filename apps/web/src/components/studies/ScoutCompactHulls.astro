@@ -1,0 +1,219 @@
+---
+import { buildMounts, defaultBuilds } from "@void-drift/mode-a";
+import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
+
+const mounts = buildMounts(defaultBuilds().scout);
+const variants = [
+	{
+		name: "01 / Blunt dart",
+		idea: "A round cockpit breaks the clipped nose; a short square tail carries A close behind H.",
+		hull: "-3,-21 3,-21 15,3 12,9 6,10 6,25 -6,25 -6,10 -12,9 -15,3",
+		cockpitY: -20,
+		radius: 5.5,
+		deckY: -7,
+		sideY: 2,
+		arm: 10.5,
+		aftY: 18,
+		angle: 26,
+	},
+	{
+		name: "02 / Broad shoulders",
+		idea: "A very short triangle wraps the engines; the exposed bubble leads a broad, crowded body.",
+		hull: "-3,-20 3,-20 17,1 16,8 7,10 6,25 -6,25 -7,10 -16,8 -17,1",
+		cockpitY: -20,
+		radius: 6,
+		deckY: -6,
+		sideY: 1,
+		arm: 11,
+		aftY: 18,
+		angle: 30,
+	},
+	{
+		name: "03 / Pinched tail",
+		idea: "The triangular shoulders pull sharply into a narrow neck, ending in a small aft platform.",
+		hull: "-2,-23 2,-23 15,3 12,10 4,12 4,15 6,17 6,25 -6,25 -6,17 -4,15 -4,12 -12,10 -15,3",
+		cockpitY: -21,
+		radius: 5.5,
+		deckY: -8,
+		sideY: 2,
+		arm: 10.5,
+		aftY: 20,
+		angle: 26,
+	},
+	{
+		name: "04 / Engine cheeks",
+		idea: "The engine pair moves up beside the deck fitting, making a dense forward cluster and a clear tail.",
+		hull: "-3,-22 3,-22 14,-5 15,4 9,10 6,12 6,25 -6,25 -6,12 -9,10 -15,4 -14,-5",
+		cockpitY: -21,
+		radius: 6,
+		deckY: -7,
+		sideY: -4,
+		arm: 11,
+		aftY: 18,
+		angle: 22,
+	},
+	{
+		name: "05 / Buried tail root",
+		idea: "A fuller lower triangle swallows the tail root; the aft fitting nearly touches the main body.",
+		hull: "-3,-22 3,-22 15,4 12,14 6,16 6,24 -6,24 -6,16 -12,14 -15,4",
+		cockpitY: -21,
+		radius: 5.5,
+		deckY: -8,
+		sideY: 3,
+		arm: 10.5,
+		aftY: 18,
+		angle: 30,
+	},
+	{
+		name: "06 / Small arrowhead",
+		idea: "A narrower arrowhead and almost touching center fittings compress the whole assembly around a large bubble.",
+		hull: "-2,-22 2,-22 13,0 14,7 6,11 5,24 -5,24 -6,11 -14,7 -13,0",
+		cockpitY: -21,
+		radius: 6,
+		deckY: -8,
+		sideY: 1,
+		arm: 10,
+		aftY: 13,
+		angle: 22,
+	},
+];
+---
+
+<div class="compact-hulls">
+	<label class="toggle"
+		><input type="checkbox" checked>
+		Show mount footprints</label
+	>
+	<div class="cards">
+		{variants.map((v, i) => (
+			<figure>
+				<figcaption>{v.name}</figcaption>
+				<svg
+					viewBox="-25 -33 50 68"
+					role="img"
+					aria-label={`${v.name}. ${v.idea} Cockpit first, one deck mount, two side engines and one tail mount. Nose up.`}
+				>
+					<defs>
+						<clipPath id={`scout-compact-${i}`}>
+							<polygon points={v.hull} />
+						</clipPath>
+					</defs>
+					<polygon points={v.hull} fill={FIGHTER.facets[4]} />
+					<g clip-path={`url(#scout-compact-${i})`}>
+						<polygon points="0,-30 -22,10 -6,14 0,1" fill={FIGHTER.facets[1]} />
+						<polygon points="0,-30 22,10 6,14 0,1" fill={FIGHTER.facets[3]} />
+						<polygon
+							points="0,-27 -5,-10 -6,28 0,28"
+							fill={FIGHTER.facets[0]}
+						/>
+						<polygon points="0,-27 5,-10 6,28 0,28" fill={FIGHTER.facets[5]} />
+						<polygon
+							points="-20,3 -6,8 -6,14 -20,10"
+							fill={FIGHTER.facets[2]}
+						/>
+					</g>
+					<circle
+						cx="0"
+						cy={v.cockpitY}
+						r={v.radius + 0.8}
+						fill={FIGHTER.facets[2]}
+					/>
+					<circle cx="0" cy={v.cockpitY} r={v.radius} fill="#000000" />
+					<g class="mounts">
+						{mounts.map((m) => {
+							const x =
+								m.group === "side" ? (m.index === 0 ? -v.arm : v.arm) : 0;
+							const y =
+								m.group === "side"
+									? v.sideY
+									: m.group === "hull"
+										? v.deckY
+										: v.aftY;
+							const angle =
+								m.group === "side" ? (m.index === 0 ? v.angle : -v.angle) : 0;
+							return (
+								<g transform={`translate(${x} ${y}) rotate(${angle})`}>
+									<rect
+										x={-m.height / 2}
+										y={-m.width / 2}
+										width={m.height}
+										height={m.width}
+									/>
+									<text text-anchor="middle" y="1.3">
+										{m.group === "side" ? "E" : m.group === "hull" ? "H" : "A"}
+									</text>
+								</g>
+							);
+						})}
+					</g>
+				</svg>
+				<p>{v.idea}</p>
+			</figure>
+		))}
+	</div>
+</div>
+<style>
+.toggle {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-sm);
+	min-height: 44px;
+	margin-bottom: var(--spacing-md);
+	cursor: pointer;
+}
+input {
+	accent-color: var(--color-acid-lime);
+	width: 20px;
+	height: 20px;
+}
+input:focus-visible {
+	outline: 2px solid var(--color-acid-lime);
+	outline-offset: 4px;
+}
+.cards {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-md);
+}
+figure {
+	margin: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+}
+figcaption {
+	color: var(--color-acid-lime);
+	font: var(--font-small) var(--font-flight);
+}
+svg {
+	display: block;
+	width: 100%;
+	height: 310px;
+	margin-block: var(--spacing-md);
+}
+.mounts rect {
+	fill: #071015;
+	fill-opacity: 0.65;
+	stroke: #e0ffff;
+	stroke-width: 0.4;
+}
+.mounts text {
+	fill: #e0ffff;
+	font: 3.5px var(--font-flight);
+}
+.compact-hulls:has(input:not(:checked)) .mounts {
+	display: none;
+}
+figure p {
+	margin: 0;
+}
+@media (max-width: 900px) {
+	.cards {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 580px) {
+	.cards {
+		grid-template-columns: 1fr;
+	}
+}
+</style>

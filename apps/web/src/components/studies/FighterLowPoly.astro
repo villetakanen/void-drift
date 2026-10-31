@@ -1,0 +1,188 @@
+---
+import { buildMounts, defaultLoadout } from "./ship-silhouette-reference";
+
+const mounts = buildMounts(defaultLoadout("balanced"));
+const forms = [
+	{
+		name: "A / Lance",
+		note: "Long, narrow spear with a raised central ridge.",
+		points: [
+			[48, 0],
+			[-24, -19],
+			[-19, 0],
+			[-24, 19],
+		],
+	},
+	{
+		name: "B / Razor delta",
+		note: "Broad swept wings; a low, continuous triangular body.",
+		points: [
+			[38, 0],
+			[-25, -34],
+			[-18, 0],
+			[-25, 34],
+		],
+	},
+	{
+		name: "C / Cutlass",
+		note: "Clipped shoulders and a hard, compact rear edge.",
+		points: [
+			[43, 0],
+			[-12, -27],
+			[-27, -22],
+			[-23, 0],
+			[-27, 22],
+			[-12, 27],
+		],
+	},
+	{
+		name: "D / Talon",
+		note: "A long nose between two restrained, swept wing tips.",
+		points: [
+			[46, 0],
+			[5, -11],
+			[-28, -32],
+			[-19, -10],
+			[-24, 0],
+			[-19, 10],
+			[-28, 32],
+			[5, 11],
+		],
+	},
+	{
+		name: "E / Trident",
+		note: "Forward wing shoulders flank the dominant central point.",
+		points: [
+			[46, 0],
+			[1, -12],
+			[12, -25],
+			[-26, -23],
+			[-20, 0],
+			[-26, 23],
+			[12, 25],
+			[1, 12],
+		],
+	},
+	{
+		name: "F / Dart",
+		note: "A narrow forebody opening into sharply swept rear wings.",
+		points: [
+			[48, 0],
+			[4, -9],
+			[-7, -21],
+			[-28, -29],
+			[-23, -8],
+			[-27, 0],
+			[-23, 8],
+			[-28, 29],
+			[-7, 21],
+			[4, 9],
+		],
+	},
+];
+const palette = [
+	"#c8f4f0",
+	"#83c7d0",
+	"#437e99",
+	"#264d6b",
+	"#365d79",
+	"#6193a9",
+];
+---
+
+<div class="fleet">
+	{forms.map((form) => (
+		<figure>
+			<figcaption>
+				<h4>{form.name}</h4>
+				<p>{form.note}</p>
+			</figcaption>
+			<svg
+				viewBox="0 0 320 310"
+				role="img"
+				aria-label={`${form.name}, solid low-poly Fighter with slots and small turned silhouette`}
+			>
+				{[
+					{ x: 160, y: 155, scale: 2.5, angle: -90 },
+					{ x: 115, y: 270, scale: 0.65, angle: -45 },
+				].map((view) => (
+					<g
+						transform={`translate(${view.x} ${view.y}) scale(${view.scale}) rotate(${view.angle})`}
+					>
+						{form.points.map((point, index) => {
+							const next = form.points[(index + 1) % form.points.length];
+							const upper = (point[1] + next[1]) / 2 < 0;
+							return (
+								<polygon
+									points={`-3,0 ${point.join(",")} ${next.join(",")}`}
+									fill={palette[upper ? index % 3 : 3 + (index % 3)]}
+								/>
+							);
+						})}
+						<polygon points="38,0 -15,-4 -21,0 -15,4" fill="#a2d8df" />
+						<polygon points="38,0 -21,0 -15,4" fill="#51869e" />
+						{mounts.map((mount) => (
+							<rect
+								x="-5"
+								y="-4"
+								width="10"
+								height="8"
+								fill="#122d43"
+								opacity=".65"
+								transform={`translate(${mount.x} ${mount.y}) rotate(${(mount.angle * 180) / Math.PI})`}
+							/>
+						))}
+					</g>
+				))}
+				<polygon
+					points={form.points.map((p) => p.join(",")).join(" ")}
+					fill="#bdd6df"
+					transform="translate(230 270) scale(.65) rotate(-90)"
+				/>
+			</svg>
+		</figure>
+	))}
+</div>
+<style>
+.fleet {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-lg);
+	margin-block: var(--spacing-lg);
+}
+figure {
+	margin: 0;
+	min-width: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+}
+h4 {
+	margin-bottom: var(--spacing-sm);
+}
+p {
+	color: var(--color-text-dim);
+	font-size: var(--font-small);
+	min-height: 4.5em;
+}
+svg {
+	display: block;
+	width: 100%;
+}
+@media (max-width: 850px) {
+	.fleet {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 480px) {
+	.fleet {
+		grid-template-columns: 1fr;
+	}
+	svg {
+		max-width: 320px;
+		margin: auto;
+	}
+	p {
+		min-height: 0;
+	}
+}
+</style>

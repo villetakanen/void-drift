@@ -1,0 +1,105 @@
+---
+import { buildMounts } from "../../../../../packages/mode-a/src/lib/build-renderer";
+import { defaultLoadout } from "../../../../../packages/mode-a/src/lib/schemas/loadout";
+
+const outline = "29.2,-5 22,-11 7,-13 -29.2,-5 -29.2,5 7,13 22,11 29.2,5";
+const mounts = buildMounts(defaultLoadout("scout")).map((m) => ({
+	...m,
+	x: m.group === "side" ? 10 : m.group === "hull" ? -6 : -25.5,
+	y: m.group === "side" ? (m.index === 0 ? -14 : 14) : 0,
+}));
+---
+
+<figure>
+	<svg
+		viewBox="0 0 640 570"
+		role="img"
+		aria-label="One compact Wasp Scout: forward black cockpit, two side-engine slots ahead of a single central hull slot, one aft engine slot at the rear. Small Scout and Fighter silhouettes compare length at equal scale."
+	>
+		{[
+			{ x: 320, y: 235, s: 4.7 },
+			{ x: 245, y: 485, s: 0.8 },
+		].map((v) => (
+			<g transform={`translate(${v.x} ${v.y}) scale(${v.s}) rotate(-90)`}>
+				<polygon points={outline} fill="#83c7d0" />
+				<polygon
+					points="29.2,-5 22,-11 7,-13 -29.2,-5 -29.2,0 7,-6 22,-7"
+					fill="#c8f4f0"
+				/>
+				<polygon
+					points="29.2,5 22,11 7,13 -29.2,5 -29.2,0 7,0 22,7"
+					fill="#365d79"
+				/>
+				<polygon points="8,0 -29.2,0 -29.2,-5 7,-6" fill="#a2d8df" />
+				<polygon points="27,-3 27,3 21,8 13,5 13,-5 21,-8" fill="#000" />
+				{mounts.map((m) => (
+					<g
+						transform={`translate(${m.x} ${m.y}) rotate(${(m.angle * 180) / Math.PI})`}
+					>
+						<title>{m.label}</title>
+						<rect
+							x={m.group === "side" ? -7 : -5.5}
+							y="-4.5"
+							width={m.group === "side" ? 14 : 11}
+							height="9"
+							fill="#071015"
+							fill-opacity=".38"
+							stroke="#e0ffff"
+							stroke-opacity=".75"
+							stroke-width=".28"
+						/>
+					</g>
+				))}
+			</g>
+		))}
+		<g class="annotations">
+			<path d="M251 188 H170 V145 H65" />
+			<text x="65" y="125">SIDE ENGINES · FORWARD</text>
+			<path d="M344 263 H465" />
+			<text x="470" y="267">HULL SLOT</text>
+			<path d="M344 355 H465" />
+			<text x="470" y="359">AFT ENGINE</text>
+		</g>
+		<polygon
+			points="48,0 -18,-20 -25,-17 -19,0 -25,17 -18,20"
+			fill="#6193a9"
+			transform="translate(395 485) scale(.8) rotate(-90)"
+		/>
+		<text class="annotations" x="245" y="540" text-anchor="middle">SCOUT</text>
+		<text class="annotations" x="395" y="540" text-anchor="middle">
+			FIGHTER · SAME SCALE
+		</text>
+	</svg>
+	<figcaption>
+		One arrangement proposal. Translucent areas are slots, not finished parts.
+		Scout hull length: 80% of the Fighter.
+	</figcaption>
+</figure>
+<style>
+figure {
+	margin: var(--spacing-lg) 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+}
+svg {
+	display: block;
+	width: 100%;
+	max-width: 800px;
+	margin: auto;
+}
+.annotations {
+	fill: var(--color-text-dim);
+	font-family: inherit;
+	font-size: 11px;
+}
+.annotations path {
+	fill: none;
+	stroke: var(--color-text-dim);
+	stroke-width: 1;
+}
+figcaption {
+	color: var(--color-text-dim);
+	font-size: var(--font-small);
+	text-align: center;
+}
+</style>

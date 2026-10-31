@@ -1,0 +1,540 @@
+---
+import EngineFamilyComparison from "../../../components/studies/EngineFamilyComparison.astro";
+import EngineSlotHighlights from "../../../components/studies/EngineSlotHighlights.svelte";
+import EngineSlotPlayground from "../../../components/studies/EngineSlotPlayground.svelte";
+import EngineSurfacePlayground from "../../../components/studies/EngineSurfacePlayground.svelte";
+import FusionChamberConcepts from "../../../components/studies/FusionChamberConcepts.astro";
+import IonFamilyProportions from "../../../components/studies/IonFamilyProportions.astro";
+import LightIonConcepts from "../../../components/studies/LightIonConcepts.astro";
+import PlasmaChamberConcepts from "../../../components/studies/PlasmaChamberConcepts.astro";
+import PlasmaVesselConcepts from "../../../components/studies/PlasmaVesselConcepts.astro";
+import PlasmaVesselFirstPass from "../../../components/studies/PlasmaVesselFirstPass.astro";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((entry) => entry.slug === "engine-identities");
+---
+
+<StudyLayout study={study}>
+	<section aria-labelledby="purpose">
+		<h2 id="purpose">01 / Recognize the engine before it fires</h2>
+		<p>
+			Choosing an engine should feel like choosing a different kind of machine.
+			Consider inspecting one in the catalog, then fitting it to a small, angled
+			side mount: its low-poly body should retain its identity at both scales,
+			even with the engine off. Silhouette, proportions and a few clear facets
+			must carry that distinction without relying on a label, color or plume.
+		</p>
+		<p>
+			Engines form families, with room for subtypes within each family. Each is
+			an architectural choice: its advantages come with costs, and suitability
+			for a side mount can differ from suitability for an aft mount. Family
+			identity should survive changes in size and capability; a subtype should
+			look purpose-built rather than simply ranked above its sibling.
+		</p>
+		<p>
+			The agreed scope includes how characteristics inform those identities:
+			continuous or pulsed thrust, acceleration, powered top speed, mass and
+			energy demand. These are investigation axes, not assigned engine behaviors
+			yet. Light ion, heavy ion, fission and a fourth engine remain the starting
+			lineup to test, within a language that can accommodate future subtypes.
+		</p>
+		<p>
+			The tension is between recognizable machinery in a catalog and compact
+			forms that remain legible on a crowded ship. We will examine standalone
+			bodies and fitted versions together. Plumes and exhaust effects are
+			outside this study. The parallel
+			<a href="/lab/studies/ship-slot-language">slot language study</a>
+			owns mounting cues and fitting interactions; this one owns the installed
+			engine's identity.
+		</p>
+	</section>
+	<section aria-labelledby="exploration">
+		<h2 id="exploration">
+			02 / Family resemblance and architectural differences
+		</h2>
+		<h3>02.1 / Shared construction, different proportions</h3>
+		<p>
+			One visual hypothesis: repeated construction identifies a family, while
+			proportions and component count identify its subtype. The ions share a
+			longitudinal spine and split outlet; fission uses a compact shielded body;
+			a provisional pulse engine uses separated chambers. These are body
+			sketches, not accepted technology assignments or simulated performance.
+		</p>
+		<EngineFamilyComparison />
+		<p>
+			All four use the same neutral palette. Each appears enlarged in the
+			catalog and at the same world scale in the production Fighter hull and
+			mount coordinates, once as a side pair and once as an aft pair. Hull
+			facets and mount transforms come from shared definitions; the engine
+			geometry is a study fixture. Forward is up. No plumes or other equipment
+			are shown. This comparison can reveal resemblance, crowding and
+			orientation; it cannot establish handling, pulse timing or balance.
+			Suggested roles below each body are hypotheses for later flight
+			investigation.
+		</p>
+		<p>
+			Review: the owner found 02.1 successful in showing that three distinct
+			families, including ion subtypes, can work. The proposed styling is far
+			from the intended aesthetic; no engine shape or performance assignment was
+			accepted. The next investigation deliberately shifts to faceted surfaces,
+			shared lighting and the engine's relationship to the hull.
+		</p>
+		<h3 id="surface-playground">02.2 / Engines in the ship's light</h3>
+		<p>
+			Start with light ion in all four Fighter mounts. Try a raised ridge or a
+			beveled deck, charcoal or mid-tone bodies, and restrained electric-blue
+			accents. Move the sun or rotate the ship: the hull and engine faces use
+			the same directional shading, including the angled side engines. Compare
+			above-hull and below-hull layering separately for the side and aft pairs.
+		</p>
+		<EngineSurfacePlayground client:load />
+		<p>
+			This is a study-local fake-3D lighting model using the production Fighter
+			hull and mount coordinates. Engine geometry and material values are
+			experiments; the other three bodies are comparison fixtures, not settled
+			designs. Below-hull means draw-order occlusion, without cast shadows or
+			physical mounting depth. Accents are unlit color inlays, without glow.
+			Lighting is not yet integrated into the game. Controls work with keyboard
+			and touch; settings are temporary and reset when this page reloads. Plumes
+			and handling remain outside this example.
+		</p>
+		<p>
+			Review: the owner accepted dark charcoal as the engine material direction
+			and found the faceted fake-3D treatment successful. The playground offered
+			too many options for this stage. For the Fighter, side engines belong
+			below the hull and aft engines above it, slightly nearer the cockpit. Ion
+			blue belongs at the emission end. Engine shape remains open.
+		</p>
+		<h3 id="light-ion-concepts">02.3 / Six light-ion machines</h3>
+		<p>
+			Six fixed proposals focus on the light ion alone. Each Fighter carries
+			four copies of the same engine, with side bodies below the hull and aft
+			bodies above. The aft pair moves four model units toward the cockpit in
+			this fixture; that amount is provisional. Hull, side positions, angles,
+			scale, charcoal material and upper-left light stay constant.
+		</p>
+		<LightIonConcepts />
+		<p>
+			The enlarged body beside each description exposes details hidden by the
+			hull. Blue is confined to the outlet or recessed emitter. The expected
+			straight ion stream informs the axial shapes, but no plume is drawn. Dish,
+			collar, focusing prongs and stepped casing are visual proposals, not new
+			mechanics. Shared Fighter geometry and mount transforms are reused;
+			layering, aft offset and engine bodies remain study-local.
+		</p>
+		<p>
+			Decision: 02.3 / 01 Needle accelerator is the accepted ion shape
+			direction: tapered charcoal casing, axial facets, recessed end and one
+			narrow blue emission slit. The owner requested the aft pair slightly
+			closer to the cockpit again. The six concepts remain unchanged as the
+			reviewed reference.
+		</p>
+		<h3 id="ion-family">02.4 / One needle, three proportions</h3>
+		<p>
+			Use the accepted needle unchanged as the medium reference, then compare a
+			lighter and heavier sibling. Medium is an exploratory stepping stone; the
+			intended lineup still contains light and heavy ion only. All three keep
+			the same construction, charcoal material, blue outlet and lighting. Only
+			casing proportions change: light is 80% as long and 75% as wide; heavy is
+			115% as long and 145% as wide as the reference.
+		</p>
+		<IonFamilyProportions />
+		<p>
+			Each ship carries four matching engines. Side engines remain below the
+			hull; aft engines stay above and move one additional model unit toward the
+			cockpit, five total from the production mount position. This is about two
+			to three displayed pixels depending on card width. Standalone bodies share
+			a common scale so their proportions can be compared directly. Geometry and
+			placement are study fixtures; performance remains unassigned.
+		</p>
+		<p>
+			Decision: 02.4 / 02 Medium is the accepted small/light ion body, and 02.4
+			/ 03 Heavy is the accepted heavy ion body. The reduced 01 is not selected;
+			medium does not become a third product. Preserve those exact proportions,
+			facets and blue outlet details. Ion appearance is settled for this cycle;
+			its implementation and performance remain separate work.
+		</p>
+		<h3 id="fusion-chambers">02.5 / Feed machinery and a pulse chamber</h3>
+		<p>
+			Fusion's intended character is fluctuating power from repeated fusion
+			pulses. Its body should explain two connected assemblies: forward
+			machinery feeds a separate reaction chamber, and the release opening
+			belongs to that chamber. These three proposals compare a neck, exposed
+			braces and an open cup. The same charcoal, light, Fighter mounting
+			positions and layering are retained; all three use chartreuse so shape can
+			be judged separately.
+		</p>
+		<FusionChamberConcepts />
+		<p>
+			In each enlarged engine, the injector is at the top, the connector in the
+			middle and the reaction chamber with its release opening at the bottom.
+			The three color samples repeat the first body unchanged: reactor green,
+			acid chartreuse and sulfur yellow are science-fiction visual associations,
+			not a claim about the physical color of radiation. Accent is confined to
+			the chamber opening, preserving the distinction from ion blue.
+		</p>
+		<p>
+			Fusion is treated here as the newly proposed family, distinct from the
+			existing fission engine; it does not silently replace fission. Pulse
+			timing, power balance and plumes are not implemented or demonstrated by
+			these static bodies. The question is whether the connected machinery and
+			chamber read clearly, especially where the ship covers the side engines.
+		</p>
+		<p>
+			Decision: 02.5 / 02 Braced chamber and acid chartreuse (#c6ff32) are
+			accepted for the fusion direction. Preserve the separate injector, paired
+			struts, open center and aft reaction chamber. The next refinement tests
+			pale struts; their color is not yet accepted.
+		</p>
+		<h3 id="fusion-pale-struts">02.6 / Pale struts against charcoal</h3>
+		<p>
+			The selected braced chamber now has white-ish, cool ship-colored struts.
+			They retain a light and shaded side under the same sun, while remaining
+			paler than the charcoal machinery. Geometry, chartreuse outlet, mounting
+			and scale are unchanged; 02.5 preserves the darker-strut reference.
+		</p>
+		<FusionChamberConcepts paleStruts />
+		<p>
+			Decision: 02.6 is approved as the fusion engine's visual design. Preserve
+			the 02 braced chamber geometry, charcoal injector and reaction chamber,
+			paired pale ship-colored struts with directional shading, open center, and
+			acid chartreuse (#c6ff32) release opening. Its intended output is pulsed;
+			timing, balance and plume design remain unresolved. Accepted is not
+			integrated: production implementation is still separate work.
+		</p>
+		<p>
+			The intended four-engine lineup now has settled visual designs for small
+			ion (02.4 / 02), heavy ion (02.4 / 03) and fusion (02.6). The fourth
+			engine is now being explored as a plasma drive with delayed onset. The
+			existing production fission engine's migration or replacement remains an
+			integration question, not a fifth entry assumed by this study.
+		</p>
+		<h3 id="plasma-trial">02.7 / Plasma: contain, build, release</h3>
+		<p>
+			Plasma is the fourth-engine trial: holding thrust initially produces no
+			force, then a strong blast. This rewards anticipating a maneuver and makes
+			aft mounting a natural fit; it can make quick corrections harder. That
+			delayed onset distinguishes it from fusion's repeated pulses. Whether the
+			blast becomes sustained output while held, and what release does during
+			buildup, remain open behavior questions.
+		</p>
+		<p>
+			Three body proposals make stored energy visible through a contained core,
+			retaining bands and a broad outlet. Each uses charcoal, orange accents and
+			the same Fighter lighting and mounts, with side engines below and aft
+			engines above. All four mounts are populated to expose fit, not to endorse
+			plasma for every position. The color strip repeats the magnetic bottle
+			unchanged in orange, amber and yellow.
+		</p>
+		<PlasmaChamberConcepts />
+		<p>
+			The intended sequence is
+			<strong>hold → buildup without thrust → blast</strong>. Chamber indicators
+			could show progress during the delay so the input feels acknowledged; that
+			feedback is a proposal, not yet selected. These static bodies show an
+			energized appearance, not an animation or a flight trial. Delay duration,
+			force, energy cost and cancellation need later investigation. Plumes
+			remain outside this study; none is drawn here.
+		</p>
+		<p>
+			<strong>Decision:</strong>
+			Amber (#ffb52e) is accepted as the plasma accent. None of these three body
+			designs is accepted; they remain here as the first exploration.
+		</p>
+		<h3 id="plasma-vessels">02.8 / Plasma: industrial pressure assemblies</h3>
+		<p>
+			The first vessel pass was rejected: the containers looked like toys and
+			the coil channels were too long. The revised direction is dangerous
+			industrial science fiction: larger pressure vessels, reinforced
+			restraints, armored connections and short magnetic exhaust throats. Amber
+			(#ffb52e) stays accepted.
+		</p>
+		<p>
+			Six variations compare two twin-cylinder assemblies, two long tanks and
+			two stacked-sphere assemblies. Charcoal, shared lighting and Fighter mount
+			positions stay fixed. Side engines sit below the hull; aft engines sit
+			above it.
+		</p>
+		<PlasmaVesselConcepts />
+		<p>
+			Static body studies only: the intended buildup and hot-plasma blast are
+			not simulated, and no plume is drawn.
+		</p>
+		<p class="invitation">
+			<strong
+				>Which assembly feels like dangerous pressure machinery, and which still
+				feels too toy-like?</strong
+			>
+		</p>
+		<details>
+			<summary>Rejected first vessel pass</summary>
+			<p>
+				Preserved for comparison: small containers and overly elongated coil
+				channels. None of these three shapes was accepted.
+			</p>
+			<PlasmaVesselFirstPass />
+		</details>
+		<h3 id="plasma-simplified">02.9 / Armored containment in broad facets</h3>
+		<p>
+			<strong>Decision:</strong>
+			02.8 / 04 Armored containment is the preferred plasma direction. Its
+			bottle body and coil chamber work, but the assembly is far too detailed.
+			The next pass keeps those proportions and reduces the construction to
+			broad low-poly planes.
+		</p>
+		<PlasmaVesselConcepts simplified />
+		<p>
+			The small valve, tank straps, side fittings and body indicator are
+			removed. One integrated armor edge, two coarse coil bands and the amber
+			outlet remain. The Fighter positions, layering and scale are unchanged.
+		</p>
+		<p class="invitation">
+			<strong
+				>Does this retain the pressure-vessel character while fitting the game's
+				simpler vector language?</strong
+			>
+		</p>
+		<p>
+			<strong>Approved:</strong>
+			All four engine appearances are settled: small ion = 02.4 / 02, heavy ion
+			= 02.4 / 03, fusion = 02.6 pale-strut braced chamber, plasma = 02.9
+			simplified armored containment. Preserve their shapes, charcoal facets,
+			blue/chartreuse/amber accents and material feel. This approves appearance,
+			not performance tuning or production integration.
+		</p>
+		<h3 id="engine-slots">02.10 / Engines inside the ship editor</h3>
+		<p>
+			The next question is how the approved bodies occupy the accepted editor
+			slots. A side engine can sit below the hull in flight but needs a
+			complete, recognizable representation when editing. Compare a fitted slot
+			illustration against physical-size hull layering, then switch to ship-only
+			view.
+		</p>
+		<EngineSlotPlayground client:load />
+		<p>
+			This Fighter plan reuses production mount coordinates and slot dimensions,
+			plus the exact approved engine SVG definitions above. Slot artwork scale
+			is experimental. The slot palette and linked-secondary treatment come from
+			the completed slot study; this does not reopen engine appearance.
+		</p>
+		<p class="invitation">
+			<strong
+				>Does drawing the complete engine inside its slot make fitting clear
+				while preserving its identity on the ship?</strong
+			>
+		</p>
+		<p>
+			<strong>Decision:</strong>
+			Shrinking an engine to fit a slot loses its visual character. Engine scale
+			must match the ship exactly. In the editor, the full engine must be
+			visible above the hull, including side engines. The slot is an attachment
+			marker, not a box that contains the artwork.
+		</p>
+		<h3 id="engine-highlights">02.11 / Full-size engines and selection</h3>
+		<p>
+			Keep the engines visible at full size over a 70% opaque editor hull. The
+			selected item uses soft backlight. Unselected bodies retain their normal
+			material and a dark separation edge; slot layers draw in a fixed order:
+			side, aft, then hull/Q. The side pair remains linked.
+		</p>
+		<EngineSlotHighlights client:load />
+		<p>
+			<strong>Layering decision:</strong>
+			Side slots are below aft slots; hull/Q slots are above both. Each slot
+			draws its background, then its part and highlight, then its border and
+			labels. Selection does not reorder slots.
+		</p>
+		<p>
+			Engine geometry, color, size and mount positions are fixed. The accepted
+			slot sizes, frames and selection corners are settled and remain unchanged.
+			Slot backgrounds sit behind the engines; borders, selection corners and
+			labels draw above them. The extra engine-sized brackets have been removed:
+			the selected engine uses the approved soft backlight. Flight layering
+			remains available for comparison.
+		</p>
+		<p>
+			<strong>Approved for Fighter:</strong>
+			Soft backlight around the selected part, 70% hull opacity, full-size
+			engines above the editor hull, and fixed side → aft → hull/Q ordering.
+			Slot backgrounds stay behind their parts; borders and labels stay above.
+			Slot geometry remains unchanged.
+		</p>
+		<h3 id="scout-engine-slots">02.12 / Scout engine selector</h3>
+		<p>
+			<strong>Scout placement decision:</strong>
+			All three engines sit below the hull in flight. In both views, each engine
+			starts at its slot’s top edge and extends outward at full size. The editor
+			keeps engines visible above the hull. The linked-slot connector routes
+			above the ship.
+		</p>
+		<p>
+			Apply the same treatment to the Scout's current hull. Slot 04 and its
+			engine move three model units aft in this clearance trial; other mounts
+			retain production positions. Try all four engines in the linked side pair
+			and aft slot, especially the wider fusion and plasma bodies. The Fighter's
+			extra aft offset is not applied to the Scout.
+		</p>
+		<EngineSlotHighlights
+			chassis="scout"
+			title="Scout engine selector"
+			client:load
+		/>
+		<p class="invitation">
+			<strong
+				>Does the approved editor treatment stay clear on the Scout's tighter,
+				angled mounts?</strong
+			>
+		</p>
+		<p>
+			<strong>Scout approved:</strong>
+			Preserve the slot-top engine alignment in both views, all three engines
+			beneath the hull in flight, slot 04 three model units farther aft, and
+			linkage above the ship.
+		</p>
+		<h3 id="battleship-engine-slots">02.13 / Battleship engine selector</h3>
+		<p>
+			The battleship uses the current heavy-cruiser hull and its production
+			mounts: a linked side pair and three independent aft slots. Try the four
+			accepted engines with the same soft selection backlight, 70% editor hull
+			and side → aft → hull/Q ordering. Flight starts with side engines below
+			the hull and aft engines above it; battleship placement is still under
+			review.
+		</p>
+		<p>
+			The rectangular nose support plate has been removed to restore the tapered
+			bow. Side slots and their engines move one model unit inward (roughly four
+			displayed pixels) and turn five degrees farther outward. All three aft
+			slots and their engines move three model units toward the cockpit in this
+			placement trial (roughly 12 displayed pixels).
+		</p>
+		<EngineSlotHighlights
+			chassis="tank"
+			title="Battleship engine selector"
+			client:load
+		/>
+		<p class="invitation">
+			<strong
+				>Do the engines sit naturally on the battleship, especially across its
+				three aft slots?</strong
+			>
+		</p>
+	</section>
+	<section aria-labelledby="next">
+		<h2 id="next">03 / Readiness for the player trial</h2>
+		<p>
+			All four bodies and the Fighter, Scout and battleship fitting treatments
+			are approved. Existing loadout physics already supplies mass-dependent
+			acceleration, independent engine speed taper, energy use and deterministic
+			fixed steps. The integration adds per-mount timers, shared engine
+			polygons, editor layering and mount-relative exhaust origins. Gravity and
+			friction stay unchanged.
+		</p>
+		<p>
+			Heavy ion’s powered ceiling is 750. The remaining numbers below are the
+			implementation’s first balance proposal, authorized for player testing
+			rather than claimed final. Peak acceleration equals thrust divided by the
+			whole ship’s mass; angled side engines contribute only their forward
+			component. Mixed engines keep their own ceilings and never brake overspeed
+			gained from gravity.
+		</p>
+		<table>
+			<thead>
+				<tr>
+					<th>Engine</th>
+					<th>Mass</th>
+					<th>Peak thrust</th>
+					<th>Powered ceiling</th>
+					<th>Energy/s held</th>
+					<th>Response</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Small ion</td>
+					<td>10</td>
+					<td>12,000</td>
+					<td>500</td>
+					<td>2</td>
+					<td>Immediate and steady</td>
+				</tr>
+				<tr>
+					<td>Heavy ion</td>
+					<td>20</td>
+					<td>20,000</td>
+					<td>750</td>
+					<td>3</td>
+					<td>Immediate and steady</td>
+				</tr>
+				<tr>
+					<td>Fusion</td>
+					<td>16</td>
+					<td>48,000</td>
+					<td>550</td>
+					<td>3</td>
+					<td>0.18s firing / 0.45s cycle (19,200 mean thrust)</td>
+				</tr>
+				<tr>
+					<td>Plasma</td>
+					<td>24</td>
+					<td>38,000</td>
+					<td>700</td>
+					<td>5</td>
+					<td>0.6s charge, then sustained</td>
+				</tr>
+			</tbody>
+		</table>
+		<p>
+			Fusion starts with a pulse on press; release cuts thrust but does not skip
+			recovery. Plasma consumes energy during charging; releasing or losing
+			power resets its charge. Each side responds independently and aft engines
+			activate when both controls are held. Holding inputs draws the listed
+			power throughout charging and pulse recovery. No extra heat or fuel
+			subsystem is introduced. Player review must assess pulse steering, delay
+			readability and endurance.
+		</p>
+	</section>
+	<section aria-labelledby="integration">
+		<h2 id="integration">04 / Integration</h2>
+		<p>
+			<strong>Implemented locally:</strong>
+			The approved bodies, mounts, editor treatments and first-pass engine
+			behavior now run in the shared builder and custom flight. Public
+			deployment is separate.
+		</p>
+		<p>
+			Promote the accepted 02.4/02 and 02.4/03 ion polygons, 02.6 pale-strut
+			fusion and 02.9 plasma into shared Canvas/catalog artwork. Promote the
+			final mount offsets and side angles into shared mount construction. Draw
+			editor hulls at 70%, with per-slot background → full-size engine and soft
+			selected backlight → border/labels, ordered side → aft → hull. Scout
+			engines all sit beneath its hull in flight; Fighter and battleship aft
+			engines sit above.
+		</p>
+		<p>
+			Extend the Zod part contract before simulation and UI consumers. Keep
+			timers on each Simulation, advance them in physical time, and apply energy
+			delivery to thrust rather than timer speed. Connect HUD charging/pulse
+			feedback and plume emission to actual output. Reset old ship saves as
+			requested: version 2 accepts only the four new engines, and the builder
+			removes version-1 storage.
+		</p>
+		<p>
+			The canonical integrated trial is <a href="/lab/builder">Lab builder</a>,
+			with the same shipyard and flight systems at
+			<a href="/builder">Play builder</a>. Custom survival remains unranked;
+			legacy stock score profiles are unchanged. Verify timing, cancellation,
+			overspeed, deterministic replay, slot order, all mounts and browser
+			fitting/flight. Existing plume rendering is reused; new plume aesthetics
+			and final balance remain follow-up design work. Local verification and
+			public release are recorded separately.
+		</p>
+	</section>
+</StudyLayout>
+
+<style>
+.invitation {
+	border-left: 2px solid var(--color-acid-lime);
+	padding-left: var(--spacing-md);
+}
+</style>

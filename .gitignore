@@ -26,3 +26,11 @@ dist-ssr
 # Build artifacts
 .vite/
 .astro/
+
+# Local verification evidence and browser artifacts
+artifacts/
+playwright-report/
+test-results/
+
+.firebase/
+*-debug.log

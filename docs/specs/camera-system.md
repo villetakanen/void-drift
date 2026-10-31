@@ -1,13 +1,17 @@
+> Historical specification. Current alpha behavior is defined in [playable-alpha.md](playable-alpha.md).
+
 # Feature: Camera System
 
 ## Blueprint
 
 ### Context
+
 The Camera system provides smooth, cinematic tracking of game entities within a fixed 16:9 viewport. It decouples the logical game world from the physical screen dimensions, ensuring consistent gameplay across different display sizes and aspect ratios.
 
 ### Architecture
 
 #### Camera Class
+
 - **Location:** `packages/core/src/lib/physics/Camera.ts`
 - **Responsibility:** Transform world coordinates to screen space with smooth interpolation
 - **Key Properties:**
@@ -17,11 +21,13 @@ The Camera system provides smooth, cinematic tracking of game entities within a 
   - `smoothing` - Interpolation factor (0 = instant, higher = more lag)
 
 #### Coordinate Systems
+
 1. **World Space:** Absolute positions in the game world (e.g., ship at (1000, 500))
 2. **Screen Space:** Positions relative to the canvas (0,0 = top-left of viewport)
 3. **Window Space:** Browser window coordinates (for input handling)
 
 #### Transform Pipeline
+
 ```
 World Position → Camera Transform → Screen Position → CSS Scale → Window Position
      (1000, 500)      translate       (40, 50)         scale      (80, 100)
@@ -65,9 +71,11 @@ Screen Y = World Y - offset.y
 ### Key Methods
 
 #### `setTarget(x, y)`
+
 Sets the position the camera should follow. Typically called with the player ship's position each frame.
 
 #### `update(dt)`
+
 Interpolates camera position toward target using frame-rate independent smoothing:
 ```
 factor = smoothing * dt * 60
@@ -76,26 +84,28 @@ pos.y += (target.y - pos.y) * factor
 ```
 
 #### `applyTransform(ctx)`
+
 Applies the camera offset to the rendering context. Call this before drawing game objects:
 ```javascript
-const offset = camera.getViewOffset()
-ctx.translate(-offset.x, -offset.y)
+const offset = camera.getViewOffset();
+ctx.translate(-offset.x, -offset.y);
 ```
 
 #### `worldToScreen(x, y)` / `screenToWorld(x, y)`
+
 Convert between coordinate systems. Essential for mouse/touch input handling.
 
 ### Integration with Renderer
 
 ```typescript
-renderer.clear()
-renderer.beginCamera(camera)  // ctx.save() + translate
-  
-// Draw all game objects in world space
-renderer.drawStar(star)
-renderer.drawShip(ship)
+renderer.clear();
+renderer.beginCamera(camera); // ctx.save() + translate
 
-renderer.endCamera()  // ctx.restore()
+// Draw all game objects in world space
+renderer.drawStar(star);
+renderer.drawShip(ship);
+
+renderer.endCamera(); // ctx.restore()
 
 // Draw HUD in screen space (HTML overlay)
 ```
@@ -111,38 +121,38 @@ The game canvas is wrapped in a responsive container that:
 **CSS Implementation:**
 ```css
 .viewport-wrapper {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .game-container {
-  /* Width/height set dynamically via JS */
-  position: relative;
-  background: var(--color-void);
+	/* Width/height set dynamically via JS */
+	position: relative;
+	background: var(--color-void);
 }
 
 .game-canvas {
-  width: 100%;
-  height: 100%;
+	width: 100%;
+	height: 100%;
 }
 ```
 
 **JavaScript Resize Logic:**
 ```javascript
-const windowRatio = window.innerWidth / window.innerHeight
-const targetRatio = 16 / 9
+const windowRatio = window.innerWidth / window.innerHeight;
+const targetRatio = 16 / 9;
 
 if (windowRatio > targetRatio) {
-  // Fit to height, letterbox sides
-  height = window.innerHeight
-  width = height * targetRatio
+	// Fit to height, letterbox sides
+	height = window.innerHeight;
+	width = height * targetRatio;
 } else {
-  // Fit to width, letterbox top/bottom
-  width = window.innerWidth
-  height = width / targetRatio
+	// Fit to width, letterbox top/bottom
+	width = window.innerWidth;
+	height = width / targetRatio;
 }
 ```
 
@@ -202,6 +212,7 @@ At smoothing = 0.1:
 ## Contract
 
 ### Definition of Done
+
 - [x] Camera class implemented with smooth interpolation
 - [x] Viewport constrained to 16:9 regardless of window size
 - [x] Camera follows ship without jitter or lag spikes
@@ -210,34 +221,37 @@ At smoothing = 0.1:
 - [x] Zero frame drops on 60Hz displays (iPhone 12+, desktop)
 
 ### Regression Guardrails
+
 - **Aspect Ratio:** Must remain exactly 16:9 on all window sizes
 - **Performance:** Camera.update() must complete in <0.2ms
 - **Coordinate Accuracy:** worldToScreen(screenToWorld(x, y)) must return original (x, y)
 - **Smoothing:** Camera must reach target within 1 second (smoothing = 0.1)
 
 ### Dependencies
+
 - `Vec2` class from Physics module
 - `Renderer.beginCamera()` / `Renderer.endCamera()` methods
 - GameWrapper component for viewport container
 
 ### Public API
+
 ```typescript
 // Create camera with 16:9 viewport
 const camera = new Camera({
-  viewportWidth: 1920,
-  viewportHeight: 1080,
-  smoothing: 0.1
-})
+	viewportWidth: 1920,
+	viewportHeight: 1080,
+	smoothing: 0.1,
+});
 
 // Every frame
-camera.setTarget(ship.pos.x, ship.pos.y)
-camera.update(deltaTime)
+camera.setTarget(ship.pos.x, ship.pos.y);
+camera.update(deltaTime);
 
 // Rendering
-renderer.beginCamera(camera)
+renderer.beginCamera(camera);
 // ... draw game objects ...
-renderer.endCamera()
+renderer.endCamera();
 
 // Input handling
-const worldPos = camera.screenToWorld(touchX, touchY)
+const worldPos = camera.screenToWorld(touchX, touchY);
 ```

@@ -20,6 +20,7 @@ Void Drift has pivoted from a **multiplayer-first** approach to a **single-playe
 ## What Changed
 
 ### Before (Original Vision)
+
 ```
 Phase 1-4: Physics sandbox ✅ DONE
 Phase 5: Networking & Lobbies
@@ -36,6 +37,7 @@ Phase 8: Leaderboard & polish
 ---
 
 ### After (New Vision)
+
 ```
 Phase 1-4: Physics sandbox ✅ DONE (v0.0.4)
 Phase 5: Survival Core ← YOU ARE HERE (v0.1.0)
@@ -135,12 +137,14 @@ Restart
 ### Six PBIs (26 Story Points Total) — ALL COMPLETE
 
 #### PBI-015: Resource HUD Design (5 SP) ✅
+
 - Hull & Power bar designs with 3 color states
 - Death cause iconography (STAR/HULL/POWER)
 - Timer display format
 - Gallery integration with sliders
 
 #### PBI-016: Resource Logic (8 SP) ✅
+
 - Hull & Power tracking (100% → 0%)
 - Power consumption (constant drain, scales with thrust)
 - Sun proximity zones (4 zones: refuel + burn)
@@ -148,6 +152,7 @@ Restart
 - Star contact instant death
 
 #### PBI-017: Timer & Death Logic (5 SP) ✅
+
 - Timer system (starts on first input)
 - Game state machine (MENU → PLAYING → GAME_OVER)
 - Death detection (STAR > HULL > POWER priority)
@@ -156,15 +161,18 @@ Restart
 - Restart flow (reset all state)
 
 #### PBI-018: Settings Route (3 SP) ✅
+
 - `/settings` Astro page
 - Control inversion toggle (swap left/right)
 - Nanostores with localStorage persistence
 - Immediate application (no restart needed)
 
 #### PBI-019: Lab Refactor (3 SP) ✅
+
 - Restructured gallery/lab component organization
 
 #### PBI-020: Menu Overlay (2 SP) ✅
+
 - Menu overlay with TAP TO START
 - Settings link for navigation
 - `--color-overlay` design token
@@ -176,18 +184,21 @@ Restart
 ## Success Metrics (v0.1.0) ✅ VERIFIED
 
 ### Technical
+
 - ✅ 60 FPS on desktop + mobile
 - ✅ Zero TypeScript errors
 - ✅ Resource updates < 0.5ms
 - ✅ No memory leaks
 
 ### Gameplay
+
 - ✅ 60-90s average survival time (balanced difficulty)
 - ✅ All three death causes occur naturally
 - ✅ Sun approach feels risky but necessary
 - ✅ Power consumption scales with thrust (50%/75% boost)
 
 ### UX
+
 - ✅ Controls responsive (< 50ms latency)
 - ✅ Timer always visible and accurate
 - ✅ Settings persist across sessions (nanostores)
@@ -217,6 +228,7 @@ Restart
 ## Roadmap Post-v0.1.0
 
 ### Phase 6: High Score System (v0.2.0)
+
 - Firebase Anonymous Auth
 - Firestore leaderboard schema
 - 3-letter initials entry UI
@@ -228,6 +240,7 @@ Restart
 ---
 
 ### Phase 7: Content & Polish (v0.3.0)
+
 - Add 2-3 more planets (orbital variety)
 - Sound effects (thrust, collision, death)
 - Visual effects (particles, screen shake)
@@ -238,6 +251,7 @@ Restart
 ---
 
 ### Phase 8: Ship Mode A (v1.0.0)
+
 - Firebase Hosting deployment
 - Social sharing (auto-generate score images)
 - Analytics (survival stats)
@@ -329,12 +343,12 @@ Zone 4 (> 350px): Safe Zone
 
 ## Risk Assessment
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Fuel consumption too fast | Players die in < 30s | Tuning constants, playtesting |
-| Sun zones not balanced | Avoid sun entirely | Adjust regen/burn ratio |
-| Performance regression | FPS drops below 60 | Profile early, optimize |
-| Settings don't apply live | Bad UX (restart needed) | Pass settings reactively |
+| Risk                      | Impact                  | Mitigation                    |
+| ------------------------- | ----------------------- | ----------------------------- |
+| Fuel consumption too fast | Players die in < 30s    | Tuning constants, playtesting |
+| Sun zones not balanced    | Avoid sun entirely      | Adjust regen/burn ratio       |
+| Performance regression    | FPS drops below 60      | Profile early, optimize       |
+| Settings don't apply live | Bad UX (restart needed) | Pass settings reactively      |
 
 ---
 
@@ -359,7 +373,7 @@ Zone 4 (> 350px): Safe Zone
 
 **Product Vision:** ✅ APPROVED  
 **Phase 5 Scope:** ✅ COMPLETE  
-**PBI Breakdown:** ✅ ALL SHIPPED  
+**PBI Breakdown:** ✅ ALL SHIPPED
 
 **Next Step:** Phase 6 — High Score System (v0.2.0)
 

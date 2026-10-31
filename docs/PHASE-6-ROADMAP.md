@@ -55,6 +55,7 @@ Phase 6 prepares the codebase for future Mode B (multiplayer) while completing M
 ### Track A: Foundation (v0.1.x)
 
 #### PBI-021: Package Restructure
+
 **Priority:** HIGH  
 **Estimate:** 5 Story Points  
 **Target Version:** v0.1.1
@@ -98,6 +99,7 @@ packages/
 ---
 
 #### PBI-022: Button Design System
+
 **Priority:** MEDIUM  
 **Estimate:** 3 Story Points  
 **Target Version:** v0.1.2
@@ -118,6 +120,7 @@ packages/
 ---
 
 #### PBI-023: Sun Scale System
+
 **Priority:** MEDIUM  
 **Estimate:** 5 Story Points  
 **Target Version:** v0.1.3
@@ -129,11 +132,11 @@ packages/
 - Sun type preview in lab with selector
 
 **Sun Types:**
-| Type | Size | Gravity | Power | Burn | Color |
-|------|------|---------|-------|------|-------|
-| Red Giant | 60px | 0.5x | 0.6x | 0.5x | Red |
-| Yellow Dwarf | 40px | 1.0x | 1.0x | 1.0x | Orange |
-| Blue Dwarf | 25px | 1.5x | 1.5x | 1.8x | Blue |
+| Type         | Size | Gravity | Power | Burn | Color  |
+| ------------ | ---- | ------- | ----- | ---- | ------ |
+| Red Giant    | 60px | 0.5x    | 0.6x  | 0.5x | Red    |
+| Yellow Dwarf | 40px | 1.0x    | 1.0x  | 1.0x | Orange |
+| Blue Dwarf   | 25px | 1.5x    | 1.5x  | 1.8x | Blue   |
 
 **Success Criteria:**
 - Each run has random sun type
@@ -145,6 +148,7 @@ packages/
 ---
 
 #### PBI-024: Lab Stats View
+
 **Priority:** LOW  
 **Estimate:** 3 Story Points  
 **Target Version:** v0.1.3
@@ -168,6 +172,7 @@ packages/
 ### Track B: High Scores with Supabase (v0.2.0)
 
 #### PBI-026: Supabase Project Setup
+
 **Priority:** HIGH  
 **Estimate:** 2 Story Points  
 **Target Version:** v0.2.0
@@ -206,6 +211,7 @@ create index highscores_seconds_idx on highscores (seconds asc, created_at asc);
 ---
 
 #### PBI-027: Supabase Client Setup
+
 **Priority:** HIGH  
 **Estimate:** 3 Story Points  
 **Target Version:** v0.2.0
@@ -219,19 +225,21 @@ create index highscores_seconds_idx on highscores (seconds asc, created_at asc);
 
 **Implementation:**
 ```typescript
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
 export const supabase = createClient(
-  import.meta.env.PUBLIC_SUPABASE_URL,
-  import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+	import.meta.env.PUBLIC_SUPABASE_URL,
+	import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
 );
 
 export async function ensureAnonymousSession() {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) {
-    await supabase.auth.signInAnonymously();
-  }
-  return session;
+	const {
+		data: { session },
+	} = await supabase.auth.getSession();
+	if (!session) {
+		await supabase.auth.signInAnonymously();
+	}
+	return session;
 }
 ```
 
@@ -246,6 +254,7 @@ export async function ensureAnonymousSession() {
 ---
 
 #### PBI-028: High Score Schema + Submission
+
 **Priority:** HIGH  
 **Estimate:** 3 Story Points  
 **Target Version:** v0.2.0
@@ -258,14 +267,14 @@ export async function ensureAnonymousSession() {
 
 **Schema:**
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 export const HighScoreSchema = z.object({
-  initials: z.string().regex(/^[A-Z]{3}$/),
-  uidHash: z.string().length(6),
-  seconds: z.number().int().positive().max(999999),
-  deathCause: z.enum(['STAR', 'HULL', 'POWER']),
-  userId: z.string().uuid(),
+	initials: z.string().regex(/^[A-Z]{3}$/),
+	uidHash: z.string().length(6),
+	seconds: z.number().int().positive().max(999999),
+	deathCause: z.enum(["STAR", "HULL", "POWER"]),
+	userId: z.string().uuid(),
 });
 
 export type HighScore = z.infer<typeof HighScoreSchema>;
@@ -282,6 +291,7 @@ export type HighScore = z.infer<typeof HighScoreSchema>;
 ---
 
 #### PBI-029: Initials Entry UI
+
 **Priority:** HIGH  
 **Estimate:** 5 Story Points  
 **Target Version:** v0.2.0
@@ -311,6 +321,7 @@ Game Over → InitialsEntry → Submitting... → Leaderboard
 ---
 
 #### PBI-030: Leaderboard Display
+
 **Priority:** HIGH  
 **Estimate:** 3 Story Points  
 **Target Version:** v0.2.0
@@ -326,10 +337,10 @@ Game Over → InitialsEntry → Submitting... → Leaderboard
 **Query:**
 ```typescript
 const { data: scores } = await supabase
-  .from('highscores')
-  .select('*')
-  .order('seconds', { ascending: true })
-  .limit(20);
+	.from("highscores")
+	.select("*")
+	.order("seconds", { ascending: true })
+	.limit(20);
 ```
 
 **Success Criteria:**
@@ -346,22 +357,26 @@ const { data: scores } = await supabase
 ## Implementation Strategy
 
 ### v0.1.1: Testing & Package Restructure
+
 - **PBI-031:** Vitest Setup & Unit Testing (Mandatory)
 - **PBI-021:** Split engine → core + mode-a
 - Pure refactor, no functional changes
 - **Critical for v0.2.0:** Enables Mode A to have Supabase dependencies
 
 ### v0.1.2: Design System Polish
+
 - **PBI-022:** Button Design System
 - Unified button styles across app
 - Prepares UI foundation for leaderboard components
 
 ### v0.1.3: Sun Variety & Lab Improvements
+
 - **PBI-023:** Sun Scale System (random sun types)
 - **PBI-024:** Lab Stats View (entity stats in lab)
 - Adds gameplay variety and polish
 
 ### v0.2.0: High Score System with Supabase
+
 1. **PBI-026:** Supabase Project Setup (infrastructure)
 2. **PBI-027:** Supabase Client Setup (auth + client)
 3. **PBI-028:** High Score Schema + Submission (backend logic)
@@ -375,11 +390,13 @@ const { data: scores } = await supabase
 ## Dependencies
 
 ### External Dependencies
+
 - ✅ Phase 5 complete (v0.1.0 shipped)
 - ⏳ Supabase project setup required for Track B
 - ⏳ Supabase CLI installed (`npm install -g supabase`)
 
 ### Internal Dependencies
+
 - **Critical:** PBI-021 (Package Restructure) must complete before Track B
 - Supabase PBIs should execute in order (026 → 027 → 028 → 029 → 030)
 - PBI-022 (Button Design) should complete before UI PBIs (029, 030)
@@ -389,6 +406,7 @@ const { data: scores } = await supabase
 ## Success Metrics
 
 ### Technical
+
 - Zero TypeScript errors after restructure
 - Build time not significantly increased
 - No runtime regressions
@@ -396,6 +414,7 @@ const { data: scores } = await supabase
 - Session persists across page refreshes
 
 ### Gameplay (v0.2.0)
+
 - Player can submit score after death
 - Leaderboard displays within 2 seconds
 - Scores persist across sessions
@@ -442,6 +461,7 @@ create table matches (
 ## Resources
 
 ### Documentation
+
 - [Supabase Migration Assessment](./SUPABASE-MIGRATION-ASSESSMENT.md) — Full technical analysis
 - [Leaderboard System Spec](./specs/leaderboard-system.md) — Feature spec (TBD)
 
@@ -466,6 +486,7 @@ create table matches (
 ## Changelog
 
 ### 2025-12-25: Architecture Pivot to Supabase
+
 - ❌ Removed PBI-025 (Firebase Project Setup)
 - ✅ Added PBI-026 (Supabase Project Setup)
 - ✅ Added PBI-027 (Supabase Client Setup)

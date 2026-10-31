@@ -1,15 +1,15 @@
 ---
-import Layout from "../layouts/Layout.astro";
 import SettingsPage from "../components/Settings.svelte";
+import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-  <!-- @ts-ignore -->
-  <SettingsPage client:only="svelte" />
+	<!-- @ts-ignore -->
+	<SettingsPage client:only="svelte" />
 </Layout>
 
 <style>
-  :global(body) {
-    overflow: auto;
-  }
+:global(body) {
+	overflow: auto;
+}
 </style>

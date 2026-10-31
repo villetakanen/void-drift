@@ -1,0 +1,175 @@
+---
+import { buildMounts, defaultBuilds } from "@void-drift/mode-a";
+import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
+
+const mounts = buildMounts(defaultBuilds().scout);
+const variants = [
+	{
+		name: "A / Original Split knives",
+		idea: "The preserved reference: a fast swept body, with the diamond attached through a pinched neck.",
+		tail: "0,4 8,18 0,32 -8,18",
+	},
+	{
+		name: "B / Joined stern",
+		idea: "Only the upper tail widens into the body. The cockpit, wing sweep, tail tip and fitting positions stay unchanged.",
+		tail: "-5,4 5,4 8,18 0,32 -8,18",
+	},
+].map((v) => ({
+	...v,
+	hull: "0,-22 19,16 12,10 10,1 5,7 -5,7 -10,1 -12,10 -19,16",
+	cockpitY: -21,
+	radius: 6,
+	deckY: -7,
+	sideY: 2,
+	arm: 10.5,
+	aftY: 17,
+	angle: 26,
+}));
+---
+
+<div class="joined-stern">
+	<label class="toggle"
+		><input type="checkbox" checked>
+		Show mount footprints</label
+	>
+	<div class="cards">
+		{variants.map((v, i) => (
+			<figure>
+				<figcaption>{v.name}</figcaption>
+				<svg
+					viewBox="-25 -33 50 72"
+					role="img"
+					aria-label={`${v.name}. ${v.idea} Cockpit first, one deck mount, two side engines and one tail mount. Nose up.`}
+				>
+					<defs>
+						<clipPath id={`scout-joined-${i}`}>
+							<polygon points={v.hull} />
+						</clipPath>
+					</defs>
+					<polygon points={v.tail} fill={FIGHTER.facets[2]} />
+					<defs>
+						<clipPath id={`scout-joined-tail-${i}`}>
+							<polygon points={v.tail} />
+						</clipPath>
+					</defs>
+					<g clip-path={`url(#scout-joined-tail-${i})`}>
+						<polygon points="-16,4 0,4 0,34" fill={FIGHTER.facets[1]} />
+						<polygon points="0,4 16,4 0,34" fill={FIGHTER.facets[3]} />
+						<polygon points="0,6 2,18 0,32 -2,18" fill={FIGHTER.facets[5]} />
+					</g>
+					<polygon points={v.hull} fill={FIGHTER.facets[4]} />
+					<g clip-path={`url(#scout-joined-${i})`}>
+						<polygon points="0,-24 -22,18 -8,4 0,-8" fill={FIGHTER.facets[1]} />
+						<polygon points="0,-24 22,18 8,4 0,-8" fill={FIGHTER.facets[3]} />
+						<polygon points="0,-24 -4,-10 -4,10 0,7" fill={FIGHTER.facets[0]} />
+						<polygon points="0,-24 4,-10 4,10 0,7" fill={FIGHTER.facets[5]} />
+						<polygon
+							points="-20,-24 -20,18 -10,4 -8,-12"
+							fill={FIGHTER.facets[2]}
+						/>
+					</g>
+					<circle
+						cx="0"
+						cy={v.cockpitY}
+						r={v.radius + 0.8}
+						fill={FIGHTER.facets[2]}
+					/>
+					<circle cx="0" cy={v.cockpitY} r={v.radius} fill="#000000" />
+					<g class="mounts">
+						{mounts.map((m) => {
+							const x =
+								m.group === "side" ? (m.index === 0 ? -v.arm : v.arm) : 0;
+							const y =
+								m.group === "side"
+									? v.sideY
+									: m.group === "hull"
+										? v.deckY
+										: v.aftY;
+							const angle =
+								m.group === "side" ? (m.index === 0 ? v.angle : -v.angle) : 0;
+							return (
+								<g transform={`translate(${x} ${y}) rotate(${angle})`}>
+									<rect
+										x={-m.height / 2}
+										y={-m.width / 2}
+										width={m.height}
+										height={m.width}
+									/>
+									<text text-anchor="middle" y="1.3">
+										{m.group === "side" ? "E" : m.group === "hull" ? "H" : "A"}
+									</text>
+								</g>
+							);
+						})}
+					</g>
+				</svg>
+				<p>{v.idea}</p>
+			</figure>
+		))}
+	</div>
+</div>
+<style>
+.toggle {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-sm);
+	min-height: 44px;
+	margin-bottom: var(--spacing-md);
+	cursor: pointer;
+}
+input {
+	accent-color: var(--color-acid-lime);
+	width: 20px;
+	height: 20px;
+}
+input:focus-visible {
+	outline: 2px solid var(--color-acid-lime);
+	outline-offset: 4px;
+}
+.cards {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--spacing-md);
+}
+figure {
+	margin: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+}
+figcaption {
+	color: var(--color-acid-lime);
+	font: var(--font-small) var(--font-flight);
+}
+svg {
+	display: block;
+	width: 100%;
+	height: 310px;
+	margin-block: var(--spacing-md);
+}
+.mounts rect {
+	fill: #071015;
+	fill-opacity: 0.65;
+	stroke: #e0ffff;
+	stroke-width: 0.4;
+}
+.mounts text {
+	fill: #e0ffff;
+	font: 3.5px var(--font-flight);
+}
+.joined-stern:has(input:not(:checked)) .mounts {
+	display: none;
+}
+figure p {
+	margin: 0;
+}
+@media (max-width: 900px) {
+	.cards {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 580px) {
+	.cards {
+		grid-template-columns: 1fr;
+	}
+}
+</style>

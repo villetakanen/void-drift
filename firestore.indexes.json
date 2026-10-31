@@ -1,0 +1,13 @@
+{
+	"indexes": [
+		{
+			"collectionGroup": "scores",
+			"queryScope": "COLLECTION",
+			"fields": [
+				{ "fieldPath": "challenge", "order": "ASCENDING" },
+				{ "fieldPath": "seconds", "order": "DESCENDING" }
+			]
+		}
+	],
+	"fieldOverrides": []
+}

@@ -49,253 +49,256 @@ This PBI implements a procedural audio system using the Web Audio API. All sound
 **File:** `packages/core/src/lib/audio/SoundManager.ts`
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 export const SoundConfigSchema = z.object({
-  masterVolume: z.number().min(0).max(1),
-  muted: z.boolean(),
+	masterVolume: z.number().min(0).max(1),
+	muted: z.boolean(),
 });
 
 export type SoundConfig = z.infer<typeof SoundConfigSchema>;
 
 export class SoundManager {
-  private ctx: AudioContext | null = null;
-  private masterGain: GainNode | null = null;
-  private config: SoundConfig;
-  private initialized = false;
+	private ctx: AudioContext | null = null;
+	private masterGain: GainNode | null = null;
+	private config: SoundConfig;
+	private initialized = false;
 
-  constructor(config: SoundConfig) {
-    this.config = config;
-  }
+	constructor(config: SoundConfig) {
+		this.config = config;
+	}
 
-  /**
-   * Initialize AudioContext (must be called after user interaction).
-   * @returns true if successful, false if blocked by browser
-   */
-  async init(): Promise<boolean> {
-    if (this.initialized) return true;
+	/**
+	 * Initialize AudioContext (must be called after user interaction).
+	 * @returns true if successful, false if blocked by browser
+	 */
+	async init(): Promise<boolean> {
+		if (this.initialized) return true;
 
-    try {
-      this.ctx = new AudioContext();
-      this.masterGain = this.ctx.createGain();
-      this.masterGain.connect(this.ctx.destination);
-      this.updateVolume();
-      this.initialized = true;
-      return true;
-    } catch (error) {
-      console.warn('Web Audio API not supported:', error);
-      return false;
-    }
-  }
+		try {
+			this.ctx = new AudioContext();
+			this.masterGain = this.ctx.createGain();
+			this.masterGain.connect(this.ctx.destination);
+			this.updateVolume();
+			this.initialized = true;
+			return true;
+		} catch (error) {
+			console.warn("Web Audio API not supported:", error);
+			return false;
+		}
+	}
 
-  /**
-   * Resume AudioContext if suspended (handles autoplay restrictions).
-   */
-  async resume(): Promise<void> {
-    if (this.ctx?.state === 'suspended') {
-      await this.ctx.resume();
-    }
-  }
+	/**
+	 * Resume AudioContext if suspended (handles autoplay restrictions).
+	 */
+	async resume(): Promise<void> {
+		if (this.ctx?.state === "suspended") {
+			await this.ctx.resume();
+		}
+	}
 
-  /**
-   * Update master volume.
-   */
-  setVolume(volume: number): void {
-    this.config.masterVolume = Math.max(0, Math.min(1, volume));
-    this.updateVolume();
-  }
+	/**
+	 * Update master volume.
+	 */
+	setVolume(volume: number): void {
+		this.config.masterVolume = Math.max(0, Math.min(1, volume));
+		this.updateVolume();
+	}
 
-  /**
-   * Toggle mute state.
-   */
-  setMuted(muted: boolean): void {
-    this.config.muted = muted;
-    this.updateVolume();
-  }
+	/**
+	 * Toggle mute state.
+	 */
+	setMuted(muted: boolean): void {
+		this.config.muted = muted;
+		this.updateVolume();
+	}
 
-  private updateVolume(): void {
-    if (!this.masterGain) return;
-    const volume = this.config.muted ? 0 : this.config.masterVolume;
-    this.masterGain.gain.setValueAtTime(volume, this.ctx!.currentTime);
-  }
+	private updateVolume(): void {
+		if (!this.masterGain) return;
+		const volume = this.config.muted ? 0 : this.config.masterVolume;
+		this.masterGain.gain.setValueAtTime(volume, this.ctx!.currentTime);
+	}
 
-  /**
-   * Play thrust sound (loopable, modulated by throttle).
-   * @param throttle - 0.0 to 1.0 (engine power)
-   * @returns Stop function
-   */
-  playThrust(throttle: number): () => void {
-    if (!this.ctx || !this.masterGain) return () => {};
+	/**
+	 * Play thrust sound (loopable, modulated by throttle).
+	 * @param throttle - 0.0 to 1.0 (engine power)
+	 * @returns Stop function
+	 */
+	playThrust(throttle: number): () => void {
+		if (!this.ctx || !this.masterGain) return () => {};
 
-    const now = this.ctx.currentTime;
+		const now = this.ctx.currentTime;
 
-    // Noise generator (white noise for rocket exhaust)
-    const bufferSize = this.ctx.sampleRate * 2;
-    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = Math.random() * 2 - 1;
-    }
+		// Noise generator (white noise for rocket exhaust)
+		const bufferSize = this.ctx.sampleRate * 2;
+		const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+		const data = buffer.getChannelData(0);
+		for (let i = 0; i < bufferSize; i++) {
+			data[i] = Math.random() * 2 - 1;
+		}
 
-    const noise = this.ctx.createBufferSource();
-    noise.buffer = buffer;
-    noise.loop = true;
+		const noise = this.ctx.createBufferSource();
+		noise.buffer = buffer;
+		noise.loop = true;
 
-    // Lowpass filter (modulated by throttle)
-    const filter = this.ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(200 + throttle * 1800, now); // 200-2000 Hz
-    filter.Q.setValueAtTime(1.0, now);
+		// Lowpass filter (modulated by throttle)
+		const filter = this.ctx.createBiquadFilter();
+		filter.type = "lowpass";
+		filter.frequency.setValueAtTime(200 + throttle * 1800, now); // 200-2000 Hz
+		filter.Q.setValueAtTime(1.0, now);
 
-    // Gain (volume modulated by throttle)
-    const gain = this.ctx.createGain();
-    gain.gain.setValueAtTime(throttle * 0.15, now); // Max 15% volume
+		// Gain (volume modulated by throttle)
+		const gain = this.ctx.createGain();
+		gain.gain.setValueAtTime(throttle * 0.15, now); // Max 15% volume
 
-    // Connect graph: noise → filter → gain → master
-    noise.connect(filter);
-    filter.connect(gain);
-    gain.connect(this.masterGain);
+		// Connect graph: noise → filter → gain → master
+		noise.connect(filter);
+		filter.connect(gain);
+		gain.connect(this.masterGain);
 
-    noise.start(now);
+		noise.start(now);
 
-    // Return stop function
-    return () => {
-      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx!.currentTime + 0.1);
-      noise.stop(this.ctx!.currentTime + 0.1);
-    };
-  }
+		// Return stop function
+		return () => {
+			gain.gain.exponentialRampToValueAtTime(
+				0.001,
+				this.ctx!.currentTime + 0.1,
+			);
+			noise.stop(this.ctx!.currentTime + 0.1);
+		};
+	}
 
-  /**
-   * Play collision sound (short explosion).
-   * @param intensity - 0.0 to 1.0 (impact severity)
-   */
-  playCollision(intensity: number): void {
-    if (!this.ctx || !this.masterGain) return;
+	/**
+	 * Play collision sound (short explosion).
+	 * @param intensity - 0.0 to 1.0 (impact severity)
+	 */
+	playCollision(intensity: number): void {
+		if (!this.ctx || !this.masterGain) return;
 
-    const now = this.ctx.currentTime;
-    const duration = 0.2; // 200ms
+		const now = this.ctx.currentTime;
+		const duration = 0.2; // 200ms
 
-    // Sawtooth oscillator (harsh, retro explosion)
-    const osc = this.ctx.createOscillator();
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(120, now);
-    osc.frequency.exponentialRampToValueAtTime(40, now + duration);
+		// Sawtooth oscillator (harsh, retro explosion)
+		const osc = this.ctx.createOscillator();
+		osc.type = "sawtooth";
+		osc.frequency.setValueAtTime(120, now);
+		osc.frequency.exponentialRampToValueAtTime(40, now + duration);
 
-    // Gain envelope (sharp attack, exponential decay)
-    const gain = this.ctx.createGain();
-    gain.gain.setValueAtTime(intensity * 0.3, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+		// Gain envelope (sharp attack, exponential decay)
+		const gain = this.ctx.createGain();
+		gain.gain.setValueAtTime(intensity * 0.3, now);
+		gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
-    // Connect: osc → gain → master
-    osc.connect(gain);
-    gain.connect(this.masterGain);
+		// Connect: osc → gain → master
+		osc.connect(gain);
+		gain.connect(this.masterGain);
 
-    osc.start(now);
-    osc.stop(now + duration);
-  }
+		osc.start(now);
+		osc.stop(now + duration);
+	}
 
-  /**
-   * Play countdown sound (simple beep).
-   * @param pitch - Frequency in Hz (higher for final beep)
-   */
-  playCountdown(pitch: number): void {
-    if (!this.ctx || !this.masterGain) return;
+	/**
+	 * Play countdown sound (simple beep).
+	 * @param pitch - Frequency in Hz (higher for final beep)
+	 */
+	playCountdown(pitch: number): void {
+		if (!this.ctx || !this.masterGain) return;
 
-    const now = this.ctx.currentTime;
-    const duration = 0.1; // 100ms beep
+		const now = this.ctx.currentTime;
+		const duration = 0.1; // 100ms beep
 
-    const osc = this.ctx.createOscillator();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(pitch, now);
+		const osc = this.ctx.createOscillator();
+		osc.type = "sine";
+		osc.frequency.setValueAtTime(pitch, now);
 
-    const gain = this.ctx.createGain();
-    gain.gain.setValueAtTime(0.2, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+		const gain = this.ctx.createGain();
+		gain.gain.setValueAtTime(0.2, now);
+		gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
-    osc.connect(gain);
-    gain.connect(this.masterGain);
+		osc.connect(gain);
+		gain.connect(this.masterGain);
 
-    osc.start(now);
-    osc.stop(now + duration);
-  }
+		osc.start(now);
+		osc.stop(now + duration);
+	}
 
-  /**
-   * Play death sound (noise burst).
-   */
-  playDeath(): void {
-    if (!this.ctx || !this.masterGain) return;
+	/**
+	 * Play death sound (noise burst).
+	 */
+	playDeath(): void {
+		if (!this.ctx || !this.masterGain) return;
 
-    const now = this.ctx.currentTime;
-    const duration = 0.5; // 500ms
+		const now = this.ctx.currentTime;
+		const duration = 0.5; // 500ms
 
-    // White noise burst
-    const bufferSize = this.ctx.sampleRate * duration;
-    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize); // Fade out
-    }
+		// White noise burst
+		const bufferSize = this.ctx.sampleRate * duration;
+		const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+		const data = buffer.getChannelData(0);
+		for (let i = 0; i < bufferSize; i++) {
+			data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize); // Fade out
+		}
 
-    const noise = this.ctx.createBufferSource();
-    noise.buffer = buffer;
+		const noise = this.ctx.createBufferSource();
+		noise.buffer = buffer;
 
-    // Bandpass filter (mid-range crunch)
-    const filter = this.ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.setValueAtTime(800, now);
-    filter.Q.setValueAtTime(2.0, now);
+		// Bandpass filter (mid-range crunch)
+		const filter = this.ctx.createBiquadFilter();
+		filter.type = "bandpass";
+		filter.frequency.setValueAtTime(800, now);
+		filter.Q.setValueAtTime(2.0, now);
 
-    const gain = this.ctx.createGain();
-    gain.gain.setValueAtTime(0.4, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+		const gain = this.ctx.createGain();
+		gain.gain.setValueAtTime(0.4, now);
+		gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
-    noise.connect(filter);
-    filter.connect(gain);
-    gain.connect(this.masterGain);
+		noise.connect(filter);
+		filter.connect(gain);
+		gain.connect(this.masterGain);
 
-    noise.start(now);
-  }
+		noise.start(now);
+	}
 
-  /**
-   * Play "Get Ready" sound (arpeggio).
-   */
-  playGetReady(): void {
-    if (!this.ctx || !this.masterGain) return;
+	/**
+	 * Play "Get Ready" sound (arpeggio).
+	 */
+	playGetReady(): void {
+		if (!this.ctx || !this.masterGain) return;
 
-    const now = this.ctx.currentTime;
-    const notes = [262, 330, 392]; // C4, E4, G4 (C major arpeggio)
-    const noteDuration = 0.15;
+		const now = this.ctx.currentTime;
+		const notes = [262, 330, 392]; // C4, E4, G4 (C major arpeggio)
+		const noteDuration = 0.15;
 
-    notes.forEach((freq, index) => {
-      const startTime = now + index * noteDuration;
+		notes.forEach((freq, index) => {
+			const startTime = now + index * noteDuration;
 
-      const osc = this.ctx!.createOscillator();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(freq, startTime);
+			const osc = this.ctx!.createOscillator();
+			osc.type = "triangle";
+			osc.frequency.setValueAtTime(freq, startTime);
 
-      const gain = this.ctx!.createGain();
-      gain.gain.setValueAtTime(0.2, startTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + noteDuration);
+			const gain = this.ctx!.createGain();
+			gain.gain.setValueAtTime(0.2, startTime);
+			gain.gain.exponentialRampToValueAtTime(0.001, startTime + noteDuration);
 
-      osc.connect(gain);
-      gain.connect(this.masterGain!);
+			osc.connect(gain);
+			gain.connect(this.masterGain!);
 
-      osc.start(startTime);
-      osc.stop(startTime + noteDuration);
-    });
-  }
+			osc.start(startTime);
+			osc.stop(startTime + noteDuration);
+		});
+	}
 
-  /**
-   * Cleanup resources.
-   */
-  dispose(): void {
-    if (this.ctx) {
-      this.ctx.close();
-      this.ctx = null;
-      this.masterGain = null;
-      this.initialized = false;
-    }
-  }
+	/**
+	 * Cleanup resources.
+	 */
+	dispose(): void {
+		if (this.ctx) {
+			this.ctx.close();
+			this.ctx = null;
+			this.masterGain = null;
+			this.initialized = false;
+		}
+	}
 }
 ```
 
@@ -306,35 +309,35 @@ export class SoundManager {
 **File:** `apps/web/src/stores/settings.ts`
 
 ```typescript
-import { atom } from 'nanostores';
-import { persistentAtom } from '@nanostores/persistent';
+import { atom } from "nanostores";
+import { persistentAtom } from "@nanostores/persistent";
 
 export interface Settings {
-  controlsInverted: boolean;
-  volume: number; // 0.0 to 1.0
-  muted: boolean;
+	controlsInverted: boolean;
+	volume: number; // 0.0 to 1.0
+	muted: boolean;
 }
 
 export const settings = persistentAtom<Settings>(
-  'void-drift-settings',
-  {
-    controlsInverted: false,
-    volume: 0.7,
-    muted: false,
-  },
-  {
-    encode: JSON.stringify,
-    decode: JSON.parse,
-  }
+	"void-drift-settings",
+	{
+		controlsInverted: false,
+		volume: 0.7,
+		muted: false,
+	},
+	{
+		encode: JSON.stringify,
+		decode: JSON.parse,
+	},
 );
 
 // Helper functions
 export function setVolume(volume: number): void {
-  settings.set({ ...settings.get(), volume });
+	settings.set({ ...settings.get(), volume });
 }
 
 export function setMuted(muted: boolean): void {
-  settings.set({ ...settings.get(), muted });
+	settings.set({ ...settings.get(), muted });
 }
 ```
 
@@ -365,28 +368,28 @@ Add volume controls to existing settings page:
 <!-- Existing settings UI -->
 
 <div class="setting">
-  <label for="volume">Volume</label>
-  <input
-    type="range"
-    id="volume"
-    min="0"
-    max="1"
-    step="0.1"
-    value={currentSettings.volume}
-    oninput={handleVolumeChange}
-    disabled={currentSettings.muted}
-  />
-  <span>{Math.round(currentSettings.volume * 100)}%</span>
+	<label for="volume">Volume</label>
+	<input
+		type="range"
+		id="volume"
+		min="0"
+		max="1"
+		step="0.1"
+		value={currentSettings.volume}
+		oninput={handleVolumeChange}
+		disabled={currentSettings.muted}
+	>
+	<span>{Math.round(currentSettings.volume * 100)}%</span>
 </div>
 
 <div class="setting">
-  <label for="mute">Mute Audio</label>
-  <input
-    type="checkbox"
-    id="mute"
-    checked={currentSettings.muted}
-    onchange={handleMuteToggle}
-  />
+	<label for="mute">Mute Audio</label>
+	<input
+		type="checkbox"
+		id="mute"
+		checked={currentSettings.muted}
+		onchange={handleMuteToggle}
+	>
 </div>
 ```
 
@@ -397,75 +400,75 @@ Add volume controls to existing settings page:
 **File:** `apps/web/src/components/Game.svelte`
 
 ```typescript
-import { SoundManager } from '@void-drift/core';
-import { settings } from '../stores/settings';
+import { SoundManager } from "@void-drift/core";
+import { settings } from "../stores/settings";
 
 let soundManager: SoundManager;
 let thrustSoundStop: (() => void) | null = null;
 
 $effect(() => {
-  // Initialize sound manager
-  const config = {
-    masterVolume: settings.get().volume,
-    muted: settings.get().muted,
-  };
-  soundManager = new SoundManager(config);
+	// Initialize sound manager
+	const config = {
+		masterVolume: settings.get().volume,
+		muted: settings.get().muted,
+	};
+	soundManager = new SoundManager(config);
 
-  // Listen for settings changes
-  const unsubscribe = settings.listen((newSettings) => {
-    soundManager.setVolume(newSettings.volume);
-    soundManager.setMuted(newSettings.muted);
-  });
+	// Listen for settings changes
+	const unsubscribe = settings.listen((newSettings) => {
+		soundManager.setVolume(newSettings.volume);
+		soundManager.setMuted(newSettings.muted);
+	});
 
-  return () => {
-    soundManager.dispose();
-    unsubscribe();
-  };
+	return () => {
+		soundManager.dispose();
+		unsubscribe();
+	};
 });
 
 // Initialize AudioContext on first user interaction
 function handleFirstInteraction() {
-  soundManager.init().then((success) => {
-    if (success) {
-      soundManager.playGetReady();
-    }
-  });
+	soundManager.init().then((success) => {
+		if (success) {
+			soundManager.playGetReady();
+		}
+	});
 }
 
 // In game loop
 function update(deltaTime: number) {
-  // ... existing game logic
+	// ... existing game logic
 
-  // Thrust sound
-  const isThrusting = inputState.left || inputState.right;
-  if (isThrusting && !thrustSoundStop) {
-    const throttle = (inputState.left ? 0.5 : 0) + (inputState.right ? 0.5 : 0);
-    thrustSoundStop = soundManager.playThrust(throttle);
-  } else if (!isThrusting && thrustSoundStop) {
-    thrustSoundStop();
-    thrustSoundStop = null;
-  }
+	// Thrust sound
+	const isThrusting = inputState.left || inputState.right;
+	if (isThrusting && !thrustSoundStop) {
+		const throttle = (inputState.left ? 0.5 : 0) + (inputState.right ? 0.5 : 0);
+		thrustSoundStop = soundManager.playThrust(throttle);
+	} else if (!isThrusting && thrustSoundStop) {
+		thrustSoundStop();
+		thrustSoundStop = null;
+	}
 
-  // Collision detection
-  for (const planet of planets) {
-    const collision = checkCollision(ship, planet);
-    if (collision) {
-      soundManager.playCollision(0.8); // 80% intensity
-      // ... existing collision logic
-    }
-  }
+	// Collision detection
+	for (const planet of planets) {
+		const collision = checkCollision(ship, planet);
+		if (collision) {
+			soundManager.playCollision(0.8); // 80% intensity
+			// ... existing collision logic
+		}
+	}
 
-  // Death detection
-  if (gameState.status === 'GAME_OVER' && !deathSoundPlayed) {
-    soundManager.playDeath();
-    deathSoundPlayed = true;
-  }
+	// Death detection
+	if (gameState.status === "GAME_OVER" && !deathSoundPlayed) {
+		soundManager.playDeath();
+		deathSoundPlayed = true;
+	}
 }
 
 // State transitions
 function handleGameStart() {
-  soundManager.resume(); // Ensure context is active
-  // ... existing start logic
+	soundManager.resume(); // Ensure context is active
+	// ... existing start logic
 }
 ```
 
@@ -484,25 +487,25 @@ export { SoundConfigSchema, type SoundConfig, SoundManager };
 
 ```typescript
 class SoundManager {
-  constructor(config: SoundConfig);
-  
-  // Initialization
-  init(): Promise<boolean>;
-  resume(): Promise<void>;
-  
-  // Volume control
-  setVolume(volume: number): void;
-  setMuted(muted: boolean): void;
-  
-  // Sound playback
-  playThrust(throttle: number): () => void; // Returns stop function
-  playCollision(intensity: number): void;
-  playCountdown(pitch: number): void;
-  playDeath(): void;
-  playGetReady(): void;
-  
-  // Cleanup
-  dispose(): void;
+	constructor(config: SoundConfig);
+
+	// Initialization
+	init(): Promise<boolean>;
+	resume(): Promise<void>;
+
+	// Volume control
+	setVolume(volume: number): void;
+	setMuted(muted: boolean): void;
+
+	// Sound playback
+	playThrust(throttle: number): () => void; // Returns stop function
+	playCollision(intensity: number): void;
+	playCountdown(pitch: number): void;
+	playDeath(): void;
+	playGetReady(): void;
+
+	// Cleanup
+	dispose(): void;
 }
 ```
 
@@ -511,12 +514,14 @@ class SoundManager {
 ## Acceptance Criteria
 
 ### SoundManager Implementation
+
 - [x] `SoundManager` class created in `@void-drift/core`
 - [x] AudioContext initialized on user interaction (not on page load)
 - [x] Master gain node controls global volume
 - [x] All sounds synthesized procedurally (zero audio files)
 
 ### Sound Effects
+
 - [x] **Thrust:** Continuous noise loop, modulated by throttle (0.0-1.0)
 - [x] **Collision:** Sharp sawtooth explosion (120Hz → 40Hz decay)
 - [x] **Death:** Bandpass-filtered noise burst (500ms)
@@ -524,6 +529,7 @@ class SoundManager {
 - [x] **Countdown:** Simple sine beeps (configurable pitch)
 
 ### Settings Integration
+
 - [x] Volume slider added to settings page (0-100%)
 - [x] Mute checkbox added to settings page
 - [x] Volume changes apply immediately (no restart required)
@@ -531,6 +537,7 @@ class SoundManager {
 - [x] Mute disables all audio (volume = 0)
 
 ### Game Integration
+
 - [x] Thrust sound plays when thrusting (left/right keys)
 - [x] Thrust sound stops when no thrust input
 - [x] Thrust pitch modulates with throttle intensity
@@ -540,6 +547,7 @@ class SoundManager {
 - [x] AudioContext resumes on state changes (handles autoplay restrictions)
 
 ### Performance
+
 - [x] Sound synthesis adds < 0.5ms to frame time
 - [x] No audio pops or clicks during playback
 - [x] Thrust loop seamless (no audible loop point)
@@ -638,6 +646,7 @@ class SoundManager {
 ## Testing Checklist
 
 ### SoundManager
+
 - [ ] AudioContext initializes on first user interaction
 - [ ] `init()` returns `true` on success
 - [ ] `setVolume(0.5)` reduces volume by 50%
@@ -647,6 +656,7 @@ class SoundManager {
 - [ ] `dispose()` closes AudioContext (no memory leaks)
 
 ### Sound Effects
+
 - [ ] Thrust sound audible when thrusting
 - [ ] Thrust pitch increases with throttle intensity
 - [ ] Thrust loop seamless (no clicks at loop point)
@@ -658,6 +668,7 @@ class SoundManager {
 - [ ] Countdown beeps audible (if implemented)
 
 ### Settings Integration
+
 - [ ] Volume slider updates settings store
 - [ ] Volume changes apply immediately (no restart)
 - [ ] Mute checkbox updates settings store
@@ -666,6 +677,7 @@ class SoundManager {
 - [ ] Settings persist across page reload
 
 ### Cross-Browser
+
 - [ ] Works in Chrome 120+ (desktop)
 - [ ] Works in Firefox 120+ (desktop)
 - [ ] Works in Safari 17+ (macOS)
@@ -674,6 +686,7 @@ class SoundManager {
 - [ ] AudioContext resumes after tab backgrounding
 
 ### Performance
+
 - [ ] 60 FPS with thrust + collision sounds (desktop)
 - [ ] 60 FPS with thrust + collision sounds (mobile)
 - [ ] No audio pops or glitches during playback

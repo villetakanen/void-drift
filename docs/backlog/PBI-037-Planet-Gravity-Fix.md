@@ -44,7 +44,10 @@ const influenceRadius = planet.radius * 16;
 const massInfluence = Math.sqrt(planet.mass) * 2;
 const maxInfluence = planet.radius * 8;
 const minInfluence = planet.radius * 2;
-const influenceRadius = Math.max(minInfluence, Math.min(massInfluence, maxInfluence));
+const influenceRadius = Math.max(
+	minInfluence,
+	Math.min(massInfluence, maxInfluence),
+);
 ```
 
 ---

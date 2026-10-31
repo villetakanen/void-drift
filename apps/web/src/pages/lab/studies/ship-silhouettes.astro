@@ -1,0 +1,566 @@
+---
+import FighterCanopyLight from "../../../components/studies/FighterCanopyLight.astro";
+import FighterCockpitDepth from "../../../components/studies/FighterCockpitDepth.astro";
+import FighterCockpits from "../../../components/studies/FighterCockpits.astro";
+import FighterForms from "../../../components/studies/FighterForms.astro";
+import FighterLowPoly from "../../../components/studies/FighterLowPoly.astro";
+import FighterSlots from "../../../components/studies/FighterSlots.astro";
+import FighterWingVariants from "../../../components/studies/FighterWingVariants.astro";
+import ScoutSpacecraft from "../../../components/studies/ScoutSpacecraft.astro";
+import ScoutWasp from "../../../components/studies/ScoutWasp.astro";
+import ShipSilhouetteComparison from "../../../components/studies/ShipSilhouetteComparison.astro";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((entry) => entry.slug === "ship-silhouettes");
+---
+
+<StudyLayout study={study}>
+	<aside aria-label="Study outcome">
+		<p>
+			<a href="#readiness">03 / Readiness</a>
+			· <a href="#integration">04 / Integration plan</a>
+		</p>
+		<p>
+			<strong>Exploration stopped · 30 October 2026.</strong>
+			The usable outcome is
+			<a href="#fighter-slots-tight">02.9: the agreed Fighter design</a>. Scout
+			exploration did not produce a usable design. No Scout or Heavy Corvette
+			design is accepted. Earlier examples remain as study evidence.
+		</p>
+		<p>
+			<strong>Implemented locally:</strong>
+			the 02.9 Fighter now uses the shared ship designer and in-game rendering,
+			preserving the game’s color theme and readable accents. Scout and Heavy
+			Corvette selection is disabled until their designs are resolved. Inspect
+			the result in <a href="/lab/builder">the builder Lab</a>
+			and its test flight. Human fidelity and handling review remains pending.
+		</p>
+	</aside>
+	<section aria-labelledby="purpose">
+		<h2 id="purpose">01 / Three ships, recognizable from their arrangement</h2>
+		<p>
+			The builder and flight in 0.4.0-alpha.1 give us a foundation for three
+			distinct ships: Scout, Fighter, and Heavy Corvette. This study asks how
+			their arrangements can make each identity visible. Imagine choosing a ship
+			in the builder, then recognizing it immediately when it becomes a small,
+			rotating shape in flight. Its outline should carry that continuity.
+		</p>
+		<p>
+			We will study overall proportions, where parts sit, the spaces between
+			them, and engine placement and angles. A useful target is three shapes
+			that remain distinguishable without labels or color; restrained color
+			differences can reinforce those identities. Detailed part styling is
+			outside this inquiry. Simple existing parts should let us judge the
+			composition without surface detail making the decision for us.
+		</p>
+		<p>
+			The central tension is between a clear composed silhouette and a ship
+			whose editable parts and engine directions still make sense. The result
+			should establish each ship’s recognizable arrangement in both the editor
+			and the game. Engine angles contribute to appearance but also have flight
+			consequences, so visual preference alone cannot settle their suitability.
+		</p>
+		<p>
+			<strong>Framing agreed · 30 October 2026.</strong>
+			Recognition through arrangement guides the exploration; color supports
+			identity and detailed part styling remains outside scope.
+		</p>
+	</section>
+	<section aria-labelledby="exploration">
+		<h2 id="exploration">02 / Finding the three outlines</h2>
+		<h3 id="comparison">02.1 / Spine, shoulders, body</h3>
+		<p>
+			The smallest useful surface is one monochrome sheet: three current
+			arrangements beside one proposed family. Can a narrow spine, swept
+			shoulders, and a broad body give the ships distinct identities before
+			color or part detail?
+		</p>
+		<p>
+			These static sketches use the real chassis slot counts, hull/aft mount
+			positions, and engine angles (32°, 26°, 20°). The proposal changes only
+			the hull outline and side-engine positions. Filled rectangles stand for
+			every slot, including empty ones; they are composition markers, not new
+			part artwork.
+		</p>
+		<ShipSilhouetteComparison />
+		<p>
+			All ships face up at the same scale: enlarged above, then small at the
+			production drawing scale of 0.65 below. The small view is a still size
+			check, not a camera or flight simulation. No glow, exhaust, or color
+			distinguishes the ships. Engine angles remain provisional; this sheet
+			cannot establish flight handling or attachment feasibility.
+		</p>
+		<p>
+			<strong>02.1 preserved · no design selected.</strong>
+			This comparison helped reveal the problem, without choosing a ship family.
+			Its sketches remain unchanged. The next investigation deliberately narrows
+			to the default Fighter; Scout and Corvette identities remain unresolved.
+		</p>
+		<h3 id="fighter-forms">02.2 / Fighter: sleek surfaces, sharp intent</h3>
+		<p>
+			The first sheet missed the intended aesthetic. The intended direction is
+			sleek turn-of-the-millennium vector art: luminous surfaces, clean forms,
+			controlled glow. Arrow and perhaps Clipped wings were close; Barbed arrow
+			might offer something. None was selected. The finding is a missing shared
+			visual direction, not simply a shortage of silhouette options.
+		</p>
+		<p>
+			This revised sheet explores three restrained triangular forms in that
+			surface language. Aggression comes from the long nose and swept
+			proportions. Each uses the same cyan palette, filled facets, dark inset,
+			and soft bloom; there are no outline strokes. These are provisional
+			composition treatments, not detailed part designs.
+		</p>
+		<FighterForms />
+		<p>
+			Slots remain visible using the current Fighter's mount positions and 26°
+			engine angles. The inset and glow are study-only treatments. The flat
+			shape beside each rendering keeps the silhouette inspectable without the
+			lighting. All three share drawing scales; the turned views are static, not
+			flight or camera evidence. Mount integration and the other ship types
+			remain open.
+		</p>
+		<p>
+			<strong
+				>Does this feel closer to the sleek vector-art Fighter—and which surface
+				or edge treatment carries that feeling?</strong
+			>
+			We should establish that visual language before adding more shapes.
+		</p>
+		<p>
+			<a href="/lab/studies/archive/fighter-forms-first-pass"
+				>Preserved first 02.2 sheet and the design finding</a
+			>
+			· superseded, no design selected. 02.1 remains unchanged.
+		</p>
+		<h3 id="fighter-low-poly">02.3 / Six Fighters in low-poly form</h3>
+		<p>
+			The revised 02.2 forms felt promising; the next step was more shape
+			choices with a low-poly treatment. That sheet is preserved as a useful
+			comparison, with no individual ship selected. This round keeps the angry,
+			pointed Fighter brief and explores six distinct proportions and wing
+			arrangements.
+		</p>
+		<p>
+			Solid, flat-shaded polygon faces suggest a raised spine and sloped wings.
+			A consistent light side and dark side make the surface volumes readable
+			without outline strokes, gradients, or bloom. The same current Fighter
+			slots and engine angles remain visible as dark markers. They are
+			placeholders for placement, not part artwork.
+		</p>
+		<FighterLowPoly />
+		<p>
+			Each card shows the form large, then turned and small, plus a flat
+			silhouette. The palette and drawing scales are shared across all six.
+			These are 2D low-poly style sketches, not 3D models or tested flight
+			configurations; mount support and final part integration remain
+			unresolved.
+		</p>
+		<p>
+			<strong
+				>Which of these six has the strongest Fighter character—and does the
+				faceted volume feel like the right direction?</strong
+			>
+			Shape and surface treatment can be judged separately.
+		</p>
+		<h3 id="fighter-wings">
+			02.4 / Lance and Cutlass: small wings, clean angles
+		</h3>
+		<p>
+			<strong>Agreed direction:</strong>
+			02.3's low-poly graphic style was agreed as the right direction. Lance (A)
+			and Cutlass (C) are the promising forms to develop. Trident (E) and Dart
+			(F) are outside the intended direction. The earlier sheet remains intact;
+			no final Fighter silhouette is selected.
+		</p>
+		<p>
+			These six variations stay between the slim Lance and clipped-shoulder
+			Cutlass. Small swept winglets and single angle changes add character while
+			keeping one dominant forward point. The faceted palette, central ridge,
+			scale, and lighting treatment are carried forward. Slot placement is
+			deferred; its markers are omitted here so the hull and wing relationships
+			can be read clearly.
+		</p>
+		<FighterWingVariants />
+		<p>
+			A–C develop the Lance end of the range; D–F develop the Cutlass. Each has
+			a large view, a smaller turned view, and a flat silhouette. These static
+			surface sketches do not establish mount support or flight handling.
+		</p>
+		<p>
+			<strong
+				>Which balance of slender nose and small swept wings gives the Fighter
+				the right character?</strong
+			>
+			Useful details can be combined without changing the agreed graphic style.
+		</p>
+		<h3 id="fighter-cockpits">02.5 / A flight deck for the Lance</h3>
+		<p>
+			<strong>Chosen Fighter hull:</strong>
+			02.4 A / Lance · clipped tips. This form was selected along with the
+			low-poly style. This round holds its outline, facets, palette, and ridge
+			unchanged while finding a visible place for the flight deck.
+		</p>
+		<p>
+			Six controlled variations: three positions along the centerline, each
+			shown inset into the ridge and on a small raised canopy base. The dark
+			glazing has the same size and shape in all six. Compare A with D, B with
+			E, and C with F to separate placement from the raised treatment.
+		</p>
+		<FighterCockpits />
+		<p>
+			The large and turned views include the flight deck; the flat silhouette
+			confirms the unchanged hull. The canopy suggests volume through flat
+			shading in this 2D sketch. Slot placement, visibility in motion, and
+			production integration remain outside this round.
+		</p>
+		<p>
+			<strong
+				>Where does the flight deck feel at home: forward, central, or
+				rearward—and should it sit within the ridge or rise slightly above
+				it?</strong
+			>
+		</p>
+
+		<h3 id="fighter-canopy-light">02.6 / Cockpit as a crisp accent</h3>
+		<p>
+			<strong>All soft canopy treatments rejected.</strong>
+			The hull is approaching the intended game aesthetic, but the cockpit must
+			share its crisp colors and heavy accents. The forward position and
+			selected low-poly Lance remain settled. The previous gradients and blurred
+			glow did not meet that direction.
+		</p>
+		<p>
+			Six new treatments use the game's existing acid-lime and void colors.
+			Opaque filled shapes, sharp edges, and strong light–dark separation make
+			the cockpit a deliberate accent. The choices vary the pane shape and
+			distribution of that accent: solid, split, brow, or side panels. No
+			gradients, blur, transparency, or glass reflections are used on the
+			cockpit.
+		</p>
+		<FighterCanopyLight />
+		<p>
+			The same hull and forward anchor appear in every card. Below each large
+			ship are a small turned ship and a canopy detail on a simplified hull
+			patch. The dark area is a flat graphic surround, not the rejected faceted
+			canopy. These are appearance studies; slot layout and flight readability
+			remain untested.
+		</p>
+		<p>
+			<strong
+				>Which treatment gives the forward cockpit a clear, deliberate presence
+				within the game's graphic language?</strong
+			>
+		</p>
+		<p>
+			<a href="/lab/studies/archive/fighter-canopy-soft"
+				>Rejected soft canopy sheet and feedback</a
+			>
+			· preserved separately, no option accepted.
+		</p>
+		<h3 id="fighter-cockpit-depth">02.7 / A place inside the ship</h3>
+		<p>
+			<strong>02.6's crisp-accent remake was also rejected.</strong>
+			The cockpit's purpose is a small integrated focal point that gives the
+			ship character, makes it feel finished and flyable, and can carry neon
+			identity color. The useful evidence remains 02.5 A's dark forward spot at
+			small scale. Its detailed canopy design was not accepted.
+		</p>
+		<p>
+			This comparison returns to that exact reference. B tests color within a
+			dark recess; C tests color across the canopy surface. Both use the same
+			saturated cyan. The selected hull, forward position, cockpit footprint,
+			and viewing scales stay fixed. No frames, new silhouettes, blur, or
+			additional ship details are introduced.
+		</p>
+		<FighterCockpitDepth />
+		<p>
+			Each card contains a large ship, a small turned ship below left, and a
+			magnified cockpit on a simplified hull patch below right. A reproduces
+			02.5 A. B and C are hypotheses about visual depth and character, not
+			selected designs. Different identity hues and visibility during flight
+			remain untested.
+		</p>
+		<p>
+			<strong
+				>Does B or C retain the sense of a place inside the ship while adding
+				the right focal color—or does the reference still work better?</strong
+			>
+			First compare the small ships, then check whether the close-up supports
+			that impression.
+		</p>
+
+		<h3 id="fighter-slots">02.8 / Slots on the Lance</h3>
+		<p>
+			<strong>Cockpit settled for this study:</strong>
+			the forward reference footprint becomes one solid black shape. B was
+			closest to the classic space-game references, but still felt smudgy and
+			broken. Neon cockpit exploration stops here; identity color remains
+			unresolved.
+		</p>
+		<p>
+			The selected clipped-tip Lance now carries six translucent mounting areas.
+			The two side engines sit rearward, parallel to the long hull edges (about
+			17° from the centerline). The two face slots form a column immediately
+			behind the cockpit; the aft pair sit side by side across the stern.
+		</p>
+		<FighterSlots />
+		<p>
+			This sketch uses the Fighter's existing slot inventory with proposed
+			positions and sizes. Engine alignment is a starting proposal; slow turning
+			is an intended feel, not something this static view verifies. Parts and
+			flight behavior are unchanged.
+		</p>
+		<p>
+			<strong
+				>Does this placement match the fighter you have in mind, especially the
+				stacked face slots and rearward engine pair?</strong
+			>
+		</p>
+		<h3 id="fighter-slots-tight">02.9 / Larger mounts, rotated engines</h3>
+		<p>
+			02.8 established a promising composition. This refinement enlarges the
+			mounting areas, narrows the gaps between them, and brings the aft pair
+			inward. The original layout stays above for comparison.
+		</p>
+		<FighterSlots compact />
+		<p>
+			<strong>Fighter design agreed · 30 October 2026.</strong>
+			This exact composition is agreed as the Fighter design: low-poly Lance
+			with clipped tips, black forward cockpit, large stacked face slots,
+			central aft pair, and rotated side-engine slots sitting forward and partly
+			outside the chassis. Preserve this geometry and placement. Production
+			integration and flight handling remain untested.
+		</p>
+		<p>
+			The following Scout exploration was stopped without a usable result. Its
+			identity should be distinct from the Fighter's angry triangle; no Scout
+			silhouette has been selected.
+		</p>
+		<h3 id="scout-forms">
+			02.10 / Scout: a compact Wasp, shaped by its mounts
+		</h3>
+		<p>
+			The roadster and fast-boat sheets were rejected for excessive complexity
+			and lack of character. The new direction is a compact, cockpit-first Wasp:
+			nimble and sporty, with the component arrangement giving the ship its
+			shape.
+		</p>
+		<p>
+			One proposal: two side engines high on the shoulders, ahead of the single
+			hull slot, with one aft engine low at the rear. The hull is 80% of the
+			Fighter's length. A broad forward cabin tapers into a simple rear body;
+			translucent slots keep the placement visible without designing the parts.
+		</p>
+		<ScoutWasp />
+		<p>
+			The existing Scout slot inventory is retained. Side-engine angles start at
+			the current Scout's 32° and are provisional. This sketch examines
+			arrangement and character; it does not establish flight handling. The
+			small views compare hull length at the same scale.
+		</p>
+		<p>
+			The arrangement is the strongest Scout direction so far. The hexagonal
+			window and tapered hull read as a coffin; the silhouette is not selected.
+		</p>
+		<h3 id="scout-wasp-forms">02.11 / Six compact spacecraft</h3>
+		<p>
+			The previous six outlines were rejected in full. This remake starts with
+			recognizable spacecraft volumes: a forward cabin, two shoulder engine
+			housings, a short central fuselage, and one aft drive. Classic small
+			science-fiction ships guide the character; insect shapes no longer guide
+			the outline.
+		</p>
+		<p>
+			Six compositions vary cabin width, engine separation, sweep, and body
+			proportions. The side drives stay ahead of the hull bay. A rounded dark
+			canopy sits within each faceted cabin; a few broad surfaces describe the
+			body and engine housings. No slot overlays.
+		</p>
+		<ScoutSpacecraft />
+		<p>
+			All six share the Fighter's palette and a length of 80% of its hull. Small
+			turned views test the whole composition. Housings are simple volume
+			studies, not final part artwork; mount fit, engine angles, and flight
+			handling remain provisional.
+		</p>
+		<p>
+			<strong>Exploration stopped. No design from 02.11 is selected.</strong>
+		</p>
+	</section>
+	<section aria-labelledby="readiness">
+		<h2 id="readiness">03 / Readiness: the Fighter can be integrated</h2>
+		<p>
+			02.9 is the accepted visual result. Its clipped-tip Lance, black forward
+			cockpit, stacked hull slots, central aft pair, and rotated side engines
+			can be implemented with the existing procedural drawing system. The
+			three-ship exploration did not reach its original goal: Scout and Heavy
+			Corvette remain unresolved. Integration is limited to the Fighter.
+		</p>
+		<h3>What already fits</h3>
+		<p>
+			The Fighter already has the required two mirrored side engines, two
+			independent hull slots, and two independent aft slots. Its saved loadout
+			stores part choices by slot, not coordinates. Moving those slots therefore
+			does not require deleting saves or changing their identifiers. Both the
+			builder and custom flight call the same drawBuild renderer. The Lab
+			builder uses the same components as the game, so it can demonstrate the
+			real result.
+		</p>
+		<h3>What must change together</h3>
+		<p>
+			The accepted geometry currently exists only in the study. Production
+			buildMounts still places the hull slots side by side and uses smaller
+			footprints. A shared Fighter definition must supply the hull, facets,
+			cockpit, slot positions, orientations, and sizes to rendering, selection
+			targets, and exhaust origins. Existing fittings can be adapted to the new
+			mounting areas; detailed part redesign remains outside this integration.
+		</p>
+		<p>
+			The consequential mismatch is the side-engine angle: approximately 66.8°
+			in 02.9, versus 26° in current Fighter calculations. Flight and estimates
+			currently use chassis angle and arm separately from drawing geometry.
+			Changing only the picture would make thrust disagree with the visible
+			engines. The integration must use consistent mount directions and account
+			for their rearward offset when deriving the turning lever arm. The current
+			direct turning model can remain, but its response must be reviewed in
+			flight. The accepted picture does not establish acceptable handling.
+		</p>
+		<h3>Color, selection, and scale</h3>
+		<p>
+			Keep the accepted faceted light-and-dark structure and black cockpit. Use
+			the game's existing neon accents for fittings, selection, and focus; check
+			contrast against the hull and space background. Custom rendering currently
+			hard-codes its colors, while stock ships accept a profile tint. There is
+			no implemented team system to preserve. This work concerns the game's
+			visual theme; adding teams is outside scope.
+		</p>
+		<p>
+			The accepted hull is longer than the current builder Fighter. Builder
+			framing, slot hit targets, small flight readability, and collision-size
+			consistency need checks. The tightly paired aft slots especially need
+			distinct selection targets. Preserve keyboard operation and flight touch
+			controls. No new rendering dependency is needed.
+		</p>
+		<h3>Readiness conclusion</h3>
+		<p>
+			The existing architecture supports a bounded Fighter integration. The
+			remaining risks are geometry consistency, fitting readability, and flight
+			feel—not a need for another silhouette round. Code inspection supports
+			feasibility; no integrated rendering or new handling has been verified
+			yet.
+		</p>
+	</section>
+	<section aria-labelledby="integration">
+		<h2 id="integration">04 / Integration plan: one finished Fighter</h2>
+		<p>
+			Deliver the 02.9 Fighter in the ship designer and custom flight.
+			Temporarily disable Scout and Heavy Corvette selection in the designer,
+			with a short explanation that their designs are pending. Preserve their
+			saved builds and underlying definitions. Existing stock flight and scored
+			profiles remain outside this builder-focused change.
+		</p>
+		<ol>
+			<li>
+				<strong>Promote the agreed geometry.</strong>
+				Extract the 02.9 hull, facet palette, cockpit, and mount layout into a
+				shared procedural Fighter definition. Keep the study reference intact.
+				Adapt buildMounts and drawBuild to use it, including the larger
+				translucent empty slots and fittings seated at the same positions.
+			</li>
+			<li>
+				<strong>Connect placement to use.</strong>
+				Update ShipBuilder selection targets and preview framing from the shared
+				layout. Keep every slot independently selectable, including the aft
+				pair. Disable the two unresolved chassis without changing the
+				three-build storage contract; open the Fighter by default and preserve
+				saved part choices.
+			</li>
+			<li>
+				<strong>Align flight and exhaust.</strong>
+				Update build-flight and buildStats to consume consistent engine
+				directions and turning geometry. Have buildPlumeEmitters originate at
+				the actual nozzle positions. Retain energy budgeting, speed limits,
+				shared plume effects, and the existing gravity and friction constants.
+				Review scale and collision alignment rather than silently accepting a
+				larger visual footprint.
+			</li>
+			<li>
+				<strong>Apply the game theme.</strong>
+				Keep the approved silhouette, facets, and black cockpit while making
+				installed parts, empty mounts, selection, and focus readable with shared
+				game accents. Review the same fitted ship in the designer and flight
+				before choosing any further palette adjustment. Do not restart cockpit
+				or hull exploration.
+			</li>
+			<li>
+				<strong>Verify and document.</strong>
+				Demonstrate the production result in /lab/builder and its test flight.
+				Update the ship-builder specification and relevant design documentation
+				with the Fighter-only availability, shared geometry, saved-build
+				compatibility, and remaining tuning limits. Record implementation
+				separately from this plan.
+			</li>
+		</ol>
+		<h3>Verification and review</h3>
+		<ul>
+			<li>
+				Automated checks: slot compatibility, mirrored fitting, persistence,
+				preservation of disabled-chassis saves, corruption recovery, and
+				disabled selection. Replace the browser test that currently requires all
+				three chassis to be selectable with the new availability contract.
+			</li>
+			<li>
+				Geometry and simulation checks: nozzle-to-plume alignment, mirrored
+				thrust cancellation, left/right steering, aft activation, displayed
+				estimates matching flight calculations, energy behavior, and overspeed
+				protection. Run repository verification and report failures or
+				unavailable checks explicitly.
+			</li>
+			<li>
+				Visual inspection: compare against 02.9 with empty slots and a fitted
+				build; inspect each slot's selected state, keyboard focus, the tight aft
+				pair, and the small moving ship with exhaust. Inspect intended visual
+				changes before updating any screenshot baseline.
+			</li>
+			<li>
+				Human review: confirm fidelity to 02.9, usable game colors, assembly
+				readability, and acceptable single-engine and paired-engine handling.
+				Passing automated checks cannot establish those qualities.
+			</li>
+		</ul>
+		<p>
+			<strong>Completion means:</strong>
+			the same agreed Fighter is editable and flyable with aligned parts and
+			exhaust; only the Fighter is available in the designer; existing saves are
+			retained; checks and remaining human review findings are reported. No
+			Scout or Heavy Corvette design is implied.
+		</p>
+		<p>
+			<strong>Implementation · 30 October 2026.</strong>
+			The Fighter is implemented in the shared builder and custom flight. The
+			plan and readiness assessment above record the pre-integration findings.
+			Saved builds are retained. Side thrust and displayed estimates use the
+			66.8° mounts and rearward offset; this produces counterclockwise
+			left-engine turning, clockwise right-engine turning, and about 18.5°/s
+			with default engines. Exhaust starts at each actual nozzle. The 0.65
+			drawing scale is retained; a conservative 31.2-unit circular collision
+			envelope includes the longer nose. Its lateral overestimate and flight
+			feel remain human-review questions.
+			<a href="/lab/builder">Review the editable, flyable Fighter</a>.
+		</p>
+		<p>
+			<strong>Flight-review correction · 30 October 2026.</strong>
+			The owner found the side engines too widely rotated and chose to retain
+			the original production angle of 26°. The side pair then moved inward from
+			±18 to ±15 units at the owner’s request. Fore–aft positions and sizes are
+			unchanged. Fittings, exhaust, and flight calculations share this angle.
+			This supersedes the 02.9 engine orientation; that sketch remains unchanged
+			as earlier evidence. Default fission turning is now about 96.6°/s after a
+			2.5× angular-response adjustment following feedback that it still turned
+			too slowly, with clockwise left-engine turning and counterclockwise
+			right-engine turning. Handling remains open for further flight review.
+		</p>
+	</section>
+</StudyLayout>

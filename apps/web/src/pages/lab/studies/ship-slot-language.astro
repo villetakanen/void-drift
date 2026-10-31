@@ -1,0 +1,127 @@
+---
+import SlotStates from "../../../components/studies/SlotStates.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((entry) => entry.slug === "ship-slot-language");
+---
+
+<StudyLayout study={study}>
+	<section aria-labelledby="purpose">
+		<h2 id="purpose">01 / A mounting place that explains itself</h2>
+		<p>
+			A slot is a fixed mounting place with a position, orientation and fitting
+			rules. Its overlay explains what fits and which mount is being edited; the
+			installed item supplies its own appearance and function. Translucent fills
+			keep the hull visible beneath restrained technical markings.
+		</p>
+		<p>
+			Contents and selection form four primary states: empty, filled, selected
+			empty and selected filled. Selection means editing in the builder, not an
+			engine firing. A linked secondary follows its primary and cannot be
+			selected independently. Linking is separate from equipment type.
+		</p>
+		<p>
+			The study covers slot appearance and compatibility language. Hull layout,
+			equipment balance and damage mechanics remain outside its scope. Hover and
+			keyboard focus accompany the primary states without changing them.
+		</p>
+	</section>
+	<section aria-labelledby="exploration">
+		<h2 id="exploration">02 / Slot language on the Fighter</h2>
+		<h3>02.1 / Four states, one hull</h3>
+		<p>
+			The comparison places four states and a linked pair on production Fighter
+			mount centers. Independent slot styling supports comparison while the
+			accepted geometry and palette remain fixed. Filled deck examples use the
+			same battery symbol to isolate selection from equipment identity.
+		</p>
+		<ul>
+			<li>
+				<strong>Geometry:</strong>
+				54 × 64 preview-unit fill, 4-unit gap and 1.5-unit border. Side mounts
+				retain their ±26° angles.
+			</li>
+			<li>
+				<strong>Contents:</strong>
+				empty slots use 35% acid-lime fill and void-dark borders; filled slots
+				reverse those colors. Linked dashed borders and connectors follow the
+				same border-color rule.
+			</li>
+			<li>
+				<strong>Markings:</strong>
+				empty-slot symbols use the border color at 70% opacity. Numbers use
+				ivory on 35% void-dark backing. Vertical type text runs upward from the
+				lower-left corner in the border color, without backing. Filled slots
+				retain labels but omit the central symbol.
+			</li>
+			<li>
+				<strong>Selection:</strong>
+				the accepted baseline uses acid-lime corners with a 5-unit gap and zero
+				positional offsets.
+			</li>
+		</ul>
+		<SlotStates client:load />
+		<p>
+			The accepted reference is 02.1 after vertical type text was added on 31
+			October 2026, preserved in SlotStatesAccepted021.svelte. The playground
+			uses the subsequently approved Q/Equipment and +/Universal names; the
+			original reference used E/W/+ markings. Reset restores the source
+			baseline. Temporary browser settings were not captured as decisions.
+		</p>
+		<p>
+			Acceptance covers builder-scale slot language, not placeholder equipment
+			artwork, flight readability or fitting behavior. Positional edits remain
+			experimental. The type selector changes the preview, not production rules.
+		</p>
+	</section>
+	<section aria-labelledby="readiness">
+		<h2 id="readiness">03 / Builder overlays, equipped items in flight</h2>
+		<p>
+			Slots belong in the builder. Flight shows hull and equipped items without
+			slot fills, borders, selection corners, numbers or connectors. Separate
+			overlay geometry preserves physical mount positions, nozzle origins and
+			flight forces while allowing the accepted proportions at builder scale.
+		</p>
+		<p>
+			The reference uses SVG; production uses Canvas with accessible HTML hit
+			targets. Shared style definitions carry the palette and dimensions across
+			that boundary. The comparison contains two selected examples; the real
+			builder has one active primary, with keyboard focus distinct from
+			selection.
+		</p>
+		<h3>Approved compatibility mapping</h3>
+		<ul>
+			<li>Engine (E): engines; used by side mounts.</li>
+			<li>Weapon (W): weapons; available without changing chassis layouts.</li>
+			<li>Equipment (Q): weapons and utilities; used by hull mounts.</li>
+			<li>Universal (+): all part categories; used by aft mounts.</li>
+		</ul>
+		<p>
+			The left side is primary; the right side is its non-selectable linked
+			secondary. The shared side-engine value drives paired fitting. Internal G
+			remains the saved part category for guns, separate from slot taxonomy.
+		</p>
+	</section>
+	<section aria-labelledby="integration">
+		<h2 id="integration">04 / Integration and evidence</h2>
+		<p>
+			The slot contract owns compatibility; buildMounts supplies type and link
+			identity. ShipBuilder and /lab/builder share the Canvas renderer and
+			accessible hit targets. Builder-only overlays are separate from shared
+			hull and item drawing, preserving item bodies and plume origins in flight.
+		</p>
+		<p>
+			The slot integration preserved existing saves. The later engine-catalog
+			release deliberately replaced version-1 storage with version 2; the
+			original compatibility claim describes the slot change only.
+		</p>
+		<p>
+			The original slot-loop checks and later verification are separate
+			observations. The closure record preserves their results and limits.
+			Automated checks cover fitting and rendering boundaries; they do not
+			establish acceptance of every delivered chassis layout. Human fidelity
+			review remains separate.
+		</p>
+	</section>
+</StudyLayout>

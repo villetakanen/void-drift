@@ -6,12 +6,15 @@
 ## Blueprint
 
 ### Context
+
 The **Star** acts as the central anchor of the arena. It provides both a lethal hazard (collision) and a strategic mechanic (gravity slingshot). Its visual representation must convey "heat" and "danger" without interfering with the readability of the game state.
 
 **Achievement:** Central star with gravity well and procedural pulsing animation operational at arena center.
 
 ### Architecture
+
 - **Data Model:**
+
   ```typescript
   interface Star {
     x: number;
@@ -25,6 +28,7 @@ The **Star** acts as the central anchor of the arena. It provides both a lethal 
 - **Render API:** `drawStar(ctx: CanvasRenderingContext2D, star: Star, time: number)` (implemented in `packages/core/src/lib/assets/star.ts`)
 
 ### Anti-Patterns
+
 - **Do NOT** use DOM elements (e.g., `<div>`) for the star; it must be drawn on the active Canvas.
 - **Do NOT** apply gravity globally; it must be range-limited (`influenceRadius`) to prevent chaos.
 - **Do NOT** use static sprites; the star must pulse to feel "alive".
@@ -32,16 +36,19 @@ The **Star** acts as the central anchor of the arena. It provides both a lethal 
 ## Contract
 
 ### Definition of Done
+
 - [x] Star renders with a solid core and pulsing outer rings.
 - [x] Gravity force vector is applied to the Ship when within `influenceRadius`.
 - [x] Star positioned at arena center (960, 540 in logical coordinates).
 - [x] Ship responds to gravity pull (inverse square law).
 
 ### Regression Guardrails
+
 - **FPS:** The pulse animation must not degrade performance (zero object allocation per frame).
 - **Determinism:** Gravity calculation must use fixed-step delta time (if possible) or be robust to frame-rate variance.
 
 ### Scenarios
+
 **Scenario: Gravity Pull** ✅
 - Given the Ship is motionless at distance `d < influenceRadius`
 - When the physics loop ticks
@@ -65,17 +72,18 @@ The **Star** acts as the central anchor of the arena. It provides both a lethal 
 ## Current Implementation
 
 ### Star Data Structure
+
 ```typescript
 interface Star {
-  pos: Vec2;           // Position (960, 540 - arena center)
-  radius: number;      // Visual/collision radius (varies by type)
-  influenceRadius: number;  // Gravity range (varies by type)
-  mass: number;        // Gravitational mass (varies by type)
-  color: string;       // Color based on sun type
-  type: SunType;       // RED_GIANT | YELLOW_DWARF | BLUE_DWARF
+	pos: Vec2; // Position (960, 540 - arena center)
+	radius: number; // Visual/collision radius (varies by type)
+	influenceRadius: number; // Gravity range (varies by type)
+	mass: number; // Gravitational mass (varies by type)
+	color: string; // Color based on sun type
+	type: SunType; // RED_GIANT | YELLOW_DWARF | BLUE_DWARF
 }
 
-type SunType = 'RED_GIANT' | 'YELLOW_DWARF' | 'BLUE_DWARF';
+type SunType = "RED_GIANT" | "YELLOW_DWARF" | "BLUE_DWARF";
 ```
 
 ### Sun Type System
@@ -126,11 +134,11 @@ export const SUN_CONFIG = {
 
 ### Sun Type Gameplay Effects
 
-| Sun Type | Size | Gravity | Fuel Regen | Hull Burn | Difficulty |
-|----------|------|---------|------------|-----------|------------|
-| Red Giant | Large | Low | Slow | Low | Easy |
-| Yellow Dwarf | Medium | Medium | Normal (1.0x) | Normal (1.0x) | Medium |
-| Blue Dwarf | Small | High | Fast | High | Hard |
+| Sun Type     | Size   | Gravity | Fuel Regen    | Hull Burn     | Difficulty |
+| ------------ | ------ | ------- | ------------- | ------------- | ---------- |
+| Red Giant    | Large  | Low     | Slow          | Low           | Easy       |
+| Yellow Dwarf | Medium | Medium  | Normal (1.0x) | Normal (1.0x) | Medium     |
+| Blue Dwarf   | Small  | High    | Fast          | High          | Hard       |
 
 **Design Intent:**
 - Red Giant: Forgiving, good for learning mechanics
@@ -138,15 +146,17 @@ export const SUN_CONFIG = {
 - Blue Dwarf: High risk/high reward, for skilled players
 
 ### Random Sun Selection
+
 At game start, a random sun type is selected:
 ```typescript
 function getRandomSunType(): SunType {
-  const types: SunType[] = ['RED_GIANT', 'YELLOW_DWARF', 'BLUE_DWARF'];
-  return types[Math.floor(Math.random() * types.length)];
+	const types: SunType[] = ["RED_GIANT", "YELLOW_DWARF", "BLUE_DWARF"];
+	return types[Math.floor(Math.random() * types.length)];
 }
 ```
 
 ### Lab Integration
+
 The Lab must display the current sun configuration:
 - Sun type name
 - Radius, mass, influence radius
@@ -154,6 +164,7 @@ The Lab must display the current sun configuration:
 - Visual preview with correct color and size
 
 ### Rendering (`packages/core/src/lib/assets/star.ts`)
+
 - **Core:** Solid circle using star color
 - **Glow Layers:** 3 concentric circles with decreasing opacity
 - **Fuel Zone:** Faint dashed circle at fuel regen threshold
@@ -162,6 +173,7 @@ The Lab must display the current sun configuration:
 - **Performance:** Zero allocations per frame (reuses colors/radii)
 
 ### Physics (`packages/core/src/lib/physics/Physics.ts`)
+
 - **Gravity Law:** Inverse square with safeguard: `F = G * m1 * m2 / max(distance², minDistance²)`
 - **Influence Check:** Only applies force if `distance < influenceRadius`
 - **Force Application:** `ship.acc += force_vector`
@@ -170,27 +182,32 @@ The Lab must display the current sun configuration:
   - Minimum distance: `50px` (prevents singularity near core)
 
 ### Visual Properties
+
 - **Color:** Warm orange (#ffaa00) to convey heat
 - **Pulse Speed:** 2 rad/s (completes cycle every π seconds)
 - **Glow Radius:** 3 layers at 1.5x, 2x, 2.5x core radius
 - **Opacity:** Core 1.0, layers 0.3, 0.2, 0.1
 
 ### Integration
+
 - **Location:** Always at arena center `(960, 540)` in logical viewport
 - **Camera:** Star position used as fallback center for camera bounds
 - **Starfield:** Background stars provide depth cues around the central star
 
 ## Performance Characteristics
+
 - **Render Time:** ~0.2ms per frame (4 circle draws + blend mode)
 - **Physics Time:** ~0.1ms per frame (distance calculation + force vector)
 - **Memory:** Zero allocations (no temporary objects created)
 
 ## Known Limitations
+
 - **Collision:** Ship does not explode on contact (death mechanic not yet implemented)
 - **Debug Overlay:** Influence radius circle not visualized (future enhancement)
 - **Multiple Stars:** System designed for single star (no multi-body physics)
 
 ## Future Enhancements
+
 - [ ] Add binary star systems (two orbiting stars)
 - [ ] Add solar flare particle effects
 - [ ] Add death/respawn mechanic on collision

@@ -1,0 +1,230 @@
+---
+import GravityEncounter from "../../../components/studies/gravity/GravityEncounter.svelte";
+import PlanetEncounter from "../../../components/studies/gravity/PlanetEncounter.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((entry) => entry.slug === "gravity-wells");
+---
+
+<StudyLayout study={study}>
+	<section aria-labelledby="situation">
+		<h2 id="situation">01 / The close pass should be a temptation</h2>
+		<p>
+			Imagine approaching a sun with room to pass safely outside it. Cutting
+			closer should offer an exciting alternative: bend the ship’s path, gather
+			speed, and escape with a useful advantage. Cut too close, and that same
+			pull can make escape difficult or impossible before heat destroys the
+			ship. A planet poses the same temptation, with impact replacing solar
+			burn.
+		</p>
+		<p>
+			The central tension is a rewarding pass beside a dangerous commitment. A
+			well’s reach, inward growth of pull, and visible cues should help players
+			learn that distinction. Escape also depends on approach speed, direction,
+			and the ship’s thrust; a drawn ring cannot universally promise safety.
+			Shared rules should explain differences between bodies without making
+			every encounter identical.
+		</p>
+		<p>
+			There is a useful physics distinction: an unpowered pass around a
+			stationary body gains speed on approach and gives it back on departure at
+			equal distance. Real gravity assists exchange energy with a moving body (<a
+				href="https://science.nasa.gov/mission/cassini/gravity-assists/"
+				>NASA</a
+			>). For the desired solar slingshot, we therefore need to investigate what
+			useful speed the player carries away, alongside the thrill of accelerating
+			nearby. That experience should guide the eventual size and force rules.
+		</p>
+		<p>
+			We want useful close passes, readable danger, and shared rules for suns
+			and planets. The comparisons below establish the force curve and an
+			initial strength range; physical sizing stays outside this study.
+		</p>
+	</section>
+	<section aria-labelledby="carry-away">
+		<h2 id="carry-away">02 / What does the ship carry away?</h2>
+		<p>
+			A bend in the trail can look like a slingshot even when the ship leaves
+			slower. This first comparison isolates the original stationary sun against
+			the same launch without a sun. The hypothesis is that inward acceleration
+			alone may not deliver the useful exit advantage we want.
+		</p>
+		<p>
+			Start with the default pass, then reduce the aim offset to approach the
+			center more closely. Compare peak and exit speed; scrub the replay to see
+			where acceleration becomes a difficult departure. Change entry speed to
+			see why distance alone cannot define the risk.
+		</p>
+		<h3>02.1 / Coasting with and without resistance</h3>
+		<p>
+			The demo now removes passive drag and the speed cap. Toggle the original
+			baseline at the same speed and aim to compare. Engines remain off in both
+			cases: this tests momentum preservation, not the directional engine
+			response.
+		</p>
+		<GravityEncounter client:load />
+		<p>
+			Original baseline (checkbox enabled): at entry speed 500 and aim offset
+			80: the solar pass peaks at 539, then exits at 317 units/s; the no-sun
+			reference exits at 346. The nearby acceleration is real, but this pass
+			does not retain a speed reward. A direct approach at offset 0 ends in sun
+			contact. These are observations of this fixture, not a verdict on gameplay
+			feel.
+		</p>
+		<p>
+			This diagnoses the existing rule rather than choosing a replacement. A
+			faster exit than the no-sun reference can still be slower than entry. A
+			powered escape and a moving planet need separate comparisons before we
+			generalize this result to all wells.
+		</p>
+		<p class="invitation">
+			<strong
+				>Review: interesting loops at low speed, too little influence at useful
+				flight speeds.</strong
+			>
+			We found appealing loops at low speeds, but little visible influence at an
+			entry speed of 325 with the original tuning. The aim offset was not
+			recorded, so this is an experience judgment, not a universal numerical
+			threshold. It identifies a prerequisite for the slingshot: the well must
+			meaningfully bend a ship moving at gameplay speeds. Retained exit speed
+			remains unresolved.
+		</p>
+		<p>
+			A faster ship spends less time under the pull and needs more acceleration
+			to bend through the same radius. Simply increasing strength could also
+			make the appealing slow loops lethal. Comparing trajectory influence
+			across entry speeds remains useful, but the propulsion decision below now
+			takes priority over tuning well strength, reach, and curve shape.
+		</p>
+		<h3>Engines limit thrust, not momentum</h3>
+		<p>
+			Each of our three ships has two engines. Their effectiveness depends on
+			push direction relative to motion, replacing passive drag. Gravity-earned
+			speed should not be clipped by an arbitrary speed cap. Demo 02.1 preserves
+			the original resistance model for comparison; section 03 describes the
+			engine response now used in the game.
+		</p>
+		<p>
+			Removing a cap lets gravity change speed without artificial clipping. It
+			does not make a stationary well a source of unlimited net energy. We still
+			need effective steering and braking at high speed; the initial engine
+			estimate is carried into the alpha for later playtesting.
+		</p>
+	</section>
+	<section aria-labelledby="curve-study">
+		<h2 id="curve-study">02.2 / A steep center and a quiet edge</h2>
+		<p>
+			We use inverse-square falloff with zero pull at the border. Pure
+			inverse-square gravity has no finite border. This candidate uses a(r) = μ
+			× (1/r² − 1/R²) inside radius R, and zero outside. Distance r is measured
+			from the body’s center. This is a game adaptation: continuous at the
+			border, though its slope changes there.
+		</p>
+		<p>
+			The comparison matches both curves at half the existing well radius,
+			keeping reach and the body unchanged. That reference is an experimental
+			control, not an accepted strength rule. The surface ends a pass before the
+			formula’s central singularity. Try the same entry speed and aim with each
+			curve; inspect the tighter inner turn and the quieter outer approach.
+		</p>
+		<p>
+			The new distance-dependent curves give us the shapes we want, but the
+			original strength leaves the close-in pull too weak. Strength is now
+			adjustable from 0.25× to 8× without changing the body or well radius. Keep
+			entry speed and aim fixed while adjusting it.
+		</p>
+		<GravityEncounter
+			label="Gravity curve comparison"
+			curveStudy={true}
+			client:load
+		/>
+		<p>
+			We chose the bounded inverse-square curve and a solar strength range of
+			4×–10× because it produces the close-pass shapes we want. The comparison
+			slider reaches 8×, so 8×–10× remains unverified here. The game starts at
+			4×; section 03 records the initial settings.
+		</p>
+	</section>
+	<section aria-labelledby="planet-study">
+		<h2 id="planet-study">02.3 / A small planet, a moving well</h2>
+		<p>
+			Physical size is out of scope: this trial fixes a small rock planet at
+			radius 20. Strength and reach are independent controls, with no
+			proportional relationship to that radius. The sun result stays preserved
+			above.
+		</p>
+		<p>
+			Compare the same launch around a stationary planet and an orbiting one.
+			First keep strength and reach fixed and reverse orbital direction: does
+			the encounter give a useful speed gain, or take speed away? Then tune the
+			well. The hypothesis is that planetary motion can make the slingshot
+			reward depend on approach side.
+		</p>
+		<PlanetEncounter client:load />
+		<p class="invitation">
+			<strong
+				>Which approaches produce the useful turn and exit-speed reward you want
+				from a planet?</strong
+			>
+			Physical size stays fixed while we investigate strength, reach, and
+			motion.
+		</p>
+	</section>
+	<section aria-labelledby="next">
+		<h2 id="next">03 / What we carry into the game</h2>
+		<p>
+			Use bounded inverse-square gravity for suns and planets, with zero pull at
+			the well boundary. Remove passive drag and the hard speed cap, and make
+			engine effectiveness depend on push direction. The comparisons show why
+			these changes belong together: resistance was masking the well's influence
+			and removing speed gained during a pass.
+		</p>
+		<p>
+			Keep existing body sizes and well reaches for this integration. Planet
+			strength and reach are independent of physical size. New sizing rules,
+			refined planet ranges, and visual danger cues can wait; they are not
+			needed to bring this improvement into the game.
+		</p>
+		<h3>What the study establishes</h3>
+		<p>
+			The preserved coasting and curve comparisons support the gravity model and
+			the 4×–10× solar direction. They show trajectory behavior, not how the
+			combined game feels to play. Engine effectiveness and planet strength
+			remain initial estimates. Automated checks cover steering, braking,
+			contact, and escape in the shared simulation.
+		</p>
+		<p>
+			Playtesting happens after integration, on the built alpha. That is where
+			we will judge control, difficulty, and the reward of a close pass, then
+			revisit the provisional engine and strength settings. It is outside this
+			study and is not a prerequisite for integration.
+		</p>
+		<h3>Implemented in the shared flight simulation</h3>
+		<p>
+			The game and <a href="/lab/flight">Flight Lab</a> now use bounded
+			inverse-square wells, no passive drag or speed cap, and two directional
+			engines per ship. Initial estimates are 4× solar strength, planetary
+			acceleration 300 units/s² at half reach, and engine half-effectiveness at
+			600 units/s along the push. Opposing and perpendicular thrust remain fully
+			effective. Existing sizes and reaches are preserved.
+		</p>
+		<p>
+			Four physics substeps per replay tick resolve close passes. Automated
+			checks cover coasting, braking and outward escape across all three ships,
+			differential steering, contact, and deterministic replay. New scores are
+			isolated in the gravity-1 challenge. Score-rule and two-player leaderboard
+			checks also pass for release 0.3.4; the updated rules accompany the game.
+			The local build is available for the later alpha playtest; no human
+			playtest result is claimed.
+		</p>
+	</section>
+</StudyLayout>
+
+<style>
+.invitation {
+	border-left: var(--flight-border);
+	border-left-color: var(--color-acid-lime);
+	padding-left: var(--spacing-md);
+}
+</style>

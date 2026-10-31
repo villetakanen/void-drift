@@ -1,0 +1,192 @@
+---
+import { buildMounts, defaultBuilds } from "@void-drift/mode-a";
+import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
+
+const mounts = buildMounts(defaultBuilds().scout);
+const variants = [
+	{
+		name: "A / Cockpit leads",
+		cockpitY: -14,
+		deckY: -1,
+		idea: "The round cockpit leads; the deck fitting is squeezed between the engines, with the aft fitting on the tail.",
+	},
+	{
+		name: "B / Deck leads",
+		cockpitY: -1,
+		deckY: -14,
+		idea: "The deck fitting occupies the nose; the cockpit sits between the engines, just ahead of the tail.",
+	},
+];
+const hull = "0,-28 17,8 13,13 6,13 6,31 -6,31 -6,13 -13,13 -17,8";
+---
+
+<div class="packing">
+	<label class="toggle">
+		<input type="checkbox" checked>
+		Show mount footprints and engine axes
+	</label>
+	<div class="cards">
+		{variants.map((v) => (
+			<figure>
+				<figcaption>{v.name}</figcaption>
+				<svg
+					viewBox="-30 -35 60 75"
+					role="img"
+					aria-label={`${v.name}. ${v.idea} Nose up.`}
+				>
+					<polygon points={hull} fill={FIGHTER.facets[3]} />
+					<polygon
+						points="0,-28 -17,8 -13,13 -6,13 0,4"
+						fill={FIGHTER.facets[1]}
+					/>
+					<polygon
+						points="0,-28 17,8 13,13 6,13 0,4"
+						fill={FIGHTER.facets[4]}
+					/>
+					<polygon points="0,-23 -6,0 -6,31 0,31" fill={FIGHTER.facets[0]} />
+					<polygon points="0,-23 6,0 6,31 0,31" fill={FIGHTER.facets[5]} />
+					<circle cx="0" cy={v.cockpitY} r="5" fill="#000000" />
+					<g class="mounts">
+						{mounts.map((m) => {
+							const across =
+								m.group === "side" ? (m.index === 0 ? -12 : 12) : 0;
+							const aft =
+								m.group === "side" ? 7 : m.group === "hull" ? v.deckY : 24;
+							const angle = m.group === "side" ? (m.index === 0 ? 26 : -26) : 0;
+							return (
+								<g transform={`translate(${across} ${aft}) rotate(${angle})`}>
+									{m.group !== "hull" && (
+										<line
+											x1="0"
+											y1={m.width / 2}
+											x2="0"
+											y2={m.width / 2 + 10}
+										/>
+									)}
+									<rect
+										x={-m.height / 2}
+										y={-m.width / 2}
+										width={m.height}
+										height={m.width}
+									/>
+									<text text-anchor="middle" y="1.4">
+										{m.group === "side" ? "E" : m.group === "hull" ? "H" : "A"}
+									</text>
+								</g>
+							);
+						})}
+					</g>
+				</svg>
+				<p>{v.idea}</p>
+			</figure>
+		))}
+	</div>
+	<figure class="reference">
+		<figcaption>
+			Size reference / proposed Scout envelope beside current Fighter
+		</figcaption>
+		<svg
+			viewBox="-50 -55 100 100"
+			role="img"
+			aria-label="Scout and production Fighter hulls at the same drawing scale, noses up. Scout is shorter with a narrower body and short tail."
+		>
+			<g transform="translate(-25 0)">
+				<polygon points={hull} fill={FIGHTER.facets[1]} />
+				<circle cx="0" cy="-14" r="5" fill="#000000" />
+			</g>
+			<g transform="translate(23 0) rotate(-90)">
+				{FIGHTER.hull.map((p, i) => {
+					const next = FIGHTER.hull[(i + 1) % FIGHTER.hull.length];
+					return (
+						<polygon
+							points={`-3,0 ${p.join(",")} ${next.join(",")}`}
+							fill={
+								FIGHTER.facets[(p[1] + next[1]) / 2 < 0 ? i % 3 : 3 + (i % 3)]
+							}
+						/>
+					);
+				})}
+				<polygon
+					points={FIGHTER.ridge.map((p) => p.join(",")).join(" ")}
+					fill="#a2d8df"
+				/>
+				<polygon points="38,0 -21,0 -15,4" fill="#51869e" />
+				<polygon
+					points={FIGHTER.cockpit.map((p) => p.join(",")).join(" ")}
+					fill="#000000"
+				/>
+			</g>
+		</svg>
+	</figure>
+</div>
+<style>
+.toggle {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-sm);
+	min-height: 44px;
+	margin-bottom: var(--spacing-md);
+	cursor: pointer;
+}
+input {
+	accent-color: var(--color-acid-lime);
+	width: 20px;
+	height: 20px;
+}
+input:focus-visible {
+	outline: 2px solid var(--color-acid-lime);
+	outline-offset: 4px;
+}
+.cards {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--spacing-md);
+}
+figure {
+	margin: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+}
+figcaption {
+	color: var(--color-acid-lime);
+	font: var(--font-small) var(--font-flight);
+}
+svg {
+	display: block;
+	width: 100%;
+	height: 340px;
+	margin-block: var(--spacing-md);
+}
+.mounts rect {
+	fill: #071015;
+	fill-opacity: 0.65;
+	stroke: #e0ffff;
+	stroke-width: 0.4;
+}
+.mounts text {
+	fill: #e0ffff;
+	font: 3.5px var(--font-flight);
+}
+.mounts line {
+	stroke: var(--color-neon-orange);
+	stroke-width: 0.4;
+	stroke-dasharray: 1 1;
+}
+.packing:has(input:not(:checked)) .mounts {
+	display: none;
+}
+.reference {
+	margin-block: var(--spacing-md);
+}
+.reference svg {
+	height: 300px;
+}
+figure p {
+	margin: 0;
+}
+@media (max-width: 580px) {
+	.cards {
+		grid-template-columns: 1fr;
+	}
+}
+</style>

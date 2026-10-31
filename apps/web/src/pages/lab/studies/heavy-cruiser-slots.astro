@@ -1,0 +1,556 @@
+---
+import CruiserHullGallery from "../../../components/studies/CruiserHullGallery.astro";
+import CruiserSlotSketch from "../../../components/studies/CruiserSlotSketch.astro";
+import IronKeelRefinements from "../../../components/studies/IronKeelRefinements.astro";
+import LongBevelPlacement from "../../../components/studies/LongBevelPlacement.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((entry) => entry.slug === "heavy-cruiser-slots");
+---
+
+<StudyLayout study={study}>
+	<section aria-labelledby="problem">
+		<h2 id="problem">01 / Overwhelming power in a slim hull</h2>
+		<p>
+			The Fighter says danger; this cruiser should say overwhelming power. Armor
+			does not require bulk. The owner's naval battleship reference sets the
+			direction: a long, purposeful body that looks powerful and streamlined,
+			with a sense of protection and weight rather than fighter-like agility.
+			Imperial light battleships are a mood reference, without the triangular
+			wedge.
+		</p>
+		<p>
+			Start with the eight existing mounts: two mirrored side engines, three
+			hull slots and three aft slots. Arrange those together with two or three
+			cockpit windows, then develop the low-poly armor around them. A repeated
+			window rhythm could make the bridge read as a larger crewed vessel;
+			whether it survives at flight size remains to be examined.
+		</p>
+		<p>
+			This direction replaces the opening emphasis on a “substantial” body:
+			power, protection and slenderness now guide the spatial study. The axial
+			hull layout is now carried forward from owner review in 02.1; aft
+			placement and window count remain open. Handling, balance and the final
+			chassis name follow separately; the production ship is still disabled.
+		</p>
+	</section>
+	<section aria-labelledby="exploration">
+		<h2 id="exploration">02 / Slots and bridge before armor surfaces</h2>
+		<h3>02.1 / A long battery or paired shoulders?</h3>
+		<p>
+			Read these from bow to stern. A places all three hull mounts along the
+			spine, giving the deck a long repeated rhythm. B puts two abreast behind
+			the forward mount, concentrating equipment across the shoulders. In both,
+			the bridge sits behind the hull fittings and ahead of the engine section.
+			Compare the layouts first, then the two- and three-window bridge versions.
+		</p>
+		<div class="comparison">
+			{([2, 3] as const).map((windows) => (
+				<>
+					<figure>
+						<figcaption>
+							A{windows} / Axial battery · {windows} windows
+						</figcaption>
+						<CruiserSlotSketch
+							layout="spine"
+							windows={windows}
+							label={`Axial battery with ${windows} bridge windows; three hull mounts in a line`}
+						/>
+					</figure>
+					<figure>
+						<figcaption>
+							B{windows} / Paired shoulders · {windows} windows
+						</figcaption>
+						<CruiserSlotSketch
+							layout="shoulders"
+							windows={windows}
+							label={`Paired shoulders with ${windows} bridge windows; one forward hull mount and two abreast`}
+						/>
+					</figure>
+				</>
+			))}
+		</div>
+		<p class="legend">
+			E = required side engine · H1–3 = gun/utility · A1–3 = engine/gun/utility.
+			Dark panes are cockpit windows; outlined boxes show empty mount
+			footprints.
+		</p>
+		<p>
+			Study fixture: production mount identities and counts, proposed positions,
+			one fixed hull envelope and bridge width across all four drawings. Armor
+			lines only suggest protective edges; these are spatial sketches, not final
+			facets or the production renderer. They do not establish fitted-part
+			clearance, flight-scale readability, collision or handling.
+		</p>
+		<p>
+			Owner review: the axial hull arrangement in A2 is the direction to carry
+			forward. The bridge behind the fittings does not work; the cockpit belongs
+			clearly at the front. Two panes are retained only as a comparison setting,
+			not a settled window count. These first sketches remain as the evidence
+			that exposed the cockpit-placement problem.
+		</p>
+		<h3 id="aft-triangles">02.2 / Bow cockpit and triangular aft mounts</h3>
+		<p>
+			The cockpit now leads the ship, followed by H1, H2 and H3 in a straight
+			line. Below, only the aft mounts change: a row, the center moved forward,
+			or the outer pair moved forward. The hull envelope, side engines, mount
+			sizes and two-pane cockpit are identical in all three.
+		</p>
+		<div class="comparison aft-comparison">
+			<figure>
+				<figcaption>C / Straight aft row</figcaption>
+				<CruiserSlotSketch
+					layout="spine"
+					windows={2}
+					bowCockpit
+					aft="row"
+					label="C: bow cockpit, three axial hull slots and a straight aft row"
+				/>
+				<p>A reference: three fittings terminate at the same stern edge.</p>
+			</figure>
+			<figure>
+				<figcaption>D / Center forward · pair behind</figcaption>
+				<CruiserSlotSketch
+					layout="spine"
+					windows={2}
+					bowCockpit
+					aft="center-forward"
+					label="D: bow cockpit, axial hull slots, center aft mount forward of the outer pair"
+				/>
+				<p>
+					The pair brackets a recessed central engine lane. This groups the
+					stern around two shoulders.
+				</p>
+			</figure>
+			<figure>
+				<figcaption>E / Pair forward · center behind</figcaption>
+				<CruiserSlotSketch
+					layout="spine"
+					windows={2}
+					bowCockpit
+					aft="center-back"
+					label="E: bow cockpit, axial hull slots, outer aft pair forward of the center mount"
+				/>
+				<p>
+					The center extends the ship's spine to the stern; the pair could sit
+					on stepped engine shoulders.
+				</p>
+			</figure>
+		</div>
+		<p>
+			Dashed lines mark rearward engine centerlines, not rendered exhaust. Both
+			triangles keep these lines clear of the other mount footprints, so a
+			triangular arrangement makes spatial sense. Neither proves clearance for a
+			full engine plume. Forward nozzles also sit over the provisional hull: the
+			armor will need an open channel, a stepped stern or an explicit raised
+			mount. The hull outline here deliberately stays fixed to expose that
+			issue.
+		</p>
+		<p>
+			My initial read is that E strengthens the long, purposeful spine, while D
+			concentrates weight in the outer stern pair. These are visual hypotheses;
+			actual fittings, facets and flight scale remain the next checks. This
+			round does not change thrust or steering.
+		</p>
+		<p>
+			Owner direction: carry option D into hull exploration, retaining the bow
+			cockpit and axial hull slots. Closer spacing is allowed. This settles the
+			arrangement for the next experiment, not its final dimensions or a
+			finished ship.
+		</p>
+		<h3 id="six-hulls">02.3 / Six hulls around the same arrangement</h3>
+		<p>
+			Six original takes on classic science-fiction warship forms, all elongated
+			and all using D. The hull-slot spacing is tightened from 55 to 43 sketch
+			units; the aft pair from 38 to 33 units either side of center. The forward
+			cockpit, side engines and all eight mounts occupy identical positions
+			across the six. Window shapes can change; two panes remain a working
+			choice.
+		</p>
+		<p>
+			Compare armor mass and silhouette with the slots visible, then hide them
+			to judge the ship itself. These use the production Fighter's flat colors
+			and black cockpit, with new study-only polygons. The Fighter below is
+			drawn from its current geometry as a style reference, not a size
+			comparison.
+		</p>
+		<CruiserHullGallery />
+		<p>
+			The sterns leave a channel behind D's center mount. These are hull studies
+			with empty slot overlays: fitted parts, plume width, small-scale flight
+			readability and handling still need verification. No production ship
+			definition has changed.
+		</p>
+		<p>
+			Owner review: only 01 / Iron keel is narrowly promising. The other five
+			directions are set aside. The first gallery reads too large, its mounts
+			too small and far apart, and its cockpit and facets fail the intended
+			sleek low-poly character. The gallery is retained as evidence, not an
+			accepted design.
+		</p>
+		<h3 id="compact-keels">02.4 / Six compact Iron Keels</h3>
+		<p>
+			All six preserve the forward cockpit, three axial hull mounts and D's aft
+			triangle. This round uses game drawing units: hull/aft footprints are 9 ×
+			11, matching the Fighter's 11 × 9 mounts rotated into this top view. Hull
+			centers are 13 units apart, leaving a two-unit gap. Side mounts also use
+			the Fighter's footprint. Each cruiser is shown beside the current Fighter
+			at exactly the same scale.
+		</p>
+		<p>
+			The cruiser hulls are 85–92 units long versus the Fighter's 73, rather
+			than an arbitrarily enlarged illustration. Widths are 42–46 versus 40.
+			Those are trial dimensions, not accepted gameplay sizes. Six restrained
+			variations replace the earlier broad search: long angular planes, compact
+			dark cockpit panes and tightly grouped equipment. Hide the mounts to
+			inspect the surfaces.
+		</p>
+		<IronKeelRefinements />
+		<p>
+			The cockpit stays at the bow; two small panes are still provisional. These
+			drawings use the current Fighter geometry and palette but study-only
+			cruiser polygons. Empty mounts show spatial fit; installed parts, engine
+			plumes, collision and actual flight scale remain untested. The original
+			gallery and D comparison are preserved above.
+		</p>
+		<p>
+			Owner decision: retain 08 / Long bevel as good enough to proceed, with
+			explicit dissatisfaction about visual quality. This is the working hull
+			for placement exploration, not a claim that its appearance is fully
+			successful. The other five refinements are set aside.
+		</p>
+		<h3 id="long-bevel-placement">02.5 / Long bevel at assembly scale</h3>
+		<p>
+			The exact 08 hull and cockpit are enlarged below. Select a mount, then
+			adjust its position with the sliders (arrow keys work too). Hull mounts
+			stay on the spine; side engines and the outer aft pair move symmetrically.
+			The center aft mount moves independently, so D's triangle can be
+			tightened. Reset restores the preserved 08 arrangement.
+		</p>
+		<LongBevelPlacement client:load />
+		<p>
+			Side-angle correction: the earlier overlays reversed the side-engine
+			rotation in the bow-up view. This placement view now points the left
+			engine inward at +20° and the right at −20°, so their rearward guides
+			diverge outward. Increasing the angle increases this outward exhaust
+			direction. Earlier sketches retain their original geometry as historical
+			evidence.
+		</p>
+		<p>
+			H1–H3 accept guns or utilities. A1–A3 also accept engines; both side
+			engines are required and fitted as a pair. In the existing game, one input
+			fires its side engine, while both inputs fire both side engines and all
+			installed aft engines. Guns currently have no shooting behavior. The
+			orange guides indicate rearward engine axes only, not full plume clearance
+			or simulated thrust.
+		</p>
+		<p>
+			At the starting placement, the hull mounts have two units between their
+			footprints. The side mounts partly overhang the armor; the center aft
+			mount sits just ahead of the stern channel. Those are the relationships to
+			inspect here. Positions remain a study fixture: fitted-part clearance,
+			cockpit separation, engine effects and handling need a later
+			production-system check.
+		</p>
+		<p>
+			Next owner proposal: move the side engines forward and consider moving one
+			hull mount ahead of the cockpit. The original placement tool above remains
+			available.
+		</p>
+		<h3 id="forward-engines">02.6 / Forward engines and a bow mount</h3>
+		<p>
+			The screenshot's side-engine settings are preserved here: fore–aft −22.5,
+			distance 13, angle 34°. The remaining positions are reconstructed
+			approximately from the picture: H1 −14.5, H2 −0.5, H3 12.5; center aft
+			30.5, outer pair 37 at ±11. These are trial coordinates, not an accepted
+			final layout.
+		</p>
+		<p>
+			The forward engine pair can work spatially: its rearward axes point
+			outward, away from the central deck. It will change steering leverage, so
+			this is not evidence of good flight handling. Moving H1 to the very front
+			gives a clear bow fitting with two deck slots behind the cockpit, while
+			keeping the total at eight mounts.
+		</p>
+		<LongBevelPlacement
+			client:load
+			forwardTrial
+			title="Forward engines and bow-mount comparison"
+		/>
+		<p>
+			Use “Try H1 at bow” to compare the same ship with only H1 moved. A
+			full-size mount ahead of the cockpit does not fit entirely within the
+			current narrow tip: it needs an armored support or a modest bow change. A
+			gun would also need its barrel and firing line checked; guns do not yet
+			fire in the game. Exhaust widths and attachment details still need
+			inspection with real parts.
+		</p>
+		<p>
+			<strong>Accepted — 30 October 2026.</strong>
+			The owner approved the 02.6 direction and requested readiness and
+			integration planning. Carry forward 08 / Long bevel, its forward cockpit,
+			the forward side-engine pair, H1 ahead of the cockpit, two remaining deck
+			mounts and D's aft triangle. The earlier reservations about visual polish
+			remain recorded; acceptance does not imply a successful flight test.
+		</p>
+		<p>
+			The fixed integration baseline below captures the displayed bow trial,
+			independently of temporary slider edits. Screenshot-derived coordinates
+			are implementation starting values; the accepted spatial relationships are
+			the design contract.
+		</p>
+		<div class="placement-table">
+			<table>
+				<caption>
+					Accepted reference: 02.4 variant 08 + 02.6 bow trial · top-view units
+				</caption>
+				<thead>
+					<tr>
+						<th>Mount</th>
+						<th>Across</th>
+						<th>Fore–aft</th>
+						<th>Rotation</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Left / right engine</td>
+						<td>−13 / +13</td>
+						<td>−22.5</td>
+						<td>+34° / −34°</td>
+					</tr>
+					<tr>
+						<td>H1 · bow</td>
+						<td>0</td>
+						<td>−45.5</td>
+						<td>0°</td>
+					</tr>
+					<tr>
+						<td>H2 / H3 · deck</td>
+						<td>0</td>
+						<td>−0.5 / +12.5</td>
+						<td>0°</td>
+					</tr>
+					<tr>
+						<td>A1 / A3 · outer aft</td>
+						<td>−11 / +11</td>
+						<td>+37</td>
+						<td>0°</td>
+					</tr>
+					<tr>
+						<td>A2 · center aft</td>
+						<td>0</td>
+						<td>+30.5</td>
+						<td>0°</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<p>
+			Reference footprints: side 9 × 14; hull/aft 9 × 11. Preserve the 08
+			facets, two black bow panes and elongated proportions. Bow support is
+			required; its final polygon treatment remains provisional.
+		</p>
+	</section>
+	<section aria-labelledby="readiness">
+		<h2 id="readiness">03 / Feasible with shared geometry adaptations</h2>
+		<p>
+			<strong>Ready to implement as an alpha trial.</strong>
+			The existing tank chassis already stores the required two side, three hull
+			and three aft fittings. The builder, fitting validation, energy model,
+			test flight and engine effects can be reused. No new dependency or backend
+			feature is needed. The current production renderer still uses the old
+			generic tank hull and mount positions; the study has not re-enabled the
+			ship.
+		</p>
+		<h3>Changes needed before a meaningful flight review</h3>
+		<ul>
+			<li>
+				<strong>One shared cruiser definition.</strong>
+				Production mount generation only special-cases the Fighter; add cruiser
+				hull, facets, cockpit and explicit mount geometry. Builder hit targets,
+				fitted-part drawing and engine emitters must consume those same mounts.
+			</li>
+			<li>
+				<strong>Bow support and actual fittings.</strong>
+				H1 extends beyond the old tip and has only a one-unit longitudinal gap
+				before the cockpit. Add a small armored support or modest tip widening,
+				retaining the approved silhouette. Inspect every compatible part; a rail
+				barrel and utility footprint may expose issues an empty rectangle
+				cannot.
+			</li>
+			<li>
+				<strong>Correct coordinate conversion.</strong>
+				Study coordinates are across/right and aft/down; production uses +x
+				forward. Convert (across, aft) to (−aft, across), and convert mount
+				orientation consistently. Side engines therefore use sideX 22.5, arm 13
+				and angle 34°. Verify left/right signs rather than repeating the earlier
+				overlay reversal.
+			</li>
+			<li>
+				<strong>Collision coverage.</strong>
+				The generic tank collision radius does not describe this long bow.
+				Extend buildCollisionRadius to cover the new hull, bow support and
+				relevant part extents at the existing 0.65 drawing scale. A conservative
+				circle is feasible but may feel unfair along the narrow sides; assess
+				that in flight.
+			</li>
+		</ul>
+		<h3>What can remain provisional in the alpha</h3>
+		<p>
+			Reuse tank mass 140, existing engine thrust, energy draw and speed limits.
+			Derive the side-engine turning lever from the new position and angle;
+			retain a provisional response gain rather than borrowing the Fighter's
+			2.5× tuning without evidence. Chassis length in the turning calculation
+			must be explicitly derived from the chosen local origin and extent, not
+			confused with the full 92-unit illustration length. Human flight review
+			then judges power, turning responsiveness and collision fairness. Gravity
+			and friction are outside this change.
+		</p>
+		<p>
+			Engine plumes already use mounted nozzle positions, but the forward pair
+			and compact aft channel need visual clearance checks with all aft engines
+			active. The current model keeps aft thrust free of asymmetric steering and
+			does not move the center of mass with fittings. This design can use that
+			existing convention; it does not establish a new rigid-body model or
+			shooting behavior.
+		</p>
+		<p>
+			<strong>Evidence limit:</strong>
+			owner approval covers the visual/layout direction. The study controls,
+			coordinate updates and prior formatting/type checks establish
+			inspectability only. Production fitting clearance, collision, handling and
+			flight-scale fidelity are not yet verified. Bow support is an
+			implementation task with a review point, not a reason to reopen the whole
+			silhouette search.
+		</p>
+	</section>
+	<section aria-labelledby="integration">
+		<h2 id="integration">
+			04 / Integrate the approved cruiser into the builder and flight
+		</h2>
+		<ol>
+			<li>
+				<strong>Freeze and translate the reference.</strong>
+				Preserve 02.4 variant 08 and the accepted coordinate table. Add a typed
+				cruiser geometry definition alongside fighter.ts in
+				packages/mode-a/src/lib. Preserve flat facets and cockpit polygons;
+				incorporate the minimal bow support. If a geometry or configuration data
+				contract changes, define its Zod schema before adapting consumers.
+			</li>
+			<li>
+				<strong>Connect rendering, fitting and effects.</strong>
+				Update build-renderer.ts: the tank branch in drawBuild, explicit
+				buildMounts positions/orientations, nozzle origins and
+				buildCollisionRadius. Use the same definition in the builder and
+				FlightDeck. Demonstrate empty slots, all compatible fittings and
+				all-engine exhaust in /lab/builder. Review bow support and cockpit
+				clearance here before treating the drawing as faithful.
+			</li>
+			<li>
+				<strong>Connect chassis calculations.</strong>
+				Update the tank entry in schemas/loadout.ts with the approved side
+				geometry and a documented length/turn-response convention. Reuse
+				build-flight.ts and simulation.ts behavior; adapt only where the
+				existing geometry assumptions require it. Compare single-engine and
+				paired-engine trials, braking and mixed-engine overspeed using the real
+				simulation.
+			</li>
+			<li>
+				<strong>Re-enable selection safely.</strong>
+				Update ShipBuilder.svelte to allow Fighter and tank, leaving Scout
+				pending. Retain the tank ID and version-1 saved loadouts, including each
+				hull/aft slot index, so existing builds survive. Keep the existing Heavy
+				Corvette display name for this integration unless separately renamed.
+				Custom survival remains unranked and stock scored profiles remain
+				unchanged.
+			</li>
+			<li>
+				<strong>Update authoritative guidance.</strong>
+				Update docs/specs/ship-builder.md with implemented geometry, enabled
+				selection, collision and tuning limitations; update docs/design.md with
+				the adopted cruiser reference and canonical Lab destination. Keep target
+				behavior distinct from delivered behavior until implementation lands.
+			</li>
+			<li>
+				<strong>Verify and review.</strong>
+				Test slot compatibility and saved-build preservation; mount/nozzle
+				alignment; left/right turn signs and paired cancellation; energy and
+				speed-limit behavior; and collision coverage. Run the repository's pnpm
+				verify gates and report every failure or unavailable check. Inspect
+				keyboard selection and existing landscape flight touch controls, then
+				compare builder and flight rendering with the approved reference. Human
+				review separately assesses bow attachment, small-scale readability,
+				engine clearance and handling.
+			</li>
+		</ol>
+		<p>
+			Sequencing: shared geometry and bow support → renderer/mounts/collision →
+			chassis calculations → selection and documentation → automated gates and
+			human flight review. Do not tune away the accepted layout merely to obtain
+			a familiar flight feel; document tuning separately and return material
+			silhouette changes for review.
+		</p>
+		<p>
+			<strong>Delivery status:</strong>
+			implemented locally after the owner's “deliver it” instruction. The shared
+			cruiser definition, armored bow support, explicit mounts, nozzle
+			positions, collision coverage and builder selection are connected. Saved
+			tank IDs and slot indices are preserved.
+			<a href="/lab/builder"
+				>Review the delivered cruiser in the canonical builder and test
+				flight.</a
+			>
+			Human assessment of fidelity and handling remains pending. This is not a
+			deployment claim.
+		</p>
+	</section>
+</StudyLayout>
+<style>
+.placement-table {
+	overflow-x: auto;
+	margin-block: var(--spacing-md);
+}
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+th,
+td {
+	text-align: left;
+	padding: var(--spacing-sm);
+	border-bottom: var(--flight-border);
+}
+caption {
+	text-align: left;
+	margin-bottom: var(--spacing-sm);
+}
+.comparison {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--spacing-md);
+}
+figure {
+	margin: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+}
+figcaption {
+	font: var(--font-small) var(--font-flight);
+	color: var(--color-acid-lime);
+}
+.legend {
+	margin-top: var(--spacing-md);
+	color: var(--color-text-dim);
+}
+.invitation {
+	border-left: 2px solid var(--color-acid-lime);
+	padding-left: var(--spacing-md);
+}
+@media (max-width: 580px) {
+	.comparison {
+		grid-template-columns: 1fr;
+	}
+}
+</style>

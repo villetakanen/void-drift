@@ -6,6 +6,7 @@
 ## Blueprint
 
 ### Context
+
 Planets supply the "Terrain" of the void. Unlike Stars, they are persistent obstacles that provide cover and smaller gravity wells for slingshot maneuvers. They introduce variety to the arena layout.
 
 **Achievement:** Orbiting rock planet with gravity well and elastic collision mechanics operational.
@@ -14,44 +15,45 @@ Planets supply the "Terrain" of the void. Unlike Stars, they are persistent obst
 
 #### Planet Type System
 
-| Type | ID | Color | Description |
-|------|----|-------|-------------|
-| Rock | `rock` | `#8B7355` | Brown rocky surface, cratered terrain |
-| Gas | `gas` | `#6B4C9A` | Purple gas giant, swirling atmosphere |
-| Ocean | `ocean` | `#4A90C2` | Blue water world |
-| Desert | `desert` | `#C4A35A` | Sandy tan, arid surface |
-| Ice | `ice` | `#A8D8E8` | Light blue frozen world |
+| Type   | ID       | Color     | Description                           |
+| ------ | -------- | --------- | ------------------------------------- |
+| Rock   | `rock`   | `#8B7355` | Brown rocky surface, cratered terrain |
+| Gas    | `gas`    | `#6B4C9A` | Purple gas giant, swirling atmosphere |
+| Ocean  | `ocean`  | `#4A90C2` | Blue water world                      |
+| Desert | `desert` | `#C4A35A` | Sandy tan, arid surface               |
+| Ice    | `ice`    | `#A8D8E8` | Light blue frozen world               |
 
 #### Data Model
-  ```typescript
-  type PlanetType = 'rock' | 'gas' | 'ocean' | 'desert' | 'ice';
 
-  interface Planet {
-    pos: Vec2;
-    orbitCenter: Vec2;
-    orbitRadius: number; // Distance from center (200-1000px)
-    orbitSpeed: number;  // Radians per second
-    orbitAngle: number;  // Current angle
-    radius: number;      // Planet size (10-100px)
-    mass: number;
-    color: string;
-    type: PlanetType;    // Visual type category
-    hasRing: boolean;    // Ring system around planet
-  }
-  ```
+```typescript
+type PlanetType = "rock" | "gas" | "ocean" | "desert" | "ice";
+
+interface Planet {
+	pos: Vec2;
+	orbitCenter: Vec2;
+	orbitRadius: number; // Distance from center (200-1000px)
+	orbitSpeed: number; // Radians per second
+	orbitAngle: number; // Current angle
+	radius: number; // Planet size (10-100px)
+	mass: number;
+	color: string;
+	type: PlanetType; // Visual type category
+	hasRing: boolean; // Ring system around planet
+}
+```
 
 #### Dynamic Spawning
 
 Each new game generates 0-5 planets randomly using the following parameter ranges:
 
-| Parameter | Range | Notes |
-|-----------|-------|-------|
-| Count | 0-5 | Random per game session |
-| Orbit Radius | 200-1000px | Distance from star center |
-| Planet Radius | 10-100px | Physical size |
-| Orbit Speed | ±0.02-0.15 rad/s | Sign determines direction |
-| Type | rock/gas/ocean/desert/ice | Random selection |
-| Ring | 20% probability | Visual ring system |
+| Parameter     | Range                     | Notes                     |
+| ------------- | ------------------------- | ------------------------- |
+| Count         | 0-5                       | Random per game session   |
+| Orbit Radius  | 200-1000px                | Distance from star center |
+| Planet Radius | 10-100px                  | Physical size             |
+| Orbit Speed   | ±0.02-0.15 rad/s          | Sign determines direction |
+| Type          | rock/gas/ocean/desert/ice | Random selection          |
+| Ring          | 20% probability           | Visual ring system        |
 
 **Non-Overlap Constraint:**
 Planets cannot overlap at any point in their orbits. For two planets with radii `r1` and `r2`:
@@ -74,12 +76,14 @@ Planets cannot overlap at any point in their orbits. For two planets with radii 
   - Draw planet as simple circle (no gradients/textures to match aesthetic).
 
 ### Anti-Patterns
+
 - **Do NOT** use expensive noise algorithms (Perlin) every frame. Pre-render to an offscreen canvas or use simple geometric rendering (craters = circles).
 - **Do NOT** make planets overlap the Star or Spawn points.
 
 ## Contract
 
 ### Definition of Done
+
 - [x] Planet renders with a distinct visual style (flat vector, solid color) distinguishable from the Star.
 - [x] Physics engine applies local gravity near the planet (inverse square law).
 - [x] Ships collide/bounce off the planet surface (elastic collision with restitution 0.8).
@@ -87,10 +91,12 @@ Planets cannot overlap at any point in their orbits. For two planets with radii 
 - [x] Orbit path visualized with faint line.
 
 ### Regression Guardrails
+
 - **Visibility:** Planets must be clearly distinct from the background and the Star.
 - **Physics:** Gravity wells of multiple bodies (Star + Planet) must sum logically.
 
 ### Scenarios
+
 **Scenario: Slingshot** ✅
 - Given a Planet exists in the arena
 - When I fly past it tangentially
@@ -108,20 +114,22 @@ Planets cannot overlap at any point in their orbits. For two planets with radii 
 ## Current Implementation
 
 ### Planet Data Structure
+
 ```typescript
 interface Planet {
-  pos: Vec2;              // Current position (updated each frame)
-  orbitCenter: Vec2;      // Center of orbit (usually star position)
-  orbitRadius: number;    // Distance from center (700px)
-  orbitSpeed: number;     // Angular velocity (0.05 rad/s - very slow)
-  orbitAngle: number;     // Current angle in radians
-  radius: number;         // Physical/collision radius (30px)
-  mass: number;           // Gravitational mass (400)
-  color: string;          // Visual color (Slate Blue)
+	pos: Vec2; // Current position (updated each frame)
+	orbitCenter: Vec2; // Center of orbit (usually star position)
+	orbitRadius: number; // Distance from center (700px)
+	orbitSpeed: number; // Angular velocity (0.05 rad/s - very slow)
+	orbitAngle: number; // Current angle in radians
+	radius: number; // Physical/collision radius (30px)
+	mass: number; // Gravitational mass (400)
+	color: string; // Visual color (Slate Blue)
 }
 ```
 
 ### Rendering
+
 - **Style:** Flat vector aesthetic (no gradients or textures)
 - **Color:** Slate Blue to match arcade vector art style
 - **Orbit Path:** Faint white line (`rgba(255,255,255,0.05)`) shows orbital trajectory
@@ -131,7 +139,9 @@ interface Planet {
 ### Physics
 
 #### Orbital Mechanics
-- **Update Formula:** 
+
+- **Update Formula:**
+
   ```typescript
   orbitAngle += orbitSpeed * dt
   pos.x = orbitCenter.x + Math.cos(orbitAngle) * orbitRadius
@@ -141,38 +151,45 @@ interface Planet {
 - **Radius:** Orbits at 700px from star center
 
 #### Gravity
+
 - **Law:** Inverse square law scaled by mass
 - **Influence Radius:** Mass-based: `sqrt(mass) * 10`, clamped to `[radius * 2, radius * 8]`
 - **Formula:** `strength = (mass / dist²) * 1000`
 - **Integration:** Multi-body gravity via vector addition with star
 
 #### Collision
+
 - **Detection:** Distance check `|ship.pos - planet.pos| < (ship.radius + planet.radius)`
 - **Response:** Elastic bounce with restitution 0.8
 - **Formula:** `velocity_new = velocity_old.reflect(normal) * restitution`
 - **Normal:** Calculated as `(ship.pos - planet.pos).normalize()`
 
 ### Configuration
+
 - **Current Setup:** 0-5 dynamically spawned planets per game (PBI-038)
 - **Spawning:** `initializePlanets()` in `packages/core/src/lib/physics/planets.ts`
 - **Variability:** Random count, type, orbit, size, speed, and ring per game restart
 
 ## Performance Characteristics
+
 - **Render Time:** ~0.15ms per planet (circle + orbit line)
 - **Physics Time:** ~0.2ms per planet (gravity + collision check)
 - **Memory:** Zero allocations per frame (reuses Vec2 instances)
 
 ## Visual Properties
+
 - **Color:** Slate Blue (#6A7B8C) for rock planet aesthetic
 - **Orbit Visualization:** Subtle white line at 5% opacity
 - **Scale:** Small relative to arena (1.67% of arena radius)
 - **Contrast:** Easily distinguishable from star (no glow/pulse)
 
 ## Known Limitations
+
 - **Ship Damage:** No health system (collision bounces but doesn't damage)
 - **Rings:** Ring rendering is visual-only (no collision)
 
 ## Future Enhancements
+
 - [ ] Add planet rotation animation
 - [ ] Add surface detail (procedural craters, terrain)
 - [ ] Add ship damage on high-velocity impacts
@@ -185,4 +202,3 @@ interface Planet {
 **Dynamic Spawning:** 0-5 planets per game  
 **Types:** rock, gas, ocean, desert, ice  
 **Lab:** Parameter exploration at `/lab/entities/planet`
-

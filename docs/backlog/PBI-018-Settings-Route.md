@@ -39,6 +39,7 @@ This is the fourth PBI for Phase 5 (Survival Core). It's independent of other Ph
 ## Acceptance Criteria
 
 ### Settings Route
+
 - [x] `/settings` Astro page exists and is accessible
 - [x] Page has consistent Layout with game (same header/footer if applicable)
 - [x] Page displays "Settings" heading
@@ -46,6 +47,7 @@ This is the fourth PBI for Phase 5 (Survival Core). It's independent of other Ph
 - [x] Page is mobile-responsive (readable on 320px width)
 
 ### Control Inversion Toggle
+
 - [x] Toggle/checkbox UI element labeled "Invert Controls"
 - [x] Subtitle/hint text: "Swap left/right engine controls"
 - [x] Toggle state reflects current setting from localStorage
@@ -54,6 +56,7 @@ This is the fourth PBI for Phase 5 (Survival Core). It's independent of other Ph
 - [x] Toggle has visual feedback (checked/unchecked states)
 
 ### LocalStorage Persistence
+
 - [x] Settings saved to localStorage key: `void-drift:settings`
 - [x] Settings object validated with Zod schema
 - [x] Default value: `{ invertControls: false }`
@@ -63,6 +66,7 @@ This is the fourth PBI for Phase 5 (Survival Core). It's independent of other Ph
 - [x] Settings are browser-specific (not synced)
 
 ### Input System Integration
+
 - [x] Input handler accepts `invertControls` boolean parameter
 - [x] When `invertControls = true`:
   - Left input activates right engine
@@ -82,61 +86,61 @@ This is the fourth PBI for Phase 5 (Survival Core). It's independent of other Ph
 **File:** `apps/web/src/lib/settings.ts`
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 export const SettingsSchema = z.object({
-  invertControls: z.boolean().default(false),
+	invertControls: z.boolean().default(false),
 });
 
 export type Settings = z.infer<typeof SettingsSchema>;
 
-const SETTINGS_KEY = 'void-drift:settings';
+const SETTINGS_KEY = "void-drift:settings";
 
 /**
  * Load settings from localStorage with fallback to defaults
  */
 export function loadSettings(): Settings {
-  if (typeof localStorage === 'undefined') {
-    return { invertControls: false };
-  }
-  
-  try {
-    const stored = localStorage.getItem(SETTINGS_KEY);
-    if (!stored) {
-      return { invertControls: false };
-    }
-    
-    const parsed = JSON.parse(stored);
-    return SettingsSchema.parse(parsed);
-  } catch (error) {
-    console.warn('Failed to load settings, using defaults:', error);
-    return { invertControls: false };
-  }
+	if (typeof localStorage === "undefined") {
+		return { invertControls: false };
+	}
+
+	try {
+		const stored = localStorage.getItem(SETTINGS_KEY);
+		if (!stored) {
+			return { invertControls: false };
+		}
+
+		const parsed = JSON.parse(stored);
+		return SettingsSchema.parse(parsed);
+	} catch (error) {
+		console.warn("Failed to load settings, using defaults:", error);
+		return { invertControls: false };
+	}
 }
 
 /**
  * Save settings to localStorage with validation
  */
 export function saveSettings(settings: Settings): void {
-  if (typeof localStorage === 'undefined') {
-    console.warn('localStorage not available');
-    return;
-  }
-  
-  try {
-    const validated = SettingsSchema.parse(settings);
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(validated));
-  } catch (error) {
-    console.error('Failed to save settings:', error);
-  }
+	if (typeof localStorage === "undefined") {
+		console.warn("localStorage not available");
+		return;
+	}
+
+	try {
+		const validated = SettingsSchema.parse(settings);
+		localStorage.setItem(SETTINGS_KEY, JSON.stringify(validated));
+	} catch (error) {
+		console.error("Failed to save settings:", error);
+	}
 }
 
 /**
  * Clear all settings (reset to defaults)
  */
 export function clearSettings(): void {
-  if (typeof localStorage === 'undefined') return;
-  localStorage.removeItem(SETTINGS_KEY);
+	if (typeof localStorage === "undefined") return;
+	localStorage.removeItem(SETTINGS_KEY);
 }
 ```
 
@@ -153,7 +157,7 @@ import Settings from '../components/Settings.svelte';
 ---
 
 <Layout title="Settings - Void Drift">
-  <Settings client:load />
+	<Settings client:load />
 </Layout>
 ```
 
@@ -183,29 +187,29 @@ import Settings from '../components/Settings.svelte';
 </script>
 
 <div class="settings-container">
-  <header>
-    <h1>Settings</h1>
-  </header>
-  
-  <section class="setting-group">
-    <h2>Controls</h2>
-    
-    <label class="toggle-wrapper">
-      <input 
-        type="checkbox" 
-        class="toggle-input"
-        checked={settings.invertControls}
-        onchange={toggleInvertControls}
-        onkeydown={handleKeydown}
-      />
-      <span class="toggle-label">Invert Controls</span>
-      <p class="toggle-hint">Swap left/right engine controls</p>
-    </label>
-  </section>
-  
-  <footer>
-    <a href="/" class="back-button">← Back to Game</a>
-  </footer>
+	<header>
+		<h1>Settings</h1>
+	</header>
+
+	<section class="setting-group">
+		<h2>Controls</h2>
+
+		<label class="toggle-wrapper">
+			<input
+				type="checkbox"
+				class="toggle-input"
+				checked={settings.invertControls}
+				onchange={toggleInvertControls}
+				onkeydown={handleKeydown}
+			>
+			<span class="toggle-label">Invert Controls</span>
+			<p class="toggle-hint">Swap left/right engine controls</p>
+		</label>
+	</section>
+
+	<footer>
+		<a href="/" class="back-button">← Back to Game</a>
+	</footer>
 </div>
 
 <style>
@@ -315,30 +319,30 @@ import Settings from '../components/Settings.svelte';
 Update existing input handler to accept settings:
 
 ```typescript
-import type { Ship } from '../types';
-import type { InputState } from './input-state';
+import type { Ship } from "../types";
+import type { InputState } from "./input-state";
 
 export function applyControls(
-  ship: Ship,
-  input: InputState,
-  invertControls: boolean = false
+	ship: Ship,
+	input: InputState,
+	invertControls: boolean = false,
 ): void {
-  // Swap inputs if inversion enabled
-  const leftActive = invertControls ? input.right : input.left;
-  const rightActive = invertControls ? input.left : input.right;
-  
-  if (leftActive && rightActive) {
-    // Both engines = forward thrust
-    ship.applyThrust('forward');
-  } else if (leftActive) {
-    // Left engine only = rotate left + partial thrust
-    ship.rotate(-1);
-    ship.applyThrust('left');
-  } else if (rightActive) {
-    // Right engine only = rotate right + partial thrust
-    ship.rotate(1);
-    ship.applyThrust('right');
-  }
+	// Swap inputs if inversion enabled
+	const leftActive = invertControls ? input.right : input.left;
+	const rightActive = invertControls ? input.left : input.right;
+
+	if (leftActive && rightActive) {
+		// Both engines = forward thrust
+		ship.applyThrust("forward");
+	} else if (leftActive) {
+		// Left engine only = rotate left + partial thrust
+		ship.rotate(-1);
+		ship.applyThrust("left");
+	} else if (rightActive) {
+		// Right engine only = rotate right + partial thrust
+		ship.rotate(1);
+		ship.applyThrust("right");
+	}
 }
 ```
 
@@ -351,7 +355,7 @@ export function applyControls(
 Load settings and pass to input handler:
 
 ```typescript
-import { loadSettings } from '../lib/settings';
+import { loadSettings } from "../lib/settings";
 
 // On game initialization
 const settings = loadSettings();
@@ -521,12 +525,12 @@ This PBI does NOT include:
 
 ## Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| localStorage disabled (privacy mode) | Settings don't persist | Graceful fallback to defaults, show info message |
-| Settings don't apply without reload | Poor UX | Pass settings reactively to game loop |
-| Toggle not accessible on mobile | Unusable for touch users | Ensure 44px min tap target, test on devices |
-| Corrupt localStorage crashes game | Game unplayable | Wrap JSON.parse in try/catch, fallback to defaults |
+| Risk                                 | Impact                   | Mitigation                                         |
+| ------------------------------------ | ------------------------ | -------------------------------------------------- |
+| localStorage disabled (privacy mode) | Settings don't persist   | Graceful fallback to defaults, show info message   |
+| Settings don't apply without reload  | Poor UX                  | Pass settings reactively to game loop              |
+| Toggle not accessible on mobile      | Unusable for touch users | Ensure 44px min tap target, test on devices        |
+| Corrupt localStorage crashes game    | Game unplayable          | Wrap JSON.parse in try/catch, fallback to defaults |
 
 ---
 

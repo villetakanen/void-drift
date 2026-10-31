@@ -1,0 +1,205 @@
+---
+import { buildMounts, defaultBuilds } from "@void-drift/mode-a";
+import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
+
+const mounts = buildMounts(defaultBuilds().scout);
+const variants = [
+	{
+		name: "01 / Knives, no tail",
+		idea: "The diamond is gone. A sits in a short integral stern between the two original blades.",
+		hull: "0,-22 19,16 12,10 10,1 6,7 6,18 -6,18 -6,7 -10,1 -12,10 -19,16",
+		tail: "",
+		aftY: 12,
+	},
+	{
+		name: "02 / Clipped stinger",
+		idea: "Original knife wings with a short, bevel-ended tail: a fitting support rather than a second body.",
+		hull: "0,-22 19,16 12,10 10,1 5,7 -5,7 -10,1 -12,10 -19,16",
+		tail: "-4,5 4,5 6,12 6,21 3,24 -3,24 -6,21 -6,12",
+		aftY: 15,
+	},
+	{
+		name: "03 / Short counter triangle",
+		idea: "Original blades with a squat rear-facing triangle, joined broadly instead of hanging from a narrow neck.",
+		hull: "0,-22 19,16 12,10 10,1 5,7 -5,7 -10,1 -12,10 -19,16",
+		tail: "-5,5 5,5 11,10 0,27 -11,10",
+		aftY: 15,
+	},
+	{
+		name: "04 / Heavy knife wings",
+		idea: "Thicker, wider blade roots add mass without softening the tips; the clipped stinger stays short.",
+		hull: "0,-22 23,19 14,13 10,0 5,7 -5,7 -10,0 -14,13 -23,19",
+		tail: "-4,5 4,5 6,12 6,21 3,24 -3,24 -6,21 -6,12",
+		aftY: 15,
+	},
+	{
+		name: "05 / Heavy, no tail",
+		idea: "Broad armored blades bracket an integral stern. All four fittings belong to one compact body.",
+		hull: "0,-22 23,19 15,12 11,2 6,8 6,19 -6,19 -6,8 -11,2 -15,12 -23,19",
+		tail: "",
+		aftY: 13,
+	},
+	{
+		name: "06 / Long scissors",
+		idea: "Longer, thinner swept tips reach behind a tiny central stern tab, reversing the old diamond’s emphasis.",
+		hull: "0,-22 21,26 14,18 10,1 5,7 -5,7 -10,1 -14,18 -21,26",
+		tail: "-4,5 4,5 5,11 5,20 -5,20 -5,11",
+		aftY: 14,
+	},
+].map((v) => ({
+	...v,
+	cockpitY: -21,
+	radius: 6,
+	deckY: -7,
+	sideY: 2,
+	arm: 10.5,
+	angle: 26,
+}));
+---
+
+<div class="split-knife-variants">
+	<label class="toggle"
+		><input type="checkbox" checked>
+		Show mount footprints</label
+	>
+	<div class="cards">
+		{variants.map((v, i) => (
+			<figure>
+				<figcaption>{v.name}</figcaption>
+				<svg
+					viewBox="-28 -33 56 72"
+					role="img"
+					aria-label={`${v.name}. ${v.idea} Cockpit first, one deck mount, two side engines and one aft mount. Nose up.`}
+				>
+					<defs>
+						<clipPath id={`scout-knives-${i}`}>
+							<polygon points={v.hull} />
+						</clipPath>
+					</defs>
+					{v.tail && <polygon points={v.tail} fill={FIGHTER.facets[2]} />}
+					<defs>
+						<clipPath id={`scout-knives-tail-${i}`}>
+							<polygon points={v.tail} />
+						</clipPath>
+					</defs>
+					<g clip-path={`url(#scout-knives-tail-${i})`}>
+						<polygon points="-16,4 0,4 0,34" fill={FIGHTER.facets[1]} />
+						<polygon points="0,4 16,4 0,34" fill={FIGHTER.facets[3]} />
+						<polygon points="0,6 2,18 0,32 -2,18" fill={FIGHTER.facets[5]} />
+					</g>
+					<polygon points={v.hull} fill={FIGHTER.facets[4]} />
+					<g clip-path={`url(#scout-knives-${i})`}>
+						<polygon points="0,-24 -26,28 -9,4 0,-8" fill={FIGHTER.facets[1]} />
+						<polygon points="0,-24 26,28 9,4 0,-8" fill={FIGHTER.facets[3]} />
+						<polygon points="0,-24 -4,-10 -4,10 0,7" fill={FIGHTER.facets[0]} />
+						<polygon points="0,-24 4,-10 4,10 0,7" fill={FIGHTER.facets[5]} />
+						<polygon
+							points="-20,-24 -20,18 -10,4 -8,-12"
+							fill={FIGHTER.facets[2]}
+						/>
+					</g>
+					<circle
+						cx="0"
+						cy={v.cockpitY}
+						r={v.radius + 0.8}
+						fill={FIGHTER.facets[2]}
+					/>
+					<circle cx="0" cy={v.cockpitY} r={v.radius} fill="#000000" />
+					<g class="mounts">
+						{mounts.map((m) => {
+							const x =
+								m.group === "side" ? (m.index === 0 ? -v.arm : v.arm) : 0;
+							const y =
+								m.group === "side"
+									? v.sideY
+									: m.group === "hull"
+										? v.deckY
+										: v.aftY;
+							const angle =
+								m.group === "side" ? (m.index === 0 ? v.angle : -v.angle) : 0;
+							return (
+								<g transform={`translate(${x} ${y}) rotate(${angle})`}>
+									<rect
+										x={-m.height / 2}
+										y={-m.width / 2}
+										width={m.height}
+										height={m.width}
+									/>
+									<text text-anchor="middle" y="1.3">
+										{m.group === "side" ? "E" : m.group === "hull" ? "H" : "A"}
+									</text>
+								</g>
+							);
+						})}
+					</g>
+				</svg>
+				<p>{v.idea}</p>
+			</figure>
+		))}
+	</div>
+</div>
+<style>
+.toggle {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-sm);
+	min-height: 44px;
+	margin-bottom: var(--spacing-md);
+	cursor: pointer;
+}
+input {
+	accent-color: var(--color-acid-lime);
+	width: 20px;
+	height: 20px;
+}
+input:focus-visible {
+	outline: 2px solid var(--color-acid-lime);
+	outline-offset: 4px;
+}
+.cards {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-md);
+}
+figure {
+	margin: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+}
+figcaption {
+	color: var(--color-acid-lime);
+	font: var(--font-small) var(--font-flight);
+}
+svg {
+	display: block;
+	width: 100%;
+	height: 310px;
+	margin-block: var(--spacing-md);
+}
+.mounts rect {
+	fill: #071015;
+	fill-opacity: 0.65;
+	stroke: #e0ffff;
+	stroke-width: 0.4;
+}
+.mounts text {
+	fill: #e0ffff;
+	font: 3.5px var(--font-flight);
+}
+.split-knife-variants:has(input:not(:checked)) .mounts {
+	display: none;
+}
+figure p {
+	margin: 0;
+}
+@media (max-width: 900px) {
+	.cards {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 580px) {
+	.cards {
+		grid-template-columns: 1fr;
+	}
+}
+</style>

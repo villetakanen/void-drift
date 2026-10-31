@@ -29,27 +29,32 @@ This is the foundational PBI for the Supabase-based leaderboard system. It sets 
 ## Acceptance Criteria
 
 ### Supabase Project
+
 - [ ] Supabase project created at https://supabase.com
 - [ ] Project name: `void-drift` or `void-drift-prod`
 - [ ] Region selected (prefer `us-east-1` or nearest)
 - [ ] Free tier confirmed (sufficient for v0.2.0)
 
 ### Authentication
+
 - [ ] Anonymous Authentication enabled in Supabase Dashboard
 - [ ] No other auth providers enabled (keep minimal)
 - [ ] Auth settings confirmed
 
 ### PostgreSQL Database
+
 - [ ] Database provisioned automatically by Supabase
 - [ ] `highscores` table created with schema (see below)
 - [ ] Index created for leaderboard queries
 
 ### Row-Level Security (RLS)
+
 - [ ] RLS enabled on `highscores` table
 - [ ] Policies deployed (see below)
 - [ ] Policies tested in SQL Editor
 
 ### Environment Variables
+
 - [ ] `.env.example` updated with Supabase placeholders
 - [ ] `.env.local` added to `.gitignore` (if not already)
 - [ ] Environment variables documented
@@ -166,18 +171,21 @@ delete from highscores where id = (select id from highscores limit 1);
 ## Testing Checklist
 
 ### Supabase Dashboard
+
 - [ ] Can access project dashboard
 - [ ] Anonymous Auth shows in Authentication → Providers
 - [ ] Table Editor shows `highscores` table with correct schema
 - [ ] Policies visible in Table Editor → RLS tab
 
 ### SQL Editor
+
 - [ ] Test queries execute correctly (see Testing RLS Policies section)
 - [ ] Unauthenticated read succeeds
 - [ ] Unauthenticated insert fails
 - [ ] Update/delete fail (no policies)
 
 ### Environment
+
 - [ ] `.env.example` has Supabase placeholders
 - [ ] `.env.local` is in `.gitignore`
 - [ ] Values from Dashboard match `.env.example` format

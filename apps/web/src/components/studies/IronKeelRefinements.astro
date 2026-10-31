@@ -1,0 +1,287 @@
+---
+import { buildMounts, defaultBuilds } from "@void-drift/mode-a";
+import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
+
+const variants = [
+	{
+		name: "07 / Chisel",
+		note: "Clipped prow, broad uninterrupted armor planes, shallow split stern.",
+		nose: -48,
+		bow: 5,
+		shoulder: 14,
+		waist: 15,
+		stern: 22,
+		flare: 15,
+		cockpit: ["-9,-35 -1,-37 -1,-33 -8,-31", "1,-37 9,-35 8,-31 1,-33"],
+	},
+	{
+		name: "08 / Long bevel",
+		note: "Narrower prow and a continuous edge bevel pull the eye along the hull.",
+		nose: -50,
+		bow: 3,
+		shoulder: 12,
+		waist: 14,
+		stern: 21,
+		flare: 19,
+		cockpit: ["-7,-36 -1,-39 -1,-31 -5,-30", "1,-39 7,-36 5,-30 1,-31"],
+	},
+	{
+		name: "09 / Armored visor",
+		note: "A squared command brow and short transverse windows sit within the bow armor.",
+		nose: -45,
+		bow: 8,
+		shoulder: 15,
+		waist: 15,
+		stern: 22,
+		flare: 13,
+		cockpit: ["-11,-34 -1,-34 -1,-31 -10,-30", "1,-34 11,-34 10,-30 1,-31"],
+	},
+	{
+		name: "10 / Recessed deck",
+		note: "Raised side armor frames a darker, lower center deck without widening the ship.",
+		nose: -47,
+		bow: 5,
+		shoulder: 14,
+		waist: 16,
+		stern: 22,
+		flare: 16,
+		cockpit: ["-8,-36 -1,-35 -1,-31 -7,-32", "1,-35 8,-36 7,-32 1,-31"],
+		recessed: true,
+	},
+	{
+		name: "11 / Swept stern",
+		note: "Later, sharper shoulders keep the front slender and concentrate armor around the aft pair.",
+		nose: -48,
+		bow: 4,
+		shoulder: 12,
+		waist: 13,
+		stern: 23,
+		flare: 23,
+		cockpit: ["-8,-35 -1,-37 -1,-33 -7,-30", "1,-37 8,-35 7,-30 1,-33"],
+	},
+	{
+		name: "12 / Blunt blade",
+		note: "A shortened armored bow and nearly parallel sides make the most compact member of the family.",
+		nose: -43,
+		bow: 9,
+		shoulder: 14,
+		waist: 16,
+		stern: 21,
+		flare: 18,
+		cockpit: ["-9,-33 -1,-35 -1,-31 -8,-29", "1,-35 9,-33 8,-29 1,-31"],
+	},
+];
+const mounts = buildMounts(defaultBuilds().tank).map((m) => ({
+	...m,
+	px:
+		m.group === "side"
+			? m.index === 0
+				? -19
+				: 19
+			: m.group === "aft"
+				? (m.index - 1) * 11
+				: 0,
+	py:
+		m.group === "side"
+			? 16
+			: m.group === "aft"
+				? m.index === 1
+					? 24
+					: 37
+				: -17 + m.index * 13,
+	w: m.group === "side" ? 9 : 9,
+	h: m.group === "side" ? 14 : 11,
+}));
+const fighterMounts = buildMounts(defaultBuilds().balanced);
+---
+
+<div class="refinements">
+	<label><input type="checkbox" checked> Show mounts on both ships</label>
+	<div class="grid">
+		{variants.map((v) => {
+			const outline = [
+				[-v.bow, v.nose],
+				[v.bow, v.nose],
+				[v.shoulder, -27],
+				[v.waist, 7],
+				[v.stern, v.flare],
+				[v.stern - 2, 42],
+				[-v.stern + 2, 42],
+				[-v.stern, v.flare],
+				[-v.waist, 7],
+				[-v.shoulder, -27],
+			];
+			return (
+				<figure>
+					<figcaption>{v.name}</figcaption>
+					<svg
+						viewBox="0 -57 130 117"
+						role="img"
+						aria-label={`${v.name}. Compact Iron Keel beside production Fighter at identical scale. ${v.note}`}
+					>
+						<title>{v.name}: cruiser and Fighter at the same scale</title>
+						<g transform="translate(33 0)">
+							{outline.map((p, i) => {
+								const n = outline[(i + 1) % outline.length];
+								return (
+									<polygon
+										points={`0,-5 ${p.join(",")} ${n.join(",")}`}
+										fill={
+											FIGHTER.facets[
+												(p[0] + n[0]) / 2 < 0
+													? [0, 1, 2][i % 3]
+													: [3, 4, 5][i % 3]
+											]
+										}
+									/>
+								);
+							})}
+							<polygon
+								points={`${-v.bow},${v.nose} -5,-26 -6,14 -14,36 ${-v.stern + 2},42 ${-v.waist},7 ${-v.shoulder},-27`}
+								fill={FIGHTER.facets[1]}
+							/>
+							<polygon
+								points={`${v.bow},${v.nose} ${v.shoulder},-27 ${v.waist},7 ${v.stern - 2},42 14,36 6,14 5,-26`}
+								fill={FIGHTER.facets[3]}
+							/>
+							<polygon
+								points="0,-40 6,-26 7,17 0,30 -7,17 -6,-26"
+								fill={v.recessed ? FIGHTER.facets[3] : FIGHTER.facets[0]}
+							/>
+							<polygon
+								points="0,-40 6,-26 7,17 0,30 0,-25"
+								fill={v.recessed ? FIGHTER.facets[4] : FIGHTER.facets[5]}
+							/>
+							<polygon points="-5,31 5,31 6,44 -6,44" class="void" />
+							{v.cockpit.map((points) => (
+								<polygon points={points} fill="#000" />
+							))}
+							<g class="mounts">
+								{mounts.map((m) => (
+									<g
+										transform={`translate(${m.px} ${m.py}) rotate(${m.group === "side" ? (m.index === 0 ? -20 : 20) : 0})`}
+									>
+										<rect x={-m.w / 2} y={-m.h / 2} width={m.w} height={m.h} />
+										<text y="1.2" text-anchor="middle">
+											{m.group === "side"
+												? "E"
+												: `${m.group === "hull" ? "H" : "A"}${m.index + 1}`}
+										</text>
+									</g>
+								))}
+							</g>
+						</g>
+						<g transform="translate(100 0) rotate(-90)">
+							{FIGHTER.hull.map((p, i) => {
+								const n = FIGHTER.hull[(i + 1) % FIGHTER.hull.length];
+								return (
+									<polygon
+										points={`-3,0 ${p.join(",")} ${n.join(",")}`}
+										fill={
+											FIGHTER.facets[
+												(p[1] + n[1]) / 2 < 0 ? i % 3 : 3 + (i % 3)
+											]
+										}
+									/>
+								);
+							})}
+							<polygon
+								points={FIGHTER.ridge.map((p) => p.join(",")).join(" ")}
+								fill="#a2d8df"
+							/>
+							<polygon points="38,0 -21,0 -15,4" fill="#51869e" />
+							<polygon
+								points={FIGHTER.cockpit.map((p) => p.join(",")).join(" ")}
+								fill="#000"
+							/>
+							<g class="mounts">
+								{fighterMounts.map((m) => (
+									<rect
+										transform={`translate(${m.x} ${m.y}) rotate(${(m.angle * 180) / Math.PI})`}
+										x={-m.width / 2}
+										y={-m.height / 2}
+										width={m.width}
+										height={m.height}
+									/>
+								))}
+							</g>
+						</g>
+						<text class="caption" x="33" y="55" text-anchor="middle">
+							CRUISER
+						</text>
+						<text class="caption" x="100" y="55" text-anchor="middle">
+							FIGHTER
+						</text>
+					</svg>
+					<p>{v.note}</p>
+				</figure>
+			);
+		})}
+	</div>
+</div>
+<style>
+label {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-sm);
+	min-height: 44px;
+	margin-block: var(--spacing-md);
+	cursor: pointer;
+}
+input {
+	width: 20px;
+	height: 20px;
+	accent-color: var(--color-acid-lime);
+}
+input:focus-visible {
+	outline: 2px solid var(--color-acid-lime);
+	outline-offset: 4px;
+}
+.grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--spacing-md);
+}
+figure {
+	margin: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+}
+figcaption {
+	color: var(--color-acid-lime);
+	font: var(--font-small) var(--font-flight);
+}
+svg {
+	display: block;
+	width: 100%;
+	margin-block: var(--spacing-md);
+}
+.mounts rect {
+	fill: #071015;
+	fill-opacity: 0.38;
+	stroke: #e0ffff;
+	stroke-width: 0.45;
+}
+.mounts text {
+	fill: #e0ffff;
+	font: 3px var(--font-flight);
+}
+.caption {
+	fill: var(--color-text-dim);
+	font: 3px var(--font-flight);
+}
+.void {
+	fill: var(--color-void);
+}
+.refinements:has(input:not(:checked)) .mounts {
+	display: none;
+}
+p {
+	margin: 0;
+}
+@media (max-width: 580px) {
+	.grid {
+		grid-template-columns: 1fr;
+	}
+}
+</style>

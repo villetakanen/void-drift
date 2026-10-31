@@ -14,24 +14,24 @@
  * // => 'Xa3cD1'
  */
 export async function generateUidHash(userId: string): Promise<string> {
-    // Convert UUID string to Uint8Array
-    const encoder = new TextEncoder();
-    const data = encoder.encode(userId);
+	// Convert UUID string to Uint8Array
+	const encoder = new TextEncoder();
+	const data = encoder.encode(userId);
 
-    // Hash with SHA-256
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+	// Hash with SHA-256
+	const hashBuffer = await crypto.subtle.digest("SHA-256", data);
 
-    // Convert to base64
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashBase64 = btoa(String.fromCharCode(...hashArray));
+	// Convert to base64
+	const hashArray = Array.from(new Uint8Array(hashBuffer));
+	const hashBase64 = btoa(String.fromCharCode(...hashArray));
 
-    // Take first 6 characters (alphanumeric + some symbols)
-    // Replace symbols for cleaner display
-    const hash = hashBase64
-        .substring(0, 6)
-        .replace(/\+/g, 'x')
-        .replace(/\//g, 'y')
-        .replace(/=/g, 'z');
+	// Take first 6 characters (alphanumeric + some symbols)
+	// Replace symbols for cleaner display
+	const hash = hashBase64
+		.substring(0, 6)
+		.replace(/\+/g, "x")
+		.replace(/\//g, "y")
+		.replace(/=/g, "z");
 
-    return hash;
+	return hash;
 }

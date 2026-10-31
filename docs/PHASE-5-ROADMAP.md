@@ -30,6 +30,7 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 ## Phase 5 Components (4 Incremental Releases)
 
 ### v0.0.5: PBI-015 — Resource HUD Design
+
 **Priority:** HIGH  
 **Estimate:** 5 Story Points  
 **Owner:** @Designer + @Dev
@@ -62,6 +63,7 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 ---
 
 ### v0.0.6: PBI-016 — Resource Logic & HUD Integration
+
 **Priority:** HIGH  
 **Estimate:** 8 Story Points  
 **Owner:** @Dev  
@@ -90,6 +92,7 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 ---
 
 ### v0.0.7: PBI-018 — Settings Route
+
 **Priority:** MEDIUM  
 **Estimate:** 3 Story Points  
 **Owner:** @Dev  
@@ -117,6 +120,7 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 ---
 
 ### v0.1.0: PBI-017 — Timer & Death Logic
+
 **Priority:** HIGH  
 **Estimate:** 5 Story Points  
 **Owner:** @Dev  
@@ -150,6 +154,7 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 ---
 
 ### v0.1.0: PBI-020 — Menu Overlay
+
 **Priority:** HIGH  
 **Estimate:** 2 Story Points  
 **Owner:** @Dev  
@@ -186,6 +191,7 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 ## Implementation Strategy
 
 ### Week 1: Design & HUD Elements (v0.0.5: PBI-015)
+
 **Focus:** Design-first — create and iterate on visual components in gallery
 
 **Days 1-2: Resource Bar Design**
@@ -210,6 +216,7 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 ---
 
 ### Week 2: Resource Logic & Integration (v0.0.6: PBI-016)
+
 **Focus:** Implement resource tracking and integrate designed HUD
 
 **Days 1-2: Schema & Physics**
@@ -233,6 +240,7 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 ---
 
 ### Week 3: Death/Timer Logic + Settings (v0.1.0 + v0.0.7)
+
 **Focus:** Complete game loop and add settings (parallel work)
 
 **Days 1-2: State Machine & Death Detection**
@@ -256,6 +264,7 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 ---
 
 ### Week 4: Polish & Release Prep
+
 **Focus:** Holistic testing, tuning, and documentation
 
 **Days 1-2: Gameplay Tuning**
@@ -285,6 +294,7 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 ## Success Metrics
 
 ### Technical
+
 - ✅ Zero TypeScript errors (`pnpm -r check`)
 - ✅ 60 FPS maintained on desktop (Chrome, Firefox, Safari)
 - ✅ 60 FPS maintained on mobile (iPhone 12 / Pixel 5 equivalent)
@@ -292,12 +302,14 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 - ✅ No memory leaks (tested with Chrome DevTools)
 
 ### Gameplay
+
 - ✅ Player can survive 60-90 seconds on first attempt (with learning)
 - ✅ Average survival time 30-60s (indicates balanced difficulty)
 - ✅ All three death causes occur naturally (not one-sided)
 - ✅ Sun approach feels risky but necessary (risk/reward balance)
 
 ### UX
+
 - ✅ Controls feel responsive (< 50ms input latency)
 - ✅ Timer is always visible and accurate
 - ✅ Game Over screen is clear and actionable
@@ -309,15 +321,18 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 ## Dependencies & Blockers
 
 ### External Dependencies
+
 - ✅ Phase 4 complete (camera, viewport, star, planet)
 - ✅ Input system functional (keyboard + touch)
 - ✅ Physics engine stable (gravity, collision, wrapping)
 
 ### Internal Dependencies
+
 - PBI-016 depends on PBI-015 (needs hull/fuel values)
 - PBI-017 is independent (can parallelize)
 
 ### Potential Blockers
+
 - Performance regression (resource updates too expensive)
 - Tuning issues (fuel consumption too fast/slow)
 - Mobile input lag (touch events delayed)
@@ -329,18 +344,21 @@ Phase 5 is the first major milestone for **Mode A** (single-player survival). Th
 ## Testing Strategy
 
 ### Unit Tests (Optional for v0.1.0)
+
 - `updateFuel()` clamps to [0, 100]
 - `updateHull()` clamps to [0, 100]
 - `checkDeath()` returns correct priority
 - `loadSettings()` handles corrupt data
 
 ### Integration Tests
+
 - Timer starts on first input
 - Death triggers state transition
 - Restart resets all state
 - Settings persist across sessions
 
 ### Manual QA Checklist
+
 See individual PBIs for detailed checklists:
 - [PBI-015 Testing](./backlog/PBI-015-Resource-Systems.md#testing-checklist)
 - [PBI-016 Testing](./backlog/PBI-016-Timer-Death-Logic.md#testing-checklist)
@@ -350,13 +368,13 @@ See individual PBIs for detailed checklists:
 
 ## Risk Assessment
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| Fuel consumption too aggressive | HIGH | Player frustration | Tuning constants, multiple playtests |
-| Sun zones not balanced | MEDIUM | Avoid-sun strategy dominant | Adjust regen/burn ratio, make Zone 2 rewarding |
-| Performance regression | LOW | FPS drops below 60 | Profile early, optimize distance calculations |
-| Settings don't apply live | LOW | Requires restart (bad UX) | Pass settings reactively to game loop |
-| Memory leaks on restart | MEDIUM | Browser slows over time | Profile with DevTools, cleanup listeners |
+| Risk                            | Likelihood | Impact                      | Mitigation                                     |
+| ------------------------------- | ---------- | --------------------------- | ---------------------------------------------- |
+| Fuel consumption too aggressive | HIGH       | Player frustration          | Tuning constants, multiple playtests           |
+| Sun zones not balanced          | MEDIUM     | Avoid-sun strategy dominant | Adjust regen/burn ratio, make Zone 2 rewarding |
+| Performance regression          | LOW        | FPS drops below 60          | Profile early, optimize distance calculations  |
+| Settings don't apply live       | LOW        | Requires restart (bad UX)   | Pass settings reactively to game loop          |
+| Memory leaks on restart         | MEDIUM     | Browser slows over time     | Profile with DevTools, cleanup listeners       |
 
 ---
 
@@ -425,11 +443,13 @@ Once v0.1.0 ships:
 ## Resources
 
 ### Documentation
+
 - [Project Vision](./project-vision.md) — Updated with Phase 5 details
 - [Survival Core Spec](./specs/survival-core.md) — Comprehensive feature spec
 - [AGENTS.md](../AGENTS.md) — Agent roles and coding standards
 
 ### PBIs (Execution Order)
+
 1. [PBI-015: Resource HUD Design](./backlog/PBI-015-Resource-HUD-Design.md) — v0.0.5 ✅
 2. [PBI-016: Resource Logic](./backlog/PBI-016-Resource-Logic.md) — v0.0.6 ✅
 3. [PBI-017: Timer & Death Logic](./backlog/PBI-017-Timer-Death-Logic.md) — v0.1.0 ✅
@@ -438,6 +458,7 @@ Once v0.1.0 ships:
 6. [PBI-020: Menu Overlay](./backlog/PBI-020-Menu-Overlay.md) — v0.1.0 ✅
 
 ### Related Specs
+
 - [Game Engine Phase 1](./specs/game-engine-phase1.md) — Physics foundation
 - [Controls System](./specs/controls-system.md) — Input handling
 - [Camera System](./specs/camera-system.md) — Viewport tracking

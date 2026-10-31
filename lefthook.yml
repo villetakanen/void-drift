@@ -1,0 +1,4 @@
+commit-msg:
+  commands:
+    conventional:
+      run: pnpm exec commitlint --edit "{1}"

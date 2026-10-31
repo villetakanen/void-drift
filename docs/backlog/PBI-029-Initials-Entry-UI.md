@@ -30,10 +30,12 @@ This PBI implements the arcade-style initials entry UI that appears after the pl
 ## Acceptance Criteria
 
 ### Component Creation
+
 - [ ] Create `apps/web/src/components/InitialsEntry.svelte`
 - [ ] Component renders in GameOver screen flow
 
 ### User Interface
+
 - [ ] 3-letter input display (A-Z only)
 - [ ] Current letter highlighted
 - [ ] UID hash preview shown below initials
@@ -42,18 +44,21 @@ This PBI implements the arcade-style initials entry UI that appears after the pl
 - [ ] Success/error messages
 
 ### Keyboard Input
+
 - [ ] Arrow Up/Down to cycle letters (A → Z → A)
 - [ ] Arrow Left/Right to move between letter positions
 - [ ] Enter key to submit (when 3 letters entered)
 - [ ] Escape key to cancel (return to game over screen)
 
 ### On-Screen Input
+
 - [ ] Up/Down buttons per letter position
 - [ ] Left/Right buttons to navigate positions
 - [ ] Submit button
 - [ ] Cancel button
 
 ### Integration
+
 - [ ] Component shown on game over (if score qualifies for submission)
 - [ ] Calls `submitHighScore()` on submit
 - [ ] Navigates to `/leaderboard` on success
@@ -190,65 +195,65 @@ This PBI implements the arcade-style initials entry UI that appears after the pl
 <svelte:window onkeydown={handleKeydown} />
 
 <div class="initials-entry">
-  <h2>Enter Your Initials</h2>
+	<h2>Enter Your Initials</h2>
 
-  <div class="initials-display">
-    {#each letters as letter, index}
-      <div class="letter" class:active={index === currentPosition}>
-        <button
-          class="letter-btn letter-btn-up"
-          onclick={() => {
+	<div class="initials-display">
+		{#each letters as letter, index}
+			<div class="letter" class:active={index === currentPosition}>
+				<button
+					class="letter-btn letter-btn-up"
+					onclick={() => {
             currentPosition = index;
             incrementLetter();
           }}
-          disabled={isSubmitting}
-        >
-          ▲
-        </button>
+					disabled={isSubmitting}
+				>
+					▲
+				</button>
 
-        <div class="letter-value">{letter}</div>
+				<div class="letter-value">{letter}</div>
 
-        <button
-          class="letter-btn letter-btn-down"
-          onclick={() => {
+				<button
+					class="letter-btn letter-btn-down"
+					onclick={() => {
             currentPosition = index;
             decrementLetter();
           }}
-          disabled={isSubmitting}
-        >
-          ▼
-        </button>
-      </div>
-    {/each}
-  </div>
+					disabled={isSubmitting}
+				>
+					▼
+				</button>
+			</div>
+		{/each}
+	</div>
 
-  <div class="uid-hash-preview">
-    {displayHash}
-  </div>
+	<div class="uid-hash-preview">
+		{displayHash}
+	</div>
 
-  {#if errorMessage}
-    <div class="error-message">
-      {errorMessage}
-    </div>
-  {/if}
+	{#if errorMessage}
+		<div class="error-message">
+			{errorMessage}
+		</div>
+	{/if}
 
-  <div class="actions">
-    <button class="btn btn-ghost" onclick={onCancel} disabled={isSubmitting}>
-      Cancel
-    </button>
+	<div class="actions">
+		<button class="btn btn-ghost" onclick={onCancel} disabled={isSubmitting}>
+			Cancel
+		</button>
 
-    <button
-      class="btn btn-filled"
-      onclick={handleSubmit}
-      disabled={!isFormValid || isSubmitting}
-    >
-      {isSubmitting ? 'Submitting...' : 'Submit Score'}
-    </button>
-  </div>
+		<button
+			class="btn btn-filled"
+			onclick={handleSubmit}
+			disabled={!isFormValid || isSubmitting}
+		>
+			{isSubmitting ? 'Submitting...' : 'Submit Score'}
+		</button>
+	</div>
 
-  <div class="hint">
-    Use Arrow Keys or On-Screen Buttons • Enter to Submit • Esc to Cancel
-  </div>
+	<div class="hint">
+		Use Arrow Keys or On-Screen Buttons • Enter to Submit • Esc to Cancel
+	</div>
 </div>
 
 <style>
@@ -372,27 +377,25 @@ This PBI implements the arcade-style initials entry UI that appears after the pl
 </script>
 
 {#if showInitialsEntry}
-  <InitialsEntry
-    {seconds}
-    {deathCause}
-    onSubmitSuccess={handleSubmitSuccess}
-    onCancel={handleCancel}
-  />
+	<InitialsEntry
+		{seconds}
+		{deathCause}
+		onSubmitSuccess={handleSubmitSuccess}
+		onCancel={handleCancel}
+	/>
 {:else}
-  <!-- Existing GameOver UI -->
-  <div class="game-over">
-    <h1>Game Over</h1>
-    <p>Time Survived: {seconds}s</p>
-    <p>Cause of Death: {deathCause}</p>
+	<!-- Existing GameOver UI -->
+	<div class="game-over">
+		<h1>Game Over</h1>
+		<p>Time Survived: {seconds}s</p>
+		<p>Cause of Death: {deathCause}</p>
 
-    <button class="btn btn-filled" onclick={handleSubmitScore}>
-      Submit Score
-    </button>
+		<button class="btn btn-filled" onclick={handleSubmitScore}>
+			Submit Score
+		</button>
 
-    <button class="btn btn-ghost" onclick={onRestart}>
-      Play Again
-    </button>
-  </div>
+		<button class="btn btn-ghost" onclick={onRestart}>Play Again</button>
+	</div>
 {/if}
 ```
 
@@ -418,6 +421,7 @@ This PBI implements the arcade-style initials entry UI that appears after the pl
 ## Testing Checklist
 
 ### Keyboard Input
+
 - [ ] Arrow Up cycles letter upward (A → B → ... → Z → A)
 - [ ] Arrow Down cycles letter downward (Z → Y → ... → A → Z)
 - [ ] Arrow Left moves to previous letter position
@@ -427,6 +431,7 @@ This PBI implements the arcade-style initials entry UI that appears after the pl
 - [ ] Escape cancels and returns to game over
 
 ### On-Screen Input
+
 - [ ] Click up arrow cycles letter upward
 - [ ] Click down arrow cycles letter downward
 - [ ] Click on letter position activates it
@@ -434,11 +439,13 @@ This PBI implements the arcade-style initials entry UI that appears after the pl
 - [ ] Cancel button returns to game over
 
 ### UID Hash Preview
+
 - [ ] Displays initials + underscore + 6-char hash
 - [ ] Hash matches actual submission hash
 - [ ] Updates in real-time as letters change
 
 ### Submission
+
 - [ ] Clicking submit shows "Submitting..." text
 - [ ] Buttons disabled during submission
 - [ ] Success navigates to `/leaderboard`
@@ -446,6 +453,7 @@ This PBI implements the arcade-style initials entry UI that appears after the pl
 - [ ] Can retry submission after error
 
 ### Edge Cases
+
 - [ ] Rapid key presses don't break state
 - [ ] Submission prevented during loading
 - [ ] Works on mobile touch screens

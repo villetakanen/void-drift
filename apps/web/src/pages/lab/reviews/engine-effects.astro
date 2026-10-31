@@ -1,0 +1,168 @@
+---
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const review = {
+	slug: "engine-effects-review",
+	title: "Engine effects — study-quality evaluation",
+	status: "exploratory" as const,
+	phase: "integration" as const,
+	question:
+		"Study-quality assessment, 30 October 2026. Separate from feasibility and integration planning.",
+};
+---
+
+<StudyLayout study={review}>
+	<p><a href="/lab/studies/engine-effects">Return to the design study</a></p>
+	<section aria-labelledby="readiness">
+		<h2 id="readiness">Engine effects — study-quality evaluation</h2>
+		<p>
+			<strong>Assessment: useful design conclusion, with evidence gaps.</strong>
+			Review of sections 02.1–02.4, 30 October 2026. The plume lifecycle is
+			accepted; the ribbon experiment remains unresolved. The owner wants no
+			additional forward thrust at roughly 750 units/s. Exact taper, size
+			mapping, and normal-scale readability still need review in flight.
+		</p>
+		<div class="review-table">
+			<table>
+				<thead>
+					<tr>
+						<th scope="col">Criterion</th>
+						<th scope="col">Assessment</th>
+						<th scope="col">Evidence and condition</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<th scope="row">Purpose</th>
+						<td>Supported</td>
+						<td>
+							<a href="/lab/studies/engine-effects#engine-purpose">01</a>
+							establishes expressive, filled, glowing effects; the owner
+							confirmed the visual direction in
+							<a href="/lab/studies/engine-effects#plume-lifecycle">02.3</a>.
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">Investigation</th>
+						<td>Supported</td>
+						<td>
+							<a href="/lab/studies/engine-effects#engine-direction">02.2</a>
+							exposed ribbon cutoff and instant flame loss.
+							<a href="/lab/studies/engine-effects#plume-lifecycle">02.3</a>
+							supplied a reviewed alternative with one lifetime for the whole
+							plume.
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">Alternatives and reasoning</th>
+						<td>Supported</td>
+						<td>
+							<a href="/lab/studies/engine-effects#engine-next">02.1</a>,
+							<a href="/lab/studies/engine-effects#engine-direction">02.2</a>,
+							and
+							<a href="/lab/studies/engine-effects#plume-lifecycle">02.3</a>
+							preserve stamped residue, connected ribbon, and complete emitted
+							surfaces. The last approach addresses release without a separate
+							tail object.
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">Evidence fit</th>
+						<td>Partial</td>
+						<td>
+							<a href="/lab/studies/engine-effects#plume-lifecycle">02.3</a>
+							supports isolated motion and release, not arena readability.
+							Before game adoption, inspect the fixed replay and live flight in
+							the real Lab at each camera scale; revise if the effect obscures
+							hazards or loses its character.
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">Cumulative agreement</th>
+						<td>Supported</td>
+						<td>
+							<a href="/lab/studies/engine-effects#plume-lifecycle">02.3</a>
+							records explicit lifecycle acceptance;
+							<a href="/lab/studies/engine-effects#thrust-plume">02.4</a>
+							records the approximate engine cutoff. Neither establishes
+							acceptance of exact tuning or production delivery.
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">Design coherence</th>
+						<td>Partial</td>
+						<td>
+							<a href="/lab/studies/engine-effects#thrust-plume">02.4</a>
+							combines thrust-dependent size and fade in isolation. In the Lab
+							trial, review turning, braking, both engines, release, cutoff,
+							camera changes, wrapping, pause, and death/reset. Fix
+							discontinuities before promotion.
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">Remaining uncertainty</th>
+						<td>Partial</td>
+						<td>
+							<a href="/lab/studies/engine-effects#readiness"
+								>Readiness questions</a
+							>
+							name the taper, visibility, and performance gaps. The owner
+							reviews feel after the trial; measure performance on a named
+							device before making a performance claim. Unresolved tuning
+							remains provisional.
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">Integration implications</th>
+						<td>Partial</td>
+						<td>
+							<a href="/lab/studies/engine-effects#integration"
+								>Integration plan</a
+							>
+							maps the change to shared effects, physics, configuration, and the
+							flight Lab. Verify that every engine's visual output uses its
+							actual contribution and that physics and rendering tests pass
+							before the experience review.
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<p>
+			This evaluates how well the study established purpose, investigated
+			alternatives, preserved decisions, and produced a usable conclusion. The
+			owner accepted the plume lifecycle and requested the approximate cutoff.
+			Exact tuning and full-scene evidence remain incomplete; those limits are
+			visible in parts 03 and 04.
+		</p>
+		<p>
+			Human feedback also identified a process failure: the previous assessment
+			confused study success with feasibility and implementation authorization.
+			The corrected four-part structure separates these concerns. Its usefulness
+			still requires human review; this record does not claim approval or
+			delivery.
+		</p>
+	</section>
+</StudyLayout>
+<style>
+.review-table {
+	overflow-x: auto;
+	margin-block: var(--spacing-lg);
+}
+table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--font-small);
+}
+th,
+td {
+	text-align: left;
+	vertical-align: top;
+	padding: var(--spacing-sm);
+	border-bottom: var(--flight-border);
+	line-height: 1.6;
+}
+th {
+	color: var(--color-acid-lime);
+}
+</style>

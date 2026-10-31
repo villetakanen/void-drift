@@ -27,11 +27,13 @@ The lab (`/lab`) currently shows visual previews of assets but doesn't display t
 This PBI adds a **stats panel** to the inspector sidebar of each lab entity and formalizes the **Entity Template** to ensure consistency across Ship, Star, and Planet workbenches.
 
 ### Entity Template Requirements
+
 - **Layout:** Must strictly follow the **3-column Grid** defined in [Gallery and Assets Spec](../specs/gallery_and_assets.md#ui-layout-the-workbench-grid).
 - **Stage:** `main` column uses split components (Main vs Inspector) for the interactive canvas.
 - **Inspector:** `side-pane` column is dedicated to Svelte controls.
 
 ### Lab Segmentation
+
 - **Entity Labs:** Ship, Star, Planet. (Must use `/lab/entities/` and `LabStats`)
 - **System Labs:** Resources, Typography, Buttons. (Free-form layout, NO `LabStats`)
 
@@ -40,6 +42,7 @@ This PBI adds a **stats panel** to the inspector sidebar of each lab entity and 
 ## Acceptance Criteria
 
 ### Stats Panel Component
+
 - [x] Create reusable `LabStats.svelte` component
 - [x] Displays key-value pairs in clean format
 - [x] Supports grouping (Physical, Gameplay, Zones)
@@ -47,6 +50,7 @@ This PBI adds a **stats panel** to the inspector sidebar of each lab entity and 
 - [x] Matches design system (void bg, neon-blue accents)
 
 ### Ship Stats
+
 - [x] Radius: collision size in pixels
 - [x] Max Speed: pixels per second
 - [x] Thrust Force: acceleration
@@ -54,6 +58,7 @@ This PBI adds a **stats panel** to the inspector sidebar of each lab entity and 
 - [x] Drag: damping factor
 
 ### Sun Stats
+
 - [x] Class: O / B / A / F / G / K / M
 - [x] Size Rating: 1 - 100
 - [x] Radius: visual/collision size in pixels
@@ -63,6 +68,7 @@ This PBI adds a **stats panel** to the inspector sidebar of each lab entity and 
 - [x] Zone 1/2/3 Radii: calculated from base + sun scale
 
 ### Planet Stats
+
 - [x] Radius: collision size
 - [x] Mass: gravity strength
 - [x] Orbit Radius: distance from sun
@@ -70,6 +76,7 @@ This PBI adds a **stats panel** to the inspector sidebar of each lab entity and 
 - [x] Collision Damage: hull damage on impact
 
 ### Entity Lab Convergence
+
 - [x] Refactor entity labs to follow the 3-column Grid
 - [x] Implement Granular Routing (`/lab/entities/*`)
 - [x] Create `LabPlanet.svelte` following the Entity Template (Drafted, ready for implementation)
@@ -80,9 +87,11 @@ This PBI adds a **stats panel** to the inspector sidebar of each lab entity and 
 ## Technical Implementation
 
 ### Stats Component
+
 Implemented in `apps/web/src/components/lab/LabStats.svelte`.
 
 ### Shared State Island Pattern
+
 Implemented via `.svelte.ts` modules to share reactive state between the Stage and Inspector blocks in the Astro 3-column layout.
 
 ---
@@ -103,16 +112,19 @@ Implemented via `.svelte.ts` modules to share reactive state between the Stage a
 ## Testing Checklist
 
 ### Accuracy
+
 - [x] Ship stats match `CONFIG` values
 - [x] Sun stats match `SUN_PRESETS` values
 - [x] Zone radii calculate correctly with sun scale
 
 ### Visual
+
 - [x] Stats panel readable
 - [x] Values align nicely (tabular-nums)
 - [x] Groups clearly separated
 - [x] Matches void industrial aesthetic
 
 ### Interactivity
+
 - [x] Sun type selector updates stats in real-time
 - [x] No flicker or layout shift on update

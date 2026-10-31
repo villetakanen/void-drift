@@ -1,0 +1,155 @@
+---
+import { buildMounts, defaultLoadout } from "./ship-silhouette-reference";
+
+const mounts = buildMounts(defaultLoadout("balanced"));
+const forms = [
+	{
+		name: "A / Pure arrow",
+		note: "One continuous leading edge. The long nose and shallow rear cut keep the aggression in the proportions.",
+		points: "44,0 -25,-23 -18,0 -25,23",
+		facet: "44,0 -25,-23 -18,0",
+		inset: "25,0 -18,-15 -13,0 -18,15",
+	},
+	{
+		name: "B / Clipped sweep",
+		note: "The same forward pull, with a single clipped wing corner. A broader, composed surface rather than extra spikes.",
+		points: "44,0 -17,-25 -26,-21 -20,0 -26,21 -17,25",
+		facet: "44,0 -17,-25 -26,-21 -20,0",
+		inset: "25,0 -15,-17 -19,-14 -13,0 -19,14 -15,17",
+	},
+	{
+		name: "C / Tensioned arrow",
+		note: "A restrained change of angle at the shoulder gives the wing a slight barb while preserving the clean triangular gesture.",
+		points: "44,0 2,-12 -26,-26 -20,-10 -22,0 -20,10 -26,26 2,12",
+		facet: "44,0 2,-12 -26,-26 -20,-10 -22,0",
+		inset: "25,0 0,-8 -18,-17 -13,-7 -15,0 -13,7 -18,17 0,8",
+	},
+];
+---
+
+<div class="forms">
+	{forms.map((form, i) => (
+		<figure>
+			<figcaption>
+				<h4>{form.name}</h4>
+				<p>{form.note}</p>
+			</figcaption>
+			<svg
+				viewBox="0 0 700 290"
+				role="img"
+				aria-label={`${form.name}: luminous filled Fighter surface, smaller rotated view and flat silhouette`}
+			>
+				<defs>
+					<linearGradient id={`surface-${i}`} x1="0" y1="0" x2="1" y2="1">
+						<stop stop-color="#d9ffff" />
+						<stop offset=".35" stop-color="#53e7ed" />
+						<stop offset="1" stop-color="#087d99" />
+					</linearGradient>
+					<linearGradient id={`facet-${i}`}>
+						<stop stop-color="#167eaa" />
+						<stop offset="1" stop-color="#ddffff" />
+					</linearGradient>
+					<filter
+						id={`bloom-${i}`}
+						x="-70%"
+						y="-70%"
+						width="240%"
+						height="240%"
+					>
+						<feGaussianBlur stdDeviation="3" />
+					</filter>
+				</defs>
+				{[
+					{ x: 190, y: 157, scale: 2.7, angle: -90 },
+					{ x: 450, y: 144, scale: 1.15, angle: -45 },
+				].map((view) => (
+					<g
+						transform={`translate(${view.x} ${view.y}) scale(${view.scale}) rotate(${view.angle})`}
+					>
+						<polygon
+							points={form.points}
+							fill="#24eaff"
+							opacity=".42"
+							filter={`url(#bloom-${i})`}
+						/>
+						<polygon points={form.points} fill={`url(#surface-${i})`} />
+						<polygon
+							points={form.facet}
+							fill={`url(#facet-${i})`}
+							opacity=".55"
+						/>
+						<polygon points={form.inset} fill="#092032" opacity=".25" />
+						{mounts.map((mount) => (
+							<rect
+								x="-5"
+								y="-4"
+								width="10"
+								height="8"
+								rx=".7"
+								fill="#a8f3f5"
+								opacity=".55"
+								transform={`translate(${mount.x} ${mount.y}) rotate(${(mount.angle * 180) / Math.PI})`}
+							/>
+						))}
+					</g>
+				))}
+				<polygon
+					points={form.points}
+					fill="#d4eded"
+					transform="translate(610 144) scale(.7) rotate(-90)"
+				/>
+				<text x="190" y="275" text-anchor="middle">
+					SURFACE + SLOTS
+				</text>
+				<text x="450" y="240" text-anchor="middle">
+					TURNED / SMALLER
+				</text>
+				<text x="610" y="240" text-anchor="middle">
+					FLAT SHAPE
+				</text>
+			</svg>
+		</figure>
+	))}
+</div>
+<style>
+.forms {
+	display: grid;
+	gap: var(--spacing-lg);
+	margin-block: var(--spacing-lg);
+}
+figure {
+	margin: 0;
+	background: var(--color-void);
+	border-block: var(--flight-border);
+	padding-block: var(--spacing-lg);
+	min-width: 0;
+}
+figcaption {
+	max-width: 65ch;
+}
+h4 {
+	margin-bottom: var(--spacing-sm);
+}
+p {
+	color: var(--color-text-dim);
+	font-size: var(--font-small);
+}
+svg {
+	width: 100%;
+	display: block;
+}
+text {
+	fill: var(--color-text-dim);
+	font-family: var(--font-flight);
+	font-size: 9px;
+	letter-spacing: 1px;
+}
+@media (max-width: 480px) {
+	svg {
+		min-height: 190px;
+	}
+	text {
+		font-size: 11px;
+	}
+}
+</style>

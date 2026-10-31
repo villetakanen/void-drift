@@ -1,0 +1,332 @@
+---
+import { buildMounts, defaultBuilds } from "@void-drift/mode-a";
+import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
+
+const variants = [
+	{
+		name: "01 / Iron keel",
+		idea: "A narrow armored prow, long slab sides and a deep split stern. Naval restraint.",
+		profile: [
+			[40, 12],
+			[65, 27],
+			[110, 31],
+			[150, 35],
+			[240, 37],
+			[280, 61],
+			[332, 48],
+		],
+		pods: [
+			"94,274 133,291 133,370 100,370 88,341",
+			"167,291 206,274 212,341 200,370 167,370",
+		],
+		windows: ["131,79 147,73 147,101 132,97", "153,73 169,79 168,97 153,101"],
+	},
+	{
+		name: "02 / Hammerhead",
+		idea: "A transverse command bow over a narrow armored neck; weight concentrated forward.",
+		profile: [
+			[40, 34],
+			[60, 65],
+			[101, 65],
+			[123, 28],
+			[240, 30],
+			[280, 59],
+			[332, 45],
+		],
+		pods: [
+			"91,274 132,287 132,370 101,370 91,354",
+			"168,287 209,274 209,354 199,370 168,370",
+		],
+		windows: ["103,74 146,68 146,83 108,91", "154,68 197,74 192,91 154,83"],
+	},
+	{
+		name: "03 / Cathedral",
+		idea: "A forked armored prow and long outer buttresses surround a recessed central deck.",
+		profile: [
+			[42, 37],
+			[75, 45],
+			[110, 40],
+			[150, 40],
+			[240, 43],
+			[280, 59],
+			[332, 46],
+		],
+		pods: [
+			"88,183 105,168 126,282 134,370 101,370 90,329",
+			"195,168 212,183 210,329 199,370 166,370 174,282",
+		],
+		windows: ["131,82 147,88 147,110 130,103", "153,88 169,82 170,103 153,110"],
+		cut: "142,40 158,40 155,72 150,85 145,72",
+	},
+	{
+		name: "04 / Bastion",
+		idea: "Repeated armor blocks and a clipped square bow give an industrial warship rhythm.",
+		profile: [
+			[43, 26],
+			[66, 39],
+			[110, 39],
+			[150, 33],
+			[240, 33],
+			[280, 60],
+			[332, 48],
+		],
+		pods: [
+			"90,269 131,269 131,372 99,372 90,360",
+			"169,269 210,269 210,360 201,372 169,372",
+		],
+		windows: ["123,81 146,81 146,94 123,94", "154,81 177,81 177,94 154,94"],
+		blocks: true,
+	},
+	{
+		name: "05 / Spear carrier",
+		idea: "A long raised command nose over a slim waist, ending in swept armored engine shoulders.",
+		profile: [
+			[31, 9],
+			[72, 26],
+			[110, 39],
+			[150, 27],
+			[240, 27],
+			[280, 57],
+			[332, 42],
+		],
+		pods: [
+			"83,250 101,258 135,314 132,370 102,370 96,308",
+			"199,258 217,250 204,308 198,370 168,370 165,314",
+		],
+		windows: ["140,68 148,63 148,106 133,98", "152,63 160,68 167,98 152,106"],
+	},
+	{
+		name: "06 / Twin citadel",
+		idea: "A compact command capsule and twin long armored side bodies make a carrier-like silhouette.",
+		profile: [
+			[44, 22],
+			[68, 34],
+			[110, 27],
+			[150, 28],
+			[240, 28],
+			[280, 50],
+			[332, 45],
+		],
+		pods: [
+			"94,116 112,102 130,137 130,370 100,370 88,337 88,153",
+			"188,102 206,116 212,153 212,337 200,370 170,370 170,137",
+		],
+		windows: ["128,79 146,72 146,98 134,102", "154,72 172,79 166,102 154,98"],
+	},
+];
+const mounts = buildMounts(defaultBuilds().tank).map((m) => ({
+	...m,
+	px:
+		m.group === "side"
+			? m.index === 0
+				? 94
+				: 206
+			: m.group === "aft"
+				? 117 + m.index * 33
+				: 150,
+	py:
+		m.group === "side"
+			? 285
+			: m.group === "aft"
+				? m.index === 1
+					? 311
+					: 350
+				: 143 + m.index * 43,
+}));
+---
+
+<div class="gallery">
+	<label class="toggle"
+		><input type="checkbox" checked>
+		Show slot positions</label
+	>
+	<div class="cards">
+		{variants.map((v) => (
+			<figure>
+				<figcaption>{v.name}</figcaption>
+				<svg
+					viewBox="55 15 190 380"
+					role="img"
+					aria-label={`${v.name}. ${v.idea} Bow cockpit, three axial hull slots, D aft triangle.`}
+				>
+					<title>{v.name}</title>
+					{v.profile.slice(0, -1).map(([y, w], i) => {
+						const [ny, nw] = v.profile[i + 1];
+						return (
+							<>
+								<polygon
+									points={`${150 - w},${y} 150,${y + 5} 150,${ny + 5} ${150 - nw},${ny}`}
+									fill={FIGHTER.facets[1]}
+								/>
+								<polygon
+									points={`150,${y + 5} ${150 + w},${y} ${150 + nw},${ny} 150,${ny + 5}`}
+									fill={FIGHTER.facets[3]}
+								/>
+								<polygon
+									points={`${150 - w},${y} ${150 - w + 9},${y + 8} ${150 - nw + 9},${ny} ${150 - nw},${ny}`}
+									fill={FIGHTER.facets[0]}
+								/>
+								<polygon
+									points={`${150 + w},${y} ${150 + nw},${ny} ${150 + nw - 8},${ny - 3}`}
+									fill={FIGHTER.facets[2]}
+								/>
+							</>
+						);
+					})}
+					{v.pods.map((points, i) => (
+						<polygon points={points} fill={FIGHTER.facets[i === 0 ? 2 : 3]} />
+					))}
+					{v.pods.map((points, i) => (
+						<polyline
+							points={points.split(" ").slice(0, 3).join(" ")}
+							fill="none"
+							stroke={FIGHTER.facets[i === 0 ? 0 : 5]}
+							stroke-width="3"
+						/>
+					))}
+					<polygon
+						points="143,117 157,117 160,275 150,296 140,275"
+						fill={FIGHTER.facets[5]}
+					/>
+					{v.blocks &&
+						[133, 188, 243].map((y) => (
+							<>
+								<polygon
+									points={`109,${y} 130,${y - 7} 130,${y + 29} 109,${y + 24}`}
+									fill={FIGHTER.facets[0]}
+								/>
+								<polygon
+									points={`170,${y - 7} 191,${y} 191,${y + 24} 170,${y + 29}`}
+									fill={FIGHTER.facets[2]}
+								/>
+							</>
+						))}
+					{v.cut && <polygon points={v.cut} class="cut" />}
+					{v.windows.map((points) => (
+						<polygon points={points} fill="#000000" />
+					))}
+					<g class="slots">
+						{mounts.map((m) => (
+							<g
+								transform={`translate(${m.px} ${m.py}) rotate(${m.group === "side" ? (m.index === 0 ? -20 : 20) : 0})`}
+							>
+								<rect x="-12" y="-15" width="24" height="30" />
+								<text text-anchor="middle" y="3">
+									{m.group === "side"
+										? "E"
+										: `${m.group === "hull" ? "H" : "A"}${m.index + 1}`}
+								</text>
+							</g>
+						))}
+					</g>
+				</svg>
+				<p>{v.idea}</p>
+			</figure>
+		))}
+	</div>
+	<p class="reference-label">
+		Production Fighter · same flat palette, angular facets and black cockpit
+	</p>
+	<svg
+		class="fighter"
+		viewBox="-30 -25 85 50"
+		role="img"
+		aria-label="Current production Fighter geometry and facets, nose to the right"
+	>
+		{FIGHTER.hull.map((point, i) => {
+			const next = FIGHTER.hull[(i + 1) % FIGHTER.hull.length];
+			return (
+				<polygon
+					points={`-3,0 ${point.join(",")} ${next.join(",")}`}
+					fill={
+						FIGHTER.facets[(point[1] + next[1]) / 2 < 0 ? i % 3 : 3 + (i % 3)]
+					}
+				/>
+			);
+		})}
+		<polygon
+			points={FIGHTER.ridge.map((p) => p.join(",")).join(" ")}
+			fill="#a2d8df"
+		/>
+		<polygon points="38,0 -21,0 -15,4" fill="#51869e" />
+		<polygon
+			points={FIGHTER.cockpit.map((p) => p.join(",")).join(" ")}
+			fill="#000000"
+		/>
+	</svg>
+</div>
+<style>
+.gallery {
+	margin-block: var(--spacing-lg);
+}
+.toggle {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-sm);
+	min-height: 44px;
+	margin-bottom: var(--spacing-md);
+	cursor: pointer;
+}
+input {
+	accent-color: var(--color-acid-lime);
+	width: 20px;
+	height: 20px;
+}
+input:focus-visible {
+	outline: 2px solid var(--color-acid-lime);
+	outline-offset: 4px;
+}
+.cards {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--spacing-md);
+}
+figure {
+	margin: 0;
+	border: var(--flight-border);
+	padding: var(--spacing-md);
+}
+figcaption {
+	color: var(--color-acid-lime);
+	font: var(--font-small) var(--font-flight);
+}
+svg {
+	display: block;
+	width: 100%;
+	height: 390px;
+	margin-block: var(--spacing-md);
+}
+.slots rect {
+	fill: #071015;
+	fill-opacity: 0.65;
+	stroke: #e0ffff;
+	stroke-opacity: 0.7;
+	stroke-width: 0.8;
+}
+.slots text {
+	fill: #e0ffff;
+	font: 8px var(--font-flight);
+}
+.gallery:has(input:not(:checked)) .slots {
+	display: none;
+}
+.cut {
+	fill: var(--color-void);
+}
+p {
+	margin: 0;
+}
+.fighter {
+	width: 200px;
+	height: 120px;
+}
+.reference-label {
+	margin-top: var(--spacing-lg);
+	color: var(--color-text-dim);
+}
+@media (max-width: 580px) {
+	.cards {
+		grid-template-columns: 1fr;
+	}
+}
+</style>

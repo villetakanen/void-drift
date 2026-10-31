@@ -1,27 +1,27 @@
 body {
-  background: var(--color-void);
-  color: var(--color-text);
-  font-family: "Noto Sans Math", sans-serif;
-  margin: 0;
-  overflow: hidden;
-  /* Prevent iOS Safari bounce/overscroll */
-  touch-action: none;
-  overscroll-behavior: none;
-  /* Important for game canvas */
+	background: var(--color-void);
+	color: var(--color-text);
+	font-family: "Noto Sans Math", sans-serif;
+	margin: 0;
+	overflow: hidden;
+	/* Prevent iOS Safari bounce/overscroll */
+	touch-action: none;
+	overscroll-behavior: none;
+	/* Important for game canvas */
 }
 
 /* Scrollbar aesthetic for webkit */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-  background: var(--color-void);
+	width: 8px;
+	height: 8px;
+	background: var(--color-void);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-void-light);
-  border: 1px solid var(--color-text-dim);
+	background: var(--color-void-light);
+	border: 1px solid var(--color-text-dim);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-dim);
+	background: var(--color-text-dim);
 }

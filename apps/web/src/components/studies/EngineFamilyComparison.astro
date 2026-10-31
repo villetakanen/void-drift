@@ -1,0 +1,157 @@
+---
+import { buildMounts, defaultBuilds } from "@void-drift/mode-a";
+import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
+
+const mounts = buildMounts(defaultBuilds().balanced);
+const points = (vertices: readonly (readonly number[])[]) =>
+	vertices.map((point) => point.join(",")).join(" ");
+const engines = [
+	{
+		id: "light-ion",
+		name: "Ion / light",
+		body: "7,0 4,-3 -7,-3 -9,-2 -9,2 -7,3 4,3",
+		deck: "6,0 2,-1 -6,-1 -6,1 2,1",
+		seams: "M-7,-3 L-7,3 M-9,0 L-4,0",
+		idea: "Slender spine, split outlet. Hypothesis: low mass and steady, modest thrust suit side-mounted control; limited acceleration is the cost.",
+	},
+	{
+		id: "heavy-ion",
+		name: "Ion / heavy",
+		body: "9,0 5,-5 -8,-5 -11,-3 -11,3 -8,5 5,5",
+		deck: "8,0 3,-2 -7,-2 -7,2 3,2",
+		seams: "M-8,-5 L-8,5 M-11,0 L-5,0 M0,-5 L0,-2 M0,2 L0,5",
+		idea: "Same spine and split outlet, deeper shoulders. Hypothesis: sustained high-speed thrust suits aft mounting; mass and energy demand cost agility.",
+	},
+	{
+		id: "fission",
+		name: "Fission / compact",
+		body: "6,-3 2,-6 -5,-6 -9,-3 -9,3 -5,6 2,6 6,3",
+		deck: "4,-2 1,-4 -4,-4 -6,0 -4,4 1,4 4,2",
+		seams: "M-7,-4 L-7,4 M-2,-6 L-2,-4 M-2,4 L-2,6",
+		idea: "Shielded polygonal core and short outlet. Hypothesis: strong initial acceleration at a lower speed ceiling; heavier machinery makes placement consequential.",
+	},
+	{
+		id: "pulse",
+		name: "Fourth / chambered candidate",
+		body: "8,-2 4,-4 0,-4 -2,-2 -4,-5 -8,-5 -11,-2 -11,2 -8,5 -4,5 -2,2 0,4 4,4 8,2",
+		deck: "6,0 3,-2 0,-2 -2,0 -5,-3 -7,-3 -9,0 -7,3 -5,3 -2,0 0,2 3,2",
+		seams: "M-2,-2 L-2,2 M-9,-3 L-9,3",
+		idea: "Separate chambers joined by a narrow neck. Hypothesis: powerful impulses favor aft bursts; intermittent force may make precise side control harder. Technology remains open.",
+	},
+];
+---
+
+<div class="comparison">
+	{engines.map((engine) => (
+		<article>
+			<h4>{engine.name}</h4>
+			<svg
+				viewBox="-28 -30 56 60"
+				role="img"
+				aria-label={`${engine.name}: enlarged engine body`}
+			>
+				<defs>
+					<g id={`engine-${engine.id}`}>
+						<polygon points={engine.body} fill="#657b88" />
+						<polygon points={engine.deck} fill="#c4d1d6" />
+						<path
+							d={engine.seams}
+							stroke="#111c25"
+							stroke-width="1"
+							fill="none"
+						/>
+					</g>
+				</defs>
+				<use href={`#engine-${engine.id}`} transform="rotate(-90) scale(2)" />
+			</svg>
+			<div class="fittings">
+				{(["side", "aft"] as const).map((group) => (
+					<figure>
+						<svg
+							viewBox="-35 -55 70 90"
+							role="img"
+							aria-label={`${engine.name} on Fighter ${group} mounts`}
+						>
+							<g transform="rotate(-90)">
+								{FIGHTER.hull.map((point, index) => (
+									<polygon
+										points={points([
+											[-3, 0],
+											point,
+											FIGHTER.hull[(index + 1) % FIGHTER.hull.length],
+										])}
+										fill={
+											FIGHTER.facets[
+												(point[1] +
+													FIGHTER.hull[(index + 1) % FIGHTER.hull.length][1]) /
+													2 <
+												0
+													? index % 3
+													: 3 + (index % 3)
+											]
+										}
+									/>
+								))}
+								<polygon points={points(FIGHTER.ridge)} fill="#a2d8df" />
+								<polygon points={points(FIGHTER.cockpit)} fill="#000" />
+								{mounts
+									.filter((mount) => mount.group === group)
+									.map((mount) => (
+										<use
+											href={`#engine-${engine.id}`}
+											transform={`translate(${mount.x} ${mount.y}) rotate(${(mount.angle * 180) / Math.PI})`}
+										/>
+									))}
+							</g>
+						</svg>
+						<figcaption>
+							{group === "side" ? "Side pair" : "Aft pair"}
+						</figcaption>
+					</figure>
+				))}
+			</div>
+			<p>{engine.idea}</p>
+		</article>
+	))}
+</div>
+
+<style>
+.comparison {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--spacing-lg);
+	margin-block: var(--spacing-lg);
+}
+article {
+	border: var(--flight-border);
+	padding: var(--spacing-md);
+}
+h4 {
+	font-size: var(--font-medium);
+	margin: 0;
+}
+svg {
+	display: block;
+	width: 100%;
+	height: 200px;
+}
+.fittings {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+figure {
+	margin: 0;
+}
+figcaption {
+	text-align: center;
+	color: var(--color-text-dim);
+}
+p {
+	margin-top: var(--spacing-md);
+}
+@media (max-width: 620px) {
+	.comparison {
+		grid-template-columns: 1fr;
+	}
+}
+</style>

@@ -41,6 +41,7 @@ This is the third PBI for Phase 5 (Survival Core). It builds on PBI-016 (Resourc
 ## Acceptance Criteria
 
 ### Game State Machine
+
 - [x] Four states defined: `MENU`, `PLAYING`, `GAME_OVER`, `SETTINGS`
 - [x] Valid transitions enforced:
   - `MENU → PLAYING` (on first input)
@@ -52,6 +53,7 @@ This is the third PBI for Phase 5 (Survival Core). It builds on PBI-016 (Resourc
 - [x] No invalid state transitions possible
 
 ### Timer System
+
 - [x] Timer starts at 0.0 seconds
 - [x] Timer begins counting on first input (not page load)
 - [x] Timer increments using `Date.now()` delta (frame-rate independent)
@@ -61,6 +63,7 @@ This is the third PBI for Phase 5 (Survival Core). It builds on PBI-016 (Resourc
 - [x] Timer resets to 0.0 on restart
 
 ### Death Detection
+
 - [x] `checkDeath()` function runs every frame during `PLAYING` state
 - [x] Death check occurs AFTER all physics updates
 - [x] Priority order enforced: STAR > HULL > POWER
@@ -72,6 +75,7 @@ This is the third PBI for Phase 5 (Survival Core). It builds on PBI-016 (Resourc
 - [x] Death triggers state transition to `GAME_OVER`
 
 ### HUD Updates
+
 - [x] Timer displayed in top-right corner
 - [x] Timer updates every frame (smooth animation)
 - [x] Timer font uses tabular-nums (fixed width for no layout shift)
@@ -79,6 +83,7 @@ This is the third PBI for Phase 5 (Survival Core). It builds on PBI-016 (Resourc
 - [x] Timer color: white (no warnings)
 
 ### Game Over Screen
+
 - [x] Modal overlay covers entire viewport
 - [x] Dark background (rgba(10, 10, 15, 0.95))
 - [x] "MISSION FAILED" heading in danger color
@@ -93,6 +98,7 @@ This is the third PBI for Phase 5 (Survival Core). It builds on PBI-016 (Resourc
 - [x] Keyboard accessible (Tab navigation, Enter to restart)
 
 ### Restart Flow
+
 - [x] "Try Again" button resets all game state:
   - Ship position → spawn point (center of arena)
   - Ship velocity → (0, 0)
@@ -115,32 +121,32 @@ This is the third PBI for Phase 5 (Survival Core). It builds on PBI-016 (Resourc
 **File:** `packages/engine/src/lib/schemas/game-state.ts`
 
 ```typescript
-import { z } from 'zod';
-import { ResourcesSchema } from './game-state'; // From PBI-016
+import { z } from "zod";
+import { ResourcesSchema } from "./game-state"; // From PBI-016
 
 export const GameStateSchema = z.object({
-  status: z.enum(['MENU', 'PLAYING', 'GAME_OVER', 'SETTINGS']),
-  startTime: z.number().nullable(), // Unix timestamp (ms)
-  elapsedTime: z.number(),          // Seconds (float)
-  resources: ResourcesSchema,
-  deathCause: z.enum(['STAR', 'HULL', 'FUEL']).nullable(),
+	status: z.enum(["MENU", "PLAYING", "GAME_OVER", "SETTINGS"]),
+	startTime: z.number().nullable(), // Unix timestamp (ms)
+	elapsedTime: z.number(), // Seconds (float)
+	resources: ResourcesSchema,
+	deathCause: z.enum(["STAR", "HULL", "FUEL"]).nullable(),
 });
 
 export type GameState = z.infer<typeof GameStateSchema>;
-export type GameStatus = GameState['status'];
-export type DeathCause = NonNullable<GameState['deathCause']>;
+export type GameStatus = GameState["status"];
+export type DeathCause = NonNullable<GameState["deathCause"]>;
 
 export function createInitialGameState(): GameState {
-  return {
-    status: 'MENU',
-    startTime: null,
-    elapsedTime: 0,
-    resources: {
-      hull: 100,
-      fuel: 100,
-    },
-    deathCause: null,
-  };
+	return {
+		status: "MENU",
+		startTime: null,
+		elapsedTime: 0,
+		resources: {
+			hull: 100,
+			fuel: 100,
+		},
+		deathCause: null,
+	};
 }
 ```
 
@@ -151,46 +157,50 @@ export function createInitialGameState(): GameState {
 **File:** `packages/engine/src/lib/engine/game-loop.ts`
 
 ```typescript
-import type { GameState, DeathCause } from '../schemas/game-state';
-import type { Ship, Star } from '../types';
+import type { GameState, DeathCause } from "../schemas/game-state";
+import type { Ship, Star } from "../types";
 
 export function checkDeath(
-  state: GameState,
-  ship: Ship,
-  star: Star
+	state: GameState,
+	ship: Ship,
+	star: Star,
 ): DeathCause | null {
-  // Priority: STAR > HULL > FUEL
-  
-  // 1. Star contact (instant death)
-  const distanceToStar = Math.hypot(
-    ship.position.x - star.position.x,
-    ship.position.y - star.position.y
-  );
-  
-  if (distanceToStar < star.radius) {
-    return 'STAR';
-  }
-  
-  // 2. Hull depletion
-  if (state.resources.hull <= 0) {
-    return 'HULL';
-  }
-  
-  // 3. Fuel depletion
-  if (state.resources.fuel <= 0) {
-    return 'FUEL';
-  }
-  
-  return null;
+	// Priority: STAR > HULL > FUEL
+
+	// 1. Star contact (instant death)
+	const distanceToStar = Math.hypot(
+		ship.position.x - star.position.x,
+		ship.position.y - star.position.y,
+	);
+
+	if (distanceToStar < star.radius) {
+		return "STAR";
+	}
+
+	// 2. Hull depletion
+	if (state.resources.hull <= 0) {
+		return "HULL";
+	}
+
+	// 3. Fuel depletion
+	if (state.resources.fuel <= 0) {
+		return "FUEL";
+	}
+
+	return null;
 }
 
-export function handleDeath(state: GameState, cause: DeathCause, ship: Ship): void {
-  state.status = 'GAME_OVER';
-  state.deathCause = cause;
-  
-  // Freeze ship momentum
-  ship.velocity.x = 0;
-  ship.velocity.y = 0;
+export function handleDeath(
+	state: GameState,
+	cause: DeathCause,
+	ship: Ship,
+): void {
+	state.status = "GAME_OVER";
+	state.deathCause = cause;
+
+	// Freeze ship momentum
+	ship.velocity.x = 0;
+	ship.velocity.y = 0;
 }
 ```
 
@@ -202,16 +212,16 @@ export function handleDeath(state: GameState, cause: DeathCause, ship: Ship): vo
 
 ```typescript
 export function updateTimer(state: GameState, inputActive: boolean): void {
-  // Start timer on first input
-  if (state.status === 'MENU' && inputActive) {
-    state.status = 'PLAYING';
-    state.startTime = Date.now();
-  }
-  
-  // Update elapsed time during gameplay
-  if (state.status === 'PLAYING' && state.startTime !== null) {
-    state.elapsedTime = (Date.now() - state.startTime) / 1000;
-  }
+	// Start timer on first input
+	if (state.status === "MENU" && inputActive) {
+		state.status = "PLAYING";
+		state.startTime = Date.now();
+	}
+
+	// Update elapsed time during gameplay
+	if (state.status === "PLAYING" && state.startTime !== null) {
+		state.elapsedTime = (Date.now() - state.startTime) / 1000;
+	}
 }
 ```
 
@@ -241,11 +251,11 @@ Add timer to existing HUD component from PBI-016:
 </script>
 
 <div class="hud">
-  <!-- Existing resource bars -->
-  
-  {#if isPlaying}
-    <div class="timer">{timeDisplay}</div>
-  {/if}
+	<!-- Existing resource bars -->
+
+	{#if isPlaying}
+		<div class="timer">{timeDisplay}</div>
+	{/if}
 </div>
 
 <style>
@@ -307,27 +317,26 @@ Add timer to existing HUD component from PBI-016:
 </script>
 
 <div class="overlay" role="dialog" aria-modal="true">
-  <div class="card">
-    <h1>MISSION FAILED</h1>
-    
-    <p class="time">
-      You survived <strong>{finalTime}s</strong>
-    </p>
-    
-    <div class="cause-container">
-      <canvas bind:this={iconCanvas} width="32" height="32" class="death-icon"></canvas>
-      <p class="cause">{causeMessage}</p>
-    </div>
-    
-    <div class="actions">
-      <button onclick={onRestart} class="primary">
-        Try Again
-      </button>
-      <a href="/leaderboard" class="secondary">
-        View Leaderboard
-      </a>
-    </div>
-  </div>
+	<div class="card">
+		<h1>MISSION FAILED</h1>
+
+		<p class="time">You survived <strong>{finalTime}s</strong></p>
+
+		<div class="cause-container">
+			<canvas
+				bind:this={iconCanvas}
+				width="32"
+				height="32"
+				class="death-icon"
+			></canvas>
+			<p class="cause">{causeMessage}</p>
+		</div>
+
+		<div class="actions">
+			<button onclick={onRestart} class="primary">Try Again</button>
+			<a href="/leaderboard" class="secondary"> View Leaderboard </a>
+		</div>
+	</div>
 </div>
 
 <style>
@@ -612,13 +621,13 @@ This PBI does NOT include:
 
 ## Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Timer drift over time | Inaccurate survival times | Use `Date.now()` delta, not frame count |
-| State machine bugs | Invalid transitions | Unit tests for all state pairs |
-| Memory leaks on restart | Browser slows down | Profile with DevTools, cleanup listeners |
-| Race condition on death | Multiple death causes | Single death check per frame, priority order |
-| Death icons not loading | Broken UI | Test icon rendering in gallery first (PBI-015) |
+| Risk                    | Impact                    | Mitigation                                     |
+| ----------------------- | ------------------------- | ---------------------------------------------- |
+| Timer drift over time   | Inaccurate survival times | Use `Date.now()` delta, not frame count        |
+| State machine bugs      | Invalid transitions       | Unit tests for all state pairs                 |
+| Memory leaks on restart | Browser slows down        | Profile with DevTools, cleanup listeners       |
+| Race condition on death | Multiple death causes     | Single death check per frame, priority order   |
+| Death icons not loading | Broken UI                 | Test icon rendering in gallery first (PBI-015) |
 
 ---
 

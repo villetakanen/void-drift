@@ -1,0 +1,130 @@
+---
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const rows = [
+	[
+		"Purpose",
+		"Supported",
+		"01 and the 02.3–02.4 discussion establish compact packing, bulb cockpit, swept aggression and speed rather than a literal insect.",
+	],
+	[
+		"Investigation",
+		"Partial",
+		"02.1–02.6 provide spatial sketches and a placement workbench. 02.3 and 02.4 drifted into irrelevant detail; the owner explicitly redirected the inquiry. Actual parts and flight are untested.",
+	],
+	[
+		"Alternatives and reasoning",
+		"Supported",
+		"02.5 reopened whole-ship composition instead of swapping tail appendages. The owner selected 06 / Integrated trident, then adjusted its forward engine cluster in 02.6.",
+	],
+	[
+		"Evidence fit",
+		"Partial",
+		"Same-scale silhouettes and the screenshot support visual/layout judgments only. Footprint controls and axis guides do not establish full fittings, exhaust clearance or handling.",
+	],
+	[
+		"Cumulative agreement",
+		"Supported",
+		"The study retains the cockpit decision, rejected body sets, explicit owner correction, exact accepted Trident hull and supplied screenshot. H/A coordinate estimates remain distinguished from exact side settings.",
+	],
+	[
+		"Design coherence",
+		"Partial",
+		"The owner approved the whole hull and forward packing. Side-footprint overlap, long Scout rail barrels and aft exhaust over the keel remain production-assembly review risks.",
+	],
+	[
+		"Remaining uncertainty",
+		"Supported",
+		"03 distinguishes prerequisites, reconstructed starting values and human-review gaps. 04 names fitting and flight reviews without inventing their results.",
+	],
+	[
+		"Integration implications",
+		"Supported",
+		"04 maps shared geometry, coordinate conversion, renderer/nozzles, chassis calculations, collision, selection, saved IDs, canonical Lab, tests and documentation. Implementation has not begun.",
+	],
+] as const;
+---
+
+<StudyLayout>
+	<section>
+		<h1>Scout — study-quality review</h1>
+		<p>
+			<a href="/lab/studies/scout-firefly#integration"
+				>Return to the study and integration plan</a
+			>
+		</p>
+		<p>
+			Agent assessment of this cycle, separate from feasibility, implementation
+			authorization and human judgment. Ratings are not averaged.
+		</p>
+		<div class="table-wrap">
+			<table>
+				<thead>
+					<tr>
+						<th>Criterion</th>
+						<th>Assessment</th>
+						<th>Evidence and gaps</th>
+					</tr>
+				</thead>
+				<tbody>
+					{rows.map(([criterion, rating, evidence]) => (
+						<tr>
+							<th scope="row">{criterion}</th>
+							<td>{rating}</td>
+							<td>{evidence}</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</div>
+		<h2>Human judgment</h2>
+		<p>
+			The owner rejected the first 02.2 bodies while retaining the light-bulb
+			cockpit, found every 02.3 refinement worse than the original, and called
+			out the study’s loss of direction. The owner clarified that the purpose
+			was to ideate unknown answers, not demand a reference solution or iterate
+			irrelevant details. After the whole-ship reset, 02.5 / 06 was explicitly
+			approved. The supplied 02.6 layout was then approved with “this is now
+			cool, keep that.” This is design acceptance, not approval of the study
+			process as a whole or delivered flight fidelity.
+		</p>
+		<h2>Automated evidence and limits</h2>
+		<p>
+			Prior placement-round lint, types and build checks passed. Targeted
+			browser checks on the production preview verified sliders, mirrored signs,
+			H/A movement, reset, copied coordinates, reference-geometry equality and
+			narrow layout. The existing port-4321 dev server failed hydration; the
+			fresh production preview on port 4324 worked. These were the
+			pre-integration checks, establishing inspectability rather than design
+			quality.
+		</p>
+		<p>
+			After separate implementation authorization, the shared Scout was
+			delivered in the app and canonical Lab. Added unit/browser checks cover
+			exact hull and mount geometry, compact barrels, collision, nozzle
+			emission, steering, energy and overspeed, saved builds, every fitting,
+			test/survival flow and landscape touch cancellation. Latest full-gate
+			results are retained in artifacts/verification/latest.json, separate from
+			this quality assessment. Human delivered-fidelity/handling review, device
+			performance and deployment are still not claimed.
+		</p>
+	</section>
+</StudyLayout>
+<style>
+.table-wrap {
+	overflow-x: auto;
+	margin-block: var(--spacing-lg);
+}
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+th,
+td {
+	padding: var(--spacing-sm);
+	border-bottom: var(--flight-border);
+	text-align: left;
+	vertical-align: top;
+	line-height: 1.6;
+}
+</style>

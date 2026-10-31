@@ -85,71 +85,72 @@ This PBI profiles the game on mid-range mobile devices and implements optimizati
 
 ```typescript
 export interface PerformanceMetrics {
-  fps: number;
-  frameTime: number; // ms
-  physicsTime: number; // ms
-  renderTime: number; // ms
-  particleCount: number;
-  memoryUsage?: number; // MB (if available)
+	fps: number;
+	frameTime: number; // ms
+	physicsTime: number; // ms
+	renderTime: number; // ms
+	particleCount: number;
+	memoryUsage?: number; // MB (if available)
 }
 
 export class PerformanceMonitor {
-  private frameTimes: number[] = [];
-  private lastFrameTime = 0;
-  private marks: Map<string, number> = new Map();
+	private frameTimes: number[] = [];
+	private lastFrameTime = 0;
+	private marks: Map<string, number> = new Map();
 
-  constructor(private sampleSize = 60) {}
+	constructor(private sampleSize = 60) {}
 
-  startFrame(): void {
-    this.lastFrameTime = performance.now();
-  }
+	startFrame(): void {
+		this.lastFrameTime = performance.now();
+	}
 
-  mark(label: string): void {
-    this.marks.set(label, performance.now());
-  }
+	mark(label: string): void {
+		this.marks.set(label, performance.now());
+	}
 
-  endFrame(): void {
-    const now = performance.now();
-    const frameTime = now - this.lastFrameTime;
-    
-    this.frameTimes.push(frameTime);
-    if (this.frameTimes.length > this.sampleSize) {
-      this.frameTimes.shift();
-    }
-  }
+	endFrame(): void {
+		const now = performance.now();
+		const frameTime = now - this.lastFrameTime;
 
-  getMetrics(): PerformanceMetrics {
-    const avgFrameTime = this.frameTimes.reduce((a, b) => a + b, 0) / this.frameTimes.length;
-    const fps = 1000 / avgFrameTime;
+		this.frameTimes.push(frameTime);
+		if (this.frameTimes.length > this.sampleSize) {
+			this.frameTimes.shift();
+		}
+	}
 
-    const physicsStart = this.marks.get('physics-start') ?? 0;
-    const physicsEnd = this.marks.get('physics-end') ?? 0;
-    const renderStart = this.marks.get('render-start') ?? 0;
-    const renderEnd = this.marks.get('render-end') ?? 0;
+	getMetrics(): PerformanceMetrics {
+		const avgFrameTime =
+			this.frameTimes.reduce((a, b) => a + b, 0) / this.frameTimes.length;
+		const fps = 1000 / avgFrameTime;
 
-    return {
-      fps: Math.round(fps),
-      frameTime: Math.round(avgFrameTime * 100) / 100,
-      physicsTime: Math.round((physicsEnd - physicsStart) * 100) / 100,
-      renderTime: Math.round((renderEnd - renderStart) * 100) / 100,
-      particleCount: 0, // Set externally
-      memoryUsage: this.getMemoryUsage(),
-    };
-  }
+		const physicsStart = this.marks.get("physics-start") ?? 0;
+		const physicsEnd = this.marks.get("physics-end") ?? 0;
+		const renderStart = this.marks.get("render-start") ?? 0;
+		const renderEnd = this.marks.get("render-end") ?? 0;
 
-  private getMemoryUsage(): number | undefined {
-    // @ts-ignore - Non-standard API
-    if (performance.memory) {
-      // @ts-ignore
-      return Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
-    }
-    return undefined;
-  }
+		return {
+			fps: Math.round(fps),
+			frameTime: Math.round(avgFrameTime * 100) / 100,
+			physicsTime: Math.round((physicsEnd - physicsStart) * 100) / 100,
+			renderTime: Math.round((renderEnd - renderStart) * 100) / 100,
+			particleCount: 0, // Set externally
+			memoryUsage: this.getMemoryUsage(),
+		};
+	}
 
-  reset(): void {
-    this.frameTimes = [];
-    this.marks.clear();
-  }
+	private getMemoryUsage(): number | undefined {
+		// @ts-ignore - Non-standard API
+		if (performance.memory) {
+			// @ts-ignore
+			return Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
+		}
+		return undefined;
+	}
+
+	reset(): void {
+		this.frameTimes = [];
+		this.marks.clear();
+	}
 }
 ```
 
@@ -209,40 +210,50 @@ export class PerformanceMonitor {
 ```typescript
 // apps/web/src/lib/rendering/BackgroundRenderer.ts
 export class BackgroundRenderer {
-  private offscreenCanvas: HTMLCanvasElement;
-  private offscreenCtx: CanvasRenderingContext2D;
-  private dirty = true;
+	private offscreenCanvas: HTMLCanvasElement;
+	private offscreenCtx: CanvasRenderingContext2D;
+	private dirty = true;
 
-  constructor(width: number, height: number) {
-    this.offscreenCanvas = document.createElement('canvas');
-    this.offscreenCanvas.width = width;
-    this.offscreenCanvas.height = height;
-    this.offscreenCtx = this.offscreenCanvas.getContext('2d')!;
-  }
+	constructor(width: number, height: number) {
+		this.offscreenCanvas = document.createElement("canvas");
+		this.offscreenCanvas.width = width;
+		this.offscreenCanvas.height = height;
+		this.offscreenCtx = this.offscreenCanvas.getContext("2d")!;
+	}
 
-  renderStatic(stars: Array<{ x: number; y: number; size: number }>): void {
-    if (!this.dirty) return;
+	renderStatic(stars: Array<{ x: number; y: number; size: number }>): void {
+		if (!this.dirty) return;
 
-    this.offscreenCtx.clearRect(0, 0, this.offscreenCanvas.width, this.offscreenCanvas.height);
-    this.offscreenCtx.fillStyle = '#000000';
-    this.offscreenCtx.fillRect(0, 0, this.offscreenCanvas.width, this.offscreenCanvas.height);
+		this.offscreenCtx.clearRect(
+			0,
+			0,
+			this.offscreenCanvas.width,
+			this.offscreenCanvas.height,
+		);
+		this.offscreenCtx.fillStyle = "#000000";
+		this.offscreenCtx.fillRect(
+			0,
+			0,
+			this.offscreenCanvas.width,
+			this.offscreenCanvas.height,
+		);
 
-    // Draw stars
-    for (const star of stars) {
-      this.offscreenCtx.fillStyle = '#FFFFFF';
-      this.offscreenCtx.fillRect(star.x, star.y, star.size, star.size);
-    }
+		// Draw stars
+		for (const star of stars) {
+			this.offscreenCtx.fillStyle = "#FFFFFF";
+			this.offscreenCtx.fillRect(star.x, star.y, star.size, star.size);
+		}
 
-    this.dirty = false;
-  }
+		this.dirty = false;
+	}
 
-  draw(ctx: CanvasRenderingContext2D): void {
-    ctx.drawImage(this.offscreenCanvas, 0, 0);
-  }
+	draw(ctx: CanvasRenderingContext2D): void {
+		ctx.drawImage(this.offscreenCanvas, 0, 0);
+	}
 
-  markDirty(): void {
-    this.dirty = true;
-  }
+	markDirty(): void {
+		this.dirty = true;
+	}
 }
 ```
 
@@ -251,25 +262,25 @@ export class BackgroundRenderer {
 ```typescript
 // Before: Inefficient
 function renderPlanets(ctx: CanvasRenderingContext2D, planets: Planet[]) {
-  for (const planet of planets) {
-    ctx.save();
-    ctx.translate(planet.x, planet.y);
-    ctx.fillStyle = planet.color;
-    ctx.beginPath();
-    ctx.arc(0, 0, planet.radius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  }
+	for (const planet of planets) {
+		ctx.save();
+		ctx.translate(planet.x, planet.y);
+		ctx.fillStyle = planet.color;
+		ctx.beginPath();
+		ctx.arc(0, 0, planet.radius, 0, Math.PI * 2);
+		ctx.fill();
+		ctx.restore();
+	}
 }
 
 // After: Optimized (no save/restore)
 function renderPlanets(ctx: CanvasRenderingContext2D, planets: Planet[]) {
-  for (const planet of planets) {
-    ctx.fillStyle = planet.color;
-    ctx.beginPath();
-    ctx.arc(planet.x, planet.y, planet.radius, 0, Math.PI * 2);
-    ctx.fill();
-  }
+	for (const planet of planets) {
+		ctx.fillStyle = planet.color;
+		ctx.beginPath();
+		ctx.arc(planet.x, planet.y, planet.radius, 0, Math.PI * 2);
+		ctx.fill();
+	}
 }
 ```
 
@@ -280,28 +291,32 @@ function renderPlanets(ctx: CanvasRenderingContext2D, planets: Planet[]) {
 ```typescript
 // packages/mode-a/src/lib/config.ts
 export const SURVIVAL_CONFIG = {
-  // ... existing config
-  
-  PARTICLES: {
-    maxCount: 100, // Desktop default
-    maxCountMobile: 50, // Mobile cap
-    emissionRate: 5, // Particles per frame
-    emissionRateMobile: 3, // Reduced for mobile
-  },
+	// ... existing config
+
+	PARTICLES: {
+		maxCount: 100, // Desktop default
+		maxCountMobile: 50, // Mobile cap
+		emissionRate: 5, // Particles per frame
+		emissionRateMobile: 3, // Reduced for mobile
+	},
 };
 
 // Detect mobile
 export function isMobileDevice(): boolean {
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+	return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
 // Adaptive particle config
 export function getParticleConfig() {
-  const isMobile = isMobileDevice();
-  return {
-    maxCount: isMobile ? SURVIVAL_CONFIG.PARTICLES.maxCountMobile : SURVIVAL_CONFIG.PARTICLES.maxCount,
-    emissionRate: isMobile ? SURVIVAL_CONFIG.PARTICLES.emissionRateMobile : SURVIVAL_CONFIG.PARTICLES.emissionRate,
-  };
+	const isMobile = isMobileDevice();
+	return {
+		maxCount: isMobile
+			? SURVIVAL_CONFIG.PARTICLES.maxCountMobile
+			: SURVIVAL_CONFIG.PARTICLES.maxCount,
+		emissionRate: isMobile
+			? SURVIVAL_CONFIG.PARTICLES.emissionRateMobile
+			: SURVIVAL_CONFIG.PARTICLES.emissionRate,
+	};
 }
 ```
 
@@ -310,40 +325,40 @@ export function getParticleConfig() {
 ```typescript
 // packages/core/src/lib/effects/ParticlePool.ts
 export class ParticlePool {
-  private pool: Particle[] = [];
-  private active: Particle[] = [];
+	private pool: Particle[] = [];
+	private active: Particle[] = [];
 
-  constructor(private maxSize: number) {
-    // Pre-allocate particles
-    for (let i = 0; i < maxSize; i++) {
-      this.pool.push(this.createParticle());
-    }
-  }
+	constructor(private maxSize: number) {
+		// Pre-allocate particles
+		for (let i = 0; i < maxSize; i++) {
+			this.pool.push(this.createParticle());
+		}
+	}
 
-  private createParticle(): Particle {
-    return { x: 0, y: 0, vx: 0, vy: 0, life: 0, maxLife: 0, hue: 0, size: 0 };
-  }
+	private createParticle(): Particle {
+		return { x: 0, y: 0, vx: 0, vy: 0, life: 0, maxLife: 0, hue: 0, size: 0 };
+	}
 
-  acquire(config: Partial<Particle>): Particle | null {
-    const particle = this.pool.pop() ?? null;
-    if (!particle) return null;
+	acquire(config: Partial<Particle>): Particle | null {
+		const particle = this.pool.pop() ?? null;
+		if (!particle) return null;
 
-    Object.assign(particle, config);
-    this.active.push(particle);
-    return particle;
-  }
+		Object.assign(particle, config);
+		this.active.push(particle);
+		return particle;
+	}
 
-  release(particle: Particle): void {
-    const index = this.active.indexOf(particle);
-    if (index !== -1) {
-      this.active.splice(index, 1);
-      this.pool.push(particle);
-    }
-  }
+	release(particle: Particle): void {
+		const index = this.active.indexOf(particle);
+		if (index !== -1) {
+			this.active.splice(index, 1);
+			this.pool.push(particle);
+		}
+	}
 
-  getActive(): Particle[] {
-    return this.active;
-  }
+	getActive(): Particle[] {
+		return this.active;
+	}
 }
 ```
 
@@ -353,32 +368,30 @@ export class ParticlePool {
 
 ```typescript
 // packages/core/src/lib/physics/Physics.ts
-export function applyGravity(
-  ship: Ship,
-  bodies: Array<GravitySource>
-): void {
-  let totalForceX = 0;
-  let totalForceY = 0;
+export function applyGravity(ship: Ship, bodies: Array<GravitySource>): void {
+	let totalForceX = 0;
+	let totalForceY = 0;
 
-  for (const body of bodies) {
-    const dx = body.x - ship.x;
-    const dy = body.y - ship.y;
-    const distanceSquared = dx * dx + dy * dy;
+	for (const body of bodies) {
+		const dx = body.x - ship.x;
+		const dy = body.y - ship.y;
+		const distanceSquared = dx * dx + dy * dy;
 
-    // Early exit: Skip if beyond 2x gravity radius (optimization)
-    const maxInfluenceSquared = (body.gravityRadius * 2) ** 2;
-    if (distanceSquared > maxInfluenceSquared) continue;
+		// Early exit: Skip if beyond 2x gravity radius (optimization)
+		const maxInfluenceSquared = (body.gravityRadius * 2) ** 2;
+		if (distanceSquared > maxInfluenceSquared) continue;
 
-    const distance = Math.sqrt(distanceSquared);
-    if (distance > body.gravityRadius) continue;
+		const distance = Math.sqrt(distanceSquared);
+		if (distance > body.gravityRadius) continue;
 
-    const force = (PHYSICS_CONFIG.GRAVITY_CONSTANT * body.mass) / distanceSquared;
-    totalForceX += (dx / distance) * force;
-    totalForceY += (dy / distance) * force;
-  }
+		const force =
+			(PHYSICS_CONFIG.GRAVITY_CONSTANT * body.mass) / distanceSquared;
+		totalForceX += (dx / distance) * force;
+		totalForceY += (dy / distance) * force;
+	}
 
-  ship.vx += totalForceX;
-  ship.vy += totalForceY;
+	ship.vx += totalForceX;
+	ship.vy += totalForceY;
 }
 ```
 
@@ -400,11 +413,11 @@ export { isMobileDevice, getParticleConfig };
 
 ```typescript
 class PerformanceMonitor {
-  startFrame(): void;
-  mark(label: string): void;
-  endFrame(): void;
-  getMetrics(): PerformanceMetrics;
-  reset(): void;
+	startFrame(): void;
+	mark(label: string): void;
+	endFrame(): void;
+	getMetrics(): PerformanceMetrics;
+	reset(): void;
 }
 ```
 
@@ -413,6 +426,7 @@ class PerformanceMonitor {
 ## Acceptance Criteria
 
 ### Profiling
+
 - [x] Performance monitor integrated into game loop
 - [x] Debug overlay displays FPS, frame time, memory
 - [x] Metrics logged on target devices (iPhone 12, Pixel 5)
@@ -420,6 +434,7 @@ class PerformanceMonitor {
 - [x] Post-optimization metrics captured
 
 ### Performance Targets
+
 - [x] 60 FPS sustained on iPhone 12 during heavy action
 - [x] 60 FPS sustained on Pixel 5 during heavy action
 - [x] Frame time < 16ms (95th percentile)
@@ -428,6 +443,7 @@ class PerformanceMonitor {
 - [x] No GC pauses > 16ms during gameplay
 
 ### Optimizations Implemented
+
 - [x] Offscreen canvas for static background (if needed)
 - [x] Reduced particle count on mobile (50 vs 100)
 - [x] Object pool for particles (if GC pressure detected)
@@ -435,6 +451,7 @@ class PerformanceMonitor {
 - [x] Minimized `ctx.save()` / `ctx.restore()` calls
 
 ### Battery & Thermal
+
 - [x] Battery drain < 20% per hour on target devices
 - [x] Device temperature remains < 40°C during 10min session
 - [x] No thermal throttling during normal gameplay
@@ -517,6 +534,7 @@ class PerformanceMonitor {
 ## Testing Checklist
 
 ### Profiling Tools
+
 - [ ] Debug overlay displays correct FPS
 - [ ] Debug overlay toggles with F3 key
 - [ ] Performance marks captured correctly
@@ -524,6 +542,7 @@ class PerformanceMonitor {
 - [ ] Metrics update every frame
 
 ### Performance Targets (iPhone 12)
+
 - [ ] FPS ≥ 60 during normal gameplay
 - [ ] FPS ≥ 55 during heavy action (3 planets, collisions, particles)
 - [ ] Frame time < 16ms (95th percentile)
@@ -532,6 +551,7 @@ class PerformanceMonitor {
 - [ ] No visual stuttering
 
 ### Performance Targets (Pixel 5)
+
 - [ ] FPS ≥ 60 during normal gameplay
 - [ ] FPS ≥ 55 during heavy action
 - [ ] Frame time < 16ms (95th percentile)
@@ -540,6 +560,7 @@ class PerformanceMonitor {
 - [ ] No visual stuttering
 
 ### Battery & Thermal
+
 - [ ] Battery drain < 20% per hour (iPhone 12)
 - [ ] Battery drain < 20% per hour (Pixel 5)
 - [ ] Device temperature < 40°C after 10min (iPhone 12)
@@ -547,6 +568,7 @@ class PerformanceMonitor {
 - [ ] No thermal throttling warnings
 
 ### Regression Testing
+
 - [ ] All 3 planets render correctly
 - [ ] Gravity calculations unchanged
 - [ ] Collision detection unchanged
@@ -579,15 +601,15 @@ class PerformanceMonitor {
 
 ### Target Frame Time Breakdown (16.67ms budget)
 
-| Component | Target Time | Notes |
-|-----------|-------------|-------|
-| Physics | < 3ms | Gravity + collision for 4 bodies + ship |
-| Rendering | < 8ms | Canvas draw calls |
-| Particles | < 2ms | Update + render 50-100 particles |
-| Effects | < 1ms | Screen shake, damage flash |
-| Audio | < 0.5ms | Web Audio synthesis |
-| Overhead | < 2ms | Framework, event handling, GC |
-| **Total** | **< 16.5ms** | **0.2ms safety margin** |
+| Component | Target Time  | Notes                                   |
+| --------- | ------------ | --------------------------------------- |
+| Physics   | < 3ms        | Gravity + collision for 4 bodies + ship |
+| Rendering | < 8ms        | Canvas draw calls                       |
+| Particles | < 2ms        | Update + render 50-100 particles        |
+| Effects   | < 1ms        | Screen shake, damage flash              |
+| Audio     | < 0.5ms      | Web Audio synthesis                     |
+| Overhead  | < 2ms        | Framework, event handling, GC           |
+| **Total** | **< 16.5ms** | **0.2ms safety margin**                 |
 
 ---
 

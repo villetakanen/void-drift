@@ -1,0 +1,195 @@
+---
+const forms = [
+	{
+		name: "A / Swift",
+		note: "A clipped nose and long, slim body. The most racer-like: light, quick, and purposeful.",
+		points: [
+			[30, -3],
+			[26, -7],
+			[-10, -12],
+			[-23, -9],
+			[-20, 0],
+			[-23, 9],
+			[-10, 12],
+			[26, 7],
+			[30, 3],
+		],
+	},
+	{
+		name: "B / Pebble",
+		note: "A compact, chamfered capsule. A small exploration craft with a sheltered center and a friendly stance.",
+		points: [
+			[25, -6],
+			[16, -13],
+			[-10, -16],
+			[-23, -9],
+			[-23, 9],
+			[-10, 16],
+			[16, 13],
+			[25, 6],
+		],
+	},
+	{
+		name: "C / Skipper",
+		note: "Short forward shoulders and a tucked tail. Alert and darting, with its widest point ahead of the middle.",
+		points: [
+			[26, -4],
+			[18, -10],
+			[9, -21],
+			[-1, -20],
+			[-10, -11],
+			[-23, -8],
+			[-23, 8],
+			[-10, 11],
+			[-1, 20],
+			[9, 21],
+			[18, 10],
+			[26, 4],
+		],
+	},
+	{
+		name: "D / Petrel",
+		note: "A narrow cabin with small rear wings. An explorer with a stable, open stance and a little racing pedigree.",
+		points: [
+			[29, -4],
+			[17, -8],
+			[0, -9],
+			[-12, -22],
+			[-23, -18],
+			[-19, 0],
+			[-23, 18],
+			[-12, 22],
+			[0, 9],
+			[17, 8],
+			[29, 4],
+		],
+	},
+	{
+		name: "E / Courier",
+		note: "A short, broad nose over a tapered body. Practical and self-contained, like a tiny long-distance vessel.",
+		points: [
+			[24, -9],
+			[14, -16],
+			[-8, -14],
+			[-24, -7],
+			[-24, 7],
+			[-8, 14],
+			[14, 16],
+			[24, 9],
+		],
+	},
+	{
+		name: "F / Minnow",
+		note: "A little angular teardrop with a narrow tail. Curious and lively, with a larger-feeling cabin at the front.",
+		points: [
+			[28, 0],
+			[19, -12],
+			[1, -17],
+			[-14, -10],
+			[-25, -5],
+			[-25, 5],
+			[-14, 10],
+			[1, 17],
+			[19, 12],
+		],
+	},
+];
+const palette = [
+	"#c8f4f0",
+	"#83c7d0",
+	"#437e99",
+	"#264d6b",
+	"#365d79",
+	"#6193a9",
+];
+---
+
+<div class="fleet">
+	{forms.map((form) => (
+		<figure>
+			<figcaption>
+				<h4>{form.name}</h4>
+				<p>{form.note}</p>
+			</figcaption>
+			<svg
+				viewBox="0 0 320 310"
+				role="img"
+				aria-label={`${form.name}, compact low-poly Scout and small turned silhouette`}
+			>
+				{[
+					{ x: 160, y: 155, scale: 2.5, angle: -90 },
+					{ x: 115, y: 270, scale: 0.65, angle: -45 },
+				].map((view) => (
+					<g
+						transform={`translate(${view.x} ${view.y}) scale(${view.scale}) rotate(${view.angle})`}
+					>
+						{form.points.map((point, index) => {
+							const next = form.points[(index + 1) % form.points.length];
+							const upper = (point[1] + next[1]) / 2 < 0;
+							return (
+								<polygon
+									points={`-3,0 ${point.join(",")} ${next.join(",")}`}
+									fill={palette[upper ? index % 3 : 3 + (index % 3)]}
+								/>
+							);
+						})}
+						<polygon points="24,0 -10,-4 -18,0 -10,4" fill="#a2d8df" />
+						<polygon points="24,0 -18,0 -10,4" fill="#51869e" />
+						<polygon
+							points="18,0 14,-3.5 7,-3.5 4,0 7,3.5 14,3.5"
+							fill="#000000"
+						/>
+					</g>
+				))}
+				<polygon
+					points={form.points.map((p) => p.join(",")).join(" ")}
+					fill="#bdd6df"
+					transform="translate(230 270) scale(.65) rotate(-90)"
+				/>
+			</svg>
+		</figure>
+	))}
+</div>
+<style>
+.fleet {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-lg);
+	margin-block: var(--spacing-lg);
+}
+figure {
+	margin: 0;
+	min-width: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+}
+h4 {
+	margin-bottom: var(--spacing-sm);
+}
+p {
+	color: var(--color-text-dim);
+	font-size: var(--font-small);
+	min-height: 4.5em;
+}
+svg {
+	display: block;
+	width: 100%;
+}
+@media (max-width: 850px) {
+	.fleet {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 480px) {
+	.fleet {
+		grid-template-columns: 1fr;
+	}
+	svg {
+		max-width: 320px;
+		margin: auto;
+	}
+	p {
+		min-height: 0;
+	}
+}
+</style>

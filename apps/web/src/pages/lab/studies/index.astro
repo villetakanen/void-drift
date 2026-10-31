@@ -1,0 +1,34 @@
+---
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+---
+
+<StudyLayout>
+	{studies.map((study) => (
+		<article>
+			<p>
+				{study.phase} · {study.status}
+			</p>
+			<h2>
+				<a href={`/lab/studies/${study.slug}`}>{study.title} →</a>
+			</h2>
+			<p>{study.question}</p>
+		</article>
+	))}
+	<p>
+		Studies have four parts: design problem → exploration → readiness →
+		integration plan. Readiness assesses feasibility; integration documents how
+		and why to implement the conclusion. Study-quality evaluation is separate.
+		Status records exploratory → accepted → integrated into shared
+		implementation. Acceptance does not imply implementation. Closed studies
+		retain their evidence; consult their closure record for the final outcome.
+	</p>
+</StudyLayout>
+<style>
+article {
+	border: var(--flight-border);
+	padding: var(--spacing-lg);
+	margin-bottom: var(--spacing-lg);
+	background: var(--color-void-light);
+}
+</style>

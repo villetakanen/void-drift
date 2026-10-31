@@ -26,14 +26,14 @@ A new `Camera` class that provides:
 **Key Features:**
 ```typescript
 const camera = new Camera({
-  viewportWidth: 1920,
-  viewportHeight: 1080,
-  smoothing: 0.1  // Frame-rate independent
-})
+	viewportWidth: 1920,
+	viewportHeight: 1080,
+	smoothing: 0.1, // Frame-rate independent
+});
 
 // Every frame
-camera.setTarget(ship.pos.x, ship.pos.y)
-camera.update(deltaTime)
+camera.setTarget(ship.pos.x, ship.pos.y);
+camera.update(deltaTime);
 ```
 
 **Performance:**
@@ -48,10 +48,10 @@ camera.update(deltaTime)
 Extended the `Renderer` class with camera-space rendering:
 
 ```typescript
-renderer.beginCamera(camera)  // Save context + apply transform
-  renderer.drawStar(star)
-  renderer.drawShip(ship)
-renderer.endCamera()          // Restore context
+renderer.beginCamera(camera); // Save context + apply transform
+renderer.drawStar(star);
+renderer.drawShip(ship);
+renderer.endCamera(); // Restore context
 ```
 
 **Changes:**
@@ -79,17 +79,17 @@ viewport-wrapper (100vw x 100vh, flexbox centered)
 
 **Responsive Scaling Logic:**
 ```javascript
-const windowRatio = window.innerWidth / window.innerHeight
-const targetRatio = 16 / 9
+const windowRatio = window.innerWidth / window.innerHeight;
+const targetRatio = 16 / 9;
 
 if (windowRatio > targetRatio) {
-  // Letterbox sides
-  height = window.innerHeight
-  width = height * targetRatio
+	// Letterbox sides
+	height = window.innerHeight;
+	width = height * targetRatio;
 } else {
-  // Letterbox top/bottom
-  width = window.innerWidth
-  height = width / targetRatio
+	// Letterbox top/bottom
+	width = window.innerWidth;
+	height = width / targetRatio;
 }
 ```
 
@@ -159,11 +159,13 @@ Removed `build` script from `@void-drift/engine` package because:
 ## Testing Results
 
 ### Build Status
+
 ✅ `pnpm --filter web build` - SUCCESS  
 ✅ `pnpm --filter web check` - 0 errors, 0 warnings  
 ✅ `pnpm --filter @void-drift/engine check` - 0 errors, 0 warnings
 
 ### Browser Testing
+
 - **Desktop (1920x1080):** Game fills screen perfectly
 - **Desktop (2560x1440):** Game scales up, maintains 16:9
 - **Ultrawide (3440x1440):** Letterboxed sides, no advantage
@@ -171,6 +173,7 @@ Removed `build` script from `@void-drift/engine` package because:
 - **Mobile (landscape):** Game scales to fit width
 
 ### Performance
+
 - **60 FPS** maintained on desktop (M1 MacBook)
 - **Camera.update():** <0.2ms per frame
 - **Zero GC pauses** from camera system (no allocations)
@@ -196,11 +199,13 @@ Removed `build` script from `@void-drift/engine` package because:
 ## Files Changed
 
 ### Created
+
 - `packages/engine/src/lib/engine/Camera.ts` (115 lines)
 - `docs/specs/camera-system.md` (207 lines)
 - `docs/specs/IMPLEMENTATION-PBI-013.md` (this file)
 
 ### Modified
+
 - `packages/engine/src/index.ts` - Export Camera class
 - `packages/engine/src/lib/engine/Renderer.ts` - Add camera methods
 - `packages/engine/package.json` - Remove build script
@@ -212,11 +217,13 @@ Removed `build` script from `@void-drift/engine` package because:
 ## Future Enhancements
 
 ### Short-Term
+
 1. **Camera Shake:** Add trauma system for impacts/collisions
 2. **Look-Ahead:** Offset camera in direction of ship velocity
 3. **Zoom Levels:** Dynamic zoom based on ship speed
 
 ### Long-Term (Multiplayer)
+
 1. **Multi-Target Tracking:** Center camera on player group centroid
 2. **Dynamic Zoom:** Zoom out to fit all players in frame
 3. **Spectator Mode:** Free camera movement with WASD
@@ -244,25 +251,25 @@ The Camera system is fully integrated and ready for use. To add camera tracking 
 
 ```typescript
 // 1. Create camera
-const camera = new Camera({ 
-  viewportWidth: 1920, 
-  viewportHeight: 1080, 
-  smoothing: 0.1 
-})
+const camera = new Camera({
+	viewportWidth: 1920,
+	viewportHeight: 1080,
+	smoothing: 0.1,
+});
 
 // 2. Update every frame
-camera.setTarget(entity.pos.x, entity.pos.y)
-camera.update(deltaTime)
+camera.setTarget(entity.pos.x, entity.pos.y);
+camera.update(deltaTime);
 
 // 3. Render with camera
-renderer.beginCamera(camera)
+renderer.beginCamera(camera);
 // ... draw game objects ...
-renderer.endCamera()
+renderer.endCamera();
 ```
 
 For input handling, convert screen coordinates to world space:
 ```typescript
-const worldPos = camera.screenToWorld(touchX, touchY)
+const worldPos = camera.screenToWorld(touchX, touchY);
 ```
 
 ---

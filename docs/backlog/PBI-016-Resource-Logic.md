@@ -35,6 +35,7 @@ This is the second PBI for Phase 5 (Survival Core). It implements the actual res
 ## Acceptance Criteria
 
 ### Hull System
+
 - [x] Ship starts with 100% hull on game initialization
 - [x] Planet collision deducts 7% hull per impact
 - [x] Hull damage is applied during existing collision detection logic
@@ -48,6 +49,7 @@ This is the second PBI for Phase 5 (Survival Core). It implements the actual res
 - [x] Hull updates are frame-rate independent (use deltaTime)
 
 ### Power System
+
 - [x] Ship starts with 100% power on game initialization
 - [x] Power consumes 1.0% per second (constant decay)
 - [x] Sun proximity refuels based on distance zones:
@@ -60,12 +62,14 @@ This is the second PBI for Phase 5 (Survival Core). It implements the actual res
 - [x] Power cannot regenerate above 100%
 
 ### Data Model
+
 - [x] `ResourcesSchema` defined in Zod with hull/power validation
 - [x] `GameState` schema includes resources object
 - [x] Resources exported from `@void-drift/engine` package
 - [x] All resource mutations go through validated update functions
 
 ### Physics Integration
+
 - [x] `updatePower()` function added to physics loop
 - [x] `updateHull()` function added to physics loop
 - [x] Resource updates occur AFTER input processing, BEFORE collision detection
@@ -73,6 +77,7 @@ This is the second PBI for Phase 5 (Survival Core). It implements the actual res
 - [x] No new object allocations in update loops (performance)
 
 ### HUD Integration
+
 - [x] Hull bar displayed in game HUD (uses PBI-015 design)
 - [x] Power bar displayed in game HUD (uses PBI-015 design)
 - [x] Bars update every frame (smooth animation)
@@ -89,18 +94,18 @@ This is the second PBI for Phase 5 (Survival Core). It implements the actual res
 **File:** `packages/engine/src/lib/schemas/game-state.ts`
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 export const ResourcesSchema = z.object({
-  hull: z.number().min(0).max(100),
-  power: z.number().min(0).max(100),
+	hull: z.number().min(0).max(100),
+	power: z.number().min(0).max(100),
 });
 
 export type Resources = z.infer<typeof ResourcesSchema>;
 
 export const GameStateSchema = z.object({
-  resources: ResourcesSchema,
-  // Other game state fields added in PBI-017
+	resources: ResourcesSchema,
+	// Other game state fields added in PBI-017
 });
 
 export type GameState = z.infer<typeof GameStateSchema>;
@@ -115,23 +120,23 @@ export type GameState = z.infer<typeof GameStateSchema>;
 Add to existing config:
 ```typescript
 export const SURVIVAL_CONFIG = {
-  INITIAL_HULL: 100,
-  INITIAL_FUEL: 100,
-  FUEL_CONSUMPTION_RATE: 1.5,
-  
-  SUN_ZONE_1_RADIUS: 150,
-  SUN_ZONE_2_RADIUS: 250,
-  SUN_ZONE_3_RADIUS: 350,
-  
-  FUEL_REGEN_ZONE_1: 4.0,
-  FUEL_REGEN_ZONE_2: 2.0,
-  FUEL_REGEN_ZONE_3: 0.5,
-  
-  HULL_BURN_ZONE_1: 1.5,
-  HULL_BURN_ZONE_2: 0.5,
-  HULL_BURN_ZONE_3: 0.1,
-  
-  PLANET_COLLISION_DAMAGE: 7,
+	INITIAL_HULL: 100,
+	INITIAL_FUEL: 100,
+	FUEL_CONSUMPTION_RATE: 1.5,
+
+	SUN_ZONE_1_RADIUS: 150,
+	SUN_ZONE_2_RADIUS: 250,
+	SUN_ZONE_3_RADIUS: 350,
+
+	FUEL_REGEN_ZONE_1: 4.0,
+	FUEL_REGEN_ZONE_2: 2.0,
+	FUEL_REGEN_ZONE_3: 0.5,
+
+	HULL_BURN_ZONE_1: 1.5,
+	HULL_BURN_ZONE_2: 0.5,
+	HULL_BURN_ZONE_3: 0.1,
+
+	PLANET_COLLISION_DAMAGE: 7,
 } as const;
 ```
 
@@ -144,70 +149,70 @@ export const SURVIVAL_CONFIG = {
 Add two new functions:
 
 ```typescript
-import { SURVIVAL_CONFIG } from '../config';
-import type { Resources } from '../schemas/game-state';
+import { SURVIVAL_CONFIG } from "../config";
+import type { Resources } from "../schemas/game-state";
 
 export function updatePower(
-  resources: Resources,
-  isThrusting: boolean,
-  distanceToSun: number,
-  deltaTime: number
+	resources: Resources,
+	isThrusting: boolean,
+	distanceToSun: number,
+	deltaTime: number,
 ): void {
-  const dt = deltaTime / 1000; // Convert ms to seconds
-  
-  // Consumption
-  // Constant decay
-  resources.power -= SURVIVAL_CONFIG.POWER_CONSUMPTION_RATE * dt;
-  
-  // Regeneration (sun proximity)
-  let regenRate = 0;
-  if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_1_RADIUS) {
-    regenRate = SURVIVAL_CONFIG.FUEL_REGEN_ZONE_1;
-  } else if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_2_RADIUS) {
-    regenRate = SURVIVAL_CONFIG.FUEL_REGEN_ZONE_2;
-  } else if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_3_RADIUS) {
-    regenRate = SURVIVAL_CONFIG.FUEL_REGEN_ZONE_3;
-  }
-  
-  resources.power += regenRate * dt;
-  
-  // Clamp
-  resources.power = Math.max(0, Math.min(100, resources.power));
+	const dt = deltaTime / 1000; // Convert ms to seconds
+
+	// Consumption
+	// Constant decay
+	resources.power -= SURVIVAL_CONFIG.POWER_CONSUMPTION_RATE * dt;
+
+	// Regeneration (sun proximity)
+	let regenRate = 0;
+	if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_1_RADIUS) {
+		regenRate = SURVIVAL_CONFIG.FUEL_REGEN_ZONE_1;
+	} else if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_2_RADIUS) {
+		regenRate = SURVIVAL_CONFIG.FUEL_REGEN_ZONE_2;
+	} else if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_3_RADIUS) {
+		regenRate = SURVIVAL_CONFIG.FUEL_REGEN_ZONE_3;
+	}
+
+	resources.power += regenRate * dt;
+
+	// Clamp
+	resources.power = Math.max(0, Math.min(100, resources.power));
 }
 
 export function updateHull(
-  resources: Resources,
-  distanceToSun: number,
-  sunRadius: number,
-  deltaTime: number
+	resources: Resources,
+	distanceToSun: number,
+	sunRadius: number,
+	deltaTime: number,
 ): void {
-  const dt = deltaTime / 1000;
-  
-  // Star contact = instant death
-  if (distanceToSun < sunRadius) {
-    resources.hull = 0;
-    return;
-  }
-  
-  // Sun proximity burn
-  let burnRate = 0;
-  if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_1_RADIUS) {
-    burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_1;
-  } else if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_2_RADIUS) {
-    burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_2;
-  } else if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_3_RADIUS) {
-    burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_3;
-  }
-  
-  resources.hull -= burnRate * dt;
-  
-  // Clamp
-  resources.hull = Math.max(0, Math.min(100, resources.hull));
+	const dt = deltaTime / 1000;
+
+	// Star contact = instant death
+	if (distanceToSun < sunRadius) {
+		resources.hull = 0;
+		return;
+	}
+
+	// Sun proximity burn
+	let burnRate = 0;
+	if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_1_RADIUS) {
+		burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_1;
+	} else if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_2_RADIUS) {
+		burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_2;
+	} else if (distanceToSun < SURVIVAL_CONFIG.SUN_ZONE_3_RADIUS) {
+		burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_3;
+	}
+
+	resources.hull -= burnRate * dt;
+
+	// Clamp
+	resources.hull = Math.max(0, Math.min(100, resources.hull));
 }
 
 export function applyPlanetCollisionDamage(resources: Resources): void {
-  resources.hull -= SURVIVAL_CONFIG.PLANET_COLLISION_DAMAGE;
-  resources.hull = Math.max(0, resources.hull);
+	resources.hull -= SURVIVAL_CONFIG.PLANET_COLLISION_DAMAGE;
+	resources.hull = Math.max(0, resources.hull);
 }
 ```
 
@@ -252,15 +257,23 @@ applyPlanetCollisionDamage(gameState.resources);
 </script>
 
 <div class="hud">
-  <div class="resource-bar">
-    <div class="bar-fill" style:width="{hullPercent}%" style:background-color={hullColor}></div>
-    <span class="bar-label">HULL {hullPercent.toFixed(0)}%</span>
-  </div>
-  
-  <div class="resource-bar">
-    <div class="bar-fill" style:width="{powerPercent}%" style:background-color={powerColor}></div>
-    <span class="bar-label">POWER {powerPercent.toFixed(0)}%</span>
-  </div>
+	<div class="resource-bar">
+		<div
+			class="bar-fill"
+			style:width="{hullPercent}%"
+			style:background-color={hullColor}
+		></div>
+		<span class="bar-label">HULL {hullPercent.toFixed(0)}%</span>
+	</div>
+
+	<div class="resource-bar">
+		<div
+			class="bar-fill"
+			style:width="{powerPercent}%"
+			style:background-color={powerColor}
+		></div>
+		<span class="bar-label">POWER {powerPercent.toFixed(0)}%</span>
+	</div>
 </div>
 
 <style>
@@ -372,6 +385,7 @@ applyPlanetCollisionDamage(gameState.resources);
 - [ ] Fuel at 10%: Red bar
 
 ### Performance Tests
+
 - [ ] Run game for 60 seconds with resource updates active
 - [ ] Check Chrome DevTools Performance tab
 - [ ] Verify no frame drops below 58 FPS
@@ -408,13 +422,13 @@ This PBI does NOT include:
 
 ## Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Power consumption too fast | Players die in < 30s | Tuning constants in `config.ts`, playtest with 5 users |
-| Sun zones too punishing | Players avoid sun entirely | Adjust regen/burn ratio, make Zone 2 more rewarding |
-| Performance regression | FPS drops below 60 | Profile with Chrome DevTools, optimize distance calculations |
-| Hull damage feels unfair | Negative player feedback | Add visual warning when entering burn zones (Phase 7) |
-| HUD bars not smooth | Jittery updates | Use CSS transitions, verify Svelte reactivity |
+| Risk                       | Impact                     | Mitigation                                                   |
+| -------------------------- | -------------------------- | ------------------------------------------------------------ |
+| Power consumption too fast | Players die in < 30s       | Tuning constants in `config.ts`, playtest with 5 users       |
+| Sun zones too punishing    | Players avoid sun entirely | Adjust regen/burn ratio, make Zone 2 more rewarding          |
+| Performance regression     | FPS drops below 60         | Profile with Chrome DevTools, optimize distance calculations |
+| Hull damage feels unfair   | Negative player feedback   | Add visual warning when entering burn zones (Phase 7)        |
+| HUD bars not smooth        | Jittery updates            | Use CSS transitions, verify Svelte reactivity                |
 
 ---
 
