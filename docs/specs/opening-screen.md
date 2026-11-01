@@ -1,7 +1,7 @@
 # Opening screen and design-system remediation plan
 
 **Status:** IN PROGRESS. S1 done and owner-approved 2026-11-01; S2 done and owner-approved
-2026-11-01; S3 done 2026-11-01, pending owner approval; S4–S12 planned.
+2026-11-01; S3 done and owner-approved 2026-11-01; S4–S12 planned.
 **Scope note (owner, 2026-11-01):** phone landscape is temporarily out of scope. 844×390 checks
 are not required until it returns; D7 and the S12 phone contract stay as targets.
 **Source:** [opening screen audit](../audits/2026-11-01-opening-screen.md), owner decisions D1–D7 (2026-11-01).
@@ -76,7 +76,7 @@ the favicon was the Astro starter icon; Lab titles read "Void·Drift". No canvas
 
 ### S3 — Colour roles (D6)
 
-**Done 2026-11-01, pending owner approval.** The rule is in `design-system-core.md` (Colour);
+**Done 2026-11-01, owner-approved.** The rule is in `design-system-core.md` (Colour);
 `/lab/tokens` shows every role with contrast measured against each surface. Owner decisions: every
 colour token is written in `lch()`; the brand lime is `#eeff41` (the token since PBI-022), not the
 older `#d4ff00`; the elevation steps and `--color-backdrop` from the Lab instrument are the surface
