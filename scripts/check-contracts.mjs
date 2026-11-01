@@ -35,3 +35,27 @@ for (const [role, constant] of [
 	assert.equal(ts, css, `${constant} must equal --font-family-${role}`);
 }
 console.log("Canvas type families match the CSS role tokens.");
+
+// Canvas colours mirror the CSS colour roles; aliases resolve through var().
+const canvasColors = readFileSync("packages/core/src/lib/ui/colors.ts", "utf8");
+const resolveToken = (name, seen = []) => {
+	assert(!seen.includes(name), `Circular colour token ${name}`);
+	const value = tokens
+		.match(new RegExp(`${name}:([^;]+);`))?.[1]
+		?.replace(/\s+/g, " ")
+		.trim();
+	assert(value, `Missing CSS token ${name}`);
+	const alias = value.match(/^var\((--[a-z0-9-]+)\)$/)?.[1];
+	return alias ? resolveToken(alias, [...seen, name]) : value;
+};
+const pairs = [
+	...canvasColors.matchAll(/^\t(\w+): "(--color-[a-z0-9-]+)",$/gm),
+];
+assert(pairs.length > 0, "colors.ts must name the token behind each colour");
+for (const [, key, token] of pairs) {
+	const ts = canvasColors.match(
+		new RegExp(`^\\t${key}: "([^"]+)",$`, "m"),
+	)?.[1];
+	assert.equal(ts, resolveToken(token), `COLOR.${key} must equal ${token}`);
+}
+console.log(`Canvas colours match ${pairs.length} CSS colour roles.`);

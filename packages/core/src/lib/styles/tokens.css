@@ -1,34 +1,34 @@
 @import "./fonts.css";
 
 :root {
-	/* Theme: Void Industrial (Dark Sci-Fi) */
-	--color-void: lch(1.57% 4.76 285.25);
-	/* Deepest Black/Blue */
-	--color-void-light: lch(3.33% 13.31 285.89);
-	/* Surface / Panels */
+	/* Colour roles (design-system-core.md, Colour). Brand is the one lime; it
+	   also marks what you can act on and what is selected. Informational text
+	   never uses it. */
+	--color-brand: lch(96.42% 84.18 104.87);
+	--color-action: var(--color-brand);
+	--color-selected: var(--color-brand);
+	--color-on-brand: var(--color-void);
 
-	/* Foreground */
+	/* Text */
 	--color-text: lch(99.7% 7.45 104.72);
-	/* Ivory White */
-	--color-text-dim: lch(56.7% 0 0);
-	/* Muted Text */
+	--color-text-muted: lch(56.7% 0 0);
 
-	/* Functional Palette (Raw Material Spec) */
-	/* --color-acid-lime: #d4ff00; */
-	--color-acid-lime: lch(96.42% 84.18 104.87);
-	/* Accent / New */
+	/* Borders: white at fixed strengths, so they read on every surface. */
+	--color-border: lch(100% 0 0 / 0.141);
+	--color-border-subtle: lch(100% 0 0 / 0.094);
+	--color-border-faint: lch(100% 0 0 / 0.051);
+	--color-grid: lch(45.22% 12.57 223.2);
+
+	/* Surfaces: the void is the page (elevation 0); --color-elev-1..3 step up.
+	   Glass is the void, translucent, over the stage. Hover tints any surface. */
+	--color-void: lch(1.57% 4.76 285.25);
+	--color-glass: lch(1.57% 4.76 285.25 / 0.91);
+	--color-surface-hover: lch(100% 0 0 / 0.051);
+
+	/* Status */
 	--color-android-green: lch(78.31% 65.02 151.48);
-	/* Success */
 	--color-caution-tape: lch(91.22% 89.15 92.72);
-	/* Warning */
 	--color-red: lch(56.91% 91.12 35.03);
-	/* Error */
-
-	/* Mappings */
-	--color-neon-blue: var(--color-acid-lime);
-	/* Primary Action overrides Neon Blue */
-	--color-neon-orange: var(--color-caution-tape);
-	--color-neon-green: var(--color-android-green);
 
 	/* Spacing & Shape relative to 4px grid */
 	--spacing-xs: 4px;
@@ -39,17 +39,11 @@
 
 	--radius-sm: 2px;
 
-	/* Resource HUD Tokens */
+	/* Resource colours are game data. Power shares brand until S8 separates it. */
 	--color-resource-hull: lch(74.49% 48.47 234.45);
-	/* Neon Blue */
-	--color-resource-power: var(--color-acid-lime);
+	--color-resource-power: var(--color-brand);
 	--color-resource-warning: lch(76.72% 83.63 72.58);
-	/* Orange */
 	--color-resource-danger: var(--color-red);
-
-	/* Overlay */
-	--color-overlay: lch(1.57% 4.76 285.25 / 0.9);
-	/* Semi-transparent void for modal overlays */
 
 	/* Shared control, state and motion foundations */
 	--control-min-height: 44px;
@@ -143,9 +137,18 @@
 	--flight-engine-height: 64px;
 	--flight-textarea-height: 120px;
 	--flight-bar-width: 120px;
-	--flight-border: 1px solid lch(100% 0 0 / 0.141);
-	--flight-glow: 0 0 30px lch(96.42% 84.18 104.87 / 0.149);
+	--flight-border: 1px solid var(--color-border);
+	--flight-glow: 0 0 30px
+		color-mix(in lch, var(--color-selected) 15%, transparent);
 	--flight-radius: 12px;
-	--color-flight-glass: lch(1.57% 4.76 285.25 / 0.91);
-	--color-flight-trail: lch(100% 0 0 / 0.094);
+	--color-flight-glass: var(--color-glass);
+	--color-flight-trail: var(--color-border-subtle);
+	/* Deprecated colour names (S3): they alias the roles above. */
+	--color-acid-lime: var(--color-brand);
+	--color-neon-blue: var(--color-action);
+	--color-neon-orange: var(--color-caution-tape);
+	--color-neon-green: var(--color-android-green);
+	--color-text-dim: var(--color-text-muted);
+	--color-void-light: var(--color-elev-1);
+	--color-overlay: var(--color-glass);
 }
