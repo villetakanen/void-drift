@@ -1,0 +1,193 @@
+---
+import PathComparisonRows from "../../../components/studies/PathComparisonRows.svelte";
+import PathTraceDemo from "../../../components/studies/PathTraceDemo.svelte";
+import PathViewDemo from "../../../components/studies/PathViewDemo.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find(
+	(entry) => entry.slug === "path-instrument-2026-11-01",
+);
+---
+
+<StudyLayout study={study}>
+	<section aria-labelledby="closure">
+		<h2 id="closure">Closed / Incomplete and failed</h2>
+		<p>
+			Closed on 1 November 2026 at the designer’s request. The study is
+			incomplete and is recorded as failed: it did not reach readiness or
+			integration, and the later layout and container work did not relate to the
+			questions the study set out to investigate. The sections below are kept as
+			they were, as evidence and not as approved behaviour.
+		</p>
+		<h3>Results the designer judged useful</h3>
+		<ul>
+			<li>
+				<strong>02.1:</strong>
+				drawing two studies on one fixed set of scales makes them comparable;
+				fitting axes per study does not.
+			</li>
+			<li>
+				<strong>02.2:</strong>
+				the path view has two formats, fit all paths and a default scale that
+				can be panned. Both worked as they were; the default scale value was not
+				decided.
+			</li>
+			<li>
+				<strong>02.3:</strong>
+				a time slider with a marker and a tick across the path and a cursor
+				across every trace; tenth-of-a-second and hundredth-of-a-second steps
+				were both useful.
+			</li>
+		</ul>
+		<h3>Not settled</h3>
+		<p>
+			Trace scaling, how configurations and path sources are chosen, the
+			contents of the side pane, and whether the composed instrument reads well
+			on an iPad and in the Lab. Container behaviour, the single side pane and
+			snapping into place were given in the brief, not investigated. The shell
+			drafted after 02.3 is not shown on this page.
+		</p>
+		<p>
+			The run is documented in the
+			<code>docs/loop-evidence/2026-11-01-path-instrument-closure.md</code>
+			record. No integration is approved by closure.
+		</p>
+	</section>
+	<section aria-labelledby="situation">
+		<h2 id="situation">01 / One ruler for every motion study</h2>
+		<p>
+			Studies of ship velocity, mass or engine thrust all ask the same kind of
+			question: how does this configuration move compared with that one? A
+			comparison only means something if both were measured the same way. When
+			each study invents its own instrumentation, with its own scales, input
+			sequence, graphs and framing, results from different studies cannot be set
+			side by side, and often the two halves of a single study cannot either.
+		</p>
+		<p>
+			So the instrument is a fixed way of measuring, not a convenience. It
+			calculates paths and draws them as static pictures, with no flying,
+			playback or animation. Studies supply the configurations; they do not
+			redefine the measurement. Paths and their sources can vary, while the
+			views, scales, units and input conventions stay the same everywhere the
+			instrument appears.
+		</p>
+		<p>
+			Picture two studies a month apart: one varies engine thrust, the other
+			ship mass. Because both draw three vehicles’ paths, speed, acceleration
+			and turning acceleration on identical axes, a reader can place a thrust
+			result beside a mass result and see which matters more.
+		</p>
+		<p>It follows that the instrument must be:</p>
+		<ul>
+			<li>
+				<strong>Standard.</strong>
+				Measurement choices belong to the instrument, not to each study.
+			</li>
+			<li>
+				<strong>A Lab tool.</strong>
+				Full screen, with configurations chosen and variables tried in one
+				collapsible side pane that keeps the data on stage.
+			</li>
+			<li>
+				<strong>Embeddable.</strong>
+				It treats its container as a screen at least as large as an iPad Pro. In
+				the Lab it fills the container; in a study it takes the full container
+				width and snaps to the center of the flowing text as the reader scrolls.
+			</li>
+		</ul>
+		<p>
+			The tension is between a measurement fixed enough to compare and an
+			instrument flexible enough to be useful across questions. This cycle
+			settles what is fixed and what a study may vary. Simulating flight, engine
+			tuning and production values stay outside it.
+		</p>
+	</section>
+	<section aria-labelledby="exploration">
+		<h2 id="exploration">02 / What the instrument decides</h2>
+		<h3>02.1 / The same two studies, measured two ways</h3>
+		<p>
+			Two small studies run the same calculation: one varies acceleration, the
+			other the speed ceiling. Each is drawn first with axes fitted to its own
+			data, as studies have done, then on one fixed instrument. The calculation
+			is the existing free-rotation path for the “2 aft + 2 side” fixture on the
+			shared 14-second input; the drawings are static.
+		</p>
+		<p>
+			Notice whether a reader can tell, from the top row, which change moved the
+			ship more. Then notice what the bottom row makes visible, and where a
+			value runs off the fixed range. The fixed ranges here are provisional, and
+			the example cannot say how a reader will feel about them.
+		</p>
+		<PathComparisonRows />
+		<h3>Settled from 02.1</h3>
+		<p>
+			A path view needs two formats, switched by a toggle. One auto-zooms to
+			show every path in the run. The other uses the instrument’s default scale,
+			which is the same in every study, and lets the reader move around it with
+			the mouse. This applies to the path view only. The fixed scales for the
+			speed, acceleration and turn traces, and the numbers chosen here, remain
+			provisional.
+		</p>
+		<h3>02.2 / Fit all, or default scale and pan</h3>
+		<p>
+			The same three paths from Study B, in a path view that switches between
+			the two formats. In default scale the view is larger than the screen can
+			hold, so the paths run off the edge and the reader pans to follow them.
+			Dragging works with the mouse; arrow buttons and Recenter cover the
+			keyboard.
+		</p>
+		<p>
+			Notice how much of the run the default scale shows at once, and whether
+			panning feels like reading or like searching. The example does not decide
+			the default scale value, a zoom control, or how the trace views follow a
+			pan; only the path view is under test.
+		</p>
+		<PathViewDemo client:load />
+		<p>
+			<strong>Observed:</strong>
+			both formats work as they are. Showing every path, or showing them on a
+			standard scale that is easier to understand, is enough for the path view,
+			and it does not need more fidelity. The default scale value stays
+			undecided.
+		</p>
+		<h3>02.3 / A time slider across every view</h3>
+		<p>
+			The drawings are still static, but a slider under the path area sets a
+			moment in time. A marker appears on every vehicle’s path, a cursor line
+			crosses the speed, acceleration and turn traces and the input strip, and
+			the table gives the values at that moment. It works like the cursor of a
+			measuring tool, not a playback control: nothing moves until the reader
+			moves it.
+		</p>
+		<p>
+			Notice whether you can find where a vehicle was when a trace changes, and
+			whether a tenth of a second or a hundredth is the useful step. In default
+			scale a marker can sit off screen until the view is panned to it. The
+			example does not decide the time resolution, trace scaling, or how the
+			controls sit in the side pane.
+		</p>
+		<PathTraceDemo client:load />
+		<p>
+			<strong>Observed:</strong>
+			the slider works for following the vehicles across the views, and both a
+			tenth and a hundredth of a second are useful steps. A thin tick at 90° to
+			the path at each marker shows the path’s direction at that moment; moving
+			the slider shows which way the vehicle travels along it. The slider
+			follows the shared range-input pattern the studies already use; turning it
+			into a design-system component is a candidate for after the study.
+		</p>
+	</section>
+	<section aria-labelledby="next">
+		<h2 id="next">03 / Not reached</h2>
+	</section>
+</StudyLayout>
+<style>
+ul {
+	max-width: 70ch;
+	margin-block: 0 var(--spacing-md);
+}
+li + li {
+	margin-top: var(--spacing-sm);
+}
+</style>
