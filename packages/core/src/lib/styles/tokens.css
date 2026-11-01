@@ -1,3 +1,5 @@
+@import "./fonts.css";
+
 :root {
 	/* Theme: Void Industrial (Dark Sci-Fi) */
 	--color-void: #050510;
@@ -80,12 +82,37 @@
 }
 
 :root {
-	--font-flight: ui-monospace, SFMono-Regular, Consolas, monospace;
-	--font-display: system-ui, sans-serif;
-	--font-small: 0.75rem;
-	--font-body: 0.95rem;
-	--font-large: 1.5rem;
-	--font-title: clamp(1.75rem, 4vw, 3.5rem);
+	/* Type roles (design-system-core.md): ui for game and interface text,
+	   prose for studies, help and docs, display for headlines. */
+	--font-family-ui:
+		"B612 Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+	--font-family-prose: "Noto Sans", system-ui, sans-serif;
+	--font-family-display: var(--font-family-prose);
+	--font-weight-regular: 400;
+	--font-weight-bold: 700;
+	--font-weight-display: 800;
+	--font-size-caption: 0.75rem;
+	--font-size-label: 0.875rem;
+	--font-size-body: 0.95rem;
+	--font-size-lead: 1.2rem;
+	--font-size-heading: 1.5rem;
+	--font-size-display: clamp(1.75rem, 4vw, 3.5rem);
+	--line-height-display: 1.05;
+	--line-height-heading: 1.1;
+	--line-height-ui: 1.5;
+	--line-height-prose: 1.65;
+	--tracking-eyebrow: 0.16em;
+	--tracking-wordmark: 0.12em;
+	--tracking-display: -0.04em;
+	--measure-prose: 70ch;
+
+	/* Deprecated aliases: remove once their last consumer migrates. */
+	--font-flight: var(--font-family-ui);
+	--font-display: var(--font-family-display);
+	--font-small: var(--font-size-caption);
+	--font-body: var(--font-size-body);
+	--font-large: var(--font-size-heading);
+	--font-title: var(--font-size-display);
 	--flight-header-height: 64px;
 	--flight-panel-width: 320px;
 	--flight-card-width: 480px;
