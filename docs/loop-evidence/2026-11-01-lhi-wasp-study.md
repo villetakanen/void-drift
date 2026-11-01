@@ -2,8 +2,11 @@
 
 Date: 2026-11-01 (Europe/Helsinki). Branch `claude/lhi-wasp-design-study-a9008a`.
 Outcome: owner-declared failure. Filed as failed on Claude Fable 5.1 at medium
-reasoning effort, per the owner's instruction. Study page and commits are retained
-for inspection; status is `closed`.
+reasoning effort, per the owner's instruction. The study page, its components and
+registry entry were removed later the same day at the owner's request ("your wasp
+files can be removed, as long as lessons remain"), because a parallel Wasp study in
+another session continues. The commits listed below remain in history; the sketch,
+this record and the ship drawing fundamentals in `docs/design.md` are retained.
 
 ## Intent and scope
 
