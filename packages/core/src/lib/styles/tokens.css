@@ -2,26 +2,26 @@
 
 :root {
 	/* Theme: Void Industrial (Dark Sci-Fi) */
-	--color-void: #050510;
+	--color-void: lch(1.57% 4.76 285.25);
 	/* Deepest Black/Blue */
-	--color-void-light: #0a0a1f;
+	--color-void-light: lch(3.33% 13.31 285.89);
 	/* Surface / Panels */
 
 	/* Foreground */
-	--color-text: #fffff0;
+	--color-text: lch(99.7% 7.45 104.72);
 	/* Ivory White */
-	--color-text-dim: #888888;
+	--color-text-dim: lch(56.7% 0 0);
 	/* Muted Text */
 
 	/* Functional Palette (Raw Material Spec) */
 	/* --color-acid-lime: #d4ff00; */
-	--color-acid-lime: #eeff41;
+	--color-acid-lime: lch(96.42% 84.18 104.87);
 	/* Accent / New */
-	--color-android-green: #3ddc84;
+	--color-android-green: lch(78.31% 65.02 151.48);
 	/* Success */
-	--color-caution-tape: #ffe600;
+	--color-caution-tape: lch(91.22% 89.15 92.72);
 	/* Warning */
-	--color-red: #ff3333;
+	--color-red: lch(56.91% 91.12 35.03);
 	/* Error */
 
 	/* Mappings */
@@ -40,15 +40,15 @@
 	--radius-sm: 2px;
 
 	/* Resource HUD Tokens */
-	--color-resource-hull: #00c8ff;
+	--color-resource-hull: lch(74.49% 48.47 234.45);
 	/* Neon Blue */
 	--color-resource-power: var(--color-acid-lime);
-	--color-resource-warning: #ffaa00;
+	--color-resource-warning: lch(76.72% 83.63 72.58);
 	/* Orange */
 	--color-resource-danger: var(--color-red);
 
 	/* Overlay */
-	--color-overlay: rgba(5, 5, 16, 0.9);
+	--color-overlay: lch(1.57% 4.76 285.25 / 0.9);
 	/* Semi-transparent void for modal overlays */
 
 	/* Shared control, state and motion foundations */
@@ -113,15 +113,15 @@
 	/* Instrument display: a console (elevation 1) holds displays with 4px
 	   scanlines, a darkened edge, a thin dark bezel and a black shadow. */
 	--surface-display:
-		radial-gradient(ellipse at center, transparent 55%, rgb(0 0 0 / 0.4)),
+		radial-gradient(ellipse at center, transparent 55%, lch(0% 0 0 / 0.4)),
 		repeating-linear-gradient(
 			0deg,
 			var(--color-elev-2) 0 2px,
 			lch(9% 15 290) 2px 4px
 		);
-	--shadow-display: inset 0 0 0 1px lch(4% 8 290), 0 8px 24px rgb(0 0 0 / 0.7);
+	--shadow-display: inset 0 0 0 1px lch(4% 8 290), 0 8px 24px lch(0% 0 0 / 0.7);
 	/* Dims what an overlay covers. */
-	--color-backdrop: rgb(0 0 0 / 0.11);
+	--color-backdrop: lch(0% 0 0 / 0.11);
 
 	/* Logomark height steps (design-system-core.md, Identity). */
 	--logomark-height-sm: 1rem;
@@ -143,9 +143,9 @@
 	--flight-engine-height: 64px;
 	--flight-textarea-height: 120px;
 	--flight-bar-width: 120px;
-	--flight-border: 1px solid #ffffff24;
-	--flight-glow: 0 0 30px #eeff4126;
+	--flight-border: 1px solid lch(100% 0 0 / 0.141);
+	--flight-glow: 0 0 30px lch(96.42% 84.18 104.87 / 0.149);
 	--flight-radius: 12px;
-	--color-flight-glass: #050510e8;
-	--color-flight-trail: #ffffff18;
+	--color-flight-glass: lch(1.57% 4.76 285.25 / 0.91);
+	--color-flight-trail: lch(100% 0 0 / 0.094);
 }
