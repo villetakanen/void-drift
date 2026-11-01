@@ -4,13 +4,22 @@ import LabTypographyMain from "../../components/lab/LabTypographyMain.svelte";
 import LabLayout from "../../layouts/LabLayout.astro";
 ---
 
-<LabLayout title="Typography & Tokens">
+<LabLayout title="Typography">
 	<LabTypographyMain client:only="svelte" />
 
 	<Controls slot="inspector" title="Details">
-		<p style="padding: 1rem; color: var(--color-text-dim); font-size: 0.9rem;">
-			This page displays the core design tokens including typography and color
-			palette.
+		<p class="details">
+			Type roles, size steps, line heights, tracking, the global
+			<code>.prose</code>
+			class and canvas fonts, rendered from the production tokens. The rules are
+			in <code>docs/specs/design-system-core.md</code>.
 		</p>
 	</Controls>
 </LabLayout>
+
+<style>
+.details {
+	color: var(--color-text-dim);
+	font-size: var(--font-size-caption);
+}
+</style>
