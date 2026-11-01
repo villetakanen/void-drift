@@ -1,0 +1,524 @@
+---
+import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
+
+type Point = readonly [number, number];
+type Facet = {
+	points: readonly Point[];
+	shade: 0 | 1 | 2 | 3 | 4 | 5;
+};
+
+interface TailVariant {
+	name: string;
+	tailPolys: string;
+	idea: string;
+	aftFacets: readonly Facet[];
+}
+
+interface Props {
+	mode?: "parents" | "mashups";
+}
+
+const { mode = "parents" } = Astro.props;
+
+const pts = (list: readonly Point[]) => list.map((p) => p.join(",")).join(" ");
+
+const palette = [
+	FIGHTER.facets[0], // #c8f4f0 (0: brightest)
+	FIGHTER.facets[1], // #83c7d0 (1: light)
+	FIGHTER.facets[5], // #6193a9 (2: medium-light)
+	FIGHTER.facets[2], // #437e99 (3: medium)
+	FIGHTER.facets[4], // #365d79 (4: dark)
+	FIGHTER.facets[3], // #264d6b (5: deepest shadow)
+] as const;
+
+// Shared 08.09 nose + outer, mid, and inner gull-wing ribbons (all keeping the (±3,-1) -> (±5,9) line)
+const sharedForeAndWingFacets: readonly Facet[] = [
+	{
+		points: [
+			[-3, -25],
+			[0, -25],
+			[0, -16],
+			[-3, -10],
+			[-6, -10],
+		],
+		shade: 0,
+	},
+	{
+		points: [
+			[0, -25],
+			[3, -25],
+			[6, -10],
+			[3, -10],
+			[0, -16],
+		],
+		shade: 2,
+	},
+	{
+		points: [
+			[-6, -10],
+			[-13.5, 12.5],
+			[-18, 6.5],
+		],
+		shade: 3,
+	},
+	{
+		points: [
+			[6, -10],
+			[18, 6.5],
+			[13.5, 12.5],
+		],
+		shade: 5,
+	},
+	{
+		points: [
+			[-6, -10],
+			[-9.5, 11],
+			[-13.5, 12.5],
+		],
+		shade: 2,
+	},
+	{
+		points: [
+			[6, -10],
+			[13.5, 12.5],
+			[9.5, 11],
+		],
+		shade: 4,
+	},
+	{
+		points: [
+			[-6, -10],
+			[-3, -10],
+			[-3, -1],
+			[-5, 9],
+			[-9.5, 11],
+		],
+		shade: 0,
+	},
+	{
+		points: [
+			[6, -10],
+			[9.5, 11],
+			[5, 9],
+			[3, -1],
+			[3, -10],
+		],
+		shade: 2,
+	},
+];
+
+const parents: readonly TailVariant[] = [
+	{
+		name: "08.09-A / Two-plane centerline tail",
+		tailPolys: "2 tail polygons",
+		idea: "Clean x=0 centerline split from the cockpit tip (0, 3.5) to the stern (0, 24.5), matching the 2-plane nose.",
+		aftFacets: [
+			{
+				points: [
+					[-3, -1],
+					[0, 3.5],
+					[0, 24.5],
+					[-3.3, 24.5],
+					[-5, 9],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[3, -1],
+					[5, 9],
+					[3.3, 24.5],
+					[0, 24.5],
+				],
+				shade: 3,
+			},
+		],
+	},
+	{
+		name: "08.09-B / Three-plane central wedge",
+		tailPolys: "3 tail polygons",
+		idea: "Diagonal creases from (±3, −1) to (0, 24.5) frame a darker central wedge between two bright outer tail quads.",
+		aftFacets: [
+			{
+				points: [
+					[-3, -1],
+					[0, 24.5],
+					[-3.3, 24.5],
+					[-5, 9],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[3, -1],
+					[5, 9],
+					[3.3, 24.5],
+					[0, 24.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[-3, -1],
+					[0, 3.5],
+					[3, -1],
+					[0, 24.5],
+				],
+				shade: 4,
+			},
+		],
+	},
+];
+
+const mashups: readonly TailVariant[] = [
+	{
+		name: "AB-1 / Split-keel recessed wedge (Direct A + B)",
+		tailPolys: "4 tail polygons",
+		idea: "Combines B’s central wedge ((±3, −1) to (0, 24.5)) with A’s x=0 centerline split, keeping B’s bright outer flank quads and a 2-tone recessed inner spine.",
+		aftFacets: [
+			// Outer quads from B
+			{
+				points: [
+					[-3, -1],
+					[0, 24.5],
+					[-3.3, 24.5],
+					[-5, 9],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[3, -1],
+					[5, 9],
+					[3.3, 24.5],
+					[0, 24.5],
+				],
+				shade: 2,
+			},
+			// Split central wedge (A's centerline inside B's wedge)
+			{
+				points: [
+					[-3, -1],
+					[0, 3.5],
+					[0, 24.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[3, -1],
+					[0, 24.5],
+				],
+				shade: 4,
+			},
+		],
+	},
+	{
+		name: "AB-2 / Raised dorsal ridge + angled side bevels",
+		tailPolys: "4 tail polygons",
+		idea: "Same A+B 4-polygon geometry as AB-1, but lights the central wedge as a raised dorsal spine (shades 0 & 2) while the outer tail quads slope away into darker bevels (shades 1 & 4).",
+		aftFacets: [
+			// Sloped outer bevel quads
+			{
+				points: [
+					[-3, -1],
+					[0, 24.5],
+					[-3.3, 24.5],
+					[-5, 9],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[3, -1],
+					[5, 9],
+					[3.3, 24.5],
+					[0, 24.5],
+				],
+				shade: 4,
+			},
+			// Raised central spine wedge split down x=0
+			{
+				points: [
+					[-3, -1],
+					[0, 3.5],
+					[0, 24.5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[3, -1],
+					[0, 24.5],
+				],
+				shade: 2,
+			},
+		],
+	},
+	{
+		name: "AB-3 / Truncated wedge + flat stern tip",
+		tailPolys: "4 tail polygons",
+		idea: "Instead of pinching to a single point at (0, 24.5), B’s creases taper from (±3, −1) to (±1.4, 24.5) on either side of A’s x=0 centerline, giving the central spine a solid width all the way to the stern.",
+		aftFacets: [
+			// Outer flank quads
+			{
+				points: [
+					[-3, -1],
+					[-1.4, 24.5],
+					[-3.3, 24.5],
+					[-5, 9],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[3, -1],
+					[5, 9],
+					[3.3, 24.5],
+					[1.4, 24.5],
+				],
+				shade: 3,
+			},
+			// Central split spine tapering from ±3 to ±1.4
+			{
+				points: [
+					[-3, -1],
+					[0, 3.5],
+					[0, 24.5],
+					[-1.4, 24.5],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[3, -1],
+					[1.4, 24.5],
+					[0, 24.5],
+				],
+				shade: 4,
+			},
+		],
+	},
+	{
+		name: "AB-4 / Three-plane asymmetric ridge (Fighter style)",
+		tailPolys: "3 tail polygons",
+		idea: "Keeps A’s unbroken left tail plane from x=0 to the outer edge, and uses B’s right-hand wedge crease ((0, 3.5) → (3, −1) → (0, 24.5)) to cast a crisp shadow facet down the right side of the spine.",
+		aftFacets: [
+			// Unbroken A left plane
+			{
+				points: [
+					[-3, -1],
+					[0, 3.5],
+					[0, 24.5],
+					[-3.3, 24.5],
+					[-5, 9],
+				],
+				shade: 1,
+			},
+			// B right outer quad
+			{
+				points: [
+					[3, -1],
+					[5, 9],
+					[3.3, 24.5],
+					[0, 24.5],
+				],
+				shade: 2,
+			},
+			// B right inner shadow wedge
+			{
+				points: [
+					[0, 3.5],
+					[3, -1],
+					[0, 24.5],
+				],
+				shade: 4,
+			},
+		],
+	},
+	{
+		name: "AB-5 / Mid-tail wedge into 2-plane stern",
+		tailPolys: "4 tail polygons",
+		idea: "B’s wedge closes at the mid-tail (0, 14.5) just behind the waist, while the rear half of the tail continues as A’s clean 2-plane centerline split to (0, 24.5).",
+		aftFacets: [
+			// A's 2-plane tail base
+			{
+				points: [
+					[-3, -1],
+					[0, 14.5],
+					[0, 24.5],
+					[-3.3, 24.5],
+					[-5, 9],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[3, -1],
+					[5, 9],
+					[3.3, 24.5],
+					[0, 24.5],
+					[0, 14.5],
+				],
+				shade: 3,
+			},
+			// Shortened B wedge behind cockpit, split down x=0
+			{
+				points: [
+					[-3, -1],
+					[0, 3.5],
+					[0, 14.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[3, -1],
+					[0, 14.5],
+				],
+				shade: 4,
+			},
+		],
+	},
+	{
+		name: "AB-6 / Waist-corner bevels + A’s upper spine",
+		tailPolys: "4 tail polygons",
+		idea: "Keeps A’s 2-plane centerline split from the cockpit down through (±5, 9) to (0, 24.5), and adds two small outer bevel triangles from the waist corner (±5, 9) to the stern corners (±3.3, 24.5).",
+		aftFacets: [
+			// A's upper-to-center spine planes
+			{
+				points: [
+					[-3, -1],
+					[0, 3.5],
+					[0, 24.5],
+					[-5, 9],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[3, -1],
+					[5, 9],
+					[0, 24.5],
+				],
+				shade: 3,
+			},
+			// Lower outer bevel triangles from (±5, 9) to (±3.3, 24.5)
+			{
+				points: [
+					[-5, 9],
+					[0, 24.5],
+					[-3.3, 24.5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[5, 9],
+					[3.3, 24.5],
+					[0, 24.5],
+				],
+				shade: 4,
+			},
+		],
+	},
+];
+
+const list = mode === "mashups" ? mashups : parents;
+---
+
+<div class="tail-gallery">
+	<div class:list={["cards", { "cards--two": mode === "parents" }]}>
+		{list.map((v) => (
+			<figure>
+				<figcaption>
+					<span>{v.name}</span>
+					<span class="badge">{v.tailPolys}</span>
+				</figcaption>
+				<svg
+					viewBox="-24 -30 48 64"
+					role="img"
+					aria-label={`${v.name}. ${v.idea}`}
+				>
+					<g class="hull">
+						{sharedForeAndWingFacets.map((f) => (
+							<polygon points={pts(f.points)} fill={palette[f.shade]} />
+						))}
+						{v.aftFacets.map((f) => (
+							<polygon points={pts(f.points)} fill={palette[f.shade]} />
+						))}
+					</g>
+					<g class="canopy">
+						<polygon points="0,-16 -3,-10 -3,-1 0,3.5" fill="#050a0e" />
+						<polygon points="0,-16 3,-10 3,-1 0,3.5" fill="#000000" />
+					</g>
+				</svg>
+				<p>{v.idea}</p>
+			</figure>
+		))}
+	</div>
+</div>
+
+<style>
+.tail-gallery {
+	margin-block: var(--spacing-lg);
+}
+.cards {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-md);
+}
+.cards--two {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+figure {
+	margin: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+	background: var(--color-void-light, #070b10);
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-xs, 6px);
+}
+figcaption {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: var(--spacing-sm);
+	color: var(--color-acid-lime);
+	font: var(--font-small) var(--font-flight);
+}
+.badge {
+	color: var(--color-text-dim);
+	font-size: 0.75rem;
+	white-space: nowrap;
+}
+svg {
+	display: block;
+	width: 100%;
+	height: 295px;
+	margin-block: var(--spacing-sm);
+}
+figure p {
+	margin: 0;
+	font-size: var(--font-small);
+	color: var(--color-text-dim);
+}
+@media (max-width: 900px) {
+	.cards {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 580px) {
+	.cards,
+	.cards--two {
+		grid-template-columns: 1fr;
+	}
+}
+</style>

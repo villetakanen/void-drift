@@ -1,0 +1,538 @@
+---
+import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
+
+type Point = readonly [number, number];
+type Facet = {
+	points: readonly Point[];
+	shade: 0 | 1 | 2 | 3 | 4 | 5;
+};
+
+interface Ab3WingVariant {
+	name: string;
+	idea: string;
+	rearWingFacets: readonly Facet[];
+	overrideAb3Flanks?: readonly Facet[];
+}
+
+const pts = (list: readonly Point[]) => list.map((p) => p.join(",")).join(" ");
+
+const palette = [
+	FIGHTER.facets[0], // #c8f4f0 (0: brightest)
+	FIGHTER.facets[1], // #83c7d0 (1: light)
+	FIGHTER.facets[5], // #6193a9 (2: medium-light)
+	FIGHTER.facets[2], // #437e99 (3: medium)
+	FIGHTER.facets[4], // #365d79 (4: dark)
+	FIGHTER.facets[3], // #264d6b (5: deepest shadow)
+] as const;
+
+// Locked forward hull + gull wings + AB-3 inner truncated spine
+const ab3CoreFacets: readonly Facet[] = [
+	// Nose
+	{
+		points: [
+			[-3, -25],
+			[0, -25],
+			[0, -16],
+			[-3, -10],
+			[-6, -10],
+		],
+		shade: 0,
+	},
+	{
+		points: [
+			[0, -25],
+			[3, -25],
+			[6, -10],
+			[3, -10],
+			[0, -16],
+		],
+		shade: 2,
+	},
+	// Outer gull-wing ribbon
+	{
+		points: [
+			[-6, -10],
+			[-13.5, 12.5],
+			[-18, 6.5],
+		],
+		shade: 3,
+	},
+	{
+		points: [
+			[6, -10],
+			[18, 6.5],
+			[13.5, 12.5],
+		],
+		shade: 5,
+	},
+	// Mid gull-wing ribbon
+	{
+		points: [
+			[-6, -10],
+			[-9.5, 11],
+			[-13.5, 12.5],
+		],
+		shade: 2,
+	},
+	{
+		points: [
+			[6, -10],
+			[13.5, 12.5],
+			[9.5, 11],
+		],
+		shade: 4,
+	},
+	// Inner gull-wing ribbon
+	{
+		points: [
+			[-6, -10],
+			[-3, -10],
+			[-3, -1],
+			[-5, 9],
+			[-9.5, 11],
+		],
+		shade: 0,
+	},
+	{
+		points: [
+			[6, -10],
+			[9.5, 11],
+			[5, 9],
+			[3, -1],
+			[3, -10],
+		],
+		shade: 2,
+	},
+	// AB-3 truncated central spine ((±3, -1) to (±1.4, 24.5), split down x=0)
+	{
+		points: [
+			[-3, -1],
+			[0, 3.5],
+			[0, 24.5],
+			[-1.4, 24.5],
+		],
+		shade: 1,
+	},
+	{
+		points: [
+			[0, 3.5],
+			[3, -1],
+			[1.4, 24.5],
+			[0, 24.5],
+		],
+		shade: 4,
+	},
+];
+
+// Default AB-3 outer chassis flanks ((±3, -1) -> (±5, 9) -> (±3.3, 24.5) -> (±1.4, 24.5))
+const ab3DefaultFlanks: readonly Facet[] = [
+	{
+		points: [
+			[-3, -1],
+			[-1.4, 24.5],
+			[-3.3, 24.5],
+			[-5, 9],
+		],
+		shade: 0,
+	},
+	{
+		points: [
+			[3, -1],
+			[5, 9],
+			[3.3, 24.5],
+			[1.4, 24.5],
+		],
+		shade: 3,
+	},
+];
+
+const variants: readonly Ab3WingVariant[] = [
+	{
+		name: "AB3-01 / Flush triangle winglet",
+		idea: "One triangle per side spans from the mid-wing corner (±9.5, 11) to AB-3’s waist (±5, 9) and stern corner (±3.3, 24.5), keeping the stern tip narrow.",
+		rearWingFacets: [
+			{
+				points: [
+					[-9.5, 11],
+					[-5, 9],
+					[-3.3, 24.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[9.5, 11],
+					[3.3, 24.5],
+					[5, 9],
+				],
+				shade: 4,
+			},
+		],
+	},
+	{
+		name: "AB3-02 / Sketch trapezoid alongside AB-3",
+		idea: "Follows your sketch’s rear wing trapezoid from (±9.5, 11) down to (±6, 24.5) in darker wing shades (2 & 4) outside AB-3’s bright (±5, 9) → (±3.3, 24.5) chassis flank.",
+		rearWingFacets: [
+			{
+				points: [
+					[-9.5, 11],
+					[-5, 9],
+					[-3.3, 24.5],
+					[-6, 24.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[9.5, 11],
+					[6, 24.5],
+					[3.3, 24.5],
+					[5, 9],
+				],
+				shade: 4,
+			},
+		],
+	},
+	{
+		name: "AB3-03 / Inset trapezoid (Stepped behind mid-wing)",
+		idea: "Starts halfway along the inner wing sweep at (±7.8, 10.2) and tapers to (±5.2, 24.5), preserving an inward step behind (±9.5, 11) so the rear wing stays slim.",
+		rearWingFacets: [
+			{
+				points: [
+					[-7.8, 10.2],
+					[-5, 9],
+					[-3.3, 24.5],
+					[-5.2, 24.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[7.8, 10.2],
+					[5.2, 24.5],
+					[3.3, 24.5],
+					[5, 9],
+				],
+				shade: 4,
+			},
+		],
+	},
+	{
+		name: "AB3-04 / Clipped-stern wing (Protruding AB-3 tip)",
+		idea: "The rear wing runs from (±8.5, 10.6) to (±5.8, 20) and cuts inward to (±3.7, 21), leaving the final 3.5 units of AB-3’s truncated tail protruding cleanly at the rear.",
+		rearWingFacets: [
+			{
+				points: [
+					[-8.5, 10.6],
+					[-5, 9],
+					[-3.7, 21],
+					[-5.8, 20],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[8.5, 10.6],
+					[5.8, 20],
+					[3.7, 21],
+					[5, 9],
+				],
+				shade: 4,
+			},
+		],
+	},
+	{
+		name: "AB3-05 / Waist-notched rear wing",
+		idea: "Leaves AB-3’s swept (±9.5, 11) → (±5, 9) trailing edge completely open, then flares a rear stabilizer wing from (±4.8, 10.8) out to (±8.2, 13.5) and down to (±5.4, 24.5).",
+		rearWingFacets: [
+			{
+				points: [
+					[-4.8, 10.8],
+					[-8.2, 13.5],
+					[-5.4, 24.5],
+					[-3.3, 24.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[4.8, 10.8],
+					[3.3, 24.5],
+					[5.4, 24.5],
+					[8.2, 13.5],
+				],
+				shade: 4,
+			},
+		],
+	},
+	{
+		name: "AB3-06 / High-mounted stabilizer cheek",
+		idea: "Tucks the rear wing into the upper half of the tail ((±9.5, 11) → (±7, 18) → (±4, 18.5)), leaving the entire lower tail (y=18.5 to 24.5) at AB-3’s slim ±3.3 width.",
+		rearWingFacets: [
+			{
+				points: [
+					[-9.5, 11],
+					[-5, 9],
+					[-4, 18.5],
+					[-7, 18],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[9.5, 11],
+					[7, 18],
+					[4, 18.5],
+					[5, 9],
+				],
+				shade: 4,
+			},
+		],
+	},
+	{
+		name: "AB3-07 / Low aft tailfin",
+		idea: "Leaves the upper waist (y=9 to 13.5) open behind the main gull wings, then flares a compact rear fin from (±4.5, 13.5) out to (±7.5, 16.5) and down to (±5.4, 24.5).",
+		rearWingFacets: [
+			{
+				points: [
+					[-4.5, 13.5],
+					[-7.5, 16.5],
+					[-5.4, 24.5],
+					[-3.3, 24.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[4.5, 13.5],
+					[3.3, 24.5],
+					[5.4, 24.5],
+					[7.5, 16.5],
+				],
+				shade: 4,
+			},
+		],
+	},
+	{
+		name: "AB3-08 / Diamond-cut rear wing (Tapers to stern corner)",
+		idea: "Runs from (±9.5, 11) to an outer corner at (±6.8, 19) and slices diagonally in to AB-3’s (±3.3, 24.5) stern corner, giving a long stabilizer edge and a narrow stern.",
+		rearWingFacets: [
+			{
+				points: [
+					[-9.5, 11],
+					[-5, 9],
+					[-3.3, 24.5],
+					[-6.8, 19],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[9.5, 11],
+					[6.8, 19],
+					[3.3, 24.5],
+					[5, 9],
+				],
+				shade: 4,
+			},
+		],
+	},
+	{
+		name: "AB3-09 / Folded 2-ribbon rear wing",
+		idea: "Divides the rear wing into two radial triangles from (±5, 9) ((±9.5, 11) → (±7.2, 18.5) → (±5.2, 24.5)), echoing the folded ribbon geometry of the forward gull wings.",
+		rearWingFacets: [
+			{
+				points: [
+					[-5, 9],
+					[-9.5, 11],
+					[-7.2, 18.5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[-5, 9],
+					[-7.2, 18.5],
+					[-5.2, 24.5],
+					[-3.3, 24.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[5, 9],
+					[7.2, 18.5],
+					[9.5, 11],
+				],
+				shade: 5,
+			},
+			{
+				points: [
+					[5, 9],
+					[3.3, 24.5],
+					[5.2, 24.5],
+					[7.2, 18.5],
+				],
+				shade: 4,
+			},
+		],
+	},
+	{
+		name: "AB3-10 / Narrow parallel stabilizer strip",
+		idea: "Adds a slim 2.2-unit-wide parallel bevel strip ((±7.2, 10) to (±5.5, 24.5)) outside AB-3’s flank—just enough width to house the rear stabilizer slits without widening the ship.",
+		rearWingFacets: [
+			{
+				points: [
+					[-7.2, 10],
+					[-5, 9],
+					[-3.3, 24.5],
+					[-5.5, 24.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[7.2, 10],
+					[5.5, 24.5],
+					[3.3, 24.5],
+					[5, 9],
+				],
+				shade: 4,
+			},
+		],
+	},
+	{
+		name: "AB3-11 / Swept barb rear wing",
+		idea: "Sweeps outward from (±6.5, 9.7) to a subtle barb at (±8.4, 15.5) before tapering in to (±4.8, 22.5), giving the rear wing a wasp-like secondary wing silhouette.",
+		rearWingFacets: [
+			{
+				points: [
+					[-6.5, 9.7],
+					[-5, 9],
+					[-3.5, 22.5],
+					[-4.8, 22.5],
+					[-8.4, 15.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[6.5, 9.7],
+					[8.4, 15.5],
+					[4.8, 22.5],
+					[3.5, 22.5],
+					[5, 9],
+				],
+				shade: 4,
+			},
+		],
+	},
+	{
+		name: "AB3-12 / Widened AB-3 outer quad (4 tail polys total)",
+		idea: "Instead of adding extra polygons outside AB-3, widens AB-3’s own outer flank quad from (±8, 10.3) to (±5.2, 24.5) while keeping the (±3, −1) → (±1.4, 24.5) inner spine unchanged.",
+		rearWingFacets: [],
+		overrideAb3Flanks: [
+			{
+				points: [
+					[-3, -1],
+					[-1.4, 24.5],
+					[-5.2, 24.5],
+					[-8, 10.3],
+					[-5, 9],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[3, -1],
+					[5, 9],
+					[8, 10.3],
+					[5.2, 24.5],
+					[1.4, 24.5],
+				],
+				shade: 3,
+			},
+		],
+	},
+];
+---
+
+<div class="ab3-wings-gallery">
+	<div class="cards">
+		{variants.map((v) => {
+			const flanks = v.overrideAb3Flanks ?? ab3DefaultFlanks;
+			return (
+				<figure>
+					<figcaption>{v.name}</figcaption>
+					<svg
+						viewBox="-24 -30 48 64"
+						role="img"
+						aria-label={`${v.name}. ${v.idea}`}
+					>
+						<g class="hull">
+							{v.rearWingFacets.map((f) => (
+								<polygon points={pts(f.points)} fill={palette[f.shade]} />
+							))}
+							{ab3CoreFacets.map((f) => (
+								<polygon points={pts(f.points)} fill={palette[f.shade]} />
+							))}
+							{flanks.map((f) => (
+								<polygon points={pts(f.points)} fill={palette[f.shade]} />
+							))}
+						</g>
+						<g class="canopy">
+							<polygon points="0,-16 -3,-10 -3,-1 0,3.5" fill="#050a0e" />
+							<polygon points="0,-16 3,-10 3,-1 0,3.5" fill="#000000" />
+						</g>
+					</svg>
+					<p>{v.idea}</p>
+				</figure>
+			);
+		})}
+	</div>
+</div>
+
+<style>
+.ab3-wings-gallery {
+	margin-block: var(--spacing-lg);
+}
+.cards {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-md);
+}
+figure {
+	margin: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+	background: var(--color-void-light, #070b10);
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-xs, 6px);
+}
+figcaption {
+	color: var(--color-acid-lime);
+	font: var(--font-small) var(--font-flight);
+}
+svg {
+	display: block;
+	width: 100%;
+	height: 295px;
+	margin-block: var(--spacing-sm);
+}
+figure p {
+	margin: 0;
+	font-size: var(--font-small);
+	color: var(--color-text-dim);
+}
+@media (max-width: 900px) {
+	.cards {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 580px) {
+	.cards {
+		grid-template-columns: 1fr;
+	}
+}
+</style>

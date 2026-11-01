@@ -1,0 +1,2091 @@
+---
+import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
+import { SCOUT } from "../../../../../packages/mode-a/src/lib/scout";
+
+type Point = readonly [number, number];
+type Facet = {
+	points: readonly Point[];
+	shade: 0 | 1 | 2 | 3 | 4 | 5;
+};
+type CanopyFacet = {
+	points: readonly Point[];
+	tone: "left-top" | "right-top" | "left-bot" | "right-bot" | "left" | "right";
+};
+
+interface WaspVariant {
+	name: string;
+	idea: string;
+	facets: readonly Facet[];
+	canopy: readonly CanopyFacet[];
+}
+
+const pts = (list: readonly Point[]) => list.map((p) => p.join(",")).join(" ");
+// Same six colors as FIGHTER.facets, ordered from brightest catch-light (0) to deepest shadow (5)
+const palette = [
+	FIGHTER.facets[0], // #c8f4f0
+	FIGHTER.facets[1], // #83c7d0
+	FIGHTER.facets[5], // #6193a9
+	FIGHTER.facets[2], // #437e99
+	FIGHTER.facets[4], // #365d79
+	FIGHTER.facets[3], // #264d6b
+] as const;
+
+// Standard hex canopy from the graph-paper sketch (3 squares down to 9.3 squares down, ±1 square wide)
+const hexCanopy: readonly CanopyFacet[] = [
+	{
+		points: [
+			[0, -16],
+			[-3, -10],
+			[-3, -1],
+			[0, 3.5],
+		],
+		tone: "left",
+	},
+	{
+		points: [
+			[0, -16],
+			[3, -10],
+			[3, -1],
+			[0, 3.5],
+		],
+		tone: "right",
+	},
+];
+
+// 4-facet split hex canopy (catches top-left vs bottom-right specular)
+const splitHexCanopy: readonly CanopyFacet[] = [
+	{
+		points: [
+			[0, -16],
+			[-3, -10],
+			[-3, -4],
+			[0, -5],
+		],
+		tone: "left-top",
+	},
+	{
+		points: [
+			[0, -16],
+			[3, -10],
+			[3, -4],
+			[0, -5],
+		],
+		tone: "right-top",
+	},
+	{
+		points: [
+			[0, -5],
+			[-3, -4],
+			[-3, -1],
+			[0, 3.5],
+		],
+		tone: "left-bot",
+	},
+	{
+		points: [
+			[0, -5],
+			[3, -4],
+			[3, -1],
+			[0, 3.5],
+		],
+		tone: "right-bot",
+	},
+];
+
+// 12 low-poly variants preserving the LHI WASP graph-paper silhouette (1 grid square = 3 ship units)
+const variants: readonly WaspVariant[] = [
+	{
+		name: "01 / Sketch baseline",
+		idea: "Direct triangulation from the notebook overlay: split spine, inner wing ridge from shoulder to step, and two-piece outer wing planes.",
+		facets: [
+			// Left & right nose planes
+			{
+				points: [
+					[-3, -25],
+					[0, -25],
+					[0, -16],
+					[-3, -10],
+					[-6, -10],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[0, -25],
+					[3, -25],
+					[6, -10],
+					[3, -10],
+					[0, -16],
+				],
+				shade: 2,
+			},
+			// Inner fuselage flanks beside cockpit
+			{
+				points: [
+					[-6, -10],
+					[-3, -10],
+					[-3, -1],
+					[-9, 5],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[6, -10],
+					[9, 5],
+					[3, -1],
+					[3, -10],
+				],
+				shade: 4,
+			},
+			// Mid-deck triangles below cockpit
+			{
+				points: [
+					[-3, -1],
+					[0, 3.5],
+					[-9, 5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[3, -1],
+					[9, 5],
+					[0, 3.5],
+				],
+				shade: 3,
+			},
+			// Outer upper wing triangles
+			{
+				points: [
+					[-6, -10],
+					[-9, 5],
+					[-18, 6.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[6, -10],
+					[18, 6.5],
+					[9, 5],
+				],
+				shade: 3,
+			},
+			// Outer lower wing quads (stepped trailing edge)
+			{
+				points: [
+					[-18, 6.5],
+					[-9, 5],
+					[-9, 12.5],
+					[-13.5, 12.5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[18, 6.5],
+					[13.5, 12.5],
+					[9, 12.5],
+					[9, 5],
+				],
+				shade: 5,
+			},
+			// Inner waist triangles
+			{
+				points: [
+					[0, 3.5],
+					[-3, 8.5],
+					[-9, 12.5],
+					[-9, 5],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[9, 5],
+					[9, 12.5],
+					[3, 8.5],
+				],
+				shade: 3,
+			},
+			// Central aft spine wedge
+			{
+				points: [
+					[0, 3.5],
+					[-3, 8.5],
+					[0, 24.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[0, 24.5],
+					[3, 8.5],
+				],
+				shade: 4,
+			},
+			// Aft tail flanks
+			{
+				points: [
+					[-9, 12.5],
+					[-3, 8.5],
+					[0, 24.5],
+					[-6, 24.5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[9, 12.5],
+					[6, 24.5],
+					[0, 24.5],
+					[3, 8.5],
+				],
+				shade: 2,
+			},
+		],
+		canopy: hexCanopy,
+	},
+	{
+		name: "02 / Continuous keel spine",
+		idea: "A raised central dorsal spine runs unbroken from the clipped bow around the canopy and down to the stern tip, giving the hull a crisp central backbone.",
+		facets: [
+			// Raised central bow keel
+			{
+				points: [
+					[-1.8, -25],
+					[0, -25],
+					[0, -16],
+					[-3, -10],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[0, -25],
+					[1.8, -25],
+					[3, -10],
+					[0, -16],
+				],
+				shade: 1,
+			},
+			// Outer nose cheeks
+			{
+				points: [
+					[-3.2, -25],
+					[-1.8, -25],
+					[-3, -10],
+					[-6, -10],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[1.8, -25],
+					[3.2, -25],
+					[6, -10],
+					[3, -10],
+				],
+				shade: 3,
+			},
+			// Raised aft keel spine
+			{
+				points: [
+					[-3, -1],
+					[0, 3.5],
+					[0, 24.5],
+					[-2.8, 24.5],
+					[-3.5, 11],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[3, -1],
+					[3.5, 11],
+					[2.8, 24.5],
+					[0, 24.5],
+				],
+				shade: 2,
+			},
+			// Inner wing decks
+			{
+				points: [
+					[-6, -10],
+					[-3, -10],
+					[-3, -1],
+					[-3.5, 11],
+					[-9, 12.5],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[6, -10],
+					[9, 12.5],
+					[3.5, 11],
+					[3, -1],
+					[3, -10],
+				],
+				shade: 4,
+			},
+			// Outer wing forward and aft planes
+			{
+				points: [
+					[-6, -10],
+					[-9, 12.5],
+					[-18, 6.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[6, -10],
+					[18, 6.5],
+					[9, 12.5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[-18, 6.5],
+					[-9, 12.5],
+					[-13.5, 12.5],
+				],
+				shade: 4,
+			},
+			{
+				points: [
+					[18, 6.5],
+					[13.5, 12.5],
+					[9, 12.5],
+				],
+				shade: 5,
+			},
+			// Tail side slopes
+			{
+				points: [
+					[-9, 12.5],
+					[-3.5, 11],
+					[-2.8, 24.5],
+					[-6, 24.5],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[9, 12.5],
+					[6, 24.5],
+					[2.8, 24.5],
+					[3.5, 11],
+				],
+				shade: 4,
+			},
+		],
+		canopy: hexCanopy,
+	},
+	{
+		name: "03 / Recessed wing bays",
+		idea: "Raised leading-edge spars frame darker recessed mid-wing weapon pockets so the two equipment mounts sit inside structural bays.",
+		facets: [
+			// Nose
+			{
+				points: [
+					[-3, -25],
+					[0, -25],
+					[0, -16],
+					[-3, -10],
+					[-6, -10],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[0, -25],
+					[3, -25],
+					[6, -10],
+					[3, -10],
+					[0, -16],
+				],
+				shade: 2,
+			},
+			// Raised leading-edge wing spars
+			{
+				points: [
+					[-6, -10],
+					[-3, -10],
+					[-14, 4.5],
+					[-18, 6.5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[6, -10],
+					[18, 6.5],
+					[14, 4.5],
+					[3, -10],
+				],
+				shade: 2,
+			},
+			// Recessed weapon bay trays
+			{
+				points: [
+					[-3, -10],
+					[-3, -1],
+					[-5, 10],
+					[-13.5, 12.5],
+					[-18, 6.5],
+					[-14, 4.5],
+				],
+				shade: 4,
+			},
+			{
+				points: [
+					[3, -10],
+					[14, 4.5],
+					[18, 6.5],
+					[13.5, 12.5],
+					[5, 10],
+					[3, -1],
+				],
+				shade: 5,
+			},
+			// Inner step lip
+			{
+				points: [
+					[-13.5, 12.5],
+					[-5, 10],
+					[-9, 12.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[13.5, 12.5],
+					[9, 12.5],
+					[5, 10],
+				],
+				shade: 3,
+			},
+			// Center deck & tail
+			{
+				points: [
+					[-3, -1],
+					[0, 3.5],
+					[0, 24.5],
+					[-5, 10],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[3, -1],
+					[5, 10],
+					[0, 24.5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[-9, 12.5],
+					[-5, 10],
+					[0, 24.5],
+					[-6, 24.5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[9, 12.5],
+					[6, 24.5],
+					[0, 24.5],
+					[5, 10],
+				],
+				shade: 2,
+			},
+		],
+		canopy: splitHexCanopy,
+	},
+	{
+		name: "04 / Chiseled stabilizer collars",
+		idea: "Dedicated angled chamfer facets along the nose and tail flanks turn the four stabilizer slit locations into explicit thruster cheeks.",
+		facets: [
+			// Inner nose top deck
+			{
+				points: [
+					[-3, -25],
+					[0, -25],
+					[0, -16],
+					[-3, -10],
+					[-4, -10],
+					[-2, -25],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[0, -25],
+					[3, -25],
+					[2, -25],
+					[4, -10],
+					[3, -10],
+					[0, -16],
+				],
+				shade: 1,
+			},
+			// Chamfered forward stabilizer cheeks
+			{
+				points: [
+					[-3.2, -25],
+					[-1.8, -25],
+					[-3.8, -10],
+					[-6.2, -10],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[1.8, -25],
+					[3.2, -25],
+					[6.2, -10],
+					[3.8, -10],
+				],
+				shade: 5,
+			},
+			// Main wings
+			{
+				points: [
+					[-6.2, -10],
+					[-3, -10],
+					[-3, -1],
+					[-8.5, 5.5],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[6.2, -10],
+					[8.5, 5.5],
+					[3, -1],
+					[3, -10],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[-6.2, -10],
+					[-8.5, 5.5],
+					[-18, 6.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[6.2, -10],
+					[18, 6.5],
+					[8.5, 5.5],
+				],
+				shade: 4,
+			},
+			{
+				points: [
+					[-18, 6.5],
+					[-8.5, 5.5],
+					[-9.2, 12.5],
+					[-13.5, 12.5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[18, 6.5],
+					[13.5, 12.5],
+					[9.2, 12.5],
+					[8.5, 5.5],
+				],
+				shade: 5,
+			},
+			// Aft central deck
+			{
+				points: [
+					[-3, -1],
+					[0, 3.5],
+					[0, 24.5],
+					[-3.8, 24.5],
+					[-6.5, 12.5],
+					[-8.5, 5.5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[3, -1],
+					[8.5, 5.5],
+					[6.5, 12.5],
+					[3.8, 24.5],
+					[0, 24.5],
+				],
+				shade: 2,
+			},
+			// Chamfered aft stabilizer cheeks
+			{
+				points: [
+					[-9.2, 12.5],
+					[-6.5, 12.5],
+					[-3.8, 24.5],
+					[-6.2, 24.5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[6.5, 12.5],
+					[9.2, 12.5],
+					[6.2, 24.5],
+					[3.8, 24.5],
+				],
+				shade: 5,
+			},
+		],
+		canopy: hexCanopy,
+	},
+	{
+		name: "05 / Notched wing step",
+		idea: "The under-wing step angles inward and forward toward the waist, separating the weapon wings from the tail cone with a crisp barb.",
+		facets: [
+			{
+				points: [
+					[-3, -25],
+					[0, -25],
+					[0, -16],
+					[-3, -10],
+					[-6, -10],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[0, -25],
+					[3, -25],
+					[6, -10],
+					[3, -10],
+					[0, -16],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[-6, -10],
+					[-3, -10],
+					[-3, -1],
+					[-8.5, 4.5],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[6, -10],
+					[8.5, 4.5],
+					[3, -1],
+					[3, -10],
+				],
+				shade: 4,
+			},
+			{
+				points: [
+					[-6, -10],
+					[-8.5, 4.5],
+					[-18.5, 6.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[6, -10],
+					[18.5, 6.5],
+					[8.5, 4.5],
+				],
+				shade: 3,
+			},
+			// Angled notched trailing edge (outer corner y=13.5, inner notch y=10.5)
+			{
+				points: [
+					[-18.5, 6.5],
+					[-8.5, 4.5],
+					[-8.5, 10.5],
+					[-14, 13.5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[18.5, 6.5],
+					[14, 13.5],
+					[8.5, 10.5],
+					[8.5, 4.5],
+				],
+				shade: 5,
+			},
+			{
+				points: [
+					[-3, -1],
+					[0, 3.5],
+					[-3, 9],
+					[-8.5, 10.5],
+					[-8.5, 4.5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[3, -1],
+					[8.5, 4.5],
+					[8.5, 10.5],
+					[3, 9],
+					[0, 3.5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[-3, 9],
+					[0, 24.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[0, 24.5],
+					[3, 9],
+				],
+				shade: 4,
+			},
+			{
+				points: [
+					[-8.5, 10.5],
+					[-3, 9],
+					[0, 24.5],
+					[-6, 24.5],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[8.5, 10.5],
+					[6, 24.5],
+					[0, 24.5],
+					[3, 9],
+				],
+				shade: 3,
+			},
+		],
+		canopy: hexCanopy,
+	},
+	{
+		name: "06 / Diamond pyramid canopy",
+		idea: "A 4-plane diamond canopy locks its lateral vertices directly into the wing-root creases, making the cockpit the geometric hub of the hull.",
+		facets: [
+			{
+				points: [
+					[-3, -25],
+					[0, -25],
+					[0, -17],
+					[-6, -10],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[0, -25],
+					[3, -25],
+					[6, -10],
+					[0, -17],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[0, -17],
+					[-3.6, -6],
+					[-6, -10],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[0, -17],
+					[6, -10],
+					[3.6, -6],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[-6, -10],
+					[-3.6, -6],
+					[-9, 5.5],
+					[-18, 6.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[6, -10],
+					[18, 6.5],
+					[9, 5.5],
+					[3.6, -6],
+				],
+				shade: 4,
+			},
+			{
+				points: [
+					[-3.6, -6],
+					[0, 4.5],
+					[-9, 5.5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[3.6, -6],
+					[9, 5.5],
+					[0, 4.5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[-18, 6.5],
+					[-9, 5.5],
+					[-9, 12.5],
+					[-13.5, 12.5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[18, 6.5],
+					[13.5, 12.5],
+					[9, 12.5],
+					[9, 5.5],
+				],
+				shade: 5,
+			},
+			{
+				points: [
+					[0, 4.5],
+					[-9, 5.5],
+					[-9, 12.5],
+					[-3.5, 11],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[0, 4.5],
+					[3.5, 11],
+					[9, 12.5],
+					[9, 5.5],
+				],
+				shade: 4,
+			},
+			{
+				points: [
+					[0, 4.5],
+					[-3.5, 11],
+					[0, 24.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[0, 4.5],
+					[0, 24.5],
+					[3.5, 11],
+				],
+				shade: 4,
+			},
+			{
+				points: [
+					[-9, 12.5],
+					[-3.5, 11],
+					[0, 24.5],
+					[-6, 24.5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[9, 12.5],
+					[6, 24.5],
+					[0, 24.5],
+					[3.5, 11],
+				],
+				shade: 2,
+			},
+		],
+		canopy: [
+			{
+				points: [
+					[0, -17],
+					[-3.6, -6],
+					[0, -6],
+				],
+				tone: "left-top",
+			},
+			{
+				points: [
+					[0, -17],
+					[0, -6],
+					[3.6, -6],
+				],
+				tone: "right-top",
+			},
+			{
+				points: [
+					[0, -6],
+					[-3.6, -6],
+					[0, 4.5],
+				],
+				tone: "left-bot",
+			},
+			{
+				points: [
+					[0, -6],
+					[3.6, -6],
+					[0, 4.5],
+				],
+				tone: "right-bot",
+			},
+		],
+	},
+	{
+		name: "07 / Twin-chined hull",
+		idea: "Two continuous longitudinal chines run from the bow corners past the canopy shoulders to the stern corners, separating the central hull from the wings.",
+		facets: [
+			// Flat-topped central nose between (-3,-25) and (3,-25)
+			{
+				points: [
+					[-3, -25],
+					[0, -25],
+					[0, -16],
+					[-3, -10],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[0, -25],
+					[3, -25],
+					[3, -10],
+					[0, -16],
+				],
+				shade: 1,
+			},
+			// Outer nose flare
+			{
+				points: [
+					[-3, -25],
+					[-3, -10],
+					[-6, -10],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[3, -25],
+					[6, -10],
+					[3, -10],
+				],
+				shade: 4,
+			},
+			// Longitudinal chine strips from (-6,-10) to (-6,24.5)
+			{
+				points: [
+					[-6, -10],
+					[-3, -10],
+					[-3, -1],
+					[-6, 12.5],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[6, -10],
+					[6, 12.5],
+					[3, -1],
+					[3, -10],
+				],
+				shade: 3,
+			},
+			// Center tail between (-6,12.5) and (6,12.5)
+			{
+				points: [
+					[-3, -1],
+					[0, 3.5],
+					[0, 24.5],
+					[-6, 24.5],
+					[-6, 12.5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[3, -1],
+					[6, 12.5],
+					[6, 24.5],
+					[0, 24.5],
+				],
+				shade: 2,
+			},
+			// Outer tail stabilizer wedges
+			{
+				points: [
+					[-9, 12.5],
+					[-6, 12.5],
+					[-6, 24.5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[6, 12.5],
+					[9, 12.5],
+					[6, 24.5],
+				],
+				shade: 5,
+			},
+			// Wing panels outside x=±6
+			{
+				points: [
+					[-6, -10],
+					[-6, 12.5],
+					[-9, 12.5],
+					[-18, 6.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[6, -10],
+					[18, 6.5],
+					[9, 12.5],
+					[6, 12.5],
+				],
+				shade: 4,
+			},
+			{
+				points: [
+					[-18, 6.5],
+					[-9, 12.5],
+					[-13.5, 12.5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[18, 6.5],
+					[13.5, 12.5],
+					[9, 12.5],
+				],
+				shade: 5,
+			},
+		],
+		canopy: hexCanopy,
+	},
+	{
+		name: "08 / Gull-wing ribbons",
+		idea: "Each wing folds into three radial facets from the shoulder to the stepped trailing edge, giving the delta wings an origami-like gull profile.",
+		facets: [
+			{
+				points: [
+					[-3, -25],
+					[0, -25],
+					[0, -16],
+					[-3, -10],
+					[-6, -10],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[0, -25],
+					[3, -25],
+					[6, -10],
+					[3, -10],
+					[0, -16],
+				],
+				shade: 2,
+			},
+			// 3 radial wing ribbons per side from (±6, -10)
+			{
+				points: [
+					[-6, -10],
+					[-3, -10],
+					[-3, -1],
+					[-9, 12.5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[-6, -10],
+					[-9, 12.5],
+					[-13.5, 12.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[-6, -10],
+					[-13.5, 12.5],
+					[-18, 6.5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[6, -10],
+					[9, 12.5],
+					[3, -1],
+					[3, -10],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[6, -10],
+					[13.5, 12.5],
+					[9, 12.5],
+				],
+				shade: 4,
+			},
+			{
+				points: [
+					[6, -10],
+					[18, 6.5],
+					[13.5, 12.5],
+				],
+				shade: 5,
+			},
+			// Aft body
+			{
+				points: [
+					[-3, -1],
+					[0, 3.5],
+					[-4, 12.5],
+					[-9, 12.5],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[3, -1],
+					[9, 12.5],
+					[4, 12.5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[-4, 12.5],
+					[0, 24.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[0, 24.5],
+					[4, 12.5],
+				],
+				shade: 4,
+			},
+			{
+				points: [
+					[-9, 12.5],
+					[-4, 12.5],
+					[0, 24.5],
+					[-6, 24.5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[4, 12.5],
+					[9, 12.5],
+					[6, 24.5],
+					[0, 24.5],
+				],
+				shade: 3,
+			},
+		],
+		canopy: hexCanopy,
+	},
+	{
+		name: "09 / Armored tail shroud",
+		idea: "A faceted hexagonal cowling over the rear ANY mount frames the single engine with a shallow stern recess between the aft stabilizer slits.",
+		facets: [
+			{
+				points: [
+					[-3, -25],
+					[0, -25],
+					[0, -16],
+					[-3, -10],
+					[-6, -10],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[0, -25],
+					[3, -25],
+					[6, -10],
+					[3, -10],
+					[0, -16],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[-6, -10],
+					[-3, -10],
+					[-3, -1],
+					[-9, 5],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[6, -10],
+					[9, 5],
+					[3, -1],
+					[3, -10],
+				],
+				shade: 4,
+			},
+			{
+				points: [
+					[-6, -10],
+					[-9, 5],
+					[-18, 6.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[6, -10],
+					[18, 6.5],
+					[9, 5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[-18, 6.5],
+					[-9, 5],
+					[-9, 12.5],
+					[-13.5, 12.5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[18, 6.5],
+					[13.5, 12.5],
+					[9, 12.5],
+					[9, 5],
+				],
+				shade: 5,
+			},
+			{
+				points: [
+					[-3, -1],
+					[0, 3.5],
+					[-4.5, 11],
+					[-9, 12.5],
+					[-9, 5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[3, -1],
+					[9, 5],
+					[9, 12.5],
+					[4.5, 11],
+					[0, 3.5],
+				],
+				shade: 3,
+			},
+			// Outer tail stabilizer flanks
+			{
+				points: [
+					[-9, 12.5],
+					[-4.5, 11],
+					[-3.8, 23],
+					[-6, 24.5],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[9, 12.5],
+					[6, 24.5],
+					[3.8, 23],
+					[4.5, 11],
+				],
+				shade: 4,
+			},
+			// Raised central engine shroud with shallow stern notch (y=23 at center)
+			{
+				points: [
+					[0, 3.5],
+					[-4.5, 11],
+					[-3.8, 23],
+					[0, 22.5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[0, 22.5],
+					[3.8, 23],
+					[4.5, 11],
+				],
+				shade: 2,
+			},
+		],
+		canopy: splitHexCanopy,
+	},
+	{
+		name: "10 / Broad shoulder gussets",
+		idea: "Beveled shoulder gussets bridge the nose-to-wing pinch at y=−10, giving the forward fuselage a heavier, reinforced trainer stance.",
+		facets: [
+			{
+				points: [
+					[-3.2, -25],
+					[0, -25],
+					[0, -16],
+					[-3, -10],
+					[-5.2, -13],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[0, -25],
+					[3.2, -25],
+					[5.2, -13],
+					[3, -10],
+					[0, -16],
+				],
+				shade: 2,
+			},
+			// Shoulder gusset triangles bridging (-5.2,-13) to (-9,-7)
+			{
+				points: [
+					[-5.2, -13],
+					[-3, -10],
+					[-9, -7],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[5.2, -13],
+					[9, -7],
+					[3, -10],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[-3, -10],
+					[-3, -1],
+					[-9, 5],
+					[-9, -7],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[3, -10],
+					[9, -7],
+					[9, 5],
+					[3, -1],
+				],
+				shade: 4,
+			},
+			{
+				points: [
+					[-9, -7],
+					[-9, 5],
+					[-18, 6.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[9, -7],
+					[18, 6.5],
+					[9, 5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[-18, 6.5],
+					[-9, 5],
+					[-9, 12.5],
+					[-13.5, 12.5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[18, 6.5],
+					[13.5, 12.5],
+					[9, 12.5],
+					[9, 5],
+				],
+				shade: 5,
+			},
+			{
+				points: [
+					[-3, -1],
+					[0, 3.5],
+					[-3.2, 9],
+					[-9, 12.5],
+					[-9, 5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[3, -1],
+					[9, 5],
+					[9, 12.5],
+					[3.2, 9],
+					[0, 3.5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[-3.2, 9],
+					[0, 24.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[0, 24.5],
+					[3.2, 9],
+				],
+				shade: 4,
+			},
+			{
+				points: [
+					[-9, 12.5],
+					[-3.2, 9],
+					[0, 24.5],
+					[-6, 24.5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[9, 12.5],
+					[6, 24.5],
+					[0, 24.5],
+					[3.2, 9],
+				],
+				shade: 2,
+			},
+		],
+		canopy: hexCanopy,
+	},
+	{
+		name: "11 / Geodesic triangle mesh",
+		idea: "Pure triangle tessellation with no quads: alternating facet normals across the nose, wings, and tail maximize crisp low-poly catch-lights.",
+		facets: [
+			// Triangulated nose
+			{
+				points: [
+					[-3, -25],
+					[0, -25],
+					[0, -16],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[0, -25],
+					[3, -25],
+					[0, -16],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[-3, -25],
+					[0, -16],
+					[-3, -10],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[3, -25],
+					[3, -10],
+					[0, -16],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[-3, -25],
+					[-3, -10],
+					[-6, -10],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[3, -25],
+					[6, -10],
+					[3, -10],
+				],
+				shade: 4,
+			},
+			// Triangulated inner wings
+			{
+				points: [
+					[-6, -10],
+					[-3, -10],
+					[-3, -1],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[6, -10],
+					[3, -1],
+					[3, -10],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[-6, -10],
+					[-3, -1],
+					[-9, 5],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[6, -10],
+					[9, 5],
+					[3, -1],
+				],
+				shade: 4,
+			},
+			// Triangulated outer wings
+			{
+				points: [
+					[-6, -10],
+					[-9, 5],
+					[-18, 6.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[6, -10],
+					[18, 6.5],
+					[9, 5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[-18, 6.5],
+					[-9, 5],
+					[-13.5, 12.5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[18, 6.5],
+					[13.5, 12.5],
+					[9, 5],
+				],
+				shade: 5,
+			},
+			{
+				points: [
+					[-13.5, 12.5],
+					[-9, 5],
+					[-9, 12.5],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[13.5, 12.5],
+					[9, 12.5],
+					[9, 5],
+				],
+				shade: 4,
+			},
+			// Triangulated waist & tail
+			{
+				points: [
+					[-3, -1],
+					[0, 3.5],
+					[-9, 5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[3, -1],
+					[9, 5],
+					[0, 3.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[-9, 5],
+					[-9, 12.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[9, 12.5],
+					[9, 5],
+				],
+				shade: 4,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[-9, 12.5],
+					[-3, 14],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[3, 14],
+					[9, 12.5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[-3, 14],
+					[0, 24.5],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[0, 3.5],
+					[0, 24.5],
+					[3, 14],
+				],
+				shade: 4,
+			},
+			{
+				points: [
+					[-9, 12.5],
+					[-3, 14],
+					[-6, 24.5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[9, 12.5],
+					[6, 24.5],
+					[3, 14],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[-3, 14],
+					[0, 24.5],
+					[-6, 24.5],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[3, 14],
+					[6, 24.5],
+					[0, 24.5],
+				],
+				shade: 5,
+			},
+		],
+		canopy: splitHexCanopy,
+	},
+	{
+		name: "12 / Compact trainer",
+		idea: "Slightly shorter nose (y=−22.5) and tail (y=+23) around the same 36-unit wingspan and slot footprints, pulling the stabilizers closer to center.",
+		facets: [
+			{
+				points: [
+					[-3.3, -22.5],
+					[0, -22.5],
+					[0, -15],
+					[-3, -9.5],
+					[-6.2, -9.5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[0, -22.5],
+					[3.3, -22.5],
+					[6.2, -9.5],
+					[3, -9.5],
+					[0, -15],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[-6.2, -9.5],
+					[-3, -9.5],
+					[-3, -1],
+					[-9, 4.5],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[6.2, -9.5],
+					[9, 4.5],
+					[3, -1],
+					[3, -9.5],
+				],
+				shade: 4,
+			},
+			{
+				points: [
+					[-3, -1],
+					[0, 3],
+					[-9, 4.5],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[3, -1],
+					[9, 4.5],
+					[0, 3],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[-6.2, -9.5],
+					[-9, 4.5],
+					[-18, 6],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[6.2, -9.5],
+					[18, 6],
+					[9, 4.5],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[-18, 6],
+					[-9, 4.5],
+					[-9, 12],
+					[-13.5, 12],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[18, 6],
+					[13.5, 12],
+					[9, 12],
+					[9, 4.5],
+				],
+				shade: 5,
+			},
+			{
+				points: [
+					[0, 3],
+					[-3, 8],
+					[-9, 12],
+					[-9, 4.5],
+				],
+				shade: 1,
+			},
+			{
+				points: [
+					[0, 3],
+					[9, 4.5],
+					[9, 12],
+					[3, 8],
+				],
+				shade: 3,
+			},
+			{
+				points: [
+					[0, 3],
+					[-3, 8],
+					[0, 23],
+				],
+				shade: 2,
+			},
+			{
+				points: [
+					[0, 3],
+					[0, 23],
+					[3, 8],
+				],
+				shade: 4,
+			},
+			{
+				points: [
+					[-9, 12],
+					[-3, 8],
+					[0, 23],
+					[-6.2, 23],
+				],
+				shade: 0,
+			},
+			{
+				points: [
+					[9, 12],
+					[6.2, 23],
+					[0, 23],
+					[3, 8],
+				],
+				shade: 2,
+			},
+		],
+		canopy: [
+			{
+				points: [
+					[0, -15],
+					[-3, -9.5],
+					[-3, -1],
+					[0, 3],
+				],
+				tone: "left",
+			},
+			{
+				points: [
+					[0, -15],
+					[3, -9.5],
+					[3, -1],
+					[0, 3],
+				],
+				tone: "right",
+			},
+		],
+	},
+];
+---
+
+<div class="wasp-gallery">
+	<div class="cards">
+		{variants.map((v) => (
+			<figure>
+				<figcaption>{v.name}</figcaption>
+				<svg
+					viewBox="-24 -30 48 64"
+					role="img"
+					aria-label={`${v.name}. ${v.idea} Bow up, 36 by 49.5 ship units.`}
+				>
+					<g class="hull">
+						{v.facets.map((f) => (
+							<polygon points={pts(f.points)} fill={palette[f.shade]} />
+						))}
+					</g>
+					<g class="canopy">
+						{v.canopy.map((c) => (
+							<polygon points={pts(c.points)} class={`canopy-${c.tone}`} />
+						))}
+					</g>
+				</svg>
+				<p>{v.idea}</p>
+			</figure>
+		))}
+	</div>
+
+	<figure class="scale-strip">
+		<figcaption>
+			Hull scale comparison · Identical ship units (Wasp 49.5, Scout 52, Fighter
+			73)
+		</figcaption>
+		<svg
+			viewBox="-115 -38 230 78"
+			role="img"
+			aria-label="LHI Wasp (49.5 units long) beside production Scout (52 units long) and production Fighter (73 units long) at identical scale."
+		>
+			<g transform="translate(-72 0)">
+				<g class="hull">
+					{variants[0].facets.map((f) => (
+						<polygon points={pts(f.points)} fill={palette[f.shade]} />
+					))}
+				</g>
+				<g class="canopy">
+					{variants[0].canopy.map((c) => (
+						<polygon points={pts(c.points)} class={`canopy-${c.tone}`} />
+					))}
+				</g>
+				<text class="ship-label" x="0" y="34" text-anchor="middle">
+					LHI WASP
+				</text>
+			</g>
+
+			<g transform="translate(0 0)">
+				<g transform="rotate(-90)">
+					{SCOUT.facets.map((f) => (
+						<polygon points={pts(f.points)} fill={f.color} />
+					))}
+					<circle
+						cx={SCOUT.cockpit.x}
+						cy={SCOUT.cockpit.y}
+						r={SCOUT.cockpit.collarRadius}
+						fill={FIGHTER.facets[2]}
+					/>
+					<circle
+						cx={SCOUT.cockpit.x}
+						cy={SCOUT.cockpit.y}
+						r={SCOUT.cockpit.radius}
+						fill="#000000"
+					/>
+				</g>
+				<text class="ship-label" x="0" y="34" text-anchor="middle">SCOUT</text>
+			</g>
+
+			<g transform="translate(72 11)">
+				<g transform="rotate(-90)">
+					{FIGHTER.hull.map((p, i) => {
+						const n = FIGHTER.hull[(i + 1) % FIGHTER.hull.length];
+						return (
+							<polygon
+								points={`-3,0 ${p.join(",")} ${n.join(",")}`}
+								fill={
+									FIGHTER.facets[(p[1] + n[1]) / 2 < 0 ? i % 3 : 3 + (i % 3)]
+								}
+							/>
+						);
+					})}
+					<polygon points={pts(FIGHTER.ridge)} fill="#a2d8df" />
+					<polygon points="38,0 -21,0 -15,4" fill="#51869e" />
+					<polygon points={pts(FIGHTER.cockpit)} fill="#000000" />
+				</g>
+				<text class="ship-label" x="0" y="23" text-anchor="middle">
+					FIGHTER
+				</text>
+			</g>
+		</svg>
+	</figure>
+</div>
+
+<style>
+.wasp-gallery {
+	margin-block: var(--spacing-lg);
+}
+.cards {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-md);
+}
+figure {
+	margin: 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+	background: var(--color-void-light, #070b10);
+	display: flex;
+	flex-direction: column;
+}
+figcaption {
+	color: var(--color-acid-lime);
+	font: var(--font-small) var(--font-flight);
+}
+svg {
+	display: block;
+	width: 100%;
+	height: 290px;
+	margin-block: var(--spacing-sm);
+}
+figure p {
+	margin: 0;
+	font-size: var(--font-small);
+	color: var(--color-text-dim);
+}
+
+.canopy-left,
+.canopy-left-top {
+	fill: #050a0e;
+}
+.canopy-right,
+.canopy-right-top,
+.canopy-left-bot,
+.canopy-right-bot {
+	fill: #000000;
+}
+
+.scale-strip {
+	margin-top: var(--spacing-lg);
+}
+.scale-strip svg {
+	height: 240px;
+}
+.ship-label {
+	fill: var(--color-text-dim);
+	font: 2.6px var(--font-flight);
+}
+
+@media (max-width: 900px) {
+	.cards {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 580px) {
+	.cards {
+		grid-template-columns: 1fr;
+	}
+}
+</style>

@@ -1,0 +1,605 @@
+---
+import WaspAb3RearWingVariants from "../../../components/studies/WaspAb3RearWingVariants.astro";
+import WaspAb306Refinements from "../../../components/studies/WaspAb306Refinements.astro";
+import WaspFlightDemo from "../../../components/studies/WaspFlightDemo.svelte";
+import WaspGullWingRearVariants from "../../../components/studies/WaspGullWingRearVariants.astro";
+import WaspLowPolyVariants from "../../../components/studies/WaspLowPolyVariants.astro";
+import WaspPathComparison from "../../../components/studies/WaspPathComparison.svelte";
+import WaspRearEnginePositioner from "../../../components/studies/WaspRearEnginePositioner.astro";
+import WaspSideSlotPositioner from "../../../components/studies/WaspSideSlotPositioner.svelte";
+import WaspStabilizerPositioner from "../../../components/studies/WaspStabilizerPositioner.astro";
+import WaspTailAndStabilizerAdvice from "../../../components/studies/WaspTailAndStabilizerAdvice.astro";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((entry) => entry.slug === "lhi-wasp");
+---
+
+<StudyLayout study={study}>
+	<section aria-labelledby="problem">
+		<h2 id="problem">
+			01 / A single-engine practice vessel that turns on its stabilizers
+		</h2>
+		<p>
+			Every current ship in Void Drift steers by firing a mirrored pair of side
+			engines, which means turning and forward acceleration compete across the
+			same two mounts. The <strong>LHI Wasp</strong> reverses that architecture
+			for a nimble practice hull: a single central aft mount provides forward
+			thrust, while four recessed stabilizer slits on the tapered bow and tail
+			handle rotation.
+		</p>
+		<p>
+			Taking the three sketched slots at the same <code>9 × 11</code> footprint
+			as existing equipment and universal mounts maps one graph-paper square to
+			three ship units. That makes the Wasp <code>49.5</code> units long and
+			<code>36</code>
+			units across the wings—nearly the length of the Scout (<code>52</code>)
+			with a diamond-delta wing span that carries one equipment slot (<code
+				>WEAPON OR UTIL</code
+			>) on each wing and one universal slot (<code>ANY</code>) on the stern
+			centerline.
+		</p>
+		<p>
+			This first round holds the sketched outer silhouette, three slot
+			positions, and four stabilizer locations constant while exploring how
+			low-poly facets, ridges, and canopy planes can structure the hull. Flight
+			physics for a single-engine chassis without paired side engines remain a
+			separate question after visual direction is chosen.
+		</p>
+	</section>
+
+	<section aria-labelledby="exploration">
+		<h2 id="exploration">02 / Exploration</h2>
+
+		<details class="earlier-drafts">
+			<summary>
+				Earlier hull drafts (02.1 – 02.6) · Plain hull approved at
+				<code>06.9 / Unpinched + parallel trailing edge</code>
+			</summary>
+
+			<div class="drafts-content">
+				<h3 id="twelve-variants">
+					02.1 / Twelve low-poly variants on the Wasp silhouette
+				</h3>
+				<p>
+					All twelve hulls use the shared fleet cyan-slate palette (<code
+						>FIGHTER.facets</code
+					>) and black cockpit panes, keeping the sketch’s clipped 6-unit bow,
+					5-square tapered nose, central diamond-hex cockpit, stepped delta
+					wings, and tapered tail cone. Slots and stabilizers are omitted here
+					so the low-poly hull surfaces can be compared on their own.
+				</p>
+				<WaspLowPolyVariants />
+				<p>
+					<strong>What to notice and limits:</strong>
+					Variants <code>01</code>, <code>02</code>, and <code>07</code> keep
+					broad, calm deck planes; <code>03</code> and <code>09</code> use
+					recessed wing pockets or a notched stern shroud; <code>04</code> and
+					<code>10</code>
+					add chamfered flank bevels and shoulder gussets; <code>06</code>,
+					<code>08</code>, and <code>11</code> push sharper origami and geodesic
+					facet catch-lights.
+				</p>
+				<p>
+					<strong>Owner review of 02.1:</strong>
+					<code>08 / Gull-wing ribbons</code>
+					hits the right nose, forward cockpit, and three-ribbon wing structure,
+					while the rear section reads too wide and bulbous. Carry
+					<code>08</code>’s forward hull and gull-wing ribbons into
+					<code>02.2</code>
+					and explore twelve slimmer chassis/rear geometries from mid-cockpit to
+					the stern.
+				</p>
+
+				<h3 id="slim-rear-variants">
+					02.2 / Twelve slim-chassis rear variations on Gull-wing 08
+				</h3>
+				<p>
+					Every variant below locks the clipped nose, forward canopy, and outer
+					gull-wing ribbons of <code>08</code>, then reshapes the central
+					chassis from mid-cockpit back so the wings sit outboard of a slender
+					rear body rather than merging into a wide boat tail.
+				</p>
+				<WaspGullWingRearVariants />
+				<p>
+					<strong>What to notice and limits:</strong>
+					<code>08.01</code>, <code>08.02</code>, and <code>08.12</code> step
+					the wing root inward at <code>y = 12.5</code> into progressively
+					narrower tapered stingers; <code>08.03</code> and <code>08.08</code>
+					carry the 6-unit cockpit width straight aft as a parallel fuselage
+					beam or recessed channel; <code>08.05</code> and <code>08.09</code>
+					cut the inner wing trailing edge forward so the slim tail protrudes
+					cleanly behind the wings; <code>08.04</code>
+					and <code>08.10</code> also reshape the rear half of the cockpit.
+				</p>
+				<p>
+					<strong>Owner review of 02.2:</strong>
+					<code>08.09 / Swept wing-to-tail bridge</code>
+					is closest to the mark, but its tail has too many small triangles (6
+					facets). Before addressing rear winglet/stabilizer placement, simplify
+					the chassis polygons on <code>08.09</code>’s tail first.
+				</p>
+
+				<h3 id="simplified-08-09-tail">
+					02.3 / Retaining 08.09-A and 08.09-B (C discarded)
+				</h3>
+				<p>
+					Both <code>08.09-A</code> (2-plane centerline split) and
+					<code>08.09-B</code>
+					(3-plane central wedge) preserve the
+					<code>(±3, −1) → (±5, 9)</code>
+					waist crease that makes
+					<code>08.09</code>
+					work; <code>08.09-C</code> is discarded.
+				</p>
+				<WaspTailAndStabilizerAdvice mode="parents" />
+
+				<h3 id="ab-mashups">02.4 / Six mash-ups of 08.09-A and 08.09-B</h3>
+				<p>
+					Each variant below combines <code>A</code>’s <code>x = 0</code>
+					centerline light split with <code>B</code>’s central wedge and outer
+					flank bevels in 3 or 4 tail polygons:
+				</p>
+				<WaspTailAndStabilizerAdvice mode="mashups" />
+				<p>
+					<strong>Owner decision on 02.4:</strong>
+					<code>AB-3 / Truncated wedge + flat stern tip</code>
+					is chosen for the central chassis tail. Next, explore fitting the rear
+					wing areas alongside
+					<code>AB-3</code>.
+				</p>
+
+				<h3 id="ab3-rear-wings">
+					02.5 / Twelve rear-wing variations fitted to AB-3
+				</h3>
+				<p>
+					Every variant below preserves <code>AB-3</code>’s bright slim chassis
+					flanks (<code>(±5, 9) → (±3.3, 24.5)</code>) and truncated central
+					spine (<code>(±3, −1) → (±1.4, 24.5)</code>), then attaches darker
+					rear-wing surfaces outboard of that chassis so the rear wings read as
+					wing planes rather than hull bulk:
+				</p>
+				<WaspAb3RearWingVariants />
+				<p>
+					<strong>Owner review of 02.5:</strong>
+					<code>AB3-06 / High-mounted stabilizer cheek</code>
+					is very close, but needs variations that clearly communicate the side
+					wing continuing into the aft-wing as part of the same surface (whether
+					continuous or split).
+				</p>
+
+				<h3 id="ab306-refinements">
+					02.6 / Nine variations of AB3-06: side winglet continuing into the
+					rear winglet
+				</h3>
+				<p>
+					In <code>AB3-06</code>, the rear winglet and the side winglet share
+					the same facet shade (<code>shade: 2</code>
+					left / <code>shade: 4</code>
+					right) outboard of the bright <code>AB-3</code> chassis, and almost
+					read as the same level and angle—except they pinch to a single vertex
+					at
+					<code>(±9.5, 11)</code>
+					and their bottom edges sit at different angles. All 9 variations below
+					keep <code>AB3-06</code>’s bright chassis and winglet colors intact
+					while refining the bridge, level, and edge angles between the side
+					winglet and rear winglet:
+				</p>
+				<WaspAb306Refinements />
+				<p>
+					<strong>Owner decision on 02.6:</strong>
+					<code
+						>06.9 / Unpinched + parallel trailing edge (06.1 + 06.2
+						combined)</code
+					>
+					is approved as the plain hull look.
+				</p>
+			</div>
+		</details>
+
+		<details class="earlier-drafts">
+			<summary>
+				02.7 / Rear engine slot positioning · Approved at
+				<code>y = 17.5</code>
+			</summary>
+			<div class="drafts-content">
+				<h3 id="rear-engine-positioner">
+					02.7 / Positioning the rear engine slot on 06.9
+				</h3>
+				<p>
+					With <code>06.9 / Unpinched + parallel trailing edge</code> approved
+					as the plain hull, the tool below mounts the four production engines (<code
+						>Light Ion</code
+					>, <code>Heavy Ion</code>, <code>Light Fusion</code>, and
+					<code>Heavy Plasma</code>) in pose <code>3</code> (aft lighting)
+					<strong>on top of the ship</strong>
+					along the centerline (<code>x = 0</code>) and lets you slide the
+					mount’s vertical position <code>y</code> up and down:
+				</p>
+				<WaspRearEnginePositioner />
+				<p>
+					<strong>Owner decision on 02.7:</strong>
+					Rear engine mount position is approved at <code>y = 17.5</code>.
+				</p>
+			</div>
+		</details>
+
+		<details class="earlier-drafts">
+			<summary>
+				02.8 / Four stabilizer slits positioning · Approved at front
+				<code>(±4.4, −18.5, 8.5°)</code>
+				&amp; rear
+				<code>(±4.9, 13.5, −10°)</code>
+				(behind slotted parts)
+			</summary>
+			<div class="drafts-content">
+				<h3 id="stabilizer-positioner">
+					02.8 / Positioning the four stabilizer slits on 06.9 (with rear engine
+					at y = 17.5)
+				</h3>
+				<p>
+					Because the LHI Wasp has no tilted side engines, it is the first
+					vessel to carry <strong>four stabilizer slits</strong> instead of two:
+					a forward pair on the tapered bow flanks and an aft pair on the rear
+					winglets. Use the sliders below to tune the <code>Y</code>,
+					<code>|X|</code>, and tilt angle of both pairs while checking
+					clearance against all four engines mounted at <code>y = 17.5</code>:
+				</p>
+				<WaspStabilizerPositioner />
+				<p>
+					<strong>Owner decision on 02.8:</strong>
+					Front stabilizers approved at <code>y = −18.5, x = ±4.4, 8.5°</code>;
+					rear stabilizers approved at <code>y = 13.5, x = ±4.9, −10°</code>;
+					rendered behind slotted parts.
+				</p>
+			</div>
+		</details>
+
+		<h3 id="flight-demo">
+			02.9 / Live flight animation &amp; effect layer demo
+		</h3>
+		<p>
+			The live demo below assembles the approved <code>06.9</code> hull, the
+			four stabilizer slits (<code>(±4.4, −18.5, 8.5°)</code>
+			and
+			<code>(±4.9, 13.5, −10°)</code>
+			drawn behind slotted parts), the single rear engine at
+			<code>y = 17.5</code>
+			(drawn on top of the hull and stabilizer slits), and the
+			<code>EnginePlume</code>
+			effect layer over the ship. Left turns fire the coupled
+			<strong>Front-Right + Rear-Left</strong>
+			stabilizers; right turns fire the coupled
+			<strong>Front-Left + Rear-Right</strong>
+			stabilizers; opposing pairs damp residual spin on release:
+		</p>
+		<WaspFlightDemo client:load />
+
+		<h3 id="path-comparison">
+			02.10 / Flight-path comparison: Wasp vs Fighter
+		</h3>
+		<p>
+			The flight-path instrument below compares four ion-equipped configurations
+			across burns <code>B1</code> (Course), <code>B2</code> (Turn), and
+			<code>B3</code>
+			(Weave) without settings overlays:
+			<strong>Wasp with Ion</strong>, <strong>Wasp with Heavy Ion</strong>,
+			<strong>Fighter with 4 Ions</strong>, and
+			<strong>Fighter with 2 side Ions only</strong>. On the Wasp, forward
+			thrust fires only during <code>LR</code> segments while <code>L</code> and
+			<code>R</code>
+			pivot purely on the coupled stabilizer pair:
+		</p>
+		<div class="instrument-bleed">
+			<WaspPathComparison client:load />
+		</div>
+
+		<h3 id="side-slot-positioner">
+			02.11 / Positioning the two unlinked side Equipment slots (under the
+			canopy / wing)
+		</h3>
+		<p>
+			The Wasp’s two wing mounts (<code>01</code>
+			and <code>02</code>) are
+			<strong>independent Equipment (<code>Q</code>) slots</strong>
+			(Weapons or Utilities only—not linked, so each side can equip a different
+			part or stay empty) and sit <strong>underneath the hull</strong> so
+			installed casings tuck beneath the wings while weapon barrels extend
+			forward from under the leading edge. Use the sliders below to position
+			their span
+			<code>|X|</code>
+			and fore/aft <code>Y</code> in the real builder view and flight under-hull
+			view:
+		</p>
+		<WaspSideSlotPositioner client:load />
+		<p>
+			<strong>Owner decision on 02.11:</strong>
+			Slot 01 (Left Equipment <code>Q</code>) is approved at
+			<code>(−12.00, −1.50)</code>; Slot 02 (Right Equipment <code>Q</code>) is
+			approved at <code>(+12.00, −1.50)</code>; Slot 03 (Rear Engine
+			<code>E</code>) is approved at <code>(0.00, 17.50)</code>. Both side
+			Equipment slots are unlinked and render underneath the hull in flight;
+			Slot 03 is restricted to <code>Engine (E)</code> and stabilizers are
+			forced on for the Wasp.
+		</p>
+	</section>
+
+	<section aria-labelledby="readiness">
+		<h2 id="readiness">
+			03 / Readiness: a fourth hull without paired side engines
+		</h2>
+		<p>
+			The exploration rounds above settle every visual, structural, and
+			flight-control decision needed to define the <strong>LHI Wasp</strong>:
+		</p>
+		<ul>
+			<li>
+				<strong>Plain hull geometry (<code>06.9</code>):</strong>
+				<code>49.5 × 36</code>
+				low-poly silhouette (<code>y = −25</code>
+				bow to
+				<code>y = 24.5</code>
+				stern, <code>x = −18</code> to <code>+18</code>
+				wingspan) with the shared fleet cyan-slate palette (<code
+					>FIGHTER.facets</code
+				>), diamond black cockpit, unpinched side-to-aft winglet continuation,
+				and truncated-wedge tail spine (<code>AB-3</code>).
+			</li>
+			<li>
+				<strong>Chassis mass:</strong>
+				<code>60</code>
+				bare hull mass (between Scout at <code>45</code> and Fighter at
+				<code>95</code>), giving a loaded mass of <code>70</code> with a Light
+				Ion engine or <code>80</code> with a Heavy Ion engine in the production
+				parts table.
+			</li>
+			<li>
+				<strong>Three independent mounts (not linked):</strong>
+				Slot <code>01</code> (Left Equipment <code>Q</code>, Weapon or Utility)
+				at <code>(−12.0, −1.5)</code>, Slot <code>02</code> (Right Equipment
+				<code>Q</code>, Weapon or Utility) at <code>(+12.0, −1.5)</code>, and
+				Slot <code>03</code> (Rear Engine <code>E</code>, non-empty main engine)
+				at <code>(0.0, 17.5)</code>.
+			</li>
+			<li>
+				<strong>Four recessed stabilizer slits (forced on):</strong>
+				Forward bow pair at <code>(±4.4, −18.5)</code> tilted
+				<code>+8.5°</code>
+				and aft winglet pair at <code>(±4.9, 13.5)</code>
+				tilted <code>−10.0°</code> (each at <code>0.22</code> Light-ion
+				strength, locked on in the builder). Left turns fire the coupled
+				<strong>Front-Right + Rear-Left</strong>
+				pair; right turns fire the coupled
+				<strong>Front-Left + Rear-Right</strong>
+				pair; opposing pairs brake residual spin when no turn is commanded.
+			</li>
+			<li>
+				<strong>Single-engine thrust rule:</strong>
+				The rear engine fires <strong>only on <code>LR</code></strong> (both
+				controls held) and never fires during <code>L</code> or <code>R</code>
+				turns.
+			</li>
+			<li>
+				<strong>Render layering:</strong>
+				In flight, under-wing Equipment slots <code>01</code> and
+				<code>02</code>
+				draw <strong>beneath the hull</strong>, the four stabilizer slits draw
+				on the hull <strong>behind top-mounted parts</strong>, the rear Engine
+				slot <code>03</code> draws
+				<strong>on top of the hull and rear slits</strong>, and
+				<code>EnginePlume</code>
+				effects draw on the top layer above the ship.
+			</li>
+		</ul>
+
+		<h3>What current systems already support</h3>
+		<p>
+			The fixed-step simulation loop (<code>DT = 1/60</code>
+			with 4 substeps),
+			<code>engineImpulse</code>
+			saturation curve, <code>ENGINE_ART</code> pose
+			<code>3</code>
+			(aft lighting), <code>SLOT_STYLE</code> builder overlays, and
+			<code>EnginePlume.stepMounted</code>
+			emitter pipeline all work with the Wasp without new dependencies or
+			changes to gravity/friction constants, as demonstrated in
+			<code>02.9</code>, <code>02.10</code>, and
+			<code>02.11</code>.
+		</p>
+
+		<h3>What requires schema and renderer adaptation</h3>
+		<p>
+			Current production contracts assume every ship has a mandatory, linked
+			<code>side: EngineIdSchema</code>
+			pair and a single two-slit stabilizer geometry:
+		</p>
+		<ol>
+			<li>
+				<strong
+					>Profile &amp; loadout contract (<code>ShipProfileIdSchema</code>,
+					<code>ChassisSchema</code>, <code>LoadoutSchema</code>):</strong
+				>
+				<code>ShipProfileIdSchema</code>
+				currently enumerates
+				<code>["scout", "balanced", "tank"]</code>, and
+				<code>LoadoutSchema</code>
+				requires a paired <code>side: EngineIdSchema</code>. Because Slot
+				<code>03</code>
+				on the Wasp is a mandatory <code>Engine (E)</code>
+				mount and the Wasp has no paired side mounts, the Wasp can either reuse
+				<code>side: EngineIdSchema</code>
+				as its single rear engine when
+				<code>aft: 0</code>
+				(or require <code>aft[0]</code> to be a non-null
+				<code>EngineIdSchema</code>
+				while <code>side</code> is omitted), and
+				<code>stabilizers</code>
+				is enforced as <code>true</code> on the
+				<code>"wasp"</code>
+				chassis.
+			</li>
+			<li>
+				<strong
+					>Multi-pair stabilizer contract (<code>stabilizers.ts</code>
+					&amp; <code>build-flight.ts</code>):</strong
+				>
+				<code>stabilizerMount(chassis)</code>
+				currently returns a single mirrored pair and
+				<code>output.stabilizers</code>
+				is a 2-tuple
+				<code>[left, right]</code>. The Wasp requires a two-pair stabilizer
+				definition (front bow pair + rear winglet pair) whose coupled lever arm
+				(<code>18.95 + 14.15 = 33.10 u</code>) drives angular acceleration and
+				whose four active emitter outputs feed <code>buildPlumeEmitters</code>.
+			</li>
+			<li>
+				<strong
+					>Builder &amp; flight mount layering (<code>build-renderer.ts</code
+					>):</strong
+				>
+				In <code>drawBuild</code>, equipment mounts (<code
+					>group === "hull"</code
+				>) are currently drawn on top of the hull, and
+				<code>drawStabilizerSlits</code>
+				is called at the very end of <code>drawBuild</code> (above aft engines).
+				Promoting the Wasp requires drawing its two wing <code>hull</code>
+				mounts before the hull when not rendering builder overlays, and drawing
+				stabilizer slits before top-mounted aft parts so the rear engine at
+				<code>y = 17.5</code>
+				sits cleanly over the rear slits.
+			</li>
+		</ol>
+	</section>
+
+	<section aria-labelledby="integration">
+		<h2 id="integration">04 / Integration plan</h2>
+		<p>
+			Promoting the accepted <strong>LHI Wasp</strong> design into the shared
+			<code>@void-drift/mode-a</code>
+			package, <code>ShipBuilder</code>, and Flight Lab follows five bounded
+			steps:
+		</p>
+		<ol>
+			<li>
+				<strong
+					>Add <code>wasp.ts</code> and extend chassis/loadout schemas:</strong
+				>
+				Create <code>packages/mode-a/src/lib/wasp.ts</code> exporting the
+				approved <code>06.9</code> facet table, diamond cockpit polygons,
+				<code>mass: 60</code>, <code>length: 49.5</code>,
+				<code>width: 36</code>, wing Equipment mount coordinates
+				<code>(±12.0, −1.5)</code>, rear Engine mount coordinate
+				<code>(0.0, 17.5)</code>, and four-slit stabilizer coordinates (<code
+					>(±4.4, −18.5, +8.5°)</code
+				>
+				and
+				<code>(±4.9, 13.5, −10.0°)</code>). Add <code>"wasp"</code> to
+				<code>ShipProfileIdSchema</code>, <code>CHASSIS</code>, and
+				<code>BuildStoreSchema</code>
+				(with a default fallback when hydrating existing
+				<code>void-drift-builds-v2</code>
+				saves), and enforce
+				<code>stabilizers: true</code>
+				on the Wasp.
+			</li>
+			<li>
+				<strong>Promote four-stabilizer geometry and coupled physics:</strong>
+				Extend <code>packages/mode-a/src/lib/stabilizers.ts</code> and
+				<code>packages/mode-a/src/lib/build-flight.ts</code>
+				so
+				<code>applyBuildEngines</code>
+				and <code>buildStats</code> handle the Wasp’s single rear engine (firing
+				only on
+				<code>leftThruster &amp;&amp; rightThruster</code>) and coupled
+				four-stabilizer steering (<code>Front-Right + Rear-Left</code>
+				on
+				<code>L</code>, <code>Front-Left + Rear-Right</code> on <code>R</code>,
+				and opposing pair spin-braking on release or <code>LR</code>, with
+				<code>STABILIZER_STRENGTH = 0.22</code>
+				per slit and coupled lever
+				<code>33.10 u</code>).
+			</li>
+			<li>
+				<strong
+					>Update <code>buildMounts</code>, <code>drawBuild</code>, and
+					<code>buildPlumeEmitters</code>:</strong
+				>
+				In <code>packages/mode-a/src/lib/build-renderer.ts</code>, return the
+				Wasp’s three unlinked mounts:
+				<code>01</code>
+				Left Equipment (<code>Q</code>
+				at
+				<code>x = 1.5, y = −12.0</code>),
+				<code>02</code>
+				Right Equipment (<code>Q</code>
+				at
+				<code>x = 1.5, y = +12.0</code>), and
+				<code>03</code>
+				Rear Engine (<code>E</code>
+				at
+				<code>x = −17.5, y = 0</code>). In flight mode (when
+				<code>slots</code>
+				is omitted), render the Wasp’s two wing
+				<code>hull</code>
+				mounts <strong>below the hull</strong>, render the four stabilizer slits
+				on the hull <strong>behind top-mounted parts</strong>, and render Slot
+				<code>03</code> <strong>on top of the hull and rear slits</strong>. Emit
+				plumes from the rear engine nozzle and all four stabilizer slits on the
+				top effect layer.
+			</li>
+			<li>
+				<strong
+					>Connect <code>ShipBuilder.svelte</code> and Lab fixtures:</strong
+				>
+				Expose the LHI Wasp in the chassis selector of
+				<code>apps/web/src/components/ShipBuilder.svelte</code>
+				and
+				<code>/lab/builder</code>, lock its <em>Ion stabilizers</em> checkbox to
+				checked (<code>disabled</code>), and display its coupled stabilizer
+				angular acceleration in the build statistics readout.
+			</li>
+			<li>
+				<strong>Verify contracts, build, and visual/flight fidelity:</strong>
+				Run <code>pnpm lint</code>, <code>pnpm check:contracts</code>,
+				<code>pnpm exec tsc -p tsconfig.check.json</code>, and unit tests for
+				Wasp loadout parsing, save migration, single-engine <code>LR</code>
+				thrust, and coupled 4-stabilizer turning, then inspect
+				<code>/lab/builder</code>
+				and <code>/lab/flight</code> at
+				<code>1×</code>
+				gameplay scale.
+			</li>
+		</ol>
+	</section>
+</StudyLayout>
+
+<style>
+.instrument-bleed {
+	width: 100vw;
+	height: 100svh;
+	margin-inline: calc(50% - 50vw);
+	scroll-snap-align: center;
+}
+
+.earlier-drafts {
+	margin: 1rem 0 1.75rem;
+	padding: 0.75rem 1rem;
+	background: rgba(15, 20, 34, 0.55);
+	border: 1px solid var(--border-default, rgba(255, 255, 255, 0.12));
+	border-radius: 6px;
+}
+
+.earlier-drafts > summary {
+	cursor: pointer;
+	font-family: var(--font-mono, monospace);
+	font-size: 0.82rem;
+	color: var(--text-secondary, #94a3b8);
+	user-select: none;
+}
+
+.earlier-drafts[open] > summary {
+	margin-bottom: 1rem;
+	padding-bottom: 0.65rem;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+</style>
