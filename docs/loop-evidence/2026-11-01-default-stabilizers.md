@@ -26,3 +26,16 @@ Human handling/balance review remains separate from these checks. Ignored local
 reports and logs are not remote backups. Unrelated `.claude/` files remain untouched.
 This evidence-only follow-up does not alter the deployed application; no process
 lessons are inferred.
+
+## Same-version inverted-controls update
+
+The owner requested inversion by default in production without changing 0.4.4.
+Commit `f8a38c2` changes the default to true; saved preferences remain authoritative.
+Browser checks cover default inversion and a persisted explicit opt-out.
+All nine gates passed, source unchanged, in
+`artifacts/verification/2026-11-01T07-44-42.056Z-KWGRVa/report.json` (90 unit tests,
+20 browser tests, 10 rules tests and emulator competition). The implementation was
+committed, pushed and deployed to Hosting successfully; no rules or data changed.
+Log: `artifacts/releases/0.4.4/invert-deploy.log`. The live
+`/_astro/settings.DipZ0wlA.js` was downloaded and compared byte-for-byte with the
+verified build's settings bundle; it matched. All package versions remain 0.4.4.
