@@ -72,7 +72,6 @@ $effect(() => {
 	const context = canvas?.getContext("2d");
 	if (context && canvas) {
 		context.clearRect(0, 0, 600, 540);
-		const style = getComputedStyle(canvas);
 		drawBuild(
 			context,
 			build,
