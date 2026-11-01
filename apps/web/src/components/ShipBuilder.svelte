@@ -1,4 +1,5 @@
 <script lang="ts">
+import { loadCanvasFonts } from "@void-drift/core";
 import {
 	BuildStoreSchema,
 	buildMounts,
@@ -18,6 +19,7 @@ import {
 import { onMount } from "svelte";
 import { version } from "../../package.json";
 import FlightDeck from "./FlightDeck.svelte";
+import Logo from "./Logo.svelte";
 
 let { lab = false }: { lab?: boolean } = $props();
 let builds = $state(defaultBuilds());
@@ -25,6 +27,7 @@ let chosen = $state<ShipProfileId>("balanced");
 let selected = $state("left");
 let flying = $state<"test" | "survival" | null>(null);
 let ready = $state(false);
+let fontsLoaded = $state(false);
 let notice = $state("");
 let canvas = $state<HTMLCanvasElement>();
 const build = $derived(builds[chosen]);
@@ -39,6 +42,9 @@ const compatible = $derived(
 	Object.values(PARTS).filter((part) => slotAccepts(mount.type, part.category)),
 );
 onMount(() => {
+	loadCanvasFonts().then(() => {
+		fontsLoaded = true;
+	});
 	try {
 		localStorage.removeItem("void-drift-builds-v1");
 		const saved = localStorage.getItem("void-drift-builds-v2");
@@ -60,6 +66,8 @@ onMount(() => {
 	ready = true;
 });
 $effect(() => {
+	// Read so slot labels redraw once webfonts load; canvas text does not load them.
+	void fontsLoaded;
 	const context = canvas?.getContext("2d");
 	if (context && canvas) {
 		context.clearRect(0, 0, 600, 540);
@@ -118,7 +126,7 @@ function choose(id: ShipProfileId) {
 {:else}
 	<main class="builder">
 		<header>
-			<a class="brand" href="/">VOID·DRIFT</a
+			<a class="brand" href="/"><Logo size="sm" /></a
 			><span
 				>{lab
 					? "SHIP BUILDER LAB / SHARED SYSTEMS"
@@ -185,6 +193,14 @@ function choose(id: ShipProfileId) {
 						></button>
 					{/each}
 				</div>
+				<label
+					><input type="checkbox" bind:checked={build.stabilizers}>
+					Ion stabilizers</label
+				>
+				<p class="assembly-note">
+					0.22 Light-ion thrust · 0.25 Light-ion energy while firing. Assist
+					turns and brake spin automatically.
+				</p>
 				<p class="assembly-note">
 					Side engines are a mirrored pair. Hull and aft fittings are
 					independent.<br>Every installed part adds mass. Weapons are static
@@ -243,7 +259,7 @@ function choose(id: ShipProfileId) {
 							>
 							<small
 								>{part.category === "E"
-									? `${part.thrust.toLocaleString()} thrust · ${part.limit} powered ceiling · ${part.response === "pulse" ? "0.18s pulse / 0.45s cycle" : part.response === "delayed" ? "0.6s charge, then sustained" : "Immediate / steady"}`
+									? `${part.thrust.toLocaleString()} thrust · ${part.limit.toFixed(0)} powered ceiling · ${part.response === "pulse" ? "0.18s pulse / 0.45s cycle" : part.response === "delayed" ? "0.6s charge, then sustained" : "Immediate / steady"}`
 									: part.id === "battery"
 										? "+100 energy capacity"
 										: part.id === "coil"
@@ -305,10 +321,10 @@ function choose(id: ShipProfileId) {
 						<dd>{stats.acceleration.toFixed(1)}</dd>
 					</div>
 					<div>
-						<dt>Single-side turning</dt>
+						<dt>Single-side angular acceleration</dt>
 						<dd>
 							{((Math.abs(stats.turnRate) * 180) / Math.PI).toFixed(1)}
-							°/s
+							°/s²
 						</dd>
 					</div>
 					<div>
@@ -378,6 +394,9 @@ header a {
 	text-decoration: none;
 }
 header a:hover {
+	color: var(--color-acid-lime);
+}
+header .brand {
 	color: var(--color-acid-lime);
 }
 header {

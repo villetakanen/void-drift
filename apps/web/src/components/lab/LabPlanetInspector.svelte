@@ -200,7 +200,7 @@ select {
 }
 
 .color-label {
-	font-family: monospace;
+	font-family: var(--font-family-ui);
 	color: var(--color-text-dim);
 }
 

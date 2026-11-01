@@ -18,6 +18,30 @@ export const studies = z.array(studySchema).parse([
 			"How can a very small trainer that steers on four stabilizers instead of side engines read as its own ship beside the Scout?",
 	},
 	{
+		slug: "path-instrument-2026-11-01",
+		title: "Path instrument: reading motion in any container",
+		status: "closed",
+		phase: "exploration",
+		question:
+			"What should a single, standard path instrument fix and what may a study vary, so motion results from different studies can be compared?",
+	},
+	{
+		slug: "plasma-behaviour-2026-11-01",
+		title: "Plasma engines: commitment and recovery",
+		status: "closed",
+		phase: "exploration",
+		question:
+			"What acceleration or speed advantage would make plasma’s delayed response worth choosing over ion?",
+	},
+	{
+		slug: "base-movement-ion",
+		title: "Base movement: flying with ion engines",
+		status: "integrated",
+		phase: "integration",
+		question:
+			"How can momentum make flying engaging while two engine controls keep the ship understandable and recoverable?",
+	},
+	{
 		slug: "ion-engines-2026-10-31",
 		title: "Ion engines: precise, decisive, reliable",
 		status: "integrated",

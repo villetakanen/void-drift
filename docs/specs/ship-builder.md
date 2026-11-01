@@ -353,3 +353,76 @@ Engine bodies, thrust, limits, mass, energy, controls, gravity and friction are
 unchanged by this ion-effects integration. The accepted demo shares Light's
 motion/output across both variants solely for visual comparison; real fitted
 flight retains each engine's existing output behavior.
+
+
+## Base movement and optional stabilizers — 0.4.2
+
+Supersedes earlier direct-turn and individual-ion limits for custom ships. Ranked
+stock profiles keep their challenge physics. New builder and Flight Lab defaults
+are two Light-ion side engines with empty optional mounts. Version-2 saves gain an
+optional `stabilizers` boolean, default false; existing fitted parts are preserved.
+The switch is available in builder and Flight Lab. Stabilizers are built-in, consume
+no slot and add no mass in this alpha adapter.
+
+Ion force vectors combine before calculating acceleration and speed ceiling. Light
+strength is 1, Heavy 1.75. Heavy also draws 1.75× Light energy (3.5/s versus 2/s). At reference mass 115, Light acceleration starts at 220;
+actual force is 25300 and acceleration divides by assembled mass. Net strength E
+sets ceiling 340*E below 1, otherwise 340*(1+0.4*(1-exp(-0.8*(E-1)))). External
+overspeed is preserved, never inflated by ion steering. These are initial tuning
+values exposed in Flight Lab, not final balance. Fusion/Plasma response and individual
+ceilings are retained; only their ion companions use the combined rule.
+
+All custom ships integrate angular velocity from force × mount lever / rectangular
+hull inertia about the existing origin. Rotation persists without input and is
+bounded at 180°/s. Stabilizers provide 0.22 Light-ion force each, using the same ion
+settings regardless of main engines. L fires the right stabilizer, R the left;
+no turn command (release or LR) counters existing spin, with a fractional final burn
+that cannot reverse it. Each firing stabilizer draws 0.25 Light-ion energy (0.5/s
+at current Light draw 2/s). Substep power budgets scale forces and effects together;
+empty batteries cannot generate stabilizer torque. Pausing freezes motion/effects;
+reset starts from rest. Added mass slows both linear and angular response.
+
+Accepted hull-relative placements (back, left/right across, outward exhaust angle):
+Fighter 77%, 10/90%, 37.7°; Scout 67%, 38/62%, 67°; Cruiser 76%, 23/77%, 63°.
+Shared slits have a recessed charcoal body and blue edge. Mounted Light-ion exhaust
+at 0.22 output appears above hull/fittings, with the accepted residue/fade behavior.
+Builder and Flight Lab consume the same saved option, simulation, geometry and
+renderer. Flight Lab renders its effective settings loadout, including imported
+trials, and exposes acceleration, speed curve and angular cap. Older stock trial
+imports keep the stock simulation path.
+
+References: `/lab/studies/base-movement-ion#integration`, canonical `/lab/builder`
+and `/lab/flight`. Flight feel, actual acceleration/speed and all-hull stabilizer
+recovery require post-integration human review; checks cannot establish balance.
+
+
+## Main-game fleet — 0.4.3
+
+The main game now uses assembled ships with Light ion in all side and aft mounts:
+Scout has three engines and no extra battery, Fighter four engines and one battery,
+Tank five engines and two batteries. Capacity is 100/200/300 including the intrinsic
+pack. Remaining hull slots are empty; stabilizers remain off by default. Shared
+ion physics, free rotation, mass, energy and renderer apply to these ships.
+
+`starterLoadout` and `gameSettings` define this fixed fleet independently from saved
+builder ships and the two-side-ion Flight Lab fixture. Old trial imports retain
+their settings. Scores use the new `ion-1` challenge. The owner authorized clearing the old
+pre-alpha leaderboard before release; legacy namespaces remain supported by the
+rules but are not queried by this release. Custom builder and Lab runs remain unranked.
+
+
+## Standard-flight defaults — 0.4.4
+
+Opening or reloading the main game selects Fighter, independently of a previously
+saved chassis selection. Players can still choose Scout or Tank for that session;
+reset/retry retains the current session's choice. All three fixed starter loadouts
+enable stabilizers. The 0.4.3 engine fittings and battery counts remain unchanged.
+Builder saves and the Flight Lab's optional stabilizer setting are independent and
+are not forced on. The existing pre-alpha ion-1 leaderboard remains in use.
+
+
+### Inverted controls default — 0.4.4 hotfix
+
+New or reset settings default to inverted left/right engine controls. Existing
+explicitly saved settings continue to take precedence, and the Settings toggle
+can disable inversion. The release number remains 0.4.4.

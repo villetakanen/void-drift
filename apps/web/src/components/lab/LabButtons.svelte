@@ -177,7 +177,7 @@ async function save() {
 <style>
 .catalog {
 	padding: var(--spacing-lg);
-	font-family: var(--font-display);
+	font-family: var(--font-family-display);
 	display: grid;
 	gap: var(--spacing-lg);
 }
@@ -185,7 +185,7 @@ section {
 	min-width: 0;
 }
 h2 {
-	font-size: var(--font-large);
+	font-size: var(--font-size-heading);
 	margin-bottom: var(--spacing-md);
 }
 p,

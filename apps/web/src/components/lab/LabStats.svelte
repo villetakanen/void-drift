@@ -63,15 +63,13 @@ dl {
 
 dt {
 	color: var(--color-text-dim);
-	font-family: var(--font-primary);
+	font-family: var(--font-family-ui);
 }
 
 dd {
 	color: var(--color-neon-blue);
 	margin: 0;
-	font-family:
-		ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-		"Courier New", monospace;
+	font-family: var(--font-family-ui);
 	font-variant-numeric: tabular-nums;
 	font-weight: 500;
 }

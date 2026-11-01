@@ -17,18 +17,18 @@ let { title, children }: { title: string; children?: Snippet } = $props();
 	padding: 1rem;
 	height: 100%;
 	color: var(--color-text);
-	font-family: "Noto Sans Math", sans-serif;
+	font-family: var(--font-family-ui);
 	overflow-y: auto;
 }
 
 h3 {
 	margin-top: 0;
-	font-size: 1rem;
+	font-size: var(--font-size-label);
 	color: var(--color-neon-blue); /* Maps to Acid Lime */
 	text-transform: uppercase;
 	border-bottom: 2px solid var(--color-text-dim);
 	padding-bottom: 0.5rem;
 	margin-bottom: 1rem;
-	font-weight: bold;
+	font-weight: var(--font-weight-bold);
 }
 </style>

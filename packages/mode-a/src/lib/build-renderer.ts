@@ -1,4 +1,4 @@
-import type { PlumeEmitter } from "@void-drift/core";
+import { canvasFont, type PlumeEmitter } from "@void-drift/core";
 import { CRUISER } from "./cruiser";
 import { ENGINE_ART } from "./engine-art";
 import { FIGHTER } from "./fighter";
@@ -11,6 +11,7 @@ import {
 	type SlotType,
 } from "./schemas/loadout";
 import { SCOUT } from "./scout";
+import { drawStabilizerSlits, stabilizerMount } from "./stabilizers";
 export const BUILD_FLIGHT_SCALE = 0.65;
 export interface BuildMount {
 	key: string;
@@ -341,6 +342,8 @@ export function drawBuild(
 
 		ctx.restore();
 	}
+	if (build.stabilizers)
+		drawStabilizerSlits(ctx, stabilizerMount(build.chassis));
 	ctx.restore();
 }
 
@@ -406,7 +409,7 @@ function drawSlot(
 	if (!mount.part) {
 		ctx.fillStyle = ink;
 		ctx.globalAlpha = 0.7;
-		ctx.font = "700 32px ui-monospace, monospace";
+		ctx.font = canvasFont(32, 700);
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
 		ctx.fillText(SLOT_TYPES[mount.type].symbol, 0, 0);
@@ -416,14 +419,14 @@ function drawSlot(
 	ctx.globalAlpha = 0.35;
 	ctx.fillRect(-cw - 23, -ch - 12, 22, 16);
 	ctx.globalAlpha = 1;
-	ctx.font = "11px ui-monospace, monospace";
+	ctx.font = canvasFont(11);
 	ctx.textAlign = "right";
 	ctx.textBaseline = "alphabetic";
 	ctx.fillStyle = palette.ivory;
 	ctx.fillText(String(number).padStart(2, "0"), -cw - 5, -ch);
 	ctx.translate(-w - 4, h);
 	ctx.rotate(-Math.PI / 2);
-	ctx.font = "8px ui-monospace, monospace";
+	ctx.font = canvasFont(8);
 	ctx.textAlign = "left";
 	ctx.fillStyle = ink;
 	ctx.fillText(SLOT_TYPES[mount.type].label, 0, 0);
@@ -432,7 +435,7 @@ function drawSlot(
 
 /** Emission uses the same mount/nozzle geometry as the ship drawing. */
 export function buildPlumeEmitters(build: Loadout): PlumeEmitter[] {
-	return buildMounts(build)
+	const emitters: PlumeEmitter[] = buildMounts(build)
 		.filter((mount) => mount.part && PARTS[mount.part].category === "E")
 		.map((mount) => ({
 			style:
@@ -454,6 +457,18 @@ export function buildPlumeEmitters(build: Loadout): PlumeEmitter[] {
 			angle: mount.angle,
 			output: 0,
 		}));
+	if (build.stabilizers) {
+		const m = stabilizerMount(build.chassis);
+		for (const side of [-1, 1])
+			emitters.push({
+				style: "ion-light",
+				x: (m.x - m.fx) * BUILD_FLIGHT_SCALE,
+				y: (side * m.y + side * m.fy) * BUILD_FLIGHT_SCALE,
+				angle: Math.atan2(-side * m.fy, m.fx),
+				output: 0,
+			});
+	}
+	return emitters;
 }
 
 export function nozzleOffset(mount: BuildMount) {

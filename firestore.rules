@@ -10,6 +10,7 @@ service cloud.firestore {
      && d.userId == request.auth.uid
      && d.shipId in ['scout','balanced','tank']
      && ((d.challenge == 'alpha-1' && scoreId == request.auth.uid + '_' + d.shipId)
+      || (d.challenge == 'ion-1' && scoreId == 'ion-1_' + request.auth.uid + '_' + d.shipId)
       || (d.challenge == 'gravity-1' && scoreId == 'gravity-1_' + request.auth.uid + '_' + d.shipId))
      && d.initials is string && d.initials.matches('^[A-Z]{3}$')
      && d.seconds is int && d.seconds >= 1 && d.seconds <= 3600

@@ -1,4 +1,6 @@
 <script lang="ts">
+import { loadCanvasFonts } from "@void-drift/core";
+
 let {
 	width,
 	height,
@@ -10,8 +12,14 @@ let {
 } = $props();
 
 let canvas: HTMLCanvasElement;
+let fontsLoaded = $state(false);
+loadCanvasFonts().then(() => {
+	fontsLoaded = true;
+});
 
 $effect(() => {
+	// Read so the drawing repeats once webfonts load; canvas text does not load them.
+	void fontsLoaded;
 	if (!canvas) return;
 	const ctx = canvas.getContext("2d");
 	if (!ctx) return;

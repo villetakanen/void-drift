@@ -96,7 +96,7 @@ describe("accepted Scout Trident", () => {
 		]);
 		expect(mounts[0].angle).toBeCloseTo((49 * Math.PI) / 180);
 		expect(mounts[1].angle).toBeCloseTo(-mounts[0].angle);
-		expect(buildStats(defaultLoadout("scout")).mass).toBe(92);
+		expect(buildStats(defaultLoadout("scout")).mass).toBe(80);
 	});
 
 	it("keeps compact weapon fittings clear of the cockpit and each other", () => {
@@ -186,24 +186,19 @@ describe("accepted Scout Trident", () => {
 		const output = applyBuildEngines(paired, build, both, 1 / 60, true);
 		expect(left.rotation).toBeGreaterThan(0);
 		expect(left.rotation).toBeCloseTo(-right.rotation);
-		expect(left.rotation * 60).toBeCloseTo(buildStats(build).turnRate);
+		expect(left.rotation * 60 * 60).toBeCloseTo(buildStats(build).turnRate);
 		expect(left.vel.y).toBeCloseTo(-right.vel.y);
 		expect(paired.rotation).toBe(0);
 		expect(paired.vel.y).toBe(0);
 		const stats = buildStats(build);
-		const sideAcceleration =
-			(2 * 48000 * Math.cos((49 * Math.PI) / 180)) / stats.mass;
-		// The aft impulse follows the side impulse, so its real powered-speed
-		// taper sees the velocity already gained within this fixed step.
-		const aftAcceleration =
-			(12000 / stats.mass) * (1 - sideAcceleration / 60 / 500);
-		expect(stats.acceleration).toBeCloseTo(
-			sideAcceleration + 12000 / stats.mass,
-		);
-		expect(paired.vel.x * 60).toBeCloseTo(sideAcceleration + aftAcceleration);
+		const expectedAcceleration =
+			(2 * 25300 * Math.cos((49 * Math.PI) / 180) + 25300) / stats.mass;
+		// All active ions combine before their one at-rest impulse.
+		expect(stats.acceleration).toBeCloseTo(expectedAcceleration);
+		expect(paired.vel.x * 60).toBeCloseTo(expectedAcceleration);
 		expect(leftOutput.aft).toEqual([0]);
 		expect(output.aft[0]).toBeGreaterThan(0);
-		expect(buildDrain(build, both)).toBe(11);
+		expect(buildDrain(build, both)).toBe(9);
 	});
 
 	it("keeps mixed-engine overspeed bounded and replays real energy/plumes deterministically", () => {

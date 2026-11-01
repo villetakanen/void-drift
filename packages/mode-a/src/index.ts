@@ -6,10 +6,12 @@ export * from "./lib/firebase";
 export * from "./lib/game-loop";
 export * from "./lib/schemas/flight";
 export * from "./lib/schemas/game-state";
+export * from "./lib/schemas/ion";
 export * from "./lib/schemas/loadout";
 export * from "./lib/schemas/settings";
 export * from "./lib/schemas/ship-profile";
 export * from "./lib/simulation";
+export * from "./lib/stabilizers";
 // Svelte Components
 export * from "./lib/utils/uid-hash";
 export * from "./schemas/highscore";

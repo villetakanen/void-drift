@@ -1,5 +1,6 @@
 <script lang="ts">
 import { settings } from "../lib/stores/settings";
+import Logo from "./Logo.svelte";
 
 // Svelte's $ prefix subscribes to nanostores automatically
 const currentSettings = $derived($settings);
@@ -21,6 +22,7 @@ function handleKeydown(event: KeyboardEvent) {
 
 <div class="settings-page">
 	<header>
+		<a href="/" class="brand"><Logo size="sm" /></a>
 		<h1>Settings</h1>
 	</header>
 
@@ -61,6 +63,10 @@ function handleKeydown(event: KeyboardEvent) {
 
 header {
 	margin-bottom: var(--spacing-xl);
+}
+
+header .brand {
+	margin-bottom: var(--spacing-md);
 }
 
 h1 {

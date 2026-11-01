@@ -22,7 +22,12 @@ import {
 	ReplaySchema,
 } from "./schemas/flight";
 import { createInitialGameState } from "./schemas/game-state";
-import { buildStats, PARTS } from "./schemas/loadout";
+import {
+	buildStats,
+	defaultLoadout,
+	PARTS,
+	starterLoadout,
+} from "./schemas/loadout";
 import type { ShipProfileId } from "./schemas/ship-profile";
 
 export const STEP = 1 / 60;
@@ -40,6 +45,18 @@ export function stockSettings(id: ShipProfileId = "balanced"): FlightSettings {
 		camera: { padding: 160, smoothing: 4, zoomSteps: 5 },
 	});
 }
+export function gameSettings(id: ShipProfileId = "balanced"): FlightSettings {
+	return FlightSettingsSchema.parse({
+		...stockSettings(id),
+		loadout: starterLoadout(id),
+	});
+}
+export function labSettings(id: ShipProfileId = "balanced"): FlightSettings {
+	return FlightSettingsSchema.parse({
+		...stockSettings(id),
+		loadout: defaultLoadout(id),
+	});
+}
 export class Simulation {
 	readonly settings: FlightSettings;
 	readonly ship: GameObject = {
@@ -53,7 +70,13 @@ export class Simulation {
 	readonly planets = initializePlanets(960, 540);
 	readonly state = createInitialGameState();
 	readonly plume = new EnginePlume();
-	engineOutput = { left: 0, right: 0, aft: [] as number[] };
+	engineOutput = {
+		left: 0,
+		right: 0,
+		aft: [] as number[],
+		stabilizers: [0, 0],
+	};
+	readonly angularMotion = { velocity: 0 };
 	private readonly buildEmitters;
 	private readonly engineTimers: Record<string, number> = {};
 	ticks = 0;
@@ -120,30 +143,40 @@ export class Simulation {
 		if (this.state.status !== "PLAYING") return;
 		const beforeX = this.ship.pos.x;
 		const beforeY = this.ship.pos.y;
-		let engineFraction = 1;
-		if (this.settings.loadout) {
-			const stats = buildStats(this.settings.loadout);
-			const distance = Math.hypot(
-				this.ship.pos.x - this.star.pos.x,
-				this.ship.pos.y - this.star.pos.y,
-			);
-			const available = Math.max(
-				0,
-				Math.min(
-					stats.capacity,
-					this.state.resources.power +
-						(solarCharge(distance, this.star, stats.coils) - 3) * STEP,
-				),
-			);
-			const requested = (buildDrain(this.settings.loadout, input) - 3) * STEP;
-			const spent = Math.min(available, requested);
-			engineFraction = requested > 0 ? spent / requested : 0;
-			this.state.resources.power = available - spent;
-		}
 		let delivered = 0;
 		let substeps = 0;
 		// Four substeps resolve stronger close passes without changing the replay tick rate.
 		for (let substep = 0; substep < 4; substep++) {
+			let engineFraction = 1;
+			if (this.settings.loadout) {
+				const stats = buildStats(this.settings.loadout);
+				const distance = Math.hypot(
+					this.ship.pos.x - this.star.pos.x,
+					this.ship.pos.y - this.star.pos.y,
+				);
+				const available = Math.max(
+					0,
+					Math.min(
+						stats.capacity,
+						this.state.resources.power +
+							(solarCharge(distance, this.star, stats.coils) - 3) * (STEP / 4),
+					),
+				);
+				const requested =
+					(buildDrain(
+						this.settings.loadout,
+						input,
+						this.angularMotion.velocity,
+						STEP / 4,
+						this.settings.ion,
+					) -
+						3) *
+					(STEP / 4);
+				const spent = Math.min(available, requested);
+				engineFraction = requested > 0 ? spent / requested : 0;
+				this.state.resources.power = available - spent;
+			}
+
 			if (this.settings.loadout) {
 				this.engineOutput = applyBuildEngines(
 					this.ship,
@@ -153,6 +186,8 @@ export class Simulation {
 					engineFraction > 0,
 					this.engineTimers,
 					engineFraction,
+					this.angularMotion,
+					this.settings.ion,
 				);
 			}
 			delivered += updateShip(
@@ -195,9 +230,10 @@ export class Simulation {
 					const id = this.settings.loadout?.aft[index];
 					return !!id && PARTS[id].category === "E";
 				}),
+				...this.engineOutput.stabilizers,
 			];
 			for (const [index, emitter] of this.buildEmitters.entries())
-				emitter.output = outputs[index] * engineFraction;
+				emitter.output = outputs[index];
 			this.plume.stepMounted(STEP, this.ship, this.buildEmitters);
 		} else
 			this.plume.step(

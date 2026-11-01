@@ -1,7 +1,7 @@
 body {
 	background: var(--color-void);
 	color: var(--color-text);
-	font-family: "Noto Sans Math", sans-serif;
+	font-family: var(--font-family-ui);
 	margin: 0;
 	overflow: hidden;
 	/* Prevent iOS Safari bounce/overscroll */

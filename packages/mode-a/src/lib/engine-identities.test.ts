@@ -65,7 +65,7 @@ describe("four-engine player trial", () => {
 		expect(engineDuty(PARTS.fusion, false, 1 / 60, timers, "pulse")).toBe(0);
 		expect(engineDuty(PARTS.fusion, true, 1 / 60, timers, "pulse")).toBe(0);
 	});
-	it("heavy ion approaches 750, mixed low-ceiling engines do not brake it", () => {
+	it("mixed ion and fusion approaches the higher fusion ceiling without clipping overspeed", () => {
 		const build = defaultLoadout("balanced");
 		build.side = "heavy-ion";
 		build.aft = ["ion", "fusion"];
@@ -73,8 +73,8 @@ describe("four-engine player trial", () => {
 		const timers: EngineTimers = {};
 		for (let i = 0; i < 12000; i++)
 			applyBuildEngines(ship, build, both, 1 / 60, true, timers);
-		expect(ship.vel.mag()).toBeGreaterThan(749);
-		expect(ship.vel.mag()).toBeLessThanOrEqual(750.000001);
+		expect(ship.vel.mag()).toBeGreaterThan(549);
+		expect(ship.vel.mag()).toBeLessThanOrEqual(550.000001);
 		ship.vel.set(1000, 0);
 		applyBuildEngines(ship, build, both, 1 / 60, true, timers);
 		expect(ship.vel.mag()).toBeCloseTo(1000);

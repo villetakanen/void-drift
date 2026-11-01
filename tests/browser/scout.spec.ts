@@ -26,16 +26,16 @@ test("Scout restores its four-slot save, fits every part and flies from the cano
 	).toHaveCount(0);
 	await expect(
 		page.getByRole("button", {
-			name: "Right side · mirrored E: Fusion",
+			name: "Right side · mirrored E: Light ion",
 		}),
 	).toBeDisabled();
 	await page
-		.getByRole("button", { name: "Left side · mirrored E: Fusion" })
+		.getByRole("button", { name: "Left side · mirrored E: Light ion" })
 		.focus();
 	await page.keyboard.press("Enter");
-	await page.getByRole("button", { name: /Small ion.*10 mass/ }).click();
+	await page.getByRole("button", { name: /Light ion.*10 mass/ }).click();
 	await expect(
-		page.getByRole("button", { name: "Left side · mirrored E: Small ion" }),
+		page.getByRole("button", { name: "Left side · mirrored E: Light ion" }),
 	).toBeVisible();
 
 	for (const [part, label] of [
@@ -46,7 +46,7 @@ test("Scout restores its four-slot save, fits every part and flies from the cano
 	]) {
 		await page.locator(".mount").nth(2).click();
 		await expect(
-			page.getByRole("button", { name: /Small ion.*10 mass/ }),
+			page.getByRole("button", { name: /Light ion.*10 mass/ }),
 		).toHaveCount(0);
 		await page
 			.getByRole("button", { name: new RegExp(`${part}.*mass`) })
@@ -61,7 +61,7 @@ test("Scout restores its four-slot save, fits every part and flies from the cano
 		"Energy storage",
 		"Loading coil",
 		"Fusion",
-		"Small ion",
+		"Light ion",
 	]) {
 		await page.locator(".mount").nth(3).click();
 		await page
@@ -76,7 +76,7 @@ test("Scout restores its four-slot save, fits every part and flies from the cano
 		page.getByRole("button", { name: "Hull 1 · Equipment: Loading coil" }),
 	).toBeVisible();
 	await expect(
-		page.getByRole("button", { name: "Aft 1 · Universal: Small ion" }),
+		page.getByRole("button", { name: "Aft 1 · Universal: Light ion" }),
 	).toBeVisible();
 	const after = await page.evaluate(() =>
 		localStorage.getItem("void-drift-builds-v2"),
@@ -100,7 +100,7 @@ test("Scout restores its four-slot save, fits every part and flies from the cano
 	const tick = Number(await deck.getAttribute("data-ticks"));
 	await page.keyboard.down("a");
 	await expect(
-		page.getByRole("button", { name: "Left engine", exact: true }),
+		page.getByRole("button", { name: "Right engine", exact: true }),
 	).toHaveClass(/active/);
 	await page.keyboard.down("d");
 	await expect(
@@ -119,7 +119,7 @@ test("Scout restores its four-slot save, fits every part and flies from the cano
 	).toHaveAttribute("value", /9[89]|100/);
 	await page.getByRole("button", { name: "Return to builder" }).click();
 	await expect(
-		page.getByRole("button", { name: "Aft 1 · Universal: Small ion" }),
+		page.getByRole("button", { name: "Aft 1 · Universal: Light ion" }),
 	).toBeVisible();
 	await page.getByRole("button", { name: "Start survival" }).click();
 	await expect(page.locator(".edition")).toHaveText(

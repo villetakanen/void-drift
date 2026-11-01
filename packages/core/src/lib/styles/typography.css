@@ -1,0 +1,48 @@
+/* Long-form reading surface: studies, help and docs.
+   Descendant rules use :where() so local component styles still win. */
+.prose {
+	font-family: var(--font-family-prose);
+	font-size: 1rem;
+	line-height: var(--line-height-prose);
+}
+
+:where(.prose) :where(p, li) {
+	line-height: var(--line-height-prose);
+}
+
+:where(.prose) :where(h1) {
+	font-family: var(--font-family-display);
+	font-weight: var(--font-weight-display);
+	font-size: var(--font-size-display);
+	line-height: var(--line-height-heading);
+	letter-spacing: var(--tracking-display);
+	margin-block: var(--spacing-md);
+}
+
+:where(.prose) :where(h2) {
+	font-size: var(--font-size-heading);
+	line-height: var(--line-height-heading);
+	margin-bottom: var(--spacing-md);
+}
+
+:where(.prose) :where(section > h3) {
+	margin-block: var(--spacing-lg) var(--spacing-sm);
+}
+
+:where(.prose) :where(section > p) {
+	max-width: var(--measure-prose);
+	margin-block: 0 var(--spacing-md);
+}
+
+:where(.prose) :where(section) {
+	margin-bottom: var(--spacing-lg);
+}
+
+:where(.prose) :where(.lead) {
+	font-size: var(--font-size-lead);
+	line-height: 1.6;
+}
+
+:where(.prose) :where(a) {
+	color: var(--color-acid-lime);
+}

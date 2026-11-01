@@ -1,3 +1,5 @@
+import { canvasFont } from "../ui/typography";
+
 export interface ResourceBarProps {
 	value: number; // 0-100
 	maxValue: number; // Usually 100
@@ -45,7 +47,7 @@ export function drawResourceBar(
 
 	// Label text
 	ctx.fillStyle = "#ffffff";
-	ctx.font = "bold 12px sans-serif";
+	ctx.font = canvasFont(12, 700);
 	ctx.textAlign = "center";
 	ctx.textBaseline = "middle";
 
