@@ -96,6 +96,36 @@ The audit retains original findings and explicitly records promotion decisions.
 Retrospective evidence: the owner valued the situation-first explanation. Review
 that lesson at the end of the factory loop before changing standing skill guidance.
 
+## Ship drawing fundamentals
+
+Derived from the accepted Fighter, Scout and Heavy Corvette definitions in
+`packages/mode-a/src/lib/`. Apply before sketching any new hull or study variant.
+
+- **Silhouette first, and it is fixed.** A ship is an outline of six to twelve points
+  in ship units, nose forward. When the owner supplies a sketch, the outer line is the
+  silhouette, interior lines are folds, hatching is canopy, and the nose width is the
+  fuselage width. Do not redraw the outline to solve a shading problem.
+- **Volume comes from one construction, not from tones.** The spine is the highest
+  line. Planes fan from the spine or a single apex out to the outline edges, so
+  neighbouring planes face different ways. A plane's tone follows its facing; a tone
+  chosen by eye produces tiles, not a body.
+- **One light, one palette.** Light comes from the ship's left. The six `FIGHTER.facets`
+  tones give three light tones to left-facing planes and three dark tones to
+  right-facing ones, with a near-white strip on the spine. Flat fills only: no
+  gradients, strokes, outlines or textures.
+- **Few planes.** Six to twelve hull planes. Wings are thin flat plates; only the
+  fuselage carries height. If a hull reads bulky, the body has spread into the wings.
+- **Cockpit is black and compact**, with a thin lighter collar or panes, placed on the
+  spine ahead of the fittings.
+- **The hull does not draw its fittings.** Slot footprints (11 × 9, side 14 × 9) and
+  engine art sit on top of flat hull areas. Leave those areas simple. Clip an exhaust
+  notch rather than painting over it.
+- **Check both scales.** The builder enlarges the hull; flight draws it at 0.65 units
+  per pixel, where a small ship is under 30 pixels long. A detail that only reads
+  enlarged is not part of the ship.
+- **Promote as fixed facets.** Studies may compute shading from heights; the production
+  definition stores finished colour polygons, as `scout.ts` and `cruiser.ts` do.
+
 ## Fighter silhouette
 
 The accepted 02.9 clipped-tip Lance is now the shared custom Fighter in the designer
