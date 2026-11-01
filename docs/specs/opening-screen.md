@@ -1,7 +1,7 @@
 # Opening screen and design-system remediation plan
 
-**Status:** IN PROGRESS. S1 done and owner-approved 2026-11-01; S2 implemented 2026-11-01, awaiting
-owner review; S3–S12 planned.
+**Status:** IN PROGRESS. S1 done and owner-approved 2026-11-01; S2 done and owner-approved
+2026-11-01; S3–S12 planned.
 **Scope note (owner, 2026-11-01):** phone landscape is temporarily out of scope. 844×390 checks
 are not required until it returns; D7 and the S12 phone contract stay as targets.
 **Source:** [opening screen audit](../audits/2026-11-01-opening-screen.md), owner decisions D1–D7 (2026-11-01).
@@ -61,7 +61,8 @@ stages passed; `test:rules` and `test:competition` did not run (no Java runtime 
 
 ### S2 — Logomark (D1)
 
-**Implemented 2026-11-01, awaiting owner review.** The rule is in `design-system-core.md`
+**Done 2026-11-01, owner-approved.** Verification: 7 of 9 `pnpm verify` stages passed;
+`test:rules` and `test:competition` did not run (no Java runtime on the machine). The rule is in `design-system-core.md`
 (Identity). Inventory: `Logo.svelte` drew text glyphs in fallback fonts and appeared only in the Lab
 rail; game, builder and scores headers used a `VOID·DRIFT` text wordmark; Settings had no mark;
 the favicon was the Astro starter icon; Lab titles read "Void·Drift". No canvas draws the brand.
