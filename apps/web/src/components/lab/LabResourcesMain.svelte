@@ -3,25 +3,23 @@
 let _props: { slot?: string; "client:only"?: string; "client:load"?: boolean } =
 	$props();
 
-import { canvasFont, drawDeathIcon, drawResourceBar } from "@void-drift/core";
+import {
+	COLOR,
+	canvasFont,
+	drawDeathIcon,
+	drawResourceBar,
+} from "@void-drift/core";
 import Canvas from "../Canvas.svelte";
 import { resourcesParams } from "./resources-state.svelte";
-
-const COLORS = {
-	hull: "#00c8ff",
-	fuel: "#D4FF00",
-	warning: "#FFAA00",
-	danger: "#FF3333",
-};
 
 function drawHullBar(ctx: CanvasRenderingContext2D) {
 	drawResourceBar(ctx, 0, 0, 200, 24, {
 		value: resourcesParams.hullValue,
 		maxValue: 100,
 		label: "HULL",
-		colorNormal: COLORS.hull,
-		colorWarning: COLORS.warning,
-		colorDanger: COLORS.danger,
+		colorNormal: COLOR.resourceHull,
+		colorWarning: COLOR.resourceWarning,
+		colorDanger: COLOR.resourceDanger,
 	});
 }
 
@@ -30,9 +28,9 @@ function drawFuelBar(ctx: CanvasRenderingContext2D) {
 		value: resourcesParams.fuelValue,
 		maxValue: 100,
 		label: "FUEL",
-		colorNormal: COLORS.fuel,
-		colorWarning: COLORS.warning,
-		colorDanger: COLORS.danger,
+		colorNormal: COLOR.resourcePower,
+		colorWarning: COLOR.resourceWarning,
+		colorDanger: COLOR.resourceDanger,
 	});
 }
 
@@ -43,7 +41,7 @@ function drawIcons(ctx: CanvasRenderingContext2D) {
 	drawDeathIcon(ctx, startX + spacing, 40, 32, "HULL");
 	drawDeathIcon(ctx, startX + spacing * 2, 40, 32, "POWER");
 
-	ctx.fillStyle = "#888";
+	ctx.fillStyle = COLOR.textMuted;
 	ctx.font = canvasFont(10);
 	ctx.textAlign = "center";
 	ctx.fillText("STAR", startX, 70);

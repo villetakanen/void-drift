@@ -1,3 +1,4 @@
+import { COLOR } from "../ui/colors";
 import { canvasFont } from "../ui/typography";
 
 export interface ResourceBarProps {
@@ -32,7 +33,7 @@ export function drawResourceBar(
 	}
 
 	// Background
-	ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+	ctx.fillStyle = COLOR.borderSubtle;
 	ctx.fillRect(x, y, width, height);
 
 	// Border
@@ -46,13 +47,13 @@ export function drawResourceBar(
 	ctx.fillRect(x, y, fillWidth, height);
 
 	// Label text
-	ctx.fillStyle = "#ffffff";
+	ctx.fillStyle = COLOR.text;
 	ctx.font = canvasFont(12, 700);
 	ctx.textAlign = "center";
 	ctx.textBaseline = "middle";
 
 	// Text shadow for readability
-	ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+	ctx.shadowColor = COLOR.void;
 	ctx.shadowBlur = 4;
 
 	const text = `${props.label} ${Math.round(percentage)}%`;

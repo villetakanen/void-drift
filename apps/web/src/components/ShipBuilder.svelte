@@ -1,5 +1,5 @@
 <script lang="ts">
-import { loadCanvasFonts } from "@void-drift/core";
+import { COLOR, loadCanvasFonts } from "@void-drift/core";
 import {
 	BuildStoreSchema,
 	buildMounts,
@@ -7,6 +7,7 @@ import {
 	CHASSIS,
 	defaultBuilds,
 	drawBuild,
+	ENGINE_ACCENT,
 	ENGINE_ART,
 	engineArtId,
 	PARTS,
@@ -81,9 +82,9 @@ $effect(() => {
 			previewScale,
 			selected,
 			{
-				dark: style.getPropertyValue("--color-void").trim(),
-				lime: style.getPropertyValue("--color-acid-lime").trim(),
-				ivory: style.getPropertyValue("--color-text").trim(),
+				dark: COLOR.void,
+				lime: COLOR.selected,
+				ivory: COLOR.text,
 			},
 		);
 	}
@@ -231,10 +232,10 @@ function choose(id: ShipProfileId) {
 									height="56"
 									aria-hidden="true"
 									style:color={part.id === "fusion"
-										? "#c6ff32"
+										? ENGINE_ACCENT.fusion
 										: part.id === "plasma"
-											? "#ffb52e"
-											: "#29baff"}
+											? ENGINE_ACCENT.plasma
+											: ENGINE_ACCENT.ion}
 								>
 									<g transform="rotate(-90)">
 										{#each ENGINE_ART[engineArtId(part.id)][0] as face}

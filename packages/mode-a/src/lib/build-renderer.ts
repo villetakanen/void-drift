@@ -1,4 +1,4 @@
-import { canvasFont, type PlumeEmitter } from "@void-drift/core";
+import { COLOR, canvasFont, type PlumeEmitter } from "@void-drift/core";
 import { CRUISER } from "./cruiser";
 import { ENGINE_ART } from "./engine-art";
 import { FIGHTER } from "./fighter";
@@ -141,7 +141,7 @@ function drawEngine(
 	ctx.translate(engineOffset(build, mount), 0);
 	// One silhouette pass avoids glowing seams between the low-poly faces.
 	if (selected) {
-		ctx.shadowColor = "#d4ff00";
+		ctx.shadowColor = COLOR.selected;
 		ctx.shadowBlur = 8;
 		ctx.fillStyle = "#252a31";
 		ctx.beginPath();
@@ -161,8 +161,8 @@ function drawEngine(
 			face.points,
 			face.color === "currentColor"
 				? id === "fusion"
-					? "#c6ff32"
-					: "#ffb52e"
+					? ENGINE_ACCENT.fusion
+					: ENGINE_ACCENT.plasma
 				: face.color,
 		);
 	ctx.restore();
@@ -296,7 +296,7 @@ export function drawBuild(
 		}
 		// This rectangle is the installed item's casing, not a vacant mount overlay.
 		ctx.strokeStyle =
-			PARTS[mount.part].category === "E" ? "#9af7ff" : "#d4ff00";
+			PARTS[mount.part].category === "E" ? "#9af7ff" : COLOR.selected;
 		ctx.fillStyle = "#071015";
 		ctx.lineWidth = 0.45;
 		ctx.fillRect(
@@ -347,6 +347,18 @@ export function drawBuild(
 	ctx.restore();
 }
 
+/** Engine identity colours: game data, shared by the builder canvas and its cards. */
+export const ENGINE_ACCENT = {
+	fusion: "#c6ff32",
+	plasma: "#ffb52e",
+	ion: "#29baff",
+} as const;
+
+/**
+ * Slot overlay inks. Production passes COLOR roles: `lime` is the selected
+ * ink for occupied slots, `dark` the void and `ivory` the text. Preserved
+ * studies pass their own values.
+ */
 export interface SlotPalette {
 	dark: string;
 	lime: string;
