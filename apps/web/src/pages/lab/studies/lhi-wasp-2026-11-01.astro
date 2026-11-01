@@ -99,30 +99,40 @@ const study = studies.find((entry) => entry.slug === "lhi-wasp-2026-11-01");
 			as evidence of the stabilizer firing language; its fixture hull is not
 			carried forward.
 		</p>
-		<h3 id="low-poly-bodies">
-			02.2 / Six low-poly bodies on the sketched folds
-		</h3>
+		<h3 id="low-poly-bodies">02.2 / Six low-poly bodies with real relief</h3>
 		<p>
-			All six keep the sketched outline and the fold nodes read from it: the
-			spar from each wingtip through an inner node to the canopy base, the
-			shoulder line falling to the spar, a vertical fold under the wing to the
-			trailing root, the flank to the stern corner, and the long stern tent from
-			both inner nodes to the stern centre. They differ in which folds are kept,
-			which way each plane faces, and therefore where the light falls. Light
-			comes from the left as on the Fighter and Scout. Show the fold lines to
-			compare the structure; hide them to judge the body as it would appear in
-			the builder.
+			A first set of six used the sketched folds as flat tiles with a tone
+			picked per plane. None of them read as a solid, let alone a spacecraft,
+			and they were replaced rather than kept. The reason is construction: the
+			Fighter, Scout and Cruiser get their volume from one consistent relief, a
+			lit left side, a shaded right side and a spine that is actually the
+			highest line. A fold only reads when the planes on each side of it face
+			different ways.
+		</p>
+		<p>
+			These six therefore give every fold node a height. Each plane's facing is
+			computed from those heights and shaded from one light ahead, to the left
+			and above, through the shared six-tone Fighter palette. All keep the
+			sketched outline; they differ in which folds exist and in the height
+			profile, which is what changes the body's character. Show the fold lines
+			to compare structure; hide them to judge the body as the builder would
+			show it.
 		</p>
 		<WaspLowPolyVariants />
 		<p>
-			01 and 02 keep every sketched fold and disagree only on whether the stern
-			spine is a ridge or a channel. 03 asks how few planes still read as a
-			solid. 04 makes the spar the dominant edge. 05 trades folds for one steep
-			side wall. 06 adds the cross fold suggested by the shoulder ticks and
-			flattens the stern into a deck. Chassis planes only: no stabilizers,
-			slots, engines or stern notch, and the canopy is a placeholder leaf. These
-			are flat sketches in the shared palette, not the production renderer; the
-			shading is an assumed facing for each plane, not a lighting model.
+			01 and 02 keep every sketched fold and differ only in whether the spine or
+			the wingtips are highest. 03 replaces the inner folds with a level deck
+			and sharp chines. 04 is the Cruiser's one-apex fan. 05 raises two ridges
+			along the spars and sinks the canopy between them. 06 adds the shoulder
+			cross fold as a high nose blade and lifts the stern into a saddle.
+		</p>
+		<p>
+			Chassis planes only: no stabilizers, slots, engines or stern notch, and
+			the canopy is a placeholder leaf. Heights are study fixtures chosen for
+			reading, not measured parts; the shading is a flat-plane lighting
+			estimate, not the production renderer, which stores finished facet colours
+			rather than heights. A chosen body would be converted to fixed facets at
+			integration, as the Scout and Cruiser were.
 		</p>
 	</section>
 	<section aria-labelledby="readiness">

@@ -2,13 +2,14 @@
 import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
 
 /**
- * Six low-poly readings of the Wasp outline, built on the fold nodes drawn in
- * the owner's 2026-11-01 sketch. Nose up, ship units. No engines, slots or
- * stabilizers: chassis planes only. Light comes from the left, as on the
- * Fighter and Scout, so left-facing planes are lighter than right-facing ones.
+ * Six low-poly Wasp bodies, nose up, in ship units. Each variant gives the
+ * fold nodes a height, so every plane has a real normal and is shaded from
+ * one light (ahead, left and above) in the shared Fighter palette. Chassis
+ * planes only: no engines, slots or stabilizers.
  */
-type Point = readonly [number, number];
-const left: Record<string, Point> = {
+type XY = readonly [number, number];
+type XYZ = readonly [number, number, number];
+const outline: Record<string, XY> = {
 	nT: [0, -20],
 	n: [-2.8, -20],
 	s: [-5.5, -9],
@@ -22,117 +23,226 @@ const left: Record<string, Point> = {
 	k: [0, 2],
 	q: [-3, 2.7],
 };
-const mirror = (name: string): Point => {
-	const [x, y] = left[name];
-	return [-x, y];
-};
-const node = (name: string): Point =>
-	name.endsWith("R") ? mirror(name.slice(0, -1)) : left[name];
 const f = FIGHTER.facets;
-/** Palette from brightest to darkest. */
-const shade = [f[0], f[1], f[5], f[2], f[4], f[3]];
-const cockpit = "0,-11.4 -3,-6.1 -3,-0.7 0,2 3,-0.7 3,-6.1";
+const stops = [f[0], f[1], f[5], f[2], f[4], f[3]];
+const hex = (c: string) =>
+	[1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
+const mix = (t: number) => {
+	const x = Math.min(Math.max(t, 0), 1) * (stops.length - 1);
+	const i = Math.min(Math.floor(x), stops.length - 2);
+	const u = x - i;
+	const a = hex(stops[i]);
+	const b = hex(stops[i + 1]);
+	return `#${a
+		.map((v, j) =>
+			Math.round(v + (b[j] - v) * u)
+				.toString(16)
+				.padStart(2, "0"),
+		)
+		.join("")}`;
+};
+const light = (() => {
+	const v = [-0.75, -0.3, 0.5];
+	const l = Math.hypot(...v);
+	return v.map((x) => x / l);
+})();
+const shade = (points: XYZ[]) => {
+	let nx = 0;
+	let ny = 0;
+	let nz = 0;
+	for (let i = 0; i < points.length; i++) {
+		const [x1, y1, z1] = points[i];
+		const [x2, y2, z2] = points[(i + 1) % points.length];
+		nx += (y1 - y2) * (z1 + z2);
+		ny += (z1 - z2) * (x1 + x2);
+		nz += (x1 - x2) * (y1 + y2);
+	}
+	const l = Math.hypot(nx, ny, nz) || 1;
+	if (nz < 0) {
+		nx = -nx;
+		ny = -ny;
+		nz = -nz;
+	}
+	const dot = (nx * light[0] + ny * light[1] + nz * light[2]) / l;
+	return mix(1 - Math.min(Math.max((dot - 0.05) / 0.9, 0), 1));
+};
 
-interface Facet {
-	nodes: string[];
-	/** Shade index for the left copy and its mirrored right copy; one value is a centre plane. */
-	shades: [number, number] | [number];
-}
 interface Variant {
 	name: string;
 	idea: string;
-	facets: Facet[];
+	z: Record<string, number>;
+	facets: string[][];
 }
-const cheek: Facet = { nodes: ["nT", "n", "s", "q", "k"], shades: [1, 4] };
-const wingUpper: Facet = { nodes: ["s", "t", "p"], shades: [2, 3] };
-const wingInner: Facet = { nodes: ["s", "p", "q"], shades: [1, 3] };
-const wingLower: Facet = { nodes: ["t", "rt", "r", "p"], shades: [3, 4] };
-const sideBox: Facet = { nodes: ["p", "r", "q"], shades: [4, 5] };
-const flank: Facet = { nodes: ["q", "r", "c"], shades: [2, 4] };
-const keelOuter: Facet = { nodes: ["q", "c", "m"], shades: [3, 5] };
-const keelInner: Facet = { nodes: ["q", "k", "m"], shades: [0, 2] };
-
+const sketched = [
+	["nT", "n", "s", "q", "k"],
+	["s", "t", "p"],
+	["s", "p", "q"],
+	["t", "rt", "r", "p"],
+	["p", "r", "q"],
+	["q", "r", "c"],
+	["q", "c", "m"],
+	["q", "k", "m"],
+];
 const variants: Variant[] = [
 	{
-		name: "01 / As drawn, tent keel",
-		idea: "Every sketched fold kept. The spine is a raised ridge from nose to stern; the stern tent and spar both read as peaks.",
+		name: "01 / Tent spine",
+		idea: "The sketched folds with the spine as the highest line: a ridge rises from the nose, peaks under the canopy and runs down the stern tent. Wings fall from the shoulders to flat tips.",
+		z: {
+			nT: 2,
+			n: 0.5,
+			s: 1.5,
+			sC: 4,
+			t: 0,
+			p: 0.5,
+			rt: 0,
+			r: 0,
+			c: 0.5,
+			m: 2,
+			k: 5,
+			q: 3,
+		},
+		facets: sketched,
+	},
+	{
+		name: "02 / Gull wings",
+		idea: "Same folds, but the wingtips rise above the shoulders. The body sits low between two upswept blades, with the stern tent a shallow keel.",
+		z: {
+			nT: 2,
+			n: 0.5,
+			s: 2.2,
+			sC: 3.5,
+			t: 4,
+			p: 1,
+			rt: 3,
+			r: 0.5,
+			c: 0.5,
+			m: 1.5,
+			k: 4,
+			q: 2.5,
+		},
+		facets: sketched,
+	},
+	{
+		name: "03 / Flat deck, chines",
+		idea: "A level deck from the shoulders to the canopy base, with sharp chines dropping to every outline edge. Stealth-plate reading; the stern is one sloped deck.",
+		z: {
+			nT: 3,
+			n: 0,
+			s: 4,
+			sC: 4,
+			t: 0,
+			p: 0,
+			rt: 0,
+			r: 0,
+			c: 0,
+			m: 1,
+			k: 4,
+			q: 4,
+		},
 		facets: [
-			cheek,
-			wingUpper,
-			wingInner,
-			wingLower,
-			sideBox,
-			flank,
-			keelOuter,
-			keelInner,
+			["nT", "s", "q", "k", "qR", "sR"],
+			["nT", "n", "s"],
+			["s", "t", "p", "q"],
+			["t", "rt", "r", "p"],
+			["q", "p", "r", "c"],
+			["q", "c", "m", "cR", "qR", "k"],
 		],
 	},
 	{
-		name: "02 / As drawn, valley keel",
-		idea: "Same folds, but the long stern triangles fall inward: the spine behind the canopy is a channel, not a ridge.",
+		name: "04 / Pyramid fan",
+		idea: "The Cruiser's construction: every outline edge forms a triangle with one apex at the canopy base. One peak, planes darkening as they turn away from the light.",
+		z: {
+			nT: 1,
+			n: 0,
+			s: 0,
+			sC: 2,
+			t: 0,
+			p: 0,
+			rt: 0,
+			r: 0,
+			c: 0,
+			m: 1,
+			k: 6,
+			q: 3,
+		},
 		facets: [
-			cheek,
-			wingUpper,
-			wingInner,
-			wingLower,
-			sideBox,
-			flank,
-			{ nodes: ["q", "c", "m"], shades: [1, 3] },
-			{ nodes: ["q", "k", "m"], shades: [4, 5] },
+			["k", "nT", "n"],
+			["k", "n", "s"],
+			["k", "s", "t"],
+			["k", "t", "rt"],
+			["k", "rt", "r"],
+			["k", "r", "c"],
+			["k", "c", "m"],
 		],
 	},
 	{
-		name: "03 / Three planes a side",
-		idea: "Shoulder-to-spar and box folds dropped. One wing plate, one cheek, one stern plane per side: the calmest body.",
-		facets: [
-			cheek,
-			{ nodes: ["s", "t", "rt", "r", "q"], shades: [2, 3] },
-			{ nodes: ["q", "r", "c", "m", "k"], shades: [3, 5] },
-		],
+		name: "05 / Twin ridges",
+		idea: "Two ridges run from the shoulders along the spar to the stern, with the canopy sunk in a trough between them: a split, boom-like body around the pilot.",
+		z: {
+			nT: 1,
+			n: 0,
+			s: 4,
+			sC: 2,
+			t: 0,
+			p: 3,
+			rt: 0,
+			r: 0,
+			c: 0,
+			m: 1,
+			k: 2.5,
+			q: 3.5,
+		},
+		facets: sketched,
 	},
 	{
-		name: "04 / Spar ridge",
-		idea: "The spar from wingtip to canopy base is the sharpest edge. Everything ahead of it faces the light; everything behind falls away.",
+		name: "06 / Nose blade, stern saddle",
+		idea: "The nose carries a high blade that drops behind the canopy; the stern tent rises again to a tall centre. A hunched, predatory profile on the same outline.",
+		z: {
+			nT: 4,
+			n: 0.5,
+			s: 1,
+			sC: 4.5,
+			t: 0,
+			p: 0.5,
+			rt: 0,
+			r: 0,
+			c: 0.5,
+			m: 3.5,
+			k: 2.5,
+			q: 2,
+		},
 		facets: [
-			{ nodes: ["nT", "n", "s", "q", "k"], shades: [0, 2] },
-			{ nodes: ["s", "t", "p"], shades: [1, 3] },
-			{ nodes: ["s", "p", "q"], shades: [0, 2] },
-			{ nodes: ["t", "rt", "r", "p"], shades: [4, 5] },
-			{ nodes: ["p", "r", "q"], shades: [3, 5] },
-			{ nodes: ["q", "r", "c"], shades: [4, 5] },
-			{ nodes: ["q", "c", "m"], shades: [3, 4] },
-			{ nodes: ["q", "k", "m"], shades: [2, 3] },
-		],
-	},
-	{
-		name: "05 / Boxed flank",
-		idea: "The shoulder, box and flank folds merge into one steep side wall under a flat wing plate, giving the small body visible depth.",
-		facets: [
-			cheek,
-			{ nodes: ["s", "t", "rt", "r", "p"], shades: [2, 2] },
-			{ nodes: ["s", "p", "r", "c", "q"], shades: [4, 5] },
-			{ nodes: ["q", "c", "m", "k"], shades: [1, 3] },
-		],
-	},
-	{
-		name: "06 / Nose cap, flat stern",
-		idea: "A cross fold on the shoulder line tilts the nose forward as its own cap; behind the canopy the stern becomes one flat deck.",
-		facets: [
-			{ nodes: ["n", "nR", "sR", "s"], shades: [2] },
-			{ nodes: ["s", "q", "k", "sC"], shades: [1, 4] },
-			wingUpper,
-			wingInner,
-			wingLower,
-			sideBox,
-			flank,
-			{ nodes: ["q", "c", "m", "cR", "qR", "k"], shades: [3] },
+			["nT", "n", "s", "sC"],
+			["sC", "s", "q", "k"],
+			["s", "t", "p"],
+			["s", "p", "q"],
+			["t", "rt", "r", "p"],
+			["p", "r", "q"],
+			["q", "r", "c"],
+			["q", "c", "m"],
+			["q", "k", "m"],
 		],
 	},
 ];
-const polygon = (names: string[]) =>
-	names.map((n) => node(n).join(",")).join(" ");
-const mirrored = (names: string[]) =>
+const cockpit = "0,-11.4 -3,-6.1 -3,-0.7 0,2 3,-0.7 3,-6.1";
+const resolve = (v: Variant, name: string): XYZ => {
+	const base = name.endsWith("R") ? name.slice(0, -1) : name;
+	const [x, y] = outline[base];
+	return [name.endsWith("R") ? -x : x, y, v.z[base] * 2.2];
+};
+const mirrorNames = (names: string[]) =>
 	names.map((n) => (n.endsWith("R") ? n.slice(0, -1) : `${n}R`));
+const planes = (v: Variant) =>
+	v.facets.flatMap((names) => {
+		const isCentre = names.some((n) => n.endsWith("R"));
+		return (isCentre ? [names] : [names, mirrorNames(names)]).map((set) => {
+			const pts = set.map((n) => resolve(v, n));
+			return {
+				points: pts.map(([x, y]) => `${x},${y}`).join(" "),
+				fill: shade(pts),
+			};
+		});
+	});
 ---
 
 <div class="lowpoly">
@@ -141,55 +251,35 @@ const mirrored = (names: string[]) =>
 		Show fold lines</label
 	>
 	<div class="cards">
-		{variants.map((v) => (
-			<figure>
-				<figcaption>{v.name}</figcaption>
-				<svg
-					viewBox="-20 -24 40 48"
-					role="img"
-					aria-label={`${v.name}. ${v.idea} Nose up, chassis planes only.`}
-				>
-					{v.facets.map((facet) =>
-						facet.shades.length === 2 ? (
-							<>
-								<polygon
-									points={polygon(facet.nodes)}
-									fill={shade[facet.shades[0]]}
-								/>
-								<polygon
-									points={polygon(mirrored(facet.nodes))}
-									fill={shade[facet.shades[1]]}
-								/>
-							</>
-						) : (
-							<polygon
-								points={polygon(facet.nodes)}
-								fill={shade[facet.shades[0]]}
-							/>
-						),
-					)}
-					<polygon
-						points={cockpit}
-						fill="#000"
-						stroke={f[1]}
-						stroke-width="0.3"
-					/>
-					<g class="folds">
-						{v.facets.map((facet) =>
-							facet.shades.length === 2 ? (
-								<>
-									<polygon points={polygon(facet.nodes)} />
-									<polygon points={polygon(mirrored(facet.nodes))} />
-								</>
-							) : (
-								<polygon points={polygon(facet.nodes)} />
-							),
-						)}
-					</g>
-				</svg>
-				<p>{v.idea}</p>
-			</figure>
-		))}
+		{variants.map((v) => {
+			const facets = planes(v);
+			return (
+				<figure>
+					<figcaption>{v.name}</figcaption>
+					<svg
+						viewBox="-20 -24 40 48"
+						role="img"
+						aria-label={`${v.name}. ${v.idea} Nose up, chassis planes only.`}
+					>
+						{facets.map((p) => (
+							<polygon points={p.points} fill={p.fill} />
+						))}
+						<polygon
+							points={cockpit}
+							fill="#000"
+							stroke={f[0]}
+							stroke-width="0.35"
+						/>
+						<g class="folds">
+							{facets.map((p) => (
+								<polygon points={p.points} />
+							))}
+						</g>
+					</svg>
+					<p>{v.idea}</p>
+				</figure>
+			);
+		})}
 	</div>
 </div>
 <style>
