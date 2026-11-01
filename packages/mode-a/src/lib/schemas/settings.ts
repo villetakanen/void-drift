@@ -10,6 +10,6 @@ export const SettingsSchema = z.object({
 export type Settings = z.infer<typeof SettingsSchema>;
 
 export const DEFAULT_SETTINGS: Settings = {
-	invertControls: false,
+	invertControls: true,
 	selectedShipId: DEFAULT_SHIP_PROFILE_ID,
 };

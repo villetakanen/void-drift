@@ -419,3 +419,10 @@ reset/retry retains the current session's choice. All three fixed starter loadou
 enable stabilizers. The 0.4.3 engine fittings and battery counts remain unchanged.
 Builder saves and the Flight Lab's optional stabilizer setting are independent and
 are not forced on. The existing pre-alpha ion-1 leaderboard remains in use.
+
+
+### Inverted controls default — 0.4.4 hotfix
+
+New or reset settings default to inverted left/right engine controls. Existing
+explicitly saved settings continue to take precedence, and the Settings toggle
+can disable inversion. The release number remains 0.4.4.

@@ -100,7 +100,7 @@ test("Scout restores its four-slot save, fits every part and flies from the cano
 	const tick = Number(await deck.getAttribute("data-ticks"));
 	await page.keyboard.down("a");
 	await expect(
-		page.getByRole("button", { name: "Left engine", exact: true }),
+		page.getByRole("button", { name: "Right engine", exact: true }),
 	).toHaveClass(/active/);
 	await page.keyboard.down("d");
 	await expect(

@@ -25,27 +25,27 @@ test("optional stabilizers persist and render in all fitted hulls through turn, 
 			.click();
 		const deck = page.locator(".flight-page");
 		await expect(deck).toHaveAttribute("data-stabilizers", "true");
-		await page.keyboard.down("a");
+		await page.keyboard.down("d");
 		await page.clock.runFor(500);
 		await expect
 			.poll(async () => Number(await deck.getAttribute("data-spin")))
 			.toBeGreaterThan(0);
 		await page.screenshot({ path: `artifacts/ion-${chassis}-left.png` });
-		await page.keyboard.up("a");
+		await page.keyboard.up("d");
 		const initialSpin = Number(await deck.getAttribute("data-spin"));
 		await page.clock.runFor(500);
 		const brakingSpin = Number(await deck.getAttribute("data-spin"));
 		expect(brakingSpin).toBeLessThan(initialSpin);
 		expect(brakingSpin).toBeGreaterThanOrEqual(0);
 		await page.screenshot({ path: `artifacts/ion-${chassis}-release.png` });
-		await page.keyboard.down("d");
-		await page.clock.runFor(500);
-		await page.screenshot({ path: `artifacts/ion-${chassis}-right.png` });
 		await page.keyboard.down("a");
 		await page.clock.runFor(500);
+		await page.screenshot({ path: `artifacts/ion-${chassis}-right.png` });
+		await page.keyboard.down("d");
+		await page.clock.runFor(500);
 		await page.screenshot({ path: `artifacts/ion-${chassis}-both.png` });
-		await page.keyboard.up("a");
 		await page.keyboard.up("d");
+		await page.keyboard.up("a");
 	}
 });
 
