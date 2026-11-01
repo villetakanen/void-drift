@@ -41,10 +41,11 @@ unless marked independent.
 - Investigate: CSS `font-family`/`font` declarations, the `--font-*` tokens, `body` in
   `styles.css`, layouts, and canvas `ctx.font` (`build-renderer.ts`, `resource-bar.ts`, Lab
   inspectors). Confirm that nothing loads Noto Sans Math.
-- Spec: `design-system-core.md` (type section rewritten). Roles: `ui` = monospace for all game and
-  interface text; `prose` = system sans-serif for studies, help and docs; `display` = the prose family
+- Spec: `design-system-core.md` (type section rewritten). Roles: `ui` = B612 Mono for all game and
+  interface text; `prose` = Noto Sans for studies, help and docs; `display` = the prose family
   at weight 800. Add size steps, line heights and tracking tokens, plus a global `.prose` class
-  promoted from `StudyLayout`. No webfonts.
+  promoted from `StudyLayout`. ~~No webfonts.~~ [DEPRECATED 2026-11-01] B612 Mono and Noto Sans are
+  self-hosted with OFL licences (D2 as amended).
 - Lab: rebuild `/lab/typography` to show the three roles, every size step and `.prose`.
 - Apply: replace every literal family with a role token, including canvas fonts through a
   shared TS constant. Remove `"Noto Sans Math"` from runtime CSS. Keep the old `--font-*` names as
@@ -160,7 +161,7 @@ unless marked independent.
 
 ## Boundaries
 
-- No new npm dependencies, webfonts or paid services.
+- No new npm dependencies or paid services. Fonts are self-hosted files, never a CDN (D2 as amended).
 - No changes to gravity, friction or ship tuning.
 - Star systems are never static (owner, 2026-11-01).
 - Stored ids, saved builds, settings and score documents stay compatible.

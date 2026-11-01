@@ -15,7 +15,7 @@ This specification defines the "Experience Model" for Void Drift. It establishes
 
 - **Tech Stack:** Vanilla CSS Variables (Tokens).
 - **Location:** `apps/web/src/styles.css` (Single Source of Truth).
-- **Font:** Noto Sans Math (Google Fonts, loaded via CDN).
+- **Font:** [DEPRECATED 2026-11-01] ~~Noto Sans Math (Google Fonts, loaded via CDN).~~ See [Typography](#typography); fonts are self-hosted.
 - **Logo Symbolism:** ∅·Δ (Void × Drift).
 - **Implementation:** Zero hardcoded colors in components; all use `var(--token-name)`.
 
@@ -32,8 +32,8 @@ This specification defines the "Experience Model" for Void Drift. It establishes
 
 - [x] Global CSS file exists at `apps/web/src/styles.css`.
 - [x] CSS Variables for all defined colors are present in `:root`.
-- [x] Font "Noto Sans Math" loads correctly via Google Fonts.
-- [x] Logo component renders ∅·Δ glyphs correctly using Noto Sans Math.
+- [ ] [DEPRECATED 2026-11-01] ~~Font "Noto Sans Math" loads correctly via Google Fonts.~~ The CDN link was removed on 2026-10-28 (`3041a80`); nothing has loaded it since.
+- [ ] [DEPRECATED 2026-11-01] ~~Logo component renders ∅·Δ glyphs correctly using Noto Sans Math.~~ Replaced by SVG outlines in opening-screen S2.
 - [x] All UI components use design tokens (no hardcoded hex values).
 
 ### Regression Guardrails
@@ -47,7 +47,7 @@ This specification defines the "Experience Model" for Void Drift. It establishes
 **Scenario: Logo Rendering** ✅
 - Given the Logo component in `apps/web/src/components/Logo.svelte`
 - When rendered in the HUD
-- Then it displays ∅·Δ using Noto Sans Math font
+- Then it displays ∅·Δ using Noto Sans Math font [DEPRECATED 2026-11-01]: vector outlines from S2; the font is not served
 - And it uses `var(--color-neon-blue)` for color
 - And it has a subtle text-shadow glow effect
 - **Status:** VERIFIED - Logo visible in game HUD (top-left)
@@ -65,6 +65,53 @@ This specification defines the "Experience Model" for Void Drift. It establishes
 - Then it MUST use `var(--color-*)` tokens
 - And NOT use hardcoded hex values like `#00f0ff`
 - **Status:** ENFORCED - Biome linting checks for hardcoded colors
+
+## Typography
+
+**Status:** Implemented 2026-11-01 (opening-screen S1, decision D2 as amended).
+**Source of truth:** `packages/core/src/lib/styles/{fonts,tokens,typography}.css` and
+`packages/core/src/lib/ui/typography.ts`. **Lab:** `/lab/typography`.
+
+### Typefaces
+
+| Role      | Face                                | Used for                                                                                          | Shipped as                                         |
+| --------- | ----------------------------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| `ui`      | B612 Mono 400/700, roman and italic | All game and interface text: HUD, menus, builder, settings, leaderboard, Lab shell, canvas labels | Self-hosted woff2 (latin)                          |
+| `prose`   | Noto Sans, variable 100–900         | Studies, help and docs                                                                            | Self-hosted woff2 (latin subset: English, Finnish) |
+| `display` | Noto Sans at weight 800             | Headlines                                                                                         | Same file as `prose`                               |
+| Logotype  | Noto Sans Math                      | ∅·Δ only                                                                                          | SVG outlines (S2); the font is never served        |
+
+"Monospace" in this project means B612 Mono. Fonts live in
+`packages/core/src/lib/styles/fonts/` with their SIL OFL 1.1 licences; there is no CDN and no npm
+font package. Each family falls back to the OS face (`ui-monospace`, `system-ui`) while loading
+(`font-display: swap`) or for characters outside the subset.
+
+### Tokens
+
+| Group        | Tokens                                                                                                                                       |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Families     | `--font-family-ui`, `--font-family-prose`, `--font-family-display`                                                                           |
+| Weights      | `--font-weight-regular` 400, `--font-weight-medium` 500, `--font-weight-bold` 700, `--font-weight-display` 800                               |
+| Sizes        | `--font-size-caption` 0.75rem, `-label` 0.875rem, `-body` 0.95rem, `-lead` 1.2rem, `-heading` 1.5rem, `-display` clamp(1.75rem, 4vw, 3.5rem) |
+| Line heights | `--line-height-display` 1.05, `-heading` 1.1, `-ui` 1.5, `-prose` 1.65                                                                       |
+| Tracking     | `--tracking-eyebrow` 0.16em, `-wordmark` 0.12em, `-display` −0.04em                                                                          |
+| Measure      | `--measure-prose` 70ch                                                                                                                       |
+
+B612 Mono has no 500 or 800; `--font-weight-medium` resolves to 400 in the ui role. Use 400 or 700
+there. Deprecated aliases remain until their last consumer migrates: `--font-flight` → ui,
+`--font-display` → display, `--font-small` → caption, `--font-body` → body, `--font-large` → heading,
+`--font-title` → display size. Preserved studies keep using these aliases.
+
+### Rules
+
+- Page roots set the role: game pages (`body`, `.flight-page`) and the Lab shell use `ui`;
+  `StudyLayout` puts `.prose` on its `main`.
+- `.prose` is global: family, line height, measure on section paragraphs, heading rhythm and link
+  colour. Its descendant rules have zero specificity, so local component styles win.
+- Components name role tokens. Literal families are not allowed in shared CSS, layouts or canvas.
+- Canvas uses `canvasFont(size, weight)` from `@void-drift/core`, which mirrors `--font-family-ui`
+  (`pnpm check:contracts` keeps them equal). One-shot canvas drawings redraw after `loadCanvasFonts()`.
+- Preserved study components keep their local values.
 
 ## Current Implementation
 
@@ -96,7 +143,9 @@ This specification defines the "Experience Model" for Void Drift. It establishes
 }
 ```
 
-#### Typography
+#### Typography [DEPRECATED 2026-11-01]
+
+Superseded by [Typography](#typography).
 
 ```css
 :root {
@@ -148,7 +197,9 @@ This specification defines the "Experience Model" for Void Drift. It establishes
 }
 ```
 
-## Font Loading
+## Font Loading [DEPRECATED 2026-11-01]
+
+Superseded by [Typography](#typography): fonts are self-hosted and no CDN is used.
 
 ### Google Fonts CDN
 
@@ -284,7 +335,7 @@ Text-only style for navigation:
 - [ ] Add animation tokens (duration, easing curves)
 - [ ] Add shadow/glow effect tokens for consistent visual effects
 - [ ] Add breakpoint tokens for responsive design
-- [ ] Consider self-hosting fonts for offline support
+- [x] Self-host fonts (2026-11-01, opening-screen S1)
 
 ---
 

@@ -14,6 +14,9 @@ to versioned configuration. Feel and fidelity require human playtesting.
 
 - Tokens: `packages/core/src/lib/styles/tokens.css`; shared classes in that styles
   directory; application-level styles in `apps/web/src/styles.css`.
+- Type: B612 Mono for all game and interface text, Noto Sans for prose and heavy
+  display headlines, both self-hosted; Noto Sans Math only as the SVG logomark.
+  Roles and tokens are in `specs/design-system-core.md`; `/lab/typography` shows them.
 - Use shared variables for UI colors, fonts, spacing, and sizes. Add a missing token
   deliberately, with a Lab example, rather than accumulating component literals.
 - Procedural drawing lives in `packages/core/src/lib/assets/`; effects live in
