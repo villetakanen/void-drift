@@ -74,15 +74,13 @@ and the dimmed scene show through behind the overlay.
 
 ## Owner decisions (all recorded 2026-11-01)
 
-| # | Decision | Options seen |
-|---|----------|--------------|
-| D1 | Brand mark | **Decided 2026-11-01:** the logomark is ∅·Δ set in Noto Sans Math, shipped as vector outlines (no runtime font). Convert once and commit the SVG with a source/licence note; no new dependency |
-| D2 | Typefaces | **Decided 2026-11-01:** monospace for all game/UX text; long-form prose (studies, help) uses the system sans-serif; display headlines use that same sans-serif in a heavy weight. No webfonts. |
-| D3 | Opening primary | **Revised 2026-11-01:** the card is only the three ships, shown as visuals, plus a Go button; select a ship, then Go (see E4). The builder leaves the card for an extra entry in a top corner of the header, without the version number. The dropdown and the separate Start/Build buttons go |
-| D4 | Ship names | **Decided 2026-11-01:** Scout / Fighter / Corvette everywhere, from one shared name source. Ids `scout` / `balanced` / `tank` stay. Rename "Heavy Corvette" in `loadout.ts`, `design.md` and the builder; replace "Balanced"/"Tank" in `config.ts`, the Lab inspector and hand-written descriptions; the leaderboard shows names, not ids |
-| D5 | Backdrop | **Decided 2026-11-01:** a live, ship-less star system at the outermost zoom level. Planets and moons move slowly and the star radiates; it shows what a system looks like. The system is random, in line with star-system randomization (currently effectively off: see E12) |
-| D6 | Accent meaning | **Decided 2026-11-01:** lime is the brand colour, and the brand colour doubles as the action highlight. It is used for the logomark, actions (buttons, links, focus, active controls) and selection (selected outlines, occupied builder slots). Informational text (eyebrows, tags, descriptions) moves off lime |
-| D7 | Phone landscape | **Decided 2026-11-01:** simple and must fit an iPhone in landscape. The minimum is the logomark, three ship visuals in a row and a one-line control hint. The headline/eyebrow appear only where space allows |
+- **D1 Brand mark:** Decided 2026-11-01 — the logomark is ∅·Δ set in Noto Sans Math, shipped as vector outlines (no runtime font). Convert once and commit the SVG with a source/licence note; no new dependency
+- **D2 Typefaces:** Decided 2026-11-01 — monospace for all game/UX text; long-form prose (studies, help) uses the system sans-serif; display headlines use that same sans-serif in a heavy weight. No webfonts.
+- **D3 Opening primary:** Revised 2026-11-01 — the card is only the three ships, shown as visuals, plus a Go button; select a ship, then Go (see E4). The builder leaves the card for an extra entry in a top corner of the header, without the version number. The dropdown and the separate Start/Build buttons go
+- **D4 Ship names:** Decided 2026-11-01 — Scout / Fighter / Corvette everywhere, from one shared name source. Ids `scout` / `balanced` / `tank` stay. Rename "Heavy Corvette" in `loadout.ts`, `design.md` and the builder; replace "Balanced"/"Tank" in `config.ts`, the Lab inspector and hand-written descriptions; the leaderboard shows names, not ids
+- **D5 Backdrop:** Decided 2026-11-01 — a live, ship-less star system at the outermost zoom level. Planets and moons move slowly and the star radiates; it shows what a system looks like. The system is random, in line with star-system randomization (currently effectively off: see E12)
+- **D6 Accent meaning:** Decided 2026-11-01 — lime is the brand colour, and the brand colour doubles as the action highlight. It is used for the logomark, actions (buttons, links, focus, active controls) and selection (selected outlines, occupied builder slots). Informational text (eyebrows, tags, descriptions) moves off lime
+- **D7 Phone landscape:** Decided 2026-11-01 — simple and must fit an iPhone in landscape. The minimum is the logomark, three ship visuals in a row and a one-line control hint. The headline/eyebrow appear only where space allows
 
 ## Primitives to create
 
@@ -150,9 +148,9 @@ and the dimmed scene show through behind the overlay.
   - `sunType` is hard-coded `"G"`.
   - Planets come from a fixed list in core `config.ts`, where "The Moon" is a planet entry,
     not a satellite.
-  So "random system" today means random orbit phase only. Real variety depends on generator
-  work outside the design system. Open: if the run uses the fixed challenge system, Start changes the scene
-  the player has just been looking at.
+    So "random system" today means random orbit phase only. Real variety depends on generator
+    work outside the design system. Open: if the run uses the fixed challenge system, Start changes the scene
+    the player has just been looking at.
 
 ### Lab and docs
 
