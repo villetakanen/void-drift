@@ -1,11 +1,11 @@
 <script lang="ts">
 import { EnginePlume, type PlumeEmitter, Vec2 } from "@void-drift/core";
-import { BUILD_FLIGHT_SCALE } from "@void-drift/mode-a";
+import { BUILD_FLIGHT_SCALE, ENGINE_ART, FIGHTER } from "@void-drift/mode-a";
 import { onMount } from "svelte";
-import { ENGINE_ART } from "../../../../../packages/mode-a/src/lib/engine-art";
-import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
 import { DT, INPUT_SEQUENCE, TOTAL_TICKS } from "./movement-bench";
 import "@void-drift/core/styles/buttons.css";
+
+let { label = "LHI Wasp flight demo" }: { label?: string } = $props();
 
 type Point = readonly [number, number];
 type Facet = {
@@ -772,7 +772,7 @@ onMount(() => {
 });
 </script>
 
-<div class="wasp-flight-demo">
+<section class="wasp-flight-demo" aria-label={label}>
 	<div class="demo-toolbar">
 		<div class="toolbar-group">
 			<span class="group-label">Mode &amp; Playback</span>
@@ -940,7 +940,7 @@ onMount(() => {
 			</strong>
 		</span>
 	</output>
-</div>
+</section>
 
 <style>
 .wasp-flight-demo {

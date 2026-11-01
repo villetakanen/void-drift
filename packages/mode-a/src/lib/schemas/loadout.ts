@@ -3,7 +3,13 @@ import { CRUISER } from "../cruiser";
 import { FIGHTER } from "../fighter";
 import { SCOUT } from "../scout";
 import { stabilizerMount } from "../stabilizers";
-import { ION_DEFAULTS, ION_REFERENCE_MASS, STABILIZER_ENERGY } from "./ion";
+import { WASP } from "../wasp";
+import {
+	ION_DEFAULTS,
+	ION_REFERENCE_MASS,
+	STABILIZER_ENERGY,
+	STABILIZER_STRENGTH,
+} from "./ion";
 import { ShipProfileIdSchema } from "./ship-profile";
 
 export const EngineIdSchema = z.enum(["ion", "heavy-ion", "fusion", "plasma"]);
@@ -56,15 +62,27 @@ export const ChassisSchema = z.object({
 	name: z.string(),
 	mass: z.number().positive(),
 	hull: z.number().int().positive(),
-	aft: z.number().int().positive(),
-	angle: z.number().positive(),
-	arm: z.number().positive(),
+	aft: z.number().int().nonnegative(),
+	angle: z.number().nonnegative(),
+	arm: z.number().nonnegative(),
 	sideX: z.number().default(0),
 	turnResponse: z.number().positive().default(1),
 	length: z.number().positive(),
 	width: z.number().positive(),
 });
 export const CHASSIS = {
+	wasp: ChassisSchema.parse({
+		name: "LHI Wasp",
+		mass: WASP.mass,
+		hull: 2,
+		aft: 0,
+		angle: WASP.angle,
+		arm: WASP.arm,
+		sideX: WASP.sideX,
+		turnResponse: WASP.turnResponse,
+		length: WASP.length,
+		width: WASP.width,
+	}),
 	scout: ChassisSchema.parse({
 		name: "Scout",
 		mass: SCOUT.mass,
@@ -208,13 +226,17 @@ export const LoadoutSchema = z
 				message: "Parts must fit this chassis's fixed slots",
 			});
 		}
-	});
+	})
+	.transform((build) =>
+		build.chassis === "wasp" ? { ...build, stabilizers: true } : build,
+	);
 export type Loadout = z.infer<typeof LoadoutSchema>;
 export function defaultLoadout(chassis: Loadout["chassis"]): Loadout {
 	return LoadoutSchema.parse({
 		version: 2,
 		chassis,
 		side: "ion",
+		stabilizers: chassis === "wasp",
 		hull: Array(CHASSIS[chassis].hull).fill(null),
 		aft: Array(CHASSIS[chassis].aft).fill(null),
 	});
@@ -230,18 +252,21 @@ export function starterLoadout(chassis: Loadout["chassis"]): Loadout {
 }
 export const BuildStoreSchema = z
 	.object({
+		wasp: LoadoutSchema.default(() => defaultLoadout("wasp")),
 		scout: LoadoutSchema,
 		balanced: LoadoutSchema,
 		tank: LoadoutSchema,
 	})
 	.refine(
 		(builds) =>
+			builds.wasp.chassis === "wasp" &&
 			builds.scout.chassis === "scout" &&
 			builds.balanced.chassis === "balanced" &&
 			builds.tank.chassis === "tank",
 	);
 export function defaultBuilds() {
 	return {
+		wasp: defaultLoadout("wasp"),
 		scout: defaultLoadout("scout"),
 		balanced: defaultLoadout("balanced"),
 		tank: defaultLoadout("tank"),
@@ -249,7 +274,10 @@ export function defaultBuilds() {
 }
 export function buildStats(build: Loadout) {
 	const chassis = CHASSIS[build.chassis];
-	const ids = [build.side, build.side, ...build.hull, ...build.aft];
+	const isWasp = build.chassis === "wasp";
+	const ids = isWasp
+		? [build.side, ...build.hull]
+		: [build.side, build.side, ...build.hull, ...build.aft];
 	let mass = chassis.mass,
 		capacity = 100,
 		coils = 1,
@@ -261,24 +289,31 @@ export function buildStats(build: Loadout) {
 		if (id === "coil") coils++;
 		engineDraw += PARTS[id].draw;
 	}
-	if (build.stabilizers) engineDraw += PARTS.ion.draw * STABILIZER_ENERGY;
+	if (isWasp || build.stabilizers)
+		engineDraw += PARTS.ion.draw * STABILIZER_ENERGY;
 	const side = PARTS[build.side];
 	const angle = (chassis.angle * Math.PI) / 180;
 	const aftThrust = build.aft.reduce(
 		(sum, id) => sum + (id ? PARTS[id].thrust : 0),
 		0,
 	);
+	const acceleration = isWasp
+		? side.thrust / mass
+		: (2 * side.thrust * Math.cos(angle) + aftThrust) / mass;
+	const turnRate = isWasp
+		? (PARTS.ion.thrust * STABILIZER_STRENGTH * WASP.stabilizers.coupledLever) /
+			(mass * WASP.stabilizers.inertiaPerMass)
+		: (side.thrust *
+				(Math.cos(angle) * chassis.arm + Math.sin(angle) * chassis.sideX)) /
+			(mass * stabilizerMount(build.chassis).inertiaPerMass);
 	return {
 		mass,
 		capacity,
 		coils,
 		engineDraw,
 		drain: 3 + engineDraw,
-		acceleration: (2 * side.thrust * Math.cos(angle) + aftThrust) / mass,
-		turnRate:
-			(side.thrust *
-				(Math.cos(angle) * chassis.arm + Math.sin(angle) * chassis.sideX)) /
-			(mass * stabilizerMount(build.chassis).inertiaPerMass),
+		acceleration,
+		turnRate,
 		endurance: capacity / 3,
 		fullEndurance: capacity / (3 + engineDraw),
 	};

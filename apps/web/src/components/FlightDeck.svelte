@@ -398,12 +398,16 @@ onMount(() => {
 						</select>
 						<div class="ship-description">
 							{lab
-								? "Two Light-ion side engines. Tune and compare flight."
-								: chosen === "scout"
-									? "SCOUT / Three Light ions. Standard energy capacity."
-									: chosen === "tank"
-										? "TANK / Five Light ions. Two extra energy packs."
-										: "FIGHTER / Four Light ions. One extra energy pack."}
+								? chosen === "wasp"
+									? "One rear Light-ion engine + 4 turning stabilizers. Tune and compare flight."
+									: "Two Light-ion side engines. Tune and compare flight."
+								: chosen === "wasp"
+									? "LHI WASP / One rear Light ion + 4 turning stabilizers. Standard energy capacity."
+									: chosen === "scout"
+										? "SCOUT / Three Light ions. Standard energy capacity."
+										: chosen === "tank"
+											? "TANK / Five Light ions. Two extra energy packs."
+											: "FIGHTER / Four Light ions. One extra energy pack."}
 						</div>
 						<div class="button-group button-group--vertical">
 							{#if !lab}
@@ -544,7 +548,11 @@ onMount(() => {
 				>
 				{#if tuning.loadout}
 					<label
-						><input type="checkbox" bind:checked={tuning.loadout.stabilizers}>
+						><input
+							type="checkbox"
+							bind:checked={tuning.loadout.stabilizers}
+							disabled={tuning.loadout.chassis === "wasp"}
+						>
 						Ion stabilizers</label
 					>
 					<p>

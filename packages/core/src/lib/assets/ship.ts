@@ -4,7 +4,7 @@ export interface DrawShipOptions {
 	rotation: number;
 	color?: string;
 	size?: number;
-	variant?: "scout" | "balanced" | "tank";
+	variant?: "wasp" | "scout" | "balanced" | "tank";
 }
 
 export function drawShip(

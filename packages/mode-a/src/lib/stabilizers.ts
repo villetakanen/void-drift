@@ -2,6 +2,7 @@ import { CRUISER } from "./cruiser";
 import { FIGHTER } from "./fighter";
 import type { ShipProfileId } from "./schemas/ship-profile";
 import { SCOUT } from "./scout";
+import { WASP } from "./wasp";
 
 export const STABILIZER_PLACEMENTS = {
 	balanced: { back: 77, inset: 10, angle: 37.7 },
@@ -9,6 +10,16 @@ export const STABILIZER_PLACEMENTS = {
 	tank: { back: 76, inset: 23, angle: 63 },
 } as const;
 export function stabilizerMount(chassis: ShipProfileId) {
+	if (chassis === "wasp") {
+		return {
+			x: WASP.stabilizers.front.x,
+			y: WASP.stabilizers.front.y,
+			fx: WASP.stabilizers.front.fx,
+			fy: WASP.stabilizers.front.fy,
+			lever: WASP.stabilizers.coupledLever,
+			inertiaPerMass: WASP.stabilizers.inertiaPerMass,
+		};
+	}
 	const points =
 		chassis === "balanced"
 			? FIGHTER.hull
@@ -33,6 +44,10 @@ export function stabilizerMount(chassis: ShipProfileId) {
 		lever: x * fy + y * fx,
 		inertiaPerMass: (length ** 2 + width ** 2) / 12 + ((nose + stern) / 2) ** 2,
 	};
+}
+export function drawWaspStabilizerSlits(ctx: CanvasRenderingContext2D) {
+	drawStabilizerSlits(ctx, WASP.stabilizers.front);
+	drawStabilizerSlits(ctx, WASP.stabilizers.rear);
 }
 export function drawStabilizerSlits(
 	ctx: CanvasRenderingContext2D,

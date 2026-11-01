@@ -154,7 +154,7 @@ function choose(id: ShipProfileId) {
 					onclick={() => choose(id as ShipProfileId)}
 				>
 					{chassis.name}<small
-						>{2 + chassis.hull + chassis.aft}
+						>{(id === "wasp" ? 1 : 2) + chassis.hull + chassis.aft}
 						SLOTS · {chassis.mass} MASS</small
 					>
 				</button>
@@ -194,17 +194,23 @@ function choose(id: ShipProfileId) {
 					{/each}
 				</div>
 				<label
-					><input type="checkbox" bind:checked={build.stabilizers}>
-					Ion stabilizers</label
+					><input
+						type="checkbox"
+						bind:checked={build.stabilizers}
+						disabled={chosen === "wasp"}
+					>
+					Ion stabilizers{chosen === "wasp" ? " (forced on)" : ""}</label
 				>
 				<p class="assembly-note">
 					0.22 Light-ion thrust · 0.25 Light-ion energy while firing. Assist
 					turns and brake spin automatically.
 				</p>
 				<p class="assembly-note">
-					Side engines are a mirrored pair. Hull and aft fittings are
-					independent.<br>Every installed part adds mass. Weapons are static
-					fittings in this alpha.
+					{chosen === "wasp"
+						? "One rear center engine (fires on A+D) and two independent under-wing equipment slots. Four turning stabilizers are forced on."
+						: "Side engines are a mirrored pair. Hull and aft fittings are independent."}
+					<br>Every installed part adds mass. Weapons are static fittings in
+					this alpha.
 				</p>
 			</section>
 			<section class="parts" aria-label="Compatible parts">
@@ -212,7 +218,9 @@ function choose(id: ShipProfileId) {
 				<h2>{mount.label}</h2>
 				<p>
 					{mount.group === "side"
-						? "One choice fits both sides. Two engines, two masses."
+						? chosen === "wasp"
+							? "Single rear center engine. Required propulsion slot."
+							: "One choice fits both sides. Two engines, two masses."
 						: "Swap freely. Empty is a valid choice."}
 				</p>
 				<div class="part-list">

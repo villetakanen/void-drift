@@ -1,6 +1,11 @@
 import { z } from "zod";
 
-export const ShipProfileIdSchema = z.enum(["scout", "balanced", "tank"]);
+export const ShipProfileIdSchema = z.enum([
+	"wasp",
+	"scout",
+	"balanced",
+	"tank",
+]);
 
 export const ShipProfileSchema = z.object({
 	id: ShipProfileIdSchema,
@@ -13,7 +18,7 @@ export const ShipProfileSchema = z.object({
 	tint: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
 });
 
-export const ShipProfilesSchema = z.array(ShipProfileSchema).length(3);
+export const ShipProfilesSchema = z.array(ShipProfileSchema).length(4);
 
 export type ShipProfileId = z.infer<typeof ShipProfileIdSchema>;
 export type ShipProfile = z.infer<typeof ShipProfileSchema>;

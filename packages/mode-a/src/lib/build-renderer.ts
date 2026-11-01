@@ -11,7 +11,12 @@ import {
 	type SlotType,
 } from "./schemas/loadout";
 import { SCOUT } from "./scout";
-import { drawStabilizerSlits, stabilizerMount } from "./stabilizers";
+import {
+	drawStabilizerSlits,
+	drawWaspStabilizerSlits,
+	stabilizerMount,
+} from "./stabilizers";
+import { WASP } from "./wasp";
 export const BUILD_FLIGHT_SCALE = 0.65;
 export interface BuildMount {
 	key: string;
@@ -29,6 +34,49 @@ export interface BuildMount {
 }
 export function buildMounts(build: Loadout): BuildMount[] {
 	const c = CHASSIS[build.chassis];
+	if (build.chassis === "wasp") {
+		return [
+			{
+				key: "hull-0",
+				type: "equipment",
+				label: "Left wing · Equipment",
+				x: WASP.hullMounts[0][0],
+				y: WASP.hullMounts[0][1],
+				angle: 0,
+				part: build.hull[0] ?? null,
+				group: "hull",
+				index: 0,
+				width: 11,
+				height: 9,
+			},
+			{
+				key: "hull-1",
+				type: "equipment",
+				label: "Right wing · Equipment",
+				x: WASP.hullMounts[1][0],
+				y: WASP.hullMounts[1][1],
+				angle: 0,
+				part: build.hull[1] ?? null,
+				group: "hull",
+				index: 1,
+				width: 11,
+				height: 9,
+			},
+			{
+				key: "left",
+				type: "engine",
+				label: "Rear center · Engine",
+				x: WASP.engineMount[0],
+				y: WASP.engineMount[1],
+				angle: 0,
+				part: build.side,
+				group: "side",
+				index: 0,
+				width: 11,
+				height: 9,
+			},
+		];
+	}
 	return [
 		{
 			key: "left",
@@ -136,7 +184,14 @@ function drawEngine(
 ) {
 	if (!mount.part) return;
 	const id = engineArtId(mount.part);
-	const pose = mount.key === "left" ? 1 : mount.key === "right" ? 2 : 3;
+	const pose =
+		build.chassis === "wasp"
+			? 3
+			: mount.key === "left"
+				? 1
+				: mount.key === "right"
+					? 2
+					: 3;
 	ctx.save();
 	ctx.translate(engineOffset(build, mount), 0);
 	// One silhouette pass avoids glowing seams between the low-poly faces.
@@ -182,21 +237,29 @@ export function drawBuild(
 	ctx.rotate(rotation);
 	ctx.scale(scale, scale);
 	const mounts = buildMounts(build);
+	const isWasp = build.chassis === "wasp";
 	const below = (mount: BuildMount) =>
-		build.chassis === "scout" || mount.group === "side";
+		isWasp
+			? mount.group === "hull"
+			: build.chassis === "scout" || mount.group === "side";
 	if (!slots)
 		for (const mount of mounts) {
-			if (!mount.part || PARTS[mount.part].category !== "E" || !below(mount))
-				continue;
+			if (!mount.part || !below(mount)) continue;
 			ctx.save();
 			ctx.translate(mount.x, mount.y);
 			ctx.rotate(mount.angle);
-			drawEngine(ctx, build, mount);
+			if (PARTS[mount.part].category === "E") {
+				drawEngine(ctx, build, mount);
+			} else {
+				drawNonEngineFitting(ctx, mount);
+			}
 			ctx.restore();
 		}
 	ctx.save();
 	if (slots) ctx.globalAlpha = 0.7;
-	if (build.chassis === "tank") {
+	if (isWasp) {
+		for (const facet of WASP.facets) polygon(ctx, facet.points, facet.color);
+	} else if (build.chassis === "tank") {
 		// Clip out the stern channel without painting over the scene beneath it.
 		ctx.save();
 		ctx.beginPath();
@@ -245,6 +308,9 @@ export function drawBuild(
 		}
 	}
 	ctx.restore();
+	if (isWasp) {
+		drawWaspStabilizerSlits(ctx);
+	}
 	if (slots) {
 		for (const secondary of mounts.filter((m) => m.linkedTo)) {
 			const primary = mounts.find((m) => m.key === secondary.linkedTo);
@@ -264,9 +330,12 @@ export function drawBuild(
 			ctx.restore();
 		}
 	}
-	for (const mount of ["side", "aft", "hull"].flatMap((group) =>
-		mounts.filter((m) => m.group === group),
-	)) {
+	const renderOrder = isWasp
+		? mounts
+		: ["side", "aft", "hull"].flatMap((group) =>
+				mounts.filter((m) => m.group === group),
+			);
+	for (const mount of renderOrder) {
 		const index = mounts.findIndex((m) => m.key === mount.key);
 		ctx.save();
 		ctx.translate(mount.x, mount.y);
@@ -286,7 +355,7 @@ export function drawBuild(
 			continue;
 		}
 		if (slots) drawSlot(ctx, mount, index + 1, selected === mount.key, slots);
-		if (!mount.part) {
+		if (!mount.part || (!slots && below(mount))) {
 			ctx.restore();
 			continue;
 		}
@@ -294,57 +363,60 @@ export function drawBuild(
 			const fit = Math.min(54 / 7 / mount.height, 64 / 7 / mount.width) * 0.65;
 			ctx.scale(fit, fit);
 		}
-		// This rectangle is the installed item's casing, not a vacant mount overlay.
-		ctx.strokeStyle =
-			PARTS[mount.part].category === "E" ? "#9af7ff" : COLOR.selected;
-		ctx.fillStyle = "#071015";
-		ctx.lineWidth = 0.45;
-		ctx.fillRect(
-			-mount.width / 2,
-			-mount.height / 2,
-			mount.width,
-			mount.height,
-		);
-		ctx.strokeRect(
-			-mount.width / 2,
-			-mount.height / 2,
-			mount.width,
-			mount.height,
-		);
-		if (mount.part === "rail" || mount.part === "laser") {
-			// Use the same mount-relative fittings as Fighter/Heavy: the legacy
-			// Scout's 18-unit barrel would cross this compact hull's cockpit.
-			const barrel = barrelLength(mount);
-			ctx.fillRect(0, -2, barrel, 4);
-			ctx.strokeRect(0, -2, barrel, 4);
-		} else if (mount.part === "coil") {
-			for (let i = -3; i <= 3; i += 3) {
-				ctx.beginPath();
-				ctx.ellipse(i, 0, 1.5, 3, 0, 0, Math.PI * 2);
-				ctx.stroke();
-			}
-		} else if (mount.part === "battery") {
-			ctx.beginPath();
-			ctx.moveTo(-2, -2);
-			ctx.lineTo(2, -2);
-			ctx.moveTo(0, -4);
-			ctx.lineTo(0, 0);
-			ctx.stroke();
-		} else if (mount.part) {
-			ctx.strokeStyle = mount.part === "ion" ? "#9af7ff" : "#ffc56e";
-			ctx.beginPath();
-			ctx.moveTo(-mount.width / 2, -3);
-			ctx.lineTo(-nozzleOffset(mount), -4);
-			ctx.lineTo(-nozzleOffset(mount), 4);
-			ctx.lineTo(-mount.width / 2, 3);
-			ctx.stroke();
-		}
+		drawNonEngineFitting(ctx, mount);
 
 		ctx.restore();
 	}
-	if (build.stabilizers)
+	if (!isWasp && build.stabilizers)
 		drawStabilizerSlits(ctx, stabilizerMount(build.chassis));
 	ctx.restore();
+}
+
+function drawNonEngineFitting(
+	ctx: CanvasRenderingContext2D,
+	mount: BuildMount,
+) {
+	if (!mount.part) return;
+	// This rectangle is the installed item's casing, not a vacant mount overlay.
+	ctx.strokeStyle =
+		PARTS[mount.part].category === "E" ? "#9af7ff" : COLOR.selected;
+	ctx.fillStyle = "#071015";
+	ctx.lineWidth = 0.45;
+	ctx.fillRect(-mount.width / 2, -mount.height / 2, mount.width, mount.height);
+	ctx.strokeRect(
+		-mount.width / 2,
+		-mount.height / 2,
+		mount.width,
+		mount.height,
+	);
+	if (mount.part === "rail" || mount.part === "laser") {
+		// Use the same mount-relative fittings as Fighter/Heavy: the legacy
+		// Scout's 18-unit barrel would cross this compact hull's cockpit.
+		const barrel = barrelLength(mount);
+		ctx.fillRect(0, -2, barrel, 4);
+		ctx.strokeRect(0, -2, barrel, 4);
+	} else if (mount.part === "coil") {
+		for (let i = -3; i <= 3; i += 3) {
+			ctx.beginPath();
+			ctx.ellipse(i, 0, 1.5, 3, 0, 0, Math.PI * 2);
+			ctx.stroke();
+		}
+	} else if (mount.part === "battery") {
+		ctx.beginPath();
+		ctx.moveTo(-2, -2);
+		ctx.lineTo(2, -2);
+		ctx.moveTo(0, -4);
+		ctx.lineTo(0, 0);
+		ctx.stroke();
+	} else if (mount.part) {
+		ctx.strokeStyle = mount.part === "ion" ? "#9af7ff" : "#ffc56e";
+		ctx.beginPath();
+		ctx.moveTo(-mount.width / 2, -3);
+		ctx.lineTo(-nozzleOffset(mount), -4);
+		ctx.lineTo(-nozzleOffset(mount), 4);
+		ctx.lineTo(-mount.width / 2, 3);
+		ctx.stroke();
+	}
 }
 
 /** Engine identity colours: game data, shared by the builder canvas and its cards. */
@@ -469,7 +541,18 @@ export function buildPlumeEmitters(build: Loadout): PlumeEmitter[] {
 			angle: mount.angle,
 			output: 0,
 		}));
-	if (build.stabilizers) {
+	if (build.chassis === "wasp") {
+		for (const m of [WASP.stabilizers.front, WASP.stabilizers.rear]) {
+			for (const side of [-1, 1])
+				emitters.push({
+					style: "ion-light",
+					x: (m.x - m.fx) * BUILD_FLIGHT_SCALE,
+					y: (side * m.y + side * m.fy) * BUILD_FLIGHT_SCALE,
+					angle: Math.atan2(-side * m.fy, m.fx),
+					output: 0,
+				});
+		}
+	} else if (build.stabilizers) {
 		const m = stabilizerMount(build.chassis);
 		for (const side of [-1, 1])
 			emitters.push({
@@ -512,6 +595,28 @@ export function barrelLength(mount: BuildMount) {
 
 /** Conservative circular collision envelope, including the accepted forward tip. */
 function baseBuildCollisionRadius(build: Loadout) {
+	if (build.chassis === "wasp") {
+		const hull = Math.max(
+			...WASP.facets.flatMap((facet) =>
+				facet.points.map(([x, y]) => Math.hypot(x, y)),
+			),
+		);
+		const fittings = buildMounts(build).map((mount) => {
+			const forward =
+				mount.part === "rail" || mount.part === "laser"
+					? barrelLength(mount)
+					: mount.width / 2;
+			const rear =
+				mount.part && PARTS[mount.part].category === "E"
+					? nozzleOffset(mount)
+					: mount.width / 2;
+			return (
+				Math.hypot(mount.x, mount.y) +
+				Math.hypot(Math.max(forward, rear), Math.max(mount.height / 2, 4))
+			);
+		});
+		return Math.max(hull, ...fittings) * BUILD_FLIGHT_SCALE;
+	}
 	if (build.chassis === "tank") {
 		const hull = Math.max(
 			...CRUISER.facets.flatMap((f) =>

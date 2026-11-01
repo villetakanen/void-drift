@@ -6,6 +6,16 @@ import {
 
 const RAW_SHIP_PROFILES = [
 	{
+		id: "wasp",
+		name: "LHI Wasp",
+		thrustMultiplier: 1.0,
+		turnMultiplier: 1.15,
+		hullMultiplier: 0.78,
+		powerDrainMultiplier: 0.9,
+		zoomDefault: 1.15,
+		tint: "#83C7D0",
+	},
+	{
 		id: "scout",
 		name: "Scout",
 		thrustMultiplier: 1.15,
@@ -40,9 +50,10 @@ const RAW_SHIP_PROFILES = [
 export const SHIP_PROFILES = ShipProfilesSchema.parse(RAW_SHIP_PROFILES);
 
 export const SHIP_PROFILE_BY_ID: Record<ShipProfileId, ShipProfile> = {
-	scout: SHIP_PROFILES[0],
-	balanced: SHIP_PROFILES[1],
-	tank: SHIP_PROFILES[2],
+	wasp: SHIP_PROFILES[0],
+	scout: SHIP_PROFILES[1],
+	balanced: SHIP_PROFILES[2],
+	tank: SHIP_PROFILES[3],
 };
 
 export const DEFAULT_SHIP_PROFILE_ID: ShipProfileId = "balanced";

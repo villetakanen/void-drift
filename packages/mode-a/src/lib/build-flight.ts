@@ -11,6 +11,7 @@ import {
 } from "./schemas/ion";
 import { buildStats, CHASSIS, type Loadout, PARTS } from "./schemas/loadout";
 import { stabilizerMount } from "./stabilizers";
+import { WASP } from "./wasp";
 
 /** One engine impulse: transverse steering may rotate, never inflate overspeed. */
 export function engineImpulse(
@@ -78,7 +79,8 @@ export function stabilizerBurn(
 	settings: IonSettings = ION_DEFAULTS,
 ) {
 	const command = Number(input.leftThruster) - Number(input.rightThruster);
-	if (!build.stabilizers || (!command && Math.abs(spin) < 1e-10))
+	const isWasp = build.chassis === "wasp";
+	if ((!isWasp && !build.stabilizers) || (!command && Math.abs(spin) < 1e-10))
 		return { side: 0, duty: 0 };
 	const m = stabilizerMount(build.chassis);
 	const direction = command || -Math.sign(spin);
@@ -105,11 +107,12 @@ export function applyBuildEngines(
 	settings: IonSettings = ION_DEFAULTS,
 	parts: typeof PARTS = PARTS,
 ) {
+	const isWasp = build.chassis === "wasp";
 	const output = {
 		left: 0,
 		right: 0,
 		aft: build.aft.map(() => 0),
-		stabilizers: [0, 0],
+		stabilizers: isWasp ? [0, 0, 0, 0] : [0, 0],
 	};
 	const stats = buildStats(build),
 		chassis = CHASSIS[build.chassis];
@@ -164,8 +167,19 @@ export function applyBuildEngines(
 				duty,
 			});
 	}
-	main(build.side, input.leftThruster, "left", angle, mainLever, "left");
-	main(build.side, input.rightThruster, "right", -angle, -mainLever, "right");
+	if (isWasp) {
+		main(
+			build.side,
+			input.leftThruster && input.rightThruster,
+			"left",
+			0,
+			0,
+			"left",
+		);
+	} else {
+		main(build.side, input.leftThruster, "left", angle, mainLever, "left");
+		main(build.side, input.rightThruster, "right", -angle, -mainLever, "right");
+	}
 	for (const [index, id] of build.aft.entries())
 		if (id && PARTS[id].category === "E")
 			main(
@@ -179,14 +193,30 @@ export function applyBuildEngines(
 			);
 	const burn = stabilizerBurn(build, input, motion.velocity, dt, settings);
 	const strength = burn.duty * STABILIZER_STRENGTH * Number(powered);
-	ix += strength * m.fx;
-	iy += -burn.side * strength * m.fy;
-	torque +=
-		-burn.side *
-		strength *
-		m.lever *
-		settings.acceleration *
-		ION_REFERENCE_MASS;
+	if (isWasp) {
+		const frontSide = -burn.side;
+		const rearSide = burn.side;
+		ix += strength * (WASP.stabilizers.front.fx + WASP.stabilizers.rear.fx);
+		iy +=
+			strength *
+			(-frontSide * WASP.stabilizers.front.fy +
+				-rearSide * WASP.stabilizers.rear.fy);
+		torque +=
+			-burn.side *
+			strength *
+			WASP.stabilizers.coupledLever *
+			settings.acceleration *
+			ION_REFERENCE_MASS;
+	} else {
+		ix += strength * m.fx;
+		iy += -burn.side * strength * m.fy;
+		torque +=
+			-burn.side *
+			strength *
+			m.lever *
+			settings.acceleration *
+			ION_REFERENCE_MASS;
+	}
 	const previous = motion.velocity;
 	const maxTurn = (settings.maxTurn * Math.PI) / 180;
 	motion.velocity = Math.max(
@@ -208,13 +238,17 @@ export function applyBuildEngines(
 		else output[group] = value;
 	}
 	const combined = Math.hypot(ix, iy);
+	const ceilingStrength =
+		isWasp && !(input.leftThruster && input.rightThruster)
+			? Math.max(1, combined)
+			: combined;
 	const delivered =
 		combined > 1e-10 && power > 0
 			? engineImpulse(
 					ship,
 					ship.rotation + Math.atan2(iy, ix),
 					(settings.acceleration * ION_REFERENCE_MASS * combined) / stats.mass,
-					ionCeiling(combined, settings),
+					ionCeiling(ceilingStrength, settings),
 					dt * power,
 				)
 			: 0;
@@ -254,8 +288,19 @@ export function applyBuildEngines(
 			);
 	}
 
-	if (burn.side)
-		output.stabilizers[burn.side === -1 ? 0 : 1] = strength * power;
+	if (burn.side) {
+		if (isWasp) {
+			if (burn.side === -1) {
+				output.stabilizers[1] = strength * power;
+				output.stabilizers[2] = strength * power;
+			} else {
+				output.stabilizers[0] = strength * power;
+				output.stabilizers[3] = strength * power;
+			}
+		} else {
+			output.stabilizers[burn.side === -1 ? 0 : 1] = strength * power;
+		}
+	}
 	return output;
 }
 export function solarCharge(distance: number, star: Star, coils: number) {
@@ -278,9 +323,15 @@ export function buildDrain(
 	settings: IonSettings = ION_DEFAULTS,
 ) {
 	const count = Number(input.leftThruster) + Number(input.rightThruster);
+	const isWasp = build.chassis === "wasp";
+	const sideDraw = isWasp
+		? count === 2
+			? PARTS[build.side].draw
+			: 0
+		: count * PARTS[build.side].draw;
 	return (
 		3 +
-		count * PARTS[build.side].draw +
+		sideDraw +
 		stabilizerBurn(build, input, spin, dt, settings).duty *
 			STABILIZER_ENERGY *
 			PARTS.ion.draw +

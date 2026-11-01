@@ -1,7 +1,9 @@
 export * from "./lib/build-flight";
 export * from "./lib/build-renderer";
 export * from "./lib/config";
+export * from "./lib/cruiser";
 export * from "./lib/engine-art";
+export * from "./lib/fighter";
 export * from "./lib/firebase";
 export * from "./lib/game-loop";
 export * from "./lib/schemas/flight";
@@ -10,8 +12,10 @@ export * from "./lib/schemas/ion";
 export * from "./lib/schemas/loadout";
 export * from "./lib/schemas/settings";
 export * from "./lib/schemas/ship-profile";
+export * from "./lib/scout";
 export * from "./lib/simulation";
 export * from "./lib/stabilizers";
 // Svelte Components
 export * from "./lib/utils/uid-hash";
+export * from "./lib/wasp";
 export * from "./schemas/highscore";

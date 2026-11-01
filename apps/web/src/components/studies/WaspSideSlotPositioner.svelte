@@ -2,6 +2,7 @@
 import { canvasFont, loadCanvasFonts } from "@void-drift/core";
 import {
 	ENGINE_ART,
+	FIGHTER,
 	PARTS,
 	type PartId,
 	SLOT_STYLE,
@@ -11,8 +12,9 @@ import {
 	slotAccepts,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
-import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
 import "@void-drift/core/styles/buttons.css";
+
+let { label = "LHI Wasp side slot positioner" }: { label?: string } = $props();
 
 type Point = readonly [number, number];
 
@@ -668,7 +670,7 @@ $effect(() => {
 });
 </script>
 
-<div class="wasp-slot-placer">
+<section class="wasp-slot-placer" aria-label={label}>
 	<div class="controls-bar">
 		<div class="slider-group">
 			<div class="group-header">
@@ -894,7 +896,7 @@ $effect(() => {
 			</div>
 		</section>
 	</div>
-</div>
+</section>
 
 <style>
 .wasp-slot-placer {

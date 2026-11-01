@@ -12,7 +12,7 @@ export const studies = z.array(studySchema).parse([
 	{
 		slug: "lhi-wasp",
 		title: "LHI Wasp: single-engine practice vessel",
-		status: "accepted",
+		status: "integrated",
 		phase: "integration",
 		question:
 			"How should low-poly facets structure the LHI Wasp silhouette around one rear engine, two wing equipment mounts, and four turning stabilizers?",

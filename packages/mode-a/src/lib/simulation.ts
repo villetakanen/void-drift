@@ -223,15 +223,18 @@ export class Simulation {
 			this.engineOutput.right = input.rightThruster ? delivered / substeps : 0;
 		}
 		if (this.settings.loadout) {
-			const outputs = [
-				this.engineOutput.left,
-				this.engineOutput.right,
-				...this.engineOutput.aft.filter((_, index) => {
-					const id = this.settings.loadout?.aft[index];
-					return !!id && PARTS[id].category === "E";
-				}),
-				...this.engineOutput.stabilizers,
-			];
+			const outputs =
+				this.settings.loadout.chassis === "wasp"
+					? [this.engineOutput.left, ...this.engineOutput.stabilizers]
+					: [
+							this.engineOutput.left,
+							this.engineOutput.right,
+							...this.engineOutput.aft.filter((_, index) => {
+								const id = this.settings.loadout?.aft[index];
+								return !!id && PARTS[id].category === "E";
+							}),
+							...this.engineOutput.stabilizers,
+						];
 			for (const [index, emitter] of this.buildEmitters.entries())
 				emitter.output = outputs[index];
 			this.plume.stepMounted(STEP, this.ship, this.buildEmitters);
