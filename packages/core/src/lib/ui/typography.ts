@@ -1,7 +1,7 @@
 /**
  * Canvas mirror of the CSS type roles in styles/tokens.css.
  * Canvas cannot read custom properties, so the family strings are duplicated
- * here and kept equal by typography.test.ts.
+ * here and kept equal by scripts/check-contracts.mjs.
  */
 export const FONT_FAMILY_UI =
 	'"B612 Mono", ui-monospace, SFMono-Regular, Consolas, monospace';
