@@ -94,7 +94,7 @@ font package. Each family falls back to the OS face (`ui-monospace`, `system-ui`
 | Weights      | `--font-weight-regular` 400, `--font-weight-medium` 500, `--font-weight-bold` 700, `--font-weight-display` 800                               |
 | Sizes        | `--font-size-caption` 0.75rem, `-label` 0.875rem, `-body` 0.95rem, `-lead` 1.2rem, `-heading` 1.5rem, `-display` clamp(1.75rem, 4vw, 3.5rem) |
 | Line heights | `--line-height-display` 1.05, `-heading` 1.1, `-ui` 1.5, `-prose` 1.65                                                                       |
-| Tracking     | `--tracking-eyebrow` 0.16em, `-wordmark` 0.12em, `-display` −0.04em                                                                          |
+| Tracking     | `--tracking-eyebrow` 0.16em, `-wordmark` 0.12em, `-display` 0.06em                                                                           |
 | Measure      | `--measure-prose` 70ch                                                                                                                       |
 
 B612 Mono has no 500 or 800; `--font-weight-medium` resolves to 400 in the ui role. Use 400 or 700

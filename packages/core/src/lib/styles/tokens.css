@@ -103,7 +103,7 @@
 	--line-height-prose: 1.65;
 	--tracking-eyebrow: 0.16em;
 	--tracking-wordmark: 0.12em;
-	--tracking-display: -0.04em;
+	--tracking-display: 0.06em;
 	--measure-prose: 70ch;
 
 	/* Deprecated aliases: remove once their last consumer migrates. */
