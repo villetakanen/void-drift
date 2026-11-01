@@ -12,7 +12,7 @@ export const studies = z.array(studySchema).parse([
 	{
 		slug: "lhi-wasp-2026-11-01",
 		title: "LHI Wasp: a small, predictable trainer",
-		status: "exploratory",
+		status: "closed",
 		phase: "exploration",
 		question:
 			"How can a very small trainer that steers on four stabilizers instead of side engines read as its own ship beside the Scout?",
