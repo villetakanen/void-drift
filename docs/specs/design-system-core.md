@@ -129,13 +129,12 @@ literal and never the palette name behind it.
 
 ### Brand and its aliases
 
-| Token              | Value                       | Use                                                                    |
-| ------------------ | --------------------------- | ---------------------------------------------------------------------- |
-| `--color-brand`    | `lch(96.42% 84.18 104.87)`  | The logomark and identity (the lime, sRGB `#eeff41`)                   |
-| `--color-action`   | `var(--color-brand)`        | What you can act on: buttons, links, toggles, sliders, inspector inputs |
-| `--color-selected` | `var(--color-brand)`        | What is selected: pressed buttons, active engines, Lab nav, installed builder parts and occupied slots, selection outlines |
-| `--color-on-brand` | `var(--color-void)`         | Text and marks on a lime fill                                          |
-
+| Token              | Value                      | Use                                                                                                                        |
+| ------------------ | -------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `--color-brand`    | `lch(96.42% 84.18 104.87)` | The logomark and identity (the lime, sRGB `#eeff41`)                                                                       |
+| `--color-action`   | `var(--color-brand)`       | What you can act on: buttons, links, toggles, sliders, inspector inputs                                                    |
+| `--color-selected` | `var(--color-brand)`       | What is selected: pressed buttons, active engines, Lab nav, installed builder parts and occupied slots, selection outlines |
+| `--color-on-brand` | `var(--color-void)`        | Text and marks on a lime fill                                                                                              |
 - Lime is one colour with two jobs: it is the brand, and it marks what is interactive or selected.
   Use the alias that says which job a use does, so the jobs can be told apart in code even though
   they render the same.
@@ -146,20 +145,19 @@ literal and never the palette name behind it.
 
 ### Text, border, surface and scrim
 
-| Role    | Token                    | Value                             | Use                                              |
-| ------- | ------------------------ | --------------------------------- | ------------------------------------------------ |
-| Text    | `--color-text`           | `lch(99.7% 7.45 104.72)`          | Headings, values, body, descriptions             |
-| Text    | `--color-text-muted`     | `lch(56.7% 0 0)`                  | Eyebrows, tags, captions, secondary labels       |
-| Border  | `--color-border`         | `lch(100% 0 0 / 0.141)`           | Panel, header and table edges                    |
-| Border  | `--color-border-subtle`  | `lch(100% 0 0 / 0.094)`           | Dividers inside panels; resource bar track       |
-| Border  | `--color-border-faint`   | `lch(100% 0 0 / 0.051)`           | Lab stage grids                                  |
-| Border  | `--color-grid`           | `lch(45.22% 12.57 223.2)`         | Builder blueprint grid                           |
-| Surface | `--color-void`           | `lch(1.57% 4.76 285.25)`          | The page and the canvas clear (elevation 0)      |
-| Surface | `--color-elev-1`..`-3`   | see [Elevation](#elevation-and-inputs) | Panels, displays, overlay panes             |
-| Surface | `--color-glass`          | `lch(1.57% 4.76 285.25 / 0.91)`   | The void over the stage: menu overlay, pause banner, engine pads |
-| Surface | `--color-surface-hover`  | `lch(100% 0 0 / 0.051)`           | Hover tint on any surface                        |
-| Scrim   | `--color-backdrop`       | `lch(0% 0 0 / 0.11)`              | Dims what an overlay covers                      |
-
+| Role    | Token                   | Value                                  | Use                                                              |
+| ------- | ----------------------- | -------------------------------------- | ---------------------------------------------------------------- |
+| Text    | `--color-text`          | `lch(99.7% 7.45 104.72)`               | Headings, values, body, descriptions                             |
+| Text    | `--color-text-muted`    | `lch(56.7% 0 0)`                       | Eyebrows, tags, captions, secondary labels                       |
+| Border  | `--color-border`        | `lch(100% 0 0 / 0.141)`                | Panel, header and table edges                                    |
+| Border  | `--color-border-subtle` | `lch(100% 0 0 / 0.094)`                | Dividers inside panels; resource bar track                       |
+| Border  | `--color-border-faint`  | `lch(100% 0 0 / 0.051)`                | Lab stage grids                                                  |
+| Border  | `--color-grid`          | `lch(45.22% 12.57 223.2)`              | Builder blueprint grid                                           |
+| Surface | `--color-void`          | `lch(1.57% 4.76 285.25)`               | The page and the canvas clear (elevation 0)                      |
+| Surface | `--color-elev-1`..`-3`  | see [Elevation](#elevation-and-inputs) | Panels, displays, overlay panes                                  |
+| Surface | `--color-glass`         | `lch(1.57% 4.76 285.25 / 0.91)`        | The void over the stage: menu overlay, pause banner, engine pads |
+| Surface | `--color-surface-hover` | `lch(100% 0 0 / 0.051)`                | Hover tint on any surface                                        |
+| Scrim   | `--color-backdrop`      | `lch(0% 0 0 / 0.11)`                   | Dims what an overlay covers                                      |
 - Panels sit on `--color-elev-1`; `--color-void-light` now aliases it (panels rose from L 3.3 to
   5.5).
 - Borders are white at fixed strengths so one token reads on every surface.
@@ -170,13 +168,13 @@ literal and never the palette name behind it.
 
 Measured in the browser on `/lab/tokens` (WCAG 2.1; glass over the void):
 
-| Surface              | `--color-text` | `--color-text-muted`   | `--color-action` | Borders (border / subtle / faint / grid) |
-| -------------------- | -------------- | ---------------------- | ---------------- | ---------------------------------------- |
-| `--color-void`       | 20.1:1         | 5.7:1                  | 18.4:1           | 1.4 / 1.2 / 1.1 / 3.8                    |
-| `--color-elev-1`     | 18.5:1         | 5.3:1                  | 16.9:1           | 1.5 / 1.3 / 1.1 / 3.5                    |
-| `--color-elev-2`     | 16.5:1         | 4.7:1                  | 15.1:1           | 1.5 / 1.3 / 1.2 / 3.1                    |
-| `--color-elev-3`     | 14.4:1         | **4.1:1** (large only) | 13.1:1           | 1.6 / 1.3 / 1.2 / 2.7                    |
-| `--color-glass`      | 20.1:1         | 5.7:1                  | 18.4:1           | 1.4 / 1.2 / 1.1 / 3.8                    |
+| Surface          | `--color-text` | `--color-text-muted`   | `--color-action` | Borders (border / subtle / faint / grid) |
+| ---------------- | -------------- | ---------------------- | ---------------- | ---------------------------------------- |
+| `--color-void`   | 20.1:1         | 5.7:1                  | 18.4:1           | 1.4 / 1.2 / 1.1 / 3.8                    |
+| `--color-elev-1` | 18.5:1         | 5.3:1                  | 16.9:1           | 1.5 / 1.3 / 1.1 / 3.5                    |
+| `--color-elev-2` | 16.5:1         | 4.7:1                  | 15.1:1           | 1.5 / 1.3 / 1.2 / 3.1                    |
+| `--color-elev-3` | 14.4:1         | **4.1:1** (large only) | 13.1:1           | 1.6 / 1.3 / 1.2 / 2.7                    |
+| `--color-glass`  | 20.1:1         | 5.7:1                  | 18.4:1           | 1.4 / 1.2 / 1.1 / 3.8                    |
 
 `--color-on-brand` on `--color-brand` is 18.4:1.
 
