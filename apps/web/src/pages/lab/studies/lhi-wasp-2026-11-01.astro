@@ -99,41 +99,46 @@ const study = studies.find((entry) => entry.slug === "lhi-wasp-2026-11-01");
 			as evidence of the stabilizer firing language; its fixture hull is not
 			carried forward.
 		</p>
-		<h3 id="low-poly-bodies">02.2 / Six slim bodies, very few planes</h3>
+		<h3 id="low-poly-bodies">
+			02.2 / Six slim bodies inside the sketched outline
+		</h3>
 		<p>
-			Two earlier sets were replaced. The first used the sketched folds as flat
-			tiles with a tone picked per plane and did not read as a solid. The second
-			gave the folds heights and shaded each plane from its facing, which
-			produced volume, but on the full sketched outline every body came out
-			bulky: broad delta blobs rather than a small spacecraft. Owner direction
-			after that round: the Wasp is a slim fuselage like a fighter jet, with
-			small wings, a very compact canopy and very few polygons. Simple, elegant,
+			Three earlier sets were replaced. The first used the sketched folds as
+			flat tiles with a tone picked per plane and did not read as a solid. The
+			second gave the folds heights and shaded each plane from its facing, which
+			produced volume, but treated the whole outline as body and came out bulky.
+			The third kept the slimness but replaced the sketched outline with wing
+			shapes of the agent's own, which lost the ship. Owner direction: the outer
+			shape is fixed; the Wasp is a slim fuselage like a fighter jet with small
+			wings, a very compact canopy and very few polygons. Simple, elegant,
 			smooth, fast.
 		</p>
 		<p>
-			These six keep the sketch's length and its 5.6-unit shoulder width as the
-			fuselage, and set the broad delta outline aside. Every body is the same
-			three-plane-a-side fuselage with a raised spine, a canopy 8.5 units long,
-			and one to three thin wing or fin plates a side, for eight to twelve
-			planes in total. Shading is still computed from plane heights under one
-			light ahead, to the left and above, in the shared palette. Show the fold
-			lines to count the planes; hide them to judge the silhouette.
+			These six keep the traced outline exactly and get the slimness inside it.
+			A narrow raised fuselage, 5.6 units wide or less, runs nose to stern with
+			three planes a side. Everything between fuselage and outline is thin, flat
+			wing plate, one or two planes a side, so the wing reads as a blade rather
+			than as body. The canopy is 8.5 units long. Each body has eight to ten
+			planes. Shading is computed from plane heights under one light ahead, to
+			the left and above, in the shared palette. Show the fold lines to count
+			the planes; hide them to judge the body.
 		</p>
 		<WaspLowPolyVariants />
 		<p>
-			01 is the plainest dart. 02 sweeps the wings long and adds stern fins. 03
-			puts small canards ahead of the canopy. 04 cranks the wing. 05 shrinks it
-			to interceptor stubs. 06 places small fins at the nose and stern tapers,
-			where the four stabilizers will sit, with a thin wing between.
+			01 is the plainest tube and plate. 02 lets the fuselage follow the nose
+			taper out to the shoulders before narrowing. 03 and 04 fold the plate
+			along the sketched spar, with the tip raised or dropped. 05 pinches the
+			fuselage into a stern boom. 06 flattens the fuselage into a deck with
+			sharp chines.
 		</p>
 		<p>
 			Chassis planes only: no stabilizers, slots, engines or stern notch. The
-			wing slots from the sketch no longer have a broad wing under them; where
-			the two Q fittings and the stern + fitting attach to a slim body is the
-			next question once a silhouette is chosen. Heights are study fixtures and
-			the shading is a flat-plane estimate, not the production renderer, which
-			stores finished facet colours. A chosen body would be converted to fixed
-			facets at integration, as the Scout and Cruiser were.
+			sketched wing slots now sit on thin plate and the stern slot on the
+			fuselage end; whether a fitting on a blade needs a visible mount is a
+			later question. Heights are study fixtures and the shading is a flat-plane
+			estimate, not the production renderer, which stores finished facet
+			colours. A chosen body would be converted to fixed facets at integration,
+			as the Scout and Cruiser were.
 		</p>
 	</section>
 	<section aria-labelledby="readiness">

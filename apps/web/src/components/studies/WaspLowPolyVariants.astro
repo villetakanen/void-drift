@@ -2,10 +2,10 @@
 import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
 
 /**
- * Six slim low-poly Wasp bodies, nose up, in ship units. Every plane carries
- * heights, so it has a real normal and is shaded from one light (ahead, left
- * and above) in the shared Fighter palette. Chassis planes only: no engines,
- * slots or stabilizers.
+ * Six slim low-poly Wasp bodies inside the sketched outline, nose up, in ship
+ * units. Every plane carries heights, so it has a real normal and is shaded
+ * from one light (ahead, left and above) in the shared Fighter palette.
+ * Chassis planes only: no engines, slots or stabilizers.
  */
 type XYZ = readonly [number, number, number];
 const f = FIGHTER.facets;
@@ -58,121 +58,120 @@ interface Variant {
 	/** Left-side and centre planes as [x, y, z]; planes with x < 0 are mirrored. */
 	planes: XYZ[][];
 }
-/** Slim fuselage shared by most bodies: three planes a side, 5.6 units wide. */
-const fuselage = (nose = 0.5, mid = 3, stern = 1.5): XYZ[][] => [
-	[
-		[0, -20, nose],
-		[-2.8, -8, 0],
-		[0, -8, mid],
-	],
-	[
-		[0, -8, mid],
-		[-2.8, -8, 0],
-		[-2.8, 12, 0],
-		[0, 12, mid],
-	],
-	[
-		[0, 12, mid],
-		[-2.8, 12, 0],
-		[-2.5, 19.5, 0],
-		[0, 19.5, stern],
-	],
+/**
+ * Sketched outline, left side, nose to stern. Every body keeps it exactly.
+ * n nose edge, s shoulder, t wingtip, rt/r trailing cut, c stern corner.
+ */
+const n: XYZ = [-2.8, -20, 0];
+const s: XYZ = [-5.5, -9, 0];
+const t: XYZ = [-14.5, 5, 0];
+const rt: XYZ = [-11, 10, 0];
+const r: XYZ = [-8.5, 10, 0];
+const c: XYZ = [-5.3, 19.5, 0];
+/**
+ * Narrow raised fuselage: quads between a spine (x 0, given heights) and a
+ * side line (z 0) with matching y stations, nose to stern.
+ */
+const fuselage = (
+	side: readonly (readonly [number, number])[],
+	spine: readonly number[],
+): XYZ[][] =>
+	side.slice(0, -1).map((_, i) => [
+		[0, side[i][1], spine[i]],
+		[side[i][0], side[i][1], 0],
+		[side[i + 1][0], side[i + 1][1], 0],
+		[0, side[i + 1][1], spine[i + 1]],
+	]);
+const tube: (readonly [number, number])[] = [
+	[-2.8, -20],
+	[-2.8, -8],
+	[-2.8, 12],
+	[-2.8, 19.5],
 ];
 const variants: Variant[] = [
 	{
-		name: "01 / Dart",
-		idea: "Straight fuselage, one clipped delta a side set well aft. Four body planes, two wings: the plainest jet.",
+		name: "01 / Tube and plate",
+		idea: "A straight 5.6-unit fuselage with a high spine, nose to stern. Everything outside it is one flat wing plate a side. Eight planes.",
 		planes: [
-			...fuselage(),
-			[
-				[-2.8, 0, 0],
-				[-10, 8, 0],
-				[-10, 10.5, 0],
-				[-2.8, 10.5, 0],
-			],
+			...fuselage(tube, [0.5, 3, 3, 1.5]),
+			[n, s, t, rt, r, c, [-2.8, 19.5, 0]],
 		],
 	},
 	{
-		name: "02 / Swept blades",
-		idea: "Long thin swept wings from mid-body, and a small fin pair at the stern. Reads fast standing still.",
+		name: "02 / Shouldered body",
+		idea: "The fuselage follows the nose taper out to the shoulders, then narrows to the stern: the shoulders become body, like intake cheeks. Eight planes.",
 		planes: [
-			...fuselage(),
-			[
-				[-2.8, -4, 0],
-				[-12.5, 9, 0.6],
-				[-2.8, 8, 0],
-			],
-			[
-				[-2.5, 14, 0],
-				[-6, 19.5, 0],
-				[-2.5, 19.5, 0],
-			],
+			...fuselage(
+				[
+					[-2.8, -20],
+					[-5.5, -9],
+					[-2.8, 12],
+					[-2.5, 19.5],
+				],
+				[0.5, 3.2, 2.8, 1.4],
+			),
+			[s, t, rt, r, c, [-2.5, 19.5, 0], [-2.8, 12, 0]],
 		],
 	},
 	{
-		name: "03 / Canard needle",
-		idea: "A needle nose with small canards ahead of the canopy and a cropped main wing aft: the ship steers before it lifts.",
+		name: "03 / Spar fold, dihedral",
+		idea: "Tube fuselage; the plate folds along the sketched spar from wingtip to body, with the tip raised. Two wing planes a side at different angles. Ten planes.",
 		planes: [
-			...fuselage(0.3, 2.6, 1.2),
-			[
-				[-2.8, -13, 0],
-				[-6.5, -10, 0.3],
-				[-2.8, -8.5, 0],
-			],
-			[
-				[-2.8, 2, 0],
-				[-9.5, 9, 0.4],
-				[-9.5, 11, 0.4],
-				[-2.8, 11, 0],
-			],
+			...fuselage(tube, [0.5, 3, 3, 1.5]),
+			[n, s, [-14.5, 5, 0.7], [-2.8, 2.5, 0]],
+			[[-2.8, 2.5, 0], [-14.5, 5, 0.7], rt, r, c, [-2.8, 19.5, 0]],
 		],
 	},
 	{
-		name: "04 / Cranked arrow",
-		idea: "One wing a side with a crank: a shallow inner sweep breaking to a sharper outer blade, the fuselage ridge carried to the tail.",
+		name: "04 / Spar fold, anhedral",
+		idea: "The same spar fold with the tip dropped instead, so the blades hang from the body. Ten planes.",
 		planes: [
-			...fuselage(0.5, 3.2, 1.8),
-			[
-				[-2.8, -2, 0],
-				[-8, 5, 0.3],
-				[-11.5, 10, 0.6],
-				[-2.8, 9.5, 0],
-			],
+			...fuselage(tube, [0.5, 3.2, 3.2, 1.5]),
+			[n, s, [-14.5, 5, -0.9], [-2.8, 2.5, 0]],
+			[[-2.8, 2.5, 0], [-14.5, 5, -0.9], rt, r, c, [-2.8, 19.5, 0]],
 		],
 	},
 	{
-		name: "05 / Stub wings",
-		idea: "Short, broad stubs like an interceptor, the body doing the work. The smallest span of the six.",
+		name: "05 / Boom stern",
+		idea: "The fuselage pinches to 3.6 units behind the canopy and runs out as a boom; the plate keeps the stern corners as a tail. Eight planes.",
 		planes: [
-			...fuselage(0.6, 3.4, 1.6),
-			[
-				[-2.8, 1, 0],
-				[-8, 5.5, 0],
-				[-8, 9.5, 0],
-				[-2.8, 10, 0],
-			],
+			...fuselage(
+				[
+					[-2.8, -20],
+					[-2.8, -6],
+					[-1.8, 8],
+					[-1.8, 19.5],
+				],
+				[0.5, 3, 2.4, 1.2],
+			),
+			[n, s, t, rt, r, c, [-1.8, 19.5, 0], [-1.8, 8, 0], [-2.8, -6, 0]],
 		],
 	},
 	{
-		name: "06 / Four fins",
-		idea: "Small fins where the stabilizers will sit, a pair at the nose taper and a pair at the stern, with a thin mid wing between. The hull itself hints at four points of control.",
+		name: "06 / Flat deck, chines",
+		idea: "A level deck 3.2 units wide drops over sharp chines to the plate: a boxy stealth fuselage on the same outline. Ten planes.",
 		planes: [
-			...fuselage(0.4, 2.8, 1.4),
+			[[0, -20, 0.5], n, [-1.6, -8, 2.6], [0, -8, 2.6]],
 			[
-				[-2.8, -15, 0],
-				[-5.5, -11, 0.2],
-				[-2.8, -10, 0],
+				[0, -8, 2.6],
+				[-1.6, -8, 2.6],
+				[-1.6, 12, 2.6],
+				[0, 12, 2.6],
 			],
 			[
-				[-2.8, 0, 0],
-				[-9.5, 7.5, 0.4],
-				[-2.8, 8, 0],
+				[-1.6, -8, 2.6],
+				[-2.8, -8, 0],
+				[-2.8, 12, 0],
+				[-1.6, 12, 2.6],
 			],
 			[
-				[-2.6, 12, 0],
-				[-6.5, 18, 0.2],
-				[-2.5, 18, 0],
+				[0, 12, 2.6],
+				[-1.6, 12, 2.6],
+				[-2.8, 12, 0],
+				[-2.8, 19.5, 0],
+				[0, 19.5, 1],
 			],
+			[n, s, t, rt, r, c, [-2.8, 19.5, 0], [-2.8, 12, 0], [-2.8, -8, 0]],
 		],
 	},
 ];
