@@ -1,4 +1,5 @@
 ---
+import WaspLowPolyVariants from "../../../components/studies/WaspLowPolyVariants.astro";
 import WaspSketchTrace from "../../../components/studies/WaspSketchTrace.astro";
 import WaspStabilizerStates from "../../../components/studies/WaspStabilizerStates.astro";
 import { studies } from "../../../data/studies";
@@ -89,6 +90,39 @@ const study = studies.find((entry) => entry.slug === "lhi-wasp-2026-11-01");
 			shape and glow are study fixtures; the real stabilizer rule, mass and turn
 			rate are untouched, and no engine is fitted in the stern slot, so push and
 			steer together remain unexamined.
+		</p>
+		<p>
+			Owner review: the comparison is useful for a different reason than its
+			question. As with the other ships, the low-poly fake-3D body has to be
+			drawn first; stabilizers, slots and engines are placed on it afterwards.
+			The sketch's interior lines mark where the folds are expected. 02.1 stays
+			as evidence of the stabilizer firing language; its fixture hull is not
+			carried forward.
+		</p>
+		<h3 id="low-poly-bodies">
+			02.2 / Six low-poly bodies on the sketched folds
+		</h3>
+		<p>
+			All six keep the sketched outline and the fold nodes read from it: the
+			spar from each wingtip through an inner node to the canopy base, the
+			shoulder line falling to the spar, a vertical fold under the wing to the
+			trailing root, the flank to the stern corner, and the long stern tent from
+			both inner nodes to the stern centre. They differ in which folds are kept,
+			which way each plane faces, and therefore where the light falls. Light
+			comes from the left as on the Fighter and Scout. Show the fold lines to
+			compare the structure; hide them to judge the body as it would appear in
+			the builder.
+		</p>
+		<WaspLowPolyVariants />
+		<p>
+			01 and 02 keep every sketched fold and disagree only on whether the stern
+			spine is a ridge or a channel. 03 asks how few planes still read as a
+			solid. 04 makes the spar the dominant edge. 05 trades folds for one steep
+			side wall. 06 adds the cross fold suggested by the shoulder ticks and
+			flattens the stern into a deck. Chassis planes only: no stabilizers,
+			slots, engines or stern notch, and the canopy is a placeholder leaf. These
+			are flat sketches in the shared palette, not the production renderer; the
+			shading is an assumed facing for each plane, not a lighting model.
 		</p>
 	</section>
 	<section aria-labelledby="readiness">
