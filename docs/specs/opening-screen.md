@@ -30,8 +30,7 @@ because they share the panel, scrim and text roles.
 - No new npm dependencies, webfonts or paid services. The logomark is a committed SVG.
 - No changes to gravity, friction or ship tuning.
 - Star systems are never static (owner, 2026-11-01). The fixed `CHALLENGE_SEED` (2026) is a
-  bug, tracked and fixed separately; every run and every attract scene gets a fresh random seed.
-  P7 depends on that fix.
+  bug, fixed in P0 of this plan; every run and every attract scene gets a fresh random seed.
 - Stored ids `scout` / `balanced` / `tank`, saved builds, settings and score documents are unchanged.
 - Real star-system variety (star types, generated planets, true moons) is generator work
   **outside this plan**. The attract scene uses what the simulation offers today:
@@ -41,6 +40,29 @@ because they share the panel, scrim and text roles.
 ## Phases
 
 Each phase is one bounded change that passes `pnpm verify` and is shown in the Lab and the game.
+
+### P0 — Random star system every run (bug fix)
+
+Files: `packages/mode-a/src/lib/simulation.ts`, `packages/mode-a/src/schemas/highscore.ts`,
+`apps/web/src/components/FlightDeck.svelte`, `tests/browser/*.spec.ts`, mode-a vitest suites,
+`docs/specs/playable-alpha.md`, `docs/architecture.md`.
+
+- Every new game run (Start/Go and Try Again) gets a fresh random seed. `CHALLENGE_SEED`
+  stops being the game default. `stockSettings`, `gameSettings` and `labSettings` take a seed
+  instead of hard-coding 2026.
+- The Lab keeps explicit, shareable seeds: the `/lab/flight` seed field, `?trial=` URLs and fixed
+  replays reproduce exactly.
+- Tests and visual baselines that relied on seed 2026 pass an explicit seed through a test or Lab
+  path. Assertions are not weakened.
+- Score documents, Firestore rules, saved builds and settings stay compatible. The leaderboard
+  now compares runs on different random systems.
+- `playable-alpha.md` and `architecture.md` drop the "seed 2026, G-class" ranked rule and fix the
+  `gravity-1` / `ion-1` challenge-name drift.
+- No gravity/friction changes. Star types and generated planets remain generator work outside
+  this plan; P0 only stops the system from being fixed.
+
+Done when two consecutive game runs start with different seeds, a Lab trial URL replays
+identically, and `pnpm verify` passes.
 
 ### P1 — Foundation tokens (T1, T2, T4, T5, T6, T8)
 
@@ -143,6 +165,8 @@ Files: `packages/mode-a/src/lib/config.ts`, `packages/mode-a/src/lib/schemas/loa
 
 ### P7 — Attract scene and motion (E12, E11, T7)
 
+Requires P0.
+
 Files: `packages/mode-a/src/lib/simulation.ts` (preview mode), `FlightDeck.svelte`,
 `packages/core` renderer and camera, and `docs/architecture.md` if the simulation surface changes.
 
@@ -168,6 +192,7 @@ Files: `packages/mode-a/src/lib/simulation.ts` (preview mode), `FlightDeck.svelt
 
 ### Definition of Done
 
+- [ ] Each game run and each attract scene uses a fresh random seed; Lab trial seeds still reproduce.
 - [ ] No `"Noto Sans Math"` reference remains in runtime CSS; the logomark renders from SVG.
 - [ ] Opening-screen CSS uses only tokens; no hex, rgba or z-index literals in the touched files.
 - [ ] `--color-brand` appears only through brand, action and selected roles. Eyebrows, tags and
@@ -197,6 +222,11 @@ Scenario: Start a run from the opening
   And the Corvette card is selected
   When the player selects Scout and activates Go
   Then the run starts with Scout and the HUD appears
+
+Scenario: Every run is a new system
+  Given a player finishes a run
+  When they choose Try Again
+  Then the new run starts with a different seed than the previous run
 
 Scenario: Keyboard-only start
   Given the opening has loaded
