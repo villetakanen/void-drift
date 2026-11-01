@@ -726,7 +726,7 @@ onMount(() => {
 	left: 16px;
 	right: 16px;
 	pointer-events: none;
-	color: var(--color-acid-lime);
+	color: var(--color-text);
 	font-size: 12px;
 }
 .build-nav {

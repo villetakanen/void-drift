@@ -44,5 +44,5 @@
 }
 
 :where(.prose) :where(a) {
-	color: var(--color-acid-lime);
+	color: var(--color-action);
 }

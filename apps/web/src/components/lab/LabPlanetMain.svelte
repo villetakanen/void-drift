@@ -4,6 +4,7 @@ let _props: { slot?: string; "client:only"?: string; "client:load"?: boolean } =
 	$props();
 
 import {
+	COLOR,
 	canvasFont,
 	drawPlanet,
 	getPlanetInfluenceRadius,
@@ -128,14 +129,14 @@ function drawPlanetPreview(ctx: CanvasRenderingContext2D) {
 	});
 
 	// Draw selection indicator
-	ctx.strokeStyle = "var(--color-acid-lime, #d4ff00)";
+	ctx.strokeStyle = COLOR.selected;
 	ctx.lineWidth = 2;
 	ctx.beginPath();
 	ctx.arc(px, py, scaledRadius + 6, 0, Math.PI * 2);
 	ctx.stroke();
 
 	// Draw info labels
-	ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+	ctx.fillStyle = COLOR.textMuted;
 	ctx.font = canvasFont(11);
 	ctx.textAlign = "left";
 	ctx.fillText(`Orbit: ${orbitRadius.toFixed(0)}px`, 10, 20);
@@ -163,8 +164,8 @@ function drawPlanetPreview(ctx: CanvasRenderingContext2D) {
 	overflow: hidden;
 	position: relative;
 	background-image:
-		linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-		linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+		linear-gradient(var(--color-border-faint) 1px, transparent 1px),
+		linear-gradient(90deg, var(--color-border-faint) 1px, transparent 1px);
 	background-size: 20px 20px;
 }
 </style>

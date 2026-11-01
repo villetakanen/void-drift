@@ -43,8 +43,8 @@ $effect(() => {
 
 <style>
 canvas {
-	background: #000;
-	border: 1px solid #333;
+	background: var(--color-void);
+	border: 1px solid var(--color-border);
 	image-rendering: pixelated;
 }
 </style>

@@ -20,6 +20,7 @@ export * from "./lib/physics/planets";
 export * from "./lib/schemas/common";
 export * from "./lib/schemas/sun";
 // UI Utilities
+export * from "./lib/ui/colors";
 export * from "./lib/ui/fullscreen";
 export * from "./lib/ui/typography";
 // Svelte Components

@@ -180,14 +180,14 @@ svg {
 	display: block;
 }
 .grid {
-	stroke: var(--color-flight-trail);
+	stroke: var(--color-border-subtle);
 }
 .zero,
 .axis {
-	stroke: var(--color-text-dim);
+	stroke: var(--color-text-muted);
 }
 .tick {
-	fill: var(--color-text-dim);
+	fill: var(--color-text-muted);
 	font: 13px var(--font-family-ui);
 }
 .cursor {
@@ -207,7 +207,7 @@ svg {
 	white-space: nowrap;
 }
 .name {
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	letter-spacing: 0.1em;
 	text-transform: uppercase;
 }
@@ -221,7 +221,7 @@ svg {
 	font-variant-numeric: tabular-nums;
 }
 .at {
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 }
 .values b {
 	min-width: 3ch;

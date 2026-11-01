@@ -9,7 +9,7 @@ test("canonical buttons share tokens, spacing, states and responsive composition
 	await expect(vertical).toHaveCSS("padding-top", "8px");
 	await expect(vertical).toHaveCSS("gap", "8px");
 	await expect(vertical).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-	await expect(strip).toHaveCSS("background-color", "rgb(5, 5, 16)");
+	await expect(strip).toHaveCSS("background-color", "lch(1.57 4.76 285.25)");
 	const widths = await vertical
 		.locator(".btn")
 		.evaluateAll((nodes) =>
@@ -30,7 +30,7 @@ test("canonical buttons share tokens, spacing, states and responsive composition
 	const unavailable = page.getByRole("button", { name: "Unavailable" });
 	await expect(unavailable).toHaveCSS("opacity", "0.45");
 	await unavailable.hover();
-	await expect(unavailable).toHaveCSS("color", "rgb(238, 255, 65)");
+	await expect(unavailable).toHaveCSS("color", "lch(96.42 84.18 104.87)");
 	// Shared spacing changes affect both padding and gap; local layout literals must not win.
 	await page.evaluate(() =>
 		document.documentElement.style.setProperty("--spacing-sm", "12px"),

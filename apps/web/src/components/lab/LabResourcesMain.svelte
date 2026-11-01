@@ -3,25 +3,23 @@
 let _props: { slot?: string; "client:only"?: string; "client:load"?: boolean } =
 	$props();
 
-import { canvasFont, drawDeathIcon, drawResourceBar } from "@void-drift/core";
+import {
+	COLOR,
+	canvasFont,
+	drawDeathIcon,
+	drawResourceBar,
+} from "@void-drift/core";
 import Canvas from "../Canvas.svelte";
 import { resourcesParams } from "./resources-state.svelte";
-
-const COLORS = {
-	hull: "#00c8ff",
-	fuel: "#D4FF00",
-	warning: "#FFAA00",
-	danger: "#FF3333",
-};
 
 function drawHullBar(ctx: CanvasRenderingContext2D) {
 	drawResourceBar(ctx, 0, 0, 200, 24, {
 		value: resourcesParams.hullValue,
 		maxValue: 100,
 		label: "HULL",
-		colorNormal: COLORS.hull,
-		colorWarning: COLORS.warning,
-		colorDanger: COLORS.danger,
+		colorNormal: COLOR.resourceHull,
+		colorWarning: COLOR.resourceWarning,
+		colorDanger: COLOR.resourceDanger,
 	});
 }
 
@@ -30,9 +28,9 @@ function drawFuelBar(ctx: CanvasRenderingContext2D) {
 		value: resourcesParams.fuelValue,
 		maxValue: 100,
 		label: "FUEL",
-		colorNormal: COLORS.fuel,
-		colorWarning: COLORS.warning,
-		colorDanger: COLORS.danger,
+		colorNormal: COLOR.resourcePower,
+		colorWarning: COLOR.resourceWarning,
+		colorDanger: COLOR.resourceDanger,
 	});
 }
 
@@ -43,7 +41,7 @@ function drawIcons(ctx: CanvasRenderingContext2D) {
 	drawDeathIcon(ctx, startX + spacing, 40, 32, "HULL");
 	drawDeathIcon(ctx, startX + spacing * 2, 40, 32, "POWER");
 
-	ctx.fillStyle = "#888";
+	ctx.fillStyle = COLOR.textMuted;
 	ctx.font = canvasFont(10);
 	ctx.textAlign = "center";
 	ctx.fillText("STAR", startX, 70);
@@ -90,8 +88,8 @@ function drawIcons(ctx: CanvasRenderingContext2D) {
 	align-items: flex-start;
 	flex: 1;
 	background-image:
-		linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-		linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+		linear-gradient(var(--color-border-faint) 1px, transparent 1px),
+		linear-gradient(90deg, var(--color-border-faint) 1px, transparent 1px);
 	background-size: 20px 20px;
 }
 
@@ -100,8 +98,8 @@ function drawIcons(ctx: CanvasRenderingContext2D) {
 	flex-direction: column;
 	gap: 2rem;
 	padding: 2rem;
-	background: rgba(0, 0, 0, 0.5);
-	border: 1px solid rgba(255, 255, 255, 0.1);
+	background: var(--color-glass);
+	border: 1px solid var(--color-border-subtle);
 	border-radius: 4px;
 	backdrop-filter: blur(4px);
 }
@@ -109,8 +107,8 @@ function drawIcons(ctx: CanvasRenderingContext2D) {
 h3 {
 	margin: 0 0 1rem 0;
 	font-size: 0.8rem;
-	color: var(--color-text-dim);
-	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+	color: var(--color-text-muted);
+	border-bottom: 1px solid var(--color-border-faint);
 	padding-bottom: 0.5rem;
 	text-transform: uppercase;
 	letter-spacing: 0.1em;
@@ -125,7 +123,7 @@ h3 {
 
 .meta {
 	font-family: var(--font-family-ui);
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	font-size: 0.9rem;
 }
 
@@ -139,8 +137,8 @@ h3 {
 	color: var(--color-text);
 	font-family: var(--font-family-ui);
 	padding: 0.25rem 0.5rem;
-	background: rgba(255, 255, 255, 0.05);
-	border: 1px solid var(--color-neon-blue);
+	background: var(--color-surface-hover);
+	border: 1px solid var(--color-border);
 	border-radius: 2px;
 }
 </style>

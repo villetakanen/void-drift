@@ -92,8 +92,8 @@ function drawStarPreview(ctx: CanvasRenderingContext2D) {
 	overflow: hidden;
 	position: relative;
 	background-image:
-		linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-		linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+		linear-gradient(var(--color-border-faint) 1px, transparent 1px),
+		linear-gradient(90deg, var(--color-border-faint) 1px, transparent 1px);
 	background-size: 20px 20px;
 }
 </style>

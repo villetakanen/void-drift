@@ -71,7 +71,7 @@ const name = `toggle-${Math.random().toString(36).slice(2, 8)}`;
 	line-height: 1;
 	white-space: nowrap;
 	cursor: pointer;
-	background: var(--color-flight-trail);
+	background: var(--color-border-subtle);
 	color: var(--color-text);
 	transition: var(--button-transition);
 }
@@ -98,11 +98,11 @@ const name = `toggle-${Math.random().toString(36).slice(2, 8)}`;
 	);
 }
 .part:not(.selected):hover {
-	background: color-mix(in srgb, var(--color-acid-lime) 28%, transparent);
+	background: color-mix(in srgb, var(--color-action) 28%, transparent);
 }
 .part.selected {
-	background: var(--color-acid-lime);
-	color: var(--color-void);
+	background: var(--color-selected);
+	color: var(--color-on-brand);
 	cursor: default;
 }
 .part input {

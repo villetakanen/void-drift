@@ -245,14 +245,14 @@ function drawCanvasSample(ctx: CanvasRenderingContext2D) {
 	font-size: var(--font-size-caption);
 	letter-spacing: var(--tracking-eyebrow);
 	text-transform: uppercase;
-	color: var(--color-text-dim);
-	border-bottom: var(--flight-border);
+	color: var(--color-text-muted);
+	border-bottom: 1px solid var(--color-border);
 	padding-bottom: var(--spacing-sm);
 	margin-bottom: var(--spacing-md);
 }
 
 .note {
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	font-size: var(--font-size-caption);
 	margin-bottom: var(--spacing-md);
 }
@@ -260,7 +260,7 @@ function drawCanvasSample(ctx: CanvasRenderingContext2D) {
 code {
 	font-family: var(--font-family-ui);
 	font-size: var(--font-size-caption);
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	overflow-wrap: anywhere;
 }
 
@@ -290,7 +290,7 @@ code {
 }
 
 .role {
-	border: var(--flight-border);
+	border: 1px solid var(--color-border);
 	padding: var(--spacing-md);
 	display: grid;
 	gap: var(--spacing-sm);
@@ -303,12 +303,12 @@ code {
 }
 
 .role header strong {
-	color: var(--color-acid-lime);
+	color: var(--color-text);
 }
 
 .role header span {
 	font-size: var(--font-size-caption);
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 }
 
 .faces {
@@ -346,13 +346,13 @@ th,
 td {
 	text-align: left;
 	padding: var(--spacing-sm);
-	border-bottom: var(--flight-border);
+	border-bottom: 1px solid var(--color-border);
 	vertical-align: baseline;
 }
 
 th {
 	font-size: var(--font-size-caption);
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	font-weight: var(--font-weight-regular);
 }
 
@@ -373,7 +373,7 @@ th {
 }
 
 .prose-sample {
-	border: var(--flight-border);
+	border: 1px solid var(--color-border);
 	padding: var(--spacing-lg);
 }
 </style>

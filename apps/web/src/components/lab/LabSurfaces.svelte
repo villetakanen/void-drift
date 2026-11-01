@@ -79,7 +79,7 @@ const steps = [
 	font-family: var(--font-family-ui);
 }
 .step span {
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 }
 .display {
 	width: 448px;

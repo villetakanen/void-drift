@@ -10,6 +10,7 @@ import { getParticleAlpha, type Particle } from "../effects/particles";
 import type { Camera } from "../physics/Camera";
 import type { GameObject, Planet, Star } from "../physics/Physics";
 import { getPlanetInfluenceRadius } from "../physics/Physics";
+import { COLOR } from "../ui/colors";
 
 export class Renderer {
 	private ctx: CanvasRenderingContext2D;
@@ -49,7 +50,7 @@ export class Renderer {
 	}
 
 	clear() {
-		this.ctx.fillStyle = "#050510"; // --color-void
+		this.ctx.fillStyle = COLOR.void;
 		this.ctx.fillRect(0, 0, this.width, this.height);
 	}
 

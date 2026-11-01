@@ -20,6 +20,7 @@ const LINKS = [
 	{ href: "/lab/entities/star", label: "Star", exact: false },
 	{ href: "/lab/entities/planet", label: "Planet", exact: false },
 	{ href: "/lab/logomark", label: "Logomark", exact: false },
+	{ href: "/lab/tokens", label: "Colour roles", exact: false },
 	{ href: "/lab/typography", label: "Typography", exact: false },
 	{ href: "/lab/resources", label: "Resources", exact: false },
 	{ href: "/lab/inputs", label: "Inputs", exact: false },
@@ -102,8 +103,8 @@ const LINKS = [
 /* Column 1: Nav Rail */
 .nav-rail {
 	grid-area: nav;
-	background: var(--color-void-light);
-	border-right: 1px solid rgba(255, 255, 255, 0.1);
+	background: var(--color-elev-1);
+	border-right: 1px solid var(--color-border-subtle);
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
@@ -111,9 +112,9 @@ const LINKS = [
 
 .logo-area {
 	display: flex;
-	color: var(--color-acid-lime);
+	color: var(--color-brand);
 	padding: 1.5rem;
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	border-bottom: 1px solid var(--color-border-subtle);
 	flex-shrink: 0;
 }
 
@@ -130,7 +131,7 @@ const LINKS = [
 .page-header {
 	grid-area: header;
 	padding: 1rem 2rem;
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	border-bottom: 1px solid var(--color-border-subtle);
 	background: var(--color-void);
 	display: flex;
 	align-items: center;
@@ -139,7 +140,7 @@ const LINKS = [
 .page-header h1 {
 	margin: 0;
 	font-size: var(--font-size-caption);
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	text-transform: uppercase;
 	letter-spacing: var(--tracking-eyebrow);
 }
@@ -149,7 +150,7 @@ const LINKS = [
 	grid-area: main;
 	overflow-y: auto;
 	background: var(--color-void);
-	border-right: 1px solid rgba(255, 255, 255, 0.1);
+	border-right: 1px solid var(--color-border-subtle);
 	display: flex;
 	flex-direction: column;
 }
@@ -157,7 +158,7 @@ const LINKS = [
 /* Column 3: Inspector */
 .inspector-rail {
 	grid-area: inspector;
-	background: var(--color-void-light);
+	background: var(--color-elev-1);
 	overflow-y: auto;
 	display: flex;
 	flex-direction: column;
@@ -166,7 +167,7 @@ const LINKS = [
 /* Link Styles */
 a {
 	text-decoration: none;
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	padding: 0.6rem 1rem;
 	text-align: left;
 	border-radius: var(--radius-sm);
@@ -179,13 +180,13 @@ a {
 
 a:hover {
 	color: var(--color-text);
-	background: rgba(255, 255, 255, 0.05);
+	background: var(--color-surface-hover);
 }
 
 a.active {
-	color: var(--color-acid-lime);
-	border: 1px solid rgba(212, 255, 0, 0.3);
-	background: rgba(212, 255, 0, 0.1);
+	color: var(--color-selected);
+	border: 1px solid color-mix(in lch, var(--color-selected) 30%, transparent);
+	background: color-mix(in lch, var(--color-selected) 10%, transparent);
 }
 .lab-grid.wide {
 	grid-template-columns: 250px minmax(0, 1fr);

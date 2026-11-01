@@ -156,13 +156,13 @@ const sunStatsGroups = $derived.by(() => {
 }
 
 label {
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	font-size: 0.9rem;
 }
 
 input[type="range"] {
 	width: 100%;
-	accent-color: var(--color-acid-lime);
+	accent-color: var(--color-action);
 }
 
 select {
@@ -170,7 +170,7 @@ select {
 	padding: 0.5rem;
 	background: var(--color-void);
 	color: var(--color-text);
-	border: 1px solid rgba(255, 255, 255, 0.1);
+	border: 1px solid var(--color-border-subtle);
 	font-family: inherit;
 }
 </style>

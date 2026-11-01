@@ -24,9 +24,9 @@ let { title, children }: { title: string; children?: Snippet } = $props();
 h3 {
 	margin-top: 0;
 	font-size: var(--font-size-label);
-	color: var(--color-neon-blue); /* Maps to Acid Lime */
+	color: var(--color-text);
 	text-transform: uppercase;
-	border-bottom: 2px solid var(--color-text-dim);
+	border-bottom: 2px solid var(--color-text-muted);
 	padding-bottom: 0.5rem;
 	margin-bottom: 1rem;
 	font-weight: var(--font-weight-bold);

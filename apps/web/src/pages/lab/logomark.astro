@@ -6,8 +6,8 @@ import LabLayout from "../../layouts/LabLayout.astro";
 const SIZES = ["sm", "md", "lg"] as const;
 const SURFACES = [
 	{ name: "void", token: "--color-void", mark: "brand" },
-	{ name: "void-light", token: "--color-void-light", mark: "brand" },
-	{ name: "brand", token: "--color-acid-lime", mark: "void" },
+	{ name: "void-light", token: "--color-elev-1", mark: "brand" },
+	{ name: "brand", token: "--color-brand", mark: "void" },
 ] as const;
 const FAVICON_SIZES = [16, 32, 64];
 ---
@@ -89,15 +89,15 @@ const FAVICON_SIZES = [16, 32, 64];
 	font-size: var(--font-size-caption);
 	letter-spacing: var(--tracking-eyebrow);
 	text-transform: uppercase;
-	color: var(--color-text-dim);
-	border-bottom: var(--flight-border);
+	color: var(--color-text-muted);
+	border-bottom: 1px solid var(--color-border);
 	padding-bottom: var(--spacing-sm);
 	margin-bottom: var(--spacing-md);
 }
 
 .note,
 .details {
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	font-size: var(--font-size-caption);
 	margin-bottom: var(--spacing-md);
 }
@@ -117,12 +117,12 @@ code {
 	display: grid;
 	gap: var(--spacing-md);
 	padding: var(--spacing-lg);
-	border: var(--flight-border);
+	border: 1px solid var(--color-border);
 }
 
 .surface[data-mark="brand"] {
-	--mark: var(--color-acid-lime);
-	--caption: var(--color-text-dim);
+	--mark: var(--color-brand);
+	--caption: var(--color-text-muted);
 }
 
 .surface[data-mark="void"] {
@@ -159,7 +159,7 @@ figure {
 }
 
 figcaption {
-	color: var(--caption, var(--color-text-dim));
+	color: var(--caption, var(--color-text-muted));
 	font-size: var(--font-size-caption);
 }
 </style>

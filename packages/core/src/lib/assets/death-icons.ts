@@ -1,5 +1,6 @@
 // death-icons.ts
 import type { DeathCause } from "../schemas/common";
+import { COLOR } from "../ui/colors";
 
 /**
  * Draw death cause icon (for leaderboard/Game Over screen)
@@ -37,7 +38,7 @@ function drawStarIcon(ctx: CanvasRenderingContext2D, size: number): void {
 	const outerRadius = size / 2;
 	const innerRadius = outerRadius * 0.5;
 
-	ctx.fillStyle = "#ffaa00"; // Warning color
+	ctx.fillStyle = COLOR.resourceWarning;
 	ctx.beginPath();
 
 	for (let i = 0; i < points * 2; i++) {
@@ -61,7 +62,7 @@ function drawHullIcon(ctx: CanvasRenderingContext2D, size: number): void {
 	const halfSize = size / 2;
 
 	// Shield outline
-	ctx.strokeStyle = "#ff0064"; // Danger color
+	ctx.strokeStyle = COLOR.resourceDanger;
 	ctx.lineWidth = 2;
 	ctx.beginPath();
 	ctx.moveTo(0, -halfSize);
@@ -72,7 +73,7 @@ function drawHullIcon(ctx: CanvasRenderingContext2D, size: number): void {
 	ctx.stroke();
 
 	// Crack through shield
-	ctx.strokeStyle = "#ff0064";
+	ctx.strokeStyle = COLOR.resourceDanger;
 	ctx.lineWidth = 2;
 	ctx.beginPath();
 	ctx.moveTo(-halfSize * 0.7, -halfSize * 0.3);
@@ -85,7 +86,7 @@ function drawPowerIcon(ctx: CanvasRenderingContext2D, size: number): void {
 	const halfSize = size / 2;
 
 	// Droplet shape (now representing power/energy)
-	ctx.fillStyle = "#D4FF00"; // Acid Lime (Power Color)
+	ctx.fillStyle = COLOR.resourcePower;
 	ctx.beginPath();
 	ctx.arc(0, halfSize * 0.2, halfSize * 0.6, 0, Math.PI * 2);
 	ctx.fill();
@@ -99,7 +100,7 @@ function drawPowerIcon(ctx: CanvasRenderingContext2D, size: number): void {
 	ctx.fill();
 
 	// Empty indicator (X through droplet)
-	ctx.strokeStyle = "#ff0064";
+	ctx.strokeStyle = COLOR.resourceDanger;
 	ctx.lineWidth = 2;
 	ctx.beginPath();
 	ctx.moveTo(-halfSize * 0.5, -halfSize * 0.5);

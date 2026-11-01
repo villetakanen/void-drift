@@ -190,7 +190,7 @@ const scale = $derived(Math.min(hostW / SCREEN.w, hostH / SCREEN.h));
 	top: 50%;
 	right: calc(100% - 44px);
 	transform: translateY(-50%);
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	font-size: 13px;
 	letter-spacing: 0.1em;
 	text-transform: uppercase;
@@ -198,7 +198,7 @@ const scale = $derived(Math.min(hostW / SCREEN.w, hostH / SCREEN.h));
 .slider-end {
 	position: absolute;
 	bottom: -2px;
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	font-size: 13px;
 }
 .slider-end.start {
