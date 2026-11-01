@@ -137,8 +137,8 @@ async function save() {
 				(500).
 			</li>
 			<li>
-				Color: lime <code>--color-acid-lime</code>, void
-				<code>--color-void</code>, consequence <code>--color-red</code>.
+				Color: <code>--color-action</code> (the brand lime), text on it
+				<code>--color-on-brand</code>, consequence <code>--color-red</code>.
 			</li>
 			<li>
 				States: <code>--state-disabled-opacity</code> (0.45),
@@ -197,15 +197,15 @@ p {
 }
 a,
 code {
-	color: var(--color-acid-lime);
+	color: var(--color-text);
 }
 .example {
-	background: var(--color-void-light);
+	background: var(--color-elev-1);
 	padding: var(--spacing-md);
 }
 [role="status"] {
 	padding: var(--spacing-md);
-	border: var(--flight-border);
+	border: 1px solid var(--color-border);
 }
 code {
 	overflow-wrap: anywhere;

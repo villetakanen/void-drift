@@ -70,7 +70,7 @@ header .brand {
 }
 
 h1 {
-	color: var(--color-neon-blue);
+	color: var(--color-text);
 	font-size: 2.5rem;
 	margin: 0;
 	text-transform: uppercase;
@@ -86,8 +86,8 @@ h2 {
 }
 
 .setting-group {
-	background: var(--color-void-light);
-	border: 1px solid var(--color-text-dim);
+	background: var(--color-elev-1);
+	border: 1px solid var(--color-text-muted);
 	border-radius: var(--radius-sm);
 	padding: var(--spacing-md);
 	margin-bottom: var(--spacing-lg);
@@ -104,7 +104,7 @@ h2 {
 }
 
 .toggle-row:hover {
-	background: rgba(255, 255, 255, 0.05);
+	background: var(--color-surface-hover);
 }
 
 .toggle-input {
@@ -112,12 +112,12 @@ h2 {
 	height: 20px;
 	margin-top: 2px;
 	cursor: pointer;
-	accent-color: var(--color-neon-blue);
+	accent-color: var(--color-action);
 	flex-shrink: 0;
 }
 
 .toggle-input:focus-visible {
-	outline: 2px solid var(--color-neon-blue);
+	outline: var(--focus-ring-width) solid var(--color-focus-ring);
 	outline-offset: 2px;
 }
 
@@ -135,7 +135,7 @@ h2 {
 
 .toggle-hint {
 	font-size: 0.875rem;
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 }
 
 footer {

@@ -59,3 +59,17 @@ for (const [, key, token] of pairs) {
 	assert.equal(ts, resolveToken(token), `COLOR.${key} must equal ${token}`);
 }
 console.log(`Canvas colours match ${pairs.length} CSS colour roles.`);
+
+// The browser chrome colour is a literal; it must stay the void page colour.
+const layout = readFileSync("apps/web/src/layouts/Layout.astro", "utf8");
+assert.equal(
+	layout.match(/name="theme-color" content="([^"]+)"/)?.[1],
+	"#050510",
+	"theme-color must be #050510, the sRGB form of --color-void",
+);
+assert.equal(
+	resolveToken("--color-void"),
+	"lch(1.57% 4.76 285.25)",
+	"--color-void changed: update theme-color in Layout.astro to match",
+);
+console.log("theme-color matches --color-void.");

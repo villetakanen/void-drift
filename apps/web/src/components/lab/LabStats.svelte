@@ -31,7 +31,7 @@ let { groups }: { groups: StatGroup[] } = $props();
 }
 
 .stat-group {
-	border-top: 1px solid rgba(255, 255, 255, 0.05);
+	border-top: 1px solid var(--color-border-faint);
 	padding-top: var(--spacing-sm);
 	margin-bottom: var(--spacing-md);
 }
@@ -42,7 +42,7 @@ let { groups }: { groups: StatGroup[] } = $props();
 }
 
 h4 {
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	font-size: 0.625rem;
 	text-transform: uppercase;
 	letter-spacing: 0.15em;
@@ -62,12 +62,12 @@ dl {
 }
 
 dt {
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	font-family: var(--font-family-ui);
 }
 
 dd {
-	color: var(--color-neon-blue);
+	color: var(--color-text);
 	margin: 0;
 	font-family: var(--font-family-ui);
 	font-variant-numeric: tabular-nums;

@@ -95,21 +95,21 @@ const seconds = Array.from({ length: SECONDS + 1 }, (_, i) => i);
 	left: 0;
 	right: 0;
 	height: 12px;
-	background: var(--color-flight-trail);
+	background: var(--color-border-subtle);
 }
 .gutter {
 	position: absolute;
 	right: calc(100% + 6px);
 	top: 50%;
 	transform: translateY(-50%);
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 }
 .on {
 	position: absolute;
 	top: 0;
 	bottom: 0;
 	box-sizing: border-box;
-	border-right: 1px solid var(--color-void-light);
+	border-right: 1px solid var(--color-elev-1);
 	background: color-mix(in srgb, var(--color-text) 70%, transparent);
 }
 .on.active {
@@ -128,7 +128,7 @@ const seconds = Array.from({ length: SECONDS + 1 }, (_, i) => i);
 	right: 0;
 	bottom: 0;
 	height: 12px;
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 }
 .axis span {
 	position: absolute;

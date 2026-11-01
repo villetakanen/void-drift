@@ -107,16 +107,16 @@ const shipStatsGroups = $derived([
 }
 
 label {
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	font-size: 0.9rem;
 }
 
 select {
 	width: 100%;
 	min-height: 44px;
-	border: 1px solid rgba(255, 255, 255, 0.2);
+	border: 1px solid var(--color-border);
 	border-radius: 6px;
-	background: rgba(5, 5, 16, 0.7);
+	background: var(--color-glass);
 	color: var(--color-text);
 	padding: 0.5rem;
 	font: inherit;
@@ -124,7 +124,7 @@ select {
 
 input[type="range"] {
 	width: 100%;
-	accent-color: var(--color-acid-lime);
+	accent-color: var(--color-action);
 	min-height: 44px;
 }
 </style>

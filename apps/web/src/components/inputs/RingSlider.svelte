@@ -64,7 +64,7 @@ const p = $derived(Math.max(0, Math.min(1, (value - min) / (max - min))));
 	display: flex;
 	justify-content: space-between;
 	gap: var(--spacing-sm);
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	font-size: var(--font-size-caption);
 }
 .value {
@@ -94,20 +94,20 @@ const p = $derived(Math.max(0, Math.min(1, (value - min) / (max - min))));
 	left: 0;
 	right: 0;
 	height: 2px;
-	background: var(--color-flight-trail);
+	background: var(--color-border-subtle);
 	transition: background var(--duration-fast) var(--ease-standard);
 }
 .fill {
 	height: 100%;
 	width: calc(var(--_x) + var(--_thumb) / 2);
-	background: var(--color-acid-lime);
+	background: var(--color-action);
 }
 .thumb {
 	left: var(--_x);
 	width: var(--_thumb);
 	height: var(--_thumb);
 	box-sizing: border-box;
-	border: 2px solid var(--color-acid-lime);
+	border: 2px solid var(--color-action);
 	border-radius: 50%;
 	background: var(--color-void);
 }
@@ -137,7 +137,7 @@ input::-moz-range-thumb {
 }
 /* The unfilled track takes a faint lime tint under a pointer. */
 .control:hover .track {
-	background: color-mix(in srgb, var(--color-acid-lime) 28%, transparent);
+	background: color-mix(in srgb, var(--color-action) 28%, transparent);
 }
 @media (prefers-reduced-motion: reduce) {
 	.track {

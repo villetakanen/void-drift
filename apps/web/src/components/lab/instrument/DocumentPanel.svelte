@@ -151,7 +151,7 @@ section {
 }
 h4 {
 	margin: 0 0 var(--spacing-sm);
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	font-size: 13px;
 	font-weight: normal;
 	letter-spacing: 0.1em;
@@ -168,7 +168,7 @@ legend {
 }
 .family {
 	margin: var(--spacing-sm) 0 var(--spacing-xs);
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	font-size: 13px;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
@@ -182,7 +182,7 @@ legend {
 	border-left: 3px solid transparent;
 }
 .param.changed {
-	border-left-color: var(--color-acid-lime);
+	border-left-color: var(--color-selected);
 }
 .param input {
 	min-height: 36px;
@@ -191,24 +191,23 @@ legend {
 	padding: 2px 6px;
 	background: var(--color-void);
 	color: var(--color-text);
-	border: 1px solid var(--color-text-dim);
+	border: 1px solid var(--color-text-muted);
 	font: inherit;
 	text-align: right;
 }
 .param.changed input {
-	border-color: var(--color-acid-lime);
-	color: var(--color-acid-lime);
+	border-color: var(--color-selected);
 }
 .reset {
 	min-height: 36px;
 	background: transparent;
 	color: var(--color-text);
-	border: 1px solid var(--color-text-dim);
+	border: 1px solid var(--color-text-muted);
 	cursor: pointer;
 }
 .unit {
 	grid-column: 1 / -1;
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	font-size: 13px;
 }
 pre {
@@ -217,7 +216,7 @@ pre {
 	margin: var(--spacing-sm) 0;
 	padding: var(--spacing-sm);
 	background: var(--color-void);
-	border: 1px solid var(--color-flight-trail);
+	border: 1px solid var(--color-border-subtle);
 	font-size: 12px;
 	user-select: text;
 }
@@ -227,12 +226,12 @@ textarea {
 	margin: var(--spacing-sm) 0;
 	background: var(--color-void);
 	color: var(--color-text);
-	border: 1px solid var(--color-text-dim);
+	border: 1px solid var(--color-text-muted);
 	font: 12px var(--font-family-ui);
 }
 summary {
 	cursor: pointer;
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 }
 .error {
 	color: var(--color-caution-tape);

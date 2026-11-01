@@ -21,11 +21,11 @@
 	margin-block: var(--spacing-md);
 	max-width: var(--measure-prose);
 }
-.catalog a,
-.catalog code {
-	color: var(--color-acid-lime);
+.catalog a {
+	color: var(--color-action);
 }
 .catalog code {
+	color: var(--color-text);
 	overflow-wrap: anywhere;
 }
 /* An example sits on the console, elevation 1, as the instrument does. */
@@ -38,6 +38,6 @@
 	font-family: var(--font-family-ui);
 }
 .catalog .caption {
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	font: var(--font-size-caption) var(--font-family-ui);
 }

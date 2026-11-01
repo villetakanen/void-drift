@@ -23,7 +23,8 @@ const { title = "Void Drift" } = Astro.props;
 
 		<!-- Mobile UX Fidelity -->
 		<meta name="mobile-web-app-capable" content="yes">
-		<meta name="theme-color" content="#000000">
+		<!-- --color-void in sRGB; meta cannot read tokens (check-contracts pins it). -->
+		<meta name="theme-color" content="#050510">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta
 			name="apple-mobile-web-app-status-bar-style"
@@ -42,7 +43,7 @@ body {
 	margin: 0;
 	width: 100%;
 	height: 100%;
-	background: #000;
+	background: var(--color-void);
 	color: var(--color-text);
 	overflow: hidden;
 }

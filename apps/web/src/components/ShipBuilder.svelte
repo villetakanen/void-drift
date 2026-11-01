@@ -390,18 +390,18 @@ footer,
 	gap: 20px;
 }
 header a {
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	text-decoration: none;
 }
 header a:hover {
-	color: var(--color-acid-lime);
+	color: var(--color-action);
 }
 header .brand {
-	color: var(--color-acid-lime);
+	color: var(--color-brand);
 }
 header {
 	padding-bottom: 22px;
-	border-bottom: 1px solid var(--color-flight-trail);
+	border-bottom: 1px solid var(--color-border-subtle);
 	font-size: 12px;
 	letter-spacing: 0.12em;
 }
@@ -418,18 +418,18 @@ h2 {
 }
 p {
 	line-height: 1.6;
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	margin: 6px 0;
 }
 .eyebrow {
-	color: var(--color-acid-lime);
+	color: var(--color-text-muted);
 	font-size: 11px;
 	letter-spacing: 0.16em;
 }
 .saved,
 .panel-title span {
 	font-size: 10px;
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	letter-spacing: 0.1em;
 }
 .chassis {
@@ -457,9 +457,9 @@ p {
 .assembly,
 .parts,
 .numbers {
-	border: 1px solid var(--color-flight-trail);
+	border: 1px solid var(--color-border-subtle);
 	padding: 20px;
-	background: var(--color-void-light);
+	background: var(--color-elev-1);
 }
 .blueprint {
 	position: relative;
@@ -479,8 +479,8 @@ canvas {
 	inset: 0;
 	opacity: 0.2;
 	background-image:
-		linear-gradient(#537079 1px, transparent 1px),
-		linear-gradient(90deg, #537079 1px, transparent 1px);
+		linear-gradient(var(--color-grid) 1px, transparent 1px),
+		linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
 	background-size: 30px 30px;
 }
 .mount {
@@ -512,7 +512,7 @@ canvas {
 	text-align: left;
 	background: transparent;
 	color: inherit;
-	border: 1px solid var(--color-flight-trail);
+	border: 1px solid var(--color-border-subtle);
 	padding: 14px;
 	cursor: pointer;
 	display: grid;
@@ -520,7 +520,7 @@ canvas {
 }
 .part:hover,
 .part.installed {
-	border-color: var(--color-acid-lime);
+	border-color: var(--color-selected);
 }
 .part.installed {
 	background: var(--color-void);
@@ -533,10 +533,10 @@ canvas {
 .part small,
 .part > span + span {
 	font-size: 11px;
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 }
 .part-name small {
-	color: var(--color-acid-lime);
+	color: var(--color-text-muted);
 }
 dl {
 	margin: 20px 0;
@@ -545,12 +545,12 @@ dl div {
 	display: flex;
 	justify-content: space-between;
 	gap: 12px;
-	border-bottom: 1px solid var(--color-flight-trail);
+	border-bottom: 1px solid var(--color-border-subtle);
 	padding: 10px 0;
 }
 dt {
 	font-size: 12px;
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 }
 dd {
 	margin: 0;
@@ -565,7 +565,7 @@ footer {
 	background: var(--color-void);
 	padding-bottom: 12px;
 	margin-top: 22px;
-	border-top: 1px solid var(--color-flight-trail);
+	border-top: 1px solid var(--color-border-subtle);
 	padding-top: 20px;
 }
 footer p {

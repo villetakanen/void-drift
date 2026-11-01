@@ -157,7 +157,7 @@ const planetStatsGroups = $derived([
 }
 
 label {
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	font-size: 0.9rem;
 	display: flex;
 	align-items: center;
@@ -166,11 +166,11 @@ label {
 
 input[type="range"] {
 	width: 100%;
-	accent-color: var(--color-acid-lime);
+	accent-color: var(--color-action);
 }
 
 input[type="checkbox"] {
-	accent-color: var(--color-acid-lime);
+	accent-color: var(--color-action);
 }
 
 select {
@@ -178,7 +178,7 @@ select {
 	padding: 0.5rem;
 	background: var(--color-void);
 	color: var(--color-text);
-	border: 1px solid rgba(255, 255, 255, 0.1);
+	border: 1px solid var(--color-border-subtle);
 	font-family: inherit;
 }
 
@@ -187,7 +187,7 @@ select {
 	align-items: center;
 	gap: 0.75rem;
 	padding: 0.5rem;
-	background: rgba(255, 255, 255, 0.05);
+	background: var(--color-surface-hover);
 	border-radius: 4px;
 	margin-bottom: 1rem;
 }
@@ -196,19 +196,19 @@ select {
 	width: 24px;
 	height: 24px;
 	border-radius: 50%;
-	border: 2px solid rgba(255, 255, 255, 0.2);
+	border: 2px solid var(--color-border);
 }
 
 .color-label {
 	font-family: var(--font-family-ui);
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 }
 
 .range-labels {
 	display: flex;
 	justify-content: space-between;
 	font-size: 0.75rem;
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	opacity: 0.6;
 }
 </style>

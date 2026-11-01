@@ -70,8 +70,8 @@ const id = `pane-${Math.random().toString(36).slice(2, 8)}`;
 	min-height: 40px;
 	padding: 0;
 	background: transparent;
-	color: var(--color-acid-lime);
-	border: 1px solid var(--color-acid-lime);
+	color: var(--color-action);
+	border: 1px solid var(--color-action);
 	font: 20px var(--font-family-ui);
 	cursor: pointer;
 }

@@ -193,10 +193,10 @@ svg.dragging {
 	cursor: grabbing;
 }
 .grid {
-	stroke: var(--color-flight-trail);
+	stroke: var(--color-border-subtle);
 }
 .axis {
-	stroke: var(--color-text-dim);
+	stroke: var(--color-text-muted);
 }
 .ring {
 	stroke: var(--color-text);
@@ -227,7 +227,7 @@ svg.dragging {
 	color: var(--color-text);
 }
 .name {
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	font-size: 15px;
 	letter-spacing: 0.1em;
 	text-transform: uppercase;

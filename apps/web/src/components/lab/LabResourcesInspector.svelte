@@ -39,12 +39,12 @@ import { resourcesParams } from "./resources-state.svelte";
 }
 
 label {
-	color: var(--color-text-dim);
+	color: var(--color-text-muted);
 	font-size: 0.9rem;
 }
 
 input[type="range"] {
 	width: 100%;
-	accent-color: var(--color-acid-lime);
+	accent-color: var(--color-action);
 }
 </style>
