@@ -217,7 +217,8 @@ function release(event: PointerEvent) {
 	input?.setPointer(event.pointerId, null);
 }
 onMount(() => {
-	chosen = loadout?.chassis ?? settings.get().selectedShipId;
+	chosen =
+		loadout?.chassis ?? (lab ? settings.get().selectedShipId : "balanced");
 	tuning = lab ? labSettings(chosen) : gameSettings(chosen);
 	if (lab) {
 		const trialJSON = new URL(location.href).searchParams.get("trial");

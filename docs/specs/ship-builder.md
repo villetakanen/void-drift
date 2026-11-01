@@ -409,3 +409,13 @@ builder ships and the two-side-ion Flight Lab fixture. Old trial imports retain
 their settings. Scores use the new `ion-1` challenge. The owner authorized clearing the old
 pre-alpha leaderboard before release; legacy namespaces remain supported by the
 rules but are not queried by this release. Custom builder and Lab runs remain unranked.
+
+
+## Standard-flight defaults — 0.4.4
+
+Opening or reloading the main game selects Fighter, independently of a previously
+saved chassis selection. Players can still choose Scout or Tank for that session;
+reset/retry retains the current session's choice. All three fixed starter loadouts
+enable stabilizers. The 0.4.3 engine fittings and battery counts remain unchanged.
+Builder saves and the Flight Lab's optional stabilizer setting are independent and
+are not forced on. The existing pre-alpha ion-1 leaderboard remains in use.

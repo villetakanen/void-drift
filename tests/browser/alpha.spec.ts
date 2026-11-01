@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
 			: route.abort(),
 	);
 });
-test("all ships move, pause, release controls and persist selection", async ({
+test("standard flights start with Fighter and all ships have stabilizers", async ({
 	page,
 }) => {
 	await page.clock.install();
@@ -15,9 +15,15 @@ test("all ships move, pause, release controls and persist selection", async ({
 	page.on("pageerror", (e) => errors.push(e.message));
 	for (const id of ["scout", "balanced", "tank"]) {
 		await page.goto("/");
+		await expect(page.getByLabel("Ship Chassis")).toHaveValue("balanced");
 		await page.getByLabel("Ship Chassis").selectOption(id);
 		await page.reload();
-		await expect(page.getByLabel("Ship Chassis")).toHaveValue(id);
+		await expect(page.getByLabel("Ship Chassis")).toHaveValue("balanced");
+		await page.getByLabel("Ship Chassis").selectOption(id);
+		await expect(page.locator(".flight-page")).toHaveAttribute(
+			"data-stabilizers",
+			"true",
+		);
 		await expect(
 			page.getByRole("progressbar", { name: "Power" }),
 		).toHaveAttribute(

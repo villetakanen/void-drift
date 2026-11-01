@@ -13,7 +13,8 @@ it("main-game fleet uses every engine mount and the selected energy packs", () =
 		expect(build.side).toBe("ion");
 		expect(build.aft).toEqual(Array(aft).fill("ion"));
 		expect(build.hull.filter((part) => part === "battery")).toHaveLength(packs);
-		expect(build.stabilizers).toBe(false);
+		expect(build.stabilizers).toBe(true);
+		expect(labSettings(id).loadout?.stabilizers).toBe(false);
 		expect(buildStats(build).capacity).toBe(capacity);
 		const sim = new Simulation(gameSettings(id));
 		expect(sim.settings.loadout).toEqual(build);
