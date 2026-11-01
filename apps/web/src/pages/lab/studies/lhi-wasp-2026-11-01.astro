@@ -1,0 +1,58 @@
+---
+import WaspSketchTrace from "../../../components/studies/WaspSketchTrace.astro";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((entry) => entry.slug === "lhi-wasp-2026-11-01");
+---
+
+<StudyLayout study={study}>
+	<section aria-labelledby="purpose">
+		<h2 id="purpose">01 / A trainer that turns without its engines</h2>
+		<p>
+			The LHI Wasp is a fourth, very small ship with a different job from the
+			Scout, Fighter and Heavy Corvette. It is a training vessel: a craft whose
+			behaviour is simple enough that a new pilot learns the game from it, and
+			predictable enough that the factory can test new mechanics on it without
+			fitting choices muddying the result. Those two purposes point the same
+			way. Fewer variables in the hull means both a gentler first flight and a
+			cleaner experiment.
+		</p>
+		<p>
+			The sketch sets the form: a flat-nosed dart with a long leaf canopy, broad
+			delta wings carrying one upright weapon-or-utility slot each, one
+			universal slot straddling the stern, and four stabilizers in two angled
+			pairs, hugging the nose taper and the stern taper. Read with one grid cell
+			as two ship units, the slots match the production 11 × 9 fitting footprint
+			and the hull comes out about 40 units long and 28 wide, against the
+			Scout's 52 × 42 and the Fighter's 73 × 40.
+		</p>
+		<WaspSketchTrace />
+		<p>
+			The tension sits in what the sketch leaves out. Every current chassis
+			steers by firing a mirrored side-engine pair; turn rate therefore changes
+			with whichever engine the player fits. The Wasp has no side pair. Its only
+			engine position is the aft universal slot, so a lone engine can push but
+			cannot turn the ship by itself. The four stabilizers are the obvious
+			candidate for that missing authority: a fixed, chassis-owned turning force
+			that stays the same whatever is fitted, which is exactly the
+			predictability the trainer needs. Nothing in the current simulation models
+			a stabilizer yet, so what they do in flight is the mechanic this cycle
+			must establish, not assume.
+		</p>
+		<p>
+			<strong
+				>This cycle should settle how the Wasp flies and reads without a side
+				pair: the stabilizers' role in handling and the hull that expresses
+				it.</strong
+			>
+			Handling numbers, any training-mode content, ranked eligibility and the
+			plume of a single aft engine stay outside this decision. The
+			<a href="/study-references/lhi-wasp-sketch.webp">original sketch</a>
+			is preserved as the reference for proportions and slot placement.
+		</p>
+	</section>
+	<section aria-labelledby="exploration">
+		<h2 id="exploration">02 / To be developed after 01</h2>
+	</section>
+</StudyLayout>

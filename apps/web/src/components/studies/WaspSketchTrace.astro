@@ -1,0 +1,158 @@
+---
+import { SCOUT } from "../../../../../packages/mode-a/src/lib/scout";
+
+/**
+ * Trace of the owner's 2026-11-01 LHI Wasp sketch, nose up, in ship units.
+ * One grid cell of the sketch is read as two ship units, which makes the
+ * sketched slots match the production 11 × 9 fitting footprint.
+ */
+const wasp = {
+	outline:
+		"-2.8,-20 2.8,-20 5.5,-9 14,5 11,10 8.5,10 5.3,19.5 -5.3,19.5 -8.5,10 -11,10 -14,5 -5.5,-9",
+	flanks: ["5.5,-9 8.5,10", "-5.5,-9 -8.5,10"],
+	spar: "-14,5 0,2.3 14,5",
+	cockpit: "0,-11.6 2.8,-6 2.8,-0.5 0,2.3 -2.8,-0.5 -2.8,-6",
+	stabilizers: [
+		{ x: -3.85, y: -14.45, length: 5.9, angle: 14.7 },
+		{ x: 3.85, y: -14.45, length: 5.9, angle: -14.7 },
+		{ x: -6.25, y: 12.75, length: 6.3, angle: -21.3 },
+		{ x: 6.25, y: 12.75, length: 6.3, angle: 21.3 },
+	],
+	slots: [
+		{ x: -9.9, y: 2, w: 8.6, h: 11.5, symbol: "Q" },
+		{ x: 9.9, y: 2, w: 8.6, h: 11.5, symbol: "Q" },
+		{ x: 0, y: 16, w: 8, h: 11.8, symbol: "+" },
+	],
+};
+const scoutFacets = SCOUT.facets.map((facet) => ({
+	points: facet.points.map(([x, y]) => `${x},${y}`).join(" "),
+	color: facet.color,
+}));
+---
+
+<figure class="trace">
+	<svg
+		viewBox="-72 -34 144 70"
+		role="img"
+		aria-label="Traced LHI Wasp sketch beside the production Scout at the same scale, both nose up. The Wasp is a flat-nosed dart with a long leaf canopy, broad delta wings carrying two upright equipment slots, one universal slot straddling the stern, and four stabilizer bars paired along the nose and stern tapers."
+	>
+		<g transform="translate(-34 2)">
+			<polygon class="hull" points={wasp.outline} />
+			{wasp.flanks.map((points) => <polyline class="line" points={points} />)}
+			<line class="line" x1="0" y1="-20" x2="0" y2="19.5" />
+			<line class="line line--faint" x1="-8" y1="-9" x2="8" y2="-9" />
+			<polyline class="line" points={wasp.spar} />
+			<polygon class="cockpit" points={wasp.cockpit} />
+			{wasp.stabilizers.map((s) => (
+				<rect
+					class="stabilizer"
+					x={-0.8}
+					y={-s.length / 2}
+					width="1.6"
+					height={s.length}
+					transform={`translate(${s.x} ${s.y}) rotate(${s.angle})`}
+				/>
+			))}
+			{wasp.slots.map((slot) => (
+				<g transform={`translate(${slot.x} ${slot.y})`}>
+					<rect
+						class="slot"
+						x={-slot.w / 2}
+						y={-slot.h / 2}
+						width={slot.w}
+						height={slot.h}
+					/>
+					<text class="slot-label" text-anchor="middle" y="1.4">
+						{slot.symbol}
+					</text>
+				</g>
+			))}
+			<text class="caption" text-anchor="middle" y="30">
+				LHI Wasp · sketch trace
+			</text>
+		</g>
+		<g transform="translate(36 -1)">
+			<g transform="rotate(-90)">
+				{scoutFacets.map((facet) => (
+					<polygon points={facet.points} fill={facet.color} />
+				))}
+			</g>
+			<circle
+				cx="0"
+				cy={-SCOUT.cockpit.x}
+				r={SCOUT.cockpit.collarRadius}
+				fill="#437e99"
+			/>
+			<circle
+				cx="0"
+				cy={-SCOUT.cockpit.x}
+				r={SCOUT.cockpit.radius}
+				fill="#000"
+			/>
+			<text class="caption" text-anchor="middle" y="33">
+				Scout · production hull
+			</text>
+		</g>
+	</svg>
+	<figcaption>
+		Equal scale, nose up. Wasp units are read from the sketch grid; the Scout is
+		the current production geometry without fittings.
+	</figcaption>
+</figure>
+<style>
+.trace {
+	margin: var(--spacing-md) 0;
+	padding: var(--spacing-md);
+	border: var(--flight-border);
+}
+svg {
+	display: block;
+	width: 100%;
+	max-height: 420px;
+}
+.hull {
+	fill: #264d6b;
+	fill-opacity: 0.55;
+	stroke: #c8f4f0;
+	stroke-width: 0.5;
+	stroke-linejoin: round;
+}
+.line {
+	fill: none;
+	stroke: #c8f4f0;
+	stroke-width: 0.3;
+}
+.line--faint {
+	stroke-opacity: 0.4;
+}
+.cockpit {
+	fill: #000;
+	stroke: #83c7d0;
+	stroke-width: 0.4;
+}
+.stabilizer {
+	fill: #00c8ff;
+	fill-opacity: 0.85;
+	stroke: #e0ffff;
+	stroke-width: 0.25;
+}
+.slot {
+	fill: var(--color-acid-lime);
+	fill-opacity: 0.2;
+	stroke: var(--color-acid-lime);
+	stroke-width: 0.4;
+}
+.slot-label {
+	fill: var(--color-text);
+	font: 4px var(--font-flight);
+}
+.caption {
+	fill: var(--color-text-dim);
+	font: 3.2px var(--font-flight);
+}
+figcaption {
+	color: var(--color-text-dim);
+	font: var(--font-small) var(--font-flight);
+	margin-top: var(--spacing-sm);
+}
+</style>
