@@ -98,33 +98,40 @@ that lesson at the end of the factory loop before changing standing skill guidan
 
 ## Ship drawing fundamentals
 
-Derived from the accepted Fighter, Scout and Heavy Corvette definitions in
-`packages/mode-a/src/lib/`. Apply before sketching any new hull or study variant.
+Every ship poses a character. A player must identify it at a glance and feel
+something about it before flying it: the Scout is an angry little firefly, the
+Heavy Corvette overwhelming power, the Wasp a slim, fast trainer that is mostly
+engine. This is a game-experience requirement; the faux-3D low-poly drawing is the
+means. Use this order whenever a chassis is drawn or studied.
 
-- **Silhouette first, and it is fixed.** A ship is an outline of six to twelve points
-  in ship units, nose forward. When the owner supplies a sketch, the outer line is the
-  silhouette, interior lines are folds, hatching is canopy, and the nose width is the
-  fuselage width. Do not redraw the outline to solve a shading problem.
-- **Volume comes from one construction, not from tones.** The spine is the highest
-  line. Planes fan from the spine or a single apex out to the outline edges, so
-  neighbouring planes face different ways. A plane's tone follows its facing; a tone
-  chosen by eye produces tiles, not a body.
-- **One light, one palette.** Light comes from the ship's left. The six `FIGHTER.facets`
-  tones give three light tones to left-facing planes and three dark tones to
-  right-facing ones, with a near-white strip on the spine. Flat fills only: no
-  gradients, strokes, outlines or textures.
-- **Few planes.** Six to twelve hull planes. Wings are thin flat plates; only the
-  fuselage carries height. If a hull reads bulky, the body has spread into the wings.
-- **Cockpit is black and compact**, with a thin lighter collar or panes, placed on the
-  spine ahead of the fittings.
-- **The hull does not draw its fittings.** Slot footprints (11 × 9, side 14 × 9) and
-  engine art sit on top of flat hull areas. Leave those areas simple. Clip an exhaust
-  notch rather than painting over it.
-- **Check both scales.** The builder enlarges the hull; flight draws it at 0.65 units
-  per pixel, where a small ship is under 30 pixels long. A detail that only reads
-  enlarged is not part of the ship.
-- **Promote as fixed facets.** Studies may compute shading from heights; the production
-  definition stores finished colour polygons, as `scout.ts` and `cruiser.ts` do.
+1. **Character before geometry.** Write the ship's character in one sentence and name
+   the one or two features that carry it: a stance, a silhouette move, a part the
+   ship is built around. Everything else is restraint.
+2. **Build it as an object.** A ship is a few solid parts: body, wings or blades,
+   canopy, and whatever it is built around, such as an engine or a bridge. Give each
+   part a shape in three dimensions before drawing anything. The top-down drawing is
+   that object seen from above; a sketch's outer line is its projected silhouette and
+   the interior lines are the object's real edges, not folds in a flat sheet.
+3. **Planes from edges.** Each part becomes a few flat planes meeting at the object's
+   edges: ridges, chines, wing roots. Light comes from the ship's left and above.
+   Planes facing it take the light tones of the shared palette, planes falling away
+   take the dark ones, and the highest ridge carries the brightest strip. Flat fills
+   only: no gradients, outlines or textures.
+4. **As few planes as carry the character.** Six to twelve is typical. Remove any
+   plane the silhouette and the light can do without. Wings are thin; only the body
+   has height. A bulky result means body has leaked into the wings.
+5. **Canopy and fittings are their own objects.** The canopy is black and compact and
+   marks the front and the scale. Slots, engines and weapons sit on the chassis;
+   keep the areas under them calm.
+6. **Check at both scales.** Enlarged in the builder and at the 0.65 flight scale,
+   where a small ship is under 30 pixels long. A detail that reads only when enlarged
+   is not part of the ship.
+7. **Judge character, not rendering.** A body that renders correctly can still pose
+   no one. The owner judges whether the ship is identifiable and has its feeling;
+   automated checks only establish that it draws.
+
+Production stores the result as fixed colour polygons, as `scout.ts` and `cruiser.ts`
+do; studies may compute shading from part heights to get there.
 
 ## Fighter silhouette
 
