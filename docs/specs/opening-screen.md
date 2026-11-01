@@ -1,6 +1,8 @@
 # Opening screen and design-system remediation plan
 
-**Status:** PLANNED. Nothing here is implemented yet.
+**Status:** IN PROGRESS. S1 done and owner-approved 2026-11-01; S2–S12 planned.
+**Scope note (owner, 2026-11-01):** phone landscape is temporarily out of scope. 844×390 checks
+are not required until it returns; D7 and the S12 phone contract stay as targets.
 **Source:** [opening screen audit](../audits/2026-11-01-opening-screen.md), owner decisions D1–D7 (2026-11-01).
 
 ## Context
@@ -37,6 +39,11 @@ unless marked independent.
 ## Slices
 
 ### S1 — Fonts (D2, D1 font part)
+
+**Done 2026-11-01, owner-approved.** B612 Mono (ui) and Noto Sans (prose; display at 800 with
+0.03em tracking) are self-hosted. Owner decisions: preserved studies follow the aliases and render
+B612 Mono; ui text that requests weight 500 renders at 400. Verification: 7 of 9 `pnpm verify`
+stages passed; `test:rules` and `test:competition` did not run (no Java runtime on the machine).
 
 - Investigate: CSS `font-family`/`font` declarations, the `--font-*` tokens, `body` in
   `styles.css`, layouts, and canvas `ctx.font` (`build-renderer.ts`, `resource-bar.ts`, Lab
