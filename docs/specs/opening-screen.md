@@ -28,7 +28,10 @@ because they share the panel, scrim and text roles.
 ## Boundaries
 
 - No new npm dependencies, webfonts or paid services. The logomark is a committed SVG.
-- No changes to gravity, friction, ship tuning or the challenge seed for scored runs.
+- No changes to gravity, friction or ship tuning.
+- Star systems are never static (owner, 2026-11-01). The fixed `CHALLENGE_SEED` (2026) is a
+  bug, tracked and fixed separately; every run and every attract scene gets a fresh random seed.
+  P7 depends on that fix.
 - Stored ids `scout` / `balanced` / `tank`, saved builds, settings and score documents are unchanged.
 - Real star-system variety (star types, generated planets, true moons) is generator work
   **outside this plan**. The attract scene uses what the simulation offers today:
@@ -145,7 +148,8 @@ Files: `packages/mode-a/src/lib/simulation.ts` (preview mode), `FlightDeck.svelt
 
 - A menu-only preview: no ship, no input, no scoring and no death. Planets advance at a reduced
   time scale and the star's radiance animates. The camera is fixed at zoom level 1 (whole system).
-  The seed is random per visit and affects only orbit phase. The scored run keeps `CHALLENGE_SEED`.
+  The seed is random per visit. When Go is pressed, the run starts in a new random system. The attract
+  scene is a preview of what a system looks like, not of the run's system.
 - Motion tokens `--duration-{fast,base,slow}` and `--ease-{enter,exit}`. On Go, the panel exits,
   then a short ready beat runs before the survival clock starts.
 - Under `prefers-reduced-motion`, the preview shows a still frame and the transition is instant.
@@ -179,7 +183,7 @@ Files: `packages/mode-a/src/lib/simulation.ts` (preview mode), `FlightDeck.svelt
 
 ### Regression guardrails
 
-- Scored runs use `CHALLENGE_SEED` and stock tuning. The attract scene never writes scores or settings.
+- No code path produces a fixed star system. The attract scene never writes scores or settings.
 - Existing settings, saved builds and Firestore score documents parse without migration.
 - Engine touch controls keep simultaneous multi-touch, cancel and lost-focus handling.
 
@@ -217,9 +221,5 @@ Scenario: Reduced motion
 
 ## Open questions
 
-- **Attract vs run system.** The attract scene is random, but the scored run uses the fixed
-  challenge system, so Start swaps the scene the player was looking at. Accept the swap (with the
-  P7 transition hiding it), or let the attract scene show the challenge system until generator
-  work lands?
 - **Corvette art name.** design.md and `cruiser.ts` say "Heavy cruiser silhouette". P4 renames
   the displayed ship only; renaming code identifiers is optional cleanup.

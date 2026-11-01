@@ -148,9 +148,9 @@ and the dimmed scene show through behind the overlay.
   - `sunType` is hard-coded `"G"`.
   - Planets come from a fixed list in core `config.ts`, where "The Moon" is a planet entry,
     not a satellite.
-    So "random system" today means random orbit phase only. Real variety depends on generator
-    work outside the design system. Open: if the run uses the fixed challenge system, Start changes the scene
-    the player has just been looking at.
+    The owner ruled the fixed seed a bug (2026-11-01): systems are never static, so every run
+    and every attract scene is random. Real variety beyond orbit phase is generator work outside
+    the design system.
 
 ### Lab and docs
 
