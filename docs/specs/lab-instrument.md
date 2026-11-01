@@ -1,6 +1,6 @@
 # Lab instrument
 
-Status: v1 implemented locally, 2026-11-01; iPad readability review pending.
+Status: v1 implemented locally, 2026-11-01; iPad readability reviewed by the owner, 2026-11-01.
 Design record: study `lab-instrument-2026-11-01` (`/lab/studies/lab-instrument-2026-11-01`).
 
 ## Context
@@ -134,7 +134,7 @@ between fitting all paths and a default scale (0.2 px/u) that pans by dragging.
   closes on Escape with focus returned (browser test).
 - [x] An edited value updates the graphs and the document (browser test).
 - [x] Each reference page renders its components (browser test).
-- [ ] Readability on the iPad is reviewed by a person and recorded.
+- [x] Readability on the iPad is reviewed by a person and recorded (owner, 2026-11-01).
 
 ### Regression Guardrails
 

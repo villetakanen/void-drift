@@ -142,3 +142,10 @@ Local commit only. Not pushed, not deployed, no live verification.
 - Calculation omits gravity, power limits and part mass or chassis changes (stated in
   the specification).
 - Screenshots, Playwright traces and the scratch config are not retained.
+
+## Later evidence (after closure)
+
+- 2026-11-01, after the closure commit: asked whether the iPad review was done, the
+  owner answered "Yes, reviewed" (an owner statement about readability on the iPad;
+  no notes, device model or screenshots were given). On that basis the specification's
+  last Definition of Done item was ticked and the study was marked `integrated`.

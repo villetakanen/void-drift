@@ -12,7 +12,7 @@ export const studies = z.array(studySchema).parse([
 	{
 		slug: "lab-instrument-2026-11-01",
 		title: "Lab instrument: one screen for comparing vehicles",
-		status: "accepted",
+		status: "integrated",
 		phase: "integration",
 		question:
 			"What does a single shared instrument look like that every study and the Lab use to compare paths, engines and hulls on the same measurements?",
