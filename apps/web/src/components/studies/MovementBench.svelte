@@ -15,6 +15,7 @@ import {
 	simulateBench,
 	TOTAL_TICKS,
 } from "./movement-bench";
+import { plasmaMasses, plasmaVariants, simulatePlasma } from "./plasma-bench";
 import {
 	RotationSettings,
 	rotationModes,
@@ -31,28 +32,52 @@ let {
 	comparison = false,
 	turning = false,
 	stabilizers = false,
+	plasma = false,
+	delayStudy = false,
 }: {
 	label?: string;
 	comparison?: boolean;
 	turning?: boolean;
 	stabilizers?: boolean;
+	plasma?: boolean;
+	delayStudy?: boolean;
 } = $props();
 // Each study section fixes its comparison mode for this component instance.
+const delayMode = untrack(() => delayStudy);
+let delay = $state(0.6);
+let appliedDelay = $state(0.6);
+let delayTimer: ReturnType<typeof setTimeout> | undefined;
+function applyDelay() {
+	clearTimeout(delayTimer);
+	data = simulatePlasma({ delay });
+	appliedDelay = delay;
+}
+function scheduleDelay() {
+	clearTimeout(delayTimer);
+	delayTimer = setTimeout(applyDelay, 80);
+}
+const plasmaMode = untrack(() => plasma);
 const stabilizerMode = untrack(() => stabilizers);
-const turningMode = untrack(() => turning || stabilizers);
-const ceilingMode = untrack(() => comparison || turning || stabilizers);
-const variants = stabilizerMode
-	? stabilizerVariants
-	: ceilingMode
-		? ceilingVariants
-		: originalVariants;
-const simulate = stabilizerMode
-	? simulateStabilizers
-	: turningMode
-		? simulateRotation
+const turningMode = untrack(() => turning || stabilizers || plasma);
+const ceilingMode = untrack(
+	() => comparison || turning || stabilizers || plasma,
+);
+const variants = plasmaMode
+	? plasmaVariants
+	: stabilizerMode
+		? stabilizerVariants
 		: ceilingMode
-			? simulateCeilings
-			: simulateBench;
+			? ceilingVariants
+			: originalVariants;
+const simulate = plasmaMode
+	? simulatePlasma
+	: stabilizerMode
+		? simulateStabilizers
+		: turningMode
+			? simulateRotation
+			: ceilingMode
+				? simulateCeilings
+				: simulateBench;
 let stabilizerBack = $state(85);
 let stabilizerInset = $state(15);
 let stabilizerAngle = $state((Math.atan2(14.05, 14) * 180) / Math.PI);
@@ -63,22 +88,23 @@ let acceleration = $state(ceilingMode ? 175 : 100);
 let bonus = $state(0.4);
 let falloff = $state(0.8);
 let maxSpeed = $state(ceilingMode ? 250 : 500);
-let data = $state(
+let data = $state.raw(
 	simulate({
 		acceleration: ceilingMode ? 175 : 100,
 		maxSpeed: ceilingMode ? 250 : 500,
 	}),
 );
-let tick = $state(0);
+let tick = $state(plasmaMode ? TOTAL_TICKS : 0);
 let playing = $state(false);
 let error = $state("");
 let canvas: HTMLCanvasElement;
+const scaleData = $derived(data);
 const time = $derived(tick * DT);
 const input = $derived(sequence(Math.min(tick, TOTAL_TICKS - 1)));
 const speedPeak = $derived(
 	Math.max(
 		1,
-		...data.flatMap((path) =>
+		...scaleData.flatMap((path) =>
 			path.map((p) => Math.max(p.speed, p.ceiling ?? 0)),
 		),
 	),
@@ -86,11 +112,11 @@ const speedPeak = $derived(
 const spinPeak = $derived(
 	Math.max(
 		1,
-		...data.flatMap((path) => path.map((p) => Math.abs(p.spin ?? 0))),
+		...scaleData.flatMap((path) => path.map((p) => Math.abs(p.spin ?? 0))),
 	),
 );
 const distancePeak = $derived(
-	Math.max(1, ...data.map((path) => path[TOTAL_TICKS].distance)),
+	Math.max(1, ...scaleData.map((path) => path[TOTAL_TICKS].distance)),
 );
 function graph(
 	index: number,
@@ -150,7 +176,7 @@ function draw() {
 	const width = 1000,
 		height = 440;
 	ctx.clearRect(0, 0, width, height);
-	const points = data.flat();
+	const points = scaleData.flat();
 	const minX = Math.min(0, ...points.map((p) => p.x)),
 		maxX = Math.max(1, ...points.map((p) => p.x));
 	const minY = Math.min(0, ...points.map((p) => p.y)),
@@ -184,7 +210,9 @@ function draw() {
 		const path = data[index];
 		ctx.strokeStyle = variant.color;
 		ctx.lineWidth = 2;
-		ctx.setLineDash(index === (ceilingMode ? 4 : 3) ? [8, 6] : []);
+		ctx.setLineDash(
+			!plasmaMode && index === (ceilingMode ? 4 : 3) ? [8, 6] : [],
+		);
 		ctx.beginPath();
 		for (let i = 0; i <= tick; i++) {
 			const p = path[i];
@@ -213,6 +241,10 @@ $effect(() => {
 	draw();
 });
 onMount(() => {
+	if (plasmaMode) {
+		draw();
+		return () => clearTimeout(delayTimer);
+	}
 	let last = performance.now(),
 		elapsed = 0,
 		frame = 0;
@@ -236,126 +268,147 @@ onMount(() => {
 </script>
 
 <div class="bench">
-	<form
-		onsubmit={(event) => {
-			event.preventDefault();
-			apply();
-		}}
-	>
-		<label
-			>Acceleration per engine (units/s²)<input
-				type="number"
-				min="1"
-				max="2000"
-				step="1"
-				bind:value={acceleration}
-				required
-			></label
+	{#if delayMode}
+		<label class="scrub"
+			>Plasma charge delay: {delay.toFixed(2)} s
+			<input
+				aria-label="Plasma charge delay"
+				type="range"
+				min="0.1"
+				max="0.99"
+				step="0.01"
+				bind:value={delay}
+				oninput={scheduleDelay}
+				onchange={applyDelay}
+			>
+		</label>
+		<p>
+			Drawn delay: {appliedDelay.toFixed(2)} s · stabilizers on · full 14-second
+			paths. Only plasma delay changes.
+		</p>
+	{/if}
+	{#if !plasmaMode}
+		<form
+			onsubmit={(event) => {
+				event.preventDefault();
+				apply();
+			}}
 		>
-		<label
-			>{ceilingMode
-				? "One-Light ceiling (units/s)"
-				: "Max powered speed (units/s)"}<input
-				type="number"
-				min="10"
-				max="3000"
-				step="1"
-				bind:value={maxSpeed}
-				required
-			></label
-		>
-		{#if ceilingMode}
 			<label
-				>Extra-speed allowance (× base)<input
+				>Acceleration per engine (units/s²)<input
 					type="number"
-					min="0"
-					max="2"
-					step="0.1"
-					bind:value={bonus}
+					min="1"
+					max="2000"
+					step="1"
+					bind:value={acceleration}
 					required
 				></label
 			>
 			<label
-				>Falloff rate<input
+				>{ceilingMode
+					? "One-Light ceiling (units/s)"
+					: "Max powered speed (units/s)"}<input
 					type="number"
-					min="0.05"
-					max="4"
-					step="0.05"
-					bind:value={falloff}
+					min="10"
+					max="3000"
+					step="1"
+					bind:value={maxSpeed}
 					required
 				></label
 			>
-		{/if}
-		{#if turningMode}
-			{#if !stabilizerMode}
+			{#if ceilingMode}
 				<label
-					>Rotation mode<select bind:value={rotationMode}>
-						{#each rotationModes as mode}
-							<option value={mode.value}>{mode.label}</option>
-						{/each}
-					</select></label
+					>Extra-speed allowance (× base)<input
+						type="number"
+						min="0"
+						max="2"
+						step="0.1"
+						bind:value={bonus}
+						required
+					></label
+				>
+				<label
+					>Falloff rate<input
+						type="number"
+						min="0.05"
+						max="4"
+						step="0.05"
+						bind:value={falloff}
+						required
+					></label
 				>
 			{/if}
-			<label
-				>Maximum turn rate (°/s)<input
-					type="number"
-					min="5"
-					max="720"
-					step="5"
-					bind:value={maxTurn}
-					required
-				></label
-			>
-		{/if}
-		{#if stabilizerMode}
-			<label
-				>Same ship in both paths<select bind:value={fixture}>
-					<option value="side">2 side engines</option>
-					<option value="all">2 side + 2 aft</option>
-					<option value="aft">2 aft engines</option>
-				</select></label
-			>
-			<label
-				>Back from nose (%)<input
-					type="range"
-					min="0"
-					max="100"
-					step="1"
-					bind:value={stabilizerBack}
-				></label
-			>
-			<label
-				>Left position across hull (%)<input
-					type="range"
-					min="0"
-					max="50"
-					step="1"
-					bind:value={stabilizerInset}
-				></label
-			>
-			<label
-				>Outward exhaust angle (°)<input
-					type="range"
-					min="-180"
-					max="180"
-					step="0.1"
-					bind:value={stabilizerAngle}
-				></label
-			>
-			<button
-				type="button"
-				class="btn btn-ghost"
-				onclick={() => {
-					stabilizerBack = 85;
-					stabilizerInset = 15;
-					stabilizerAngle = (Math.atan2(14.05, 14) * 180) / Math.PI;
-				}}
-			>
-				Reset geometry
-			</button>
-		{/if}
-		<button class="btn btn-ghost" type="submit">Apply & restart</button>
-	</form>
+			{#if turningMode}
+				{#if !stabilizerMode}
+					<label
+						>Rotation mode<select bind:value={rotationMode}>
+							{#each rotationModes as mode}
+								<option value={mode.value}>{mode.label}</option>
+							{/each}
+						</select></label
+					>
+				{/if}
+				<label
+					>Maximum turn rate (°/s)<input
+						type="number"
+						min="5"
+						max="720"
+						step="5"
+						bind:value={maxTurn}
+						required
+					></label
+				>
+			{/if}
+			{#if stabilizerMode}
+				<label
+					>Same ship in both paths<select bind:value={fixture}>
+						<option value="side">2 side engines</option>
+						<option value="all">2 side + 2 aft</option>
+						<option value="aft">2 aft engines</option>
+					</select></label
+				>
+				<label
+					>Back from nose (%)<input
+						type="range"
+						min="0"
+						max="100"
+						step="1"
+						bind:value={stabilizerBack}
+					></label
+				>
+				<label
+					>Left position across hull (%)<input
+						type="range"
+						min="0"
+						max="50"
+						step="1"
+						bind:value={stabilizerInset}
+					></label
+				>
+				<label
+					>Outward exhaust angle (°)<input
+						type="range"
+						min="-180"
+						max="180"
+						step="0.1"
+						bind:value={stabilizerAngle}
+					></label
+				>
+				<button
+					type="button"
+					class="btn btn-ghost"
+					onclick={() => {
+						stabilizerBack = 85;
+						stabilizerInset = 15;
+						stabilizerAngle = (Math.atan2(14.05, 14) * 180) / Math.PI;
+					}}
+				>
+					Reset geometry
+				</button>
+			{/if}
+			<button class="btn btn-ghost" type="submit">Apply & restart</button>
+		</form>
+	{/if}
 	{#if error}
 		<p role="alert">{error}</p>
 	{/if}
@@ -434,12 +487,14 @@ onMount(() => {
 							fill="none"
 							stroke={variant.color}
 							stroke-width="2"
-							stroke-dasharray={index === (ceilingMode ? 4 : 3)
+							stroke-dasharray={!plasmaMode && index === (ceilingMode ? 4 : 3)
 								? "7 5"
 								: undefined}
 						/>
 
-						{#if ceilingMode && chart.field === "speed" && index < 4}
+						{#if ceilingMode &&
+							chart.field === "speed" &&
+							(plasmaMode || index < 4)}
 							<polyline
 								points={graph(index, "ceiling", chart.peak)}
 								fill="none"
@@ -468,73 +523,94 @@ onMount(() => {
 		height="440"
 		aria-label={`${label}: flight paths; numeric positions and distances below`}
 	></canvas>
-	<div class="transport">
-		<button type="button" class="btn btn-ghost" onclick={() => seek(0)}>
-			Rewind
-		</button>
-		<button
-			type="button"
-			class="btn btn-filled"
-			onclick={() => {
-				if (tick === TOTAL_TICKS) tick = 0;
-				playing = !playing;
-			}}
-		>
-			{playing ? "Pause" : "Play"}
-		</button>
-		<button type="button" class="btn btn-ghost" onclick={() => seek(tick - 1)}>
-			−1 frame
-		</button>
-		<button type="button" class="btn btn-ghost" onclick={() => seek(tick + 1)}>
-			+1 frame
-		</button>
-		<button type="button" class="btn btn-ghost" onclick={restart}>
-			Replay
-		</button>
-		<output
-			>{time.toFixed(2)}
-			/ {DURATION.toFixed(2)} s ·
-			{tick === TOTAL_TICKS
-				? "End"
-				: input.left && input.right
-					? "L + R"
-					: input.left
-						? "L"
-						: input.right
-							? "R"
-							: "No thrust"}</output
-		>
-	</div>
-	<label class="scrub"
-		>Timeline<input
-			aria-label="Timeline"
-			type="range"
-			min="0"
-			max={TOTAL_TICKS}
-			step="1"
-			value={tick}
-			oninput={(event) => seek(Number(event.currentTarget.value))}
-		></label
-	>
-	<div class="phases">
-		{#each INPUT_SEQUENCE as phase, index}
-			<button type="button" onclick={() => seek(index * 60)}>
-				{index}–{index + 1}s · {phase}
+	{#if !plasmaMode}
+		<div class="transport">
+			<button type="button" class="btn btn-ghost" onclick={() => seek(0)}>
+				Rewind
 			</button>
-		{/each}
-	</div>
+			<button
+				type="button"
+				class="btn btn-filled"
+				onclick={() => {
+					if (tick === TOTAL_TICKS) tick = 0;
+					playing = !playing;
+				}}
+			>
+				{playing ? "Pause" : "Play"}
+			</button>
+			<button
+				type="button"
+				class="btn btn-ghost"
+				onclick={() => seek(tick - 1)}
+			>
+				−1 frame
+			</button>
+			<button
+				type="button"
+				class="btn btn-ghost"
+				onclick={() => seek(tick + 1)}
+			>
+				+1 frame
+			</button>
+			<button type="button" class="btn btn-ghost" onclick={restart}>
+				Replay
+			</button>
+			<output
+				>{time.toFixed(2)}
+				/ {DURATION.toFixed(2)} s ·
+				{tick === TOTAL_TICKS
+					? "End"
+					: input.left && input.right
+						? "L + R"
+						: input.left
+							? "L"
+							: input.right
+								? "R"
+								: "No thrust"}</output
+			>
+		</div>
+		<label class="scrub"
+			>Timeline<input
+				aria-label="Timeline"
+				type="range"
+				min="0"
+				max={TOTAL_TICKS}
+				step="1"
+				value={tick}
+				oninput={(event) => seek(Number(event.currentTarget.value))}
+			></label
+		>
+		<div class="phases">
+			{#each INPUT_SEQUENCE as phase, index}
+				<button type="button" onclick={() => seek(index * 60)}>
+					{index}–{index + 1}s · {phase}
+				</button>
+			{/each}
+		</div>
+	{:else}
+		<p>
+			Complete 14-second run · stabilizers on. Input sequence:
+			{INPUT_SEQUENCE.join(" → ")}
+			(one second each). Table values are at the end of the run.
+		</p>
+	{/if}
 	<div class="readouts">
 		<table>
 			<thead>
 				<tr>
 					<th>Ship</th>
+					{#if plasmaMode}
+						<th>Mass</th>
+					{/if}
 					<th>Speed</th>
 					{#if ceilingMode}
 						<th>Ceiling</th>
 					{/if}
 					{#if turningMode}
 						<th>Turn °/s</th>
-						<th>Stabilizer</th>
+						{#if !plasmaMode}
+							<th>Stabilizer</th>
+						{/if}
 					{/if}
 					<th>Length</th>
 					<th>X</th>
@@ -545,13 +621,18 @@ onMount(() => {
 				{#each variants as variant, index}
 					<tr>
 						<th style:color={variant.color}>{variant.label}</th>
+						{#if plasmaMode}
+							<td>{plasmaMasses[index]}</td>
+						{/if}
 						<td>{data[index][tick].speed.toFixed(1)}</td>
 						{#if ceilingMode}
 							<td>{data[index][tick].ceiling?.toFixed(1) ?? "—"}</td>
 						{/if}
 						{#if turningMode}
 							<td>{data[index][tick].spin?.toFixed(1)}</td>
-							<td>{data[index][tick].stabilizer?.toFixed(2)}</td>
+							{#if !plasmaMode}
+								<td>{data[index][tick].stabilizer?.toFixed(2)}</td>
+							{/if}
 						{/if}
 						<td>{data[index][tick].distance.toFixed(1)}</td>
 						<td>{data[index][tick].x.toFixed(1)}</td>

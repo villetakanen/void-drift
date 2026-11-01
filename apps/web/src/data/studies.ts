@@ -10,6 +10,14 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
 	{
+		slug: "plasma-behaviour-2026-11-01",
+		title: "Plasma engines: commitment and recovery",
+		status: "closed",
+		phase: "exploration",
+		question:
+			"What acceleration or speed advantage would make plasma’s delayed response worth choosing over ion?",
+	},
+	{
 		slug: "base-movement-ion",
 		title: "Base movement: flying with ion engines",
 		status: "integrated",
