@@ -149,3 +149,18 @@ Local commit only. Not pushed, not deployed, no live verification.
   owner answered "Yes, reviewed" (an owner statement about readability on the iPad;
   no notes, device model or screenshots were given). On that basis the specification's
   last Definition of Done item was ticked and the study was marked `integrated`.
+- 2026-11-01, owner instruction "Push": `bf1aa3f..e319ebb` pushed to
+  `origin/feat/0-4-0` (commits `c7e9375`, `769fbdd`, `e319ebb`), after a fetch showed
+  no new remote commits. Not deployed; no live verification.
+- 2026-11-01, owner instruction "close loop" (second time): direct inspection of the
+  repository. `origin/feat/0-4-0` was still at `be4201e`, the LHI Wasp study, which
+  sits on `e319ebb`. Local `feat/0-4-0` was 11 commits ahead, unpushed, ending in
+  `58f1000` "Merge S3 colour roles into feat/0-4-0". That work came from a separate
+  loop (colour roles, S3) and is not part of this one. Commits `af4ea69` and `58f1000`
+  changed instrument files: `RingSlider`, `Toggle`, `catalog.css`, `BurnRow`,
+  `DocumentPanel`, `LabInstrument`, `OverlayPane`, `PathPane` and `TimeGraph`. They
+  replaced colour names with roles such as `--color-action`, `--color-selected` and
+  `--color-border-subtle`. `tokens.css` kept the values of `--color-elev-1..3`. It
+  rewrote `--shadow-display` and `--color-backdrop` in `lch()` and added an
+  `--color-void-light` alias. This loop ran no checks against those later revisions;
+  whether the instrument still renders as reviewed on the iPad is unknown.
