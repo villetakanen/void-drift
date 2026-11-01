@@ -1,38 +1,39 @@
 <script lang="ts">
 /**
- * Logo Component
- * Renders the mathematical identity of Void Drift
- * Symbol: ∅ ⋅ Δ
+ * ∅·Δ logomark (void · drift), drawn from committed Noto Sans Math outlines.
+ * Fills with currentColor; the consumer sets the colour, normally the brand.
  */
+import { LOGOMARK_PATHS, LOGOMARK_VIEWBOX } from "./logomark";
+
 interface Props {
-	size?: string;
-	color?: string;
+	size?: "sm" | "md" | "lg";
+	label?: string;
 }
 
-let { size = "1.5rem", color = "var(--color-neon-blue)" }: Props = $props();
+let { size = "md", label = "Void Drift" }: Props = $props();
 </script>
 
-<div class="logo" style="--size: {size}; --color: {color};">
-	<span class="symbol" title="Void">&empty;</span>
-	<span class="operator" title="Interaction">&sdot;</span>
-	<span class="symbol" title="Drift">&Delta;</span>
-</div>
+<svg
+	class="logomark"
+	viewBox={LOGOMARK_VIEWBOX}
+	role="img"
+	aria-label={label}
+	style:height="var(--logomark-height-{size})"
+>
+	<path d={LOGOMARK_PATHS.void} />
+	<path class="operator" d={LOGOMARK_PATHS.operator} />
+	<path d={LOGOMARK_PATHS.drift} />
+</svg>
 
 <style>
-.logo {
-	/* Interim until S2 replaces the glyphs with SVG outlines (D1). */
-	font-family: var(--font-family-display);
-	font-size: var(--size);
-	color: var(--color);
-	display: inline-flex;
-	align-items: center;
-	gap: 0.2ch;
-	user-select: none;
-	font-weight: var(--font-weight-regular);
+.logomark {
+	display: block;
+	width: auto;
+	fill: currentColor;
+	flex-shrink: 0;
 }
 
 .operator {
 	opacity: 0.7;
-	margin: 0 0.1ch;
 }
 </style>
