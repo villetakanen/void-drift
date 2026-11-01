@@ -1,7 +1,7 @@
 # Opening screen and design-system remediation plan
 
 **Status:** IN PROGRESS. S1 done and owner-approved 2026-11-01; S2 done and owner-approved
-2026-11-01; S3–S12 planned.
+2026-11-01; S3 done 2026-11-01, pending owner approval; S4–S12 planned.
 **Scope note (owner, 2026-11-01):** phone landscape is temporarily out of scope. 844×390 checks
 are not required until it returns; D7 and the S12 phone contract stay as targets.
 **Source:** [opening screen audit](../audits/2026-11-01-opening-screen.md), owner decisions D1–D7 (2026-11-01).
@@ -75,6 +75,21 @@ the favicon was the Astro starter icon; Lab titles read "Void·Drift". No canvas
   header, the Lab nav rail and the favicon.
 
 ### S3 — Colour roles (D6)
+
+**Done 2026-11-01, pending owner approval.** The rule is in `design-system-core.md` (Colour);
+`/lab/tokens` shows every role with contrast measured against each surface. Owner decisions: every
+colour token is written in `lch()`; the brand lime is `#eeff41` (the token since PBI-022), not the
+older `#d4ff00`; the elevation steps and `--color-backdrop` from the Lab instrument are the surface
+and scrim roles. Verification: 6 of 9 `pnpm verify` stages passed; `test:browser` could not start
+because another checkout's dev server held port 4322, and the same 25 browser tests passed on port
+4342; `test:rules` and `test:competition` did not run (no Java runtime on the machine).
+
+Inventory: 45 lime/neon uses outside preserved studies (brand 6, action 15, selected 7, text 15,
+border 1, game data 1 for the HUD bars); about 40 hex/rgb literals in shared CSS; a second lime,
+`#d4ff00`, in 7 hard-coded places (builder canvas, death icon, Lab nav and resources, the Lab planet
+ring, the Balanced ship tint); `--color-overlay` (0.9) had no shared consumer and duplicated
+`--color-flight-glass` (0.91); `#000` backgrounds on the page, the stage canvas and `theme-color`
+against the `#050510` void elsewhere; and a Lab planet ring set to `var(...)`, which canvas ignores.
 
 - Investigate: uses of `--color-acid-lime` / `--color-neon-*`, hex literals in shared UI,
   `--color-overlay` vs `--color-flight-glass`, `#000` page backgrounds and `theme-color`.
