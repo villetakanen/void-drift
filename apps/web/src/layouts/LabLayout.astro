@@ -32,15 +32,13 @@ const LINKS = [
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
-		<title>{title} | Void·Drift Lab</title>
+		<title>{title} | Void Drift Lab</title>
 	</head>
 	<body>
 		<div class:list={["lab-grid", { wide }]}>
 			<!-- Column 1: Nav Rail -->
 			<aside class="nav-rail">
-				<div class="logo-area">
-					<Logo />
-				</div>
+				<a class="logo-area" href="/lab"><Logo label="Void Drift Lab" /></a>
 				<nav class="tray">
 					{LINKS.map((link) => {
 						const isActive = link.exact
@@ -107,6 +105,8 @@ const LINKS = [
 }
 
 .logo-area {
+	display: flex;
+	color: var(--color-acid-lime);
 	padding: 1.5rem;
 	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 	flex-shrink: 0;

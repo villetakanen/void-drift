@@ -15,14 +15,10 @@
 	border-bottom: var(--flight-border);
 }
 .brand {
-	font-family: var(--font-family-display);
-	font-weight: var(--font-weight-display);
-	letter-spacing: var(--tracking-wordmark);
-	color: var(--color-text);
-	text-decoration: none;
-}
-.brand span {
+	display: inline-flex;
+	align-items: center;
 	color: var(--color-acid-lime);
+	text-decoration: none;
 }
 .edition,
 .eyebrow {

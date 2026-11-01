@@ -37,7 +37,7 @@ const ROLES = [
 
 const SIZES = ["caption", "label", "body", "lead", "heading", "display"];
 const LINE_HEIGHTS = ["display", "heading", "ui", "prose"];
-const TRACKING = ["eyebrow", "wordmark", "display"];
+const TRACKING = ["eyebrow", "display"];
 const FACES = [
 	'400 16px "B612 Mono"',
 	'italic 400 16px "B612 Mono"',

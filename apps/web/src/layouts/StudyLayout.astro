@@ -1,4 +1,5 @@
 ---
+import Logo from "../components/Logo.svelte";
 import type { Study } from "../data/studies";
 import "@void-drift/core/styles/reset.css";
 import "@void-drift/core/styles/tokens.css";
@@ -15,12 +16,13 @@ const { study } = Astro.props;
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 		<title>{study?.title ?? "Design studies"} | Void Drift</title>
 	</head>
 	<body>
 		<nav aria-label="Study navigation">
 			<a href="/lab">← Lab</a><a href="/lab/studies">Design studies</a
-			><span>VOID DRIFT / RESEARCH</span>
+			><span class="research"><Logo size="sm" /> / RESEARCH</span>
 		</nav>
 		<main class="prose">
 			<header>
@@ -57,6 +59,14 @@ nav span {
 	margin-left: auto;
 	color: var(--color-text-dim);
 	font: var(--font-size-caption) var(--font-family-ui);
+}
+.research {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--spacing-sm);
+}
+.research :global(.logomark) {
+	color: var(--color-acid-lime);
 }
 a {
 	color: var(--color-acid-lime);

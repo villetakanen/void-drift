@@ -22,6 +22,7 @@ import {
 import { onMount } from "svelte";
 import { version } from "../../package.json";
 import { settings } from "../lib/stores/settings";
+import Logo from "./Logo.svelte";
 
 let {
 	lab = false,
@@ -312,7 +313,7 @@ onMount(() => {
 	data-zoom-steps={activeZoomSteps}
 >
 	<header class="flight-header">
-		<a href="/" class="brand">VOID<span>·</span>DRIFT</a>
+		<a href="/" class="brand"><Logo size="sm" /></a>
 		<span class="edition"
 			>{loadout
 				? testFlight

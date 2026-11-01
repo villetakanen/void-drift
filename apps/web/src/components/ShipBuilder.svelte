@@ -19,6 +19,7 @@ import {
 import { onMount } from "svelte";
 import { version } from "../../package.json";
 import FlightDeck from "./FlightDeck.svelte";
+import Logo from "./Logo.svelte";
 
 let { lab = false }: { lab?: boolean } = $props();
 let builds = $state(defaultBuilds());
@@ -125,7 +126,7 @@ function choose(id: ShipProfileId) {
 {:else}
 	<main class="builder">
 		<header>
-			<a class="brand" href="/">VOID·DRIFT</a
+			<a class="brand" href="/"><Logo size="sm" /></a
 			><span
 				>{lab
 					? "SHIP BUILDER LAB / SHARED SYSTEMS"
@@ -393,6 +394,9 @@ header a {
 	text-decoration: none;
 }
 header a:hover {
+	color: var(--color-acid-lime);
+}
+header .brand {
 	color: var(--color-acid-lime);
 }
 header {

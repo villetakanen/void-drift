@@ -5,6 +5,8 @@ import "@void-drift/core/styles/buttons.css";
 import "@void-drift/core/styles/typography.css";
 import "../styles.css";
 import "@void-drift/core/styles/flight.css";
+
+const { title = "Void Drift" } = Astro.props;
 ---
 
 <!doctype html>
@@ -17,7 +19,7 @@ import "@void-drift/core/styles/flight.css";
 		>
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 		<meta name="generator" content={Astro.generator}>
-		<title>Void Drift</title>
+		<title>{title}</title>
 
 		<!-- Mobile UX Fidelity -->
 		<meta name="mobile-web-app-capable" content="yes">
