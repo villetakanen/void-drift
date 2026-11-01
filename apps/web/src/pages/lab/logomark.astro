@@ -1,0 +1,165 @@
+---
+import Controls from "../../components/Controls.svelte";
+import Logo from "../../components/Logo.svelte";
+import LabLayout from "../../layouts/LabLayout.astro";
+
+const SIZES = ["sm", "md", "lg"] as const;
+const SURFACES = [
+	{ name: "void", token: "--color-void", mark: "brand" },
+	{ name: "void-light", token: "--color-void-light", mark: "brand" },
+	{ name: "brand", token: "--color-acid-lime", mark: "void" },
+] as const;
+const FAVICON_SIZES = [16, 32, 64];
+---
+
+<LabLayout title="Logomark">
+	<div class="logomark-lab">
+		<section>
+			<h2 class="section-title">Size steps</h2>
+			<p class="note">
+				The production <code>Logo.svelte</code> on each surface. Height comes
+				from <code>--logomark-height-*</code>; the fill is
+				<code>currentColor</code>.
+			</p>
+			<div class="surfaces">
+				{SURFACES.map((surface) => (
+						<article
+							class="surface"
+							data-mark={surface.mark}
+							style={`background: var(${surface.token})`}
+						>
+							<header>
+								<strong>{surface.name}</strong>
+								<code>{surface.token}</code>
+							</header>
+							<div class="steps">
+								{SIZES.map((size) => (
+									<figure>
+										<Logo size={size} />
+										<figcaption>
+											{size} · var(--logomark-height-{size})
+										</figcaption>
+									</figure>
+								))}
+							</div>
+						</article>
+					))}
+			</div>
+		</section>
+
+		<section>
+			<h2 class="section-title">Favicon</h2>
+			<p class="note">
+				<code>public/favicon.svg</code>, generated with the outlines.
+			</p>
+			<div class="favicons">
+				{FAVICON_SIZES.map((px) => (
+						<figure>
+							<img
+								src="/favicon.svg"
+								width={px}
+								height={px}
+								alt={`Favicon at ${px} pixels`}
+							>
+							<figcaption>{px}px</figcaption>
+						</figure>
+					))}
+			</div>
+		</section>
+	</div>
+
+	<Controls slot="inspector" title="Details">
+		<p class="details">
+			∅·Δ (void · drift) converted once from Noto Sans Math (SIL OFL 1.1) by
+			<code>scripts/convert-logomark.py</code>. The font is never served. The
+			rules are in <code>docs/specs/design-system-core.md</code> (Identity).
+		</p>
+	</Controls>
+</LabLayout>
+
+<style>
+.logomark-lab {
+	padding: var(--spacing-lg);
+	display: grid;
+	gap: var(--spacing-lg);
+	color: var(--color-text);
+}
+
+.section-title {
+	font-size: var(--font-size-caption);
+	letter-spacing: var(--tracking-eyebrow);
+	text-transform: uppercase;
+	color: var(--color-text-dim);
+	border-bottom: var(--flight-border);
+	padding-bottom: var(--spacing-sm);
+	margin-bottom: var(--spacing-md);
+}
+
+.note,
+.details {
+	color: var(--color-text-dim);
+	font-size: var(--font-size-caption);
+	margin-bottom: var(--spacing-md);
+}
+
+code {
+	font-family: var(--font-family-ui);
+	font-size: var(--font-size-caption);
+	overflow-wrap: anywhere;
+}
+
+.surfaces {
+	display: grid;
+	gap: var(--spacing-md);
+}
+
+.surface {
+	display: grid;
+	gap: var(--spacing-md);
+	padding: var(--spacing-lg);
+	border: var(--flight-border);
+}
+
+.surface[data-mark="brand"] {
+	--mark: var(--color-acid-lime);
+	--caption: var(--color-text-dim);
+}
+
+.surface[data-mark="void"] {
+	--mark: var(--color-void);
+	--caption: var(--color-void);
+}
+
+.surface header {
+	display: flex;
+	gap: var(--spacing-md);
+	align-items: baseline;
+	color: var(--caption);
+	font-size: var(--font-size-caption);
+}
+
+.surface code {
+	color: var(--caption);
+}
+
+.steps,
+.favicons {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	gap: var(--spacing-xl);
+}
+
+figure {
+	margin: 0;
+	display: grid;
+	gap: var(--spacing-sm);
+	justify-items: start;
+	color: var(--mark);
+}
+
+figcaption {
+	color: var(--caption, var(--color-text-dim));
+	font-size: var(--font-size-caption);
+}
+</style>

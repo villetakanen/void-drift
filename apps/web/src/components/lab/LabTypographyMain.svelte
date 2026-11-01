@@ -113,8 +113,8 @@ function drawCanvasSample(ctx: CanvasRenderingContext2D) {
 					<span>Noto Sans Math · ∅·Δ only</span>
 				</header>
 				<p class="note">
-					Shipped as SVG outlines (opening-screen S2); the font itself is never
-					served.
+					Shipped as SVG outlines; the font itself is never served. See
+					<a href="/lab/logomark">Logomark</a>.
 				</p>
 			</article>
 		</div>
