@@ -153,6 +153,12 @@ and systems where relevant; isolate experiments and label fixtures/future scenar
 Include keyboard, narrow-layout, and relevant states for interactive examples.
 Preserve reference material so shared-style changes do not erase decision meaning.
 
+Compare vehicle motion, engine or hull values with the Lab instrument, not new
+charts: write its configuration document and embed it with `InstrumentEmbed`; the
+designer's adjusted document is the decided values. The contract is
+`docs/specs/lab-instrument.md`. If the instrument cannot show what the study needs,
+propose an amendment to that specification instead of a study-local chart.
+
 One lead owns synthesis. Delegate only when authorized and useful; reconcile results
 into the same study. Verify changes using repository gates and browser inspection;
 report unavailable checks and human-review gaps separately. Provide the review URL.

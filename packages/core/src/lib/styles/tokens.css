@@ -105,6 +105,24 @@
 	--tracking-display: 0.03em;
 	--measure-prose: 70ch;
 
+	/* Elevation (lab-instrument study, 02.8). Each step keeps the background's
+	   hue, 290, and raises lightness by 5.5 and chroma by 5. */
+	--color-elev-1: lch(5.5% 10 290);
+	--color-elev-2: lch(11% 15 290);
+	--color-elev-3: lch(16.5% 20 290);
+	/* Instrument display: a console (elevation 1) holds displays with 4px
+	   scanlines, a darkened edge, a thin dark bezel and a black shadow. */
+	--surface-display:
+		radial-gradient(ellipse at center, transparent 55%, rgb(0 0 0 / 0.4)),
+		repeating-linear-gradient(
+			0deg,
+			var(--color-elev-2) 0 2px,
+			lch(9% 15 290) 2px 4px
+		);
+	--shadow-display: inset 0 0 0 1px lch(4% 8 290), 0 8px 24px rgb(0 0 0 / 0.7);
+	/* Dims what an overlay covers. */
+	--color-backdrop: rgb(0 0 0 / 0.11);
+
 	/* Logomark height steps (design-system-core.md, Identity). */
 	--logomark-height-sm: 1rem;
 	--logomark-height-md: 1.5rem;

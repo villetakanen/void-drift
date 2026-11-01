@@ -1,0 +1,43 @@
+/* Design-system reference pages in the Lab: the layout of the Buttons
+   catalog, shared by the inputs, graphs, instrument parts and surfaces pages. */
+.catalog {
+	display: grid;
+	gap: var(--spacing-lg);
+	padding: var(--spacing-lg);
+	font-family: var(--font-family-display);
+}
+.catalog section {
+	min-width: 0;
+}
+.catalog h2 {
+	font-size: var(--font-size-heading);
+	margin-bottom: var(--spacing-md);
+}
+.catalog p,
+.catalog li {
+	line-height: 1.6;
+}
+.catalog p {
+	margin-block: var(--spacing-md);
+	max-width: var(--measure-prose);
+}
+.catalog a,
+.catalog code {
+	color: var(--color-acid-lime);
+}
+.catalog code {
+	overflow-wrap: anywhere;
+}
+/* An example sits on the console, elevation 1, as the instrument does. */
+.catalog .example {
+	display: grid;
+	justify-items: start;
+	gap: var(--spacing-md);
+	padding: var(--spacing-lg);
+	background: var(--color-elev-1);
+	font-family: var(--font-family-ui);
+}
+.catalog .caption {
+	color: var(--color-text-dim);
+	font: var(--font-size-caption) var(--font-family-ui);
+}

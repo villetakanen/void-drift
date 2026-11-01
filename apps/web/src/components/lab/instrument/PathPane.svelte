@@ -1,0 +1,235 @@
+<script lang="ts">
+import { niceCeil, type Track } from "../../../lib/instrument";
+import Toggle from "../../inputs/Toggle.svelte";
+
+// The path tool (lab-instrument study, 02.8–02.9): a square display of every
+// vehicle's path with a marker at the current time, the scale switch in its
+// top right and its numbers in its bottom right. It draws in its own
+// coordinates; the host scales it.
+let {
+	tracks,
+	tick,
+	size = 672,
+	scale = 1,
+}: {
+	tracks: Track[];
+	/** Sample index marked on every path. */
+	tick: number;
+	/** Side of the square, in the host's logical pixels. */
+	size?: number;
+	/** Host's scale, so dragging follows the pointer. */
+	scale?: number;
+} = $props();
+
+const DEFAULT_SCALE = 0.2;
+const DEFAULT_GRID = 500;
+// Half-length of the tick drawn across each path at the marker.
+const TICK = 16;
+const FIT_MARGIN = 48;
+
+let mode = $state<"fit" | "default">("fit");
+let pan = $state({ x: 40, y: 336 });
+let dragging = $state(false);
+let last = { x: 0, y: 0 };
+
+const fit = $derived.by(() => {
+	const pts = tracks.flatMap((t) => t.samples);
+	const xs = pts.map((p) => p.x),
+		ys = pts.map((p) => p.y);
+	const x0 = Math.min(...xs),
+		x1 = Math.max(...xs),
+		y0 = Math.min(...ys),
+		y1 = Math.max(...ys);
+	const s = Math.min(
+		(size - 2 * FIT_MARGIN) / Math.max(1, x1 - x0),
+		(size - 2 * FIT_MARGIN) / Math.max(1, y1 - y0),
+	);
+	return {
+		s,
+		ox: (size - (x1 - x0) * s) / 2 - x0 * s,
+		oy: (size - (y1 - y0) * s) / 2 - y0 * s,
+	};
+});
+const view = $derived(
+	mode === "fit" ? fit : { s: DEFAULT_SCALE, ox: pan.x, oy: pan.y },
+);
+const grid = $derived(mode === "fit" ? niceCeil(100 / view.s) : DEFAULT_GRID);
+const sx = (x: number) => view.ox + x * view.s;
+const sy = (y: number) => view.oy + y * view.s;
+function lines(o: number) {
+	const out: number[] = [];
+	const start = Math.ceil(-o / view.s / grid) * grid;
+	for (let v = start; o + v * view.s <= size; v += grid) out.push(v);
+	return out;
+}
+const gridX = $derived(lines(view.ox));
+const gridY = $derived(lines(view.oy));
+// The area of space the display shows, in world units.
+const area = $derived(Math.round(size / view.s));
+
+function choose(next: "fit" | "default") {
+	mode = next;
+	if (next === "default") pan = { x: 40, y: size / 2 };
+}
+function down(e: PointerEvent) {
+	if (mode !== "default") return;
+	dragging = true;
+	last = { x: e.clientX, y: e.clientY };
+	(e.currentTarget as Element).setPointerCapture(e.pointerId);
+}
+function move(e: PointerEvent) {
+	if (!dragging) return;
+	pan = {
+		x: pan.x + (e.clientX - last.x) / scale,
+		y: pan.y + (e.clientY - last.y) / scale,
+	};
+	last = { x: e.clientX, y: e.clientY };
+}
+const id = `path-${Math.random().toString(36).slice(2, 8)}`;
+</script>
+
+<div class="pane" style={`width:${size}px;height:${size}px`}>
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<svg
+		class:pan={mode === "default"}
+		class:dragging
+		viewBox={`0 0 ${size} ${size}`}
+		width={size}
+		height={size}
+		onpointerdown={down}
+		onpointermove={move}
+		onpointerup={() => (dragging = false)}
+		onpointercancel={() => (dragging = false)}
+		role="img"
+		aria-label="Plan view of every path with a marker at the current time"
+	>
+		<defs>
+			<clipPath {id}><rect width={size} height={size} /></clipPath>
+		</defs>
+		<g clip-path={`url(#${id})`}>
+			{#each gridX as g}
+				<line
+					x1={sx(g)}
+					x2={sx(g)}
+					y1="0"
+					y2={size}
+					class={g === 0 ? "axis" : "grid"}
+				/>
+			{/each}
+			{#each gridY as g}
+				<line
+					x1="0"
+					x2={size}
+					y1={sy(g)}
+					y2={sy(g)}
+					class={g === 0 ? "axis" : "grid"}
+				/>
+			{/each}
+			{#each tracks as t}
+				<polyline
+					points={t.samples
+						.map((p) => `${sx(p.x).toFixed(1)},${sy(p.y).toFixed(1)}`)
+						.join(" ")}
+					fill="none"
+					stroke={t.color}
+					stroke-width="2"
+				/>
+				{@const p = t.samples[tick]}
+				{@const v = Math.hypot(p.vx, p.vy)}
+				{#if v > 1e-6}
+					<line
+						x1={sx(p.x) + (p.vy / v) * TICK}
+						y1={sy(p.y) - (p.vx / v) * TICK}
+						x2={sx(p.x) - (p.vy / v) * TICK}
+						y2={sy(p.y) + (p.vx / v) * TICK}
+						stroke={t.color}
+						stroke-width="1.5"
+						stroke-linecap="round"
+					/>
+				{/if}
+				<circle cx={sx(p.x)} cy={sy(p.y)} r="5" fill="none" class="ring" />
+				<circle cx={sx(p.x)} cy={sy(p.y)} r="2.5" fill={t.color} />
+			{/each}
+		</g>
+	</svg>
+	<!-- Title and numbers on one line in the display's bottom right. -->
+	<dl class="readout">
+		<dt class="name">Paths</dt>
+		<dd>{area} × {area} u</dd>
+		<dd>grid {grid} u</dd>
+		<dd>{view.s.toFixed(3)} px/u</dd>
+	</dl>
+	<div class="tools">
+		<Toggle
+			label="Path scale"
+			options={["Fit all", "Default scale"]}
+			bind:value={
+				() => (mode === "fit" ? "Fit all" : "Default scale"),
+				(o) => choose(o === "Fit all" ? "fit" : "default")
+			}
+		/>
+	</div>
+</div>
+
+<style>
+/* An instrument display: elevation 2 with scanlines, bezel and black shadow. */
+.pane {
+	position: relative;
+	background: var(--surface-display);
+	box-shadow: var(--shadow-display);
+	font-family: var(--font-family-ui);
+}
+svg {
+	position: absolute;
+	inset: 0;
+	display: block;
+	user-select: none;
+}
+svg.pan {
+	cursor: grab;
+	touch-action: none;
+}
+svg.dragging {
+	cursor: grabbing;
+}
+.grid {
+	stroke: var(--color-flight-trail);
+}
+.axis {
+	stroke: var(--color-text-dim);
+}
+.ring {
+	stroke: var(--color-text);
+	stroke-width: 1.5;
+}
+.tools {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+}
+/* One 24px line: the readout keeps the 4px rhythm on the display. */
+.readout {
+	position: absolute;
+	right: 8px;
+	bottom: 8px;
+	display: flex;
+	align-items: baseline;
+	gap: 16px;
+	margin: 0;
+	padding: 4px 8px;
+	font-size: 17px;
+	line-height: 24px;
+	white-space: nowrap;
+	pointer-events: none;
+}
+.readout dd {
+	margin: 0;
+	color: var(--color-text);
+}
+.name {
+	color: var(--color-text-dim);
+	font-size: 15px;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+</style>

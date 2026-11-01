@@ -10,6 +10,14 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
 	{
+		slug: "lab-instrument-2026-11-01",
+		title: "Lab instrument: one screen for comparing vehicles",
+		status: "accepted",
+		phase: "integration",
+		question:
+			"What does a single shared instrument look like that every study and the Lab use to compare paths, engines and hulls on the same measurements?",
+	},
+	{
 		slug: "path-instrument-2026-11-01",
 		title: "Path instrument: reading motion in any container",
 		status: "closed",

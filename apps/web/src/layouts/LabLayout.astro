@@ -12,6 +12,7 @@ const currentPath = Astro.url.pathname;
 const LINKS = [
 	{ href: "/lab/studies", label: "Design studies", exact: false },
 	{ href: "/lab/flight", label: "Flight trials", exact: false },
+	{ href: "/lab/instrument", label: "Instrument", exact: true },
 	{ href: "/lab/builder", label: "Ship builder", exact: false },
 	{ href: "/lab/ion-engines", label: "Ion effects", exact: false },
 	{ href: "/lab", label: "Dashboard", exact: true },
@@ -21,7 +22,10 @@ const LINKS = [
 	{ href: "/lab/logomark", label: "Logomark", exact: false },
 	{ href: "/lab/typography", label: "Typography", exact: false },
 	{ href: "/lab/resources", label: "Resources", exact: false },
-	{ href: "/lab/buttons", label: "Buttons", exact: false },
+	{ href: "/lab/inputs", label: "Inputs", exact: false },
+	{ href: "/lab/graphs", label: "Graphs", exact: false },
+	{ href: "/lab/instrument-parts", label: "Instrument parts", exact: false },
+	{ href: "/lab/surfaces", label: "Surfaces", exact: false },
 	{ href: "/", label: "← Back to Game", exact: true },
 ];
 ---

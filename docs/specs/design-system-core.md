@@ -116,6 +116,29 @@ there. Deprecated aliases remain until their last consumer migrates: `--font-fli
   (`pnpm check:contracts` keeps them equal). One-shot canvas drawings redraw after `loadCanvasFonts()`.
 - Preserved study components keep their local values.
 
+## Elevation and inputs
+
+**Status:** Implemented 2026-11-01 (lab-instrument study, 02.4–02.8 and 04).
+**Source of truth:** `packages/core/src/lib/styles/tokens.css`,
+`apps/web/src/components/inputs/Toggle.svelte`, `apps/web/src/components/inputs/RingSlider.svelte`.
+**References:** `/lab/surfaces`, `/lab/inputs`.
+
+| Token               | Value                                              | Use                |
+| ------------------- | -------------------------------------------------- | ------------------ |
+| `--color-elev-1`    | `lch(5.5% 10 290)`                                 | Console            |
+| `--color-elev-2`    | `lch(11% 15 290)`                                  | Display            |
+| `--color-elev-3`    | `lch(16.5% 20 290)`                                | Overlay pane       |
+| `--surface-display` | elevation 2 with 4px scanlines and a darkened edge | Display background |
+| `--shadow-display`  | 1px dark bezel; 0 8px 24px black at 70%            | Display edge       |
+| `--color-backdrop`  | black at 11%                                       | Behind an overlay  |
+- Each elevation step keeps the background's hue, 290, and raises lightness by 5.5
+  and chroma by 5.
+- `Toggle` takes `options`, a bindable `value` and a group `label`; `compact` sets
+  8px side padding and `stretch` fills the width. Native radios give arrow keys.
+- `RingSlider` wraps a native range input (keys, touch and forms unchanged) at a
+  44px touch height; `compact` hides its label line where the host shows it. Its
+  value is announced through the input, not a live region.
+
 ## Identity
 
 **Status:** Implemented 2026-11-01 (opening-screen S2, decision D1).

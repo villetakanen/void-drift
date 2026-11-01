@@ -99,6 +99,25 @@ The audit retains original findings and explicitly records promotion decisions.
 Retrospective evidence: the owner valued the situation-first explanation. Review
 that lesson at the end of the factory loop before changing standing skill guidance.
 
+## Lab instrument, inputs and surfaces
+
+The study at `/lab/studies/lab-instrument-2026-11-01` records the rationale;
+`docs/specs/lab-instrument.md` is the contract. Reference pages: `/lab/instrument`,
+`/lab/inputs`, `/lab/graphs`, `/lab/instrument-parts` and `/lab/surfaces`.
+
+- The toggle is one button-shaped control split into equal parts: cut corners
+  outside, a straight split inside, the selected part filled lime, the others a
+  faint fill that takes a faint lime tint under a pointer.
+- The ring slider is a faint 2px track, lime to the value, and a lime ring knob;
+  label and value stay neutral, and the unfilled track takes the same tint on hover.
+- Lime marks the selection and the knob; hover borrows it at low strength. Data and
+  values stay neutral; vehicles keep one colour in every diagram.
+- Elevation steps keep the background's hue (290): console (elevation 1), display
+  (elevation 2, with scanlines, a bezel and a black shadow), overlay (elevation 3).
+- Diagrams are displays on the console with every label outside the data; graphs
+  scale their value axes to the data. Elements keep the 4px vertical rhythm; inline
+  widths follow content, and inline gaps are grid-sized.
+
 ## Ship drawing fundamentals
 
 Every ship poses a character. A player must identify it at a glance and feel

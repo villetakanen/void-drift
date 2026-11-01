@@ -1,0 +1,739 @@
+---
+import InstrumentEmbed from "../../../components/lab/instrument/InstrumentEmbed.astro";
+import BrandSliderComparison from "../../../components/studies/BrandSliderComparison.svelte";
+import BurnStripComparison from "../../../components/studies/BurnStripComparison.svelte";
+import InstrumentView from "../../../components/studies/InstrumentView.svelte";
+import LabInstrument021 from "../../../components/studies/LabInstrument021.svelte";
+import LabInstrumentConfigDemo023 from "../../../components/studies/LabInstrumentConfigDemo023.svelte";
+import LabInstrumentConfigDemo027 from "../../../components/studies/LabInstrumentConfigDemo027.svelte";
+import OptionToggleComparison from "../../../components/studies/OptionToggleComparison.svelte";
+import PathToolComparison from "../../../components/studies/PathToolComparison.svelte";
+import PathToolComparison028 from "../../../components/studies/PathToolComparison028.svelte";
+import TraceGraphsExample from "../../../components/studies/TraceGraphsExample.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+import { STARTER_DOCUMENT } from "../../../lib/instrument/starter";
+
+const study = studies.find(
+	(entry) => entry.slug === "lab-instrument-2026-11-01",
+);
+---
+
+<StudyLayout study={study}>
+	<section aria-labelledby="problem">
+		<h2 id="problem">01 / Every study builds its own ruler</h2>
+		<p>
+			A study that varies engine thrust and a study that varies hull mass both
+			end up drawing a path, a speed curve and a few figures. Each builds that
+			drawing itself, with its own axes, units and input program, so the two
+			results cannot be laid side by side, and neither can be checked in the
+			Lab. The work of measuring is repeated and the comparison is lost.
+		</p>
+		<p>
+			The Lab instrument is one shared element that owns the measuring. A study
+			hands it vehicle configurations and path sources; the instrument decides
+			the views, scales, units, input program and controls. Paths are
+			calculated, not flown, and drawn statically. The same element fills the
+			container in the Lab and, in a study, takes the full column width and
+			snaps to the centre of the reading flow. All controls sit in one
+			collapsible pane that slides over the views.
+		</p>
+		<h3>The screen</h3>
+		<p>
+			The screen has two columns of equal width inside an even margin, with no
+			header and no footer. The plan view takes the left column; the time-based
+			diagrams take the right.
+		</p>
+		<h3>The control pane</h3>
+		<ul>
+			<li>
+				Controls live where they act. Tools for reading the diagrams (time,
+				scale, panning, showing a vehicle) sit on the diagrams themselves.
+			</li>
+			<li>
+				The pane holds only the values under investigation: the settings a study
+				varies and the document they are copied from. It is placed on the
+				instrument's container, not drawn inside the scaled screen: anchored to
+				the right edge, the container's full height, at a normal readable size.
+			</li>
+			<li>
+				It is either visible or hidden, with no animation. When visible it sits
+				over the screen; nothing behind it moves, resizes or reflows.
+			</li>
+			<li>
+				It always starts hidden. Hidden, only a menu button in the container's
+				top-right corner remains; visible, the pane's own close button takes
+				that corner. Escape also closes it.
+			</li>
+			<li>
+				Content taller than the screen scrolls inside the pane. Targets stay
+				touch-sized.
+			</li>
+		</ul>
+		<h3>The design problem: a configuration that travels</h3>
+		<p>
+			The instrument is only used if handing it work is easier than building a
+			chart. That hand-over is a configuration: a small document an agent
+			writes, the instrument draws, and the designer adjusts on screen. Say a
+			plasma study wants faster acceleration: the designer changes that one
+			value in the pane, compares it with the stock ship, and copies the
+			resulting document back to the agent, or the agent reads it from the page,
+			as the decided values. Nothing in it is mandatory; it names only what
+			differs.
+		</p>
+		<p>
+			So the questions are about that document: what a vehicle in it is, which
+			parameters can change, which ships can be used, and how many vehicles one
+			screen can hold. The game already describes ships as loadouts (a chassis
+			with parts in fixed slots) and parts as parameter sets (mass, thrust,
+			speed limit, response), which is a likely starting vocabulary. The default
+			path scale, the slider as a design-system component and device readability
+			checks sit outside this cycle.
+		</p>
+	</section>
+
+	<section aria-labelledby="anatomy">
+		<h2 id="anatomy">02.1 / Anatomy: three views, one readout, one pane</h2>
+		<p>
+			One fixed 16:10 screen holds a plan view of every path, three traces on a
+			shared time axis with the input program beneath them, and a readout table.
+			The table joins the moment (values at the slider time), the whole run
+			(peak speed, time to 200 u/s, distance) and the configuration a study
+			supplied, so an engine or hull comparison reads from the same calculation
+			as the paths.
+		</p>
+		<div class="bleed">
+			<LabInstrument021 client:load label="Lab instrument" />
+		</div>
+		<p class="limits">
+			Fixture: four vehicles from two imagined studies, calculated with the
+			free-rotation bench (2 aft + 2 side) on the shared 14-second input. The
+			configuration columns show only the two settings that bench varies; real
+			engine and hull properties are not connected. Samples are 1/60 s apart.
+			The screen scales with its container; it has not been checked on an iPad.
+		</p>
+	</section>
+
+	<section aria-labelledby="vehicle">
+		<h2 id="vehicle">02.2 / A vehicle is a loadout plus what differs</h2>
+		<p>
+			Each vehicle in the configuration is a game loadout (a chassis with parts
+			in its fixed slots, the same document the ship builder saves) plus an
+			optional list of changes. Changes are grouped by engine family and name
+			only the values that differ from the game, so a document that lists
+			nothing describes ships exactly as they fly today.
+		</p>
+		<pre class="sample"><code>{`{
+  "label": "Plasma aft, more thrust",
+  "loadout": { "version": 2, "chassis": "balanced", "side": "ion",
+               "stabilizers": true, "hull": [null, null],
+               "aft": ["plasma", "plasma"] },
+  "changes": { "plasma": { "thrust": 46000 } }
+}`}</code></pre>
+		<p>
+			Changes belong to one vehicle, so the stock part and a changed one can be
+			compared side by side. Because they are keyed by engine family, the values
+			that should become the part's new definition can be read straight from the
+			document.
+		</p>
+		<p>
+			The working example is in 02.3, where it follows the control placement
+			that came out of reviewing this one.
+		</p>
+	</section>
+
+	<section aria-labelledby="placement">
+		<h2 id="placement">
+			02.3 / Reading tools on the diagrams, values in the pane
+		</h2>
+		<p>
+			Each kind of control now sits where it acts. Time is scrubbed on the
+			traces themselves (drag across them, or use the slider beneath); the plan
+			view carries its own scale buttons; a vehicle is hidden or shown from its
+			row in the readout. The pane opens to only the values under investigation
+			and the document, so what it contains is exactly what gets copied back.
+		</p>
+		<p>
+			In a study the instrument takes the full width and height of the window
+			and snaps into place as it is scrolled to. It starts from a three-vehicle
+			document: a Fighter with ion aft engines, the same with plasma, and plasma
+			with more thrust. Change a value in the pane and watch the paths and
+			readout follow.
+		</p>
+		<div class="bleed">
+			<LabInstrumentConfigDemo023 client:load />
+		</div>
+		<p class="limits">
+			Paths are calculated with the game's own engine function on the shared
+			14-second input. Not included: gravity, power limits, and changes to part
+			mass or chassis values, which that function does not take per vehicle. Ion
+			values are shared by light and heavy ion and the stabilisers; the turn cap
+			applies to every ship. Out-of-range values are refused rather than drawn.
+		</p>
+	</section>
+
+	<section aria-labelledby="toggle">
+		<h2 id="toggle">02.4 / A two-option toggle</h2>
+		<p>
+			The plan view's scale buttons choose one of two options, and the design
+			system has no control for that yet. The toggle here is one button: its
+			outer edge has the shared cut corners, and inside it is split straight
+			down the middle into two equal halves. The selected half is filled like
+			the shared filled button, so the selection reads with the same weight as a
+			primary action.
+		</p>
+		<p>
+			Two treatments of the unselected half were compared: inside a ghost
+			button's lime border, or with no border as a faint fill. The faint fill
+			without a border was chosen. It keeps the control quiet beside the
+			diagrams and leaves lime for the selection alone.
+		</p>
+		<h3>Hover on the unselected half</h3>
+		<p>
+			The resting state works; the hover state did not, because darkening the
+			faint fill made the half sink into the surface instead of answering the
+			pointer. Three hover treatments are compared below: the fill brightens,
+			the half previews a ghost button, or the shared selected-indicator bar
+			appears along its bottom edge. A fourth, D, keeps the lift but swaps the
+			semi-transparent white for semi-transparent lime, so hover borrows the
+			brand colour at low strength while the selection keeps it at full. Each
+			shows a live toggle to point at and the same hover state drawn without a
+			pointer.
+		</p>
+		<OptionToggleComparison client:load />
+		<h3>Accepted: brand tint</h3>
+		<p>
+			D was accepted. The two-option toggle is one control with the shared cut
+			corners outside and a straight split inside. The selected half is filled
+			lime; the unselected half is a faint white fill with a white label; on
+			hover that fill turns to the same strength of lime (28%). The plan view's
+			scale toggle in the current instrument, 02.7, uses it.
+		</p>
+		<p class="limits">
+			Study-local: not in the shared button styles yet. Hover exists only with a
+			mouse or trackpad; on the iPad a touch selects directly, so the resting
+			and selected states carry the control there. Toggles with more than two
+			options and on/off toggles are outside this comparison.
+		</p>
+	</section>
+
+	<section aria-labelledby="slider">
+		<h2 id="slider">02.5 / An on-brand slider</h2>
+		<p>
+			The instrument needs sliders in two places: time on the diagrams, and the
+			values under investigation in the pane. Sliders elsewhere in the Lab are
+			the browser's own, tinted lime, with a label and the value beside it. They
+			work, but nothing about them belongs to the brand.
+		</p>
+		<p>
+			A first round drew the slider in the brand's shapes: a cut-corner thumb on
+			a tall rail, a filled gauge, and a ruler with a marker. Each lost what
+			makes a slider recognisable, a thin track and a handle to drag, so it was
+			set aside.
+		</p>
+		<p>
+			A second round kept that anatomy, with a lime fill and either a round or a
+			cut-corner handle. The round handle was chosen, but lime on the fill, the
+			value and the handle together was too much brand colour for a control that
+			sits beside the diagrams.
+		</p>
+		<p>
+			A third round kept lime on the knob alone, with a grey fill and a white
+			value. It was calm but lifeless: the slider stopped looking like part of
+			the instrument.
+		</p>
+		<p>
+			This round uses lime sparingly: the fill up to the value and the knob, and
+			nothing else. The label and value stay neutral, and the unfilled track
+			takes the accepted faint lime tint under a pointer. Both keep the native
+			input underneath, so arrow keys, touch and screen readers behave as
+			before, with a 44px touch height. A uses a 4px fill and a solid knob; B a
+			2px fill and a lime ring.
+		</p>
+		<BrandSliderComparison client:load />
+		<h3>Accepted: ring</h3>
+		<p>
+			B was accepted. The slider is a faint 2px track; lime marks the part up to
+			the value and the knob, a lime ring with a dark centre. The label and
+			value are neutral. Under a pointer the unfilled track takes the faint lime
+			tint, as the toggle does. The current instrument's time slider, in 02.7,
+			uses it.
+		</p>
+		<p class="limits">Study-local: not in the shared styles yet.</p>
+	</section>
+
+	<section aria-labelledby="burns">
+		<h2 id="burns">02.6 / Three burns, and how the input reads</h2>
+		<p>
+			The instrument owns a small set of input programs, all 14 seconds long; a
+			study picks one and never writes its own. Each answers a different kind of
+			question:
+		</p>
+		<ul>
+			<li>
+				<strong>Course:</strong>
+				the original mixed program: burns, coasts, single-engine turns and
+				restarts.
+			</li>
+			<li>
+				<strong>Turn:</strong>
+				6 s on both engines, 2 s left only, 1 s coast, then both engines to the
+				end. Acceleration, one committed turn, and the burn out of it.
+			</li>
+			<li>
+				<strong>Weave:</strong>
+				both, left, right, repeating; each round's steps are 0.3 s longer than
+				the last (0.3, 0.6, 0.9 s and on) until 14 s, so response is tested from
+				the quickest taps to held inputs.
+			</li>
+		</ul>
+		<p>
+			Picking a burn is a three-way choice, so the switcher is the accepted
+			toggle split into three equal parts, labelled B1, B2 and B3 for the
+			programs above. Two codings for the input strip were compared: one colour
+			per input, or lime lanes where the upper lane is the left engine and the
+			lower the right. The lanes were chosen; they read well and add no hues
+			beside the vehicles' trace colours.
+		</p>
+		<p>
+			The switcher and the lanes are in the current instrument, in 02.7. The
+			switcher sits on the strip it chooses, just left of the lanes, so the
+			lanes stay on the traces' time axis. The burn is part of the configuration
+			document, so a switched burn is copied back with the values. With the
+			strip, the toggles and the slider all in lime, the instrument overuses the
+			brand colour. Five tones for the lit lanes are compared below, from the
+			current lime to grey.
+		</p>
+		<BurnStripComparison client:load />
+		<h3>Accepted: burn switcher and input lanes</h3>
+		<p>
+			The burn strip is decided. Three 14-second burns, B1 to B3, chosen with a
+			compact three-part toggle that sits on the strip just left of the lanes.
+			The lanes show the left engine above and the right below; a lit lane is
+			soft white (white at 70%), leaving lime to the controls. The current
+			instrument, in 02.7, uses it.
+		</p>
+		<p class="limits">Study-local: not in the shared styles yet.</p>
+	</section>
+
+	<section aria-labelledby="current">
+		<h2 id="current">02.7 / The instrument with the decisions so far</h2>
+		<p>
+			Each earlier section keeps the instrument as it was reviewed there. This
+			one carries every accepted decision: the plan view's two-option toggle
+			(02.4), the ring slider for time (02.5), and the burn switcher with soft
+			white input lanes (02.6), on the 4px vertical rhythm.
+		</p>
+		<div class="bleed">
+			<LabInstrumentConfigDemo027 client:load />
+		</div>
+	</section>
+
+	<section aria-labelledby="look">
+		<h2 id="look">02.8 / The path tool's edge and material</h2>
+		<p>Fixed for the path tool, not open here:</p>
+		<ul>
+			<li>Its plot is square, 1:1.</li>
+			<li>
+				Its width is one 50% column of the iPad screen, with sensible padding.
+			</li>
+			<li>It has the scale switch.</li>
+			<li>It shows its numbers: the area shown, the grid and the scale.</li>
+			<li>It shows the area of space in relation to the path.</li>
+		</ul>
+		<p>
+			Within those, this step asks how the plot separates from what is around
+			it. The first round compared a framed panel with no frame; this round
+			varies what the edge is made of. The design system has no elevation, so
+			two study-local steps are tried. Mixing the app's ivory white into the
+			background pulled them towards a neutral grey, and keeping only the
+			background's faint chroma left them close to neutral, so they keep its hue
+			(290) and raise chroma with lightness: elevation 1 is lch(5.5% 10 290),
+			elevation 2 lch(11% 15 290). The example area below is elevation 1; the
+			plot is elevation 2.
+		</p>
+		<p>
+			Of five edges tried (white or brand border; white, brand or black shadow),
+			the black shadow was accepted: the plot casts a soft shadow downwards, 8px
+			down with a 24px blur.
+		</p>
+		<p>
+			Lightness steps alone read as slightly lighter blue-black, not as anything
+			in a space instrument. The switch above the one path tool now changes the
+			material of both levels, all on the background's hue of 290:
+		</p>
+		<ul>
+			<li>
+				<strong>Tinted void:</strong>
+				the lch steps above, kept as the reference.
+			</li>
+			<li>
+				<strong>Lit plate:</strong>
+				machined panels lit from the upper left, as the engine studies light
+				their parts: a soft diagonal gradient and a thin highlight on each
+				level's upper-left edge.
+			</li>
+			<li>
+				<strong>Glass over space:</strong>
+				a faint starfield behind tinted glass; the plot is denser glass that
+				blurs the stars behind it.
+			</li>
+			<li>
+				<strong>Instrument display:</strong>
+				a flat console holding a display with faint scanlines on the 4px rhythm
+				and a darkened edge.
+			</li>
+		</ul>
+		<div class="wide">
+			<PathToolComparison028 client:load />
+		</div>
+		<h3>Accepted: instrument display</h3>
+		<p>
+			The path tool is a display set into a console. Elevation 1, the console,
+			is lch(5.5% 10 290); elevation 2, the display, carries faint scanlines on
+			the 4px rhythm between lch(11% 15 290) and lch(9% 15 290), a darkened
+			edge, a thin dark bezel, and the black shadow beneath it.
+		</p>
+		<p class="limits">
+			Study-local and still in time; drag the plot in default scale. Telling the
+			vehicles apart is not part of this step.
+		</p>
+	</section>
+
+	<section aria-labelledby="readout">
+		<h2 id="readout">02.9 / Numbers on the display</h2>
+		<p>
+			With the path tool a display, its title and numbers move onto it. A first
+			try stacked them small in the top-left corner; they now read larger, on
+			one line in the display's bottom-right corner: the name, the area shown,
+			the grid spacing and the scale. Nothing sits above the display any more,
+			so the tool is the square itself.
+		</p>
+		<div class="wide">
+			<PathToolComparison client:load />
+		</div>
+		<p class="limits">
+			Study-local and still in time; drag the display in default scale. The
+			numbers read over the grid and paths without a backing.
+		</p>
+	</section>
+
+	<section aria-labelledby="graphs">
+		<h2 id="graphs">02.10 / The time graphs: the basics</h2>
+		<p>
+			Speed, acceleration and turn acceleration are one graph component used
+			three times; they differ only in name, unit and range. They share the path
+			tool's display material and shadow, but they are graphs, so they need
+			measurements and every label outside the data:
+		</p>
+		<ul>
+			<li>
+				A value axis on the instrument's fixed scale, never fitted: about five
+				ticks with values and gridlines, a stronger zero line where the range
+				crosses zero.
+			</li>
+			<li>
+				A time axis, 0–14 s with a gridline and a label every second, the same
+				on every graph: the component is one complete graph, shown three times.
+			</li>
+			<li>
+				A title row above the plot: the measure and its unit on the left, and on
+				the right the time and each vehicle's value at the cursor, in its
+				colour. A warning appears there if a value exceeds the fixed scale.
+			</li>
+			<li>The time cursor: a vertical line with a dot on each trace.</li>
+			<li>
+				Margins on the 4px grid: 28px for the title row, 52px for the value
+				labels, 24px for the seconds. Each graph is 176px tall, so three with
+				16px gaps leave 112px of the path tool's 672px for the lanes and slider.
+			</li>
+		</ul>
+		<div class="wide">
+			<TraceGraphsExample client:load />
+		</div>
+		<p class="limits">
+			Study-local and still in time (7 s). A first round put the name and range
+			on the display over the data, with no axes; it is not kept. The lanes and
+			slider are not drawn here, and the burn switcher's place beside them is
+			open.
+		</p>
+	</section>
+
+	<section aria-labelledby="composed">
+		<h2 id="composed">02.11 / The composed view</h2>
+		<p>
+			The path tool and the time graph put together on the instrument's screen.
+			The screen is the console, elevation 1. The left column holds the path
+			tool at its square size with the burn row under it, as accepted in 02.6:
+			the compact B1–B3 switcher, then the selected burn's lanes in soft white.
+			The right column holds the graph three times, 208px each with 24px between
+			them, with the time slider under it. Both rows are the full column width
+			and 44px tall, 24px below their block, so the two columns end level; the
+			slider's knob runs along the graphs' time axis. Below both columns, one
+			row across the screen names the vehicles: a short line in each one's
+			colour, then its label, for the two to six vehicles a configuration holds.
+			The pane is not shown. The screen fills the window and snaps into place.
+		</p>
+		<p>
+			Decided here: every graph scales its value axis to fit the data, rounded
+			out to a nice value, and a measure that can go negative stays symmetric
+			about zero. This replaces the fixed scales of 02.10: nothing is clipped,
+			and values are compared by reading the axis rather than the height of a
+			line. The path tool keeps its own switch between fitting all paths and the
+			default scale.
+		</p>
+		<div class="bleed">
+			<InstrumentView client:load />
+		</div>
+		<p class="limits">
+			Study-local. Switching the burn recalculates every diagram; drag the
+			slider or the path tool in default scale.
+		</p>
+	</section>
+
+	<section aria-labelledby="readiness">
+		<h2 id="readiness">03 / Readiness: what ships as v1</h2>
+		<p>
+			The accepted design is the composed view of 02.11 with the pane on top:
+			the path tool and its burn row in the left column, the time graph three
+			times and the time slider in the right, the legend across both, all on the
+			console and display materials. The pane overlay is specified but not yet
+			drawn: elevation 3 on the same progression as the two below it (lightness
+			up 5.5 and chroma up 5 per step, so lch(16.5% 20 290)), 45% of the screen
+			wide, and an 11% opaque backdrop over the rest. What the pane holds is
+			filled in by the agent for each study.
+		</p>
+		<h3>Ready to reuse</h3>
+		<ul>
+			<li>
+				<strong>Calculation:</strong>
+				paths come from the game's own engine function, with each vehicle's part
+				and ion values passed in, so a study's changes never touch the game's
+				definitions.
+			</li>
+			<li>
+				<strong>Configuration document:</strong>
+				one validated schema: vehicles as loadouts plus sparse changes, and the
+				burn. It already round-trips through Copy and Load in the 02.3 pane.
+			</li>
+			<li><strong>Burns:</strong> B1–B3 as data, each exactly 14 seconds.</li>
+			<li>
+				<strong>Diagrams and controls:</strong>
+				the path tool, the time graph, the burn lanes, the two- and three-part
+				toggle and the ring slider, each a separate component in its accepted
+				form, plus the shared display material.
+			</li>
+			<li>
+				<strong>Pane behaviour:</strong>
+				shown or hidden from a corner button, Escape and focus return, as
+				specified in 01 and built in 02.3.
+			</li>
+		</ul>
+		<h3>Required before v1 ships</h3>
+		<ol>
+			<li>
+				<strong>One component from one document.</strong>
+				The composed view is wired to the study's example vehicles. It has to
+				take a configuration document, validate it, and derive the paths,
+				graphs, burn and legend from it.
+			</li>
+			<li>
+				<strong>The pane overlay.</strong>
+				Drawn to the specification above, with a slot the host fills. Its
+				default content is the existing value editor and the document's Copy and
+				Load, set in the accepted controls.
+			</li>
+			<li>
+				<strong>Where it lives.</strong>
+				The components move out of the study folder into the Lab's own
+				components; the frozen copies stay with the study as its record.
+			</li>
+			<li>
+				<strong>A Lab page and a study embed.</strong>
+				The Lab page fills its container; in a study the instrument takes the
+				full window and snaps into place, as on this page.
+			</li>
+			<li>
+				<strong>How agents call it.</strong>
+				A specification of the contract and one rule in the design-study skill:
+				motion, engine and hull comparisons use this instrument and its
+				configuration document rather than new charts.
+			</li>
+			<li>
+				<strong>Design-system pages.</strong>
+				The new components join the shared design system, each with a Lab
+				reference page as the buttons have: the toggle and the ring slider with
+				the inputs, beside the buttons; the path tool and the time graph on a
+				Graphs page; the burn row, the legend and the pane overlay on a Lab
+				components page; the elevation steps and the console and display
+				materials with the foundations.
+			</li>
+			<li>
+				<strong>Tests.</strong>
+				Unit tests for the burns, the schema and the calculation; one browser
+				test of the composed view, the burn switch, the slider and the pane.
+			</li>
+		</ol>
+		<h3>Provisional, not blocking</h3>
+		<ul>
+			<li>
+				The path tool's default scale (0.2 px/u) has not been tuned. Time moves
+				in 1/60 s samples.
+			</li>
+		</ul>
+		<h3>Risks and limits</h3>
+		<ul>
+			<li>
+				<strong>Fidelity:</strong>
+				gravity, power limits, and changes to part mass or chassis values are
+				not in the calculation. A difference shown here may not exist in flight;
+				the specification has to say so.
+			</li>
+			<li>
+				<strong>Comparison across studies:</strong>
+				with every graph scaled to its data, two studies are compared by reading
+				their axes, not by laying the lines over each other.
+			</li>
+			<li>
+				<strong>Readability:</strong>
+				the whole screen scales with the window, so text gets small on small
+				windows. Nothing has been checked on a physical iPad.
+			</li>
+			<li>
+				<strong>Elevation 3:</strong>
+				its value is an assumed continuation of the progression and has not been
+				seen yet.
+			</li>
+		</ul>
+	</section>
+
+	<section aria-labelledby="integration">
+		<h2 id="integration">04 / Integration plan</h2>
+		<p>
+			Each step leaves the instrument working and can be reviewed on its own.
+			This is a plan; building it needs a separate go-ahead.
+		</p>
+		<ol>
+			<li>
+				<strong>Data first.</strong>
+				Move the configuration schema, the burns and the calculation into one
+				Lab module, unchanged, with unit tests: each burn is 14 s, the schema
+				accepts the 02.7 document and rejects a broken loadout, and the
+				calculation is deterministic.
+			</li>
+			<li>
+				<strong>The component.</strong>
+				Build the Lab instrument from the 02.11 view, the path tool, the time
+				graph, the burn lanes, the toggle, the slider and the display material,
+				taking a configuration document. Check it renders the 02.7 document
+				exactly as 02.11 does.
+			</li>
+			<li>
+				<strong>The pane.</strong>
+				Add the overlay to the specification, with a slot and the default value
+				editor and Copy and Load. Review point: the designer judges elevation 3
+				and the backdrop in place.
+			</li>
+			<li>
+				<strong>Design-system promotion and pages.</strong>
+				The toggle (two and three parts, with the lime-tint hover) and the ring
+				slider become shared input styles beside the buttons; the elevation
+				steps and the console and display materials become foundation tokens.
+				Each component gets a Lab reference page with its states, as the buttons
+				have:
+				<ul>
+					<li>
+						<strong>Inputs:</strong>
+						the buttons, the toggle and the ring slider together.
+					</li>
+					<li>
+						<strong>Graphs:</strong>
+						the path tool and the time graph.
+					</li>
+					<li>
+						<strong>Lab components:</strong>
+						the burn row, the legend and the pane overlay.
+					</li>
+					<li>
+						<strong>Foundations:</strong>
+						the elevation steps and the console and display materials.
+					</li>
+				</ul>
+				Review point: the designer checks each page against its accepted
+				section.
+			</li>
+			<li>
+				<strong>The Lab page.</strong>
+				Add the instrument to the Lab with a starting document and Load, filling
+				the container. Review point: the designer uses it for one real
+				comparison.
+			</li>
+			<li>
+				<strong>The study embed and the contract.</strong>
+				Add the full-window embed for study pages. Write the instrument's
+				specification: the document, the burns, the views and the decisions
+				above, with targets kept apart from what is built. Add the rule to the
+				design-study skill, and the new inputs, graphs and foundations to the
+				design guide and the design-system specification.
+			</li>
+			<li>
+				<strong>Verification.</strong>
+				Lint, type and Astro checks, the unit tests, a browser test of the view,
+				burn switch, slider and pane, a render check of every new reference
+				page, and a human review on the iPad for readability. Mark the study
+				integrated only after these pass and the review is recorded.
+			</li>
+		</ol>
+		<h3>Follow-ups, outside v1</h3>
+		<ul>
+			<li>
+				Add part mass, chassis values, gravity and power limits to the
+				calculation.
+			</li>
+			<li>More burns, if studies need them.</li>
+			<li>Tune the path tool's default scale.</li>
+		</ul>
+		<h3>v1 as built</h3>
+		<p>
+			The shipped instrument, embedded as any study embeds it, from the starting
+			document. It is the Lab component, not a study copy; its reference pages
+			are Inputs, Graphs, Instrument parts and Surfaces in the Lab, and its
+			contract is <code>docs/specs/lab-instrument.md</code>.
+		</p>
+		<InstrumentEmbed config={STARTER_DOCUMENT} label="Lab instrument, v1" />
+	</section>
+</StudyLayout>
+
+<style is:global>
+html {
+	scroll-snap-type: y proximity;
+	overflow-x: clip;
+}
+</style>
+<style>
+.sample {
+	max-width: 70ch;
+	overflow: auto;
+	padding: var(--spacing-sm) var(--spacing-md);
+	background: var(--color-void-light);
+	border: var(--flight-border);
+	font: var(--font-small) var(--font-flight);
+}
+/* Full window width, height from content: for component comparisons. */
+.wide {
+	width: 100vw;
+	margin-inline: calc(50% - 50vw);
+}
+/* Full window band: the instrument fills it and snaps to its centre. */
+.bleed {
+	width: 100vw;
+	height: 100svh;
+	margin-inline: calc(50% - 50vw);
+	scroll-snap-align: center;
+}
+.limits {
+	color: var(--color-text-dim);
+	font-size: 0.9rem;
+	margin-top: var(--spacing-md);
+}
+</style>

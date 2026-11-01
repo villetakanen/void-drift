@@ -1,0 +1,20 @@
+---
+import LabInstrument from "../../components/lab/instrument/LabInstrument.svelte";
+import LabLayout from "../../layouts/LabLayout.astro";
+import { STARTER_DOCUMENT } from "../../lib/instrument/starter";
+---
+
+<LabLayout title="Instrument" wide>
+	<div class="fill">
+		<LabInstrument client:load config={STARTER_DOCUMENT} />
+	</div>
+</LabLayout>
+
+<style>
+/* The instrument fills the Lab's main stage. */
+.fill {
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+}
+</style>
