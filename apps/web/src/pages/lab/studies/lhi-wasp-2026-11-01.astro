@@ -99,40 +99,41 @@ const study = studies.find((entry) => entry.slug === "lhi-wasp-2026-11-01");
 			as evidence of the stabilizer firing language; its fixture hull is not
 			carried forward.
 		</p>
-		<h3 id="low-poly-bodies">02.2 / Six low-poly bodies with real relief</h3>
+		<h3 id="low-poly-bodies">02.2 / Six slim bodies, very few planes</h3>
 		<p>
-			A first set of six used the sketched folds as flat tiles with a tone
-			picked per plane. None of them read as a solid, let alone a spacecraft,
-			and they were replaced rather than kept. The reason is construction: the
-			Fighter, Scout and Cruiser get their volume from one consistent relief, a
-			lit left side, a shaded right side and a spine that is actually the
-			highest line. A fold only reads when the planes on each side of it face
-			different ways.
+			Two earlier sets were replaced. The first used the sketched folds as flat
+			tiles with a tone picked per plane and did not read as a solid. The second
+			gave the folds heights and shaded each plane from its facing, which
+			produced volume, but on the full sketched outline every body came out
+			bulky: broad delta blobs rather than a small spacecraft. Owner direction
+			after that round: the Wasp is a slim fuselage like a fighter jet, with
+			small wings, a very compact canopy and very few polygons. Simple, elegant,
+			smooth, fast.
 		</p>
 		<p>
-			These six therefore give every fold node a height. Each plane's facing is
-			computed from those heights and shaded from one light ahead, to the left
-			and above, through the shared six-tone Fighter palette. All keep the
-			sketched outline; they differ in which folds exist and in the height
-			profile, which is what changes the body's character. Show the fold lines
-			to compare structure; hide them to judge the body as the builder would
-			show it.
+			These six keep the sketch's length and its 5.6-unit shoulder width as the
+			fuselage, and set the broad delta outline aside. Every body is the same
+			three-plane-a-side fuselage with a raised spine, a canopy 8.5 units long,
+			and one to three thin wing or fin plates a side, for eight to twelve
+			planes in total. Shading is still computed from plane heights under one
+			light ahead, to the left and above, in the shared palette. Show the fold
+			lines to count the planes; hide them to judge the silhouette.
 		</p>
 		<WaspLowPolyVariants />
 		<p>
-			01 and 02 keep every sketched fold and differ only in whether the spine or
-			the wingtips are highest. 03 replaces the inner folds with a level deck
-			and sharp chines. 04 is the Cruiser's one-apex fan. 05 raises two ridges
-			along the spars and sinks the canopy between them. 06 adds the shoulder
-			cross fold as a high nose blade and lifts the stern into a saddle.
+			01 is the plainest dart. 02 sweeps the wings long and adds stern fins. 03
+			puts small canards ahead of the canopy. 04 cranks the wing. 05 shrinks it
+			to interceptor stubs. 06 places small fins at the nose and stern tapers,
+			where the four stabilizers will sit, with a thin wing between.
 		</p>
 		<p>
-			Chassis planes only: no stabilizers, slots, engines or stern notch, and
-			the canopy is a placeholder leaf. Heights are study fixtures chosen for
-			reading, not measured parts; the shading is a flat-plane lighting
-			estimate, not the production renderer, which stores finished facet colours
-			rather than heights. A chosen body would be converted to fixed facets at
-			integration, as the Scout and Cruiser were.
+			Chassis planes only: no stabilizers, slots, engines or stern notch. The
+			wing slots from the sketch no longer have a broad wing under them; where
+			the two Q fittings and the stern + fitting attach to a slim body is the
+			next question once a silhouette is chosen. Heights are study fixtures and
+			the shading is a flat-plane estimate, not the production renderer, which
+			stores finished facet colours. A chosen body would be converted to fixed
+			facets at integration, as the Scout and Cruiser were.
 		</p>
 	</section>
 	<section aria-labelledby="readiness">

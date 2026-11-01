@@ -2,27 +2,12 @@
 import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
 
 /**
- * Six low-poly Wasp bodies, nose up, in ship units. Each variant gives the
- * fold nodes a height, so every plane has a real normal and is shaded from
- * one light (ahead, left and above) in the shared Fighter palette. Chassis
- * planes only: no engines, slots or stabilizers.
+ * Six slim low-poly Wasp bodies, nose up, in ship units. Every plane carries
+ * heights, so it has a real normal and is shaded from one light (ahead, left
+ * and above) in the shared Fighter palette. Chassis planes only: no engines,
+ * slots or stabilizers.
  */
-type XY = readonly [number, number];
 type XYZ = readonly [number, number, number];
-const outline: Record<string, XY> = {
-	nT: [0, -20],
-	n: [-2.8, -20],
-	s: [-5.5, -9],
-	sC: [0, -9],
-	t: [-14.5, 5],
-	p: [-8.5, 3.4],
-	rt: [-11, 10],
-	r: [-8.5, 10],
-	c: [-5.3, 19.5],
-	m: [0, 19.5],
-	k: [0, 2],
-	q: [-3, 2.7],
-};
 const f = FIGHTER.facets;
 const stops = [f[0], f[1], f[5], f[2], f[4], f[3]];
 const hex = (c: string) =>
@@ -70,178 +55,137 @@ const shade = (points: XYZ[]) => {
 interface Variant {
 	name: string;
 	idea: string;
-	z: Record<string, number>;
-	facets: string[][];
+	/** Left-side and centre planes as [x, y, z]; planes with x < 0 are mirrored. */
+	planes: XYZ[][];
 }
-const sketched = [
-	["nT", "n", "s", "q", "k"],
-	["s", "t", "p"],
-	["s", "p", "q"],
-	["t", "rt", "r", "p"],
-	["p", "r", "q"],
-	["q", "r", "c"],
-	["q", "c", "m"],
-	["q", "k", "m"],
+/** Slim fuselage shared by most bodies: three planes a side, 5.6 units wide. */
+const fuselage = (nose = 0.5, mid = 3, stern = 1.5): XYZ[][] => [
+	[
+		[0, -20, nose],
+		[-2.8, -8, 0],
+		[0, -8, mid],
+	],
+	[
+		[0, -8, mid],
+		[-2.8, -8, 0],
+		[-2.8, 12, 0],
+		[0, 12, mid],
+	],
+	[
+		[0, 12, mid],
+		[-2.8, 12, 0],
+		[-2.5, 19.5, 0],
+		[0, 19.5, stern],
+	],
 ];
 const variants: Variant[] = [
 	{
-		name: "01 / Tent spine",
-		idea: "The sketched folds with the spine as the highest line: a ridge rises from the nose, peaks under the canopy and runs down the stern tent. Wings fall from the shoulders to flat tips.",
-		z: {
-			nT: 2,
-			n: 0.5,
-			s: 1.5,
-			sC: 4,
-			t: 0,
-			p: 0.5,
-			rt: 0,
-			r: 0,
-			c: 0.5,
-			m: 2,
-			k: 5,
-			q: 3,
-		},
-		facets: sketched,
-	},
-	{
-		name: "02 / Gull wings",
-		idea: "Same folds, but the wingtips rise above the shoulders. The body sits low between two upswept blades, with the stern tent a shallow keel.",
-		z: {
-			nT: 2,
-			n: 0.5,
-			s: 2.2,
-			sC: 3.5,
-			t: 4,
-			p: 1,
-			rt: 3,
-			r: 0.5,
-			c: 0.5,
-			m: 1.5,
-			k: 4,
-			q: 2.5,
-		},
-		facets: sketched,
-	},
-	{
-		name: "03 / Flat deck, chines",
-		idea: "A level deck from the shoulders to the canopy base, with sharp chines dropping to every outline edge. Stealth-plate reading; the stern is one sloped deck.",
-		z: {
-			nT: 3,
-			n: 0,
-			s: 4,
-			sC: 4,
-			t: 0,
-			p: 0,
-			rt: 0,
-			r: 0,
-			c: 0,
-			m: 1,
-			k: 4,
-			q: 4,
-		},
-		facets: [
-			["nT", "s", "q", "k", "qR", "sR"],
-			["nT", "n", "s"],
-			["s", "t", "p", "q"],
-			["t", "rt", "r", "p"],
-			["q", "p", "r", "c"],
-			["q", "c", "m", "cR", "qR", "k"],
+		name: "01 / Dart",
+		idea: "Straight fuselage, one clipped delta a side set well aft. Four body planes, two wings: the plainest jet.",
+		planes: [
+			...fuselage(),
+			[
+				[-2.8, 0, 0],
+				[-10, 8, 0],
+				[-10, 10.5, 0],
+				[-2.8, 10.5, 0],
+			],
 		],
 	},
 	{
-		name: "04 / Pyramid fan",
-		idea: "The Cruiser's construction: every outline edge forms a triangle with one apex at the canopy base. One peak, planes darkening as they turn away from the light.",
-		z: {
-			nT: 1,
-			n: 0,
-			s: 0,
-			sC: 2,
-			t: 0,
-			p: 0,
-			rt: 0,
-			r: 0,
-			c: 0,
-			m: 1,
-			k: 6,
-			q: 3,
-		},
-		facets: [
-			["k", "nT", "n"],
-			["k", "n", "s"],
-			["k", "s", "t"],
-			["k", "t", "rt"],
-			["k", "rt", "r"],
-			["k", "r", "c"],
-			["k", "c", "m"],
+		name: "02 / Swept blades",
+		idea: "Long thin swept wings from mid-body, and a small fin pair at the stern. Reads fast standing still.",
+		planes: [
+			...fuselage(),
+			[
+				[-2.8, -4, 0],
+				[-12.5, 9, 0.6],
+				[-2.8, 8, 0],
+			],
+			[
+				[-2.5, 14, 0],
+				[-6, 19.5, 0],
+				[-2.5, 19.5, 0],
+			],
 		],
 	},
 	{
-		name: "05 / Twin ridges",
-		idea: "Two ridges run from the shoulders along the spar to the stern, with the canopy sunk in a trough between them: a split, boom-like body around the pilot.",
-		z: {
-			nT: 1,
-			n: 0,
-			s: 4,
-			sC: 2,
-			t: 0,
-			p: 3,
-			rt: 0,
-			r: 0,
-			c: 0,
-			m: 1,
-			k: 2.5,
-			q: 3.5,
-		},
-		facets: sketched,
+		name: "03 / Canard needle",
+		idea: "A needle nose with small canards ahead of the canopy and a cropped main wing aft: the ship steers before it lifts.",
+		planes: [
+			...fuselage(0.3, 2.6, 1.2),
+			[
+				[-2.8, -13, 0],
+				[-6.5, -10, 0.3],
+				[-2.8, -8.5, 0],
+			],
+			[
+				[-2.8, 2, 0],
+				[-9.5, 9, 0.4],
+				[-9.5, 11, 0.4],
+				[-2.8, 11, 0],
+			],
+		],
 	},
 	{
-		name: "06 / Nose blade, stern saddle",
-		idea: "The nose carries a high blade that drops behind the canopy; the stern tent rises again to a tall centre. A hunched, predatory profile on the same outline.",
-		z: {
-			nT: 4,
-			n: 0.5,
-			s: 1,
-			sC: 4.5,
-			t: 0,
-			p: 0.5,
-			rt: 0,
-			r: 0,
-			c: 0.5,
-			m: 3.5,
-			k: 2.5,
-			q: 2,
-		},
-		facets: [
-			["nT", "n", "s", "sC"],
-			["sC", "s", "q", "k"],
-			["s", "t", "p"],
-			["s", "p", "q"],
-			["t", "rt", "r", "p"],
-			["p", "r", "q"],
-			["q", "r", "c"],
-			["q", "c", "m"],
-			["q", "k", "m"],
+		name: "04 / Cranked arrow",
+		idea: "One wing a side with a crank: a shallow inner sweep breaking to a sharper outer blade, the fuselage ridge carried to the tail.",
+		planes: [
+			...fuselage(0.5, 3.2, 1.8),
+			[
+				[-2.8, -2, 0],
+				[-8, 5, 0.3],
+				[-11.5, 10, 0.6],
+				[-2.8, 9.5, 0],
+			],
+		],
+	},
+	{
+		name: "05 / Stub wings",
+		idea: "Short, broad stubs like an interceptor, the body doing the work. The smallest span of the six.",
+		planes: [
+			...fuselage(0.6, 3.4, 1.6),
+			[
+				[-2.8, 1, 0],
+				[-8, 5.5, 0],
+				[-8, 9.5, 0],
+				[-2.8, 10, 0],
+			],
+		],
+	},
+	{
+		name: "06 / Four fins",
+		idea: "Small fins where the stabilizers will sit, a pair at the nose taper and a pair at the stern, with a thin mid wing between. The hull itself hints at four points of control.",
+		planes: [
+			...fuselage(0.4, 2.8, 1.4),
+			[
+				[-2.8, -15, 0],
+				[-5.5, -11, 0.2],
+				[-2.8, -10, 0],
+			],
+			[
+				[-2.8, 0, 0],
+				[-9.5, 7.5, 0.4],
+				[-2.8, 8, 0],
+			],
+			[
+				[-2.6, 12, 0],
+				[-6.5, 18, 0.2],
+				[-2.5, 18, 0],
+			],
 		],
 	},
 ];
-const cockpit = "0,-11.4 -3,-6.1 -3,-0.7 0,2 3,-0.7 3,-6.1";
-const resolve = (v: Variant, name: string): XYZ => {
-	const base = name.endsWith("R") ? name.slice(0, -1) : name;
-	const [x, y] = outline[base];
-	return [name.endsWith("R") ? -x : x, y, v.z[base] * 2.2];
-};
-const mirrorNames = (names: string[]) =>
-	names.map((n) => (n.endsWith("R") ? n.slice(0, -1) : `${n}R`));
+const cockpit = "0,-13 1.3,-10.5 1.3,-6.5 0,-4.5 -1.3,-6.5 -1.3,-10.5";
 const planes = (v: Variant) =>
-	v.facets.flatMap((names) => {
-		const isCentre = names.some((n) => n.endsWith("R"));
-		return (isCentre ? [names] : [names, mirrorNames(names)]).map((set) => {
-			const pts = set.map((n) => resolve(v, n));
-			return {
-				points: pts.map(([x, y]) => `${x},${y}`).join(" "),
-				fill: shade(pts),
-			};
-		});
+	v.planes.flatMap((pts) => {
+		const mirrored = pts.some(([x]) => x < 0)
+			? [pts, pts.map(([x, y, z]): XYZ => [-x, y, z])]
+			: [pts];
+		return mirrored.map((set) => ({
+			points: set.map(([x, y]) => `${x},${y}`).join(" "),
+			fill: shade(set),
+		}));
 	});
 ---
 
