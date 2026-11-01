@@ -14,17 +14,18 @@ This specification defines the "Experience Model" for Void Drift. It establishes
 ### Architecture
 
 - **Tech Stack:** Vanilla CSS Variables (Tokens).
-- **Location:** `apps/web/src/styles.css` (Single Source of Truth).
+- **Location:** [DEPRECATED 2026-11-01] ~~`apps/web/src/styles.css` (Single Source of Truth).~~ Tokens live in `packages/core/src/lib/styles/tokens.css`; see [Colour](#colour).
 - **Font:** [DEPRECATED 2026-11-01] ~~Noto Sans Math (Google Fonts, loaded via CDN).~~ See [Typography](#typography); fonts are self-hosted.
 - **Logo Symbolism:** ∅·Δ (Void × Drift). See [Identity](#identity).
 - **Implementation:** Zero hardcoded colors in components; all use `var(--token-name)`.
 
 ### Anti-Patterns
 
-- **Do NOT** use hardcoded hex values in components (e.g., `#00f0ff`); always use `var(--color-neon-blue)`.
+- **Do NOT** use hardcoded colour values in components or canvas; name a role (see [Colour](#colour)). [DEPRECATED 2026-11-01] ~~always use `var(--color-neon-blue)`.~~
 - **Do NOT** use Tailwind or other utility classes; use semantic CSS.
 - [DEPRECATED 2026-11-01] ~~**Do NOT** use image assets for the logo; use HTML entities for sharp scaling.~~ The logomark is inline SVG outlines; see [Identity](#identity).
-- **Do NOT** use `var(--color-primary)` - this token does not exist. Use `var(--color-neon-blue)` for primary accent color.
+- [DEPRECATED 2026-11-01] ~~**Do NOT** use `var(--color-primary)` - this token does not exist. Use `var(--color-neon-blue)` for primary accent color.~~ Use `--color-action` for what you can act on.
+- **Do NOT** colour informational text with brand, action or selected.
 
 ## Contract
 
@@ -40,7 +41,7 @@ This specification defines the "Experience Model" for Void Drift. It establishes
 ### Regression Guardrails
 
 - **Performance:** No Layout Thrashing from heavy CSS effects.
-- **Accessibility:** Text colors must meet AA contrast ratio against `--color-void`.
+- **Accessibility:** Text roles must meet AA on the surfaces they are used on; `/lab/tokens` measures each pair.
 - **Consistency:** All new UI components must use the defined design tokens.
 
 ### Scenarios
@@ -58,8 +59,8 @@ game HUD".~~ The audit found it only in the Lab, drawn by fallback fonts. Replac
 **Scenario: Dark Mode Default** ✅
 - Given a blank page in the application
 - When loaded
-- Then the background color is exactly `var(--color-void)` (#050510)
-- And the text color is `var(--color-text)` (#e0e0e0)
+- Then the background color is exactly `var(--color-void)` [DEPRECATED 2026-11-01] ~~(#050510)~~ (`lch(1.57% 4.76 285.25)`)
+- And the text color is `var(--color-text)` [DEPRECATED 2026-11-01] ~~(#e0e0e0)~~ (`lch(99.7% 7.45 104.72)`)
 - **Status:** VERIFIED - All pages use dark theme by default
 
 **Scenario: Token Enforcement** ✅
@@ -67,7 +68,8 @@ game HUD".~~ The audit found it only in the Lab, drawn by fallback fonts. Replac
 - When it needs a color value
 - Then it MUST use `var(--color-*)` tokens
 - And NOT use hardcoded hex values like `#00f0ff`
-- **Status:** ENFORCED - Biome linting checks for hardcoded colors
+- **Status:** [DEPRECATED 2026-11-01] ~~ENFORCED - Biome linting checks for hardcoded colors~~ No lint rule
+  checks colours. `pnpm check:contracts` keeps canvas `COLOR` equal to the tokens; CSS literals are caught in review.
 
 ## Typography
 
@@ -116,6 +118,97 @@ there. Deprecated aliases remain until their last consumer migrates: `--font-fli
   (`pnpm check:contracts` keeps them equal). One-shot canvas drawings redraw after `loadCanvasFonts()`.
 - Preserved study components keep their local values.
 
+## Colour
+
+**Status:** Implemented 2026-11-01 (opening-screen S3, decision D6).
+**Source of truth:** `packages/core/src/lib/styles/tokens.css` and
+`packages/core/src/lib/ui/colors.ts`. **Lab:** `/lab/tokens`.
+
+Every colour value is written in `lch()`. Components, layouts and canvas name a role, never a
+literal and never the palette name behind it.
+
+### Brand and its aliases
+
+| Token              | Value                       | Use                                                                    |
+| ------------------ | --------------------------- | ---------------------------------------------------------------------- |
+| `--color-brand`    | `lch(96.42% 84.18 104.87)`  | The logomark and identity (the lime, sRGB `#eeff41`)                   |
+| `--color-action`   | `var(--color-brand)`        | What you can act on: buttons, links, toggles, sliders, inspector inputs |
+| `--color-selected` | `var(--color-brand)`        | What is selected: pressed buttons, active engines, Lab nav, installed builder parts and occupied slots, selection outlines |
+| `--color-on-brand` | `var(--color-void)`         | Text and marks on a lime fill                                          |
+
+- Lime is one colour with two jobs: it is the brand, and it marks what is interactive or selected.
+  Use the alias that says which job a use does, so the jobs can be told apart in code even though
+  they render the same.
+- Informational text never uses brand: eyebrows, tags, captions, descriptions, headings, values and
+  feedback messages use the text roles.
+- Hover and selection tints mix the role with transparent (`color-mix(in lch, var(--color-selected)
+  10%, transparent)`); there are no separate tint tokens.
+
+### Text, border, surface and scrim
+
+| Role    | Token                    | Value                             | Use                                              |
+| ------- | ------------------------ | --------------------------------- | ------------------------------------------------ |
+| Text    | `--color-text`           | `lch(99.7% 7.45 104.72)`          | Headings, values, body, descriptions             |
+| Text    | `--color-text-muted`     | `lch(56.7% 0 0)`                  | Eyebrows, tags, captions, secondary labels       |
+| Border  | `--color-border`         | `lch(100% 0 0 / 0.141)`           | Panel, header and table edges                    |
+| Border  | `--color-border-subtle`  | `lch(100% 0 0 / 0.094)`           | Dividers inside panels; resource bar track       |
+| Border  | `--color-border-faint`   | `lch(100% 0 0 / 0.051)`           | Lab stage grids                                  |
+| Border  | `--color-grid`           | `lch(45.22% 12.57 223.2)`         | Builder blueprint grid                           |
+| Surface | `--color-void`           | `lch(1.57% 4.76 285.25)`          | The page and the canvas clear (elevation 0)      |
+| Surface | `--color-elev-1`..`-3`   | see [Elevation](#elevation-and-inputs) | Panels, displays, overlay panes             |
+| Surface | `--color-glass`          | `lch(1.57% 4.76 285.25 / 0.91)`   | The void over the stage: menu overlay, pause banner, engine pads |
+| Surface | `--color-surface-hover`  | `lch(100% 0 0 / 0.051)`           | Hover tint on any surface                        |
+| Scrim   | `--color-backdrop`       | `lch(0% 0 0 / 0.11)`              | Dims what an overlay covers                      |
+
+- Panels sit on `--color-elev-1`; `--color-void-light` now aliases it (panels rose from L 3.3 to
+  5.5).
+- Borders are white at fixed strengths so one token reads on every surface.
+- `theme-color` in `Layout.astro` is `#050510`, the void in sRGB, because a meta tag cannot read
+  a token; `pnpm check:contracts` fails if either side changes alone.
+
+### Contrast on each surface
+
+Measured in the browser on `/lab/tokens` (WCAG 2.1; glass over the void):
+
+| Surface              | `--color-text` | `--color-text-muted`   | `--color-action` | Borders (border / subtle / faint / grid) |
+| -------------------- | -------------- | ---------------------- | ---------------- | ---------------------------------------- |
+| `--color-void`       | 20.1:1         | 5.7:1                  | 18.4:1           | 1.4 / 1.2 / 1.1 / 3.8                    |
+| `--color-elev-1`     | 18.5:1         | 5.3:1                  | 16.9:1           | 1.5 / 1.3 / 1.1 / 3.5                    |
+| `--color-elev-2`     | 16.5:1         | 4.7:1                  | 15.1:1           | 1.5 / 1.3 / 1.2 / 3.1                    |
+| `--color-elev-3`     | 14.4:1         | **4.1:1** (large only) | 13.1:1           | 1.6 / 1.3 / 1.2 / 2.7                    |
+| `--color-glass`      | 20.1:1         | 5.7:1                  | 18.4:1           | 1.4 / 1.2 / 1.1 / 3.8                    |
+
+`--color-on-brand` on `--color-brand` is 18.4:1.
+
+- Text and action pass AAA on every surface. Muted text passes AA everywhere except elevation 3,
+  where it is large-text only; use `--color-text` for body-size text there.
+- Borders are decorative separators and sit below the 3:1 non-text minimum. Controls get their
+  edge from `--color-action`, not from a border role.
+
+### Canvas
+
+Canvas cannot read custom properties. Renderers import `COLOR` from `@void-drift/core`, whose values
+mirror the resolved tokens; `pnpm check:contracts` resolves each token through its aliases and fails
+on drift. The builder passes `COLOR.selected`, `COLOR.void` and `COLOR.text` as its slot palette.
+
+### Game and status colours
+
+Planets, stars, particles, ion beams, plumes, ship and engine art, orbits and the arena keep their
+own values in the renderers; they are game data, not roles. Engine identity colours live in
+`ENGINE_ACCENT` (`@void-drift/mode-a`). Token-defined game colours are `--color-resource-hull`,
+`-power`, `-warning`, `-danger` and the status colours `--color-android-green`,
+`--color-caution-tape` and `--color-red`. `--color-resource-power` aliases brand until S8 gives it its
+own colour, and the Balanced ship tint (`#D4FF00`) is ship data that S4 owns.
+
+### Deprecated names
+
+These alias a role and remain only while preserved studies use them (preserved studies follow the
+aliases, as they do for type): `--color-acid-lime` → brand, `--color-neon-blue` → action,
+`--color-neon-orange` → caution-tape, `--color-neon-green` → android-green, `--color-text-dim` →
+text-muted, `--color-void-light` → elev-1, `--color-overlay` → glass (0.9 became 0.91),
+`--color-flight-glass` → glass, `--color-flight-trail` → border-subtle, `--flight-border` →
+`1px solid var(--color-border)`, `--flight-glow` → a 15% selected mix.
+
 ## Elevation and inputs
 
 **Status:** Implemented 2026-11-01 (lab-instrument study, 02.4–02.8 and 04).
@@ -133,6 +226,8 @@ there. Deprecated aliases remain until their last consumer migrates: `--font-fli
 | `--color-backdrop`  | black at 11%                                       | Behind an overlay  |
 - Each elevation step keeps the background's hue, 290, and raises lightness by 5.5
   and chroma by 5.
+- The elevation steps are the surface roles and `--color-backdrop` is the scrim role;
+  see [Colour](#colour).
 - `Toggle` takes `options`, a bindable `value` and a group `label`; `compact` sets
   8px side padding and `stretch` fills the width. Native radios give arrow keys.
 - `RingSlider` wraps a native range input (keys, touch and forms unchanged) at a
@@ -171,8 +266,8 @@ Width follows the 2.62:1 aspect ratio.
 
 ### Placement and colour
 
-- The mark is lime (`--color-acid-lime`, the brand colour under D6). On a lime surface it is
-  `--color-void`. Consumers set the colour; shared headers use `.brand` in `flight.css`.
+- The mark is `--color-brand` (D6). On a lime surface it is `--color-on-brand`.
+  [DEPRECATED 2026-11-01] ~~lime (`--color-acid-lime`)~~ renamed in S3. Consumers set the colour; shared headers use `.brand` in `flight.css`.
 - Every shared page header links home with the mark: `FlightDeck`, `ShipBuilder`, `Leaderboard` and
   `Settings`. The Lab rail links it to `/lab` with the name "Void Drift Lab". `StudyLayout` shows it
   in the nav beside "/ RESEARCH". Preserved study pages keep their local values.
@@ -184,7 +279,9 @@ Width follows the 2.62:1 aspect ratio.
 
 ### Design Tokens (`apps/web/src/styles.css`)
 
-#### Color Palette
+#### Color Palette [DEPRECATED 2026-11-01]
+
+This block predates the PBI-022 lime and the S3 roles; see [Colour](#colour).
 
 ```css
 :root {
@@ -233,7 +330,9 @@ Superseded by [Identity](#identity).
 - **Styling:** Neon blue color with text-shadow glow
 - **Responsive:** Scales down on mobile (32px)
 
-### Usage Examples
+### Usage Examples [DEPRECATED 2026-11-01]
+
+The examples use `--color-neon-blue`; read it as `--color-action`.
 
 **Component Styling:**
 ```svelte
@@ -288,6 +387,10 @@ Superseded by [Typography](#typography): fonts are self-hosted and no CDN is use
 - **Subset:** Full Unicode math symbols loaded for logo rendering [DEPRECATED 2026-11-01]: the logomark is SVG outlines
 
 ## Button System
+
+[DEPRECATED 2026-11-01] Colour names in this section predate S3: `--color-neon-blue` is
+`--color-action`, `--color-void` text on a fill is `--color-on-brand`, and the pressed state is
+`--color-selected`. The focus ring is `--color-focus-ring`.
 
 ### Button Tokens
 

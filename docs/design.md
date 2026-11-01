@@ -197,12 +197,23 @@ without cutting away accepted hull geometry. Human review of close-packed fittin
 plumes, circular collision and fast turning remains pending. Gravity, friction and
 stock scored ships are unchanged.
 
+## Colour roles
+
+Lime is one colour with two jobs (D6): it is the brand, and it marks what you can act
+on and what is selected, including selection outlines. Name the job, not the colour:
+`--color-brand` for the logomark, `--color-action` for controls and links,
+`--color-selected` for selected and installed things. Eyebrows, tags, descriptions
+and values are information and use `--color-text` or `--color-text-muted`, never
+lime. Panels sit on the elevation steps; the backdrop dims what an overlay covers.
+`design-system-core.md` (Colour) owns the tokens and contrast; `/lab/tokens` shows
+them.
+
 ## Builder slot language
 
 Accepted study: /lab/studies/ship-slot-language. Slot overlays appear only in the
 builder; flight shows the hull and equipped items. Shared compatibility distinguishes
 Engine E, Weapon W, Equipment Q (weapons/utilities), and Universal +. Occupancy
-determines inverse acid-lime/void-dark fill and border treatment, with linked
+determines inverse selected-lime/void-dark fill and border treatment, with linked
 secondaries non-selectable and using the same border color for their connectors.
 The ship-builder spec owns exact appearance and fitting rules; /lab/builder uses
 the production renderer. The preserved study reference documents accepted intent.
