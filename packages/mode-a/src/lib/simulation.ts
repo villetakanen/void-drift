@@ -22,7 +22,12 @@ import {
 	ReplaySchema,
 } from "./schemas/flight";
 import { createInitialGameState } from "./schemas/game-state";
-import { buildStats, defaultLoadout, PARTS } from "./schemas/loadout";
+import {
+	buildStats,
+	defaultLoadout,
+	PARTS,
+	starterLoadout,
+} from "./schemas/loadout";
 import type { ShipProfileId } from "./schemas/ship-profile";
 
 export const STEP = 1 / 60;
@@ -38,6 +43,12 @@ export function stockSettings(id: ShipProfileId = "balanced"): FlightSettings {
 		seed: CHALLENGE_SEED,
 		profile: SHIP_PROFILE_BY_ID[id],
 		camera: { padding: 160, smoothing: 4, zoomSteps: 5 },
+	});
+}
+export function gameSettings(id: ShipProfileId = "balanced"): FlightSettings {
+	return FlightSettingsSchema.parse({
+		...stockSettings(id),
+		loadout: starterLoadout(id),
 	});
 }
 export function labSettings(id: ShipProfileId = "balanced"): FlightSettings {

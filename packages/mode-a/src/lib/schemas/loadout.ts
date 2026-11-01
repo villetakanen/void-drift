@@ -219,6 +219,14 @@ export function defaultLoadout(chassis: Loadout["chassis"]): Loadout {
 		aft: Array(CHASSIS[chassis].aft).fill(null),
 	});
 }
+/** Fixed main-game fleet; builder saves and isolated Lab fixtures stay independent. */
+export function starterLoadout(chassis: Loadout["chassis"]): Loadout {
+	const build = defaultLoadout(chassis);
+	build.aft.fill("ion");
+	const packs = chassis === "balanced" ? 1 : chassis === "tank" ? 2 : 0;
+	for (let i = 0; i < packs; i++) build.hull[i] = "battery";
+	return LoadoutSchema.parse(build);
+}
 export const BuildStoreSchema = z
 	.object({
 		scout: LoadoutSchema,

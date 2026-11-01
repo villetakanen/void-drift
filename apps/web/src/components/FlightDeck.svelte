@@ -7,6 +7,7 @@ import {
 	drawBuild,
 	type FlightSettings,
 	FlightSettingsSchema,
+	gameSettings,
 	type Loadout,
 	labSettings,
 	SHIP_PROFILES,
@@ -85,7 +86,7 @@ function reset(start = false) {
 			? { ...stockSettings(loadout.chassis), loadout, testFlight }
 			: lab
 				? tuning
-				: stockSettings(chosen),
+				: gameSettings(chosen),
 	);
 	if (start) simulation.start();
 	paused = false;
@@ -128,7 +129,7 @@ function sync() {
 }
 function selectShip(value: string) {
 	chosen = ShipProfileIdSchema.parse(value);
-	tuning = lab ? labSettings(chosen) : stockSettings(chosen);
+	tuning = lab ? labSettings(chosen) : gameSettings(chosen);
 	settings.set({ ...settings.get(), selectedShipId: chosen });
 	reset(false);
 }
@@ -217,7 +218,7 @@ function release(event: PointerEvent) {
 }
 onMount(() => {
 	chosen = loadout?.chassis ?? settings.get().selectedShipId;
-	tuning = lab ? labSettings(chosen) : stockSettings(chosen);
+	tuning = lab ? labSettings(chosen) : gameSettings(chosen);
 	if (lab) {
 		const trialJSON = new URL(location.href).searchParams.get("trial");
 		if (trialJSON) {
@@ -362,7 +363,7 @@ onMount(() => {
 					><strong class="time">{seconds.toFixed(1)}s</strong>
 				</div>
 			</div>
-			{#if loadout && engineFeedback}
+			{#if activeLoadout && engineFeedback}
 				<p class="engine-feedback">{engineFeedback}</p>
 			{/if}
 			{#if status === "MENU"}
@@ -388,15 +389,19 @@ onMount(() => {
 							onchange={(event) => selectShip(event.currentTarget.value)}
 						>
 							{#each SHIP_PROFILES as profile}
-								<option value={profile.id}>{profile.name}</option>
+								<option value={profile.id}>
+									{!lab && profile.id === "balanced" ? "Fighter" : profile.name}
+								</option>
 							{/each}
 						</select>
 						<div class="ship-description">
-							{chosen === "scout"
-								? "SCOUT / Quick thrust. Sharp turns. Fragile hull."
-								: chosen === "tank"
-									? "TANK / Heavy hull. Efficient engines. Deliberate turns."
-									: "BALANCED / Steady thrust. Predictable handling."}
+							{lab
+								? "Two Light-ion side engines. Tune and compare flight."
+								: chosen === "scout"
+									? "SCOUT / Three Light ions. Standard energy capacity."
+									: chosen === "tank"
+										? "TANK / Five Light ions. Two extra energy packs."
+										: "FIGHTER / Four Light ions. One extra energy pack."}
 						</div>
 						<div class="button-group button-group--vertical">
 							{#if !lab}

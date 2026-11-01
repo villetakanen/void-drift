@@ -105,3 +105,11 @@ uses the same mounted emitter list as the renderer. Custom ions combine directio
 force; other response families retain their pulse/charge behavior. Ranked stock
 physics remains separate. FlightDeck draws the effective simulation loadout, so
 imported Lab configurations and builder flights share rendering and power capacity.
+
+
+### Default fleet — 0.4.3
+
+Main-game `gameSettings` now supplies the fixed assembled Light-ion fleet, replacing
+the legacy stock simulation at the game entry. New scores use `ion-1` IDs and queries;
+Firestore retains the older challenge namespaces. `stockSettings` stays available
+for legacy trials; `labSettings` retains the two-side-engine tuning fixture.

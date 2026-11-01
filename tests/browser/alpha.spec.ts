@@ -18,6 +18,12 @@ test("all ships move, pause, release controls and persist selection", async ({
 		await page.getByLabel("Ship Chassis").selectOption(id);
 		await page.reload();
 		await expect(page.getByLabel("Ship Chassis")).toHaveValue(id);
+		await expect(
+			page.getByRole("progressbar", { name: "Power" }),
+		).toHaveAttribute(
+			"max",
+			id === "scout" ? "100" : id === "balanced" ? "200" : "300",
+		);
 		await page.getByRole("button", { name: "TAP TO START" }).click();
 		const deck = page.locator(".flight-page");
 		const y = await deck.getAttribute("data-y");

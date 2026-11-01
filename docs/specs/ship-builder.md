@@ -394,3 +394,18 @@ imports keep the stock simulation path.
 References: `/lab/studies/base-movement-ion#integration`, canonical `/lab/builder`
 and `/lab/flight`. Flight feel, actual acceleration/speed and all-hull stabilizer
 recovery require post-integration human review; checks cannot establish balance.
+
+
+## Main-game fleet — 0.4.3
+
+The main game now uses assembled ships with Light ion in all side and aft mounts:
+Scout has three engines and no extra battery, Fighter four engines and one battery,
+Tank five engines and two batteries. Capacity is 100/200/300 including the intrinsic
+pack. Remaining hull slots are empty; stabilizers remain off by default. Shared
+ion physics, free rotation, mass, energy and renderer apply to these ships.
+
+`starterLoadout` and `gameSettings` define this fixed fleet independently from saved
+builder ships and the two-side-ion Flight Lab fixture. Old trial imports retain
+their settings. Scores use the new `ion-1` challenge. The owner authorized clearing the old
+pre-alpha leaderboard before release; legacy namespaces remain supported by the
+rules but are not queried by this release. Custom builder and Lab runs remain unranked.
