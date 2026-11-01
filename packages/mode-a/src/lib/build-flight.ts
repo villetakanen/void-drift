@@ -103,6 +103,7 @@ export function applyBuildEngines(
 	powerFraction = 1,
 	motion: AngularMotion = { velocity: 0 },
 	settings: IonSettings = ION_DEFAULTS,
+	parts: typeof PARTS = PARTS,
 ) {
 	const output = {
 		left: 0,
@@ -142,7 +143,7 @@ export function applyBuildEngines(
 		group: "left" | "right" | "aft",
 		index = 0,
 	) {
-		const part = PARTS[id];
+		const part = parts[id];
 		const duty = engineDuty(part, powered && held, dt, timers, key);
 		const strength = ionStrength(id);
 		const thrust = strength
