@@ -8,7 +8,7 @@ const study = studies.find((entry) => entry.slug === "lhi-wasp-2026-11-01");
 
 <StudyLayout study={study}>
 	<section aria-labelledby="purpose">
-		<h2 id="purpose">01 / A trainer that turns without its engines</h2>
+		<h2 id="purpose">01 / A trainer that turns on four stabilizers</h2>
 		<p>
 			The LHI Wasp is a fourth, very small ship with a different job from the
 			Scout, Fighter and Heavy Corvette. It is a training vessel: a craft whose
@@ -29,25 +29,33 @@ const study = studies.find((entry) => entry.slug === "lhi-wasp-2026-11-01");
 		</p>
 		<WaspSketchTrace />
 		<p>
-			The tension sits in what the sketch leaves out. Every current chassis
-			steers by firing a mirrored side-engine pair; turn rate therefore changes
-			with whichever engine the player fits. The Wasp has no side pair. Its only
-			engine position is the aft universal slot, so a lone engine can push but
-			cannot turn the ship by itself. The four stabilizers are the obvious
-			candidate for that missing authority: a fixed, chassis-owned turning force
-			that stays the same whatever is fitted, which is exactly the
-			predictability the trainer needs. Nothing in the current simulation models
-			a stabilizer yet, so what they do in flight is the mechanic this cycle
-			must establish, not assume.
+			Stabilizers are a given, not an unknown. Every ship already flies with
+			one: when a turn input is released, rotation stops instead of coasting,
+			and the ship never tumbles in free fall. The simulation expresses that
+			rule as direct angular response without angular momentum. The Wasp simply
+			carries four of them, in two pairs, because it has no side engines to turn
+			with. Turning fires the stabilizers on the side that produces the turn;
+			releasing fires the opposite pair to arrest the rotation, exactly as the
+			one stabilizer does on the other ships. The aft universal slot is the only
+			engine position, so a lone engine pushes and the stabilizers steer. Turn
+			authority therefore belongs to the chassis and never changes with the
+			fitted engine, which is what makes the trainer predictable.
+		</p>
+		<p>
+			The tension this leaves is one of expression: a hull this small must show
+			four stabilizers doing their work, two upright wing slots, a stern slot
+			and a large canopy without becoming a loose collection of parts, both
+			enlarged in the builder and at flight size beside the Scout.
 		</p>
 		<p>
 			<strong
-				>This cycle should settle how the Wasp flies and reads without a side
-				pair: the stabilizers' role in handling and the hull that expresses
-				it.</strong
+				>This cycle should settle the Wasp hull: how the sketched proportions,
+				four stabilizers and three slots read as one small trainer in the
+				builder and in flight.</strong
 			>
-			Handling numbers, any training-mode content, ranked eligibility and the
-			plume of a single aft engine stay outside this decision. The
+			Stabilizer turn rate, mass and other handling numbers, any training-mode
+			content, ranked eligibility and the plume of a single aft engine stay
+			outside this decision. The
 			<a href="/study-references/lhi-wasp-sketch.webp">original sketch</a>
 			is preserved as the reference for proportions and slot placement.
 		</p>

@@ -15,7 +15,7 @@ export const studies = z.array(studySchema).parse([
 		status: "exploratory",
 		phase: "purpose",
 		question:
-			"How can a very small four-stabilizer trainer with no side-engine pair fly predictably and read as its own ship beside the Scout?",
+			"How can a very small trainer that steers on four stabilizers instead of side engines read as its own ship beside the Scout?",
 	},
 	{
 		slug: "ion-engines-2026-10-31",
