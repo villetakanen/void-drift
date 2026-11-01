@@ -1,5 +1,6 @@
 ---
 import WaspSketchTrace from "../../../components/studies/WaspSketchTrace.astro";
+import WaspStabilizerStates from "../../../components/studies/WaspStabilizerStates.astro";
 import { studies } from "../../../data/studies";
 import StudyLayout from "../../../layouts/StudyLayout.astro";
 
@@ -61,6 +62,36 @@ const study = studies.find((entry) => entry.slug === "lhi-wasp-2026-11-01");
 		</p>
 	</section>
 	<section aria-labelledby="exploration">
-		<h2 id="exploration">02 / To be developed after 01</h2>
+		<h2 id="exploration">02 / Showing four stabilizers at work</h2>
+		<h3 id="stabilizer-states">02.1 / Coasting, turning, released</h3>
+		<p>
+			The same sketched hull, faceted in the shared Fighter palette, in the
+			three situations the stabilizer rule produces. Turning left fires the
+			forward-right and aft-left stabilizers; releasing fires the opposite pair
+			until the rotation stops. Jets point outward from the hull, the way a
+			reaction thruster pushes, so the firing pair is always the one on the far
+			side of the motion. Show the footprints to check that the wing slots and
+			the stern slot stay clear of every jet.
+		</p>
+		<WaspStabilizerStates />
+		<p>
+			Geometry is the 01 trace: about 40 × 28 units, canopy 14 units long,
+			stabilizer bars 1.6 wide and about 6 long, slot footprints 11.5 × 8.6 and
+			11.8 × 8. The bottom strip draws the three states and the production Scout
+			at the real 0.65 flight drawing scale, so the Wasp appears at roughly 26
+			pixels long, as it would in play.
+		</p>
+		<p>
+			What to notice: whether the two firing bars read as a diagonal pair rather
+			than two unrelated sparks, whether the released state is distinguishable
+			from the turn without reading the caption, and whether the jets survive
+			the flight-scale strip at all. Nothing here is simulated. The facets, jet
+			shape and glow are study fixtures; the real stabilizer rule, mass and turn
+			rate are untouched, and no engine is fitted in the stern slot, so push and
+			steer together remain unexamined.
+		</p>
+	</section>
+	<section aria-labelledby="readiness">
+		<h2 id="readiness">03 / To be developed after 02</h2>
 	</section>
 </StudyLayout>

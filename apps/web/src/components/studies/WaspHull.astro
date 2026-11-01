@@ -1,0 +1,100 @@
+---
+import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
+
+/**
+ * Study-only faceted Wasp hull traced from the 2026-11-01 sketch, nose up,
+ * in ship units. `state` selects which stabilizer pairs fire:
+ * turning left fires forward-right and aft-left; arresting fires the
+ * opposite pair. Jets point outward, away from the hull.
+ */
+interface Props {
+	state?: "coast" | "turn" | "arrest";
+	slots?: boolean;
+}
+const { state = "coast", slots = false } = Astro.props;
+const f = FIGHTER.facets;
+const facets = [
+	{ points: "-2.8,-20 0,-20 0,19.5 -5.3,19.5 -8.5,10 -5.5,-9", color: f[1] },
+	{ points: "2.8,-20 0,-20 0,19.5 5.3,19.5 8.5,10 5.5,-9", color: f[4] },
+	{ points: "-5.5,-9 -14,5 -7.5,3.6", color: f[2] },
+	{ points: "5.5,-9 14,5 7.5,3.6", color: f[5] },
+	{ points: "-14,5 -11,10 -8.5,10 -7.5,3.6", color: f[3] },
+	{ points: "14,5 11,10 8.5,10 7.5,3.6", color: f[3] },
+	{ points: "-5.3,19.5 5.3,19.5 0,13", color: f[3] },
+	{ points: "-2.8,-20 2.8,-20 0,-14", color: f[0] },
+];
+const cockpit = "0,-11.6 2.8,-6 2.8,-0.5 0,2.3 -2.8,-0.5 -2.8,-6";
+const stabilizers = [
+	{ id: "fl", x: -3.85, y: -14.45, length: 5.9, angle: 14.7, out: -1 },
+	{ id: "fr", x: 3.85, y: -14.45, length: 5.9, angle: -14.7, out: 1 },
+	{ id: "al", x: -6.25, y: 12.75, length: 6.3, angle: -21.3, out: -1 },
+	{ id: "ar", x: 6.25, y: 12.75, length: 6.3, angle: 21.3, out: 1 },
+];
+const firing: Record<string, string[]> = {
+	coast: [],
+	turn: ["fr", "al"],
+	arrest: ["fl", "ar"],
+};
+const active = firing[state];
+const slotBoxes = [
+	{ x: -9.9, y: 2, w: 8.6, h: 11.5, symbol: "Q" },
+	{ x: 9.9, y: 2, w: 8.6, h: 11.5, symbol: "Q" },
+	{ x: 0, y: 16, w: 8, h: 11.8, symbol: "+" },
+];
+---
+
+<g class="wasp-hull">
+	{facets.map((facet) => <polygon points={facet.points} fill={facet.color} />)}
+	<polygon points={cockpit} fill="#000" stroke={f[1]} stroke-width="0.4" />
+	{stabilizers.map((s) => (
+		<g transform={`translate(${s.x} ${s.y}) rotate(${s.angle})`}>
+			{active.includes(s.id) && (
+				<g class="jet">
+					<polygon
+						points={`${s.out * 0.8},-1.6 ${s.out * 0.8},1.6 ${s.out * 5.5},0`}
+						fill="#00c8ff"
+						fill-opacity="0.85"
+					/>
+					<ellipse
+						cx={s.out * 0.8}
+						cy="0"
+						rx="2.2"
+						ry={s.length / 2 + 0.6}
+						fill="#c8f4f0"
+						fill-opacity="0.35"
+					/>
+				</g>
+			)}
+			<rect
+				x="-0.8"
+				y={-s.length / 2}
+				width="1.6"
+				height={s.length}
+				fill={active.includes(s.id) ? "#e0ffff" : "#9fd6e2"}
+				stroke="#071015"
+				stroke-width="0.25"
+			/>
+		</g>
+	))}
+	{slots && (
+		<g class="slots">
+			{slotBoxes.map((slot) => (
+				<g transform={`translate(${slot.x} ${slot.y})`}>
+					<rect
+						x={-slot.w / 2}
+						y={-slot.h / 2}
+						width={slot.w}
+						height={slot.h}
+						fill="#eeff41"
+						fill-opacity="0.2"
+						stroke="#eeff41"
+						stroke-width="0.4"
+					/>
+					<text text-anchor="middle" y="1.4" fill="#fffff0" font-size="4">
+						{slot.symbol}
+					</text>
+				</g>
+			))}
+		</g>
+	)}
+</g>
