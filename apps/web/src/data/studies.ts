@@ -10,6 +10,14 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
 	{
+		slug: "base-movement-ion",
+		title: "Base movement: flying with ion engines",
+		status: "integrated",
+		phase: "integration",
+		question:
+			"How can momentum make flying engaging while two engine controls keep the ship understandable and recoverable?",
+	},
+	{
 		slug: "ion-engines-2026-10-31",
 		title: "Ion engines: precise, decisive, reliable",
 		status: "integrated",

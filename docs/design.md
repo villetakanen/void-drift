@@ -176,3 +176,15 @@ reconstruct firing (tick 45), turning (270), release residue (330), and expired 
 those moments. The reference retains its painter and replay code but consumes shared
 physics, hull drawing and plume lifecycle; this is a painter-fidelity check, not an
 independent baseline for changes to those shared systems or a human motion review.
+
+
+## Ion movement and stabilizers — 0.4.2
+
+Custom ships use free-fall rotation and optional built-in ion stabilizers. The
+accepted Fighter/Scout/Cruiser placements and recessed slits are shared by builder
+and flight; effects draw above fitted hulls. `/lab/flight` starts from actual
+two-Light-ion side loadouts and exposes the initial 220/340/0.4/0.8/180° values.
+Heavy ion contributes 1.75× Light force and energy. Stabilizers contribute 0.22×
+force, consume 0.25× energy, assist crosswise and oppose uncommanded spin.
+The study `/lab/studies/base-movement-ion` preserves the comparisons and accepted
+appearances. Flight balance and recovery on all hulls still need human testing.

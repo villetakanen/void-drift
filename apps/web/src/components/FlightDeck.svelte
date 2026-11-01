@@ -8,6 +8,7 @@ import {
 	type FlightSettings,
 	FlightSettingsSchema,
 	type Loadout,
+	labSettings,
 	SHIP_PROFILES,
 	type ShipProfileId,
 	ShipProfileIdSchema,
@@ -55,6 +56,8 @@ let left = $state(false);
 let right = $state(false);
 let cause = $state("");
 let engineFeedback = $state("");
+let activeLoadout = $state<Loadout>();
+let spin = $state(0);
 let wraps = $state(0);
 let json = $state("");
 let message = $state("");
@@ -108,6 +111,8 @@ function frameCamera(snap = false) {
 }
 function sync() {
 	engineFeedback = simulation.engineFeedback;
+	activeLoadout = simulation.settings.loadout;
+	spin = (simulation.angularMotion.velocity * 180) / Math.PI;
 	status = simulation.state.status;
 	seconds = simulation.state.elapsedTime;
 	hull = simulation.state.resources.hull;
@@ -123,7 +128,7 @@ function sync() {
 }
 function selectShip(value: string) {
 	chosen = ShipProfileIdSchema.parse(value);
-	tuning = stockSettings(chosen);
+	tuning = lab ? labSettings(chosen) : stockSettings(chosen);
 	settings.set({ ...settings.get(), selectedShipId: chosen });
 	reset(false);
 }
@@ -212,7 +217,7 @@ function release(event: PointerEvent) {
 }
 onMount(() => {
 	chosen = loadout?.chassis ?? settings.get().selectedShipId;
-	tuning = stockSettings(chosen);
+	tuning = lab ? labSettings(chosen) : stockSettings(chosen);
 	if (lab) {
 		const trialJSON = new URL(location.href).searchParams.get("trial");
 		if (trialJSON) {
@@ -220,7 +225,7 @@ onMount(() => {
 				tuning = FlightSettingsSchema.parse(JSON.parse(trialJSON));
 				chosen = tuning.profile.id;
 			} catch {
-				message = "Invalid trial link; using stock settings.";
+				message = "Invalid trial link; using Light-ion lab settings.";
 			}
 		}
 	}
@@ -253,11 +258,11 @@ onMount(() => {
 		renderer.drawArenaBoundary(1200);
 		renderer.drawStar(simulation.star, simulation.ticks * STEP * 1000);
 		for (const planet of simulation.planets) renderer.drawPlanet(planet);
-		if (context) simulation.plume.draw(context);
-		if (loadout && context)
+		if (context && !simulation.settings.loadout) simulation.plume.draw(context);
+		if (simulation.settings.loadout && context)
 			drawBuild(
 				context,
-				loadout,
+				simulation.settings.loadout,
 				simulation.ship.pos.x,
 				simulation.ship.pos.y,
 				simulation.ship.rotation,
@@ -269,6 +274,7 @@ onMount(() => {
 				simulation.settings.profile.tint,
 				chosen,
 			);
+		if (context && simulation.settings.loadout) simulation.plume.draw(context);
 		renderer.endCamera();
 		frame = requestAnimationFrame(draw);
 	}
@@ -297,6 +303,8 @@ onMount(() => {
 	data-x={x.toFixed(4)}
 	data-y={y.toFixed(4)}
 	data-ticks={ticks}
+	data-spin={spin.toFixed(4)}
+	data-stabilizers={activeLoadout?.stabilizers ?? false}
 	data-zoom={zoom.toFixed(4)}
 	data-zoom-level={zoomLevel}
 	data-zoom-steps={activeZoomSteps}
@@ -345,7 +353,7 @@ onMount(() => {
 					<small>POWER</small><strong>{power.toFixed(0)}%</strong
 					><progress
 						aria-label="Power"
-						max={loadout ? buildStats(loadout).capacity : 100}
+						max={activeLoadout ? buildStats(activeLoadout).capacity : 100}
 						value={power}
 					></progress>
 				</div>
@@ -527,27 +535,73 @@ onMount(() => {
 					max="2147483647"
 					bind:value={tuning.seed}
 				>
-				{#each [
-					"thrustMultiplier",
-					"turnMultiplier",
-					"hullMultiplier",
-					"powerDrainMultiplier",
-				] as key}
-					<label for={key}
-						>{key.replace("Multiplier", "")}
-						×
-						{Number(tuning.profile[key as "thrustMultiplier"]).toFixed(
-							2,
-						)}</label
-					><input
-						id={key}
-						type="range"
-						min="0.5"
-						max="2"
-						step="0.01"
-						bind:value={tuning.profile[key as "thrustMultiplier"]}
+				{#if tuning.loadout}
+					<label
+						><input type="checkbox" bind:checked={tuning.loadout.stabilizers}>
+						Ion stabilizers</label
 					>
-				{/each}
+					<p>
+						0.22 thrust · 0.25 Light-ion energy when firing. Default trials use
+						two Light-ion side engines with empty aft mounts.
+					</p>
+					{#each [
+						"acceleration",
+						"maxSpeed",
+						"bonus",
+						"falloff",
+						"maxTurn",
+					] as key}
+						<label for={`ion-${key}`}
+							>{{
+								acceleration: "Light ion acceleration at 115 mass",
+								maxSpeed: "One Light ion speed",
+								bonus: "Speed bonus",
+								falloff: "Speed falloff",
+								maxTurn: "Maximum rotation °/s",
+							}[key]}</label
+						>
+						<input
+							id={`ion-${key}`}
+							type="number"
+							step={key === "bonus" || key === "falloff" ? 0.01 : 1}
+							min={key === "bonus" ? 0 : key === "falloff" ? 0.01 : 1}
+							max={key === "bonus"
+								? 2
+								: key === "falloff"
+									? 5
+									: key === "maxTurn"
+										? 720
+										: 2000}
+							bind:value={tuning.ion[key as "acceleration"]}
+						>
+					{/each}
+					<p>
+						Rotation: {spin.toFixed(1)}°/s. Apply settings to restart the trial.
+					</p>
+				{:else}
+					{#each [
+						"thrustMultiplier",
+						"turnMultiplier",
+						"hullMultiplier",
+						"powerDrainMultiplier",
+					] as key}
+						<label for={key}
+							>{key.replace("Multiplier", "")}
+							×
+							{Number(tuning.profile[key as "thrustMultiplier"]).toFixed(
+								2,
+							)}</label
+						><input
+							id={key}
+							type="range"
+							min="0.5"
+							max="2"
+							step="0.01"
+							bind:value={tuning.profile[key as "thrustMultiplier"]}
+						>
+					{/each}
+				{/if}
+
 				<h3>Solar system zoom</h3>
 				<p>Fixed 1920 × 1080 · 16:9. Zoom snaps; trails stay in space.</p>
 				<label for="zoom-steps">Zoom levels: {tuning.camera.zoomSteps}</label>

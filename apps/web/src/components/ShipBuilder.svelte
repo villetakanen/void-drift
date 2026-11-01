@@ -185,6 +185,14 @@ function choose(id: ShipProfileId) {
 						></button>
 					{/each}
 				</div>
+				<label
+					><input type="checkbox" bind:checked={build.stabilizers}>
+					Ion stabilizers</label
+				>
+				<p class="assembly-note">
+					0.22 Light-ion thrust · 0.25 Light-ion energy while firing. Assist
+					turns and brake spin automatically.
+				</p>
 				<p class="assembly-note">
 					Side engines are a mirrored pair. Hull and aft fittings are
 					independent.<br>Every installed part adds mass. Weapons are static
@@ -243,7 +251,7 @@ function choose(id: ShipProfileId) {
 							>
 							<small
 								>{part.category === "E"
-									? `${part.thrust.toLocaleString()} thrust · ${part.limit} powered ceiling · ${part.response === "pulse" ? "0.18s pulse / 0.45s cycle" : part.response === "delayed" ? "0.6s charge, then sustained" : "Immediate / steady"}`
+									? `${part.thrust.toLocaleString()} thrust · ${part.limit.toFixed(0)} powered ceiling · ${part.response === "pulse" ? "0.18s pulse / 0.45s cycle" : part.response === "delayed" ? "0.6s charge, then sustained" : "Immediate / steady"}`
 									: part.id === "battery"
 										? "+100 energy capacity"
 										: part.id === "coil"
@@ -305,10 +313,10 @@ function choose(id: ShipProfileId) {
 						<dd>{stats.acceleration.toFixed(1)}</dd>
 					</div>
 					<div>
-						<dt>Single-side turning</dt>
+						<dt>Single-side angular acceleration</dt>
 						<dd>
 							{((Math.abs(stats.turnRate) * 180) / Math.PI).toFixed(1)}
-							°/s
+							°/s²
 						</dd>
 					</div>
 					<div>

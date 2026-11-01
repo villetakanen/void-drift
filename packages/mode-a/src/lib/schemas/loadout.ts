@@ -2,6 +2,8 @@ import { z } from "zod";
 import { CRUISER } from "../cruiser";
 import { FIGHTER } from "../fighter";
 import { SCOUT } from "../scout";
+import { stabilizerMount } from "../stabilizers";
+import { ION_DEFAULTS, ION_REFERENCE_MASS, STABILIZER_ENERGY } from "./ion";
 import { ShipProfileIdSchema } from "./ship-profile";
 
 export const EngineIdSchema = z.enum(["ion", "heavy-ion", "fusion", "plasma"]);
@@ -138,11 +140,11 @@ export const PARTS = {
 	}),
 	ion: PartSchema.parse({
 		id: "ion",
-		name: "Small ion",
+		name: "Light ion",
 		category: "E",
 		mass: 10,
-		thrust: 12000,
-		limit: 500,
+		thrust: ION_DEFAULTS.acceleration * ION_REFERENCE_MASS,
+		limit: ION_DEFAULTS.maxSpeed,
 		draw: 2,
 	}),
 
@@ -151,9 +153,11 @@ export const PARTS = {
 		name: "Heavy ion",
 		category: "E",
 		mass: 20,
-		thrust: 20000,
-		limit: 750,
-		draw: 3,
+		thrust: ION_DEFAULTS.acceleration * ION_REFERENCE_MASS * 1.75,
+		limit:
+			ION_DEFAULTS.maxSpeed *
+			(1 + ION_DEFAULTS.bonus * (1 - Math.exp(-ION_DEFAULTS.falloff * 0.75))),
+		draw: 2 * 1.75,
 		response: "steady",
 		chargeSeconds: 0,
 	}),
@@ -185,6 +189,7 @@ export const LoadoutSchema = z
 		version: z.literal(2),
 		chassis: ShipProfileIdSchema,
 		side: EngineIdSchema,
+		stabilizers: z.boolean().default(false),
 		hull: z.array(PartIdSchema.nullable()).max(3),
 		aft: z.array(PartIdSchema.nullable()).max(3),
 	})
@@ -209,7 +214,7 @@ export function defaultLoadout(chassis: Loadout["chassis"]): Loadout {
 	return LoadoutSchema.parse({
 		version: 2,
 		chassis,
-		side: "fusion",
+		side: "ion",
 		hull: Array(CHASSIS[chassis].hull).fill(null),
 		aft: Array(CHASSIS[chassis].aft).fill(null),
 	});
@@ -247,6 +252,7 @@ export function buildStats(build: Loadout) {
 		if (id === "coil") coils++;
 		engineDraw += PARTS[id].draw;
 	}
+	if (build.stabilizers) engineDraw += PARTS.ion.draw * STABILIZER_ENERGY;
 	const side = PARTS[build.side];
 	const angle = (chassis.angle * Math.PI) / 180;
 	const aftThrust = build.aft.reduce(
@@ -262,9 +268,8 @@ export function buildStats(build: Loadout) {
 		acceleration: (2 * side.thrust * Math.cos(angle) + aftThrust) / mass,
 		turnRate:
 			(side.thrust *
-				chassis.turnResponse *
 				(Math.cos(angle) * chassis.arm + Math.sin(angle) * chassis.sideX)) /
-			(mass * chassis.length ** 2),
+			(mass * stabilizerMount(build.chassis).inertiaPerMass),
 		endurance: capacity / 3,
 		fullEndurance: capacity / (3 + engineDraw),
 	};

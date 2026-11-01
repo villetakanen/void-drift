@@ -1,6 +1,16 @@
 import type { GameObject, InputState, Star } from "@void-drift/core";
 import { SURVIVAL_CONFIG } from "@void-drift/core";
+import {
+	ION_DEFAULTS,
+	ION_REFERENCE_MASS,
+	type IonSettings,
+	ionCeiling,
+	ionStrength,
+	STABILIZER_ENERGY,
+	STABILIZER_STRENGTH,
+} from "./schemas/ion";
 import { buildStats, CHASSIS, type Loadout, PARTS } from "./schemas/loadout";
+import { stabilizerMount } from "./stabilizers";
 
 /** One engine impulse: transverse steering may rotate, never inflate overspeed. */
 export function engineImpulse(
@@ -56,6 +66,33 @@ export function engineDuty(
 		return start % part.pulsePeriod < part.pulseOn ? 1 : 0;
 	return 1;
 }
+export interface AngularMotion {
+	velocity: number;
+}
+/** Fractional final braking burn stops at zero without reversing the spin. */
+export function stabilizerBurn(
+	build: Loadout,
+	input: InputState,
+	spin: number,
+	dt: number,
+	settings: IonSettings = ION_DEFAULTS,
+) {
+	const command = Number(input.leftThruster) - Number(input.rightThruster);
+	if (!build.stabilizers || (!command && Math.abs(spin) < 1e-10))
+		return { side: 0, duty: 0 };
+	const m = stabilizerMount(build.chassis);
+	const direction = command || -Math.sign(spin);
+	const acceleration =
+		(settings.acceleration * ION_REFERENCE_MASS) / buildStats(build).mass;
+	const angularAcceleration =
+		(acceleration * STABILIZER_STRENGTH * Math.abs(m.lever)) / m.inertiaPerMass;
+	return {
+		side: -direction * Math.sign(m.lever),
+		duty: command
+			? 1
+			: Math.min(1, Math.abs(spin) / (angularAcceleration * dt)),
+	};
+}
 export function applyBuildEngines(
 	ship: GameObject,
 	build: Loadout,
@@ -64,67 +101,160 @@ export function applyBuildEngines(
 	powered: boolean,
 	timers: EngineTimers = {},
 	powerFraction = 1,
+	motion: AngularMotion = { velocity: 0 },
+	settings: IonSettings = ION_DEFAULTS,
 ) {
-	const output = { left: 0, right: 0, aft: build.aft.map(() => 0) };
+	const output = {
+		left: 0,
+		right: 0,
+		aft: build.aft.map(() => 0),
+		stabilizers: [0, 0],
+	};
 	const stats = buildStats(build),
-		chassis = CHASSIS[build.chassis],
-		engine = PARTS[build.side];
+		chassis = CHASSIS[build.chassis];
+	const m = stabilizerMount(build.chassis);
 	const angle = (chassis.angle * Math.PI) / 180;
-	const left = engineDuty(
-		engine,
-		powered && input.leftThruster,
-		dt,
-		timers,
-		"left",
+	const mainLever =
+		Math.cos(angle) * chassis.arm + Math.sin(angle) * chassis.sideX;
+	const power = powered ? powerFraction : 0;
+	let ix = 0,
+		iy = 0,
+		torque = 0;
+	const ionOutputs: {
+		group: "left" | "right" | "aft";
+		index: number;
+		duty: number;
+	}[] = [];
+	const otherImpulses: {
+		direction: number;
+		thrust: number;
+		limit: number;
+		group: "left" | "right" | "aft";
+		index: number;
+		duty: number;
+	}[] = [];
+	function main(
+		id: keyof typeof PARTS,
+		held: boolean,
+		key: string,
+		direction: number,
+		lever: number,
+		group: "left" | "right" | "aft",
+		index = 0,
+	) {
+		const part = PARTS[id];
+		const duty = engineDuty(part, powered && held, dt, timers, key);
+		const strength = ionStrength(id);
+		const thrust = strength
+			? settings.acceleration * ION_REFERENCE_MASS * strength
+			: part.thrust;
+		torque += thrust * duty * lever;
+		if (strength) {
+			ix += Math.cos(direction) * strength * duty;
+			iy += Math.sin(direction) * strength * duty;
+			ionOutputs.push({ group, index, duty });
+		} else
+			otherImpulses.push({
+				direction,
+				thrust: thrust * duty,
+				limit: part.limit,
+				group,
+				index,
+				duty,
+			});
+	}
+	main(build.side, input.leftThruster, "left", angle, mainLever, "left");
+	main(build.side, input.rightThruster, "right", -angle, -mainLever, "right");
+	for (const [index, id] of build.aft.entries())
+		if (id && PARTS[id].category === "E")
+			main(
+				id,
+				input.leftThruster && input.rightThruster,
+				`aft-${index}`,
+				0,
+				0,
+				"aft",
+				index,
+			);
+	const burn = stabilizerBurn(build, input, motion.velocity, dt, settings);
+	const strength = burn.duty * STABILIZER_STRENGTH * Number(powered);
+	ix += strength * m.fx;
+	iy += -burn.side * strength * m.fy;
+	torque +=
+		-burn.side *
+		strength *
+		m.lever *
+		settings.acceleration *
+		ION_REFERENCE_MASS;
+	const previous = motion.velocity;
+	const maxTurn = (settings.maxTurn * Math.PI) / 180;
+	motion.velocity = Math.max(
+		-maxTurn,
+		Math.min(
+			maxTurn,
+			previous + (torque / (stats.mass * m.inertiaPerMass)) * dt * power,
+		),
 	);
-	const right = engineDuty(
-		engine,
-		powered && input.rightThruster,
-		dt,
-		timers,
-		"right",
-	);
-	const impulse = (direction: number, thrust: number, limit: number) =>
-		thrust > 0
+	if (
+		Number(input.leftThruster) === Number(input.rightThruster) &&
+		burn.duty &&
+		Math.abs(motion.velocity) < 1e-10
+	)
+		motion.velocity = 0;
+	ship.rotation += motion.velocity * dt;
+	function set(group: "left" | "right" | "aft", index: number, value: number) {
+		if (group === "aft") output.aft[index] = value;
+		else output[group] = value;
+	}
+	const combined = Math.hypot(ix, iy);
+	const delivered =
+		combined > 1e-10 && power > 0
 			? engineImpulse(
 					ship,
-					direction,
-					thrust / stats.mass,
-					limit,
-					dt * powerFraction,
+					ship.rotation + Math.atan2(iy, ix),
+					(settings.acceleration * ION_REFERENCE_MASS * combined) / stats.mass,
+					ionCeiling(combined, settings),
+					dt * power,
 				)
 			: 0;
-	ship.rotation += (left - right) * stats.turnRate * dt * powerFraction;
-	if (left === right && left > 0) {
-		output.left = output.right =
-			impulse(
+	for (const o of ionOutputs) set(o.group, o.index, o.duty * delivered * power);
+	// Symmetric non-ion side pairs retain their combined forward impulse.
+	const l = otherImpulses.find((o) => o.group === "left");
+	const r = otherImpulses.find((o) => o.group === "right");
+	if (l && r && l.duty === r.duty && l.thrust > 0 && power > 0) {
+		const delivery =
+			engineImpulse(
+				ship,
 				ship.rotation,
-				2 * engine.thrust * Math.cos(angle) * left,
-				engine.limit,
-			) * left;
-	} else {
-		if (left)
-			output.left =
-				impulse(ship.rotation + angle, engine.thrust * left, engine.limit) *
-				left;
-		if (right)
-			output.right =
-				impulse(ship.rotation - angle, engine.thrust * right, engine.limit) *
-				right;
+				(2 * l.thrust * Math.cos(angle)) / stats.mass,
+				l.limit,
+				dt * power,
+			) *
+			l.duty *
+			power;
+		output.left = output.right = delivery;
 	}
-	for (const [index, id] of build.aft.entries()) {
-		if (!id || PARTS[id].category !== "E") continue;
-		const part = PARTS[id];
-		const duty = engineDuty(
-			part,
-			powered && input.leftThruster && input.rightThruster,
-			dt,
-			timers,
-			`aft-${index}`,
-		);
-		output.aft[index] =
-			impulse(ship.rotation, part.thrust * duty, part.limit) * duty;
+	// Keep other families' pulse/charge and individual ceilings; only ions aggregate.
+	for (const o of otherImpulses) {
+		if (o.group !== "aft" && l && r && l.duty === r.duty) continue;
+		if (o.thrust > 0 && power > 0)
+			set(
+				o.group,
+				o.index,
+				engineImpulse(
+					ship,
+					ship.rotation + o.direction,
+					o.thrust / stats.mass,
+					o.limit,
+					dt * power,
+				) *
+					o.duty *
+					power,
+			);
 	}
+
+	if (burn.side)
+		output.stabilizers[burn.side === -1 ? 0 : 1] = strength * power;
 	return output;
 }
 export function solarCharge(distance: number, star: Star, coils: number) {
@@ -139,11 +269,20 @@ export function solarCharge(distance: number, star: Star, coils: number) {
 					: 0;
 	return rate * star.powerMultiplier * coils;
 }
-export function buildDrain(build: Loadout, input: InputState) {
+export function buildDrain(
+	build: Loadout,
+	input: InputState,
+	spin = 0,
+	dt = 1 / 240,
+	settings: IonSettings = ION_DEFAULTS,
+) {
 	const count = Number(input.leftThruster) + Number(input.rightThruster);
 	return (
 		3 +
 		count * PARTS[build.side].draw +
+		stabilizerBurn(build, input, spin, dt, settings).duty *
+			STABILIZER_ENERGY *
+			PARTS.ion.draw +
 		(count === 2
 			? build.aft.reduce((sum, id) => sum + (id ? PARTS[id].draw : 0), 0)
 			: 0)

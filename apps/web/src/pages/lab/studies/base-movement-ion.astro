@@ -1,0 +1,539 @@
+---
+import FighterStabilizerLook from "../../../components/studies/FighterStabilizerLook.svelte";
+import MovementBench from "../../../components/studies/MovementBench.svelte";
+import StabilizerFlight from "../../../components/studies/StabilizerFlight.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((entry) => entry.slug === "base-movement-ion");
+if (!study) throw new Error("Missing base movement study metadata");
+---
+
+<StudyLayout study={study}>
+	<section aria-labelledby="problem">
+		<h2 id="problem">01 / Momentum worth learning to control</h2>
+		<p>
+			Start at rest, fire the engines, then release them. How quickly should the
+			ship gather speed, how should acceleration change as speed builds, and
+			what should happen when thrust stops? These establish the basic experience
+			of movement before turning and recovery can be judged. The successful
+			alpha gives us a playable foundation; its current tuning is a starting
+			point for investigation, not a settled straight-flight design.
+		</p>
+		<p>
+			This study should settle the basic relationship between engine input,
+			turning, acceleration and coasting. Two controls must support both a
+			beginner's deliberate change of course and a practiced player's flowing
+			manoeuvres. Momentum, mass and engine direction should explain what
+			happens, while responsiveness and recoverability guide where the game
+			simplifies physics. Turning response, braking effort and behaviour at
+			speed remain questions to investigate together, rather than independent
+			numbers to tune.
+		</p>
+		<p>
+			Ion is the simple default engine. Light supplies the baseline; Heavy
+			counts as 1.75 Light engines. That relationship must become meaningful in
+			flight; it does not yet assign every mass, energy or speed value the same
+			multiplier. Their established bodies and beam effects carry into the
+			trials. Gravity and other engine types are excluded. Hull redesign, camera
+			redesign and survival-resource balancing are outside this movement
+			decision.
+		</p>
+		<h3>What success looks like</h3>
+		<ul>
+			<li>
+				<strong>Easy to start:</strong>
+				a new player can understand the two controls and deliberately change
+				course.
+			</li>
+			<li>
+				<strong>Movement makes sense:</strong>
+				the ship carries momentum, and the player can understand how firing an
+				engine changes its path.
+			</li>
+			<li>
+				<strong>Mistakes are recoverable:</strong>
+				overshooting gives the player something to correct, without a long
+				struggle to regain control.
+			</li>
+			<li>
+				<strong>Practice pays off:</strong>
+				anticipating turns leads to smoother, more accurate flying.
+			</li>
+			<li>
+				<strong>Both ions work:</strong>
+				Light feels dependable; Heavy's 1.75-Light contribution is useful and
+				understandable without making flight unmanageable.
+			</li>
+			<li>
+				<strong>Flying is fun on its own:</strong>
+				accelerating, turning and drifting invite another go, even without
+				gravity or survival pressure.
+			</li>
+		</ul>
+		<p>
+			Playable trials will test these criteria through changing course and
+			recovering from overshoots, with both ion variants. Human play review must
+			judge clarity, control and enjoyment; simulation checks can verify the
+			underlying rules but cannot establish fun.
+		</p>
+		<p>
+			The first investigation establishes acceleration, speed and coasting with
+			Light ion. The shared fourteen-second input sequence also exposes how side
+			engines change the path; it does not select a new turning model. Heavy
+			remains a later scaling comparison.
+		</p>
+	</section>
+	<section>
+		<h2>02 / See what sustained thrust does</h2>
+		<h3>02.1 / Four paths, one input sequence</h3>
+		<p>
+			Compare one aft engine, two side engines, and two aft plus two side
+			engines against a straight-moving reference at 75% of the chosen maximum
+			speed. Each run lasts fourteen seconds, with one second per input: LR, LR,
+			coast, L, coast, LR, coast, R, coast, R, coast, LR, LR, LR. The three
+			powered ships start at rest at the same origin, facing right. The
+			reference starts already moving. Playback starts paused; Play or Replay
+			starts the animation.
+		</p>
+		<MovementBench client:load />
+		<p>
+			Acceleration means the contribution of one aligned Light engine at rest,
+			on a fixed common effective mass. Adding engines adds force without adding
+			mass in this fixture. Side thrust uses the real Fighter mount angles and
+			turn-response calculation; aft engines fire only when both controls are
+			held. The aft-only ship is deliberately artificial: real builds require
+			side engines. The constant-speed reference ignores all inputs.
+		</p>
+		<p>
+			The bench reuses the production engine impulse: speed-increasing thrust
+			tapers toward the chosen powered-speed limit, while braking and transverse
+			response remain available. This is the current candidate to inspect, not
+			an accepted movement rule. Travel momentum persists on release; rotation
+			uses the current direct response. There is no gravity, drag, energy
+			depletion, wrapping or randomness. Simulation uses 60 ticks per second
+			with four substeps; seeking reads the same precomputed run. Distance is
+			accumulated path length, not displacement. Route framing and graph scales
+			stay fixed throughout each run and refit when settings are applied.
+		</p>
+		<p>
+			Look for how engine count changes acceleration, how quickly each ship
+			approaches the reference speed, and what happens through single-engine
+			input and release. These traces expose the rules and their consequences;
+			they do not yet establish whether free flight is fun.
+		</p>
+		<p>
+			Review of 02.1 establishes engine direction and summed engine strength as
+			the basis for a semi-physical movement model. Relatively high acceleration
+			per engine with a low speed ceiling produced the most interesting path
+			shapes in human review. No exact parameter pair was recorded; this is a
+			promising region to investigate, not final tuning or proof of playable
+			handling. How engine strength determines the speed ceiling remains open.
+		</p>
+
+		<h3 id="ceiling-comparison">
+			02.2 / How much speed should combined force buy?
+		</h3>
+		<p>
+			Combined directional force is the chosen basis for acceleration and the
+			powered speed ceiling. Compare the original example ships, plus two aft
+			engines to make alignment directly comparable with the side pair. All use
+			the same Fighter geometry, effective mass, Light engines and
+			fourteen-second sequence from 02.1.
+		</p>
+		<MovementBench
+			comparison
+			label="Directional force and speed comparison"
+			client:load
+		/>
+		<p>
+			During LR, one aft supplies 1 equivalent, two aft supply 2, two angled
+			side engines supply about 1.80, and both pairs supply about 3.80. Sideways
+			forces cancel in the mirrored pair. One combined force vector drives each
+			powered ship; its magnitude determines acceleration and the ceiling. Aft
+			engines fire only on LR; side engines follow their respective controls.
+			The artificial side-pair reference instantly travels at half its two-side
+			LR ceiling while either control is held, following its facing. One button
+			turns at half the current Fighter turn rate; LR holds heading. Release
+			preserves travel velocity and stops rotation. This replaces the original
+			constant-speed reference for turning review.
+		</p>
+		<p>
+			The candidate curve is V(E) = V₁ × [1 + B × (1 − exp(−k × (E − 1)))] for E
+			≥ 1. V₁ is the one-Light ceiling, B the extra-speed allowance, and k the
+			falloff rate. B = 0 gives every powered arrangement the same ceiling.
+			Larger B gives extra force more speed benefit; larger k reaches that
+			allowance with fewer engines. Start with B = 0, then compare 0.4 while
+			keeping acceleration and V₁ fixed.
+		</p>
+		<p>
+			Solid lines show speed and dashed lines show powered ceilings. A zero
+			ceiling means no active force, not braking: coasting preserves velocity,
+			and a lower ceiling never clamps existing speed. The graphs and readouts
+			distinguish traversed length from position. The bench starts paused with
+			the accepted exploration defaults: 175 acceleration per engine, 250
+			one-Light speed, 0.4 extra-speed allowance and 0.8 falloff. Review
+			confirmed this directional-force approach works; these defaults carry
+			forward into the turning study.
+		</p>
+		<p>
+			The question is whether two aft engines deserve a noticeable speed
+			advantage over the angled side pair, beyond their stronger acceleration,
+			and how much advantage four engines should gain. Fixed effective mass
+			isolates that question; equipment mass, Heavy scaling and free-flight feel
+			remain later investigations. Current Fighter turning and the production
+			thrust taper remain the baseline.
+		</p>
+		<p>
+			The previous comparison of installed, active and directional counting
+			addressed the wrong question and is
+			<a href="/lab/studies/archive/ion-ceiling-rules">preserved separately</a>;
+			it established no accepted rule.
+		</p>
+
+		<h3 id="turning-comparison">02.3 / Turning, release and recovery</h3>
+		<p>
+			The accepted 175 / 250 / 0.4 / 0.8 defaults carry forward. The same ships
+			and input sequence now compare four selectable rotation modes. Free fall
+			retains spin; no free fall stops spin when there is no turn command,
+			including LR. In both cases turning builds from torque while a single
+			button is held. Add stabilizers to examine assisted turns and, under free
+			fall with neither button held, automatic counter-spin. Choose a mode and
+			Apply &amp; restart. All benches initially remain paused.
+		</p>
+		<MovementBench
+			turning
+			label="Turning and stabilizer comparison"
+			client:load
+		/>
+		<p>
+			Each stabilizer is 0.25 Light strength. The mirrored pair is 85% back from
+			the nose and 15% / 85% across the Fighter's full hull bounds. This trial
+			now uses the outward-exhaust correction recorded in 02.5, with opposite
+			tangential thrust directions: one assists clockwise torque, the other
+			counterclockwise torque. Only the appropriate engine fires. That exhaust
+			orientation is a study assumption; the accepted placement alone does not
+			fix it. Their force affects travel as well as spin. Aft-only fixtures also
+			receive the pair in stabilized modes.
+		</p>
+		<p>
+			Angular acceleration uses force × lever arm divided by inertia. The study
+			uses a uniform rectangle enclosing the real Fighter hull, measured about
+			the existing ship origin, as a shared inertia proxy. Equipment mass
+			distribution and production's direct turn-response gain are not included.
+			A provisional 120°/s maximum bounds spin in every mode; the input exposes
+			it for review. Stabilizers provide physical counter-torque, not passive
+			damping; braking tapers on the last substep so it cannot reverse spin.
+			They do not auto-brake during LR. With no free fall, release stops spin
+			immediately, so stabilizers only assist commanded turns.
+		</p>
+		<p>
+			The artificial side-pair reference instantly sets travel to half its LR
+			powered ceiling while either button is held and turns at half the chosen
+			maximum rate on a single button. Release preserves its velocity and stops
+			its spin immediately. It ignores the rotation-mode selector and
+			stabilizers, providing a fixed comparison.
+		</p>
+		<p>
+			The third graph shows signed angular speed; positive is clockwise on the
+			canvas. The readout shows active stabilizer strength. Watch the one-second
+			releases after L and R: does continued spin create useful movement, and
+			does counter-thrust bring it back under control? Below one Light
+			equivalent, the speed-ceiling curve extends linearly to zero so a
+			stabilizer alone has a defined positive ceiling. Existing momentum is
+			still never clamped. These are study-local mechanics; no production
+			flight, gravity or friction settings change.
+		</p>
+
+		<h3 id="stabilizer-comparison">
+			02.4 / Stabilizers: help or interference?
+		</h3>
+		<p>
+			Free-fall rotation is accepted: retaining spin is the more interesting
+			direction for play. The four-mode trial above is preserved as evidence.
+			This comparison fixes free fall and overlays the same Fighter with and
+			without stabilizers; both follow the same sequence and tuning. Start with
+			the side pair, then check the other engine arrangements if useful.
+		</p>
+		<MovementBench stabilizers label="Stabilizers on versus off" client:load />
+		<p>
+			Move the mirrored mounts and rotate their thrust directions in the
+			diagram, then Apply &amp; restart. The very same positions and angles
+			determine force and torque in the replay. The unassisted path stays fixed
+			when only stabilizer geometry changes. Arrows describe force, not exhaust.
+			Placement begins at 85% back and 15% / 85% across; the initial angle uses
+			the corrected outward-exhaust tangent orientation from 02.5.
+		</p>
+		<p>
+			Keep each stabilizer at 0.25 Light. During a commanded turn, the engine
+			with the appropriate torque assists; with neither input held, the opposite
+			torque slows residual spin. No automatic braking occurs during LR. Moving
+			or angling a mount can reduce its leverage to zero or reverse which nozzle
+			provides each turn. Braking stops at zero spin. Stabilizer force also
+			changes travel, so assess the path and speed as well as the angular-speed
+			graph.
+		</p>
+		<p>
+			The question is whether the extra turning authority and recovery improve
+			the free-fall experience enough to keep stabilizers. Geometry remains
+			experimental; the retained rectangular inertia proxy, fixed effective mass
+			and 120°/s default limit are unchanged. These traces support a handling
+			hypothesis; a playable trial is still needed to judge control and
+			enjoyment.
+		</p>
+
+		<h3 id="stabilizer-look">02.5 / Recessed stabilizers on the Fighter</h3>
+		<p>
+			Orientation correction: L fires the right stabilizer; R fires the left.
+			The slits exhaust outward, with force directed oppositely. Effects are
+			drawn over the hull and fitted parts in this preview; the production
+			renderer still draws plumes underneath and needs that layer-order change
+			during integration. The earlier inward-crossing exhaust and same-side
+			activation were a misunderstanding, not the selected design. The shared
+			placement calculation and current turning trials use this correction;
+			changing angles can still reverse torque, which the diagram reports.
+		</p>
+		<p>
+			Selected direction: free-fall rotation, with stabilizers enabled or
+			disabled in the ship editor. The next ion defaults are 220 acceleration,
+			340 one-Light speed, 0.4 extra-speed allowance, 0.8 falloff and 180°/s
+			maximum rotation. Stabilizers remain ion engines at 0.22 Light strength
+			each regardless of the main engines. They assist a turn and counter
+			residual spin whenever no turn is commanded, including LR. These are the
+			next integration targets; the earlier trial configurations remain
+			preserved above.
+		</p>
+		<p>
+			Placement and angle now need to work visually as well as mechanically.
+			This proposal recesses the stabilizer into a narrow dark slit, exposing
+			only a small charcoal engine edge and a blue outlet line. The actual
+			production Fighter carries Heavy ions in both side and both aft mounts to
+			expose crowding. No editor slot markings appear. The smaller view uses the
+			game's hull drawing scale at 1× camera zoom.
+		</p>
+		<FighterStabilizerLook client:load />
+		<p>
+			Effects layer over the hull and fitted parts in this preview. Production
+			still draws plumes underneath; correcting that layer order belongs in the
+			integration plan.
+		</p>
+		<p>
+			The hull, Heavy engines and ion flames use shared rendering. Stabilizer
+			slits remain study-only artwork. The selected placement is now 77% back,
+			10% / 90% across and 37.7° outward exhaust angle; Reset placement restores
+			it. The stationary preview exposes fit and plume overlap, while 02.6
+			examines the same appearance through motion and release.
+		</p>
+
+		<h3 id="stabilizer-flight">02.6 / The selected placement in flight</h3>
+		<p>
+			The Fighter placement is selected: 77% back from the nose, 10% / 90%
+			across, 37.7° outward exhaust angle. The slit appearance and proposed
+			0.22-output flame now run through the same fourteen-second sequence used
+			above, with a Heavy ion in each side and aft mount. The placement
+			inspector above resets to this reference.
+		</p>
+		<StabilizerFlight client:load />
+		<p>
+			This replay uses the shared study motion model with the agreed 220 / 340 /
+			0.4 / 0.8 values, 180°/s rotation limit, Heavy strength 1.75 and
+			stabilizers 0.22. L fires the right stabilizer; R fires the left. With no
+			turn command, including LR, counter-thrust removes residual spin. No
+			gravity, energy limit, drag or wrapping is present; rectangular inertia
+			and fixed effective mass remain study assumptions.
+		</p>
+		<p>
+			The shared Heavy-ion and Light-ion effects emit at the actual nozzles and
+			draw over the hull. Emission size follows the delivered combined-force
+			fraction; the stabilizer's mark also scales by its 0.22 contribution.
+			Existing marks keep their world position, velocity and fade. The
+			fixed-orientation camera follows the ship at the selected scale; the grid
+			and two-second route trace expose its movement. Playback starts paused.
+			Seeking deterministically reconstructs the same 60 Hz flight and emission
+			history, with four motion substeps per tick and no randomness.
+		</p>
+
+		<h3 id="scout-stabilizers">02.7 / Scout: slits within the swept hull</h3>
+		<p>
+			Ion characteristics and appearance, including optional Fighter
+			stabilizers, are approved. Actual acceleration and speed values remain
+			subject to post-study Flight Lab testing. After integration, the Lab
+			vessels start with two Light-ion side engines and no aft engines. This is
+			an integration target, not a change to current production loadouts.
+		</p>
+		<p>
+			The Scout now needs its own visual placement. Keep the approved recessed
+			slit, blue outlet and ion effect; judge their relationship to the Scout's
+			round cockpit, swept blades and narrow central keel. The three placement
+			buttons offer starting compositions, not accepted positions. Position and
+			angle remain adjustable.
+		</p>
+		<FighterStabilizerLook
+			scout
+			label="Scout stabilizer visual placement"
+			client:load
+		/>
+		<p>
+			The preview consumes the real Scout hull and engine mounts. It opens with
+			the Light-ion side pair; switch to the full Heavy-ion fit to expose
+			crowding around the single aft mount. L and R show all matching engine
+			effects with crosswise stabilizer assistance; LR shows all fitted main
+			engines. Effects remain above the hull. Percentages use the Scout's own
+			hull bounds, not the Fighter's dimensions.
+		</p>
+		<p>
+			Wing roots put the slits on the inner swept surfaces; swept blades move
+			them farther aft and outward; central keel tests a tighter placement
+			beside the spine. Look for a deliberate recess that belongs to the hull,
+			with a clear outlet and no collision with fitted engine bodies. The
+			smaller view exposes gameplay-scale readability. This is a visual
+			comparison; Scout handling still needs flight testing; the selected
+			placement is 67% back, 38% / 62% across, at 67°.
+		</p>
+
+		<h3 id="cruiser-stabilizers">
+			02.8 / Cruiser: slits along the armored hull
+		</h3>
+		<p>
+			The Scout placement is selected: 67% back, 38% / 62% across and 67°
+			outward exhaust angle. Its preview above now opens and resets to those
+			values. The cruiser is next: retain the approved slit language while
+			finding positions that belong to its long armored hull and clear its three
+			aft engines.
+		</p>
+		<FighterStabilizerLook
+			cruiser
+			label="Cruiser stabilizer visual placement"
+			client:load
+		/>
+		<p>
+			Mid flanks, aft shoulders and stern edges provide three starting
+			placements. The real cruiser hull, side pair and three aft mounts are
+			used. The full Heavy-ion fitting includes two side engines and three aft
+			engines to inspect clearance. L and R fire the corresponding main engine
+			and crosswise stabilizer; LR fires all installed main engines. Position
+			and angle sliders use this hull's own bounds. The selected placement opens
+			and resets at 76% back, 23% / 77% across and 63° outward exhaust angle.
+		</p>
+	</section>
+	<section id="readiness">
+		<h2>03 / Ready for an alpha flight trial</h2>
+		<p>
+			The selected design fits the existing fixed-step simulation, mounted
+			engine renderer, ion plume painter and replay tools. Production needs
+			persistent angular velocity, a combined directional ion force, automatic
+			stabilizer power demand and a saved on/off option. Gravity and other
+			engine response families stay outside this study.
+		</p>
+		<p>
+			Free-fall rotation and the recessed slit appearance are accepted. Light
+			ion strength is 1; Heavy ion is 1.75 in both force and energy consumption.
+			A firing stabilizer provides 0.22 Light-ion thrust and consumes 0.25
+			Light-ion energy, independently of the main engine family. L assists with
+			the right stabilizer; R with the left. With no turn command, including LR,
+			stabilizers oppose spin and stop at zero. Without stabilizers, rotation
+			continues after release.
+		</p>
+		<table>
+			<thead>
+				<tr>
+					<th>Hull</th>
+					<th>Back from nose</th>
+					<th>Across</th>
+					<th>Outward exhaust</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Fighter</td>
+					<td>77%</td>
+					<td>10% / 90%</td>
+					<td>37.7°</td>
+				</tr>
+				<tr>
+					<td>Scout</td>
+					<td>67%</td>
+					<td>38% / 62%</td>
+					<td>67°</td>
+				</tr>
+				<tr>
+					<td>Cruiser</td>
+					<td>76%</td>
+					<td>23% / 77%</td>
+					<td>63°</td>
+				</tr>
+			</tbody>
+		</table>
+		<p>
+			The starting rates are 220 acceleration, 340 speed, 0.4 ceiling bonus, 0.8
+			falloff and 180°/s rotation cap. Acceleration and speed remain tuning
+			hypotheses for the real Flight Lab. Geometry-driven inertia and different
+			hull masses will change handling: visual acceptance does not establish the
+			balance of Scout or Cruiser.
+		</p>
+		<p>
+			No dependency or gravity change is needed. Alpha adapters use a 115-mass
+			reference (Fighter with two Light ions), the study's rectangular hull
+			inertia about the ship origin, and built-in stabilizers with no additional
+			slot or mass. Existing saves default to off. Mixed builds retain
+			Fusion/Plasma pulse, charge and individual speed rules; their ion engines
+			and stabilizers use the combined ion rule. These compatibility choices
+			need flight review, not another visual-placement study.
+		</p>
+	</section>
+	<section id="integration">
+		<h2>04 / Bring the accepted design into flight</h2>
+		<p>
+			The integration below is implemented for 0.4.2 in
+			<a href="/lab/builder">the shared builder</a>
+			and
+			<a href="/lab/flight">Flight Lab</a>. The preserved 02 examples describe
+			their investigation-time conditions; their production-pending statements
+			are historical. Post-integration flight balance remains open.
+		</p>
+		<ol>
+			<li>
+				Define validated ion tuning and optional stabilizers in shared
+				flight/loadout schemas. Preserve version-2 builds with an off default;
+				new builds use two Light-ion side engines.
+			</li>
+			<li>
+				Sum ion force vectors and torque at each simulation substep. Use net
+				force for the saturating speed ceiling, retain external overspeed,
+				integrate free-fall angular velocity, and cap automatic braking at zero.
+				Budget stabilizer energy before applying force.
+			</li>
+			<li>
+				Promote the three accepted slit placements and shared Light-ion flames
+				to the build renderer. Draw flight effects above hull and fittings.
+				Preserve the exploratory examples as references, including the Heavy-ion
+				Fighter and five-engine Cruiser.
+			</li>
+			<li>
+				Add the optional stabilizer switch to builder and Flight Lab. Lab trials
+				use the real two-Light-ion loadout, expose the provisional ion values,
+				and export/import those settings. Keep scored stock trials separate from
+				these unranked experiments.
+			</li>
+			<li>
+				Verify directional summation, Heavy strength, coasting, counter-spin,
+				power exhaustion, schema compatibility and deterministic replay. Inspect
+				real rendering during L, R, LR and release/fade on each chassis. Run
+				repository gates before the authorized 0.4.x release.
+			</li>
+		</ol>
+		<p>
+			The motion reference is 14 one-second inputs: LR, LR, none, L, none, LR,
+			none, R, none, R, none, LR, LR, LR; start at rest without randomness. The
+			Fighter flight example preserves its follow camera and zoom options.
+			Integration checks use the actual game camera and gravity, so trajectories
+			are not expected to duplicate the isolated bench.
+		</p>
+		<p>
+			Human flight testing after integration must settle acceleration/speed
+			balance and check stabilizer recovery and plume readability on all hulls.
+			Automated verification establishes implementation contracts, not that
+			these values make the final game fun.
+		</p>
+	</section>
+</StudyLayout>

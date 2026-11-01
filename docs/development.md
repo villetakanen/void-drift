@@ -116,3 +116,13 @@ No visual tolerance changed. Human review is out of this integration's scope and
 will happen afterward on the built alpha. The initial integration lacked Java for backend checks. Release 0.3.4 verification
 used a temporary Temurin Java 21 runtime: all gates passed, including nine
 Firestore rule tests and the two-player competition test.
+
+
+## Ion movement integration — 0.4.2
+
+The Flight Lab 450-tick screenshot was inspected and updated for the intentional
+change from a stock ship to the assembled two-Light-ion Fighter with persistent
+rotation. No screenshot tolerance changed. Browser tests cover stabilizer persistence,
+all-hull turns/release/LR, and Lab tuning import/replay. Unit tests cover force ratio,
+bounded directional speed, free rotation, counter-spin, energy and reset/replay.
+Human balance review remains open; gravity and scored stock profiles are unchanged.

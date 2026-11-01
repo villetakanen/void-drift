@@ -40,7 +40,7 @@ describe("ship builder contract", () => {
 		expect(LoadoutSchema.safeParse({ ...build, side: null }).success).toBe(
 			false,
 		);
-		expect(buildStats(build).mass).toBe(92);
+		expect(buildStats(build).mass).toBe(80);
 	});
 	it("adds capacity without multiplying life support and begins full", () => {
 		const sim = simulation();
@@ -55,8 +55,8 @@ describe("ship builder contract", () => {
 		const build = defaultLoadout("balanced");
 		build.aft[0] = "ion";
 		expect(buildDrain(build, idle)).toBe(3);
-		expect(buildDrain(build, { ...idle, leftThruster: true })).toBe(6);
-		expect(buildDrain(build, both)).toBe(11);
+		expect(buildDrain(build, { ...idle, leftThruster: true })).toBe(5);
+		expect(buildDrain(build, both)).toBe(9);
 		const a = ship();
 		applyBuildEngines(a, build, both, 1 / 60, true);
 		expect(a.rotation).toBe(0);
@@ -199,15 +199,15 @@ it("uses accepted mount geometry for propulsion, estimates, nozzles and collisio
 			((26 * Math.PI) / 180) * (i === 0 ? 1 : -1),
 		);
 		expect(emitter.x / BUILD_FLIGHT_SCALE).toBeCloseTo(
-			mount.x - 12 * Math.cos(mount.angle),
+			mount.x - 11 * Math.cos(mount.angle),
 		);
 		expect(emitter.y / BUILD_FLIGHT_SCALE).toBeCloseTo(
-			mount.y - 12 * Math.sin(mount.angle),
+			mount.y - 11 * Math.sin(mount.angle),
 		);
 	}
 	const stats = buildStats(build);
-	expect((stats.turnRate * 180) / Math.PI).toBeCloseTo(193.18192, 3);
-	expect(stats.acceleration).toBeCloseTo(679.40338, 3);
+	expect((stats.turnRate * 180) / Math.PI).toBeCloseTo(146.0292, 3);
+	expect(stats.acceleration).toBeCloseTo(395.46938, 3);
 	const forward = ship();
 	applyBuildEngines(forward, build, both, 1 / 60, true);
 	expect(forward.vel.x * 60).toBeCloseTo(stats.acceleration);
@@ -222,7 +222,7 @@ it("uses accepted mount geometry for propulsion, estimates, nozzles and collisio
 		1 / 60,
 		true,
 	);
-	expect(left.rotation * 60).toBeCloseTo(stats.turnRate);
+	expect(left.rotation * 60 * 60).toBeCloseTo(stats.turnRate);
 	expect(left.rotation).toBeCloseTo(-right.rotation);
 	expect(left.vel.x).toBeCloseTo(right.vel.x);
 	expect(left.vel.y).toBeCloseTo(-right.vel.y);

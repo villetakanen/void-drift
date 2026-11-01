@@ -9,13 +9,13 @@ test("fit, persist, fly, reset and return to an assembled ship", async ({
 	await expect(
 		page.getByRole("heading", { name: "Your ship. Your compromise." }),
 	).toBeVisible();
-	await page.getByRole("button", { name: /Small ion.*10 mass/ }).click();
+	await page.getByRole("button", { name: /Light ion.*10 mass/ }).click();
 	await expect(
-		page.getByRole("button", { name: "Right side · mirrored E: Small ion" }),
+		page.getByRole("button", { name: "Right side · mirrored E: Light ion" }),
 	).toBeVisible();
 	await page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }).click();
 	await expect(
-		page.getByRole("button", { name: /Small ion.*10 mass/ }),
+		page.getByRole("button", { name: /Light ion.*10 mass/ }),
 	).toHaveCount(0);
 	await page.getByRole("button", { name: /Energy storage.*18 mass/ }).click();
 	await expect(
@@ -81,7 +81,7 @@ test("corrupt browser storage recovers to flyable defaults", async ({
 	await expect(page.getByRole("status")).toContainText("Restored flyable");
 	await expect(
 		page.getByRole("button", {
-			name: "Left side · mirrored E: Fusion",
+			name: "Left side · mirrored E: Light ion",
 		}),
 	).toBeVisible();
 });
@@ -126,13 +126,13 @@ test("preserves other chassis saves and independently selects tight aft mounts",
 	await page.getByRole("button", { name: /Rail gun.*15 mass/ }).click();
 	await page.getByRole("button", { name: "Aft 2 · Universal: Empty" }).focus();
 	await page.keyboard.press("Enter");
-	await page.getByRole("button", { name: /Small ion.*10 mass/ }).click();
+	await page.getByRole("button", { name: /Light ion.*10 mass/ }).click();
 	await page.reload();
 	const restored = await page.evaluate(() =>
 		JSON.parse(localStorage.getItem("void-drift-builds-v2") ?? "null"),
 	);
-	expect(restored.scout).toEqual(saved.scout);
-	expect(restored.tank).toEqual(saved.tank);
+	expect(restored.scout).toEqual({ ...saved.scout, stabilizers: false });
+	expect(restored.tank).toEqual({ ...saved.tank, stabilizers: false });
 	expect(restored.balanced.aft).toEqual(["rail", "ion"]);
 	await page.getByRole("button", { name: "Start survival" }).click();
 	await page.keyboard.down("a");
@@ -164,7 +164,7 @@ test("cruiser fits eight mounts, preserves Fighter and flies", async ({
 	await page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }).click();
 	await page.getByRole("button", { name: /Rail gun.*15 mass/ }).click();
 	await page.getByRole("button", { name: "Aft 2 · Universal: Empty" }).click();
-	await page.getByRole("button", { name: /Small ion.*10 mass/ }).click();
+	await page.getByRole("button", { name: /Light ion.*10 mass/ }).click();
 	await page.getByRole("button", { name: /Fighter.*6 SLOTS/ }).click();
 	await expect(
 		page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }),
@@ -175,7 +175,7 @@ test("cruiser fits eight mounts, preserves Fighter and flies", async ({
 		page.getByRole("button", { name: "Hull 1 · Equipment: Rail gun" }),
 	).toBeVisible();
 	await expect(
-		page.getByRole("button", { name: "Aft 2 · Universal: Small ion" }),
+		page.getByRole("button", { name: "Aft 2 · Universal: Light ion" }),
 	).toBeVisible();
 	await page.setViewportSize({ width: 1440, height: 1100 });
 	await page.screenshot({
@@ -212,7 +212,7 @@ test("new engine catalog resets old saves and exposes plasma charging in flight"
 		)
 		.toBeNull();
 	await expect(
-		page.getByRole("button", { name: /Heavy ion.*750 powered ceiling/ }),
+		page.getByRole("button", { name: /Heavy ion.*20 mass/ }),
 	).toBeVisible();
 	await page.getByRole("button", { name: /Plasma.*24 mass/ }).click();
 	await expect(

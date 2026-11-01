@@ -94,3 +94,14 @@ branches on an optional validated loadout while preserving legacy stock trials.
 Resource power is absolute nonnegative energy; runtime clamps it to build capacity.
 Custom runs are unranked and cannot use the stock score submission path.
 See [the ship-builder spec](specs/ship-builder.md) for provisional physics and tuning.
+
+
+### Ion motion integration — 0.4.2
+
+Validated `FlightSettings.ion` owns custom ion acceleration/ceiling/rotation tuning;
+`Loadout.stabilizers` defaults false for old version-2 saves. Simulation keeps
+angular velocity, budgets engine and automatic stabilizer demand per substep, and
+uses the same mounted emitter list as the renderer. Custom ions combine directional
+force; other response families retain their pulse/charge behavior. Ranked stock
+physics remains separate. FlightDeck draws the effective simulation loadout, so
+imported Lab configurations and builder flights share rendering and power capacity.
