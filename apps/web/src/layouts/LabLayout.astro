@@ -3,6 +3,7 @@ import Logo from "../components/Logo.svelte";
 import "@void-drift/core/styles/reset.css";
 import "@void-drift/core/styles/tokens.css";
 import "@void-drift/core/styles/buttons.css";
+import "@void-drift/core/styles/typography.css";
 import "../styles.css";
 
 const { title, wide = false } = Astro.props;
@@ -30,8 +31,6 @@ const LINKS = [
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-
-		<!-- Google Fonts: Noto Sans Math -->
 
 		<title>{title} | Void·Drift Lab</title>
 	</head>
@@ -82,7 +81,7 @@ const LINKS = [
 	overflow: hidden;
 	background: var(--color-void);
 	color: var(--color-text);
-	font-family: "Noto Sans Math", sans-serif;
+	font-family: var(--font-family-ui);
 }
 
 .lab-grid {
@@ -134,10 +133,10 @@ const LINKS = [
 
 .page-header h1 {
 	margin: 0;
-	font-size: 0.7rem;
+	font-size: var(--font-size-caption);
 	color: var(--color-text-dim);
 	text-transform: uppercase;
-	letter-spacing: 0.25em;
+	letter-spacing: var(--tracking-eyebrow);
 }
 
 /* Column 2 Row 2: Main Stage */
@@ -167,7 +166,7 @@ a {
 	text-align: left;
 	border-radius: var(--radius-sm);
 	text-transform: uppercase;
-	font-size: 0.75rem;
+	font-size: var(--font-size-caption);
 	transition: all 0.2s;
 	border: 1px solid transparent;
 	display: block;

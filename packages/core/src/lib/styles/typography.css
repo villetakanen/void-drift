@@ -6,6 +6,10 @@
 	line-height: var(--line-height-prose);
 }
 
+:where(.prose) :where(p, li) {
+	line-height: var(--line-height-prose);
+}
+
 :where(.prose) :where(h1) {
 	font-family: var(--font-family-display);
 	font-weight: var(--font-weight-display);

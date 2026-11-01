@@ -3,7 +3,11 @@
 let _props: { slot?: string; "client:only"?: string; "client:load"?: boolean } =
 	$props();
 
-import { drawPlanet, getPlanetInfluenceRadius } from "@void-drift/core";
+import {
+	canvasFont,
+	drawPlanet,
+	getPlanetInfluenceRadius,
+} from "@void-drift/core";
 import Canvas from "../Canvas.svelte";
 import {
 	getPlanetColor,
@@ -132,7 +136,7 @@ function drawPlanetPreview(ctx: CanvasRenderingContext2D) {
 
 	// Draw info labels
 	ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
-	ctx.font = "11px sans-serif";
+	ctx.font = canvasFont(11);
 	ctx.textAlign = "left";
 	ctx.fillText(`Orbit: ${orbitRadius.toFixed(0)}px`, 10, 20);
 	ctx.fillText(`Radius: ${planetRadius.toFixed(0)}px`, 10, 35);

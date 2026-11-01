@@ -1,4 +1,5 @@
 <script lang="ts">
+import { loadCanvasFonts } from "@void-drift/core";
 import {
 	BuildStoreSchema,
 	buildMounts,
@@ -25,6 +26,7 @@ let chosen = $state<ShipProfileId>("balanced");
 let selected = $state("left");
 let flying = $state<"test" | "survival" | null>(null);
 let ready = $state(false);
+let fontsLoaded = $state(false);
 let notice = $state("");
 let canvas = $state<HTMLCanvasElement>();
 const build = $derived(builds[chosen]);
@@ -39,6 +41,9 @@ const compatible = $derived(
 	Object.values(PARTS).filter((part) => slotAccepts(mount.type, part.category)),
 );
 onMount(() => {
+	loadCanvasFonts().then(() => {
+		fontsLoaded = true;
+	});
 	try {
 		localStorage.removeItem("void-drift-builds-v1");
 		const saved = localStorage.getItem("void-drift-builds-v2");
@@ -60,6 +65,8 @@ onMount(() => {
 	ready = true;
 });
 $effect(() => {
+	// Read so slot labels redraw once webfonts load; canvas text does not load them.
+	void fontsLoaded;
 	const context = canvas?.getContext("2d");
 	if (context && canvas) {
 		context.clearRect(0, 0, 600, 540);

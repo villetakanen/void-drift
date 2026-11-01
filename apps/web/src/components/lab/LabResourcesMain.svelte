@@ -3,7 +3,7 @@
 let _props: { slot?: string; "client:only"?: string; "client:load"?: boolean } =
 	$props();
 
-import { drawDeathIcon, drawResourceBar } from "@void-drift/core";
+import { canvasFont, drawDeathIcon, drawResourceBar } from "@void-drift/core";
 import Canvas from "../Canvas.svelte";
 import { resourcesParams } from "./resources-state.svelte";
 
@@ -44,7 +44,7 @@ function drawIcons(ctx: CanvasRenderingContext2D) {
 	drawDeathIcon(ctx, startX + spacing * 2, 40, 32, "POWER");
 
 	ctx.fillStyle = "#888";
-	ctx.font = "10px sans-serif";
+	ctx.font = canvasFont(10);
 	ctx.textAlign = "center";
 	ctx.fillText("STAR", startX, 70);
 	ctx.fillText("HULL", startX + spacing, 70);
@@ -124,7 +124,7 @@ h3 {
 }
 
 .meta {
-	font-family: monospace;
+	font-family: var(--font-family-ui);
 	color: var(--color-text-dim);
 	font-size: 0.9rem;
 }
@@ -137,7 +137,7 @@ h3 {
 .timer {
 	font-size: 1rem;
 	color: var(--color-text);
-	font-family: monospace;
+	font-family: var(--font-family-ui);
 	padding: 0.25rem 0.5rem;
 	background: rgba(255, 255, 255, 0.05);
 	border: 1px solid var(--color-neon-blue);

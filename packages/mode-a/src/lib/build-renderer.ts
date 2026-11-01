@@ -1,4 +1,4 @@
-import type { PlumeEmitter } from "@void-drift/core";
+import { canvasFont, type PlumeEmitter } from "@void-drift/core";
 import { CRUISER } from "./cruiser";
 import { ENGINE_ART } from "./engine-art";
 import { FIGHTER } from "./fighter";
@@ -409,7 +409,7 @@ function drawSlot(
 	if (!mount.part) {
 		ctx.fillStyle = ink;
 		ctx.globalAlpha = 0.7;
-		ctx.font = "700 32px ui-monospace, monospace";
+		ctx.font = canvasFont(32, 700);
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
 		ctx.fillText(SLOT_TYPES[mount.type].symbol, 0, 0);
@@ -419,14 +419,14 @@ function drawSlot(
 	ctx.globalAlpha = 0.35;
 	ctx.fillRect(-cw - 23, -ch - 12, 22, 16);
 	ctx.globalAlpha = 1;
-	ctx.font = "11px ui-monospace, monospace";
+	ctx.font = canvasFont(11);
 	ctx.textAlign = "right";
 	ctx.textBaseline = "alphabetic";
 	ctx.fillStyle = palette.ivory;
 	ctx.fillText(String(number).padStart(2, "0"), -cw - 5, -ch);
 	ctx.translate(-w - 4, h);
 	ctx.rotate(-Math.PI / 2);
-	ctx.font = "8px ui-monospace, monospace";
+	ctx.font = canvasFont(8);
 	ctx.textAlign = "left";
 	ctx.fillStyle = ink;
 	ctx.fillText(SLOT_TYPES[mount.type].label, 0, 0);

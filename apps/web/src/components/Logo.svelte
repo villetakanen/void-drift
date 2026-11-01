@@ -20,14 +20,15 @@ let { size = "1.5rem", color = "var(--color-neon-blue)" }: Props = $props();
 
 <style>
 .logo {
-	font-family: "Noto Sans Math", sans-serif;
+	/* Interim until S2 replaces the glyphs with SVG outlines (D1). */
+	font-family: var(--font-family-display);
 	font-size: var(--size);
 	color: var(--color);
 	display: inline-flex;
 	align-items: center;
 	gap: 0.2ch;
 	user-select: none;
-	font-weight: normal; /* Math symbols often look best at normal weight */
+	font-weight: var(--font-weight-regular);
 }
 
 .operator {
