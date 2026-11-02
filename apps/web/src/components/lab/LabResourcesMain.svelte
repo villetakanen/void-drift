@@ -100,7 +100,7 @@ function drawIcons(ctx: CanvasRenderingContext2D) {
 	padding: 2rem;
 	background: var(--color-glass);
 	border: 1px solid var(--color-border-subtle);
-	border-radius: 4px;
+	border-radius: var(--radius-sm);
 	backdrop-filter: blur(4px);
 }
 
@@ -139,6 +139,6 @@ h3 {
 	padding: 0.25rem 0.5rem;
 	background: var(--color-surface-hover);
 	border: 1px solid var(--color-border);
-	border-radius: 2px;
+	border-radius: var(--radius-sm);
 }
 </style>

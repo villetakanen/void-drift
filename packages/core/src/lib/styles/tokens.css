@@ -37,7 +37,23 @@
 	--spacing-lg: 32px;
 	--spacing-xl: 64px;
 
+	/* Text fields only; surfaces and controls cut their corners. */
 	--radius-sm: 2px;
+
+	/* Corner cuts (design-system-core.md, Surfaces): buttons, the toggle and
+	   engine pads cut md; panels cut lg. Always the top-left and bottom-right. */
+	--cut-size-sm: 6px;
+	--cut-size-md: 10px;
+	--cut-size-lg: 16px;
+
+	/* Layers (design-system-core.md, Layers): the only z-index values in
+	   shared UI. Gaps leave room for a later layer. */
+	--layer-under: -1;
+	--layer-base: 0;
+	--layer-raised: 1;
+	--layer-hud: 10;
+	--layer-overlay: 100;
+	--layer-toast: 200;
 
 	/* Resource colours are game data. Power shares brand until S8 separates it. */
 	--color-resource-hull: lch(74.49% 48.47 234.45);
@@ -66,7 +82,7 @@
 	--button-font-weight: var(--font-weight-medium);
 	--button-border-width: var(--border-width-control);
 	--button-min-height: var(--control-min-height);
-	--button-cut-size: 10px;
+	--button-cut-size: var(--cut-size-md);
 	--button-border-radius: var(--radius-sm);
 	--button-transition:
 		background var(--duration-fast) var(--ease-standard),

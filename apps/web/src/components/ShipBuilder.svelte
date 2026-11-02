@@ -572,7 +572,7 @@ dd {
 footer {
 	position: sticky;
 	bottom: 0;
-	z-index: 2;
+	z-index: var(--layer-raised);
 	background: var(--color-void);
 	padding-bottom: 12px;
 	margin-top: 22px;

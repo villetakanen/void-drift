@@ -87,7 +87,7 @@ h2 {
 
 .setting-group {
 	background: var(--color-elev-1);
-	border: 1px solid var(--color-text-muted);
+	border: 1px solid var(--color-border);
 	border-radius: var(--radius-sm);
 	padding: var(--spacing-md);
 	margin-bottom: var(--spacing-lg);

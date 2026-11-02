@@ -188,7 +188,7 @@ select {
 	gap: 0.75rem;
 	padding: 0.5rem;
 	background: var(--color-surface-hover);
-	border-radius: 4px;
+	border-radius: var(--radius-sm);
 	margin-bottom: 1rem;
 }
 

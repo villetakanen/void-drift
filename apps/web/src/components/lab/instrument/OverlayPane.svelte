@@ -93,7 +93,7 @@ const id = `pane-${Math.random().toString(36).slice(2, 8)}`;
 	position: absolute;
 	inset-block: 0;
 	right: 0;
-	z-index: 1;
+	z-index: var(--layer-raised);
 	width: 45%;
 	box-sizing: border-box;
 	overflow: auto;

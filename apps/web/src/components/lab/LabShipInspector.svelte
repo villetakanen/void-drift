@@ -129,7 +129,7 @@ select {
 	width: 100%;
 	min-height: 44px;
 	border: 1px solid var(--color-border);
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: var(--color-glass);
 	color: var(--color-text);
 	padding: 0.5rem;

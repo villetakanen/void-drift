@@ -28,7 +28,8 @@
 	appearance: none;
 	vertical-align: middle;
 	position: relative;
-	z-index: 1;
+	/* Own stacking context, so the ::before fill stays behind the label. */
+	isolation: isolate;
 
 	/* Futuristic Cut-off Corners */
 	clip-path: polygon(
@@ -58,7 +59,7 @@
 	inset: var(--_outline-inset);
 	background: var(--color-void);
 	clip-path: inherit;
-	z-index: -1;
+	z-index: var(--layer-under);
 	transition: background var(--duration-fast) var(--ease-standard);
 }
 
@@ -111,7 +112,7 @@
 	inset: var(--_outline-inset);
 	background: var(--color-void);
 	clip-path: inherit;
-	z-index: -1;
+	z-index: var(--layer-under);
 	transition: background var(--duration-fast) var(--ease-standard);
 }
 
