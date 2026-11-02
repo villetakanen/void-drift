@@ -161,21 +161,21 @@ literal and never the palette name behind it.
 
 ### Text, border, surface and scrim
 
-| Role    | Token                   | Value                                  | Use                                                              |
-| ------- | ----------------------- | -------------------------------------- | ---------------------------------------------------------------- |
-| Text    | `--color-text`          | `lch(99.7% 7.45 104.72)`               | Headings, values, body, descriptions                             |
-| Text    | `--color-text-muted`    | `lch(56.7% 0 0)`                       | Eyebrows, tags, captions, secondary labels                       |
-| Border  | `--color-border`        | `lch(100% 0 0 / 0.141)`                | Panel, header and table edges                                    |
-| Border  | `--color-border-subtle` | `lch(100% 0 0 / 0.094)`                | Dividers inside panels; resource bar track                       |
-| Border  | `--color-border-faint`  | `lch(100% 0 0 / 0.051)`                | Lab stage grids                                                  |
-| Border  | `--color-grid`          | `lch(45.22% 12.57 223.2)`              | Builder blueprint grid                                           |
-| Surface | `--color-void`          | `lch(1.57% 4.76 285.25)`               | The page and the canvas clear (elevation 0)                      |
-| Surface | `--color-elev-1`..`-3`  | see [Elevation](#elevation-and-inputs) | Panels, displays, overlay panes                                  |
-| Surface | `--color-glass`         | `lch(1.57% 4.76 285.25 / 0.91)`        | The void over the live stage: engine pads. [DEPRECATED 2026-11-02] ~~menu overlay, pause banner~~ (see [Surfaces and layers](#surfaces-and-layers)) |
-| Surface | `--color-surface-hover` | `lch(100% 0 0 / 0.051)`                | Hover tint on any surface                                        |
-| Scrim   | `--color-backdrop`      | `lch(0% 0 0 / 0.11)`                   | Dims what a Lab overlay pane covers|
-| Scrim   | `--scrim-filter`, `--scrim-surface` | see [Scrim](#scrim-the-offline-feed) | Shades the stage behind a dialog |
-| Surface | `--panel-fill`          | elev-2 at 65%                          | Panels; see [Panels](#panels) |
+| Role    | Token                               | Value                                  | Use                                                                                                                                                 |
+| ------- | ----------------------------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Text    | `--color-text`                      | `lch(99.7% 7.45 104.72)`               | Headings, values, body, descriptions                                                                                                                |
+| Text    | `--color-text-muted`                | `lch(56.7% 0 0)`                       | Eyebrows, tags, captions, secondary labels                                                                                                          |
+| Border  | `--color-border`                    | `lch(100% 0 0 / 0.141)`                | Panel, header and table edges                                                                                                                       |
+| Border  | `--color-border-subtle`             | `lch(100% 0 0 / 0.094)`                | Dividers inside panels; resource bar track                                                                                                          |
+| Border  | `--color-border-faint`              | `lch(100% 0 0 / 0.051)`                | Lab stage grids                                                                                                                                     |
+| Border  | `--color-grid`                      | `lch(45.22% 12.57 223.2)`              | Builder blueprint grid                                                                                                                              |
+| Surface | `--color-void`                      | `lch(1.57% 4.76 285.25)`               | The page and the canvas clear (elevation 0)                                                                                                         |
+| Surface | `--color-elev-1`..`-3`              | see [Elevation](#elevation-and-inputs) | Panels, displays, overlay panes                                                                                                                     |
+| Surface | `--color-glass`                     | `lch(1.57% 4.76 285.25 / 0.91)`        | The void over the live stage: engine pads. [DEPRECATED 2026-11-02] ~~menu overlay, pause banner~~ (see [Surfaces and layers](#surfaces-and-layers)) |
+| Surface | `--color-surface-hover`             | `lch(100% 0 0 / 0.051)`                | Hover tint on any surface                                                                                                                           |
+| Scrim   | `--color-backdrop`                  | `lch(0% 0 0 / 0.11)`                   | Dims what a Lab overlay pane covers                                                                                                                 |
+| Scrim   | `--scrim-filter`, `--scrim-surface` | see [Scrim](#scrim-the-offline-feed)   | Shades the stage behind a dialog                                                                                                                    |
+| Surface | `--panel-fill`                      | elev-2 at 65%                          | Panels; see [Panels](#panels)                                                                                                                       |
 - Panels sit on `--color-elev-1`; `--color-void-light` now aliases it (panels rose from L 3.3 to
   5.5).
 - Borders are white at fixed strengths so one token reads on every surface.
@@ -232,13 +232,13 @@ text-muted, `--color-void-light` → elev-1, `--color-overlay` → glass (0.9 be
 `apps/web/src/components/inputs/Toggle.svelte`, `apps/web/src/components/inputs/RingSlider.svelte`.
 **References:** `/lab/surfaces`, `/lab/inputs`.
 
-| Token               | Value                                              | Use                |
-| ------------------- | -------------------------------------------------- | ------------------ |
-| `--color-elev-1`    | `lch(5.5% 10 290)`                                 | Console            |
-| `--color-elev-2`    | `lch(11% 15 290)`                                  | Display            |
-| `--color-elev-3`    | `lch(16.5% 20 290)`                                | Overlay pane       |
-| `--surface-display` | elevation 2 with 4px scanlines and a darkened edge | Display background |
-| `--shadow-display`  | 1px dark bezel; 0 8px 24px black at 70%            | Display edge       |
+| Token               | Value                                              | Use                       |
+| ------------------- | -------------------------------------------------- | ------------------------- |
+| `--color-elev-1`    | `lch(5.5% 10 290)`                                 | Console                   |
+| `--color-elev-2`    | `lch(11% 15 290)`                                  | Display                   |
+| `--color-elev-3`    | `lch(16.5% 20 290)`                                | Overlay pane              |
+| `--surface-display` | elevation 2 with 4px scanlines and a darkened edge | Display background        |
+| `--shadow-display`  | 1px dark bezel; 0 8px 24px black at 70%            | Display edge              |
 | `--color-backdrop`  | black at 11%                                       | Behind a Lab overlay pane |
 - Each elevation step keeps the background's hue, 290, and raises lightness by 5.5
   and chroma by 5.
@@ -269,12 +269,11 @@ text-muted, `--color-void-light` → elev-1, `--color-overlay` → glass (0.9 be
 One corner language: every surface and control cuts its **top-left and bottom-right**
 corners, as buttons do.
 
-| Token           | Value | Use                                    |
-| --------------- | ----- | -------------------------------------- |
-| `--cut-size-sm` | 6px   | Small controls                         |
-| `--cut-size-md` | 10px  | Buttons, the toggle, engine pads       |
-| `--cut-size-lg` | 16px  | Panels                                 |
-
+| Token           | Value | Use                              |
+| --------------- | ----- | -------------------------------- |
+| `--cut-size-sm` | 6px   | Small controls                   |
+| `--cut-size-md` | 10px  | Buttons, the toggle, engine pads |
+| `--cut-size-lg` | 16px  | Panels                           |
 - `--button-cut-size` aliases `--cut-size-md`.
 - `--radius-sm` (2px) is for text fields only. Circles (knobs, swatches) stay round.
 - [DEPRECATED 2026-11-02] ~~`--flight-radius: 12px` on engine pads~~; removed. Engine pads are
@@ -295,11 +294,10 @@ fill can be translucent and frosted while the edge and shadow follow the cut:
 
 ### Panels
 
-| Class          | Fill                                      | Edge             | Corners | Shadow                               | Use                                 |
-| -------------- | ----------------------------------------- | ---------------- | ------- | ------------------------------------ | ----------------------------------- |
-| `.panel`       | `--panel-fill` (elev-2 at 65%), 40px blur | `--color-border` | `lg`    | `--panel-shadow` (0 8px 24px, 70%)   | Dialogs over the stage              |
-| `.panel--flat` | the same                                  | `--color-border` | `lg`    | none                                 | Status messages on the live game    |
-
+| Class          | Fill                                      | Edge             | Corners | Shadow                             | Use                              |
+| -------------- | ----------------------------------------- | ---------------- | ------- | ---------------------------------- | -------------------------------- |
+| `.panel`       | `--panel-fill` (elev-2 at 65%), 40px blur | `--color-border` | `lg`    | `--panel-shadow` (0 8px 24px, 70%) | Dialogs over the stage           |
+| `.panel--flat` | the same                                  | `--color-border` | `lg`    | none                               | Status messages on the live game |
 - The panel is a frosted shade on the console form: the instrument display's edge and shadow,
   with a translucent fill instead of an opaque one, because the game is not the Lab.
 - The fill and blur are measured together. With the star behind a panel and the scrim on, the
@@ -327,15 +325,14 @@ console display rather than live.
 
 The only `z-index` values in shared UI. Gaps leave room for a later layer.
 
-| Token             | Value | Use                                                          |
-| ----------------- | ----- | ------------------------------------------------------------ |
-| `--layer-toast`   | 200   | Status messages over everything                              |
-| `--layer-overlay` | 100   | Dialogs and their scrim                                      |
-| `--layer-hud`     | 10    | HUD and engine pads                                          |
-| `--layer-raised`  | 1     | Sticky footers; a Lab pane over its backdrop                 |
-| `--layer-base`    | 0     | The stage and page content                                   |
-| `--layer-under`   | -1    | Behind content inside an isolated part (a button's fill)     |
-
+| Token             | Value | Use                                                      |
+| ----------------- | ----- | -------------------------------------------------------- |
+| `--layer-toast`   | 200   | Status messages over everything                          |
+| `--layer-overlay` | 100   | Dialogs and their scrim                                  |
+| `--layer-hud`     | 10    | HUD and engine pads                                      |
+| `--layer-raised`  | 1     | Sticky footers; a Lab pane over its backdrop             |
+| `--layer-base`    | 0     | The stage and page content                               |
+| `--layer-under`   | -1    | Behind content inside an isolated part (a button's fill) |
 - A part that orders its own pieces (a button's fill behind its label, a cut surface's layers)
   isolates itself with `isolation: isolate` rather than taking a `z-index`.
 - Inventory before S6: 7 literals in shared UI (`buttons.css` 1, -1, -1; `flight.css` 2, 5; the
@@ -428,7 +425,7 @@ Superseded by [Typography](#typography).
 }
 ```
 
-### Logo Component (`apps/web/src/components/Logo.svelte`) [DEPRECATED 2026-11-01]
+### Logo Component (`apps/web/src/components/Logo.svelte`)[DEPRECATED 2026-11-01]
 
 Superseded by [Identity](#identity).
 

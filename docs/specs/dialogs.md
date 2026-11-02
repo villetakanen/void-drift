@@ -19,11 +19,11 @@ one behaviour for every dialog, so the stage is isolated the same way on every s
 A dialog interrupts a stage: it covers the game (or another live view) and asks the player to
 choose before the stage carries on. Today:
 
-| Dialog       | Screen                                        | Label          | Escape                  | Focus on open                              |
-| ------------ | --------------------------------------------- | -------------- | ----------------------- | ------------------------------------------ |
-| Game menu    | game, flight Lab                               | "Game menu"    | does nothing            | Start (`TAP TO START`)                     |
-| Paused       | game, builder test flight, flight Lab          | "Paused"       | resumes (closes)        | Resume                                     |
-| Run complete | game, custom survival, flight Lab             | "Run complete" | does nothing            | Initials when shown, else Try Again / Return to builder |
+| Dialog       | Screen                                | Label          | Escape           | Focus on open                                           |
+| ------------ | ------------------------------------- | -------------- | ---------------- | ------------------------------------------------------- |
+| Game menu    | game, flight Lab                      | "Game menu"    | does nothing     | Start (`TAP TO START`)                                  |
+| Paused       | game, builder test flight, flight Lab | "Paused"       | resumes (closes) | Resume                                                  |
+| Run complete | game, custom survival, flight Lab     | "Run complete" | does nothing     | Initials when shown, else Try Again / Return to builder |
 
 Not dialogs:
 
