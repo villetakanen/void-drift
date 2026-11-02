@@ -45,6 +45,11 @@ Voice-led development of a procedural space survival game and its software facto
 - Reuse real game systems in the Lab; demonstrate shared visual definition changes there.
 - Keep this file under 80 lines. Put detailed guidance in its authoritative document.
 
+## Local Java
+
+- Use Java 21 at `tools.local/java21/jdk/Contents/Home` (`JAVA_HOME`) for Firebase checks.
+- If missing, install Temurin 21 for the host OS/architecture there; keep the runtime in ignored `tools.local/`, never commit it.
+
 ## Engineering essentials
 
 - Use strict TypeScript; narrow `unknown` instead of introducing `any`.

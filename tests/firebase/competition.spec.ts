@@ -24,7 +24,7 @@ test("two anonymous pilots complete runs, submit and see a shared leaderboard", 
 				: route.abort(),
 		);
 		await page.clock.install();
-		await page.goto("http://127.0.0.1:4323/");
+		await page.goto("/");
 		await page
 			.getByRole("radiogroup", { name: "SELECT YOUR SHIP" })
 			.getByText(LAUNCHER[ship], { exact: true })
@@ -52,7 +52,7 @@ test("two anonymous pilots complete runs, submit and see a shared leaderboard", 
 	}
 	const context = await browser.newContext();
 	const page = await context.newPage();
-	await page.goto("http://127.0.0.1:4323/leaderboard");
+	await page.goto("/leaderboard");
 	await expect(page.getByRole("cell").filter({ hasText: /ONE/ })).toBeVisible();
 	await expect(page.getByRole("cell").filter({ hasText: /TWO/ })).toBeVisible();
 	for (const name of ["Scout", "Corvette"])

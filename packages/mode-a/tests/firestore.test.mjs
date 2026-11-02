@@ -32,7 +32,7 @@ const score = {
 	challenge: "alpha-1",
 	userId: "pilot",
 };
-function ref(user = "pilot", id = "pilot_balanced", app = "void-drift") {
+function ref(user = "pilot", id = "pilot_fighter", app = "void-drift") {
 	const context = user
 		? environment.authenticatedContext(user)
 		: environment.unauthenticatedContext();
@@ -63,7 +63,7 @@ test("different players can contribute and read the shared board", async () => {
 test("anonymous, cross-owner and wrong namespace writes fail", async () => {
 	await assertFails(setDoc(ref(""), score));
 	await assertFails(setDoc(ref("rival"), score));
-	await assertFails(setDoc(ref("pilot", "pilot_balanced", "other"), score));
+	await assertFails(setDoc(ref("pilot", "pilot_fighter", "other"), score));
 });
 test("identity and document shape cannot be forged", async () => {
 	await assertFails(setDoc(ref("pilot", "wrong"), score));
@@ -118,30 +118,30 @@ test("reads require authentication and a bounded list query", async () => {
 test("new gravity scores are isolated from legacy personal bests", async () => {
 	await assertSucceeds(setDoc(ref(), score));
 	const current = { ...score, challenge: "gravity-1", seconds: 20 };
-	const target = ref("pilot", "gravity-1_pilot_balanced");
+	const target = ref("pilot", "gravity-1_pilot_fighter");
 	await assertSucceeds(setDoc(target, current));
 	await assertSucceeds(setDoc(target, { ...current, seconds: 25 }));
 	await assertFails(setDoc(target, { ...current, seconds: 10 }));
 	await assertFails(setDoc(ref(), { ...current, seconds: 100 }));
 	await assertFails(setDoc(target, { ...score, seconds: 100 }));
-	await assertFails(setDoc(ref("rival", "gravity-1_pilot_balanced"), current));
+	await assertFails(setDoc(ref("rival", "gravity-1_pilot_fighter"), current));
 });
 
 test("new ion scores are isolated from legacy personal bests", async () => {
 	await assertSucceeds(setDoc(ref(), score));
 	await assertSucceeds(
-		setDoc(ref("pilot", "gravity-1_pilot_balanced"), {
+		setDoc(ref("pilot", "gravity-1_pilot_fighter"), {
 			...score,
 			challenge: "gravity-1",
 		}),
 	);
 	const current = { ...score, challenge: "ion-1", seconds: 20 };
-	const target = ref("pilot", "ion-1_pilot_balanced");
-	await assertFails(setDoc(ref("pilot", "gravity-1_pilot_balanced"), current));
+	const target = ref("pilot", "ion-1_pilot_fighter");
+	await assertFails(setDoc(ref("pilot", "gravity-1_pilot_fighter"), current));
 	await assertSucceeds(setDoc(target, current));
 	await assertSucceeds(setDoc(target, { ...current, seconds: 25 }));
 	await assertFails(setDoc(target, { ...current, seconds: 10 }));
 	await assertFails(setDoc(ref(), { ...current, seconds: 100 }));
 	await assertFails(setDoc(target, { ...score, seconds: 100 }));
-	await assertFails(setDoc(ref("rival", "ion-1_pilot_balanced"), current));
+	await assertFails(setDoc(ref("rival", "ion-1_pilot_fighter"), current));
 });
