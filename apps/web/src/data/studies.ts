@@ -17,7 +17,6 @@ export const studies = z.array(studySchema).parse([
 		question:
 			"What gives a family of utility machinery volume, character and a convincing place alongside the ships and engines?",
 	},
-
 	{
 		slug: "in-game-controllers",
 		title: "In-game controllers: side-margin angled thrust flaps",

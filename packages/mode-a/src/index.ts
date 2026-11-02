@@ -15,6 +15,7 @@ export * from "./lib/schemas/ship-profile";
 export * from "./lib/scout";
 export * from "./lib/simulation";
 export * from "./lib/stabilizers";
+export * from "./lib/utility-art";
 // Svelte Components
 export * from "./lib/utils/uid-hash";
 export * from "./lib/wasp";

@@ -480,3 +480,22 @@ and a one-line trait.
   `scout.ts`, `wasp.ts`, renderer comments, and the `cruiser` wording in test names.
 - **Preserved studies** pass the new ids to production APIs, but their prose and displayed
   names stay as they were recorded.
+
+## Utility machinery resting artwork — accepted 2026-11-02
+
+The family promise is “I create opportunities.” Its selected accent is RGB
+206, 219, 23 (`#CEDB17`), applied to connectors, struts and attachments. Individual
+members need not share a silhouette. The accepted resting geometry is preserved in
+`/lab/studies/utility-machinery-2026-11-02`, section 02.6.
+
+Shared `UTILITY_ART` faces and `drawUtilityArtwork` provide storage, solar, gravity
+and repair artwork using flat filled planes, with local +x forward. Simple accent
+shades preserve the accepted construction. Default mount scale is 0.35. Storage
+replaces the existing battery casing/mark in the production builder and flight
+renderer, retaining existing mount positions and hull layering rules.
+
+Solar, gravity and repair are conceptual artwork identifiers only. This change adds
+no device IDs, catalog entries, loadout choices, charging or repair rules. All four
+artworks are available at `/lab/utility-artwork`; that page also exercises the real
+battery renderer on all production hulls at enlarged and gameplay scale. Resting
+states only: no deployment, orbiting drones, field pulses or animation.

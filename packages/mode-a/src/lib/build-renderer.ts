@@ -16,6 +16,7 @@ import {
 	drawWaspStabilizerSlits,
 	stabilizerMount,
 } from "./stabilizers";
+import { drawUtilityArtwork } from "./utility-art";
 import { WASP } from "./wasp";
 export const BUILD_FLIGHT_SCALE = 0.65;
 export interface BuildMount {
@@ -377,6 +378,10 @@ function drawNonEngineFitting(
 	mount: BuildMount,
 ) {
 	if (!mount.part) return;
+	if (mount.part === "battery") {
+		drawUtilityArtwork(ctx, "storage");
+		return;
+	}
 	// This rectangle is the installed item's casing, not a vacant mount overlay.
 	ctx.strokeStyle =
 		PARTS[mount.part].category === "E" ? "#9af7ff" : COLOR.selected;
@@ -401,13 +406,6 @@ function drawNonEngineFitting(
 			ctx.ellipse(i, 0, 1.5, 3, 0, 0, Math.PI * 2);
 			ctx.stroke();
 		}
-	} else if (mount.part === "battery") {
-		ctx.beginPath();
-		ctx.moveTo(-2, -2);
-		ctx.lineTo(2, -2);
-		ctx.moveTo(0, -4);
-		ctx.lineTo(0, 0);
-		ctx.stroke();
 	} else if (mount.part) {
 		ctx.strokeStyle = mount.part === "ion" ? "#9af7ff" : "#ffc56e";
 		ctx.beginPath();
