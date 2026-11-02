@@ -14,11 +14,13 @@ Purchasing parts and shooting for credits are future scope.
 
 ## Chassis and fitting contract
 
-| Chassis        | Side E | Hull G/U | Aft E/G/U |
-| -------------- | -----: | -------: | --------: |
-| Scout          |      2 |        1 |         1 |
-| Fighter        |      2 |        2 |         2 |
-| Heavy Corvette |      2 |        3 |         3 |
+| Chassis  | Side E | Hull G/U | Aft E/G/U |
+| -------- | -----: | -------: | --------: |
+| Scout    |      2 |        1 |         1 |
+| Fighter  |      2 |        2 |         2 |
+| Corvette |      2 |        3 |         3 |
+
+Names and ids follow [Ship names and ids](#ship-names-and-ids--s4-2026-11-02).
 
 Every chassis starts with a mirrored fission side pair and empty optional slots.
 Both side engines are required; editing either side fits the identical mirrored pair.
@@ -85,8 +87,9 @@ builder preserves all fittings. A separate action starts survival.
 - Flight composition: existing FlightDeck and flight Lab; reuse real systems.
 - Define Zod chassis, part and loadout schemas before changing consumers.
 - Keep configuration versioned and simulation deterministic.
-- Existing scout/balanced/tank identifiers require an explicit compatibility choice
-  when presenting Scout/Fighter/Heavy Corvette; do not silently corrupt old saves.
+- ~~Existing scout/balanced/tank identifiers require an explicit compatibility choice
+  when presenting Scout/Fighter/Heavy Corvette; do not silently corrupt old saves.~~
+  [DEPRECATED 2026-11-01] The ids are now the short names; old saves are purged (S4, below).
 - Current leaderboard accepts stock configurations only. Decide and document a new
   challenge/ranking contract before submitting custom-build scores; preserve old scores.
 - No new dependencies or gravity/friction changes without existing project approval.
@@ -131,11 +134,13 @@ and remaining tuning hypotheses as 0.4.0 is delivered.
 
 - `/builder` is the desktop entry; `/lab/builder` demonstrates the identical builder,
   renderer and simulation. The existing game menu links to the builder.
-- Local storage key `void-drift-builds-v1` preserves three independently validated
+- ~~Local storage key `void-drift-builds-v1` preserves three~~ [DEPRECATED 2026-11-01] Local storage key
+  `void-drift-builds-v3` preserves four independently validated
   builds. Invalid saves restore flyable defaults with a visible notice. Storage
   failures keep the in-memory build usable. Existing stock settings are unchanged.
-- Internal IDs remain scout/balanced/tank for compatibility. Builder display names
-  are Scout/Fighter/Heavy Corvette; the old scored challenge keeps its stock profiles.
+- ~~Internal IDs remain scout/balanced/tank for compatibility. Builder display names
+  are Scout/Fighter/Heavy Corvette;~~ [DEPRECATED 2026-11-01] See Ship names and ids (S4). The old scored
+  challenge keeps its stock profiles.
 - Custom survival is explicitly unranked; no custom score is sent to Firebase.
 - Chassis masses are 60/95/140; side angles 32/26/20 degrees; lever arms 13/16/20.
   Part masses: rail 15, laser 9, battery 18, coil 10, ion 10, fission 16.
@@ -400,7 +405,7 @@ recovery require post-integration human review; checks cannot establish balance.
 
 The main game now uses assembled ships with Light ion in all side and aft mounts:
 Scout has three engines and no extra battery, Fighter four engines and one battery,
-Tank five engines and two batteries. Capacity is 100/200/300 including the intrinsic
+~~Tank~~ [DEPRECATED 2026-11-01] Corvette five engines and two batteries. Capacity is 100/200/300 including the intrinsic
 pack. Remaining hull slots are empty; stabilizers remain off by default. Shared
 ion physics, free rotation, mass, energy and renderer apply to these ships.
 
@@ -414,7 +419,7 @@ rules but are not queried by this release. Custom builder and Lab runs remain un
 ## Standard-flight defaults — 0.4.4
 
 Opening or reloading the main game selects Fighter, independently of a previously
-saved chassis selection. Players can still choose Scout or Tank for that session;
+saved chassis selection. Players can still choose Scout or ~~Tank~~ [DEPRECATED 2026-11-01] Corvette (or Wasp) for that session;
 reset/retry retains the current session's choice. All three fixed starter loadouts
 enable stabilizers. The 0.4.3 engine fittings and battery counts remain unchanged.
 Builder saves and the Flight Lab's optional stabilizer setting are independent and
@@ -426,3 +431,38 @@ are not forced on. The existing pre-alpha ion-1 leaderboard remains in use.
 New or reset settings default to inverted left/right engine controls. Existing
 explicitly saved settings continue to take precedence, and the Settings toggle
 can disable inversion. The release number remains 0.4.4.
+
+
+## Ship names and ids — S4, 2026-11-02
+
+Owner decision D4, amended 2026-11-02: a ship's id is its short name in lower case, and
+`balanced` and `tank` are retired. Every ship also has a long name (its full designation)
+and a one-line trait.
+
+| Id         | Short name | Long name              | Trait                                                                |
+| ---------- | ---------- | ---------------------- | -------------------------------------------------------------------- |
+| `wasp`     | Wasp       | LHI Wasp               | One rear Light ion + 4 turning stabilizers. Standard energy capacity. |
+| `scout`    | Scout      | Daehan Scout No.7      | Three Light ions. Standard energy capacity.                          |
+| `fighter`  | Fighter    | Aegis XF-1 Interceptor | Four Light ions. One extra energy pack.                              |
+| `corvette` | Corvette   | Mark II Escort Frigate | Five Light ions. Two extra energy packs.                             |
+
+- **Source.** `SHIP_IDENTITY` in `packages/mode-a/src/lib/config.ts`, parsed by
+  `ShipIdentitiesSchema`. The schema requires every id and rejects a short name that differs
+  from its id. `ShipProfile` and `Chassis` no longer carry a `name`.
+- **Traits** describe the main-game starter fleet; a unit test checks each trait's engine
+  and energy-pack counts against `starterLoadout`.
+- **Where each name appears.** Short name in compact places: flight-menu options, builder
+  chassis buttons, the leaderboard Ship column, the Lab inspector selector and instrument
+  legends. Long name in headings and descriptions: the builder heading, the flight-menu
+  description (with the trait) and the Lab inspector's Identity group. The Flight Lab menu keeps
+  its own lines describing the Lab test fixture, not the starter ship.
+- **Saved data (alpha).** No migration. Builds move to `void-drift-builds-v3`, and the
+  v1 and v2 keys are removed on load. Settings that name a retired id fall back to defaults.
+  Lab trial links naming a retired profile id no longer parse. The Firestore rules accept
+  only the four new ids; existing `ion-1` score documents with old ids are purged by the owner
+  on the next install.
+- **Kept code identifiers** (optional cleanup): `cruiser.ts`/`CRUISER`, `fighter.ts`,
+  `scout.ts`, `wasp.ts`, renderer comments, and the `cruiser` wording in test names.
+- **Preserved studies** pass the new ids to production APIs, but their prose and displayed
+  names stay as they were recorded.
+
