@@ -1,7 +1,7 @@
 # Opening screen and design-system remediation plan
 
 **Status:** IN PROGRESS. S1 done and owner-approved 2026-11-01; S2 done and owner-approved
-2026-11-01; S3 done and owner-approved 2026-11-01; S4 done 2026-11-02, pending owner approval;
+2026-11-01; S3 done and owner-approved 2026-11-01; S4 done and owner-approved 2026-11-02;
 S5–S12 planned.
 **Scope note (owner, 2026-11-01):** phone landscape is temporarily out of scope. 844×390 checks
 are not required until it returns; D7 and the S12 phone contract stay as targets.
@@ -103,7 +103,7 @@ against the `#050510` void elsewhere; and a Lab planet ring set to `var(...)`, w
 
 ### S4 — Ship names (D4)
 
-**Done 2026-11-02, pending owner approval.** The rule is in `ship-builder.md` (Ship names and ids).
+**Done 2026-11-02, owner-approved.** The rule is in `ship-builder.md` (Ship names and ids).
 `SHIP_IDENTITY` in `@void-drift/mode-a` is the single Zod-parsed source of each ship's short name,
 long name and trait; `/lab/entities/ship` shows all three. Owner decisions (2026-11-02): every ship
 has a short and a long name; the short name is the id, and `balanced` and `tank` are retired; saved
