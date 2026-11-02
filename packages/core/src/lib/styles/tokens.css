@@ -132,6 +132,26 @@
 	--shadow-display: inset 0 0 0 1px lch(4% 8 290), 0 8px 24px lch(0% 0 0 / 0.7);
 	/* Dims what an overlay covers. */
 	--color-backdrop: lch(0% 0 0 / 0.11);
+	/* Scrim, the offline feed (dialogs.md): while a dialog is open the stage
+	   loses its colour, takes the elevation hue, dims and blurs, and carries
+	   the display's scanlines and darkened edge. */
+	--scrim-filter: grayscale(0.85) brightness(0.7) blur(2px);
+	--scrim-surface:
+		radial-gradient(ellipse at center, transparent 45%, lch(0% 0 0 / 0.55)),
+		repeating-linear-gradient(
+			0deg,
+			transparent 0 2px,
+			lch(0% 0 0 / 0.3) 2px 4px
+		),
+		linear-gradient(lch(11% 15 290 / 0.35), lch(11% 15 290 / 0.35));
+	/* Panel, the frosted shade on the console form: elevation 2 let through,
+	   a blur behind it only, and the display's drop shadow. Fill and blur are
+	   measured together: with the star behind the panel and the scrim on,
+	   muted text keeps 4.5:1 (4.53:1 measured 2026-11-02). Re-measure with
+	   the star behind a panel if the fill, the blur or the scrim changes. */
+	--panel-fill: color-mix(in lch, var(--color-elev-2) 65%, transparent);
+	--panel-blur: 40px;
+	--panel-shadow: drop-shadow(0 8px 24px lch(0% 0 0 / 0.7));
 
 	/* Logomark height steps (design-system-core.md, Identity). */
 	--logomark-height-sm: 1rem;
@@ -156,7 +176,6 @@
 	--flight-border: 1px solid var(--color-border);
 	--flight-glow: 0 0 30px
 		color-mix(in lch, var(--color-selected) 15%, transparent);
-	--flight-radius: 12px;
 	--color-flight-glass: var(--color-glass);
 	--color-flight-trail: var(--color-border-subtle);
 	/* Deprecated colour names (S3): they alias the roles above. */

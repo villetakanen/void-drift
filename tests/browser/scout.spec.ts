@@ -164,7 +164,9 @@ test("Scout preserves landscape two-touch input, cancellation and blur safety", 
 	await expect(right).not.toHaveClass(/active/);
 	await page.keyboard.down("a");
 	await page.evaluate(() => window.dispatchEvent(new Event("blur")));
-	await expect(left).not.toHaveClass(/active/);
+	// Blur pauses: the pads are released and hide behind the Paused dialog.
+	await expect(page.locator(".engine.left")).not.toHaveClass(/active/);
+	await expect(left).toBeHidden();
 	await expect(
 		page.getByRole("button", { name: "Resume", exact: true }),
 	).toBeVisible();

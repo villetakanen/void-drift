@@ -23,6 +23,7 @@ import {
 import { onMount } from "svelte";
 import { version } from "../../package.json";
 import { settings } from "../lib/stores/settings";
+import Dialog from "./Dialog.svelte";
 import Logo from "./Logo.svelte";
 
 let {
@@ -283,7 +284,8 @@ onMount(() => {
 		frame = requestAnimationFrame(draw);
 	}
 	const key = (event: KeyboardEvent) => {
-		if (event.code === "Escape" && status === "PLAYING") togglePause();
+		if (event.code === "Escape" && status === "PLAYING" && !paused)
+			togglePause();
 	};
 	const blur = () => {
 		if (status === "PLAYING") paused = true;
@@ -344,192 +346,192 @@ onMount(() => {
 	</header>
 	<div class="flight-layout">
 		<section class="flight-stage" aria-label="Flight arena">
-			<canvas
-				bind:this={canvas}
-				aria-label="Ship, star and orbiting planets"
-			></canvas>
-			<div class="flight-hud">
-				<div>
-					<small>HULL</small><strong>{hull.toFixed(0)}%</strong
-					><progress aria-label="Hull" max="100" value={hull}></progress>
-				</div>
-				<div>
-					<small>POWER</small><strong>{power.toFixed(0)}%</strong
-					><progress
-						aria-label="Power"
-						max={activeLoadout ? buildStats(activeLoadout).capacity : 100}
-						value={power}
-					></progress>
-				</div>
-				<div class="timer">
-					<small>SURVIVAL</small
-					><strong class="time">{seconds.toFixed(1)}s</strong>
-				</div>
-			</div>
-			{#if activeLoadout && engineFeedback}
-				<p class="engine-feedback">{engineFeedback}</p>
-			{/if}
-			{#if status === "MENU"}
-				<div
-					class="flight-overlay"
-					role="dialog"
-					aria-label="Game menu"
-					aria-modal="true"
-				>
-					<div class="flight-card">
-						<p class="eyebrow">
-							{lab ? "DESIGN THE FLIGHT" : "KEEP THE ENGINES ALIVE"}
-						</p>
-						<h1>{lab ? "Test. Feel. Repeat." : "Dance with gravity."}</h1>
-						<p>
-							Skim the star to recharge. Stay clear of its heat.<br>Keep moving.
-							Beat your best.
-						</p>
-						<label for="ship-select">Ship Chassis</label
-						><select
-							id="ship-select"
-							value={chosen}
-							onchange={(event) => selectShip(event.currentTarget.value)}
-						>
-							{#each SHIP_PROFILES as profile}
-								<option value={profile.id}>
-									{SHIP_IDENTITY[profile.id].shortName}
-								</option>
-							{/each}
-						</select>
-						<div class="ship-description">
-							{SHIP_IDENTITY[chosen].longName}
-							/
-							{lab
-								? chosen === "wasp"
-									? "One rear Light-ion engine + 4 turning stabilizers. Tune and compare flight."
-									: "Two Light-ion side engines. Tune and compare flight."
-								: SHIP_IDENTITY[chosen].trait}
-						</div>
-						<div class="button-group button-group--vertical">
-							{#if !lab}
-								<a class="btn btn-filled" href="/builder"
-									>Build your ship · {version}</a
-								>
-							{/if}
-							<button type="button" class="btn btn-filled" onclick={start}>
-								TAP TO START
-							</button>
-						</div>
-						<p class="control-copy">
-							A + D / ← + → · Both engines thrust forward
-						</p>
+			<div class="flight-stage-layer" data-stage>
+				<canvas
+					bind:this={canvas}
+					aria-label="Ship, star and orbiting planets"
+				></canvas>
+				<div class="flight-hud" data-hud>
+					<div>
+						<small>HULL</small><strong>{hull.toFixed(0)}%</strong
+						><progress aria-label="Hull" max="100" value={hull}></progress>
+					</div>
+					<div>
+						<small>POWER</small><strong>{power.toFixed(0)}%</strong
+						><progress
+							aria-label="Power"
+							max={activeLoadout ? buildStats(activeLoadout).capacity : 100}
+							value={power}
+						></progress>
+					</div>
+					<div class="timer">
+						<small>SURVIVAL</small
+						><strong class="time">{seconds.toFixed(1)}s</strong>
 					</div>
 				</div>
-			{:else if status === "GAME_OVER"}
-				<div
-					class="flight-overlay"
-					role="dialog"
-					aria-label="Run complete"
-					aria-modal="true"
-				>
-					<div class="flight-card">
-						<p class="eyebrow">
-							{cause === "STAR"
-								? "TOO CLOSE TO THE STAR"
-								: cause === "HULL"
-									? "HULL LOST"
-									: "POWER DEPLETED"}
-						</p>
-						<h1>{seconds.toFixed(1)} seconds.</h1>
-						<p>Every orbit teaches you something.</p>
-						{#if !lab && !loadout}
-							<label for="initials">Your initials</label>
-							<input
-								id="initials"
-								maxlength="3"
-								bind:value={initials}
-								oninput={() => {
-									initials = initials.toUpperCase().replace(/[^A-Z]/g, "");
-								}}
-							>
-							<div class="button-group button-group--vertical">
-								<button
-									type="button"
-									class="btn btn-filled"
-									disabled={saving ||
-										scoreSaved ||
-										!scoresAvailable() ||
-										!/^[A-Z]{3}$/.test(initials)}
-									onclick={save}
-								>
-									{saving ? "Saving…" : scoreSaved ? "Saved" : "Submit Score"}
-								</button>
-							</div>
-							{#if !scoresAvailable()}
-								<p>Shared scores are unavailable in this local session.</p>
-							{/if}
+				{#if activeLoadout && engineFeedback}
+					<p class="engine-feedback" data-hud>{engineFeedback}</p>
+				{/if}
+				<div class="flight-controls" data-hud>
+					<button
+						type="button"
+						class:active={left}
+						class="engine cut-surface left"
+						aria-label="Left engine"
+						onpointerdown={(event) => press(event, "left")}
+						onpointerup={release}
+						onpointercancel={release}
+						onlostpointercapture={release}
+					>
+						◀<span>LEFT ENGINE</span>
+					</button>
+					<div class="flight-actions">
+						{#if status === "PLAYING"}
+							<button type="button" class="btn btn-link" onclick={togglePause}>
+								{paused ? "Resume flight" : "Pause"}
+							</button>
 						{/if}
+						<small
+							>{loadout
+								? testFlight
+									? "TEST / NO GAME-OVER"
+									: "CUSTOM BUILD / UNRANKED"
+								: lab
+									? "UNRANKED TRIAL"
+									: "G CLASS / SHARED CHALLENGE"}</small
+						>
+					</div>
+					<button
+						type="button"
+						class:active={right}
+						class="engine cut-surface right"
+						aria-label="Right engine"
+						onpointerdown={(event) => press(event, "right")}
+						onpointerup={release}
+						onpointercancel={release}
+						onlostpointercapture={release}
+					>
+						▶<span>RIGHT ENGINE</span>
+					</button>
+				</div>
+			</div>
+			{#if status === "MENU"}
+				<Dialog label="Game menu" class="flight-card" returnFocus={false}>
+					<p class="eyebrow">
+						{lab ? "DESIGN THE FLIGHT" : "KEEP THE ENGINES ALIVE"}
+					</p>
+					<h1>{lab ? "Test. Feel. Repeat." : "Dance with gravity."}</h1>
+					<p>
+						Skim the star to recharge. Stay clear of its heat.<br>Keep moving.
+						Beat your best.
+					</p>
+					<label for="ship-select">Ship Chassis</label
+					><select
+						id="ship-select"
+						value={chosen}
+						onchange={(event) => selectShip(event.currentTarget.value)}
+					>
+						{#each SHIP_PROFILES as profile}
+							<option value={profile.id}>
+								{SHIP_IDENTITY[profile.id].shortName}
+							</option>
+						{/each}
+					</select>
+					<div class="ship-description">
+						{SHIP_IDENTITY[chosen].longName}
+						/
+						{lab
+							? chosen === "wasp"
+								? "One rear Light-ion engine + 4 turning stabilizers. Tune and compare flight."
+								: "Two Light-ion side engines. Tune and compare flight."
+							: SHIP_IDENTITY[chosen].trait}
+					</div>
+					<div class="button-group button-group--vertical">
+						{#if !lab}
+							<a class="btn btn-filled" href="/builder"
+								>Build your ship · {version}</a
+							>
+						{/if}
+						<button
+							type="button"
+							class="btn btn-filled"
+							data-autofocus
+							onclick={start}
+						>
+							TAP TO START
+						</button>
+					</div>
+					<p class="control-copy">
+						A + D / ← + → · Both engines thrust forward
+					</p>
+				</Dialog>
+			{:else if status === "GAME_OVER"}
+				<Dialog label="Run complete" class="flight-card">
+					<p class="eyebrow">
+						{cause === "STAR"
+							? "TOO CLOSE TO THE STAR"
+							: cause === "HULL"
+								? "HULL LOST"
+								: "POWER DEPLETED"}
+					</p>
+					<h1>{seconds.toFixed(1)} seconds.</h1>
+					<p>Every orbit teaches you something.</p>
+					{#if !lab && !loadout}
+						<label for="initials">Your initials</label>
+						<input
+							id="initials"
+							data-autofocus
+							maxlength="3"
+							bind:value={initials}
+							oninput={() => {
+								initials = initials.toUpperCase().replace(/[^A-Z]/g, "");
+							}}
+						>
 						<div class="button-group button-group--vertical">
 							<button
 								type="button"
-								class="btn btn-ghost"
-								onclick={() => (onReturn ? onReturn() : reset(false))}
+								class="btn btn-filled"
+								disabled={saving ||
+									scoreSaved ||
+									!scoresAvailable() ||
+									!/^[A-Z]{3}$/.test(initials)}
+								onclick={save}
 							>
-								{onReturn ? "Return to builder" : "Try Again"}
-							</button><a class="btn btn-ghost" href="/leaderboard"
-								>View Leaderboard</a
-							>
+								{saving ? "Saving…" : scoreSaved ? "Saved" : "Submit Score"}
+							</button>
 						</div>
-					</div>
-				</div>
-			{:else if paused}
-				<div class="pause-banner">
-					<span>PAUSED</span>
+						{#if !scoresAvailable()}
+							<p>Shared scores are unavailable in this local session.</p>
+						{/if}
+					{/if}
 					<div class="button-group button-group--vertical">
-						<button type="button" class="btn btn-filled" onclick={togglePause}>
+						<button
+							type="button"
+							class="btn btn-ghost"
+							data-autofocus
+							onclick={() => (onReturn ? onReturn() : reset(false))}
+						>
+							{onReturn ? "Return to builder" : "Try Again"}
+						</button><a class="btn btn-ghost" href="/leaderboard"
+							>View Leaderboard</a
+						>
+					</div>
+				</Dialog>
+			{:else if paused}
+				<Dialog label="Paused" class="flight-card" onclose={togglePause}>
+					<p class="eyebrow">PAUSED</p>
+					<div class="button-group button-group--vertical">
+						<button
+							type="button"
+							class="btn btn-filled"
+							data-autofocus
+							onclick={togglePause}
+						>
 							Resume
 						</button>
 					</div>
-				</div>
+				</Dialog>
 			{/if}
-			<div class="flight-controls">
-				<button
-					type="button"
-					class:active={left}
-					class="engine left"
-					aria-label="Left engine"
-					onpointerdown={(event) => press(event, "left")}
-					onpointerup={release}
-					onpointercancel={release}
-					onlostpointercapture={release}
-				>
-					◀<span>LEFT ENGINE</span>
-				</button>
-				<div class="flight-actions">
-					{#if status === "PLAYING"}
-						<button type="button" class="btn btn-link" onclick={togglePause}>
-							{paused ? "Resume flight" : "Pause"}
-						</button>
-					{/if}
-					<small
-						>{loadout
-							? testFlight
-								? "TEST / NO GAME-OVER"
-								: "CUSTOM BUILD / UNRANKED"
-							: lab
-								? "UNRANKED TRIAL"
-								: "G CLASS / SHARED CHALLENGE"}</small
-					>
-				</div>
-				<button
-					type="button"
-					class:active={right}
-					class="engine right"
-					aria-label="Right engine"
-					onpointerdown={(event) => press(event, "right")}
-					onpointerup={release}
-					onpointercancel={release}
-					onlostpointercapture={release}
-				>
-					▶<span>RIGHT ENGINE</span>
-				</button>
-			</div>
 		</section>
 		{#if lab}
 			<aside class="flight-inspector">
@@ -720,7 +722,7 @@ onMount(() => {
 		{/if}
 	</div>
 	{#if message}
-		<p role="status" class="flight-message">{message}</p>
+		<p role="status" class="flight-message panel panel--flat">{message}</p>
 	{/if}
 </div>
 

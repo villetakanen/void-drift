@@ -24,8 +24,9 @@ test("standard flights start with Fighter and all ships have stabilizers", async
 			"data-stabilizers",
 			"true",
 		);
+		// The HUD sits in the stage, which the menu makes inert.
 		await expect(
-			page.getByRole("progressbar", { name: "Power" }),
+			page.locator(".flight-hud progress[aria-label='Power']"),
 		).toHaveAttribute(
 			"max",
 			id === "scout" ? "100" : id === "fighter" ? "200" : "300",
@@ -61,11 +62,17 @@ test("flight Lab replays exactly, imports safely, and restarts after death", asy
 	await page.getByRole("button", { name: "Replay trial", exact: true }).click();
 	await expect(deck).toHaveAttribute("data-x", x ?? "");
 	await expect(deck).toHaveAttribute("data-y", y ?? "");
+	// Compare the canvas alone: hide the HUD, the pads and the paused dialog,
+	// and lift the scrim. (The screenshot `style` option never applied here;
+	// the old baseline showed the HUD and pause banner.)
+	const bare = await page.addStyleTag({
+		content:
+			".flight-hud, .flight-controls, .dialog-layer { visibility: hidden !important; } [data-stage] { filter: none !important; transition: none !important; }",
+	});
 	await expect(page.locator("canvas")).toHaveScreenshot("flight-trial.png", {
 		maxDiffPixelRatio: 0.005,
-		style:
-			".flight-hud, .flight-controls, .pause-banner { visibility: hidden !important; }",
 	});
+	await bare.evaluate((tag) => tag.remove());
 	await testInfo.attach("flight-trial", {
 		body: await page.screenshot(),
 		contentType: "image/png",
@@ -85,10 +92,10 @@ test("flight Lab replays exactly, imports safely, and restarts after death", asy
 	).toBeVisible();
 	await page.getByRole("button", { name: "Try Again" }).click();
 	await expect(page.getByRole("dialog", { name: "Game menu" })).toBeVisible();
-	await expect(page.getByRole("progressbar", { name: "Hull" })).toHaveAttribute(
-		"value",
-		"100",
-	);
+	// The HUD sits in the stage, which the menu makes inert.
+	await expect(
+		page.locator(".flight-hud progress[aria-label='Hull']"),
+	).toHaveAttribute("value", "100");
 });
 test("landscape touch engines support simultaneous activation, cancellation and focus loss", async ({
 	browser,
@@ -130,7 +137,9 @@ test("landscape touch engines support simultaneous activation, cancellation and 
 	await expect(right).not.toHaveClass(/active/);
 	await page.keyboard.down("ArrowUp");
 	await page.evaluate(() => window.dispatchEvent(new Event("blur")));
-	await expect(left).not.toHaveClass(/active/);
+	// Blur pauses: the pads are released and hide behind the Paused dialog.
+	await expect(page.locator(".engine.left")).not.toHaveClass(/active/);
+	await expect(left).toBeHidden();
 	await expect(
 		page.getByRole("button", { name: "Resume", exact: true }),
 	).toBeVisible();

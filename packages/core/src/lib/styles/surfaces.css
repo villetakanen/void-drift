@@ -1,0 +1,138 @@
+/* Surfaces, panels and the dialog layer (design-system-core.md, Surfaces;
+   dialogs.md). One corner language: every cut surface cuts its top-left and
+   bottom-right corners, as buttons do.
+
+   A cut surface draws in two layers behind its content, so that a fill may
+   be translucent and frosted while its edge and shadow follow the cut:
+   - ::before is the fill (and frost), clipped to the cut shape;
+   - ::after is the 1px edge and the shadow outside the shape. It paints the
+     shape opaque, takes its drop shadow, then a clip with a hole removes
+     everything inside the edge, so the shadow never shows through the fill.
+   The element itself is isolated and unclipped, so the shadow can spill. */
+.cut-surface,
+.panel {
+	--_cut: var(--cut-size-md);
+	--_edge-width: 1px;
+	--_edge: var(--color-border);
+	--_fill: var(--color-glass);
+	--_frost: none;
+	--_shadow: none;
+	/* How far the shadow may spill outside the shape. */
+	--_spill: 64px;
+	/* The inner corner of a diagonal edge sits 0.414 × its width further in. */
+	--_inner: calc(var(--_cut) + 0.4142 * var(--_edge-width));
+	position: relative;
+	isolation: isolate;
+}
+.cut-surface::before,
+.panel::before,
+.cut-surface::after,
+.panel::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: var(--layer-under);
+	pointer-events: none;
+}
+.cut-surface::before,
+.panel::before {
+	background: var(--_fill);
+	backdrop-filter: var(--_frost);
+	clip-path: polygon(
+		var(--_cut) 0,
+		100% 0,
+		100% calc(100% - var(--_cut)),
+		calc(100% - var(--_cut)) 100%,
+		0 100%,
+		0 var(--_cut)
+	);
+}
+.cut-surface::after,
+.panel::after {
+	--_shape-edge:
+		transparent calc(var(--_cut) * 0.7071),
+		var(--_edge) 0 calc(100% - var(--_cut) * 0.7071), transparent 0;
+	--_shape-base:
+		transparent calc(var(--_cut) * 0.7071),
+		var(--color-void) 0 calc(100% - var(--_cut) * 0.7071), transparent 0;
+	background:
+		linear-gradient(135deg, var(--_shape-edge)),
+		linear-gradient(135deg, var(--_shape-base));
+	filter: var(--_shadow);
+	clip-path: polygon(
+		evenodd,
+		calc(-1 * var(--_spill)) calc(-1 * var(--_spill)),
+		calc(100% + var(--_spill)) calc(-1 * var(--_spill)),
+		calc(100% + var(--_spill)) calc(100% + var(--_spill)),
+		calc(-1 * var(--_spill)) calc(100% + var(--_spill)),
+		calc(-1 * var(--_spill)) calc(-1 * var(--_spill)),
+		var(--_inner) var(--_edge-width),
+		calc(100% - var(--_edge-width)) var(--_edge-width),
+		calc(100% - var(--_edge-width)) calc(100% - var(--_inner)),
+		calc(100% - var(--_inner)) calc(100% - var(--_edge-width)),
+		var(--_edge-width) calc(100% - var(--_edge-width)),
+		var(--_edge-width) var(--_inner),
+		var(--_inner) var(--_edge-width),
+		calc(-1 * var(--_spill)) calc(-1 * var(--_spill))
+	);
+}
+
+/* The panel: a frosted shade on the console form (cut lg, 1px border role,
+   the display's drop shadow). Use it for dialogs over the stage. */
+.panel {
+	--_cut: var(--cut-size-lg);
+	--_fill: var(--panel-fill);
+	--_frost: blur(var(--panel-blur));
+	--_shadow: var(--panel-shadow);
+	padding: var(--spacing-lg);
+	color: var(--color-text);
+}
+/* The same shade without the shadow, for a surface that sits on the live
+   game rather than over the feed, such as a status message. */
+.panel--flat {
+	--_shadow: none;
+	padding: var(--spacing-md);
+}
+
+/* The dialog layer (dialogs.md): fills its stage, carries the scrim and
+   centres the panel. The stage it covers is a sibling marked data-stage. */
+.dialog-layer {
+	position: absolute;
+	inset: 0;
+	z-index: var(--layer-overlay);
+	display: grid;
+	place-items: center;
+	overflow: auto;
+	padding: var(--spacing-md);
+}
+.dialog-scrim {
+	position: absolute;
+	inset: 0;
+	background: var(--scrim-surface);
+	animation: dialog-in var(--duration-fast) var(--ease-standard);
+}
+/* The panel itself does not fade: opacity below 1 on it would cut its frost
+   off from the feed until the fade ends. */
+.dialog-layer > .panel:focus {
+	outline: none;
+}
+[data-stage][inert] {
+	filter: var(--scrim-filter);
+	transition: filter var(--duration-fast) var(--ease-standard);
+}
+[data-stage][inert] [data-hud] {
+	visibility: hidden;
+}
+@keyframes dialog-in {
+	from {
+		opacity: 0;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.dialog-scrim {
+		animation: none;
+	}
+	[data-stage][inert] {
+		transition: none;
+	}
+}
