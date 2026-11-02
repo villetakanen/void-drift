@@ -2,7 +2,8 @@
 
 **Status:** IN PROGRESS. S1 done and owner-approved 2026-11-01; S2 done and owner-approved
 2026-11-01; S3 done and owner-approved 2026-11-01; S4 done and owner-approved 2026-11-02;
-S5–S12 planned.
+S5 moved out to the [random star systems plan](../plans/random-star-systems.md)
+(owner, 2026-11-02); S6–S12 planned.
 **Scope note (owner, 2026-11-01):** phone landscape is temporarily out of scope. 844×390 checks
 are not required until it returns; D7 and the S12 phone contract stay as targets.
 **Source:** [opening screen audit](../audits/2026-11-01-opening-screen.md), owner decisions D1–D7 (2026-11-01).
@@ -137,15 +138,10 @@ in builds (`void-drift-builds-v2`), settings, Firestore rules and score document
   `fighter`, `corvette` (owner, 2026-11-02). The leaderboard shows names. Hand-written descriptions
   and the `balanced → Fighter` override are removed.
 
-### S5 — Random star system every run (bug fix; independent of S1–S4)
+### S5 — Moved out
 
-- Investigate: `CHALLENGE_SEED` and its users, the `CHALLENGE` name, and tests and baselines relying
-  on seed 2026.
-- Spec: `playable-alpha.md` and `architecture.md`. Drop the "seed 2026, G-class" ranked rule and fix
-  the `gravity-1`/`ion-1` drift. The owner rules that static systems are a bug.
-- Apply: every game run (start and Try Again) gets a fresh random seed. Lab trials, `?trial=` URLs and
-  fixed replays keep explicit seeds. Tests pass explicit seeds without weakening assertions.
-  Score, rule and saved-data compatibility is kept. No gravity/friction changes.
+Random star systems for game runs are world-generation work, not opening-screen work. They now live
+in the [random star systems plan](../plans/random-star-systems.md) (owner, 2026-11-02).
 
 ### S6 — Surfaces, layers and dialogs
 
@@ -187,14 +183,19 @@ in builds (`void-drift-builds-v2`), settings, Firestore rules and score document
   The last-used ship is preselected; arrows and 1–3 select; Enter is Go. Browser tests move from "TAP TO
   START" to select + Go; add keyboard-only and phone no-scroll tests.
 
-### S11 — Attract scene and motion (D5; requires S5)
+### S11 — Attract scene and motion (D5)
 
-- Spec: `camera-system.md` and `architecture.md` for the menu preview mode; `design-system-core.md`
-  for motion tokens.
-- Lab: the preview at a fixed seed for evidence.
-- Apply: ship-less, input-less, non-scoring preview at zoom level 1 with slow orbits and a radiating
-  star; random seed per visit. Motion tokens; the panel exits, then a ready beat before the clock runs.
-  Reduced motion gives a still frame and an instant start. Report 60 FPS on the reference laptop.
+The backdrop is a star system shown for its own sake, like the star and planet Lab pages. It is not
+the game world: no simulation, no ship, no spawn, no score, and nothing in it carries into the run
+that Go starts (owner, 2026-11-02). It draws the current system until the random star systems plan
+delivers a generator, then shows a fresh system per visit with no further opening-screen work.
+
+- Spec: `design-system-core.md` for the scene element and motion tokens; `architecture.md` for where
+  the scene lives.
+- Lab: a star-system scene page built from the real star and planet renderers.
+- Apply: the opening shows that scene at whole-system zoom with slow orbits and a radiating star.
+  Motion tokens; the panel exits, then a ready beat before the clock runs. Reduced motion gives a
+  still frame and an instant start. Report 60 FPS on the reference laptop.
 
 ### S12 — Opening screen composition
 
@@ -206,12 +207,11 @@ in builds (`void-drift-builds-v2`), settings, Firestore rules and score document
 
 ## Target opening experience (S12 contract)
 
-1. On load, a ship-less random star system shows at whole-system zoom. Planets move slowly and the
+1. On load, a star-system scene (not the game world) shows at whole-system zoom. Planets move slowly and the
    star radiates. There is no HUD and no engine pads.
 2. A panel shows the ∅·Δ logomark, three ship cards (Scout / Fighter / Corvette) with real
    silhouettes, one Go button and a one-line control hint.
-3. The last-used ship is preselected. Tapping a card selects it; Go starts the run in a new random
-   system. Keyboard: arrows or 1–3 select, Enter goes.
+3. The last-used ship is preselected. Tapping a card selects it; Go starts the run. Keyboard: arrows or 1–3 select, Enter goes.
 4. The header holds the logomark, a run tag, and nav: Builder, Scores, Settings.
 5. At 844×390 everything in step 2 fits below the header without scrolling. The headline and eyebrow
    appear only where there is room.
@@ -220,10 +220,10 @@ in builds (`void-drift-builds-v2`), settings, Firestore rules and score document
 
 - No new npm dependencies or paid services. Fonts are self-hosted files, never a CDN (D2 as amended).
 - No changes to gravity, friction or ship tuning.
-- Star systems are never static (owner, 2026-11-01).
+- Random systems for game runs are out of scope here; see the
+  [random star systems plan](../plans/random-star-systems.md).
 - ~~Stored ids, saved builds, settings and score documents stay compatible.~~ [DEPRECATED 2026-11-01] Ship ids changed
   in S4; old builds, settings and scores are purged in alpha (owner, 2026-11-02).
-- Real system variety (star types, generated planets, true moons) is generator work outside this plan.
 
 ## Contract
 
@@ -232,7 +232,6 @@ in builds (`void-drift-builds-v2`), settings, Firestore rules and score document
 - [ ] Every slice's owning spec describes the implemented rule; stale text is marked deprecated.
 - [ ] `/lab/typography`, `/lab/tokens`, `/lab/ship-launcher` and `/lab/opening` render from production code.
 - [ ] No literal font family, brand hex or `z-index` remains in shared UI or shared canvas renderers.
-- [ ] Each game run and each attract scene uses a fresh random seed; Lab trial seeds still reproduce.
 - [ ] Ship names read Scout / Fighter / Corvette everywhere; ~~stored ids are unchanged~~ [DEPRECATED 2026-11-01] ids
   equal the short names.
 - [ ] Dialogs isolate the stage on every screen that has them.
@@ -245,15 +244,10 @@ in builds (`void-drift-builds-v2`), settings, Firestore rules and score document
 Scenario: Start a run from the opening
   Given a returning player whose last ship was Corvette
   When the opening loads
-  Then a ship-less star system animates at whole-system zoom
+  Then a star-system scene animates at whole-system zoom
   And the Corvette card is selected
   When the player selects Scout and activates Go
   Then the run starts with Scout and the HUD appears
-
-Scenario: Every run is a new system
-  Given a player finishes a run
-  When they choose Try Again
-  Then the new run starts with a different seed than the previous run
 
 Scenario: Keyboard-only start
   Given the opening has loaded
