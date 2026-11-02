@@ -3,7 +3,7 @@
 **Status:** IN PROGRESS. S1 done and owner-approved 2026-11-01; S2 done and owner-approved
 2026-11-01; S3 done and owner-approved 2026-11-01; S4 done and owner-approved 2026-11-02;
 S5 moved out to the [random star systems plan](../plans/random-star-systems.md)
-(owner, 2026-11-02); S6 done 2026-11-02, pending owner approval; S7–S12 planned.
+(owner, 2026-11-02); S6 done and owner-approved 2026-11-02; S7–S12 planned.
 **Scope note (owner, 2026-11-01):** phone landscape is temporarily out of scope. 844×390 checks
 are not required until it returns; D7 and the S12 phone contract stay as targets.
 **Source:** [opening screen audit](../audits/2026-11-01-opening-screen.md), owner decisions D1–D7 (2026-11-01).
@@ -145,20 +145,21 @@ in the [random star systems plan](../plans/random-star-systems.md) (owner, 2026-
 
 ### S6 — Surfaces, layers and dialogs
 
-**Done 2026-11-02, pending owner approval.** The rules are in `design-system-core.md` (Surfaces
+**Done 2026-11-02, owner-approved.** The rules are in `design-system-core.md` (Surfaces
 and layers) and the new `dialogs.md`; `/lab/surfaces` shows the cut scale, `.panel` and
 `.panel--flat`, the layer scale read from production CSS, and a live dialog on the real
-`Dialog.svelte`. Owner decisions (2026-11-02): the scrim is an *offline feed* (the stage
-desaturated, tinted to hue 290, dimmed, blurred, with the display's scanlines and darkened edge);
-the panel is a *frosted shade on the console form* (translucent, not the Lab's opaque elevation,
-with the display's cut edge and drop shadow); only the stage is inert, so the header and Lab inspector
+`Dialog.svelte`. Owner decisions (2026-11-02): the scrim is an _offline feed_: a 27% hue shift toward
+290 (`mix-blend-mode: hue`, so colours keep their saturation), a light dim, a 2px blur, scanlines
+in the void colour at 35% and a darkened edge. The first version (grayscale under a dark overlay)
+was too black, and a `color` blend desaturated instead of shifting hue (owner review). The panel
+is opaque elevation 2 on the console form (the display's cut edge and drop shadow), chosen over
+a frosted translucent shade; only the stage is inert, so the header and Lab inspector
 stay usable and dialogs drop `aria-modal`; pause becomes a dialog; Settings groups only fix their
-border role. Measured: elev-2 at 65% needed a 40px blur, not ~12px, for muted text to keep 4.5:1
-with the star behind a panel (4.53:1). Verification at `1660720`: `pnpm verify` itself crashed
-before any stage (its fingerprint reads the `.claude/skills` symlink added in `d72f127`; a fix is in
-uncommitted work from another session), so its stages were run one by one in a clean worktree:
-7 of 9 passed (27 browser tests, 2 new); `test:rules` and `test:competition` did not run (no Java
-runtime). Browser evidence at 1440×900 is in `artifacts/evidence/s6/` (git-ignored).
+border role. Verification at `5ca350f`, in a clean worktree: `pnpm verify` itself crashed before any stage
+(its fingerprint reads the `.claude/skills` symlink added in `d72f127`; a fix is in uncommitted
+work from another session), so its stages were run one by one: 7 of 9 passed (27 browser tests,
+2 new); `lint` failed only on this file's formatting, fixed in the commit recording approval;
+`test:rules` and `test:competition` did not run (no Java runtime). Browser evidence at 1440×900 is in `artifacts/evidence/s6/` (git-ignored).
 
 Inventory: menu and run complete were full-stage `--color-glass` overlays (`z-index: 2`) marked
 `aria-modal` with no surface on the card; pause was an unlabelled glass banner; the toast was
