@@ -57,11 +57,13 @@ dl {
 .stat-row {
 	display: flex;
 	justify-content: space-between;
+	gap: var(--spacing-md);
 	padding: 2px 0;
 	line-height: 1.4;
 }
 
 dt {
+	flex-shrink: 0;
 	color: var(--color-text-muted);
 	font-family: var(--font-family-ui);
 }
@@ -72,5 +74,6 @@ dd {
 	font-family: var(--font-family-ui);
 	font-variant-numeric: tabular-nums;
 	font-weight: 500;
+	text-align: end;
 }
 </style>
