@@ -12,6 +12,7 @@ import {
 	engineArtId,
 	PARTS,
 	type PartId,
+	SHIP_IDENTITY,
 	type ShipProfileId,
 	ShipProfileIdSchema,
 	SLOT_STYLE,
@@ -155,7 +156,7 @@ function choose(id: ShipProfileId) {
 					aria-pressed={chosen === id}
 					onclick={() => choose(id as ShipProfileId)}
 				>
-					{chassis.name}<small
+					{SHIP_IDENTITY[id as ShipProfileId].shortName}<small
 						>{(id === "wasp" ? 1 : 2) + chassis.hull + chassis.aft}
 						SLOTS · {chassis.mass} MASS</small
 					>
@@ -165,7 +166,7 @@ function choose(id: ShipProfileId) {
 		<div class="workbench">
 			<section class="assembly" aria-label="Ship assembly">
 				<div class="panel-title">
-					<h2>{CHASSIS[chosen].name}</h2>
+					<h2>{SHIP_IDENTITY[chosen].longName}</h2>
 					<span>FIXED MOUNTS / TOP VIEW</span>
 				</div>
 				<div class="blueprint">

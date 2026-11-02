@@ -3,7 +3,11 @@
 let _props: { slot?: string; "client:only"?: string; "client:load"?: boolean } =
 	$props();
 
-import { type HighScore, loadHighScores } from "@void-drift/mode-a";
+import {
+	type HighScore,
+	loadHighScores,
+	SHIP_IDENTITY,
+} from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import { version } from "../../package.json";
 import Logo from "./Logo.svelte";
@@ -56,7 +60,7 @@ onMount(() => {
 					<tr>
 						<td>{index + 1}</td>
 						<td>{row.initials}<small> · {row.userId.slice(-4)}</small></td>
-						<td>{row.shipId}</td>
+						<td>{SHIP_IDENTITY[row.shipId].shortName}</td>
 						<td>{row.seconds}s</td>
 					</tr>
 				{/each}

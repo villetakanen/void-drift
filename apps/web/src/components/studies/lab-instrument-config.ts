@@ -1,7 +1,6 @@
 import { Vec2 } from "@void-drift/core";
 import {
 	applyBuildEngines,
-	CHASSIS,
 	type EngineTimers,
 	ION_DEFAULTS,
 	IonSettingsSchema,
@@ -118,6 +117,13 @@ export function familiesOf(loadout: Loadout): Family[] {
 	return out;
 }
 
+// Frozen: the chassis names this study showed before the 2026-11-02 rename.
+const CHASSIS_NAMES: Record<Loadout["chassis"], string> = {
+	wasp: "LHI Wasp",
+	scout: "Scout",
+	fighter: "Fighter",
+	corvette: "Heavy Corvette",
+};
 const PART_NAMES: Record<string, string> = {
 	ion: "light ion",
 	"heavy-ion": "heavy ion",
@@ -129,7 +135,7 @@ export function describeLoadout(loadout: Loadout) {
 	const aftText = aft.length
 		? `${aft.length}× ${[...new Set(aft)].map((id) => PART_NAMES[id] ?? id).join(" + ")} aft`
 		: "no aft";
-	return `${CHASSIS[loadout.chassis].name} · ${PART_NAMES[loadout.side]} sides · ${aftText}${loadout.stabilizers ? " · stabilisers" : ""}`;
+	return `${CHASSIS_NAMES[loadout.chassis]} · ${PART_NAMES[loadout.side]} sides · ${aftText}${loadout.stabilizers ? " · stabilisers" : ""}`;
 }
 export function describeChanges(changes: VehicleChanges) {
 	return Object.entries(changes)

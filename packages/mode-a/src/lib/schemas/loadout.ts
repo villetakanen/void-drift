@@ -59,7 +59,6 @@ export function slotAccepts(type: SlotType, category: "E" | "G" | "U") {
 	);
 }
 export const ChassisSchema = z.object({
-	name: z.string(),
 	mass: z.number().positive(),
 	hull: z.number().int().positive(),
 	aft: z.number().int().nonnegative(),
@@ -72,7 +71,6 @@ export const ChassisSchema = z.object({
 });
 export const CHASSIS = {
 	wasp: ChassisSchema.parse({
-		name: "LHI Wasp",
 		mass: WASP.mass,
 		hull: 2,
 		aft: 0,
@@ -84,7 +82,6 @@ export const CHASSIS = {
 		width: WASP.width,
 	}),
 	scout: ChassisSchema.parse({
-		name: "Scout",
 		mass: SCOUT.mass,
 		hull: 1,
 		aft: 1,
@@ -96,7 +93,6 @@ export const CHASSIS = {
 		width: SCOUT.width,
 	}),
 	fighter: ChassisSchema.parse({
-		name: "Fighter",
 		mass: 95,
 		hull: 2,
 		aft: 2,
@@ -108,7 +104,6 @@ export const CHASSIS = {
 		width: FIGHTER.width,
 	}),
 	corvette: ChassisSchema.parse({
-		name: "Heavy Corvette",
 		mass: 140,
 		hull: 3,
 		aft: 3,

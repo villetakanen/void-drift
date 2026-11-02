@@ -27,7 +27,7 @@ test("fit, persist, fly, reset and return to an assembled ship", async ({
 		page.getByRole("button", { name: /Scout.*4 SLOTS/ }),
 	).toBeEnabled();
 	await expect(
-		page.getByRole("button", { name: /Heavy Corvette.*8 SLOTS/ }),
+		page.getByRole("button", { name: /Corvette.*8 SLOTS/ }),
 	).toBeEnabled();
 	await page.reload();
 	await expect(
@@ -160,17 +160,23 @@ test("cruiser fits eight mounts, preserves Fighter and flies", async ({
 	page,
 }) => {
 	await page.goto("/lab/builder");
-	await page.getByRole("button", { name: /Heavy Corvette.*8 SLOTS/ }).click();
+	await page.getByRole("button", { name: /Corvette.*8 SLOTS/ }).click();
+	await expect(
+		page.getByRole("heading", { name: "Mark II Escort Frigate" }),
+	).toBeVisible();
 	await page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }).click();
 	await page.getByRole("button", { name: /Rail gun.*15 mass/ }).click();
 	await page.getByRole("button", { name: "Aft 2 · Universal: Empty" }).click();
 	await page.getByRole("button", { name: /Light ion.*10 mass/ }).click();
 	await page.getByRole("button", { name: /Fighter.*6 SLOTS/ }).click();
 	await expect(
+		page.getByRole("heading", { name: "Aegis XF-1 Interceptor" }),
+	).toBeVisible();
+	await expect(
 		page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }),
 	).toBeVisible();
 	await page.reload();
-	await page.getByRole("button", { name: /Heavy Corvette.*8 SLOTS/ }).click();
+	await page.getByRole("button", { name: /Corvette.*8 SLOTS/ }).click();
 	await expect(
 		page.getByRole("button", { name: "Hull 1 · Equipment: Rail gun" }),
 	).toBeVisible();

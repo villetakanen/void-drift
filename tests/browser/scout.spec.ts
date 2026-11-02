@@ -9,7 +9,7 @@ test("Scout restores its four-slot save, fits every part and flies from the cano
 	await page.goto("/builder");
 	await page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }).click();
 	await page.getByRole("button", { name: /Energy storage.*18 mass/ }).click();
-	await page.getByRole("button", { name: /Heavy Corvette.*8 SLOTS/ }).click();
+	await page.getByRole("button", { name: /Corvette.*8 SLOTS/ }).click();
 	await page.getByRole("button", { name: "Hull 2 · Equipment: Empty" }).click();
 	await page.getByRole("button", { name: /Loading coil.*10 mass/ }).click();
 	const before = await page.evaluate(() =>

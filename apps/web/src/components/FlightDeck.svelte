@@ -10,6 +10,7 @@ import {
 	gameSettings,
 	type Loadout,
 	labSettings,
+	SHIP_IDENTITY,
 	SHIP_PROFILES,
 	type ShipProfileId,
 	ShipProfileIdSchema,
@@ -392,22 +393,18 @@ onMount(() => {
 						>
 							{#each SHIP_PROFILES as profile}
 								<option value={profile.id}>
-									{!lab && profile.id === "fighter" ? "Fighter" : profile.name}
+									{SHIP_IDENTITY[profile.id].shortName}
 								</option>
 							{/each}
 						</select>
 						<div class="ship-description">
+							{SHIP_IDENTITY[chosen].longName}
+							/
 							{lab
 								? chosen === "wasp"
 									? "One rear Light-ion engine + 4 turning stabilizers. Tune and compare flight."
 									: "Two Light-ion side engines. Tune and compare flight."
-								: chosen === "wasp"
-									? "LHI WASP / One rear Light ion + 4 turning stabilizers. Standard energy capacity."
-									: chosen === "scout"
-										? "SCOUT / Three Light ions. Standard energy capacity."
-										: chosen === "corvette"
-											? "TANK / Five Light ions. Two extra energy packs."
-											: "FIGHTER / Four Light ions. One extra energy pack."}
+								: SHIP_IDENTITY[chosen].trait}
 						</div>
 						<div class="button-group button-group--vertical">
 							{#if !lab}
