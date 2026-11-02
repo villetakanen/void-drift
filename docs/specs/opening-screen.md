@@ -275,5 +275,7 @@ Scenario: Prose stays readable
   S4 renames displayed names only; renaming code identifiers is optional cleanup. S4 renamed the
   design.md heading to "Corvette silhouette"; `cruiser.ts`/`CRUISER`, `fighter.ts`, `scout.ts` and
   "cruiser" in test names remain.
-- **Wasp in the launcher.** S10 and the S12 contract assume three cards and keys 1–3. The Wasp is a
-  fourth flyable ship; whether it is a launcher card is undecided (asked 2026-11-02).
+- ~~**Wasp in the launcher.** S10 and the S12 contract assume three cards and keys 1–3. The Wasp is a
+  fourth flyable ship; whether it is a launcher card is undecided (asked 2026-11-02).~~ Resolved
+  (owner, 2026-11-02): the Wasp is not a launcher ship yet. S10 keeps three cards (Scout / Fighter /
+  Corvette) and keys 1–3; the Wasp stays selectable in the builder and the Lab.
