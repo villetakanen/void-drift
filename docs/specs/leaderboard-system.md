@@ -422,4 +422,3 @@ service cloud.firestore {
 
 - [Survival Core Spec](./survival-core.md) — Death cause types
 - [Design System Spec](./design-system-core.md) — UI tokens
-- [Phase 6 Roadmap](../PHASE-6-ROADMAP.md) — Implementation timeline

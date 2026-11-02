@@ -1,28 +1,48 @@
-# Void Drift agent guide
+# Void Drift
 
 Voice-led development of a procedural space survival game and its software factory.
 
+## Repository map
+
+```yaml
+- docs                  # Plans, specs, all docs here
+  - plans               # Planning material, a map is not the territory, always check staleness
+  - specs               # ASLDC.io style living specs defining intent, and expected high-level functionality of the apps
+- apps/web/src
+  - pages/lab                     # The Lab: component and entity pages
+    - studies                     # Design studies, dated; archive/ holds retired ones
+    - reviews                     # Design reviews
+  - data/studies.ts               # Study registry
+  - components/studies            # Study components and benches
+  - components/FlightDeck.svelte  # rAF game loop, keyboard and touch input wiring
+- packages
+  - core                          # Shared engine: physics, input, renderer, asset generators
+    - src/lib/schemas             # Shared Zod contracts
+    - src/lib/styles/tokens.css   # Visual token source of truth
+    - src/lib/ui/colors.ts        # Canvas mirror of tokens; parity checked by scripts/check-contracts.mjs
+  - mode-a                        # Game rules, ships, simulation, Firebase client
+    - src/lib/game-loop.ts        # Death checks and loop rules
+    - src/lib/schemas             # Game-state, flight, loadout, settings, ship Zod contracts
+    - src/schemas/highscore.ts    # Leaderboard contract
+```
+
 ## Read on demand
 
-- Product intent and scope: `docs/rebuild-charter.md`.
-- Structure, simulation, or data changes: `docs/architecture.md`.
-- Visuals, controls, camera, or feedback: `docs/design.md`.
-- Tooling and verification: `docs/development.md` and `docs/specs/voice-led-factory.md`.
-- Before committing, follow `.agents/skills/commit-messages/SKILL.md`.
-- Feature work: read the relevant spec in `docs/specs/`; use `.agents/skills/spec.md` to author specs.
-- Old backlog and phase roadmaps are historical evidence, not active assignments.
-- Read only the context needed for the task; follow the owner's latest decisions.
-
-- Design exploration: use `.agents/skills/design-study/SKILL.md`.
-- Loop closure: use `.agents/skills/close-loop/SKILL.md` to collect evidence only.
+- Scope or priority: `docs/rebuild-charter.md`.
+- Structure, simulation, data: `docs/architecture.md`.
+- Visuals, controls, camera, feedback: `docs/design.md`.
+- Setup, gates, release: `docs/development.md`.
+- Feature work: its spec in `docs/specs/`.
+- Changing the factory or its gates: `docs/specs/voice-led-factory.md`.
 
 ## Working method
 
+- Read only the context needed for the task; follow the owner's latest decisions.
 - Translate conversational requests into a small, explicit acceptance contract.
 - Clarify consequential ambiguity; resolve routine implementation details autonomously.
 - Implement bounded changes, verify them, and present playable or inspectable evidence.
 - Update relevant specs alongside changed behavior; distinguish targets from implemented behavior.
-- Reuse the real game systems in the Lab so its examples predict production behavior.
+- Reuse real game systems in the Lab; demonstrate shared visual definition changes there.
 - Keep this file under 80 lines. Put detailed guidance in its authoritative document.
 
 ## Engineering essentials
@@ -31,7 +51,6 @@ Voice-led development of a procedural space survival game and its software facto
 - Define or update Zod schemas before changing data contracts; parse external inputs.
 - Use Svelte 5 Runes, native CSS, shared tokens, and procedural Canvas assets.
 - Connect controls to the game loop; retain keyboard and landscape touch support.
-- Demonstrate changes to shared visual definitions in the Lab.
 
 ## Authority
 

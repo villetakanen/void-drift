@@ -1,3 +1,7 @@
+---
+name: spec
+description: Create, reverse-engineer, or update a living feature specification in docs/specs/ that defines intent, behavior contracts, and acceptance criteria.
+---
 # Spec Skill (@Spec)
 
 ## Trigger
@@ -19,7 +23,6 @@
 ### 1) Load Context
 - Read `AGENTS.md` first for project boundaries and role rules.
 - Read relevant existing specs in `docs/specs/`.
-- Read backlog PBIs in `docs/backlog/` when they are referenced.
 - For ASDLC guidance, use MCP articles:
   - `the-spec`
   - `living-specs`

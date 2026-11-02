@@ -3,7 +3,6 @@
 **Status:** DRAFT
 **Phase:** 7 (Content & Polish)
 **Target Version:** v0.3.0
-**Backlog Link:** `docs/backlog/PBI-032-Multi-Planet-System.md`
 
 ---
 

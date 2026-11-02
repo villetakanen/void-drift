@@ -241,7 +241,6 @@ None. System is production-ready.
 - **Spec:** `docs/specs/game-viewport.md`
 - **Design System:** `docs/specs/design-system-core.md`
 - **Camera API:** `docs/specs/camera-system.md`
-- **PBI:** `docs/backlog/PBI-013-Game-Viewport-Camera.md`
 
 ---
 

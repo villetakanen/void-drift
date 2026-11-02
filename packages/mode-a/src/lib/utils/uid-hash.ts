@@ -6,7 +6,7 @@
  *
  * Purpose: Prevents duplicate initials confusion (AAA_abc123 vs AAA_xyz789).
  *
- * @param userId - Supabase auth user ID (UUID)
+ * @param userId - Firebase auth user ID
  * @returns 6-character alphanumeric hash
  *
  * @example

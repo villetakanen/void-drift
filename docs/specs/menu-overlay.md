@@ -357,5 +357,3 @@ Consider a brief delay before hiding to allow the fade animation.
 
 - [Survival Core Spec](./survival-core.md) - Game state machine
 - [Settings System Spec](./settings-system.md) - Settings navigation
-- [PBI-017: Timer & Death Logic](../backlog/PBI-017-Timer-Death-Logic.md) - State transitions
-- [PBI-018: Settings Route](../backlog/PBI-018-Settings-Route.md) - Settings page
