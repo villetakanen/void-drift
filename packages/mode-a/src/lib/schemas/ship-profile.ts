@@ -3,13 +3,12 @@ import { z } from "zod";
 export const ShipProfileIdSchema = z.enum([
 	"wasp",
 	"scout",
-	"balanced",
-	"tank",
+	"fighter",
+	"corvette",
 ]);
 
 export const ShipProfileSchema = z.object({
 	id: ShipProfileIdSchema,
-	name: z.string().min(1),
 	thrustMultiplier: z.number().positive(),
 	turnMultiplier: z.number().positive(),
 	hullMultiplier: z.number().positive(),
@@ -20,5 +19,35 @@ export const ShipProfileSchema = z.object({
 
 export const ShipProfilesSchema = z.array(ShipProfileSchema).length(4);
 
+/** Display identity: the short name is the id; the long name is the full designation. */
+export const ShipIdentitySchema = z
+	.object({
+		shortName: z.string().min(1),
+		longName: z.string().min(1),
+		trait: z.string().min(1),
+	})
+	.strict();
+
+export const ShipIdentitiesSchema = z
+	.object({
+		wasp: ShipIdentitySchema,
+		scout: ShipIdentitySchema,
+		fighter: ShipIdentitySchema,
+		corvette: ShipIdentitySchema,
+	})
+	.strict()
+	.superRefine((ships, ctx) => {
+		for (const [id, ship] of Object.entries(ships)) {
+			if (ship.shortName.toLowerCase() !== id) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					path: [id, "shortName"],
+					message: "A ship's short name must be its id",
+				});
+			}
+		}
+	});
+
 export type ShipProfileId = z.infer<typeof ShipProfileIdSchema>;
 export type ShipProfile = z.infer<typeof ShipProfileSchema>;
+export type ShipIdentity = z.infer<typeof ShipIdentitySchema>;

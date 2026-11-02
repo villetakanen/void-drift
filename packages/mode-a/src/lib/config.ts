@@ -1,13 +1,40 @@
 import {
+	ShipIdentitiesSchema,
+	type ShipIdentity,
 	type ShipProfile,
 	type ShipProfileId,
 	ShipProfilesSchema,
 } from "./schemas/ship-profile";
 
+// Owner-approved names (D4, 2026-11-02). Every UI surface reads names and traits from here.
+export const SHIP_IDENTITY: Record<ShipProfileId, ShipIdentity> =
+	ShipIdentitiesSchema.parse({
+		wasp: {
+			shortName: "Wasp",
+			longName: "LHI Wasp",
+			trait:
+				"One rear Light ion + 4 turning stabilizers. Standard energy capacity.",
+		},
+		scout: {
+			shortName: "Scout",
+			longName: "Daehan Scout No.7",
+			trait: "Three Light ions. Standard energy capacity.",
+		},
+		fighter: {
+			shortName: "Fighter",
+			longName: "Aegis XF-1 Interceptor",
+			trait: "Four Light ions. One extra energy pack.",
+		},
+		corvette: {
+			shortName: "Corvette",
+			longName: "Mark II Escort Frigate",
+			trait: "Five Light ions. Two extra energy packs.",
+		},
+	});
+
 const RAW_SHIP_PROFILES = [
 	{
 		id: "wasp",
-		name: "LHI Wasp",
 		thrustMultiplier: 1.0,
 		turnMultiplier: 1.15,
 		hullMultiplier: 0.78,
@@ -17,7 +44,6 @@ const RAW_SHIP_PROFILES = [
 	},
 	{
 		id: "scout",
-		name: "Scout",
 		thrustMultiplier: 1.15,
 		turnMultiplier: 1.2,
 		hullMultiplier: 0.82,
@@ -26,8 +52,7 @@ const RAW_SHIP_PROFILES = [
 		tint: "#9AF7FF",
 	},
 	{
-		id: "balanced",
-		name: "Balanced",
+		id: "fighter",
 		thrustMultiplier: 1.0,
 		turnMultiplier: 1.0,
 		hullMultiplier: 1.0,
@@ -36,8 +61,7 @@ const RAW_SHIP_PROFILES = [
 		tint: "#D4FF00",
 	},
 	{
-		id: "tank",
-		name: "Tank",
+		id: "corvette",
 		thrustMultiplier: 0.9,
 		turnMultiplier: 0.86,
 		hullMultiplier: 1.28,
@@ -52,8 +76,8 @@ export const SHIP_PROFILES = ShipProfilesSchema.parse(RAW_SHIP_PROFILES);
 export const SHIP_PROFILE_BY_ID: Record<ShipProfileId, ShipProfile> = {
 	wasp: SHIP_PROFILES[0],
 	scout: SHIP_PROFILES[1],
-	balanced: SHIP_PROFILES[2],
-	tank: SHIP_PROFILES[3],
+	fighter: SHIP_PROFILES[2],
+	corvette: SHIP_PROFILES[3],
 };
 
-export const DEFAULT_SHIP_PROFILE_ID: ShipProfileId = "balanced";
+export const DEFAULT_SHIP_PROFILE_ID: ShipProfileId = "fighter";

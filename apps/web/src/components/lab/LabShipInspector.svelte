@@ -7,6 +7,7 @@ import { CONFIG } from "@void-drift/core";
 import {
 	DEFAULT_SHIP_PROFILE_ID,
 	GRAVITY_FLIGHT,
+	SHIP_IDENTITY,
 	SHIP_PROFILE_BY_ID,
 	SHIP_PROFILES,
 	type ShipProfileId,
@@ -23,7 +24,18 @@ const selectedProfile = $derived(
 	SHIP_PROFILE_BY_ID[shipParams.profileId as ShipProfileId],
 );
 
+const identity = $derived(SHIP_IDENTITY[selectedProfile.id]);
+
 const shipStatsGroups = $derived([
+	{
+		label: "Identity",
+		stats: [
+			{ key: "Id", value: selectedProfile.id },
+			{ key: "Short name", value: identity.shortName },
+			{ key: "Long name", value: identity.longName },
+			{ key: "Trait", value: identity.trait },
+		],
+	},
 	{
 		label: "Physical",
 		stats: [
@@ -77,7 +89,9 @@ const shipStatsGroups = $derived([
 		<label for="ship-profile">Chassis</label>
 		<select id="ship-profile" bind:value={shipParams.profileId}>
 			{#each SHIP_PROFILES as profile}
-				<option value={profile.id}>{profile.name}</option>
+				<option value={profile.id}>
+					{SHIP_IDENTITY[profile.id].shortName}
+				</option>
 			{/each}
 		</select>
 	</div>

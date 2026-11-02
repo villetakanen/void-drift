@@ -21,7 +21,7 @@ export function ceilingFor(strength: number, base: number) {
 }
 export function simulateCeilings(raw: unknown): Sample[][] {
 	const { acceleration, maxSpeed } = BenchSettings.parse(raw);
-	const chassis = CHASSIS.balanced;
+	const chassis = CHASSIS.fighter;
 	const angle = (chassis.angle * Math.PI) / 180;
 	const turnRate =
 		(acceleration *

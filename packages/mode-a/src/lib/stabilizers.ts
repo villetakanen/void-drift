@@ -5,9 +5,9 @@ import { SCOUT } from "./scout";
 import { WASP } from "./wasp";
 
 export const STABILIZER_PLACEMENTS = {
-	balanced: { back: 77, inset: 10, angle: 37.7 },
+	fighter: { back: 77, inset: 10, angle: 37.7 },
 	scout: { back: 67, inset: 38, angle: 67 },
-	tank: { back: 76, inset: 23, angle: 63 },
+	corvette: { back: 76, inset: 23, angle: 63 },
 } as const;
 export function stabilizerMount(chassis: ShipProfileId) {
 	if (chassis === "wasp") {
@@ -21,7 +21,7 @@ export function stabilizerMount(chassis: ShipProfileId) {
 		};
 	}
 	const points =
-		chassis === "balanced"
+		chassis === "fighter"
 			? FIGHTER.hull
 			: (chassis === "scout" ? SCOUT : CRUISER).facets.flatMap(
 					(face) => face.points,

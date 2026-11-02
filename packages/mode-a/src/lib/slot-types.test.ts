@@ -22,7 +22,7 @@ describe("slot compatibility", () => {
 		}
 	});
 	it("preserves saves, hull restrictions and universal engines on every chassis", () => {
-		for (const chassis of ["scout", "balanced", "tank"] as const) {
+		for (const chassis of ["scout", "fighter", "corvette"] as const) {
 			const build = defaultLoadout(chassis);
 			build.hull[0] = "coil";
 			build.aft[0] = "ion";
@@ -56,7 +56,7 @@ it("keeps builder overlays out of flight while retaining equipped casings", asyn
 			},
 		set: () => true,
 	});
-	const build = defaultLoadout("balanced");
+	const build = defaultLoadout("fighter");
 	drawBuild(ctx, build, 0, 0, 0);
 	expect(operations.filter((op) => op === "fillRect")).toHaveLength(0);
 	expect(operations.filter((op) => op === "fill").length).toBeGreaterThan(12);

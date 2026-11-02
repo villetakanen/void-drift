@@ -18,7 +18,7 @@ let { label = "Light and Heavy ion visual comparison" }: { label?: string } =
 	$props();
 const variants = (["ion", "heavy-ion"] as const).map((part) => ({
 	build: LoadoutSchema.parse({
-		...defaultLoadout("balanced"),
+		...defaultLoadout("fighter"),
 		side: part,
 		aft: [part, null],
 	}),

@@ -12,7 +12,7 @@ import {
 
 const fighter = (aft: [string | null, string | null]) => ({
 	version: 2,
-	chassis: "balanced",
+	chassis: "fighter",
 	side: "ion",
 	stabilizers: true,
 	hull: [null, null],

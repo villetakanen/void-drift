@@ -8,8 +8,8 @@ import {
 export { defaultLoadout } from "../../../../../packages/mode-a/src/lib/schemas/loadout";
 export const CHASSIS = {
 	...productionChassis,
-	balanced: {
-		...productionChassis.balanced,
+	fighter: {
+		...productionChassis.fighter,
 		angle: 26,
 		arm: 16,
 		length: 32,

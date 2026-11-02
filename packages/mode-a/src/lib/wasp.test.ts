@@ -45,8 +45,8 @@ describe("LHI Wasp integration", () => {
 	it("migrates legacy BuildStore saves without a wasp entry", () => {
 		const legacy = {
 			scout: defaultLoadout("scout"),
-			balanced: defaultLoadout("balanced"),
-			tank: defaultLoadout("tank"),
+			fighter: defaultLoadout("fighter"),
+			corvette: defaultLoadout("corvette"),
 		};
 		const parsed = BuildStoreSchema.parse(legacy);
 		expect(parsed.wasp.chassis).toBe("wasp");

@@ -8,8 +8,8 @@ import { SCOUT } from "../../../../../packages/mode-a/src/lib/scout";
 // This keeps the editor trial's artwork identical to the reviewed bodies.
 let {
 	title = "Full-size engine highlighting",
-	chassis = "balanced",
-}: { title?: string; chassis?: "balanced" | "scout" | "tank" } = $props();
+	chassis = "fighter",
+}: { title?: string; chassis?: "fighter" | "scout" | "corvette" } = $props();
 const engines = [
 	{ name: "Small ion", id: "ion-family-1", color: "#29baff" },
 	{ name: "Heavy ion", id: "ion-family-2", color: "#29baff" },
@@ -64,16 +64,16 @@ function engineId(index: number, key: string) {
 	</div>
 	<div class="workspace">
 		<svg
-			viewBox={chassis === "tank" ? "0 -80 900 900" : "0 0 900 650"}
+			viewBox={chassis === "corvette" ? "0 -80 900 900" : "0 0 900 650"}
 			aria-label={chassis === "scout"
 				? "Scout engine fitting playground"
-				: chassis === "tank"
+				: chassis === "corvette"
 					? "Battleship engine fitting playground"
 					: "Fighter engine fitting playground"}
 			role="img"
 		>
 			<defs>
-				{#if chassis === "tank"}
+				{#if chassis === "corvette"}
 					<mask
 						id="battleship-hull-mask"
 						maskUnits="userSpaceOnUse"
@@ -171,7 +171,7 @@ function engineId(index: number, key: string) {
 				transform="translate(450 365) rotate(-90) scale(7)"
 				opacity={mode === "editor" ? 0.7 : 1}
 			>
-				{#if chassis === "tank"}
+				{#if chassis === "corvette"}
 					<g mask="url(#battleship-hull-mask)">
 						{#each CRUISER.facets as facet}
 							<polygon points={points(facet.points)} fill={facet.color} />
@@ -215,7 +215,7 @@ function engineId(index: number, key: string) {
 			{/if}
 			{#if mode === "editor"}
 				<path
-					d={`M ${450 + engineMounts[0].y * 7} ${365 - engineMounts[0].x * 7} V ${chassis === "tank" ? -40 : 60} H ${450 + engineMounts[1].y * 7} V ${365 - engineMounts[1].x * 7}`}
+					d={`M ${450 + engineMounts[0].y * 7} ${365 - engineMounts[0].x * 7} V ${chassis === "corvette" ? -40 : 60} H ${450 + engineMounts[1].y * 7} V ${365 - engineMounts[1].x * 7}`}
 					fill="none"
 					stroke={(fitted.left ?? -1) >= 0
 						? "var(--color-acid-lime)"

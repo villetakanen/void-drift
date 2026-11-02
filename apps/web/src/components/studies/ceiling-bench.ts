@@ -39,7 +39,7 @@ export function ceilingFor(
 export function simulateCeilings(raw: unknown): Sample[][] {
 	const { acceleration, maxSpeed, bonus, falloff } =
 		DirectionalSettings.parse(raw);
-	const chassis = CHASSIS.balanced;
+	const chassis = CHASSIS.fighter;
 	const angle = (chassis.angle * Math.PI) / 180;
 	const turnRate =
 		(acceleration *

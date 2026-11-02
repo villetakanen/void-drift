@@ -8,7 +8,7 @@ service cloud.firestore {
      && d.keys().hasAll(['initials','seconds','deathCause','shipId','challenge','userId'])
      && d.keys().hasOnly(['initials','seconds','deathCause','shipId','challenge','userId'])
      && d.userId == request.auth.uid
-     && d.shipId in ['wasp','scout','balanced','tank']
+     && d.shipId in ['wasp','scout','fighter','corvette']
      && ((d.challenge == 'alpha-1' && scoreId == request.auth.uid + '_' + d.shipId)
       || (d.challenge == 'ion-1' && scoreId == 'ion-1_' + request.auth.uid + '_' + d.shipId)
       || (d.challenge == 'gravity-1' && scoreId == 'gravity-1_' + request.auth.uid + '_' + d.shipId))

@@ -111,9 +111,9 @@ export function buildMounts(build: Loadout): BuildMount[] {
 				type: "equipment",
 				label: `Hull ${index + 1} · Equipment`,
 				x:
-					build.chassis === "tank"
+					build.chassis === "corvette"
 						? CRUISER.hullMounts[index]
-						: build.chassis === "balanced"
+						: build.chassis === "fighter"
 							? 2 - index * 12
 							: SCOUT.hullX,
 				y: build.chassis !== "scout" ? 0 : (index - (c.hull - 1) / 2) * 10,
@@ -131,16 +131,16 @@ export function buildMounts(build: Loadout): BuildMount[] {
 				type: "universal",
 				label: `Aft ${index + 1} · Universal`,
 				x:
-					build.chassis === "tank"
+					build.chassis === "corvette"
 						? CRUISER.aftMounts[index][0]
-						: build.chassis === "balanced"
+						: build.chassis === "fighter"
 							? -22
 							: SCOUT.aftX,
 				y:
-					build.chassis === "tank"
+					build.chassis === "corvette"
 						? CRUISER.aftMounts[index][1]
 						: (index - (c.aft - 1) / 2) *
-							(build.chassis === "balanced" ? 10 : 12),
+							(build.chassis === "fighter" ? 10 : 12),
 				angle: 0,
 				part,
 				group: "aft",
@@ -156,7 +156,7 @@ export function buildMounts(build: Loadout): BuildMount[] {
 				x:
 					mount.x +
 					(mount.group === "aft"
-						? build.chassis === "balanced"
+						? build.chassis === "fighter"
 							? 5
 							: build.chassis === "scout"
 								? -3
@@ -259,7 +259,7 @@ export function drawBuild(
 	if (slots) ctx.globalAlpha = 0.7;
 	if (isWasp) {
 		for (const facet of WASP.facets) polygon(ctx, facet.points, facet.color);
-	} else if (build.chassis === "tank") {
+	} else if (build.chassis === "corvette") {
 		// Clip out the stern channel without painting over the scene beneath it.
 		ctx.save();
 		ctx.beginPath();
@@ -272,7 +272,7 @@ export function drawBuild(
 		ctx.clip("evenodd");
 		for (const facet of CRUISER.facets) polygon(ctx, facet.points, facet.color);
 		ctx.restore();
-	} else if (build.chassis === "balanced") {
+	} else if (build.chassis === "fighter") {
 		for (const [index, point] of FIGHTER.hull.entries()) {
 			const next = FIGHTER.hull[(index + 1) % FIGHTER.hull.length];
 			polygon(
@@ -617,7 +617,7 @@ function baseBuildCollisionRadius(build: Loadout) {
 		});
 		return Math.max(hull, ...fittings) * BUILD_FLIGHT_SCALE;
 	}
-	if (build.chassis === "tank") {
+	if (build.chassis === "corvette") {
 		const hull = Math.max(
 			...CRUISER.facets.flatMap((f) =>
 				f.points.map(([x, y]) => Math.hypot(x, y)),

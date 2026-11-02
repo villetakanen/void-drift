@@ -4,7 +4,7 @@ export interface DrawShipOptions {
 	rotation: number;
 	color?: string;
 	size?: number;
-	variant?: "wasp" | "scout" | "balanced" | "tank";
+	variant?: "wasp" | "scout" | "fighter" | "corvette";
 }
 
 export function drawShip(
@@ -17,7 +17,7 @@ export function drawShip(
 		rotation,
 		color = "#00ffcc",
 		size = 1,
-		variant = "balanced",
+		variant = "fighter",
 	} = options;
 
 	ctx.save();
@@ -43,7 +43,7 @@ export function drawShip(
 		ctx.stroke();
 	}
 
-	if (variant === "tank") {
+	if (variant === "corvette") {
 		ctx.beginPath();
 		ctx.moveTo(-7, 5.5);
 		ctx.lineTo(-11, 3);

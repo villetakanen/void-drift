@@ -4,7 +4,7 @@ import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
 
 type Point = readonly [number, number];
 const points = (v: readonly Point[]) => v.map((p) => p.join(",")).join(" ");
-const mounts = buildMounts(defaultBuilds().balanced)
+const mounts = buildMounts(defaultBuilds().fighter)
 	.map((m) => (m.group === "aft" ? { ...m, x: m.x - 5 } : m))
 	.filter((m) => m.group !== "hull");
 type Vessel = { body: Point[]; ridge: Point };

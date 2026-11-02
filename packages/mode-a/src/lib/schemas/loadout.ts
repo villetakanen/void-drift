@@ -59,7 +59,6 @@ export function slotAccepts(type: SlotType, category: "E" | "G" | "U") {
 	);
 }
 export const ChassisSchema = z.object({
-	name: z.string(),
 	mass: z.number().positive(),
 	hull: z.number().int().positive(),
 	aft: z.number().int().nonnegative(),
@@ -72,7 +71,6 @@ export const ChassisSchema = z.object({
 });
 export const CHASSIS = {
 	wasp: ChassisSchema.parse({
-		name: "LHI Wasp",
 		mass: WASP.mass,
 		hull: 2,
 		aft: 0,
@@ -84,7 +82,6 @@ export const CHASSIS = {
 		width: WASP.width,
 	}),
 	scout: ChassisSchema.parse({
-		name: "Scout",
 		mass: SCOUT.mass,
 		hull: 1,
 		aft: 1,
@@ -95,8 +92,7 @@ export const CHASSIS = {
 		length: SCOUT.length,
 		width: SCOUT.width,
 	}),
-	balanced: ChassisSchema.parse({
-		name: "Fighter",
+	fighter: ChassisSchema.parse({
 		mass: 95,
 		hull: 2,
 		aft: 2,
@@ -107,8 +103,7 @@ export const CHASSIS = {
 		length: FIGHTER.length,
 		width: FIGHTER.width,
 	}),
-	tank: ChassisSchema.parse({
-		name: "Heavy Corvette",
+	corvette: ChassisSchema.parse({
 		mass: 140,
 		hull: 3,
 		aft: 3,
@@ -246,7 +241,7 @@ export function starterLoadout(chassis: Loadout["chassis"]): Loadout {
 	const build = defaultLoadout(chassis);
 	build.stabilizers = true;
 	build.aft.fill("ion");
-	const packs = chassis === "balanced" ? 1 : chassis === "tank" ? 2 : 0;
+	const packs = chassis === "fighter" ? 1 : chassis === "corvette" ? 2 : 0;
 	for (let i = 0; i < packs; i++) build.hull[i] = "battery";
 	return LoadoutSchema.parse(build);
 }
@@ -254,22 +249,22 @@ export const BuildStoreSchema = z
 	.object({
 		wasp: LoadoutSchema.default(() => defaultLoadout("wasp")),
 		scout: LoadoutSchema,
-		balanced: LoadoutSchema,
-		tank: LoadoutSchema,
+		fighter: LoadoutSchema,
+		corvette: LoadoutSchema,
 	})
 	.refine(
 		(builds) =>
 			builds.wasp.chassis === "wasp" &&
 			builds.scout.chassis === "scout" &&
-			builds.balanced.chassis === "balanced" &&
-			builds.tank.chassis === "tank",
+			builds.fighter.chassis === "fighter" &&
+			builds.corvette.chassis === "corvette",
 	);
 export function defaultBuilds() {
 	return {
 		wasp: defaultLoadout("wasp"),
 		scout: defaultLoadout("scout"),
-		balanced: defaultLoadout("balanced"),
-		tank: defaultLoadout("tank"),
+		fighter: defaultLoadout("fighter"),
+		corvette: defaultLoadout("corvette"),
 	};
 }
 export function buildStats(build: Loadout) {

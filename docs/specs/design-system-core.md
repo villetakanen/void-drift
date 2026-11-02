@@ -196,7 +196,7 @@ own values in the renderers; they are game data, not roles. Engine identity colo
 `ENGINE_ACCENT` (`@void-drift/mode-a`). Token-defined game colours are `--color-resource-hull`,
 `-power`, `-warning`, `-danger` and the status colours `--color-android-green`,
 `--color-caution-tape` and `--color-red`. `--color-resource-power` aliases brand until S8 gives it its
-own colour, and the Balanced ship tint (`#D4FF00`) is ship data that S4 owns.
+own colour, and the Fighter ship tint (`#D4FF00`) is ship data in `SHIP_PROFILES`; S4 renamed the ship and left the tint unchanged.
 
 ### Deprecated names
 

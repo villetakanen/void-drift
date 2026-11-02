@@ -54,7 +54,7 @@ export function sequence(tick: number) {
 }
 export function simulateBench(raw: unknown): Sample[][] {
 	const settings = BenchSettings.parse(raw);
-	const chassis = CHASSIS.balanced;
+	const chassis = CHASSIS.fighter;
 	const angle = (chassis.angle * Math.PI) / 180;
 	const turnRate =
 		(settings.acceleration *

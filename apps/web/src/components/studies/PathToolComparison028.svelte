@@ -18,7 +18,7 @@ const H = 24 + W;
 const COLORS = ["#5ce5e7", "#ffbd69", "#ff7aa8"];
 const fighter = (aft: [string | null, string | null]) => ({
 	version: 2,
-	chassis: "balanced",
+	chassis: "fighter",
 	side: "ion",
 	stabilizers: true,
 	hull: [null, null],

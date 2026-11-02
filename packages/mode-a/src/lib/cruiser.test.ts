@@ -11,7 +11,7 @@ import { buildStats, defaultLoadout } from "./schemas/loadout";
 
 describe("approved cruiser", () => {
 	it("places bow fitting ahead of cockpit and preserves indexed aft triangle", () => {
-		const mounts = buildMounts(defaultLoadout("tank"));
+		const mounts = buildMounts(defaultLoadout("corvette"));
 		expect(mounts).toHaveLength(8);
 		expect(mounts.find((m) => m.key === "hull-0")?.x).toBe(45.5);
 		expect(
@@ -23,7 +23,7 @@ describe("approved cruiser", () => {
 		]);
 	});
 	it("encloses mount corners and places exhaust behind each nozzle", () => {
-		const build = defaultLoadout("tank");
+		const build = defaultLoadout("corvette");
 		build.aft = ["ion", "ion", "ion"];
 		const radius = buildCollisionRadius(build);
 		for (const m of buildMounts(build)) {
@@ -43,7 +43,7 @@ describe("approved cruiser", () => {
 		expect(emitters[1].y).toBeGreaterThan(13 * BUILD_FLIGHT_SCALE);
 	});
 	it("turns in opposing directions and cancels paired torque", () => {
-		const build = defaultLoadout("tank");
+		const build = defaultLoadout("corvette");
 		expect(buildStats(build).turnRate).toBeGreaterThan(0);
 		const body = () => ({
 			pos: new Vec2(0, 0),

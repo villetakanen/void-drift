@@ -38,20 +38,20 @@ export const GRAVITY_FLIGHT = GravityFlightSchema.parse({
 	planetStrength: 600,
 });
 export const CHALLENGE_SEED = 2026;
-export function stockSettings(id: ShipProfileId = "balanced"): FlightSettings {
+export function stockSettings(id: ShipProfileId = "fighter"): FlightSettings {
 	return FlightSettingsSchema.parse({
 		seed: CHALLENGE_SEED,
 		profile: SHIP_PROFILE_BY_ID[id],
 		camera: { padding: 160, smoothing: 4, zoomSteps: 5 },
 	});
 }
-export function gameSettings(id: ShipProfileId = "balanced"): FlightSettings {
+export function gameSettings(id: ShipProfileId = "fighter"): FlightSettings {
 	return FlightSettingsSchema.parse({
 		...stockSettings(id),
 		loadout: starterLoadout(id),
 	});
 }
-export function labSettings(id: ShipProfileId = "balanced"): FlightSettings {
+export function labSettings(id: ShipProfileId = "fighter"): FlightSettings {
 	return FlightSettingsSchema.parse({
 		...stockSettings(id),
 		loadout: defaultLoadout(id),

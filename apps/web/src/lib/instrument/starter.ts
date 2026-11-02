@@ -2,7 +2,7 @@
 // lab-instrument study (02.7): ion aft, plasma aft, and plasma with more thrust.
 const fighter = (aft: [string | null, string | null]) => ({
 	version: 2,
-	chassis: "balanced",
+	chassis: "fighter",
 	side: "ion",
 	stabilizers: true,
 	hull: [null, null],

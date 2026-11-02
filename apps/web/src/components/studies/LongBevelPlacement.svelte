@@ -20,7 +20,7 @@ const outline = [
 	[-12, -27],
 ];
 const initial = () =>
-	buildMounts(defaultBuilds().tank)
+	buildMounts(defaultBuilds().corvette)
 		.map((m) => ({
 			...m,
 			x:

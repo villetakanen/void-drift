@@ -9,11 +9,11 @@ test("Scout restores its four-slot save, fits every part and flies from the cano
 	await page.goto("/builder");
 	await page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }).click();
 	await page.getByRole("button", { name: /Energy storage.*18 mass/ }).click();
-	await page.getByRole("button", { name: /Heavy Corvette.*8 SLOTS/ }).click();
+	await page.getByRole("button", { name: /Corvette.*8 SLOTS/ }).click();
 	await page.getByRole("button", { name: "Hull 2 · Equipment: Empty" }).click();
 	await page.getByRole("button", { name: /Loading coil.*10 mass/ }).click();
 	const before = await page.evaluate(() =>
-		localStorage.getItem("void-drift-builds-v2"),
+		localStorage.getItem("void-drift-builds-v3"),
 	);
 	if (!before) throw new Error("Initial chassis builds not saved");
 	await page.goto("/lab/builder?chassis=scout");
@@ -79,13 +79,13 @@ test("Scout restores its four-slot save, fits every part and flies from the cano
 		page.getByRole("button", { name: "Aft 1 · Universal: Light ion" }),
 	).toBeVisible();
 	const after = await page.evaluate(() =>
-		localStorage.getItem("void-drift-builds-v2"),
+		localStorage.getItem("void-drift-builds-v3"),
 	);
 	if (!after) throw new Error("Scout build not saved");
 	const savedBefore = BuildStoreSchema.parse(JSON.parse(before));
 	const savedAfter = BuildStoreSchema.parse(JSON.parse(after));
 	// Compare unrelated version-1 builds, not just their presence.
-	for (const chassis of ["balanced", "tank"] as const) {
+	for (const chassis of ["fighter", "corvette"] as const) {
 		expect(savedAfter[chassis]).toEqual(savedBefore[chassis]);
 	}
 	await page.setViewportSize({ width: 1440, height: 1100 });

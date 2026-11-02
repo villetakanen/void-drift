@@ -3,7 +3,7 @@ import { Simulation, stockSettings } from "./simulation";
 
 const both = { leftThruster: true, rightThruster: true, fire: false };
 const idle = { leftThruster: false, rightThruster: false, fire: false };
-function fly(id: "scout" | "balanced" | "tank", ticks = 120) {
+function fly(id: "scout" | "fighter" | "corvette", ticks = 120) {
 	const s = new Simulation(stockSettings(id));
 	s.start();
 	for (let i = 0; i < ticks; i++) s.step(both);
@@ -12,17 +12,17 @@ function fly(id: "scout" | "balanced" | "tank", ticks = 120) {
 describe("flight contract", () => {
 	it("applies ship thrust and power drain", () => {
 		const scout = fly("scout"),
-			balanced = fly("balanced"),
-			tank = fly("tank");
-		expect(scout.ship.pos.y).toBeLessThan(balanced.ship.pos.y);
-		expect(balanced.ship.pos.y).toBeLessThan(tank.ship.pos.y);
+			fighter = fly("fighter"),
+			corvette = fly("corvette");
+		expect(scout.ship.pos.y).toBeLessThan(fighter.ship.pos.y);
+		expect(fighter.ship.pos.y).toBeLessThan(corvette.ship.pos.y);
 		expect(scout.state.resources.power).toBeLessThan(
-			tank.state.resources.power,
+			corvette.state.resources.power,
 		);
 	});
 	it("applies turn multipliers", () => {
 		const a = new Simulation(stockSettings("scout")),
-			b = new Simulation(stockSettings("tank"));
+			b = new Simulation(stockSettings("corvette"));
 		a.start();
 		b.start();
 		for (let i = 0; i < 30; i++) {
@@ -80,9 +80,9 @@ describe("flight contract", () => {
 		s.step(idle);
 		expect(s.wraps).toBe(1);
 	});
-	it("tank hull absorbs more equal star damage", () => {
+	it("corvette hull absorbs more equal star damage", () => {
 		const a = new Simulation(stockSettings("scout")),
-			b = new Simulation(stockSettings("tank"));
+			b = new Simulation(stockSettings("corvette"));
 		a.start();
 		b.start();
 		a.ship.pos.set(1040, 540);
@@ -94,7 +94,7 @@ describe("flight contract", () => {
 });
 
 describe("integrated gravity flight", () => {
-	for (const id of ["scout", "balanced", "tank"] as const) {
+	for (const id of ["scout", "fighter", "corvette"] as const) {
 		it(`${id} coasts above the old cap and brakes with full thrust`, () => {
 			const s = new Simulation(stockSettings(id));
 			s.planets.length = 0;

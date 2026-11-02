@@ -14,7 +14,7 @@ let {
 	splayDegrees = 0,
 }: { label?: string; splayDegrees?: number } = $props();
 
-const simulation = new Simulation(stockSettings("balanced"));
+const simulation = new Simulation(stockSettings("fighter"));
 simulation.start();
 const frames = Array.from({ length: 361 }, (_, tick) => {
 	const left = tick < 180;
@@ -141,7 +141,7 @@ $effect(() => {
 		y: 0,
 		rotation: current.rotation,
 		color: "#d9fff2",
-		variant: "balanced",
+		variant: "fighter",
 	});
 	ctx.restore();
 });

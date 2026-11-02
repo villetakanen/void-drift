@@ -13,12 +13,12 @@ test("standard flights start with Fighter and all ships have stabilizers", async
 	await page.clock.install();
 	const errors: string[] = [];
 	page.on("pageerror", (e) => errors.push(e.message));
-	for (const id of ["scout", "balanced", "tank"]) {
+	for (const id of ["scout", "fighter", "corvette"]) {
 		await page.goto("/");
-		await expect(page.getByLabel("Ship Chassis")).toHaveValue("balanced");
+		await expect(page.getByLabel("Ship Chassis")).toHaveValue("fighter");
 		await page.getByLabel("Ship Chassis").selectOption(id);
 		await page.reload();
-		await expect(page.getByLabel("Ship Chassis")).toHaveValue("balanced");
+		await expect(page.getByLabel("Ship Chassis")).toHaveValue("fighter");
 		await page.getByLabel("Ship Chassis").selectOption(id);
 		await expect(page.locator(".flight-page")).toHaveAttribute(
 			"data-stabilizers",
@@ -28,7 +28,7 @@ test("standard flights start with Fighter and all ships have stabilizers", async
 			page.getByRole("progressbar", { name: "Power" }),
 		).toHaveAttribute(
 			"max",
-			id === "scout" ? "100" : id === "balanced" ? "200" : "300",
+			id === "scout" ? "100" : id === "fighter" ? "200" : "300",
 		);
 		await page.getByRole("button", { name: "TAP TO START" }).click();
 		const deck = page.locator(".flight-page");

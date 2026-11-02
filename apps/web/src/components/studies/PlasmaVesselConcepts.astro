@@ -9,7 +9,7 @@ const { simplified = false } = Astro.props;
 const prefix = simplified ? "plasma-simple" : "plasma-vessel";
 type Point = readonly [number, number];
 const points = (v: readonly Point[]) => v.map((p) => p.join(",")).join(" ");
-const mounts = buildMounts(defaultBuilds().balanced)
+const mounts = buildMounts(defaultBuilds().fighter)
 	.map((m) => (m.group === "aft" ? { ...m, x: m.x - 5 } : m))
 	.filter((m) => m.group !== "hull");
 type Part = { body: Point[]; base: number[]; accent?: boolean };

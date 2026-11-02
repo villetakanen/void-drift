@@ -20,7 +20,7 @@ const body = () => ({
 
 describe("four-engine player trial", () => {
 	it("rejects obsolete saves and fission IDs", () => {
-		const build = defaultLoadout("balanced");
+		const build = defaultLoadout("fighter");
 		expect(LoadoutSchema.safeParse({ ...build, version: 1 }).success).toBe(
 			false,
 		);
@@ -29,7 +29,7 @@ describe("four-engine player trial", () => {
 		);
 	});
 	it("plasma has no thrust or steering until charged; release and power loss reset it", () => {
-		const build = defaultLoadout("balanced");
+		const build = defaultLoadout("fighter");
 		build.side = "plasma";
 		const timers: EngineTimers = {};
 		const ship = body();
@@ -66,7 +66,7 @@ describe("four-engine player trial", () => {
 		expect(engineDuty(PARTS.fusion, true, 1 / 60, timers, "pulse")).toBe(0);
 	});
 	it("mixed ion and fusion approaches the higher fusion ceiling without clipping overspeed", () => {
-		const build = defaultLoadout("balanced");
+		const build = defaultLoadout("fighter");
 		build.side = "heavy-ion";
 		build.aft = ["ion", "fusion"];
 		const ship = body();

@@ -5,7 +5,7 @@ test("two anonymous pilots complete runs, submit and see a shared leaderboard", 
 }) => {
 	for (const [ship, initials] of [
 		["scout", "ONE"],
-		["tank", "TWO"],
+		["corvette", "TWO"],
 	]) {
 		const context = await browser.newContext();
 		const page = await context.newPage();
@@ -45,5 +45,7 @@ test("two anonymous pilots complete runs, submit and see a shared leaderboard", 
 	await page.goto("http://127.0.0.1:4323/leaderboard");
 	await expect(page.getByRole("cell").filter({ hasText: /ONE/ })).toBeVisible();
 	await expect(page.getByRole("cell").filter({ hasText: /TWO/ })).toBeVisible();
+	for (const name of ["Scout", "Corvette"])
+		await expect(page.getByRole("cell", { name, exact: true })).toBeVisible();
 	await context.close();
 });

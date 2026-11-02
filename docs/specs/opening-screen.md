@@ -1,7 +1,8 @@
 # Opening screen and design-system remediation plan
 
 **Status:** IN PROGRESS. S1 done and owner-approved 2026-11-01; S2 done and owner-approved
-2026-11-01; S3 done and owner-approved 2026-11-01; S4–S12 planned.
+2026-11-01; S3 done and owner-approved 2026-11-01; S4 done and owner-approved 2026-11-02;
+S5–S12 planned.
 **Scope note (owner, 2026-11-01):** phone landscape is temporarily out of scope. 844×390 checks
 are not required until it returns; D7 and the S12 phone contract stay as targets.
 **Source:** [opening screen audit](../audits/2026-11-01-opening-screen.md), owner decisions D1–D7 (2026-11-01).
@@ -102,11 +103,31 @@ against the `#050510` void elsewhere; and a Lab planet ring set to `var(...)`, w
 
 ### S4 — Ship names (D4)
 
+**Done 2026-11-02, owner-approved.** The rule is in `ship-builder.md` (Ship names and ids).
+`SHIP_IDENTITY` in `@void-drift/mode-a` is the single Zod-parsed source of each ship's short name,
+long name and trait; `/lab/entities/ship` shows all three. Owner decisions (2026-11-02): every ship
+has a short and a long name; the short name is the id, and `balanced` and `tank` are retired; saved
+data is purged rather than migrated (alpha). Names: Wasp / LHI Wasp, Scout / Daehan Scout No.7,
+Fighter / Aegis XF-1 Interceptor, Corvette / Mark II Escort Frigate. Verification at `1bbeef8`: 7 of 9 `pnpm verify` stages
+passed (25 browser tests); `test:rules` and `test:competition` did not run (no Java runtime on the
+machine), so the new Firestore rule ids and the leaderboard name assertion are unverified. Browser
+evidence at 1440×900 is in `artifacts/evidence/s4/` (git-ignored); the local leaderboard has no Firebase, so it
+shows its unavailable state, not names.
+
+Inventory: two disagreeing name sources: `SHIP_PROFILES.name` (LHI Wasp / Scout / Balanced /
+Tank; the Lab inspector and flight menu) and `CHASSIS.name` (LHI Wasp / Scout / Fighter / Heavy
+Corvette; the builder). The flight menu overrode `balanced` to "Fighter" outside the Lab, and its
+trait lines were hand-written. The leaderboard showed raw ids. A Lab instrument-parts legend
+hard-coded "Heavy corvette". Two preserved studies read production chassis names; they now keep
+the names they showed as local literals. Browser tests asserted "Heavy Corvette". Ids were stored
+in builds (`void-drift-builds-v2`), settings, Firestore rules and score document ids.
+
 - Investigate: `config.ts`, `loadout.ts`, `FlightDeck`, `ShipBuilder`, `Leaderboard`,
   `LabShipInspector`, design.md and other specs.
 - Spec: `ship-builder.md` and `ship-select-ui-persistence.md` (names), design.md headings.
-- Apply: one Zod-parsed display-name and trait source: Scout / Fighter / Corvette. Ids
-  `scout`/`balanced`/`tank` are unchanged. The leaderboard shows names. Hand-written descriptions
+- Apply: one Zod-parsed display-name and trait source: Scout / Fighter / Corvette. ~~Ids
+  `scout`/`balanced`/`tank` are unchanged.~~ [DEPRECATED 2026-11-01] Ids equal short names: `wasp`, `scout`,
+  `fighter`, `corvette` (owner, 2026-11-02). The leaderboard shows names. Hand-written descriptions
   and the `balanced → Fighter` override are removed.
 
 ### S5 — Random star system every run (bug fix; independent of S1–S4)
@@ -193,7 +214,8 @@ against the `#050510` void elsewhere; and a Lab planet ring set to `var(...)`, w
 - No new npm dependencies or paid services. Fonts are self-hosted files, never a CDN (D2 as amended).
 - No changes to gravity, friction or ship tuning.
 - Star systems are never static (owner, 2026-11-01).
-- Stored ids, saved builds, settings and score documents stay compatible.
+- ~~Stored ids, saved builds, settings and score documents stay compatible.~~ [DEPRECATED 2026-11-01] Ship ids changed
+  in S4; old builds, settings and scores are purged in alpha (owner, 2026-11-02).
 - Real system variety (star types, generated planets, true moons) is generator work outside this plan.
 
 ## Contract
@@ -204,7 +226,8 @@ against the `#050510` void elsewhere; and a Lab planet ring set to `var(...)`, w
 - [ ] `/lab/typography`, `/lab/tokens`, `/lab/ship-launcher` and `/lab/opening` render from production code.
 - [ ] No literal font family, brand hex or `z-index` remains in shared UI or shared canvas renderers.
 - [ ] Each game run and each attract scene uses a fresh random seed; Lab trial seeds still reproduce.
-- [ ] Ship names read Scout / Fighter / Corvette everywhere; stored ids are unchanged.
+- [ ] Ship names read Scout / Fighter / Corvette everywhere; ~~stored ids are unchanged~~ [DEPRECATED 2026-11-01] ids
+  equal the short names.
 - [ ] Dialogs isolate the stage on every screen that has them.
 - [ ] The S12 contract holds at 1440×900 and 844×390, with reduced motion respected.
 - [ ] `pnpm verify` passes; skipped or unavailable stages are reported as such.
@@ -249,4 +272,10 @@ Scenario: Prose stays readable
 ## Open questions
 
 - **Corvette code names.** `cruiser.ts` and the "Heavy cruiser silhouette" heading predate D4.
-  S4 renames displayed names only; renaming code identifiers is optional cleanup.
+  S4 renames displayed names only; renaming code identifiers is optional cleanup. S4 renamed the
+  design.md heading to "Corvette silhouette"; `cruiser.ts`/`CRUISER`, `fighter.ts`, `scout.ts` and
+  "cruiser" in test names remain.
+- ~~**Wasp in the launcher.** S10 and the S12 contract assume three cards and keys 1–3. The Wasp is a
+  fourth flyable ship; whether it is a launcher card is undecided (asked 2026-11-02).~~ Resolved
+  (owner, 2026-11-02): the Wasp is not a launcher ship yet. S10 keeps three cards (Scout / Fighter /
+  Corvette) and keys 1–3; the Wasp stays selectable in the builder and the Lab.

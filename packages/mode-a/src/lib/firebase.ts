@@ -19,6 +19,7 @@ import {
 	HighScoreSchema,
 	type HighScoreSubmission,
 	HighScoreSubmissionSchema,
+	parseHighScores,
 } from "../schemas/highscore";
 
 export const LEADERBOARD_UNAVAILABLE =
@@ -85,7 +86,7 @@ export async function loadHighScores(): Promise<HighScore[]> {
 					limit(20),
 				),
 			);
-			return rows.docs.map((row) => HighScoreSchema.parse(row.data()));
+			return parseHighScores(rows.docs.map((row) => row.data()));
 		})(),
 	);
 }

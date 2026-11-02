@@ -26,7 +26,7 @@ let fitting = $state(isScout ? "light" : "heavy");
 const name = isScout ? "Scout" : isCruiser ? "Cruiser" : "Fighter";
 const build = $derived(
 	LoadoutSchema.parse({
-		...defaultLoadout(isScout ? "scout" : isCruiser ? "tank" : "balanced"),
+		...defaultLoadout(isScout ? "scout" : isCruiser ? "corvette" : "fighter"),
 		side: fitting === "light" ? "ion" : "heavy-ion",
 		aft: Array(isScout ? 1 : isCruiser ? 3 : 2).fill(
 			fitting === "light" ? null : "heavy-ion",

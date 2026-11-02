@@ -1,5 +1,6 @@
 <script lang="ts">
 import "./catalog.css";
+import { SHIP_IDENTITY } from "@void-drift/mode-a";
 import {
 	type BurnId,
 	SECONDS,
@@ -29,9 +30,9 @@ const named = (labels: string[]): Track[] =>
 	}));
 const three = named(["Ion aft", "Plasma aft", "Plasma aft, more thrust"]);
 const six = named([
-	"Scout",
-	"Fighter",
-	"Heavy corvette",
+	SHIP_IDENTITY.scout.shortName,
+	SHIP_IDENTITY.fighter.shortName,
+	SHIP_IDENTITY.corvette.shortName,
 	"Ion",
 	"Fusion",
 	"Plasma",

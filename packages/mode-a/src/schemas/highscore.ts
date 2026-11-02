@@ -13,3 +13,10 @@ export const HighScoreSchema = HighScoreSubmissionSchema.extend({
 }).strict();
 export type HighScore = z.infer<typeof HighScoreSchema>;
 export type HighScoreSubmission = z.infer<typeof HighScoreSubmissionSchema>;
+/** Leaderboard rows that fail the current schema (for example, retired ship ids) are skipped. */
+export function parseHighScores(rows: unknown[]): HighScore[] {
+	return rows.flatMap((row) => {
+		const parsed = HighScoreSchema.safeParse(row);
+		return parsed.success ? [parsed.data] : [];
+	});
+}

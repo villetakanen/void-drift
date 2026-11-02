@@ -11,7 +11,7 @@ const engines = [
 	{ name: "Fusion", id: "fusion-pale-1", color: "#c6ff32" },
 	{ name: "Plasma", id: "plasma-simple-0", color: "#ffb52e" },
 ];
-const mounts = buildMounts(defaultBuilds().balanced);
+const mounts = buildMounts(defaultBuilds().fighter);
 const engineMounts = mounts.filter((m) => m.group !== "hull");
 let selection = $state("left");
 let fitted = $state<Record<string, number>>({ left: 0, right: 0 });

@@ -34,7 +34,9 @@ Persisted shape is backward-compatible by applying defaults when old local data 
 #### 2. Menu Overlay Selector
 
 Update `apps/web/src/components/MenuOverlay.svelte`:
-- add `Ship` selector UI with 3 options (`Scout`, `Balanced`, `Tank`)
+- ~~add `Ship` selector UI with 3 options (`Scout`, `Balanced`, `Tank`)~~ [DEPRECATED 2026-11-01] the selector lists
+  every ship by short name (Wasp, Scout, Fighter, Corvette) from `SHIP_IDENTITY`; see
+  [Ship names and ids](./ship-builder.md#ship-names-and-ids--s4-2026-11-02)
 - display short stats summary for selected ship
 - keep controls touch-safe (>=44px target) and keyboard accessible
 
@@ -62,7 +64,7 @@ Update web settings store (current `apps/web/src/lib/stores/settings`) so:
 
 #### Selector Behavior
 
-- default: `Balanced`
+- ~~default: `Balanced`~~ [DEPRECATED 2026-11-01] default: Fighter (`fighter`)
 - user choice persists across reload
 - choice is reflected immediately in menu summary
 
@@ -82,7 +84,7 @@ Update web settings store (current `apps/web/src/lib/stores/settings`) so:
 
 ### Definition of Done
 
-- [ ] Start menu includes ship selector with 3 variants.
+- [ ] Start menu includes ship selector with ~~3 variants~~ [DEPRECATED 2026-11-01] every ship.
 - [ ] Selected ship persists across page reload.
 - [ ] New game and restart consistently apply selected ship.
 - [ ] In-game ship visuals match selected profile.

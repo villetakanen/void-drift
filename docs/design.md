@@ -122,7 +122,7 @@ The study at `/lab/studies/lab-instrument-2026-11-01` records the rationale;
 
 Every ship poses a character. A player must identify it at a glance and feel
 something about it before flying it: the Scout is an angry little firefly, the
-Heavy Corvette overwhelming power, the Wasp a slim, fast trainer that is mostly
+Corvette overwhelming power, the Wasp a slim, fast trainer that is mostly
 engine. This is a game-experience requirement; the faux-3D low-poly drawing is the
 means. Use this order whenever a chassis is drawn or studied.
 
@@ -167,13 +167,13 @@ The ship-builder spec records geometry-derived turning and collision limitations
 human fidelity and handling review remains pending.
 
 
-## Heavy cruiser silhouette
+## Corvette silhouette
 
 Long bevel 08 with the accepted forward-engine and bow-slot layout is implemented
-for Heavy Corvette (`tank`). The shared `cruiser.ts` definition preserves the slim
+for ~~Heavy Corvette (`tank`)~~ [DEPRECATED 2026-11-01] the Corvette (`corvette`). The shared `cruiser.ts` definition preserves the slim
 faceted hull, two black forward cockpit panes, axial deck fittings and triangular
 aft mounts. A small armored nose platform supports the bow fitting. `/lab/builder`
-demonstrates the real renderer and flight systems. Fighter and Heavy Corvette are
+demonstrates the real renderer and flight systems. Fighter and Corvette are
 selectable; Scout is also enabled by the integration below. The earlier
 Fighter-only statement is superseded.
 Owner approval established the direction despite reservations about visual polish;
@@ -189,7 +189,7 @@ H and A remain axial. All three chassis are selectable, with version-1 saves int
 `/lab/builder?chassis=scout` is the canonical shared renderer and playable test flight;
 `/builder?chassis=scout` opens the same build in the app.
 
-The Scout now uses the same mount-relative weapon graphics as Fighter/Heavy instead
+The Scout now uses the same mount-relative weapon graphics as Fighter/Corvette instead
 of its legacy oversized barrels, keeping fittings clear of the cockpit. The accepted
 side footprints overlap slightly; their centers and keyboard targets remain distinct.
 Engines are surface/deck-mounted: the aft exhaust can overlay the pointed keel,

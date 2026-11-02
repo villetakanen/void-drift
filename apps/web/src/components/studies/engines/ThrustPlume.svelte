@@ -25,7 +25,7 @@ type Mark = {
 	size: number;
 };
 function trial(turning: boolean) {
-	const simulation = new Simulation(stockSettings("balanced"));
+	const simulation = new Simulation(stockSettings("fighter"));
 	simulation.ship.pos.set(960, 540);
 	simulation.ship.rotation = 0;
 	simulation.ship.vel.set(launchSpeed, 0);
@@ -169,7 +169,7 @@ function render(canvas: HTMLCanvasElement, t: ReturnType<typeof trial>) {
 		y: 0,
 		rotation: t.simulation.ship.rotation,
 		color: "#d9fff2",
-		variant: "balanced",
+		variant: "fighter",
 	});
 	ctx.restore();
 }

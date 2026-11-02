@@ -6,23 +6,27 @@ import {
 } from "./ship-silhouette-reference";
 
 // Fixed composition sketches: real slot counts and angles, proposed hulls and side positions.
+// Names are frozen as this study showed them before the 2026-11-02 rename.
 const sketches = [
 	{
 		id: "scout",
+		name: "Scout",
 		intent: "Long spine · tucked engines",
 		hull: "34,0 -18,-8 -24,0 -18,8",
 		sideX: -9,
 		sideY: 12,
 	},
 	{
-		id: "balanced",
+		id: "fighter",
+		name: "Fighter",
 		intent: "Wide shoulders · swept engines",
 		hull: "30,0 -18,-25 -12,0 -18,25",
 		sideX: -10,
 		sideY: 25,
 	},
 	{
-		id: "tank",
+		id: "corvette",
+		name: "Heavy Corvette",
 		intent: "Broad body · parallel banks",
 		hull: "30,0 18,-24 -26,-24 -32,-15 -32,15 -26,24 18,24",
 		sideX: -5,
@@ -38,7 +42,7 @@ const sketches = [
 		const currentHull = `${chassis.length},0 ${-chassis.length * 0.65},${-chassis.width} ${-chassis.length * 0.85},0 ${-chassis.length * 0.65},${chassis.width}`;
 		return (
 			<article>
-				<h4>{chassis.name}</h4>
+				<h4>{sketch.name}</h4>
 				<p>{sketch.intent}</p>
 				{[false, true].map((proposed) => (
 					<figure>
@@ -48,7 +52,7 @@ const sketches = [
 						<svg
 							viewBox="0 0 240 240"
 							role="img"
-							aria-label={`${chassis.name}: ${proposed ? sketch.intent : "current hull and mounts"}, enlarged and small`}
+							aria-label={`${sketch.name}: ${proposed ? sketch.intent : "current hull and mounts"}, enlarged and small`}
 						>
 							{[
 								{ x: 120, y: 90, scale: 2.1 },

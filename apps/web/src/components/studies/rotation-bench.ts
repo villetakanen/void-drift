@@ -82,7 +82,7 @@ export function simulateRotation(raw: unknown): Sample[][] {
 	const free = rotationMode.startsWith("free");
 	const stabilized = rotationMode.endsWith("stabilized");
 	const limitSpin = (maxTurn * Math.PI) / 180;
-	const chassis = CHASSIS.balanced;
+	const chassis = CHASSIS.fighter;
 	const angle = (chassis.angle * Math.PI) / 180;
 	const mainLever =
 		Math.cos(angle) * chassis.arm + Math.sin(angle) * chassis.sideX;
