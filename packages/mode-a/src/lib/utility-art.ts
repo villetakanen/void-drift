@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { drawPotentialWell, POTENTIAL_WELL_SCALE } from "./potential-well-art";
 
 // Artwork identifiers only: these do not add game devices or loadout entries.
 export const UtilityArtworkIdSchema = z.enum([
@@ -976,9 +977,15 @@ export const UTILITY_ART = UtilityArtSchema.parse({
 export function drawUtilityArtwork(
 	ctx: CanvasRenderingContext2D,
 	id: UtilityArtworkId,
-	scale = UTILITY_MOUNT_SCALE,
+	scale = id === "storage" ? POTENTIAL_WELL_SCALE : UTILITY_MOUNT_SCALE,
 ) {
 	ctx.save();
+	if (id === "storage") {
+		ctx.scale(scale / POTENTIAL_WELL_SCALE, scale / POTENTIAL_WELL_SCALE);
+		drawPotentialWell(ctx);
+		ctx.restore();
+		return;
+	}
 	ctx.scale(scale, scale);
 	for (const face of UTILITY_ART[id]) {
 		ctx.fillStyle = face.color;

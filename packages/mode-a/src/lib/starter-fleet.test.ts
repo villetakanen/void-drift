@@ -6,8 +6,8 @@ import { gameSettings, labSettings, Simulation } from "./simulation";
 it("main-game fleet uses every engine mount and the selected energy packs", () => {
 	for (const [id, aft, packs, capacity] of [
 		["scout", 1, 0, 100],
-		["fighter", 2, 1, 200],
-		["corvette", 3, 2, 300],
+		["fighter", 2, 1, 185],
+		["corvette", 3, 2, 270],
 	] as const) {
 		const build = starterLoadout(id);
 		expect(build.side).toBe("ion");

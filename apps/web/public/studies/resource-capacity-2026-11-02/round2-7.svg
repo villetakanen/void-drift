@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 40 40">
+	<title>Potential Well study: round2-7</title>
+	<path d="M-10,-14H-7V-8H7V-14H10V-5H-10Z" fill="#304759" />
+	<path d="M-10,-14H-7V-8H7V-6H-10Z" fill="#d1e5ec" />
+	<path
+		d="M0.0,-14 C5,-14 5,-12 5,-10 V-11 Q5,-7 0.0,-7 Q-5,-7 -5,-11 V-10 Q-5,-14 0.0,-14"
+		fill="#304759"
+	/>
+	<path d="M0.0,-14 Q-5,-14 -5,-10 V-11 Q-5,-7 0.0,-7Z" fill="#7894a4" />
+	<path d="M-1.0,-13V-8H1.0V-13Z" fill="#d1e5ec" />
+	<path d="M-2,-7H2L3,-6V-6L2,-5H-2L-3,-6V-6Z" fill="#cedb17" />
+	<path d="M-2,-7H2L1,-6H-2V-6L-3,-6V-6Z" fill="#e3ea76" />
+	<path d="M2,-7L3,-6V-6L2,-5H-2L-1,-6H2Z" fill="#87920f" />
+	<path d="M-10,-4H-7V2H7V-4H10V5H-10Z" fill="#304759" />
+	<path d="M-10,-4H-7V2H7V4H-10Z" fill="#d1e5ec" />
+	<path
+		d="M0.0,-4 C5,-4 5,-2 5,0 V-1 Q5,3 0.0,3 Q-5,3 -5,-1 V0 Q-5,-4 0.0,-4"
+		fill="#304759"
+	/>
+	<path d="M0.0,-4 Q-5,-4 -5,0 V-1 Q-5,3 0.0,3Z" fill="#7894a4" />
+	<path d="M-1.0,-3V2H1.0V-3Z" fill="#d1e5ec" />
+	<path d="M-2,3H2L3,4V4L2,5H-2L-3,4V4Z" fill="#cedb17" />
+	<path d="M-2,3H2L1,4H-2V4L-3,4V4Z" fill="#e3ea76" />
+	<path d="M2,3L3,4V4L2,5H-2L-1,4H2Z" fill="#87920f" />
+	<path d="M-10,6H-7V12H7V6H10V15H-10Z" fill="#304759" />
+	<path d="M-10,6H-7V12H7V14H-10Z" fill="#d1e5ec" />
+	<path
+		d="M0.0,6 C5,6 5,8 5,10 V9 Q5,13 0.0,13 Q-5,13 -5,9 V10 Q-5,6 0.0,6"
+		fill="#304759"
+	/>
+	<path d="M0.0,6 Q-5,6 -5,10 V9 Q-5,13 0.0,13Z" fill="#7894a4" />
+	<path d="M-1.0,7V12H1.0V7Z" fill="#d1e5ec" />
+	<path d="M-2,13H2L3,14V14L2,15H-2L-3,14V14Z" fill="#cedb17" />
+	<path d="M-2,13H2L1,14H-2V14L-3,14V14Z" fill="#e3ea76" />
+	<path d="M2,13L3,14V14L2,15H-2L-1,14H2Z" fill="#87920f" />
+</svg>

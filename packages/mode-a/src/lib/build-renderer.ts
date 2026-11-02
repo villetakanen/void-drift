@@ -2,6 +2,7 @@ import { COLOR, canvasFont, type PlumeEmitter } from "@void-drift/core";
 import { CRUISER } from "./cruiser";
 import { ENGINE_ART } from "./engine-art";
 import { FIGHTER } from "./fighter";
+import { drawPotentialWell } from "./potential-well-art";
 import {
 	CHASSIS,
 	type Loadout,
@@ -16,7 +17,6 @@ import {
 	drawWaspStabilizerSlits,
 	stabilizerMount,
 } from "./stabilizers";
-import { drawUtilityArtwork } from "./utility-art";
 import { WASP } from "./wasp";
 export const BUILD_FLIGHT_SCALE = 0.65;
 export interface BuildMount {
@@ -378,8 +378,8 @@ function drawNonEngineFitting(
 	mount: BuildMount,
 ) {
 	if (!mount.part) return;
-	if (mount.part === "battery") {
-		drawUtilityArtwork(ctx, "storage");
+	if (mount.part === "battery" || mount.part === "heavy-well") {
+		drawPotentialWell(ctx, mount.part === "heavy-well");
 		return;
 	}
 	// This rectangle is the installed item's casing, not a vacant mount overlay.

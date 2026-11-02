@@ -499,3 +499,26 @@ no device IDs, catalog entries, loadout choices, charging or repair rules. All f
 artworks are available at `/lab/utility-artwork`; that page also exercises the real
 battery renderer on all production hulls at enlarged and gameplay scale. Resting
 states only: no deployment, orbiting drones, field pulses or animation.
+
+## Potential Well — implemented 2026-11-02
+
+Supersedes the earlier +100-per-battery rule and placeholder storage artwork.
+Every hull retains 100 intrinsic capacity. Potential Well (`battery`, preserved for
+saved version-2 loadouts) adds 85 capacity and 18 mass. Heavy Potential Well
+(`heavy-well`) adds 140 capacity and 36 mass. Both are utility fittings accepted by
+equipment and universal mounts; neither adds resource draw or collection behavior.
+The UI resource remains energy. Flights begin at the combined full capacity, and
+life-support consumption remains 3 per second. Stock Fighter capacity is 185 and
+Corvette capacity is 270; stock Wasp and Scout remain 100.
+
+Approved part-list description for both sizes (121 characters):
+“A bank of well containment units stores potential in subspace, ready to supply the
+ship with matter and energy as needed.”
+
+Shared procedural path definitions in `potential-well-art.ts` implement the accepted
+normal 02.8 and heavy 02.9 A from `/lab/studies/resource-capacity-2026-11-02`.
+Both use 0.55 artwork scale and the production mount transforms/layering. The heavy
+has larger wells; neither has yellow end extensions. #CEDB17 connects the wells,
+with grey lattice between the connectors and upper-left lighting. No animation or
+SFX is included. The study fleet tool uses these production definitions and offers
+both sizes, every equipment mount and fully populated Light ion engine/aft mounts.

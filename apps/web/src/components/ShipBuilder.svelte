@@ -12,6 +12,7 @@ import {
 	engineArtId,
 	PARTS,
 	type PartId,
+	POTENTIAL_WELL_ART,
 	SHIP_IDENTITY,
 	type ShipProfileId,
 	ShipProfileIdSchema,
@@ -256,6 +257,24 @@ function choose(id: ShipProfileId) {
 										{/each}
 									</g>
 								</svg>
+							{:else if part.capacity > 0}
+								<svg
+									viewBox="-24 -30 48 60"
+									width="72"
+									height="56"
+									aria-hidden="true"
+								>
+									{#each POTENTIAL_WELL_ART[
+										part.id === "heavy-well" ? "heavy" : "normal"
+									] as face}
+										<path
+											d={face.path}
+											fill={face.fill}
+											stroke={face.stroke}
+											stroke-width={face.width}
+										/>
+									{/each}
+								</svg>
 							{/if}
 							<span class="part-name"
 								>{part.name}<small
@@ -271,12 +290,15 @@ function choose(id: ShipProfileId) {
 							<small
 								>{part.category === "E"
 									? `${part.thrust.toLocaleString()} thrust · ${part.limit.toFixed(0)} powered ceiling · ${part.response === "pulse" ? "0.18s pulse / 0.45s cycle" : part.response === "delayed" ? "0.6s charge, then sustained" : "Immediate / steady"}`
-									: part.id === "battery"
-										? "+100 energy capacity"
+									: part.capacity > 0
+										? `+${part.capacity} energy capacity`
 										: part.id === "coil"
 											? "+1× solar charging"
 											: "Static fitting · no energy draw"}</small
 							>
+							{#if part.description}
+								<small>{part.description}</small>
+							{/if}
 						</button>
 					{/each}
 					{#if mount.group !== "side"}

@@ -17,6 +17,7 @@ export const PartIdSchema = z.enum([
 	"rail",
 	"laser",
 	"battery",
+	"heavy-well",
 	"coil",
 	"ion",
 	"heavy-ion",
@@ -26,6 +27,8 @@ export const PartIdSchema = z.enum([
 export type PartId = z.infer<typeof PartIdSchema>;
 export const PartSchema = z.object({
 	id: PartIdSchema,
+	description: z.string().max(220).default(""),
+	capacity: z.number().nonnegative().default(0),
 	name: z.string(),
 	category: z.enum(["G", "U", "E"]),
 	mass: z.number().positive(),
@@ -135,9 +138,24 @@ export const PARTS = {
 	}),
 	battery: PartSchema.parse({
 		id: "battery",
-		name: "Energy storage",
+		name: "Potential Well",
+		description:
+			"A bank of well containment units stores potential in subspace, ready to supply the ship with matter and energy as needed.",
+		capacity: 85,
 		category: "U",
 		mass: 18,
+		thrust: 0,
+		limit: 0,
+		draw: 0,
+	}),
+	"heavy-well": PartSchema.parse({
+		id: "heavy-well",
+		name: "Heavy Potential Well",
+		description:
+			"A bank of well containment units stores potential in subspace, ready to supply the ship with matter and energy as needed.",
+		category: "U",
+		capacity: 140,
+		mass: 36,
 		thrust: 0,
 		limit: 0,
 		draw: 0,
@@ -286,7 +304,7 @@ export function buildStats(build: Loadout) {
 	for (const id of ids) {
 		if (!id) continue;
 		mass += PARTS[id].mass;
-		if (id === "battery") capacity += 100;
+		capacity += PARTS[id].capacity;
 		if (id === "coil") coils++;
 		engineDraw += PARTS[id].draw;
 	}

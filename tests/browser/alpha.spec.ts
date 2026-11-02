@@ -42,7 +42,7 @@ test("standard flights start with Fighter and all ships have stabilizers", async
 			page.locator(".flight-hud progress[aria-label='Power']"),
 		).toHaveAttribute(
 			"max",
-			id === "scout" ? "100" : id === "fighter" ? "200" : "300",
+			id === "scout" ? "100" : id === "fighter" ? "185" : "270",
 		);
 		await page.getByRole("button", { name: "PRESS START" }).click();
 		const deck = page.locator(".flight-page");

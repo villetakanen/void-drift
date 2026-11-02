@@ -1,0 +1,122 @@
+---
+const names = [
+	"Long pair / Open spacing",
+	"Long pair / Broad wells",
+	"Long pair / Close coupling",
+];
+const notes = [
+	"Smaller original ring wells reveal more of the underlying rails.",
+	"Broader original wells sit farther apart on wider-set rails.",
+	"Broad original wells sit close together over a narrow rail pair.",
+];
+const root = "/studies/resource-capacity-2026-11-02";
+---
+
+<section
+	class="grid-scroll"
+	aria-label="Three long-pair variations with original ring wells"
+>
+	<div class="well-options">
+		{names.map((name, i) => (
+			<article>
+				<h4>
+					{String(i + 1).padStart(2, "0")} / {name}
+				</h4>
+				<p class="note">{notes[i]}</p>
+				<div class="pair">
+					{["normal"].map((size) => (
+						<figure>
+							<figcaption>
+								{size === "normal" ? "Normal · +85" : "Large · +140 · 2× mass"}
+							</figcaption>
+							<div class="enlargement">
+								<img
+									src={`${root}/long-pair-${i + 1}.svg`}
+									width="320"
+									height="320"
+									alt={`${name}, ${size}, orthographic top-down at eight times scale`}
+								/>
+							</div>
+							<div class="actual">
+								<img
+									src={`${root}/long-pair-${i + 1}.svg`}
+									width="40"
+									height="40"
+									alt={`${name}, ${size}, at one times scale`}
+								/>
+							</div>
+							<small>8× above · 1× below</small>
+						</figure>
+					))}
+				</div>
+			</article>
+		))}
+	</div>
+</section>
+<style>
+.note {
+	min-height: 5em;
+	font-size: 0.875rem;
+	line-height: 1.5;
+}
+.grid-scroll {
+	overflow-x: auto;
+}
+.well-options {
+	display: grid;
+	grid-template-columns: repeat(3, 344px);
+	gap: 1rem;
+	width: max-content;
+}
+.grid-scroll:focus-visible {
+	outline: 2px solid var(--color-action);
+	outline-offset: 2px;
+}
+article {
+	border: 1px solid var(--color-border);
+	padding: 11px;
+	background: var(--color-void);
+}
+h4 {
+	margin: 0 0 1rem;
+}
+.pair {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 1rem;
+}
+figure {
+	margin: 0;
+	width: 320px;
+	max-width: 100%;
+	text-align: center;
+}
+figcaption {
+	font-size: 0.875rem;
+}
+.enlargement {
+	overflow: auto;
+}
+.enlargement img {
+	display: block;
+	width: 320px;
+	height: 320px;
+	max-width: none;
+}
+.actual {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 64px;
+	border-top: 1px solid var(--color-border);
+}
+.actual img {
+	width: 40px;
+	height: 40px;
+	max-width: none;
+}
+small {
+	color: var(--color-text-muted);
+}
+</style>

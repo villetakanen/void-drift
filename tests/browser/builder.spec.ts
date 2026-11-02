@@ -17,11 +17,11 @@ test("fit, persist, fly, reset and return to an assembled ship", async ({
 	await expect(
 		page.getByRole("button", { name: /Light ion.*10 mass/ }),
 	).toHaveCount(0);
-	await page.getByRole("button", { name: /Energy storage.*18 mass/ }).click();
+	await page.getByRole("button", { name: /Potential Well.*18 mass/ }).click();
 	await expect(
 		page
 			.getByRole("region", { name: "Ship assembly" })
-			.getByRole("button", { name: /Hull 1.*Energy storage/ }),
+			.getByRole("button", { name: /Hull 1.*Potential Well/ }),
 	).toBeVisible();
 	await expect(
 		page.getByRole("button", { name: /Scout.*4 SLOTS/ }),
@@ -31,7 +31,7 @@ test("fit, persist, fly, reset and return to an assembled ship", async ({
 	).toBeEnabled();
 	await page.reload();
 	await expect(
-		page.getByRole("button", { name: "Hull 1 · Equipment: Energy storage" }),
+		page.getByRole("button", { name: "Hull 1 · Equipment: Potential Well" }),
 	).toBeVisible();
 	await page.setViewportSize({ width: 1440, height: 1100 });
 	await page.screenshot({
@@ -45,7 +45,7 @@ test("fit, persist, fly, reset and return to an assembled ship", async ({
 	);
 	await expect(
 		page.getByRole("progressbar", { name: "Power" }),
-	).toHaveAttribute("max", "200");
+	).toHaveAttribute("max", "185");
 	await page.keyboard.down("a");
 	await page.keyboard.down("d");
 	await expect
@@ -59,10 +59,10 @@ test("fit, persist, fly, reset and return to an assembled ship", async ({
 	await page.getByRole("button", { name: "Reset flight" }).click();
 	await expect(
 		page.getByRole("progressbar", { name: "Power" }),
-	).toHaveAttribute("value", /19[89]|200/);
+	).toHaveAttribute("value", /18[345]/);
 	await page.getByRole("button", { name: "Return to builder" }).click();
 	await expect(
-		page.getByRole("button", { name: "Hull 1 · Equipment: Energy storage" }),
+		page.getByRole("button", { name: "Hull 1 · Equipment: Potential Well" }),
 	).toBeVisible();
 	await page.getByRole("button", { name: "Start survival" }).click();
 	await expect(page.locator(".edition")).toHaveText(
@@ -241,4 +241,27 @@ test("new engine catalog resets old saves and exposes plasma charging in flight"
 	await page.keyboard.down("a");
 	await expect(page.locator(".engine-feedback")).toContainText("charging");
 	await page.keyboard.up("a");
+});
+
+test("heavy Potential Well persists and supplies its full reserve in flight", async ({
+	page,
+}) => {
+	await page.goto("/builder");
+	await page
+		.getByRole("button", { name: "Hull 1 · Equipment: Empty", exact: true })
+		.click();
+	await page
+		.getByRole("button", { name: /Heavy Potential Well.*36 mass/ })
+		.click();
+	await page.reload();
+	await expect(
+		page.getByRole("button", {
+			name: "Hull 1 · Equipment: Heavy Potential Well",
+			exact: true,
+		}),
+	).toBeVisible();
+	await page.getByRole("button", { name: "Test flight", exact: true }).click();
+	await expect(
+		page.getByRole("progressbar", { name: "Power" }),
+	).toHaveAttribute("max", "240");
 });

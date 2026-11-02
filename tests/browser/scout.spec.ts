@@ -8,7 +8,7 @@ test("Scout restores its four-slot save, fits every part and flies from the cano
 	page.on("pageerror", (error) => errors.push(error.message));
 	await page.goto("/builder");
 	await page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }).click();
-	await page.getByRole("button", { name: /Energy storage.*18 mass/ }).click();
+	await page.getByRole("button", { name: /Potential Well.*18 mass/ }).click();
 	await page.getByRole("button", { name: /Corvette.*8 SLOTS/ }).click();
 	await page.getByRole("button", { name: "Hull 2 · Equipment: Empty" }).click();
 	await page.getByRole("button", { name: /Loading coil.*10 mass/ }).click();
@@ -41,7 +41,7 @@ test("Scout restores its four-slot save, fits every part and flies from the cano
 	for (const [part, label] of [
 		["Rail gun", "Rail gun"],
 		["Laser", "Laser"],
-		["Energy storage", "Energy storage"],
+		["Potential Well", "Potential Well"],
 		["Loading coil", "Loading coil"],
 	]) {
 		await page.locator(".mount").nth(2).click();
@@ -49,7 +49,7 @@ test("Scout restores its four-slot save, fits every part and flies from the cano
 			page.getByRole("button", { name: /Light ion.*10 mass/ }),
 		).toHaveCount(0);
 		await page
-			.getByRole("button", { name: new RegExp(`${part}.*mass`) })
+			.getByRole("button", { name: new RegExp(`^${part}.*mass`) })
 			.click();
 		await expect(
 			page.getByRole("button", { name: `Hull 1 · Equipment: ${label}` }),
@@ -58,14 +58,14 @@ test("Scout restores its four-slot save, fits every part and flies from the cano
 	for (const part of [
 		"Rail gun",
 		"Laser",
-		"Energy storage",
+		"Potential Well",
 		"Loading coil",
 		"Fusion",
 		"Light ion",
 	]) {
 		await page.locator(".mount").nth(3).click();
 		await page
-			.getByRole("button", { name: new RegExp(`${part}.*mass`) })
+			.getByRole("button", { name: new RegExp(`^${part}.*mass`) })
 			.click();
 		await expect(
 			page.getByRole("button", { name: `Aft 1 · Universal: ${part}` }),

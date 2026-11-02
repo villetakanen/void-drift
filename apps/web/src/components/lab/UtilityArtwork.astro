@@ -1,5 +1,5 @@
 ---
-import { UTILITY_ART } from "@void-drift/mode-a";
+import { POTENTIAL_WELL_ART, UTILITY_ART } from "@void-drift/mode-a";
 
 const ids = ["storage", "solar", "gravity", "repair"] as const;
 ---
@@ -19,16 +19,31 @@ const ids = ["storage", "solar", "gravity", "repair"] as const;
 					role="img"
 					aria-label={`${id}, ${small ? "mounted gameplay scale" : "enlarged"}`}
 				>
-					<g transform={`rotate(-90) scale(${small ? 0.35 * 0.65 : 1})`}>
-						{UTILITY_ART[id].map((face) => (
-							<path
-								d={face.contours
-									.map((c) => `M${c.map((p) => p.join(",")).join("L")}Z`)
-									.join(" ")}
-								fill={face.color}
-								fill-rule={face.fillRule}
-							/>
-						))}
+					<g
+						transform={`rotate(-90) scale(${small ? (id === "storage" ? 0.55 : 0.35) * 0.65 : 1})`}
+					>
+						{id === "storage" ? (
+							<g transform="rotate(90)">
+								{POTENTIAL_WELL_ART.normal.map((face) => (
+									<path
+										d={face.path}
+										fill={face.fill}
+										stroke={face.stroke}
+										stroke-width={face.width}
+									/>
+								))}
+							</g>
+						) : (
+							UTILITY_ART[id].map((face) => (
+								<path
+									d={face.contours
+										.map((c) => `M${c.map((p) => p.join(",")).join("L")}Z`)
+										.join(" ")}
+									fill={face.color}
+									fill-rule={face.fillRule}
+								/>
+							))
+						)}
 					</g>
 				</svg>
 			))}
@@ -69,6 +84,7 @@ for (const canvas of document.querySelectorAll<HTMLCanvasElement>(
 	if (!ctx) continue;
 	const build = defaultLoadout(id);
 	build.hull[0] = "battery";
+	build.aft.fill("ion");
 	drawBuild(ctx, build, 150, 150, -Math.PI / 2, 2.5);
 	drawBuild(ctx, build, 150, 325, -Math.PI / 2, 0.65);
 }

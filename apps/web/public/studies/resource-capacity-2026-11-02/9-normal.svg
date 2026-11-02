@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 40 40">
+	<title>Potential Well study: 9-normal</title>
+	<path d="M-7,-9.0H7L8,-8.0V8.0L7,9.0H-7L-8,8.0V-8.0Z" fill="#12171e" />
+	<path d="M-7,-9.0H7L6,-8.0H-7V8.0L-8,8.0V-8.0Z" fill="#d1e5ec" />
+	<path d="M7,-9.0L8,-8.0V8.0L7,9.0H-7L-6,8.0H7Z" fill="#304759" />
+	<path d="M-1,-7H1L2,-6V-5L1,-4H-1L-2,-5V-6Z" fill="#7894a4" />
+	<path d="M-1,-7H1L0,-6H-1V-5L-2,-5V-6Z" fill="#d1e5ec" />
+	<path d="M1,-7L2,-6V-5L1,-4H-1L0,-5H1Z" fill="#304759" />
+	<path d="M-1,-3H1L2,-2V-1L1,0H-1L-2,-1V-2Z" fill="#7894a4" />
+	<path d="M-1,-3H1L0,-2H-1V-1L-2,-1V-2Z" fill="#d1e5ec" />
+	<path d="M1,-3L2,-2V-1L1,0H-1L0,-1H1Z" fill="#304759" />
+	<path d="M-1,1H1L2,2V3L1,4H-1L-2,3V2Z" fill="#7894a4" />
+	<path d="M-1,1H1L0,2H-1V3L-2,3V2Z" fill="#d1e5ec" />
+	<path d="M1,1L2,2V3L1,4H-1L0,3H1Z" fill="#304759" />
+	<path d="M-1,5H1L2,6V7L1,8H-1L-2,7V6Z" fill="#7894a4" />
+	<path d="M-1,5H1L0,6H-1V7L-2,7V6Z" fill="#d1e5ec" />
+	<path d="M1,5L2,6V7L1,8H-1L0,7H1Z" fill="#304759" />
+	<path
+		d="M-3.00,-9.00L-6.00,-9.00L-8.00,-6.00L-8.00,6.00L-6.00,9.00L-3.00,9.00Z"
+		fill="#7894a4"
+	/>
+	<path d="M-3.00,-9.00L-6.00,-9.00L-8.00,-6.00L-4.00,-6.00Z" fill="#d1e5ec" />
+	<path
+		d="M3.00,-9.00L6.00,-9.00L8.00,-6.00L8.00,6.00L6.00,9.00L3.00,9.00Z"
+		fill="#304759"
+	/>
+	<path d="M3.00,-9.00L6.00,-9.00L8.00,-6.00L4.00,-6.00Z" fill="#d1e5ec" />
+	<path d="M-8,-6.0H8L9,-5.0V-5.0L8,-4.0H-8L-9,-5.0V-5.0Z" fill="#cedb17" />
+	<path d="M-8,-6.0H8L7,-5.0H-8V-5.0L-9,-5.0V-5.0Z" fill="#e3ea76" />
+	<path d="M8,-6.0L9,-5.0V-5.0L8,-4.0H-8L-7,-5.0H8Z" fill="#87920f" />
+	<path d="M-8,4.0H8L9,5.0V5.0L8,6.0H-8L-9,5.0V5.0Z" fill="#cedb17" />
+	<path d="M-8,4.0H8L7,5.0H-8V5.0L-9,5.0V5.0Z" fill="#e3ea76" />
+	<path d="M8,4.0L9,5.0V5.0L8,6.0H-8L-7,5.0H8Z" fill="#87920f" />
+</svg>

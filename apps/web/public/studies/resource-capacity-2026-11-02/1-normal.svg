@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 40 40">
+	<title>Potential Well study: 1-normal</title>
+	<path d="M-5,-9.0H5L6,-8.0V8.0L5,9.0H-5L-6,8.0V-8.0Z" fill="#12171e" />
+	<path d="M-5,-9.0H5L4,-8.0H-5V8.0L-6,8.0V-8.0Z" fill="#d1e5ec" />
+	<path d="M5,-9.0L6,-8.0V8.0L5,9.0H-5L-4,8.0H5Z" fill="#304759" />
+	<path d="M-6,-6H6L7,-5V-4L6,-3H-6L-7,-4V-5Z" fill="#7894a4" />
+	<path d="M-6,-6H6L5,-5H-6V-4L-7,-4V-5Z" fill="#d1e5ec" />
+	<path d="M6,-6L7,-5V-4L6,-3H-6L-5,-4H6Z" fill="#304759" />
+	<path d="M-6,-2H6L7,-1V0L6,1H-6L-7,0V-1Z" fill="#7894a4" />
+	<path d="M-6,-2H6L5,-1H-6V0L-7,0V-1Z" fill="#d1e5ec" />
+	<path d="M6,-2L7,-1V0L6,1H-6L-5,0H6Z" fill="#304759" />
+	<path d="M-6,2H6L7,3V4L6,5H-6L-7,4V3Z" fill="#7894a4" />
+	<path d="M-6,2H6L5,3H-6V4L-7,4V3Z" fill="#d1e5ec" />
+	<path d="M6,2L7,3V4L6,5H-6L-5,4H6Z" fill="#304759" />
+	<path d="M-6,6H6L7,7V8L6,9H-6L-7,8V7Z" fill="#7894a4" />
+	<path d="M-6,6H6L5,7H-6V8L-7,8V7Z" fill="#d1e5ec" />
+	<path d="M6,6L7,7V8L6,9H-6L-5,8H6Z" fill="#304759" />
+	<path d="M-7,-10.0H-7L-6,-9.0V9.0L-7,10.0H-7L-8,9.0V-9.0Z" fill="#cedb17" />
+	<path d="M-7,-10.0H-7L-8,-9.0H-7V9.0L-8,9.0V-9.0Z" fill="#e3ea76" />
+	<path d="M-7,-10.0L-6,-9.0V9.0L-7,10.0H-7L-6,9.0H-7Z" fill="#87920f" />
+	<path d="M7,-10.0H7L8,-9.0V9.0L7,10.0H7L6,9.0V-9.0Z" fill="#cedb17" />
+	<path d="M7,-10.0H7L6,-9.0H7V9.0L6,9.0V-9.0Z" fill="#e3ea76" />
+	<path d="M7,-10.0L8,-9.0V9.0L7,10.0H7L8,9.0H7Z" fill="#87920f" />
+	<path d="M-8,-11.0H8L9,-10.0V-9.0L8,-8.0H-8L-9,-9.0V-10.0Z" fill="#304759" />
+	<path d="M-8,-11.0H8L7,-10.0H-8V-9.0L-9,-9.0V-10.0Z" fill="#d1e5ec" />
+	<path d="M8,-11.0L9,-10.0V-9.0L8,-8.0H-8L-7,-9.0H8Z" fill="#304759" />
+	<path d="M-8,9.0H8L9,10.0V11.0L8,12.0H-8L-9,11.0V10.0Z" fill="#304759" />
+	<path d="M-8,9.0H8L7,10.0H-8V11.0L-9,11.0V10.0Z" fill="#d1e5ec" />
+	<path d="M8,9.0L9,10.0V11.0L8,12.0H-8L-7,11.0H8Z" fill="#304759" />
+</svg>

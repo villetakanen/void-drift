@@ -1,0 +1,134 @@
+---
+const names = [
+	"Cassette / Broad cartridge tray",
+	"Cassette / Long magazine",
+	"Cassette / Four-well block",
+	"Rings / Twin transverse wells",
+	"Rings / Longitudinal bank",
+	"Rings / Triangular manifold",
+	"Cradles / Open ladder",
+	"Cradles / Twin saddles",
+	"Cradles / Stepped fan",
+];
+const notes = [
+	"Three rounded cartridges held in a wide, low tray. End clamps leave the wells exposed.",
+	"A tall magazine with three substantial chambers; side clamps concentrate the attachment around its waist.",
+	"Four recessed wells in a compact armored block. A cross-shaped structural bridge binds the assembly.",
+	"Two broad collars joined at a central mounting bridge. Width gives the contained spaces room to read.",
+	"Three separated collars along a spine. A long silhouette and dark openings carry the identity.",
+	"Three wells arranged around a central attachment. A compact cluster rather than a linear bank.",
+	"Three open cradles expose rounded cores. Bright heel fittings connect each unit to the assembly.",
+	"Two long containment bodies sit within separate U-shaped saddles, linked across their waist.",
+	"Three progressively wider cradles create a fan. Open ends and projecting feet define its silhouette.",
+];
+const root = "/studies/resource-capacity-2026-11-02";
+---
+
+<section
+	class="grid-scroll"
+	aria-label="Nine refinements grouped by cassette, ring bank and nested cradles"
+>
+	<div class="well-options">
+		{names.map((name, i) => (
+			<article>
+				<h4>
+					{String(i + 1).padStart(2, "0")} / {name}
+				</h4>
+				<p class="note">{notes[i]}</p>
+				<div class="pair">
+					{["normal"].map((size) => (
+						<figure>
+							<figcaption>
+								{size === "normal" ? "Normal · +85" : "Large · +140 · 2× mass"}
+							</figcaption>
+							<div class="enlargement">
+								<img
+									src={`${root}/round2-${i + 1}.svg`}
+									width="320"
+									height="320"
+									alt={`${name}, ${size}, orthographic top-down at eight times scale`}
+								/>
+							</div>
+							<div class="actual">
+								<img
+									src={`${root}/round2-${i + 1}.svg`}
+									width="40"
+									height="40"
+									alt={`${name}, ${size}, at one times scale`}
+								/>
+							</div>
+							<small>8× above · 1× below</small>
+						</figure>
+					))}
+				</div>
+			</article>
+		))}
+	</div>
+</section>
+<style>
+.note {
+	min-height: 5em;
+	font-size: 0.875rem;
+	line-height: 1.5;
+}
+.grid-scroll {
+	overflow-x: auto;
+}
+.well-options {
+	display: grid;
+	grid-template-columns: repeat(3, 344px);
+	gap: 1rem;
+	width: max-content;
+}
+.grid-scroll:focus-visible {
+	outline: 2px solid var(--color-action);
+	outline-offset: 2px;
+}
+article {
+	border: 1px solid var(--color-border);
+	padding: 11px;
+	background: var(--color-void);
+}
+h4 {
+	margin: 0 0 1rem;
+}
+.pair {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 1rem;
+}
+figure {
+	margin: 0;
+	width: 320px;
+	max-width: 100%;
+	text-align: center;
+}
+figcaption {
+	font-size: 0.875rem;
+}
+.enlargement {
+	overflow: auto;
+}
+.enlargement img {
+	display: block;
+	width: 320px;
+	height: 320px;
+	max-width: none;
+}
+.actual {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 64px;
+	border-top: 1px solid var(--color-border);
+}
+.actual img {
+	width: 40px;
+	height: 40px;
+	max-width: none;
+}
+small {
+	color: var(--color-text-muted);
+}
+</style>

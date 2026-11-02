@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 40 40">
+	<title>Potential Well study: round2-3</title>
+	<path d="M-11,-11H11L12,-10V10L11,11H-11L-12,10V-10Z" fill="#304759" />
+	<path d="M-11,-11H11L10,-10H-11V10L-12,10V-10Z" fill="#d1e5ec" />
+	<path d="M11,-11L12,-10V10L11,11H-11L-10,10H11Z" fill="#304759" />
+	<path d="M-8,-8H-2L-1,-7V-2L-2,-1H-8L-9,-2V-7Z" fill="#12171e" />
+	<path d="M-8,-8H-2L-3,-7H-8V-2L-9,-2V-7Z" fill="#d1e5ec" />
+	<path d="M-2,-8L-1,-7V-2L-2,-1H-8L-7,-2H-2Z" fill="#304759" />
+	<path d="M-7,-7H-3L-2,-6V-3L-3,-2H-7L-8,-3V-6Z" fill="#7894a4" />
+	<path d="M-7,-7H-3L-4,-6H-7V-3L-8,-3V-6Z" fill="#d1e5ec" />
+	<path d="M-3,-7L-2,-6V-3L-3,-2H-7L-6,-3H-3Z" fill="#304759" />
+	<path d="M-8,1H-2L-1,2V7L-2,8H-8L-9,7V2Z" fill="#12171e" />
+	<path d="M-8,1H-2L-3,2H-8V7L-9,7V2Z" fill="#d1e5ec" />
+	<path d="M-2,1L-1,2V7L-2,8H-8L-7,7H-2Z" fill="#304759" />
+	<path d="M-7,2H-3L-2,3V6L-3,7H-7L-8,6V3Z" fill="#7894a4" />
+	<path d="M-7,2H-3L-4,3H-7V6L-8,6V3Z" fill="#d1e5ec" />
+	<path d="M-3,2L-2,3V6L-3,7H-7L-6,6H-3Z" fill="#304759" />
+	<path d="M2,-8H8L9,-7V-2L8,-1H2L1,-2V-7Z" fill="#12171e" />
+	<path d="M2,-8H8L7,-7H2V-2L1,-2V-7Z" fill="#d1e5ec" />
+	<path d="M8,-8L9,-7V-2L8,-1H2L3,-2H8Z" fill="#304759" />
+	<path d="M3,-7H7L8,-6V-3L7,-2H3L2,-3V-6Z" fill="#7894a4" />
+	<path d="M3,-7H7L6,-6H3V-3L2,-3V-6Z" fill="#d1e5ec" />
+	<path d="M7,-7L8,-6V-3L7,-2H3L4,-3H7Z" fill="#304759" />
+	<path d="M2,1H8L9,2V7L8,8H2L1,7V2Z" fill="#12171e" />
+	<path d="M2,1H8L7,2H2V7L1,7V2Z" fill="#d1e5ec" />
+	<path d="M8,1L9,2V7L8,8H2L3,7H8Z" fill="#304759" />
+	<path d="M3,2H7L8,3V6L7,7H3L2,6V3Z" fill="#7894a4" />
+	<path d="M3,2H7L6,3H3V6L2,6V3Z" fill="#d1e5ec" />
+	<path d="M7,2L8,3V6L7,7H3L4,6H7Z" fill="#304759" />
+	<path d="M-1,-12H1L2,-11V11L1,12H-1L-2,11V-11Z" fill="#cedb17" />
+	<path d="M-1,-12H1L0,-11H-1V11L-2,11V-11Z" fill="#e3ea76" />
+	<path d="M1,-12L2,-11V11L1,12H-1L0,11H1Z" fill="#87920f" />
+	<path d="M-12,-2H12L13,-1V1L12,2H-12L-13,1V-1Z" fill="#cedb17" />
+	<path d="M-12,-2H12L11,-1H-12V1L-13,1V-1Z" fill="#e3ea76" />
+	<path d="M12,-2L13,-1V1L12,2H-12L-11,1H12Z" fill="#87920f" />
+</svg>

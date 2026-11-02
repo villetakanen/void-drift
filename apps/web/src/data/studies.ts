@@ -10,6 +10,14 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
 	{
+		slug: "resource-capacity-2026-11-02",
+		title: "Ship reserves: capacity made physical",
+		status: "accepted",
+		phase: "scope",
+		question:
+			"What basic piece of equipment lets a ship carry more of what keeps it running?",
+	},
+	{
 		slug: "utility-machinery-2026-11-02",
 		title: "Utility machinery: objects with weight",
 		status: "accepted",

@@ -44,12 +44,12 @@ describe("ship builder contract", () => {
 	});
 	it("adds capacity without multiplying life support and begins full", () => {
 		const sim = simulation();
-		expect(sim.state.resources.power).toBe(200);
+		expect(sim.state.resources.power).toBe(185);
 		for (let i = 0; i < 60; i++) sim.step(idle);
-		expect(sim.state.resources.power).toBeCloseTo(197, 5);
+		expect(sim.state.resources.power).toBeCloseTo(182, 5);
 		expect(
 			buildStats(LoadoutSchema.parse(sim.settings.loadout)).endurance,
-		).toBeCloseTo(200 / 3);
+		).toBeCloseTo(185 / 3);
 	});
 	it("uses both controls for aft engines and cancels mirrored torque", () => {
 		const build = defaultLoadout("fighter");
