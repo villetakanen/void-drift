@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-30 -30 60 60">
+	<title>Resting repair</title>
+	<g>
+		<polygon points="-7,-6 -6,-7 6,-7 7,-6 7,7 -7,7" fill="#304759"></polygon>
+		<polygon points="-7,-6 -6,-7 -6,6 -7,7" fill="#d1e5ec"></polygon>
+		<polygon points="-6,-7 6,-7 6,6 -6,6" fill="#7894a4"></polygon>
+		<polygon
+			points="-10,-2 -9,-3 9,-3 10,-2 10,3 -10,3"
+			fill="var(--family-accent)"
+			style="filter:brightness(.55)"
+		></polygon>
+		<polygon
+			points="-10,-2 -9,-3 -9,2 -10,3"
+			fill="var(--family-accent)"
+			style="filter:brightness(1.15)"
+		></polygon>
+		<polygon points="-9,-3 9,-3 9,2 -9,2" fill="var(--family-accent)"></polygon>
+	</g>
+	<g transform="matrix(1, 0, 0, 1, 0, 0)" style="transform-origin:0px 0px">
+		<g>
+			<polygon
+				points="-2,-11 -1,-12 1,-12 2,-11 2,-6 -2,-6"
+				fill="#304759"
+			></polygon>
+			<polygon points="-2,-11 -1,-12 -1,-7 -2,-6" fill="#d1e5ec"></polygon>
+			<polygon points="-1,-12 1,-12 1,-7 -1,-7" fill="#7894a4"></polygon>
+			<polygon
+				points="-2,-8 -1,-9 1,-9 2,-8 2,-7 -2,-7"
+				fill="var(--family-accent)"
+				style="filter:brightness(.55)"
+			></polygon>
+			<polygon
+				points="-2,-8 -1,-9 -1,-8 -2,-7"
+				fill="var(--family-accent)"
+				style="filter:brightness(1.15)"
+			></polygon>
+			<polygon
+				points="-1,-9 1,-9 1,-8 -1,-8"
+				fill="var(--family-accent)"
+			></polygon>
+		</g>
+	</g>
+	<g transform="matrix(0, 1, -1, 0, 0, 0)" style="transform-origin:0px 0px">
+		<g>
+			<polygon
+				points="-2,-11 -1,-12 1,-12 2,-11 2,-6 -2,-6"
+				fill="#304759"
+			></polygon>
+			<polygon points="-2,-11 -1,-12 -1,-7 -2,-6" fill="#d1e5ec"></polygon>
+			<polygon points="-1,-12 1,-12 1,-7 -1,-7" fill="#7894a4"></polygon>
+			<polygon
+				points="-2,-8 -1,-9 1,-9 2,-8 2,-7 -2,-7"
+				fill="var(--family-accent)"
+				style="filter:brightness(.55)"
+			></polygon>
+			<polygon
+				points="-2,-8 -1,-9 -1,-8 -2,-7"
+				fill="var(--family-accent)"
+				style="filter:brightness(1.15)"
+			></polygon>
+			<polygon
+				points="-1,-9 1,-9 1,-8 -1,-8"
+				fill="var(--family-accent)"
+			></polygon>
+		</g>
+	</g>
+	<g transform="matrix(-1, 0, 0, -1, 0, 0)" style="transform-origin:0px 0px">
+		<g>
+			<polygon
+				points="-2,-11 -1,-12 1,-12 2,-11 2,-6 -2,-6"
+				fill="#304759"
+			></polygon>
+			<polygon points="-2,-11 -1,-12 -1,-7 -2,-6" fill="#d1e5ec"></polygon>
+			<polygon points="-1,-12 1,-12 1,-7 -1,-7" fill="#7894a4"></polygon>
+			<polygon
+				points="-2,-8 -1,-9 1,-9 2,-8 2,-7 -2,-7"
+				fill="var(--family-accent)"
+				style="filter:brightness(.55)"
+			></polygon>
+			<polygon
+				points="-2,-8 -1,-9 -1,-8 -2,-7"
+				fill="var(--family-accent)"
+				style="filter:brightness(1.15)"
+			></polygon>
+			<polygon
+				points="-1,-9 1,-9 1,-8 -1,-8"
+				fill="var(--family-accent)"
+			></polygon>
+		</g>
+	</g>
+	<g transform="matrix(0, -1, 1, 0, 0, 0)" style="transform-origin:0px 0px">
+		<g>
+			<polygon
+				points="-2,-11 -1,-12 1,-12 2,-11 2,-6 -2,-6"
+				fill="#304759"
+			></polygon>
+			<polygon points="-2,-11 -1,-12 -1,-7 -2,-6" fill="#d1e5ec"></polygon>
+			<polygon points="-1,-12 1,-12 1,-7 -1,-7" fill="#7894a4"></polygon>
+			<polygon
+				points="-2,-8 -1,-9 1,-9 2,-8 2,-7 -2,-7"
+				fill="var(--family-accent)"
+				style="filter:brightness(.55)"
+			></polygon>
+			<polygon
+				points="-2,-8 -1,-9 -1,-8 -2,-7"
+				fill="var(--family-accent)"
+				style="filter:brightness(1.15)"
+			></polygon>
+			<polygon
+				points="-1,-9 1,-9 1,-8 -1,-8"
+				fill="var(--family-accent)"
+			></polygon>
+		</g>
+	</g>
+</svg>

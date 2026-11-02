@@ -1,0 +1,889 @@
+---
+import OpportunityColour from "../../../components/studies/OpportunityColour.astro";
+
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((s) => s.slug === "utility-machinery-2026-11-02");
+const ships = [
+	["wasp", "Wasp"],
+	["scout", "Scout"],
+	["fighter", "Fighter"],
+	["corvette", "Corvette"],
+];
+const engines = [
+	["ion", "Light ion"],
+	["heavy-ion", "Heavy ion"],
+	["fusion", "Fusion"],
+	["plasma", "Plasma"],
+];
+const root = "/studies/utility-machinery-2026-11-02/";
+---
+
+<StudyLayout study={study}>
+	<section>
+		<details>
+			<summary>01 / Machinery with a physical presence</summary>
+			<p>
+				Beside the Wasp’s raised body and the ion engine’s assembled housing, a
+				utility should feel like another manufactured object in the same world.
+				Energy storage, solar charging, gravity charging and automatic repair
+				offer four different characters: held power, a surface reaching for
+				light, a mechanism gathering energy from motion through gravity, and a
+				machine tending another machine. These are starting impressions to
+				investigate, not settled construction choices.
+			</p>
+			<p>
+				The family needs weight without becoming four identical boxes. The ships
+				and engines below establish the visual foundation: a few solid parts,
+				clear changes of plane, deliberate joins and dark spaces between
+				assemblies. Visible working parts should explain how an object is put
+				together. At enlarged scale, a housing should have thickness and a
+				mechanism should seem supported; at flight scale, the silhouette and
+				largest masses must carry its identity.
+			</p>
+			<p>
+				This cycle explores which proportions, working structures and family
+				resemblances make these utilities belong. A small device beside a ship
+				must hold its own without overwhelming the ship’s character. The shared
+				reference panel stays here throughout the exploration, so each proposal
+				can be compared against the same established objects. Capacity, charging
+				balance, repair rules and final mounting arrangements remain outside
+				this visual inquiry.
+			</p>
+		</details>
+		<div class="reference" id="reference">
+			<h3>Production reference / ships and engines</h3>
+			<p>
+				Static captures of current production artwork, 2 November 2026. Ships
+				use default loadouts, nose up; engines use the aft lighting pose,
+				exhaust down. Enlargements share a scale within each row: ships 2.5×,
+				engines 8×. Every small view uses the same 0.65× flight scale. Compare
+				small views at normal browser zoom.
+			</p>
+			{[ships, engines].map((group) => (
+				<div class="grid">
+					{group.map(([id, label]) => (
+						<figure>
+							<figcaption>{label}</figcaption>
+							<img
+								src={`${root}${id}.png`}
+								width="240"
+								height="280"
+								alt={`${label}, enlarged production artwork`}
+							/>
+							<div class="small">
+								<img
+									src={`${root}${id}-flight.png`}
+									width="100"
+									height="90"
+									alt={`${label} at gameplay scale`}
+								/>
+							</div>
+							<span>0.65× / flight scale</span>
+						</figure>
+					))}
+				</div>
+			))}
+		</div>
+	</section>
+	<section id="exploration">
+		<h2>02 / Construction as family character</h2>
+		<details>
+			<summary>02.1 / A housing or a supporting cradle</summary>
+			<p>
+				The Wasp and ion suggest a provisional family principle: substantial
+				primary masses, with smaller fittings visibly seated in them. Their
+				character comes from shaped volumes before surface detail. The fusion
+				engine adds another possibility already present in this world: separated
+				masses connected across an open space. This suggests that belonging need
+				not require a closed shell.
+			</p>
+			<p>
+				These two storage sketches test where to put the structural weight. Both
+				contain the same paired, faceted cells, terminal bridge and lower
+				connector; both occupy 22 × 28 drawing units with identical lighting and
+				palette. A wraps the cells in deep protective shoulders. B exposes their
+				sides and carries them between end blocks, with a recessed central spine
+				and lateral retaining clamps. The dark gaps in B are spaces between
+				objects, not decorative markings.
+			</p>
+			<div class="grid">
+				<figure>
+					<figcaption>Wasp / raised body</figcaption>
+					<img
+						src={`${root}wasp.png`}
+						width="240"
+						height="280"
+						alt="Production Wasp reference"
+					>
+					<div class="small">
+						<img
+							src={`${root}wasp-flight.png`}
+							width="100"
+							height="90"
+							alt="Wasp at flight scale"
+						>
+					</div>
+					<span>Production · 2.5× / 0.65×</span>
+				</figure>
+				<figure>
+					<figcaption>Ion / protective housing</figcaption>
+					<img
+						src={`${root}ion.png`}
+						width="240"
+						height="280"
+						alt="Production light ion reference"
+					>
+					<div class="small">
+						<img
+							src={`${root}ion-flight.png`}
+							width="100"
+							height="90"
+							alt="Light ion at flight scale"
+						>
+					</div>
+					<span>Production · 8× / 0.65×</span>
+				</figure>
+				{[
+					["housing", "A / Armoured cassette"],
+					["cradle", "B / Exposed cell cradle"],
+				].map(([id, label]) => (
+					<figure>
+						<figcaption>{label}</figcaption>
+						<img
+							src={`${root}${id}.svg`}
+							width="240"
+							height="280"
+							alt={`${label}: provisional energy storage construction`}
+						/>
+						<div class="small">
+							<img
+								src={`${root}${id}-flight.svg`}
+								width="100"
+								height="90"
+								alt={`${label} at provisional gameplay scale`}
+							/>
+						</div>
+						<span>Sketch · 8× / 0.65×</span>
+					</figure>
+				))}
+			</div>
+			<p>
+				A tests a compact, guarded character; B tests a serviceable machine
+				whose assembly can be understood from outside. The working hypothesis is
+				that thick supports around an exposed functional part could unite
+				storage cells, solar hinges, gravity machinery and repair joints without
+				forcing them into the same silhouette. These sketches only test that
+				proposition on storage. They do not establish the other devices, moving
+				behaviour, or final equipment size.
+			</p>
+			<p>
+				At small scale, inspect the overall mass and the openings first. If the
+				exposed construction disappears there, it may still explain assembly
+				when enlarged, but it cannot yet carry the family’s gameplay identity.
+				No construction direction has been selected.
+			</p>
+			<p>
+				<a href="#reference">Return to all eight production references ↑</a>
+			</p>
+		</details>
+	</section>
+	<section id="family-promise">
+		<details>
+			<summary>02.2 / What does this machinery promise the pilot?</summary>
+			<p>
+				02.1 succeeded in making the problem visible: the first construction
+				sketches felt approachable enough to discuss, but cassette versus cradle
+				did not explain why this family matters. Neither construction was
+				selected. The next question moves from assembly to character.
+			</p>
+			<p>
+				The ships can be read as angry triangles announcing “I am an attack
+				ship”; the engines announce “I burn power.” This family needs an equally
+				direct promise. The support-class analogy is useful: a cleric matters
+				through the relationship they create with the player, not through the
+				category “support.” Here, “I sustain you,” “I gather power for you” and
+				“I empower you” describe reasons to care. “Utility” remains a working
+				label, not a character brief.
+			</p>
+			<p>
+				Three deliberately provisional postures below explore that relationship.
+				Each uses the same central working core, palette, lighting and display
+				scale. Surrounding masses change its stance: enclosing, reaching or
+				reinforcing. These are visual metaphors for a family, not three proposed
+				equipment types. The drawings cannot establish their emotional reading
+				without human interpretation.
+			</p>
+			<div class="promises">
+				{[
+					[
+						"sustain",
+						"I keep you going",
+						"A steadfast companion",
+						"Low shoulders cup the working core; weight sits beneath it. The intended feeling is dependable reserve: something that stays with you through a difficult run. The risk is reading as passive armour or a container.",
+					],
+					[
+						"gather",
+						"I turn surroundings into strength",
+						"A resourceful companion",
+						"The assembly opens outward, with substantial receiving ends and a core between them. The intended feeling is alertness and exchange with the world. The risk is reading as a weapon or a claw rather than a provider.",
+					],
+					[
+						"empower",
+						"I help you do more",
+						"An enabling companion",
+						"Paired raised masses reinforce the core and point in a shared direction. The intended feeling is readiness and added capability. The risk is becoming another engine or implying speed alone.",
+					],
+				].map(([id, promise, character, description]) => (
+					<figure>
+						<figcaption>{promise}</figcaption>
+						<img
+							src={`${root}${id}.svg`}
+							width="240"
+							height="280"
+							alt={`${character}: speculative machinery posture`}
+						/>
+						<div class="small">
+							<img
+								src={`${root}${id}-flight.svg`}
+								width="100"
+								height="90"
+								alt={`${character} at provisional flight scale`}
+							/>
+						</div>
+						<h4>{character}</h4>
+						<p>{description}</p>
+					</figure>
+				))}
+			</div>
+			<h4>One promise, four expressions</h4>
+			<p>
+				A family promise must survive changes of function. These are possible
+				meanings for the existing four roles, not new gameplay commitments.
+			</p>
+			<div class="meanings">
+				<table>
+					<thead>
+						<tr>
+							<th>Role</th>
+							<th>Keep you going</th>
+							<th>Turn surroundings into strength</th>
+							<th>Help you do more</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th>Storage</th>
+							<td>Reserve when you need it</td>
+							<td>Hold what you have gathered</td>
+							<td>Headroom for your next action</td>
+						</tr>
+						<tr>
+							<th>Solar charging</th>
+							<td>Replenishment you can rely on</td>
+							<td>Find value in available light</td>
+							<td>Renew your capacity to act</td>
+						</tr>
+						<tr>
+							<th>Gravity charging</th>
+							<td>Recover energy along the journey</td>
+							<td>Make the environment an opportunity</td>
+							<td>Convert a manoeuvre into possibility</td>
+						</tr>
+						<tr>
+							<th>Automatic repair</th>
+							<td>Help you endure damage</td>
+							<td>Restore what remains usable</td>
+							<td>Return you to action</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<p>
+				“I help you do more” is a promising umbrella because it puts the pilot’s
+				agency first. “I keep you going” may better express care and endurance.
+				“I turn surroundings into strength” has a distinctive, resourceful
+				attitude, but fits storage and repair less directly. These are
+				hypotheses; a mixture or a different promise may describe the family
+				better.
+			</p>
+			<p>
+				The useful result of this round is a desired relationship and the
+				visible qualities that support it. A chosen phrase would guide another
+				drawing round across all four functions; it would not automatically
+				approve any posture shown here.
+				<a href="#reference"
+					>The production reference panel remains the shared visual
+					foundation.</a
+				>
+			</p>
+		</details>
+	</section>
+	<section id="wartime-roles">
+		<details>
+			<summary>02.3 / Keep going—and make it count</summary>
+			<p>
+				02.2 succeeded in explaining the role behind the machinery. The
+				discussion now centres on “I keep you going” and “I turn surroundings
+				into strength”; broad empowerment is no longer the leading direction.
+				The support-class analogy remains useful, but the wartime framing gives
+				support a harder purpose: endurance can be a means of gaining advantage,
+				not simply reassurance.
+			</p>
+			<p>
+				Extra armour, repair, energy gathering and energy storage all help a
+				ship remain operational. They also let a pilot make use of something:
+				protection, recoverable damage, available energy or a reserve held for
+				later. “Exploitation” here means making those resources and
+				opportunities count. It need not mean consuming the environment or
+				scavenging an enemy. Armour enters this discussion as another example of
+				the family’s role; its inclusion does not settle a new equipment design.
+			</p>
+			<h4>Four possible attitudes</h4>
+			<div class="meanings">
+				<table>
+					<thead>
+						<tr>
+							<th>Promise</th>
+							<th>Relationship with the pilot</th>
+							<th>What makes it compelling</th>
+							<th>What it could miss</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th>I keep you in the fight</th>
+							<td>A steadfast combat companion</td>
+							<td>
+								Damage and depletion do not immediately take away your ability
+								to act. Armour buys tolerance, repair restores condition,
+								gathering replenishes and storage holds reserve.
+							</td>
+							<td>Can sound passive if staying alive is its only ambition.</td>
+						</tr>
+						<tr>
+							<th>I make opportunity usable</th>
+							<td>A resourceful accomplice</td>
+							<td>
+								You notice something worth exploiting and the machinery lets you
+								benefit: available light, a gravity encounter, protection or
+								stored energy.
+							</td>
+							<td>
+								Not every resource comes from the surroundings; repair and
+								armour should not be forced into a harvesting metaphor.
+							</td>
+						</tr>
+						<tr>
+							<th>I help you outlast</th>
+							<td>A relentless campaign machine</td>
+							<td>
+								The family expresses persistence under pressure: staying
+								effective after ordinary reserves would have run out.
+							</td>
+							<td>
+								Can imply slow attrition or an opponent who runs out first.
+								Neither combat pacing nor opponent resource rules are
+								established here.
+							</td>
+						</tr>
+						<tr>
+							<th>I turn reserves into advantage</th>
+							<td>A calculating quartermaster</td>
+							<td>
+								Protection, restored condition and stored energy feel like means
+								to pursue an intention. The promise is having enough in hand to
+								commit when an opening appears.
+							</td>
+							<td>
+								Can overemphasise hoarding or imply active release controls.
+								This is a character hypothesis, not a new control scheme.
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<h4>One situation, different reasons to care</h4>
+			<p>
+				Imagine a battered ship approaching another dangerous stretch with
+				energy running low. This is a fictional design situation, not a claim
+				about implemented encounters. “Keep you in the fight” makes the
+				machinery feel dependable. “Make opportunity usable” draws attention to
+				what the route offers. “Help you outlast” gives continued operation a
+				stubborn character. “Turn reserves into advantage” makes the remaining
+				margin feel like something the pilot can commit with intent.
+			</p>
+			<p>
+				The hardware might perform the same functions in every reading. What
+				changes is the attitude: shelter, resourcefulness, persistence or
+				calculated advantage. This is why industrial versus scientific, and
+				cassette versus cradle, cannot settle the family’s character on their
+				own.
+			</p>
+			<h4>A working synthesis: resourceful endurance</h4>
+			<p>
+				<strong
+					>“I keep you in the fight by making the most of what you have and what
+					you encounter.”</strong
+				>
+				This combines the two promising directions without making every device a
+				collector. Armour preserves your margin; repair restores it; gathering
+				adds to it; storage carries it forward. The common purpose is
+				maintaining the means to act under pressure.
+			</p>
+			<p>
+				That suggests machinery with a tenacious, purposeful character: valuable
+				because it helps the pilot persist and take opportunities. “Combat
+				support,” “sustainment” and “survival machinery” are possible working
+				names, each with a different emphasis; none is selected. The
+				exploitation angle contributes resourcefulness and intent, while “keep
+				you going” supplies the family’s centre. Whether that should feel more
+				like a loyal companion or a calculating war machine remains open.
+			</p>
+			<p>
+				This round deliberately uses roles and situations rather than new
+				drawings. It establishes no visual selection, combat mechanic, balance
+				rule or additional control. The next visual investigation can express
+				the relationship that emerges from this discussion. The earlier sketches
+				and production references remain available for that work.
+			</p>
+		</details>
+	</section>
+	<section id="family-decision">
+		<details>
+			<summary>02.3 / Direction established: “I create opportunities.”</summary>
+			<p>
+				<strong>The family’s promise is “I create opportunities.”</strong>
+				This advances the discussion beyond keeping the ship operational or
+				exploiting opportunities that already exist. These machines create room
+				for the pilot to act.
+			</p>
+			<p>
+				Armour can create room to take a risk. Repair can create another chance
+				after damage. Gathering energy can make an otherwise unavailable action
+				possible; storage can preserve that possibility until the pilot needs
+				it. These are interpretations of the agreed promise, to investigate
+				through design—not additional mechanics or settled balance.
+			</p>
+			<p>
+				Endurance and resourcefulness remain useful means, but opportunity
+				creation is the family’s centre. The earlier endurance-led synthesis is
+				superseded. No silhouette, construction or working name has been
+				selected. The next visual question is how machinery can communicate that
+				it makes an opening possible, while remaining a substantial object
+				alongside the ships and engines.
+			</p>
+		</details>
+	</section>
+	<section id="family-identity">
+		<details>
+			<summary>02.4 / An identity that survives a small silhouette</summary>
+			<div class="decision">
+				<h4>Established: a clear accent identifies the family</h4>
+				<p>
+					A distinct, vivid family colour carried by selected physical parts is
+					a useful identity cue. Bases, connections or other recurring parts can
+					carry it, much as dark engine bodies and their coloured exhaust ends
+					identify engines. This is an accepted direction for family
+					recognition, alongside other qualities still to be discovered.
+				</p>
+				<p>
+					The exact hue, its placement and the additional family cues remain
+					open. Amber is a successful example, not a selected colour; neither
+					the open yoke nor the transverse bridge is selected as the
+					construction. The family promise remains “I create opportunities.”
+				</p>
+			</div>
+			<p>
+				<strong
+					>“I create opportunities” remains the family promise. Clean, crisp and
+					energetic is the colour intent.</strong
+				>
+				A minimal palette can carry vivid colour on substantial parts; minimal
+				does not mean muted. The next hypothesis is a bright, repeated
+				structural feature that identifies the family while the working parts
+				distinguish its members.
+			</p>
+			<p>
+				Two proposals use the same four experimental bodies and the same vivid
+				amber palette. A gives each device an open, three-sided yoke: a physical
+				opening around the mechanism, suggesting available room or possibility.
+				B gives each device a broad transverse power bridge: a strongly
+				connected assembly, suggesting capability made available. These meanings
+				are hypotheses, not symbols a player can be assumed to understand.
+			</p>
+			{[
+				[
+					"gate",
+					"A / Open yoke",
+					"A bright opening carried by two raised shoulders and a deep connecting heel.",
+				],
+				[
+					"band",
+					"B / Power bridge",
+					"A bright transverse mass connects the working assembly, interrupted by a raised central fitting.",
+				],
+			].map(([motif, title, description]) => (
+				<div class="identity-round">
+					<h4>{title}</h4>
+					<p>{description}</p>
+					<div class="grid">
+						{[
+							["storage", "Storage"],
+							["solar", "Solar charging"],
+							["gravity", "Gravity charging"],
+							["repair", "Repair"],
+						].map(([kind, label]) => (
+							<figure>
+								<figcaption>{label}</figcaption>
+								<img
+									src={`${root}identity-${motif}-${kind}-color.svg`}
+									width="240"
+									height="250"
+									alt={`${label} with ${title}, enlarged faceted construction`}
+								/>
+								<div class="small">
+									<img
+										src={`${root}identity-${motif}-${kind}-color-flight.svg`}
+										width="100"
+										height="70"
+										alt={`${label} with ${title} at 0.65 scale`}
+									/>
+									<img
+										src={`${root}identity-${motif}-${kind}-mono-flight.svg`}
+										width="100"
+										height="70"
+										alt={`${label} with ${title}, colour removed at 0.65 scale`}
+									/>
+								</div>
+								<span>6× enlarged · 0.65× colour · 0.65× greyscale</span>
+							</figure>
+						))}
+					</div>
+				</div>
+			))}
+			<p>
+				The small views are approximately 17–23 pixels across at normal browser
+				zoom. Greyscale copies help expose whether shape contributes identity
+				when hue is unavailable. Each coloured part has a light-facing plane, a
+				broad saturated face and a dark side; the colour belongs to an assembled
+				object rather than a painted icon. The solar wings, gravity rotor and
+				repair jaws are provisional visual fixtures, not selected mechanisms.
+			</p>
+			<h4>Beside established equipment</h4>
+			<div class="identity-strip">
+				{["ion", "heavy-ion", "fusion", "plasma"].map((id) => (
+					<img
+						src={`${root}${id}-flight.png`}
+						width="100"
+						height="90"
+						alt={`${id}, production flight scale`}
+					/>
+				))}<img
+					src={`${root}identity-gate-storage-color-flight.svg`}
+					width="100"
+					height="70"
+					alt="Open-yoke storage proposal at flight scale"
+				><img
+					src={`${root}identity-band-storage-color-flight.svg`}
+					width="100"
+					height="70"
+					alt="Power-bridge storage proposal at flight scale"
+				>
+			</div>
+			<p>
+				Amber is energetic, but the production plasma engine already uses an
+				orange accent, so hue alone cannot establish a distinct family. The
+				proposed transverse or open construction must do additional work. Future
+				guns are expected to be long and pointed; their artwork is not
+				established here, so separation from guns remains a later comparison.
+				The full
+				<a href="#reference">ship and engine reference panel</a>
+				remains available above.
+			</p>
+			<p>
+				This round can establish a promising combination of shape and colour, or
+				reveal that neither cue carries enough identity. It cannot prove that a
+				tiny object literally communicates “opportunity,” nor settle the colour
+				for the entire game. Family recognition and the feeling of available
+				capability are related but separate judgments.
+			</p>
+		</details>
+	</section>
+	<section id="working-character">
+		<details>
+			<summary>02.5 / Different ways of creating an opportunity</summary>
+			<p>
+				<strong
+					>The family is connected by colour on its structure, attachments and
+					connections. It need not share a silhouette.</strong
+				>
+				The remaining body palette—white, grey or black—is unresolved. These
+				sketches retain a cool grey body and vivid amber structure to focus this
+				round on behaviour, without selecting those colours.
+			</p>
+			<p>
+				The next hypothesis is that each device becomes most itself when
+				working. Storage holds potential quietly. Solar enlarges its collecting
+				surface. Gravity reaches beyond the object through a field. Repair
+				distributes its work through four drones. Their different shapes and
+				behaviours can belong together because the accent identifies what holds,
+				joins and attaches the machinery.
+			</p>
+			<p>
+				The animated trial informed the discussion; the accepted delivery uses
+				only the resting drawings preserved in 02.6. Working states are outside
+				this delivery.
+			</p>
+			<p>
+				These are illustrative resting and working states, independent of the
+				game loop. The solar proposal uses hinged collectors; projected solar
+				fields remain an alternative. Gravity ellipses explore an FX layer
+				without defining force or range. Repair drones orbit a schematic service
+				area without a ship or damage targets; their eventual routes and scale
+				relative to a hull remain open. Storage is deliberately identical in
+				both columns.
+			</p>
+			<p>
+				The comparison keeps geometry and camera fixed between states, uses no
+				randomness, and runs a 1.3-second solar deployment, a 2.8-second field
+				cycle and a 6-second drone loop. These timings serve inspection only. On
+				narrow phones the enlarged drawings fit the columns; the 0.65× views
+				retain their size. Reduced-motion mode preserves deployed poses without
+				continuous movement.
+			</p>
+			<p>
+				The useful discovery is whether these distinct working behaviours give
+				each member a compelling role while the accent on physical structure
+				holds the family together. Mechanisms, body palette and animation are
+				still proposals.
+				<a href="#reference"
+					>Production ships and engines remain the visual foundation.</a
+				>
+			</p>
+		</details>
+	</section>
+	<section id="family-colour">
+		<details>
+			<summary>02.6 / Accepted colour and resting parts</summary>
+			<p>
+				The accepted reference uses RGB 206, 219, 23 (#CEDB17) on the existing
+				connector, strut and attachment geometry. Two production Wasps carry
+				Light ions, with storage and solar on the first and gravity and repair
+				on the second. All devices rest above the wings in this reference.
+			</p>
+			<OpportunityColour />
+			<p>
+				The given resting parts and simple colour shading are accepted for this
+				delivery. Individual part refinement can follow in separate studies. No
+				deployment, drones in flight, pulsing fields or other animations are
+				included.
+			</p>
+		</details>
+	</section>
+	<section id="readiness">
+		<h2>03 / Readiness: a static family can be delivered</h2>
+		<p>
+			<strong>Accepted conclusion:</strong>
+			the family creates opportunities. Its identity uses #CEDB17 on connectors,
+			struts and attachments; its members may have different silhouettes. The
+			four given resting drawings in 02.6 are the exact delivery reference,
+			including their current body colours and simple accent shading.
+			Working-state ideas remain useful future research, but this delivery
+			contains no animations.
+		</p>
+		<p>
+			The reference is already inspectable as static SVG equipment over
+			production Wasp artwork. Its four assets are resting-storage.svg,
+			resting-solar.svg, resting-gravity.svg and resting-repair.svg in the study
+			component directory. The reference uses a 0.35 equipment scale, production
+			wing-mount centres, top-of-hull layering and a 0.65 flight-scale check.
+			These are the preserved comparison conditions; production layering must
+			follow each hull’s mounting rules.
+		</p>
+		<p>
+			Production drawBuild already handles mounts, orientation, hull layering
+			and engine artwork. Its non-engine fitting renderer currently draws
+			generic casings and a battery mark, so these new faces still require
+			integration. Battery already has a part contract and capacity effect.
+			Solar charging, gravity charging and repair are not defined as those
+			equipment types in the current loadout contract; displaying their art does
+			not implement their game rules.
+		</p>
+		<p>
+			Integration provides artwork only. Gravity Charger remains conceptual:
+			this scope adds no device ID, loadout entry or gameplay rules. Static
+			artwork integration is feasible with existing procedural drawing systems
+			and no added dependencies. A shared accent definition and reusable part
+			faces should serve both the Lab and the renderer. Equipment contracts must
+			be defined with Zod before any new IDs or data shape are added. Mechanics
+			for the three new functions are separate work, not a prerequisite for
+			preserving or displaying the accepted artwork.
+		</p>
+		<p>
+			Remaining verification concerns are readability at actual mount size,
+			clipping and layering on other hulls, and distinction from other bright
+			game colours. Human acceptance here settles the illustrated family and
+			resting parts; it does not claim an implemented gameplay release.
+		</p>
+	</section>
+	<section id="scope">
+		<h2>04 / Scope: resting artwork first</h2>
+		<p>
+			Separate study-quality review:
+			<code>docs/reviews/utility-machinery-2026-11-02.md</code>.
+		</p>
+		<p>
+			<strong>Study accepted, 2 November 2026.</strong>
+			The selected colour is RGB 206, 219, 23 (#CEDB17). Deliver the four given
+			resting parts with that family accent. No animations or working-state FX
+			are included. No change to docs/design.md is proposed: the feature’s
+			identity belongs in its equipment contract and shared drawing definitions.
+		</p>
+		<ol>
+			<li>
+				<strong>Shared static artwork — small.</strong>
+				Extract the accepted resting faces and accent shading into reusable
+				procedural part definitions, retaining 02.6 as the fidelity reference.
+				Document the family promise, accent placement and resting-only scope in
+				the ship-builder specification. Verify all four at enlarged and gameplay
+				scales in the Lab.
+			</li>
+			<li>
+				<strong>Shared artwork integration — medium, follows slice 1.</strong>
+				Make all four artworks available in shared drawing definitions and the
+				Lab. Connect storage to the existing battery renderer. Gravity charging,
+				solar charging and repair remain conceptual artworks wherever no
+				corresponding device exists: add no device IDs, catalog or loadout
+				entries, simulation behaviour or invented rules. Verify mount transforms
+				and layering with labelled visual fixtures.
+			</li>
+			<li>
+				<strong>Individual device work — separate studies.</strong>
+				Solar, gravity and repair need their own behaviour contracts before
+				becoming functional equipment. Future shape refinement or activation
+				design belongs in those studies; the accepted static family provides the
+				starting point. Their scope and size remain undecided.
+			</li>
+		</ol>
+		<p>
+			The first two slices can deliver and verify the visual result
+			independently of new game mechanics. Acceptance closes this design study;
+			production implementation, publishing and separate studies have not been
+			started by this closure.
+		</p>
+		<p>
+			Verification for implementation should include contract, type, unit and
+			build checks plus browser inspection of the shared art on actual hulls.
+			Animation is explicitly excluded. The study’s earlier checks establish
+			availability of the examples, not production integration.
+		</p>
+	</section>
+</StudyLayout>
+<style>
+section {
+	margin-block: 3rem;
+}
+.reference {
+	margin-top: 2rem;
+	padding: 1rem;
+	border: 1px solid var(--color-border);
+	background: var(--color-void);
+}
+.grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 1rem;
+	margin-top: 1.5rem;
+}
+figure {
+	margin: 0;
+	text-align: center;
+	min-width: 0;
+}
+figcaption {
+	font-weight: 600;
+}
+img {
+	display: block;
+	margin: auto;
+	max-width: 100%;
+	object-fit: contain;
+}
+.small {
+	border-top: 1px solid var(--color-border);
+}
+.small img {
+	max-width: none;
+}
+span {
+	color: var(--color-text-muted);
+	font-size: 0.75rem;
+}
+@media (max-width: 650px) {
+	.grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+</style>
+
+<style>
+.promises {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 1.5rem;
+	margin-block: 2rem;
+}
+.promises p {
+	text-align: left;
+}
+.meanings {
+	overflow-x: auto;
+	margin-block: 1.5rem;
+}
+th,
+td {
+	padding: 0.75rem;
+	text-align: left;
+	border-bottom: 1px solid var(--color-border);
+	vertical-align: top;
+}
+@media (max-width: 650px) {
+	.promises {
+		grid-template-columns: 1fr;
+	}
+}
+</style>
+
+<style>
+.identity-round {
+	margin-block: 2rem;
+}
+.identity-strip {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1rem;
+	margin-block: 1rem;
+}
+.identity-strip img {
+	margin: 0;
+}
+</style>
+
+<style>
+summary {
+	cursor: pointer;
+	font-weight: 600;
+	padding-block: 1rem;
+}
+details {
+	border-block: 1px solid var(--color-border);
+}
+.decision {
+	margin-block: 1.5rem;
+	padding: 1rem;
+	border: 1px solid var(--color-border);
+}
+</style>

@@ -10,6 +10,15 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
 	{
+		slug: "utility-machinery-2026-11-02",
+		title: "Utility machinery: objects with weight",
+		status: "accepted",
+		phase: "scope",
+		question:
+			"What gives a family of utility machinery volume, character and a convincing place alongside the ships and engines?",
+	},
+
+	{
 		slug: "in-game-controllers",
 		title: "In-game controllers: side-margin angled thrust flaps",
 		status: "open",

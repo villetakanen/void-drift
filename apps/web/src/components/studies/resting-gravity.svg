@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-30 -30 60 60">
+	<title>Resting gravity</title>
+	<path
+		d="M-12 -6L-6 -12H6L12 -6V6L6 12H-6L-12 6Z M-7 -3V3L-3 7H3L7 3V-3L3 -7H-3Z"
+		fill="#819eae"
+		fill-rule="evenodd"
+	></path>
+	<path d="M-12 -6L-6 -12H6L3 -7H-3L-7 -3Z" fill="#d1e5ec"></path>
+	<path d="M7 3L12 6L6 12H-6L-3 7H3Z" fill="#304759"></path>
+	<g>
+		<polygon
+			points="-15,-2 -14,-3 -9,-3 -8,-2 -8,3 -15,3"
+			fill="var(--family-accent)"
+			style="filter:brightness(.55)"
+		></polygon>
+		<polygon
+			points="-15,-2 -14,-3 -14,2 -15,3"
+			fill="var(--family-accent)"
+			style="filter:brightness(1.15)"
+		></polygon>
+		<polygon
+			points="-14,-3 -9,-3 -9,2 -14,2"
+			fill="var(--family-accent)"
+		></polygon>
+		<polygon
+			points="8,-2 9,-3 14,-3 15,-2 15,3 8,3"
+			fill="var(--family-accent)"
+			style="filter:brightness(.55)"
+		></polygon>
+		<polygon
+			points="8,-2 9,-3 9,2 8,3"
+			fill="var(--family-accent)"
+			style="filter:brightness(1.15)"
+		></polygon>
+		<polygon points="9,-3 14,-3 14,2 9,2" fill="var(--family-accent)"></polygon>
+		<polygon points="-3,-4 -2,-5 2,-5 3,-4 3,5 -3,5" fill="#304759"></polygon>
+		<polygon points="-3,-4 -2,-5 -2,4 -3,5" fill="#d1e5ec"></polygon>
+		<polygon points="-2,-5 2,-5 2,4 -2,4" fill="#7894a4"></polygon>
+	</g>
+</svg>
