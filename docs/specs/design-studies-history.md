@@ -3,7 +3,8 @@
 Archived on 29 October 2026 from the reusable specification. These are historical
 accounts, including stale descriptions and rejected proposals, not current contracts.
 Consult for factory diagnosis or specific research, not as mandatory new-cycle input.
-Current adopted product guidance lives in docs/design.md and relevant feature specs.
+Current adopted product guidance lives in the relevant feature specs and code;
+docs/design.md holds only experience principles, art direction and brand.
 
 ## Pilot limits
 

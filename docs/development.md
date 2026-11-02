@@ -25,7 +25,7 @@ failure or source change during verification. It never auto-fixes source.
 
 | Command                 | Evidence                                                                                               |
 | ----------------------- | ------------------------------------------------------------------------------------------------------ |
-| `pnpm check:contracts`  | Agent guide below 80 lines and context links exist                                                     |
+| `pnpm check:contracts`  | Agent context links exist; warns on agent guide or design.md size and scope                            |
 | `pnpm lint`             | Biome formatting/imports/recommended rules, warnings fail                                              |
 | `pnpm check:types`      | Astro, Svelte and workspace TypeScript, warnings fail                                                  |
 | `pnpm test`             | Physics, stock profile effects, replay, death/reset, camera/wrap                                       |
@@ -54,6 +54,13 @@ are hidden for cross-platform canvas comparison. Its initial image was agent-ins
 human assessment of fidelity and fun remains pending. Update a baseline only after
 reviewing the intended visual change, then repeat the comparison without update mode.
 Automated tests do not prove sustained 60 FPS or difficulty balance on a physical phone.
+Report the device and scenario used for any performance measurement.
+
+The Lab is an experience-design surface, not just an asset gallery. Its trials use
+production systems and expose the relevant parameters, reset/replay and shareable
+configuration. Keep capture environments explicit (fixed viewport, seed and simulation
+time), and show an accepted design change in the real game as well as the Lab.
+
 
 ## Release
 

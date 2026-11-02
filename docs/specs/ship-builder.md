@@ -249,6 +249,11 @@ Gravity, friction, energy costs, thrust and speed limits are unchanged. Custom r
 remain unranked. `/lab/builder` is the canonical assembly and test-flight example.
 Human review of bow support, fitted-part readability, exhaust clearance, turning and
 circular-collision fairness remains pending; automated checks do not establish feel.
+Owner approval established the direction despite reservations about visual polish.
+
+Production stores every chassis as fixed colour polygons, as `scout.ts` and
+`cruiser.ts` do; studies may compute shading from part heights to get there. The
+drawing method is in `docs/design.md` (ship drawing fundamentals).
 
 ## Scout Trident integration
 
@@ -358,6 +363,17 @@ Engine bodies, thrust, limits, mass, energy, controls, gravity and friction are
 unchanged by this ion-effects integration. The accepted demo shares Light's
 motion/output across both variants solely for visual comparison; real fitted
 flight retains each engine's existing output behavior.
+
+The ion Lab retains the accepted replay from rest with the Light build driving both
+variants: fixed 60 Hz steps, four engine substeps, forward thrust, a one-sided turn
+from 4–4.75 s, release at 5.25 s, and an end at 7 s. There is no random input or seed.
+Each 480 × 330 canvas tracks the ship at (320, 165) with scale 2.4. Checkpoint buttons
+reconstruct firing (tick 45), turning (270), release residue (330), and expired residue
+(360). The browser test compares both variants against the preserved reference at
+those moments. The reference retains its painter and replay code but consumes shared
+physics, hull drawing and plume lifecycle; this is a painter-fidelity check, not an
+independent baseline for changes to those shared systems or a human motion review.
+(Moved from `docs/design.md` on 2026-11-02.)
 
 
 ## Base movement and optional stabilizers — 0.4.2

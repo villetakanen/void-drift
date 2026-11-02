@@ -106,6 +106,12 @@ implementation or another exploration round. Name unresolved choices without cla
 they are resolved. Completing it does not authorize building; implement only when
 separately requested or already authorized.
 
+**Flag any docs/design.md change.** If the conclusion would change an experience
+principle, a non-goal, the art direction or the brand, state the proposed change
+prominently in 04, as its own item before the slices, and repeat it in the chat
+handoff. The owner decides it. Route everything else the study settles to the
+feature spec or code that owns it, never to docs/design.md.
+
 ## Ending a study
 
 All three end states are successes. The designer decides; you may propose one.

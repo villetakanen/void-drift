@@ -42,6 +42,12 @@ big the change is, not execution or further exploration. Completing or accepting
 study does not implicitly authorize implementation. Existing explicit implementation
 authorization still counts. Publication requires separate authorization.
 
+**`docs/design.md` changes must be flagged in part 04.** If the conclusion would
+change an experience principle, a non-goal, the art direction or the brand, part 04
+states the proposed change prominently, as its own item before the slices, and the
+chat handoff repeats it. The owner decides it. Everything else an accepted study
+settles goes to the feature spec or code that owns it, never to `docs/design.md`.
+
 ### Ending a study
 
 Phase metadata names the current part; status is `open` until the study ends. All

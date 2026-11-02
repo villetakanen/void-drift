@@ -1,17 +1,53 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 
+// Scope and size limits on context documents warn; they never fail the gate.
+const warnings = [];
+const warn = (message) => {
+	warnings.push(message);
+	console.warn(`WARNING: ${message}`);
+};
+
 const instructions = readFileSync("AGENTS.md", "utf8");
 const lineCount = instructions.trimEnd().split("\n").length;
-assert(
-	lineCount < 80,
-	`AGENTS.md has ${lineCount} lines; it must stay below 80.`,
-);
+if (lineCount >= 80) {
+	warn(`AGENTS.md has ${lineCount} lines; keep it below 80.`);
+}
 for (const match of instructions.matchAll(/`((?:docs|\.agents)\/[^`]+)`/g)) {
 	assert(existsSync(match[1]), `Missing agent context: ${match[1]}`);
 }
 console.log(
 	`Agent entry point: ${lineCount} lines; all context links resolve.`,
+);
+
+// docs/design.md holds experience principles, art direction and brand only.
+const design = readFileSync("docs/design.md", "utf8");
+const designLines = design.trimEnd().split("\n");
+if (designLines.length > 200) {
+	warn(
+		`docs/design.md has ${designLines.length} lines; above 200, consider splitting brand out.`,
+	);
+}
+const designChecks = [
+	[
+		/^#{1,6} .*(\b\d+\.\d+(\.\d+)?\b|\b\d{4}-\d{2}-\d{2}\b)/,
+		"version or date in a heading (records belong in feature specs)",
+	],
+	[/\/lab\/studies\//, "link to a study (studies are history)"],
+	[
+		/\b(?:packages|apps|scripts|tests)\/|\.(?:ts|js|mjs|svelte|astro|css)\b/,
+		"source path (values and rules belong in specs or code)",
+	],
+];
+designLines.forEach((line, index) => {
+	for (const [pattern, reason] of designChecks) {
+		if (pattern.test(line)) {
+			warn(`docs/design.md:${index + 1}: ${reason}.`);
+		}
+	}
+});
+console.log(
+	`docs/design.md: ${designLines.length} lines; ${warnings.length} context warning(s).`,
 );
 
 // Canvas cannot read CSS custom properties; its type families mirror the tokens.

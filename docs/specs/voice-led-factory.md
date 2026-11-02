@@ -48,6 +48,20 @@ Verification reports and stage logs are retained per invocation under
 convenience copy. Closure records link the specific run. This local retention does
 not back up artifacts or make browser traces immutable.
 
+### Context-document warnings
+
+`pnpm check:contracts` warns, and never fails, when a context document outgrows its
+scope. The owner decided on 2026-11-02 that these limits warn rather than block.
+
+- `AGENTS.md` at 80 lines or more. Missing context links still fail the gate.
+- `docs/design.md` above 200 lines (consider moving brand into its own document).
+- In `docs/design.md`: a version or date in a heading, a `/lab/studies/` link, or a
+  source path. These mark records, study history and values that belong in feature
+  specs or code.
+
+Warnings print as `WARNING:` lines in the contracts log. They are signals for the
+owner and agents to act on, not passes or failures.
+
 ### Regression guardrails
 
 - Rules and tests change when intent changes, with a reason; passing results alone do not justify weakening a contract.

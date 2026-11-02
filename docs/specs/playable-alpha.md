@@ -22,7 +22,9 @@ Firebase Auth and Firestore replace Supabase. Paths are
 - Three ships apply thrust, turning, hull and power-drain multipliers.
 - Fixed-step replay reproduces world state for identical validated settings and inputs.
 - Keyboard A/D or arrows activate differential engines; both produce forward thrust.
-- Landscape touch buttons support simultaneous presses, release/cancel and blur reset.
+- Landscape touch buttons support simultaneous presses, release/cancel and blur reset,
+  with targets of at least 44 CSS pixels. Laptop/desktop keyboard play is the primary
+  development experience. Controls give visible feedback when active.
 - Start, pause/resume, death and restart work without page reload or service credentials.
 - Camera frames ship and star, fits their extents with padding, snaps between discrete zoom levels, and snaps
   framing at antipodal arena wrap while preserving ship velocity.

@@ -27,6 +27,20 @@ This specification defines the "Experience Model" for Void Drift. It establishes
 - [DEPRECATED 2026-11-01] ~~**Do NOT** use `var(--color-primary)` - this token does not exist. Use `var(--color-neon-blue)` for primary accent color.~~ Use `--color-action` for what you can act on.
 - **Do NOT** colour informational text with brand, action or selected.
 
+### Working rules
+
+Moved from `docs/design.md` on 2026-11-02.
+
+- Use shared variables for UI colours, fonts, spacing and sizes. Add a missing token
+  deliberately, with a Lab example, rather than accumulating component literals.
+- Use native CSS and global classes for basic HTML elements; avoid trivial component
+  wrappers for buttons and links. Larger interaction components remain appropriate.
+- Feature work consumes the established design system. Changing its definitions is
+  explicit design work, documented here and demonstrated in `/lab` in the same change.
+- Procedural drawing lives in `packages/core/src/lib/assets/`, effects in
+  `packages/core/src/lib/effects/`. Canvas geometry and simulation values belong in
+  their typed configuration, not CSS.
+
 ## Contract
 
 ### Definition of Done
@@ -231,6 +245,13 @@ text-muted, `--color-void-light` → elev-1, `--color-overlay` → glass (0.9 be
 - `RingSlider` wraps a native range input (keys, touch and forms unchanged) at a
   44px touch height; `compact` hides its label line where the host shows it. Its
   value is announced through the input, not a live region.
+- The toggle is one button-shaped control split into equal parts: cut corners
+  outside, a straight split inside, the selected part filled lime, the others a
+  faint fill that takes a faint lime tint under a pointer.
+- The ring slider is a faint 2px track, lime to the value, and a lime ring knob;
+  label and value stay neutral, and the unfilled track takes the same tint on hover.
+- Lime marks the selection and the knob; hover borrows it at low strength. Data and
+  values stay neutral.
 
 ## Identity
 
@@ -385,6 +406,34 @@ Superseded by [Typography](#typography): fonts are self-hosted and no CDN is use
 - **Subset:** Full Unicode math symbols loaded for logo rendering [DEPRECATED 2026-11-01]: the logomark is SVG outlines
 
 ## Button System
+
+### Current rules — button study promotion, 2026-10-28
+
+Moved from `docs/design.md` on 2026-11-02. These rules are current; the subsections
+after them predate the promotion. The accepted study at `/lab/studies/buttons` records
+the rationale; `/lab/buttons` is the canonical interactive reference. Shared
+definitions are in core `styles/buttons.css`, with foundations in `styles/tokens.css`.
+
+- Game startup, pause/continue, setup and mode-selection buttons navigate game states.
+  Player actions save designs/settings or reset data. Hierarchy follows the current
+  user goal, so navigation can be primary. Use links for URL navigation and buttons
+  for in-app state transitions or commands. Settings persist on change.
+- `.button-group.button-group--vertical` makes transparent equal-width menu groups,
+  with a private 320px maximum width. `.button-group.button-group--strip` makes
+  anchored groups on a solid void surface; related actions go in
+  `.button-group__section`, and strip hosts use `.button-group-frame` for container
+  queries. Both modes use 8px padding and minimum gaps; strips stack below 580px of
+  host width and keep the solid background. Preserve meaningful DOM/tab order.
+- Buttons keep angled corners, lime filled/ghost variants and red consequences. Shared
+  states: an inset focus ring, disabled opacity with suppressed hover, selected
+  indication and reduced motion. Busy buttons must be disabled by the owning
+  interaction; ARIA alone does not prevent activation. Link buttons keep 44px minimum
+  targets. Native game touch controls remain specialized controls.
+- Public foundations express shared control/state/motion values; `--_name` properties
+  own component composition (see `docs/architecture.md`). `--button-*` names remain
+  compatibility aliases. Do not reuse unrelated tokens merely because numbers match.
+- Consumers: game start/pause/run-complete groups, flight Lab commands, settings
+  navigation, leaderboard action strip, the canonical Lab and study examples.
 
 [DEPRECATED 2026-11-01] Colour names in this section predate S3: `--color-neon-blue` is
 `--color-action`, `--color-void` text on a fill is `--color-on-brand`, and the pressed state is

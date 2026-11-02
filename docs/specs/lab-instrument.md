@@ -94,7 +94,9 @@ One 1440 × 900 logical screen, scaled to fit its container, on the console
 
 Every graph scales its value axis to its data: a nice tick step for about five
 ticks, the top one step above the peak, symmetric about zero for turn
-acceleration. Values are compared by reading the axes. The path pane switches
+acceleration. Values are compared by reading the axes. Diagrams are displays
+(elevation 2) on the console with every label outside the data; a vehicle keeps
+one colour in every diagram; inline gaps are grid-sized. The path pane switches
 between fitting all paths and a default scale (0.2 px/u) that pans by dragging.
 
 ### Components
