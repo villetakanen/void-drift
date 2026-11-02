@@ -161,6 +161,16 @@ work from another session), so its stages were run one by one: 7 of 9 passed (27
 2 new); `lint` failed only on this file's formatting, fixed in the commit recording approval;
 `test:rules` and `test:competition` did not run (no Java runtime). Browser evidence at 1440×900 is in `artifacts/evidence/s6/` (git-ignored).
 
+Released as 0.4.7 on 2026-11-02: `9669a7d` on `feat/0-4-0` (verify `2026-11-02T10-03-03.588Z-PSecRS`
+at `e4a890b`, run as one command now that the verify fix is in: 7 of 9 stages, 27 browser tests;
+`test:rules` and `test:competition` not run for lack of Java) was pushed, built in a clean worktree
+and deployed (`firebase deploy --only firestore,hosting`, project `void-drift-alpha`; no rules
+changes since 0.4.6). On `https://void-drift-alpha.web.app`: the header showed 0.4.7; the menu
+opened as a dialog with focus on Start and the stage inert; Escape during a run opened Paused with
+focus on Resume; Lab run complete showed the scrim and panel; the leaderboard loaded scores;
+`/lab/surfaces` and the in-game controllers study rendered. No page errors. Evidence is in
+`artifacts/evidence/release-0.4.7/` (git-ignored).
+
 Inventory: menu and run complete were full-stage `--color-glass` overlays (`z-index: 2`) marked
 `aria-modal` with no surface on the card; pause was an unlabelled glass banner; the toast was
 elev-1 at `z-index: 5`; engine pads used `--flight-radius: 12px`; Settings groups had a muted-text
