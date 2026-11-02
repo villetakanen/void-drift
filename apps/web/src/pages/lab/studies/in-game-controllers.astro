@@ -1,0 +1,185 @@
+---
+import "@void-drift/core/styles/buttons.css";
+import "@void-drift/core/styles/surfaces.css";
+import ControllerGeometryBench from "../../../components/studies/in-game-controllers/ControllerGeometryBench.svelte";
+import StageMarginBench from "../../../components/studies/in-game-controllers/StageMarginBench.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((item) => item.slug === "in-game-controllers");
+if (!study) throw new Error("Missing study metadata for in-game-controllers");
+---
+
+<StudyLayout study={study}>
+	<section aria-labelledby="part-01">
+		<h2 id="part-01">
+			01 / Side-margin 60° thrust flaps across thumbs and keyboards
+		</h2>
+		<p>
+			On a keyboard, a pilot flies with three direct commands: left engine (<code
+				>A</code
+			>
+			/ <code>←</code>), right engine (<code>D</code>
+			/ <code>→</code>), and a single-key forward burn (<code>W</code>
+			/ <code>↑</code>) that fires both thrusters together. To give touch
+			players the same single-thumb access to both turning and full forward
+			thrust, the controller layout establishes four fixed givens from the
+			concept draft:
+		</p>
+		<ul>
+			<li>
+				<strong>Ship-free side margins:</strong>
+				Both control pairs sit flush against the left and right screen edges,
+				inside the outer horizontal margin where camera framing, padding, and
+				the circular arena keep the ship from traveling.
+			</li>
+			<li>
+				<strong>Lower-corner full thrust, upper-margin turn:</strong>
+				Full forward thrust (<code>F</code>, firing both engines) anchors both
+				lower corners; single-engine turn (<code>L</code>
+				on the left,
+				<code>R</code>
+				on the right) sits directly above <code>F</code> along the lower-middle
+				side edge.
+			</li>
+			<li>
+				<strong>Stacked 60° angled flaps:</strong>
+				Each side uses two overlapping 60°-angled flaps (sloping 30° downward
+				from horizontal inward from the screen bezel), with the lower
+				<code>F</code>
+				flap tucked over the base of the upper <code>L</code> /
+				<code>R</code>
+				flap.
+			</li>
+		</ul>
+		<p>
+			With the locations and 60°-angled flap silhouette established, this study
+			investigates how the stage envelope and side instrumentation margins are
+			defined across screens, how large the touch zones should be inside those
+			margins, and how the stacked flaps layer and style their states.
+		</p>
+	</section>
+
+	<section aria-labelledby="part-02">
+		<h2 id="part-02">02 / Exploration</h2>
+
+		<details class="prior-iteration">
+			<summary>
+				02.1 / Initial raw viewport sizing (superseded by 02.2 stage envelope)
+			</summary>
+			<div class="details-body">
+				<p>
+					<strong>Observation from 02.1:</strong>
+					Plotting the 60° flaps across unconstrained device viewports (<code
+						>19.5:9</code
+					>
+					phone through
+					<code>4:3</code>
+					tablet and desktop) revealed that the software has not yet defined the
+					allowable stage aspect-ratio bounds or separated the
+					<em>rendered space area</em>
+					from the
+					<em>active camera framing box</em>
+					and the
+					<em>side instrumentation margins</em>.
+				</p>
+				<ControllerGeometryBench client:load />
+			</div>
+		</details>
+
+		<h3 id="part-02-2">
+			02.2 / Stage envelope (16:9 to 4:3), active camera box, and shared
+			instrument margins
+		</h3>
+		<p>
+			Instead of letting the stage stretch to arbitrary screen ratios, we
+			constrain the playable screen envelope between <strong>16:9</strong>
+			(widest allowed, <code>1920 × 1080</code> logical) and
+			<strong>4:3</strong>
+			(narrowest/tallest allowed,
+			<code>1440 × 1080</code>
+			logical), clamping wider or narrower viewports to the nearest bound.
+			Across <code>16:9</code>, <code>4:3</code>, and every ratio in between,
+			the stage divides into three concentric responsibilities with
+			<strong>identical margins on all screen sizes</strong>:
+		</p>
+		<ul>
+			<li>
+				<strong>Rendered space area (100% of stage):</strong>
+				The void, starfield, and orbit rings render edge-to-edge across the
+				entire <code>16:9..4:3</code> frame—including behind all margins.
+			</li>
+			<li>
+				<strong>Top &amp; bottom visual margins (<code>M_y</code>):</strong>
+				Equal vertical padding at the top and bottom of the frame. Graphics
+				render through them, keeping the active camera framing inset from the
+				horizontal screen edges.
+			</li>
+			<li>
+				<strong
+					>Left &amp; right instrumentation margins (<code>M_x</code>):</strong
+				>
+				Equal side rails on both <code>16:9</code> and <code>4:3</code> that
+				house all HUD instruments and touch controls outside the active camera
+				box: <strong>Hull &amp; Power</strong> + <strong>L / F flaps</strong> on
+				the left, and <strong>Survival time &amp; Score</strong> +
+				<strong>R / F flaps</strong>
+				on the right.
+			</li>
+			<li>
+				<strong
+					>Active camera area (<code>W - 2·M_x</code>
+					× <code>H - 2·M_y</code>):</strong
+				>
+				The central box that the camera fits the ship and star inside.
+			</li>
+		</ul>
+		<p>
+			<strong>What to notice &amp; limitations:</strong>
+			Use the sliders below to adjust the shared side instrumentation margin (<code
+				>M_x</code
+			>), the top/bottom visual margin (<code>M_y</code>), and the flap stack
+			proportions on <code>16:9</code> and <code>4:3</code> side-by-side (drawn
+			at equal logical height so identical margins have identical visual
+			thickness). Check how much active camera width remains on <code>4:3</code>
+			as <code>M_x</code> grows, and how the top HUD instruments clear the upper
+			<code>L</code>
+			/ <code>R</code> flap bevel.
+		</p>
+
+		<StageMarginBench client:load />
+	</section>
+
+	<section aria-labelledby="part-03">
+		<h2 id="part-03">03 / To be developed after 02</h2>
+	</section>
+</StudyLayout>
+
+<style>
+ul {
+	max-width: var(--measure-prose);
+	margin-block: 0 var(--spacing-md);
+	padding-left: var(--spacing-md);
+	display: grid;
+	gap: var(--spacing-xs);
+}
+
+.prior-iteration {
+	margin-block: var(--spacing-md) var(--spacing-lg);
+	border: 1px solid var(--color-border);
+	background: var(--color-elev-1);
+}
+
+.prior-iteration summary {
+	padding: var(--spacing-sm) var(--spacing-md);
+	font-family: var(--font-family-ui);
+	font-size: var(--font-size-caption);
+	color: var(--color-text-muted);
+	cursor: pointer;
+}
+
+.details-body {
+	padding: var(--spacing-md);
+	border-top: 1px solid var(--color-border-subtle);
+}
+</style>

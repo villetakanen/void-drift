@@ -10,6 +10,14 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
 	{
+		slug: "in-game-controllers",
+		title: "In-game controllers: side-margin angled thrust flaps",
+		status: "open",
+		phase: "exploration",
+		question:
+			"How should the 60°-angled L/F and R/F side-margin touch flaps be sized and layered across phone, tablet, and desktop screens?",
+	},
+	{
 		slug: "lhi-wasp",
 		title: "LHI Wasp: single-engine practice vessel",
 		status: "accepted",
