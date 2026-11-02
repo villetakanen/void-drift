@@ -439,13 +439,12 @@ Owner decision D4, amended 2026-11-02: a ship's id is its short name in lower ca
 `balanced` and `tank` are retired. Every ship also has a long name (its full designation)
 and a one-line trait.
 
-| Id         | Short name | Long name              | Trait                                                                |
-| ---------- | ---------- | ---------------------- | -------------------------------------------------------------------- |
+| Id         | Short name | Long name              | Trait                                                                 |
+| ---------- | ---------- | ---------------------- | --------------------------------------------------------------------- |
 | `wasp`     | Wasp       | LHI Wasp               | One rear Light ion + 4 turning stabilizers. Standard energy capacity. |
-| `scout`    | Scout      | Daehan Scout No.7      | Three Light ions. Standard energy capacity.                          |
-| `fighter`  | Fighter    | Aegis XF-1 Interceptor | Four Light ions. One extra energy pack.                              |
-| `corvette` | Corvette   | Mark II Escort Frigate | Five Light ions. Two extra energy packs.                             |
-
+| `scout`    | Scout      | Daehan Scout No.7      | Three Light ions. Standard energy capacity.                           |
+| `fighter`  | Fighter    | Aegis XF-1 Interceptor | Four Light ions. One extra energy pack.                               |
+| `corvette` | Corvette   | Mark II Escort Frigate | Five Light ions. Two extra energy packs.                              |
 - **Source.** `SHIP_IDENTITY` in `packages/mode-a/src/lib/config.ts`, parsed by
   `ShipIdentitiesSchema`. The schema requires every id and rejects a short name that differs
   from its id. `ShipProfile` and `Chassis` no longer carry a `name`.
@@ -465,4 +464,3 @@ and a one-line trait.
   `scout.ts`, `wasp.ts`, renderer comments, and the `cruiser` wording in test names.
 - **Preserved studies** pass the new ids to production APIs, but their prose and displayed
   names stay as they were recorded.
-
