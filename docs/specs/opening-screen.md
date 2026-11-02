@@ -245,7 +245,21 @@ Known gaps:
 - The ship on the stage still shows through the scrim beside the panel.
 - At 2× the Corvette's nose nearly reaches its name.
 
-Release evidence: see the 0.4.8 note below.
+Released as 0.4.8 on 2026-11-02: `8900114` on `feat/0-4-0` (verify `2026-11-02T12-33-18.909Z-bK2Pcc`
+at `45e12ef` plus the version bump: 7 of 9 stages, 27 browser tests; `test:rules` and
+`test:competition` did not run for lack of Java, so the updated `competition.spec.ts` is unverified)
+was pushed, built in a clean worktree and deployed (`firebase deploy --only firestore,hosting`,
+project `void-drift-alpha`; no rules changes). On `https://void-drift-alpha.web.app`: the header
+showed `SURVIVAL / 0.4.8` and HANGAR, HIGH SCORES, OPTIONS; the menu opened with focus on PRESS
+START and the stage inert; 01–04 showed Scout, Wasp, Fighter and Corvette with their long names and
+equipment; PRESS START started a run; the builder header read `HANGAR / 0.4.8`; the settings
+heading read Options; the leaderboard loaded 3 scores; the Lab flight menu showed the selector with
+PLAY in its nav. No page errors. Evidence is in `artifacts/evidence/release-0.4.8/` (git-ignored).
+
+Defect found on the live site: after clicking a toggle part, keys 1–4 did nothing, because the
+shortcut treated the focused radio as text entry. Fixed in `e0745fb` with a browser test that fails
+without the fix (verify `2026-11-02T12-39-34.174Z-zRHzwU`: 7 of 9 stages, 28 browser tests; same two
+stages not run). The fix is a local commit, not yet released.
 
 ### S7 — Text roles, tags and navigation
 
