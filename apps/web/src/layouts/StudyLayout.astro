@@ -33,8 +33,7 @@ const { study } = Astro.props;
 				</p>
 				<h1>{study?.title ?? "Design studies"}</h1>
 				<p class="lead">
-					{study?.question ??
-						"Design problem, exploration, readiness, and integration planning."}
+					{study?.question ?? "Problem, exploration, readiness, and scope."}
 				</p>
 			</header>
 			<slot />

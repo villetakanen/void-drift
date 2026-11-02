@@ -1,6 +1,6 @@
 ---
 name: design-study
-description: Develop a four-part study through design problem, exploration, readiness, and integration planning; preserve human decisions and promote accepted results into the game and shared design system.
+description: Develop a four-part design study (problem, exploration, readiness, scope) and end it as accepted, ruled out, or stopped, preserving the designer's decisions.
 ---
 
 # Design study
@@ -21,7 +21,7 @@ specific research need. Preserve current-cycle agreements as the discussion deve
 Keep old artifacts separate; prefer a new cycle-specific slug rather than importing
 old page content. If reusing a URL is necessary, archive the prior page first.
 
-## 01 / Design problem — why?
+## 01 / Problem — why?
 
 Synthesize supplied intent and relevant knowledge into a provisional purpose,
 principles, design tension, and important unknowns. Distinguish designer statements,
@@ -68,10 +68,9 @@ taking that result through parts 03 and 04 before exploring the next subject.
 Keep the remaining scope explicit and honor a direction to continue exploration.
 
 When a visual example is accepted, identify its exact variant and the properties
-the designer settled. Carry that reference into the integration plan alongside
-anything still provisional. For motion, retain the input/tick sequence, initial
-conditions, seed (or explicit absence of randomness), and camera with the reference.
-Verify integration at representative firing, turning, and release/fade moments.
+the designer settled. Carry that reference into the scope alongside anything still
+provisional. For motion, retain the input/tick sequence, initial conditions, seed
+(or explicit absence of randomness), and camera with the reference.
 
 Protect the current investigation's question. Before polishing or repurposing a demo,
 check whether the change advances that question. If it diverts the study, push back
@@ -98,14 +97,24 @@ Assess readiness for the intended delivery. For an alpha trial, distinguish bloc
 to implementing and learning from the chosen design from tuning or configurability
 that can remain provisional; explain the consequence of each blocker.
 
-## 04 / Integration — how and why to implement it
+## 04 / Scope — how big, and in what slices?
 
-Document the implementation path: affected shared definitions, game systems, canonical
-Lab examples, specifications, sequencing, dependencies, rationale, and verification.
-This part is a plan, not implementation or another exploration round. Name unresolved
-choices and planned review points without claiming they are resolved. Completing the
-study does not authorize execution; implement only when separately requested or already
-authorized. Accepted is not integrated; mark integrated only after actual delivery.
+Size the accepted conclusion: which shared definitions, game systems, Lab pages and
+specs it touches, and how to cut it into slices that can each be delivered and verified
+alone, in order, with dependencies and a rough size. This is understanding, not
+implementation or another exploration round. Name unresolved choices without claiming
+they are resolved. Completing it does not authorize building; implement only when
+separately requested or already authorized.
+
+## Ending a study
+
+All three end states are successes. The designer decides; you may propose one.
+
+- **Accepted** (after 04): the slices become implementation work, fully or partly.
+- **Ruled out** (after 02 or 03): record on the page why the concept does not fit the game.
+- **Stopped** (any part): use the close-loop skill to record what blocked the study.
+
+Set `status` in `apps/web/src/data/studies.ts`; it stays `open` until then.
 
 ## Study-quality evaluation — separate from the four parts
 
@@ -141,9 +150,9 @@ instruction to explore suffices. Do not ask generic approval questions or requir
 unknown mechanics to be solved. Fill the next part when appropriate and leave one next placeholder, up to part 04.
 Preserve settled current-cycle sections; explain any reason to revisit them.
 
-The four numbered parts are design problem, exploration, readiness, and integration.
+The four numbered parts are problem, exploration, readiness, and scope.
 Use 02.1, 02.2, and so on for exploration iterations; do not advance the main part
-number for each experiment. Develop parts progressively, with subject-specific titles. Do not prefill lifecycle reports, integration
+number for each experiment. Develop parts progressively, with subject-specific titles. Do not prefill lifecycle reports, scope
 bookkeeping, or readiness assessments in the opening. Keep phase/status in supporting
 metadata. Review the first page against the specification's form checklist and inspect
 its rendering; record human usefulness separately. Keep URLs stable within a cycle.
@@ -164,5 +173,4 @@ into the same study. Verify changes using repository gates and browser inspectio
 report unavailable checks and human-review gaps separately. Provide the review URL.
 
 Keep the workflow small. Factory lessons live in docs/factory-building-lessons/;
-new interpretations require review before becoming standing guidance. The phased
-workflow is approved for use; its effectiveness still requires a fresh study.
+new interpretations require review before becoming standing guidance.

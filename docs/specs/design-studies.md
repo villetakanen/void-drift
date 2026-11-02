@@ -13,13 +13,13 @@ Each cycle develops understanding from its own brief and current established rea
 - `apps/web/src/data/studies.ts` validates metadata with Zod before rendering.
 - Pages develop numbered sections progressively. Phase/status metadata supports
   navigation; subject-specific headings follow the four numbered parts.
-- Exploratory → accepted → integrated distinguishes owner acceptance from delivery.
-  Agents record acceptance only when the owner explicitly settles the direction.
+- A study is open until the designer ends it as accepted, ruled out, or stopped.
+  Agents record an end state only when the designer explicitly settles it.
 - Experimental styles remain scoped to study components; fixture behavior is labeled.
 - Within a cycle, iteration keeps the URL and records significant feedback and reasons.
   A fresh cycle has a distinct identity; a matching title or URL does not carry agreement.
-- Promotion updates shared implementation, canonical Lab examples, and relevant design
-  guidance/specs; the study retains rationale and links to the resulting destinations.
+- An accepted study's slices are implemented as separate work; the study retains its
+  rationale and links to what implemented it.
 - Keyboard operation and narrow layouts are reviewed separately from gameplay feel.
 
 ## Phased inquiry contract — adopted 2026-10-29
@@ -29,23 +29,32 @@ including problem formulation; it must neither invent settled purpose nor requir
 the designer to supply the result of the inquiry. See the
 [factory lesson](../factory-building-lessons/002-phased-design-studies.md).
 
-| Part                | Contribution                                                                             | Result                                                             |
-| ------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| 01 / Design problem | Establish intent, experience, principles, and uncertainty.                               | Shared problem worth investigating.                                |
-| 02 / Exploration    | Investigate alternatives with concrete examples; preserve iterations as 02.1, 02.2, etc. | Design conclusions and explicit remaining hypotheses.              |
-| 03 / Readiness      | Assess those conclusions against current systems and constraints.                        | Feasibility, dependencies, required adaptations, and risks.        |
-| 04 / Integration    | Document how and why to implement the conclusions.                                       | Sequenced implementation plan, affected systems, and verification. |
+| Part             | Contribution                                                                             | Result                                                           |
+| ---------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| 01 / Problem     | Establish intent, experience, principles, and uncertainty.                               | Shared problem worth investigating.                              |
+| 02 / Exploration | Investigate alternatives with concrete examples; preserve iterations as 02.1, 02.2, etc. | Design conclusions and explicit remaining hypotheses.            |
+| 03 / Readiness   | Assess those conclusions against current systems and constraints.                        | Feasibility, dependencies, required adaptations, and risks.      |
+| 04 / Scope       | Size the conclusions and cut them into deliverable slices.                               | Slices in order, affected systems, dependencies, and rough size. |
 
 These four parts are the study structure. Develop them progressively; do not fill
-future parts before there is evidence to support them. Integration here means planning,
-not execution or further exploration. Completing or accepting the study does not
-implicitly authorize implementation. Existing explicit implementation authorization
-still counts. Publication requires separate authorization.
+future parts before there is evidence to support them. Scope means understanding how
+big the change is, not execution or further exploration. Completing or accepting the
+study does not implicitly authorize implementation. Existing explicit implementation
+authorization still counts. Publication requires separate authorization.
 
-Phase metadata describes the current work; status describes acceptance and delivery.
-Only explicit design acceptance changes exploratory to accepted. Mark integrated only
-after implementation and verification, not after writing part 04. Human review of feel
-and fidelity is separate from automated correctness and from study-quality evaluation.
+### Ending a study
+
+Phase metadata names the current part; status is `open` until the study ends. All
+three end states are successes; the designer decides, and the agent may propose one.
+
+| End state | Reached after | Leaves behind                                                   |
+| --------- | ------------- | --------------------------------------------------------------- |
+| Accepted  | 04 / Scope    | Slices to implement, fully or partly, as separate work.         |
+| Ruled out | 02 or 03      | A game lesson: why the concept does not fit, on the study page. |
+| Stopped   | Any part      | Harness intel, recorded with the close-loop skill.              |
+
+Human review of feel and fidelity is separate from automated correctness and from
+study-quality evaluation.
 
 An unknown calls for research or design investigation unless only the designer can
 supply the missing creative boundary. A mechanic’s role in play can be the
@@ -89,7 +98,7 @@ Section 01 makes the subject understandable: explain relevant situations, why th
 matter, and the tension or uncertainty worth studying. Contribute actual design
 reasoning rather than narrating the request or agent actions. Ask a focused question
 for designer judgment in chat when needed. Do not populate future
-alternatives, recommendations, integration plans, readiness tables, or history panels.
+alternatives, recommendations, scope plans, readiness tables, or history panels.
 
 For a broad subject, propose one design decision this cycle can settle and name
 adjacent questions left outside it. Ground the boundary in the supplied intent;
@@ -127,10 +136,10 @@ is not agreement. Unknown mechanics can remain the next section's investigation.
 Then fill section 02 with the next useful investigation and add one unfilled next
 section. Preserve settled sections and their current-cycle agreements. Use subsections for iterations within each of the four parts. Revisit a settled section with an explicit reason when evidence challenges it.
 
-Design problem → exploration → readiness → integration planning defines the four parts.
+Problem → exploration → readiness → scope defines the four parts.
 Use subject-specific prose. Distinguish intent, evidence, and hypotheses naturally
 without organizing the page by authorship labels. Cite research where it supports
-claims. Add decision records and integration material only when the cycle reaches
+claims. Add decision records and scope material only when the cycle reaches
 them; the study-quality rubric remains a separate evaluation record.
 
 ### First-page form review
@@ -218,19 +227,18 @@ Keep the remaining scope explicit and honor a direction to continue exploration.
 Completing that result does not complete the unresolved scope of the original brief.
 
 When a visual example is accepted, identify its exact variant and the properties
-the designer settled. Carry that reference into the integration plan alongside
-anything still provisional. Acceptance of a lifecycle, for example, need not settle
-its final visual tuning. For motion, preserve the initial conditions, input/tick
-sequence, seed (or absence of randomness), and camera as part of the reference.
-Compare integration at representative firing, turning, and release/fade moments;
-a matching still frame alone does not establish fidelity through motion.
+the designer settled. Carry that reference into the scope alongside anything still
+provisional. Acceptance of a lifecycle, for example, need not settle its final visual
+tuning. For motion, preserve the initial conditions, input/tick sequence, seed (or
+absence of randomness), and camera as part of the reference; a matching still frame
+alone does not establish fidelity through motion.
 
 ## Study-quality evaluation — separate from readiness
 
 Evaluate whether the study succeeded, using the eight criteria below. Store ratings
 and evidence in a separate linked record (for example `/lab/reviews/<study-slug>`).
 This rubric does not replace part 03: readiness assesses feasibility of the design
-conclusion in the current setting. Part 04 documents the implementation path.
+conclusion in the current setting. Part 04 sizes and slices the work.
 Neither the rubric nor a feasibility conclusion authorizes execution.
 
 | Criterion                  | Success evidence                                                                       | Warning signs                                                                                   |
@@ -251,8 +259,9 @@ already passed its tests. Record the owner's judgment separately from the agent'
 assessment. Planned checks are not completed evidence.
 
 Part 03 should explain current-system fit, dependencies, constraints, risks, and any
-adaptations required by the conclusion. Part 04 should state what changes, why, in
-what order, and how fidelity and correctness will be checked. Unresolved design choices
+adaptations required by the conclusion. Part 04 should state what changes, in how
+many slices and what order, their rough size and dependencies, and how fidelity and
+correctness will be checked. Unresolved design choices
 remain explicit; return a named question to part 02 when more exploration is needed.
 
 Assess readiness for the intended delivery. For an alpha trial, distinguish blockers
@@ -266,7 +275,13 @@ develops a provisional framing at a stable URL, then chooses investigations suit
 to the unknowns with unresolved decisions visible.
 
 Given feedback changes the direction, the same study is revised and the reason recorded;
-shared production styles remain unaffected until deliberate integration.
+shared production styles remain unaffected until accepted slices are implemented.
 
-Given a study is accepted but implementation is unfinished, its status is accepted,
-not integrated. Unavailable checks and pending human review remain explicit.
+Given a study is accepted, its slices are implemented as separate work and its status
+stays accepted. Unavailable checks and pending human review remain explicit.
+
+Given exploration or readiness shows the concept does not fit the game, the designer
+rules it out and the study page records why.
+
+Given a study cannot continue as run, the designer stops it at any part and the
+close-loop skill records what blocked it.
