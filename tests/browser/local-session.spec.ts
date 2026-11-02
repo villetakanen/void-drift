@@ -77,3 +77,22 @@ test("unconfigured leaderboard explains unavailability", async ({ page }) => {
 	).toBeVisible();
 	await expect(page.getByRole("button", { name: "Retry" })).toBeVisible();
 });
+
+test("number keys pick a ship on the menu, even after using the toggle", async ({
+	page,
+}) => {
+	await page.goto("/");
+	const ships = page.getByRole("radiogroup", { name: "SELECT YOUR SHIP" });
+	await ships.getByText("04", { exact: true }).click();
+	await expect(page.locator(".ship-name")).toHaveText("Corvette");
+	await page.keyboard.press("1");
+	await expect(page.locator(".ship-name")).toHaveText("Scout");
+	await expect(page.getByRole("radio", { name: "01" })).toBeChecked();
+	await page.keyboard.press("2");
+	await expect(page.locator(".ship-name")).toHaveText("Wasp");
+	await page.getByRole("button", { name: "PRESS START" }).click();
+	await expect(page.locator(".flight-page")).toHaveAttribute(
+		"data-status",
+		"PLAYING",
+	);
+});

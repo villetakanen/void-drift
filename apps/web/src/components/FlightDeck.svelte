@@ -320,9 +320,12 @@ onMount(() => {
 		if (event.code === "Escape" && status === "PLAYING" && !paused)
 			togglePause();
 		const digit = /^Digit([1-9])$/.exec(event.code);
+		// Text entry keeps its digits; choice inputs such as the ship toggle do not.
 		const typing =
 			event.target instanceof HTMLElement &&
-			event.target.closest("input, textarea, select, [contenteditable]");
+			event.target.closest(
+				"textarea, select, [contenteditable], input:not([type=radio], [type=checkbox], [type=range], [type=button])",
+			);
 		if (status === "MENU" && digit && !typing) {
 			const id = LAUNCHER_ORDER[Number(digit[1]) - 1];
 			if (id) selectShip(id);
