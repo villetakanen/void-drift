@@ -67,7 +67,7 @@ test("flight Lab replays exactly, imports safely, and restarts after death", asy
 	// the old baseline showed the HUD and pause banner.)
 	const bare = await page.addStyleTag({
 		content:
-			".flight-hud, .flight-controls, .dialog-layer { visibility: hidden !important; } [data-stage] { filter: none !important; transition: none !important; }",
+			".flight-hud, .flight-controls, .dialog-layer { visibility: hidden !important; } [data-stage] { filter: none !important; transition: none !important; } [data-stage]::after { display: none !important; }",
 	});
 	await expect(page.locator("canvas")).toHaveScreenshot("flight-trial.png", {
 		maxDiffPixelRatio: 0.005,

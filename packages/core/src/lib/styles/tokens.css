@@ -133,24 +133,20 @@
 	/* Dims what an overlay covers. */
 	--color-backdrop: lch(0% 0 0 / 0.11);
 	/* Scrim, the offline feed (dialogs.md): while a dialog is open the stage
-	   loses its colour, takes the elevation hue, dims and blurs, and carries
-	   the display's scanlines and darkened edge. */
-	--scrim-filter: grayscale(0.85) brightness(0.7) blur(2px);
+	   takes a small tint toward the elevation hue (which is the
+	   desaturation: colours stay, cooler and quieter), dims a little and
+	   blurs, and carries the display's scanlines and darkened edge. */
+	--scrim-filter: brightness(0.85) blur(2px);
+	--scrim-tint: color-mix(in lch, var(--color-elev-2) 27%, transparent);
 	--scrim-surface:
-		radial-gradient(ellipse at center, transparent 45%, lch(0% 0 0 / 0.55)),
+		radial-gradient(ellipse at center, transparent 55%, lch(0% 0 0 / 0.3)),
 		repeating-linear-gradient(
 			0deg,
 			transparent 0 2px,
-			lch(0% 0 0 / 0.3) 2px 4px
-		),
-		linear-gradient(lch(11% 15 290 / 0.35), lch(11% 15 290 / 0.35));
-	/* Panel, the frosted shade on the console form: elevation 2 let through,
-	   a blur behind it only, and the display's drop shadow. Fill and blur are
-	   measured together: with the star behind the panel and the scrim on,
-	   muted text keeps 4.5:1 (4.53:1 measured 2026-11-02). Re-measure with
-	   the star behind a panel if the fill, the blur or the scrim changes. */
-	--panel-fill: color-mix(in lch, var(--color-elev-2) 65%, transparent);
-	--panel-blur: 40px;
+			color-mix(in lch, var(--color-void) 35%, transparent) 2px 4px
+		);
+	/* Panel: elevation 2 on the console form, with the display's shadow. */
+	--panel-fill: var(--color-elev-2);
 	--panel-shadow: drop-shadow(0 8px 24px lch(0% 0 0 / 0.7));
 
 	/* Logomark height steps (design-system-core.md, Identity). */

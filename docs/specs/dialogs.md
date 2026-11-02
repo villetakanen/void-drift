@@ -1,6 +1,6 @@
 # Dialogs
 
-**Status:** Implemented 2026-11-02 (opening-screen S6), pending owner review.
+**Status:** Implemented 2026-11-02 (opening-screen S6), owner-approved 2026-11-02.
 **Source of truth:** `apps/web/src/components/Dialog.svelte`,
 `packages/core/src/lib/styles/surfaces.css`.
 **Reference:** `/lab/surfaces` (live dialog demo), `/lab/flight`.
@@ -58,8 +58,9 @@ and the engine pads. The page header and the Lab inspector are outside it.
    would claim the whole page is blocked. Owner decision, 2026-11-02.
 3. **HUD and engine pads hide.** Parts marked `data-hud` inside an inert stage are
    `visibility: hidden`: the HUD, the engine feedback line and the engine pads.
-4. **The scrim shades the stage.** The stage takes `--scrim-filter` and the scrim layer carries
-   `--scrim-surface`: the game reads as an offline feed behind the panel.
+4. **The scrim shades the stage.** The stage takes `--scrim-filter` and a `--scrim-tint` colour
+   blend, and the scrim layer carries `--scrim-surface`: the game reads as an offline feed behind
+   the panel, its colours kept but pulled toward hue 290.
 5. **Focus moves in.** On open, focus moves to the element marked `data-autofocus`, else the
    first control in the panel, else the panel itself.
 6. **Focus returns.** On close, focus returns to the element that had it when the dialog opened,
@@ -71,7 +72,7 @@ and the engine pads. The page header and the Lab inspector are outside it.
    resumes. The menu and run complete have nothing to go back to, so Escape does nothing there.
    During play, Escape opens pause.
 8. **Motion.** The scrim and the stage filter ease in over `--duration-fast`; with reduced
-   motion they appear at once. The panel appears at once (fading it would cut off its frost).
+   motion they appear at once.
 
 ## Contract
 

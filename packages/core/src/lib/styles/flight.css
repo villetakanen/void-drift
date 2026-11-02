@@ -95,6 +95,9 @@
 .flight-stage-layer {
 	position: absolute;
 	inset: 0;
+	/* Opaque, so the scrim tint has a backdrop to blend with everywhere,
+	   including the letterbox around the canvas. */
+	background: var(--color-void);
 }
 .flight-card {
 	box-sizing: border-box;

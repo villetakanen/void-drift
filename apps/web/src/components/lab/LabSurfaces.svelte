@@ -86,12 +86,10 @@ let closable = $state(true);
 	<section>
 		<h2>Panels</h2>
 		<p>
-			A frosted shade on the console form: elevation 2 at 65%, a 40px blur of
-			what is behind it only, a 1px <code>--color-border</code> edge that
-			follows the cut, and the display's drop shadow outside the shape. The fill
-			and blur were measured together: with the star behind a panel and the
-			scrim on, muted text keeps 4.5:1. <code>.panel--flat</code> drops the
-			shadow, for a surface on the live game such as a status message.
+			Elevation 2 on the console form: a 1px <code>--color-border</code> edge
+			that follows the cut, and the display's drop shadow outside the shape.
+			<code>.panel--flat</code>
+			drops the shadow, for a surface on the live game such as a status message.
 		</p>
 		<div class="feed panels">
 			<div class="star" aria-hidden="true"></div>
@@ -139,11 +137,11 @@ let closable = $state(true);
 		<h2>Dialogs and the scrim</h2>
 		<p>
 			A live dialog using the game's <code>Dialog</code> component. Opening it
-			makes the stage inert and shades it as an offline feed (no colour, the
-			elevation hue, dimmed and blurred, with the display's scanlines and
-			darkened edge); the HUD and engine pads hide. Focus moves to the dialog's
-			first control and returns to the opener on close. Try it from the
-			keyboard: Tab never reaches the stage while the dialog is open.
+			makes the stage inert and shades it as an offline feed (a 27% pull toward
+			the elevation hue, a little dimmed and blurred, with the display's
+			scanlines and darkened edge); the HUD and engine pads hide. Focus moves to
+			the dialog's first control and returns to the opener on close. Try it from
+			the keyboard: Tab never reaches the stage while the dialog is open.
 			<a href="/lab/flight">Flight Lab →</a>
 		</p>
 		<label class="caption closable">
@@ -317,6 +315,7 @@ let closable = $state(true);
 .demo-stage {
 	position: absolute;
 	inset: 0;
+	background: var(--color-void);
 }
 .demo-hud {
 	position: absolute;

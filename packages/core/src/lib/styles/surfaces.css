@@ -3,8 +3,8 @@
    bottom-right corners, as buttons do.
 
    A cut surface draws in two layers behind its content, so that a fill may
-   be translucent and frosted while its edge and shadow follow the cut:
-   - ::before is the fill (and frost), clipped to the cut shape;
+   be translucent while its edge and shadow follow the cut:
+   - ::before is the fill, clipped to the cut shape;
    - ::after is the 1px edge and the shadow outside the shape. It paints the
      shape opaque, takes its drop shadow, then a clip with a hole removes
      everything inside the edge, so the shadow never shows through the fill.
@@ -15,7 +15,6 @@
 	--_edge-width: 1px;
 	--_edge: var(--color-border);
 	--_fill: var(--color-glass);
-	--_frost: none;
 	--_shadow: none;
 	/* How far the shadow may spill outside the shape. */
 	--_spill: 64px;
@@ -37,7 +36,6 @@
 .cut-surface::before,
 .panel::before {
 	background: var(--_fill);
-	backdrop-filter: var(--_frost);
 	clip-path: polygon(
 		var(--_cut) 0,
 		100% 0,
@@ -77,12 +75,11 @@
 	);
 }
 
-/* The panel: a frosted shade on the console form (cut lg, 1px border role,
-   the display's drop shadow). Use it for dialogs over the stage. */
+/* The panel: elevation 2 on the console form (cut lg, 1px border role, the
+   display's drop shadow). Use it for dialogs over the stage. */
 .panel {
 	--_cut: var(--cut-size-lg);
 	--_fill: var(--panel-fill);
-	--_frost: blur(var(--panel-blur));
 	--_shadow: var(--panel-shadow);
 	padding: var(--spacing-lg);
 	color: var(--color-text);
@@ -111,14 +108,25 @@
 	background: var(--scrim-surface);
 	animation: dialog-in var(--duration-fast) var(--ease-standard);
 }
-/* The panel itself does not fade: opacity below 1 on it would cut its frost
-   off from the feed until the fade ends. */
 .dialog-layer > .panel:focus {
 	outline: none;
 }
 [data-stage][inert] {
 	filter: var(--scrim-filter);
 	transition: filter var(--duration-fast) var(--ease-standard);
+}
+/* The tint shifts the stage's hues toward the tint's hue (290) and keeps
+   each pixel's own saturation and lightness. It sits inside the stage: the
+   dialog layer is its own group, so a blend there has nothing to mix. A stage
+   must paint an opaque background, or the tint shows as flat colour wherever
+   it is transparent. */
+[data-stage][inert]::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: var(--scrim-tint);
+	mix-blend-mode: hue;
+	pointer-events: none;
 }
 [data-stage][inert] [data-hud] {
 	visibility: hidden;

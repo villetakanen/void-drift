@@ -282,29 +282,24 @@ corners, as buttons do.
 ### Cut surfaces
 
 `.cut-surface` (and `.panel`, which builds on it) draws its fill and edge behind its content, so a
-fill can be translucent and frosted while the edge and shadow follow the cut:
+fill can be translucent while the edge and shadow follow the cut:
 
-- `::before` is the fill (`--_fill`) and frost (`--_frost`), clipped to the cut shape.
+- `::before` is the fill (`--_fill`), clipped to the cut shape.
 - `::after` is the 1px edge (`--_edge`) and the shadow (`--_shadow`) outside the shape: it
   paints the shape, takes its drop shadow, then a clip with a hole removes everything inside the
   edge, so the shadow never shows through a translucent fill.
 - The element is isolated (`isolation: isolate`) and unclipped, so the shadow can spill.
-- Private properties: `--_cut`, `--_fill`, `--_frost`, `--_edge`, `--_edge-width`, `--_shadow`.
-  Defaults: `md`, glass, no frost, `--color-border`, 1px, no shadow.
+- Private properties: `--_cut`, `--_fill`, `--_edge`, `--_edge-width`, `--_shadow`.
+  Defaults: `md`, glass, `--color-border`, 1px, no shadow.
 
 ### Panels
 
-| Class          | Fill                                      | Edge             | Corners | Shadow                             | Use                              |
-| -------------- | ----------------------------------------- | ---------------- | ------- | ---------------------------------- | -------------------------------- |
-| `.panel`       | `--panel-fill` (elev-2 at 65%), 40px blur | `--color-border` | `lg`    | `--panel-shadow` (0 8px 24px, 70%) | Dialogs over the stage           |
-| `.panel--flat` | the same                                  | `--color-border` | `lg`    | none                               | Status messages on the live game |
-- The panel is a frosted shade on the console form: the instrument display's edge and shadow,
-  with a translucent fill instead of an opaque one, because the game is not the Lab.
-- The fill and blur are measured together. With the star behind a panel and the scrim on, the
-  brightest pixel behind it must keep `--color-text-muted` at 4.5:1 or better. Measured
-  2026-11-02 at 1440×900: **4.53:1** (elev-2 at 65% with a 12px blur gave 3.86:1; 24px gave
-  4.08:1). Re-measure if the fill, the blur or the scrim changes.
-- The panel itself never fades: opacity below 1 on it would cut its frost off from the stage.
+| Class          | Fill                    | Edge             | Corners | Shadow                             | Use                              |
+| -------------- | ----------------------- | ---------------- | ------- | ---------------------------------- | -------------------------------- |
+| `.panel`       | `--panel-fill` (elev-2) | `--color-border` | `lg`    | `--panel-shadow` (0 8px 24px, 70%) | Dialogs over the stage           |
+| `.panel--flat` | the same                | `--color-border` | `lg`    | none                               | Status messages on the live game |
+- The panel is elevation 2 on the console form: the instrument display's edge and shadow (owner,
+  2026-11-02). [DEPRECATED 2026-11-02] ~~A frosted translucent shade~~.
 - Consumers: the game menu, pause and run complete (`.flight-card` on the panel) and the flight
   status message (`.flight-message`, flat).
 
@@ -313,9 +308,18 @@ fill can be translucent and frosted while the edge and shadow follow the cut:
 While a dialog is open, the stage it covers reads as an offline feed: the game, seen on a
 console display rather than live.
 
-- `--scrim-filter` on the stage: `grayscale(0.85) brightness(0.7) blur(2px)`.
-- `--scrim-surface` on the scrim layer over it: the display's darkened edge, 2px-on/2px-off
-  scanlines, and an elevation-2 tint at 35%.
+- `--scrim-filter` on the stage: `brightness(0.85) blur(2px)`.
+- `--scrim-tint` inside the stage: elevation 2 at 27%, blended with `mix-blend-mode: hue`. It
+  shifts the stage's hues toward 290 and keeps each pixel's saturation and lightness, so colours
+  stay recognisable, only cooler; the void stays black. It sits inside the stage
+  because the dialog layer is its own group, where a blend would have nothing to mix with. A stage
+  paints an opaque background, or the tint shows as flat colour where it is transparent.
+- [DEPRECATED 2026-11-02] ~~`grayscale(0.85) brightness(0.7)` and a flat elev-2 overlay at 35%~~: the
+  first version stacked four darkening layers and removed the system's colours (owner review).
+  [DEPRECATED 2026-11-02] ~~`mix-blend-mode: color`~~: it takes chroma from the low-chroma tint
+  and so desaturated heavily instead of moving hues toward 290.
+- `--scrim-surface` on the scrim layer over it: a darkened edge (30% black, from 55% out) and
+  2px-on/2px-off scanlines in `--color-void` at 35%.
 - Both ease in over `--duration-fast`; with reduced motion they appear at once.
 - The panel is clean: scanlines belong to the feed, not to the pane in front of it.
 - `--color-backdrop` (black at 11%) stays the dim behind a Lab overlay pane; game dialogs use
