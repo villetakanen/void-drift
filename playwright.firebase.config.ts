@@ -1,5 +1,8 @@
 import { defineConfig } from "@playwright/test";
+import { verificationUrls } from "./packages/core/src/lib/schemas/verification-ports.mjs";
 import base from "./playwright.config";
+
+const baseURL = verificationUrls().competition;
 export default defineConfig({
 	...base,
 	testDir: "./tests/firebase",
@@ -9,10 +12,10 @@ export default defineConfig({
 		["list"],
 		["html", { open: "never", outputFolder: "playwright-report/firebase" }],
 	],
-	use: { ...base.use, baseURL: "http://127.0.0.1:4323" },
+	use: { ...base.use, baseURL },
 	webServer: {
-		command: "pnpm --filter web dev --host 127.0.0.1 --port 4323",
-		url: "http://127.0.0.1:4323",
+		command: `pnpm --filter web dev --host 127.0.0.1 --port ${new URL(baseURL).port}`,
+		url: baseURL,
 		reuseExistingServer: false,
 		env: {
 			PUBLIC_FIREBASE_API_KEY: "demo-key",

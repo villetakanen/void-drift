@@ -34,7 +34,25 @@ failure or source change during verification. It never auto-fixes source.
 | `pnpm test:rules`       | Firestore emulator allowed/rejected access cases                                                       |
 | `pnpm test:competition` | Two browser identities submit completed runs; third reads both scores via emulators                    |
 
-Browser tests own ports 4322/4323; emulators use 8080/9099. Offline browser tests
+`pnpm verify:quick` runs contracts (including factory regression tests), lint, types
+and unit tests through the same recorded runner. It exits nonzero on failure or
+source changes, but is always **partial verification**, not a full pass. Reports
+include `mode`, `partial`, `skippedSteps` and `selectedChecksPassed`; `passed` is
+reserved for successful full verification. `pnpm test:factory` tests the runner
+with isolated fake commands; these are not gameplay-check results.
+
+Browser tests default to ports 4322/4323. Override them for another worktree:
+
+```sh
+PLAYWRIGHT_PORT=4342 PLAYWRIGHT_FIREBASE_PORT=4343 pnpm verify
+```
+
+Both overrides must be decimal TCP ports (1–65535) and must differ. The same
+settings work with `pnpm test:browser` and `pnpm test:competition`. Tests always
+start their own server (`reuseExistingServer: false`); occupied ports fail rather
+than silently testing another checkout. Verification reports record both resolved
+URLs under `browserUrls`, even when browser stages are skipped in quick mode.
+Emulators still use 8080/9099; these overrides do not isolate concurrent emulators. Offline browser tests
 blank live configuration and block external requests. Competition uses `demo-void-drift`,
 never the live project. GitHub Actions runs these same gates with Java 21 and Chromium.
 
@@ -60,7 +78,6 @@ The Lab is an experience-design surface, not just an asset gallery. Its trials u
 production systems and expose the relevant parameters, reset/replay and shareable
 configuration. Keep capture environments explicit (fixed viewport, seed and simulation
 time), and show an accepted design change in the real game as well as the Lab.
-
 
 ## Release
 

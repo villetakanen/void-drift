@@ -48,6 +48,24 @@ Verification reports and stage logs are retained per invocation under
 convenience copy. Closure records link the specific run. This local retention does
 not back up artifacts or make browser traces immutable.
 
+### Quick verification and worktree browser ports
+
+`pnpm verify:quick` uses the recorded verification runner for contracts, lint, strict
+types and unit tests. It exits nonzero for any selected failure or source mutation.
+Its console and report explicitly identify partial verification and list omitted
+stages. `selectedChecksPassed` describes the selected checks; `passed` remains false
+for quick runs, even on exit zero. Full `pnpm verify` retains all required stages.
+Factory regression tests run within the contracts gate and exercise successful,
+failed and source-mutating runner fixtures without substituting for real checks.
+
+`PLAYWRIGHT_PORT` and `PLAYWRIGHT_FIREBASE_PORT` configure offline-browser and
+competition servers, defaulting to 4322 and 4323. The Zod contract in
+`packages/core/src/lib/schemas/verification-ports.mjs` rejects malformed,
+out-of-range or equal ports before checks start. Both Playwright configurations
+use the resolved URL for navigation and server readiness, start their own server,
+and retain `reuseExistingServer: false`. Verification reports retain both URLs.
+Port overrides do not isolate Firebase emulator ports.
+
 ### Context-document warnings
 
 `pnpm check:contracts` warns, and never fails, when a context document outgrows its
