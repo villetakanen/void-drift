@@ -23,7 +23,7 @@ function handleKeydown(event: KeyboardEvent) {
 <div class="settings-page">
 	<header>
 		<a href="/" class="brand"><Logo size="sm" /></a>
-		<h1>Settings</h1>
+		<h1>Options</h1>
 	</header>
 
 	<section class="setting-group">

@@ -3,7 +3,9 @@
 **Status:** IN PROGRESS. S1 done and owner-approved 2026-11-01; S2 done and owner-approved
 2026-11-01; S3 done and owner-approved 2026-11-01; S4 done and owner-approved 2026-11-02;
 S5 moved out to the [random star systems plan](../plans/random-star-systems.md)
-(owner, 2026-11-02); S6 done and owner-approved 2026-11-02; S7–S12 planned.
+(owner, 2026-11-02); S6 done and owner-approved 2026-11-02; the menu panel and ship selector
+were delivered early by an owner-led spike on 2026-11-02 (0.4.8, see
+[Spike — title menu](#spike--title-menu-and-ship-selector)); S7–S12 planned for what remains.
 **Scope note (owner, 2026-11-01):** phone landscape is temporarily out of scope. 844×390 checks
 are not required until it returns; D7 and the S12 phone contract stay as targets.
 **Source:** [opening screen audit](../audits/2026-11-01-opening-screen.md), owner decisions D1–D7 (2026-11-01).
@@ -189,13 +191,70 @@ Lab panes. The Lab overlay pane already moved focus and closed on Escape; it sta
   run-complete and pause. Dialogs make the stage `inert`, hide HUD and engine pads, move focus in and
   return it on close. One corner language: engine pads move from the 12px radius to cut corners.
 
+### Spike — Title menu and ship selector
+
+**Done 2026-11-02, owner-approved; released as 0.4.8.** The owner reworked the game menu live,
+directly in `FlightDeck.svelte`, and documented it afterwards. It delivers the S12 panel and the
+S10 selector in a different form from the one planned below, and part of S7's navigation.
+**Source of truth:** `apps/web/src/components/FlightDeck.svelte` (MENU dialog, header nav),
+`packages/core/src/lib/styles/flight.css` (`.title-frame`, `.ship-select`), the design-system
+`apps/web/src/components/inputs/Toggle.svelte`.
+
+The menu panel, top to bottom:
+
+1. The ∅·Δ logomark at `sm` in the brand colour, then **VOID DRIFT** in the display role.
+2. **SELECT YOUR SHIP** (eyebrow), then the design-system `Toggle` numbered `01 | 02 | 03 | 04`.
+   Launcher order: 01 Scout, 02 Wasp, 03 Fighter, 04 Corvette. Clicking or tapping a part, arrow
+   keys inside the toggle, or keys 1–4 anywhere on the menu (except while typing in a field) select
+   a ship. Selection is immediate; there is no confirm step.
+3. The selected ship's short name in display caps, then the ship drawn by the production
+   `drawBuild` at 2× (scale 3.2 on a 480×340 canvas shown at 240×170), from the loadout that flies.
+4. Small and secondary: the long name, then an equipment line counted from that loadout, for
+   example "Equipped: 5× Light ion · 2× Energy storage". It replaces the hand-written trait in the
+   menu; the Lab's flight menu shows the same line.
+5. **PRESS START**, the only filled button. It takes focus when the menu opens.
+6. The web package version, small and muted.
+
+Owner decisions (2026-11-02):
+
+- One primary button. "Build your ship · version" leaves the panel; the builder moves to the
+  header nav.
+- Wording follows old arcade and pinball machines: PRESS START replaces TAP TO START.
+- The eyebrow ("KEEP THE ENGINES ALIVE"), headline ("Dance with gravity."), rules paragraph and
+  keyboard hint are removed from the menu. The owner judged them unneeded.
+- The Wasp is a launcher ship (02). This reverses the earlier decision that the launcher had
+  three ships.
+- The switch is the existing design-system `Toggle`, not a new control.
+- Header nav: **HANGAR** (`/builder`), **HIGH SCORES**, **OPTIONS**, in caps; the Lab's link
+  reads **PLAY**. The builder header reads `HANGAR / <version>` (was `SHIPYARD`), and the settings
+  page heading reads "Options". The owner considers the header itself poor design, but removing it
+  was out of scope.
+
+Inventory before the spike: an eyebrow, headline and two-line rules paragraph; a native
+`<select>` labelled "Ship Chassis" listing four ships in profile order; a long-name/trait line;
+two filled buttons with the version-stamped builder link first; TAP TO START; and a fixed
+keyboard hint that ignored the invert-controls setting.
+
+Known gaps:
+
+- The toggle's options are named only "01"–"04" for assistive technology: `Toggle` has no
+  per-option label. The group is named "SELECT YOUR SHIP" and the visible ship name changes
+  with the selection.
+- The game menu always opens on Fighter (03); only the flight Lab restores the last ship
+  (S12 contract item 3 is still a target).
+- The ship on the stage still shows through the scrim beside the panel.
+- At 2× the Corvette's nose nearly reaches its name.
+
+Release evidence: see the 0.4.8 note below.
+
 ### S7 — Text roles, tags and navigation
 
 - Spec: `design-system-core.md`.
 - Lab: text roles, `.tag` and `.nav-link`.
 - Apply: global `.eyebrow`, `.lead`, `.caption`, `.field-label` and `.tag` replace local
-  equivalents. Headers use `.nav-link`, with Builder joining Scores and Settings. The version
-  leaves button labels.
+  equivalents. Headers use `.nav-link`, ~~with Builder joining Scores and Settings~~
+  [DEPRECATED 2026-11-02] with the spike's HANGAR, HIGH SCORES and OPTIONS. ~~The version
+  leaves button labels.~~ [DEPRECATED 2026-11-02] Done in the spike.
 
 ### S8 — Resource meter
 
@@ -209,15 +268,19 @@ Lab panes. The Lab overlay pane already moved focus and closed on Escape; it sta
 - Spec: `controls-system.md`.
 - Lab: key caps and touch hint.
 - Apply: `.kbd` and a touch variant chosen by `(pointer: coarse)`. The text matches actual mappings,
-  including inverted-controls defaults. Hints are never hidden on phones.
+  including inverted-controls defaults. Hints are never hidden on phones. The menu no longer
+  carries a hint (owner, 2026-11-02); where hints appear instead is part of this slice.
 
 ### S10 — Ship launcher (D3, D7)
 
 - Spec: `ship-select-and-camera-zoom-v0.4.0.md` / `ship-select-ui-persistence.md`, updated.
 - Lab: `/lab/ship-launcher` at 1440×900 and 844×390 with each ship selected.
-- Apply: a radio group of three cards (production silhouette, S4 name, trait) plus one filled Go.
+- Apply: ~~a radio group of three cards (production silhouette, S4 name, trait) plus one filled Go.
   The last-used ship is preselected; arrows and 1–3 select; Enter is Go. Browser tests move from "TAP TO
-  START" to select + Go; add keyboard-only and phone no-scroll tests.
+  START" to select + Go; add keyboard-only and phone no-scroll tests.~~ [DEPRECATED 2026-11-02] The
+  spike delivered the selector as the design-system toggle 01–04 with one ship shown at a time, and
+  browser tests select through it. Remaining: preselect the last-used ship, add a `/lab/ship-launcher`
+  page, and add keyboard-only and phone no-scroll tests.
 
 ### S11 — Attract scene and motion (D5)
 
@@ -237,20 +300,30 @@ delivers a generator, then shows a fresh system per visit with no further openin
 
 - Spec: this file shrinks to the composition contract below. `menu-overlay.md` is marked deprecated.
 - Lab: `/lab/opening` composes the real opening with a fixed seed as the reviewed visual baseline.
-- Apply: `FlightDeck` MENU becomes logomark, ship launcher, Go and control hint in a panel over the
-  attract scene. The dropdown, "TAP TO START" and the in-card builder button are removed.
+- Apply: ~~`FlightDeck` MENU becomes logomark, ship launcher, Go and control hint in a panel over the
+  attract scene. The dropdown, "TAP TO START" and the in-card builder button are removed.~~
+  [DEPRECATED 2026-11-02] The panel and removals are done (spike). Remaining: place the panel over
+  the S11 attract scene and add `/lab/opening`.
 - Human review: attract-scene pace, readability over the scene, ship card clarity, Go on a real phone.
 
 ## Target opening experience (S12 contract)
 
 1. On load, a star-system scene (not the game world) shows at whole-system zoom. Planets move slowly and the
    star radiates. There is no HUD and no engine pads.
-2. A panel shows the ∅·Δ logomark, three ship cards (Scout / Fighter / Corvette) with real
-   silhouettes, one Go button and a one-line control hint.
-3. The last-used ship is preselected. Tapping a card selects it; Go starts the run. Keyboard: arrows or 1–3 select, Enter goes.
-4. The header holds the logomark, a run tag, and nav: Builder, Scores, Settings.
-5. At 844×390 everything in step 2 fits below the header without scrolling. The headline and eyebrow
-   appear only where there is room.
+2. ~~A panel shows the ∅·Δ logomark, three ship cards (Scout / Fighter / Corvette) with real
+   silhouettes, one Go button and a one-line control hint.~~ [DEPRECATED 2026-11-02] A panel shows
+   the ∅·Δ logomark, VOID DRIFT, SELECT YOUR SHIP with the 01–04 toggle (Scout / Wasp / Fighter /
+   Corvette), the selected ship's name, production drawing, long name and equipment, one PRESS START
+   button and the version. No control hint. Implemented (spike), except the attract scene behind it.
+3. The last-used ship is preselected. ~~Tapping a card selects it; Go starts the run. Keyboard: arrows or
+   1–3 select, Enter goes.~~ [DEPRECATED 2026-11-02] Tapping a toggle part selects it; PRESS START
+   starts the run. Keyboard: arrows or 1–4 select, Enter on PRESS START goes. Preselection is not yet
+   implemented; the rest is.
+4. The header holds the logomark, a run tag, and nav: ~~Builder, Scores, Settings~~
+   [DEPRECATED 2026-11-02] HANGAR, HIGH SCORES, OPTIONS. Implemented.
+5. At 844×390 everything in step 2 fits below the header without scrolling. ~~The headline and eyebrow
+   appear only where there is room.~~ [DEPRECATED 2026-11-02] The menu has no headline or eyebrow
+   copy. Not yet checked (phone landscape is out of scope for now).
 
 ## Boundaries
 
@@ -281,9 +354,10 @@ Scenario: Start a run from the opening
   Given a returning player whose last ship was Corvette
   When the opening loads
   Then a star-system scene animates at whole-system zoom
-  And the Corvette card is selected
-  When the player selects Scout and activates Go
+  And 04 (Corvette) is selected in the ship toggle
+  When the player selects 01 (Scout) and activates PRESS START
   Then the run starts with Scout and the HUD appears
+  # Updated 2026-11-02 (spike): cards and Go became the toggle and PRESS START.
 
 Scenario: Keyboard-only start
   Given the opening has loaded
@@ -293,7 +367,8 @@ Scenario: Keyboard-only start
 Scenario: Phone landscape fit
   Given an 844×390 touch viewport
   When the opening loads
-  Then the logomark, three ship cards, Go and the touch hint are visible without scrolling
+  Then the logomark, the ship toggle, the selected ship and PRESS START are visible without scrolling
+  # Updated 2026-11-02 (spike): no cards and no hint in the menu.
 
 Scenario: Dialog isolation
   Given any dialog is open
@@ -315,4 +390,5 @@ Scenario: Prose stays readable
 - ~~**Wasp in the launcher.** S10 and the S12 contract assume three cards and keys 1–3. The Wasp is a
   fourth flyable ship; whether it is a launcher card is undecided (asked 2026-11-02).~~ Resolved
   (owner, 2026-11-02): the Wasp is not a launcher ship yet. S10 keeps three cards (Scout / Fighter /
-  Corvette) and keys 1–3; the Wasp stays selectable in the builder and the Lab.
+  Corvette) and keys 1–3; the Wasp stays selectable in the builder and the Lab. Reversed (owner,
+  2026-11-02, spike): the Wasp is launcher ship 02 of four.

@@ -1,5 +1,12 @@
 import { expect, test } from "@playwright/test";
 
+const LAUNCHER: Record<string, string> = {
+	scout: "01",
+	wasp: "02",
+	fighter: "03",
+	corvette: "04",
+};
+
 test("two anonymous pilots complete runs, submit and see a shared leaderboard", async ({
 	browser,
 }) => {
@@ -18,8 +25,11 @@ test("two anonymous pilots complete runs, submit and see a shared leaderboard", 
 		);
 		await page.clock.install();
 		await page.goto("http://127.0.0.1:4323/");
-		await page.getByLabel("Ship Chassis").selectOption(ship);
-		await page.getByRole("button", { name: "TAP TO START" }).click();
+		await page
+			.getByRole("radiogroup", { name: "SELECT YOUR SHIP" })
+			.getByText(LAUNCHER[ship], { exact: true })
+			.click();
+		await page.getByRole("button", { name: "PRESS START" }).click();
 		for (
 			let i = 0;
 			i < 15 &&

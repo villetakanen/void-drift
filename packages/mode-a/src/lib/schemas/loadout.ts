@@ -267,12 +267,18 @@ export function defaultBuilds() {
 		corvette: defaultLoadout("corvette"),
 	};
 }
+/** Every fitted part, one entry per mount: the Wasp has one side mount, other chassis two. */
+export function fittedParts(build: Loadout): PartId[] {
+	const ids =
+		build.chassis === "wasp"
+			? [build.side, ...build.hull]
+			: [build.side, build.side, ...build.hull, ...build.aft];
+	return ids.filter((id): id is PartId => id !== null);
+}
 export function buildStats(build: Loadout) {
 	const chassis = CHASSIS[build.chassis];
 	const isWasp = build.chassis === "wasp";
-	const ids = isWasp
-		? [build.side, ...build.hull]
-		: [build.side, build.side, ...build.hull, ...build.aft];
+	const ids = fittedParts(build);
 	let mass = chassis.mass,
 		capacity = 100,
 		coils = 1,

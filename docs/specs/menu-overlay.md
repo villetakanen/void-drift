@@ -1,6 +1,7 @@
 # Menu Overlay Specification
 
-**Status:** IMPLEMENTED  
+**Status:** ~~IMPLEMENTED~~ [DEPRECATED 2026-11-02] Superseded by the title menu in
+[opening-screen.md](opening-screen.md#spike--title-menu-and-ship-selector). Kept as history.  
 **Phase:** 5 (Survival Core)  
 **Related PBI:** PBI-018 (Settings), PBI-017 (Game State)
 

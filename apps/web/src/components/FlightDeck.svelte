@@ -7,16 +7,18 @@ import {
 	drawBuild,
 	type FlightSettings,
 	FlightSettingsSchema,
+	fittedParts,
 	gameSettings,
 	type Loadout,
 	labSettings,
+	PARTS,
 	SHIP_IDENTITY,
-	SHIP_PROFILES,
 	type ShipProfileId,
 	ShipProfileIdSchema,
 	Simulation,
 	STEP,
 	scoresAvailable,
+	starterLoadout,
 	stockSettings,
 	submitHighScore,
 } from "@void-drift/mode-a";
@@ -24,6 +26,7 @@ import { onMount } from "svelte";
 import { version } from "../../package.json";
 import { settings } from "../lib/stores/settings";
 import Dialog from "./Dialog.svelte";
+import Toggle from "./inputs/Toggle.svelte";
 import Logo from "./Logo.svelte";
 
 let {
@@ -61,6 +64,36 @@ let right = $state(false);
 let cause = $state("");
 let engineFeedback = $state("");
 let activeLoadout = $state<Loadout>();
+// Menu launcher order; the toggle numbers them 01–04 (owner, 2026-11-02).
+const LAUNCHER_ORDER: readonly ShipProfileId[] = [
+	"scout",
+	"wasp",
+	"fighter",
+	"corvette",
+];
+let shipArt = $state<HTMLCanvasElement>();
+const launcherNumber = (index: number) => String(index + 1).padStart(2, "0");
+// "3× Light ion · 1× Energy storage", counted from the loadout that flies.
+function equipment(build: Loadout) {
+	const counts = new Map<string, number>();
+	for (const id of fittedParts(build))
+		counts.set(PARTS[id].name, (counts.get(PARTS[id].name) ?? 0) + 1);
+	return `Equipped: ${[...counts].map(([name, n]) => `${n}× ${name}`).join(" · ")}`;
+}
+$effect(() => {
+	const context = shipArt?.getContext("2d");
+	if (!context || !shipArt) return;
+	const build = tuning.loadout ?? starterLoadout(chosen);
+	context.clearRect(0, 0, shipArt.width, shipArt.height);
+	drawBuild(
+		context,
+		build,
+		shipArt.width / 2,
+		shipArt.height / 2,
+		-Math.PI / 2,
+		3.2,
+	);
+});
 let spin = $state(0);
 let wraps = $state(0);
 let json = $state("");
@@ -286,6 +319,14 @@ onMount(() => {
 	const key = (event: KeyboardEvent) => {
 		if (event.code === "Escape" && status === "PLAYING" && !paused)
 			togglePause();
+		const digit = /^Digit([1-9])$/.exec(event.code);
+		const typing =
+			event.target instanceof HTMLElement &&
+			event.target.closest("input, textarea, select, [contenteditable]");
+		if (status === "MENU" && digit && !typing) {
+			const id = LAUNCHER_ORDER[Number(digit[1]) - 1];
+			if (id) selectShip(id);
+		}
 	};
 	const blur = () => {
 		if (status === "PLAYING") paused = true;
@@ -339,9 +380,11 @@ onMount(() => {
 				</button>
 			{/if}
 			{#if lab}
-				<a href="/">Play</a>
+				<a href="/">PLAY</a>
+			{:else if !loadout}
+				<a href="/builder">HANGAR</a>
 			{/if}
-			<a href="/leaderboard">Scores</a><a href="/settings">Settings</a>
+			<a href="/leaderboard">HIGH SCORES</a><a href="/settings">OPTIONS</a>
 		</nav>
 	</header>
 	<div class="flight-layout">
@@ -417,53 +460,44 @@ onMount(() => {
 			</div>
 			{#if status === "MENU"}
 				<Dialog label="Game menu" class="flight-card" returnFocus={false}>
-					<p class="eyebrow">
-						{lab ? "DESIGN THE FLIGHT" : "KEEP THE ENGINES ALIVE"}
-					</p>
-					<h1>{lab ? "Test. Feel. Repeat." : "Dance with gravity."}</h1>
-					<p>
-						Skim the star to recharge. Stay clear of its heat.<br>Keep moving.
-						Beat your best.
-					</p>
-					<label for="ship-select">Ship Chassis</label
-					><select
-						id="ship-select"
-						value={chosen}
-						onchange={(event) => selectShip(event.currentTarget.value)}
-					>
-						{#each SHIP_PROFILES as profile}
-							<option value={profile.id}>
-								{SHIP_IDENTITY[profile.id].shortName}
-							</option>
-						{/each}
-					</select>
-					<div class="ship-description">
-						{SHIP_IDENTITY[chosen].longName}
-						/
-						{lab
-							? chosen === "wasp"
-								? "One rear Light-ion engine + 4 turning stabilizers. Tune and compare flight."
-								: "Two Light-ion side engines. Tune and compare flight."
-							: SHIP_IDENTITY[chosen].trait}
+					<div class="title-frame">
+						<span class="title-logo"><Logo size="sm" /></span>
+						<h1>VOID DRIFT</h1>
+					</div>
+					<p class="eyebrow">SELECT YOUR SHIP</p>
+					<div class="ship-select">
+						<Toggle
+							label="SELECT YOUR SHIP"
+							options={LAUNCHER_ORDER.map((_, index) => launcherNumber(index))}
+							bind:value={
+								() => launcherNumber(LAUNCHER_ORDER.indexOf(chosen)),
+								(number) => selectShip(LAUNCHER_ORDER[Number(number) - 1])
+							}
+						/>
+						<p class="ship-name">{SHIP_IDENTITY[chosen].shortName}</p>
+						<canvas
+							bind:this={shipArt}
+							class="ship-art"
+							width="480"
+							height="340"
+							aria-hidden="true"
+						></canvas>
+						<p class="ship-detail">
+							{SHIP_IDENTITY[chosen].longName}<br>
+							{equipment(tuning.loadout ?? starterLoadout(chosen))}
+						</p>
 					</div>
 					<div class="button-group button-group--vertical">
-						{#if !lab}
-							<a class="btn btn-filled" href="/builder"
-								>Build your ship · {version}</a
-							>
-						{/if}
 						<button
 							type="button"
 							class="btn btn-filled"
 							data-autofocus
 							onclick={start}
 						>
-							TAP TO START
+							PRESS START
 						</button>
 					</div>
-					<p class="control-copy">
-						A + D / ← + → · Both engines thrust forward
-					</p>
+					<p class="title-version">{version}</p>
 				</Dialog>
 			{:else if status === "GAME_OVER"}
 				<Dialog label="Run complete" class="flight-card">

@@ -120,6 +120,17 @@
 	color: var(--color-text-muted);
 	line-height: 1.6;
 }
+.flight-card .title-frame {
+	display: grid;
+	justify-items: center;
+	gap: var(--spacing-sm);
+}
+.flight-card .title-logo {
+	color: var(--color-brand);
+}
+.flight-card .title-version {
+	font-size: var(--font-size-caption);
+}
 .flight-card .eyebrow {
 	color: var(--color-text-muted);
 }
@@ -138,11 +149,6 @@
 	min-height: var(--control-min-height);
 	width: 100%;
 	box-sizing: border-box;
-}
-.ship-description {
-	font-size: var(--font-size-caption);
-	color: var(--color-text);
-	line-height: var(--line-height-ui);
 }
 .flight-controls {
 	position: absolute;
@@ -248,6 +254,31 @@
 }
 .score-page small {
 	color: var(--color-text-muted);
+}
+.flight-card .ship-select {
+	display: grid;
+	justify-items: center;
+	gap: var(--spacing-sm);
+}
+.flight-card .ship-name {
+	font:
+		var(--font-weight-display) var(--font-size-heading) /
+		var(--line-height-display) var(--font-family-display);
+	letter-spacing: var(--tracking-display);
+	text-transform: uppercase;
+	color: var(--color-text);
+}
+.flight-card .ship-select .toggle {
+	margin-bottom: var(--spacing-md);
+}
+.flight-card .ship-art {
+	width: 240px;
+	height: 170px;
+	margin-bottom: calc(-1 * var(--spacing-sm));
+}
+.flight-card .ship-detail {
+	font-size: var(--font-size-caption);
+	line-height: var(--line-height-ui);
 }
 @media (max-height: 500px) {
 	.flight-header {

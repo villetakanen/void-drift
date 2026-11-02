@@ -1,5 +1,12 @@
 import { expect, test } from "@playwright/test";
 
+const LAUNCHER: Record<string, string> = {
+	scout: "01",
+	wasp: "02",
+	fighter: "03",
+	corvette: "04",
+};
+
 test.beforeEach(async ({ page }) => {
 	await page.route("**/*", (route) =>
 		new URL(route.request().url()).hostname === "127.0.0.1"
@@ -15,11 +22,17 @@ test("standard flights start with Fighter and all ships have stabilizers", async
 	page.on("pageerror", (e) => errors.push(e.message));
 	for (const id of ["scout", "fighter", "corvette"]) {
 		await page.goto("/");
-		await expect(page.getByLabel("Ship Chassis")).toHaveValue("fighter");
-		await page.getByLabel("Ship Chassis").selectOption(id);
+		await expect(page.getByRole("radio", { name: "03" })).toBeChecked();
+		await page
+			.getByRole("radiogroup", { name: "SELECT YOUR SHIP" })
+			.getByText(LAUNCHER[id], { exact: true })
+			.click();
 		await page.reload();
-		await expect(page.getByLabel("Ship Chassis")).toHaveValue("fighter");
-		await page.getByLabel("Ship Chassis").selectOption(id);
+		await expect(page.getByRole("radio", { name: "03" })).toBeChecked();
+		await page
+			.getByRole("radiogroup", { name: "SELECT YOUR SHIP" })
+			.getByText(LAUNCHER[id], { exact: true })
+			.click();
 		await expect(page.locator(".flight-page")).toHaveAttribute(
 			"data-stabilizers",
 			"true",
@@ -31,7 +44,7 @@ test("standard flights start with Fighter and all ships have stabilizers", async
 			"max",
 			id === "scout" ? "100" : id === "fighter" ? "200" : "300",
 		);
-		await page.getByRole("button", { name: "TAP TO START" }).click();
+		await page.getByRole("button", { name: "PRESS START" }).click();
 		const deck = page.locator(".flight-page");
 		const y = await deck.getAttribute("data-y");
 		await page.keyboard.down("ArrowUp");
@@ -69,7 +82,9 @@ test("flight Lab replays exactly, imports safely, and restarts after death", asy
 		content:
 			".flight-hud, .flight-controls, .dialog-layer { visibility: hidden !important; } [data-stage] { filter: none !important; transition: none !important; } [data-stage]::after { display: none !important; }",
 	});
-	await expect(page.locator("canvas")).toHaveScreenshot("flight-trial.png", {
+	await expect(
+		page.getByLabel("Ship, star and orbiting planets"),
+	).toHaveScreenshot("flight-trial.png", {
 		maxDiffPixelRatio: 0.005,
 	});
 	await bare.evaluate((tag) => tag.remove());
@@ -112,7 +127,7 @@ test("landscape touch engines support simultaneous activation, cancellation and 
 			: route.abort(),
 	);
 	await page.goto("/");
-	await page.getByRole("button", { name: "TAP TO START" }).tap();
+	await page.getByRole("button", { name: "PRESS START" }).tap();
 	const left = page.getByRole("button", { name: "Left engine" }),
 		right = page.getByRole("button", { name: "Right engine" });
 	const a = await left.boundingBox(),
@@ -151,8 +166,12 @@ test("Lab configures, previews and shares stepped zoom at a fixed Full HD resolu
 }) => {
 	await page.goto("/lab/flight");
 	const deck = page.locator(".flight-page");
-	await expect(page.locator("canvas")).toHaveAttribute("width", "1920");
-	await expect(page.locator("canvas")).toHaveAttribute("height", "1080");
+	await expect(
+		page.getByLabel("Ship, star and orbiting planets"),
+	).toHaveAttribute("width", "1920");
+	await expect(
+		page.getByLabel("Ship, star and orbiting planets"),
+	).toHaveAttribute("height", "1080");
 	for (const count of [4, 11]) {
 		await page.getByLabel("Zoom levels:").fill(String(count));
 		await page.getByRole("button", { name: "Apply & reset" }).click();

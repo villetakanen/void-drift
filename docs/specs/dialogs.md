@@ -21,7 +21,7 @@ choose before the stage carries on. Today:
 
 | Dialog       | Screen                                | Label          | Escape           | Focus on open                                           |
 | ------------ | ------------------------------------- | -------------- | ---------------- | ------------------------------------------------------- |
-| Game menu    | game, flight Lab                      | "Game menu"    | does nothing     | Start (`TAP TO START`)                                  |
+| Game menu    | game, flight Lab                      | "Game menu"    | does nothing     | Start (`PRESS START`)                                   |
 | Paused       | game, builder test flight, flight Lab | "Paused"       | resumes (closes) | Resume                                                  |
 | Run complete | game, custom survival, flight Lab     | "Run complete" | does nothing     | Initials when shown, else Try Again / Return to builder |
 
@@ -53,7 +53,7 @@ and the engine pads. The page header and the Lab inspector are outside it.
 1. **Stage inert.** On open the stage gets `inert`. Nothing in it can be focused, clicked or
    found by assistive technology. Holders are counted, so when one dialog hands over to the next
    (run complete → menu), the stage stays inert throughout.
-2. **Only the stage.** The page header (Scores, Settings, Return to builder) and the flight Lab
+2. **Only the stage.** The page header (HANGAR, HIGH SCORES, OPTIONS, Return to builder) and the flight Lab
    inspector stay usable while a dialog is open. The dialog is therefore not `aria-modal`: that
    would claim the whole page is blocked. Owner decision, 2026-11-02.
 3. **HUD and engine pads hide.** Parts marked `data-hud` inside an inert stage are

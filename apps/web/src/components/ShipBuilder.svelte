@@ -133,7 +133,7 @@ function choose(id: ShipProfileId) {
 			><span
 				>{lab
 					? "SHIP BUILDER LAB / SHARED SYSTEMS"
-					: `SHIPYARD / ${version}`}</span
+					: `HANGAR / ${version}`}</span
 			><a href="/lab/flight">Flight Lab</a>
 		</header>
 		<div class="heading">

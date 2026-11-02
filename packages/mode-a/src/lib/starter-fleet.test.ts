@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { CHALLENGE } from "../schemas/highscore";
-import { buildStats, starterLoadout } from "./schemas/loadout";
+import { buildStats, fittedParts, starterLoadout } from "./schemas/loadout";
 import { gameSettings, labSettings, Simulation } from "./simulation";
 
 it("main-game fleet uses every engine mount and the selected energy packs", () => {
@@ -28,4 +28,17 @@ it("main-game fleet uses every engine mount and the selected energy packs", () =
 		);
 	}
 	expect(CHALLENGE).toBe("ion-1");
+});
+
+it("fitted parts list every mounted part once per mount", () => {
+	const count = (id: Parameters<typeof starterLoadout>[0]) => {
+		const counts: Record<string, number> = {};
+		for (const part of fittedParts(starterLoadout(id)))
+			counts[part] = (counts[part] ?? 0) + 1;
+		return counts;
+	};
+	expect(count("scout")).toEqual({ ion: 3 });
+	expect(count("fighter")).toEqual({ ion: 4, battery: 1 });
+	expect(count("corvette")).toEqual({ ion: 5, battery: 2 });
+	expect(count("wasp")).toEqual({ ion: 1 });
 });

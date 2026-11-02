@@ -246,6 +246,7 @@ text-muted, `--color-void-light` → elev-1, `--color-overlay` → glass (0.9 be
   see [Colour](#colour).
 - `Toggle` takes `options`, a bindable `value` and a group `label`; `compact` sets
   8px side padding and `stretch` fills the width. Native radios give arrow keys.
+  The game menu's ship selector (01–04) is a `Toggle` (opening-screen spike, 2026-11-02).
 - `RingSlider` wraps a native range input (keys, touch and forms unchanged) at a
   44px touch height; `compact` hides its label line where the host shows it. Its
   value is announced through the input, not a live region.
@@ -364,11 +365,11 @@ and the `--logomark-height-*` tokens. **Lab:** `/lab/logomark`.
 
 ### Sizes
 
-| Token                  | Height | Used for                                                    |
-| ---------------------- | ------ | ----------------------------------------------------------- |
-| `--logomark-height-sm` | 1rem   | Page headers (game, builder, scores, settings, study shell) |
-| `--logomark-height-md` | 1.5rem | Lab nav rail                                                |
-| `--logomark-height-lg` | 3rem   | Title cards (reserved for opening-screen S12)               |
+| Token                  | Height | Used for                                                                            |
+| ---------------------- | ------ | ----------------------------------------------------------------------------------- |
+| `--logomark-height-sm` | 1rem   | Page headers (game, builder, scores, settings, study shell) and the game menu title |
+| `--logomark-height-md` | 1.5rem | Lab nav rail                                                                        |
+| `--logomark-height-lg` | 3rem   | Title cards (reserved for opening-screen S12)                                       |
 
 Width follows the 2.62:1 aspect ratio.
 

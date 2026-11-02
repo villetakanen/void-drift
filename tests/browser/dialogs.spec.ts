@@ -46,12 +46,10 @@ test("dialog isolation: Tab never reaches the HUD, engine pads or canvas", async
 	page,
 }) => {
 	await page.goto("/");
-	await expect(
-		page.getByRole("button", { name: "TAP TO START" }),
-	).toBeFocused();
+	await expect(page.getByRole("button", { name: "PRESS START" })).toBeFocused();
 	await expectIsolated(page, "Game menu");
 
-	await page.getByRole("button", { name: "TAP TO START" }).click();
+	await page.getByRole("button", { name: "PRESS START" }).click();
 	await expect(page.locator(".flight-page")).toHaveAttribute(
 		"data-status",
 		"PLAYING",
@@ -74,14 +72,12 @@ test("dialog isolation: Tab never reaches the HUD, engine pads or canvas", async
 	await page.getByRole("button", { name: "Try Again" }).click();
 	await expect(page.getByRole("dialog", { name: "Game menu" })).toBeVisible();
 	await expect(page.locator("[data-stage]")).toHaveAttribute("inert", "");
-	await expect(
-		page.getByRole("button", { name: "TAP TO START" }),
-	).toBeFocused();
+	await expect(page.getByRole("button", { name: "PRESS START" })).toBeFocused();
 });
 
 test("focus returns to the opener when a dialog closes", async ({ page }) => {
 	await page.goto("/");
-	await page.getByRole("button", { name: "TAP TO START" }).click();
+	await page.getByRole("button", { name: "PRESS START" }).click();
 	const pause = page.getByRole("button", { name: "Pause", exact: true });
 	await pause.focus();
 	await page.keyboard.press("Escape");

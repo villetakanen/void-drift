@@ -10,7 +10,7 @@ test("inversion defaults on and an explicit opt-out persists", async ({
 	await page.reload();
 	await expect(toggle).not.toBeChecked();
 	await page.goto("/");
-	await page.getByRole("button", { name: "TAP TO START" }).click();
+	await page.getByRole("button", { name: "PRESS START" }).click();
 	await page.keyboard.down("ArrowLeft");
 	await expect(page.locator(".engine.left")).toHaveClass(/active/);
 	await expect(page.locator(".engine.right")).not.toHaveClass(/active/);

@@ -42,6 +42,11 @@ Update `apps/web/src/components/MenuOverlay.svelte`:
 
 Menu controls should not interfere with existing tap/click-to-start behavior.
 
+[2026-11-02] The selector is now the design-system `Toggle`, numbered 01–04 in launcher order
+(Scout, Wasp, Fighter, Corvette), with the selected ship's name, drawing, long name and
+equipment shown in the menu; see
+[opening-screen.md](opening-screen.md#spike--title-menu-and-ship-selector).
+
 #### 3. Game Start/Restart Wiring
 
 Update `apps/web/src/components/GameWrapper.svelte`:
@@ -65,7 +70,7 @@ Update web settings store (current `apps/web/src/lib/stores/settings`) so:
 #### Selector Behavior
 
 - ~~default: `Balanced`~~ [DEPRECATED 2026-11-01] default: Fighter (`fighter`)
-- user choice persists across reload
+- user choice persists across reload [2026-11-02: implemented only in the flight Lab; the game menu opens on Fighter]
 - choice is reflected immediately in menu summary
 
 #### Accessibility

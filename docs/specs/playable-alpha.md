@@ -78,6 +78,10 @@ tool reached directly at `/lab/flight` or through the Lab navigation, with a ret
 link to play. Game and leaderboard labels use the web package version (0.3.2),
 independently of the internal `alpha-1` scoring challenge identifier.
 
+Update 2026-11-02 (0.4.8): the game header nav reads HANGAR (the builder), HIGH SCORES and
+OPTIONS; the Lab's return link reads PLAY. The builder header reads `HANGAR / <version>`. See
+[opening-screen.md](opening-screen.md#spike--title-menu-and-ship-selector).
+
 ## Gravity well integration — 29 October 2026
 
 Game and Flight Lab use four physics substeps per 60 Hz replay tick. Suns and

@@ -1,5 +1,12 @@
 import { expect, test } from "@playwright/test";
 
+const LAUNCHER: Record<string, string> = {
+	scout: "01",
+	wasp: "02",
+	fighter: "03",
+	corvette: "04",
+};
+
 test.beforeEach(async ({ page }) => {
 	// These smoke checks cannot accidentally use live services or external fonts.
 	await page.route("**/*", (route) => {
@@ -16,9 +23,14 @@ test("local game starts with each ship and responds to keyboard input", async ({
 	for (const ship of ["scout", "fighter", "corvette"]) {
 		await page.goto("/");
 		await expect(page.getByRole("dialog", { name: "Game menu" })).toBeVisible();
-		await page.getByLabel("Ship Chassis").selectOption(ship);
-		await expect(page.getByLabel("Ship Chassis")).toHaveValue(ship);
-		await page.getByRole("button", { name: "TAP TO START" }).click();
+		await page
+			.getByRole("radiogroup", { name: "SELECT YOUR SHIP" })
+			.getByText(LAUNCHER[ship], { exact: true })
+			.click();
+		await expect(
+			page.getByRole("radio", { name: LAUNCHER[ship] }),
+		).toBeChecked();
+		await page.getByRole("button", { name: "PRESS START" }).click();
 		await expect(page.getByRole("dialog", { name: "Game menu" })).toBeHidden();
 		await page.keyboard.down("ArrowLeft");
 		await expect(page.locator(".engine.right")).toHaveClass(/active/);
