@@ -1,7 +1,7 @@
 # Experience design
 
 What playing Void Drift should feel and look like, and how the game presents itself.
-It follows from the game's vision (`docs/vision.md`, not yet written).
+It follows from the game's vision in `docs/vision.md`.
 
 Read it when starting new design work: a design study, the look or feel of a new
 feature, or a choice between options that conflict. It is not needed for development,
