@@ -113,6 +113,13 @@ passed (25 browser tests); `test:rules` and `test:competition` did not run (no J
 machine), so the new Firestore rule ids and the leaderboard name assertion are unverified. Browser
 evidence at 1440×900 is in `artifacts/evidence/s4/` (git-ignored); the local leaderboard has no Firebase, so it
 shows its unavailable state, not names.
+Released as 0.4.6 on 2026-11-02: merge `894818e` on `feat/0-4-0` (verify `2026-11-02T06-49-15.877Z-Qfbz5q`:
+7 of 9 stages, `test:rules` and `test:competition` not run for lack of Java) was pushed and deployed
+(`firebase deploy --only firestore,hosting`, project `void-drift-alpha`). On
+`https://void-drift-alpha.web.app`: the menu showed 0.4.6, short-name options and the Fighter's long
+name and trait; the builder showed short-name buttons and the "Aegis XF-1 Interceptor" heading; the
+Lab inspector showed the Identity group; the leaderboard loaded and showed "Scout" in the Ship column.
+Old scores with retired ids are skipped by the leaderboard rather than deleted.
 
 Inventory: two disagreeing name sources: `SHIP_PROFILES.name` (LHI Wasp / Scout / Balanced /
 Tank; the Lab inspector and flight menu) and `CHASSIS.name` (LHI Wasp / Scout / Fighter / Heavy
