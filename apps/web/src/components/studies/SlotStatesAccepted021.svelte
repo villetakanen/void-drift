@@ -21,7 +21,7 @@ const states = [
 		id: "06",
 	},
 ];
-const allMounts = buildMounts(defaultBuilds().balanced);
+const allMounts = buildMounts(defaultBuilds().fighter);
 const mounts = [
 	...allMounts.filter((m) => m.group !== "side"),
 	...allMounts.filter((m) => m.group === "side"),

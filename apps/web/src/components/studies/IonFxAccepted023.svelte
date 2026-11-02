@@ -21,7 +21,7 @@ let {
 }: { label?: string; linear?: boolean; fx?: boolean } = $props();
 // Each preserved example has a fixed loadout for its lifetime.
 const hasAft = untrack(() => fx);
-const baseBuild = defaultLoadout("balanced");
+const baseBuild = defaultLoadout("fighter");
 const build = LoadoutSchema.parse({
 	...baseBuild,
 	side: "ion",

@@ -5,7 +5,7 @@ test("two anonymous pilots complete runs, submit and see a shared leaderboard", 
 }) => {
 	for (const [ship, initials] of [
 		["scout", "ONE"],
-		["tank", "TWO"],
+		["corvette", "TWO"],
 	]) {
 		const context = await browser.newContext();
 		const page = await context.newPage();

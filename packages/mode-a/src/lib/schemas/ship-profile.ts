@@ -3,8 +3,8 @@ import { z } from "zod";
 export const ShipProfileIdSchema = z.enum([
 	"wasp",
 	"scout",
-	"balanced",
-	"tank",
+	"fighter",
+	"corvette",
 ]);
 
 export const ShipProfileSchema = z.object({

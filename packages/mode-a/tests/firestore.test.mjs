@@ -28,7 +28,7 @@ const score = {
 	initials: "ACE",
 	seconds: 42,
 	deathCause: "POWER",
-	shipId: "balanced",
+	shipId: "fighter",
 	challenge: "alpha-1",
 	userId: "pilot",
 };

@@ -35,7 +35,7 @@ const configuration = (
 	label,
 	color,
 	build: LoadoutSchema.parse({
-		...defaultLoadout("balanced"),
+		...defaultLoadout("fighter"),
 		side,
 		aft,
 		stabilizers: true,
@@ -75,7 +75,7 @@ function availableCeiling(
 	spin: number,
 ) {
 	const input = sequence(Math.min(tick, TOTAL_TICKS - 1));
-	const angle = (CHASSIS.balanced.angle * Math.PI) / 180;
+	const angle = (CHASSIS.fighter.angle * Math.PI) / 180;
 	let ix = 0,
 		iy = 0,
 		plasma = 0;

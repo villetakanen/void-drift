@@ -95,7 +95,7 @@ export const CHASSIS = {
 		length: SCOUT.length,
 		width: SCOUT.width,
 	}),
-	balanced: ChassisSchema.parse({
+	fighter: ChassisSchema.parse({
 		name: "Fighter",
 		mass: 95,
 		hull: 2,
@@ -107,7 +107,7 @@ export const CHASSIS = {
 		length: FIGHTER.length,
 		width: FIGHTER.width,
 	}),
-	tank: ChassisSchema.parse({
+	corvette: ChassisSchema.parse({
 		name: "Heavy Corvette",
 		mass: 140,
 		hull: 3,
@@ -246,7 +246,7 @@ export function starterLoadout(chassis: Loadout["chassis"]): Loadout {
 	const build = defaultLoadout(chassis);
 	build.stabilizers = true;
 	build.aft.fill("ion");
-	const packs = chassis === "balanced" ? 1 : chassis === "tank" ? 2 : 0;
+	const packs = chassis === "fighter" ? 1 : chassis === "corvette" ? 2 : 0;
 	for (let i = 0; i < packs; i++) build.hull[i] = "battery";
 	return LoadoutSchema.parse(build);
 }
@@ -254,22 +254,22 @@ export const BuildStoreSchema = z
 	.object({
 		wasp: LoadoutSchema.default(() => defaultLoadout("wasp")),
 		scout: LoadoutSchema,
-		balanced: LoadoutSchema,
-		tank: LoadoutSchema,
+		fighter: LoadoutSchema,
+		corvette: LoadoutSchema,
 	})
 	.refine(
 		(builds) =>
 			builds.wasp.chassis === "wasp" &&
 			builds.scout.chassis === "scout" &&
-			builds.balanced.chassis === "balanced" &&
-			builds.tank.chassis === "tank",
+			builds.fighter.chassis === "fighter" &&
+			builds.corvette.chassis === "corvette",
 	);
 export function defaultBuilds() {
 	return {
 		wasp: defaultLoadout("wasp"),
 		scout: defaultLoadout("scout"),
-		balanced: defaultLoadout("balanced"),
-		tank: defaultLoadout("tank"),
+		fighter: defaultLoadout("fighter"),
+		corvette: defaultLoadout("corvette"),
 	};
 }
 export function buildStats(build: Loadout) {

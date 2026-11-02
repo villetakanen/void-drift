@@ -176,14 +176,14 @@ function calculateWasp(aftEngine: "ion" | "heavy-ion", burn: BurnId): Sample[] {
 }
 
 const fighter4IonsLoadout = LoadoutSchema.parse({
-	...defaultLoadout("balanced"),
+	...defaultLoadout("fighter"),
 	side: "ion",
 	aft: ["ion", "ion"],
 	stabilizers: true,
 });
 
 const fighter2SideIonsLoadout = LoadoutSchema.parse({
-	...defaultLoadout("balanced"),
+	...defaultLoadout("fighter"),
 	side: "ion",
 	aft: [null, null],
 	stabilizers: true,

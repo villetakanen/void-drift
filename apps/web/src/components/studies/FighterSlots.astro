@@ -25,7 +25,7 @@ const palette = [
 const clipNormal = Math.atan2(7, 3);
 const sideAngle = (Math.atan2(20, 66) * 180) / Math.PI;
 // Real Fighter slot inventory, study-local positions and footprints.
-const mounts = buildMounts(defaultLoadout("balanced")).map((mount) => {
+const mounts = buildMounts(defaultLoadout("fighter")).map((mount) => {
 	const sign = mount.index === 0 ? -1 : 1;
 	return {
 		...mount,

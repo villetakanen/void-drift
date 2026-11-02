@@ -4,7 +4,7 @@ test("optional stabilizers persist and render in all fitted hulls through turn, 
 	page,
 }) => {
 	await page.clock.install();
-	for (const chassis of ["balanced", "scout", "tank"]) {
+	for (const chassis of ["fighter", "scout", "corvette"]) {
 		await page.goto(`/lab/builder?chassis=${chassis}`);
 		await page.getByRole("checkbox", { name: "Ion stabilizers" }).check();
 		await page.reload();
@@ -12,7 +12,7 @@ test("optional stabilizers persist and render in all fitted hulls through turn, 
 			page.getByRole("checkbox", { name: "Ion stabilizers" }),
 		).toBeChecked();
 		await page.getByRole("button", { name: /Heavy ion.*20 mass/ }).click();
-		if (chassis === "tank") {
+		if (chassis === "corvette") {
 			for (const n of [1, 2, 3]) {
 				await page
 					.getByRole("button", { name: `Aft ${n} · Universal: Empty` })

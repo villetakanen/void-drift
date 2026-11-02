@@ -43,7 +43,7 @@ export function forceComposition(
 	}));
 	const force = contributions.reduce((sum, item) => sum + item.force, 0);
 	const fittedMass =
-		CHASSIS.balanced.mass +
+		CHASSIS.fighter.mass +
 		config.engines.reduce((sum, id) => sum + PARTS[id].mass, 0);
 	const mass = fitted ? fittedMass : REFERENCE_MASS;
 	return {

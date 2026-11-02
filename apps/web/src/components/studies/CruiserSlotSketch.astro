@@ -10,7 +10,7 @@ interface Props {
 }
 const { layout, windows, label, bowCockpit = false, aft = "row" } = Astro.props;
 // Production mount identities/counts; positions are study fixtures.
-const mounts = buildMounts(defaultBuilds().tank).map((mount) => {
+const mounts = buildMounts(defaultBuilds().corvette).map((mount) => {
 	const hullPositions =
 		layout === "spine"
 			? [

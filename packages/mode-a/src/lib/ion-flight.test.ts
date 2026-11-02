@@ -26,7 +26,7 @@ const body = () => ({
 describe("accepted ion flight", () => {
 	it("migrates absent stabilizer flags without replacing fitted engines", () => {
 		const build = {
-			...defaultLoadout("balanced"),
+			...defaultLoadout("fighter"),
 			side: "plasma",
 			stabilizers: undefined,
 		};
@@ -37,7 +37,7 @@ describe("accepted ion flight", () => {
 		).toBe(false);
 	});
 	it("Heavy gives 1.75 times Light force after accounting for installed mass", () => {
-		const light = defaultLoadout("balanced"),
+		const light = defaultLoadout("fighter"),
 			heavy = { ...light, side: "heavy-ion" as const };
 		expect(PARTS["heavy-ion"].draw / PARTS.ion.draw).toBe(1.75);
 		const a = body(),
@@ -49,7 +49,7 @@ describe("accepted ion flight", () => {
 		).toBeCloseTo(1.75, 12);
 	});
 	it("counts directional force rather than installed engines for speed", () => {
-		const build = defaultLoadout("balanced");
+		const build = defaultLoadout("fighter");
 		const a = body();
 		for (let i = 0; i < 12000; i++)
 			applyBuildEngines(a, build, both, STEP, true);
@@ -61,7 +61,7 @@ describe("accepted ion flight", () => {
 		for (let i = 0; i < 200; i++) applyBuildEngines(a, build, left, STEP, true);
 		expect(a.vel.mag()).toBeLessThanOrEqual(1000.000001);
 	});
-	for (const chassis of ["balanced", "scout", "tank"] as const) {
+	for (const chassis of ["fighter", "scout", "corvette"] as const) {
 		it(`${chassis}: free fall persists, optional stabilizers assist crosswise and stop without reversing`, () => {
 			const build = defaultLoadout(chassis),
 				ship = body(),
@@ -114,7 +114,7 @@ describe("accepted ion flight", () => {
 		});
 	}
 	it("charges 0.25 Light-ion energy for assist and automatic braking with any main family", () => {
-		const build = { ...defaultLoadout("balanced"), stabilizers: true };
+		const build = { ...defaultLoadout("fighter"), stabilizers: true };
 		for (const side of ["ion", "heavy-ion", "fusion", "plasma"] as const) {
 			build.side = side;
 			expect(buildDrain(build, left)).toBe(

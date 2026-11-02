@@ -13,7 +13,7 @@ test("local game starts with each ship and responds to keyboard input", async ({
 }) => {
 	const errors: string[] = [];
 	page.on("pageerror", (error) => errors.push(error.message));
-	for (const ship of ["scout", "balanced", "tank"]) {
+	for (const ship of ["scout", "fighter", "corvette"]) {
 		await page.goto("/");
 		await expect(page.getByRole("dialog", { name: "Game menu" })).toBeVisible();
 		await page.getByLabel("Ship Chassis").selectOption(ship);
@@ -49,9 +49,9 @@ test("ship Lab changes the production drawing without live credentials", async (
 			),
 	);
 	const scout = await capture();
-	await page.getByLabel("Chassis").selectOption("tank");
+	await page.getByLabel("Chassis").selectOption("corvette");
 	await expect.poll(capture).not.toBe(scout);
-	await testInfo.attach("tank-lab", {
+	await testInfo.attach("corvette-lab", {
 		body: await canvas.screenshot(),
 		contentType: "image/png",
 	});

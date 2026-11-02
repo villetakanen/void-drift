@@ -21,7 +21,7 @@ function ship() {
 	};
 }
 function simulation(testFlight = false) {
-	const loadout = defaultLoadout("balanced");
+	const loadout = defaultLoadout("fighter");
 	loadout.hull[0] = "battery";
 	const sim = new Simulation({ ...stockSettings(), loadout, testFlight });
 	sim.ship.pos.set(1900, 540);
@@ -52,7 +52,7 @@ describe("ship builder contract", () => {
 		).toBeCloseTo(200 / 3);
 	});
 	it("uses both controls for aft engines and cancels mirrored torque", () => {
-		const build = defaultLoadout("balanced");
+		const build = defaultLoadout("fighter");
 		build.aft[0] = "ion";
 		expect(buildDrain(build, idle)).toBe(3);
 		expect(buildDrain(build, { ...idle, leftThruster: true })).toBe(5);
@@ -66,8 +66,8 @@ describe("ship builder contract", () => {
 		expect(b.vel.y).toBeGreaterThan(0);
 	});
 	it("more mass reduces acceleration and turning", () => {
-		const light = defaultLoadout("balanced"),
-			heavy = defaultLoadout("balanced");
+		const light = defaultLoadout("fighter"),
+			heavy = defaultLoadout("fighter");
 		heavy.hull[0] = "battery";
 		expect(buildStats(heavy).acceleration).toBeLessThan(
 			buildStats(light).acceleration,
@@ -90,7 +90,7 @@ describe("ship builder contract", () => {
 		expect(b.vel.x).toBeCloseTo(1100 - 200 / 60);
 	});
 	it("mixed engines and repeated sideways thrust cannot exceed the fastest powered limit", () => {
-		const build = defaultLoadout("balanced");
+		const build = defaultLoadout("fighter");
 		build.aft = ["ion", "fusion"];
 		const a = ship();
 		for (let i = 0; i < 30000; i++) {
@@ -143,7 +143,7 @@ it("preserves established gravity and overspeed coasting for assembled ships", (
 	const stock = new Simulation(stockSettings());
 	const assembled = new Simulation({
 		...stockSettings(),
-		loadout: defaultLoadout("balanced"),
+		loadout: defaultLoadout("fighter"),
 	});
 	expect(assembled.star).toEqual(stock.star);
 	expect(assembled.planets).toEqual(stock.planets);
@@ -162,10 +162,10 @@ it("preserves established gravity and overspeed coasting for assembled ships", (
 });
 
 it("emits shared fading surfaces for every active installed engine", () => {
-	const loadout = defaultLoadout("tank");
+	const loadout = defaultLoadout("corvette");
 	loadout.aft = ["ion", "rail", "fusion"];
 	const sim = new Simulation({
-		...stockSettings("tank"),
+		...stockSettings("corvette"),
 		loadout,
 		testFlight: true,
 	});
@@ -182,7 +182,7 @@ it("emits shared fading surfaces for every active installed engine", () => {
 });
 
 it("uses accepted mount geometry for propulsion, estimates, nozzles and collision", () => {
-	const build = defaultLoadout("balanced");
+	const build = defaultLoadout("fighter");
 	const mounts = buildMounts(build);
 	expect(mounts.map(({ x, y }) => [x, y])).toEqual([
 		[-12, -15],

@@ -2,7 +2,7 @@
 import { buildMounts, defaultBuilds } from "@void-drift/mode-a";
 import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
 
-const mounts = buildMounts(defaultBuilds().balanced);
+const mounts = buildMounts(defaultBuilds().fighter);
 const points = (vertices: readonly (readonly number[])[]) =>
 	vertices.map((point) => point.join(",")).join(" ");
 const engines = [

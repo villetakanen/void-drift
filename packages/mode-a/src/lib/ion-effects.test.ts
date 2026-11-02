@@ -3,7 +3,7 @@ import { buildPlumeEmitters } from "./build-renderer";
 import { defaultLoadout } from "./schemas/loadout";
 
 it("assigns ion styles per mount without restyling fusion or plasma", () => {
-	for (const chassis of ["balanced", "scout", "tank"] as const) {
+	for (const chassis of ["fighter", "scout", "corvette"] as const) {
 		for (const side of ["ion", "heavy-ion", "fusion", "plasma"] as const) {
 			const build = defaultLoadout(chassis);
 			build.side = side;

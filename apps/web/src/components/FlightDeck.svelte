@@ -40,7 +40,7 @@ let simulation: Simulation;
 let input: Input;
 let renderer: Renderer;
 let camera: Camera;
-let chosen = $state<ShipProfileId>("balanced");
+let chosen = $state<ShipProfileId>("fighter");
 let tuning = $state<FlightSettings>(stockSettings());
 let status = $state("MENU");
 let paused = $state(false);
@@ -219,7 +219,7 @@ function release(event: PointerEvent) {
 }
 onMount(() => {
 	chosen =
-		loadout?.chassis ?? (lab ? settings.get().selectedShipId : "balanced");
+		loadout?.chassis ?? (lab ? settings.get().selectedShipId : "fighter");
 	tuning = lab ? labSettings(chosen) : gameSettings(chosen);
 	if (lab) {
 		const trialJSON = new URL(location.href).searchParams.get("trial");
@@ -392,7 +392,7 @@ onMount(() => {
 						>
 							{#each SHIP_PROFILES as profile}
 								<option value={profile.id}>
-									{!lab && profile.id === "balanced" ? "Fighter" : profile.name}
+									{!lab && profile.id === "fighter" ? "Fighter" : profile.name}
 								</option>
 							{/each}
 						</select>
@@ -405,7 +405,7 @@ onMount(() => {
 									? "LHI WASP / One rear Light ion + 4 turning stabilizers. Standard energy capacity."
 									: chosen === "scout"
 										? "SCOUT / Three Light ions. Standard energy capacity."
-										: chosen === "tank"
+										: chosen === "corvette"
 											? "TANK / Five Light ions. Two extra energy packs."
 											: "FIGHTER / Four Light ions. One extra energy pack."}
 						</div>

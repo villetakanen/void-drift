@@ -24,7 +24,7 @@ import Logo from "./Logo.svelte";
 
 let { lab = false }: { lab?: boolean } = $props();
 let builds = $state(defaultBuilds());
-let chosen = $state<ShipProfileId>("balanced");
+let chosen = $state<ShipProfileId>("fighter");
 let selected = $state("left");
 let flying = $state<"test" | "survival" | null>(null);
 let ready = $state(false);
@@ -34,8 +34,8 @@ let canvas = $state<HTMLCanvasElement>();
 const build = $derived(builds[chosen]);
 const stats = $derived(buildStats(build));
 const mounts = $derived(buildMounts(build));
-const previewScale = $derived(chosen === "tank" ? 4.5 : 5.2);
-const previewY = $derived(chosen === "tank" ? 270 : 325);
+const previewScale = $derived(chosen === "corvette" ? 4.5 : 5.2);
+const previewY = $derived(chosen === "corvette" ? 270 : 325);
 const mount = $derived(
 	mounts.find((item) => item.key === selected) ?? mounts[0],
 );
@@ -47,8 +47,10 @@ onMount(() => {
 		fontsLoaded = true;
 	});
 	try {
+		// Alpha: saves from before the fighter/corvette ids are purged, not migrated.
 		localStorage.removeItem("void-drift-builds-v1");
-		const saved = localStorage.getItem("void-drift-builds-v2");
+		localStorage.removeItem("void-drift-builds-v2");
+		const saved = localStorage.getItem("void-drift-builds-v3");
 		if (saved) {
 			const parsed = BuildStoreSchema.safeParse(JSON.parse(saved));
 			if (parsed.success) builds = parsed.data;
@@ -91,7 +93,7 @@ $effect(() => {
 $effect(() => {
 	if (ready) {
 		try {
-			localStorage.setItem("void-drift-builds-v2", JSON.stringify(builds));
+			localStorage.setItem("void-drift-builds-v3", JSON.stringify(builds));
 		} catch {
 			notice =
 				"Storage is unavailable. Changes are kept until this page closes.";

@@ -95,7 +95,7 @@ export class Renderer {
 	drawShip(
 		ship: GameObject,
 		tint?: string,
-		variant: "wasp" | "scout" | "balanced" | "tank" = "balanced",
+		variant: "wasp" | "scout" | "fighter" | "corvette" = "fighter",
 	) {
 		this.renderWrapped(ship.pos.x, ship.pos.y, ship.radius, (offX, offY) => {
 			drawShip(this.ctx, {

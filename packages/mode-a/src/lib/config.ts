@@ -26,7 +26,7 @@ const RAW_SHIP_PROFILES = [
 		tint: "#9AF7FF",
 	},
 	{
-		id: "balanced",
+		id: "fighter",
 		name: "Balanced",
 		thrustMultiplier: 1.0,
 		turnMultiplier: 1.0,
@@ -36,7 +36,7 @@ const RAW_SHIP_PROFILES = [
 		tint: "#D4FF00",
 	},
 	{
-		id: "tank",
+		id: "corvette",
 		name: "Tank",
 		thrustMultiplier: 0.9,
 		turnMultiplier: 0.86,
@@ -52,8 +52,8 @@ export const SHIP_PROFILES = ShipProfilesSchema.parse(RAW_SHIP_PROFILES);
 export const SHIP_PROFILE_BY_ID: Record<ShipProfileId, ShipProfile> = {
 	wasp: SHIP_PROFILES[0],
 	scout: SHIP_PROFILES[1],
-	balanced: SHIP_PROFILES[2],
-	tank: SHIP_PROFILES[3],
+	fighter: SHIP_PROFILES[2],
+	corvette: SHIP_PROFILES[3],
 };
 
-export const DEFAULT_SHIP_PROFILE_ID: ShipProfileId = "balanced";
+export const DEFAULT_SHIP_PROFILE_ID: ShipProfileId = "fighter";

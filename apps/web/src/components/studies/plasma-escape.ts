@@ -26,7 +26,7 @@ export const ESCAPE_SECONDS = 6;
 export const ESCAPE_HZ = 240;
 export const LIGHT_FORCE = ION_DEFAULTS.acceleration * ION_REFERENCE_MASS;
 export const SIDE_STRENGTH =
-	2 * Math.cos((CHASSIS.balanced.angle * Math.PI) / 180);
+	2 * Math.cos((CHASSIS.fighter.angle * Math.PI) / 180);
 export const START_SPEED = ionCeiling(SIDE_STRENGTH);
 export const escapeVariants = [
 	{ label: "1 Light aft", aft: "ion", color: "#5ce5e7" },
@@ -65,7 +65,7 @@ export function simulateEscape(raw: unknown = {}): EscapeRun[] {
 						? PARTS.plasma.thrust / LIGHT_FORCE
 						: settings.strength;
 		const build = LoadoutSchema.parse({
-			...defaultLoadout("balanced"),
+			...defaultLoadout("fighter"),
 			stabilizers: true,
 			aft: [variant.aft, null],
 		});
@@ -147,7 +147,7 @@ export function simulateEscapeSequence(raw: unknown = {}): SequenceRun[] {
 		if (cached) return cached;
 		const reference = simulateEscape(settings)[index];
 		const build = LoadoutSchema.parse({
-			...defaultLoadout("balanced"),
+			...defaultLoadout("fighter"),
 			stabilizers: true,
 			aft: [variant.aft, null],
 		});
@@ -164,7 +164,7 @@ export function simulateEscapeSequence(raw: unknown = {}): SequenceRun[] {
 			...PARTS,
 			plasma: PartSchema.parse({ ...PARTS.plasma, chargeSeconds: 0.1 }),
 		};
-		const angle = (CHASSIS.balanced.angle * Math.PI) / 180;
+		const angle = (CHASSIS.fighter.angle * Math.PI) / 180;
 		const mount = stabilizerMount(build.chassis);
 		let distance = 0;
 		const samples = [

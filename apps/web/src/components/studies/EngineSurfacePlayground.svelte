@@ -5,7 +5,7 @@ import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
 let { label = "Engine surface playground" }: { label?: string } = $props();
 type Engine = "light" | "heavy" | "fission" | "chambered";
 type Point = readonly [number, number];
-const mounts = buildMounts(defaultBuilds().balanced).filter(
+const mounts = buildMounts(defaultBuilds().fighter).filter(
 	(m) => m.group !== "hull",
 );
 const names: Record<Engine, string> = {

@@ -75,7 +75,7 @@ test("corrupt browser storage recovers to flyable defaults", async ({
 	page,
 }) => {
 	await page.addInitScript(() =>
-		localStorage.setItem("void-drift-builds-v2", '{"broken":true}'),
+		localStorage.setItem("void-drift-builds-v3", '{"broken":true}'),
 	);
 	await page.goto("/builder");
 	await expect(page.getByRole("status")).toContainText("Restored flyable");
@@ -97,16 +97,16 @@ test("preserves other chassis saves and independently selects tight aft mounts",
 			hull: ["battery"],
 			aft: ["rail"],
 		},
-		balanced: {
+		fighter: {
 			version: 2,
-			chassis: "balanced",
+			chassis: "fighter",
 			side: "fusion",
 			hull: [null, null],
 			aft: [null, null],
 		},
-		tank: {
+		corvette: {
 			version: 2,
-			chassis: "tank",
+			chassis: "corvette",
 			side: "ion",
 			hull: ["coil", null, "laser"],
 			aft: ["ion", null, "fusion"],
@@ -115,7 +115,7 @@ test("preserves other chassis saves and independently selects tight aft mounts",
 	await page.goto("/lab/builder");
 	await page.evaluate(
 		(value) =>
-			localStorage.setItem("void-drift-builds-v2", JSON.stringify(value)),
+			localStorage.setItem("void-drift-builds-v3", JSON.stringify(value)),
 		saved,
 	);
 	await page.reload();
@@ -129,11 +129,11 @@ test("preserves other chassis saves and independently selects tight aft mounts",
 	await page.getByRole("button", { name: /Light ion.*10 mass/ }).click();
 	await page.reload();
 	const restored = await page.evaluate(() =>
-		JSON.parse(localStorage.getItem("void-drift-builds-v2") ?? "null"),
+		JSON.parse(localStorage.getItem("void-drift-builds-v3") ?? "null"),
 	);
 	expect(restored.scout).toEqual({ ...saved.scout, stabilizers: false });
-	expect(restored.tank).toEqual({ ...saved.tank, stabilizers: false });
-	expect(restored.balanced.aft).toEqual(["rail", "ion"]);
+	expect(restored.corvette).toEqual({ ...saved.corvette, stabilizers: false });
+	expect(restored.fighter.aft).toEqual(["rail", "ion"]);
 	await page.getByRole("button", { name: "Start survival" }).click();
 	await page.keyboard.down("a");
 	await page.keyboard.down("d");
@@ -202,15 +202,23 @@ test("cruiser fits eight mounts, preserves Fighter and flies", async ({
 test("new engine catalog resets old saves and exposes plasma charging in flight", async ({
 	page,
 }) => {
-	await page.addInitScript(() =>
-		localStorage.setItem("void-drift-builds-v1", JSON.stringify({ old: true })),
-	);
+	await page.addInitScript(() => {
+		localStorage.setItem("void-drift-builds-v1", JSON.stringify({ old: true }));
+		localStorage.setItem(
+			"void-drift-builds-v2",
+			JSON.stringify({ balanced: {}, tank: {} }),
+		);
+	});
 	await page.goto("/builder");
 	await expect
 		.poll(() =>
-			page.evaluate(() => localStorage.getItem("void-drift-builds-v1")),
+			page.evaluate(() => [
+				localStorage.getItem("void-drift-builds-v1"),
+				localStorage.getItem("void-drift-builds-v2"),
+			]),
 		)
-		.toBeNull();
+		.toEqual([null, null]);
+	await expect(page.getByText("could not be read")).toHaveCount(0);
 	await expect(
 		page.getByRole("button", { name: /Heavy ion.*20 mass/ }),
 	).toBeVisible();

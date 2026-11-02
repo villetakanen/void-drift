@@ -15,7 +15,7 @@ import { defaultLoadout } from "./schemas/loadout";
 
 it("shared-rule Light reference matches production assembled propulsion", () => {
 	const run = simulateEscape()[0];
-	const build = defaultLoadout("balanced");
+	const build = defaultLoadout("fighter");
 	build.aft[0] = "ion";
 	build.stabilizers = true;
 	const ship = {
@@ -59,7 +59,7 @@ it("isolates adjustable force, preserves delay and bounds diminishing speed retu
 
 it("sequence paths match production Light flight including turns and stabilizers", () => {
 	const run = simulateEscapeSequence()[0];
-	const build = defaultLoadout("balanced");
+	const build = defaultLoadout("fighter");
 	build.aft[0] = "ion";
 	build.stabilizers = true;
 	const ship = {

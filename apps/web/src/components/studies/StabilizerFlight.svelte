@@ -16,7 +16,7 @@ import "@void-drift/core/styles/buttons.css";
 let { label = "Fighter stabilizer flight replay" }: { label?: string } =
 	$props();
 const build = LoadoutSchema.parse({
-	...defaultLoadout("balanced"),
+	...defaultLoadout("fighter"),
 	side: "heavy-ion",
 	aft: ["heavy-ion", "heavy-ion"],
 });
