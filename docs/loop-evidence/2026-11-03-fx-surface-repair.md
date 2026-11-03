@@ -157,7 +157,7 @@ The [FX contract](../specs/sfx-canvas.md) still leaves **FX-01** composition rev
 the earlier local-verification stage; the subsequent publication evidence is dated
 above. No acceptance flags were changed by closure. In-app observations do not
 record a browser version or graphics backend and do not establish isolated GPU
-cost. Physical-phone evidence remains unavailable; software fallback misses the
+cost. At that inspection, physical-phone evidence was unavailable; software fallback misses the
 declared budget. The positive owner feedback concerns the local builder before the
 final residue cleanup, not an explicit review of every released effect combination.
 
@@ -166,3 +166,29 @@ are ignored local files. They were present for this inspection, but are not dura
 repository attachments. The tracked record retains their essential outcomes and
 identities; temporary checkouts and preview servers have no retention guarantee.
 No lessons, signals or standing process changes were derived during closure.
+
+## Physical-device owner report and final closure
+
+After receiving the live Lab links, the owner pasted the six-ship FX instrument's
+readout and identified the device/browser as "Pixel 8/chrome". This is an
+owner-reported physical-phone observation, received on 3 November 2026, rather than
+an agent-run profile. The workload was six ships, 24 main engines, 12 collectors,
+two stations, 16 missiles and 12 fires.
+
+- Update + FX submission: **1.00 ms median, 1.40 ms p95, 4.10 ms maximum**.
+- Frame interval: **16.80 ms p95**.
+- Activity: **36 activation cues, 185/1024 decorative marks, 105/256 sparks**.
+- Dropped requests: **0**.
+
+Source: the owner's pasted readout and subsequent device identification in this
+chat. The exact deployed revision, Chrome/OS versions, camera setting, warmup and
+sample duration were not captured. No trace or screenshot accompanied the report.
+The counter measures update plus FX submission; it does not isolate GPU/compositor
+work. This adds physical-device evidence without retrospectively changing the
+earlier software-rendered measurements or certifying the complete 3 ms target.
+
+The owner then asked whether the loop was ready to close. The repair and release
+loop remains closed with this follow-up recorded; full-pipeline timing and the
+remaining human-review criteria retain their stated limits. Only this evidence
+record was updated and documentation checks were run. No application change,
+deployment, new test run or acceptance-flag change was made for this follow-up.
