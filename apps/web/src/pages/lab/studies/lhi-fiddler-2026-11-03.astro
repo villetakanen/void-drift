@@ -1,6 +1,12 @@
 ---
 import { CHASSIS } from "@void-drift/mode-a";
+import BladeAssembly from "../../../components/studies/fiddler/BladeAssembly.svelte";
+import BladeConstruction from "../../../components/studies/fiddler/BladeConstruction.svelte";
+import CorvetteVolume from "../../../components/studies/fiddler/CorvetteVolume.svelte";
 import Exploration from "../../../components/studies/fiddler/Exploration.svelte";
+import LhiForm from "../../../components/studies/fiddler/LhiForm.svelte";
+import NoseSideConstruction from "../../../components/studies/fiddler/NoseSideConstruction.svelte";
+import RootPair from "../../../components/studies/fiddler/RootPair.svelte";
 import { studies } from "../../../data/studies";
 import StudyLayout from "../../../layouts/StudyLayout.astro";
 
@@ -54,77 +60,322 @@ const study = studies.find((entry) => entry.slug === "lhi-fiddler-2026-11-03");
 			<figcaption>
 				<strong>Initial feeling draft · designer reference</strong><br>The two
 				forward blades, open middle and shared family language are the starting
-				point. The size, proportions, canopy treatment and exact construction
-				are not a target. Original image preserved unchanged.
+				point. Size and exact proportions remain open; the pincer construction
+				and cockpit/window framing are family references. For 02.2, the glass
+				stays black. Original image preserved unchanged.
 			</figcaption>
 		</figure>
 	</section>
-	<section aria-labelledby="exploration">
-		<h2 id="exploration">02 / Two blades, enough ship behind them</h2>
-		<h3 id="exploration-02-1">02.1 / Where does the bridge belong?</h3>
+	<h2 id="exploration">02 / Giving Fiddler corvette scale</h2>
+	<details class="earlier-round">
+		<summary>02.1 / First layouts and family lesson — retained</summary>
+		<section aria-labelledby="exploration-02-1">
+			<h3 id="exploration-02-1">02.1 / Where does the bridge belong?</h3>
+			<p>
+				<strong>Rejected exploration, retained as evidence.</strong>
+				The three proposals and their original reasoning remain below. The
+				family-language lesson following them supersedes the recommendation of
+				B; no variant was accepted.
+			</p>
+			<p>
+				Three constructions keep the twin forward hulls and four stabilizers. A
+				central keel, an offset bridge and a broad stern yoke test where the
+				ship’s identity and weight should sit. Each offers the same tentative
+				ten-mount arrangement, including two equipment mounts on each forward
+				blade, so slot count does not decide the silhouette for us.
+			</p>
+			<Exploration client:load />
+			<p>
+				<strong>First direction to inspect: B, the port bridge.</strong>
+				It gives the open throat the most space and makes the offset cockpit a
+				distinctive feature without making one blade smaller. A is the closer
+				Wasp echo; C tests how much stern mass Fiddler can carry before the
+				family resemblance weakens. These are proposals, not a settled choice.
+			</p>
+			<p>
+				The mounted and fitted views test whether the bare shapes leave useful,
+				quiet surfaces. They cannot establish handling, balance, structural
+				strength or the final loadout rules. Once the stance is chosen, the next
+				exploration can resolve its bridge, fittings and stabilizer placement
+				together.
+			</p>
+		</section>
+		<section aria-labelledby="family-lesson">
+			<h3 id="family-lesson">02.1 / Lesson: family comes before layout</h3>
+			<p>
+				<strong>Ship family and ship role are separate.</strong>
+				There are four families: LHI, Daehan, Aegis, and a military-inspired
+				family whose name is still open. Wasp and Fiddler belong to LHI; Daehan
+				Scout No.7, Aegis XF-1 Interceptor and the military-inspired Mark II
+				Escort Frigate establish different lineages. Fiddler being a corvette
+				does not put it in the same family as the military-inspired Corvette.
+				The latter is a mass and scale comparison here, not an LHI design
+				reference.
+			</p>
+			<p>
+				The repository names individual ships but underdevelops the families
+				behind them. Shared colours and low-poly rendering do not adequately
+				define LHI. The initial draft illustrates a particular family character,
+				including the nature of the front pincers and the cockpit/window
+				language. Those relationships matter, even while its size and exact
+				proportions remain open.
+			</p>
+			<p>
+				<strong>02.1 reduced that reference too far.</strong>
+				Two forward bars, a gap and a black canopy preserved a checklist while
+				moving far from the intended forms. Changing the cockpit position did
+				not resolve that loss. The earlier caption’s dismissal of canopy
+				treatment as a target was too broad: the precise drawing is not binding,
+				but its cockpit/window language is part of the reference to understand.
+			</p>
+			<p>
+				The next useful design work is to articulate LHI’s construction, pincer
+				and window language from the supplied draft and Wasp before another
+				Fiddler layout. The rejected drawings remain visible at the designer’s
+				request because they make this gap inspectable. This records the finding
+				within this study; it does not establish finished family rules or accept
+				any of the proposed hulls or the ten-mount arrangement.
+			</p>
+		</section>
+	</details>
+	<details class="earlier-round">
+		<summary>
+			02.2 / Copied forms and the missing corvette scale — retained
+		</summary>
+		<section aria-labelledby="exploration-02-2">
+			<h3 id="exploration-02-2">02.2 / Recovering LHI’s construction</h3>
+			<p>
+				<strong>Keep the window black; develop its shape and framing.</strong>
+				This settles the glass question for this round. The investigation
+				returns to the supplied draft’s bent, widening pincers, diagonal
+				shoulder roots and long canopy embedded between hull cheeks. Those are a
+				reading of this reference to test, not yet a complete set of rules for
+				every LHI ship.
+			</p>
+			<p>
+				The left drawing reconstructs the draft’s forms with flat fills and
+				black glass. The right makes one proposal: increase the blades’
+				cross-section and the roots’ breadth while keeping the open middle,
+				swept shoulders and tapering centre body. Both use the same drawing
+				scale. The cockpit stays central so its placement does not distract from
+				testing the construction.
+			</p>
+			<LhiForm client:load />
+			<p>
+				Only the four requested forward equipment footprints are shown. The
+				ten-mount arrangement from 02.1 is not carried forward; the rest of the
+				loadout, main engines and stabilizer authority remain unresolved. This
+				comparison can establish whether the form belongs to LHI and has room to
+				grow into a heavy ship. It cannot establish mass, flight feel or fitting
+				clearance for a complete loadout.
+			</p>
+		</section>
+		<section aria-labelledby="corvette-scale">
+			<h3 id="corvette-scale">
+				02.2 / Clarification: repeated forms, missing ship scale
+			</h3>
+			<p>
+				The original draft deliberately copies Wasp’s cockpit one-to-one and
+				reuses Wasp’s front polygons for the pincers. Repeating those forms on a
+				larger ship is the family-building intent. The unresolved design problem
+				is that the result does not yet feel like a corvette: a substantial, big
+				ship. Recovering the copied forms in 02.2 does not solve that problem.
+			</p>
+			<p>
+				A working diagnosis is that much of the extra footprint reads as long
+				extensions, thin swept surfaces and space between them, while the
+				central body remains slender. The cockpit already provides a familiar
+				scale reference; enlarging or shrinking it is not the starting
+				correction. The next investigation should keep the repeated LHI forms
+				legible while giving the equipment-bearing hulls and their connections
+				convincing volume. The catamaran opening remains part of the brief.
+				Where that volume belongs, and how much it needs, are still design
+				questions.
+			</p>
+		</section>
+	</details>
+	<details class="earlier-round">
+		<summary>
+			02.3 / Volume comparisons and the surface-language lesson — retained
+		</summary>
+		<section aria-labelledby="exploration-02-3">
+			<h3 id="exploration-02-3">
+				02.3 / Where does the corvette carry its volume?
+			</h3>
+			<h4 id="surface-language-lesson">
+				Retained lesson / Surface language before volume comparison
+			</h4>
+			<p>
+				The volume question is useful, but these drawings do not yet make it
+				answerable. Their planes do not clearly communicate which surfaces
+				belong to a raised body, a thin wing, a bevel or a continuous deck.
+				Copying bow polygons and cockpit outlines alone does not preserve that
+				understanding. These 02.3 examples are retained at the designer’s
+				request as evidence of this gap; neither volume direction is accepted.
+			</p>
+			<p>
+				Whole-ship variants were paused to establish the shape language. The
+				isolated construction in 02.4 now takes that discussion forward. First
+				establish the parts, their surface relationships and how light describes
+				them; then compare where Fiddler gains volume. The existing ship drawing
+				fundamentals already call for solid objects expressed through a few flat
+				planes, with light from the ship’s left and above. This round needs to
+				apply that foundation to LHI’s specific forms.
+			</p>
+			<p>
+				The
+				<a href="/lab/studies/lhi-wasp#ab306-refinements">accepted Wasp 06.9</a>
+				provides a concrete reference: a slender faceted body, a black canopy
+				between its cheeks, thin swept wing surfaces and a tapering, flat-ended
+				tail wedge. The side and rear winglets share a shade and a physical
+				bridge, with parallel trailing edges, so they read as one continuing
+				plane. These are relationships to understand before adapting them to the
+				larger hull; their exact Fiddler proportions remain open.
+			</p>
+			<h4 id="blade-section">
+				Agreed starting form / Wasp’s nose continued into each blade
+			</h4>
+			<p>
+				Each forward blade begins with the same implied three-dimensional form
+				as Wasp’s nose: its ridge and sloping sides continue along the blade.
+				The shared nose section, including the angles of its faces, is the
+				starting reference. A continuous flat upper deck is not required. This
+				carries the construction behind the copied front polygons through the
+				length of the part.
+			</p>
+			<p>
+				The initial draft also includes a triangular upper surface near the rear
+				end of each blade. Its transition into the blade and root remains to be
+				resolved locally. Equipment placement must follow the blade’s
+				established section; its exact mounting arrangement remains open.
+			</p>
+			<p>
+				With the same face angles and the same ship-relative light,
+				corresponding surfaces should retain Wasp’s light-and-dark relationship
+				along the blade. A new shade needs a change of surface angle or a
+				separate object to explain it. This settles the starting blade
+				construction, while the larger hull’s proportions and the source of its
+				corvette scale remain unresolved.
+			</p>
+			<p>
+				<strong>The retained experiment.</strong>
+				The first 02.3 examples did not provide a useful comparison because
+				their connection to LHI was lost. These replacements carry over the
+				actual front bow faces and the complete command body from the draft
+				reconstruction. The canopy, its framing, the long body taper and aft
+				vanes keep their original shape and size. The two bow faces move apart
+				without changing shape; the new volume starts behind them.
+			</p>
+			<CorvetteVolume client:load />
+			<p>
+				This comparison attempted to investigate
+				<strong>where the major hull volume belongs</strong>. A deepens the
+				angular pincers and their swept roots. B puts a broader, deeper shoulder
+				deck beneath the original command body. The Lineage view isolates the
+				unchanged parts so family continuity can be checked directly. The same
+				fitting count provides a size reference and exposes crowding, but it
+				cannot resolve the unclear surface construction.
+			</p>
+			<p>
+				The 180–210 hull-mass range remains provisional. These drawings do not
+				calculate mass or establish handling, structural strength or a final
+				loadout. Engine positions and stabilizer authority need a later flight
+				investigation after the hull direction is useful.
+			</p>
+		</section>
+	</details>
+	<details class="earlier-round">
+		<summary>02.4 / Ridge and lighting explanation — retained</summary>
+		<section aria-labelledby="exploration-02-4">
+			<h3 id="exploration-02-4">02.4 / Wasp’s nose becomes a blade</h3>
+			<p>
+				The agreed starting point is a ridge with the same sloping sides as
+				Wasp’s nose, continued along each blade. This isolated construction uses
+				Wasp’s actual nose outline and face colours. Switch between Top and
+				Angled to inspect how the two flat faces describe one solid part.
+			</p>
+			<BladeConstruction client:load />
+			<p>
+				This tests one direct continuation: the nose’s taper and face angles
+				continue toward a broader root. The original artwork defines a top view,
+				so the height shown here is an illustrative interpretation shared by
+				both pieces, not an established Wasp measurement. The blade length is a
+				study fixture. The triangular surface near the root, fittings and
+				whole-ship proportions remain unresolved; this round first makes the
+				ridge and its lighting inspectable.
+			</p>
+			<p>
+				The construction explanation was received positively. The reference was
+				then clarified: “nose” includes the nose face and the longer side beside
+				the cockpit, with a change of angle between them. 02.5 carries that full
+				sequence forward. The nose-only extension above remains the earlier,
+				incomplete reading of the intended body.
+			</p>
+		</section>
+	</details>
+	<details class="earlier-round">
+		<summary>02.5 / The original nose and side — retained</summary>
+		<section aria-labelledby="exploration-02-5">
+			<h3 id="exploration-02-5">02.5 / Nose, bend, long side</h3>
+			<p>
+				LHI’s shared language includes the nose, its turn into the longer side,
+				and the complex inner contour beside the cockpit. The reference here is
+				<strong>one side of Wasp</strong>: the two actual polygons, with the
+				cockpit opening and the fuselage behind that side cut away. Both inner
+				and outer edges belong to the form being carried into Fiddler.
+			</p>
+			<NoseSideConstruction client:load />
+			<p>
+				The earlier solid study filled that opening and mirrored the outside
+				into a complete body, losing the inner shape. This corrected extraction
+				keeps the original two faces intact. Wasp gives them the same shade;
+				their edges carry the change of direction. This is the family
+				resemblance to preserve as proportions and arrangements change. The
+				angled view’s height remains illustrative; the inner wall, triangular
+				root, fittings and complete Fiddler hull remain to be designed.
+			</p>
+		</section>
+	</details>
+	<section aria-labelledby="exploration-02-6">
+		<h3 id="exploration-02-6">02.6 / From copied side to forward blade</h3>
 		<p>
-			<strong>Rejected exploration, retained as evidence.</strong>
-			The three proposals and their original reasoning remain below. The
-			family-language lesson following them supersedes the recommendation of B;
-			no variant was accepted.
+			<strong>The wall loses the recognizable form; the root does not.</strong>
+			The mirrored pair is worth exploring further. This separates three
+			different outcomes: the added wall is rejected, the root preserves the
+			family resemblance, and the paired arrangement remains a promising
+			direction. The original comparison remains below; 02.7 isolates the useful
+			parts without the wall.
 		</p>
 		<p>
-			Three constructions keep the twin forward hulls and four stabilizers. A
-			central keel, an offset bridge and a broad stern yoke test where the
-			ship’s identity and weight should sit. Each offers the same tentative
-			ten-mount arrangement, including two equipment mounts on each forward
-			blade, so slot count does not decide the silhouette for us.
+			The two Wasp faces now form the exposed side of a blade. A return wall
+			follows their complex inner contour, and a triangular upper surface joins
+			the rear of the side to a broader root. Switch through Faces, Wall and
+			Root to see each addition; the original two polygons stay unchanged.
 		</p>
-		<Exploration client:load />
+		<BladeAssembly client:load />
 		<p>
-			<strong>First direction to inspect: B, the port bridge.</strong>
-			It gives the open throat the most space and makes the offset cockpit a
-			distinctive feature without making one blade smaller. A is the closer Wasp
-			echo; C tests how much stern mass Fiddler can carry before the family
-			resemblance weakens. These are proposals, not a settled choice.
-		</p>
-		<p>
-			The mounted and fitted views test whether the bare shapes leave useful,
-			quiet surfaces. They cannot establish handling, balance, structural
-			strength or the final loadout rules. Once the stance is chosen, the next
-			exploration can resolve its bridge, fittings and stabilizer placement
-			together.
+			This proposal tests whether the copied LHI side can become a substantial,
+			connected part while its nose, bend and inner contour stay recognizable.
+			The root grows locally behind the long side. The paired view establishes
+			the open stance and an aft connection to develop further; it does not yet
+			establish corvette scale or a complete loadout. Mass and flight behaviour
+			remain outside this construction round.
 		</p>
 	</section>
-	<section aria-labelledby="family-lesson">
-		<h3 id="family-lesson">02.1 / Lesson: family comes before layout</h3>
+	<section aria-labelledby="exploration-02-7">
+		<h3 id="exploration-02-7">02.7 / The pair, with the copied edge exposed</h3>
 		<p>
-			<strong>Ship family and ship role are separate.</strong>
-			There are four families: LHI, Daehan, Aegis, and a military-inspired
-			family whose name is still open. Wasp and Fiddler belong to LHI; Daehan
-			Scout No.7, Aegis XF-1 Interceptor and the military-inspired Mark II
-			Escort Frigate establish different lineages. Fiddler being a corvette does
-			not put it in the same family as the military-inspired Corvette. The
-			latter is a mass and scale comparison here, not an LHI design reference.
+			The two mirrored Wasp sides establish the open stance. Adding only the
+			triangular roots gives each a broader rear attachment while keeping the
+			original nose, bend and long side visible. Both examples use the same
+			size, spacing and lighting; the root is the only change.
 		</p>
+		<RootPair client:load />
 		<p>
-			The repository names individual ships but underdevelops the families
-			behind them. Shared colours and low-poly rendering do not adequately
-			define LHI. The initial draft illustrates a particular family character,
-			including the nature of the front pincers and the cockpit/window language.
-			Those relationships matter, even while its size and exact proportions
-			remain open.
-		</p>
-		<p>
-			<strong>02.1 reduced that reference too far.</strong>
-			Two forward bars, a gap and a black canopy preserved a checklist while
-			moving far from the intended forms. Changing the cockpit position did not
-			resolve that loss. The earlier caption’s dismissal of canopy treatment as
-			a target was too broad: the precise drawing is not binding, but its
-			cockpit/window language is part of the reference to understand.
-		</p>
-		<p>
-			The next useful design work is to articulate LHI’s construction, pincer
-			and window language from the supplied draft and Wasp before another
-			Fiddler layout. The rejected drawings remain visible at the designer’s
-			request because they make this gap inspectable. This records the finding
-			within this study; it does not establish finished family rules or accept
-			any of the proposed hulls or the ten-mount arrangement.
+			The wall from 02.6 is absent from both examples. This comparison isolates
+			the useful paired form before developing the hull behind it. Root
+			dimensions and spacing remain provisional; corvette scale, cockpit
+			position and equipment space are still open.
 		</p>
 	</section>
 	<section aria-labelledby="readiness">
@@ -135,6 +386,14 @@ const study = studies.find((entry) => entry.slug === "lhi-fiddler-2026-11-03");
 <style>
 section {
 	margin-block: var(--spacing-xl);
+}
+.earlier-round {
+	border-block: 1px solid var(--color-border);
+	padding-block: var(--spacing-md);
+}
+.earlier-round summary {
+	cursor: pointer;
+	font-weight: var(--font-weight-bold);
 }
 section > p {
 	max-width: var(--measure-prose);
