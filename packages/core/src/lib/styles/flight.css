@@ -107,8 +107,7 @@
 	text-align: center;
 	padding: var(--spacing-lg);
 }
-.flight-card h1,
-.score-page h1 {
+.flight-card h1 {
 	font:
 		var(--font-weight-display) var(--font-size-display) /
 		var(--line-height-display) var(--font-family-display);
@@ -229,31 +228,6 @@
 	z-index: var(--layer-toast);
 	margin: 0;
 	font: var(--font-size-body) var(--font-family-ui);
-}
-.score-page {
-	max-width: var(--flight-canvas-max);
-	margin: auto;
-	padding: var(--spacing-lg);
-	height: 100dvh;
-	overflow: auto;
-	font-family: var(--font-family-ui);
-}
-.score-page p {
-	margin-block: var(--spacing-md);
-}
-.score-page table {
-	width: 100%;
-	border-collapse: collapse;
-	margin-block: var(--spacing-lg);
-}
-.score-page th,
-.score-page td {
-	text-align: left;
-	padding: var(--spacing-md);
-	border-bottom: 1px solid var(--color-border);
-}
-.score-page small {
-	color: var(--color-text-muted);
 }
 .flight-card .ship-select {
 	display: grid;

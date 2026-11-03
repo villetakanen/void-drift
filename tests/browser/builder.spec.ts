@@ -194,9 +194,7 @@ test("preserves other chassis saves and independently selects tight aft mounts",
 		"GAME_OVER",
 	);
 	await page.keyboard.up("ArrowUp");
-	await expect(page.getByRole("button", { name: "Submit Score" })).toHaveCount(
-		0,
-	);
+	await expect(page.getByRole("button", { name: "Save Score" })).toHaveCount(0);
 	await page
 		.getByRole("dialog", { name: "Run complete" })
 		.getByRole("button", { name: "Return to builder" })

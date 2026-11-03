@@ -4,6 +4,7 @@ import { onMount } from "svelte";
 
 let { label = "Arcade FX instrument" }: { label?: string } = $props();
 let canvas: HTMLCanvasElement;
+let weapons = $state(false);
 let running = $state(true),
 	enabled = $state(true),
 	overload = $state(false),
@@ -22,11 +23,15 @@ let p50 = $state(0),
 	samples = $state(0);
 let reset = () => {},
 	burst = () => {};
+let toggleWeapons = () => {};
 onMount(() => {
 	movingCamera = new URL(location.href).searchParams.get("camera") === "moving";
 	const ctx = canvas.getContext("2d");
 	if (!ctx) return;
 	const bench = new FxBench();
+	weapons = new URL(location.href).searchParams.get("weapons") === "1";
+	bench.weapons = weapons;
+	bench.reset();
 	let last = performance.now(),
 		carry = 0,
 		frame = 0;
@@ -39,6 +44,11 @@ onMount(() => {
 		samples = 0;
 	};
 	burst = () => bench.burst();
+	toggleWeapons = () => {
+		weapons = !weapons;
+		bench.weapons = weapons;
+		reset();
+	};
 	const draw = (now: number) => {
 		const elapsed = now - last;
 		last = now;
@@ -103,6 +113,7 @@ onMount(() => {
 	class="fx-bench"
 	aria-label={label}
 	data-ticks={ticks}
+	data-weapons={weapons}
 	data-camera={movingCamera ? "moving" : "fixed"}
 	data-marks={marks}
 	data-essential={essential}
@@ -117,6 +128,14 @@ onMount(() => {
 	data-frame-p95={frame95}
 >
 	<div class="controls">
+		<button
+			type="button"
+			class="btn btn-ghost"
+			aria-pressed={weapons}
+			onclick={() => toggleWeapons()}
+		>
+			Weapons {weapons ? "on" : "off"}
+		</button>
 		<button
 			type="button"
 			class="btn btn-primary"

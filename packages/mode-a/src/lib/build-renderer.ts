@@ -1,4 +1,10 @@
-import { COLOR, canvasFont, type PlumeEmitter } from "@void-drift/core";
+import {
+	COLOR,
+	canvasFont,
+	type GameObject,
+	type PlumeEmitter,
+} from "@void-drift/core";
+import { drawCockpitMaterial } from "./cockpit-material";
 import { CRUISER } from "./cruiser";
 import { ENGINE_ART } from "./engine-art";
 import { FIDDLER } from "./fiddler";
@@ -301,6 +307,8 @@ export function drawBuild(
 	selected = "",
 	slots?: SlotPalette,
 	mountOverride?: BuildMount[],
+	weaponAngles?: Readonly<Record<string, number>>,
+	cockpitMaterial = true,
 ) {
 	ctx.save();
 	ctx.translate(x, y);
@@ -323,7 +331,7 @@ export function drawBuild(
 			if (PARTS[mount.part].category === "E") {
 				drawEngine(ctx, build, mount);
 			} else {
-				drawNonEngineFitting(ctx, mount);
+				drawNonEngineFitting(ctx, mount, weaponAngles?.[mount.key]);
 			}
 			ctx.restore();
 		}
@@ -381,6 +389,7 @@ export function drawBuild(
 			ctx.fill();
 		}
 	}
+	if (cockpitMaterial) drawCockpitMaterial(ctx, build.chassis);
 	ctx.restore();
 	if (lhi) {
 		drawStabilizerSlits(ctx, lhi.front);
@@ -438,7 +447,7 @@ export function drawBuild(
 			const fit = Math.min(54 / 7 / mount.height, 64 / 7 / mount.width) * 0.65;
 			ctx.scale(fit, fit);
 		}
-		drawNonEngineFitting(ctx, mount);
+		drawNonEngineFitting(ctx, mount, weaponAngles?.[mount.key]);
 
 		ctx.restore();
 	}
@@ -451,6 +460,7 @@ export function drawBuild(
 export function drawNonEngineFitting(
 	ctx: CanvasRenderingContext2D,
 	mount: BuildMount,
+	weaponAngle = mount.angle,
 ) {
 	if (!mount.part) return;
 	if (mount.part === "gravity-coil") {
@@ -477,8 +487,17 @@ export function drawNonEngineFitting(
 		// Use the same mount-relative fittings as Fighter/Heavy: the legacy
 		// Scout's 18-unit barrel would cross this compact hull's cockpit.
 		const barrel = barrelLength(mount);
+		ctx.save();
+		if (mount.part === "laser") {
+			ctx.rotate(weaponAngle - mount.angle);
+			ctx.beginPath();
+			ctx.arc(0, 0, 3, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.stroke();
+		}
 		ctx.fillRect(0, -2, barrel, 4);
 		ctx.strokeRect(0, -2, barrel, 4);
+		ctx.restore();
 	} else if (mount.part === "coil") {
 		for (let i = -3; i <= 3; i += 3) {
 			ctx.beginPath();
@@ -676,6 +695,27 @@ function polygon(
 }
 export function barrelLength(mount: BuildMount) {
 	return mount.width / 2 + (mount.part === "rail" ? 1 : 0);
+}
+
+/** Same transform and barrel geometry as drawBuild; local angles include the slot. */
+export function weaponPose(
+	ship: Pick<GameObject, "pos" | "rotation">,
+	mount: BuildMount,
+	localAngle = mount.angle,
+) {
+	const cos = Math.cos(ship.rotation),
+		sin = Math.sin(ship.rotation);
+	const x = ship.pos.x + (mount.x * cos - mount.y * sin) * BUILD_FLIGHT_SCALE;
+	const y = ship.pos.y + (mount.x * sin + mount.y * cos) * BUILD_FLIGHT_SCALE;
+	const angle = ship.rotation + localAngle;
+	const length = barrelLength(mount) * BUILD_FLIGHT_SCALE;
+	return {
+		x,
+		y,
+		angle,
+		muzzleX: x + Math.cos(angle) * length,
+		muzzleY: y + Math.sin(angle) * length,
+	};
 }
 
 /** Conservative circular collision envelope, including the accepted forward tip. */

@@ -57,6 +57,8 @@ it("draws fittings in flight but labels and selection only in the builder", () =
 			get:
 				(_target, key) =>
 				(...args: unknown[]) => {
+					if (key === "createLinearGradient" || key === "createRadialGradient")
+						return { addColorStop: () => {} };
 					if (key === "fillText") labels.push(String(args[0]));
 					if (
 						["fill", "stroke", "fillRect", "strokeRect", "fillText"].includes(

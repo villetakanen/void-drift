@@ -10,6 +10,14 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
 	{
+		slug: "gilded-surfaces-2026-11-03",
+		title: "Gilded glass: a surface language",
+		status: "accepted",
+		phase: "scope",
+		question:
+			"How does green–space–gold become a consistent material language across round, curved, cornered and faceted surfaces?",
+	},
+	{
 		slug: "lhi-fiddler-2026-11-03",
 		title: "Ship 05 / LHI Fiddler Heavy Assault Corvette",
 		status: "accepted",

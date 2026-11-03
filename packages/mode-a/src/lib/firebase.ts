@@ -83,7 +83,7 @@ export async function loadHighScores(): Promise<HighScore[]> {
 					collection(db, "artifacts", "void-drift", "scores"),
 					where("challenge", "==", CHALLENGE),
 					orderBy("seconds", "desc"),
-					limit(20),
+					limit(30),
 				),
 			);
 			return parseHighScores(rows.docs.map((row) => row.data()));

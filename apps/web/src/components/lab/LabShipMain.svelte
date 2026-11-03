@@ -21,14 +21,27 @@ function drawShipPreview(ctx: CanvasRenderingContext2D) {
 	const cy = ctx.canvas.height / 2;
 	const profile = SHIP_PROFILE_BY_ID[shipParams.profileId as ShipProfileId];
 
-	if (profile.id === "fiddler") {
+	if (profile.id === "fiddler" || shipParams.weapons) {
+		const build = starterLoadout(profile.id);
+		if (shipParams.weapons) {
+			build.hull[0] = "rail";
+			if (build.hull.length > 1) build.hull[1] = "laser";
+			else build.aft[0] = "laser";
+		}
 		drawBuild(
 			ctx,
-			starterLoadout("fiddler"),
+			build,
 			cx,
 			cy,
 			(shipParams.rotation * Math.PI) / 180,
 			2,
+			"",
+			undefined,
+			undefined,
+			{
+				"hull-1": (shipParams.turretAngle * Math.PI) / 180,
+				"aft-0": (shipParams.turretAngle * Math.PI) / 180,
+			},
 		);
 		return;
 	}

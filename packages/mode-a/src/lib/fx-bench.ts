@@ -7,6 +7,7 @@ import {
 } from "@void-drift/core";
 import { BUILD_FLIGHT_SCALE, drawBuild } from "./build-renderer";
 import { FlightFx } from "./gravity-fold-fx";
+import { drawSalvage } from "./salvage-renderer";
 import { starterLoadout } from "./schemas/loadout";
 import { GRAVITY_FLIGHT, Simulation, STEP, stockSettings } from "./simulation";
 
@@ -18,6 +19,7 @@ export class FxBench {
 	ticks = 0;
 	overload = false;
 	enabled = true;
+	weapons = false;
 	constructor() {
 		this.reset();
 	}
@@ -28,11 +30,14 @@ export class FxBench {
 		this.ships = Array.from({ length: 6 }, (_, i) => {
 			const loadout = starterLoadout("fighter");
 			loadout.hull.fill("gravity-coil");
+			if (this.weapons) loadout.hull[1] = i % 2 === 0 ? "laser" : "rail";
 			const sim = new Simulation({
 				...stockSettings("fighter"),
 				loadout,
 				testFlight: true,
 			});
+			// Preserve the existing reference workload unless weapon diagnostics are selected.
+			if (sim.salvage && !this.weapons) sim.salvage.nextPass = Infinity;
 			const x = 400 + (i % 3) * 500,
 				y = 300 + Math.floor(i / 3) * 470;
 			// Local test scene only: isolate six planetary passes from the central star.
@@ -94,6 +99,7 @@ export class FxBench {
 			ctx.strokeRect(x - 18, 522, 36, 36);
 		}
 		for (const sim of this.ships) {
+			if (sim.salvage && this.weapons) drawSalvage(ctx, sim.salvage);
 			if (sim.settings.loadout)
 				drawBuild(
 					ctx,
@@ -102,6 +108,10 @@ export class FxBench {
 					sim.ship.pos.y,
 					sim.ship.rotation,
 					BUILD_FLIGHT_SCALE,
+					"",
+					undefined,
+					undefined,
+					sim.salvage?.angles,
 				);
 		}
 	}
@@ -112,6 +122,7 @@ export class FxBench {
 		}
 		this.fx.surface.draw(target, this.ticks * STEP, (ctx, pass) => {
 			for (const sim of this.ships) this.fx.drawShip(ctx, sim);
+			this.fx.drawParticles(ctx);
 			const time = this.ticks * STEP;
 			ctx.strokeStyle = FX_INK.gravity;
 			for (const x of [700, 1220])

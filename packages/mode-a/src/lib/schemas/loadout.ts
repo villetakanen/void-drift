@@ -127,6 +127,8 @@ export const PARTS = {
 	rail: PartSchema.parse({
 		id: "rail",
 		name: "Rail gun",
+		description:
+			"Automatically fires along the slot when a target approaches its firing line. Heavy hits and recoil; shots can miss. Active in Test flight; preserves 10 energy for flight systems.",
 		category: "G",
 		mass: 15,
 		thrust: 0,
@@ -136,6 +138,8 @@ export const PARTS = {
 	laser: PartSchema.parse({
 		id: "laser",
 		name: "Laser",
+		description:
+			"Short-range rotating pulse laser. Prioritizes incoming debris, then derelicts. Active in Test flight; preserves 10 energy for flight systems.",
 		category: "G",
 		mass: 9,
 		thrust: 0,

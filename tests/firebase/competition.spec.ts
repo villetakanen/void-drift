@@ -41,6 +41,7 @@ test("two anonymous pilots complete runs, retry a rejected write and see a share
 		await expect(page.getByText(pilot.name, { exact: true })).toBeVisible();
 		await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
 		await page.getByRole("button", { name: "PRESS START" }).click();
+		await page.clock.runFor(320);
 		await expect(page.locator(".flight-page")).toHaveAttribute(
 			"data-status",
 			"PLAYING",
@@ -63,7 +64,7 @@ test("two anonymous pilots complete runs, retry a rejected write and see a share
 		await page.clock.resume();
 		await page.getByLabel("Your initials").fill(pilot.initials);
 		const submit = page.getByRole("button", {
-			name: "Submit Score",
+			name: "Save Score",
 			exact: true,
 		});
 		if (pilot.initials === "ONE") {
@@ -95,9 +96,7 @@ test("two anonymous pilots complete runs, retry a rejected write and see a share
 			expect(rejected).toBe(true);
 		}
 		await submit.click();
-		await expect(
-			page.getByRole("button", { name: "Saved", exact: true }),
-		).toBeVisible({ timeout: 15000 });
+		await expect(page).toHaveURL(/\/leaderboard$/, { timeout: 15000 });
 		await context.close();
 	}
 	const context = await newLocalContext();

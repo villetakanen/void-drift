@@ -1,4 +1,4 @@
-import type { GameObject, InputState } from "@void-drift/core";
+import type { GameObject } from "@void-drift/core";
 import {
 	CONFIG,
 	ENGINE_CUTOFF,
@@ -21,6 +21,7 @@ import {
 	gravityCollectionRate,
 	gravitySource,
 } from "./gravity-collection";
+import { type FlightTickInput, SalvageSystem } from "./salvage";
 import {
 	type FlightSettings,
 	FlightSettingsSchema,
@@ -75,6 +76,7 @@ export class Simulation {
 	readonly planets = initializePlanets(960, 540);
 	readonly state = createInitialGameState();
 	readonly plume = new EnginePlume();
+	readonly salvage?: SalvageSystem;
 	gravityCollectionRate = 0;
 	gravityFoldOpacity = 0;
 	gravityFoldDirection = 0;
@@ -120,7 +122,17 @@ export class Simulation {
 			this.planets.length = 0;
 			this.star.mass *= (12 / this.star.radius) ** 2;
 			this.star.radius = 12;
-			this.ship.pos.set(820, 540);
+			// Give fitting trials a quiet opening pass; flying into the well remains real.
+			this.ship.pos.set(
+				this.star.pos.x - this.star.influenceRadius - 85,
+				this.star.pos.y,
+			);
+			if (this.settings.loadout)
+				this.salvage = new SalvageSystem(
+					this.settings.loadout,
+					this.settings.seed,
+					this.settings.ion,
+				);
 		}
 	}
 	get engineFeedback() {
@@ -147,8 +159,9 @@ export class Simulation {
 		this.state.status = "PLAYING";
 		this.state.startTime = 0;
 	}
-	step(input: InputState) {
+	step(input: FlightTickInput) {
 		if (this.state.status !== "PLAYING") return;
+		this.salvage?.beginTick(input.sendDerelict ?? false, this.ship, this.star);
 		const beforeX = this.ship.pos.x;
 		const beforeY = this.ship.pos.y;
 		let delivered = 0;
@@ -156,6 +169,8 @@ export class Simulation {
 		let substeps = 0;
 		// Four substeps resolve stronger close passes without changing the replay tick rate.
 		for (let substep = 0; substep < 4; substep++) {
+			const previousX = this.ship.pos.x,
+				previousY = this.ship.pos.y;
 			let engineFraction = 1;
 			if (this.settings.loadout) {
 				const stats = buildStats(this.settings.loadout);
@@ -235,6 +250,18 @@ export class Simulation {
 				ENGINE_CUTOFF,
 			);
 			substeps++;
+			if (this.salvage && this.settings.loadout)
+				this.salvage.step(
+					STEP / 4,
+					this.ship,
+					this.star,
+					this.state.resources,
+					buildStats(this.settings.loadout).capacity,
+					previousX,
+					previousY,
+					Math.hypot(this.ship.pos.x - previousX, this.ship.pos.y - previousY) >
+						1200,
+				);
 			if (
 				!this.settings.testFlight &&
 				Math.hypot(this.ship.pos.x - 960, this.ship.pos.y - 540) <
@@ -319,6 +346,7 @@ export class Simulation {
 	replay(data: unknown) {
 		const inputs = ReplaySchema.parse(data);
 		for (const input of inputs)
-			for (let tick = 0; tick < input.ticks; tick++) this.step(input);
+			for (let tick = 0; tick < input.ticks; tick++)
+				this.step({ ...input, sendDerelict: tick === 0 && input.sendDerelict });
 	}
 }

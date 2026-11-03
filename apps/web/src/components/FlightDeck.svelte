@@ -5,11 +5,14 @@ import {
 	buildStats,
 	CHALLENGE,
 	drawBuild,
+	drawSalvage,
 	FlightFx,
 	type FlightSettings,
 	FlightSettingsSchema,
+	type FlightTickInput,
 	fittedParts,
 	gameSettings,
+	LandingSystem,
 	type Loadout,
 	labSettings,
 	PARTS,
@@ -64,6 +67,18 @@ let ticks = $state(0);
 let left = $state(false);
 let right = $state(false);
 let cause = $state("");
+let pendingDerelict = $state(false);
+let canSendDerelict = $state(false);
+let salvageFeedback = $state("");
+let salvageStats = $state({
+	passes: 0,
+	destroyed: 0,
+	rail: 0,
+	laser: 0,
+	collected: 0,
+	bodies: 0,
+	spent: 0,
+});
 let engineFeedback = $state("");
 let activeLoadout = $state<Loadout>();
 // Fleet order: Fiddler joins as the unranked Ship 05 flight trial.
@@ -97,6 +112,19 @@ $effect(() => {
 		build.chassis === "fiddler" ? 2.3 : 3.2,
 	);
 });
+let phase = $state<"menu" | "starting" | "playing">("menu");
+let landing = $state.raw<LandingSystem>();
+let transitionTime = 0;
+let transitionBlurred = false;
+let sceneOpacity = $state(1);
+let reducedMotion = false;
+let stage: HTMLElement;
+let landingFrame = { width: 1920, height: 1080, cardRight: 1200 };
+function enterMenu() {
+	if (!lab && !loadout) landing = new LandingSystem();
+	phase = "menu";
+	reset(false);
+}
 let spin = $state(0);
 let wraps = $state(0);
 let json = $state("");
@@ -118,6 +146,8 @@ const coast = [
 	},
 ];
 function reset(start = false) {
+	pendingDerelict = false;
+	if (phase !== "starting") phase = start ? "playing" : "menu";
 	input?.reset();
 	previewLevel = -1;
 	simulation = new Simulation(
@@ -150,6 +180,21 @@ function frameCamera(snap = false) {
 	);
 }
 function sync() {
+	const salvage = simulation.salvage;
+	canSendDerelict = salvage?.canSend ?? false;
+	salvageStats = {
+		passes: salvage?.passes ?? 0,
+		destroyed: salvage?.destroyed ?? 0,
+		rail: salvage?.shotsFired ?? 0,
+		laser: salvage?.laserPulses ?? 0,
+		collected: salvage?.energyCollected ?? 0,
+		bodies: salvage?.bodies.length ?? 0,
+		spent: salvage?.energySpent ?? 0,
+	};
+	salvageFeedback =
+		salvage && salvage.time - salvage.lastCollection.time < 2
+			? `+${salvage.lastCollection.amount.toFixed(1)} energy collected`
+			: "";
 	engineFeedback = simulation.engineFeedback;
 	activeLoadout = simulation.settings.loadout;
 	spin = (simulation.angularMotion.velocity * 180) / Math.PI;
@@ -167,13 +212,24 @@ function sync() {
 	activeZoomSteps = simulation.settings.camera.zoomSteps;
 }
 function selectShip(value: string) {
+	if (phase === "starting") return;
 	chosen = ShipProfileIdSchema.parse(value);
 	tuning = lab ? labSettings(chosen) : gameSettings(chosen);
 	settings.set({ ...settings.get(), selectedShipId: chosen });
 	reset(false);
 }
 function start() {
-	reset(true);
+	if (phase === "starting") return;
+	if (!lab && !loadout && !reducedMotion) {
+		phase = "starting";
+		transitionTime = 0;
+		transitionBlurred = false;
+		input?.reset();
+	} else {
+		landing = undefined;
+		phase = "playing";
+		reset(true);
+	}
 	(document.activeElement as HTMLElement)?.blur();
 }
 function togglePause() {
@@ -186,13 +242,13 @@ function step() {
 	advance({ leftThruster: false, rightThruster: false, fire: false });
 	sync();
 }
-function advance(state: {
-	leftThruster: boolean;
-	rightThruster: boolean;
-	fire: boolean;
-}) {
+function advance(state: FlightTickInput) {
 	const before = simulation.wraps;
-	simulation.step(state);
+	simulation.step({
+		...state,
+		sendDerelict: pendingDerelict || state.sendDerelict,
+	});
+	pendingDerelict = false;
 	frameCamera(before !== simulation.wraps);
 	camera.update(STEP);
 }
@@ -263,9 +319,11 @@ async function save() {
 	});
 	saving = false;
 	scoreSaved = result.success;
-	message = result.success
-		? "Personal best saved. Compare your run on the leaderboard."
-		: result.error;
+	if (result.success) {
+		window.location.assign("/leaderboard");
+	} else {
+		message = result.error;
+	}
 }
 function press(event: PointerEvent, side: "left" | "right") {
 	const button = event.currentTarget as HTMLElement;
@@ -294,7 +352,26 @@ onMount(() => {
 	renderer.resize(1920, 1080);
 	camera = new Camera();
 	input = new Input(canvas);
-	reset(Boolean(loadout));
+	if (!lab && !loadout) enterMenu();
+	else reset(Boolean(loadout));
+	const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+	const updateMotion = () => {
+		reducedMotion = motion.matches;
+	};
+	updateMotion();
+	motion.addEventListener("change", updateMotion);
+	const measure = () => {
+		const bounds = stage.getBoundingClientRect();
+		const card = stage.querySelector(".flight-card")?.getBoundingClientRect();
+		landingFrame = {
+			width: bounds.width,
+			height: bounds.height,
+			cardRight: card ? card.right - bounds.left : bounds.width / 2 + 240,
+		};
+	};
+	const resize = new ResizeObserver(measure);
+	resize.observe(stage);
+	measure();
 	let last = performance.now();
 	let accumulator = 0;
 	let frame = 0;
@@ -302,10 +379,32 @@ onMount(() => {
 	function draw(time: number) {
 		const dt = Math.min((time - last) / 1000, 0.1);
 		last = time;
+		if (phase === "starting" && !document.hidden) {
+			transitionTime += reducedMotion ? 0.3 : dt;
+			if (transitionTime >= 0.15 && landing) {
+				landing = undefined;
+				reset(true);
+				paused = transitionBlurred;
+				accumulator = 0;
+			}
+			sceneOpacity =
+				transitionTime < 0.15
+					? 1 - transitionTime / 0.15
+					: Math.min(1, (transitionTime - 0.15) / 0.15);
+			if (transitionTime >= 0.3) {
+				phase = "playing";
+				input.reset();
+				accumulator = 0;
+			}
+		}
 		const controls = input.getEffectiveState(settings.get().invertControls);
 		left = controls.leftThruster;
 		right = controls.rightThruster;
-		if (!paused && simulation.state.status === "PLAYING") {
+		if (
+			!paused &&
+			phase !== "starting" &&
+			simulation.state.status === "PLAYING"
+		) {
 			accumulator += dt;
 			while (accumulator >= STEP) {
 				advance(controls);
@@ -314,28 +413,49 @@ onMount(() => {
 		} else accumulator = 0;
 		sync();
 		renderer.clear();
-		renderer.beginCamera(camera);
-		renderer.drawBackground();
-		renderer.drawArenaBoundary(1200);
-		renderer.drawStar(simulation.star, simulation.ticks * STEP * 1000);
-		for (const planet of simulation.planets) renderer.drawPlanet(planet);
-		if (simulation.settings.loadout && context)
-			drawBuild(
+		if (landing && context) {
+			if (!document.hidden && !reducedMotion) landing.step(dt);
+			// Fill the menu canvas; gameplay retains its fixed 16:9 viewport.
+			renderer.drawBackground();
+			context.save();
+			context.scale(1920 / landingFrame.width, 1080 / landingFrame.height);
+			landing.draw(
 				context,
-				simulation.settings.loadout,
-				simulation.ship.pos.x,
-				simulation.ship.pos.y,
-				simulation.ship.rotation,
-				BUILD_FLIGHT_SCALE,
+				landingFrame.width,
+				landingFrame.height,
+				landingFrame.cardRight,
 			);
-		else if (chosen !== "fiddler")
-			renderer.drawShip(
-				simulation.ship,
-				simulation.settings.profile.tint,
-				chosen,
-			);
-		if (context) flightFx.draw(context, simulation);
-		renderer.endCamera();
+			context.restore();
+		} else {
+			renderer.beginCamera(camera);
+			renderer.drawBackground();
+			renderer.drawArenaBoundary(1200);
+			renderer.drawStar(simulation.star, simulation.ticks * STEP * 1000);
+			for (const planet of simulation.planets) renderer.drawPlanet(planet);
+			if (context && simulation.salvage)
+				drawSalvage(context, simulation.salvage);
+			if (simulation.settings.loadout && context)
+				drawBuild(
+					context,
+					simulation.settings.loadout,
+					simulation.ship.pos.x,
+					simulation.ship.pos.y,
+					simulation.ship.rotation,
+					BUILD_FLIGHT_SCALE,
+					"",
+					undefined,
+					undefined,
+					simulation.salvage?.angles,
+				);
+			else if (chosen !== "fiddler")
+				renderer.drawShip(
+					simulation.ship,
+					simulation.settings.profile.tint,
+					chosen,
+				);
+			if (context) flightFx.draw(context, simulation);
+			renderer.endCamera();
+		}
 		frame = requestAnimationFrame(draw);
 	}
 	const key = (event: KeyboardEvent) => {
@@ -348,12 +468,13 @@ onMount(() => {
 			event.target.closest(
 				"textarea, select, [contenteditable], input:not([type=radio], [type=checkbox], [type=range], [type=button])",
 			);
-		if (status === "MENU" && digit && !typing) {
+		if (status === "MENU" && phase !== "starting" && digit && !typing) {
 			const id = LAUNCHER_ORDER[Number(digit[1]) - 1];
 			if (id) selectShip(id);
 		}
 	};
 	const blur = () => {
+		if (phase === "starting") transitionBlurred = true;
 		if (status === "PLAYING") paused = true;
 	};
 	window.addEventListener("keydown", key);
@@ -361,6 +482,8 @@ onMount(() => {
 	frame = requestAnimationFrame(draw);
 	return () => {
 		cancelAnimationFrame(frame);
+		resize.disconnect();
+		motion.removeEventListener("change", updateMotion);
 		input.destroy();
 		window.removeEventListener("keydown", key);
 		window.removeEventListener("blur", blur);
@@ -372,6 +495,15 @@ onMount(() => {
 	class:lab
 	class="flight-page"
 	data-status={status}
+	data-salvage-passes={salvageStats.passes}
+	data-salvage-destroyed={salvageStats.destroyed}
+	data-rail-shots={salvageStats.rail}
+	data-laser-pulses={salvageStats.laser}
+	data-salvage-collected={salvageStats.collected}
+	data-salvage-bodies={salvageStats.bodies}
+	data-weapon-energy={salvageStats.spent}
+	data-phase={phase}
+	data-landing-sun={landing?.star.type}
 	data-x={x.toFixed(4)}
 	data-y={y.toFixed(4)}
 	data-ticks={ticks}
@@ -406,6 +538,19 @@ onMount(() => {
 					Reset flight
 				</button>
 			{/if}
+			{#if testFlight && loadout}
+				<button
+					type="button"
+					class="btn btn-link"
+					disabled={paused ||
+						pendingDerelict ||
+						!canSendDerelict ||
+						status !== "PLAYING"}
+					onclick={() => (pendingDerelict = true)}
+				>
+					Send derelict
+				</button>
+			{/if}
 			{#if lab}
 				<a href="/">PLAY</a>
 			{:else if !loadout}
@@ -415,11 +560,21 @@ onMount(() => {
 		</nav>
 	</header>
 	<div class="flight-layout">
-		<section class="flight-stage" aria-label="Flight arena">
+		<section
+			bind:this={stage}
+			class="flight-stage"
+			class:landing={Boolean(landing)}
+			style:opacity={sceneOpacity}
+			aria-label="Flight arena"
+		>
 			<div class="flight-stage-layer" data-stage>
 				<canvas
 					bind:this={canvas}
-					aria-label="Ship, star and orbiting planets"
+					aria-label={landing
+						? "Decorative star and orbiting planets"
+						: testFlight
+							? "Fitted ship, star, derelicts, debris and energy collectibles"
+							: "Ship, star and orbiting planets"}
 				></canvas>
 				<div class="flight-hud" data-hud>
 					<div>
@@ -456,6 +611,11 @@ onMount(() => {
 						◀<span>LEFT ENGINE</span>
 					</button>
 					<div class="flight-actions">
+						{#if testFlight}
+							<small role="status"
+								>{salvageFeedback || "WEAPONS AUTO · 10 ENERGY RESERVE"}</small
+							>
+						{/if}
 						{#if status === "PLAYING"}
 							<button type="button" class="btn btn-link" onclick={togglePause}>
 								{paused ? "Resume flight" : "Pause"}
@@ -519,6 +679,7 @@ onMount(() => {
 							type="button"
 							class="btn btn-filled"
 							data-autofocus
+							disabled={phase === "starting"}
 							onclick={start}
 						>
 							PRESS START
@@ -548,7 +709,9 @@ onMount(() => {
 								initials = initials.toUpperCase().replace(/[^A-Z]/g, "");
 							}}
 						>
-						<div class="button-group button-group--vertical">
+					{/if}
+					<div class="button-group button-group--vertical">
+						{#if !lab && !loadout && chosen !== "fiddler"}
 							<button
 								type="button"
 								class="btn btn-filled"
@@ -558,24 +721,17 @@ onMount(() => {
 									!/^[A-Z]{3}$/.test(initials)}
 								onclick={save}
 							>
-								{saving ? "Saving…" : scoreSaved ? "Saved" : "Submit Score"}
+								{saving ? "Saving…" : scoreSaved ? "Saved" : "Save Score"}
 							</button>
-						</div>
-						{#if !scoresAvailable()}
-							<p>Shared scores are unavailable in this local session.</p>
 						{/if}
-					{/if}
-					<div class="button-group button-group--vertical">
 						<button
 							type="button"
 							class="btn btn-ghost"
 							data-autofocus
-							onclick={() => (onReturn ? onReturn() : reset(false))}
+							onclick={() => (onReturn ? onReturn() : enterMenu())}
 						>
-							{onReturn ? "Return to builder" : "Try Again"}
-						</button><a class="btn btn-ghost" href="/leaderboard"
-							>View Leaderboard</a
-						>
+							{onReturn ? "Return to builder" : "Play Again"}
+						</button><a class="btn btn-ghost" href="/leaderboard">Top Scores</a>
 					</div>
 				</Dialog>
 			{:else if paused}
@@ -789,6 +945,20 @@ onMount(() => {
 </div>
 
 <style>
+@media (max-height: 500px) {
+	.flight-stage.landing :global(.ship-art) {
+		width: 140px;
+		height: 100px;
+	}
+	.flight-stage.landing :global(.flight-card h1) {
+		font-size: var(--font-size-heading);
+	}
+}
+
+.flight-stage.landing > .flight-stage-layer > canvas {
+	object-fit: fill;
+}
+
 .engine-feedback {
 	position: absolute;
 	bottom: 100px;

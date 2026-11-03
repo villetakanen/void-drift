@@ -108,6 +108,28 @@ const shipStatsGroups = $derived([
 	</div>
 </Controls>
 
+<Controls title="Weapon fittings">
+	<label
+		><input type="checkbox" bind:checked={shipParams.weapons}>
+		Show railgun and laser</label
+	>
+	<div class="control-group">
+		<label for="turret-angle">Laser rotation ({shipParams.turretAngle}°)</label>
+		<input
+			id="turret-angle"
+			type="range"
+			min="-180"
+			max="180"
+			bind:value={shipParams.turretAngle}
+			disabled={!shipParams.weapons}
+		>
+	</div>
+	<p>
+		Shared fitting geometry. Fly and fire these weapons in the
+		<a href="/lab/builder">Hangar Lab</a>.
+	</p>
+</Controls>
+
 <Controls title="Stats">
 	<LabStats groups={shipStatsGroups} />
 </Controls>

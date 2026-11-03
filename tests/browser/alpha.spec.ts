@@ -39,6 +39,10 @@ test("standard flights start with Fighter and all ships have stabilizers", async
 			page.locator(".flight-hud progress[aria-label='Power']"),
 		).toHaveAttribute("max", String(buildStats(starterLoadout(id)).capacity));
 		await page.getByRole("button", { name: "PRESS START" }).click();
+		await expect(page.locator(".flight-page")).toHaveAttribute(
+			"data-phase",
+			"playing",
+		);
 		await expect(page.getByRole("dialog", { name: "Game menu" })).toBeHidden();
 		const deck = page.locator(".flight-page");
 		const y = await deck.getAttribute("data-y");
@@ -114,7 +118,7 @@ test("flight Lab replays exactly, imports safely, and restarts after death", asy
 	await expect(
 		page.getByRole("dialog", { name: "Run complete" }),
 	).toBeVisible();
-	await page.getByRole("button", { name: "Try Again" }).click();
+	await page.getByRole("button", { name: "Play Again" }).click();
 	await expect(page.getByRole("dialog", { name: "Game menu" })).toBeVisible();
 	// The HUD sits in the stage, which the menu makes inert.
 	const hull = page.locator(".flight-hud progress[aria-label='Hull']");
@@ -135,6 +139,10 @@ test("landscape touch engines support simultaneous activation, cancellation and 
 	await page.clock.install();
 	await page.goto("/");
 	await page.getByRole("button", { name: "PRESS START" }).tap();
+	await expect(page.locator(".flight-page")).toHaveAttribute(
+		"data-phase",
+		"playing",
+	);
 	const left = page.getByRole("button", { name: "Left engine" }),
 		right = page.getByRole("button", { name: "Right engine" });
 	const a = await left.boundingBox(),

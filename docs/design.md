@@ -41,7 +41,7 @@ the world stay attached to the scene through a jump.
 
 ## Art direction
 
-High-contrast neon on the void. Everything is drawn procedurally with flat fills; no
+High-contrast neon on the void. Hull planes use procedural flat fills; approved cockpit glass uses gradients and crisp reflections (see [cockpit materials](specs/cockpit-materials.md)). No
 external image or audio assets unless there is no other way.
 
 ### Ship drawing fundamentals
@@ -63,13 +63,14 @@ is drawn or studied.
 3. **Planes from edges.** Each part becomes a few flat planes meeting at the object's
    edges: ridges, chines, wing roots. Light comes from the ship's left and above.
    Planes facing it take the light tones of the shared palette, planes falling away
-   take the dark ones, and the highest ridge carries the brightest strip. Flat fills
-   only: no gradients, outlines or textures.
+   take the dark ones, and the highest ridge carries the brightest strip. Hull planes use flat fills only: no gradients, outlines or textures. Approved
+   cockpit materials are the scoped exception.
 4. **As few planes as carry the character.** Six to twelve is typical. Remove any
    plane the silhouette and the light can do without. Wings are thin; only the body
    has height. A bulky result means body has leaked into the wings.
-5. **Canopy and fittings are their own objects.** The canopy is black and compact and
-   marks the front and the scale. Slots, engines and weapons sit on the chassis;
+5. **Canopy and fittings are their own objects.** The canopy is compact and marks the front and the scale. Approved manufacturer
+   glass uses the [cockpit material language](specs/cockpit-materials.md); other
+   canopies remain black. Slots, engines and weapons sit on the chassis;
    keep the areas under them calm.
 6. **Check at both scales.** Enlarged in the builder and at the 0.65 flight scale,
    where a small ship is under 30 pixels long. A detail that reads only when enlarged

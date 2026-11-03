@@ -24,6 +24,7 @@ import {
 	slotAccepts,
 	UTILITY_ART,
 	WASP,
+	WEAPONS,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import { version } from "../../package.json";
@@ -436,7 +437,9 @@ function choose(id: ShipProfileId) {
 										? `+${part.capacity} energy capacity`
 										: part.id === "coil"
 											? "+1× solar charging"
-											: "Static fitting · no energy draw"}</small
+											: part.id === "rail" || part.id === "laser"
+												? `${part.id === "rail" ? "Fixed direction · automatic" : "Rotating point defence"} · ${WEAPONS[part.id].energy} energy/shot · Test flight only`
+												: "Static fitting · no energy draw"}</small
 							>
 							{#if part.description}
 								<small>{part.description}</small>
@@ -546,8 +549,10 @@ function choose(id: ShipProfileId) {
 			</div>
 		</footer>
 		<p class="footnote">
-			Test flight: small sun, real energy and damage, no game-over. Custom
-			survival is unranked during alpha tuning.
+			Test flight: small sun, passing salvage, automatic weapons, real energy
+			and damage, no game-over. Weapons keep 10 energy in reserve; engine
+			endurance estimates exclude weapon demand. Custom survival is unranked;
+			weapons remain inactive there.
 		</p>
 		{#if notice}
 			<p role="status">{notice}</p>

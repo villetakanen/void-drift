@@ -532,7 +532,7 @@ definitions are in core `styles/buttons.css`, with foundations in `styles/tokens
   anchored groups on a solid void surface; related actions go in
   `.button-group__section`, and strip hosts use `.button-group-frame` for container
   queries. Both modes use 8px padding and minimum gaps; strips stack below 580px of
-  host width and keep the solid background. Preserve meaningful DOM/tab order.
+  host width and remove the group background. Only horizontal rows have the solid black background. Preserve meaningful DOM/tab order.
 - Buttons keep angled corners, lime filled/ghost variants and red consequences. Shared
   states: an inset focus ring, disabled opacity with suppressed hover, selected
   indication and reduced motion. Busy buttons must be disabled by the owning

@@ -5,6 +5,7 @@ import { chromium } from "@playwright/test";
 const baseURL = process.env.FX_BASE_URL ?? "http://127.0.0.1:4347";
 const duration = Number(process.env.FX_PROFILE_SECONDS ?? 60);
 const camera = process.env.FX_PROFILE_CAMERA ?? "fixed";
+const weapons = process.env.FX_PROFILE_WEAPONS === "1";
 if (!["fixed", "moving"].includes(camera))
 	throw new Error("FX_PROFILE_CAMERA must be fixed or moving");
 if (!Number.isFinite(duration) || duration < 5 || duration > 300)
@@ -29,7 +30,9 @@ try {
 		const page = await context.newPage();
 		const errors = [];
 		page.on("pageerror", (error) => errors.push(error.message));
-		await page.goto(`${baseURL}/lab/fx?camera=${camera}`);
+		await page.goto(
+			`${baseURL}/lab/fx?camera=${camera}&weapons=${weapons ? "1" : "0"}`,
+		);
 		const scene = page.getByRole("region", { name: "Arcade FX instrument" });
 		await scene.getByRole("button", { name: "Pause", exact: true }).waitFor();
 		await page.waitForTimeout(5000);
@@ -90,6 +93,7 @@ try {
 		results.push({
 			label,
 			camera,
+			weapons,
 			graphics,
 			browser: browser.version(),
 			host: `${process.platform}/${process.arch}`,

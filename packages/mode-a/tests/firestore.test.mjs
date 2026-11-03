@@ -56,7 +56,7 @@ test("different players can contribute and read the shared board", async () => {
 	const db = environment.authenticatedContext("viewer").firestore();
 	const rows = await assertSucceeds(
 		getDocs(
-			query(collection(db, "artifacts", "void-drift", "scores"), limit(20)),
+			query(collection(db, "artifacts", "void-drift", "scores"), limit(30)),
 		),
 	);
 	if (rows.size !== 2) throw new Error("Both players must appear");
@@ -103,7 +103,7 @@ test("reads require authentication and a bounded list query", async () => {
 					"void-drift",
 					"scores",
 				),
-				limit(21),
+				limit(31),
 			),
 		),
 	);
@@ -116,7 +116,7 @@ test("reads require authentication and a bounded list query", async () => {
 					"void-drift",
 					"scores",
 				),
-				limit(20),
+				limit(30),
 			),
 		),
 	);
@@ -153,3 +153,15 @@ for (const challenge of ["gravity-1", "ion-1"]) {
 		await assertFails(setDoc(ref("rival", id), current));
 	});
 }
+
+test("each anonymous identity can keep a best on every ranked craft", async () => {
+	for (const userId of ["pilot", "rival"]) {
+		for (const shipId of ["wasp", "scout", "fighter", "corvette"]) {
+			const target = ref(userId, `ion-1_${userId}_${shipId}`);
+			const current = { ...score, userId, shipId, challenge: "ion-1" };
+			await assertSucceeds(setDoc(target, current));
+			await assertSucceeds(setDoc(target, { ...current, seconds: 60 }));
+			await assertFails(setDoc(target, { ...current, seconds: 30 }));
+		}
+	}
+});

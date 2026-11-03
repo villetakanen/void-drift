@@ -74,7 +74,7 @@ test("dialog isolation: Tab never reaches the HUD, engine pads or canvas", async
 	await expect(page.locator("[data-stage]")).toHaveAttribute("inert", "");
 
 	// Hand-over: the stage stays inert from run complete into the menu.
-	await page.getByRole("button", { name: "Try Again" }).click();
+	await page.getByRole("button", { name: "Play Again" }).click();
 	await expect(page.getByRole("dialog", { name: "Game menu" })).toBeVisible();
 	await expect(page.locator("[data-stage]")).toHaveAttribute("inert", "");
 	await expect(page.getByRole("button", { name: "PRESS START" })).toBeFocused();

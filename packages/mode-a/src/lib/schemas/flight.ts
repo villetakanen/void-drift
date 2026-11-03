@@ -37,5 +37,7 @@ export const ReplayInputSchema = z.object({
 	leftThruster: z.boolean(),
 	rightThruster: z.boolean(),
 	fire: z.literal(false),
+	// Scenario command, consumed once at the beginning of a replay chunk.
+	sendDerelict: z.boolean().optional(),
 });
 export const ReplaySchema = z.array(ReplayInputSchema).max(1000);

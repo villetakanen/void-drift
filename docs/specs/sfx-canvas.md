@@ -305,6 +305,25 @@ production; visual equality gates remain retired.
 
 ## Supporting records
 
+### Weapon trial — 2026-11-03
+
+The [weapons and salvage trial](weapons-and-salvage.md) adds simulation-owned
+rail rounds, rotating laser pulses, impact/destruction events and energy collection.
+`FlightFx` stamps their fresh light into the existing surface and consumes events
+into one shared weapon spark pool (capacity 256). Physical wrecks, fragments and
+cells are world objects, visible independently of cosmetic effects. Existing
+source/decorative budgets and pause/reset/camera semantics apply. Current pulse
+events expire after 0.2 seconds and are bounded to 128; they are not trail histories.
+Laser pulses use a saturated red outer stroke and a brighter narrow core. Rail
+collisions and ship–derelict contacts stamp the same circular plume expanding from the actual swept contact point
+for 0.2 seconds and feed the same bounded spark pool. Expired slugs and near
+misses cannot trigger that plume. Pause/reset semantics apply to both effects.
+
+The mixed Lab's Weapons toggle, also `/lab/fx?weapons=1`, fits alternating lasers
+and rails beside the six ships' gravity collectors and shows real encounters.
+The default reference workload suppresses encounter spawning. Weapon-mode traces
+must be identified separately from earlier reference-workload measurements.
+
 - [Investigation, alternatives, verification and migration](../plans/2026-11-03-fx-framework-triage.md)
   holds code-level diagnosis, measurements, candidate designs and proposed test changes.
 - [DEPRECATED 2026-11-03: historical rendering proposal](../archive/sfx-canvas-legacy.md)

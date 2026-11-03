@@ -1,6 +1,7 @@
 import {
 	FX_INK,
 	type FxPass,
+	FxSparks,
 	FxSurface,
 	type GameObject,
 	paintArc,
@@ -10,6 +11,7 @@ import {
 	type BuildMount,
 	buildMounts,
 } from "./build-renderer";
+import { stampWeaponLight } from "./salvage-renderer";
 import type { Loadout } from "./schemas/loadout";
 import type { Simulation } from "./simulation";
 
@@ -67,14 +69,43 @@ export function drawGravityFold(
 export class FlightFx {
 	readonly surface = new FxSurface();
 	private simulation?: Simulation;
+	private readonly weaponSparks = new FxSparks();
+	private weaponEvents = new WeakMap<Simulation, number>();
+	private weaponTime = 0;
 	get pass() {
 		return this.surface.pass;
 	}
 	clear() {
 		this.surface.clear();
+		this.weaponSparks.clear();
+		this.weaponEvents = new WeakMap();
+		this.weaponTime = 0;
 	}
 	drawShip(ctx: CanvasRenderingContext2D, sim: Simulation, fold = true) {
 		sim.plume.stamp(ctx, this.pass);
+		if (sim.salvage) {
+			const salvage = sim.salvage;
+			this.weaponSparks.step(Math.max(0, salvage.time - this.weaponTime));
+			this.weaponTime = salvage.time;
+			let seen = this.weaponEvents.get(sim) ?? 0;
+			for (const event of salvage.events) {
+				if (event.id <= seen) continue;
+				if (
+					event.kind === "break" ||
+					event.kind === "impact" ||
+					event.kind === "collision"
+				)
+					this.weaponSparks.burst(
+						event.x,
+						event.y,
+						event.kind === "break" || event.kind === "collision" ? 16 : 4,
+						event.id,
+					);
+				seen = event.id;
+			}
+			this.weaponEvents.set(sim, seen);
+			stampWeaponLight(ctx, salvage, this.pass);
+		}
 		if (fold && sim.settings.loadout && sim.gravityCollectionRate > 0)
 			drawGravityFold(
 				ctx,
@@ -85,6 +116,9 @@ export class FlightFx {
 				sim.gravityFoldDirection,
 				this.pass,
 			);
+	}
+	drawParticles(ctx: CanvasRenderingContext2D) {
+		this.weaponSparks.draw(ctx, this.pass);
 	}
 	draw(
 		ctx: CanvasRenderingContext2D,
@@ -99,7 +133,10 @@ export class FlightFx {
 		this.surface.draw(
 			ctx,
 			sim.ticks / 60,
-			(light) => this.drawShip(light, sim, fold),
+			(light) => {
+				this.drawShip(light, sim, fold);
+				this.drawParticles(light);
+			},
 			additive,
 		);
 	}

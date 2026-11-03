@@ -171,6 +171,9 @@
 }
 /* Private composition threshold, not a global device breakpoint. Host owns containment. */
 @container (max-width: 580px) {
+	.button-group--strip {
+		background: transparent;
+	}
 	.button-group--strip,
 	.button-group--strip > .button-group__section {
 		display: grid;

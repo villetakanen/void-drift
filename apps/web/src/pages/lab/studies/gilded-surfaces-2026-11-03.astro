@@ -1,0 +1,204 @@
+---
+import AegisGlass from "../../../components/studies/gilded/AegisGlass.svelte";
+import LhiGlass from "../../../components/studies/gilded/LhiGlass.svelte";
+import ScoutGlass from "../../../components/studies/gilded/ScoutGlass.svelte";
+import SurfaceAtlas from "../../../components/studies/gilded/SurfaceAtlas.astro";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find(
+	(entry) => entry.slug === "gilded-surfaces-2026-11-03",
+);
+---
+
+<StudyLayout study={study}>
+	<section>
+		<h2>01 / A material language across shapes</h2>
+		<p>
+			The Fiddler reference gives cockpit glass a distinctive material: gold at
+			the forward tip, a space-dark middle and green toward the rear. Its
+			central ridge divides the reflection into two surfaces. The desired result
+			of this study is a clear visual-language guide that explains how to use
+			that green–space–gold treatment on round, curved, cornered and faceted
+			surfaces, with every ship’s cockpit as a practical application.
+		</p>
+		<p>
+			The central tension is continuity versus form. A recognizable material
+			should survive a change of shape, but a rounded canopy should not look
+			like a diamond with softened corners. We need to distinguish what stays
+			constant —the colour family, dark depth and balance of reflection—from
+			what follows the object: highlight position, transitions, seams and
+			changes of plane. The reference suggests a direction; these rules remain
+			to be discovered.
+		</p>
+		<p>
+			The guide should pair rules with rendered examples: a round dome, a long
+			curved canopy, an angular canopy and a multi-plane surface, followed by
+			the actual cockpit family at enlarged and flight sizes. It should explain
+			where the material belongs, how adjacent surfaces meet, and when restraint
+			preserves the ship’s character. Extending it onto hull panels is an open
+			usage question. The current art direction calls for flat fills and black
+			canopies; any proposed exception must be explicit in the eventual scope.
+		</p>
+	</section>
+	<section>
+		<h2>02 / Reflection follows the surface</h2>
+		<details>
+			<summary>
+				02.1 / One material, four constructions — approved direction
+			</summary>
+			<p>
+				First proposal: gold catches the forward light, green returns at the
+				rear, and a broad space-dark band gives the glass depth. Curvature bends
+				the band; a real ridge breaks it. An angular outline alone does neither.
+			</p>
+			<SurfaceAtlas />
+			<p>
+				Designer decision: the four surface treatments in 02.1 are approved as
+				the material direction. Cockpit application and small-scale readability
+				remain open.
+			</p>
+			<p>
+				These are procedural material sketches under a fixed forward-left light,
+				not ship geometry or a physical reflection simulation. The round and
+				curved samples test continuous roll-off; the final sample interprets the
+				Fiddler reference’s split planes. Colour, band width and contrast are
+				provisional.
+			</p>
+			<p>
+				Proposed usage boundary: reserve this rich reflection for glass first.
+				Keep surrounding structure quiet so the dark centre still reads as
+				depth. Applying it to opaque panels remains a separate comparison.
+				Cockpit fit and flight-size readability have not yet been demonstrated.
+			</p>
+		</details>
+	</section>
+	<section>
+		<details>
+			<summary>02.2 / Daehan: space glass dome — approved</summary>
+			<p>
+				Designer decision: gradient direction −70°, reflection edge direction
+				−30°, gold border retained. This reads as a space glass dome and is
+				approved as the visual language for the Daehan family. Scout is the
+				reviewed example; fitting this language to the other Daehan cockpit
+				geometries remains work.
+			</p>
+			<ScoutGlass client:load />
+			<p>
+				The accepted construction combines a green–space–gold gradient, dark
+				edge roll-off, a gold collar and a crisp bowed reflection crossing glass
+				and collar. Gradient and reflection rotate independently. Reset restores
+				the accepted values; adjustments here are temporary explorations.
+			</p>
+			<p>
+				The designer has directed exploration to continue with LHI next.
+				Daehan’s implementation readiness, production integration and flight
+				review remain to be assessed. Visual approval does not claim a deployed
+				change.
+			</p>
+		</details>
+	</section>
+	<section>
+		<details>
+			<summary>02.3 / LHI: cut glass at the ridge — B selected</summary>
+			<p>
+				Wasp’s two production canopy planes provide the first LHI comparison.
+				The material keeps the green–space–gold family but replaces the dome’s
+				bowed reflection with straight edges on each plane. A thin gold
+				perimeter frames the glass; the centre ridge remains a meeting of
+				surfaces.
+			</p>
+			<LhiGlass client:load />
+			<p>
+				A keeps the reflection connected at the ridge and changes its direction.
+				B adds a step between planes, testing a stronger difference in reflected
+				view. The question is whether that step gives the canopy more solidity
+				or makes it feel like two unrelated panes. Designer decision: B is
+				selected; retain the reflection offset between panes.
+			</p>
+			<p>
+				These are study overlays on the real Wasp hull and fittings. The
+				proposed gold perimeter and reflection are not production changes.
+				Fiddler application follows after the pane relationship is settled;
+				static views cannot establish readability in motion.
+			</p>
+		</details>
+	</section>
+	<section>
+		<h3>02.4 / The selected reflection on both LHI ships</h3>
+		<p>
+			B’s offset reflection now carries across Wasp and Fiddler. Both use their
+			production glass outlines, the same palette, right-pane shading and thin
+			gold perimeter. The offset remains 13% of canopy length. This checks the
+			selected pane relationship against Fiddler’s larger surrounding hull.
+		</p>
+		<LhiGlass family client:load />
+		<p>
+			Designer decision: the B treatment on Wasp and Fiddler is approved for
+			LHI, including the offset reflection, darker right pane and thin gold
+			perimeter. Production integration and flight verification remain separate
+			work.
+		</p>
+	</section>
+	<section>
+		<h3>02.5 / Aegis: blue visor — approved</h3>
+		<p>
+			Designer decision: continuous visor, gradient −79°, reflection −39°, blue
+			reflection (#427fe0) at 32% opacity, thin gold perimeter retained. The
+			remaining ship family is excluded from this cycle.
+		</p>
+		<AegisGlass client:load />
+		<p>
+			Reset restores the accepted values. The study and production now consume
+			the same material renderer. The reflection stays crisp and rotates
+			separately from the green–space–gold gradient.
+		</p>
+	</section>
+	<section>
+		<h2>03 / Ready for shared rendering</h2>
+		<p>
+			Scout, XF-1, Wasp and Fiddler already share drawBuild across the Hangar,
+			Lab and flight. Their existing cockpit geometry supplies the clipping
+			paths; no silhouette, fitting or simulation change is required. The
+			accepted procedural Canvas treatments can be extracted directly and
+			painted after hull geometry, before fittings. Readiness: no implementation
+			blocker.
+		</p>
+		<p>
+			The shared material stays in ship coordinates, as reviewed; it rotates
+			with the ship rather than tracking a world light. Gradients are authored
+			reflections, not physical environment maps. The existing flight scale is
+			preserved. Automated checks cannot establish feel, readability amid
+			effects or sustained device performance.
+		</p>
+	</section>
+	<section>
+		<h2>04 / Deliver the three approved families</h2>
+		<p>
+			<strong>Art-direction change:</strong>
+			permit gradients and crisp reflective overlays for approved cockpit
+			materials, plus restrained gold framing. Hull planes retain flat fills.
+			This replaces the universal black-canopy rule for Daehan, LHI and Aegis
+			only, under the designer’s implementation authorization.
+		</p>
+		<ol>
+			<li>
+				Small: extract the accepted glass renderers and parameters into mode-a;
+				keep the Lab study controls on the same definitions.
+			</li>
+			<li>
+				Small: integrate them in drawBuild before fittings. Cover Scout, XF-1,
+				Wasp and Fiddler; leave Mark II Escort Frigate unchanged.
+			</li>
+			<li>
+				Small: document manufacturer usage rules, check types, build and
+				rendering integration; assess human flight fidelity separately.
+			</li>
+		</ol>
+		<p>
+			Local implementation is connected. This study is accepted; it does not
+			claim a push, deployment or completed human flight review. Validation
+			results are reported with the delivery.
+		</p>
+	</section>
+</StudyLayout>

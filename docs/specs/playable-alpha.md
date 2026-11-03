@@ -12,7 +12,11 @@ existing ship-profile schema. Gravity and engines follow the accepted 29 October
 All ranked runs use challenge `gravity-1`, seed 2026, a G-class star, and stock profiles.
 Scoring is casual client-reported survival time, clearly labeled: Firestore rules
 validate ownership, shape, version and bounds, but do not prove an honest simulation.
-Each anonymous player keeps one best score per ship. Different balance versions
+Each anonymous player keeps one best score per ranked ship, independently of other
+players and crafts. Successful saving opens Top Scores, which displays the 30
+longest times across crafts. The score heading, results and action strip share
+one design-system panel; long boards scroll with the page and narrow tables
+scroll within the panel. Equal or shorter runs retain the existing best. Different balance versions
 use separate boards. Lab runs and imported tuning cannot submit ranked scores.
 Firebase Auth and Firestore replace Supabase. Paths are
 `artifacts/{appId}/scores/{challenge}_{uid}_{shipId}`. Offline play remains available.
@@ -148,3 +152,34 @@ centre slot below the chassis; the forward weapon/support slots start empty.
 Fiddler runs are marked unranked and cannot submit to the existing challenge.
 The Hangar can fit and test the same ship. Full geometry, fitting and linked-drive
 behavior is specified in [Hangar](hangar/spec.md#fiddler-flight-trial--2026-11-03).
+
+Run complete uses the shared dialog panel and one vertical action group: Save Score
+is filled and primary; Play Again and Top Scores are ghost secondary actions.
+
+## Landing system — 2026-11-03
+
+Landing planets never have rings.
+
+The production launcher keeps its centred ship-selection dialog, ship preview and
+existing shaded backdrop. A separate cosmetic system shows a random sun to its
+right and three planets orbiting with 20–45 second periods. Sun class, planet
+appearance, orbital phases and bounded orbit sizes vary per menu entry. Selection
+and resize preserve that system. The sun stays right of the dialog, while wide,
+projected elliptical outer orbits span the screen and pass behind the panel to its
+left. The outer planet starts visibly left of the dialog. Planet sizes remain
+substantial and independent of orbit framing; all are unringed. Outer orbits may crop;
+small screens prioritize the launcher. No background ship, flight effects, arena
+boundary or gameplay influence guides are drawn. The shared procedural artwork
+and circular orbit update are reused; survival physics are not advanced.
+
+Start fades to void for 150 ms, replaces the demo with the existing fixed G-class,
+seed-2026 survival run, then reveals it for 150 ms. Repeated activation is ignored;
+flight input, resource consumption and the simulation clock wait until the reveal
+finishes. Input and frame accumulation reset at handoff. Blur during the handoff
+leaves the new run paused. Play Again creates a new menu system. Flight Lab and
+builder flights retain their existing behavior. Hidden pages suspend demo motion;
+reduced motion shows a static system and starts immediately.
+
+`/lab/landing` presents the production composition and handoff for visual review.
+Automated checks establish generation bounds, orbital movement, reduced motion
+and the fresh-run handoff; they do not establish human visual acceptance.

@@ -31,52 +31,152 @@ onMount(() => {
 });
 </script>
 <main class="score-page">
-	<a href="/" class="brand"><Logo size="sm" /></a>
-	<p class="eyebrow">{version} / G CLASS</p>
-	<h1>The longest orbit.</h1>
-	<p>One personal best per ship. A shared challenge for every pilot.</p>
-	<p class="control-copy">
-		Casual, client-reported scores. Lab trials are unranked.
-	</p>
-	{#if loading}
-		<p role="status">Loading shared scores…</p>
-	{:else if error}
-		<p role="status">{error}</p>
-		<button type="button" class="btn btn-ghost" onclick={load}>Retry</button>
-	{:else if rows.length === 0}
-		<p>No scores yet. Set the first mark.</p>
-	{:else}
-		<table>
-			<thead>
-				<tr>
-					<th>Rank</th>
-					<th>Pilot</th>
-					<th>Ship</th>
-					<th>Survival</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each rows as row, index}
-					<tr>
-						<td>{index + 1}</td>
-						<td>{row.initials}<small> · {row.userId.slice(-4)}</small></td>
-						<td>{SHIP_IDENTITY[row.shipId].shortName}</td>
-						<td>{row.seconds}s</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-	{/if}
-	<div class="button-group-frame">
-		<div class="button-group button-group--strip">
-			<button
-				type="button"
-				class="btn btn-ghost"
-				onclick={load}
-				disabled={loading}
+	<section class="panel score-panel" aria-labelledby="scores-title">
+		<header class="score-heading">
+			<a href="/" class="brand" aria-label="Void Drift home"
+				><Logo size="sm" /></a
 			>
-				Refresh
-			</button><a class="btn btn-filled" href="/">Fly again</a>
+			<p class="eyebrow">G CLASS / TOP 30</p>
+			<h1 id="scores-title">Top scores</h1>
+			<p>One best time per pilot, per craft.</p>
+		</header>
+		<div class="score-results" aria-busy={loading}>
+			{#if loading}
+				<p role="status">Loading shared scores…</p>
+			{:else if error}
+				<p role="status">{error}</p>
+			{:else if rows.length === 0}
+				<p>No scores yet. Set the first mark.</p>
+			{:else}
+				<table aria-label="Top 30 survival times">
+					<thead>
+						<tr>
+							<th scope="col">Rank</th>
+							<th scope="col">Pilot</th>
+							<th scope="col">Ship</th>
+							<th scope="col">Survival</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each rows as row, index}
+							<tr>
+								<td>{index + 1}</td>
+								<td>
+									<strong>{row.initials}</strong
+									><small>{row.userId.slice(-4)}</small>
+								</td>
+								<td>{SHIP_IDENTITY[row.shipId].shortName}</td>
+								<td>{row.seconds}s</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			{/if}
 		</div>
-	</div>
+		<p class="score-note">
+			Casual, client-reported times. Lab trials are unranked.
+		</p>
+		<div class="button-group-frame">
+			<div class="button-group button-group--strip">
+				<button
+					type="button"
+					class="btn btn-ghost"
+					onclick={load}
+					disabled={loading}
+				>
+					{error ? "Retry" : "Refresh"}
+				</button><a class="btn btn-filled" href="/">Fly again</a>
+			</div>
+		</div>
+		<p class="score-version">{version}</p>
+	</section>
 </main>
+
+<style>
+.score-page {
+	box-sizing: border-box;
+	height: 100dvh;
+	overflow: auto;
+	padding: var(--spacing-lg) var(--spacing-md);
+	background: var(--color-elev-1);
+	font: var(--font-size-body) / var(--line-height-ui) var(--font-family-ui);
+}
+.score-panel {
+	width: min(100%, 48rem);
+	box-sizing: border-box;
+	margin-inline: auto;
+	display: grid;
+	gap: var(--spacing-lg);
+}
+.score-heading {
+	display: grid;
+	justify-items: center;
+	gap: var(--spacing-md);
+	text-align: center;
+}
+h1 {
+	margin: 0;
+	font:
+		var(--font-weight-display) var(--font-size-display) /
+		var(--line-height-display) var(--font-family-display);
+	letter-spacing: var(--tracking-display);
+}
+p {
+	margin: 0;
+	color: var(--color-text-muted);
+}
+.score-results {
+	min-width: 0;
+	overflow-x: auto;
+}
+.score-results > p {
+	padding-block: var(--spacing-lg);
+	text-align: center;
+}
+table {
+	width: 100%;
+	border-collapse: collapse;
+	font-variant-numeric: tabular-nums;
+}
+th,
+td {
+	padding: var(--spacing-md) var(--spacing-sm);
+	text-align: left;
+	border-bottom: 1px solid var(--color-border-subtle);
+}
+th {
+	color: var(--color-text-muted);
+	font-size: var(--font-size-caption);
+	font-weight: var(--font-weight-regular);
+}
+th:last-child,
+td:last-child {
+	text-align: right;
+}
+td:first-child {
+	color: var(--color-text-muted);
+}
+td:last-child {
+	font-weight: var(--font-weight-bold);
+	white-space: nowrap;
+}
+small {
+	display: block;
+	color: var(--color-text-muted);
+	font-size: var(--font-size-caption);
+}
+.score-note,
+.score-version {
+	text-align: center;
+	font-size: var(--font-size-caption);
+}
+@media (max-width: 580px) {
+	.score-panel {
+		padding: var(--spacing-md);
+	}
+	th,
+	td {
+		padding-inline: var(--spacing-xs);
+	}
+}
+</style>

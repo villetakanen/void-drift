@@ -17,7 +17,7 @@ service cloud.firestore {
      && d.deathCause in ['STAR','HULL','POWER'];
    }
    allow get: if appId == 'void-drift' && request.auth != null;
-   allow list: if appId == 'void-drift' && request.auth != null && request.query.limit <= 20;
+   allow list: if appId == 'void-drift' && request.auth != null && request.query.limit <= 30;
    allow create: if valid();
    allow update: if valid() && request.resource.data.challenge == resource.data.challenge && resource.data.userId == request.auth.uid && request.resource.data.seconds > resource.data.seconds;
    allow delete: if false;

@@ -11,8 +11,10 @@ fit it, inspect it, test it, and return to adjust it or start survival.
 The [owner-approved charter](../../rebuild-charter.md#next-phase--ship-builder-2026-10-30)
 sets the scope: free fitting in fixed mounts, desktop mouse and keyboard acceptance,
 and initially unranked custom survival. Mobile Hangar layout is deferred; existing
-landscape flight controls remain supported. Weapons are static fittings; buying
-parts, combat, mount authoring and flight tuning are separate work.
+landscape flight controls remain supported. Weapons are active in fitted Test flight
+under the [weapons and salvage contract](../weapons-and-salvage.md), and remain static
+in custom survival. Buying parts, survival combat, mount authoring and flight tuning
+are separate work.
 
 This spec owns the player assembly workflow and its handoff to flight. Shared ship
 physics, balance and artwork can evolve independently. Their exact definitions
@@ -76,6 +78,9 @@ prior work; it is not a competing current specification.
    and continues at empty energy or lethal damage. Engines require available power
    and can resume after charging. Return preserves the build. Survival retains its
    normal end conditions and is explicitly unranked, with score submission excluded.
+   The [weapon trial](../weapons-and-salvage.md) starts outside the small sun's
+   influence, adds passing derelicts, automatic fitted weapons and energy pickups,
+   and offers Send derelict. Reset reproduces the encounter sequence.
 
 Constraints 1–2, 4 and 6 carry the original brief and charter; later fitting and
 identity decisions are recorded under [Slot language](../../history/ship-builder.md#slot-language-integration--2026-10-31)
