@@ -66,6 +66,7 @@ export async function smokeArtifact(directory, evidenceDirectory) {
 		await page.goto(url);
 		await page.getByRole("button", { name: "PRESS START" }).click();
 		const deck = page.locator(".flight-page");
+		await expect(deck).toHaveAttribute("data-phase", "playing");
 		await expect(deck).toHaveAttribute("data-status", "PLAYING");
 		const y = await deck.getAttribute("data-y");
 		await page.keyboard.down("ArrowUp");
