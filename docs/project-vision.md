@@ -1,4 +1,12 @@
-# Project: VOID DRIFT
+# Historical project vision: VOID DRIFT
+
+> Historical record — superseded, marked 2 November 2026. The text below preserves
+> an earlier vision, roadmap and styling direction. Its instructions, values,
+> completion claims and “current” or “next” sections are historical, not active
+> requirements or verified current status. Do not use it to guide new work.
+> Current intent lives in [vision.md](vision.md), experience direction in
+> [design.md](design.md), and scope in [rebuild-charter.md](rebuild-charter.md).
+> Consult current feature specifications and implementation for behavior.
 
 **"Newtonian Chaos in a Shared Canvas"**
 

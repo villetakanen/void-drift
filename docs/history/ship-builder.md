@@ -1,5 +1,35 @@
 # Ship builder — 0.4.0
 
+> **[DEPRECATED 2026-11-03] As a feature specification.** This file preserves the
+> former Ship Builder document, including its uncommitted additions at the time of
+> extraction. It mixes decisions, implementation reports and superseded states.
+> The current player workflow contract is [Hangar](../specs/hangar/spec.md).
+> This record is not a second active Hangar spec. Accepted decisions about shared
+> ships, flight and artwork remain evidence for those domains; moving them here
+> neither revokes them nor promotes implementation commentary to owner approval.
+
+Read dated entries in context. In particular:
+
+| Superseded statement                                      | Later decision / current source                                                   |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| Three ships, Fighter-only or Fighter/Corvette selection   | Four identities in `ShipProfileIdSchema`; all available in Hangar                 |
+| Fission defaults and the original ion limits              | Engine identities and Base movement entries; `PARTS` and `ION_DEFAULTS`           |
+| Either side edits the pair                                | Slot language: primary left mount edits the pair; right is linked                 |
+| Every added battery supplies 100 capacity                 | Potential Well entry; `PARTS` owns capacities                                     |
+| Release immediately stops rotation                        | Base movement: angular velocity and stabilizer braking                            |
+| Stabilizers default off                                   | Linked engines and stabilizer defaults: on, Wasp forced on                        |
+| Version-1/2 browser saves remain current                  | Ship names and ids: v3 browser store; loadout schema version remains 2            |
+| Four independently validated saved builds                 | `BuildStoreSchema` validates the whole store; one invalid entry resets it all     |
+| Gravity artwork is only conceptual/static                 | Gravity coil and Gravity collection entries                                       |
+| First-column placement and decorative CSS as requirements | Hangar uses named functional regions; exact composition remains in shared UI/code |
+
+Exact tuning, geometry and formulas below describe their recorded revision, not
+final balance. Cross-domain intent not yet covered by a focused living spec must
+be read against the later decisions and canonical code; this extraction does not
+claim that wider specification work is complete.
+
+---
+
 Status: implemented local 0.4.0 alpha, 2026-10-30; human flight/assembly review pending.
 
 ## Purpose and delivery
@@ -494,11 +524,51 @@ shades preserve the accepted construction. Default mount scale is 0.35. Storage
 replaces the existing battery casing/mark in the production builder and flight
 renderer, retaining existing mount positions and hull layering rules.
 
-Solar, gravity and repair are conceptual artwork identifiers only. This change adds
+Solar, gravity and repair were conceptual artwork identifiers in this delivery. It added
 no device IDs, catalog entries, loadout choices, charging or repair rules. All four
 artworks are available at `/lab/utility-artwork`; that page also exercises the real
 battery renderer on all production hulls at enlarged and gameplay scale. Resting
 states only: no deployment, orbiting drones, field pulses or animation.
+
+## Gravity coil — implemented 2026-11-03
+
+The accepted static form is **M / Inset ring at 100%**, preserved in
+`/lab/studies/gravity-coil-form-2026-11-03` sections 02.5–02.6. The segmented toroid,
+creased sector shells, open centre and yellow connections remain unchanged. The
+engine-coloured open annulus sits inside the outer silhouette, beneath the shells
+and visible through their gaps. Upper-left lighting and the accepted light machinery,
+charcoal and safety-yellow palette are preserved. No backing plate or outer rim.
+
+`gravity-coil-art.ts` constructs the accepted faces in ship-local +x coordinates;
+`UTILITY_ART.gravity` validates them with the shared face schema. Its default mount
+scale is **0.5**, matching the selected 100% reference. `utilityArtworkScale` is shared
+by Canvas and SVG consumers; other utility artwork scales retain their values.
+The study’s drawings remain independent fidelity references.
+
+**Playable catalog hookup, explicitly added after the static-form study:**
+`gravity-coil` is a separate utility fitting named **Gravity coil**, available in
+equipment and universal slots on all four hulls. It appears in the catalog, builder
+and flight using the same shared artwork and the existing mount/layer rules. It
+persists in existing version-2 loadouts and version-3 browser storage without a reset.
+It has provisional mass **10**, matching Loading coil, and contributes the normal
+mass effect on acceleration and turning. It adds **no capacity, thrust or energy
+draw**. Collection and flight FX are defined below.
+Existing `coil` remains the solar-charging Loading coil. Starter fleets are unchanged.
+
+The shared-artwork Lab page `/lab/utility-artwork#gravity-coil` shows all equipment
+slots fitted on Wasp, Scout, Fighter and Corvette, with all engine-compatible slots
+carrying Light ions, at 3×, true 1× and 0.65 flight scale. The frozen study retains
+the above-hull comparison. Acceptance covers static artwork and a selectable static
+fitting. The subsequent FX study defines collection and animation below.
+
+Acceptance scenarios:
+
+- The new fitting can be installed, reloaded, flown and removed independently of
+  Loading coil; its installation does not increase solar charging or storage.
+- Its shared geometry, face colours and paint order match M at 100%, including the
+  transparent aperture; flight does not add the legacy rectangular placeholder.
+- All four hulls use their existing mounts and layering; the flight scale remains
+  0.65, with Gravity coil’s artwork transform at 0.5 inside that scene transform.
 
 ## Potential Well — implemented 2026-11-02
 
@@ -522,3 +592,101 @@ has larger wells; neither has yellow end extensions. #CEDB17 connects the wells,
 with grey lattice between the connectors and upper-left lighting. No animation or
 SFX is included. The study fleet tool uses these production definitions and offers
 both sizes, every equipment mount and fully populated Light ion engine/aft mounts.
+
+## Fighter equipment-mount handoff — 2026-11-03
+
+Implemented from the owner’s mount plan, narrowed by their explicit correction:
+equipment mounts are now hull-0 (37, 0) and hull-1 (-1, 0). All engine positions,
+aft positions and angles retain their prior production values, including the
+side engines’ ±26° angles. The exported angle difference was not accepted.
+Mount identities, types, dimensions and production links are unchanged.
+
+`FIGHTER.hullMounts` in `packages/mode-a/src/lib/fighter.ts` supplies the equipment
+positions to the shared mount builder, production rendering and builder hit
+targets. The submitted Heavy Potential Well loadout was a preview; default
+equipment and saved loadouts are unchanged.
+
+## Hangar control alignment — 2026-11-03
+
+The Hangar uses the shared `Toggle` for its four ship choices, labelled with
+ship short names. Selecting a ship preserves its saved build and resets mount
+selection as before. The introductory slogans and footer encouragement are
+removed; the Hangar heading, save status and functional flight instructions remain.
+
+The Hangar chooser uses the full-width detailed selector variant: each segment
+shows the ship name, mount count and chassis mass in wrapping inline flex. Values
+come from production chassis definitions; saved fitting mass is not included.
+
+The first Hangar column has a standalone elevated ship display, with no enclosing panel. Ion stabilizers and ship-system notes sit below
+in a separate elevated, cut-corner block. The ship display uses the shared
+scanline surface, bezel/shadow and reference axes used by the mount planner;
+installed parts and slot selection remain production rendering. The systems
+block retains its existing control behavior.
+
+The standalone ship display fills its column. Its drawing scale and origin fit
+the current hull, fittings, slot labels and link guides to the measured container
+with padding. Resize and chassis changes recalculate framing; canvas rendering
+and clickable mount targets use the same transform. The canvas backing resolution
+follows device pixel density.
+
+Inside the ship display, its name sits top-left behind the ship drawing in
+layer order. “Fixed mounts / Top view” sits bottom-right. Both are passive labels;
+mount targets remain above the drawing and receive input.
+
+The ion-stabilizer block uses elevation-1 console fill and the standard
+`cut-surface` corners, with its decorative edge suppressed. It does not adopt
+the larger panel cuts or a panel border.
+
+## Linked engines and stabilizer defaults — 2026-11-03
+
+New builds on every chassis start with ion stabilizers on. Absent stabilizer flags
+default on; explicit saved choices remain intact, with Wasp still forced on.
+In its own pane below stabilizers, Linked engines is a persisted per-build checkbox, off by
+default. Missing `linkedEngines` in version-2 loadouts means off. When enabled,
+either left or right input commands every fitted engine in the aft mount group;
+when disabled, both inputs are required. Neither input means no aft command.
+Side engine selection, turning inputs, engine charge/pulse behavior and power
+limits remain unchanged. Energy drain and visible exhaust use the same command.
+The Wasp has no aft-group mounts, so this option does not change its center engine.
+
+A shared Plan / View toggle sits top-right inside the ship display. Plan is the
+default and shows builder slot markings and selectable mount targets. View draws
+the fitted ship through the production in-game renderer, omitting slot markings,
+reference axes and mount targets. Switching modes preserves fittings, selection
+and framing. The ship title remains behind the drawing; the toggle stays above it.
+
+
+### Gravity collection and flight FX — adopted 2026-11-03
+
+Accepted study: `/lab/studies/gravity-coil-fx-2026-11-03`, parts 03–04.
+Each fitted Gravity coil supplies **1 energy/second** whenever the ship centre is
+strictly inside a planet’s existing influence radius. This is automatic while
+coasting or thrusting. Multiple coils stack; overlapping wells never multiply the
+rate. Loading coils keep their solar behavior. Gravity collection changes no forces,
+gravity constants or velocity. Starter fleets remain unchanged.
+
+Collection is budgeted in simulation substeps, alongside solar supply and baseline
+drain, before the zero/capacity clamp and engine spending. It is limited to
+remaining storage capacity. It does not resurrect a
+finished run. A full store receiving enough other supply collects nothing; if normal
+consumption opens capacity, collection can fill that space. At 3/s baseline drain,
+one coil offsets one third and two offset two thirds before solar and engine draw.
+The 1/s rate is the alpha balance starting point, not a proven equilibrium.
+
+Actual deposited energy drives the shared flight FX. Each fitted mount emits the
+approved J dispersed soft fold: purple 273°, 250% brightness, double original
+width/height and original 15 drawing-unit offset away from the nearest influencing
+planet. Grain patterns are deterministic and independent per mount. Hull rotation
+moves the mounts; field direction controls the folds. Activity fades in/out over
+0.25 seconds, including full storage and field exit; exit keeps the last direction
+through the fade. Pausing freezes the effect with simulation time.
+
+Fitted flight renders engine marks and folds additively onto one transparent FX
+surface above the ship, then composites that surface over the world. The study
+uses the same simulation and renderer, including the two-coil turning flyby and
+live collection rate. Its normal-blend toggle is a diagnostic comparison only.
+
+Acceptance: test one/two coils, idle/thrust, excluded boundary/outside, overlapping
+wells, capacity and full-store fade, field-exit fade, deterministic replay and
+unchanged motion against an equal-mass noncollecting fitting. Judge visibility and
+balance separately in play; no automatic check settles those qualities.

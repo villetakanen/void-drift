@@ -42,48 +42,16 @@ and distinguish synthesis from observations of this game.
 
 ## 02 / Exploration — how?
 
-Once purpose is shared, deliver the smallest concrete example that makes the current
-question inspectable in the active page section, in this exploration round. Described
-alternatives, research summaries, and plans to build later are insufficient. Use a
-sketch, sequence, interactive composition, or repeatable simulation suited to the claim;
-do not ask the designer to choose between experiences they must merely imagine.
-Define consumed objects and conditions. Keep prose brief: what to notice, limitations,
-and the uncertainty the example addresses. Put the review question in chat. Follow the specification's exploration-entry
-checks. Report actual blockers as incomplete work; explicit requests for conceptual
-discussion override this default. Do not overbuild a final solution to provide evidence.
+Read [references/exploration.md](references/exploration.md) when entering or resuming
+part 02. It owns creative rounds, feedback, retention and focus. Continue with the same
+agent and conversation; no separate invocation or handoff is needed. Carry in the shared
+question, established references and useful current-cycle agreements; carry out supported
+conclusions and remaining uncertainties.
 
-Connect each alternative to agreed purpose, a hypothesis, a suitable investigation,
-and a decision the result could inform. Choose research, scenarios, sketches,
-interactive examples, or flight trials according to the uncertainty. Do not default
-to presets or a viewer. Explain what the chosen method cannot establish.
-
-Present a focused comparison for human judgment. Carry current-cycle agreed points and reasons
-forward each round; advance the next unknown. Reopen an agreement only with an
-explicit reason. If the designer challenges the frame, return to purpose and identify
-what changed rather than polishing the same artifact. Recommend only with supporting
-reasoning; never manufacture evidence or acceptance.
-
-When an independently usable result is accepted within a broader study, recommend
-taking that result through parts 03 and 04 before exploring the next subject.
-Keep the remaining scope explicit and honor a direction to continue exploration.
-
-When a visual example is accepted, identify its exact variant and the properties
-the designer settled. Carry that reference into the scope alongside anything still
-provisional. For motion, retain the input/tick sequence, initial conditions, seed
-(or explicit absence of randomness), and camera with the reference.
-
-Protect the current investigation's question. Before polishing or repurposing a demo,
-check whether the change advances that question. If it diverts the study, push back
-briefly: explain the useful observation and recommend resolving its design implication
-first. Keep the diverting edit pending unless the designer explicitly overrides;
-ordinary repairs that make the current question answerable should proceed normally.
-Honor an explicit override, including one already given, without repeated resistance.
-Record the deliberate question change and any unresolved prior question.
-
-Preserve useful examples and configurations when their question is answered or the
-inquiry changes. Record observations and limits, not invented conclusions. Give a new
-question a separate example or preserved variant instead of tuning away the comparison.
-Follow the specification's focus rule; it protects inquiry, not agent authority.
+When an independently usable result is accepted, recommend taking it through parts 03
+and 04 while keeping remaining scope explicit; honor a direction to continue exploration.
+A rejected proposal alone does not reopen part 01 or end the study. Return to purpose
+when the designer challenges the shared question.
 
 ## 03 / Readiness — is the conclusion feasible here?
 

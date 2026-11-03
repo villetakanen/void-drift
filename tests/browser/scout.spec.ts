@@ -9,7 +9,10 @@ test("Scout restores its four-slot save, fits every part and flies from the cano
 	await page.goto("/builder");
 	await page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }).click();
 	await page.getByRole("button", { name: /Potential Well.*18 mass/ }).click();
-	await page.getByRole("button", { name: /Corvette.*8 SLOTS/ }).click();
+	await page
+		.getByRole("radiogroup", { name: "Choose chassis" })
+		.getByText("Corvette", { exact: true })
+		.click();
 	await page.getByRole("button", { name: "Hull 2 · Equipment: Empty" }).click();
 	await page.getByRole("button", { name: /Loading coil.*10 mass/ }).click();
 	const before = await page.evaluate(() =>
@@ -18,8 +21,8 @@ test("Scout restores its four-slot save, fits every part and flies from the cano
 	if (!before) throw new Error("Initial chassis builds not saved");
 	await page.goto("/lab/builder?chassis=scout");
 	await expect(
-		page.getByRole("button", { name: /Scout.*4 SLOTS/ }),
-	).toHaveAttribute("aria-pressed", "true");
+		page.getByRole("radio", { name: "Scout", exact: true }),
+	).toBeChecked();
 	await expect(page.locator(".mount")).toHaveCount(4);
 	await expect(
 		page.getByText("Scout design is pending.", { exact: false }),
@@ -178,6 +181,6 @@ test("invalid chassis deep links recover to the normal Fighter selection", async
 }) => {
 	await page.goto("/builder?chassis=not-a-chassis");
 	await expect(
-		page.getByRole("button", { name: /Fighter.*6 SLOTS/ }),
-	).toHaveAttribute("aria-pressed", "true");
+		page.getByRole("radio", { name: "Fighter", exact: true }),
+	).toBeChecked();
 });

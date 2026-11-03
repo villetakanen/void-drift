@@ -19,6 +19,7 @@ export const PartIdSchema = z.enum([
 	"battery",
 	"heavy-well",
 	"coil",
+	"gravity-coil",
 	"ion",
 	"heavy-ion",
 	"fusion",
@@ -169,6 +170,18 @@ export const PARTS = {
 		limit: 0,
 		draw: 0,
 	}),
+	"gravity-coil": PartSchema.parse({
+		id: "gravity-coil",
+		name: "Gravity coil",
+		description:
+			"Generates 1 energy/s inside a planet’s gravity well, up to storage capacity.",
+		category: "U",
+		// Fitting mass matches Loading coil.
+		mass: 10,
+		thrust: 0,
+		limit: 0,
+		draw: 0,
+	}),
 	ion: PartSchema.parse({
 		id: "ion",
 		name: "Light ion",
@@ -220,7 +233,8 @@ export const LoadoutSchema = z
 		version: z.literal(2),
 		chassis: ShipProfileIdSchema,
 		side: EngineIdSchema,
-		stabilizers: z.boolean().default(false),
+		stabilizers: z.boolean().default(true),
+		linkedEngines: z.boolean().optional(),
 		hull: z.array(PartIdSchema.nullable()).max(3),
 		aft: z.array(PartIdSchema.nullable()).max(3),
 	})
@@ -249,7 +263,8 @@ export function defaultLoadout(chassis: Loadout["chassis"]): Loadout {
 		version: 2,
 		chassis,
 		side: "ion",
-		stabilizers: chassis === "wasp",
+		stabilizers: true,
+		linkedEngines: false,
 		hull: Array(CHASSIS[chassis].hull).fill(null),
 		aft: Array(CHASSIS[chassis].aft).fill(null),
 	});

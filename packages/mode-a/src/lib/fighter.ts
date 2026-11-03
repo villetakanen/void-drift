@@ -29,6 +29,7 @@ export const FIGHTER = {
 	turnResponse: 2.5,
 	// Owner retained the original production angle after flight review.
 	angle: (26 * Math.PI) / 180,
+	hullMounts: [37, -1],
 	length: 48,
 	width: 20,
 } as const;

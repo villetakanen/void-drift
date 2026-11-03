@@ -1,0 +1,246 @@
+---
+const names = [
+	"Segmented toroid",
+	"Elongated toroid",
+	"Split horseshoe",
+	"Twin rings",
+	"Three-turn barrel spring",
+	"Segmented helix",
+	"Tapered spring",
+	"Paired counter-wound springs",
+	"Spaced induction hoops",
+];
+const pt = (r: number, a: number) => [r * Math.cos(a), r * Math.sin(a)];
+const poly = (p: number[][]) => p.map((v) => v.join(",")).join(" ");
+const arc = (r: number, a: number, b: number) =>
+	Array.from({ length: 4 }, (_, i) => pt(r, a + ((b - a) * i) / 3));
+const ringFaces = Array.from({ length: 8 }, (_, i) => {
+	const a = (i * Math.PI) / 4 + 0.07,
+		b = ((i + 1) * Math.PI) / 4 - 0.07;
+	return {
+		a,
+		b,
+		shade:
+			Math.sin((a + b) / 2) + Math.cos((a + b) / 2) < 0 ? "#a2b7bf" : "#607d8d",
+	};
+});
+// Orthographic projection of a rectangular-section helical band: x across, y fore–aft, z height.
+function helix(
+	turns: number,
+	radius: number,
+	length: number,
+	taper = false,
+	reverse = false,
+	segmented = false,
+) {
+	const faces: { points: string; fill: string; z: number }[] = [];
+	const count = turns * 24;
+	for (let i = 0; i < count; i++) {
+		if (segmented && i % 12 >= 9) continue;
+		const vertex = (t: number, outer: boolean, edge: number) => {
+			const a = t * turns * Math.PI * 2 * (reverse ? -1 : 1);
+			const r = radius * (taper ? 1 - 0.48 * t : 1) + (outer ? 1.4 : -1.4);
+			return [
+				Math.cos(a) * r,
+				-length / 2 + t * length + edge,
+				Math.sin(a) * r,
+			];
+		};
+		const t = i / count,
+			u = (i + 1) / count;
+		const a = vertex(t, true, -1.5),
+			b = vertex(u, true, -1.5),
+			c = vertex(u, true, 1.5),
+			d = vertex(t, true, 1.5);
+		const e = vertex(t, false, -1.5),
+			f = vertex(u, false, -1.5);
+		const z = (a[2] + b[2]) / 2;
+		faces.push({
+			points: poly([a, b, c, d].map((v) => [v[0], v[1]])),
+			fill: z > radius * 0.3 ? "#a2b7bf" : z > 0 ? "#607d8d" : "#263c4b",
+			z,
+		});
+		faces.push({
+			points: poly([a, b, f, e].map((v) => [v[0], v[1]])),
+			fill: z > 0 ? "#7894a4" : "#304759",
+			z: z + 0.01,
+		});
+	}
+	return faces.sort((a, b) => a.z - b.z);
+}
+---
+
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+	<defs>
+		<g id="nine-ring">
+			{ringFaces.map((f) => (
+				<g>
+					<polygon
+						points={poly([...arc(16, f.a, f.b), ...arc(8, f.b, f.a)])}
+						fill="#304759"
+					/>
+					<polygon
+						points={poly([...arc(15, f.a, f.b), ...arc(10, f.b, f.a)])}
+						fill={f.shade}
+					/>
+					<polygon
+						points={poly([...arc(10, f.a, f.b), ...arc(8, f.b, f.a)])}
+						fill="#263c4b"
+					/>
+				</g>
+			))}
+		</g>
+		<g id="nine-tabs">
+			<path d="M-18-3H-13V3H-18Z M13-3H18V3H13Z" fill="#cedb17" />
+		</g>
+		<g id="nine-ends">
+			<path d="M-6-23H6V-18H-6Z M-6 18H6V23H-6Z" fill="#cedb17" />
+			<path d="M-6-19H6V-18H-6Z M-6 22H6V23H-6Z" fill="#88951b" />
+		</g>
+		{names.map((_, i) => (
+			<g id={`coil-nine-${i}`}>
+				{i === 0 && (
+					<>
+						<use href="#nine-ring" />
+						<use href="#nine-tabs" />
+					</>
+				)}
+				{i === 1 && (
+					<g transform="scale(.8 1.3)">
+						<use href="#nine-ring" />
+						<use href="#nine-tabs" />
+					</g>
+				)}
+				{i === 2 && (
+					<>
+						{ringFaces
+							.filter((_, j) => j !== 1 && j !== 2)
+							.map((f) => (
+								<g>
+									<polygon
+										points={poly([...arc(16, f.a, f.b), ...arc(8, f.b, f.a)])}
+										fill="#304759"
+									/>
+									<polygon
+										points={poly([...arc(15, f.a, f.b), ...arc(10, f.b, f.a)])}
+										fill={f.shade}
+									/>
+								</g>
+							))}
+						<path
+							d="M-13 8L-8 4L-4 9L-9 13Z M8 4L13 8L9 13L4 9Z"
+							fill="#cedb17"
+						/>
+					</>
+				)}
+				{i === 3 && (
+					<>
+						<g transform="translate(0 -11) scale(.65)">
+							<use href="#nine-ring" />
+						</g>
+						<g transform="translate(0 11) scale(.65)">
+							<use href="#nine-ring" />
+						</g>
+						<path d="M-3-5H3V5H-3Z" fill="#cedb17" />
+					</>
+				)}
+				{(i === 4 || i === 5 || i === 6) && (
+					<>
+						{helix(3, 11, 34, i === 6, false, i === 5).map((f) => (
+							<polygon points={f.points} fill={f.fill} />
+						))}
+						<use href="#nine-ends" />
+					</>
+				)}
+				{i === 7 &&
+					[-1, 1].map((side) => (
+						<g transform={`translate(${side * 9} 0)`}>
+							{helix(2, 5, 32, false, side === 1).map((f) => (
+								<polygon points={f.points} fill={f.fill} />
+							))}
+							<g transform="scale(.65 1)">
+								<use href="#nine-ends" />
+							</g>
+						</g>
+					))}
+				{i === 8 && (
+					<>
+						<path d="M-12-19H-9V19H-12Z M9-19H12V19H9Z" fill="#88951b" />
+						<path d="M-12-19H-10V19H-12Z M9-19H11V19H9Z" fill="#cedb17" />
+						{[-13, 0, 13].map((y) => (
+							<g transform={`translate(0 ${y})`}>
+								<path d="M-13-2L-9-5H9L13-2V3L9 5H-9L-13 3Z" fill="#304759" />
+								<path d="M-13-2L-9-5H9L13-2L9 0H-9Z" fill="#a2b7bf" />
+								<path d="M-9 0H9V3H-9Z" fill="#607d8d" />
+							</g>
+						))}
+					</>
+				)}
+			</g>
+		))}
+	</defs>
+</svg>
+<div class="grid">
+	{names.map((name, i) => (
+		<article>
+			<h4>
+				{String(i + 1).padStart(2, "0")} / {name}
+			</h4>
+			<svg
+				class="large"
+				viewBox="-29 -29 58 58"
+				role="img"
+				aria-label={`${name}, enlarged`}
+			>
+				<use href={`#coil-nine-${i}`} />
+			</svg>
+			<div class="sample">
+				<svg
+					width="64"
+					height="64"
+					viewBox="-32 -32 64 64"
+					role="img"
+					aria-label={`${name}, 1×`}
+				>
+					<use href={`#coil-nine-${i}`} />
+				</svg>
+				<span>1×</span>
+			</div>
+		</article>
+	))}
+</div>
+<style>
+.grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-md);
+}
+article {
+	padding: var(--spacing-md);
+	border: 1px solid var(--color-border);
+}
+h4 {
+	margin: 0;
+	min-height: 3em;
+}
+.large {
+	width: 100%;
+	height: 210px;
+}
+.sample {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-md);
+	color: var(--color-text-muted);
+}
+.sample svg {
+	width: 64px;
+	height: 64px;
+	flex: none;
+}
+@media (max-width: 600px) {
+	.grid {
+		grid-template-columns: 1fr;
+	}
+}
+</style>

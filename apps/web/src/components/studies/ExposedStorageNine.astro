@@ -1,0 +1,288 @@
+---
+const variants = [
+	[
+		"01",
+		"Single vessel",
+		"One faceted reservoir with an exposed valve and a short return pipe.",
+	],
+	[
+		"02",
+		"Twin vessels",
+		"Two narrow reservoirs joined by a visible cross-feed.",
+	],
+	[
+		"03",
+		"Canted coil",
+		"A single vessel with a coil rising at 60° across its upper end.",
+	],
+	[
+		"04",
+		"Open helix",
+		"A winding around an exposed central core; the winding is the body.",
+	],
+	[
+		"05",
+		"Pancake stack",
+		"Three broad storage discs separated by open gaps on a central spindle.",
+	],
+	[
+		"06",
+		"U-loop",
+		"Two upright legs connected by a broad exposed return bend.",
+	],
+	[
+		"07",
+		"Unequal pair",
+		"A main reservoir and a smaller accumulator linked by external plumbing.",
+	],
+	[
+		"08",
+		"Three-lobe cluster",
+		"Three short cells gathered around a visible central junction.",
+	],
+	[
+		"09",
+		"Vessel and flywheel",
+		"A squat reservoir with a raised, tilted annular component.",
+	],
+];
+---
+
+<svg class="defs" aria-hidden="true">
+	<defs>
+		<g id="exposed-tank">
+			<path
+				d="M-10-21 L-6-27 H6 L10-21 V21 L6 27 H-6 L-10 21 Z"
+				fill="#81949d"
+			/>
+			<path d="M-10-21 L-6-27 V23 L-10 21 Z" fill="#c0cdd1" />
+			<path d="M6-27 L10-21 V21 L6 27 Z" fill="#425c68" />
+			<path d="M-6-27 H6 L10-21 H-10 Z" fill="#d4dfe1" />
+			<path d="M-3-32 H3 V-27 H-3 Z" fill="#a0b4bb" />
+			<path d="M-3 16 H3 V21 H-3 Z" fill="#d5bc84" />
+		</g>
+		<g id="exposed-ring">
+			<path
+				d="M-22-9 L-13-17 H13 L22-9 V9 L13 17 H-13 L-22 9 Z M-14-5 V5 L-8 10 H8 L14 5 V-5 L8-10 H-8 Z"
+				fill-rule="evenodd"
+				fill="#9aadb5"
+			/>
+			<path
+				d="M-22-9 L-13-17 H13 L22-9 H14 L8-10 H-8 L-14-5 Z"
+				fill="#d1dadd"
+			/>
+			<path
+				d="M-22 9 L-13 17 H13 L22 9 V3 L13 11 H-13 L-22 3 Z"
+				fill="#4c6672"
+			/>
+		</g>
+		<g id="exposed-foot">
+			<path d="M-17 23 H-8 V30 H-17 Z M8 23 H17 V30 H8 Z" fill="#526a75" />
+		</g>
+	</defs>
+</svg>
+<div class="nine">
+	{variants.map(([id, title, description], index) => (
+		<article>
+			<h4>
+				{id} / {title}
+			</h4>
+			<svg class="large" viewBox="-48 -48 96 96" role="img" aria-label={title}>
+				<defs>
+					<g id={`exposed-option-${id}`}>
+						<use href="#exposed-foot" />
+						{index === 0 && (
+							<>
+								<path d="M9-17 H22 V14 H10 V9 H17 V-12 H9 Z" fill="#688590" />
+								<use href="#exposed-tank" />
+								<rect x="-6" y="-36" width="12" height="4" fill="#aebcc1" />
+							</>
+						)}
+						{index === 1 && (
+							<>
+								<use
+									href="#exposed-tank"
+									transform="translate(-12 0) scale(.8 .9)"
+								/>
+								<use
+									href="#exposed-tank"
+									transform="translate(12 0) scale(.8 .9)"
+								/>
+								<path
+									d="M-12-19 H12 V-14 H-12 Z M-12 14 H12 V18 H-12 Z"
+									fill="#adbec5"
+								/>
+							</>
+						)}
+						{index === 2 && (
+							<>
+								<use href="#exposed-tank" />
+								<g transform="translate(0 -15) rotate(-60) scale(.85 .65)">
+									<use href="#exposed-ring" />
+									<path
+										d="M-8-10 V10 M0-10 V10 M8-10 V10"
+										stroke="#617d89"
+										stroke-width="4"
+									/>
+								</g>
+							</>
+						)}
+						{index === 3 && (
+							<>
+								<path d="M-5-30 H5 V30 H-5 Z" fill="#465e69" />
+								{[-21, -7, 7, 21].map((y) => (
+									<g transform={`translate(0 ${y}) scale(.8 .38)`}>
+										<use href="#exposed-ring" />
+									</g>
+								))}
+								<path
+									d="M-17-22 L17-8 M-17-8 L17 6 M-17 6 L17 20"
+									stroke="#c1cdd1"
+									stroke-width="5"
+								/>
+							</>
+						)}
+						{index === 4 && (
+							<>
+								<path d="M-4-33 H4 V33 H-4 Z" fill="#b1c1c7" />
+								{[-18, 0, 18].map((y) => (
+									<g transform={`translate(0 ${y})`}>
+										<path
+											d="M-23-7 L-14-12 H14 L23-7 V4 L14 9 H-14 L-23 4 Z"
+											fill="#65818f"
+										/>
+										<path
+											d="M-23-7 L-14-12 H14 L23-7 L14-2 H-14 Z"
+											fill="#c0cdd1"
+										/>
+									</g>
+								))}
+							</>
+						)}
+						{index === 5 && (
+							<>
+								<path
+									d="M-23-27 H-12 V13 L-6 21 H6 L12 13 V-27 H23 V18 L12 32 H-12 L-23 18 Z"
+									fill="#72909d"
+								/>
+								<path
+									d="M-23-27 H-18 V16 L-9 27 H9 L18 16 V-27 H23 V18 L12 32 H-12 L-23 18 Z"
+									fill="#b8c9cf"
+								/>
+								<path
+									d="M-25-30 H-10 V-24 H-25 Z M10-30 H25 V-24 H10 Z"
+									fill="#4b626d"
+								/>
+							</>
+						)}
+						{index === 6 && (
+							<>
+								<use href="#exposed-tank" transform="translate(-8 0)" />
+								<use
+									href="#exposed-tank"
+									transform="translate(17 7) scale(.55 .6)"
+								/>
+								<path
+									d="M-8-19 H17 V-8 H12 V-14 H-8 Z M0 16 H17 V21 H0 Z"
+									fill="#b1c3ca"
+								/>
+							</>
+						)}
+						{index === 7 && (
+							<>
+								<use
+									href="#exposed-tank"
+									transform="translate(0 -12) scale(.65 .65)"
+								/>
+								<use
+									href="#exposed-tank"
+									transform="translate(-14 10) scale(.65 .65)"
+								/>
+								<use
+									href="#exposed-tank"
+									transform="translate(14 10) scale(.65 .65)"
+								/>
+								<path d="M-14 3 H-4 V-12 H4 V3 H14 V10 H-14 Z" fill="#c1cbd0" />
+								<path d="M-4 3 H4 V11 H-4 Z" fill="#d5bc84" />
+							</>
+						)}
+						{index === 8 && (
+							<>
+								<use
+									href="#exposed-tank"
+									transform="translate(0 10) scale(1.35 .65)"
+								/>
+								<path d="M-3-25 H3 V0 H-3 Z" fill="#4c6571" />
+								<g transform="translate(0 -18) rotate(-30) scale(1 .65)">
+									<use href="#exposed-ring" />
+									<path
+										d="M-14 0 H14 M0-10 V10"
+										stroke="#7d929c"
+										stroke-width="4"
+									/>
+								</g>
+							</>
+						)}
+					</g>
+				</defs>
+				<use href={`#exposed-option-${id}`} />
+			</svg>
+			<p>{description}</p>
+			<div class="small">
+				<span>32 px</span>
+				<svg
+					width="32"
+					height="32"
+					viewBox="-48 -48 96 96"
+					role="img"
+					aria-label={`${title}, small silhouette`}
+				>
+					<use href={`#exposed-option-${id}`} />
+				</svg>
+			</div>
+		</article>
+	))}
+</div>
+<style>
+.defs {
+	position: absolute;
+	width: 0;
+	height: 0;
+}
+.nine {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-md);
+	margin-block: var(--spacing-lg);
+}
+article {
+	padding: var(--spacing-md);
+	background: var(--color-void-light);
+	border: var(--flight-border);
+}
+h4 {
+	margin: 0;
+	font-size: 1rem;
+}
+.large {
+	width: 100%;
+	height: 210px;
+	display: block;
+}
+.small {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	color: var(--color-text-muted);
+}
+@media (max-width: 800px) {
+	.nine {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 500px) {
+	.nine {
+		grid-template-columns: 1fr;
+	}
+}
+</style>

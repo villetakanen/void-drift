@@ -13,6 +13,14 @@ The owner develops through conversational speech transcripts and browser inspect
 
 ## Architecture
 
+UI and game-visual implementation uses the `shared-components` skill at
+`.agents/skills/shared-components/SKILL.md` for ownership, reuse/extraction,
+composition and consumer verification. `AGENTS.md` routes portable agents to it;
+`CLAUDE.md` links to that entry point and `.claude/skills` links to `.agents/skills`,
+so Claude reads the same skill without a separate copy. The `fx-development` skill
+adds the game-time, scene-budget and profiling workflow for effects; the living
+[FX spec](sfx-canvas.md) retains its behavior and acceptance authority.
+
 Flow: spoken intent → concise contract → bounded implementation → deterministic gates → browser/Lab evidence → human experience review → local commit → explicitly authorized publication.
 
 The repository holds durable contracts and configuration. The Lab uses the same simulation, procedural assets, camera, and validated ship profiles as production. Test adapters control time, randomness, input, and network outcomes. Live services are exercised separately from deterministic checks.

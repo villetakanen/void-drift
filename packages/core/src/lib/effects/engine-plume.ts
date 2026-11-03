@@ -1,8 +1,8 @@
 import { z } from "zod";
 import type { GameObject } from "../physics/Physics";
-import { type PlumeStyle, paintIonBeam } from "./ion-beam";
+import { FxPass } from "./arcade-fx";
+import { type PlumeStyle, paintBeam } from "./ion-beam";
 
-/** Render-only proportions; emission, output and world-space lifetime stay shared. */
 export const PlumeProportionsSchema = z.object({
 	length: z.number().positive().max(4).default(1),
 	width: z.number().positive().max(4).default(1),
@@ -10,10 +10,10 @@ export const PlumeProportionsSchema = z.object({
 });
 export type PlumeProportions = z.infer<typeof PlumeProportionsSchema>;
 const DEFAULT_PROPORTIONS = PlumeProportionsSchema.parse({});
-
 export const ENGINE_CUTOFF = 750;
 const LIFETIME = 0.65;
-const CAPACITY_PER_ENGINE = 40;
+const MAX_EMITTERS = 8;
+const CAPACITY = 40 * MAX_EMITTERS;
 export interface PlumeEmitter {
 	style?: PlumeStyle;
 	x: number;
@@ -21,7 +21,7 @@ export interface PlumeEmitter {
 	angle: number;
 	output: number;
 }
-type Surface = {
+export interface PlumeMark {
 	style: PlumeStyle;
 	x: number;
 	y: number;
@@ -30,52 +30,86 @@ type Surface = {
 	angle: number;
 	age: number;
 	size: number;
-};
+}
+const emptyMark = (): PlumeMark => ({
+	style: "default",
+	x: 0,
+	y: 0,
+	vx: 0,
+	vy: 0,
+	angle: 0,
+	age: 0,
+	size: 0,
+});
 
-/** Alpha plume: complete surfaces, aged by simulation time in world space. */
+/** Fixed storage, game-time lifetime, attached activation and detached world trails. */
 export class EnginePlume {
-	private surfaces: Surface[] = [];
+	private readonly surfaces = Array.from({ length: CAPACITY }, emptyMark);
+	private readonly outlets = Array.from({ length: MAX_EMITTERS }, emptyMark);
+	private used = 0;
+	private active = 0;
+	private readonly pass = new FxPass();
+	private readonly legacy: PlumeEmitter[] = [-1, 1].map((side) => ({
+		x: -8,
+		y: side * 5,
+		angle: (-side * Math.PI) / 15,
+		output: 0,
+	}));
 	get count() {
-		return this.surfaces.length;
+		return this.used;
+	}
+	get activeCount() {
+		return this.active;
+	}
+	clear() {
+		this.used = 0;
+		this.active = 0;
+	}
+	/** Read-only inspection of lifecycle/coordinates; rendering recipes stay private. */
+	inspect(visit: (mark: Readonly<PlumeMark>) => void) {
+		for (let i = 0; i < this.used; i++) visit(this.surfaces[i]);
 	}
 	step(dt: number, ship: GameObject, left: number, right: number) {
-		this.stepMounted(
-			dt,
-			ship,
-			[-1, 1].map((side) => ({
-				x: -8,
-				y: side * 5,
-				angle: (-side * Math.PI) / 15,
-				output: side === -1 ? left : right,
-			})),
-		);
+		this.legacy[0].output = left;
+		this.legacy[1].output = right;
+		this.stepMounted(dt, ship, this.legacy);
 	}
 	stepMounted(dt: number, ship: GameObject, emitters: readonly PlumeEmitter[]) {
-		for (const surface of this.surfaces) {
-			surface.age += dt;
-			surface.x += surface.vx * dt;
-			surface.y += surface.vy * dt;
+		if (!(dt > 0) || !Number.isFinite(dt)) return;
+		for (let i = this.used - 1; i >= 0; i--) {
+			const mark = this.surfaces[i];
+			mark.age += dt;
+			if (mark.age >= LIFETIME) {
+				this.surfaces[i] = this.surfaces[--this.used];
+				this.surfaces[this.used] = mark;
+			} else {
+				mark.x += mark.vx * dt;
+				mark.y += mark.vy * dt;
+			}
 		}
-		this.surfaces = this.surfaces.filter((surface) => surface.age < LIFETIME);
 		const cos = Math.cos(ship.rotation),
 			sin = Math.sin(ship.rotation);
-		for (const emitter of emitters) {
-			if (emitter.output <= 0) continue;
-			const angle = ship.rotation + emitter.angle;
-			this.surfaces.push({
-				style: emitter.style ?? "default",
-				x: ship.pos.x + emitter.x * cos - emitter.y * sin,
-				y: ship.pos.y + emitter.x * sin + emitter.y * cos,
-				vx: ship.vel.x * 0.8 - 45 * Math.cos(angle),
-				vy: ship.vel.y * 0.8 - 45 * Math.sin(angle),
-				angle,
-				age: 0,
-				size: Math.sqrt(Math.min(1, emitter.output)),
-			});
+		this.active = 0;
+		for (let i = 0; i < Math.min(MAX_EMITTERS, emitters.length); i++) {
+			const emitter = emitters[i];
+			if (!(emitter.output > 0) || !Number.isFinite(emitter.output)) continue;
+			const outlet = this.outlets[this.active++];
+			outlet.style = emitter.style ?? "default";
+			outlet.x = ship.pos.x + emitter.x * cos - emitter.y * sin;
+			outlet.y = ship.pos.y + emitter.x * sin + emitter.y * cos;
+			outlet.angle = ship.rotation + emitter.angle;
+			outlet.size = Math.sqrt(Math.min(1, emitter.output));
+			if (this.used >= CAPACITY) continue;
+			const mark = this.surfaces[this.used++];
+			mark.style = outlet.style;
+			mark.x = outlet.x;
+			mark.y = outlet.y;
+			mark.angle = outlet.angle;
+			mark.size = outlet.size;
+			mark.age = 0;
+			mark.vx = ship.vel.x * 0.8 - 45 * Math.cos(outlet.angle);
+			mark.vy = ship.vel.y * 0.8 - 45 * Math.sin(outlet.angle);
 		}
-		const CAPACITY = CAPACITY_PER_ENGINE * Math.max(2, emitters.length);
-		if (this.surfaces.length > CAPACITY)
-			this.surfaces.splice(0, this.surfaces.length - CAPACITY);
 	}
 	draw(
 		ctx: CanvasRenderingContext2D,
@@ -85,42 +119,45 @@ export class EnginePlume {
 			size: number,
 			age: number,
 		) => void,
+		scene?: FxPass,
 	) {
-		for (const surface of this.surfaces) {
-			const age = surface.age / LIFETIME;
-			const length = (43 + age * 22) * surface.size * proportions.length;
-			ctx.save();
-			ctx.translate(surface.x, surface.y);
-			ctx.rotate(surface.angle);
-			ctx.globalAlpha = 0.26 * (1 - age) ** 2 * proportions.opacity;
-			// A study can change the mark, while core owns its position, motion and fade.
-			if (paintSurface) {
-				paintSurface(ctx, surface.size, age);
+		const pass = scene ?? this.pass;
+		const radius = 60 * Math.max(proportions.length, proportions.width);
+		if (!scene) pass.begin(ctx, !paintSurface);
+		try {
+			// Reserve activation independently of decorative capacity across the scene.
+			if (!paintSurface)
+				for (let i = 0; i < this.active; i++) {
+					const mark = this.outlets[i];
+					if (!pass.visible(mark.x, mark.y, radius) || !pass.budget.take(true))
+						continue;
+					ctx.save();
+					ctx.translate(mark.x, mark.y);
+					ctx.rotate(mark.angle);
+					ctx.scale(proportions.length, proportions.width);
+					ctx.globalAlpha = 0.9 * proportions.opacity;
+					paintBeam(ctx, mark.size, mark.style);
+					ctx.restore();
+				}
+			for (let i = 0; i < this.used; i++) {
+				const mark = this.surfaces[i];
+				if (!pass.visible(mark.x, mark.y, radius) || !pass.budget.take())
+					continue;
+				const age = mark.age / LIFETIME;
+				ctx.save();
+				ctx.translate(mark.x, mark.y);
+				ctx.rotate(mark.angle);
+				ctx.globalAlpha =
+					(paintSurface ? 0.26 : 0.18) * (1 - age) ** 2 * proportions.opacity;
+				if (paintSurface) paintSurface(ctx, mark.size, age);
+				else {
+					ctx.scale(proportions.length, proportions.width);
+					paintBeam(ctx, mark.size * (0.25 + age * 0.35), mark.style);
+				}
 				ctx.restore();
-				continue;
 			}
-			if (surface.style !== "default") {
-				paintIonBeam(ctx, surface.size, surface.style);
-				ctx.restore();
-				continue;
-			}
-			ctx.translate(-length * 0.42, 0);
-			ctx.scale(
-				length * 0.58,
-				(9 + age * 5) * surface.size * proportions.width,
-			);
-			const gradient = ctx.createRadialGradient(0.3, 0, 0, 0, 0, 1);
-			gradient.addColorStop(0, "#eafff9");
-			gradient.addColorStop(0.22, "#70ffe2");
-			gradient.addColorStop(0.6, "#13aebf88");
-			gradient.addColorStop(1, "#1754b000");
-			ctx.fillStyle = gradient;
-			ctx.shadowColor = "#25e9d2";
-			ctx.shadowBlur = 12;
-			ctx.beginPath();
-			ctx.ellipse(0, 0, 1, 1, 0, 0, Math.PI * 2);
-			ctx.fill();
-			ctx.restore();
+		} finally {
+			if (!scene) pass.end(ctx);
 		}
 	}
 }

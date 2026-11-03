@@ -30,7 +30,7 @@ describe("accepted ion flight", () => {
 			side: "plasma",
 			stabilizers: undefined,
 		};
-		expect(LoadoutSchema.parse(build).stabilizers).toBe(false);
+		expect(LoadoutSchema.parse(build).stabilizers).toBe(true);
 		expect(LoadoutSchema.parse(build).side).toBe("plasma");
 		expect(
 			LoadoutSchema.safeParse({ ...build, stabilizers: "yes" }).success,

@@ -66,7 +66,7 @@ This is display-only and does not alter runtime config.
 - options: `Scout`, `Balanced`, `Tank`
 - default: `Balanced`
 - [DEPRECATED 2026-11-01] The ids are now `wasp`, `scout`, `fighter`, `corvette`; the inspector lists short names
-  and shows the long name and trait. See [Ship names and ids](./ship-builder.md#ship-names-and-ids--s4-2026-11-02).
+  and shows the long name and trait. See [Ship names and ids](../history/ship-builder.md#ship-names-and-ids--s4-2026-11-02).
 
 #### Profile Stats Panel
 

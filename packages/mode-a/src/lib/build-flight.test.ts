@@ -53,6 +53,8 @@ describe("ship builder contract", () => {
 	});
 	it("uses both controls for aft engines and cancels mirrored torque", () => {
 		const build = defaultLoadout("fighter");
+		// Isolate main engines from optional stabilizer assist.
+		build.stabilizers = false;
 		build.aft[0] = "ion";
 		expect(buildDrain(build, idle)).toBe(3);
 		expect(buildDrain(build, { ...idle, leftThruster: true })).toBe(5);
@@ -163,6 +165,8 @@ it("preserves established gravity and overspeed coasting for assembled ships", (
 
 it("emits shared fading surfaces for every active installed engine", () => {
 	const loadout = defaultLoadout("corvette");
+	// Isolate main engines from optional stabilizer assist.
+	loadout.stabilizers = false;
 	loadout.aft = ["ion", "rail", "fusion"];
 	const sim = new Simulation({
 		...stockSettings("corvette"),
@@ -183,12 +187,14 @@ it("emits shared fading surfaces for every active installed engine", () => {
 
 it("uses accepted mount geometry for propulsion, estimates, nozzles and collision", () => {
 	const build = defaultLoadout("fighter");
+	// Isolate main engines from optional stabilizer assist.
+	build.stabilizers = false;
 	const mounts = buildMounts(build);
 	expect(mounts.map(({ x, y }) => [x, y])).toEqual([
 		[-12, -15],
 		[-12, 15],
-		[2, 0],
-		[-10, 0],
+		[37, 0],
+		[-1, 0],
 		[-17, -5],
 		[-17, 5],
 	]);
@@ -229,4 +235,47 @@ it("uses accepted mount geometry for propulsion, estimates, nozzles and collisio
 	expect(
 		new Simulation({ ...stockSettings(), loadout: build }).ship.radius,
 	).toBeCloseTo(31.2);
+});
+
+it("defaults stabilizers on and preserves explicit saved choices", () => {
+	for (const chassis of ["wasp", "scout", "fighter", "corvette"] as const) {
+		const build = defaultLoadout(chassis);
+		expect(build.stabilizers).toBe(true);
+		expect(build.linkedEngines).toBe(false);
+		expect(
+			LoadoutSchema.parse({ ...build, stabilizers: false }).stabilizers,
+		).toBe(chassis === "wasp");
+	}
+	const build = defaultLoadout("fighter");
+	expect(
+		LoadoutSchema.safeParse({ ...build, linkedEngines: "yes" }).success,
+	).toBe(false);
+});
+
+it("links every aft engine to either input with matching drain and power gating", () => {
+	const build = defaultLoadout("fighter");
+	build.stabilizers = false;
+	build.aft = ["ion", "ion"];
+	for (const linkedEngines of [false, true]) {
+		build.linkedEngines = linkedEngines;
+		for (const input of [
+			idle,
+			{ ...idle, leftThruster: true },
+			{ ...idle, rightThruster: true },
+			both,
+		]) {
+			const active = linkedEngines
+				? input.leftThruster || input.rightThruster
+				: input.leftThruster && input.rightThruster;
+			const out = applyBuildEngines(ship(), build, input, 1 / 60, true);
+			expect(out.aft.every((v) => v > 0)).toBe(active);
+			const withoutAft = { ...build, aft: [null, null] };
+			expect(buildDrain(build, input) - buildDrain(withoutAft, input)).toBe(
+				active ? 4 : 0,
+			);
+			expect(
+				applyBuildEngines(ship(), build, input, 1 / 60, false).aft,
+			).toEqual([0, 0]);
+		}
+	}
 });

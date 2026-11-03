@@ -30,6 +30,8 @@ describe("four-engine player trial", () => {
 	});
 	it("plasma has no thrust or steering until charged; release and power loss reset it", () => {
 		const build = defaultLoadout("fighter");
+		// Isolate main engines from optional stabilizer assist.
+		build.stabilizers = false;
 		build.side = "plasma";
 		const timers: EngineTimers = {};
 		const ship = body();

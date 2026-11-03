@@ -490,10 +490,11 @@ const study = studies.find((s) => s.slug === "resource-capacity-2026-11-02");
 		<h2>04 / Scope: shared artwork, then functional fittings</h2>
 		<p>
 			<strong>No change to docs/design.md is proposed.</strong>
-			The feature decisions belong in the ship-builder specification, equipment
-			contracts and shared artwork. Both normal and heavy visual directions are
-			decided. The delivery scope was accepted and implementation authorized;
-			publishing remains a separate action.
+			The feature decisions belong in the ship-builder decision record
+			(docs/history/ship-builder.md), equipment contracts and shared artwork.
+			Both normal and heavy visual directions are decided. The delivery scope
+			was accepted and implementation authorized; publishing remains a separate
+			action.
 		</p>
 		<ol>
 			<li>
@@ -516,7 +517,7 @@ const study = studies.find((s) => s.slug === "resource-capacity-2026-11-02");
 				capacity data through Zod, implement +85/+140 and the 2:1 mass ratio,
 				and connect each fitting to the correct shared drawing. Add the chosen
 				name and approved description to the part list. Update
-				docs/specs/ship-builder.md to distinguish delivered behavior from
+				docs/history/ship-builder.md to distinguish delivered behavior from
 				historical battery rules. Verify old normal loadouts still parse, heavy
 				loadouts round-trip, slot compatibility holds, intrinsic capacity stays
 				100, and combinations yield correct mass and capacity.

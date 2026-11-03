@@ -284,3 +284,17 @@ These are approved repairs, not proof of a general cause or improved study outco
 The ion reference still consumes shared physics and plume lifecycle code; the test
 is not an independent baseline for those systems. Run folders remain ignored local
 artifacts, not durable backup. Fresh human assessment of the writing remains open.
+
+## Adopted — exploration guide and discard-and-replace recovery
+
+2 November 2026. The owner approved extracting exploration into a supporting guide,
+loaded during part 02 with the same agent and conversation. Detailed exploration
+instructions move out of the main skill and specification; phase ownership stays in
+the main skill. Unusable attempts are removed and replaced, while useful discoveries
+and agreements survive. Explicit discussion, stopping and reframing requests still govern.
+
+The owner identified a recurring pattern of defensive explanation replacing exploration
+after an unusable turn. This is the owner's workflow decision, not a proven causal
+explanation. The evaluation protocol adds a rejection-and-replacement probe. The edits
+are implemented; effectiveness awaits a fresh human-reviewed round. No replay or model
+comparison was performed for this change.

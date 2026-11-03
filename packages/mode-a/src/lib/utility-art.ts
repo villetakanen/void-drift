@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { GRAVITY_COIL_SCALE, gravityCoilFaces } from "./gravity-coil-art";
 import { drawPotentialWell, POTENTIAL_WELL_SCALE } from "./potential-well-art";
 
 // Artwork identifiers only: these do not add game devices or loadout entries.
@@ -24,7 +25,7 @@ const UtilityArtSchema = z.object({
 });
 export const UTILITY_ACCENT = "#cedb17";
 export const UTILITY_MOUNT_SCALE = 0.35;
-// Accepted 02.6 resting faces. Local +x points forward, as in ship/engine artwork.
+// Resting faces; Gravity coil superseded by the accepted M / Inset ring. Local +x points forward, as in ship/engine artwork.
 export const UTILITY_ART = UtilityArtSchema.parse({
 	storage: [
 		{
@@ -420,176 +421,7 @@ export const UTILITY_ART = UtilityArtSchema.parse({
 			fillRule: "nonzero",
 		},
 	],
-	gravity: [
-		{
-			contours: [
-				[
-					[6.0, -12.0],
-					[12.0, -6.0],
-					[12.0, 6.0],
-					[6.0, 12.0],
-					[-6.0, 12.0],
-					[-12.0, 6.0],
-					[-12.0, -6.0],
-					[-6.0, -12.0],
-				],
-				[
-					[3.0, -7.0],
-					[-3.0, -7.0],
-					[-7.0, -3.0],
-					[-7.0, 3.0],
-					[-3.0, 7.0],
-					[3.0, 7.0],
-					[7.0, 3.0],
-					[7.0, -3.0],
-				],
-			],
-			color: "#819eae",
-			fillRule: "evenodd",
-		},
-		{
-			contours: [
-				[
-					[6.0, -12.0],
-					[12.0, -6.0],
-					[12.0, 6.0],
-					[7.0, 3.0],
-					[7.0, -3.0],
-					[3.0, -7.0],
-				],
-			],
-			color: "#d1e5ec",
-			fillRule: "nonzero",
-		},
-		{
-			contours: [
-				[
-					[-3.0, 7.0],
-					[-6.0, 12.0],
-					[-12.0, 6.0],
-					[-12.0, -6.0],
-					[-7.0, -3.0],
-					[-7.0, 3.0],
-				],
-			],
-			color: "#304759",
-			fillRule: "nonzero",
-		},
-		{
-			contours: [
-				[
-					[2.0, -15.0],
-					[3.0, -14.0],
-					[3.0, -9.0],
-					[2.0, -8.0],
-					[-3.0, -8.0],
-					[-3.0, -15.0],
-				],
-			],
-			color: "#71780d",
-			fillRule: "nonzero",
-		},
-		{
-			contours: [
-				[
-					[2.0, -15.0],
-					[3.0, -14.0],
-					[-2.0, -14.0],
-					[-3.0, -15.0],
-				],
-			],
-			color: "#edfc1a",
-			fillRule: "nonzero",
-		},
-		{
-			contours: [
-				[
-					[3.0, -14.0],
-					[3.0, -9.0],
-					[-2.0, -9.0],
-					[-2.0, -14.0],
-				],
-			],
-			color: "#cedb17",
-			fillRule: "nonzero",
-		},
-		{
-			contours: [
-				[
-					[2.0, 8.0],
-					[3.0, 9.0],
-					[3.0, 14.0],
-					[2.0, 15.0],
-					[-3.0, 15.0],
-					[-3.0, 8.0],
-				],
-			],
-			color: "#71780d",
-			fillRule: "nonzero",
-		},
-		{
-			contours: [
-				[
-					[2.0, 8.0],
-					[3.0, 9.0],
-					[-2.0, 9.0],
-					[-3.0, 8.0],
-				],
-			],
-			color: "#edfc1a",
-			fillRule: "nonzero",
-		},
-		{
-			contours: [
-				[
-					[3.0, 9.0],
-					[3.0, 14.0],
-					[-2.0, 14.0],
-					[-2.0, 9.0],
-				],
-			],
-			color: "#cedb17",
-			fillRule: "nonzero",
-		},
-		{
-			contours: [
-				[
-					[4.0, -3.0],
-					[5.0, -2.0],
-					[5.0, 2.0],
-					[4.0, 3.0],
-					[-5.0, 3.0],
-					[-5.0, -3.0],
-				],
-			],
-			color: "#304759",
-			fillRule: "nonzero",
-		},
-		{
-			contours: [
-				[
-					[4.0, -3.0],
-					[5.0, -2.0],
-					[-4.0, -2.0],
-					[-5.0, -3.0],
-				],
-			],
-			color: "#d1e5ec",
-			fillRule: "nonzero",
-		},
-		{
-			contours: [
-				[
-					[5.0, -2.0],
-					[5.0, 2.0],
-					[-4.0, 2.0],
-					[-4.0, -2.0],
-				],
-			],
-			color: "#7894a4",
-			fillRule: "nonzero",
-		},
-	],
+	gravity: gravityCoilFaces(),
 	repair: [
 		{
 			contours: [
@@ -974,10 +806,16 @@ export const UTILITY_ART = UtilityArtSchema.parse({
 	],
 });
 
+export function utilityArtworkScale(id: UtilityArtworkId): number {
+	if (id === "storage") return POTENTIAL_WELL_SCALE;
+	if (id === "gravity") return GRAVITY_COIL_SCALE;
+	return UTILITY_MOUNT_SCALE;
+}
+
 export function drawUtilityArtwork(
 	ctx: CanvasRenderingContext2D,
 	id: UtilityArtworkId,
-	scale = id === "storage" ? POTENTIAL_WELL_SCALE : UTILITY_MOUNT_SCALE,
+	scale = utilityArtworkScale(id),
 ) {
 	ctx.save();
 	if (id === "storage") {

@@ -108,7 +108,12 @@ collision and replay. Human review is explicitly outside integration scope and
 happens afterward on the built alpha. Study trajectories cannot establish playtest
 results. Physical sizing, new reach rules and visual danger cues are deferred.
 
-## Engine effects alpha — 30 October 2026
+## Engine effects alpha — 30 October 2026 (historical painter)
+
+The surface recipe below records the 0.3-era implementation. Alpha 0.5.0 replaces
+its painting with the [arcade FX contract](sfx-canvas.md): sharp strokes, bounded
+world-space trails and a shared final pass. The behavior and output ownership
+remain; the old surface appearance is not an active constraint.
 
 The game and flight Lab now use the Engine Effects study's complete glowing surfaces
 instead of the position-line trace and attached flame. Core owns the drawing and
@@ -130,7 +135,7 @@ performance still need review.
 
 ### Builder continuity — 0.4.0
 
-The assembled ship path uses the same accepted EnginePlume surfaces and lifecycle,
-with emitters placed at the fitted side and aft nozzles. It does not substitute line
-flames or disable the shared effect. Stock emitter geometry and gravity remain
-unchanged; the ship-builder spec owns custom engine output and test-fixture rules.
+The assembled ship path shares production EnginePlume rendering and lifecycle,
+with emitters placed at fitted nozzles. Alpha 0.5.0 uses the arcade FX painter in
+both assembled and stock paths. Emitter geometry and gravity remain unchanged. [Hangar](hangar/spec.md) owns the custom-flight handoff and test-fixture
+contract; shared engine decisions remain in the [ship-builder history](../history/ship-builder.md).

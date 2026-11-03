@@ -1,0 +1,141 @@
+---
+const concepts = [
+	{
+		name: "A / Compressed stack",
+		description:
+			"Energy held in a dense stack of solid plates. The large unit gains a deeper lower body and a heavier retaining frame; its top connection stays familiar.",
+		kind: "stack",
+	},
+	{
+		name: "B / Contained core",
+		description:
+			"Energy held inside one protected solid core. The large unit broadens the same core and its shoulders. It feels more substantial without becoming a second device bolted alongside the first.",
+		kind: "core",
+	},
+];
+---
+
+<div class="concepts">
+	{concepts.map((concept) => (
+		<article>
+			<h3>{concept.name}</h3>
+			<p>{concept.description}</p>
+			<div class="pair">
+				{[false, true].map((large) => {
+					const w = large ? 13 : 10;
+					const d = large ? 7 : 3;
+					return (
+						<figure>
+							<figcaption>
+								{large ? "Large · +140 · mass 2m" : "Normal · +85 · mass m"}
+							</figcaption>
+							{[5, 0.65].map((scale) => (
+								<svg
+									viewBox={scale === 5 ? "-90 -95 180 190" : "-45 -20 90 40"}
+									width={scale === 5 ? 180 : 90}
+									height={scale === 5 ? 190 : 40}
+									role="img"
+									aria-label={`${concept.name}, ${large ? "large" : "normal"}, ${scale} scale`}
+								>
+									<g transform={`scale(${scale})`}>
+										{concept.kind === "stack" ? (
+											<>
+												<path
+													d={`M-10,-11 L10,-11 L13,-7 L13,${10 + d} L-7,${10 + d} L-10,10 Z`}
+													fill="#304759"
+												/>
+												<path
+													d={`M-10,-11 L10,-11 L10,10 L-10,10 Z`}
+													fill="#819eae"
+												/>
+												{[-7, -2, 3, 8].map((y) => (
+													<path
+														d={`M-9,${y} L9,${y} L9,${y + 2} L-9,${y + 2} Z`}
+														fill="#d1e5ec"
+													/>
+												))}
+												{large && (
+													<path
+														d="M-7,14 L12,14 M-7,17 L12,17"
+														stroke="#819eae"
+														stroke-width="1.5"
+													/>
+												)}
+												<path
+													d={`M-12,-12 L-8,-12 L-8,${11 + d} L-12,${11 + d} Z M8,-12 L12,-12 L12,${11 + d} L8,${11 + d} Z`}
+													fill="#cedb17"
+												/>
+												<path
+													d="M-12,-12 L-8,-12 L-7,-10 L-11,-10 Z M8,-12 L12,-12 L13,-10 L9,-10 Z"
+													fill="#edfc1a"
+												/>
+											</>
+										) : (
+											<>
+												<path
+													d={`M-${w},-12 L${w - 3},-12 L${w},-8 L${w},10 L${w - 4},14 L-${w},10 Z`}
+													fill="#304759"
+												/>
+												<path
+													d={`M-${w},-12 L${w - 3},-12 L${w - 3},8 L-${w},8 Z`}
+													fill="#819eae"
+												/>
+												<path
+													d={`M-${w},-12 L-${w - 3},-15 L${w - 6},-15 L${w - 3},-12 Z`}
+													fill="#d1e5ec"
+												/>
+												<path
+													d={`M-${w + 2},-7 L-${w - 1},-7 L-${w - 1},6 L${w},6 L${w},-7 L${w + 3},-7 L${w + 3},10 L-${w + 2},10 Z`}
+													fill="#cedb17"
+												/>
+												<path
+													d={`M-${w + 2},10 L${w + 3},10 L${w},13 L-${w},13 Z`}
+													fill="#71780d"
+												/>
+											</>
+										)}
+										<path d="M-3,-15 L3,-15 L3,-10 L-3,-10 Z" fill="#cedb17" />
+									</g>
+								</svg>
+							))}
+							<small>5× construction · 0.65× silhouette</small>
+						</figure>
+					);
+				})}
+			</div>
+		</article>
+	))}
+</div>
+<style>
+.concepts {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 390px), 1fr));
+	gap: 2rem;
+}
+.pair {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 1rem;
+}
+figure {
+	margin: 0;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+}
+figcaption,
+small {
+	font-size: 0.8rem;
+}
+svg {
+	max-width: 100%;
+	background: var(--color-void, #070710);
+}
+article p {
+	min-height: 7em;
+}
+small {
+	opacity: 0.7;
+}
+</style>

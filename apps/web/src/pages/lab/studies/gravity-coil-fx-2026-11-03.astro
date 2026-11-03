@@ -1,0 +1,316 @@
+---
+import GravityFoldFlight from "../../../components/studies/GravityFoldFlight.svelte";
+import GravityFoldVisibility from "../../../components/studies/GravityFoldVisibility.svelte";
+import GravityFxFizzles from "../../../components/studies/GravityFxFizzles.svelte";
+import GravityFxMotion from "../../../components/studies/GravityFxMotion.svelte";
+import GravityFxOverlap from "../../../components/studies/GravityFxOverlap.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find(
+	(entry) => entry.slug === "gravity-coil-fx-2026-11-03",
+);
+---
+
+<StudyLayout study={study}>
+	<section>
+		<h2>01 / Making gravity become potential</h2>
+		<p>
+			A ship passes a planet while its engines fire. The gravity coil begins
+			working: gravitational pull becomes potential, expressed as an exotic
+			physics light show. That is the intended fiction; what starts the
+			conversion, whether it changes the ship’s pull, and how it ends remain
+			questions at the start of this study. Then, the fitted coil’s static form
+			was established; collection and its visual behaviour were not implemented.
+			Parts 03–04 record the accepted behavior and delivery scope.
+		</p>
+		<p>
+			The effect should make the process feel extraordinary while giving its
+			activity a readable shape in time. An onset, sustained conversion and
+			ending may need different expressions. Engine FX already describe thrust
+			and leave fading residue behind a moving ship. Sharing the FX layer means
+			considering overlap, brightness, direction and persistence together:
+			turning or coasting should still make sense when both processes are
+			visible. The coil’s placement above or below the hull also matters to
+			where the light can appear to originate. When both effects occupy the same
+			pixel, the compositing rule must also be decided: addition, burn, blending
+			or replacement.
+		</p>
+		<p>
+			This cycle aims to settle one coherent visual behaviour for conversion:
+			when it appears, what moves or changes, and how it composes with engine FX
+			at flight scale. The relationship between planet, coil and potential is
+			the central uncertainty to explore. Trigger and intensity scenarios can be
+			provisional while their meaning is investigated; exact resource balance,
+			storage artwork and redesigning the engines are outside this cycle.
+		</p>
+	</section>
+	<section>
+		<h2>02 / The light show in a shared FX layer</h2>
+		<details>
+			<summary id="overlap">
+				02.1 / Two effects, one pixel — Add selected
+			</summary>
+			<p>
+				<strong>Selected: A / Add.</strong>
+				Coil and engine FX add their light where they share a pixel, using the
+				comparison’s Canvas
+				<code>lighter</code>
+				compositing rule on the transparent FX surface. This is the overlap rule
+				carried into subsequent exploration. The five comparisons remain below
+				as the reviewed reference.
+			</p>
+			<p>
+				The selection settles compositing, not the violet fixture’s colour,
+				shape or opacity. Brightness under repeated emissions, flight-scale
+				readability and the conversion’s onset, movement and ending still need
+				investigation. Production rendering is unchanged.
+			</p>
+			<p>
+				These five comparisons use the same production Light ion beam painter
+				and a violet elliptical field fixture. Move the field across the beam,
+				vary its opacity and reverse the draw order. The field is a test mark,
+				not a proposed coil shape or accepted colour. This isolates the overlap
+				rule before choosing the conversion’s choreography.
+			</p>
+			<GravityFxOverlap client:load />
+			<p>
+				Add and Screen test luminous coexistence; alpha blending tests a
+				readable foreground effect; Burn tests a field that disrupts light;
+				Override tests exclusive ownership of the pixel. Compare the crossing
+				with the untouched beam and field, especially when the engine is drawn
+				last.
+			</p>
+			<p>
+				The two marks are composed on a transparent FX surface over the void.
+				Burn therefore acts where the marks overlap, not against an opaque black
+				background. Override replaces pixels above a 5% source-alpha threshold
+				with opaque colour and ignores the opacity control for the later mark.
+				This is a deliberately hard replacement rule, not Canvas’s whole-surface
+				copy.
+			</p>
+			<p>
+				This enlarged, static fixture establishes neither flight-scale
+				readability nor accumulation across many emissions. Trigger, duration,
+				planet connection, and whether conversion harvests or distorts gravity
+				remain open.
+			</p>
+		</details>
+	</section>
+	<section>
+		<details>
+			<summary id="conversion">02.2 / What does conversion do?</summary>
+			<p>
+				Gather and Fold remain useful motion references. Capture was rejected
+				and removed. The line treatment is not carried forward; the next round
+				explores pixel fizzles and static, including residue left by invisible
+				collection. All use the accepted Add rule, the production coil artwork
+				and the production Light ion beam painter. The violet light remains
+				provisional. Compare the sense of intake and completion, then switch the
+				engine off to see what its light conceals.
+			</p>
+			<GravityFxMotion client:load />
+			<p>
+				Shared eight-second fixture: idle until 1 s, engagement from 1–2 s,
+				conversion until 5 s, release until 6.5 s, then idle. Playback starts on
+				request and stops at 8 s; the slider scrubs the same deterministic
+				sequence. No randomness or simulated resource gain. The field direction
+				is a cue, not a planet tether. The engine stays lit to expose overlap
+				during release.
+			</p>
+			<p>
+				This is an enlarged equipment bench: coil artwork at four times its
+				fitted size, with a nearby engine mark deliberately crossing the effect.
+				It does not represent a ship mount, flight motion, or actual plume
+				accumulation. These sketches investigate visual meaning before testing
+				the chosen behaviour on a moving, fully fitted ship. Timing, trigger
+				conditions and whether collection changes gravitational pull remain
+				provisional.
+			</p>
+		</details>
+	</section>
+	<section>
+		<details>
+			<summary id="fizzles">02.3 / The space left behind — E retained</summary>
+			<p>
+				<strong>E / Granular fold is the chosen motion direction.</strong>
+				Its shifting pixel volume is promising, but too faint. The next
+				comparison moves it away from the field origin and increases visibility.
+				This selects the idea, not its current brightness, size, colour or
+				timing.
+			</p>
+			<p>
+				Conversion may be invisible while the disturbed space around it gives it
+				away. Four examples replace drawn lines with many small pixel fizzles. D
+				gathers from the incoming field; E keeps the fold’s local movement; F
+				disperses residue beyond the device; G leaves static in the region an
+				unseen gathering front has crossed. “Behind” here follows the field’s
+				direction, independently of a ship’s eventual direction of travel.
+			</p>
+			<GravityFxFizzles client:load />
+			<p>
+				All four retain Add, the same provisional violet palette, the real coil
+				artwork and the nearby ion mark. Emissions begin at 1 s and stop at 5 s;
+				existing fizzles live for 0.7–1.5 s, leaving a visible aftermath before
+				the field clears. The eight-second replay and scrubber share fixed
+				particle births and deterministic noise. Engine FX can be switched off.
+			</p>
+			<p>
+				Look for whether the activity feels like matter arriving, a local fold,
+				or space reacting after something has happened. These remain enlarged
+				equipment sketches; field direction is illustrative, and neither flight
+				scale nor a moving ship’s wake has been tested. Add is settled; the
+				texture, colour, density, timing and gravitational consequences are
+				open.
+			</p>
+		</details>
+	</section>
+	<section>
+		<h3 id="offset-fold">02.4 / A dispersed fold downstream</h3>
+		<p>
+			The dense and coarse bright proposals were rejected: both lost E’s
+			character and felt too condensed. Visibility should come from a dispersed,
+			softer disturbance with dim edges, not packing more bright grains into its
+			centre. E remains the reference; H and I have been removed.
+		</p>
+		<GravityFoldVisibility client:load />
+		<p>
+			J’s Colour and Top brightness sliders adjust its live palette and light
+			intensity. 273° and 100% reproduce the starting treatment; Reset J
+			restores them. Values are exploratory and apply only to J in this open
+			page.
+		</p>
+		<p>
+			Left: E’s original grain, palette, emission rate and motion translated
+			away from the field origin. Right: J spreads that same emission rate
+			across a wider volume, softens each grain and fades the outer region into
+			space. Neither uses the rejected one-pixel minimum at flight scale. This
+			isolates spatial softness from simply increasing brightness or density.
+		</p>
+		<p>
+			Both centres remain 15 ship drawing units downstream of the coil; field
+			origin is left. Add and continuous playback stay, with Fold FX off by
+			default. Switching off clears the comparison. The lower samples show 0.65
+			flight scale at 100% browser zoom; full ships and moving camera still need
+			review. Flight-scale visibility remains an investigation, not a solved
+			result.
+		</p>
+	</section>
+	<section>
+		<h3 id="planet-flight">02.5 / J in a powered flyby</h3>
+		<p>
+			<strong>Selected trial: two purple J folds at 273° and 250%.</strong>
+			Each fold is twice the width and height, with its original centre distance
+			of 15 ship drawing units restored. The larger size provides the desired
+			coverage without moving the effect closer to its coil. The soft edges and
+			brightness stay; independent grain patterns overlap using Add. Press Fly
+			by for a repeating powered pass: approach from outside the planet’s
+			influence, cross the field, then leave it. Both engines drive the
+			approach; from 1–1.6 seconds the left engine alone turns the ship inside
+			the field, then both resume. Watch the coils rotate with the hull while
+			their folds keep pointing away from the planet. Turn off Turn in field to
+			compare the straight pass. Game camera uses the production framing; switch
+			it off for a close view, or use ¼ speed to inspect the pass.
+		</p>
+		<GravityFoldFlight client:load />
+		<p>
+			Add is active, but its visible contribution remains under review. Sparse
+			grains only brighten where pixels overlap; the previous mint palette
+			offered little hue contrast, and already-bright engine cores can saturate.
+			This purple trial restores colour contrast with the mint engine trails.
+			Pause inside the field and toggle Add fold light to compare addition with
+			normal transparency on the same frame. This comparison keeps the selected
+			colour, brightness, size and distance unchanged.
+		</p>
+		<p>
+			This repeatable fixture starts the fitted Fighter 350 units left and 140
+			above the first planet, moving right at 60 units/s with heading zero. Each
+			three-second pass runs the real simulation with stock gravity, moving
+			planets, engine response, power drain and collisions. Both hull slots
+			carry gravity coils, replacing the starter battery; starter engines and
+			the ship’s base power capacity remain. Repeating resets the run; disable
+			Repeat flyby to continue, or Powered flyby to fly manually. Engine
+			brightness responds to the game’s actual delivered output even while the
+			controls remain held.
+		</p>
+		<p>
+			Implemented collection: each coil adds up to 1 energy/second inside any
+			planet’s influence, limited by storage capacity. Wells do not multiply the
+			rate. The shared game renderer points folds away from the nearest well and
+			fades them over 0.25 seconds when collection stops. The readout shows
+			actual energy deposited. Engine marks and J add on a transparent surface
+			above the ship. The optional close view is a study inspection camera.
+		</p>
+	</section>
+	<section>
+		<h2>03 / Ready for an alpha trial</h2>
+		<p>
+			The approved treatment is J: purple 273°, 250% brightness, twice the
+			original width and height, soft dispersed edges, and the original 15-unit
+			offset away from the planet. Each fitted coil has independent grain; light
+			adds on the shared engine FX surface. The two-coil turning flyby is the
+			accepted visual reference.
+		</p>
+		<p>
+			Each fitted coil automatically generates 1 energy/second inside any
+			planet’s influence, during thrust or coasting. Coils stack; overlapping
+			wells do not. Storage capacity caps collection. Gravity and motion are
+			unchanged. FX follow actual collection and fade out when storage is full
+			or the ship leaves the field.
+		</p>
+		<p>
+			The simulation already owns planet influence, fitted equipment, fixed
+			substeps and capacity-limited power. The renderer already provides engine
+			trails and mount transforms. Required additions are collection accounting,
+			a shared fold renderer and an activity fade. No dependencies, storage
+			migration or physics-constant changes are needed.
+		</p>
+		<p>
+			There are no alpha implementation blockers. Baseline consumption is 3
+			energy/second before engine draw: one coil offsets one third, two offset
+			two thirds, before solar charging. This is an endurance benefit, not
+			unlimited propulsion. The 1/s rate remains a balancing hypothesis. A
+			0.25-second fade and nearest influencing planet for visual direction are
+			implementation choices to review in play; neither changes the collection
+			rate.
+		</p>
+	</section>
+	<section>
+		<h2>04 / Deliver collection and shared flight FX</h2>
+		<p>
+			No experience-principle or art-direction change is proposed for
+			docs/design.md. The accepted behavior is recorded in
+			docs/history/ship-builder.md. Starter loadouts remain unchanged; the part
+			is fitted through the existing builder.
+		</p>
+		<ol>
+			<li>
+				Small: add a validated collection definition and deterministic power
+				accounting. Verify inside/outside boundaries, multiple coils,
+				overlapping wells, capacity, thrust/coasting and unchanged motion.
+			</li>
+			<li>
+				Medium, after collection: extract the accepted fold into shared flight
+				rendering, drive its fade from actual collection, and compose it with
+				engine FX on a transparent additive surface. Use it in the game and the
+				flyby; preserve the earlier exploration drawings as references.
+			</li>
+			<li>
+				Small, after integration: update catalog text and the living
+				specification, expose live collection in the flyby, and verify types,
+				contracts, tests and browser behavior. Human balance and sustained
+				device-performance review remain separate from automated correctness.
+			</li>
+		</ol>
+		<p>
+			The design is accepted and implementation is authorized. Scope excludes
+			changing starter fleets, gravity strength, engine tuning, storage artwork
+			or solar Loading coil behavior.
+		</p>
+	</section>
+	<p>
+		<a href="/lab/reviews/gravity-coil-fx-2026-11-03"
+			>Study-quality review and implementation evidence</a
+		>
+	</p>
+</StudyLayout>

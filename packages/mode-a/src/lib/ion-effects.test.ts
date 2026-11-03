@@ -6,6 +6,8 @@ it("assigns ion styles per mount without restyling fusion or plasma", () => {
 	for (const chassis of ["fighter", "scout", "corvette"] as const) {
 		for (const side of ["ion", "heavy-ion", "fusion", "plasma"] as const) {
 			const build = defaultLoadout(chassis);
+			// Isolate main engines from optional stabilizer assist.
+			build.stabilizers = false;
 			build.side = side;
 			build.aft = build.aft.map((_, i) => (i === 0 ? "heavy-ion" : "fusion"));
 			const styles = buildPlumeEmitters(build).map((e) => e.style);

@@ -1,0 +1,165 @@
+---
+import { CHASSIS } from "@void-drift/mode-a";
+import Exploration from "../../../components/studies/fiddler/Exploration.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((entry) => entry.slug === "lhi-fiddler-2026-11-03");
+---
+
+<StudyLayout study={study}>
+	<section aria-labelledby="problem">
+		<h2 id="problem">01 / The heavy end of the LHI family</h2>
+		<p>
+			<strong
+				>Fiddler is a heavy assault corvette that advances behind two long,
+				load-bearing blades.</strong
+			>
+			Where Wasp feels like a slim engine with a pilot, Fiddler should feel like
+			a substantial platform with room to prepare for a long, difficult run. Its
+			character comes from the open catamaran stance and the weight gathered
+			behind it.
+		</p>
+		<p>
+			In the Hangar, fitting two pieces of equipment to each forward strut
+			should feel natural: these are useful hulls, not decorative antennae. In
+			flight, the gap between them must survive the small scale. Wasp’s cool,
+			flat planes, long lit ridges, swept shoulders and compact black canopy
+			provide the family resemblance. Four built-in stabilizers belong to the
+			brief; their authority on a much heavier hull still needs investigation.
+		</p>
+		<p>
+			The current Corvette has {CHASSIS.corvette.mass} hull mass; Fiddler’s
+			working range is
+			<strong>180–210, with 190 as a starting hypothesis</strong>, before
+			fittings. It should feel deliberate when committing to a course, with
+			reassuring attitude control rather than effortless light-ship recovery.
+			This round investigates the silhouette, bridge position and space for
+			fittings. Exact mass, thrust, turning, reserves and combat function remain
+			open; “assault” describes the intended character, not an implemented
+			firing system.
+		</p>
+		<figure class="reference">
+			<a
+				href="/studies/lhi-fiddler-2026-11-03/feeling-draft.png"
+				aria-label="Open the original Fiddler feeling draft at full size"
+			>
+				<img
+					src="/studies/lhi-fiddler-2026-11-03/feeling-draft.png"
+					width="715"
+					height="686"
+					alt="Original feeling draft: a cool blue twin-blade catamaran on the left, beside a smaller pointed ship on the right; both have swept shoulders and long faceted bodies."
+				>
+			</a>
+			<figcaption>
+				<strong>Initial feeling draft · designer reference</strong><br>The two
+				forward blades, open middle and shared family language are the starting
+				point. The size, proportions, canopy treatment and exact construction
+				are not a target. Original image preserved unchanged.
+			</figcaption>
+		</figure>
+	</section>
+	<section aria-labelledby="exploration">
+		<h2 id="exploration">02 / Two blades, enough ship behind them</h2>
+		<h3 id="exploration-02-1">02.1 / Where does the bridge belong?</h3>
+		<p>
+			<strong>Rejected exploration, retained as evidence.</strong>
+			The three proposals and their original reasoning remain below. The
+			family-language lesson following them supersedes the recommendation of B;
+			no variant was accepted.
+		</p>
+		<p>
+			Three constructions keep the twin forward hulls and four stabilizers. A
+			central keel, an offset bridge and a broad stern yoke test where the
+			ship’s identity and weight should sit. Each offers the same tentative
+			ten-mount arrangement, including two equipment mounts on each forward
+			blade, so slot count does not decide the silhouette for us.
+		</p>
+		<Exploration client:load />
+		<p>
+			<strong>First direction to inspect: B, the port bridge.</strong>
+			It gives the open throat the most space and makes the offset cockpit a
+			distinctive feature without making one blade smaller. A is the closer Wasp
+			echo; C tests how much stern mass Fiddler can carry before the family
+			resemblance weakens. These are proposals, not a settled choice.
+		</p>
+		<p>
+			The mounted and fitted views test whether the bare shapes leave useful,
+			quiet surfaces. They cannot establish handling, balance, structural
+			strength or the final loadout rules. Once the stance is chosen, the next
+			exploration can resolve its bridge, fittings and stabilizer placement
+			together.
+		</p>
+	</section>
+	<section aria-labelledby="family-lesson">
+		<h3 id="family-lesson">02.1 / Lesson: family comes before layout</h3>
+		<p>
+			<strong>Ship family and ship role are separate.</strong>
+			There are four families: LHI, Daehan, Aegis, and a military-inspired
+			family whose name is still open. Wasp and Fiddler belong to LHI; Daehan
+			Scout No.7, Aegis XF-1 Interceptor and the military-inspired Mark II
+			Escort Frigate establish different lineages. Fiddler being a corvette does
+			not put it in the same family as the military-inspired Corvette. The
+			latter is a mass and scale comparison here, not an LHI design reference.
+		</p>
+		<p>
+			The repository names individual ships but underdevelops the families
+			behind them. Shared colours and low-poly rendering do not adequately
+			define LHI. The initial draft illustrates a particular family character,
+			including the nature of the front pincers and the cockpit/window language.
+			Those relationships matter, even while its size and exact proportions
+			remain open.
+		</p>
+		<p>
+			<strong>02.1 reduced that reference too far.</strong>
+			Two forward bars, a gap and a black canopy preserved a checklist while
+			moving far from the intended forms. Changing the cockpit position did not
+			resolve that loss. The earlier caption’s dismissal of canopy treatment as
+			a target was too broad: the precise drawing is not binding, but its
+			cockpit/window language is part of the reference to understand.
+		</p>
+		<p>
+			The next useful design work is to articulate LHI’s construction, pincer
+			and window language from the supplied draft and Wasp before another
+			Fiddler layout. The rejected drawings remain visible at the designer’s
+			request because they make this gap inspectable. This records the finding
+			within this study; it does not establish finished family rules or accept
+			any of the proposed hulls or the ten-mount arrangement.
+		</p>
+	</section>
+	<section aria-labelledby="readiness">
+		<h2 id="readiness">03 / To be developed after 02</h2>
+	</section>
+</StudyLayout>
+
+<style>
+section {
+	margin-block: var(--spacing-xl);
+}
+section > p {
+	max-width: var(--measure-prose);
+}
+.reference {
+	margin: var(--spacing-xl) 0;
+	display: grid;
+	grid-template-columns: minmax(0, 540px) minmax(0, 1fr);
+	gap: var(--spacing-lg);
+	align-items: end;
+}
+.reference img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+figcaption {
+	max-width: 38ch;
+	color: var(--color-text-muted);
+	font:
+		var(--font-size-label) / var(--line-height-prose) var(--font-family-prose);
+}
+@media (max-width: 700px) {
+	.reference {
+		grid-template-columns: 1fr;
+	}
+}
+</style>

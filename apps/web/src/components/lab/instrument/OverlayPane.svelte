@@ -1,5 +1,5 @@
 <script lang="ts">
-import { type Snippet, tick as settled } from "svelte";
+import { onMount, type Snippet, tick as settled } from "svelte";
 
 // The pane overlay (lab-instrument study, 01 and 03). Placed on its container,
 // unscaled: hidden at first; a menu button in the container's top-right corner
@@ -18,6 +18,10 @@ let {
 } = $props();
 
 let open = $state(false);
+let ready = $state(false);
+onMount(() => {
+	ready = true;
+});
 let menuEl = $state<HTMLButtonElement>();
 let closeEl = $state<HTMLButtonElement>();
 let paneEl = $state<HTMLElement>();
@@ -41,6 +45,7 @@ const id = `pane-${Math.random().toString(36).slice(2, 8)}`;
 	class="corner menu"
 	aria-label={`Open ${title.toLowerCase()}`}
 	aria-expanded={open}
+	disabled={!ready}
 	aria-controls={id}
 	onclick={() => setOpen(true)}
 >

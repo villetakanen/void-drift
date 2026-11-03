@@ -44,7 +44,8 @@ const p = $derived(Math.max(0, Math.min(1, (value - min) / (max - min))));
 			{min}
 			{max}
 			{step}
-			bind:value
+			{value}
+			oninput={(event) => (value = event.currentTarget.valueAsNumber)}
 			aria-valuetext={`${value.toFixed(digits)} ${unit}`.trim()}
 		>
 	</div>

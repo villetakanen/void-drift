@@ -57,6 +57,8 @@ it("keeps builder overlays out of flight while retaining equipped casings", asyn
 		set: () => true,
 	});
 	const build = defaultLoadout("fighter");
+	// Isolate main engines from optional stabilizer assist.
+	build.stabilizers = false;
 	drawBuild(ctx, build, 0, 0, 0);
 	expect(operations.filter((op) => op === "fillRect")).toHaveLength(0);
 	expect(operations.filter((op) => op === "fill").length).toBeGreaterThan(12);

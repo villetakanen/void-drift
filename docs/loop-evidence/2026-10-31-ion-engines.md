@@ -52,7 +52,7 @@ parts 03/04, then implementation and publication as 0.4.1.
   changes no thrust, speed limits, mass, power, controls, gravity or friction.
 - `/lab/ion-engines` uses the production painter and includes the frozen approved
   02.4 reference. The study preserves the earlier accepted 02.3 example.
-  Design guidance and the ship-builder specification document the ion scope.
+  Design guidance and the [ship-builder record](../history/ship-builder.md#ion-effects--041) document the ion scope.
 - Both comparison ships replay Light's output and motion to isolate appearance.
   Real fitted flight retains each engine's existing behavior; the comparison
   does not establish Heavy's handling or an engine balance decision.

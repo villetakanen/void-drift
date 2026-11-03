@@ -6,6 +6,7 @@ export * from "./lib/assets/ship";
 export * from "./lib/assets/star";
 export * from "./lib/config";
 export * from "./lib/debug/PerformanceMonitor";
+export * from "./lib/effects/arcade-fx";
 export * from "./lib/effects/damage-feedback";
 export * from "./lib/effects/engine-plume";
 export * from "./lib/effects/ion-beam";

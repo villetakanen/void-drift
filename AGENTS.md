@@ -31,6 +31,7 @@ Voice-led development of a procedural space survival game and its software facto
 - Scope or priority: `docs/rebuild-charter.md`.
 - Structure, simulation, data: `docs/architecture.md`.
 - New design work (a study, a feature's look or feel): `docs/design.md`.
+- UI/game visuals: `.agents/skills/shared-components/SKILL.md`; FX: `.agents/skills/fx-development/SKILL.md`.
 - Setup, gates, release: `docs/development.md`.
 - Feature work: its spec in `docs/specs/`.
 - Changing the factory or its gates: `docs/specs/voice-led-factory.md`.

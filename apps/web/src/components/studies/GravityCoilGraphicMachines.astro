@@ -1,0 +1,198 @@
+---
+const rows = [
+	{ id: 0, name: "Toroid" },
+	{ id: 2, name: "Horseshoe" },
+	{ id: 4, name: "Spring" },
+];
+const designs = [
+	[
+		"Inner ribbon",
+		"One close inner ribbon links the sectors to the side connectors. A single open centre carries the silhouette.",
+	],
+	[
+		"Swept connection",
+		"Two tapered paths sweep from the side connectors into the ring. Their direction suggests one continuous circuit.",
+	],
+	[
+		"Quiet perimeter",
+		"A narrow charcoal perimeter unifies the sectors; yellow stays concentrated at the two connections.",
+	],
+	[
+		"Inner return",
+		"A close inner arc joins the terminals, following the horseshoe rather than building a second frame around it.",
+	],
+	[
+		"Crown path",
+		"A tapered path runs over the crown and into both shoulders. The open mouth remains the strongest feature.",
+	],
+	[
+		"Terminal sweep",
+		"Two short swept shapes lead from the mouth terminals into the shoulders; a quiet dark arc completes the visual relationship.",
+	],
+	[
+		"Single return",
+		"A slim side return connects the two ends. Tapered junctions suggest continuity without end blocks.",
+	],
+	[
+		"Central thread",
+		"A quiet central path connects both ends behind the winding. Yellow marks only its junctions.",
+	],
+	[
+		"Swept returns",
+		"Two tapered side paths follow the spring envelope, joining at the ends while leaving the winding dominant.",
+	],
+];
+const rings =
+	"M0-15L10.6-10.6L15 0L10.6 10.6L0 15L-10.6 10.6L-15 0L-10.6-10.6Z M0-12.5L-8.8-8.8L-12.5 0L-8.8 8.8L0 12.5L8.8 8.8L12.5 0L8.8-8.8Z";
+const horse =
+	"M-10 11L-15 2L-13-7L-6-14H6L13-7L15 2L10 11L8 9L12 1L10-6L5-11H-5L-10-6L-12 1L-8 9Z";
+const paths = [
+	"M0-9L6.4-6.4L9 0L6.4 6.4L0 9L-6.4 6.4L-9 0L-6.4-6.4Z M0-7L-5-5L-7 0L-5 5L0 7L5 5L7 0L5-5Z M-14-1H-8V1H-14Z M8-1H14V1H8Z",
+	"M-17-2L-11-3L-4-10L0-13L-8-9L-13-1Z M17 2L11 3L4 10L0 13L8 9L13 1Z",
+	"M-18-2L-12-2L-9-5L-11 1L-18 2Z M18 2L12 2L9 5L11-1L18-2Z",
+	"M-8 9L-10 2L-8-5L-4-9H4L8-5L10 2L8 9L6 8L8 1L6-4L3-7H-3L-6-4L-8 1L-6 8Z",
+	"M-13-4L-10-12L0-17L10-12L13-4L8-10L0-14L-8-10Z",
+	"M-12 10L-15 2L-12-6L-12 1L-8 7Z M12 10L15 2L12-6L12 1L8 7Z",
+	"M1-21L-13-17L-15-12V13L-11 19L1 21L-10 16L-12 12V-12L-10-15Z",
+	"M-1-20H1V20H-1Z",
+	"M0-21L-13-17L-16 0L-13 17L0 21L-11 15L-13 0L-11-15Z M3-21L14-16L16 0L14 16L3 21L12 14L13 0L12-14Z",
+];
+---
+
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+	<defs>
+		{designs.map((_, i) => (
+			<g id={`graphic-full-${i}`}>
+				{i < 6 && (
+					<path d={i < 3 ? rings : horse} fill="#304759" fill-rule="evenodd" />
+				)}
+				<path
+					d={paths[i]}
+					fill={i === 2 || i === 7 ? "#607d8d" : "#a5af20"}
+					fill-rule="evenodd"
+				/>
+				<use href={`#coil-nine-${rows[Math.floor(i / 3)].id}`} />
+				{i < 6 && (
+					<path
+						d={paths[i]}
+						fill={i === 2 ? "#a5af20" : "#cedb17"}
+						fill-rule="evenodd"
+					/>
+				)}
+				{i >= 6 && (
+					<>
+						<path
+							d="M0-21L12-18L12-15L8-17L0-19Z M0 19L8 17L12 15V18L0 21Z"
+							fill="#cedb17"
+						/>
+						<path
+							d="M0-21L12-18L8-18L0-20Z M0 19L8 17L12 15L8 18Z"
+							fill="#e1e773"
+						/>
+					</>
+				)}
+			</g>
+		))}
+	</defs>
+</svg>
+<div class="board">
+	<div class="grid">
+		{designs.slice(0, 6).map(([name, note], i) => (
+			<article>
+				<h4>
+					{i + 1} / {rows[Math.floor(i / 3)].name} · {name}
+				</h4>
+				<svg
+					class="large"
+					width="260"
+					height="260"
+					viewBox="-24 -24 48 48"
+					role="img"
+					aria-label={`${name}, enlarged`}
+				>
+					<use href={`#graphic-full-${i}`} />
+				</svg>
+				<p class="scale">Enlarged above · 1× below</p>
+				<div class="contexts">
+					{["Free", "Under wing", "On chassis"].map((label, j) => (
+						<figure>
+							<svg
+								width="80"
+								height="72"
+								viewBox="-40 -36 80 72"
+								role="img"
+								aria-label={`${name}, ${label}, 1×`}
+							>
+								{j === 2 && (
+									<path d="M-30-30H22L32 0L22 30H-30Z" fill="#264d6b" />
+								)}
+								<use href={`#graphic-full-${i}`} />
+								{j === 1 && <path d="M-40-36H-11L-9 36H-40Z" fill="#437e99" />}
+							</svg>
+							<figcaption>{label}</figcaption>
+						</figure>
+					))}
+				</div>
+				<p>{note}</p>
+			</article>
+		))}
+	</div>
+</div>
+<p class="caption">
+	Blue surfaces are schematic hull-edge fixtures, not production chassis or
+	verified mount positions. Under-wing samples cover the left attachment side;
+	on-chassis samples place the whole module above the hull. The hull surfaces
+	are comparison fixtures. Working shapes are retained; the added paths are
+	graphic connection proposals.
+</p>
+<style>
+.board {
+	width: 100%;
+
+	overflow-x: auto;
+}
+.grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(280px, 1fr));
+	gap: 16px;
+}
+article {
+	padding: 15px;
+	border: 1px solid var(--color-border);
+}
+h4 {
+	margin: 0;
+	min-height: 3em;
+}
+.large {
+	display: block;
+	width: 100%;
+	height: 260px;
+	max-width: none;
+}
+.scale,
+.caption {
+	color: var(--color-text-muted);
+}
+.contexts {
+	display: flex;
+	justify-content: space-between;
+}
+figure {
+	margin: 0;
+}
+figure svg {
+	width: 80px;
+	height: 72px;
+	max-width: none;
+}
+figcaption {
+	font-size: 12px;
+}
+article p {
+	font-size: 14px;
+}
+.board:focus-visible {
+	outline: 2px solid var(--color-text);
+}
+</style>

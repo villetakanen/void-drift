@@ -143,6 +143,8 @@ describe("accepted Scout Trident", () => {
 
 	it("aligns three emitters with actual side/aft nozzles", () => {
 		const build = defaultLoadout("scout");
+		// Isolate main engines from optional stabilizer assist.
+		build.stabilizers = false;
 		build.aft[0] = "ion";
 		const engines = buildMounts(build).filter((m) => m.group !== "hull");
 		const emitters = buildPlumeEmitters(build);
@@ -165,6 +167,8 @@ describe("accepted Scout Trident", () => {
 
 	it("uses signed forward engine leverage, cancels paired torque and activates aft only with both", () => {
 		const build = defaultLoadout("scout");
+		// Isolate main engines from optional stabilizer assist.
+		build.stabilizers = false;
 		build.aft[0] = "ion";
 		const left = body(),
 			right = body(),

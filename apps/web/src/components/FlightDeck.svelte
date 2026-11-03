@@ -5,6 +5,7 @@ import {
 	buildStats,
 	CHALLENGE,
 	drawBuild,
+	FlightFx,
 	type FlightSettings,
 	FlightSettingsSchema,
 	fittedParts,
@@ -45,6 +46,7 @@ let simulation: Simulation;
 let input: Input;
 let renderer: Renderer;
 let camera: Camera;
+const flightFx = new FlightFx();
 let chosen = $state<ShipProfileId>("fighter");
 let tuning = $state<FlightSettings>(stockSettings());
 let status = $state("MENU");
@@ -296,7 +298,6 @@ onMount(() => {
 		renderer.drawArenaBoundary(1200);
 		renderer.drawStar(simulation.star, simulation.ticks * STEP * 1000);
 		for (const planet of simulation.planets) renderer.drawPlanet(planet);
-		if (context && !simulation.settings.loadout) simulation.plume.draw(context);
 		if (simulation.settings.loadout && context)
 			drawBuild(
 				context,
@@ -312,7 +313,7 @@ onMount(() => {
 				simulation.settings.profile.tint,
 				chosen,
 			);
-		if (context && simulation.settings.loadout) simulation.plume.draw(context);
+		if (context) flightFx.draw(context, simulation);
 		renderer.endCamera();
 		frame = requestAnimationFrame(draw);
 	}

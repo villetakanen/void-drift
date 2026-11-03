@@ -1,0 +1,149 @@
+import {
+	FX_INK,
+	FxSparks,
+	getPlanetInfluenceRadius,
+	initializePlanets,
+	paintArc,
+} from "@void-drift/core";
+import { BUILD_FLIGHT_SCALE, drawBuild } from "./build-renderer";
+import { FlightFx } from "./gravity-fold-fx";
+import { starterLoadout } from "./schemas/loadout";
+import { GRAVITY_FLIGHT, Simulation, STEP, stockSettings } from "./simulation";
+
+/** Isolated diagnostic: real engines and collectors; extra entities are FX fixtures. */
+export class FxBench {
+	readonly fx = new FlightFx();
+	readonly sparks = new FxSparks();
+	ships: Simulation[] = [];
+	ticks = 0;
+	overload = false;
+	enabled = true;
+	constructor() {
+		this.reset();
+	}
+	reset() {
+		this.ticks = 0;
+		this.sparks.clear();
+		this.ships = Array.from({ length: 6 }, (_, i) => {
+			const loadout = starterLoadout("fighter");
+			loadout.hull.fill("gravity-coil");
+			const sim = new Simulation({
+				...stockSettings("fighter"),
+				loadout,
+				testFlight: true,
+			});
+			const x = 400 + (i % 3) * 500,
+				y = 300 + Math.floor(i / 3) * 470;
+			// Local test scene only: isolate six planetary passes from the central star.
+			sim.star.mass = 0;
+			sim.star.powerMultiplier = 0;
+			const planet = initializePlanets(960, 540)[0];
+			planet.well = {
+				reach: getPlanetInfluenceRadius(planet),
+				strength: GRAVITY_FLIGHT.planetStrength,
+			};
+			sim.planets.push(planet);
+			planet.orbitRadius = 0;
+			planet.orbitSpeed = 0;
+			planet.orbitCenter.set(x + 100, y);
+			planet.pos.set(x + 100, y);
+			sim.ship.pos.set(x, y);
+			sim.ship.rotation = -Math.PI / 2;
+			sim.start();
+			return sim;
+		});
+	}
+	burst() {
+		this.sparks.burst(960, 540, this.overload ? 100000 : 96, this.ticks + 2026);
+	}
+	step() {
+		if (this.ticks >= 480) this.reset();
+		for (let i = 0; i < this.ships.length; i++) {
+			const phase = (this.ticks + i * 13) % 240;
+			this.ships[i].step({
+				leftThruster: phase < 180,
+				rightThruster: phase < 120,
+				fire: false,
+			});
+			// Diagnostic-only lane wrap keeps all six moving ships in the viewport.
+			const ship = this.ships[i].ship;
+			const x = 400 + (i % 3) * 500,
+				y = 300 + Math.floor(i / 3) * 470;
+			if (Math.abs(ship.pos.x - x) > 180 || Math.abs(ship.pos.y - y) > 180) {
+				ship.pos.set(x, y);
+				this.ships[i].plume.clear();
+			}
+		}
+		this.sparks.step(STEP);
+		if (this.ticks % 12 === 0)
+			for (let i = 0; i < 12; i++)
+				this.sparks.burst(240 + i * 125, 900, 2, this.ticks + i * 71);
+		if (this.ticks % 60 === 0) this.burst();
+		this.ticks++;
+	}
+	drawWorld(ctx: CanvasRenderingContext2D) {
+		ctx.fillStyle = "#070710";
+		ctx.fillRect(0, 0, 1920, 1080);
+		ctx.fillStyle = "#222739";
+		for (let x = 40; x < 1920; x += 80)
+			for (let y = 40; y < 1080; y += 80) ctx.fillRect(x, y, 1, 1);
+		ctx.strokeStyle = "#34344d";
+		ctx.lineWidth = 1;
+		for (const x of [700, 1220]) {
+			ctx.strokeRect(x - 18, 522, 36, 36);
+		}
+		for (const sim of this.ships) {
+			if (sim.settings.loadout)
+				drawBuild(
+					ctx,
+					sim.settings.loadout,
+					sim.ship.pos.x,
+					sim.ship.pos.y,
+					sim.ship.rotation,
+					BUILD_FLIGHT_SCALE,
+				);
+		}
+	}
+	drawFx(ctx: CanvasRenderingContext2D) {
+		this.fx.begin(ctx);
+		try {
+			if (!this.enabled) return;
+			for (const sim of this.ships) this.fx.drawShip(ctx, sim);
+			const time = this.ticks * STEP;
+			ctx.strokeStyle = FX_INK.gravity;
+			for (const x of [700, 1220])
+				for (let wave = 0; wave < 8; wave++) {
+					if (!this.fx.pass.budget.take()) break;
+					const p = (time * 0.7 + wave / 8) % 1;
+					ctx.save();
+					ctx.translate(x, 540);
+					ctx.globalAlpha = 1 - p;
+					paintArc(ctx, 20 + p * 50, time * 0.3);
+					ctx.restore();
+				}
+			ctx.strokeStyle = FX_INK.core;
+			for (let i = 0; i < 16; i++)
+				for (let segment = 0; segment < 4; segment++) {
+					if (!this.fx.pass.budget.take()) break;
+					const x = (time * 180 + i * 117 - segment * 8 + 1920) % 1920,
+						y = 120 + i * 50;
+					ctx.globalAlpha = 1 - segment / 4;
+					ctx.beginPath();
+					ctx.moveTo(x, y);
+					ctx.lineTo(x - 5, y + 2);
+					ctx.stroke();
+				}
+			this.sparks.draw(ctx, this.fx.pass);
+			if (this.overload) {
+				// A bounded stress request deliberately exhausts decoration, not activation.
+				ctx.fillStyle = FX_INK.fire;
+				for (let i = 0; i < 2048; i++) {
+					if (!this.fx.pass.budget.take()) break;
+					ctx.fillRect((i * 73) % 1920, (i * 37) % 1080, 1, 1);
+				}
+			}
+		} finally {
+			this.fx.end(ctx);
+		}
+	}
+}

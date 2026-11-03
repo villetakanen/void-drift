@@ -14,6 +14,10 @@ test("mount layout editing, linked handoff, undo and invalid import", async ({
 	await page.getByRole("button", { name: "Copy layout", exact: true }).click();
 	await page.getByText("Load / inspect document", { exact: true }).click();
 	const exported = await page.getByLabel("Layout document").inputValue();
+	const document = JSON.parse(exported);
+	expect(document.mounts.map((m: { angle: number }) => m.angle)).toEqual(
+		document.baseline.map((m: { angle: number }) => m.angle),
+	);
 	expect(
 		JSON.parse(exported).mounts.find((m: { key: string }) => m.key === "left")
 			.x,

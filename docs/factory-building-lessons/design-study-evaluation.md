@@ -70,6 +70,19 @@ vertical groups with solid anchored action strips. Request one spacing refinemen
 while preserving hierarchy and shared styling. Check that phasing supports forward
 progress without unnecessary interviews or redundant permission requests.
 
+## Rejection and replacement probe
+
+In an authorized fresh exploration, after a concrete proposal, give designer feedback
+that it is unusable while keeping the shared question unchanged. Do not coach recovery.
+Inspect the next turn and page: did it remove the unusable attempt, deliver a replacement,
+preserve useful prior agreements, and focus chat on the new proposal? Record prose-only
+recovery, unnecessary reframing and retained rejected material as failures of this probe.
+A tool blocker means incomplete delivery, not a pass. Judge usefulness separately.
+
+Retain the evaluation record and feedback, without requiring rejected drawings to remain
+on the study page. Honor explicit requests to discuss or stop; these are not failures to
+replace a proposal. This probe is planned, not yet run.
+
 ## Workflow evaluation rubric
 
 Record pass, partial, or fail for each item, citing a turn or artifact excerpt:

@@ -184,7 +184,9 @@ export function applyBuildEngines(
 		if (id && PARTS[id].category === "E")
 			main(
 				id,
-				input.leftThruster && input.rightThruster,
+				build.linkedEngines
+					? input.leftThruster || input.rightThruster
+					: input.leftThruster && input.rightThruster,
 				`aft-${index}`,
 				0,
 				0,
@@ -335,7 +337,7 @@ export function buildDrain(
 		stabilizerBurn(build, input, spin, dt, settings).duty *
 			STABILIZER_ENERGY *
 			PARTS.ion.draw +
-		(count === 2
+		((build.linkedEngines ? count > 0 : count === 2)
 			? build.aft.reduce((sum, id) => sum + (id ? PARTS[id].draw : 0), 0)
 			: 0)
 	);

@@ -262,10 +262,16 @@ implemented 2026-11-03.
   its text uses `--color-on-brand`. Focus, hover, disabled and reduced-motion states
   use the shared control foundations.
 - `/lab/inputs` demonstrates the switch in off, on and disabled states. The Hangar
-  uses it for Ion stabilizers.
+  uses it for Ion stabilizers and Linked engines.
 - The toggle is one button-shaped control split into equal parts: cut corners
   outside, a straight split inside, the selected part filled lime, the others a
   faint fill that takes a faint lime tint under a pointer.
+- The detailed selector variant adds optional `details` keyed by option label.
+  Each segment lays out its name and supporting facts with wrapping inline flex.
+  `stretch` fills the host width with equal segments. Facts use caption text,
+  muted when unselected and on-brand when selected. Native radio names remain
+  the option labels; facts are accessible descriptions. `/lab/inputs` demonstrates
+  this variant with ship slot counts and chassis mass; the Hangar consumes it.
 - The ring slider is a faint 2px track, lime to the value, and a lime ring knob;
   label and value stay neutral, and the unfilled track takes the same tint on hover.
 - Lime marks the selection and the knob; hover borrows it at low strength. Data and

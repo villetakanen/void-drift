@@ -7,7 +7,7 @@ test("fit, persist, fly, reset and return to an assembled ship", async ({
 	page.on("pageerror", (error) => errors.push(error.message));
 	await page.goto("/builder");
 	await expect(
-		page.getByRole("heading", { name: "Your ship. Your compromise." }),
+		page.getByRole("heading", { name: "Hangar", exact: true }),
 	).toBeVisible();
 	await page.getByRole("button", { name: /Light ion.*10 mass/ }).click();
 	await expect(
@@ -24,10 +24,10 @@ test("fit, persist, fly, reset and return to an assembled ship", async ({
 			.getByRole("button", { name: /Hull 1.*Potential Well/ }),
 	).toBeVisible();
 	await expect(
-		page.getByRole("button", { name: /Scout.*4 SLOTS/ }),
+		page.getByRole("radio", { name: "Scout", exact: true }),
 	).toBeEnabled();
 	await expect(
-		page.getByRole("button", { name: /Corvette.*8 SLOTS/ }),
+		page.getByRole("radio", { name: "Corvette", exact: true }),
 	).toBeEnabled();
 	await page.reload();
 	await expect(
@@ -120,8 +120,8 @@ test("preserves other chassis saves and independently selects tight aft mounts",
 	);
 	await page.reload();
 	await expect(
-		page.getByRole("button", { name: /Fighter 6 SLOTS/ }),
-	).toHaveAttribute("aria-pressed", "true");
+		page.getByRole("radio", { name: "Fighter", exact: true }),
+	).toBeChecked();
 	await page.getByRole("button", { name: "Aft 1 · Universal: Empty" }).click();
 	await page.getByRole("button", { name: /Rail gun.*15 mass/ }).click();
 	await page.getByRole("button", { name: "Aft 2 · Universal: Empty" }).focus();
@@ -131,8 +131,8 @@ test("preserves other chassis saves and independently selects tight aft mounts",
 	const restored = await page.evaluate(() =>
 		JSON.parse(localStorage.getItem("void-drift-builds-v3") ?? "null"),
 	);
-	expect(restored.scout).toEqual({ ...saved.scout, stabilizers: false });
-	expect(restored.corvette).toEqual({ ...saved.corvette, stabilizers: false });
+	expect(restored.scout).toEqual({ ...saved.scout, stabilizers: true });
+	expect(restored.corvette).toEqual({ ...saved.corvette, stabilizers: true });
 	expect(restored.fighter.aft).toEqual(["rail", "ion"]);
 	await page.getByRole("button", { name: "Start survival" }).click();
 	await page.keyboard.down("a");
@@ -160,7 +160,10 @@ test("cruiser fits eight mounts, preserves Fighter and flies", async ({
 	page,
 }) => {
 	await page.goto("/lab/builder");
-	await page.getByRole("button", { name: /Corvette.*8 SLOTS/ }).click();
+	await page
+		.getByRole("radiogroup", { name: "Choose chassis" })
+		.getByText("Corvette", { exact: true })
+		.click();
 	await expect(
 		page.getByRole("heading", { name: "Mark II Escort Frigate" }),
 	).toBeVisible();
@@ -168,7 +171,10 @@ test("cruiser fits eight mounts, preserves Fighter and flies", async ({
 	await page.getByRole("button", { name: /Rail gun.*15 mass/ }).click();
 	await page.getByRole("button", { name: "Aft 2 · Universal: Empty" }).click();
 	await page.getByRole("button", { name: /Light ion.*10 mass/ }).click();
-	await page.getByRole("button", { name: /Fighter.*6 SLOTS/ }).click();
+	await page
+		.getByRole("radiogroup", { name: "Choose chassis" })
+		.getByText("Fighter", { exact: true })
+		.click();
 	await expect(
 		page.getByRole("heading", { name: "Aegis XF-1 Interceptor" }),
 	).toBeVisible();
@@ -176,7 +182,10 @@ test("cruiser fits eight mounts, preserves Fighter and flies", async ({
 		page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }),
 	).toBeVisible();
 	await page.reload();
-	await page.getByRole("button", { name: /Corvette.*8 SLOTS/ }).click();
+	await page
+		.getByRole("radiogroup", { name: "Choose chassis" })
+		.getByText("Corvette", { exact: true })
+		.click();
 	await expect(
 		page.getByRole("button", { name: "Hull 1 · Equipment: Rail gun" }),
 	).toBeVisible();
@@ -264,4 +273,37 @@ test("heavy Potential Well persists and supplies its full reserve in flight", as
 	await expect(
 		page.getByRole("progressbar", { name: "Power" }),
 	).toHaveAttribute("max", "240");
+});
+
+test("linked-engine setting persists and new ships enable stabilizers", async ({
+	page,
+}) => {
+	await page.goto("/builder");
+	await expect(
+		page.getByRole("checkbox", { name: "Ion stabilizers", exact: true }),
+	).toBeChecked();
+	await expect(
+		page.getByRole("checkbox", { name: "Linked engines", exact: true }),
+	).not.toBeChecked();
+	await page
+		.getByRole("checkbox", { name: "Linked engines", exact: true })
+		.check();
+	await page.reload();
+	await expect(
+		page.getByRole("checkbox", { name: "Linked engines", exact: true }),
+	).toBeChecked();
+	const saved = await page.evaluate(() =>
+		JSON.parse(localStorage.getItem("void-drift-builds-v3") ?? "{}"),
+	);
+	expect(saved.fighter.linkedEngines).toBe(true);
+	await page
+		.getByRole("radiogroup", { name: "Choose chassis" })
+		.getByText("Scout", { exact: true })
+		.click();
+	await expect(
+		page.getByRole("checkbox", { name: "Ion stabilizers", exact: true }),
+	).toBeChecked();
+	await expect(
+		page.getByRole("checkbox", { name: "Linked engines", exact: true }),
+	).not.toBeChecked();
 });

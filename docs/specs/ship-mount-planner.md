@@ -14,7 +14,7 @@ Version one moves and rotates existing mounts. Linked, mirrored editing is requi
 Mount creation, deletion, type changes, resizing, hull editing and flight tuning
 are outside this version. The tool is a Lab authoring surface, not a player editor.
 
-Related contracts: [ship builder](ship-builder.md),
+Related contracts: [Hangar](hangar/spec.md),
 [Lab instrument](lab-instrument.md), [design system](design-system-core.md).
 Structure follows ASDLC's [Spec](https://asdlc.io/patterns/the-spec/) and
 [Living Specs](https://asdlc.io/practices/living-specs/) guidance.
@@ -233,3 +233,19 @@ ship or preview changes and completed mount edits. During dragging the transform
 stays fixed. Manual pan or zoom leaves automatic framing; Fit ship restores it.
 Framing uses conservative fitting/label bounds, so decorative art has breathing
 room. Camera changes never alter ship-local mount values.
+
+Preview part uses one labelled native dropdown containing only compatible parts
+and Empty where permitted. It retains the current fitting and uses the inspector
+field tokens, keeping the controls compact.
+
+Range controls preserve the document’s exact values on initialization. Browser
+step normalization is applied only after explicit user input; opening the planner
+or selecting a mount must not quantize its angle.
+
+### Exhaust-direction guides — 2026-11-03
+
+In Fitted and Empty views, every engine-compatible mount (engine and universal)
+shows a dotted lime line from its rear edge toward exhaust, ending in a small
+dotted arrowhead, using the same stroke pattern as the line. Direction is mount-local negative x rotated by the mount angle,
+regardless of the installed part. Guides follow edits and view rotation and are
+included in automatic framing. In-game and flight-scale previews omit them.

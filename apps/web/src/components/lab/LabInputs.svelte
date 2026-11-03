@@ -1,5 +1,10 @@
 <script lang="ts">
 import "./catalog.css";
+import { CHASSIS, SHIP_IDENTITY } from "@void-drift/mode-a";
+
+const ships = ["wasp", "scout", "fighter", "corvette"] as const;
+let detailed = $state("Fighter");
+
 import RingSlider from "../inputs/RingSlider.svelte";
 import Switch from "../inputs/Switch.svelte";
 import Toggle from "../inputs/Toggle.svelte";
@@ -28,6 +33,21 @@ let thrust = $state(38000);
 			<a href="/lab/studies/lab-instrument-2026-11-01#toggle">Study →</a>
 		</p>
 		<div class="example">
+			<span class="caption">Detailed selector · full width</span>
+			<div style="width:100%">
+				<Toggle
+					stretch
+					label="Ship, detailed"
+					options={ships.map((id) => SHIP_IDENTITY[id].shortName)}
+					details={Object.fromEntries(
+						ships.map((id) => [
+							SHIP_IDENTITY[id].shortName,
+							`${(id === "wasp" ? 1 : 2) + CHASSIS[id].hull + CHASSIS[id].aft} slots · ${CHASSIS[id].mass} mass`,
+						]),
+					)}
+					bind:value={detailed}
+				/>
+			</div>
 			<span class="caption">Two options</span>
 			<Toggle
 				label="Path scale"
@@ -56,7 +76,8 @@ let thrust = $state(38000);
 			<code>label</code>
 			for the group, <code>compact</code> for 8px side padding,
 			<code>stretch</code>
-			to fill the width.
+			to fill the width. Optional <code>details</code> maps option names to
+			supporting facts, arranged in wrapping inline flex segments.
 		</p>
 	</section>
 
@@ -68,32 +89,38 @@ let thrust = $state(38000);
 			uses a native checkbox for keyboard behavior.
 		</p>
 		<div class="example switch-examples">
-			<label class="switch-example">
+			<label class="switch-example" for="lab-stabilizers">
 				<span class="switch-example__copy">
 					<span class="switch-example__name">Ion stabilizers</span>
 					<span class="switch-example__help">Assist turns and brake spin.</span>
 				</span>
-				<Switch bind:checked={stabilizers} />
+				<Switch id="lab-stabilizers" bind:checked={stabilizers} />
 			</label>
-			<label class="switch-example">
+			<label class="switch-example" for="lab-linkedEngines">
 				<span class="switch-example__copy">
 					<span class="switch-example__name">Linked engines</span>
-					<span class="switch-example__help">One input fires the aft engines.</span>
+					<span class="switch-example__help"
+						>One input fires the aft engines.</span
+					>
 				</span>
-				<Switch bind:checked={linkedEngines} />
+				<Switch id="lab-linkedEngines" bind:checked={linkedEngines} />
 			</label>
-			<label class="switch-example">
+			<label class="switch-example" for="lab-forcedOn">
 				<span class="switch-example__copy">
 					<span class="switch-example__name">Forced on</span>
-					<span class="switch-example__help">Disabled, with its saved state visible.</span>
+					<span class="switch-example__help"
+						>Disabled, with its saved state visible.</span
+					>
 				</span>
-				<Switch bind:checked={forcedOn} disabled />
+				<Switch id="lab-forcedOn" bind:checked={forcedOn} disabled />
 			</label>
 		</div>
 		<p>
-			<code>Switch</code> binds a boolean through <code>checked</code> and accepts
-			optional <code>disabled</code>. A surrounding label supplies its accessible
-			name; the native checkbox preserves keyboard behavior.
+			<code>Switch</code>
+			exposes a bindable boolean and optional
+			<code>disabled</code>
+			state. The adjacent setting name labels the checkbox; ON/OFF stays visible
+			in the sliding square.
 		</p>
 	</section>
 

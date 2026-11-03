@@ -10,6 +10,38 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
 	{
+		slug: "lhi-fiddler-2026-11-03",
+		title: "Ship 05 / LHI Fiddler Heavy Assault Corvette",
+		status: "open",
+		phase: "exploration",
+		question:
+			"How can a heavy twin-blade corvette carry an abundant loadout and still look unmistakably related to Wasp?",
+	},
+	{
+		slug: "gravity-coil-fx-2026-11-03",
+		title: "Gravity coil: potential in motion",
+		status: "accepted",
+		phase: "scope",
+		question:
+			"When and how does gravity becoming potential create an exotic light show that remains readable alongside engine FX?",
+	},
+	{
+		slug: "gravity-coil-form-2026-11-03",
+		title: "Gravity coil: static visual form",
+		status: "accepted",
+		phase: "scope",
+		question:
+			"What visual construction makes the chosen coil shape feel like complete equipment on its own and part of this game when fitted to a ship?",
+	},
+	{
+		slug: "gravity-coil-2026-11-03",
+		title: "Gravity coil",
+		status: "stopped",
+		phase: "exploration",
+		question:
+			"What makes a gravity coil read as substantial technical machinery beside a ship’s engines?",
+	},
+	{
 		slug: "resource-capacity-2026-11-02",
 		title: "Ship reserves: capacity made physical",
 		status: "accepted",
@@ -18,12 +50,44 @@ export const studies = z.array(studySchema).parse([
 			"What basic piece of equipment lets a ship carry more of what keeps it running?",
 	},
 	{
+		slug: "energy-support-2026-11-02",
+		title: "Extra energy: potential made physical",
+		status: "stopped",
+		phase: "exploration",
+		question:
+			"What kind of object makes extra energy feel like an opportunity, and belongs above or below a ship?",
+	},
+	{
 		slug: "utility-machinery-2026-11-02",
 		title: "Utility machinery: objects with weight",
 		status: "accepted",
 		phase: "scope",
 		question:
 			"What gives a family of utility machinery volume, character and a convincing place alongside the ships and engines?",
+	},
+	{
+		slug: "open-frame-machinery-2026-11-02",
+		title: "Open-frame machinery",
+		status: "stopped",
+		phase: "exploration",
+		question:
+			"Can exposed working parts give four utilities a shared character alongside Void Drift’s ships and engines?",
+	},
+	{
+		slug: "ship-utility-language-2026-11-02",
+		title: "The visual language of ship utilities",
+		status: "stopped",
+		phase: "exploration",
+		question:
+			"How do we build utilities that look good alongside Void Drift’s ships and engines, and feel like machinery from the same world?",
+	},
+	{
+		slug: "utilities-2026-11-02",
+		title: "Utilities: energy, charging and repair",
+		status: "stopped",
+		phase: "exploration",
+		question:
+			"How should four utility devices express their roles and remain recognizable above or below a ship?",
 	},
 	{
 		slug: "in-game-controllers",

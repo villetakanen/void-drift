@@ -28,6 +28,7 @@ let heavyCanvas: HTMLCanvasElement;
 let playing = $state(false);
 let released = $state(false);
 let ticks = $state(0);
+let markCount = $state(0);
 let plumes = variants.map(() => new EnginePlume());
 const ship = {
 	pos: new Vec2(0, 0),
@@ -43,6 +44,7 @@ let power = stats.capacity;
 let timers: Record<string, number> = {};
 function reset() {
 	ticks = 0;
+	markCount = 0;
 	released = false;
 	ship.pos.x = ship.pos.y = ship.vel.x = ship.vel.y = ship.rotation = 0;
 	power = stats.capacity;
@@ -100,6 +102,7 @@ function advance() {
 			})),
 		);
 	});
+	markCount = plumes.reduce((sum, plume) => sum + plume.count, 0);
 	ticks++;
 	if (ticks === 420) playing = false;
 }
@@ -116,7 +119,6 @@ function render(canvas: HTMLCanvasElement, index: number) {
 	const y0 = Math.floor(ship.pos.y / 40) * 40;
 	for (let x = x0 - 120; x <= x0 + 100; x += 40)
 		for (let y = y0 - 80; y <= y0 + 80; y += 40) ctx.fillRect(x, y, 0.45, 0.45);
-	plumes[index].draw(ctx);
 	drawBuild(
 		ctx,
 		variants[index].build,
@@ -125,6 +127,7 @@ function render(canvas: HTMLCanvasElement, index: number) {
 		ship.rotation,
 		BUILD_FLIGHT_SCALE,
 	);
+	plumes[index].draw(ctx);
 	ctx.restore();
 }
 onMount(() => {
@@ -156,10 +159,15 @@ onMount(() => {
 	};
 });
 </script>
-<section class="comparison" aria-label={label} data-tick={ticks}>
+<section
+	class="comparison"
+	aria-label={label}
+	data-tick={ticks}
+	data-marks={markCount}
+>
 	<div class="views">
 		<figure>
-			<figcaption>Light ion · accepted beam</figcaption>
+			<figcaption>Light ion · arcade beam</figcaption>
 			<canvas
 				bind:this={lightCanvas}
 				width="480"
@@ -168,7 +176,7 @@ onMount(() => {
 			></canvas>
 		</figure>
 		<figure>
-			<figcaption>Heavy ion · accepted proportions</figcaption>
+			<figcaption>Heavy ion · arcade beam</figcaption>
 			<canvas
 				bind:this={heavyCanvas}
 				width="480"

@@ -1,0 +1,151 @@
+---
+import { underRings } from "./UnderRings";
+
+const variants = [
+	{
+		id: "shell",
+		label: "E / No added ring",
+		note: "The retained reference, unchanged.",
+	},
+	...underRings,
+];
+const contexts = [
+	{
+		suffix: "",
+		name: "Alone",
+		width: 30,
+		height: 30,
+		box: "-15 -15 30 30",
+		scale: 6,
+	},
+	{
+		suffix: "-fighter-over",
+		name: "Fighter · on chassis",
+		width: 80,
+		height: 90,
+		box: "-40 -52 80 90",
+		scale: 2,
+	},
+	{
+		suffix: "-wasp-over",
+		name: "Wasp · on chassis",
+		width: 80,
+		height: 90,
+		box: "-40 -52 80 90",
+		scale: 2,
+	},
+	{
+		suffix: "-wasp-under",
+		name: "Wasp · under wing",
+		width: 80,
+		height: 90,
+		box: "-40 -52 80 90",
+		scale: 2,
+	},
+];
+---
+
+<!-- biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard access to the fixed-scale horizontal comparison. -->
+<section class="ring-scroll" aria-label="Under-ring comparison" tabindex="0">
+	<div class="ring-grid">
+		{variants.map((v) => (
+			<div class="variant-heading">
+				<h4>
+					{v.label}
+					{v.id === "rim-inset" && <span class="selected">Selected</span>}
+				</h4>
+				<p>{v.note}</p>
+			</div>
+		))}
+		{contexts.map((context) =>
+			variants.map((v) => (
+				<figure>
+					<figcaption>
+						{context.name} · {context.scale}×
+					</figcaption>
+					<svg
+						width={context.width * context.scale}
+						height={context.height * context.scale}
+						viewBox={context.box}
+						role="img"
+						aria-label={`${v.label}, ${context.name}, ${context.scale}×`}
+					>
+						<use href={`#form-${v.id}${context.suffix}`} />
+					</svg>
+					<div class="native">
+						<svg
+							data-native
+							width={context.width}
+							height={context.height}
+							viewBox={context.box}
+							role="img"
+							aria-label={`${v.label}, ${context.name}, 1×`}
+						>
+							<use href={`#form-${v.id}${context.suffix}`} />
+						</svg>
+					</div>
+					<span>1×</span>
+				</figure>
+			)),
+		)}
+	</div>
+</section>
+<style>
+.ring-scroll {
+	overflow-x: auto;
+	border: 1px solid var(--color-border);
+	margin-block: 24px;
+}
+.ring-scroll:focus-visible {
+	outline: 2px solid var(--color-action);
+	outline-offset: 3px;
+}
+.ring-grid {
+	display: grid;
+	grid-template-columns: repeat(5, 190px);
+	width: 950px;
+	margin-inline: auto;
+	padding-block: 16px;
+}
+.variant-heading {
+	padding: 0 12px;
+	text-align: center;
+}
+h4 {
+	margin: 0 0 8px;
+	font-size: 14px;
+}
+.variant-heading p {
+	font-size: 13px;
+	line-height: 1.5;
+	margin: 0 0 16px;
+}
+figure {
+	margin: 0;
+	padding-block: 16px;
+	text-align: center;
+	border-top: 1px solid var(--color-border);
+}
+figcaption,
+span {
+	font: 12px var(--font-family-ui);
+	color: var(--color-text-muted);
+}
+svg {
+	display: block;
+	max-width: none;
+	margin-inline: auto;
+}
+.native {
+	padding-top: 8px;
+}
+</style>
+
+<style>
+.selected {
+	display: block;
+	margin-top: 6px;
+	color: var(--color-text);
+	font-weight: 700;
+}
+</style>

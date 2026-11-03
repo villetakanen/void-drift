@@ -1,4 +1,5 @@
 ---
+import GravityCoilFleet from "../../components/lab/GravityCoilFleet.astro";
 import UtilityArtworkBench from "../../components/lab/UtilityArtwork.astro";
 import PotentialWellSizing from "../../components/studies/PotentialWellSizing.astro";
 import StudyLayout from "../../layouts/StudyLayout.astro";
@@ -15,14 +16,26 @@ import StudyLayout from "../../layouts/StudyLayout.astro";
 	}}
 >
 	<p>
-		Potential Well replaces the original storage artwork. Solar, gravity and
-		repair are artwork only: no new devices, loadout entries, rules or
-		animations. Shapes and colour follow
+		Potential Well replaces the original storage artwork. Gravity coil uses
+		<a href="/lab/studies/gravity-coil-form-2026-11-03#decision"
+			>M / Inset ring at 100%</a
+		>
+		and is available as a static fitting in the
+		<a href="/builder">ship builder</a>. Solar and repair remain conceptual
+		artwork. Their shapes and colour follow
 		<a href="/lab/studies/utility-machinery-2026-11-02#family-colour"
 			>the accepted reference</a
 		>.
 	</p>
 	<UtilityArtworkBench />
+	<h2 id="gravity-coil">Gravity coil / production fleet comparison</h2>
+	<p>
+		The accepted 100% size on every equipment mount, with Light ions in all
+		engine and aft slots. These are the shared builder and flight drawings,
+		using each hull’s normal layering. 1× means one ship drawing unit per CSS
+		pixel at 100% browser zoom. Drawings retain their scale on narrow screens.
+	</p>
+	<GravityCoilFleet />
 	<h2>Potential Wells / production fleet comparison</h2>
 	<p>
 		Normal and heavy production fittings at the accepted 0.55 scale, with Light

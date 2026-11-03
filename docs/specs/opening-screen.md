@@ -106,7 +106,7 @@ against the `#050510` void elsewhere; and a Lab planet ring set to `var(...)`, w
 
 ### S4 — Ship names (D4)
 
-**Done 2026-11-02, owner-approved.** The rule is in `ship-builder.md` (Ship names and ids).
+**Done 2026-11-02, owner-approved.** The decision is preserved in [Ship names and ids](../history/ship-builder.md#ship-names-and-ids--s4-2026-11-02).
 `SHIP_IDENTITY` in `@void-drift/mode-a` is the single Zod-parsed source of each ship's short name,
 long name and trait; `/lab/entities/ship` shows all three. Owner decisions (2026-11-02): every ship
 has a short and a long name; the short name is the id, and `balanced` and `tank` are retired; saved
@@ -134,7 +134,7 @@ in builds (`void-drift-builds-v2`), settings, Firestore rules and score document
 
 - Investigate: `config.ts`, `loadout.ts`, `FlightDeck`, `ShipBuilder`, `Leaderboard`,
   `LabShipInspector`, design.md and other specs.
-- Spec: `ship-builder.md` and `ship-select-ui-persistence.md` (names), design.md headings.
+- Spec: [Hangar](hangar/spec.md) and `ship-select-ui-persistence.md` (names), design.md headings.
 - Apply: one Zod-parsed display-name and trait source: Scout / Fighter / Corvette. ~~Ids
   `scout`/`balanced`/`tank` are unchanged.~~ [DEPRECATED 2026-11-01] Ids equal short names: `wasp`, `scout`,
   `fighter`, `corvette` (owner, 2026-11-02). The leaderboard shows names. Hand-written descriptions

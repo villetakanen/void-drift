@@ -1,0 +1,266 @@
+---
+interface Face {
+	points: readonly (readonly number[])[];
+	color: string;
+}
+interface Engine {
+	x: number;
+	y: number;
+	angle: number;
+	below: boolean;
+	faces: Face[];
+}
+interface Props {
+	wasp: Face[];
+	fighterHull: Face[];
+	mounts: { x: number; y: number }[][];
+	engines: Engine[][];
+}
+const { wasp, fighterHull, mounts, engines } = Astro.props;
+const points = (ps: readonly (readonly number[])[]) =>
+	ps.map((p) => p.join(",")).join(" ");
+const options = [
+	{
+		name: "A / Ring held by two rails",
+		idea: "Keep the toroid identity, but let two fore–aft rails connect its working sectors. The connection has a direction shared with the ship; it does not require a second dark circle.",
+		test: "Does the ring remain a complete machine when its continuity comes from rails?",
+		risk: "The rails may compete with the aperture at 1×.",
+	},
+	{
+		name: "B / Open return",
+		idea: "A single horseshoe body carries both shoulders into the terminals. Its open mouth points aft, echoing the engine direction while leaving a distinct field-working opening.",
+		test: "Can one continuous body replace the need for a separate support frame?",
+		risk: "The open mouth may make it read as another engine.",
+	},
+	{
+		name: "C / Paired windings",
+		idea: "Two opposed curved working bodies join a narrow central spine. The winding is recognised through repetition and the spaces beside the spine, rather than an enclosed circular badge.",
+		test: "Can a coil belong through the ship’s long-axis rhythm while keeping its own identity?",
+		risk: "The spine may dominate and make the winding too subtle.",
+	},
+];
+---
+
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+	<defs>
+		<!-- All three are complete objects: no backing plate, perimeter outline or floating supports. -->
+		<g id="belong-coil-0">
+			<path d="M-7-14H7V-11H-7Z M-7 11H7V14H-7Z" fill="#a9b13b" />
+			<path d="M-7-18H-3V18H-7Z M3-18H7V18H3Z" fill="#a9b13b" />
+			<path d="M-7-18H-5V18H-7Z M3-18H5V18H3Z" fill="#d5dc72" />
+			<path
+				d="M-4-15L-12-11L-16-3L-15 5L-10 12L-4 15V10L-9 7L-11 2L-10-5L-5-9Z"
+				fill="#91adb8"
+			/>
+			<path
+				d="M4-15L12-11L16-3L15 5L10 12L4 15V10L9 7L11 2L10-5L5-9Z"
+				fill="#607f90"
+			/>
+			<path d="M-4-15L-12-11L-16-3L-13-2L-10-8L-4-11Z" fill="#c0d7db" />
+			<path d="M4-15L12-11L16-3L13-2L10-8L4-11Z" fill="#9fb8c2" />
+			<path
+				d="M-15 5L-10 12L-4 15V12L-9 9L-12 4Z M15 5L10 12L4 15V12L9 9L12 4Z"
+				fill="#4d7086"
+			/>
+		</g>
+		<g id="belong-coil-1">
+			<path
+				d="M-7 18L-14 9L-16-2L-11-12L0-17L11-12L16-2L14 9L7 18L5 10L9 5L10-2L7-8L0-11L-7-8L-10-2L-9 5L-5 10Z"
+				fill="#7899a9"
+			/>
+			<path
+				d="M-7 18L-14 9L-16-2L-11-12L0-17V-13L-9-9L-12-1L-10 7Z"
+				fill="#bad2d7"
+			/>
+			<path d="M0-17L11-12L16-2L14 9L7 18L9 9L12 1L9-8L0-13Z" fill="#4f748b" />
+			<path
+				d="M-7 18L-10 11L-9 5L-5 10L-3 15Z M7 18L10 11L9 5L5 10L3 15Z"
+				fill="#bdc94c"
+			/>
+			<path d="M-10 11L-9 5L-5 10L-3 15L-5 13Z" fill="#d8df7c" />
+		</g>
+		<g id="belong-coil-2">
+			<path d="M-2-18H2V18H-2Z" fill="#b4c143" />
+			<path d="M-2-18H0V18H-2Z" fill="#d7de77" />
+			<path
+				d="M-1-14L-11-12L-16-5L-15 5L-9 12L-1 14V9L-7 7L-10 2L-9-4L-6-8L-1-9Z"
+				fill="#9cb8c2"
+			/>
+			<path
+				d="M1-14L11-12L16-5L15 5L9 12L1 14V9L7 7L10 2L9-4L6-8L1-9Z"
+				fill="#6f90a2"
+			/>
+			<path
+				d="M-1-14L-11-12L-16-5L-12-4L-9-9L-1-11Z M1-14L11-12L16-5L12-4L9-9L1-11Z"
+				fill="#c0d7db"
+			/>
+			<path
+				d="M-15 5L-9 12L-1 14V11L-7 9L-11 4Z M15 5L9 12L1 14V11L7 9L11 4Z"
+				fill="#4e7289"
+			/>
+		</g>
+		{["wasp", "fighter"].map((_ship, i) => (
+			<g id={`belong-ship-${i}`} transform="rotate(-90)">
+				{engines[i]
+					.filter((e) => e.below)
+					.map((e) => (
+						<g
+							transform={`translate(${e.x} ${e.y}) rotate(${(e.angle * 180) / Math.PI})`}
+						>
+							{e.faces.map((f) => (
+								<polygon points={points(f.points)} fill={f.color} />
+							))}
+						</g>
+					))}
+				{(i === 0 ? wasp : fighterHull).map((f) => (
+					<polygon points={points(f.points)} fill={f.color} />
+				))}
+				{engines[i]
+					.filter((e) => !e.below)
+					.map((e) => (
+						<g
+							transform={`translate(${e.x} ${e.y}) rotate(${(e.angle * 180) / Math.PI})`}
+						>
+							{e.faces.map((f) => (
+								<polygon points={points(f.points)} fill={f.color} />
+							))}
+						</g>
+					))}
+			</g>
+		))}
+		{options.map((_, n) =>
+			[0, 1].map((i) => (
+				<g id={`belong-fitted-${n}-${i}`}>
+					{i === 0 && (
+						<use
+							href={`#belong-coil-${n}`}
+							transform={`translate(${mounts[i][0].y} ${-mounts[i][0].x}) scale(.5)`}
+						/>
+					)}
+					<use href={`#belong-ship-${i}`} />
+					{i === 1 && (
+						<use
+							href={`#belong-coil-${n}`}
+							transform={`translate(${mounts[i][0].y} ${-mounts[i][0].x}) scale(.5)`}
+						/>
+					)}
+				</g>
+			)),
+		)}
+	</defs>
+</svg>
+<div class="comparison">
+	{options.map((option, n) => (
+		<article>
+			<h4>{option.name}</h4>
+			<p>{option.idea}</p>
+			<figure>
+				<svg
+					width="160"
+					height="160"
+					viewBox="-24 -24 48 48"
+					role="img"
+					aria-label={`${option.name}, free-standing`}
+				>
+					<use href={`#belong-coil-${n}`} />
+				</svg>
+				<figcaption>Free-standing construction</figcaption>
+			</figure>
+			{[0, 1].map((i) => (
+				<figure>
+					<svg
+						width="270"
+						height="270"
+						viewBox="-45 -55 90 90"
+						role="img"
+						aria-label={`${option.name}, ${i === 0 ? "Wasp under wing" : "Fighter on chassis"}, 3×`}
+					>
+						<use href={`#belong-fitted-${n}-${i}`} />
+					</svg>
+					<figcaption>
+						{i === 0 ? "Wasp · under wing" : "Fighter · on chassis"} · 3×
+					</figcaption>
+				</figure>
+			))}
+			<div class="actual">
+				{[0, 1].map((i) => (
+					<figure>
+						<svg
+							width="90"
+							height="90"
+							viewBox="-45 -55 90 90"
+							role="img"
+							aria-label={`${option.name}, ${i === 0 ? "Wasp" : "Fighter"}, 1×`}
+						>
+							<use href={`#belong-fitted-${n}-${i}`} />
+						</svg>
+						<figcaption>{i === 0 ? "Wasp" : "Fighter"} · 1×</figcaption>
+					</figure>
+				))}
+			</div>
+			<p>
+				<strong>Explores:</strong> {option.test}
+			</p>
+			<p class="risk">{option.risk}</p>
+		</article>
+	))}
+</div>
+<p class="conditions">
+	Shared conditions: one coil, 18-unit fore–aft length, existing equipment
+	mounts; Wasp beneath hull and Fighter above. Production chassis and light ion
+	artwork; all engine-compatible mounts filled, including Fighter’s two aft
+	mounts. Static hardware only. These drawings test construction and visual
+	belonging; fit values and FX remain open.
+</p>
+<style>
+.comparison {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 16px;
+}
+article {
+	padding: 14px;
+	border: 1px solid var(--color-border);
+	min-width: 0;
+}
+h4 {
+	font-size: 18px;
+	margin: 0 0 12px;
+}
+article > p {
+	font-size: 14px;
+	line-height: 1.6;
+	min-height: 110px;
+}
+figure {
+	margin: 0;
+	text-align: center;
+}
+svg {
+	display: block;
+	margin: auto;
+	max-width: none;
+}
+figcaption,
+.conditions,
+.risk {
+	font-size: 13px;
+	color: var(--color-text-muted);
+}
+.actual {
+	display: flex;
+	justify-content: space-around;
+	margin-top: 16px;
+}
+.conditions {
+	margin-top: 20px;
+}
+@media (max-width: 1000px) {
+	.comparison {
+		grid-template-columns: 1fr;
+	}
+	article > p {
+		min-height: 0;
+	}
+}
+</style>

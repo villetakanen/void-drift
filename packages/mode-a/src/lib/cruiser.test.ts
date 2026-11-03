@@ -24,6 +24,8 @@ describe("approved cruiser", () => {
 	});
 	it("encloses mount corners and places exhaust behind each nozzle", () => {
 		const build = defaultLoadout("corvette");
+		// Isolate main engines from optional stabilizer assist.
+		build.stabilizers = false;
 		build.aft = ["ion", "ion", "ion"];
 		const radius = buildCollisionRadius(build);
 		for (const m of buildMounts(build)) {

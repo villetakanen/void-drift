@@ -1,0 +1,153 @@
+---
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const review = {
+	slug: "gravity-coil-form-2026-11-03",
+	title: "Gravity coil static form — study-quality review",
+	status: "accepted" as const,
+	phase: "scope" as const,
+	question: "Evidence and limits of the static-form inquiry, 3 November 2026.",
+};
+const rows = [
+	[
+		"Purpose",
+		"Supported",
+		"The opening fixes the question of completeness alone and belonging on a ship, while preserving the chosen shape and excluding effects and mechanics.",
+		"problem",
+	],
+	[
+		"Investigation",
+		"Supported",
+		"02.2 established E as promising. 02.3–02.4 tested face proportions and dark material; owner feedback redirected the work to an under-ring. 02.5 compared three exposed widths and an inset ring against unchanged E.",
+		"under-ring",
+	],
+	[
+		"Alternatives and reasoning",
+		"Supported",
+		"M was selected from the direct ring comparison. It preserves E and adds continuity beneath the gaps without an exposed outer rim. A causal explanation for the earlier icon reading is not established.",
+		"decision",
+	],
+	[
+		"Evidence fit",
+		"Supported",
+		"Static vector comparisons address static construction. 02.6 extends the context to all four real hulls, with Light ions in every engine-compatible slot and M in every remaining equipment slot. Scale checks establish rendering dimensions, not aesthetic quality.",
+		"sizing",
+	],
+	[
+		"Cumulative agreement",
+		"Supported",
+		"1A, C, D and E remain available. E was not reshaped for the ring comparison. The earlier preference for shallow crowns was superseded by the owner’s decision to retain E, then select M.",
+		"decision",
+	],
+	[
+		"Design coherence",
+		"Supported",
+		"M was selected after being shown alone, above Fighter, above Wasp and under Wasp’s wing. The owner then selected 100% after the four-hull sizing comparison. This settles the static form and size, without claiming future collection or animation fidelity.",
+		"sizing",
+	],
+	[
+		"Remaining uncertainty",
+		"Supported",
+		"The 100% size is settled. The separate selectable fitting is explicitly static: no collection, capacity or energy draw; mass 10 is provisional. Collection behavior and effects remain outside this conclusion.",
+		"readiness",
+	],
+	[
+		"Integration implications",
+		"Supported",
+		"03 identifies the shared face schema, orientation conversion, 0.5 scale and existing renderer. 04 specifies shared artwork, the separately requested catalog fitting, and fleet/persistence/flight checks. The existing solar Loading coil remains separate.",
+		"scope",
+	],
+];
+---
+
+<StudyLayout study={review}>
+	<p>
+		<a href="/lab/studies/gravity-coil-form-2026-11-03#decision"
+			>Return to the selected design</a
+		>
+	</p>
+	<section>
+		<h2>Human judgment</h2>
+		<p>
+			E was described as the first version that belonged to the game, with
+			on-chassis attachment still unresolved. The later reshaping experiments
+			were considered useful evidence against continuing that direction. The
+			owner then selected <strong>M / Inset ring</strong> and instructed the
+			study to move to 03 and 04. The subsequent direction reopened exploration
+			for a fleet sizing tool, retaining those sections as initial assessments.
+			The owner then selected <strong>100%</strong>, finalized the study and
+			authorized implementation. They explicitly chose a separate selectable
+			Gravity coil with no collection behavior yet.
+		</p>
+	</section>
+	<section>
+		<h2>Agent assessment</h2>
+		<p>
+			Ratings assess the reasoning and evidence for this bounded static-form
+			study. They do not average into a score or certify future implementation.
+		</p>
+		{rows.map(([criterion, rating, evidence, anchor]) => (
+			<article>
+				<h3>
+					{criterion} · {rating}
+				</h3>
+				<p>
+					{evidence}{" "}
+					<a href={`/lab/studies/gravity-coil-form-2026-11-03#${anchor}`}>
+						Study evidence ↗
+					</a>
+				</p>
+			</article>
+		))}
+	</section>
+	<section>
+		<h2>Rendering checks and limits</h2>
+		<p>
+			The 02.5 working-tree check passed the production build, type checks and
+			targeted formatting/lint. Browser inspection confirmed that all 20 new 1×
+			views have matching CSS and drawing dimensions, every proposal reuses E
+			unchanged, and Wasp’s one and Fighter’s four engine slots are fitted.
+			Narrow-screen geometry retains its native dimensions and scrollable
+			comparison.
+		</p>
+		<p>
+			The 02.6 browser inspection covered the shared slider, keyboard steps,
+			maximum-size overlaps, above-hull comparison and reset. All twelve views
+			updated together. The four native canvases remained 120 × 140 CSS pixels
+			on desktop and at a 390-pixel viewport, with one drawing unit per pixel.
+			The fleet contains 1/3/4/5 Light ions and 2/1/2/3 coils on
+			Wasp/Scout/Fighter/Corvette respectively. These are rendering and control
+			checks; the subsequent human decision selected 100%.
+		</p>
+		<p>
+			Those earlier checks concern the study page, not promoted artwork. Full
+			regression and backend checks were not rerun for the ring-comparison
+			round. The new 02.6 fixture draws M on Canvas with production hulls,
+			engine artwork and mount transforms, including Scout, Corvette and 0.65
+			flight views. It does not promote M into the shared utility artwork.
+			Earlier steps 02.1–02.4 are collapsed; 02.5 and 02.6 remain visible.
+			Run-local logs and screenshots are under
+			<code>artifacts/gravity-coil-form/</code>; these ignored files are local
+			evidence, not a durable backup.
+		</p>
+		<p>
+			The implementation keeps all 86 M faces, their colours and paint order,
+			with a 0.5 default scale. The preserved study retains the Fighter mount
+			positions used for review; the production fleet follows the separate
+			subsequent mount handoff. The fitting is available locally in the builder
+			and flight, with no collection behavior. Run-specific implementation
+			checks are recorded alongside the earlier evidence; passing them does not
+			constitute publication or acceptance of future mechanics.
+		</p>
+		<p>
+			Implementation checks passed: 132 unit tests, 33 browser tests, type
+			checks, contracts, production build and targeted lint. Browser inspection
+			also covered the actual catalog and test flight, and confirmed true 1×
+			fleet views on desktop and at a 390-pixel viewport. Full-repository lint
+			still reports formatting in the two pre-existing Wasp/1A reference SVGs.
+			Backend and competition checks were not rerun for this local artwork and
+			catalog change. The study is accepted; the implementation is local and has
+			not been published.
+		</p>
+	</section>
+</StudyLayout>

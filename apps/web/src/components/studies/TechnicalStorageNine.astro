@@ -1,0 +1,231 @@
+---
+const variants = [
+	{
+		name: "Terminal crown",
+		note: "Black top plate, paired terminals and a yellow ceramic bridge.",
+		color: "#e4b936",
+		kind: 0,
+	},
+	{
+		name: "Recessed core",
+		note: "Deep black recesses separate broad storage plates; a lime centre marks the core.",
+		color: "var(--color-brand)",
+		kind: 1,
+	},
+	{
+		name: "External bus",
+		note: "Offset yellow conductors connect individual plates to a top junction.",
+		color: "#e4b936",
+		kind: 2,
+	},
+	{
+		name: "Split plates",
+		note: "Paired storage lobes leave a dark central channel and exposed contacts.",
+		color: "#e4b936",
+		kind: 3,
+	},
+	{
+		name: "Black reservoirs",
+		note: "Dark plate bodies with pale rims and a small lime terminal assembly.",
+		color: "var(--color-brand)",
+		kind: 4,
+	},
+	{
+		name: "Service head",
+		note: "An asymmetric top module and side return line borrow the unequal pair’s machinery.",
+		color: "#e4b936",
+		kind: 5,
+	},
+	{
+		name: "Insulated layers",
+		note: "Yellow separators and black plate faces make the layered construction explicit.",
+		color: "#e4b936",
+		kind: 6,
+	},
+	{
+		name: "Coil junction",
+		note: "A compact exposed winding sits above the storage stack, rather than replacing it.",
+		color: "var(--color-brand)",
+		kind: 7,
+	},
+	{
+		name: "Contact shoes",
+		note: "Broad yellow contacts on each layer and a black top manifold emphasize assembly.",
+		color: "#e4b936",
+		kind: 8,
+	},
+];
+---
+
+<div class="technical-nine">
+	{variants.map((v, index) => (
+		<article>
+			<h4>
+				{String(index + 1).padStart(2, "0")} / {v.name}
+			</h4>
+			<svg class="large" viewBox="-40 -48 80 96" role="img" aria-label={v.name}>
+				<defs>
+					<g id={`technical-stack-${index}`}>
+						<path d="M-5-26 H5 V31 H-5 Z" fill="#080c12" />
+						{[20, 2, -16].map((y, i) => (
+							<g transform={`translate(0 ${y})`}>
+								<path
+									d="M-23-5 L-14-11 H14 L23-5 V4 L14 10 H-14 L-23 4 Z"
+									fill={v.kind === 4 || v.kind === 6 ? "#121c25" : "#5f7887"}
+								/>
+								<path
+									d="M-23-5 L-14-11 H14 L23-5 L14 1 H-14 Z"
+									fill={v.kind === 4 || v.kind === 6 ? "#303f4c" : "#a9bec8"}
+								/>
+								<path d="M14 1 L23-5 V4 L14 10 Z" fill="#253946" />
+								<path
+									d="M-23 2 L-14 8 H14 L23 2 V5 L14 11 H-14 L-23 5 Z"
+									fill={v.kind === 6 ? v.color : "#0a111a"}
+								/>
+								{v.kind === 1 && (
+									<>
+										<path d="M-15-5 L-9-8 H9 L15-5 L9-1 H-9 Z" fill="#05090f" />
+										<path d="M-4-7 H4 V-2 H-4 Z" fill={v.color} />
+									</>
+								)}
+								{v.kind === 3 && (
+									<>
+										<path d="M-4-11 H4 V10 H-4 Z" fill="#060b11" />
+										<path
+											d="M-9-6 H-5 V-1 H-9 Z M5-6 H9 V-1 H5 Z"
+											fill={v.color}
+										/>
+									</>
+								)}
+								{v.kind === 4 && (
+									<path
+										d="M-23-5 L-14 1 H14 L23-5 V-2 L14 4 H-14 L-23-2 Z"
+										fill="#9db3bd"
+									/>
+								)}
+								{v.kind === 8 && (
+									<path
+										d="M-20-4 H-13 V6 H-20 Z M13-4 H20 V6 H13 Z"
+										fill={v.color}
+									/>
+								)}
+								{v.kind === 2 && (
+									<path d={`M${14 - i * 4}-3 h5 v9 h-5 Z`} fill={v.color} />
+								)}
+							</g>
+						))}
+						{v.kind === 0 && (
+							<>
+								<path d="M-14-23 L-8-27 H8 L14-23 L8-18 H-8 Z" fill="#070d14" />
+								<path
+									d="M-10-34 H-5 V-23 H-10 Z M5-34 H10 V-23 H5 Z"
+									fill="#c3d2d7"
+								/>
+								<path d="M-11-31 H11 V-26 H-11 Z" fill={v.color} />
+							</>
+						)}
+						{v.kind === 1 && <path d="M-5-32 H5 V-25 H-5 Z" fill="#263c49" />}
+						{v.kind === 2 && (
+							<>
+								<path
+									d="M23-22 H30 V24 H23 V19 H26 V-17 H23 Z"
+									fill={v.color}
+								/>
+								<path d="M6-31 H23 V-21 H6 Z" fill="#0a121c" />
+								<path d="M9-28 H19 V-24 H9 Z" fill="#afc1c9" />
+							</>
+						)}
+						{v.kind === 3 && <path d="M-8-29 H8 V-23 H-8 Z" fill="#b5c8cf" />}
+						{v.kind === 4 && (
+							<>
+								<path d="M-9-30 H9 V-23 H-9 Z" fill="#0a1018" />
+								<path
+									d="M-6-31 H-2 V-24 H-6 Z M2-31 H6 V-24 H2 Z"
+									fill={v.color}
+								/>
+							</>
+						)}
+						{v.kind === 5 && (
+							<>
+								<path d="M-13-35 H1 L6-30 V-22 H-13 Z" fill="#1b2a35" />
+								<path d="M-13-35 H1 L6-30 H-13 Z" fill={v.color} />
+								<path d="M6-28 H27 V13 H22 V-23 H6 Z" fill="#829ca9" />
+								<path d="M-9-29 H-3 V-24 H-9 Z" fill="#b2c7cf" />
+							</>
+						)}
+						{v.kind === 6 && <path d="M-8-30 H8 V-23 H-8 Z" fill="#9bb3bf" />}
+						{v.kind === 7 && (
+							<>
+								<path d="M-12-34 H12 V-23 H-12 Z" fill="#080e16" />
+								{[-9, -3, 3, 9].map((x) => (
+									<path d={`M${x}-35 v13 h3 v-13 Z`} fill={v.color} />
+								))}
+							</>
+						)}
+						{v.kind === 8 && (
+							<>
+								<path d="M-16-29 H12 L17-24 H-16 Z" fill="#101c27" />
+								<path
+									d="M-8-35 H-3 V-27 H-8 Z M5-32 H10 V-27 H5 Z"
+									fill="#aec1c9"
+								/>
+							</>
+						)}
+					</g>
+				</defs>
+				<use href={`#technical-stack-${index}`} />
+			</svg>
+			<p>{v.note}</p>
+			<div class="samples">
+				<span>32 px study sample</span>
+				<svg
+					width="32"
+					height="38"
+					viewBox="-40 -48 80 96"
+					role="img"
+					aria-label={`${v.name}, small sample`}
+				>
+					<use href={`#technical-stack-${index}`} />
+				</svg>
+			</div>
+		</article>
+	))}
+</div>
+<style>
+.technical-nine {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-md);
+	margin-block: var(--spacing-lg);
+}
+article {
+	padding: var(--spacing-md);
+	background: var(--color-void-light);
+	border: var(--flight-border);
+}
+h4 {
+	margin: 0;
+	font-size: 1rem;
+}
+.large {
+	width: 100%;
+	height: 230px;
+	display: block;
+}
+.samples {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	color: var(--color-text-muted);
+}
+@media (max-width: 800px) {
+	.technical-nine {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 500px) {
+	.technical-nine {
+		grid-template-columns: 1fr;
+	}
+}
+</style>

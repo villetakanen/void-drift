@@ -1,5 +1,9 @@
 ---
-import { POTENTIAL_WELL_ART, UTILITY_ART } from "@void-drift/mode-a";
+import {
+	POTENTIAL_WELL_ART,
+	UTILITY_ART,
+	utilityArtworkScale,
+} from "@void-drift/mode-a";
 
 const ids = ["storage", "solar", "gravity", "repair"] as const;
 ---
@@ -8,8 +12,12 @@ const ids = ["storage", "solar", "gravity", "repair"] as const;
 	{ids.map((id) => (
 		<figure>
 			<figcaption>
-				{id}
-				{id !== "storage" ? " · conceptual artwork" : " · battery artwork"}
+				{id === "gravity" ? "Gravity coil" : id}
+				{id === "storage"
+					? " · battery artwork"
+					: id === "gravity"
+						? " · M / Inset ring"
+						: " · conceptual artwork"}
 			</figcaption>
 			{[false, true].map((small) => (
 				<svg
@@ -20,7 +28,7 @@ const ids = ["storage", "solar", "gravity", "repair"] as const;
 					aria-label={`${id}, ${small ? "mounted gameplay scale" : "enlarged"}`}
 				>
 					<g
-						transform={`rotate(-90) scale(${small ? (id === "storage" ? 0.55 : 0.35) * 0.65 : 1})`}
+						transform={`rotate(-90) scale(${small ? utilityArtworkScale(id) * 0.65 : 1})`}
 					>
 						{id === "storage" ? (
 							<g transform="rotate(90)">

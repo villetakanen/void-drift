@@ -36,7 +36,7 @@ Persisted shape is backward-compatible by applying defaults when old local data 
 Update `apps/web/src/components/MenuOverlay.svelte`:
 - ~~add `Ship` selector UI with 3 options (`Scout`, `Balanced`, `Tank`)~~ [DEPRECATED 2026-11-01] the selector lists
   every ship by short name (Wasp, Scout, Fighter, Corvette) from `SHIP_IDENTITY`; see
-  [Ship names and ids](./ship-builder.md#ship-names-and-ids--s4-2026-11-02)
+  [Ship names and ids](../history/ship-builder.md#ship-names-and-ids--s4-2026-11-02)
 - display short stats summary for selected ship
 - keep controls touch-safe (>=44px target) and keyboard accessible
 

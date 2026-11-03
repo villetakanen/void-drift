@@ -9,6 +9,7 @@ let {
 	label,
 	compact = false,
 	stretch = false,
+	details,
 }: {
 	options: string[];
 	value: string;
@@ -18,6 +19,8 @@ let {
 	compact?: boolean;
 	/** Fills the width of its container. */
 	stretch?: boolean;
+	/** Optional supporting facts inside each option; enables the detailed variant. */
+	details?: Record<string, string>;
 } = $props();
 
 const name = `toggle-${Math.random().toString(36).slice(2, 8)}`;
@@ -27,14 +30,29 @@ const name = `toggle-${Math.random().toString(36).slice(2, 8)}`;
 	class="toggle"
 	class:compact
 	class:stretch
+	class:detailed={!!details}
 	role="radiogroup"
 	aria-label={label}
 	style={`--_n:${options.length}`}
 >
-	{#each options as option}
+	{#each options as option, index}
 		<label class="part" class:selected={value === option}>
-			<input type="radio" {name} value={option} bind:group={value}>
+			<input
+				type="radio"
+				{name}
+				value={option}
+				bind:group={value}
+				aria-label={option}
+				aria-describedby={details?.[option]
+					? `${name}-detail-${index}`
+					: undefined}
+			>
 			<span>{option}</span>
+			{#if details?.[option]}
+				<span class="detail" id={`${name}-detail-${index}`}
+					>{details[option]}</span
+				>
+			{/if}
 		</label>
 	{/each}
 </div>
@@ -44,7 +62,7 @@ const name = `toggle-${Math.random().toString(36).slice(2, 8)}`;
 .toggle {
 	--_cut: var(--button-cut-size);
 	display: inline-grid;
-	grid-template-columns: repeat(var(--_n), 1fr);
+	grid-template-columns: repeat(var(--_n), minmax(0, 1fr));
 	min-height: var(--button-min-height);
 	box-sizing: border-box;
 	clip-path: polygon(
@@ -74,6 +92,24 @@ const name = `toggle-${Math.random().toString(36).slice(2, 8)}`;
 	background: var(--color-border-subtle);
 	color: var(--color-text);
 	transition: var(--button-transition);
+}
+.detailed .part {
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: var(--spacing-sm) var(--spacing-md);
+	white-space: normal;
+	min-width: 0;
+}
+.detail {
+	font-size: var(--font-size-caption);
+	color: var(--color-text-muted);
+	line-height: var(--line-height-ui);
+}
+.selected .detail {
+	color: var(--color-on-brand);
+}
+.detailed .part:not(.selected):hover .detail {
+	color: var(--color-text);
 }
 .compact .part {
 	padding-inline: var(--spacing-sm);

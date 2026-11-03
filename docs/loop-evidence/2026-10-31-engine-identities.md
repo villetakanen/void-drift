@@ -28,7 +28,7 @@ release. These are player-trial values, not established balance conclusions.
 The owner explicitly discarded save compatibility: version-1 ship storage is
 removed on opening the builder, with version-2 builds and no fission alias.
 Stock ranked profiles remain unchanged; custom survival is unranked.
-Study sections 03/04 and the ship-builder spec document readiness and integration.
+Study sections 03/04 and the [ship-builder record](../history/ship-builder.md#engine-identities-integration--2026-10-31) document readiness and integration.
 
 ## Verification and publication
 

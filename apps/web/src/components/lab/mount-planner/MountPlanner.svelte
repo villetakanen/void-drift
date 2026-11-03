@@ -166,6 +166,9 @@ function fitPart(value: string) {
 	if (checked.success) apply(checked.data);
 	else message = checked.error.message;
 }
+// Ship-local -x is the exhaust direction; mount angle rotates that axis.
+const EXHAUST_GUIDE_LENGTH = 20;
+const EXHAUST_ARROW_SIZE = 1.5;
 function fitView() {
 	const mounts = previewMounts(plan, original);
 	const hull =
@@ -195,6 +198,15 @@ function fitView() {
 				Math.max(CHASSIS[plan.chassis].length, ...mounts.map((m) => m.x)) + 8;
 			points.push([rear, m.y], [rear, partner?.y ?? m.y]);
 		}
+	if (contents !== "In-game") {
+		for (const m of mounts.filter((m) => slotAccepts(m.type, "E"))) {
+			const x = m.x - EXHAUST_GUIDE_LENGTH * Math.cos(m.angle);
+			const y = m.y - EXHAUST_GUIDE_LENGTH * Math.sin(m.angle);
+			for (const dx of [-EXHAUST_ARROW_SIZE, EXHAUST_ARROW_SIZE])
+				for (const dy of [-EXHAUST_ARROW_SIZE, EXHAUST_ARROW_SIZE])
+					points.push([x + dx, y + dy]);
+		}
+	}
 	const a = (rotation * Math.PI) / 180;
 	const projected = points.map(([x, y]) => [
 		x * Math.cos(a) - y * Math.sin(a),
@@ -329,6 +341,38 @@ function draw() {
 			: { dark: COLOR.void, lime: COLOR.selected, ivory: COLOR.text },
 		contents === "Empty" ? mounts.map((m) => ({ ...m, part: null })) : mounts,
 	);
+	if (contents !== "In-game") {
+		ctx.save();
+		ctx.translate(width / 2 + panX, height / 2 + panY);
+		ctx.rotate(a);
+		ctx.scale(zoom, zoom);
+		ctx.strokeStyle = COLOR.selected;
+		ctx.lineWidth = 1.5 / zoom;
+		ctx.lineCap = "round";
+		for (const m of mounts.filter((m) => slotAccepts(m.type, "E"))) {
+			ctx.save();
+			ctx.translate(m.x, m.y);
+			ctx.rotate(m.angle);
+			ctx.setLineDash([0.5 / zoom, 5 / zoom]);
+			ctx.beginPath();
+			ctx.moveTo(-m.width / 2, 0);
+			ctx.lineTo(-EXHAUST_GUIDE_LENGTH, 0);
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(
+				-EXHAUST_GUIDE_LENGTH + EXHAUST_ARROW_SIZE,
+				-EXHAUST_ARROW_SIZE,
+			);
+			ctx.lineTo(-EXHAUST_GUIDE_LENGTH, 0);
+			ctx.lineTo(
+				-EXHAUST_GUIDE_LENGTH + EXHAUST_ARROW_SIZE,
+				EXHAUST_ARROW_SIZE,
+			);
+			ctx.stroke();
+			ctx.restore();
+		}
+		ctx.restore();
+	}
 	flight.width = 200 * dpr;
 	flight.height = 100 * dpr;
 	small.scale(dpr, dpr);
@@ -447,9 +491,9 @@ onMount(() => {
 					bind:value={
 						() => zoom,
 						(v) => {
-							autoFit = false;
-							zoom = v;
-						}
+	autoFit = false;
+	zoom = v;
+}
 					}
 				/>
 			</div>
@@ -572,33 +616,24 @@ onMount(() => {
 						Link mirrored pair
 					</button>
 				{/if}
-				<p>Preview part</p>
-				<fieldset class="choices" aria-label="Preview part">
-					{#if current.group !== "side"}
-						<button
-							type="button"
-							class="btn btn-ghost"
-							aria-pressed={!previewMounts(plan).find((m) => m.key === selected)
-								?.part}
-							onclick={() => fitPart("")}
-						>
-							Empty
-						</button>
-					{/if}
-					{#each Object.entries(PARTS).filter(
-						([, p]) => current && slotAccepts(current.type, p.category),
-					) as [id, p]}
-						<button
-							type="button"
-							class="btn btn-ghost"
-							aria-pressed={previewMounts(plan).find((m) => m.key === selected)
-								?.part === id}
-							onclick={() => fitPart(id)}
-						>
-							{p.name}
-						</button>
-					{/each}
-				</fieldset>
+				<label
+					>Preview part
+					<select
+						aria-label="Preview part"
+						value={previewMounts(plan).find((m) => m.key === selected)?.part ??
+							""}
+						onchange={(e) => fitPart(e.currentTarget.value)}
+					>
+						{#if current.group !== "side"}
+							<option value="">Empty</option>
+						{/if}
+						{#each Object.entries(PARTS).filter(
+							([, p]) => current && slotAccepts(current.type, p.category),
+						) as [id, p]}
+							<option value={id}>{p.name}</option>
+						{/each}
+					</select></label
+				>
 			</fieldset>
 		{/if}
 		<div class="flight">
@@ -685,17 +720,28 @@ aside {
 	flex-wrap: wrap;
 }
 input,
+select,
 textarea {
 	font: inherit;
 	color: var(--color-text);
 }
 input[type="number"],
+select,
 textarea {
 	background: var(--color-void);
 	border: 1px solid var(--color-text-muted);
 	border-radius: var(--radius-sm);
 	padding: var(--spacing-sm);
 	min-height: var(--control-min-height);
+}
+select {
+	width: 100%;
+	min-width: 0;
+	border-color: var(--color-action);
+}
+select:focus-visible {
+	outline: var(--focus-ring-width) solid var(--color-focus-ring);
+	outline-offset: 2px;
 }
 .choices {
 	display: flex;

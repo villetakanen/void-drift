@@ -17,6 +17,11 @@ import { buildCollisionRadius, buildPlumeEmitters } from "./build-renderer";
 import { SHIP_PROFILE_BY_ID } from "./config";
 import { createStar } from "./game-loop";
 import {
+	GRAVITY_COLLECTION,
+	gravityCollectionRate,
+	gravitySource,
+} from "./gravity-collection";
+import {
 	type FlightSettings,
 	FlightSettingsSchema,
 	ReplaySchema,
@@ -70,6 +75,9 @@ export class Simulation {
 	readonly planets = initializePlanets(960, 540);
 	readonly state = createInitialGameState();
 	readonly plume = new EnginePlume();
+	gravityCollectionRate = 0;
+	gravityFoldOpacity = 0;
+	gravityFoldDirection = 0;
 	engineOutput = {
 		left: 0,
 		right: 0,
@@ -144,6 +152,7 @@ export class Simulation {
 		const beforeX = this.ship.pos.x;
 		const beforeY = this.ship.pos.y;
 		let delivered = 0;
+		let collected = 0;
 		let substeps = 0;
 		// Four substeps resolve stronger close passes without changing the replay tick rate.
 		for (let substep = 0; substep < 4; substep++) {
@@ -154,13 +163,28 @@ export class Simulation {
 					this.ship.pos.x - this.star.pos.x,
 					this.ship.pos.y - this.star.pos.y,
 				);
+				const supplied =
+					this.state.resources.power +
+					(solarCharge(distance, this.star, stats.coils) - 3) * (STEP / 4);
+				const source = gravitySource(this.ship, this.planets);
+				const amount = source
+					? Math.max(
+							0,
+							Math.min(
+								stats.capacity - supplied,
+								(gravityCollectionRate(this.settings.loadout) * STEP) / 4,
+							),
+						)
+					: 0;
+				collected += amount;
+				if (source && amount > 0)
+					this.gravityFoldDirection = Math.atan2(
+						this.ship.pos.y - source.pos.y,
+						this.ship.pos.x - source.pos.x,
+					);
 				const available = Math.max(
 					0,
-					Math.min(
-						stats.capacity,
-						this.state.resources.power +
-							(solarCharge(distance, this.star, stats.coils) - 3) * (STEP / 4),
-					),
+					Math.min(stats.capacity, supplied + amount),
 				);
 				const requested =
 					(buildDrain(
@@ -222,6 +246,12 @@ export class Simulation {
 			this.engineOutput.left = input.leftThruster ? delivered / substeps : 0;
 			this.engineOutput.right = input.rightThruster ? delivered / substeps : 0;
 		}
+		if (
+			Math.hypot(this.ship.pos.x - beforeX, this.ship.pos.y - beforeY) > 1200
+		) {
+			this.wraps++;
+			this.plume.clear();
+		}
 		if (this.settings.loadout) {
 			const outputs =
 				this.settings.loadout.chassis === "wasp"
@@ -245,8 +275,6 @@ export class Simulation {
 				this.engineOutput.left,
 				this.engineOutput.right,
 			);
-		if (Math.hypot(this.ship.pos.x - beforeX, this.ship.pos.y - beforeY) > 1200)
-			this.wraps++;
 		const distance = Math.hypot(this.ship.pos.x - 960, this.ship.pos.y - 540);
 		this.thrust.left = input.leftThruster;
 		this.thrust.right = input.rightThruster;
@@ -265,6 +293,13 @@ export class Simulation {
 			this.star,
 			STEP,
 			this.settings.loadout ? 1 : this.settings.profile.hullMultiplier,
+		);
+		this.gravityCollectionRate = collected / STEP;
+		const target = collected > 0 ? 1 : 0;
+		const fade = STEP / GRAVITY_COLLECTION.fadeSeconds;
+		this.gravityFoldOpacity += Math.max(
+			-fade,
+			Math.min(fade, target - this.gravityFoldOpacity),
 		);
 		this.ticks++;
 		this.state.elapsedTime = this.ticks * STEP;

@@ -5,30 +5,39 @@ import {
 	buildMounts,
 	buildStats,
 	CHASSIS,
+	CRUISER,
 	defaultBuilds,
 	drawBuild,
 	ENGINE_ACCENT,
 	ENGINE_ART,
 	engineArtId,
+	FIGHTER,
 	PARTS,
 	type PartId,
 	POTENTIAL_WELL_ART,
+	SCOUT,
 	SHIP_IDENTITY,
 	type ShipProfileId,
 	ShipProfileIdSchema,
 	SLOT_STYLE,
 	slotAccepts,
+	UTILITY_ART,
+	WASP,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import { version } from "../../package.json";
 import FlightDeck from "./FlightDeck.svelte";
 import Switch from "./inputs/Switch.svelte";
+import Toggle from "./inputs/Toggle.svelte";
 import Logo from "./Logo.svelte";
+
+const shipIds = ["wasp", "scout", "fighter", "corvette"] as const;
 
 let { lab = false }: { lab?: boolean } = $props();
 let builds = $state(defaultBuilds());
 let chosen = $state<ShipProfileId>("fighter");
 let selected = $state("left");
+let previewMode = $state("Plan");
 let flying = $state<"test" | "survival" | null>(null);
 let ready = $state(false);
 let fontsLoaded = $state(false);
@@ -37,8 +46,55 @@ let canvas = $state<HTMLCanvasElement>();
 const build = $derived(builds[chosen]);
 const stats = $derived(buildStats(build));
 const mounts = $derived(buildMounts(build));
-const previewScale = $derived(chosen === "corvette" ? 4.5 : 5.2);
-const previewY = $derived(chosen === "corvette" ? 270 : 325);
+let previewWidth = $state(600);
+let previewHeight = $state(540);
+const framing = $derived.by(() => {
+	const hull =
+		chosen === "fighter"
+			? FIGHTER.hull
+			: (chosen === "wasp"
+					? WASP.facets
+					: chosen === "scout"
+						? SCOUT.facets
+						: CRUISER.facets
+				).flatMap((f) => f.points);
+	const points: number[][] = hull.map((p) => [p[0], p[1]]);
+	for (const m of mounts) {
+		// Bounds include the fitting, slot number, caption and selection brackets.
+		const r = Math.max(12, m.width, m.height);
+		for (const x of [-r, r])
+			for (const y of [-r, r])
+				points.push([
+					m.x + x * Math.cos(m.angle) - y * Math.sin(m.angle),
+					m.y + x * Math.sin(m.angle) + y * Math.cos(m.angle),
+				]);
+		if (m.linkedTo)
+			points.push([
+				Math.max(CHASSIS[chosen].length, ...mounts.map((m) => m.x)) + 8,
+				m.y,
+			]);
+	}
+	const xs = points.map((p) => p[1]),
+		ys = points.map((p) => -p[0]);
+	const minX = Math.min(...xs),
+		maxX = Math.max(...xs),
+		minY = Math.min(...ys),
+		maxY = Math.max(...ys);
+	const scale = Math.max(
+		0.01,
+		Math.min(
+			Math.max(1, previewWidth - 32) / (maxX - minX),
+			Math.max(1, previewHeight - 32) / (maxY - minY),
+		),
+	);
+	return {
+		scale,
+		x: previewWidth / 2 - ((minX + maxX) * scale) / 2,
+		y: previewHeight / 2 - ((minY + maxY) * scale) / 2,
+	};
+});
+const previewScale = $derived(framing.scale);
+const previewY = $derived(framing.y);
 const mount = $derived(
 	mounts.find((item) => item.key === selected) ?? mounts[0],
 );
@@ -76,20 +132,25 @@ $effect(() => {
 	void fontsLoaded;
 	const context = canvas?.getContext("2d");
 	if (context && canvas) {
-		context.clearRect(0, 0, 600, 540);
+		const dpr = window.devicePixelRatio || 1;
+		canvas.width = Math.round(previewWidth * dpr);
+		canvas.height = Math.round(previewHeight * dpr);
+		context.scale(dpr, dpr);
 		drawBuild(
 			context,
 			build,
-			300,
+			framing.x,
 			previewY,
 			-Math.PI / 2,
 			previewScale,
 			selected,
-			{
-				dark: COLOR.void,
-				lime: COLOR.selected,
-				ivory: COLOR.text,
-			},
+			previewMode === "Plan"
+				? {
+						dark: COLOR.void,
+						lime: COLOR.selected,
+						ivory: COLOR.text,
+					}
+				: undefined,
 		);
 	}
 });
@@ -139,84 +200,123 @@ function choose(id: ShipProfileId) {
 			><a href="/lab/flight">Flight Lab</a>
 		</header>
 		<div class="heading">
-			<div>
-				<p class="eyebrow">BUILD SOMETHING THAT FEELS YOURS</p>
-				<h1>Your ship. Your compromise.</h1>
-				<p>Fit a slot. Watch the numbers. Take it out.</p>
-			</div>
+			<h1>Hangar</h1>
 			<span class="saved"
 				>{ready ? "BUILDS SAVED ON THIS BROWSER" : "LOADING BUILDS"}</span
 			>
 		</div>
-		<nav class="chassis" aria-label="Choose chassis">
-			{#each Object.entries(CHASSIS) as [id, chassis]}
-				<button
-					type="button"
-					class="btn"
-					class:btn-filled={chosen === id}
-					class:btn-ghost={chosen !== id}
-					aria-pressed={chosen === id}
-					onclick={() => choose(id as ShipProfileId)}
-				>
-					{SHIP_IDENTITY[id as ShipProfileId].shortName}<small
-						>{(id === "wasp" ? 1 : 2) + chassis.hull + chassis.aft}
-						SLOTS · {chassis.mass} MASS</small
-					>
-				</button>
-			{/each}
-		</nav>
+		<div class="chassis">
+			<Toggle
+				label="Choose chassis"
+				stretch
+				details={Object.fromEntries(
+					shipIds.map((id) => [
+						SHIP_IDENTITY[id].shortName,
+						`${(id === "wasp" ? 1 : 2) + CHASSIS[id].hull + CHASSIS[id].aft} slots · ${CHASSIS[id].mass} mass`,
+					]),
+				)}
+				options={shipIds.map((id) => SHIP_IDENTITY[id].shortName)}
+				bind:value={
+					() => SHIP_IDENTITY[chosen].shortName,
+					(name) => {
+	const id = shipIds.find((id) => SHIP_IDENTITY[id].shortName === name);
+	if (id) choose(id);
+}
+				}
+			/>
+		</div>
 		<div class="workbench">
-			<section class="assembly" aria-label="Ship assembly">
-				<div class="panel-title">
-					<h2>{SHIP_IDENTITY[chosen].longName}</h2>
-					<span>FIXED MOUNTS / TOP VIEW</span>
-				</div>
-				<div class="blueprint">
-					<div class="grid-lines"></div>
-					<canvas
-						width="600"
-						height="540"
-						bind:this={canvas}
-						aria-label="Ship preview with installed parts"
-					></canvas>
-					{#each mounts as slot}
-						<button
-							type="button"
-							class="mount"
-							disabled={Boolean(slot.linkedTo)}
-							title={slot.linkedTo
-								? "Linked to the left engine slot; edit the pair there"
-								: slot.label}
-							style:left={`${(300 + slot.y * previewScale) / 6}%`}
-							style:top={`${(previewY - slot.x * previewScale) / 5.4}%`}
-							style:width={`${(((SLOT_STYLE.width + 2 * SLOT_STYLE.gap) / SLOT_STYLE.referenceScale) * previewScale) / 6}%`}
-							style:height={`${(((SLOT_STYLE.height + 2 * SLOT_STYLE.gap) / SLOT_STYLE.referenceScale) * previewScale) / 5.4}%`}
-							style:transform={`translate(-50%, -50%) rotate(${slot.angle}rad)`}
-							aria-label={`${slot.label}: ${slot.part ? PARTS[slot.part].name : "Empty"}`}
-							aria-pressed={mount.key === slot.key}
-							onclick={() => (selected = slot.key)}
-						></button>
-					{/each}
-				</div>
-				<label
-					><Switch
-						bind:checked={build.stabilizers}
-						disabled={chosen === "wasp"}
-					/>
-					Ion stabilizers{chosen === "wasp" ? " (forced on)" : ""}</label
-				>
-				<p class="assembly-note">
-					0.22 Light-ion thrust · 0.25 Light-ion energy while firing. Assist
-					turns and brake spin automatically.
-				</p>
-				<p class="assembly-note">
-					{chosen === "wasp"
-						? "One rear center engine (fires on A+D) and two independent under-wing equipment slots. Four turning stabilizers are forced on."
-						: "Side engines are a mirrored pair. Hull and aft fittings are independent."}
-					<br>Every installed part adds mass. Weapons are static fittings in
-					this alpha.
-				</p>
-			</section>
+			<div class="ship-column">
+				<section class="assembly" aria-label="Ship assembly">
+					<div
+						class="blueprint"
+						bind:clientWidth={previewWidth}
+						bind:clientHeight={previewHeight}
+					>
+						{#if previewMode === "Plan"}
+							<div class="view-axes" aria-hidden="true"></div>
+						{/if}
+						<div class="preview-mode">
+							<Toggle
+								compact
+								label="Ship preview mode"
+								options={["Plan", "View"]}
+								bind:value={previewMode}
+							/>
+						</div>
+						<h2 class="ship-name">{SHIP_IDENTITY[chosen].longName}</h2>
+						<span class="view-caption"
+							>{previewMode === "Plan"
+								? "FIXED MOUNTS / TOP VIEW"
+								: "IN-GAME / TOP VIEW"}</span
+						>
+						<canvas
+							width="600"
+							height="540"
+							bind:this={canvas}
+							aria-label="Ship preview with installed parts"
+						></canvas>
+						{#each previewMode === "Plan" ? mounts : [] as slot}
+							<button
+								type="button"
+								class="mount"
+								disabled={Boolean(slot.linkedTo)}
+								title={slot.linkedTo
+									? "Linked to the left engine slot; edit the pair there"
+									: slot.label}
+								style:left={`${((framing.x + slot.y * previewScale) / previewWidth) * 100}%`}
+								style:top={`${((previewY - slot.x * previewScale) / previewHeight) * 100}%`}
+								style:width={`${(((SLOT_STYLE.width + 2 * SLOT_STYLE.gap) / SLOT_STYLE.referenceScale) * previewScale * 100) / previewWidth}%`}
+								style:height={`${(((SLOT_STYLE.height + 2 * SLOT_STYLE.gap) / SLOT_STYLE.referenceScale) * previewScale * 100) / previewHeight}%`}
+								style:transform={`translate(-50%, -50%) rotate(${slot.angle}rad)`}
+								aria-label={`${slot.label}: ${slot.part ? PARTS[slot.part].name : "Empty"}`}
+								aria-pressed={mount.key === slot.key}
+								onclick={() => (selected = slot.key)}
+							></button>
+						{/each}
+					</div>
+				</section>
+				<section class="ship-systems cut-surface" aria-label="Ship systems">
+					<label class="system-setting" for="hangar-stabilizers">
+						<span
+							>Ion stabilizers{chosen === "wasp" ? " (forced on)" : ""}</span
+						>
+						<Switch
+							id="hangar-stabilizers"
+							bind:checked={build.stabilizers}
+							disabled={chosen === "wasp"}
+						/>
+					</label>
+					<p class="assembly-note">
+						0.22 Light-ion thrust · 0.25 Light-ion energy while firing. Assist
+						turns and brake spin automatically.
+					</p>
+
+					<p class="assembly-note">
+						{chosen === "wasp"
+							? "One rear center engine (fires on A+D) and two independent under-wing equipment slots. Four turning stabilizers are forced on."
+							: "Side engines are a mirrored pair. Hull and aft fittings are independent."}
+						<br>Every installed part adds mass. Weapons are static fittings in
+						this alpha.
+					</p>
+				</section>
+				<section class="ship-systems cut-surface" aria-label="Linked engines">
+					<label class="system-setting" for="hangar-linked-engines">
+						<span>Linked engines</span>
+						<Switch
+							id="hangar-linked-engines"
+							bind:checked={
+								() => build.linkedEngines ?? false,
+								(value) => (build.linkedEngines = value)
+							}
+						/>
+					</label>
+					<p class="assembly-note">
+						Left or right input also fires all fitted aft engines. When off, aft
+						engines require both inputs.
+					</p>
+				</section>
+			</div>
 			<section class="parts" aria-label="Compatible parts">
 				<p class="eyebrow">SELECTED MOUNT</p>
 				<h2>{mount.label}</h2>
@@ -253,6 +353,27 @@ function choose(id: ShipProfileId) {
 											<polygon
 												points={face.points.map((p) => p.join(",")).join(" ")}
 												fill={face.color}
+											/>
+										{/each}
+									</g>
+								</svg>
+							{:else if part.id === "gravity-coil"}
+								<svg
+									viewBox="-24 -30 48 60"
+									width="72"
+									height="56"
+									aria-hidden="true"
+								>
+									<g transform="rotate(-90)">
+										{#each UTILITY_ART.gravity as face}
+											<path
+												d={face.contours
+													.map(
+														(c) => `M${c.map((p) => p.join(",")).join("L")}Z`,
+													)
+													.join(" ")}
+												fill={face.color}
+												fill-rule={face.fillRule}
 											/>
 										{/each}
 									</g>
@@ -314,8 +435,7 @@ function choose(id: ShipProfileId) {
 				</div>
 			</section>
 			<aside class="numbers" aria-label="Build statistics">
-				<p class="eyebrow">FLIGHT ESTIMATE</p>
-				<h2>Know your ship.</h2>
+				<h2>Flight estimates</h2>
 				<dl>
 					<div>
 						<dt>Total mass</dt>
@@ -376,8 +496,12 @@ function choose(id: ShipProfileId) {
 		</div>
 		<footer>
 			<div>
-				<strong>Ready when you are.</strong>
-				<p>A + D or ← + → · Both controls fire aft engines.</p>
+				<p>
+					A + D or ← + → ·
+					{build.linkedEngines
+						? "Either control fires aft engines."
+						: "Both controls fire aft engines."}
+				</p>
 			</div>
 			<div class="actions">
 				<button
@@ -414,7 +538,6 @@ function choose(id: ShipProfileId) {
 }
 header,
 .heading,
-.panel-title,
 footer,
 .actions {
 	display: flex;
@@ -442,7 +565,7 @@ header {
 	margin: 26px 0;
 }
 h1 {
-	font-size: 32px;
+	font-size: var(--font-size-heading);
 	margin: 4px 0 8px;
 }
 h2 {
@@ -460,7 +583,7 @@ p {
 	letter-spacing: 0.16em;
 }
 .saved,
-.panel-title span {
+.view-caption {
 	font-size: 10px;
 	color: var(--color-text-muted);
 	letter-spacing: 0.1em;
@@ -470,15 +593,6 @@ p {
 	gap: 12px;
 	margin-bottom: 22px;
 }
-.chassis button {
-	flex: 1;
-	display: flex;
-	justify-content: space-between;
-	gap: 12px;
-}
-.chassis small {
-	font-size: 10px;
-}
 .workbench {
 	display: grid;
 	grid-template-columns: minmax(360px, 1.4fr) minmax(250px, 1fr) minmax(
@@ -487,36 +601,84 @@ p {
 		);
 	gap: 20px;
 }
-.assembly,
 .parts,
 .numbers {
 	border: 1px solid var(--color-border-subtle);
 	padding: 20px;
 	background: var(--color-elev-1);
 }
+.ship-column {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-md);
+	min-width: 0;
+}
+.ship-systems {
+	--_fill: var(--color-elev-1);
+	--_edge: transparent;
+	padding: var(--spacing-md);
+}
+.system-setting {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--spacing-sm);
+	min-height: var(--control-min-height);
+	cursor: pointer;
+}
+.blueprint {
+	background: var(--surface-display);
+	box-shadow: var(--shadow-display);
+}
 .blueprint {
 	position: relative;
+	isolation: isolate;
 	aspect-ratio: 600 / 540;
 	width: 100%;
-	max-width: 533px;
 	margin: auto;
 }
+.preview-mode {
+	position: absolute;
+	top: var(--spacing-md);
+	right: var(--spacing-md);
+	z-index: var(--layer-hud);
+}
+.ship-name {
+	position: absolute;
+	top: var(--spacing-md);
+	left: var(--spacing-md);
+	max-width: calc(100% - 180px);
+	margin: 0;
+	text-align: left;
+	z-index: var(--layer-base);
+	pointer-events: none;
+}
+.view-caption {
+	position: absolute;
+	bottom: var(--spacing-md);
+	right: var(--spacing-md);
+	z-index: var(--layer-raised);
+	pointer-events: none;
+}
 canvas {
+	z-index: var(--layer-raised);
 	width: 100%;
 	height: 100%;
 	position: absolute;
 	inset: 0;
 }
-.grid-lines {
+.view-axes {
 	position: absolute;
 	inset: 0;
-	opacity: 0.2;
-	background-image:
-		linear-gradient(var(--color-grid) 1px, transparent 1px),
-		linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
-	background-size: 30px 30px;
+	pointer-events: none;
+	background:
+		linear-gradient(var(--color-border-subtle), var(--color-border-subtle))
+		center / 1px 100% no-repeat,
+		linear-gradient(var(--color-border-subtle), var(--color-border-subtle))
+		center / 100% 1px no-repeat;
 }
 .mount {
+	z-index: var(--layer-hud);
 	position: absolute;
 	border: 0;
 	background: transparent;
@@ -617,9 +779,6 @@ footer p {
 	}
 	.chassis {
 		flex-wrap: wrap;
-	}
-	.chassis button {
-		min-width: 160px;
 	}
 	.heading,
 	header,

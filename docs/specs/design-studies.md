@@ -29,12 +29,12 @@ including problem formulation; it must neither invent settled purpose nor requir
 the designer to supply the result of the inquiry. See the
 [factory lesson](../factory-building-lessons/002-phased-design-studies.md).
 
-| Part             | Contribution                                                                             | Result                                                           |
-| ---------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| 01 / Problem     | Establish intent, experience, principles, and uncertainty.                               | Shared problem worth investigating.                              |
-| 02 / Exploration | Investigate alternatives with concrete examples; preserve iterations as 02.1, 02.2, etc. | Design conclusions and explicit remaining hypotheses.            |
-| 03 / Readiness   | Assess those conclusions against current systems and constraints.                        | Feasibility, dependencies, required adaptations, and risks.      |
-| 04 / Scope       | Size the conclusions and cut them into deliverable slices.                               | Slices in order, affected systems, dependencies, and rough size. |
+| Part             | Contribution                                                                                   | Result                                                           |
+| ---------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| 01 / Problem     | Establish intent, experience, principles, and uncertainty.                                     | Shared problem worth investigating.                              |
+| 02 / Exploration | Investigate alternatives with concrete examples; develop useful iterations as 02.1, 02.2, etc. | Design conclusions and explicit remaining hypotheses.            |
+| 03 / Readiness   | Assess those conclusions against current systems and constraints.                              | Feasibility, dependencies, required adaptations, and risks.      |
+| 04 / Scope       | Size the conclusions and cut them into deliverable slices.                                     | Slices in order, affected systems, dependencies, and rough size. |
 
 These four parts are the study structure. Develop them progressively; do not fill
 future parts before there is evidence to support them. Scope means understanding how
@@ -164,80 +164,20 @@ Record rendering correctness separately from the designer's judgment of usefulne
 and progression. A build pass cannot establish the latter. On later rounds check that
 feedback changed the page and that settled agreements survived.
 
-### Exploration entry — show something to examine
+### Exploration — concrete proposals and useful discoveries
 
-Once purpose is sufficiently shared and the cycle enters exploration, deliver the
-smallest concrete example that lets the designer examine the current question.
-A description of alternatives, a research summary, or a plan to build an example
-is not sufficient. Do not ask for a preference between imagined experiences before
-providing an appropriate basis for comparison. Purpose can begin with explanation;
-exploration must make its question inspectable.
+Each exploration round delivers an inspectable example addressing the shared question.
+Preserve useful discoveries and agreed qualities; remove unusable attempts and replace
+them in the same round. Rejection alone does not reopen purpose or end the study.
+Explicit discussion, stopping, preservation and reframing requests take precedence;
+actual delivery blockers remain visible.
 
-Choose the medium to fit the claim: a sketch or annotated sequence can expose spatial
-relationships; an interactive composition can expose control hierarchy; a repeatable
-simulation can expose motion and speed differences. Research can inform the example
-but does not replace it. Do not claim a static sketch demonstrates dynamic behavior.
-Build only enough to examine one question, not every alternative or a finished feature.
-Define the real objects consumed, relevant starting conditions, and controlled variables;
-reuse established systems where appropriate and label any fixture departures.
-
-Put the example in the active numbered section with a brief explanation of what to
-notice and its limits. Put one review question grounded in the example in chat. Deliver it in
-the same exploration round rather than ending with a promise to build it. If a real
-blocker prevents delivery, report the blocker and keep the investigation incomplete;
-do not substitute a prose-only preference interview or claim exploration is delivered.
-An explicit designer request for conceptual discussion can override this default.
-
-Before presenting exploration, check that:
-
-- The example exists on the review page and works in its intended medium.
-- Its comparison or observable behavior can inform the stated question.
-- Supporting prose explains what to notice, without burying the example.
-- The review question can be considered from the example; limits remain explicit.
-
-Rendering/interaction checks establish availability, not design usefulness. The
-focus rule below still applies: do not polish or repurpose the example before
-addressing its question unless the designer explicitly overrides.
-
-### Protect the investigation's question
-
-Give each concrete example a question it can answer. Before adjusting it, check
-whether the requested change helps answer that question, repairs an obstacle to
-understanding it, or instead polishes or repurposes the demo. Make ordinary relevant
-repairs without an approval ritual.
-
-When a request would divert the study, push back briefly before implementing it:
-name the current question, explain what the demo already lets us observe, and
-recommend resolving that question first. Invite judgment on the observation and
-its design implication, not on additional fixture details. Do not silently comply
-with an accumulating sequence of tweaks that no longer advances understanding.
-
-The designer can explicitly override this focus recommendation, including in the
-initial request (for example, “set this question aside and investigate the new one”).
-Honor that instruction without arguing or asking again. An ordinary tweak request
-is not by itself an explicit override. If the designer has not overridden, keep the
-diverting edit pending and bring the current question to review. This is a study-focus
-responsibility, not a restriction on the designer's authority.
-
-When an example has answered its question, record what was observed, its limitations,
-and the designer's interpretation. An inconclusive result can also close an experiment
-with its limits recorded. Preserve useful comparisons and their configuration before
-repurposing the fixture. Give a new question a separate example or preserved variant;
-do not overwrite the evidence while tuning toward a desired outcome. On an override,
-record the deliberate change and whether the previous question remains unresolved.
-These observations belong to this cycle; they do not bind a future cycle automatically.
-
-When an independently usable result is accepted within a broader study, recommend
-taking that result through parts 03 and 04 before exploring the next subject.
-Keep the remaining scope explicit and honor a direction to continue exploration.
-Completing that result does not complete the unresolved scope of the original brief.
-
-When a visual example is accepted, identify its exact variant and the properties
-the designer settled. Carry that reference into the scope alongside anything still
-provisional. Acceptance of a lifecycle, for example, need not settle its final visual
-tuning. For motion, preserve the initial conditions, input/tick sequence, seed (or
-absence of randomness), and camera as part of the reference; a matching still frame
-alone does not establish fidelity through motion.
+The [exploration guide](../../.agents/skills/design-study/references/exploration.md)
+owns detailed round, feedback, retention and focus instructions. Read it when entering
+or resuming part 02, within the same skill and conversation. Keep procedural detail there
+instead of duplicating it here. Accepted variants and settled properties travel into
+readiness and scope, with provisional choices explicit. Human judgment of usefulness
+remains separate from rendering and automated correctness.
 
 ## Study-quality evaluation — separate from readiness
 

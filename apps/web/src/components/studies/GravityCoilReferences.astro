@@ -1,0 +1,104 @@
+---
+import { ENGINE_ART } from "../../../../../packages/mode-a/src/lib/engine-art";
+import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
+import { POTENTIAL_WELL_ART } from "../../../../../packages/mode-a/src/lib/potential-well-art";
+import { WASP } from "../../../../../packages/mode-a/src/lib/wasp";
+
+const points = (ps: readonly (readonly number[])[]) =>
+	ps.map((p) => p.join(",")).join(" ");
+const fighter = FIGHTER.hull.map((p, i) => {
+	const n = FIGHTER.hull[(i + 1) % FIGHTER.hull.length];
+	return {
+		points: [[-3, 0], p, n],
+		color: FIGHTER.facets[(p[1] + n[1]) / 2 < 0 ? i % 3 : 3 + (i % 3)],
+	};
+});
+---
+
+<div class="references">
+	{[
+		"Wasp chassis",
+		"Fighter chassis",
+		"Light ion",
+		"Fusion",
+		"Potential Well",
+	].map((name, i) => (
+		<figure>
+			<svg
+				viewBox={
+					i === 1
+						? "-45 -55 90 90"
+						: i === 0
+							? "-32 -32 64 64"
+							: "-22 -24 44 48"
+				}
+				role="img"
+				aria-label={name}
+			>
+				{i === 0 && (
+					<g transform="rotate(-90)">
+						{WASP.facets.map((f) => (
+							<polygon points={points(f.points)} fill={f.color} />
+						))}
+					</g>
+				)}
+				{i === 1 && (
+					<g transform="rotate(-90)">
+						{fighter.map((f) => (
+							<polygon points={points(f.points)} fill={f.color} />
+						))}
+						<polygon points={points(FIGHTER.ridge)} fill="#a2d8df" />
+						<polygon points="38,0 -21,0 -15,4" fill="#51869e" />
+						<polygon points={points(FIGHTER.cockpit)} fill="#000" />
+					</g>
+				)}
+				{(i === 2 || i === 3) && (
+					<g transform="rotate(-90)">
+						{ENGINE_ART[i === 2 ? "ion" : "fusion"][0].map((f) => (
+							<polygon points={points(f.points)} fill={f.color} />
+						))}
+					</g>
+				)}
+				{i === 4 &&
+					POTENTIAL_WELL_ART.normal.map((f) => (
+						<path
+							d={f.path}
+							fill={f.fill}
+							stroke={f.stroke}
+							stroke-width={f.width}
+						/>
+					))}
+			</svg>
+			<figcaption>{name}</figcaption>
+		</figure>
+	))}
+</div>
+<p class="caption">
+	Production artwork · enlarged independently for construction reference · noses
+	up, exhausts down. Fusion is the current engine name; Potential Well is the
+	implemented energy store.
+</p>
+<style>
+.references {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	gap: var(--spacing-md);
+}
+figure {
+	margin: 0;
+	padding: var(--spacing-md);
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+}
+svg {
+	width: 100%;
+	height: 190px;
+}
+figcaption {
+	text-align: center;
+}
+.caption {
+	color: var(--color-text-muted);
+	font-size: var(--font-size-caption);
+}
+</style>

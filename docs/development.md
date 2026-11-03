@@ -23,16 +23,16 @@ Set `JAVA_HOME` and put its `bin` on `PATH` if Java is not installed system-wide
 `pnpm verify` runs every stage, retains individual results and exits nonzero on any
 failure or source change during verification. It never auto-fixes source.
 
-| Command                 | Evidence                                                                                               |
-| ----------------------- | ------------------------------------------------------------------------------------------------------ |
-| `pnpm check:contracts`  | Agent context links exist; warns on agent guide or design.md size and scope                            |
-| `pnpm lint`             | Biome formatting/imports/recommended rules, warnings fail                                              |
-| `pnpm check:types`      | Astro, Svelte and workspace TypeScript, warnings fail                                                  |
-| `pnpm test`             | Physics, stock profile effects, replay, death/reset, camera/wrap                                       |
-| `pnpm build`            | Static production build                                                                                |
-| `pnpm test:browser`     | Real keyboard movement, multi-touch/cancel, pause, replay, import, death/restart and visual comparison |
-| `pnpm test:rules`       | Firestore emulator allowed/rejected access cases                                                       |
-| `pnpm test:competition` | Two browser identities submit completed runs; third reads both scores via emulators                    |
+| Command                 | Evidence                                                                                             |
+| ----------------------- | ---------------------------------------------------------------------------------------------------- |
+| `pnpm check:contracts`  | Agent context links exist; warns on agent guide or design.md size and scope                          |
+| `pnpm lint`             | Biome formatting/imports/recommended rules, warnings fail                                            |
+| `pnpm check:types`      | Astro, Svelte and workspace TypeScript, warnings fail                                                |
+| `pnpm test`             | Physics, stock profile effects, replay, death/reset, camera/wrap                                     |
+| `pnpm build`            | Static production build                                                                              |
+| `pnpm test:browser`     | Real keyboard movement, multi-touch/cancel, pause, replay, import, death/restart and review captures |
+| `pnpm test:rules`       | Firestore emulator allowed/rejected access cases                                                     |
+| `pnpm test:competition` | Two browser identities submit completed runs; third reads both scores via emulators                  |
 
 `pnpm verify:quick` runs contracts (including factory regression tests), lint, types
 and unit tests through the same recorded runner. It exits nonzero on failure or
@@ -67,12 +67,16 @@ Commit identity and deployment identity are separate from passing working-tree c
 
 ## Visual review and experience
 
-The graphics baseline is a fixed viewport, seed and 450-tick paused replay. Text overlays
-are hidden for cross-platform canvas comparison. Its initial image was agent-inspected;
-human assessment of fidelity and fun remains pending. Update a baseline only after
-reviewing the intended visual change, then repeat the comparison without update mode.
-Automated tests do not prove sustained 60 FPS or difficulty balance on a physical phone.
-Report the device and scenario used for any performance measurement.
+Flight and FX captures use explicit viewport, seed and simulation time for human
+review. Alpha 0.5.0 removes pixel equality gates for the combined flight canvas and
+painter recipes: expressive effects and their overlap are intentionally tunable.
+Automated checks cover their activation, lifecycle, placement, bounded work and
+simulation isolation. Shared UI/accessibility and other functional checks remain.
+Human assessment of fidelity and fun is recorded separately. Automated tests do not
+prove sustained 60 FPS or difficulty balance on a physical phone. Report the device,
+scenario, backing resolution and full rendering evidence for performance measurements.
+`/lab/fx` runs the production mixed scene; `node scripts/profile-fx.mjs` captures
+sustained Chromium timing/traces against a server on port 4347 by default.
 
 The Lab is an experience-design surface, not just an asset gallery. Its trials use
 production systems and expose the relevant parameters, reset/replay and shareable
@@ -88,11 +92,13 @@ Platform to work around setup failures. Public web configuration is local, not c
 After successful verification and an authorized commit/push:
 
 ```sh
-pnpm build
+PUBLIC_FIREBASE_EMULATORS=false pnpm build
 pnpm exec firebase deploy --only firestore,hosting --project void-drift-alpha
 ```
 
-Hosting serves `apps/web/dist`. Verify game, Lab, authentication and score reads at
+Pass the existing production public Firebase values explicitly into the build
+environment; Astro does not automatically read the repository-root `.env.local`.
+Never commit that configuration. Hosting serves `apps/web/dist`. Verify game, Lab, authentication and score reads at
 `https://void-drift-alpha.web.app`. Record revision and deployment result separately;
 passing local tests alone do not mean released. Hosting rollback is available in the
 Firebase console; rules changes require redeploying the reviewed previous rules.

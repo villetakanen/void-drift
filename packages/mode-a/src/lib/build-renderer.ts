@@ -17,6 +17,7 @@ import {
 	drawWaspStabilizerSlits,
 	stabilizerMount,
 } from "./stabilizers";
+import { drawUtilityArtwork } from "./utility-art";
 import { WASP } from "./wasp";
 export const BUILD_FLIGHT_SCALE = 0.65;
 export interface BuildMount {
@@ -115,7 +116,7 @@ export function buildMounts(build: Loadout): BuildMount[] {
 					build.chassis === "corvette"
 						? CRUISER.hullMounts[index]
 						: build.chassis === "fighter"
-							? 2 - index * 12
+							? FIGHTER.hullMounts[index]
 							: SCOUT.hullX,
 				y: build.chassis !== "scout" ? 0 : (index - (c.hull - 1) / 2) * 10,
 				angle: 0,
@@ -379,6 +380,10 @@ function drawNonEngineFitting(
 	mount: BuildMount,
 ) {
 	if (!mount.part) return;
+	if (mount.part === "gravity-coil") {
+		drawUtilityArtwork(ctx, "gravity");
+		return;
+	}
 	if (mount.part === "battery" || mount.part === "heavy-well") {
 		drawPotentialWell(ctx, mount.part === "heavy-well");
 		return;

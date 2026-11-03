@@ -90,7 +90,7 @@ Keep allocation-free render behavior in frame loop.
 | Tank     | `tank`     | Higher hull resilience | Slower turn/thrust |
 
 [DEPRECATED 2026-11-01] `balanced` and `tank` are retired; the ids are `wasp`, `scout`, `fighter`, `corvette`.
-Names and traits: [Ship names and ids](./ship-builder.md#ship-names-and-ids--s4-2026-11-02).
+Names and traits: [Ship names and ids](../history/ship-builder.md#ship-names-and-ids--s4-2026-11-02).
 
 ### Anti-Patterns
 

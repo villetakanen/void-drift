@@ -127,7 +127,7 @@ alignment with the long hull edge, then explicitly retained the original product
 does not rotate fast enough?”, Fighter's direct angular response was multiplied by
 2.5. The default fission build now estimates 96.6°/s turning and 339.7 units/s²
 paired forward acceleration. These values describe this implementation; they are
-not general design targets. See the ship-builder specification and `fighter.ts`.
+not general design targets. See the [ship-builder record](../history/ship-builder.md#fighter-silhouette-integration--2026-10-30) and `fighter.ts`.
 
 The conservative 31.2-unit circular collision envelope includes the longer nose.
 Study sketches retain earlier orientations as historical evidence. Earlier
