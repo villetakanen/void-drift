@@ -1,6 +1,8 @@
 # Dialogs
 
-**Status:** Implemented 2026-11-02 (opening-screen S6), owner-approved 2026-11-02.
+**Status:** Current implementation from 2026-11-02 (opening-screen S6).
+Dialog modality was disputed by the owner on 2026-11-03; correction is deferred
+pending opening-screen composition, not accepted as intended non-modal behavior.
 **Source of truth:** `apps/web/src/components/Dialog.svelte`,
 `packages/core/src/lib/styles/surfaces.css`.
 **Reference:** `/lab/surfaces` (live dialog demo), `/lab/flight`.
@@ -53,9 +55,13 @@ and the engine pads. The page header and the Lab inspector are outside it.
 1. **Stage inert.** On open the stage gets `inert`. Nothing in it can be focused, clicked or
    found by assistive technology. Holders are counted, so when one dialog hands over to the next
    (run complete → menu), the stage stays inert throughout.
-2. **Only the stage.** The page header (HANGAR, HIGH SCORES, OPTIONS, Return to builder) and the flight Lab
-   inspector stay usable while a dialog is open. The dialog is therefore not `aria-modal`: that
-   would claim the whole page is blocked. Owner decision, 2026-11-02.
+2. **Current limitation: only the stage.** The page header (HANGAR, HIGH SCORES,
+   OPTIONS, Return to builder) and flight Lab inspector remain usable; the current
+   component is not `aria-modal`. [DEPRECATED 2026-11-03] The prior attribution of
+   this behavior to an owner decision was challenged as likely agent drift. The
+   owner wants all actual dialogs to trap focus until closed, but explicitly
+   deferred that fix because the permanent opening menu relies on external header
+   navigation. See the [separate composition plan](../plans/2026-11-03-opening-screen-dialog-boundary.md).
 3. **HUD and engine pads hide.** Parts marked `data-hud` inside an inert stage are
    `visibility: hidden`: the HUD, the engine feedback line and the engine pads.
 4. **The scrim shades the stage.** The stage takes `--scrim-filter` and a `--scrim-tint` colour
@@ -86,6 +92,10 @@ and the engine pads. The page header and the Lab inspector are outside it.
 - [x] Browser tests cover dialog isolation and focus return (`tests/browser/dialogs.spec.ts`).
 
 ### Regression Guardrails
+
+The checks below protect current stage isolation and restoration during pruning.
+They do not establish external-header access as the intended long-term contract.
+Modal containment is a deferred target tied to the composition plan above.
 
 - Tab never reaches the HUD, the engine pads or the canvas while any dialog is open.
 - A dialog never leaves its stage inert after it closes.

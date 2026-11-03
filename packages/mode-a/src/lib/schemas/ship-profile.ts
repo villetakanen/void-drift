@@ -5,6 +5,7 @@ export const ShipProfileIdSchema = z.enum([
 	"scout",
 	"fighter",
 	"corvette",
+	"fiddler",
 ]);
 
 export const ShipProfileSchema = z.object({
@@ -17,7 +18,7 @@ export const ShipProfileSchema = z.object({
 	tint: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
 });
 
-export const ShipProfilesSchema = z.array(ShipProfileSchema).length(4);
+export const ShipProfilesSchema = z.array(ShipProfileSchema).length(5);
 
 /** Display identity: the short name is the id; the long name is the full designation. */
 export const ShipIdentitySchema = z
@@ -34,6 +35,7 @@ export const ShipIdentitiesSchema = z
 		scout: ShipIdentitySchema,
 		fighter: ShipIdentitySchema,
 		corvette: ShipIdentitySchema,
+		fiddler: ShipIdentitySchema,
 	})
 	.strict()
 	.superRefine((ships, ctx) => {

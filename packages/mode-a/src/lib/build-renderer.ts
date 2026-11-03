@@ -1,6 +1,7 @@
 import { COLOR, canvasFont, type PlumeEmitter } from "@void-drift/core";
 import { CRUISER } from "./cruiser";
 import { ENGINE_ART } from "./engine-art";
+import { FIDDLER } from "./fiddler";
 import { FIGHTER } from "./fighter";
 import { drawPotentialWell } from "./potential-well-art";
 import {
@@ -14,7 +15,7 @@ import {
 import { SCOUT } from "./scout";
 import {
 	drawStabilizerSlits,
-	drawWaspStabilizerSlits,
+	lhiStabilizers,
 	stabilizerMount,
 } from "./stabilizers";
 import { drawUtilityArtwork } from "./utility-art";
@@ -24,6 +25,9 @@ export interface BuildMount {
 	key: string;
 	type: SlotType;
 	linkedTo?: string;
+	required?: boolean;
+	underHull?: boolean;
+	language?: { symbol: string; label: string };
 	label: string;
 	x: number;
 	y: number;
@@ -36,6 +40,69 @@ export interface BuildMount {
 }
 export function buildMounts(build: Loadout): BuildMount[] {
 	const c = CHASSIS[build.chassis];
+	if (build.chassis === "fiddler") {
+		return [
+			...FIDDLER.rootEngines.map(
+				([x, y], index): BuildMount => ({
+					key: index === 0 ? "left" : "right",
+					type: "engine",
+					required: true,
+					linkedTo: index === 1 ? "left" : undefined,
+					label: `${index === 0 ? "Left" : "Right"} blade root · Engine pair`,
+					x,
+					y,
+					angle: 0,
+					part: build.side,
+					group: "side",
+					index,
+					width: 14,
+					height: 9,
+					underHull: true,
+				}),
+			),
+			...FIDDLER.rearEngines.map(
+				([x, y], index): BuildMount => ({
+					key: `aft-${index}`,
+					type: "engine",
+					required: true,
+					linkedTo: index === 1 ? "aft-0" : undefined,
+					label: `${index === 0 ? "Left" : "Right"} rear · Engine pair`,
+					x,
+					y,
+					angle: 0,
+					part: build.aft[index],
+					group: "aft",
+					index,
+					width: 14,
+					height: 9,
+					underHull: false,
+				}),
+			),
+			...FIDDLER.hullMounts.map(
+				([x, y], index): BuildMount => ({
+					key: `hull-${index}`,
+					type: index === 2 || index === 3 ? "support" : "equipment",
+					language:
+						index === 2 || index === 3
+							? SLOT_TYPES.support
+							: { symbol: "+", label: "Weapon / support" },
+					label:
+						index === 4
+							? "Centre · Weapon / support"
+							: `${index % 2 === 0 ? "Left" : "Right"} ${index < 2 ? "forward pincer · Weapon / support" : "aft pincer · Support"}`,
+					x,
+					y,
+					angle: 0,
+					part: build.hull[index],
+					group: "hull",
+					index,
+					width: 11,
+					height: 9,
+					underHull: true,
+				}),
+			),
+		];
+	}
 	if (build.chassis === "wasp") {
 		return [
 			{
@@ -187,7 +254,7 @@ function drawEngine(
 	if (!mount.part) return;
 	const id = engineArtId(mount.part);
 	const pose =
-		build.chassis === "wasp"
+		build.chassis === "wasp" || build.chassis === "fiddler"
 			? 3
 			: mount.key === "left"
 				? 1
@@ -241,10 +308,12 @@ export function drawBuild(
 	ctx.scale(scale, scale);
 	const mounts = mountOverride ?? buildMounts(build);
 	const isWasp = build.chassis === "wasp";
+	const lhi = lhiStabilizers(build.chassis);
 	const below = (mount: BuildMount) =>
-		isWasp
+		mount.underHull ??
+		(isWasp
 			? mount.group === "hull"
-			: build.chassis === "scout" || mount.group === "side";
+			: build.chassis === "scout" || mount.group === "side");
 	if (!slots)
 		for (const mount of mounts) {
 			if (!mount.part || !below(mount)) continue;
@@ -262,6 +331,8 @@ export function drawBuild(
 	if (slots) ctx.globalAlpha = 0.7;
 	if (isWasp) {
 		for (const facet of WASP.facets) polygon(ctx, facet.points, facet.color);
+	} else if (build.chassis === "fiddler") {
+		for (const facet of FIDDLER.facets) polygon(ctx, facet.points, facet.color);
 	} else if (build.chassis === "corvette") {
 		// Clip out the stern channel without painting over the scene beneath it.
 		ctx.save();
@@ -311,8 +382,9 @@ export function drawBuild(
 		}
 	}
 	ctx.restore();
-	if (isWasp) {
-		drawWaspStabilizerSlits(ctx);
+	if (lhi) {
+		drawStabilizerSlits(ctx, lhi.front);
+		drawStabilizerSlits(ctx, lhi.rear);
 	}
 	if (slots) {
 		for (const secondary of mounts.filter((m) => m.linkedTo)) {
@@ -370,12 +442,13 @@ export function drawBuild(
 
 		ctx.restore();
 	}
-	if (!isWasp && build.stabilizers)
+	if (!lhi && build.stabilizers)
 		drawStabilizerSlits(ctx, stabilizerMount(build.chassis));
 	ctx.restore();
 }
 
-function drawNonEngineFitting(
+/** Full-size installed weapon/support artwork, shared with placement tools. */
+export function drawNonEngineFitting(
 	ctx: CanvasRenderingContext2D,
 	mount: BuildMount,
 ) {
@@ -447,13 +520,16 @@ export const SLOT_STYLE = {
 	border: 1.5,
 	referenceScale: 7,
 } as const;
-function drawSlot(
+/** Shared mount overlay for the Hangar and geometry authoring tools. */
+export function drawSlot(
 	ctx: CanvasRenderingContext2D,
 	mount: BuildMount,
-	number: number,
+	number: number | string,
 	selected: boolean,
 	palette: SlotPalette,
 	backgroundOnly = false,
+	language: { symbol: string; label: string } = mount.language ??
+		SLOT_TYPES[mount.type],
 ) {
 	ctx.save();
 	// Convert ship-local forward +x into the study's upright slot coordinates.
@@ -500,7 +576,7 @@ function drawSlot(
 		ctx.font = canvasFont(32, 700);
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
-		ctx.fillText(SLOT_TYPES[mount.type].symbol, 0, 0);
+		ctx.fillText(language.symbol, 0, 0);
 		ctx.globalAlpha = 1;
 	}
 	ctx.fillStyle = palette.dark;
@@ -511,13 +587,17 @@ function drawSlot(
 	ctx.textAlign = "right";
 	ctx.textBaseline = "alphabetic";
 	ctx.fillStyle = palette.ivory;
-	ctx.fillText(String(number).padStart(2, "0"), -cw - 5, -ch);
+	ctx.fillText(
+		typeof number === "number" ? String(number).padStart(2, "0") : number,
+		-cw - 5,
+		-ch,
+	);
 	ctx.translate(-w - 4, h);
 	ctx.rotate(-Math.PI / 2);
 	ctx.font = canvasFont(8);
 	ctx.textAlign = "left";
 	ctx.fillStyle = ink;
-	ctx.fillText(SLOT_TYPES[mount.type].label, 0, 0);
+	ctx.fillText(language.label, 0, 0);
 	ctx.restore();
 }
 
@@ -545,8 +625,9 @@ export function buildPlumeEmitters(build: Loadout): PlumeEmitter[] {
 			angle: mount.angle,
 			output: 0,
 		}));
-	if (build.chassis === "wasp") {
-		for (const m of [WASP.stabilizers.front, WASP.stabilizers.rear]) {
+	const lhi = lhiStabilizers(build.chassis);
+	if (lhi) {
+		for (const m of [lhi.front, lhi.rear]) {
 			for (const side of [-1, 1])
 				emitters.push({
 					style: "ion-light",
@@ -599,9 +680,9 @@ export function barrelLength(mount: BuildMount) {
 
 /** Conservative circular collision envelope, including the accepted forward tip. */
 function baseBuildCollisionRadius(build: Loadout) {
-	if (build.chassis === "wasp") {
+	if (build.chassis === "wasp" || build.chassis === "fiddler") {
 		const hull = Math.max(
-			...WASP.facets.flatMap((facet) =>
+			...(build.chassis === "wasp" ? WASP : FIDDLER).facets.flatMap((facet) =>
 				facet.points.map(([x, y]) => Math.hypot(x, y)),
 			),
 		);

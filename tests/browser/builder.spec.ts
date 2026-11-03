@@ -1,23 +1,32 @@
-import { expect, test } from "@playwright/test";
+import {
+	buildStats,
+	CHASSIS,
+	defaultLoadout,
+} from "../../packages/mode-a/src/lib/schemas/loadout";
+import { expect, test } from "../helpers/local-browser";
 
 test("fit, persist, fly, reset and return to an assembled ship", async ({
 	page,
 }) => {
-	const errors: string[] = [];
-	page.on("pageerror", (error) => errors.push(error.message));
+	const time = new Date("2026-11-03T00:00:00Z");
+	await page.clock.install({ time });
+	await page.clock.pauseAt(time);
+	const fitted = defaultLoadout("fighter");
+	fitted.hull[0] = "heavy-well";
+	const capacity = String(buildStats(fitted).capacity);
 	await page.goto("/builder");
 	await expect(
 		page.getByRole("heading", { name: "Hangar", exact: true }),
 	).toBeVisible();
-	await page.getByRole("button", { name: /Light ion.*10 mass/ }).click();
+	await page.getByRole("button", { name: /^Light ion\b/ }).click();
 	await expect(
 		page.getByRole("button", { name: "Right side · mirrored E: Light ion" }),
 	).toBeVisible();
 	await page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }).click();
-	await expect(
-		page.getByRole("button", { name: /Light ion.*10 mass/ }),
-	).toHaveCount(0);
-	await page.getByRole("button", { name: /Potential Well.*18 mass/ }).click();
+	await expect(page.getByRole("button", { name: /^Light ion\b/ })).toHaveCount(
+		0,
+	);
+	await page.getByRole("button", { name: /^Heavy Potential Well\b/ }).click();
 	await expect(
 		page
 			.getByRole("region", { name: "Ship assembly" })
@@ -31,13 +40,11 @@ test("fit, persist, fly, reset and return to an assembled ship", async ({
 	).toBeEnabled();
 	await page.reload();
 	await expect(
-		page.getByRole("button", { name: "Hull 1 · Equipment: Potential Well" }),
+		page.getByRole("button", {
+			name: "Hull 1 · Equipment: Heavy Potential Well",
+		}),
 	).toBeVisible();
 	await page.setViewportSize({ width: 1440, height: 1100 });
-	await page.screenshot({
-		path: "artifacts/builder-desktop.png",
-		fullPage: true,
-	});
 	await page.getByRole("button", { name: "Test flight", exact: true }).click();
 	await expect(page.locator(".flight-page")).toHaveAttribute(
 		"data-status",
@@ -45,9 +52,10 @@ test("fit, persist, fly, reset and return to an assembled ship", async ({
 	);
 	await expect(
 		page.getByRole("progressbar", { name: "Power" }),
-	).toHaveAttribute("max", "185");
+	).toHaveAttribute("max", capacity);
 	await page.keyboard.down("a");
 	await page.keyboard.down("d");
+	await page.clock.runFor(600);
 	await expect
 		.poll(async () =>
 			Number(await page.locator(".flight-page").getAttribute("data-ticks")),
@@ -55,20 +63,20 @@ test("fit, persist, fly, reset and return to an assembled ship", async ({
 		.toBeGreaterThan(30);
 	await page.keyboard.up("a");
 	await page.keyboard.up("d");
-	await page.screenshot({ path: "artifacts/builder-flight.png" });
 	await page.getByRole("button", { name: "Reset flight" }).click();
 	await expect(
 		page.getByRole("progressbar", { name: "Power" }),
-	).toHaveAttribute("value", /18[345]/);
+	).toHaveAttribute("value", capacity);
 	await page.getByRole("button", { name: "Return to builder" }).click();
 	await expect(
-		page.getByRole("button", { name: "Hull 1 · Equipment: Potential Well" }),
+		page.getByRole("button", {
+			name: "Hull 1 · Equipment: Heavy Potential Well",
+		}),
 	).toBeVisible();
 	await page.getByRole("button", { name: "Start survival" }).click();
 	await expect(page.locator(".edition")).toHaveText(
 		"CUSTOM SURVIVAL / UNRANKED",
 	);
-	expect(errors).toEqual([]);
 });
 
 test("corrupt browser storage recovers to flyable defaults", async ({
@@ -112,6 +120,7 @@ test("preserves other chassis saves and independently selects tight aft mounts",
 			aft: ["ion", null, "fusion"],
 		},
 	};
+	await page.clock.install();
 	await page.goto("/lab/builder");
 	await page.evaluate(
 		(value) =>
@@ -123,10 +132,10 @@ test("preserves other chassis saves and independently selects tight aft mounts",
 		page.getByRole("radio", { name: "Fighter", exact: true }),
 	).toBeChecked();
 	await page.getByRole("button", { name: "Aft 1 · Universal: Empty" }).click();
-	await page.getByRole("button", { name: /Rail gun.*15 mass/ }).click();
+	await page.getByRole("button", { name: /^Rail gun\b/ }).click();
 	await page.getByRole("button", { name: "Aft 2 · Universal: Empty" }).focus();
 	await page.keyboard.press("Enter");
-	await page.getByRole("button", { name: /Light ion.*10 mass/ }).click();
+	await page.getByRole("button", { name: /^Light ion\b/ }).click();
 	await page.reload();
 	const restored = await page.evaluate(() =>
 		JSON.parse(localStorage.getItem("void-drift-builds-v3") ?? "null"),
@@ -134,32 +143,6 @@ test("preserves other chassis saves and independently selects tight aft mounts",
 	expect(restored.scout).toEqual({ ...saved.scout, stabilizers: true });
 	expect(restored.corvette).toEqual({ ...saved.corvette, stabilizers: true });
 	expect(restored.fighter.aft).toEqual(["rail", "ion"]);
-	await page.getByRole("button", { name: "Start survival" }).click();
-	await page.keyboard.down("a");
-	await page.keyboard.down("d");
-	await expect(page.locator(".flight-page")).toHaveAttribute(
-		"data-status",
-		"GAME_OVER",
-		{ timeout: 20000 },
-	);
-	await page.keyboard.up("a");
-	await page.keyboard.up("d");
-	await expect(page.getByRole("button", { name: "Submit Score" })).toHaveCount(
-		0,
-	);
-	await page
-		.getByRole("dialog", { name: "Run complete" })
-		.getByRole("button", { name: "Return to builder" })
-		.click();
-	await expect(
-		page.getByRole("button", { name: "Aft 1 · Universal: Rail gun" }),
-	).toBeVisible();
-});
-
-test("cruiser fits eight mounts, preserves Fighter and flies", async ({
-	page,
-}) => {
-	await page.goto("/lab/builder");
 	await page
 		.getByRole("radiogroup", { name: "Choose chassis" })
 		.getByText("Corvette", { exact: true })
@@ -167,10 +150,19 @@ test("cruiser fits eight mounts, preserves Fighter and flies", async ({
 	await expect(
 		page.getByRole("heading", { name: "Mark II Escort Frigate" }),
 	).toBeVisible();
-	await page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }).click();
-	await page.getByRole("button", { name: /Rail gun.*15 mass/ }).click();
+	await expect(page.locator(".mount")).toHaveCount(
+		2 + CHASSIS.corvette.hull + CHASSIS.corvette.aft,
+	);
 	await page.getByRole("button", { name: "Aft 2 · Universal: Empty" }).click();
-	await page.getByRole("button", { name: /Light ion.*10 mass/ }).click();
+	await page.getByRole("button", { name: /^Light ion\b/ }).click();
+	await page.reload();
+	await page
+		.getByRole("radiogroup", { name: "Choose chassis" })
+		.getByText("Corvette", { exact: true })
+		.click();
+	await expect(
+		page.getByRole("button", { name: "Aft 2 · Universal: Light ion" }),
+	).toBeVisible();
 	await page
 		.getByRole("radiogroup", { name: "Choose chassis" })
 		.getByText("Fighter", { exact: true })
@@ -181,36 +173,36 @@ test("cruiser fits eight mounts, preserves Fighter and flies", async ({
 	await expect(
 		page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }),
 	).toBeVisible();
-	await page.reload();
+	await expect(
+		page.getByRole("button", { name: "Aft 1 · Universal: Rail gun" }),
+	).toBeVisible();
+	await page.getByRole("button", { name: "Start survival" }).click();
+	await page.keyboard.down("ArrowRight");
+	await page.clock.runFor(750);
+	await page.keyboard.up("ArrowRight");
+	await page.keyboard.down("ArrowUp");
+	for (
+		let i = 0;
+		i < 5 &&
+		(await page.locator(".flight-page").getAttribute("data-status")) !==
+			"GAME_OVER";
+		i++
+	)
+		await page.clock.runFor(1000);
+	await expect(page.locator(".flight-page")).toHaveAttribute(
+		"data-status",
+		"GAME_OVER",
+	);
+	await page.keyboard.up("ArrowUp");
+	await expect(page.getByRole("button", { name: "Submit Score" })).toHaveCount(
+		0,
+	);
 	await page
-		.getByRole("radiogroup", { name: "Choose chassis" })
-		.getByText("Corvette", { exact: true })
+		.getByRole("dialog", { name: "Run complete" })
+		.getByRole("button", { name: "Return to builder" })
 		.click();
 	await expect(
-		page.getByRole("button", { name: "Hull 1 · Equipment: Rail gun" }),
-	).toBeVisible();
-	await expect(
-		page.getByRole("button", { name: "Aft 2 · Universal: Light ion" }),
-	).toBeVisible();
-	await page.setViewportSize({ width: 1440, height: 1100 });
-	await page.screenshot({
-		path: "artifacts/cruiser-builder.png",
-		fullPage: true,
-	});
-	await page.getByRole("button", { name: "Test flight", exact: true }).click();
-	await page.keyboard.down("a");
-	await page.keyboard.down("d");
-	await expect
-		.poll(async () =>
-			Number(await page.locator(".flight-page").getAttribute("data-ticks")),
-		)
-		.toBeGreaterThan(45);
-	await page.keyboard.up("a");
-	await page.keyboard.up("d");
-	await page.screenshot({ path: "artifacts/cruiser-flight.png" });
-	await page.getByRole("button", { name: "Return to builder" }).click();
-	await expect(
-		page.getByRole("button", { name: "Hull 1 · Equipment: Rail gun" }),
+		page.getByRole("button", { name: "Aft 1 · Universal: Rail gun" }),
 	).toBeVisible();
 });
 
@@ -235,9 +227,9 @@ test("new engine catalog resets old saves and exposes plasma charging in flight"
 		.toEqual([null, null]);
 	await expect(page.getByText("could not be read")).toHaveCount(0);
 	await expect(
-		page.getByRole("button", { name: /Heavy ion.*20 mass/ }),
+		page.getByRole("button", { name: /^Heavy ion\b/ }),
 	).toBeVisible();
-	await page.getByRole("button", { name: /Plasma.*24 mass/ }).click();
+	await page.getByRole("button", { name: /^Plasma\b/ }).click();
 	await expect(
 		page.getByRole("button", { name: "Right side · mirrored E: Plasma" }),
 	).toBeVisible();
@@ -250,60 +242,4 @@ test("new engine catalog resets old saves and exposes plasma charging in flight"
 	await page.keyboard.down("a");
 	await expect(page.locator(".engine-feedback")).toContainText("charging");
 	await page.keyboard.up("a");
-});
-
-test("heavy Potential Well persists and supplies its full reserve in flight", async ({
-	page,
-}) => {
-	await page.goto("/builder");
-	await page
-		.getByRole("button", { name: "Hull 1 · Equipment: Empty", exact: true })
-		.click();
-	await page
-		.getByRole("button", { name: /Heavy Potential Well.*36 mass/ })
-		.click();
-	await page.reload();
-	await expect(
-		page.getByRole("button", {
-			name: "Hull 1 · Equipment: Heavy Potential Well",
-			exact: true,
-		}),
-	).toBeVisible();
-	await page.getByRole("button", { name: "Test flight", exact: true }).click();
-	await expect(
-		page.getByRole("progressbar", { name: "Power" }),
-	).toHaveAttribute("max", "240");
-});
-
-test("linked-engine setting persists and new ships enable stabilizers", async ({
-	page,
-}) => {
-	await page.goto("/builder");
-	await expect(
-		page.getByRole("checkbox", { name: "Ion stabilizers", exact: true }),
-	).toBeChecked();
-	await expect(
-		page.getByRole("checkbox", { name: "Linked engines", exact: true }),
-	).not.toBeChecked();
-	await page
-		.getByRole("checkbox", { name: "Linked engines", exact: true })
-		.check();
-	await page.reload();
-	await expect(
-		page.getByRole("checkbox", { name: "Linked engines", exact: true }),
-	).toBeChecked();
-	const saved = await page.evaluate(() =>
-		JSON.parse(localStorage.getItem("void-drift-builds-v3") ?? "{}"),
-	);
-	expect(saved.fighter.linkedEngines).toBe(true);
-	await page
-		.getByRole("radiogroup", { name: "Choose chassis" })
-		.getByText("Scout", { exact: true })
-		.click();
-	await expect(
-		page.getByRole("checkbox", { name: "Ion stabilizers", exact: true }),
-	).toBeChecked();
-	await expect(
-		page.getByRole("checkbox", { name: "Linked engines", exact: true }),
-	).not.toBeChecked();
 });

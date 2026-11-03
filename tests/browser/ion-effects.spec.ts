@@ -1,10 +1,8 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../helpers/local-browser";
 
 test("shared ion instrument exposes firing, turning, release and expiry", async ({
 	page,
-}, testInfo) => {
-	const errors: string[] = [];
-	page.on("pageerror", (e) => errors.push(e.message));
+}) => {
 	await page.goto("/lab/ion-engines");
 	const region = page.getByRole("region", { name: "Production ion effects" });
 	for (const [tick, name] of [
@@ -21,12 +19,4 @@ test("shared ion instrument exposes firing, turning, release and expiry", async 
 				.poll(async () => Number(await region.getAttribute("data-outlets")))
 				.toBeGreaterThan(0);
 	}
-	await region
-		.getByRole("button", { name: "Firing · 0.75 s", exact: true })
-		.click();
-	await testInfo.attach("arcade-ion-review", {
-		body: await region.screenshot(),
-		contentType: "image/png",
-	});
-	expect(errors).toEqual([]);
 });

@@ -3,6 +3,7 @@ import {
 	forceComposition,
 	forwardAcceleration,
 } from "../../../../apps/web/src/components/studies/force-composition";
+import { CHASSIS, PARTS } from "./schemas/loadout";
 
 it("separates combined force from mass and diminishing ceilings", () => {
 	const one = forceComposition(0, false, true),
@@ -14,9 +15,13 @@ it("separates combined force from mass and diminishing ceilings", () => {
 	const fitted = forceComposition(3, true, true),
 		fixed = forceComposition(3, false, true),
 		charging = forceComposition(3, true, false);
-	expect(fitted.mass).toBe(129);
+	expect(fitted.mass).toBe(
+		CHASSIS.fighter.mass + PARTS.ion.mass + PARTS.plasma.mass,
+	);
 	expect(fitted.ceiling).toBe(fixed.ceiling);
-	expect(fitted.acceleration).toBeLessThan(fixed.acceleration);
+	expect(fitted.acceleration * fitted.mass).toBeCloseTo(
+		fixed.acceleration * fixed.mass,
+	);
 	expect(charging.mass).toBe(fitted.mass);
 	expect(charging.force).toBe(one.force);
 });
@@ -30,6 +35,6 @@ it("samples production taper at rest, cruising speed, and overspeed", () => {
 		forwardAcceleration(row.force, row.mass, row.ceiling, row.ceiling / 2),
 	).toBeCloseTo(row.acceleration / 2, 9);
 	expect(
-		forwardAcceleration(row.force, row.mass, row.ceiling, 500),
+		forwardAcceleration(row.force, row.mass, row.ceiling, row.ceiling * 2),
 	).toBeCloseTo(0, 9);
 });

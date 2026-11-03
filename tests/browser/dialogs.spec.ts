@@ -1,31 +1,36 @@
-import { expect, type Page, test } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "../helpers/local-browser";
 
 // docs/specs/dialogs.md: every dialog isolates its stage and returns focus.
-test.beforeEach(async ({ page }) => {
-	await page.route("**/*", (route) =>
-		new URL(route.request().url()).hostname === "127.0.0.1"
-			? route.continue()
-			: route.abort(),
-	);
-});
 
-/** Presses Tab `n` times and reports where focus went that it must not. */
-async function tabOutsideStage(page: Page, n = 24) {
-	const leaks: string[] = [];
-	for (let i = 0; i < n; i++) {
-		await page.keyboard.press("Tab");
-		const leak = await page.evaluate(() => {
-			const e = document.activeElement;
-			if (!e) return null;
-			if (e instanceof HTMLCanvasElement) return "canvas";
-			if (e.closest(".flight-hud")) return "HUD";
-			if (e.closest(".flight-controls")) return `engine pads: ${e.textContent}`;
-			if (e.closest("[data-stage]")) return `stage: ${e.textContent}`;
-			return null;
+/** Retain stage isolation while the owner defers the wider modal composition change. */
+async function expectStageIsolation(page: Page) {
+	const dialog = page.getByRole("dialog");
+	for (const selector of ["button", "canvas"]) {
+		await page.locator(`[data-stage] ${selector}`).evaluateAll((nodes) => {
+			for (const node of nodes) if (node instanceof HTMLElement) node.focus();
 		});
-		if (leak) leaks.push(leak);
+		expect(
+			await dialog.evaluate((element) =>
+				element.contains(document.activeElement),
+			),
+		).toBe(true);
 	}
-	return leaks;
+	const controls = dialog.locator(
+		"button:visible:not([disabled]), a:visible[href], input:visible:not([disabled])",
+	);
+	for (const [edge, key] of [
+		[controls.last(), "Tab"],
+		[controls.first(), "Shift+Tab"],
+	] as const) {
+		await edge.focus();
+		await page.keyboard.press(key);
+		expect(
+			await page.evaluate(
+				() => document.activeElement?.closest("[data-stage]") !== null,
+			),
+		).toBe(false);
+	}
 }
 
 async function expectIsolated(page: Page, name: string) {
@@ -39,7 +44,7 @@ async function expectIsolated(page: Page, name: string) {
 	await expect(page.locator("[data-stage]")).toHaveAttribute("inert", "");
 	await expect(page.locator(".flight-hud")).toBeHidden();
 	await expect(page.getByRole("button", { name: "Left engine" })).toBeHidden();
-	expect(await tabOutsideStage(page)).toEqual([]);
+	await expectStageIsolation(page);
 }
 
 test("dialog isolation: Tab never reaches the HUD, engine pads or canvas", async ({
@@ -100,7 +105,7 @@ test("focus returns to the opener when a dialog closes", async ({ page }) => {
 	await expect(
 		page.getByRole("button", { name: "Close", exact: true }),
 	).toBeFocused();
-	expect(await tabOutsideStage(page, 12)).toEqual([]);
+	await expectStageIsolation(page);
 	await page.keyboard.press("Escape");
 	await expect(page.getByRole("dialog", { name: "Demo dialog" })).toBeHidden();
 	await expect(opener).toBeFocused();

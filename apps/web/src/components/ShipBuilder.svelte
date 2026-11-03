@@ -11,6 +11,7 @@ import {
 	ENGINE_ACCENT,
 	ENGINE_ART,
 	engineArtId,
+	FIDDLER,
 	FIGHTER,
 	PARTS,
 	type PartId,
@@ -31,7 +32,7 @@ import Switch from "./inputs/Switch.svelte";
 import Toggle from "./inputs/Toggle.svelte";
 import Logo from "./Logo.svelte";
 
-const shipIds = ["wasp", "scout", "fighter", "corvette"] as const;
+const shipIds = ["wasp", "scout", "fighter", "corvette", "fiddler"] as const;
 
 let { lab = false }: { lab?: boolean } = $props();
 let builds = $state(defaultBuilds());
@@ -48,15 +49,18 @@ const stats = $derived(buildStats(build));
 const mounts = $derived(buildMounts(build));
 let previewWidth = $state(600);
 let previewHeight = $state(540);
+let titleHeight = $state(48);
 const framing = $derived.by(() => {
 	const hull =
 		chosen === "fighter"
 			? FIGHTER.hull
-			: (chosen === "wasp"
-					? WASP.facets
-					: chosen === "scout"
-						? SCOUT.facets
-						: CRUISER.facets
+			: (chosen === "fiddler"
+					? FIDDLER.facets
+					: chosen === "wasp"
+						? WASP.facets
+						: chosen === "scout"
+							? SCOUT.facets
+							: CRUISER.facets
 				).flatMap((f) => f.points);
 	const points: number[][] = hull.map((p) => [p[0], p[1]]);
 	for (const m of mounts) {
@@ -80,17 +84,19 @@ const framing = $derived.by(() => {
 		maxX = Math.max(...xs),
 		minY = Math.min(...ys),
 		maxY = Math.max(...ys);
+	const top = Math.max(60, titleHeight + 32);
+	const drawingHeight = Math.max(1, previewHeight - top - 28);
 	const scale = Math.max(
 		0.01,
 		Math.min(
 			Math.max(1, previewWidth - 32) / (maxX - minX),
-			Math.max(1, previewHeight - 32) / (maxY - minY),
+			drawingHeight / (maxY - minY),
 		),
 	);
 	return {
 		scale,
 		x: previewWidth / 2 - ((minX + maxX) * scale) / 2,
-		y: previewHeight / 2 - ((minY + maxY) * scale) / 2,
+		y: top + drawingHeight / 2 - ((minY + maxY) * scale) / 2,
 	};
 });
 const previewScale = $derived(framing.scale);
@@ -165,7 +171,11 @@ $effect(() => {
 	}
 });
 function install(id: PartId | null) {
-	if (mount.linkedTo || (id && !slotAccepts(mount.type, PARTS[id].category)))
+	if (
+		mount.linkedTo ||
+		(!id && mount.required) ||
+		(id && !slotAccepts(mount.type, PARTS[id].category))
+	)
 		return;
 	if (mount.group === "side") {
 		if (
@@ -175,6 +185,8 @@ function install(id: PartId | null) {
 			id === "plasma"
 		)
 			build.side = id;
+	} else if (chosen === "fiddler" && mount.group === "aft") {
+		build.aft = [id, id];
 	} else build[mount.group][mount.index] = id;
 }
 function choose(id: ShipProfileId) {
@@ -244,7 +256,9 @@ function choose(id: ShipProfileId) {
 								bind:value={previewMode}
 							/>
 						</div>
-						<h2 class="ship-name">{SHIP_IDENTITY[chosen].longName}</h2>
+						<h2 class="ship-name" bind:clientHeight={titleHeight}>
+							{SHIP_IDENTITY[chosen].longName}
+						</h2>
 						<span class="view-caption"
 							>{previewMode === "Plan"
 								? "FIXED MOUNTS / TOP VIEW"
@@ -279,12 +293,14 @@ function choose(id: ShipProfileId) {
 				<section class="ship-systems cut-surface" aria-label="Ship systems">
 					<label class="system-setting" for="hangar-stabilizers">
 						<span
-							>Ion stabilizers{chosen === "wasp" ? " (forced on)" : ""}</span
+							>Ion stabilizers{chosen === "wasp" || chosen === "fiddler"
+								? " (forced on)"
+								: ""}</span
 						>
 						<Switch
 							id="hangar-stabilizers"
 							bind:checked={build.stabilizers}
-							disabled={chosen === "wasp"}
+							disabled={chosen === "wasp" || chosen === "fiddler"}
 						/>
 					</label>
 					<p class="assembly-note">
@@ -293,9 +309,11 @@ function choose(id: ShipProfileId) {
 					</p>
 
 					<p class="assembly-note">
-						{chosen === "wasp"
-							? "One rear center engine (fires on A+D) and two independent under-wing equipment slots. Four turning stabilizers are forced on."
-							: "Side engines are a mirrored pair. Hull and aft fittings are independent."}
+						{chosen === "fiddler"
+							? "Four engines in two required matching pairs. Five independent weapon/support fittings. Four turning stabilizers are forced on."
+							: chosen === "wasp"
+								? "One rear center engine (fires on A+D) and two independent under-wing equipment slots. Four turning stabilizers are forced on."
+								: "Side engines are a mirrored pair. Hull and aft fittings are independent."}
 						<br>Every installed part adds mass. Weapons are static fittings in
 						this alpha.
 					</p>
@@ -312,8 +330,9 @@ function choose(id: ShipProfileId) {
 						/>
 					</label>
 					<p class="assembly-note">
-						Left or right input also fires all fitted aft engines. When off, aft
-						engines require both inputs.
+						{chosen === "fiddler"
+							? "Turning or braking spin also fires the two main engines on the corresponding side. This adds forward thrust, without changing the turn. When off, mains require both controls."
+							: "Left or right input also fires all fitted aft engines. When off, aft engines require both inputs."}
 					</p>
 				</section>
 			</div>
@@ -321,11 +340,13 @@ function choose(id: ShipProfileId) {
 				<p class="eyebrow">SELECTED MOUNT</p>
 				<h2>{mount.label}</h2>
 				<p>
-					{mount.group === "side"
-						? chosen === "wasp"
-							? "Single rear center engine. Required propulsion slot."
-							: "One choice fits both sides. Two engines, two masses."
-						: "Swap freely. Empty is a valid choice."}
+					{mount.required
+						? "Required engine pair. One choice fits both sides; each engine adds mass."
+						: mount.group === "side"
+							? chosen === "wasp"
+								? "Single rear center engine. Required propulsion slot."
+								: "One choice fits both sides. Two engines, two masses."
+							: "Swap freely. Empty is a valid choice."}
 				</p>
 				<div class="part-list">
 					{#each compatible as part}
@@ -422,7 +443,7 @@ function choose(id: ShipProfileId) {
 							{/if}
 						</button>
 					{/each}
-					{#if mount.group !== "side"}
+					{#if mount.group !== "side" && !mount.required}
 						<button
 							type="button"
 							class="btn btn-ghost"
@@ -489,8 +510,9 @@ function choose(id: ShipProfileId) {
 					¹ Energy/s, near → far, G-class sun.<br>² Full batteries, no solar
 					charging.<br>³ At rest, both controls, world units/s².<br>Intrinsic
 					battery and coil included. More mass slows acceleration and turning.
-					The side mounts turn left-engine input clockwise and right-engine
-					input counterclockwise.
+					{chosen === "fiddler"
+						? "Stabilizers provide turning; linked mains add forward speed only."
+						: "The side mounts turn left-engine input clockwise and right-engine input counterclockwise."}
 				</p>
 			</aside>
 		</div>
@@ -498,9 +520,13 @@ function choose(id: ShipProfileId) {
 			<div>
 				<p>
 					A + D or ← + → ·
-					{build.linkedEngines
-						? "Either control fires aft engines."
-						: "Both controls fire aft engines."}
+					{chosen === "fiddler"
+						? build.linkedEngines
+							? "Turn + matching-side drive; both controls fire all four."
+							: "One control turns; both fire all four mains."
+						: build.linkedEngines
+							? "Either control fires aft engines."
+							: "Both controls fire aft engines."}
 				</p>
 			</div>
 			<div class="actions">

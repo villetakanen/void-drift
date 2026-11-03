@@ -1,35 +1,45 @@
+import { CONFIG, SURVIVAL_CONFIG, updateShip, Vec2 } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { Simulation, stockSettings } from "./simulation";
 
 const both = { leftThruster: true, rightThruster: true, fire: false };
 const idle = { leftThruster: false, rightThruster: false, fire: false };
-function fly(id: "scout" | "fighter" | "corvette", ticks = 120) {
-	const s = new Simulation(stockSettings(id));
-	s.start();
-	for (let i = 0; i < ticks; i++) s.step(both);
-	return s;
+function fly(
+	overrides: Partial<ReturnType<typeof stockSettings>["profile"]>,
+	input = both,
+	ticks = 30,
+) {
+	const settings = stockSettings();
+	settings.profile = {
+		...settings.profile,
+		thrustMultiplier: 1,
+		turnMultiplier: 1,
+		powerDrainMultiplier: 1,
+		...overrides,
+	};
+	const sim = new Simulation(settings);
+	sim.planets.length = 0;
+	sim.ship.pos.set(1900, 540);
+	sim.start();
+	for (let i = 0; i < ticks; i++) sim.step(input);
+	return sim;
 }
 describe("flight contract", () => {
-	it("applies ship thrust and power drain", () => {
-		const scout = fly("scout"),
-			fighter = fly("fighter"),
-			corvette = fly("corvette");
-		expect(scout.ship.pos.y).toBeLessThan(fighter.ship.pos.y);
-		expect(fighter.ship.pos.y).toBeLessThan(corvette.ship.pos.y);
-		expect(scout.state.resources.power).toBeLessThan(
-			corvette.state.resources.power,
+	it("applies supplied thrust and power-drain multipliers", () => {
+		const reference = fly({});
+		const stronger = fly({ thrustMultiplier: 2, powerDrainMultiplier: 2 });
+		expect(stronger.ship.pos.y).toBeLessThan(reference.ship.pos.y);
+		expect(stronger.state.resources.power).toBeLessThan(
+			reference.state.resources.power,
 		);
 	});
-	it("applies turn multipliers", () => {
-		const a = new Simulation(stockSettings("scout")),
-			b = new Simulation(stockSettings("corvette"));
-		a.start();
-		b.start();
-		for (let i = 0; i < 30; i++) {
-			a.step({ ...idle, leftThruster: true });
-			b.step({ ...idle, leftThruster: true });
-		}
-		expect(a.ship.rotation).toBeGreaterThan(b.ship.rotation);
+	it("applies supplied turn multipliers", () => {
+		const input = { ...idle, leftThruster: true };
+		const reference = fly({}, input);
+		const faster = fly({ turnMultiplier: 2 }, input);
+		expect(faster.ship.rotation + Math.PI / 2).toBeCloseTo(
+			2 * (reference.ship.rotation + Math.PI / 2),
+		);
 	});
 	it("reproduces validated replay exactly", () => {
 		const a = new Simulation(),
@@ -66,7 +76,9 @@ describe("flight contract", () => {
 		const ticks = s.ticks;
 		s.step(both);
 		expect(s.ticks).toBe(ticks);
-		expect(new Simulation().state.resources.power).toBe(100);
+		expect(new Simulation().state.resources.power).toBe(
+			SURVIVAL_CONFIG.INITIAL_POWER,
+		);
 	});
 	it("wraps antipodally with preserved inward momentum", () => {
 		const s = new Simulation();
@@ -80,16 +92,23 @@ describe("flight contract", () => {
 		s.step(idle);
 		expect(s.wraps).toBe(1);
 	});
-	it("corvette hull absorbs more equal star damage", () => {
-		const a = new Simulation(stockSettings("scout")),
-			b = new Simulation(stockSettings("corvette"));
-		a.start();
-		b.start();
-		a.ship.pos.set(1040, 540);
-		b.ship.pos.set(1040, 540);
-		a.step(idle);
-		b.step(idle);
-		expect(a.state.resources.hull).toBeLessThan(b.state.resources.hull);
+	it("a supplied stronger hull reduces equal star damage", () => {
+		const settings = stockSettings();
+		const runs = [1, 2].map(
+			(hullMultiplier) =>
+				new Simulation({
+					...settings,
+					profile: { ...settings.profile, hullMultiplier },
+				}),
+		);
+		for (const sim of runs) {
+			sim.start();
+			sim.ship.pos.set(1040, 540);
+			sim.step(idle);
+		}
+		expect(runs[0].state.resources.hull).toBeLessThan(
+			runs[1].state.resources.hull,
+		);
 	});
 });
 
@@ -106,22 +125,55 @@ describe("integrated gravity flight", () => {
 			s.ship.rotation = Math.PI;
 			s.step(both);
 			expect(s.ship.vel.x).toBeCloseTo(
-				1500 - (400 * s.settings.profile.thrustMultiplier) / 60,
+				1500 - (CONFIG.THRUST_FORCE * s.settings.profile.thrustMultiplier) / 60,
 				6,
 			);
 		});
-		it(`${id} can power outward from the outer solar well`, () => {
-			const s = new Simulation(stockSettings(id));
-			s.planets.length = 0;
-			s.ship.pos.set(1210, 540);
-			s.ship.rotation = 0;
-			s.start();
-			for (let tick = 0; tick < 120; tick++) s.step(both);
-			expect(s.state.status).toBe("PLAYING");
-			expect(s.ship.pos.x - 960).toBeGreaterThan(s.star.influenceRadius);
-			expect(s.ship.vel.x).toBeGreaterThan(0);
-		});
 	}
+	it("escapes a supplied solar well under power while coasting falls inward", () => {
+		const star = {
+			...new Simulation().star,
+			mass: 60,
+			influenceRadius: 300,
+			radius: 20,
+		};
+		const run = (input: typeof idle) => {
+			const ship = {
+				pos: new Vec2(star.pos.x + 250, star.pos.y),
+				vel: new Vec2(0, 0),
+				acc: new Vec2(0, 0),
+				rotation: 0,
+				radius: 1,
+			};
+			// Explicit fixture: 50 units to escape, 400 thrust, 600 cutoff.
+			// Initial gravity is 4.4 and decreases outward. Even at 400 speed,
+			// net acceleration exceeds 128, covering 50 units within one second.
+			for (let tick = 0; tick < 240; tick++)
+				updateShip(
+					ship,
+					input,
+					1 / 240,
+					1920,
+					1080,
+					star,
+					[],
+					undefined,
+					undefined,
+					{
+						thrustMultiplier: 400 / CONFIG.THRUST_FORCE,
+						turnMultiplier: 1,
+						hullMultiplier: 1,
+					},
+					{ drag: 0, speedLimit: null },
+					"inverse-square",
+					null,
+					600,
+				);
+			return ship;
+		};
+		expect(run(both).pos.x - star.pos.x).toBeGreaterThan(star.influenceRadius);
+		expect(run(idle).pos.x - star.pos.x).toBeLessThan(250);
+	});
 	it("ends solar contact and resolves planetary contact with damage", () => {
 		const sun = new Simulation();
 		sun.start();
@@ -144,13 +196,21 @@ describe("integrated gravity flight", () => {
 			1500 - planet.radius - s.ship.radius,
 		);
 	});
-	it("retains planet reaches independently of physical size", () => {
-		const s = new Simulation();
-		for (const p of s.planets) {
-			const reach = p.well?.reach;
-			p.radius *= 2;
-			expect(p.well?.reach).toBe(reach);
-			expect(p.well?.strength).toBe(600);
-		}
+	it("uses the fixed well reach after changing a planet's physical size", () => {
+		const runs = [30, 1].map((radius) => {
+			const sim = new Simulation();
+			const planet = sim.planets[0];
+			sim.planets.splice(1);
+			planet.radius = radius;
+			planet.orbitCenter.set(1500, 540);
+			planet.orbitRadius = 0;
+			planet.orbitSpeed = 0;
+			sim.ship.pos.set(1650, 540);
+			sim.start();
+			sim.step(idle);
+			return sim;
+		});
+		expect(runs[0].ship.vel.x).toBeLessThan(0);
+		expect(runs[1].ship.vel).toEqual(runs[0].ship.vel);
 	});
 });

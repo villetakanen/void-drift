@@ -12,8 +12,8 @@ export const studies = z.array(studySchema).parse([
 	{
 		slug: "lhi-fiddler-2026-11-03",
 		title: "Ship 05 / LHI Fiddler Heavy Assault Corvette",
-		status: "open",
-		phase: "exploration",
+		status: "accepted",
+		phase: "scope",
 		question:
 			"How can a heavy twin-blade corvette carry an abundant loadout and still look unmistakably related to Wasp?",
 	},

@@ -1,8 +1,9 @@
 import { z } from "zod";
 import { CRUISER } from "../cruiser";
+import { FIDDLER } from "../fiddler";
 import { FIGHTER } from "../fighter";
 import { SCOUT } from "../scout";
-import { stabilizerMount } from "../stabilizers";
+import { lhiStabilizers, stabilizerMount } from "../stabilizers";
 import { WASP } from "../wasp";
 import {
 	ION_DEFAULTS,
@@ -45,12 +46,14 @@ export const SlotTypeSchema = z.enum([
 	"engine",
 	"weapon",
 	"equipment",
+	"support",
 	"universal",
 ]);
 export type SlotType = z.infer<typeof SlotTypeSchema>;
 export const SLOT_TYPES = {
 	engine: { symbol: "E", label: "Engines" },
 	weapon: { symbol: "W", label: "Weapons" },
+	support: { symbol: "S", label: "Support" },
 	equipment: { symbol: "Q", label: "Equipment" },
 	universal: { symbol: "+", label: "Universal" },
 } as const;
@@ -58,6 +61,7 @@ export function slotAccepts(type: SlotType, category: "E" | "G" | "U") {
 	return (
 		type === "universal" ||
 		(type === "equipment" && category !== "E") ||
+		(type === "support" && category === "U") ||
 		(type === "weapon" && category === "G") ||
 		(type === "engine" && category === "E")
 	);
@@ -74,6 +78,7 @@ export const ChassisSchema = z.object({
 	width: z.number().positive(),
 });
 export const CHASSIS = {
+	fiddler: ChassisSchema.parse({ ...FIDDLER, hull: 5, aft: 2 }),
 	wasp: ChassisSchema.parse({
 		mass: WASP.mass,
 		hull: 2,
@@ -235,12 +240,26 @@ export const LoadoutSchema = z
 		side: EngineIdSchema,
 		stabilizers: z.boolean().default(true),
 		linkedEngines: z.boolean().optional(),
-		hull: z.array(PartIdSchema.nullable()).max(3),
+		hull: z.array(PartIdSchema.nullable()).max(5),
 		aft: z.array(PartIdSchema.nullable()).max(3),
 	})
 	.strict()
 	.superRefine((build, ctx) => {
 		const chassis = CHASSIS[build.chassis];
+		if (
+			build.chassis === "fiddler" &&
+			(build.aft.some((id) => !id || !EngineIdSchema.safeParse(id).success) ||
+				build.aft[0] !== build.aft[1] ||
+				[2, 3].some((index) => {
+					const id = build.hull[index];
+					return id && PARTS[id].category !== "U";
+				}))
+		)
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message:
+					"Fiddler requires matching rear engines and support-only aft pincer slots",
+			});
 		if (
 			build.hull.length !== chassis.hull ||
 			build.aft.length !== chassis.aft ||
@@ -255,7 +274,7 @@ export const LoadoutSchema = z
 		}
 	})
 	.transform((build) =>
-		build.chassis === "wasp" ? { ...build, stabilizers: true } : build,
+		lhiStabilizers(build.chassis) ? { ...build, stabilizers: true } : build,
 	);
 export type Loadout = z.infer<typeof LoadoutSchema>;
 export function defaultLoadout(chassis: Loadout["chassis"]): Loadout {
@@ -266,7 +285,7 @@ export function defaultLoadout(chassis: Loadout["chassis"]): Loadout {
 		stabilizers: true,
 		linkedEngines: false,
 		hull: Array(CHASSIS[chassis].hull).fill(null),
-		aft: Array(CHASSIS[chassis].aft).fill(null),
+		aft: Array(CHASSIS[chassis].aft).fill(chassis === "fiddler" ? "ion" : null),
 	});
 }
 /** Fixed main-game fleet; builder saves and isolated Lab fixtures stay independent. */
@@ -274,12 +293,15 @@ export function starterLoadout(chassis: Loadout["chassis"]): Loadout {
 	const build = defaultLoadout(chassis);
 	build.stabilizers = true;
 	build.aft.fill("ion");
+	if (chassis === "fiddler")
+		build.hull = [null, null, "battery", "battery", "gravity-coil"];
 	const packs = chassis === "fighter" ? 1 : chassis === "corvette" ? 2 : 0;
 	for (let i = 0; i < packs; i++) build.hull[i] = "battery";
 	return LoadoutSchema.parse(build);
 }
 export const BuildStoreSchema = z
 	.object({
+		fiddler: LoadoutSchema.default(() => starterLoadout("fiddler")),
 		wasp: LoadoutSchema.default(() => defaultLoadout("wasp")),
 		scout: LoadoutSchema,
 		fighter: LoadoutSchema,
@@ -287,6 +309,7 @@ export const BuildStoreSchema = z
 	})
 	.refine(
 		(builds) =>
+			builds.fiddler.chassis === "fiddler" &&
 			builds.wasp.chassis === "wasp" &&
 			builds.scout.chassis === "scout" &&
 			builds.fighter.chassis === "fighter" &&
@@ -294,6 +317,7 @@ export const BuildStoreSchema = z
 	);
 export function defaultBuilds() {
 	return {
+		fiddler: starterLoadout("fiddler"),
 		wasp: defaultLoadout("wasp"),
 		scout: defaultLoadout("scout"),
 		fighter: defaultLoadout("fighter"),
@@ -311,6 +335,7 @@ export function fittedParts(build: Loadout): PartId[] {
 export function buildStats(build: Loadout) {
 	const chassis = CHASSIS[build.chassis];
 	const isWasp = build.chassis === "wasp";
+	const lhi = lhiStabilizers(build.chassis);
 	const ids = fittedParts(build);
 	let mass = chassis.mass,
 		capacity = 100,
@@ -323,7 +348,7 @@ export function buildStats(build: Loadout) {
 		if (id === "coil") coils++;
 		engineDraw += PARTS[id].draw;
 	}
-	if (isWasp || build.stabilizers)
+	if (lhi || build.stabilizers)
 		engineDraw += PARTS.ion.draw * STABILIZER_ENERGY;
 	const side = PARTS[build.side];
 	const angle = (chassis.angle * Math.PI) / 180;
@@ -334,9 +359,9 @@ export function buildStats(build: Loadout) {
 	const acceleration = isWasp
 		? side.thrust / mass
 		: (2 * side.thrust * Math.cos(angle) + aftThrust) / mass;
-	const turnRate = isWasp
-		? (PARTS.ion.thrust * STABILIZER_STRENGTH * WASP.stabilizers.coupledLever) /
-			(mass * WASP.stabilizers.inertiaPerMass)
+	const turnRate = lhi
+		? (PARTS.ion.thrust * STABILIZER_STRENGTH * lhi.coupledLever) /
+			(mass * lhi.inertiaPerMass)
 		: (side.thrust *
 				(Math.cos(angle) * chassis.arm + Math.sin(angle) * chassis.sideX)) /
 			(mass * stabilizerMount(build.chassis).inertiaPerMass);

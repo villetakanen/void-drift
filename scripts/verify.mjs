@@ -11,6 +11,7 @@ import {
 } from "node:fs";
 
 import { verificationUrls } from "../packages/core/src/lib/schemas/verification-ports.mjs";
+import { runBackend } from "./verify-backend.mjs";
 
 const args = process.argv.slice(2);
 if (args.length > 1 || (args.length === 1 && args[0] !== "--quick")) {
@@ -92,6 +93,13 @@ console.log(
 	`Verification mode: ${mode}${mode === "quick" ? " (PARTIAL; not full verification)" : ""}`,
 );
 for (const name of selectedSteps) {
+	if (name === "test:competition") continue;
+	if (name === "test:rules") {
+		const backend = await runBackend(directory);
+		report.backendLifecycle = backend.lifecycle;
+		report.steps.push(...backend.steps);
+		continue;
+	}
 	console.log(`Running ${name}…`);
 	const started = Date.now();
 	const result = spawnSync("pnpm", ["run", name], {
@@ -120,6 +128,7 @@ report.finishedAt = new Date().toISOString();
 report.sourceUnchanged = fingerprint() === report.sourceFingerprint;
 report.selectedChecksPassed =
 	report.sourceUnchanged &&
+	(report.backendLifecycle?.status ?? "passed") === "passed" &&
 	report.steps.every((step) => step.status === "passed");
 report.passed = mode === "full" && report.selectedChecksPassed;
 const serialized = `${JSON.stringify(report, null, 2)}\n`;

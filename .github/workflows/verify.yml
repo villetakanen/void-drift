@@ -1,5 +1,8 @@
 name: Verify
 on: [push, pull_request]
+concurrency:
+  group: verify-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
@@ -30,5 +33,6 @@ jobs:
           name: verification-evidence
           path: |
             artifacts/verification/
+            artifacts/competition/
             playwright-report/
             test-results/

@@ -3,10 +3,10 @@ import { SURVIVAL_CONFIG } from "../config";
 import { initializePlanets } from "./planets";
 
 describe("initializePlanets", () => {
-	it("returns deterministic three-planet roster from config", () => {
+	it("returns the configured deterministic roster", () => {
 		const planets = initializePlanets(960, 540);
 
-		expect(planets).toHaveLength(3);
+		expect(planets).toHaveLength(SURVIVAL_CONFIG.PLANETS.length);
 		expect(planets.map((planet) => planet.orbitRadius)).toEqual(
 			SURVIVAL_CONFIG.PLANETS.map((planet) => planet.orbitRadius),
 		);
@@ -15,11 +15,11 @@ describe("initializePlanets", () => {
 		);
 	});
 
-	it("initializes moon with retrograde orbit speed", () => {
-		const moonConfig = SURVIVAL_CONFIG.PLANETS.find(
+	it("initializes the moon with retrograde orbit speed", () => {
+		const moonIndex = SURVIVAL_CONFIG.PLANETS.findIndex(
 			(planet) => planet.id === "moon",
 		);
-		expect(moonConfig).toBeDefined();
-		expect((moonConfig?.orbitSpeed ?? 0) < 0).toBe(true);
+		expect(moonIndex).toBeGreaterThanOrEqual(0);
+		expect(initializePlanets(960, 540)[moonIndex].orbitSpeed).toBeLessThan(0);
 	});
 });

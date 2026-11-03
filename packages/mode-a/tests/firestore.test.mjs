@@ -9,6 +9,7 @@ import {
 	collection,
 	deleteDoc,
 	doc,
+	getDoc,
 	getDocs,
 	limit,
 	query,
@@ -86,10 +87,26 @@ test("unknown challenge, ship and death cause fail", async () => {
 test("scores cannot decrease, be overwritten by another owner, or be deleted", async () => {
 	await assertSucceeds(setDoc(ref(), score));
 	await assertFails(setDoc(ref(), { ...score, seconds: 10 }));
+	await assertFails(setDoc(ref(), score));
 	await assertFails(setDoc(ref("rival"), { ...score, seconds: 99 }));
 	await assertFails(deleteDoc(ref()));
 });
 test("reads require authentication and a bounded list query", async () => {
+	await assertFails(getDoc(ref("")));
+	await assertFails(getDoc(ref("pilot", "pilot_fighter", "other")));
+	await assertFails(
+		getDocs(
+			query(
+				collection(
+					environment.authenticatedContext("pilot").firestore(),
+					"artifacts",
+					"void-drift",
+					"scores",
+				),
+				limit(21),
+			),
+		),
+	);
 	await assertFails(
 		getDocs(
 			query(
@@ -115,33 +132,24 @@ test("reads require authentication and a bounded list query", async () => {
 	);
 });
 
-test("new gravity scores are isolated from legacy personal bests", async () => {
-	await assertSucceeds(setDoc(ref(), score));
-	const current = { ...score, challenge: "gravity-1", seconds: 20 };
-	const target = ref("pilot", "gravity-1_pilot_fighter");
-	await assertSucceeds(setDoc(target, current));
-	await assertSucceeds(setDoc(target, { ...current, seconds: 25 }));
-	await assertFails(setDoc(target, { ...current, seconds: 10 }));
-	await assertFails(setDoc(ref(), { ...current, seconds: 100 }));
-	await assertFails(setDoc(target, { ...score, seconds: 100 }));
-	await assertFails(setDoc(ref("rival", "gravity-1_pilot_fighter"), current));
-});
-
-test("new ion scores are isolated from legacy personal bests", async () => {
-	await assertSucceeds(setDoc(ref(), score));
-	await assertSucceeds(
-		setDoc(ref("pilot", "gravity-1_pilot_fighter"), {
-			...score,
-			challenge: "gravity-1",
-		}),
-	);
-	const current = { ...score, challenge: "ion-1", seconds: 20 };
-	const target = ref("pilot", "ion-1_pilot_fighter");
-	await assertFails(setDoc(ref("pilot", "gravity-1_pilot_fighter"), current));
-	await assertSucceeds(setDoc(target, current));
-	await assertSucceeds(setDoc(target, { ...current, seconds: 25 }));
-	await assertFails(setDoc(target, { ...current, seconds: 10 }));
-	await assertFails(setDoc(ref(), { ...current, seconds: 100 }));
-	await assertFails(setDoc(target, { ...score, seconds: 100 }));
-	await assertFails(setDoc(ref("rival", "ion-1_pilot_fighter"), current));
-});
+for (const challenge of ["gravity-1", "ion-1"]) {
+	test(`${challenge} scores are isolated from legacy personal bests`, async () => {
+		await assertSucceeds(setDoc(ref(), score));
+		const current = { ...score, challenge, seconds: 20 };
+		const id = `${challenge}_pilot_fighter`;
+		const target = ref("pilot", id);
+		if (challenge === "ion-1") {
+			const gravity = ref("pilot", "gravity-1_pilot_fighter");
+			await assertSucceeds(
+				setDoc(gravity, { ...score, challenge: "gravity-1" }),
+			);
+			await assertFails(setDoc(gravity, current));
+		}
+		await assertSucceeds(setDoc(target, current));
+		await assertSucceeds(setDoc(target, { ...current, seconds: 25 }));
+		await assertFails(setDoc(target, { ...current, seconds: 10 }));
+		await assertFails(setDoc(ref(), { ...current, seconds: 100 }));
+		await assertFails(setDoc(target, { ...score, seconds: 100 }));
+		await assertFails(setDoc(ref("rival", id), current));
+	});
+}

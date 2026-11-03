@@ -66,12 +66,13 @@ let right = $state(false);
 let cause = $state("");
 let engineFeedback = $state("");
 let activeLoadout = $state<Loadout>();
-// Menu launcher order; the toggle numbers them 01–04 (owner, 2026-11-02).
+// Fleet order: Fiddler joins as the unranked Ship 05 flight trial.
 const LAUNCHER_ORDER: readonly ShipProfileId[] = [
 	"scout",
 	"wasp",
 	"fighter",
 	"corvette",
+	"fiddler",
 ];
 let shipArt = $state<HTMLCanvasElement>();
 const launcherNumber = (index: number) => String(index + 1).padStart(2, "0");
@@ -93,7 +94,7 @@ $effect(() => {
 		shipArt.width / 2,
 		shipArt.height / 2,
 		-Math.PI / 2,
-		3.2,
+		build.chassis === "fiddler" ? 2.3 : 3.2,
 	);
 });
 let spin = $state(0);
@@ -243,7 +244,15 @@ function importTrial() {
 	}
 }
 async function save() {
-	if (lab || loadout || status !== "GAME_OVER" || saving || scoreSaved) return;
+	if (
+		lab ||
+		loadout ||
+		chosen === "fiddler" ||
+		status !== "GAME_OVER" ||
+		saving ||
+		scoreSaved
+	)
+		return;
 	saving = true;
 	const result = await submitHighScore({
 		initials,
@@ -319,7 +328,7 @@ onMount(() => {
 				simulation.ship.rotation,
 				BUILD_FLIGHT_SCALE,
 			);
-		else
+		else if (chosen !== "fiddler")
 			renderer.drawShip(
 				simulation.ship,
 				simulation.settings.profile.tint,
@@ -381,7 +390,9 @@ onMount(() => {
 					: "CUSTOM SURVIVAL / UNRANKED"
 				: lab
 					? "FLIGHT LAB"
-					: `SURVIVAL / ${version}`}</span
+					: chosen === "fiddler"
+						? "FIDDLER / UNRANKED FLIGHT TRIAL"
+						: `SURVIVAL / ${version}`}</span
 		>
 		<nav class:build-nav={Boolean(loadout)} aria-label="Flight navigation">
 			{#if onReturn}
@@ -455,7 +466,7 @@ onMount(() => {
 								? testFlight
 									? "TEST / NO GAME-OVER"
 									: "CUSTOM BUILD / UNRANKED"
-								: lab
+								: lab || chosen === "fiddler"
 									? "UNRANKED TRIAL"
 									: "G CLASS / SHARED CHALLENGE"}</small
 						>
@@ -526,7 +537,7 @@ onMount(() => {
 					</p>
 					<h1>{seconds.toFixed(1)} seconds.</h1>
 					<p>Every orbit teaches you something.</p>
-					{#if !lab && !loadout}
+					{#if !lab && !loadout && chosen !== "fiddler"}
 						<label for="initials">Your initials</label>
 						<input
 							id="initials"
@@ -600,7 +611,8 @@ onMount(() => {
 						><input
 							type="checkbox"
 							bind:checked={tuning.loadout.stabilizers}
-							disabled={tuning.loadout.chassis === "wasp"}
+							disabled={tuning.loadout.chassis === "wasp" ||
+								tuning.loadout.chassis === "fiddler"}
 						>
 						Ion stabilizers</label
 					>

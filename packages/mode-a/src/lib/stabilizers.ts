@@ -1,4 +1,5 @@
 import { CRUISER } from "./cruiser";
+import { FIDDLER } from "./fiddler";
 import { FIGHTER } from "./fighter";
 import type { ShipProfileId } from "./schemas/ship-profile";
 import { SCOUT } from "./scout";
@@ -9,15 +10,21 @@ export const STABILIZER_PLACEMENTS = {
 	scout: { back: 67, inset: 38, angle: 67 },
 	corvette: { back: 76, inset: 23, angle: 63 },
 } as const;
+export function lhiStabilizers(chassis: ShipProfileId) {
+	return chassis === "wasp"
+		? WASP.stabilizers
+		: chassis === "fiddler"
+			? FIDDLER.stabilizers
+			: null;
+}
 export function stabilizerMount(chassis: ShipProfileId) {
-	if (chassis === "wasp") {
+	if (chassis === "wasp" || chassis === "fiddler") {
+		const geometry =
+			chassis === "wasp" ? WASP.stabilizers : FIDDLER.stabilizers;
 		return {
-			x: WASP.stabilizers.front.x,
-			y: WASP.stabilizers.front.y,
-			fx: WASP.stabilizers.front.fx,
-			fy: WASP.stabilizers.front.fy,
-			lever: WASP.stabilizers.coupledLever,
-			inertiaPerMass: WASP.stabilizers.inertiaPerMass,
+			...geometry.front,
+			lever: geometry.coupledLever,
+			inertiaPerMass: geometry.inertiaPerMass,
 		};
 	}
 	const points =

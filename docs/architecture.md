@@ -111,7 +111,7 @@ See [Hangar](specs/hangar/spec.md) for assembly and flight handoff; the
 
 Validated `FlightSettings.ion` owns custom ion acceleration/ceiling/rotation tuning;
 `Loadout.stabilizers` now defaults true when absent in version-2 saves; explicit
-choices survive, except Wasp always enables stabilizers. Simulation keeps
+choices survive, except Wasp and Fiddler always enable stabilizers. Simulation keeps
 angular velocity, budgets engine and automatic stabilizer demand per substep, and
 uses the same mounted emitter list as the renderer. Custom ions combine directional
 force; other response families retain their pulse/charge behavior. Ranked stock
@@ -125,3 +125,23 @@ Main-game `gameSettings` now supplies the fixed assembled Light-ion fleet, repla
 the legacy stock simulation at the game entry. New scores use `ion-1` IDs and queries;
 Firestore retains the older challenge namespaces. `stockSettings` stays available
 for legacy trials; `labSettings` retains the two-side-engine tuning fixture.
+
+### LHI Fiddler flight integration — 2026-11-03
+
+`fiddler-form.ts` preserves the supplied sketch's planar construction;
+`fiddler.ts` owns the accepted scaled hull, Wasp-sized window, mount coordinates,
+and four stabilizers. Study and production drawing share these definitions. The
+right-wing crossed-edge gap is repaired in that common geometry.
+
+Fiddler uses two required matching engine pairs, five independent below-hull
+fittings, and the shared LHI four-stabilizer control path. Linking on commands the
+two mains on the turning/braking side for forward thrust only; it leaves angular
+authority with the stabilizers. Linking off separates main drive from single-input
+turning. Fiddler profiles without a loadout acquire a valid default at the flight
+schema boundary, so they cannot fall through to legacy stock physics or art.
+
+It enters the main menu as 05 and the Hangar as an unranked flight trial. Score
+validation retains the existing ranked fleet. Existing v3 Hangar stores gain a
+Fiddler starting build without replacing their other ships. See the
+[Hangar contract](specs/hangar/spec.md#fiddler-flight-trial--2026-11-03) for the
+accepted starting fit and remaining human flight review.

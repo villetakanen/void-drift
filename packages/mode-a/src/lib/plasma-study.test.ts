@@ -5,7 +5,7 @@ import {
 } from "../../../../apps/web/src/components/studies/plasma-bench";
 
 it("includes immediate stabilizer assistance and coast braking in all six configurations", () => {
-	const runs = simulatePlasma();
+	const runs = simulatePlasma({ delay: 0.6 });
 	expect(runs).toHaveLength(6);
 	expect(plasmaVariants.every((v) => v.build.stabilizers)).toBe(true);
 	for (const index of [2, 5]) {
@@ -25,18 +25,18 @@ it("includes immediate stabilizer assistance and coast braking in all six config
 	}
 });
 it("isolates delay, reuses invariant ion runs and validates slider bounds", () => {
-	const baseline = simulatePlasma();
+	const baseline = simulatePlasma({ delay: 0.6 });
 	const short = simulatePlasma({ delay: 0.1 });
 	const long = simulatePlasma({ delay: 0.99 });
 	for (const i of [0, 1, 3]) {
-		expect(short[i]).toBe(baseline[i]);
-		expect(long[i]).toBe(baseline[i]);
+		expect(short[i]).toEqual(baseline[i]);
+		expect(long[i]).toEqual(baseline[i]);
 	}
 	expect(short[2][6].speed).toBe(0);
 	expect(short[2][7].speed).toBeGreaterThan(0);
 	expect(long[2][59].speed).toBe(0);
 	expect(long[2][60].speed).toBeGreaterThan(0);
-	expect(simulatePlasma()).toEqual(baseline);
+	expect(simulatePlasma({ delay: 0.6 })).toEqual(baseline);
 	for (const delay of [0, 1, 0.105, Number.NaN])
 		expect(() => simulatePlasma({ delay })).toThrow();
 });

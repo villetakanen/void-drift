@@ -3,6 +3,8 @@ export * from "./lib/build-renderer";
 export * from "./lib/config";
 export * from "./lib/cruiser";
 export * from "./lib/engine-art";
+export * from "./lib/fiddler";
+export * from "./lib/fiddler-form";
 export * from "./lib/fighter";
 export * from "./lib/firebase";
 export * from "./lib/fx-bench";

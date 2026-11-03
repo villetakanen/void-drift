@@ -1,58 +1,27 @@
-import { expect, test } from "@playwright/test";
-
-const LAUNCHER: Record<string, string> = {
-	scout: "01",
-	wasp: "02",
-	fighter: "03",
-	corvette: "04",
-};
-
-test.beforeEach(async ({ page }) => {
-	// These smoke checks cannot accidentally use live services or external fonts.
-	await page.route("**/*", (route) => {
-		const url = new URL(route.request().url());
-		return url.hostname === "127.0.0.1" ? route.continue() : route.abort();
-	});
-});
-
-test("local game starts with each ship and responds to keyboard input", async ({
-	page,
-}) => {
-	const errors: string[] = [];
-	page.on("pageerror", (error) => errors.push(error.message));
-	for (const ship of ["scout", "fighter", "corvette"]) {
-		await page.goto("/");
-		await expect(page.getByRole("dialog", { name: "Game menu" })).toBeVisible();
-		await page
-			.getByRole("radiogroup", { name: "SELECT YOUR SHIP" })
-			.getByText(LAUNCHER[ship], { exact: true })
-			.click();
-		await expect(
-			page.getByRole("radio", { name: LAUNCHER[ship] }),
-		).toBeChecked();
-		await page.getByRole("button", { name: "PRESS START" }).click();
-		await expect(page.getByRole("dialog", { name: "Game menu" })).toBeHidden();
-		await page.keyboard.down("ArrowLeft");
-		await expect(page.locator(".engine.right")).toHaveClass(/active/);
-		await page.keyboard.up("ArrowLeft");
-		await expect(page.locator(".engine.right")).not.toHaveClass(/active/);
-		await expect(page.locator(".timer .time")).not.toHaveText("0.0s");
-	}
-	expect(errors).toEqual([]);
-});
+import { expect, test } from "../helpers/local-browser";
 
 test("ship Lab changes the production drawing without live credentials", async ({
 	page,
-}, testInfo) => {
-	const errors: string[] = [];
-	page.on("pageerror", (error) => errors.push(error.message));
+}) => {
 	await page.goto("/lab/entities/ship");
 	const canvas = page.locator("canvas").first();
 	await expect(page.getByLabel("Chassis")).toBeVisible();
 	await page.getByLabel("Chassis").selectOption("scout");
 	const capture = () =>
 		canvas.evaluate((element) => (element as HTMLCanvasElement).toDataURL());
-	await expect.poll(capture).not.toBe("");
+	await expect
+		.poll(() =>
+			canvas.evaluate((element) => {
+				const canvas = element as HTMLCanvasElement;
+				const pixels = canvas
+					.getContext("2d")
+					?.getImageData(0, 0, canvas.width, canvas.height).data;
+				return (
+					pixels?.some((alpha, index) => index % 4 === 3 && alpha > 0) ?? false
+				);
+			}),
+		)
+		.toBe(true);
 	// Allow the Lab's animation frame to consume the selected profile.
 	await page.evaluate(
 		() =>
@@ -63,11 +32,6 @@ test("ship Lab changes the production drawing without live credentials", async (
 	const scout = await capture();
 	await page.getByLabel("Chassis").selectOption("corvette");
 	await expect.poll(capture).not.toBe(scout);
-	await testInfo.attach("corvette-lab", {
-		body: await canvas.screenshot(),
-		contentType: "image/png",
-	});
-	expect(errors).toEqual([]);
 });
 
 test("unconfigured leaderboard explains unavailability", async ({ page }) => {

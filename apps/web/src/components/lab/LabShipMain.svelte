@@ -4,7 +4,12 @@ let _props: { slot?: string; "client:only"?: string; "client:load"?: boolean } =
 	$props();
 
 import { drawShip } from "@void-drift/core";
-import { SHIP_PROFILE_BY_ID, type ShipProfileId } from "@void-drift/mode-a";
+import {
+	drawBuild,
+	SHIP_PROFILE_BY_ID,
+	type ShipProfileId,
+	starterLoadout,
+} from "@void-drift/mode-a";
 import Canvas from "../Canvas.svelte";
 import { shipParams } from "./ship-state.svelte";
 
@@ -16,6 +21,17 @@ function drawShipPreview(ctx: CanvasRenderingContext2D) {
 	const cy = ctx.canvas.height / 2;
 	const profile = SHIP_PROFILE_BY_ID[shipParams.profileId as ShipProfileId];
 
+	if (profile.id === "fiddler") {
+		drawBuild(
+			ctx,
+			starterLoadout("fiddler"),
+			cx,
+			cy,
+			(shipParams.rotation * Math.PI) / 180,
+			2,
+		);
+		return;
+	}
 	drawShip(ctx, {
 		x: cx,
 		y: cy,

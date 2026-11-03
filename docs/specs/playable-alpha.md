@@ -139,3 +139,12 @@ The assembled ship path shares production EnginePlume rendering and lifecycle,
 with emitters placed at fitted nozzles. Alpha 0.5.0 uses the arcade FX painter in
 both assembled and stock paths. Emitter geometry and gravity remain unchanged. [Hangar](hangar/spec.md) owns the custom-flight handoff and test-fixture
 contract; shared engine decisions remain in the [ship-builder history](../history/ship-builder.md).
+
+## Ship 05 flight trial — 3 November 2026
+
+The main menu includes LHI Fiddler as 05. Its default assembled fit is four Light
+ions, two Potential Wells in the lower pincer slots and a Gravity coil in the
+centre slot below the chassis; the forward weapon/support slots start empty.
+Fiddler runs are marked unranked and cannot submit to the existing challenge.
+The Hangar can fit and test the same ship. Full geometry, fitting and linked-drive
+behavior is specified in [Hangar](hangar/spec.md#fiddler-flight-trial--2026-11-03).

@@ -6,11 +6,15 @@ import {
 	barrelLength,
 	buildCollisionRadius,
 	buildMounts,
-	buildPlumeEmitters,
-	engineOffset,
 	nozzleOffset,
 } from "./build-renderer";
-import { buildStats, defaultLoadout, LoadoutSchema } from "./schemas/loadout";
+import { ionCeiling } from "./schemas/ion";
+import {
+	buildStats,
+	defaultLoadout,
+	LoadoutSchema,
+	PARTS,
+} from "./schemas/loadout";
 import { SCOUT } from "./scout";
 import { Simulation, stockSettings } from "./simulation";
 
@@ -25,78 +29,18 @@ const body = () => ({
 });
 
 describe("accepted Scout Trident", () => {
-	it("preserves all six accepted planes, cockpit and compact screenshot layout", () => {
-		expect(SCOUT.facets.map((facet) => facet.points)).toEqual([
-			[
-				[23, 0],
-				[-24, 21],
-				[-14, 11],
-				[-4, 8],
-				[-9, 5],
-				[-20, 5],
-				[-29, 0],
-				[-20, -5],
-				[-9, -5],
-				[-4, -8],
-				[-14, -11],
-				[-24, -21],
-			],
-			[
-				[23, 0],
-				[-24, -21],
-				[-14, -11],
-				[-4, -8],
-				[4, 0],
-			],
-			[
-				[23, 0],
-				[-24, 21],
-				[-14, 11],
-				[-4, 8],
-				[4, 0],
-			],
-			[
-				[23, 0],
-				[5, -4],
-				[-20, -5],
-				[-29, 0],
-			],
-			[
-				[23, 0],
-				[5, 4],
-				[-20, 5],
-				[-29, 0],
-			],
-			[
-				[-24, -21],
-				[9, -6],
-				[-14, -11],
-			],
-		]);
-		expect(SCOUT.facets.map((facet) => facet.color)).toEqual([
-			"#264d6b",
-			"#83c7d0",
-			"#365d79",
-			"#c8f4f0",
-			"#6193a9",
-			"#437e99",
-		]);
-		expect(SCOUT.cockpit).toEqual({
-			x: 21,
-			y: 0,
-			radius: 6,
-			collarRadius: 6.8,
+	it("mirrors the forward side mounts around the hull and aft fittings", () => {
+		const [left, right, hull, aft] = buildMounts(defaultLoadout("scout"));
+		expect(left.x).toBeGreaterThan(hull.x);
+		expect(hull.x).toBeGreaterThan(aft.x);
+		expect(left.y).toBeLessThan(0);
+		expect(right).toMatchObject({
+			x: left.x,
+			y: -left.y,
+			angle: -left.angle,
+			width: left.width,
+			height: left.height,
 		});
-		const mounts = buildMounts(defaultLoadout("scout"));
-		expect(mounts.map((m) => [m.key, m.x, m.y, m.width, m.height])).toEqual([
-			["left", 10.5, -6, 10, 8],
-			["right", 10.5, 6, 10, 8],
-			["hull-0", 1, 0, 10, 8],
-			["aft-0", -14.5, 0, 10, 8],
-		]);
-		expect(mounts[0].angle).toBeCloseTo((49 * Math.PI) / 180);
-		expect(mounts[1].angle).toBeCloseTo(-mounts[0].angle);
-		expect(buildStats(defaultLoadout("scout")).mass).toBe(80);
 	});
 
 	it("keeps compact weapon fittings clear of the cockpit and each other", () => {
@@ -104,7 +48,6 @@ describe("accepted Scout Trident", () => {
 		build.hull[0] = "rail";
 		build.aft[0] = "rail";
 		const [hull, aft] = buildMounts(build).filter((m) => m.group !== "side");
-		expect(barrelLength(hull)).toBe(6);
 		expect(hull.x + barrelLength(hull)).toBeLessThan(
 			SCOUT.cockpit.x - SCOUT.cockpit.radius,
 		);
@@ -141,30 +84,6 @@ describe("accepted Scout Trident", () => {
 		},
 	);
 
-	it("aligns three emitters with actual side/aft nozzles", () => {
-		const build = defaultLoadout("scout");
-		// Isolate main engines from optional stabilizer assist.
-		build.stabilizers = false;
-		build.aft[0] = "ion";
-		const engines = buildMounts(build).filter((m) => m.group !== "hull");
-		const emitters = buildPlumeEmitters(build);
-		expect(emitters).toHaveLength(3);
-		for (const [i, e] of emitters.entries()) {
-			const m = engines[i];
-			expect(e.x).toBeCloseTo(
-				(m.x + (engineOffset(build, m) - nozzleOffset(m)) * Math.cos(m.angle)) *
-					BUILD_FLIGHT_SCALE,
-			);
-			expect(e.y).toBeCloseTo(
-				(m.y + (engineOffset(build, m) - nozzleOffset(m)) * Math.sin(m.angle)) *
-					BUILD_FLIGHT_SCALE,
-			);
-			expect(e.angle).toBe(m.angle);
-		}
-		expect(emitters[0].y).toBeLessThan(-6 * BUILD_FLIGHT_SCALE);
-		expect(emitters[1].y).toBeGreaterThan(6 * BUILD_FLIGHT_SCALE);
-	});
-
 	it("uses signed forward engine leverage, cancels paired torque and activates aft only with both", () => {
 		const build = defaultLoadout("scout");
 		// Isolate main engines from optional stabilizer assist.
@@ -196,13 +115,17 @@ describe("accepted Scout Trident", () => {
 		expect(paired.vel.y).toBe(0);
 		const stats = buildStats(build);
 		const expectedAcceleration =
-			(2 * 25300 * Math.cos((49 * Math.PI) / 180) + 25300) / stats.mass;
+			(2 * PARTS.ion.thrust * Math.cos(buildMounts(build)[0].angle) +
+				PARTS.ion.thrust) /
+			stats.mass;
 		// All active ions combine before their one at-rest impulse.
 		expect(stats.acceleration).toBeCloseTo(expectedAcceleration);
 		expect(paired.vel.x * 60).toBeCloseTo(expectedAcceleration);
 		expect(leftOutput.aft).toEqual([0]);
 		expect(output.aft[0]).toBeGreaterThan(0);
-		expect(buildDrain(build, both)).toBe(9);
+		expect(buildDrain(build, both) - buildDrain(build, idle)).toBe(
+			3 * PARTS.ion.draw,
+		);
 	});
 
 	it("keeps mixed-engine overspeed bounded and replays real energy/plumes deterministically", () => {
@@ -213,7 +136,7 @@ describe("accepted Scout Trident", () => {
 			ship.rotation = Math.atan2(ship.vel.y, ship.vel.x) + Math.PI / 3;
 			applyBuildEngines(ship, build, both, 1 / 60, true);
 		}
-		expect(ship.vel.mag()).toBeLessThanOrEqual(550.000001);
+		expect(ship.vel.mag()).toBeLessThanOrEqual(ionCeiling(Infinity) + 1e-6);
 		const sims = [0, 1].map(
 			() =>
 				new Simulation({

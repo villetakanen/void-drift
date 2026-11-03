@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { buildMounts } from "./build-renderer";
+import { buildMounts, drawBuild } from "./build-renderer";
 import {
 	defaultLoadout,
 	LoadoutSchema,
+	SLOT_TYPES,
 	SlotTypeSchema,
 	slotAccepts,
 } from "./schemas/loadout";
@@ -45,30 +46,44 @@ describe("slot compatibility", () => {
 	});
 });
 
-it("keeps builder overlays out of flight while retaining equipped casings", async () => {
-	const { drawBuild } = await import("./build-renderer");
-	const operations: string[] = [];
-	const ctx = new Proxy({} as CanvasRenderingContext2D, {
-		get:
-			(_target, key) =>
-			(..._args: unknown[]) => {
-				operations.push(String(key));
-			},
-		set: () => true,
-	});
+it("draws fittings in flight but labels and selection only in the builder", () => {
 	const build = defaultLoadout("fighter");
-	// Isolate main engines from optional stabilizer assist.
 	build.stabilizers = false;
-	drawBuild(ctx, build, 0, 0, 0);
-	expect(operations.filter((op) => op === "fillRect")).toHaveLength(0);
-	expect(operations.filter((op) => op === "fill").length).toBeGreaterThan(12);
-	expect(operations).not.toContain("fillText");
-	operations.length = 0;
-	drawBuild(ctx, build, 0, 0, 0, 1, "left", {
-		dark: "#050510",
-		lime: "#eeff41",
-		ivory: "#fffff0",
-	});
-	expect(operations.filter((op) => op === "fillRect")).toHaveLength(12);
-	expect(operations.filter((op) => op === "fillText")).toHaveLength(16);
+	const palette = { dark: "#050510", lime: "#eeff41", ivory: "#fffff0" };
+	function render(builder = false, selected = "") {
+		const paint: { method: string; args: unknown[] }[] = [];
+		const labels: string[] = [];
+		const ctx = new Proxy({} as CanvasRenderingContext2D, {
+			get:
+				(_target, key) =>
+				(...args: unknown[]) => {
+					if (key === "fillText") labels.push(String(args[0]));
+					if (
+						["fill", "stroke", "fillRect", "strokeRect", "fillText"].includes(
+							String(key),
+						)
+					)
+						paint.push({ method: String(key), args });
+				},
+			set: () => true,
+		});
+		drawBuild(ctx, build, 0, 0, 0, 1, selected, builder ? palette : undefined);
+		return { paint, labels };
+	}
+	const emptyFlight = render();
+	build.hull[0] = "rail";
+	const equippedFlight = render();
+	expect(equippedFlight.paint).not.toEqual(emptyFlight.paint);
+	expect(equippedFlight.labels).toEqual([]);
+	expect(render(false, "left")).toEqual(equippedFlight);
+	const builder = render(true);
+	expect(builder.labels).toEqual(
+		expect.arrayContaining(
+			buildMounts(build).flatMap((mount, index) => [
+				SLOT_TYPES[mount.type].label,
+				String(index + 1).padStart(2, "0"),
+			]),
+		),
+	);
+	expect(render(true, "left").paint).not.toEqual(builder.paint);
 });

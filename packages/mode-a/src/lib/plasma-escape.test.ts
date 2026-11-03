@@ -11,6 +11,7 @@ import {
 	simulateEscapeSequence,
 } from "../../../../apps/web/src/components/studies/plasma-escape";
 import { applyBuildEngines } from "./build-flight";
+import { ionCeiling } from "./schemas/ion";
 import { defaultLoadout } from "./schemas/loadout";
 
 it("shared-rule Light reference matches production assembled propulsion", () => {
@@ -43,16 +44,18 @@ it("shared-rule Light reference matches production assembled propulsion", () => 
 it("isolates adjustable force, preserves delay and bounds diminishing speed returns", () => {
 	const low = simulateEscape({ strength: 1 }),
 		high = simulateEscape({ strength: 10 });
-	for (const i of [0, 1, 2]) expect(high[i]).toBe(low[i]);
+	for (const i of [0, 1, 2]) expect(high[i]).toEqual(low[i]);
 	expect(high[3].mass).toBe(low[3].mass);
 	expect(high[3].samples[24].speed).toBe(START_SPEED);
 	expect(high[3].samples[25].speed).toBeGreaterThan(START_SPEED);
 	expect(high[3].samples[6 * ESCAPE_HZ].distance).toBeGreaterThan(
 		low[3].samples[6 * ESCAPE_HZ].distance,
 	);
-	expect(high[3].samples.every((p) => p.speed < 476 && p.ceiling < 476)).toBe(
-		true,
-	);
+	expect(
+		high[3].samples.every(
+			(p) => p.speed < ionCeiling(Infinity) && p.ceiling < ionCeiling(Infinity),
+		),
+	).toBe(true);
 	expect(() => simulateEscape({ strength: 10.1 })).toThrow();
 	expect(() => simulateEscape({ strength: 0 })).toThrow();
 });
@@ -98,6 +101,8 @@ it("sequence paths match production Light flight including turns and stabilizers
 	expect(high.samples[24]).toEqual(low.samples[24]);
 	expect(high.samples[25].speed).toBeGreaterThan(low.samples[25].speed);
 	expect(
-		high.samples.every((p) => Number.isFinite(p.x) && p.speed <= 476),
+		high.samples.every(
+			(p) => Number.isFinite(p.x) && p.speed <= ionCeiling(Infinity),
+		),
 	).toBe(true);
 });

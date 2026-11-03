@@ -2,7 +2,12 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { SURVIVAL_CONFIG } from "../config";
 import type { InputState } from "../entities/Input";
 import type { GameObject, Planet, Star } from "./Physics";
-import { updatePower, updateShip, Vec2 } from "./Physics";
+import {
+	getPlanetInfluenceRadius,
+	updatePower,
+	updateShip,
+	Vec2,
+} from "./Physics";
 
 describe("Vec2", () => {
 	it("should initialize correctly", () => {
@@ -119,36 +124,24 @@ describe("Planet gravity (mass-based influence)", () => {
 		};
 	}
 
-	it("should calculate influence radius from sqrt(mass) capped at radius * 8", () => {
-		// mass=400, radius=30 → sqrt(400)*10 = 200, cap = 240, min = 60 → 200
-
-		const expected = Math.sqrt(400) * 10; // 200
-		const max = 30 * 8; // 240
-		const min = 30 * 2; // 60
-		const influence = Math.max(min, Math.min(expected, max));
-		expect(influence).toBe(200);
+	it.each([
+		{ mass: 400, radius: 30, expected: 200 },
+		{ mass: 10000, radius: 50, expected: 400 },
+		{ mass: 1, radius: 80, expected: 160 },
+	])("derives reach $expected from mass $mass and radius $radius", (planet) => {
+		expect(getPlanetInfluenceRadius(planet)).toBe(planet.expected);
 	});
 
-	it("should cap influence radius at radius * 8 for high-mass planets", () => {
-		// mass=10000, radius=50 → sqrt(10000)*10 = 1000, cap = 400, min = 100 → 400
-		const mass = 10000;
-		const radius = 50;
-		const raw = Math.sqrt(mass) * 10; // 1000
-		const max = radius * 8; // 400
-		const min = radius * 2; // 100
-		const influence = Math.max(min, Math.min(raw, max));
-		expect(influence).toBe(400);
-	});
-
-	it("should enforce minimum influence radius of radius * 2 for low-mass planets", () => {
-		// mass=1, radius=80 → sqrt(1)*10 = 10, cap = 640, min = 160 → 160
-		const mass = 1;
-		const radius = 80;
-		const raw = Math.sqrt(mass) * 10; // 10
-		const max = radius * 8; // 640
-		const min = radius * 2; // 160
-		const influence = Math.max(min, Math.min(raw, max));
-		expect(influence).toBe(160);
+	it("uses explicit well reach independently of physical size and mass", () => {
+		for (const radius of [1, 100])
+			for (const mass of [1, 10000])
+				expect(
+					getPlanetInfluenceRadius({
+						radius,
+						mass,
+						well: { reach: 315, strength: 600 },
+					}),
+				).toBe(315);
 	});
 
 	it("should pull ship toward planet within influence radius", () => {

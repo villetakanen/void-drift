@@ -38,7 +38,11 @@ prior work; it is not a competing current specification.
    compatible part or empty an optional mount. Required propulsion remains fitted.
    Scout, Fighter and Corvette share one mirrored side-engine choice; the left
    primary edits the pair and the right mount communicates the link. Wasp has one
-   required centre engine and independent equipment mounts. Compatibility is owned
+   required centre engine and independent equipment mounts. Fiddler has two required
+   mirrored engine pairs: blade roots and rear, with a separate fitting choice for
+   each pair. Its forward two + slots and centre + accept weapons or support;
+   the lower two S slots accept support only. All five fittings sit below the hull;
+   none accepts engines. Compatibility is owned
    by `slotAccepts` and `LoadoutSchema`, including equipment mounts accepting weapons.
 2. **Independent builds.** Each chassis retains its own fittings and system choices
    across switching and reloads when storage works. Hangar builds are independent
@@ -57,10 +61,15 @@ prior work; it is not a competing current specification.
    state their conditions and distinguish peak output from sustained behavior.
    They support comparison, not a promise of flight duration in every environment.
 5. **System choices affect flight.** Stabilizers default on; explicit saved choices
-   persist except that Wasp requires them. Linked engines defaults off and changes
+   persist except that Wasp and Fiddler require them. Linked engines defaults off and changes
    the aft-engine command from both inputs to either input. Neither input commands
    no aft thrust. This setting leaves side-engine selection and Wasp's centre-engine
-   rule intact; actual thrust, draw and exhaust still obey power and engine timing.
+   rule intact. For Fiddler, both inputs fire all four mains; with linking off, a
+   single input uses the four built-in stabilizers alone. With linking on, a turn
+   or automatic spin-braking burn also commands the corresponding side's root
+   and rear engines, proportionally to the stabilizer burn. They add forward force
+   and exhaust, with no extra turning torque. The opposite mains stay off. Actual
+   thrust, draw and exhaust still obey power and engine timing.
 6. **Try the actual build.** Test and survival use the selected fittings and shared
    simulation/rendering. Every new flight and reset starts with full build capacity.
    Test flight has a small sun and no planets, retains energy and damage simulation,
@@ -78,6 +87,23 @@ Those latest notes report local implementation; they do not establish completed
 human acceptance of the composition or flight feel. Column order, corner sizes,
 paint coordinates and formulas remain implementation details, not new product intent.
 
+### Fiddler flight trial — 2026-11-03
+
+The [accepted Fiddler study](../../../apps/web/src/pages/lab/studies/lhi-fiddler-2026-11-03.astro)
+adds Ship 05, the LHI Fiddler Heavy Assault Corvette. It belongs to Wasp's LHI
+family, independently of the military-inspired Corvette. `fiddler.ts` owns the
+accepted +35% hull, unchanged Wasp-size black glass, nine mounts and four corrected
+stabilizer positions. Its hull mass is 187. The centre + slot is at upright
+(0, +20), below the chassis, between cockpit and rear engines.
+
+Main-menu `starterLoadout("fiddler")` has four Light ions, two Potential Wells in
+the lower pincer S slots and one Gravity coil in the centre + slot. Forward + slots
+are empty: assembled mass 273, capacity 270. New Hangar saves begin with that same
+fit; subsequent Hangar changes stay independent of the main-menu fleet. Fiddler is
+available in the Hangar, main-menu slot 05, Flight Lab and shared instrument, with
+unranked survival and test flight. Initial stabilizer strength uses Wasp's values
+and Fiddler's geometric inertia; flight feel and endurance await owner review.
+
 ### Current implementation choices
 
 `ShipBuilder` opens Fighter unless a valid `chassis` query selects another ship.
@@ -90,7 +116,7 @@ a planetary flight environment. It remains a deliberate limit of this fixture.
 The current browser key is `void-drift-builds-v3`; the contained loadouts have schema
 version 2. The owner-approved alpha reset removes v1/v2 browser keys instead of
 migrating retired IDs. `BuildStoreSchema` parses the store as a whole: a missing
-Wasp entry gets a default, but a malformed required entry rejects the whole store.
+Wasp or Fiddler entry gets its starting build, but a malformed required entry rejects the whole store.
 On rejection, `ShipBuilder` retains defaults and reports recovery. This is not
 per-chassis salvage. A storage exception reports limited persistence and keeps the
 in-memory builds. Hangar persistence has no account or Firestore dependency.

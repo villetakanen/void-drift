@@ -23,16 +23,17 @@ Set `JAVA_HOME` and put its `bin` on `PATH` if Java is not installed system-wide
 `pnpm verify` runs every stage, retains individual results and exits nonzero on any
 failure or source change during verification. It never auto-fixes source.
 
-| Command                 | Evidence                                                                                             |
-| ----------------------- | ---------------------------------------------------------------------------------------------------- |
-| `pnpm check:contracts`  | Agent context links exist; warns on agent guide or design.md size and scope                          |
-| `pnpm lint`             | Biome formatting/imports/recommended rules, warnings fail                                            |
-| `pnpm check:types`      | Astro, Svelte and workspace TypeScript, warnings fail                                                |
-| `pnpm test`             | Physics, stock profile effects, replay, death/reset, camera/wrap                                     |
-| `pnpm build`            | Static production build                                                                              |
-| `pnpm test:browser`     | Real keyboard movement, multi-touch/cancel, pause, replay, import, death/restart and review captures |
-| `pnpm test:rules`       | Firestore emulator allowed/rejected access cases                                                     |
-| `pnpm test:competition` | Two browser identities submit completed runs; third reads both scores via emulators                  |
+| Command                 | Evidence                                                                                                         |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `pnpm check:contracts`  | Context links, CSS/Canvas parity and runner regressions; context size/scope warnings remain advisory             |
+| `pnpm check:commits`    | Conventional Commit syntax after the adoption baseline                                                           |
+| `pnpm lint`             | Biome formatting/imports/recommended rules, warnings fail                                                        |
+| `pnpm check:types`      | Astro, Svelte, workspace and browser-harness TypeScript; Astro/Svelte warnings fail                              |
+| `pnpm test`             | Physics, stock profile effects, replay, death/reset, camera/wrap                                                 |
+| `pnpm build`            | Static production build                                                                                          |
+| `pnpm test:browser`     | Keyboard/touch movement, cancel, pause, replay/import, saved settings, focus, death/restart and Canvas semantics |
+| `pnpm test:rules`       | Firestore emulator allowed/rejected access cases                                                                 |
+| `pnpm test:competition` | Two browser identities submit completed runs; third reads both scores via emulators                              |
 
 `pnpm verify:quick` runs contracts (including factory regression tests), lint, types
 and unit tests through the same recorded runner. It exits nonzero on failure or
@@ -40,6 +41,16 @@ source changes, but is always **partial verification**, not a full pass. Reports
 include `mode`, `partial`, `skippedSteps` and `selectedChecksPassed`; `passed` is
 reserved for successful full verification. `pnpm test:factory` tests the runner
 with isolated fake commands; these are not gameplay-check results.
+
+Full verification runs rules and competition sequentially in one owned
+Firestore/Auth emulator session. Each keeps its own named result, log and duration;
+`backendLifecycle` records the shared command outcome, inclusive duration and
+setup/cleanup overhead. Do not add its inclusive duration to the two suite durations.
+Startup/shutdown has a seven-minute deadline with ten seconds for graceful cleanup
+before terminating the owned process group. Either suite or
+lifecycle failure fails full verification. Test data is cleared between the suites.
+`pnpm test:backend` runs this combined backend check alone; `test:rules` and
+`test:competition` remain independent focused commands.
 
 Browser tests default to ports 4322/4323. Override them for another worktree:
 
@@ -55,6 +66,8 @@ URLs under `browserUrls`, even when browser stages are skipped in quick mode.
 Emulators still use 8080/9099; these overrides do not isolate concurrent emulators. Offline browser tests
 blank live configuration and block external requests. Competition uses `demo-void-drift`,
 never the live project. GitHub Actions runs these same gates with Java 21 and Chromium.
+Superseded runs of the same event/ref are canceled. Push and pull-request checks
+remain distinct so branch-head and PR-merge verification both retain coverage.
 
 `artifacts/verification/<timestamp>-<unique-suffix>/report.json` records revision,
 dirty state, source fingerprint, environment, commands and run-local log paths.
@@ -66,6 +79,17 @@ with `pnpm exec playwright show-report`. A later source change invalidates evide
 Commit identity and deployment identity are separate from passing working-tree checks.
 
 ## Visual review and experience
+
+`pnpm test:capture` collects reproducible review images separately from the required
+correctness suite. Images use run-local output paths and attachments; successful
+correctness runs no longer produce the repeated review captures. Automatic failure
+screenshots and retained failure traces remain enabled. Capture completion is not
+human visual approval or an additional correctness gate.
+
+Dialog modality is unresolved: the current stage-only behavior remains during
+pruning because the opening menu depends on navigation outside the dialog. See
+[the separate composition plan](plans/2026-11-03-opening-screen-dialog-boundary.md).
+The owner wants actual dialogs to trap focus; this is not yet implemented.
 
 Flight and FX captures use explicit viewport, seed and simulation time for human
 review. Alpha 0.5.0 removes pixel equality gates for the combined flight canvas and
@@ -93,19 +117,52 @@ The selected Firebase project is `void-drift-alpha` (Spark), database `(default)
 `eur3`. Anonymous authentication must be enabled. Do not upgrade billing or Identity
 Platform to work around setup failures. Public web configuration is local, not committed.
 
-After successful verification and an authorized commit/push:
+After the full verification gates pass on a stable candidate, prepare the production
+artifact locally:
 
 ```sh
-PUBLIC_FIREBASE_EMULATORS=false pnpm build
-pnpm exec firebase deploy --only firestore,hosting --project void-drift-alpha
+pnpm release:prepare
+pnpm release:check artifacts/prepared-releases/<run>
 ```
 
-Pass the existing production public Firebase values explicitly into the build
-environment; Astro does not automatically read the repository-root `.env.local`.
-Never commit that configuration. Hosting serves `apps/web/dist`. Verify game, Lab, authentication and score reads at
-`https://void-drift-alpha.web.app`. Record revision and deployment result separately;
-passing local tests alone do not mean released. Hosting rollback is available in the
-Firebase console; rules changes require redeploying the reviewed previous rules.
+Preparation reads `.env.local` when present; already-exported environment values take
+precedence. It requires nonempty `PUBLIC_FIREBASE_API_KEY` and `PUBLIC_FIREBASE_APP_ID`,
+`PUBLIC_FIREBASE_PROJECT_ID=void-drift-alpha` and `PUBLIC_FIREBASE_EMULATORS=false`.
+Missing or invalid settings fail before building, without printing their values.
+Offline development and ordinary verification still work without production settings.
+
+The command builds once into the new run's `bundle/public`, confirms that the production
+identifiers reached the JavaScript, and smoke-tests that built site in Chromium: real
+keyboard flight, pause and the FX Lab controls, with page/asset errors checked. External
+requests are blocked; preparation neither contacts the live backend nor verifies its
+availability. A failed build/smoke or a source edit during preparation cannot produce a
+prepared release. It does not replace full verification or human experience review.
+
+Each `artifacts/prepared-releases/<run>/` retains a report, build log and smoke captures.
+The report identifies revision, dirty state, source fingerprint, version, environment,
+file hashes and artifact fingerprint. `bundle/` includes the built site and snapshots of
+Firestore rules/indexes plus the Firebase configuration used to publish them. Never edit
+a prepared bundle; prepare again. These local artifacts remain ignored, not a backup.
+
+After explicit push/publication authorization, publish that exact checked bundle:
+
+```sh
+pnpm release:publish artifacts/prepared-releases/<run>
+```
+
+Publication validates the saved report and every bundle file before invoking Firebase.
+It deploys a hash-checked copy per attempt so Firebase cache writes leave the saved
+bundle intact. It does not rebuild, take current checkout rules, commit, push or tag.
+Each attempt retains its own deployment log and report. Preparation and `release:check` never publish.
+The current deployment configuration supports this project's single Hosting site and
+Firestore rules/indexes; unsupported Hosting options/hooks fail preparation for review.
+
+Then verify game, Lab, authentication and score reads at
+`https://void-drift-alpha.web.app` without submitting a production test score. Record
+live verification separately: even a successful deployment report has `liveVerified: false`.
+Hosting rollback is available in the Firebase console; rules changes require redeploying
+the reviewed previous rules. Preserve the report's dirty-state qualification when a
+candidate was prepared before committing; its base revision alone is not its identity.
 
 ## Known limits
 

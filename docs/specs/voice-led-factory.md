@@ -74,6 +74,67 @@ use the resolved URL for navigation and server readiness, start their own server
 and retain `reuseExistingServer: false`. Verification reports retain both URLs.
 Port overrides do not isolate Firebase emulator ports.
 
+### Pruned verification and review captures
+
+The full runner retains all nine named gate results. Rules and competition share
+one owned Firestore/Auth emulator lifecycle, run sequentially, and start competition
+with cleared test data. Each suite retains its own outcome, duration and log;
+`backendLifecycle` records the shared command outcome, inclusive duration and
+setup/cleanup overhead. A lifecycle failure fails full verification. Startup/shutdown
+is bounded, and an interrupted or malformed backend report produces named failures
+rather than losing the final verification report. A failing rules suite does not hide the competition result, and
+an unavailable stage cannot count as passed. Standalone rules/competition commands
+remain available; `pnpm test:backend` exercises the shared lifecycle directly.
+
+Browser correctness checks own real input-to-simulation wiring, persistence,
+hydration, focus and Canvas semantics. Numerical matrices stay in unit tests.
+`pnpm test:capture` owns deliberate review screenshots with explicit scenario,
+viewport and simulation time; it is opt-in and produces run-local artifacts.
+Failure screenshots and traces remain part of ordinary browser verification.
+Captures do not establish human acceptance, and synthetic Canvas pixel probes
+verify compositing/lifecycle behavior without freezing expressive artwork.
+
+Every browser context, including manually created touch contexts and the independent
+leaderboard reader, blocks non-local network requests and records uncaught page
+errors. Competition uses the demo backend. Astro and Svelte warnings fail type
+verification; browser harness and configuration TypeScript are included explicitly.
+
+Factory regression fixtures assert the identities of the required commands, inspect
+retained logs/reports, and exercise independent backend-suite and startup failures.
+The existing source fingerprint and partial/full distinction remain authoritative.
+CI cancels superseded runs for the same event/ref while preserving separate push
+and pull-request coverage.
+
+### Prepared release artifacts
+
+`pnpm release:prepare` validates production Firebase settings through
+`packages/core/src/lib/schemas/release.mjs` before building. Local `.env.local` supplies
+unset environment values; explicit environment values take precedence. Production
+project is `void-drift-alpha`, emulators must be explicitly false, and the API key/app ID
+must be nonempty. Normal offline verification remains independent of these values.
+
+A unique run contains one production build, copied rules/indexes and deployment config,
+build log, browser smoke evidence and a validated preparation report. The smoke exercises
+built keyboard flight/pause and FX Lab interaction, fails on page/local asset errors,
+and blocks external traffic. It does not establish live Auth/Firestore availability.
+The production identifiers must appear in the built JavaScript. Failed builds, smoke
+checks or source mutation cannot yield `status: prepared`.
+
+The report records revision, dirty state, source fingerprint, version, environment,
+smoke outcome, per-file hashes and artifact fingerprint. Full correctness gates and
+human review remain separate prerequisites/evidence; preparation is not a full-suite pass.
+`release:check <run>` validates the report and complete bundle contents without publishing.
+
+Following explicit publication authorization, `release:publish <run>` validates the
+same bundle and deploys its Hosting files and Firestore snapshots without rebuilding
+or taking inputs from the current checkout. Each attempt records its outcome separately;
+actual live verification remains required. Missing/changed/added files block publication.
+No command in this workflow commits, pushes or tags source automatically.
+
+Factory tests exercise invalid settings, build/smoke/source-change failures, artifact
+mutation and publication arguments with controlled fixtures. A real preparation run
+provides separate browser/build evidence. Ignored local artifacts are not durable backup.
+
 ### Context-document warnings
 
 `pnpm check:contracts` warns, and never fails, when a context document outgrows its

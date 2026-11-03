@@ -18,6 +18,32 @@ const body = () => ({
 	radius: 16,
 });
 
+// Test-owned timings and ceilings: production balance remains freely tunable.
+const parts = {
+	...PARTS,
+	plasma: {
+		...PARTS.plasma,
+		response: "delayed" as const,
+		chargeSeconds: 0.6,
+		thrust: 50000,
+	},
+	fusion: {
+		...PARTS.fusion,
+		response: "pulse" as const,
+		thrust: 45000,
+		pulsePeriod: 0.45,
+		pulseOn: 0.18,
+		limit: 550,
+	},
+};
+const ion = {
+	acceleration: 220,
+	maxSpeed: 340,
+	bonus: 0.4,
+	falloff: 0.8,
+	maxTurn: 180,
+};
+
 describe("four-engine player trial", () => {
 	it("rejects obsolete saves and fission IDs", () => {
 		const build = defaultLoadout("fighter");
@@ -36,24 +62,35 @@ describe("four-engine player trial", () => {
 		const timers: EngineTimers = {};
 		const ship = body();
 		const left = { ...idle, leftThruster: true };
-		for (let i = 0; i < 36; i++)
-			applyBuildEngines(ship, build, left, 1 / 60, true, timers);
+		const step = (input: typeof idle, powered = true) =>
+			applyBuildEngines(
+				ship,
+				build,
+				input,
+				1 / 60,
+				powered,
+				timers,
+				1,
+				undefined,
+				ion,
+				parts,
+			);
+		for (let i = 0; i < 36; i++) step(left);
 		expect(ship.vel.mag()).toBe(0);
 		expect(ship.rotation).toBe(0);
-		applyBuildEngines(ship, build, left, 1 / 60, true, timers);
+		step(left);
 		expect(ship.vel.mag()).toBeGreaterThan(0);
 		expect(ship.rotation).toBeGreaterThan(0);
-		applyBuildEngines(ship, build, idle, 1 / 60, true, timers);
+		step(idle);
 		expect(timers.left).toBe(0);
-		for (let i = 0; i < 20; i++)
-			applyBuildEngines(ship, build, left, 1 / 60, true, timers);
-		applyBuildEngines(ship, build, left, 1 / 60, false, timers);
+		for (let i = 0; i < 20; i++) step(left);
+		step(left, false);
 		expect(timers.left).toBe(0);
 	});
 	it("fusion alternates firing and recovery at 40% duty", () => {
 		const timers: EngineTimers = {};
 		const outputs = Array.from({ length: 108 }, () =>
-			engineDuty(PARTS.fusion, true, 1 / 240, timers, "pulse"),
+			engineDuty(parts.fusion, true, 1 / 240, timers, "pulse"),
 		);
 		expect(outputs[0]).toBe(1);
 		expect(outputs[60]).toBe(0);
@@ -64,8 +101,8 @@ describe("four-engine player trial", () => {
 	});
 	it("releasing fusion cannot retrigger its pulse during recovery", () => {
 		const timers: EngineTimers = { pulse: 0.25 };
-		expect(engineDuty(PARTS.fusion, false, 1 / 60, timers, "pulse")).toBe(0);
-		expect(engineDuty(PARTS.fusion, true, 1 / 60, timers, "pulse")).toBe(0);
+		expect(engineDuty(parts.fusion, false, 1 / 60, timers, "pulse")).toBe(0);
+		expect(engineDuty(parts.fusion, true, 1 / 60, timers, "pulse")).toBe(0);
 	});
 	it("mixed ion and fusion approaches the higher fusion ceiling without clipping overspeed", () => {
 		const build = defaultLoadout("fighter");
@@ -73,12 +110,24 @@ describe("four-engine player trial", () => {
 		build.aft = ["ion", "fusion"];
 		const ship = body();
 		const timers: EngineTimers = {};
-		for (let i = 0; i < 12000; i++)
-			applyBuildEngines(ship, build, both, 1 / 60, true, timers);
+		const step = () =>
+			applyBuildEngines(
+				ship,
+				build,
+				both,
+				1 / 60,
+				true,
+				timers,
+				1,
+				undefined,
+				ion,
+				parts,
+			);
+		for (let i = 0; i < 12000; i++) step();
 		expect(ship.vel.mag()).toBeGreaterThan(549);
 		expect(ship.vel.mag()).toBeLessThanOrEqual(550.000001);
 		ship.vel.set(1000, 0);
-		applyBuildEngines(ship, build, both, 1 / 60, true, timers);
+		step();
 		expect(ship.vel.mag()).toBeCloseTo(1000);
 	});
 	it("simulation owns independent timing, pauses without charging and replays deterministically", () => {

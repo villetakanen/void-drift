@@ -2,190 +2,104 @@
 
 Status: reusable workflow. Individual study history is outside the entry contract.
 
-## Context
+## Context and ownership
 
 Conversation produces inspectable design proposals before shared implementation changes.
-Each cycle develops understanding from its own brief and current established reality.
+This specification owns observable outputs, presentation and decision authority.
+The [design-study skill](../../.agents/skills/design-study/SKILL.md) owns how to conduct
+the work; its [exploration guide](../../.agents/skills/design-study/references/exploration.md)
+owns creative rounds, feedback, retention and focus. Keep those procedures in their
+owner rather than repeating them here.
 
 ## Contract
 
 - `/lab/studies` lists studies; `/lab/studies/<slug>` provides a stable review URL.
 - `apps/web/src/data/studies.ts` validates metadata with Zod before rendering.
-- Pages develop numbered sections progressively. Phase/status metadata supports
-  navigation; subject-specific headings follow the four numbered parts.
-- A study is open until the designer ends it as accepted, ruled out, or stopped.
-  Agents record an end state only when the designer explicitly settles it.
 - Experimental styles remain scoped to study components; fixture behavior is labeled.
-- Within a cycle, iteration keeps the URL and records significant feedback and reasons.
-  A fresh cycle has a distinct identity; a matching title or URL does not carry agreement.
-- An accepted study's slices are implemented as separate work; the study retains its
-  rationale and links to what implemented it.
+- A cycle keeps a stable URL and records significant feedback, decisions and reasons.
+- Accepted slices are separate implementation work; the study links to their delivery.
 - Keyboard operation and narrow layouts are reviewed separately from gameplay feel.
-
-## Phased inquiry contract — adopted 2026-10-29
-
-Uncertainty is the normal reason to study. The agent helps develop understanding,
-including problem formulation; it must neither invent settled purpose nor require
-the designer to supply the result of the inquiry. See the
-[factory lesson](../factory-building-lessons/002-phased-design-studies.md).
-
-| Part             | Contribution                                                                                   | Result                                                           |
-| ---------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| 01 / Problem     | Establish intent, experience, principles, and uncertainty.                                     | Shared problem worth investigating.                              |
-| 02 / Exploration | Investigate alternatives with concrete examples; develop useful iterations as 02.1, 02.2, etc. | Design conclusions and explicit remaining hypotheses.            |
-| 03 / Readiness   | Assess those conclusions against current systems and constraints.                              | Feasibility, dependencies, required adaptations, and risks.      |
-| 04 / Scope       | Size the conclusions and cut them into deliverable slices.                                     | Slices in order, affected systems, dependencies, and rough size. |
-
-These four parts are the study structure. Develop them progressively; do not fill
-future parts before there is evidence to support them. Scope means understanding how
-big the change is, not execution or further exploration. Completing or accepting the
-study does not implicitly authorize implementation. Existing explicit implementation
-authorization still counts. Publication requires separate authorization.
-
-**`docs/design.md` changes must be flagged in part 04.** If the conclusion would
-change an experience principle, a non-goal, the art direction or the brand, part 04
-states the proposed change prominently, as its own item before the slices, and the
-chat handoff repeats it. The owner decides it. Everything else an accepted study
-settles goes to the feature spec or code that owns it, never to `docs/design.md`.
-
-### Ending a study
-
-Phase metadata names the current part; status is `open` until the study ends. All
-three end states are successes; the designer decides, and the agent may propose one.
-
-| End state | Reached after | Leaves behind                                                   |
-| --------- | ------------- | --------------------------------------------------------------- |
-| Accepted  | 04 / Scope    | Slices to implement, fully or partly, as separate work.         |
-| Ruled out | 02 or 03      | A game lesson: why the concept does not fit, on the study page. |
-| Stopped   | Any part      | Harness intel, recorded with the close-loop skill.              |
-
-Human review of feel and fidelity is separate from automated correctness and from
-study-quality evaluation.
-
-An unknown calls for research or design investigation unless only the designer can
-supply the missing creative boundary. A mechanic’s role in play can be the
-investigation itself. Choose evidence appropriate to the question; visual observation
-alone cannot establish gameplay consequences. Current code informs feasibility
-and reuse, not what the future game ought to mean.
 
 ### Cycle zero — current established reality
 
-At the start of every new cycle, ground the work in current implementation, standing
-principles, and explicitly adopted decisions. Distinguish what exists from what is
-desired; this baseline can be deliberately changed and is not a demand to discuss
-alpha shortcomings. Cycle zero is context gathering, not a mandatory page section.
+A fresh cycle starts from current implementation, standing principles and explicitly
+adopted decisions. Earlier studies are informative evidence, not contracts: their title,
+recency or recorded acceptance does not automatically carry proposals or questions into
+the new cycle. Prior decisions have authority through adoption into current reality.
+Current-cycle agreements accumulate; revisiting one needs an explicit reason. Earlier
+artifacts remain separately available, and rejected drafts stay out of the new page.
+Cycle zero is context gathering, not a mandatory page section.
 
-Earlier studies are informative evidence, not contracts, even with the exact same
-title and even if completed a minute ago. A prior decision has authority only insofar
-as it was explicitly adopted into current reality, not because a study recorded it.
-Do not inherit proposals, acceptance, or unresolved questions from an earlier cycle.
-Preserve agreements reached within this cycle, grounded in its starting reality.
+### Four-part outputs
 
-Read current authoritative product guidance and relevant implementation on demand.
-Do not automatically read earlier study pages, retrospectives, or factory reports
-for a new study. If consulting history answers a specific research question, treat
-it as evidence and explicitly reconsider any proposal before carrying it forward.
-Keep earlier artifacts available separately. Prefer a new cycle-specific slug when
-a prior page exists; if a URL must be reused, archive its previous content first.
-Do not embed rejected drafts in the new review page, even in collapsed disclosures.
+| Part             | Result                                                                                                                                                       |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 01 / Problem     | Shared purpose, principles, design tension and an answerable question, with adjacent scope explicit.                                                         |
+| 02 / Exploration | Concrete examples, useful discoveries, exact accepted variants and settled properties; remaining hypotheses and reference/replay conditions remain explicit. |
+| 03 / Readiness   | Feasibility in the current setting: reusable systems, adaptations, dependencies, risks and unresolved choices, judged against the intended delivery.         |
+| 04 / Scope       | Ordered, independently deliverable slices, affected systems/specs, rough size, dependencies and checks for correctness and fidelity.                         |
+
+Uncertainty is a normal input. Desired intent comes from the design inquiry; current
+code informs feasibility. Evidence must support the claim: visual examples do not by
+themselves establish gameplay consequences. Useful reasoning and agreements survive
+iteration; unsupported future parts are left unfilled.
+
+Scope sizes the work; completing or accepting a study does not implicitly authorize
+implementation. Existing explicit implementation authorization still counts. Publication
+requires separate authorization.
+
+**Flag `docs/design.md` changes prominently in part 04, before the slices, and in the
+chat handoff.** Changes to experience principles, non-goals, art direction or brand
+require the owner's decision. Other conclusions belong in their feature spec or code.
 
 ### Current study presentation
 
-The page is a progressively developed study, not a comprehensive status report.
-Start with exactly one substantive numbered section and an unfilled next section:
+The page explains the design, alternatives, decisions and reasons for a teammate
+outside the conversation. Review questions and coordination belong in chat, with one
+focused invitation explaining what the response enables. Necessary control labels
+remain on the page. Historical conditions and check results are labeled and linked
+to their specific evidence.
 
-> 01 / [Subject-specific situation, context, or design problem]
->
-> Useful explanation and reasoning grounded in this cycle's brief and reality.
->
-> 02 / To be developed after 01
+The opening contains exactly one substantive numbered section 01 and an unfilled
+“02 / To be developed after 01”. It explains a concrete situation and the subject's
+central tension. Normally use two or three short paragraphs or a compact purpose list;
+150–250 words is an editing target, not a quota. Implementation inventories, attribution
+headings and lifecycle reports do not belong in the opening. The button opening
+“Situations before styling” supplies the explanatory progression, not specific choices.
 
-Section 01 makes the subject understandable: explain relevant situations, why they
-matter, and the tension or uncertainty worth studying. Contribute actual design
-reasoning rather than narrating the request or agent actions. Ask a focused question
-for designer judgment in chat when needed. Do not populate future
-alternatives, recommendations, scope plans, readiness tables, or history panels.
+StudyLayout supplies paragraph spacing and bounded prose width; examples can use the
+wider canvas. Parts develop progressively with subject-specific headings and one next
+placeholder, up to 04. Exploration iterations use 02.1, 02.2 and so on. Phase/status
+metadata supports navigation without replacing subject-specific content.
 
-For a broad subject, propose one design decision this cycle can settle and name
-adjacent questions left outside it. Ground the boundary in the supplied intent;
-do not require the designer to decompose the topic first.
+Each exploration round supplies an inspectable example addressing the shared question.
+Explicit requests for conceptual discussion, stopping, preservation or reframing govern;
+actual delivery blockers remain visible. The exploration guide owns replacement and
+retention procedure. Rendered correctness and human usefulness are separate evidence.
 
-Keep the first explanation brief: normally two or three short paragraphs, or a
-short introduction and a compact list of purposes. Aim for roughly 150–250 words
-excluding the chat invitation; this is an editing target, not a quota or reason to omit
-essential meaning. Defer implementation inventories and secondary qualifications.
-Use one concrete situation to make the central tension understandable.
+### Ending a study
 
-Keep the page as shared design documentation: explain the design, alternatives,
-decisions, and reasons. Put review questions and coordination in chat, with one
-focused invitation and the next step it enables. Page text should stand on its own
-for a teammate outside the conversation. Avoid agent/owner delivery narration;
-label historical conditions and link run-specific evidence instead of presenting
-old check results as current status. Necessary control labels remain on the page.
-Do not ask the designer to settle an uninvestigated mechanic merely to unlock work.
+Status stays `open` until the designer settles an end state; the agent may propose one.
+All three end states are successes for the project: they produce implementation scope,
+rule out a direction, or stop an unsuccessful effort while retaining useful evidence.
+A failed study can therefore end successfully for the project. This does not relabel
+the study's design quality or overwrite the designer's assessment of failure.
 
-The shared StudyLayout supplies readable paragraph spacing and a bounded prose
-width. Keep diagrams and interactive comparisons free to use the wider canvas.
+| End state | Reached after | Leaves behind                                                     |
+| --------- | ------------- | ----------------------------------------------------------------- |
+| Accepted  | 04 / Scope    | Slices to implement, fully or partly, as separate work.           |
+| Ruled out | 02 or 03      | Why the concept does not fit the game, recorded on the page.      |
+| Stopped   | Any part      | Evidence of what blocked the study, collected through close-loop. |
 
-The button opening “01 / Situations before styling” is the concrete form reference:
-it explains situations and their implications before comparing appearance. Reuse
-that explanatory progression, not button decisions or the completed page's many
-sections. This description is sufficient; reading the historical page is optional.
+## Optional study-quality evaluation — separate from readiness
 
-Update the current section when feedback changes its reasoning; do not leave useful
-reasoning only in chat while the page is stale. Section 01 is sufficiently settled
-when the conversation establishes shared purpose and scope and no unresolved framing
-objection remains. A substantive confirmation or clear instruction to explore the
-next question is sufficient; do not introduce a generic approval interview. Silence
-is not agreement. Unknown mechanics can remain the next section's investigation.
-
-Then fill section 02 with the next useful investigation and add one unfilled next
-section. Preserve settled sections and their current-cycle agreements. Use subsections for iterations within each of the four parts. Revisit a settled section with an explicit reason when evidence challenges it.
-
-Problem → exploration → readiness → scope defines the four parts.
-Use subject-specific prose. Distinguish intent, evidence, and hypotheses naturally
-without organizing the page by authorship labels. Cite research where it supports
-claims. Add decision records and scope material only when the cycle reaches
-them; the study-quality rubric remains a separate evaluation record.
-
-### First-page form review
-
-Before presenting the initial page, inspect source and rendered output:
-
-- One substantive numbered section 01 explains the subject and supports discussion.
-- Section 02 is an unfilled next stage, not a disguised full-lifecycle outline.
-- Content is grounded in this cycle and established reality, not inherited proposals.
-- Reasoning appears on the page; process vocabulary and attribution do not dominate.
-- The opening is brief, paragraphs are visibly separated, and lines are easy to read.
-- The chat handoff makes the next contribution and its consequence clear;
-  it does not demand an answer the study is meant to investigate.
-
-Record rendering correctness separately from the designer's judgment of usefulness
-and progression. A build pass cannot establish the latter. On later rounds check that
-feedback changed the page and that settled agreements survived.
-
-### Exploration — concrete proposals and useful discoveries
-
-Each exploration round delivers an inspectable example addressing the shared question.
-Preserve useful discoveries and agreed qualities; remove unusable attempts and replace
-them in the same round. Rejection alone does not reopen purpose or end the study.
-Explicit discussion, stopping, preservation and reframing requests take precedence;
-actual delivery blockers remain visible.
-
-The [exploration guide](../../.agents/skills/design-study/references/exploration.md)
-owns detailed round, feedback, retention and focus instructions. Read it when entering
-or resuming part 02, within the same skill and conversation. Keep procedural detail there
-instead of duplicating it here. Accepted variants and settled properties travel into
-readiness and scope, with provisional choices explicit. Human judgment of usefulness
-remains separate from rendering and automated correctness.
-
-## Study-quality evaluation — separate from readiness
-
-Evaluate whether the study succeeded, using the eight criteria below. Store ratings
-and evidence in a separate linked record (for example `/lab/reviews/<study-slug>`).
-This rubric does not replace part 03: readiness assesses feasibility of the design
-conclusion in the current setting. Part 04 sizes and slices the work.
-Neither the rubric nor a feasibility conclusion authorizes execution.
+Use this rubric for a requested factory evaluation or targeted investigation.
+Ordinary studies do not require a separate ratings report; their reasoning, readiness,
+scope and human judgment remain part of the work. When an evaluation is requested,
+store ratings and supporting evidence in a separate linked record, for example
+`/lab/reviews/<study-slug>`. The [evaluation protocol](../factory-building-lessons/design-study-evaluation.md)
+is available for deliberate workflow trials. Neither the rubric nor a feasibility
+conclusion authorizes implementation.
 
 | Criterion                  | Success evidence                                                                       | Warning signs                                                                                   |
 | -------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
@@ -204,30 +118,17 @@ Assess the study's reasoning and usefulness, not whether a future implementation
 already passed its tests. Record the owner's judgment separately from the agent's
 assessment. Planned checks are not completed evidence.
 
-Part 03 should explain current-system fit, dependencies, constraints, risks, and any
-adaptations required by the conclusion. Part 04 should state what changes, in how
-many slices and what order, their rough size and dependencies, and how fidelity and
-correctness will be checked. Unresolved design choices
-remain explicit; return a named question to part 02 when more exploration is needed.
-
-Assess readiness for the intended delivery. For an alpha trial, distinguish blockers
-to implementing and learning from the chosen design from tuning or configurability
-that can remain provisional; explain the consequence of each blocker.
 
 ## Scenarios
 
-Given an operator describes a design problem, the agent extracts a bounded brief and
-develops a provisional framing at a stable URL, then chooses investigations suited
-to the unknowns with unresolved decisions visible.
+Given a design question, the study develops a bounded problem and inspectable examples
+at a stable URL, preserving decisions and explicit unknowns as the work progresses.
 
-Given feedback changes the direction, the same study is revised and the reason recorded;
-shared production styles remain unaffected until accepted slices are implemented.
+Given feedback challenges an example, the exploration procedure governs its replacement;
+shared production behavior remains unchanged until implementation is authorized.
 
-Given a study is accepted, its slices are implemented as separate work and its status
-stays accepted. Unavailable checks and pending human review remain explicit.
+Given the designer ends a failed study, its stopped state retains both the failure
+assessment and the project's value in stopping and collecting evidence.
 
-Given exploration or readiness shows the concept does not fit the game, the designer
-rules it out and the study page records why.
-
-Given a study cannot continue as run, the designer stops it at any part and the
-close-loop skill records what blocked it.
+Given an ordinary study completes, no separate rubric report is required. Given a
+requested factory evaluation, the linked assessment includes evidence and human judgment.

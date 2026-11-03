@@ -5,7 +5,8 @@ export const HighScoreSubmissionSchema = z.object({
 	initials: z.string().regex(/^[A-Z]{3}$/),
 	seconds: z.number().int().min(1).max(3600),
 	deathCause: z.enum(["STAR", "HULL", "POWER"]),
-	shipId: ShipProfileIdSchema,
+	// Fiddler is an unranked flight trial until balance is accepted.
+	shipId: ShipProfileIdSchema.exclude(["fiddler"]),
 	challenge: z.literal(CHALLENGE),
 });
 export const HighScoreSchema = HighScoreSubmissionSchema.extend({

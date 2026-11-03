@@ -6,6 +6,7 @@ import {
 	LoadoutSchema,
 	SlotTypeSchema,
 } from "./schemas/loadout";
+import { ShipProfileIdSchema } from "./schemas/ship-profile";
 
 const Mount = z
 	.object({
@@ -45,7 +46,7 @@ export const MountPlanSchema = z
 		version: z.literal(1),
 		kind: z.literal("ship-mount-plan"),
 		coordinates: z.literal(COORDINATES),
-		chassis: z.enum(["wasp", "scout", "fighter", "corvette"]),
+		chassis: ShipProfileIdSchema,
 		baseline: z.array(Mount).min(1),
 		mounts: z.array(Mount).min(1),
 		mirrorPairs: z.array(Pair),
@@ -170,6 +171,7 @@ export function moveMount(
 export function previewMounts(plan: MountPlan, original = false): BuildMount[] {
 	const production = buildMounts(plan.previewLoadout);
 	return (original ? plan.baseline : plan.mounts).map((m) => ({
+		...production.find((p) => p.key === m.key),
 		...m,
 		label: production.find((p) => p.key === m.key)?.label ?? m.key,
 		part: production.find((p) => p.key === m.key)?.part ?? null,

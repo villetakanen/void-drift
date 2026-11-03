@@ -19,7 +19,8 @@ describe("Gravity coil fitting", () => {
 			expect(LoadoutSchema.parse(build)).toEqual(build);
 			const after = buildStats(build);
 			expect(after.mass).toBe(
-				before.mass + 10 * (build.hull.length + build.aft.length),
+				before.mass +
+					PARTS["gravity-coil"].mass * (build.hull.length + build.aft.length),
 			);
 			expect(after.capacity).toBe(before.capacity);
 			expect(after.coils).toBe(before.coils);
@@ -29,8 +30,8 @@ describe("Gravity coil fitting", () => {
 			builds,
 		);
 		const solar = defaultLoadout("fighter");
+		const originalCoils = buildStats(solar).coils;
 		solar.hull[0] = "coil";
-		expect(buildStats(solar).coils).toBe(2);
-		expect(PARTS.coil.name).toBe("Loading coil");
+		expect(buildStats(solar).coils).toBe(originalCoils + 1);
 	});
 });

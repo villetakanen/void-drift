@@ -1,16 +1,62 @@
 ---
-import { CHASSIS } from "@void-drift/mode-a";
+import { CHASSIS, starterLoadout } from "@void-drift/mode-a";
+import InstrumentEmbed from "../../../components/lab/instrument/InstrumentEmbed.astro";
 import BladeAssembly from "../../../components/studies/fiddler/BladeAssembly.svelte";
 import BladeConstruction from "../../../components/studies/fiddler/BladeConstruction.svelte";
+import CapacityStudy from "../../../components/studies/fiddler/CapacityStudy.svelte";
 import CorvetteVolume from "../../../components/studies/fiddler/CorvetteVolume.svelte";
+import EngineStudy from "../../../components/studies/fiddler/EngineStudy.svelte";
 import Exploration from "../../../components/studies/fiddler/Exploration.svelte";
+import {
+	ENGINE_PAIR_MASS,
+	ENGINE_PAIR_THRUST,
+	FOUR_ENGINE_LOADED_MASS,
+	FOUR_ENGINE_MASS,
+	FOUR_ENGINE_THRUST,
+	TRIAL_EQUIPMENT_MASS,
+	TRIAL_HULL_MASS,
+	TRIAL_LOADED_MASS,
+} from "../../../components/studies/fiddler/engine-placement";
+import FlightReady from "../../../components/studies/fiddler/FlightReady.svelte";
+import FourEngineStudy from "../../../components/studies/fiddler/FourEngineStudy.svelte";
 import LhiForm from "../../../components/studies/fiddler/LhiForm.svelte";
 import NoseSideConstruction from "../../../components/studies/fiddler/NoseSideConstruction.svelte";
+import PincerSlotStudy from "../../../components/studies/fiddler/PincerSlotStudy.svelte";
 import RootPair from "../../../components/studies/fiddler/RootPair.svelte";
+import StabilizerStudy from "../../../components/studies/fiddler/StabilizerStudy.svelte";
+import WindowStudy from "../../../components/studies/fiddler/WindowStudy.svelte";
 import { studies } from "../../../data/studies";
 import StudyLayout from "../../../layouts/StudyLayout.astro";
 
 const study = studies.find((entry) => entry.slug === "lhi-fiddler-2026-11-03");
+const fiddlerFlightComparison = {
+	version: 1,
+	burn: "turn",
+	vehicles: [
+		{ label: "Fiddler · stabilizers only", loadout: starterLoadout("fiddler") },
+		{
+			label: "Fiddler · linked engines on",
+			loadout: { ...starterLoadout("fiddler"), linkedEngines: true },
+		},
+	],
+};
+const waspControlReference = {
+	version: 1,
+	burn: "turn",
+	vehicles: [
+		{
+			label: "Current Wasp / light ion, empty equipment slots",
+			loadout: {
+				version: 2,
+				chassis: "wasp",
+				side: "ion",
+				stabilizers: true,
+				hull: [null, null],
+				aft: [],
+			},
+		},
+	],
+};
 ---
 
 <StudyLayout study={study}>
@@ -36,14 +82,14 @@ const study = studies.find((entry) => entry.slug === "lhi-fiddler-2026-11-03");
 		</p>
 		<p>
 			The current Corvette has {CHASSIS.corvette.mass} hull mass; Fiddler’s
-			working range is
-			<strong>180–210, with 190 as a starting hypothesis</strong>, before
-			fittings. It should feel deliberate when committing to a course, with
-			reassuring attitude control rather than effortless light-ship recovery.
-			This round investigates the silhouette, bridge position and space for
-			fittings. Exact mass, thrust, turning, reserves and combat function remain
-			open; “assault” describes the intended character, not an implemented
-			firing system.
+			current working hull mass is <strong>{TRIAL_HULL_MASS}</strong>, before
+			fittings, refined from the initial 180–210 exploration. LHI ships should
+			be quite fast: strong forward drive and decisive turning, with a tradeoff
+			when combining them. Fiddler commits to a line, turns to choose the next
+			one, then pushes again. This round investigates the silhouette, bridge
+			position and space for fittings. Thrust, turning, reserves and combat
+			function remain open; “assault” describes the intended character, not an
+			implemented firing system.
 		</p>
 		<figure class="reference">
 			<a
@@ -66,7 +112,7 @@ const study = studies.find((entry) => entry.slug === "lhi-fiddler-2026-11-03");
 			</figcaption>
 		</figure>
 	</section>
-	<h2 id="exploration">02 / Giving Fiddler corvette scale</h2>
+	<h2 id="exploration">02 / LHI form, scale and propulsion</h2>
 	<details class="earlier-round">
 		<summary>02.1 / First layouts and family lesson — retained</summary>
 		<section aria-labelledby="exploration-02-1">
@@ -336,50 +382,458 @@ const study = studies.find((entry) => entry.slug === "lhi-fiddler-2026-11-03");
 			</p>
 		</section>
 	</details>
-	<section aria-labelledby="exploration-02-6">
-		<h3 id="exploration-02-6">02.6 / From copied side to forward blade</h3>
+	<details class="earlier-round">
+		<summary>02.6 / Wall, root and mirrored pair — retained</summary>
+		<section aria-labelledby="exploration-02-6">
+			<h3 id="exploration-02-6">02.6 / From copied side to forward blade</h3>
+			<p>
+				<strong
+					>The wall loses the recognizable form; the root does not.</strong
+				>
+				The mirrored pair is worth exploring further. This separates three
+				different outcomes: the added wall is rejected, the root preserves the
+				family resemblance, and the paired arrangement remains a promising
+				direction. The original comparison remains below; 02.7 isolates the
+				useful parts without the wall.
+			</p>
+			<p>
+				The two Wasp faces now form the exposed side of a blade. A return wall
+				follows their complex inner contour, and a triangular upper surface
+				joins the rear of the side to a broader root. Switch through Faces, Wall
+				and Root to see each addition; the original two polygons stay unchanged.
+			</p>
+			<BladeAssembly client:load />
+			<p>
+				This proposal tests whether the copied LHI side can become a
+				substantial, connected part while its nose, bend and inner contour stay
+				recognizable. The root grows locally behind the long side. The paired
+				view establishes the open stance and an aft connection to develop
+				further; it does not yet establish corvette scale or a complete loadout.
+				Mass and flight behaviour remain outside this construction round.
+			</p>
+		</section>
+	</details>
+	<details class="earlier-round">
+		<summary>02.7 / Mirrored faces and roots — retained</summary>
+		<section aria-labelledby="exploration-02-7">
+			<h3 id="exploration-02-7">
+				02.7 / The pair, with the copied edge exposed
+			</h3>
+			<p>
+				The two mirrored Wasp sides establish the open stance. Adding only the
+				triangular roots gives each a broader rear attachment while keeping the
+				original nose, bend and long side visible. Both examples use the same
+				size, spacing and lighting; the root is the only change.
+			</p>
+			<RootPair client:load />
+			<p>
+				The wall from 02.6 is absent from both examples. This comparison
+				isolates the useful paired form before developing the hull behind it.
+				Root dimensions and spacing remain provisional; corvette scale, cockpit
+				position and equipment space are still open.
+			</p>
+		</section>
+	</details>
+	<details class="earlier-round">
+		<summary>02.8 / The connected LHI sketch — retained</summary>
+		<section aria-labelledby="exploration-02-8">
+			<h3 id="exploration-02-8">
+				02.8 / The blades become part of an LHI ship
+			</h3>
+			<p>
+				This new sketch brings the copied forms into a complete composition. The
+				mirrored blades, swept roots and long cockpit body share a sequence of
+				tapered face, bend and longer side. The family resemblance now carries
+				through their connections as well as the individual parts. This is a
+				promising direction; the complete Fiddler design remains open.
+			</p>
+			<figure class="connected-reference">
+				<a
+					href="/studies/lhi-fiddler-2026-11-03/connected-draft.png"
+					aria-label="Open the new connected Fiddler sketch at full size"
+				>
+					<img
+						src="/studies/lhi-fiddler-2026-11-03/connected-draft.png"
+						width="398"
+						height="783"
+						alt="New Fiddler sketch: two long forward blades connect through swept, angular shoulders to a central cockpit body with a long tapered tail and two rear fins."
+					>
+				</a>
+				<figcaption>
+					<p><strong>New feeling draft · original preserved</strong></p>
+					<p>
+						<strong>Repeated faces.</strong>
+						The blades retain the nose-to-side bend and the complex inner
+						contour. The cockpit framing repeats that angular language in the
+						centre.
+					</p>
+					<p>
+						<strong>Swept connections.</strong>
+						Each blade widens into a pointed root, with diagonal surfaces
+						reaching the central body. Those connections echo Wasp’s shoulders
+						and give the whole silhouette a coherent sweep.
+					</p>
+					<p>
+						<strong>Open stance.</strong>
+						The long gap between the blades stays clear, while the rear fins and
+						tapered centre give the composition a second, smaller repetition of
+						the same angles.
+					</p>
+					<p>
+						The coloured glass belongs to the supplied reference. Black glass
+						remains the working decision for the ship.
+					</p>
+				</figcaption>
+			</figure>
+			<details class="earlier-round">
+				<summary>Family line-up · supplied comparison with Wasp</summary>
+				<figure class="lineup-reference">
+					<a href="/studies/lhi-fiddler-2026-11-03/family-lineup.png">
+						<img
+							src="/studies/lhi-fiddler-2026-11-03/family-lineup.png"
+							width="1626"
+							height="1022"
+							alt="Supplied line-up of two Fiddler sketches around Wasp, with similar cockpit sizes and shared angular faces."
+						>
+					</a>
+					<figcaption>
+						The copied cockpit gives the three drawings a common size reference.
+						Original comparison preserved unchanged.
+					</figcaption>
+				</figure>
+			</details>
+			<p>
+				<strong
+					>The family reads more clearly; corvette scale still needs
+					evidence.</strong
+				>
+				The prominent cockpit and long, narrow tail give this sketch an agile
+				character. The next useful comparison would preserve these angles and
+				use Wasp’s cockpit size and equipment footprints as scale references,
+				including two fittings on each blade. That would reveal how much hull is
+				available around familiar-sized parts before changing the silhouette.
+				The sketch alone does not settle the 180–210 mass target or the four
+				stabilizers’ placement.
+			</p>
+		</section>
+	</details>
+	<details class="earlier-round">
+		<summary>02.9 / Equipment and hull scale — retained</summary>
+		<section aria-labelledby="exploration-02-9">
+			<h3 id="exploration-02-9">02.9 / Put the equipment on it</h3>
+			<p>
+				The family language is sufficient to investigate capacity. Fiddler must
+				carry more than the existing cruiser while retaining the copied blade
+				bends, swept roots and cockpit framing. The same equipment is drawn at
+				the same scale on both hulls, so useful space can be judged directly.
+			</p>
+			<CapacityStudy client:load />
+			<p>
+				The first trial adds two non-engine positions over the cruiser: eight
+				places for equipment, plus two engines. Two of those equipment positions
+				sit on each blade. This is a capacity hypothesis, not an accepted
+				loadout. The Fiddler hull is a procedural trace of the new sketch, with
+				black glass.
+			</p>
+			<p>
+				At Draft size, the round coils overhang the blades and crowd the
+				shoulder connections; the rear engines also sit close to the central
+				equipment. Hull +35% gives the items more separation, while the coil
+				overhang keeps the width of the mounting surfaces an open question. This
+				is a size comparison, not a mass calculation: the 180–210 target, four
+				stabilizers, final cockpit size and engine authority remain separate
+				design questions.
+			</p>
+		</section>
+	</details>
+	<details class="earlier-round">
+		<summary>
+			02.10 / Window size and the accepted hull scale — retained
+		</summary>
+		<section aria-labelledby="exploration-02-10">
+			<h3 id="exploration-02-10">02.10 / Move and size the LHI window</h3>
+			<p>
+				LHI keeps Wasp’s black window shape. Start at its original size, then
+				move and scale it directly on the larger Fiddler hull. A familiar window
+				on a larger body lets us explore both the ship’s scale and the bridge’s
+				place within it.
+			</p>
+			<WindowStudy client:load />
+			<p>
+				<strong>Designer decision:</strong>
+				carry forward the +35% hull with the exact Wasp-shaped black window at
+				100% Wasp size (19.5 × 6 units). That familiar-sized opening resolves
+				the perceived scale of the ship. The tool remains available; an edited
+				setting is not a new decision. The following round uses the central
+				starting position. Exact window placement, equipment mounts and flight
+				values remain provisional.
+			</p>
+		</section>
+	</details>
+	<details class="earlier-round">
+		<summary>
+			02.11 / Two-engine placement and the LHI handling principle — retained
+		</summary>
+		<section aria-labelledby="exploration-02-11">
+			<h3 id="exploration-02-11">02.11 / Push, turn, then push again</h3>
+			<p>
+				This two-engine comparison led to the four-engine arrangement in 02.12:
+				the designer chose to combine the blade-root and rear pairs.
+			</p>
+			<p>
+				<strong
+					>LHI’s handling identity: quite fast, with strong forward drive and
+					strong turning, with little ability to combine them.</strong
+				>
+				Fiddler should point its nose decisively, then commit to the new
+				direction. Turning the hull does not immediately turn its existing
+				travel; the next main burn redirects it.
+			</p>
+			<p>
+				Wasp already separates these jobs: both controls fire the main engine;
+				one control turns on the stabilizers. The proposal here extends that to
+				two parallel main engines, firing together only on both controls. Their
+				separation is a packaging choice, not differential steering. Stabilizers
+				can still brake residual spin while the main engines fire, as on Wasp.
+			</p>
+			<EngineStudy client:load />
+			<h4>Size the drive for the fitted ship</h4>
+			<p>
+				The working hull mass is now exactly {TRIAL_HULL_MASS}. These two
+				engines add {ENGINE_PAIR_MASS} and the eight trial fittings add
+				{TRIAL_EQUIPMENT_MASS}:
+				<strong>{TRIAL_LOADED_MASS} total</strong>. With today’s heavy-ion
+				values, the pair supplies {ENGINE_PAIR_THRUST.toLocaleString("en-US")}
+				force units. Dividing by that mass gives about
+				{Math.round(ENGINE_PAIR_THRUST / TRIAL_LOADED_MASS)}
+				u/s² of initial forward acceleration at full power, from rest. This is a
+				force budget; actual acceleration tapers with speed, and power
+				availability matters. Lower mass helps acceleration; the engine speed
+				ceiling is a separate limit. The fast LHI character still needs to be
+				judged in flight.
+			</p>
+			<p>
+				Two heavy ions are a starting hypothesis. Moving them cannot solve a
+				thrust shortage. Strong turning will separately depend on stabilizer
+				force, leverage and this larger hull’s rotational inertia; four slits
+				alone do not establish it. Main-engine placement comes first, then the
+				four stabilizers can be arranged around those engines and their exhaust.
+			</p>
+			<details>
+				<summary>
+					Inspect Wasp’s current push–turn–push control reference
+				</summary>
+				<p>
+					B2 runs six seconds of both controls, two of left only, one of coast,
+					then five of both. This is the current Wasp, not simulated Fiddler.
+					The shared instrument cannot yet represent Fiddler’s hull mass, paired
+					main drive and four-stabilizer geometry; that extension is proposed
+					before making Fiddler flight comparisons.
+				</p>
+				<InstrumentEmbed
+					config={waspControlReference}
+					label="Current Wasp control reference"
+				/>
+			</details>
+		</section>
+	</details>
+	<details class="earlier-round">
+		<summary>02.12 / Four engines, one forward drive — accepted</summary>
+		<section aria-labelledby="exploration-02-12">
+			<h3 id="exploration-02-12">02.12 / Four engines, one forward drive</h3>
+			<p>
+				<strong>Accepted arrangement:</strong>
+				the four main-engine positions, underwing blade-root mounting and two
+				linked engine-only pairs fit the ship’s character. Engine type remains
+				selectable within each pair.
+			</p>
+			<p>
+				<strong>Designer direction: use both pairs.</strong>
+				Two engine slots sit below the blade-root wings at spacing 47 and
+				fore–aft +1; two more sit at the rear at spacing 16 and fore–aft +39.
+				Spacing is centre-to-centre, so the mount centres are (−23.5, +1),
+				(+23.5, +1), (−8, +39) and (+8, +39). All four exhaust straight aft.
+			</p>
+			<p>
+				<strong>All four slots accept engines only.</strong>
+				E1 and E2 form one linked pair; E3 and E4 form the other. Both slots in
+				a pair must carry the same engine type. The two pairs may use different
+				types, while every fit remains left–right symmetrical.
+			</p>
+			<FourEngineStudy client:load />
+			<p>
+				This keeps the +35% hull, Wasp-sized black window and {TRIAL_HULL_MASS}
+				hull mass. The eight trial equipment positions remain available for
+				review, giving twelve fitting positions with the four engines. The
+				underwing roots preserve the visible wing surfaces; their exhaust paths
+				and the four stabilizers still need to be checked together.
+			</p>
+			<p>
+				<strong>Reference budget: four heavy ions.</strong>
+				Engine choices remain open within the linked pairs. With four current
+				heavy ions as the trial fit, engine mass is {FOUR_ENGINE_MASS}; adding
+				the eight trial fittings’
+				{TRIAL_EQUIPMENT_MASS}
+				gives <strong>{FOUR_ENGINE_LOADED_MASS} total mass</strong>. Their
+				combined {FOUR_ENGINE_THRUST.toLocaleString("en-US")} force units give
+				about {Math.round(FOUR_ENGINE_THRUST / FOUR_ENGINE_LOADED_MASS)} u/s² of
+				initial acceleration from rest at full power. This is a thrust budget,
+				not a flight result. More ion engines increase acceleration strongly;
+				the current ion speed-ceiling bonus has diminishing returns.
+			</p>
+			<p>
+				All four mains are intended to fire together on both controls. One
+				control turns through the separate stabilizers, preserving LHI’s
+				push–turn–push character. Stabilizer authority and sustained power
+				supply remain the next handling questions.
+			</p>
+		</section>
+	</details>
+	<section aria-labelledby="exploration-02-13">
+		<h3 id="exploration-02-13">02.13 / Place the four turning thrusters</h3>
 		<p>
-			<strong>The wall loses the recognizable form; the root does not.</strong>
-			The mirrored pair is worth exploring further. This separates three
-			different outcomes: the added wall is rejected, the root preserves the
-			family resemblance, and the paired arrangement remains a promising
-			direction. The original comparison remains below; 02.7 isolates the useful
-			parts without the wall.
+			LHI’s four turning thrusters are built into the ship and always enabled,
+			as on Wasp. They fire when turning or braking rotation; they are not
+			optional fittings or continuously burning engines. The accepted hull,
+			window and four main-engine positions stay fixed while these two mirrored
+			pairs are placed.
 		</p>
 		<p>
-			The two Wasp faces now form the exposed side of a blade. A return wall
-			follows their complex inner contour, and a triangular upper surface joins
-			the rear of the side to a broader root. Switch through Faces, Wall and
-			Root to see each addition; the original two polygons stay unchanged.
+			<strong>Decided placement:</strong>
+			front pair spacing 48, fore–aft −43, slit tilt 8.5°; rear pair spacing 29,
+			fore–aft +33, slit tilt −16.5°. Spacing is centre-to-centre. These
+			corrected values replace the miscopied 27 front spacing and +19.5° rear
+			tilt, and are carried into 02.14.
 		</p>
-		<BladeAssembly client:load />
+		<StabilizerStudy client:load />
 		<p>
-			This proposal tests whether the copied LHI side can become a substantial,
-			connected part while its nose, bend and inner contour stay recognizable.
-			The root grows locally behind the long side. The paired view establishes
-			the open stance and an aft connection to develop further; it does not yet
-			establish corvette scale or a complete loadout. Mass and flight behaviour
-			remain outside this construction round.
+			The placement tool now opens at the decision. Further edits here are
+			experiments; Reset to decision restores the settled values. Turning
+			strength remains an open flight question for the shared instrument
+			extension.
 		</p>
 	</section>
-	<section aria-labelledby="exploration-02-7">
-		<h3 id="exploration-02-7">02.7 / The pair, with the copied edge exposed</h3>
+	<section aria-labelledby="exploration-02-14">
+		<h3 id="exploration-02-14">02.14 / Fit the two pincer slot pairs</h3>
 		<p>
-			The two mirrored Wasp sides establish the open stance. Adding only the
-			triangular roots gives each a broader rear attachment while keeping the
-			original nose, bend and long side visible. Both examples use the same
-			size, spacing and lighting; the root is the only change.
+			<strong>Decided pincer slots:</strong>
+			both pairs have spacing 31, with centres at x = ±15.5. The forward pair
+			sits at fore–aft −52 and uses
+			<strong>+ · weapon or support</strong>; the aft pair sits at fore–aft −29
+			and uses <strong>S · support only</strong>. All four are mounted below the
+			ship. Neither pair accepts engines; S slots also exclude weapons.
+			Positions are mirrored, while fittings remain independent.
 		</p>
-		<RootPair client:load />
+		<PincerSlotStudy client:load />
 		<p>
-			The wall from 02.6 is absent from both examples. This comparison isolates
-			the useful paired form before developing the hull behind it. Root
-			dimensions and spacing remain provisional; corvette scale, cockpit
-			position and equipment space are still open.
+			The editor now starts at the decided positions and under-ship mounting.
+			Reset to decided slots restores those choices while keeping trial
+			fittings. Weapons and support use their actual game artwork and size;
+			weapons are static previews. Fitted view shows the hull covering the parts
+			mounted below. The final centre slot is added in 03 below. Operating
+			clearance remains to be reviewed in flight.
 		</p>
 	</section>
 	<section aria-labelledby="readiness">
-		<h2 id="readiness">03 / To be developed after 02</h2>
+		<h2 id="readiness">03 / Ready for an integrated flight trial</h2>
+		<FlightReady client:visible />
+		<p>
+			The designer accepts the ship’s form and requests flight integration after
+			one final centre slot. That slot accepts a weapon or support, sits below
+			the hull at x 0 / fore–aft +20, and occupies the space between the
+			Wasp-sized window and rear engines. +20 is the implementation starting
+			point for this last slot. The resulting ship has nine slots: two linked
+			engine pairs, two independent front + slots, two independent S slots, and
+			the centre + slot.
+		</p>
+		<p>
+			The shared Hangar, renderer, energy system, simulation and flight controls
+			can carry the design. Required adaptations are a fifth chassis, five hull
+			fittings, a second required mirrored engine pair, support-only
+			compatibility, and Wasp-style four-stabilizer control at Fiddler’s
+			accepted positions. The hull stays at 187 mass. Both controls fire all
+			four mains; one control turns with the stabilizers. With Linked engines
+			on, turning or automatic spin braking also fires the two mains on the
+			corresponding side, adding forward speed and exhaust without additional
+			turning torque. Linking defaults off. There is no unresolved design
+			blocker to a trial.
+		</p>
+		<p>
+			The main-menu starting fit is four Light ions, two Potential Wells in the
+			lower pincer S slots, and one Gravity coil in the centre + slot below the
+			chassis. Both forward + slots start empty. This is 273 assembled mass and
+			270 energy capacity.
+		</p>
+		<InstrumentEmbed
+			config={fiddlerFlightComparison}
+			label="Fiddler: stabilizers alone or linked drive"
+		/>
+		<p>
+			The shared instrument compares the same default ship with linking off and
+			on. It supplies unlimited energy and omits planetary gravity; use the
+			Hangar flight for real energy and collision behavior.
+		</p>
+		<p>
+			Initial stabilizer force and energy use follow Wasp; the larger hull’s
+			inertia is calculated from its actual bounds. Handling, endurance and
+			clearance still need human flight review. Weapon fittings remain static,
+			as in the current game. Early Fiddler runs are unranked.
+		</p>
+	</section>
+	<section aria-labelledby="scope">
+		<h2 id="scope">04 / Integrate the accepted ship</h2>
+		<p>
+			The designer explicitly authorizes game integration. No
+			experience-principle change is proposed. Earlier eight-item capacity
+			sketches are superseded by the five decided equipment/weapon slots; the
+			rejected explorations stay available as requested.
+		</p>
+		<ol>
+			<li>
+				Promote the accepted hull, window, mounts and corrected stabilizers into
+				one shared Fiddler definition, with schema validation and fitting rules.
+			</li>
+			<li>
+				Connect the two engine banks and four turning thrusters to real thrust,
+				energy, inertia, collision bounds and plume outputs. Preserve other
+				ships.
+			</li>
+			<li>
+				Add Fiddler to the Hangar and game selection, keep old saved builds
+				readable, and expose Test flight with an editable trial loadout.
+			</li>
+			<li>
+				Check geometry, compatibility, symmetry, push–turn separation, energy
+				and save/flight handoff; inspect the ship in the Hangar and fly it in
+				the browser.
+			</li>
+		</ol>
+		<p>
+			The accepted shape and mount layout now have a shared production
+			definition. The crossed right-wing face that left a triangular gap is
+			repaired. The Hangar, flight drawing and study use that corrected surface
+			geometry. All four integration slices are delivered locally. No change to
+			global gravity or friction was needed.
+		</p>
+		<p>
+			Verification: 149 unit tests pass, including seven Fiddler integration
+			tests; type checks, lint, contracts and the production build pass. Browser
+			review covered the nine-slot Hangar, required rear-pair changes,
+			support-only compatibility, the centre fitting, returning from flight,
+			straight thrust, linked and unlinked turning, and main-menu 05 with the
+			decided starting fit. The shared instrument shows equal turning
+			acceleration with linking off and on, while forward acceleration differs.
+		</p>
+		<p>
+			Automated browser and Firebase suites were not run in this iteration. The
+			designer has accepted the form and authorized this trial; handling,
+			endurance and final balance still await flying by the designer. This is
+			local working code, not a published release.
+		</p>
+		<p>
+			<a href="/builder?chassis=fiddler">Open Fiddler in the Hangar</a>
+			· <a href="/">Play from the main menu, slot 05</a>
+		</p>
 	</section>
 </StudyLayout>
 
@@ -405,10 +859,19 @@ section > p {
 	gap: var(--spacing-lg);
 	align-items: end;
 }
-.reference img {
+.reference img,
+.connected-reference img,
+.lineup-reference img {
 	display: block;
 	max-width: 100%;
 	height: auto;
+}
+.connected-reference {
+	margin: var(--spacing-xl) 0;
+	display: grid;
+	grid-template-columns: minmax(0, 398px) minmax(0, 1fr);
+	gap: var(--spacing-xl);
+	align-items: start;
 }
 figcaption {
 	max-width: 38ch;
@@ -416,8 +879,22 @@ figcaption {
 	font:
 		var(--font-size-label) / var(--line-height-prose) var(--font-family-prose);
 }
+.connected-reference figcaption,
+.lineup-reference figcaption {
+	max-width: var(--measure-prose);
+}
+.connected-reference figcaption p {
+	margin-block: 0 var(--spacing-lg);
+}
+.connected-reference strong {
+	color: var(--color-text);
+}
+.lineup-reference {
+	margin: var(--spacing-lg) 0;
+}
 @media (max-width: 700px) {
-	.reference {
+	.reference,
+	.connected-reference {
 		grid-template-columns: 1fr;
 	}
 }

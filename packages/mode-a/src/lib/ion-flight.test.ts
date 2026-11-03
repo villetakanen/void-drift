@@ -2,13 +2,13 @@ import { Vec2 } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { applyBuildEngines, buildDrain } from "./build-flight";
 import { buildPlumeEmitters } from "./build-renderer";
-import { ION_DEFAULTS, ionCeiling } from "./schemas/ion";
 import {
-	buildStats,
-	defaultLoadout,
-	LoadoutSchema,
-	PARTS,
-} from "./schemas/loadout";
+	ION_DEFAULTS,
+	ionCeiling,
+	ionStrength,
+	STABILIZER_ENERGY,
+} from "./schemas/ion";
+import { buildStats, defaultLoadout, PARTS } from "./schemas/loadout";
 import { labSettings, Simulation, STEP } from "./simulation";
 import { stabilizerMount } from "./stabilizers";
 
@@ -24,39 +24,30 @@ const body = () => ({
 });
 
 describe("accepted ion flight", () => {
-	it("migrates absent stabilizer flags without replacing fitted engines", () => {
-		const build = {
-			...defaultLoadout("fighter"),
-			side: "plasma",
-			stabilizers: undefined,
-		};
-		expect(LoadoutSchema.parse(build).stabilizers).toBe(true);
-		expect(LoadoutSchema.parse(build).side).toBe("plasma");
-		expect(
-			LoadoutSchema.safeParse({ ...build, stabilizers: "yes" }).success,
-		).toBe(false);
-	});
-	it("Heavy gives 1.75 times Light force after accounting for installed mass", () => {
+	it("delivers configured relative ion force after accounting for installed mass", () => {
 		const light = defaultLoadout("fighter"),
 			heavy = { ...light, side: "heavy-ion" as const };
-		expect(PARTS["heavy-ion"].draw / PARTS.ion.draw).toBe(1.75);
 		const a = body(),
 			b = body();
 		applyBuildEngines(a, light, both, STEP, true);
 		applyBuildEngines(b, heavy, both, STEP, true);
 		expect(
 			(b.vel.x * buildStats(heavy).mass) / (a.vel.x * buildStats(light).mass),
-		).toBeCloseTo(1.75, 12);
+		).toBeCloseTo(ionStrength(heavy.side) / ionStrength(light.side), 12);
 	});
 	it("counts directional force rather than installed engines for speed", () => {
 		const build = defaultLoadout("fighter");
 		const a = body();
 		for (let i = 0; i < 12000; i++)
 			applyBuildEngines(a, build, both, STEP, true);
-		const ceiling = ionCeiling(2 * Math.cos((26 * Math.PI) / 180));
+		const ceiling = ionCeiling(
+			2 * Math.cos(buildPlumeEmitters(build)[0].angle),
+		);
 		expect(a.vel.mag()).toBeCloseTo(ceiling, 5);
 		expect(ceiling).toBeLessThan(ionCeiling(2));
-		expect(ionCeiling(1000)).toBeCloseTo(476);
+		expect(ionCeiling(1000)).toBeCloseTo(
+			ION_DEFAULTS.maxSpeed * (1 + ION_DEFAULTS.bonus),
+		);
 		a.vel.set(1000, 0);
 		for (let i = 0; i < 200; i++) applyBuildEngines(a, build, left, STEP, true);
 		expect(a.vel.mag()).toBeLessThanOrEqual(1000.000001);
@@ -84,7 +75,8 @@ describe("accepted ion flight", () => {
 				1,
 				spin,
 			);
-			expect(assist.stabilizers).toEqual([0, 0.22]);
+			expect(assist.stabilizers[0]).toBe(0);
+			expect(assist.stabilizers[1]).toBeGreaterThan(0);
 			expect(spin.velocity).toBeGreaterThan(free);
 			const brake = applyBuildEngines(
 				ship,
@@ -97,10 +89,12 @@ describe("accepted ion flight", () => {
 				spin,
 			);
 			expect(brake.stabilizers[0]).toBeGreaterThan(0);
+			let minimumSpin = spin.velocity;
 			for (let i = 0; i < 20000; i++) {
 				applyBuildEngines(ship, build, idle, STEP / 4, true, {}, 1, spin);
-				expect(spin.velocity).toBeGreaterThanOrEqual(0);
+				minimumSpin = Math.min(minimumSpin, spin.velocity);
 			}
+			expect(minimumSpin).toBeGreaterThanOrEqual(0);
 			expect(spin.velocity).toBe(0);
 			expect(
 				applyBuildEngines(ship, build, idle, STEP / 4, true, {}, 1, spin)
@@ -113,15 +107,18 @@ describe("accepted ion flight", () => {
 			expect(m.lever).toBeLessThan(0);
 		});
 	}
-	it("charges 0.25 Light-ion energy for assist and automatic braking with any main family", () => {
+	it("charges configured stabilizer energy for assist and braking with any main family", () => {
 		const build = { ...defaultLoadout("fighter"), stabilizers: true };
 		for (const side of ["ion", "heavy-ion", "fusion", "plasma"] as const) {
 			build.side = side;
 			expect(buildDrain(build, left)).toBe(
-				3 + PARTS[side].draw + PARTS.ion.draw * 0.25,
+				buildDrain(build, idle, 0) +
+					PARTS[side].draw +
+					PARTS.ion.draw * STABILIZER_ENERGY,
 			);
-			expect(buildDrain(build, idle, 1)).toBe(3.5);
-			expect(buildDrain(build, idle, 0)).toBe(3);
+			expect(buildDrain(build, idle, 1) - buildDrain(build, idle, 0)).toBe(
+				PARTS.ion.draw * STABILIZER_ENERGY,
+			);
 		}
 		const sim = new Simulation({
 			...labSettings(),
@@ -133,7 +130,10 @@ describe("accepted ion flight", () => {
 		sim.angularMotion.velocity = 1;
 		const before = sim.state.resources.power;
 		sim.step(idle);
-		expect(before - sim.state.resources.power).toBeCloseTo(3.5 * STEP, 10);
+		expect(before - sim.state.resources.power).toBeCloseTo(
+			buildDrain(build, idle, 1) * STEP,
+			10,
+		);
 		sim.state.resources.power = 0;
 		const spin = sim.angularMotion.velocity;
 		sim.step(idle);

@@ -5,6 +5,7 @@ import {
 	CHASSIS,
 	CRUISER,
 	drawBuild,
+	FIDDLER,
 	FIGHTER,
 	type Loadout,
 	type MountPlan,
@@ -159,6 +160,9 @@ function fitPart(value: string) {
 	if (current.group === "side") {
 		if (!result) return;
 		next.previewLoadout.side = id as Loadout["side"];
+	} else if (plan.chassis === "fiddler" && current.group === "aft") {
+		if (result?.category !== "E") return;
+		next.previewLoadout.aft = [result.id, result.id];
 	} else
 		next.previewLoadout[current.group][current.index] =
 			id as Loadout["hull"][number];
@@ -174,11 +178,13 @@ function fitView() {
 	const hull =
 		plan.chassis === "fighter"
 			? FIGHTER.hull
-			: (plan.chassis === "wasp"
-					? WASP.facets
-					: plan.chassis === "scout"
-						? SCOUT.facets
-						: CRUISER.facets
+			: (plan.chassis === "fiddler"
+					? FIDDLER.facets
+					: plan.chassis === "wasp"
+						? WASP.facets
+						: plan.chassis === "scout"
+							? SCOUT.facets
+							: CRUISER.facets
 				).flatMap((f) => f.points);
 	const points: number[][] = hull.map((p) => [p[0], p[1]]);
 	// Include fittings, slot labels and selection brackets in their rotated bounds.
@@ -624,7 +630,8 @@ onMount(() => {
 							""}
 						onchange={(e) => fitPart(e.currentTarget.value)}
 					>
-						{#if current.group !== "side"}
+						{#if current.group !== "side" &&
+							!(plan.chassis === "fiddler" && current.group === "aft")}
 							<option value="">Empty</option>
 						{/if}
 						{#each Object.entries(PARTS).filter(

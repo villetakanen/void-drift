@@ -10,8 +10,7 @@ import {
 	STABILIZER_STRENGTH,
 } from "./schemas/ion";
 import { buildStats, CHASSIS, type Loadout, PARTS } from "./schemas/loadout";
-import { stabilizerMount } from "./stabilizers";
-import { WASP } from "./wasp";
+import { lhiStabilizers, stabilizerMount } from "./stabilizers";
 
 /** One engine impulse: transverse steering may rotate, never inflate overspeed. */
 export function engineImpulse(
@@ -79,8 +78,8 @@ export function stabilizerBurn(
 	settings: IonSettings = ION_DEFAULTS,
 ) {
 	const command = Number(input.leftThruster) - Number(input.rightThruster);
-	const isWasp = build.chassis === "wasp";
-	if ((!isWasp && !build.stabilizers) || (!command && Math.abs(spin) < 1e-10))
+	const isLhi = !!lhiStabilizers(build.chassis);
+	if ((!isLhi && !build.stabilizers) || (!command && Math.abs(spin) < 1e-10))
 		return { side: 0, duty: 0 };
 	const m = stabilizerMount(build.chassis);
 	const direction = command || -Math.sign(spin);
@@ -95,6 +94,19 @@ export function stabilizerBurn(
 			: Math.min(1, Math.abs(spin) / (angularAcceleration * dt)),
 	};
 }
+/** Linked Fiddler drive follows the active turning/braking side, never adds torque. */
+function fiddlerDrive(
+	build: Loadout,
+	input: InputState,
+	burn: { side: number; duty: number },
+) {
+	if (input.leftThruster && input.rightThruster) return [1, 1] as const;
+	if (!build.linkedEngines) return [0, 0] as const;
+	return [
+		burn.side < 0 ? burn.duty : 0,
+		burn.side > 0 ? burn.duty : 0,
+	] as const;
+}
 export function applyBuildEngines(
 	ship: GameObject,
 	build: Loadout,
@@ -108,11 +120,15 @@ export function applyBuildEngines(
 	parts: typeof PARTS = PARTS,
 ) {
 	const isWasp = build.chassis === "wasp";
+	const isFiddler = build.chassis === "fiddler";
+	const lhi = lhiStabilizers(build.chassis);
+	const burn = stabilizerBurn(build, input, motion.velocity, dt, settings);
+	const drive = fiddlerDrive(build, input, burn);
 	const output = {
 		left: 0,
 		right: 0,
 		aft: build.aft.map(() => 0),
-		stabilizers: isWasp ? [0, 0, 0, 0] : [0, 0],
+		stabilizers: lhi ? [0, 0, 0, 0] : [0, 0],
 	};
 	const stats = buildStats(build),
 		chassis = CHASSIS[build.chassis];
@@ -145,9 +161,11 @@ export function applyBuildEngines(
 		lever: number,
 		group: "left" | "right" | "aft",
 		index = 0,
+		commandDuty = 1,
 	) {
 		const part = parts[id];
-		const duty = engineDuty(part, powered && held, dt, timers, key);
+		const duty =
+			engineDuty(part, powered && held, dt, timers, key) * commandDuty;
 		const strength = ionStrength(id);
 		const thrust = strength
 			? settings.acceleration * ION_REFERENCE_MASS * strength
@@ -167,7 +185,10 @@ export function applyBuildEngines(
 				duty,
 			});
 	}
-	if (isWasp) {
+	if (isFiddler) {
+		main(build.side, drive[0] > 0, "left", 0, 0, "left", 0, drive[0]);
+		main(build.side, drive[1] > 0, "right", 0, 0, "right", 0, drive[1]);
+	} else if (isWasp) {
 		main(
 			build.side,
 			input.leftThruster && input.rightThruster,
@@ -184,29 +205,28 @@ export function applyBuildEngines(
 		if (id && PARTS[id].category === "E")
 			main(
 				id,
-				build.linkedEngines
-					? input.leftThruster || input.rightThruster
-					: input.leftThruster && input.rightThruster,
+				isFiddler
+					? drive[index] > 0
+					: build.linkedEngines
+						? input.leftThruster || input.rightThruster
+						: input.leftThruster && input.rightThruster,
 				`aft-${index}`,
 				0,
 				0,
 				"aft",
 				index,
+				isFiddler ? drive[index] : 1,
 			);
-	const burn = stabilizerBurn(build, input, motion.velocity, dt, settings);
 	const strength = burn.duty * STABILIZER_STRENGTH * Number(powered);
-	if (isWasp) {
+	if (lhi) {
 		const frontSide = -burn.side;
 		const rearSide = burn.side;
-		ix += strength * (WASP.stabilizers.front.fx + WASP.stabilizers.rear.fx);
-		iy +=
-			strength *
-			(-frontSide * WASP.stabilizers.front.fy +
-				-rearSide * WASP.stabilizers.rear.fy);
+		ix += strength * (lhi.front.fx + lhi.rear.fx);
+		iy += strength * (-frontSide * lhi.front.fy + -rearSide * lhi.rear.fy);
 		torque +=
 			-burn.side *
 			strength *
-			WASP.stabilizers.coupledLever *
+			lhi.coupledLever *
 			settings.acceleration *
 			ION_REFERENCE_MASS;
 	} else {
@@ -241,7 +261,7 @@ export function applyBuildEngines(
 	}
 	const combined = Math.hypot(ix, iy);
 	const ceilingStrength =
-		isWasp && !(input.leftThruster && input.rightThruster)
+		lhi && !(input.leftThruster && input.rightThruster)
 			? Math.max(1, combined)
 			: combined;
 	const delivered =
@@ -291,7 +311,7 @@ export function applyBuildEngines(
 	}
 
 	if (burn.side) {
-		if (isWasp) {
+		if (lhi) {
 			if (burn.side === -1) {
 				output.stabilizers[1] = strength * power;
 				output.stabilizers[2] = strength * power;
@@ -324,6 +344,19 @@ export function buildDrain(
 	dt = 1 / 240,
 	settings: IonSettings = ION_DEFAULTS,
 ) {
+	const burn = stabilizerBurn(build, input, spin, dt, settings);
+	if (build.chassis === "fiddler") {
+		const drive = fiddlerDrive(build, input, burn);
+		return (
+			3 +
+			(drive[0] + drive[1]) * PARTS[build.side].draw +
+			build.aft.reduce(
+				(sum, id, index) => sum + (id ? PARTS[id].draw * drive[index] : 0),
+				0,
+			) +
+			burn.duty * STABILIZER_ENERGY * PARTS.ion.draw
+		);
+	}
 	const count = Number(input.leftThruster) + Number(input.rightThruster);
 	const isWasp = build.chassis === "wasp";
 	const sideDraw = isWasp
@@ -334,9 +367,7 @@ export function buildDrain(
 	return (
 		3 +
 		sideDraw +
-		stabilizerBurn(build, input, spin, dt, settings).duty *
-			STABILIZER_ENERGY *
-			PARTS.ion.draw +
+		burn.duty * STABILIZER_ENERGY * PARTS.ion.draw +
 		((build.linkedEngines ? count > 0 : count === 2)
 			? build.aft.reduce((sum, id) => sum + (id ? PARTS[id].draw : 0), 0)
 			: 0)

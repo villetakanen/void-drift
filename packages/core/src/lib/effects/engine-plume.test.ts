@@ -1,6 +1,8 @@
 import { expect, it } from "vitest";
 import { updateShip, Vec2 } from "../physics/Physics";
-import { ENGINE_CUTOFF, EnginePlume } from "./engine-plume";
+import { EnginePlume } from "./engine-plume";
+
+const cutoff = 750; // Explicit input fixture, independent of the shipped cutoff.
 
 function ship(speed = 0) {
 	return {
@@ -28,7 +30,7 @@ function push(speed: number, rotation = 0, right = true, dt = 1 / 60) {
 		{ drag: 0, speedLimit: null },
 		"inverse-square",
 		600,
-		ENGINE_CUTOFF,
+		cutoff,
 	);
 	return { body, output };
 }
@@ -45,16 +47,23 @@ it("retains braking, sideways thrust, and half contribution per engine", () => {
 	expect(push(1200, Math.PI / 2).body.vel.y).toBeGreaterThan(0);
 	expect(push(0, 0, false).body.vel.x).toBeCloseTo(push(0).body.vel.x / 2);
 });
-it("release removes emission state and continuous stamping stores only current outlets", () => {
+it("legacy outlets pause, release, reject invalid output and reset without accumulating", () => {
 	const plume = new EnginePlume(),
 		body = ship();
-	plume.step(1 / 60, body, 1, 1);
+	plume.step(1 / 60, body, 1, 0);
+	plume.step(0, body, 0, 1);
+	expect(plume.activeCount).toBe(1);
+	plume.step(1 / 60, body, Number.NaN, Infinity);
+	expect(plume.activeCount).toBe(0);
+	for (let i = 0; i < 1000; i++) plume.step(1 / 60, body, 1, 1);
+	expect(plume.activeCount).toBe(2);
 	plume.step(1 / 60, body, 0, 0);
 	expect(plume.activeCount).toBe(0);
 	plume.step(0.65, body, 0, 0);
 	expect(plume.activeCount).toBe(0);
-	for (let i = 0; i < 1000; i++) plume.step(1 / 60, body, 1, 1);
-	expect(plume.activeCount).toBe(2);
+	plume.step(1 / 60, body, 1, 1);
+	plume.clear();
+	expect(plume.activeCount).toBe(0);
 });
 
 it("mounted emission stays bounded independently of elapsed time or source overload", () => {
@@ -73,7 +82,15 @@ it("mounted emission stays bounded independently of elapsed time or source overl
 		body,
 		Array.from({ length: 1000 }, () => emitters[0]),
 	);
-	expect(plume.activeCount).toBe(8);
+	const saturated = plume.activeCount;
+	expect(saturated).toBeGreaterThan(0);
+	expect(saturated).toBeLessThan(1000);
+	plume.stepMounted(
+		1 / 60,
+		body,
+		Array.from({ length: 2000 }, () => emitters[0]),
+	);
+	expect(plume.activeCount).toBe(saturated);
 	for (const emitter of emitters) emitter.output = 0;
 	const count = plume.activeCount;
 	plume.stepMounted(0, body, emitters);

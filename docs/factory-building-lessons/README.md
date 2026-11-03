@@ -10,5 +10,11 @@ Numbering identifies factory improvements, not individual study attempts.
 2. [002 — Phased design studies](002-phased-design-studies.md): purpose,
    exploration, integration, and cumulative human decisions throughout the work.
 
-[Design-study evaluation protocol](design-study-evaluation.md) provides a bounded
-replay for improvement 002. No comparative model evaluation has been run yet.
+Completed work and evidence: [release preparation in 001](001-modernizing-the-factory.md#done--prepared-release-artifacts-2026-11-03)
+and [study-harness tasks in 002](002-phased-design-studies.md#done-tasks-and-evidence--current-implementation).
+Each links implementation and supporting evidence; completion does not imply empirical
+validation of workflow effectiveness.
+
+The optional [design-study evaluation protocol](design-study-evaluation.md) provides a
+bounded replay for a requested evaluation of improvement 002. Ordinary studies do not
+require it. No comparative model evaluation has been run yet.

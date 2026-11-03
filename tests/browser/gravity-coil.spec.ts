@@ -1,10 +1,16 @@
-import { expect, test } from "@playwright/test";
+import {
+	buildStats,
+	defaultLoadout,
+	PARTS,
+} from "../../packages/mode-a/src/lib/schemas/loadout";
+import { expect, test } from "../helpers/local-browser";
 
 test("Gravity coil fits, persists and flies separately from solar Loading coil", async ({
 	page,
 }) => {
-	const errors: string[] = [];
-	page.on("pageerror", (error) => errors.push(error.message));
+	const fitted = defaultLoadout("fighter");
+	fitted.hull[0] = "gravity-coil";
+	fitted.aft[0] = "coil";
 	await page.goto("/builder");
 	await expect(page.getByRole("button", { name: /^Gravity coil/ })).toHaveCount(
 		0,
@@ -13,8 +19,7 @@ test("Gravity coil fits, persists and flies separately from solar Loading coil",
 		.getByRole("button", { name: "Hull 1 · Equipment: Empty", exact: true })
 		.click();
 	const part = page.getByRole("button", { name: /^Gravity coil/ });
-	await expect(part).toContainText("Generates 1 energy/s");
-	await expect(part.locator("svg path")).not.toHaveCount(0);
+	await expect(part).toContainText(PARTS["gravity-coil"].description);
 	await part.click();
 	await page
 		.getByRole("button", { name: "Aft 1 · Universal: Empty", exact: true })
@@ -40,7 +45,7 @@ test("Gravity coil fits, persists and flies separately from solar Loading coil",
 	);
 	await expect(
 		page.getByRole("progressbar", { name: "Power" }),
-	).toHaveAttribute("max", "100");
+	).toHaveAttribute("max", String(buildStats(fitted).capacity));
 	await page.keyboard.down("a");
 	await expect
 		.poll(async () =>
@@ -72,5 +77,4 @@ test("Gravity coil fits, persists and flies separately from solar Loading coil",
 			exact: true,
 		}),
 	).toBeVisible();
-	expect(errors).toEqual([]);
 });

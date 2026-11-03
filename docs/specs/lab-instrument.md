@@ -120,6 +120,24 @@ between fitting all paths and a default scale (0.2 px/u) that pans by dragging.
 - Custom pane content: pass a `pane` snippet to `LabInstrument`; it receives the
   parsed document.
 
+## Study chassis proposal and Fiddler integration
+
+Originally proposed by [Fiddler 02.11–02.12](../../apps/web/src/pages/lab/studies/lhi-fiddler-2026-11-03.astro)
+on 2026-11-03, while its mass, eight-equipment sketch and stabilizer layout were
+still provisional. That stage could not model Fiddler with the existing chassis.
+
+The designer subsequently accepted the fixed Fiddler hull, 187 mass, four main
+engines, four built-in stabilizers and five equipment/weapon slots, and authorized
+game integration in 03–04. Fiddler is now a validated production loadout and can
+use the existing instrument document and real force calculation. The study embeds
+linked-off and linked-on Fiddler examples using the same starting fit. The ordinary
+instrument limits still apply: supplied power, no planetary gravity, no survival
+endurance claim. Actual energy and collision behavior is tested in flight.
+
+The broader proposal to author arbitrary provisional chassis, stabilizer geometry
+and independent force tuning inside instrument documents remains unimplemented.
+It is no longer a prerequisite for comparing this accepted Fiddler configuration.
+
 ## Contract
 
 ### Definition of Done

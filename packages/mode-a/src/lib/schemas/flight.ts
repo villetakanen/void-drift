@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { IonSettingsSchema } from "./ion";
-import { LoadoutSchema } from "./loadout";
+import { defaultLoadout, LoadoutSchema } from "./loadout";
 import { ShipProfileSchema } from "./ship-profile";
 
 export const FlightSettingsSchema = z
@@ -25,6 +25,11 @@ export const FlightSettingsSchema = z
 		(settings) =>
 			!settings.loadout || settings.loadout.chassis === settings.profile.id,
 		{ message: "Build and profile chassis must match" },
+	)
+	.transform((settings) =>
+		settings.profile.id === "fiddler" && !settings.loadout
+			? { ...settings, loadout: defaultLoadout("fiddler") }
+			: settings,
 	);
 export type FlightSettings = z.infer<typeof FlightSettingsSchema>;
 export const ReplayInputSchema = z.object({

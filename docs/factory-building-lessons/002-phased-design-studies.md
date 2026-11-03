@@ -3,6 +3,37 @@
 Date: 29 October 2026.
 Status: designer approved the workflow changes; fresh-cycle effectiveness untested.
 
+## Done tasks and evidence — current implementation
+
+This index links completed harness changes to both their basis and their current owner.
+Older sections below preserve the adoption history. Checked items mean implemented;
+human effectiveness remains separate and is not inferred from document validation.
+
+- [x] Bound broad studies to one decision. Basis:
+  [planet-purpose scope diagnosis](../factory-experiment-planet-purpose-scope.md#outcome-and-the-designers-diagnosis).
+  Implementation: [problem procedure](../../.agents/skills/design-study/SKILL.md#01--develop-the-problem).
+- [x] Recommend completing independently usable accepted results. Basis:
+  [Fighter/Scout sequence](../loop-evidence/2026-10-30-ship-silhouettes.md).
+  Implementation: [exploration procedure](../../.agents/skills/design-study/references/exploration.md#make-the-question-inspectable).
+- [x] Carry exact accepted variants and replay conditions into scope. Basis:
+  [engine-effects decisions](../loop-evidence/2026-10-30-engine-effects.md) and
+  [ion replay findings](../loop-evidence/2026-10-31-ion-engines.md).
+  Implementation: [reference retention](../../.agents/skills/design-study/references/exploration.md#make-the-question-inspectable).
+- [x] Judge readiness against the intended delivery. Basis:
+  [alpha-scope correction](../loop-evidence/2026-10-30-engine-effects.md).
+  Implementation: [readiness procedure](../../.agents/skills/design-study/SKILL.md#03--assess-readiness).
+- [x] Consolidate duplicated instructions (owner-approved 3 November).
+  Implementation: [ownership map](../specs/design-studies.md#context-and-ownership).
+  Evidence: [scope, changed files and validation](../loop-evidence/2026-11-03-factory-harness-amendments.md).
+- [x] Make the quality rubric optional for ordinary studies (owner-approved amendment,
+  3 November). Implementation: [evaluation contract](../specs/design-studies.md#optional-study-quality-evaluation--separate-from-readiness)
+  and [optional protocol](design-study-evaluation.md).
+  Evidence: [implementation and checks](../loop-evidence/2026-11-03-factory-harness-amendments.md#implementation-evidence).
+- [x] Clarify that a failed study can end successfully for the project (owner clarification,
+  3 November), preserving its recorded failure. Implementation:
+  [ending contract](../specs/design-studies.md#ending-a-study).
+  Evidence: [owner decision and verification limits](../loop-evidence/2026-11-03-factory-harness-amendments.md#authorized-scope).
+
 ## Why we changed the factory
 
 Three design-study attempts exposed a gap. The button study developed purpose,

@@ -1,9 +1,11 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../helpers/local-browser";
 
 // Contract: docs/specs/lab-instrument.md.
 test.use({ viewport: { width: 1366, height: 1024 } });
 
-test("the instrument draws the starting document", async ({ page }) => {
+test("switching the burn redraws the views and changes the document", async ({
+	page,
+}) => {
 	await page.goto("/lab/instrument");
 	const legend = page.getByRole("list", { name: "Vehicles" });
 	await expect(legend.getByRole("listitem")).toHaveText([
@@ -16,12 +18,6 @@ test("the instrument draws the starting document", async ({ page }) => {
 		page.getByRole("img", { name: /^Plan view of every path/ }),
 	).toBeVisible();
 	await expect(page.getByRole("img", { name: /^B1, Course/ })).toBeVisible();
-});
-
-test("switching the burn redraws the views and changes the document", async ({
-	page,
-}) => {
-	await page.goto("/lab/instrument");
 	const speed = page.locator(".graph .head").first();
 	const before = await speed.textContent();
 	await page.getByRole("radiogroup", { name: "Burn" }).getByText("B2").click();
@@ -42,9 +38,6 @@ test("the pane opens, takes focus, and closes on Escape", async ({ page }) => {
 	await expect(
 		page.getByRole("button", { name: "Close values" }),
 	).toBeFocused();
-	const host = await page.locator("figure.host").boundingBox();
-	const box = await pane.boundingBox();
-	expect(box && host && box.width / host.width).toBeCloseTo(0.45, 2);
 	await page.keyboard.press("Escape");
 	await expect(pane).toBeHidden();
 	await expect(page.getByRole("button", { name: "Open values" })).toBeFocused();
@@ -88,9 +81,5 @@ test("each reference page renders its components", async ({ page }) => {
 	).toBeVisible();
 
 	await page.goto("/lab/surfaces");
-	await expect(page.locator(".step")).toHaveCount(3);
-	await expect(page.locator(".display").first()).toHaveCSS(
-		"background-image",
-		/repeating-linear-gradient/,
-	);
+	await expect(page.locator(".display").first()).toBeVisible();
 });

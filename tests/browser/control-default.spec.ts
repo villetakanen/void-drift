@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../helpers/local-browser";
 
 test("inversion defaults on and an explicit opt-out persists", async ({
 	page,

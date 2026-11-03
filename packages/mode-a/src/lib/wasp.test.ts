@@ -2,6 +2,7 @@ import { Vec2 } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { applyBuildEngines, buildDrain } from "./build-flight";
 import {
+	BUILD_FLIGHT_SCALE,
 	buildCollisionRadius,
 	buildMounts,
 	buildPlumeEmitters,
@@ -59,22 +60,30 @@ describe("LHI Wasp integration", () => {
 		const mounts = buildMounts(build);
 		expect(mounts).toHaveLength(3);
 		expect(mounts.every((m) => !m.linkedTo)).toBe(true);
-		expect(mounts.map((m) => [m.key, m.type, m.x, m.y])).toEqual([
-			["hull-0", "equipment", 1.5, -12],
-			["hull-1", "equipment", 1.5, 12],
-			["left", "engine", -17.5, 0],
-		]);
+		const [left, right, engine] = mounts;
+		expect(left.type).toBe("equipment");
+		expect(right).toMatchObject({ type: "equipment", x: left.x, y: -left.y });
+		expect(engine.type).toBe("engine");
+		expect(engine.x).toBeLessThan(left.x);
+		expect(engine.y).toBe(0);
 
 		const emitters = buildPlumeEmitters(build);
 		expect(emitters).toHaveLength(5);
-		expect(buildCollisionRadius(build)).toBeGreaterThan(WASP.length * 0.65);
+		for (const facet of WASP.facets)
+			for (const [x, y] of facet.points)
+				expect(Math.hypot(x, y) * BUILD_FLIGHT_SCALE).toBeLessThanOrEqual(
+					buildCollisionRadius(build),
+				);
 	});
 
 	it("computes single-engine mass, forward acceleration, and 4-slit turn rate", () => {
 		const build = defaultLoadout("wasp");
 		const stats = buildStats(build);
-		expect(stats.mass).toBe(WASP.mass + PARTS.ion.mass);
-		expect(stats.acceleration).toBeCloseTo(PARTS.ion.thrust / 70, 5);
+		expect(stats.mass).toBe(WASP.mass + PARTS[build.side].mass);
+		expect(stats.acceleration).toBeCloseTo(
+			PARTS[build.side].thrust / stats.mass,
+			5,
+		);
 		expect(stats.turnRate).toBeGreaterThan(0);
 	});
 

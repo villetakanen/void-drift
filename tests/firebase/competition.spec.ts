@@ -1,64 +1,112 @@
-import { expect, test } from "@playwright/test";
+import { verificationUrls } from "../../packages/core/src/lib/schemas/verification-ports.mjs";
+import { expect, test } from "../helpers/local-browser";
 
-const LAUNCHER: Record<string, string> = {
-	scout: "01",
-	wasp: "02",
-	fighter: "03",
-	corvette: "04",
-};
+const firestore = "http://127.0.0.1:8080";
+test.use({
+	localOrigins: [
+		verificationUrls().competition,
+		firestore,
+		"http://127.0.0.1:9099",
+	],
+});
 
-test("two anonymous pilots complete runs, submit and see a shared leaderboard", async ({
-	browser,
+// Rules cases leave fixtures behind. Clear them even when that preceding suite
+// failed, and also isolate a standalone competition invocation.
+test.beforeAll(async ({ request }) => {
+	const response = await request.delete(
+		`${firestore}/emulator/v1/projects/demo-void-drift/databases/(default)/documents`,
+	);
+	expect(response.ok(), "reset demo Firestore before competition").toBe(true);
+});
+
+test("two anonymous pilots complete runs, retry a rejected write and see a shared leaderboard", async ({
+	newLocalContext,
 }) => {
-	for (const [ship, initials] of [
-		["scout", "ONE"],
-		["corvette", "TWO"],
+	for (const pilot of [
+		{ launcher: "01", name: "Scout", initials: "ONE", turnMs: 256 },
+		{ launcher: "04", name: "Corvette", initials: "TWO", turnMs: 560 },
 	]) {
-		const context = await browser.newContext();
+		const context = await newLocalContext();
 		const page = await context.newPage();
-		await page.route("**/*", (route) =>
-			["localhost", "127.0.0.1"].includes(
-				new URL(route.request().url()).hostname,
-			)
-				? route.continue()
-				: route.abort(),
-		);
-		await page.clock.install();
+		await page.clock.install({ time: new Date("2026-11-03T00:00:00Z") });
 		await page.goto("/");
+		await expect(page.locator(".flight-page")).toHaveAttribute(
+			"data-stabilizers",
+			"true",
+		);
 		await page
 			.getByRole("radiogroup", { name: "SELECT YOUR SHIP" })
-			.getByText(LAUNCHER[ship], { exact: true })
+			.getByText(pilot.launcher, { exact: true })
 			.click();
+		await expect(page.getByText(pilot.name, { exact: true })).toBeVisible();
+		await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
 		await page.getByRole("button", { name: "PRESS START" }).click();
-		// Fly through the real input path. Two long idle runs spend the test's
-		// deadline rasterizing software Canvas frames rather than checking scores.
+		await expect(page.locator(".flight-page")).toHaveAttribute(
+			"data-status",
+			"PLAYING",
+		);
+		// Derived with Simulation(gameSettings): left-only for 15/33 ticks then
+		// both reaches STAR in ~2 seconds. Inverted default maps Right to left.
+		// Clock rAF cadence is 16ms; 256/560ms produce those turn tick counts.
+		await page.keyboard.down("ArrowRight");
+		await page.clock.runFor(pilot.turnMs);
+		await page.keyboard.up("ArrowRight");
 		await page.keyboard.down("ArrowUp");
-		for (
-			let i = 0;
-			i < 150 &&
-			(await page.locator(".flight-page").getAttribute("data-status")) !==
-				"GAME_OVER";
-			i++
-		)
-			await page.clock.runFor(1000);
+		await page.clock.runFor(2500);
 		await page.keyboard.up("ArrowUp");
 		await expect(
 			page.getByRole("dialog", { name: "Run complete" }),
 		).toBeVisible();
-		await page.getByLabel("Your initials").fill(initials);
-		await page
-			.getByRole("button", { name: "Submit Score", exact: true })
-			.click();
+		await expect(
+			page.getByText("TOO CLOSE TO THE STAR", { exact: true }),
+		).toBeVisible();
+		await page.clock.resume();
+		await page.getByLabel("Your initials").fill(pilot.initials);
+		const submit = page.getByRole("button", {
+			name: "Submit Score",
+			exact: true,
+		});
+		if (pilot.initials === "ONE") {
+			let rejected = false;
+			await page.route(
+				(url) =>
+					url.origin === firestore &&
+					url.pathname.endsWith("/documents:commit"),
+				async (route) => {
+					if (rejected) return route.continue();
+					rejected = true;
+					await route.fulfill({
+						status: 403,
+						json: {
+							error: {
+								code: 403,
+								status: "PERMISSION_DENIED",
+								message: "Verification fixture denied this write.",
+							},
+						},
+					});
+				},
+			);
+			await submit.click();
+			await expect(page.locator(".flight-message")).toContainText(
+				"Verification fixture denied this write.",
+			);
+			await expect(submit).toBeEnabled();
+			expect(rejected).toBe(true);
+		}
+		await submit.click();
 		await expect(
 			page.getByRole("button", { name: "Saved", exact: true }),
 		).toBeVisible({ timeout: 15000 });
 		await context.close();
 	}
-	const context = await browser.newContext();
+	const context = await newLocalContext();
 	const page = await context.newPage();
 	await page.goto("/leaderboard");
-	await expect(page.getByRole("cell").filter({ hasText: /ONE/ })).toBeVisible();
-	await expect(page.getByRole("cell").filter({ hasText: /TWO/ })).toBeVisible();
+	for (const initials of ["ONE", "TWO"])
+		await expect(
+			page.getByRole("cell", { name: new RegExp(`^${initials}\\b`) }),
+		).toBeVisible();
 	for (const name of ["Scout", "Corvette"])
 		await expect(page.getByRole("cell", { name, exact: true })).toBeVisible();
 	await context.close();

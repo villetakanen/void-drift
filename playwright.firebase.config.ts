@@ -7,10 +7,10 @@ export default defineConfig({
 	...base,
 	testDir: "./tests/firebase",
 	timeout: 60000,
-	outputDir: "test-results/firebase",
+	outputDir: "artifacts/competition/results",
 	reporter: [
 		["list"],
-		["html", { open: "never", outputFolder: "playwright-report/firebase" }],
+		["html", { open: "never", outputFolder: "artifacts/competition/report" }],
 	],
 	use: { ...base.use, baseURL },
 	webServer: {

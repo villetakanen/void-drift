@@ -1,7 +1,9 @@
 # Phased design-study evaluation
 
-Status: protocol ready; no runs recorded. This is a manual evaluation, not an
-automated correctness test or an instruction to start additional chats.
+Status: optional protocol ready; no runs recorded. Use for a requested factory
+evaluation or targeted investigation, not as a standing report for every study.
+This is a manual evaluation, not an automated correctness test or an instruction
+to start additional chats.
 
 ## Next trial — exact prompt and model replay
 
@@ -114,12 +116,8 @@ its evidence and human assessment exist. Promote further lessons separately.
 
 ## Four-part structure and separate study evaluation
 
-Owner clarification, 30 October 2026: the study has four parts: design problem,
-exploration, readiness (feasibility in the current setting), and integration (the how
-and why of implementation, documented as a plan). The quality rubric evaluates study
-success separately. It is neither part 03 nor an execution approval gate.
-
-Check that 02.x iterations stay in exploration, part 03 identifies current-system fit
-and constraints, and part 04 supplies actionable steps with rationale and verification.
-Writing the plan must not trigger implementation. Record human usefulness separately
-from correctness; this clarification does not establish a successful workflow trial.
+The 30 October 2026 clarification separated study-quality evaluation from readiness
+and the fourth part, then called integration. The current
+[four-part contract](../specs/design-studies.md#four-part-outputs) names that part scope
+and owns its outputs. Use that contract when evaluating phase progression; do not
+maintain a second copy here. Writing scope does not authorize implementation.

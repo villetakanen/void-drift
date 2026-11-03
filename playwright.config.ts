@@ -5,7 +5,6 @@ const baseURL = verificationUrls().browser;
 
 export default defineConfig({
 	testDir: "./tests/browser",
-	snapshotPathTemplate: "{testDir}/baselines/{arg}{ext}",
 	fullyParallel: false,
 	forbidOnly: true,
 	retries: 0,

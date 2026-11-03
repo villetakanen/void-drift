@@ -3,10 +3,19 @@ import { describe, expect, it } from "vitest";
 import { applyBuildEngines, buildDrain, engineImpulse } from "./build-flight";
 import {
 	BUILD_FLIGHT_SCALE,
+	buildCollisionRadius,
 	buildMounts,
 	buildPlumeEmitters,
+	engineOffset,
+	nozzleOffset,
 } from "./build-renderer";
-import { buildStats, defaultLoadout, LoadoutSchema } from "./schemas/loadout";
+import { ionCeiling } from "./schemas/ion";
+import {
+	buildStats,
+	defaultLoadout,
+	LoadoutSchema,
+	PARTS,
+} from "./schemas/loadout";
 import { Simulation, stockSettings } from "./simulation";
 
 const idle = { leftThruster: false, rightThruster: false, fire: false };
@@ -40,25 +49,19 @@ describe("ship builder contract", () => {
 		expect(LoadoutSchema.safeParse({ ...build, side: null }).success).toBe(
 			false,
 		);
-		expect(buildStats(build).mass).toBe(80);
-	});
-	it("adds capacity without multiplying life support and begins full", () => {
-		const sim = simulation();
-		expect(sim.state.resources.power).toBe(185);
-		for (let i = 0; i < 60; i++) sim.step(idle);
-		expect(sim.state.resources.power).toBeCloseTo(182, 5);
-		expect(
-			buildStats(LoadoutSchema.parse(sim.settings.loadout)).endurance,
-		).toBeCloseTo(185 / 3);
 	});
 	it("uses both controls for aft engines and cancels mirrored torque", () => {
 		const build = defaultLoadout("fighter");
 		// Isolate main engines from optional stabilizer assist.
 		build.stabilizers = false;
 		build.aft[0] = "ion";
-		expect(buildDrain(build, idle)).toBe(3);
-		expect(buildDrain(build, { ...idle, leftThruster: true })).toBe(5);
-		expect(buildDrain(build, both)).toBe(9);
+		const baselineDrain = buildDrain(build, idle);
+		expect(
+			buildDrain(build, { ...idle, leftThruster: true }) - baselineDrain,
+		).toBe(PARTS[build.side].draw);
+		expect(buildDrain(build, both) - baselineDrain).toBe(
+			2 * PARTS[build.side].draw + PARTS.ion.draw,
+		);
 		const a = ship();
 		applyBuildEngines(a, build, both, 1 / 60, true);
 		expect(a.rotation).toBe(0);
@@ -99,7 +102,9 @@ describe("ship builder contract", () => {
 			a.rotation = Math.atan2(a.vel.y, a.vel.x) + Math.PI / 3;
 			applyBuildEngines(a, build, both, 1 / 60, true);
 		}
-		expect(a.vel.mag()).toBeLessThanOrEqual(550.000001);
+		expect(a.vel.mag()).toBeLessThanOrEqual(
+			Math.max(PARTS.fusion.limit, ionCeiling(Infinity)) + 1e-6,
+		);
 	});
 	it("ends survival at empty energy but keeps damaged/empty test flights running", () => {
 		const a = simulation();
@@ -185,68 +190,92 @@ it("supplies current outlets for every engine delivering output", () => {
 	expect(sim.plume.activeCount).toBe(1);
 });
 
-it("uses accepted mount geometry for propulsion, estimates, nozzles and collision", () => {
-	const build = defaultLoadout("fighter");
-	// Isolate main engines from optional stabilizer assist.
-	build.stabilizers = false;
-	const mounts = buildMounts(build);
-	expect(mounts.map(({ x, y }) => [x, y])).toEqual([
-		[-12, -15],
-		[-12, 15],
-		[37, 0],
-		[-1, 0],
-		[-17, -5],
-		[-17, 5],
-	]);
-	const emitters = buildPlumeEmitters(build);
-	for (const [i, emitter] of emitters.entries()) {
-		const mount = mounts[i];
-		expect(emitter.angle).toBeCloseTo(
-			((26 * Math.PI) / 180) * (i === 0 ? 1 : -1),
+it.each(["scout", "fighter", "corvette"] as const)(
+	"%s shares mount geometry across propulsion, estimates, nozzles and collision",
+	(chassis) => {
+		const build = defaultLoadout(chassis);
+		// Isolate main engines from optional stabilizer assist.
+		build.stabilizers = false;
+		build.aft.fill("ion");
+		const mounts = buildMounts(build);
+		expect(mounts[1]).toMatchObject({
+			x: mounts[0].x,
+			y: -mounts[0].y,
+			angle: -mounts[0].angle,
+		});
+		const emitters = buildPlumeEmitters(build);
+		const engines = mounts.filter((mount) => mount.group !== "hull");
+		expect(emitters).toHaveLength(engines.length);
+		for (const [i, emitter] of emitters.entries()) {
+			const mount = engines[i];
+			expect(emitter.angle).toBeCloseTo(mount.angle);
+			expect(emitter.x / BUILD_FLIGHT_SCALE).toBeCloseTo(
+				mount.x +
+					(engineOffset(build, mount) - nozzleOffset(mount)) *
+						Math.cos(mount.angle),
+			);
+			expect(emitter.y / BUILD_FLIGHT_SCALE).toBeCloseTo(
+				mount.y +
+					(engineOffset(build, mount) - nozzleOffset(mount)) *
+						Math.sin(mount.angle),
+			);
+		}
+		expect(emitters[0].y).toBeLessThan(mounts[0].y * BUILD_FLIGHT_SCALE);
+		expect(emitters[1].y).toBeGreaterThan(mounts[1].y * BUILD_FLIGHT_SCALE);
+		const stats = buildStats(build);
+		expect(stats.turnRate).toBeGreaterThan(0);
+		expect(stats.acceleration).toBeGreaterThan(0);
+		const forward = ship();
+		applyBuildEngines(forward, build, both, 1 / 60, true);
+		expect(forward.vel.x * 60).toBeCloseTo(stats.acceleration);
+		expect(forward.vel.y).toBe(0);
+		expect(forward.rotation).toBe(0);
+		const left = ship(),
+			right = ship();
+		applyBuildEngines(
+			left,
+			build,
+			{ ...idle, leftThruster: true },
+			1 / 60,
+			true,
 		);
-		expect(emitter.x / BUILD_FLIGHT_SCALE).toBeCloseTo(
-			mount.x - 11 * Math.cos(mount.angle),
+		applyBuildEngines(
+			right,
+			build,
+			{ ...idle, rightThruster: true },
+			1 / 60,
+			true,
 		);
-		expect(emitter.y / BUILD_FLIGHT_SCALE).toBeCloseTo(
-			mount.y - 11 * Math.sin(mount.angle),
-		);
-	}
-	const stats = buildStats(build);
-	expect((stats.turnRate * 180) / Math.PI).toBeCloseTo(146.0292, 3);
-	expect(stats.acceleration).toBeCloseTo(395.46938, 3);
-	const forward = ship();
-	applyBuildEngines(forward, build, both, 1 / 60, true);
-	expect(forward.vel.x * 60).toBeCloseTo(stats.acceleration);
-	expect(forward.vel.y).toBe(0);
-	const left = ship(),
-		right = ship();
-	applyBuildEngines(left, build, { ...idle, leftThruster: true }, 1 / 60, true);
-	applyBuildEngines(
-		right,
-		build,
-		{ ...idle, rightThruster: true },
-		1 / 60,
-		true,
-	);
-	expect(left.rotation * 60 * 60).toBeCloseTo(stats.turnRate);
-	expect(left.rotation).toBeCloseTo(-right.rotation);
-	expect(left.vel.x).toBeCloseTo(right.vel.x);
-	expect(left.vel.y).toBeCloseTo(-right.vel.y);
-	expect(
-		new Simulation({ ...stockSettings(), loadout: build }).ship.radius,
-	).toBeCloseTo(31.2);
-});
+		expect(left.rotation * 60 * 60).toBeCloseTo(stats.turnRate);
+		expect(left.rotation).toBeCloseTo(-right.rotation);
+		expect(left.vel.x).toBeCloseTo(right.vel.x);
+		expect(left.vel.y).toBeCloseTo(-right.vel.y);
+		expect(
+			new Simulation({ ...stockSettings(chassis), loadout: build }).ship.radius,
+		).toBe(buildCollisionRadius(build));
+	},
+);
 
-it("defaults stabilizers on and preserves explicit saved choices", () => {
+it("defaults missing stabilizers without replacing engines and preserves explicit choices", () => {
 	for (const chassis of ["wasp", "scout", "fighter", "corvette"] as const) {
 		const build = defaultLoadout(chassis);
 		expect(build.stabilizers).toBe(true);
 		expect(build.linkedEngines).toBe(false);
+		const legacy = LoadoutSchema.parse({
+			...build,
+			side: "plasma",
+			stabilizers: undefined,
+		});
+		expect(legacy.stabilizers).toBe(true);
+		expect(legacy.side).toBe("plasma");
 		expect(
 			LoadoutSchema.parse({ ...build, stabilizers: false }).stabilizers,
 		).toBe(chassis === "wasp");
 	}
 	const build = defaultLoadout("fighter");
+	expect(
+		LoadoutSchema.safeParse({ ...build, stabilizers: "yes" }).success,
+	).toBe(false);
 	expect(
 		LoadoutSchema.safeParse({ ...build, linkedEngines: "yes" }).success,
 	).toBe(false);
@@ -271,7 +300,7 @@ it("links every aft engine to either input with matching drain and power gating"
 			expect(out.aft.every((v) => v > 0)).toBe(active);
 			const withoutAft = { ...build, aft: [null, null] };
 			expect(buildDrain(build, input) - buildDrain(withoutAft, input)).toBe(
-				active ? 4 : 0,
+				active ? 2 * PARTS.ion.draw : 0,
 			);
 			expect(
 				applyBuildEngines(ship(), build, input, 1 / 60, false).aft,

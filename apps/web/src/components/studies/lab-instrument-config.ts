@@ -119,6 +119,7 @@ export function familiesOf(loadout: Loadout): Family[] {
 
 // Frozen: the chassis names this study showed before the 2026-11-02 rename.
 const CHASSIS_NAMES: Record<Loadout["chassis"], string> = {
+	fiddler: "LHI Fiddler",
 	wasp: "LHI Wasp",
 	scout: "Scout",
 	fighter: "Fighter",

@@ -155,8 +155,12 @@ and layers) and the new `dialogs.md`; `/lab/surfaces` shows the cut scale, `.pan
 in the void colour at 35% and a darkened edge. The first version (grayscale under a dark overlay)
 was too black, and a `color` blend desaturated instead of shifting hue (owner review). The panel
 is opaque elevation 2 on the console form (the display's cut edge and drop shadow), chosen over
-a frosted translucent shade; only the stage is inert, so the header and Lab inspector
-stay usable and dialogs drop `aria-modal`; pause becomes a dialog; Settings groups only fix their
+a frosted translucent shade. [DEPRECATED 2026-11-03] The stage-only isolation and
+non-modal behavior recorded here were challenged by the owner as likely agent drift.
+The owner wants actual dialogs to retain keyboard focus until closed, but explicitly
+deferred implementation: the permanent opening menu depends on external navigation.
+Current stage-only behavior remains pending the separate opening-screen/dialog plan;
+`dialogs.md` distinguishes this implementation from the unresolved target. Pause becomes a dialog; Settings groups only fix their
 border role. Verification at `5ca350f`, in a clean worktree: `pnpm verify` itself crashed before any stage
 (its fingerprint reads the `.claude/skills` symlink added in `d72f127`; a fix is in uncommitted
 work from another session), so its stages were run one by one: 7 of 9 passed (27 browser tests,
@@ -357,7 +361,7 @@ delivers a generator, then shows a fresh system per visit with no further openin
 - [ ] No literal font family, brand hex or `z-index` remains in shared UI or shared canvas renderers.
 - [ ] Ship names read Scout / Fighter / Corvette everywhere; ~~stored ids are unchanged~~ [DEPRECATED 2026-11-01] ids
   equal the short names.
-- [ ] Dialogs isolate the stage on every screen that has them.
+- [ ] Target, deferred 2026-11-03: resolve opening-screen composition, then make actual dialogs isolate background interaction and retain focus until closed.
 - [ ] The S12 contract holds at 1440×900 and 844×390, with reduced motion respected.
 - [ ] `pnpm verify` passes; skipped or unavailable stages are reported as such.
 
@@ -384,10 +388,11 @@ Scenario: Phone landscape fit
   Then the logomark, the ship toggle, the selected ship and PRESS START are visible without scrolling
   # Updated 2026-11-02 (spike): no cards and no hint in the menu.
 
-Scenario: Dialog isolation
+Scenario: Dialog isolation (target deferred pending opening-screen composition)
   Given any dialog is open
   When the player presses Tab repeatedly
-  Then focus never reaches the HUD, the engine pads or the canvas
+  Then focus stays inside the dialog until it closes
+  And focus cannot reach the header, inspector, HUD, engine pads or canvas
 
 Scenario: Prose stays readable
   Given a design study page

@@ -38,18 +38,6 @@ it("only current delivered outlets are retained, with mount position and identit
 	plume.inspect((outlet) => released.push({ ...outlet }));
 	expect(released).toEqual([]);
 });
-it("pause, invalid output and reset govern current emission", () => {
-	const body = ship(),
-		plume = new EnginePlume();
-	plume.step(1 / 60, body, 1, 0);
-	plume.step(0, body, 0, 1);
-	expect(plume.activeCount).toBe(1);
-	plume.step(1 / 60, body, Number.NaN, Infinity);
-	expect(plume.activeCount).toBe(0);
-	plume.step(1 / 60, body, 1, 1);
-	plume.clear();
-	expect(plume.activeCount).toBe(0);
-});
 it("shared image decay depends on elapsed game time, not display frequency", () => {
 	expect(fxRetention(0)).toBe(1);
 	expect(fxRetention(1 / 60) ** 30).toBeCloseTo(fxRetention(1 / 30) ** 15, 12);

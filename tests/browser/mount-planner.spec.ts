@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../helpers/local-browser";
 
 test("mount layout editing, linked handoff, undo and invalid import", async ({
 	page,
@@ -40,10 +40,11 @@ test("mount layout editing, linked handoff, undo and invalid import", async ({
 	await expect(page.getByLabel("Mount X", { exact: true })).toHaveValue(
 		"-18.125",
 	);
-	await page.screenshot({ path: "artifacts/mount-planner-desktop.png" });
 });
 
-test("designer links and landscape touch surface", async ({ page }) => {
+test("designer links mirrored mounts at a compact viewport", async ({
+	page,
+}) => {
 	await page.setViewportSize({ width: 1180, height: 820 });
 	await page.goto("/lab/mount-planner");
 	await expect(page.locator("[data-ready=true]")).toBeVisible();
@@ -64,7 +65,6 @@ test("designer links and landscape touch surface", async ({ page }) => {
 	await expect(page.getByLabel("Mount Y", { exact: true })).toHaveValue("20");
 	await page.getByRole("button", { name: "Unlink pair", exact: true }).click();
 	await expect(page.getByLabel("Mirror partner")).toBeVisible();
-	await page.screenshot({ path: "artifacts/mount-planner-landscape.png" });
 });
 
 test("view modes and automatic framing preserve mount values", async ({
@@ -88,7 +88,6 @@ test("view modes and automatic framing preserve mount values", async ({
 	await expect(page.getByLabel("Mount X", { exact: true })).toHaveValue(
 		initial,
 	);
-	await page.screenshot({ path: "artifacts/mount-planner-in-game.png" });
 	await page
 		.getByRole("radiogroup", { name: "Mount contents" })
 		.getByText("Empty", { exact: true })
@@ -97,5 +96,4 @@ test("view modes and automatic framing preserve mount values", async ({
 		initial,
 	);
 	await page.getByRole("button", { name: "Fit ship", exact: true }).click();
-	await page.screenshot({ path: "artifacts/mount-planner-fit.png" });
 });

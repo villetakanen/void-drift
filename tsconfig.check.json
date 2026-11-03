@@ -11,6 +11,8 @@
 	"include": [
 		"packages/**/*.ts",
 		"apps/web/src/**/*.ts",
+		"tests/**/*.ts",
+		"playwright*.config.ts",
 		"apps/web/src/vite-env.d.ts"
 	],
 	"exclude": ["node_modules", "**/dist"]
