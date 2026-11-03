@@ -6,6 +6,7 @@ export * from "./lib/engine-art";
 export * from "./lib/fighter";
 export * from "./lib/firebase";
 export * from "./lib/game-loop";
+export * from "./lib/mount-planner";
 export * from "./lib/potential-well-art";
 export * from "./lib/schemas/flight";
 export * from "./lib/schemas/game-state";

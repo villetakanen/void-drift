@@ -232,12 +232,13 @@ export function drawBuild(
 	scale = 1,
 	selected = "",
 	slots?: SlotPalette,
+	mountOverride?: BuildMount[],
 ) {
 	ctx.save();
 	ctx.translate(x, y);
 	ctx.rotate(rotation);
 	ctx.scale(scale, scale);
-	const mounts = buildMounts(build);
+	const mounts = mountOverride ?? buildMounts(build);
 	const isWasp = build.chassis === "wasp";
 	const below = (mount: BuildMount) =>
 		isWasp
