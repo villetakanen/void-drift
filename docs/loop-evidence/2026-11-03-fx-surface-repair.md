@@ -83,7 +83,7 @@ isolated attributable GPU cost remain unverified; the whole-pipeline 3 ms accept
 is not claimed. Owner approval covers the builder ion/gravity combination, not every
 fixture or possible overlap.
 
-## Publication and concurrent work
+## Publication and concurrent work at repair closure
 
 This is a local correction to the released 0.5.0 source. No version/tag change,
 push or Firebase publication is part of this loop. The running local builder is at
@@ -92,3 +92,40 @@ push or Firebase publication is part of this loop. The running local builder is 
 Unrelated Fiddler page/component edits were preserved and excluded from the isolated
 verification and this repair's commit. Local artifacts and temporary preview folders
 are inspectable evidence, not durable backups.
+
+## Later owner-approved 0.5.0 publication
+
+The owner subsequently authorized committing, pushing and releasing the complete
+checkout, stating that other agents were stopped. Their Fiddler study rounds and
+helpers were included in `88c581c`, preserving the open study status. The FX repair
+itself is `eee9b6a`. No further production FX changes were needed for integration.
+
+Combined verification first failed only release-plan formatting
+(`artifacts/verification/2026-11-03T14-04-44.077Z-M5471a/report.json`). After that
+documentation repair, full `pnpm verify` passed at clean source
+`0f3414fd3980c50b12422eef4e9db50db1a7a8f3` with `sourceUnchanged: true` and no
+skipped gates. Report:
+`artifacts/verification/2026-11-03T14-07-51.044Z-iMoLgY/report.json`.
+145 unit, 39 browser, 10 rules, one competition and five factory tests passed, plus
+contracts, commit checks, lint, types and build. This run used Node 24.14.0 on
+darwin/arm64, Java 21 and ports 4354/4355. It is new combined-candidate evidence,
+not a replacement for the earlier failed/isolated attempts.
+
+The owner requested plain 0.5.0 without an extra alpha label and explicitly approved
+moving the already-published tag from `7e15fc9` to `0f3414f`. Source and tag were
+pushed; a production build from that clean source was deployed to Firebase hosting,
+with rules/indexes released. GitHub release:
+https://github.com/villetakanen/void-drift/releases/tag/v0.5.0.
+
+Live checks passed at 14:12:15 UTC, with no page errors: flight/pause, moving-camera
+FX, ion firing/fade controls, Hangar defaults/view modes, shared controls, latest
+Fiddler view interaction, utility assets, anonymous Auth and score reads. No score
+was submitted. Separately, 204 checked live pages and JS/CSS files matched the built
+artifact. Evidence: `artifacts/release-0.5.0-refresh/live-smoke.json`,
+`live-artifact-match.json`, manifest, deployment log and screenshots in that directory.
+The checkout moved to `feat/0-5-0` for subsequent development. Full publication
+identifiers and artifact fingerprint are in `docs/releases/0.5.0.md`.
+
+These release checks do not close the performance gaps recorded above. The owner
+feedback remains local-builder feedback; automated live success does not establish
+acceptance of every visual combination or the complete 3 ms rendering target.
