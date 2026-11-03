@@ -1,5 +1,10 @@
 # Persistent FX surface repair — 2026-11-03
 
+Closed at the owner's request after the approved 0.5.0 publication. This record
+covers the FX repair, integration and release through source `0f3414f` and release
+evidence commit `0719198`. Delivery is recorded separately from the outstanding
+composition, performance and whole-scene experience acceptance in the FX spec.
+
 ## Intent and owner decisions
 
 The owner found the 0.5.0 engines looked like protruding sticks. Discussion clarified
@@ -129,3 +134,35 @@ identifiers and artifact fingerprint are in `docs/releases/0.5.0.md`.
 These release checks do not close the performance gaps recorded above. The owner
 feedback remains local-builder feedback; automated live success does not establish
 acceptance of every visual combination or the complete 3 ms rendering target.
+
+## Closure inspection and evidence limits
+
+On closure, direct inspection of the tagged `FxSurface` implementation, repair and
+integration commit changes, FX contract, five named verification reports above,
+production manifest, deployment log, live smoke and artifact-match reports confirmed
+the recorded revision boundaries and check outcomes. The retained software profile
+and in-app timing snapshots were also available and inspected. No application tests,
+live probes or deployments were rerun for closure; only this record was changed and
+checked with the repository's documentation formatter/linter and a whitespace check.
+
+The repository had subsequently advanced to `c9b115c` on `feat/0-5-0`, with a separate
+[0.5.1 publication record](../releases/0.5.1.md) and unrelated working changes. Those
+later changes and their verification are outside this loop. The local `v0.5.0` tag
+still resolves to `0f3414fd3980c50b12422eef4e9db50db1a7a8f3`. The earlier clean-checkout
+and live-site observations above describe their recorded times, not the checkout or
+deployed version at this later closure. Current remote/live state was not rechecked.
+
+The [FX contract](../specs/sfx-canvas.md) still leaves **FX-01** composition review,
+**FX-07** performance and **FX-08** whole-scene experience open. Its header records
+the earlier local-verification stage; the subsequent publication evidence is dated
+above. No acceptance flags were changed by closure. In-app observations do not
+record a browser version or graphics backend and do not establish isolated GPU
+cost. Physical-phone evidence remains unavailable; software fallback misses the
+declared budget. The positive owner feedback concerns the local builder before the
+final residue cleanup, not an explicit review of every released effect combination.
+
+Verification reports, profiles, manifests, logs and screenshots under `artifacts/`
+are ignored local files. They were present for this inspection, but are not durable
+repository attachments. The tracked record retains their essential outcomes and
+identities; temporary checkouts and preview servers have no retention guarantee.
+No lessons, signals or standing process changes were derived during closure.
