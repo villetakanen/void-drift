@@ -227,9 +227,11 @@ text-muted, `--color-void-light` → elev-1, `--color-overlay` → glass (0.9 be
 
 ## Elevation and inputs
 
-**Status:** Implemented 2026-11-01 (lab-instrument study, 02.4–02.8 and 04).
+**Status:** Toggle and RingSlider implemented 2026-11-01; square Switch accepted and
+implemented 2026-11-03.
 **Source of truth:** `packages/core/src/lib/styles/tokens.css`,
-`apps/web/src/components/inputs/Toggle.svelte`, `apps/web/src/components/inputs/RingSlider.svelte`.
+`apps/web/src/components/inputs/Toggle.svelte`, `apps/web/src/components/inputs/RingSlider.svelte`,
+`apps/web/src/components/inputs/Switch.svelte`.
 **References:** `/lab/surfaces`, `/lab/inputs`.
 
 | Token               | Value                                              | Use                       |
@@ -250,6 +252,17 @@ text-muted, `--color-void-light` → elev-1, `--color-overlay` → glass (0.9 be
 - `RingSlider` wraps a native range input (keys, touch and forms unchanged) at a
   44px touch height; `compact` hides its label line where the host shows it. Its
   value is announced through the input, not a live region.
+- `Switch` is a binary on/off setting, distinct from the multi-option `Toggle`.
+  It binds `checked` and optionally accepts `disabled`; a surrounding label supplies
+  its accessible name. The native checkbox preserves checkbox semantics and
+  Space-key behavior.
+- The switch hit area is 88×44px. Its visible track is 80×30px with the small
+  top-left and bottom-right cuts and no border. A cut-corner marker moves between
+  explicit `OFF` and `ON` states. The selected marker uses `--color-selected`;
+  its text uses `--color-on-brand`. Focus, hover, disabled and reduced-motion states
+  use the shared control foundations.
+- `/lab/inputs` demonstrates the switch in off, on and disabled states. The Hangar
+  uses it for Ion stabilizers.
 - The toggle is one button-shaped control split into equal parts: cut corners
   outside, a straight split inside, the selected part filled lime, the others a
   faint fill that takes a faint lime tint under a pointer.

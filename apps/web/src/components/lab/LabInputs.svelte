@@ -1,15 +1,18 @@
 <script lang="ts">
 import "./catalog.css";
 import RingSlider from "../inputs/RingSlider.svelte";
+import Switch from "../inputs/Switch.svelte";
 import Toggle from "../inputs/Toggle.svelte";
 
-// Reference for the inputs beside the buttons: the toggle and the ring slider.
-let { label = "Toggle and slider design system" }: { label?: string } =
-	$props();
+// Shared control references: multi-option Toggle, binary Switch and RingSlider.
+let { label = "Input design system" }: { label?: string } = $props();
 
 let two = $state("Fit all");
 let three = $state("B1");
 let stretched = $state("B2");
+let stabilizers = $state(true);
+let linkedEngines = $state(false);
+let forcedOn = $state(true);
 let time = $state(7);
 let thrust = $state(38000);
 </script>
@@ -58,6 +61,43 @@ let thrust = $state(38000);
 	</section>
 
 	<section>
+		<h2>Switch</h2>
+		<p>
+			A square marker slides between labeled states for an independent on/off
+			setting. The control keeps a 44px hit area around its shorter track. It
+			uses a native checkbox for keyboard behavior.
+		</p>
+		<div class="example switch-examples">
+			<label class="switch-example">
+				<span class="switch-example__copy">
+					<span class="switch-example__name">Ion stabilizers</span>
+					<span class="switch-example__help">Assist turns and brake spin.</span>
+				</span>
+				<Switch bind:checked={stabilizers} />
+			</label>
+			<label class="switch-example">
+				<span class="switch-example__copy">
+					<span class="switch-example__name">Linked engines</span>
+					<span class="switch-example__help">One input fires the aft engines.</span>
+				</span>
+				<Switch bind:checked={linkedEngines} />
+			</label>
+			<label class="switch-example">
+				<span class="switch-example__copy">
+					<span class="switch-example__name">Forced on</span>
+					<span class="switch-example__help">Disabled, with its saved state visible.</span>
+				</span>
+				<Switch bind:checked={forcedOn} disabled />
+			</label>
+		</div>
+		<p>
+			<code>Switch</code> binds a boolean through <code>checked</code> and accepts
+			optional <code>disabled</code>. A surrounding label supplies its accessible
+			name; the native checkbox preserves keyboard behavior.
+		</p>
+	</section>
+
+	<section>
 		<h2>Ring slider</h2>
 		<p>
 			A faint 2px track, lime up to the value, and a lime ring knob; the label
@@ -93,3 +133,35 @@ let thrust = $state(38000);
 		</p>
 	</section>
 </section>
+
+<style>
+.switch-examples {
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
+	align-items: start;
+}
+
+.switch-example {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--spacing-sm);
+	min-height: var(--control-min-height);
+	padding: var(--spacing-sm);
+	background: var(--color-void);
+}
+
+.switch-example__copy {
+	display: grid;
+	gap: var(--spacing-xs);
+}
+
+.switch-example__name {
+	color: var(--color-text);
+	font-size: var(--font-size-label);
+}
+
+.switch-example__help {
+	color: var(--color-text-muted);
+	font-size: var(--font-size-caption);
+}
+</style>

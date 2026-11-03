@@ -22,6 +22,7 @@ import {
 import { onMount } from "svelte";
 import { version } from "../../package.json";
 import FlightDeck from "./FlightDeck.svelte";
+import Switch from "./inputs/Switch.svelte";
 import Logo from "./Logo.svelte";
 
 let { lab = false }: { lab?: boolean } = $props();
@@ -198,11 +199,10 @@ function choose(id: ShipProfileId) {
 					{/each}
 				</div>
 				<label
-					><input
-						type="checkbox"
+					><Switch
 						bind:checked={build.stabilizers}
 						disabled={chosen === "wasp"}
-					>
+					/>
 					Ion stabilizers{chosen === "wasp" ? " (forced on)" : ""}</label
 				>
 				<p class="assembly-note">
