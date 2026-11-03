@@ -23,6 +23,7 @@ export class FxBench {
 	}
 	reset() {
 		this.ticks = 0;
+		this.fx.clear();
 		this.sparks.clear();
 		this.ships = Array.from({ length: 6 }, (_, i) => {
 			const loadout = starterLoadout("fighter");
@@ -104,10 +105,12 @@ export class FxBench {
 				);
 		}
 	}
-	drawFx(ctx: CanvasRenderingContext2D) {
-		this.fx.begin(ctx);
-		try {
-			if (!this.enabled) return;
+	drawFx(target: CanvasRenderingContext2D) {
+		if (!this.enabled) {
+			this.fx.clear();
+			return;
+		}
+		this.fx.surface.draw(target, this.ticks * STEP, (ctx, pass) => {
 			for (const sim of this.ships) this.fx.drawShip(ctx, sim);
 			const time = this.ticks * STEP;
 			ctx.strokeStyle = FX_INK.gravity;
@@ -117,33 +120,31 @@ export class FxBench {
 					const p = (time * 0.7 + wave / 8) % 1;
 					ctx.save();
 					ctx.translate(x, 540);
-					ctx.globalAlpha = 1 - p;
+					ctx.globalAlpha = (1 - p) * pass.opacity;
 					paintArc(ctx, 20 + p * 50, time * 0.3);
 					ctx.restore();
 				}
 			ctx.strokeStyle = FX_INK.core;
-			for (let i = 0; i < 16; i++)
-				for (let segment = 0; segment < 4; segment++) {
-					if (!this.fx.pass.budget.take()) break;
-					const x = (time * 180 + i * 117 - segment * 8 + 1920) % 1920,
-						y = 120 + i * 50;
-					ctx.globalAlpha = 1 - segment / 4;
-					ctx.beginPath();
-					ctx.moveTo(x, y);
-					ctx.lineTo(x - 5, y + 2);
-					ctx.stroke();
-				}
+			for (let i = 0; i < 16; i++) {
+				if (!pass.budget.take()) break;
+				const x = (time * 180 + i * 117) % 1920,
+					y = 120 + i * 50;
+				ctx.globalAlpha = pass.opacity;
+				ctx.beginPath();
+				ctx.moveTo(x, y);
+				ctx.lineTo(x - 5, y + 2);
+				ctx.stroke();
+			}
 			this.sparks.draw(ctx, this.fx.pass);
 			if (this.overload) {
 				// A bounded stress request deliberately exhausts decoration, not activation.
 				ctx.fillStyle = FX_INK.fire;
+				ctx.globalAlpha = pass.opacity;
 				for (let i = 0; i < 2048; i++) {
 					if (!this.fx.pass.budget.take()) break;
 					ctx.fillRect((i * 73) % 1920, (i * 37) % 1080, 1, 1);
 				}
 			}
-		} finally {
-			this.fx.end(ctx);
-		}
+		});
 	}
 }

@@ -6,7 +6,8 @@ let { label = "Arcade FX instrument" }: { label?: string } = $props();
 let canvas: HTMLCanvasElement;
 let running = $state(true),
 	enabled = $state(true),
-	overload = $state(false);
+	overload = $state(false),
+	movingCamera = $state(false);
 let ticks = $state(0),
 	marks = $state(0),
 	essential = $state(0),
@@ -22,6 +23,7 @@ let p50 = $state(0),
 let reset = () => {},
 	burst = () => {};
 onMount(() => {
+	movingCamera = new URL(location.href).searchParams.get("camera") === "moving";
 	const ctx = canvas.getContext("2d");
 	if (!ctx) return;
 	const bench = new FxBench();
@@ -51,10 +53,22 @@ onMount(() => {
 			}
 		} else carry = 0;
 		const update = performance.now() - start;
+		ctx.save();
+		if (movingCamera) {
+			const time = bench.ticks * STEP;
+			const zoom = 1.03 + 0.03 * Math.sin(time * 0.7);
+			ctx.translate(960, 540);
+			ctx.scale(zoom, zoom);
+			ctx.translate(
+				-960 + 40 * Math.sin(time * 0.9),
+				-540 + 25 * Math.sin(time * 0.7),
+			);
+		}
 		bench.drawWorld(ctx);
 		const before = performance.now();
 		bench.drawFx(ctx);
 		const after = performance.now();
+		ctx.restore();
 		if (running) {
 			costs.push(update + after - before);
 			intervals.push(elapsed);
@@ -89,6 +103,7 @@ onMount(() => {
 	class="fx-bench"
 	aria-label={label}
 	data-ticks={ticks}
+	data-camera={movingCamera ? "moving" : "fixed"}
 	data-marks={marks}
 	data-essential={essential}
 	data-dropped={dropped}
@@ -122,6 +137,14 @@ onMount(() => {
 			onclick={() => (enabled = !enabled)}
 		>
 			FX {enabled ? "on" : "off"}
+		</button>
+		<button
+			type="button"
+			class="btn btn-ghost"
+			aria-pressed={movingCamera}
+			onclick={() => (movingCamera = !movingCamera)}
+		>
+			Camera {movingCamera ? "moving" : "fixed"}
 		</button>
 		<button
 			type="button"

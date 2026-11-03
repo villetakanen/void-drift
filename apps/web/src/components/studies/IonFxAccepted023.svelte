@@ -1,5 +1,5 @@
 <script lang="ts">
-import { EnginePlume, PlumeProportionsSchema, Vec2 } from "@void-drift/core";
+import { Vec2 } from "@void-drift/core";
 import {
 	applyBuildEngines,
 	BUILD_FLIGHT_SCALE,
@@ -12,6 +12,7 @@ import {
 	STEP,
 } from "@void-drift/mode-a";
 import { onMount, untrack } from "svelte";
+import { EnginePlume, PlumeProportionsSchema } from "./accepted-ion-plume";
 import "@void-drift/core/styles/buttons.css";
 
 let {

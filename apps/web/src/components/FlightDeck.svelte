@@ -197,13 +197,25 @@ function advance(state: {
 }
 function trial(coasting = false) {
 	reset(true);
-	for (const chunk of coasting ? coast : replay)
+	const sequence = coasting ? coast : replay;
+	const historyStart =
+		sequence.reduce((sum, chunk) => sum + chunk.ticks, 0) - 60;
+	for (const chunk of sequence)
 		for (
 			let i = 0;
 			i < chunk.ticks && simulation.state.status === "PLAYING";
 			i++
-		)
+		) {
 			advance(chunk);
+			// Seek the image history too; only the final second can remain visible.
+			const context = canvas?.getContext("2d");
+			if (context && simulation.ticks >= historyStart) {
+				context.save();
+				camera.applyTransform(context);
+				flightFx.draw(context, simulation);
+				context.restore();
+			}
+		}
 	paused = true;
 	sync();
 }

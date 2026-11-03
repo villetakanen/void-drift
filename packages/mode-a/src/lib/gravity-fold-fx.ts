@@ -1,4 +1,10 @@
-import { FX_INK, FxPass, type GameObject, paintArc } from "@void-drift/core";
+import {
+	FX_INK,
+	type FxPass,
+	FxSurface,
+	type GameObject,
+	paintArc,
+} from "@void-drift/core";
 import {
 	BUILD_FLIGHT_SCALE,
 	type BuildMount,
@@ -18,7 +24,7 @@ function collectors(loadout: Loadout) {
 	return mounts;
 }
 
-/** Phase waves need no particle simulation, gradients, blur or history canvas. */
+/** Phase waves stamp fresh light into the shared surface without particle history. */
 export function drawGravityFold(
 	ctx: CanvasRenderingContext2D,
 	loadout: Loadout,
@@ -41,14 +47,14 @@ export function drawGravityFold(
 		ctx.rotate(direction);
 		ctx.strokeStyle = FX_INK.gravity;
 		ctx.lineWidth = 1;
-		ctx.globalAlpha = opacity;
+		ctx.globalAlpha = opacity * (pass?.opacity ?? 1);
 		paintArc(ctx, 5, 0);
 		for (let wave = 0; wave < 4; wave++) {
 			if (pass && !pass.budget.take()) break;
 			const phase = (time * 1.25 + wave / 4 + index * 0.19) % 1;
 			ctx.save();
 			ctx.translate(phase * 14, 0);
-			ctx.globalAlpha = opacity * (1 - phase) * 0.8;
+			ctx.globalAlpha = opacity * (1 - phase) * 0.8 * (pass?.opacity ?? 1);
 			paintArc(ctx, 6 + phase * 24, Math.sin(time * 3 + wave) * 0.16);
 			ctx.restore();
 		}
@@ -57,15 +63,19 @@ export function drawGravityFold(
 	}
 }
 
-/** Same final pass in play, Lab and multi-ship diagnostic scenes. */
+/** One persistent scene surface in play, Lab and multi-ship diagnostics. */
 export class FlightFx {
-	readonly pass = new FxPass();
-	begin(ctx: CanvasRenderingContext2D, additive = true) {
-		this.pass.begin(ctx, additive);
+	readonly surface = new FxSurface();
+	private simulation?: Simulation;
+	get pass() {
+		return this.surface.pass;
+	}
+	clear() {
+		this.surface.clear();
 	}
 	drawShip(ctx: CanvasRenderingContext2D, sim: Simulation, fold = true) {
-		sim.plume.draw(ctx, undefined, undefined, this.pass);
-		if (fold && sim.settings.loadout)
+		sim.plume.stamp(ctx, this.pass);
+		if (fold && sim.settings.loadout && sim.gravityCollectionRate > 0)
 			drawGravityFold(
 				ctx,
 				sim.settings.loadout,
@@ -76,20 +86,21 @@ export class FlightFx {
 				this.pass,
 			);
 	}
-	end(ctx: CanvasRenderingContext2D) {
-		this.pass.end(ctx);
-	}
 	draw(
 		ctx: CanvasRenderingContext2D,
 		sim: Simulation,
 		fold = true,
 		additive = true,
 	) {
-		this.begin(ctx, additive);
-		try {
-			this.drawShip(ctx, sim, fold);
-		} finally {
-			this.end(ctx);
+		if (this.simulation !== sim) {
+			this.clear();
+			this.simulation = sim;
 		}
+		this.surface.draw(
+			ctx,
+			sim.ticks / 60,
+			(light) => this.drawShip(light, sim, fold),
+			additive,
+		);
 	}
 }

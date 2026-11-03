@@ -23,9 +23,10 @@ export class FxBudget {
 	}
 }
 
-/** A logical top layer, drawn directly into the world canvas. */
+/** Shared emission budget and view culling inside the persistent light surface. */
 export class FxPass {
 	readonly budget = new FxBudget();
+	opacity = 1;
 	private a = 1;
 	private b = 0;
 	private c = 0;
@@ -34,8 +35,9 @@ export class FxPass {
 	private f = 0;
 	private width = 0;
 	private height = 0;
-	begin(ctx: CanvasRenderingContext2D, additive = true) {
+	begin(ctx: CanvasRenderingContext2D, additive = true, opacity = 1) {
 		this.budget.reset();
+		this.opacity = opacity;
 		const transform = ctx.getTransform();
 		this.a = transform.a;
 		this.b = transform.b;
@@ -149,7 +151,7 @@ export class FxSparks {
 		for (let i = 0; i < this.used; i++) {
 			const p = this.pool[i];
 			if (!pass.visible(p.x, p.y, 3) || !pass.budget.take()) continue;
-			ctx.globalAlpha = 1 - p.age / p.life;
+			ctx.globalAlpha = pass.opacity;
 			ctx.fillRect(p.x, p.y, 1.5, 1.5);
 		}
 		ctx.restore();

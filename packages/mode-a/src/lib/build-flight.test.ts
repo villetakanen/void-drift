@@ -163,7 +163,7 @@ it("preserves established gravity and overspeed coasting for assembled ships", (
 	expect(assembled.ship.vel.mag()).toBeGreaterThan(500);
 });
 
-it("emits shared fading surfaces for every active installed engine", () => {
+it("supplies current outlets for every engine delivering output", () => {
 	const loadout = defaultLoadout("corvette");
 	// Isolate main engines from optional stabilizer assist.
 	loadout.stabilizers = false;
@@ -176,13 +176,13 @@ it("emits shared fading surfaces for every active installed engine", () => {
 	sim.ship.pos.set(1800, 540);
 	sim.start();
 	sim.step(both);
-	expect(sim.plume.count).toBe(4);
+	expect(sim.plume.activeCount).toBe(4);
 	sim.step(idle);
-	expect(sim.plume.count).toBe(4);
+	expect(sim.plume.activeCount).toBe(0);
 	for (let i = 0; i < 40; i++) sim.step(idle);
-	expect(sim.plume.count).toBe(0);
+	expect(sim.plume.activeCount).toBe(0);
 	sim.step({ ...idle, leftThruster: true });
-	expect(sim.plume.count).toBe(1);
+	expect(sim.plume.activeCount).toBe(1);
 });
 
 it("uses accepted mount geometry for propulsion, estimates, nozzles and collision", () => {

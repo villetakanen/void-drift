@@ -4,11 +4,18 @@ import { chromium } from "@playwright/test";
 
 const baseURL = process.env.FX_BASE_URL ?? "http://127.0.0.1:4347";
 const duration = Number(process.env.FX_PROFILE_SECONDS ?? 60);
+const camera = process.env.FX_PROFILE_CAMERA ?? "fixed";
+if (!["fixed", "moving"].includes(camera))
+	throw new Error("FX_PROFILE_CAMERA must be fixed or moving");
 if (!Number.isFinite(duration) || duration < 5 || duration > 300)
 	throw new Error("FX_PROFILE_SECONDS must be between 5 and 300");
 const directory = `artifacts/fx-profile/${new Date().toISOString().replaceAll(":", "-")}`;
 await mkdir(directory, { recursive: true });
 const browser = await chromium.launch();
+const graphicsSession = await browser.newBrowserCDPSession();
+const { gpu } = await graphicsSession.send("SystemInfo.getInfo");
+const graphics = { devices: gpu.devices, features: gpu.featureStatus };
+await graphicsSession.detach();
 const results = [];
 try {
 	for (const mobile of [false, true]) {
@@ -22,7 +29,7 @@ try {
 		const page = await context.newPage();
 		const errors = [];
 		page.on("pageerror", (error) => errors.push(error.message));
-		await page.goto(`${baseURL}/lab/fx`);
+		await page.goto(`${baseURL}/lab/fx?camera=${camera}`);
 		const scene = page.getByRole("region", { name: "Arcade FX instrument" });
 		await scene.getByRole("button", { name: "Pause", exact: true }).waitFor();
 		await page.waitForTimeout(5000);
@@ -82,6 +89,8 @@ try {
 		});
 		results.push({
 			label,
+			camera,
+			graphics,
 			browser: browser.version(),
 			host: `${process.platform}/${process.arch}`,
 			cpu: cpus()[0]?.model,
@@ -114,7 +123,7 @@ try {
 				baseURL,
 				results,
 				caveat:
-					"Headless Chromium on this host; mobile is viewport/touch emulation, not a physical phone. Trace costs include world/UI work and overlapping threads, not an isolated additive GPU timer.",
+					"Headless Chromium on this host; inspect graphics.features for software rendering before interpreting GPU performance. Mobile is viewport/touch emulation, not a physical phone. Trace costs include world/UI work and overlapping threads, not an isolated additive GPU timer.",
 			},
 			null,
 			2,

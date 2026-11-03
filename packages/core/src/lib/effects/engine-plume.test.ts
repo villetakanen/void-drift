@@ -45,19 +45,19 @@ it("retains braking, sideways thrust, and half contribution per engine", () => {
 	expect(push(1200, Math.PI / 2).body.vel.y).toBeGreaterThan(0);
 	expect(push(0, 0, false).body.vel.x).toBeCloseTo(push(0).body.vel.x / 2);
 });
-it("release preserves live surfaces until expiry and continuous emission stays bounded", () => {
+it("release removes emission state and continuous stamping stores only current outlets", () => {
 	const plume = new EnginePlume(),
 		body = ship();
 	plume.step(1 / 60, body, 1, 1);
 	plume.step(1 / 60, body, 0, 0);
-	expect(plume.count).toBe(2);
+	expect(plume.activeCount).toBe(0);
 	plume.step(0.65, body, 0, 0);
-	expect(plume.count).toBe(0);
+	expect(plume.activeCount).toBe(0);
 	for (let i = 0; i < 1000; i++) plume.step(1 / 60, body, 1, 1);
-	expect(plume.count).toBeLessThanOrEqual(80);
+	expect(plume.activeCount).toBe(2);
 });
 
-it("mounted emitters retain the shared fading lifecycle with bounded five-engine emission", () => {
+it("mounted emission stays bounded independently of elapsed time or source overload", () => {
 	const plume = new EnginePlume(),
 		body = ship();
 	const emitters = Array.from({ length: 5 }, (_, i) => ({
@@ -67,12 +67,17 @@ it("mounted emitters retain the shared fading lifecycle with bounded five-engine
 		output: 1,
 	}));
 	for (let i = 0; i < 1000; i++) plume.stepMounted(1 / 60, body, emitters);
-	expect(plume.count).toBeGreaterThan(80);
-	expect(plume.count).toBeLessThanOrEqual(200);
+	expect(plume.activeCount).toBe(5);
+	plume.stepMounted(
+		1 / 60,
+		body,
+		Array.from({ length: 1000 }, () => emitters[0]),
+	);
+	expect(plume.activeCount).toBe(8);
 	for (const emitter of emitters) emitter.output = 0;
-	const count = plume.count;
+	const count = plume.activeCount;
 	plume.stepMounted(0, body, emitters);
-	expect(plume.count).toBe(count);
+	expect(plume.activeCount).toBe(count);
 	plume.stepMounted(0.65, body, emitters);
-	expect(plume.count).toBe(0);
+	expect(plume.activeCount).toBe(0);
 });

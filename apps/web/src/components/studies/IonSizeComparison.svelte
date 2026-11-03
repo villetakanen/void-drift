@@ -28,7 +28,7 @@ let heavyCanvas: HTMLCanvasElement;
 let playing = $state(false);
 let released = $state(false);
 let ticks = $state(0);
-let markCount = $state(0);
+let outletCount = $state(0);
 let plumes = variants.map(() => new EnginePlume());
 const ship = {
 	pos: new Vec2(0, 0),
@@ -44,7 +44,7 @@ let power = stats.capacity;
 let timers: Record<string, number> = {};
 function reset() {
 	ticks = 0;
-	markCount = 0;
+	outletCount = 0;
 	released = false;
 	ship.pos.x = ship.pos.y = ship.vel.x = ship.vel.y = ship.rotation = 0;
 	power = stats.capacity;
@@ -55,7 +55,14 @@ function reset() {
 function seek(target: number) {
 	playing = false;
 	reset();
-	for (let i = 0; i < target; i++) advance();
+	for (let i = 0; i < target; i++) {
+		advance();
+		// Seeking must replay painting: history is an image, not stored marks.
+		if (i >= target - 60) {
+			render(lightCanvas, 0);
+			render(heavyCanvas, 1);
+		}
+	}
 	render(lightCanvas, 0);
 	render(heavyCanvas, 1);
 }
@@ -102,7 +109,7 @@ function advance() {
 			})),
 		);
 	});
-	markCount = plumes.reduce((sum, plume) => sum + plume.count, 0);
+	outletCount = plumes.reduce((sum, plume) => sum + plume.activeCount, 0);
 	ticks++;
 	if (ticks === 420) playing = false;
 }
@@ -131,7 +138,7 @@ function render(canvas: HTMLCanvasElement, index: number) {
 	ctx.restore();
 }
 onMount(() => {
-	for (let i = 0; i < 45; i++) advance();
+	seek(45);
 	let last = performance.now(),
 		carry = 0,
 		frame = 0;
@@ -163,11 +170,11 @@ onMount(() => {
 	class="comparison"
 	aria-label={label}
 	data-tick={ticks}
-	data-marks={markCount}
+	data-outlets={outletCount}
 >
 	<div class="views">
 		<figure>
-			<figcaption>Light ion · arcade beam</figcaption>
+			<figcaption>Light ion · persistent light</figcaption>
 			<canvas
 				bind:this={lightCanvas}
 				width="480"
@@ -176,7 +183,7 @@ onMount(() => {
 			></canvas>
 		</figure>
 		<figure>
-			<figcaption>Heavy ion · arcade beam</figcaption>
+			<figcaption>Heavy ion · persistent light</figcaption>
 			<canvas
 				bind:this={heavyCanvas}
 				width="480"
@@ -187,10 +194,10 @@ onMount(() => {
 	</div>
 	<p>
 		{released || ticks >= 315
-			? "Off · marks fading"
+			? "Off · accumulated light fading"
 			: ticks >= 240 && ticks < 285
 				? "Turning · one side engine"
-				: "On · emitting beam marks"}
+				: "On · stamping light"}
 	</p>
 	<div class="controls">
 		<button type="button" class="btn btn-ghost" onclick={() => seek(45)}>

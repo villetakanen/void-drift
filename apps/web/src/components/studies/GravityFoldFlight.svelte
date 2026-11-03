@@ -166,10 +166,10 @@ onMount(() => {
 <p>{status} · {field}</p>
 <canvas bind:this={canvas} aria-label={label}></canvas>
 <p>
-	Pause inside the field, then toggle Add fold light to compare the same frame.
-	On: overlapping light adds and can brighten toward white. Off: folds use
-	ordinary transparency over the engine trails and each other. Engine rendering
-	stays fixed. Use J FX to compare against engines alone.
+	Pause inside the field, then toggle Add fold light to compare how the same
+	accumulated surface sits over the world. On: its light adds brightness. Off:
+	ordinary transparency. J FX controls new collector stamping; existing light
+	fades when flight resumes.
 </p>
 <p>
 	W / ↑: both engines · A / ← and D / →: individual engines. Touch either half

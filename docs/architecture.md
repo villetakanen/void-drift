@@ -9,9 +9,11 @@ Read for changes to structure, simulation, or data flow. Product scope belongs i
 - Core owns physics, camera, input, procedural drawing and shared styles.
 - Mode A owns the fixed 60 Hz `Simulation`, seeded trials, ship profiles and Firebase boundary.
 - `FlightDeck.svelte` composes the same systems for the game and `/lab/flight`.
-- Alpha 0.5.0 draws FX in a final direct Canvas pass above ships/world and below HUD.
-  Core owns bounded trails, sparks and scene budgets; mode supplies actual engine
-  and collector activity. `/lab/fx` exercises six production simulations together.
+- The FX correction accumulates new stamps on a shared persistent Canvas surface
+  above ships/world and below HUD. Overlap adds light; the whole image decays with
+  game time. Core owns buffers, stamp caches, bounded moving sparks and scene budgets;
+  mode supplies actual engine and collector activity. Engines retain only current
+  outlets, not trail history. `/lab/fx` exercises six production simulations together.
   The [FX contract](specs/sfx-canvas.md) owns lifecycle and performance acceptance.
 - Replay takes validated settings and ordered input/tick chunks. Rendering reads state;
   simulation time drives orbits and animation. Camera zoom frames the ship and star,

@@ -77,6 +77,10 @@ prove sustained 60 FPS or difficulty balance on a physical phone. Report the dev
 scenario, backing resolution and full rendering evidence for performance measurements.
 `/lab/fx` runs the production mixed scene; `node scripts/profile-fx.mjs` captures
 sustained Chromium timing/traces against a server on port 4347 by default.
+Use `FX_PROFILE_CAMERA=moving` to include pan/zoom reprojection. Prefer a fixed
+production preview for sustained measurements so live edits cannot reset counters.
+The report includes graphics devices/features: software Canvas/compositing results
+must be identified as such, not reported as hardware-accelerated browser timing.
 
 The Lab is an experience-design surface, not just an asset gallery. Its trials use
 production systems and expose the relevant parameters, reset/replay and shareable

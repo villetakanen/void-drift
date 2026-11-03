@@ -1,5 +1,5 @@
 <script lang="ts">
-import { EnginePlume, Vec2 } from "@void-drift/core";
+import { Vec2 } from "@void-drift/core";
 import {
 	applyBuildEngines,
 	BUILD_FLIGHT_SCALE,
@@ -12,6 +12,7 @@ import {
 	STEP,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
+import { EnginePlume } from "./accepted-ion-plume";
 import "@void-drift/core/styles/buttons.css";
 
 let { label = "Light and Heavy ion visual comparison" }: { label?: string } =

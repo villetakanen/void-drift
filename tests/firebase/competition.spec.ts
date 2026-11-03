@@ -30,14 +30,18 @@ test("two anonymous pilots complete runs, submit and see a shared leaderboard", 
 			.getByText(LAUNCHER[ship], { exact: true })
 			.click();
 		await page.getByRole("button", { name: "PRESS START" }).click();
+		// Fly through the real input path. Two long idle runs spend the test's
+		// deadline rasterizing software Canvas frames rather than checking scores.
+		await page.keyboard.down("ArrowUp");
 		for (
 			let i = 0;
-			i < 15 &&
+			i < 150 &&
 			(await page.locator(".flight-page").getAttribute("data-status")) !==
 				"GAME_OVER";
 			i++
 		)
-			await page.clock.runFor(10000);
+			await page.clock.runFor(1000);
+		await page.keyboard.up("ArrowUp");
 		await expect(
 			page.getByRole("dialog", { name: "Run complete" }),
 		).toBeVisible();

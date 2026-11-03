@@ -15,10 +15,10 @@ test("shared ion instrument exposes firing, turning, release and expiry", async 
 	] as const) {
 		await region.getByRole("button", { name, exact: true }).click();
 		await expect(region).toHaveAttribute("data-tick", String(tick));
-		if (tick === 360) await expect(region).toHaveAttribute("data-marks", "0");
+		if (tick >= 330) await expect(region).toHaveAttribute("data-outlets", "0");
 		else
 			await expect
-				.poll(async () => Number(await region.getAttribute("data-marks")))
+				.poll(async () => Number(await region.getAttribute("data-outlets")))
 				.toBeGreaterThan(0);
 	}
 	await region

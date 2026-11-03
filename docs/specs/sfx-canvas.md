@@ -1,10 +1,10 @@
 # Arcade effects layer
 
-Updated 2026-11-03. **Status: implemented for alpha 0.5.0; owner experience and
-physical-device performance acceptance pending.** The shared direct Canvas pass,
-bounded trails/sparks and gravity arcs now run in play and Lab. Automated behavioral
-evidence and measured desktop results are separate from those remaining acceptances.
-[Investigation, alternatives and migration](../plans/2026-11-03-fx-framework-triage.md).
+Updated 2026-11-03. **Status: persistent-surface correction implemented and locally verified;
+owner builder playtest visually positive; performance acceptance pending.** The owner
+rejected the 0.5.0 engine appearance and clarified that the accumulated image must
+hold the history. The direct pass and per-engine trail histories shipped in 0.5.0
+are superseded. [Correction plan](../plans/2026-11-03-fx-surface-correction.md).
 
 ## Blueprint
 
@@ -26,21 +26,26 @@ workload here; their gameplay implementation belongs to their own features.
   the [collection adoption record](../history/ship-builder.md#gravity-collection-and-flight-fx--adopted-2026-11-03)
   preserves the existing rule's rationale.
 - **Core owns reusable effects capabilities.** The current entry points are
-  `packages/core/src/lib/effects/arcade-fx.ts`, `engine-plume.ts` and `ion-beam.ts`; the current
+  `packages/core/src/lib/effects/fx-surface.ts`, `arcade-fx.ts`, `engine-plume.ts`
+  and `ion-beam.ts`; the current
   mode adapter/compositor is `packages/mode-a/src/lib/gravity-fold-fx.ts`.
   Dependency direction remains web → mode/core and mode → core.
 - **Web composes the scene.** `apps/web/src/components/FlightDeck.svelte` combines
   simulation, camera, world and effects. Play and Lab use shared production effects.
   `/lab/fx` composes six production simulations through `mode-a/lib/fx-bench.ts`.
-  Their logical layer sits above world geometry and ships, below readable HUD and
-  controls. Physical canvases and renderer APIs are implementation choices.
+  The persistent light surface sits above world geometry and ships, below readable
+  HUD and controls. Emitters stamp fresh light; overlapping light adds; one shared
+  game-time decay fades the accumulated image. Engine trail marks are not retained
+  as individually aged and redrawn objects. Buffer count and renderer APIs remain
+  implementation choices.
 - **Data boundaries stay explicit.** Inputs are anchored by `FlightSettingsSchema`
   in `packages/mode-a/src/lib/schemas/flight.ts`, `LoadoutSchema` in
   `packages/mode-a/src/lib/schemas/loadout.ts`, and `GravityCollectionSchema` in
   `packages/mode-a/src/lib/gravity-collection.ts`. Define changed external/config
   contracts in Zod before consumers; parse them on entry. Internal data is typed.
-- **Backend choice remains open.** Alpha 0.5.0 uses a direct Canvas 2D pass with
-  solid strokes and phase-driven arcs, avoiding the former offscreen blur/blend path.
+- **Backend choice remains open.** The correction uses reusable Canvas 2D history
+  buffers, cached complete ion stamps and phase-driven gravity arcs. Gradients are
+  generated only when building the stamp cache; there is no live blur pass.
   JavaScript, GPU rendering, WASM/Rust and CSS alternatives remain judged by this contract. The FX exception to the
   current Canvas convention is recorded in [Architecture](../architecture.md).
   Implementation alternatives and their tradeoffs live in the investigation.
@@ -49,16 +54,22 @@ workload here; their gameplay implementation belongs to their own features.
 
 - **Output fidelity:** effect activity follows actual delivered output and gameplay
   events. An emitter identifies its source, transform, activity and lifecycle.
-- **Time and space:** effects advance with game time. Attached cues follow mounts;
-  detached trails retain their world-space motion and lifetime. Camera transforms
-  apply consistently. Arena wrapping is a discontinuity with explicit trail reset.
+- **Time and space:** effects advance with game time. Fresh stamps follow current
+  mounts. Accumulated light remains at its painted world position and shares the
+  surface decay; it carries no per-mark velocity. Camera changes preserve this
+  placement. Arena wrap starts stamping at the new location without a connecting
+  streak; previous light fades at its old location. Reset clears the whole surface.
 - **Simulation authority:** gameplay results and input semantics are invariant under
   changes to effect density, appearance or backend. Replay reproduces game state;
   incidental sparkle patterns may vary.
 - **Bounded load:** scene-wide limits bound active effects, memory and queued work.
-  Essential activation cues take priority over secondary decoration when saturated.
+  Current source stamps take priority over secondary decoration when saturated.
+  Moving sparks may retain bounded motion state; their painted trails live in the image.
 - **Artistic freedom:** rendering quirks are judged in play. The contract fixes
-  behavior and quality targets; recipes, palettes and overlap pixels remain tunable.
+  behavior and quality targets; recipes, palettes and overlap pixels remain tunable. The accepted ion reference
+  supplies its parallel luminous core, coloured halo and transparent end, with
+  Light mint-cyan and Heavy cooler, longer and wider. A separate attached rod and
+  faint residue does not represent that accepted identity.
 
 ## Contract
 
@@ -70,11 +81,11 @@ these identifiers; unchecked items represent outstanding acceptance work.
 - [ ] **FX-01 — Composition:** shared play/Lab effects appear above the world while
   HUD and controls remain readable and operable. Human inspection verifies layering.
 - [x] **FX-02 — Activity:** engine and collector cues represent delivered output,
-  transition on release/inactivity, and expire according to their configured fade.
+  stop new stamping on release/inactivity, and leave light to the shared decay.
 - [x] **FX-03 — Lifecycle:** pause, resume and reset preserve game-time semantics;
-  equal elapsed game time gives equal effect lifetime at 30 and 60 fps.
-- [x] **FX-04 — Placement:** source cues follow turning mounts, detached marks retain
-  world-space motion, and camera/wrap transitions preserve the stated behavior.
+  equal elapsed game time gives equivalent shared decay at 30 and 60 fps.
+- [x] **FX-04 — Placement:** source stamps follow turning mounts, accumulated light retains
+  its painted world position, and camera/wrap transitions preserve this meaning.
 - [x] **FX-05 — Isolation:** identical gameplay inputs yield identical gameplay state
   across supported effects settings, including presentation disabled.
 - [x] **FX-06 — Capacity:** overload stays within declared scene work/memory limits
@@ -83,6 +94,8 @@ these identifiers; unchecked items represent outstanding acceptance work.
   named reference environments, with sustained frame pacing and profiling evidence.
 - [ ] **FX-08 — Experience:** the owner reviews a playable mixed scene and records
   whether its effects feel sharp, sparkly, electric and readable at gameplay zoom.
+  Owner builder playtest on 2026-11-03 approved the ion/gravity appearance as matching
+  the intended effect; the entire diagnostic workload has not had owner review.
 
 ### Performance acceptance
 
@@ -113,8 +126,11 @@ frozen synthetic benchmark is evidence of feasibility only.
 - Gameplay forces, resources, damage, controls and replay remain governed by their
   existing contracts while effects change.
 - Play and Lab resolve the same production definitions and mount geometry.
-- Pausing freezes effect age; resuming continues from that age; resetting starts
-  an empty presentation lifecycle. Expired/off-screen work respects the work budget.
+- Pausing freezes accumulated light without adding more brightness. Resume uses
+  elapsed game time; reset empties presentation state. Off-screen emission is culled.
+  Display frames skipped between updates do not create an emission backlog.
+- Playback/seek in the Lab replays painting as well as simulation for the visible
+  history interval; simulation state alone cannot reconstruct an accumulated image.
 - Automated checks verify activity, lifecycle, geometry and bounded behavior.
   Human review verifies expressive appearance; captures support that review.
   Gherkin below specifies behavior, not exact drawing calls or pixel equality.
@@ -137,6 +153,22 @@ Feature: Fast, expressive arcade effects
     And the effects appear above the world and ship
     And the HUD remains readable and its controls operable
 
+  @FX-02 @FX-03
+  Scenario: Sources share accumulated light
+    Given two sources stamp light onto the same part of the effects surface
+    When the surface is presented above the world
+    Then their overlapping light adds brightness
+    When both sources stop stamping
+    Then their combined image fades through the same decay operation
+    And neither source retains or redraws its painted trail marks
+
+  @FX-02 @FX-03
+  Scenario: Old light disappears during continuing emission elsewhere
+    Given one source has stopped stamping and another keeps emitting
+    When the shared image history has passed its expiry bound
+    Then the old source leaves no residual colour or opacity
+    And the active source remains visible
+
   @FX-02
   Scenario: An engine delivers thrust and then stops
     Given an engine has started delivering thrust
@@ -144,7 +176,7 @@ Feature: Fast, expressive arcade effects
     Then a thrust cue appears at that engine's outlet
     When delivered thrust becomes zero even if its input remains held
     Then new active thrust emission stops
-    And released marks expire within their configured lifetime
+    And all previously stamped engine light follows the shared surface decay
 
   @FX-02
   Scenario: A fitted collector starts receiving energy
@@ -158,18 +190,19 @@ Feature: Fast, expressive arcade effects
   Scenario Outline: A gravity collector stops receiving energy
     Given a fitted collector has an active collection cue
     When <cause>
-    Then its activity fades out within the configured collection fade time
-    And the fade retains the last active field direction
+    Then new collector stamping stops
+    And its accumulated light decays at its painted world position and direction
     Examples:
       | cause                                      |
       | the ship leaves planetary influence        |
       | other supply fills all available storage   |
 
   @FX-03
-  Scenario: Pause and resume preserve effect age
+  Scenario: Pause and resume preserve accumulated light
     Given active and released effects are visible
     When the game pauses for five seconds of wall time
-    Then their age and animation phase remain at the paused game time
+    Then the accumulated image neither fades nor gains brightness
+    And source animation phase remains at the paused game time
     When the game resumes for one simulation tick
     Then effects advance by one simulation tick
 
@@ -177,29 +210,30 @@ Feature: Fast, expressive arcade effects
   Scenario: Reset clears the previous presentation
     Given a run contains active effects and pending bursts
     When the run is reset
-    Then its old marks and pending bursts are cleared
+    Then its accumulated image and pending bursts are cleared
     And the new run's effects respond to the new run's state
 
   @FX-03
-  Scenario: Lifetimes remain consistent at different display rates
-    Given two effects have the same configured lifetime and starting state
+  Scenario: Decay remains consistent at different display rates
+    Given two light surfaces have the same starting image and decay setting
     When equal game time passes with rendering at 30 and 60 frames per second
-    Then both effects have advanced by the same elapsed game time
-    And both expire at the configured lifetime
+    Then both images have decayed by the same elapsed game time within raster precision
+    And a quiet surface eventually clears completely
 
   @FX-04
   Scenario: Turning and camera changes preserve spatial meaning
-    Given a turning ship has an attached cue and a released trail
+    Given a turning ship has fresh stamps and accumulated light
     When the ship turns and the camera pans or changes zoom
-    Then the attached cue follows its current mount
-    And the released trail follows its world-space motion through the same camera
+    Then fresh stamps follow the current mount
+    And accumulated light remains at its painted world position through the camera
 
   @FX-04
-  Scenario: Arena wrap resets trail continuity
+  Scenario: Arena wrap does not bridge the arena
     Given a ship has an active trail
     When the ship wraps to the opposite side of the arena
-    Then its pre-wrap trail continuity is cleared
-    And new marks begin at the wrapped source position
+    Then fresh stamps begin at the wrapped source position
+    And previous light fades at its old world position
+    And no stroke connects the two locations
 
   @FX-05
   Scenario: Effects settings preserve gameplay results
@@ -233,28 +267,41 @@ Feature: Fast, expressive arcade effects
     And those judgments determine experience acceptance
 ```
 
-## Implementation and evidence — 0.5.0
+## Implementation and evidence — surface correction
 
-Current implementation limits are 1,024 decorative requests and 128 reserved
-activation cues per scene pass. Each ship has at most eight outlets and 320 stored
-trail marks; the shared burst pool holds 256 sparks and never queues overflow.
-The diagnostic fixes the number of ships/entities; these limits are implementation
-choices under FX-06, not permanent art recipes or new game population limits.
+One scene owns two rolling history images and one reusable reprojection buffer
+(about 24.9 MB of raw RGBA storage at 1920×1080, excluding browser overhead).
+Both images use the same decay. Each receives fresh stamps for a 0.5-second window;
+old windows are retired wholesale, so even 8-bit rounding residue is gone within
+one second of its last stamp while other sources keep firing. This is bounded image
+history, not per-source/mark histories. Stationary-camera images fade in place;
+camera movement combines reprojection and decay in a copy. Their combined light is
+added over the world. The shared half-life is 0.1 seconds; a wholly quiet surface
+also clears after 0.8 seconds. These are tunable
+implementation values. Different frame rates need not produce identical overlap pixels.
 
-| Contract            | Evidence                                                                                                                                                               |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| FX-02               | `gravity-collection.test.ts`, `build-flight.test.ts`, core `ion-beam.test.ts`: delivered output, full storage/influence transitions and released-mark expiry           |
-| FX-03               | Core `ion-beam.test.ts`, `arcade-fx.test.ts`; browser `fx.spec.ts`, `alpha.spec.ts`, `ion-effects.spec.ts`: game-time lifetime, pause/reset, replay and bounded bursts |
-| FX-04               | Core `ion-beam.test.ts`, mode `fx-integration.test.ts`, browser `alpha.spec.ts`: mount/world meaning, wrap reset and camera controls                                   |
-| FX-05               | Mode `fx-integration.test.ts`, browser `fx.spec.ts`: identical gameplay with decoration disabled/overloaded; draw reads state and restores its Canvas context          |
-| FX-06               | Core `arcade-fx.test.ts`, browser `fx.spec.ts` and `alpha.spec.ts`: reserved activation under overload, bounded pools and keyboard/multitouch operation                |
-| FX-01, FX-07, FX-08 | Review captures, sustained traces and remaining acceptance in the [0.5.0 release record](../releases/0.5.0.md)                                                         |
+Limits remain 1,024 decorative and 128 source requests per advancing scene frame.
+Each ship holds at most eight current engine outlets, with no historical marks.
+The moving spark pool holds at most 256 particles; their trail is image persistence.
+Ion stamps are cached by style. These capacities do not set game population limits.
 
-Visual equality checks for engine painters, gravity-coil faces and the combined
-flight canvas have been retired. Functional fitting, collection, flight and
-lifecycle checks remain. Historical studies are references; they do not constrain
-the new effects. [FX development skill](../../.agents/skills/fx-development/SKILL.md)
-guides future agents through this model without copying the specification.
+- Core outlet tests cover delivered output, mount transforms, pause/reset and bounds.
+- Browser `fx-surface.spec.ts` checks additive accumulation, shared decay, pause,
+  camera movement, reset and discontinuous placement with synthetic stamps. These
+  are compositing semantics, not screenshot or art-recipe equality assertions.
+- Existing mode/browser checks cover gameplay isolation, collection, replay, overload,
+  keyboard/touch and production Lab consumers. Appearance remains human-reviewed.
+- Sustained traces, final verification and owner feedback are recorded in the
+  [repair evidence](../loop-evidence/2026-11-03-fx-surface-repair.md).
+  The 0.5.0 timing results do not certify the changed rendering path.
+
+[DEPRECATED 2026-11-03] The direct-pass implementation shipped in 0.5.0 retained
+320 individually aged trail marks per ship and separate attached beams. It did not
+implement the owner's intended persistent surface. Its checks and measurements
+remain historical evidence in the [0.5.0 release record](../releases/0.5.0.md).
+The [FX development skill](../../.agents/skills/fx-development/SKILL.md) guides agents
+through the agreed model. Preserved study painters are comparison evidence outside
+production; visual equality gates remain retired.
 
 ## Supporting records
 

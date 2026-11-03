@@ -230,7 +230,7 @@ describe("accepted Scout Trident", () => {
 		expect(sims[0].ship).toEqual(sims[1].ship);
 		expect(sims[0].state).toEqual(sims[1].state);
 		expect(sims[0].state.resources.power).toBeLessThan(100);
-		expect(sims[0].plume.count).toBeGreaterThan(0);
+		expect(sims[0].plume.activeCount).toBeGreaterThan(0);
 		for (const sim of sims) {
 			sim.state.resources.power = 0;
 			sim.step(both);

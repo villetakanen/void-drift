@@ -9,6 +9,7 @@ export * from "./lib/debug/PerformanceMonitor";
 export * from "./lib/effects/arcade-fx";
 export * from "./lib/effects/damage-feedback";
 export * from "./lib/effects/engine-plume";
+export * from "./lib/effects/fx-surface";
 export * from "./lib/effects/ion-beam";
 export * from "./lib/effects/particles";
 // Effects
