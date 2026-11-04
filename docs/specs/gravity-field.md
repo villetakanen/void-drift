@@ -1,8 +1,5 @@
 # Gravity field
 
-Sections marked **Target** are agreed and not implemented; everything else
-describes how gravity flies.
-
 ## Context
 
 Gravity is the game's terrain. The accepted intent (study `gravity-wells`,
@@ -133,7 +130,7 @@ before and after such a change are never compared.
 differ from the previous release; editing tuning values never changes it. The
 step belongs to the release procedure in `docs/development.md`.
 
-### Target: reach from mass
+### Reach from mass
 
 A well's pull is semi-physical, `G × mass / distance²` with `G = 1000`, and its
 reach is only a hard cut-off from its mass, `reach = sizeMultiplier × mass`, kept
@@ -141,8 +138,8 @@ artificially smaller than physics so game physics stays sane. Mass alone sets ho
 hard a well pulls; the reach sets only where the pull ends. The
 [Gravity tuning](gravity-tuning.md) bench finds the multiplier with one well and
 given ships. Planets adopt the law first and suns after, each as its own change
-that also defines how the bench's values reach the tuning file; until then the
-rules above apply.
+that also defines how the bench's values reach the tuning file; a body uses the
+curve above until it adopts this law.
 
 ## Contract
 

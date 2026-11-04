@@ -1,7 +1,5 @@
 # Gravity tuning
 
-Status: Target, not implemented.
-
 ## Context
 
 Gravity tuning is the Lab bench for deciding how a gravity well works, metrics
@@ -36,8 +34,8 @@ One static well in empty space: no sun, no planets, no orbit, no surface.
 
 The law is one production function, `massWellAcceleration` with the constant
 `MASS_WELL_G` (`packages/core/src/lib/physics/Physics.ts`), used by the bench now
-and by planets, then suns, when the game adopts it (gravity-field.md, "Target:
-reach from mass"). The game's current curve, `wellAcceleration`, is unchanged
+and by planets, then suns, when the game adopts it (gravity-field.md, "Reach from
+mass"). The game's current curve, `wellAcceleration`, is unchanged
 until then.
 
 The well has no surface and ends no run. Like a planet's, its pull is not applied

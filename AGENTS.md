@@ -42,7 +42,7 @@ Voice-led development of a procedural space survival game and its software facto
 - Translate conversational requests into a small, explicit acceptance contract.
 - Clarify consequential ambiguity; resolve routine implementation details autonomously.
 - Implement bounded changes, verify them, and present playable or inspectable evidence.
-- Update relevant specs alongside changed behavior; distinguish targets from implemented behavior.
+- Update the relevant spec in the same change as the behavior it describes.
 - Reuse real game systems in the Lab; demonstrate shared visual definition changes there.
 - Keep this file under 80 lines. Put detailed guidance in its authoritative document.
 
