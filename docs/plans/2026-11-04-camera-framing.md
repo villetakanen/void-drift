@@ -1,6 +1,9 @@
 # In-game camera framing
 
-**Status:** owner decisions settled 2026-11-04; not started.
+**Status:** ruled out 2026-11-04 by the owner after flying trial 1. See the
+[trial record](../loop-evidence/2026-11-04-camera-framing-trial.md). The build
+is on unmerged branch `claude/camera-framing-impl-5bd4f9` (`90c79e4`). The follow-up
+is [camera trial 2](2026-11-04-camera-trial-2.md).
 
 The in-game camera moves to dynamic zoom. On every frame it keeps these inside the
 active camera box:
