@@ -116,7 +116,9 @@ test("a field document draws bodies, outcomes and field graphs", async ({
 
 test("the pane edits a gravity field and refuses impossible values", async ({
 	page,
+	context,
 }) => {
+	await context.grantPermissions(["clipboard-read", "clipboard-write"]);
 	await page.goto("/lab/instrument");
 	await page.getByRole("button", { name: "Open values" }).click();
 	await page.getByRole("button", { name: /^Reset Thrust/ }).click();
@@ -133,6 +135,10 @@ test("the pane edits a gravity field and refuses impossible values", async ({
 	await strength.fill("300");
 	await strength.press("Tab");
 	await expect(document).toContainText('"planetStrength": 300');
+	await page.getByRole("button", { name: "Copy proposal" }).click();
+	const copied = await page.evaluate(() => navigator.clipboard.readText());
+	expect(copied).toMatch(/^Gravity tuning proposal/);
+	expect(copied).toMatch(/^Apply: planetStrength \S+ → 300$/m);
 	const well = page.locator("#w-0-strength");
 	const before = await well.inputValue();
 	await well.fill("-5");

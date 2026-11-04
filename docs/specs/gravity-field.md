@@ -172,34 +172,47 @@ counts planet contact substeps. The Lab instrument's
 field mode (`docs/specs/lab-instrument.md`) runs this `Simulation`; it has no
 gravity code of its own.
 
-### Target: changing gravity values
+### Changing gravity values
 
-Gravity values change only by applying an owner-supplied proposal. A proposal is
-copied from the Lab instrument's pane (Copy proposal) and reads:
+Gravity values change only by applying an owner-supplied proposal. The owner
+copies it from the Lab instrument's pane (Copy proposal, enabled once a field
+document changes a gravity value) and hands it to an agent. Built by
+`gravityProposal` (`apps/web/src/lib/instrument/proposal.ts`), it reads:
 
 ```text
 Gravity tuning proposal (instrument document v2, from /lab/instrument)
-Baseline: <current gravity values in the tuning file>
-Apply: <value> <old> → <new>; …
-Not applied (Lab wells): <labels>
+Baseline: <every gravity value the Lab's game build had, key value; …>
+Apply: <key> <old> → <new>; …
+Not applied (Lab wells): <labels, or none>
 <the instrument document JSON>
 ```
 
+Keys are `sunMultiplier`, `planetStrength`, `sunReachFactor`,
+`planetReach.massScale`, `planetReach.minRadii`, `planetReach.maxRadii` and
+`curve`.
+
 `pnpm tuning:apply <area> <file>` (`scripts/tuning-apply.mjs`) applies one
 section of the tuning file; `gravity` is defined here, `ship` by the Lab
-usability plan. For `gravity` it:
+usability plan. The script loads each area's checks from TypeScript through
+Vite (`createViteServer` from `vitest/node`). For `gravity`
+(`applyGravitySection`, `proposal.ts`) it:
 
-- parses the JSON with `InstrumentConfig`, takes `field.changes`, validates them
-  with `GravityTuningSchema`, writes the `gravity` section and prints old → new
-  for each value; other sections are untouched;
-- refuses, changing nothing, when the document has no changes or only values
-  equal to the tuning file, a value is out of range or unknown, or the baseline
-  values differ from the tuning file.
+- parses the JSON with `InstrumentConfig`, lays `field.changes` over the tuning
+  file's `gravity` section, validates the result with `GravityTuningSchema`,
+  writes the file with every other section untouched, and prints `key old → new`
+  for each changed value;
+- refuses, writing nothing and exiting 1, when the block has no document or
+  invalid JSON, the document is invalid or has no field, a value is out of range
+  or unknown, the Apply line is missing or disagrees with the document, an Apply
+  `old` value differs from the tuning file (a stale proposal, named by value), or
+  nothing would change; the tuning file itself being invalid is refused too;
+- exits 2 for an unknown area or a missing file argument.
 
-The agent then: updates the table above; runs `pnpm verify`,
-updating visual baselines for the trajectory change without changing tolerances;
-and commits locally with the proposal block in the message body. Added Lab wells
-never become game bodies by this route.
+`VOID_DRIFT_TUNING_FILE` points the script at another file (used by its tests).
+The agent then runs `pnpm verify`, updating visual baselines for the trajectory
+change without changing tolerances, and commits locally with the proposal block
+in the message body. It does not change `CHALLENGE`. Lab wells and starts never
+become game data by this route.
 
 ## Contract
 
@@ -227,8 +240,10 @@ never become game bodies by this route.
 - [x] An empty system has no pull or heat; Lab wells pull only inside reach, sum,
   and have no surface; frozen orbits hold; the start, changes and every
   rejection above behave as described (`field.test.ts`).
-- [ ] Target: `tuning:apply` applies a valid proposal and refuses each invalid
-  case listed above, leaving the tuning file unchanged (script tests).
+- [x] A proposal reads back as exactly its changes; each refusal above has a
+  reason; `tuning:apply` applies a proposal once and then refuses it as stale
+  without writing (`proposal.test.ts`, including a run of the script on a
+  copy).
 - [ ] Owner flight review of sun and planet feel, recorded here with date.
 
 ### Regression Guardrails
@@ -276,16 +291,16 @@ Scenario: Planet contact bounces the ship
     and scaled by 0.8, plus that substep's gravity change
   And its hull is lower by PLANET_COLLISION_DAMAGE
 
-Scenario: Target: applying an owner's proposal
+Scenario: Applying an owner's proposal
   Given a copied proposal changing planetStrength from 600 to 450
   When the agent runs tuning:apply with it
   Then the tuning file holds 450 and the script prints "planetStrength 600 → 450"
   And CHALLENGE is unchanged
 
-Scenario: Target: refusing a stale proposal
-  Given a proposal whose baseline sunMultiplier is 5 while the tuning file holds 4
+Scenario: Refusing a stale proposal
+  Given a proposal whose Apply line has sunMultiplier 5 → 6 while the tuning file holds 4
   When the agent runs tuning:apply with it
-  Then it refuses, names the mismatched value, and the tuning file is unchanged
+  Then it refuses, names sunMultiplier, writes nothing and exits 1
 ```
 
 ## Open questions

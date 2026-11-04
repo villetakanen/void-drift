@@ -124,8 +124,8 @@ between fitting all paths and a default scale (0.2 px/u) that pans by dragging.
 
 ### Gravity field mode
 
-Document, calculation, views and field editing implemented, 2026-11-04. Pull
-shading and Copy proposal are targets, not yet implemented. Plan: [2026-11-04-gravity-field-lab.md](../plans/2026-11-04-gravity-field-lab.md).
+Document, calculation, views, field editing and Copy proposal implemented,
+2026-11-04. Pull shading is a target, not yet implemented. Plan: [2026-11-04-gravity-field-lab.md](../plans/2026-11-04-gravity-field-lab.md).
 Gravity rules: [gravity-field.md](gravity-field.md).
 
 A version 2 document may carry a `field`. Version 1 documents and version 2
@@ -254,8 +254,9 @@ take the bodies of the longest run, so moving planets cover the whole burn.
 - Path pane: with `onmovewell`, a Lab well's cross can be dragged; the well
   follows the pointer and the paths recalculate on release. A drop the schema
   refuses (outside the arena) leaves the well where it was.
-- Target: Copy proposal sits beside Copy JSON and copies the block defined in
-  gravity-field.md; it is disabled while `field.changes` is empty.
+- Copy proposal sits beside Copy JSON in field documents and copies the block
+  defined in gravity-field.md ("Changing gravity values"); it is disabled while
+  no gravity value differs from the game's.
 
 ## Study chassis proposal and Fiddler integration
 
@@ -315,8 +316,8 @@ It is no longer a prerequisite for comparing this accepted Fiddler configuration
   refused with its reason (browser test, `lab-instrument.spec.ts`).
 - [x] A refused edit leaves the document unchanged and gives one plain reason;
   a gravity value set back to the game's leaves `field.changes` (unit tests).
-- [ ] Target: an edited gravity value appears in the copied proposal (browser
-  test).
+- [x] An edited gravity value appears in the copied proposal's Apply line
+  (browser test, `lab-instrument.spec.ts`).
 - [ ] Target: field mode readability on a large screen (1280px wide or more)
   reviewed by the owner and recorded.
 

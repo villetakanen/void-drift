@@ -11,6 +11,7 @@ import {
 	familiesOf,
 	GRAVITY_PARAMETERS,
 	gravityChange,
+	gravityProposal,
 	gravityStock,
 	InstrumentConfig,
 	type InstrumentField,
@@ -33,6 +34,15 @@ let copied = $state(false);
 let draft = $state("");
 let loadError = $state("");
 const text = $derived(serialize($state.snapshot(config)));
+// The block an agent applies with `pnpm tuning:apply gravity`; null without gravity changes.
+const proposal = $derived(gravityProposal($state.snapshot(config)));
+let proposalCopied = $state(false);
+async function copyProposal() {
+	if (!proposal) return;
+	await navigator.clipboard.writeText(proposal);
+	proposalCopied = true;
+	setTimeout(() => (proposalCopied = false), 1500);
+}
 
 function current(i: number, family: Family, key: string): number | undefined {
 	const group = config.vehicles[i].changes[family] as
@@ -424,9 +434,31 @@ function load() {
 
 <section aria-labelledby="pane-document">
 	<h4 id="pane-document">Document</h4>
-	<button type="button" class="btn btn-ghost" onclick={copy}>
-		{copied ? "Copied" : "Copy JSON"}
-	</button>
+	<div class="copies">
+		<button type="button" class="btn btn-ghost" onclick={copy}>
+			{copied ? "Copied" : "Copy JSON"}
+		</button>
+		{#if config.version === 2 && config.field}
+			<button
+				type="button"
+				class="btn btn-ghost"
+				onclick={copyProposal}
+				disabled={!proposal}
+				title={proposal
+					? "Copies the gravity changes for an agent to apply to the game"
+					: "Change a gravity value to make a proposal"}
+			>
+				{proposalCopied ? "Copied" : "Copy proposal"}
+			</button>
+		{/if}
+	</div>
+	{#if proposal}
+		<p class="unit">
+			Copy proposal hands the gravity changes to an agent, who applies them to
+			the game with <code>pnpm tuning:apply gravity</code>. Lab wells and starts
+			stay in the Lab.
+		</p>
+	{/if}
 	<pre>{text}</pre>
 	<details>
 		<summary>Load a document</summary>
@@ -466,6 +498,10 @@ fieldset {
 	margin: 0 0 var(--spacing-md);
 	padding: 0;
 	border: 0;
+}
+.copies {
+	display: flex;
+	gap: var(--spacing-sm);
 }
 .toggles {
 	display: flex;

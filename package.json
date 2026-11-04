@@ -22,6 +22,7 @@
 		"test:rules": "firebase emulators:exec --only firestore --project demo-void-drift \"node --test packages/mode-a/tests/firestore.test.mjs\"",
 		"test:competition": "firebase emulators:exec --only firestore,auth --project demo-void-drift \"playwright test -c playwright.firebase.config.ts\"",
 		"prepare": "lefthook install",
+		"tuning:apply": "node scripts/tuning-apply.mjs",
 		"check:commits": "commitlint --from 841c975deee6f53db6b663f6a08047f8f8704e06 --to HEAD"
 	},
 	"devDependencies": {
