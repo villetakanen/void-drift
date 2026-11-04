@@ -1,5 +1,13 @@
 # Void Drift rebuild charter
 
+> Historical record, archived 2026-11-04. This was the plan for the rebuild that
+> produced the playable alpha, with a 0.4.0 ship-builder appendix. Its scope,
+> sequence, open decisions and instructions are not current requirements. Do not use
+> it to guide new work. Current intent is in [vision.md](../vision.md), and current
+> scope comes from the owner's latest decisions and the active [plans](../plans/).
+> Feature behavior is in the [specs](../specs/), and agent authority is in
+> [AGENTS.md](../../AGENTS.md).
+
 Status: agreed direction from the owner's conversation on 2026-10-28; delivery is incremental.
 
 ## Purpose
@@ -57,8 +65,8 @@ Consulted 2026-10-28:
 ## Next phase — ship builder, 2026-10-30
 
 The owner authorizes a playable 0.4.0 alpha built from the agreed
-[ship-builder brief](history/ship-builder.md#purpose-and-delivery), now expressed as
-the [Hangar contract](specs/hangar/spec.md), followed by focused design studies for
+[ship-builder brief](ship-builder.md#purpose-and-delivery), now expressed as
+the [Hangar contract](../specs/hangar/spec.md), followed by focused design studies for
 amendments revealed through play. Player fitting now belongs in scope: fixed slots,
 visible parts, mass-based directional engines and energy tradeoffs. Desktop is the
 builder acceptance target; mobile sizing/layout is deferred. Weapons are static;

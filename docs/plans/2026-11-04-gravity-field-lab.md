@@ -11,7 +11,7 @@ Status: approved 2026-11-04; spec work S1–S5 done; steps 1–2 implemented.
 - The owner can change the gravity values under investigation in the pane and
   copy one block that an agent applies to the game without interpretation.
 - Applying a copied proposal is the owner's explicit approval to change the
-  gravity values it names (the charter's gravity/friction approval rule). Nothing
+  gravity values it names (the gravity/friction approval rule in `AGENTS.md`). Nothing
   else in this plan changes gravity values.
 - Gravity's intent and behaviour are captured in one living spec, not in dated
   release sections.

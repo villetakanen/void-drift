@@ -44,7 +44,7 @@ This project is a Monorepo managed by `pnpm`:
 
 ## Documentation
 
-- [Rebuild Charter](./docs/rebuild-charter.md)
+- [Vision](./docs/vision.md)
 - [Architecture](./docs/architecture.md)
 - [Experience Design](./docs/design.md)
 - [Development and Verification](./docs/development.md)

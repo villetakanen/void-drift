@@ -8,9 +8,10 @@ The Hangar lets players assemble a ship from visible fittings, understand the
 tradeoffs, and feel those choices in flight. Its complete loop is choose a ship,
 fit it, inspect it, test it, and return to adjust it or start survival.
 
-The [owner-approved charter](../../rebuild-charter.md#next-phase--ship-builder-2026-10-30)
-sets the scope: free fitting in fixed mounts, desktop mouse and keyboard acceptance,
-and initially unranked custom survival. Mobile Hangar layout is deferred; existing
+The owner-approved 0.4.0 scope, recorded in the archived
+[rebuild charter](../../history/rebuild-charter.md#next-phase--ship-builder-2026-10-30),
+sets free fitting in fixed mounts, desktop mouse and keyboard acceptance, and
+initially unranked custom survival. Mobile Hangar layout is deferred; existing
 landscape flight controls remain supported. Weapons are active in fitted Test flight
 under the [weapons and salvage contract](../weapons-and-salvage.md), and remain static
 in custom survival. Buying parts, survival combat, mount authoring and flight tuning

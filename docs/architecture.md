@@ -1,7 +1,7 @@
 # Architecture
 
-Read for changes to structure, simulation, or data flow. Product scope belongs in
-[the charter](rebuild-charter.md); verification belongs in [development](development.md).
+Read for changes to structure, simulation, or data flow. Product intent belongs in
+[vision](vision.md); verification belongs in [development](development.md).
 
 ## Current implementation
 

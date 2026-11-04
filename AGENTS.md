@@ -28,7 +28,7 @@ Voice-led development of a procedural space survival game and its software facto
 
 ## Read on demand
 
-- Scope or priority: `docs/rebuild-charter.md`.
+- Scope or priority: the owner's latest decisions; intent in `docs/vision.md`, active work in `docs/plans/`.
 - Structure, simulation, data: `docs/architecture.md`.
 - New design work (a study, a feature's look or feel): `docs/design.md`.
 - UI/game visuals: `.agents/skills/shared-components/SKILL.md`; FX: `.agents/skills/fx-development/SKILL.md`.
