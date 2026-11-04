@@ -1,7 +1,6 @@
 import {
 	FX_INK,
 	FxSparks,
-	getPlanetInfluenceRadius,
 	initializePlanets,
 	paintArc,
 } from "@void-drift/core";
@@ -9,7 +8,7 @@ import { BUILD_FLIGHT_SCALE, drawBuild } from "./build-renderer";
 import { FlightFx } from "./gravity-fold-fx";
 import { drawSalvage } from "./salvage-renderer";
 import { starterLoadout } from "./schemas/loadout";
-import { GRAVITY_FLIGHT, Simulation, STEP, stockSettings } from "./simulation";
+import { Simulation, STEP, stockSettings, tunedWell } from "./simulation";
 
 /** Isolated diagnostic: real engines and collectors; extra entities are FX fixtures. */
 export class FxBench {
@@ -44,10 +43,7 @@ export class FxBench {
 			sim.star.mass = 0;
 			sim.star.powerMultiplier = 0;
 			const planet = initializePlanets(960, 540)[0];
-			planet.well = {
-				reach: getPlanetInfluenceRadius(planet),
-				strength: GRAVITY_FLIGHT.planetStrength,
-			};
+			planet.well = tunedWell(planet);
 			sim.planets.push(planet);
 			planet.orbitRadius = 0;
 			planet.orbitSpeed = 0;

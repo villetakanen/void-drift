@@ -1,6 +1,6 @@
 # Gravity field in the Lab instrument
 
-Status: approved 2026-11-04; spec work S1–S4 written, implementation not started.
+Status: approved 2026-11-04; spec work S1–S5 done; step 1 implemented.
 
 ## Acceptance contract
 
@@ -59,12 +59,24 @@ the real `Simulation`.
 	"field": {
 		"system": "game",
 		"orbits": "frozen",
-		"wells": [{ "label": "W1", "x": 1400, "y": 300, "reach": 260, "strength": 900, "curve": "inverse-square" }],
+		"wells": [
+			{
+				"label": "W1",
+				"x": 1400,
+				"y": 300,
+				"reach": 260,
+				"strength": 900,
+				"curve": "inverse-square"
+			}
+		],
 		"changes": { "planetStrength": 450, "sunMultiplier": 5 }
 	},
 	"vehicles": [
-		{ "label": "Close pass", "loadout": { "...": "game loadout" },
-		  "start": { "x": 460, "y": 540, "heading": -90, "speed": 300 } }
+		{
+			"label": "Close pass",
+			"loadout": { "...": "game loadout" },
+			"start": { "x": 460, "y": 540, "heading": -90, "speed": 300 }
+		}
 	]
 }
 ```

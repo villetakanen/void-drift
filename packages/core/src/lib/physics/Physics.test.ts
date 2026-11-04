@@ -168,6 +168,39 @@ describe("Planet gravity (mass-based influence)", () => {
 		expect(Math.abs(ship.vel.y)).toBeLessThan(0.01);
 	});
 
+	it("does not pull outside an explicit well's reach", () => {
+		const planet = makePlanet({
+			orbitCenter: new Vec2(600, 600),
+			orbitRadius: 0,
+			well: { reach: 150, strength: 600 },
+		});
+		const outside = makeShip(600 - 151, 600);
+		const inside = makeShip(600 - 149, 600);
+		for (const ship of [outside, inside])
+			updateShip(ship, noInput, 1 / 60, arenaSize, arenaSize, undefined, [
+				planet,
+			]);
+		expect(outside.vel).toEqual(new Vec2(0, 0));
+		expect(inside.vel.x).toBeGreaterThan(0);
+	});
+
+	it("pulls with the well's own curve", () => {
+		const [inverse, linear] = (["inverse-square", "linear"] as const).map(
+			(curve) => {
+				const ship = makeShip(600 - 50, 600);
+				updateShip(ship, noInput, 1 / 60, arenaSize, arenaSize, undefined, [
+					makePlanet({
+						orbitCenter: new Vec2(600, 600),
+						orbitRadius: 0,
+						well: { reach: 200, strength: 600, curve },
+					}),
+				]);
+				return ship.vel.x;
+			},
+		);
+		expect(inverse).toBeGreaterThan(linear);
+	});
+
 	it("should NOT pull ship outside influence radius", () => {
 		const planet = makePlanet({
 			pos: new Vec2(600, 600),

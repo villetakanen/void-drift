@@ -1,6 +1,7 @@
 import type { GameObject, Star, SunType } from "@void-drift/core";
 import { SUN_CONFIG, Vec2 } from "@void-drift/core";
 import type { DeathCause, GameState } from "./schemas/game-state";
+import { GRAVITY_TUNING } from "./tuning";
 
 export function checkDeath(
 	state: GameState,
@@ -57,13 +58,18 @@ export function getRandomSunType(): SunType {
 	return types[Math.floor(Math.random() * types.length)];
 }
 
-export function createStar(type: SunType, x: number, y: number): Star {
+export function createStar(
+	type: SunType,
+	x: number,
+	y: number,
+	reachFactor = GRAVITY_TUNING.sunReachFactor,
+): Star {
 	const config = SUN_CONFIG[type];
 	return {
 		type,
 		pos: new Vec2(x, y),
 		radius: config.radius,
-		influenceRadius: config.radius * 9, // Tuned for better feel
+		influenceRadius: config.radius * reachFactor,
 		mass: config.mass,
 		color: config.color,
 		glowColor: config.glowColor,

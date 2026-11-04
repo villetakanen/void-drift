@@ -25,7 +25,7 @@ here.
 
 - One G sun at (960, 540), created by `createStar` in
   `packages/mode-a/src/lib/game-loop.ts` from `SUN_CONFIG.G`
-  (`packages/core/src/lib/config.ts`). Its reach is its radius × 9.
+  (`packages/core/src/lib/config.ts`). Its reach is its radius × `sunReachFactor`.
 - Three planets from `SURVIVAL_CONFIG.PLANETS` (same file), built by
   `initializePlanets` (`packages/core/src/lib/physics/planets.ts`) on circular
   orbits round the sun. In play the flight seed rotates every orbit's starting
@@ -33,10 +33,10 @@ here.
   seed their salvage).
 - `Simulation` (`packages/mode-a/src/lib/simulation.ts`) applies the gravity
   tuning to these bodies in its constructor: sun mass × `sunMultiplier`, and each
-  planet gets an explicit well `{ reach, strength: planetStrength }`, validated by
-  `PlanetWellSchema` (`packages/core/src/lib/physics/Physics.ts`), where reach is
-  `getPlanetInfluenceRadius` of the planet before the well is set:
-  `clamp(√mass · 10, 2 · radius, 8 · radius)`.
+  planet gets an explicit well `{ reach, strength: planetStrength, curve }`,
+  validated by `PlanetWellSchema` (`packages/core/src/lib/physics/Physics.ts`),
+  where reach is `getPlanetInfluenceRadius` under the tuning's reach rule:
+  `clamp(√mass · massScale, minRadii · radius, maxRadii · radius)`.
 - Test flights (`settings.testFlight`) remove the planets, shrink the sun to
   radius 12 with its strength scaled by (12 / radius)², and place the ship 85
   outside the sun's reach. The reach is stored when the sun is created and is not
@@ -53,9 +53,9 @@ here.
 `updateShip` (same file) adds, per substep, the pull of:
 
 - the sun, when `sun.radius < distance < sun reach`, with the curve passed by the
-  caller (play passes `inverse-square`);
+  caller (play passes the tuning's `curve`);
 - each planet, when `planet.radius + ship.radius < distance < planet reach`, with
-  `inverse-square` when the planet has a well. Planets without a well use the
+  its well's `curve` (absent: `inverse-square`) when the planet has a well. Planets without a well use the
   legacy `mass / distance² · 1000` (studies only; play always sets wells).
 
 Pulls add as vectors. Gravity does not depend on the ship, its speed, its mass or
@@ -88,20 +88,32 @@ its engines.
 
 ### Tuning values
 
-Parsed by `GravityFlightSchema` (`Physics.ts`) into `GRAVITY_FLIGHT`
-(`simulation.ts`).
+Gameplay tuning lives in one versioned file, `packages/mode-a/src/lib/tuning.json`,
+one section per area, parsed at load by `TuningSchema` (`packages/mode-a/src/lib/tuning.ts`)
+into `TUNING`. This spec owns the `gravity` section, validated by
+`GravityTuningSchema` (`packages/mode-a/src/lib/schemas/gravity.ts`) and exported
+as `GRAVITY_TUNING`. The Lab usability plan
+(`docs/plans/2026-11-04-lab-usability.md`) adds per-ship sections to the same file.
 
-| Value              | Today | Range     | Meaning                                  |
-| ------------------ | ----- | --------- | ---------------------------------------- |
-| `sunMultiplier`    | 4     | 4–10      | sun strength = `SUN_CONFIG` mass × value |
-| `planetStrength`   | 600   | > 0       | strength of every planet's well          |
-| `engineSpeedScale` | 600   | > 0       | see "Engine taper" below                 |
+| Value            | Range                      | Meaning                                           |
+| ---------------- | -------------------------- | ------------------------------------------------- |
+| `sunMultiplier`  | 4–10                       | sun strength = `SUN_CONFIG` mass × value          |
+| `planetStrength` | > 0                        | strength of every planet's well                   |
+| `sunReachFactor` | > 0                        | sun reach = sun radius × value                    |
+| `planetReach`    | each > 0, min ≤ max        | `{ massScale, minRadii, maxRadii }`: planet reach |
+| `curve`          | `inverse-square`, `linear` | curve of the sun's and every planet's well        |
 
-Fixed in code, not tunable today: sun reach factor 9, planet reach rule,
-curve `inverse-square`, four substeps.
+The file holds the values in play; read it for them rather than copying them
+here. `applyGravityTuning` and `tunedWell` (`simulation.ts`) apply the section to
+bodies; `Simulation`, `createStar`'s default reach and the FX bench use them.
+`GRAVITY_FLIGHT` keeps its shape for existing consumers, taking its gravity values
+from the section; its `engineSpeedScale` is not gravity (see below).
 
-`planetStrength` 600 and `sunMultiplier` 4 are provisional and not yet reviewed
-for feel in flight.
+Still fixed in code: four substeps. `getPlanetInfluenceRadius` keeps a default
+reach rule for studies and Lab inspectors only.
+
+`planetStrength` and `sunMultiplier` are provisional and not yet reviewed for feel
+in flight.
 
 ### Engine taper (finding)
 
@@ -126,19 +138,8 @@ differ from the previous release (owner decision, 2026-11-04). Applying a
 proposal or editing values in code never changes it. The step belongs to the
 release procedure in `docs/development.md`.
 
-### Target: tuning as configuration
+### Target: injectable field
 
-- One versioned tuning file holds every tuned gameplay value in play, in one
-  section per area. This spec owns the `gravity` section; the Lab usability plan
-  (`docs/plans/2026-11-04-lab-usability.md`) adds per-ship sections (parts,
-  chassis mass, chassis-scoped ion) to the same file and command.
-- `GravityTuningSchema` in `packages/mode-a/src/lib/schemas/gravity.ts` validates
-  the `gravity` section: `sunMultiplier`, `planetStrength`, the sun reach factor,
-  the planet reach rule and the curve, each with its range. `GRAVITY_FLIGHT` reads
-  it. The gravity values now held in code move there: `GRAVITY_FLIGHT`
-  (`simulation.ts`), the sun reach factor 9 (`createStar`, `game-loop.ts`) and the
-  planet reach rule's 10, 2 and 8 (`getPlanetInfluenceRadius`, `Physics.ts`). The
-  legacy no-well formula stays in code for studies only.
 - With no sun (the instrument's `empty` system), `Simulation` applies no solar
   charge, no heat and no sun contact check.
 - `Simulation` accepts an optional field: gravity tuning, body set (`game` or
@@ -187,8 +188,7 @@ never become game bodies by this route.
   weaker near the border (`WellCurve.test.ts`).
 - [x] A planet with a well pulls inside its reach, and its reach is independent
   of size (`Physics.test.ts`, `simulation.test.ts`).
-- [ ] A planet with a well does not pull outside its reach (unit test; today's
-  outside-reach test uses a legacy planet without a well).
+- [x] A planet with a well does not pull outside its reach (`Physics.test.ts`).
 - [x] `updateShip`'s well can be escaped with thrust, on a fixture sun with the
   stock thrust path (`simulation.test.ts`); unpowered, a loadout ship coasts
   above the old speed cap with planets removed (same file).
@@ -196,9 +196,10 @@ never become game bodies by this route.
   game sun (unit tests).
 - [x] The same replay gives the same trajectory twice under one rules version
   (`simulation.test.ts`, "reproduces validated replay exactly").
-- [ ] Target: every gravity value in play is read from the tuning file (unit
-  tests: changing each tuning value, including the sun reach factor and the planet
-  reach rule, changes the corresponding pull or reach in a `Simulation`).
+- [x] Every gravity value in play is read from the tuning file: the simulation's
+  bodies equal those built from `GRAVITY_TUNING`, and changing each value changes
+  the bodies (`tuning.test.ts`).
+- [x] A planet with a well pulls with its own curve (`Physics.test.ts`).
 - [ ] Target: a default `Simulation` and one given the default field explicitly
   produce the same trajectory for the same replay (unit test).
 - [ ] Target: `tuning:apply` applies a valid proposal and refuses each invalid

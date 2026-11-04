@@ -1,4 +1,4 @@
-import type { GameObject } from "@void-drift/core";
+import type { GameObject, Planet, Star } from "@void-drift/core";
 import {
 	CONFIG,
 	ENGINE_CUTOFF,
@@ -28,6 +28,7 @@ import {
 	ReplaySchema,
 } from "./schemas/flight";
 import { createInitialGameState } from "./schemas/game-state";
+import type { GravityTuning } from "./schemas/gravity";
 import {
 	buildStats,
 	defaultLoadout,
@@ -35,14 +36,39 @@ import {
 	starterLoadout,
 } from "./schemas/loadout";
 import type { ShipProfileId } from "./schemas/ship-profile";
+import { GRAVITY_TUNING } from "./tuning";
 
 export const STEP = 1 / 60;
 export { CHALLENGE } from "../schemas/highscore";
 export const GRAVITY_FLIGHT = GravityFlightSchema.parse({
 	engineSpeedScale: 600,
-	sunMultiplier: 4,
-	planetStrength: 600,
+	sunMultiplier: GRAVITY_TUNING.sunMultiplier,
+	planetStrength: GRAVITY_TUNING.planetStrength,
 });
+/** A planet's well under the gravity tuning, from its size and mass. */
+export function tunedWell(
+	planet: Planet,
+	tuning: GravityTuning = GRAVITY_TUNING,
+) {
+	return PlanetWellSchema.parse({
+		reach: getPlanetInfluenceRadius(
+			{ radius: planet.radius, mass: planet.mass },
+			tuning.planetReach,
+		),
+		strength: tuning.planetStrength,
+		curve: tuning.curve,
+	});
+}
+/** Applies the gravity tuning to freshly created bodies. */
+export function applyGravityTuning(
+	star: Star,
+	planets: Planet[],
+	tuning: GravityTuning = GRAVITY_TUNING,
+) {
+	star.mass *= tuning.sunMultiplier;
+	star.influenceRadius = star.radius * tuning.sunReachFactor;
+	for (const planet of planets) planet.well = tunedWell(planet, tuning);
+}
 export const CHALLENGE_SEED = 2026;
 export function stockSettings(id: ShipProfileId = "fighter"): FlightSettings {
 	return FlightSettingsSchema.parse({
@@ -76,6 +102,7 @@ export class Simulation {
 	readonly planets = initializePlanets(960, 540);
 	readonly state = createInitialGameState();
 	readonly plume = new EnginePlume();
+	readonly gravity: GravityTuning = GRAVITY_TUNING;
 	readonly salvage?: SalvageSystem;
 	gravityCollectionRate = 0;
 	gravityFoldOpacity = 0;
@@ -99,13 +126,7 @@ export class Simulation {
 			: [];
 		if (this.settings.loadout)
 			this.ship.radius = buildCollisionRadius(this.settings.loadout);
-		this.star.mass *= GRAVITY_FLIGHT.sunMultiplier;
-		for (const planet of this.planets) {
-			planet.well = PlanetWellSchema.parse({
-				reach: getPlanetInfluenceRadius(planet),
-				strength: GRAVITY_FLIGHT.planetStrength,
-			});
-		}
+		applyGravityTuning(this.star, this.planets, this.gravity);
 		// Seed changes orbit phase, not flight tuning.
 		const phase = ((this.settings.seed % 360) / 180) * Math.PI;
 		for (const planet of this.planets) {
@@ -245,7 +266,7 @@ export class Simulation {
 					? { ...this.settings.profile, hullMultiplier: 1 }
 					: this.settings.profile,
 				{ drag: 0, speedLimit: null },
-				"inverse-square",
+				this.gravity.curve,
 				GRAVITY_FLIGHT.engineSpeedScale,
 				ENGINE_CUTOFF,
 			);

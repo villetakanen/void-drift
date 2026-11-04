@@ -69,6 +69,7 @@ export interface Star {
 export const PlanetWellSchema = z.object({
 	reach: z.number().finite().positive(),
 	strength: z.number().finite().positive(),
+	curve: z.enum(["linear", "inverse-square"]).optional(), // Absent: inverse-square.
 });
 
 export interface Planet {
@@ -102,15 +103,36 @@ export interface CollisionEventData {
 	impactSpeed?: number;
 }
 
-export function getPlanetInfluenceRadius(planet: {
-	radius: number;
-	mass: number;
-	well?: { reach: number; strength: number };
-}): number {
+/** Reach of a planet without an explicit well: clamp(sqrt(mass) * massScale, minRadii * r, maxRadii * r). */
+export const PlanetReachRuleSchema = z
+	.object({
+		massScale: z.number().finite().positive(),
+		minRadii: z.number().finite().positive(),
+		maxRadii: z.number().finite().positive(),
+	})
+	.refine((rule) => rule.minRadii <= rule.maxRadii, {
+		message: "minRadii must not exceed maxRadii",
+	});
+export type PlanetReachRule = z.infer<typeof PlanetReachRuleSchema>;
+/** Studies and Lab inspectors only; play passes the game's tuned rule. */
+const STUDY_PLANET_REACH: PlanetReachRule = {
+	massScale: 10,
+	minRadii: 2,
+	maxRadii: 8,
+};
+
+export function getPlanetInfluenceRadius(
+	planet: {
+		radius: number;
+		mass: number;
+		well?: { reach: number; strength: number };
+	},
+	rule: PlanetReachRule = STUDY_PLANET_REACH,
+): number {
 	if (planet.well) return planet.well.reach;
-	const massInfluence = Math.sqrt(planet.mass) * 10;
-	const maxInfluence = planet.radius * 8;
-	const minInfluence = planet.radius * 2;
+	const massInfluence = Math.sqrt(planet.mass) * rule.massScale;
+	const maxInfluence = planet.radius * rule.maxRadii;
+	const minInfluence = planet.radius * rule.minRadii;
 	return Math.max(minInfluence, Math.min(massInfluence, maxInfluence));
 }
 
@@ -360,7 +382,6 @@ export function updateShip(
 		const distSq = dx * dx + dy * dy;
 		const dist = Math.sqrt(distSq);
 
-		// Gravity influence is mass-based, capped at radius * 8
 		const influenceRadius = getPlanetInfluenceRadius(planet);
 
 		if (dist < influenceRadius && dist > planet.radius + ship.radius) {
@@ -369,7 +390,7 @@ export function updateShip(
 						dist,
 						planet.well.reach,
 						planet.well.strength,
-						"inverse-square",
+						planet.well.curve ?? "inverse-square",
 					)
 				: (planet.mass / distSq) * 1000;
 			const gravityX = (dx / dist) * strength;

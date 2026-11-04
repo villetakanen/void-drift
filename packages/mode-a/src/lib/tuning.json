@@ -1,0 +1,10 @@
+{
+	"version": 1,
+	"gravity": {
+		"sunMultiplier": 4,
+		"planetStrength": 600,
+		"sunReachFactor": 9,
+		"planetReach": { "massScale": 10, "minRadii": 2, "maxRadii": 8 },
+		"curve": "inverse-square"
+	}
+}

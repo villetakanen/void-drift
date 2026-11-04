@@ -138,14 +138,28 @@ documents without a field behave exactly as above.
 		"system": "game",
 		"orbits": "frozen",
 		"wells": [
-			{ "label": "W1", "x": 1400, "y": 300, "reach": 260, "strength": 900, "curve": "inverse-square" }
+			{
+				"label": "W1",
+				"x": 1400,
+				"y": 300,
+				"reach": 260,
+				"strength": 900,
+				"curve": "inverse-square"
+			}
 		],
 		"changes": { "planetStrength": 450 }
 	},
 	"vehicles": [
 		{
 			"label": "Close pass",
-			"loadout": { "version": 2, "chassis": "balanced", "side": "ion", "stabilizers": true, "hull": [null, null], "aft": ["plasma", "plasma"] },
+			"loadout": {
+				"version": 2,
+				"chassis": "balanced",
+				"side": "ion",
+				"stabilizers": true,
+				"hull": [null, null],
+				"aft": ["plasma", "plasma"]
+			},
 			"start": { "x": 460, "y": 540, "heading": -90, "speed": 300 }
 		}
 	]
