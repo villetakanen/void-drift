@@ -11,7 +11,9 @@ import {
 	updatePower,
 	updateShip,
 	Vec2,
+	wellAcceleration,
 } from "@void-drift/core";
+import { z } from "zod";
 import { applyBuildEngines, buildDrain, solarCharge } from "./build-flight";
 import { buildCollisionRadius, buildPlumeEmitters } from "./build-renderer";
 import { SHIP_PROFILE_BY_ID } from "./config";
@@ -28,7 +30,13 @@ import {
 	ReplaySchema,
 } from "./schemas/flight";
 import { createInitialGameState } from "./schemas/game-state";
-import type { GravityTuning } from "./schemas/gravity";
+import {
+	type GravityField,
+	GravityFieldSchema,
+	type GravityTuning,
+	GravityTuningSchema,
+	type LabWell,
+} from "./schemas/gravity";
 import {
 	buildStats,
 	defaultLoadout,
@@ -69,6 +77,37 @@ export function applyGravityTuning(
 	star.influenceRadius = star.radius * tuning.sunReachFactor;
 	for (const planet of planets) planet.well = tunedWell(planet, tuning);
 }
+/**
+ * Options beyond flight settings. `field` sets Lab flight conditions; the Lab
+ * usability plan adds a per-chassis tuning patch beside it.
+ */
+export const SimulationOptionsSchema = z
+	.object({ field: GravityFieldSchema.optional() })
+	.strict();
+export type SimulationOptions = z.input<typeof SimulationOptionsSchema>;
+/** Summed pull of Lab wells at a point; like a planet's, each stops at contact distance. */
+export function labWellPull(
+	wells: readonly LabWell[],
+	at: { x: number; y: number },
+	contactRadius: number,
+) {
+	const pull = { x: 0, y: 0 };
+	for (const well of wells) {
+		const dx = well.x - at.x;
+		const dy = well.y - at.y;
+		const distance = Math.hypot(dx, dy);
+		if (distance <= contactRadius) continue;
+		const strength = wellAcceleration(
+			distance,
+			well.reach,
+			well.strength,
+			well.curve,
+		);
+		pull.x += (dx / distance) * strength;
+		pull.y += (dy / distance) * strength;
+	}
+	return pull;
+}
 export const CHALLENGE_SEED = 2026;
 export function stockSettings(id: ShipProfileId = "fighter"): FlightSettings {
 	return FlightSettingsSchema.parse({
@@ -102,7 +141,10 @@ export class Simulation {
 	readonly planets = initializePlanets(960, 540);
 	readonly state = createInitialGameState();
 	readonly plume = new EnginePlume();
-	readonly gravity: GravityTuning = GRAVITY_TUNING;
+	readonly gravity: GravityTuning;
+	readonly field?: GravityField;
+	/** False in a field with system "empty": no sun pull, light, heat or contact. */
+	readonly hasSun: boolean;
 	readonly salvage?: SalvageSystem;
 	gravityCollectionRate = 0;
 	gravityFoldOpacity = 0;
@@ -119,8 +161,17 @@ export class Simulation {
 	ticks = 0;
 	wraps = 0;
 	private thrust = { left: false, right: false };
-	constructor(settings: unknown = stockSettings()) {
+	constructor(settings: unknown = stockSettings(), options: unknown = {}) {
 		this.settings = FlightSettingsSchema.parse(settings);
+		const { field } = SimulationOptionsSchema.parse(options);
+		if (field && this.settings.testFlight)
+			throw new Error("A field cannot be combined with a test flight");
+		this.field = field;
+		this.hasSun = field?.system !== "empty";
+		this.gravity = GravityTuningSchema.parse({
+			...GRAVITY_TUNING,
+			...field?.changes,
+		});
 		this.buildEmitters = this.settings.loadout
 			? buildPlumeEmitters(this.settings.loadout)
 			: [];
@@ -136,6 +187,7 @@ export class Simulation {
 				540 + Math.sin(planet.orbitAngle) * planet.orbitRadius,
 			);
 		}
+		if (field) this.applyField(field);
 		this.state.sunType = "G";
 		if (this.settings.loadout)
 			this.state.resources.power = buildStats(this.settings.loadout).capacity;
@@ -155,6 +207,45 @@ export class Simulation {
 					this.settings.ion,
 				);
 		}
+	}
+	private applyField(field: GravityField) {
+		if (field.system === "empty") this.planets.length = 0;
+		if (field.orbits === "frozen")
+			for (const planet of this.planets) planet.orbitSpeed = 0;
+		const start = field.start;
+		if (!start) return;
+		const heading = (start.heading * Math.PI) / 180;
+		this.ship.pos.set(start.x, start.y);
+		this.ship.rotation = heading;
+		this.ship.vel.set(
+			Math.cos(heading) * start.speed,
+			Math.sin(heading) * start.speed,
+		);
+		const inside = (x: number, y: number, radius: number) =>
+			Math.hypot(start.x - x, start.y - y) <= radius + this.ship.radius;
+		if (
+			this.hasSun &&
+			inside(this.star.pos.x, this.star.pos.y, this.star.radius)
+		)
+			throw new Error("start is inside the sun");
+		for (const planet of this.planets)
+			if (inside(planet.pos.x, planet.pos.y, planet.radius))
+				throw new Error("start is inside a planet");
+	}
+	private pullLabWells() {
+		const pull = labWellPull(
+			this.field?.wells ?? [],
+			this.ship.pos,
+			this.ship.radius,
+		);
+		this.ship.acc.x += pull.x;
+		this.ship.acc.y += pull.y;
+	}
+	/** Distance from the arena centre, where play's sun sits; infinite without a sun, so no heat or contact. */
+	private sunDistance() {
+		return this.hasSun
+			? Math.hypot(this.ship.pos.x - 960, this.ship.pos.y - 540)
+			: Infinity;
 	}
 	get engineFeedback() {
 		const build = this.settings.loadout;
@@ -195,10 +286,13 @@ export class Simulation {
 			let engineFraction = 1;
 			if (this.settings.loadout) {
 				const stats = buildStats(this.settings.loadout);
-				const distance = Math.hypot(
-					this.ship.pos.x - this.star.pos.x,
-					this.ship.pos.y - this.star.pos.y,
-				);
+				// Solar supply measures from the sun's position; heat and contact from the arena centre.
+				const distance = this.hasSun
+					? Math.hypot(
+							this.ship.pos.x - this.star.pos.x,
+							this.ship.pos.y - this.star.pos.y,
+						)
+					: Infinity;
 				const supplied =
 					this.state.resources.power +
 					(solarCharge(distance, this.star, stats.coils) - 3) * (STEP / 4);
@@ -250,6 +344,7 @@ export class Simulation {
 					this.settings.ion,
 				);
 			}
+			this.pullLabWells();
 			delivered += updateShip(
 				this.ship,
 				this.settings.loadout
@@ -258,7 +353,7 @@ export class Simulation {
 				STEP / 4,
 				1920,
 				1080,
-				this.star,
+				this.hasSun ? this.star : undefined,
 				this.planets,
 				this.state.resources,
 				undefined,
@@ -285,8 +380,7 @@ export class Simulation {
 				);
 			if (
 				!this.settings.testFlight &&
-				Math.hypot(this.ship.pos.x - 960, this.ship.pos.y - 540) <
-					this.star.radius + this.ship.radius
+				this.sunDistance() < this.star.radius + this.ship.radius
 			)
 				break;
 		}
@@ -323,7 +417,7 @@ export class Simulation {
 				this.engineOutput.left,
 				this.engineOutput.right,
 			);
-		const distance = Math.hypot(this.ship.pos.x - 960, this.ship.pos.y - 540);
+		const distance = this.sunDistance();
 		this.thrust.left = input.leftThruster;
 		this.thrust.right = input.rightThruster;
 		if (!this.settings.loadout)

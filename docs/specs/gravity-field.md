@@ -138,17 +138,34 @@ differ from the previous release (owner decision, 2026-11-04). Applying a
 proposal or editing values in code never changes it. The step belongs to the
 release procedure in `docs/development.md`.
 
-### Target: injectable field
+### Lab flight conditions (field)
 
-- With no sun (the instrument's `empty` system), `Simulation` applies no solar
-  charge, no heat and no sun contact check.
-- `Simulation` accepts an optional field: gravity tuning, body set (`game` or
-  `empty`), added wells, frozen orbits and ship start. Without one it builds the
-  bodies in play exactly as above. The same options object also carries an
-  optional per-chassis tuning patch, defined by the Lab usability plan; this spec
-  only requires that a field and a patch can be given together.
-- The Lab instrument's field mode (`docs/specs/lab-instrument.md`) runs this
-  `Simulation`; it never has its own gravity code.
+`new Simulation(settings, { field })`. Options are parsed by
+`SimulationOptionsSchema` (`simulation.ts`); the field by `GravityFieldSchema`
+(`packages/mode-a/src/lib/schemas/gravity.ts`). Without a field, or with the
+empty field `{}`, the simulation flies exactly as play. The Lab usability plan
+adds its per-chassis tuning patch to the same options object, beside `field`.
+
+- `system`: `game` (default) or `empty`. An empty system has no planets and no
+  sun: `hasSun` is false, the sun neither pulls nor charges, and there is no heat
+  and no sun contact.
+- `orbits`: `moving` (default) or `frozen`; frozen planets stay at their seeded
+  start positions.
+- `wells`: up to four Lab wells, each `LabWellSchema`: label, position inside the
+  arena, reach, strength and curve. A Lab well pulls by `wellAcceleration`
+  (`labWellPull`, `simulation.ts`), summed with every other pull, outside the
+  ship's radius, as a planet of radius zero would. It has no surface: nothing
+  collides with it, it ends no run, and gravity coils do not collect from it.
+- `changes`: any `GravityTuningSchema` values, laid over `GRAVITY_TUNING` and
+  validated with it; `Simulation.gravity` holds the result.
+- `start`: `ShipStartSchema` (position inside the arena, heading in degrees with
+  0 = +x and −90 = up, speed along the heading); without it the ship keeps the
+  game's spawn.
+
+The constructor throws when a start lies within contact distance of the sun or a
+planet, and when a field is combined with a test flight. The Lab instrument's
+field mode (`docs/specs/lab-instrument.md`) runs this `Simulation`; it has no
+gravity code of its own.
 
 ### Target: changing gravity values
 
@@ -192,16 +209,19 @@ never become game bodies by this route.
 - [x] `updateShip`'s well can be escaped with thrust, on a fixture sun with the
   stock thrust path (`simulation.test.ts`); unpowered, a loadout ship coasts
   above the old speed cap with planets removed (same file).
-- [ ] The close-pass and too-deep scenarios below pass on a `Simulation` with the
-  game sun (unit tests).
+- [x] The close-pass and too-deep scenarios below pass on a `Simulation` with the
+  game sun (`field.test.ts`).
 - [x] The same replay gives the same trajectory twice under one rules version
   (`simulation.test.ts`, "reproduces validated replay exactly").
 - [x] Every gravity value in play is read from the tuning file: the simulation's
   bodies equal those built from `GRAVITY_TUNING`, and changing each value changes
   the bodies (`tuning.test.ts`).
 - [x] A planet with a well pulls with its own curve (`Physics.test.ts`).
-- [ ] Target: a default `Simulation` and one given the default field explicitly
-  produce the same trajectory for the same replay (unit test).
+- [x] A default `Simulation` and one given the empty field produce the same
+  trajectory, idle and under thrust (`field.test.ts`).
+- [x] An empty system has no pull or heat; Lab wells pull only inside reach, sum,
+  and have no surface; frozen orbits hold; the start, changes and every
+  rejection above behave as described (`field.test.ts`).
 - [ ] Target: `tuning:apply` applies a valid proposal and refuses each invalid
   case listed above, leaving the tuning file unchanged (script tests).
 - [ ] Owner flight review of sun and planet feel, recorded here with date.
