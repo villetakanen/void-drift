@@ -165,6 +165,29 @@ export function engineEffectiveness(
 export const WellCurveSchema = z.enum(["linear", "inverse-square"]);
 export type WellCurve = z.infer<typeof WellCurveSchema>;
 
+/** Gravity constant of the mass well law (docs/specs/gravity-tuning.md). */
+export const MASS_WELL_G = 1000;
+
+/** A mass well's reach: a hard cut-off, `sizeMultiplier × mass`. */
+export function massWellReach(mass: number, sizeMultiplier: number): number {
+	return sizeMultiplier * mass;
+}
+
+/**
+ * The mass well law: semi-physical pull `G × mass / distance²` inside the
+ * reach, zero at and beyond it. The reach only cuts the pull off; it never
+ * changes the pull inside it.
+ */
+export function massWellAcceleration(
+	distance: number,
+	mass: number,
+	sizeMultiplier: number,
+): number {
+	if (distance <= 0 || distance >= massWellReach(mass, sizeMultiplier))
+		return 0;
+	return (MASS_WELL_G * mass) / (distance * distance);
+}
+
 /** Study comparison: both curves have acceleration strength / 2 at reach / 2. */
 export function wellAcceleration(
 	distance: number,

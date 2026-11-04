@@ -46,7 +46,7 @@ Each step is a local commit with its spec update and passing checks.
 3. **R3. Bench calculation.** `massWellAcceleration` and `MASS_WELL_G` in core;
    `apps/web/src/lib/gravity-tuning/`: the document schema, the four loadouts,
    and the flight (instrument burns and engines, well pull from
-   `massWellAcceleration`). Unit tests per gravity-tuning.md.
+   `massWellAcceleration`). Done 2026-11-04. Unit tests per gravity-tuning.md.
 4. **R4. Bench page.** `/lab/gravity-tuning` composed from the instrument's parts,
    the four settings in the pane, the draggable well; Lab nav entries "Gravity
    tuning" and "Ship tuning" (agree the nav and the instrument's renaming with the

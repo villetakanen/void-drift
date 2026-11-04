@@ -67,8 +67,11 @@ Every ship starts at the origin with heading 0 (+x) and velocity `startSpeed`
 along it, then flies the chosen burn through the instrument's calculation (the
 production `applyBuildEngines` per substep, four substeps a tick, supplied power)
 with the well's pull added to its velocity each substep before its position moves,
-as the game integrates gravity. With the well beyond reach of every path, a ship's
-path equals the instrument's path for the same burn at the same start.
+as the game integrates gravity. The bench calls the instrument's own `calculate`
+with its `Flight` option (`startSpeed`, `pull`; `apps/web/src/lib/instrument/calculate.ts`);
+`flyBench` (`apps/web/src/lib/gravity-tuning/flight.ts`) flies the four ships and
+samples each one's pull and distance to the well. With the well beyond reach of
+every path, a ship's path equals the instrument's path for the same burn.
 
 ### Settings
 
@@ -127,16 +130,18 @@ gravity-field.md; until then the bench changes no game value.
 
 ### Definition of Done
 
-- [ ] The document schema accepts the default document and rejects an unknown
-  key, a negative starting speed, a zero strength and a size multiplier above 5
-  (unit tests).
-- [ ] With the well out of reach of every path, each ship's path equals the
-  instrument's calculation of the same loadout on the same burn (unit test).
-- [ ] Inside reach the pull is `MASS_WELL_G × mass / distance²`; at and beyond
-  reach it is zero (unit test).
-- [ ] Doubling the size multiplier doubles the reach and leaves the pull inside
+- [x] The document schema accepts the default document and rejects an unknown
+  key, a negative starting speed, a zero strength, a size multiplier above 5 and
+  a burn outside B1–B3 (`gravity-tuning.test.ts`).
+- [x] With the well out of reach of every path, each ship's path equals the
+  instrument's calculation of the same loadout on the same burn, for all three
+  burns; a path that enters the reach differs (`gravity-tuning.test.ts`).
+- [x] Inside reach the pull is `MASS_WELL_G × mass / distance²`; at and beyond
+  reach, and within the ship's radius, it is zero (`MassWell.test.ts`,
+  `gravity-tuning.test.ts`).
+- [x] Doubling the size multiplier doubles the reach and leaves the pull inside
   the old reach unchanged; doubling the mass doubles the pull at every distance
-  inside reach (unit test).
+  inside reach (`MassWell.test.ts`).
 - [ ] `/lab/gravity-tuning` draws four paths, the well and three graphs; an
   edited setting redraws them and reaches the document; dragging the well moves
   it (browser tests).

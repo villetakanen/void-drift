@@ -20,11 +20,26 @@ export type Sample = {
 };
 
 /**
+ * How a flight starts and what else acts on it. The instrument flies from rest
+ * with nothing else; the Gravity tuning bench (docs/specs/gravity-tuning.md)
+ * adds a starting speed along +x and its well's pull.
+ */
+export type Flight = {
+	startSpeed?: number;
+	/** Acceleration at a point, added to the velocity each substep before the move. */
+	pull?: (x: number, y: number) => { x: number; y: number };
+};
+
+/**
  * Calculates one vehicle on a burn with the production engine function and the
  * vehicle's own part and ion values. Not included: gravity, power limits, and
  * changes to part mass or chassis values.
  */
-export function calculate(vehicle: InstrumentVehicle, burn: BurnId): Sample[] {
+export function calculate(
+	vehicle: InstrumentVehicle,
+	burn: BurnId,
+	flight: Flight = {},
+): Sample[] {
 	const { loadout, changes } = vehicle;
 	const parts = {
 		...PARTS,
@@ -34,7 +49,7 @@ export function calculate(vehicle: InstrumentVehicle, burn: BurnId): Sample[] {
 	const ion = IonSettingsSchema.parse({ ...ION_DEFAULTS, ...changes.ion });
 	const ship = {
 		pos: new Vec2(0, 0),
-		vel: new Vec2(0, 0),
+		vel: new Vec2(flight.startSpeed ?? 0, 0),
 		acc: new Vec2(0, 0),
 		rotation: 0,
 		radius: 16,
@@ -66,6 +81,11 @@ export function calculate(vehicle: InstrumentVehicle, burn: BurnId): Sample[] {
 				ion,
 				parts,
 			);
+			if (flight.pull) {
+				const g = flight.pull(ship.pos.x, ship.pos.y);
+				ship.vel.x += (g.x * DT) / 4;
+				ship.vel.y += (g.y * DT) / 4;
+			}
 			ship.pos.x += (ship.vel.x * DT) / 4;
 			ship.pos.y += (ship.vel.y * DT) / 4;
 		}
