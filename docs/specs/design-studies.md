@@ -52,15 +52,19 @@ requires separate authorization.
 
 **Flag `docs/design.md` changes prominently in part 04, before the slices, and in the
 chat handoff.** Changes to experience principles, non-goals, art direction or brand
-require the owner's decision. Other conclusions belong in their feature spec or code.
+require explicit agreement in the design conversation. Other conclusions belong in their feature spec or code.
 
 ### Current study presentation
 
-The page explains the design, alternatives, decisions and reasons for a teammate
-outside the conversation. Review questions and coordination belong in chat, with one
-focused invitation explaining what the response enables. Necessary control labels
-remain on the page. Historical conditions and check results are labeled and linked
-to their specific evidence.
+The deliverable is a design document for designers and agents. Explain what was
+studied, explored, learned and decided, with the reasons, evidence and remaining
+questions needed to continue the work. Synthesize the conversation into statements
+about the design. Requirements, hypotheses, observations and decisions should be
+recognizable from their substance and evidence. Attribute external sources when they
+support a claim; conversational speakers and approval exchanges belong in chat.
+Review questions, coordination and process evaluation also belong in chat or their
+separate evidence records. Necessary control labels remain on the page. Historical
+conditions and check results are labeled and linked to their specific evidence.
 
 The opening contains exactly one substantive numbered section 01 and an unfilled
 “02 / To be developed after 01”. It explains a concrete situation and the subject's
@@ -117,7 +121,7 @@ conclusion authorizes implementation.
 For every criterion record **Supported**, **Partial**, or **Unsupported**, with
 links to evidence and explicit gaps. Do not average ratings or infer human acceptance.
 Assess the study's reasoning and usefulness, not whether a future implementation has
-already passed its tests. Record the owner's judgment separately from the agent's
+already passed its tests. Record participant feedback separately from the evaluation’s evidence-based
 assessment. Planned checks are not completed evidence.
 
 

@@ -21,8 +21,9 @@ Create a cycle-specific slug; if reusing a URL is necessary, archive the old pag
 ## 01 / Develop the problem
 
 Synthesize supplied intent and relevant knowledge into a provisional purpose,
-principles, design tension and important unknowns. Distinguish designer statements,
-sourced knowledge and agent hypotheses naturally in the reasoning. Contribute reasoning
+principles, design tension and important unknowns. Express established intent as design requirements, proposed explanations as hypotheses,
+and observations with their supporting evidence. Synthesize discussion into design
+reasoning for the document’s readers; keep conversational attribution in chat. Contribute reasoning
 before asking focused questions about creative intent or boundaries. Unknown mechanics
 are investigation items, not homework the designer must finish before work can begin.
 

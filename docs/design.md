@@ -8,7 +8,7 @@ feature, or a choice between options that conflict. It is not needed for develop
 QA or planning. Exact values, component rules and behaviour belong in feature specs,
 preferably in code: see [where details live](#where-details-live).
 
-The owner decides what this document says. A design study proposes a change to it only
+Changes to these principles require explicit agreement in the design conversation. A design study proposes a change to it only
 in its part 04 (scope), flagged prominently; nothing else changes it.
 
 ## Intent
@@ -36,7 +36,7 @@ fidelity are judged by people playing; automated checks only establish that thin
 
 ## Camera and arena
 
-The reference is the owner's Star Control 2: automatic framing and zoom together with
+The reference is Star Control 2: automatic framing and zoom together with
 arena edge wrapping. Zoom jumps deliberately invite the player to reorient; effects in
 the world stay attached to the scene through a jump.
 
@@ -77,7 +77,7 @@ is drawn or studied.
    where a small ship is under 30 pixels long. A detail that reads only when enlarged
    is not part of the ship.
 7. **Judge character, not rendering.** A body that renders correctly can still pose
-   no one. The owner judges whether the ship is identifiable and has its feeling;
+   no one. Human design review judges whether the ship is identifiable and has its feeling;
    automated checks only establish that it draws.
 
 ## Brand

@@ -1,16 +1,16 @@
 # Voice-led development factory
 
 Status: implemented alpha gates; human experience review remains open. Created 2026-10-28.
-Authority: the owner's latest decisions. Origin: the archived
+Authority: the latest agreed project decisions. Origin: the archived
 [rebuild charter](../history/rebuild-charter.md).
 
 Loop 1 outcome and learning: [alpha retrospective](../factory-experiment-alpha.md).
-The owner gave positive overall experience feedback after release; detailed balance
+Post-release experience feedback was positive overall; detailed balance
 and physical-device performance assessments remain open.
 
 ## Context
 
-The owner develops through conversational speech transcripts and browser inspection. The factory must turn that input into traceable changes and trustworthy evidence without requiring manual IDE operation.
+Development uses conversational speech transcripts and browser inspection. The factory must turn that input into traceable changes and trustworthy evidence without requiring manual IDE operation.
 
 Historical files remain reference material; their unfinished items are not commitments. Existing code is evidence of implementation, not proof of intended behavior.
 

@@ -28,7 +28,7 @@ Voice-led development of a procedural space survival game and its software facto
 
 ## Read on demand
 
-- Scope or priority: the owner's latest decisions; intent in `docs/vision.md`, active work in `docs/plans/`.
+- Scope or priority: the latest agreed project decisions; intent in `docs/vision.md`, active work in `docs/plans/`.
 - Structure, simulation, data: `docs/architecture.md`.
 - New design work (a study, a feature's look or feel): `docs/design.md`.
 - UI/game visuals: `.agents/skills/shared-components/SKILL.md`; FX: `.agents/skills/fx-development/SKILL.md`.
@@ -38,7 +38,7 @@ Voice-led development of a procedural space survival game and its software facto
 
 ## Working method
 
-- Read only the context needed for the task; follow the owner's latest decisions.
+- Read only the context needed for the task; follow the latest agreed project decisions.
 - Translate conversational requests into a small, explicit acceptance contract.
 - Clarify consequential ambiguity; resolve routine implementation details autonomously.
 - Implement bounded changes, verify them, and present playable or inspectable evidence.
