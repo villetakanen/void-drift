@@ -42,10 +42,10 @@ test("mount layout editing, linked handoff, undo and invalid import", async ({
 	);
 });
 
-test("designer links mirrored mounts at a compact viewport", async ({
+test("designer links mirrored mounts at the narrowest supported viewport", async ({
 	page,
 }) => {
-	await page.setViewportSize({ width: 1180, height: 820 });
+	await page.setViewportSize({ width: 1280, height: 800 });
 	await page.goto("/lab/mount-planner");
 	await expect(page.locator("[data-ready=true]")).toBeVisible();
 	await page

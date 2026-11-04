@@ -123,7 +123,7 @@ Each task can land on its own.
   - mark `ship-lab-chassis-preview.md` as superseded or reconcile it
 - Test: every routed `/lab/*.astro` page (studies excluded) has a registry entry, and the
   reverse. Do not test titles or order.
-- Evidence: a desktop screenshot of `/lab` and a tablet-width read of the nav.
+- Evidence: a desktop screenshot of `/lab` and a read of the nav at 1280px.
 - **Done 2026-11-04.** Built as planned, with three differences:
   - `group` and `source` cover what `kind` would have said, so there is no `kind` field.
   - `/lab/buttons` stays a routable alias (`aliasOf`), not a redirect, because the
@@ -220,6 +220,6 @@ Each task can land on its own.
   proposal flow.
 - Production code and tests do not import from `components/studies/`. Tests check
   relations, not design values.
-- Keyboard and tablet touch support stay on every changed bench. The Lab is not a
-  phone surface; no task checks or fixes phone layout.
+- Keyboard support stays on every changed bench. The Lab targets 1280px and up;
+  no task checks or fixes narrower layout.
 - Each task updates its owning spec and records skipped device checks explicitly.

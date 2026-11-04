@@ -85,7 +85,7 @@ test("mount editor framing and view modes", async ({ page }, info) => {
 	await page.goto("/lab/mount-planner");
 	await expect(page.locator("[data-ready=true]")).toBeVisible();
 	await capture(page, info, "mount-planner-desktop");
-	await page.setViewportSize({ width: 1180, height: 820 });
+	await page.setViewportSize({ width: 1280, height: 800 });
 	await capture(page, info, "mount-planner-compact");
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	for (const mode of ["In-game", "Empty"]) {

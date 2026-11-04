@@ -25,7 +25,7 @@ fidelity are judged by people playing; automated checks only establish that thin
   Controls and instructions stay consistent with each other.
 - **Keyboard first, the phone kept.** Laptop and desktop keyboard play is the primary
   experience; landscape phone play with two simultaneous touch controls stays.
-  This is about play: the Lab is not a phone surface ([development](development.md#visual-review-and-experience)).
+  This is about play: the Lab targets screens 1280px wide and up ([development](development.md#visual-review-and-experience)).
 - **Ships are characters.** A player identifies each ship at a glance and feels
   something about it before flying it (see [ship drawing](#ship-drawing-fundamentals)).
 

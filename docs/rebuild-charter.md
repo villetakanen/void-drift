@@ -22,7 +22,7 @@ Firebase is the selected backend direction, reconfirmed by the owner on 2026-10-
 
 ## Development experience
 
-The default surface is conversation plus a browser showing the game and Lab. Build a separate developer dashboard only if use reveals a need. The Lab runs on desktop, laptop and tablet; phones are out of its scope (owner decision, 2026-11-04). Phone support is a play requirement only. The agent handles repository operations and answers branch, check, commit, push, and release questions from inspected evidence. A successful local build is not a release.
+The default surface is conversation plus a browser showing the game and Lab. Build a separate developer dashboard only if use reveals a need. The Lab targets large screens only (1280px wide and up); tablets and phones are out of its scope (owner decision, 2026-11-04). Phone support is a play requirement only. The agent handles repository operations and answers branch, check, commit, push, and release questions from inspected evidence. A successful local build is not a release.
 
 Agents may implement, repair, verify, and make local commits within the agreed scope. Human checkpoints assess product intent, visual quality, and game feel. Pushes and publishing require explicit authorization. Preserve pre-existing changes and identify their provenance when committing. Current rules still require approval for new npm dependencies and changes to gravity/friction.
 
