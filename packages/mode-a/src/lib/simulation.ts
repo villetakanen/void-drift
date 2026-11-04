@@ -7,6 +7,8 @@ import {
 	getPlanetInfluenceRadius,
 	initializePlanets,
 	PlanetWellSchema,
+	planetPull,
+	starPull,
 	updateHull,
 	updatePower,
 	updateShip,
@@ -160,6 +162,8 @@ export class Simulation {
 	private readonly engineTimers: Record<string, number> = {};
 	ticks = 0;
 	wraps = 0;
+	/** Planet contacts so far (one per contact substep). */
+	contacts = 0;
 	private thrust = { left: false, right: false };
 	constructor(settings: unknown = stockSettings(), options: unknown = {}) {
 		this.settings = FlightSettingsSchema.parse(settings);
@@ -242,6 +246,21 @@ export class Simulation {
 		this.ship.acc.y += pull.y;
 	}
 	/** Distance from the arena centre, where play's sun sits; infinite without a sun, so no heat or contact. */
+	/** Summed gravity acceleration at a point (default: the ship) from every body and Lab well. */
+	gravityAt(at: { x: number; y: number } = this.ship.pos) {
+		const pull = labWellPull(this.field?.wells ?? [], at, this.ship.radius);
+		if (this.hasSun) {
+			const sun = starPull(at, this.star, this.gravity.curve);
+			pull.x += sun.x;
+			pull.y += sun.y;
+		}
+		for (const planet of this.planets) {
+			const planetGravity = planetPull(at, this.ship.radius, planet);
+			pull.x += planetGravity.x;
+			pull.y += planetGravity.y;
+		}
+		return pull;
+	}
 	private sunDistance() {
 		return this.hasSun
 			? Math.hypot(this.ship.pos.x - 960, this.ship.pos.y - 540)
@@ -356,7 +375,9 @@ export class Simulation {
 				this.hasSun ? this.star : undefined,
 				this.planets,
 				this.state.resources,
-				undefined,
+				() => {
+					this.contacts++;
+				},
 				this.settings.loadout
 					? { ...this.settings.profile, hullMultiplier: 1 }
 					: this.settings.profile,

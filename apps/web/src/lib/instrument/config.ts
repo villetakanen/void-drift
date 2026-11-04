@@ -1,12 +1,16 @@
 import {
+	GravityFieldSchema,
 	ION_DEFAULTS,
 	IonSettingsSchema,
 	type Loadout,
 	LoadoutSchema,
 	PARTS,
+	type ShipStart,
+	ShipStartSchema,
 } from "@void-drift/mode-a";
 import { z } from "astro/zod";
-import { BURN_IDS } from "./burns";
+import { BURN_IDS, V2_BURN_IDS } from "./burns";
+import { fieldSimulation, type InstrumentField } from "./field";
 
 // The Lab instrument's configuration document: what an agent writes, the
 // designer adjusts in the pane, and is copied back. Each vehicle is a game
@@ -65,13 +69,67 @@ export const InstrumentVehicle = z
 	.strict();
 export type InstrumentVehicle = z.infer<typeof InstrumentVehicle>;
 
-export const InstrumentConfig = z
+const InstrumentConfigV1 = z
 	.object({
 		version: z.literal(1),
 		burn: z.enum(BURN_IDS).default("course"),
 		vehicles: z.array(InstrumentVehicle).min(1).max(6),
 	})
 	.strict();
+
+// Version 2 adds the coast burn and an optional field (lab-instrument.md,
+// "Gravity field mode"); a field vehicle may set its start.
+const InstrumentConfigV2 = z
+	.object({
+		version: z.literal(2),
+		burn: z.enum(V2_BURN_IDS).default("course"),
+		field: gameSchema<InstrumentField>(
+			GravityFieldSchema.omit({ start: true }),
+		).optional(),
+		vehicles: z
+			.array(
+				InstrumentVehicle.extend({
+					start: gameSchema<ShipStart>(ShipStartSchema).optional(),
+				}),
+			)
+			.min(1)
+			.max(6),
+	})
+	.strict();
+
+export const InstrumentConfig = z
+	.discriminatedUnion("version", [InstrumentConfigV1, InstrumentConfigV2])
+	.superRefine((doc, ctx) => {
+		if (doc.version !== 2) return;
+		doc.vehicles.forEach((vehicle, i) => {
+			if (!doc.field) {
+				if (vehicle.start)
+					ctx.addIssue({
+						code: z.ZodIssueCode.custom,
+						path: ["vehicles", i, "start"],
+						message: "A start needs a field",
+					});
+				return;
+			}
+			for (const family of ["fusion", "plasma"] as const)
+				if (vehicle.changes[family])
+					ctx.addIssue({
+						code: z.ZodIssueCode.custom,
+						path: ["vehicles", i, "changes", family],
+						message:
+							"Part changes in a field need the per-chassis tuning patch, not yet available",
+					});
+			try {
+				fieldSimulation(vehicle, doc.field);
+			} catch (error) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					path: ["vehicles", i, "start"],
+					message: error instanceof Error ? error.message : String(error),
+				});
+			}
+		});
+	});
 export type InstrumentConfig = z.infer<typeof InstrumentConfig>;
 
 export type Family = "ion" | "fusion" | "plasma";

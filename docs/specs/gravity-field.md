@@ -163,7 +163,12 @@ adds its per-chassis tuning patch to the same options object, beside `field`.
   game's spawn.
 
 The constructor throws when a start lies within contact distance of the sun or a
-planet, and when a field is combined with a test flight. The Lab instrument's
+planet, and when a field is combined with a test flight.
+
+`Simulation.gravityAt(point)` returns the summed pull at a point (default: the
+ship) from the same functions the step uses: `starPull` and `planetPull`
+(`Physics.ts`, called by `updateShip`) and `labWellPull`. `Simulation.contacts`
+counts planet contact substeps. The Lab instrument's
 field mode (`docs/specs/lab-instrument.md`) runs this `Simulation`; it has no
 gravity code of its own.
 

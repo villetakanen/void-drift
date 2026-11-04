@@ -8,8 +8,11 @@ export const TOTAL_TICKS = SECONDS * TICK_RATE;
 
 export type Input = "LR" | "L" | "R" | "–";
 export type Segment = { input: Input; ticks: number };
+/** Version 1 documents' burns. */
 export const BURN_IDS = ["course", "turn", "weave"] as const;
-export type BurnId = (typeof BURN_IDS)[number];
+/** Version 2 documents add coast: no input, for pure gravity paths. */
+export const V2_BURN_IDS = [...BURN_IDS, "coast"] as const;
+export type BurnId = (typeof V2_BURN_IDS)[number];
 
 const s = (seconds: number) => Math.round(seconds * TICK_RATE);
 
@@ -67,6 +70,11 @@ export const BURNS: Record<
 	course: { label: "B1", name: "Course", segments: course() },
 	turn: { label: "B2", name: "Turn", segments: turn() },
 	weave: { label: "B3", name: "Weave", segments: weave() },
+	coast: {
+		label: "B0",
+		name: "Coast",
+		segments: [{ input: "–", ticks: TOTAL_TICKS }],
+	},
 };
 
 /** Engine state at a tick, for the calculation. */

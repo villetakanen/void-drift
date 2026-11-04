@@ -37,7 +37,7 @@ study needs, record that as an amendment to this specification.
 			"label": "Plasma aft, more thrust",
 			"loadout": {
 				"version": 2,
-				"chassis": "balanced",
+				"chassis": "fighter",
 				"side": "ion",
 				"stabilizers": true,
 				"hull": [null, null],
@@ -77,8 +77,8 @@ function, with its own part and ion values, from rest at the origin. Speed,
 acceleration (differenced over 6 ticks) and turn acceleration derive from the
 samples. Not included: gravity, power limits, and changes to part mass or chassis
 values. A difference shown by the instrument may therefore not appear in flight.
-Target: documents with a `field` are calculated in flight conditions instead; see
-"Target: gravity field mode".
+Documents with a `field` are calculated in flight conditions instead; see
+"Gravity field mode".
 
 ### Views
 
@@ -122,9 +122,10 @@ between fitting all paths and a default scale (0.2 px/u) that pans by dragging.
 - Custom pane content: pass a `pane` snippet to `LabInstrument`; it receives the
   parsed document.
 
-### Target: gravity field mode
+### Gravity field mode
 
-Not implemented. Plan: [2026-11-04-gravity-field-lab.md](../plans/2026-11-04-gravity-field-lab.md).
+Document and calculation implemented, 2026-11-04. Views, pane editing and Copy
+proposal are targets, not yet implemented. Plan: [2026-11-04-gravity-field-lab.md](../plans/2026-11-04-gravity-field-lab.md).
 Gravity rules: [gravity-field.md](gravity-field.md).
 
 A version 2 document may carry a `field`. Version 1 documents and version 2
@@ -183,19 +184,28 @@ documents without a field behave exactly as above.
   game's spawn, at rest, facing up. A start on or inside a body's surface, or
   outside the arena, is rejected. `start` is allowed only with a `field`;
   documents without one still run from rest at the origin.
-- Burn `coast`: no input for 840 ticks. Version 2 documents may use it with or
-  without a field; version 1 keeps B1–B3. Field documents accept all four burns,
+- Burn `coast` (label B0): no input for 840 ticks. Version 2 documents
+  (`V2_BURN_IDS`, `burns.ts`) may use it with or without a field; version 1 keeps
+  B1–B3 (`BURN_IDS`). Field documents accept all four burns,
   so a path can combine gravity with thrust.
 
-Calculation: each vehicle runs in its own `Simulation` built from the field,
-with the production step, its power budget and its death checks. The vehicle's
-`changes` reach that `Simulation` as its per-chassis tuning patch, whose shape
-the Lab usability plan (`docs/plans/2026-11-04-lab-usability.md`) defines;
-part changes (`changes.fusion`, `changes.plasma`) therefore need that patch to
-reach `applyBuildEngines`. Samples add the gravity acceleration and the distance
-to the nearest game body's surface (Lab wells, having no surface, count by centre
-distance). Events are recorded per tick: each planet contact (the ship bounces
-and the run continues) and each arena wrap. The path ends at:
+Schema: `InstrumentConfig` (`config.ts`) is a union on `version`; version 2 takes
+the field through `GravityFieldSchema` without its `start`, and each vehicle's
+start through `ShipStartSchema` (both `packages/mode-a/src/lib/schemas/gravity.ts`).
+It also rejects a start without a field, part changes in a field vehicle, and a
+start the vehicle's `Simulation` refuses (inside the sun or a planet).
+
+Calculation: `calculateField` (`apps/web/src/lib/instrument/field.ts`) flies each
+vehicle in its own `Simulation` built from the field and the vehicle's start
+(`fieldSimulation`), with the production step, its power budget and its death
+checks, on the chosen burn. Ion changes reach it through the flight settings'
+`ion`. Part changes (`changes.fusion`, `changes.plasma`) need the per-chassis
+tuning patch the Lab usability plan (`docs/plans/2026-11-04-lab-usability.md`)
+defines; until it exists a field document refuses them. Each sample adds the
+gravity acceleration (`gx`, `gy`, from `Simulation.gravityAt`) and `surface`, the
+distance to the nearest game body's surface (Lab wells count by centre distance).
+Events are recorded per tick: each planet contact (the ship bounces and the run
+continues) and each arena wrap. The path ends at:
 
 - `star`, `hull` or `power`: the run ended with that death cause; sampling stops
   at that tick;
@@ -248,15 +258,21 @@ It is no longer a prerequisite for comparing this accepted Fiddler configuration
 - [x] An edited value updates the graphs and the document (browser test).
 - [x] Each reference page renders its components (browser test).
 - [x] Readability on the iPad is reviewed by a person and recorded (owner, 2026-11-01).
-- [ ] Target: version 1 documents parse and calculate unchanged under the
-  version 2 schema (unit test).
-- [ ] Target: a field vehicle's samples equal a `Simulation` built from the same
-  field and start, fed the same burn (unit test).
-- [ ] Target: the schema rejects a fifth Lab well, an out-of-range strength, an
-  unknown gravity change, a Lab well outside the arena, a start inside a body or
-  outside the arena, and a `start` without a `field` (unit tests).
-- [ ] Target: with two overlapping Lab wells, a sample's gravity acceleration is
-  the vector sum of each well's pull alone (unit test).
+- [x] Version 1 documents parse and calculate unchanged, and a version 2
+  document without a field calculates as version 1; coast is refused in
+  version 1 (`lab-instrument.test.ts`).
+- [x] A field vehicle's samples equal a `Simulation` built from the same field
+  and start, fed the same burn (`lab-instrument.test.ts`).
+- [x] The schema rejects a fifth Lab well, an out-of-range strength, an unknown
+  gravity change, a Lab well outside the arena, a start inside a body or outside
+  the arena, a `start` without a `field`, and part changes in a field
+  (`lab-instrument.test.ts`).
+- [x] With two overlapping Lab wells, the gravity acceleration is the vector sum
+  of each well's pull alone (`labWellPull`, which `Simulation.gravityAt` uses;
+  `field.test.ts`).
+- [x] Field runs end in `star` on a coast into the sun, `bound` inside a reach
+  and `free` outside every reach, and record planet contacts and wraps
+  (`lab-instrument.test.ts`).
 - [ ] Target: a field document shows bodies, reach rings and outcome marks, and
   an edited gravity value redraws paths and appears in the copied proposal
   (browser test).
@@ -311,12 +327,12 @@ Scenario: Target: tuning a planet well
   Then every path redraws
   And Copy proposal copies a block containing "planetStrength 600 → 450"
 
-Scenario: Target: an out-of-range Lab well
+Scenario: An out-of-range Lab well
   Given a field document whose Lab well has a negative strength
   When the instrument receives it
   Then it lists the schema's issues instead of drawing
 
-Scenario: Target: a start inside the sun
+Scenario: A start inside the sun
   Given a field document with system "game" and a vehicle starting at the sun's centre
   When the instrument receives it
   Then it lists the issue instead of drawing

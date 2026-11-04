@@ -270,6 +270,50 @@ export function applyPlanetCollisionDamage(resources: Resources): void {
 	resources.hull = Math.max(0, resources.hull);
 }
 
+/** A sun's pull at a point: inside its reach and outside its surface. */
+export function starPull(
+	at: { x: number; y: number },
+	star: Star,
+	curve: WellCurve,
+): Vec2 {
+	const distVec = star.pos.clone().sub(new Vec2(at.x, at.y));
+	const dist = distVec.mag();
+	if (!(dist < star.influenceRadius && dist > star.radius))
+		return new Vec2(0, 0);
+	distVec.normalize();
+	return distVec.mult(
+		wellAcceleration(dist, star.influenceRadius, star.mass, curve),
+	);
+}
+
+/** A planet's pull at a point: inside its reach and outside contact distance. */
+export function planetPull(
+	at: { x: number; y: number },
+	shipRadius: number,
+	planet: Planet,
+): { x: number; y: number } {
+	const dx = planet.pos.x - at.x;
+	const dy = planet.pos.y - at.y;
+	const distSq = dx * dx + dy * dy;
+	const dist = Math.sqrt(distSq);
+	if (
+		!(
+			dist < getPlanetInfluenceRadius(planet) &&
+			dist > planet.radius + shipRadius
+		)
+	)
+		return { x: 0, y: 0 };
+	const strength = planet.well
+		? wellAcceleration(
+				dist,
+				planet.well.reach,
+				planet.well.strength,
+				planet.well.curve ?? "inverse-square",
+			)
+		: (planet.mass / distSq) * 1000;
+	return { x: (dx / dist) * strength, y: (dy / dist) * strength };
+}
+
 export function updateShip(
 	ship: GameObject,
 	input: InputState,
@@ -352,25 +396,7 @@ export function updateShip(
 	}
 
 	// 2. Gravity Well (Star)
-	// Apply force if within influence radius
-	if (star) {
-		const distVec = star.pos.clone().sub(ship.pos);
-		const dist = distVec.mag();
-
-		if (dist < star.influenceRadius && dist > star.radius) {
-			// Normalize direction
-			distVec.normalize();
-
-			const strength = wellAcceleration(
-				dist,
-				star.influenceRadius,
-				star.mass,
-				wellCurve,
-			);
-
-			ship.acc.add(distVec.mult(strength));
-		}
-	}
+	if (star) ship.acc.add(starPull(ship.pos, star, wellCurve));
 
 	// 3. Planet Interaction (Gravity + Collision)
 	for (const planet of planets) {
@@ -382,22 +408,9 @@ export function updateShip(
 		const distSq = dx * dx + dy * dy;
 		const dist = Math.sqrt(distSq);
 
-		const influenceRadius = getPlanetInfluenceRadius(planet);
-
-		if (dist < influenceRadius && dist > planet.radius + ship.radius) {
-			const strength = planet.well
-				? wellAcceleration(
-						dist,
-						planet.well.reach,
-						planet.well.strength,
-						planet.well.curve ?? "inverse-square",
-					)
-				: (planet.mass / distSq) * 1000;
-			const gravityX = (dx / dist) * strength;
-			const gravityY = (dy / dist) * strength;
-			ship.acc.x += gravityX;
-			ship.acc.y += gravityY;
-		}
+		const gravity = planetPull(ship.pos, ship.radius, planet);
+		ship.acc.x += gravity.x;
+		ship.acc.y += gravity.y;
 
 		// Collision (Elastic Bounce)
 		const minDist = planet.radius + ship.radius;
