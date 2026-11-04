@@ -128,10 +128,9 @@ between fitting all paths and a default scale (0.2 px/u) that pans by dragging.
 
 > Ship tuning and gravity tuning are separate benches (owner decision,
 > 2026-11-04): ships are tuned without gravity, and gravity is tuned with given
-> ships in [gravity-tuning.md](gravity-tuning.md). This mode mixed the two and is
-> being removed: it is still in the code until plan step R1 removes it, after
-> which version 1 is the instrument's only document. Kept as the record of what
-> was built.
+> ships in [gravity-tuning.md](gravity-tuning.md). This mode mixed the two and
+> was removed in plan step R1 (2026-11-04); version 1 is again the instrument's
+> only document. Kept as the record of what was built.
 
 Document, calculation, views, field editing and Copy proposal implemented,
 2026-11-04. Pull shading is a target, not yet implemented. Plan: [2026-11-04-gravity-field-lab.md](../plans/2026-11-04-gravity-field-lab.md).
@@ -302,7 +301,7 @@ It is no longer a prerequisite for comparing this accepted Fiddler configuration
 - [x] An edited value updates the graphs and the document (browser test).
 - [x] Each reference page renders its components (browser test).
 - [x] Readability on the iPad is reviewed by a person and recorded (owner, 2026-11-01).
-#### [DEPRECATED 2026-11-04] Field mode (removed by plan step R1)
+#### [DEPRECATED 2026-11-04] Field mode (removed in plan step R1)
 
 - [x] Version 1 documents parse and calculate unchanged, and a version 2
   document without a field calculates as version 1; coast is refused in

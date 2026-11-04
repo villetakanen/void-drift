@@ -191,10 +191,10 @@ gravity code of its own.
 
 ### [DEPRECATED 2026-11-04] Changing gravity values
 
-> The proposal below came from the instrument's field mode and goes with it
-> (plan step R2). The `pnpm tuning:apply` script and its area registry stay for
-> the ship area; how Gravity tuning's values reach the game is defined when
-> planets adopt reach from mass. Still in the code until R2.
+> The proposal below came from the instrument's field mode and was removed with
+> it in plan step R1 (2026-11-04). The `pnpm tuning:apply` script and its area
+> registry stay (no areas yet) for the ship area; how Gravity tuning's values
+> reach the game is defined when planets adopt reach from mass.
 
 Gravity values change only by applying an owner-supplied proposal. The owner
 copies it from the Lab instrument's pane (Copy proposal, enabled once a field

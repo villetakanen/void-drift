@@ -1,48 +1,24 @@
 <script lang="ts">
 import "@void-drift/core/styles/buttons.css";
 import {
-	GRAVITY_TUNING,
-	type LabWell,
-	type ShipStart,
-} from "@void-drift/mode-a";
-import {
-	editDocument,
 	type Family,
 	familiesOf,
-	GRAVITY_PARAMETERS,
-	gravityChange,
-	gravityProposal,
-	gravityStock,
 	InstrumentConfig,
-	type InstrumentField,
 	PARAMETERS,
 	serialize,
-	setGravityChange,
 	stockValue,
 	TRACK_COLORS,
 } from "../../../lib/instrument";
-import Toggle from "../../inputs/Toggle.svelte";
 
 // The pane's default content (lab-instrument study, 02.2–02.3): each vehicle's
 // values under investigation, then the configuration document to copy back or
-// to load from an agent. A value outside its schema range is refused. A
-// version 2 document also edits its gravity field (lab-instrument.md, "Gravity
-// field mode"): system, orbits, gravity values, Lab wells and vehicle starts.
+// to load from an agent. A value outside its schema range is refused.
 let { config = $bindable() }: { config: InstrumentConfig } = $props();
 
 let copied = $state(false);
 let draft = $state("");
 let loadError = $state("");
 const text = $derived(serialize($state.snapshot(config)));
-// The block an agent applies with `pnpm tuning:apply gravity`; null without gravity changes.
-const proposal = $derived(gravityProposal($state.snapshot(config)));
-let proposalCopied = $state(false);
-async function copyProposal() {
-	if (!proposal) return;
-	await navigator.clipboard.writeText(proposal);
-	proposalCopied = true;
-	setTimeout(() => (proposalCopied = false), 1500);
-}
 
 function current(i: number, family: Family, key: string): number | undefined {
 	const group = config.vehicles[i].changes[family] as
@@ -69,78 +45,6 @@ function setValue(i: number, family: Family, key: string, raw: string) {
 	const parsed = InstrumentConfig.safeParse(plain);
 	if (parsed.success) config = parsed.data;
 	return parsed.success;
-}
-// Field edits go through the schema; a refused edit says why.
-let fieldError = $state("");
-const MAX_WELLS = 4;
-const SPAWN: ShipStart = { x: 460, y: 540, heading: -90, speed: 0 };
-const WELL_KEYS = [
-	{ key: "x", label: "X", unit: "u" },
-	{ key: "y", label: "Y", unit: "u" },
-	{ key: "reach", label: "Reach", unit: "u" },
-	{ key: "strength", label: "Strength", unit: "u/s²" },
-] as const;
-const START_KEYS = [
-	{ key: "x", label: "X", unit: "u" },
-	{ key: "y", label: "Y", unit: "u" },
-	{ key: "heading", label: "Heading", unit: "° (0 = +x, −90 = up)" },
-	{ key: "speed", label: "Speed", unit: "u/s" },
-] as const;
-function editField(
-	change: (
-		field: InstrumentField,
-		draft: Extract<InstrumentConfig, { version: 2 }>,
-	) => void,
-) {
-	const result = editDocument($state.snapshot(config), (draft) => {
-		if (draft.version === 2 && draft.field) change(draft.field, draft);
-	});
-	if (result.ok) {
-		config = result.doc;
-		fieldError = "";
-	} else fieldError = result.message;
-	return result.ok;
-}
-function addField() {
-	const parsed = InstrumentConfig.safeParse({
-		...$state.snapshot(config),
-		version: 2,
-		field: {},
-	});
-	if (parsed.success) {
-		config = parsed.data;
-		fieldError = "";
-	} else
-		fieldError = parsed.error.issues.map((issue) => issue.message).join("; ");
-}
-function addWell(field: InstrumentField) {
-	const used = new Set(field.wells.map((w) => w.label));
-	let n = 1;
-	while (used.has(`W${n}`)) n++;
-	editField((f) => {
-		f.wells.push({
-			label: `W${n}`,
-			x: 1600,
-			y: 300,
-			reach: 200,
-			strength: 600,
-			curve: "inverse-square",
-		});
-	});
-}
-/** Number input change: apply, or put the shown value back when refused. */
-function onNumber(
-	e: Event & { currentTarget: HTMLInputElement },
-	shown: number,
-	apply: (value: number | undefined) => boolean,
-) {
-	const raw = e.currentTarget.value;
-	const value = raw === "" ? undefined : Number(raw);
-	if (value !== undefined && !Number.isFinite(value)) {
-		e.currentTarget.value = String(shown);
-		return;
-	}
-	if (!apply(value)) e.currentTarget.value = String(shown);
 }
 async function copy() {
 	await navigator.clipboard.writeText(text);
@@ -213,252 +117,11 @@ function load() {
 	{/each}
 </section>
 
-<section aria-labelledby="pane-field">
-	<h4 id="pane-field">Gravity field</h4>
-	{#if config.version === 2 && config.field}
-		{@const field = config.field}
-		<div class="toggles">
-			<Toggle
-				compact
-				label="System"
-				options={["game", "empty"]}
-				bind:value={
-					() => field.system,
-					(v) =>
-	editField((f) => {
-		f.system = v as InstrumentField["system"];
-	})
-				}
-			/>
-			<Toggle
-				compact
-				label="Orbits"
-				options={["moving", "frozen"]}
-				bind:value={
-					() => field.orbits,
-					(v) =>
-	editField((f) => {
-		f.orbits = v as InstrumentField["orbits"];
-	})
-				}
-			/>
-		</div>
-		<fieldset>
-			<legend>Gravity values</legend>
-			{#each GRAVITY_PARAMETERS as param}
-				{@const value = gravityChange(field.changes, param.key)}
-				{@const stock = gravityStock(param.key)}
-				{@const id = `g-${param.key.replace(".", "-")}`}
-				<div class="param" class:changed={value !== undefined}>
-					<label for={id}>{param.label}</label>
-					<input
-						{id}
-						type="number"
-						step="any"
-						value={value ?? stock}
-						onchange={(e) =>
-							onNumber(e, value ?? stock, (v) =>
-								editField((f) => setGravityChange(f.changes, param.key, v)),
-							)}
-					>
-					{#if value !== undefined}
-						<button
-							type="button"
-							class="reset"
-							aria-label={`Reset ${param.label} to ${stock}`}
-							onclick={() =>
-								editField((f) =>
-									setGravityChange(f.changes, param.key, undefined),
-								)}
-						>
-							↺
-						</button>
-					{/if}
-					<span class="unit">
-						{param.unit}{value !== undefined ? ` · game ${stock}` : ""}
-					</span>
-				</div>
-			{/each}
-			<div
-				class="param"
-				class:changed={field.changes.curve !== undefined &&
-					field.changes.curve !== GRAVITY_TUNING.curve}
-			>
-				<Toggle
-					compact
-					label="Well curve"
-					options={["inverse-square", "linear"]}
-					bind:value={
-						() => field.changes.curve ?? GRAVITY_TUNING.curve,
-						(v) =>
-	editField((f) => {
-		if (v === GRAVITY_TUNING.curve) delete f.changes.curve;
-		else f.changes.curve = v as LabWell["curve"];
-	})
-					}
-				/>
-				<span class="unit"
-					>curve of the sun and planets · game {GRAVITY_TUNING.curve}</span
-				>
-			</div>
-		</fieldset>
-		{#each field.wells as well, w}
-			<fieldset>
-				<legend>Lab well {well.label}</legend>
-				{#each WELL_KEYS as param}
-					{@const id = `w-${w}-${param.key}`}
-					<div class="param">
-						<label for={id}>{param.label}</label>
-						<input
-							{id}
-							type="number"
-							step="any"
-							value={well[param.key]}
-							onchange={(e) =>
-								onNumber(
-									e,
-									well[param.key],
-									(v) =>
-										v !== undefined &&
-										editField((f) => {
-											f.wells[w][param.key] = v;
-										}),
-								)}
-						>
-						<span></span>
-						<span class="unit">{param.unit}</span>
-					</div>
-				{/each}
-				<div class="param">
-					<Toggle
-						compact
-						label={`${well.label} curve`}
-						options={["inverse-square", "linear"]}
-						bind:value={
-							() => well.curve,
-							(v) =>
-	editField((f) => {
-		f.wells[w].curve = v as LabWell["curve"];
-	})
-						}
-					/>
-				</div>
-				<button
-					type="button"
-					class="btn btn-ghost"
-					onclick={() => editField((f) => void f.wells.splice(w, 1))}
-				>
-					Remove {well.label}
-				</button>
-			</fieldset>
-		{/each}
-		<button
-			type="button"
-			class="btn btn-ghost"
-			disabled={field.wells.length >= MAX_WELLS}
-			onclick={() => addWell(field)}
-		>
-			Add Lab well
-		</button>
-		{#each config.vehicles as vehicle, i}
-			{@const start = "start" in vehicle ? vehicle.start : undefined}
-			<fieldset>
-				<legend>
-					<i style={`background:${TRACK_COLORS[i]}`}></i>{vehicle.label}
-					start
-				</legend>
-				{#if start}
-					{#each START_KEYS as param}
-						{@const id = `s-${i}-${param.key}`}
-						<div class="param changed">
-							<label for={id}>{param.label}</label>
-							<input
-								{id}
-								type="number"
-								step="any"
-								value={start[param.key]}
-								onchange={(e) =>
-									onNumber(
-										e,
-										start[param.key],
-										(v) =>
-											v !== undefined &&
-											editField((_, d) => {
-												const s = d.vehicles[i].start;
-												if (s) s[param.key] = v;
-											}),
-									)}
-							>
-							<span></span>
-							<span class="unit">{param.unit}</span>
-						</div>
-					{/each}
-					<button
-						type="button"
-						class="btn btn-ghost"
-						onclick={() =>
-							editField((_, d) => {
-								delete d.vehicles[i].start;
-							})}
-					>
-						Use the game's spawn
-					</button>
-				{:else}
-					<p class="unit">The game's spawn, at rest, facing up.</p>
-					<button
-						type="button"
-						class="btn btn-ghost"
-						onclick={() =>
-							editField((_, d) => {
-								d.vehicles[i].start = { ...SPAWN };
-							})}
-					>
-						Set a start
-					</button>
-				{/if}
-			</fieldset>
-		{/each}
-	{:else}
-		<p class="unit">
-			Flies the vehicles in the game's sun and planets, with Lab wells and
-			starts of their own.
-		</p>
-		<button type="button" class="btn btn-ghost" onclick={addField}>
-			Add a gravity field
-		</button>
-	{/if}
-	{#if fieldError}
-		<p class="error" role="alert">{fieldError}</p>
-	{/if}
-</section>
-
 <section aria-labelledby="pane-document">
 	<h4 id="pane-document">Document</h4>
-	<div class="copies">
-		<button type="button" class="btn btn-ghost" onclick={copy}>
-			{copied ? "Copied" : "Copy JSON"}
-		</button>
-		{#if config.version === 2 && config.field}
-			<button
-				type="button"
-				class="btn btn-ghost"
-				onclick={copyProposal}
-				disabled={!proposal}
-				title={proposal
-					? "Copies the gravity changes for an agent to apply to the game"
-					: "Change a gravity value to make a proposal"}
-			>
-				{proposalCopied ? "Copied" : "Copy proposal"}
-			</button>
-		{/if}
-	</div>
-	{#if proposal}
-		<p class="unit">
-			Copy proposal hands the gravity changes to an agent, who applies them to
-			the game with <code>pnpm tuning:apply gravity</code>. Lab wells and starts
-			stay in the Lab.
-		</p>
-	{/if}
+	<button type="button" class="btn btn-ghost" onclick={copy}>
+		{copied ? "Copied" : "Copy JSON"}
+	</button>
 	<pre>{text}</pre>
 	<details>
 		<summary>Load a document</summary>
@@ -498,16 +161,6 @@ fieldset {
 	margin: 0 0 var(--spacing-md);
 	padding: 0;
 	border: 0;
-}
-.copies {
-	display: flex;
-	gap: var(--spacing-sm);
-}
-.toggles {
-	display: flex;
-	flex-wrap: wrap;
-	gap: var(--spacing-sm);
-	margin-bottom: var(--spacing-md);
 }
 legend {
 	padding: 0;

@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import { initializePlanets } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { createStar } from "./game-loop";
@@ -74,5 +75,19 @@ describe("gravity tuning", () => {
 		expect(
 			GravityTuningSchema.safeParse({ ...GRAVITY_TUNING, drag: 1 }).success,
 		).toBe(false);
+	});
+});
+
+describe("pnpm tuning:apply", () => {
+	it("refuses an area it does not know, writing nothing", () => {
+		const run = spawnSync(
+			"node",
+			["scripts/tuning-apply.mjs", "gravity", "x"],
+			{
+				encoding: "utf8",
+			},
+		);
+		expect(run.status).toBe(2);
+		expect(run.stderr).toMatch(/^Usage: pnpm tuning:apply/);
 	});
 });

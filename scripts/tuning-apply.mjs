@@ -1,6 +1,6 @@
 // pnpm tuning:apply <area> <file>: applies an owner-supplied proposal to one
 // section of the versioned tuning file (packages/mode-a/src/lib/tuning.json).
-// Spec: docs/specs/gravity-field.md, "Changing gravity values". Each area's
+// Spec: docs/specs/gravity-field.md. Each area's
 // checks live in TypeScript beside its schemas, loaded here through Vite.
 // Exit codes: 0 applied, 1 refused (nothing written), 2 usage.
 import { readFileSync, writeFileSync } from "node:fs";
@@ -14,17 +14,16 @@ const tuningFile = resolve(
 	root,
 	process.env.VOID_DRIFT_TUNING_FILE ?? "packages/mode-a/src/lib/tuning.json",
 );
-const AREAS = {
-	gravity: {
-		module: "/apps/web/src/lib/instrument/proposal.ts",
-		apply: "applyGravitySection",
-	},
-};
+// Each area: the TypeScript module and export that reads a proposal against the
+// tuning file. None yet: the instrument's gravity proposal was removed with its
+// field mode; `ship` comes with the Lab usability plan, and gravity again when
+// planets adopt reach from mass (gravity-field.md).
+const AREAS = {};
 
 const [area, file] = process.argv.slice(2);
 if (!AREAS[area] || !file) {
 	console.error(
-		`Usage: pnpm tuning:apply <area> <proposal file>; areas: ${Object.keys(AREAS).join(", ")}`,
+		`Usage: pnpm tuning:apply <area> <proposal file>; areas: ${Object.keys(AREAS).join(", ") || "none yet"}`,
 	);
 	process.exit(2);
 }

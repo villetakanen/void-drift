@@ -1,4 +1,3 @@
-import { FIELD_DOCUMENT } from "../../apps/web/src/lib/instrument/starter";
 import { expect, test } from "../helpers/local-browser";
 
 // Contract: docs/specs/lab-instrument.md.
@@ -70,13 +69,12 @@ test("each reference page renders its components", async ({ page }) => {
 	await page.goto("/lab/graphs");
 	await expect(
 		page.getByRole("img", { name: /^Plan view of every path/ }),
-	).toHaveCount(2);
-	await expect(page.locator(".graph")).toHaveCount(4);
-	await expect(page.locator(".reach.lab")).toHaveCount(2);
+	).toBeVisible();
+	await expect(page.locator(".graph")).toHaveCount(2);
 
 	await page.goto("/lab/instrument-parts");
 	await expect(page.getByRole("radiogroup", { name: "Burn" })).toBeVisible();
-	await expect(page.getByRole("list", { name: "Vehicles" })).toHaveCount(3);
+	await expect(page.getByRole("list", { name: "Vehicles" })).toHaveCount(2);
 	await page.getByRole("button", { name: "Open values" }).click();
 	await expect(
 		page.getByText("Pane content, filled by the host."),
@@ -84,65 +82,4 @@ test("each reference page renders its components", async ({ page }) => {
 
 	await page.goto("/lab/surfaces");
 	await expect(page.locator(".display").first()).toBeVisible();
-});
-
-test("a field document draws bodies, outcomes and field graphs", async ({
-	page,
-}) => {
-	await page.goto("/lab/instrument");
-	await expect(page.locator(".graph")).toHaveCount(3);
-	await page.getByRole("button", { name: "Open values" }).click();
-	await page.getByText("Load a document").click();
-	await page
-		.getByRole("textbox", { name: "Configuration document to load" })
-		.fill(JSON.stringify(FIELD_DOCUMENT));
-	await page.getByRole("button", { name: "Load", exact: true }).click();
-	await page.keyboard.press("Escape");
-	const vehicles = page.getByRole("list", { name: "Vehicles" });
-	await expect(vehicles.getByRole("listitem")).toHaveCount(
-		FIELD_DOCUMENT.vehicles.length,
-	);
-	await expect(vehicles.locator(".outcome")).toHaveCount(
-		FIELD_DOCUMENT.vehicles.length,
-	);
-	const heads = page.locator(".graph .head .name");
-	await expect(heads).toHaveText(["Speed", "Gravity", "Nearest surface"]);
-	await expect(page.locator(".reach.lab")).toHaveCount(
-		FIELD_DOCUMENT.field.wells.length,
-	);
-	await expect(page.locator(".surface")).not.toHaveCount(0);
-	await expect(page.getByRole("img", { name: /^B0, Coast/ })).toBeVisible();
-});
-
-test("the pane edits a gravity field and refuses impossible values", async ({
-	page,
-	context,
-}) => {
-	await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-	await page.goto("/lab/instrument");
-	await page.getByRole("button", { name: "Open values" }).click();
-	await page.getByRole("button", { name: /^Reset Thrust/ }).click();
-	await page.getByRole("button", { name: "Add a gravity field" }).click();
-	await expect(page.locator(".graph .head .name")).toHaveText([
-		"Speed",
-		"Gravity",
-		"Nearest surface",
-	]);
-	await page.getByRole("button", { name: "Add Lab well" }).click();
-	await expect(page.locator(".reach.lab")).toHaveCount(1);
-	const document = page.locator(".pane pre");
-	const strength = page.locator("#g-planetStrength");
-	await strength.fill("300");
-	await strength.press("Tab");
-	await expect(document).toContainText('"planetStrength": 300');
-	await page.getByRole("button", { name: "Copy proposal" }).click();
-	const copied = await page.evaluate(() => navigator.clipboard.readText());
-	expect(copied).toMatch(/^Gravity tuning proposal/);
-	expect(copied).toMatch(/^Apply: planetStrength \S+ → 300$/m);
-	const well = page.locator("#w-0-strength");
-	const before = await well.inputValue();
-	await well.fill("-5");
-	await well.press("Tab");
-	await expect(well).toHaveValue(before);
-	await expect(page.getByRole("alert")).toBeVisible();
 });

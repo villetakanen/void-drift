@@ -3,7 +3,6 @@ import {
 	bodyAt,
 	type FieldBody,
 	niceCeil,
-	sampleIndex,
 	type Track,
 } from "../../../lib/instrument";
 import Toggle from "../../inputs/Toggle.svelte";
@@ -11,9 +10,8 @@ import Toggle from "../../inputs/Toggle.svelte";
 // The path tool (lab-instrument study, 02.8–02.9): a square display of every
 // vehicle's path with a marker at the current time, the scale switch in its
 // top right and its numbers in its bottom right. It draws in its own
-// coordinates; the host scales it. In field mode (lab-instrument.md, "Gravity
-// field mode") it draws in the world frame with the field's bodies under the
-// paths, planet contacts on them and each path's outcome at its end.
+// coordinates; the host scales it. Given bodies (the Gravity tuning bench's
+// well), it draws them under the paths and lets a well be dragged.
 let {
 	tracks,
 	tick,
@@ -40,13 +38,13 @@ const DEFAULT_GRID = 500;
 // Half-length of the tick drawn across each path at the marker.
 const TICK = 16;
 const FIT_MARGIN = 48;
-// Half-size of contact and outcome marks.
+// Half-size of a well's centre cross.
 const MARK = 6;
 // A jump this long between samples is an arena wrap, not motion.
 const WRAP_JUMP = 1000;
 // Play's arena centre, where the default scale opens in field mode.
 const ARENA_CENTRE = { x: 960, y: 540 };
-const field = $derived(bodies.length > 0 || tracks.some((t) => t.run));
+const field = $derived(bodies.length > 0);
 
 let mode = $state<"fit" | "default">("fit");
 let pan = $state({ x: 40, y: 336 });
@@ -164,11 +162,9 @@ function segments(track: Track) {
 	});
 	return out.map((pts) => pts.join(" "));
 }
-function contacts(track: Track) {
-	return (track.run?.events ?? [])
-		.filter((e) => e.kind === "contact")
-		.map((e) => track.samples[sampleIndex(track, e.tick)]);
-}
+// A run that ended early holds its last sample under the marker.
+const sampleAt = (track: Track) =>
+	track.samples[Math.max(0, Math.min(tick, track.samples.length - 1))];
 </script>
 
 <div class="pane" style={`width:${size}px;height:${size}px`}>
@@ -252,49 +248,7 @@ function contacts(track: Track) {
 				{#each segments(t) as points}
 					<polyline {points} fill="none" stroke={t.color} stroke-width="2" />
 				{/each}
-				{#each contacts(t) as c}
-					<rect
-						x={sx(c.x) - MARK / 1.5}
-						y={sy(c.y) - MARK / 1.5}
-						width={(2 * MARK) / 1.5}
-						height={(2 * MARK) / 1.5}
-						transform={`rotate(45 ${sx(c.x)} ${sy(c.y)})`}
-						fill="none"
-						stroke={t.color}
-						stroke-width="1.5"
-					/>
-				{/each}
-				{#if t.run}
-					{@const end = t.samples[t.samples.length - 1]}
-					{#if t.run.outcome === "bound"}
-						<rect
-							x={sx(end.x) - MARK}
-							y={sy(end.y) - MARK}
-							width={2 * MARK}
-							height={2 * MARK}
-							fill="none"
-							stroke={t.color}
-							stroke-width="2"
-						/>
-					{:else if t.run.outcome === "free"}
-						{@const v = Math.hypot(end.vx, end.vy) || 1}
-						{@const ux = end.vx / v}
-						{@const uy = end.vy / v}
-						<path
-							d={`M${sx(end.x) - ux * MARK - uy * MARK},${sy(end.y) - uy * MARK + ux * MARK}L${sx(end.x) + ux * MARK},${sy(end.y) + uy * MARK}L${sx(end.x) - ux * MARK + uy * MARK},${sy(end.y) - uy * MARK - ux * MARK}`}
-							fill="none"
-							stroke={t.color}
-							stroke-width="2"
-						/>
-					{:else}
-						<path
-							d={`M${sx(end.x) - MARK},${sy(end.y) - MARK}l${2 * MARK},${2 * MARK}M${sx(end.x) + MARK},${sy(end.y) - MARK}l${-2 * MARK},${2 * MARK}`}
-							stroke={t.color}
-							stroke-width="2.5"
-						/>
-					{/if}
-				{/if}
-				{@const p = t.samples[sampleIndex(t, tick)]}
+				{@const p = sampleAt(t)}
 				{@const v = Math.hypot(p.vx, p.vy)}
 				{#if v > 1e-6}
 					<line

@@ -16,13 +16,10 @@ import Toggle from "../../inputs/Toggle.svelte";
 let {
 	burn = $bindable(),
 	tick,
-	ids = BURN_IDS,
 }: {
 	burn: BurnId;
 	/** Current time in ticks. */
 	tick: number;
-	/** Burns offered: B1–B3, or with B0 Coast for version 2 documents. */
-	ids?: readonly BurnId[];
 } = $props();
 
 const segments = $derived.by(() => {
@@ -45,10 +42,10 @@ const seconds = Array.from({ length: SECONDS + 1 }, (_, i) => i);
 	<Toggle
 		compact
 		label="Burn"
-		options={ids.map((id) => BURNS[id].label)}
+		options={BURN_IDS.map((id) => BURNS[id].label)}
 		bind:value={
 			() => BURNS[burn].label,
-			(l) => (burn = ids.find((id) => BURNS[id].label === l) ?? burn)
+			(l) => (burn = BURN_IDS.find((id) => BURNS[id].label === l) ?? burn)
 		}
 	/>
 	<div

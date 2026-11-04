@@ -1,12 +1,14 @@
 <script lang="ts">
 import "./catalog.css";
 import {
-	documentTracks,
+	calculate,
 	InstrumentConfig,
 	SECONDS,
 	TICK_RATE,
+	TRACK_COLORS,
+	traces,
 } from "../../lib/instrument";
-import { FIELD_DOCUMENT, STARTER_DOCUMENT } from "../../lib/instrument/starter";
+import { STARTER_DOCUMENT } from "../../lib/instrument/starter";
 import RingSlider from "../inputs/RingSlider.svelte";
 import PathPane from "./instrument/PathPane.svelte";
 import TimeGraph from "./instrument/TimeGraph.svelte";
@@ -15,13 +17,16 @@ import TimeGraph from "./instrument/TimeGraph.svelte";
 // from the starting document, with one time control driving both.
 let { label = "Graphs design system" }: { label?: string } = $props();
 
-const tracks = documentTracks(InstrumentConfig.parse(STARTER_DOCUMENT));
-// Field mode: the same diagrams in the world frame, from the field document.
-const fieldTracks = documentTracks(InstrumentConfig.parse(FIELD_DOCUMENT));
-const bodies = fieldTracks
-	.map((t) => t.run)
-	.filter((run) => run !== undefined)
-	.sort((a, b) => b.samples.length - a.samples.length)[0]?.bodies;
+const doc = InstrumentConfig.parse(STARTER_DOCUMENT);
+const tracks = doc.vehicles.map((v, i) => {
+	const samples = calculate(v, doc.burn);
+	return {
+		label: v.label,
+		color: TRACK_COLORS[i],
+		samples,
+		traces: traces(samples),
+	};
+});
 let time = $state(7);
 const tick = $derived(Math.round(time * TICK_RATE));
 </script>
@@ -85,43 +90,13 @@ const tick = $derived(Math.round(time * TICK_RATE));
 			<TimeGraph measure="turn" {tracks} {tick} />
 		</div>
 		<p>
-			<code>TimeGraph</code>: <code>measure</code> (speed, acceleration, turn,
-			gravity or surface),
+			<code>TimeGraph</code>: <code>measure</code> (speed, acceleration or
+			turn),
 			<code>tracks</code>, <code>tick</code>, <code>width</code> and
 			<code>height</code>
 			(672 × 208 in the instrument). Its plot margins are exported as
 			<code>GRAPH_MARGIN</code>
 			so controls can line up with the time axis.
-		</p>
-	</section>
-
-	<section>
-		<h2>Field mode</h2>
-		<p>
-			A document with a field draws in the world frame. Under the paths: the sun
-			and planets as their surfaces with dashed reach rings, and Lab wells as a
-			cross and reach ring in caution yellow, since they have no surface. A
-			diamond marks each planet contact; a wrap breaks the path line. Each path
-			ends in its outcome: a cross for a run that ended (sun, hull or power), a
-			square for bound, an arrowhead for free. The graphs become speed, gravity
-			and distance to the nearest surface; a run that ended holds its last
-			value. These four probes coast past frozen planets.
-			<a href="/lab/instrument">The composed instrument →</a>
-		</p>
-		<div class="example">
-			<PathPane tracks={fieldTracks} bodies={bodies ?? []} {tick} size={672} />
-			<span class="caption"
-				>Gravity: summed pull of every body and Lab well</span
-			>
-			<TimeGraph measure="gravity" tracks={fieldTracks} {tick} />
-			<span class="caption">Nearest surface: Lab wells count by centre</span>
-			<TimeGraph measure="surface" tracks={fieldTracks} {tick} />
-		</div>
-		<p>
-			<code>PathPane</code>
-			takes the field's <code>bodies</code> (from the longest run);
-			<code>documentTracks</code>
-			calculates either kind of document.
 		</p>
 	</section>
 </section>

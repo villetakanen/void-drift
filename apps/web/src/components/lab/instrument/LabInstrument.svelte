@@ -1,15 +1,13 @@
 <script lang="ts">
 import { type Snippet, untrack } from "svelte";
 import {
-	documentTracks,
-	editDocument,
-	FIELD_MEASURES,
-	FLIGHT_MEASURES,
+	calculate,
 	InstrumentConfig,
 	SECONDS,
 	TICK_RATE,
+	TRACK_COLORS,
 	type Track,
-	V2_BURN_IDS,
+	traces,
 } from "../../../lib/instrument";
 import RingSlider from "../../inputs/RingSlider.svelte";
 import BurnRow from "./BurnRow.svelte";
@@ -55,33 +53,26 @@ const RIGHT = PAD + COL + GAP;
 const CONTROL_TOP = TOP + BLOCK + CONTROL_GAP;
 // The slider's knob (16px) runs along the graphs' time axis.
 const SLIDER = { left: GRAPH_MARGIN.left - 8, right: GRAPH_MARGIN.right - 8 };
+const measures = ["speed", "acceleration", "turn"] as const;
 
 // The document is read once, as the starting point; edits happen in the pane.
 const parsed = untrack(() => InstrumentConfig.safeParse(config));
 const issues = parsed.success ? [] : parsed.error.issues;
 let doc = $state(parsed.success ? parsed.data : null);
 let tick = $state(7 * TICK_RATE);
-const tracks = $derived.by((): Track[] =>
-	doc ? documentTracks($state.snapshot(doc)) : [],
-);
-// Field mode: the bodies of the longest run, so moving planets cover the burn.
-const bodies = $derived(
-	tracks
-		.map((t) => t.run)
-		.filter((run) => run !== undefined)
-		.sort((a, b) => b.samples.length - a.samples.length)[0]?.bodies ?? [],
-);
-function moveWell(index: number, x: number, y: number) {
-	if (!doc) return;
-	const result = editDocument($state.snapshot(doc), (draft) => {
-		if (draft.version === 2 && draft.field?.wells[index])
-			Object.assign(draft.field.wells[index], { x, y });
+const tracks = $derived.by((): Track[] => {
+	if (!doc) return [];
+	const plain = $state.snapshot(doc);
+	return plain.vehicles.map((v, i) => {
+		const samples = calculate(v, plain.burn);
+		return {
+			label: v.label,
+			color: TRACK_COLORS[i],
+			samples,
+			traces: traces(samples),
+		};
 	});
-	if (result.ok) doc = result.doc;
-}
-const measures = $derived(
-	tracks.some((t) => t.run) ? FIELD_MEASURES : FLIGHT_MEASURES,
-);
+});
 
 let hostW = $state(SCREEN.w);
 let hostH = $state(SCREEN.h);
@@ -100,24 +91,13 @@ const scale = $derived(Math.min(hostW / SCREEN.w, hostH / SCREEN.h));
 			style={`width:${SCREEN.w}px;height:${SCREEN.h}px;transform:translate(-50%,-50%) scale(${scale})`}
 		>
 			<div class="slot" style={`left:${PAD}px;top:${TOP}px`}>
-				<PathPane
-					{tracks}
-					{bodies}
-					{tick}
-					{scale}
-					size={BLOCK}
-					onmovewell={moveWell}
-				/>
+				<PathPane {tracks} {tick} {scale} size={BLOCK} />
 			</div>
 			<div
 				class="slot"
 				style={`left:${PAD}px;top:${CONTROL_TOP}px;width:${COL}px`}
 			>
-				<BurnRow
-					bind:burn={doc.burn}
-					{tick}
-					ids={doc.version === 2 ? V2_BURN_IDS : undefined}
-				/>
+				<BurnRow bind:burn={doc.burn} {tick} />
 			</div>
 			{#each measures as m, i}
 				<div

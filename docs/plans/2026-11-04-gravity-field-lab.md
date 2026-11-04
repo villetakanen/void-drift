@@ -31,13 +31,14 @@ Each step is a local commit with its spec update and passing checks.
    version 2 documents, the coast burn, `calculateField`, `FIELD_DOCUMENT`, the
    pane's Gravity field section and Copy proposal, B0 in `BurnRow`, outcomes in
    `Legend`, the field sections on `/lab/graphs` and `/lab/instrument-parts`, and
-   their tests. Keep the shared parts the bench reuses: well drawing and dragging
+   their tests, plus the gravity proposal and the `gravity` area of `tuning:apply`
+   (they read instrument field documents). Done 2026-11-04. Keep the shared parts
+   the bench reuses: well drawing and dragging
    in `PathPane`, gaps and held values in `TimeGraph`. Version 1 behaviour and its
    tests unchanged.
 2. **R2. Remove unused gravity plumbing.** The `Simulation` field options and
    their schemas (`GravityFieldSchema`, `LabWellSchema`, `ShipStartSchema`,
-   `labWellPull`, `gravityAt`, contact counting) and the gravity proposal with
-   the `gravity` area of `tuning:apply`. Keep the tuning file and
+   `labWellPull`, `gravityAt`, contact counting). Keep the tuning file and
    `GravityTuningSchema` (step 1), `starPull` and `planetPull`, and the
    `tuning:apply` script with its area registry for the ship area. The trajectory
    fingerprint stays unchanged.

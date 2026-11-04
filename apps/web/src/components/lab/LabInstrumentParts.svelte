@@ -3,7 +3,6 @@ import "./catalog.css";
 import { SHIP_IDENTITY } from "@void-drift/mode-a";
 import {
 	type BurnId,
-	type Outcome,
 	SECONDS,
 	TICK_RATE,
 	TRACK_COLORS,
@@ -27,19 +26,8 @@ const named = (labels: string[]): Track[] =>
 		label: l,
 		color: TRACK_COLORS[i],
 		samples: [],
-		traces: { speed: [], acceleration: [], turn: [], gravity: [], surface: [] },
+		traces: { speed: [], acceleration: [], turn: [] },
 	}));
-// In field mode the legend adds how each path ended.
-const ended = (outcomes: [string, Outcome][]): Track[] =>
-	named(outcomes.map(([l]) => l)).map((t, i) => ({
-		...t,
-		run: { samples: [], events: [], bodies: [], outcome: outcomes[i][1] },
-	}));
-const field = ended([
-	["Close pass", "free"],
-	["Too deep", "star"],
-	["Captured", "bound"],
-]);
 const three = named(["Ion aft", "Plasma aft", "Plasma aft, more thrust"]);
 const six = named([
 	SHIP_IDENTITY.scout.shortName,
@@ -78,9 +66,8 @@ const six = named([
 			</div>
 		</div>
 		<p>
-			<code>BurnRow</code>: bindable <code>burn</code> (course, turn, weave, or
-			coast in version 2 documents) and <code>tick</code>. Each burn is 14 s; B1
-			Course, B2 Turn, B3 Weave, B0 Coast (no input).
+			<code>BurnRow</code>: bindable <code>burn</code> (course, turn or weave)
+			and <code>tick</code>. Each burn is 14 s; B1 Course, B2 Turn, B3 Weave.
 		</p>
 	</section>
 
@@ -94,14 +81,6 @@ const six = named([
 		<div class="example">
 			<Legend tracks={three} />
 			<Legend tracks={six} />
-		</div>
-		<p>
-			In field mode each name is followed, muted, by how its path ended: free,
-			bound, hit the sun, hull lost or power lost. The path pane marks the same
-			ending at the path's end.
-		</p>
-		<div class="example">
-			<Legend tracks={field} />
 		</div>
 	</section>
 

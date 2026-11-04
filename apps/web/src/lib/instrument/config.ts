@@ -1,18 +1,12 @@
 import {
-	GRAVITY_TUNING,
-	GravityFieldSchema,
-	type GravityTuning,
 	ION_DEFAULTS,
 	IonSettingsSchema,
 	type Loadout,
 	LoadoutSchema,
 	PARTS,
-	type ShipStart,
-	ShipStartSchema,
 } from "@void-drift/mode-a";
 import { z } from "astro/zod";
-import { BURN_IDS, V2_BURN_IDS } from "./burns";
-import { fieldSimulation, type InstrumentField } from "./field";
+import { BURN_IDS } from "./burns";
 
 // The Lab instrument's configuration document: what an agent writes, the
 // designer adjusts in the pane, and is copied back. Each vehicle is a game
@@ -71,69 +65,13 @@ export const InstrumentVehicle = z
 	.strict();
 export type InstrumentVehicle = z.infer<typeof InstrumentVehicle>;
 
-const InstrumentConfigV1 = z
+export const InstrumentConfig = z
 	.object({
 		version: z.literal(1),
 		burn: z.enum(BURN_IDS).default("course"),
 		vehicles: z.array(InstrumentVehicle).min(1).max(6),
 	})
 	.strict();
-
-// Version 2 adds the coast burn and an optional field (lab-instrument.md,
-// "Gravity field mode"); a field vehicle may set its start.
-const InstrumentConfigV2 = z
-	.object({
-		version: z.literal(2),
-		burn: z.enum(V2_BURN_IDS).default("course"),
-		field: gameSchema<InstrumentField>(
-			GravityFieldSchema.omit({ start: true }),
-		).optional(),
-		vehicles: z
-			.array(
-				InstrumentVehicle.extend({
-					start: gameSchema<ShipStart>(ShipStartSchema).optional(),
-				}),
-			)
-			.min(1)
-			.max(6),
-	})
-	.strict();
-
-export const InstrumentConfig = z
-	.discriminatedUnion("version", [InstrumentConfigV1, InstrumentConfigV2])
-	.superRefine((doc, ctx) => {
-		if (doc.version !== 2) return;
-		doc.vehicles.forEach((vehicle, i) => {
-			if (!doc.field) {
-				if (vehicle.start)
-					ctx.addIssue({
-						code: z.ZodIssueCode.custom,
-						path: ["vehicles", i, "start"],
-						message: "A start needs a field",
-					});
-				return;
-			}
-			for (const family of ["fusion", "plasma"] as const)
-				if (Object.keys(vehicle.changes[family] ?? {}).length)
-					ctx.addIssue({
-						code: z.ZodIssueCode.custom,
-						path: ["vehicles", i, "changes", family],
-						message:
-							"Part changes in a field need the per-chassis tuning patch, not yet available",
-					});
-			try {
-				fieldSimulation(vehicle, doc.field);
-			} catch (error) {
-				// Schema errors are already reported; only the Simulation's own refusals are new.
-				if (error instanceof Error && "issues" in error) return;
-				ctx.addIssue({
-					code: z.ZodIssueCode.custom,
-					path: ["vehicles", i, "start"],
-					message: error instanceof Error ? error.message : String(error),
-				});
-			}
-		});
-	});
 export type InstrumentConfig = z.infer<typeof InstrumentConfig>;
 
 export type Family = "ion" | "fusion" | "plasma";
@@ -194,81 +132,4 @@ export function serialize(config: InstrumentConfig): string {
 		null,
 		2,
 	);
-}
-
-/**
- * Applies an edit to a copy of the document and keeps it only if the result is
- * still a valid document; otherwise returns why, so the pane can refuse it.
- */
-export function editDocument(
-	doc: InstrumentConfig,
-	edit: (draft: InstrumentConfig) => void,
-): { ok: true; doc: InstrumentConfig } | { ok: false; message: string } {
-	const draft = structuredClone(doc);
-	edit(draft);
-	const parsed = InstrumentConfig.safeParse(draft);
-	if (parsed.success) return { ok: true, doc: parsed.data };
-	return {
-		ok: false,
-		message: parsed.error.issues.map((issue) => issue.message).join("; "),
-	};
-}
-
-/** Gravity values the pane edits; `planetReach.*` are the reach rule's parts. */
-export const GRAVITY_PARAMETERS: Parameter[] = [
-	{ key: "sunMultiplier", label: "Sun multiplier", unit: "× sun mass" },
-	{ key: "planetStrength", label: "Planet strength", unit: "u/s²" },
-	{ key: "sunReachFactor", label: "Sun reach", unit: "× sun radius" },
-	{ key: "planetReach.massScale", label: "Planet reach", unit: "u per √mass" },
-	{ key: "planetReach.minRadii", label: "Planet reach min", unit: "× radius" },
-	{ key: "planetReach.maxRadii", label: "Planet reach max", unit: "× radius" },
-];
-type GravityChanges = NonNullable<InstrumentField["changes"]>;
-/** A gravity value in the game's tuning file. */
-export function gravityStock(key: string): number {
-	const [group, part] = key.split(".");
-	const value =
-		group === "planetReach"
-			? GRAVITY_TUNING.planetReach[part as keyof GravityTuning["planetReach"]]
-			: GRAVITY_TUNING[group as keyof GravityTuning];
-	return typeof value === "number" ? value : Number.NaN;
-}
-/** The document's value for a gravity key, or undefined when it is the game's. */
-export function gravityChange(
-	changes: GravityChanges,
-	key: string,
-): number | undefined {
-	const [group, part] = key.split(".");
-	const value =
-		group === "planetReach"
-			? changes.planetReach?.[part as keyof GravityTuning["planetReach"]]
-			: changes[group as keyof GravityChanges];
-	return typeof value === "number" && value !== gravityStock(key)
-		? value
-		: undefined;
-}
-/** Sets (or, for undefined or the game's value, clears) a gravity change in place. */
-export function setGravityChange(
-	changes: GravityChanges,
-	key: string,
-	value: number | undefined,
-) {
-	const [group, part] = key.split(".");
-	const stock = value === undefined || value === gravityStock(key);
-	if (group === "planetReach") {
-		const reach = {
-			...GRAVITY_TUNING.planetReach,
-			...changes.planetReach,
-			[part]: stock ? gravityStock(key) : value,
-		};
-		const same = (Object.keys(reach) as (keyof typeof reach)[]).every(
-			(k) => reach[k] === GRAVITY_TUNING.planetReach[k],
-		);
-		if (same) delete changes.planetReach;
-		else changes.planetReach = reach;
-		return;
-	}
-	const k = group as Exclude<keyof GravityChanges, "planetReach" | "curve">;
-	if (stock) delete changes[k];
-	else changes[k] = value;
 }
