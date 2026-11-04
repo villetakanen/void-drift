@@ -38,7 +38,8 @@ Each step is a local commit with its spec update and passing checks.
    tests unchanged.
 2. **R2. Remove unused gravity plumbing.** The `Simulation` field options and
    their schemas (`GravityFieldSchema`, `LabWellSchema`, `ShipStartSchema`,
-   `labWellPull`, `gravityAt`, contact counting). Keep the tuning file and
+   `labWellPull`, `gravityAt`, contact counting). Done 2026-11-04; the game-sun
+   scenarios moved to `sun.test.ts`. Keep the tuning file and
    `GravityTuningSchema` (step 1), `starPull` and `planetPull`, and the
    `tuning:apply` script with its area registry for the ship area. The trajectory
    fingerprint stays unchanged.

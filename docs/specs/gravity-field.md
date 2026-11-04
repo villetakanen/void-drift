@@ -153,9 +153,10 @@ values reach the tuning file. Until then the rules above stand.
 
 ### [DEPRECATED 2026-11-04] Lab flight conditions (field)
 
-> Built for the instrument's field mode, which mixed ship and gravity tuning and
-> is being removed (plan steps R1–R2). The Gravity tuning bench does not use it.
-> Still in the code until R2.
+> Built for the instrument's field mode, which mixed ship and gravity tuning.
+> Removed in plan step R2 (2026-11-04); the Gravity tuning bench does not use
+> it. `starPull` and `planetPull` (`Physics.ts`), split out of `updateShip` for
+> it, remain and `updateShip` uses them.
 
 `new Simulation(settings, { field })`. Options are parsed by
 `SimulationOptionsSchema` (`simulation.ts`); the field by `GravityFieldSchema`
@@ -250,18 +251,17 @@ become game data by this route.
   stock thrust path (`simulation.test.ts`); unpowered, a loadout ship coasts
   above the old speed cap with planets removed (same file).
 - [x] The close-pass and too-deep scenarios below pass on a `Simulation` with the
-  game sun (`field.test.ts`).
+  game sun (`sun.test.ts`).
 - [x] The same replay gives the same trajectory twice under one rules version
   (`simulation.test.ts`, "reproduces validated replay exactly").
 - [x] Every gravity value in play is read from the tuning file: the simulation's
   bodies equal those built from `GRAVITY_TUNING`, and changing each value changes
   the bodies (`tuning.test.ts`).
 - [x] A planet with a well pulls with its own curve (`Physics.test.ts`).
-- [x] A default `Simulation` and one given the empty field produce the same
-  trajectory, idle and under thrust (`field.test.ts`).
-- [x] An empty system has no pull or heat; Lab wells pull only inside reach, sum,
-  and have no surface; frozen orbits hold; the start, changes and every
-  rejection above behave as described (`field.test.ts`).
+- [DEPRECATED 2026-11-04, removed with the field in R2] ~~A default
+  `Simulation` and one given the empty field produce the same trajectory; an
+  empty system, Lab wells, frozen orbits, starts and changes behave as
+  described (`field.test.ts`).~~
 - [x] A proposal reads back as exactly its changes; each refusal above has a
   reason; `tuning:apply` applies a proposal once and then refuses it as stale
   without writing (`proposal.test.ts`, including a run of the script on a
