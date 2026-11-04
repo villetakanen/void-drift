@@ -86,7 +86,8 @@ Scenario: Failure path
 
 ### 5) Maintain as Living Spec
 - If behavior changed, update the relevant spec in the same change.
-- Mark obsolete sections with `[DEPRECATED yyyy-mm-dd]` plus rationale instead of deleting history.
+- A spec states the current contract only. Rewrite changed sections in the present tense and delete superseded text; git holds the history, and the commit message holds the why.
+- Do not add `[DEPRECATED …]` markers, dated decisions, change logs or release-history sections. Mark agreed but unbuilt work as **Target**.
 
 ## Boundaries
 - This skill writes and updates specification docs only.
