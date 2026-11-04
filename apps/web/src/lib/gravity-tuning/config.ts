@@ -9,8 +9,14 @@ export const GravityWell = z
 		y: z.number().finite().min(-10000).max(10000).default(300),
 		strength: z.number().finite().positive().max(10000).default(600),
 		sizeMultiplier: z.number().finite().positive().max(5).default(0.5),
+		falloff: z.enum(["inverse-square", "inverse"]).default("inverse-square"),
+		radius: z.number().finite().positive().max(10000).default(40),
 	})
-	.strict();
+	.strict()
+	.refine((well) => well.radius < well.strength * well.sizeMultiplier, {
+		message: "The body radius must be smaller than the reach",
+		path: ["radius"],
+	});
 export type GravityWell = z.infer<typeof GravityWell>;
 
 export const GravityTuningConfig = z
@@ -47,14 +53,16 @@ export const SETTINGS = [
 	{ key: "startSpeed", label: "Starting speed", unit: "u/s along +x" },
 	{ key: "well.strength", label: "Well strength", unit: "mass" },
 	{ key: "well.sizeMultiplier", label: "Well size", unit: "reach per mass" },
+	{ key: "well.radius", label: "Body radius", unit: "u" },
 	{ key: "well.x", label: "Well x", unit: "u" },
 	{ key: "well.y", label: "Well y", unit: "u" },
 ] as const;
 export type SettingKey = (typeof SETTINGS)[number]["key"];
+type NumericWellKey = Exclude<keyof GravityWell, "falloff">;
 export function settingValue(doc: GravityTuningConfig, key: SettingKey) {
 	return key === "startSpeed"
 		? doc.startSpeed
-		: doc.well[key.slice(5) as keyof GravityWell];
+		: doc.well[key.slice(5) as NumericWellKey];
 }
 export function setSetting(
 	doc: GravityTuningConfig,
@@ -62,5 +70,5 @@ export function setSetting(
 	value: number,
 ) {
 	if (key === "startSpeed") doc.startSpeed = value;
-	else doc.well[key.slice(5) as keyof GravityWell] = value;
+	else doc.well[key.slice(5) as NumericWellKey] = value;
 }

@@ -165,8 +165,12 @@ export function engineEffectiveness(
 export const WellCurveSchema = z.enum(["linear", "inverse-square"]);
 export type WellCurve = z.infer<typeof WellCurveSchema>;
 
-/** Gravity constant of the mass well law (docs/specs/gravity-tuning.md). */
+/** Gravity constants of the mass well law (docs/specs/gravity-tuning.md). */
 export const MASS_WELL_G = 1000;
+/** The flat-world constant; both falloffs pull equally at 100 u. */
+export const MASS_WELL_G_2D = MASS_WELL_G / 100;
+export const MassWellFalloffSchema = z.enum(["inverse-square", "inverse"]);
+export type MassWellFalloff = z.infer<typeof MassWellFalloffSchema>;
 
 /** A mass well's reach: a hard cut-off, `sizeMultiplier × mass`. */
 export function massWellReach(mass: number, sizeMultiplier: number): number {
@@ -174,18 +178,21 @@ export function massWellReach(mass: number, sizeMultiplier: number): number {
 }
 
 /**
- * The mass well law: semi-physical pull `G × mass / distance²` inside the
- * reach, zero at and beyond it. The reach only cuts the pull off; it never
- * changes the pull inside it.
+ * The mass well law: a semi-physical pull from mass, `G × mass / distance²` or
+ * in a flat world `G₂ × mass / distance`, inside the reach; zero at and beyond
+ * it. The reach only cuts the pull off; it never changes the pull inside it.
  */
 export function massWellAcceleration(
 	distance: number,
 	mass: number,
 	sizeMultiplier: number,
+	falloff: MassWellFalloff = "inverse-square",
 ): number {
 	if (distance <= 0 || distance >= massWellReach(mass, sizeMultiplier))
 		return 0;
-	return (MASS_WELL_G * mass) / (distance * distance);
+	return falloff === "inverse"
+		? (MASS_WELL_G_2D * mass) / distance
+		: (MASS_WELL_G * mass) / (distance * distance);
 }
 
 /** Study comparison: both curves have acceleration strength / 2 at reach / 2. */
@@ -337,6 +344,41 @@ export function planetPull(
 	return { x: (dx / dist) * strength, y: (dy / dist) * strength };
 }
 
+/**
+ * Planet contact: within `contactDistance` of `centre`, the ship is pushed out to
+ * that distance and its velocity reflected about the surface normal, scaled by
+ * restitution 0.8. Returns the speed at impact, or null without contact.
+ */
+export function bounceOffSurface(
+	ship: { pos: Vec2; vel: Vec2 },
+	centre: { x: number; y: number },
+	contactDistance: number,
+): number | null {
+	const dx = centre.x - ship.pos.x;
+	const dy = centre.y - ship.pos.y;
+	const dist = Math.sqrt(dx * dx + dy * dy);
+	if (!(dist < contactDistance)) return null;
+	const impactSpeed = Math.hypot(ship.vel.x, ship.vel.y);
+
+	// Resolve overlap
+	const overlap = contactDistance - dist;
+	const nx = dist > 0 ? dx / dist : 1; // Vector pointing towards the centre
+	const ny = dist > 0 ? dy / dist : 0;
+
+	// Push ship out
+	ship.pos.x -= nx * overlap;
+	ship.pos.y -= ny * overlap;
+
+	// Reflect velocity, V' = V - 2(V . N)N, about the outward normal N = -n
+	const normalX = -nx;
+	const normalY = -ny;
+	const dot = ship.vel.x * normalX + ship.vel.y * normalY;
+	const restitution = 0.8;
+	ship.vel.x = (ship.vel.x - 2 * dot * normalX) * restitution;
+	ship.vel.y = (ship.vel.y - 2 * dot * normalY) * restitution;
+	return impactSpeed;
+}
+
 export function updateShip(
 	ship: GameObject,
 	input: InputState,
@@ -426,44 +468,18 @@ export function updateShip(
 		// Update Planet Position (Orbit)
 		updatePlanetOrbit(planet, dt);
 
-		const dx = planet.pos.x - ship.pos.x;
-		const dy = planet.pos.y - ship.pos.y;
-		const distSq = dx * dx + dy * dy;
-		const dist = Math.sqrt(distSq);
-
 		const gravity = planetPull(ship.pos, ship.radius, planet);
 		ship.acc.x += gravity.x;
 		ship.acc.y += gravity.y;
 
 		// Collision (Elastic Bounce)
-		const minDist = planet.radius + ship.radius;
-		if (dist < minDist) {
-			const impactSpeed = Math.hypot(ship.vel.x, ship.vel.y);
+		const impactSpeed = bounceOffSurface(
+			ship,
+			planet.pos,
+			planet.radius + ship.radius,
+		);
+		if (impactSpeed !== null) {
 			const impactMagnitude = Math.max(0.1, Math.min(1, impactSpeed / 550));
-
-			// Resolve overlap
-			const overlap = minDist - dist;
-			const nx = dist > 0 ? dx / dist : 1; // Vector pointing towards planet
-			const ny = dist > 0 ? dy / dist : 0;
-
-			// Push ship out
-			ship.pos.x -= nx * overlap;
-			ship.pos.y -= ny * overlap;
-
-			// Reflect Velocity
-			// V' = V - 2(V . N)N
-			// We want N to be the normal of the reflection surface (pointing OUT from planet)
-			// So normal = -n
-			const normalX = -nx;
-			const normalY = -ny;
-
-			const dot = ship.vel.x * normalX + ship.vel.y * normalY;
-
-			// Restitution (bounciness)
-			const restitution = 0.8;
-
-			ship.vel.x = (ship.vel.x - 2 * dot * normalX) * restitution;
-			ship.vel.y = (ship.vel.y - 2 * dot * normalY) * restitution;
 
 			if (resources) {
 				resources.hull = Math.max(

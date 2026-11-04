@@ -1,7 +1,7 @@
 import { massWellAcceleration, massWellReach } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
-import { BURN_IDS } from "../instrument/burns";
-import { calculate } from "../instrument/calculate";
+import { BURN_IDS, TOTAL_TICKS } from "../instrument/burns";
+import { calculate, traces } from "../instrument/calculate";
 import {
 	DEFAULT_DOCUMENT,
 	flyBench,
@@ -25,6 +25,19 @@ describe("document", () => {
 				well: { ...DEFAULT_DOCUMENT.well, sizeMultiplier: 5.01 },
 			},
 			{ ...DEFAULT_DOCUMENT, burn: "coast" },
+			{
+				...DEFAULT_DOCUMENT,
+				well: { ...DEFAULT_DOCUMENT.well, falloff: "linear" },
+			},
+			{
+				...DEFAULT_DOCUMENT,
+				well: {
+					...DEFAULT_DOCUMENT.well,
+					radius:
+						DEFAULT_DOCUMENT.well.strength *
+						DEFAULT_DOCUMENT.well.sizeMultiplier,
+				},
+			},
 		];
 		for (const doc of refused)
 			expect(GravityTuningConfig.safeParse(doc).success).toBe(false);
@@ -44,6 +57,7 @@ describe("flight", () => {
 				expect(runs[i].samples).toEqual(
 					calculate({ label, loadout, changes: {} }, burn),
 				);
+				expect(runs[i].unaffected).toEqual(runs[i].samples);
 				expect(runs[i].gravity.every((g) => g === 0)).toBe(true);
 			});
 		}
@@ -75,17 +89,43 @@ describe("flight", () => {
 			expect(run.samples[0]).toMatchObject({ x: 0, y: 0, vx: 250, vy: 0 });
 	});
 
-	it("pulls by the mass well law toward the centre, not within the ship", () => {
-		const well = DEFAULT_DOCUMENT.well;
-		const reach = massWellReach(well.strength, well.sizeMultiplier);
-		const d = reach / 2;
-		const g = wellPull(well, well.x - d, well.y, 16);
-		expect(g.x).toBeCloseTo(
-			massWellAcceleration(d, well.strength, well.sizeMultiplier),
-			9,
-		);
-		expect(g.y).toBeCloseTo(0, 12);
-		expect(wellPull(well, well.x - reach, well.y, 16)).toEqual({ x: 0, y: 0 });
-		expect(wellPull(well, well.x - 10, well.y, 16)).toEqual({ x: 0, y: 0 });
+	it("pulls by the chosen falloff toward the centre, never within contact distance", () => {
+		for (const falloff of ["inverse-square", "inverse"] as const) {
+			const well = { ...DEFAULT_DOCUMENT.well, falloff };
+			const reach = massWellReach(well.strength, well.sizeMultiplier);
+			const d = reach / 2;
+			const g = wellPull(well, well.x - d, well.y, 16);
+			expect(g.x).toBeCloseTo(
+				massWellAcceleration(d, well.strength, well.sizeMultiplier, falloff),
+				9,
+			);
+			expect(g.y).toBeCloseTo(0, 12);
+			expect(wellPull(well, well.x - reach, well.y, 16)).toEqual({
+				x: 0,
+				y: 0,
+			});
+			expect(wellPull(well, well.x - (well.radius + 15), well.y, 16)).toEqual({
+				x: 0,
+				y: 0,
+			});
+		}
+	});
+
+	it("bounces a ship off the body, records the contact and keeps flying", () => {
+		const doc = GravityTuningConfig.parse({
+			...DEFAULT_DOCUMENT,
+			well: { ...DEFAULT_DOCUMENT.well, x: 600, y: 0 },
+		});
+		const hit = flyBench(doc).filter((r) => r.contacts.length > 0);
+		expect(hit.length).toBeGreaterThan(0);
+		for (const run of hit) {
+			expect(run.samples).toHaveLength(TOTAL_TICKS + 1);
+			expect(Math.min(...run.distance)).toBeGreaterThan(doc.well.radius);
+		}
+	});
+
+	it("takes each ship's thrust from its unaffected path", () => {
+		for (const run of flyBench(DEFAULT_DOCUMENT))
+			expect(run.thrust).toBe(Math.max(...traces(run.unaffected).acceleration));
 	});
 });

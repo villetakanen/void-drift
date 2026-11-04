@@ -1,6 +1,6 @@
 <script lang="ts">
 import "@void-drift/core/styles/buttons.css";
-import { massWellReach } from "@void-drift/core";
+import { MASS_WELL_G, MASS_WELL_G_2D, massWellReach } from "@void-drift/core";
 import {
 	DEFAULT_DOCUMENT,
 	editGravityTuning,
@@ -10,8 +10,9 @@ import {
 	setSetting,
 	settingValue,
 } from "../../../lib/gravity-tuning";
+import Toggle from "../../inputs/Toggle.svelte";
 
-// Gravity tuning's pane (docs/specs/gravity-tuning.md, "Views"): the four
+// Gravity tuning's pane (docs/specs/gravity-tuning.md, "Views"): the
 // settings as value rows like the instrument's, the default shown once a value
 // changes, then the document to copy back or to load. A refused value keeps the
 // previous one and says why.
@@ -93,6 +94,32 @@ function load() {
 			</span>
 		</div>
 	{/each}
+	<div
+		class="param"
+		class:changed={config.well.falloff !== DEFAULT_DOCUMENT.well.falloff}
+	>
+		<Toggle
+			compact
+			label="Falloff"
+			options={["inverse-square", "inverse"]}
+			bind:value={
+				() => config.well.falloff,
+				(v) => {
+	const result = editGravityTuning($state.snapshot(config), (d) => {
+		d.well.falloff = v as typeof d.well.falloff;
+	});
+	if (result.ok) {
+		config = result.doc;
+		error = "";
+	} else error = result.message;
+}
+			}
+		/>
+		<span class="unit">
+			falloff: 1/d² (G = {MASS_WELL_G}) or flat-world 1/d (G =
+			{MASS_WELL_G_2D}); equal at {MASS_WELL_G / MASS_WELL_G_2D} u
+		</span>
+	</div>
 	<p class="unit">Reach {Math.round(reach)} u (well size × strength)</p>
 	{#if error}
 		<p class="error" role="alert">{error}</p>

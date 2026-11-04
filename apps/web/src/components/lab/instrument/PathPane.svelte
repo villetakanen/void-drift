@@ -38,7 +38,7 @@ const DEFAULT_GRID = 500;
 // Half-length of the tick drawn across each path at the marker.
 const TICK = 16;
 const FIT_MARGIN = 48;
-// Half-size of a well's centre cross.
+// Half-size of a well's centre cross and of contact marks.
 const MARK = 6;
 // A jump this long between samples is an arena wrap, not motion.
 const WRAP_JUMP = 1000;
@@ -52,7 +52,10 @@ let dragging = $state(false);
 let last = { x: 0, y: 0 };
 
 const fit = $derived.by(() => {
-	const pts: { x: number; y: number }[] = tracks.flatMap((t) => t.samples);
+	const pts: { x: number; y: number }[] = tracks.flatMap((t) => [
+		...t.samples,
+		...(t.unaffected ?? []),
+	]);
 	for (const body of bodies)
 		for (const c of body.path)
 			for (const [dx, dy] of [
@@ -151,11 +154,11 @@ const centre = (body: FieldBody) =>
 		? held
 		: bodyAt(body, tick);
 
-/** The path as polylines, broken wherever the ship wrapped across the arena. */
-function segments(track: Track) {
+/** A path as polylines, broken wherever the ship wrapped across the arena. */
+function segments(samples: Track["samples"]) {
 	const out: string[][] = [[]];
-	track.samples.forEach((p, i) => {
-		const prev = track.samples[i - 1];
+	samples.forEach((p, i) => {
+		const prev = samples[i - 1];
 		if (prev && Math.hypot(p.x - prev.x, p.y - prev.y) > WRAP_JUMP)
 			out.push([]);
 		out[out.length - 1].push(`${sx(p.x).toFixed(1)},${sy(p.y).toFixed(1)}`);
@@ -197,6 +200,14 @@ const sampleAt = (track: Track) =>
 					class={body.kind === "well" ? "reach lab" : "reach"}
 				/>
 				{#if body.kind === "well"}
+					{#if body.radius > 0}
+						<circle
+							cx={sx(c.x)}
+							cy={sy(c.y)}
+							r={Math.max(2, body.radius * view.s)}
+							class="lab-surface"
+						/>
+					{/if}
 					<path
 						d={`M${sx(c.x) - MARK},${sy(c.y)}h${2 * MARK}M${sx(c.x)},${sy(c.y) - MARK}v${2 * MARK}`}
 						class="lab-centre"
@@ -245,8 +256,33 @@ const sampleAt = (track: Track) =>
 				/>
 			{/each}
 			{#each tracks as t}
-				{#each segments(t) as points}
+				{#if t.unaffected}
+					{#each segments(t.unaffected) as points}
+						<polyline
+							{points}
+							fill="none"
+							stroke={t.color}
+							stroke-width="1.5"
+							stroke-dasharray="2 5"
+							stroke-linecap="round"
+						/>
+					{/each}
+				{/if}
+				{#each segments(t.samples) as points}
 					<polyline {points} fill="none" stroke={t.color} stroke-width="2" />
+				{/each}
+				{#each t.contacts ?? [] as index}
+					{@const c = t.samples[Math.min(index, t.samples.length - 1)]}
+					<rect
+						x={sx(c.x) - MARK / 1.5}
+						y={sy(c.y) - MARK / 1.5}
+						width={(2 * MARK) / 1.5}
+						height={(2 * MARK) / 1.5}
+						transform={`rotate(45 ${sx(c.x)} ${sy(c.y)})`}
+						fill="none"
+						stroke={t.color}
+						stroke-width="1.5"
+					/>
 				{/each}
 				{@const p = sampleAt(t)}
 				{@const v = Math.hypot(p.vx, p.vy)}
@@ -326,6 +362,11 @@ svg.dragging {
 	stroke: var(--color-caution-tape);
 }
 .lab-centre {
+	stroke-width: 1.5;
+}
+.lab-surface {
+	fill: color-mix(in srgb, var(--color-caution-tape) 25%, transparent);
+	stroke: var(--color-caution-tape);
 	stroke-width: 1.5;
 }
 .surface {

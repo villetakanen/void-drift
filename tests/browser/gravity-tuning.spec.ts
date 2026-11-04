@@ -19,6 +19,11 @@ test("the bench draws four ships, the well and three graphs", async ({
 		"Distance to well",
 	]);
 	await expect(page.locator(".reach.lab")).toHaveCount(1);
+	await expect(page.locator(".lab-surface")).toHaveCount(1);
+	await expect(page.locator(".reference")).toHaveCount(4);
+	expect(
+		await page.locator('polyline[stroke-dasharray="2 5"]').count(),
+	).toBeGreaterThanOrEqual(4);
 	await expect(page.getByRole("radiogroup", { name: "Burn" })).toBeVisible();
 });
 
@@ -29,6 +34,7 @@ test("a setting redraws the bench and reaches the document; an impossible one is
 	const speed = page.locator(".graph .head").first();
 	const before = await speed.textContent();
 	await page.getByRole("button", { name: "Open values" }).click();
+	await expect(page.getByRole("radiogroup", { name: "Falloff" })).toBeVisible();
 	const size = page.locator("#gt-well-sizeMultiplier");
 	await size.fill("1");
 	await size.press("Tab");

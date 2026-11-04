@@ -16,7 +16,8 @@ import GravityPanel from "./GravityPanel.svelte";
 
 // Gravity tuning (docs/specs/gravity-tuning.md): one well in empty space and
 // the four given ships on the instrument's burns, on the shared instrument
-// screen. The pane holds the four settings and the document.
+// screen, each ship's unaffected path dotted and its thrust dashed on the
+// gravity graph. The pane holds the settings and the document.
 let {
 	config,
 	label = "Gravity tuning",
@@ -37,6 +38,9 @@ const tracks = $derived.by((): Track[] =>
 				label: run.label,
 				color: TRACK_COLORS[i],
 				samples: run.samples,
+				unaffected: run.unaffected,
+				contacts: run.contacts,
+				references: { gravity: run.thrust },
 				traces: {
 					speed: run.samples.map((s) => Math.hypot(s.vx, s.vy)),
 					gravity: run.gravity,
@@ -52,7 +56,7 @@ const bodies = $derived.by((): FieldBody[] =>
 					kind: "well",
 					label: "Well",
 					color: "",
-					radius: 0,
+					radius: doc.well.radius,
 					reach: massWellReach(doc.well.strength, doc.well.sizeMultiplier),
 					path: [{ x: doc.well.x, y: doc.well.y }],
 				},

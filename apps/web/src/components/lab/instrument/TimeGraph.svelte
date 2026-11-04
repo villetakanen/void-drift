@@ -45,6 +45,7 @@ const peak = $derived(
 	Math.max(
 		1,
 		...tracks.flatMap((t) => values(t).filter(Number.isFinite).map(Math.abs)),
+		...tracks.map((t) => Math.abs(t.references?.[measure] ?? 0)),
 	),
 );
 const step = $derived(niceCeil(peak / (spec.signed ? 2.5 : 5)));
@@ -140,6 +141,21 @@ const at = (t: Track) => Math.max(0, Math.min(tick, values(t).length - 1));
 		>
 			s
 		</text>
+		{#each tracks as t}
+			{@const reference = t.references?.[measure]}
+			{#if reference !== undefined}
+				<line
+					x1={plot.x}
+					x2={plot.x + plot.w}
+					y1={y(reference)}
+					y2={y(reference)}
+					stroke={t.color}
+					stroke-width="1"
+					stroke-dasharray="6 4"
+					class="reference"
+				/>
+			{/if}
+		{/each}
 		{#each tracks as t}
 			{#each lines(values(t)) as points}
 				<polyline {points} fill="none" stroke={t.color} stroke-width="1.6" />

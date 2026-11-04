@@ -28,6 +28,8 @@ export type Flight = {
 	startSpeed?: number;
 	/** Acceleration at a point, added to the velocity each substep before the move. */
 	pull?: (x: number, y: number) => { x: number; y: number };
+	/** Resolves contact with a body after the pull and before the move; `tick` is the sample about to be recorded. */
+	contact?: (ship: { pos: Vec2; vel: Vec2 }, tick: number) => void;
 };
 
 /**
@@ -86,6 +88,7 @@ export function calculate(
 				ship.vel.x += (g.x * DT) / 4;
 				ship.vel.y += (g.y * DT) / 4;
 			}
+			flight.contact?.(ship, tick + 1);
 			ship.pos.x += (ship.vel.x * DT) / 4;
 			ship.pos.y += (ship.vel.y * DT) / 4;
 		}
@@ -151,6 +154,12 @@ export type Track = {
 	samples: Sample[];
 	/** The measures this track has values for; a graph needs its measure here. */
 	traces: Partial<Record<Measure, number[]>>;
+	/** The same flight without outside forces, drawn dotted (Gravity tuning). */
+	unaffected?: Sample[];
+	/** Sample indices of contacts with a body, marked on the path. */
+	contacts?: number[];
+	/** A reference value per measure, drawn as a dashed line in the track's colour. */
+	references?: Partial<Record<Measure, number>>;
 };
 /** Six distinct vehicle colours, in order; a configuration holds at most six. */
 export const TRACK_COLORS = [
