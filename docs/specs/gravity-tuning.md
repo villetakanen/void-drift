@@ -10,8 +10,8 @@ thrust. The game's sun and planets use the same mass law
 
 It is one of two benches with one subject each. Ship tuning (the Motion instrument’s no-gravity screen,
 [motion-instrument.md](motion-instrument.md)) compares ships with no gravity; Gravity
-tuning studies one well with ships that cannot be changed. Neither has the
-other's options.
+tuning studies one well with ships that cannot be changed. These restrictions
+belong to these configured Lab uses, rather than every Motion instrument instance.
 
 ## Architecture
 
@@ -20,34 +20,16 @@ other's options.
 One static well in empty space: no sun, no planets, no orbit. The well is a body
 with a surface.
 
-- `strength`: the well's mass.
-- `falloff`: how the pull falls with distance, one of two semi-physical laws:
-  - `inverse-square`: `G × mass / distance²`, `G = 1000` (`MASS_WELL_G`), a mass
-    in three dimensions;
-  - `inverse`: `G₂ × mass / distance`, `G₂ = 10` (`MASS_WELL_G_2D`), a mass in a
-    flat world. The constants make both laws pull equally at 100 u.
+The configured inputs are the well's mass (`strength`), production falloff
+selection (`falloff`), cut-off pull (`cutoff`), body radius (`radius`) and centre
+(`x`, `y`). Their units, accepted ranges and defaults are listed under Settings.
 
-  Mass alone sets how hard the well pulls under either law.
-- `cutoff`: the pull, in u/s², below which it no longer matters. The reach is
-  where the pull falls to it, `√(G × mass / cutoff)` for 1/d² and
-  `G₂ × mass / cutoff` for 1/d, so every well's edge means the same pull. The
-  reach is a hard cut-off, artificially smaller than physics to keep game
-  physics sane: inside it the pull follows the falloff exactly, at and beyond it
-  it is zero. Changing the cut-off moves where the pull ends, never how strong
-  it is inside.
-- `radius`: the body's surface, smaller than the reach. The pull applies only
-  outside contact distance, `radius + ship radius`, as for a planet. A ship that
-  reaches contact distance bounces as off a planet: it is placed on the surface
-  and its velocity is reflected about the surface normal and scaled by 0.8
-  (`bounceOffSurface`, the game's planet contact). The bench records each contact;
-  the run continues. The body bounds the pull at `pull(radius + ship radius)`.
-- `x`, `y`: the well's centre in the bench's frame.
-
-The law is one production function, `massWellAcceleration(distance, mass,
-cutoff, falloff)`, with `massWellPull`, `massWellReach`, `MASS_WELL_G` and
-`MASS_WELL_G_2D`
-(`packages/core/src/lib/physics/Physics.ts`), the same law the game's sun and
-planets use.
+[Gravity field](gravity-field.md) owns the gravity equations, reach and cut-off
+behavior, integration rules and planet contact response. The bench uses the
+production functions `massWellAcceleration`, `massWellPull`, `massWellReach` and
+`bounceOffSurface` from `packages/core/src/lib/physics/Physics.ts`. It supplies
+configured values to those functions and displays their results; it defines no
+separate gravity or collision law.
 
 ### The ships
 
@@ -71,18 +53,18 @@ The instrument's three burns, unchanged: B1 Course, B2 Turn, B3 Weave
 removes or edits a burn.
 
 Every ship starts at the origin with heading 0 (+x) and velocity `startSpeed`
-along it, then flies the chosen burn through the instrument's calculation (the
-production `applyBuildEngines` per substep, four substeps a tick, supplied power)
-with the well's pull added to its velocity each substep before its position moves,
-as the game integrates gravity, then bounces off the body on contact before it
-moves. The bench calls the instrument's own `calculate` with its `Flight` option
-(`startSpeed`, `pull`, `contact`; `apps/web/src/lib/instrument/calculate.ts`);
-`flyBench` (`apps/web/src/lib/gravity-tuning/flight.ts`) flies the four ships and
-samples each one's pull, distance to the well's centre and contacts.
+along it, with supplied power. The bench calls the instrument's `calculate` with
+its `Flight` options (`startSpeed`, `pull`, `contact`;
+`apps/web/src/lib/instrument/calculate.ts`). The well and contact callbacks use
+the production physics functions above. `flyBench`
+(`apps/web/src/lib/gravity-tuning/flight.ts`) samples each ship's path, pull,
+distance to the well's centre and contact events.
 
-Each ship also flies the same burn and start without the well, its unaffected
-path. With the well beyond reach of every path, a ship's path equals its
-unaffected path, which equals the instrument's path for the same burn.
+Each ship also runs without the well as its shadow reference. The shadow uses the
+same hull, equipment in the same mounts, hull and equipment properties, motion
+settings, burn, starting position, heading and velocity. Gravity is the only
+difference in simulation conditions. Its path is displayed beside the configured-well
+result, following the shared Motion instrument contract.
 
 Each ship's thrust is its peak engine acceleration on the unaffected path (the
 instrument's acceleration measure), the reference for how strong the well is
@@ -101,14 +83,16 @@ These, and nothing else:
 | Body radius    | `well.radius`, u                 | > 0, less than the reach    | 40               |
 | Well position  | `well.x`, `well.y`, u            | each within ±10000          | (1000, 150)      |
 
-The burn switcher (B1–B3) chooses which program is drawn, as in the instrument;
-it is not a setting of the flight.
+The selected burn is part of the experiment configuration. Choosing B1, B2 or B3
+recalculates every ship and its no-well reference using that input program.
 
 ### Document
 
-A configuration document, parsed by `GravityTuningConfig`
+An agent-supplied configuration document, parsed by `GravityTuningConfig`
 (`apps/web/src/lib/gravity-tuning/config.ts`), so an agent can hand the bench a
-starting point and the designer can copy the decided values back:
+starting point and the designer can export exact current values for the
+conversation. The page supplies the configuration; there is no designer-facing
+configuration import workflow:
 
 ```json
 {
@@ -144,36 +128,37 @@ viewports 1280px wide and up. The bench is `GravityTuning` with its pane
 - Legend: the four ships in their fixed colours.
 - Pane: the settings, with the defaults shown when changed; the derived reach,
   surface pull (the pull at the body's radius) and that pull as a multiple of
-  each ship's thrust; then the document (Copy JSON, Load).
+  each ship's thrust; then Copy JSON for exporting the current settings.
 
 Page: `/lab/gravity-tuning`, named "Gravity tuning" in the Lab.
 
 ### Handoff
 
-The copied document is the record of a decision; the bench changes no game value.
-A decided falloff, cut-off or mass reaches the game by editing the `gravity`
-section of the tuning file (gravity-field.md, "Tuning values"), where a test
-guards each body's pull at contact against the reference ship's thrust.
+The copied document records the experiment settings, not their acceptance.
+Acceptance is recorded separately in the study or an explicit designer decision;
+the bench changes no game value. An accepted falloff, cut-off or mass reaches the
+game through the tuning workflow owned by [Gravity field](gravity-field.md).
 
 ## Contract
 
 ### Definition of Done
 
+- [ ] The pane offers export of current settings without a configuration-import
+  control; agent-supplied configurations remain schema-validated.
+- [ ] Switching from B1 to B2 recalculates every ship and its no-well reference
+  using B2, records the selection and preserves all other experiment settings.
+- [ ] Changing well strength from 10000 to 10001 uses 10001 in the simulation
+  and exported configuration, with all other experiment settings unchanged.
 - [x] The document schema accepts the default document and rejects an unknown
   key, a negative starting speed, a zero strength, a zero cut-off, an
   unknown falloff, a body radius at or beyond the reach and a burn outside B1–B3
   (`gravity-tuning.test.ts`).
-- [x] With the well out of reach of every path, each ship's path equals its
-  unaffected path and the instrument's calculation of the same loadout on the
-  same burn, for all three burns; a path that enters the reach differs (`gravity-tuning.test.ts`).
-- [x] Inside reach the pull follows the chosen falloff with its constant; at and
-  beyond reach it is zero; both falloffs agree at 100 u (`MassWell.test.ts`, `gravity-tuning.test.ts`).
-- [x] At the reach the pull equals the cut-off; a lower cut-off extends the reach
-  and leaves the pull inside unchanged; doubling the mass doubles the pull at
-  every distance inside reach; for both falloffs (`MassWell.test.ts`).
-- [x] No pull applies within contact distance; a ship aimed at the body bounces
-  off its surface with the planet rule, a contact is recorded and the run
-  continues; the game's planet contact is unchanged (`MassWell.test.ts`, `gravity-tuning.test.ts`, trajectory fingerprint).
+- [ ] The configured well values reach the production gravity and contact
+  functions through the shared calculation; paths, gravity measurements and
+  contact markers display the resulting samples and events.
+- [ ] Each no-well shadow retains the same build, hull and equipment properties,
+  motion settings, burn and starting state as its configured-well run; gravity is
+  the only condition difference.
 - [x] Each ship's thrust is the peak of its unaffected path's acceleration (`gravity-tuning.test.ts`).
 - [x] `/lab/gravity-tuning` draws four paths and four dotted unaffected paths,
   the well's surface and reach, three graphs with four thrust lines on the
@@ -182,49 +167,56 @@ guards each body's pull at contact against the reference ship's thrust.
 
 ### Regression Guardrails
 
-- The bench's settings are those listed above; ships and burns are not settings.
+- The bench exposes the settings listed above and selection among the shared
+  burn programs. Its ships and the burn programs themselves remain fixed.
 - The ships and burns are the game's and the instrument's own definitions,
   imported, never copied.
-- The well's pull comes from the production `massWellAcceleration` and its
-  contact from the game's `bounceOffSurface`; the reach never changes the pull
-  inside it.
+- Gravity, derived well measurements and contact response use production physics;
+  their laws belong to [Gravity field](gravity-field.md).
 - The bench changes no game value.
 
 ### Scenarios
 
 ```gherkin
-Scenario: A well out of reach changes nothing
-  Given the default well moved to (1000, 10000)
-  When the bench flies B1
-  Then every path equals its dotted unaffected path and the instrument's path
+Scenario: Change the experiment's burn
+  Given a gravity experiment using B1
+  When the designer selects B2
+  Then every ship and its no-well reference are recalculated using B2
+  And the configuration records B2
+  And all other experiment settings remain unchanged
 
-Scenario: A lower cut-off bends the paths sooner
-  Given the default document
-  When the designer halves the cut-off pull
-  Then the reach ring grows and every path that enters it bends toward the well earlier
+Scenario: Make a small gravity adjustment
+  Given the well strength is 10000
+  When the designer changes it to 10001
+  Then the simulation uses a well strength of 10001
+  And the exported configuration contains 10001
+  And all other experiment settings remain unchanged
+
+Scenario: Apply configured gravity settings
+  Given an experiment with a configured well
+  When the designer changes a valid well setting
+  Then the shared simulation receives the updated configuration
+  And the paths and measurements display the production simulation's results
+
+Scenario: Display a no-well reference
+  Given an experiment with a configured well
+  When the instrument displays a ship's paths
+  Then its reference path uses the same ship, burn and starting conditions
+  And the reference simulation omits the well
 
 Scenario: Moving the well
   Given the default document
   When the designer drags the well to a new point
   Then the document's well.x and well.y are that point and the paths redraw
 
-Scenario: A flat-world well bends across its reach
-  Given a well with falloff inverse and a path that crosses its reach
-  When the bench flies it
-  Then the gravity graph shows pull across the whole crossing, not only near the body
-
-Scenario: Hitting the body
-  Given a ship whose path runs into the body
-  When it reaches contact distance
-  Then it bounces off the surface, a contact is marked and its path continues
+Scenario: Display a production contact event
+  Given the production simulation reports a ship contacting the body
+  When the instrument displays the resulting path
+  Then a contact marker appears at the reported contact
+  And the path displays the subsequent simulation samples
 
 Scenario: An impossible setting
   Given the default document
   When the designer sets the cut-off pull to 0
   Then the value is refused, the previous value stays and the reason is shown
 ```
-
-## Open questions
-
-- How the bench's strength maps to a planet's mass when the game adopts the rule,
-  and whether the sun keeps a separate multiplier until suns are fixed. (Owner.)

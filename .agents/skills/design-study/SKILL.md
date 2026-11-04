@@ -50,10 +50,17 @@ established references and useful current-cycle agreements; carry out supported
 conclusions and remaining uncertainties. The guide owns concrete proposals, feedback,
 retention, focus protection and the recommendation to finish independently usable results.
 
-Compare vehicle motion, engine or hull values with the Motion instrument: write its
-configuration document and embed it with `InstrumentEmbed`. The designer's adjusted
-document is the decided values. Read `docs/specs/motion-instrument.md`; if it cannot show
-what the study needs, propose an amendment there instead of a study-local chart.
+Use the Motion instrument for interactive motion investigations, with each instance
+configured for its comparison and the variables the designer needs to adjust.
+A study may embed several independent instances. Read `docs/specs/motion-instrument.md`;
+record missing instrument capabilities and proposed extensions in the design study.
+Discuss them with the designer. Update the instrument spec only when the designer
+accepts the requirement. Reuse production simulation code for experiments.
+
+For recorded findings, retain written conclusions and captured images of the observed
+results. Keep an interactive instance only when continued interaction serves the
+study, not solely to preserve historical evidence. Instruments use current production
+simulation code; later production changes may alter or invalidate old examples.
 
 ## 03 / Assess readiness
 

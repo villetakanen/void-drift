@@ -1,36 +1,78 @@
 # Motion instrument
 
 Design record: study `lab-instrument-2026-11-01` (`/lab/studies/lab-instrument-2026-11-01`).
-The Motion instrument is a Lab instrument for comparing motion through paths,
-burn inputs and measurements. Its two screens are Ship tuning (without gravity)
-and [Gravity tuning](gravity-tuning.md) (with a gravity well). This document
-describes Ship tuning and the shared components; the Gravity tuning spec describes
-its settings and measurements.
+The shared instrument is used in Lab simulation pages and design studies.
+Ship tuning and [Gravity tuning](gravity-tuning.md) are configured uses of it.
 
 ## Context
 
-Studies that compare motion, engines or hulls used to build their own charts, each
-with its own axes, units and inputs, so no two could be read together. The Motion
-instrument is the one shared tool for those comparisons. An agent writes a
-configuration document; the instrument calculates and draws it; the designer
-adjusts the values under investigation in its pane and copies the document back
-as the decided values.
+The Motion instrument makes the consequences of motion rules and settings visible
+through simulated paths and measurements. It supports investigations of the rules
+and small adjustments to their values under controlled conditions.
 
-Use the instrument for any comparison of vehicle motion, engine or hull values.
-Do not build new motion charts in a study; if the instrument cannot show what a
-study needs, record that as an amendment to this specification.
+An agent configures each experiment, including its fixed conditions and the
+variables available for the game designer to adjust. A Lab room can provide an
+ongoing tuning environment; a design study can contain several independently
+configured experiments addressing different comparisons.
+
+Interactive instances support investigation. Written findings and captured images
+record observed results; an instance is retained when continued interaction serves
+the study. Study evidence practices belong to the design-study skill.
 
 ## Architecture
 
-### Inputs and outputs
+### Shared instrument and configured uses
 
-- Input: a configuration document, parsed by `InstrumentConfig` in
+The shared instrument owns experiment configuration, the distinction between fixed
+and adjustable variables, simulation, and the presentation of paths and measurements.
+Each configured use selects its ships, motion rules, environment, burn program,
+measurements and exposed controls from the supported capabilities. Its restrictions
+apply to that use rather than defining every Motion instrument instance.
+
+Simulations use the current production laws, math and libraries with the
+experiment's configured values. Production changes also affect embedded instances;
+historical examples may change or become incompatible. Written findings and captured
+images preserve historical results. The instrument does not maintain old simulation
+versions to keep previous examples working.
+
+### Shared properties and comparison conditions
+
+Hull and equipment properties and motion-rule settings belong to the experiment,
+not individual ships. Every ship uses the same definitions for the same hull and
+equipment. Configured tuning values apply consistently to all ships that use them;
+vehicles differ through their hull and mounted equipment, not per-vehicle property
+overrides.
+
+Experimental conditions may differ explicitly between comparison runs. A no-gravity
+shadow uses the same hull, mounted equipment, properties, motion settings, burn and
+starting state as its source ship, with gravity omitted. This difference in conditions
+does not give the shadow different hull or equipment properties.
+
+### Export and acceptance
+
+An exported configuration captures the experiment's exact current values for
+sharing in the conversation with the agent. Exporting does not approve those
+settings or apply them to the game. Acceptance is recorded separately in the
+study or an explicit designer decision.
+
+The agent supplies the starting configuration through the Lab page or study.
+The designer adjusts the exposed controls and exports values for discussion;
+there is no designer-facing configuration import workflow.
+
+### Ship tuning configuration
+
+The following document, burns and calculation describe Ship tuning. Gravity tuning's
+configuration and measurements are defined in [its spec](gravity-tuning.md).
+
+#### Inputs and outputs
+
+- Input: an agent-supplied configuration document, parsed by `InstrumentConfig` in
   `apps/web/src/lib/instrument/config.ts`. Anything else is rejected with its
   issues listed in place of the view.
 - Output: the same document, edited in the pane, as JSON (Copy JSON), with empty
   change groups left out (`serialize` in the same file).
 
-### Configuration document
+#### Configuration document
 
 ```json
 {
@@ -38,7 +80,7 @@ study needs, record that as an amendment to this specification.
 	"burn": "course",
 	"vehicles": [
 		{
-			"label": "Plasma aft, more thrust",
+			"label": "Plasma aft",
 			"loadout": {
 				"version": 2,
 				"chassis": "balanced",
@@ -46,25 +88,25 @@ study needs, record that as an amendment to this specification.
 				"stabilizers": true,
 				"hull": [null, null],
 				"aft": ["plasma", "plasma"]
-			},
-			"changes": { "plasma": { "thrust": 46000 } }
+			}
 		}
 	]
 }
 ```
 
 - `vehicles`: one to six. Each is a game loadout (`LoadoutSchema` in
-  `packages/mode-a`) plus optional `changes`, keyed by engine family, naming only
-  values that differ from the game. A document without changes describes ships as
-  they fly today.
-- `changes.ion`: any of `acceleration`, `maxSpeed`, `bonus`, `falloff`, `maxTurn`
+  `packages/mode-a`) with a label. Property overrides belong to the experiment,
+  shared across its vehicles. A document without overrides uses the current
+  production ship and engine values. Its paths reflect the configured experimental
+  conditions, including starting state, burn inputs, gravity and power supply.
+- Shared engine tuning values, keyed by engine family: ion exposes any of `acceleration`, `maxSpeed`, `bonus`, `falloff`, `maxTurn`
   (shared by light and heavy ions and the stabilisers; the turn cap applies to
-  every ship). `changes.fusion` and `changes.plasma`: any of `thrust`, `limit`,
+  every ship). Fusion and plasma expose any of `thrust`, `limit`,
   `chargeSeconds`, `pulsePeriod`, `pulseOn`. Values outside the schemas' ranges
   are rejected.
 - `burn`: one of the instrument's fixed programs; studies never write inputs.
 
-### Burns (`apps/web/src/lib/instrument/burns.ts`)
+#### Burns (`apps/web/src/lib/instrument/burns.ts`)
 
 All are 14 s at 60 Hz.
 
@@ -74,15 +116,19 @@ All are 14 s at 60 Hz.
 | `turn`   | B2    | 6 s LR, 2 s L, 1 s coast, 5 s LR                                 |
 | `weave`  | B3    | LR, L, R repeating; each round's steps 0.3 s longer; cut at 14 s |
 
-### Calculation (`apps/web/src/lib/instrument/calculate.ts`)
+#### Calculation (`apps/web/src/lib/instrument/calculate.ts`)
 
 Each vehicle runs on the burn through the production `applyBuildEngines`
-function, with its own part and ion values, from rest at the origin. Speed,
+function, using the experiment’s shared part and ion values, from rest at the
+origin. Speed,
 acceleration (differenced over 6 ticks) and turn acceleration derive from the
 samples. Not included: gravity, power limits, and changes to part mass or chassis
 values. A difference shown by the instrument may therefore not appear in flight.
 
-### Views
+### Shared screen and Ship tuning views
+
+The layout is shared; the measurements and default controls below are Ship tuning’s.
+Gravity tuning supplies its own measurements and controls.
 
 One 1440 × 900 logical screen, scaled to fit its container, on the console
 (elevation 1). Two 672px columns in a 32px margin, 32px apart; no header or footer.
@@ -94,7 +140,8 @@ One 1440 × 900 logical screen, scaled to fit its container, on the console
 - Below both, 24px down: the legend, naming every vehicle in its colour.
 - The pane overlay, unscaled on the container: menu button in the top-right
   corner, elevation 3, 45% of the container wide, over an 11% backdrop. Default
-  content: each vehicle's values and the document's Copy JSON and Load.
+  content: the experiment’s shared tuning values and Copy JSON for exporting the
+  current settings.
 
 Every graph scales its value axis to its data: a nice tick step for about five
 ticks, the top one step above the peak, symmetric about zero for turn
@@ -102,6 +149,10 @@ acceleration. Values are compared by reading the axes. Diagrams are displays
 (elevation 2) on the console with every label outside the data; a vehicle keeps
 one colour in every diagram; inline gaps are grid-sized. The path pane switches
 between fitting all paths and a default scale (0.2 px/u) that pans by dragging.
+
+Reading controls—such as the time cursor, path scale and panning—change the
+presentation only. They preserve the experiment's settings and calculated paths
+and measurements. The time cursor selects a point in the existing results.
 
 ### Components
 
@@ -121,37 +172,33 @@ between fitting all paths and a default scale (0.2 px/u) that pans by dragging.
   `components/lab/instrument/InstrumentEmbed.astro`. It takes the full window and
   snaps into place.
 - In the Lab: `/lab/instrument` opens with the starting document
-  (`apps/web/src/lib/instrument/starter.ts`); paste another under Load a document.
+  (`apps/web/src/lib/instrument/starter.ts`), supplied by the page.
 - Custom pane content: pass a `pane` snippet to `ShipTuning`; it receives the
   parsed document.
-
-## Study chassis proposal and Fiddler integration
-
-Originally proposed by [Fiddler 02.11–02.12](../../apps/web/src/pages/lab/studies/lhi-fiddler-2026-11-03.astro)
-on 2026-11-03, while its mass, eight-equipment sketch and stabilizer layout were
-still provisional. That stage could not model Fiddler with the existing chassis.
-
-The designer subsequently accepted the fixed Fiddler hull, 187 mass, four main
-engines, four built-in stabilizers and five equipment/weapon slots, and authorized
-game integration in 03–04. Fiddler is now a validated production loadout and can
-use the existing instrument document and real force calculation. The study embeds
-linked-off and linked-on Fiddler examples using the same starting fit. The ordinary
-instrument limits still apply: supplied power, no planetary gravity, no survival
-endurance claim. Actual energy and collision behavior is tested in flight.
-
-The broader proposal to author arbitrary provisional chassis, stabilizer geometry
-and independent force tuning inside instrument documents remains unimplemented.
-It is no longer a prerequisite for comparing this accepted Fiddler configuration.
 
 ## Contract
 
 ### Definition of Done
 
-- [x] Every burn is exactly 840 ticks (unit test).
-- [x] The schema accepts the design record's document and rejects a loadout that
-  does not fit its chassis, an unknown change and an unknown burn (unit tests).
-- [x] The calculation is deterministic and equals the design record's calculation
-  for every vehicle and burn (unit tests).
+- [ ] The designer can export current values; the pane has no configuration-import
+  control. Agent-supplied configurations remain schema-validated.
+- [ ] Moving the time cursor or changing the path view updates the presentation
+  while preserving experiment settings and calculated paths and measurements.
+- [ ] Export contains the experiment's current configured values and leaves game
+  values unchanged.
+- [x] Every Ship tuning burn is exactly 840 ticks (unit test).
+- [ ] The configuration schema and controls express tuning values at experiment
+  scope rather than as per-vehicle property overrides. Update validation and export
+  together; reject invalid loadouts, unknown tuning fields and unknown burns.
+- [ ] A ship and its no-gravity shadow use identical hull and equipment properties,
+  motion settings, burn and starting state; gravity is their only condition difference.
+- [ ] Ships with the same hull and equipment in the same mounts produce identical
+  paths and measurements under identical starting conditions, burn inputs,
+  environment and motion settings.
+- [ ] Simulation uses the current production functions with the experiment’s
+  configured values; verify this independently of historical study calculations.
+- [ ] Multiple instances in one study have independent configurations and results;
+  editing an exposed variable preserves fixed conditions and other instances.
 - [x] `/lab/instrument` renders the starting document with three vehicles in the
   legend and three graphs (browser test).
 - [x] Switching the burn redraws every view and changes the document (browser test).
@@ -162,7 +209,10 @@ It is no longer a prerequisite for comparing this accepted Fiddler configuration
 
 ### Regression Guardrails
 
-- Studies hand the instrument documents; they never define inputs, axes or units.
+- Configured uses supply experiment conditions and exposed controls through the
+  shared instrument’s supported capabilities; simulation uses production code.
+- Configured hull and equipment properties apply consistently across the experiment;
+  comparison conditions cannot introduce per-vehicle property overrides.
 - The game's part and ion definitions are never changed by a document.
 - The instrument's scales come from the data and the fixed rules above, never from
   a study.
@@ -171,10 +221,47 @@ It is no longer a prerequisite for comparing this accepted Fiddler configuration
 ### Scenarios
 
 ```gherkin
-Scenario: Comparing a changed engine with stock
-  Given a document with "Plasma aft" and "Plasma aft, more thrust"
-  When the designer opens the pane and sets Plasma aft's thrust to 52000
-  Then the graphs redraw and the copied document contains "thrust": 52000
+Scenario: Compare a ship with its no-gravity shadow
+  Given a ship and a shadow with the same hull and mounted equipment
+  And both use the same production properties, motion settings and burn inputs
+  And both start from the same position, heading and velocity
+  When the instrument simulates the ship with gravity
+  And simulates its shadow without gravity
+  Then both retain identical hull and equipment properties
+  And gravity is the only difference in their simulation conditions
+
+Scenario: Inspect results without changing the experiment
+  Given a calculated motion experiment
+  When the designer moves the time cursor or changes the path view
+  Then the presentation updates
+  And the experiment settings remain unchanged
+  And the calculated paths and measurements remain unchanged
+
+Scenario: Export an experiment's settings
+  Given the designer has adjusted an experiment
+  When they export its configuration
+  Then the export contains the current configured values
+  And exporting does not apply those values to the game
+
+Scenario: Independent experiments within one design study
+  Given a study contains two Motion instrument instances
+  And each has its own configured conditions and adjustable variables
+  When the designer changes an exposed variable in the first instance
+  Then its paths and measurements are recalculated
+  And its fixed conditions remain unchanged
+  And the second instance's configuration and results remain unchanged
+
+Scenario: Simulate using production behavior
+  Given an experiment with configured ships, inputs and environment
+  When the Motion instrument calculates paths and measurements
+  Then it uses the current production simulation functions
+  And applies the experiment's configured values
+
+Scenario: Identical ships produce identical paths
+  Given two ships with the same hull and equipment in the same mounts
+  And identical starting conditions, burn inputs, environment and motion settings
+  When the Motion instrument simulates them
+  Then their paths and measurements are identical
 
 Scenario: Switching the burn
   Given the instrument shows B1
@@ -182,25 +269,8 @@ Scenario: Switching the burn
   Then the lanes show 6 s both, 2 s left, 1 s coast, 5 s both
   And every path and graph is recalculated on that burn
 
-Scenario: A broken document
-  Given a document whose loadout has the wrong number of aft slots
+Scenario: An invalid agent-supplied configuration
+  Given an agent-supplied configuration whose loadout has the wrong number of aft slots
   When the instrument receives it
   Then it lists the schema's issues instead of drawing
 ```
-
-## Proposed capability: ship-law comparisons (2026-11-04)
-
-Problem framing: [Ship motion: a law for assembled ships](../../apps/web/src/pages/lab/studies/ship-motion-laws-2026-11-04.astro),
-part 01. This is an unimplemented investigation need, not a change to the current
-instrument contract or authorization to build it.
-
-The study needs matched comparisons of candidate propulsion/rotation laws and
-controlled mass or propulsion-geometry changes, first without gravity and then
-with one configured production mass well. Existing Ship tuning cannot express
-all these changes; Gravity tuning shares its calculation but fixes the ships.
-Resolve this boundary explicitly before implementing a combined experiment.
-Reuse the shared calculation and views, retain the current baseline, and record
-the candidate law, build, initial state, well and power conditions for replay.
-Any additional burn or measurement needed to expose a claimed behaviour belongs
-in the shared instrument contract, not a study-local motion chart. The exact
-extension is left to exploration and subsequent readiness/scope.

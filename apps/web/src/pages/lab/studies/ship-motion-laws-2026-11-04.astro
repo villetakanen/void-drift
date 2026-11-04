@@ -159,11 +159,11 @@ const study = studies.find(
 		<p>
 			The missing capability is comparing candidate ship laws and controlled
 			build changes in that same well experiment. Mass, geometry and candidate
-			law selection are not ordinary instrument settings today. Record needed
-			extensions in the instrument's owning specification before implementing
-			them; preserve a reproducible baseline and reuse the shared instruments.
-			The initial mathematical comparison can proceed without this extension,
-			but gravity compatibility cannot be declared demonstrated without it.
+			law selection are not ordinary instrument settings today. Keep proposed
+			extensions in this study; update the instrument specification when they
+			are approved. Reuse the shared production simulation for comparisons. The
+			initial mathematical comparison can proceed without this extension, but
+			gravity compatibility cannot be declared demonstrated without it.
 		</p>
 		<p>
 			Builder test flight currently removes planets, retains a small sun and
@@ -229,5 +229,75 @@ const study = studies.find(
 	</section>
 	<section>
 		<h2>02 / Exploration</h2>
+	</section>
+	<details>
+		<summary>Earlier instrument capability proposals</summary>
+		<p>
+			These notes were moved from the Motion instrument spec. They preserve
+			earlier investigation needs, not approved instrument requirements. Current
+			study decisions take precedence.
+		</p>
+		<p>
+			Problem framing: Ship motion: a law for assembled ships, part 01. This is
+			an unimplemented investigation need, not a change to the current
+			instrument contract or authorization to build it.
+		</p>
+		<p>
+			The study needs matched comparisons of candidate propulsion/rotation laws
+			and controlled mass or propulsion-geometry changes, first without gravity
+			and then with one configured production mass well. Existing Ship tuning
+			cannot express all these changes; Gravity tuning shares its calculation
+			but fixes the ships. Resolve this boundary explicitly before implementing
+			a combined experiment. Reuse the shared calculation and views, retain the
+			current baseline, and record the candidate law, build, initial state, well
+			and power conditions for replay. Any additional burn or measurement needed
+			to expose a claimed behaviour belongs in the shared instrument contract,
+			not a study-local motion chart. The exact extension is left to exploration
+			and subsequent readiness/scope.
+		</p>
+		<p>
+			Exploration 02.1 (hull speed ratings) identifies three specific
+			capabilities:
+		</p>
+		<p>
+			<strong>Hull speed rating.</strong>
+			A per-vehicle value naming the hull&#x27;s engine-driven cruise, applied
+			to every engine family and independent of combined thrust. Today it can
+			only be emulated for all-ion builds, by setting the ion speed ceiling to
+			the rating and the heavy-ion bonus to zero; thrust weaker than one light
+			ion then still receives a proportionally lower ceiling, and fusion and
+			plasma keep their own limits.
+		</p>
+		<p>
+			<strong>Sustained straight burn.</strong>
+			A fixed program holding both controls for the full 14 s, so a slow climb
+			finishes before any turn. B2 turns at 6 s, before a loaded Wasp reaches
+			90% of its rating.
+		</p>
+		<p>
+			<strong>Predicted curve.</strong>
+			The candidate law&#x27;s analytical speed curve drawn by the instrument
+			beside each simulated trace, distinguishable from it, so a study separates
+			prediction from observation without its own chart.
+		</p>
+	</details>
+	<section aria-labelledby="additive-instrument-proposal">
+		<h3 id="additive-instrument-proposal">
+			Instrument capability proposal: additive build speed
+		</h3>
+		<p>
+			Exploration 02.2 demonstrates an additive all-ion build speed by emulating
+			each vehicle&#x27;s calculated cruise through the existing ion
+			<code>maxSpeed</code>
+			setting and a zero combined-thrust bonus. This makes the proposed build
+			value visible in the production flight calculation, but the configuration
+			cannot record its sources. For a later mixed-family or angled-mount
+			decision, a configured comparison may need explicit hull base speed,
+			per-engine-family speed contributions, and the candidate composition rule,
+			with the instrument showing the derived build speed alongside the
+			simulation. This is an investigation capability, not an approved
+			instrument contract change; decide whether it is needed after that
+			question is framed.
+		</p>
 	</section>
 </StudyLayout>
