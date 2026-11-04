@@ -1,6 +1,6 @@
 # Gravity field in the Lab instrument
 
-Status: approved 2026-11-04; spec work S1–S5 done; steps 1–3 implemented.
+Status: approved 2026-11-04; spec work S1–S5 done; steps 1–4 implemented (pull shading deferred).
 
 ## Acceptance contract
 

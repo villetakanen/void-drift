@@ -124,8 +124,8 @@ between fitting all paths and a default scale (0.2 px/u) that pans by dragging.
 
 ### Gravity field mode
 
-Document and calculation implemented, 2026-11-04. Views, pane editing and Copy
-proposal are targets, not yet implemented. Plan: [2026-11-04-gravity-field-lab.md](../plans/2026-11-04-gravity-field-lab.md).
+Document, calculation and views implemented, 2026-11-04. Pull shading, pane
+editing of the field and Copy proposal are targets, not yet implemented. Plan: [2026-11-04-gravity-field-lab.md](../plans/2026-11-04-gravity-field-lab.md).
 Gravity rules: [gravity-field.md](gravity-field.md).
 
 A version 2 document may carry a `field`. Version 1 documents and version 2
@@ -212,16 +212,31 @@ continues) and each arena wrap. The path ends at:
 - `free`: 840 ticks flown and the ship outside every reach;
 - `bound`: 840 ticks flown and the ship inside some reach.
 
-Views in field mode, otherwise as above:
+Views in field mode, otherwise as above. `documentTracks` (`field.ts`) calculates
+either kind of document; a track carries its `run` in field mode, and the views
+take the bodies of the longest run, so moving planets cover the whole burn.
 
-- Path pane in the world frame: every body's surface and reach ring, Lab wells
-  drawn apart from game bodies, a mark at each planet contact, each path ending
-  in its outcome mark; a wrap breaks the path line instead of drawing a chord
-  across the arena; optional shading of pull strength.
-- Graphs: speed, gravity acceleration, distance to nearest surface.
-- Pane: edit `field.changes`, add, drag and remove Lab wells, edit each vehicle's
-  start. Copy proposal sits beside Copy JSON and copies the block defined in
-  gravity-field.md; it is disabled while `field.changes` is empty.
+- Path pane in the world frame (`PathPane` with `bodies`): game bodies as their
+  surface in the body's own colour with a dashed muted reach ring; Lab wells as a
+  cross and dashed reach ring in caution yellow, since they have no surface.
+  Bodies sit under the paths. A diamond marks each planet contact; a jump of
+  more than 1000 u between samples (a wrap) breaks the path line. Each path ends
+  in its outcome: a cross for `star`, `hull` or `power`, a square for `bound`, an
+  arrowhead along the velocity for `free`. Fit all includes every reach ring;
+  the default scale opens on the arena centre (960, 540).
+- Graphs (`FIELD_MEASURES`): speed, gravity (`|g|`, u/s²) and nearest surface
+  (u). Missing values (no body at all) are gaps; a run that ended holds its last
+  value under the cursor.
+- Legend: each name is followed, muted, by its outcome: free, bound, hit the
+  sun, hull lost or power lost.
+- Burn row: version 2 documents offer B0 Coast beside B1–B3 (`BurnRow` `ids`).
+- Reference: `/lab/graphs` "Field mode" draws `FIELD_DOCUMENT`
+  (`apps/web/src/lib/instrument/starter.ts`); `/lab/instrument-parts` shows the
+  field legend.
+- Target: optional shading of pull strength on the path pane.
+- Target: pane editing of `field.changes`; add, drag and remove Lab wells; edit
+  each vehicle's start. Copy proposal sits beside Copy JSON and copies the block
+  defined in gravity-field.md; it is disabled while `field.changes` is empty.
 
 ## Study chassis proposal and Fiddler integration
 
@@ -273,9 +288,11 @@ It is no longer a prerequisite for comparing this accepted Fiddler configuration
 - [x] Field runs end in `star` on a coast into the sun, `bound` inside a reach
   and `free` outside every reach, and record planet contacts and wraps
   (`lab-instrument.test.ts`).
-- [ ] Target: a field document shows bodies, reach rings and outcome marks, and
-  an edited gravity value redraws paths and appears in the copied proposal
-  (browser test).
+- [x] A field document loaded in the instrument shows the field graphs, every
+  Lab well's reach ring, body surfaces, an outcome per vehicle and B0 Coast
+  (browser test, `lab-instrument.spec.ts`).
+- [ ] Target: an edited gravity value redraws the paths and appears in the
+  copied proposal (browser test).
 - [ ] Target: field mode readability on a large screen (1280px wide or more)
   reviewed by the owner and recorded.
 

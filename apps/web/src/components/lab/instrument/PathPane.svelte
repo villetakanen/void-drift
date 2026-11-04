@@ -1,18 +1,29 @@
 <script lang="ts">
-import { niceCeil, type Track } from "../../../lib/instrument";
+import {
+	bodyAt,
+	type FieldBody,
+	niceCeil,
+	sampleIndex,
+	type Track,
+} from "../../../lib/instrument";
 import Toggle from "../../inputs/Toggle.svelte";
 
 // The path tool (lab-instrument study, 02.8–02.9): a square display of every
 // vehicle's path with a marker at the current time, the scale switch in its
 // top right and its numbers in its bottom right. It draws in its own
-// coordinates; the host scales it.
+// coordinates; the host scales it. In field mode (lab-instrument.md, "Gravity
+// field mode") it draws in the world frame with the field's bodies under the
+// paths, planet contacts on them and each path's outcome at its end.
 let {
 	tracks,
 	tick,
+	bodies = [],
 	size = 672,
 	scale = 1,
 }: {
 	tracks: Track[];
+	/** The field's bodies; empty outside field mode. */
+	bodies?: FieldBody[];
 	/** Sample index marked on every path. */
 	tick: number;
 	/** Side of the square, in the host's logical pixels. */
@@ -26,6 +37,13 @@ const DEFAULT_GRID = 500;
 // Half-length of the tick drawn across each path at the marker.
 const TICK = 16;
 const FIT_MARGIN = 48;
+// Half-size of contact and outcome marks.
+const MARK = 6;
+// A jump this long between samples is an arena wrap, not motion.
+const WRAP_JUMP = 1000;
+// Play's arena centre, where the default scale opens in field mode.
+const ARENA_CENTRE = { x: 960, y: 540 };
+const field = $derived(bodies.length > 0 || tracks.some((t) => t.run));
 
 let mode = $state<"fit" | "default">("fit");
 let pan = $state({ x: 40, y: 336 });
@@ -33,7 +51,14 @@ let dragging = $state(false);
 let last = { x: 0, y: 0 };
 
 const fit = $derived.by(() => {
-	const pts = tracks.flatMap((t) => t.samples);
+	const pts: { x: number; y: number }[] = tracks.flatMap((t) => t.samples);
+	for (const body of bodies)
+		for (const c of body.path)
+			for (const [dx, dy] of [
+				[-1, -1],
+				[1, 1],
+			])
+				pts.push({ x: c.x + dx * body.reach, y: c.y + dy * body.reach });
 	const xs = pts.map((p) => p.x),
 		ys = pts.map((p) => p.y);
 	const x0 = Math.min(...xs),
@@ -69,7 +94,13 @@ const area = $derived(Math.round(size / view.s));
 
 function choose(next: "fit" | "default") {
 	mode = next;
-	if (next === "default") pan = { x: 40, y: size / 2 };
+	if (next === "default")
+		pan = field
+			? {
+					x: size / 2 - ARENA_CENTRE.x * DEFAULT_SCALE,
+					y: size / 2 - ARENA_CENTRE.y * DEFAULT_SCALE,
+				}
+			: { x: 40, y: size / 2 };
 }
 function down(e: PointerEvent) {
 	if (mode !== "default") return;
@@ -86,6 +117,23 @@ function move(e: PointerEvent) {
 	last = { x: e.clientX, y: e.clientY };
 }
 const id = `path-${Math.random().toString(36).slice(2, 8)}`;
+
+/** The path as polylines, broken wherever the ship wrapped across the arena. */
+function segments(track: Track) {
+	const out: string[][] = [[]];
+	track.samples.forEach((p, i) => {
+		const prev = track.samples[i - 1];
+		if (prev && Math.hypot(p.x - prev.x, p.y - prev.y) > WRAP_JUMP)
+			out.push([]);
+		out[out.length - 1].push(`${sx(p.x).toFixed(1)},${sy(p.y).toFixed(1)}`);
+	});
+	return out.map((pts) => pts.join(" "));
+}
+function contacts(track: Track) {
+	return (track.run?.events ?? [])
+		.filter((e) => e.kind === "contact")
+		.map((e) => track.samples[sampleIndex(track, e.tick)]);
+}
 </script>
 
 <div class="pane" style={`width:${size}px;height:${size}px`}>
@@ -107,6 +155,30 @@ const id = `path-${Math.random().toString(36).slice(2, 8)}`;
 			<clipPath {id}><rect width={size} height={size} /></clipPath>
 		</defs>
 		<g clip-path={`url(#${id})`}>
+			{#each bodies as body}
+				{@const c = bodyAt(body, tick)}
+				<circle
+					cx={sx(c.x)}
+					cy={sy(c.y)}
+					r={body.reach * view.s}
+					fill="none"
+					class={body.kind === "well" ? "reach lab" : "reach"}
+				/>
+				{#if body.kind === "well"}
+					<path
+						d={`M${sx(c.x) - MARK},${sy(c.y)}h${2 * MARK}M${sx(c.x)},${sy(c.y) - MARK}v${2 * MARK}`}
+						class="lab-centre"
+					/>
+				{:else}
+					<circle
+						cx={sx(c.x)}
+						cy={sy(c.y)}
+						r={Math.max(2, body.radius * view.s)}
+						fill={body.color}
+						class="surface"
+					/>
+				{/if}
+			{/each}
 			{#each gridX as g}
 				<line
 					x1={sx(g)}
@@ -126,15 +198,52 @@ const id = `path-${Math.random().toString(36).slice(2, 8)}`;
 				/>
 			{/each}
 			{#each tracks as t}
-				<polyline
-					points={t.samples
-						.map((p) => `${sx(p.x).toFixed(1)},${sy(p.y).toFixed(1)}`)
-						.join(" ")}
-					fill="none"
-					stroke={t.color}
-					stroke-width="2"
-				/>
-				{@const p = t.samples[tick]}
+				{#each segments(t) as points}
+					<polyline {points} fill="none" stroke={t.color} stroke-width="2" />
+				{/each}
+				{#each contacts(t) as c}
+					<rect
+						x={sx(c.x) - MARK / 1.5}
+						y={sy(c.y) - MARK / 1.5}
+						width={(2 * MARK) / 1.5}
+						height={(2 * MARK) / 1.5}
+						transform={`rotate(45 ${sx(c.x)} ${sy(c.y)})`}
+						fill="none"
+						stroke={t.color}
+						stroke-width="1.5"
+					/>
+				{/each}
+				{#if t.run}
+					{@const end = t.samples[t.samples.length - 1]}
+					{#if t.run.outcome === "bound"}
+						<rect
+							x={sx(end.x) - MARK}
+							y={sy(end.y) - MARK}
+							width={2 * MARK}
+							height={2 * MARK}
+							fill="none"
+							stroke={t.color}
+							stroke-width="2"
+						/>
+					{:else if t.run.outcome === "free"}
+						{@const v = Math.hypot(end.vx, end.vy) || 1}
+						{@const ux = end.vx / v}
+						{@const uy = end.vy / v}
+						<path
+							d={`M${sx(end.x) - ux * MARK - uy * MARK},${sy(end.y) - uy * MARK + ux * MARK}L${sx(end.x) + ux * MARK},${sy(end.y) + uy * MARK}L${sx(end.x) - ux * MARK + uy * MARK},${sy(end.y) - uy * MARK - ux * MARK}`}
+							fill="none"
+							stroke={t.color}
+							stroke-width="2"
+						/>
+					{:else}
+						<path
+							d={`M${sx(end.x) - MARK},${sy(end.y) - MARK}l${2 * MARK},${2 * MARK}M${sx(end.x) + MARK},${sy(end.y) - MARK}l${-2 * MARK},${2 * MARK}`}
+							stroke={t.color}
+							stroke-width="2.5"
+						/>
+					{/if}
+				{/if}
+				{@const p = t.samples[sampleIndex(t, tick)]}
 				{@const v = Math.hypot(p.vx, p.vy)}
 				{#if v > 1e-6}
 					<line
@@ -201,6 +310,21 @@ svg.dragging {
 .ring {
 	stroke: var(--color-text);
 	stroke-width: 1.5;
+}
+.reach {
+	stroke: var(--color-text-muted);
+	stroke-width: 1;
+	stroke-dasharray: 4 4;
+}
+.reach.lab,
+.lab-centre {
+	stroke: var(--color-caution-tape);
+}
+.lab-centre {
+	stroke-width: 1.5;
+}
+.surface {
+	opacity: 0.85;
 }
 .tools {
 	position: absolute;

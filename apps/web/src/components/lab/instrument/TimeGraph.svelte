@@ -38,8 +38,14 @@ const plot = $derived({
 });
 // Auto-scale: a nice tick step for about five ticks, the top one step above the
 // peak. Signed measures stay symmetric about zero.
+// Values that do not exist (NaN, e.g. no surface in an empty field) are gaps.
 const peak = $derived(
-	Math.max(1, ...tracks.flatMap((t) => t.traces[measure].map(Math.abs))),
+	Math.max(
+		1,
+		...tracks.flatMap((t) =>
+			t.traces[measure].filter(Number.isFinite).map(Math.abs),
+		),
+	),
 );
 const step = $derived(niceCeil(peak / (spec.signed ? 2.5 : 5)));
 const range = $derived.by(() => {
@@ -56,12 +62,23 @@ const seconds = Array.from({ length: SECONDS + 1 }, (_, i) => i);
 const x = (t: number) => plot.x + (t / TOTAL_TICKS) * plot.w;
 const y = (v: number) =>
 	plot.y + plot.h - ((v - range.min) / (range.max - range.min)) * plot.h;
-function points(values: number[]) {
-	return values
-		.map((v, t) => `${x(t).toFixed(1)},${y(v).toFixed(1)}`)
-		.join(" ");
+/** Polylines for the finite runs of a trace. */
+function lines(values: number[]) {
+	const out: string[][] = [[]];
+	values.forEach((v, t) => {
+		if (!Number.isFinite(v)) {
+			if (out[out.length - 1].length) out.push([]);
+			return;
+		}
+		out[out.length - 1].push(`${x(t).toFixed(1)},${y(v).toFixed(1)}`);
+	});
+	return out.filter((pts) => pts.length).map((pts) => pts.join(" "));
 }
-const fmt = (v: number) => (v < 0 ? `−${Math.abs(v)}` : `${v}`);
+const fmt = (v: number) =>
+	!Number.isFinite(v) ? "–" : v < 0 ? `−${Math.abs(v)}` : `${v}`;
+// A run that ended early holds its last value under the cursor.
+const at = (t: Track) =>
+	Math.max(0, Math.min(tick, t.traces[measure].length - 1));
 </script>
 
 <div class="graph" style={`width:${width}px;height:${height}px`}>
@@ -125,12 +142,9 @@ const fmt = (v: number) => (v < 0 ? `−${Math.abs(v)}` : `${v}`);
 			s
 		</text>
 		{#each tracks as t}
-			<polyline
-				points={points(t.traces[measure])}
-				fill="none"
-				stroke={t.color}
-				stroke-width="1.6"
-			/>
+			{#each lines(t.traces[measure]) as points}
+				<polyline {points} fill="none" stroke={t.color} stroke-width="1.6" />
+			{/each}
 		{/each}
 		<line
 			x1={x(tick)}
@@ -140,13 +154,16 @@ const fmt = (v: number) => (v < 0 ? `−${Math.abs(v)}` : `${v}`);
 			class="cursor"
 		/>
 		{#each tracks as t}
-			<circle
-				cx={x(tick)}
-				cy={y(t.traces[measure][tick])}
-				r="3.5"
-				fill={t.color}
-				class="dot"
-			/>
+			{@const value = t.traces[measure][at(t)]}
+			{#if Number.isFinite(value)}
+				<circle
+					cx={x(at(t))}
+					cy={y(value)}
+					r="3.5"
+					fill={t.color}
+					class="dot"
+				/>
+			{/if}
 		{/each}
 	</svg>
 	<div
@@ -159,7 +176,7 @@ const fmt = (v: number) => (v < 0 ? `−${Math.abs(v)}` : `${v}`);
 			<span class="at">{(tick / TICK_RATE).toFixed(2)} s</span>
 			{#each tracks as t}
 				<b style={`color:${t.color}`}
-					>{fmt(Math.round(t.traces[measure][tick]))}</b
+					>{fmt(Math.round(t.traces[measure][at(t)]))}</b
 				>
 			{/each}
 		</span>

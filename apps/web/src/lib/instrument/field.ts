@@ -7,8 +7,14 @@ import {
 	stockSettings,
 } from "@void-drift/mode-a";
 import { type BurnId, inputAt, TOTAL_TICKS } from "./burns";
-import type { Sample } from "./calculate";
-import type { InstrumentVehicle } from "./config";
+import {
+	calculate,
+	type Sample,
+	TRACK_COLORS,
+	type Track,
+	traces,
+} from "./calculate";
+import type { InstrumentConfig, InstrumentVehicle } from "./config";
 
 // Field mode (lab-instrument.md, "Gravity field mode"): each vehicle
 // flies the production Simulation under the document's field. Gravity comes
@@ -22,10 +28,21 @@ export type FieldVehicle = InstrumentVehicle & { start?: ShipStart };
 export type FieldSample = Sample & { gx: number; gy: number; surface: number };
 export type FieldEvent = { tick: number; kind: "contact" | "wrap" };
 export type Outcome = "star" | "hull" | "power" | "free" | "bound";
+/** A body as the views draw it: game sun and planets, or a Lab well (no surface). */
+export type FieldBody = {
+	kind: "sun" | "planet" | "well";
+	label: string;
+	color: string;
+	radius: number;
+	reach: number;
+	/** Centre at every sample index; one entry when the body never moves. */
+	path: { x: number; y: number }[];
+};
 export type FieldRun = {
 	samples: FieldSample[];
 	events: FieldEvent[];
 	outcome: Outcome;
+	bodies: FieldBody[];
 };
 
 /** The vehicle's Simulation; throws as Simulation does (a start inside a body). */
@@ -67,6 +84,11 @@ function insideSomeReach(sim: Simulation, field: InstrumentField) {
 	);
 }
 
+/** A body's centre at a sample index; the last known one past its path. */
+export function bodyAt(body: FieldBody, index: number) {
+	return body.path[Math.min(index, body.path.length - 1)];
+}
+
 /** Flies one vehicle on a burn under the field, through the production step. */
 export function calculateField(
 	vehicle: FieldVehicle,
@@ -76,7 +98,42 @@ export function calculateField(
 	const sim = fieldSimulation(vehicle, field);
 	const samples: FieldSample[] = [];
 	const events: FieldEvent[] = [];
+	const at = (p: { x: number; y: number }) => ({ x: p.x, y: p.y });
+	const planets: FieldBody[] = sim.planets.map((planet) => ({
+		kind: "planet",
+		label: planet.type,
+		color: planet.color,
+		radius: planet.radius,
+		reach: getPlanetInfluenceRadius(planet),
+		path: [],
+	}));
+	const bodies: FieldBody[] = [
+		...(sim.hasSun
+			? [
+					{
+						kind: "sun" as const,
+						label: "Sun",
+						color: sim.star.color,
+						radius: sim.star.radius,
+						reach: sim.star.influenceRadius,
+						path: [at(sim.star.pos)],
+					},
+				]
+			: []),
+		...planets,
+		...field.wells.map((well) => ({
+			kind: "well" as const,
+			label: well.label,
+			color: "",
+			radius: 0,
+			reach: well.reach,
+			path: [at(well)],
+		})),
+	];
 	const record = () => {
+		sim.planets.forEach((planet, i) => {
+			planets[i].path.push(at(planet.pos));
+		});
 		const gravity = sim.gravityAt();
 		samples.push({
 			x: sim.ship.pos.x,
@@ -105,11 +162,31 @@ export function calculateField(
 				samples,
 				events,
 				outcome: cause.toLowerCase() as "star" | "hull" | "power",
+				bodies,
 			};
 	}
 	return {
 		samples,
 		events,
 		outcome: insideSomeReach(sim, field) ? "bound" : "free",
+		bodies,
 	};
+}
+
+/** Every vehicle of a document as the views draw it, in field mode when it has a field. */
+export function documentTracks(doc: InstrumentConfig): Track[] {
+	return doc.vehicles.map((vehicle, i) => {
+		const run =
+			doc.version === 2 && doc.field
+				? calculateField(vehicle, doc.burn, doc.field)
+				: undefined;
+		const samples = run ? run.samples : calculate(vehicle, doc.burn);
+		return {
+			label: vehicle.label,
+			color: TRACK_COLORS[i],
+			samples,
+			traces: traces(samples),
+			run,
+		};
+	});
 }

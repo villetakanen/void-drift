@@ -1,3 +1,4 @@
+import { FIELD_DOCUMENT } from "../../apps/web/src/lib/instrument/starter";
 import { expect, test } from "../helpers/local-browser";
 
 // Contract: docs/specs/lab-instrument.md.
@@ -69,12 +70,13 @@ test("each reference page renders its components", async ({ page }) => {
 	await page.goto("/lab/graphs");
 	await expect(
 		page.getByRole("img", { name: /^Plan view of every path/ }),
-	).toBeVisible();
-	await expect(page.locator(".graph")).toHaveCount(2);
+	).toHaveCount(2);
+	await expect(page.locator(".graph")).toHaveCount(4);
+	await expect(page.locator(".reach.lab")).toHaveCount(2);
 
 	await page.goto("/lab/instrument-parts");
 	await expect(page.getByRole("radiogroup", { name: "Burn" })).toBeVisible();
-	await expect(page.getByRole("list", { name: "Vehicles" })).toHaveCount(2);
+	await expect(page.getByRole("list", { name: "Vehicles" })).toHaveCount(3);
 	await page.getByRole("button", { name: "Open values" }).click();
 	await expect(
 		page.getByText("Pane content, filled by the host."),
@@ -82,4 +84,32 @@ test("each reference page renders its components", async ({ page }) => {
 
 	await page.goto("/lab/surfaces");
 	await expect(page.locator(".display").first()).toBeVisible();
+});
+
+test("a field document draws bodies, outcomes and field graphs", async ({
+	page,
+}) => {
+	await page.goto("/lab/instrument");
+	await expect(page.locator(".graph")).toHaveCount(3);
+	await page.getByRole("button", { name: "Open values" }).click();
+	await page.getByText("Load a document").click();
+	await page
+		.getByRole("textbox", { name: "Configuration document to load" })
+		.fill(JSON.stringify(FIELD_DOCUMENT));
+	await page.getByRole("button", { name: "Load", exact: true }).click();
+	await page.keyboard.press("Escape");
+	const vehicles = page.getByRole("list", { name: "Vehicles" });
+	await expect(vehicles.getByRole("listitem")).toHaveCount(
+		FIELD_DOCUMENT.vehicles.length,
+	);
+	await expect(vehicles.locator(".outcome")).toHaveCount(
+		FIELD_DOCUMENT.vehicles.length,
+	);
+	const heads = page.locator(".graph .head .name");
+	await expect(heads).toHaveText(["Speed", "Gravity", "Nearest surface"]);
+	await expect(page.locator(".reach.lab")).toHaveCount(
+		FIELD_DOCUMENT.field.wells.length,
+	);
+	await expect(page.locator(".surface")).not.toHaveCount(0);
+	await expect(page.getByRole("img", { name: /^B0, Coast/ })).toBeVisible();
 });
