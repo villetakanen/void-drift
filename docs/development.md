@@ -132,10 +132,8 @@ Platform to work around setup failures. Public web configuration is local, not c
 Before preparing, decide the rules version. If gameplay rules or any tuning-file value
 differ from the previous release, change `CHALLENGE` in
 `packages/mode-a/src/schemas/highscore.ts` once for this release; new scores then use
-new document IDs and queries. Otherwise leave it unchanged. Applying tuning proposals
-(`pnpm tuning:apply <area> <proposal file>`, from the Lab instrument's Copy proposal)
-between releases never changes it (owner decision, 2026-11-04;
-[gravity-field.md](specs/gravity-field.md#rules-version)).
+new document IDs and queries. Otherwise leave it unchanged. Editing tuning values
+between releases never changes it ([gravity-field.md](specs/gravity-field.md#rules-version)).
 
 After the full verification gates pass on a stable candidate, prepare the production
 artifact locally:

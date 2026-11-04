@@ -3,10 +3,6 @@
 **Status:** ✅ COMPLETED (2024)  
 **Current Version:** 0.0.4
 
-> **[DEPRECATED 2026-11-04]** This spec's gravity rules (the mass-based formula and the gravity criteria and scenarios) are superseded by
-> [gravity-field.md](gravity-field.md), which describes gravity as it flies today.
-> Kept for history; do not implement from them.
-
 ## Blueprint
 
 ### Context
@@ -72,7 +68,7 @@ Planets cannot overlap at any point in their orbits. For two planets with radii 
 5. Skip planet if no valid placement found
 
 - **Physics:**
-  - Gravity: Inverse square law, influence radius is **mass-based** (capped at `radius * 8`).
+  - Gravity: [gravity-field.md](gravity-field.md#bodies-in-play).
   - Collision: Elastic bounce (restitution 0.8).
   - Motion: Planets orbit the central star.
 - **Rendering:** Flat Vector Style (Solid Color) in `packages/core/src/lib/assets/planet.ts`.
@@ -156,12 +152,7 @@ interface Planet {
 
 #### Gravity
 
-**[DEPRECATED 2026-11-04]** Play gives every planet an explicit inverse-square well; see [gravity-field.md](gravity-field.md#bodies-in-play). The formula below applies only to planets without a well.
-
-- **Law:** Inverse square law scaled by mass
-- **Influence Radius:** Mass-based: `sqrt(mass) * 10`, clamped to `[radius * 2, radius * 8]`
-- **Formula:** `strength = (mass / dist²) * 1000`
-- **Integration:** Multi-body gravity via vector addition with star
+Specified in [gravity-field.md](gravity-field.md#bodies-in-play).
 
 #### Collision
 

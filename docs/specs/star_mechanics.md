@@ -3,10 +3,6 @@
 **Status:** ✅ COMPLETED (2024)  
 **Current Version:** 0.0.4
 
-> **[DEPRECATED 2026-11-04]** This spec's gravity rules (`applyGravity`, `G = 0.1`, the 350px reach and the gravity scenarios) are superseded by
-> [gravity-field.md](gravity-field.md), which describes gravity as it flies today.
-> Kept for history; do not implement from them.
-
 ## Blueprint
 
 ### Context
@@ -28,7 +24,7 @@ The **Star** acts as the central anchor of the arena. It provides both a lethal 
     color: string;
   }
   ```
-- **Physics API:** `applyGravity(ship: Ship, star: Star): Vector2` (implemented in `packages/core/src/lib/physics/Physics.ts`)
+- **Gravity:** the star's pull and reach are specified in [gravity-field.md](gravity-field.md).
 - **Render API:** `drawStar(ctx: CanvasRenderingContext2D, star: Star, time: number)` (implemented in `packages/core/src/lib/assets/star.ts`)
 
 ### Anti-Patterns
@@ -178,14 +174,7 @@ The Lab must display the current sun configuration:
 
 ### Physics (`packages/core/src/lib/physics/Physics.ts`)
 
-**[DEPRECATED 2026-11-04]** See [gravity-field.md](gravity-field.md#the-pull).
-
-- **Gravity Law:** Inverse square with safeguard: `F = G * m1 * m2 / max(distance², minDistance²)`
-- **Influence Check:** Only applies force if `distance < influenceRadius`
-- **Force Application:** `ship.acc += force_vector`
-- **Constants:**
-  - Gravitational constant: `G = 0.1`
-  - Minimum distance: `50px` (prevents singularity near core)
+- **Gravity:** [gravity-field.md](gravity-field.md#the-pull).
 
 ### Visual Properties
 
@@ -224,4 +213,4 @@ The Lab must display the current sun configuration:
 
 **Star System Status: OPERATIONAL** ⭐  
 **Location:** Arena center (960, 540)  
-**Gravity:** Active with 350px influence radius
+**Gravity:** see [gravity-field.md](gravity-field.md)

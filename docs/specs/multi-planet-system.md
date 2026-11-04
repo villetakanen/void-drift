@@ -4,10 +4,6 @@
 **Phase:** 7 (Content & Polish)
 **Target Version:** v0.3.0
 
-> **[DEPRECATED 2026-11-04]** This spec's gravity composition criteria and scenario are superseded by
-> [gravity-field.md](gravity-field.md), which describes gravity as it flies today.
-> Kept for history; do not implement from them.
-
 ---
 
 ## Blueprint

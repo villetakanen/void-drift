@@ -1,7 +1,6 @@
 # Gravity tuning
 
-Status: specified 2026-11-04 from the owner's decisions; not implemented. Plan:
-[2026-11-04-gravity-field-lab.md](../plans/2026-11-04-gravity-field-lab.md).
+Status: Target, not implemented.
 
 ## Context
 
@@ -24,8 +23,8 @@ other's options.
 One static well in empty space: no sun, no planets, no orbit, no surface.
 
 - `strength`: the well's mass.
-- The pull is semi-physical: `G × mass / distance²`, with `G = 1000` (the old
-  planet rule's constant; a fixed game constant, not a setting). Mass alone sets
+- The pull is semi-physical: `G × mass / distance²`, with `G = 1000` (the
+  constant of the no-well planet formula; a fixed game constant, not a setting). Mass alone sets
   how hard the well pulls.
 - `sizeMultiplier`: reach in units per unit of mass, so
   `reach = sizeMultiplier × mass`. The reach is only a cut-off, artificially

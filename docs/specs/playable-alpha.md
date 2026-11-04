@@ -7,9 +7,9 @@ Status: implementation in progress, 2026-10-28. Scope approved in the voice-led 
 `packages/mode-a/src/lib/simulation.ts` owns a fixed 60 Hz survival simulation.
 Game and Flight Lab share this simulation and the core renderer/input/camera.
 `schemas/flight.ts` validates Lab settings and replay inputs; ship tuning uses the
-existing ship-profile schema. Gravity and engines follow the accepted 29 October gravity study integration below.
+existing ship-profile schema. Gravity: [gravity-field.md](gravity-field.md).
 
-All ranked runs use the current challenge `CHALLENGE` (`ion-1` since 0.4.3), seed 2026, a G-class star, and stock profiles.
+All ranked runs use the current challenge `CHALLENGE` (`ion-1`), seed 2026, a G-class star, and stock profiles.
 Scoring is casual client-reported survival time, clearly labeled: Firestore rules
 validate ownership, shape, version and bounds, but do not prove an honest simulation.
 Each anonymous player keeps one best score per ranked ship, independently of other
@@ -85,38 +85,6 @@ independently of the internal `alpha-1` scoring challenge identifier.
 Update 2026-11-02 (0.4.8): the game header nav reads HANGAR (the builder), HIGH SCORES and
 OPTIONS; the Lab's return link reads PLAY. The builder header reads `HANGAR / <version>`. See
 [opening-screen.md](opening-screen.md#spike--title-menu-and-ship-selector).
-
-## Gravity well integration — 29 October 2026
-
-> **[DEPRECATED 2026-11-04]** Gravity rules, tuning values and the rules version
-> now live in [gravity-field.md](gravity-field.md). That spec also records that the
-> engine taper described below is not applied in play. This section is kept as
-> the record of the 29 October change.
-
-Game and Flight Lab use four physics substeps per 60 Hz replay tick. Suns and
-planets use a bounded inverse-square pull: strength / 6 × ((reach / distance)² − 1),
-zero at and beyond reach. Existing body sizes and reaches are preserved. The G sun
-starts at 4× its previous strength (accepted range 4×–10×). Planets use independent
-well strength 600, equivalent to acceleration 300 at half reach; this is provisional.
-
-All three ships have two engines, each supplying half of combined thrust. The
-forward component of velocity along the push direction reduces effectiveness by
-1 / (1 + (max(0, velocity · direction) / 600)²). Braking and perpendicular thrust
-retain full effectiveness. Profile multipliers remain. There is no passive drag
-or hard speed cap; gravity is independent of engine taper. The 600 units/s engine
-scale is an initial estimate, not a maximum velocity or established play balance.
-
-Legacy study comparisons retain their explicit old resistance/curve configuration.
-New scores use gravity-1 and separate document IDs; existing alpha-1 records remain.
-(Since 0.4.3 the challenge is `ion-1`; see [gravity-field.md](gravity-field.md#rules-version).)
-A deployment must include the updated rules before new scores can be submitted.
-Existing replay inputs are deterministic under this revision but trajectories differ
-from alpha-1; cross-version replay equivalence is not promised.
-
-Automated correctness checks cover directional thrust, coasting, steering, escape,
-collision and replay. Human review is explicitly outside integration scope and
-happens afterward on the built alpha. Study trajectories cannot establish playtest
-results. Physical sizing, new reach rules and visual danger cues are deferred.
 
 ## Engine effects alpha — 30 October 2026 (historical painter)
 

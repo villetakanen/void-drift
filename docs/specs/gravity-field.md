@@ -1,9 +1,7 @@
 # Gravity field
 
-Status: reverse-engineered from the code, 2026-11-04. Sections marked **Target**
-describe the agreed direction in
-[2026-11-04-gravity-field-lab.md](../plans/2026-11-04-gravity-field-lab.md) and
-are not implemented. Everything else describes what flies today.
+Sections marked **Target** are agreed and not implemented; everything else
+describes how gravity flies.
 
 ## Context
 
@@ -92,8 +90,7 @@ Gameplay tuning lives in one versioned file, `packages/mode-a/src/lib/tuning.jso
 one section per area, parsed at load by `TuningSchema` (`packages/mode-a/src/lib/tuning.ts`)
 into `TUNING`. This spec owns the `gravity` section, validated by
 `GravityTuningSchema` (`packages/mode-a/src/lib/schemas/gravity.ts`) and exported
-as `GRAVITY_TUNING`. The Lab usability plan
-(`docs/plans/2026-11-04-lab-usability.md`) adds per-ship sections to the same file.
+as `GRAVITY_TUNING`. Other areas add their own sections to the same file.
 
 | Value            | Range                      | Meaning                                           |
 | ---------------- | -------------------------- | ------------------------------------------------- |
@@ -115,7 +112,7 @@ reach rule for studies and Lab inspectors only.
 `planetStrength` and `sunMultiplier` are provisional and not yet reviewed for feel
 in flight.
 
-### Engine taper (finding)
+### Engine taper
 
 `updateShip` takes both `engineCutoff` and `engineSpeedScale`; when a cutoff is
 given it is applied and `engineSpeedScale` is ignored. Play passes
@@ -123,8 +120,7 @@ given it is applied and `engineSpeedScale` is ignored. Play passes
 1 / (1 + (v / 600)²) taper is never applied. Loadout ships, which is every ship
 in play, receive no thrust input in `updateShip` at all; their thrust comes from
 `applyBuildEngines` (`build-flight.ts`) with each part's own `limit`. So
-`engineSpeedScale` currently affects no flight. It belongs to engine rules, not
-gravity, and is kept here only until that is decided.
+`engineSpeedScale` affects no flight. It belongs to engine rules, not gravity.
 
 ### Rules version
 
@@ -134,108 +130,19 @@ rules in this spec changes trajectories for the same inputs, so scores from
 before and after such a change are never compared.
 
 `CHALLENGE` changes once per release, at release, and only when rules or tuning
-differ from the previous release (owner decision, 2026-11-04). Applying a
-proposal or editing values in code never changes it. The step belongs to the
-release procedure in `docs/development.md`.
+differ from the previous release; editing tuning values never changes it. The
+step belongs to the release procedure in `docs/development.md`.
 
 ### Target: reach from mass
 
-Owner decision, 2026-11-04: a well's pull is semi-physical,
-`G × mass / distance²` (`G = 1000`), and its reach is only a cut-off that comes
-from its mass, `reach = sizeMultiplier × mass`, artificially smaller than physics
-to keep game physics sane; a hard cut, metrics first. The current curve lets the
-reach shape the pull everywhere inside it, a drift from the earlier mass-based
-planet rule that this corrects. The
+A well's pull is semi-physical, `G × mass / distance²` with `G = 1000`, and its
+reach is only a hard cut-off from its mass, `reach = sizeMultiplier × mass`, kept
+artificially smaller than physics so game physics stays sane. Mass alone sets how
+hard a well pulls; the reach sets only where the pull ends. The
 [Gravity tuning](gravity-tuning.md) bench finds the multiplier with one well and
-the game's ships. The game does not follow this yet: planets adopt it first and
-suns later, each as its own specified change, which also defines how the bench's
-values reach the tuning file. Until then the rules above stand.
-
-### [DEPRECATED 2026-11-04] Lab flight conditions (field)
-
-> Built for the instrument's field mode, which mixed ship and gravity tuning.
-> Removed in plan step R2 (2026-11-04); the Gravity tuning bench does not use
-> it. `starPull` and `planetPull` (`Physics.ts`), split out of `updateShip` for
-> it, remain and `updateShip` uses them.
-
-`new Simulation(settings, { field })`. Options are parsed by
-`SimulationOptionsSchema` (`simulation.ts`); the field by `GravityFieldSchema`
-(`packages/mode-a/src/lib/schemas/gravity.ts`). Without a field, or with the
-empty field `{}`, the simulation flies exactly as play. The Lab usability plan
-adds its per-chassis tuning patch to the same options object, beside `field`.
-
-- `system`: `game` (default) or `empty`. An empty system has no planets and no
-  sun: `hasSun` is false, the sun neither pulls nor charges, and there is no heat
-  and no sun contact.
-- `orbits`: `moving` (default) or `frozen`; frozen planets stay at their seeded
-  start positions.
-- `wells`: up to four Lab wells, each `LabWellSchema`: label, position inside the
-  arena, reach, strength and curve. A Lab well pulls by `wellAcceleration`
-  (`labWellPull`, `simulation.ts`), summed with every other pull, outside the
-  ship's radius, as a planet of radius zero would. It has no surface: nothing
-  collides with it, it ends no run, and gravity coils do not collect from it.
-- `changes`: any `GravityTuningSchema` values, laid over `GRAVITY_TUNING` and
-  validated with it; `Simulation.gravity` holds the result.
-- `start`: `ShipStartSchema` (position inside the arena, heading in degrees with
-  0 = +x and −90 = up, speed along the heading); without it the ship keeps the
-  game's spawn.
-
-The constructor throws when a start lies within contact distance of the sun or a
-planet, and when a field is combined with a test flight.
-
-`Simulation.gravityAt(point)` returns the summed pull at a point (default: the
-ship) from the same functions the step uses: `starPull` and `planetPull`
-(`Physics.ts`, called by `updateShip`) and `labWellPull`. `Simulation.contacts`
-counts planet contact substeps. The Lab instrument's
-field mode (`docs/specs/lab-instrument.md`) runs this `Simulation`; it has no
-gravity code of its own.
-
-### [DEPRECATED 2026-11-04] Changing gravity values
-
-> The proposal below came from the instrument's field mode and was removed with
-> it in plan step R1 (2026-11-04). The `pnpm tuning:apply` script and its area
-> registry stay (no areas yet) for the ship area; how Gravity tuning's values
-> reach the game is defined when planets adopt reach from mass.
-
-Gravity values change only by applying an owner-supplied proposal. The owner
-copies it from the Lab instrument's pane (Copy proposal, enabled once a field
-document changes a gravity value) and hands it to an agent. Built by
-`gravityProposal` (`apps/web/src/lib/instrument/proposal.ts`), it reads:
-
-```text
-Gravity tuning proposal (instrument document v2, from /lab/instrument)
-Baseline: <every gravity value the Lab's game build had, key value; …>
-Apply: <key> <old> → <new>; …
-Not applied (Lab wells): <labels, or none>
-<the instrument document JSON>
-```
-
-Keys are `sunMultiplier`, `planetStrength`, `sunReachFactor`,
-`planetReach.massScale`, `planetReach.minRadii`, `planetReach.maxRadii` and
-`curve`.
-
-`pnpm tuning:apply <area> <file>` (`scripts/tuning-apply.mjs`) applies one
-section of the tuning file; `gravity` is defined here, `ship` by the Lab
-usability plan. The script loads each area's checks from TypeScript through
-Vite (`createViteServer` from `vitest/node`). For `gravity`
-(`applyGravitySection`, `proposal.ts`) it:
-
-- parses the JSON with `InstrumentConfig`, lays `field.changes` over the tuning
-  file's `gravity` section, validates the result with `GravityTuningSchema`,
-  writes the file with every other section untouched, and prints `key old → new`
-  for each changed value;
-- refuses, writing nothing and exiting 1, when the block has no document or
-  invalid JSON, the document is invalid or has no field, a value is out of range
-  or unknown, the Apply line is missing or disagrees with the document, an Apply
-  `old` value differs from the tuning file (a stale proposal, named by value), or
-  nothing would change; the tuning file itself being invalid is refused too;
-- exits 2 for an unknown area or a missing file argument.
-
-`VOID_DRIFT_TUNING_FILE` points the script at another file (used by its tests).
-The agent then runs `pnpm verify`, updating visual baselines for the trajectory
-change without changing tolerances, and commits locally with the proposal block
-in the message body. It does not change `CHALLENGE`. Lab wells and starts never
-become game data by this route.
+given ships. Planets adopt the law first and suns after, each as its own change
+that also defines how the bench's values reach the tuning file; until then the
+rules above apply.
 
 ## Contract
 
@@ -258,14 +165,6 @@ become game data by this route.
   bodies equal those built from `GRAVITY_TUNING`, and changing each value changes
   the bodies (`tuning.test.ts`).
 - [x] A planet with a well pulls with its own curve (`Physics.test.ts`).
-- [DEPRECATED 2026-11-04, removed with the field in R2] ~~A default
-  `Simulation` and one given the empty field produce the same trajectory; an
-  empty system, Lab wells, frozen orbits, starts and changes behave as
-  described (`field.test.ts`).~~
-- [x] A proposal reads back as exactly its changes; each refusal above has a
-  reason; `tuning:apply` applies a proposal once and then refuses it as stale
-  without writing (`proposal.test.ts`, including a run of the script on a
-  copy).
 - [ ] Owner flight review of sun and planet feel, recorded here with date.
 
 ### Regression Guardrails
@@ -276,7 +175,7 @@ become game data by this route.
 - Play has no passive drag and no speed cap.
 - A release whose gravity values or rules differ from the previous release
   changes `CHALLENGE`; nothing else changes it.
-- Lab-only wells exist only in Lab documents.
+- The Gravity tuning bench changes no game value.
 
 ### Scenarios
 
@@ -313,16 +212,6 @@ Scenario: Planet contact bounces the ship
     and scaled by 0.8, plus that substep's gravity change
   And its hull is lower by PLANET_COLLISION_DAMAGE
 
-Scenario: Applying an owner's proposal
-  Given a copied proposal changing planetStrength from 600 to 450
-  When the agent runs tuning:apply with it
-  Then the tuning file holds 450 and the script prints "planetStrength 600 → 450"
-  And CHALLENGE is unchanged
-
-Scenario: Refusing a stale proposal
-  Given a proposal whose Apply line has sunMultiplier 5 → 6 while the tuning file holds 4
-  When the agent runs tuning:apply with it
-  Then it refuses, names sunMultiplier, writes nothing and exits 1
 ```
 
 ## Open questions
@@ -331,5 +220,5 @@ Scenario: Refusing a stale proposal
   flight today.
 - The sun's contact and heat checks use (960, 540) instead of the sun's
   position; harmless while the sun is fixed there.
-- `sunMultiplier` has a floor of 4, today's value, so a proposal cannot weaken the
-  sun. Widening a range is a rules change for the owner, not a proposal.
+- `sunMultiplier` has a floor of 4, the value in play, so tuning cannot weaken
+  the sun. Widening a range is a rules change for the owner.

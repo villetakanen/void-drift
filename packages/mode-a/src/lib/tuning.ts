@@ -3,8 +3,7 @@ import { GravityTuningSchema } from "./schemas/gravity";
 import data from "./tuning.json";
 
 /**
- * Versioned gameplay tuning, one section per area. Values change only through
- * `pnpm tuning:apply <area>`; spec: docs/specs/gravity-field.md.
+ * Versioned gameplay tuning, one section per area. Spec: docs/specs/gravity-field.md.
  */
 export const TuningSchema = z
 	.object({
