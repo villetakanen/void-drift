@@ -23,17 +23,27 @@ other's options.
 
 One static well in empty space: no sun, no planets, no orbit, no surface.
 
-- `strength`: the well's mass. The pull follows the game's well curve
-  (`wellAcceleration`, `packages/core/src/lib/physics/Physics.ts`, with the
-  tuning file's `curve`, today inverse-square): `strength / 2` at half reach,
-  zero at and beyond reach.
+- `strength`: the well's mass.
+- The pull is semi-physical: `G × mass / distance²`, with `G = 1000` (the old
+  planet rule's constant; a fixed game constant, not a setting). Mass alone sets
+  how hard the well pulls.
 - `sizeMultiplier`: reach in units per unit of mass, so
-  `reach = sizeMultiplier × strength`. This is the metric the bench exists to
-  find ("1× mass units, 2× mass units, or what").
+  `reach = sizeMultiplier × mass`. The reach is only a cut-off, artificially
+  smaller than physics (where the pull never ends) to keep game physics sane:
+  inside it the pull is exactly `G × mass / distance²`, at and beyond it zero, a
+  hard cut. Changing the size moves where the pull ends, never how strong it is
+  inside. The bench exists to find this multiplier.
 - `x`, `y`: the well's centre in the bench's frame.
 
+The law is one production function, `massWellAcceleration` with the constant
+`MASS_WELL_G` (`packages/core/src/lib/physics/Physics.ts`), used by the bench now
+and by planets, then suns, when the game adopts it (gravity-field.md, "Target:
+reach from mass"). The game's current curve, `wellAcceleration`, is unchanged
+until then.
+
 The well has no surface and ends no run. Like a planet's, its pull is not applied
-within a ship's own radius of its centre.
+within a ship's own radius of its centre; nothing else limits it, so the gravity
+graph shows how strong a pass near the centre is.
 
 ### The ships
 
@@ -125,9 +135,11 @@ gravity-field.md; until then the bench changes no game value.
   (unit tests).
 - [ ] With the well out of reach of every path, each ship's path equals the
   instrument's calculation of the same loadout on the same burn (unit test).
-- [ ] The pull at a point equals `wellAcceleration` with reach
-  `sizeMultiplier × strength`, and is zero at and beyond reach (unit test).
-- [ ] Doubling the size multiplier doubles the reach (unit test).
+- [ ] Inside reach the pull is `MASS_WELL_G × mass / distance²`; at and beyond
+  reach it is zero (unit test).
+- [ ] Doubling the size multiplier doubles the reach and leaves the pull inside
+  the old reach unchanged; doubling the mass doubles the pull at every distance
+  inside reach (unit test).
 - [ ] `/lab/gravity-tuning` draws four paths, the well and three graphs; an
   edited setting redraws them and reaches the document; dragging the well moves
   it (browser tests).
@@ -139,7 +151,8 @@ gravity-field.md; until then the bench changes no game value.
 - The bench has exactly four settings; ships and burns are not settings.
 - The ships and burns are the game's and the instrument's own definitions,
   imported, never copied.
-- The well's pull comes from the production `wellAcceleration`.
+- The well's pull comes from the production `massWellAcceleration`; the reach
+  never changes the pull inside it.
 - The bench changes no game value.
 
 ### Scenarios

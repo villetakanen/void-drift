@@ -13,8 +13,10 @@ steps 4–7 below are superseded by R1–R5. Spec work S1–S5 done.
   Fighter with two aft light ions too; Corvette with two aft light ions too); the
   instrument's three burns, unchanged; exactly four settings: starting speed,
   well strength, well size multiplier, well position.
-- Reach comes from mass: `reach = sizeMultiplier × mass`, metrics first. The game
-  adopts it later, planets first, suns last.
+- The well law is semi-physical: pull `G × mass / distance²` (`G = 1000`); reach
+  is only a hard cut-off from mass, `reach = sizeMultiplier × mass`, artificially
+  small to keep game physics sane. The game adopts it later, planets first, suns
+  last.
 
 Specs: [gravity-tuning.md](../specs/gravity-tuning.md) (new);
 [lab-instrument.md](../specs/lab-instrument.md) field mode deprecated;
@@ -39,9 +41,10 @@ Each step is a local commit with its spec update and passing checks.
    `GravityTuningSchema` (step 1), `starPull` and `planetPull`, and the
    `tuning:apply` script with its area registry for the ship area. The trajectory
    fingerprint stays unchanged.
-3. **R3. Bench calculation.** `apps/web/src/lib/gravity-tuning/`: the document
-   schema, the four loadouts, and the flight (instrument burns and engines, well
-   pull from `wellAcceleration`). Unit tests per gravity-tuning.md.
+3. **R3. Bench calculation.** `massWellAcceleration` and `MASS_WELL_G` in core;
+   `apps/web/src/lib/gravity-tuning/`: the document schema, the four loadouts,
+   and the flight (instrument burns and engines, well pull from
+   `massWellAcceleration`). Unit tests per gravity-tuning.md.
 4. **R4. Bench page.** `/lab/gravity-tuning` composed from the instrument's parts,
    the four settings in the pane, the draggable well; Lab nav entries "Gravity
    tuning" and "Ship tuning" (agree the nav and the instrument's renaming with the

@@ -140,8 +140,12 @@ release procedure in `docs/development.md`.
 
 ### Target: reach from mass
 
-Owner decision, 2026-11-04: every well's reach comes from its mass,
-`reach = sizeMultiplier × mass`, metrics first. The
+Owner decision, 2026-11-04: a well's pull is semi-physical,
+`G × mass / distance²` (`G = 1000`), and its reach is only a cut-off that comes
+from its mass, `reach = sizeMultiplier × mass`, artificially smaller than physics
+to keep game physics sane; a hard cut, metrics first. The current curve lets the
+reach shape the pull everywhere inside it, a drift from the earlier mass-based
+planet rule that this corrects. The
 [Gravity tuning](gravity-tuning.md) bench finds the multiplier with one well and
 the game's ships. The game does not follow this yet: planets adopt it first and
 suns later, each as its own specified change, which also defines how the bench's
