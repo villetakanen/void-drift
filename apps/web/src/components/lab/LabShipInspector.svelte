@@ -5,8 +5,8 @@ let _props: { slot?: string; "client:only"?: string; "client:load"?: boolean } =
 
 import { CONFIG } from "@void-drift/core";
 import {
+	CHASSIS,
 	DEFAULT_SHIP_PROFILE_ID,
-	GRAVITY_FLIGHT,
 	SHIP_IDENTITY,
 	SHIP_PROFILE_BY_ID,
 	SHIP_PROFILES,
@@ -25,6 +25,7 @@ const selectedProfile = $derived(
 );
 
 const identity = $derived(SHIP_IDENTITY[selectedProfile.id]);
+const chassis = $derived(CHASSIS[selectedProfile.id]);
 
 const shipStatsGroups = $derived([
 	{
@@ -36,36 +37,27 @@ const shipStatsGroups = $derived([
 			{ key: "Trait", value: identity.trait },
 		],
 	},
+	// Fitted flight reads the chassis and its parts; of the profile
+	// multipliers only power drain still applies.
 	{
-		label: "Physical",
+		label: "Chassis",
 		stats: [
+			{ key: "Mass", value: chassis.mass },
+			{ key: "Hull slots", value: chassis.hull },
+			{ key: "Aft slots", value: chassis.aft },
+			{
+				key: "Turn response",
+				value: chassis.turnResponse.toFixed(2),
+				unit: "x",
+			},
 			{ key: "Radius", value: CONFIG.SHIP_RADIUS, unit: "px" },
-			{
-				key: "Engine taper scale",
-				value: GRAVITY_FLIGHT.engineSpeedScale,
-				unit: "px/s",
-			},
-			{
-				key: "Hull Multiplier",
-				value: selectedProfile.hullMultiplier.toFixed(2),
-			},
 		],
 	},
 	{
-		label: "Movement",
+		label: "Power",
 		stats: [
 			{
-				key: "Thrust",
-				value: selectedProfile.thrustMultiplier.toFixed(2),
-				unit: "x",
-			},
-			{
-				key: "Turn",
-				value: selectedProfile.turnMultiplier.toFixed(2),
-				unit: "x",
-			},
-			{
-				key: "Power Drain",
+				key: "Power drain",
 				value: selectedProfile.powerDrainMultiplier.toFixed(2),
 				unit: "x",
 			},

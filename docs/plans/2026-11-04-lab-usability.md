@@ -124,6 +124,15 @@ Each task can land on its own.
 - Test: every routed `/lab/*.astro` page (studies excluded) has a registry entry, and the
   reverse. Do not test titles or order.
 - Evidence: a desktop screenshot of `/lab` and a phone-width read of the nav.
+- **Done 2026-11-04.** Built as planned, with three differences:
+  - `group` and `source` cover what `kind` would have said, so there is no `kind` field.
+  - `/lab/buttons` stays a routable alias (`aliasOf`), not a redirect, because the
+    browser test and external links use it.
+  - Web unit tests now run in vitest (`apps/web/src/**/*.test.ts`). The root `tsc` check
+    excludes them because it does not load `vite/client`; svelte-check covers them.
+
+  At phone width the nav wraps to 22 links above the content. A collapsible nav is
+  left for later.
 
 ### 2. Shared bench state
 

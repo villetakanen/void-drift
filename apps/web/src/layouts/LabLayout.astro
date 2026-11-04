@@ -1,5 +1,6 @@
 ---
 import Logo from "../components/Logo.svelte";
+import { labGroups, listedLabPages } from "../data/lab-pages";
 import "@void-drift/core/styles/reset.css";
 import "@void-drift/core/styles/tokens.css";
 import "@void-drift/core/styles/buttons.css";
@@ -8,30 +9,13 @@ import "@void-drift/core/styles/typography.css";
 import "../styles.css";
 
 const { title, wide = false } = Astro.props;
-const currentPath = Astro.url.pathname;
-
-const LINKS = [
-	{ href: "/lab/studies", label: "Design studies", exact: false },
-	{ href: "/lab/flight", label: "Flight trials", exact: false },
-	{ href: "/lab/instrument", label: "Instrument", exact: true },
-	{ href: "/lab/mount-planner", label: "Mount planner", exact: true },
-	{ href: "/lab/builder", label: "Ship builder", exact: false },
-	{ href: "/lab/fx", label: "Arcade FX", exact: true },
-	{ href: "/lab/ion-engines", label: "Ion effects", exact: false },
-	{ href: "/lab", label: "Dashboard", exact: true },
-	{ href: "/lab/entities/ship", label: "Ship", exact: false },
-	{ href: "/lab/entities/star", label: "Star", exact: false },
-	{ href: "/lab/entities/planet", label: "Planet", exact: false },
-	{ href: "/lab/logomark", label: "Logomark", exact: false },
-	{ href: "/lab/tokens", label: "Colour roles", exact: false },
-	{ href: "/lab/typography", label: "Typography", exact: false },
-	{ href: "/lab/resources", label: "Resources", exact: false },
-	{ href: "/lab/inputs", label: "Inputs", exact: false },
-	{ href: "/lab/graphs", label: "Graphs", exact: false },
-	{ href: "/lab/instrument-parts", label: "Instrument parts", exact: false },
-	{ href: "/lab/surfaces", label: "Surfaces", exact: false },
-	{ href: "/", label: "← Back to Game", exact: true },
-];
+const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isActive = (href: string) =>
+	currentPath === href || currentPath.startsWith(`${href}/`);
+const groups = labGroups.map((group) => ({
+	...group,
+	pages: listedLabPages.filter((page) => page.group === group.id),
+}));
 ---
 
 <!doctype html>
@@ -48,18 +32,25 @@ const LINKS = [
 			<!-- Column 1: Nav Rail -->
 			<aside class="nav-rail">
 				<a class="logo-area" href="/lab"><Logo label="Void Drift Lab" /></a>
-				<nav class="tray">
-					{LINKS.map((link) => {
-						const isActive = link.exact
-							? currentPath === link.href
-							: currentPath.startsWith(link.href) && link.href !== "/lab";
-
-						return (
-							<a href={link.href} class:list={[{ active: isActive }]}>
-								{link.label}
-							</a>
-						);
-					})}
+				<nav class="tray" aria-label="Lab">
+					<a href="/lab" class:list={[{ active: currentPath === "/lab" }]}
+						>Index</a
+					>
+					{groups.map((group) => (
+						<section class="group" aria-label={group.label}>
+							<h2>{group.label}</h2>
+							{group.pages.map((page) => (
+								<a
+									href={page.href}
+									class:list={[{ active: isActive(page.href) }]}
+									aria-current={isActive(page.href) ? "page" : undefined}
+								>
+									{page.title}
+								</a>
+							))}
+						</section>
+					))}
+					<a href="/">← Back to Game</a>
 				</nav>
 			</aside>
 
@@ -128,6 +119,24 @@ const LINKS = [
 	gap: 0.25rem;
 	overflow-y: auto;
 	flex: 1;
+}
+
+.group {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	margin-top: var(--spacing-sm);
+}
+
+.group h2 {
+	margin: 0;
+	padding: var(--spacing-xs) 1rem;
+	font-size: var(--font-size-caption);
+	font-weight: normal;
+	color: var(--color-text-muted);
+	letter-spacing: var(--tracking-eyebrow);
+	text-transform: uppercase;
+	opacity: 0.7;
 }
 
 /* Column 2 Row 1: Header */
@@ -211,6 +220,12 @@ a.active {
 		flex-direction: row;
 		flex-wrap: wrap;
 		padding: var(--spacing-sm);
+	}
+	.wide .group {
+		display: contents;
+	}
+	.wide .group h2 {
+		display: none;
 	}
 }
 </style>

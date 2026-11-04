@@ -1,37 +1,151 @@
 ---
+import { labGroups, listedLabPages } from "../../data/lab-pages";
+import { studies } from "../../data/studies";
 import LabLayout from "../../layouts/LabLayout.astro";
+
+const groups = labGroups.map((group) => ({
+	...group,
+	pages: listedLabPages.filter((page) => page.group === group.id),
+}));
+// The registry lists the newest studies first.
+const latestStudies = studies.slice(0, 4);
+const SOURCE_LABEL = {
+	production: "Production",
+	sketch: "Sketch",
+	record: "Record",
+} as const;
 ---
 
-<LabLayout title="Dashboard">
-	<div class="dashboard-shell">
-		<p>Select an asset from the left sidebar to begin tuning.</p>
-		<a href="/lab/utility-artwork">Utility machinery artwork →</a>
-		<div class="hint">← Use the nav rail to navigate</div>
+<LabLayout title="Index" wide>
+	<div class="index">
+		<p class="lead">
+			How the game looks, what its ships are, and the tools to try changes.
+		</p>
+		<dl class="legend">
+			<div>
+				<dt>Production</dt>
+				<dd>renders the game's own code</dd>
+			</div>
+			<div>
+				<dt>Sketch</dt>
+				<dd>study-local drawing, not what plays</dd>
+			</div>
+			<div>
+				<dt>Record</dt>
+				<dd>design decisions and their evidence</dd>
+			</div>
+		</dl>
+		{groups.map((group) => (
+			<section aria-labelledby={`group-${group.id}`}>
+				<h2 id={`group-${group.id}`}>{group.label}</h2>
+				<ul>
+					{group.pages.map((page) => (
+						<li>
+							<a href={page.href}>{page.title}</a>
+							<span class="source">{SOURCE_LABEL[page.source]}</span>
+							<p>{page.purpose}</p>
+						</li>
+					))}
+					{group.id === "studies" &&
+						latestStudies.map((study) => (
+							<li>
+								<a href={`/lab/studies/${study.slug}`}>{study.title}</a>
+								<span class="source">{study.status}</span>
+								<p>{study.question}</p>
+							</li>
+						))}
+				</ul>
+			</section>
+		))}
 	</div>
 </LabLayout>
 
 <style>
-.dashboard-shell {
-	flex: 1;
+.index {
 	display: flex;
 	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	background-image:
-		linear-gradient(var(--color-border-faint) 1px, transparent 1px),
-		linear-gradient(90deg, var(--color-border-faint) 1px, transparent 1px);
-	background-size: 20px 20px;
+	gap: var(--spacing-lg);
+	padding: var(--spacing-lg);
+	max-width: 72rem;
+}
+
+.lead {
+	margin: 0;
+	font-size: var(--font-size-lead);
+	color: var(--color-text);
+}
+
+.legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--spacing-sm) var(--spacing-lg);
+	margin: 0;
+	font-size: var(--font-size-label);
 	color: var(--color-text-muted);
 }
 
-p {
-	color: var(--color-text-muted);
-	font-size: 1.25rem;
-	margin-bottom: 0.5rem;
+.legend div {
+	display: flex;
+	gap: var(--spacing-sm);
 }
 
-.hint {
-	font-size: 0.9rem;
-	opacity: 0.6;
+.legend dt,
+.source {
+	font-size: var(--font-size-caption);
+	letter-spacing: var(--tracking-eyebrow);
+	text-transform: uppercase;
+	color: var(--color-text-muted);
+}
+
+.legend dd {
+	margin: 0;
+}
+
+h2 {
+	margin: 0 0 var(--spacing-md);
+	font-size: var(--font-size-caption);
+	font-weight: normal;
+	letter-spacing: var(--tracking-eyebrow);
+	text-transform: uppercase;
+	color: var(--color-text-muted);
+}
+
+ul {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+	gap: var(--spacing-md);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+li {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--spacing-xs) var(--spacing-sm);
+	padding: var(--spacing-md);
+	border: 1px solid var(--color-border-subtle);
+	border-radius: var(--radius-sm);
+	background: var(--color-elev-1);
+}
+
+li a {
+	color: var(--color-text);
+	text-decoration: none;
+	font-size: var(--font-size-body);
+}
+
+li a:hover,
+li a:focus-visible {
+	color: var(--color-selected);
+}
+
+li p {
+	flex-basis: 100%;
+	margin: 0;
+	font-size: var(--font-size-label);
+	color: var(--color-text-muted);
 }
 </style>

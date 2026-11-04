@@ -1,6 +1,8 @@
 # Feature: Ship Lab Chassis Preview
 
-**Status:** PLANNED  
+**Status:** [DEPRECATED 2026-11-04] Superseded. `/lab/entities/ship` reads the
+shipped profiles and chassis (`SHIP_PROFILES`, `SHIP_IDENTITY`, `CHASSIS`); the
+three-profile set below (`scout`, `balanced`, `tank`) is retired. Kept as history.  
 **Target Version:** 0.4.0
 
 ## Blueprint

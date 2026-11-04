@@ -111,6 +111,12 @@ production systems and expose the relevant parameters, reset/replay and shareabl
 configuration. Keep capture environments explicit (fixed viewport, seed and simulation
 time), and show an accepted design change in the real game as well as the Lab.
 
+The Lab is also the reference for how the game looks and what its ships are.
+`apps/web/src/data/lab-pages.ts` lists every Lab page with its group, purpose and
+source (production code, study-local sketch, or design record). The nav rail and
+the `/lab` index render from it, and a unit test keeps it and the routes in step.
+A new Lab page needs an entry; a kept old route is an alias of its replacement.
+
 ## Release
 
 The selected Firebase project is `void-drift-alpha` (Spark), database `(default)` in
