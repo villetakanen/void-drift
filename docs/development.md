@@ -117,6 +117,12 @@ source (production code, study-local sketch, or design record). The nav rail and
 the `/lab` index render from it, and a unit test keeps it and the routes in step.
 A new Lab page needs an entry; a kept old route is an alias of its replacement.
 
+The Lab is not a phone surface and will not become one (owner decision,
+2026-11-04). It targets desktop and laptop browsers and tablets. Do not design,
+test, review or fix Lab pages at phone size, and do not report phone layout as a
+Lab gap. Phone requirements belong to play only: landscape phone play with two
+touch controls, and the shared components that play uses at that size.
+
 ## Release
 
 The selected Firebase project is `void-drift-alpha` (Spark), database `(default)` in

@@ -78,7 +78,7 @@ assessment of the study, including failure, separately from the value of ending 
 for the project.
 
 Reuse production systems in interactive examples and scope experiments. Check keyboard,
-narrow-layout and relevant states, along with affected repository gates and rendering.
+narrow desktop or tablet layout (never phone; the Lab is not a phone surface) and relevant states, along with affected repository gates and rendering.
 Report automated correctness, visual inspection and human judgment separately; provide
 the review URL. One lead owns synthesis; delegate only when authorized and useful.
 

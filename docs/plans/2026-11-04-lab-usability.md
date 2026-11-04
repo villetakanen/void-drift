@@ -98,13 +98,13 @@ Each task can land on its own.
 - Task 3 needs task 2, plus G2 and G3 from the gravity plan.
 - Task 4 needs task 3, plus G1 and G6.
 
-| # | Task | Done when |
-|---|------|-----------|
-| 1 | Lab map and source labels | `/lab` and the nav are generated from one registry. Every page shows its kind and source. Stale pages are fixed. |
-| 2 | Shared bench state | A helper using Zod, the URL and the clipboard is adopted by `/lab/flight` and one study bench. Links restore state exactly. |
-| 3 | Per-ship tuning patch with A/B | A sparse per-chassis patch is compared against stock as two instrument vehicles through the real simulation, and can be flown in `/lab/flight`. The dead sliders are gone. |
-| 4 | Ship section of the tuning file | `pnpm tuning:apply ship <patch>` checks a patch and writes the `ship` section of the shared tuning file. |
-| 5 | Study sandbox and data snapshots | Each study has a sandbox area, frozen sections use config plus capture instead of copied components, and orphaned components are reported. |
+| #   | Task                             | Done when                                                                                                                                                                  |
+| --- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Lab map and source labels        | `/lab` and the nav are generated from one registry. Every page shows its kind and source. Stale pages are fixed.                                                           |
+| 2   | Shared bench state               | A helper using Zod, the URL and the clipboard is adopted by `/lab/flight` and one study bench. Links restore state exactly.                                                |
+| 3   | Per-ship tuning patch with A/B   | A sparse per-chassis patch is compared against stock as two instrument vehicles through the real simulation, and can be flown in `/lab/flight`. The dead sliders are gone. |
+| 4   | Ship section of the tuning file  | `pnpm tuning:apply ship <patch>` checks a patch and writes the `ship` section of the shared tuning file.                                                                   |
+| 5   | Study sandbox and data snapshots | Each study has a sandbox area, frozen sections use config plus capture instead of copied components, and orphaned components are reported.                                 |
 
 ### 1. Lab map and source labels
 
@@ -123,16 +123,13 @@ Each task can land on its own.
   - mark `ship-lab-chassis-preview.md` as superseded or reconcile it
 - Test: every routed `/lab/*.astro` page (studies excluded) has a registry entry, and the
   reverse. Do not test titles or order.
-- Evidence: a desktop screenshot of `/lab` and a phone-width read of the nav.
+- Evidence: a desktop screenshot of `/lab` and a tablet-width read of the nav.
 - **Done 2026-11-04.** Built as planned, with three differences:
   - `group` and `source` cover what `kind` would have said, so there is no `kind` field.
   - `/lab/buttons` stays a routable alias (`aliasOf`), not a redirect, because the
     browser test and external links use it.
   - Web unit tests now run in vitest (`apps/web/src/**/*.test.ts`). The root `tsc` check
     excludes them because it does not load `vite/client`; svelte-check covers them.
-
-  At phone width the nav wraps to 22 links above the content. A collapsible nav is
-  left for later.
 
 ### 2. Shared bench state
 
@@ -223,5 +220,6 @@ Each task can land on its own.
   proposal flow.
 - Production code and tests do not import from `components/studies/`. Tests check
   relations, not design values.
-- Keyboard and landscape touch support stay on every changed bench.
+- Keyboard and tablet touch support stay on every changed bench. The Lab is not a
+  phone surface; no task checks or fixes phone layout.
 - Each task updates its owning spec and records skipped device checks explicitly.

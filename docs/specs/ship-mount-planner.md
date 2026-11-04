@@ -142,7 +142,8 @@ or assess handling; human layout review and automated fidelity checks are separa
 - [ ] A representative exported layout applied to production reproduces the
   planner's geometry, fitting placement, nozzle origins and hit targets.
 - [ ] Owner reviews manipulation, linked editing, readability and visual fidelity
-  on desktop and landscape touch. Record this separately from automated results.
+  on desktop and tablet touch. Record this separately from automated results.
+  The Lab is not a phone surface.
 
 ### Regression guardrails
 

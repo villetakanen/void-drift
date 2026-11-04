@@ -18,7 +18,8 @@ owner rather than repeating them here.
 - Experimental styles remain scoped to study components; fixture behavior is labeled.
 - A cycle keeps a stable URL and records significant feedback, decisions and reasons.
 - Accepted slices are separate implementation work; the study links to their delivery.
-- Keyboard operation and narrow layouts are reviewed separately from gameplay feel.
+- Keyboard operation and narrow desktop or tablet layouts are reviewed separately from
+  gameplay feel. Study pages are not checked at phone size; the Lab is not a phone surface.
 
 ### Cycle zero — current established reality
 
