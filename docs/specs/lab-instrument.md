@@ -124,8 +124,8 @@ between fitting all paths and a default scale (0.2 px/u) that pans by dragging.
 
 ### Gravity field mode
 
-Document, calculation and views implemented, 2026-11-04. Pull shading, pane
-editing of the field and Copy proposal are targets, not yet implemented. Plan: [2026-11-04-gravity-field-lab.md](../plans/2026-11-04-gravity-field-lab.md).
+Document, calculation, views and field editing implemented, 2026-11-04. Pull
+shading and Copy proposal are targets, not yet implemented. Plan: [2026-11-04-gravity-field-lab.md](../plans/2026-11-04-gravity-field-lab.md).
 Gravity rules: [gravity-field.md](gravity-field.md).
 
 A version 2 document may carry a `field`. Version 1 documents and version 2
@@ -234,9 +234,28 @@ take the bodies of the longest run, so moving planets cover the whole burn.
   (`apps/web/src/lib/instrument/starter.ts`); `/lab/instrument-parts` shows the
   field legend.
 - Target: optional shading of pull strength on the path pane.
-- Target: pane editing of `field.changes`; add, drag and remove Lab wells; edit
-  each vehicle's start. Copy proposal sits beside Copy JSON and copies the block
-  defined in gravity-field.md; it is disabled while `field.changes` is empty.
+- Pane, "Gravity field" section (`DocumentPanel`), between the values and the
+  document:
+  - Without a field: "Add a gravity field" turns the document into version 2
+    with the empty field (refused, with the reason, while a vehicle has part
+    changes).
+  - System and Orbits toggles.
+  - Gravity values (`GRAVITY_PARAMETERS`, `config.ts`) as number rows like the
+    vehicle values, showing the game's value when changed, with a reset; and the
+    well curve as a toggle. Setting a value back to the game's removes it from
+    `field.changes`.
+  - Each Lab well's x, y, reach, strength and curve, with Remove; Add Lab well
+    up to four.
+  - Each vehicle's start (x, y, heading, speed), or "Set a start" from the
+    game's spawn and "Use the game's spawn" to clear it.
+  - Every edit goes through `editDocument` (`config.ts`): an edit the schema
+    refuses is not applied, the input shows its previous value, and the reason
+    appears under the section.
+- Path pane: with `onmovewell`, a Lab well's cross can be dragged; the well
+  follows the pointer and the paths recalculate on release. A drop the schema
+  refuses (outside the arena) leaves the well where it was.
+- Target: Copy proposal sits beside Copy JSON and copies the block defined in
+  gravity-field.md; it is disabled while `field.changes` is empty.
 
 ## Study chassis proposal and Fiddler integration
 
@@ -291,8 +310,13 @@ It is no longer a prerequisite for comparing this accepted Fiddler configuration
 - [x] A field document loaded in the instrument shows the field graphs, every
   Lab well's reach ring, body surfaces, an outcome per vehicle and B0 Coast
   (browser test, `lab-instrument.spec.ts`).
-- [ ] Target: an edited gravity value redraws the paths and appears in the
-  copied proposal (browser test).
+- [x] In the pane, a document gains a field, a Lab well is added, an edited
+  gravity value reaches the document, and an impossible well strength is
+  refused with its reason (browser test, `lab-instrument.spec.ts`).
+- [x] A refused edit leaves the document unchanged and gives one plain reason;
+  a gravity value set back to the game's leaves `field.changes` (unit tests).
+- [ ] Target: an edited gravity value appears in the copied proposal (browser
+  test).
 - [ ] Target: field mode readability on a large screen (1280px wide or more)
   reviewed by the owner and recorded.
 

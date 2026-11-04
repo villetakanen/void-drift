@@ -2,6 +2,7 @@
 import { type Snippet, untrack } from "svelte";
 import {
 	documentTracks,
+	editDocument,
 	FIELD_MEASURES,
 	FLIGHT_MEASURES,
 	InstrumentConfig,
@@ -70,6 +71,14 @@ const bodies = $derived(
 		.filter((run) => run !== undefined)
 		.sort((a, b) => b.samples.length - a.samples.length)[0]?.bodies ?? [],
 );
+function moveWell(index: number, x: number, y: number) {
+	if (!doc) return;
+	const result = editDocument($state.snapshot(doc), (draft) => {
+		if (draft.version === 2 && draft.field?.wells[index])
+			Object.assign(draft.field.wells[index], { x, y });
+	});
+	if (result.ok) doc = result.doc;
+}
 const measures = $derived(
 	tracks.some((t) => t.run) ? FIELD_MEASURES : FLIGHT_MEASURES,
 );
@@ -91,7 +100,14 @@ const scale = $derived(Math.min(hostW / SCREEN.w, hostH / SCREEN.h));
 			style={`width:${SCREEN.w}px;height:${SCREEN.h}px;transform:translate(-50%,-50%) scale(${scale})`}
 		>
 			<div class="slot" style={`left:${PAD}px;top:${TOP}px`}>
-				<PathPane {tracks} {bodies} {tick} {scale} size={BLOCK} />
+				<PathPane
+					{tracks}
+					{bodies}
+					{tick}
+					{scale}
+					size={BLOCK}
+					onmovewell={moveWell}
+				/>
 			</div>
 			<div
 				class="slot"

@@ -18,12 +18,15 @@ let {
 	tracks,
 	tick,
 	bodies = [],
+	onmovewell,
 	size = 672,
 	scale = 1,
 }: {
 	tracks: Track[];
 	/** The field's bodies; empty outside field mode. */
 	bodies?: FieldBody[];
+	/** Called when a Lab well (index among the wells) is dropped at a world point; enables dragging. */
+	onmovewell?: (index: number, x: number, y: number) => void;
 	/** Sample index marked on every path. */
 	tick: number;
 	/** Side of the square, in the host's logical pixels. */
@@ -118,6 +121,38 @@ function move(e: PointerEvent) {
 }
 const id = `path-${Math.random().toString(36).slice(2, 8)}`;
 
+// Dragging a Lab well: it follows the pointer and is handed back on release.
+let svg: SVGSVGElement | undefined = $state();
+let held = $state<{ index: number; x: number; y: number } | null>(null);
+const wellIndex = (body: FieldBody) =>
+	bodies.filter((b) => b.kind === "well").indexOf(body);
+function world(e: PointerEvent) {
+	const rect = svg?.getBoundingClientRect();
+	if (!rect) return { x: 0, y: 0 };
+	const k = size / rect.width;
+	return {
+		x: ((e.clientX - rect.left) * k - view.ox) / view.s,
+		y: ((e.clientY - rect.top) * k - view.oy) / view.s,
+	};
+}
+function grab(e: PointerEvent, body: FieldBody) {
+	if (!onmovewell) return;
+	e.stopPropagation();
+	(e.currentTarget as Element).setPointerCapture(e.pointerId);
+	held = { index: wellIndex(body), ...world(e) };
+}
+function drag(e: PointerEvent) {
+	if (held) held = { ...held, ...world(e) };
+}
+function drop() {
+	if (held) onmovewell?.(held.index, Math.round(held.x), Math.round(held.y));
+	held = null;
+}
+const centre = (body: FieldBody) =>
+	held && body.kind === "well" && wellIndex(body) === held.index
+		? held
+		: bodyAt(body, tick);
+
 /** The path as polylines, broken wherever the ship wrapped across the arena. */
 function segments(track: Track) {
 	const out: string[][] = [[]];
@@ -139,6 +174,7 @@ function contacts(track: Track) {
 <div class="pane" style={`width:${size}px;height:${size}px`}>
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<svg
+		bind:this={svg}
 		class:pan={mode === "default"}
 		class:dragging
 		viewBox={`0 0 ${size} ${size}`}
@@ -156,7 +192,7 @@ function contacts(track: Track) {
 		</defs>
 		<g clip-path={`url(#${id})`}>
 			{#each bodies as body}
-				{@const c = bodyAt(body, tick)}
+				{@const c = centre(body)}
 				<circle
 					cx={sx(c.x)}
 					cy={sy(c.y)}
@@ -169,6 +205,21 @@ function contacts(track: Track) {
 						d={`M${sx(c.x) - MARK},${sy(c.y)}h${2 * MARK}M${sx(c.x)},${sy(c.y) - MARK}v${2 * MARK}`}
 						class="lab-centre"
 					/>
+					{#if onmovewell}
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
+						<circle
+							cx={sx(c.x)}
+							cy={sy(c.y)}
+							r={2 * MARK}
+							class="handle"
+							onpointerdown={(e) => grab(e, body)}
+							onpointermove={drag}
+							onpointerup={drop}
+							onpointercancel={() => (held = null)}
+						>
+							<title>Drag Lab well {body.label}</title>
+						</circle>
+					{/if}
 				{:else}
 					<circle
 						cx={sx(c.x)}
@@ -325,6 +376,11 @@ svg.dragging {
 }
 .surface {
 	opacity: 0.85;
+}
+.handle {
+	fill: transparent;
+	cursor: move;
+	touch-action: none;
 }
 .tools {
 	position: absolute;

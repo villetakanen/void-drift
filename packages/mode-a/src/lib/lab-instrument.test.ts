@@ -5,13 +5,17 @@ import {
 	BURNS,
 	calculate,
 	calculateField,
+	editDocument,
+	gravityChange,
 	InstrumentConfig,
 	inputAt,
+	setGravityChange,
 	TOTAL_TICKS,
 	traces,
 	V2_BURN_IDS,
 } from "../../../../apps/web/src/lib/instrument";
 import { Simulation, stockSettings } from "./simulation";
+import { GRAVITY_TUNING } from "./tuning";
 
 const fighter = (aft: [string | null, string | null]) => ({
 	version: 2,
@@ -286,5 +290,60 @@ describe("field calculation", () => {
 		expect(calculateField(doc.vehicles[0], "coast", doc.field).outcome).toBe(
 			"bound",
 		);
+	});
+});
+
+describe("field editing", () => {
+	const doc = InstrumentConfig.parse(fieldDocument({ wells: [well] }));
+	const field = (d: InstrumentConfig) => {
+		if (d.version !== 2 || !d.field)
+			throw new Error("expected a field document");
+		return d.field;
+	};
+	it("keeps a valid edit and refuses an invalid one with one plain reason", () => {
+		const moved = editDocument(doc, (d) => {
+			field(d).wells[0].x = 300;
+		});
+		expect(moved.ok && field(moved.doc).wells[0].x).toBe(300);
+		const refused = editDocument(doc, (d) => {
+			field(d).wells[0].strength = -1;
+		});
+		expect(refused.ok).toBe(false);
+		if (!refused.ok)
+			expect(refused.message).not.toMatch(/unrecognized_keys|\[/);
+		expect(field(doc).wells[0].strength).toBe(well.strength);
+	});
+	it("clears a gravity change set back to the game's value", () => {
+		const changes = {};
+		setGravityChange(
+			changes,
+			"planetStrength",
+			GRAVITY_TUNING.planetStrength * 2,
+		);
+		expect(gravityChange(changes, "planetStrength")).toBe(
+			GRAVITY_TUNING.planetStrength * 2,
+		);
+		setGravityChange(changes, "planetStrength", GRAVITY_TUNING.planetStrength);
+		expect(changes).toEqual({});
+		const scale = GRAVITY_TUNING.planetReach.massScale + 1;
+		setGravityChange(changes, "planetReach.massScale", scale);
+		expect(changes).toEqual({
+			planetReach: { ...GRAVITY_TUNING.planetReach, massScale: scale },
+		});
+		setGravityChange(changes, "planetReach.massScale", undefined);
+		expect(changes).toEqual({});
+	});
+	it("allows an emptied part change group in a field", () => {
+		const emptied = {
+			...fieldDocument({}),
+			vehicles: [
+				{
+					label: "Probe",
+					loadout: fighter(["plasma", "plasma"]),
+					changes: { plasma: {} },
+				},
+			],
+		};
+		expect(issues(emptied)).toEqual([]);
 	});
 });

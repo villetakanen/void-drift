@@ -113,3 +113,30 @@ test("a field document draws bodies, outcomes and field graphs", async ({
 	await expect(page.locator(".surface")).not.toHaveCount(0);
 	await expect(page.getByRole("img", { name: /^B0, Coast/ })).toBeVisible();
 });
+
+test("the pane edits a gravity field and refuses impossible values", async ({
+	page,
+}) => {
+	await page.goto("/lab/instrument");
+	await page.getByRole("button", { name: "Open values" }).click();
+	await page.getByRole("button", { name: /^Reset Thrust/ }).click();
+	await page.getByRole("button", { name: "Add a gravity field" }).click();
+	await expect(page.locator(".graph .head .name")).toHaveText([
+		"Speed",
+		"Gravity",
+		"Nearest surface",
+	]);
+	await page.getByRole("button", { name: "Add Lab well" }).click();
+	await expect(page.locator(".reach.lab")).toHaveCount(1);
+	const document = page.locator(".pane pre");
+	const strength = page.locator("#g-planetStrength");
+	await strength.fill("300");
+	await strength.press("Tab");
+	await expect(document).toContainText('"planetStrength": 300');
+	const well = page.locator("#w-0-strength");
+	const before = await well.inputValue();
+	await well.fill("-5");
+	await well.press("Tab");
+	await expect(well).toHaveValue(before);
+	await expect(page.getByRole("alert")).toBeVisible();
+});

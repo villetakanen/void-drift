@@ -1,5 +1,7 @@
 import {
+	GRAVITY_TUNING,
 	GravityFieldSchema,
+	type GravityTuning,
 	ION_DEFAULTS,
 	IonSettingsSchema,
 	type Loadout,
@@ -112,7 +114,7 @@ export const InstrumentConfig = z
 				return;
 			}
 			for (const family of ["fusion", "plasma"] as const)
-				if (vehicle.changes[family])
+				if (Object.keys(vehicle.changes[family] ?? {}).length)
 					ctx.addIssue({
 						code: z.ZodIssueCode.custom,
 						path: ["vehicles", i, "changes", family],
@@ -122,6 +124,8 @@ export const InstrumentConfig = z
 			try {
 				fieldSimulation(vehicle, doc.field);
 			} catch (error) {
+				// Schema errors are already reported; only the Simulation's own refusals are new.
+				if (error instanceof Error && "issues" in error) return;
 				ctx.addIssue({
 					code: z.ZodIssueCode.custom,
 					path: ["vehicles", i, "start"],
@@ -190,4 +194,81 @@ export function serialize(config: InstrumentConfig): string {
 		null,
 		2,
 	);
+}
+
+/**
+ * Applies an edit to a copy of the document and keeps it only if the result is
+ * still a valid document; otherwise returns why, so the pane can refuse it.
+ */
+export function editDocument(
+	doc: InstrumentConfig,
+	edit: (draft: InstrumentConfig) => void,
+): { ok: true; doc: InstrumentConfig } | { ok: false; message: string } {
+	const draft = structuredClone(doc);
+	edit(draft);
+	const parsed = InstrumentConfig.safeParse(draft);
+	if (parsed.success) return { ok: true, doc: parsed.data };
+	return {
+		ok: false,
+		message: parsed.error.issues.map((issue) => issue.message).join("; "),
+	};
+}
+
+/** Gravity values the pane edits; `planetReach.*` are the reach rule's parts. */
+export const GRAVITY_PARAMETERS: Parameter[] = [
+	{ key: "sunMultiplier", label: "Sun multiplier", unit: "× sun mass" },
+	{ key: "planetStrength", label: "Planet strength", unit: "u/s²" },
+	{ key: "sunReachFactor", label: "Sun reach", unit: "× sun radius" },
+	{ key: "planetReach.massScale", label: "Planet reach", unit: "u per √mass" },
+	{ key: "planetReach.minRadii", label: "Planet reach min", unit: "× radius" },
+	{ key: "planetReach.maxRadii", label: "Planet reach max", unit: "× radius" },
+];
+type GravityChanges = NonNullable<InstrumentField["changes"]>;
+/** A gravity value in the game's tuning file. */
+export function gravityStock(key: string): number {
+	const [group, part] = key.split(".");
+	const value =
+		group === "planetReach"
+			? GRAVITY_TUNING.planetReach[part as keyof GravityTuning["planetReach"]]
+			: GRAVITY_TUNING[group as keyof GravityTuning];
+	return typeof value === "number" ? value : Number.NaN;
+}
+/** The document's value for a gravity key, or undefined when it is the game's. */
+export function gravityChange(
+	changes: GravityChanges,
+	key: string,
+): number | undefined {
+	const [group, part] = key.split(".");
+	const value =
+		group === "planetReach"
+			? changes.planetReach?.[part as keyof GravityTuning["planetReach"]]
+			: changes[group as keyof GravityChanges];
+	return typeof value === "number" && value !== gravityStock(key)
+		? value
+		: undefined;
+}
+/** Sets (or, for undefined or the game's value, clears) a gravity change in place. */
+export function setGravityChange(
+	changes: GravityChanges,
+	key: string,
+	value: number | undefined,
+) {
+	const [group, part] = key.split(".");
+	const stock = value === undefined || value === gravityStock(key);
+	if (group === "planetReach") {
+		const reach = {
+			...GRAVITY_TUNING.planetReach,
+			...changes.planetReach,
+			[part]: stock ? gravityStock(key) : value,
+		};
+		const same = (Object.keys(reach) as (keyof typeof reach)[]).every(
+			(k) => reach[k] === GRAVITY_TUNING.planetReach[k],
+		);
+		if (same) delete changes.planetReach;
+		else changes.planetReach = reach;
+		return;
+	}
+	const k = group as Exclude<keyof GravityChanges, "planetReach" | "curve">;
+	if (stock) delete changes[k];
+	else changes[k] = value;
 }
