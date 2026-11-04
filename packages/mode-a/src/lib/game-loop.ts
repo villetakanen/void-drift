@@ -1,7 +1,6 @@
 import type { GameObject, Star, SunType } from "@void-drift/core";
 import { SUN_CONFIG, Vec2 } from "@void-drift/core";
 import type { DeathCause, GameState } from "./schemas/game-state";
-import { GRAVITY_TUNING } from "./tuning";
 
 export function checkDeath(
 	state: GameState,
@@ -62,7 +61,8 @@ export function createStar(
 	type: SunType,
 	x: number,
 	y: number,
-	reachFactor = GRAVITY_TUNING.sunReachFactor,
+	/** Reach of a sun without a mass well (studies); play sets its mass well. */
+	reachFactor = 9,
 ): Star {
 	const config = SUN_CONFIG[type];
 	return {

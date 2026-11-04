@@ -86,7 +86,14 @@ function moveWell(_index: number, x: number, y: number) {
 		onmovewell={moveWell}
 		{label}
 	>
-		<GravityPanel bind:config={doc} />
+		<GravityPanel
+			bind:config={doc}
+			ships={tracks.map((t) => ({
+				label: t.label,
+				color: t.color,
+				thrust: t.references?.gravity ?? Number.NaN,
+			}))}
+		/>
 	</InstrumentScreen>
 {:else}
 	<InstrumentScreen

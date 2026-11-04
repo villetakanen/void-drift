@@ -8,7 +8,13 @@ import { BUILD_FLIGHT_SCALE, drawBuild } from "./build-renderer";
 import { FlightFx } from "./gravity-fold-fx";
 import { drawSalvage } from "./salvage-renderer";
 import { starterLoadout } from "./schemas/loadout";
-import { Simulation, STEP, stockSettings, tunedWell } from "./simulation";
+import {
+	planetMass,
+	Simulation,
+	STEP,
+	stockSettings,
+	tunedMassWell,
+} from "./simulation";
 
 /** Isolated diagnostic: real engines and collectors; extra entities are FX fixtures. */
 export class FxBench {
@@ -43,7 +49,7 @@ export class FxBench {
 			sim.star.mass = 0;
 			sim.star.powerMultiplier = 0;
 			const planet = initializePlanets(960, 540)[0];
-			planet.well = tunedWell(planet);
+			planet.massWell = tunedMassWell(planetMass(planet.id));
 			sim.planets.push(planet);
 			planet.orbitRadius = 0;
 			planet.orbitSpeed = 0;

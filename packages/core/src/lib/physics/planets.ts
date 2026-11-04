@@ -16,6 +16,7 @@ export function initializePlanets(centerX: number, centerY: number): Planet[] {
 			centerX + Math.cos(config.orbitPhase) * config.orbitRadius,
 			centerY + Math.sin(config.orbitPhase) * config.orbitRadius,
 		),
+		id: config.id,
 		orbitCenter: new Vec2(centerX, centerY),
 		orbitRadius: config.orbitRadius,
 		orbitSpeed: config.orbitSpeed,

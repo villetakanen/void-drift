@@ -1,12 +1,11 @@
-import type { GameObject, Planet, Star } from "@void-drift/core";
+import type { GameObject, MassWell, Planet, Star } from "@void-drift/core";
 import {
 	CONFIG,
 	ENGINE_CUTOFF,
 	EnginePlume,
 	GravityFlightSchema,
-	getPlanetInfluenceRadius,
 	initializePlanets,
-	PlanetWellSchema,
+	massWellReach,
 	updateHull,
 	updatePower,
 	updateShip,
@@ -42,32 +41,38 @@ export const STEP = 1 / 60;
 export { CHALLENGE } from "../schemas/highscore";
 export const GRAVITY_FLIGHT = GravityFlightSchema.parse({
 	engineSpeedScale: 600,
-	sunMultiplier: GRAVITY_TUNING.sunMultiplier,
-	planetStrength: GRAVITY_TUNING.planetStrength,
 });
-/** A planet's well under the gravity tuning, from its size and mass. */
-export function tunedWell(
-	planet: Planet,
+/** A configured body's well under the gravity tuning's mass law. */
+export function tunedMassWell(
+	mass: number,
 	tuning: GravityTuning = GRAVITY_TUNING,
-) {
-	return PlanetWellSchema.parse({
-		reach: getPlanetInfluenceRadius(
-			{ radius: planet.radius, mass: planet.mass },
-			tuning.planetReach,
-		),
-		strength: tuning.planetStrength,
-		curve: tuning.curve,
-	});
+): MassWell {
+	return { mass, cutoff: tuning.cutoff, falloff: tuning.falloff };
 }
-/** Applies the gravity tuning to freshly created bodies. */
+/** A configured planet's mass from the tuning file; every configured planet needs one. */
+export function planetMass(
+	id: string | undefined,
+	tuning: GravityTuning = GRAVITY_TUNING,
+): number {
+	const mass = id === undefined ? undefined : tuning.planetMass[id];
+	if (mass === undefined)
+		throw new Error(`No mass for planet ${id ?? "(no id)"} in the tuning file`);
+	return mass;
+}
+/** Puts the play sun and configured planets on the mass law. */
 export function applyGravityTuning(
 	star: Star,
 	planets: Planet[],
 	tuning: GravityTuning = GRAVITY_TUNING,
 ) {
-	star.mass *= tuning.sunMultiplier;
-	star.influenceRadius = star.radius * tuning.sunReachFactor;
-	for (const planet of planets) planet.well = tunedWell(planet, tuning);
+	setStarMassWell(star, tunedMassWell(tuning.sunMass, tuning));
+	for (const planet of planets)
+		planet.massWell = tunedMassWell(planetMass(planet.id, tuning), tuning);
+}
+/** Gives the star a mass well and makes its reach follow it. */
+export function setStarMassWell(star: Star, well: MassWell) {
+	star.massWell = well;
+	star.influenceRadius = massWellReach(well.mass, well.cutoff, well.falloff);
 }
 export const CHALLENGE_SEED = 2026;
 export function stockSettings(id: ShipProfileId = "fighter"): FlightSettings {
@@ -141,7 +146,13 @@ export class Simulation {
 			this.state.resources.power = buildStats(this.settings.loadout).capacity;
 		if (this.settings.testFlight) {
 			this.planets.length = 0;
-			this.star.mass *= (12 / this.star.radius) ** 2;
+			// A smaller sun with the same pull at its surface.
+			const well = this.star.massWell;
+			if (well)
+				setStarMassWell(this.star, {
+					...well,
+					mass: well.mass * (12 / this.star.radius) ** 2,
+				});
 			this.star.radius = 12;
 			// Give fitting trials a quiet opening pass; flying into the well remains real.
 			this.ship.pos.set(
@@ -266,7 +277,7 @@ export class Simulation {
 					? { ...this.settings.profile, hullMultiplier: 1 }
 					: this.settings.profile,
 				{ drag: 0, speedLimit: null },
-				this.gravity.curve,
+				"inverse-square",
 				GRAVITY_FLIGHT.engineSpeedScale,
 				ENGINE_CUTOFF,
 			);

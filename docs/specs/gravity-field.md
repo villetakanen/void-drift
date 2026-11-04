@@ -20,41 +20,47 @@ here.
 
 - One G sun at (960, 540), created by `createStar` in
   `packages/mode-a/src/lib/game-loop.ts` from `SUN_CONFIG.G`
-  (`packages/core/src/lib/config.ts`). Its reach is its radius × `sunReachFactor`.
-- Three planets from `SURVIVAL_CONFIG.PLANETS` (same file), built by
-  `initializePlanets` (`packages/core/src/lib/physics/planets.ts`) on circular
-  orbits round the sun. In play the flight seed rotates every orbit's starting
-  phase by `(seed mod 360) / 180 · π` and changes nothing else (test flights also
-  seed their salvage).
-- `Simulation` (`packages/mode-a/src/lib/simulation.ts`) applies the gravity
-  tuning to these bodies in its constructor: sun mass × `sunMultiplier`, and each
-  planet gets an explicit well `{ reach, strength: planetStrength, curve }`,
-  validated by `PlanetWellSchema` (`packages/core/src/lib/physics/Physics.ts`),
-  where reach is `getPlanetInfluenceRadius` under the tuning's reach rule:
-  `clamp(√mass · massScale, minRadii · radius, maxRadii · radius)`.
+  (`packages/core/src/lib/config.ts`), radius 35.
+- Three planets from `SURVIVAL_CONFIG.PLANETS` (same file), each with its `id`,
+  built by `initializePlanets` (`packages/core/src/lib/physics/planets.ts`) on
+  circular orbits round the sun. In play the flight seed rotates every orbit's
+  starting phase by `(seed mod 360) / 180 · π` and changes nothing else (test
+  flights also seed their salvage).
+- `Simulation` (`packages/mode-a/src/lib/simulation.ts`) puts every body on the
+  mass law in its constructor (`applyGravityTuning`): the sun and each planet get
+  a `massWell` (`MassWellSchema`, `packages/core/src/lib/physics/Physics.ts`) of
+  their mass from the tuning file, with its cut-off pull and falloff; the sun's
+  `influenceRadius` is set to its reach. A configured planet without a mass in
+  the tuning file is an error.
 - Test flights (`settings.testFlight`) remove the planets, shrink the sun to
-  radius 12 with its strength scaled by (12 / radius)², and place the ship 85
-  outside the sun's reach. The reach is stored when the sun is created and is not
-  recomputed, so it stays at the G sun's 315.
+  radius 12 with its mass scaled by (12 / 35)², keeping its pull at the surface,
+  and place the ship 85 outside the sun's new reach.
 
 ### The pull
 
-`wellAcceleration(distance, reach, strength, curve)` in `Physics.ts`:
+The mass law (reasoning: [gravity-model.md](../gravity-model.md)): a body pulls by
+its mass, `massWellPull` in `Physics.ts`,
 
-- inverse-square: `strength / 6 · ((reach / distance)² − 1)`
-- linear: `strength · (1 − distance / reach)`
-- zero at and beyond reach; both curves give `strength / 2` at half reach.
+- 1/d², in play: `G × mass / distance²`, `G = 1000` (`MASS_WELL_G`);
+- 1/d: `G₂ × mass / distance`, `G₂ = 10` (`MASS_WELL_G_2D`), equal to 1/d² at
+  100 u.
+
+Its reach is where that pull falls to the cut-off pull, the same for every body:
+`√(G × mass / cutoff)` for 1/d², `G₂ × mass / cutoff` for 1/d (`massWellReach`).
+The reach is a hard cut-off, kept artificially smaller than physics so game
+physics stays sane: inside it the pull is exactly the law, at and beyond it zero
+(`massWellAcceleration`). Mass alone sets how hard a body pulls; the cut-off only
+sets where the pull ends.
 
 `updateShip` (same file) adds, per substep, the pull of:
 
-- the sun, when `sun.radius < distance < sun reach`, with the curve passed by the
-  caller (play passes the tuning's `curve`);
-- each planet, when `planet.radius + ship.radius < distance < planet reach`, with
-  its well's `curve` (absent: `inverse-square`) when the planet has a well. Planets without a well use the
-  legacy `mass / distance² · 1000` (studies only; play always sets wells).
+- the sun, when `sun.radius < distance < sun reach` (`starPull`);
+- each planet, when `planet.radius + ship.radius < distance < planet reach`
+  (`planetPull`).
 
 Pulls add as vectors. Gravity does not depend on the ship, its speed, its mass or
-its engines.
+its engines. Bodies without a `massWell` (studies only) keep the study curve,
+`wellAcceleration`, or the legacy `mass / distance² · 1000`.
 
 ### Motion
 
@@ -89,24 +95,28 @@ into `TUNING`. This spec owns the `gravity` section, validated by
 `GravityTuningSchema` (`packages/mode-a/src/lib/schemas/gravity.ts`) and exported
 as `GRAVITY_TUNING`. Other areas add their own sections to the same file.
 
-| Value            | Range                      | Meaning                                           |
-| ---------------- | -------------------------- | ------------------------------------------------- |
-| `sunMultiplier`  | 4–10                       | sun strength = `SUN_CONFIG` mass × value          |
-| `planetStrength` | > 0                        | strength of every planet's well                   |
-| `sunReachFactor` | > 0                        | sun reach = sun radius × value                    |
-| `planetReach`    | each > 0, min ≤ max        | `{ massScale, minRadii, maxRadii }`: planet reach |
-| `curve`          | `inverse-square`, `linear` | curve of the sun's and every planet's well        |
+| Value        | Range                       | Meaning                                   |
+| ------------ | --------------------------- | ----------------------------------------- |
+| `falloff`    | `inverse-square`, `inverse` | the mass law's falloff                    |
+| `cutoff`     | > 0, u/s²                   | the pull at which every body's reach ends |
+| `sunMass`    | > 0                         | the play sun's mass                       |
+| `planetMass` | > 0, by planet id           | each configured planet's mass             |
+
+Masses are absolute and chosen from a pull at contact distance (body radius +
+the reference ship's radius) relative to the reference ship's thrust: planets
+about 1×, the sun about 2×, the cut-off about 10 %. The reference ship is the
+Fighter's starter loadout; its thrust is its peak acceleration on the
+instrument's B1. The relation is guarded by a test, not derived at load: changing
+ship thrust or a body's size fails the guard and names the bodies to retune on
+the [Gravity tuning](gravity-tuning.md) bench.
 
 The file holds the values in play; read it for them rather than copying them
-here. `applyGravityTuning` and `tunedWell` (`simulation.ts`) apply the section to
-bodies; `Simulation`, `createStar`'s default reach and the FX bench use them.
-`GRAVITY_FLIGHT` keeps its shape for existing consumers, taking its gravity values
-from the section; its `engineSpeedScale` is not gravity (see below).
+here. `applyGravityTuning`, `tunedMassWell`, `planetMass` and `setStarMassWell`
+(`simulation.ts`) apply the section; `Simulation` and the FX bench use them.
 
-Still fixed in code: four substeps. `getPlanetInfluenceRadius` keeps a default
-reach rule for studies and Lab inspectors only.
-
-`planetStrength` and `sunMultiplier` are provisional.
+Still fixed in code: four substeps. `createStar` gives suns without a mass well
+(studies) a reach of 9 × radius, and `getPlanetInfluenceRadius` keeps a reach
+rule for planets without one.
 
 ### Engine taper
 
@@ -129,29 +139,17 @@ before and after such a change are never compared.
 differ from the previous release; editing tuning values never changes it. The
 step belongs to the release procedure in `docs/development.md`.
 
-### Reach from mass
-
-A well's pull is semi-physical and comes from its mass; its reach is only a hard
-cut-off where its pull falls to a cut-off pull, the same for every well, kept
-artificially smaller than physics so game physics stays sane; a well is a body
-with a surface, inside which no pull applies. The falloff, `G × mass / distance²`
-or the flat-world `G₂ × mass / distance`, the cut-off pull and each body's mass
-for its radius are found on the
-[Gravity tuning](gravity-tuning.md) bench with given ships, metrics first:
-gravity is read against each ship's thrust. Planets adopt the law first and suns
-after, each as its own change that also defines how the bench's values reach the
-tuning file; a body uses the curve above until it adopts this law.
-
 ## Contract
 
 ### Definition of Done
 
-- [x] The inverse-square curve is zero at and beyond reach, equals
-  `strength / 2` at half reach, and is stronger than linear near the centre and
-  weaker near the border (`WellCurve.test.ts`).
-- [x] A planet with a well pulls inside its reach, and its reach is independent
-  of size (`Physics.test.ts`, `simulation.test.ts`).
-- [x] A planet with a well does not pull outside its reach (`Physics.test.ts`).
+- [x] The mass law pulls `G × mass / d²` (or `G₂ × mass / d`) inside the reach and
+  nothing at or beyond it; the pull at the reach equals the cut-off; a lower
+  cut-off extends the reach without changing the pull inside; twice the mass
+  pulls twice as hard (`MassWell.test.ts`).
+- [x] The study curve is zero at and beyond reach and equals `strength / 2` at
+  half reach (`WellCurve.test.ts`); planets with a study well are inert outside
+  it and pull with their own curve (`Physics.test.ts`).
 - [x] `updateShip`'s well can be escaped with thrust, on a fixture sun with the
   stock thrust path (`simulation.test.ts`); unpowered, a loadout ship coasts
   above the old speed cap with planets removed (same file).
@@ -160,9 +158,13 @@ tuning file; a body uses the curve above until it adopts this law.
 - [x] The same replay gives the same trajectory twice under one rules version
   (`simulation.test.ts`, "reproduces validated replay exactly").
 - [x] Every gravity value in play is read from the tuning file: the simulation's
-  bodies equal those built from `GRAVITY_TUNING`, and changing each value changes
-  the bodies (`tuning.test.ts`).
-- [x] A planet with a well pulls with its own curve (`Physics.test.ts`).
+  bodies equal those built from `GRAVITY_TUNING`, every configured planet has a
+  mass, the sun's reach is where its pull meets the cut-off, and changing each
+  value changes the bodies (`tuning.test.ts`).
+- [x] Each planet pulls 0.75–1.5× and the sun 1.5–3× the reference ship's thrust
+  at contact; the cut-off is 5–20 % of it (`game-gravity.test.ts`).
+- [x] Planet contact bounces the ship with the shared `bounceOffSurface`
+  (`MassWell.test.ts`; game planet contact unchanged by the extraction).
 
 ### Regression Guardrails
 
@@ -217,5 +219,5 @@ Scenario: Planet contact bounces the ship
   flight today.
 - The sun's contact and heat checks use (960, 540) instead of the sun's
   position; harmless while the sun is fixed there.
-- `sunMultiplier` has a floor of 4, the value in play, so tuning cannot weaken
-  the sun. Widening a range is a rules change for the owner.
+- Other sun types (O–M) have no mass in the tuning file; play uses only the G
+  sun.

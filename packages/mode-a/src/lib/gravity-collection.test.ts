@@ -1,3 +1,4 @@
+import { getPlanetInfluenceRadius } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { buildDrain } from "./build-flight";
 import { GRAVITY_COLLECTION, gravitySource } from "./gravity-collection";
@@ -50,9 +51,11 @@ describe("gravity collection", () => {
 		}
 	it("does not collect outside a well or without coils; boundary is excluded", () => {
 		const sim = fixture();
-		sim.ship.pos.set(1700, 540);
+		const reach = getPlanetInfluenceRadius(sim.planets[0]);
+		// At the reach (a hair outside, past rounding) the ship is out of the well.
+		sim.ship.pos.set(1500 + reach + 1e-9, 540);
 		expect(gravitySource(sim.ship, sim.planets)).toBeUndefined();
-		sim.ship.pos.set(1800, 540);
+		sim.ship.pos.set(1500 + reach + 100, 540);
 		sim.step(idle);
 		expect(sim.gravityCollectionRate).toBe(0);
 		const empty = fixture(0);

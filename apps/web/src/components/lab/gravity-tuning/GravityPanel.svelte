@@ -21,7 +21,14 @@ import Toggle from "../../inputs/Toggle.svelte";
 // settings as value rows like the instrument's, the default shown once a value
 // changes, then the document to copy back or to load. A refused value keeps the
 // previous one and says why.
-let { config = $bindable() }: { config: GravityTuningConfig } = $props();
+let {
+	config = $bindable(),
+	ships = [],
+}: {
+	config: GravityTuningConfig;
+	/** Each ship's thrust, for the surface pull as a multiple of it. */
+	ships?: { label: string; color: string; thrust: number }[];
+} = $props();
 
 let error = $state("");
 let copied = $state(false);
@@ -132,6 +139,16 @@ function load() {
 		Reach {Math.round(reach)} u (where the pull falls to the cut-off) · surface
 		pull {Math.round(surfacePull)} u/s² at the body's radius
 	</p>
+	{#if ships.length}
+		<ul class="ratios" aria-label="Surface pull against each ship's thrust">
+			{#each ships as ship}
+				<li>
+					<i style={`background:${ship.color}`}></i>{ship.label}
+					<b>{(surfacePull / ship.thrust).toFixed(2)}× thrust</b>
+				</li>
+			{/each}
+		</ul>
+	{/if}
 	{#if error}
 		<p class="error" role="alert">{error}</p>
 	{/if}
@@ -237,6 +254,28 @@ textarea {
 summary {
 	cursor: pointer;
 	color: var(--color-text-muted);
+}
+.ratios {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	color: var(--color-text-muted);
+	font-size: 13px;
+}
+.ratios li {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-sm);
+}
+.ratios i {
+	display: inline-block;
+	width: 16px;
+	height: 3px;
+}
+.ratios b {
+	margin-left: auto;
+	color: var(--color-text);
+	font-weight: normal;
 }
 .error {
 	color: var(--color-caution-tape);

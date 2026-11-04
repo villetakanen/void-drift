@@ -3,11 +3,10 @@
 ## Context
 
 Gravity tuning is the Lab bench for deciding how a gravity well works, metrics
-first. Today the game's wells follow mixed rules (the sun's reach is a multiple of
-its radius, a planet's comes from its mass, strengths are set apart from either;
-see [gravity-field.md](gravity-field.md)). The bench defines one rule, reach from
-mass, and shows what a well with given values does to real ships. The game adopts
-the rule later, planets first and suns last.
+first: one well with given values, flown by real ships, read against each ship's
+thrust. The game's sun and planets use the same mass law
+([gravity-field.md](gravity-field.md)); the reasoning behind it is in
+[gravity-model.md](../gravity-model.md).
 
 It is one of two benches with one subject each. Ship tuning (the Lab instrument,
 [lab-instrument.md](lab-instrument.md)) compares ships with no gravity; Gravity
@@ -47,9 +46,8 @@ with a surface.
 The law is one production function, `massWellAcceleration(distance, mass,
 cutoff, falloff)`, with `massWellPull`, `massWellReach`, `MASS_WELL_G` and
 `MASS_WELL_G_2D`
-(`packages/core/src/lib/physics/Physics.ts`), used by the bench now and by the
-game's bodies when they adopt it (gravity-field.md, "Reach from mass"). The game's
-current curve, `wellAcceleration`, is unchanged until then.
+(`packages/core/src/lib/physics/Physics.ts`), the same law the game's sun and
+planets use.
 
 ### The ships
 
@@ -144,17 +142,18 @@ viewports 1280px wide and up. The bench is `GravityTuning` with its pane
 - Graphs: speed, gravity (the well's pull on each ship, u/s², with each ship's
   thrust as a dashed line in its colour) and distance to the well's centre.
 - Legend: the four ships in their fixed colours.
-- Pane: the settings, with the defaults shown when changed; the derived reach and
-  surface pull (the pull at the body's radius); then the document (Copy JSON,
-  Load).
+- Pane: the settings, with the defaults shown when changed; the derived reach,
+  surface pull (the pull at the body's radius) and that pull as a multiple of
+  each ship's thrust; then the document (Copy JSON, Load).
 
 Page: `/lab/gravity-tuning`, named "Gravity tuning" in the Lab.
 
 ### Handoff
 
-The copied document is the record of a decision. How the game adopts reach from
-mass (planets first, then suns) is a separate, later change specified in
-gravity-field.md; until then the bench changes no game value.
+The copied document is the record of a decision; the bench changes no game value.
+A decided falloff, cut-off or mass reaches the game by editing the `gravity`
+section of the tuning file (gravity-field.md, "Tuning values"), where a test
+guards each body's pull at contact against the reference ship's thrust.
 
 ## Contract
 

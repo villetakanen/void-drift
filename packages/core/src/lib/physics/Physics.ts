@@ -64,6 +64,8 @@ export interface Star {
 	powerMultiplier: number;
 	burnMultiplier: number;
 	pulseSpeed: number;
+	/** The mass well law in play (docs/specs/gravity-field.md); without it, the study curve. */
+	massWell?: MassWell;
 }
 
 export const PlanetWellSchema = z.object({
@@ -72,7 +74,19 @@ export const PlanetWellSchema = z.object({
 	curve: z.enum(["linear", "inverse-square"]).optional(), // Absent: inverse-square.
 });
 
+/** A body's well under the mass law: its mass, the cut-off pull and the falloff. */
+export const MassWellSchema = z.object({
+	mass: z.number().finite().positive(),
+	cutoff: z.number().finite().positive(),
+	falloff: z.enum(["inverse-square", "inverse"]),
+});
+export type MassWell = z.infer<typeof MassWellSchema>;
+
 export interface Planet {
+	/** The configured planet's id, when it has one. */
+	id?: string;
+	/** The mass well law in play; takes precedence over `well`. */
+	massWell?: MassWell;
 	well?: z.infer<typeof PlanetWellSchema>; // Explicit independent well parameters when integrated.
 	pos: Vec2; // Current position (calculated from orbit)
 	orbitCenter: Vec2; // Center of orbit (usually star)
@@ -126,9 +140,16 @@ export function getPlanetInfluenceRadius(
 		radius: number;
 		mass: number;
 		well?: { reach: number; strength: number };
+		massWell?: MassWell;
 	},
 	rule: PlanetReachRule = STUDY_PLANET_REACH,
 ): number {
+	if (planet.massWell)
+		return massWellReach(
+			planet.massWell.mass,
+			planet.massWell.cutoff,
+			planet.massWell.falloff,
+		);
 	if (planet.well) return planet.well.reach;
 	const massInfluence = Math.sqrt(planet.mass) * rule.massScale;
 	const maxInfluence = planet.radius * rule.maxRadii;
@@ -146,8 +167,6 @@ export const FlightResistanceSchema = z.object({
 export type FlightResistance = z.infer<typeof FlightResistanceSchema>;
 export const GravityFlightSchema = z.object({
 	engineSpeedScale: z.number().finite().positive(),
-	sunMultiplier: z.number().min(4).max(10),
-	planetStrength: z.number().finite().positive(),
 });
 /** Along-motion thrust fades; braking and transverse thrust retain full effectiveness. */
 export function engineEffectiveness(
@@ -327,8 +346,11 @@ export function starPull(
 	if (!(dist < star.influenceRadius && dist > star.radius))
 		return new Vec2(0, 0);
 	distVec.normalize();
+	const well = star.massWell;
 	return distVec.mult(
-		wellAcceleration(dist, star.influenceRadius, star.mass, curve),
+		well
+			? massWellAcceleration(dist, well.mass, well.cutoff, well.falloff)
+			: wellAcceleration(dist, star.influenceRadius, star.mass, curve),
 	);
 }
 
@@ -349,14 +371,17 @@ export function planetPull(
 		)
 	)
 		return { x: 0, y: 0 };
-	const strength = planet.well
-		? wellAcceleration(
-				dist,
-				planet.well.reach,
-				planet.well.strength,
-				planet.well.curve ?? "inverse-square",
-			)
-		: (planet.mass / distSq) * 1000;
+	const mass = planet.massWell;
+	const strength = mass
+		? massWellAcceleration(dist, mass.mass, mass.cutoff, mass.falloff)
+		: planet.well
+			? wellAcceleration(
+					dist,
+					planet.well.reach,
+					planet.well.strength,
+					planet.well.curve ?? "inverse-square",
+				)
+			: (planet.mass / distSq) * 1000;
 	return { x: (dx / dist) * strength, y: (dy / dist) * strength };
 }
 

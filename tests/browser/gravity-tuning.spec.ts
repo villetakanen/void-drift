@@ -36,6 +36,11 @@ test("a setting redraws the bench and reaches the document; an impossible one is
 	const before = await speed.textContent();
 	await page.getByRole("button", { name: "Open values" }).click();
 	await expect(page.getByRole("radiogroup", { name: "Falloff" })).toBeVisible();
+	await expect(
+		page
+			.getByRole("list", { name: "Surface pull against each ship's thrust" })
+			.getByRole("listitem"),
+	).toHaveCount(4);
 	const size = page.locator("#gt-well-cutoff");
 	await size.fill("25");
 	await size.press("Tab");

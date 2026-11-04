@@ -1,10 +1,9 @@
 {
 	"version": 1,
 	"gravity": {
-		"sunMultiplier": 4,
-		"planetStrength": 600,
-		"sunReachFactor": 9,
-		"planetReach": { "massScale": 10, "minRadii": 2, "maxRadii": 8 },
-		"curve": "inverse-square"
+		"falloff": "inverse-square",
+		"cutoff": 50,
+		"sunMass": 5250,
+		"planetMass": { "rock": 2250, "gas": 3500, "moon": 1450 }
 	}
 }

@@ -53,6 +53,11 @@ Each step is a local commit with its spec update and passing checks.
    Lab usability session, which owns the page registry and ship tuning). Done
    2026-11-04; the instrument's screen is shared as `InstrumentScreen`.
 5. **R5. Verification.** Browser tests and `pnpm verify`.
+6. **R6. The game on the mass law.** The bench showed a point mass with 1/d²
+   cannot work and that the reach should end at a cut-off pull. The sun and
+   planets now use the mass law with a body, 1/d², cut-off 50 u/s² and absolute
+   masses guarded against the Fighter starter's thrust. Reasoning:
+   [gravity-model.md](../gravity-model.md). Done 2026-11-04.
 
 Later, separately specified: planets adopt reach from mass, then suns; that change
 defines how Gravity tuning's values reach the tuning file.
