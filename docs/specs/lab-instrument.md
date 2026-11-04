@@ -184,3 +184,20 @@ Scenario: A broken document
   When the instrument receives it
   Then it lists the schema's issues instead of drawing
 ```
+
+## Proposed capability: ship-law comparisons (2026-11-04)
+
+Problem framing: [Ship motion: a law for assembled ships](../../apps/web/src/pages/lab/studies/ship-motion-laws-2026-11-04.astro),
+part 01. This is an unimplemented investigation need, not a change to the current
+instrument contract or authorization to build it.
+
+The study needs matched comparisons of candidate propulsion/rotation laws and
+controlled mass or propulsion-geometry changes, first without gravity and then
+with one configured production mass well. Existing Ship tuning cannot express
+all these changes; Gravity tuning shares its calculation but fixes the ships.
+Resolve this boundary explicitly before implementing a combined experiment.
+Reuse the shared calculation and views, retain the current baseline, and record
+the candidate law, build, initial state, well and power conditions for replay.
+Any additional burn or measurement needed to expose a claimed behaviour belongs
+in the shared instrument contract, not a study-local motion chart. The exact
+extension is left to exploration and subsequent readiness/scope.

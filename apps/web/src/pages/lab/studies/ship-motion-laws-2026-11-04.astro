@@ -1,0 +1,233 @@
+---
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find(
+	(entry) => entry.slug === "ship-motion-laws-2026-11-04",
+);
+---
+
+<StudyLayout study={study}>
+	<section>
+		<h2>01 / Build choices must become flight character</h2>
+		<p>
+			A designer adds equipment to a ship, doubles its engines, or angles a pair
+			of thrusters. Each choice should create an understandable change in how
+			the ship gains speed, turns, carries momentum and recovers. Those changes
+			must leave room for different useful ships: a powerful launch need not
+			mean the highest cruising speed, and a heavy ship need not be merely a
+			worse light one. The current mechanics work, but the owner finds their
+			range and depth insufficient for developing the game's ship design.
+		</p>
+		<p>
+			The tension is between expressive construction and readable control. If
+			every engine arrangement needs its own exception, designers cannot reason
+			about new builds. If one physically elaborate rule makes normal turns and
+			recovery laborious, the game loses its arcade character. Void Drift needs
+			a small, coherent set of relationships that can produce varied ships while
+			keeping two-control flight understandable.
+		</p>
+		<p>
+			This cycle asks which shared rule should translate an assembled ship and
+			pilot input into linear and rotational motion. Begin with controlled
+			flight without gravity, then require that the same rule remains coherent
+			through the existing gravity laws. The outcome is a flight-law decision
+			with demonstrated tradeoffs, not final fleet balance. A rule must explain
+			both what extra machinery buys and what the pilot gives up.
+		</p>
+
+		<h3>01.1 / The first decision and its boundaries</h3>
+		<p>
+			Settle the minimum common law for mass, thrust composition, speed and
+			turning. “Common” means consistent relationships and explicit component
+			properties; it does not require one equation, identical engine response,
+			or the removal of every intentional hull distinction. Existing ships are
+			reference cases, not numerical targets that all alternatives must
+			reproduce.
+		</p>
+		<p>
+			The working design hypothesis is that these relationships can explain
+			useful differences between builds without accumulating hull-specific
+			corrections. It fails if the rule works only for a symmetric example,
+			needs hidden compensation to make ordinary layouts fly, or offers variety
+			that pilots cannot understand or recover from. No motion law has yet been
+			selected.
+		</p>
+
+		<h3>01.2 / The questions the law must answer</h3>
+		<p>
+			<strong>Mass and inertia.</strong>
+			What should added equipment cost in acceleration, braking, turn-in and
+			stopping a turn? Does mass also change attainable engine-driven speed?
+			Does placement matter separately from total mass? A moving centre of mass
+			and component-derived rotational inertia are options to justify, not
+			prerequisites. Engine additions must include their added mass when judging
+			their benefit.
+		</p>
+		<p>
+			<strong>One engine and many.</strong>
+			What determines an engine's force at rest, while already moving, and when
+			opposing motion? How do aligned, angled, opposed and mixed-family engines
+			combine? Separate useful acceleration from eventual speed, and separate
+			commanded thrust from thrust actually delivered. Pulse and charge
+			behaviour may remain distinct without giving each family an incompatible
+			composition rule.
+		</p>
+		<p>
+			<strong>Speed and momentum.</strong>
+			Distinguish speed attainable under sustained propulsion from instantaneous
+			speed, directional thrust effectiveness and any absolute simulation limit.
+			State the reference frame. What happens after release, after turning
+			across existing momentum, and above the engine-driven range? Whether extra
+			engines raise that range, and whether gains diminish, must be decided
+			before selecting a curve.
+		</p>
+		<p>
+			<strong>Turning and stabilization.</strong>
+			Explain how engine angle and lever arm affect translation and rotation,
+			individually and together. What do left, right, both and neither command?
+			What can stabilizers actually counteract, how quickly, and with what
+			translation or thrust cost? Include insufficient or absent stabilization
+			where the build permits it. Whether forward speed changes turning
+			authority is an explicit choice. Do not silently add another player
+			control or unlimited corrective torque.
+		</p>
+		<p>
+			<strong>External acceleration.</strong>
+			A well must not be mistaken for another engine. Explain what propulsion
+			and stabilization can do while gravity changes the ship's velocity, and
+			what momentum remains on exit. Decide whether excess speed persists or
+			decays and why that behaviour serves play. A high peak near a body alone
+			is not evidence of a useful exit or a controllable manoeuvre.
+		</p>
+
+		<h3>01.3 / Evidence that would make the decision credible</h3>
+		<p>
+			Start with a small contrasting set of real builds: a light craft, a
+			heavier craft and an angled or asymmetric propulsion case. Compare one
+			meaningful change at a time: extra non-propulsive mass; extra identical
+			engines with their mass; a mixed engine set; a changed angle or lever; and
+			changed stabilization. Use controlled fixtures only where production
+			loadouts cannot express a necessary case, and label them as such.
+		</p>
+		<p>
+			For each candidate, explain the predicted tradeoff before looking at
+			paths. Observe acceleration, speed over time, turn rate, turn stopping
+			time, heading versus travel direction and recovery distance. Use world
+			units and seconds, so camera zoom cannot masquerade as a handling change.
+			Time to a stated fraction of cruise speed is useful only when that
+			candidate has a defined cruise speed; otherwise compare a common speed or
+			fixed-duration burn. Numerical thresholds remain to be established through
+			exploration rather than inherited from the supplied proposal.
+		</p>
+		<p>
+			Repeat matched flights with no well and with one configured well, holding
+			build, initial state and input sequence fixed. Distinguish coasting from
+			powered passes and contacts from successful flybys. Record the law, well
+			settings, power mode and elapsed time. Include release, reversal,
+			both-input flight, weak stabilization and repeated turning at high speed:
+			a claimed speed bound must survive changes in heading and engine mix.
+		</p>
+		<p>
+			A satisfying result explains the direction of each change, supports at
+			least two useful handling characters, and keeps its stated guarantees when
+			forces compose. Replays establish reproducibility and numerical behaviour;
+			hands-on flight establishes whether control is readable and recovery
+			satisfying. The designer judges those qualities. Curves alone cannot
+			establish fun, combat balance or a winner.
+		</p>
+
+		<h3>01.4 / Existing means and the missing experiment</h3>
+		<p>
+			The current build-flight calculation already uses total fitted mass,
+			angled thrust and torque, persistent angular velocity and braking
+			stabilizers. Ion thrust aggregates with diminishing speed gains; other
+			families retain their own speed limits and delivery timing. Rotational
+			inertia uses a chassis factor times mass, and some hulls have explicit
+			drive rules. This provides a working baseline, not evidence that its
+			particular limits are the desired future law.
+		</p>
+		<p>
+			<a href="/lab/instrument">Ship tuning</a>
+			compares editable builds under fixed burns with supplied power, without
+			gravity. <a href="/lab/gravity-tuning">Gravity tuning</a> already adds one
+			mass-based well and a no-well reference through the shared calculation,
+			but keeps its ships fixed. It supports inverse and inverse-square falloff,
+			a pull cut-off and body contact. Use these current laws; choosing new
+			gravity constants is a separate decision.
+		</p>
+		<p>
+			The missing capability is comparing candidate ship laws and controlled
+			build changes in that same well experiment. Mass, geometry and candidate
+			law selection are not ordinary instrument settings today. Record needed
+			extensions in the instrument's owning specification before implementing
+			them; preserve a reproducible baseline and reuse the shared instruments.
+			The initial mathematical comparison can proceed without this extension,
+			but gravity compatibility cannot be declared demonstrated without it.
+		</p>
+		<p>
+			Builder test flight currently removes planets, retains a small sun and
+			still accounts for power. A later hands-on trial needs a repeatable planet
+			setup and an explicit unlimited-energy option—the game's equivalent of
+			“unlimited fuel”—to isolate handling from endurance. That option should
+			supply power without erasing engine response timing or changing mass.
+			Normal-power flight is a subsequent integration check. These are evidence
+			needs, not tool features implemented or approved by this problem
+			statement.
+		</p>
+
+		<h3>01.5 / The dependency order</h3>
+		<p>
+			First resolve propulsion and rotation in empty space with supplied power:
+			what a build does, why it does it, and what the two controls request.
+			Treat translation and rotation together where angled engines couple them;
+			a straight-line speed curve alone cannot settle this first problem. Then
+			test the surviving rule through a fixed gravity well and hands-on flight.
+			If it fails there, reopen the specific motion assumption rather than
+			compensate by retuning the well.
+		</p>
+		<p>
+			Engine-family identities and fleet tuning follow the common law. Energy
+			costs and endurance follow demonstrated handling. Builder performance
+			indicators follow quantities the law can truthfully predict. Combat
+			balance, component destruction, freely placed components and optional
+			flight-computer upgrades are adjacent design problems, not requirements
+			for this cycle. Their relevance can be recorded without implementing them.
+		</p>
+
+		<h3>01.6 / How to use the supplied proposal</h3>
+		<p>
+			The owner's deliberately naive-agent PDF contributes possibilities:
+			mass-dependent speed, diminishing engine returns, directional force taper,
+			coupled rotation, stabilization and gravity overspeed. Its Double-Diamond
+			instructions do not govern this study. Its equations, physical analogies,
+			claims about other games, engine archetypes and numerical targets are
+			unvalidated hypotheses, not adopted project facts. In particular, an
+			“exhaust ceiling,” “structural impedance” or an overspeed wake must earn
+			its place as a game rule; the name is no evidence.
+		</p>
+		<p>
+			Exploration should compare coherent alternatives against the current
+			baseline, not merely tune the PDF's preferred formula. It must state which
+			parts of a candidate are physical modelling, deliberate arcade rules or
+			control assistance. No particular logarithm, drag law, centre of mass
+			model or stabilization policy is selected here.
+		</p>
+		<p>
+			Implementation references:
+			<code>packages/mode-a/src/lib/build-flight.ts</code>,
+			<code>schemas/loadout.ts</code>
+			and <code>schemas/ion.ts</code> in that library;
+			<code>packages/mode-a/src/lib/simulation.ts</code>;
+			<code>packages/core/src/lib/physics/Physics.ts</code>. Owning contracts:
+			<code>docs/specs/lab-instrument.md</code>,
+			<code>docs/specs/gravity-tuning.md</code>
+			and
+			<code>docs/specs/gravity-field.md</code>. This page records the problem;
+			production behaviour and standing design principles are unchanged.
+		</p>
+	</section>
+	<section>
+		<h2>02 / Exploration</h2>
+	</section>
+</StudyLayout>

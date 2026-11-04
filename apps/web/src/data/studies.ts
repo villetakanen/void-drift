@@ -10,6 +10,14 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
 	{
+		slug: "ship-motion-laws-2026-11-04",
+		title: "Ship motion: a law for assembled ships",
+		status: "open",
+		phase: "exploration",
+		question:
+			"What shared flight rule makes mass and propulsion layout produce distinct, predictable handling, while preserving control through a gravity well?",
+	},
+	{
 		slug: "gilded-surfaces-2026-11-03",
 		title: "Gilded glass: a surface language",
 		status: "accepted",
