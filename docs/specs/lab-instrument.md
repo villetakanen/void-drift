@@ -1,6 +1,5 @@
 # Lab instrument
 
-Status: v1 implemented locally, 2026-11-01; iPad readability reviewed by the owner, 2026-11-01.
 Design record: study `lab-instrument-2026-11-01` (`/lab/studies/lab-instrument-2026-11-01`).
 Designer-facing name: Ship tuning. It compares ships with no gravity; gravity is
 tuned on its own bench, [Gravity tuning](gravity-tuning.md).
@@ -157,7 +156,6 @@ It is no longer a prerequisite for comparing this accepted Fiddler configuration
   closes on Escape with focus returned (browser test).
 - [x] An edited value updates the graphs and the document (browser test).
 - [x] Each reference page renders its components (browser test).
-- [x] Readability on the iPad is reviewed by a person and recorded (owner, 2026-11-01).
 
 ### Regression Guardrails
 

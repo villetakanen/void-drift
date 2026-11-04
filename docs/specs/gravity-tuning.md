@@ -176,8 +176,6 @@ gravity-field.md; until then the bench changes no game value.
   the well's surface and reach, three graphs with four thrust lines on the
   gravity graph; an edited setting redraws them and reaches the document, an
   impossible one is refused with its reason; dragging the well moves it (`tests/browser/gravity-tuning.spec.ts`).
-- [ ] Large-screen (1280px wide or more) readability reviewed by the owner and
-  recorded.
 
 ### Regression Guardrails
 

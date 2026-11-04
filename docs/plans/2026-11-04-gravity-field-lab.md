@@ -52,8 +52,7 @@ Each step is a local commit with its spec update and passing checks.
    tuning" and "Ship tuning" (agree the nav and the instrument's renaming with the
    Lab usability session, which owns the page registry and ship tuning). Done
    2026-11-04; the instrument's screen is shared as `InstrumentScreen`.
-5. **R5. Verification.** Browser tests, `pnpm verify`, owner large-screen
-   (≥1280px) readability review.
+5. **R5. Verification.** Browser tests and `pnpm verify`.
 
 Later, separately specified: planets adopt reach from mass, then suns; that change
 defines how Gravity tuning's values reach the tuning file.

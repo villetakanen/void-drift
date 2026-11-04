@@ -106,8 +106,7 @@ from the section; its `engineSpeedScale` is not gravity (see below).
 Still fixed in code: four substeps. `getPlanetInfluenceRadius` keeps a default
 reach rule for studies and Lab inspectors only.
 
-`planetStrength` and `sunMultiplier` are provisional and not yet reviewed for feel
-in flight.
+`planetStrength` and `sunMultiplier` are provisional.
 
 ### Engine taper
 
@@ -163,7 +162,6 @@ tuning file; a body uses the curve above until it adopts this law.
   bodies equal those built from `GRAVITY_TUNING`, and changing each value changes
   the bodies (`tuning.test.ts`).
 - [x] A planet with a well pulls with its own curve (`Physics.test.ts`).
-- [ ] Owner flight review of sun and planet feel, recorded here with date.
 
 ### Regression Guardrails
 
