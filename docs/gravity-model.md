@@ -95,6 +95,35 @@ From the formula above with the reference ship (contact distance = body radius +
 | Gas giant | 45     | 3500 | ≈ 265 |
 | G sun     | 35     | 5250 | ≈ 324 |
 
+## Deferred until ship top speed is settled
+
+Playtesting the mass law showed passes are close to binary: a ship is either
+barely touched or hits the body. Under 1/d² almost all the pull sits just above
+the surface, and a pass bends roughly as one over its closest distance, so the
+band of passes that bend without crashing is thin. A steeper curve would make it
+thinner. Star Control 2's melee went the other way: a constant pull inside a
+fixed radius (its distance-dependent formula is compiled out), so the bend grows
+smoothly with depth.
+
+Two ideas were sketched and set aside, because both depend on how fast ships
+can go, which is not decided yet; tuning against today's speeds would only add
+complexity. The mass law in play works well enough meanwhile.
+
+- **A well described by the pull a ship feels:** reach, edge pull and surface
+  pull, with the steepness derived, `pull(d) = edge × (reach / d)ⁿ`. Constant
+  pull (Star Control 2) is edge = surface; today's law is n = 2. Field size, edge
+  pull, surface pull and steepness cannot all be set freely: any three fix the
+  fourth. A flatter curve with the same field and surface needs a stronger edge.
+- **A slingshot that gives speed.** An unpowered pass past a fixed well leaves
+  at the speed it arrived. Real gains come from an orbiting planet (up to twice
+  its orbital speed, only about 70–90 u/s with today's slow orbits), from thrust
+  at the bottom of the dive (which our engines' speed taper mostly cancels), or
+  from gravity carrying a ship past its engines' speed limit. A game rule would
+  pull at a fraction while the ship climbs out, so deeper passes leave faster;
+  it is not physical and may let a circling ship pump speed. Trying it would add
+  an outbound pull factor and well motion to the bench, read against each ship's
+  speed with and without the well.
+
 ## Still open
 
 - Whether 1/d replaces 1/d² if play shows passes too sharp.
