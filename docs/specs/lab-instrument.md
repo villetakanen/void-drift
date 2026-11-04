@@ -157,28 +157,43 @@ documents without a field behave exactly as above.
 - `field.orbits`: `moving`, as in play, or `frozen`, bodies held at their start
   positions.
 - `field.wells`: zero to four Lab wells, each with a label, position, reach,
-  strength and curve within the gravity schema's ranges. They exist only in the
-  document.
+  strength and curve within the gravity schema's ranges, centred inside the arena
+  (within 1200 of (960, 540)). A Lab well is a point well with no surface: it
+  pulls but cannot be touched. Lab wells exist only in the document. The
+  six-vehicle limit is unchanged.
 - `field.changes`: gravity values that differ from the game, named and ranged by
   `GravityTuningSchema`. The only part of a document that can become game
   configuration, through `pnpm tuning:apply` (see gravity-field.md).
-- `vehicles[].start`: world position, heading in degrees and speed along it;
-  without it the vehicle starts at the game's spawn, at rest, facing up.
-- Burn `coast`: no input for 14 s. Available to every document.
+- `vehicles[].start`: world position, heading in degrees (0 = +x, −90 = up, the
+  game's rotation −π/2) and speed along it; without it the vehicle starts at the
+  game's spawn, at rest, facing up. A start on or inside a body's surface, or
+  outside the arena, is rejected. `start` is allowed only with a `field`;
+  documents without one still run from rest at the origin.
+- Burn `coast`: no input for 840 ticks. Version 2 documents may use it with or
+  without a field; version 1 keeps B1–B3. Field documents accept all four burns,
+  so a path can combine gravity with thrust.
 
 Calculation: each vehicle runs in its own `Simulation` built from the field,
 with the production step, its power budget and its death checks. The vehicle's
 `changes` reach that `Simulation` as its per-chassis tuning patch, whose shape
-the Lab usability plan (`docs/plans/2026-11-04-lab-usability.md`) defines. Its samples
-add the gravity acceleration, the distance to the nearest body's surface, and
-the first outcome: `star` (death cause STAR), `planet` (first contact), `escaped`
-(outside every reach and moving away), or `bound` at 14 s.
+the Lab usability plan (`docs/plans/2026-11-04-lab-usability.md`) defines;
+part changes (`changes.fusion`, `changes.plasma`) therefore need that patch to
+reach `applyBuildEngines`. Samples add the gravity acceleration and the distance
+to the nearest game body's surface (Lab wells, having no surface, count by centre
+distance). Events are recorded per tick: each planet contact (the ship bounces
+and the run continues) and each arena wrap. The path ends at:
+
+- `star`, `hull` or `power`: the run ended with that death cause; sampling stops
+  at that tick;
+- `free`: 840 ticks flown and the ship outside every reach;
+- `bound`: 840 ticks flown and the ship inside some reach.
 
 Views in field mode, otherwise as above:
 
 - Path pane in the world frame: every body's surface and reach ring, Lab wells
-  drawn apart from game bodies, each path ending in its outcome mark; optional
-  shading of pull strength.
+  drawn apart from game bodies, a mark at each planet contact, each path ending
+  in its outcome mark; a wrap breaks the path line instead of drawing a chord
+  across the arena; optional shading of pull strength.
 - Graphs: speed, gravity acceleration, distance to nearest surface.
 - Pane: edit `field.changes`, add, drag and remove Lab wells, edit each vehicle's
   start. Copy proposal sits beside Copy JSON and copies the block defined in
@@ -223,8 +238,11 @@ It is no longer a prerequisite for comparing this accepted Fiddler configuration
   version 2 schema (unit test).
 - [ ] Target: a field vehicle's samples equal a `Simulation` built from the same
   field and start, fed the same burn (unit test).
-- [ ] Target: the schema rejects a fifth Lab well, an out-of-range strength and
-  an unknown gravity change (unit tests).
+- [ ] Target: the schema rejects a fifth Lab well, an out-of-range strength, an
+  unknown gravity change, a Lab well outside the arena, a start inside a body or
+  outside the arena, and a `start` without a `field` (unit tests).
+- [ ] Target: with two overlapping Lab wells, a sample's gravity acceleration is
+  the vector sum of each well's pull alone (unit test).
 - [ ] Target: a field document shows bodies, reach rings and outcome marks, and
   an edited gravity value redraws paths and appears in the copied proposal
   (browser test).
@@ -283,4 +301,15 @@ Scenario: Target: an out-of-range Lab well
   Given a field document whose Lab well has a negative strength
   When the instrument receives it
   Then it lists the schema's issues instead of drawing
+
+Scenario: Target: a start inside the sun
+  Given a field document with system "game" and a vehicle starting at the sun's centre
+  When the instrument receives it
+  Then it lists the issue instead of drawing
+
+Scenario: Target: a path that wraps
+  Given a field document whose vehicle coasts out of the arena
+  When the instrument calculates it
+  Then a wrap event is recorded at that tick
+  And the path pane breaks the line there and continues from the opposite side
 ```

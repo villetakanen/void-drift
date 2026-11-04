@@ -28,8 +28,9 @@ here.
   (`packages/core/src/lib/config.ts`). Its reach is its radius × 9.
 - Three planets from `SURVIVAL_CONFIG.PLANETS` (same file), built by
   `initializePlanets` (`packages/core/src/lib/physics/planets.ts`) on circular
-  orbits round the sun. The flight seed rotates every orbit's starting phase by
-  `(seed mod 360) / 180 · π`; it changes nothing else.
+  orbits round the sun. In play the flight seed rotates every orbit's starting
+  phase by `(seed mod 360) / 180 · π` and changes nothing else (test flights also
+  seed their salvage).
 - `Simulation` (`packages/mode-a/src/lib/simulation.ts`) applies the gravity
   tuning to these bodies in its constructor: sun mass × `sunMultiplier`, and each
   planet gets an explicit well `{ reach, strength: planetStrength }`, validated by
@@ -38,7 +39,8 @@ here.
   `clamp(√mass · 10, 2 · radius, 8 · radius)`.
 - Test flights (`settings.testFlight`) remove the planets, shrink the sun to
   radius 12 with its strength scaled by (12 / radius)², and place the ship 85
-  outside the sun's reach.
+  outside the sun's reach. The reach is stored when the sun is created and is not
+  recomputed, so it stays at the G sun's 315.
 
 ### The pull
 
@@ -62,7 +64,8 @@ its engines.
 ### Motion
 
 - Fixed tick `STEP = 1/60` s; `Simulation.step` runs four substeps of `STEP / 4`.
-  Replays are inputs per tick (`ReplaySchema`, `schemas/flight.ts`).
+  Replays are input segments, each held for a number of ticks (`ReplaySchema`,
+  `schemas/flight.ts`).
 - Planets advance on their orbits inside `updateShip`, once per substep, before
   their pull is measured.
 - Integration is semi-implicit Euler: velocity from the summed acceleration, then
@@ -73,10 +76,13 @@ its engines.
 
 ### Contact
 
-- Planet: the ship is pushed out to the surface and its velocity reflected about
-  the surface normal with restitution 0.8; hull damage is applied.
-- Sun: the substep loop stops when the ship is within sun radius + ship radius of
-  (960, 540), and the tick ends the run with death cause `STAR`
+- Planet: whenever the ship is inside radius + ship radius, whichever way it is
+  moving, it is pushed out to the surface, its velocity is reflected about the
+  surface normal and the whole velocity scaled by 0.8, and the hull loses
+  `SURVIVAL_CONFIG.PLANET_COLLISION_DAMAGE` (loadout ships use hull multiplier 1).
+- Sun, outside test flights: the substep loop stops when the ship is within sun
+  radius + ship radius of (960, 540), and the tick ends the run with death cause
+  `STAR`. In test flights contact is not lethal and the loop does not stop
   (`highscore.ts` death causes: `STAR`, `HULL`, `POWER`). Heat damage near the sun
   is `updateHull`, outside this spec.
 
@@ -129,7 +135,12 @@ release procedure in `docs/development.md`.
 - `GravityTuningSchema` in `packages/mode-a/src/lib/schemas/gravity.ts` validates
   the `gravity` section: `sunMultiplier`, `planetStrength`, the sun reach factor,
   the planet reach rule and the curve, each with its range. `GRAVITY_FLIGHT` reads
-  it, and no other code holds gravity values.
+  it. The gravity values now held in code move there: `GRAVITY_FLIGHT`
+  (`simulation.ts`), the sun reach factor 9 (`createStar`, `game-loop.ts`) and the
+  planet reach rule's 10, 2 and 8 (`getPlanetInfluenceRadius`, `Physics.ts`). The
+  legacy no-well formula stays in code for studies only.
+- With no sun (the instrument's `empty` system), `Simulation` applies no solar
+  charge, no heat and no sun contact check.
 - `Simulation` accepts an optional field: gravity tuning, body set (`game` or
   `empty`), added wells, frozen orbits and ship start. Without one it builds the
   bodies in play exactly as above. The same options object also carries an
@@ -158,8 +169,9 @@ usability plan. For `gravity` it:
 - parses the JSON with `InstrumentConfig`, takes `field.changes`, validates them
   with `GravityTuningSchema`, writes the `gravity` section and prints old → new
   for each value; other sections are untouched;
-- refuses, changing nothing, when the document has no changes, a value is out of
-  range or unknown, or the baseline values differ from the tuning file.
+- refuses, changing nothing, when the document has no changes or only values
+  equal to the tuning file, a value is out of range or unknown, or the baseline
+  values differ from the tuning file.
 
 The agent then: updates the table above; runs `pnpm verify`,
 updating visual baselines for the trajectory change without changing tolerances;
@@ -173,15 +185,20 @@ never become game bodies by this route.
 - [x] The inverse-square curve is zero at and beyond reach, equals
   `strength / 2` at half reach, and is stronger than linear near the centre and
   weaker near the border (`WellCurve.test.ts`).
-- [x] A planet pulls inside its reach and not outside it; an explicit reach is
-  independent of size (`Physics.test.ts`, `simulation.test.ts`).
-- [x] Under power, a ship can escape the sun's well; unpowered, a ship coasts
-  above the old speed cap (`simulation.test.ts`).
+- [x] A planet with a well pulls inside its reach, and its reach is independent
+  of size (`Physics.test.ts`, `simulation.test.ts`).
+- [ ] A planet with a well does not pull outside its reach (unit test; today's
+  outside-reach test uses a legacy planet without a well).
+- [x] `updateShip`'s well can be escaped with thrust, on a fixture sun with the
+  stock thrust path (`simulation.test.ts`); unpowered, a loadout ship coasts
+  above the old speed cap with planets removed (same file).
+- [ ] The close-pass and too-deep scenarios below pass on a `Simulation` with the
+  game sun (unit tests).
 - [x] The same replay gives the same trajectory twice under one rules version
   (`simulation.test.ts`, "reproduces validated replay exactly").
-- [ ] Target: every gravity value in play is read from the tuning file (unit test:
-  a `Simulation` built from a modified tuning object pulls differently; no
-  gravity literal remains in `simulation.ts`).
+- [ ] Target: every gravity value in play is read from the tuning file (unit
+  tests: changing each tuning value, including the sun reach factor and the planet
+  reach rule, changes the corresponding pull or reach in a `Simulation`).
 - [ ] Target: a default `Simulation` and one given the default field explicitly
   produce the same trajectory for the same replay (unit test).
 - [ ] Target: `tuning:apply` applies a valid proposal and refuses each invalid
@@ -202,25 +219,36 @@ never become game bodies by this route.
 
 ```gherkin
 Scenario: A pass outside reach is unaffected
-  Given a coasting ship whose path stays outside every body's reach
-  When it flies for 14 s
-  Then its velocity is unchanged
+  Given a Simulation with planets removed and a loadout ship given no input
+  And the ship starts at 1.5 sun reaches from the sun, moving tangentially
+  And its speed keeps it inside the arena for 840 ticks
+  When it flies for 840 ticks
+  Then its velocity after every tick equals its starting velocity
 
-Scenario: A close sun pass escapes under power
-  Given a ship crossing the sun's reach with full engines toward open space
-  When it passes inside half the sun's reach
-  Then its path bends toward the sun
-  And it leaves the sun's reach without touching the sun
+Scenario: A close sun pass bends and escapes
+  Given a Simulation with planets removed and a loadout ship given no input
+  And the ship starts outside the sun's reach on a straight line whose closest
+    approach to the sun's centre lies between contact distance and half reach
+  And its speed exceeds escape speed at that closest approach
+  When it flies until it leaves the sun's reach or 840 ticks pass
+  Then its gravity acceleration at closest approach points at the sun
+  And its heading has turned toward the sun's side compared with its start
+  And it is outside the sun's reach before 840 ticks
+  And the run has not ended
 
 Scenario: Going too deep ends the run
-  Given an unpowered ship falling straight toward the sun
-  When it comes within sun radius plus ship radius of the sun's centre
+  Given a Simulation with planets removed and a loadout ship given no input
+  And the ship starts at rest at 0.9 sun reaches from the sun
+  When it flies for up to 840 ticks
   Then the run ends with death cause STAR
 
 Scenario: Planet contact bounces the ship
-  Given a ship that reaches a planet's surface
-  Then it is placed on the surface with its velocity reflected and reduced
-  And its hull is damaged
+  Given a ship that is inside a planet's radius plus its own radius
+  When the substep is applied
+  Then it is placed on the planet's surface
+  And its velocity is its previous velocity reflected about the surface normal
+    and scaled by 0.8, plus that substep's gravity change
+  And its hull is lower by PLANET_COLLISION_DAMAGE
 
 Scenario: Target: applying an owner's proposal
   Given a copied proposal changing planetStrength from 600 to 450
@@ -238,6 +266,7 @@ Scenario: Target: refusing a stale proposal
 
 - Does `engineSpeedScale` move to the engine rules or get removed? It affects no
   flight today.
-- The sun's contact check uses (960, 540) instead of the sun's position; harmless
-  while the sun is fixed there, but the field mode's `empty` system must not rely
-  on it.
+- The sun's contact and heat checks use (960, 540) instead of the sun's
+  position; harmless while the sun is fixed there.
+- `sunMultiplier` has a floor of 4, today's value, so a proposal cannot weaken the
+  sun. Widening a range is a rules change for the owner, not a proposal.
