@@ -3,6 +3,10 @@
 **Status:** ✅ COMPLETED (2024)  
 **Current Version:** 0.0.4
 
+> **[DEPRECATED 2026-11-04]** This spec's gravity rules (`applyGravity`, `G = 0.1`, the 350px reach and the gravity scenarios) are superseded by
+> [gravity-field.md](gravity-field.md), which describes gravity as it flies today.
+> Kept for history; do not implement from them.
+
 ## Blueprint
 
 ### Context
@@ -173,6 +177,8 @@ The Lab must display the current sun configuration:
 - **Performance:** Zero allocations per frame (reuses colors/radii)
 
 ### Physics (`packages/core/src/lib/physics/Physics.ts`)
+
+**[DEPRECATED 2026-11-04]** See [gravity-field.md](gravity-field.md#the-pull).
 
 - **Gravity Law:** Inverse square with safeguard: `F = G * m1 * m2 / max(distance², minDistance²)`
 - **Influence Check:** Only applies force if `distance < influenceRadius`

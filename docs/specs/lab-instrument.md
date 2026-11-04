@@ -77,6 +77,8 @@ function, with its own part and ion values, from rest at the origin. Speed,
 acceleration (differenced over 6 ticks) and turn acceleration derive from the
 samples. Not included: gravity, power limits, and changes to part mass or chassis
 values. A difference shown by the instrument may therefore not appear in flight.
+Target: documents with a `field` are calculated in flight conditions instead; see
+"Target: gravity field mode".
 
 ### Views
 
@@ -120,6 +122,68 @@ between fitting all paths and a default scale (0.2 px/u) that pans by dragging.
 - Custom pane content: pass a `pane` snippet to `LabInstrument`; it receives the
   parsed document.
 
+### Target: gravity field mode
+
+Not implemented. Plan: [2026-11-04-gravity-field-lab.md](../plans/2026-11-04-gravity-field-lab.md).
+Gravity rules: [gravity-field.md](gravity-field.md).
+
+A version 2 document may carry a `field`. Version 1 documents and version 2
+documents without a field behave exactly as above.
+
+```json
+{
+	"version": 2,
+	"burn": "coast",
+	"field": {
+		"system": "game",
+		"orbits": "frozen",
+		"wells": [
+			{ "label": "W1", "x": 1400, "y": 300, "reach": 260, "strength": 900, "curve": "inverse-square" }
+		],
+		"changes": { "planetStrength": 450 }
+	},
+	"vehicles": [
+		{
+			"label": "Close pass",
+			"loadout": { "version": 2, "chassis": "balanced", "side": "ion", "stabilizers": true, "hull": [null, null], "aft": ["plasma", "plasma"] },
+			"start": { "x": 460, "y": 540, "heading": -90, "speed": 300 }
+		}
+	]
+}
+```
+
+- `field.system`: `game` (the sun and planets in play, at the game's seed) or
+  `empty` (added wells only).
+- `field.orbits`: `moving`, as in play, or `frozen`, bodies held at their start
+  positions.
+- `field.wells`: zero to four Lab wells, each with a label, position, reach,
+  strength and curve within the gravity schema's ranges. They exist only in the
+  document.
+- `field.changes`: gravity values that differ from the game, named and ranged by
+  `GravityTuningSchema`. The only part of a document that can become game
+  configuration, through `pnpm tuning:apply` (see gravity-field.md).
+- `vehicles[].start`: world position, heading in degrees and speed along it;
+  without it the vehicle starts at the game's spawn, at rest, facing up.
+- Burn `coast`: no input for 14 s. Available to every document.
+
+Calculation: each vehicle runs in its own `Simulation` built from the field,
+with the production step, its power budget and its death checks. The vehicle's
+`changes` reach that `Simulation` as its per-chassis tuning patch, whose shape
+the Lab usability plan (`docs/plans/2026-11-04-lab-usability.md`) defines. Its samples
+add the gravity acceleration, the distance to the nearest body's surface, and
+the first outcome: `star` (death cause STAR), `planet` (first contact), `escaped`
+(outside every reach and moving away), or `bound` at 14 s.
+
+Views in field mode, otherwise as above:
+
+- Path pane in the world frame: every body's surface and reach ring, Lab wells
+  drawn apart from game bodies, each path ending in its outcome mark; optional
+  shading of pull strength.
+- Graphs: speed, gravity acceleration, distance to nearest surface.
+- Pane: edit `field.changes`, add, drag and remove Lab wells, edit each vehicle's
+  start. Copy proposal sits beside Copy JSON and copies the block defined in
+  gravity-field.md; it is disabled while `field.changes` is empty.
+
 ## Study chassis proposal and Fiddler integration
 
 Originally proposed by [Fiddler 02.11–02.12](../../apps/web/src/pages/lab/studies/lhi-fiddler-2026-11-03.astro)
@@ -155,6 +219,17 @@ It is no longer a prerequisite for comparing this accepted Fiddler configuration
 - [x] An edited value updates the graphs and the document (browser test).
 - [x] Each reference page renders its components (browser test).
 - [x] Readability on the iPad is reviewed by a person and recorded (owner, 2026-11-01).
+- [ ] Target: version 1 documents parse and calculate unchanged under the
+  version 2 schema (unit test).
+- [ ] Target: a field vehicle's samples equal a `Simulation` built from the same
+  field and start, fed the same burn (unit test).
+- [ ] Target: the schema rejects a fifth Lab well, an out-of-range strength and
+  an unknown gravity change (unit tests).
+- [ ] Target: a field document shows bodies, reach rings and outcome marks, and
+  an edited gravity value redraws paths and appears in the copied proposal
+  (browser test).
+- [ ] Target: field mode readability on the iPad reviewed by the owner and
+  recorded.
 
 ### Regression Guardrails
 
@@ -163,6 +238,10 @@ It is no longer a prerequisite for comparing this accepted Fiddler configuration
 - The instrument's scales come from the data and the fixed rules above, never from
   a study.
 - Elements keep the 4px vertical rhythm; inline widths follow content.
+- Field mode calculates through the production `Simulation`; the instrument has
+  no gravity code of its own.
+- Lab wells and vehicle starts never reach the game; only `field.changes` can,
+  and only through `pnpm tuning:apply`.
 
 ### Scenarios
 
@@ -180,6 +259,28 @@ Scenario: Switching the burn
 
 Scenario: A broken document
   Given a document whose loadout has the wrong number of aft slots
+  When the instrument receives it
+  Then it lists the schema's issues instead of drawing
+
+Scenario: Target: a coast path bends round a frozen Lab well
+  Given a field document with system "empty", orbits "frozen" and one Lab well
+  And a vehicle starting outside the well's reach, heading past it, on coast
+  When the instrument calculates it
+  Then the path is straight until it enters the reach ring and curves toward the well inside it
+
+Scenario: Target: a vehicle captured by the sun
+  Given a field document with system "game" and a vehicle aimed at the sun on coast
+  When the instrument calculates it
+  Then its path ends in the "star" outcome mark at the sun's surface
+
+Scenario: Target: tuning a planet well
+  Given a field document with system "game" and no changes
+  When the designer sets planetStrength to 450 in the pane
+  Then every path redraws
+  And Copy proposal copies a block containing "planetStrength 600 → 450"
+
+Scenario: Target: an out-of-range Lab well
+  Given a field document whose Lab well has a negative strength
   When the instrument receives it
   Then it lists the schema's issues instead of drawing
 ```

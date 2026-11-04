@@ -117,6 +117,13 @@ The selected Firebase project is `void-drift-alpha` (Spark), database `(default)
 `eur3`. Anonymous authentication must be enabled. Do not upgrade billing or Identity
 Platform to work around setup failures. Public web configuration is local, not committed.
 
+Before preparing, decide the rules version. If gameplay rules or any tuning-file value
+differ from the previous release, change `CHALLENGE` in
+`packages/mode-a/src/schemas/highscore.ts` once for this release; new scores then use
+new document IDs and queries. Otherwise leave it unchanged. Applying tuning proposals
+between releases never changes it (owner decision, 2026-11-04;
+[gravity-field.md](specs/gravity-field.md#rules-version)).
+
 After the full verification gates pass on a stable candidate, prepare the production
 artifact locally:
 

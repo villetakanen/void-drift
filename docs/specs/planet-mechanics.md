@@ -3,6 +3,10 @@
 **Status:** ✅ COMPLETED (2024)  
 **Current Version:** 0.0.4
 
+> **[DEPRECATED 2026-11-04]** This spec's gravity rules (the mass-based formula and the gravity criteria and scenarios) are superseded by
+> [gravity-field.md](gravity-field.md), which describes gravity as it flies today.
+> Kept for history; do not implement from them.
+
 ## Blueprint
 
 ### Context
@@ -151,6 +155,8 @@ interface Planet {
 - **Radius:** Orbits at 700px from star center
 
 #### Gravity
+
+**[DEPRECATED 2026-11-04]** Play gives every planet an explicit inverse-square well; see [gravity-field.md](gravity-field.md#bodies-in-play). The formula below applies only to planets without a well.
 
 - **Law:** Inverse square law scaled by mass
 - **Influence Radius:** Mass-based: `sqrt(mass) * 10`, clamped to `[radius * 2, radius * 8]`

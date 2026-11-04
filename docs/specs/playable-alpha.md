@@ -9,7 +9,7 @@ Game and Flight Lab share this simulation and the core renderer/input/camera.
 `schemas/flight.ts` validates Lab settings and replay inputs; ship tuning uses the
 existing ship-profile schema. Gravity and engines follow the accepted 29 October gravity study integration below.
 
-All ranked runs use challenge `gravity-1`, seed 2026, a G-class star, and stock profiles.
+All ranked runs use the current challenge `CHALLENGE` (`ion-1` since 0.4.3), seed 2026, a G-class star, and stock profiles.
 Scoring is casual client-reported survival time, clearly labeled: Firestore rules
 validate ownership, shape, version and bounds, but do not prove an honest simulation.
 Each anonymous player keeps one best score per ranked ship, independently of other
@@ -88,6 +88,11 @@ OPTIONS; the Lab's return link reads PLAY. The builder header reads `HANGAR / <v
 
 ## Gravity well integration — 29 October 2026
 
+> **[DEPRECATED 2026-11-04]** Gravity rules, tuning values and the rules version
+> now live in [gravity-field.md](gravity-field.md). That spec also records that the
+> engine taper described below is not applied in play. This section is kept as
+> the record of the 29 October change.
+
 Game and Flight Lab use four physics substeps per 60 Hz replay tick. Suns and
 planets use a bounded inverse-square pull: strength / 6 × ((reach / distance)² − 1),
 zero at and beyond reach. Existing body sizes and reaches are preserved. The G sun
@@ -103,6 +108,7 @@ scale is an initial estimate, not a maximum velocity or established play balance
 
 Legacy study comparisons retain their explicit old resistance/curve configuration.
 New scores use gravity-1 and separate document IDs; existing alpha-1 records remain.
+(Since 0.4.3 the challenge is `ion-1`; see [gravity-field.md](gravity-field.md#rules-version).)
 A deployment must include the updated rules before new scores can be submitted.
 Existing replay inputs are deterministic under this revision but trajectories differ
 from alpha-1; cross-version replay equivalence is not promised.
