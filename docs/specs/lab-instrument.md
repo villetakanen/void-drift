@@ -260,8 +260,8 @@ It is no longer a prerequisite for comparing this accepted Fiddler configuration
 - [ ] Target: a field document shows bodies, reach rings and outcome marks, and
   an edited gravity value redraws paths and appears in the copied proposal
   (browser test).
-- [ ] Target: field mode readability on the iPad reviewed by the owner and
-  recorded.
+- [ ] Target: field mode readability on a large screen (1280px wide or more)
+  reviewed by the owner and recorded.
 
 ### Regression Guardrails
 

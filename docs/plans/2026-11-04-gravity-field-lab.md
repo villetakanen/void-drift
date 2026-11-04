@@ -219,7 +219,7 @@ Each step is a local commit with its spec update and passing `pnpm verify`.
    close sun pass, planet slingshot, two added wells. Linked from the
    `gravity-wells` study as a new section; its earlier sections stay as they are.
 8. **Verification.** `pnpm verify` including browser tests for the new scenarios;
-   owner iPad readability review recorded in the spec. Feel is reviewed separately
+   owner large-screen (≥1280px) readability review recorded in the spec. Feel is reviewed separately
    in flight, not inferred from the instrument.
 
 ### Applying a proposal (the agent's steps, also recorded in `gravity-field.md`)
