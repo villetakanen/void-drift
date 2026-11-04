@@ -2,6 +2,8 @@
 
 Status: v1 implemented locally, 2026-11-01; iPad readability reviewed by the owner, 2026-11-01.
 Design record: study `lab-instrument-2026-11-01` (`/lab/studies/lab-instrument-2026-11-01`).
+Designer-facing name: Ship tuning. It compares ships with no gravity; gravity has
+its own bench, [Gravity tuning](gravity-tuning.md) (owner decision, 2026-11-04).
 
 ## Context
 
@@ -77,8 +79,8 @@ function, with its own part and ion values, from rest at the origin. Speed,
 acceleration (differenced over 6 ticks) and turn acceleration derive from the
 samples. Not included: gravity, power limits, and changes to part mass or chassis
 values. A difference shown by the instrument may therefore not appear in flight.
-Documents with a `field` are calculated in flight conditions instead; see
-"Gravity field mode".
+**[DEPRECATED 2026-11-04]** ~~Documents with a `field` are calculated in flight
+conditions instead; see "Gravity field mode".~~ Ship tuning has no gravity.
 
 ### Views
 
@@ -122,7 +124,14 @@ between fitting all paths and a default scale (0.2 px/u) that pans by dragging.
 - Custom pane content: pass a `pane` snippet to `LabInstrument`; it receives the
   parsed document.
 
-### Gravity field mode
+### [DEPRECATED 2026-11-04] Gravity field mode
+
+> Ship tuning and gravity tuning are separate benches (owner decision,
+> 2026-11-04): ships are tuned without gravity, and gravity is tuned with given
+> ships in [gravity-tuning.md](gravity-tuning.md). This mode mixed the two and is
+> being removed: it is still in the code until plan step R1 removes it, after
+> which version 1 is the instrument's only document. Kept as the record of what
+> was built.
 
 Document, calculation, views, field editing and Copy proposal implemented,
 2026-11-04. Pull shading is a target, not yet implemented. Plan: [2026-11-04-gravity-field-lab.md](../plans/2026-11-04-gravity-field-lab.md).
@@ -293,6 +302,8 @@ It is no longer a prerequisite for comparing this accepted Fiddler configuration
 - [x] An edited value updates the graphs and the document (browser test).
 - [x] Each reference page renders its components (browser test).
 - [x] Readability on the iPad is reviewed by a person and recorded (owner, 2026-11-01).
+#### [DEPRECATED 2026-11-04] Field mode (removed by plan step R1)
+
 - [x] Version 1 documents parse and calculate unchanged, and a version 2
   document without a field calculates as version 1; coast is refused in
   version 1 (`lab-instrument.test.ts`).
@@ -328,9 +339,9 @@ It is no longer a prerequisite for comparing this accepted Fiddler configuration
 - The instrument's scales come from the data and the fixed rules above, never from
   a study.
 - Elements keep the 4px vertical rhythm; inline widths follow content.
-- Field mode calculates through the production `Simulation`; the instrument has
+- [DEPRECATED 2026-11-04, field mode] Field mode calculates through the production `Simulation`; the instrument has
   no gravity code of its own.
-- Lab wells and vehicle starts never reach the game; only `field.changes` can,
+- [DEPRECATED 2026-11-04, field mode] Lab wells and vehicle starts never reach the game; only `field.changes` can,
   and only through `pnpm tuning:apply`.
 
 ### Scenarios
@@ -351,6 +362,8 @@ Scenario: A broken document
   Given a document whose loadout has the wrong number of aft slots
   When the instrument receives it
   Then it lists the schema's issues instead of drawing
+
+# [DEPRECATED 2026-11-04] Field mode scenarios below; see gravity-tuning.md.
 
 Scenario: Target: a coast path bends round a frozen Lab well
   Given a field document with system "empty", orbits "frozen" and one Lab well

@@ -138,7 +138,20 @@ differ from the previous release (owner decision, 2026-11-04). Applying a
 proposal or editing values in code never changes it. The step belongs to the
 release procedure in `docs/development.md`.
 
-### Lab flight conditions (field)
+### Target: reach from mass
+
+Owner decision, 2026-11-04: every well's reach comes from its mass,
+`reach = sizeMultiplier × mass`, metrics first. The
+[Gravity tuning](gravity-tuning.md) bench finds the multiplier with one well and
+the game's ships. The game does not follow this yet: planets adopt it first and
+suns later, each as its own specified change, which also defines how the bench's
+values reach the tuning file. Until then the rules above stand.
+
+### [DEPRECATED 2026-11-04] Lab flight conditions (field)
+
+> Built for the instrument's field mode, which mixed ship and gravity tuning and
+> is being removed (plan steps R1–R2). The Gravity tuning bench does not use it.
+> Still in the code until R2.
 
 `new Simulation(settings, { field })`. Options are parsed by
 `SimulationOptionsSchema` (`simulation.ts`); the field by `GravityFieldSchema`
@@ -172,7 +185,12 @@ counts planet contact substeps. The Lab instrument's
 field mode (`docs/specs/lab-instrument.md`) runs this `Simulation`; it has no
 gravity code of its own.
 
-### Changing gravity values
+### [DEPRECATED 2026-11-04] Changing gravity values
+
+> The proposal below came from the instrument's field mode and goes with it
+> (plan step R2). The `pnpm tuning:apply` script and its area registry stay for
+> the ship area; how Gravity tuning's values reach the game is defined when
+> planets adopt reach from mass. Still in the code until R2.
 
 Gravity values change only by applying an owner-supplied proposal. The owner
 copies it from the Lab instrument's pane (Copy proposal, enabled once a field

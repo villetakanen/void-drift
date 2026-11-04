@@ -1,6 +1,58 @@
-# Gravity field in the Lab instrument
+# Gravity tuning bench
 
-Status: approved 2026-11-04; spec work S1–S5 done; steps 1–6 implemented (pull shading deferred).
+Status: redirected 2026-11-04 by the owner; see "Redirect". Steps 1–3 stand;
+steps 4–7 below are superseded by R1–R5. Spec work S1–S5 done.
+
+## Redirect, 2026-11-04 (owner decisions)
+
+- Two benches with one subject each, named for designers: **Ship tuning** (the
+  Lab instrument) compares ships with no gravity; **Gravity tuning** tunes one
+  well with given ships. Putting gravity into the instrument mixed the two.
+- Gravity tuning: one static well in empty space; four fixed ships (Wasp with a
+  light ion side and no linked engines; Fighter, side light ions, stabilizers;
+  Fighter with two aft light ions too; Corvette with two aft light ions too); the
+  instrument's three burns, unchanged; exactly four settings: starting speed,
+  well strength, well size multiplier, well position.
+- Reach comes from mass: `reach = sizeMultiplier × mass`, metrics first. The game
+  adopts it later, planets first, suns last.
+
+Specs: [gravity-tuning.md](../specs/gravity-tuning.md) (new);
+[lab-instrument.md](../specs/lab-instrument.md) field mode deprecated;
+[gravity-field.md](../specs/gravity-field.md) "Target: reach from mass", field and
+proposal sections deprecated.
+
+### Steps
+
+Each step is a local commit with its spec update and passing checks.
+
+1. **R1. Instrument without gravity.** Remove field mode from the instrument:
+   version 2 documents, the coast burn, `calculateField`, `FIELD_DOCUMENT`, the
+   pane's Gravity field section and Copy proposal, B0 in `BurnRow`, outcomes in
+   `Legend`, the field sections on `/lab/graphs` and `/lab/instrument-parts`, and
+   their tests. Keep the shared parts the bench reuses: well drawing and dragging
+   in `PathPane`, gaps and held values in `TimeGraph`. Version 1 behaviour and its
+   tests unchanged.
+2. **R2. Remove unused gravity plumbing.** The `Simulation` field options and
+   their schemas (`GravityFieldSchema`, `LabWellSchema`, `ShipStartSchema`,
+   `labWellPull`, `gravityAt`, contact counting) and the gravity proposal with
+   the `gravity` area of `tuning:apply`. Keep the tuning file and
+   `GravityTuningSchema` (step 1), `starPull` and `planetPull`, and the
+   `tuning:apply` script with its area registry for the ship area. The trajectory
+   fingerprint stays unchanged.
+3. **R3. Bench calculation.** `apps/web/src/lib/gravity-tuning/`: the document
+   schema, the four loadouts, and the flight (instrument burns and engines, well
+   pull from `wellAcceleration`). Unit tests per gravity-tuning.md.
+4. **R4. Bench page.** `/lab/gravity-tuning` composed from the instrument's parts,
+   the four settings in the pane, the draggable well; Lab nav entries "Gravity
+   tuning" and "Ship tuning" (agree the nav and the instrument's renaming with the
+   Lab usability session, which owns the page registry and ship tuning).
+5. **R5. Verification.** Browser tests, `pnpm verify`, owner large-screen
+   (≥1280px) readability review.
+
+Later, separately specified: planets adopt reach from mass, then suns; that change
+defines how Gravity tuning's values reach the tuning file.
+
+## Original plan (history)
 
 ## Acceptance contract
 
