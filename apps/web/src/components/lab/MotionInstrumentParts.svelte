@@ -15,7 +15,7 @@ import OverlayPane from "./instrument/OverlayPane.svelte";
 
 // Reference for the instrument's own components: the burn row, the legend and
 // the pane overlay.
-let { label = "Instrument parts" }: { label?: string } = $props();
+let { label = "Motion instrument parts" }: { label?: string } = $props();
 
 let burn = $state<BurnId>("course");
 let time = $state(7);

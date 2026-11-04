@@ -10,7 +10,7 @@ the owning specs.
 
 ## Owning specs
 
-- `docs/specs/lab-instrument.md`: document model, copy back, instrument scope.
+- `docs/specs/motion-instrument.md`: document model, copy back, instrument scope.
 - `docs/specs/design-studies.md` and `.agents/skills/design-study/`: study form and ending.
 - `docs/specs/playable-alpha.md`: flight trials, trial import and export, stock-only scores.
 - `docs/specs/design-system-core.md`: reference pages.
@@ -142,7 +142,7 @@ Each task can land on its own.
 - Adopt it in one interactive study bench, preferably `MovementBench`.
 - Test: the round trip from schema to hash to schema is lossless, and invalid or old
   versions are rejected.
-- Update the `lab-instrument.md` and `playable-alpha.md` text where it describes export.
+- Update the `motion-instrument.md` and `playable-alpha.md` text where it describes export.
 
 ### 3. Per-ship tuning patch with A/B flight
 
@@ -155,7 +155,7 @@ Each task can land on its own.
 - A/B for analysis: an instrument document with two vehicles, stock and patched, on
   G3's `Simulation` path. The patch goes in the patched vehicle's `changes`. Add
   instrument starters for "stock vs patched" per chassis. Do not build new charts
-  (`lab-instrument.md`).
+  (`motion-instrument.md`).
 - Feel: `/lab/flight` accepts the same patch through task 2's state helper, so the owner
   can fly the patched ship.
   - Remove or rewire the profile multiplier sliders so that every visible control changes flight.

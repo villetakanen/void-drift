@@ -8,7 +8,7 @@ import {
 import { z } from "astro/zod";
 import { BURN_IDS } from "./burns";
 
-// The Lab instrument's configuration document: what an agent writes, the
+// The Motion instrument's configuration document: what an agent writes, the
 // designer adjusts in the pane, and is copied back. Each vehicle is a game
 // loadout plus a sparse list of changes; the burn is one of the fixed set.
 

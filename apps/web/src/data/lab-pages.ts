@@ -77,14 +77,14 @@ export const labPages = z.array(labPageSchema).parse([
 	{
 		href: "/lab/graphs",
 		title: "Graphs",
-		purpose: "The instrument's path and trace graphs.",
+		purpose: "The Motion instrument's path and trace graphs.",
 		group: "design-system",
 		source: "production",
 	},
 	{
 		href: "/lab/instrument-parts",
-		title: "Instrument parts",
-		purpose: "The instrument's panes and controls on their own.",
+		title: "Motion instrument parts",
+		purpose: "The Motion instrument's panes and controls on their own.",
 		group: "design-system",
 		source: "production",
 	},

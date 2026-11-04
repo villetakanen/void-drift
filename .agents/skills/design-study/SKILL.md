@@ -50,9 +50,9 @@ established references and useful current-cycle agreements; carry out supported
 conclusions and remaining uncertainties. The guide owns concrete proposals, feedback,
 retention, focus protection and the recommendation to finish independently usable results.
 
-Compare vehicle motion, engine or hull values with the Lab instrument: write its
+Compare vehicle motion, engine or hull values with the Motion instrument: write its
 configuration document and embed it with `InstrumentEmbed`. The designer's adjusted
-document is the decided values. Read `docs/specs/lab-instrument.md`; if it cannot show
+document is the decided values. Read `docs/specs/motion-instrument.md`; if it cannot show
 what the study needs, propose an amendment there instead of a study-local chart.
 
 ## 03 / Assess readiness

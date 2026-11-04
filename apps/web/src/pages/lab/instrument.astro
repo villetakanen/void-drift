@@ -1,12 +1,12 @@
 ---
-import LabInstrument from "../../components/lab/instrument/LabInstrument.svelte";
+import ShipTuning from "../../components/lab/instrument/ShipTuning.svelte";
 import LabLayout from "../../layouts/LabLayout.astro";
 import { STARTER_DOCUMENT } from "../../lib/instrument/starter";
 ---
 
 <LabLayout title="Ship tuning" wide>
 	<div class="fill">
-		<LabInstrument client:load config={STARTER_DOCUMENT} />
+		<ShipTuning client:load config={STARTER_DOCUMENT} />
 	</div>
 </LabLayout>
 

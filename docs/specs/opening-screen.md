@@ -83,7 +83,7 @@ the favicon was the Astro starter icon; Lab titles read "Void·Drift". No canvas
 **Done 2026-11-01, owner-approved.** The rule is in `design-system-core.md` (Colour);
 `/lab/tokens` shows every role with contrast measured against each surface. Owner decisions: every
 colour token is written in `lch()`; the brand lime is `#eeff41` (the token since PBI-022), not the
-older `#d4ff00`; the elevation steps and `--color-backdrop` from the Lab instrument are the surface
+older `#d4ff00`; the elevation steps and `--color-backdrop` from the Motion instrument are the surface
 and scrim roles. Verification: 6 of 9 `pnpm verify` stages passed; `test:browser` could not start
 because another checkout's dev server held port 4322, and the same 25 browser tests passed on port
 4342; `test:rules` and `test:competition` did not run (no Java runtime on the machine).
@@ -127,7 +127,7 @@ Old scores with retired ids are skipped by the leaderboard rather than deleted.
 Inventory: two disagreeing name sources: `SHIP_PROFILES.name` (LHI Wasp / Scout / Balanced /
 Tank; the Lab inspector and flight menu) and `CHASSIS.name` (LHI Wasp / Scout / Fighter / Heavy
 Corvette; the builder). The flight menu overrode `balanced` to "Fighter" outside the Lab, and its
-trait lines were hand-written. The leaderboard showed raw ids. A Lab instrument-parts legend
+trait lines were hand-written. The leaderboard showed raw ids. A Motion instrument-parts legend
 hard-coded "Heavy corvette". Two preserved studies read production chassis names; they now keep
 the names they showed as local literals. Browser tests asserted "Heavy Corvette". Ids were stored
 in builds (`void-drift-builds-v2`), settings, Firestore rules and score document ids.

@@ -31,8 +31,8 @@ Not dialogs:
 
 - Status messages (`.flight-message`, builder and leaderboard notices) announce; they don't
   interrupt. They are `role="status"` and never take focus.
-- The Lab instrument's overlay pane is a disclosure: a menu button opens a pane over the
-  instrument, which stays the subject. It keeps its own behaviour (lab-instrument.md): focus
+- The Motion instrument's overlay pane is a disclosure: a menu button opens a pane over the
+  instrument, which stays the subject. It keeps its own behaviour (motion-instrument.md): focus
   moves to its close button, Escape closes it and returns focus to the menu button.
 - Whether the opening screen is a dialog at all is open until S12 composes it; until then the
   menu is one.

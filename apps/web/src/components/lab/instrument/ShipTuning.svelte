@@ -9,14 +9,14 @@ import {
 	traces,
 } from "../../../lib/instrument";
 import DocumentPanel from "./DocumentPanel.svelte";
-import InstrumentScreen from "./InstrumentScreen.svelte";
+import MotionInstrumentScreen from "./MotionInstrumentScreen.svelte";
 
-// The Lab instrument, Ship tuning (study lab-instrument-2026-11-01): compares
+// Ship tuning, the Motion instrument without gravity (study lab-instrument-2026-11-01): compares
 // two to six vehicles from one configuration document on the shared
 // instrument screen. The pane holds the values under investigation.
 let {
 	config,
-	label = "Lab instrument",
+	label = "Ship tuning",
 	pane,
 }: {
 	/** The configuration document; parsed here, so it may come from anywhere. */
@@ -46,7 +46,7 @@ const tracks = $derived.by((): Track[] => {
 </script>
 
 {#if doc}
-	<InstrumentScreen
+	<MotionInstrumentScreen
 		{tracks}
 		bind:burn={doc.burn}
 		measures={FLIGHT_MEASURES}
@@ -57,9 +57,9 @@ const tracks = $derived.by((): Track[] => {
 		{:else}
 			<DocumentPanel bind:config={doc} />
 		{/if}
-	</InstrumentScreen>
+	</MotionInstrumentScreen>
 {:else}
-	<InstrumentScreen
+	<MotionInstrumentScreen
 		tracks={[]}
 		burn="course"
 		measures={FLIGHT_MEASURES}
@@ -67,5 +67,5 @@ const tracks = $derived.by((): Track[] => {
 		{issues}
 	>
 		{""}
-	</InstrumentScreen>
+	</MotionInstrumentScreen>
 {/if}

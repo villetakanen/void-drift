@@ -1,6 +1,6 @@
 import { expect, test } from "../helpers/local-browser";
 
-// Contract: docs/specs/lab-instrument.md.
+// Contract: docs/specs/motion-instrument.md.
 test.use({ viewport: { width: 1366, height: 1024 } });
 
 test("switching the burn redraws the views and changes the document", async ({

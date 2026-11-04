@@ -1,10 +1,10 @@
 ---
-import LabInstrument from "./LabInstrument.svelte";
+import ShipTuning from "./ShipTuning.svelte";
 
-// The Lab instrument inside a study page: it breaks out of the text column to
+// The Motion instrument inside a study page: it breaks out of the text column to
 // the full width and height of the window and snaps into place as it is
 // scrolled to. Pass the study's configuration document; see
-// docs/specs/lab-instrument.md.
+// docs/specs/motion-instrument.md.
 interface Props {
 	config: unknown;
 	label?: string;
@@ -13,7 +13,7 @@ const { config, label } = Astro.props;
 ---
 
 <div class="instrument-embed">
-	<LabInstrument client:visible {config} {label} />
+	<ShipTuning client:visible {config} {label} />
 </div>
 
 <style is:global>

@@ -96,6 +96,6 @@ is drawn or studied.
 - Flight, controls, camera and the Flight Lab: [playable alpha](specs/playable-alpha.md).
 - Player assembly and flight handoff: [Hangar](specs/hangar/spec.md).
 - Recorded ship, engine and artwork decisions: [ship-builder history](history/ship-builder.md).
-- The Lab instrument: [lab instrument](specs/lab-instrument.md).
+- The Motion instrument: [motion instrument](specs/motion-instrument.md).
 - Lab practice and visual evidence: [development](development.md).
 - How design studies run and end: [design studies](specs/design-studies.md).

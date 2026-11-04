@@ -80,7 +80,7 @@ Local commit `c7e93758d7c0e73f819d9c1bd6288a9676c11df2` on `feat/0-4-0`,
   `--surface-display`, `--shadow-display`, `--color-backdrop`.
 - Lab pages `/lab/instrument`, `/lab/inputs` (`/lab/buttons` kept as an alias),
   `/lab/graphs`, `/lab/instrument-parts`, `/lab/surfaces`; Lab nav updated.
-- `docs/specs/lab-instrument.md` (new), sections in `docs/design.md` and
+- `docs/specs/motion-instrument.md` (new), sections in `docs/design.md` and
   `docs/specs/design-system-core.md`, one rule in
   `.agents/skills/design-study/SKILL.md`.
 - Tests `packages/mode-a/src/lib/lab-instrument.test.ts`,

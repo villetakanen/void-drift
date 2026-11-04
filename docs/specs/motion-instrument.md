@@ -1,13 +1,16 @@
-# Lab instrument
+# Motion instrument
 
 Design record: study `lab-instrument-2026-11-01` (`/lab/studies/lab-instrument-2026-11-01`).
-Designer-facing name: Ship tuning. It compares ships with no gravity; gravity is
-tuned on its own bench, [Gravity tuning](gravity-tuning.md).
+The Motion instrument is a Lab instrument for comparing motion through paths,
+burn inputs and measurements. Its two screens are Ship tuning (without gravity)
+and [Gravity tuning](gravity-tuning.md) (with a gravity well). This document
+describes Ship tuning and the shared components; the Gravity tuning spec describes
+its settings and measurements.
 
 ## Context
 
 Studies that compare motion, engines or hulls used to build their own charts, each
-with its own axes, units and inputs, so no two could be read together. The Lab
+with its own axes, units and inputs, so no two could be read together. The Motion
 instrument is the one shared tool for those comparisons. An agent writes a
 configuration document; the instrument calculates and draws it; the designer
 adjusts the values under investigation in its pane and copies the document back
@@ -102,15 +105,15 @@ between fitting all paths and a default scale (0.2 px/u) that pans by dragging.
 
 ### Components
 
-| Component                          | Path                                      | Reference page            |
-| ---------------------------------- | ----------------------------------------- | ------------------------- |
-| `LabInstrument`                    | `apps/web/src/components/lab/instrument/` | `/lab/instrument`         |
-| `InstrumentEmbed` (study pages)    | same folder                               | used in the design record |
-| `InstrumentScreen` (shared screen) | same folder                               | `/lab/instrument`         |
-| `PathPane`, `TimeGraph`            | same folder                               | `/lab/graphs`             |
-| `BurnRow`, `Legend`, `OverlayPane` | same folder                               | `/lab/instrument-parts`   |
-| `Toggle`, `RingSlider`             | `apps/web/src/components/inputs/`         | `/lab/inputs`             |
-| Elevation and display tokens       | `packages/core/src/lib/styles/tokens.css` | `/lab/surfaces`           |
+| Component                                | Path                                      | Reference page            |
+| ---------------------------------------- | ----------------------------------------- | ------------------------- |
+| `ShipTuning`                             | `apps/web/src/components/lab/instrument/` | `/lab/instrument`         |
+| `InstrumentEmbed` (study pages)          | same folder                               | used in the design record |
+| `MotionInstrumentScreen` (shared screen) | same folder                               | `/lab/instrument`         |
+| `PathPane`, `TimeGraph`                  | same folder                               | `/lab/graphs`             |
+| `BurnRow`, `Legend`, `OverlayPane`       | same folder                               | `/lab/instrument-parts`   |
+| `Toggle`, `RingSlider`                   | `apps/web/src/components/inputs/`         | `/lab/inputs`             |
+| Elevation and display tokens             | `packages/core/src/lib/styles/tokens.css` | `/lab/surfaces`           |
 
 ### Using it
 
@@ -119,7 +122,7 @@ between fitting all paths and a default scale (0.2 px/u) that pans by dragging.
   snaps into place.
 - In the Lab: `/lab/instrument` opens with the starting document
   (`apps/web/src/lib/instrument/starter.ts`); paste another under Load a document.
-- Custom pane content: pass a `pane` snippet to `LabInstrument`; it receives the
+- Custom pane content: pass a `pane` snippet to `ShipTuning`; it receives the
   parsed document.
 
 ## Study chassis proposal and Fiddler integration

@@ -19,7 +19,7 @@ steps 4–7 below are superseded by R1–R5. Spec work S1–S5 done.
   last.
 
 Specs: [gravity-tuning.md](../specs/gravity-tuning.md) (new);
-[lab-instrument.md](../specs/lab-instrument.md) field mode deprecated;
+[motion-instrument.md](../specs/motion-instrument.md) field mode deprecated;
 [gravity-field.md](../specs/gravity-field.md) "Target: reach from mass", field and
 proposal sections deprecated.
 
@@ -90,7 +90,7 @@ defines how Gravity tuning's values reach the tuning file.
   (960, 540) and `initializePlanets`; bodies and tuning cannot be injected.
 - Integration: semi-implicit Euler in `updateShip`, 4 substeps per 1/60 s tick, no
   drag and no speed cap in play. Loadout ships get thrust from `applyBuildEngines`.
-- Lab instrument (`docs/specs/lab-instrument.md`, `apps/web/src/lib/instrument/`):
+- Lab instrument (`docs/specs/motion-instrument.md`, `apps/web/src/lib/instrument/`):
   document in, Copy JSON out, six vehicles, fixed 14 s burns, from rest at the
   origin. It explicitly excludes gravity, and its spec says new motion comparisons
   extend the instrument rather than adding charts to studies.
@@ -222,7 +222,7 @@ commit.
 - `playable-alpha.md`: replace the dated gravity section body with a pointer; keep
   its scoring and replay commitments where they belong.
 
-### S3. Amend `docs/specs/lab-instrument.md`
+### S3. Amend `docs/specs/motion-instrument.md`
 
 - Architecture: document v2 (`field`, `start`, `coast`), v1 documents still
   accepted unchanged; field-mode calculation through `Simulation`; field-mode

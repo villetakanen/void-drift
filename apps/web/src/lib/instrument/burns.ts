@@ -1,4 +1,4 @@
-// The Lab instrument's fixed set of 14-second input programs (study
+// The Motion instrument's fixed set of 14-second input programs (study
 // lab-instrument-2026-11-01, 02.6). A configuration names one by id; nobody
 // writes inputs. Durations are whole ticks at 60 Hz.
 export const TICK_RATE = 60;

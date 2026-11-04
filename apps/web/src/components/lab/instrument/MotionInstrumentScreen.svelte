@@ -16,8 +16,8 @@ import PathPane from "./PathPane.svelte";
 import TimeGraph from "./TimeGraph.svelte";
 import { GRAPH_MARGIN } from "./time-graph";
 
-// The instrument's screen (study lab-instrument-2026-11-01), shared by Ship
-// tuning (the Lab instrument) and Gravity tuning: a 1440 × 900 logical screen
+// The Motion instrument screen (study lab-instrument-2026-11-01), shared by
+// Ship tuning and Gravity tuning: a 1440 × 900 logical screen
 // on the console holds the path tool and burn row (left), three time graphs and
 // the time slider (right), and the legend below both. It scales to fill its
 // container. The pane overlays it with the host's content.

@@ -11,7 +11,7 @@ import {
 	TRACK_COLORS,
 	type Track,
 } from "../../../lib/instrument";
-import InstrumentScreen from "../instrument/InstrumentScreen.svelte";
+import MotionInstrumentScreen from "../instrument/MotionInstrumentScreen.svelte";
 import GravityPanel from "./GravityPanel.svelte";
 
 // Gravity tuning (docs/specs/gravity-tuning.md): one well in empty space and
@@ -78,7 +78,7 @@ function moveWell(_index: number, x: number, y: number) {
 </script>
 
 {#if doc}
-	<InstrumentScreen
+	<MotionInstrumentScreen
 		{tracks}
 		{bodies}
 		bind:burn={doc.burn}
@@ -94,9 +94,9 @@ function moveWell(_index: number, x: number, y: number) {
 				thrust: t.references?.gravity ?? Number.NaN,
 			}))}
 		/>
-	</InstrumentScreen>
+	</MotionInstrumentScreen>
 {:else}
-	<InstrumentScreen
+	<MotionInstrumentScreen
 		tracks={[]}
 		burn="course"
 		measures={MEASURES}
@@ -104,5 +104,5 @@ function moveWell(_index: number, x: number, y: number) {
 		{issues}
 	>
 		{""}
-	</InstrumentScreen>
+	</MotionInstrumentScreen>
 {/if}

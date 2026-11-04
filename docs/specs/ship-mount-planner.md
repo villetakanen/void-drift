@@ -15,7 +15,7 @@ Mount creation, deletion, type changes, resizing, hull editing and flight tuning
 are outside this version. The tool is a Lab authoring surface, not a player editor.
 
 Related contracts: [Hangar](hangar/spec.md),
-[Lab instrument](lab-instrument.md), [design system](design-system-core.md).
+[Motion instrument](motion-instrument.md), [design system](design-system-core.md).
 Structure follows ASDLC's [Spec](https://asdlc.io/patterns/the-spec/) and
 [Living Specs](https://asdlc.io/practices/living-specs/) guidance.
 

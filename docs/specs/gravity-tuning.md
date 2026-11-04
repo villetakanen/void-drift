@@ -8,8 +8,8 @@ thrust. The game's sun and planets use the same mass law
 ([gravity-field.md](gravity-field.md)); the reasoning behind it is in
 [gravity-model.md](../gravity-model.md).
 
-It is one of two benches with one subject each. Ship tuning (the Lab instrument,
-[lab-instrument.md](lab-instrument.md)) compares ships with no gravity; Gravity
+It is one of two benches with one subject each. Ship tuning (the Motion instrument’s no-gravity screen,
+[motion-instrument.md](motion-instrument.md)) compares ships with no gravity; Gravity
 tuning studies one well with ships that cannot be changed. Neither has the
 other's options.
 
@@ -130,7 +130,7 @@ Anything else is rejected with its issues listed in place of the view.
 
 ### Views
 
-The instrument's screen, `InstrumentScreen`
+The instrument's screen, `MotionInstrumentScreen`
 (`apps/web/src/components/lab/instrument/`, shared with Ship tuning), with its
 parts (`PathPane`, `BurnRow`, `TimeGraph`, `Legend`, `OverlayPane`), for
 viewports 1280px wide and up. The bench is `GravityTuning` with its pane
