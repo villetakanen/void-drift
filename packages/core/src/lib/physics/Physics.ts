@@ -172,27 +172,43 @@ export const MASS_WELL_G_2D = MASS_WELL_G / 100;
 export const MassWellFalloffSchema = z.enum(["inverse-square", "inverse"]);
 export type MassWellFalloff = z.infer<typeof MassWellFalloffSchema>;
 
-/** A mass well's reach: a hard cut-off, `sizeMultiplier × mass`. */
-export function massWellReach(mass: number, sizeMultiplier: number): number {
-	return sizeMultiplier * mass;
+/** A mass well's pull at a distance, with no cut-off. */
+export function massWellPull(
+	distance: number,
+	mass: number,
+	falloff: MassWellFalloff = "inverse-square",
+): number {
+	return falloff === "inverse"
+		? (MASS_WELL_G_2D * mass) / distance
+		: (MASS_WELL_G * mass) / (distance * distance);
+}
+
+/** A mass well's reach: where its pull falls to `cutoff`, a hard cut-off. */
+export function massWellReach(
+	mass: number,
+	cutoff: number,
+	falloff: MassWellFalloff = "inverse-square",
+): number {
+	return falloff === "inverse"
+		? (MASS_WELL_G_2D * mass) / cutoff
+		: Math.sqrt((MASS_WELL_G * mass) / cutoff);
 }
 
 /**
  * The mass well law: a semi-physical pull from mass, `G × mass / distance²` or
  * in a flat world `G₂ × mass / distance`, inside the reach; zero at and beyond
- * it. The reach only cuts the pull off; it never changes the pull inside it.
+ * it. The reach is where the pull falls to `cutoff`; it never changes the pull
+ * inside it.
  */
 export function massWellAcceleration(
 	distance: number,
 	mass: number,
-	sizeMultiplier: number,
+	cutoff: number,
 	falloff: MassWellFalloff = "inverse-square",
 ): number {
-	if (distance <= 0 || distance >= massWellReach(mass, sizeMultiplier))
+	if (distance <= 0 || distance >= massWellReach(mass, cutoff, falloff))
 		return 0;
-	return falloff === "inverse"
-		? (MASS_WELL_G_2D * mass) / distance
-		: (MASS_WELL_G * mass) / (distance * distance);
+	return massWellPull(distance, mass, falloff);
 }
 
 /** Study comparison: both curves have acceleration strength / 2 at reach / 2. */

@@ -22,7 +22,7 @@ export function wellPull(
 	const a = massWellAcceleration(
 		distance,
 		well.strength,
-		well.sizeMultiplier,
+		well.cutoff,
 		well.falloff,
 	);
 	return { x: (dx / distance) * a, y: (dy / distance) * a };

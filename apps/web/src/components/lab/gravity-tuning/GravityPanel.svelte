@@ -1,6 +1,11 @@
 <script lang="ts">
 import "@void-drift/core/styles/buttons.css";
-import { MASS_WELL_G, MASS_WELL_G_2D, massWellReach } from "@void-drift/core";
+import {
+	MASS_WELL_G,
+	MASS_WELL_G_2D,
+	massWellPull,
+	massWellReach,
+} from "@void-drift/core";
 import {
 	DEFAULT_DOCUMENT,
 	editGravityTuning,
@@ -24,7 +29,10 @@ let draft = $state("");
 let loadError = $state("");
 const text = $derived(JSON.stringify($state.snapshot(config), null, 2));
 const reach = $derived(
-	massWellReach(config.well.strength, config.well.sizeMultiplier),
+	massWellReach(config.well.strength, config.well.cutoff, config.well.falloff),
+);
+const surfacePull = $derived(
+	massWellPull(config.well.radius, config.well.strength, config.well.falloff),
 );
 
 function set(key: SettingKey, raw: string) {
@@ -120,7 +128,10 @@ function load() {
 			{MASS_WELL_G_2D}); equal at {MASS_WELL_G / MASS_WELL_G_2D} u
 		</span>
 	</div>
-	<p class="unit">Reach {Math.round(reach)} u (well size × strength)</p>
+	<p class="unit">
+		Reach {Math.round(reach)} u (where the pull falls to the cut-off) · surface
+		pull {Math.round(surfacePull)} u/s² at the body's radius
+	</p>
 	{#if error}
 		<p class="error" role="alert">{error}</p>
 	{/if}

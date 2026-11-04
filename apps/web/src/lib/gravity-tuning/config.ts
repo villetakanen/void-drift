@@ -1,3 +1,4 @@
+import { massWellReach } from "@void-drift/core";
 import { z } from "astro/zod";
 import { BURN_IDS } from "../instrument/burns";
 
@@ -5,18 +6,22 @@ import { BURN_IDS } from "../instrument/burns";
 // drawn and the bench's four settings. Ships and burns are not settings.
 export const GravityWell = z
 	.object({
-		x: z.number().finite().min(-10000).max(10000).default(1200),
-		y: z.number().finite().min(-10000).max(10000).default(300),
-		strength: z.number().finite().positive().max(10000).default(600),
-		sizeMultiplier: z.number().finite().positive().max(5).default(0.5),
+		x: z.number().finite().min(-10000).max(10000).default(1000),
+		y: z.number().finite().min(-10000).max(10000).default(150),
+		strength: z.number().finite().positive().max(100000).default(2400),
+		cutoff: z.number().finite().positive().max(10000).default(50),
 		falloff: z.enum(["inverse-square", "inverse"]).default("inverse-square"),
 		radius: z.number().finite().positive().max(10000).default(40),
 	})
 	.strict()
-	.refine((well) => well.radius < well.strength * well.sizeMultiplier, {
-		message: "The body radius must be smaller than the reach",
-		path: ["radius"],
-	});
+	.refine(
+		(well) =>
+			well.radius < massWellReach(well.strength, well.cutoff, well.falloff),
+		{
+			message: "The body radius must be smaller than the reach",
+			path: ["radius"],
+		},
+	);
 export type GravityWell = z.infer<typeof GravityWell>;
 
 export const GravityTuningConfig = z
@@ -52,7 +57,11 @@ export function editGravityTuning(
 export const SETTINGS = [
 	{ key: "startSpeed", label: "Starting speed", unit: "u/s along +x" },
 	{ key: "well.strength", label: "Well strength", unit: "mass" },
-	{ key: "well.sizeMultiplier", label: "Well size", unit: "reach per mass" },
+	{
+		key: "well.cutoff",
+		label: "Cut-off pull",
+		unit: "u/s², the reach ends here",
+	},
 	{ key: "well.radius", label: "Body radius", unit: "u" },
 	{ key: "well.x", label: "Well x", unit: "u" },
 	{ key: "well.y", label: "Well y", unit: "u" },

@@ -132,10 +132,11 @@ step belongs to the release procedure in `docs/development.md`.
 ### Reach from mass
 
 A well's pull is semi-physical and comes from its mass; its reach is only a hard
-cut-off from its mass, `reach = sizeMultiplier × mass`, kept artificially smaller
-than physics so game physics stays sane; a well is a body with a surface, inside
-which no pull applies. The falloff, `G × mass / distance²` or the flat-world
-`G₂ × mass / distance`, the body radius and the multiplier are found on the
+cut-off where its pull falls to a cut-off pull, the same for every well, kept
+artificially smaller than physics so game physics stays sane; a well is a body
+with a surface, inside which no pull applies. The falloff, `G × mass / distance²`
+or the flat-world `G₂ × mass / distance`, the cut-off pull and each body's mass
+for its radius are found on the
 [Gravity tuning](gravity-tuning.md) bench with given ships, metrics first:
 gravity is read against each ship's thrust. Planets adopt the law first and suns
 after, each as its own change that also defines how the bench's values reach the

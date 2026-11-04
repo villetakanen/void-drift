@@ -29,11 +29,13 @@ with a surface.
     flat world. The constants make both laws pull equally at 100 u.
 
   Mass alone sets how hard the well pulls under either law.
-- `sizeMultiplier`: reach in units per unit of mass, `reach = sizeMultiplier ×
-  mass`. The reach is only a hard cut-off, artificially smaller than physics to
-  keep game physics sane: inside it the pull follows the falloff exactly, at and
-  beyond it it is zero. Changing the size moves where the pull ends, never how
-  strong it is inside.
+- `cutoff`: the pull, in u/s², below which it no longer matters. The reach is
+  where the pull falls to it, `√(G × mass / cutoff)` for 1/d² and
+  `G₂ × mass / cutoff` for 1/d, so every well's edge means the same pull. The
+  reach is a hard cut-off, artificially smaller than physics to keep game
+  physics sane: inside it the pull follows the falloff exactly, at and beyond it
+  it is zero. Changing the cut-off moves where the pull ends, never how strong
+  it is inside.
 - `radius`: the body's surface, smaller than the reach. The pull applies only
   outside contact distance, `radius + ship radius`, as for a planet. A ship that
   reaches contact distance bounces as off a planet: it is placed on the surface
@@ -43,7 +45,8 @@ with a surface.
 - `x`, `y`: the well's centre in the bench's frame.
 
 The law is one production function, `massWellAcceleration(distance, mass,
-sizeMultiplier, falloff)` with `MASS_WELL_G` and `MASS_WELL_G_2D`
+cutoff, falloff)`, with `massWellPull`, `massWellReach`, `MASS_WELL_G` and
+`MASS_WELL_G_2D`
 (`packages/core/src/lib/physics/Physics.ts`), used by the bench now and by the
 game's bodies when they adopt it (gravity-field.md, "Reach from mass"). The game's
 current curve, `wellAcceleration`, is unchanged until then.
@@ -91,14 +94,14 @@ against that ship.
 
 These, and nothing else:
 
-| Setting        | Meaning                               | Range                       | Default          |
-| -------------- | ------------------------------------- | --------------------------- | ---------------- |
-| Starting speed | `startSpeed`, u/s along +x            | 0–1000                      | 0                |
-| Well strength  | `well.strength`, the well's mass      | > 0, up to 10000            | 600              |
-| Well size      | `well.sizeMultiplier`, reach per mass | > 0, up to 5                | 0.5              |
-| Falloff        | `well.falloff`                        | `inverse-square`, `inverse` | `inverse-square` |
-| Body radius    | `well.radius`, u                      | > 0, less than the reach    | 40               |
-| Well position  | `well.x`, `well.y`, u                 | each within ±10000          | (1200, 300)      |
+| Setting        | Meaning                          | Range                       | Default          |
+| -------------- | -------------------------------- | --------------------------- | ---------------- |
+| Starting speed | `startSpeed`, u/s along +x       | 0–1000                      | 0                |
+| Well strength  | `well.strength`, the well's mass | > 0, up to 100000           | 2400             |
+| Cut-off pull   | `well.cutoff`, u/s²              | > 0, up to 10000            | 50               |
+| Falloff        | `well.falloff`                   | `inverse-square`, `inverse` | `inverse-square` |
+| Body radius    | `well.radius`, u                 | > 0, less than the reach    | 40               |
+| Well position  | `well.x`, `well.y`, u            | each within ±10000          | (1000, 150)      |
 
 The burn switcher (B1–B3) chooses which program is drawn, as in the instrument;
 it is not a setting of the flight.
@@ -115,10 +118,10 @@ starting point and the designer can copy the decided values back:
 	"burn": "course",
 	"startSpeed": 0,
 	"well": {
-		"x": 1200,
-		"y": 300,
-		"strength": 600,
-		"sizeMultiplier": 0.5,
+		"x": 1000,
+		"y": 150,
+		"strength": 2400,
+		"cutoff": 50,
 		"falloff": "inverse-square",
 		"radius": 40
 	}
@@ -141,8 +144,9 @@ viewports 1280px wide and up. The bench is `GravityTuning` with its pane
 - Graphs: speed, gravity (the well's pull on each ship, u/s², with each ship's
   thrust as a dashed line in its colour) and distance to the well's centre.
 - Legend: the four ships in their fixed colours.
-- Pane: the settings, with the defaults shown when changed, the reach, then the
-  document (Copy JSON, Load).
+- Pane: the settings, with the defaults shown when changed; the derived reach and
+  surface pull (the pull at the body's radius); then the document (Copy JSON,
+  Load).
 
 Page: `/lab/gravity-tuning`, named "Gravity tuning" in the Lab.
 
@@ -157,7 +161,7 @@ gravity-field.md; until then the bench changes no game value.
 ### Definition of Done
 
 - [x] The document schema accepts the default document and rejects an unknown
-  key, a negative starting speed, a zero strength, a size multiplier above 5, an
+  key, a negative starting speed, a zero strength, a zero cut-off, an
   unknown falloff, a body radius at or beyond the reach and a burn outside B1–B3
   (`gravity-tuning.test.ts`).
 - [x] With the well out of reach of every path, each ship's path equals its
@@ -165,9 +169,9 @@ gravity-field.md; until then the bench changes no game value.
   same burn, for all three burns; a path that enters the reach differs (`gravity-tuning.test.ts`).
 - [x] Inside reach the pull follows the chosen falloff with its constant; at and
   beyond reach it is zero; both falloffs agree at 100 u (`MassWell.test.ts`, `gravity-tuning.test.ts`).
-- [x] Doubling the size multiplier doubles the reach and leaves the pull inside
-  the old reach unchanged; doubling the mass doubles the pull at every distance
-  inside reach (`MassWell.test.ts`).
+- [x] At the reach the pull equals the cut-off; a lower cut-off extends the reach
+  and leaves the pull inside unchanged; doubling the mass doubles the pull at
+  every distance inside reach; for both falloffs (`MassWell.test.ts`).
 - [x] No pull applies within contact distance; a ship aimed at the body bounces
   off its surface with the planet rule, a contact is recorded and the run
   continues; the game's planet contact is unchanged (`MassWell.test.ts`, `gravity-tuning.test.ts`, trajectory fingerprint).
@@ -191,14 +195,14 @@ gravity-field.md; until then the bench changes no game value.
 
 ```gherkin
 Scenario: A well out of reach changes nothing
-  Given the well at (1200, 10000) with strength 600 and size multiplier 0.5
+  Given the default well moved to (1000, 10000)
   When the bench flies B1
   Then every path equals its dotted unaffected path and the instrument's path
 
-Scenario: A larger well bends the paths sooner
+Scenario: A lower cut-off bends the paths sooner
   Given the default document
-  When the designer doubles the size multiplier
-  Then the reach ring doubles and every path that enters it bends toward the well earlier
+  When the designer halves the cut-off pull
+  Then the reach ring grows and every path that enters it bends toward the well earlier
 
 Scenario: Moving the well
   Given the default document
@@ -217,7 +221,7 @@ Scenario: Hitting the body
 
 Scenario: An impossible setting
   Given the default document
-  When the designer sets the size multiplier to 0
+  When the designer sets the cut-off pull to 0
   Then the value is refused, the previous value stays and the reason is shown
 ```
 

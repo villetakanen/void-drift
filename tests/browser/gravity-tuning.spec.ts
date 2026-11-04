@@ -1,3 +1,4 @@
+import { GravityTuningConfig } from "../../apps/web/src/lib/gravity-tuning/config";
 import { expect, test } from "../helpers/local-browser";
 
 // Contract: docs/specs/gravity-tuning.md.
@@ -35,10 +36,10 @@ test("a setting redraws the bench and reaches the document; an impossible one is
 	const before = await speed.textContent();
 	await page.getByRole("button", { name: "Open values" }).click();
 	await expect(page.getByRole("radiogroup", { name: "Falloff" })).toBeVisible();
-	const size = page.locator("#gt-well-sizeMultiplier");
-	await size.fill("1");
+	const size = page.locator("#gt-well-cutoff");
+	await size.fill("25");
 	await size.press("Tab");
-	await expect(page.locator(".pane pre")).toContainText('"sizeMultiplier": 1');
+	await expect(page.locator(".pane pre")).toContainText('"cutoff": 25');
 	await expect(speed).not.toHaveText(before ?? "");
 	const shown = await size.inputValue();
 	await size.fill("0");
@@ -62,6 +63,7 @@ test("dragging the well moves it in the document", async ({ page }) => {
 	await page.mouse.up();
 	await page.getByRole("button", { name: "Open values" }).click();
 	const doc = JSON.parse((await documentText(page)) ?? "{}");
-	expect(doc.well.x).not.toBe(1200);
-	expect(doc.well.y).not.toBe(300);
+	const defaults = GravityTuningConfig.parse({ version: 1 }).well;
+	expect(doc.well.x).not.toBe(defaults.x);
+	expect(doc.well.y).not.toBe(defaults.y);
 });

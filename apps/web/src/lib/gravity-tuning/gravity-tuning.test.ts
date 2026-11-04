@@ -22,7 +22,7 @@ describe("document", () => {
 			{ ...DEFAULT_DOCUMENT, well: { ...DEFAULT_DOCUMENT.well, strength: 0 } },
 			{
 				...DEFAULT_DOCUMENT,
-				well: { ...DEFAULT_DOCUMENT.well, sizeMultiplier: 5.01 },
+				well: { ...DEFAULT_DOCUMENT.well, cutoff: 0 },
 			},
 			{ ...DEFAULT_DOCUMENT, burn: "coast" },
 			{
@@ -33,9 +33,10 @@ describe("document", () => {
 				...DEFAULT_DOCUMENT,
 				well: {
 					...DEFAULT_DOCUMENT.well,
-					radius:
-						DEFAULT_DOCUMENT.well.strength *
-						DEFAULT_DOCUMENT.well.sizeMultiplier,
+					radius: massWellReach(
+						DEFAULT_DOCUMENT.well.strength,
+						DEFAULT_DOCUMENT.well.cutoff,
+					),
 				},
 			},
 		];
@@ -67,7 +68,7 @@ describe("flight", () => {
 		const runs = flyBench(DEFAULT_DOCUMENT);
 		const reach = massWellReach(
 			DEFAULT_DOCUMENT.well.strength,
-			DEFAULT_DOCUMENT.well.sizeMultiplier,
+			DEFAULT_DOCUMENT.well.cutoff,
 		);
 		const entered = runs.filter((r) => r.distance.some((d) => d < reach));
 		expect(entered.length).toBeGreaterThan(0);
@@ -92,11 +93,11 @@ describe("flight", () => {
 	it("pulls by the chosen falloff toward the centre, never within contact distance", () => {
 		for (const falloff of ["inverse-square", "inverse"] as const) {
 			const well = { ...DEFAULT_DOCUMENT.well, falloff };
-			const reach = massWellReach(well.strength, well.sizeMultiplier);
+			const reach = massWellReach(well.strength, well.cutoff, falloff);
 			const d = reach / 2;
 			const g = wellPull(well, well.x - d, well.y, 16);
 			expect(g.x).toBeCloseTo(
-				massWellAcceleration(d, well.strength, well.sizeMultiplier, falloff),
+				massWellAcceleration(d, well.strength, well.cutoff, falloff),
 				9,
 			);
 			expect(g.y).toBeCloseTo(0, 12);

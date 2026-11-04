@@ -4,56 +4,64 @@ import {
 	MASS_WELL_G,
 	MASS_WELL_G_2D,
 	massWellAcceleration,
+	massWellPull,
 	massWellReach,
 	Vec2,
 } from "./Physics";
 
 // Contract: docs/specs/gravity-tuning.md, "The well".
 describe("mass well law", () => {
-	const mass = 600;
-	const size = 0.5;
-	const reach = massWellReach(mass, size);
+	const mass = 2400;
+	const cutoff = 50;
 
-	it("pulls G × mass / distance² inside reach and nothing at or beyond it", () => {
-		for (const d of [reach / 10, reach / 2, reach * 0.99])
-			expect(massWellAcceleration(d, mass, size)).toBeCloseTo(
-				(MASS_WELL_G * mass) / d ** 2,
-				9,
-			);
-		expect(massWellAcceleration(reach, mass, size)).toBe(0);
-		expect(massWellAcceleration(reach * 2, mass, size)).toBe(0);
-	});
+	for (const falloff of ["inverse-square", "inverse"] as const) {
+		const reach = massWellReach(mass, cutoff, falloff);
 
-	it("moves only the cut-off when the size changes", () => {
-		expect(massWellReach(mass, size * 2)).toBe(reach * 2);
-		for (const d of [reach / 4, reach / 2, reach * 0.9])
-			expect(massWellAcceleration(d, mass, size * 2)).toBe(
-				massWellAcceleration(d, mass, size),
-			);
-		expect(massWellAcceleration(reach * 1.5, mass, size * 2)).toBeGreaterThan(
-			0,
-		);
-	});
+		it(`${falloff}: pulls by the law inside reach and nothing at or beyond it`, () => {
+			for (const d of [reach / 10, reach / 2, reach * 0.99])
+				expect(massWellAcceleration(d, mass, cutoff, falloff)).toBeCloseTo(
+					massWellPull(d, mass, falloff),
+					9,
+				);
+			expect(massWellAcceleration(reach, mass, cutoff, falloff)).toBe(0);
+			expect(massWellAcceleration(reach * 2, mass, cutoff, falloff)).toBe(0);
+		});
 
-	it("pulls twice as hard at every distance with twice the mass", () => {
-		for (const d of [reach / 4, reach / 2])
-			expect(massWellAcceleration(d, mass * 2, size)).toBeCloseTo(
-				2 * massWellAcceleration(d, mass, size),
-				9,
-			);
-	});
+		it(`${falloff}: ends the reach where the pull falls to the cut-off`, () => {
+			expect(massWellPull(reach, mass, falloff)).toBeCloseTo(cutoff, 9);
+		});
 
-	it("falls off as G₂ × mass / distance in a flat world, agreeing at 100 u", () => {
-		for (const d of [reach / 10, reach / 2])
-			expect(massWellAcceleration(d, mass, size, "inverse")).toBeCloseTo(
-				(MASS_WELL_G_2D * mass) / d,
-				9,
-			);
-		expect(massWellAcceleration(100, mass, size, "inverse")).toBeCloseTo(
-			massWellAcceleration(100, mass, size, "inverse-square"),
+		it(`${falloff}: a lower cut-off extends the reach and leaves the pull inside unchanged`, () => {
+			expect(massWellReach(mass, cutoff / 2, falloff)).toBeGreaterThan(reach);
+			for (const d of [reach / 4, reach / 2, reach * 0.9])
+				expect(massWellAcceleration(d, mass, cutoff / 2, falloff)).toBe(
+					massWellAcceleration(d, mass, cutoff, falloff),
+				);
+		});
+
+		it(`${falloff}: pulls twice as hard at every distance with twice the mass`, () => {
+			for (const d of [reach / 4, reach / 2])
+				expect(massWellAcceleration(d, mass * 2, cutoff, falloff)).toBeCloseTo(
+					2 * massWellAcceleration(d, mass, cutoff, falloff),
+					9,
+				);
+		});
+	}
+
+	it("uses G for 1/d² and G₂ for 1/d, equal at G / G₂ u", () => {
+		expect(massWellPull(200, mass)).toBeCloseTo(
+			(MASS_WELL_G * mass) / 200 ** 2,
 			9,
 		);
-		expect(massWellAcceleration(reach, mass, size, "inverse")).toBe(0);
+		expect(massWellPull(200, mass, "inverse")).toBeCloseTo(
+			(MASS_WELL_G_2D * mass) / 200,
+			9,
+		);
+		const equal = MASS_WELL_G / MASS_WELL_G_2D;
+		expect(massWellPull(equal, mass, "inverse")).toBeCloseTo(
+			massWellPull(equal, mass),
+			9,
+		);
 	});
 });
 

@@ -57,7 +57,11 @@ const bodies = $derived.by((): FieldBody[] =>
 					label: "Well",
 					color: "",
 					radius: doc.well.radius,
-					reach: massWellReach(doc.well.strength, doc.well.sizeMultiplier),
+					reach: massWellReach(
+						doc.well.strength,
+						doc.well.cutoff,
+						doc.well.falloff,
+					),
 					path: [{ x: doc.well.x, y: doc.well.y }],
 				},
 			]
