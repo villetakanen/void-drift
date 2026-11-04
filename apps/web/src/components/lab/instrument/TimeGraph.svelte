@@ -30,6 +30,8 @@ let {
 } = $props();
 
 const spec = $derived(MEASURES[measure]);
+// A track without values for this measure draws nothing.
+const values = (t: Track) => t.traces[measure] ?? [];
 const plot = $derived({
 	x: M.left,
 	y: M.top,
@@ -42,9 +44,7 @@ const plot = $derived({
 const peak = $derived(
 	Math.max(
 		1,
-		...tracks.flatMap((t) =>
-			t.traces[measure].filter(Number.isFinite).map(Math.abs),
-		),
+		...tracks.flatMap((t) => values(t).filter(Number.isFinite).map(Math.abs)),
 	),
 );
 const step = $derived(niceCeil(peak / (spec.signed ? 2.5 : 5)));
@@ -77,8 +77,7 @@ function lines(values: number[]) {
 const fmt = (v: number) =>
 	!Number.isFinite(v) ? "–" : v < 0 ? `−${Math.abs(v)}` : `${v}`;
 // A run that ended early holds its last value under the cursor.
-const at = (t: Track) =>
-	Math.max(0, Math.min(tick, t.traces[measure].length - 1));
+const at = (t: Track) => Math.max(0, Math.min(tick, values(t).length - 1));
 </script>
 
 <div class="graph" style={`width:${width}px;height:${height}px`}>
@@ -142,7 +141,7 @@ const at = (t: Track) =>
 			s
 		</text>
 		{#each tracks as t}
-			{#each lines(t.traces[measure]) as points}
+			{#each lines(values(t)) as points}
 				<polyline {points} fill="none" stroke={t.color} stroke-width="1.6" />
 			{/each}
 		{/each}
@@ -154,7 +153,7 @@ const at = (t: Track) =>
 			class="cursor"
 		/>
 		{#each tracks as t}
-			{@const value = t.traces[measure][at(t)]}
+			{@const value = values(t)[at(t)]}
 			{#if Number.isFinite(value)}
 				<circle
 					cx={x(at(t))}
@@ -175,9 +174,7 @@ const at = (t: Track) =>
 		<span class="values">
 			<span class="at">{(tick / TICK_RATE).toFixed(2)} s</span>
 			{#each tracks as t}
-				<b style={`color:${t.color}`}
-					>{fmt(Math.round(t.traces[measure][at(t)]))}</b
-				>
+				<b style={`color:${t.color}`}>{fmt(Math.round(values(t)[at(t)]))}</b>
 			{/each}
 		</span>
 	</div>

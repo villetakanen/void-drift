@@ -139,8 +139,17 @@ export const labPages = z.array(labPageSchema).parse([
 	},
 	{
 		href: "/lab/instrument",
-		title: "Instrument",
-		purpose: "Compare burns across vehicles; copy the document back.",
+		title: "Ship tuning",
+		purpose:
+			"Compare ships on fixed burns, no gravity; copy the document back.",
+		group: "tools",
+		source: "production",
+	},
+	{
+		href: "/lab/gravity-tuning",
+		title: "Gravity tuning",
+		purpose:
+			"One well and the given ships on fixed burns; tune its mass and size.",
 		group: "tools",
 		source: "production",
 	},

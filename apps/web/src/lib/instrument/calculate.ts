@@ -94,7 +94,12 @@ export function calculate(
 	return samples;
 }
 
-export type Measure = "speed" | "acceleration" | "turn";
+export type Measure =
+	| "speed"
+	| "acceleration"
+	| "turn"
+	| "gravity"
+	| "distance";
 /** signed: the measure can go negative, so its axis is symmetric about zero. */
 export const MEASURES: Record<
 	Measure,
@@ -103,12 +108,19 @@ export const MEASURES: Record<
 	speed: { label: "Speed", unit: "u/s", signed: false },
 	acceleration: { label: "Acceleration", unit: "u/s²", signed: false },
 	turn: { label: "Turn acceleration", unit: "°/s²", signed: true },
+	// Gravity tuning bench (docs/specs/gravity-tuning.md).
+	gravity: { label: "Gravity", unit: "u/s²", signed: false },
+	distance: { label: "Distance to well", unit: "u", signed: false },
 };
+/** The instrument's graphs. */
+export const FLIGHT_MEASURES = ["speed", "acceleration", "turn"] as const;
 /** Ticks over which acceleration is differenced. */
 const WINDOW = 6;
 
-/** The three measures for every sample. */
-export function traces(samples: Sample[]): Record<Measure, number[]> {
+/** The instrument's three measures for every sample. */
+export function traces(
+	samples: Sample[],
+): Record<(typeof FLIGHT_MEASURES)[number], number[]> {
 	const span = WINDOW * DT;
 	const at = (i: number) =>
 		samples[Math.max(0, Math.min(i, samples.length - 1))];
@@ -137,7 +149,8 @@ export type Track = {
 	label: string;
 	color: string;
 	samples: Sample[];
-	traces: Record<Measure, number[]>;
+	/** The measures this track has values for; a graph needs its measure here. */
+	traces: Partial<Record<Measure, number[]>>;
 };
 /** Six distinct vehicle colours, in order; a configuration holds at most six. */
 export const TRACK_COLORS = [

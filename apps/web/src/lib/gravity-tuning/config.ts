@@ -25,3 +25,42 @@ export type GravityTuningConfig = z.infer<typeof GravityTuningConfig>;
 
 /** The bench's opening document. */
 export const DEFAULT_DOCUMENT = GravityTuningConfig.parse({ version: 1 });
+
+/** Applies an edit to a copy; keeps it only if the result is a valid document. */
+export function editGravityTuning(
+	doc: GravityTuningConfig,
+	edit: (draft: GravityTuningConfig) => void,
+): { ok: true; doc: GravityTuningConfig } | { ok: false; message: string } {
+	const draft = structuredClone(doc);
+	edit(draft);
+	const parsed = GravityTuningConfig.safeParse(draft);
+	return parsed.success
+		? { ok: true, doc: parsed.data }
+		: {
+				ok: false,
+				message: parsed.error.issues.map((i) => i.message).join("; "),
+			};
+}
+
+/** The bench's settings, in the pane's order, with their document paths. */
+export const SETTINGS = [
+	{ key: "startSpeed", label: "Starting speed", unit: "u/s along +x" },
+	{ key: "well.strength", label: "Well strength", unit: "mass" },
+	{ key: "well.sizeMultiplier", label: "Well size", unit: "reach per mass" },
+	{ key: "well.x", label: "Well x", unit: "u" },
+	{ key: "well.y", label: "Well y", unit: "u" },
+] as const;
+export type SettingKey = (typeof SETTINGS)[number]["key"];
+export function settingValue(doc: GravityTuningConfig, key: SettingKey) {
+	return key === "startSpeed"
+		? doc.startSpeed
+		: doc.well[key.slice(5) as keyof GravityWell];
+}
+export function setSetting(
+	doc: GravityTuningConfig,
+	key: SettingKey,
+	value: number,
+) {
+	if (key === "startSpeed") doc.startSpeed = value;
+	else doc.well[key.slice(5) as keyof GravityWell] = value;
+}

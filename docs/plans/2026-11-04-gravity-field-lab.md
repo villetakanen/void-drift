@@ -50,7 +50,8 @@ Each step is a local commit with its spec update and passing checks.
 4. **R4. Bench page.** `/lab/gravity-tuning` composed from the instrument's parts,
    the four settings in the pane, the draggable well; Lab nav entries "Gravity
    tuning" and "Ship tuning" (agree the nav and the instrument's renaming with the
-   Lab usability session, which owns the page registry and ship tuning).
+   Lab usability session, which owns the page registry and ship tuning). Done
+   2026-11-04; the instrument's screen is shared as `InstrumentScreen`.
 5. **R5. Verification.** Browser tests, `pnpm verify`, owner large-screen
    (≥1280px) readability review.
 

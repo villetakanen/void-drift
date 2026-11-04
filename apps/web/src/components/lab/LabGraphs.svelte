@@ -90,8 +90,8 @@ const tick = $derived(Math.round(time * TICK_RATE));
 			<TimeGraph measure="turn" {tracks} {tick} />
 		</div>
 		<p>
-			<code>TimeGraph</code>: <code>measure</code> (speed, acceleration or
-			turn),
+			<code>TimeGraph</code>: <code>measure</code> (speed, acceleration or turn;
+			gravity or distance to well on the Gravity tuning bench),
 			<code>tracks</code>, <code>tick</code>, <code>width</code> and
 			<code>height</code>
 			(672 × 208 in the instrument). Its plot margins are exported as

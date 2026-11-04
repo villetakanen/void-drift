@@ -107,6 +107,7 @@ between fitting all paths and a default scale (0.2 px/u) that pans by dragging.
 | ---------------------------------- | ----------------------------------------- | ------------------------- |
 | `LabInstrument`                    | `apps/web/src/components/lab/instrument/` | `/lab/instrument`         |
 | `InstrumentEmbed` (study pages)    | same folder                               | used in the design record |
+| `InstrumentScreen` (shared screen) | same folder                               | `/lab/instrument`         |
 | `PathPane`, `TimeGraph`            | same folder                               | `/lab/graphs`             |
 | `BurnRow`, `Legend`, `OverlayPane` | same folder                               | `/lab/instrument-parts`   |
 | `Toggle`, `RingSlider`             | `apps/web/src/components/inputs/`         | `/lab/inputs`             |

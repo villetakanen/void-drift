@@ -1,0 +1,20 @@
+---
+import GravityTuningBench from "../../components/lab/gravity-tuning/GravityTuning.svelte";
+import LabLayout from "../../layouts/LabLayout.astro";
+import { DEFAULT_DOCUMENT } from "../../lib/gravity-tuning";
+---
+
+<LabLayout title="Gravity tuning" wide>
+	<div class="fill">
+		<GravityTuningBench client:load config={DEFAULT_DOCUMENT} />
+	</div>
+</LabLayout>
+
+<style>
+/* The bench fills the Lab's main stage. */
+.fill {
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+}
+</style>

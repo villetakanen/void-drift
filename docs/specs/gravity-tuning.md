@@ -106,9 +106,11 @@ Anything else is rejected with its issues listed in place of the view.
 
 ### Views
 
-The instrument's layout and parts (`PathPane`, `BurnRow`, `TimeGraph`, `Legend`,
-`OverlayPane`, from `apps/web/src/components/lab/instrument/`), on one screen for
-viewports 1280px wide and up:
+The instrument's screen, `InstrumentScreen`
+(`apps/web/src/components/lab/instrument/`, shared with Ship tuning), with its
+parts (`PathPane`, `BurnRow`, `TimeGraph`, `Legend`, `OverlayPane`), for
+viewports 1280px wide and up. The bench is `GravityTuning` with its pane
+`GravityPanel` (`apps/web/src/components/lab/gravity-tuning/`):
 
 - Path pane: the four paths and the well, drawn as its centre and reach ring. The
   well can be dragged to set its position.
@@ -142,9 +144,10 @@ gravity-field.md; until then the bench changes no game value.
 - [x] Doubling the size multiplier doubles the reach and leaves the pull inside
   the old reach unchanged; doubling the mass doubles the pull at every distance
   inside reach (`MassWell.test.ts`).
-- [ ] `/lab/gravity-tuning` draws four paths, the well and three graphs; an
-  edited setting redraws them and reaches the document; dragging the well moves
-  it (browser tests).
+- [x] `/lab/gravity-tuning` draws four paths, the well and three graphs; an
+  edited setting redraws them and reaches the document, an impossible one is
+  refused with its reason; dragging the well moves it
+  (`tests/browser/gravity-tuning.spec.ts`).
 - [ ] Large-screen (1280px wide or more) readability reviewed by the owner and
   recorded.
 
