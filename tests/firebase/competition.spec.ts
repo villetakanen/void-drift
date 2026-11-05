@@ -24,7 +24,7 @@ test("two anonymous pilots complete runs, retry a rejected write and see a share
 }) => {
 	for (const pilot of [
 		{ launcher: "01", name: "Scout", initials: "ONE", turnMs: 256 },
-		{ launcher: "04", name: "Corvette", initials: "TWO", turnMs: 560 },
+		{ launcher: "04", name: "Corvette", initials: "TWO", turnMs: 512 },
 	]) {
 		const context = await newLocalContext();
 		const page = await context.newPage();
@@ -46,9 +46,9 @@ test("two anonymous pilots complete runs, retry a rejected write and see a share
 			"data-status",
 			"PLAYING",
 		);
-		// Derived with Simulation(gameSettings): left-only for 15/33 ticks then
+		// Derived with Simulation(gameSettings): left-only for 15/30 ticks then
 		// both reaches STAR in ~2 seconds. Inverted default maps Right to left.
-		// Clock rAF cadence is 16ms; 256/560ms produce those turn tick counts.
+		// Clock rAF cadence is 16ms; 256/512ms produce those turn tick counts.
 		await page.keyboard.down("ArrowRight");
 		await page.clock.runFor(pilot.turnMs);
 		await page.keyboard.up("ArrowRight");
