@@ -34,7 +34,7 @@ Voice-led development of a procedural space survival game and its software facto
 - UI/game visuals: `.agents/skills/shared-components/SKILL.md`; FX: `.agents/skills/fx-development/SKILL.md`.
 - Setup, gates, release: `docs/development.md`.
 - Feature work: its spec in `docs/specs/`.
-- Changing the factory or its gates: `docs/specs/voice-led-factory.md`.
+- Changing the factory or its gates: `docs/specs/factory/spec.md`.
 
 ## Working method
 
