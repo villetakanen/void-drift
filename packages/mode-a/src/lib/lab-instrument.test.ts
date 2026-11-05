@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { calculate as studyCalculate } from "../../../../apps/web/src/components/studies/lab-instrument-config";
 import {
 	BURN_IDS,
 	BURNS,
@@ -21,14 +20,10 @@ const fighter = (aft: [string | null, string | null]) => ({
 // The document accepted in the lab-instrument study (02.7).
 const document = {
 	version: 1,
+	properties: { plasma: { thrust: 46000 } },
 	vehicles: [
 		{ label: "Ion aft", loadout: fighter(["ion", "ion"]) },
 		{ label: "Plasma aft", loadout: fighter(["plasma", "plasma"]) },
-		{
-			label: "Plasma aft, more thrust",
-			loadout: fighter(["plasma", "plasma"]),
-			changes: { plasma: { thrust: 46000 } },
-		},
 	],
 };
 
@@ -54,20 +49,26 @@ describe("configuration document", () => {
 	it("accepts the study's document and defaults the burn", () => {
 		const parsed = InstrumentConfig.parse(document);
 		expect(parsed.burn).toBe("course");
-		expect(parsed.vehicles[0].changes).toEqual({});
+		expect(parsed.properties).toEqual(document.properties);
 	});
 	it("rejects a loadout that does not fit its chassis", () => {
 		const broken = structuredClone(document);
 		broken.vehicles[0].loadout.aft = ["ion"] as never;
 		expect(InstrumentConfig.safeParse(broken).success).toBe(false);
 	});
-	it("rejects an unknown change and an unknown burn", () => {
+	it("rejects per-vehicle overrides and obsolete ceiling fields", () => {
 		expect(
 			InstrumentConfig.safeParse({
 				...document,
 				vehicles: [
-					{ ...document.vehicles[0], changes: { plasma: { mass: 1 } } },
+					{ ...document.vehicles[0], changes: { plasma: { thrust: 1 } } },
 				],
+			}).success,
+		).toBe(false);
+		expect(
+			InstrumentConfig.safeParse({
+				...document,
+				properties: { ion: { maxSpeed: 200 } },
 			}).success,
 		).toBe(false);
 		expect(
@@ -89,14 +90,11 @@ describe("calculation", () => {
 			);
 		}
 	});
-	it("matches the study's calculation exactly", () => {
-		for (const vehicle of config.vehicles)
-			for (const burn of BURN_IDS)
-				expect(calculate(vehicle, burn)).toEqual(studyCalculate(vehicle, burn));
-	});
-	it("lets a change reach the result", () => {
+	it("applies one experiment-wide property set", () => {
 		const stock = traces(calculate(config.vehicles[1], "course")).speed;
-		const changed = traces(calculate(config.vehicles[2], "course")).speed;
+		const changed = traces(
+			calculate(config.vehicles[1], "course", {}, config.properties),
+		).speed;
 		expect(Math.max(...changed)).toBeGreaterThan(Math.max(...stock));
 	});
 });

@@ -432,7 +432,7 @@ function choose(id: ShipProfileId) {
 							>
 							<small
 								>{part.category === "E"
-									? `${part.thrust.toLocaleString()} thrust · ${part.limit.toFixed(0)} powered ceiling · ${part.response === "pulse" ? "0.18s pulse / 0.45s cycle" : part.response === "delayed" ? "0.6s charge, then sustained" : "Immediate / steady"}`
+									? `${part.thrust.toLocaleString()} thrust · ${part.response === "pulse" ? "0.18s pulse / 0.45s cycle" : part.response === "delayed" ? "0.6s charge, then sustained" : "Immediate / steady"}`
 									: part.capacity > 0
 										? `+${part.capacity} energy capacity`
 										: part.id === "coil"
@@ -461,6 +461,17 @@ function choose(id: ShipProfileId) {
 			<aside class="numbers" aria-label="Build statistics">
 				<h2>Flight estimates</h2>
 				<dl>
+					<div>
+						<dt>Powered cruise ceiling</dt>
+						<dd>{stats.poweredCruiseCeiling} u/s</dd>
+					</div>
+					<div>
+						<dt>Hull base + installed engines</dt>
+						<dd>
+							{stats.hullBaseSpeed}
+							+ {stats.installedEngineContribution} u/s
+						</dd>
+					</div>
 					<div>
 						<dt>Total mass</dt>
 						<dd>{stats.mass}</dd>
@@ -511,8 +522,10 @@ function choose(id: ShipProfileId) {
 				</dl>
 				<p class="footnote">
 					¹ Energy/s, near → far, G-class sun.<br>² Full batteries, no solar
-					charging.<br>³ At rest, both controls, world units/s².<br>Intrinsic
-					battery and coil included. More mass slows acceleration and turning.
+					charging.<br>³ At rest, both controls, world units/s²; full power and
+					all fitted engines active. Instantaneous peak before pulse/charge
+					timing. Intrinsic battery and coil included. More mass slows
+					acceleration and turning.
 					{chosen === "fiddler"
 						? "Stabilizers provide turning; linked mains add forward speed only."
 						: "The side mounts turn left-engine input clockwise and right-engine input counterclockwise."}

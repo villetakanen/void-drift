@@ -1,4 +1,11 @@
 import { verificationUrls } from "../../packages/core/src/lib/schemas/verification-ports.mjs";
+import {
+	advanceFlightTicks,
+	COMPETITION_FLIGHTS,
+	type CompetitionChassis,
+	competitionFlightResult,
+	waitForFlightPhase,
+} from "../helpers/competition-flight";
 import { expect, test } from "../helpers/local-browser";
 
 const firestore = "http://127.0.0.1:8080";
@@ -22,10 +29,29 @@ test.beforeAll(async ({ request }) => {
 test("two anonymous pilots complete runs, retry a rejected write and see a shared leaderboard", async ({
 	newLocalContext,
 }) => {
-	for (const pilot of [
-		{ launcher: "01", name: "Scout", initials: "ONE", turnMs: 256 },
-		{ launcher: "04", name: "Corvette", initials: "TWO", turnMs: 560 },
-	]) {
+	const pilots: {
+		launcher: string;
+		name: string;
+		chassis: CompetitionChassis;
+		initials: string;
+	}[] = [
+		{ launcher: "01", name: "Scout", chassis: "scout", initials: "ONE" },
+		{
+			launcher: "04",
+			name: "Corvette",
+			chassis: "corvette",
+			initials: "TWO",
+		},
+	];
+	for (const pilot of pilots) {
+		const chassis = pilot.chassis;
+		const flight = COMPETITION_FLIGHTS[chassis];
+		const predicted = competitionFlightResult(chassis);
+		expect(predicted).toMatchObject({
+			status: "GAME_OVER",
+			cause: "STAR",
+			ticks: flight.turnTicks + flight.thrustTicks,
+		});
 		const context = await newLocalContext();
 		const page = await context.newPage();
 		await page.clock.install({ time: new Date("2026-11-03T00:00:00Z") });
@@ -41,19 +67,23 @@ test("two anonymous pilots complete runs, retry a rejected write and see a share
 		await expect(page.getByText(pilot.name, { exact: true })).toBeVisible();
 		await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
 		await page.getByRole("button", { name: "PRESS START" }).click();
-		await page.clock.runFor(320);
+		await waitForFlightPhase(page, "playing");
 		await expect(page.locator(".flight-page")).toHaveAttribute(
 			"data-status",
 			"PLAYING",
 		);
-		// Derived with Simulation(gameSettings): left-only for 15/33 ticks then
-		// both reaches STAR in ~2 seconds. Inverted default maps Right to left.
-		// Clock rAF cadence is 16ms; 256/560ms produce those turn tick counts.
+		await expect(page.locator(".flight-page")).toHaveAttribute(
+			"data-ticks",
+			"0",
+		);
+		// The matching production simulation has already proved these exact
+		// fixed-step routes end at the star. The helper advances one browser tick
+		// at a time, so rAF cadence cannot change the route between hulls.
 		await page.keyboard.down("ArrowRight");
-		await page.clock.runFor(pilot.turnMs);
+		await advanceFlightTicks(page, flight.turnTicks);
 		await page.keyboard.up("ArrowRight");
 		await page.keyboard.down("ArrowUp");
-		await page.clock.runFor(2500);
+		await advanceFlightTicks(page, flight.thrustTicks);
 		await page.keyboard.up("ArrowUp");
 		await expect(
 			page.getByRole("dialog", { name: "Run complete" }),

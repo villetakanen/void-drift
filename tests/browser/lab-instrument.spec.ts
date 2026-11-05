@@ -10,8 +10,7 @@ test("switching the burn redraws the views and changes the document", async ({
 	const legend = page.getByRole("list", { name: "Vehicles" });
 	await expect(legend.getByRole("listitem")).toHaveText([
 		"Ion aft",
-		"Plasma aft",
-		"Plasma aft, more thrust",
+		"Plasma aft, 46k shared thrust",
 	]);
 	await expect(page.locator(".graph")).toHaveCount(3);
 	await expect(
@@ -50,10 +49,12 @@ test("an edited value updates the graphs and the document", async ({
 	const speed = page.locator(".graph .head").first();
 	const before = await speed.textContent();
 	await page.getByRole("button", { name: "Open values" }).click();
-	const thrust = page.locator("#p-1-plasma-thrust");
+	const thrust = page.locator("#p-plasma-thrust");
 	await thrust.fill("52000");
 	await thrust.press("Tab");
-	await expect(page.locator(".pane pre")).toContainText('"thrust": 52000');
+	await expect(page.locator(".pane pre")).toContainText(
+		'"plasma": {\n      "thrust": 52000',
+	);
 	await expect(speed).not.toHaveText(before ?? "");
 });
 

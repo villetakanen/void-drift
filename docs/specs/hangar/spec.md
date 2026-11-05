@@ -63,6 +63,13 @@ prior work; it is not a competing current specification.
    energy supply, capacity and consumption using shared definitions. Estimates
    state their conditions and distinguish peak output from sustained behavior.
    They support comparison, not a promise of flight duration in every environment.
+   Powered cruise ceiling is hull base speed plus every physically installed
+   main-engine contribution; the builder shows both terms. Engine details report
+   their contribution rather than an individual speed limit. Peak forward
+   acceleration assumes full power, all fitted engines active and a start from
+   rest; it is an instantaneous estimate before pulse or charge timing. Existing
+   version-2 saved loadouts keep their IDs and restore without migration. The
+   [ship propulsion contract](../ship-propulsion.md) owns values and flight law.
 5. **System choices affect flight.** Stabilizers default on; explicit saved choices
    persist except that Wasp and Fiddler require them. Linked engines defaults off and changes
    the aft-engine command from both inputs to either input. Neither input commands

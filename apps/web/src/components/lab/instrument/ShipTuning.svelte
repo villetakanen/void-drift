@@ -34,7 +34,7 @@ const tracks = $derived.by((): Track[] => {
 	if (!doc) return [];
 	const plain = $state.snapshot(doc);
 	return plain.vehicles.map((v, i) => {
-		const samples = calculate(v, plain.burn);
+		const samples = calculate(v, plain.burn, {}, plain.properties);
 		return {
 			label: v.label,
 			color: TRACK_COLORS[i],

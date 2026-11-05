@@ -1,14 +1,14 @@
 import { Vec2 } from "@void-drift/core";
 import {
+	ASSEMBLED_ION_DEFAULTS,
+	AssembledIonSettingsSchema,
 	applyBuildEngines,
 	type EngineTimers,
-	ION_DEFAULTS,
-	IonSettingsSchema,
 	PARTS,
 	PartSchema,
 } from "@void-drift/mode-a";
 import { type BurnId, DT, inputAt, TOTAL_TICKS } from "./burns";
-import type { InstrumentVehicle } from "./config";
+import type { ExperimentProperties, InstrumentVehicle } from "./config";
 
 /** One calculated moment: position, velocity, and turn rate in °/s. */
 export type Sample = {
@@ -41,14 +41,18 @@ export function calculate(
 	vehicle: InstrumentVehicle,
 	burn: BurnId,
 	flight: Flight = {},
+	properties: ExperimentProperties = {},
 ): Sample[] {
-	const { loadout, changes } = vehicle;
+	const { loadout } = vehicle;
 	const parts = {
 		...PARTS,
-		fusion: PartSchema.parse({ ...PARTS.fusion, ...changes.fusion }),
-		plasma: PartSchema.parse({ ...PARTS.plasma, ...changes.plasma }),
+		fusion: PartSchema.parse({ ...PARTS.fusion, ...properties.fusion }),
+		plasma: PartSchema.parse({ ...PARTS.plasma, ...properties.plasma }),
 	};
-	const ion = IonSettingsSchema.parse({ ...ION_DEFAULTS, ...changes.ion });
+	const ion = AssembledIonSettingsSchema.parse({
+		...ASSEMBLED_ION_DEFAULTS,
+		...properties.ion,
+	});
 	const ship = {
 		pos: new Vec2(0, 0),
 		vel: new Vec2(flight.startSpeed ?? 0, 0),

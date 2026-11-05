@@ -5,6 +5,38 @@ import StudyLayout from "../../../layouts/StudyLayout.astro";
 const study = studies.find(
 	(entry) => entry.slug === "ship-motion-laws-2026-11-04",
 );
+const corvette = {
+	version: 2,
+	chassis: "corvette",
+	side: "ion",
+	stabilizers: true,
+	hull: [null, null, null],
+	aft: [null, null, null],
+};
+
+// Historical v1 input retained for provenance. The current Motion instrument
+// rejects per-vehicle `changes`; this object is displayed as data and never run.
+const historicalB1Configuration = {
+	version: 1,
+	burn: "course",
+	vehicles: [
+		{
+			label: "High cruise 340, current force",
+			loadout: corvette,
+			changes: { ion: { maxSpeed: 340, acceleration: 220, bonus: 0 } },
+		},
+		{
+			label: "Cruise 234.5, current force",
+			loadout: corvette,
+			changes: { ion: { maxSpeed: 234.5, acceleration: 220, bonus: 0 } },
+		},
+		{
+			label: "Cruise 234.5, reduced force",
+			loadout: corvette,
+			changes: { ion: { maxSpeed: 234.5, acceleration: 110, bonus: 0 } },
+		},
+	],
+} as const;
 ---
 
 <StudyLayout study={study}>
@@ -35,6 +67,15 @@ const study = studies.find(
 			with demonstrated tradeoffs, not final fleet balance. A rule must explain
 			both what extra machinery buys and what the pilot gives up.
 		</p>
+		<aside>
+			<strong>Production update:</strong>
+			the accepted assembled-ship cruise model is now implemented. See the
+			<a href="/lab/ship-propulsion">current propulsion reference</a>
+			and
+			<a href="/lab/instrument">live Motion instrument</a>. This study's earlier
+			baseline text and saved captures describe the previous production law;
+			they have not been rerun and are not evidence for the current model.
+		</aside>
 
 		<h3>01.1 / The first decision and its boundaries</h3>
 		<p>
@@ -229,13 +270,250 @@ const study = studies.find(
 	</section>
 	<section>
 		<h2>02 / Exploration</h2>
+		<details>
+			<summary>02.1 / Hull identity with engine-driven speed upgrades</summary>
+			<details>
+				<summary id="exploration-02-1">
+					02.1 / Hull identity with engine-driven speed upgrades
+				</summary>
+				<h4>What the comparison established</h4>
+				<p>
+					Acceleration and cruising speed can express different ship characters.
+					In the all-ion, supplied-power comparison, a five-ion Corvette
+					initially accelerated harder than a one-ion Wasp: 606 versus 361 u/s².
+					With illustrative cruising speeds of 360 and 480 u/s respectively,
+					Wasp overtook the Corvette in speed after about 1.6 seconds. More
+					engines improved acceleration after accounting for their mass; extra
+					equipment mass lengthened the climb to speed.
+				</p>
+				<p>
+					These results used the shared flight calculation from rest in empty
+					space, with both controls held for the first six seconds of B2. A
+					per-build ion limit and zero ion speed bonus represented the trial
+					cruise values. The comparison supports separating acceleration from
+					cruising speed. Its values are experimental examples; the additive
+					model below remains to be demonstrated. Turning and gravity behaviour
+					remain open.
+				</p>
+				<h4>Decided relationship</h4>
+				<p>
+					<strong
+						>Build cruising speed = hull base speed + the sum of fitted engines’
+						speed contributions.</strong
+					>
+					Engines therefore improve both acceleration and attainable cruising
+					speed. Hull base speed and each engine's contribution are independent
+					game-design variables, available for later tuning of individual ships
+					and families.
+				</p>
+				<p>
+					The hull's permitted mounts and compatible engines bound the available
+					speed increase. This model uses that implicit maximum rather than a
+					separate hull ceiling. A large difference between hull base speeds can
+					preserve Wasp's speed advantage even when a heavy cruiser mounts many
+					more engines. The size of that difference, each engine's contribution
+					and the final fleet values belong to subsequent balance work.
+				</p>
+				<p>
+					Initial acceleration continues to follow delivered forward force
+					divided by fitted mass. The trial's linear taper provides a starting
+					candidate for approaching the build's calculated cruising speed. That
+					speed is a propulsion property; gravity can supply additional
+					velocity. The full response to overspeed, angled thrust and mixed
+					engines is still to be explored. Flight feel requires hands-on review.
+				</p>
+				<h4>Next investigation</h4>
+				<p>
+					Demonstrate the additive speed relationship alongside mass-dependent
+					acceleration. Compare Wasp with basic and upgraded Corvette builds,
+					using illustrative values to expose the relationship. Establish how
+					the calculated build speed feeds the flight rule, and identify which
+					choices remain for engine composition and later tuning.
+				</p>
+			</details>
+		</details>
+		<h3 id="exploration-02-2">
+			02.2 / Additive build speed works in the tested builds
+		</h3>
+		<p>
+			Hull base speed plus fitted engine contributions produced the intended
+			cruising-speed differences and upgrades. With illustrative hull bases of
+			360 u/s for Wasp and 180 u/s for Corvette, and +35 u/s per ion, the
+			one-ion Wasp reached towards 395 u/s, the two-ion Corvette towards 250
+			u/s, and the five-ion Corvette towards 355 u/s.
+		</p>
+		<p>
+			Including engine mass, initial acceleration was respectively 361, 246 and
+			606 u/s². The upgraded Corvette accelerated hardest and gained cruising
+			speed over its basic build, while Wasp retained the highest eventual
+			speed. Analytical predictions and simulated readings agreed closely at one
+			and six seconds.
+		</p>
+		<p>
+			The comparison used the shared production calculation from rest in empty
+			space, with supplied power and both controls held during B2's first six
+			seconds. Each calculated build cruise was emulated through the per-vehicle
+			ion speed limit with zero bonus. For these all-ion straight burns,
+			acceleration followed force divided by fitted mass, multiplied by
+			remaining speed headroom. The analytical relationship was v(t) = V × (1 −
+			exp(−a₀t/V)), for constant forward thrust from rest below cruising speed
+			V.
+		</p>
+		<h4>Conclusion</h4>
+		<p>
+			<strong
+				>The additive cruising-speed model works for the tested builds.</strong
+			>
+			Hull and engine speed properties control the destination; force and fitted
+			mass control the climb. This relationship is retained for the next
+			exploration. The current ion acceleration produces a faster build-up than
+			intended. Reducing ion force lengthens the climb while preserving
+			calculated cruising speeds; its numerical tuning remains later work. Mixed
+			engines, directional propulsion and gravity remain subsequent
+			investigations.
+		</p>
+
+		<h3 id="exploration-02-3">
+			02.3 / Angled thrust and recovery create distinct paths
+		</h3>
+		<p>
+			The existing flight calculation produces distinct bends, hooks and
+			recovery curves with lower cruising-speed settings. Angled main engines
+			change translation and rotation together. Small stabilizers also deliver
+			force while braking a turn after input is released, so they participate in
+			the path rather than merely stopping the hull's rotation. The path
+			character is a promising visual reference to retain.
+		</p>
+		<p>
+			The comparison used Corvette with two side ions and Scout with two side
+			ions plus one aft ion, each with stabilizers fitted and off. All started
+			at rest at the origin, heading +x, with supplied power and no gravity, on
+			B1 for 14 seconds at 60 Hz with four simulation substeps per tick. Ion
+			speed settings were 234.5 u/s for Corvette and 261 u/s for Scout, with
+			zero speed bonus and otherwise production settings. The capture uses Fit
+			all at 1440 × 1000, with the time marker at 7 s.
+		</p>
+		<figure>
+			<img
+				src="/studies/ship-motion-laws-2026-11-04/02-3-paths.png"
+				alt="Recorded Corvette and Scout paths with and without stabilizers, with speed, acceleration and turn-acceleration traces."
+				width="1440"
+				height="1000"
+				loading="lazy"
+				style="width: 100%; height: auto;"
+			>
+			<figcaption>
+				02.3 recorded comparison; a static reference for subsequent experiments.
+			</figcaption>
+		</figure>
+		<h4>What remains unresolved</h4>
+		<p>
+			These paths use the existing scalar speed limiter with lower settings. The
+			proposed direction-dependent speed envelope was not implemented; its
+			validity remains open. Stabilizers change the commanded turn as well as
+			recovery, so later path differences include both effects. Lower speed may
+			explain the attractive motion, but this comparison did not vary speed
+			independently to establish that cause.
+		</p>
+		<h4>Next investigation</h4>
+		<p>
+			Identify what produces this path character and whether it survives a
+			gentler build-up of speed. Hold one ship, geometry, stabilizer fit and B1
+			fixed; compare higher and lower cruising speed at current ion force, then
+			lower speed with reduced ion force. Account for the current force setting
+			changing main thrust, turning torque and stabilizer strength together.
+			This investigates the relationship between speed and steering; hands-on
+			feel and final numerical balance remain later work.
+		</p>
+		<h3 id="exploration-02-4">
+			02.4 / Cruise speed and force change steering together
+		</h3>
+		<p class="note">
+			These numerical findings are historical results from the prior ceiling
+			law. The original input is retained below as data, not run by the current
+			instrument. See the
+			<a href="/lab/ship-propulsion">Ship propulsion reference</a>.
+		</p>
+		<p>
+			The 02.3 path was the visual reference: production impulses at a lower
+			scalar speed setting created bends and recovery curves. The comparison
+			held the Corvette's two side ions, stabilizers, 39° geometry, origin,
+			heading, supplied power, empty space and B1 input sequence fixed. It
+			varied the ion ceiling, then ion force at the lower ceiling, with zero
+			speed bonus in all three builds.
+		</p>
+		<p>
+			The high setting was 340 u/s, then the default; 234.5 u/s was the 02.3
+			Corvette reference. The reduced-force trial used 110 u/s² at the 115-mass
+			reference, half the then-current 220. These values exposed the
+			relationship; none was proposed fleet balance.
+		</p>
+		<h4>Matched observations</h4>
+		<p>
+			B1 held both controls for 0–2 s, coasted 2–3 s, held left alone 3–4 s,
+			then released both controls for recovery at 4–5 s. The recorded comparison
+			read position, speed and spin at 3.5 s during one-sided thrust and 4.5 s
+			during automatic recovery, with the same build and start for all three
+			traces.
+		</p>
+		<p>
+			With the then-current force, lowering cruise from 340 to 234.5 u/s changed
+			speed at 3.5 s from 262 to 206 u/s while spin stays 149°/s; at 4.5 s,
+			speed is 244 versus 189 u/s while spin is 154°/s in both. Forward position
+			is shorter (712 versus 582 at 3.5 s; 951 versus 763 at 4.5 s) while
+			lateral position is nearly the same. The same turn authority bends the
+			lower-speed path more sharply relative to its forward travel: less
+			velocity must be redirected. At cruise 234.5, halving force changed
+			speed/spin at 3.5 s from 206/149 to 157/74; at 4.5 s from 189/154 to
+			152/136. The reduced-force path was both slower and less bent. Ion force
+			scaled main thrust, turning torque and stabilizer output together, so the
+			path change cannot be attributed to gentler acceleration alone. Weaker
+			steering and recovery can offset the benefit of lower travel speed.
+		</p>
+		<details>
+			<summary>Archived B1 input (previous ceiling model)</summary>
+			<p>
+				This is the original per-vehicle configuration shape used for the
+				findings above. It is retained as historical data and is not parsed or
+				passed to the current Motion instrument.
+			</p>
+			<pre
+			><code>{JSON.stringify(historicalB1Configuration, null, 2)}</code></pre>
+		</details>
+		<h4>Finding and limitation</h4>
+		<p>
+			The three traces make the path, speed, turning and recovery differences
+			inspectable at the same times and spatial scale. The historical
+			340-to-234.5 comparison isolated the scalar speed setting; the 234.5/110
+			case was a combined force change. Production ion force drove side-main
+			thrust, their turning torque, and stabilizer output from one setting. The
+			shared calculation faithfully showed that coupled response, but could not
+			independently tune these three outputs to explain their separate
+			contributions.
+		</p>
+		<p>
+			To separate them, hold main translation and cruise fixed while varying
+			main-engine torque, then hold both fixed while varying stabilizer force
+			and braking response. That needs independent candidate controls in the
+			owning Motion instrument and flight calculation; it is a future
+			experiment, not a change made here. This round retains the additive
+			build-speed model. It investigates how speed and steering interact,
+			leaving handling feel to hands-on review.
+		</p>
+		<h4>Next decision</h4>
+		<p>
+			Should turning authority be independent of forward engine force, so that
+			lowering force can soften acceleration without weakening steering and
+			recovery? The controlled follow-up should vary main torque and stabilizer
+			strength independently at the same build mass and cruise setting.
+		</p>
 	</section>
 	<details>
 		<summary>Earlier instrument capability proposals</summary>
 		<p>
-			These notes were moved from the Motion instrument spec. They preserve
-			earlier investigation needs, not approved instrument requirements. Current
-			study decisions take precedence.
+			These notes were moved from the Motion instrument spec. They preserve the
+			earlier hull-speed-rating exploration and are not approved instrument
+			requirements. The current study decisions above take precedence.
 		</p>
 		<p>
 			Problem framing: Ship motion: a law for assembled ships, part 01. This is
@@ -256,29 +534,19 @@ const study = studies.find(
 			and subsequent readiness/scope.
 		</p>
 		<p>
-			Exploration 02.1 (hull speed ratings) identifies three specific
-			capabilities:
+			Exploration 02.1 retains the separation between acceleration and cruising
+			speed, then selects an additive build speed: hull base speed plus fitted
+			engines&#x27; speed contributions. The earlier fixed-hull-rating proposal
+			is superseded.
 		</p>
 		<p>
-			<strong>Hull speed rating.</strong>
-			A per-vehicle value naming the hull&#x27;s engine-driven cruise, applied
-			to every engine family and independent of combined thrust. Today it can
-			only be emulated for all-ion builds, by setting the ion speed ceiling to
-			the rating and the heavy-ion bonus to zero; thrust weaker than one light
-			ion then still receives a proportionally lower ceiling, and fusion and
-			plasma keep their own limits.
-		</p>
-		<p>
-			<strong>Sustained straight burn.</strong>
-			A fixed program holding both controls for the full 14 s, so a slow climb
-			finishes before any turn. B2 turns at 6 s, before a loaded Wasp reaches
-			90% of its rating.
-		</p>
-		<p>
-			<strong>Predicted curve.</strong>
-			The candidate law&#x27;s analytical speed curve drawn by the instrument
-			beside each simulated trace, distinguishable from it, so a study separates
-			prediction from observation without its own chart.
+			The next comparison needs a reproducible per-build cruising speed derived
+			from those properties. All-ion straight flight can use the existing
+			per-vehicle ion limit with zero bonus as an explicitly labeled emulation.
+			A general model across engine families remains an investigation need. A
+			sustained straight burn and analytical reference curves remain possible
+			extensions when required by the next comparison; neither is an implemented
+			capability or a prerequisite decided here.
 		</p>
 	</details>
 	<section aria-labelledby="additive-instrument-proposal">

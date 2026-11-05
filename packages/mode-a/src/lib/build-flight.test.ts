@@ -9,7 +9,6 @@ import {
 	engineOffset,
 	nozzleOffset,
 } from "./build-renderer";
-import { ionCeiling } from "./schemas/ion";
 import {
 	buildStats,
 	defaultLoadout,
@@ -94,7 +93,7 @@ describe("ship builder contract", () => {
 		engineImpulse(b, Math.PI, 200, 350, 1 / 60);
 		expect(b.vel.x).toBeCloseTo(1100 - 200 / 60);
 	});
-	it("mixed engines and repeated sideways thrust cannot exceed the fastest powered limit", () => {
+	it("mixed engines and repeated sideways thrust cannot exceed the shared powered ceiling", () => {
 		const build = defaultLoadout("fighter");
 		build.aft = ["ion", "fusion"];
 		const a = ship();
@@ -103,7 +102,7 @@ describe("ship builder contract", () => {
 			applyBuildEngines(a, build, both, 1 / 60, true);
 		}
 		expect(a.vel.mag()).toBeLessThanOrEqual(
-			Math.max(PARTS.fusion.limit, ionCeiling(Infinity)) + 1e-6,
+			buildStats(build).poweredCruiseCeiling + 1e-6,
 		);
 	});
 	it("ends survival at empty energy but keeps damaged/empty test flights running", () => {

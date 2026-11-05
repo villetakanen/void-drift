@@ -1,10 +1,9 @@
 import type { GameObject, InputState, Star } from "@void-drift/core";
 import { SURVIVAL_CONFIG } from "@void-drift/core";
 import {
-	ION_DEFAULTS,
+	ASSEMBLED_ION_DEFAULTS,
+	type AssembledIonSettings,
 	ION_REFERENCE_MASS,
-	type IonSettings,
-	ionCeiling,
 	ionStrength,
 	STABILIZER_ENERGY,
 	STABILIZER_STRENGTH,
@@ -75,7 +74,7 @@ export function stabilizerBurn(
 	input: InputState,
 	spin: number,
 	dt: number,
-	settings: IonSettings = ION_DEFAULTS,
+	settings: AssembledIonSettings = ASSEMBLED_ION_DEFAULTS,
 ) {
 	const command = Number(input.leftThruster) - Number(input.rightThruster);
 	const isLhi = !!lhiStabilizers(build.chassis);
@@ -116,7 +115,7 @@ export function applyBuildEngines(
 	timers: EngineTimers = {},
 	powerFraction = 1,
 	motion: AngularMotion = { velocity: 0 },
-	settings: IonSettings = ION_DEFAULTS,
+	settings: AssembledIonSettings = ASSEMBLED_ION_DEFAULTS,
 	parts: typeof PARTS = PARTS,
 ) {
 	const isWasp = build.chassis === "wasp";
@@ -130,7 +129,7 @@ export function applyBuildEngines(
 		aft: build.aft.map(() => 0),
 		stabilizers: lhi ? [0, 0, 0, 0] : [0, 0],
 	};
-	const stats = buildStats(build),
+	const stats = buildStats(build, parts),
 		chassis = CHASSIS[build.chassis];
 	const m = stabilizerMount(build.chassis);
 	const angle = (chassis.angle * Math.PI) / 180;
@@ -179,7 +178,7 @@ export function applyBuildEngines(
 			otherImpulses.push({
 				direction,
 				thrust: thrust * duty,
-				limit: part.limit,
+				limit: stats.poweredCruiseCeiling,
 				group,
 				index,
 				duty,
@@ -260,17 +259,13 @@ export function applyBuildEngines(
 		else output[group] = value;
 	}
 	const combined = Math.hypot(ix, iy);
-	const ceilingStrength =
-		lhi && !(input.leftThruster && input.rightThruster)
-			? Math.max(1, combined)
-			: combined;
 	const delivered =
 		combined > 1e-10 && power > 0
 			? engineImpulse(
 					ship,
 					ship.rotation + Math.atan2(iy, ix),
 					(settings.acceleration * ION_REFERENCE_MASS * combined) / stats.mass,
-					ionCeiling(ceilingStrength, settings),
+					stats.poweredCruiseCeiling,
 					dt * power,
 				)
 			: 0;
@@ -291,7 +286,7 @@ export function applyBuildEngines(
 			power;
 		output.left = output.right = delivery;
 	}
-	// Keep other families' pulse/charge and individual ceilings; only ions aggregate.
+	// Response timing remains family-specific; every installed engine shares V.
 	for (const o of otherImpulses) {
 		if (o.group !== "aft" && l && r && l.duty === r.duty) continue;
 		if (o.thrust > 0 && power > 0)
@@ -342,7 +337,7 @@ export function buildDrain(
 	input: InputState,
 	spin = 0,
 	dt = 1 / 240,
-	settings: IonSettings = ION_DEFAULTS,
+	settings: AssembledIonSettings = ASSEMBLED_ION_DEFAULTS,
 ) {
 	const burn = stabilizerBurn(build, input, spin, dt, settings);
 	if (build.chassis === "fiddler") {

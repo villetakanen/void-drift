@@ -35,16 +35,14 @@ describe("accepted ion flight", () => {
 			(b.vel.x * buildStats(heavy).mass) / (a.vel.x * buildStats(light).mass),
 		).toBeCloseTo(ionStrength(heavy.side) / ionStrength(light.side), 12);
 	});
-	it("counts directional force rather than installed engines for speed", () => {
+	it("uses the shared installed-build ceiling for speed", () => {
 		const build = defaultLoadout("fighter");
 		const a = body();
 		for (let i = 0; i < 12000; i++)
 			applyBuildEngines(a, build, both, STEP, true);
-		const ceiling = ionCeiling(
-			2 * Math.cos(buildPlumeEmitters(build)[0].angle),
-		);
+		const ceiling = buildStats(build).poweredCruiseCeiling;
 		expect(a.vel.mag()).toBeCloseTo(ceiling, 5);
-		expect(ceiling).toBeLessThan(ionCeiling(2));
+		expect(ceiling).toBe(346);
 		expect(ionCeiling(1000)).toBeCloseTo(
 			ION_DEFAULTS.maxSpeed * (1 + ION_DEFAULTS.bonus),
 		);

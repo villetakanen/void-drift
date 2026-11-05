@@ -19,7 +19,7 @@ let { label = "Graphs design system" }: { label?: string } = $props();
 
 const doc = InstrumentConfig.parse(STARTER_DOCUMENT);
 const tracks = doc.vehicles.map((v, i) => {
-	const samples = calculate(v, doc.burn);
+	const samples = calculate(v, doc.burn, {}, doc.properties);
 	return {
 		label: v.label,
 		color: TRACK_COLORS[i],

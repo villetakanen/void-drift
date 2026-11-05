@@ -168,6 +168,14 @@ export const labPages = z.array(labPageSchema).parse([
 		source: "production",
 	},
 	{
+		href: "/lab/ship-propulsion",
+		title: "Ship propulsion",
+		purpose:
+			"The shared installed-engine cruise ceiling and its flight behavior.",
+		group: "tools",
+		source: "production",
+	},
+	{
 		href: "/lab/fx",
 		title: "Arcade FX",
 		purpose: "FX workload bench with frame timings.",

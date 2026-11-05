@@ -776,35 +776,20 @@ onMount(() => {
 						0.22 thrust · 0.25 Light-ion energy when firing. Default trials use
 						two Light-ion side engines with empty aft mounts.
 					</p>
-					{#each [
-						"acceleration",
-						"maxSpeed",
-						"bonus",
-						"falloff",
-						"maxTurn",
-					] as key}
+					{#each ["acceleration", "maxTurn"] as key}
 						<label for={`ion-${key}`}
 							>{{
 								acceleration: "Light ion acceleration at 115 mass",
-								maxSpeed: "One Light ion speed",
-								bonus: "Speed bonus",
-								falloff: "Speed falloff",
 								maxTurn: "Maximum rotation °/s",
 							}[key]}</label
 						>
 						<input
 							id={`ion-${key}`}
 							type="number"
-							step={key === "bonus" || key === "falloff" ? 0.01 : 1}
-							min={key === "bonus" ? 0 : key === "falloff" ? 0.01 : 1}
-							max={key === "bonus"
-								? 2
-								: key === "falloff"
-									? 5
-									: key === "maxTurn"
-										? 720
-										: 2000}
-							bind:value={tuning.ion[key as "acceleration"]}
+							step={1}
+							min={1}
+							max={key === "maxTurn" ? 720 : 2000}
+							bind:value={tuning.ion[key as "acceleration" | "maxTurn"]}
 						>
 					{/each}
 					<p>

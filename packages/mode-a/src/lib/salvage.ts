@@ -1,9 +1,9 @@
 import type { GameObject, InputState, Resources, Star } from "@void-drift/core";
 import { type BuildMount, buildMounts, weaponPose } from "./build-renderer";
 import {
-	ION_DEFAULTS,
+	ASSEMBLED_ION_DEFAULTS,
+	type AssembledIonSettings,
 	ION_REFERENCE_MASS,
-	type IonSettings,
 } from "./schemas/ion";
 import { buildStats, type Loadout } from "./schemas/loadout";
 import { SALVAGE, WEAPONS } from "./schemas/salvage";
@@ -96,7 +96,11 @@ export class SalvageSystem {
 	private eventSequence = 0;
 	private randomState: number;
 	private readonly recoilAcceleration: number;
-	constructor(loadout: Loadout, seed: number, ion: IonSettings = ION_DEFAULTS) {
+	constructor(
+		loadout: Loadout,
+		seed: number,
+		ion: AssembledIonSettings = ASSEMBLED_ION_DEFAULTS,
+	) {
 		this.randomState = seed >>> 0;
 		this.recoilAcceleration =
 			(ion.acceleration * ION_REFERENCE_MASS * WEAPONS.rail.recoilStrength) /

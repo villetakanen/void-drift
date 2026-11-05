@@ -79,7 +79,9 @@ test("flight Lab replays exactly, imports safely, and restarts after death", asy
 	await page.goto("/lab/flight");
 	const initialSeed = await page.getByLabel("Scenario seed").inputValue();
 	await page.getByRole("checkbox", { name: "Ion stabilizers" }).uncheck();
-	await page.getByLabel("One Light ion speed", { exact: true }).fill("360");
+	await page
+		.getByLabel("Light ion acceleration at 115 mass", { exact: true })
+		.fill("360");
 	await page.getByRole("button", { name: "Apply & reset" }).click();
 	await expect(page.locator(".flight-page")).toHaveAttribute(
 		"data-stabilizers",
@@ -104,7 +106,7 @@ test("flight Lab replays exactly, imports safely, and restarts after death", asy
 		true,
 	);
 	expect(exported.loadout.stabilizers).toBe(false);
-	expect(exported.ion.maxSpeed).toBe(360);
+	expect(exported.ion.acceleration).toBe(360);
 	await page.getByLabel("Trial configuration").fill("{bad json}");
 	await page.getByRole("button", { name: "Import JSON" }).click();
 	await expect(page.locator(".flight-message")).toContainText("Invalid trial");

@@ -111,16 +111,16 @@ See [Hangar](specs/hangar/spec.md) for assembly and flight handoff; the
 [ship-builder history](history/ship-builder.md) retains provisional physics and tuning decisions.
 
 
-### Ion motion integration — 0.4.2
+### Assembled propulsion
 
-Validated `FlightSettings.ion` owns custom ion acceleration/ceiling/rotation tuning;
-`Loadout.stabilizers` now defaults true when absent in version-2 saves; explicit
-choices survive, except Wasp and Fiddler always enable stabilizers. Simulation keeps
-angular velocity, budgets engine and automatic stabilizer demand per substep, and
-uses the same mounted emitter list as the renderer. Custom ions combine directional
-force; other response families retain their pulse/charge behavior. Ranked stock
-physics remains separate. FlightDeck draws the effective simulation loadout, so
-imported Lab configurations and builder flights share rendering and power capacity.
+`ChassisSchema.baseSpeed` and `PartSchema.speedContribution` in `loadout.ts` own
+hull bases and per-engine values. `buildStats` derives the powered cruise ceiling
+from physical installed mains; `applyBuildEngines` passes that value to every
+assembled engine family. `engineImpulse` retains its linear taper, radial/transverse
+decomposition and overspeed behavior. Validated assembled `FlightSettings.ion`
+contains force and turn-rate tuning only. Pulse/charge timing, power, torque,
+inertia, angular caps and stabilizer behavior retain their existing owners. Ranked
+legacy stock physics remains separate.
 
 
 ### Default fleet — 0.4.3

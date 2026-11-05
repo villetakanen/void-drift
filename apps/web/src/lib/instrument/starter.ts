@@ -1,5 +1,4 @@
-// The Lab page's starting document: the three Fighters compared in the
-// lab-instrument study (02.7): ion aft, plasma aft, and plasma with more thrust.
+// Lab starting document: compare two Fighters under one shared property set.
 const fighter = (aft: [string | null, string | null]) => ({
 	version: 2,
 	chassis: "fighter",
@@ -12,13 +11,12 @@ const fighter = (aft: [string | null, string | null]) => ({
 export const STARTER_DOCUMENT = {
 	version: 1,
 	burn: "course",
+	properties: { plasma: { thrust: 46000 } },
 	vehicles: [
 		{ label: "Ion aft", loadout: fighter(["ion", "ion"]) },
-		{ label: "Plasma aft", loadout: fighter(["plasma", "plasma"]) },
 		{
-			label: "Plasma aft, more thrust",
+			label: "Plasma aft, 46k shared thrust",
 			loadout: fighter(["plasma", "plasma"]),
-			changes: { plasma: { thrust: 46000 } },
 		},
 	],
 };

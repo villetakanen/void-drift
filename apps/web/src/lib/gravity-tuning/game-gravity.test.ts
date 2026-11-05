@@ -13,12 +13,8 @@ import { calculate, traces } from "../instrument/calculate";
 // fails and names the bodies to retune on the Gravity tuning bench.
 const reference = starterLoadout("fighter");
 const thrust = Math.max(
-	...traces(
-		calculate(
-			{ label: "Reference", loadout: reference, changes: {} },
-			"course",
-		),
-	).acceleration,
+	...traces(calculate({ label: "Reference", loadout: reference }, "course"))
+		.acceleration,
 );
 const shipRadius = buildCollisionRadius(reference);
 const contactPull = (radius: number, mass: number) =>

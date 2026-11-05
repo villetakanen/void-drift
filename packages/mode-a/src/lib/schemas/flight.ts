@@ -1,12 +1,14 @@
 import { z } from "zod";
-import { IonSettingsSchema } from "./ion";
+import { AssembledIonSettingsSchema } from "./ion";
 import { defaultLoadout, LoadoutSchema } from "./loadout";
 import { ShipProfileSchema } from "./ship-profile";
 
 export const FlightSettingsSchema = z
 	.object({
 		loadout: LoadoutSchema.optional(),
-		ion: IonSettingsSchema.default(() => IonSettingsSchema.parse({})),
+		ion: AssembledIonSettingsSchema.default(() =>
+			AssembledIonSettingsSchema.parse({}),
+		),
 		testFlight: z.boolean().default(false),
 		seed: z.number().int().min(1).max(2147483647),
 		profile: ShipProfileSchema.extend({

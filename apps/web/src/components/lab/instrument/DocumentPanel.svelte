@@ -2,12 +2,11 @@
 import "@void-drift/core/styles/buttons.css";
 import {
 	type Family,
-	familiesOf,
+	familiesIn,
 	InstrumentConfig,
 	PARAMETERS,
 	serialize,
 	stockValue,
-	TRACK_COLORS,
 } from "../../../lib/instrument";
 
 // The pane's default content (lab-instrument study, 02.2–02.3): each vehicle's
@@ -20,15 +19,13 @@ let draft = $state("");
 let loadError = $state("");
 const text = $derived(serialize($state.snapshot(config)));
 
-function current(i: number, family: Family, key: string): number | undefined {
-	const group = config.vehicles[i].changes[family] as
-		| Record<string, number>
-		| undefined;
+function current(family: Family, key: string): number | undefined {
+	const group = config.properties[family] as Record<string, number> | undefined;
 	return group?.[key];
 }
-function setValue(i: number, family: Family, key: string, raw: string) {
+function setValue(family: Family, key: string, raw: string) {
 	const plain = $state.snapshot(config);
-	const changes = plain.vehicles[i].changes as Record<
+	const changes = plain.properties as Record<
 		string,
 		Record<string, number> | undefined
 	>;
@@ -41,7 +38,7 @@ function setValue(i: number, family: Family, key: string, raw: string) {
 	)
 		delete group[key];
 	else group[key] = value;
-	plain.vehicles[i].changes = { ...changes, [family]: group };
+	plain.properties = { ...changes, [family]: group };
 	const parsed = InstrumentConfig.safeParse(plain);
 	if (parsed.success) config = parsed.data;
 	return parsed.success;
@@ -73,45 +70,43 @@ function load() {
 
 <section aria-labelledby="pane-values">
 	<h4 id="pane-values">Values</h4>
-	{#each config.vehicles as vehicle, i}
+	{#each familiesIn(config.vehicles) as family}
 		<fieldset>
 			<legend>
-				<i style={`background:${TRACK_COLORS[i]}`}></i>{vehicle.label}
+				{family === "fusion" ? "Fission" : family}
+				· shared across every vehicle
 			</legend>
-			{#each familiesOf(vehicle.loadout) as family}
-				<p class="family">{family}</p>
-				{#each PARAMETERS[family] as param}
-					{@const value = current(i, family, param.key)}
-					{@const stock = stockValue(family, param.key)}
-					{@const id = `p-${i}-${family}-${param.key}`}
-					<div class="param" class:changed={value !== undefined}>
-						<label for={id}>{param.label}</label>
-						<input
-							{id}
-							type="number"
-							step="any"
-							value={value ?? stock}
-							onchange={(e) => {
-								const field = e.currentTarget;
-								if (!setValue(i, family, param.key, field.value))
-									field.value = String(value ?? stock);
-							}}
+			{#each PARAMETERS[family] as param}
+				{@const value = current(family, param.key)}
+				{@const stock = stockValue(family, param.key)}
+				{@const id = `p-${family}-${param.key}`}
+				<div class="param" class:changed={value !== undefined}>
+					<label for={id}>{param.label}</label>
+					<input
+						{id}
+						type="number"
+						step="any"
+						value={value ?? stock}
+						onchange={(e) => {
+							const field = e.currentTarget;
+							if (!setValue(family, param.key, field.value))
+								field.value = String(value ?? stock);
+						}}
+					>
+					{#if value !== undefined}
+						<button
+							type="button"
+							class="reset"
+							aria-label={`Reset shared ${param.label} to ${stock}`}
+							onclick={() => setValue(family, param.key, "")}
 						>
-						{#if value !== undefined}
-							<button
-								type="button"
-								class="reset"
-								aria-label={`Reset ${param.label} to ${stock}`}
-								onclick={() => setValue(i, family, param.key, "")}
-							>
-								↺
-							</button>
-						{/if}
-						<span class="unit">
-							{param.unit}{value !== undefined ? ` · stock ${stock}` : ""}
-						</span>
-					</div>
-				{/each}
+							↺
+						</button>
+					{/if}
+					<span class="unit">
+						{param.unit}{value !== undefined ? ` · stock ${stock}` : ""}
+					</span>
+				</div>
 			{/each}
 		</fieldset>
 	{/each}
@@ -165,13 +160,6 @@ fieldset {
 legend {
 	padding: 0;
 	margin-bottom: var(--spacing-xs);
-}
-.family {
-	margin: var(--spacing-sm) 0 var(--spacing-xs);
-	color: var(--color-text-muted);
-	font-size: 13px;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
 }
 .param {
 	display: grid;
@@ -236,13 +224,6 @@ summary {
 .error {
 	color: var(--color-caution-tape);
 	font-size: 13px;
-}
-i {
-	display: inline-block;
-	width: 24px;
-	height: 3px;
-	margin-right: 8px;
-	vertical-align: middle;
 }
 input:focus-visible,
 textarea:focus-visible,

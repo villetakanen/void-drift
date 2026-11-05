@@ -208,7 +208,6 @@ const tracks = $derived.by((): Track[] => {
 				{
 					label: "Fighter with 4 ions",
 					loadout: fighter4IonsLoadout,
-					changes: {},
 				},
 				burn,
 			),
@@ -219,7 +218,6 @@ const tracks = $derived.by((): Track[] => {
 				{
 					label: "Fighter with 2 side ions only",
 					loadout: fighter2SideIonsLoadout,
-					changes: {},
 				},
 				burn,
 			),

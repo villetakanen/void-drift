@@ -55,9 +55,7 @@ describe("flight", () => {
 			});
 			const runs = flyBench(doc);
 			GRAVITY_TUNING_SHIPS.forEach(({ label, loadout }, i) => {
-				expect(runs[i].samples).toEqual(
-					calculate({ label, loadout, changes: {} }, burn),
-				);
+				expect(runs[i].samples).toEqual(calculate({ label, loadout }, burn));
 				expect(runs[i].unaffected).toEqual(runs[i].samples);
 				expect(runs[i].gravity.every((g) => g === 0)).toBe(true);
 			});
@@ -76,7 +74,7 @@ describe("flight", () => {
 			const i = GRAVITY_TUNING_SHIPS.findIndex((s) => s.label === run.label);
 			const { label, loadout } = GRAVITY_TUNING_SHIPS[i];
 			expect(run.samples).not.toEqual(
-				calculate({ label, loadout, changes: {} }, DEFAULT_DOCUMENT.burn),
+				calculate({ label, loadout }, DEFAULT_DOCUMENT.burn),
 			);
 		}
 	});

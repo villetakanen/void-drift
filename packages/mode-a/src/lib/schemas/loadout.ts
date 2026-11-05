@@ -35,6 +35,7 @@ export const PartSchema = z.object({
 	category: z.enum(["G", "U", "E"]),
 	mass: z.number().positive(),
 	thrust: z.number().nonnegative(),
+	speedContribution: z.number().finite().nonnegative().default(0),
 	limit: z.number().nonnegative(),
 	draw: z.number().nonnegative(),
 	response: z.enum(["steady", "pulse", "delayed"]).default("steady"),
@@ -68,6 +69,7 @@ export function slotAccepts(type: SlotType, category: "E" | "G" | "U") {
 }
 export const ChassisSchema = z.object({
 	mass: z.number().positive(),
+	baseSpeed: z.number().finite().positive(),
 	hull: z.number().int().positive(),
 	aft: z.number().int().nonnegative(),
 	angle: z.number().nonnegative(),
@@ -78,9 +80,10 @@ export const ChassisSchema = z.object({
 	width: z.number().positive(),
 });
 export const CHASSIS = {
-	fiddler: ChassisSchema.parse({ ...FIDDLER, hull: 5, aft: 2 }),
+	fiddler: ChassisSchema.parse({ ...FIDDLER, hull: 5, aft: 2, baseSpeed: 280 }),
 	wasp: ChassisSchema.parse({
 		mass: WASP.mass,
+		baseSpeed: 420,
 		hull: 2,
 		aft: 0,
 		angle: WASP.angle,
@@ -92,6 +95,7 @@ export const CHASSIS = {
 	}),
 	scout: ChassisSchema.parse({
 		mass: SCOUT.mass,
+		baseSpeed: 370,
 		hull: 1,
 		aft: 1,
 		angle: SCOUT.angle,
@@ -103,6 +107,7 @@ export const CHASSIS = {
 	}),
 	fighter: ChassisSchema.parse({
 		mass: 95,
+		baseSpeed: 330,
 		hull: 2,
 		aft: 2,
 		angle: (FIGHTER.angle * 180) / Math.PI,
@@ -114,6 +119,7 @@ export const CHASSIS = {
 	}),
 	corvette: ChassisSchema.parse({
 		mass: 140,
+		baseSpeed: 240,
 		hull: 3,
 		aft: 3,
 		angle: CRUISER.angle,
@@ -194,9 +200,11 @@ export const PARTS = {
 	ion: PartSchema.parse({
 		id: "ion",
 		name: "Light ion",
+		description: "+8 u/s to ship cruise ceiling.",
 		category: "E",
 		mass: 10,
 		thrust: ION_DEFAULTS.acceleration * ION_REFERENCE_MASS,
+		speedContribution: 8,
 		limit: ION_DEFAULTS.maxSpeed,
 		draw: 2,
 	}),
@@ -204,9 +212,11 @@ export const PARTS = {
 	"heavy-ion": PartSchema.parse({
 		id: "heavy-ion",
 		name: "Heavy ion",
+		description: "+11 u/s to ship cruise ceiling.",
 		category: "E",
 		mass: 20,
 		thrust: ION_DEFAULTS.acceleration * ION_REFERENCE_MASS * 1.75,
+		speedContribution: 11,
 		limit:
 			ION_DEFAULTS.maxSpeed *
 			(1 + ION_DEFAULTS.bonus * (1 - Math.exp(-ION_DEFAULTS.falloff * 0.75))),
@@ -216,10 +226,12 @@ export const PARTS = {
 	}),
 	fusion: PartSchema.parse({
 		id: "fusion",
-		name: "Fusion",
+		name: "Fission",
+		description: "+17 u/s to ship cruise ceiling.",
 		category: "E",
 		mass: 16,
 		thrust: 48000,
+		speedContribution: 17,
 		limit: 550,
 		draw: 3,
 		response: "pulse",
@@ -228,9 +240,11 @@ export const PARTS = {
 	plasma: PartSchema.parse({
 		id: "plasma",
 		name: "Plasma",
+		description: "+9 u/s to ship cruise ceiling.",
 		category: "E",
 		mass: 24,
 		thrust: 38000,
+		speedContribution: 9,
 		limit: 700,
 		draw: 5,
 		response: "delayed",
@@ -336,7 +350,7 @@ export function fittedParts(build: Loadout): PartId[] {
 			: [build.side, build.side, ...build.hull, ...build.aft];
 	return ids.filter((id): id is PartId => id !== null);
 }
-export function buildStats(build: Loadout) {
+export function buildStats(build: Loadout, parts: typeof PARTS = PARTS) {
 	const chassis = CHASSIS[build.chassis];
 	const isWasp = build.chassis === "wasp";
 	const lhi = lhiStabilizers(build.chassis);
@@ -345,19 +359,30 @@ export function buildStats(build: Loadout) {
 		capacity = 100,
 		coils = 1,
 		engineDraw = 0;
+	let installedEngineContribution = 0;
+	const engineCounts = new Map<PartId, number>();
 	for (const id of ids) {
 		if (!id) continue;
-		mass += PARTS[id].mass;
-		capacity += PARTS[id].capacity;
+		mass += parts[id].mass;
+		capacity += parts[id].capacity;
 		if (id === "coil") coils++;
-		engineDraw += PARTS[id].draw;
+		engineDraw += parts[id].draw;
+		if (parts[id].category === "E") {
+			installedEngineContribution += parts[id].speedContribution;
+			engineCounts.set(id, (engineCounts.get(id) ?? 0) + 1);
+		}
 	}
+	const engineBreakdown = [...engineCounts].map(([id, count]) => ({
+		id,
+		count,
+		contribution: count * parts[id].speedContribution,
+	}));
 	if (lhi || build.stabilizers)
 		engineDraw += PARTS.ion.draw * STABILIZER_ENERGY;
-	const side = PARTS[build.side];
+	const side = parts[build.side];
 	const angle = (chassis.angle * Math.PI) / 180;
 	const aftThrust = build.aft.reduce(
-		(sum, id) => sum + (id ? PARTS[id].thrust : 0),
+		(sum, id) => sum + (id ? parts[id].thrust : 0),
 		0,
 	);
 	const acceleration = isWasp
@@ -370,6 +395,10 @@ export function buildStats(build: Loadout) {
 				(Math.cos(angle) * chassis.arm + Math.sin(angle) * chassis.sideX)) /
 			(mass * stabilizerMount(build.chassis).inertiaPerMass);
 	return {
+		poweredCruiseCeiling: chassis.baseSpeed + installedEngineContribution,
+		hullBaseSpeed: chassis.baseSpeed,
+		installedEngineContribution,
+		engineBreakdown,
 		mass,
 		capacity,
 		coils,

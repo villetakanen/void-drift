@@ -22,4 +22,10 @@ it("defaults legacy trials consistently and validates the 4–11 integer range",
 				camera: { ...settings.camera, zoomSteps },
 			}).success,
 		).toBe(false);
+	expect(
+		FlightSettingsSchema.safeParse({
+			...settings,
+			ion: { acceleration: 220, maxTurn: 180, maxSpeed: 340, bonus: 0 },
+		}).success,
+	).toBe(false);
 });

@@ -78,6 +78,7 @@ configuration and measurements are defined in [its spec](gravity-tuning.md).
 {
 	"version": 1,
 	"burn": "course",
+	"properties": { "plasma": { "thrust": 46000 } },
 	"vehicles": [
 		{
 			"label": "Plasma aft",
@@ -95,15 +96,16 @@ configuration and measurements are defined in [its spec](gravity-tuning.md).
 ```
 
 - `vehicles`: one to six. Each is a game loadout (`LoadoutSchema` in
-  `packages/mode-a`) with a label. Property overrides belong to the experiment,
-  shared across its vehicles. A document without overrides uses the current
+  `packages/mode-a`) with a label. `properties` is a sparse, experiment-wide
+  override object; per-vehicle changes are rejected. A document without overrides uses the current
   production ship and engine values. Its paths reflect the configured experimental
   conditions, including starting state, burn inputs, gravity and power supply.
-- Shared engine tuning values, keyed by engine family: ion exposes any of `acceleration`, `maxSpeed`, `bonus`, `falloff`, `maxTurn`
-  (shared by light and heavy ions and the stabilisers; the turn cap applies to
-  every ship). Fusion and plasma expose any of `thrust`, `limit`,
-  `chargeSeconds`, `pulsePeriod`, `pulseOn`. Values outside the schemas' ranges
-  are rejected.
+- Shared engine tuning values in `properties`: ion exposes `acceleration` and
+  `maxTurn`; internal `fusion` (displayed as Fission) and plasma expose `thrust`,
+  `speedContribution`, `chargeSeconds`, `pulsePeriod` and `pulseOn`. Hull bases
+  and engine contributions come from shared production definitions. Per-vehicle
+  overrides and obsolete `maxSpeed`, `bonus`, `falloff` and `limit` ceilings are
+  rejected by the strict schema.
 - `burn`: one of the instrument's fixed programs; studies never write inputs.
 
 #### Burns (`apps/web/src/lib/instrument/burns.ts`)
@@ -124,6 +126,8 @@ origin. Speed,
 acceleration (differenced over 6 ticks) and turn acceleration derive from the
 samples. Not included: gravity, power limits, and changes to part mass or chassis
 values. A difference shown by the instrument may therefore not appear in flight.
+Every assembled impulse uses `buildStats`' ship-wide powered cruise ceiling.
+Gravity tuning uses this same production model with its own gravity configuration.
 
 ### Shared screen and Ship tuning views
 
@@ -274,3 +278,23 @@ Scenario: An invalid agent-supplied configuration
   When the instrument receives it
   Then it lists the schema's issues instead of drawing
 ```
+
+### Investigation note: directional propulsion
+
+Ship motion exploration 02.3 uses real Corvette and Scout geometry and compares
+each stabilizer fit with its stabilizers-off reference on B1. Current paths,
+speed and turn-acceleration views expose the resulting translation and rotation,
+but the instrument does not record which mount delivered thrust on each tick or
+show a per-direction build-speed projection. For a later decision about sideways
+thrust and overspeed, consider a configured directional projection rule and
+per-mount delivered-force trace. This note records an evidence need, not an
+approved instrument feature.
+
+Exploration 02.4 can be compared with existing per-vehicle ion acceleration
+and speed-ceiling changes. The acceleration setting simultaneously scales
+main-engine linear thrust, their torque, and stabilizer acceleration/torque, so
+it cannot isolate steering authority from acceleration. A later controlled trial
+may need separate candidate controls for main linear force, main-engine torque,
+and stabilizer force/braking response, while retaining production values as the
+baseline. Add only the controls needed for that experiment; this is an identified
+capability gap, not an approved instrument feature.

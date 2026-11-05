@@ -10,6 +10,14 @@ export const IonSettingsSchema = z.object({
 });
 export type IonSettings = z.infer<typeof IonSettingsSchema>;
 export const ION_DEFAULTS = IonSettingsSchema.parse({});
+export const AssembledIonSettingsSchema = z
+	.object({
+		acceleration: z.number().finite().min(1).max(2000).default(220),
+		maxTurn: z.number().finite().min(1).max(720).default(180),
+	})
+	.strict();
+export type AssembledIonSettings = z.infer<typeof AssembledIonSettingsSchema>;
+export const ASSEMBLED_ION_DEFAULTS = AssembledIonSettingsSchema.parse({});
 export const ION_REFERENCE_MASS = 115;
 export const STABILIZER_STRENGTH = 0.22;
 export const STABILIZER_ENERGY = 0.25;

@@ -5,7 +5,12 @@ import {
 	type EngineTimers,
 	engineDuty,
 } from "./build-flight";
-import { defaultLoadout, LoadoutSchema, PARTS } from "./schemas/loadout";
+import {
+	buildStats,
+	defaultLoadout,
+	LoadoutSchema,
+	PARTS,
+} from "./schemas/loadout";
 import { Simulation, stockSettings } from "./simulation";
 
 const both = { leftThruster: true, rightThruster: true, fire: false };
@@ -33,7 +38,7 @@ const parts = {
 		thrust: 45000,
 		pulsePeriod: 0.45,
 		pulseOn: 0.18,
-		limit: 550,
+		speedContribution: 17,
 	},
 };
 const ion = {
@@ -104,7 +109,7 @@ describe("four-engine player trial", () => {
 		expect(engineDuty(parts.fusion, false, 1 / 60, timers, "pulse")).toBe(0);
 		expect(engineDuty(parts.fusion, true, 1 / 60, timers, "pulse")).toBe(0);
 	});
-	it("mixed ion and fusion approaches the higher fusion ceiling without clipping overspeed", () => {
+	it("mixed installed engines approach the shared ceiling without clipping overspeed", () => {
 		const build = defaultLoadout("fighter");
 		build.side = "heavy-ion";
 		build.aft = ["ion", "fusion"];
@@ -124,8 +129,10 @@ describe("four-engine player trial", () => {
 				parts,
 			);
 		for (let i = 0; i < 12000; i++) step();
-		expect(ship.vel.mag()).toBeGreaterThan(549);
-		expect(ship.vel.mag()).toBeLessThanOrEqual(550.000001);
+		const ceiling = buildStats(build, parts).poweredCruiseCeiling;
+		expect(ceiling).toBe(377);
+		expect(ship.vel.mag()).toBeGreaterThan(ceiling - 1);
+		expect(ship.vel.mag()).toBeLessThanOrEqual(ceiling + 0.000001);
 		ship.vel.set(1000, 0);
 		step();
 		expect(ship.vel.mag()).toBeCloseTo(1000);

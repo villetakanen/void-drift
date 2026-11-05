@@ -7,7 +7,9 @@ Status: implementation in progress, 2026-10-28. Scope approved in the voice-led 
 `packages/mode-a/src/lib/simulation.ts` owns a fixed 60 Hz survival simulation.
 Game and Flight Lab share this simulation and the core renderer/input/camera.
 `schemas/flight.ts` validates Lab settings and replay inputs; ship tuning uses the
-existing ship-profile schema. Gravity: [gravity-field.md](gravity-field.md).
+existing ship-profile schema. Assembled propulsion follows the shared
+[ship propulsion contract](ship-propulsion.md); legacy stock trials retain their
+separate physics. Gravity: [gravity-field.md](gravity-field.md).
 
 All ranked runs use the current challenge `CHALLENGE` (`ion-1`), seed 2026, a G-class star, and stock profiles.
 Scoring is casual client-reported survival time, clearly labeled: Firestore rules

@@ -45,7 +45,7 @@ export type BenchRun = {
 /** Flies every given ship under the document's settings, and without the well. */
 export function flyBench(doc: GravityTuningConfig): BenchRun[] {
 	return GRAVITY_TUNING_SHIPS.map(({ label, loadout }) => {
-		const vehicle = { label, loadout, changes: {} };
+		const vehicle = { label, loadout };
 		const radius = buildCollisionRadius(loadout);
 		const contacts: number[] = [];
 		const samples = calculate(vehicle, doc.burn, {
