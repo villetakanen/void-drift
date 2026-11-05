@@ -120,21 +120,23 @@ The brief for the worktree session:
 > its subject selection (gravity source and target framing).
 >
 > Add:
+>
 > - field-driven zoom from the production pull functions
 > - a tunable widest zoom
 > - HUD edge markers for wells outside the view
 > - a key to switch to the production camera
 > - a flag-gated live tuning panel with JSON copy
->
+
 > Tests assert relations only, never design values. Commit locally in the worktree.
 > Don't push or merge, and don't touch `feat/0-5-0` except to create and update the
 > loop record in the main checkout.
 >
 > Before handing over:
+>
 > - Run `pnpm verify` on the committed revision with Java 21 and report every gate.
 > - Run the FX profile.
 > - Start the trial build's dev server and give the owner its URL and the key.
->
+
 > Then run the flight script with the owner. Ask the fixed question set after each
 > scenario and append each answer to the loop record immediately, with the tuning
 > JSON. Copy artifacts to `artifacts/camera-trial-2/` in the main checkout before any
