@@ -1,4 +1,12 @@
 <script lang="ts">
+import { COLOR, paintIonBeam } from "@void-drift/core";
+import {
+	BUILD_FLIGHT_SCALE,
+	buildPlumeEmitters,
+	drawBuild,
+	starterLoadout,
+	WASP,
+} from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import { version } from "../../package.json";
 import Logo from "./Logo.svelte";
@@ -6,6 +14,42 @@ import Logo from "./Logo.svelte";
 let { onStart, disabled = false }: { onStart: () => void; disabled?: boolean } =
 	$props();
 let startButton: HTMLButtonElement;
+let arrivalCanvas: HTMLCanvasElement;
+
+function drawArrival() {
+	const ctx = arrivalCanvas.getContext("2d");
+	if (!ctx) return;
+	const scale = 156 / WASP.fullLength;
+	const build = starterLoadout("wasp");
+	ctx.scale(2, 2);
+	ctx.translate(520, 90);
+	ctx.rotate(-Math.PI / 6);
+	// Static menu artwork: reuse the arrival ink and the fitted engine's real nozzle.
+	const wingTipX = -6.5 * scale;
+	const tailLength = 450;
+	const tail = ctx.createLinearGradient(wingTipX - tailLength, 0, wingTipX, 0);
+	tail.addColorStop(0, "transparent");
+	tail.addColorStop(1, COLOR.countdown);
+	ctx.fillStyle = tail;
+	ctx.globalAlpha = 0.22;
+	ctx.fillRect(
+		wingTipX - tailLength,
+		(-WASP.width * scale) / 2,
+		tailLength,
+		WASP.width * scale,
+	);
+	ctx.globalAlpha = 1;
+	const engine = buildPlumeEmitters(build)[0];
+	ctx.save();
+	ctx.translate(
+		(engine.x * scale) / BUILD_FLIGHT_SCALE,
+		(engine.y * scale) / BUILD_FLIGHT_SCALE,
+	);
+	ctx.rotate(engine.angle);
+	paintIonBeam(ctx, 2.21, "ion-light");
+	ctx.restore();
+	drawBuild(ctx, build, 0, 0, 0, scale);
+}
 let hint = $state(0);
 let portrait = $state(false);
 const hints = [
@@ -15,6 +59,7 @@ const hints = [
 ];
 
 onMount(() => {
+	drawArrival();
 	const resize = () => {
 		portrait = window.innerWidth <= window.innerHeight;
 	};
@@ -50,13 +95,20 @@ onMount(() => {
 					>
 						PRESS START
 					</button>
-					<a href="/builder" class="btn btn-ghost">HANGAR · CHOOSE SHIPS</a>
+					<a href="/builder" class="btn btn-ghost">HANGAR</a>
 					<a href="/leaderboard" class="btn btn-ghost">TOP SCORES</a>
 					<a href="/settings" class="btn btn-ghost">SETTINGS</a>
 					<a href="/credits" class="btn btn-ghost">CREDITS</a>
 				</div>
 			</nav>
 			<p class="version">{version}</p>
+			<canvas
+				class="arrival-wasp"
+				bind:this={arrivalCanvas}
+				width="1200"
+				height="800"
+				aria-hidden="true"
+			></canvas>
 		</section>
 		<aside class="hint" aria-label="Flight hint">
 			{#if portrait}
@@ -101,6 +153,15 @@ onMount(() => {
 	align-items: center;
 	gap: var(--spacing-sm);
 	pointer-events: auto;
+}
+.arrival-wasp {
+	position: absolute;
+	width: 600px;
+	height: 400px;
+	max-width: none;
+	left: calc(100% - 520px);
+	top: calc(100% - 90px);
+	pointer-events: none;
 }
 .identity {
 	display: flex;

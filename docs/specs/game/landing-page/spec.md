@@ -49,6 +49,12 @@ game's home and Hangar is an alternative launch point.
   definitions; the content is not transformed or scaled. The background and scrim
   continue beyond the region to fill the viewport.
   The current title-screen target is iPad or larger.
+- A static, decorative 156px-long Wasp overlaps the panel’s bottom-right corner,
+  heading 30° above right. Its single equipped ion engine has a luminous plume;
+  a ship-wide, 450px arrival-green trail starts at the wing tips and fades aft
+  from 22% opacity. Artwork may overflow
+  the panel, is hidden from assistive technology and never intercepts input.
+  The production composition is also visible at `/lab/landing`.
 - The version label sits at the bottom inside the menu panel, in small muted
   caption text.
 - The lime logomark sits centred above a visible “VOID DRIFT” heading. The
@@ -67,7 +73,7 @@ game's home and Hangar is an alternative launch point.
   transition and 3, 2, 1, GO countdown. Movement and scoring begin at GO; held
   controls apply at release. Reduced motion skips the fade and retains the count.
 - Ship selection belongs in Hangar; the title screen has no ship selector.
-- The Hangar entry clearly communicates that players can choose other ships there.
+- The Hangar link reads “HANGAR”; the rotating hint explains ship choice.
 - Hangar, Top Scores, Settings and Credits are secondary game-menu destinations.
 - PRESS START receives initial keyboard focus. The menu focus order is PRESS START,
   Hangar, Top Scores, Settings, Credits.
