@@ -10,6 +10,14 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
 	{
+		slug: "run-countdown-2026-11-05",
+		title: "Run countdown: three seconds of light",
+		status: "accepted",
+		phase: "scope",
+		question:
+			"How does a 3, 2, 1 countdown painted on the effects surface give a run a readable, characterful threshold without hiding the ship it releases?",
+	},
+	{
 		slug: "ship-motion-laws-2026-11-04",
 		title: "Ship motion: a law for assembled ships",
 		status: "open",
