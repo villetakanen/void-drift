@@ -1,5 +1,10 @@
 # Motion instrument: conform implementation to the reviewed contract
 
+Status (2026-11-05): deferred from 0.5.3. The attempted migration was undone at
+the owner's request; the reviewed contracts remain intended requirements and
+unchecked criteria remain unimplemented. Resume as a separate bounded change.
+See [the attempt record](../loop-evidence/2026-11-05-motion-instrument-conformance.md).
+
 ## Purpose and authority
 
 Implement the contracts in [Motion instrument](../specs/motion-instrument.md) and

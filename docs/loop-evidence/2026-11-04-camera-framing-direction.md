@@ -79,10 +79,10 @@ Quotes are short extracts from the owner's messages. Paraphrases are attributed.
 
 ## Changes delivered
 
-| Revision | Content |
-| --- | --- |
+| Revision  | Content                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `af20e14` | **Charter archive** (8 files). The charter moves to `docs/history/rebuild-charter.md` with a historical banner. Its original text is kept; the interim clause removals were reverted with `git checkout` before the move. Two charter-only rules move to `docs/specs/voice-led-factory.md`. Scope now points to the owner's latest decisions, `docs/vision.md` and `docs/plans/`. References are repointed in `AGENTS.md` (`CLAUDE.md` is a symlink to it), README, architecture, project-vision, the Hangar spec and one line of the gravity-field plan. |
-| `0084569` | **Camera plan.** Adds `docs/plans/2026-11-04-camera-framing.md`: the in-game camera plan with the owner's decisions; not started. The commit was amended from `f514731` to change only its message. |
+| `0084569` | **Camera plan.** Adds `docs/plans/2026-11-04-camera-framing.md`: the in-game camera plan with the owner's decisions; not started. The commit was amended from `f514731` to change only its message.                                                                                                                                                                                                                                                                                                                                                       |
 
 Neither commit touched the other session's changes:
 
@@ -96,14 +96,14 @@ Neither commit touched the other session's changes:
 
 All checks ran from the repository root on the local macOS shell.
 
-| Check | Outcome | Tree |
-| --- | --- | --- |
-| `node scripts/check-contracts.mjs` | Exit 0. Agent entry point 79 lines, all context links resolve; design.md 0 warnings; token parity passed. | Dirty tree before `af20e14`, including other sessions' uncommitted changes |
-| `npx biome check AGENTS.md README.md docs` | "Checked 97 files … No fixes applied." | Same |
-| Ad hoc Python link check of the six edited docs | No broken relative links. Not a repository gate. | Same |
-| lefthook `commit-msg` (commitlint) on `af20e14` | Passed | — |
-| lefthook `commit-msg` on `f514731` | Passed with a `footer-leading-blank` warning (a body line starting `decisions:` was read as a footer) | — |
-| lefthook `commit-msg` on `0084569` | Passed with no warnings | — |
+| Check                                           | Outcome                                                                                                   | Tree                                                                       |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `node scripts/check-contracts.mjs`              | Exit 0. Agent entry point 79 lines, all context links resolve; design.md 0 warnings; token parity passed. | Dirty tree before `af20e14`, including other sessions' uncommitted changes |
+| `npx biome check AGENTS.md README.md docs`      | "Checked 97 files … No fixes applied."                                                                    | Same                                                                       |
+| Ad hoc Python link check of the six edited docs | No broken relative links. Not a repository gate.                                                          | Same                                                                       |
+| lefthook `commit-msg` (commitlint) on `af20e14` | Passed                                                                                                    | —                                                                          |
+| lefthook `commit-msg` on `f514731`              | Passed with a `footer-leading-blank` warning (a body line starting `decisions:` was read as a footer)     | —                                                                          |
+| lefthook `commit-msg` on `0084569`              | Passed with no warnings                                                                                   | —                                                                          |
 
 **Not run:** `pnpm verify`, unit tests, browser tests and FX profiling. Only docs
 changed, and no camera code was implemented.

@@ -9,7 +9,7 @@ Game and Flight Lab share this simulation and the core renderer/input/camera.
 `schemas/flight.ts` validates Lab settings and replay inputs; ship tuning uses the
 existing ship-profile schema. Gravity: [gravity-field.md](gravity-field.md).
 
-All ranked runs use the current challenge `CHALLENGE` (`ion-1`), seed 2026, a G-class star, and stock profiles.
+All ranked runs use the current challenge `CHALLENGE` (`gravity-2`), seed 2026, a G-class star, and stock profiles.
 Scoring is casual client-reported survival time, clearly labeled: Firestore rules
 validate ownership, shape, version and bounds, but do not prove an honest simulation.
 Each anonymous player keeps one best score per ranked ship, independently of other

@@ -3,7 +3,9 @@ import { expect, test } from "../helpers/local-browser";
 test("landing animation survives selection and hands off a fresh run", async ({
 	page,
 }) => {
-	await page.clock.install();
+	const clockStart = new Date("2026-01-01T00:00:00Z");
+	await page.clock.install({ time: clockStart });
+	await page.clock.pauseAt(clockStart);
 	await page.goto("/");
 	const deck = page.locator(".flight-page");
 	await expect(deck).toHaveAttribute("data-landing-sun", /[OBAFGKM]/);
@@ -20,7 +22,6 @@ test("landing animation survives selection and hands off a fresh run", async ({
 	await page.setViewportSize({ width: 960, height: 540 });
 	await expect(deck).toHaveAttribute("data-landing-sun", sun ?? "");
 	await expect(deck).toHaveAttribute("data-ticks", "0");
-	await page.clock.pauseAt(await page.evaluate(() => Date.now()));
 	await page.getByRole("button", { name: "PRESS START" }).click();
 	await expect(deck).toHaveAttribute("data-phase", "starting");
 	await page.clock.runFor(240);

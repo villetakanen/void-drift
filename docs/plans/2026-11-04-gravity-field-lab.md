@@ -59,8 +59,10 @@ Each step is a local commit with its spec update and passing checks.
    masses guarded against the Fighter starter's thrust. Reasoning:
    [gravity-model.md](../gravity-model.md). Done 2026-11-04.
 
-Later, separately specified: planets adopt reach from mass, then suns; that change
-defines how Gravity tuning's values reach the tuning file.
+R6 supersedes the earlier planets-then-suns rollout: both now use the mass law.
+R5's complete stable verification is carried by the 0.5.3 consolidation candidate.
+The newer Motion instrument conformance requirements remain a separate deferred
+implementation; this plan does not claim they are complete.
 
 ## Original plan (history)
 

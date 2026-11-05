@@ -132,18 +132,23 @@ test("reads require authentication and a bounded list query", async () => {
 	);
 });
 
-for (const challenge of ["gravity-1", "ion-1"]) {
+for (const challenge of ["gravity-1", "ion-1", "gravity-2"]) {
 	test(`${challenge} scores are isolated from legacy personal bests`, async () => {
 		await assertSucceeds(setDoc(ref(), score));
 		const current = { ...score, challenge, seconds: 20 };
 		const id = `${challenge}_pilot_fighter`;
 		const target = ref("pilot", id);
-		if (challenge === "ion-1") {
+		if (challenge !== "gravity-1") {
 			const gravity = ref("pilot", "gravity-1_pilot_fighter");
 			await assertSucceeds(
 				setDoc(gravity, { ...score, challenge: "gravity-1" }),
 			);
 			await assertFails(setDoc(gravity, current));
+		}
+		if (challenge === "gravity-2") {
+			const previous = ref("pilot", "ion-1_pilot_fighter");
+			await assertSucceeds(setDoc(previous, { ...score, challenge: "ion-1" }));
+			await assertFails(setDoc(previous, current));
 		}
 		await assertSucceeds(setDoc(target, current));
 		await assertSucceeds(setDoc(target, { ...current, seconds: 25 }));
@@ -157,8 +162,8 @@ for (const challenge of ["gravity-1", "ion-1"]) {
 test("each anonymous identity can keep a best on every ranked craft", async () => {
 	for (const userId of ["pilot", "rival"]) {
 		for (const shipId of ["wasp", "scout", "fighter", "corvette"]) {
-			const target = ref(userId, `ion-1_${userId}_${shipId}`);
-			const current = { ...score, userId, shipId, challenge: "ion-1" };
+			const target = ref(userId, `gravity-2_${userId}_${shipId}`);
+			const current = { ...score, userId, shipId, challenge: "gravity-2" };
 			await assertSucceeds(setDoc(target, current));
 			await assertSucceeds(setDoc(target, { ...current, seconds: 60 }));
 			await assertFails(setDoc(target, { ...current, seconds: 30 }));

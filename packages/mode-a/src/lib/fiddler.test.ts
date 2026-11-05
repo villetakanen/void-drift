@@ -1,6 +1,6 @@
 import { Vec2 } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
-import { HighScoreSubmissionSchema } from "../schemas/highscore";
+import { CHALLENGE, HighScoreSubmissionSchema } from "../schemas/highscore";
 import { applyBuildEngines, buildDrain } from "./build-flight";
 import {
 	BUILD_FLIGHT_SCALE,
@@ -230,7 +230,7 @@ describe("LHI Fiddler flight trial", () => {
 				seconds: 10,
 				deathCause: "POWER",
 				shipId: "fiddler",
-				challenge: "ion-1",
+				challenge: CHALLENGE,
 			}).success,
 		).toBe(false);
 	});

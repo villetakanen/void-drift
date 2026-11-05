@@ -1,6 +1,11 @@
 # Lab usability: exploration, tuning and reference
 
-**Status:** proposed, not started. Owner review needed before task 1.
+**Status (2026-11-05):** task 1 delivered in `90f9dbe`. Tasks 2–5 are
+unimplemented proposals, outside release 0.5.3. Their original dependency map
+below is historical: the gravity redirect removed the injectable field options
+and instrument v2. The reviewed Motion instrument contract supersedes per-vehicle
+property overrides and designer-facing import proposals for that instrument.
+See [the consolidation plan](2026-11-05-release-0.5.3.md) for current priorities.
 
 The owner wants two things from the Lab. Developers should be able to use design
 studies to explore, not only to record decisions. Small gameplay changes should be
@@ -17,7 +22,7 @@ the owning specs.
 - `docs/specs/voice-led-factory.md`: any gate change (task 5).
 - `docs/specs/gravity-field.md`: tuning file, `tuning:apply` and rules version.
 
-## Concurrent work
+## Original dependency map (superseded)
 
 `docs/plans/2026-11-04-gravity-field-lab.md` (specs committed in `c3c44be`) owns:
 
@@ -92,7 +97,7 @@ not adopted lessons.
 
 ## Tasks
 
-Each task can land on its own.
+The following task sequence is the original proposal, not a current execution queue.
 
 - Tasks 1, 2 and 5 can start now. Task 5 needs task 2.
 - Task 3 needs task 2, plus G2 and G3 from the gravity plan.
