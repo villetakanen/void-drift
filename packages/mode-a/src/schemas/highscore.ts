@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { ShipProfileIdSchema } from "../lib/schemas/ship-profile";
-export const CHALLENGE = "arrival-1";
+export const CHALLENGE = "arrival-2";
 export const HighScoreSubmissionSchema = z.object({
 	initials: z.string().regex(/^[A-Z]{3}$/),
 	seconds: z.number().int().min(1).max(3600),

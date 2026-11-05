@@ -14,7 +14,7 @@ existing ship-profile schema. Assembled propulsion follows the shared
 [ship propulsion contract](ship-propulsion.md); legacy stock trials retain their
 separate physics. Gravity: [gravity-field.md](gravity-field.md).
 
-All ranked runs use the current challenge `CHALLENGE` (`arrival-1`), a fresh per-run seed, a G-class star, and stock profiles.
+All ranked runs use the current challenge `CHALLENGE` (`arrival-2`), a fresh per-run seed, a G-class star, and stock profiles.
 Scoring is casual client-reported survival time, clearly labeled: Firestore rules
 validate ownership, shape, version and bounds, but do not prove an honest simulation.
 Each anonymous player keeps one best score per ranked ship, independently of other
