@@ -25,7 +25,7 @@ failure or source change during verification. It never auto-fixes source.
 
 | Command                 | Evidence                                                                                                         |
 | ----------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `pnpm check:contracts`  | Context links, CSS/Canvas parity and runner regressions; context size/scope warnings remain advisory             |
+| `pnpm check:contracts`  | Context and Markdown links, CSS/Canvas parity, runner regressions; size/scope and link warnings are advisory     |
 | `pnpm check:commits`    | Conventional Commit syntax after the adoption baseline                                                           |
 | `pnpm lint`             | Biome formatting/imports/recommended rules, warnings fail                                                        |
 | `pnpm check:types`      | Astro, Svelte, workspace and browser-harness TypeScript; Astro/Svelte warnings fail                              |
@@ -191,8 +191,11 @@ Historical backlog items are not new assignments.
 ## Commit messages
 
 Follow `.agents/skills/commit-messages/SKILL.md` before committing.
-`pnpm install` installs the Lefthook commit-msg hook through the prepare script.
+`pnpm install` installs the Lefthook hooks through the prepare script.
 Run `pnpm exec lefthook install` if lifecycle scripts were disabled.
+The pre-commit hook runs `biome check --staged` on staged files: it rejects
+formatting, import-order and lint findings before they reach verification and
+never writes to source.
 The hook runs commitlint using `commitlint.config.mjs`; it rejects malformed
 messages without changing files. It checks syntax, not whether the selected type
 or breaking-change declaration accurately describes the diff.

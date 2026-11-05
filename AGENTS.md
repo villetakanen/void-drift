@@ -63,10 +63,10 @@ Voice-led development of a procedural space survival game and its software facto
 
 - Implement, repair, test, and make local commits within the agreed scope.
 - Preserve unrelated and pre-existing changes; identify their provenance before committing them.
-- Ask before adding npm dependencies or changing gravity/friction constants.
+- Ask before adding npm dependencies or changing gravity/friction constants; never introduce paid or card-requiring services.
 - Existing explicit approval covers the authorized action; do not ask again for it.
 - Obtain explicit authorization before pushing, publishing, or sending external feedback.
-- Use services that do not require a credit card; do not introduce paid services.
+- Keep `docs/project-vision.md` (a historic artefact humans read) and every `docs/plans/` file; plans leave only after a separate human review.
 
 ## Evidence and learning
 

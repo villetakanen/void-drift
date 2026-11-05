@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
+import { dirname, relative, resolve } from "node:path";
 
 // Scope and size limits on context documents warn; they never fail the gate.
 const warnings = [];
@@ -18,6 +20,31 @@ for (const match of instructions.matchAll(/`((?:docs|\.agents)\/[^`]+)`/g)) {
 }
 console.log(
 	`Agent entry point: ${lineCount} lines; all context links resolve.`,
+);
+
+// Relative Markdown links across tracked docs warn when their target is missing.
+// Links into ignored local evidence (artifacts/) are expected to be absent elsewhere.
+const markdownFiles = execFileSync(
+	"git",
+	["ls-files", "-z", "--", "*.md", ":!**/node_modules/**"],
+	{ encoding: "utf8" },
+)
+	.split("\0")
+	.filter((file) => file && existsSync(file));
+let brokenLinks = 0;
+for (const file of markdownFiles) {
+	const text = readFileSync(file, "utf8");
+	for (const match of text.matchAll(/\]\(([^)\s#]+)(?:#[^)]*)?\)/g)) {
+		const target = match[1];
+		if (/^(?:[a-z]+:|\/)/i.test(target)) continue;
+		const path = relative(process.cwd(), resolve(dirname(file), target));
+		if (path.startsWith("artifacts/") || existsSync(path)) continue;
+		brokenLinks += 1;
+		warn(`${file}: link target missing: ${target}`);
+	}
+}
+console.log(
+	`Markdown links: ${markdownFiles.length} files; ${brokenLinks} missing target(s).`,
 );
 
 // docs/design.md holds experience principles, art direction and brand only.
