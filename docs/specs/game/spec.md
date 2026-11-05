@@ -128,12 +128,12 @@ Landing planets never have rings.
 The production launcher follows the [title-screen composition](landing-page/spec.md):
 a left-side menu panel and right-side hints over the shared dialog scrim. A separate
 cosmetic system shows a random sun approximately at the centre of the bottom-right
-quadrant, below the hints, and three planets orbiting with 20–45 second periods.
+quadrant, below the hints, and three planets orbiting with 120–240 second periods.
 The system extends toward the upper-left corner, with its outer edge approximately
 reaching that corner; this is best-effort visual placement, not an exact fit calculation. Sun class, planet
 appearance, orbital phases and bounded orbit sizes vary per menu entry. Selection
-and resize preserve that system. The sun stays below the right-side hints, while wide,
-projected elliptical outer orbits span the screen toward the upper-left. Planet sizes remain
+and resize preserve that system. The sun stays below the right-side hints, while circular
+outer orbits span the screen toward the upper-left. Planet sizes remain
 substantial and independent of orbit framing; all are unringed. Outer orbits may crop;
 the background fills the viewport independently of the centred 16:9 title content. No background ship, flight effects, arena
 boundary or gameplay influence guides are drawn. The shared procedural artwork

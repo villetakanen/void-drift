@@ -35,7 +35,7 @@ export class LandingSystem {
 				),
 				orbitCenter: new Vec2(0, 0),
 				orbitRadius,
-				orbitSpeed: (Math.PI * 2) / (20 + index * 8 + random() * 9),
+				orbitSpeed: (Math.PI * 2) / (120 + index * 45 + random() * 30),
 				orbitAngle: angle,
 				initialAngle: angle,
 				radius: [30, 44, 36][index] + random() * 8,
@@ -63,7 +63,7 @@ export class LandingSystem {
 		const planets = this.planets.map((planet, index) => {
 			const variation = planet.orbitRadius / [180, 560, 920][index];
 			const orbitX = diagonal * [0.22, 0.58, 0.94][index] * variation;
-			const orbitY = orbitX * 0.42;
+			const orbitY = orbitX;
 			const localX = (planet.pos.x / planet.orbitRadius) * orbitX;
 			const localY = (planet.pos.y / planet.orbitRadius) * orbitY;
 			return {

@@ -18,8 +18,8 @@ describe("landing system", () => {
 				expect(planet.orbitRadius - planet.radius).toBeGreaterThan(
 					scene.star.radius,
 				);
-				expect((Math.PI * 2) / planet.orbitSpeed).toBeGreaterThanOrEqual(20);
-				expect((Math.PI * 2) / planet.orbitSpeed).toBeLessThanOrEqual(45);
+				expect((Math.PI * 2) / planet.orbitSpeed).toBeGreaterThanOrEqual(120);
+				expect((Math.PI * 2) / planet.orbitSpeed).toBeLessThanOrEqual(240);
 				if (index)
 					expect(
 						planet.orbitRadius - scene.planets[index - 1].orbitRadius,
@@ -60,10 +60,24 @@ describe("landing system", () => {
 				a.planets[0].pos.x - initial.x,
 				a.planets[0].pos.y - initial.y,
 			),
-		).toBeGreaterThan(50);
+		).toBeGreaterThan(5);
 		const run = new Simulation(gameSettings());
 		expect(run.star.type).toBe("G");
 		expect(run.settings.seed).toBe(CHALLENGE_SEED);
 		expect(run.ticks).toBe(0);
+	});
+
+	it("keeps each visible orbit circular and centered on the sun throughout motion", () => {
+		const scene = new LandingSystem(() => 0.5);
+		for (let step = 0; step < 16; step++) {
+			scene.step(10);
+			const frame = scene.layout(1920, 1080);
+			for (const body of frame.planets) {
+				expect(body.orbitY).toBeCloseTo(body.orbitX);
+				expect(
+					Math.hypot(body.x - frame.star.x, body.y - frame.star.y),
+				).toBeCloseTo(body.orbitX);
+			}
+		}
 	});
 });
