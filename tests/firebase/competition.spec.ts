@@ -45,6 +45,19 @@ test("two anonymous pilots complete runs, retry a rejected write and see a share
 		const chassis = pilot.chassis;
 		const context = await newLocalContext();
 		const page = await context.newPage();
+		// Fix only the single-word arrival seed; Firebase keeps its normal entropy.
+		const arrivalSeed = chassis === "scout" ? 158 : 80;
+		await page.addInitScript((seed) => {
+			const random = crypto.getRandomValues.bind(crypto);
+			Object.defineProperty(crypto, "getRandomValues", {
+				value(array: ArrayBufferView) {
+					const result = random(array);
+					if (result instanceof Uint32Array && result.length === 1)
+						result[0] = seed - 1;
+					return result;
+				},
+			});
+		}, arrivalSeed);
 		await page.clock.install({ time: new Date("2026-11-03T00:00:00Z") });
 		await page.goto("/");
 		await expect(page.locator(".flight-page")).toHaveAttribute(
@@ -70,8 +83,11 @@ test("two anonymous pilots complete runs, retry a rejected write and see a share
 		const seed = Number(
 			await page.locator(".flight-page").getAttribute("data-seed"),
 		);
+		expect(seed).toBe(arrivalSeed);
 		const predicted = competitionFlightResult(chassis, seed);
 		expect(predicted.status).toBe("GAME_OVER");
+		expect(predicted.cause).toBe("STAR");
+		expect(predicted.ticks).toBeLessThan(500);
 		await page.clock.runFor((predicted.ticks * 1000) / 60 + 40);
 		await expect(
 			page.getByRole("dialog", { name: "Run complete" }),
