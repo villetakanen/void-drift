@@ -8,7 +8,13 @@ import {
 	STABILIZER_ENERGY,
 	STABILIZER_STRENGTH,
 } from "./schemas/ion";
-import { buildStats, CHASSIS, type Loadout, PARTS } from "./schemas/loadout";
+import {
+	buildStats,
+	CHASSIS,
+	LIFE_SUPPORT_DRAIN,
+	type Loadout,
+	PARTS,
+} from "./schemas/loadout";
 import { lhiStabilizers, stabilizerMount } from "./stabilizers";
 
 /** One engine impulse: transverse steering may rotate, never inflate overspeed. */
@@ -343,7 +349,7 @@ export function buildDrain(
 	if (build.chassis === "fiddler") {
 		const drive = fiddlerDrive(build, input, burn);
 		return (
-			3 +
+			LIFE_SUPPORT_DRAIN +
 			(drive[0] + drive[1]) * PARTS[build.side].draw +
 			build.aft.reduce(
 				(sum, id, index) => sum + (id ? PARTS[id].draw * drive[index] : 0),
@@ -360,7 +366,7 @@ export function buildDrain(
 			: 0
 		: count * PARTS[build.side].draw;
 	return (
-		3 +
+		LIFE_SUPPORT_DRAIN +
 		sideDraw +
 		burn.duty * STABILIZER_ENERGY * PARTS.ion.draw +
 		((build.linkedEngines ? count > 0 : count === 2)

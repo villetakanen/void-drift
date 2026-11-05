@@ -16,6 +16,7 @@ import {
 	PARTS,
 	starterLoadout,
 } from "./schemas/loadout";
+import { gameSettings, Simulation } from "./simulation";
 import { WASP } from "./wasp";
 
 describe("LHI Wasp integration", () => {
@@ -141,3 +142,20 @@ describe("LHI Wasp integration", () => {
 		);
 	});
 });
+
+for (const side of ["leftThruster", "rightThruster"] as const) {
+	it(`powers Wasp ${side} steering through the simulation energy budget`, () => {
+		const sim = new Simulation(gameSettings("wasp"));
+		sim.start();
+		const rotation = sim.ship.rotation;
+		for (let i = 0; i < 30; i++)
+			sim.step({
+				leftThruster: false,
+				rightThruster: false,
+				fire: false,
+				[side]: true,
+			});
+		expect(Math.abs(sim.ship.rotation - rotation)).toBeGreaterThan(0.01);
+		expect(sim.engineOutput.stabilizers.some((value) => value > 0)).toBe(true);
+	});
+}

@@ -15,9 +15,5 @@
 		"playwright*.config.ts",
 		"apps/web/src/vite-env.d.ts"
 	],
-	"exclude": [
-		"node_modules",
-		"**/dist",
-		"apps/web/src/**/*.test.ts"
-	]
+	"exclude": ["node_modules", "**/dist", "apps/web/src/**/*.test.ts"]
 }

@@ -75,8 +75,9 @@ test("fit, persist, fly, reset and return to an assembled ship", async ({
 	).toBeVisible();
 	await page.getByRole("button", { name: "Start survival" }).click();
 	await page.clock.runFor(3200);
-	await expect(page.locator(".edition")).toHaveText(
-		"CUSTOM SURVIVAL / UNRANKED",
+	await expect(page.locator("header")).toHaveCount(0);
+	await expect(page.locator(".flight-actions")).toContainText(
+		"CUSTOM BUILD / UNRANKED",
 	);
 });
 

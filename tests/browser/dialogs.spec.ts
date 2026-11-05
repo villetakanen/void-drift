@@ -24,8 +24,7 @@ test("pause is modal and restores focus to the game", async ({ page }) => {
 	await pause.focus();
 	await page.keyboard.press("Escape");
 	await expectModal(page, "Paused");
-	const header = page.locator("header").first();
-	await expect(header).toHaveJSProperty("inert", true);
+	await expect(page.locator("header")).toHaveCount(0);
 	await page.keyboard.press("Escape");
 	await expect(page.getByRole("dialog", { name: "Paused" })).toBeHidden();
 	await expect(page.locator("[data-stage]")).not.toHaveAttribute("inert");

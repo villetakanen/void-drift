@@ -20,6 +20,7 @@ import {
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import { version } from "../../package.json";
+import { fitGameScreen, GAME_HEIGHT } from "../lib/game-screen";
 import { settings } from "../lib/stores/settings";
 import Dialog from "./Dialog.svelte";
 import Logo from "./Logo.svelte";
@@ -76,7 +77,11 @@ let phase = $state<"menu" | "starting" | "playing">("menu");
 let landing = $state.raw<LandingSystem>();
 let transitionTime = 0;
 let countTime = -1;
-let transitionBlurred = false;
+let lastFrameTime = 0;
+let portrait = $state(false);
+let viewport: HTMLElement;
+let screen = $state(fitGameScreen(1920, 1080));
+const adaptive = $derived(!landing && !testFlight);
 let sceneOpacity = $state(1);
 let reducedMotion = false;
 let stage: HTMLElement;
@@ -111,7 +116,7 @@ function reset(start = false) {
 		phase = "starting";
 	} else countTime = -1;
 	if (start) simulation.start();
-	paused = false;
+	paused = start && portrait;
 	scoreSaved = false;
 	message = "";
 	frameCamera(true);
@@ -169,7 +174,7 @@ function start() {
 	if (launchSource === "title" && !reducedMotion && landing) {
 		phase = "starting";
 		transitionTime = 0;
-		transitionBlurred = false;
+		paused = portrait;
 		input?.reset();
 	} else {
 		landing = undefined;
@@ -179,9 +184,17 @@ function start() {
 	}
 	(document.activeElement as HTMLElement)?.blur();
 }
+function suspend() {
+	input?.reset();
+	left = right = false;
+	lastFrameTime = performance.now();
+	if (status === "PLAYING" || phase === "starting") paused = true;
+}
 function togglePause() {
+	if (portrait || document.hidden) return;
 	paused = !paused;
 	input?.reset();
+	lastFrameTime = performance.now();
 }
 function advance(state: FlightTickInput) {
 	const before = simulation.wraps;
@@ -219,6 +232,8 @@ async function save() {
 	}
 }
 function press(event: PointerEvent, side: "left" | "right") {
+	if (paused || portrait || document.hidden) return;
+	event.preventDefault();
 	const button = event.currentTarget as HTMLElement;
 	button.setPointerCapture(event.pointerId);
 	input?.setPointer(event.pointerId, side);
@@ -240,6 +255,18 @@ onMount(() => {
 	updateMotion();
 	motion.addEventListener("change", updateMotion);
 	const measure = () => {
+		const available = viewport.getBoundingClientRect();
+		const css = getComputedStyle(viewport);
+		screen = fitGameScreen(
+			available.width -
+				parseFloat(css.paddingLeft) -
+				parseFloat(css.paddingRight),
+			available.height -
+				parseFloat(css.paddingTop) -
+				parseFloat(css.paddingBottom),
+		);
+		portrait = window.innerWidth <= window.innerHeight;
+		if (portrait) suspend();
 		const bounds = stage.getBoundingClientRect();
 		landingFrame = {
 			width: bounds.width,
@@ -249,21 +276,34 @@ onMount(() => {
 	};
 	const resize = new ResizeObserver(measure);
 	resize.observe(stage);
+	resize.observe(viewport);
+	window.addEventListener("resize", measure);
 	measure();
-	let last = performance.now();
+	lastFrameTime = performance.now();
 	let accumulator = 0;
 	let frame = 0;
 	const context = canvas.getContext("2d");
+	const playSurface = canvas.parentElement;
+	const preventMenu = (event: Event) => event.preventDefault();
+	playSurface?.addEventListener("contextmenu", preventMenu);
 	function draw(time: number) {
-		const dt = Math.min((time - last) / 1000, 0.1);
-		last = time;
+		const dt = Math.max(0, Math.min((time - lastFrameTime) / 1000, 0.1));
+		if (portrait || document.hidden) suspend();
+		const blocked = paused || portrait || document.hidden;
+		if (blocked) input.reset();
+		const renderWidth = adaptive ? Math.round(screen.logicalWidth) : 1920;
+		if (canvas.width !== renderWidth) {
+			renderer.resize(renderWidth, GAME_HEIGHT);
+			// Update render geometry only; camera policy and fitting remain unchanged.
+			camera.viewportWidth = renderWidth;
+		}
+		lastFrameTime = time;
 		let released = false;
-		if (phase === "starting" && !document.hidden) {
+		if (phase === "starting" && !blocked) {
 			transitionTime += reducedMotion ? 0.3 : dt;
 			if (transitionTime >= 0.15 && landing) {
 				landing = undefined;
 				reset(true);
-				paused = transitionBlurred;
 				accumulator = 0;
 			}
 			sceneOpacity =
@@ -276,19 +316,13 @@ onMount(() => {
 				accumulator = 0;
 			}
 		}
-		if (
-			phase === "starting" &&
-			!landing &&
-			transitionTime >= 0.3 &&
-			!document.hidden &&
-			!paused
-		)
+		if (phase === "starting" && !landing && transitionTime >= 0.3 && !blocked)
 			countTime = Math.min(3, countTime + dt);
 		const controls = input.getEffectiveState(settings.get().invertControls);
 		left = controls.leftThruster;
 		right = controls.rightThruster;
 		if (
-			!paused &&
+			!blocked &&
 			!released &&
 			phase !== "starting" &&
 			simulation.state.status === "PLAYING"
@@ -303,7 +337,7 @@ onMount(() => {
 		renderer.clear();
 		if (landing && context) {
 			if (!document.hidden && !reducedMotion) landing.step(dt);
-			// Fill the menu canvas; gameplay retains its fixed 16:9 viewport.
+			// The title backdrop fills the viewport independently of the play stage.
 			renderer.drawBackground();
 			context.save();
 			context.scale(1920 / landingFrame.width, 1080 / landingFrame.height);
@@ -373,20 +407,23 @@ onMount(() => {
 		if (event.code === "Escape" && status === "PLAYING" && !paused)
 			togglePause();
 	};
-	const blur = () => {
-		if (phase === "starting") transitionBlurred = true;
-		if (status === "PLAYING") paused = true;
+	const visibility = () => {
+		if (document.hidden) suspend();
 	};
 	window.addEventListener("keydown", key);
-	window.addEventListener("blur", blur);
+	window.addEventListener("blur", suspend);
+	document.addEventListener("visibilitychange", visibility);
 	frame = requestAnimationFrame(draw);
 	return () => {
 		cancelAnimationFrame(frame);
+		playSurface?.removeEventListener("contextmenu", preventMenu);
 		resize.disconnect();
 		motion.removeEventListener("change", updateMotion);
 		input.destroy();
 		window.removeEventListener("keydown", key);
-		window.removeEventListener("blur", blur);
+		window.removeEventListener("blur", suspend);
+		window.removeEventListener("resize", measure);
+		document.removeEventListener("visibilitychange", visibility);
 	};
 });
 </script>
@@ -394,6 +431,9 @@ onMount(() => {
 <div
 	class="flight-page"
 	class:title-active={Boolean(landing)}
+	class:survival-screen={!testFlight}
+	data-paused={paused}
+	data-portrait={portrait}
 	data-launch-source={launchSource}
 	data-status={status}
 	data-salvage-passes={salvageStats.passes}
@@ -415,7 +455,7 @@ onMount(() => {
 	data-zoom-level={zoomLevel}
 	data-zoom-steps={activeZoomSteps}
 >
-	{#if !landing}
+	{#if !landing && testFlight}
 		<header class="flight-header">
 			<a href="/" class="brand"><Logo size="sm" /></a>
 			<span class="edition"
@@ -457,12 +497,17 @@ onMount(() => {
 			</nav>
 		</header>
 	{/if}
-	<div class="flight-layout">
+	<div class="flight-layout" bind:this={viewport}>
 		<section
 			bind:this={stage}
 			class="flight-stage"
 			class:landing={Boolean(landing)}
-			style:opacity={sceneOpacity}
+			class:adaptive
+			style:width={adaptive ? `${screen.width}px` : undefined}
+			style:height={adaptive ? `${screen.height}px` : undefined}
+			style:--game-gutter={`${screen.gutter}px`}
+			data-active-width={screen.activeWidth}
+			style:opacity={paused || portrait ? 1 : sceneOpacity}
 			aria-label="Flight arena"
 		>
 			<div
@@ -547,7 +592,41 @@ onMount(() => {
 					</button>
 				</div>
 			</div>
-			{#if landing}
+			{#if portrait && (phase !== "menu" || !landing)}
+				<Dialog
+					label="Rotate to landscape"
+					class="flight-card"
+					returnFocus={false}
+				>
+					<h1>Rotate to landscape</h1>
+					<p>Flight is paused. Turn your screen sideways to continue.</p>
+				</Dialog>
+			{:else if paused}
+				<Dialog label="Paused" class="flight-card" onclose={togglePause}>
+					<p class="eyebrow">PAUSED</p>
+					<div class="button-group button-group--vertical">
+						<button
+							type="button"
+							class="btn btn-filled"
+							data-autofocus
+							onclick={togglePause}
+						>
+							Resume
+						</button>
+						<button
+							type="button"
+							class="btn btn-ghost"
+							onclick={() => (onReturn ? onReturn() : enterMenu())}
+						>
+							Abort
+						</button>
+						{#if !testFlight}
+							<a class="btn btn-ghost" href="/leaderboard">Top Scores</a>
+							<a class="btn btn-ghost" href="/settings">Settings</a>
+						{/if}
+					</div>
+				</Dialog>
+			{:else if landing}
 				<div class="dialog-scrim" aria-hidden="true"></div>
 				<TitleScreen onStart={start} disabled={phase === "starting"} />
 			{:else if status === "GAME_OVER"}
@@ -602,33 +681,33 @@ onMount(() => {
 						</button><a class="btn btn-ghost" href="/leaderboard">Top Scores</a>
 					</div>
 				</Dialog>
-			{:else if paused}
-				<Dialog label="Paused" class="flight-card" onclose={togglePause}>
-					<p class="eyebrow">PAUSED</p>
-					<div class="button-group button-group--vertical">
-						<button
-							type="button"
-							class="btn btn-filled"
-							data-autofocus
-							onclick={togglePause}
-						>
-							Resume
-						</button>
-						<button
-							type="button"
-							class="btn btn-ghost"
-							onclick={() => (onReturn ? onReturn() : enterMenu())}
-						>
-							Abort
-						</button>
-					</div>
-				</Dialog>
 			{/if}
 		</section>
 	</div>
 </div>
 
 <style>
+.survival-screen .flight-layout {
+	box-sizing: border-box;
+	align-items: center;
+	justify-content: center;
+	padding: env(safe-area-inset-top) env(safe-area-inset-right)
+		env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+.flight-stage.adaptive {
+	flex: none;
+}
+.flight-stage-layer {
+	touch-action: none;
+	user-select: none;
+	-webkit-user-select: none;
+	-webkit-touch-callout: none;
+	overscroll-behavior: none;
+}
+.title-active .flight-layout {
+	padding: 0;
+}
+
 .flight-message {
 	position: static;
 }

@@ -31,6 +31,7 @@ import type { GravityTuning } from "./schemas/gravity";
 import {
 	buildStats,
 	defaultLoadout,
+	LIFE_SUPPORT_DRAIN,
 	PARTS,
 	starterLoadout,
 } from "./schemas/loadout";
@@ -227,7 +228,8 @@ export class Simulation {
 				);
 				const supplied =
 					this.state.resources.power +
-					(solarCharge(distance, this.star, stats.coils) - 3) * (STEP / 4);
+					(solarCharge(distance, this.star, stats.coils) - LIFE_SUPPORT_DRAIN) *
+						(STEP / 4);
 				const source = gravitySource(this.ship, this.planets);
 				const amount = source
 					? Math.max(
@@ -256,7 +258,7 @@ export class Simulation {
 						STEP / 4,
 						this.settings.ion,
 					) -
-						3) *
+						LIFE_SUPPORT_DRAIN) *
 					(STEP / 4);
 				const spent = Math.min(available, requested);
 				engineFraction = requested > 0 ? spent / requested : 0;

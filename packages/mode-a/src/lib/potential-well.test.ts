@@ -31,6 +31,7 @@ describe("Potential Well fittings", () => {
 			const idle = { leftThruster: false, rightThruster: false, fire: false };
 			const loadout = defaultLoadout("fighter");
 			const baselineDrain = buildDrain(loadout, idle);
+			expect(baselineDrain).toBe(1.5);
 			loadout.hull[0] = part;
 			const capacity = buildStats(loadout).capacity;
 			expect(buildDrain(loadout, idle)).toBe(baselineDrain);

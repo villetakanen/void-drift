@@ -57,8 +57,8 @@ describe("ship builder contract", () => {
 		const baselineDrain = buildDrain(build, idle);
 		expect(
 			buildDrain(build, { ...idle, leftThruster: true }) - baselineDrain,
-		).toBe(PARTS[build.side].draw);
-		expect(buildDrain(build, both) - baselineDrain).toBe(
+		).toBeCloseTo(PARTS[build.side].draw);
+		expect(buildDrain(build, both) - baselineDrain).toBeCloseTo(
 			2 * PARTS[build.side].draw + PARTS.ion.draw,
 		);
 		const a = ship();
@@ -298,9 +298,9 @@ it("links every aft engine to either input with matching drain and power gating"
 			const out = applyBuildEngines(ship(), build, input, 1 / 60, true);
 			expect(out.aft.every((v) => v > 0)).toBe(active);
 			const withoutAft = { ...build, aft: [null, null] };
-			expect(buildDrain(build, input) - buildDrain(withoutAft, input)).toBe(
-				active ? 2 * PARTS.ion.draw : 0,
-			);
+			expect(
+				buildDrain(build, input) - buildDrain(withoutAft, input),
+			).toBeCloseTo(active ? 2 * PARTS.ion.draw : 0);
 			expect(
 				applyBuildEngines(ship(), build, input, 1 / 60, false).aft,
 			).toEqual([0, 0]);

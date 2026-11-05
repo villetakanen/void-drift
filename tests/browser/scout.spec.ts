@@ -117,8 +117,9 @@ test("Scout restores its four-slot save, fits equipment and engines and flies fr
 		page.getByRole("button", { name: "Aft 1 · Universal: Light ion" }),
 	).toBeVisible();
 	await page.getByRole("button", { name: "Start survival" }).click();
-	await expect(page.locator(".edition")).toHaveText(
-		"CUSTOM SURVIVAL / UNRANKED",
+	await expect(page.locator("header")).toHaveCount(0);
+	await expect(page.locator(".flight-actions")).toContainText(
+		"CUSTOM BUILD / UNRANKED",
 	);
 });
 

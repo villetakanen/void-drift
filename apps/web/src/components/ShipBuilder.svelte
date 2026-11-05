@@ -13,6 +13,7 @@ import {
 	engineArtId,
 	FIDDLER,
 	FIGHTER,
+	LIFE_SUPPORT_DRAIN,
 	PARTS,
 	type PartId,
 	POTENTIAL_WELL_ART,
@@ -491,7 +492,7 @@ function choose(id: ShipProfileId) {
 					</div>
 					<div>
 						<dt>Life support</dt>
-						<dd>3 /s</dd>
+						<dd>{LIFE_SUPPORT_DRAIN} /s</dd>
 					</div>
 					<div>
 						<dt>All engines + life support</dt>

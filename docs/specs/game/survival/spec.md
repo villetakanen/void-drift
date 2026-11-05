@@ -67,7 +67,10 @@ MENU ──[first input]──> PLAYING ──[death]──> GAME_OVER ──[re
 
 **Consumption:**
 - Power depletes constantly at a fixed rate
-- Consumption rate: **1.0% per second** (constant decay)
+- Ship life support consumes **1.5 energy per second** (constant drain).
+  Assembled-flight supply and engine-demand calculations both use
+  `LIFE_SUPPORT_DRAIN` from `packages/mode-a/src/lib/schemas/loadout.ts`;
+  low-draw steering and stabilizer braking receive their requested power.
 - Life support and basic systems consume power regardless of thrusting
 
 **Regeneration (Sun Proximity):**

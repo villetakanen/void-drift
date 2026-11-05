@@ -2,6 +2,9 @@
 
 Status: implementation in progress, 2026-10-28. Scope approved in the voice-led rebuild conversation.
 
+Screen composition, viewport fitting and play availability follow
+[Game Screen](game-screen/spec.md).
+
 ## Architecture
 
 `packages/mode-a/src/lib/simulation.ts` owns a fixed 60 Hz survival simulation.
@@ -52,7 +55,8 @@ unavailability. Given valid configuration, separate anonymous players can compet
 
 ## Stepped zoom — patch 0.3.1
 
-Flight renders a fixed 1920×1080 logical view, scaled proportionally to fit.
+Stage geometry and the active-area boundary follow
+[Game Screen](game-screen/spec.md); camera behavior is specified below.
 The shared camera defaults to five geometrically spaced levels from whole-system
 view (the 1200-unit-radius arena plus padding) to 1.6× close view. Automatic framing
 selects the closest level that fits ship and star with padding. Both zoom directions

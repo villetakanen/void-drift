@@ -1,3 +1,5 @@
+export const LIFE_SUPPORT_DRAIN = 1.5;
+
 import { z } from "zod";
 import { CRUISER } from "../cruiser";
 import { FIDDLER } from "../fiddler";
@@ -403,10 +405,10 @@ export function buildStats(build: Loadout, parts: typeof PARTS = PARTS) {
 		capacity,
 		coils,
 		engineDraw,
-		drain: 3 + engineDraw,
+		drain: LIFE_SUPPORT_DRAIN + engineDraw,
 		acceleration,
 		turnRate,
-		endurance: capacity / 3,
-		fullEndurance: capacity / (3 + engineDraw),
+		endurance: capacity / LIFE_SUPPORT_DRAIN,
+		fullEndurance: capacity / (LIFE_SUPPORT_DRAIN + engineDraw),
 	};
 }
