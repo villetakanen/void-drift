@@ -313,6 +313,7 @@ export function starterLoadout(chassis: Loadout["chassis"]): Loadout {
 	const build = defaultLoadout(chassis);
 	build.stabilizers = true;
 	build.aft.fill("ion");
+	if (chassis === "wasp") build.hull[0] = "gravity-coil";
 	if (chassis === "fiddler")
 		build.hull = [null, null, "battery", "battery", "gravity-coil"];
 	const packs = chassis === "fighter" ? 1 : chassis === "corvette" ? 2 : 0;

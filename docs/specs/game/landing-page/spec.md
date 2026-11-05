@@ -50,7 +50,8 @@ game's home and Hangar is an alternative launch point.
   continue beyond the region to fill the viewport.
   The current title-screen target is iPad or larger.
 - A static, decorative 156px-long Wasp overlaps the panel’s bottom-right corner,
-  heading 30° above right. Its single equipped ion engine has a luminous plume;
+  heading 30° above right. Its hull slots stay empty independently of the playable
+  starter loadout. Its single equipped ion engine has a luminous plume;
   a ship-wide, 450px arrival-green trail starts at the wing tips and fades aft
   from 22% opacity. Artwork may overflow
   the panel, is hidden from assistive technology and never intercepts input.

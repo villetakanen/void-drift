@@ -77,7 +77,8 @@ Human review of reorientation and preferred level count remains pending.
 ## Player navigation and version labels — patch 0.3.2
 
 The [title screen](landing-page/spec.md) exposes PRESS START, Hangar, Top Scores,
-Settings and Credits. PRESS START launches Wasp; Hangar owns ship choice. Runs retain
+Settings and Credits. PRESS START launches Wasp with a Gravity coil in its left
+hull slot and its right hull slot empty; Hangar owns ship choice. Runs retain
 their launch source for Abort and game-over return. Game and leaderboard labels use
 the web package version independently of the internal scoring challenge identifier.
 
