@@ -6,7 +6,9 @@
 
 The Hangar lets players assemble a ship from visible fittings, understand the
 tradeoffs, and feel those choices in flight. Its complete loop is choose a ship,
-fit it, inspect it, test it, and return to adjust it or start survival.
+fit it, inspect it, test it, and return to adjust it or start survival. Test flight starts directly from Hangar;
+Abort or game-over return from Hangar survival returns to Hangar. Hangar also
+provides a return to the title screen.
 
 The owner-approved 0.4.0 scope, recorded in the archived
 [rebuild charter](../../history/rebuild-charter.md#next-phase--ship-builder-2026-10-30),
@@ -113,7 +115,7 @@ Main-menu `starterLoadout("fiddler")` has four Light ions, two Potential Wells i
 the lower pincer S slots and one Gravity coil in the centre + slot. Forward + slots
 are empty: assembled mass 273, capacity 270. New Hangar saves begin with that same
 fit; subsequent Hangar changes stay independent of the main-menu fleet. Fiddler is
-available in the Hangar, main-menu slot 05, Flight Lab and shared instrument, with
+available in the Hangar and shared instrument, with
 unranked survival and test flight. Initial stabilizer strength uses Wasp's values
 and Fiddler's geometric inertia; flight feel and endurance await owner review.
 

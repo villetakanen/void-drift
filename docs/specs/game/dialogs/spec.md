@@ -1,12 +1,10 @@
 # Dialogs
 
-**Status:** Current implementation from 2026-11-02 (opening-screen S6).
-Dialog modality was disputed by the owner on 2026-11-03; correction is deferred
-pending opening-screen composition, not accepted as intended non-modal behavior.
+**Status:** Current.
 **Source of truth:** `apps/web/src/components/Dialog.svelte`,
 `packages/core/src/lib/styles/surfaces.css`.
-**Reference:** `/lab/surfaces` (live dialog demo), `/lab/flight`.
-**Look:** [design-system-core.md, Surfaces and layers](design-system-core.md#surfaces-and-layers).
+**Reference:** `/lab/surfaces` (live dialog demo).
+**Look:** [Surfaces and layers](../../factory/design-system/spec.md#surfaces-and-layers).
 
 ## Context
 
@@ -21,11 +19,10 @@ one behaviour for every dialog, so the stage is isolated the same way on every s
 A dialog interrupts a stage: it covers the game (or another live view) and asks the player to
 choose before the stage carries on. Today:
 
-| Dialog       | Screen                                | Label          | Escape           | Focus on open                                           |
-| ------------ | ------------------------------------- | -------------- | ---------------- | ------------------------------------------------------- |
-| Game menu    | game, flight Lab                      | "Game menu"    | does nothing     | Start (`PRESS START`)                                   |
-| Paused       | game, builder test flight, flight Lab | "Paused"       | resumes (closes) | Resume                                                  |
-| Run complete | game, custom survival, flight Lab     | "Run complete" | does nothing     | Initials when shown, else Try Again / Return to builder |
+| Dialog       | Screen                    | Label          | Escape           | Focus on open                                     |
+| ------------ | ------------------------- | -------------- | ---------------- | ------------------------------------------------- |
+| Paused       | game, builder test flight | "Paused"       | resumes (closes) | Resume                                            |
+| Run complete | game, custom survival     | "Run complete" | does nothing     | Initials when shown, else return to launch source |
 
 Not dialogs:
 
@@ -34,8 +31,7 @@ Not dialogs:
 - The Motion instrument's overlay pane is a disclosure: a menu button opens a pane over the
   instrument, which stays the subject. It keeps its own behaviour (motion-instrument.md): focus
   moves to its close button, Escape closes it and returns focus to the menu button.
-- Whether the opening screen is a dialog at all is open until S12 composes it; until then the
-  menu is one.
+- The opening screen is a normal game menu, with the shared scrim appearance but no modal behavior.
 
 ## Architecture
 
@@ -45,26 +41,22 @@ Not dialogs:
 
 Structure: the host is positioned and holds two siblings, the stage (`data-stage`) and the
 dialog. The dialog renders `.dialog-layer` (`--layer-overlay`) with the scrim and a `.panel`
-that is `role="dialog"`, named by `label`, `tabindex="-1"`.
+that is `role="dialog"`, `aria-modal="true"`, named by `label`, `tabindex="-1"`.
 
 In FlightDeck the stage is `.flight-stage-layer`: the canvas, the HUD, the engine feedback line
-and the engine pads. The page header and the Lab inspector are outside it.
+and the engine pads.
 
 ## Behaviour
 
 1. **Stage inert.** On open the stage gets `inert`. Nothing in it can be focused, clicked or
-   found by assistive technology. Holders are counted, so when one dialog hands over to the next
-   (run complete → menu), the stage stays inert throughout.
-2. **Current limitation: only the stage.** The page header (HANGAR, HIGH SCORES,
-   OPTIONS, Return to builder) and flight Lab inspector remain usable; the current
-   component is not `aria-modal`. [DEPRECATED 2026-11-03] The prior attribution of
-   this behavior to an owner decision was challenged as likely agent drift. The
-   owner wants all actual dialogs to trap focus until closed, but explicitly
-   deferred that fix because the permanent opening menu relies on external header
-   navigation. See the [separate composition plan](../plans/2026-11-03-opening-screen-dialog-boundary.md).
+   found by assistive technology. Holders are counted, so if multiple dialogs overlap, the stage stays inert until all have closed.
+   Returning from run complete opens the nonmodal title screen or Hangar.
+2. **Page isolation.** Siblings along the dialog's ancestor path are inert, including the
+   page header. Tab and Shift+Tab wrap within the dialog, and focus cannot move outside it.
+   Existing inert state is preserved and counted across dialog handovers.
 3. **HUD and engine pads hide.** Parts marked `data-hud` inside an inert stage are
    `visibility: hidden`: the HUD, the engine feedback line and the engine pads.
-4. **The scrim shades the stage.** The stage takes `--scrim-filter` and a `--scrim-tint` colour
+4. **The scrim shades the stage.** A `scrim-stage` takes `--scrim-filter` and a `--scrim-tint` colour
    blend, and the scrim layer carries `--scrim-surface`: the game reads as an offline feed behind
    the panel, its colours kept but pulled toward hue 290.
 5. **Focus moves in.** On open, focus moves to the element marked `data-autofocus`, else the
@@ -72,10 +64,9 @@ and the engine pads. The page header and the Lab inspector are outside it.
 6. **Focus returns.** On close, focus returns to the element that had it when the dialog opened,
    if it is still in the page and not inert; otherwise it stays where the page puts it. The stage
    is released before focus returns, so a control inside the stage can take it back.
-   Exception: the game menu (`returnFocus={false}`) closes only by starting a run, and focus
-   then leaves controls so keys reach the ship rather than a button.
+   `returnFocus={false}` allows a caller to hand focus to the game instead.
 7. **Escape.** Escape closes a dialog only where closing is allowed (`onclose` given): pause
-   resumes. The menu and run complete have nothing to go back to, so Escape does nothing there.
+   resumes. Run complete has nothing to go back to, so Escape does nothing there.
    During play, Escape opens pause.
 8. **Motion.** The scrim and the stage filter ease in over `--duration-fast`; with reduced
    motion they appear at once.
@@ -87,15 +78,13 @@ and the engine pads. The page header and the Lab inspector are outside it.
 - [x] Every dialog uses `Dialog.svelte`; no other component sets `role="dialog"` in shared UI.
 - [x] While a dialog is open, its stage is `inert` and its `data-hud` parts are hidden.
 - [x] Focus moves into a dialog on open and returns to the opener on close (pause, Lab demo).
-- [x] Escape resumes from pause; it does nothing on the menu or run complete.
+- [x] Escape resumes from pause; it does nothing on run complete.
 - [x] `/lab/surfaces` has a live dialog demo on the real component, usable from the keyboard.
 - [x] Browser tests cover dialog isolation and focus return (`tests/browser/dialogs.spec.ts`).
 
 ### Regression Guardrails
 
-The checks below protect current stage isolation and restoration during pruning.
-They do not establish external-header access as the intended long-term contract.
-Modal containment is a deferred target tied to the composition plan above.
+Focus remains within the active dialog and the rest of the page is unavailable.
 
 - Tab never reaches the HUD, the engine pads or the canvas while any dialog is open.
 - A dialog never leaves its stage inert after it closes.
@@ -122,9 +111,4 @@ Scenario: Run complete cannot be dismissed
   When the player presses Escape
   Then the dialog stays open and the stage stays inert
 
-Scenario: Hand-over between dialogs
-  Given the run complete dialog is open in the flight Lab
-  When the player activates Try Again
-  Then the game menu opens with focus on Start
-  And the stage stays inert throughout
 ```

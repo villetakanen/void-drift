@@ -82,8 +82,8 @@ is drawn or studied.
 
 ## Brand
 
-- **The mark.** ∅·Δ reads "void · drift" and is the only brand mark; there is no
-  wordmark.
+- **The mark.** ∅·Δ reads "void · drift" and is the only brand mark. The title screen also
+  displays “VOID DRIFT” as a normal heading beneath the mark.
 - **Lime has two jobs.** It is the brand, and it marks what you can act on and what is
   selected. Information (eyebrows, tags, descriptions, values) is never lime. Name the
   job, not the colour.

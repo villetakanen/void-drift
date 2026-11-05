@@ -4,6 +4,7 @@
  * kept equal to the resolved tokens by scripts/check-contracts.mjs.
  */
 export const COLOR = {
+	countdown: "lch(78.31% 65.02 151.48)",
 	brand: "lch(96.42% 84.18 104.87)",
 	action: "lch(96.42% 84.18 104.87)",
 	selected: "lch(96.42% 84.18 104.87)",
@@ -28,6 +29,7 @@ export const COLOR = {
 
 /** The CSS custom property each canvas colour mirrors. */
 export const COLOR_TOKEN: Record<keyof typeof COLOR, string> = {
+	countdown: "--color-android-green",
 	brand: "--color-brand",
 	action: "--color-action",
 	selected: "--color-selected",

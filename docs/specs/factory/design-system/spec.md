@@ -325,6 +325,9 @@ fill can be translucent while the edge and shadow follow the cut:
 
 ### Scrim (the offline feed)
 
+The shared `.scrim-stage` class applies the stage filter and tint independently of modality;
+`.dialog-scrim` supplies the overlay surface. A non-modal screen may compose both.
+
 While a dialog is open, the stage it covers reads as an offline feed: the game, seen on a
 console display rather than live.
 
@@ -371,8 +374,9 @@ and the `--logomark-height-*` tokens. **Lab:** `/lab/logomark`.
 ### Logomark
 
 - The mark is ∅·Δ: U+2205 empty set, U+22C5 dot operator, U+0394 Greek capital delta (void · drift).
-  It is the only brand mark. There is no text wordmark; "Void Drift" is the accessible name and the
-  page-title text.
+  It is the only brand mark. The title screen also displays “VOID DRIFT” as an
+  ordinary heading beneath it; this is not a separate mark. “Void Drift” is the
+  accessible name and the page-title text.
 - The glyphs come from Noto Sans Math 3.000 (SIL OFL 1.1), converted once by
   `scripts/convert-logomark.py` into `logomark.ts` (paths cropped to the ink box, 180 font units
   between advance boxes). `logomark-OFL.txt` sits beside it. The font is never committed or served;
@@ -670,3 +674,5 @@ Text-only style for navigation:
 **Design System Status: OPERATIONAL** 🎨  
 **Token Count:** 15+ defined variables  
 **Coverage:** 100% of UI components
+
+Survival countdown uses Saira Stencil 700 outlines (SIL OFL), in Android green, as transient run-status information.

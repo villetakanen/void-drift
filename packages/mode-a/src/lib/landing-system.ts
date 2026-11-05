@@ -22,7 +22,7 @@ export class LandingSystem {
 		const appearances = Object.values(PLANET_TYPES);
 		this.planets = Array.from({ length: 3 }, (_, index) => {
 			const type = appearances[Math.floor(random() * appearances.length)];
-			// The outer planet opens in the left-hand space, not behind the launcher.
+			// The outer planet opens toward the upper-left of the system.
 			const angle =
 				index === 2
 					? Math.PI + (random() - 0.5) * 0.18
@@ -52,44 +52,27 @@ export class LandingSystem {
 		for (const planet of this.planets) updatePlanetOrbit(planet, dt);
 	}
 
-	/** Project the shared orbital motion into a wide, tilted presentation plane.
-	 * Body sizes are independent of orbit framing, so wide orbits stay readable.
-	 */
-	layout(width: number, height: number, cardRight: number) {
-		const space = Math.max(0, width - cardRight);
-		const cardLeft = Math.max(0, width - cardRight);
-		const x = cardRight + space / 2;
-		const y = height / 2;
+	/** Project orbits along the diagonal from the sun toward the upper-left. */
+	layout(width: number, height: number, _cardRight = 0) {
+		const x = width * 0.75;
+		const y = height * 0.75;
 		const bodyScale = Math.max(0.65, Math.min(1.2, width / 1280));
-		const star = {
-			x,
-			y,
-			radius: Math.min(
-				Math.max(18, this.star.radius * bodyScale),
-				Math.max(8, space * 0.3),
-			),
-		};
-		const spans = [
-			Math.max(
-				space * 0.36,
-				star.radius + this.planets[0].radius * bodyScale + 16,
-			),
-			x - cardLeft * 0.65,
-			x - cardLeft * 0.35,
-		];
+		const star = { x, y, radius: this.star.radius * bodyScale };
+		const rotation = Math.atan2(y, x);
+		const diagonal = Math.hypot(x, y);
 		const planets = this.planets.map((planet, index) => {
 			const variation = planet.orbitRadius / [180, 560, 920][index];
-			const orbitX = spans[index] * variation;
-			const orbitY =
-				index === 0
-					? orbitX
-					: Math.min(orbitX, height * [0.28, 0.36, 0.43][index]);
+			const orbitX = diagonal * [0.22, 0.58, 0.94][index] * variation;
+			const orbitY = orbitX * 0.42;
+			const localX = (planet.pos.x / planet.orbitRadius) * orbitX;
+			const localY = (planet.pos.y / planet.orbitRadius) * orbitY;
 			return {
 				planet,
 				orbitX,
 				orbitY,
-				x: x + (planet.pos.x / planet.orbitRadius) * orbitX,
-				y: y + (planet.pos.y / planet.orbitRadius) * orbitY,
+				rotation,
+				x: x + localX * Math.cos(rotation) - localY * Math.sin(rotation),
+				y: y + localX * Math.sin(rotation) + localY * Math.cos(rotation),
 				radius: planet.radius * bodyScale,
 			};
 		});
@@ -115,7 +98,7 @@ export class LandingSystem {
 				frame.star.y,
 				body.orbitX,
 				body.orbitY,
-				0,
+				body.rotation,
 				0,
 				Math.PI * 2,
 			);

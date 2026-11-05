@@ -1,7 +1,7 @@
 # Development and verification
 
 Develop through conversation and browser inspection; an IDE is optional.
-Product contracts live in [playable alpha](specs/playable-alpha.md).
+Product contracts live in [playable alpha](specs/game/spec.md).
 
 ## Setup
 
@@ -13,8 +13,8 @@ pnpm exec playwright install chromium
 pnpm dev
 ```
 
-Open `http://localhost:4321` for play, `/lab/flight` for flight trials and `/lab` for
-asset examples. Backend configuration is optional for local flight. Copy the public
+Open `http://localhost:4321` for play, `/builder` for Hangar test flight and `/lab`
+for developer instruments and asset examples. Backend configuration is optional for local flight. Copy the public
 Firebase keys from `.env.example` into ignored `.env.local` to enable shared scores.
 Set `JAVA_HOME` and put its `bin` on `PATH` if Java is not installed system-wide.
 
@@ -86,10 +86,9 @@ correctness runs no longer produce the repeated review captures. Automatic failu
 screenshots and retained failure traces remain enabled. Capture completion is not
 human visual approval or an additional correctness gate.
 
-Dialog modality is unresolved: the current stage-only behavior remains during
-pruning because the opening menu depends on navigation outside the dialog. See
-[the separate composition plan](plans/2026-11-03-opening-screen-dialog-boundary.md).
-The owner wants actual dialogs to trap focus; this is not yet implemented.
+The title screen is ordinary navigation. Actual dialogs trap focus and isolate the
+stage; see the [dialog contract](specs/game/dialogs/spec.md) and the resolved
+[composition plan](plans/2026-11-03-opening-screen-dialog-boundary.md).
 
 Flight and FX captures use explicit viewport, seed and simulation time for human
 review. Alpha 0.5.0 removes pixel equality gates for the combined flight canvas and

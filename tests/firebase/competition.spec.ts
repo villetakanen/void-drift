@@ -1,7 +1,5 @@
 import { verificationUrls } from "../../packages/core/src/lib/schemas/verification-ports.mjs";
 import {
-	advanceFlightTicks,
-	COMPETITION_FLIGHTS,
 	type CompetitionChassis,
 	competitionFlightResult,
 	waitForFlightPhase,
@@ -30,41 +28,36 @@ test("two anonymous pilots complete runs, retry a rejected write and see a share
 	newLocalContext,
 }) => {
 	const pilots: {
-		launcher: string;
-		name: string;
 		chassis: CompetitionChassis;
 		initials: string;
+		seed: number;
 	}[] = [
-		{ launcher: "01", name: "Scout", chassis: "scout", initials: "ONE" },
-		{
-			launcher: "04",
-			name: "Corvette",
-			chassis: "corvette",
-			initials: "TWO",
-		},
+		{ chassis: "wasp", initials: "ONE", seed: 158 },
+		{ chassis: "wasp", initials: "TWO", seed: 2 },
 	];
 	for (const pilot of pilots) {
 		const chassis = pilot.chassis;
-		const flight = COMPETITION_FLIGHTS[chassis];
-		const predicted = competitionFlightResult(chassis);
-		expect(predicted).toMatchObject({
-			status: "GAME_OVER",
-			cause: "STAR",
-			ticks: flight.turnTicks + flight.thrustTicks,
-		});
 		const context = await newLocalContext();
 		const page = await context.newPage();
+		// Fix only the single-word arrival seed; Firebase keeps its normal entropy.
+		const arrivalSeed = pilot.seed;
+		await page.addInitScript((seed) => {
+			const random = crypto.getRandomValues.bind(crypto);
+			Object.defineProperty(crypto, "getRandomValues", {
+				value(array: ArrayBufferView) {
+					const result = random(array);
+					if (result instanceof Uint32Array && result.length === 1)
+						result[0] = seed - 1;
+					return result;
+				},
+			});
+		}, arrivalSeed);
 		await page.clock.install({ time: new Date("2026-11-03T00:00:00Z") });
 		await page.goto("/");
 		await expect(page.locator(".flight-page")).toHaveAttribute(
 			"data-stabilizers",
 			"true",
 		);
-		await page
-			.getByRole("radiogroup", { name: "SELECT YOUR SHIP" })
-			.getByText(pilot.launcher, { exact: true })
-			.click();
-		await expect(page.getByText(pilot.name, { exact: true })).toBeVisible();
 		await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
 		await page.getByRole("button", { name: "PRESS START" }).click();
 		await waitForFlightPhase(page, "playing");
@@ -76,21 +69,22 @@ test("two anonymous pilots complete runs, retry a rejected write and see a share
 			"data-ticks",
 			"0",
 		);
-		// The matching production simulation has already proved these exact
-		// fixed-step routes end at the star. The helper advances one browser tick
-		// at a time, so rAF cadence cannot change the route between hulls.
-		await page.keyboard.down("ArrowRight");
-		await advanceFlightTicks(page, flight.turnTicks);
-		await page.keyboard.up("ArrowRight");
-		await page.keyboard.down("ArrowUp");
-		await advanceFlightTicks(page, flight.thrustTicks);
-		await page.keyboard.up("ArrowUp");
+		const seed = Number(
+			await page.locator(".flight-page").getAttribute("data-seed"),
+		);
+		expect(seed).toBe(arrivalSeed);
+		const predicted = competitionFlightResult(chassis, seed);
+		expect(predicted.status).toBe("GAME_OVER");
+		expect(predicted.cause).toBe("STAR");
+		expect(predicted.ticks).toBeLessThan(1000);
+		await page.clock.runFor((predicted.ticks * 1000) / 60 + 40);
 		await expect(
 			page.getByRole("dialog", { name: "Run complete" }),
 		).toBeVisible();
-		await expect(
-			page.getByText("TOO CLOSE TO THE STAR", { exact: true }),
-		).toBeVisible();
+		await expect(page.locator(".flight-page")).toHaveAttribute(
+			"data-ticks",
+			String(predicted.ticks),
+		);
 		await page.clock.resume();
 		await page.getByLabel("Your initials").fill(pilot.initials);
 		const submit = page.getByRole("button", {
@@ -119,9 +113,9 @@ test("two anonymous pilots complete runs, retry a rejected write and see a share
 				},
 			);
 			await submit.click();
-			await expect(page.locator(".flight-message")).toContainText(
-				"Verification fixture denied this write.",
-			);
+			await expect(
+				page.getByRole("dialog", { name: "Run complete" }).getByRole("status"),
+			).toContainText("Verification fixture denied this write.");
 			await expect(submit).toBeEnabled();
 			expect(rejected).toBe(true);
 		}
@@ -136,7 +130,8 @@ test("two anonymous pilots complete runs, retry a rejected write and see a share
 		await expect(
 			page.getByRole("cell", { name: new RegExp(`^${initials}\\b`) }),
 		).toBeVisible();
-	for (const name of ["Scout", "Corvette"])
-		await expect(page.getByRole("cell", { name, exact: true })).toBeVisible();
+	await expect(
+		page.getByRole("cell", { name: "Wasp", exact: true }),
+	).toHaveCount(2);
 	await context.close();
 });

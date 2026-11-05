@@ -29,22 +29,20 @@ describe("landing system", () => {
 		expect(classes.size).toBe(7);
 	});
 
-	it("opens with a substantial outer planet left of the centred launcher", () => {
+	it("places the sun in the lower-right and extends toward the upper-left", () => {
 		for (const random of [0, 0.5, 0.999]) {
 			const scene = new LandingSystem(() => random);
 			for (const [width, height] of [
-				[1280, 644],
-				[844, 337],
+				[1920, 1080],
+				[1024, 768],
 			]) {
-				const cardRight = width / 2 + 240;
-				const frame = scene.layout(width, height, cardRight);
+				const frame = scene.layout(width, height);
+				expect(frame.star.x).toBe(width * 0.75);
+				expect(frame.star.y).toBe(height * 0.75);
 				const outer = frame.planets[2];
-				expect(outer.x - outer.radius).toBeGreaterThan(0);
-				expect(outer.x + outer.radius).toBeLessThan(width - cardRight);
-				expect(outer.y - outer.radius).toBeGreaterThan(0);
-				expect(outer.y + outer.radius).toBeLessThan(height);
-				expect(frame.planets.every((body) => body.radius >= 19.5)).toBe(true);
-				expect(frame.star.x - frame.star.radius).toBeGreaterThan(cardRight);
+				expect(outer.x).toBeLessThan(width * 0.15);
+				expect(outer.y).toBeLessThan(height * 0.2);
+				expect(frame.planets.every((body) => body.radius > 0)).toBe(true);
 			}
 		}
 	});

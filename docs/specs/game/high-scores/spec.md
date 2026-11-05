@@ -154,7 +154,7 @@ export async function generateUidHash(uid: string): Promise<string> {
 - [ ] Current player's score highlighted if in top 20
 - [ ] Loading state while fetching
 - [ ] Empty state if no scores exist
-- [ ] Link back to game
+- [ ] Return link opens the title screen
 
 #### Security Rules
 

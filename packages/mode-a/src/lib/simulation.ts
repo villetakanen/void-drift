@@ -141,6 +141,21 @@ export class Simulation {
 				540 + Math.sin(planet.orbitAngle) * planet.orbitRadius,
 			);
 		}
+		if (this.settings.arrival && !this.settings.testFlight) {
+			const angle =
+				((Math.imul(this.settings.seed, 2654435761) >>> 0) / 4294967296) *
+				Math.PI *
+				2;
+			this.ship.pos.set(
+				960 + 1180 * Math.cos(angle),
+				540 + 1180 * Math.sin(angle),
+			);
+			this.ship.rotation = angle + Math.PI + (37 * Math.PI) / 180;
+			this.ship.vel.set(
+				600 * Math.cos(this.ship.rotation),
+				600 * Math.sin(this.ship.rotation),
+			);
+		}
 		this.state.sunType = "G";
 		if (this.settings.loadout)
 			this.state.resources.power = buildStats(this.settings.loadout).capacity;

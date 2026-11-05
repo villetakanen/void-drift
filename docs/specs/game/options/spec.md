@@ -266,7 +266,7 @@ If `localStorage` is undefined (SSR, private browsing restrictions):
 - [ ] Toggle works with mouse click
 - [ ] Toggle works with keyboard (Space/Enter)
 - [ ] Settings page is accessible via `/settings`
-- [ ] "Back to Game" navigation works
+- [ ] Return navigation opens the title screen
 - [ ] Mobile: toggle is tappable (44px target)
 
 ---

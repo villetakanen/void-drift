@@ -142,11 +142,11 @@ let closable = $state(true);
 			scanlines and darkened edge); the HUD and engine pads hide. Focus moves to
 			the dialog's first control and returns to the opener on close. Try it from
 			the keyboard: Tab never reaches the stage while the dialog is open.
-			<a href="/lab/flight">Flight Lab →</a>
+			<a href="/">Title screen →</a>
 		</p>
 		<label class="caption closable">
 			<input type="checkbox" bind:checked={closable}>
-			Escape closes it (as pause does; the menu and run complete do not)
+			Escape closes it (as pause does; run complete does not)
 		</label>
 		<div class="feed demo-host">
 			<div class="demo-stage" data-stage>

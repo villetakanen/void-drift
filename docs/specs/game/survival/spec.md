@@ -962,3 +962,14 @@ void-drift/
 3. Create PBI-016 (Hull & Fuel Systems)
 4. Create PBI-017 (Settings Route)
 5. Begin implementation (Week 1: Core Systems)
+
+## Interstellar arrival — 2026-11-05
+
+Every Survival launch and restart chooses a fresh seed. The seed determines orbit
+phase and a uniform full-circle entry position 1180 units from the system centre
+(inside the 1200-unit wrap boundary). Heading and velocity point 37 degrees off
+inward radial, at speed 600. Existing engine ceilings and physics remain in force.
+The revealed world holds still for three seconds: 3, 2, 1, then GO releases play.
+Resources and scoring time do not advance during the count. Hidden pages and pause
+hold the count; held controls apply at release. Reduced motion retains the count
+without ignition flicker. Flight Lab and builder test flight keep their existing start.

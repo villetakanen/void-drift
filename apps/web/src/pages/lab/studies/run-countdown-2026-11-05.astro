@@ -101,21 +101,20 @@ const study = studies.find(
 			countdown extends that wait by three seconds, with the revealed run on
 			screen and still. Flight Lab and builder flights skip the starting phase
 			and stay unaffected. <code>/lab/landing</code> already composes the
-			production launcher and handoff, so it shows the countdown with no new
-			Lab page.
+			production launcher and handoff, so it shows the countdown with no new Lab
+			page.
 		</p>
 		<p>
 			The shared surface is ready for the effect: additive stamping, a cached
 			luminous stamp built once with its halo, and the essential budget for a
 			cue that must not drop. One adaptation is needed. <code>FlightFx</code>
-			advances the surface with simulation ticks, which stay at zero during
-			the count, so the light would neither fade nor accept new stamps. The
-			surface needs a presentation clock: count time during the countdown,
-			then count time plus ticks, which stays monotonic. Stamping the digits in
-			world space at the ship's starting position, scaled by the inverse zoom,
-			keeps their screen size. It also lets the last light stay where the ship
-			launched once the camera starts following, as painted light already
-			does.
+			advances the surface with simulation ticks, which stay at zero during the
+			count, so the light would neither fade nor accept new stamps. The surface
+			needs a presentation clock: count time during the countdown, then count
+			time plus ticks, which stays monotonic. Stamping the digits in world space
+			at the ship's starting position, scaled by the inverse zoom, keeps their
+			screen size. It also lets the last light stay where the ship launched once
+			the camera starts following, as painted light already does.
 		</p>
 		<p>
 			The face ships as outlines rather than a font file. The countdown needs
@@ -124,10 +123,11 @@ const study = studies.find(
 			study's woff2. The countdown is HUD information, the status of a run about
 			to start, so it keeps the <code>--color-android-green</code> token; the
 			effects surface is only its painter. The canvas mirror in
-			<code>packages/core/src/lib/ui/colors.ts</code> does not yet carry that
-			token, so it gains one under the existing parity check. The countdown is
-			the first canvas text outside the <code>ui</code> face, so the typeface
-			table in the design-system core gains a row.
+			<code>packages/core/src/lib/ui/colors.ts</code>
+			does not yet carry that token, so it gains one under the existing parity
+			check. The countdown is the first canvas text outside the
+			<code>ui</code>
+			face, so the typeface table in the design-system core gains a row.
 		</p>
 		<p>
 			Unresolved choices, provisional for delivery: the final mark (GO in the
@@ -149,37 +149,37 @@ const study = studies.find(
 		<h3>S1 — Countdown glyphs and ignition painter (core, small–medium)</h3>
 		<ul>
 			<li>
-				Generate Saira Stencil 700 outlines for 0–3, G and O with the
-				logomark's conversion script; commit them with the OFL licence.
+				Generate Saira Stencil 700 outlines for 0–3, G and O with the logomark's
+				conversion script; commit them with the OFL licence.
 			</li>
 			<li>
 				Mirror <code>--color-android-green</code> in the canvas
-				<code>COLOR</code> map, kept equal by
+				<code>COLOR</code>
+				map, kept equal by
 				<code>scripts/check-contracts.mjs</code>. Add a painter in
-				<code>packages/core/src/lib/effects/</code> that maps count time and
-				final mark to cached luminous stamps in that colour, using the accepted
-				strike, hold and release.
+				<code>packages/core/src/lib/effects/</code>
+				that maps count time and final mark to cached luminous stamps in that
+				colour, using the accepted strike, hold and release.
 			</li>
 			<li>
 				Specs: <code>docs/specs/sfx-canvas.md</code> (countdown emitter) and
-				<code>docs/specs/design-system-core.md</code> (typeface row).
+				<code>docs/specs/design-system-core.md</code>
+				(typeface row).
 			</li>
 			<li>
 				Correctness: digits appear in descending order and then the final mark;
 				nothing is stamped outside the active windows; equal time gives equal
 				strike output; stamps use the essential allowance.
 			</li>
-			<li>
-				Fidelity: frames match the 02.1 reference conditions above.
-			</li>
+			<li>Fidelity: frames match the 02.1 reference conditions above.</li>
 		</ul>
 		<h3>S2 — Counted start in play (web and mode, medium; needs S1)</h3>
 		<ul>
 			<li>
 				Extend the starting phase in <code>FlightDeck</code> with a countdown
 				phase after the reveal, exposed as <code>data-phase</code>. The run's
-				simulation stays at zero ticks until the final mark, and it starts
-				with the mark.
+				simulation stays at zero ticks until the final mark, and it starts with
+				the mark.
 			</li>
 			<li>
 				Give <code>FlightFx</code> a presentation clock and let the countdown
@@ -192,12 +192,12 @@ const study = studies.find(
 			<li>
 				Correctness, in <code>tests/browser/landing.spec.ts</code> and unit
 				tests: Launch enters the countdown, and ticks and resources stay
-				unchanged through it. Input delivered during the count does not move
-				the ship; play begins at the final mark. Repeated activation is
-				ignored, and a hidden page pauses the count. Reduced motion starts
-				immediately, and Lab and builder flights are unchanged. The surface
-				decays during the count and keeps the countdown's light at its world
-				position after play begins.
+				unchanged through it. Input delivered during the count does not move the
+				ship; play begins at the final mark. Repeated activation is ignored, and
+				a hidden page pauses the count. Reduced motion starts immediately, and
+				Lab and builder flights are unchanged. The surface decays during the
+				count and keeps the countdown's light at its world position after play
+				begins.
 			</li>
 			<li>
 				Fidelity: <code>/lab/landing</code> shows the accepted reference over

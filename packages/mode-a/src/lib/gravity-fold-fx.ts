@@ -5,6 +5,7 @@ import {
 	FxSurface,
 	type GameObject,
 	paintArc,
+	paintSpeedLine,
 } from "@void-drift/core";
 import {
 	BUILD_FLIGHT_SCALE,
@@ -82,6 +83,18 @@ export class FlightFx {
 		this.weaponTime = 0;
 	}
 	drawShip(ctx: CanvasRenderingContext2D, sim: Simulation, fold = true) {
+		if (sim.settings.arrival && !sim.settings.testFlight) {
+			const fade = Math.max(0, 1 - sim.ticks / 90);
+			paintSpeedLine(
+				ctx,
+				this.pass,
+				sim.ship.pos.x - Math.cos(sim.ship.rotation) * sim.ship.radius,
+				sim.ship.pos.y - Math.sin(sim.ship.rotation) * sim.ship.radius,
+				sim.ship.vel.x,
+				sim.ship.vel.y,
+				fade,
+			);
+		}
 		sim.plume.stamp(ctx, this.pass);
 		if (sim.salvage) {
 			const salvage = sim.salvage;
@@ -125,6 +138,8 @@ export class FlightFx {
 		sim: Simulation,
 		fold = true,
 		additive = true,
+		presentationTime = sim.ticks / 60,
+		overlay?: (ctx: CanvasRenderingContext2D, pass: FxPass) => void,
 	) {
 		if (this.simulation !== sim) {
 			this.clear();
@@ -132,10 +147,11 @@ export class FlightFx {
 		}
 		this.surface.draw(
 			ctx,
-			sim.ticks / 60,
+			presentationTime,
 			(light) => {
 				this.drawShip(light, sim, fold);
 				this.drawParticles(light);
+				overlay?.(light, this.pass);
 			},
 			additive,
 		);

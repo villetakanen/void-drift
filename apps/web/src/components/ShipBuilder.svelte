@@ -199,6 +199,7 @@ function choose(id: ShipProfileId) {
 {#if flying}
 	<FlightDeck
 		loadout={build}
+		launchSource="hangar"
 		testFlight={flying === "test"}
 		onReturn={() => (flying = null)}
 	/>
@@ -210,7 +211,7 @@ function choose(id: ShipProfileId) {
 				>{lab
 					? "SHIP BUILDER LAB / SHARED SYSTEMS"
 					: `HANGAR / ${version}`}</span
-			><a href="/lab/flight">Flight Lab</a>
+			><a href="/">Return to title screen</a>
 		</header>
 		<div class="heading">
 			<h1>Hangar</h1>

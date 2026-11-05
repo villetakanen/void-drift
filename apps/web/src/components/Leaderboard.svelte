@@ -85,7 +85,7 @@ onMount(() => {
 					disabled={loading}
 				>
 					{error ? "Retry" : "Refresh"}
-				</button><a class="btn btn-filled" href="/">Fly again</a>
+				</button><a class="btn btn-filled" href="/">Return to title screen</a>
 			</div>
 		</div>
 		<p class="score-version">{version}</p>

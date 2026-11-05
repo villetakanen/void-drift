@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Camera, Input, Renderer } from "@void-drift/core";
+import { Camera, Input, paintCountdown, Renderer } from "@void-drift/core";
 import {
 	BUILD_FLIGHT_SCALE,
 	buildStats,
@@ -7,22 +7,14 @@ import {
 	drawBuild,
 	drawSalvage,
 	FlightFx,
-	type FlightSettings,
-	FlightSettingsSchema,
 	type FlightTickInput,
-	fittedParts,
 	gameSettings,
 	LandingSystem,
 	type Loadout,
-	labSettings,
-	PARTS,
-	SHIP_IDENTITY,
 	type ShipProfileId,
-	ShipProfileIdSchema,
 	Simulation,
 	STEP,
 	scoresAvailable,
-	starterLoadout,
 	stockSettings,
 	submitHighScore,
 } from "@void-drift/mode-a";
@@ -30,17 +22,17 @@ import { onMount } from "svelte";
 import { version } from "../../package.json";
 import { settings } from "../lib/stores/settings";
 import Dialog from "./Dialog.svelte";
-import Toggle from "./inputs/Toggle.svelte";
 import Logo from "./Logo.svelte";
+import TitleScreen from "./TitleScreen.svelte";
 
 let {
-	lab = false,
 	loadout,
+	launchSource = "title",
 	testFlight = false,
 	onReturn,
 }: {
-	lab?: boolean;
 	loadout?: Loadout;
+	launchSource?: "title" | "hangar";
 	testFlight?: boolean;
 	onReturn?: () => void;
 } = $props();
@@ -50,8 +42,7 @@ let input: Input;
 let renderer: Renderer;
 let camera: Camera;
 const flightFx = new FlightFx();
-let chosen = $state<ShipProfileId>("fighter");
-let tuning = $state<FlightSettings>(stockSettings());
+let chosen = $derived<ShipProfileId>(loadout?.chassis ?? "wasp");
 let status = $state("MENU");
 let paused = $state(false);
 let seconds = $state(0);
@@ -62,8 +53,8 @@ let y = $state(540);
 let zoom = $state(1);
 let zoomLevel = $state(0);
 let activeZoomSteps = $state(5);
-let previewLevel = $state(-1);
 let ticks = $state(0);
+let runSeed = $state(0);
 let left = $state(false);
 let right = $state(false);
 let cause = $state("");
@@ -81,82 +72,44 @@ let salvageStats = $state({
 });
 let engineFeedback = $state("");
 let activeLoadout = $state<Loadout>();
-// Fleet order: Fiddler joins as the unranked Ship 05 flight trial.
-const LAUNCHER_ORDER: readonly ShipProfileId[] = [
-	"scout",
-	"wasp",
-	"fighter",
-	"corvette",
-	"fiddler",
-];
-let shipArt = $state<HTMLCanvasElement>();
-const launcherNumber = (index: number) => String(index + 1).padStart(2, "0");
-// "3× Light ion · 1× Energy storage", counted from the loadout that flies.
-function equipment(build: Loadout) {
-	const counts = new Map<string, number>();
-	for (const id of fittedParts(build))
-		counts.set(PARTS[id].name, (counts.get(PARTS[id].name) ?? 0) + 1);
-	return `Equipped: ${[...counts].map(([name, n]) => `${n}× ${name}`).join(" · ")}`;
-}
-$effect(() => {
-	const context = shipArt?.getContext("2d");
-	if (!context || !shipArt) return;
-	const build = tuning.loadout ?? starterLoadout(chosen);
-	context.clearRect(0, 0, shipArt.width, shipArt.height);
-	drawBuild(
-		context,
-		build,
-		shipArt.width / 2,
-		shipArt.height / 2,
-		-Math.PI / 2,
-		build.chassis === "fiddler" ? 2.3 : 3.2,
-	);
-});
 let phase = $state<"menu" | "starting" | "playing">("menu");
 let landing = $state.raw<LandingSystem>();
 let transitionTime = 0;
+let countTime = -1;
 let transitionBlurred = false;
 let sceneOpacity = $state(1);
 let reducedMotion = false;
 let stage: HTMLElement;
 let landingFrame = { width: 1920, height: 1080, cardRight: 1200 };
 function enterMenu() {
-	if (!lab && !loadout) landing = new LandingSystem();
+	landing = new LandingSystem();
+	sceneOpacity = 1;
 	phase = "menu";
 	reset(false);
 }
 let spin = $state(0);
-let wraps = $state(0);
-let json = $state("");
 let message = $state("");
 let initials = $state("AAA");
 let saving = $state(false);
 let scoreSaved = $state(false);
-const replay = [
-	{ ticks: 180, leftThruster: true, rightThruster: true, fire: false as const },
-	{ ticks: 90, leftThruster: true, rightThruster: false, fire: false as const },
-	{ ticks: 180, leftThruster: true, rightThruster: true, fire: false as const },
-];
-const coast = [
-	{
-		ticks: 36000,
-		leftThruster: false,
-		rightThruster: false,
-		fire: false as const,
-	},
-];
 function reset(start = false) {
 	pendingDerelict = false;
 	if (phase !== "starting") phase = start ? "playing" : "menu";
 	input?.reset();
-	previewLevel = -1;
 	simulation = new Simulation(
 		loadout
 			? { ...stockSettings(loadout.chassis), loadout, testFlight }
-			: lab
-				? tuning
-				: gameSettings(chosen),
+			: gameSettings("wasp"),
 	);
+	if (start && !testFlight) {
+		simulation = new Simulation({
+			...simulation.settings,
+			arrival: true,
+			seed: (crypto.getRandomValues(new Uint32Array(1))[0] % 2147483647) + 1,
+		});
+		countTime = 0;
+		phase = "starting";
+	} else countTime = -1;
 	if (start) simulation.start();
 	paused = false;
 	scoreSaved = false;
@@ -176,7 +129,7 @@ function frameCamera(snap = false) {
 		c.smoothing,
 		snap,
 		c.zoomSteps,
-		lab && previewLevel >= 0 ? previewLevel : null,
+		null,
 	);
 }
 function sync() {
@@ -205,22 +158,15 @@ function sync() {
 	x = simulation.ship.pos.x;
 	y = simulation.ship.pos.y;
 	ticks = simulation.ticks;
-	wraps = simulation.wraps;
+	runSeed = simulation.settings.seed;
 	cause = simulation.state.deathCause ?? "";
 	zoom = camera?.zoom ?? 1;
 	zoomLevel = camera?.zoomLevel ?? 0;
 	activeZoomSteps = simulation.settings.camera.zoomSteps;
 }
-function selectShip(value: string) {
-	if (phase === "starting") return;
-	chosen = ShipProfileIdSchema.parse(value);
-	tuning = lab ? labSettings(chosen) : gameSettings(chosen);
-	settings.set({ ...settings.get(), selectedShipId: chosen });
-	reset(false);
-}
 function start() {
 	if (phase === "starting") return;
-	if (!lab && !loadout && !reducedMotion) {
+	if (launchSource === "title" && !reducedMotion && landing) {
 		phase = "starting";
 		transitionTime = 0;
 		transitionBlurred = false;
@@ -228,6 +174,7 @@ function start() {
 	} else {
 		landing = undefined;
 		phase = "playing";
+		transitionTime = 0.3;
 		reset(true);
 	}
 	(document.activeElement as HTMLElement)?.blur();
@@ -235,12 +182,6 @@ function start() {
 function togglePause() {
 	paused = !paused;
 	input?.reset();
-}
-function step() {
-	if (simulation.state.status === "MENU") simulation.start();
-	paused = true;
-	advance({ leftThruster: false, rightThruster: false, fire: false });
-	sync();
 }
 function advance(state: FlightTickInput) {
 	const before = simulation.wraps;
@@ -252,56 +193,8 @@ function advance(state: FlightTickInput) {
 	frameCamera(before !== simulation.wraps);
 	camera.update(STEP);
 }
-function trial(coasting = false) {
-	reset(true);
-	const sequence = coasting ? coast : replay;
-	const historyStart =
-		sequence.reduce((sum, chunk) => sum + chunk.ticks, 0) - 60;
-	for (const chunk of sequence)
-		for (
-			let i = 0;
-			i < chunk.ticks && simulation.state.status === "PLAYING";
-			i++
-		) {
-			advance(chunk);
-			// Seek the image history too; only the final second can remain visible.
-			const context = canvas?.getContext("2d");
-			if (context && simulation.ticks >= historyStart) {
-				context.save();
-				camera.applyTransform(context);
-				flightFx.draw(context, simulation);
-				context.restore();
-			}
-		}
-	paused = true;
-	sync();
-}
-function apply() {
-	const parsed = FlightSettingsSchema.safeParse(tuning);
-	if (!parsed.success) {
-		message = "Use finite values within the displayed tuning ranges.";
-		return;
-	}
-	tuning = parsed.data;
-	chosen = tuning.profile.id;
-	reset(false);
-	json = JSON.stringify(tuning, null, 2);
-}
-function importTrial() {
-	try {
-		const next = FlightSettingsSchema.parse(JSON.parse(json));
-		tuning = next;
-		chosen = next.profile.id;
-		reset(false);
-		message = "Trial imported. Ready to fly or replay.";
-	} catch {
-		message =
-			"Invalid trial. Check the seed, profile and camera ranges. Current flight is unchanged.";
-	}
-}
 async function save() {
 	if (
-		lab ||
 		loadout ||
 		chosen === "fiddler" ||
 		status !== "GAME_OVER" ||
@@ -334,25 +227,11 @@ function release(event: PointerEvent) {
 	input?.setPointer(event.pointerId, null);
 }
 onMount(() => {
-	chosen =
-		loadout?.chassis ?? (lab ? settings.get().selectedShipId : "fighter");
-	tuning = lab ? labSettings(chosen) : gameSettings(chosen);
-	if (lab) {
-		const trialJSON = new URL(location.href).searchParams.get("trial");
-		if (trialJSON) {
-			try {
-				tuning = FlightSettingsSchema.parse(JSON.parse(trialJSON));
-				chosen = tuning.profile.id;
-			} catch {
-				message = "Invalid trial link; using Light-ion lab settings.";
-			}
-		}
-	}
 	renderer = new Renderer(canvas);
 	renderer.resize(1920, 1080);
 	camera = new Camera();
 	input = new Input(canvas);
-	if (!lab && !loadout) enterMenu();
+	if (launchSource === "title") enterMenu();
 	else reset(Boolean(loadout));
 	const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
 	const updateMotion = () => {
@@ -362,11 +241,10 @@ onMount(() => {
 	motion.addEventListener("change", updateMotion);
 	const measure = () => {
 		const bounds = stage.getBoundingClientRect();
-		const card = stage.querySelector(".flight-card")?.getBoundingClientRect();
 		landingFrame = {
 			width: bounds.width,
 			height: bounds.height,
-			cardRight: card ? card.right - bounds.left : bounds.width / 2 + 240,
+			cardRight: bounds.width / 2,
 		};
 	};
 	const resize = new ResizeObserver(measure);
@@ -379,6 +257,7 @@ onMount(() => {
 	function draw(time: number) {
 		const dt = Math.min((time - last) / 1000, 0.1);
 		last = time;
+		let released = false;
 		if (phase === "starting" && !document.hidden) {
 			transitionTime += reducedMotion ? 0.3 : dt;
 			if (transitionTime >= 0.15 && landing) {
@@ -391,17 +270,26 @@ onMount(() => {
 				transitionTime < 0.15
 					? 1 - transitionTime / 0.15
 					: Math.min(1, (transitionTime - 0.15) / 0.15);
-			if (transitionTime >= 0.3) {
+			if (transitionTime >= 0.3 && countTime >= 3) {
+				released = true;
 				phase = "playing";
-				input.reset();
 				accumulator = 0;
 			}
 		}
+		if (
+			phase === "starting" &&
+			!landing &&
+			transitionTime >= 0.3 &&
+			!document.hidden &&
+			!paused
+		)
+			countTime = Math.min(3, countTime + dt);
 		const controls = input.getEffectiveState(settings.get().invertControls);
 		left = controls.leftThruster;
 		right = controls.rightThruster;
 		if (
 			!paused &&
+			!released &&
 			phase !== "starting" &&
 			simulation.state.status === "PLAYING"
 		) {
@@ -453,7 +341,30 @@ onMount(() => {
 					simulation.settings.profile.tint,
 					chosen,
 				);
-			if (context) flightFx.draw(context, simulation);
+			const countCentre = camera.screenToWorld(
+				canvas.width / 2,
+				canvas.height / 2,
+			);
+			if (context)
+				flightFx.draw(
+					context,
+					simulation,
+					true,
+					true,
+					Math.max(0, countTime) + simulation.ticks * STEP,
+					countTime < 0
+						? undefined
+						: (light, pass) =>
+								paintCountdown(
+									light,
+									pass,
+									countTime + simulation.ticks * STEP,
+									countCentre.x,
+									countCentre.y,
+									camera.zoom,
+									reducedMotion,
+								),
+				);
 			renderer.endCamera();
 		}
 		frame = requestAnimationFrame(draw);
@@ -461,17 +372,6 @@ onMount(() => {
 	const key = (event: KeyboardEvent) => {
 		if (event.code === "Escape" && status === "PLAYING" && !paused)
 			togglePause();
-		const digit = /^Digit([1-9])$/.exec(event.code);
-		// Text entry keeps its digits; choice inputs such as the ship toggle do not.
-		const typing =
-			event.target instanceof HTMLElement &&
-			event.target.closest(
-				"textarea, select, [contenteditable], input:not([type=radio], [type=checkbox], [type=range], [type=button])",
-			);
-		if (status === "MENU" && phase !== "starting" && digit && !typing) {
-			const id = LAUNCHER_ORDER[Number(digit[1]) - 1];
-			if (id) selectShip(id);
-		}
 	};
 	const blur = () => {
 		if (phase === "starting") transitionBlurred = true;
@@ -492,8 +392,9 @@ onMount(() => {
 </script>
 
 <div
-	class:lab
 	class="flight-page"
+	class:title-active={Boolean(landing)}
+	data-launch-source={launchSource}
 	data-status={status}
 	data-salvage-passes={salvageStats.passes}
 	data-salvage-destroyed={salvageStats.destroyed}
@@ -507,58 +408,55 @@ onMount(() => {
 	data-x={x.toFixed(4)}
 	data-y={y.toFixed(4)}
 	data-ticks={ticks}
+	data-seed={runSeed}
 	data-spin={spin.toFixed(4)}
 	data-stabilizers={activeLoadout?.stabilizers ?? false}
 	data-zoom={zoom.toFixed(4)}
 	data-zoom-level={zoomLevel}
 	data-zoom-steps={activeZoomSteps}
 >
-	<header class="flight-header">
-		<a href="/" class="brand"><Logo size="sm" /></a>
-		<span class="edition"
-			>{loadout
-				? testFlight
-					? "BUILDER / TEST FLIGHT"
-					: "CUSTOM SURVIVAL / UNRANKED"
-				: lab
-					? "FLIGHT LAB"
+	{#if !landing}
+		<header class="flight-header">
+			<a href="/" class="brand"><Logo size="sm" /></a>
+			<span class="edition"
+				>{loadout
+					? testFlight
+						? "BUILDER / TEST FLIGHT"
+						: "CUSTOM SURVIVAL / UNRANKED"
 					: chosen === "fiddler"
 						? "FIDDLER / UNRANKED FLIGHT TRIAL"
 						: `SURVIVAL / ${version}`}</span
-		>
-		<nav class:build-nav={Boolean(loadout)} aria-label="Flight navigation">
-			{#if onReturn}
-				<button type="button" class="btn btn-link" onclick={onReturn}>
-					Return to builder
-				</button><button
-					type="button"
-					class="btn btn-link"
-					onclick={() => reset(true)}
-				>
-					Reset flight
-				</button>
-			{/if}
-			{#if testFlight && loadout}
-				<button
-					type="button"
-					class="btn btn-link"
-					disabled={paused ||
-						pendingDerelict ||
-						!canSendDerelict ||
-						status !== "PLAYING"}
-					onclick={() => (pendingDerelict = true)}
-				>
-					Send derelict
-				</button>
-			{/if}
-			{#if lab}
-				<a href="/">PLAY</a>
-			{:else if !loadout}
-				<a href="/builder">HANGAR</a>
-			{/if}
-			<a href="/leaderboard">HIGH SCORES</a><a href="/settings">OPTIONS</a>
-		</nav>
-	</header>
+			>
+			<nav class:build-nav={Boolean(loadout)} aria-label="Flight navigation">
+				{#if onReturn}
+					<button type="button" class="btn btn-link" onclick={onReturn}>
+						Return to builder
+					</button><button
+						type="button"
+						class="btn btn-link"
+						onclick={() => reset(true)}
+					>
+						Reset flight
+					</button>
+				{/if}
+				{#if testFlight && loadout}
+					<button
+						type="button"
+						class="btn btn-link"
+						disabled={paused ||
+							pendingDerelict ||
+							!canSendDerelict ||
+							status !== "PLAYING"}
+						onclick={() => (pendingDerelict = true)}
+					>
+						Send derelict
+					</button>
+				{/if}
+
+				<a href="/leaderboard">HIGH SCORES</a><a href="/settings">OPTIONS</a>
+			</nav>
+		</header>
+	{/if}
 	<div class="flight-layout">
 		<section
 			bind:this={stage}
@@ -567,7 +465,11 @@ onMount(() => {
 			style:opacity={sceneOpacity}
 			aria-label="Flight arena"
 		>
-			<div class="flight-stage-layer" data-stage>
+			<div
+				class="flight-stage-layer"
+				class:scrim-stage={Boolean(landing)}
+				data-stage
+			>
 				<canvas
 					bind:this={canvas}
 					aria-label={landing
@@ -626,7 +528,7 @@ onMount(() => {
 								? testFlight
 									? "TEST / NO GAME-OVER"
 									: "CUSTOM BUILD / UNRANKED"
-								: lab || chosen === "fiddler"
+								: chosen === "fiddler"
 									? "UNRANKED TRIAL"
 									: "G CLASS / SHARED CHALLENGE"}</small
 						>
@@ -645,48 +547,9 @@ onMount(() => {
 					</button>
 				</div>
 			</div>
-			{#if status === "MENU"}
-				<Dialog label="Game menu" class="flight-card" returnFocus={false}>
-					<div class="title-frame">
-						<span class="title-logo"><Logo size="sm" /></span>
-						<h1>VOID DRIFT</h1>
-					</div>
-					<p class="eyebrow">SELECT YOUR SHIP</p>
-					<div class="ship-select">
-						<Toggle
-							label="SELECT YOUR SHIP"
-							options={LAUNCHER_ORDER.map((_, index) => launcherNumber(index))}
-							bind:value={
-								() => launcherNumber(LAUNCHER_ORDER.indexOf(chosen)),
-								(number) => selectShip(LAUNCHER_ORDER[Number(number) - 1])
-							}
-						/>
-						<p class="ship-name">{SHIP_IDENTITY[chosen].shortName}</p>
-						<canvas
-							bind:this={shipArt}
-							class="ship-art"
-							width="480"
-							height="340"
-							aria-hidden="true"
-						></canvas>
-						<p class="ship-detail">
-							{SHIP_IDENTITY[chosen].longName}<br>
-							{equipment(tuning.loadout ?? starterLoadout(chosen))}
-						</p>
-					</div>
-					<div class="button-group button-group--vertical">
-						<button
-							type="button"
-							class="btn btn-filled"
-							data-autofocus
-							disabled={phase === "starting"}
-							onclick={start}
-						>
-							PRESS START
-						</button>
-					</div>
-					<p class="title-version">{version}</p>
-				</Dialog>
+			{#if landing}
+				<div class="dialog-scrim" aria-hidden="true"></div>
+				<TitleScreen onStart={start} disabled={phase === "starting"} />
 			{:else if status === "GAME_OVER"}
 				<Dialog label="Run complete" class="flight-card">
 					<p class="eyebrow">
@@ -698,7 +561,7 @@ onMount(() => {
 					</p>
 					<h1>{seconds.toFixed(1)} seconds.</h1>
 					<p>Every orbit teaches you something.</p>
-					{#if !lab && !loadout && chosen !== "fiddler"}
+					{#if !loadout && chosen !== "fiddler"}
 						<label for="initials">Your initials</label>
 						<input
 							id="initials"
@@ -710,8 +573,11 @@ onMount(() => {
 							}}
 						>
 					{/if}
+					{#if message}
+						<p role="status" class="flight-message">{message}</p>
+					{/if}
 					<div class="button-group button-group--vertical">
-						{#if !lab && !loadout && chosen !== "fiddler"}
+						{#if !loadout && chosen !== "fiddler"}
 							<button
 								type="button"
 								class="btn btn-filled"
@@ -730,7 +596,9 @@ onMount(() => {
 							data-autofocus
 							onclick={() => (onReturn ? onReturn() : enterMenu())}
 						>
-							{onReturn ? "Return to builder" : "Play Again"}
+							{launchSource === "hangar"
+								? "Return to Hangar"
+								: "Return to title screen"}
 						</button><a class="btn btn-ghost" href="/leaderboard">Top Scores</a>
 					</div>
 				</Dialog>
@@ -746,198 +614,43 @@ onMount(() => {
 						>
 							Resume
 						</button>
+						<button
+							type="button"
+							class="btn btn-ghost"
+							onclick={() => (onReturn ? onReturn() : enterMenu())}
+						>
+							Abort
+						</button>
 					</div>
 				</Dialog>
 			{/if}
 		</section>
-		{#if lab}
-			<aside class="flight-inspector">
-				<h2>Flight instruments</h2>
-				<p>Production physics. Repeatable trials.</p>
-				<label for="seed">Scenario seed</label>
-				<input
-					id="seed"
-					type="number"
-					min="1"
-					max="2147483647"
-					bind:value={tuning.seed}
-				>
-				{#if tuning.loadout}
-					<label
-						><input
-							type="checkbox"
-							bind:checked={tuning.loadout.stabilizers}
-							disabled={tuning.loadout.chassis === "wasp" ||
-								tuning.loadout.chassis === "fiddler"}
-						>
-						Ion stabilizers</label
-					>
-					<p>
-						0.22 thrust · 0.25 Light-ion energy when firing. Default trials use
-						two Light-ion side engines with empty aft mounts.
-					</p>
-					{#each ["acceleration", "maxTurn"] as key}
-						<label for={`ion-${key}`}
-							>{{
-								acceleration: "Light ion acceleration at 115 mass",
-								maxTurn: "Maximum rotation °/s",
-							}[key]}</label
-						>
-						<input
-							id={`ion-${key}`}
-							type="number"
-							step={1}
-							min={1}
-							max={key === "maxTurn" ? 720 : 2000}
-							bind:value={tuning.ion[key as "acceleration" | "maxTurn"]}
-						>
-					{/each}
-					<p>
-						Rotation: {spin.toFixed(1)}°/s. Apply settings to restart the trial.
-					</p>
-				{:else}
-					{#each [
-						"thrustMultiplier",
-						"turnMultiplier",
-						"hullMultiplier",
-						"powerDrainMultiplier",
-					] as key}
-						<label for={key}
-							>{key.replace("Multiplier", "")}
-							×
-							{Number(tuning.profile[key as "thrustMultiplier"]).toFixed(
-								2,
-							)}</label
-						><input
-							id={key}
-							type="range"
-							min="0.5"
-							max="2"
-							step="0.01"
-							bind:value={tuning.profile[key as "thrustMultiplier"]}
-						>
-					{/each}
-				{/if}
-
-				<h3>Solar system zoom</h3>
-				<p>Fixed 1920 × 1080 · 16:9. Zoom snaps; trails stay in space.</p>
-				<label for="zoom-steps">Zoom levels: {tuning.camera.zoomSteps}</label>
-				<input
-					id="zoom-steps"
-					type="range"
-					min="4"
-					max="11"
-					step="1"
-					bind:value={tuning.camera.zoomSteps}
-				>
-				<label for="zoom-preview">Preview zoom</label>
-				<select
-					id="zoom-preview"
-					bind:value={previewLevel}
-					onchange={() => {
-						frameCamera(true);
-						sync();
-					}}
-				>
-					<option value={-1}>Automatic framing</option>
-					{#each Array(activeZoomSteps) as _, i}
-						<option value={i}>
-							Level {i + 1}{i === 0
-								? " · Whole system"
-								: i === activeZoomSteps - 1
-									? " · Close"
-									: ""}
-						</option>
-					{/each}
-				</select>
-				<p>
-					Apply & reset to change the number of levels. Preview any level while
-					paused or flying.
-				</p>
-				<label for="padding">Camera padding</label>
-				<input
-					id="padding"
-					type="range"
-					min="80"
-					max="400"
-					bind:value={tuning.camera.padding}
-				><label for="smoothing">Camera pan response</label>
-				<input
-					id="smoothing"
-					type="range"
-					min="1"
-					max="12"
-					step="0.5"
-					bind:value={tuning.camera.smoothing}
-				>
-				<div class="button-group button-group--vertical">
-					<button type="button" class="btn btn-filled" onclick={apply}>
-						Apply & reset
-					</button><button type="button" class="btn btn-ghost" onclick={step}>
-						Step 1 frame
-					</button><button
-						type="button"
-						class="btn btn-ghost"
-						onclick={() => trial()}
-					>
-						Replay trial
-					</button><button
-						type="button"
-						class="btn btn-ghost"
-						onclick={() => trial(true)}
-					>
-						Coast to end
-					</button>
-				</div>
-				<output
-					>Tick {ticks} · Level {zoomLevel + 1}/{activeZoomSteps}
-					· Zoom {zoom.toFixed(2)} · Wraps {wraps}<br>Position
-					{x.toFixed(1)}, {y.toFixed(1)}</output
-				>
-				<label for="trial-json">Trial configuration</label
-				><textarea
-					id="trial-json"
-					bind:value={json}
-					spellcheck="false"
-				></textarea>
-				<div class="button-group button-group--vertical">
-					<button
-						type="button"
-						class="btn btn-ghost"
-						onclick={() => {
-							json = JSON.stringify(simulation.settings, null, 2);
-						}}
-					>
-						Export JSON
-					</button><button
-						type="button"
-						class="btn btn-ghost"
-						onclick={importTrial}
-					>
-						Import JSON
-					</button>
-				</div>
-				<a
-					href={`/lab/flight?trial=${encodeURIComponent(JSON.stringify(tuning))}`}
-					>Open shareable trial</a
-				><a href="/lab">Asset & token Lab →</a>
-			</aside>
-		{/if}
 	</div>
-	{#if message}
-		<p role="status" class="flight-message panel panel--flat">{message}</p>
-	{/if}
 </div>
 
 <style>
-@media (max-height: 500px) {
-	.flight-stage.landing :global(.ship-art) {
-		width: 140px;
-		height: 100px;
-	}
-	.flight-stage.landing :global(.flight-card h1) {
-		font-size: var(--font-size-heading);
-	}
+.flight-message {
+	position: static;
+}
+.title-active {
+	padding: 0;
+}
+.title-active .flight-layout {
+	display: block;
+	height: 100dvh;
+}
+.title-active .flight-stage {
+	width: 100%;
+	height: 100%;
+	max-height: none;
+	aspect-ratio: auto;
+}
+.title-active .flight-stage-layer {
+	width: 100%;
+	height: 100%;
+}
+.title-active [data-hud] {
+	display: none;
 }
 
 .flight-stage.landing > .flight-stage-layer > canvas {

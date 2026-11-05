@@ -46,7 +46,7 @@ function handleKeydown(event: KeyboardEvent) {
 
 	<footer class="button-group-frame">
 		<div class="button-group button-group--strip">
-			<a href="/" class="btn btn-ghost">Back to Game</a>
+			<a href="/" class="btn btn-ghost">Return to title screen</a>
 		</div>
 	</footer>
 </div>

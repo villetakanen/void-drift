@@ -1,7 +1,8 @@
 # Opening-screen navigation and dialog modality
 
-Status: deferred by the owner on 2026-11-03. This is separate from test pruning;
-no screen redesign or modal behavior change is implemented by that work.
+Status: resolved 2026-11-05. The owner chose normal title-screen navigation;
+actual interrupting dialogs retain modal focus. The original deferral and options
+below remain as the decision record.
 
 ## Problem and owner decisions
 

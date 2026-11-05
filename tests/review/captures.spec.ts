@@ -13,12 +13,29 @@ async function freeze(page: Page) {
 	await page.clock.pauseAt(time);
 }
 
-test("flight trial at its fixed seed and replay tick", async ({
+test("title composition at desktop, tablet and ultrawide sizes", async ({
 	page,
 }, info) => {
-	await page.goto("/lab/flight");
-	await page.getByRole("button", { name: "Replay trial", exact: true }).click();
-	await capture(page, info, "flight-trial");
+	await page.emulateMedia({ reducedMotion: "reduce" });
+	for (const [name, width, height] of [
+		["desktop", 1920, 1080],
+		["tablet", 1024, 768],
+		["tablet-portrait", 768, 1024],
+		["ultrawide", 2560, 1080],
+	] as const) {
+		await page.setViewportSize({ width, height });
+		await page.goto("/");
+		await expect(
+			page.getByRole("button", { name: "PRESS START" }),
+		).toBeVisible();
+		await capture(page, info, `title-${name}`);
+	}
+});
+
+test("Hangar test flight", async ({ page }, info) => {
+	await page.goto("/builder");
+	await page.getByRole("button", { name: "Test flight", exact: true }).click();
+	await capture(page, info, "hangar-test-flight");
 });
 
 test("production ship preview and assembled hulls", async ({ page }, info) => {

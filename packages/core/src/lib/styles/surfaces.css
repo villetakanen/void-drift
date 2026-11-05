@@ -111,7 +111,7 @@
 .dialog-layer > .panel:focus {
 	outline: none;
 }
-[data-stage][inert] {
+.scrim-stage {
 	filter: var(--scrim-filter);
 	transition: filter var(--duration-fast) var(--ease-standard);
 }
@@ -120,7 +120,7 @@
    dialog layer is its own group, so a blend there has nothing to mix. A stage
    must paint an opaque background, or the tint shows as flat colour wherever
    it is transparent. */
-[data-stage][inert]::after {
+.scrim-stage::after {
 	content: "";
 	position: absolute;
 	inset: 0;
@@ -128,7 +128,7 @@
 	mix-blend-mode: hue;
 	pointer-events: none;
 }
-[data-stage][inert] [data-hud] {
+.scrim-stage [data-hud] {
 	visibility: hidden;
 }
 @keyframes dialog-in {
@@ -140,7 +140,7 @@
 	.dialog-scrim {
 		animation: none;
 	}
-	[data-stage][inert] {
+	.scrim-stage {
 		transition: none;
 	}
 }

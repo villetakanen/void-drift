@@ -332,3 +332,16 @@ must be identified separately from earlier reference-workload measurements.
   [Living Specs](https://asdlc.io/practices/living-specs/) (both updated 2026-10-05),
   and [Gherkin](https://asdlc.io/concepts/gherkin/), checked 2026-11-03.
   The repository's established `docs/specs/` layout is retained.
+
+## Arrival countdown
+
+Saira Stencil 700 outlines paint Android-green ignition numerals through the shared
+essential FX allowance. A presentation clock advances during the frozen count, then
+continues with simulation time. The countdown and GO are stamped at the centre of the gameplay viewport,
+independent of ship position. Residual light follows the shared surface decay.
+
+An Android-green speed line extends backward from the arriving ship's rear,
+opposite its velocity. It is visible throughout the countdown and fades over the
+first 1.5 seconds of flight. Its length scales with speed, capped at 420 world
+units. It uses the shared essential allowance and persistent light decay; pause
+and reset follow the existing surface lifecycle. It does not affect physics.

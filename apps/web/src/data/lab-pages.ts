@@ -130,13 +130,7 @@ export const labPages = z.array(labPageSchema).parse([
 		group: "ships-and-world",
 		source: "sketch",
 	},
-	{
-		href: "/lab/flight",
-		title: "Flight trials",
-		purpose: "Fly the real game loop with tuning, seed and replay.",
-		group: "tools",
-		source: "production",
-	},
+
 	{
 		href: "/lab/instrument",
 		title: "Ship tuning",
