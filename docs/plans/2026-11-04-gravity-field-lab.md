@@ -60,7 +60,8 @@ Each step is a local commit with its spec update and passing checks.
    [gravity-model.md](../gravity-model.md). Done 2026-11-04.
 
 R6 supersedes the earlier planets-then-suns rollout: both now use the mass law.
-R5's complete stable verification is carried by the 0.5.3 consolidation candidate.
+R5's full verification passed on the stable 0.5.3 candidate `fa51539`; see
+[release evidence](../releases/0.5.3.md).
 The newer Motion instrument conformance requirements remain a separate deferred
 implementation; this plan does not claim they are complete.
 
