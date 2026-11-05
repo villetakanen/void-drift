@@ -74,6 +74,7 @@ test("fit, persist, fly, reset and return to an assembled ship", async ({
 		}),
 	).toBeVisible();
 	await page.getByRole("button", { name: "Start survival" }).click();
+	await page.clock.runFor(3200);
 	await expect(page.locator(".edition")).toHaveText(
 		"CUSTOM SURVIVAL / UNRANKED",
 	);
@@ -177,13 +178,14 @@ test("preserves other chassis saves and independently selects tight aft mounts",
 		page.getByRole("button", { name: "Aft 1 · Universal: Rail gun" }),
 	).toBeVisible();
 	await page.getByRole("button", { name: "Start survival" }).click();
+	await page.clock.runFor(3200);
 	await page.keyboard.down("ArrowRight");
 	await page.clock.runFor(750);
 	await page.keyboard.up("ArrowRight");
 	await page.keyboard.down("ArrowUp");
 	for (
 		let i = 0;
-		i < 5 &&
+		i < 40 &&
 		(await page.locator(".flight-page").getAttribute("data-status")) !==
 			"GAME_OVER";
 		i++

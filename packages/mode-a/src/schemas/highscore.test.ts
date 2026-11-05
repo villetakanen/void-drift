@@ -6,7 +6,7 @@ const score = {
 	seconds: 42,
 	deathCause: "STAR",
 	shipId: "corvette",
-	challenge: "ion-1",
+	challenge: "arrival-1",
 	userId: "pilot",
 };
 

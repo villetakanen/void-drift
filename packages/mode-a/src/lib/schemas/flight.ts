@@ -9,6 +9,7 @@ export const FlightSettingsSchema = z
 		ion: AssembledIonSettingsSchema.default(() =>
 			AssembledIonSettingsSchema.parse({}),
 		),
+		arrival: z.boolean().default(false),
 		testFlight: z.boolean().default(false),
 		seed: z.number().int().min(1).max(2147483647),
 		profile: ShipProfileSchema.extend({

@@ -1,7 +1,5 @@
 import { verificationUrls } from "../../packages/core/src/lib/schemas/verification-ports.mjs";
 import {
-	advanceFlightTicks,
-	COMPETITION_FLIGHTS,
 	type CompetitionChassis,
 	competitionFlightResult,
 	waitForFlightPhase,
@@ -45,13 +43,6 @@ test("two anonymous pilots complete runs, retry a rejected write and see a share
 	];
 	for (const pilot of pilots) {
 		const chassis = pilot.chassis;
-		const flight = COMPETITION_FLIGHTS[chassis];
-		const predicted = competitionFlightResult(chassis);
-		expect(predicted).toMatchObject({
-			status: "GAME_OVER",
-			cause: "STAR",
-			ticks: flight.turnTicks + flight.thrustTicks,
-		});
 		const context = await newLocalContext();
 		const page = await context.newPage();
 		await page.clock.install({ time: new Date("2026-11-03T00:00:00Z") });
@@ -76,21 +67,19 @@ test("two anonymous pilots complete runs, retry a rejected write and see a share
 			"data-ticks",
 			"0",
 		);
-		// The matching production simulation has already proved these exact
-		// fixed-step routes end at the star. The helper advances one browser tick
-		// at a time, so rAF cadence cannot change the route between hulls.
-		await page.keyboard.down("ArrowRight");
-		await advanceFlightTicks(page, flight.turnTicks);
-		await page.keyboard.up("ArrowRight");
-		await page.keyboard.down("ArrowUp");
-		await advanceFlightTicks(page, flight.thrustTicks);
-		await page.keyboard.up("ArrowUp");
+		const seed = Number(
+			await page.locator(".flight-page").getAttribute("data-seed"),
+		);
+		const predicted = competitionFlightResult(chassis, seed);
+		expect(predicted.status).toBe("GAME_OVER");
+		await page.clock.runFor((predicted.ticks * 1000) / 60 + 40);
 		await expect(
 			page.getByRole("dialog", { name: "Run complete" }),
 		).toBeVisible();
-		await expect(
-			page.getByText("TOO CLOSE TO THE STAR", { exact: true }),
-		).toBeVisible();
+		await expect(page.locator(".flight-page")).toHaveAttribute(
+			"data-ticks",
+			String(predicted.ticks),
+		);
 		await page.clock.resume();
 		await page.getByLabel("Your initials").fill(pilot.initials);
 		const submit = page.getByRole("button", {

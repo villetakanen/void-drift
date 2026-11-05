@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Camera, Input, Renderer } from "@void-drift/core";
+import { Camera, Input, paintCountdown, Renderer } from "@void-drift/core";
 import {
 	BUILD_FLIGHT_SCALE,
 	buildStats,
@@ -64,6 +64,7 @@ let zoomLevel = $state(0);
 let activeZoomSteps = $state(5);
 let previewLevel = $state(-1);
 let ticks = $state(0);
+let runSeed = $state(0);
 let left = $state(false);
 let right = $state(false);
 let cause = $state("");
@@ -115,6 +116,7 @@ $effect(() => {
 let phase = $state<"menu" | "starting" | "playing">("menu");
 let landing = $state.raw<LandingSystem>();
 let transitionTime = 0;
+let countTime = -1;
 let transitionBlurred = false;
 let sceneOpacity = $state(1);
 let reducedMotion = false;
@@ -157,6 +159,15 @@ function reset(start = false) {
 				? tuning
 				: gameSettings(chosen),
 	);
+	if (start && !lab && !testFlight) {
+		simulation = new Simulation({
+			...simulation.settings,
+			arrival: true,
+			seed: (crypto.getRandomValues(new Uint32Array(1))[0] % 2147483647) + 1,
+		});
+		countTime = 0;
+		phase = "starting";
+	} else countTime = -1;
 	if (start) simulation.start();
 	paused = false;
 	scoreSaved = false;
@@ -205,6 +216,7 @@ function sync() {
 	x = simulation.ship.pos.x;
 	y = simulation.ship.pos.y;
 	ticks = simulation.ticks;
+	runSeed = simulation.settings.seed;
 	wraps = simulation.wraps;
 	cause = simulation.state.deathCause ?? "";
 	zoom = camera?.zoom ?? 1;
@@ -220,7 +232,7 @@ function selectShip(value: string) {
 }
 function start() {
 	if (phase === "starting") return;
-	if (!lab && !loadout && !reducedMotion) {
+	if (!lab && !loadout && !reducedMotion && landing) {
 		phase = "starting";
 		transitionTime = 0;
 		transitionBlurred = false;
@@ -228,6 +240,7 @@ function start() {
 	} else {
 		landing = undefined;
 		phase = "playing";
+		transitionTime = 0.3;
 		reset(true);
 	}
 	(document.activeElement as HTMLElement)?.blur();
@@ -379,6 +392,7 @@ onMount(() => {
 	function draw(time: number) {
 		const dt = Math.min((time - last) / 1000, 0.1);
 		last = time;
+		let released = false;
 		if (phase === "starting" && !document.hidden) {
 			transitionTime += reducedMotion ? 0.3 : dt;
 			if (transitionTime >= 0.15 && landing) {
@@ -391,17 +405,26 @@ onMount(() => {
 				transitionTime < 0.15
 					? 1 - transitionTime / 0.15
 					: Math.min(1, (transitionTime - 0.15) / 0.15);
-			if (transitionTime >= 0.3) {
+			if (transitionTime >= 0.3 && countTime >= 3) {
+				released = true;
 				phase = "playing";
-				input.reset();
 				accumulator = 0;
 			}
 		}
+		if (
+			phase === "starting" &&
+			!landing &&
+			transitionTime >= 0.3 &&
+			!document.hidden &&
+			!paused
+		)
+			countTime = Math.min(3, countTime + dt);
 		const controls = input.getEffectiveState(settings.get().invertControls);
 		left = controls.leftThruster;
 		right = controls.rightThruster;
 		if (
 			!paused &&
+			!released &&
 			phase !== "starting" &&
 			simulation.state.status === "PLAYING"
 		) {
@@ -453,7 +476,30 @@ onMount(() => {
 					simulation.settings.profile.tint,
 					chosen,
 				);
-			if (context) flightFx.draw(context, simulation);
+			const countCentre = camera.screenToWorld(
+				canvas.width / 2,
+				canvas.height / 2,
+			);
+			if (context)
+				flightFx.draw(
+					context,
+					simulation,
+					true,
+					true,
+					Math.max(0, countTime) + simulation.ticks * STEP,
+					countTime < 0
+						? undefined
+						: (light, pass) =>
+								paintCountdown(
+									light,
+									pass,
+									countTime + simulation.ticks * STEP,
+									countCentre.x,
+									countCentre.y,
+									camera.zoom,
+									reducedMotion,
+								),
+				);
 			renderer.endCamera();
 		}
 		frame = requestAnimationFrame(draw);
@@ -507,6 +553,7 @@ onMount(() => {
 	data-x={x.toFixed(4)}
 	data-y={y.toFixed(4)}
 	data-ticks={ticks}
+	data-seed={runSeed}
 	data-spin={spin.toFixed(4)}
 	data-stabilizers={activeLoadout?.stabilizers ?? false}
 	data-zoom={zoom.toFixed(4)}

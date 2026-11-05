@@ -26,7 +26,25 @@ test("landing animation survives selection and hands off a fresh run", async ({
 	await page.clock.runFor(240);
 	await expect(deck).toHaveAttribute("data-ticks", "0");
 	await expect(deck).not.toHaveAttribute("data-landing-sun");
-	await page.clock.runFor(100);
+	const position = [
+		await deck.getAttribute("data-x"),
+		await deck.getAttribute("data-y"),
+	];
+	const power = await page
+		.getByRole("progressbar", { name: "Power" })
+		.getAttribute("value");
+	await page.keyboard.down("ArrowUp");
+	await page.clock.runFor(2500);
+	expect([
+		await deck.getAttribute("data-x"),
+		await deck.getAttribute("data-y"),
+	]).toEqual(position);
+	await expect(
+		page.getByRole("progressbar", { name: "Power" }),
+	).toHaveAttribute("value", power ?? "");
+	await expect(deck).toHaveAttribute("data-phase", "starting");
+	await expect(deck).toHaveAttribute("data-ticks", "0");
+	await page.clock.runFor(700);
 	await expect(deck).toHaveAttribute("data-phase", "playing");
 	await expect(canvas).toHaveAttribute(
 		"aria-label",
@@ -34,9 +52,10 @@ test("landing animation survives selection and hands off a fresh run", async ({
 	);
 	await page.clock.runFor(1000);
 	expect(Number(await deck.getAttribute("data-ticks"))).toBeGreaterThan(0);
+	await page.keyboard.up("ArrowUp");
 });
 
-test("reduced motion keeps the demo static and starts immediately", async ({
+test("reduced motion keeps the demo static and retains the three-second count", async ({
 	page,
 }) => {
 	await page.emulateMedia({ reducedMotion: "reduce" });
@@ -56,6 +75,7 @@ test("reduced motion keeps the demo static and starts immediately", async ({
 		await canvas.evaluate((node: HTMLCanvasElement) => node.toDataURL()),
 	).toBe(before);
 	await page.getByRole("button", { name: "PRESS START" }).click();
+	await page.clock.runFor(3100);
 	await expect(page.locator(".flight-page")).toHaveAttribute(
 		"data-phase",
 		"playing",

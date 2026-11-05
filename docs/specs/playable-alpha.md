@@ -11,7 +11,7 @@ existing ship-profile schema. Assembled propulsion follows the shared
 [ship propulsion contract](ship-propulsion.md); legacy stock trials retain their
 separate physics. Gravity: [gravity-field.md](gravity-field.md).
 
-All ranked runs use the current challenge `CHALLENGE` (`ion-1`), seed 2026, a G-class star, and stock profiles.
+All ranked runs use the current challenge `CHALLENGE` (`arrival-1`), a fresh per-run seed, a G-class star, and stock profiles.
 Scoring is casual client-reported survival time, clearly labeled: Firestore rules
 validate ownership, shape, version and bounds, but do not prove an honest simulation.
 Each anonymous player keeps one best score per ranked ship, independently of other
@@ -148,13 +148,15 @@ small screens prioritize the launcher. No background ship, flight effects, arena
 boundary or gameplay influence guides are drawn. The shared procedural artwork
 and circular orbit update are reused; survival physics are not advanced.
 
-Start fades to void for 150 ms, replaces the demo with the existing fixed G-class,
-seed-2026 survival run, then reveals it for 150 ms. Repeated activation is ignored;
-flight input, resource consumption and the simulation clock wait until the reveal
-finishes. Input and frame accumulation reset at handoff. Blur during the handoff
-leaves the new run paused. Play Again creates a new menu system. Flight Lab and
-builder flights retain their existing behavior. Hidden pages suspend demo motion;
-reduced motion shows a static system and starts immediately.
+Start fades to void for 150 ms, replaces the demo with a fresh seeded G-class
+Survival run, and reveals it for 150 ms. A centred three-second 3, 2, 1 countdown
+then holds the world, resources and score timer still. GO releases flight; controls
+held through the count apply at release. Entry is at radius 1180, speed 600, heading
+37 degrees off inward, with a green speed line behind the ship. Repeated activation
+is ignored. Hidden pages and pause hold the count; blur leaves the new run paused.
+Play Again creates a new menu system. Flight Lab and builder Test flight retain
+their existing start; custom Survival uses the arrival. Reduced motion keeps the
+static menu, skips the crossfade, and retains the count without ignition flicker.
 
 `/lab/landing` presents the production composition and handoff for visual review.
 Automated checks establish generation bounds, orbital movement, reduced motion

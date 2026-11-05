@@ -670,3 +670,5 @@ Text-only style for navigation:
 **Design System Status: OPERATIONAL** 🎨  
 **Token Count:** 15+ defined variables  
 **Coverage:** 100% of UI components
+
+Survival countdown uses Saira Stencil 700 outlines (SIL OFL), in Android green, as transient run-status information.
