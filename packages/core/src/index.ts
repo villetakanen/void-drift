@@ -5,7 +5,6 @@ export * from "./lib/assets/resource-bar";
 export * from "./lib/assets/ship";
 export * from "./lib/assets/star";
 export * from "./lib/config";
-export * from "./lib/debug/PerformanceMonitor";
 export * from "./lib/effects/arcade-fx";
 export * from "./lib/effects/damage-feedback";
 export * from "./lib/effects/engine-plume";
@@ -13,7 +12,6 @@ export * from "./lib/effects/fx-surface";
 export * from "./lib/effects/ion-beam";
 export * from "./lib/effects/particles";
 // Effects
-export * from "./lib/effects/screen-shake";
 export * from "./lib/entities/Input";
 export * from "./lib/entities/Renderer";
 export * from "./lib/physics/Camera";
@@ -23,6 +21,5 @@ export * from "./lib/schemas/common";
 export * from "./lib/schemas/sun";
 // UI Utilities
 export * from "./lib/ui/colors";
-export * from "./lib/ui/fullscreen";
 export * from "./lib/ui/typography";
 // Svelte Components

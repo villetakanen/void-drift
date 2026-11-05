@@ -31,6 +31,5 @@ export * from "./lib/stabilizers";
 export * from "./lib/tuning";
 export * from "./lib/utility-art";
 // Svelte Components
-export * from "./lib/utils/uid-hash";
 export * from "./lib/wasp";
 export * from "./schemas/highscore";
