@@ -1,8 +1,10 @@
 ---
 import LabDerelict from "../../../components/lab/LabDerelict.svelte";
+import LabDerelictDamage from "../../../components/lab/LabDerelictDamage.svelte";
 import LabLayout from "../../../layouts/LabLayout.astro";
 ---
 
 <LabLayout title="Derelict" wide>
+	<LabDerelictDamage client:only="svelte" />
 	<LabDerelict client:only="svelte" />
 </LabLayout>

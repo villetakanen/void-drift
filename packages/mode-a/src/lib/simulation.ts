@@ -317,6 +317,7 @@ export class Simulation {
 					previousY,
 					Math.hypot(this.ship.pos.x - previousX, this.ship.pos.y - previousY) >
 						1200,
+					this.planets,
 				);
 			if (
 				this.settings.mode !== "practice" &&

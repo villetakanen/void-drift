@@ -143,6 +143,45 @@ Canonical capture evidence:
 Production FX capture:
 `artifacts/review/2026-11-07T07-31-44.634Z-33db6763-815a-4af2-8c50-f14972fd4dcf/`.
 
+### Fitted collisions and physical shedding slice
+
+Implemented attached-mask and shard state, fitted material collision, threshold
+shedding, eight-piece accounting and parent-relative B release. Drawings and
+collision drop the same attached regions; released shards use the same source-site
+pivots. Star/planet destruction loses energy with no score, per the owner's explicit
+correction. Player destruction produces one cell. The Lab now has a real simulation
+specimen for laser pulses, rail shots, ram, coasting and fitted-material inspection.
+
+Newborn movement begins on the next fixed substep; release poses and impact plumes
+use fractional contact. Terminal-time checks prevent a later gun or ram contact
+from claiming a body that has already reached a hazard, expired or exited. Stable
+independent rail processing is retained; this is not a global event solver.
+Collectible appearance/ejection and the live selected release pulse remain slice 7.
+
+Verification: the final full suite passed 271 tests across 47 files; after making
+fragment count a schema literal, the 42 salvage tests passed again. Workspace
+Astro/Svelte checks and the final TypeScript check passed. Changed-file lint and
+four browser journeys passed (material aperture/size, staged damage/ram, entry and
+score). Real-damage captures show three shed pieces, fitted overlay and eight
+released physical pieces plus one player-drop cell. They were inspected; human
+in-flight feel and sustained rendering performance remain unaccepted/unmeasured.
+
+Repaired checks: the first type check found five nullable references in the Lab
+specimen; narrowing to the local salvage instance fixed them. The first browser
+run selected both Lab canvases; a label-based selector fixed the assertion. The
+full suite exposed two boundary-entry regressions from floating-point rounding in
+the new pre-contact exit check; a 1e-7-unit arena-edge tolerance fixed entry without
+changing paths or spawn rules. A late contracts run hit the existing emulator
+shutdown-marker timeout test; an isolated rerun passed all 14 factory checks.
+No factory contracts were changed. Full repository lint retains existing study SVG
+issues; full browser, production build and backend gates were not run.
+
+Capture evidence:
+`artifacts/review/2026-11-07T07-59-34.404Z-bafb93d2-b46e-4b4e-a53b-3aac0fa57f1f/`.
+Indicative collision-only Vitest measurements were about 92 ms per 1000 static
+casts and 96 ms per 100 difficult rotating grazes; these are not frame-time or
+hardware acceptance measurements.
+
 ## Acceptance contract
 
 - Both entries use the active Hangar build and system choices, with fresh sessions
@@ -188,16 +227,19 @@ or four-piece breakup as the finished mode.
 
 ## Open decisions
 
-1. **Damage details (before commit 6):** the policy is accepted below. Finalize
-   shedding thresholds and contact/release sequencing when implementing physical
-   progression; proposed starting values below remain provisional.
+1. **Damage details resolved in slice 6:** cumulative 20%/40%/60% damage releases
+   B indices 0/6/3; destruction releases the rest exactly once. Ram-born pieces
+   suppress the causal overlap until collective separation. Values remain initial
+   balance tuning; the selected damage/energy policy is accepted.
 2. **Colour treatment resolved in the artwork slice:** bake each plane's original
    hue treatment into a flat fill. Sample the mean RGB over the plane interior;
    retain the 41 source paths unchanged. No runtime hull hue overlay or gradient
    and no exception to docs/design.md. Energy light retains its separate halo.
-3. **Collision implementation:** choose fitted shapes and swept collision handling
-   for long shards, hull gaps and partially attached structures. No circular-only
-   authoritative proxies. Verify contact at encounter speeds.
+3. **Collision implementation resolved in slice 6:** shared source fills are
+   triangulated and clipped into convex material pieces. Precomputed region
+   vertices and bounded lazy mask caches feed analytic linear casts and rotating
+   casts with 0.0001-world-unit near-contact tolerance. Broad circles only reject.
+   Actual contact timing orders world hazards, expiry/exit and player contacts.
 4. **Arrival tuning resolved for slice 3:** first arrival at 3 seconds, independent
    uniform 6–12-second gaps, uniform boundary entries, inward headings within ±60°,
    uniform 100–500 u/s system speed, 30-second wreck expiry and eight groups.
@@ -210,39 +252,39 @@ or four-piece breakup as the finished mode.
 ## Accepted damage policy
 
 Owner decision, 7 November 2026: staged shedding with containment loss and energy
-release at destruction, following the recommendation and study 02.7 B. No early
+release at player-caused destruction, following the recommendation and study 02.7 B. No early
 energy release from a surviving wreck. This makes accumulated damage visible
 while retaining destruction as the event that releases the energy. Player kill
 attribution still independently governs the score bonus; environmental destruction
-does not become a player kill merely because energy is released.
+awards no kill and destroys contained energy; it does not release a cell.
 
 Resolve remaining decisions just in time, before their dependent slices. Do not
 reopen the selected policy as part of threshold tuning. Implementation must update
 the owning Derelicts spec alongside the behavior.
 
-### Proposed implementation details
+### Physical implementation decisions
 
 Use cumulative damage rather than hit count or hit location.
 
-Proposed starting thresholds: release the selected tip, side section and lower
+Starting thresholds: release the selected tip, side section and lower
 end at 20%, 40% and 60% of initial hull damage; containment fails at 100%. Keep
 85 wreck hull, 100 rail damage and 5 laser damage as existing provisional tuning.
 That means shedding at 20, 35 and 55 accumulated damage with laser pulses, and
-destruction at 85. These percentages remain provisional implementation tuning;
+destruction at 85. These percentages are initial implementation tuning;
 the staged-shedding/energy-at-destruction policy above is accepted.
 
-A single lethal hit crosses every threshold in one simulation step: release all
+A single lethal player hit crosses every threshold in one simulation step: release all
 eight pieces once and eject energy immediately. Do not insert artificial delays
 or grant a dying wreck additional invulnerability to showcase the animation.
 Early pieces use their independent fragment health; shedding does not subtract
 extra hull from the parent. A detached piece no longer collides as attached hull.
 All parts inherit parent motion plus the selected B release motion.
 
-Direct ship contact retains the mode contract's destruction and 30 damage;
-environmental destruction earns no kill bonus. Exact contact sequencing must
-avoid charging the same contact for both the wreck and newly released shards.
-Confirm the release/drop behavior for environmental destruction and exits during
-policy discussion; do not infer rewards for despawning bodies.
+Direct ship contact retains destruction and 30 damage once. Ram-born material
+arms only after collective separation. Owner correction in this slice explicitly
+requires star/planet destruction to lose contained energy and award no kill; it
+releases remaining physical material, not a cell. Expiry/exit add no new material
+or drops. Earlier contact determines attribution; equal-time terminal contacts win.
 
 ## Verification and completion
 

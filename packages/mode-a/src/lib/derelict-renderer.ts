@@ -4,6 +4,7 @@ import {
 	DERELICT_PLANE_PALETTE,
 	DERELICT_RELEASE_CUE,
 	DERELICT_SCALE,
+	DERELICT_SHARDS,
 	DERELICT_SOURCE_PLANES,
 } from "./derelict-geometry";
 
@@ -21,6 +22,11 @@ export function createDerelictPainter() {
 		ctx.fillStyle = DERELICT_PLANE_PALETTE[index];
 		ctx.fill(path);
 	}
+
+	const shardPaths = DERELICT_SHARDS.map((piece) => new Path2D(piece.path));
+	const remainingPaths = new Map<number, Path2D>();
+	const paintHull = (target: CanvasRenderingContext2D) =>
+		target.drawImage(hull, 72, 75, 60, 150);
 
 	// Cache the complete square and halo once; no per-frame blur.
 	const light = document.createElement("canvas");
@@ -58,8 +64,30 @@ export function createDerelictPainter() {
 			target.stroke();
 			target.restore();
 		},
-		hull(target: CanvasRenderingContext2D) {
-			target.drawImage(hull, 72, 75, 60, 150);
+		hull(target: CanvasRenderingContext2D, releasedMask = 0) {
+			if (!releasedMask) {
+				paintHull(target);
+				return;
+			}
+			let path = remainingPaths.get(releasedMask);
+			if (!path) {
+				path = new Path2D();
+				for (let index = 0; index < shardPaths.length; index++)
+					if (!(releasedMask & (1 << index))) path.addPath(shardPaths[index]);
+				remainingPaths.set(releasedMask, path);
+			}
+			target.save();
+			target.clip(path);
+			paintHull(target);
+			target.restore();
+		},
+		shard(target: CanvasRenderingContext2D, index: number) {
+			const path = shardPaths[index];
+			if (!path) throw new Error("Invalid derelict shard index");
+			target.save();
+			target.clip(path);
+			paintHull(target);
+			target.restore();
 		},
 		core(target: CanvasRenderingContext2D, time: number) {
 			target.save();
@@ -103,6 +131,7 @@ export function drawDerelict(
 	time: number,
 	layer: "body" | "light" | "aperture" = "body",
 	pass?: FxPass,
+	releasedMask = 0,
 ) {
 	ctx.save();
 	ctx.translate(x, y);
@@ -111,9 +140,28 @@ export function drawDerelict(
 	ctx.translate(-DERELICT_ORIGIN.x, -DERELICT_ORIGIN.y);
 	const painter = getDerelictPainter();
 	if (layer === "body") {
-		painter.hull(ctx);
+		painter.hull(ctx, releasedMask);
 		painter.core(ctx, time);
 	} else if (layer === "aperture") painter.aperture(ctx, time);
 	else if (pass) painter.light(ctx, pass, time);
+	ctx.restore();
+}
+
+/** A physical shard uses its source-site pivot, matching fitted collision geometry. */
+export function drawDerelictShard(
+	ctx: CanvasRenderingContext2D,
+	x: number,
+	y: number,
+	rotation: number,
+	index: number,
+) {
+	const piece = DERELICT_SHARDS[index];
+	if (!piece) throw new Error("Invalid derelict shard index");
+	ctx.save();
+	ctx.translate(x, y);
+	ctx.rotate(rotation);
+	ctx.scale(DERELICT_SCALE, DERELICT_SCALE);
+	ctx.translate(-piece.x, -piece.y);
+	getDerelictPainter().shard(ctx, index);
 	ctx.restore();
 }

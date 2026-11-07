@@ -1,6 +1,12 @@
 import { Vec2 } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { weaponPose } from "./build-renderer";
+import { castDerelict } from "./derelict-collision";
+import {
+	DERELICT_ORIGIN,
+	DERELICT_SCALE,
+	DERELICT_SHARDS,
+} from "./derelict-geometry";
 import { createStar } from "./game-loop";
 import { type SalvageBody, SalvageSystem } from "./salvage";
 import { buildStats, defaultLoadout } from "./schemas/loadout";
@@ -99,6 +105,22 @@ function injectLegacyPass(sim: Simulation) {
 }
 
 describe("Derelicts weapons and salvage", () => {
+	it("blocks fitted weapons and flying rounds at a planet without rewarding its impact", () => {
+		const f = fixture(["rail", "laser"]);
+		const planet = new Simulation(stockSettings()).planets[0];
+		planet.pos.set(470, 400);
+		planet.radius = 10;
+		f.system.bodies.push(body("wreck", 550, 400));
+		f.system.shots.push({ x: 420, y: 400, vx: 12000, vy: 0, angle: 0 });
+		f.system.step(STEP, f.ship, f.star, f.resources, 100, 400, 400, false, [
+			planet,
+		]);
+		expect(f.system.energySpent).toBe(0);
+		expect(f.system.shots).toHaveLength(0);
+		expect(f.system.bodies[0].hull).toBe(85);
+		expect(f.system.playerKills).toBe(0);
+	});
+
 	it("rejects inconsistent run results and fractional kill counts", () => {
 		expect(
 			DerelictsResultSchema.safeParse({
@@ -157,11 +179,14 @@ describe("Derelicts weapons and salvage", () => {
 		expect(sim.derelictsResult).toBeNull();
 		if (!sim.salvage) throw new Error("Missing salvage system");
 		for (let i = 0; i < 2; i++) {
+			sim.salvage.bodies = [];
 			sim.salvage.bodies.push(body("wreck", 550, 400, i + 1));
 			sim.salvage.shots.push({ x: 550, y: 400, vx: 0, vy: 0, angle: 0 });
 			sim.step(idle);
 		}
-		sim.salvage.bodies.push(body("wreck", sim.ship.pos.x, sim.ship.pos.y, 3));
+		sim.salvage.bodies = [];
+		sim.salvage.bodies.push(body("wreck", 550, 400, 3));
+		sim.salvage.shots.push({ x: 550, y: 400, vx: 0, vy: 0, angle: 0 });
 		sim.step(idle);
 		sim.ticks = 3599;
 		sim.state.resources.hull = 0;
@@ -338,7 +363,8 @@ describe("Derelicts weapons and salvage", () => {
 			(event) => event.kind === "collision",
 		);
 		expect(impacts).toHaveLength(1);
-		expect(impacts[0].x).toBeCloseTo(distant.x - distant.radius);
+		expect(impacts[0].x).toBeLessThan(distant.x);
+		expect(impacts[0].x).toBeGreaterThan(distant.x - 60);
 		expect(impacts[0].y).toBeCloseTo(distant.y);
 	});
 	it("deals 100 rail damage to an 85-hull wreck and 5 laser damage to a 12-hull shard", () => {
@@ -410,11 +436,170 @@ describe("Derelicts weapons and salvage", () => {
 		expect(f.system.destroyed).toBe(1);
 		expect(f.system.laserPulses).toBe(17);
 		expect(f.system.bodies.filter((b) => b.kind === "fragment")).toHaveLength(
-			4,
+			8,
 		);
 		expect(f.system.bodies.filter((b) => b.kind === "cell")).toHaveLength(1);
 		expect(f.system.energySpent).toBe(8.5);
 	});
+	it("releases a moving wreck's fragment from its swept rail contact pose", () => {
+		const f = fixture();
+		const wreck = body("wreck", 550, 400, 1, 100, 0);
+		wreck.hull = 150;
+		const impact = castDerelict(
+			{ kind: "wreck", x: wreck.x, y: wreck.y, rotation: 0 },
+			{ x: 500, y: 400 },
+			{ x: 5900, y: 0 },
+			0,
+			STEP,
+			0.3,
+		);
+		expect(impact).not.toBeNull();
+		if (!impact) throw new Error("Missing impact");
+		f.system.bodies.push(wreck);
+		f.system.shots.push({ x: 500, y: 400, vx: 6000, vy: 0, angle: 0 });
+		f.step();
+		const fragment = f.system.bodies.find(
+			(b) => b.kind === "fragment" && b.shardIndex === 0,
+		);
+		expect(fragment).toBeDefined();
+		if (!fragment) throw new Error("Missing fragment");
+		const site = DERELICT_SHARDS[0],
+			angle = impact.time * 0.3;
+		const dx = (site.x - DERELICT_ORIGIN.x) * DERELICT_SCALE;
+		const dy = (site.y - DERELICT_ORIGIN.y) * DERELICT_SCALE;
+		expect(fragment.x).toBeCloseTo(
+			550 + 100 * impact.time + dx * Math.cos(angle) - dy * Math.sin(angle),
+			7,
+		);
+		expect(fragment.y).toBeCloseTo(
+			400 + dx * Math.sin(angle) + dy * Math.cos(angle),
+			7,
+		);
+		expect(fragment.rotation).toBeCloseTo(angle, 7);
+		expect(wreck.x).toBeCloseTo(550 + 100 * STEP, 7);
+		expect(wreck.initialHull).toBe(150);
+	});
+	it("sheds the selected pieces at damage thresholds and releases the rest only once", () => {
+		const f = fixture(["laser"]);
+		const wreck = body("wreck", 550, 400);
+		f.system.bodies.push(wreck);
+		const seen: number[] = [];
+		for (let i = 0; i < 360 && wreck.hull > 0; i++) {
+			f.step();
+			for (const piece of f.system.bodies.filter(
+				(b) => b.kind === "fragment",
+			)) {
+				if (!seen.includes(piece.shardIndex ?? -1))
+					seen.push(piece.shardIndex ?? -1);
+			}
+			if (wreck.hull > 0)
+				expect(f.system.bodies.some((b) => b.kind === "cell")).toBe(false);
+		}
+		expect(seen.slice(0, 3)).toEqual([0, 6, 3]);
+		expect(seen.slice().sort()).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
+		expect(f.system.playerKills).toBe(1);
+	});
+	it.each(["star", "planet"] as const)(
+		"destroys contained energy at a swept %s impact without scoring",
+		(kind) => {
+			const f = fixture();
+			const planet = new Simulation(stockSettings()).planets[0];
+			planet.pos.set(750, 650);
+			planet.radius = 35;
+			const hazard = kind === "star" ? f.star : planet;
+			const wreck = body(
+				"wreck",
+				hazard.pos.x - hazard.radius - 100,
+				hazard.pos.y,
+				1,
+				500,
+				0,
+			);
+			wreck.releasedMask = 1;
+			f.system.bodies.push(wreck);
+			f.system.step(
+				0.3,
+				f.ship,
+				f.star,
+				f.resources,
+				100,
+				f.ship.pos.x,
+				f.ship.pos.y,
+				false,
+				kind === "planet" ? [planet] : [],
+			);
+			expect(f.system.playerKills).toBe(0);
+			expect(f.system.destroyed).toBe(0);
+			expect(f.system.bodies.filter((b) => b.kind === "fragment")).toHaveLength(
+				7,
+			);
+			expect(f.system.bodies.filter((b) => b.kind === "cell")).toHaveLength(0);
+			expect(wreck.x).toBeLessThan(hazard.pos.x - hazard.radius);
+			f.system.step(
+				STEP,
+				f.ship,
+				f.star,
+				f.resources,
+				100,
+				f.ship.pos.x,
+				f.ship.pos.y,
+				false,
+				kind === "planet" ? [planet] : [],
+			);
+			expect(f.system.bodies.filter((b) => b.kind === "cell")).toHaveLength(0);
+			expect(f.system.playerKills).toBe(0);
+		},
+	);
+	it.each([
+		{ name: "rail before star", start: 620, kills: 1, cells: 1 },
+		{ name: "star before rail", start: 530, kills: 0, cells: 0 },
+	])("orders $name within the same step", ({ start, kills, cells }) => {
+		const f = fixture();
+		f.star.pos.set(800, 400);
+		f.star.radius = 30;
+		const wreck = body("wreck", 700, 400, 1, 300, 0);
+		f.system.bodies.push(wreck);
+		f.system.shots.push({ x: start, y: 400, vx: 1000, vy: 0, angle: 0 });
+		f.system.step(0.3, f.ship, f.star, f.resources, 100, 400, 400, false);
+		expect(f.system.playerKills).toBe(kills);
+		expect(f.system.bodies.filter((b) => b.kind === "cell")).toHaveLength(
+			cells,
+		);
+	});
+	it.each([
+		{ name: "rail before ram", start: 550, damage: 0 },
+		{ name: "ram before rail", start: 680, damage: 30 },
+	])("orders $name within the same step", ({ start, damage }) => {
+		const f = fixture();
+		const wreck = body("wreck", 500, 400, 1, -300, 0);
+		f.system.bodies.push(wreck);
+		f.system.shots.push({ x: start, y: 400, vx: -1000, vy: 0, angle: Math.PI });
+		f.system.step(0.3, f.ship, f.star, f.resources, 100, 400, 400, false);
+		expect(f.system.playerKills).toBe(1);
+		expect(f.resources.hull).toBe(100 - damage);
+	});
+	it.each([
+		{ kind: "expiry", before: true },
+		{ kind: "expiry", before: false },
+		{ kind: "exit", before: true },
+		{ kind: "exit", before: false },
+	] as const)(
+		"orders rail contact relative to $kind (before: $before)",
+		({ kind, before }) => {
+			const f = fixture();
+			const exit = kind === "exit";
+			const wreck = body("wreck", exit ? 2100 : 700, 400, 1, 300, 0);
+			wreck.life = exit ? 10 : 0.2;
+			const shotX = (exit ? 2100 : 700) - (before ? 80 : 170);
+			f.system.bodies.push(wreck);
+			f.system.shots.push({ x: shotX, y: 400, vx: 1000, vy: 0, angle: 0 });
+			f.system.step(0.3, f.ship, f.star, f.resources, 100, 400, 400, false);
+			expect(f.system.playerKills).toBe(before ? 1 : 0);
+			expect(f.system.bodies.filter((b) => b.kind === "cell")).toHaveLength(
+				before ? 1 : 0,
+			);
+		},
+	);
 	it("charges for actual shots only, protects reserve, and budgets defence first", () => {
 		const f = fixture(["rail", "laser"]);
 		f.system.bodies.push(body("wreck", 550, 400));
@@ -450,7 +635,7 @@ describe("Derelicts weapons and salvage", () => {
 		expect(f.system.bodies.filter((b) => b.kind === "cell")).toHaveLength(1);
 		expect(
 			f.system.bodies.filter((b) => b.kind === "fragment").length,
-		).toBeLessThanOrEqual(4);
+		).toBeLessThanOrEqual(8);
 	});
 	it("blocks laser and rail fire through the star and absorbs existing rounds", () => {
 		const f = fixture(["rail", "laser"]);
@@ -496,11 +681,11 @@ describe("Derelicts weapons and salvage", () => {
 			(event) => event.kind === "collision",
 		);
 		expect(plumes).toHaveLength(1);
-		expect(plumes[0].x).toBeCloseTo(402);
-		expect(plumes[0].y).toBeCloseTo(400);
+		expect(plumes[0].x).toBeCloseTo(402.772, 2);
+		expect(plumes[0].y).toBeCloseTo(397.743, 2);
 		expect(
 			f.system.bodies.filter((body) => body.kind === "fragment"),
-		).toHaveLength(4);
+		).toHaveLength(8);
 		expect(f.system.bodies.filter((body) => body.kind === "cell")).toHaveLength(
 			1,
 		);

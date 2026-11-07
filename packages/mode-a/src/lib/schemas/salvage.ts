@@ -1,5 +1,29 @@
 import { z } from "zod";
 
+export const SalvagePhysicalStateSchema = z.object({
+	initialHull: z.number().positive().optional(),
+	releasedMask: z.number().int().min(0).max(255).optional(),
+	shardIndex: z.number().int().min(0).max(7).optional(),
+	previousRotation: z.number().optional(),
+	suppressShipContact: z.boolean().optional(),
+});
+export type SalvagePhysicalState = z.infer<typeof SalvagePhysicalStateSchema>;
+export const SalvageBodySchema = SalvagePhysicalStateSchema.extend({
+	id: z.number().int(),
+	group: z.number().int(),
+	kind: z.enum(["wreck", "fragment", "cell"]),
+	x: z.number(),
+	y: z.number(),
+	previousX: z.number(),
+	previousY: z.number(),
+	vx: z.number(),
+	vy: z.number(),
+	radius: z.number().positive(),
+	hull: z.number(),
+	life: z.number(),
+	rotation: z.number(),
+});
+
 export const DestructionCauseSchema = z.enum([
 	"player-weapon",
 	"player-ram",
@@ -107,7 +131,7 @@ export const SalvageConfigSchema = z.object({
 		contact: z.number().positive(),
 	}),
 	fragment: z.object({
-		count: z.number().int().positive(),
+		count: z.literal(8),
 		hull: z.number().positive(),
 		radius: z.number().positive(),
 		contact: z.number().positive(),
@@ -122,6 +146,6 @@ export const SalvageConfigSchema = z.object({
 });
 export const SALVAGE = SalvageConfigSchema.parse({
 	wreck: { hull: 85, radius: 18, life: 30, contact: 30 },
-	fragment: { count: 4, hull: 12, radius: 5, contact: 5, life: 12, speed: 60 },
+	fragment: { count: 8, hull: 12, radius: 5, contact: 5, life: 12, speed: 60 },
 	cell: { energy: 30, radius: 6, life: 20 },
 });

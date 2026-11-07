@@ -35,7 +35,7 @@ export const labPages = z.array(labPageSchema).parse([
 		href: "/lab/entities/derelict",
 		title: "Derelict",
 		purpose:
-			"Shared hull artwork, contained energy and eight-piece fracture reference.",
+			"Damage-driven shedding, fitted collisions and shared derelict artwork.",
 		group: "ships-and-world",
 		source: "production",
 	},

@@ -34,7 +34,7 @@ test("shared hull measures 110 units and keeps its energy aperture black after l
 		y: 240 + (154.15 - 150) * DERELICT_SCALE * 1.6,
 	};
 	const hole = await page
-		.locator("canvas")
+		.locator('canvas[aria-label^="Wasp and Fiddler"]')
 		.evaluate(
 			(node, p) =>
 				Array.from(

@@ -143,9 +143,9 @@ $effect(() => {
 	>
 	<label><input type="checkbox" bind:checked={glow}> Energy light</label>
 	<p>
-		The scrubber demonstrates the accepted release order and motion.
-		Damage-driven release, physical shard collisions and the release pulse are
-		later integration slices.
+		The scrubber demonstrates the accepted release order and motion. Use the
+		damage specimen above to exercise physical release and fitted collisions.
+		The reference pulse is connected to live energy release in the next slice.
 	</p>
 </div>
 <style>

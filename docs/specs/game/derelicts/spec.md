@@ -101,7 +101,8 @@ B reference; C's additional varied drift and spin are not part of this choice.
   hull geometry, material colours and hollow rotating energy square.
 - Breakup uses eight unequal pieces. Early shedding is distributed across a
   forward tip, a side section and a lower end while energy remains contained.
-  The remaining structure separates when containment fails and the energy ejects.
+  The remaining structure separates at destruction. Player-caused destruction
+  releases the energy; star or planet destruction loses the contained energy.
   Preserve B's release order and motion.
 - All eight pieces are physical hazards from release, not cosmetic debris.
   Early-shed pieces count toward the eight-piece total; final rupture does not
@@ -109,8 +110,10 @@ B reference; C's additional varied drift and spin are not part of this choice.
 - Collision shapes must fit the visible hull and individual shards. The former
   uniform circular proxies do not define the accepted geometry.
 - The study's timed demonstration establishes visual sequence, not damage
-  thresholds. Mapping actual damage to shedding and final release remains an
-  implementation design decision to resolve without changing this direction.
+  thresholds. Cumulative damage releases B pieces 0, 6 and 3 at 20%, 40% and 60%
+  of initial hull. With 85 hull and 5-damage laser pulses, release follows pulses
+  4, 7 and 11; destruction follows pulse 17. A lethal hit releases all remaining
+  pieces immediately, without a staged delay or duplicate pieces.
 
 ### Shared artwork
 
@@ -131,13 +134,44 @@ B reference; C's additional varied drift and spin are not part of this choice.
   state. Shape-matched collision and physical shard release have their own
   acceptance criteria below.
 
+### Fitted material and physical release
+
+- `derelict-collision.ts` triangulates the source fill polygons and clips them by
+  the eight shared fracture regions. Collision uses their material union, including
+  gaps and missing regions; region envelopes and circular bounds only reject
+  distant candidates. They do not establish a physical hit.
+- `SalvageBodySchema` validates initial hull, released-piece bit mask, shard index,
+  previous rotation and ram-contact suppression state before consumers change.
+  A surviving parent loses each released region from both drawing and collision.
+  A fragment rotates around its source-site pivot and uses that region's material.
+- Released pieces inherit the parent's position, heading and translational
+  velocity plus B's release impulse rotated into world space. Each fragment uses
+  B's 0.8 rad/s spin, 12 hull, 12-second lifetime and 5 contact damage.
+- Rail rounds, laser pulses, ship contact and star/planet contact use fitted
+  sweeps. Linear casts are analytic; rotating near-contact casts have a bounded
+  0.0001-world-unit numerical tolerance. Contact plumes and release origins use
+  the swept contact and fractional parent pose.
+- Earlier terminal contacts take precedence over later player hits. Equal-time
+  environment, expiry or exit wins over player contact. Environmental removal
+  gives no kill and no cell, even after player damage. Independent rail rounds
+  retain stable array processing order rather than a global contact-event solver.
+- New pieces are created at the contact pose and enter movement on the next fixed
+  substep. They can make stationary ship contact immediately. A ram's newly born
+  pieces suppress that same ship overlap collectively until separation; early-shed
+  pieces and later separate contacts retain their normal damage.
+- Expiry and system exit remove the parent without additional fragments or drops;
+  previously released pieces retain their own lifetime and collision state.
+- The canonical Lab damage specimen uses production simulation and weapon hits,
+  with optional fitted-material overlay. The separate timed reference remains a
+  visual demonstration, not gameplay damage scheduling.
+
 ## Weapons
 
 - Railguns fire from their muzzle along the world-space slot direction when a
   target within 600 u is predicted to enter a ±8° firing arc, or the fixed trajectory
   already predicts a physical hit. Motion prediction uses relative velocity at the
   target's forward crossing plane. The arc grants firing permission; it never steers
-  the barrel or slug. Near misses are intentional. The star blocks acquisition.
+  the barrel or slug. Near misses are intentional. The star and planets block acquisition.
   A round inherits ship velocity at firing and travels until its first physical
   hit or the system boundary, without a range-based lifetime or homing.
   Swept relative collision resolves hits between simulation steps.
@@ -146,7 +180,7 @@ B reference; C's additional varied drift and spin are not part of this choice.
   acceleration setting. This is an external force with no engine speed cap or
   additional energy cost. Simultaneous guns add their recoil; subsequent turning
   does not redirect it. Recoil translates the ship without adding torque.
-- A real rail collision with a body or star emits a circular expanding impact
+- A real rail collision with a body, star or planet emits a circular expanding impact
   plume and radial sparks at the swept contact point. Misses have no impact plume.
   Ship–derelict collisions use the same plume at their contact point.
   The shared persistent FX surface owns its fading light.
@@ -160,8 +194,8 @@ B reference; C's additional varied drift and spin are not part of this choice.
   energy before railguns; stable mount order settles remaining contention. Spend
   only for a delivered shot whose full cost leaves at least 10 energy units.
   Engine and life-support use of that reserve remains unrestricted.
-- Shots ignore their owning ship and energy cells. The star blocks laser fire and
-  absorbs rail rounds. Unavailable energy prevents firing, while turret tracking
+- Shots ignore their owning ship and energy cells. The star and planets block laser fire and
+  absorb rail rounds. Unavailable energy prevents firing, while turret tracking
   itself is free. No separate fire control is needed on keyboard or touch.
 
 Initial values are tunable constants, not accepted balance:
@@ -180,11 +214,14 @@ passing wreck within its shorter range. Approach and stay close, or combine guns
 
 ## Salvage
 
-- Breakup, including destruction by hull contact, releases eight physical pieces
-  in total under the visual direction above, plus one energy cell at containment
-  failure. Hitting a wreck deals 30 hull damage once and produces
-  the same circular plume as a rail hit. Fragment contact deals 5 damage once and consumes the
-  fragment. Shooting fragments creates only cosmetic feedback, with no further drops.
+- Player weapon or hull-contact destruction releases all remaining physical
+  pieces (eight total including early shedding), plus one energy cell. Environmental
+  star or planet destruction releases the remaining material but destroys the
+  contained energy: no cell and no kill bonus. Expiry and exit create no new drops.
+- Hitting a wreck deals 30 hull damage once and produces the same circular plume
+  as a rail hit. Its newborn pieces do not charge the same overlapping ram again;
+  they arm after separation. Other fragment contact deals 5 damage once and consumes
+  the fragment. Shooting fragments creates feedback with no further drops.
 - Cell contact adds energy up to build capacity and consumes the cell, even if
   capacity is already full. Cells cannot be shot and have no attraction mechanic.
   Brief feedback reports the actual energy gained.
@@ -234,7 +271,7 @@ passing wreck within its shorter range. Approach and stay close, or combine guns
 - [ ] Breakup matches B's distributed early shedding, release order, motion and
   energy ejection, with exactly eight physical hazard pieces in total and no
   duplicate pieces at final rupture.
-- [ ] Each released piece participates in physical collision and damage using
+- [x] Each released piece participates in physical collision and damage using
   collision geometry fitted to its visible shape.
 - [ ] After implementation, human in-flight review confirms intact silhouette,
   shedding, hazards and released energy remain readable in the star-system

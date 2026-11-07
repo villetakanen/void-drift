@@ -1,5 +1,5 @@
 import { COLOR, FX_INK, type FxPass } from "@void-drift/core";
-import { drawDerelict } from "./derelict-renderer";
+import { drawDerelict, drawDerelictShard } from "./derelict-renderer";
 import type { SalvageSystem } from "./salvage";
 
 const LASER_INK = "#ff1028";
@@ -12,7 +12,26 @@ export function drawSalvage(
 	ctx.save();
 	for (const body of salvage.bodies) {
 		if (body.kind === "wreck") {
-			drawDerelict(ctx, body.x, body.y, body.rotation, salvage.time);
+			drawDerelict(
+				ctx,
+				body.x,
+				body.y,
+				body.rotation,
+				salvage.time,
+				"body",
+				undefined,
+				body.releasedMask ?? 0,
+			);
+			continue;
+		}
+		if (body.kind === "fragment") {
+			drawDerelictShard(
+				ctx,
+				body.x,
+				body.y,
+				body.rotation,
+				body.shardIndex ?? 0,
+			);
 			continue;
 		}
 		ctx.save();
@@ -30,24 +49,6 @@ export function drawSalvage(
 			ctx.fill();
 			ctx.fillStyle = COLOR.void;
 			ctx.fillRect(-2, -2, 4, 4);
-		} else {
-			ctx.fillStyle = COLOR.resourceWarning;
-			ctx.beginPath();
-			ctx.moveTo(-r, -r * 0.3);
-			ctx.lineTo(-r * 0.4, -r * 0.8);
-			ctx.lineTo(r * 0.7, -r * 0.55);
-			ctx.lineTo(r, r * 0.2);
-			ctx.lineTo(r * 0.2, r * 0.75);
-			ctx.lineTo(-r * 0.7, r * 0.5);
-			ctx.closePath();
-			ctx.fill();
-			ctx.fillStyle = COLOR.grid;
-			ctx.beginPath();
-			ctx.moveTo(-r, -r * 0.3);
-			ctx.lineTo(r * 0.7, -r * 0.55);
-			ctx.lineTo(r * 0.2, r * 0.15);
-			ctx.closePath();
-			ctx.fill();
 		}
 		ctx.restore();
 	}

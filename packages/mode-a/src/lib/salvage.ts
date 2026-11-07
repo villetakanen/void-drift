@@ -1,11 +1,24 @@
-import type { GameObject, InputState, Resources, Star } from "@void-drift/core";
+import type {
+	GameObject,
+	InputState,
+	Planet,
+	Resources,
+	Star,
+} from "@void-drift/core";
 import { type BuildMount, buildMounts, weaponPose } from "./build-renderer";
+import { castDerelict, getDerelictRadius } from "./derelict-collision";
+import {
+	DERELICT_ORIGIN,
+	DERELICT_SCALE,
+	DERELICT_SHARDS,
+} from "./derelict-geometry";
 import {
 	ASSEMBLED_ION_DEFAULTS,
 	type AssembledIonSettings,
 	ION_REFERENCE_MASS,
 } from "./schemas/ion";
 import { buildStats, type Loadout } from "./schemas/loadout";
+import type { SalvagePhysicalState } from "./schemas/salvage";
 import {
 	type DestructionCause,
 	ENCOUNTER,
@@ -14,7 +27,7 @@ import {
 } from "./schemas/salvage";
 
 export type FlightTickInput = InputState & { sendDerelict?: boolean };
-export interface SalvageBody {
+export interface SalvageBody extends SalvagePhysicalState {
 	id: number;
 	group: number;
 	kind: "wreck" | "fragment" | "cell";
@@ -77,7 +90,8 @@ function angleDifference(a: number, b: number) {
 }
 function outside(x: number, y: number) {
 	return (
-		Math.hypot(x - ENCOUNTER.centerX, y - ENCOUNTER.centerY) > ENCOUNTER.radius
+		Math.hypot(x - ENCOUNTER.centerX, y - ENCOUNTER.centerY) >
+		ENCOUNTER.radius + 1e-7
 	);
 }
 
@@ -189,6 +203,9 @@ export class SalvageSystem {
 			hull: "hull" in config ? config.hull : 1,
 			life: config.life,
 			rotation: this.random() * Math.PI * 2,
+			...(kind === "wreck"
+				? { initialHull: SALVAGE.wreck.hull, releasedMask: 0 }
+				: {}),
 		};
 	}
 	private scheduleRandom() {
@@ -224,40 +241,135 @@ export class SalvageSystem {
 			),
 		);
 	}
+	private cast(
+		body: SalvageBody,
+		x: number,
+		y: number,
+		vx: number,
+		vy: number,
+		radius: number,
+		horizon: number,
+		previous = false,
+		angularScale = 1,
+	) {
+		if (body.kind === "cell")
+			return contactTime(
+				x - (previous ? body.previousX : body.x),
+				y - (previous ? body.previousY : body.y),
+				vx,
+				vy,
+				radius + body.radius,
+				horizon,
+			);
+		const shape = {
+			kind: body.kind,
+			x: previous ? body.previousX : body.x,
+			y: previous ? body.previousY : body.y,
+			rotation: previous
+				? (body.previousRotation ?? body.rotation)
+				: body.rotation,
+			shardIndex: body.shardIndex ?? 0,
+			releasedMask: body.releasedMask ?? 0,
+		};
+		const bound = getDerelictRadius(shape) + radius;
+		if (
+			!Number.isFinite(
+				contactTime(x - shape.x, y - shape.y, vx, vy, bound, horizon),
+			)
+		)
+			return Infinity;
+		if (!Number.isFinite(horizon)) {
+			const speed = Math.hypot(vx, vy);
+			horizon =
+				speed > 0
+					? (Math.hypot(x - shape.x, y - shape.y) + bound * 2) / speed
+					: 0;
+		}
+		return (
+			castDerelict(
+				{
+					kind: body.kind,
+					x: previous ? body.previousX : body.x,
+					y: previous ? body.previousY : body.y,
+					rotation: previous
+						? (body.previousRotation ?? body.rotation)
+						: body.rotation,
+					shardIndex: body.shardIndex ?? 0,
+					releasedMask: body.releasedMask ?? 0,
+				},
+				{ x, y },
+				{ x: vx, y: vy },
+				radius,
+				horizon,
+				previous ? (body.kind === "wreck" ? 0.3 : 0.8) * angularScale : 0,
+			)?.time ?? Infinity
+		);
+	}
+	private release(
+		body: SalvageBody,
+		index: number,
+		suppressShipContact = false,
+	) {
+		const bit = 1 << index;
+		if ((body.releasedMask ?? 0) & bit) return;
+		body.releasedMask = (body.releasedMask ?? 0) | bit;
+		const site = DERELICT_SHARDS[index];
+		const c = Math.cos(body.rotation),
+			s = Math.sin(body.rotation);
+		const px = (site.x - DERELICT_ORIGIN.x) * DERELICT_SCALE,
+			py = (site.y - DERELICT_ORIGIN.y) * DERELICT_SCALE;
+		const fragment = this.body(
+			"fragment",
+			body.group,
+			body.x + c * px - s * py,
+			body.y + s * px + c * py,
+			body.vx + c * site.vx - s * site.vy,
+			body.vy + s * site.vx + c * site.vy,
+		);
+		fragment.rotation = body.rotation;
+		fragment.previousRotation = body.rotation;
+		fragment.shardIndex = index;
+		fragment.suppressShipContact = suppressShipContact;
+		this.bodies.push(fragment);
+	}
 	private destroy(body: SalvageBody, cause: DestructionCause) {
 		if (body.hull <= 0) return;
 		body.hull = 0;
-		if (cause !== "player-weapon" && cause !== "player-ram") return;
+		if (cause === "expiry" || cause === "exit") return;
 		if (body.kind !== "wreck") {
-			this.emit("impact", body.x, body.y);
+			if (cause === "player-weapon" || cause === "player-ram")
+				this.emit("impact", body.x, body.y);
 			return;
 		}
-		this.destroyed++;
-		this.playerKills++;
-		this.emit("break", body.x, body.y);
-		const phase = this.random() * Math.PI * 2;
-		for (let i = 0; i < SALVAGE.fragment.count; i++) {
-			const angle = phase + (i * Math.PI * 2) / SALVAGE.fragment.count;
-			const fragment = this.body(
-				"fragment",
-				body.group,
-				body.x + Math.cos(angle) * 12,
-				body.y + Math.sin(angle) * 12,
-				body.vx + Math.cos(angle) * SALVAGE.fragment.speed,
-				body.vy + Math.sin(angle) * SALVAGE.fragment.speed,
-			);
-			this.bodies.push(fragment);
+		if (cause === "player-weapon" || cause === "player-ram") {
+			this.destroyed++;
+			this.playerKills++;
 		}
-		this.bodies.push(
-			this.body("cell", body.group, body.x, body.y, body.vx, body.vy),
-		);
+		this.emit("break", body.x, body.y);
+		for (let i = 0; i < DERELICT_SHARDS.length; i++)
+			this.release(body, i, cause === "player-ram");
+		if (cause !== "environment")
+			this.bodies.push(
+				this.body("cell", body.group, body.x, body.y, body.vx, body.vy),
+			);
 	}
 	private damage(body: SalvageBody, amount: number) {
 		if (body.hull <= 0) return;
 		this.hits++;
+		if (body.kind === "wreck" && body.initialHull === undefined)
+			body.initialHull = body.hull;
 		if (body.hull <= amount) this.destroy(body, "player-weapon");
 		else {
 			body.hull -= amount;
+			if (body.kind === "wreck") {
+				const damage = 1 - body.hull / (body.initialHull ?? SALVAGE.wreck.hull);
+				for (const [threshold, index] of [
+					[0.2, 0],
+					[0.4, 6],
+					[0.6, 3],
+				] as const)
+					if (damage + 1e-9 >= threshold) this.release(body, index);
+			}
 			this.emit("impact", body.x, body.y);
 		}
 	}
@@ -267,8 +379,9 @@ export class SalvageSystem {
 		endX: number,
 		endY: number,
 		star: Star,
+		planets: readonly Planet[],
 	) {
-		return (
+		if (
 			contactTime(
 				x - star.pos.x,
 				y - star.pos.y,
@@ -276,10 +389,27 @@ export class SalvageSystem {
 				endY - y,
 				star.radius,
 				1,
-			) === Infinity
+			) !== Infinity
+		)
+			return false;
+		return planets.every(
+			(planet) =>
+				contactTime(
+					x - planet.pos.x,
+					y - planet.pos.y,
+					endX - x,
+					endY - y,
+					planet.radius,
+					1,
+				) === Infinity,
 		);
 	}
-	private targetLaser(weapon: WeaponState, ship: GameObject, star: Star) {
+	private targetLaser(
+		weapon: WeaponState,
+		ship: GameObject,
+		star: Star,
+		planets: readonly Planet[],
+	) {
 		const pose = weaponPose(ship, weapon.mount, weapon.angle);
 		const candidates = this.bodies
 			.flatMap((body) => {
@@ -288,17 +418,18 @@ export class SalvageSystem {
 					body.kind === "cell" ||
 					body.hull <= 0 ||
 					distance > WEAPONS.laser.range ||
-					!this.lineClear(pose.x, pose.y, body.x, body.y, star)
+					!this.lineClear(pose.x, pose.y, body.x, body.y, star, planets)
 				)
 					return [];
 				const threat =
 					body.kind === "fragment"
-						? contactTime(
-								body.x - ship.pos.x,
-								body.y - ship.pos.y,
-								body.vx - ship.vel.x,
-								body.vy - ship.vel.y,
-								ship.radius + body.radius,
+						? this.cast(
+								body,
+								ship.pos.x,
+								ship.pos.y,
+								ship.vel.x - body.vx,
+								ship.vel.y - body.vy,
+								ship.radius,
 								WEAPONS.laser.threatHorizon,
 							)
 						: Infinity;
@@ -326,12 +457,13 @@ export class SalvageSystem {
 		ship: GameObject,
 		star: Star,
 		resources: Resources,
+		planets: readonly Planet[],
 	) {
 		for (const weapon of this.weapons) {
 			const config = WEAPONS[weapon.kind];
 			let target: SalvageBody | undefined;
 			if (weapon.kind === "laser") {
-				target = this.targetLaser(weapon, ship, star);
+				target = this.targetLaser(weapon, ship, star, planets);
 				weapon.target = target?.id ?? null;
 				if (target) {
 					const base = weaponPose(ship, weapon.mount, weapon.angle);
@@ -376,15 +508,23 @@ export class SalvageSystem {
 						body.kind === "cell" ||
 						body.hull <= 0 ||
 						Math.hypot(body.x - pose.x, body.y - pose.y) > config.range ||
-						!this.lineClear(pose.muzzleX, pose.muzzleY, body.x, body.y, star)
+						!this.lineClear(
+							pose.muzzleX,
+							pose.muzzleY,
+							body.x,
+							body.y,
+							star,
+							planets,
+						)
 					)
 						continue;
-					let t = contactTime(
-						pose.muzzleX - body.x,
-						pose.muzzleY - body.y,
+					let t = this.cast(
+						body,
+						pose.muzzleX,
+						pose.muzzleY,
 						vx - body.vx,
 						vy - body.vy,
-						body.radius,
+						0,
 						Infinity,
 					);
 					// Predict the target's bearing when the slug reaches its forward plane.
@@ -440,15 +580,28 @@ export class SalvageSystem {
 					star.radius,
 					config.range,
 				);
+				for (const planet of planets)
+					first = Math.min(
+						first,
+						contactTime(
+							pose.muzzleX - planet.pos.x,
+							pose.muzzleY - planet.pos.y,
+							dx,
+							dy,
+							planet.radius,
+							config.range,
+						),
+					);
 				let hit: SalvageBody | undefined;
 				for (const body of this.bodies) {
 					if (body.kind === "cell" || body.hull <= 0) continue;
-					const distance = contactTime(
-						pose.muzzleX - body.x,
-						pose.muzzleY - body.y,
+					const distance = this.cast(
+						body,
+						pose.muzzleX,
+						pose.muzzleY,
 						dx,
 						dy,
-						body.radius,
+						0,
 						config.range,
 					);
 					if (distance < first) {
@@ -481,6 +634,7 @@ export class SalvageSystem {
 		previousX: number,
 		previousY: number,
 		wrapped: boolean,
+		planets: readonly Planet[] = [],
 	) {
 		this.time += dt;
 		this.events = this.events.filter((event) => this.time - event.time <= 0.2);
@@ -490,7 +644,37 @@ export class SalvageSystem {
 				ENCOUNTER.intervalMin +
 				this.scheduleRandom() * (ENCOUNTER.intervalMax - ENCOUNTER.intervalMin);
 		}
-		this.fireWeapons(dt, ship, star, resources);
+		const hazards = [star, ...planets];
+		const existingBodies = new Set(this.bodies);
+		// A body already touching a world hazard is gone before an instantaneous pulse.
+		for (const body of existingBodies) {
+			if (body.hull <= 0) continue;
+			if (body.life <= 0) {
+				this.destroy(body, "expiry");
+				continue;
+			}
+			if (outside(body.x, body.y)) {
+				this.destroy(body, "exit");
+				continue;
+			}
+			if (
+				body.hull > 0 &&
+				hazards.some(
+					(hazard) =>
+						this.cast(
+							body,
+							hazard.pos.x,
+							hazard.pos.y,
+							0,
+							0,
+							hazard.radius,
+							0,
+						) !== Infinity,
+				)
+			)
+				this.destroy(body, "environment");
+		}
+		this.fireWeapons(dt, ship, star, resources, planets);
 		for (const weapon of this.weapons) {
 			if (!weapon.recoil) continue;
 			const duration = Math.min(dt, weapon.recoil.remaining);
@@ -502,27 +686,84 @@ export class SalvageSystem {
 			weapon.recoil.remaining -= duration;
 			if (weapon.recoil.remaining <= 1e-9) weapon.recoil = null;
 		}
-		for (const body of this.bodies) {
+		const startX = wrapped ? ship.pos.x : previousX,
+			startY = wrapped ? ship.pos.y : previousY;
+		for (const body of existingBodies) {
+			if (body.hull <= 0) continue;
+			body.previousRotation = body.rotation;
 			body.previousX = body.x;
 			body.previousY = body.y;
 			body.x += body.vx * dt;
 			body.y += body.vy * dt;
 			body.life -= dt;
 			body.rotation += dt * (body.kind === "wreck" ? 0.3 : 0.8);
-			if (body.life <= 0) this.destroy(body, "expiry");
-			else if (outside(body.x, body.y)) this.destroy(body, "exit");
-			else if (
-				contactTime(
-					body.previousX - star.pos.x,
-					body.previousY - star.pos.y,
-					body.vx,
-					body.vy,
-					star.radius + body.radius,
-					dt,
-				) !== Infinity
-			)
-				this.destroy(body, "environment");
 		}
+		type Terminal = { time: number; cause: "environment" | "expiry" | "exit" };
+		const terminalTimes = new Map<
+			SalvageBody,
+			{ mask: number; terminal: Terminal }
+		>();
+		const shipTimes = new Map<SalvageBody, { mask: number; time: number }>();
+		const terminal = (body: SalvageBody): Terminal => {
+			const mask = body.releasedMask ?? 0;
+			const cached = terminalTimes.get(body);
+			if (cached?.mask === mask) return cached.terminal;
+			let result: Terminal = { time: Infinity, cause: "environment" };
+			for (const hazard of hazards) {
+				const time = this.cast(
+					body,
+					hazard.pos.x,
+					hazard.pos.y,
+					-body.vx,
+					-body.vy,
+					hazard.radius,
+					dt,
+					true,
+				);
+				if (time < result.time) result = { time, cause: "environment" };
+			}
+			const expiry = body.life <= 0 ? Math.max(0, dt + body.life) : Infinity;
+			if (expiry < result.time) result = { time: expiry, cause: "expiry" };
+			if (outside(body.x, body.y)) {
+				const x = body.previousX - ENCOUNTER.centerX,
+					y = body.previousY - ENCOUNTER.centerY;
+				const a = body.vx ** 2 + body.vy ** 2;
+				const b = 2 * (x * body.vx + y * body.vy);
+				const c = x * x + y * y - ENCOUNTER.radius ** 2;
+				const time =
+					a > 0
+						? Math.max(
+								0,
+								(-b + Math.sqrt(Math.max(0, b * b - 4 * a * c))) / (2 * a),
+							)
+						: Infinity;
+				if (time < result.time) result = { time, cause: "exit" };
+			}
+			terminalTimes.set(body, { mask, terminal: result });
+			return result;
+		};
+		const shipTime = (body: SalvageBody) => {
+			const mask = body.releasedMask ?? 0;
+			const cached = shipTimes.get(body);
+			if (cached?.mask === mask) return cached.time;
+			const time = body.suppressShipContact
+				? Infinity
+				: dt *
+					this.cast(
+						body,
+						startX,
+						startY,
+						ship.pos.x - startX - (body.x - body.previousX),
+						ship.pos.y - startY - (body.y - body.previousY),
+						ship.radius,
+						1,
+						true,
+						dt,
+					);
+			shipTimes.set(body, { mask, time });
+			return time;
+		};
+
 		this.shots = this.shots.filter((shot) => {
 			let first = contactTime(
 				shot.x - star.pos.x,
@@ -532,42 +773,95 @@ export class SalvageSystem {
 				star.radius,
 				dt,
 			);
+			for (const planet of planets)
+				first = Math.min(
+					first,
+					contactTime(
+						shot.x - planet.pos.x,
+						shot.y - planet.pos.y,
+						shot.vx,
+						shot.vy,
+						planet.radius,
+						dt,
+					),
+				);
 			let hit: SalvageBody | undefined;
-			for (const body of this.bodies) {
+			for (const body of existingBodies) {
 				if (body.kind === "cell" || body.hull <= 0) continue;
-				const time = contactTime(
-					shot.x - body.previousX,
-					shot.y - body.previousY,
+				const time = this.cast(
+					body,
+					shot.x,
+					shot.y,
 					shot.vx - body.vx,
 					shot.vy - body.vy,
-					body.radius,
+					0,
 					dt,
+					true,
 				);
-				if (time < first) {
+				if (
+					time < first &&
+					time < terminal(body).time &&
+					time < shipTime(body)
+				) {
 					first = time;
 					hit = body;
 				}
 			}
 			shot.x += shot.vx * Math.min(dt, first);
 			shot.y += shot.vy * Math.min(dt, first);
-			if (hit) this.damage(hit, WEAPONS.rail.damage);
+			if (hit) {
+				const end = { x: hit.x, y: hit.y, rotation: hit.rotation };
+				hit.x = hit.previousX + hit.vx * first;
+				hit.y = hit.previousY + hit.vy * first;
+				hit.rotation =
+					(hit.previousRotation ?? end.rotation) +
+					first * (hit.kind === "wreck" ? 0.3 : 0.8);
+				this.damage(hit, WEAPONS.rail.damage);
+				if (hit.hull > 0) Object.assign(hit, end);
+			}
 			if (first !== Infinity) this.emit("collision", shot.x, shot.y);
 			return first === Infinity && !outside(shot.x, shot.y);
 		});
-		const startX = wrapped ? ship.pos.x : previousX,
-			startY = wrapped ? ship.pos.y : previousY;
-		// Snapshot: debris created by contact starts participating next substep.
+		// Keep every newborn from one ram suppressed until the ship has left all of them.
+		const suppressedBodies = new Set(
+			this.bodies.filter((b) => b.suppressShipContact),
+		);
+		const suppressedGroups = new Set([...suppressedBodies].map((b) => b.group));
+		for (const group of suppressedGroups) {
+			const pieces = this.bodies.filter(
+				(b) => b.group === group && b.suppressShipContact,
+			);
+			if (
+				pieces.every(
+					(b) =>
+						this.cast(b, ship.pos.x, ship.pos.y, 0, 0, ship.radius, 0) ===
+						Infinity,
+				)
+			)
+				for (const piece of pieces) piece.suppressShipContact = false;
+		}
 		for (const body of [...this.bodies]) {
 			if (body.hull <= 0) continue;
-			const contact = contactTime(
-				body.previousX - startX,
-				body.previousY - startY,
-				body.x - body.previousX - (ship.pos.x - startX),
-				body.y - body.previousY - (ship.pos.y - startY),
-				ship.radius + body.radius,
-				1,
-			);
-			if (contact === Infinity) continue;
+			const born = !existingBodies.has(body);
+			const contact = born
+				? this.cast(body, ship.pos.x, ship.pos.y, 0, 0, ship.radius, 0)
+				: this.cast(
+						body,
+						startX,
+						startY,
+						ship.pos.x - startX - (body.x - body.previousX),
+						ship.pos.y - startY - (body.y - body.previousY),
+						ship.radius,
+						1,
+						true,
+						dt,
+					);
+			if (suppressedBodies.has(body)) continue;
+			if (
+				contact === Infinity ||
+				(!born && terminal(body).time <= contact * dt)
+			)
+				continue;
 			if (body.kind === "cell") {
 				const amount = Math.max(
 					0,
@@ -587,15 +881,50 @@ export class SalvageSystem {
 							: SALVAGE.fragment.contact),
 				);
 				if (body.kind === "wreck") {
-					const x = body.previousX + (body.x - body.previousX) * contact;
-					const y = body.previousY + (body.y - body.previousY) * contact;
-					const dx = startX + (ship.pos.x - startX) * contact - x;
-					const dy = startY + (ship.pos.y - startY) * contact - y;
-					const ratio = body.radius / Math.max(body.radius, Math.hypot(dx, dy));
-					this.emit("collision", x + dx * ratio, y + dy * ratio);
+					const hit = castDerelict(
+						{
+							kind: "wreck",
+							x: body.previousX,
+							y: body.previousY,
+							rotation: body.previousRotation ?? body.rotation,
+							releasedMask: body.releasedMask ?? 0,
+						},
+						{ x: startX, y: startY },
+						{
+							x: ship.pos.x - startX - (body.x - body.previousX),
+							y: ship.pos.y - startY - (body.y - body.previousY),
+						},
+						ship.radius,
+						1,
+						0.3 * dt,
+					);
+					if (hit)
+						this.emit(
+							"collision",
+							hit.surfaceX + (body.x - body.previousX) * hit.time,
+							hit.surfaceY + (body.y - body.previousY) * hit.time,
+						);
+				}
+				if (!born) {
+					body.x = body.previousX + (body.x - body.previousX) * contact;
+					body.y = body.previousY + (body.y - body.previousY) * contact;
+					body.rotation =
+						(body.previousRotation ?? body.rotation) +
+						dt * contact * (body.kind === "wreck" ? 0.3 : 0.8);
 				}
 				this.destroy(body, "player-ram");
 			}
+		}
+		for (const body of existingBodies) {
+			if (body.hull <= 0) continue;
+			const { time, cause } = terminal(body);
+			if (time === Infinity) continue;
+			body.x = body.previousX + body.vx * time;
+			body.y = body.previousY + body.vy * time;
+			body.rotation =
+				(body.previousRotation ?? body.rotation) +
+				time * (body.kind === "wreck" ? 0.3 : 0.8);
+			this.destroy(body, cause);
 		}
 		this.bodies = this.bodies.filter((body) => body.hull > 0);
 	}
