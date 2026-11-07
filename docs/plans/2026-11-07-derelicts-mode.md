@@ -83,6 +83,16 @@ changes were made to factory gates. Full repository lint retains the previously
 observed study SVG issues; build, full browser and backend gates were not run.
 Human flight balance/readability review remains pending the integrated mode.
 
+### Early playable entry
+
+Owner requested an early Hangar launch after slice 3, without waiting for scoring
+or new game-over behavior. The Derelicts button passes the current build into the
+existing flight screen in Derelicts mode. This advances only the launch wiring from
+slice 8; generated systems, score presentation and the accepted artwork remain
+pending their planned slices. Existing Pause/Abort and return behavior is retained.
+Workspace types and a focused browser launch/encounter/abort/setup-retention check
+passed. This launch change is local working code.
+
 ## Acceptance contract
 
 - Both entries use the active Hangar build and system choices, with fresh sessions

@@ -18,7 +18,8 @@ persistent records, leaderboard competition or progression rewards.
 
 ## Ownership and entry
 
-- The Hangar owns access and the active setup; this spec owns Derelicts rules.
+- The Hangar offers a Derelicts launch alongside Test flight and Start survival.
+  It owns access and the active setup; this spec owns Derelicts rules.
 - Enter with the active Hangar ship, fittings and system choices. Use its actual
   mass, thrust, handling and capacities, with normal fresh-run resources.
 - Use a generated star system. When generation is unavailable, use the default

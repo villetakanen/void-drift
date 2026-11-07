@@ -41,7 +41,7 @@ let builds = $state(defaultBuilds());
 let chosen = $state<ShipProfileId>("fighter");
 let selected = $state("left");
 let previewMode = $state("Plan");
-let flying = $state<"test" | "survival" | null>(null);
+let flying = $state<"test" | "derelicts" | "survival" | null>(null);
 let ready = $state(false);
 let fontsLoaded = $state(false);
 let notice = $state("");
@@ -201,7 +201,7 @@ function choose(id: ShipProfileId) {
 	<FlightDeck
 		loadout={build}
 		launchSource="hangar"
-		mode={flying === "test" ? "practice" : "survival"}
+		mode={flying === "test" ? "practice" : flying}
 		onReturn={() => (flying = null)}
 	/>
 {:else}
@@ -560,6 +560,13 @@ function choose(id: ShipProfileId) {
 					onclick={() => (flying = "survival")}
 				>
 					Start survival
+				</button>
+				<button
+					type="button"
+					class="btn btn-ghost"
+					onclick={() => (flying = "derelicts")}
+				>
+					Derelicts
 				</button>
 			</div>
 		</footer>
