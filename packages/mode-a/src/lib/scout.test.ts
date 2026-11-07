@@ -142,7 +142,7 @@ describe("accepted Scout Trident", () => {
 				new Simulation({
 					...stockSettings("scout"),
 					loadout: build,
-					mode: "practice",
+					mode: "survival",
 				}),
 		);
 		for (const sim of sims) {
@@ -159,7 +159,7 @@ describe("accepted Scout Trident", () => {
 			sim.step(both);
 			expect(sim.engineOutput.left).toBe(0);
 			expect(sim.engineOutput.aft[0]).toBe(0);
-			expect(sim.state.status).toBe("PLAYING");
+			expect(sim.state.status).toBe("GAME_OVER");
 		}
 	});
 });

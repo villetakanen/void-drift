@@ -63,7 +63,6 @@ let left = $state(false);
 let right = $state(false);
 let cause = $state("");
 let pendingDerelict = $state(false);
-let canSendDerelict = $state(false);
 let salvageFeedback = $state("");
 let salvageStats = $state({
 	passes: 0,
@@ -142,7 +141,6 @@ function frameCamera(snap = false) {
 }
 function sync() {
 	const salvage = simulation.salvage;
-	canSendDerelict = salvage?.canSend ?? false;
 	salvageStats = {
 		passes: salvage?.passes ?? 0,
 		destroyed: salvage?.destroyed ?? 0,
@@ -475,29 +473,8 @@ onMount(() => {
 				{#if onReturn}
 					<button type="button" class="btn btn-link" onclick={onReturn}>
 						Return to builder
-					</button><button
-						type="button"
-						class="btn btn-link"
-						onclick={() => reset(true)}
-					>
-						Reset flight
 					</button>
 				{/if}
-				{#if testFlight && loadout}
-					<button
-						type="button"
-						class="btn btn-link"
-						disabled={paused ||
-							pendingDerelict ||
-							!canSendDerelict ||
-							status !== "PLAYING"}
-						onclick={() => (pendingDerelict = true)}
-					>
-						Send derelict
-					</button>
-				{/if}
-
-				<a href="/leaderboard">HIGH SCORES</a><a href="/settings">OPTIONS</a>
 			</nav>
 		</header>
 	{/if}
@@ -524,7 +501,7 @@ onMount(() => {
 					aria-label={landing
 						? "Decorative star and orbiting planets"
 						: testFlight
-							? "Fitted ship, star, derelicts, debris and energy collectibles"
+							? "Fitted ship, star and orbiting planets"
 							: "Ship, star and orbiting planets"}
 				></canvas>
 				<div class="flight-hud" data-hud>
@@ -540,10 +517,12 @@ onMount(() => {
 							value={power}
 						></progress>
 					</div>
-					<div class="timer">
-						<small>SURVIVAL</small
-						><strong class="time">{seconds.toFixed(1)}s</strong>
-					</div>
+					{#if !testFlight}
+						<div class="timer">
+							<small>SURVIVAL</small
+							><strong class="time">{seconds.toFixed(1)}s</strong>
+						</div>
+					{/if}
 				</div>
 				{#if activeLoadout && engineFeedback}
 					<p class="engine-feedback" data-hud>{engineFeedback}</p>
@@ -562,7 +541,7 @@ onMount(() => {
 						◀<span>LEFT ENGINE</span>
 					</button>
 					<div class="flight-actions">
-						{#if testFlight}
+						{#if mode === "derelicts"}
 							<small role="status"
 								>{salvageFeedback || "WEAPONS AUTO · 10 ENERGY RESERVE"}</small
 							>
@@ -575,7 +554,7 @@ onMount(() => {
 						<small
 							>{loadout
 								? testFlight
-									? "TEST / NO GAME-OVER"
+									? "PRACTICE / FULL HEALTH AND ENERGY"
 									: "CUSTOM BUILD / UNRANKED"
 								: chosen === "fiddler"
 									? "UNRANKED TRIAL"

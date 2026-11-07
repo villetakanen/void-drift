@@ -34,12 +34,14 @@ to practice. An explicit mode takes precedence over the deprecated boolean.
 Launch source and mode are independent, and only Survival may use the existing
 ranked submission path (subject to its other eligibility checks).
 
-The initial structural migration preserves the former practice behavior, including
-its small-sun environment and salvage. It does not claim completion of the new
-[practice](test-flight/spec.md) or Derelicts contracts. Derelicts is a validated
-internal selection pending encounter integration, not an offered Hangar launch.
-Settings and replay consumers should pass explicit modes; no build-store migration
-is required. Existing replay input chunks retain their schema.
+Practice now uses the fixed default star-and-planet environment, full health and
+energy throughout flight, and normal physical interactions without encounters or
+failure. It offers Pause/Resume/Abort, with no Reset or survival timer. See the
+[practice contract](test-flight/spec.md). Derelicts is internal pending encounter
+integration, not an offered Hangar launch. Its internal salvage system retains the
+previous encounter implementation until that slice. Settings and replay consumers
+should pass explicit modes; no build-store migration is required. Existing replay
+input chunks retain their schema.
 
 ## Contract
 

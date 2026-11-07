@@ -5,7 +5,7 @@ import {
 } from "../../packages/mode-a/src/lib/schemas/loadout";
 import { expect, test } from "../helpers/local-browser";
 
-test("fit, persist, fly, reset and return to an assembled ship", async ({
+test("fit, persist, practise, pause and return to an assembled ship", async ({
 	page,
 }) => {
 	const time = new Date("2026-11-03T00:00:00Z");
@@ -63,11 +63,14 @@ test("fit, persist, fly, reset and return to an assembled ship", async ({
 		.toBeGreaterThan(30);
 	await page.keyboard.up("a");
 	await page.keyboard.up("d");
-	await page.getByRole("button", { name: "Reset flight" }).click();
+	await expect(page.getByRole("button", { name: "Reset flight" })).toHaveCount(
+		0,
+	);
 	await expect(
 		page.getByRole("progressbar", { name: "Power" }),
 	).toHaveAttribute("value", capacity);
-	await page.getByRole("button", { name: "Return to builder" }).click();
+	await page.getByRole("button", { name: "Pause", exact: true }).click();
+	await page.getByRole("button", { name: "Abort", exact: true }).click();
 	await expect(
 		page.getByRole("button", {
 			name: "Hull 1 · Equipment: Heavy Potential Well",

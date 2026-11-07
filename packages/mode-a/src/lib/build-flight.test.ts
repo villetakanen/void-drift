@@ -119,20 +119,25 @@ describe("ship builder contract", () => {
 		b.state.resources.hull = 0;
 		b.step(both);
 		expect(b.state.status).toBe("PLAYING");
-		expect(b.engineOutput.left).toBe(0);
+		expect(b.engineOutput.left).toBeGreaterThan(0);
+		expect(b.state.resources.hull).toBe(100);
+		expect(b.state.resources.power).toBe(
+			buildStats({ ...defaultLoadout("fighter"), hull: ["battery", null] })
+				.capacity,
+		);
 		b.ship.pos.set(980, 540);
 		b.step(idle);
 		expect(b.state.resources.power).toBeGreaterThan(0);
 	});
 	it("uses incoming charge with held controls and cannot thrust on unavailable energy", () => {
-		const sim = simulation(true);
+		const sim = simulation();
 		sim.ship.pos.set(980, 540);
 		sim.state.resources.power = 0;
 		sim.step(both);
 		expect(sim.engineOutput.left).toBeGreaterThan(0);
 		expect(sim.state.resources.power).toBe(0);
-		expect(sim.state.status).toBe("PLAYING");
 		sim.ship.pos.set(1900, 540);
+		sim.state.status = "PLAYING";
 		sim.step(both);
 		expect(sim.engineOutput.left).toBe(0);
 	});
@@ -310,4 +315,38 @@ it("links every aft engine to either input with matching drain and power gating"
 			).toEqual([0, 0]);
 		}
 	}
+});
+
+it("starts practice in the same full default system regardless of seed or arrival", () => {
+	const a = new Simulation({
+		...stockSettings(),
+		mode: "practice",
+		seed: 1,
+		arrival: true,
+	});
+	const b = new Simulation({ ...stockSettings(), mode: "practice", seed: 999 });
+	const standard = new Simulation(stockSettings());
+	expect(a.star).toEqual(standard.star);
+	expect(a.planets).toEqual(standard.planets);
+	expect(a.planets.length).toBeGreaterThan(0);
+	expect(a.ship).toEqual(b.ship);
+	expect(a.planets).toEqual(b.planets);
+	expect(a.salvage).toBeUndefined();
+});
+
+it("keeps practice healthy and in normal motion through star contact", () => {
+	const sim = simulation(true);
+	sim.ship.pos.set(sim.star.pos.x + 1, sim.star.pos.y);
+	sim.ship.vel.set(0, 100);
+	const before = { x: sim.ship.pos.x, y: sim.ship.pos.y };
+	for (let i = 0; i < 30; i++) sim.step(both);
+	expect(sim.state.status).toBe("PLAYING");
+	expect(sim.state.resources.hull).toBe(100);
+	expect(sim.state.resources.power).toBe(
+		buildStats({ ...defaultLoadout("fighter"), hull: ["battery", null] })
+			.capacity,
+	);
+	expect(
+		Math.hypot(sim.ship.pos.x - before.x, sim.ship.pos.y - before.y),
+	).toBeLessThan(1200);
 });

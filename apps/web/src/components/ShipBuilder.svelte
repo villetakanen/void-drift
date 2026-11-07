@@ -564,10 +564,9 @@ function choose(id: ShipProfileId) {
 			</div>
 		</footer>
 		<p class="footnote">
-			Test flight: small sun, passing salvage, automatic weapons, real energy
-			and damage, no game-over. Weapons keep 10 energy in reserve; engine
-			endurance estimates exclude weapon demand. Custom survival is unranked;
-			weapons remain inactive there.
+			Test flight: practise in a repeatable star system with full health and
+			energy. Pause to resume or abort back to the Hangar. Custom survival is
+			unranked; weapons remain inactive there.
 		</p>
 		{#if notice}
 			<p role="status">{notice}</p>

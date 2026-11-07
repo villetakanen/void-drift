@@ -34,7 +34,7 @@ prior work; it is not a competing current specification.
 | Fittings and saves    | [`loadout.ts`](../../../packages/mode-a/src/lib/schemas/loadout.ts): `PartSchema`, `ChassisSchema`, `LoadoutSchema`, `BuildStoreSchema`, `slotAccepts`, `defaultBuilds`. Browser data is parsed before use; a loadout is parsed again through [`FlightSettingsSchema`](../../../packages/mode-a/src/lib/schemas/flight.ts) at simulation entry. |
 | Mounts and appearance | `buildMounts` and `drawBuild` in [`build-renderer.ts`](../../../packages/mode-a/src/lib/build-renderer.ts) supply production mounts and ship drawing. The Hangar consumes these definitions; the [mount planner](../ship-mount-planner.md) authors proposed geometry separately.                                                                |
 | Information           | `PARTS`, `CHASSIS`, `fittedParts` and `buildStats` in `loadout.ts` supply catalog values and assembled estimates. Numerical catalogs, slot counts, coordinates and formulas are maintained there rather than copied into this spec.                                                                                                             |
-| Flight handoff        | [`FlightDeck.svelte`](../../../apps/web/src/components/FlightDeck.svelte) receives `loadout`, `testFlight` and `onReturn`. [`Simulation`](../../../packages/mode-a/src/lib/simulation.ts) owns resources and termination; [`build-flight.ts`](../../../packages/mode-a/src/lib/build-flight.ts) owns engine commands and power demand.          |
+| Flight handoff        | [`FlightDeck.svelte`](../../../apps/web/src/components/FlightDeck.svelte) receives `loadout`, `mode` and `onReturn`. [`Simulation`](../../../packages/mode-a/src/lib/simulation.ts) owns resources and termination; [`build-flight.ts`](../../../packages/mode-a/src/lib/build-flight.ts) owns engine commands and power demand.                |
 | Shared interface      | [`Toggle.svelte`](../../../apps/web/src/components/inputs/Toggle.svelte) and the [design system](../design-system-core.md) supply controls and visual foundations. `/lab/builder` is the inspectable production composition.                                                                                                                    |
 
 ### Constraints
@@ -82,15 +82,14 @@ prior work; it is not a competing current specification.
    and rear engines, proportionally to the stabilizer burn. They add forward force
    and exhaust, with no extra turning torque. The opposite mains stay off. Actual
    thrust, draw and exhaust still obey power and engine timing.
-6. **Try the actual build.** Test and survival use the selected fittings and shared
-   simulation/rendering. Every new flight and reset starts with full build capacity.
-   Test flight has a small sun and no planets, retains energy and damage simulation,
-   and continues at empty energy or lethal damage. Engines require available power
-   and can resume after charging. Return preserves the build. Survival retains its
-   normal end conditions and is explicitly unranked, with score submission excluded.
-   The [weapon trial](../weapons-and-salvage.md) starts outside the small sun's
-   influence, adds passing derelicts, automatic fitted weapons and energy pickups,
-   and offers Send derelict. Reset reproduces the encounter sequence.
+6. **Try the actual build.** Practice and survival use the selected fittings and
+   shared simulation/rendering. Every entry starts fresh with full build capacity.
+   [Practice](../test-flight/spec.md) uses a fixed star-and-planet system, keeps
+   health and energy full, retains normal physics, and has no encounters or failure.
+   Pause/Resume/Abort preserves the setup; no Reset is offered. Survival retains
+   normal end conditions and is explicitly unranked, with submission excluded.
+   Weapons and salvage belong to the separate Derelicts mode, whose public entry
+   remains pending integration.
 
 Constraints 1–2, 4 and 6 carry the original brief and charter; later fitting and
 identity decisions are recorded under [Slot language](../../history/ship-builder.md#slot-language-integration--2026-10-31)
@@ -150,7 +149,7 @@ These are acceptance criteria, not claims that checks have passed.
 | D4        | Plan/View preserve the build; display framing and keyboard/pointer targets remain usable.                            | H6        |
 | D5        | Part and build figures match shared definitions and state sufficient conditions to interpret them.                   | H7        |
 | D6        | Stabilizer and linked-engine choices persist and govern the same build in flight.                                    | H8        |
-| D7        | Test, reset and return preserve assembly while test and survival enforce their distinct end conditions.              | H9–H10    |
+| D7        | Practice, pause and return preserve assembly while practice and survival enforce distinct resource/end rules.        | H9–H10    |
 | D8        | Custom survival is labelled unranked and cannot submit a ranked score.                                               | H10       |
 
 ### Regression guardrails
@@ -236,14 +235,15 @@ Feature: Assemble and fly a ship in the Hangar
     And no input commands no aft thrust
     And Wasp retains forced stabilizers and its both-input centre engine
 
-  Scenario: H9 Test, reset and return
-    Given my fitted ship in the small-sun test flight
-    When energy is empty or damage would end survival
-    Then the test continues and thrust is limited to available energy
-    And newly available charge can power held engine controls
-    When I reset and return to the Hangar
-    Then reset started with full capacity and initial flight conditions
-    And my fittings and system choices are preserved
+  Scenario: H9 Practise, pause and return
+    Given my fitted ship in the fixed star-and-planet practice system
+    When I fly using engines or encounter hazards
+    Then health and energy remain full and practice continues
+    And no encounters or Reset action are offered
+    When I pause, resume, then pause and abort
+    Then pause freezes the session and resume continues it
+    And abort returns to the unchanged Hangar setup
+    And entering practice again starts fresh
 
   Scenario: H10 Start unranked survival
     Given my fitted ship in the Hangar

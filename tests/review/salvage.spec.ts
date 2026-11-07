@@ -12,7 +12,7 @@ test("shared weapon fitting and turret geometry", async ({ page }, info) => {
 });
 
 for (const width of [1280, 844]) {
-	test(`weapon salvage review at ${width}`, async ({ page }, info) => {
+	test(`armed practice review at ${width}`, async ({ page }, info) => {
 		const time = new Date("2026-11-03T00:00:00Z");
 		await page.clock.install({ time });
 		await page.clock.pauseAt(time);
@@ -35,18 +35,13 @@ for (const width of [1280, 844]) {
 			await info.attach(name, { path, contentType: "image/png" });
 		};
 		await page.clock.runFor(7200);
-		await capture("tracking");
 		const flight = page.locator(".flight-page");
-		for (let i = 0; i < 100; i++) {
-			if (Number(await flight.getAttribute("data-salvage-destroyed")) > 0)
-				break;
-			await page.clock.runFor(16);
-		}
-		await expect(flight).toHaveAttribute("data-salvage-destroyed", "1");
-		await page.clock.runFor(48);
-		await capture("rail-impact");
-		await page.clock.runFor(1000);
-		await capture("fragments");
+		await expect(flight).toHaveAttribute("data-salvage-passes", "0");
+		await expect(flight).toHaveAttribute("data-rail-shots", "0");
+		await expect(flight).toHaveAttribute("data-laser-pulses", "0");
+		await capture("armed-practice");
+		await page.getByRole("button", { name: "Pause", exact: true }).click();
+		await capture("practice-paused");
 	});
 }
 
@@ -62,38 +57,4 @@ test("shared weapon effects in the mixed Lab", async ({ page }, info) => {
 	const path = info.outputPath("weapon-fx-lab.png");
 	await page.screenshot({ path });
 	await info.attach("weapon-fx-lab", { path, contentType: "image/png" });
-});
-
-test("ship collision uses the shared plume while debris remains physical", async ({
-	page,
-}, info) => {
-	const time = new Date("2026-11-03T00:00:00Z");
-	await page.clock.install({ time });
-	await page.clock.pauseAt(time);
-	await page.goto("/builder?chassis=fighter");
-	await page.getByRole("button", { name: "Test flight", exact: true }).click();
-	await page.clock.runFor(7200);
-	await page.keyboard.down("ArrowUp");
-	const flight = page.locator(".flight-page");
-	for (let i = 0; i < 100; i++) {
-		if (Number(await flight.getAttribute("data-salvage-destroyed")) > 0) break;
-		await page.clock.runFor(16);
-	}
-	await page.keyboard.up("ArrowUp");
-	await expect(flight).toHaveAttribute("data-salvage-destroyed", "1");
-	await expect(flight).toHaveAttribute("data-rail-shots", "0");
-	await expect(flight).toHaveAttribute("data-laser-pulses", "0");
-	// The unit scenario isolates the 30-damage wreck hit. During a rendered frame,
-	// up to four newly released shards can also collide for five damage each.
-	const hull = Number(
-		await page
-			.getByRole("progressbar", { name: "Hull", exact: true })
-			.getAttribute("value"),
-	);
-	expect(hull).toBeLessThanOrEqual(70);
-	expect(hull).toBeGreaterThanOrEqual(50);
-	await page.clock.runFor(48);
-	const path = info.outputPath("ship-impact.png");
-	await page.screenshot({ path });
-	await info.attach("ship-impact", { path, contentType: "image/png" });
 });

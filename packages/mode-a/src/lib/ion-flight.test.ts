@@ -121,7 +121,7 @@ describe("accepted ion flight", () => {
 		const sim = new Simulation({
 			...labSettings(),
 			loadout: build,
-			mode: "practice",
+			mode: "survival",
 		});
 		sim.ship.pos.set(1900, 540);
 		sim.start();

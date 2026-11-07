@@ -7,7 +7,7 @@ policy before implementation, then accepted staged shedding with energy released
 at destruction, then authorized implementation one atomic commit at a time. Remaining
 decisions will be resolved just in time for their dependent implementation slices.
 
-### First slice evidence
+### First slice evidence — committed and pushed as `33aaec2`
 
 Explicit modes are implemented with legacy `testFlight` input compatibility and
 explicit-mode precedence. Practice retains its previous behavior in this slice;
@@ -39,6 +39,30 @@ The study accepts the supplied hull/material direction, working 110-unit extent,
 eight-piece B distributed shedding and motion, ejected hollow energy square and
 0.28-second expanding release pulse. Its damage comparisons are unselected;
 demonstration times and five equal hits are not gameplay balance requirements.
+
+### Safe-practice slice
+
+Practice now retains the default star and planets and fixed initial conditions,
+full health/energy and unlimited engine availability through normal physical
+interactions. The flight screen has no Reset, Send action or survival timer;
+Pause/Resume/Abort preserves the build and re-entry starts fresh.
+
+Existing salvage ownership moves to internal Derelicts mode here, before the
+arrival rewrite in slice 3. Unit and FX fixtures explicitly recreate their former
+isolated small-star scene; these fixtures do not define either mode's environment.
+The accepted practice spec is adopted in this commit; unrelated Hangar opening,
+routing and study work remains separate.
+
+Working-tree evidence: 236 unit tests passed; workspace types, contracts and
+changed-code lint passed. All ten affected browser journeys passed across the
+completed checks and isolated rerun. The first run was interrupted after five
+failures caused by outdated Vite dependencies during concurrent type checking;
+a subsequent run passed nine of ten, with the new practice journey interrupted
+by a development-server reload. Its isolated rerun and the touch check passed.
+Two desktop/landscape-phone capture checks passed; images were inspected for
+resource display, controls and pause composition. Human handling acceptance is
+still outstanding. Full repository lint retains the previously observed study
+SVG failures; full browser, build and backend gates were not run for this slice.
 
 ## Acceptance contract
 

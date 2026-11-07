@@ -1,149 +1,102 @@
-# Weapons and salvage in Test flight
+# Test Flight — Mode 1: flight practice
 
-Status: implemented for an alpha trial, 2026-11-03. Automated correctness,
-visual inspection, performance measurements and owner acceptance are separate evidence.
-Weapon feel and survival balance remain provisional.
+## Purpose
 
-## Context
+Test Flight gives the player a safe place to become familiar with the ship they
+have prepared in the Hangar. In a repeatable holodeck environment with a star and
+planets, they can practise manoeuvres, explore how their setup responds, and
+develop confidence flying it before entering a game mode with consequences.
 
-Fit a railgun or rotating point-defence laser in the Hangar, launch Test flight,
-break a passing derelict, approach through its fragments and collect energy.
-Return to change fittings or reset to compare the same opening encounter.
-The owner selected automatic firing, short laser pulses, a 10-energy weapon
-reserve, physical fragment hazards, and both automatic and summoned passes.
+The ship retains its actual handling and its normal physical interaction with
+the environment. Energy and health remain full, allowing the player to
+concentrate on learning through flight, repeat attempts freely, and understand
+how equipment choices affect their experience.
 
-## Architecture
+Practice supports the preparation loop: equip a ship, fly it, then return to the
+Hangar with a clearer sense of what to keep or change. A session is transient
+and ends when the player chooses to leave.
 
-- `packages/mode-a/src/lib/schemas/salvage.ts` owns validated weapon and encounter
-  tuning. Shot energy is separate from propulsion `PartSchema.draw` and engine
-  endurance estimates. Saved fitting IDs and loadout versions are unchanged.
-- `packages/mode-a/src/lib/salvage.ts` owns deterministic targeting, turret motion,
-  rounds, bodies, damage, energy, bounded events and encounter timing. Simulation
-  creates it only for a validated fitted `testFlight`; it advances in the existing
-  four substeps per 60 Hz tick, after propulsion receives its energy allocation.
-- `FlightTickInput.sendDerelict` is an optional one-tick scenario command.
-  `ReplayInputSchema` accepts it on a chunk, consumed on that chunk's first tick.
-  Old recordings remain valid; `fire` stays false because weapons fire automatically.
-- Shared `buildMounts`, `weaponPose` and `drawBuild` own slot transforms, muzzle
-  positions and optional runtime laser angles. No mount-authoring feature is added.
-- `salvage-renderer.ts` draws physical objects and fresh weapon light. `FlightFx`
-  uses the shared persistent surface and a bounded spark pool. Rendering cannot
-  change combat outcomes. `/lab/entities/ship` previews shared fittings and turret
-  angles; `/lab/builder` runs the same trial; `/lab/fx?weapons=1` adds the production
-  weapon path to the mixed diagnostic workload.
-- `FlightDeck` composes drawing, collection feedback, pause/reset and Send derelict.
-  No backend, account, network service or persistent encounter state is involved.
+## Ownership and boundaries
 
-## Contract
+The Hangar owns access to Test Flight and selection of the active setup. This
+spec owns Mode 1's environment, flight rules, ending and return behavior.
 
-### Weapons
+Three modes are planned. This contract defines only Mode 1.
+[Derelicts (Mode 2)](../derelicts/spec.md) owns the trial survival/combat game
+and its weapon and salvage rules. Mode 3 remains unspecified. Derelicts' resource
+consumption, damage, encounters and scoring do not apply to flight practice.
 
-- Railguns fire from their muzzle along the world-space slot direction when a
-  target within 600 u is predicted to enter a ±8° firing arc, or the fixed trajectory
-  already predicts a physical hit. Motion prediction uses relative velocity at the
-  target's forward crossing plane. The arc grants firing permission; it never steers
-  the barrel or slug. Near misses are intentional. The star blocks acquisition.
-  A round inherits ship velocity at firing and travels until its first physical
-  hit or the system boundary, without a range-based lifetime or homing.
-  Swept relative collision resolves hits between simulation steps.
-- Each rail shot recoils opposite its firing direction for 0.22 s with 0.34 of
-  one Light ion engine's force, scaled by current build mass and the flight's ion
-  acceleration setting. This is an external force with no engine speed cap or
-  additional energy cost. Simultaneous guns add their recoil; subsequent turning
-  does not redirect it. Recoil translates the ship without adding torque.
-- A real rail collision with a body or star emits a circular expanding impact
-  plume and radial sparks at the swept contact point. Misses have no impact plume.
-  Ship–derelict collisions use the same plume at their contact point.
-  The shared persistent FX surface owns its fading light.
-- Lasers rotate independently through 360°, at a finite rate, and pulse only when
-  aligned. Incoming fragments whose predicted trajectory contacts the ship within
-  three seconds have priority, then intact wrecks, then other fragments.
-  Keep a valid target within the same priority; choose new targets by threat time
-  or distance, breaking ties by stable entity ID. A pulse damages its first hit.
-  The beam is bright red with a narrow lighter core; its range is 160 u.
-- Each mount has independent cooldown/aim state. Defensive lasers receive weapon
-  energy before railguns; stable mount order settles remaining contention. Spend
-  only for a delivered shot whose full cost leaves at least 10 energy units.
-  Engine and life-support use of that reserve remains unrestricted.
-- Shots ignore their owning ship and energy cells. The star blocks laser fire and
-  absorbs rail rounds. Unavailable energy prevents firing, while turret tracking
-  itself is free. No separate fire control is needed on keyboard or touch.
+## Entry and loadout
 
-Initial values are tunable constants, not accepted balance:
+- Enter from the Hangar using its active ship, fittings and system choices.
+- Use that build's actual mass, thrust and handling through the shared flight
+  simulation. Unlimited resources do not replace the build's physical properties.
+- Start in a fixed, repeatable standard star-and-planet environment, with the
+  same starting flight conditions on each entry. Exact layout and spawn geometry
+  are not prescribed here.
+- Start with full energy and health.
 
-| Item     | Initial settings                                                                                                   |
-| -------- | ------------------------------------------------------------------------------------------------------------------ |
-| Railgun  | 100 damage, 3 energy, 0.6 s cooldown, 600 u/s muzzle speed, 600 u acquisition, ±8° arc; 0.34-ion recoil for 0.22 s |
-| Laser    | 5 damage, 0.5 energy, 0.25 s cooldown, 160 u range, 360°/s tracking, 2° tolerance                                  |
-| Derelict | 85 hull, 18 u radius, 40 u/s relative crossing speed, 18 s lifetime, 30 contact damage                             |
-| Fragment | Four per wreck, 12 hull, 5 u radius, 60 u/s radial scatter, 12 s lifetime, 5 contact damage                        |
-| Cell     | 30 energy, 6 u radius, 20 s lifetime                                                                               |
+## Flight rules
 
-A rail hit destroys an intact derelict. A laser needs 17 pulses for a derelict
-and three for a shard; a single stationary laser is not guaranteed to finish a
-passing wreck within its shorter range. Approach and stay close, or combine guns.
-[DEPRECATED 2026-11-03] The first trial used exact-hit-only rail triggering,
-20 damage, 900 u/s slugs with a 600 u lifetime, 240 u laser range, 30-hull wrecks
-and 5-hull shards. Owner playtest feedback selected the values above.
+- Retain normal flight controls, movement, gravity and physical interactions
+  with the star and planets. Contact does not trigger a special safe reposition.
+- Energy stays full at the build's capacity. There is no fuel consumption, and
+  energy availability never limits engines or other flight systems.
+- Health stays full at the build's maximum. No source of damage reduces it.
+- No derelicts or their salvage encounters occur; there is no Send derelict action.
+- There is no survival failure or game over.
 
-### Encounter and flight
+## Pause, ending and return
 
-- Test flight retains the small sun, no planets, real propulsion/charging/damage
-  and no game over. Its starting position is now 85 units outside the sun's
-  influence radius. The old start inside the well flung an idle ship past the
-  first encounter before weapons could be compared; gravity constants are unchanged.
-- The first pass arrives at 3 s, then every 18 s. Begin 150 u ahead and 220 u to
-  alternating sides, with a crossing velocity relative to the ship at spawn.
-  If unsafe at the arena edge/star, try the mirrored side and then the two rear
-  offsets; skip a pass if no candidate is safe.
-- Wrecks, fragments, cells and rounds move ballistically in this trial. Wrecks
-  and cells inherit the source velocity; fragments add seeded radial scatter.
-  They disappear at arena exit or star contact and never wrap. Existing player
-  wrapping remains, with no swept collision or pickup across its teleport.
-- Destruction, including hull contact, produces exactly one group of four physical
-  fragments plus one cell. Hitting a wreck deals 30 hull damage once and produces
-  the same circular plume as a rail hit. Fragment contact deals 5 damage once and consumes the
-  fragment. Shooting fragments creates only cosmetic feedback, with no further drops.
-- Cell contact adds energy up to build capacity and consumes the cell, even if
-  capacity is already full. Cells cannot be shot and have no attraction mechanic.
-  Brief feedback reports the actual energy gained.
-- At most two encounter groups can remain active, including their fragments/cells.
-  Automatic arrivals skip at capacity; nothing queues. Rounds are bounded to 64,
-  current visual event records to 128, and shared weapon sparks to 256.
-- Send derelict schedules one attempt on the next tick, starts a one-second summon
-  cooldown and reschedules the next automatic pass 18 s later. Disable the action
-  while paused, outside play, with a pending command, at capacity or on cooldown.
-- Pause freezes gameplay and light. Reset creates fresh state, restores resources,
-  clears events and light, and repeats the seeded encounter sequence. Returning to
-  the Hangar preserves the fitted ship. Empty energy or zero hull does not end a trial.
+- Use the real game's Pause flow: pausing freezes the practice simulation,
+  Resume continues it, and Abort ends practice and returns to the Hangar.
+- There is no Reset action.
+- Returning preserves the active ship, fittings and system choices. Practice
+  state is discarded; entering again starts a fresh practice session.
 
-### Regression guardrails
+## Score, leaderboard and progression
 
-- Ordinary survival, including fitted custom survival, has no active weapons or
-  salvage encounters. Score rules and competition namespaces are unchanged.
-- Existing two-control flight, pointer cancellation, blur pause, saved loadouts,
-  pause/reset and builder return remain functional. No new dependencies are needed.
-- Shared fitting artwork, actual muzzle position and runtime turret orientation
-  remain consistent between Hangar, game and Lab. FX density cannot alter gameplay.
+- Practice has no score or results score, leaderboard entry or submission.
+- Practice grants no progression or rewards and changes no equipment ownership.
+- Experimental access does not change these practice rules. This contract does
+  not decide equipment unlocking or eligibility for other modes.
 
-### Acceptance scenarios
+## Integration boundaries
 
-1. Fit a railgun, launch, observe a fixed-direction slug break the opening wreck
-   with a circular impact plume, then thrust into its drifting cell. Hull hazards
-   remain physical and the HUD reports actual energy gained. Fit a laser to observe
-   red tracking pulses; stay within range for 17 pulses to break an intact wreck.
-2. Fit both types. An incoming fragment interrupts a laser's wreck target while
-   the rail remains tied to its mount. With scarce energy, defensive pulses take
-   priority and neither gun spends the 10-unit reserve.
-3. Pause after summoning: bodies, cooldowns, resources and effects freeze. Reset
-   and replay the same controls/command ticks: state and encounter results match.
-4. Return to the Hangar and launch custom survival: the fittings are preserved,
-   but weapon energy, encounter spawning and Send derelict are inactive.
+- `packages/mode-a/src/lib/schemas/loadout.ts` owns validated fittings and build
+  system choices; `packages/mode-a/src/lib/schemas/flight.ts` owns flight entry
+  settings. Any mode-selection data contract must be defined in Zod before its
+  consumers change; the existing `testFlight` boolean alone does not specify
+  which of the three modes is intended.
+- `packages/mode-a/src/lib/simulation.ts` supplies shared flight behavior;
+  `apps/web/src/components/FlightDeck.svelte` supplies controls and pause/return.
+- Mode 1 does not activate the derelict encounters owned by
+  `packages/mode-a/src/lib/salvage.ts`.
+- No persistent practice session, score record or reward write is required.
 
-Verification owners: `salvage.test.ts` covers geometry, interception, prioritization,
-resources, drops, collision, limits, replay and all five chassis. Browser
-`salvage.spec.ts` covers the actual fitting/flight/collection/reset/return journey
-and landscape input. Review `salvage.spec.ts` captures desktop and landscape
-encounters separately from correctness. Full repository verification remains the
-delivery gate. Human judgments on readability, weapon feel and the desire to repeat
-the pass are not inferred from passing tests; survival reward balance is deferred.
+## Implementation evidence — 7 November 2026
+
+The safe-practice slice uses the default star-and-planet fixture and real build
+physics with full health and energy, no salvage and no survival failure. FlightDeck
+removes Reset, manual encounters and the survival timer; Pause/Resume/Abort use the
+shared dialog. Automated checks and human experience review are reported separately
+in the [implementation plan](../../../plans/2026-11-07-derelicts-mode.md).
+
+## Acceptance criteria
+
+- [ ] Entering from the Hangar flies the active setup with its actual fittings,
+  system choices, mass, thrust and handling.
+- [ ] Re-entering practice uses the same star-and-planet layout and starting
+  flight conditions, with full build energy and health.
+- [ ] Sustained engine and flight-system use leaves energy full and never causes
+  a power shortage.
+- [ ] Star and planet interactions retain normal physical behavior while health
+  remains full; hazardous contact neither ends practice nor safely repositions
+  the ship as a practice-specific response.
+- [ ] No derelicts, salvage encounters or Send derelict action appear.
+- [ ] Pause freezes practice; Resume continues the same session; Pause → Abort
+  returns to the Hangar with the active setup unchanged.
+- [ ] Neither play nor pause offers Reset, and returning to practice after Abort
+  starts fresh rather than restoring the abandoned session.
+- [ ] Practice displays no score, offers no leaderboard submission, and produces
+  no persistent score, progression, reward or equipment-ownership changes.

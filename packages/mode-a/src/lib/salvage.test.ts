@@ -5,7 +5,7 @@ import { createStar } from "./game-loop";
 import { type SalvageBody, SalvageSystem } from "./salvage";
 import { buildStats, defaultLoadout } from "./schemas/loadout";
 import { SALVAGE } from "./schemas/salvage";
-import { Simulation, STEP, stockSettings } from "./simulation";
+import { Simulation, STEP, setStarMassWell, stockSettings } from "./simulation";
 
 const idle = {
 	leftThruster: false,
@@ -66,15 +66,31 @@ function body(
 	};
 }
 
-describe("Test flight weapons and salvage", () => {
+function legacyEncounter(sim: Simulation) {
+	sim.planets.length = 0;
+	const well = sim.star.massWell;
+	if (well)
+		setStarMassWell(sim.star, {
+			...well,
+			mass: well.mass * (12 / sim.star.radius) ** 2,
+		});
+	sim.star.radius = 12;
+	sim.ship.pos.set(
+		sim.star.pos.x - sim.star.influenceRadius - 85,
+		sim.star.pos.y,
+	);
+}
+
+describe("Derelicts weapons and salvage", () => {
 	it("completes a real rail salvage and collection pass using flight controls", () => {
 		const loadout = defaultLoadout("fighter");
 		loadout.hull[0] = "rail";
 		const sim = new Simulation({
 			...stockSettings("fighter"),
 			loadout,
-			mode: "practice",
+			mode: "derelicts",
 		});
+		legacyEncounter(sim);
 		sim.start();
 		sim.replay([
 			{ ...idle, ticks: 432 },
@@ -92,8 +108,9 @@ describe("Test flight weapons and salvage", () => {
 				const sim = new Simulation({
 					...stockSettings(chassis),
 					loadout,
-					mode: "practice",
+					mode: "derelicts",
 				});
+				legacyEncounter(sim);
 				sim.start();
 				for (let i = 0; i < 900; i++) sim.step(idle);
 				expect(sim.salvage?.hits, `${chassis} ${gun}`).toBeGreaterThan(0);
@@ -420,7 +437,11 @@ describe("Test flight weapons and salvage", () => {
 	it("replays summon only once per chunk and isolates ordinary survival", () => {
 		const loadout = defaultLoadout("fighter");
 		loadout.hull = ["rail", "laser"];
-		const settings = { ...stockSettings("fighter"), loadout, mode: "practice" };
+		const settings = {
+			...stockSettings("fighter"),
+			loadout,
+			mode: "derelicts",
+		};
 		const a = new Simulation(settings),
 			b = new Simulation(settings);
 		a.start();

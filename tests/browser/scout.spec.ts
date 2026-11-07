@@ -108,11 +108,14 @@ test("Scout restores its four-slot save, fits equipment and engines and flies fr
 	await page.keyboard.up("a");
 	await page.keyboard.up("d");
 	await expect.poll(() => deck.getAttribute("data-x")).not.toBe(x);
-	await page.getByRole("button", { name: "Reset flight" }).click();
+	await expect(page.getByRole("button", { name: "Reset flight" })).toHaveCount(
+		0,
+	);
 	await expect(
 		page.getByRole("progressbar", { name: "Power" }),
 	).toHaveAttribute("value", String(buildStats(savedAfter.scout).capacity));
-	await page.getByRole("button", { name: "Return to builder" }).click();
+	await page.getByRole("button", { name: "Pause", exact: true }).click();
+	await page.getByRole("button", { name: "Abort", exact: true }).click();
 	await expect(
 		page.getByRole("button", { name: "Aft 1 · Universal: Light ion" }),
 	).toBeVisible();

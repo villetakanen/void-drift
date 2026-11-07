@@ -134,7 +134,13 @@ export class Simulation {
 			this.ship.radius = buildCollisionRadius(this.settings.loadout);
 		applyGravityTuning(this.star, this.planets, this.gravity);
 		// Seed changes orbit phase, not flight tuning.
-		const phase = ((this.settings.seed % 360) / 180) * Math.PI;
+		const phase =
+			(((this.settings.mode === "practice"
+				? CHALLENGE_SEED
+				: this.settings.seed) %
+				360) /
+				180) *
+			Math.PI;
 		for (const planet of this.planets) {
 			planet.orbitAngle += phase;
 			planet.pos.set(
@@ -160,28 +166,12 @@ export class Simulation {
 		this.state.sunType = "G";
 		if (this.settings.loadout)
 			this.state.resources.power = buildStats(this.settings.loadout).capacity;
-		if (this.settings.mode === "practice") {
-			this.planets.length = 0;
-			// A smaller sun with the same pull at its surface.
-			const well = this.star.massWell;
-			if (well)
-				setStarMassWell(this.star, {
-					...well,
-					mass: well.mass * (12 / this.star.radius) ** 2,
-				});
-			this.star.radius = 12;
-			// Give fitting trials a quiet opening pass; flying into the well remains real.
-			this.ship.pos.set(
-				this.star.pos.x - this.star.influenceRadius - 85,
-				this.star.pos.y,
+		if (this.settings.mode === "derelicts" && this.settings.loadout)
+			this.salvage = new SalvageSystem(
+				this.settings.loadout,
+				this.settings.seed,
+				this.settings.ion,
 			);
-			if (this.settings.loadout)
-				this.salvage = new SalvageSystem(
-					this.settings.loadout,
-					this.settings.seed,
-					this.settings.ion,
-				);
-		}
 	}
 	get engineFeedback() {
 		const build = this.settings.loadout;
@@ -220,6 +210,8 @@ export class Simulation {
 			const previousX = this.ship.pos.x,
 				previousY = this.ship.pos.y;
 			let engineFraction = 1;
+			if (this.settings.mode === "practice" && !this.settings.loadout)
+				this.state.resources.power = 100;
 			if (this.settings.loadout) {
 				const stats = buildStats(this.settings.loadout);
 				const distance = Math.hypot(
@@ -260,9 +252,20 @@ export class Simulation {
 					) -
 						LIFE_SUPPORT_DRAIN) *
 					(STEP / 4);
-				const spent = Math.min(available, requested);
-				engineFraction = requested > 0 ? spent / requested : 0;
-				this.state.resources.power = available - spent;
+				const spent =
+					this.settings.mode === "practice"
+						? requested
+						: Math.min(available, requested);
+				engineFraction =
+					this.settings.mode === "practice"
+						? 1
+						: requested > 0
+							? spent / requested
+							: 0;
+				this.state.resources.power =
+					this.settings.mode === "practice"
+						? stats.capacity
+						: available - spent;
 			}
 
 			if (this.settings.loadout) {
@@ -370,6 +373,12 @@ export class Simulation {
 			STEP,
 			this.settings.loadout ? 1 : this.settings.profile.hullMultiplier,
 		);
+		if (this.settings.mode === "practice") {
+			this.state.resources.power = this.settings.loadout
+				? buildStats(this.settings.loadout).capacity
+				: 100;
+			this.state.resources.hull = 100;
+		}
 		this.gravityCollectionRate = collected / STEP;
 		const target = collected > 0 ? 1 : 0;
 		const fade = STEP / GRAVITY_COLLECTION.fadeSeconds;

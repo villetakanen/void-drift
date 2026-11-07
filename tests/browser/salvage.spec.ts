@@ -1,6 +1,6 @@
 import { expect, test } from "../helpers/local-browser";
 
-test("fit weapons, salvage, collect, summon, reset and return through the Hangar", async ({
+test("armed practice has full resources, no encounters and fresh entry after abort", async ({
 	page,
 }) => {
 	const time = new Date("2026-11-03T00:00:00Z");
@@ -11,58 +11,48 @@ test("fit weapons, salvage, collect, summon, reset and return through the Hangar
 	await page.getByRole("button", { name: /^Rail gun\b/ }).click();
 	await page.getByRole("button", { name: "Test flight", exact: true }).click();
 	const flight = page.locator(".flight-page");
-	const send = page.getByRole("button", { name: "Send derelict", exact: true });
-	await expect(send).toBeEnabled();
-	await page.clock.runFor(7200);
+	const initialX = await flight.getAttribute("data-x");
+	const initialY = await flight.getAttribute("data-y");
+	const power = page.getByRole("progressbar", { name: "Power" });
+	const capacity = await power.getAttribute("max");
+	await expect(
+		page.getByRole("button", { name: /Reset flight|Send derelict/ }),
+	).toHaveCount(0);
+	await expect(page.locator(".timer")).toHaveCount(0);
 	await page.keyboard.down("ArrowUp");
-	await page.clock.runFor(1500);
+	await page.clock.runFor(12000);
 	await page.keyboard.up("ArrowUp");
-	await expect(flight).toHaveAttribute("data-salvage-destroyed", "1");
-	await expect
-		.poll(async () => Number(await flight.getAttribute("data-rail-shots")))
-		.toBeGreaterThan(0);
-	await expect
-		.poll(async () =>
-			Number(await flight.getAttribute("data-salvage-collected")),
-		)
-		.toBeGreaterThan(0);
-	await expect(page.getByRole("status")).toContainText("energy collected");
+	await expect(power).toHaveAttribute("value", capacity ?? "");
+	await expect(page.getByRole("progressbar", { name: "Hull" })).toHaveAttribute(
+		"value",
+		"100",
+	);
+	await expect(flight).toHaveAttribute("data-status", "PLAYING");
+	for (const name of [
+		"data-salvage-passes",
+		"data-rail-shots",
+		"data-salvage-bodies",
+	])
+		await expect(flight).toHaveAttribute(name, "0");
 	await page.getByRole("button", { name: "Pause", exact: true }).click();
-	const paused = await flight.getAttribute("data-ticks");
-	await expect(send).toBeDisabled();
+	const ticks = await flight.getAttribute("data-ticks");
 	await page.clock.runFor(1000);
-	await expect(flight).toHaveAttribute("data-ticks", paused ?? "");
+	await expect(flight).toHaveAttribute("data-ticks", ticks ?? "");
 	await page.getByRole("button", { name: "Resume", exact: true }).click();
-	await send.click();
-	await page.clock.runFor(32);
-	await expect(flight).toHaveAttribute("data-salvage-passes", "2");
-	await expect(send).toBeDisabled();
-	await page.getByRole("button", { name: "Reset flight" }).click();
-	await expect(flight).toHaveAttribute("data-salvage-passes", "0");
-	await expect(flight).toHaveAttribute("data-salvage-collected", "0");
-	await expect(flight).toHaveAttribute("data-rail-shots", "0");
-	await page.getByRole("button", { name: "Return to builder" }).click();
+	await page.clock.runFor(100);
+	await expect(flight).not.toHaveAttribute("data-ticks", ticks ?? "");
+	await page.getByRole("button", { name: "Pause", exact: true }).click();
+	await page.getByRole("button", { name: "Abort", exact: true }).click();
 	await expect(
 		page.getByRole("button", { name: "Hull 1 · Equipment: Rail gun" }),
 	).toBeVisible();
-	await page.getByRole("button", { name: /^Laser\b/ }).click();
 	await page.getByRole("button", { name: "Test flight", exact: true }).click();
-	await page.clock.runFor(11000);
-	await expect
-		.poll(async () => Number(await flight.getAttribute("data-laser-pulses")))
-		.toBeGreaterThan(0);
-	await page.getByRole("button", { name: "Return to builder" }).click();
-	await page
-		.getByRole("button", { name: "Start survival", exact: true })
-		.click();
-	await expect(send).toHaveCount(0);
-	await page.clock.runFor(4000);
-	await expect(flight).toHaveAttribute("data-salvage-passes", "0");
-	await expect(flight).toHaveAttribute("data-rail-shots", "0");
-	await expect(flight).toHaveAttribute("data-laser-pulses", "0");
+	await expect(flight).toHaveAttribute("data-x", initialX ?? "");
+	await expect(flight).toHaveAttribute("data-y", initialY ?? "");
+	await expect(page.getByRole("button", { name: "Save Score" })).toHaveCount(0);
 });
 
-test("landscape weapon trials retain simultaneous engine input and release", async ({
+test("landscape practice retain simultaneous engine input and release", async ({
 	page,
 	context,
 }) => {
@@ -70,7 +60,7 @@ test("landscape weapon trials retain simultaneous engine input and release", asy
 	await page.clock.install({ time });
 	await page.clock.pauseAt(time);
 	await page.setViewportSize({ width: 844, height: 390 });
-	await page.goto("/lab/builder?chassis=wasp");
+	await page.goto("/builder?chassis=wasp");
 	await page
 		.getByRole("button", { name: "Left wing · Equipment: Empty" })
 		.click();
@@ -99,13 +89,7 @@ test("landscape weapon trials retain simultaneous engine input and release", asy
 	await page.clock.runFor(32);
 	await expect(left).not.toHaveClass(/active/);
 	await expect(right).not.toHaveClass(/active/);
-	await expect(
-		page.getByRole("button", { name: "Send derelict" }),
-	).toBeVisible();
-	await page.getByRole("button", { name: "Send derelict" }).click();
-	await page.clock.runFor(32);
-	await expect(page.locator(".flight-page")).toHaveAttribute(
-		"data-salvage-passes",
-		"1",
+	await expect(page.getByRole("button", { name: "Send derelict" })).toHaveCount(
+		0,
 	);
 });

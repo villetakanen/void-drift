@@ -12,6 +12,7 @@ import {
 	planetMass,
 	Simulation,
 	STEP,
+	setStarMassWell,
 	stockSettings,
 	tunedMassWell,
 } from "./simulation";
@@ -39,13 +40,20 @@ export class FxBench {
 			const sim = new Simulation({
 				...stockSettings("fighter"),
 				loadout,
-				mode: "practice",
+				mode: "derelicts",
 			});
 			// Preserve the existing reference workload unless weapon diagnostics are selected.
 			if (sim.salvage && !this.weapons) sim.salvage.nextPass = Infinity;
 			const x = 400 + (i % 3) * 500,
 				y = 300 + Math.floor(i / 3) * 470;
 			// Local test scene only: isolate six planetary passes from the central star.
+			sim.planets.length = 0;
+			if (sim.star.massWell)
+				setStarMassWell(sim.star, {
+					...sim.star.massWell,
+					mass: sim.star.massWell.mass * (12 / sim.star.radius) ** 2,
+				});
+			sim.star.radius = 12;
 			sim.star.mass = 0;
 			sim.star.powerMultiplier = 0;
 			const planet = initializePlanets(960, 540)[0];
