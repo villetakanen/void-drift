@@ -47,7 +47,7 @@ The intact hull uses shared 110-unit artwork with flat fills and contained energ
 Physical shards and remaining hull share fitted material collision and staged
 damage release. Player destruction ejects the shared energy square with a fixed
 rupture pulse; environmental destruction loses that energy and awards no kill.
-Generated-system entry remains a future slice.
+The mode uses the default star system.
 Settings and replay consumers pass explicit modes; no build-store migration is
 required. Existing replay input chunks retain their schema.
 

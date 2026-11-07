@@ -22,8 +22,7 @@ persistent records, leaderboard competition or progression rewards.
   It owns access and the active setup; this spec owns Derelicts rules.
 - Enter with the active Hangar ship, fittings and system choices. Use its actual
   mass, thrust, handling and capacities, with normal fresh-run resources.
-- Use a generated star system. When generation is unavailable, use the default
-  star system so the mode remains playable.
+- Use the default star system.
 - Mode 1 [flight practice](../test-flight/spec.md) has its own contract. Mode 3
   remains unspecified. Experimental equipment access is owned elsewhere and
   does not grant Derelicts leaderboard eligibility.

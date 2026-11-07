@@ -440,7 +440,7 @@ function choose(id: ShipProfileId) {
 										: part.id === "coil"
 											? "+1× solar charging"
 											: part.id === "rail" || part.id === "laser"
-												? `${part.id === "rail" ? "Fixed direction · automatic" : "Rotating point defence"} · ${WEAPONS[part.id].energy} energy/shot · Test flight only`
+												? `${part.id === "rail" ? "Fixed direction · automatic" : "Rotating point defence"} · ${WEAPONS[part.id].energy} energy/shot · Derelicts only`
 												: "Static fitting · no energy draw"}</small
 							>
 							{#if part.description}
@@ -572,8 +572,9 @@ function choose(id: ShipProfileId) {
 		</footer>
 		<p class="footnote">
 			Test flight: practise in a repeatable star system with full health and
-			energy. Pause to resume or abort back to the Hangar. Custom survival is
-			unranked; weapons remain inactive there.
+			energy. Derelicts: survive, destroy passing wrecks and collect energy; see
+			your score at game over. Pause to resume or abort back to the Hangar.
+			Custom survival is unranked; weapons remain inactive there.
 		</p>
 		{#if notice}
 			<p role="status">{notice}</p>

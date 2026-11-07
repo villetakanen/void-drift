@@ -2,10 +2,16 @@
 
 ## Status and scope
 
-In progress, 7 November 2026. The owner requested this plan and discussion of damage
-policy before implementation, then accepted staged shedding with energy released
-at destruction, then authorized implementation one atomic commit at a time. Remaining
-decisions will be resolved just in time for their dependent implementation slices.
+Implementation complete, 7 November 2026, with generated solar systems deferred by
+owner decision. Final Hangar copy reconciliation completes the deliverables: weapon
+labels identify Derelicts, and the launch explanation distinguishes practice,
+Derelicts and custom survival. Existing launches, results and return paths are wired.
+
+Solar-system generation is outside this completed scope while another agent works
+on suns. Keep the current default environment; do not change generation or fallback
+wiring here. Verification and experience review are evidence activities, not remaining
+feature deliverables or an additional implementation slice. Historical evidence and
+the original sequence below are retained.
 
 ### First slice evidence — committed and pushed as `33aaec2`
 
@@ -218,8 +224,8 @@ Captures do not establish owner acceptance of feel or sustained device performan
   and unchanged setup on return.
 - Practice has a fixed star-and-planet layout, full health/energy throughout,
   normal physical interactions, no encounters, score or failure, and no Reset.
-- Derelicts has normal survival failure and resources; generated systems fall
-  back to the default system when generation is unavailable.
+- Derelicts has normal survival failure and resources in the default star system.
+  Generated solar systems are deferred to separate work.
 - Wrecks enter at the system boundary at 100–500 u/s independently of the player.
   Random arrival timing has a steady distribution; no manual Send action exists.
 - Score is gameplay seconds plus ten per player weapon/ram kill, counted once;
@@ -248,14 +254,14 @@ establish ownership of baseline changes before staging any commits.
 | 5   | `refactor(derelicts): share accepted wreck artwork`      | Promote shared hull, eight fracture regions, materials and release visual definitions; study and game use the same definitions. Resolve colour treatment first; compare intact/separated silhouettes and material continuity at fixed scale.                                                    |
 | 6   | `feat(derelicts): implement physical damage progression` | After damage-policy agreement, define validated attached/released piece and containment state. Implement fitted collision geometry for remaining hull and shards, deterministic progression and exactly-once releases. Verify large hits, repeated hits, contact and environmental destruction. |
 | 7   | `feat(derelicts): connect energy release and pulse`      | Trigger one moving square collectible and the selected expanding pulse at actual containment loss; retain B ejection and existing pickup amount/lifetime. Verify collection, capacity clamping, expiry, pause and replay.                                                                       |
-| 8   | `feat(hangar): expose practice and derelicts launches`   | Finish explicit launch choices, generated-system fallback, mode-specific results and return paths. Reconcile obsolete Hangar copy/criteria and study references to encounter testing in practice. Verify complete keyboard/touch journeys and simultaneous-breakup performance.                 |
+| 8   | `docs(hangar): reconcile flight mode copy`               | Complete: launch choices, mode-specific results and return paths were delivered in earlier slices; reconcile final Hangar weapon labels and mode descriptions. Generated-system wiring is deferred to separate work.                                                                            |
 
 Dependencies: 1 precedes mode work; 3 precedes 4; 5 and damage-policy agreement
 precede 6; 6 precedes 7; 8 integrates the complete slices. Existing combat can serve
 as an intermediate implementation in 3–4; it is not acceptance of generic artwork
 or four-piece breakup as the finished mode.
 
-## Open decisions
+## Resolved decisions and deferred work
 
 1. **Damage details resolved in slice 6:** cumulative 20%/40%/60% damage releases
    B indices 0/6/3; destruction releases the rest exactly once. Ram-born pieces
@@ -275,9 +281,10 @@ or four-piece breakup as the finished mode.
    uniform 100–500 u/s system speed, 30-second wreck expiry and eight groups.
    Skip arrivals at capacity without a backlog; separate seeded timing/trajectory
    streams from combat. These are provisional balance values for flight review.
-   Generated-system integration remains a later entry slice with default fallback.
-5. **Experience acceptance:** measure multiple simultaneous breakups and review
-   readability at 100–500 u/s. Automated tests do not accept visual fidelity.
+   Generated-system integration is deferred to separate work while suns are being developed.
+5. **Scope closure:** final Hangar copy is reconciled. Generated solar systems are
+   deferred. No implementation decisions remain for this plan. Experience review
+   and performance measurements remain separate evidence, not feature deliverables.
 
 ## Accepted damage policy
 

@@ -6,16 +6,17 @@
 
 The Hangar lets players assemble a ship from visible fittings, understand the
 tradeoffs, and feel those choices in flight. Its complete loop is choose a ship,
-fit it, inspect it, test it, and return to adjust it or start survival. Test flight starts directly from Hangar;
-Abort or game-over return from Hangar survival returns to Hangar. Hangar also
+fit it, inspect it, test it, and return to adjust it or start survival. Test flight,
+Derelicts and custom survival start directly from Hangar;
+Abort or game-over return from these modes returns to Hangar. Hangar also
 provides a return to the title screen.
 
 The owner-approved 0.4.0 scope, recorded in the archived
 [rebuild charter](../../history/rebuild-charter.md#next-phase--ship-builder-2026-10-30),
 sets free fitting in fixed mounts, desktop mouse and keyboard acceptance, and
 initially unranked custom survival. Mobile Hangar layout is deferred; existing
-landscape flight controls remain supported. Weapons are active in fitted Test flight
-under the [weapons and salvage contract](../weapons-and-salvage.md), and remain static
+landscape flight controls remain supported. Weapons are active in
+[Derelicts](../derelicts/spec.md), and remain static
 in custom survival. Buying parts, survival combat, mount authoring and flight tuning
 are separate work.
 
@@ -82,14 +83,16 @@ prior work; it is not a competing current specification.
    and rear engines, proportionally to the stabilizer burn. They add forward force
    and exhaust, with no extra turning torque. The opposite mains stay off. Actual
    thrust, draw and exhaust still obey power and engine timing.
-6. **Try the actual build.** Practice and survival use the selected fittings and
+6. **Try the actual build.** Practice, Derelicts and survival use the selected fittings and
    shared simulation/rendering. Every entry starts fresh with full build capacity.
    [Practice](../test-flight/spec.md) uses a fixed star-and-planet system, keeps
    health and energy full, retains normal physics, and has no encounters or failure.
    Pause/Resume/Abort preserves the setup; no Reset is offered. Survival retains
    normal end conditions and is explicitly unranked, with submission excluded.
-   Weapons and salvage belong to the separate Derelicts mode, whose public entry
-   remains pending integration.
+   The Derelicts action launches survival combat with automatic weapons, passing
+   wrecks, physical debris and energy pickups. Its score appears at game over,
+   without saving or leaderboard submission. Weapon details say “Derelicts only”;
+   the flight-action copy distinguishes safe practice, Derelicts and custom survival.
 
 Constraints 1–2, 4 and 6 carry the original brief and charter; later fitting and
 identity decisions are recorded under [Slot language](../../history/ship-builder.md#slot-language-integration--2026-10-31)
