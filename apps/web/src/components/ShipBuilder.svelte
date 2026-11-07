@@ -201,7 +201,7 @@ function choose(id: ShipProfileId) {
 	<FlightDeck
 		loadout={build}
 		launchSource="hangar"
-		testFlight={flying === "test"}
+		mode={flying === "test" ? "practice" : "survival"}
 		onReturn={() => (flying = null)}
 	/>
 {:else}

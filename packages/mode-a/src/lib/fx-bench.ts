@@ -39,7 +39,7 @@ export class FxBench {
 			const sim = new Simulation({
 				...stockSettings("fighter"),
 				loadout,
-				testFlight: true,
+				mode: "practice",
 			});
 			// Preserve the existing reference workload unless weapon diagnostics are selected.
 			if (sim.salvage && !this.weapons) sim.salvage.nextPass = Infinity;

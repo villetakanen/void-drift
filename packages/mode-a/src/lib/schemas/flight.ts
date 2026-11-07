@@ -3,6 +3,9 @@ import { AssembledIonSettingsSchema } from "./ion";
 import { defaultLoadout, LoadoutSchema } from "./loadout";
 import { ShipProfileSchema } from "./ship-profile";
 
+export const FlightModeSchema = z.enum(["practice", "derelicts", "survival"]);
+export type FlightMode = z.infer<typeof FlightModeSchema>;
+
 export const FlightSettingsSchema = z
 	.object({
 		loadout: LoadoutSchema.optional(),
@@ -10,7 +13,9 @@ export const FlightSettingsSchema = z
 			AssembledIonSettingsSchema.parse({}),
 		),
 		arrival: z.boolean().default(false),
-		testFlight: z.boolean().default(false),
+		mode: FlightModeSchema.optional(),
+		/** @deprecated Use mode. Retained for legacy flight settings. */
+		testFlight: z.boolean().optional(),
 		seed: z.number().int().min(1).max(2147483647),
 		profile: ShipProfileSchema.extend({
 			thrustMultiplier: z.number().min(0.5).max(2),
@@ -29,11 +34,18 @@ export const FlightSettingsSchema = z
 			!settings.loadout || settings.loadout.chassis === settings.profile.id,
 		{ message: "Build and profile chassis must match" },
 	)
-	.transform((settings) =>
-		settings.profile.id === "fiddler" && !settings.loadout
-			? { ...settings, loadout: defaultLoadout("fiddler") }
-			: settings,
-	);
+	.transform((settings) => {
+		const mode =
+			settings.mode ?? (settings.testFlight ? "practice" : "survival");
+		return {
+			...settings,
+			mode,
+			testFlight: mode === "practice",
+			...(settings.profile.id === "fiddler" && !settings.loadout
+				? { loadout: defaultLoadout("fiddler") }
+				: {}),
+		};
+	});
 export type FlightSettings = z.infer<typeof FlightSettingsSchema>;
 export const ReplayInputSchema = z.object({
 	ticks: z.number().int().min(1).max(36000),

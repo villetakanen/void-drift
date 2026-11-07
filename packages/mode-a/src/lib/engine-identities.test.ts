@@ -142,8 +142,8 @@ describe("four-engine player trial", () => {
 		loadout.side = "plasma";
 		loadout.aft = ["fusion"];
 		const sims = [
-			new Simulation({ ...stockSettings("scout"), loadout, testFlight: true }),
-			new Simulation({ ...stockSettings("scout"), loadout, testFlight: true }),
+			new Simulation({ ...stockSettings("scout"), loadout, mode: "practice" }),
+			new Simulation({ ...stockSettings("scout"), loadout, mode: "practice" }),
 		];
 		for (const sim of sims) {
 			sim.step(both);
@@ -156,7 +156,7 @@ describe("four-engine player trial", () => {
 		const fresh = new Simulation({
 			...stockSettings("scout"),
 			loadout,
-			testFlight: true,
+			mode: "practice",
 		});
 		fresh.start();
 		fresh.step(both);

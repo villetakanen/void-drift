@@ -31,7 +31,11 @@ function ship() {
 function simulation(testFlight = false) {
 	const loadout = defaultLoadout("fighter");
 	loadout.hull[0] = "battery";
-	const sim = new Simulation({ ...stockSettings(), loadout, testFlight });
+	const sim = new Simulation({
+		...stockSettings(),
+		loadout,
+		mode: testFlight ? "practice" : "survival",
+	});
 	sim.ship.pos.set(1900, 540);
 	sim.start();
 	return sim;
@@ -175,7 +179,7 @@ it("supplies current outlets for every engine delivering output", () => {
 	const sim = new Simulation({
 		...stockSettings("corvette"),
 		loadout,
-		testFlight: true,
+		mode: "practice",
 	});
 	sim.ship.pos.set(1800, 540);
 	sim.start();

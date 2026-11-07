@@ -26,6 +26,21 @@ use separate boards. Lab runs and imported tuning cannot submit ranked scores.
 Firebase Auth and Firestore replace Supabase. Paths are
 `artifacts/{appId}/scores/{challenge}_{uid}_{shipId}`. Offline play remains available.
 
+## Flight-mode migration — 7 November 2026
+
+Flight settings validate an explicit `mode`: `practice`, `derelicts` or `survival`.
+Omitted mode defaults to Survival; legacy inputs with only `testFlight: true` map
+to practice. An explicit mode takes precedence over the deprecated boolean.
+Launch source and mode are independent, and only Survival may use the existing
+ranked submission path (subject to its other eligibility checks).
+
+The initial structural migration preserves the former practice behavior, including
+its small-sun environment and salvage. It does not claim completion of the new
+[practice](test-flight/spec.md) or Derelicts contracts. Derelicts is a validated
+internal selection pending encounter integration, not an offered Hangar launch.
+Settings and replay consumers should pass explicit modes; no build-store migration
+is required. Existing replay input chunks retain their schema.
+
 ## Contract
 
 - Three ships apply thrust, turning, hull and power-drain multipliers.

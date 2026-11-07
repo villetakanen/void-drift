@@ -121,7 +121,7 @@ describe("accepted ion flight", () => {
 		const sim = new Simulation({
 			...labSettings(),
 			loadout: build,
-			testFlight: true,
+			mode: "practice",
 		});
 		sim.ship.pos.set(1900, 540);
 		sim.start();
@@ -141,7 +141,7 @@ describe("accepted ion flight", () => {
 	it("replays the accepted sequence with spin and energy deterministically, then resets at rest", () => {
 		const settings = labSettings();
 		if (settings.loadout) settings.loadout.stabilizers = true;
-		settings.testFlight = true;
+		settings.mode = "practice";
 		const sims = [new Simulation(settings), new Simulation(settings)];
 		for (const sim of sims) {
 			sim.start();

@@ -7,6 +7,7 @@ import {
 	drawBuild,
 	drawSalvage,
 	FlightFx,
+	type FlightMode,
 	type FlightTickInput,
 	gameSettings,
 	LandingSystem,
@@ -29,14 +30,16 @@ import TitleScreen from "./TitleScreen.svelte";
 let {
 	loadout,
 	launchSource = "title",
-	testFlight = false,
+	mode = "survival",
 	onReturn,
 }: {
 	loadout?: Loadout;
 	launchSource?: "title" | "hangar";
-	testFlight?: boolean;
+	mode?: FlightMode;
 	onReturn?: () => void;
 } = $props();
+// Practice retains the former fitted test-flight behavior during mode migration.
+const testFlight = $derived(mode === "practice");
 let canvas: HTMLCanvasElement;
 let simulation: Simulation;
 let input: Input;
@@ -103,8 +106,8 @@ function reset(start = false) {
 	input?.reset();
 	simulation = new Simulation(
 		loadout
-			? { ...stockSettings(loadout.chassis), loadout, testFlight }
-			: gameSettings("wasp"),
+			? { ...stockSettings(loadout.chassis), loadout, mode }
+			: { ...gameSettings("wasp"), mode },
 	);
 	if (start && !testFlight) {
 		simulation = new Simulation({
@@ -208,6 +211,7 @@ function advance(state: FlightTickInput) {
 }
 async function save() {
 	if (
+		mode !== "survival" ||
 		loadout ||
 		chosen === "fiddler" ||
 		status !== "GAME_OVER" ||
@@ -640,7 +644,7 @@ onMount(() => {
 					</p>
 					<h1>{seconds.toFixed(1)} seconds.</h1>
 					<p>Every orbit teaches you something.</p>
-					{#if !loadout && chosen !== "fiddler"}
+					{#if mode === "survival" && !loadout && chosen !== "fiddler"}
 						<label for="initials">Your initials</label>
 						<input
 							id="initials"
@@ -656,7 +660,7 @@ onMount(() => {
 						<p role="status" class="flight-message">{message}</p>
 					{/if}
 					<div class="button-group button-group--vertical">
-						{#if !loadout && chosen !== "fiddler"}
+						{#if mode === "survival" && !loadout && chosen !== "fiddler"}
 							<button
 								type="button"
 								class="btn btn-filled"

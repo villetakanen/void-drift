@@ -142,7 +142,7 @@ export class Simulation {
 				540 + Math.sin(planet.orbitAngle) * planet.orbitRadius,
 			);
 		}
-		if (this.settings.arrival && !this.settings.testFlight) {
+		if (this.settings.arrival && this.settings.mode !== "practice") {
 			const angle =
 				((Math.imul(this.settings.seed, 2654435761) >>> 0) / 4294967296) *
 				Math.PI *
@@ -160,7 +160,7 @@ export class Simulation {
 		this.state.sunType = "G";
 		if (this.settings.loadout)
 			this.state.resources.power = buildStats(this.settings.loadout).capacity;
-		if (this.settings.testFlight) {
+		if (this.settings.mode === "practice") {
 			this.planets.length = 0;
 			// A smaller sun with the same pull at its surface.
 			const well = this.star.massWell;
@@ -312,7 +312,7 @@ export class Simulation {
 						1200,
 				);
 			if (
-				!this.settings.testFlight &&
+				this.settings.mode !== "practice" &&
 				Math.hypot(this.ship.pos.x - 960, this.ship.pos.y - 540) <
 					this.star.radius + this.ship.radius
 			)
@@ -387,7 +387,7 @@ export class Simulation {
 					: this.state.resources.power <= 0
 						? "POWER"
 						: null;
-		if (cause && !this.settings.testFlight) {
+		if (cause && this.settings.mode !== "practice") {
 			this.state.status = "GAME_OVER";
 			this.state.deathCause = cause;
 		}

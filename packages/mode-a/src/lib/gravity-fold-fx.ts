@@ -83,7 +83,7 @@ export class FlightFx {
 		this.weaponTime = 0;
 	}
 	drawShip(ctx: CanvasRenderingContext2D, sim: Simulation, fold = true) {
-		if (sim.settings.arrival && !sim.settings.testFlight) {
+		if (sim.settings.arrival && sim.settings.mode !== "practice") {
 			const fade = Math.max(0, 1 - sim.ticks / 90);
 			paintSpeedLine(
 				ctx,

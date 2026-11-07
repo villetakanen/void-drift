@@ -29,3 +29,41 @@ it("defaults legacy trials consistently and validates the 4–11 integer range",
 		}).success,
 	).toBe(false);
 });
+
+it("normalizes legacy test flight settings and gives explicit modes precedence", () => {
+	const { mode: _mode, testFlight: _testFlight, ...legacy } = stockSettings();
+	expect(FlightSettingsSchema.parse(legacy)).toMatchObject({
+		mode: "survival",
+		testFlight: false,
+	});
+	expect(
+		FlightSettingsSchema.parse({ ...legacy, testFlight: true }),
+	).toMatchObject({ mode: "practice", testFlight: true });
+	expect(
+		FlightSettingsSchema.parse({ ...legacy, testFlight: false }),
+	).toMatchObject({ mode: "survival", testFlight: false });
+	expect(
+		FlightSettingsSchema.parse({
+			...legacy,
+			mode: "survival",
+			testFlight: true,
+		}),
+	).toMatchObject({ mode: "survival", testFlight: false });
+	expect(
+		FlightSettingsSchema.parse({
+			...legacy,
+			mode: "practice",
+			testFlight: false,
+		}),
+	).toMatchObject({ mode: "practice", testFlight: true });
+	expect(
+		FlightSettingsSchema.parse({
+			...legacy,
+			mode: "derelicts",
+			testFlight: true,
+		}),
+	).toMatchObject({ mode: "derelicts", testFlight: false });
+	expect(
+		FlightSettingsSchema.safeParse({ ...legacy, mode: "invalid" }).success,
+	).toBe(false);
+});

@@ -142,7 +142,7 @@ describe("accepted Scout Trident", () => {
 				new Simulation({
 					...stockSettings("scout"),
 					loadout: build,
-					testFlight: true,
+					mode: "practice",
 				}),
 		);
 		for (const sim of sims) {

@@ -73,7 +73,7 @@ describe("Test flight weapons and salvage", () => {
 		const sim = new Simulation({
 			...stockSettings("fighter"),
 			loadout,
-			testFlight: true,
+			mode: "practice",
 		});
 		sim.start();
 		sim.replay([
@@ -92,7 +92,7 @@ describe("Test flight weapons and salvage", () => {
 				const sim = new Simulation({
 					...stockSettings(chassis),
 					loadout,
-					testFlight: true,
+					mode: "practice",
 				});
 				sim.start();
 				for (let i = 0; i < 900; i++) sim.step(idle);
@@ -420,7 +420,7 @@ describe("Test flight weapons and salvage", () => {
 	it("replays summon only once per chunk and isolates ordinary survival", () => {
 		const loadout = defaultLoadout("fighter");
 		loadout.hull = ["rail", "laser"];
-		const settings = { ...stockSettings("fighter"), loadout, testFlight: true };
+		const settings = { ...stockSettings("fighter"), loadout, mode: "practice" };
 		const a = new Simulation(settings),
 			b = new Simulation(settings);
 		a.start();
@@ -441,7 +441,7 @@ describe("Test flight weapons and salvage", () => {
 		const reset = new Simulation(settings);
 		expect(reset.salvage?.bodies).toHaveLength(0);
 		expect(reset.salvage?.shotsFired).toBe(0);
-		const survival = new Simulation({ ...settings, testFlight: false });
+		const survival = new Simulation({ ...settings, mode: "survival" });
 		survival.start();
 		survival.replay(replay);
 		expect(survival.salvage).toBeUndefined();
