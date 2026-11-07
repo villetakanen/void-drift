@@ -6,7 +6,10 @@ import {
 	flyBench,
 	GravityTuningConfig,
 } from "../../../lib/gravity-tuning";
+import { GRAVITY_TUNING_SHIPS } from "../../../lib/gravity-tuning/fleet";
 import {
+	ENERGY_MEASURES,
+	energyTraces,
 	type FieldBody,
 	TRACK_COLORS,
 	type Track,
@@ -42,6 +45,14 @@ const tracks = $derived.by((): Track[] =>
 				contacts: run.contacts,
 				references: { gravity: run.thrust },
 				traces: {
+					...(doc?.energy
+						? energyTraces(
+								run.samples,
+								GRAVITY_TUNING_SHIPS[i],
+								doc.burn,
+								doc.energy,
+							)
+						: {}),
 					speed: run.samples.map((s) => Math.hypot(s.vx, s.vy)),
 					gravity: run.gravity,
 					distance: run.distance,
@@ -80,9 +91,19 @@ function moveWell(_index: number, x: number, y: number) {
 {#if doc}
 	<MotionInstrumentScreen
 		{tracks}
-		{bodies}
+		bodies={[
+			...bodies,
+			...(doc.energy?.fields.map((f, i) => ({
+				kind: "energy" as const,
+				label: `Collection ${i + 1}`,
+				color: "",
+				radius: 0,
+				reach: f.reach,
+				path: [{ x: f.x, y: f.y }],
+			})) ?? []),
+		]}
 		bind:burn={doc.burn}
-		measures={MEASURES}
+		measures={doc.energy ? ENERGY_MEASURES : MEASURES}
 		onmovewell={moveWell}
 		{label}
 	>

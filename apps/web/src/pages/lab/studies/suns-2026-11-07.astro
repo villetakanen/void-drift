@@ -1,0 +1,977 @@
+---
+import ChargingStudy from "../../../components/studies/suns/ChargingStudy.svelte";
+import ExposureEconomy from "../../../components/studies/suns/ExposureEconomy.astro";
+import SunHudPreview from "../../../components/studies/suns/SunHudPreview.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((entry) => entry.slug === "suns-2026-11-07");
+---
+
+<StudyLayout study={study}>
+	<section>
+		<h2>01 / A star in the fiction, an encounter in play</h2>
+		<p>
+			A sun must feel like a star that belongs in this universe, and behave in
+			ways a pilot can learn. Real stars are the modelling reference; the game’s
+			fiction and playability determine the useful granularity. The study will
+			define which stellar properties matter, what the fiction allows ships to
+			do around them, and how those choices become gameplay character,
+			appearance and feedback.
+		</p>
+		<p>
+			The central tension is between a coherent stellar model and an encounter
+			that remains readable and enjoyable at the game’s scale. Size, colour,
+			heat, gravity and stellar activity are candidate dimensions to
+			investigate, not a commitment to simulate every phenomenon. We need to
+			decide which relationships to preserve, simplify or deliberately depart
+			from, and why. The fiction must also explain the ship’s side of the
+			encounter: what it can withstand, exploit and sense. Existing sun types
+			and mechanics are material to examine, not the definition we must
+			preserve.
+		</p>
+		<p>
+			A close pass provides a concrete test: why approach, what changes as the
+			ship draws nearer, and how can the pilot judge an escape? The outcome
+			should connect each sun’s identity to expected behaviour and the cues that
+			communicate it. Small visual, UX and HUD adjustments belong here when they
+			support that model. A broader flight redesign remains outside this cycle.
+			Retained definitions, examples and deliberate fictional allowances should
+			make the eventual Suns article straightforward to write, distinguishing
+			intended behaviour from what the game currently does.
+		</p>
+	</section>
+	<section id="exploration">
+		<h2>02 / Stellar properties become pilot decisions</h2>
+		<details>
+			<summary>02.1 / Stellar model and settled decisions</summary>
+			<h3 id="stellar-model">
+				02.1 / Preserve relationships, compress the scale
+			</h3>
+			<p>
+				Adopted model: describe a sun through temperature, radius, mass, radiant
+				output and activity. Use coherent stellar families to choose these
+				together, then compress their extremes for play. Spectral class is an
+				identity, not a difficulty rating. The encounter comparisons below
+				remain proposals; they are not measured flight results or accepted
+				tuning.
+			</p>
+			<table>
+				<caption>
+					From stellar reference to playable consequence
+				</caption>
+				<thead>
+					<tr>
+						<th>Real characteristic</th>
+						<th>Proposed model and fiction</th>
+						<th>What the pilot reads</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>
+							<strong>Temperature → colour.</strong>
+							O–B stars are hotter and bluer; K–M cooler and redder. These
+							classes describe a temperature sequence.
+							<a href="https://science.nasa.gov/exoplanets/stars/"
+								>NASA: stellar classes</a
+							>
+						</td>
+						<td>
+							Keep the ordering. A filtered flight display exaggerates colour
+							differences and limits glare; saturated neon is a display
+							convention.
+						</td>
+						<td>
+							Colour identifies the family immediately. It does not alone
+							promise safety or tell the strength of the pull.
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<strong>Radius and luminosity.</strong>
+							Total radiant output depends on both emitting area and
+							temperature: L ∝ R²T⁴. A cool, expanded giant can still be
+							luminous.
+							<a href="https://spacemath.gsfc.nasa.gov/SMBooks/SMBook5.pdf"
+								>NASA: radiation model</a
+							>
+						</td>
+						<td>
+							Keep radius separate from output. Compress sizes and exposure
+							distances. Fictional shielding allows a short encounter; it does
+							not make the luminous body traversable.
+						</td>
+						<td>
+							The disc occupies space; exposure increases on approach. A larger
+							disc does not automatically mean a stronger gravitational well.
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<strong>Mass and distance → gravity.</strong>
+							Outside a spherical star, gravitational acceleration follows mass
+							divided by distance squared.
+							<a
+								href="https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/weight-gravitational-force/"
+								>NASA: gravity</a
+							>
+						</td>
+						<td>
+							Preserve attraction and increasing pull inward. Compress strength
+							and retain a bounded arena reach as a gameplay abstraction, not a
+							physical edge.
+						</td>
+						<td>
+							The trajectory bends before contact. An inward dive gains speed
+							but creates an outward climb; gravity alone is not a free
+							permanent speed boost.
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<strong>Activity is a separate trait.</strong>
+							Magnetic energy drives solar flares; red dwarfs can also produce
+							powerful eruptions.
+							<a href="https://science.nasa.gov/sun/solar-storms-and-flares/"
+								>NASA: solar activity</a
+							>;
+							<a
+								href="https://science.nasa.gov/universe/exoplanets/neighboring-stars-bad-behavior-large-and-frequent-flares/"
+								>Proxima’s flares</a
+							>
+						</td>
+						<td>
+							Begin with steady stars. If activity earns a mechanic, use a
+							legible build-up and bounded event. Reliable advance warning would
+							be a fictional sensor capability.
+						</td>
+						<td>
+							Steady means predictable, not harmless. An active star adds timing
+							decisions independently of its colour.
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<strong>A luminous atmosphere.</strong>
+							The Sun has a visible photosphere and an extended corona; it has
+							no solid surface.
+							<a href="https://science.nasa.gov/sun/facts/">NASA: the Sun</a>
+						</td>
+						<td>
+							Use a crisp luminous body as the terminal boundary and a
+							restrained atmosphere for presence. Exposure is an abstraction of
+							the ship’s response, not the gas temperature at each point.
+						</td>
+						<td>
+							Contact reads as destruction. A decorative glow must not
+							masquerade as an exact safe-distance marker.
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<h3 id="stellar-decisions">02.1 decisions / The standard sun model</h3>
+			<p>
+				The stellar model above is the foundation for further exploration and
+				the eventual Suns reference article. Temperature, radius, mass, radiant
+				output and activity have distinct meanings. Real stellar relationships
+				guide coherent combinations; the game’s compressed representation does
+				not require colour, gravity reach or charging reach to be calculated
+				directly from the visible disc radius.
+			</p>
+			<ul class="decisions">
+				<li>
+					<strong>Baseline:</strong>
+					begin with our own Sun as the familiar reference, represented as a
+					steady Sun-like star. Establish this encounter before varying the
+					stellar family.
+				</li>
+				<li>
+					<strong>Gravity:</strong>
+					size the field in relation to its maximum pull, with a finite cutoff.
+					The visible body does not alone determine its reach. This fixes a
+					design relationship, not new tuning values or a revised force law.
+				</li>
+				<li>
+					<strong>Solar charging:</strong>
+					treat its strength, distance profile and outer cutoff as an unresolved
+					design. Neither the body radius nor the gravity boundary automatically
+					supplies the charging boundary.
+				</li>
+				<li>
+					<strong>Scope:</strong>
+					regular stars, from small to large. Exotic objects such as quasars and
+					fictional miniature black holes remain future subjects. The baseline
+					does not settle the eventual stellar catalogue or require an eruption
+					mechanic.
+				</li>
+				<li>
+					<strong>Documentation:</strong>
+					retain the scientific reasoning, fictional simplifications and their
+					gameplay meanings together. The three encounter sketches remain
+					hypotheses until tried in play.
+				</li>
+			</ul>
+			<p>
+				The next investigation is the Sun-like charging field. Compare how a
+				pilot gains energy across distance, where collection stops, and how that
+				field overlaps gravity and damaging exposure. A linear ramp is one
+				candidate, not an adopted law. Percentage examples such as 10–90% or
+				10–100% remain illustrative until their distance interval and reference
+				charging rate are explicitly defined. Luminosity describes the source;
+				usable charging also depends on the collector and its limits.
+			</p>
+			<h3>Three encounters to distinguish first</h3>
+			<p>
+				Start with main-sequence suns: cool K/M, solar-like G/F and hot A/B/O.
+				Keep the seven class names available, but first establish three readable
+				experiences. Their relative size, mass and output follow the broad
+				main-sequence trend; all three examples below are steady. Evolved giants
+				and compact remnants would need their own families, not another step on
+				this ladder.
+				<a href="https://science.nasa.gov/universe/stars/types/"
+					>NASA: stellar families</a
+				>.
+			</p>
+			<div class="encounters">
+				<article>
+					<h4>Cool / intimate</h4>
+					<p>
+						<strong>A compact, warm-coloured presence.</strong>
+						Lower output and mass in this proposed main-sequence family.
+					</p>
+					<ol>
+						<li>
+							<strong>Approach:</strong>
+							travel closer before exposure matters.
+						</li>
+						<li>
+							<strong>Pass:</strong>
+							work near a small body; modest energy income makes lingering
+							tempting.
+						</li>
+						<li>
+							<strong>Leave:</strong>
+							a gentler pull gives more room to correct, provided the pilot has
+							not skimmed the fatal boundary.
+						</li>
+					</ol>
+					<p>
+						Desired feel: precise and approachable. An active M variant could
+						overturn the calm without changing its identity.
+					</p>
+				</article>
+				<article>
+					<h4>Solar-like / deliberate</h4>
+					<p>
+						<strong>The reference encounter.</strong>
+						Intermediate body, pull and radiant output.
+					</p>
+					<ol>
+						<li>
+							<strong>Approach:</strong>
+							recognise the bend in the path and plan the exit.
+						</li>
+						<li>
+							<strong>Pass:</strong>
+							a sustained arc offers useful collection, while exposure makes
+							staying costly.
+						</li>
+						<li>
+							<strong>Leave:</strong>
+							commit thrust while there is still room to climb out.
+						</li>
+					</ol>
+					<p>
+						Desired feel: a learnable bargain. This is where we establish what
+						fair warning and useful reward mean.
+					</p>
+				</article>
+				<article>
+					<h4>Hot / commanding</h4>
+					<p>
+						<strong>A large, pale blue-white presence.</strong>
+						Higher output and mass, compressed to fit the arena.
+					</p>
+					<ol>
+						<li>
+							<strong>Approach:</strong>
+							react farther out; both exposure and trajectory demand attention.
+						</li>
+						<li>
+							<strong>Pass:</strong>
+							make a wide, committed sweep. High local collection rate is
+							countered by rapid exposure cost.
+						</li>
+						<li>
+							<strong>Leave:</strong>
+							begin the exit earlier; a late inward correction should feel
+							consequential.
+						</li>
+					</ol>
+					<p>
+						Desired feel: commanding and expensive to misjudge. Greater
+						luminosity does not automatically guarantee a better net energy
+						bargain.
+					</p>
+				</article>
+			</div>
+			<p>
+				Scenario conditions: the same assembled ship, collection equipment,
+				part-filled reserves and undamaged hull; no planets, debris or random
+				eruptions. These are authored encounter sequences, not simulated paths.
+				They expose the intended choices for discussion; escape margins and
+				energy profit still require trials with the production Motion
+				instrument.
+			</p>
+			<h3>What the fiction needs to carry</h3>
+			<p>
+				Proposed allowance: ships have enough protection to operate briefly in
+				stellar proximity, and compact collectors convert incident stellar
+				energy into usable power. Keep collection distinct from fictional
+				gravity-coil recovery. A bare ship should still encounter the same
+				radiation and gravity, without inheriting a collector’s benefit. Use
+				existing hull loss to express damaging exposure initially; a new heat
+				reserve or cooling minigame is not yet justified.
+			</p>
+			<p>
+				Distances, ship size, stellar size and encounter duration use
+				deliberately compressed scales. Stars remain stable over a run; stellar
+				evolution, internal fusion and detailed spectra inform identity without
+				becoming simulations. A luminous body, restrained atmospheric motion and
+				an exposure cue can carry the fiction. Reserve expanding warning pulses
+				for meaningful events if events are adopted, rather than teaching that
+				every star continually emits dangerous circular waves.
+			</p>
+			<h3>Implications to investigate next</h3>
+			<p>
+				The current configuration couples radius, mass, power, burn and pulse
+				speed along O–M. The proposed model separates their meanings before
+				retuning any values. Flight feedback should distinguish
+				<em>collection</em>
+				from <em>net power change</em> and show damaging exposure where the
+				pilot already reads hull status. A collection boundary depends on
+				equipment; it cannot also promise safety or escape. Keep decorative
+				corona, damage threshold and gravity reach conceptually distinct.
+			</p>
+			<p>
+				Agreed sequence: establish the steady Sun-like encounter first, then
+				test the cool and hot ends against it. Leave eruptions and evolved stars
+				as extensions until the basic pass offers a worthwhile decision.
+				Unsettled: whether collection is worth approaching for with the actual
+				loadouts, how early damage must become legible, and whether three felt
+				families give the seven class labels enough meaning.
+			</p>
+		</details>
+		<details>
+			<summary>02.2 / Collecting inside the well</summary>
+			<h3 id="charging-field">02.2 / Collecting inside the well</h3>
+			<p>
+				First hypothesis: for Terra’s Sun, the outer solar-collection boundary
+				coincides with the gravity boundary. Crossing inward begins both
+				collection and attraction. Energy recovery therefore asks the pilot to
+				enter the well. This is a trial premise, not a settled field law or a
+				claim that every point inside the well is equally dangerous.
+			</p>
+			<figure class="field-sketch">
+				<svg
+					viewBox="0 0 1040 400"
+					role="img"
+					aria-labelledby="field-title field-desc"
+				>
+					<title id="field-title">
+						Three proposed relationships between collection reach and gravity
+						reach
+					</title>
+					<desc id="field-desc">
+						Distance increases to the right from a fixed stellar surface.
+						Gravity ends at the same dashed line in all three examples. Terra’s
+						solar collection ends there too; the generous example extends beyond
+						it, and the demanding example ends inside it. These are schematic
+						field extents, not force or charging curves.
+					</desc>
+					<text x="240" y="26">Stellar surface</text>
+					<text x="760" y="26">Distance outward →</text>
+					<line x1="240" y1="40" x2="240" y2="350" class="surface" />
+					<line x1="760" y1="40" x2="760" y2="350" class="boundary" />
+					<text x="765" y="380">Gravity cutoff</text>
+					<text x="0" y="83">Terra / shared reach</text>
+					<path d="M240 72 H760" class="gravity" />
+					<path d="M240 100 H760" class="collection" />
+					<text x="0" y="193">Extended collection</text>
+					<path d="M240 182 H760" class="gravity" />
+					<path d="M240 210 H970" class="collection" />
+					<text x="0" y="303">Deep collection</text>
+					<path d="M240 292 H760" class="gravity" />
+					<path d="M240 320 H500" class="collection" />
+				</svg>
+				<figcaption>
+					Schematic, not to scale. Solid pale line: gravity reach. Dashed blue
+					line: collection reach. Identical body and gravity field in all three
+					examples isolate the effect of moving only the collection boundary.
+					Line length says where an effect exists, not how strong it is.
+				</figcaption>
+			</figure>
+			<p>
+				The shared boundary gives the baseline a simple promise: collecting
+				stellar energy exposes the ship to gravitational pull. Extending
+				collection beyond it could permit recovery without that pull;
+				restricting collection to the interior could demand a deeper commitment.
+				These are relative gravitational risks. Neither an outer collection band
+				nor a weak pull guarantees safety from radiation, contact or other
+				hazards.
+			</p>
+			<h3>Collection begins before the battery necessarily recovers</h3>
+			<p>
+				Keep three thresholds distinct: the outer edge where the collector
+				begins supplying power; the distance where supply exceeds this ship’s
+				current consumption; and the exposure at which hull damage begins. Only
+				the first is proposed to coincide with Terra’s gravity boundary. A ship
+				can be collecting while its battery is still draining. Thrust, equipment
+				and collector capacity move the break-even point.
+			</p>
+			<p>
+				For the next curve comparison, a linear rise from zero at the outer edge
+				is a useful starting candidate: entry is gentle and the pilot must
+				travel inward for useful income. Starting at a nonzero rate would give
+				an immediate reward but create a step at the boundary. Neither is chosen
+				yet. Peak rate, its distance from the surface and the damage profile
+				remain open. A narrow field alone does not establish an extremely
+				dangerous sun; useful net recovery must actually require a consequential
+				inward commitment.
+			</p>
+			<h3>Compact radiant-energy collection</h3>
+			<p>
+				The fictional direction is a compact collector integrated with the ship,
+				without large deployable solar panels. It harvests stellar radiation
+				through advanced collection technology; the exact mechanism remains
+				undefined. The finite charging field represents the useful operating
+				envelope of that technology, not a place where sunlight physically ends.
+				Solar collection remains distinct from gravity-based energy recovery.
+			</p>
+			<p>
+				This sketch establishes an inspectable spatial hypothesis only. It does
+				not establish charging rates, profitable flight paths or escape margins.
+				The next comparison should hold the Sun, ship and gravity field fixed
+				while varying the collection profile, showing gross collection and net
+				power separately before testing the pass in flight.
+			</p>
+		</details>
+		<details>
+			<summary>
+				02.3 / Linear charging and the selected 7.5 E/s reference
+			</summary>
+			<h3 id="charging-curves">
+				02.3 / A linear collection curve on real flight paths
+			</h3>
+			<p>
+				This develops 02.2’s shared-boundary hypothesis. Collection rises
+				linearly from zero at the gravity edge to a candidate maximum at the
+				surface: C(d) = peak × (reach − d) / (reach − radius), clamped to zero
+				outside. The original 4 E/s peak used the current G-star inner-zone rate
+				for one collector, replacing only the stepped profile in this study’s
+				energy calculation.
+			</p>
+			<p>
+				The Wasp is the reference ship for these trials: one Light ion engine,
+				stabilizers enabled, empty equipment slots and inherent collection
+				equivalent to one solar collector. No solar fitting is required. Use the
+				controls inside the path instrument to compare coasting and powered
+				consumption across three approach offsets using the shared Motion
+				instrument. B1, B2 and B3 change the flight program; the time cursor
+				connects the paths to the four energy graphs. The starting offsets are
+				experimental conditions; the burn inputs generate these paths through
+				the Wasp’s production motion rules. The paths make the game’s behaviour
+				inspectable rather than prescribing its outcome.
+			</p>
+			<p>
+				The energy-budget controls vary life-support draw, ion power draw and
+				peak solar collection over the same Wasp paths. The linear profile and
+				shared field boundary stay fixed. Ion draw changes energy costs only,
+				including stabilizer costs; thrust and handling stay unchanged. Battery
+				change starts at zero, revealing whether a whole manoeuvre recovers more
+				than it spends. Reset restores the selected experiment budget without
+				changing the selected burn.
+			</p>
+			<h3 id="charging-selection">Selected standard-Sun reference / 7.5 E/s</h3>
+			<p>
+				Adopted Path tool requirement: energy-collection fields belong in path
+				analysis alongside gravity fields. The shared instrument must support
+				gross collection, consumption, net charging and cumulative battery
+				change, synchronized with the ship’s path and time cursor. Collection
+				reach and profile are independently defined from gravity. This study
+				demonstrates the readings; reusable collection-field configuration
+				remains delivery work beyond the study-local calculation.
+			</p>
+			<p>
+				Human review found the 7.5 E/s peak satisfying across different burns
+				and Wasp paths. This is the selected maximum collection rate for the
+				standard Sun, per inherent collector-equivalent. Retain it as the
+				reference for subsequent field-shape exploration and later comparisons
+				with other stars. The retained experiment opens at 0.8 E/s life-support
+				draw and 1.0 E/s Light ion draw. These consumption values are experiment
+				settings, not adopted changes to every ship’s production rules.
+			</p>
+			<p>
+				The successful result establishes the energy-budget direction. The next
+				hypothesis is to retain the 7.5 E/s maximum at the surface or slightly
+				outside it, falling to 10% (0.75 E/s) at the field edge. The peak’s
+				position, inner plateau and outer cutoff remain unsettled. The
+				instrument below preserves the tested linear-to-zero curve; it does not
+				silently substitute that next hypothesis. Capacity caps and damaging
+				exposure still need assessment before implementation.
+			</p>
+			<ChargingStudy client:load />
+			<p>
+				The existing instrument lacked energy traces. This requested comparison
+				adds collection, consumption and signed net charging to its shared
+				graphs. The linear solar law stays study-local. Motion uses production
+				propulsion and the current gravity tuning; no gravity constants are
+				changed. Consumption is sampled from production buildDrain at each
+				recorded flight state. The original 4 E/s peak with 1.5 E/s life support
+				and 2 E/s ion draw yielded coasting break-even at about 216 u and
+				forward-thrust break-even at about 71 u from the centre (surface 35 u;
+				reach 324 u). Under that original budget, the B1 passes all spent more
+				energy than they collected across the full 14 seconds, despite brief
+				recovery on the closer paths. These historical results describe the
+				initial budget, not the selected 7.5 E/s reference. Net energy totals
+				use these 60 Hz samples and exclude battery saturation, power starvation
+				and radiation damage. They establish the candidate energy budget, not
+				survival or the final integrated flight experience.
+			</p>
+		</details>
+		<details>
+			<summary>02.4 / Accepted collection-field shapes</summary>
+			<h3 id="field-shape">02.4 / A useful edge and an accessible peak</h3>
+			<p>
+				Preserve the selected 7.5 E/s peak, 0.8 E/s life support and 1.0 E/s ion
+				draw while comparing three collection profiles on the same simulated
+				Wasp paths. Open the hamburger pane to switch between the retained
+				reference, a 10% outer edge, and that same edge with a 20 u inner
+				shoulder. The shoulder distance is an exploratory fixture, not an
+				accepted value.
+			</p>
+			<p>
+				At this budget the 10% edge supplies 0.75 E/s: just below the 0.8 E/s
+				life-support cost. Entry nearly pays for coasting, but forward thrust
+				still requires moving inward. The shoulder makes maximum collection
+				accessible outside the luminous surface; it does not establish a safe
+				place to linger. Damage and ship contact clearance still constrain
+				access.
+			</p>
+			<p>
+				A nonzero edge also creates a discontinuity: collection jumps between
+				0.75 E/s at the boundary and zero immediately outside it. Look for that
+				step in the collection trace, and compare how early net charging starts
+				and how much the battery recovers. Switching profiles preserves the
+				burn, starting positions and paths; these are field comparisons, not new
+				flight scenarios. The previous instrument remains an independent
+				retained reference.
+			</p>
+
+			<h3>Accepted charging profiles</h3>
+			<p>
+				Both the 10% edge and the 10% edge with a 20 u shoulder are accepted as
+				useful standard-Sun charging profiles. Preserve both exact variants: 7.5
+				E/s maximum per collector-equivalent, 0.75 E/s at the shared outer
+				gravity/collection boundary, zero outside; the shoulder variant
+				maintains the maximum from the surface to 20 u beyond it. The reference
+				experiment uses Wasp, 0.8 E/s life support and 1.0 E/s ion draw.
+				Acceptance concerns the observed charging behaviour, not yet radiation
+				balance or one chosen production default. Both variants remain available
+				in the instrument.
+			</p>
+			<ChargingStudy
+				client:load
+				compareShapes
+				label="Sun field-shape comparison"
+			/>
+		</details>
+		<h3 id="exposure-economy">02.5 / Trading hull for energy</h3>
+		<p>
+			The damage envelope should be much smaller than the collection field. This
+			round compares local energy income and hull cost directly across distance,
+			without flight paths. Two deliberately simple candidate damage envelopes
+			test how much high-income space can remain free of radiation damage.
+			Repair is optional fitted equipment; its assumed 0.2 E/s running cost is
+			included conditionally, while its restoration rate remains open.
+		</p>
+		<p>
+			Damage has its own reach, intensity and profile, independently specified
+			from collection and gravity. Collection represents harvestable stellar
+			radiation; damage represents exposure that exceeds the ship’s protection.
+			This is a gameplay distinction, not a claim that light is separate from
+			energy. Stellar colour is a proposed readable clue to hazardous radiation;
+			atmospheric appearance and flare behaviour may communicate activity. The
+			mapping from those cues to damage reach and severity is still to be
+			explored. A large collection field must not automatically imply a large
+			damage envelope, and permanent exposure must remain distinguishable from
+			an intermittent flare.
+		</p>
+		<p>
+			Settled placement: maximum damage begins at the shoulder’s outer edge, 20
+			u beyond the surface, and remains at maximum inward to the surface. The
+			comparison uses 1.5 hull/s as its provisional maximum; the outer damage
+			boundaries and linear-versus-stepped decline remain open.
+		</p>
+		<ExposureEconomy />
+
+		<h3 id="sun-hud-preview">02.6 / Field states in the game view</h3>
+		<p>
+			A presentation trial using the production G-star animation and Wasp
+			renderer. The side switches expose the approved Suns HUD states directly.
+			All boundary strokes are one CSS pixel, drawn after world projection;
+			camera zoom changes the circle’s apparent radius, never its stroke width.
+			The existing Sun animation is retained, not redesigned.
+		</p>
+		<SunHudPreview client:load />
+		<p>
+			Optional fill toggles compare barely visible 3.3% Android-green solar and
+			11% red hazard interiors. Each fill appears only while its corresponding
+			field is visible and active; outlines retain their existing treatment.
+			Both fills are approved for the standard-Sun HUD.
+		</p>
+		<p>
+			Android green is the common field language. Gravity is dashed; solar
+			availability uses a solid boundary, brightened when collection is active.
+			At their shared radius, the solar line is drawn 2 CSS pixels inside the
+			gravity line so both remain readable. This visual offset stays fixed at
+			every zoom and does not change either gameplay boundary. Hazard is muted
+			amber until damage is active, then red. Text repeats active states so
+			colour is not the only cue. Active collection does not imply net charging.
+			These are approved presentation states; toggles force the states and
+			relocate the ship for context. No production HUD behaviour has changed.
+		</p>
+		<h3 id="standard-sun-decision">Delivery decision / One standard Sun</h3>
+		<p>
+			This study now delivers the standard Sun only. Its mechanics and geometry
+			are settled; remaining presentation work is limited to HUD information and
+			field lines, including their states in relevant situations. Other stellar
+			types are reserved for a confirmed follow-up study. Earlier comparisons
+			remain evidence, not additional delivery scope.
+		</p>
+		<table>
+			<caption>
+				Locked standard-Sun mechanics
+			</caption>
+			<thead>
+				<tr>
+					<th>Property</th>
+					<th>Selected value</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Star identity and surface</td>
+					<td>G / standard Sun; 35 u radius</td>
+				</tr>
+				<tr>
+					<td>Shoulder</td>
+					<td>20 u beyond the surface; outer radius 55 u</td>
+				</tr>
+				<tr>
+					<td>Collection</td>
+					<td>
+						7.5 E/s per collector-equivalent through the shoulder; linear
+						decline to 0.75 E/s at the outer edge; zero outside
+					</td>
+				</tr>
+				<tr>
+					<td>Collection reach</td>
+					<td>
+						Same as the unchanged standard gravity field: approximately 324 u
+						from centre
+					</td>
+				</tr>
+				<tr>
+					<td>Damage</td>
+					<td>
+						1.5 hull/s through the shoulder; linear decline to zero at 100 u
+						from centre; zero beyond
+					</td>
+				</tr>
+				<tr>
+					<td>Life-support draw</td>
+					<td>0.8 E/s</td>
+				</tr>
+				<tr>
+					<td>Light ion draw</td>
+					<td>1.0 E/s; energy cost only, with thrust and handling unchanged</td>
+				</tr>
+				<tr>
+					<td>Inherent collection</td>
+					<td>
+						One solar collector-equivalent on every ship; fittings add to it
+					</td>
+				</tr>
+				<tr>
+					<td>Reference ship</td>
+					<td>Wasp</td>
+				</tr>
+			</tbody>
+		</table>
+		<p>
+			All distances above are centre-based except the explicitly stated shoulder
+			width. The 100 u damage boundary is not another 100 u beyond the shoulder.
+			Gravity tuning is retained. Production battery capacity, depletion and
+			contact remain real constraints. Optional repair’s 0.2 E/s was a
+			comparison assumption; repair output and implementation are not part of
+			this commitment.
+		</p>
+		<p>
+			Scope includes making current game sun presentations consistently
+			standard, shared mechanic definitions, the Path tool’s reusable
+			energy-field analysis, and a polished Suns Lab article explaining fiction,
+			zones and expected in-game behaviour. Colour and activity mappings for
+			other stars belong in the confirmed stellar-variety follow-up, after this
+			standard is delivered.
+		</p>
+	</section>
+	<section>
+		<h2>03 / Standard Sun is ready for integration</h2>
+		<p>
+			The standard-Sun mechanics and HUD model are settled and ready for a
+			bounded implementation. No further visual exploration blocks this patch.
+			The production game already supplies inherent collection, fitted-collector
+			scaling, resource capacity, propulsion and gravity. The study uses their
+			motion and consumption definitions and adds the accepted profiles as an
+			energy calculation over the paths.
+		</p>
+		<p>
+			Production solar charging still uses three stepped zones scaled from the
+			sun’s radius, in both assembled and stock resource paths. Delivery needs
+			one shared collection-field definition with explicit reach, peak, outer
+			fraction and shoulder, consumed by play and the Path tool. The
+			standard-Sun-only delivery adopts the locked 0.8 E/s life-support and 1.0
+			E/s Light ion costs, preserving thrust and handling; other engine families
+			are outside this change.
+		</p>
+		<p>
+			Battery saturation and depletion already affect production flight, but are
+			deliberately absent from the retained experiment. An integrated trial must
+			show actual stored energy, wasted collection at capacity, and propulsion
+			when reserves are depleted. The shipping profile is now the 10% edge with
+			a 20 u shoulder and the 100 u damage envelope. Retained alternatives
+			remain study evidence.
+		</p>
+		<h3>Integration and HUD / field-line feedback</h3>
+		<p>
+			<strong>Every ship gets one inherent solar collector-equivalent.</strong>
+			No fitting, equipment slot or unlock is required. Fitted collectors add to
+			that baseline. The existing assembled-loadout calculation already starts
+			at one; integration must preserve this and verify the same rule for every
+			stock, assembled and unfitted ship path. Wasp remains the reference ship,
+			not the only ship eligible to collect.
+		</p>
+		<p>
+			Current hull damage also uses radius-scaled zones. For the current G-star
+			radius of 35 u, their outer boundaries are 87.5, 148.75 and 210 u; the
+			proposed shoulder ends at 55 u from the centre. It therefore lies within
+			the current innermost damage band. This is a code-derived overlap, not a
+			finding that the shoulder is too dangerous. Exploration 02.5 established
+			the selected trade through distance-based energy and hull rates. The new
+			damage profile is settled in the delivery decision above. Implementation
+			must verify its interaction with actual battery limits and contact.
+			Optional repair output remains outside scope.
+		</p>
+		<p>
+			Current simulation creates a G star, but the decorative landing system
+			still selects from multiple stellar types. Standard-Sun delivery must
+			align that presentation too. Technical reuse is strong; no new physics
+			system is needed. Remaining delivery work includes shared field
+			configuration, integrated resource feedback, world/HUD cues and the Suns
+			article. The animated preview establishes the approved presentation, not
+			live gameplay behaviour. Integration still needs in-game verification;
+			readiness does not claim production implementation is complete.
+		</p>
+	</section>
+	<section>
+		<h2>04 / A bounded standard-Sun patch</h2>
+		<h3>Settled Suns HUD constraints</h3>
+		<p>
+			Android green, from the shared Android-green token, is the primary colour
+			for Suns HUD lines. Supporting colours may distinguish hazard states. This
+			is scoped to Suns; it does not redefine the game’s brand or other HUDs.
+			Field boundaries remain world-anchored, but every HUD stroke is one CSS
+			pixel wide at every camera zoom and supported display resolution. Device
+			pixel ratio affects rasterization, not the intended visible stroke width.
+			Active states must not thicken the line.
+		</p>
+		<p>
+			The approved model uses dim Android-green dashed gravity and solid solar
+			boundaries; active collection brightens the solar line and adds a 3.3%
+			Android-green fill. Hazard is dotted in both states: muted amber when
+			inactive, red with an 11% red fill when damage is active. Fills are absent
+			in inactive states. The preview toggles remain comparison aids; production
+			derives activation from actual ship effects. Collection may be active
+			while net battery change is negative; active hazard means damage is being
+			applied. At coincident gravity/solar boundaries, draw solar 2 CSS pixels
+			inside gravity while both are visible. This fixed screen-space offset does
+			not change either gameplay reach. All strokes remain 1 CSS pixel wide.
+		</p>
+
+		<p>
+			Deliver the settled mechanics now, with presentation limited to HUD
+			information, field lines and their states. Sun artwork, palette changes,
+			corona redesign and other effects are deferred and are not prerequisites.
+			Existing usable rendering stays the starting point. No change to the
+			standing experience-design principles is proposed.
+		</p>
+
+		<p>
+			Integration updates the owning star, survival, propulsion and game-screen
+			specs alongside their behaviour, plus the Motion instrument spec for Path
+			energy analysis. The existing star spec describes an older implementation
+			and must be reconciled against current code and these decisions. The Lab
+			article documents the implemented standard, including fiction, inherent
+			collection, zone boundaries, battery limits and the HUD’s visual inset.
+		</p>
+		<table>
+			<caption>
+				Delivery slices
+			</caption>
+			<thead>
+				<tr>
+					<th>Slice</th>
+					<th>Scope and dependency</th>
+					<th>Evidence</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>1 / Shared mechanics · medium</td>
+					<td>
+						Implement locked standard-Sun collection, damage and energy costs
+						through shared definitions; align game sun identity. Update schemas
+						and owning specs. Preserve gravity and handling. Guarantee one
+						inherent collector on every ship, with fitted collectors additive.
+					</td>
+					<td>
+						Boundary, collector scaling, resource cap/depletion, damage and
+						contact checks; verify production and study parity.
+					</td>
+				</tr>
+				<tr>
+					<td>2 / HUD and field lines · small–medium</td>
+					<td>
+						Implement the approved line styles, colours, active fills and 2 px
+						solar inset through shared HUD rendering. Connect states to real
+						collection and damage. Depends on slice 1.
+					</td>
+					<td>
+						Inspect normal, collecting, net-draining, damaging and full-battery
+						states in play; verify 1 px strokes and 2 px separation across zoom
+						and display density. Maintain keyboard and landscape touch.
+					</td>
+				</tr>
+				<tr>
+					<td>3 / Path support and Lab reference · medium</td>
+					<td>
+						Generalize energy fields into the shared Path configuration and
+						write the standard-Sun article from the retained decisions. Depends
+						on the shared mechanics; does not require new stellar artwork.
+					</td>
+					<td>
+						Schema validation, synchronized readings and unchanged motion for
+						energy-only comparisons; article checked against implemented
+						behaviour.
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<p>
+			The wider stellar research and standard-Sun artwork/effects are deferred.
+			Neither expands this patch. Readiness and scope are finalized for the
+			approved standard-Sun model. Implementation is separate work; this handoff
+			does not claim completed integration, gameplay verification or
+			publication.
+		</p>
+	</section>
+</StudyLayout>
+
+<style>
+.field-sketch {
+	margin: var(--spacing-lg) 0;
+}
+.field-sketch svg {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+.field-sketch text {
+	fill: var(--color-text);
+	font: 16px var(--font-family-prose);
+}
+.field-sketch .surface {
+	stroke: var(--color-text-muted);
+	stroke-width: 2;
+}
+.field-sketch .boundary {
+	stroke: var(--color-text-muted);
+	stroke-width: 1;
+	stroke-dasharray: 4 5;
+}
+.field-sketch .gravity {
+	stroke: var(--color-text);
+	stroke-width: 6;
+}
+.field-sketch .collection {
+	stroke: var(--color-resource-hull);
+	stroke-width: 6;
+	stroke-dasharray: 12 5;
+}
+figcaption {
+	max-width: var(--measure-prose);
+	color: var(--color-text-muted);
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-block: var(--spacing-lg);
+	font-size: 0.95rem;
+}
+caption {
+	text-align: left;
+	margin-bottom: var(--spacing-md);
+	font-weight: 600;
+}
+th,
+td {
+	text-align: left;
+	vertical-align: top;
+	padding: var(--spacing-md);
+	border-bottom: 1px solid var(--color-border);
+	width: 33.333%;
+}
+th {
+	color: var(--color-text-muted);
+}
+.encounters {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--spacing-lg);
+	margin-block: var(--spacing-lg);
+}
+article {
+	border-top: 1px solid var(--color-border);
+	padding-top: var(--spacing-md);
+}
+h4 {
+	font-size: var(--font-size-heading);
+	margin-bottom: var(--spacing-md);
+}
+article p {
+	margin-bottom: var(--spacing-md);
+}
+ol,
+.decisions {
+	padding-left: var(--spacing-md);
+}
+.decisions {
+	max-width: var(--measure-prose);
+}
+li {
+	margin-bottom: var(--spacing-md);
+}
+</style>

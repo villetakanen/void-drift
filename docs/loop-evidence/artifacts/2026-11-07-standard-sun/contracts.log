@@ -1,0 +1,179 @@
+
+> void-drift-monorepo@0.5.5 check:contracts /Users/ville.takanen/dev/void-drift
+> node scripts/check-contracts.mjs && pnpm test:factory
+
+Agent entry point: 79 lines; all context links resolve.
+WARNING: .agents/skills/design-study/SKILL.md: link target missing: ../../../docs/specs/design-studies.md
+WARNING: docs/architecture.md: link target missing: specs/sfx-canvas.md
+WARNING: docs/architecture.md: link target missing: specs/sfx-canvas.md
+WARNING: docs/architecture.md: link target missing: specs/hangar/spec.md
+WARNING: docs/architecture.md: link target missing: specs/hangar/spec.md
+WARNING: docs/archive/sfx-canvas-legacy.md: link target missing: ../specs/sfx-canvas.md
+WARNING: docs/archive/specs/menu-overlay.md: link target missing: opening-screen.md
+WARNING: docs/archive/specs/menu-overlay.md: link target missing: ./survival-core.md
+WARNING: docs/archive/specs/menu-overlay.md: link target missing: ./settings-system.md
+WARNING: docs/archive/specs/ship-lab-chassis-preview.md: link target missing: ../history/ship-builder.md
+WARNING: docs/design.md: link target missing: specs/cockpit-materials.md
+WARNING: docs/design.md: link target missing: specs/cockpit-materials.md
+WARNING: docs/design.md: link target missing: specs/design-system-core.md
+WARNING: docs/design.md: link target missing: specs/playable-alpha.md
+WARNING: docs/design.md: link target missing: specs/hangar/spec.md
+WARNING: docs/design.md: link target missing: specs/motion-instrument.md
+WARNING: docs/design.md: link target missing: specs/design-studies.md
+WARNING: docs/development.md: link target missing: specs/gravity-field.md
+WARNING: docs/factory-building-lessons/001-modernizing-the-factory.md: link target missing: ../specs/voice-led-factory.md
+WARNING: docs/factory-building-lessons/002-phased-design-studies.md: link target missing: ../specs/design-studies.md
+WARNING: docs/factory-building-lessons/002-phased-design-studies.md: link target missing: ../specs/design-studies.md
+WARNING: docs/factory-building-lessons/002-phased-design-studies.md: link target missing: ../specs/design-studies.md
+WARNING: docs/factory-building-lessons/002-phased-design-studies.md: link target missing: ../specs/design-studies.md
+WARNING: docs/factory-building-lessons/002-phased-design-studies.md: link target missing: ../specs/design-studies-history.md
+WARNING: docs/factory-building-lessons/002-phased-design-studies.md: link target missing: ../specs/design-studies.md
+WARNING: docs/factory-building-lessons/design-study-evaluation.md: link target missing: ../specs/design-studies.md
+WARNING: docs/factory-experiment-design-studies.md: link target missing: specs/design-studies.md
+WARNING: docs/factory-report-design-study-form-drift.md: link target missing: specs/design-studies.md
+WARNING: docs/gravity-model.md: link target missing: specs/gravity-field.md
+WARNING: docs/gravity-model.md: link target missing: specs/gravity-tuning.md
+WARNING: docs/history/rebuild-charter.md: link target missing: ../specs/hangar/spec.md
+WARNING: docs/history/ship-builder.md: link target missing: ../specs/hangar/spec.md
+WARNING: docs/loop-evidence/2026-10-29-planetary-design-study.md: link target missing: ../specs/design-studies.md
+WARNING: docs/loop-evidence/2026-10-30-engine-effects.md: link target missing: ../specs/playable-alpha.md
+WARNING: docs/loop-evidence/2026-10-31-ship-slot-language.md: link target missing: ../../apps/web/src/components/studies/SlotStatesAccepted021.svelte
+WARNING: docs/loop-evidence/2026-11-02-potential-well.md: link target missing: ../specs/hangar/spec.md
+WARNING: docs/loop-evidence/2026-11-03-factory-harness-amendments.md: link target missing: ../specs/voice-led-factory.md
+WARNING: docs/loop-evidence/2026-11-03-factory-harness-amendments.md: link target missing: ../specs/design-studies.md
+WARNING: docs/loop-evidence/2026-11-03-factory-harness-amendments.md: link target missing: ../specs/design-studies.md
+WARNING: docs/loop-evidence/2026-11-03-factory-harness-amendments.md: link target missing: ../specs/design-studies.md
+WARNING: docs/loop-evidence/2026-11-03-fx-surface-repair.md: link target missing: ../specs/sfx-canvas.md
+WARNING: docs/loop-evidence/2026-11-03-lhi-fiddler.md: link target missing: ../specs/hangar/spec.md
+WARNING: docs/plans/2026-11-03-fx-framework-triage.md: link target missing: ../specs/sfx-canvas.md
+WARNING: docs/plans/2026-11-03-test-suite-pruning.md: link target missing: ../specs/voice-led-factory.md
+WARNING: docs/plans/2026-11-04-gravity-field-lab.md: link target missing: ../specs/gravity-tuning.md
+WARNING: docs/plans/2026-11-04-gravity-field-lab.md: link target missing: ../specs/motion-instrument.md
+WARNING: docs/plans/2026-11-04-gravity-field-lab.md: link target missing: ../specs/gravity-field.md
+WARNING: docs/plans/2026-11-04-motion-instrument-conformance.md: link target missing: ../specs/motion-instrument.md
+WARNING: docs/plans/2026-11-04-motion-instrument-conformance.md: link target missing: ../specs/gravity-tuning.md
+WARNING: docs/plans/random-star-systems.md: link target missing: ../specs/opening-screen.md
+WARNING: docs/specs/factory/cockpit-materials/spec.md: link target missing: ../../apps/web/src/pages/lab/studies/gilded-surfaces-2026-11-03.astro
+WARNING: docs/specs/factory/design-system/spec.md: link target missing: dialogs.md
+WARNING: docs/specs/factory/effects/spec.md: link target missing: ../plans/2026-11-03-fx-surface-correction.md
+WARNING: docs/specs/factory/effects/spec.md: link target missing: ../history/ship-builder.md
+WARNING: docs/specs/factory/effects/spec.md: link target missing: ../architecture.md
+WARNING: docs/specs/factory/effects/spec.md: link target missing: ../loop-evidence/2026-11-03-fx-surface-repair.md
+WARNING: docs/specs/factory/effects/spec.md: link target missing: ../releases/0.5.0.md
+WARNING: docs/specs/factory/effects/spec.md: link target missing: ../../.agents/skills/fx-development/SKILL.md
+WARNING: docs/specs/factory/effects/spec.md: link target missing: weapons-and-salvage.md
+WARNING: docs/specs/factory/effects/spec.md: link target missing: ../plans/2026-11-03-fx-framework-triage.md
+WARNING: docs/specs/factory/effects/spec.md: link target missing: ../archive/sfx-canvas-legacy.md
+WARNING: docs/specs/factory/spec.md: link target missing: ../history/rebuild-charter.md
+WARNING: docs/specs/factory/spec.md: link target missing: ../factory-experiment-alpha.md
+WARNING: docs/specs/factory/spec.md: link target missing: sfx-canvas.md
+WARNING: docs/specs/factory/spec.md: link target missing: playable-alpha.md
+WARNING: docs/specs/factory/spec.md: link target missing: ../development.md
+WARNING: docs/specs/factory/spec.md: link target missing: design-studies.md
+WARNING: docs/specs/factory/spec.md: link target missing: design-studies.md
+WARNING: docs/specs/factory/spec.md: link target missing: ../factory-building-lessons/README.md
+WARNING: docs/specs/game/camera/spec.md: link target missing: playable-alpha.md
+WARNING: docs/specs/game/controls/spec.md: link target missing: playable-alpha.md
+WARNING: docs/specs/game/hangar/mount-planner/spec.md: link target missing: hangar/spec.md
+WARNING: docs/specs/game/hangar/mount-planner/spec.md: link target missing: motion-instrument.md
+WARNING: docs/specs/game/hangar/mount-planner/spec.md: link target missing: design-system-core.md
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../history/rebuild-charter.md
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../history/ship-builder.md
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../apps/web/src/pages/builder.astro
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../apps/web/src/pages/lab/builder.astro
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../apps/web/src/components/ShipBuilder.svelte
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../packages/mode-a/src/lib/config.ts
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../packages/mode-a/src/lib/schemas/ship-profile.ts
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../packages/mode-a/src/lib/schemas/loadout.ts
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../packages/mode-a/src/lib/schemas/flight.ts
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../packages/mode-a/src/lib/build-renderer.ts
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../ship-mount-planner.md
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../apps/web/src/components/FlightDeck.svelte
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../packages/mode-a/src/lib/simulation.ts
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../packages/mode-a/src/lib/build-flight.ts
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../apps/web/src/components/inputs/Toggle.svelte
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../design-system-core.md
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../ship-propulsion.md
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../history/ship-builder.md
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../history/ship-builder.md
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../history/ship-builder.md
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../history/ship-builder.md
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../apps/web/src/pages/lab/studies/lhi-fiddler-2026-11-03.astro
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../tests/browser/scout.spec.ts
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../packages/mode-a/src/lib/wasp.test.ts
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../tests/browser/builder.spec.ts
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../packages/mode-a/src/lib/slot-types.test.ts
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../tests/browser/gravity-coil.spec.ts
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../packages/mode-a/src/lib/starter-fleet.test.ts
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../packages/mode-a/src/lib/build-flight.test.ts
+WARNING: docs/specs/game/hangar/spec.md: link target missing: ../../../packages/mode-a/src/lib/potential-well.test.ts
+WARNING: docs/specs/game/high-scores/spec.md: link target missing: playable-alpha.md
+WARNING: docs/specs/game/high-scores/spec.md: link target missing: ./survival-core.md
+WARNING: docs/specs/game/high-scores/spec.md: link target missing: ./design-system-core.md
+WARNING: docs/specs/game/options/spec.md: link target missing: ./survival-core.md
+WARNING: docs/specs/game/ship-select/camera-zoom.md: link target missing: playable-alpha.md
+WARNING: docs/specs/game/ship-select/camera-zoom.md: link target missing: ../history/ship-builder.md
+WARNING: docs/specs/game/ship-select/spec.md: link target missing: ../history/ship-builder.md
+WARNING: docs/specs/game/ship-select/spec.md: link target missing: opening-screen.md
+WARNING: docs/specs/game/spec.md: link target missing: ship-propulsion.md
+WARNING: docs/specs/game/spec.md: link target missing: gravity-field.md
+WARNING: docs/specs/game/spec.md: link target missing: sfx-canvas.md
+WARNING: docs/specs/game/spec.md: link target missing: ../history/ship-builder.md
+WARNING: docs/specs/game/world/gravity-field/spec.md: link target missing: ../gravity-model.md
+WARNING: docs/specs/game/world/gravity-field/spec.md: link target missing: gravity-tuning.md
+WARNING: docs/specs/game/world/planets/spec.md: link target missing: gravity-field.md
+WARNING: docs/specs/game/world/planets/spec.md: link target missing: gravity-field.md
+WARNING: docs/specs/lab/design-studies/spec.md: link target missing: ../../.agents/skills/design-study/SKILL.md
+WARNING: docs/specs/lab/design-studies/spec.md: link target missing: ../../.agents/skills/design-study/references/exploration.md
+WARNING: docs/specs/lab/design-studies/spec.md: link target missing: ../factory-building-lessons/design-study-evaluation.md
+WARNING: docs/specs/lab/gravity-tuning/spec.md: link target missing: gravity-field.md
+WARNING: docs/specs/lab/gravity-tuning/spec.md: link target missing: ../gravity-model.md
+WARNING: docs/specs/lab/gravity-tuning/spec.md: link target missing: motion-instrument.md
+WARNING: docs/specs/lab/gravity-tuning/spec.md: link target missing: gravity-field.md
+WARNING: docs/specs/lab/gravity-tuning/spec.md: link target missing: gravity-field.md
+WARNING: docs/specs/lab/gravity-tuning/spec.md: link target missing: gravity-field.md
+WARNING: docs/specs/lab/motion-instrument/spec.md: link target missing: gravity-tuning.md
+WARNING: docs/specs/lab/motion-instrument/spec.md: link target missing: gravity-tuning.md
+WARNING: outgoing/asdlc-feedback-void-drift.md: link target missing: ../docs/specs/design-studies.md
+WARNING: outgoing/asdlc-feedback-void-drift.md: link target missing: ../docs/specs/voice-led-factory.md
+Markdown links: 132 files; 133 missing target(s).
+docs/design.md: 101 lines; 133 context warning(s).
+Canvas type families match the CSS role tokens.
+Canvas colours match 21 CSS colour roles.
+theme-color matches --color-void.
+
+> void-drift-monorepo@0.5.5 test:factory /Users/ville.takanen/dev/void-drift
+> node --test scripts/verification.test.mjs scripts/release.test.mjs
+
+Release preparation prepared: /var/folders/5x/92_br_c51191x_mqv5grk7p00000gq/T/void-release-qBn5oi/artifacts/prepared-releases/2026-11-07T08-36-44.581Z-Gs44Kx
+Release preparation failed: /var/folders/5x/92_br_c51191x_mqv5grk7p00000gq/T/void-release-fBL5Qd/artifacts/prepared-releases/2026-11-07T08-36-44.954Z-pcBbv6
+Release preparation failed: /var/folders/5x/92_br_c51191x_mqv5grk7p00000gq/T/void-release-tvFLQI/artifacts/prepared-releases/2026-11-07T08-36-45.453Z-qapuUa
+Release preparation failed: /var/folders/5x/92_br_c51191x_mqv5grk7p00000gq/T/void-release-QSmrsU/artifacts/prepared-releases/2026-11-07T08-36-45.799Z-Mjvykn
+Release preparation failed: /var/folders/5x/92_br_c51191x_mqv5grk7p00000gq/T/void-release-7maj0o/artifacts/prepared-releases/2026-11-07T08-36-46.273Z-4Rcgs6
+Release preparation prepared: /var/folders/5x/92_br_c51191x_mqv5grk7p00000gq/T/void-release-lzyNE2/artifacts/prepared-releases/2026-11-07T08-36-46.778Z-Il8dCf
+Release preparation prepared: /var/folders/5x/92_br_c51191x_mqv5grk7p00000gq/T/void-release-OwYoqp/artifacts/prepared-releases/2026-11-07T08-36-47.191Z-w8PE27
+Release preparation prepared: /var/folders/5x/92_br_c51191x_mqv5grk7p00000gq/T/void-release-AQ7f9Q/artifacts/prepared-releases/2026-11-07T08-36-47.851Z-r6t5LC
+Release preparation prepared: /var/folders/5x/92_br_c51191x_mqv5grk7p00000gq/T/void-release-ypvvPT/artifacts/prepared-releases/2026-11-07T08-36-48.281Z-X4mnR7
+Release preparation prepared: /var/folders/5x/92_br_c51191x_mqv5grk7p00000gq/T/void-release-ZVW2pn/artifacts/prepared-releases/2026-11-07T08-36-48.784Z-l98Imv
+✔ invalid production configuration fails before a build and does not echo values (137.156583ms)
+✔ preparation saves the tested build, source identity and original deployment inputs (445.605292ms)
+✔ build failure, missing embedded configuration and source changes cannot prepare a release (1252.319083ms)
+✔ failed browser smoke remains failed evidence (609.959375ms)
+✔ changed, added and deleted artifact files prevent publication (1425.6755ms)
+✔ publication consumes the saved bundle without rebuilding or taking changed source rules (544.624125ms)
+✔ publication failure is recorded separately from successful preparation (446.01825ms)
+✔ quick success is explicitly partial, retains logs and records URLs (643.902375ms)
+✔ a failed stage cannot be hidden by successful-looking output (621.116208ms)
+✔ source mutation invalidates otherwise successful checks (664.958208ms)
+✔ full mode still requires every stage (903.50775ms)
+✔ backend startup and either suite failure remain distinct failures (3750.445208ms)
+✔ a stalled emulator lifecycle is stopped and reported without losing evidence (454.185417ms)
+✔ browser ports have defaults and reject invalid or colliding overrides (2.356625ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7098.21125

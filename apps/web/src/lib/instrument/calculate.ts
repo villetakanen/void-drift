@@ -106,12 +106,20 @@ export type Measure =
 	| "acceleration"
 	| "turn"
 	| "gravity"
-	| "distance";
+	| "distance"
+	| "collection"
+	| "consumption"
+	| "netPower"
+	| "batteryChange";
 /** signed: the measure can go negative, so its axis is symmetric about zero. */
 export const MEASURES: Record<
 	Measure,
 	{ label: string; unit: string; signed: boolean }
 > = {
+	batteryChange: { label: "Battery change", unit: "E", signed: true },
+	collection: { label: "Collection", unit: "E/s", signed: false },
+	consumption: { label: "Consumption", unit: "E/s", signed: false },
+	netPower: { label: "Net charging", unit: "E/s", signed: true },
 	speed: { label: "Speed", unit: "u/s", signed: false },
 	acceleration: { label: "Acceleration", unit: "u/s²", signed: false },
 	turn: { label: "Turn acceleration", unit: "°/s²", signed: true },

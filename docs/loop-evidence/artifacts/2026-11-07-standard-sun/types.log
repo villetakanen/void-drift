@@ -1,0 +1,23 @@
+
+> void-drift-monorepo@0.5.5 check:types /Users/ville.takanen/dev/void-drift
+> pnpm check && pnpm --filter web exec svelte-check --tsconfig ./tsconfig.json --fail-on-warnings && tsc -p tsconfig.check.json
+
+
+> void-drift-monorepo@0.5.5 check /Users/ville.takanen/dev/void-drift
+> pnpm -r check
+
+Scope: 3 of 4 workspace projects
+apps/web check$ astro check --minimumFailingSeverity warning
+apps/web check: 10:36:06 [content] Syncing content
+apps/web check: 10:36:06 [content] Synced content
+apps/web check: 10:36:06 [types] Generated 32ms
+apps/web check: 10:36:06 [check] Getting diagnostics for Astro files in /Users/ville.takanen/dev/void-drift/apps/web...
+apps/web check: Result (213 files): 
+apps/web check: - 0 errors
+apps/web check: - 0 warnings
+apps/web check: - 0 hints
+apps/web check: Done
+Loading svelte-check in workspace: /Users/ville.takanen/dev/void-drift/apps/web
+Getting Svelte diagnostics...
+
+svelte-check found 0 errors and 0 warnings

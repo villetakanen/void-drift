@@ -1,4 +1,5 @@
 <script lang="ts">
+import EnergyPanel from "../instrument/EnergyPanel.svelte";
 import "@void-drift/core/styles/buttons.css";
 import {
 	MASS_WELL_G,
@@ -75,6 +76,7 @@ function load() {
 	}
 }
 </script>
+<EnergyPanel bind:energy={config.energy} />
 
 <section aria-labelledby="gravity-settings">
 	<h4 id="gravity-settings">Settings</h4>

@@ -131,12 +131,13 @@ describe("ship builder contract", () => {
 	});
 	it("uses incoming charge with held controls and cannot thrust on unavailable energy", () => {
 		const sim = simulation();
-		sim.ship.pos.set(980, 540);
+		sim.ship.pos.set(sim.star.pos.x + 280, sim.star.pos.y);
 		sim.state.resources.power = 0;
 		sim.step(both);
 		expect(sim.engineOutput.left).toBeGreaterThan(0);
 		expect(sim.state.resources.power).toBe(0);
 		sim.ship.pos.set(1900, 540);
+		sim.state.resources.power = 0;
 		sim.state.status = "PLAYING";
 		sim.step(both);
 		expect(sim.engineOutput.left).toBe(0);

@@ -10,6 +10,14 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
 	{
+		slug: "suns-2026-11-07",
+		title: "Suns: stellar character in play",
+		status: "accepted",
+		phase: "scope",
+		question:
+			"How should real stars and the game’s fiction shape suns whose character, behaviour and consequences are readable in play?",
+	},
+	{
 		slug: "run-countdown-2026-11-05",
 		title: "Run countdown: three seconds of light",
 		status: "accepted",

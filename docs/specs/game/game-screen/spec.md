@@ -155,3 +155,14 @@ Scenario: Background during arrival
 - [ASDLC Living Specs](https://asdlc.io/practices/living-specs/) and
   [The Spec](https://asdlc.io/patterns/the-spec/) guide the separation of durable
   screen behavior from implementation tasks and independently evolving features.
+
+
+## Standard-Sun field HUD — 2026-11-07
+
+The world layer composes the shared `drawSunFields` renderer with live simulation
+collection and applied Sun-damage rates. The [star contract](../world/star/spec.md)
+owns colours, patterns, fills and the visual 2 CSS px solar inset. Strokes remain
+1 CSS px after both camera transforms and stage scaling; display density changes
+rasterization only. The overlay is painted into the existing canvas and introduces
+no input surface, preserving keyboard and simultaneous landscape touch controls.
+Collection activation is independent of net battery gain or capacity saturation.

@@ -92,7 +92,7 @@ describe("flight contract", () => {
 		s.step(idle);
 		expect(s.wraps).toBe(1);
 	});
-	it("a supplied stronger hull reduces equal star damage", () => {
+	it("standard Sun exposure applies the same hull rate to stock profiles", () => {
 		const settings = stockSettings();
 		const runs = [1, 2].map(
 			(hullMultiplier) =>
@@ -106,7 +106,7 @@ describe("flight contract", () => {
 			sim.ship.pos.set(1040, 540);
 			sim.step(idle);
 		}
-		expect(runs[0].state.resources.hull).toBeLessThan(
+		expect(runs[0].state.resources.hull).toBeCloseTo(
 			runs[1].state.resources.hull,
 		);
 	});

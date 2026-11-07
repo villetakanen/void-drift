@@ -197,7 +197,11 @@ const sampleAt = (track: Track) =>
 					cy={sy(c.y)}
 					r={body.reach * view.s}
 					fill="none"
-					class={body.kind === "well" ? "reach lab" : "reach"}
+					class={body.kind === "well"
+						? "reach lab"
+						: body.kind === "energy"
+							? "energy-reach"
+							: "reach"}
 				/>
 				{#if body.kind === "well"}
 					{#if body.radius > 0}
@@ -227,7 +231,7 @@ const sampleAt = (track: Track) =>
 							<title>Drag Lab well {body.label}</title>
 						</circle>
 					{/if}
-				{:else}
+				{:else if body.kind !== "energy"}
 					<circle
 						cx={sx(c.x)}
 						cy={sy(c.y)}
@@ -322,6 +326,12 @@ const sampleAt = (track: Track) =>
 </div>
 
 <style>
+.energy-reach {
+	stroke: var(--color-android-green);
+	stroke-width: 1px;
+	vector-effect: non-scaling-stroke;
+	opacity: 0.35;
+}
 /* An instrument display: elevation 2 with scanlines, bezel and black shadow. */
 .pane {
 	position: relative;

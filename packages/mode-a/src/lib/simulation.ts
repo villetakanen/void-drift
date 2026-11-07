@@ -97,6 +97,8 @@ export function labSettings(id: ShipProfileId = "fighter"): FlightSettings {
 	});
 }
 export class Simulation {
+	solarCollectionRate = 0;
+	solarDamageRate = 0;
 	readonly settings: FlightSettings;
 	readonly ship: GameObject = {
 		pos: new Vec2(460, 540),
@@ -208,6 +210,7 @@ export class Simulation {
 		const beforeY = this.ship.pos.y;
 		let delivered = 0;
 		let collected = 0;
+		let solarCollected = 0;
 		let substeps = 0;
 		// Four substeps resolve stronger close passes without changing the replay tick rate.
 		for (let substep = 0; substep < 4; substep++) {
@@ -222,6 +225,8 @@ export class Simulation {
 					this.ship.pos.x - this.star.pos.x,
 					this.ship.pos.y - this.star.pos.y,
 				);
+				solarCollected +=
+					solarCharge(distance, this.star, stats.coils) * (STEP / 4);
 				const supplied =
 					this.state.resources.power +
 					(solarCharge(distance, this.star, stats.coils) - LIFE_SUPPORT_DRAIN) *
@@ -371,13 +376,15 @@ export class Simulation {
 				this.thrust,
 				this.settings.profile.powerDrainMultiplier,
 			);
-		updateHull(
-			this.state.resources,
-			distance,
-			this.star,
-			STEP,
-			this.settings.loadout ? 1 : this.settings.profile.hullMultiplier,
-		);
+		const hullBeforeSun = this.state.resources.hull;
+		updateHull(this.state.resources, distance, this.star, STEP);
+		this.solarCollectionRate = this.settings.loadout
+			? solarCollected / STEP
+			: solarCharge(distance, this.star, 1);
+		this.solarDamageRate =
+			this.settings.mode === "practice"
+				? 0
+				: (hullBeforeSun - this.state.resources.hull) / STEP;
 		if (this.settings.mode === "practice") {
 			this.state.resources.power = this.settings.loadout
 				? buildStats(this.settings.loadout).capacity

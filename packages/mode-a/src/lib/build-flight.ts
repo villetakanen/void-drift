@@ -1,5 +1,5 @@
 import type { GameObject, InputState, Star } from "@void-drift/core";
-import { SURVIVAL_CONFIG } from "@void-drift/core";
+import { solarCollectionRate } from "@void-drift/core";
 import {
 	ASSEMBLED_ION_DEFAULTS,
 	type AssembledIonSettings,
@@ -327,16 +327,7 @@ export function applyBuildEngines(
 	return output;
 }
 export function solarCharge(distance: number, star: Star, coils: number) {
-	const scale = star.radius / 40;
-	const rate =
-		distance < SURVIVAL_CONFIG.POWER_ZONE_1_RADIUS * scale
-			? SURVIVAL_CONFIG.POWER_REGEN_ZONE_1
-			: distance < SURVIVAL_CONFIG.POWER_ZONE_2_RADIUS * scale
-				? SURVIVAL_CONFIG.POWER_REGEN_ZONE_2
-				: distance < SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS * scale
-					? SURVIVAL_CONFIG.POWER_REGEN_ZONE_3
-					: 0;
-	return rate * star.powerMultiplier * coils;
+	return solarCollectionRate(distance, star, coils);
 }
 export function buildDrain(
 	build: Loadout,
@@ -344,33 +335,36 @@ export function buildDrain(
 	spin = 0,
 	dt = 1 / 240,
 	settings: AssembledIonSettings = ASSEMBLED_ION_DEFAULTS,
+	lightIonDrawScale = 1,
 ) {
+	const draw = (id: keyof typeof PARTS) =>
+		PARTS[id].draw * (id === "ion" ? lightIonDrawScale : 1);
 	const burn = stabilizerBurn(build, input, spin, dt, settings);
 	if (build.chassis === "fiddler") {
 		const drive = fiddlerDrive(build, input, burn);
 		return (
 			LIFE_SUPPORT_DRAIN +
-			(drive[0] + drive[1]) * PARTS[build.side].draw +
+			(drive[0] + drive[1]) * draw(build.side) +
 			build.aft.reduce(
-				(sum, id, index) => sum + (id ? PARTS[id].draw * drive[index] : 0),
+				(sum, id, index) => sum + (id ? draw(id) * drive[index] : 0),
 				0,
 			) +
-			burn.duty * STABILIZER_ENERGY * PARTS.ion.draw
+			burn.duty * STABILIZER_ENERGY * draw("ion")
 		);
 	}
 	const count = Number(input.leftThruster) + Number(input.rightThruster);
 	const isWasp = build.chassis === "wasp";
 	const sideDraw = isWasp
 		? count === 2
-			? PARTS[build.side].draw
+			? draw(build.side)
 			: 0
-		: count * PARTS[build.side].draw;
+		: count * draw(build.side);
 	return (
 		LIFE_SUPPORT_DRAIN +
 		sideDraw +
-		burn.duty * STABILIZER_ENERGY * PARTS.ion.draw +
+		burn.duty * STABILIZER_ENERGY * draw("ion") +
 		((build.linkedEngines ? count > 0 : count === 2)
-			? build.aft.reduce((sum, id) => sum + (id ? PARTS[id].draw : 0), 0)
+			? build.aft.reduce((sum, id) => sum + (id ? draw(id) : 0), 0)
 			: 0)
 	);
 }

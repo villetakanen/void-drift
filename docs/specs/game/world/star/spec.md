@@ -1,216 +1,69 @@
-# Feature: Star Entity & Mechanics
+# Standard Sun
 
-**Status:** ✅ COMPLETED (2024)  
-**Current Version:** 0.0.4
+## Intent
 
-## Blueprint
+A steady G Sun offers collectable energy inside its gravitational well. The
+pilot trades income against the pull, exposure and terminal contact. Other
+stellar families and Sun artwork/effect redesign are deferred. The accepted
+[study](../../../../../apps/web/src/pages/lab/studies/suns-2026-11-07.astro)
+retains experiments; the [closure](../../../../loop-evidence/2026-11-07-suns-closure.md)
+records acceptance, not production validation.
 
-### Context
+## Architecture
 
-The **Star** acts as the central anchor of the arena. It provides both a lethal hazard (collision) and a strategic mechanic (gravity slingshot). Its visual representation must convey "heat" and "danger" without interfering with the readability of the game state.
-
-**Achievement:** Central star with gravity well and procedural pulsing animation operational at arena center.
-
-### Architecture
-
-- **Data Model:**
-
-  ```typescript
-  interface Star {
-    x: number;
-    y: number;
-    radius: number;       // Collision Radius
-    influenceRadius: number; // Gravity effective range
-    color: string;
-  }
-  ```
-- **Gravity:** the star's pull and reach are specified in [gravity-field.md](gravity-field.md).
-- **Render API:** `drawStar(ctx: CanvasRenderingContext2D, star: Star, time: number)` (implemented in `packages/core/src/lib/assets/star.ts`)
-
-### Anti-Patterns
-
-- **Do NOT** use DOM elements (e.g., `<div>`) for the star; it must be drawn on the active Canvas.
-- **Do NOT** apply gravity globally; it must be range-limited (`influenceRadius`) to prevent chaos.
-- **Do NOT** use static sprites; the star must pulse to feel "alive".
+- `SUN_CONFIG.G` supplies the radius-35 body and existing artwork. Production
+  simulation and the decorative landing system both select G.
+- `packages/core/src/lib/solar.ts` owns centre-distance field profiles.
+  `EnergyFieldSchema` validates independent reach, shoulder, peak and outer
+  fraction. `solarField` uses the existing gravity reach (about 324 u).
+- `solarCollectionRate` supplies both stock `updatePower` and assembled
+  `solarCharge`. Every ship has one inherent collector-equivalent; each fitted
+  solar collector adds one. No fitting, unlock or slot is needed for the baseline.
+- `solarDamageRate` supplies `updateHull`. All production ships use the direct field damage rate. Terminal contact
+  and ship collision geometry remain unchanged.
+- `drawSunFields` is the shared world-anchored HUD renderer. The production
+  `FlightDeck` and Suns Lab live Wasp reference consume simulation effect rates.
+  The historical `SunHudPreview` forces comparison states and is not live play.
+- [Gravity](../gravity-field/spec.md) retains its force, mass, reach and cutoff.
+  There is no new gravity or friction tuning.
 
 ## Contract
 
-### Definition of Done
+Distances are measured from the centre, in world units.
 
-- [x] Star renders with a solid core and pulsing outer rings.
-- [x] Gravity force vector is applied to the Ship when within `influenceRadius`.
-- [x] Star positioned at arena center (960, 540 in logical coordinates).
-- [x] Ship responds to gravity pull (inverse square law).
+| Quantity                          | Through radius 55 | Beyond the shoulder                 | Outside reach |
+| --------------------------------- | ----------------- | ----------------------------------- | ------------- |
+| Collection / collector-equivalent | 7.5 E/s           | Linear to 0.75 E/s at gravity reach | Zero          |
+| Exposure                          | 1.5 hull/s        | Linear to zero at radius 100        | Zero          |
 
-### Regression Guardrails
+The shoulder extends 20 u beyond the radius-35 surface. The exact collection
+boundary includes its 0.75 E/s edge; gravity retains its existing exclusive cutoff.
+Capacity saturation wastes supply. Collection is gross incoming energy, not net
+battery gain. Stored energy and depleted propulsion retain production feedback.
+Life support is 0.8 E/s; Light ion is 1.0 E/s per fully firing physical engine.
+Other engine-family draw, thrust, handling and collisions remain unchanged.
 
-- **FPS:** The pulse animation must not degrade performance (zero object allocation per frame).
-- **Determinism:** Gravity calculation must use fixed-step delta time (if possible) or be robust to frame-rate variance.
+### HUD
 
-### Scenarios
+- Gravity: dim Android green, dashed 5/5 CSS px.
+- Solar: dim solid Android green; full brightness and 3.3% green fill while
+  actual collection is positive, including at capacity and during net drain.
+- Hazard: dotted 1/4 CSS px, round caps, amber at 60% opacity while inactive;
+  red with 11% red fill when Sun damage is actually applied.
+- Inactive green opacity is 35%. Every stroke is 1 CSS px at every zoom and
+  display density. Dash dimensions also remain in screen space.
+- Coincident visible outer boundaries draw solar 2 CSS px inward. Neither
+  physical field changes reach. Artwork and decorative pulses are separate.
+- Practice retains its resource protection: it cannot claim applied hull damage.
 
-**Scenario: Gravity Pull** ✅
-- Given the Ship is motionless at distance `d < influenceRadius`
-- When the physics loop ticks
-- Then the Ship's velocity changes towards the Star's center
-- And the speed increases over time
-- **Status:** VERIFIED - Gravity well functional
+### Verification scenarios
 
-**Scenario: Safety Zone** ✅
-- Given the Ship is at distance `d > influenceRadius`
-- When the physics loop ticks
-- Then no external force is applied from the Star
-- **Status:** VERIFIED - Influence radius properly limits gravity
-
-**Scenario: Visual Animation** ✅
-- Given the Star is rendered each frame
-- When time progresses
-- Then the outer rings pulse smoothly
-- And the animation uses Math.sin for smooth oscillation
-- **Status:** VERIFIED - Pulsing effect operational
-
-## Current Implementation
-
-### Star Data Structure
-
-```typescript
-interface Star {
-	pos: Vec2; // Position (960, 540 - arena center)
-	radius: number; // Visual/collision radius (varies by type)
-	influenceRadius: number; // Gravity range (varies by type)
-	mass: number; // Gravitational mass (varies by type)
-	color: string; // Color based on sun type
-	type: SunType; // RED_GIANT | YELLOW_DWARF | BLUE_DWARF
-}
-
-type SunType = "RED_GIANT" | "YELLOW_DWARF" | "BLUE_DWARF";
-```
-
-### Sun Type System
-
-The sun type determines visual appearance and gameplay characteristics.
-
-**Config Location:** `packages/core/src/lib/config.ts`
-
-```typescript
-// Schema definition
-interface SunTypeConfig {
-  radius: number;           // Visual/collision radius
-  influenceRadius: number;  // Gravity effective range
-  mass: number;             // Gravitational pull strength
-  color: string;            // Core color hex
-  powerMultiplier: number;  // Fuel regen rate multiplier (1.0 = baseline)
-  burnMultiplier: number;   // Hull damage rate multiplier (1.0 = baseline)
-}
-
-// Config structure
-export const SUN_CONFIG = {
-  RED_GIANT: {
-    radius: /* tunable */,
-    influenceRadius: /* tunable */,
-    mass: /* tunable */,
-    color: /* tunable */,
-    powerMultiplier: /* tunable, < 1.0 */,
-    burnMultiplier: /* tunable, < 1.0 */,
-  },
-  YELLOW_DWARF: {
-    radius: /* tunable */,
-    influenceRadius: /* tunable */,
-    mass: /* tunable */,
-    color: /* tunable */,
-    powerMultiplier: 1.0,  // Baseline reference
-    burnMultiplier: 1.0,   // Baseline reference
-  },
-  BLUE_DWARF: {
-    radius: /* tunable */,
-    influenceRadius: /* tunable */,
-    mass: /* tunable */,
-    color: /* tunable */,
-    powerMultiplier: /* tunable, > 1.0 */,
-    burnMultiplier: /* tunable, > 1.0 */,
-  },
-} as const;
-```
-
-### Sun Type Gameplay Effects
-
-| Sun Type     | Size   | Gravity | Fuel Regen    | Hull Burn     | Difficulty |
-| ------------ | ------ | ------- | ------------- | ------------- | ---------- |
-| Red Giant    | Large  | Low     | Slow          | Low           | Easy       |
-| Yellow Dwarf | Medium | Medium  | Normal (1.0x) | Normal (1.0x) | Medium     |
-| Blue Dwarf   | Small  | High    | Fast          | High          | Hard       |
-
-**Design Intent:**
-- Red Giant: Forgiving, good for learning mechanics
-- Yellow Dwarf: Baseline difficulty, balanced risk/reward
-- Blue Dwarf: High risk/high reward, for skilled players
-
-### Random Sun Selection
-
-At game start, a random sun type is selected:
-```typescript
-function getRandomSunType(): SunType {
-	const types: SunType[] = ["RED_GIANT", "YELLOW_DWARF", "BLUE_DWARF"];
-	return types[Math.floor(Math.random() * types.length)];
-}
-```
-
-### Lab Integration
-
-The Lab must display the current sun configuration:
-- Sun type name
-- Radius, mass, influence radius
-- Power/burn multipliers
-- Visual preview with correct color and size
-
-### Rendering (`packages/core/src/lib/assets/star.ts`)
-
-- **Core:** Solid circle using star color
-- **Glow Layers:** 3 concentric circles with decreasing opacity
-- **Fuel Zone:** Faint dashed circle at fuel regen threshold
-- **Animation:** Outer rings pulse using `Math.sin(time * 2)` for breathing effect
-- **Blend Mode:** `lighter` for additive glow effect
-- **Performance:** Zero allocations per frame (reuses colors/radii)
-
-### Physics (`packages/core/src/lib/physics/Physics.ts`)
-
-- **Gravity:** [gravity-field.md](gravity-field.md#the-pull).
-
-### Visual Properties
-
-- **Color:** Warm orange (#ffaa00) to convey heat
-- **Pulse Speed:** 2 rad/s (completes cycle every π seconds)
-- **Glow Radius:** 3 layers at 1.5x, 2x, 2.5x core radius
-- **Opacity:** Core 1.0, layers 0.3, 0.2, 0.1
-
-### Integration
-
-- **Location:** Always at arena center `(960, 540)` in logical viewport
-- **Camera:** Star position used as fallback center for camera bounds
-- **Starfield:** Background stars provide depth cues around the central star
-
-## Performance Characteristics
-
-- **Render Time:** ~0.2ms per frame (4 circle draws + blend mode)
-- **Physics Time:** ~0.1ms per frame (distance calculation + force vector)
-- **Memory:** Zero allocations (no temporary objects created)
-
-## Known Limitations
-
-- **Collision:** Ship does not explode on contact (death mechanic not yet implemented)
-- **Debug Overlay:** Influence radius circle not visualized (future enhancement)
-- **Multiple Stars:** System designed for single star (no multi-body physics)
-
-## Future Enhancements
-
-- [ ] Add binary star systems (two orbiting stars)
-- [ ] Add solar flare particle effects
-- [ ] Add death/respawn mechanic on collision
-- [ ] Add corona shader effect for more dramatic visuals
-- [ ] Add debug mode to visualize influence radius
-
----
-
-**Star System Status: OPERATIONAL** ⭐  
-**Location:** Arena center (960, 540)  
-**Gravity:** see [gravity-field.md](gravity-field.md)
+- Profile values at 35, 55, midpoint, exact edge and immediately outside it.
+- Every chassis: starter/default/unfitted baseline plus additive fitted collectors;
+  legacy stock collection without equipment.
+- Full battery, net-draining collection, depleted reserves, lethal contact,
+  applied exposure and undamaged flight beyond 100.
+- Shared HUD stroke/dash/inset geometry across camera scales, CSS canvas sizes
+  and display density; actual collection and damage activation.
+- Lab inspected at 1280 px or wider. Human flight assessment is separate from
+  automated mechanics and presentation checks.

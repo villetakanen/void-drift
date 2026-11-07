@@ -1,5 +1,22 @@
 # Feature: Survival Core (Mode A Gameplay)
 
+## Current standard-Sun resource contract — 2026-11-07
+
+The [standard Sun](../world/star/spec.md) owns the current collection and exposure
+profiles. These supersede the stepped zones and old consumption examples in the
+legacy implementation material below. Life support is exactly 0.8 E/s for every
+ship; Light ion draw is 1.0 E/s per firing engine, with existing steering duty.
+The legacy stock profile multiplier applies only to propulsion draw.
+Every ship inherently collects one solar equivalent; fitted collectors add.
+Assemblies retain their actual fitted energy capacity, stock ships retain 100 E,
+and both clamp stored energy and preserve depletion/death and collision behavior.
+Gross collection remains active at saturation and during net battery drain.
+Practice's explicit resource protection remains distinct from Survival.
+
+The remainder preserves earlier implementation examples and evidence; its old
+Sun zones, costs and completion claims do not establish current verification.
+
+
 **Status:** ✅ COMPLETE  
 **Version:** v0.1.0  
 **Phase:** 5 (Survival Core)

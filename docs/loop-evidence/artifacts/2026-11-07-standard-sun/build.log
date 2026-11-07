@@ -1,0 +1,403 @@
+
+> void-drift-monorepo@0.5.5 build /Users/ville.takanen/dev/void-drift
+> pnpm --filter web build
+
+
+> web@0.5.5 build /Users/ville.takanen/dev/void-drift/apps/web
+> astro build
+
+10:36:44 [vite] Forced re-optimization of dependencies
+10:36:44 [content] Syncing content
+10:36:44 [content] Synced content
+10:36:44 [types] Generated 115ms
+10:36:44 [build] output: "static"
+10:36:44 [build] mode: "static"
+10:36:44 [build] directory: /Users/ville.takanen/dev/void-drift/apps/web/dist/
+10:36:44 [build] Collecting build info...
+10:36:44 [build] ✓ Completed in 134ms.
+10:36:44 [build] Building static entrypoints...
+10:36:49 [vite] ✓ built in 4.82s
+10:36:49 [build] ✓ Completed in 4.84s.
+
+ building client (vite) 
+10:36:49 [vite] transforming...
+10:36:52 [vite] ✓ 640 modules transformed.
+10:36:52 [vite] rendering chunks...
+10:36:53 [vite] computing gzip size...
+10:36:53 [vite] dist/_astro/instrument-parts.CXgjS0Vk.css                                           0.10 kB │ gzip:   0.11 kB
+10:36:53 [vite] dist/_astro/derelict-draft-two-2026-11-06.giZ35Mi_.css                              0.17 kB │ gzip:   0.14 kB
+10:36:53 [vite] dist/_astro/gravity-tuning.oBtNe6j-.css                                             0.42 kB │ gzip:   0.23 kB
+10:36:53 [vite] dist/_astro/fx.DpCMqbG1.css                                                         0.44 kB │ gzip:   0.24 kB
+10:36:53 [vite] dist/_astro/star.CqMD1H68.css                                                       0.60 kB │ gzip:   0.29 kB
+10:36:53 [vite] dist/_astro/ion-engines.CmwIhZtf.css                                                0.61 kB │ gzip:   0.30 kB
+10:36:53 [vite] dist/_astro/ion-engines.Bws904Fi.css                                                0.61 kB │ gzip:   0.30 kB
+10:36:53 [vite] dist/_astro/graphs.DzOfse98.css                                                     0.69 kB │ gzip:   0.30 kB
+10:36:53 [vite] dist/_astro/gravity-tuning.DHVOHm_o.css                                             0.90 kB │ gzip:   0.39 kB
+10:36:53 [vite] dist/_astro/gravity-coil-2026-11-03.CJdq2Y_s.css                                    0.90 kB │ gzip:   0.41 kB
+10:36:53 [vite] dist/_astro/instrument-parts.eS1Fda5-.css                                           1.02 kB │ gzip:   0.45 kB
+10:36:53 [vite] dist/_astro/ship-utility-language-2026-11-02.Bj7RxIP_.css                           1.05 kB │ gzip:   0.40 kB
+10:36:53 [vite] dist/_astro/gilded-surfaces-2026-11-03.Bow3tbmU.css                                 1.07 kB │ gzip:   0.36 kB
+10:36:53 [vite] dist/_astro/base-movement-ion.TDhdsJuR.css                                          1.08 kB │ gzip:   0.35 kB
+10:36:53 [vite] dist/_astro/buttons.DyOqVweD.css                                                    1.15 kB │ gzip:   0.42 kB
+10:36:53 [vite] dist/_astro/instrument-parts.DCDiTBlz.css                                           1.18 kB │ gzip:   0.49 kB
+10:36:53 [vite] dist/_astro/tokens.DpX6rMkP.css                                                     1.21 kB │ gzip:   0.45 kB
+10:36:53 [vite] dist/_astro/run-countdown-2026-11-05.Cru7fx9T.css                                   1.30 kB │ gzip:   0.45 kB
+10:36:53 [vite] dist/_astro/ion-engines-2026-10-31.tT3k-aFZ.css                                     1.68 kB │ gzip:   0.41 kB
+10:36:53 [vite] dist/_astro/leaderboard.CzxM05ET.css                                                1.77 kB │ gzip:   0.59 kB
+10:36:53 [vite] dist/_astro/graphs.B6b81oqN.css                                                     1.81 kB │ gzip:   0.71 kB
+10:36:53 [vite] dist/_astro/gravity-wells.CjuEbN7R.css                                              1.86 kB │ gzip:   0.50 kB
+10:36:53 [vite] dist/_astro/ion-ceiling-rules.BDQJfoj_.css                                          1.88 kB │ gzip:   0.58 kB
+10:36:53 [vite] dist/_astro/lab-instrument-2026-11-01.xYDkTXGl.css                                  1.92 kB │ gzip:   0.60 kB
+10:36:53 [vite] dist/_astro/derelict-three-2026-11-06.V1VM8ExX.css                                  1.99 kB │ gzip:   0.37 kB
+10:36:53 [vite] dist/_astro/gravity-coil-form-2026-11-03.arErTw-7.css                               2.08 kB │ gzip:   0.73 kB
+10:36:53 [vite] dist/_astro/gravity-tuning.CTAoUNYX.css                                             2.16 kB │ gzip:   0.65 kB
+10:36:53 [vite] dist/_astro/scout-firefly.p7pFBqke.css                                              2.17 kB │ gzip:   0.73 kB
+10:36:53 [vite] dist/_astro/heavy-cruiser-slots.__BummUg.css                                        2.21 kB │ gzip:   0.74 kB
+10:36:53 [vite] dist/_astro/base-movement-ion.Dld8JRFS.css                                          2.35 kB │ gzip:   0.68 kB
+10:36:53 [vite] dist/_astro/ship-slot-language.CsfmvgCl.css                                         2.47 kB │ gzip:   0.74 kB
+10:36:53 [vite] dist/_astro/plasma-behaviour-2026-11-01.BkyXbcmr.css                                2.48 kB │ gzip:   0.77 kB
+10:36:53 [vite] dist/_astro/graphs.BSPx8fxa.css                                                     2.54 kB │ gzip:   0.78 kB
+10:36:53 [vite] dist/_astro/engine-effects.SfAWHg50.css                                             2.70 kB │ gzip:   0.57 kB
+10:36:53 [vite] dist/_astro/suns-2026-11-07.G5E_SZpH.css                                            2.82 kB │ gzip:   0.96 kB
+10:36:53 [vite] dist/_astro/surfaces.CCTiNWto.css                                                   3.05 kB │ gzip:   0.92 kB
+10:36:53 [vite] dist/_astro/mount-planner.D1cja9J0.css                                              3.37 kB │ gzip:   0.98 kB
+10:36:53 [vite] dist/_astro/star.CyBUR2w7.css                                                       3.54 kB │ gzip:   1.04 kB
+10:36:53 [vite] dist/_astro/engine-identities.CgQFxXXO.css                                          4.09 kB │ gzip:   0.88 kB
+10:36:53 [vite] dist/_astro/gravity-coil-fx-2026-11-03.kR9_O7gs.css                                 4.24 kB │ gzip:   0.81 kB
+10:36:53 [vite] dist/_astro/path-instrument-2026-11-01.CqYzXgDF.css                                 4.37 kB │ gzip:   1.04 kB
+10:36:53 [vite] dist/_astro/ShipBuilder.BbNAoNTl.css                                                5.36 kB │ gzip:   1.40 kB
+10:36:53 [vite] dist/_astro/lhi-wasp.CyCb3gV-.css                                                   8.08 kB │ gzip:   1.93 kB
+10:36:53 [vite] dist/_astro/in-game-controllers.C1MgAZWB.css                                        8.52 kB │ gzip:   1.44 kB
+10:36:53 [vite] dist/_astro/lhi-fiddler-2026-11-03.D0SwWZf_.css                                    18.86 kB │ gzip:   2.82 kB
+10:36:53 [vite] dist/_astro/lab-instrument-2026-11-01.Clf3HBPf.css                                 34.56 kB │ gzip:   5.21 kB
+10:36:53 [vite] dist/_astro/package.CsTzPfs1.js                                                     0.03 kB │ gzip:   0.05 kB
+10:36:53 [vite] dist/_astro/legacy.CAojB-mX.js                                                      0.05 kB │ gzip:   0.07 kB
+10:36:53 [vite] dist/_astro/resources-state.svelte.BZ9QzAHp.js                                      0.10 kB │ gzip:   0.11 kB
+10:36:53 [vite] dist/_astro/ship-state.svelte.Rn6eC97Y.js                                           0.12 kB │ gzip:   0.14 kB
+10:36:53 [vite] dist/_astro/typography.BQ9aKCIi.js                                                  0.30 kB │ gzip:   0.23 kB
+10:36:53 [vite] dist/_astro/this.BzZJpGv8.js                                                        0.31 kB │ gzip:   0.23 kB
+10:36:53 [vite] dist/_astro/wasp-side.Dok_lDKL.js                                                   0.32 kB │ gzip:   0.25 kB
+10:36:53 [vite] dist/_astro/index-client.B0eVG_bc.js                                                0.33 kB │ gzip:   0.26 kB
+10:36:53 [vite] dist/_astro/if.BN4scLhP.js                                                          0.39 kB │ gzip:   0.29 kB
+10:36:53 [vite] dist/_astro/UtilityArtwork.astro_astro_type_script_index_0_lang.CyNy7Rpc.js         0.40 kB │ gzip:   0.30 kB
+10:36:53 [vite] dist/_astro/class.pfNcLMOY.js                                                       0.42 kB │ gzip:   0.29 kB
+10:36:53 [vite] dist/_astro/snippet.Ds91_Vsx.js                                                     0.43 kB │ gzip:   0.31 kB
+10:36:53 [vite] dist/_astro/planet-state.svelte.Dpddiny5.js                                         0.44 kB │ gzip:   0.30 kB
+10:36:53 [vite] dist/_astro/ship.Dxx5J1rA.js                                                        0.48 kB │ gzip:   0.27 kB
+10:36:53 [vite] dist/_astro/style.C3GlNFL9.js                                                       0.49 kB │ gzip:   0.32 kB
+10:36:53 [vite] dist/_astro/colors.C4hIuF-_.js                                                      0.49 kB │ gzip:   0.28 kB
+10:36:53 [vite] dist/_astro/planet.CXan_BiD.js                                                      0.50 kB │ gzip:   0.29 kB
+10:36:53 [vite] dist/_astro/Controls.DTYhNQhi.js                                                    0.51 kB │ gzip:   0.34 kB
+10:36:53 [vite] dist/_astro/stabilizer-art.DKp3xFpk.js                                              0.52 kB │ gzip:   0.29 kB
+10:36:53 [vite] dist/_astro/lifecycle.D_OExYfO.js                                                   0.53 kB │ gzip:   0.34 kB
+10:36:53 [vite] dist/_astro/instrument-example.BigwlUa9.js                                          0.58 kB │ gzip:   0.38 kB
+10:36:53 [vite] dist/_astro/size.xLOkwaUd.js                                                        0.60 kB │ gzip:   0.36 kB
+10:36:53 [vite] dist/_astro/star.Dh5x4Cwj.js                                                        0.60 kB │ gzip:   0.39 kB
+10:36:53 [vite] dist/_astro/GravityCoilFleet.astro_astro_type_script_index_0_lang.BlrGX5Lk.js       0.64 kB │ gzip:   0.44 kB
+10:36:53 [vite] dist/_astro/Canvas.BDTYSy5T.js                                                      0.72 kB │ gzip:   0.46 kB
+10:36:53 [vite] dist/_astro/sun-fields.CYfJNbd2.js                                                  0.73 kB │ gzip:   0.47 kB
+10:36:53 [vite] dist/_astro/clone.eXi4MNDH.js                                                       0.76 kB │ gzip:   0.42 kB
+10:36:53 [vite] dist/_astro/Switch.DRpp3mgO.js                                                      0.77 kB │ gzip:   0.45 kB
+10:36:53 [vite] dist/_astro/engine-placement.Jx7kHjGW.js                                            0.79 kB │ gzip:   0.44 kB
+10:36:53 [vite] dist/_astro/burns.juv7ImD8.js                                                       0.82 kB │ gzip:   0.47 kB
+10:36:53 [vite] dist/_astro/LabStats.Dokcz2je.js                                                    0.85 kB │ gzip:   0.48 kB
+10:36:53 [vite] dist/_astro/PathViewDemo.NHLL20fV.js                                                0.86 kB │ gzip:   0.47 kB
+10:36:53 [vite] dist/_astro/select.151PJoqy.js                                                      1.02 kB │ gzip:   0.59 kB
+10:36:53 [vite] dist/_astro/client.svelte.aVKxUuzS.js                                               1.04 kB │ gzip:   0.58 kB
+10:36:53 [vite] dist/_astro/lab-instrument.BmLmdQII.js                                              1.04 kB │ gzip:   0.55 kB
+10:36:53 [vite] dist/_astro/path-instrument.Buk6stnU.js                                             1.05 kB │ gzip:   0.58 kB
+10:36:53 [vite] dist/_astro/GameWrapper.dqN0Of7V.js                                                 1.07 kB │ gzip:   0.55 kB
+10:36:53 [vite] dist/_astro/flight.VLmh4aEz.js                                                      1.10 kB │ gzip:   0.59 kB
+10:36:53 [vite] dist/_astro/LabResourcesInspector.CM1-jyNb.js                                       1.19 kB │ gzip:   0.61 kB
+10:36:53 [vite] dist/_astro/OptionToggle.CptqzvN3.js                                                1.21 kB │ gzip:   0.73 kB
+10:36:53 [vite] dist/_astro/attributes.NPFBN_kN.js                                                  1.23 kB │ gzip:   0.67 kB
+10:36:53 [vite] dist/_astro/LabShipMain.BRqWPuvj.js                                                 1.24 kB │ gzip:   0.73 kB
+10:36:53 [vite] dist/_astro/events.D7_emZsx.js                                                      1.36 kB │ gzip:   0.80 kB
+10:36:53 [vite] dist/_astro/PotentialWellSizing.astro_astro_type_script_index_0_lang.GTwLQjaa.js    1.38 kB │ gzip:   0.75 kB
+10:36:53 [vite] dist/_astro/movement-bench.DMPHSeK8.js                                              1.45 kB │ gzip:   0.79 kB
+10:36:53 [vite] dist/_astro/RingSlider.KHlg4F7U.js                                                  1.53 kB │ gzip:   0.82 kB
+10:36:53 [vite] dist/_astro/Toggle.DAsfdOTH.js                                                      1.53 kB │ gzip:   0.86 kB
+10:36:53 [vite] dist/_astro/branches.D-GcB6oe.js                                                    1.54 kB │ gzip:   0.68 kB
+10:36:53 [vite] dist/_astro/BrandSlider.Y2lTmVur.js                                                 1.55 kB │ gzip:   0.82 kB
+10:36:53 [vite] dist/_astro/charging.BGsnNG_a.js                                                    1.58 kB │ gzip:   0.90 kB
+10:36:53 [vite] dist/_astro/Logo.mBOV_Mo5.js                                                        1.61 kB │ gzip:   0.92 kB
+10:36:53 [vite] dist/_astro/props.BgZJlryu.js                                                       1.62 kB │ gzip:   0.87 kB
+10:36:53 [vite] dist/_astro/attributes.q36Eg1F8.js                                                  1.68 kB │ gzip:   0.88 kB
+10:36:53 [vite] dist/_astro/PathToolComparison.Dt7tcpPv.js                                          1.69 kB │ gzip:   0.91 kB
+10:36:53 [vite] dist/_astro/BrandSliderComparison.sUF4AkPK.js                                       1.71 kB │ gzip:   0.88 kB
+10:36:53 [vite] dist/_astro/OverlayPane.DeoL2YR6.js                                                 1.74 kB │ gzip:   0.93 kB
+10:36:53 [vite] dist/_astro/input.B9Qh7Xa8.js                                                       1.77 kB │ gzip:   0.90 kB
+10:36:53 [vite] dist/_astro/Settings.BGsWP8Rg.js                                                    1.77 kB │ gzip:   0.87 kB
+10:36:53 [vite] dist/_astro/InputStrip.K8AJUM62.js                                                  1.83 kB │ gzip:   0.98 kB
+10:36:53 [vite] dist/_astro/salvage-renderer.5DkNQ135.js                                            1.96 kB │ gzip:   0.84 kB
+10:36:53 [vite] dist/_astro/FlightReady.DWY_izeh.js                                                 1.98 kB │ gzip:   1.13 kB
+10:36:53 [vite] dist/_astro/VoidCapacitorMounts.astro_astro_type_script_index_0_lang.jkPB4o-X.js    1.98 kB │ gzip:   0.97 kB
+10:36:53 [vite] dist/_astro/LhiGlass.B6V2jfVX.js                                                    2.10 kB │ gzip:   1.20 kB
+10:36:53 [vite] dist/_astro/settings.9U83ifGa.js                                                    2.12 kB │ gzip:   1.02 kB
+10:36:53 [vite] dist/_astro/BurnStripComparison.DslmyGTN.js                                         2.17 kB │ gzip:   1.11 kB
+10:36:53 [vite] dist/_astro/OptionToggleComparison.DB3j-i5T.js                                      2.25 kB │ gzip:   1.07 kB
+10:36:53 [vite] dist/_astro/lhi-form.DD6fs_bq.js                                                    2.29 kB │ gzip:   0.82 kB
+10:36:53 [vite] dist/_astro/accepted-ion-plume.bDsphgd9.js                                          2.32 kB │ gzip:   1.09 kB
+10:36:53 [vite] dist/_astro/RootPair.qoT_RCl5.js                                                    2.32 kB │ gzip:   1.24 kB
+10:36:53 [vite] dist/_astro/PlacementHandles.B55BXE5u.js                                            2.35 kB │ gzip:   1.19 kB
+10:36:53 [vite] dist/_astro/LabPlanetMain.DT9ODXoZ.js                                               2.36 kB │ gzip:   1.18 kB
+10:36:53 [vite] dist/_astro/Legend.DzAumREK.js                                                      2.43 kB │ gzip:   1.25 kB
+10:36:53 [vite] dist/_astro/ScoutGlass.CMTPPVAT.js                                                  2.44 kB │ gzip:   1.29 kB
+10:36:53 [vite] dist/_astro/gravity-fold-fx.CV_AMuwu.js                                             2.58 kB │ gzip:   1.19 kB
+10:36:53 [vite] dist/_astro/Renderer.DaGbVOFe.js                                                    2.66 kB │ gzip:   1.11 kB
+10:36:53 [vite] dist/_astro/Dialog.B0Q9BuM-.js                                                      2.71 kB │ gzip:   1.31 kB
+10:36:53 [vite] dist/_astro/derelict-renderer.-RQuSfuR.js                                           2.73 kB │ gzip:   1.19 kB
+10:36:53 [vite] dist/_astro/Comparison.Da9uapGX.js                                                  2.79 kB │ gzip:   1.46 kB
+10:36:53 [vite] dist/_astro/EnergyPanel.CxvbnwYg.js                                                 2.80 kB │ gzip:   1.38 kB
+10:36:53 [vite] dist/_astro/DraftBench.C37jTxBK.js                                                  2.84 kB │ gzip:   1.50 kB
+10:36:53 [vite] dist/_astro/lab-instrument-config.DdJKjCOe.js                                       2.93 kB │ gzip:   1.40 kB
+10:36:53 [vite] dist/_astro/AegisGlass.DJNxNqYO.js                                                  3.02 kB │ gzip:   1.51 kB
+10:36:53 [vite] dist/_astro/BladeDrawing.BhTQrhvE.js                                                3.16 kB │ gzip:   1.59 kB
+10:36:53 [vite] dist/_astro/LabDerelict.VuWvE6u8.js                                                 3.16 kB │ gzip:   1.61 kB
+10:36:53 [vite] dist/_astro/LabShipInspector.Bsw1t5Dh.js                                            3.16 kB │ gzip:   1.43 kB
+10:36:53 [vite] dist/_astro/UtilityLanguage.TWcuYL-U.js                                             3.32 kB │ gzip:   1.70 kB
+10:36:53 [vite] dist/_astro/GravityFxOverlap.DQOKBoQ3.js                                            3.52 kB │ gzip:   1.73 kB
+10:36:53 [vite] dist/_astro/Leaderboard.b_IP_s0X.js                                                 3.61 kB │ gzip:   1.73 kB
+10:36:53 [vite] dist/_astro/LabResourcesMain.B5eIXlaB.js                                            3.62 kB │ gzip:   1.43 kB
+10:36:53 [vite] dist/_astro/CapacityStudy.a2epUWm_.js                                               3.64 kB │ gzip:   1.65 kB
+10:36:53 [vite] dist/_astro/MotionInstrumentScreen.D1tRoJBI.js                                      3.67 kB │ gzip:   1.77 kB
+10:36:53 [vite] dist/_astro/each.CyzFDyyX.js                                                        3.84 kB │ gzip:   1.82 kB
+10:36:53 [vite] dist/_astro/NoseSideConstruction.BCm4hLjI.js                                        3.89 kB │ gzip:   1.86 kB
+10:36:53 [vite] dist/_astro/MotionInstrumentParts.B7-j25ri.js                                       3.98 kB │ gzip:   1.98 kB
+10:36:53 [vite] dist/_astro/GravityFxMotion.hKXXK0K-.js                                             4.04 kB │ gzip:   2.07 kB
+10:36:53 [vite] dist/_astro/LabGraphs.4rzudsFT.js                                                   4.04 kB │ gzip:   1.99 kB
+10:36:53 [vite] dist/_astro/UtilityBelonging.BdV5YFn9.js                                            4.06 kB │ gzip:   2.17 kB
+10:36:53 [vite] dist/_astro/Exploration.DUE-Fze7.js                                                 4.10 kB │ gzip:   1.99 kB
+10:36:53 [vite] dist/_astro/EngineEffects.CyfPgPcH.js                                               4.11 kB │ gzip:   2.13 kB
+10:36:53 [vite] dist/_astro/BladeAssembly.DYuSunqK.js                                               4.14 kB │ gzip:   2.00 kB
+10:36:53 [vite] dist/_astro/Camera.DBqaGOoN.js                                                      4.18 kB │ gzip:   1.41 kB
+10:36:53 [vite] dist/_astro/Drawing.B3v9oXkV.js                                                     4.25 kB │ gzip:   2.13 kB
+10:36:53 [vite] dist/_astro/EngineStudy.CnmXAWLS.js                                                 4.36 kB │ gzip:   2.17 kB
+10:36:53 [vite] dist/_astro/LabPlanetInspector.XOMO9A_k.js                                          4.49 kB │ gzip:   1.62 kB
+10:36:53 [vite] dist/_astro/SunFlightBench.CDWgmxKz.js                                              4.54 kB │ gzip:   2.15 kB
+10:36:53 [vite] dist/_astro/IonSizeComparison.DuIIZcL3.js                                           4.55 kB │ gzip:   2.14 kB
+10:36:53 [vite] dist/_astro/render.5sU8Dm7f.js                                                      4.56 kB │ gzip:   2.06 kB
+10:36:53 [vite] dist/_astro/PlumeLifecycle.DGsJy211.js                                              4.65 kB │ gzip:   2.23 kB
+10:36:53 [vite] dist/_astro/GravityFxFizzles.C_4uw4NH.js                                            4.68 kB │ gzip:   2.47 kB
+10:36:53 [vite] dist/_astro/PathTool.B7ZuWjHU.js                                                    4.88 kB │ gzip:   2.30 kB
+10:36:53 [vite] dist/_astro/LabDerelictDamage.B65QxEom.js                                           4.95 kB │ gzip:   2.31 kB
+10:36:53 [vite] dist/_astro/IonSizesAccepted024.DxMD5Wzj.js                                         5.12 kB │ gzip:   2.40 kB
+10:36:53 [vite] dist/_astro/WaspPathComparison.B02hikxs.js                                          5.20 kB │ gzip:   2.41 kB
+10:36:53 [vite] dist/_astro/StabilizerFlight.ChIc0uvz.js                                            5.21 kB │ gzip:   2.44 kB
+10:36:53 [vite] dist/_astro/TailComparison.DE0wuwGW.js                                              5.23 kB │ gzip:   2.52 kB
+10:36:53 [vite] dist/_astro/rotation-bench.Dn6KhyrZ.js                                              5.24 kB │ gzip:   2.32 kB
+10:36:53 [vite] dist/_astro/Progressive.BmTCwYAG.js                                                 5.33 kB │ gzip:   2.70 kB
+10:36:53 [vite] dist/_astro/GravityFoldFlight.DFKQm8-3.js                                           5.33 kB │ gzip:   2.44 kB
+10:36:53 [vite] dist/_astro/config.BtP-ewp3.js                                                      5.44 kB │ gzip:   2.37 kB
+10:36:53 [vite] dist/_astro/GravityCoilFit.azIev4DQ.js                                              5.46 kB │ gzip:   2.57 kB
+10:36:53 [vite] dist/_astro/GravityFoldVisibility.rzXfMEtm.js                                       5.47 kB │ gzip:   2.78 kB
+10:36:53 [vite] dist/_astro/FourEngineStudy.pgjGfgIp.js                                             5.53 kB │ gzip:   2.60 kB
+10:36:53 [vite] dist/_astro/LhiForm.C42Ku-Y5.js                                                     5.56 kB │ gzip:   2.57 kB
+10:36:53 [vite] dist/_astro/TraceGraphsExample.BBdHgdb_.js                                          5.62 kB │ gzip:   2.43 kB
+10:36:53 [vite] dist/_astro/ThrustPlume.RY5ojKsO.js                                                 5.70 kB │ gzip:   2.76 kB
+10:36:53 [vite] dist/_astro/LabInputs.ayfE2TXp.js                                                   5.77 kB │ gzip:   2.36 kB
+10:36:53 [vite] dist/_astro/ChargingStudy.DNoVGnB2.js                                               5.81 kB │ gzip:   2.72 kB
+10:36:53 [vite] dist/_astro/ForceComposition.DoidtSN4.js                                            5.90 kB │ gzip:   2.71 kB
+10:36:53 [vite] dist/_astro/BladeConstruction.B5zuhffj.js                                           5.93 kB │ gzip:   2.72 kB
+10:36:53 [vite] dist/_astro/LabButtons.CLPV3yXn.js                                                  5.95 kB │ gzip:   2.11 kB
+10:36:53 [vite] dist/_astro/ShipTuning.C8Lird5r.js                                                  6.05 kB │ gzip:   2.77 kB
+10:36:53 [vite] dist/_astro/SunHudPreview.CP1PjHBe.js                                               6.11 kB │ gzip:   2.70 kB
+10:36:53 [vite] dist/_astro/StabilizerStudy.CN4Ql2F2.js                                             6.14 kB │ gzip:   2.75 kB
+10:36:53 [vite] dist/_astro/Damage.BDUHtGvS.js                                                      6.16 kB │ gzip:   3.10 kB
+10:36:53 [vite] dist/_astro/WindowStudy.CEFggE0N.js                                                 6.34 kB │ gzip:   2.99 kB
+10:36:53 [vite] dist/_astro/CapacityDrawing.B4_e5h0F.js                                             6.65 kB │ gzip:   2.70 kB
+10:36:53 [vite] dist/_astro/ShardMotion.Dhy9rNc5.js                                                 6.67 kB │ gzip:   3.33 kB
+10:36:53 [vite] dist/_astro/PathToolComparison028.g3CH-gYJ.js                                       6.74 kB │ gzip:   3.17 kB
+10:36:53 [vite] dist/_astro/PlanetEncounter.Dg5stPj_.js                                             6.84 kB │ gzip:   3.15 kB
+10:36:53 [vite] dist/_astro/path-fixtures.C-3s-Z_v.js                                               6.86 kB │ gzip:   2.97 kB
+10:36:53 [vite] dist/_astro/LabTypographyMain.C1N9CAuc.js                                           6.97 kB │ gzip:   2.73 kB
+10:36:53 [vite] dist/_astro/IonStreamStudy.Ebqi1IH9.js                                              6.99 kB │ gzip:   3.25 kB
+10:36:53 [vite] dist/_astro/IonFxAccepted023.DNwY85qz.js                                            7.04 kB │ gzip:   3.27 kB
+10:36:53 [vite] dist/_astro/CorvetteVolume.C9omTUNw.js                                              7.33 kB │ gzip:   3.43 kB
+10:36:53 [vite] dist/_astro/FighterStabilizerLook.Cf4-7Tnh.js                                       7.42 kB │ gzip:   3.32 kB
+10:36:53 [vite] dist/_astro/InstrumentView.Bmb-bbDQ.js                                              7.62 kB │ gzip:   3.19 kB
+10:36:53 [vite] dist/_astro/ButtonStudy.BYPrOP80.js                                                 7.82 kB │ gzip:   3.18 kB
+10:36:53 [vite] dist/_astro/LabSurfaces.D85gvjqT.js                                                 7.83 kB │ gzip:   3.17 kB
+10:36:53 [vite] dist/_astro/EngineSurfacePlayground.UzvZcxcT.js                                     8.09 kB │ gzip:   3.29 kB
+10:36:53 [vite] dist/_astro/FxBench.4FGybSGn.js                                                     8.12 kB │ gzip:   3.57 kB
+10:36:53 [vite] dist/_astro/FleetSizing.PlsJCUYN.js                                                 8.20 kB │ gzip:   3.77 kB
+10:36:53 [vite] dist/_astro/LongBevelPlacement.Cil3MqhD.js                                          8.22 kB │ gzip:   3.44 kB
+10:36:53 [vite] dist/_astro/EngineSlotPlayground.nHOp6IWG.js                                        8.50 kB │ gzip:   3.60 kB
+10:36:53 [vite] dist/_astro/PincerSlotStudy.B-xN-RZR.js                                             8.50 kB │ gzip:   3.70 kB
+10:36:53 [vite] dist/_astro/RunCountdown.CdpwsWbb.js                                                8.63 kB │ gzip:   3.52 kB
+10:36:53 [vite] dist/_astro/GravityTuning.DjHsa7F5.js                                               9.00 kB │ gzip:   3.88 kB
+10:36:53 [vite] dist/_astro/GravityEncounter.DoWzPGim.js                                            9.18 kB │ gzip:   4.14 kB
+10:36:53 [vite] dist/_astro/PlasmaEscape.CA_88eQz.js                                                9.22 kB │ gzip:   4.22 kB
+10:36:53 [vite] dist/_astro/ScoutTridentPlacement.4H_lQbGx.js                                       9.49 kB │ gzip:   3.59 kB
+10:36:53 [vite] dist/_astro/LabTokens.Bf8eoaS1.js                                                   9.70 kB │ gzip:   3.38 kB
+10:36:53 [vite] dist/_astro/PathTraceDemo.Dv-VM83v.js                                               9.76 kB │ gzip:   3.93 kB
+10:36:53 [vite] dist/_astro/CeilingRulesReference.CpHTaI9L.js                                       9.99 kB │ gzip:   4.39 kB
+10:36:53 [vite] dist/_astro/SlotStates.BpgDk8aT.js                                                 10.99 kB │ gzip:   4.42 kB
+10:36:53 [vite] dist/_astro/EngineSlotHighlights.CPf3nSof.js                                       11.75 kB │ gzip:   4.37 kB
+10:36:53 [vite] dist/_astro/TimeGraph.1MSYpLxJ.js                                                  12.59 kB │ gzip:   4.94 kB
+10:36:53 [vite] dist/_astro/WaspFlightDemo.BHfc7RJ1.js                                             12.67 kB │ gzip:   4.90 kB
+10:36:53 [vite] dist/_astro/ControllerGeometryBench.BRd-ikv1.js                                    13.27 kB │ gzip:   4.69 kB
+10:36:53 [vite] dist/_astro/WaspSideSlotPositioner.D98MuC0A.js                                     14.08 kB │ gzip:   5.32 kB
+10:36:53 [vite] dist/_astro/LabInstrument021.jE3_QuRL.js                                           14.36 kB │ gzip:   5.38 kB
+10:36:53 [vite] dist/_astro/MountPlanner.D7KB-oXm.js                                               14.49 kB │ gzip:   5.88 kB
+10:36:53 [vite] dist/_astro/StageMarginBench.Crtm3AWa.js                                           17.23 kB │ gzip:   5.32 kB
+10:36:53 [vite] dist/_astro/LabInstrumentConfigDemo023.BwtCnkJf.js                                 18.49 kB │ gzip:   7.42 kB
+10:36:53 [vite] dist/_astro/ShipBuilder.Dha_9NDI.js                                                18.71 kB │ gzip:   7.45 kB
+10:36:53 [vite] dist/_astro/LabInstrumentConfigDemo027.DQtLIGMV.js                                 18.92 kB │ gzip:   7.78 kB
+10:36:53 [vite] dist/_astro/MovementBench.DrF9uph6.js                                              19.32 kB │ gzip:   7.91 kB
+10:36:53 [vite] dist/_astro/template.BzvQKJ-E.js                                                   23.00 kB │ gzip:   9.04 kB
+10:36:53 [vite] dist/_astro/FlightDeck.q3e-DXAK.js                                                 24.09 kB │ gzip:  10.73 kB
+10:36:53 [vite] dist/_astro/sun.DRemzboa.js                                                        70.20 kB │ gzip:  18.62 kB
+10:36:53 [vite] dist/_astro/settings.mnCIXUtR.js                                                  801.91 kB │ gzip: 208.30 kB
+10:36:53 [WARN] [vite] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+10:36:53 [vite] ✓ built in 3.30s
+
+ generating static routes 
+10:36:53 ▶ src/pages/builder.astro
+10:36:53   └─ /builder/index.html (+5ms) 
+10:36:53 ▶ src/pages/credits.astro
+10:36:53   └─ /credits/index.html (+1ms) 
+10:36:53 ▶ src/pages/hangar.astro
+10:36:53   └─ /hangar/index.html (+2ms) 
+10:36:53 ▶ src/pages/lab/builder.astro
+10:36:53   └─ /lab/builder/index.html (+2ms) 
+10:36:53 ▶ src/pages/lab/buttons.astro
+10:36:53   └─ /lab/buttons/index.html (+12ms) 
+10:36:53 ▶ src/pages/lab/entities/derelict.astro
+10:36:53   └─ /lab/entities/derelict/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/entities/planet.astro
+10:36:53   └─ /lab/entities/planet/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/entities/ship.astro
+10:36:53   └─ /lab/entities/ship/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/entities/star.astro
+10:36:53   └─ /lab/entities/star/index.html (+3ms) 
+10:36:53 ▶ src/pages/lab/flight.astro
+10:36:53   └─ /lab/flight/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/fx.astro
+10:36:53   └─ /lab/fx/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/graphs.astro
+10:36:53   └─ /lab/graphs/index.html (+32ms) 
+10:36:53 ▶ src/pages/lab/gravity-tuning.astro
+10:36:53   └─ /lab/gravity-tuning/index.html (+123ms) 
+10:36:53 ▶ src/pages/lab/inputs.astro
+10:36:53   └─ /lab/inputs/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/instrument.astro
+10:36:53   └─ /lab/instrument/index.html (+22ms) 
+10:36:53 ▶ src/pages/lab/instrument-parts.astro
+10:36:53   └─ /lab/instrument-parts/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/ion-engines.astro
+10:36:53   └─ /lab/ion-engines/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/landing.astro
+10:36:53   └─ /lab/landing/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/logomark.astro
+10:36:53   └─ /lab/logomark/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/mount-planner.astro
+10:36:53   └─ /lab/mount-planner/index.html (+2ms) 
+10:36:53 ▶ src/pages/lab/resources.astro
+10:36:53   └─ /lab/resources/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/reviews/engine-effects.astro
+10:36:53   └─ /lab/reviews/engine-effects/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/reviews/gravity-coil-form-2026-11-03.astro
+10:36:53   └─ /lab/reviews/gravity-coil-form-2026-11-03/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/reviews/gravity-coil-fx-2026-11-03.astro
+10:36:53   └─ /lab/reviews/gravity-coil-fx-2026-11-03/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/reviews/scout-firefly.astro
+10:36:53   └─ /lab/reviews/scout-firefly/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/ship-propulsion.astro
+10:36:53   └─ /lab/ship-propulsion/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/studies/archive/fighter-canopy-soft.astro
+10:36:53   └─ /lab/studies/archive/fighter-canopy-soft/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/studies/archive/ion-ceiling-rules.astro
+10:36:53   └─ /lab/studies/archive/ion-ceiling-rules/index.html (+6ms) 
+10:36:53 ▶ src/pages/lab/studies/archive/scout-firefly-rounded-bodies.astro
+10:36:53   └─ /lab/studies/archive/scout-firefly-rounded-bodies/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/studies/base-movement-ion.astro
+10:36:53   └─ /lab/studies/base-movement-ion/index.html (+40ms) 
+10:36:53 ▶ src/pages/lab/studies/buttons.astro
+10:36:53   └─ /lab/studies/buttons/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/studies/derelict-draft-two-2026-11-06.astro
+10:36:53   └─ /lab/studies/derelict-draft-two-2026-11-06/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/studies/derelict-three-2026-11-06.astro
+10:36:53   └─ /lab/studies/derelict-three-2026-11-06/index.html (+2ms) 
+10:36:53 ▶ src/pages/lab/studies/derelicts-2026-11-06.astro
+10:36:53   └─ /lab/studies/derelicts-2026-11-06/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/studies/energy-support-2026-11-02.astro
+10:36:53   └─ /lab/studies/energy-support-2026-11-02/index.html (+2ms) 
+10:36:53 ▶ src/pages/lab/studies/engine-effects.astro
+10:36:53   └─ /lab/studies/engine-effects/index.html (+3ms) 
+10:36:53 ▶ src/pages/lab/studies/engine-identities.astro
+10:36:53   └─ /lab/studies/engine-identities/index.html (+19ms) 
+10:36:53 ▶ src/pages/lab/studies/gilded-surfaces-2026-11-03.astro
+10:36:53   └─ /lab/studies/gilded-surfaces-2026-11-03/index.html (+1ms) 
+10:36:53 ▶ src/pages/lab/studies/gravity-coil-2026-11-03.astro
+10:36:53   └─ /lab/studies/gravity-coil-2026-11-03/index.html (+13ms) 
+10:36:53 ▶ src/pages/lab/studies/gravity-coil-form-2026-11-03.astro
+10:36:53   └─ /lab/studies/gravity-coil-form-2026-11-03/index.html (+6ms) 
+10:36:53 ▶ src/pages/lab/studies/gravity-coil-fx-2026-11-03.astro
+10:36:53   └─ /lab/studies/gravity-coil-fx-2026-11-03/index.html (+2ms) 
+10:36:53 ▶ src/pages/lab/studies/gravity-wells.astro
+10:36:53   └─ /lab/studies/gravity-wells/index.html (+3ms) 
+10:36:53 ▶ src/pages/lab/studies/heavy-cruiser-slots.astro
+10:36:53   └─ /lab/studies/heavy-cruiser-slots/index.html (+5ms) 
+10:36:53 ▶ src/pages/lab/studies/in-game-controllers.astro
+10:36:53   └─ /lab/studies/in-game-controllers/index.html (+2ms) 
+10:36:53 ▶ src/pages/lab/studies/ion-engines-2026-10-31.astro
+10:36:53   └─ /lab/studies/ion-engines-2026-10-31/index.html (+2ms) 
+10:36:53 ▶ src/pages/lab/studies/lab-instrument-2026-11-01.astro
+10:36:53   └─ /lab/studies/lab-instrument-2026-11-01/index.html (+173ms) 
+10:36:53 ▶ src/pages/lab/studies/lhi-fiddler-2026-11-03.astro
+10:36:53   └─ /lab/studies/lhi-fiddler-2026-11-03/index.html (+32ms) 
+10:36:53 ▶ src/pages/lab/studies/lhi-wasp.astro
+10:36:53   └─ /lab/studies/lhi-wasp/index.html (+32ms) 
+10:36:53 ▶ src/pages/lab/studies/open-frame-machinery-2026-11-02.astro
+10:36:53   └─ /lab/studies/open-frame-machinery-2026-11-02/index.html (+2ms) 
+10:36:53 ▶ src/pages/lab/studies/path-instrument-2026-11-01.astro
+10:36:53   └─ /lab/studies/path-instrument-2026-11-01/index.html (+32ms) 
+10:36:53 ▶ src/pages/lab/studies/plasma-behaviour-2026-11-01.astro
+10:36:53   └─ /lab/studies/plasma-behaviour-2026-11-01/index.html (+119ms) 
+10:36:54 ▶ src/pages/lab/studies/resource-capacity-2026-11-02.astro
+10:36:54   └─ /lab/studies/resource-capacity-2026-11-02/index.html (+2ms) 
+10:36:54 ▶ src/pages/lab/studies/run-countdown-2026-11-05.astro
+10:36:54   └─ /lab/studies/run-countdown-2026-11-05/index.html (+1ms) 
+10:36:54 ▶ src/pages/lab/studies/scout-firefly.astro
+10:36:54   └─ /lab/studies/scout-firefly/index.html (+4ms) 
+10:36:54 ▶ src/pages/lab/studies/ship-motion-laws-2026-11-04.astro
+10:36:54   └─ /lab/studies/ship-motion-laws-2026-11-04/index.html (+1ms) 
+10:36:54 ▶ src/pages/lab/studies/ship-silhouettes.astro
+10:36:54   └─ /lab/studies/ship-silhouettes/index.html (+5ms) 
+10:36:54 ▶ src/pages/lab/studies/ship-slot-language.astro
+10:36:54   └─ /lab/studies/ship-slot-language/index.html (+2ms) 
+10:36:54 ▶ src/pages/lab/studies/ship-utility-language-2026-11-02.astro
+10:36:54   └─ /lab/studies/ship-utility-language-2026-11-02/index.html (+1ms) 
+10:36:54 ▶ src/pages/lab/studies/suns-2026-11-07.astro
+10:36:54   └─ /lab/studies/suns-2026-11-07/index.html (+35ms) 
+10:36:54 ▶ src/pages/lab/studies/utilities-2026-11-02.astro
+10:36:54   └─ /lab/studies/utilities-2026-11-02/index.html (+4ms) 
+10:36:54 ▶ src/pages/lab/studies/utility-machinery-2026-11-02.astro
+10:36:54   └─ /lab/studies/utility-machinery-2026-11-02/index.html (+2ms) 
+10:36:54 ▶ src/pages/lab/studies/index.astro
+10:36:54   └─ /lab/studies/index.html (+1ms) 
+10:36:54 ▶ src/pages/lab/surfaces.astro
+10:36:54   └─ /lab/surfaces/index.html (+1ms) 
+10:36:54 ▶ src/pages/lab/tokens.astro
+10:36:54   └─ /lab/tokens/index.html (+1ms) 
+10:36:54 ▶ src/pages/lab/typography.astro
+10:36:54   └─ /lab/typography/index.html (+1ms) 
+10:36:54 ▶ src/pages/lab/utility-artwork.astro
+10:36:54   └─ /lab/utility-artwork/index.html (+2ms) 
+10:36:54 ▶ src/pages/lab/index.astro
+10:36:54   └─ /lab/index.html (+1ms) 
+10:36:54 ▶ src/pages/leaderboard.astro
+10:36:54   └─ /leaderboard/index.html (+1ms) 
+10:36:54 ▶ src/pages/settings.astro
+10:36:54   └─ /settings/index.html (+0ms) 
+10:36:54 ▶ src/pages/index.astro
+10:36:54   └─ /index.html (+1ms) 
+10:36:54 ✓ Completed in 961ms.
+
+10:36:54 [build] 70 page(s) built in 9.30s
+10:36:54 [build] Complete!

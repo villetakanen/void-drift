@@ -4,7 +4,6 @@ import {
 	drawStar,
 	PLANET_TYPES,
 	type Planet,
-	SunTypeSchema,
 	updatePlanetOrbit,
 	Vec2,
 } from "@void-drift/core";
@@ -17,8 +16,7 @@ export class LandingSystem {
 	time = 0;
 
 	constructor(random: () => number = Math.random) {
-		const types = SunTypeSchema.options;
-		this.star = createStar(types[Math.floor(random() * types.length)], 0, 0);
+		this.star = createStar("G", 0, 0);
 		const appearances = Object.values(PLANET_TYPES);
 		this.planets = Array.from({ length: 3 }, (_, index) => {
 			const type = appearances[Math.floor(random() * appearances.length)];

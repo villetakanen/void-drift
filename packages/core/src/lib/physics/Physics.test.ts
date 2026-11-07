@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { SURVIVAL_CONFIG } from "../config";
 import type { InputState } from "../entities/Input";
+import { solarCollectionRate } from "../solar";
 import type { GameObject, Planet, Star } from "./Physics";
 import {
 	getPlanetInfluenceRadius,
@@ -69,7 +70,7 @@ describe("updatePower", () => {
 		const expected =
 			50 -
 			SURVIVAL_CONFIG.POWER_CONSUMPTION_RATE +
-			SURVIVAL_CONFIG.POWER_REGEN_ZONE_1;
+			solarCollectionRate(SURVIVAL_CONFIG.POWER_ZONE_1_RADIUS - 10, mockSun);
 		expect(resources.power).toBe(expected);
 	});
 

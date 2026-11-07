@@ -33,8 +33,10 @@ let {
 }: {
 	tracks: Track[];
 	burn: BurnId;
-	/** The three graphs, top to bottom. */
-	measures: readonly [Measure, Measure, Measure];
+	/** Three or four graphs, top to bottom. */
+	measures:
+		| readonly [Measure, Measure, Measure]
+		| readonly [Measure, Measure, Measure, Measure];
 	/** Bodies under the paths, such as Gravity tuning's well. */
 	bodies?: FieldBody[];
 	onmovewell?: (index: number, x: number, y: number) => void;
@@ -49,7 +51,7 @@ let {
 const SCREEN = { w: 1440, h: 900 };
 const PAD = 32;
 const GAP = 32;
-const COL = (SCREEN.w - 2 * PAD - GAP) / 2;
+const COL = (1440 - 2 * PAD - GAP) / 2;
 const BLOCK = COL;
 const CONTROL = 44;
 const CONTROL_GAP = 24;
@@ -57,16 +59,18 @@ const LEGEND = 24;
 const LEGEND_GAP = 24;
 const HEIGHT = BLOCK + CONTROL_GAP + CONTROL + LEGEND_GAP + LEGEND;
 const TOP = Math.floor((SCREEN.h - HEIGHT) / 2 / 4) * 4;
-const GRAPH = 208;
-const GRAPH_GAP = (BLOCK - 3 * GRAPH) / 2;
+const GRAPH_GAP = 24;
+const GRAPH = $derived(
+	(BLOCK - (measures.length - 1) * GRAPH_GAP) / measures.length,
+);
 const RIGHT = PAD + COL + GAP;
 const CONTROL_TOP = TOP + BLOCK + CONTROL_GAP;
 // The slider's knob (16px) runs along the graphs' time axis.
 const SLIDER = { left: GRAPH_MARGIN.left - 8, right: GRAPH_MARGIN.right - 8 };
 
 let tick = $state(7 * TICK_RATE);
-let hostW = $state(SCREEN.w);
-let hostH = $state(SCREEN.h);
+let hostW = $state(1440);
+let hostH = $state(900);
 const scale = $derived(Math.min(hostW / SCREEN.w, hostH / SCREEN.h));
 </script>
 

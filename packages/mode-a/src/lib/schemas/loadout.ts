@@ -1,4 +1,4 @@
-export const LIFE_SUPPORT_DRAIN = 1.5;
+export const LIFE_SUPPORT_DRAIN = 0.8;
 
 import { z } from "zod";
 import { CRUISER } from "../cruiser";
@@ -208,7 +208,7 @@ export const PARTS = {
 		thrust: ION_DEFAULTS.acceleration * ION_REFERENCE_MASS,
 		speedContribution: 8,
 		limit: ION_DEFAULTS.maxSpeed,
-		draw: 2,
+		draw: 1,
 	}),
 
 	"heavy-ion": PartSchema.parse({

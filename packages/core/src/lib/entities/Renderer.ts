@@ -1,7 +1,7 @@
 import { drawPlanet } from "../assets/planet";
 import { drawShip } from "../assets/ship";
 import { drawStar } from "../assets/star";
-import { SURVIVAL_CONFIG } from "../config";
+
 import {
 	type DamageFlash,
 	renderDamageFlash,
@@ -122,7 +122,6 @@ export class Renderer {
 					glowColor: star.glowColor,
 					time: time,
 					pulseSpeed: star.pulseSpeed,
-					powerZoneRadius: SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS,
 				});
 			},
 		);

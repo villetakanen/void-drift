@@ -29,7 +29,7 @@ Assembled ships use a ship-wide powered cruise ceiling derived from their hull a
 
 ### Regression guardrails
 
-- Do not change thrust, mass, energy demand, duty/charge timing, torque, inertia, angular caps, stabilizer braking, linked-drive rules, gravity or friction as part of this contract.
+- Apart from the accepted standard-Sun Light ion energy update, do not change thrust, mass, energy demand, duty/charge timing, torque, inertia, angular caps, stabilizer braking, linked-drive rules, gravity or friction as part of this contract.
 - Keep the existing `engineImpulse` linear taper, radial/transverse decomposition and finite-impulse overspeed protection.
 - Legacy stock physics and historical findings are not silently migrated to this assembled model.
 
@@ -59,3 +59,15 @@ Scenario: Unsupported old instrument ceiling
   Then it is rejected with a schema issue
   And the document is not interpreted as current propulsion tuning
 ```
+
+
+## Standard-Sun energy update — 2026-11-07
+
+Light ion draw is 1.0 E/s per fully firing physical engine, including the
+existing proportional stabilizer energy duty. Life support is 0.8 E/s. Heavy
+ion, Fission and Plasma costs are unchanged. This cost update changes no force,
+torque, response timing, cruise ceiling, handling, gravity or friction.
+The Wasp's single Light ion plus life support draws 1.8 E/s in an unsteered
+forward burn. Production storage limits and energy-limited delivery remain active.
+`buildDrain` supports a Light-ion-only draw scale for energy analysis without
+mutating the shared parts or altering calculated motion.

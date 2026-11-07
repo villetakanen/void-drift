@@ -7,32 +7,13 @@ import {
 } from "@void-drift/mode-a";
 import { z } from "astro/zod";
 import { BURN_IDS } from "./burns";
+import { EnergyAnalysis } from "./energy";
 
 // The Motion instrument's configuration document: what an agent writes, the
 // designer adjusts in the pane, and is copied back. Vehicles are game loadouts;
 // properties are sparse overrides shared across the experiment.
 
-type Issue = { path: (string | number)[]; message: string };
-// Wraps a game schema (separate Zod instance) so its own rules still apply.
-function gameSchema<T>(schema: {
-	safeParse(
-		v: unknown,
-	):
-		| { success: true; data: T }
-		| { success: false; error: { issues: Issue[] } };
-}) {
-	return z.unknown().transform((value, ctx) => {
-		const result = schema.safeParse(value);
-		if (result.success) return result.data;
-		for (const issue of result.error.issues)
-			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
-				path: issue.path,
-				message: issue.message,
-			});
-		return z.NEVER;
-	});
-}
+import { gameSchema } from "./external-schema";
 
 // Supported production values shared by every vehicle in an experiment.
 const PartChange = z
@@ -69,6 +50,7 @@ export const InstrumentConfig = z
 		burn: z.enum(BURN_IDS).default("course"),
 		properties: ExperimentProperties.default({}),
 		vehicles: z.array(InstrumentVehicle).min(1).max(6),
+		energy: EnergyAnalysis.optional(),
 	})
 	.strict();
 export type InstrumentConfig = z.infer<typeof InstrumentConfig>;

@@ -1,10 +1,179 @@
 ---
-import LabStarInspector from "../../../components/lab/LabStarInspector.svelte";
-import LabStarMain from "../../../components/lab/LabStarMain.svelte";
+import { massWellReach, STANDARD_SUN } from "@void-drift/core";
+import { GRAVITY_TUNING } from "@void-drift/mode-a";
+import SunFlightBench from "../../../components/lab/SunFlightBench.svelte";
 import LabLayout from "../../../layouts/LabLayout.astro";
+
+const reach = massWellReach(
+	GRAVITY_TUNING.sunMass,
+	GRAVITY_TUNING.cutoff,
+	GRAVITY_TUNING.falloff,
+);
 ---
 
-<LabLayout title="Star">
-	<LabStarMain client:only="svelte" />
-	<LabStarInspector slot="inspector" client:only="svelte" />
+<LabLayout title="Suns" wide>
+	<article>
+		<p class="eyebrow">WORLD / STANDARD SUN</p>
+		<h1>A bargain inside the well</h1>
+		<p class="lead">
+			The standard Sun is a steady G star: a familiar source of energy, a
+			gravitational commitment and a lethal body. Approach to collect. Leave
+			before the bargain becomes an impact.
+		</p>
+		<h2>A star at the scale of a flight</h2>
+		<p>
+			Temperature, radius, mass and radiant output describe different properties
+			of a star. Void Drift compresses their distances and times into an
+			encounter a pilot can read. The luminous body is a terminal boundary, not
+			solid ground. Fictional shielding lets a ship survive brief exposure
+			nearby; it does not make the Sun traversable. Decorative rings are
+			atmosphere, not precise safety markers.
+		</p>
+		<h2>Three overlapping fields</h2>
+		<table>
+			<thead>
+				<tr>
+					<th>Zone, from the centre</th>
+					<th>What happens</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Surface · {STANDARD_SUN.radius} u</td>
+					<td>
+						Contact destroys the ship. Existing ship collision geometry remains
+						in force.
+					</td>
+				</tr>
+				<tr>
+					<td>Shoulder · to {STANDARD_SUN.shoulder} u</td>
+					<td>
+						The 20 u shoulder beyond the surface supplies 7.5 E/s per
+						collector-equivalent and 1.5 hull/s exposure. Close collection is
+						never a promise of safe clearance.
+					</td>
+				</tr>
+				<tr>
+					<td>Hazard · to {STANDARD_SUN.damageReach} u</td>
+					<td>
+						Beyond the shoulder, exposure declines linearly to zero at 100 u.
+						Outside this envelope there is no Sun proximity damage.
+					</td>
+				</tr>
+				<tr>
+					<td>Collection and gravity · {reach.toFixed(2)} u</td>
+					<td>
+						Collection declines linearly from 7.5 E/s at 55 u to 0.75 E/s at the
+						boundary, then stops outside it. Gravity keeps its existing force
+						law and cutoff.
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<p>
+			There is room to collect outside the damaging envelope, but still inside
+			the gravitational well. An inward pass builds speed and bends the path.
+			The outward climb still needs an exit plan; neither a green line nor
+			positive income guarantees escape.
+		</p>
+		<h2>Every ship can collect</h2>
+		<p>
+			One collector-equivalent is inherent in every ship. It takes no slot,
+			fitting or unlock. Each fitted solar collector adds another equivalent;
+			two equivalents double gross income at every distance. Gravity collection
+			is a separate fitted capability and does not replace this baseline.
+		</p>
+		<p>
+			The Wasp is the reference: life support draws 0.8 E/s and its single Light
+			ion draws 1.0 E/s when fully firing. Steering stabilizers also consume
+			power when used. Other engine families retain their own costs. At the
+			outer edge, 0.75 E/s cannot cover even life support: collection has begun
+			while the battery still drains. Flying inward improves income, with
+			full-thrust break-even around 282 u for the unsteered Wasp.
+		</p>
+		<h2>Stored energy is a real limit</h2>
+		<p>
+			A battery holds its actual fitted capacity. Collection above capacity is
+			wasted; it does not build a hidden reserve. Engine delivery falls with
+			available energy, and exhausted reserves end a Survival run. Hull damage
+			and contact remain separate failure paths. Practice flight retains its
+			deliberate resource protection, so use Survival or the live reference
+			below to assess depletion. No repair device or automatic hull recovery is
+			included.
+		</p>
+		<h2>Read the field, then read the ship</h2>
+		<p>
+			Dim dashed Android green marks gravity. Solid green marks collection: it
+			brightens with actual collection and gains a 3.3% green fill. The hazard
+			envelope is dotted amber until Sun damage is applied, then dotted red with
+			an 11% red fill. Active collection describes gross supply, even at a full
+			battery or while consumption exceeds income.
+		</p>
+		<p>
+			Every boundary stroke stays one CSS pixel wide across zoom and display
+			density. Where the two outer boundaries coincide, the solar line is drawn
+			two CSS pixels inward so both remain visible. This is a display offset;
+			both physical reaches stay identical.
+		</p>
+		<SunFlightBench client:load />
+		<h2>Explore the budget without changing the flight</h2>
+		<p>
+			The <a href="/lab/instrument">Motion instrument</a> and
+			<a href="/lab/gravity-tuning">Gravity tuning</a>
+			share optional collection-field configuration: centre, independent reach,
+			shoulder, peak and outer fraction. Their energy view shows collection,
+			consumption, net power and cumulative battery change on one time cursor.
+			Those comparisons explicitly exclude energy feedback, capacity and
+			starvation; their battery change is an unclamped energy integral, not
+			stored charge.
+		</p>
+		<p>
+			The
+			<a href="/lab/studies/suns-2026-11-07">accepted design study</a>
+			preserves earlier alternatives and forced HUD comparisons as experiments.
+			This article describes the implemented standard. Other stellar families,
+			Sun artwork and effect redesign remain deferred. Automated checks
+			establish mechanics; human flight review still judges the bargain’s feel.
+		</p>
+	</article>
 </LabLayout>
+<style>
+article {
+	max-width: 1100px;
+	padding: 40px;
+	margin: 0 auto;
+	line-height: 1.65;
+}
+h1 {
+	font-size: 40px;
+	line-height: 1.15;
+}
+h2 {
+	margin-top: 40px;
+}
+.lead {
+	font-size: 22px;
+	max-width: 850px;
+}
+.eyebrow {
+	color: var(--color-text-muted);
+}
+table {
+	border-collapse: collapse;
+	width: 100%;
+}
+th,
+td {
+	padding: 16px;
+	text-align: left;
+	border-bottom: 1px solid var(--color-border);
+	vertical-align: top;
+}
+th:first-child,
+td:first-child {
+	width: 30%;
+}
+a {
+	color: var(--color-text);
+}
+</style>

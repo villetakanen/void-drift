@@ -1,0 +1,364 @@
+
+> void-drift-monorepo@0.5.5 lint /Users/ville.takanen/dev/void-drift
+> biome check . --error-on-warnings
+
+apps/web/public/studies/derelict-draft-two-2026-11-06/source.svg:4:1 lint/a11y/noSvgWithoutTitle ━━━━━━━━━━
+
+  × Alternative text title element cannot be empty
+  
+      2 │ <!-- Created with Inkscape (http://www.inkscape.org/) -->
+      3 │ 
+    > 4 │ <svg
+        │ ^^^^
+    > 5 │    width="210mm"
+         ...
+  > 325 │        y="77.499146" />
+  > 326 │   </g>
+  > 327 │ </svg>
+        │ ^^^^^^
+    328 │ 
+  
+  i For accessibility purposes, SVGs should have an alternative text, provided via title element. If the svg element has role="img", you should add the aria-label or aria-labelledby attribute.
+  
+
+apps/web/public/studies/derelict-draft-two-2026-11-06/source.svg format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+      1     │ - <?xml·version="1.0"·encoding="UTF-8"·standalone="no"?>
+          1 │ + <?xml·version="1.0"·encoding="UTF-8"·standalone="no"·?>
+      2   2 │   <!-- Created with Inkscape (http://www.inkscape.org/) -->
+      3   3 │   
+      4   4 │   <svg
+      5     │ - ···width="210mm"
+      6     │ - ···height="297mm"
+      7     │ - ···viewBox="0·0·210·297"
+      8     │ - ···version="1.1"
+      9     │ - ···id="svg1"
+     10     │ - ···sodipodi:docname="derelict.svg"
+     11     │ - ···inkscape:version="1.4·(e7c3feb1,·2024-10-09)"
+     12     │ - ···xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+     13     │ - ···xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+     14     │ - ···xmlns:xlink="http://www.w3.org/1999/xlink"
+     15     │ - ···xmlns="http://www.w3.org/2000/svg"
+     16     │ - ···xmlns:svg="http://www.w3.org/2000/svg">
+     17     │ - ··<sodipodi:namedview
+     18     │ - ·····id="namedview1"
+     19     │ - ·····pagecolor="#ffffff"
+     20     │ - ·····bordercolor="#000000"
+     21     │ - ·····borderopacity="0.25"
+     22     │ - ·····inkscape:showpageshadow="2"
+     23     │ - ·····inkscape:pageopacity="0.0"
+     24     │ - ·····inkscape:pagecheckerboard="0"
+     25     │ - ·····inkscape:deskcolor="#d1d1d1"
+     26     │ - ·····inkscape:document-units="mm"
+     27     │ - ·····inkscape:zoom="1.1256906"
+     28     │ - ·····inkscape:cx="371.32761"
+     29     │ - ·····inkscape:cy="572.9816"
+     30     │ - ·····inkscape:window-width="1512"
+     31     │ - ·····inkscape:window-height="921"
+     32     │ - ·····inkscape:window-x="0"
+     33     │ - ·····inkscape:window-y="61"
+     34     │ - ·····inkscape:window-maximized="0"
+     35     │ - ·····inkscape:current-layer="layer7"·/>
+     36     │ - ··<defs
+     37     │ - ·····id="defs1">
+     38     │ - ····<linearGradient
+     39     │ - ·······id="linearGradient2"
+     40     │ - ·······inkscape:collect="always">
+     41     │ - ······<stop
+     42     │ - ·········style="stop-color:#992811;stop-opacity:1;"
+     43     │ - ·········offset="0"
+     44     │ - ·········id="stop2"·/>
+     45     │ - ······<stop
+     46     │ - ·········style="stop-color:#836c16;stop-opacity:0;"
+     47     │ - ·········offset="0.48387095"
+     48     │ - ·········id="stop4"·/>
+     49     │ - ······<stop
+     50     │ - ·········style="stop-color:#668000;stop-opacity:1"
+     51     │ - ·········offset="1"
+     52     │ - ·········id="stop3"·/>
+     53     │ - ····</linearGradient>
+     54     │ - ····<radialGradient
+     55     │ - ·······inkscape:collect="always"
+     56     │ - ·······xlink:href="#linearGradient1292"
+     57     │ - ·······id="radialGradient1293"
+     58     │ - ·······cx="-1216.2747"
+     59     │ - ·······cy="591.47632"
+     60     │ - ·······fx="-1216.2747"
+     61     │ - ·······fy="591.47632"
+     62     │ - ·······r="15.4729"
+     63     │ - ·······gradientTransform="matrix(1.3232005,0.16395341,-0.19987713,1.613126,1828.2038,-601.14265)"
+     64     │ - ·······gradientUnits="userSpaceOnUse"·/>
+     65     │ - ····<linearGradient
+     66     │ - ·······id="linearGradient1292"
+     67     │ - ·······inkscape:collect="always">
+     68     │ - ······<stop
+     69     │ - ·········style="stop-color:#445016;stop-opacity:1"
+     70     │ - ·········offset="0"
+     71     │ - ·········id="stop1292"·/>
+     72     │ - ······<stop
+     73     │ - ·········style="stop-color:#241f1c;stop-opacity:1"
+     74     │ - ·········offset="1"
+     75     │ - ·········id="stop1293"·/>
+     76     │ - ····</linearGradient>
+     77     │ - ····<filter
+     78     │ - ·······style="color-interpolation-filters:sRGB"
+     79     │ - ·······inkscape:label="Blur"
+     80     │ - ·······id="filter1300"
+     81     │ - ·······x="-0.92629754"
+     82     │ - ·······y="-0.92629754"
+     83     │ - ·······width="2.8525951"
+     84     │ - ·······height="2.8525951">
+     85     │ - ······<feGaussianBlur
+     86     │ - ·········stdDeviation="2·2"
+     87     │ - ·········result="fbSourceGraphic"
+     88     │ - ·········id="feGaussianBlur1300"·/>
+     89     │ - ······<feColorMatrix
+     90     │ - ·········result="fbSourceGraphicAlpha"
+     91     │ - ·········in="fbSourceGraphic"
+     92     │ - ·········values="0·0·0·-1·0·0·0·0·-1·0·0·0·0·-1·0·0·0·0·1·0"
+     93     │ - ·········id="feColorMatrix1300"·/>
+     94     │ - ······<feGaussianBlur
+     95     │ - ·········id="feGaussianBlur1301"
+     96     │ - ·········stdDeviation="2·2"
+     97     │ - ·········result="blur"
+     98     │ - ·········in="fbSourceGraphic"·/>
+     99     │ - ····</filter>
+    100     │ - ····<linearGradient
+    101     │ - ·······inkscape:collect="always"
+    102     │ - ·······xlink:href="#linearGradient2"
+    103     │ - ·······id="linearGradient3"
+    104     │ - ·······x1="90.994072"
+    105     │ - ·······y1="99.380028"
+    106     │ - ·······x2="119.85214"
+    107     │ - ·······y2="217.85976"
+    108     │ - ·······gradientUnits="userSpaceOnUse"·/>
+    109     │ - ··</defs>
+    110     │ - ··<rect
+    111     │ - ·····style="fill:#000000;stroke-width:2.39815;paint-order:stroke·fill·markers"
+    112     │ - ·····id="rect1"
+    113     │ - ·····width="210"
+    114     │ - ·····height="214.54326"
+    115     │ - ·····x="-0.9752"
+    116     │ - ·····y="39.076778"
+    117     │ - ·····sodipodi:insensitive="true"·/>
+    118     │ - ··<g
+    119     │ - ·····inkscape:groupmode="layer"
+    120     │ - ·····id="layer6"
+    121     │ - ·····inkscape:label="Layer·2"
+    122     │ - ·····sodipodi:insensitive="true"·/>
+    123     │ - ··<g
+    124     │ - ·····inkscape:label="Layer·1"
+    125     │ - ·····inkscape:groupmode="layer"
+    126     │ - ·····id="layer1"
+    127     │ - ·····sodipodi:insensitive="true">
+    128     │ - ····<path
+    129     │ - ·······style="fill:url(#radialGradient1293);fill-opacity:1;stroke-width:1.01503;paint-order:stroke·fill·markers"
+    130     │ - ·······d="m·89.269207,104.94361·7.987696,7.77171·4.425527,0.21599·8.09557,11.01001·-1.94296,8.95911·6.26062,16.62293·0.10806,16.51503·-6.5844,9.93055·-7.23211,7.66385·-0.32379,7.87971·-11.765644,7.12414·-5.505004,-29.36004·3.777945,-25.15033·2.26675,-26.87732·z"
+    131     │ - ·······id="path1287"·/>
+    132     │ - ····<g
+    133     │ - ·······id="g1301"
+    134     │ - ·······transform="matrix(0.5737664,0,0,0.5737664,460.28035,-250.94476)">
+    135     │ - ······<rect
+    136     │ - ·········style="opacity:1;fill:none;fill-opacity:1;stroke:#9dd519;stroke-width:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke·fill·markers"
+    137     │ - ·········id="rect1300"
+    138     │ - ·········width="12.522974"
+    139     │ - ·········height="12.522974"
+    140     │ - ·········x="-196.73663"
+    141     │ - ·········y="918.95746"
+    142     │ - ·········transform="rotate(30)"·/>
+    143     │ - ······<rect
+    144     │ - ·········style="fill:none;fill-opacity:1;stroke:#9dd519;stroke-width:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke·fill·markers;filter:url(#filter1300)"
+    145     │ - ·········id="rect1300-7"
+    146     │ - ·········width="12.522974"
+    147     │ - ·········height="12.522974"
+    148     │ - ·········x="-196.73663"
+    149     │ - ·········y="918.95746"
+  546 more lines truncated
+  
+
+docs/artwork/void-drift-ships-equipment.svg:2:1 lint/a11y/noSvgWithoutTitle ━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Alternative text title element cannot be empty
+  
+       1 │ <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+     > 2 │ <svg
+         │ ^^^^
+     > 3 │    width="1640"
+     > 4 │    height="2220"
+          ...
+  > 9830 │        id="text1271">Solar and repair are library artwork. Corvette retains its current black windows. No raster images.</text>
+  > 9831 │   </g>
+  > 9832 │ </svg>
+         │ ^^^^^^
+    9833 │ 
+  
+  i For accessibility purposes, SVGs should have an alternative text, provided via title element. If the svg element has role="img", you should add the aria-label or aria-labelledby attribute.
+  
+
+docs/artwork/void-drift-ships-equipment.svg format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+       1       │ - <?xml·version="1.0"·encoding="UTF-8"·standalone="no"?>
+             1 │ + <?xml·version="1.0"·encoding="UTF-8"·standalone="no"·?>
+       2     2 │   <svg
+       3       │ - ···width="1640"
+       4       │ - ···height="2220"
+       5       │ - ···viewBox="0·0·1640·2220"
+       6       │ - ···version="1.1"
+       7       │ - ···id="svg1271"
+       8       │ - ···sodipodi:docname="void-drift-ships-equipment.svg"
+       9       │ - ···inkscape:version="1.4·(e7c3feb1,·2024-10-09)"
+      10       │ - ···xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+      11       │ - ···xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+      12       │ - ···xmlns="http://www.w3.org/2000/svg"
+      13       │ - ···xmlns:svg="http://www.w3.org/2000/svg">
+      14       │ - ··<sodipodi:namedview
+      15       │ - ·····id="namedview1271"
+      16       │ - ·····pagecolor="#ffffff"
+      17       │ - ·····bordercolor="#000000"
+      18       │ - ·····borderopacity="0.25"
+      19       │ - ·····inkscape:showpageshadow="2"
+      20       │ - ·····inkscape:pageopacity="0.0"
+      21       │ - ·····inkscape:pagecheckerboard="0"
+      22       │ - ·····inkscape:deskcolor="#d1d1d1"
+      23       │ - ·····inkscape:zoom="1.5465195"
+      24       │ - ·····inkscape:cx="-89.879241"
+      25       │ - ·····inkscape:cy="496.59897"
+      26       │ - ·····inkscape:window-width="1512"
+      27       │ - ·····inkscape:window-height="949"
+      28       │ - ·····inkscape:window-x="0"
+      29       │ - ·····inkscape:window-y="33"
+      30       │ - ·····inkscape:window-maximized="0"
+      31       │ - ·····inkscape:current-layer="background"·/>
+      32       │ - ··<title
+      33       │ - ·····id="title1">Void·Drift·—·ships·and·equipment</title>
+      34       │ - ··<desc
+      35       │ - ·····id="desc1">Exported·directly·from·production·drawing·routines,·2026-11-05.·Five·starter·ships,·five·hulls,·sixteen·engine·lighting·variants,·six·equipment·items,·two·utility·library·items·and·stabilizer·slits.·Native·vector·paths,·clips·and·gradients.</desc>
+      36       │ - ··<defs
+      37       │ - ·····id="defs86">
+      38       │ - ····<clipPath
+      39       │ - ·······id="clip-1"
+      40       │ - ·······clipPathUnits="userSpaceOnUse">
+      41       │ - ······<path
+      42       │ - ·········d="M16·0L10·-3L1·-3L-3.5·0Z"
+      43       │ - ·········transform="matrix(1·0·0·1·0·0)"
+      44       │ - ·········clip-rule="nonzero"
+      45       │ - ·········id="path1"·/>
+      46       │ - ····</clipPath>
+      47       │ - ····<linearGradient
+      48       │ - ·······id="gradient-2"
+      49       │ - ·······gradientUnits="userSpaceOnUse"
+      50       │ - ·······x1="16"
+      51       │ - ·······y1="-2"
+      52       │ - ·······x2="-3.5"
+      53       │ - ·······y2="2">
+      54       │ - ······<stop
+      55       │ - ·········offset="0"
+      56       │ - ·········stop-color="#ecd365"
+      57       │ - ·········stop-opacity="1"
+      58       │ - ·········id="stop1"·/>
+      59       │ - ······<stop
+      60       │ - ·········offset="0.21"
+      61       │ - ·········stop-color="#827331"
+      62       │ - ·········stop-opacity="1"
+      63       │ - ·········id="stop2"·/>
+      64       │ - ······<stop
+      65       │ - ·········offset="0.43"
+      66       │ - ·········stop-color="#07121a"
+      67       │ - ·········stop-opacity="1"
+      68       │ - ·········id="stop3"·/>
+      69       │ - ······<stop
+      70       │ - ·········offset="0.57"
+      71       │ - ·········stop-color="#03070c"
+      72       │ - ·········stop-opacity="1"
+      73       │ - ·········id="stop4"·/>
+      74       │ - ······<stop
+      75       │ - ·········offset="0.82"
+      76       │ - ·········stop-color="#127045"
+      77       │ - ·········stop-opacity="1"
+      78       │ - ·········id="stop5"·/>
+      79       │ - ······<stop
+      80       │ - ·········offset="1"
+      81       │ - ·········stop-color="#71b76c"
+      82       │ - ·········stop-opacity="1"
+      83       │ - ·········id="stop6"·/>
+      84       │ - ····</linearGradient>
+      85       │ - ····<clipPath
+      86       │ - ·······id="clip-3"
+      87       │ - ·······clipPathUnits="userSpaceOnUse">
+      88       │ - ······<path
+      89       │ - ·········d="M16·0L10·3L1·3L-3.5·0Z"
+      90       │ - ·········transform="matrix(1·0·0·1·0·0)"
+      91       │ - ·········clip-rule="nonzero"
+      92       │ - ·········id="path6"·/>
+      93       │ - ····</clipPath>
+      94       │ - ····<linearGradient
+      95       │ - ·······id="gradient-4"
+      96       │ - ·······gradientUnits="userSpaceOnUse"
+      97       │ - ·······x1="16"
+      98       │ - ·······y1="3"
+      99       │ - ·······x2="-3.5"
+     100       │ - ·······y2="-3">
+     101       │ - ······<stop
+     102       │ - ·········offset="0"
+     103       │ - ·········stop-color="#ecd365"
+     104       │ - ·········stop-opacity="1"
+     105       │ - ·········id="stop7"·/>
+     106       │ - ······<stop
+     107       │ - ·········offset="0.21"
+     108       │ - ·········stop-color="#827331"
+     109       │ - ·········stop-opacity="1"
+     110       │ - ·········id="stop8"·/>
+     111       │ - ······<stop
+     112       │ - ·········offset="0.43"
+     113       │ - ·········stop-color="#07121a"
+     114       │ - ·········stop-opacity="1"
+     115       │ - ·········id="stop9"·/>
+     116       │ - ······<stop
+     117       │ - ·········offset="0.57"
+     118       │ - ·········stop-color="#03070c"
+     119       │ - ·········stop-opacity="1"
+     120       │ - ·········id="stop10"·/>
+     121       │ - ······<stop
+     122       │ - ·········offset="0.82"
+     123       │ - ·········stop-color="#127045"
+     124       │ - ·········stop-opacity="1"
+     125       │ - ·········id="stop11"·/>
+     126       │ - ······<stop
+     127       │ - ·········offset="1"
+     128       │ - ·········stop-color="#71b76c"
+     129       │ - ·········stop-opacity="1"
+     130       │ - ·········id="stop12"·/>
+     131       │ - ····</linearGradient>
+     132       │ - ····<linearGradient
+     133       │ - ·······id="gradient-5"
+     134       │ - ·······gradientUnits="userSpaceOnUse"
+     135       │ - ·······x1="27.8"
+     136       │ - ·······y1="-6.8"
+     137       │ - ·······x2="14.2"
+     138       │ - ·······y2="6.8">
+     139       │ - ······<stop
+     140       │ - ·········offset="0"
+     141       │ - ·········stop-color="#f4df8c"
+     142       │ - ·········stop-opacity="1"
+     143       │ - ·········id="stop13"·/>
+     144       │ - ······<stop
+     145       │ - ·········offset="0.35"
+     146       │ - ·········stop-color="#c4a64b"
+     147       │ - ·········stop-opacity="1"
+     148       │ - ·········id="stop14"·/>
+     149       │ - ······<stop
+  20354 more lines truncated
+  
+
+Checked 768 files in 339ms. No fixes applied.
+Found 4 errors.
+check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+
+ ELIFECYCLE  Command failed with exit code 1.

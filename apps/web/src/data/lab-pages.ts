@@ -105,8 +105,8 @@ export const labPages = z.array(labPageSchema).parse([
 	},
 	{
 		href: "/lab/entities/star",
-		title: "Star",
-		purpose: "Star classes and their survival values.",
+		title: "Suns",
+		purpose: "The standard Sun: collection, exposure and live field feedback.",
 		group: "ships-and-world",
 		source: "production",
 	},

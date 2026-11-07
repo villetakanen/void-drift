@@ -2,7 +2,7 @@
 // and its surface when it has one. Used by the Gravity tuning bench
 // (docs/specs/gravity-tuning.md).
 export type FieldBody = {
-	kind: "sun" | "planet" | "well";
+	kind: "sun" | "planet" | "well" | "energy";
 	label: string;
 	color: string;
 	radius: number;

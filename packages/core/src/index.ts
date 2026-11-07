@@ -4,6 +4,7 @@ export * from "./lib/assets/resource-bar";
 // Assets
 export * from "./lib/assets/ship";
 export * from "./lib/assets/star";
+export * from "./lib/assets/sun-fields";
 export * from "./lib/config";
 export * from "./lib/effects/arcade-fx";
 // Svelte Components
@@ -22,6 +23,7 @@ export * from "./lib/physics/Physics";
 export * from "./lib/physics/planets";
 export * from "./lib/schemas/common";
 export * from "./lib/schemas/sun";
+export * from "./lib/solar";
 // UI Utilities
 export * from "./lib/ui/colors";
 export * from "./lib/ui/typography";

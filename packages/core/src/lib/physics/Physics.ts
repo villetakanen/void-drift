@@ -1,3 +1,4 @@
+import { solarCollectionRate, solarDamageRate } from "../solar";
 export class Vec2 {
 	constructor(
 		public x: number,
@@ -267,26 +268,13 @@ export function updatePower(
 	} else if (thrustState.left || thrustState.right) {
 		consumptionRate = SURVIVAL_CONFIG.POWER_CONSUMPTION_SINGLE_THRUST;
 	}
-	resources.power -= consumptionRate * drainMultiplier * dt;
+	resources.power -=
+		(SURVIVAL_CONFIG.POWER_CONSUMPTION_RATE +
+			(consumptionRate - SURVIVAL_CONFIG.POWER_CONSUMPTION_RATE) *
+				drainMultiplier) *
+		dt;
 
-	// Regeneration (sun proximity)
-	const radiusScale = sun.radius / 40; // 40 = baseline (yellow dwarf)
-	let regenRate = 0;
-	if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_1_RADIUS * radiusScale) {
-		regenRate = SURVIVAL_CONFIG.POWER_REGEN_ZONE_1;
-	} else if (
-		distanceToSun <
-		SURVIVAL_CONFIG.POWER_ZONE_2_RADIUS * radiusScale
-	) {
-		regenRate = SURVIVAL_CONFIG.POWER_REGEN_ZONE_2;
-	} else if (
-		distanceToSun <
-		SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS * radiusScale
-	) {
-		regenRate = SURVIVAL_CONFIG.POWER_REGEN_ZONE_3;
-	}
-
-	resources.power += regenRate * sun.powerMultiplier * dt;
+	resources.power += solarCollectionRate(distanceToSun, sun) * dt;
 
 	// Clamp
 	resources.power = Math.max(0, Math.min(100, resources.power));
@@ -307,24 +295,7 @@ export function updateHull(
 		return;
 	}
 
-	// Sun proximity burn
-	const radiusScale = sun.radius / 40; // 40 = baseline (yellow dwarf)
-	let burnRate = 0;
-	if (distanceToSun < SURVIVAL_CONFIG.POWER_ZONE_1_RADIUS * radiusScale) {
-		burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_1;
-	} else if (
-		distanceToSun <
-		SURVIVAL_CONFIG.POWER_ZONE_2_RADIUS * radiusScale
-	) {
-		burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_2;
-	} else if (
-		distanceToSun <
-		SURVIVAL_CONFIG.POWER_ZONE_3_RADIUS * radiusScale
-	) {
-		burnRate = SURVIVAL_CONFIG.HULL_BURN_ZONE_3;
-	}
-
-	resources.hull -= (burnRate * sun.burnMultiplier * dt) / hullMultiplier;
+	resources.hull -= (solarDamageRate(distanceToSun) * dt) / hullMultiplier;
 
 	// Clamp
 	resources.hull = Math.max(0, Math.min(100, resources.hull));

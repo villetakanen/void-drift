@@ -190,7 +190,12 @@ const at = (t: Track) => Math.max(0, Math.min(tick, values(t).length - 1));
 		<span class="values">
 			<span class="at">{(tick / TICK_RATE).toFixed(2)} s</span>
 			{#each tracks as t}
-				<b style={`color:${t.color}`}>{fmt(Math.round(values(t)[at(t)]))}</b>
+				<b style={`color:${t.color}`}
+					>{(spec.unit === "E/s" || spec.unit === "E") &&
+					Number.isFinite(values(t)[at(t)])
+						? values(t)[at(t)].toFixed(2)
+						: fmt(Math.round(values(t)[at(t)]))}</b
+				>
 			{/each}
 		</span>
 	</div>

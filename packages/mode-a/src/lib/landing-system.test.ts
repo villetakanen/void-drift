@@ -3,7 +3,7 @@ import { LandingSystem } from "./landing-system";
 import { CHALLENGE_SEED, gameSettings, Simulation } from "./simulation";
 
 describe("landing system", () => {
-	it("generates bounded, separated orbits across seeds and all sun classes", () => {
+	it("generates bounded, separated orbits across seeds with the standard G Sun", () => {
 		const classes = new Set<string>();
 		for (let seed = 1; seed <= 100; seed++) {
 			let state = seed * 98765;
@@ -26,7 +26,7 @@ describe("landing system", () => {
 					).toBeGreaterThan(planet.radius + scene.planets[index - 1].radius);
 			}
 		}
-		expect(classes.size).toBe(7);
+		expect([...classes]).toEqual(["G"]);
 	});
 
 	it("places the sun in the lower-right and extends toward the upper-left", () => {

@@ -1,5 +1,11 @@
 <script lang="ts">
-import { Camera, Input, paintCountdown, Renderer } from "@void-drift/core";
+import {
+	Camera,
+	drawSunFields,
+	Input,
+	paintCountdown,
+	Renderer,
+} from "@void-drift/core";
 import {
 	BUILD_FLIGHT_SCALE,
 	buildStats,
@@ -353,6 +359,11 @@ onMount(() => {
 			renderer.drawBackground();
 			renderer.drawArenaBoundary(1200);
 			renderer.drawStar(simulation.star, simulation.ticks * STEP * 1000);
+			if (context)
+				drawSunFields(context, simulation.star, {
+					collecting: simulation.solarCollectionRate > 0,
+					damaging: simulation.solarDamageRate > 0,
+				});
 			for (const planet of simulation.planets) renderer.drawPlanet(planet);
 			if (context && simulation.salvage)
 				drawSalvage(context, simulation.salvage);

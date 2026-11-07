@@ -298,3 +298,57 @@ may need separate candidate controls for main linear force, main-engine torque,
 and stabilizer force/braking response, while retaining production values as the
 baseline. Add only the controls needed for that experiment; this is an identified
 capability gap, not an approved instrument feature.
+
+### Solar charging measurements
+
+The Suns study’s linear charging comparison uses the shared Motion instrument
+path pane, burn programs, time cursor and graphs. Graph measures include gross
+`collection`, `consumption` and signed `netPower`, in energy units per second.
+They retain the shared automatic scales and per-track colours. The configured
+study supplies traces; adding these measures does not change production charging.
+The study labels its candidate law, reference loadout, starting states, sampling,
+contact termination and omitted resource/damage feedback. The break-even readout accompanies the shared time graphs.
+
+The Suns energy-budget comparison additionally supplies signed `batteryChange`
+(E), starting at zero and integrating net power at 60 Hz. This is an unclamped
+energy delta, not state of charge. The shared screen supports a fourth graph
+with the same cursor and track colours; existing three-graph uses retain their
+layout. Energy values display two decimal places.
+
+The study exposes life-support draw, ion power draw and peak solar collection,
+with a reset to the study’s explicitly selected budget (7.5 E/s peak,
+0.8 E/s life support, 1.0 E/s ion draw). Ion draw scales main-engine
+and ion-stabilizer costs together without changing propulsion. Budget edits
+preserve paths, burn, field geometry and motion rules. Changing the burn remains
+an explicit change of flight scenario. Capacity and starvation are excluded.
+
+The Suns study places all three energy sliders, reset and break-even readouts
+in the existing hamburger overlay pane. Closing the pane leaves the full path
+and graph display unobstructed and preserves all settings. There is no separate
+distance-curve panel or persistent controls strip.
+
+### Shared collection-field configuration
+
+Both Ship tuning and Gravity tuning accept optional `energy` configuration. It
+contains up to twelve collection `fields`, each with a finite x/y centre,
+independent positive `reach`, nonnegative `shoulder` and `peak`, and
+`outerFraction` in [0, 1]. Shoulder must be strictly inside reach. These values
+reuse the production `EnergyFieldShape` and reach validation; `fieldRate` is the
+same plateau/linear law used by production solar collection. Exact edge values
+are included; supply is zero outside reach. Each field scales by the vehicle's
+inherent plus fitted collectors; overlapping fields add.
+
+The energy pane enables analysis and edits field geometry, budget, add/remove
+and export through each instrument's existing document. Invalid edits preserve
+the previous document and report validation errors. Life support and Light ion
+draw are experiment-wide; other engine families keep their costs. Energy feedback
+is explicitly `excluded`: edits cannot change motion, gravity, contact, capacity
+or starvation. These are analytical paths, not a resource-limited playthrough.
+
+Enabled energy analysis shows collection, consumption, signed net power and
+cumulative battery change on the same time cursor and per-track colours. Battery
+change integrates the sampled net rate at 60 Hz from zero without clamping.
+Collection boundaries draw alongside independently configured gravity boundaries.
+Disabling energy restores the original three motion graphs. Inspection and export
+do not mutate production values. The historical Suns fixture retains its earlier
+candidate profiles and omitted feedback as labelled experiment evidence.

@@ -2,6 +2,8 @@
 import { type Snippet, untrack } from "svelte";
 import {
 	calculate,
+	ENERGY_MEASURES,
+	energyTraces,
 	FLIGHT_MEASURES,
 	InstrumentConfig,
 	TRACK_COLORS,
@@ -39,7 +41,12 @@ const tracks = $derived.by((): Track[] => {
 			label: v.label,
 			color: TRACK_COLORS[i],
 			samples,
-			traces: traces(samples),
+			traces: {
+				...traces(samples),
+				...(plain.energy
+					? energyTraces(samples, v, plain.burn, plain.energy, plain.properties)
+					: {}),
+			},
 		};
 	});
 });
@@ -48,8 +55,16 @@ const tracks = $derived.by((): Track[] => {
 {#if doc}
 	<MotionInstrumentScreen
 		{tracks}
+		bodies={doc.energy?.fields.map((f, i) => ({
+			kind: "energy",
+			label: `Collection ${i + 1}`,
+			color: "",
+			radius: 0,
+			reach: f.reach,
+			path: [{ x: f.x, y: f.y }],
+		})) ?? []}
 		bind:burn={doc.burn}
-		measures={FLIGHT_MEASURES}
+		measures={doc.energy ? ENERGY_MEASURES : FLIGHT_MEASURES}
 		{label}
 	>
 		{#if pane}

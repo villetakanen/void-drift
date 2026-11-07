@@ -1,0 +1,23 @@
+[WebServer] (node:61672) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:61695) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 12 tests using 1 worker
+
+(node:61730) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › tests/browser/alpha.spec.ts:7:5 › title starts a stock Wasp and keyboard controls reach flight (5.1s)
+  ✓   2 [chromium] › tests/browser/alpha.spec.ts:34:5 › retired Flight Lab redirects to Hangar (542ms)
+  ✓   3 [chromium] › tests/browser/alpha.spec.ts:39:5 › landscape touch engines support simultaneous activation, cancellation and focus loss (5.0s)
+  ✓   4 [chromium] › tests/browser/game-screen.spec.ts:3:5 › Survival fits the adaptive stage without navigation or page overflow (4.1s)
+  ✓   5 [chromium] › tests/browser/game-screen.spec.ts:60:5 › portrait freezes the countdown and requires fresh input after Resume (9.0s)
+  ✓   6 [chromium] › tests/browser/game-screen.spec.ts:95:5 › portrait launch is blocked and backgrounding requires deliberate Resume (13.4s)
+  ✓   7 [chromium] › tests/browser/game-screen.spec.ts:137:5 › live surface contains selection and context menus (3.8s)
+  ✓   8 [chromium] › tests/browser/game-screen.spec.ts:157:6 › ArrowLeft turns the launched Wasp and release brakes its spin (4.4s)
+  ✓   9 [chromium] › tests/browser/game-screen.spec.ts:157:6 › ArrowRight turns the launched Wasp and release brakes its spin (4.6s)
+  ✓  10 [chromium] › tests/browser/suns.spec.ts:9:7 › standard Sun at density 1 › live effects and fixed CSS geometry follow the Wasp (1.3s)
+  ✓  11 [chromium] › tests/browser/suns.spec.ts:9:7 › standard Sun at density 2 › live effects and fixed CSS geometry follow the Wasp (1.1s)
+  ✓  12 [chromium] › tests/browser/suns.spec.ts:187:5 › Path energy controls preserve analysis and export alongside gravity (1.2s)
+
+  12 passed (56.6s)

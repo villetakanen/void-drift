@@ -1,6 +1,7 @@
 import { massWellReach } from "@void-drift/core";
 import { z } from "astro/zod";
 import { BURN_IDS } from "../instrument/burns";
+import { EnergyAnalysis } from "../instrument/energy";
 
 // The Gravity tuning bench's document (docs/specs/gravity-tuning.md): the burn
 // drawn and the bench's four settings. Ships and burns are not settings.
@@ -30,6 +31,7 @@ export const GravityTuningConfig = z
 		burn: z.enum(BURN_IDS).default("course"),
 		startSpeed: z.number().finite().min(0).max(1000).default(0),
 		well: GravityWell.default({}),
+		energy: EnergyAnalysis.optional(),
 	})
 	.strict();
 export type GravityTuningConfig = z.infer<typeof GravityTuningConfig>;
