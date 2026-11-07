@@ -43,7 +43,9 @@ The Hangar also launches [Derelicts](derelicts/spec.md) with the fitted build,
 seeded boundary encounters and normal survival resources. Its transient result
 appears only at game over: gameplay seconds plus ten per player weapon/ram kill.
 The result is frozen, not saved or submitted, and does not alter Survival scoring.
-Accepted artwork, staged shedding and generated systems remain future slices.
+The intact hull uses shared 110-unit artwork with flat fills and contained energy.
+Physical shard release, fitted collision shapes and generated systems remain
+future slices.
 Settings and replay consumers pass explicit modes; no build-store migration is
 required. Existing replay input chunks retain their schema.
 

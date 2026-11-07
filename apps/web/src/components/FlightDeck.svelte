@@ -7,6 +7,7 @@ import {
 	type DerelictsResult,
 	drawBuild,
 	drawSalvage,
+	drawSalvageApertures,
 	FlightFx,
 	type FlightMode,
 	type FlightTickInput,
@@ -398,6 +399,8 @@ onMount(() => {
 									reducedMotion,
 								),
 				);
+			if (context && simulation.salvage)
+				drawSalvageApertures(context, simulation.salvage);
 			renderer.endCamera();
 		}
 		frame = requestAnimationFrame(draw);

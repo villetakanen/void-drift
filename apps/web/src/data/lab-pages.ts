@@ -32,6 +32,14 @@ export type LabPage = z.infer<typeof labPageSchema>;
 
 export const labPages = z.array(labPageSchema).parse([
 	{
+		href: "/lab/entities/derelict",
+		title: "Derelict",
+		purpose:
+			"Shared hull artwork, contained energy and eight-piece fracture reference.",
+		group: "ships-and-world",
+		source: "production",
+	},
+	{
 		href: "/lab/tokens",
 		title: "Colour roles",
 		purpose: "Colour tokens and the roles each one may play.",

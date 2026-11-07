@@ -112,6 +112,25 @@ B reference; C's additional varied drift and spin are not part of this choice.
   thresholds. Mapping actual damage to shedding and final release remains an
   implementation design decision to resolve without changing this direction.
 
+### Shared artwork
+
+- `packages/mode-a/src/lib/derelict-geometry.ts` owns the unchanged source paths,
+  flat per-plane colours, eight B fracture regions and reference release motion.
+  Source paths have a measured 139.51844787597656-unit overall extent; the common
+  scale normalizes that extent to 110 world units around source origin (101, 150).
+- Production hull colours are baked flat fills sampled from each source plane's
+  original hue treatment. Hulls have no runtime tint overlay or gradient. Energy
+  keeps its luminous halo and independently rotating hollow square.
+- `derelict-renderer.ts` caches the hull and energy stamp. Production salvage and
+  the canonical [/lab/entities/derelict](../../../../apps/web/src/pages/lab/entities/derelict.astro)
+  consume this painter. The Lab demonstrates B motion and the selected pulse as a
+  visual reference; reference times do not define gameplay damage thresholds.
+- Energy light uses the shared persistent FX surface and its source budget.
+  Restore the square's black aperture after light compositing, including in the
+  mixed FX Lab. Rendering does not change collision, damage, resource or scoring
+  state. Shape-matched collision and physical shard release have their own
+  acceptance criteria below.
+
 ## Weapons
 
 - Railguns fire from their muzzle along the world-space slot direction when a

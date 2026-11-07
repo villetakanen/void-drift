@@ -1,4 +1,5 @@
 import { COLOR, FX_INK, type FxPass } from "@void-drift/core";
+import { drawDerelict } from "./derelict-renderer";
 import type { SalvageSystem } from "./salvage";
 
 const LASER_INK = "#ff1028";
@@ -10,6 +11,10 @@ export function drawSalvage(
 ) {
 	ctx.save();
 	for (const body of salvage.bodies) {
+		if (body.kind === "wreck") {
+			drawDerelict(ctx, body.x, body.y, body.rotation, salvage.time);
+			continue;
+		}
 		ctx.save();
 		ctx.translate(body.x, body.y);
 		ctx.rotate(body.rotation);
@@ -26,8 +31,7 @@ export function drawSalvage(
 			ctx.fillStyle = COLOR.void;
 			ctx.fillRect(-2, -2, 4, 4);
 		} else {
-			ctx.fillStyle =
-				body.kind === "wreck" ? COLOR.textMuted : COLOR.resourceWarning;
+			ctx.fillStyle = COLOR.resourceWarning;
 			ctx.beginPath();
 			ctx.moveTo(-r, -r * 0.3);
 			ctx.lineTo(-r * 0.4, -r * 0.8);
@@ -44,12 +48,6 @@ export function drawSalvage(
 			ctx.lineTo(r * 0.2, r * 0.15);
 			ctx.closePath();
 			ctx.fill();
-			if (body.kind === "wreck") {
-				ctx.fillStyle = COLOR.void;
-				ctx.fillRect(-r * 0.4, -2, r * 0.9, 4);
-				ctx.fillStyle = COLOR.resourceWarning;
-				ctx.fillRect(-r * 0.5, r * 0.25, r * 0.45, 2);
-			}
 		}
 		ctx.restore();
 	}
@@ -62,6 +60,18 @@ export function stampWeaponLight(
 	salvage: SalvageSystem,
 	pass: FxPass,
 ) {
+	for (const body of salvage.bodies) {
+		if (body.kind === "wreck" && pass.visible(body.x, body.y, 60))
+			drawDerelict(
+				ctx,
+				body.x,
+				body.y,
+				body.rotation,
+				salvage.time,
+				"light",
+				pass,
+			);
+	}
 	ctx.save();
 	ctx.globalAlpha = pass.opacity;
 	ctx.strokeStyle = FX_INK.core;
@@ -126,4 +136,21 @@ export function stampWeaponLight(
 		}
 	}
 	ctx.restore();
+}
+
+/** Restore the hollow centre after the persistent light surface is composited. */
+export function drawSalvageApertures(
+	ctx: CanvasRenderingContext2D,
+	salvage: SalvageSystem,
+) {
+	for (const body of salvage.bodies)
+		if (body.kind === "wreck")
+			drawDerelict(
+				ctx,
+				body.x,
+				body.y,
+				body.rotation,
+				salvage.time,
+				"aperture",
+			);
 }

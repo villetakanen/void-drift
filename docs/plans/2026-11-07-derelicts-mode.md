@@ -111,6 +111,38 @@ passed. The rendered result dialog was inspected. Full repository lint retains
 previously observed study SVG issues; full browser, build and backend gates were
 not run. This is partial verification, not a release claim.
 
+### Shared-artwork slice
+
+Promoted the unchanged 41 source paths, sampled flat palette, eight B fracture
+regions/motion and selected release-cue definition into mode-a. Normalized the
+measured source extent to 110 world units (the study's nominal 110/140 scale was
+about 0.35% smaller). The production intact hull and canonical Derelict Lab use
+one cached painter; the square's light uses the existing persistent surface and
+its black aperture is restored after compositing. Local study adapters also use
+that shared painter and B reference; their broader uncommitted study work remains
+outside this commit. Retained source captures preserve the prior hue treatment.
+
+Physical collision proxies, four generic gameplay fragments, damage progression,
+collectible visuals and live release-pulse triggering are deliberately unchanged
+until slices 6–7. The visible 110-unit hull currently exceeds its old radius-18
+collision proxy; this is a known trial limitation, not accepted collision fidelity.
+
+Verification: 249 tests in 46 files passed; workspace types, contracts (14 factory
+checks), changed-file lint and two focused browser checks passed. The initial type
+check found the Astro no-props component signature issue; adding an explicit
+optional label resolved it. Initial review capture rejected range value `0.70`;
+normalizing it to `0.7` resolved the capture fixture. Canonical intact, early
+shedding, release and separated captures and early/post-impact production FX
+captures were inspected against the retained reference. Sustained performance and
+human in-flight fidelity/balance review remain unmeasured/unaccepted. Full build,
+full browser, backend and full repository lint were not run; existing study SVG
+lint issues remain outside this commit. This is partial verification.
+
+Canonical capture evidence:
+`artifacts/review/2026-11-07T07-30-45.996Z-749ce8d2-8e2a-4ec3-a049-528cd6024e97/`.
+Production FX capture:
+`artifacts/review/2026-11-07T07-31-44.634Z-33db6763-815a-4af2-8c50-f14972fd4dcf/`.
+
 ## Acceptance contract
 
 - Both entries use the active Hangar build and system choices, with fresh sessions
@@ -159,8 +191,10 @@ or four-piece breakup as the finished mode.
 1. **Damage details (before commit 6):** the policy is accepted below. Finalize
    shedding thresholds and contact/release sequencing when implementing physical
    progression; proposed starting values below remain provisional.
-2. **Colour treatment:** bake selected colours into flat hull planes (recommended)
-   or explicitly approve a scoped hue-overlay exception to docs/design.md.
+2. **Colour treatment resolved in the artwork slice:** bake each plane's original
+   hue treatment into a flat fill. Sample the mean RGB over the plane interior;
+   retain the 41 source paths unchanged. No runtime hull hue overlay or gradient
+   and no exception to docs/design.md. Energy light retains its separate halo.
 3. **Collision implementation:** choose fitted shapes and swept collision handling
    for long shards, hull gaps and partially attached structures. No circular-only
    authoritative proxies. Verify contact at encounter speeds.

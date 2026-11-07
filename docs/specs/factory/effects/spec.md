@@ -6,6 +6,15 @@ rejected the 0.5.0 engine appearance and clarified that the accumulated image mu
 hold the history. The direct pass and per-engine trail histories shipped in 0.5.0
 are superseded. [Correction plan](../plans/2026-11-03-fx-surface-correction.md).
 
+## Derelict contained energy
+
+Intact derelicts stamp the shared rotating-square halo into the persistent scene
+surface through `stampWeaponLight`, with normal visibility and source-budget
+checks. The hull painter keeps flat fills; energy light is independent decoration.
+FlightDeck and the mixed FX Lab restore the square's black aperture after the
+light composite. The release-pulse definition is shared with the canonical
+Derelict Lab; damage-triggered pulse activation belongs to containment integration.
+
 ## Blueprint
 
 ### Context

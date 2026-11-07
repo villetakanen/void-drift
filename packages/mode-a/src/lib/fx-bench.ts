@@ -6,7 +6,7 @@ import {
 } from "@void-drift/core";
 import { BUILD_FLIGHT_SCALE, drawBuild } from "./build-renderer";
 import { FlightFx } from "./gravity-fold-fx";
-import { drawSalvage } from "./salvage-renderer";
+import { drawSalvage, drawSalvageApertures } from "./salvage-renderer";
 import { starterLoadout } from "./schemas/loadout";
 import { SALVAGE } from "./schemas/salvage";
 import {
@@ -187,5 +187,8 @@ export class FxBench {
 				}
 			}
 		});
+		for (const sim of this.ships)
+			if (sim.salvage && this.weapons)
+				drawSalvageApertures(target, sim.salvage);
 	}
 }
