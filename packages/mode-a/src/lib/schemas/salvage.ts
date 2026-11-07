@@ -1,5 +1,29 @@
 import { z } from "zod";
 
+export const DestructionCauseSchema = z.enum([
+	"player-weapon",
+	"player-ram",
+	"environment",
+	"expiry",
+	"exit",
+]);
+export type DestructionCause = z.infer<typeof DestructionCauseSchema>;
+
+export const DerelictsResultSchema = z
+	.object({
+		seconds: z.number().nonnegative(),
+		playerKills: z.number().int().nonnegative(),
+		score: z.number().nonnegative(),
+	})
+	.refine(
+		(result) => result.score === result.seconds + 10 * result.playerKills,
+		{
+			message:
+				"Derelicts score must equal gameplay seconds plus ten per player kill",
+		},
+	);
+export type DerelictsResult = z.infer<typeof DerelictsResultSchema>;
+
 const ShotSchema = z.object({
 	damage: z.number().positive(),
 	energy: z.number().positive(),

@@ -4,7 +4,7 @@ import { weaponPose } from "./build-renderer";
 import { createStar } from "./game-loop";
 import { type SalvageBody, SalvageSystem } from "./salvage";
 import { buildStats, defaultLoadout } from "./schemas/loadout";
-import { SALVAGE } from "./schemas/salvage";
+import { DerelictsResultSchema, SALVAGE } from "./schemas/salvage";
 import { Simulation, STEP, setStarMassWell, stockSettings } from "./simulation";
 
 const idle = {
@@ -99,6 +99,94 @@ function injectLegacyPass(sim: Simulation) {
 }
 
 describe("Derelicts weapons and salvage", () => {
+	it("rejects inconsistent run results and fractional kill counts", () => {
+		expect(
+			DerelictsResultSchema.safeParse({
+				seconds: 60,
+				playerKills: 3,
+				score: 60,
+			}).success,
+		).toBe(false);
+		expect(
+			DerelictsResultSchema.safeParse({
+				seconds: 60,
+				playerKills: 0.5,
+				score: 65,
+			}).success,
+		).toBe(false);
+	});
+	it("counts weapon and ram wreck kills once, excluding other removals and fragments", () => {
+		const f = fixture();
+		const wreck = body("wreck", 550, 400);
+		f.system.bodies.push(wreck);
+		f.system.shots.push(
+			...[1, 2].map(() => ({ x: 550, y: 400, vx: 0, vy: 0, angle: 0 })),
+		);
+		f.step();
+		expect(f.system.playerKills).toBe(1);
+		f.system.bodies = [body("wreck", 400, 400, 2)];
+		f.step();
+		expect(f.system.playerKills).toBe(2);
+		const damaged = body("wreck", 550, 400, 3);
+		damaged.hull = 200;
+		f.system.bodies = [damaged];
+		f.system.shots = [];
+		f.system.shots.push({ x: 550, y: 400, vx: 0, vy: 0, angle: 0 });
+		f.step();
+		expect(damaged.hull).toBe(100);
+		damaged.x = f.star.pos.x;
+		damaged.y = f.star.pos.y;
+		const expired = body("wreck", 550, 400, 4);
+		expired.life = 0;
+		const exited = body("wreck", 10000, 400, 5);
+		const fragment = body("fragment", 400, 400, 6);
+		f.system.bodies = [damaged, expired, exited, fragment];
+		f.step();
+		expect(f.system.playerKills).toBe(2);
+	});
+
+	it("freezes the final Derelicts score and keeps other runs result-free", () => {
+		const loadout = defaultLoadout("fighter");
+		const sim = new Simulation({
+			...stockSettings(),
+			loadout,
+			mode: "derelicts",
+		});
+		legacyEncounter(sim);
+		sim.start();
+		expect(sim.derelictsResult).toBeNull();
+		if (!sim.salvage) throw new Error("Missing salvage system");
+		for (let i = 0; i < 2; i++) {
+			sim.salvage.bodies.push(body("wreck", 550, 400, i + 1));
+			sim.salvage.shots.push({ x: 550, y: 400, vx: 0, vy: 0, angle: 0 });
+			sim.step(idle);
+		}
+		sim.salvage.bodies.push(body("wreck", sim.ship.pos.x, sim.ship.pos.y, 3));
+		sim.step(idle);
+		sim.ticks = 3599;
+		sim.state.resources.hull = 0;
+		sim.step(idle);
+		expect(sim.derelictsResult).toEqual({
+			seconds: 60,
+			playerKills: 3,
+			score: 90,
+		});
+		sim.step(idle);
+		expect(sim.derelictsResult).toEqual({
+			seconds: 60,
+			playerKills: 3,
+			score: 90,
+		});
+		expect(
+			new Simulation({ ...stockSettings(), loadout, mode: "derelicts" })
+				.derelictsResult,
+		).toBeNull();
+		const survival = new Simulation(stockSettings());
+		survival.start();
+		survival.state.resources.hull = 0;
+		survival.step(idle);
+		expect(survival.derelictsResult).toBeNull();
+	});
 	it("completes a real rail salvage and collection pass using flight controls", () => {
 		const loadout = defaultLoadout("fighter");
 		loadout.hull[0] = "rail";

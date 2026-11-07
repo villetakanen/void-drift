@@ -6,7 +6,12 @@ import {
 	ION_REFERENCE_MASS,
 } from "./schemas/ion";
 import { buildStats, type Loadout } from "./schemas/loadout";
-import { ENCOUNTER, SALVAGE, WEAPONS } from "./schemas/salvage";
+import {
+	type DestructionCause,
+	ENCOUNTER,
+	SALVAGE,
+	WEAPONS,
+} from "./schemas/salvage";
 
 export type FlightTickInput = InputState & { sendDerelict?: boolean };
 export interface SalvageBody {
@@ -87,6 +92,7 @@ export class SalvageSystem {
 	nextPass = ENCOUNTER.firstPass;
 	passes = 0;
 	destroyed = 0;
+	playerKills = 0;
 	shotsFired = 0;
 	laserPulses = 0;
 	hits = 0;
@@ -218,14 +224,16 @@ export class SalvageSystem {
 			),
 		);
 	}
-	private destroy(body: SalvageBody) {
+	private destroy(body: SalvageBody, cause: DestructionCause) {
 		if (body.hull <= 0) return;
 		body.hull = 0;
+		if (cause !== "player-weapon" && cause !== "player-ram") return;
 		if (body.kind !== "wreck") {
 			this.emit("impact", body.x, body.y);
 			return;
 		}
 		this.destroyed++;
+		this.playerKills++;
 		this.emit("break", body.x, body.y);
 		const phase = this.random() * Math.PI * 2;
 		for (let i = 0; i < SALVAGE.fragment.count; i++) {
@@ -247,7 +255,7 @@ export class SalvageSystem {
 	private damage(body: SalvageBody, amount: number) {
 		if (body.hull <= 0) return;
 		this.hits++;
-		if (body.hull <= amount) this.destroy(body);
+		if (body.hull <= amount) this.destroy(body, "player-weapon");
 		else {
 			body.hull -= amount;
 			this.emit("impact", body.x, body.y);
@@ -501,9 +509,9 @@ export class SalvageSystem {
 			body.y += body.vy * dt;
 			body.life -= dt;
 			body.rotation += dt * (body.kind === "wreck" ? 0.3 : 0.8);
-			if (
-				body.life <= 0 ||
-				outside(body.x, body.y) ||
+			if (body.life <= 0) this.destroy(body, "expiry");
+			else if (outside(body.x, body.y)) this.destroy(body, "exit");
+			else if (
 				contactTime(
 					body.previousX - star.pos.x,
 					body.previousY - star.pos.y,
@@ -513,7 +521,7 @@ export class SalvageSystem {
 					dt,
 				) !== Infinity
 			)
-				body.hull = 0;
+				this.destroy(body, "environment");
 		}
 		this.shots = this.shots.filter((shot) => {
 			let first = contactTime(
@@ -586,7 +594,7 @@ export class SalvageSystem {
 					const ratio = body.radius / Math.max(body.radius, Math.hypot(dx, dy));
 					this.emit("collision", x + dx * ratio, y + dy * ratio);
 				}
-				this.destroy(body);
+				this.destroy(body, "player-ram");
 			}
 		}
 		this.bodies = this.bodies.filter((body) => body.hull > 0);

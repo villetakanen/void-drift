@@ -91,7 +91,25 @@ existing flight screen in Derelicts mode. This advances only the launch wiring f
 slice 8; generated systems, score presentation and the accepted artwork remain
 pending their planned slices. Existing Pause/Abort and return behavior is retained.
 Workspace types and a focused browser launch/encounter/abort/setup-retention check
-passed. This launch change is local working code.
+passed. The launch is preserved in local commit `b171d89`.
+
+### Run-score slice
+
+Destruction records its typed cause at the point of removal. Player weapon and
+ram wreck kills increment a separate exactly-once counter; fragments, environment,
+expiry and exit do not. A validated frozen result captures gameplay seconds,
+player kills and their total at Derelicts game over. FlightDeck shows this result
+only in that dialog, with no live score/timer, submission or leaderboard action.
+Survival's timer, result and submission rules remain separate.
+
+Verification: all 246 tests across 45 files passed in the working tree; workspace
+Astro/Svelte/TypeScript checks, contracts (14 factory tests) and changed-file lint
+passed. Seven entry/Survival browser checks passed initially; the score assertion
+failed on whitespace twice because the first edit did not match the formatted
+source. After correcting that assertion, the full result/storage/fresh-run journey
+passed. The rendered result dialog was inspected. Full repository lint retains
+previously observed study SVG issues; full browser, build and backend gates were
+not run. This is partial verification, not a release claim.
 
 ## Acceptance contract
 

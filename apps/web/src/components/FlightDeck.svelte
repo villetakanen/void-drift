@@ -4,6 +4,7 @@ import {
 	BUILD_FLIGHT_SCALE,
 	buildStats,
 	CHALLENGE,
+	type DerelictsResult,
 	drawBuild,
 	drawSalvage,
 	FlightFx,
@@ -50,6 +51,7 @@ let chosen = $derived<ShipProfileId>(loadout?.chassis ?? "wasp");
 let status = $state("MENU");
 let paused = $state(false);
 let seconds = $state(0);
+let derelictsResult = $state<Readonly<DerelictsResult> | null>(null);
 let hull = $state(100);
 let power = $state(100);
 let x = $state(460);
@@ -157,6 +159,7 @@ function sync() {
 	spin = (simulation.angularMotion.velocity * 180) / Math.PI;
 	status = simulation.state.status;
 	seconds = simulation.state.elapsedTime;
+	derelictsResult = simulation.derelictsResult;
 	hull = simulation.state.resources.hull;
 	power = simulation.state.resources.power;
 	x = simulation.ship.pos.x;
@@ -511,7 +514,7 @@ onMount(() => {
 							value={power}
 						></progress>
 					</div>
-					{#if !testFlight}
+					{#if mode === "survival"}
 						<div class="timer">
 							<small>SURVIVAL</small
 							><strong class="time">{seconds.toFixed(1)}s</strong>
@@ -597,7 +600,7 @@ onMount(() => {
 						>
 							Abort
 						</button>
-						{#if !testFlight}
+						{#if mode === "survival"}
 							<a class="btn btn-ghost" href="/leaderboard">Top Scores</a>
 							<a class="btn btn-ghost" href="/settings">Settings</a>
 						{/if}
@@ -615,8 +618,16 @@ onMount(() => {
 								? "HULL LOST"
 								: "POWER DEPLETED"}
 					</p>
-					<h1>{seconds.toFixed(1)} seconds.</h1>
-					<p>Every orbit teaches you something.</p>
+					{#if mode === "derelicts" && derelictsResult}
+						<h1>{derelictsResult.score.toFixed(1)} points.</h1>
+						<p>
+							{derelictsResult.seconds.toFixed(1)}
+							seconds · {derelictsResult.playerKills} derelicts destroyed
+						</p>
+					{:else}
+						<h1>{seconds.toFixed(1)} seconds.</h1>
+						<p>Every orbit teaches you something.</p>
+					{/if}
 					{#if mode === "survival" && !loadout && chosen !== "fiddler"}
 						<label for="initials">Your initials</label>
 						<input
@@ -655,7 +666,10 @@ onMount(() => {
 							{launchSource === "hangar"
 								? "Return to Hangar"
 								: "Return to title screen"}
-						</button><a class="btn btn-ghost" href="/leaderboard">Top Scores</a>
+						</button>
+						{#if mode === "survival"}
+							<a class="btn btn-ghost" href="/leaderboard">Top Scores</a>
+						{/if}
 					</div>
 				</Dialog>
 			{/if}

@@ -35,6 +35,7 @@ import {
 	PARTS,
 	starterLoadout,
 } from "./schemas/loadout";
+import { type DerelictsResult, DerelictsResultSchema } from "./schemas/salvage";
 import type { ShipProfileId } from "./schemas/ship-profile";
 import { GRAVITY_TUNING } from "./tuning";
 
@@ -110,6 +111,10 @@ export class Simulation {
 	readonly plume = new EnginePlume();
 	readonly gravity: GravityTuning = GRAVITY_TUNING;
 	readonly salvage?: SalvageSystem;
+	private finalDerelictsResult: Readonly<DerelictsResult> | null = null;
+	get derelictsResult(): Readonly<DerelictsResult> | null {
+		return this.finalDerelictsResult;
+	}
 	gravityCollectionRate = 0;
 	gravityFoldOpacity = 0;
 	gravityFoldDirection = 0;
@@ -398,6 +403,17 @@ export class Simulation {
 		if (cause && this.settings.mode !== "practice") {
 			this.state.status = "GAME_OVER";
 			this.state.deathCause = cause;
+			if (this.settings.mode === "derelicts") {
+				const seconds = this.state.elapsedTime;
+				const playerKills = this.salvage?.playerKills ?? 0;
+				this.finalDerelictsResult = Object.freeze(
+					DerelictsResultSchema.parse({
+						seconds,
+						playerKills,
+						score: seconds + 10 * playerKills,
+					}),
+				);
+			}
 		}
 	}
 	replay(data: unknown) {

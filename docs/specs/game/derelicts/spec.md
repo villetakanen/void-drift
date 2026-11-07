@@ -175,8 +175,10 @@ passing wreck within its shorter range. Approach and stay close, or combine guns
 - `packages/mode-a/src/lib/schemas/loadout.ts` owns validated setup data;
   `packages/mode-a/src/lib/schemas/flight.ts` owns flight settings;
   `packages/mode-a/src/lib/schemas/salvage.ts` owns weapon/encounter tuning.
-  Define mode selection and any changed encounter or score data contracts in
-  Zod before changing consumers.
+  Validated destruction causes and transient final results in `salvage.ts`
+  distinguish player weapon/ram kills from environment, expiry and exit. The
+  simulation captures a frozen result only at Derelicts game over; UI reads that
+  result without persistence. Define changed contracts in Zod before consumers.
 - `packages/mode-a/src/lib/simulation.ts` and
   `packages/mode-a/src/lib/game-loop.ts` provide shared simulation and survival
   termination. `packages/mode-a/src/lib/salvage.ts` provides combat and salvage.
@@ -196,15 +198,15 @@ passing wreck within its shorter range. Approach and stay close, or combine guns
   encounter random inputs, moving the player changes neither entry nor initial path.
 - [x] Arrival intervals vary, but their timing distribution does not depend on
   elapsed run duration; no Send derelict control is offered.
-- [ ] At 60 gameplay seconds, two weapon kills and one ram kill produce 90 points,
+- [x] At 60 gameplay seconds, two weapon kills and one ram kill produce 90 points,
   regardless of additional environmental destruction or destroyed fragments.
-- [ ] Each derelict awards its bonus once; a player-damaged wreck subsequently
+- [x] Each derelict awards its bonus once; a player-damaged wreck subsequently
   destroyed by the environment awards none.
 - [ ] Pause freezes the encounter and scoring clock; Resume continues; Abort
   returns to the unchanged Hangar setup. No in-run reset is offered.
 - [ ] Game over shows the final score and permits return to the unchanged setup.
   A new run carries over no score or encounter state.
-- [ ] No score appears outside game over, no score is persisted or submitted,
+- [x] No score appears outside game over, no score is persisted or submitted,
   and the run changes no persistent progression, rewards or equipment ownership.
 - [ ] Shared weapon targeting, power costs, recoil, fragments and energy pickups
   follow the rules above with keyboard and landscape touch flight controls.
