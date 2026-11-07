@@ -79,6 +79,23 @@ function legacyEncounter(sim: Simulation) {
 		sim.star.pos.x - sim.star.influenceRadius - 85,
 		sim.star.pos.y,
 	);
+	if (sim.salvage) sim.salvage.nextPass = Infinity;
+}
+
+function injectLegacyPass(sim: Simulation) {
+	const ship = sim.ship;
+	const cos = Math.cos(ship.rotation),
+		sin = Math.sin(ship.rotation);
+	sim.salvage?.bodies.push(
+		body(
+			"wreck",
+			ship.pos.x + cos * 150 - sin * 220,
+			ship.pos.y + sin * 150 + cos * 220,
+			1,
+			ship.vel.x + sin * 40,
+			ship.vel.y - cos * 40,
+		),
+	);
 }
 
 describe("Derelicts weapons and salvage", () => {
@@ -92,8 +109,10 @@ describe("Derelicts weapons and salvage", () => {
 		});
 		legacyEncounter(sim);
 		sim.start();
+		sim.replay([{ ...idle, ticks: 180 }]);
+		injectLegacyPass(sim);
 		sim.replay([
-			{ ...idle, ticks: 432 },
+			{ ...idle, ticks: 252 },
 			{ ...idle, leftThruster: true, rightThruster: true, ticks: 90 },
 		]);
 		expect(sim.salvage?.destroyed).toBe(1);
@@ -112,7 +131,9 @@ describe("Derelicts weapons and salvage", () => {
 				});
 				legacyEncounter(sim);
 				sim.start();
-				for (let i = 0; i < 900; i++) sim.step(idle);
+				for (let i = 0; i < 180; i++) sim.step(idle);
+				injectLegacyPass(sim);
+				for (let i = 0; i < 720; i++) sim.step(idle);
 				expect(sim.salvage?.hits, `${chassis} ${gun}`).toBeGreaterThan(0);
 				if (gun === "rail") expect(sim.salvage?.destroyed).toBe(1);
 			}
@@ -416,25 +437,7 @@ describe("Derelicts weapons and salvage", () => {
 		);
 		expect(wrapped.system.energyCollected).toBe(0);
 	});
-	it("bounds whole encounter groups, expires objects, and resets automatic cadence on summon", () => {
-		const f = fixture();
-		f.system.nextPass = SALVAGE.firstPass;
-		f.step(179);
-		expect(f.system.passes).toBe(0);
-		f.step();
-		expect(f.system.passes).toBe(1);
-		f.system.beginTick(true, f.ship, f.star);
-		expect(f.system.passes).toBe(2);
-		expect(f.system.canSend).toBe(false);
-		f.step(60);
-		f.system.beginTick(true, f.ship, f.star);
-		expect(f.system.passes).toBe(2);
-		f.system.nextPass = 1000;
-		f.step(18 * 60);
-		expect(f.system.groups).toBe(0);
-		expect(f.system.canSend).toBe(true);
-	});
-	it("replays summon only once per chunk and isolates ordinary survival", () => {
+	it("ignores legacy sends in replay and isolates ordinary survival", () => {
 		const loadout = defaultLoadout("fighter");
 		loadout.hull = ["rail", "laser"];
 		const settings = {

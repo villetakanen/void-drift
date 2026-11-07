@@ -199,7 +199,6 @@ export class Simulation {
 	}
 	step(input: FlightTickInput) {
 		if (this.state.status !== "PLAYING") return;
-		this.salvage?.beginTick(input.sendDerelict ?? false, this.ship, this.star);
 		const beforeX = this.ship.pos.x;
 		const beforeY = this.ship.pos.y;
 		let delivered = 0;
@@ -404,7 +403,6 @@ export class Simulation {
 	replay(data: unknown) {
 		const inputs = ReplaySchema.parse(data);
 		for (const input of inputs)
-			for (let tick = 0; tick < input.ticks; tick++)
-				this.step({ ...input, sendDerelict: tick === 0 && input.sendDerelict });
+			for (let tick = 0; tick < input.ticks; tick++) this.step(input);
 	}
 }

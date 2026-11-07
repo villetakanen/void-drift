@@ -46,17 +46,39 @@ export const WEAPONS = WeaponConfigSchema.parse({
 		threatHorizon: 3,
 	},
 });
+export const EncounterConfigSchema = z
+	.object({
+		firstPass: z.number().nonnegative(),
+		intervalMin: z.number().positive(),
+		intervalMax: z.number().positive(),
+		groups: z.number().int().positive(),
+		centerX: z.number(),
+		centerY: z.number(),
+		radius: z.number().positive(),
+		speedMin: z.number().positive(),
+		speedMax: z.number().positive(),
+		headingSpread: z
+			.number()
+			.positive()
+			.lt(Math.PI / 2),
+	})
+	.refine((c) => c.intervalMax >= c.intervalMin && c.speedMax >= c.speedMin);
+export const ENCOUNTER = EncounterConfigSchema.parse({
+	firstPass: 3,
+	intervalMin: 6,
+	intervalMax: 12,
+	groups: 8,
+	centerX: 960,
+	centerY: 540,
+	radius: 1200,
+	speedMin: 100,
+	speedMax: 500,
+	headingSpread: Math.PI / 3,
+});
 export const SalvageConfigSchema = z.object({
-	firstPass: z.number().nonnegative(),
-	interval: z.number().positive(),
-	summonCooldown: z.number().positive(),
-	groups: z.number().int().positive(),
-	forward: z.number().positive(),
-	side: z.number().positive(),
 	wreck: z.object({
 		hull: z.number().positive(),
 		radius: z.number().positive(),
-		speed: z.number().positive(),
 		life: z.number().positive(),
 		contact: z.number().positive(),
 	}),
@@ -75,13 +97,7 @@ export const SalvageConfigSchema = z.object({
 	}),
 });
 export const SALVAGE = SalvageConfigSchema.parse({
-	firstPass: 3,
-	interval: 18,
-	summonCooldown: 1,
-	groups: 2,
-	forward: 150,
-	side: 220,
-	wreck: { hull: 85, radius: 18, speed: 40, life: 18, contact: 30 },
+	wreck: { hull: 85, radius: 18, life: 30, contact: 30 },
 	fragment: { count: 4, hull: 12, radius: 5, contact: 5, life: 12, speed: 60 },
 	cell: { energy: 30, radius: 6, life: 20 },
 });

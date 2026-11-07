@@ -64,6 +64,25 @@ resource display, controls and pause composition. Human handling acceptance is
 still outstanding. Full repository lint retains the previously observed study
 SVG failures; full browser, build and backend gates were not run for this slice.
 
+### Boundary-arrival slice
+
+Replaced ship-relative passes with seeded inward boundary arrivals. Timing and
+trajectory streams are independent of combat/breakup random consumption, and
+capacity skips consume candidate paths without changing future deadlines. The
+legacy manual-send replay field remains parseable but is ignored. The FX Lab
+supplies explicit diagnostic targets so it does not depend on random arrivals.
+Public Derelicts entry and generated-system wiring remain in slice 8.
+
+Verification: all 240 tests in the full unit suite passed before the final
+expiry-coverage addition; the six arrival tests then passed with that addition.
+Workspace types and changed-file lint passed. Contracts initially failed in an
+existing 300-ms emulator-timeout runner test (missing shutdown marker); an isolated
+rerun passed all 14 factory tests with advisory existing Markdown-link warnings.
+Practice and landscape-touch browser regressions passed (two tests). No source
+changes were made to factory gates. Full repository lint retains the previously
+observed study SVG issues; build, full browser and backend gates were not run.
+Human flight balance/readability review remains pending the integrated mode.
+
 ## Acceptance contract
 
 - Both entries use the active Hangar build and system choices, with fresh sessions
@@ -117,9 +136,12 @@ or four-piece breakup as the finished mode.
 3. **Collision implementation:** choose fitted shapes and swept collision handling
    for long shards, hull gaps and partially attached structures. No circular-only
    authoritative proxies. Verify contact at encounter speeds.
-4. **Arrival tuning:** initial interval distribution and concurrent-body budget;
-   no elapsed-time ramp or ship-relative positioning. Inspect generated-system
-   readiness before deciding integration details; retain default fallback.
+4. **Arrival tuning resolved for slice 3:** first arrival at 3 seconds, independent
+   uniform 6–12-second gaps, uniform boundary entries, inward headings within ±60°,
+   uniform 100–500 u/s system speed, 30-second wreck expiry and eight groups.
+   Skip arrivals at capacity without a backlog; separate seeded timing/trajectory
+   streams from combat. These are provisional balance values for flight review.
+   Generated-system integration remains a later entry slice with default fallback.
 5. **Experience acceptance:** measure multiple simultaneous breakups and review
    readability at 100–500 u/s. Automated tests do not accept visual fidelity.
 
@@ -167,4 +189,5 @@ entry/UI changes. Use repository-required checks from docs/development.md before
 completion. Report failed, skipped and unavailable checks explicitly. Review Lab
 references at widths of at least 1280px; flight additionally retains landscape
 phone controls. Record human review and measured frame-time/body/effect budgets.
-Preserve all existing plans. No push, publication or external feedback is included.
+Preserve all existing plans. The owner explicitly authorized committing and pushing
+each requested slice; publication and external feedback remain outside scope.

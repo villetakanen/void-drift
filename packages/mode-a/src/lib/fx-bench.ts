@@ -8,6 +8,7 @@ import { BUILD_FLIGHT_SCALE, drawBuild } from "./build-renderer";
 import { FlightFx } from "./gravity-fold-fx";
 import { drawSalvage } from "./salvage-renderer";
 import { starterLoadout } from "./schemas/loadout";
+import { SALVAGE } from "./schemas/salvage";
 import {
 	planetMass,
 	Simulation,
@@ -42,8 +43,8 @@ export class FxBench {
 				loadout,
 				mode: "derelicts",
 			});
-			// Preserve the existing reference workload unless weapon diagnostics are selected.
-			if (sim.salvage && !this.weapons) sim.salvage.nextPass = Infinity;
+			// The diagnostic supplies its own targets instead of waiting for encounters.
+			if (sim.salvage) sim.salvage.nextPass = Infinity;
 			const x = 400 + (i % 3) * 500,
 				y = 300 + Math.floor(i / 3) * 470;
 			// Local test scene only: isolate six planetary passes from the central star.
@@ -65,6 +66,25 @@ export class FxBench {
 			planet.pos.set(x + 100, y);
 			sim.ship.pos.set(x, y);
 			sim.ship.rotation = -Math.PI / 2;
+			if (this.weapons && sim.salvage) {
+				const targetX = x,
+					targetY = y - 130;
+				sim.salvage.bodies.push({
+					id: 1,
+					group: 1,
+					kind: "wreck",
+					x: targetX,
+					y: targetY,
+					previousX: targetX,
+					previousY: targetY,
+					vx: 0,
+					vy: 0,
+					radius: SALVAGE.wreck.radius,
+					hull: SALVAGE.wreck.hull,
+					life: SALVAGE.wreck.life,
+					rotation: 0,
+				});
+			}
 			sim.start();
 			return sim;
 		});

@@ -62,7 +62,6 @@ let runSeed = $state(0);
 let left = $state(false);
 let right = $state(false);
 let cause = $state("");
-let pendingDerelict = $state(false);
 let salvageFeedback = $state("");
 let salvageStats = $state({
 	passes: 0,
@@ -100,7 +99,6 @@ let initials = $state("AAA");
 let saving = $state(false);
 let scoreSaved = $state(false);
 function reset(start = false) {
-	pendingDerelict = false;
 	if (phase !== "starting") phase = start ? "playing" : "menu";
 	input?.reset();
 	simulation = new Simulation(
@@ -199,11 +197,7 @@ function togglePause() {
 }
 function advance(state: FlightTickInput) {
 	const before = simulation.wraps;
-	simulation.step({
-		...state,
-		sendDerelict: pendingDerelict || state.sendDerelict,
-	});
-	pendingDerelict = false;
+	simulation.step(state);
 	frameCamera(before !== simulation.wraps);
 	camera.update(STEP);
 }

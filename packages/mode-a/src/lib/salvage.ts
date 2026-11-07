@@ -6,7 +6,7 @@ import {
 	ION_REFERENCE_MASS,
 } from "./schemas/ion";
 import { buildStats, type Loadout } from "./schemas/loadout";
-import { SALVAGE, WEAPONS } from "./schemas/salvage";
+import { ENCOUNTER, SALVAGE, WEAPONS } from "./schemas/salvage";
 
 export type FlightTickInput = InputState & { sendDerelict?: boolean };
 export interface SalvageBody {
@@ -71,7 +71,9 @@ function angleDifference(a: number, b: number) {
 	return Math.atan2(Math.sin(a - b), Math.cos(a - b));
 }
 function outside(x: number, y: number) {
-	return Math.hypot(x - 960, y - 540) > 1200;
+	return (
+		Math.hypot(x - ENCOUNTER.centerX, y - ENCOUNTER.centerY) > ENCOUNTER.radius
+	);
 }
 
 /** Bounded, deterministic gameplay. No Canvas, wall clock, or cosmetic randomness. */
@@ -82,8 +84,7 @@ export class SalvageSystem {
 	shots: RailShot[] = [];
 	events: WeaponEvent[] = [];
 	time = 0;
-	nextPass = SALVAGE.firstPass;
-	summonReadyAt = 0;
+	nextPass = ENCOUNTER.firstPass;
 	passes = 0;
 	destroyed = 0;
 	shotsFired = 0;
@@ -95,6 +96,8 @@ export class SalvageSystem {
 	private sequence = 0;
 	private eventSequence = 0;
 	private randomState: number;
+	private scheduleState: number;
+	private trajectoryState: number;
 	private readonly recoilAcceleration: number;
 	constructor(
 		loadout: Loadout,
@@ -102,6 +105,8 @@ export class SalvageSystem {
 		ion: AssembledIonSettings = ASSEMBLED_ION_DEFAULTS,
 	) {
 		this.randomState = seed >>> 0;
+		this.scheduleState = (seed ^ 0x9e3779b9) >>> 0;
+		this.trajectoryState = (seed ^ 0x85ebca6b) >>> 0;
 		this.recoilAcceleration =
 			(ion.acceleration * ION_REFERENCE_MASS * WEAPONS.rail.recoilStrength) /
 			buildStats(loadout).mass;
@@ -126,11 +131,6 @@ export class SalvageSystem {
 	}
 	get groups() {
 		return new Set(this.bodies.map((body) => body.group)).size;
-	}
-	get canSend() {
-		return (
-			this.time + 1e-9 >= this.summonReadyAt && this.groups < SALVAGE.groups
-		);
 	}
 	private random() {
 		this.randomState =
@@ -185,52 +185,38 @@ export class SalvageSystem {
 			rotation: this.random() * Math.PI * 2,
 		};
 	}
-	private spawn(ship: GameObject, star: Star) {
-		if (this.groups >= SALVAGE.groups) return false;
-		const cos = Math.cos(ship.rotation),
-			sin = Math.sin(ship.rotation);
-		const side = this.passes % 2 === 0 ? 1 : -1;
-		// Near an edge, use the first safe mirrored pass; never wrap a spawned wreck.
-		for (const [forward, lateral] of [
-			[1, side],
-			[1, -side],
-			[-1, side],
-			[-1, -side],
-		]) {
-			const x =
-				ship.pos.x +
-				cos * SALVAGE.forward * forward -
-				sin * SALVAGE.side * lateral;
-			const y =
-				ship.pos.y +
-				sin * SALVAGE.forward * forward +
-				cos * SALVAGE.side * lateral;
-			if (
-				outside(x, y) ||
-				Math.hypot(x - star.pos.x, y - star.pos.y) <
-					star.radius + SALVAGE.wreck.radius
-			)
-				continue;
-			this.passes++;
-			this.bodies.push(
-				this.body(
-					"wreck",
-					this.passes,
-					x,
-					y,
-					ship.vel.x + sin * SALVAGE.wreck.speed * lateral,
-					ship.vel.y - cos * SALVAGE.wreck.speed * lateral,
-				),
-			);
-			return true;
-		}
-		return false;
+	private scheduleRandom() {
+		this.scheduleState =
+			(Math.imul(this.scheduleState, 1664525) + 1013904223) >>> 0;
+		return this.scheduleState / 4294967296;
 	}
-	beginTick(send: boolean, ship: GameObject, star: Star) {
-		if (send && this.canSend && this.spawn(ship, star)) {
-			this.summonReadyAt = this.time + SALVAGE.summonCooldown;
-			this.nextPass = this.time + SALVAGE.interval;
-		}
+	private trajectoryRandom() {
+		this.trajectoryState =
+			(Math.imul(this.trajectoryState, 1664525) + 1013904223) >>> 0;
+		return this.trajectoryState / 4294967296;
+	}
+	private spawn() {
+		// Consume the complete trajectory even when the group budget is full.
+		const angle = this.trajectoryRandom() * Math.PI * 2;
+		const heading =
+			angle +
+			Math.PI +
+			(this.trajectoryRandom() * 2 - 1) * ENCOUNTER.headingSpread;
+		const speed =
+			ENCOUNTER.speedMin +
+			this.trajectoryRandom() * (ENCOUNTER.speedMax - ENCOUNTER.speedMin);
+		if (this.groups >= ENCOUNTER.groups) return;
+		this.passes++;
+		this.bodies.push(
+			this.body(
+				"wreck",
+				this.passes,
+				ENCOUNTER.centerX + Math.cos(angle) * ENCOUNTER.radius,
+				ENCOUNTER.centerY + Math.sin(angle) * ENCOUNTER.radius,
+				Math.cos(heading) * speed,
+				Math.sin(heading) * speed,
+			),
+		);
 	}
 	private destroy(body: SalvageBody) {
 		if (body.hull <= 0) return;
@@ -490,9 +476,11 @@ export class SalvageSystem {
 	) {
 		this.time += dt;
 		this.events = this.events.filter((event) => this.time - event.time <= 0.2);
-		if (this.time + 1e-9 >= this.nextPass) {
-			this.spawn(ship, star);
-			this.nextPass = this.time + SALVAGE.interval;
+		while (this.time + 1e-9 >= this.nextPass) {
+			this.spawn();
+			this.nextPass +=
+				ENCOUNTER.intervalMin +
+				this.scheduleRandom() * (ENCOUNTER.intervalMax - ENCOUNTER.intervalMin);
 		}
 		this.fireWeapons(dt, ship, star, resources);
 		for (const weapon of this.weapons) {
