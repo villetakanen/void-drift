@@ -251,6 +251,7 @@ export const DERELICT_PLANE_PALETTE: readonly string[] = [
 	"#5f776e",
 	"#9abdb1",
 ];
+export const DERELICT_ENERGY_SOURCE = { x: 100.05, y: 154.15 } as const;
 export const DERELICT_ORIGIN = { x: 101, y: 150 } as const;
 export const DERELICT_SCALE = 110 / 139.51844787597656;
 
@@ -314,3 +315,6 @@ export const DERELICT_RELEASE_CUE = {
 	lineWidth: 3 / 1.6,
 	strength: 1.8,
 } as const;
+
+/** B reference ejection velocity in the wreck's local frame. */
+export const DERELICT_ENERGY_EJECTION = { x: 0, y: -45 } as const;

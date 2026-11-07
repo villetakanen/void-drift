@@ -23,12 +23,18 @@ let canvas: HTMLCanvasElement;
 let ready = $state(false);
 let showMaterial = $state(false);
 let repaint = () => {};
+let energyX = $state<number | undefined>();
+let energyY = $state<number | undefined>();
+let pulseX = $state<number | undefined>();
+let pulseY = $state<number | undefined>();
+let gameTime = $state(0);
 let hull = $state(SALVAGE.wreck.hull),
 	fragments = $state(0),
 	cells = $state(0),
 	shipHull = $state(100);
-let act: (kind: "laser" | "rail" | "ram" | "coast" | "reset") => void =
-	() => {};
+let act: (
+	kind: "laser" | "rail" | "ram" | "coast" | "coast-short" | "reset",
+) => void = () => {};
 onMount(() => {
 	const ctx = canvas.getContext("2d");
 	if (!ctx) return;
@@ -88,6 +94,15 @@ onMount(() => {
 		).length;
 		cells = salvage.bodies.filter((body) => body.kind === "cell").length;
 		shipHull = sim.state.resources.hull;
+		const cell = salvage.bodies.find((body) => body.kind === "cell");
+		const release = salvage.events.find(
+			(event) => event.kind === "energy-release",
+		);
+		energyX = cell?.x;
+		energyY = cell?.y;
+		pulseX = release?.x;
+		pulseY = release?.y;
+		gameTime = salvage.time;
 	};
 	const reset = () => {
 		sim = new Simulation({
@@ -141,7 +156,14 @@ onMount(() => {
 			sim.ship.pos.set(wreck.x - 25, wreck.y);
 			sim.ship.vel.set(100, 0);
 		}
-		const ticks = kind === "coast" ? 30 : kind === "rail" ? 15 : 1;
+		const ticks =
+			kind === "coast"
+				? 30
+				: kind === "coast-short"
+					? 6
+					: kind === "rail"
+						? 15
+						: 1;
 		for (let tick = 0; tick < ticks; tick++) {
 			sim.step({ leftThruster: false, rightThruster: false, fire: false });
 			paint();
@@ -156,7 +178,15 @@ $effect(() => {
 	repaint();
 });
 </script>
-<section class="damage-bench" aria-label="Physical shedding specimen">
+<section
+	class="damage-bench"
+	aria-label="Physical shedding specimen"
+	data-energy-x={energyX}
+	data-energy-y={energyY}
+	data-pulse-x={pulseX}
+	data-pulse-y={pulseY}
+	data-game-time={gameTime}
+>
 	<h2>Damage and physical pieces</h2>
 	<p>Production simulation · fixed specimen · 2× view</p>
 	<canvas bind:this={canvas} aria-label={label}></canvas>
@@ -197,6 +227,14 @@ $effect(() => {
 			type="button"
 			class="btn btn-ghost"
 			disabled={!ready}
+			onclick={() => act("coast-short")}
+		>
+			Coast 0.1 s
+		</button>
+		<button
+			type="button"
+			class="btn btn-ghost"
+			disabled={!ready}
 			onclick={() => act("coast")}
 		>
 			Coast 0.5 s
@@ -212,11 +250,14 @@ $effect(() => {
 	</div>
 	<p>
 		Laser damage sheds pieces at 20%, 40% and 60%. Player destruction releases
-		the remaining pieces and one energy cell. Environmental destruction loses
-		the energy and awards no kill.
+		the remaining pieces, ejects the energy square and stamps the release pulse.
+		Environmental destruction loses the energy and awards no kill.
 	</p>
 </section>
 <style>
+.button-group {
+	flex-wrap: wrap;
+}
 .damage-bench {
 	padding: var(--spacing-lg);
 }

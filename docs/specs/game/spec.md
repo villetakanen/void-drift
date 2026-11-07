@@ -45,8 +45,9 @@ appears only at game over: gameplay seconds plus ten per player weapon/ram kill.
 The result is frozen, not saved or submitted, and does not alter Survival scoring.
 The intact hull uses shared 110-unit artwork with flat fills and contained energy.
 Physical shards and remaining hull share fitted material collision and staged
-damage release. Generated systems and collectible/release-feedback integration
-remain future slices.
+damage release. Player destruction ejects the shared energy square with a fixed
+rupture pulse; environmental destruction loses that energy and awards no kill.
+Generated-system entry remains a future slice.
 Settings and replay consumers pass explicit modes; no build-store migration is
 required. Existing replay input chunks retain their schema.
 

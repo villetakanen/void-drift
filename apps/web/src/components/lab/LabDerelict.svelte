@@ -3,6 +3,8 @@ import { FxSurface } from "@void-drift/core";
 import {
 	BUILD_FLIGHT_SCALE,
 	createDerelictPainter,
+	DERELICT_ENERGY_EJECTION,
+	DERELICT_ENERGY_SOURCE,
 	DERELICT_ORIGIN,
 	DERELICT_SCALE,
 	DERELICT_SHARDS,
@@ -76,7 +78,8 @@ onMount(() => {
 			painter.hull(ctx);
 			ctx.restore();
 		}
-		const energyY = 240 - 45 * Math.max(0, time - 1) * 1.6;
+		const energyY =
+			240 + DERELICT_ENERGY_EJECTION.y * Math.max(0, time - 1) * 1.6;
 		ctx.save();
 		at(ctx, 740, energyY);
 		painter.core(ctx, time);
@@ -90,7 +93,10 @@ onMount(() => {
 			if (!glow) return;
 			for (const [x, y] of [
 				[350, 240],
-				[740, 240 - 45 * Math.max(0, stampTime - 1) * 1.6],
+				[
+					740,
+					240 + DERELICT_ENERGY_EJECTION.y * Math.max(0, stampTime - 1) * 1.6,
+				],
 			]) {
 				target.save();
 				at(target, x, y);
@@ -99,8 +105,10 @@ onMount(() => {
 			}
 			target.save();
 			target.translate(
-				740 + (100.05 - DERELICT_ORIGIN.x) * DERELICT_SCALE * 1.6,
-				240 + (154.15 - DERELICT_ORIGIN.y) * DERELICT_SCALE * 1.6,
+				740 +
+					(DERELICT_ENERGY_SOURCE.x - DERELICT_ORIGIN.x) * DERELICT_SCALE * 1.6,
+				240 +
+					(DERELICT_ENERGY_SOURCE.y - DERELICT_ORIGIN.y) * DERELICT_SCALE * 1.6,
 			);
 			target.scale(1.6, 1.6);
 			painter.release(target, pass, stampTime - 1);
@@ -145,7 +153,7 @@ $effect(() => {
 	<p>
 		The scrubber demonstrates the accepted release order and motion. Use the
 		damage specimen above to exercise physical release and fitted collisions.
-		The reference pulse is connected to live energy release in the next slice.
+		The damage specimen uses this square and pulse on actual player destruction.
 	</p>
 </div>
 <style>

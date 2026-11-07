@@ -182,6 +182,36 @@ Indicative collision-only Vitest measurements were about 92 ms per 1000 static
 casts and 96 ms per 100 difficult rotating grazes; these are not frame-time or
 hardware acceptance measurements.
 
+### Energy-square pickup and player release-pulse slice
+
+Promoted source-centre and B ejection constants; player weapon/ram destruction
+creates one moving square at the fractional rupture pose. It inherits wreck
+velocity plus local (0, −45) u/s transformed by contact heading. The rotation anchor
+retains that heading; shared π/6-per-second phase preserves continuity after release.
+Pickup value/radius/lifetime stay 30/6/20; full-capacity pickups remain consumed.
+
+The validated `energy-release` event retains the fixed rupture centre for the
+shared 0.28-second world-unit pulse. The persistent surface owns afterglow. It
+replaces the generic player-break flash; environmental destruction, expiry, exit
+and fragment destruction create neither event nor collectible. Body, halo and black
+aperture use the same cached painter in flight and the production Lab specimen.
+The Lab adds short coasting to inspect the pulse separately from the moving square.
+
+Verification: 274 unit tests across 47 files, workspace type checks, 14 factory
+contract tests, changed-file Biome checks and the production build passed. Four
+browser journeys passed: moving square/fixed pulse/hollow aperture/reset, physical
+shedding, Hangar entry and frozen game-over scoring. The production specimen capture
+passed and was inspected at 1440px; the behavioral Lab check uses 1280px.
+Pause/fresh-run and saturated-event-ring coverage retain the release lifecycle.
+The flight FX surface clears when the simulation instance changes.
+
+Capture evidence:
+`artifacts/review/2026-11-07T08-21-59.477Z-793e5a1d-3e7b-4073-90e0-78187522b149/`.
+This is focused verification, not a full `pnpm verify` pass: the complete browser
+suite and backend suites were not run for this slice. Repository-wide lint remains
+affected by unrelated untracked study SVGs recorded in earlier slice evidence.
+Captures do not establish owner acceptance of feel or sustained device performance.
+
 ## Acceptance contract
 
 - Both entries use the active Hangar build and system choices, with fresh sessions

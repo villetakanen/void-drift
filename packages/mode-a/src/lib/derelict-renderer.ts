@@ -1,5 +1,6 @@
 import { COLOR, type FxPass } from "@void-drift/core";
 import {
+	DERELICT_ENERGY_SOURCE,
 	DERELICT_ORIGIN,
 	DERELICT_PLANE_PALETTE,
 	DERELICT_RELEASE_CUE,
@@ -47,7 +48,7 @@ export function createDerelictPainter() {
 	glow.strokeRect(-25.92, -25.92, 51.84, 51.84);
 
 	function atCore(target: CanvasRenderingContext2D, time: number) {
-		target.translate(100.05, 154.15);
+		target.translate(DERELICT_ENERGY_SOURCE.x, DERELICT_ENERGY_SOURCE.y);
 		target.rotate(Math.PI / 6 + (time * Math.PI) / 6);
 	}
 	return {
@@ -163,5 +164,41 @@ export function drawDerelictShard(
 	ctx.scale(DERELICT_SCALE, DERELICT_SCALE);
 	ctx.translate(-piece.x, -piece.y);
 	getDerelictPainter().shard(ctx, index);
+	ctx.restore();
+}
+
+/** The free cell shares the contained square's source-space artwork and phase. */
+export function drawDerelictEnergy(
+	ctx: CanvasRenderingContext2D,
+	x: number,
+	y: number,
+	rotation: number,
+	time: number,
+	layer: "body" | "light" | "aperture",
+	pass?: FxPass,
+) {
+	ctx.save();
+	ctx.translate(x, y);
+	ctx.rotate(rotation);
+	ctx.scale(DERELICT_SCALE, DERELICT_SCALE);
+	ctx.translate(-DERELICT_ENERGY_SOURCE.x, -DERELICT_ENERGY_SOURCE.y);
+	const painter = getDerelictPainter();
+	if (layer === "body") painter.core(ctx, time);
+	else if (layer === "aperture") painter.aperture(ctx, time);
+	else if (pass) painter.light(ctx, pass, time);
+	ctx.restore();
+}
+
+/** Stamp the shared world-unit pulse at its fixed rupture point. */
+export function stampDerelictRelease(
+	ctx: CanvasRenderingContext2D,
+	x: number,
+	y: number,
+	age: number,
+	pass: FxPass,
+) {
+	ctx.save();
+	ctx.translate(x, y);
+	getDerelictPainter().release(ctx, pass, age);
 	ctx.restore();
 }

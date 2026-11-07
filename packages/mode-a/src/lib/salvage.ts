@@ -8,7 +8,10 @@ import type {
 import { type BuildMount, buildMounts, weaponPose } from "./build-renderer";
 import { castDerelict, getDerelictRadius } from "./derelict-collision";
 import {
+	DERELICT_ENERGY_EJECTION,
+	DERELICT_ENERGY_SOURCE,
 	DERELICT_ORIGIN,
+	DERELICT_RELEASE_CUE,
 	DERELICT_SCALE,
 	DERELICT_SHARDS,
 } from "./derelict-geometry";
@@ -24,7 +27,11 @@ import {
 	ENCOUNTER,
 	SALVAGE,
 	WEAPONS,
+	type WeaponEvent,
+	WeaponEventSchema,
 } from "./schemas/salvage";
+
+export type { WeaponEvent } from "./schemas/salvage";
 
 export type FlightTickInput = InputState & { sendDerelict?: boolean };
 export interface SalvageBody extends SalvagePhysicalState {
@@ -57,16 +64,6 @@ export interface WeaponState {
 	target: number | null;
 	recoil: { remaining: number; angle: number } | null;
 }
-export interface WeaponEvent {
-	id: number;
-	kind: "rail" | "laser" | "collision" | "impact" | "break" | "collect";
-	x: number;
-	y: number;
-	endX: number;
-	endY: number;
-	time: number;
-}
-
 /** First contact between relative linear motion and a circle, including overlap. */
 export function contactTime(
 	x: number,
@@ -163,17 +160,26 @@ export class SalvageSystem {
 		y: number,
 		endX = x,
 		endY = y,
+		time = this.time,
 	) {
-		if (this.events.length >= 128) this.events.shift();
-		this.events.push({
-			id: ++this.eventSequence,
-			kind,
-			x,
-			y,
-			endX,
-			endY,
-			time: this.time,
-		});
+		if (this.events.length >= 128) {
+			// Preserve active containment cues when ordinary impact traffic fills the ring.
+			const ordinary = this.events.findIndex(
+				(event) => event.kind !== "energy-release",
+			);
+			this.events.splice(Math.max(ordinary, 0), 1);
+		}
+		this.events.push(
+			WeaponEventSchema.parse({
+				id: ++this.eventSequence,
+				kind,
+				x,
+				y,
+				endX,
+				endY,
+				time,
+			}),
+		);
 	}
 	private body(
 		kind: SalvageBody["kind"],
@@ -332,7 +338,11 @@ export class SalvageSystem {
 		fragment.suppressShipContact = suppressShipContact;
 		this.bodies.push(fragment);
 	}
-	private destroy(body: SalvageBody, cause: DestructionCause) {
+	private destroy(
+		body: SalvageBody,
+		cause: DestructionCause,
+		time = this.time,
+	) {
 		if (body.hull <= 0) return;
 		body.hull = 0;
 		if (cause === "expiry" || cause === "exit") return;
@@ -345,20 +355,42 @@ export class SalvageSystem {
 			this.destroyed++;
 			this.playerKills++;
 		}
-		this.emit("break", body.x, body.y);
+		const playerRelease = cause === "player-weapon" || cause === "player-ram";
+		if (!playerRelease) this.emit("break", body.x, body.y);
 		for (let i = 0; i < DERELICT_SHARDS.length; i++)
 			this.release(body, i, cause === "player-ram");
-		if (cause !== "environment")
-			this.bodies.push(
-				this.body("cell", body.group, body.x, body.y, body.vx, body.vy),
+		if (playerRelease) {
+			const c = Math.cos(body.rotation),
+				s = Math.sin(body.rotation);
+			const px =
+				(DERELICT_ENERGY_SOURCE.x - DERELICT_ORIGIN.x) * DERELICT_SCALE;
+			const py =
+				(DERELICT_ENERGY_SOURCE.y - DERELICT_ORIGIN.y) * DERELICT_SCALE;
+			const x = body.x + c * px - s * py,
+				y = body.y + s * px + c * py;
+			const cell = this.body(
+				"cell",
+				body.group,
+				x,
+				y,
+				body.vx +
+					c * DERELICT_ENERGY_EJECTION.x -
+					s * DERELICT_ENERGY_EJECTION.y,
+				body.vy +
+					s * DERELICT_ENERGY_EJECTION.x +
+					c * DERELICT_ENERGY_EJECTION.y,
 			);
+			cell.rotation = body.rotation;
+			this.bodies.push(cell);
+			this.emit("energy-release", x, y, x, y, time);
+		}
 	}
-	private damage(body: SalvageBody, amount: number) {
+	private damage(body: SalvageBody, amount: number, time = this.time) {
 		if (body.hull <= 0) return;
 		this.hits++;
 		if (body.kind === "wreck" && body.initialHull === undefined)
 			body.initialHull = body.hull;
-		if (body.hull <= amount) this.destroy(body, "player-weapon");
+		if (body.hull <= amount) this.destroy(body, "player-weapon", time);
 		else {
 			body.hull -= amount;
 			if (body.kind === "wreck") {
@@ -618,7 +650,7 @@ export class SalvageSystem {
 					pose.muzzleY + dy * first,
 				);
 				this.laserPulses++;
-				this.damage(hit, config.damage);
+				this.damage(hit, config.damage, this.time - dt);
 			}
 			weapon.readyAt = this.time + config.cooldown;
 			resources.power -= config.energy;
@@ -637,7 +669,11 @@ export class SalvageSystem {
 		planets: readonly Planet[] = [],
 	) {
 		this.time += dt;
-		this.events = this.events.filter((event) => this.time - event.time <= 0.2);
+		this.events = this.events.filter(
+			(event) =>
+				this.time - event.time <=
+				(event.kind === "energy-release" ? DERELICT_RELEASE_CUE.duration : 0.2),
+		);
 		while (this.time + 1e-9 >= this.nextPass) {
 			this.spawn();
 			this.nextPass +=
@@ -696,7 +732,8 @@ export class SalvageSystem {
 			body.x += body.vx * dt;
 			body.y += body.vy * dt;
 			body.life -= dt;
-			body.rotation += dt * (body.kind === "wreck" ? 0.3 : 0.8);
+			if (body.kind !== "cell")
+				body.rotation += dt * (body.kind === "wreck" ? 0.3 : 0.8);
 		}
 		type Terminal = { time: number; cause: "environment" | "expiry" | "exit" };
 		const terminalTimes = new Map<
@@ -816,7 +853,7 @@ export class SalvageSystem {
 				hit.rotation =
 					(hit.previousRotation ?? end.rotation) +
 					first * (hit.kind === "wreck" ? 0.3 : 0.8);
-				this.damage(hit, WEAPONS.rail.damage);
+				this.damage(hit, WEAPONS.rail.damage, this.time - dt + first);
 				if (hit.hull > 0) Object.assign(hit, end);
 			}
 			if (first !== Infinity) this.emit("collision", shot.x, shot.y);
@@ -912,7 +949,11 @@ export class SalvageSystem {
 						(body.previousRotation ?? body.rotation) +
 						dt * contact * (body.kind === "wreck" ? 0.3 : 0.8);
 				}
-				this.destroy(body, "player-ram");
+				this.destroy(
+					body,
+					"player-ram",
+					born ? this.time : this.time - dt + contact * dt,
+				);
 			}
 		}
 		for (const body of existingBodies) {

@@ -8,12 +8,19 @@ are superseded. [Correction plan](../plans/2026-11-03-fx-surface-correction.md).
 
 ## Derelict contained energy
 
-Intact derelicts stamp the shared rotating-square halo into the persistent scene
-surface through `stampWeaponLight`, with normal visibility and source-budget
-checks. The hull painter keeps flat fills; energy light is independent decoration.
-FlightDeck and the mixed FX Lab restore the square's black aperture after the
-light composite. The release-pulse definition is shared with the canonical
-Derelict Lab; damage-triggered pulse activation belongs to containment integration.
+Intact derelicts and released energy squares stamp the same cached rotating-square
+halo into the persistent surface through `stampWeaponLight`, using visibility and
+source budgets. Hull fills remain flat; energy light is independent decoration.
+FlightDeck and the mixed FX Lab restore square apertures after compositing.
+
+A player-caused containment loss emits one validated `energy-release` event at the
+fixed rupture centre and actual contact time. Its shared world-unit pulse expands
+for 0.28 gameplay seconds, then the surface owns remaining light decay. It replaces
+the generic player-break flash and does not follow the ejected square. Active
+release cues retain priority over ordinary impact events in the bounded ring. Environmental
+removal, expiry, exit and fragments produce no energy-release cue. Pause adds no
+emission or decay; reset discards the old history. The canonical Derelict Lab uses
+these same production causes and painters.
 
 ## Blueprint
 

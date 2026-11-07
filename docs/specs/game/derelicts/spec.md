@@ -226,6 +226,29 @@ passing wreck within its shorter range. Approach and stay close, or combine guns
   capacity is already full. Cells cannot be shot and have no attraction mechanic.
   Brief feedback reports the actual energy gained.
 
+### Energy release and feedback
+
+- Player weapon and ram destruction create the collectible at the transformed
+  contained-square centre, source (100.05, 154.15), at the fractional contact pose.
+  Ejection inherits wreck velocity plus local (0, −45) u/s rotated by the wreck's
+  heading. `DERELICT_ENERGY_SOURCE` and `DERELICT_ENERGY_EJECTION` own that reference.
+- The free square uses the same cached artwork, scale and halo as contained energy.
+  Its rotation anchor retains the wreck's contact heading; the shared time-driven
+  phase continues independently at π/6 rad/s. The black aperture is restored after
+  shared-light compositing. The physical square remains readable without its halo.
+- One validated `energy-release` event records the fixed rupture centre and contact
+  time. It stamps the selected expanding pulse for 0.28 gameplay seconds into the
+  shared persistent FX surface, then its existing light decays normally. The pulse
+  stays at the rupture point while the square moves; active release cues are
+  retained ahead of ordinary impact traffic in the bounded 128-event ring. It
+  replaces the generic
+  player-break flash. Visibility and source budgets remain authoritative.
+- Star/planet destruction, expiry and exit produce neither this event nor a cell.
+  Fragment destruction produces neither. Pause freezes square motion/phase, event
+  age and light history; a fresh session clears the old release and pickup.
+- Collection keeps the 30-energy value, 6-unit collision radius and 20-second
+  lifetime. A full-capacity pickup is still consumed and reports zero gain.
+
 ## Integration boundaries
 
 - `packages/mode-a/src/lib/schemas/loadout.ts` owns validated setup data;

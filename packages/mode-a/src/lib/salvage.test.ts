@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { weaponPose } from "./build-renderer";
 import { castDerelict } from "./derelict-collision";
 import {
+	DERELICT_ENERGY_SOURCE,
 	DERELICT_ORIGIN,
 	DERELICT_SCALE,
 	DERELICT_SHARDS,
@@ -146,9 +147,18 @@ describe("Derelicts weapons and salvage", () => {
 		);
 		f.step();
 		expect(f.system.playerKills).toBe(1);
+		expect(
+			f.system.events.filter((e) => e.kind === "energy-release"),
+		).toHaveLength(1);
+		expect(f.system.bodies.filter((b) => b.kind === "cell")).toHaveLength(1);
+		f.system.events = [];
 		f.system.bodies = [body("wreck", 400, 400, 2)];
 		f.step();
 		expect(f.system.playerKills).toBe(2);
+		expect(
+			f.system.events.filter((e) => e.kind === "energy-release"),
+		).toHaveLength(1);
+		f.system.events = [];
 		const damaged = body("wreck", 550, 400, 3);
 		damaged.hull = 200;
 		f.system.bodies = [damaged];
@@ -165,6 +175,10 @@ describe("Derelicts weapons and salvage", () => {
 		f.system.bodies = [damaged, expired, exited, fragment];
 		f.step();
 		expect(f.system.playerKills).toBe(2);
+		expect(
+			f.system.events.filter((e) => e.kind === "energy-release"),
+		).toHaveLength(0);
+		expect(f.system.bodies.filter((b) => b.kind === "cell")).toHaveLength(0);
 	});
 
 	it("freezes the final Derelicts score and keeps other runs result-free", () => {
@@ -224,9 +238,11 @@ describe("Derelicts weapons and salvage", () => {
 		sim.start();
 		sim.replay([{ ...idle, ticks: 180 }]);
 		injectLegacyPass(sim);
+		if (!sim.salvage) throw new Error("Missing salvage");
+		sim.salvage.bodies[0].rotation = (20 * Math.PI) / 180;
 		sim.replay([
-			{ ...idle, ticks: 252 },
-			{ ...idle, leftThruster: true, rightThruster: true, ticks: 90 },
+			{ ...idle, ticks: 220 },
+			{ ...idle, leftThruster: true, rightThruster: true, ticks: 150 },
 		]);
 		expect(sim.salvage?.destroyed).toBe(1);
 		expect(sim.salvage?.energyCollected).toBeGreaterThan(0);
@@ -479,6 +495,115 @@ describe("Derelicts weapons and salvage", () => {
 		expect(wreck.x).toBeCloseTo(550 + 100 * STEP, 7);
 		expect(wreck.initialHull).toBe(150);
 	});
+	it("releases the moving energy source at swept weapon contact and keeps the pulse fixed", () => {
+		const f = fixture();
+		const wreck = body("wreck", 550, 400, 1, 100, 0);
+		wreck.rotation = 0.7;
+		const impact = castDerelict(
+			{ kind: "wreck", x: wreck.x, y: wreck.y, rotation: wreck.rotation },
+			{ x: 500, y: 400 },
+			{ x: 5900, y: 0 },
+			0,
+			STEP,
+			0.3,
+		);
+		if (!impact) throw new Error("Missing impact");
+		f.system.bodies.push(wreck);
+		f.system.shots.push({ x: 500, y: 400, vx: 6000, vy: 0, angle: 0 });
+		f.step();
+		const cells = f.system.bodies.filter((b) => b.kind === "cell");
+		const releases = f.system.events.filter((e) => e.kind === "energy-release");
+		expect(cells).toHaveLength(1);
+		expect(releases).toHaveLength(1);
+		const cell = cells[0],
+			event = releases[0],
+			angle = 0.7 + impact.time * 0.3;
+		const dx = (DERELICT_ENERGY_SOURCE.x - DERELICT_ORIGIN.x) * DERELICT_SCALE;
+		const dy = (DERELICT_ENERGY_SOURCE.y - DERELICT_ORIGIN.y) * DERELICT_SCALE;
+		expect(cell.x).toBeCloseTo(
+			550 + 100 * impact.time + dx * Math.cos(angle) - dy * Math.sin(angle),
+		);
+		expect(cell.y).toBeCloseTo(
+			400 + dx * Math.sin(angle) + dy * Math.cos(angle),
+		);
+		expect(cell.vx).toBeCloseTo(100 + 45 * Math.sin(angle));
+		expect(cell.vy).toBeCloseTo(-45 * Math.cos(angle));
+		expect(cell.rotation).toBeCloseTo(angle);
+		expect(event.x).toBe(cell.x);
+		expect(event.y).toBe(cell.y);
+		f.step(10);
+		expect(cell.rotation).toBeCloseTo(angle);
+		expect(cell.x).not.toBe(event.x);
+		expect(f.system.events).toContain(event);
+		f.step(8);
+		expect(f.system.events).not.toContain(event);
+	});
+	it("keeps the active release cue when impact traffic fills the bounded event ring", () => {
+		const f = fixture();
+		f.system.bodies.push(body("wreck", 550, 400, 1000));
+		f.system.shots.push({ x: 550, y: 400, vx: 0, vy: 0, angle: 0 });
+		f.step();
+		for (let batch = 0; batch < 2; batch++) {
+			for (let round = 0; round < 64; round++)
+				f.system.shots.push({
+					x: f.star.pos.x,
+					y: f.star.pos.y,
+					vx: 0,
+					vy: 0,
+					angle: 0,
+				});
+			f.step();
+		}
+		expect(f.system.events).toHaveLength(128);
+		expect(
+			f.system.events.some((event) => event.kind === "energy-release"),
+		).toBe(true);
+	});
+	it("freezes released energy and its event during pause and resets both on a fresh run", () => {
+		const settings = {
+			...stockSettings("fighter"),
+			loadout: defaultLoadout("fighter"),
+			mode: "derelicts",
+		};
+		const sim = new Simulation(settings);
+		legacyEncounter(sim);
+		sim.start();
+		const salvage = sim.salvage;
+		if (!salvage) throw new Error("Missing salvage");
+		salvage.bodies.push(body("wreck", 550, 400, 1000));
+		salvage.shots.push({ x: 550, y: 400, vx: 0, vy: 0, angle: 0 });
+		sim.step(idle);
+		expect(salvage.bodies.some((body) => body.kind === "cell")).toBe(true);
+		expect(
+			salvage.events.some((event) => event.kind === "energy-release"),
+		).toBe(true);
+		sim.state.status = "MENU";
+		const before = JSON.stringify({
+			bodies: salvage.bodies,
+			events: salvage.events,
+			time: salvage.time,
+		});
+		for (let tick = 0; tick < 60; tick++) sim.step(idle);
+		expect(
+			JSON.stringify({
+				bodies: salvage.bodies,
+				events: salvage.events,
+				time: salvage.time,
+			}),
+		).toBe(before);
+		sim.state.status = "PLAYING";
+		sim.step(idle);
+		expect(
+			JSON.stringify({
+				bodies: salvage.bodies,
+				events: salvage.events,
+				time: salvage.time,
+			}),
+		).not.toBe(before);
+		const fresh = new Simulation(settings);
+		expect(fresh.salvage?.bodies).toHaveLength(0);
+		expect(fresh.salvage?.events).toHaveLength(0);
+	});
 	it("sheds the selected pieces at damage thresholds and releases the rest only once", () => {
 		const f = fixture(["laser"]);
 		const wreck = body("wreck", 550, 400);
@@ -530,6 +655,9 @@ describe("Derelicts weapons and salvage", () => {
 			);
 			expect(f.system.playerKills).toBe(0);
 			expect(f.system.destroyed).toBe(0);
+			expect(
+				f.system.events.filter((e) => e.kind === "energy-release"),
+			).toHaveLength(0);
 			expect(f.system.bodies.filter((b) => b.kind === "fragment")).toHaveLength(
 				7,
 			);

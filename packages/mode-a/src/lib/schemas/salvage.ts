@@ -1,5 +1,24 @@
 import { z } from "zod";
 
+const EventFields = {
+	id: z.number().int(),
+	x: z.number(),
+	y: z.number(),
+	endX: z.number(),
+	endY: z.number(),
+	time: z.number(),
+};
+export const WeaponEventSchema = z.discriminatedUnion("kind", [
+	z.object({ ...EventFields, kind: z.literal("rail") }),
+	z.object({ ...EventFields, kind: z.literal("laser") }),
+	z.object({ ...EventFields, kind: z.literal("collision") }),
+	z.object({ ...EventFields, kind: z.literal("impact") }),
+	z.object({ ...EventFields, kind: z.literal("break") }),
+	z.object({ ...EventFields, kind: z.literal("collect") }),
+	z.object({ ...EventFields, kind: z.literal("energy-release") }),
+]);
+export type WeaponEvent = z.infer<typeof WeaponEventSchema>;
+
 export const SalvagePhysicalStateSchema = z.object({
 	initialHull: z.number().positive().optional(),
 	releasedMask: z.number().int().min(0).max(255).optional(),

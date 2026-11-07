@@ -28,9 +28,10 @@ test("physical shedding matches fitted material in the production damage specime
 	await capture("fitted-material");
 	await bench.getByRole("checkbox", { name: "Show fitted material" }).uncheck();
 	await bench.getByRole("button", { name: "Rail shot", exact: true }).click();
+	await capture("player-energy-release-pulse");
 	await bench.getByRole("button", { name: "Coast 0.5 s" }).click();
 	await expect(bench.getByRole("status")).toContainText(
 		"Hull 0 / 85 · Fragments 8 · Energy cells 1",
 	);
-	await capture("eight-physical-pieces");
+	await capture("eight-physical-pieces-and-ejected-square");
 });

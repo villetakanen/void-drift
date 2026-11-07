@@ -1,8 +1,18 @@
 import { COLOR, FX_INK, type FxPass } from "@void-drift/core";
-import { drawDerelict, drawDerelictShard } from "./derelict-renderer";
+import { DERELICT_RELEASE_CUE } from "./derelict-geometry";
+import {
+	drawDerelict,
+	drawDerelictEnergy,
+	drawDerelictShard,
+	stampDerelictRelease,
+} from "./derelict-renderer";
 import type { SalvageSystem } from "./salvage";
 
 const LASER_INK = "#ff1028";
+const RELEASE_REACH =
+	DERELICT_RELEASE_CUE.radius +
+	DERELICT_RELEASE_CUE.speed * DERELICT_RELEASE_CUE.duration +
+	DERELICT_RELEASE_CUE.lineWidth / 2;
 
 /** Physical objects stay readable even when decorative light is disabled. */
 export function drawSalvage(
@@ -34,23 +44,14 @@ export function drawSalvage(
 			);
 			continue;
 		}
-		ctx.save();
-		ctx.translate(body.x, body.y);
-		ctx.rotate(body.rotation);
-		const r = body.radius;
-		if (body.kind === "cell") {
-			ctx.fillStyle = COLOR.resourcePower;
-			ctx.beginPath();
-			ctx.moveTo(0, -r);
-			ctx.lineTo(r, 0);
-			ctx.lineTo(0, r);
-			ctx.lineTo(-r, 0);
-			ctx.closePath();
-			ctx.fill();
-			ctx.fillStyle = COLOR.void;
-			ctx.fillRect(-2, -2, 4, 4);
-		}
-		ctx.restore();
+		drawDerelictEnergy(
+			ctx,
+			body.x,
+			body.y,
+			body.rotation,
+			salvage.time,
+			"body",
+		);
 	}
 	ctx.restore();
 }
@@ -62,6 +63,16 @@ export function stampWeaponLight(
 	pass: FxPass,
 ) {
 	for (const body of salvage.bodies) {
+		if (body.kind === "cell" && pass.visible(body.x, body.y, 30))
+			drawDerelictEnergy(
+				ctx,
+				body.x,
+				body.y,
+				body.rotation,
+				salvage.time,
+				"light",
+				pass,
+			);
 		if (body.kind === "wreck" && pass.visible(body.x, body.y, 60))
 			drawDerelict(
 				ctx,
@@ -89,6 +100,11 @@ export function stampWeaponLight(
 	}
 	for (const event of salvage.events) {
 		const age = salvage.time - event.time;
+		if (event.kind === "energy-release") {
+			if (pass.visible(event.x, event.y, RELEASE_REACH))
+				stampDerelictRelease(ctx, event.x, event.y, age, pass);
+			continue;
+		}
 		const collision = event.kind === "collision";
 		if (age > (collision ? 0.2 : 0.08)) continue;
 		const radius = collision
@@ -145,7 +161,16 @@ export function drawSalvageApertures(
 	salvage: SalvageSystem,
 ) {
 	for (const body of salvage.bodies)
-		if (body.kind === "wreck")
+		if (body.kind === "cell")
+			drawDerelictEnergy(
+				ctx,
+				body.x,
+				body.y,
+				body.rotation,
+				salvage.time,
+				"aperture",
+			);
+		else if (body.kind === "wreck")
 			drawDerelict(
 				ctx,
 				body.x,
