@@ -123,6 +123,14 @@ voice. Listed in the retro README.
 Evidence brought by the assistant from the loop records; the reading is the
 designer's, in the designer's words.
 
+The entries below are testimony, not decisions. Each once ended "No change
+named", struck on 8 November after the designer read it: "why would we not do
+a change for A and B? I think those kind of recordings are from the broken
+cycle. We kind of restarted here. I have no idea why we would not act on A or
+B. I have not decided such a thing, nor discussed either of them in breadth. I
+have just given an oral testimony to questions I'm agent asked, and everything
+else is like drift." Whether to act on A, B or C is open.
+
 ### A. Exploration stops when it turns into discussion
 
 Evidence: the loop is named by the designer in ten of twelve stopped studies
@@ -153,8 +161,6 @@ somebody is frustrated or something doesn't make sense. We just try something
 else. [...] We're just throwing balls on the wall and see which one sticks. And
 if they don't, that's nobody's fault."
 
-No change named.
-
 ### B. No rubric for the design question itself
 
 Evidence: the question is named as the problem in two records, path-instrument
@@ -179,8 +185,6 @@ record that. And even in the micro-interaction cases, I guess like 1/3 at
 least of them, is because of us having like a problem that cannot be solved by
 exploring and learning."
 
-No change named.
-
 ### C. The design system is bypassed
 
 Evidence: no loop record names a component invented in place; the two
@@ -201,8 +205,6 @@ simulation code".
 The designer, asked whether the bypass is the bench controls these counts
 show or something the counts miss: "Yes, the controls: studies drawing their
 own sliders, checkboxes and buttons instead of the Lab primitives."
-
-No change named.
 
 ### Item 1, plan status lines, raised as a quick win
 
