@@ -68,8 +68,10 @@ game's home and Hangar is an alternative launch point.
   to choose another ship. Messages rotate approximately every eight seconds with
   a subtle fade. Reduced motion presents a static message. World-flavour copy
   waits until the game voice is established.
-- In portrait or square viewports, the hint area instead shows the persistent Android
-  green status “Rotate your screen to landscape.” It clears automatically in landscape,
+- In viewports narrower than 4:3, the same aspect limit that blocks flight in the
+  [game screen](../game-screen/spec.md), the hint area instead shows the persistent
+  Android green status “Rotate your screen to landscape.” It clears automatically
+  at 4:3 or wider,
   without taking focus, blocking navigation, resetting the menu or locking orientation.
 - PRESS START begins a survival run with Wasp through the existing fade-through-void
   transition and 3, 2, 1, GO countdown. Movement and scoring begin at GO; held
@@ -105,8 +107,8 @@ game's home and Hangar is an alternative launch point.
   order, starting with focus on PRESS START and without a modal focus trap.
 - [ ] Practical hints appear one at a time and rotate approximately every eight
   seconds with a subtle fade; reduced motion shows a static message.
-- [ ] Portrait and square viewports show the orientation warning without interrupting
-  navigation; it clears on return to landscape.
+- [ ] Viewports narrower than 4:3 show the orientation warning without interrupting
+  navigation; it clears at 4:3 or wider.
 - [ ] Human review confirms the start invitation dominates the secondary choices.
 
 ### Regression Guardrails

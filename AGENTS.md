@@ -62,7 +62,7 @@ Voice-led development of a procedural space survival game and its software facto
 ## Authority
 
 - Implement, repair, test, and make local commits within the agreed scope.
-- Preserve unrelated and pre-existing changes; identify their provenance before committing them.
+- Every session and tool shares this checkout; a commit saves the whole tree to the active branch, other sessions' work included.
 - Ask before adding npm dependencies or changing gravity/friction constants; never introduce paid or card-requiring services.
 - Existing explicit approval covers the authorized action; do not ask again for it.
 - Obtain explicit authorization before pushing, publishing, or sending external feedback.

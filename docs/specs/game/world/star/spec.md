@@ -50,8 +50,8 @@ Other engine-family draw, thrust, handling and collisions remain unchanged.
   actual collection is positive, including at capacity and during net drain.
 - Hazard: dotted 1/4 CSS px, round caps, amber at 60% opacity while inactive;
   red with 11% red fill when Sun damage is actually applied.
-- Inactive green opacity is 35%. Every stroke is 1 CSS px at every zoom and
-  display density. Dash dimensions also remain in screen space.
+- Inactive green opacity is 35%. Every stroke is 1 CSS px at every zoom, stage
+  scale and display density. Dash dimensions also remain in screen space.
 - Coincident visible outer boundaries draw solar 2 CSS px inward. Neither
   physical field changes reach. Artwork and decorative pulses are separate.
 - Practice retains its resource protection: it cannot claim applied hull damage.

@@ -156,8 +156,8 @@ export const studies = z.array(studySchema).parse([
   {
     slug: "in-game-controllers",
     title: "In-game controllers: side-margin angled thrust flaps",
-    status: "open",
-    phase: "exploration",
+    status: "accepted",
+    phase: "scope",
     question:
       "How should the 60°-angled L/F and R/F side-margin touch flaps be sized and layered across phone, tablet, and desktop screens?",
   },

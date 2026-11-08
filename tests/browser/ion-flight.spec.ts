@@ -25,9 +25,8 @@ test("optional stabilizers and linked engines persist independently and reach fl
     "data-stabilizers",
     "false",
   );
-  await page
-    .getByRole("button", { name: "Return to builder", exact: true })
-    .click();
+  await page.getByRole("button", { name: "Pause", exact: true }).click();
+  await page.getByRole("button", { name: "Abort", exact: true }).click();
   await stabilizers.check();
   await linked.uncheck();
   await page.reload();
@@ -46,9 +45,8 @@ test("optional stabilizers and linked engines persist independently and reach fl
   const braking = Number(await deck.getAttribute("data-spin"));
   expect(braking).toBeLessThan(initial);
   expect(braking).toBeGreaterThanOrEqual(0);
-  await page
-    .getByRole("button", { name: "Return to builder", exact: true })
-    .click();
+  await page.getByRole("button", { name: "Pause", exact: true }).click();
+  await page.getByRole("button", { name: "Abort", exact: true }).click();
   await page
     .getByRole("radiogroup", { name: "Choose chassis" })
     .getByText("Scout", { exact: true })

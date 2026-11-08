@@ -187,6 +187,22 @@ Client-reported scores support casual competition only. Human gameplay review,
 physical mobile performance and protected-branch enforcement are not automated passes.
 Historical backlog items are not new assignments.
 
+## Shared checkout
+
+Two to four sessions, in different tools, work in this one checkout at the same
+time. They share nothing but the filesystem and git, and the designer follows the
+work through the editor's git pane: the uncommitted diff shows what is in flight,
+and a commit is a save point of the whole tree to the active branch. A commit
+therefore carries every session's current work, not one session's change; the
+branch is the unit of work, and release from `main` is the gate. Because anyone
+may save at any moment, the tree is kept formatted and checkable throughout; when
+another session's work fails the hook, the fix goes forward rather than around it.
+Staging by path, stashing and resetting leave work in the pane that no one can
+place, so they want a reason. A worktree suits a trial that would disturb the
+shared tree; its result returns as uncommitted delta (`git merge --squash <branch>`
+in this checkout), shows in the pane like any other work, is saved by the next
+commit, and the worktree is then removed. (Decision of 2026-11-08.)
+
 ## Commit messages
 
 Follow `.agents/skills/commit-messages/SKILL.md` before committing.

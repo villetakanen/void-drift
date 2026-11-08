@@ -1,3 +1,4 @@
+import { GAME_MIN_RATIO } from "../../apps/web/src/lib/game-screen";
 import {
   buildStats,
   CHASSIS,
@@ -44,7 +45,11 @@ test("fit, persist, practise, pause and return to an assembled ship", async ({
       name: "Hull 1 · Equipment: Heavy Potential Well",
     }),
   ).toBeVisible();
-  await page.setViewportSize({ width: 1440, height: 1100 });
+  // A 4:3 viewport: Practice fills it with no header, so flight is not gated.
+  await page.setViewportSize({
+    width: 1440,
+    height: (1440 * GAME_MIN_RATIO.height) / GAME_MIN_RATIO.width,
+  });
   await page.getByRole("button", { name: "Test flight", exact: true }).click();
   await expect(page.locator(".flight-page")).toHaveAttribute(
     "data-status",

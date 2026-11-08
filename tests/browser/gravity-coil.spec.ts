@@ -53,9 +53,8 @@ test("Gravity coil fits, persists and flies separately from solar Loading coil",
     )
     .toBeGreaterThan(30);
   await page.keyboard.up("a");
-  await page
-    .getByRole("button", { name: "Return to builder", exact: true })
-    .click();
+  await page.getByRole("button", { name: "Pause", exact: true }).click();
+  await page.getByRole("button", { name: "Abort", exact: true }).click();
   await page
     .getByRole("button", {
       name: "Hull 1 · Equipment: Gravity coil",

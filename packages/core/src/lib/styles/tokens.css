@@ -161,7 +161,6 @@
   --font-body: var(--font-size-body);
   --font-large: var(--font-size-heading);
   --font-title: var(--font-size-display);
-  --flight-header-height: 64px;
   --flight-panel-width: 320px;
   --flight-card-width: 480px;
   --flight-canvas-max: 1600px;

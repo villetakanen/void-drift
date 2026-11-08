@@ -3,8 +3,9 @@ name: commit-messages
 description: Prepare meaningful Conventional Commit messages when committing or squash-merging.
 ---
 # Commit messages
-- Inspect the staged diff and preserve unrelated work.
-- Keep each commit focused on one coherent change.
+- Stage the whole checkout; other sessions' in-flight work belongs to the snapshot.
+- Format and check the whole tree first; fix forward when another session's work fails the hook.
+- Name the headline change; the type describes it, not every hunk.
 - Follow the repository's commitlint configuration for message syntax.
 - Use feat for capabilities and fix for corrected behavior.
 - Choose other types according to the actual change, not its size.

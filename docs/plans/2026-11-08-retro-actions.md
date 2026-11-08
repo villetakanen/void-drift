@@ -59,6 +59,7 @@ deferred (8 November 2026).
 | Human experience review out of scope: `AGENTS.md`, `design.md`, `development.md` reworded | tension | `dbe1968`        |
 | Retire "owner": three skills, current docs, specs and code comments                       | 6       | `1c0a4ec`        |
 | Retire "owner": fourteen Lab study and review pages                                       | 6       | `99f6317`        |
+| Shared checkout practice: `AGENTS.md`, `development.md`, commit skill, factory spec       | 13      | HEAD             |
 
 To the designer these are four tasks, not seven: link repair with its gate,
 evidence and formatting, releases and CI, the 0.6.0 note (8 November).
@@ -105,12 +106,19 @@ No new machinery, no CI. Each change ships with a failing-then-passing check.
 11. **Ref cleanup** (finding 4). Sixteen merged local branches, the merged
     worktrees under `.claude/worktrees` (11 GB), stash `0.5.0 wip before spec
     relocation`. Present the exact list; delete only what is approved. The
-    unmerged `claude/camera-*` branches and the Codex worktree stay.
+    unmerged `claude/camera-*` branches and the Codex worktree stay. Cause: no rule
+    said a worktree is removed once its delta has returned; `development.md`
+    now does.
 12. **Study harness replay** (finding 1). Lessons 001/002 say "adopted, not
     validated". Decide whether to run the evaluation protocol in
     `docs/factory-building-lessons/design-study-evaluation.md` before the
     point-defence study, and against which model.
-13. **One checkout per session** (finding 4). Whether to adopt it as a rule.
+13. **Shared checkout practice recorded** (finding 4). Done 8 November 2026;
+    see the Done table. The checkout is shared by every session and tool on
+    purpose, and the designer monitors the work through the git pane; the rules
+    told agents to commit by path, which emptied the pane of meaning. Now stated
+    in `AGENTS.md`, `development.md`, the commit-messages skill and the factory
+    spec.
 14. **Root `artifacts/` retention** (finding 6). 2.9 GB, 152 runs, ignored.
     Whether to prune runs older than the last release.
 

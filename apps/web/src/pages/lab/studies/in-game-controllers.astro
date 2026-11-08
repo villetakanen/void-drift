@@ -2,6 +2,10 @@
 import "@void-drift/core/styles/buttons.css";
 import "@void-drift/core/styles/surfaces.css";
 import ControllerGeometryBench from "../../../components/studies/in-game-controllers/ControllerGeometryBench.svelte";
+import CssGutterBench from "../../../components/studies/in-game-controllers/CssGutterBench.svelte";
+import FlapStackBench from "../../../components/studies/in-game-controllers/FlapStackBench.svelte";
+import GlassPaneBench from "../../../components/studies/in-game-controllers/GlassPaneBench.svelte";
+import PadUxBench from "../../../components/studies/in-game-controllers/PadUxBench.svelte";
 import StageMarginBench from "../../../components/studies/in-game-controllers/StageMarginBench.svelte";
 import { studies } from "../../../data/studies";
 import StudyLayout from "../../../layouts/StudyLayout.astro";
@@ -11,175 +15,477 @@ if (!study) throw new Error("Missing study metadata for in-game-controllers");
 ---
 
 <StudyLayout study={study}>
-	<section aria-labelledby="part-01">
-		<h2 id="part-01">
-			01 / Side-margin 60° thrust flaps across thumbs and keyboards
-		</h2>
-		<p>
-			On a keyboard, a pilot flies with three direct commands: left engine (<code
-				>A</code
-			>
-			/ <code>←</code>), right engine (<code>D</code>
-			/ <code>→</code>), and a single-key forward burn (<code>W</code>
-			/ <code>↑</code>) that fires both thrusters together. To give touch
-			players the same single-thumb access to both turning and full forward
-			thrust, the controller layout establishes four fixed givens from the
-			concept draft:
-		</p>
-		<ul>
-			<li>
-				<strong>Ship-free side margins:</strong>
-				Both control pairs sit flush against the left and right screen edges,
-				inside the outer horizontal margin where camera framing, padding, and
-				the circular arena keep the ship from traveling.
-			</li>
-			<li>
-				<strong>Lower-corner full thrust, upper-margin turn:</strong>
-				Full forward thrust (<code>F</code>, firing both engines) anchors both
-				lower corners; single-engine turn (<code>L</code>
-				on the left,
-				<code>R</code>
-				on the right) sits directly above <code>F</code> along the lower-middle
-				side edge.
-			</li>
-			<li>
-				<strong>Stacked 60° angled flaps:</strong>
-				Each side uses two overlapping 60°-angled flaps (sloping 30° downward
-				from horizontal inward from the screen bezel), with the lower
-				<code>F</code>
-				flap tucked over the base of the upper <code>L</code> /
-				<code>R</code>
-				flap.
-			</li>
-		</ul>
-		<p>
-			With the locations and 60°-angled flap silhouette established, this study
-			investigates how the stage envelope and side instrumentation margins are
-			defined across screens, how large the touch zones should be inside those
-			margins, and how the stacked flaps layer and style their states.
-		</p>
-	</section>
+  <section aria-labelledby="part-01">
+    <h2 id="part-01">
+      01 / Side-margin 60° thrust flaps across thumbs and keyboards
+    </h2>
+    <p>
+      On a keyboard, a pilot flies with three direct commands: left engine (<code
+        >A</code
+      >
+      / <code>←</code>), right engine (<code>D</code>
+      / <code>→</code>), and a single-key forward burn (<code>W</code>
+      / <code>↑</code>) that fires both thrusters together. To give touch
+      players the same single-thumb access to both turning and full forward
+      thrust, the controller layout establishes four fixed givens from the
+      concept draft:
+    </p>
+    <ul>
+      <li>
+        <strong>Ship-free side margins:</strong>
+        Both control pairs sit flush against the left and right screen edges,
+        inside the outer horizontal gutter where camera framing and padding keep
+        the ship from traveling.
+      </li>
+      <li>
+        <strong>Lower-corner full thrust, upper-margin turn:</strong>
+        Full forward thrust (<code>F</code>, firing both engines) anchors both
+        lower corners; single-engine turn (<code>L</code>
+        on the left,
+        <code>R</code>
+        on the right) sits directly above <code>F</code> along the lower-middle
+        side edge.
+      </li>
+      <li>
+        <strong>Stacked 60° angled flaps:</strong>
+        Each side uses two overlapping 60°-angled flaps (sloping 30° downward
+        from horizontal inward from the screen bezel), with the lower
+        <code>F</code>
+        flap tucked over the base of the upper <code>L</code> /
+        <code>R</code>
+        flap.
+      </li>
+    </ul>
+    <p>
+      With the locations and 60°-angled flap silhouette established, this study
+      investigates how the side and vertical gutters are sized in CSS pixels so
+      they remain a sensible minimum on every screen without bloating on larger
+      displays, how the central fly area adapts across screen sizes, and how the
+      stacked flaps layer and style their states.
+    </p>
+  </section>
 
-	<section aria-labelledby="part-02">
-		<h2 id="part-02">02 / Exploration</h2>
+  <section aria-labelledby="part-02">
+    <h2 id="part-02">02 / Exploration</h2>
 
-		<details class="prior-iteration">
-			<summary>
-				02.1 / Initial raw viewport sizing (superseded by 02.2 stage envelope)
-			</summary>
-			<div class="details-body">
-				<p>
-					<strong>Observation from 02.1:</strong>
-					Plotting the 60° flaps across unconstrained device viewports (<code
-						>19.5:9</code
-					>
-					phone through
-					<code>4:3</code>
-					tablet and desktop) revealed that the software has not yet defined the
-					allowable stage aspect-ratio bounds or separated the
-					<em>rendered space area</em>
-					from the
-					<em>active camera framing box</em>
-					and the
-					<em>side instrumentation margins</em>.
-				</p>
-				<ControllerGeometryBench client:load />
-			</div>
-		</details>
+    <details class="prior-iteration" id="part-02-1">
+      <summary>
+        02.1 / Initial raw viewport sizing (superseded by stage &amp; gutter
+        models)
+      </summary>
+      <div class="details-body">
+        <p>
+          <strong>Observation from 02.1:</strong>
+          Plotting the 60° flaps across unconstrained device viewports (<code
+            >19.5:9</code
+          >
+          phone through
+          <code>4:3</code>
+          tablet and desktop) revealed that the software had not yet separated
+          the
+          <em>rendered space area</em>
+          from the
+          <em>active camera framing box</em>
+          and the
+          <em>side instrumentation gutters</em>.
+        </p>
+        <ControllerGeometryBench client:load />
+      </div>
+    </details>
 
-		<h3 id="part-02-2">
-			02.2 / Stage envelope (16:9 to 4:3), active camera box, and shared
-			instrument margins
-		</h3>
-		<p>
-			Instead of letting the stage stretch to arbitrary screen ratios, we
-			constrain the playable screen envelope between <strong>16:9</strong>
-			(widest allowed, <code>1920 × 1080</code> logical) and
-			<strong>4:3</strong>
-			(narrowest/tallest allowed,
-			<code>1440 × 1080</code>
-			logical), clamping wider or narrower viewports to the nearest bound.
-			Across <code>16:9</code>, <code>4:3</code>, and every ratio in between,
-			the stage divides into three concentric responsibilities with
-			<strong>identical margins on all screen sizes</strong>:
-		</p>
-		<ul>
-			<li>
-				<strong>Rendered space area (100% of stage):</strong>
-				The void, starfield, and orbit rings render edge-to-edge across the
-				entire <code>16:9..4:3</code> frame—including behind all margins.
-			</li>
-			<li>
-				<strong>Top &amp; bottom visual margins (<code>M_y</code>):</strong>
-				Equal vertical padding at the top and bottom of the frame. Graphics
-				render through them, keeping the active camera framing inset from the
-				horizontal screen edges.
-			</li>
-			<li>
-				<strong
-					>Left &amp; right instrumentation margins (<code>M_x</code>):</strong
-				>
-				Equal side rails on both <code>16:9</code> and <code>4:3</code> that
-				house all HUD instruments and touch controls outside the active camera
-				box: <strong>Hull &amp; Power</strong> + <strong>L / F flaps</strong> on
-				the left, and <strong>Survival time &amp; Score</strong> +
-				<strong>R / F flaps</strong>
-				on the right.
-			</li>
-			<li>
-				<strong
-					>Active camera area (<code>W - 2·M_x</code>
-					× <code>H - 2·M_y</code>):</strong
-				>
-				The central box that the camera fits the ship and star inside.
-			</li>
-		</ul>
-		<p>
-			<strong>What to notice &amp; limitations:</strong>
-			Use the sliders below to adjust the shared side instrumentation margin (<code
-				>M_x</code
-			>), the top/bottom visual margin (<code>M_y</code>), and the flap stack
-			proportions on <code>16:9</code> and <code>4:3</code> side-by-side (drawn
-			at equal logical height so identical margins have identical visual
-			thickness). Check how much active camera width remains on <code>4:3</code>
-			as <code>M_x</code> grows, and how the top HUD instruments clear the upper
-			<code>L</code>
-			/ <code>R</code> flap bevel.
-		</p>
+    <details class="prior-iteration" id="part-02-2">
+      <summary>
+        02.2 / Stage envelope (16:9 to 4:3) with stage-scaled logical margins
+      </summary>
+      <div class="details-body">
+        <p>
+          Step 02.2 constrained the stage between <strong>16:9</strong>
+          (<code>1920 × 1080</code>
+          logical) and
+          <strong>4:3</strong>
+          (<code>1440 × 1080</code>
+          logical) and tested a side margin defined in
+          <em>logical stage units</em>
+          (<code>H / 6 = 180</code>
+          logical units at
+          <code>1080</code>
+          height). Because logical units scale with stage height, that margin
+          shrinks to <code>128 CSS px</code> on an iPad (<code>1024 × 768</code
+          >) and <code>62 CSS px</code> on a <code>375 CSS px</code> phone,
+          while scaling up on tall desktop monitors.
+        </p>
 
-		<StageMarginBench client:load />
-	</section>
+        <StageMarginBench client:load />
+      </div>
+    </details>
 
-	<section aria-labelledby="part-03">
-		<h2 id="part-03">03 / To be developed after 02</h2>
-	</section>
+    <details class="prior-iteration" id="part-02-3">
+      <summary>
+        02.3 / 180 CSS-pixel side gutters, minimum bounds, and adaptive fly
+        width (accepted: 180 CSS px)
+      </summary>
+      <div class="details-body">
+        <p>
+          <strong>Decision from 02.3:</strong>
+          Both left and right instrumentation and control gutters use a fixed
+          <strong><code>180 CSS px</code></strong>
+          width (<code>G_x = 180 CSS px</code>), leaving a sensible minimum
+          margin on every screen without bloating on larger displays and
+          allowing the central fly area (<code>W − 360 CSS px</code>) to expand
+          naturally on wider viewports.
+        </p>
+
+        <CssGutterBench client:load />
+      </div>
+    </details>
+
+    <details class="prior-iteration" id="part-02-4">
+      <summary>
+        02.4 / Nested visual <code>F</code> tab inside outer <code>L / R</code>
+        tab vs. end-to-end touch areas (settled: corner-nested 84% W, 54% H)
+      </summary>
+      <div class="details-body">
+        <p>
+          <strong
+            >Settled in 02.4: Corner-nested <code>F</code> tab at 84% outer
+            width (<code>151 CSS px</code>
+            inside the <code>180 CSS px</code>
+            outer <code>L / R</code> tab, leaving a <code>29 CSS px</code> outer
+            rim) and 54% of the total tab height, paired with full-width
+            end-to-end touch areas split along the 30° seam.</strong
+          >
+        </p>
+
+        <FlapStackBench client:load />
+      </div>
+    </details>
+
+    <details class="prior-iteration" id="part-02-5" open>
+      <summary>
+        02.5 / Pad resting fill, border outline, markings, and active-state UX
+        (findings: borderless blue glass + technical arrow-and-text markings)
+      </summary>
+      <div class="details-body">
+        <p>
+          <strong>Findings from 02.5:</strong>
+          The bluish glass panes with the technical arrow-and-text markings (<code
+            >◀ TURN · LEFT ENGINE</code
+          >
+          /
+          <code>▲ BURN · BOTH ENGINES</code>) read best, but the resting blue
+          glass should be roughly half as dense (much more translucent) with
+          <strong>no border lines anywhere</strong>. When active, only the
+          engaged pad(s) should shift from translucent blue glass to
+          almost-identical-translucency yellow-brand glass: turning left/right
+          tints only the upper <code>L / R</code> pane; burning forward tints
+          both lower <code>F</code> panes; and burning forward + turning left
+          tints both <code>F</code> and <code>L</code>.
+        </p>
+
+        <PadUxBench client:load />
+      </div>
+    </details>
+
+    <h3 id="part-02-6">
+      02.6 / Borderless disjoint blue-to-yellow glass panes, stepped lower-pane
+      density, and aligned white technical markings
+    </h3>
+    <p>
+      <strong>Accepted in 02.6:</strong>
+    </p>
+    <ul>
+      <li>
+        <strong>Disjoint non-overlapping glass panes:</strong>
+        Painting the full outer tab yellow and stacking a translucent blue
+        <code>F</code>
+        pane on top mixes the two tints. Instead, the upper
+        <code>L / R</code>
+        pane and the corner-nested <code>F</code> pane (<code
+          >84% W = 151 CSS px</code
+        >, <code>54% H</code>) are drawn as
+        <strong>disjoint non-overlapping polygons</strong>
+        with zero border lines.
+      </li>
+      <li>
+        <strong>Stepped density with a very thin active yellow wash:</strong>
+        Because the panes are borderless and non-overlapping, the lower corner
+        <code>F</code>
+        pane uses a slightly denser glass tint than the upper
+        <code>L / R</code>
+        pane both at rest (<code>36%</code>
+        vs. <code>22%</code>
+        <code>--color-elev-3</code>
+        blue glass) and when active, where both shift to a very thin yellow
+        brand wash (<code>9%</code>
+        upper
+        <code>L / R</code>
+        and <code>16%</code> lower <code>F</code>
+        <code>--color-selected</code>) so stars remain clearly visible through
+        the active panes.
+      </li>
+      <li>
+        <strong
+          >White technical markings aligned to the same screen-border
+          distance:</strong
+        >
+        The two-line arrow + caption markings (<code>◀ TURN · LEFT ENGINE</code>
+        and <code>▲ BURN · BOTH ENGINES</code>) use white (<code
+          >--color-text</code
+        >, keeping Android green reserved for the live holographic HUD), share
+        the exact same horizontal distance from the outer screen border (<code
+          >72 CSS px</code
+        >), and place the upper <code>TURN</code> label along the slanted
+        centerline of the upper corridor.
+      </li>
+    </ul>
+    <p>
+      <strong>What to notice &amp; limitations:</strong>
+      The bench opens on the accepted configuration (disjoint panes,
+      <code>22%</code>
+      / <code>36%</code> resting blue glass,
+      <code>9%</code>
+      / <code>16%</code> thin active yellow wash, and
+      <code>72 CSS px</code>
+      border-aligned white labels).
+    </p>
+
+    <GlassPaneBench client:load />
+  </section>
+
+  <section aria-labelledby="part-03">
+    <h2 id="part-03">
+      03 / Readiness: CSS-pixel gutters, multi-pointer input, and disjoint
+      glass-pane wiring
+    </h2>
+    <p>
+      Inspecting the current implementation against the accepted
+      <code>180 CSS px</code>
+      side gutters, corner-nested disjoint 60° glass panes (<code
+        >84% W = 151 CSS px</code
+      >, <code>54% H</code>), and end-to-end touch areas shows three clean
+      adaptations with no architectural blockers:
+    </p>
+    <ul>
+      <li>
+        <strong
+          >Screen and gutter geometry (<code
+            >apps/web/src/lib/game-screen.ts</code
+          >):</strong
+        >
+        <code>fitGameScreen(width, height)</code>
+        currently computes a stage-scaled logical gutter (<code
+          >(1080 / 6) * scale</code
+        >). Adopting a fixed <code>180 CSS px</code> side gutter (<code
+          >G_x = 180</code
+        >) and a minimum vertical gutter (<code>G_y = 48 CSS px</code>, clamped
+        on short phones) lets the rendered space canvas fill the safe viewport
+        while exposing the central active camera-fitting box (<code
+          >width - 360 CSS px</code
+        >
+        by <code>height - 2·G_y CSS px</code>) independently of the outer stage
+        width.
+      </li>
+      <li>
+        <strong
+          >Independent pad states &amp; dual-thrust input (<code
+            >packages/core/src/lib/entities/Input.ts</code
+          >):</strong
+        >
+        Extending <code>setPointer(id, zone)</code> to accept
+        <code>"left" | "right" | "both" | null</code>
+        lets the input manager aggregate <code>"both"</code> into
+        <code>leftThruster: true</code>
+        and
+        <code>rightThruster: true</code>
+        (matching keyboard <code>W</code> /
+        <code>ArrowUp</code>) while exposing independent active flags for the
+        upper turn panes (<code>L</code>, <code>R</code>) and lower burn panes (<code
+          >F</code
+        >) so turning lights only <code>L</code> or
+        <code>R</code>, forward burn lights only the lower <code>F</code> panes,
+        and forward + turn lights both.
+      </li>
+      <li>
+        <strong
+          >Disjoint visual glass panes vs. end-to-end pointer capture in
+          <code>FlightDeck.svelte</code>:</strong
+        >
+        Replacing the rectangular <code>148 × 64 px</code>
+        <code>.engine.cut-surface</code>
+        buttons in
+        <code>FlightDeck.svelte</code>
+        separates each side's
+        <code>180 CSS px</code>
+        gutter assembly into:
+        <ol>
+          <li>
+            <strong>Disjoint borderless SVG glass panes:</strong>
+            Draws the L-shaped upper <code>L / R</code> polygon (<code
+              >22%</code
+            >
+            resting <code>--color-elev-3</code> blue glass →
+            <code>9%</code>
+            active <code>--color-selected</code> yellow wash) and the
+            corner-nested lower <code>F</code> polygon (<code>151 CSS px</code>
+            wide, <code>54%</code> height;
+            <code>36%</code>
+            resting blue glass → <code>16%</code> active yellow wash), with
+            white (<code>--color-text</code>) technical labels (<code
+              >◀ TURN · LEFT ENGINE</code
+            >
+            /
+            <code>▲ BURN · BOTH ENGINES</code>) aligned at
+            <code>72 CSS px</code>
+            from the outer screen border.
+          </li>
+          <li>
+            <strong>End-to-end pointer capture layer:</strong>
+            Classifies pointer events across the full <code>180 CSS px</code>
+            gutter width against the single 30° seam line, supporting live thumb
+            slides between <code>L / R</code> and <code>F</code> and clearing on
+            <code>pointerup</code>, <code>pointercancel</code>,
+            <code>lostpointercapture</code>, <code>blur</code>, pause, or
+            portrait rotation.
+          </li>
+        </ol>
+      </li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="part-04">
+    <h2 id="part-04">
+      04 / Scope: three slices to 180 CSS px gutters and disjoint 60° glass
+      thrust pads
+    </h2>
+    <p>
+      <strong>No <code>docs/design.md</code> change.</strong>
+      The controller pads and <code>180 CSS px</code> side gutters use existing
+      design tokens (<code>--color-elev-3</code>,
+      <code>--color-selected</code>, <code>--color-text</code>, and
+      <code>--font-family-ui</code>); their contracts belong in
+      <code>docs/specs/game/game-screen/spec.md</code>
+      and
+      <code>docs/specs/game/controls/spec.md</code>.
+    </p>
+
+    <h3>
+      S1 — CSS-pixel gutter geometry in <code>game-screen</code> (web, small)
+    </h3>
+    <ul>
+      <li>
+        Update <code>apps/web/src/lib/game-screen.ts</code> and
+        <code>apps/web/src/components/FlightDeck.svelte</code>
+        so side instrumentation gutters use a fixed
+        <code>180 CSS px</code>
+        width (<code>G_x = 180</code>) and sensible top/bottom minimum bounds,
+        leaving the central active camera-framing width as
+        <code>width - 360 CSS px</code>
+        while space renders edge-to-edge behind the gutters.
+      </li>
+      <li>
+        Update <code>docs/specs/game/game-screen/spec.md</code> to record the
+        <code>180 CSS px</code>
+        side gutters and adaptive central fly width.
+      </li>
+      <li>
+        <strong>Correctness:</strong>
+        Unit and browser checks verify
+        <code>gutter = 180</code>
+        and <code>activeWidth = width - 360</code>
+        across desktop, iPad, and landscape phone viewports.
+      </li>
+    </ul>
+
+    <h3>
+      S2 — Independent pad states &amp; dual-thrust pointer support in
+      <code>Input</code>
+      (core, small)
+    </h3>
+    <ul>
+      <li>
+        Extend <code>packages/core/src/lib/entities/Input.ts</code> so
+        <code>setPointer(id, zone)</code>
+        accepts
+        <code>"left" | "right" | "both" | null</code>
+        and exposes per-pad active state (<code>leftTurn</code>,
+        <code>rightTurn</code>,
+        <code>forwardBurn</code>) alongside effective thruster outputs.
+      </li>
+      <li>
+        Update <code>docs/specs/game/controls/spec.md</code> (and
+        <code>docs/specs/game/spec.md</code>) with the three-zone touch and
+        keyboard mapping.
+      </li>
+      <li>
+        <strong>Correctness:</strong>
+        Unit tests verify single-pointer
+        <code>left</code>, <code>right</code>, and <code>both</code> states,
+        combined <code>both + left</code> highlighting, control inversion, and
+        reset on blur/cancel.
+      </li>
+    </ul>
+
+    <h3>
+      S3 — Disjoint 60° glass thrust pads in <code>FlightDeck</code> and Lab
+      catalog (web &amp; core styles, medium; needs S1, S2)
+    </h3>
+    <ul>
+      <li>
+        Extract a shared <code>ThrustFlapPair.svelte</code> component
+        implementing the accepted 02.6 design: disjoint borderless polygons
+        inside the <code>180 CSS px</code> gutter (<code
+          >84% W = 151 CSS px</code
+        >,
+        <code>54% H</code>
+        corner-nested <code>F</code>), stepped resting blue glass (<code
+          >22%</code
+        >
+        / <code>36%</code>), thin active yellow wash (<code>9%</code>
+        / <code>16%</code>), <code>72 CSS px</code>
+        border-aligned white technical markings, and end-to-end 30°-seam pointer
+        capture.
+      </li>
+      <li>
+        Wire <code>ThrustFlapPair</code> into <code>FlightDeck.svelte</code> and
+        demonstrate the shared component in the Lab catalog.
+      </li>
+      <li>
+        <strong>Correctness &amp; fidelity:</strong>
+        Browser tests verify independent pad highlighting for <code>L</code>,
+        <code>R</code>,
+        <code>F</code>, and <code>F + L</code>, end-to-end touch hit-testing
+        across the full <code>180 CSS px</code> width, and visual fidelity
+        matching the accepted 02.6 reference at <code>1280px+</code> in the Lab.
+      </li>
+    </ul>
+  </section>
 </StudyLayout>
 
 <style>
 ul {
-	max-width: var(--measure-prose);
-	margin-block: 0 var(--spacing-md);
-	padding-left: var(--spacing-md);
-	display: grid;
-	gap: var(--spacing-xs);
+  max-width: var(--measure-prose);
+  margin-block: 0 var(--spacing-md);
+  padding-left: var(--spacing-md);
+  display: grid;
+  gap: var(--spacing-xs);
 }
 
 .prior-iteration {
-	margin-block: var(--spacing-md) var(--spacing-lg);
-	border: 1px solid var(--color-border);
-	background: var(--color-elev-1);
+  margin-block: var(--spacing-md) var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-elev-1);
 }
 
 .prior-iteration summary {
-	padding: var(--spacing-sm) var(--spacing-md);
-	font-family: var(--font-family-ui);
-	font-size: var(--font-size-caption);
-	color: var(--color-text-muted);
-	cursor: pointer;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-family: var(--font-family-ui);
+  font-size: var(--font-size-caption);
+  color: var(--color-text-muted);
+  cursor: pointer;
 }
 
 .details-body {
-	padding: var(--spacing-md);
-	border-top: 1px solid var(--color-border-subtle);
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--color-border-subtle);
 }
 </style>

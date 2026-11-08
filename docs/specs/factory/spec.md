@@ -163,7 +163,7 @@ designer and agents to act on, not passes or failures.
 - Rules and tests change when intent changes, with a reason; passing results alone do not justify weakening a contract.
 - Performance observations report device/browser and scenario. A 60 FPS target is evaluated as a measurement, not treated as a hardware-independent deterministic assertion.
 - Human approval of feel and fidelity remains distinct from automated behavioral correctness.
-- Existing unrelated work survives iteration and is not silently absorbed into a new commit.
+- A commit saves the whole shared checkout; other sessions' in-flight work is saved with it and stays visible in the diff.
 - Only approved lessons become standing guidance; experiment notes remain evidence rather than instructions.
 
 ### Scenarios

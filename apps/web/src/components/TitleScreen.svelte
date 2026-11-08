@@ -9,6 +9,7 @@ import {
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import { version } from "../../package.json";
+import { isNarrowerThanMinRatio } from "../lib/game-screen";
 import Logo from "./Logo.svelte";
 
 let { onStart, disabled = false }: { onStart: () => void; disabled?: boolean } =
@@ -52,7 +53,7 @@ function drawArrival() {
   drawBuild(ctx, build, 0, 0, 0, scale);
 }
 let hint = $state(0);
-let portrait = $state(false);
+let narrow = $state(false);
 const hints = [
   "A / D or ← / → steer. Hold both to accelerate. On touchscreens, use the engine pads.",
   "Survive as long as you can. Keep clear of stars and planets.",
@@ -62,14 +63,15 @@ const hints = [
 onMount(() => {
   drawArrival();
   const resize = () => {
-    portrait = window.innerWidth <= window.innerHeight;
+    // The title fills the window (fixed, inset 0), so it gates on the window.
+    narrow = isNarrowerThanMinRatio(window.innerWidth, window.innerHeight);
   };
   resize();
   window.addEventListener("resize", resize);
   startButton.focus();
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const timer = window.setInterval(() => {
-    if (!motion.matches && !portrait) hint = (hint + 1) % hints.length;
+    if (!motion.matches && !narrow) hint = (hint + 1) % hints.length;
   }, 8000);
   return () => {
     window.removeEventListener("resize", resize);
@@ -112,7 +114,7 @@ onMount(() => {
       ></canvas>
     </section>
     <aside class="hint" aria-label="Flight hint">
-      {#if portrait}
+      {#if narrow}
         <p role="status" class="orientation-warning">
           Rotate your screen to landscape.
         </p>

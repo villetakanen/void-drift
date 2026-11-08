@@ -6,40 +6,24 @@
   background: var(--color-void);
   color: var(--color-text);
 }
-.flight-header {
-  min-height: var(--flight-header-height);
-  padding: var(--spacing-md) var(--spacing-lg);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-lg);
-  border-bottom: 1px solid var(--color-border);
-}
 .brand {
   display: inline-flex;
   align-items: center;
   color: var(--color-brand);
   text-decoration: none;
 }
-.edition,
 .eyebrow {
   font-size: var(--font-size-caption);
   letter-spacing: var(--tracking-eyebrow);
   color: var(--color-text-muted);
 }
-.flight-header nav {
-  margin-left: auto;
-  display: flex;
-  gap: var(--spacing-md);
-}
-.flight-header a,
 .flight-inspector a {
   min-height: var(--control-min-height);
   display: inline-flex;
   align-items: center;
 }
 .flight-inspector a:not(.btn),
-.flight-card a:not(.btn),
-.flight-header nav a:not(.btn) {
+.flight-card a:not(.btn) {
   color: var(--color-text-muted);
   font-size: var(--font-size-caption);
 }
@@ -255,10 +239,6 @@
   line-height: var(--line-height-ui);
 }
 @media (max-height: 500px) {
-  .flight-header {
-    min-height: var(--control-min-height);
-    padding: var(--spacing-xs) var(--spacing-md);
-  }
   .flight-card {
     padding: var(--spacing-sm);
     gap: var(--spacing-sm);
@@ -272,18 +252,8 @@
   .flight-hud strong {
     font-size: var(--font-size-body);
   }
-  .edition {
-    display: none;
-  }
 }
 @media (max-width: 700px) {
-  .edition {
-    display: none;
-  }
-  .flight-header {
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm);
-  }
   .flight-layout:has(.flight-inspector) {
     overflow: auto;
     flex-direction: column;

@@ -1,3 +1,4 @@
+import { GAME_MIN_RATIO } from "../../apps/web/src/lib/game-screen";
 import {
   BuildStoreSchema,
   buildStats,
@@ -85,7 +86,11 @@ test("Scout restores its four-slot save, fits equipment and engines and flies fr
   for (const chassis of ["fighter", "corvette"] as const) {
     expect(savedAfter[chassis]).toEqual(savedBefore[chassis]);
   }
-  await page.setViewportSize({ width: 1440, height: 1100 });
+  // A 4:3 viewport: Practice fills it with no header, so flight is not gated.
+  await page.setViewportSize({
+    width: 1440,
+    height: (1440 * GAME_MIN_RATIO.height) / GAME_MIN_RATIO.width,
+  });
   await page.getByRole("button", { name: "Test flight", exact: true }).click();
   const deck = page.locator(".flight-page");
   await expect(deck).toHaveAttribute("data-status", "PLAYING");

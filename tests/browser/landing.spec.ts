@@ -1,3 +1,4 @@
+import { GAME_MIN_RATIO } from "../../apps/web/src/lib/game-screen";
 import { expect, test } from "../helpers/local-browser";
 
 test("landing animation survives resize and hands off a fresh Wasp run", async ({
@@ -205,4 +206,25 @@ test("orientation warning follows the viewport without interrupting the menu", a
   await expect(deck).toHaveAttribute("data-ticks", "0");
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: /TOP SCORES/ })).toBeFocused();
+});
+
+test("orientation warning follows the 4:3 flight limit in landscape", async ({
+  page,
+}) => {
+  const width = 1100;
+  const minHeight = (width * GAME_MIN_RATIO.height) / GAME_MIN_RATIO.width;
+  // Landscape, but narrower than 4:3.
+  await page.setViewportSize({ width, height: minHeight + 100 });
+  await page.goto("/");
+  const warning = page
+    .getByRole("status")
+    .filter({ hasText: "Rotate your screen to landscape." });
+  const start = page.getByRole("button", { name: "PRESS START" });
+  await expect(warning).toBeVisible();
+  await expect(start).toBeFocused();
+  await page.setViewportSize({ width, height: Math.floor(minHeight) });
+  await expect(warning).toHaveCount(0);
+  await expect(start).toBeFocused();
+  await page.setViewportSize({ width, height: Math.floor(minHeight) + 1 });
+  await expect(warning).toBeVisible();
 });

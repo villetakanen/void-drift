@@ -28,11 +28,9 @@ import {
   submitHighScore,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
-import { version } from "../../package.json";
 import { fitGameScreen, GAME_HEIGHT } from "../lib/game-screen";
 import { settings } from "../lib/stores/settings";
 import Dialog from "./Dialog.svelte";
-import Logo from "./Logo.svelte";
 import TitleScreen from "./TitleScreen.svelte";
 
 let {
@@ -46,7 +44,7 @@ let {
   mode?: FlightMode;
   onReturn?: () => void;
 } = $props();
-// Practice retains the former fitted test-flight behavior during mode migration.
+// Practice skips the arrival countdown and labels itself; its screen is Survival's.
 const testFlight = $derived(mode === "practice");
 let canvas: HTMLCanvasElement;
 let simulation: Simulation;
@@ -88,10 +86,11 @@ let landing = $state.raw<LandingSystem>();
 let transitionTime = 0;
 let countTime = -1;
 let lastFrameTime = 0;
-let portrait = $state(false);
+let narrow = $state(false);
 let viewport: HTMLElement;
 let screen = $state(fitGameScreen(1920, 1080));
-const adaptive = $derived(!landing && !testFlight);
+// Every flight mode uses the adaptive stage; only the title landing does not.
+const adaptive = $derived(!landing);
 let sceneOpacity = $state(1);
 let reducedMotion = false;
 let stage: HTMLElement;
@@ -125,7 +124,7 @@ function reset(start = false) {
     phase = "starting";
   } else countTime = -1;
   if (start) simulation.start();
-  paused = start && portrait;
+  paused = start && narrow;
   scoreSaved = false;
   message = "";
   frameCamera(true);
@@ -183,7 +182,7 @@ function start() {
   if (launchSource === "title" && !reducedMotion && landing) {
     phase = "starting";
     transitionTime = 0;
-    paused = portrait;
+    paused = narrow;
     input?.reset();
   } else {
     landing = undefined;
@@ -200,7 +199,7 @@ function suspend() {
   if (status === "PLAYING" || phase === "starting") paused = true;
 }
 function togglePause() {
-  if (portrait || document.hidden) return;
+  if (narrow || document.hidden) return;
   paused = !paused;
   input?.reset();
   lastFrameTime = performance.now();
@@ -238,7 +237,7 @@ async function save() {
   }
 }
 function press(event: PointerEvent, side: "left" | "right") {
-  if (paused || portrait || document.hidden) return;
+  if (paused || narrow || document.hidden) return;
   event.preventDefault();
   const button = event.currentTarget as HTMLElement;
   button.setPointerCapture(event.pointerId);
@@ -271,8 +270,8 @@ onMount(() => {
         parseFloat(css.paddingTop) -
         parseFloat(css.paddingBottom),
     );
-    portrait = window.innerWidth <= window.innerHeight;
-    if (portrait) suspend();
+    narrow = screen.narrow;
+    if (narrow) suspend();
     const bounds = stage.getBoundingClientRect();
     landingFrame = {
       width: bounds.width,
@@ -294,8 +293,8 @@ onMount(() => {
   playSurface?.addEventListener("contextmenu", preventMenu);
   function draw(time: number) {
     const dt = Math.max(0, Math.min((time - lastFrameTime) / 1000, 0.1));
-    if (portrait || document.hidden) suspend();
-    const blocked = paused || portrait || document.hidden;
+    if (narrow || document.hidden) suspend();
+    const blocked = paused || narrow || document.hidden;
     if (blocked) input.reset();
     const renderWidth = adaptive ? Math.round(screen.logicalWidth) : 1920;
     if (canvas.width !== renderWidth) {
@@ -445,9 +444,8 @@ onMount(() => {
 <div
   class="flight-page"
   class:title-active={Boolean(landing)}
-  class:survival-screen={!testFlight}
   data-paused={paused}
-  data-portrait={portrait}
+  data-narrow={narrow}
   data-launch-source={launchSource}
   data-status={status}
   data-salvage-passes={salvageStats.passes}
@@ -469,27 +467,6 @@ onMount(() => {
   data-zoom-level={zoomLevel}
   data-zoom-steps={activeZoomSteps}
 >
-  {#if !landing && testFlight}
-    <header class="flight-header">
-      <a href="/" class="brand"><Logo size="sm" /></a>
-      <span class="edition"
-        >{loadout
-          ? testFlight
-            ? "BUILDER / TEST FLIGHT"
-            : "CUSTOM SURVIVAL / UNRANKED"
-          : chosen === "fiddler"
-            ? "FIDDLER / UNRANKED FLIGHT TRIAL"
-            : `SURVIVAL / ${version}`}</span
-      >
-      <nav class:build-nav={Boolean(loadout)} aria-label="Flight navigation">
-        {#if onReturn}
-          <button type="button" class="btn btn-link" onclick={onReturn}>
-            Return to builder
-          </button>
-        {/if}
-      </nav>
-    </header>
-  {/if}
   <div class="flight-layout" bind:this={viewport}>
     <section
       bind:this={stage}
@@ -498,9 +475,13 @@ onMount(() => {
       class:adaptive
       style:width={adaptive ? `${screen.width}px` : undefined}
       style:height={adaptive ? `${screen.height}px` : undefined}
-      style:--game-gutter={`${screen.gutter}px`}
-      data-active-width={screen.activeWidth}
-      style:opacity={paused || portrait ? 1 : sceneOpacity}
+      style:--game-gutter={`${screen.gutter.side}px`}
+      style:--game-gutter-edge={`${screen.gutter.edge}px`}
+      data-active-width={screen.active.css.width}
+      data-active-height={screen.active.css.height}
+      data-active-logical-width={screen.active.logical.width}
+      data-active-logical-height={screen.active.logical.height}
+      style:opacity={paused || narrow ? 1 : sceneOpacity}
       aria-label="Flight arena"
     >
       <div
@@ -587,14 +568,17 @@ onMount(() => {
           </button>
         </div>
       </div>
-      {#if portrait && (phase !== "menu" || !landing)}
+      {#if narrow && (phase !== "menu" || !landing)}
         <Dialog
-          label="Rotate to landscape"
+          label="Rotate to continue"
           class="flight-card"
           returnFocus={false}
         >
-          <h1>Rotate to landscape</h1>
-          <p>Flight is paused. Turn your screen sideways to continue.</p>
+          <h1>Rotate to continue</h1>
+          <p>
+            Flight is paused. Turn your screen sideways or widen the window to
+            continue.
+          </p>
         </Dialog>
       {:else if paused}
         <Dialog label="Paused" class="flight-card" onclose={togglePause}>
@@ -693,7 +677,8 @@ onMount(() => {
 </div>
 
 <style>
-.survival-screen .flight-layout {
+/* Every flight mode measures the safe viewport; the title resets it below. */
+.flight-layout {
   box-sizing: border-box;
   align-items: center;
   justify-content: center;
@@ -750,10 +735,5 @@ onMount(() => {
   pointer-events: none;
   color: var(--color-text);
   font-size: 12px;
-}
-.build-nav {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
 }
 </style>
