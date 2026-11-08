@@ -14,8 +14,8 @@ Version one moves and rotates existing mounts. Linked, mirrored editing is requi
 Mount creation, deletion, type changes, resizing, hull editing and flight tuning
 are outside this version. The tool is a Lab authoring surface, not a player editor.
 
-Related contracts: [Hangar](hangar/spec.md),
-[Motion instrument](motion-instrument.md), [design system](design-system-core.md).
+Related contracts: [Hangar](../spec.md),
+[Motion instrument](../../../lab/motion-instrument/spec.md), [design system](../../../factory/design-system/spec.md).
 Structure follows ASDLC's [Spec](https://asdlc.io/patterns/the-spec/) and
 [Living Specs](https://asdlc.io/practices/living-specs/) guidance.
 

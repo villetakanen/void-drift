@@ -282,7 +282,7 @@ implemented 2026-11-03.
 **Status:** Implemented 2026-11-02 (opening-screen S6).
 **Source of truth:** `packages/core/src/lib/styles/tokens.css`,
 `packages/core/src/lib/styles/surfaces.css`, `apps/web/src/components/Dialog.svelte`.
-**Reference:** `/lab/surfaces`. Dialog behaviour: [dialogs.md](dialogs.md).
+**Reference:** `/lab/surfaces`. Dialog behaviour: [dialogs.md](../../game/dialogs/spec.md).
 
 ### Corner cuts
 

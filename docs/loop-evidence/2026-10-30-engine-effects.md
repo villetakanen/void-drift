@@ -51,7 +51,7 @@ Traceable sources:
 [plume](../../packages/core/src/lib/effects/engine-plume.ts),
 [physics](../../packages/core/src/lib/physics/Physics.ts),
 [simulation](../../packages/mode-a/src/lib/simulation.ts),
-[alpha specification](../specs/playable-alpha.md).
+[alpha specification](../specs/game/spec.md).
 
 ## Verification evidence
 

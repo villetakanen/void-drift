@@ -132,7 +132,7 @@ Before preparing, decide the rules version. If gameplay rules or any tuning-file
 differ from the previous release, change `CHALLENGE` in
 `packages/mode-a/src/schemas/highscore.ts` once for this release; new scores then use
 new document IDs and queries. Otherwise leave it unchanged. Editing tuning values
-between releases never changes it ([gravity-field.md](specs/gravity-field.md#rules-version)).
+between releases never changes it ([gravity-field.md](specs/game/world/gravity-field/spec.md#rules-version)).
 
 After the full verification gates pass on a stable candidate, prepare the production
 artifact locally:

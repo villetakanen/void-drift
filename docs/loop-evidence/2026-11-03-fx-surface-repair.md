@@ -152,7 +152,7 @@ still resolves to `0f3414fd3980c50b12422eef4e9db50db1a7a8f3`. The earlier clean-
 and live-site observations above describe their recorded times, not the checkout or
 deployed version at this later closure. Current remote/live state was not rechecked.
 
-The [FX contract](../specs/sfx-canvas.md) still leaves **FX-01** composition review,
+The [FX contract](../specs/factory/effects/spec.md) still leaves **FX-01** composition review,
 **FX-07** performance and **FX-08** whole-scene experience open. Its header records
 the earlier local-verification stage; the subsequent publication evidence is dated
 above. No acceptance flags were changed by closure. In-app observations do not

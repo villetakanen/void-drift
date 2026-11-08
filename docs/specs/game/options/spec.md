@@ -285,4 +285,4 @@ If `localStorage` is undefined (SSR, private browsing restrictions):
 
 - [nanostores documentation](https://github.com/nanostores/nanostores)
 - [@nanostores/persistent](https://github.com/nanostores/persistent)
-- [Survival Core Spec](./survival-core.md)
+- [Survival Core Spec](../survival/spec.md)

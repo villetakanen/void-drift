@@ -14,7 +14,7 @@ Read for changes to structure, simulation, or data flow. Product intent belongs 
   game time. Core owns buffers, stamp caches, bounded moving sparks and scene budgets;
   mode supplies actual engine and collector activity. Engines retain only current
   outlets, not trail history. `/lab/fx` exercises six production simulations together.
-  The [FX contract](specs/sfx-canvas.md) owns lifecycle and performance acceptance.
+  The [FX contract](specs/factory/effects/spec.md) owns lifecycle and performance acceptance.
 - Replay takes validated settings and ordered input/tick chunks. Rendering reads state;
   simulation time drives orbits and animation. Camera zoom frames the ship and star,
   with an explicit snap when crossing the circular arena boundary.
@@ -27,7 +27,7 @@ Read for changes to structure, simulation, or data flow. Product intent belongs 
   core; web composes both. Use existing packages rather than a new engine framework.
 - The current renderer uses `CanvasRenderingContext2D`. Reuse vectors/buffers in
   hot loops; prefer scalar arithmetic and `Math.hypot` where appropriate.
-  Owner decision, 2026-11-03: the [FX layer](specs/sfx-canvas.md) may use a different
+  Owner decision, 2026-11-03: the [FX layer](specs/factory/effects/spec.md) may use a different
   backend when its behavior, performance and experience justify it. Its dependency
   boundaries and simulation authority remain unchanged. Backend alternatives are
   still proposals in the [FX investigation](plans/2026-11-03-fx-framework-triage.md).
@@ -107,7 +107,7 @@ branches on an optional validated loadout while preserving legacy stock trials.
 `/builder` and `/lab/builder` compose the same ShipBuilder and FlightDeck components.
 Resource power is absolute nonnegative energy; runtime clamps it to build capacity.
 Custom runs are unranked and cannot use the stock score submission path.
-See [Hangar](specs/hangar/spec.md) for assembly and flight handoff; the
+See [Hangar](specs/game/hangar/spec.md) for assembly and flight handoff; the
 [ship-builder history](history/ship-builder.md) retains provisional physics and tuning decisions.
 
 
@@ -147,5 +147,5 @@ schema boundary, so they cannot fall through to legacy stock physics or art.
 It enters the main menu as 05 and the Hangar as an unranked flight trial. Score
 validation retains the existing ranked fleet. Existing v3 Hangar stores gain a
 Fiddler starting build without replacing their other ships. See the
-[Hangar contract](specs/hangar/spec.md#fiddler-flight-trial--2026-11-03) for the
+[Hangar contract](specs/game/hangar/spec.md#fiddler-flight-trial--2026-11-03) for the
 accepted starting fit and remaining human flight review.

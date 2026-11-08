@@ -42,7 +42,7 @@ the world stay attached to the scene through a jump.
 
 ## Art direction
 
-High-contrast neon on the void. Hull planes use procedural flat fills; approved cockpit glass uses gradients and crisp reflections (see [cockpit materials](specs/cockpit-materials.md)). No
+High-contrast neon on the void. Hull planes use procedural flat fills; approved cockpit glass uses gradients and crisp reflections (see [cockpit materials](specs/factory/cockpit-materials/spec.md)). No
 external image or audio assets unless there is no other way.
 
 ### Ship drawing fundamentals
@@ -70,7 +70,7 @@ is drawn or studied.
    plane the silhouette and the light can do without. Wings are thin; only the body
    has height. A bulky result means body has leaked into the wings.
 5. **Canopy and fittings are their own objects.** The canopy is compact and marks the front and the scale. Approved manufacturer
-   glass uses the [cockpit material language](specs/cockpit-materials.md); other
+   glass uses the [cockpit material language](specs/factory/cockpit-materials/spec.md); other
    canopies remain black. Slots, engines and weapons sit on the chassis;
    keep the areas under them calm.
 6. **Check at both scales.** Enlarged in the builder and at the 0.65 flight scale,
@@ -92,10 +92,10 @@ is drawn or studied.
 ## Where details live
 
 - Tokens, type, colour roles, elevation, inputs, buttons, identity:
-  [design system core](specs/design-system-core.md).
-- Flight, controls, camera and the Flight Lab: [playable alpha](specs/playable-alpha.md).
-- Player assembly and flight handoff: [Hangar](specs/hangar/spec.md).
+  [design system core](specs/factory/design-system/spec.md).
+- Flight, controls, camera and the Flight Lab: [playable alpha](specs/game/spec.md).
+- Player assembly and flight handoff: [Hangar](specs/game/hangar/spec.md).
 - Recorded ship, engine and artwork decisions: [ship-builder history](history/ship-builder.md).
-- The Motion instrument: [motion instrument](specs/motion-instrument.md).
+- The Motion instrument: [motion instrument](specs/lab/motion-instrument/spec.md).
 - Lab practice and visual evidence: [development](development.md).
-- How design studies run and end: [design studies](specs/design-studies.md).
+- How design studies run and end: [design studies](specs/lab/design-studies/spec.md).

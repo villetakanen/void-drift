@@ -18,9 +18,9 @@ steps 4–7 below are superseded by R1–R5. Spec work S1–S5 done.
   small to keep game physics sane. The game adopts it later, planets first, suns
   last.
 
-Specs: [gravity-tuning.md](../specs/gravity-tuning.md) (new);
-[motion-instrument.md](../specs/motion-instrument.md) field mode deprecated;
-[gravity-field.md](../specs/gravity-field.md) "Target: reach from mass", field and
+Specs: [gravity-tuning.md](../specs/lab/gravity-tuning/spec.md) (new);
+[motion-instrument.md](../specs/lab/motion-instrument/spec.md) field mode deprecated;
+[gravity-field.md](../specs/game/world/gravity-field/spec.md) "Target: reach from mass", field and
 proposal sections deprecated.
 
 ### Steps

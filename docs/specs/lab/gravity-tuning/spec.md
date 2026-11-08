@@ -5,11 +5,11 @@
 Gravity tuning is the Lab bench for deciding how a gravity well works, metrics
 first: one well with given values, flown by real ships, read against each ship's
 thrust. The game's sun and planets use the same mass law
-([gravity-field.md](gravity-field.md)); the reasoning behind it is in
-[gravity-model.md](../gravity-model.md).
+([gravity-field.md](../../game/world/gravity-field/spec.md)); the reasoning behind it is in
+[gravity-model.md](../../../gravity-model.md).
 
 It is one of two benches with one subject each. Ship tuning (the Motion instrument’s no-gravity screen,
-[motion-instrument.md](motion-instrument.md)) compares ships with no gravity; Gravity
+[motion-instrument.md](../motion-instrument/spec.md)) compares ships with no gravity; Gravity
 tuning studies one well with ships that cannot be changed. These restrictions
 belong to these configured Lab uses, rather than every Motion instrument instance.
 
@@ -24,7 +24,7 @@ The configured inputs are the well's mass (`strength`), production falloff
 selection (`falloff`), cut-off pull (`cutoff`), body radius (`radius`) and centre
 (`x`, `y`). Their units, accepted ranges and defaults are listed under Settings.
 
-[Gravity field](gravity-field.md) owns the gravity equations, reach and cut-off
+[Gravity field](../../game/world/gravity-field/spec.md) owns the gravity equations, reach and cut-off
 behavior, integration rules and planet contact response. The bench uses the
 production functions `massWellAcceleration`, `massWellPull`, `massWellReach` and
 `bounceOffSurface` from `packages/core/src/lib/physics/Physics.ts`. It supplies
@@ -137,7 +137,7 @@ Page: `/lab/gravity-tuning`, named "Gravity tuning" in the Lab.
 The copied document records the experiment settings, not their acceptance.
 Acceptance is recorded separately in the study or an explicit designer decision;
 the bench changes no game value. An accepted falloff, cut-off or mass reaches the
-game through the tuning workflow owned by [Gravity field](gravity-field.md).
+game through the tuning workflow owned by [Gravity field](../../game/world/gravity-field/spec.md).
 
 ## Contract
 
@@ -172,7 +172,7 @@ game through the tuning workflow owned by [Gravity field](gravity-field.md).
 - The ships and burns are the game's and the instrument's own definitions,
   imported, never copied.
 - Gravity, derived well measurements and contact response use production physics;
-  their laws belong to [Gravity field](gravity-field.md).
+  their laws belong to [Gravity field](../../game/world/gravity-field/spec.md).
 - The bench changes no game value.
 
 ### Scenarios

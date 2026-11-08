@@ -38,7 +38,7 @@ here.
 
 ### The pull
 
-The mass law (reasoning: [gravity-model.md](../gravity-model.md)): a body pulls by
+The mass law (reasoning: [gravity-model.md](../../../../gravity-model.md)): a body pulls by
 its mass, `massWellPull` in `Physics.ts`,
 
 - 1/d², in play: `G × mass / distance²`, `G = 1000` (`MASS_WELL_G`);
@@ -108,7 +108,7 @@ about 1×, the sun about 2×, the cut-off about 10 %. The reference ship is the
 Fighter's starter loadout; its thrust is its peak acceleration on the
 instrument's B1. The relation is guarded by a test, not derived at load: changing
 ship thrust or a body's size fails the guard and names the bodies to retune on
-the [Gravity tuning](gravity-tuning.md) bench.
+the [Gravity tuning](../../../lab/gravity-tuning/spec.md) bench.
 
 The file holds the values in play; read it for them rather than copying them
 here. `applyGravityTuning`, `tunedMassWell`, `planetMass` and `setStarMassWell`

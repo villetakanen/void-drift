@@ -1,6 +1,6 @@
 # Random star systems plan
 
-**Status:** PLANNED (stub). Moved out of the [opening screen plan](../specs/opening-screen.md) as
+**Status:** PLANNED (stub). Moved out of the [opening screen plan](../specs/game/landing-page/spec.md) as
 its former S5 (owner, 2026-11-02).
 **Owner ruling (2026-11-01):** static star systems are a bug. Every game run plays in a new
 system; in early alpha a system can never be static in any situation.

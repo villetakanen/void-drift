@@ -1,4 +1,4 @@
-> Historical specification. Current alpha behavior is defined in [playable-alpha.md](playable-alpha.md).
+> Historical specification. Current alpha behavior is defined in [playable-alpha.md](../spec.md).
 
 # Feature: Camera Zoom + Ship Select (v0.4.0)
 
@@ -90,7 +90,7 @@ Keep allocation-free render behavior in frame loop.
 | Tank     | `tank`     | Higher hull resilience | Slower turn/thrust |
 
 [DEPRECATED 2026-11-01] `balanced` and `tank` are retired; the ids are `wasp`, `scout`, `fighter`, `corvette`.
-Names and traits: [Ship names and ids](../history/ship-builder.md#ship-names-and-ids--s4-2026-11-02).
+Names and traits: [Ship names and ids](../../../history/ship-builder.md#ship-names-and-ids--s4-2026-11-02).
 
 ### Anti-Patterns
 

@@ -2,8 +2,8 @@
 
 ## Purpose and authority
 
-Implement the contracts in [Motion instrument](../specs/motion-instrument.md) and
-[Gravity tuning](../specs/gravity-tuning.md). This plan records implementation work;
+Implement the contracts in [Motion instrument](../specs/lab/motion-instrument/spec.md) and
+[Gravity tuning](../specs/lab/gravity-tuning/spec.md). This plan records implementation work;
 creating it does not start that work. The designer reviewed the contracts in the
 November 4 conversation. Recheck the specs and working tree before implementation:
 the ship-motion study is being edited independently.

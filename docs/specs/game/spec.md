@@ -11,8 +11,8 @@ Screen composition, viewport fitting and play availability follow
 Game and production-backed Lab instruments share simulation and core rendering primitives.
 `schemas/flight.ts` validates flight settings and replay inputs; ship tuning uses the
 existing ship-profile schema. Assembled propulsion follows the shared
-[ship propulsion contract](ship-propulsion.md); legacy stock trials retain their
-separate physics. Gravity: [gravity-field.md](gravity-field.md).
+[ship propulsion contract](ships/propulsion/spec.md); legacy stock trials retain their
+separate physics. Gravity: [gravity-field.md](world/gravity-field/spec.md).
 
 All ranked runs use the current challenge `CHALLENGE` (`arrival-3`), a fresh per-run seed, a G-class star, and stock profiles.
 Scoring is casual client-reported survival time, clearly labeled: Firestore rules
@@ -110,7 +110,7 @@ the web package version independently of the internal scoring challenge identifi
 ## Engine effects alpha — 30 October 2026 (historical painter)
 
 The surface recipe below records the 0.3-era implementation. Alpha 0.5.0 replaces
-its painting with the [arcade FX contract](sfx-canvas.md): sharp strokes, bounded
+its painting with the [arcade FX contract](../factory/effects/spec.md): sharp strokes, bounded
 world-space trails and a shared final pass. The behavior and output ownership
 remain; the old surface appearance is not an active constraint.
 
@@ -136,7 +136,7 @@ performance still need review.
 The assembled ship path shares production EnginePlume rendering and lifecycle,
 with emitters placed at fitted nozzles. Alpha 0.5.0 uses the arcade FX painter in
 both assembled and stock paths. Emitter geometry and gravity remain unchanged. [Hangar](hangar/spec.md) owns the custom-flight handoff and test-fixture
-contract; shared engine decisions remain in the [ship-builder history](../history/ship-builder.md).
+contract; shared engine decisions remain in the [ship-builder history](../../history/ship-builder.md).
 
 ## Ship 05 flight trial — 3 November 2026
 

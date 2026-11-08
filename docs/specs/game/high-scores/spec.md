@@ -1,4 +1,4 @@
-> Historical specification. Current alpha behavior is defined in [playable-alpha.md](playable-alpha.md).
+> Historical specification. Current alpha behavior is defined in [playable-alpha.md](../spec.md).
 
 # Feature: Leaderboard System (High Scores)
 
@@ -420,5 +420,5 @@ service cloud.firestore {
 
 ## Related Documents
 
-- [Survival Core Spec](./survival-core.md) — Death cause types
-- [Design System Spec](./design-system-core.md) — UI tokens
+- [Survival Core Spec](../survival/spec.md) — Death cause types
+- [Design System Spec](../../factory/design-system/spec.md) — UI tokens

@@ -2,7 +2,7 @@
 
 Design record: study `lab-instrument-2026-11-01` (`/lab/studies/lab-instrument-2026-11-01`).
 The shared instrument is used in Lab simulation pages and design studies.
-Ship tuning and [Gravity tuning](gravity-tuning.md) are configured uses of it.
+Ship tuning and [Gravity tuning](../gravity-tuning/spec.md) are configured uses of it.
 
 ## Context
 
@@ -62,7 +62,7 @@ there is no designer-facing configuration import workflow.
 ### Ship tuning configuration
 
 The following document, burns and calculation describe Ship tuning. Gravity tuning's
-configuration and measurements are defined in [its spec](gravity-tuning.md).
+configuration and measurements are defined in [its spec](../gravity-tuning/spec.md).
 
 #### Inputs and outputs
 

@@ -44,7 +44,7 @@ will fit every design problem.
   is a convention, not an enforced boundary.
 
 These decisions are recorded in [design guidance](design.md),
-[architecture](architecture.md), and the [study specification](specs/design-studies.md).
+[architecture](architecture.md), and the [study specification](specs/lab/design-studies/spec.md).
 
 ## Lessons from design iteration
 

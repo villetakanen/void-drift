@@ -1,7 +1,7 @@
 # Cockpit materials
 
 Status: implemented locally, approved 2026-11-03 in
-[the gilded surface study](../../apps/web/src/pages/lab/studies/gilded-surfaces-2026-11-03.astro).
+[the gilded surface study](../../../../apps/web/src/pages/lab/studies/gilded-surfaces-2026-11-03.astro).
 
 ## Intent and usage
 

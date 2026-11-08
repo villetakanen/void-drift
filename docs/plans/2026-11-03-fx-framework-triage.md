@@ -5,7 +5,7 @@ Working tree based on `b21de8e`, with extensive pre-existing changes including t
 new `FlightFx`, gravity collection and fitting artwork. Runtime and test files were
 not changed by this investigation. Measurements describe this local working tree,
 not a deployed release. The proposed replacement is specified in
-[Arcade effects layer](../specs/sfx-canvas.md).
+[Arcade effects layer](../specs/factory/effects/spec.md).
 
 ## Acceptance contract for this investigation
 

@@ -30,7 +30,7 @@ These approvals concern those particular designs, not a general rendering rule.
 
 Study: [resource-capacity-2026-11-02](../../apps/web/src/pages/lab/studies/resource-capacity-2026-11-02.astro).
 Recorded implementation: [Potential Well](../history/ship-builder.md#potential-well--implemented-2026-11-02).
-Current assembly contract: [Hangar](../specs/hangar/spec.md).
+Current assembly contract: [Hangar](../specs/game/hangar/spec.md).
 
 ## Delivered revisions and publication
 

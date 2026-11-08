@@ -74,7 +74,7 @@ agent self-blame or repeated explanations of agent behavior.
 
 ### The specification prescribes a different page
 
-The [current presentation contract](specs/design-studies.md#current-study-presentation)
+The [current presentation contract](specs/lab/design-studies/spec.md#current-study-presentation)
 says “Use this outline” and enumerates purpose and phase, agreed foundation, current
 investigation, review focus, and decision history and integration. The
 [skill](../.agents/skills/design-study/SKILL.md#working-surface-and-evidence)

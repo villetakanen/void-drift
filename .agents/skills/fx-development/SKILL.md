@@ -4,7 +4,7 @@ description: Implement, tune or diagnose Void Drift game effects and their share
 ---
 # FX development
 
-Read `docs/specs/sfx-canvas.md` for the current behavior, scene budget and acceptance
+Read `docs/specs/factory/effects/spec.md` for the current behavior, scene budget and acceptance
 contract. Use `.agents/skills/shared-components/SKILL.md` for shared ownership and
 composition. The spec owns requirements; this skill guides how to work on them.
 

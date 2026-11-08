@@ -6,8 +6,8 @@ Status: reusable workflow. Individual study history is outside the entry contrac
 
 Conversation produces inspectable design proposals before shared implementation changes.
 This specification owns observable outputs, presentation and decision authority.
-The [design-study skill](../../.agents/skills/design-study/SKILL.md) owns how to conduct
-the work; its [exploration guide](../../.agents/skills/design-study/references/exploration.md)
+The [design-study skill](../../../../.agents/skills/design-study/SKILL.md) owns how to conduct
+the work; its [exploration guide](../../../../.agents/skills/design-study/references/exploration.md)
 owns creative rounds, feedback, retention and focus. Keep those procedures in their
 owner rather than repeating them here.
 
@@ -103,7 +103,7 @@ Use this rubric for a requested factory evaluation or targeted investigation.
 Ordinary studies do not require a separate ratings report; their reasoning, readiness,
 scope and human judgment remain part of the work. When an evaluation is requested,
 store ratings and supporting evidence in a separate linked record, for example
-`/lab/reviews/<study-slug>`. The [evaluation protocol](../factory-building-lessons/design-study-evaluation.md)
+`/lab/reviews/<study-slug>`. The [evaluation protocol](../../../factory-building-lessons/design-study-evaluation.md)
 is available for deliberate workflow trials. Neither the rubric nor a feasibility
 conclusion authorizes implementation.
 

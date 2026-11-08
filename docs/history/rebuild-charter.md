@@ -66,7 +66,7 @@ Consulted 2026-10-28:
 
 The owner authorizes a playable 0.4.0 alpha built from the agreed
 [ship-builder brief](ship-builder.md#purpose-and-delivery), now expressed as
-the [Hangar contract](../specs/hangar/spec.md), followed by focused design studies for
+the [Hangar contract](../specs/game/hangar/spec.md), followed by focused design studies for
 amendments revealed through play. Player fitting now belongs in scope: fixed slots,
 visible parts, mass-based directional engines and energy tradeoffs. Desktop is the
 builder acceptance target; mobile sizing/layout is deferred. Weapons are static;

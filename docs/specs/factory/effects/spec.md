@@ -4,7 +4,7 @@ Updated 2026-11-03. **Status: persistent-surface correction implemented and loca
 owner builder playtest visually positive; performance acceptance pending.** The owner
 rejected the 0.5.0 engine appearance and clarified that the accumulated image must
 hold the history. The direct pass and per-engine trail histories shipped in 0.5.0
-are superseded. [Correction plan](../plans/2026-11-03-fx-surface-correction.md).
+are superseded. [Correction plan](../../../plans/2026-11-03-fx-surface-correction.md).
 
 ## Derelict contained energy
 
@@ -43,7 +43,7 @@ workload here; their gameplay implementation belongs to their own features.
   engine output, collection activity, transforms and game time. Effects consume
   those facts and own presentation state. Collector eligibility and energy remain
   owned by `packages/mode-a/src/lib/gravity-collection.ts` and the simulation;
-  the [collection adoption record](../history/ship-builder.md#gravity-collection-and-flight-fx--adopted-2026-11-03)
+  the [collection adoption record](../../../history/ship-builder.md#gravity-collection-and-flight-fx--adopted-2026-11-03)
   preserves the existing rule's rationale.
 - **Core owns reusable effects capabilities.** The current entry points are
   `packages/core/src/lib/effects/fx-surface.ts`, `arcade-fx.ts`, `engine-plume.ts`
@@ -67,7 +67,7 @@ workload here; their gameplay implementation belongs to their own features.
   buffers, cached complete ion stamps and phase-driven gravity arcs. Gradients are
   generated only when building the stamp cache; there is no live blur pass.
   JavaScript, GPU rendering, WASM/Rust and CSS alternatives remain judged by this contract. The FX exception to the
-  current Canvas convention is recorded in [Architecture](../architecture.md).
+  current Canvas convention is recorded in [Architecture](../../../architecture.md).
   Implementation alternatives and their tradeoffs live in the investigation.
 
 ### Constraints
@@ -312,14 +312,14 @@ Ion stamps are cached by style. These capacities do not set game population limi
 - Existing mode/browser checks cover gameplay isolation, collection, replay, overload,
   keyboard/touch and production Lab consumers. Appearance remains human-reviewed.
 - Sustained traces, final verification and owner feedback are recorded in the
-  [repair evidence](../loop-evidence/2026-11-03-fx-surface-repair.md).
+  [repair evidence](../../../loop-evidence/2026-11-03-fx-surface-repair.md).
   The 0.5.0 timing results do not certify the changed rendering path.
 
 [DEPRECATED 2026-11-03] The direct-pass implementation shipped in 0.5.0 retained
 320 individually aged trail marks per ship and separate attached beams. It did not
 implement the owner's intended persistent surface. Its checks and measurements
-remain historical evidence in the [0.5.0 release record](../releases/0.5.0.md).
-The [FX development skill](../../.agents/skills/fx-development/SKILL.md) guides agents
+remain historical evidence in the [0.5.0 release record](../../../releases/0.5.0.md).
+The [FX development skill](../../../../.agents/skills/fx-development/SKILL.md) guides agents
 through the agreed model. Preserved study painters are comparison evidence outside
 production; visual equality gates remain retired.
 
@@ -327,7 +327,7 @@ production; visual equality gates remain retired.
 
 ### Weapon trial — 2026-11-03
 
-The [weapons and salvage trial](weapons-and-salvage.md) adds simulation-owned
+The [weapons and salvage trial](../../game/test-flight/spec.md) adds simulation-owned
 rail rounds, rotating laser pulses, impact/destruction events and energy collection.
 `FlightFx` stamps their fresh light into the existing surface and consumes events
 into one shared weapon spark pool (capacity 256). Physical wrecks, fragments and
@@ -344,9 +344,9 @@ and rails beside the six ships' gravity collectors and shows real encounters.
 The default reference workload suppresses encounter spawning. Weapon-mode traces
 must be identified separately from earlier reference-workload measurements.
 
-- [Investigation, alternatives, verification and migration](../plans/2026-11-03-fx-framework-triage.md)
+- [Investigation, alternatives, verification and migration](../../../plans/2026-11-03-fx-framework-triage.md)
   holds code-level diagnosis, measurements, candidate designs and proposed test changes.
-- [DEPRECATED 2026-11-03: historical rendering proposal](../archive/sfx-canvas-legacy.md)
+- [DEPRECATED 2026-11-03: historical rendering proposal](../../../archive/sfx-canvas-legacy.md)
   preserves the superseded dual-canvas recipe outside the active contract.
 - Reviewed against ASDLC's [The Spec](https://asdlc.io/patterns/the-spec/),
   [Living Specs](https://asdlc.io/practices/living-specs/) (both updated 2026-10-05),

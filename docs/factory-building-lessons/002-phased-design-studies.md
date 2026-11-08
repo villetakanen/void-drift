@@ -23,15 +23,15 @@ human effectiveness remains separate and is not inferred from document validatio
   [alpha-scope correction](../loop-evidence/2026-10-30-engine-effects.md).
   Implementation: [readiness procedure](../../.agents/skills/design-study/SKILL.md#03--assess-readiness).
 - [x] Consolidate duplicated instructions (owner-approved 3 November).
-  Implementation: [ownership map](../specs/design-studies.md#context-and-ownership).
+  Implementation: [ownership map](../specs/lab/design-studies/spec.md#context-and-ownership).
   Evidence: [scope, changed files and validation](../loop-evidence/2026-11-03-factory-harness-amendments.md).
 - [x] Make the quality rubric optional for ordinary studies (owner-approved amendment,
-  3 November). Implementation: [evaluation contract](../specs/design-studies.md#optional-study-quality-evaluation--separate-from-readiness)
+  3 November). Implementation: [evaluation contract](../specs/lab/design-studies/spec.md#optional-study-quality-evaluation--separate-from-readiness)
   and [optional protocol](design-study-evaluation.md).
   Evidence: [implementation and checks](../loop-evidence/2026-11-03-factory-harness-amendments.md#implementation-evidence).
 - [x] Clarify that a failed study can end successfully for the project (owner clarification,
   3 November), preserving its recorded failure. Implementation:
-  [ending contract](../specs/design-studies.md#ending-a-study).
+  [ending contract](../specs/lab/design-studies/spec.md#ending-a-study).
   Evidence: [owner decision and verification limits](../loop-evidence/2026-11-03-factory-harness-amendments.md#authorized-scope).
 
 ## Why we changed the factory
@@ -129,7 +129,7 @@ performed as part of this improvement.
 ## Addition — design readiness before integration
 
 The designer approved an evidence-backed readiness review before the next trial.
-The [canonical rubric](../specs/design-studies.md#design-readiness-review--before-integration)
+The [canonical rubric](../specs/lab/design-studies/spec.md#design-readiness-review--before-integration)
 covers purpose, investigation, alternatives and reasoning, evidence fit, cumulative
 agreement, coherence, remaining uncertainty, and integration implications. Each is
 rated Ready, Conditional, or Not ready with supporting evidence; ratings are not
@@ -156,7 +156,7 @@ an unfilled next section, and progression through the discussion. Useful reasoni
 must reach the page. Only agreements made in the current cycle accumulate; earlier
 choices have standing only through explicit adoption into current reality. Historical
 study records were moved out of the mandatory specification to
-[an archive](../specs/design-studies-history.md), without rewriting their claims.
+[an archive](../archive/specs/design-studies-history.md), without rewriting their claims.
 
 A first-page form review is separate from rendering checks and the later readiness
 rubric. The next trial uses the designer's exact same prompt and model, without extra
@@ -289,7 +289,7 @@ closure evidence and requested that they be implemented and marked done.
   the explicit alpha-scope correction in the engine-effects evidence.
 
 Implemented in the [design-study skill](../../.agents/skills/design-study/SKILL.md)
-and [study specification](../specs/design-studies.md). Done means the harness edits
+and [study specification](../specs/lab/design-studies/spec.md). Done means the harness edits
 are adopted and implemented, not that their effectiveness has been validated.
 The partial-result recommendation remains a workflow hypothesis; the records do
 not establish why the Scout iterations failed. No fresh study or behavioral trial

@@ -1,9 +1,9 @@
 # Gravity model: reasoning
 
-Why gravity works the way [gravity-field.md](specs/gravity-field.md) says, and the
+Why gravity works the way [gravity-field.md](specs/game/world/gravity-field/spec.md) says, and the
 alternatives already weighed. The spec is the contract; this is the thinking
 behind it, to return to when the model is questioned again. Evidence came from
-the [Gravity tuning](specs/gravity-tuning.md) bench (`/lab/gravity-tuning`), with
+the [Gravity tuning](specs/lab/gravity-tuning/spec.md) bench (`/lab/gravity-tuning`), with
 the four given ships on the instrument's burns.
 
 ## The problem the old model had

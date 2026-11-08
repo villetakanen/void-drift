@@ -2,9 +2,9 @@
 
 Status: implemented alpha gates; human experience review remains open. Created 2026-10-28.
 Authority: the latest agreed project decisions. Origin: the archived
-[rebuild charter](../history/rebuild-charter.md).
+[rebuild charter](../../history/rebuild-charter.md).
 
-Loop 1 outcome and learning: [alpha retrospective](../factory-experiment-alpha.md).
+Loop 1 outcome and learning: [alpha retrospective](../../factory-experiment-alpha.md).
 Post-release experience feedback was positive overall; detailed balance
 and physical-device performance assessments remain open.
 
@@ -24,7 +24,7 @@ composition and consumer verification. `AGENTS.md` routes portable agents to it;
 `CLAUDE.md` links to that entry point and `.claude/skills` links to `.agents/skills`,
 so Claude reads the same skill without a separate copy. The `fx-development` skill
 adds the game-time, scene-budget and profiling workflow for effects; the living
-[FX spec](sfx-canvas.md) retains its behavior and acceptance authority.
+[FX spec](effects/spec.md) retains its behavior and acceptance authority.
 
 Flow: spoken intent → concise contract → bounded implementation → deterministic gates → browser/Lab evidence → human experience review → local commit → explicitly authorized publication.
 
@@ -232,9 +232,9 @@ Establish the verification command and baseline coverage, isolate local boot fro
 ## Alpha implementation — 2026-10-28
 
 The historical baseline above is superseded by the shared fixed-step simulation,
-flight Lab and Firebase implementation in [playable-alpha.md](playable-alpha.md).
+flight Lab and Firebase implementation in [playable-alpha.md](../game/spec.md).
 The required command now includes Svelte diagnostics, rules tests and two-player
-emulator competition. See [development](../development.md) for current coverage.
+emulator competition. See [development](../../development.md) for current coverage.
 Checkboxes above remain a review checklist, not an assertion of human acceptance.
 
 ## Commit-message gate — 2026-10-28
@@ -248,7 +248,7 @@ releases or publish. Meaning and compatibility still require diff review.
 
 ## Design-study experiment — 2026-10-28
 
-Conversation can branch into an exploratory [design study](design-studies.md) before
+Conversation can branch into an exploratory [design study](../lab/design-studies/spec.md) before
 implementation. `/lab/studies` indexes stable review pages. The button pilot explores
 situations and action composition first. Owner acceptance and production integration
 are separate states; studies preserve decision rationale. The first iteration and
@@ -259,7 +259,7 @@ promotion remain to be exercised with the owner.
 Design studies develop purpose, explore solutions, then integrate accepted choices.
 Human judgment participates in framing and each substantive iteration as well as
 acceptance. Unknowns are investigation inputs, not necessarily missing requirements.
-The [study contract](design-studies.md) owns this workflow;
-[factory building lessons](../factory-building-lessons/README.md) record its rationale
+The [study contract](../lab/design-studies/spec.md) owns this workflow;
+[factory building lessons](../../factory-building-lessons/README.md) record its rationale
 and pending evaluation. The button pilot is integrated; the planetary attempts failed
 and do not establish a validated replacement workflow.

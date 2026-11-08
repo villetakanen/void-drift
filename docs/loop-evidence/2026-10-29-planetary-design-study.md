@@ -106,7 +106,7 @@ stored here. Quotations are short excerpts; surrounding discussion remains in ch
   clarify consequential ambiguity, then create a page, show alternatives and a
   recommendation, and record feedback. It does not explicitly require a shared
   goal checkpoint before page creation.
-- [Study specification](../specs/design-studies.md), contract and scenarios:
+- [Study specification](../specs/lab/design-studies/spec.md), contract and scenarios:
   describes pages and examples, starting from an operator describing a design
   problem. The schema requires a question, not evidence of shared goal formulation.
 - [StudyLayout](../../apps/web/src/layouts/StudyLayout.astro): supplies header,

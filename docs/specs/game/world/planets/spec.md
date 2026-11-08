@@ -68,7 +68,7 @@ Planets cannot overlap at any point in their orbits. For two planets with radii 
 5. Skip planet if no valid placement found
 
 - **Physics:**
-  - Gravity: [gravity-field.md](gravity-field.md#bodies-in-play).
+  - Gravity: [gravity-field.md](../gravity-field/spec.md#bodies-in-play).
   - Collision: Elastic bounce (restitution 0.8).
   - Motion: Planets orbit the central star.
 - **Rendering:** Flat Vector Style (Solid Color) in `packages/core/src/lib/assets/planet.ts`.
@@ -152,7 +152,7 @@ interface Planet {
 
 #### Gravity
 
-Specified in [gravity-field.md](gravity-field.md#bodies-in-play).
+Specified in [gravity-field.md](../gravity-field/spec.md#bodies-in-play).
 
 #### Collision
 

@@ -1,7 +1,7 @@
 # Menu Overlay Specification
 
 **Status:** ~~IMPLEMENTED~~ [DEPRECATED 2026-11-02] Superseded by the title menu in
-[opening-screen.md](opening-screen.md#spike--title-menu-and-ship-selector). Kept as history.  
+[opening-screen.md](../../specs/game/landing-page/spec.md#spike--title-menu-and-ship-selector). Kept as history.  
 **Phase:** 5 (Survival Core)  
 **Related PBI:** PBI-018 (Settings), PBI-017 (Game State)
 
@@ -356,5 +356,5 @@ Consider a brief delay before hiding to allow the fade animation.
 
 ## References
 
-- [Survival Core Spec](./survival-core.md) - Game state machine
-- [Settings System Spec](./settings-system.md) - Settings navigation
+- [Survival Core Spec](../../specs/game/survival/spec.md) - Game state machine
+- [Settings System Spec](../../specs/game/options/spec.md) - Settings navigation

@@ -5,7 +5,7 @@ description: Develop a four-part design study (problem, exploration, readiness, 
 
 # Design study
 
-Read [the study contract](../../../docs/specs/design-studies.md) and
+Read [the study contract](../../../docs/specs/lab/design-studies/spec.md) and
 [design principles](../../../docs/design.md). The specification owns the four-part
 outputs, presentation, decision authority and end states. This skill owns the working
 procedure; [exploration](references/exploration.md) owns part 02's detailed rounds.
@@ -52,7 +52,7 @@ retention, focus protection and the recommendation to finish independently usabl
 
 Use the Motion instrument for interactive motion investigations, with each instance
 configured for its comparison and the variables the designer needs to adjust.
-A study may embed several independent instances. Read `docs/specs/motion-instrument.md`;
+A study may embed several independent instances. Read `docs/specs/lab/motion-instrument/spec.md`;
 record missing instrument capabilities and proposed extensions in the design study.
 Discuss them with the designer. Update the instrument spec only when the designer
 accepts the requirement. Reuse production simulation code for experiments.

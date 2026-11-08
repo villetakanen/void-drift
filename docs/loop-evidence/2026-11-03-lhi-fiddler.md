@@ -52,7 +52,7 @@ Fiddler's geometric inertia; tuning remained provisional. Weapons remain static.
   bounds and exhaust. Existing saves gain Fiddler without replacing other ships.
 - The Hangar, main-menu 05, Flight Lab and shared instrument use the integrated
   ship. The study includes a final fitting preview and linked/unlinked comparison.
-  [Hangar contract](../specs/hangar/spec.md#fiddler-flight-trial--2026-11-03) and
+  [Hangar contract](../specs/game/hangar/spec.md#fiddler-flight-trial--2026-11-03) and
   architecture/instrument/playable-alpha documentation record the behavior.
 - This chat ended implementation with local working changes and unranked trials.
   At closure, direct Git inspection shows that integration in later commit

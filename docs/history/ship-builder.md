@@ -3,7 +3,7 @@
 > **[DEPRECATED 2026-11-03] As a feature specification.** This file preserves the
 > former Ship Builder document, including its uncommitted additions at the time of
 > extraction. It mixes decisions, implementation reports and superseded states.
-> The current player workflow contract is [Hangar](../specs/hangar/spec.md).
+> The current player workflow contract is [Hangar](../specs/game/hangar/spec.md).
 > This record is not a second active Hangar spec. Accepted decisions about shared
 > ships, flight and artwork remain evidence for those domains; moving them here
 > neither revokes them nor promotes implementation commentary to owner approval.

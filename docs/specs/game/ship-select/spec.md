@@ -36,7 +36,7 @@ Persisted shape is backward-compatible by applying defaults when old local data 
 Update `apps/web/src/components/MenuOverlay.svelte`:
 - ~~add `Ship` selector UI with 3 options (`Scout`, `Balanced`, `Tank`)~~ [DEPRECATED 2026-11-01] the selector lists
   every ship by short name (Wasp, Scout, Fighter, Corvette) from `SHIP_IDENTITY`; see
-  [Ship names and ids](../history/ship-builder.md#ship-names-and-ids--s4-2026-11-02)
+  [Ship names and ids](../../../history/ship-builder.md#ship-names-and-ids--s4-2026-11-02)
 - display short stats summary for selected ship
 - keep controls touch-safe (>=44px target) and keyboard accessible
 
@@ -45,7 +45,7 @@ Menu controls should not interfere with existing tap/click-to-start behavior.
 [2026-11-02] The selector is now the design-system `Toggle`, numbered 01–04 in launcher order
 (Scout, Wasp, Fighter, Corvette), with the selected ship's name, drawing, long name and
 equipment shown in the menu; see
-[opening-screen.md](opening-screen.md#spike--title-menu-and-ship-selector).
+[opening-screen.md](../landing-page/spec.md#spike--title-menu-and-ship-selector).
 
 #### 3. Game Start/Restart Wiring
 

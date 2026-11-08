@@ -3,7 +3,7 @@
 [DEPRECATED 2026-11-03]. Preserved from the former `docs/specs/sfx-canvas.md`.
 The prescribed dual canvas, CSS filters, separate particle clock and mouse emitter
 were a proposal, not the implemented flight pipeline. The owner's current contract
-is the [Arcade effects layer specification](../specs/sfx-canvas.md). This archived
+is the [Arcade effects layer specification](../specs/factory/effects/spec.md). This archived
 recipe supplies historical context and does not constrain its replacement.
 
 ## Original proposal (unchanged)

@@ -11,7 +11,7 @@ The durable lesson is to make delivery and its evidence reconstructable while ke
 human assessment of feel and fidelity separate from automated correctness.
 
 - [Alpha retrospective](../factory-experiment-alpha.md): outcome and learning.
-- [Factory specification](../specs/voice-led-factory.md): contracts and delivery history.
+- [Factory specification](../specs/factory/spec.md): contracts and delivery history.
 - [Development guide](../development.md): current commands and known limits.
 
 These sources own detailed evidence and limitations. This summary does not assert

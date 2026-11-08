@@ -14,16 +14,16 @@ No new lesson-trial obligation or general browser-artifact retention change was 
   [schemas](../../packages/core/src/lib/schemas/release.mjs), and
   [regression tests](../../scripts/release.test.mjs). Commands and boundaries are in
   [development](../development.md#release) and the
-  [factory contract](../specs/voice-led-factory.md#prepared-release-artifacts).
+  [factory contract](../specs/factory/spec.md#prepared-release-artifacts).
 - Guidance: [skill](../../.agents/skills/design-study/SKILL.md) owns procedure;
-  [specification](../specs/design-studies.md) owns outputs and authority;
+  [specification](../specs/lab/design-studies/spec.md) owns outputs and authority;
   [exploration guide](../../.agents/skills/design-study/references/exploration.md)
   retains detailed creative rounds. The skill shrank from 150 to 89 lines and the
   specification from 233 to 134 lines; line counts describe editing, not effectiveness.
-- [Optional evaluation](../specs/design-studies.md#optional-study-quality-evaluation--separate-from-readiness)
+- [Optional evaluation](../specs/lab/design-studies/spec.md#optional-study-quality-evaluation--separate-from-readiness)
   applies to requested factory evaluations or targeted investigations. Ordinary studies
   retain reasoning, readiness, scope and human judgment without a default ratings report.
-- [Ending contract](../specs/design-studies.md#ending-a-study) distinguishes project value
+- [Ending contract](../specs/lab/design-studies/spec.md#ending-a-study) distinguishes project value
   from the quality/outcome of the study. Historical owner-declared failures stay intact.
 
 ## Verification

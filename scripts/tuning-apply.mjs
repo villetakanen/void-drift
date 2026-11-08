@@ -1,6 +1,6 @@
 // pnpm tuning:apply <area> <file>: applies an owner-supplied proposal to one
 // section of the versioned tuning file (packages/mode-a/src/lib/tuning.json).
-// Spec: docs/specs/gravity-field.md. Each area's
+// Spec: docs/specs/game/world/gravity-field/spec.md. Each area's
 // checks live in TypeScript beside its schemas, loaded here through Vite.
 // Exit codes: 0 applied, 1 refused (nothing written), 2 usage.
 import { readFileSync, writeFileSync } from "node:fs";

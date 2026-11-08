@@ -356,7 +356,7 @@ This is a hypothesis to evaluate, not a gate or a promised result. Reject change
 that only lower case count or move required work out of the reported full run.
 
 Update [development](../development.md) and
-[factory contract](../specs/voice-led-factory.md) alongside implemented command,
+[factory contract](../specs/factory/spec.md) alongside implemented command,
 report, capture or gate changes. Update relevant feature specs only where intended
 behavior changes. Keep this plan as a proposal until its slices actually land;
 do not report a new pruning policy as an adopted lesson.

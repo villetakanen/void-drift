@@ -1,4 +1,4 @@
-> Historical specification. Current alpha behavior is defined in [playable-alpha.md](playable-alpha.md).
+> Historical specification. Current alpha behavior is defined in [playable-alpha.md](../spec.md).
 
 # Feature: Camera System
 
