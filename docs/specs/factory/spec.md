@@ -67,7 +67,9 @@ not back up artifacts or make browser traces immutable.
 types and unit tests. It exits nonzero for any selected failure or source mutation.
 Its console and report explicitly identify partial verification and list omitted
 stages. `selectedChecksPassed` describes the selected checks; `passed` remains false
-for quick runs, even on exit zero. Full `pnpm verify` retains all required stages.
+for quick runs, even on exit zero. Full `pnpm verify` retains all required stages. Command errors and signals fail
+even if the child reports exit zero. The expanded browser suite has a ten-minute
+deadline; other foreground checks retain three minutes.
 Factory regression tests run within the contracts gate and exercise successful,
 failed and source-mutating runner fixtures without substituting for real checks.
 

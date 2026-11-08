@@ -22,6 +22,10 @@ removal, expiry, exit and fragments produce no energy-release cue. Pause adds no
 emission or decay; reset discards the old history. The canonical Derelict Lab uses
 these same production causes and painters.
 
+The canonical ion comparison uses the shared life-support drain when calculating
+delivered engine power, keeping its firing and release inspection sequence aligned
+with production energy rules.
+
 ## Blueprint
 
 ### Context

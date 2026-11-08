@@ -8,6 +8,7 @@ import {
 	buildStats,
 	defaultLoadout,
 	drawBuild,
+	LIFE_SUPPORT_DRAIN,
 	LoadoutSchema,
 	STEP,
 } from "@void-drift/mode-a";
@@ -79,8 +80,9 @@ function advance() {
 		rightThruster: firing && !turning,
 		fire: false,
 	};
-	const available = Math.max(0, power - 3 * STEP);
-	const requested = (buildDrain(referenceBuild, input) - 3) * STEP;
+	const available = Math.max(0, power - LIFE_SUPPORT_DRAIN * STEP);
+	const requested =
+		(buildDrain(referenceBuild, input) - LIFE_SUPPORT_DRAIN) * STEP;
 	const spent = Math.min(available, requested);
 	const fraction = requested > 0 ? spent / requested : 0;
 	power = available - spent;

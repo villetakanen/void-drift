@@ -104,7 +104,7 @@ for (const name of selectedSteps) {
 	const started = Date.now();
 	const result = spawnSync("pnpm", ["run", name], {
 		encoding: "utf8",
-		timeout: 180_000,
+		timeout: name === "test:browser" ? 600_000 : 180_000,
 		maxBuffer: 20 * 1024 * 1024,
 	});
 	const log = `${directory}/${name.replaceAll(":", "-")}.log`;
@@ -114,7 +114,10 @@ for (const name of selectedSteps) {
 	);
 	const step = {
 		command: `pnpm run ${name}`,
-		status: result.status === 0 ? "passed" : "failed",
+		status:
+			result.status === 0 && !result.error && !result.signal
+				? "passed"
+				: "failed",
 		exitCode: result.status,
 		signal: result.signal,
 		durationMs: Date.now() - started,

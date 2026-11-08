@@ -255,3 +255,24 @@ test("browser ports have defaults and reject invalid or colliding overrides", ()
 	}
 	assert.throws(() => verificationUrls({ PLAYWRIGHT_PORT: "4323" }));
 });
+
+test("a command error fails even when the child exits zero", (t) => {
+	const source = readFileSync(runner, "utf8")
+		.replace(
+			'"../packages/core/src/lib/schemas/verification-ports.mjs"',
+			JSON.stringify(
+				resolve("packages/core/src/lib/schemas/verification-ports.mjs"),
+			),
+		)
+		.replace('"./verify-backend.mjs"', JSON.stringify(backendRunner))
+		.replace(
+			"const log =",
+			'if (name === "lint") result.error = new Error("spawnSync pnpm ETIMEDOUT");\n\tconst log =',
+		);
+	const { result, report } = trial(t, ["--quick"], {}, source);
+	assert.equal(result.status, 1);
+	assert.equal(report.selectedChecksPassed, false);
+	const step = report.steps.find((step) => step.command === "pnpm run lint");
+	assert.equal(step.exitCode, 0);
+	assert.equal(step.status, "failed");
+});
