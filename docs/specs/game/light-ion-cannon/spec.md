@@ -66,7 +66,7 @@ without a storage migration.
   paid offset misses, first contact, cooldown, scarce power and post-destruction volley.
 - [x] Production LFX lifecycle and effects-disabled gameplay equivalence are checked.
 - [x] A playable production encounter is inspectable in the equipment Lab and study.
-- [ ] Owner accepts fitting fidelity, muzzle connection during movement, rhythm,
+- [ ] The designer accepts fitting fidelity, muzzle connection during movement, rhythm,
   impact and provisional combat balance after playing.
 - [ ] Named sustained mixed-effects measurements establish the effects budget.
 

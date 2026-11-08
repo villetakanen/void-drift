@@ -27,7 +27,7 @@ Read for changes to structure, simulation, or data flow. Product intent belongs 
   core; web composes both. Use existing packages rather than a new engine framework.
 - The current renderer uses `CanvasRenderingContext2D`. Reuse vectors/buffers in
   hot loops; prefer scalar arithmetic and `Math.hypot` where appropriate.
-  Owner decision, 2026-11-03: the [FX layer](specs/factory/effects/spec.md) may use a different
+  Decision of 2026-11-03: the [FX layer](specs/factory/effects/spec.md) may use a different
   backend when its behavior, performance and experience justify it. Its dependency
   boundaries and simulation authority remain unchanged. Backend alternatives are
   still proposals in the [FX investigation](plans/2026-11-03-fx-framework-triage.md).
@@ -70,7 +70,7 @@ historical roadmaps do not define current architecture requirements.
 
 ## Design tokens and component-private values
 
-Owner decision, 2026-10-28: public design-system tokens express shared visual
+Decision of 2026-10-28: public design-system tokens express shared visual
 contracts (palette, spacing, typography, control accessibility, motion and states).
 Components may also own private custom properties named `--_name`. These are not
 part of the public design-token API and need not be promoted merely because they

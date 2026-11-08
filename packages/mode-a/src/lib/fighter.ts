@@ -27,7 +27,7 @@ export const FIGHTER = {
   arm: 15,
   // Direct angular response tuning, independent of forward thrust.
   turnResponse: 2.5,
-  // Owner retained the original production angle after flight review.
+  // The designer retained the original production angle after flight review.
   angle: (26 * Math.PI) / 180,
   hullMounts: [37, -1],
   length: 48,

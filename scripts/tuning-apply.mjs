@@ -1,4 +1,4 @@
-// pnpm tuning:apply <area> <file>: applies an owner-supplied proposal to one
+// pnpm tuning:apply <area> <file>: applies a designer-supplied proposal to one
 // section of the versioned tuning file (packages/mode-a/src/lib/tuning.json).
 // Spec: docs/specs/game/world/gravity-field/spec.md. Each area's
 // checks live in TypeScript beside its schemas, loaded here through Vite.

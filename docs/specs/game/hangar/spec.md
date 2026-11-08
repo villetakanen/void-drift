@@ -164,7 +164,7 @@ HANGAR  [quiet save status]                      Experimental  [ Off | On ]
 #### Definition of Done
 
 The bounded opening and public route are implemented. Automated checks cover
-navigation and local control state; owner visual and experience acceptance remains
+navigation and local control state; the designer's visual and experience acceptance remains
 separate from implementation verification.
 
 - [x] O1: Opening `/hangar` displays the Hangar; player-facing Hangar entry links
@@ -210,7 +210,7 @@ queries, invalid-chassis fallback, pointer/keyboard Experimental selection, unch
 assembly and stored builds, reload reset, and keyboard title navigation. The existing
 builder and launch-navigation browser suites cover fitting and flight return flows.
 Production and Lab opening captures at 1440×1000 were inspected for composition;
-O5 remains open for owner visual acceptance.
+O5 remains open for the designer's visual acceptance.
 
 ## Preserved assembly specification
 
@@ -234,7 +234,7 @@ Derelicts and custom survival start directly from Hangar;
 Abort or game-over return from these modes returns to Hangar. Hangar also
 provides a return to the title screen.
 
-The owner-approved 0.4.0 scope, recorded in the archived
+The designer-approved 0.4.0 scope, recorded in the archived
 [rebuild charter](../../../history/rebuild-charter.md#next-phase--ship-builder-2026-10-30),
 sets free fitting in fixed mounts, desktop mouse and keyboard acceptance, and
 initially unranked custom survival. Mobile Hangar layout is deferred; existing
@@ -342,7 +342,7 @@ are empty: assembled mass 273, capacity 270. New Hangar saves begin with that sa
 fit; subsequent Hangar changes stay independent of the main-menu fleet. Fiddler is
 available in the Hangar and shared instrument, with
 unranked survival and test flight. Initial stabilizer strength uses Wasp's values
-and Fiddler's geometric inertia; flight feel and endurance await owner review.
+and Fiddler's geometric inertia; flight feel and endurance await designer review.
 
 ### Current implementation choices
 
@@ -354,7 +354,7 @@ The no-planet test fixture cannot demonstrate Gravity coil collection; that need
 a planetary flight environment. It remains a deliberate limit of this fixture.
 
 The current browser key is `void-drift-builds-v3`; the contained loadouts have schema
-version 2. The owner-approved alpha reset removes v1/v2 browser keys instead of
+version 2. The designer-approved alpha reset removes v1/v2 browser keys instead of
 migrating retired IDs. `BuildStoreSchema` parses the store as a whole: a missing
 Wasp or Fiddler entry gets its starting build, but a malformed required entry rejects the whole store.
 On rejection, `ShipBuilder` retains defaults and reports recovery. This is not
@@ -506,7 +506,7 @@ uncommitted work. No tests were run for this specification review.
 - **Navigation:** should the Hangar remember the last chosen ship, and should View
   allow fitting through the still-visible parts list? Current behavior opens Fighter
   without a query and permits parts-list edits in View. Recommend retaining these
-  behaviors until owner review identifies a different need; no change is authorized
+  behaviors until designer review identifies a different need; no change is authorized
   by this spec cleanup.
 - **Estimate presentation:** which peak/nominal figures best support fitting choices
   remains unverified in use. Recommend retaining the shared calculations and making

@@ -1,7 +1,7 @@
 # Arcade effects layer
 
 Updated 2026-11-03. **Status: persistent-surface correction implemented and locally verified;
-owner builder playtest visually positive; performance acceptance pending.** The owner
+the designer's builder playtest visually positive; performance acceptance pending.** The designer
 rejected the 0.5.0 engine appearance and clarified that the accumulated image must
 hold the history. The direct pass and per-engine trail histories shipped in 0.5.0
 are superseded. [Correction plan](../../../plans/2026-11-03-fx-surface-correction.md).
@@ -112,10 +112,10 @@ these identifiers; unchecked items represent outstanding acceptance work.
   while retaining essential cues and accepting keyboard/touch input normally.
 - [ ] **FX-07 — Performance:** the mixed-scene workload meets the budget below on
   named reference environments, with sustained frame pacing and profiling evidence.
-- [ ] **FX-08 — Experience:** the owner reviews a playable mixed scene and records
+- [ ] **FX-08 — Experience:** the designer reviews a playable mixed scene and records
   whether its effects feel sharp, sparkly, electric and readable at gameplay zoom.
-  Owner builder playtest on 2026-11-03 approved the ion/gravity appearance as matching
-  the intended effect; the entire diagnostic workload has not had owner review.
+  The designer's builder playtest on 2026-11-03 approved the ion/gravity appearance as matching
+  the intended effect; the entire diagnostic workload has not had designer review.
 
 ### Performance acceptance
 
@@ -282,7 +282,7 @@ Feature: Fast, expressive arcade effects
   @FX-08 @manual
   Scenario: Review the character of the combined effects in play
     Given the mixed scene is playable at normal gameplay zoom
-    When the owner observes firing, coasting, turning and overlapping effects
+    When the designer observes firing, coasting, turning and overlapping effects
     Then the review records judgments on sharpness, sparkle, electric character and readability
     And those judgments determine experience acceptance
 ```
@@ -311,13 +311,13 @@ Ion stamps are cached by style. These capacities do not set game population limi
   are compositing semantics, not screenshot or art-recipe equality assertions.
 - Existing mode/browser checks cover gameplay isolation, collection, replay, overload,
   keyboard/touch and production Lab consumers. Appearance remains human-reviewed.
-- Sustained traces, final verification and owner feedback are recorded in the
+- Sustained traces, final verification and designer feedback are recorded in the
   [repair evidence](../../../loop-evidence/2026-11-03-fx-surface-repair.md).
   The 0.5.0 timing results do not certify the changed rendering path.
 
 [DEPRECATED 2026-11-03] The direct-pass implementation shipped in 0.5.0 retained
 320 individually aged trail marks per ship and separate attached beams. It did not
-implement the owner's intended persistent surface. Its checks and measurements
+implement the designer's intended persistent surface. Its checks and measurements
 remain historical evidence in the [0.5.0 release record](../../../releases/0.5.0.md).
 The [FX development skill](../../../../.agents/skills/fx-development/SKILL.md) guides agents
 through the agreed model. Preserved study painters are comparison evidence outside

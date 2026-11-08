@@ -318,7 +318,7 @@ fill can be translucent while the edge and shadow follow the cut:
 | -------------- | ----------------------- | ---------------- | ------- | ---------------------------------- | -------------------------------- |
 | `.panel`       | `--panel-fill` (elev-2) | `--color-border` | `lg`    | `--panel-shadow` (0 8px 24px, 70%) | Dialogs over the stage           |
 | `.panel--flat` | the same                | `--color-border` | `lg`    | none                               | Status messages on the live game |
-- The panel is elevation 2 on the console form: the instrument display's edge and shadow (owner,
+- The panel is elevation 2 on the console form: the instrument display's edge and shadow (decided
   2026-11-02). [DEPRECATED 2026-11-02] ~~A frosted translucent shade~~.
 - Consumers: the game menu, pause and run complete (`.flight-card` on the panel) and the flight
   status message (`.flight-message`, flat).
@@ -338,7 +338,7 @@ console display rather than live.
   because the dialog layer is its own group, where a blend would have nothing to mix with. A stage
   paints an opaque background, or the tint shows as flat colour where it is transparent.
 - [DEPRECATED 2026-11-02] ~~`grayscale(0.85) brightness(0.7)` and a flat elev-2 overlay at 35%~~: the
-  first version stacked four darkening layers and removed the system's colours (owner review).
+  first version stacked four darkening layers and removed the system's colours (designer review).
   [DEPRECATED 2026-11-02] ~~`mix-blend-mode: color`~~: it takes chroma from the low-chroma tint
   and so desaturated heavily instead of moving hues toward 290.
 - `--scrim-surface` on the scrim layer over it: a darkened edge (30% black, from 55% out) and

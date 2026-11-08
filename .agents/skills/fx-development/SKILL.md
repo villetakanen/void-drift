@@ -64,6 +64,6 @@ work and unchanged gameplay. Use captures and human play review for sparkle, col
 interference and character. Retire obsolete painter-equality assertions when changing
 their intended contract; retain the behavioral coverage they were mixed with.
 
-Report measured performance, automated correctness and owner acceptance separately.
+Report measured performance, automated correctness and the designer's acceptance separately.
 Update the living spec for changed contracts; keep diagnosis, competing approaches
 and historical recipes in supporting documents.

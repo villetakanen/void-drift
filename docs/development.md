@@ -116,7 +116,7 @@ source (production code, study-local sketch, or design record). The nav rail and
 the `/lab` index render from it, and a unit test keeps it and the routes in step.
 A new Lab page needs an entry; a kept old route is an alias of its replacement.
 
-The Lab targets large screens only: viewports 1280px wide and up (owner decision,
+The Lab targets large screens only: viewports 1280px wide and up (decision of
 2026-11-04). It is not a tablet or phone surface and will not become one. Do not
 design, test, review or fix Lab pages below 1280px, and do not report narrower
 layout as a Lab gap. Small-screen requirements belong to play only: landscape phone

@@ -145,7 +145,7 @@ provides separate browser/build evidence. Ignored local artifacts are not durabl
 ### Context-document warnings
 
 `pnpm check:contracts` warns, and never fails, when a context document outgrows its
-scope. The owner decided on 2026-11-02 that these limits warn rather than block.
+scope. The designer decided on 2026-11-02 that these limits warn rather than block.
 
 - `AGENTS.md` at 80 lines or more. Missing context links still fail the gate.
   Relative Markdown links in tracked `*.md` files also fail the gate when their target
@@ -156,7 +156,7 @@ scope. The owner decided on 2026-11-02 that these limits warn rather than block.
   specs or code.
 
 Warnings print as `WARNING:` lines in the contracts log. They are signals for the
-owner and agents to act on, not passes or failures.
+designer and agents to act on, not passes or failures.
 
 ### Regression guardrails
 
@@ -170,10 +170,10 @@ owner and agents to act on, not passes or failures.
 
 ```gherkin
 Scenario: Voice request becomes a playable change
-  Given the owner describes a flight problem conversationally
+  Given the designer describes a flight problem conversationally
   When the agent implements the agreed behavior
   Then the contract and executable checks describe the same outcome
-  And the owner can inspect a reproducible Lab trial and play the real game
+  And the designer can inspect a reproducible Lab trial and play the real game
 
 Scenario: Automated verification detects a regression
   Given a required flight contract is deliberately broken
@@ -188,9 +188,9 @@ Scenario: Live backend is unavailable
   And shared scores clearly show their unavailable state
   And synthetic scores are identified as fixtures
 
-Scenario: Owner asks whether a change is released
+Scenario: The designer asks whether a change is released
   Given a change exists in a local commit
-  When the owner asks for release status
+  When the designer asks for release status
   Then the agent inspects repository and available deployment evidence
   And reports local, pushed, and deployed states separately
 ```
@@ -210,11 +210,11 @@ Inspected working tree: branch `feat/0-4-0`, HEAD `ac6abe4`, with pre-existing u
 
 ## First bounded implementation
 
-Establish the verification command and baseline coverage, isolate local boot from live services, and prove a browser can select a ship, start flight, and restart. Retain existing flight constants. Additional test dependencies require the owner's approval before installation. Ship behavior differences, camera design, and Firebase competition follow as separately reviewable increments.
+Establish the verification command and baseline coverage, isolate local boot from live services, and prove a browser can select a ship, start flight, and restart. Retain existing flight constants. Additional test dependencies require the designer's approval before installation. Ship behavior differences, camera design, and Firebase competition follow as separately reviewable increments.
 
 ## Factory foundation delivered — 2026-10-28
 
-- Owner approved Playwright and Biome installation, and the context split into a minimal
+- The designer approved Playwright and Biome installation, and the context split into a minimal
   `AGENTS.md`, `docs/architecture.md`, and `docs/design.md`.
 - `pnpm verify` runs contracts, strict Biome checks, Astro/workspace types, unit tests,
   build, and browser smoke tests; it retains per-stage logs and working-tree evidence.
@@ -252,9 +252,9 @@ releases or publish. Meaning and compatibility still require diff review.
 
 Conversation can branch into an exploratory [design study](../lab/design-studies/spec.md) before
 implementation. `/lab/studies` indexes stable review pages. The button pilot explores
-situations and action composition first. Owner acceptance and production integration
+situations and action composition first. Designer acceptance and production integration
 are separate states; studies preserve decision rationale. The first iteration and
-promotion remain to be exercised with the owner.
+promotion remain to be exercised with the designer.
 
 ## Phased design inquiry — 2026-10-29
 

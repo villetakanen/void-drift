@@ -40,7 +40,7 @@ editing a study does not change production defaults.
 
 The four approved ships use the same geometry and material recipes at enlarged
 and flight sizes. Fittings remain on top. Drawing preserves caller transforms,
-clipping and alpha. The excluded frigate is untouched. The owner approved the
+clipping and alpha. The excluded frigate is untouched. The designer approved the
 static designs; motion among effects and device performance remain human checks.
 
 ## Delivery verification — 2026-11-03

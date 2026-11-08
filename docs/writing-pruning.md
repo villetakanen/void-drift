@@ -12,7 +12,7 @@ a standing workflow or an automated gate.
 
 The study introduced “the pilot’s benefit” and “What does this equipment give
 the pilot?” as an organizing frame. Related prose included “carry more possibility
-into the next encounter” and “latitude to commit, correct or escape.” The owner
+into the next encounter” and “latitude to commit, correct or escape.” The designer
 identified this as drift and asked for the language to be erased from the study.
 
 The task was to establish the device’s function, name and characteristics:
@@ -33,5 +33,5 @@ individual words: substituting “player” for “pilot” would leave this dri
 
 This example does not prohibit mentioning pilots when they are the actual subject.
 It concerns an imposed rhetorical frame. Preserve explicitly adopted design
-language, such as the support family’s “I create opportunities,” unless the owner
+language, such as the support family’s “I create opportunities,” unless the designer
 changes it. The speculative audience-benefit prose was not an adopted decision.

@@ -6,7 +6,7 @@ import {
   ShipProfilesSchema,
 } from "./schemas/ship-profile";
 
-// Owner-approved names (D4, 2026-11-02). Every UI surface reads names and traits from here.
+// Designer-approved names (D4, 2026-11-02). Every UI surface reads names and traits from here.
 export const SHIP_IDENTITY: Record<ShipProfileId, ShipIdentity> =
   ShipIdentitiesSchema.parse({
     wasp: {

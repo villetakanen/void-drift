@@ -15,7 +15,7 @@ and repository. Use the existing loop record if one exists; otherwise create
 adding later evidence. Do not rewrite prior interpretations as established facts.
 
 Inspect the relevant contracts, source changes, check reports, release records and
-owner feedback. Distinguish direct inspection from a prior session's report.
+human feedback. Distinguish direct inspection from a prior session's report.
 Missing artifacts remain unavailable evidence. Do not rerun tests, mutate production,
 or reproduce a failure solely to fill a historical gap unless separately requested.
 A later run is new evidence, not proof of what happened in the closed loop.
@@ -24,7 +24,7 @@ A later run is new evidence, not proof of what happened in the closed loop.
 
 Keep a compact record another session can inspect without the full conversation:
 
-- Intent and scope, including explicit owner decisions and changes of direction.
+- Intent and scope, including the designer's explicit decisions and changes of direction.
 - Changes delivered, with commit/revision references where available.
 - Checks: command, outcome, tested revision or dirty-tree identity, environment,
   and source location. Distinguish failed, skipped, unavailable and passed results.
@@ -41,7 +41,7 @@ values. Dates and revisions should make clear which observation belongs to which
 
 ## Interpretation boundary
 
-Do not turn a finding, repeated finding, passing check or owner preference into a
+Do not turn a finding, repeated finding, passing check or designer preference into a
 signal, causal explanation, general lesson, recommendation or new requirement.
 If a source already contains an interpretation, attribute it as that source's claim;
 do not endorse it through repetition. Temporal sequence alone does not establish cause.

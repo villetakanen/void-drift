@@ -50,5 +50,5 @@ not in whichever screen first needs the change.
 - Verify intentional variants, not just the screen where the change began.
 - Demonstrate shared-definition changes in the canonical Lab example.
 - Update the owning contract; keep historical evidence separate from current rules.
-- Report behavioral checks, visual inspection and owner acceptance separately.
+- Report behavioral checks, visual inspection and the designer's acceptance separately.
 - Leave ordinary design iteration open; passing tests do not establish visual fidelity.

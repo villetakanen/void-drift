@@ -141,7 +141,7 @@ or assess handling; human layout review and automated fidelity checks are separa
 - [ ] Clipboard failure exposes a complete manual-copy fallback.
 - [ ] A representative exported layout applied to production reproduces the
   planner's geometry, fitting placement, nozzle origins and hit targets.
-- [ ] Owner reviews manipulation, linked editing, readability and visual fidelity
+- [ ] The designer reviews manipulation, linked editing, readability and visual fidelity
   on a screen 1280px wide or more. Record this separately from automated results.
   The Lab targets 1280px and up.
 
@@ -210,7 +210,7 @@ accepts optional mount geometry; its default production behavior is unchanged.
 Mirrored comparisons use an absolute tolerance of 1e-10.
 
 This prototype has not applied an exported design to production flight geometry;
-nozzle/force integration handoff and owner experience review remain unchecked.
+nozzle/force integration handoff and designer experience review remain unchecked.
 
 ### Design-system alignment — 2026-11-03
 
