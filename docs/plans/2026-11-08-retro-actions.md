@@ -58,6 +58,7 @@ deferred (8 November 2026).
 | 0.6.0 scope recorded                                                                      | state   | `b3c1e51`        |
 | Human experience review out of scope: `AGENTS.md`, `design.md`, `development.md` reworded | tension | `dbe1968`        |
 | Retire "owner": three skills, current docs, specs and code comments                       | 6       | `1c0a4ec`        |
+| Retire "owner": fourteen Lab study and review pages                                       | 6       | `99f6317`        |
 
 To the designer these are four tasks, not seven: link repair with its gate,
 evidence and formatting, releases and CI, the 0.6.0 note (8 November).
@@ -77,10 +78,8 @@ Documents only. Pathspec commits.
    2026: trivial.
 5. **Human experience review is out of scope** (tension). Done 8 November
    2026; see the Done table.
-6. **Retire "owner"**. Done for the three skills, current docs, specs and code
-   comments on 8 November 2026; see the Done table. Code and document ownership
-   keeps the word. Still open: the dated Lab study and review pages (14 pages,
-   about 80 lines), pending the designer; historic records, archives and audits
+6. **Retire "owner"**. Done 8 November 2026; see the Done table. Code and
+   document ownership keeps the word; historic records, archives and audits
    stay as written. Not a retro finding: the team asked for this before the
    retro; the word marks text not written by a person and names no one when
    several people write into one agent.
