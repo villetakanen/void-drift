@@ -258,3 +258,18 @@ Not decisions. Each one is a candidate for a separate review.
 - The unanchored `artifacts/` ignore rule had hidden `docs/loop-evidence/artifacts/`
   from git; fixed in `fa5ad4f`. The contracts gate had two regexes that assumed
   tab indentation; fixed in `3d51381` with the move to two-space indentation.
+
+### 9. Machinery the factory added without being asked
+
+Found while pushing `main`, after the review was written. A GitHub Actions
+workflow has run the full gates on every push since 28 October. It was added
+by the agent in the factory foundation commits (`88f3fca`, `3041a80`) and the
+factory spec's first definition-of-done line names it; the designer does not
+recall commissioning it. Of the last 50 runs, 20 failed and 10 were cancelled;
+no loop record after 3 November mentions a CI result. The pattern is the same
+one the lessons describe for human steps: the factory invented a process,
+kept it running, and nobody owned it. What to do with the workflow is a
+separate decision, including deleting it. Changes made after the review the
+same day, before this was recognised as a finding: `main` pushed and
+protected with the `verify` check required (admin bypass kept), workflow
+trimmed to `main`, tags and pull requests (`2beaf81`).
