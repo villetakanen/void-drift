@@ -6,32 +6,32 @@ import type { PathSeries } from "./path-instrument";
 // document on B1. Each vehicle keeps its colour across every diagram.
 const COLORS = ["#5ce5e7", "#ffbd69", "#ff7aa8"];
 const fighter = (aft: [string | null, string | null]) => ({
-	version: 2,
-	chassis: "fighter",
-	side: "ion",
-	stabilizers: true,
-	hull: [null, null],
-	aft,
+  version: 2,
+  chassis: "fighter",
+  side: "ion",
+  stabilizers: true,
+  hull: [null, null],
+  aft,
 });
 const doc = InstrumentConfig.parse({
-	version: 1,
-	vehicles: [
-		{ label: "Ion aft", loadout: fighter(["ion", "ion"]) },
-		{ label: "Plasma aft", loadout: fighter(["plasma", "plasma"]) },
-		{
-			label: "Plasma aft, more thrust",
-			loadout: fighter(["plasma", "plasma"]),
-			changes: { plasma: { thrust: 46000 } },
-		},
-	],
+  version: 1,
+  vehicles: [
+    { label: "Ion aft", loadout: fighter(["ion", "ion"]) },
+    { label: "Plasma aft", loadout: fighter(["plasma", "plasma"]) },
+    {
+      label: "Plasma aft, more thrust",
+      loadout: fighter(["plasma", "plasma"]),
+      changes: { plasma: { thrust: 46000 } },
+    },
+  ],
 });
 /** The example vehicles calculated on one burn. */
 export function seriesFor(burn: BurnId): PathSeries[] {
-	return doc.vehicles.map((v, i) => ({
-		label: v.label,
-		color: COLORS[i],
-		samples: calculate(v, burn),
-	}));
+  return doc.vehicles.map((v, i) => ({
+    label: v.label,
+    color: COLORS[i],
+    samples: calculate(v, burn),
+  }));
 }
 export const exampleSeries: PathSeries[] = seriesFor(doc.burn);
 /** The examples' time marker: 7 s. */

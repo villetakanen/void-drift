@@ -131,13 +131,13 @@ The game starts (transitions to `PLAYING`) when:
 
 ```html
 <div
-	class="menu-overlay"
-	role="dialog"
-	aria-modal="true"
-	aria-label="Game menu"
+  class="menu-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Game menu"
 >
-	<button class="start-button" autofocus>TAP TO START</button>
-	<a href="/settings" class="settings-link">Settings</a>
+  <button class="start-button" autofocus>TAP TO START</button>
+  <a href="/settings" class="settings-link">Settings</a>
 </div>
 ```
 
@@ -182,7 +182,7 @@ The existing rotate overlay takes precedence. Menu overlay only shows in landsca
 
 ```typescript
 interface Props {
-	onStart: () => void; // Called when game should start
+  onStart: () => void; // Called when game should start
 }
 ```
 
@@ -227,19 +227,19 @@ interface Props {
 </script>
 
 <div
-	class="menu-overlay"
-	role="dialog"
-	aria-modal="true"
-	aria-label="Game menu"
-	onclick={handleOverlayClick}
+  class="menu-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Game menu"
+  onclick={handleOverlayClick}
 >
-	<div class="menu-content">
-		<button bind:this={startButton} class="start-button" onclick={onStart}>
-			TAP TO START
-		</button>
+  <div class="menu-content">
+    <button bind:this={startButton} class="start-button" onclick={onStart}>
+      TAP TO START
+    </button>
 
-		<a href="/settings" class="settings-link">Settings</a>
-	</div>
+    <a href="/settings" class="settings-link">Settings</a>
+  </div>
 </div>
 ```
 
@@ -255,7 +255,7 @@ import MenuOverlay from "./MenuOverlay.svelte";
 
 <!-- Add to HUD overlay section -->
 {#if state.status === "MENU"}
-	<MenuOverlay onStart={startGame} />
+  <MenuOverlay onStart={startGame} />
 {/if}
 
 <!-- Add startGame function -->
@@ -271,10 +271,10 @@ Remove automatic start-on-input from `updateTimer()` since the menu overlay now 
 ```typescript
 // game-loop.ts - updateTimer should NOT auto-start
 export function updateTimer(state: GameState): void {
-	// Only update elapsed time during gameplay
-	if (state.status === "PLAYING" && state.startTime !== null) {
-		state.elapsedTime = (Date.now() - state.startTime) / 1000;
-	}
+  // Only update elapsed time during gameplay
+  if (state.status === "PLAYING" && state.startTime !== null) {
+    state.elapsedTime = (Date.now() - state.startTime) / 1000;
+  }
 }
 ```
 
@@ -288,12 +288,12 @@ When game starts, overlay fades out:
 
 ```css
 .menu-overlay {
-	transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease;
 }
 
 .menu-overlay.hidden {
-	opacity: 0;
-	pointer-events: none;
+  opacity: 0;
+  pointer-events: none;
 }
 ```
 

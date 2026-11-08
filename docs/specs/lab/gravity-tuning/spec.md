@@ -96,17 +96,17 @@ configuration import workflow:
 
 ```json
 {
-	"version": 1,
-	"burn": "course",
-	"startSpeed": 0,
-	"well": {
-		"x": 1000,
-		"y": 150,
-		"strength": 2400,
-		"cutoff": 50,
-		"falloff": "inverse-square",
-		"radius": 40
-	}
+  "version": 1,
+  "burn": "course",
+  "startSpeed": 0,
+  "well": {
+    "x": 1000,
+    "y": 150,
+    "strength": 2400,
+    "cutoff": 50,
+    "falloff": "inverse-square",
+    "radius": 40
+  }
 }
 ```
 

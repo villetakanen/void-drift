@@ -1,25 +1,25 @@
 <svg
-	xmlns="http://www.w3.org/2000/svg"
-	width="100"
-	height="90"
-	viewBox="0 0 100 90"
+  xmlns="http://www.w3.org/2000/svg"
+  width="100"
+  height="90"
+  viewBox="0 0 100 90"
 >
-	<title>sustain: speculative family posture</title>
-	<g transform="translate(50.0 45.0) scale(0.65)">
-		<polygon points="-4,-6 -2,-8 2,-8 4,-6 4,8 -4,8" fill="#303e4c" />
-		<polygon points="-4,-6 -2,-8 -2,6 -4,8" fill="#bad7da" />
-		<polygon points="-2,-8 2,-8 2,6 -2,6" fill="#648894" />
-		<polygon points="-1,-6 1,-6 1,6 -1,6" fill="#64d4df" />
-		<polygon points="-12,-3 -10,-5 -8,-5 -6,-3 -6,12 -12,12" fill="#303e4c" />
-		<polygon points="-12,-3 -10,-5 -10,10 -12,12" fill="#bad7da" />
-		<polygon points="-10,-5 -8,-5 -8,10 -10,10" fill="#648894" />
-		<polygon points="6,-3 8,-5 10,-5 12,-3 12,12 6,12" fill="#303e4c" />
-		<polygon points="6,-3 8,-5 8,10 6,12" fill="#bad7da" />
-		<polygon points="8,-5 10,-5 10,10 8,10" fill="#648894" />
-		<polygon points="-8,11 -6,9 6,9 8,11 8,14 -8,14" fill="#303e4c" />
-		<polygon points="-8,11 -6,9 -6,12 -8,14" fill="#bad7da" />
-		<polygon points="-6,9 6,9 6,12 -6,12" fill="#648894" />
-		<polygon points="-12,-5 -6,-11 -6,-5" fill="#91aeb7" />
-		<polygon points="6,-5 6,-11 12,-5" fill="#526d7b" />
-	</g>
+  <title>sustain: speculative family posture</title>
+  <g transform="translate(50.0 45.0) scale(0.65)">
+    <polygon points="-4,-6 -2,-8 2,-8 4,-6 4,8 -4,8" fill="#303e4c" />
+    <polygon points="-4,-6 -2,-8 -2,6 -4,8" fill="#bad7da" />
+    <polygon points="-2,-8 2,-8 2,6 -2,6" fill="#648894" />
+    <polygon points="-1,-6 1,-6 1,6 -1,6" fill="#64d4df" />
+    <polygon points="-12,-3 -10,-5 -8,-5 -6,-3 -6,12 -12,12" fill="#303e4c" />
+    <polygon points="-12,-3 -10,-5 -10,10 -12,12" fill="#bad7da" />
+    <polygon points="-10,-5 -8,-5 -8,10 -10,10" fill="#648894" />
+    <polygon points="6,-3 8,-5 10,-5 12,-3 12,12 6,12" fill="#303e4c" />
+    <polygon points="6,-3 8,-5 8,10 6,12" fill="#bad7da" />
+    <polygon points="8,-5 10,-5 10,10 8,10" fill="#648894" />
+    <polygon points="-8,11 -6,9 6,9 8,11 8,14 -8,14" fill="#303e4c" />
+    <polygon points="-8,11 -6,9 -6,12 -8,14" fill="#bad7da" />
+    <polygon points="-6,9 6,9 6,12 -6,12" fill="#648894" />
+    <polygon points="-12,-5 -6,-11 -6,-5" fill="#91aeb7" />
+    <polygon points="6,-5 6,-11 12,-5" fill="#526d7b" />
+  </g>
 </svg>

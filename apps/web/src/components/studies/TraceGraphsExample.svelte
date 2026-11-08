@@ -17,48 +17,48 @@ const measures = ["speed", "acceleration", "turn"] as const;
 
 let scale = $state(0.8);
 function measure() {
-	scale = Math.min(innerWidth / SCREEN.w, innerHeight / SCREEN.h);
+  scale = Math.min(innerWidth / SCREEN.w, innerHeight / SCREEN.h);
 }
 onMount(() => {
-	measure();
-	addEventListener("resize", measure);
-	return () => removeEventListener("resize", measure);
+  measure();
+  addEventListener("resize", measure);
+  return () => removeEventListener("resize", measure);
 });
 </script>
 
 <section class="area instrument-display" aria-label={label}>
-	<div class="host" style={`width:${W * scale}px;height:${H * scale}px`}>
-		<div class="scaled" style={`transform:scale(${scale})`}>
-			{#each measures as m, i}
-				<div style={`position:absolute;top:${i * (GRAPH + GAP)}px`}>
-					<TraceGraph010
-						measure={m}
-						series={exampleSeries}
-						tick={exampleTick}
-						width={W}
-						height={GRAPH}
-					/>
-				</div>
-			{/each}
-		</div>
-	</div>
+  <div class="host" style={`width:${W * scale}px;height:${H * scale}px`}>
+    <div class="scaled" style={`transform:scale(${scale})`}>
+      {#each measures as m, i}
+        <div style={`position:absolute;top:${i * (GRAPH + GAP)}px`}>
+          <TraceGraph010
+            measure={m}
+            series={exampleSeries}
+            tick={exampleTick}
+            width={W}
+            height={GRAPH}
+          />
+        </div>
+      {/each}
+    </div>
+  </div>
 </section>
 
 <style>
 /* The console: elevation 1 from the shared display material. */
 .area {
-	display: grid;
-	justify-items: center;
-	margin-block: var(--spacing-lg);
-	padding: var(--spacing-xl) var(--spacing-lg);
-	background: var(--_elev-1);
+  display: grid;
+  justify-items: center;
+  margin-block: var(--spacing-lg);
+  padding: var(--spacing-xl) var(--spacing-lg);
+  background: var(--_elev-1);
 }
 .host {
-	position: relative;
+  position: relative;
 }
 .scaled {
-	position: relative;
-	transform-origin: top left;
-	color: var(--color-text);
+  position: relative;
+  transform-origin: top left;
+  color: var(--color-text);
 }
 </style>

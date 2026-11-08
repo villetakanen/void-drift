@@ -1,137 +1,137 @@
 ---
 const variants = [
-	{
-		id: "toroid",
-		name: "A / Closed toroid",
-		note: "A continuous circular working mass encloses one clear aperture. Radial winding blocks give the ring its technical character.",
-	},
-	{
-		id: "spring",
-		name: "B / Axial spring",
-		note: "A winding travels along a horizontal axis between two terminals. Repeated gaps expose depth and give the assembly a directional character.",
-	},
+  {
+    id: "toroid",
+    name: "A / Closed toroid",
+    note: "A continuous circular working mass encloses one clear aperture. Radial winding blocks give the ring its technical character.",
+  },
+  {
+    id: "spring",
+    name: "B / Axial spring",
+    note: "A winding travels along a horizontal axis between two terminals. Repeated gaps expose depth and give the assembly a directional character.",
+  },
 ];
 const ring = (r: number, a: number): number[] => [
-	r * Math.cos(a),
-	r * Math.sin(a),
+  r * Math.cos(a),
+  r * Math.sin(a),
 ];
 const polygon = (ps: number[][]) => ps.map((p) => p.join(",")).join(" ");
 ---
 
 <svg width="0" height="0" aria-hidden="true" style="position:absolute">
-	<defs>
-		<g id="coil-base">
-			<path d="M-19-16H15L19-12V16H-19Z" fill="#1c2935" />
-			<path d="M-19-16H15L19-12H-15V16H-19Z" fill="#526d7c" />
-			<path d="M-19 13H19V17H-19Z" fill="#304759" />
-		</g>
-		<g id="coil-toroid">
-			<use href="#coil-base" />
-			{Array.from({ length: 12 }, (_, i) => {
-				const a = (i * Math.PI) / 6,
-					b = a + Math.PI / 6 - 0.075;
-				const ps = [ring(15, a), ring(15, b), ring(8, b), ring(8, a)];
-				return (
-					<g>
-						<polygon
-							points={polygon(ps.map(([x, y]) => [x, y + 3]))}
-							fill="#263c4b"
-						/>
-						<polygon
-							points={polygon(ps)}
-							fill={i > 5 && i < 11 ? "#a5b9c0" : "#607d8d"}
-						/>
-						<polygon
-							points={polygon([
-								ring(15, a),
-								ring(15, b),
-								ring(13, b),
-								ring(13, a),
-							])}
-							fill={i > 5 && i < 11 ? "#c7d9dc" : "#7894a4"}
-						/>
-						<polygon
-							points={polygon([
-								ring(8, a),
-								ring(8, b),
-								ring(8, b).map((v, j) => v + (j === 1 ? 3 : 0)),
-								ring(8, a).map((v, j) => v + (j === 1 ? 3 : 0)),
-							])}
-							fill="#304759"
-						/>
-					</g>
-				);
-			})}
-			<path d="M-18-4H-12V3H-18Z M12-4H18V3H12Z" fill="#88951b" />
-			<path d="M-18-4H-12V-2H-18Z M12-4H18V-2H12Z" fill="#cedb17" />
-		</g>
-		<g id="coil-spring">
-			<use href="#coil-base" />
-			<path d="M-16-2H16V5H-16Z" fill="#17232e" />
-			{[-12, -6, 0, 6, 12].map((x) => (
-				<g transform={`translate(${x} 0)`}>
-					<path
-						d="M-3-9L0-13L4-8V8L1 13L-3 9V5L0 7L1 5V-5L-1-7L-3-5Z"
-						fill="#607d8d"
-					/>
-					<path d="M-3-9L0-13L4-8L1-5L-1-7L-3-5Z" fill="#c7d9dc" />
-					<path d="M1-5L4-8V8L1 13V5Z" fill="#304759" />
-					<path d="M-3 9L1 13L4 8V11L1 16L-3 12Z" fill="#263c4b" />
-				</g>
-			))}
-			<path d="M-19-5H-15V7H-19Z M15-5H19V7H15Z" fill="#88951b" />
-			<path d="M-19-5H-15V-2H-19Z M15-5H19V-2H15Z" fill="#cedb17" />
-		</g>
-	</defs>
+  <defs>
+    <g id="coil-base">
+      <path d="M-19-16H15L19-12V16H-19Z" fill="#1c2935" />
+      <path d="M-19-16H15L19-12H-15V16H-19Z" fill="#526d7c" />
+      <path d="M-19 13H19V17H-19Z" fill="#304759" />
+    </g>
+    <g id="coil-toroid">
+      <use href="#coil-base" />
+      {Array.from({ length: 12 }, (_, i) => {
+        const a = (i * Math.PI) / 6,
+          b = a + Math.PI / 6 - 0.075;
+        const ps = [ring(15, a), ring(15, b), ring(8, b), ring(8, a)];
+        return (
+          <g>
+            <polygon
+              points={polygon(ps.map(([x, y]) => [x, y + 3]))}
+              fill="#263c4b"
+            />
+            <polygon
+              points={polygon(ps)}
+              fill={i > 5 && i < 11 ? "#a5b9c0" : "#607d8d"}
+            />
+            <polygon
+              points={polygon([
+                ring(15, a),
+                ring(15, b),
+                ring(13, b),
+                ring(13, a),
+              ])}
+              fill={i > 5 && i < 11 ? "#c7d9dc" : "#7894a4"}
+            />
+            <polygon
+              points={polygon([
+                ring(8, a),
+                ring(8, b),
+                ring(8, b).map((v, j) => v + (j === 1 ? 3 : 0)),
+                ring(8, a).map((v, j) => v + (j === 1 ? 3 : 0)),
+              ])}
+              fill="#304759"
+            />
+          </g>
+        );
+      })}
+      <path d="M-18-4H-12V3H-18Z M12-4H18V3H12Z" fill="#88951b" />
+      <path d="M-18-4H-12V-2H-18Z M12-4H18V-2H12Z" fill="#cedb17" />
+    </g>
+    <g id="coil-spring">
+      <use href="#coil-base" />
+      <path d="M-16-2H16V5H-16Z" fill="#17232e" />
+      {[-12, -6, 0, 6, 12].map((x) => (
+        <g transform={`translate(${x} 0)`}>
+          <path
+            d="M-3-9L0-13L4-8V8L1 13L-3 9V5L0 7L1 5V-5L-1-7L-3-5Z"
+            fill="#607d8d"
+          />
+          <path d="M-3-9L0-13L4-8L1-5L-1-7L-3-5Z" fill="#c7d9dc" />
+          <path d="M1-5L4-8V8L1 13V5Z" fill="#304759" />
+          <path d="M-3 9L1 13L4 8V11L1 16L-3 12Z" fill="#263c4b" />
+        </g>
+      ))}
+      <path d="M-19-5H-15V7H-19Z M15-5H19V7H15Z" fill="#88951b" />
+      <path d="M-19-5H-15V-2H-19Z M15-5H19V-2H15Z" fill="#cedb17" />
+    </g>
+  </defs>
 </svg>
 <div class="forms">
-	{variants.map((v) => (
-		<article>
-			<h4>{v.name}</h4>
-			<svg viewBox="-28 -25 56 50" role="img" aria-label={v.name}>
-				<use href={`#coil-${v.id}`} />
-			</svg>
-			<div class="small">
-				<svg
-					width="64"
-					height="52"
-					viewBox="-32 -26 64 52"
-					role="img"
-					aria-label={`${v.name} at 1×`}
-				>
-					<g>
-						<use href={`#coil-${v.id}`} />
-					</g>
-				</svg>
-				<span>1× · provisional size</span>
-			</div>
-			<p>{v.note}</p>
-		</article>
-	))}
+  {variants.map((v) => (
+    <article>
+      <h4>{v.name}</h4>
+      <svg viewBox="-28 -25 56 50" role="img" aria-label={v.name}>
+        <use href={`#coil-${v.id}`} />
+      </svg>
+      <div class="small">
+        <svg
+          width="64"
+          height="52"
+          viewBox="-32 -26 64 52"
+          role="img"
+          aria-label={`${v.name} at 1×`}
+        >
+          <g>
+            <use href={`#coil-${v.id}`} />
+          </g>
+        </svg>
+        <span>1× · provisional size</span>
+      </div>
+      <p>{v.note}</p>
+    </article>
+  ))}
 </div>
 <style>
 .forms {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-	gap: var(--spacing-lg);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--spacing-lg);
 }
 article {
-	border: 1px solid var(--color-border);
-	padding: var(--spacing-lg);
-	background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: var(--spacing-lg);
+  background: var(--color-surface);
 }
 article > svg {
-	width: 100%;
-	height: 260px;
+  width: 100%;
+  height: 260px;
 }
 h4 {
-	margin: 0;
+  margin: 0;
 }
 .small {
-	display: flex;
-	align-items: center;
-	gap: var(--spacing-md);
-	color: var(--color-text-muted);
-	font-size: var(--font-size-caption);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
 }
 </style>

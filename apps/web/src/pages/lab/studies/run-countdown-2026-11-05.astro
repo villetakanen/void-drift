@@ -4,223 +4,223 @@ import { studies } from "../../../data/studies";
 import StudyLayout from "../../../layouts/StudyLayout.astro";
 
 const study = studies.find(
-	(entry) => entry.slug === "run-countdown-2026-11-05",
+  (entry) => entry.slug === "run-countdown-2026-11-05",
 );
 ---
 
 <StudyLayout study={study}>
-	<section>
-		<h2>01 / Three seconds before control</h2>
-		<p>
-			Pressing Launch now cross-fades from the menu to flight in 0.3 seconds,
-			and the ship is live at once. Runs are short and challenging, and their
-			first moments decide orientation: where the planet is, which way the ship
-			is drifting. A countdown of 3, 2, 1 and then GO or 0 would give each run a
-			deliberate threshold. The proposal is to paint it as light on the effects
-			surface rather than as HUD text, in Android green or another ink.
-		</p>
-		<p>
-			The count has to read instantly while it shares the screen with the ship
-			it is about to release, and it costs three seconds of every run. On the
-			effects surface a numeral is stamped light: overlap adds, and the shared
-			game-time decay fades it. The afterglow and the change between digits can
-			therefore come from the surface itself, with stencil cuts, saturation and
-			flicker as the expressive means. Ink also carries a role: lime is the
-			brand and marks what can be acted on, Android green is a status colour,
-			and the effects inks are transient light.
-		</p>
-		<p>
-			This cycle aims to settle how the countdown looks and moves at gameplay
-			scale: typeface, ink, the motion of each digit, the final mark and its
-			place relative to the ship. Whether the world moves during the count and
-			when input becomes live are open; the examples assume a still scene with
-			control at the final mark. Restarts, audio and reduced motion are adjacent
-			questions outside this cycle.
-		</p>
-	</section>
-	<section>
-		<h2 id="light-numerals">02.1 / Light numerals on the effects surface</h2>
-		<p>
-			<strong
-				>Accepted: B / Ignition in Saira Stencil and Android green, centred on
-				the ship, without a launch ring.</strong
-			>
-			The demo opens on this variant; the other switches remain for comparison.
-			Settled properties: the bold stencil face, the Android green ink with a
-			hot core, the flickering strike at each digit's onset, and the count
-			sitting over the ship at full size. Whether the count ends on GO or 0 is
-			still open; the reference uses GO.
-		</p>
-		<figure class="reference">
-			<img
-				src="/studies/run-countdown-2026-11-05/02-1-ignition-strike.png"
-				alt="Digit 2 mid-strike: the green stencil numeral slipped sideways during its flicker, over the Wasp and starfield"
-				width="1056"
-				height="595"
-			>
-			<img
-				src="/studies/run-countdown-2026-11-05/02-1-ignition-steady.png"
-				alt="Digit 2 steady: the green stencil numeral with a soft halo, centred over the Wasp"
-				width="1056"
-				height="595"
-			>
-			<figcaption>
-				Accepted reference, captured from the demo at 1280 px. Conditions: a
-				1920 × 1080 backing canvas, still camera, no randomness. 0.6 s lead,
-				then one digit per second. Each digit is stamped for 0.8 s at 0.45
-				intensity; the strike lasts 0.28 s, with a deterministic on/off/half
-				pattern every 1/30 s and an 18 px slip on half steps. The final mark is
-				stamped for 0.4 s at 0.6. The glyph is 420 px at that backing, cached
-				with a 48 px halo, an ink body and a 30% core.
-			</figcaption>
-		</figure>
-		<p>
-			Each motion variant paints through the production <code>FxSurface</code>:
-			a cached luminous glyph (halo, ink body, hot core) is stamped each frame
-			while a digit is active, and the shared decay does the rest. A tests the
-			bare surface fade, B a cheap neon strike, C motion that the persistent
-			image turns into an echo. The final mark can release a launch ring. Ink,
-			typeface, final mark, placement and backdrop are independent switches.
-		</p>
-		<p>
-			The scene is a still composition: the starfield and Wasp come from the
-			production renderer, but no simulation runs and the camera does not move.
-			The example cannot show whether three seconds feels long across repeated
-			runs; that needs a flight trial. Saira Stencil is loaded only on this
-			page. Production would need only the glyphs 0–3, G and O, which could ship
-			as outlines, as the logomark does, instead of a font file.
-		</p>
-		<RunCountdown client:load />
-	</section>
-	<section>
-		<h2>03 / What the start flow already gives</h2>
-		<p>
-			Launch already has a starting phase in <code>FlightDeck</code>: a 150 ms
-			fade to void, the handoff to a fresh survival run, then a 150 ms reveal.
-			Input, resources and the simulation clock wait for the reveal. The
-			countdown extends that wait by three seconds, with the revealed run on
-			screen and still. Flight Lab and builder flights skip the starting phase
-			and stay unaffected. <code>/lab/landing</code> already composes the
-			production launcher and handoff, so it shows the countdown with no new Lab
-			page.
-		</p>
-		<p>
-			The shared surface is ready for the effect: additive stamping, a cached
-			luminous stamp built once with its halo, and the essential budget for a
-			cue that must not drop. One adaptation is needed. <code>FlightFx</code>
-			advances the surface with simulation ticks, which stay at zero during the
-			count, so the light would neither fade nor accept new stamps. The surface
-			needs a presentation clock: count time during the countdown, then count
-			time plus ticks, which stays monotonic. Stamping the digits in world space
-			at the ship's starting position, scaled by the inverse zoom, keeps their
-			screen size. It also lets the last light stay where the ship launched once
-			the camera starts following, as painted light already does.
-		</p>
-		<p>
-			The face ships as outlines rather than a font file. The countdown needs
-			only 0–3, G and O, and <code>scripts/convert-logomark.py</code> already
-			turns OFL glyphs into committed paths. A Path2D stamp cache replaces the
-			study's woff2. The countdown is HUD information, the status of a run about
-			to start, so it keeps the <code>--color-android-green</code> token; the
-			effects surface is only its painter. The canvas mirror in
-			<code>packages/core/src/lib/ui/colors.ts</code>
-			does not yet carry that token, so it gains one under the existing parity
-			check. The countdown is the first canvas text outside the
-			<code>ui</code>
-			face, so the typeface table in the design-system core gains a row.
-		</p>
-		<p>
-			Unresolved choices, provisional for delivery: the final mark (GO in the
-			reference); control going live with the final mark, and whether a thrust
-			key held through the count fires at once (provisionally yes); a hidden
-			page or blur pausing the count, matching the handoff; and reduced motion
-			keeping its immediate start, with no countdown. None of these blocks
-			delivery.
-		</p>
-	</section>
-	<section>
-		<h2>04 / Two slices to a counted start</h2>
-		<p>
-			<strong>No <code>docs/design.md</code> change.</strong>
-			The countdown adds a canvas mirror of an existing colour token and a
-			typeface row in the design-system core spec; experience principles, art
-			direction and brand stay as they are.
-		</p>
-		<h3>S1 — Countdown glyphs and ignition painter (core, small–medium)</h3>
-		<ul>
-			<li>
-				Generate Saira Stencil 700 outlines for 0–3, G and O with the logomark's
-				conversion script; commit them with the OFL licence.
-			</li>
-			<li>
-				Mirror <code>--color-android-green</code> in the canvas
-				<code>COLOR</code>
-				map, kept equal by
-				<code>scripts/check-contracts.mjs</code>. Add a painter in
-				<code>packages/core/src/lib/effects/</code>
-				that maps count time and final mark to cached luminous stamps in that
-				colour, using the accepted strike, hold and release.
-			</li>
-			<li>
-				Specs: <code>docs/specs/sfx-canvas.md</code> (countdown emitter) and
-				<code>docs/specs/design-system-core.md</code>
-				(typeface row).
-			</li>
-			<li>
-				Correctness: digits appear in descending order and then the final mark;
-				nothing is stamped outside the active windows; equal time gives equal
-				strike output; stamps use the essential allowance.
-			</li>
-			<li>Fidelity: frames match the 02.1 reference conditions above.</li>
-		</ul>
-		<h3>S2 — Counted start in play (web and mode, medium; needs S1)</h3>
-		<ul>
-			<li>
-				Extend the starting phase in <code>FlightDeck</code> with a countdown
-				phase after the reveal, exposed as <code>data-phase</code>. The run's
-				simulation stays at zero ticks until the final mark, and it starts with
-				the mark.
-			</li>
-			<li>
-				Give <code>FlightFx</code> a presentation clock and let the countdown
-				stamp into the shared surface at the ship's world position.
-			</li>
-			<li>
-				Spec: the landing section of <code>docs/specs/playable-alpha.md</code>
-				records the counted start and the provisional choices from 03.
-			</li>
-			<li>
-				Correctness, in <code>tests/browser/landing.spec.ts</code> and unit
-				tests: Launch enters the countdown, and ticks and resources stay
-				unchanged through it. Input delivered during the count does not move the
-				ship; play begins at the final mark. Repeated activation is ignored, and
-				a hidden page pauses the count. Reduced motion starts immediately, and
-				Lab and builder flights are unchanged. The surface decays during the
-				count and keeps the countdown's light at its world position after play
-				begins.
-			</li>
-			<li>
-				Fidelity: <code>/lab/landing</code> shows the accepted reference over
-				the real run at 1280 px.
-			</li>
-		</ul>
-	</section>
+  <section>
+    <h2>01 / Three seconds before control</h2>
+    <p>
+      Pressing Launch now cross-fades from the menu to flight in 0.3 seconds,
+      and the ship is live at once. Runs are short and challenging, and their
+      first moments decide orientation: where the planet is, which way the ship
+      is drifting. A countdown of 3, 2, 1 and then GO or 0 would give each run a
+      deliberate threshold. The proposal is to paint it as light on the effects
+      surface rather than as HUD text, in Android green or another ink.
+    </p>
+    <p>
+      The count has to read instantly while it shares the screen with the ship
+      it is about to release, and it costs three seconds of every run. On the
+      effects surface a numeral is stamped light: overlap adds, and the shared
+      game-time decay fades it. The afterglow and the change between digits can
+      therefore come from the surface itself, with stencil cuts, saturation and
+      flicker as the expressive means. Ink also carries a role: lime is the
+      brand and marks what can be acted on, Android green is a status colour,
+      and the effects inks are transient light.
+    </p>
+    <p>
+      This cycle aims to settle how the countdown looks and moves at gameplay
+      scale: typeface, ink, the motion of each digit, the final mark and its
+      place relative to the ship. Whether the world moves during the count and
+      when input becomes live are open; the examples assume a still scene with
+      control at the final mark. Restarts, audio and reduced motion are adjacent
+      questions outside this cycle.
+    </p>
+  </section>
+  <section>
+    <h2 id="light-numerals">02.1 / Light numerals on the effects surface</h2>
+    <p>
+      <strong
+        >Accepted: B / Ignition in Saira Stencil and Android green, centred on
+        the ship, without a launch ring.</strong
+      >
+      The demo opens on this variant; the other switches remain for comparison.
+      Settled properties: the bold stencil face, the Android green ink with a
+      hot core, the flickering strike at each digit's onset, and the count
+      sitting over the ship at full size. Whether the count ends on GO or 0 is
+      still open; the reference uses GO.
+    </p>
+    <figure class="reference">
+      <img
+        src="/studies/run-countdown-2026-11-05/02-1-ignition-strike.png"
+        alt="Digit 2 mid-strike: the green stencil numeral slipped sideways during its flicker, over the Wasp and starfield"
+        width="1056"
+        height="595"
+      >
+      <img
+        src="/studies/run-countdown-2026-11-05/02-1-ignition-steady.png"
+        alt="Digit 2 steady: the green stencil numeral with a soft halo, centred over the Wasp"
+        width="1056"
+        height="595"
+      >
+      <figcaption>
+        Accepted reference, captured from the demo at 1280 px. Conditions: a
+        1920 × 1080 backing canvas, still camera, no randomness. 0.6 s lead,
+        then one digit per second. Each digit is stamped for 0.8 s at 0.45
+        intensity; the strike lasts 0.28 s, with a deterministic on/off/half
+        pattern every 1/30 s and an 18 px slip on half steps. The final mark is
+        stamped for 0.4 s at 0.6. The glyph is 420 px at that backing, cached
+        with a 48 px halo, an ink body and a 30% core.
+      </figcaption>
+    </figure>
+    <p>
+      Each motion variant paints through the production <code>FxSurface</code>:
+      a cached luminous glyph (halo, ink body, hot core) is stamped each frame
+      while a digit is active, and the shared decay does the rest. A tests the
+      bare surface fade, B a cheap neon strike, C motion that the persistent
+      image turns into an echo. The final mark can release a launch ring. Ink,
+      typeface, final mark, placement and backdrop are independent switches.
+    </p>
+    <p>
+      The scene is a still composition: the starfield and Wasp come from the
+      production renderer, but no simulation runs and the camera does not move.
+      The example cannot show whether three seconds feels long across repeated
+      runs; that needs a flight trial. Saira Stencil is loaded only on this
+      page. Production would need only the glyphs 0–3, G and O, which could ship
+      as outlines, as the logomark does, instead of a font file.
+    </p>
+    <RunCountdown client:load />
+  </section>
+  <section>
+    <h2>03 / What the start flow already gives</h2>
+    <p>
+      Launch already has a starting phase in <code>FlightDeck</code>: a 150 ms
+      fade to void, the handoff to a fresh survival run, then a 150 ms reveal.
+      Input, resources and the simulation clock wait for the reveal. The
+      countdown extends that wait by three seconds, with the revealed run on
+      screen and still. Flight Lab and builder flights skip the starting phase
+      and stay unaffected. <code>/lab/landing</code> already composes the
+      production launcher and handoff, so it shows the countdown with no new Lab
+      page.
+    </p>
+    <p>
+      The shared surface is ready for the effect: additive stamping, a cached
+      luminous stamp built once with its halo, and the essential budget for a
+      cue that must not drop. One adaptation is needed. <code>FlightFx</code>
+      advances the surface with simulation ticks, which stay at zero during the
+      count, so the light would neither fade nor accept new stamps. The surface
+      needs a presentation clock: count time during the countdown, then count
+      time plus ticks, which stays monotonic. Stamping the digits in world space
+      at the ship's starting position, scaled by the inverse zoom, keeps their
+      screen size. It also lets the last light stay where the ship launched once
+      the camera starts following, as painted light already does.
+    </p>
+    <p>
+      The face ships as outlines rather than a font file. The countdown needs
+      only 0–3, G and O, and <code>scripts/convert-logomark.py</code> already
+      turns OFL glyphs into committed paths. A Path2D stamp cache replaces the
+      study's woff2. The countdown is HUD information, the status of a run about
+      to start, so it keeps the <code>--color-android-green</code> token; the
+      effects surface is only its painter. The canvas mirror in
+      <code>packages/core/src/lib/ui/colors.ts</code>
+      does not yet carry that token, so it gains one under the existing parity
+      check. The countdown is the first canvas text outside the
+      <code>ui</code>
+      face, so the typeface table in the design-system core gains a row.
+    </p>
+    <p>
+      Unresolved choices, provisional for delivery: the final mark (GO in the
+      reference); control going live with the final mark, and whether a thrust
+      key held through the count fires at once (provisionally yes); a hidden
+      page or blur pausing the count, matching the handoff; and reduced motion
+      keeping its immediate start, with no countdown. None of these blocks
+      delivery.
+    </p>
+  </section>
+  <section>
+    <h2>04 / Two slices to a counted start</h2>
+    <p>
+      <strong>No <code>docs/design.md</code> change.</strong>
+      The countdown adds a canvas mirror of an existing colour token and a
+      typeface row in the design-system core spec; experience principles, art
+      direction and brand stay as they are.
+    </p>
+    <h3>S1 — Countdown glyphs and ignition painter (core, small–medium)</h3>
+    <ul>
+      <li>
+        Generate Saira Stencil 700 outlines for 0–3, G and O with the logomark's
+        conversion script; commit them with the OFL licence.
+      </li>
+      <li>
+        Mirror <code>--color-android-green</code> in the canvas
+        <code>COLOR</code>
+        map, kept equal by
+        <code>scripts/check-contracts.mjs</code>. Add a painter in
+        <code>packages/core/src/lib/effects/</code>
+        that maps count time and final mark to cached luminous stamps in that
+        colour, using the accepted strike, hold and release.
+      </li>
+      <li>
+        Specs: <code>docs/specs/sfx-canvas.md</code> (countdown emitter) and
+        <code>docs/specs/design-system-core.md</code>
+        (typeface row).
+      </li>
+      <li>
+        Correctness: digits appear in descending order and then the final mark;
+        nothing is stamped outside the active windows; equal time gives equal
+        strike output; stamps use the essential allowance.
+      </li>
+      <li>Fidelity: frames match the 02.1 reference conditions above.</li>
+    </ul>
+    <h3>S2 — Counted start in play (web and mode, medium; needs S1)</h3>
+    <ul>
+      <li>
+        Extend the starting phase in <code>FlightDeck</code> with a countdown
+        phase after the reveal, exposed as <code>data-phase</code>. The run's
+        simulation stays at zero ticks until the final mark, and it starts with
+        the mark.
+      </li>
+      <li>
+        Give <code>FlightFx</code> a presentation clock and let the countdown
+        stamp into the shared surface at the ship's world position.
+      </li>
+      <li>
+        Spec: the landing section of <code>docs/specs/playable-alpha.md</code>
+        records the counted start and the provisional choices from 03.
+      </li>
+      <li>
+        Correctness, in <code>tests/browser/landing.spec.ts</code> and unit
+        tests: Launch enters the countdown, and ticks and resources stay
+        unchanged through it. Input delivered during the count does not move the
+        ship; play begins at the final mark. Repeated activation is ignored, and
+        a hidden page pauses the count. Reduced motion starts immediately, and
+        Lab and builder flights are unchanged. The surface decays during the
+        count and keeps the countdown's light at its world position after play
+        begins.
+      </li>
+      <li>
+        Fidelity: <code>/lab/landing</code> shows the accepted reference over
+        the real run at 1280 px.
+      </li>
+    </ul>
+  </section>
 </StudyLayout>
 <style>
 .reference {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: var(--spacing-sm);
-	margin: var(--spacing-lg) 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+  margin: var(--spacing-lg) 0;
 }
 .reference img {
-	width: 100%;
-	height: auto;
-	border: 1px solid var(--color-border);
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--color-border);
 }
 .reference figcaption {
-	grid-column: 1 / -1;
-	color: var(--color-text-muted);
-	font: var(--font-size-caption) var(--font-family-ui);
+  grid-column: 1 / -1;
+  color: var(--color-text-muted);
+  font: var(--font-size-caption) var(--font-family-ui);
 }
 </style>

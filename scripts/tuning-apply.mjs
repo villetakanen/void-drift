@@ -11,8 +11,8 @@ import { createViteServer } from "vitest/node";
 const root = resolve(fileURLToPath(import.meta.url), "../..");
 // Tests point this at a copy; the game's file otherwise.
 const tuningFile = resolve(
-	root,
-	process.env.VOID_DRIFT_TUNING_FILE ?? "packages/mode-a/src/lib/tuning.json",
+  root,
+  process.env.VOID_DRIFT_TUNING_FILE ?? "packages/mode-a/src/lib/tuning.json",
 );
 // Each area: the TypeScript module and export that reads a proposal against the
 // tuning file. None yet: the instrument's gravity proposal was removed with its
@@ -22,34 +22,34 @@ const AREAS = {};
 
 const [area, file] = process.argv.slice(2);
 if (!AREAS[area] || !file) {
-	console.error(
-		`Usage: pnpm tuning:apply <area> <proposal file>; areas: ${Object.keys(AREAS).join(", ") || "none yet"}`,
-	);
-	process.exit(2);
+  console.error(
+    `Usage: pnpm tuning:apply <area> <proposal file>; areas: ${Object.keys(AREAS).join(", ") || "none yet"}`,
+  );
+  process.exit(2);
 }
 
 const text = readFileSync(resolve(process.cwd(), file), "utf8");
 const server = await createViteServer({
-	root,
-	configFile: false,
-	appType: "custom",
-	logLevel: "error",
-	server: { middlewareMode: true, hmr: false, watch: null },
-	optimizeDeps: { noDiscovery: true, include: [] },
+  root,
+  configFile: false,
+  appType: "custom",
+  logLevel: "error",
+  server: { middlewareMode: true, hmr: false, watch: null },
+  optimizeDeps: { noDiscovery: true, include: [] },
 });
 let result;
 try {
-	const mod = await server.ssrLoadModule(AREAS[area].module);
-	result = mod[AREAS[area].apply](
-		text,
-		JSON.parse(readFileSync(tuningFile, "utf8")),
-	);
+  const mod = await server.ssrLoadModule(AREAS[area].module);
+  result = mod[AREAS[area].apply](
+    text,
+    JSON.parse(readFileSync(tuningFile, "utf8")),
+  );
 } finally {
-	await server.close();
+  await server.close();
 }
 if (!result.ok) {
-	console.error(`Refused, nothing written: ${result.reason}`);
-	process.exit(1);
+  console.error(`Refused, nothing written: ${result.reason}`);
+  process.exit(1);
 }
 writeFileSync(tuningFile, `${JSON.stringify(result.file, null, "\t")}\n`);
 console.log(`Applied to ${area} in ${relative(process.cwd(), tuningFile)}:`);

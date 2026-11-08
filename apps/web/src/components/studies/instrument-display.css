@@ -2,16 +2,16 @@
    materials. Both keep the background's hue, 290. Components read the
    tokens; the class sits on the console that holds them. */
 .instrument-display {
-	/* Elevation 1: a flat console. */
-	--_elev-1: lch(5.5% 10 290);
-	/* Elevation 2: a display with 4px scanlines and a darkened edge. */
-	--_elev-2:
-		radial-gradient(ellipse at center, transparent 55%, rgb(0 0 0 / 0.4)),
-		repeating-linear-gradient(
-			0deg,
-			lch(11% 15 290) 0 2px,
-			lch(9% 15 290) 2px 4px
-		);
-	/* A thin dark bezel inside the display's black shadow. */
-	--_elev-2-inset: inset 0 0 0 1px lch(4% 8 290);
+  /* Elevation 1: a flat console. */
+  --_elev-1: lch(5.5% 10 290);
+  /* Elevation 2: a display with 4px scanlines and a darkened edge. */
+  --_elev-2:
+    radial-gradient(ellipse at center, transparent 55%, rgb(0 0 0 / 0.4)),
+    repeating-linear-gradient(
+      0deg,
+      lch(11% 15 290) 0 2px,
+      lch(9% 15 290) 2px 4px
+    );
+  /* A thin dark bezel inside the display's black shadow. */
+  --_elev-2-inset: inset 0 0 0 1px lch(4% 8 290);
 }

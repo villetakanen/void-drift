@@ -8,484 +8,484 @@ import StudyLayout from "../../../layouts/StudyLayout.astro";
 
 const study = studies.find((s) => s.slug === "gravity-coil-form-2026-11-03");
 const references = [
-	{
-		item: "ref-1a",
-		label: "1A / Inner ribbon",
-		origin: "02.8 · shaped faces",
-		note: "Connected construction; established shape.",
-		link: "depth",
-	},
-	{
-		item: "ref-c",
-		label: "C / One light",
-		origin: "02.14 · C",
-		note: "Promising later surface treatment.",
-		link: "light",
-	},
-	{
-		item: "ref-d",
-		label: "D / Housed winding",
-		origin: "02.14 · D",
-		note: "Promising working-face / housing relationship.",
-		link: "light",
-	},
-	{
-		item: "well",
-		label: "Potential Well",
-		origin: "Current game",
-		note: "Separated working bodies joined by yellow links.",
-	},
-	{
-		item: "ion",
-		label: "Light ion",
-		origin: "Current game",
-		note: "A dark body with broad facets and a defined end.",
-	},
+  {
+    item: "ref-1a",
+    label: "1A / Inner ribbon",
+    origin: "02.8 · shaped faces",
+    note: "Connected construction; established shape.",
+    link: "depth",
+  },
+  {
+    item: "ref-c",
+    label: "C / One light",
+    origin: "02.14 · C",
+    note: "Promising later surface treatment.",
+    link: "light",
+  },
+  {
+    item: "ref-d",
+    label: "D / Housed winding",
+    origin: "02.14 · D",
+    note: "Promising working-face / housing relationship.",
+    link: "light",
+  },
+  {
+    item: "well",
+    label: "Potential Well",
+    origin: "Current game",
+    note: "Separated working bodies joined by yellow links.",
+  },
+  {
+    item: "ion",
+    label: "Light ion",
+    origin: "Current game",
+    note: "A dark body with broad facets and a defined end.",
+  },
 ];
 ---
 
 <StudyLayout study={study}>
-	<Definitions />
-	<section>
-		<h2 id="problem">01 / A whole component, belonging to the ship</h2>
-		<p>
-			A coil can be convincing over space and under a wing, yet read as a
-			floating icon on the chassis. The segmented toroid, open centre and yellow
-			connections are substantially decided. This study investigates the visual
-			construction within that shape: how its surfaces and connections make it
-			feel complete, and how those surfaces sit alongside the ship’s.
-		</p>
-		<p>
-			The machinery belongs to the deliberately light ship or dark engine colour
-			families; supports and connectors use safety yellow under upper-left
-			starlight. The current game references provide context, but their
-			placeholder treatments are not a finished colour target. Neither removing
-			detail nor the promising C and D treatments settled the fit. Their
-			strengths remain references, not explanations of the mismatch.
-		</p>
-		<p>
-			The aim is sleek graphic machinery made with flat facets. The form rounds
-			keep scale and placement fixed; 02.6 now explores size on the real ship
-			slots, retaining M’s selected construction. FX, animation, mechanics,
-			balance and production implementation are outside this study, as are
-			backing plates, pedestals, isometric presentation and literal realism.
-		</p>
-		<p class="small">
-			Fresh cycle ·
-			<a href="/lab/studies/gravity-coil-2026-11-03"
-				>the stopped study remains separate</a
-			>. The coil references below are preserved vector snapshots, with their
-			original treatments intact.
-		</p>
-	</section>
-	<section>
-		<h2>02 / Surfaces that make an assembly</h2>
-		<details>
-			<summary id="references">
-				02.1 / Chosen references in game context
-			</summary>
-			<p>
-				Read across the same two scales: the equipment alone, then the same
-				equipment on a fully fitted Fighter. The Light ion column shows the
-				Fighter with engines only. The reference drawings are promising designs;
-				the production equipment still includes placeholder colour treatments.
-			</p>
-			<!-- biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard access to the horizontally scrollable fixed-scale references. -->
-			<section class="reference-scroll" aria-label="References" tabindex="0">
-				<div class="reference-grid">
-					{references.map((ref) => (
-						<figure>
-							<figcaption>
-								<strong>{ref.label}</strong>
-								<span>{ref.origin}</span>
-							</figcaption>
-							<svg
-								width="180"
-								height="180"
-								viewBox="-15 -15 30 30"
-								role="img"
-								aria-label={`${ref.label}, alone, 6×`}
-							>
-								<use href={`#form-${ref.item}`} />
-							</svg>
-							<span class="scale">Alone · 6×</span>
-							<svg
-								width="160"
-								height="180"
-								viewBox="-40 -52 80 90"
-								role="img"
-								aria-label={`${ref.label}, Fighter, 2×`}
-							>
-								<use
-									href={
-										ref.item === "ion"
-											? "#form-ship-fighter"
-											: `#form-${ref.item}-fighter-over`
-									}
-								/>
-							</svg>
-							<span class="scale">Fighter · 2×</span>
-							<svg
-								data-native
-								width="80"
-								height="90"
-								viewBox="-40 -52 80 90"
-								role="img"
-								aria-label={`${ref.label}, Fighter, 1×`}
-							>
-								<use
-									href={
-										ref.item === "ion"
-											? "#form-ship-fighter"
-											: `#form-${ref.item}-fighter-over`
-									}
-								/>
-							</svg>
-							<span class="scale">Fighter · 1×</span>
-							<p>{ref.note}</p>
-							{ref.link && (
-								<a href={`/lab/studies/gravity-coil-2026-11-03#${ref.link}`}>
-									Source drawing ↗
-								</a>
-							)}
-						</figure>
-					))}
-				</div>
-			</section>
-			<p class="small">
-				All engines are Light ion; every available engine slot is fitted. 1×
-				means one ship drawing unit per CSS pixel at 100% browser zoom, matching
-				the builder’s native scale. Flight uses 0.65 of that scale. Equipment
-				stays at its fitted size: coil artwork ×0.5; Potential Well at its
-				production ×0.55. Enlargements multiply the entire scene uniformly.
-				Narrow screens scroll; the drawings never shrink to fit.
-			</p>
-			<p>
-				Two relationships are worth exploring:
-				<strong>the direction of adjoining faces</strong>, where an outer slope
-				and an aperture wall describe different sides of the same volume; and
-				<strong>the division between working material and its support</strong>,
-				where a dark winding can sit within a light saddle. Either may help the
-				coil belong. These drawings can compare those possibilities; they cannot
-				yet establish why the earlier fit failed.
-			</p>
-		</details>
-		<details>
-			<summary id="construction">
-				02.2 / Two constructions inside the chosen shape — E retained
-			</summary>
-			<p>
-				The eight sectors, their outer contour, the open centre and the yellow
-				inner connection stay. The first construction gives the light machinery
-				broad creased faces. The second exposes dark working faces between light
-				saddles. This is a comparison of whole constructions, not a palette
-				selector or a set of small tuning variations.
-			</p>
-			<h4>C / Preserved reference</h4>
-			<p>The promising 02.14 C, unchanged, in the same views used below.</p>
-			<Comparison item="ref-c" label="C / Preserved reference" />
-			<h4>E / Creased sector shells</h4>
-			<p>
-				Each light sector folds over a crest: the outside falls toward space,
-				the inside toward the opening. The yellow ribbon joins the sectors from
-				within. This tests whether clear, opposing faces can give the existing
-				light assembly volume without a separate enclosing rim. The risk is that
-				a ring of light facets still reads as a badge on the hull.
-			</p>
-			<Comparison item="shell" label="E / Creased sector shells" />
-			<h4>F / Dark windings in light saddles</h4>
-			<p>
-				The same sectors become dark working bodies, captured at their ends and
-				inner shoulders by light saddles. Yellow remains the continuous
-				connection. This tests a more explicit separation of working material
-				and support, while keeping both within the established silhouette. The
-				risk is that the saddles become decorative borders, or their
-				construction disappears at 1×.
-			</p>
-			<Comparison item="saddle" label="F / Dark windings in light saddles" />
-			<p class="small">
-				Static vector proposals. Fighter on-chassis, Wasp on-chassis and Wasp
-				under-wing use fixed mounts and unchanged production hull geometry. Wasp
-				on-chassis is a comparison fixture; its normal hull fittings sit below
-				the hull. E is retained for continued exploration; no finished
-				construction is accepted.
-			</p>
-			<p>
-				<strong>Review:</strong>
-				E is promising: the first version that feels as though it belongs to the
-				game. Its connection to the ship when on top remains unresolved. The
-				original narrow edge facet is worth testing against E’s nearly equal
-				face widths. Dark tones may be under-used, but can also make the result
-				icon-like. F has not been selected for development.
-			</p>
-		</details>
-		<details>
-			<summary id="shoulder">02.3 / A broad face and a narrow shoulder</summary>
-			<p>
-				E’s faceted character is the reference to protect. G tests the original
-				proportion: a narrow outside shoulder and one broad face toward the
-				aperture. The outline, yellow connections, inner dark return and light
-				assignments are unchanged. This isolates the face proportion before
-				changing what the darks do.
-			</p>
-			<h4>E / Retained reference</h4>
-			<p>
-				Promising game belonging; connection to the hull still unresolved.
-				Preserved unchanged.
-			</p>
-			<Comparison item="shell" label="E / Retained reference" />
-			<h4>G / Narrow shoulder</h4>
-			<p>
-				The small outside facet now turns the edge; the broad inward face
-				carries the sector. This is still E’s peaked ring, with the crest nearer
-				its outside edge. The light remains directional rather than giving every
-				segment a uniform highlight.
-			</p>
-			<Comparison item="narrow" label="G / Narrow shoulder" />
-			<p>
-				<strong>Reading the comparison:</strong>
-				G makes the inward-facing surface dominant, so its largest bright faces
-				sit toward the lower right, opposite the hull’s broad highlight. That
-				follows this proposed peaked volume; it does not establish that the
-				light is wrong. The next comparison separates that volume from a shallow
-				crown, and gives dark material a larger role.
-			</p>
-		</details>
-		<details>
-			<summary id="dark-faces">02.4 / Dark bodies or dark returns?</summary>
-			<p>
-				H makes the broad sector bodies dark, leaving the lit shoulders and
-				yellow connections to articulate them. I keeps broad light crowns and
-				gives the strong darks to their narrow, steep returns. These are
-				different constructions within the same contour. Neither puts a
-				continuous dark frame around the coil, adds a backing surface or paints
-				a shadow onto the hull.
-			</p>
-			<h4>H / Dark sector bodies</h4>
-			<p>
-				The engine-coloured body is the main mass. Its narrow shoulder catches
-				light in the ship palette, then falls into charcoal on the unlit side.
-				Unlike F’s saddles, a bright frame does not enclose each dark face. This
-				tests a coil that belongs beside the engines through its working bodies,
-				with yellow carrying the connection. The risk is that its volume becomes
-				too quiet over space.
-			</p>
-			<Comparison item="dark-shell" label="H / Dark sector bodies" />
-			<h4>I / Shallow crowns with steep returns</h4>
-			<p>
-				A broad, shallow upper face stays in the light family. Narrow outside
-				and aperture walls carry the stronger tonal change, and a sloped end
-				meets the inner connection. This tests whether sharing the hull’s broad
-				light surfaces helps the coil feel fitted, while the darks describe its
-				depth. The risk is a flatter, less distinctive winding.
-			</p>
-			<Comparison item="crown" label="I / Shallow crowns with steep returns" />
-			<p>
-				<strong>Review finding:</strong>
-				These experiments were useful, but reshaping is not the direction to
-				continue. E remains the chosen reference for further exploration. The
-				shallow crown is not carried forward. The next step keeps E intact and
-				investigates a separate ring beneath it.
-			</p>
-			<p class="small">
-				These are alternative constructions, not successive approvals. E remains
-				the reviewed reference. All context views retain the same production
-				hulls, fully fitted Light ion engines, mounting positions and scales. 1×
-				remains one drawing unit per CSS pixel; narrow screens scroll without
-				shrinking the drawings.
-			</p>
-		</details>
-		<h3 id="under-ring">02.5 / E on an engine-coloured ring</h3>
-		<p>
-			The original E sits unchanged above each proposed ring. J, K and L
-			increase the exposed rim from narrow to medium to wide. M keeps its ring
-			inside the coil’s outline, visible only through the sector gaps. That last
-			comparison separates visible connection beneath the sectors from the
-			effect of a surrounding rim.
-		</p>
-		<p>
-			The new layer uses the Light ion’s charcoal tones, with a shallow
-			upper-left-lit edge. It is an open ring, not a filled backing plate: the
-			centre and yellow connections remain E’s. The hypothesis is that a
-			continuous lower body could make the equipment feel seated on the hull. A
-			broad dark border could also strengthen the icon reading; neither outcome
-			is assumed.
-		</p>
-		<UnderRingComparison />
-		<p id="decision">
-			<strong>Selected: M / Inset ring.</strong>
-			E’s creased sector shells, open centre and yellow connections remain
-			unchanged. A continuous engine-coloured ring sits beneath the
-			construction, inside its outer silhouette, and is visible through the
-			gaps. No exposed outer rim is carried forward. This settles the
-			construction and size: 100% was selected in 02.6. The shells and inset
-			ring remain unchanged.
-		</p>
-		<p class="small">
-			Read across each row: E, narrow, medium, wide, inset. All isolated views
-			are 6×; all enlarged ship views in this comparison are 2×. Each has a true
-			1× sample beneath it. Ship geometry, all fitted Light ion engines, mounts
-			and coil size stay fixed. Only the underlying ring changes. The preceding
-			round’s ship views remain labelled 3×.
-		</p>
-		<h3 id="sizing">02.6 / M across the fleet — sizing tool</h3>
-		<p>
-			The shared slider established M’s size on all four production hulls. Light
-			ions fill every engine-compatible slot, including the universal aft slots.
-			M fills every remaining equipment slot at its actual mount position. 100%
-			matches the selected reference above. The preserved tool now holds that
-			size fixed.
-		</p>
-		<p>
-			Compare the space around neighbouring fittings, how much of the coil
-			remains visible, and its presence at native and flight scale. Normal hull
-			layering is the starting point; the above-hull option exposes concealed
-			parts for comparison. <strong>100% is the final selected size.</strong>
-			The size control is fixed to preserve that decision.
-		</p>
-		<FleetSizing client:load />
-		<p class="small">
-			Mounting context is preserved as reviewed. A subsequent, separate Fighter
-			mount decision moved its equipment slots from (2, 0) and (-10, 0) to (37,
-			0) and (-1, 0). The
-			<a href="/lab/utility-artwork#gravity-coil">production fleet view</a>
-			uses the current positions with the same accepted coil size.
-		</p>
-	</section>
-	<section>
-		<h2 id="readiness">03 / Ready at the selected size</h2>
-		<p>
-			<strong>M / Inset ring at 100% is accepted.</strong>
-			The shared renderer can reproduce its flat filled faces directly. The
-			artwork scale is 0.5, inside the ship’s scene scale; 0.65 flight scale
-			does not change that relationship. No new dependency or effect system is
-			needed.
-		</p>
-		<p>
-			The conversion preserves E’s shell faces and the inset ring beneath them,
-			their paint order, the open aperture and yellow connections. Nose-up study
-			coordinates become local +x forward; RGB strings become equivalent hex
-			colours for the validated shared face format. The study definitions remain
-			independent references for geometry, colour and scale comparisons.
-		</p>
-		<p>
-			The final delivery also includes an explicitly requested separate
-			<strong>Gravity coil</strong>
-			fitting. It uses the existing catalog, loadout persistence and
-			builder/flight renderer. Its provisional mass is 10, matching Loading
-			coil. Collection is inactive: it adds no charging, storage, thrust or
-			energy draw. Loading coil retains its solar behavior.
-		</p>
-		<p>
-			The fleet sizing comparison supported the 100% decision across all four
-			hulls. Wasp and Scout retain below-hull fittings; Fighter and Corvette
-			retain above-hull fittings. Concealment and overlap follow the actual
-			mounts. Static-form acceptance does not define future collection behavior,
-			FX or animation.
-		</p>
-	</section>
-	<section>
-		<h2 id="scope">04 / Accepted delivery</h2>
-		<p>
-			<strong
-				>No change to the art direction in <code>docs/design.md</code> is
-				proposed.</strong
-			>
-			The feature contract belongs in
-			<code>docs/history/ship-builder.md</code>. The study is accepted; its
-			original references and all useful comparisons remain available here.
-		</p>
-		<h3>1 / Shared static artwork · small</h3>
-		<p>
-			Replace the earlier <code>gravity</code> artwork with M and give it an
-			explicit default scale of 0.5. Use the shared face schema and painter in
-			Canvas and SVG views. Preserve the other utilities’ sizes and the frozen
-			study references. Fidelity checks compare every face and colour against M.
-		</p>
-		<h3>2 / Separate selectable fitting · small, after slice 1</h3>
-		<p>
-			Add <code>gravity-coil</code> to compatible equipment and universal slots,
-			with a catalog preview and the shared artwork in builder and flight.
-			Retain saved builds and starter fleets. Clearly describe collection as
-			inactive; verify that fitting it adds only its provisional mass, with no
-			collection, capacity or energy draw. This hookup was explicitly added to
-			the delivery after the static-form decision.
-		</p>
-		<h3>3 / Mounted fidelity · small, after slice 2</h3>
-		<p>
-			Use real loadouts on all four hulls, every equipment mount fitted and
-			Light ions in every engine-compatible slot. Compare shared drawings at 3×,
-			true 1× and 0.65 flight scale against the 100% reference. Verify
-			selection, persistence, test flight and return in the actual builder.
-		</p>
-		<p>
-			<strong>Implemented locally:</strong>
-			<a href="/lab/utility-artwork#gravity-coil"
-				>shared artwork and fleet views</a
-			>
-			· <a href="/hangar">selectable Gravity coil in the ship builder</a>.
-			Collection mechanics, balancing, FX and animation remain outside this
-			delivery. Publication is separate.
-		</p>
-		<p class="small">
-			<a href="/lab/reviews/gravity-coil-form-2026-11-03"
-				>Study-quality review and evidence limits</a
-			>
-			· separate from feasibility and implementation scope.
-		</p>
-	</section>
+  <Definitions />
+  <section>
+    <h2 id="problem">01 / A whole component, belonging to the ship</h2>
+    <p>
+      A coil can be convincing over space and under a wing, yet read as a
+      floating icon on the chassis. The segmented toroid, open centre and yellow
+      connections are substantially decided. This study investigates the visual
+      construction within that shape: how its surfaces and connections make it
+      feel complete, and how those surfaces sit alongside the ship’s.
+    </p>
+    <p>
+      The machinery belongs to the deliberately light ship or dark engine colour
+      families; supports and connectors use safety yellow under upper-left
+      starlight. The current game references provide context, but their
+      placeholder treatments are not a finished colour target. Neither removing
+      detail nor the promising C and D treatments settled the fit. Their
+      strengths remain references, not explanations of the mismatch.
+    </p>
+    <p>
+      The aim is sleek graphic machinery made with flat facets. The form rounds
+      keep scale and placement fixed; 02.6 now explores size on the real ship
+      slots, retaining M’s selected construction. FX, animation, mechanics,
+      balance and production implementation are outside this study, as are
+      backing plates, pedestals, isometric presentation and literal realism.
+    </p>
+    <p class="small">
+      Fresh cycle ·
+      <a href="/lab/studies/gravity-coil-2026-11-03"
+        >the stopped study remains separate</a
+      >. The coil references below are preserved vector snapshots, with their
+      original treatments intact.
+    </p>
+  </section>
+  <section>
+    <h2>02 / Surfaces that make an assembly</h2>
+    <details>
+      <summary id="references">
+        02.1 / Chosen references in game context
+      </summary>
+      <p>
+        Read across the same two scales: the equipment alone, then the same
+        equipment on a fully fitted Fighter. The Light ion column shows the
+        Fighter with engines only. The reference drawings are promising designs;
+        the production equipment still includes placeholder colour treatments.
+      </p>
+      <!-- biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard access to the horizontally scrollable fixed-scale references. -->
+      <section class="reference-scroll" aria-label="References" tabindex="0">
+        <div class="reference-grid">
+          {references.map((ref) => (
+            <figure>
+              <figcaption>
+                <strong>{ref.label}</strong>
+                <span>{ref.origin}</span>
+              </figcaption>
+              <svg
+                width="180"
+                height="180"
+                viewBox="-15 -15 30 30"
+                role="img"
+                aria-label={`${ref.label}, alone, 6×`}
+              >
+                <use href={`#form-${ref.item}`} />
+              </svg>
+              <span class="scale">Alone · 6×</span>
+              <svg
+                width="160"
+                height="180"
+                viewBox="-40 -52 80 90"
+                role="img"
+                aria-label={`${ref.label}, Fighter, 2×`}
+              >
+                <use
+                  href={
+                    ref.item === "ion"
+                      ? "#form-ship-fighter"
+                      : `#form-${ref.item}-fighter-over`
+                  }
+                />
+              </svg>
+              <span class="scale">Fighter · 2×</span>
+              <svg
+                data-native
+                width="80"
+                height="90"
+                viewBox="-40 -52 80 90"
+                role="img"
+                aria-label={`${ref.label}, Fighter, 1×`}
+              >
+                <use
+                  href={
+                    ref.item === "ion"
+                      ? "#form-ship-fighter"
+                      : `#form-${ref.item}-fighter-over`
+                  }
+                />
+              </svg>
+              <span class="scale">Fighter · 1×</span>
+              <p>{ref.note}</p>
+              {ref.link && (
+                <a href={`/lab/studies/gravity-coil-2026-11-03#${ref.link}`}>
+                  Source drawing ↗
+                </a>
+              )}
+            </figure>
+          ))}
+        </div>
+      </section>
+      <p class="small">
+        All engines are Light ion; every available engine slot is fitted. 1×
+        means one ship drawing unit per CSS pixel at 100% browser zoom, matching
+        the builder’s native scale. Flight uses 0.65 of that scale. Equipment
+        stays at its fitted size: coil artwork ×0.5; Potential Well at its
+        production ×0.55. Enlargements multiply the entire scene uniformly.
+        Narrow screens scroll; the drawings never shrink to fit.
+      </p>
+      <p>
+        Two relationships are worth exploring:
+        <strong>the direction of adjoining faces</strong>, where an outer slope
+        and an aperture wall describe different sides of the same volume; and
+        <strong>the division between working material and its support</strong>,
+        where a dark winding can sit within a light saddle. Either may help the
+        coil belong. These drawings can compare those possibilities; they cannot
+        yet establish why the earlier fit failed.
+      </p>
+    </details>
+    <details>
+      <summary id="construction">
+        02.2 / Two constructions inside the chosen shape — E retained
+      </summary>
+      <p>
+        The eight sectors, their outer contour, the open centre and the yellow
+        inner connection stay. The first construction gives the light machinery
+        broad creased faces. The second exposes dark working faces between light
+        saddles. This is a comparison of whole constructions, not a palette
+        selector or a set of small tuning variations.
+      </p>
+      <h4>C / Preserved reference</h4>
+      <p>The promising 02.14 C, unchanged, in the same views used below.</p>
+      <Comparison item="ref-c" label="C / Preserved reference" />
+      <h4>E / Creased sector shells</h4>
+      <p>
+        Each light sector folds over a crest: the outside falls toward space,
+        the inside toward the opening. The yellow ribbon joins the sectors from
+        within. This tests whether clear, opposing faces can give the existing
+        light assembly volume without a separate enclosing rim. The risk is that
+        a ring of light facets still reads as a badge on the hull.
+      </p>
+      <Comparison item="shell" label="E / Creased sector shells" />
+      <h4>F / Dark windings in light saddles</h4>
+      <p>
+        The same sectors become dark working bodies, captured at their ends and
+        inner shoulders by light saddles. Yellow remains the continuous
+        connection. This tests a more explicit separation of working material
+        and support, while keeping both within the established silhouette. The
+        risk is that the saddles become decorative borders, or their
+        construction disappears at 1×.
+      </p>
+      <Comparison item="saddle" label="F / Dark windings in light saddles" />
+      <p class="small">
+        Static vector proposals. Fighter on-chassis, Wasp on-chassis and Wasp
+        under-wing use fixed mounts and unchanged production hull geometry. Wasp
+        on-chassis is a comparison fixture; its normal hull fittings sit below
+        the hull. E is retained for continued exploration; no finished
+        construction is accepted.
+      </p>
+      <p>
+        <strong>Review:</strong>
+        E is promising: the first version that feels as though it belongs to the
+        game. Its connection to the ship when on top remains unresolved. The
+        original narrow edge facet is worth testing against E’s nearly equal
+        face widths. Dark tones may be under-used, but can also make the result
+        icon-like. F has not been selected for development.
+      </p>
+    </details>
+    <details>
+      <summary id="shoulder">02.3 / A broad face and a narrow shoulder</summary>
+      <p>
+        E’s faceted character is the reference to protect. G tests the original
+        proportion: a narrow outside shoulder and one broad face toward the
+        aperture. The outline, yellow connections, inner dark return and light
+        assignments are unchanged. This isolates the face proportion before
+        changing what the darks do.
+      </p>
+      <h4>E / Retained reference</h4>
+      <p>
+        Promising game belonging; connection to the hull still unresolved.
+        Preserved unchanged.
+      </p>
+      <Comparison item="shell" label="E / Retained reference" />
+      <h4>G / Narrow shoulder</h4>
+      <p>
+        The small outside facet now turns the edge; the broad inward face
+        carries the sector. This is still E’s peaked ring, with the crest nearer
+        its outside edge. The light remains directional rather than giving every
+        segment a uniform highlight.
+      </p>
+      <Comparison item="narrow" label="G / Narrow shoulder" />
+      <p>
+        <strong>Reading the comparison:</strong>
+        G makes the inward-facing surface dominant, so its largest bright faces
+        sit toward the lower right, opposite the hull’s broad highlight. That
+        follows this proposed peaked volume; it does not establish that the
+        light is wrong. The next comparison separates that volume from a shallow
+        crown, and gives dark material a larger role.
+      </p>
+    </details>
+    <details>
+      <summary id="dark-faces">02.4 / Dark bodies or dark returns?</summary>
+      <p>
+        H makes the broad sector bodies dark, leaving the lit shoulders and
+        yellow connections to articulate them. I keeps broad light crowns and
+        gives the strong darks to their narrow, steep returns. These are
+        different constructions within the same contour. Neither puts a
+        continuous dark frame around the coil, adds a backing surface or paints
+        a shadow onto the hull.
+      </p>
+      <h4>H / Dark sector bodies</h4>
+      <p>
+        The engine-coloured body is the main mass. Its narrow shoulder catches
+        light in the ship palette, then falls into charcoal on the unlit side.
+        Unlike F’s saddles, a bright frame does not enclose each dark face. This
+        tests a coil that belongs beside the engines through its working bodies,
+        with yellow carrying the connection. The risk is that its volume becomes
+        too quiet over space.
+      </p>
+      <Comparison item="dark-shell" label="H / Dark sector bodies" />
+      <h4>I / Shallow crowns with steep returns</h4>
+      <p>
+        A broad, shallow upper face stays in the light family. Narrow outside
+        and aperture walls carry the stronger tonal change, and a sloped end
+        meets the inner connection. This tests whether sharing the hull’s broad
+        light surfaces helps the coil feel fitted, while the darks describe its
+        depth. The risk is a flatter, less distinctive winding.
+      </p>
+      <Comparison item="crown" label="I / Shallow crowns with steep returns" />
+      <p>
+        <strong>Review finding:</strong>
+        These experiments were useful, but reshaping is not the direction to
+        continue. E remains the chosen reference for further exploration. The
+        shallow crown is not carried forward. The next step keeps E intact and
+        investigates a separate ring beneath it.
+      </p>
+      <p class="small">
+        These are alternative constructions, not successive approvals. E remains
+        the reviewed reference. All context views retain the same production
+        hulls, fully fitted Light ion engines, mounting positions and scales. 1×
+        remains one drawing unit per CSS pixel; narrow screens scroll without
+        shrinking the drawings.
+      </p>
+    </details>
+    <h3 id="under-ring">02.5 / E on an engine-coloured ring</h3>
+    <p>
+      The original E sits unchanged above each proposed ring. J, K and L
+      increase the exposed rim from narrow to medium to wide. M keeps its ring
+      inside the coil’s outline, visible only through the sector gaps. That last
+      comparison separates visible connection beneath the sectors from the
+      effect of a surrounding rim.
+    </p>
+    <p>
+      The new layer uses the Light ion’s charcoal tones, with a shallow
+      upper-left-lit edge. It is an open ring, not a filled backing plate: the
+      centre and yellow connections remain E’s. The hypothesis is that a
+      continuous lower body could make the equipment feel seated on the hull. A
+      broad dark border could also strengthen the icon reading; neither outcome
+      is assumed.
+    </p>
+    <UnderRingComparison />
+    <p id="decision">
+      <strong>Selected: M / Inset ring.</strong>
+      E’s creased sector shells, open centre and yellow connections remain
+      unchanged. A continuous engine-coloured ring sits beneath the
+      construction, inside its outer silhouette, and is visible through the
+      gaps. No exposed outer rim is carried forward. This settles the
+      construction and size: 100% was selected in 02.6. The shells and inset
+      ring remain unchanged.
+    </p>
+    <p class="small">
+      Read across each row: E, narrow, medium, wide, inset. All isolated views
+      are 6×; all enlarged ship views in this comparison are 2×. Each has a true
+      1× sample beneath it. Ship geometry, all fitted Light ion engines, mounts
+      and coil size stay fixed. Only the underlying ring changes. The preceding
+      round’s ship views remain labelled 3×.
+    </p>
+    <h3 id="sizing">02.6 / M across the fleet — sizing tool</h3>
+    <p>
+      The shared slider established M’s size on all four production hulls. Light
+      ions fill every engine-compatible slot, including the universal aft slots.
+      M fills every remaining equipment slot at its actual mount position. 100%
+      matches the selected reference above. The preserved tool now holds that
+      size fixed.
+    </p>
+    <p>
+      Compare the space around neighbouring fittings, how much of the coil
+      remains visible, and its presence at native and flight scale. Normal hull
+      layering is the starting point; the above-hull option exposes concealed
+      parts for comparison. <strong>100% is the final selected size.</strong>
+      The size control is fixed to preserve that decision.
+    </p>
+    <FleetSizing client:load />
+    <p class="small">
+      Mounting context is preserved as reviewed. A subsequent, separate Fighter
+      mount decision moved its equipment slots from (2, 0) and (-10, 0) to (37,
+      0) and (-1, 0). The
+      <a href="/lab/utility-artwork#gravity-coil">production fleet view</a>
+      uses the current positions with the same accepted coil size.
+    </p>
+  </section>
+  <section>
+    <h2 id="readiness">03 / Ready at the selected size</h2>
+    <p>
+      <strong>M / Inset ring at 100% is accepted.</strong>
+      The shared renderer can reproduce its flat filled faces directly. The
+      artwork scale is 0.5, inside the ship’s scene scale; 0.65 flight scale
+      does not change that relationship. No new dependency or effect system is
+      needed.
+    </p>
+    <p>
+      The conversion preserves E’s shell faces and the inset ring beneath them,
+      their paint order, the open aperture and yellow connections. Nose-up study
+      coordinates become local +x forward; RGB strings become equivalent hex
+      colours for the validated shared face format. The study definitions remain
+      independent references for geometry, colour and scale comparisons.
+    </p>
+    <p>
+      The final delivery also includes an explicitly requested separate
+      <strong>Gravity coil</strong>
+      fitting. It uses the existing catalog, loadout persistence and
+      builder/flight renderer. Its provisional mass is 10, matching Loading
+      coil. Collection is inactive: it adds no charging, storage, thrust or
+      energy draw. Loading coil retains its solar behavior.
+    </p>
+    <p>
+      The fleet sizing comparison supported the 100% decision across all four
+      hulls. Wasp and Scout retain below-hull fittings; Fighter and Corvette
+      retain above-hull fittings. Concealment and overlap follow the actual
+      mounts. Static-form acceptance does not define future collection behavior,
+      FX or animation.
+    </p>
+  </section>
+  <section>
+    <h2 id="scope">04 / Accepted delivery</h2>
+    <p>
+      <strong
+        >No change to the art direction in <code>docs/design.md</code> is
+        proposed.</strong
+      >
+      The feature contract belongs in
+      <code>docs/history/ship-builder.md</code>. The study is accepted; its
+      original references and all useful comparisons remain available here.
+    </p>
+    <h3>1 / Shared static artwork · small</h3>
+    <p>
+      Replace the earlier <code>gravity</code> artwork with M and give it an
+      explicit default scale of 0.5. Use the shared face schema and painter in
+      Canvas and SVG views. Preserve the other utilities’ sizes and the frozen
+      study references. Fidelity checks compare every face and colour against M.
+    </p>
+    <h3>2 / Separate selectable fitting · small, after slice 1</h3>
+    <p>
+      Add <code>gravity-coil</code> to compatible equipment and universal slots,
+      with a catalog preview and the shared artwork in builder and flight.
+      Retain saved builds and starter fleets. Clearly describe collection as
+      inactive; verify that fitting it adds only its provisional mass, with no
+      collection, capacity or energy draw. This hookup was explicitly added to
+      the delivery after the static-form decision.
+    </p>
+    <h3>3 / Mounted fidelity · small, after slice 2</h3>
+    <p>
+      Use real loadouts on all four hulls, every equipment mount fitted and
+      Light ions in every engine-compatible slot. Compare shared drawings at 3×,
+      true 1× and 0.65 flight scale against the 100% reference. Verify
+      selection, persistence, test flight and return in the actual builder.
+    </p>
+    <p>
+      <strong>Implemented locally:</strong>
+      <a href="/lab/utility-artwork#gravity-coil"
+        >shared artwork and fleet views</a
+      >
+      · <a href="/hangar">selectable Gravity coil in the ship builder</a>.
+      Collection mechanics, balancing, FX and animation remain outside this
+      delivery. Publication is separate.
+    </p>
+    <p class="small">
+      <a href="/lab/reviews/gravity-coil-form-2026-11-03"
+        >Study-quality review and evidence limits</a
+      >
+      · separate from feasibility and implementation scope.
+    </p>
+  </section>
 </StudyLayout>
 <style>
 .small {
-	font-size: 13px;
-	color: var(--color-text-muted);
+  font-size: 13px;
+  color: var(--color-text-muted);
 }
 .reference-scroll {
-	overflow-x: auto;
-	margin-block: 24px;
-	border: 1px solid var(--color-border);
+  overflow-x: auto;
+  margin-block: 24px;
+  border: 1px solid var(--color-border);
 }
 .reference-scroll:focus-visible {
-	outline: 2px solid var(--color-action);
-	outline-offset: 3px;
+  outline: 2px solid var(--color-action);
+  outline-offset: 3px;
 }
 .reference-grid {
-	display: grid;
-	grid-template-columns: repeat(5, 190px);
-	width: 950px;
-	margin-inline: auto;
-	padding-block: 20px;
+  display: grid;
+  grid-template-columns: repeat(5, 190px);
+  width: 950px;
+  margin-inline: auto;
+  padding-block: 20px;
 }
 figure {
-	margin: 0;
-	text-align: center;
-	padding-inline: 5px;
+  margin: 0;
+  text-align: center;
+  padding-inline: 5px;
 }
 figcaption strong {
-	display: block;
-	font-size: 14px;
+  display: block;
+  font-size: 14px;
 }
 figcaption span,
 .scale {
-	display: block;
-	font: 12px var(--font-family-ui);
-	color: var(--color-text-muted);
+  display: block;
+  font: 12px var(--font-family-ui);
+  color: var(--color-text-muted);
 }
 figcaption {
-	min-height: 48px;
+  min-height: 48px;
 }
 figure svg {
-	display: block;
-	max-width: none;
-	margin-inline: auto;
+  display: block;
+  max-width: none;
+  margin-inline: auto;
 }
 figure p {
-	font-size: 13px;
-	line-height: 1.6;
-	padding: 8px;
-	min-height: 86px;
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 8px;
+  min-height: 86px;
 }
 figure a {
-	font-size: 12px;
+  font-size: 12px;
 }
 </style>

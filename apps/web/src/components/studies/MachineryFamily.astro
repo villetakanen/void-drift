@@ -3,182 +3,182 @@ import { ENGINE_ART } from "../../../../../packages/mode-a/src/lib/engine-art";
 import { WASP } from "../../../../../packages/mode-a/src/lib/wasp";
 
 const names = [
-	"Energy storage",
-	"Solar charging",
-	"Gravity charging",
-	"Automatic repair",
+  "Energy storage",
+  "Solar charging",
+  "Gravity charging",
+  "Automatic repair",
 ];
 const descriptions = [
-	"Two exposed accumulator cells held by end clamps. The paired masses are the identifier.",
-	"Two broad collector leaves hinge from a narrow power spine. Area, rather than ornament, expresses collection.",
-	"A heavy split rotor surrounds an open bearing. The central void and opposing weights express inertia.",
-	"An asymmetric articulated arm reaches from a service reservoir. The open jaw distinguishes repair from propulsion.",
+  "Two exposed accumulator cells held by end clamps. The paired masses are the identifier.",
+  "Two broad collector leaves hinge from a narrow power spine. Area, rather than ornament, expresses collection.",
+  "A heavy split rotor surrounds an open bearing. The central void and opposing weights express inertia.",
+  "An asymmetric articulated arm reaches from a service reservoir. The open jaw distinguishes repair from propulsion.",
 ];
 ---
 
 <svg width="0" height="0" aria-hidden="true">
-	<defs>
-		{names.map((_, i) => (
-			<g id={`machine-${i}`}>
-				<path d="M-12-12H12V12H-12Z" fill="#222a30" />
-				<path d="M-12-12H-8V12H-12Z" fill="#75838a" />
-				<path d="M8-12H12V12H8Z" fill="#39464e" />
-				{i === 0 && (
-					<>
-						<path
-							d="M-7-9L-3-11L0-8V8L-4 10L-7 7Z M2-9L6-11L9-8V8L5 10L2 7Z"
-							fill="#678f93"
-						/>
-						<path d="M-7-9L-3-11V7L-7 7Z M2-9L6-11V7L2 7Z" fill="#a0bec0" />
-						<path d="M-12-12H12V-8H-12Z M-12 8H12V12H-12Z" fill="#59666d" />
-					</>
-				)}
-				{i === 1 && (
-					<>
-						<path
-							d="M-20-10L-5-8V10L-20 8Z M5-8L20-10V8L5 10Z"
-							fill="#31586d"
-						/>
-						<path
-							d="M-20-10L-5-8V-5L-20-7Z M5-8L20-10V-7L5-5Z"
-							fill="#86b4c7"
-						/>
-						<path d="M-3-13H3V13H-3Z" fill="#8b989c" />
-						<path d="M-19-1L-6 1V3L-19 1Z M6 1L19-1V1L6 3Z" fill="#152d3b" />
-					</>
-				)}
-				{i === 2 && (
-					<>
-						<path
-							d="M-7-13H7L14-6V6L7 13H-7L-14 6V-6Z M-6-6V6H6V-6Z"
-							fill="#687b85"
-							fill-rule="evenodd"
-						/>
-						<path d="M-7-13H7L14-6H6L3-9H-3L-6-6H-14Z" fill="#a3b2b9" />
-						<path
-							d="M-14 2H-6V8L-10 10L-14 6Z M6-8L10-10L14-6V-2H6Z"
-							fill="#a88562"
-						/>
-						<path d="M-2-4H2V4H-2Z" fill="#b8d8db" />
-					</>
-				)}
-				{i === 3 && (
-					<>
-						<path d="M-7-9H1L4-5V10H-7Z" fill="#738d90" />
-						<path d="M-7-9H-3V10H-7Z" fill="#aac1bd" />
-						<path d="M2 7L7 7L15-3L11-6Z" fill="#7f8a91" />
-						<path d="M11-6L15-3L20-12L16-14Z" fill="#b4b9b6" />
-						<path
-							d="M16-14L12-18L14-22L16-18L21-17L23-20L24-16L20-12Z"
-							fill="#a88562"
-						/>
-					</>
-				)}
-			</g>
-		))}
-	</defs>
+  <defs>
+    {names.map((_, i) => (
+      <g id={`machine-${i}`}>
+        <path d="M-12-12H12V12H-12Z" fill="#222a30" />
+        <path d="M-12-12H-8V12H-12Z" fill="#75838a" />
+        <path d="M8-12H12V12H8Z" fill="#39464e" />
+        {i === 0 && (
+          <>
+            <path
+              d="M-7-9L-3-11L0-8V8L-4 10L-7 7Z M2-9L6-11L9-8V8L5 10L2 7Z"
+              fill="#678f93"
+            />
+            <path d="M-7-9L-3-11V7L-7 7Z M2-9L6-11V7L2 7Z" fill="#a0bec0" />
+            <path d="M-12-12H12V-8H-12Z M-12 8H12V12H-12Z" fill="#59666d" />
+          </>
+        )}
+        {i === 1 && (
+          <>
+            <path
+              d="M-20-10L-5-8V10L-20 8Z M5-8L20-10V8L5 10Z"
+              fill="#31586d"
+            />
+            <path
+              d="M-20-10L-5-8V-5L-20-7Z M5-8L20-10V-7L5-5Z"
+              fill="#86b4c7"
+            />
+            <path d="M-3-13H3V13H-3Z" fill="#8b989c" />
+            <path d="M-19-1L-6 1V3L-19 1Z M6 1L19-1V1L6 3Z" fill="#152d3b" />
+          </>
+        )}
+        {i === 2 && (
+          <>
+            <path
+              d="M-7-13H7L14-6V6L7 13H-7L-14 6V-6Z M-6-6V6H6V-6Z"
+              fill="#687b85"
+              fill-rule="evenodd"
+            />
+            <path d="M-7-13H7L14-6H6L3-9H-3L-6-6H-14Z" fill="#a3b2b9" />
+            <path
+              d="M-14 2H-6V8L-10 10L-14 6Z M6-8L10-10L14-6V-2H6Z"
+              fill="#a88562"
+            />
+            <path d="M-2-4H2V4H-2Z" fill="#b8d8db" />
+          </>
+        )}
+        {i === 3 && (
+          <>
+            <path d="M-7-9H1L4-5V10H-7Z" fill="#738d90" />
+            <path d="M-7-9H-3V10H-7Z" fill="#aac1bd" />
+            <path d="M2 7L7 7L15-3L11-6Z" fill="#7f8a91" />
+            <path d="M11-6L15-3L20-12L16-14Z" fill="#b4b9b6" />
+            <path
+              d="M16-14L12-18L14-22L16-18L21-17L23-20L24-16L20-12Z"
+              fill="#a88562"
+            />
+          </>
+        )}
+      </g>
+    ))}
+  </defs>
 </svg>
 <div class="references">
-	<div>
-		<svg viewBox="-35 -35 70 70" role="img" aria-label="Production Wasp hull">
-			<g transform="rotate(-90)">
-				{WASP.facets.map((f) => (
-					<polygon
-						points={f.points.map((p) => p.join(",")).join(" ")}
-						fill={f.color}
-					/>
-				))}
-			</g>
-		</svg><span>Established Wasp hull</span>
-	</div>
-	<div>
-		<svg viewBox="-18 -18 36 36" role="img" aria-label="Production ion engine">
-			{ENGINE_ART.ion[0].map((f) => (
-				<polygon
-					points={f.points.map((p) => p.join(",")).join(" ")}
-					fill={f.color}
-				/>
-			))}
-		</svg><span>Established ion engine</span>
-	</div>
+  <div>
+    <svg viewBox="-35 -35 70 70" role="img" aria-label="Production Wasp hull">
+      <g transform="rotate(-90)">
+        {WASP.facets.map((f) => (
+          <polygon
+            points={f.points.map((p) => p.join(",")).join(" ")}
+            fill={f.color}
+          />
+        ))}
+      </g>
+    </svg><span>Established Wasp hull</span>
+  </div>
+  <div>
+    <svg viewBox="-18 -18 36 36" role="img" aria-label="Production ion engine">
+      {ENGINE_ART.ion[0].map((f) => (
+        <polygon
+          points={f.points.map((p) => p.join(",")).join(" ")}
+          fill={f.color}
+        />
+      ))}
+    </svg><span>Established ion engine</span>
+  </div>
 </div>
 <div class="family">
-	{names.map((name, i) => (
-		<article>
-			<h3>{name}</h3>
-			<svg
-				class="large"
-				viewBox="-30 -30 60 60"
-				role="img"
-				aria-label={`${name}: enlarged top-down proposal`}
-			>
-				<use href={`#machine-${i}`} />
-			</svg>
-			<div class="scale">
-				<svg
-					width="39"
-					height="39"
-					viewBox="-30 -30 60 60"
-					role="img"
-					aria-label={`${name} at flight scale`}
-				>
-					<use href={`#machine-${i}`} />
-				</svg>
-				<span>0.65×</span>
-			</div>
-			<p>{descriptions[i]}</p>
-		</article>
-	))}
+  {names.map((name, i) => (
+    <article>
+      <h3>{name}</h3>
+      <svg
+        class="large"
+        viewBox="-30 -30 60 60"
+        role="img"
+        aria-label={`${name}: enlarged top-down proposal`}
+      >
+        <use href={`#machine-${i}`} />
+      </svg>
+      <div class="scale">
+        <svg
+          width="39"
+          height="39"
+          viewBox="-30 -30 60 60"
+          role="img"
+          aria-label={`${name} at flight scale`}
+        >
+          <use href={`#machine-${i}`} />
+        </svg>
+        <span>0.65×</span>
+      </div>
+      <p>{descriptions[i]}</p>
+    </article>
+  ))}
 </div>
 <style>
 .references {
-	display: flex;
-	gap: 3rem;
-	margin: 2rem 0;
+  display: flex;
+  gap: 3rem;
+  margin: 2rem 0;
 }
 .references > div {
-	display: grid;
-	justify-items: center;
-	color: var(--color-text-muted);
+  display: grid;
+  justify-items: center;
+  color: var(--color-text-muted);
 }
 .references svg {
-	width: 160px;
-	height: 160px;
+  width: 160px;
+  height: 160px;
 }
 .family {
-	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	gap: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
 }
 article {
-	min-width: 0;
+  min-width: 0;
 }
 h3 {
-	font-size: 1rem;
+  font-size: 1rem;
 }
 .large {
-	width: 100%;
-	background: var(--color-surface);
+  width: 100%;
+  background: var(--color-surface);
 }
 .scale {
-	display: flex;
-	align-items: center;
-	gap: 1rem;
-	height: 65px;
-	color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: 65px;
+  color: var(--color-text-muted);
 }
 p {
-	font-size: 0.9rem;
-	line-height: 1.6;
+  font-size: 0.9rem;
+  line-height: 1.6;
 }
 @media (max-width: 760px) {
-	.family {
-		grid-template-columns: repeat(2, 1fr);
-	}
+  .family {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 @media (max-width: 420px) {
-	.family {
-		grid-template-columns: 1fr;
-	}
+  .family {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

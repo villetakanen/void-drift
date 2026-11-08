@@ -1,20 +1,20 @@
 <script lang="ts">
 // Explicit Astro hydration attributes avoid the empty-props integration mismatch.
 let _props: { slot?: string; "client:only"?: string; "client:load"?: boolean } =
-	$props();
+  $props();
 
 import {
-	COLOR,
-	canvasFont,
-	drawPlanet,
-	getPlanetInfluenceRadius,
+  COLOR,
+  canvasFont,
+  drawPlanet,
+  getPlanetInfluenceRadius,
 } from "@void-drift/core";
 import Canvas from "../Canvas.svelte";
 import {
-	getPlanetColor,
-	planetLabState,
-	sliderToOrbit,
-	sliderToSize,
+  getPlanetColor,
+  planetLabState,
+  sliderToOrbit,
+  sliderToSize,
 } from "./planet-state.svelte";
 
 let stageWidth = $state(600);
@@ -27,145 +27,145 @@ const planetRadius = $derived(sliderToSize(planetLabState.sizeSlider));
 const planetColor = $derived(getPlanetColor());
 const planetMass = $derived(planetRadius * 10);
 const gravityInfluence = $derived(
-	getPlanetInfluenceRadius({ radius: planetRadius, mass: planetMass }),
+  getPlanetInfluenceRadius({ radius: planetRadius, mass: planetMass }),
 );
 
 // Animation Loop
 $effect(() => {
-	let lastTime = performance.now();
-	let handle: number;
-	const loop = (t: number) => {
-		const dt = (t - lastTime) / 1000;
-		lastTime = t;
-		if (planetLabState.animating) {
-			elapsedTime += dt * planetLabState.timeScale;
-		}
-		handle = requestAnimationFrame(loop);
-	};
-	handle = requestAnimationFrame(loop);
-	return () => cancelAnimationFrame(handle);
+  let lastTime = performance.now();
+  let handle: number;
+  const loop = (t: number) => {
+    const dt = (t - lastTime) / 1000;
+    lastTime = t;
+    if (planetLabState.animating) {
+      elapsedTime += dt * planetLabState.timeScale;
+    }
+    handle = requestAnimationFrame(loop);
+  };
+  handle = requestAnimationFrame(loop);
+  return () => cancelAnimationFrame(handle);
 });
 
 function drawRing(
-	ctx: CanvasRenderingContext2D,
-	x: number,
-	y: number,
-	radius: number,
-	color: string,
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  radius: number,
+  color: string,
 ) {
-	const ringInner = radius * 1.3;
-	const ringOuter = radius * 1.8;
+  const ringInner = radius * 1.3;
+  const ringOuter = radius * 1.8;
 
-	ctx.strokeStyle = color;
-	ctx.globalAlpha = 0.4;
-	ctx.lineWidth = (ringOuter - ringInner) * 0.7;
-	ctx.beginPath();
-	ctx.ellipse(
-		x,
-		y,
-		(ringInner + ringOuter) / 2,
-		(ringInner + ringOuter) / 4,
-		0,
-		0,
-		Math.PI * 2,
-	);
-	ctx.stroke();
-	ctx.globalAlpha = 1;
+  ctx.strokeStyle = color;
+  ctx.globalAlpha = 0.4;
+  ctx.lineWidth = (ringOuter - ringInner) * 0.7;
+  ctx.beginPath();
+  ctx.ellipse(
+    x,
+    y,
+    (ringInner + ringOuter) / 2,
+    (ringInner + ringOuter) / 4,
+    0,
+    0,
+    Math.PI * 2,
+  );
+  ctx.stroke();
+  ctx.globalAlpha = 1;
 }
 
 function drawPlanetPreview(ctx: CanvasRenderingContext2D) {
-	const cx = ctx.canvas.width / 2;
-	const cy = ctx.canvas.height / 2;
+  const cx = ctx.canvas.width / 2;
+  const cy = ctx.canvas.height / 2;
 
-	// Scale to fit canvas (use 40% of smaller dimension as max orbit)
-	const scale = (Math.min(stageWidth, stageHeight) * 0.4) / 1000;
-	const scaledOrbit = orbitRadius * scale;
-	const scaledRadius = Math.max(planetRadius * scale, 8); // Min 8px visible
-	const scaledGravity = gravityInfluence * scale;
+  // Scale to fit canvas (use 40% of smaller dimension as max orbit)
+  const scale = (Math.min(stageWidth, stageHeight) * 0.4) / 1000;
+  const scaledOrbit = orbitRadius * scale;
+  const scaledRadius = Math.max(planetRadius * scale, 8); // Min 8px visible
+  const scaledGravity = gravityInfluence * scale;
 
-	// Draw central star placeholder
-	ctx.fillStyle = "#ffaa00";
-	ctx.beginPath();
-	ctx.arc(cx, cy, 15, 0, Math.PI * 2);
-	ctx.fill();
+  // Draw central star placeholder
+  ctx.fillStyle = "#ffaa00";
+  ctx.beginPath();
+  ctx.arc(cx, cy, 15, 0, Math.PI * 2);
+  ctx.fill();
 
-	// Calculate current orbital position
-	const angle = 0.05 * elapsedTime; // Fixed orbit speed for preview
-	const px = cx + Math.cos(angle) * scaledOrbit;
-	const py = cy + Math.sin(angle) * scaledOrbit;
+  // Calculate current orbital position
+  const angle = 0.05 * elapsedTime; // Fixed orbit speed for preview
+  const px = cx + Math.cos(angle) * scaledOrbit;
+  const py = cy + Math.sin(angle) * scaledOrbit;
 
-	// Draw orbit path
-	if (planetLabState.showOrbit) {
-		ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
-		ctx.lineWidth = 1;
-		ctx.setLineDash([5, 5]);
-		ctx.beginPath();
-		ctx.arc(cx, cy, scaledOrbit, 0, Math.PI * 2);
-		ctx.stroke();
-		ctx.setLineDash([]);
-	}
+  // Draw orbit path
+  if (planetLabState.showOrbit) {
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+    ctx.lineWidth = 1;
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath();
+    ctx.arc(cx, cy, scaledOrbit, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
 
-	if (planetLabState.showGravityWell) {
-		ctx.strokeStyle = "rgba(120, 220, 255, 0.35)";
-		ctx.lineWidth = 1;
-		ctx.setLineDash([6, 6]);
-		ctx.beginPath();
-		ctx.arc(px, py, scaledGravity, 0, Math.PI * 2);
-		ctx.stroke();
-		ctx.setLineDash([]);
-	}
+  if (planetLabState.showGravityWell) {
+    ctx.strokeStyle = "rgba(120, 220, 255, 0.35)";
+    ctx.lineWidth = 1;
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath();
+    ctx.arc(px, py, scaledGravity, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
 
-	// Draw ring behind planet (if enabled)
-	if (planetLabState.hasRing) {
-		drawRing(ctx, px, py, scaledRadius, planetColor);
-	}
+  // Draw ring behind planet (if enabled)
+  if (planetLabState.hasRing) {
+    drawRing(ctx, px, py, scaledRadius, planetColor);
+  }
 
-	// Draw planet
-	drawPlanet(ctx, {
-		x: px,
-		y: py,
-		radius: scaledRadius,
-		color: planetColor,
-	});
+  // Draw planet
+  drawPlanet(ctx, {
+    x: px,
+    y: py,
+    radius: scaledRadius,
+    color: planetColor,
+  });
 
-	// Draw selection indicator
-	ctx.strokeStyle = COLOR.selected;
-	ctx.lineWidth = 2;
-	ctx.beginPath();
-	ctx.arc(px, py, scaledRadius + 6, 0, Math.PI * 2);
-	ctx.stroke();
+  // Draw selection indicator
+  ctx.strokeStyle = COLOR.selected;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(px, py, scaledRadius + 6, 0, Math.PI * 2);
+  ctx.stroke();
 
-	// Draw info labels
-	ctx.fillStyle = COLOR.textMuted;
-	ctx.font = canvasFont(11);
-	ctx.textAlign = "left";
-	ctx.fillText(`Orbit: ${orbitRadius.toFixed(0)}px`, 10, 20);
-	ctx.fillText(`Radius: ${planetRadius.toFixed(0)}px`, 10, 35);
-	ctx.fillText(`Gravity: ${gravityInfluence.toFixed(0)}px`, 10, 50);
-	ctx.fillText(`Type: ${planetLabState.planetType}`, 10, 65);
-	if (planetLabState.hasRing) {
-		ctx.fillText("Ring: ON", 10, 80);
-	}
+  // Draw info labels
+  ctx.fillStyle = COLOR.textMuted;
+  ctx.font = canvasFont(11);
+  ctx.textAlign = "left";
+  ctx.fillText(`Orbit: ${orbitRadius.toFixed(0)}px`, 10, 20);
+  ctx.fillText(`Radius: ${planetRadius.toFixed(0)}px`, 10, 35);
+  ctx.fillText(`Gravity: ${gravityInfluence.toFixed(0)}px`, 10, 50);
+  ctx.fillText(`Type: ${planetLabState.planetType}`, 10, 65);
+  if (planetLabState.hasRing) {
+    ctx.fillText("Ring: ON", 10, 80);
+  }
 }
 </script>
 
 <div
-	class="stage-content"
-	bind:clientWidth={stageWidth}
-	bind:clientHeight={stageHeight}
+  class="stage-content"
+  bind:clientWidth={stageWidth}
+  bind:clientHeight={stageHeight}
 >
-	<Canvas width={stageWidth} height={stageHeight} draw={drawPlanetPreview} />
+  <Canvas width={stageWidth} height={stageHeight} draw={drawPlanetPreview} />
 </div>
 
 <style>
 .stage-content {
-	flex: 1;
-	display: flex;
-	overflow: hidden;
-	position: relative;
-	background-image:
-		linear-gradient(var(--color-border-faint) 1px, transparent 1px),
-		linear-gradient(90deg, var(--color-border-faint) 1px, transparent 1px);
-	background-size: 20px 20px;
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  background-image:
+    linear-gradient(var(--color-border-faint) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-border-faint) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 </style>

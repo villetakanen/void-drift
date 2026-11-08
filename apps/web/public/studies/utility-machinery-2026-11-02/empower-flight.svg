@@ -1,27 +1,27 @@
 <svg
-	xmlns="http://www.w3.org/2000/svg"
-	width="100"
-	height="90"
-	viewBox="0 0 100 90"
+  xmlns="http://www.w3.org/2000/svg"
+  width="100"
+  height="90"
+  viewBox="0 0 100 90"
 >
-	<title>empower: speculative family posture</title>
-	<g transform="translate(50.0 45.0) scale(0.65)">
-		<polygon points="-4,-6 -2,-8 2,-8 4,-6 4,8 -4,8" fill="#303e4c" />
-		<polygon points="-4,-6 -2,-8 -2,6 -4,8" fill="#bad7da" />
-		<polygon points="-2,-8 2,-8 2,6 -2,6" fill="#648894" />
-		<polygon points="-1,-6 1,-6 1,6 -1,6" fill="#64d4df" />
-		<polygon points="-12,-9 -10,-11 -8,-11 -6,-9 -6,11 -12,11" fill="#303e4c" />
-		<polygon points="-12,-9 -10,-11 -10,9 -12,11" fill="#bad7da" />
-		<polygon points="-10,-11 -8,-11 -8,9 -10,9" fill="#648894" />
-		<polygon points="6,-9 8,-11 10,-11 12,-9 12,11 6,11" fill="#303e4c" />
-		<polygon points="6,-9 8,-11 8,9 6,11" fill="#bad7da" />
-		<polygon points="8,-11 10,-11 10,9 8,9" fill="#648894" />
-		<polygon points="-9,6 -7,4 7,4 9,6 9,9 -9,9" fill="#303e4c" />
-		<polygon points="-9,6 -7,4 -7,7 -9,9" fill="#bad7da" />
-		<polygon points="-7,4 7,4 7,7 -7,7" fill="#648894" />
-		<polygon points="-12,-11 -9,-16 -6,-11" fill="#9cbcc5" />
-		<polygon points="6,-11 9,-16 12,-11" fill="#7b9eab" />
-		<polygon points="-10,-8 -8,-8 -8,1 -10,1" fill="#64d4df" />
-		<polygon points="8,-8 10,-8 10,1 8,1" fill="#64d4df" />
-	</g>
+  <title>empower: speculative family posture</title>
+  <g transform="translate(50.0 45.0) scale(0.65)">
+    <polygon points="-4,-6 -2,-8 2,-8 4,-6 4,8 -4,8" fill="#303e4c" />
+    <polygon points="-4,-6 -2,-8 -2,6 -4,8" fill="#bad7da" />
+    <polygon points="-2,-8 2,-8 2,6 -2,6" fill="#648894" />
+    <polygon points="-1,-6 1,-6 1,6 -1,6" fill="#64d4df" />
+    <polygon points="-12,-9 -10,-11 -8,-11 -6,-9 -6,11 -12,11" fill="#303e4c" />
+    <polygon points="-12,-9 -10,-11 -10,9 -12,11" fill="#bad7da" />
+    <polygon points="-10,-11 -8,-11 -8,9 -10,9" fill="#648894" />
+    <polygon points="6,-9 8,-11 10,-11 12,-9 12,11 6,11" fill="#303e4c" />
+    <polygon points="6,-9 8,-11 8,9 6,11" fill="#bad7da" />
+    <polygon points="8,-11 10,-11 10,9 8,9" fill="#648894" />
+    <polygon points="-9,6 -7,4 7,4 9,6 9,9 -9,9" fill="#303e4c" />
+    <polygon points="-9,6 -7,4 -7,7 -9,9" fill="#bad7da" />
+    <polygon points="-7,4 7,4 7,7 -7,7" fill="#648894" />
+    <polygon points="-12,-11 -9,-16 -6,-11" fill="#9cbcc5" />
+    <polygon points="6,-11 9,-16 12,-11" fill="#7b9eab" />
+    <polygon points="-10,-8 -8,-8 -8,1 -10,1" fill="#64d4df" />
+    <polygon points="8,-8 10,-8 10,1 8,1" fill="#64d4df" />
+  </g>
 </svg>

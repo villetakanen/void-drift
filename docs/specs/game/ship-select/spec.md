@@ -24,8 +24,8 @@ Update `packages/mode-a/src/lib/schemas/settings.ts`:
 
 ```typescript
 export const SettingsSchema = z.object({
-	invertControls: z.boolean(),
-	selectedShipId: ShipProfileIdSchema,
+  invertControls: z.boolean(),
+  selectedShipId: ShipProfileIdSchema,
 });
 ```
 

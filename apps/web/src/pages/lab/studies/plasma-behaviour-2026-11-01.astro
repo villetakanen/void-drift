@@ -6,296 +6,296 @@ import { studies } from "../../../data/studies";
 import StudyLayout from "../../../layouts/StudyLayout.astro";
 
 const study = studies.find(
-	(entry) => entry.slug === "plasma-behaviour-2026-11-01",
+  (entry) => entry.slug === "plasma-behaviour-2026-11-01",
 );
 ---
 
 <StudyLayout study={study}>
-	<section aria-labelledby="closure">
-		<h2 id="closure">Closed / Unconcluded and broken</h2>
-		<p>
-			Closed on 1 November 2026 at the designer’s request. The plasma design
-			question remains unresolved. The designer judged the work after 02.2
-			unsuccessful: repeated presentation changes and new tools did not produce
-			useful design decisions. Technical checks do not override that assessment.
-			The examples below are retained as evidence, not approved game behaviour.
-		</p>
-		<h3>Useful findings retained</h3>
-		<ul>
-			<li>
-				<strong>02.1:</strong>
-				the six-configuration comparison was accepted as useful; its delay and
-				thrust contrast warranted investigation.
-			</li>
-			<li>
-				<strong>02.2:</strong>
-				even 0.10 seconds was an interesting delay. Around 0.34 seconds and
-				above, further delay made little visible handling difference under those
-				particular acceleration, speed and input conditions. Neither number is a
-				final setting.
-			</li>
-			<li>
-				<strong>Intermediate decision:</strong>
-				diminishing speed returns and maximum speed belong to a generic chassis
-				model, provisionally using the ion curve. This establishes a direction,
-				not a validated mixed-engine implementation.
-			</li>
-		</ul>
-		<h3>Integration candidates, not integration approval</h3>
-		<ul>
-			<li>
-				<strong>Generic chassis speed rule:</strong>
-				carry the ownership decision into a future propulsion specification.
-				Combined-force semantics and production behaviour still need a design
-				conclusion.
-			</li>
-			<li>
-				<strong>Short plasma delay:</strong>
-				retain 0.10 seconds as a candidate for a future playable trial; do not
-				replace the game’s delay on the strength of this study alone.
-			</li>
-			<li>
-				<strong>Plasma aft with ion sides:</strong>
-				retain the escape-engine role as a candidate. Force, final delay, energy
-				cost and charge decay remain unresolved.
-			</li>
-		</ul>
-		<p>
-			No production tuning is promoted by closure. Stabilizers were a correction
-			to the study fixtures, not a new game feature. The 2× plasma setting and
-			the later force-composition examples were exploratory and were not
-			accepted as balance or combination rules.
-		</p>
-		<h3>Follow-up brief</h3>
-		<p>
-			First review the extraction above for concrete integration scope. A
-			separate flight-bench design study should start from the successful
-			earlier presentations and establish predictable, understandable,
-			comparable paths, input sequences, graphs, scales and controls before
-			further engine exploration. No new bench is developed in this closed
-			study.
-		</p>
-		<p>
-			A later close-loop investigation should examine the sequence of requests,
-			corrections and outcomes: why presentation changes and successive
-			exploration steps displaced useful design discussion. Cause analysis and
-			proposed factory lessons remain pending. The designer regards this failure
-			as useful evidence for developing the design factory.
-		</p>
-	</section>
-	<section aria-labelledby="purpose">
-		<h2 id="purpose">01 / Committing to a burn, recovering from a mistake</h2>
-		<p>
-			A ship approaching a star needs to change its course before the close pass
-			becomes a collision. Ion responds immediately to a correction. Plasma
-			currently requires 0.6 seconds of held input before producing thrust;
-			releasing the control or losing power resets that charge. A short tap can
-			therefore spend energy without changing the ship’s course. With plasma on
-			the side mounts, that delay also affects the start of a turn, while
-			existing momentum and spin continue.
-		</p>
-		<p>
-			The delay could be the price of performance ion cannot offer. Stronger
-			acceleration after charging would reward a committed burn with a harder
-			push; a higher top speed would reward sustaining it long enough to leave
-			ion behind. These are different rewards: reaching a shared ceiling sooner
-			changes short manoeuvres, while exceeding ion’s ceiling opens up faster
-			travel and more demanding approaches. Plasma might offer either or both.
-			The direction to investigate is a worthwhile exchange of immediate
-			response for greater performance, with the reward and its magnitude still
-			unsettled.
-		</p>
-		<p>
-			This study will investigate whether that exchange makes plasma an
-			appealing choice alongside ion, through launch, sustained flight and
-			course correction. Comparisons should distinguish acceleration from top
-			speed, and include release and reapplication so the cost of charging stays
-			visible. Turning and recovery matter because the extra speed must remain
-			usable. Charge duration, power cost and performance values remain open;
-			the current 0.6-second delay is a baseline, not a settled target. Graphics
-			and exhaust belong to the following study. Gravity, friction and the
-			established ion behaviour provide the comparison baseline.
-		</p>
-	</section>
-	<section>
-		<h2>02 / Where does delayed power belong?</h2>
-		<h3>02.1 / Six configurations, one flight sequence</h3>
-		<p>
-			The six-configuration comparison is retained as the basis for further
-			exploration. Its delay and thrust contrast is interesting enough to
-			investigate; the current values are not yet final balance.
-		</p>
-		<p>
-			Compare three side pairs—Light ion, Heavy ion and Plasma—then four-engine
-			builds with all Light ion, Light sides with Plasma aft, and all Plasma.
-			Every ship is a Fighter with its actual fitted mass and stabilizers
-			enabled. The same fourteen-second input sequence drives every path: LR,
-			LR, coast, L, coast, LR, coast, R, coast, R, coast, LR, LR, LR; one second
-			per phase. All start at rest at the same origin, facing right.
-		</p>
-		<p>
-			Follow the coloured paths through turns and release, not only the final
-			distance. The side-only trio compares immediate and delayed steering. The
-			four-engine trio shows whether immediate ion steering makes delayed aft
-			power useful, and what changes when every engine must charge. Current
-			Plasma values are the common provisional baseline: 0.6-second charge,
-			38,000 force per engine, mass 24 and 700 units/s ceiling. Ion uses the
-			current production settings. This round compares configurations before
-			tuning the reward.
-		</p>
-		<MovementBench
-			plasma
-			client:load
-			label="Six plasma and ion configurations"
-		/>
-		<p>
-			Solid lines show speed, traversed path length and signed angular speed;
-			positive rotation is clockwise. Dashed lines show the highest currently
-			available engine-family ceiling. A mixed build still applies ion and
-			plasma impulses separately: its dashed line is not a new combined limit.
-			Zero means no engine is ready to thrust, not zero travel speed. Coasting
-			retains travel momentum; stabilizers oppose uncommanded spin. Aft engines
-			respond only to LR; release resets their charge, while an uninterrupted
-			side engine keeps its own timer.
-		</p>
-		<p>
-			The bench uses production assembled-engine forces, mount geometry, mass,
-			charge timers and free-fall rotation at 60 ticks/s with four substeps.
-			Power is unlimited; gravity, drag, wrapping and randomness are absent.
-			Each view shows the complete run with framing fitted to its paths. This
-			compares configuration consequences, not survival endurance or final
-			balance. The paths and graphs are static; time is read from the graph
-			axes.
-		</p>
-		<h3 id="delay">02.2 / How much anticipation does plasma ask for?</h3>
-		<p>
-			Vary only charge delay from 0.10 to 0.99 seconds in 0.01-second steps.
-			Keep the six loadouts, thrust, mass, ceiling and input sequence from 02.1.
-			Both comparisons include production stabilizers. Every view draws the
-			complete fourteen-second run; move the slider to compare paths and graphs.
-		</p>
-		<MovementBench
-			plasma
-			delayStudy
-			client:load
-			label="Plasma delay comparison"
-		/>
-		<p>
-			First inspect the left turn at 3–4 seconds, then the repeated right turns
-			at 7–8 and 9–10 seconds. How much of each command is spent waiting, and
-			what momentum carries through the coast afterward? Compare the mixed
-			Light-side/Plasma-aft build with Plasma sides. Finish with the sustained
-			11–14-second burn to see how the same delay affects its eventual payoff.
-			Near 0.99 seconds, little of an isolated one-second command remains for
-			the main plasma engine; stabilizers still respond immediately.
-		</p>
-		<p>
-			The next decision is a promising delay range for subsequent thrust and
-			speed experiments. This replay cannot establish how quickly a human can
-			learn to anticipate the delay. Release still cuts thrust and resets charge
-			immediately; charge retention and decay remain a separate investigation.
-		</p>
-		<p>
-			<strong>Fix after 02.2:</strong>
-			Stabilizers were missing from both comparisons and are now enabled. The
-			earlier unassisted paths do not establish stabilized handling. Both views
-			now draw complete static runs; the delay control is a 0.10–0.99-second
-			slider. Framing and graph scales refit when the delay changes. The six
-			configurations and the delay investigation remain the agreed scope.
-		</p>
-		<p>
-			<strong>Observation from 02.2:</strong>
-			Even 0.10 seconds provides an interesting delay. Around 0.34 seconds and
-			above, further delay made little visible difference to handling under
-			these acceleration, speed and input conditions. This is a bounded design
-			observation, not a universal threshold.
-		</p>
-		<h3 id="escape">02.3 / Plasma as an aft escape engine</h3>
-		<p>
-			<strong>Intermediate decision:</strong>
-			Diminishing speed returns and maximum speed move to the generic chassis
-			model, outside plasma tuning. Use the ion curve provisionally for every
-			chassis and combined engine force: 340 units/s at one Light-equivalent,
-			40% maximum extra allowance, falloff 0.8. Its ceiling approaches 476
-			units/s. Earlier experiments retain their original speed rules; this
-			section applies the new shared rule locally.
-		</p>
-		<p>
-			All four Fighters have two Light-ion side engines and one occupied aft
-			slot: Light ion, Heavy ion, current-force Plasma, or adjustable Plasma.
-			The slider changes only the last engine’s force from 1–10× Light, starting
-			at 2×. Both Plasma references use the provisional 0.10-second delay and
-			current mass. “Current force” means 38,000 force units (about 1.50×
-			Light), not the old plasma-specific speed ceiling or 0.6-second delay.
-		</p>
-		<PlasmaEscape client:load />
-		<p>
-			Every run starts at rest with zero spin and follows the same
-			fourteen-second input sequence as 02.1 and 02.2. The timeline and numbered
-			path markers show where each burn, turn and coast happens. Aft thrust
-			fires only during LR; both plasma engines charge for 0.10 seconds after
-			each release. Compare acceleration, speed and traversed path length across
-			the four builds.
-		</p>
-		<p>
-			Stabilizers are enabled, including turning assistance and braking. Actual
-			mass, production angular motion, charge timing and thrust taper are
-			reused. Ready engine forces combine under the provisional generic chassis
-			curve locally; the live game is unchanged. Paths share one fitted scale;
-			graph scales stay fixed as force changes. Unlimited power, no gravity,
-			drag, wrapping or randomness isolate propulsion. This does not establish
-			escape success against a pursuer or gravity well. Energy balance and
-			charge decay remain outside this experiment.
-		</p>
-	</section>
-	<section aria-labelledby="force-composition">
-		<h3 id="force-composition">
-			02.4 / From engine force to ship acceleration
-		</h3>
-		<p>
-			The paths in 02.3 made combined propulsion difficult to read. This bench
-			separates engine force, ship mass and the diminishing speed allowance. It
-			diagnoses the provisional rule already used in 02.3; it does not settle a
-			new rule. More ready force raises acceleration from rest and also raises
-			the ceiling, with diminishing returns.
-		</p>
-		<p>
-			Start with equal mass to isolate force addition, then enable fitted mass
-			to see the weight tradeoff. Move the speed probe to compare how much
-			forward acceleration remains at the same speed. Each configuration has its
-			own graph with identical axes. Plasma uses the provisional 2× Light force;
-			switch its charged state to expose the cost of waiting.
-		</p>
-		<ForceComposition client:load />
-		<p>
-			These are stripped-down fixtures: a 95-mass Fighter body plus only the
-			listed engines, all pointing forward through its centre. They are not the
-			complete builds from 02.3. Fixed mass is 115; fitted mass includes each
-			engine even while it is inactive. There are no side engines, turning,
-			gravity, drag or power limits. Stabilizers have nothing to correct in this
-			aligned fixture.
-		</p>
-		<p>
-			The calculation is combined ready force ÷ mass, followed by the production
-			speed taper. One Light supplies 25,300 force units; Heavy supplies 1.75×
-			that. The shared ion-derived ceiling approaches 476 units/s and currently
-			depends on force, not mass. The graphs show forward acceleration, not
-			elapsed time or distance. A charged-state switch replaces a timed delay
-			here so force composition can be inspected independently.
-		</p>
-	</section>
-	<section>
-		<h2>03 / Readiness not established</h2>
-		<p>
-			The study closed during exploration. No final plasma behaviour was
-			selected for readiness assessment.
-		</p>
-	</section>
-	<section>
-		<h2>04 / Integration not planned</h2>
-		<p>
-			The extraction at the top records candidates for separate review. This
-			study provides no approved production integration plan.
-		</p>
-	</section>
+  <section aria-labelledby="closure">
+    <h2 id="closure">Closed / Unconcluded and broken</h2>
+    <p>
+      Closed on 1 November 2026 at the designer’s request. The plasma design
+      question remains unresolved. The designer judged the work after 02.2
+      unsuccessful: repeated presentation changes and new tools did not produce
+      useful design decisions. Technical checks do not override that assessment.
+      The examples below are retained as evidence, not approved game behaviour.
+    </p>
+    <h3>Useful findings retained</h3>
+    <ul>
+      <li>
+        <strong>02.1:</strong>
+        the six-configuration comparison was accepted as useful; its delay and
+        thrust contrast warranted investigation.
+      </li>
+      <li>
+        <strong>02.2:</strong>
+        even 0.10 seconds was an interesting delay. Around 0.34 seconds and
+        above, further delay made little visible handling difference under those
+        particular acceleration, speed and input conditions. Neither number is a
+        final setting.
+      </li>
+      <li>
+        <strong>Intermediate decision:</strong>
+        diminishing speed returns and maximum speed belong to a generic chassis
+        model, provisionally using the ion curve. This establishes a direction,
+        not a validated mixed-engine implementation.
+      </li>
+    </ul>
+    <h3>Integration candidates, not integration approval</h3>
+    <ul>
+      <li>
+        <strong>Generic chassis speed rule:</strong>
+        carry the ownership decision into a future propulsion specification.
+        Combined-force semantics and production behaviour still need a design
+        conclusion.
+      </li>
+      <li>
+        <strong>Short plasma delay:</strong>
+        retain 0.10 seconds as a candidate for a future playable trial; do not
+        replace the game’s delay on the strength of this study alone.
+      </li>
+      <li>
+        <strong>Plasma aft with ion sides:</strong>
+        retain the escape-engine role as a candidate. Force, final delay, energy
+        cost and charge decay remain unresolved.
+      </li>
+    </ul>
+    <p>
+      No production tuning is promoted by closure. Stabilizers were a correction
+      to the study fixtures, not a new game feature. The 2× plasma setting and
+      the later force-composition examples were exploratory and were not
+      accepted as balance or combination rules.
+    </p>
+    <h3>Follow-up brief</h3>
+    <p>
+      First review the extraction above for concrete integration scope. A
+      separate flight-bench design study should start from the successful
+      earlier presentations and establish predictable, understandable,
+      comparable paths, input sequences, graphs, scales and controls before
+      further engine exploration. No new bench is developed in this closed
+      study.
+    </p>
+    <p>
+      A later close-loop investigation should examine the sequence of requests,
+      corrections and outcomes: why presentation changes and successive
+      exploration steps displaced useful design discussion. Cause analysis and
+      proposed factory lessons remain pending. The designer regards this failure
+      as useful evidence for developing the design factory.
+    </p>
+  </section>
+  <section aria-labelledby="purpose">
+    <h2 id="purpose">01 / Committing to a burn, recovering from a mistake</h2>
+    <p>
+      A ship approaching a star needs to change its course before the close pass
+      becomes a collision. Ion responds immediately to a correction. Plasma
+      currently requires 0.6 seconds of held input before producing thrust;
+      releasing the control or losing power resets that charge. A short tap can
+      therefore spend energy without changing the ship’s course. With plasma on
+      the side mounts, that delay also affects the start of a turn, while
+      existing momentum and spin continue.
+    </p>
+    <p>
+      The delay could be the price of performance ion cannot offer. Stronger
+      acceleration after charging would reward a committed burn with a harder
+      push; a higher top speed would reward sustaining it long enough to leave
+      ion behind. These are different rewards: reaching a shared ceiling sooner
+      changes short manoeuvres, while exceeding ion’s ceiling opens up faster
+      travel and more demanding approaches. Plasma might offer either or both.
+      The direction to investigate is a worthwhile exchange of immediate
+      response for greater performance, with the reward and its magnitude still
+      unsettled.
+    </p>
+    <p>
+      This study will investigate whether that exchange makes plasma an
+      appealing choice alongside ion, through launch, sustained flight and
+      course correction. Comparisons should distinguish acceleration from top
+      speed, and include release and reapplication so the cost of charging stays
+      visible. Turning and recovery matter because the extra speed must remain
+      usable. Charge duration, power cost and performance values remain open;
+      the current 0.6-second delay is a baseline, not a settled target. Graphics
+      and exhaust belong to the following study. Gravity, friction and the
+      established ion behaviour provide the comparison baseline.
+    </p>
+  </section>
+  <section>
+    <h2>02 / Where does delayed power belong?</h2>
+    <h3>02.1 / Six configurations, one flight sequence</h3>
+    <p>
+      The six-configuration comparison is retained as the basis for further
+      exploration. Its delay and thrust contrast is interesting enough to
+      investigate; the current values are not yet final balance.
+    </p>
+    <p>
+      Compare three side pairs—Light ion, Heavy ion and Plasma—then four-engine
+      builds with all Light ion, Light sides with Plasma aft, and all Plasma.
+      Every ship is a Fighter with its actual fitted mass and stabilizers
+      enabled. The same fourteen-second input sequence drives every path: LR,
+      LR, coast, L, coast, LR, coast, R, coast, R, coast, LR, LR, LR; one second
+      per phase. All start at rest at the same origin, facing right.
+    </p>
+    <p>
+      Follow the coloured paths through turns and release, not only the final
+      distance. The side-only trio compares immediate and delayed steering. The
+      four-engine trio shows whether immediate ion steering makes delayed aft
+      power useful, and what changes when every engine must charge. Current
+      Plasma values are the common provisional baseline: 0.6-second charge,
+      38,000 force per engine, mass 24 and 700 units/s ceiling. Ion uses the
+      current production settings. This round compares configurations before
+      tuning the reward.
+    </p>
+    <MovementBench
+      plasma
+      client:load
+      label="Six plasma and ion configurations"
+    />
+    <p>
+      Solid lines show speed, traversed path length and signed angular speed;
+      positive rotation is clockwise. Dashed lines show the highest currently
+      available engine-family ceiling. A mixed build still applies ion and
+      plasma impulses separately: its dashed line is not a new combined limit.
+      Zero means no engine is ready to thrust, not zero travel speed. Coasting
+      retains travel momentum; stabilizers oppose uncommanded spin. Aft engines
+      respond only to LR; release resets their charge, while an uninterrupted
+      side engine keeps its own timer.
+    </p>
+    <p>
+      The bench uses production assembled-engine forces, mount geometry, mass,
+      charge timers and free-fall rotation at 60 ticks/s with four substeps.
+      Power is unlimited; gravity, drag, wrapping and randomness are absent.
+      Each view shows the complete run with framing fitted to its paths. This
+      compares configuration consequences, not survival endurance or final
+      balance. The paths and graphs are static; time is read from the graph
+      axes.
+    </p>
+    <h3 id="delay">02.2 / How much anticipation does plasma ask for?</h3>
+    <p>
+      Vary only charge delay from 0.10 to 0.99 seconds in 0.01-second steps.
+      Keep the six loadouts, thrust, mass, ceiling and input sequence from 02.1.
+      Both comparisons include production stabilizers. Every view draws the
+      complete fourteen-second run; move the slider to compare paths and graphs.
+    </p>
+    <MovementBench
+      plasma
+      delayStudy
+      client:load
+      label="Plasma delay comparison"
+    />
+    <p>
+      First inspect the left turn at 3–4 seconds, then the repeated right turns
+      at 7–8 and 9–10 seconds. How much of each command is spent waiting, and
+      what momentum carries through the coast afterward? Compare the mixed
+      Light-side/Plasma-aft build with Plasma sides. Finish with the sustained
+      11–14-second burn to see how the same delay affects its eventual payoff.
+      Near 0.99 seconds, little of an isolated one-second command remains for
+      the main plasma engine; stabilizers still respond immediately.
+    </p>
+    <p>
+      The next decision is a promising delay range for subsequent thrust and
+      speed experiments. This replay cannot establish how quickly a human can
+      learn to anticipate the delay. Release still cuts thrust and resets charge
+      immediately; charge retention and decay remain a separate investigation.
+    </p>
+    <p>
+      <strong>Fix after 02.2:</strong>
+      Stabilizers were missing from both comparisons and are now enabled. The
+      earlier unassisted paths do not establish stabilized handling. Both views
+      now draw complete static runs; the delay control is a 0.10–0.99-second
+      slider. Framing and graph scales refit when the delay changes. The six
+      configurations and the delay investigation remain the agreed scope.
+    </p>
+    <p>
+      <strong>Observation from 02.2:</strong>
+      Even 0.10 seconds provides an interesting delay. Around 0.34 seconds and
+      above, further delay made little visible difference to handling under
+      these acceleration, speed and input conditions. This is a bounded design
+      observation, not a universal threshold.
+    </p>
+    <h3 id="escape">02.3 / Plasma as an aft escape engine</h3>
+    <p>
+      <strong>Intermediate decision:</strong>
+      Diminishing speed returns and maximum speed move to the generic chassis
+      model, outside plasma tuning. Use the ion curve provisionally for every
+      chassis and combined engine force: 340 units/s at one Light-equivalent,
+      40% maximum extra allowance, falloff 0.8. Its ceiling approaches 476
+      units/s. Earlier experiments retain their original speed rules; this
+      section applies the new shared rule locally.
+    </p>
+    <p>
+      All four Fighters have two Light-ion side engines and one occupied aft
+      slot: Light ion, Heavy ion, current-force Plasma, or adjustable Plasma.
+      The slider changes only the last engine’s force from 1–10× Light, starting
+      at 2×. Both Plasma references use the provisional 0.10-second delay and
+      current mass. “Current force” means 38,000 force units (about 1.50×
+      Light), not the old plasma-specific speed ceiling or 0.6-second delay.
+    </p>
+    <PlasmaEscape client:load />
+    <p>
+      Every run starts at rest with zero spin and follows the same
+      fourteen-second input sequence as 02.1 and 02.2. The timeline and numbered
+      path markers show where each burn, turn and coast happens. Aft thrust
+      fires only during LR; both plasma engines charge for 0.10 seconds after
+      each release. Compare acceleration, speed and traversed path length across
+      the four builds.
+    </p>
+    <p>
+      Stabilizers are enabled, including turning assistance and braking. Actual
+      mass, production angular motion, charge timing and thrust taper are
+      reused. Ready engine forces combine under the provisional generic chassis
+      curve locally; the live game is unchanged. Paths share one fitted scale;
+      graph scales stay fixed as force changes. Unlimited power, no gravity,
+      drag, wrapping or randomness isolate propulsion. This does not establish
+      escape success against a pursuer or gravity well. Energy balance and
+      charge decay remain outside this experiment.
+    </p>
+  </section>
+  <section aria-labelledby="force-composition">
+    <h3 id="force-composition">
+      02.4 / From engine force to ship acceleration
+    </h3>
+    <p>
+      The paths in 02.3 made combined propulsion difficult to read. This bench
+      separates engine force, ship mass and the diminishing speed allowance. It
+      diagnoses the provisional rule already used in 02.3; it does not settle a
+      new rule. More ready force raises acceleration from rest and also raises
+      the ceiling, with diminishing returns.
+    </p>
+    <p>
+      Start with equal mass to isolate force addition, then enable fitted mass
+      to see the weight tradeoff. Move the speed probe to compare how much
+      forward acceleration remains at the same speed. Each configuration has its
+      own graph with identical axes. Plasma uses the provisional 2× Light force;
+      switch its charged state to expose the cost of waiting.
+    </p>
+    <ForceComposition client:load />
+    <p>
+      These are stripped-down fixtures: a 95-mass Fighter body plus only the
+      listed engines, all pointing forward through its centre. They are not the
+      complete builds from 02.3. Fixed mass is 115; fitted mass includes each
+      engine even while it is inactive. There are no side engines, turning,
+      gravity, drag or power limits. Stabilizers have nothing to correct in this
+      aligned fixture.
+    </p>
+    <p>
+      The calculation is combined ready force ÷ mass, followed by the production
+      speed taper. One Light supplies 25,300 force units; Heavy supplies 1.75×
+      that. The shared ion-derived ceiling approaches 476 units/s and currently
+      depends on force, not mass. The graphs show forward acceleration, not
+      elapsed time or distance. A charged-state switch replaces a timed delay
+      here so force composition can be inspected independently.
+    </p>
+  </section>
+  <section>
+    <h2>03 / Readiness not established</h2>
+    <p>
+      The study closed during exploration. No final plasma behaviour was
+      selected for readiness assessment.
+    </p>
+  </section>
+  <section>
+    <h2>04 / Integration not planned</h2>
+    <p>
+      The extraction at the top records candidates for separate review. This
+      study provides no approved production integration plan.
+    </p>
+  </section>
 </StudyLayout>

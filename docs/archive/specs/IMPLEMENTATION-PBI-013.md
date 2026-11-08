@@ -26,9 +26,9 @@ A new `Camera` class that provides:
 **Key Features:**
 ```typescript
 const camera = new Camera({
-	viewportWidth: 1920,
-	viewportHeight: 1080,
-	smoothing: 0.1, // Frame-rate independent
+  viewportWidth: 1920,
+  viewportHeight: 1080,
+  smoothing: 0.1, // Frame-rate independent
 });
 
 // Every frame
@@ -83,13 +83,13 @@ const windowRatio = window.innerWidth / window.innerHeight;
 const targetRatio = 16 / 9;
 
 if (windowRatio > targetRatio) {
-	// Letterbox sides
-	height = window.innerHeight;
-	width = height * targetRatio;
+  // Letterbox sides
+  height = window.innerHeight;
+  width = height * targetRatio;
 } else {
-	// Letterbox top/bottom
-	width = window.innerWidth;
-	height = width / targetRatio;
+  // Letterbox top/bottom
+  width = window.innerWidth;
+  height = width / targetRatio;
 }
 ```
 
@@ -251,9 +251,9 @@ The Camera system is fully integrated and ready for use. To add camera tracking 
 ```typescript
 // 1. Create camera
 const camera = new Camera({
-	viewportWidth: 1920,
-	viewportHeight: 1080,
-	smoothing: 0.1,
+  viewportWidth: 1920,
+  viewportHeight: 1080,
+  smoothing: 0.1,
 });
 
 // 2. Update every frame

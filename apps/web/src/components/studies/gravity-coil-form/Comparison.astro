@@ -1,117 +1,117 @@
 ---
 interface Props {
-	item: string;
-	label: string;
+  item: string;
+  label: string;
 }
 const { item, label } = Astro.props;
 const views = [
-	{
-		id: `form-${item}`,
-		name: "Alone",
-		box: "-15 -15 30 30",
-		size: 30,
-		scale: 6,
-	},
-	{
-		id: `form-${item}-fighter-over`,
-		name: "Fighter · on chassis",
-		box: "-40 -52 80 90",
-		size: 80,
-		scale: 3,
-	},
-	{
-		id: `form-${item}-wasp-over`,
-		name: "Wasp · on chassis",
-		box: "-40 -52 80 90",
-		size: 80,
-		scale: 3,
-	},
-	{
-		id: `form-${item}-wasp-under`,
-		name: "Wasp · under wing",
-		box: "-40 -52 80 90",
-		size: 80,
-		scale: 3,
-	},
+  {
+    id: `form-${item}`,
+    name: "Alone",
+    box: "-15 -15 30 30",
+    size: 30,
+    scale: 6,
+  },
+  {
+    id: `form-${item}-fighter-over`,
+    name: "Fighter · on chassis",
+    box: "-40 -52 80 90",
+    size: 80,
+    scale: 3,
+  },
+  {
+    id: `form-${item}-wasp-over`,
+    name: "Wasp · on chassis",
+    box: "-40 -52 80 90",
+    size: 80,
+    scale: 3,
+  },
+  {
+    id: `form-${item}-wasp-under`,
+    name: "Wasp · under wing",
+    box: "-40 -52 80 90",
+    size: 80,
+    scale: 3,
+  },
 ];
 ---
 
 <!-- biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard access to the horizontally scrollable fixed-scale drawings. -->
 <section class="comparison" aria-label={`${label} comparison`} tabindex="0">
-	<div class="row">
-		{views.map((view) => (
-			<figure>
-				<figcaption>
-					{view.name} · {view.scale}×
-				</figcaption>
-				<div class="large">
-					<svg
-						width={view.size * view.scale}
-						height={(view.size === 30 ? 30 : 90) * view.scale}
-						viewBox={view.box}
-						role="img"
-						aria-label={`${label}, ${view.name}, ${view.scale}×`}
-					>
-						<use href={`#${view.id}`} />
-					</svg>
-				</div>
-				<div class="native">
-					<svg
-						data-native
-						width={view.size}
-						height={view.size === 30 ? 30 : 90}
-						viewBox={view.box}
-						role="img"
-						aria-label={`${label}, ${view.name}, 1×`}
-					>
-						<use href={`#${view.id}`} />
-					</svg>
-				</div>
-				<span>1×</span>
-			</figure>
-		))}
-	</div>
+  <div class="row">
+    {views.map((view) => (
+      <figure>
+        <figcaption>
+          {view.name} · {view.scale}×
+        </figcaption>
+        <div class="large">
+          <svg
+            width={view.size * view.scale}
+            height={(view.size === 30 ? 30 : 90) * view.scale}
+            viewBox={view.box}
+            role="img"
+            aria-label={`${label}, ${view.name}, ${view.scale}×`}
+          >
+            <use href={`#${view.id}`} />
+          </svg>
+        </div>
+        <div class="native">
+          <svg
+            data-native
+            width={view.size}
+            height={view.size === 30 ? 30 : 90}
+            viewBox={view.box}
+            role="img"
+            aria-label={`${label}, ${view.name}, 1×`}
+          >
+            <use href={`#${view.id}`} />
+          </svg>
+        </div>
+        <span>1×</span>
+      </figure>
+    ))}
+  </div>
 </section>
 <style>
 .comparison {
-	overflow-x: auto;
-	border: 1px solid var(--color-border);
-	background: var(--color-void);
-	margin-block: 24px 32px;
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  background: var(--color-void);
+  margin-block: 24px 32px;
 }
 .comparison:focus-visible {
-	outline: 2px solid var(--color-action);
-	outline-offset: 3px;
+  outline: 2px solid var(--color-action);
+  outline-offset: 3px;
 }
 .row {
-	display: grid;
-	grid-template-columns: 180px repeat(3, 240px);
-	width: 900px;
-	margin-inline: auto;
-	padding: 16px 0;
+  display: grid;
+  grid-template-columns: 180px repeat(3, 240px);
+  width: 900px;
+  margin-inline: auto;
+  padding: 16px 0;
 }
 figure {
-	margin: 0;
-	text-align: center;
+  margin: 0;
+  text-align: center;
 }
 figcaption,
 span {
-	color: var(--color-text-muted);
-	font: 12px var(--font-family-ui);
+  color: var(--color-text-muted);
+  font: 12px var(--font-family-ui);
 }
 .large {
-	height: 280px;
-	display: grid;
-	place-items: center;
+  height: 280px;
+  display: grid;
+  place-items: center;
 }
 .native {
-	height: 96px;
-	display: grid;
-	place-items: center;
+  height: 96px;
+  display: grid;
+  place-items: center;
 }
 svg {
-	display: block;
-	max-width: none;
-	flex-shrink: 0;
+  display: block;
+  max-width: none;
+  flex-shrink: 0;
 }
 </style>

@@ -6,45 +6,45 @@ import { slotAccepts } from "../../../../../../packages/mode-a/src/lib/schemas/l
 import { WASP } from "../../../../../../packages/mode-a/src/lib/wasp";
 
 const fitMounts = (["wasp", "fighter"] as const).map((ship) =>
-	buildMounts(defaultLoadout(ship))
-		.filter((m) => m.group === "hull")
-		.slice(0, 1)
-		.map(({ x, y }) => ({ x, y })),
+  buildMounts(defaultLoadout(ship))
+    .filter((m) => m.group === "hull")
+    .slice(0, 1)
+    .map(({ x, y }) => ({ x, y })),
 );
 const fitEngines = (["wasp", "fighter"] as const).map((ship) =>
-	buildMounts(defaultLoadout(ship))
-		.filter((m) => slotAccepts(m.type, "E"))
-		.map((m) => ({
-			x: m.x,
-			y: m.y,
-			angle: m.angle,
-			below: ship !== "wasp" && m.group === "side",
-			faces: [
-				...ENGINE_ART.ion[
-					ship === "wasp" ? 3 : m.key === "left" ? 1 : m.key === "right" ? 2 : 3
-				],
-			],
-		})),
+  buildMounts(defaultLoadout(ship))
+    .filter((m) => slotAccepts(m.type, "E"))
+    .map((m) => ({
+      x: m.x,
+      y: m.y,
+      angle: m.angle,
+      below: ship !== "wasp" && m.group === "side",
+      faces: [
+        ...ENGINE_ART.ion[
+          ship === "wasp" ? 3 : m.key === "left" ? 1 : m.key === "right" ? 2 : 3
+        ],
+      ],
+    })),
 );
 const fitFighter: { points: readonly (readonly number[])[]; color: string }[] =
-	FIGHTER.hull.map((p, i) => {
-		const next = FIGHTER.hull[(i + 1) % FIGHTER.hull.length];
-		return {
-			points: [[-3, 0], p, next],
-			color: FIGHTER.facets[(p[1] + next[1]) / 2 < 0 ? i % 3 : 3 + (i % 3)],
-		};
-	});
+  FIGHTER.hull.map((p, i) => {
+    const next = FIGHTER.hull[(i + 1) % FIGHTER.hull.length];
+    return {
+      points: [[-3, 0], p, next],
+      color: FIGHTER.facets[(p[1] + next[1]) / 2 < 0 ? i % 3 : 3 + (i % 3)],
+    };
+  });
 fitFighter.push(
-	{ points: [...FIGHTER.ridge], color: "#a2d8df" },
-	{
-		points: [
-			[38, 0],
-			[-21, 0],
-			[-15, 4],
-		],
-		color: "#51869e",
-	},
-	{ points: [...FIGHTER.cockpit], color: "#000" },
+  { points: [...FIGHTER.ridge], color: "#a2d8df" },
+  {
+    points: [
+      [38, 0],
+      [-21, 0],
+      [-15, 4],
+    ],
+    color: "#51869e",
+  },
+  { points: [...FIGHTER.cockpit], color: "#000" },
 );
 
 import GravityCoilAssembly from "../../../components/studies/GravityCoilAssembly.astro";
@@ -68,502 +68,502 @@ const study = studies.find((s) => s.slug === "gravity-coil-2026-11-03");
 ---
 
 <StudyLayout study={study}>
-	<p>
-		This study is stopped and preserved as reference. Continue in
-		<a href="/lab/studies/gravity-coil-form-2026-11-03"
-			>Gravity coil: static visual form</a
-		>.
-	</p>
-	<section>
-		<h2>01 / A winding with weight</h2>
-		<p>
-			A Gravity coil mounted beside an engine should look like a deliberately
-			built piece of technical machinery before any effect appears. A toroid,
-			coil or spring supplies its physical identity: repeated solid windings,
-			space between them, and a convincing structure holding them to the ship.
-			The first design question is which construction gives that identity weight
-			and clarity in the game’s top-down view.
-		</p>
-		<p>
-			Imagine the fitted ship outside a gravity field, with the coil inactive.
-			Its opening and winding must still distinguish it from an engine or an
-			energy store. Enlarged, the assembly should reveal purposeful parts; at
-			flight scale, its principal masses and gaps must carry the same idea. Flat
-			facets, light from above-left and restrained material contrast connect it
-			to the existing support modules. Technical character must come from
-			construction, rather than fine lines that disappear when the ship shrinks.
-		</p>
-		<p>
-			The coil’s physical parts remain static, including when active. Like an
-			engine, it produces separate FX: field interaction or exotic physics on
-			the FX layer, with no moving or animated mechanical parts. This study
-			begins with the physical object. After its appearance, the next visual
-			question is how its active FX within a gravity field interact with engine
-			effects to create interesting combined visuals. Effect shape, rhythm and
-			overlap remain to be explored; charging rules and flight balance are
-			outside this initial inquiry.
-		</p>
-		<GravityCoilReferences />
-	</section>
-	<section>
-		<h2>02 / Construction before effects</h2>
-		<details>
-			<summary>02.1 / What space does the winding enclose? — findings</summary>
-			<p>
-				A closed toroid concentrates the machine around a single aperture. An
-				axial spring spreads its winding along a direction. These static
-				sketches compare that structural choice using the same cradle, materials
-				and approximate envelope. Broad lit faces and dark side faces describe
-				solid parts.
-			</p>
-			<GravityCoilForms />
-			<p>
-				Finding: these examples do not communicate in the game’s visual
-				language, so they cannot settle the toroid-versus-spring question. This
-				was a useful learning step, not a construction decision or an error to
-				delete.
-			</p>
-			<ul>
-				<li>
-					A support component must have no base or background plate. Such a
-					plate fails beneath a ship and makes the object look like an isometric
-					icon.
-				</li>
-				<li>
-					Too much detail makes the component messy at 1×. Small comparisons
-					must use 1×; the original 0.65× presentation was incorrect and is
-					corrected here.
-				</li>
-			</ul>
-			<p>
-				An exploration step can support a decision, teach something, or be an
-				error that can be deleted. These drawings remain as evidence of the
-				finding; neither construction has been selected.
-			</p>
-		</details>
-		<details>
-			<summary id="density">
-				02.2 / How few sections can carry the coil? — B preferred
-			</summary>
-			<p>
-				A bare ring with four broad winding sections is compared with eight
-				narrower sections. Both have the same aperture, outside dimensions, two
-				attachment tabs and material. There is no backing surface: the void is
-				visible through the centre and between sections. The view is directly
-				from above, with bevels describing thickness.
-			</p>
-			<GravityCoilDensity />
-			<p>
-				This tests how repetition and broad surfaces read at 1× before adding
-				technical detail. The toroid is a controlled fixture for this question,
-				not a selection over the spring. The 36 px width is provisional; fitted
-				clearance and under-hull occlusion remain untested. All parts are
-				static, and no FX are shown.
-			</p>
-			<p>
-				<strong>Review finding:</strong>
-				B, the eight-section ring, is clearly preferred over A. Its distinct
-				parts are worth carrying forward. This establishes a promising
-				reference, while spring and helix constructions remain open. The
-				comparison above preserves the reviewed grey supports.
-			</p>
-		</details>
-		<details>
-			<summary id="forms">
-				02.3 / Nine constructions from the segmented ring
-			</summary>
-			<p>
-				The reference below retains B’s geometry and restores yellow connectors.
-				All nine descriptions carry forward distinct substantial parts, open
-				gaps, no backing plate and static construction. They explore form before
-				FX. For longitudinal forms, the coil axis runs fore–aft along the ship:
-				the game’s overhead camera sees the side of the spring.
-			</p>
-			<GravityCoilDensity selected />
-			<ol>
-				<li>
-					<strong>Segmented toroid.</strong>
-					Keep B’s eight faceted sectors around one open centre, gripped by two
-					short yellow side connectors. The existing ring is the reference for
-					compactness and readable separation.
-				</li>
-				<li>
-					<strong>Elongated toroid.</strong>
-					Stretch that ring along the ship’s fore–aft axis into an oval,
-					retaining eight sections and yellow connectors at its waist. This
-					tests a longer silhouette without losing the single aperture.
-				</li>
-				<li>
-					<strong>Split horseshoe.</strong>
-					Open the aft end of the segmented ring, ending in two thick yellow
-					terminal blocks. The central void opens into space, giving the
-					circular machine a clear direction.
-				</li>
-				<li>
-					<strong>Twin rings.</strong>
-					Place two smaller segmented toroids fore and aft, joined by a short
-					yellow bridge. Two open centres and a narrow waist create a multipart
-					silhouette; resemblance to the Potential Well would need particular
-					scrutiny.
-				</li>
-				<li>
-					<strong>Three-turn barrel spring.</strong>
-					Lay one thick helical band along the fore–aft axis between yellow end
-					collars. Three broad turns and generous gaps expose the winding from
-					the side; the returning band falls into darker facets behind the upper
-					portions.
-				</li>
-				<li>
-					<strong>Segmented helix.</strong>
-					Build that longitudinal winding from six chunky curved pieces with
-					short recessed joints. Yellow end clamps anchor the assembly. The
-					stepped progression carries B’s separate-part character into a
-					continuous spiral.
-				</li>
-				<li>
-					<strong>Tapered spring.</strong>
-					Use three heavy turns that decrease in diameter toward the aft
-					terminal. Yellow collars cap the broad forward end and narrow aft end.
-					The taper supplies direction, with a risk of reading as an engine
-					nozzle.
-				</li>
-				<li>
-					<strong>Paired counter-wound springs.</strong>
-					Place two short, thick helices beside each other, both running
-					fore–aft but winding in opposite directions. Separate yellow end
-					clamps leave a dark channel between them. This tests paired machinery
-					without a shared background plate.
-				</li>
-				<li>
-					<strong>Spaced induction hoops.</strong>
-					Arrange three separate thick hoops perpendicular to the fore–aft axis,
-					held by two narrow yellow side connectors. Viewed from above, their
-					raised crowns and dark inner returns form a short barrel. This tests
-					whether discrete hoops communicate the coil more clearly than a
-					continuous helix at 1×.
-				</li>
-			</ol>
-			<p>
-				These are written construction proposals, not selected designs. The next
-				drawings can compare a retained ring against a longitudinal
-				construction; continuity, depth and readability at 1× still need visual
-				evidence.
-			</p>
-		</details>
-		<details>
-			<summary id="nine">
-				02.4 / Nine forms — toroid, horseshoe and spring retained
-			</summary>
-			<p>
-				The nine written constructions, in the same order. Yellow parts connect
-				or support the winding; none has a background plate. Fore is up and aft
-				is down. The longitudinal springs are viewed from above the ship,
-				showing the side of their horizontal axes. All examples remain static.
-			</p>
-			<GravityCoilNine />
-			<p>
-				Each small sample uses one artwork unit per CSS pixel (1×). Enlarged
-				views expose construction; dimensions remain provisional. The ring
-				reference is retained as 01. Compare how the other forms carry its
-				separate-part character, especially the broad turns of 05 and the
-				interrupted winding of 06. These are form studies, not fitted modules or
-				FX previews.
-			</p>
-			<p>
-				<strong>Retained forms:</strong>
-				01 Segmented toroid, 03 Split horseshoe and 05 Three-turn barrel spring.
-				The finding is that simple, effective shapes work at both 1× and 8×.
-				These originals remain the references for subsequent construction.
-			</p>
-		</details>
-		<details>
-			<summary id="machines">
-				02.5 / Supports that complete the machine — findings
-			</summary>
-			<p>
-				Three new arrangements for each retained form: toroid across the first
-				row, horseshoe across the second, spring across the third. The
-				white–charcoal working parts stay unchanged. Yellow forks, inner
-				structures and open braces explore how the object holds together when
-				some of it projects over space or sits on a chassis. No arrangement has
-				a base or background plate.
-			</p>
+  <p>
+    This study is stopped and preserved as reference. Continue in
+    <a href="/lab/studies/gravity-coil-form-2026-11-03"
+      >Gravity coil: static visual form</a
+    >.
+  </p>
+  <section>
+    <h2>01 / A winding with weight</h2>
+    <p>
+      A Gravity coil mounted beside an engine should look like a deliberately
+      built piece of technical machinery before any effect appears. A toroid,
+      coil or spring supplies its physical identity: repeated solid windings,
+      space between them, and a convincing structure holding them to the ship.
+      The first design question is which construction gives that identity weight
+      and clarity in the game’s top-down view.
+    </p>
+    <p>
+      Imagine the fitted ship outside a gravity field, with the coil inactive.
+      Its opening and winding must still distinguish it from an engine or an
+      energy store. Enlarged, the assembly should reveal purposeful parts; at
+      flight scale, its principal masses and gaps must carry the same idea. Flat
+      facets, light from above-left and restrained material contrast connect it
+      to the existing support modules. Technical character must come from
+      construction, rather than fine lines that disappear when the ship shrinks.
+    </p>
+    <p>
+      The coil’s physical parts remain static, including when active. Like an
+      engine, it produces separate FX: field interaction or exotic physics on
+      the FX layer, with no moving or animated mechanical parts. This study
+      begins with the physical object. After its appearance, the next visual
+      question is how its active FX within a gravity field interact with engine
+      effects to create interesting combined visuals. Effect shape, rhythm and
+      overlap remain to be explored; charging rules and flight balance are
+      outside this initial inquiry.
+    </p>
+    <GravityCoilReferences />
+  </section>
+  <section>
+    <h2>02 / Construction before effects</h2>
+    <details>
+      <summary>02.1 / What space does the winding enclose? — findings</summary>
+      <p>
+        A closed toroid concentrates the machine around a single aperture. An
+        axial spring spreads its winding along a direction. These static
+        sketches compare that structural choice using the same cradle, materials
+        and approximate envelope. Broad lit faces and dark side faces describe
+        solid parts.
+      </p>
+      <GravityCoilForms />
+      <p>
+        Finding: these examples do not communicate in the game’s visual
+        language, so they cannot settle the toroid-versus-spring question. This
+        was a useful learning step, not a construction decision or an error to
+        delete.
+      </p>
+      <ul>
+        <li>
+          A support component must have no base or background plate. Such a
+          plate fails beneath a ship and makes the object look like an isometric
+          icon.
+        </li>
+        <li>
+          Too much detail makes the component messy at 1×. Small comparisons
+          must use 1×; the original 0.65× presentation was incorrect and is
+          corrected here.
+        </li>
+      </ul>
+      <p>
+        An exploration step can support a decision, teach something, or be an
+        error that can be deleted. These drawings remain as evidence of the
+        finding; neither construction has been selected.
+      </p>
+    </details>
+    <details>
+      <summary id="density">
+        02.2 / How few sections can carry the coil? — B preferred
+      </summary>
+      <p>
+        A bare ring with four broad winding sections is compared with eight
+        narrower sections. Both have the same aperture, outside dimensions, two
+        attachment tabs and material. There is no backing surface: the void is
+        visible through the centre and between sections. The view is directly
+        from above, with bevels describing thickness.
+      </p>
+      <GravityCoilDensity />
+      <p>
+        This tests how repetition and broad surfaces read at 1× before adding
+        technical detail. The toroid is a controlled fixture for this question,
+        not a selection over the spring. The 36 px width is provisional; fitted
+        clearance and under-hull occlusion remain untested. All parts are
+        static, and no FX are shown.
+      </p>
+      <p>
+        <strong>Review finding:</strong>
+        B, the eight-section ring, is clearly preferred over A. Its distinct
+        parts are worth carrying forward. This establishes a promising
+        reference, while spring and helix constructions remain open. The
+        comparison above preserves the reviewed grey supports.
+      </p>
+    </details>
+    <details>
+      <summary id="forms">
+        02.3 / Nine constructions from the segmented ring
+      </summary>
+      <p>
+        The reference below retains B’s geometry and restores yellow connectors.
+        All nine descriptions carry forward distinct substantial parts, open
+        gaps, no backing plate and static construction. They explore form before
+        FX. For longitudinal forms, the coil axis runs fore–aft along the ship:
+        the game’s overhead camera sees the side of the spring.
+      </p>
+      <GravityCoilDensity selected />
+      <ol>
+        <li>
+          <strong>Segmented toroid.</strong>
+          Keep B’s eight faceted sectors around one open centre, gripped by two
+          short yellow side connectors. The existing ring is the reference for
+          compactness and readable separation.
+        </li>
+        <li>
+          <strong>Elongated toroid.</strong>
+          Stretch that ring along the ship’s fore–aft axis into an oval,
+          retaining eight sections and yellow connectors at its waist. This
+          tests a longer silhouette without losing the single aperture.
+        </li>
+        <li>
+          <strong>Split horseshoe.</strong>
+          Open the aft end of the segmented ring, ending in two thick yellow
+          terminal blocks. The central void opens into space, giving the
+          circular machine a clear direction.
+        </li>
+        <li>
+          <strong>Twin rings.</strong>
+          Place two smaller segmented toroids fore and aft, joined by a short
+          yellow bridge. Two open centres and a narrow waist create a multipart
+          silhouette; resemblance to the Potential Well would need particular
+          scrutiny.
+        </li>
+        <li>
+          <strong>Three-turn barrel spring.</strong>
+          Lay one thick helical band along the fore–aft axis between yellow end
+          collars. Three broad turns and generous gaps expose the winding from
+          the side; the returning band falls into darker facets behind the upper
+          portions.
+        </li>
+        <li>
+          <strong>Segmented helix.</strong>
+          Build that longitudinal winding from six chunky curved pieces with
+          short recessed joints. Yellow end clamps anchor the assembly. The
+          stepped progression carries B’s separate-part character into a
+          continuous spiral.
+        </li>
+        <li>
+          <strong>Tapered spring.</strong>
+          Use three heavy turns that decrease in diameter toward the aft
+          terminal. Yellow collars cap the broad forward end and narrow aft end.
+          The taper supplies direction, with a risk of reading as an engine
+          nozzle.
+        </li>
+        <li>
+          <strong>Paired counter-wound springs.</strong>
+          Place two short, thick helices beside each other, both running
+          fore–aft but winding in opposite directions. Separate yellow end
+          clamps leave a dark channel between them. This tests paired machinery
+          without a shared background plate.
+        </li>
+        <li>
+          <strong>Spaced induction hoops.</strong>
+          Arrange three separate thick hoops perpendicular to the fore–aft axis,
+          held by two narrow yellow side connectors. Viewed from above, their
+          raised crowns and dark inner returns form a short barrel. This tests
+          whether discrete hoops communicate the coil more clearly than a
+          continuous helix at 1×.
+        </li>
+      </ol>
+      <p>
+        These are written construction proposals, not selected designs. The next
+        drawings can compare a retained ring against a longitudinal
+        construction; continuity, depth and readability at 1× still need visual
+        evidence.
+      </p>
+    </details>
+    <details>
+      <summary id="nine">
+        02.4 / Nine forms — toroid, horseshoe and spring retained
+      </summary>
+      <p>
+        The nine written constructions, in the same order. Yellow parts connect
+        or support the winding; none has a background plate. Fore is up and aft
+        is down. The longitudinal springs are viewed from above the ship,
+        showing the side of their horizontal axes. All examples remain static.
+      </p>
+      <GravityCoilNine />
+      <p>
+        Each small sample uses one artwork unit per CSS pixel (1×). Enlarged
+        views expose construction; dimensions remain provisional. The ring
+        reference is retained as 01. Compare how the other forms carry its
+        separate-part character, especially the broad turns of 05 and the
+        interrupted winding of 06. These are form studies, not fitted modules or
+        FX previews.
+      </p>
+      <p>
+        <strong>Retained forms:</strong>
+        01 Segmented toroid, 03 Split horseshoe and 05 Three-turn barrel spring.
+        The finding is that simple, effective shapes work at both 1× and 8×.
+        These originals remain the references for subsequent construction.
+      </p>
+    </details>
+    <details>
+      <summary id="machines">
+        02.5 / Supports that complete the machine — findings
+      </summary>
+      <p>
+        Three new arrangements for each retained form: toroid across the first
+        row, horseshoe across the second, spring across the third. The
+        white–charcoal working parts stay unchanged. Yellow forks, inner
+        structures and open braces explore how the object holds together when
+        some of it projects over space or sits on a chassis. No arrangement has
+        a base or background plate.
+      </p>
 
-			<GravityCoilMachines />
-			<p>
-				<strong>02.5 findings:</strong>
-				Free, underwing and on-chassis views expose different failures
-				immediately. A free-standing module must connect its own parts; the hull
-				cannot supply missing structure. The external toroid brace (3),
-				horseshoe side struts (6) and spring arrangements leave unsupported or
-				floating-looking pieces. The inner bearing ring (2) adds too much small
-				detail and too many gaps. Yellow lines alone read as schematic marks
-				rather than solid machinery.
-			</p>
-			<p>
-				All three spring proposals remain unconvincing as enlarged parts-list
-				objects, even where their 1× silhouettes suggest useful ideas. Supports
-				and connectors need their own volume and the same upper-left lighting as
-				the working parts. No support arrangement from 02.5 is selected.
-			</p>
-		</details>
-		<details>
-			<summary id="solid-machines">
-				02.6 / Convincing graphic form — findings
-			</summary>
-			<p>
-				The first 02.6 attempt confirmed the earlier finding: isometric-looking,
-				decorative icon art is far from this game’s visual language. Its raised
-				blocks and offset extrusions made the equipment bulky and literal. Those
-				drawings have been removed. The direction is sleek, streamlined science
-				fiction, expressed through restrained graphic forms.
-			</p>
-			<p>
-				The equipment needs to look convincing, not physically realistic.
-				Connections need to read as deliberate paths between parts; they do not
-				need to explain a mechanically complete assembly. A few chosen planes
-				can suggest volume and character without modelling a real material or
-				object. The feeling of connection, weight and belonging to the ship is
-				the criterion. Literal metal, plastic, bevels or structural detail are
-				not requirements.
-			</p>
-			<p>
-				The retained toroid, horseshoe and spring provide the working shapes.
-				The next visual exploration should add only enough graphic structure to
-				make their relationships convincing, preserving the clarity of their
-				silhouettes and open spaces. Upper-left light remains a shared cue for
-				volume, not a reason to introduce an isometric viewpoint. Free,
-				underwing and on-chassis views remain the comparison; the replacement
-				drawings follow in 02.7.
-			</p>
-		</details>
-		<details>
-			<summary id="graphic-machines">
-				02.7 / Connection through graphic form — selections
-			</summary>
-			<p>
-				The retained ring and horseshoe treatments. Narrow ribbons, swept paths
-				and quiet charcoal returns suggest continuity without raised blocks or
-				offset extrusions. The working shapes remain the reference: the added
-				structure should bring them together without becoming the main subject.
-			</p>
-			<GravityCoilGraphicMachines />
-			<p>
-				The question is whether each drawing feels like one purposeful piece of
-				ship equipment. The paths are aesthetic proposals, not mechanical
-				diagrams. Compare the free-standing silhouette first, then what remains
-				legible under the hull edge and on the chassis surface. Small samples
-				remain 1×; no FX or moving parts are shown.
-			</p>
-			<p>
-				<strong>Review decision:</strong>
-				the graphic direction is accepted for continued exploration. Carry
-				forward 1 Inner ribbon, 2 Swept connection, 4 Inner return and 6
-				Terminal sweep. Spring options 7–9 are dropped from this comparison.
-				Options 3 and 5 remain reference material, not selected directions.
-			</p>
-		</details>
-		<details>
-			<summary id="depth">
-				02.8 / Shading and structure beneath the coil — promising reference
-			</summary>
-			<p>
-				Two new variations of each selected form, one pair per row. A explores
-				shallow facets on the existing yellow connection. B adds recessed
-				charcoal links beneath the working shape, taking the Potential Well’s
-				layered construction as a cue. The aim is a more connected feeling and a
-				little more volume while preserving the accepted silhouettes and graphic
-				simplicity.
-			</p>
-			<GravityCoilDepth />
-			<p>
-				Upper-left light is expressed through a few flat tones. The lower
-				structures appear through gaps rather than as backing plates; no offset
-				extrusion is used. Compare the enlarged shape and all three 1× views
-				before judging whether the added depth earns its visual weight. These
-				remain static appearance studies.
-			</p>
-			<p>
-				<strong>Review finding:</strong>
-				1A felt whole in the free, underwing and on-chassis speculations. Actual
-				game context exposed its dark circular surround as visually separate
-				from the ship. It remains a promising construction reference, alongside
-				the other retained options; it is not a settled game asset.
-			</p>
-		</details>
-		<details>
-			<summary id="fit">02.9 / Fitting — failed exploration step</summary>
-			<p>
-				<strong>Failure finding:</strong>
-				This step treated a promising drawing as a resolved design. Local
-				shading and border corrections displaced the useful question of how a
-				complete component belongs with the game’s graphics. The resulting
-				revisions created a false sense of progress without resolving that
-				question. The bench is retained as an example of an exploration step
-				failing; its latest drawing is not an accepted replacement for 1A.
-			</p>
-			<p>
-				One coil on each chassis, with connectors pointing fore–aft and light
-				ion engines in every available engine mount. The inner ring follows the
-				same upper-left light as the hull. Compare the overlap with the hull and
-				the silhouette over space while adjusting size and drawing order. The 1×
-				samples retain their actual size.
-			</p>
-			<GravityCoilFit
-				client:load
-				wasp={[...WASP.facets]}
-				fighterHull={fitFighter}
-				mounts={fitMounts}
-				engines={fitEngines}
-			/>
-		</details>
-		<details>
-			<summary id="belonging">
-				02.10 / Whole equipment, part of the ship — findings
-			</summary>
-			<p>
-				A gravity coil needs to feel complete over open space and belong beside
-				the ship’s engines. Three construction ideas test where that
-				completeness can come from: longitudinal rails, a continuous open body,
-				or paired windings sharing a spine. Each keeps a deliberate opening and
-				a small number of substantial parts.
-			</p>
-			<p>
-				1A supplies evidence that connected structure helps. Its circular
-				surround is not carried forward as a requirement. The real Wasp and
-				Fighter are present in every comparison, so isolated appeal cannot stand
-				in for visual belonging.
-			</p>
-			<GravityCoilBelonging
-				wasp={[...WASP.facets]}
-				fighterHull={fitFighter}
-				mounts={fitMounts}
-				engines={fitEngines}
-			/>
-			<p>
-				<strong>02.10 finding:</strong>
-				All three proposals feel acceptable under wing but remain floating icons
-				over the chassis, like 1A. Changing the supporting construction did not
-				resolve visual belonging. The Potential Well appears to work in both
-				configurations. 1A / Inner ribbon remains the reference design.
-			</p>
-		</details>
-		<details>
-			<summary id="seating">
-				02.11 / What makes equipment feel seated? — findings
-			</summary>
-			<p>
-				The next comparison keeps 1A and investigates its relationship with the
-				surface beneath it. The Potential Well has dark working interiors; the
-				coil’s opening reveals the hull. Another possible difference is whether
-				the drawing shows the hull holding the equipment. These are separate
-				hypotheses, not established causes.
-			</p>
-			<p>
-				The unchanged reference, a contained interior and captured terminals are
-				shown beside the production Potential Well. Both ships appear with
-				equipment above the hull; Wasp also appears under wing. This separates
-				the mounting relationship from the chassis choice.
-			</p>
-			<GravityCoilSeating mounts={fitMounts} />
-			<p>
-				<strong>02.11 finding:</strong>
-				B reads as a special well or window; C makes the mismatch more
-				pronounced. Neither explains the stylistic problem. 1A still looks good
-				isolated and over space, but reads as an icon on the chassis.
-			</p>
-		</details>
-		<details>
-			<summary id="planes">02.12 / A symbol or a surface? — findings</summary>
-			<p>
-				The ship is described by a few broad planes. 1A repeats a small
-				dark-edged object eight times around a centre. This comparison tests
-				whether that surface organisation creates the icon reading, while
-				keeping the ring identity, opening and yellow ribbon.
-			</p>
-			<p>
-				B gives each existing sector one full face. C treats the winding as one
-				folded surface, deliberately removing the repeated divisions. The
-				unchanged 1A and production Potential Well remain alongside them. No
-				seating hardware or filled opening is added.
-			</p>
-			<GravityCoilPlanes mounts={fitMounts} />
-			<p>
-				<a href="/studies/gravity-coil/wasp-and-1a-editable.svg" download
-					>Download editable Wasp and original 1A SVG · 3× and 1×</a
-				>
-			</p>
-			<p>
-				<strong>02.12 finding:</strong>
-				Removing detail does not make the coil fit the chassis. The simplified
-				faces and continuous surface do not resolve the stylistic mismatch. 1A
-				remains the reference.
-			</p>
-		</details>
-		<details>
-			<summary id="construction">
-				02.13 / Winding, housing and ship — findings
-			</summary>
-			<p>
-				What visual construction makes a gravity coil feel like complete
-				equipment on its own and part of this game when fitted to a ship? The 1A
-				ring, opening and yellow connections stay. This comparison investigates
-				the relationship between working material and supporting structure
-				inside that established shape.
-			</p>
-			<p>
-				B tests shared material language with identical geometry. C gives the
-				working sectors a dark interior role and the light material a retaining
-				role around them. If B helps, material continuity is a useful direction.
-				If C helps beyond B, the arrangement of housing and working surfaces is
-				worth developing. If neither helps, these constructions can be ruled out
-				without reopening the silhouette.
-			</p>
-			<GravityCoilConstruction mounts={fitMounts} />
-			<p>
-				<strong>02.13 finding:</strong>
-				B and C both improve the fit, but neither resolves it. The intended
-				materials are ship and engine colours, with safety-yellow supports under
-				starlight. Palette and the way light describes the faces remain possible
-				causes.
-			</p>
-		</details>
-		<h3 id="light">02.14 / Same equipment, same starlight</h3>
-		<p>
-			The shape stays. This comparison separates two possibilities: the coil
-			uses an unrelated set of tones, or its faces imply lighting that disagrees
-			with the ship. The two improved constructions from 02.13 remain as
-			controls.
-		</p>
-		<p>
-			B uses production colours with the original face treatment, aligned to
-			upper-left light. C uses the same colours but treats the winding as one
-			assembly under upper-left light: an outside slope and an inside wall
-			cannot both face the light in the same direction. The yellow structure
-			follows that light too.
-		</p>
-		<GravityCoilLight mounts={fitMounts} />
-		<p>
-			<strong>02.14 finding:</strong>
-			C and D are the most promising directions. The plates lost their faceted
-			character; restore it while exploring the retaining ring beneath the
-			winding.
-		</p>
-		<h3 id="assembly">02.15 / What holds the winding together?</h3>
-		<p>
-			The promising C winding stays intact. Three assembly relationships compare
-			the exposed construction with a continuous carrier beneath it, then with
-			inner and outer supports joined by yellow retaining bridges. The question
-			is whether a visible supporting structure makes the coil feel complete and
-			fitted, or turns it back into an outlined icon.
-		</p>
-		<p>
-			A keeps C as the reference. B carries the plates on a ring visible around
-			the edge and through their gaps. C captures those same plates between
-			supports, making the connection explicit. Fighter, engines, mount and
-			lighting remain fixed.
-		</p>
-		<GravityCoilAssembly mounts={fitMounts} />
-	</section>
-	<section><h2>03 / To be developed after 02</h2></section>
+      <GravityCoilMachines />
+      <p>
+        <strong>02.5 findings:</strong>
+        Free, underwing and on-chassis views expose different failures
+        immediately. A free-standing module must connect its own parts; the hull
+        cannot supply missing structure. The external toroid brace (3),
+        horseshoe side struts (6) and spring arrangements leave unsupported or
+        floating-looking pieces. The inner bearing ring (2) adds too much small
+        detail and too many gaps. Yellow lines alone read as schematic marks
+        rather than solid machinery.
+      </p>
+      <p>
+        All three spring proposals remain unconvincing as enlarged parts-list
+        objects, even where their 1× silhouettes suggest useful ideas. Supports
+        and connectors need their own volume and the same upper-left lighting as
+        the working parts. No support arrangement from 02.5 is selected.
+      </p>
+    </details>
+    <details>
+      <summary id="solid-machines">
+        02.6 / Convincing graphic form — findings
+      </summary>
+      <p>
+        The first 02.6 attempt confirmed the earlier finding: isometric-looking,
+        decorative icon art is far from this game’s visual language. Its raised
+        blocks and offset extrusions made the equipment bulky and literal. Those
+        drawings have been removed. The direction is sleek, streamlined science
+        fiction, expressed through restrained graphic forms.
+      </p>
+      <p>
+        The equipment needs to look convincing, not physically realistic.
+        Connections need to read as deliberate paths between parts; they do not
+        need to explain a mechanically complete assembly. A few chosen planes
+        can suggest volume and character without modelling a real material or
+        object. The feeling of connection, weight and belonging to the ship is
+        the criterion. Literal metal, plastic, bevels or structural detail are
+        not requirements.
+      </p>
+      <p>
+        The retained toroid, horseshoe and spring provide the working shapes.
+        The next visual exploration should add only enough graphic structure to
+        make their relationships convincing, preserving the clarity of their
+        silhouettes and open spaces. Upper-left light remains a shared cue for
+        volume, not a reason to introduce an isometric viewpoint. Free,
+        underwing and on-chassis views remain the comparison; the replacement
+        drawings follow in 02.7.
+      </p>
+    </details>
+    <details>
+      <summary id="graphic-machines">
+        02.7 / Connection through graphic form — selections
+      </summary>
+      <p>
+        The retained ring and horseshoe treatments. Narrow ribbons, swept paths
+        and quiet charcoal returns suggest continuity without raised blocks or
+        offset extrusions. The working shapes remain the reference: the added
+        structure should bring them together without becoming the main subject.
+      </p>
+      <GravityCoilGraphicMachines />
+      <p>
+        The question is whether each drawing feels like one purposeful piece of
+        ship equipment. The paths are aesthetic proposals, not mechanical
+        diagrams. Compare the free-standing silhouette first, then what remains
+        legible under the hull edge and on the chassis surface. Small samples
+        remain 1×; no FX or moving parts are shown.
+      </p>
+      <p>
+        <strong>Review decision:</strong>
+        the graphic direction is accepted for continued exploration. Carry
+        forward 1 Inner ribbon, 2 Swept connection, 4 Inner return and 6
+        Terminal sweep. Spring options 7–9 are dropped from this comparison.
+        Options 3 and 5 remain reference material, not selected directions.
+      </p>
+    </details>
+    <details>
+      <summary id="depth">
+        02.8 / Shading and structure beneath the coil — promising reference
+      </summary>
+      <p>
+        Two new variations of each selected form, one pair per row. A explores
+        shallow facets on the existing yellow connection. B adds recessed
+        charcoal links beneath the working shape, taking the Potential Well’s
+        layered construction as a cue. The aim is a more connected feeling and a
+        little more volume while preserving the accepted silhouettes and graphic
+        simplicity.
+      </p>
+      <GravityCoilDepth />
+      <p>
+        Upper-left light is expressed through a few flat tones. The lower
+        structures appear through gaps rather than as backing plates; no offset
+        extrusion is used. Compare the enlarged shape and all three 1× views
+        before judging whether the added depth earns its visual weight. These
+        remain static appearance studies.
+      </p>
+      <p>
+        <strong>Review finding:</strong>
+        1A felt whole in the free, underwing and on-chassis speculations. Actual
+        game context exposed its dark circular surround as visually separate
+        from the ship. It remains a promising construction reference, alongside
+        the other retained options; it is not a settled game asset.
+      </p>
+    </details>
+    <details>
+      <summary id="fit">02.9 / Fitting — failed exploration step</summary>
+      <p>
+        <strong>Failure finding:</strong>
+        This step treated a promising drawing as a resolved design. Local
+        shading and border corrections displaced the useful question of how a
+        complete component belongs with the game’s graphics. The resulting
+        revisions created a false sense of progress without resolving that
+        question. The bench is retained as an example of an exploration step
+        failing; its latest drawing is not an accepted replacement for 1A.
+      </p>
+      <p>
+        One coil on each chassis, with connectors pointing fore–aft and light
+        ion engines in every available engine mount. The inner ring follows the
+        same upper-left light as the hull. Compare the overlap with the hull and
+        the silhouette over space while adjusting size and drawing order. The 1×
+        samples retain their actual size.
+      </p>
+      <GravityCoilFit
+        client:load
+        wasp={[...WASP.facets]}
+        fighterHull={fitFighter}
+        mounts={fitMounts}
+        engines={fitEngines}
+      />
+    </details>
+    <details>
+      <summary id="belonging">
+        02.10 / Whole equipment, part of the ship — findings
+      </summary>
+      <p>
+        A gravity coil needs to feel complete over open space and belong beside
+        the ship’s engines. Three construction ideas test where that
+        completeness can come from: longitudinal rails, a continuous open body,
+        or paired windings sharing a spine. Each keeps a deliberate opening and
+        a small number of substantial parts.
+      </p>
+      <p>
+        1A supplies evidence that connected structure helps. Its circular
+        surround is not carried forward as a requirement. The real Wasp and
+        Fighter are present in every comparison, so isolated appeal cannot stand
+        in for visual belonging.
+      </p>
+      <GravityCoilBelonging
+        wasp={[...WASP.facets]}
+        fighterHull={fitFighter}
+        mounts={fitMounts}
+        engines={fitEngines}
+      />
+      <p>
+        <strong>02.10 finding:</strong>
+        All three proposals feel acceptable under wing but remain floating icons
+        over the chassis, like 1A. Changing the supporting construction did not
+        resolve visual belonging. The Potential Well appears to work in both
+        configurations. 1A / Inner ribbon remains the reference design.
+      </p>
+    </details>
+    <details>
+      <summary id="seating">
+        02.11 / What makes equipment feel seated? — findings
+      </summary>
+      <p>
+        The next comparison keeps 1A and investigates its relationship with the
+        surface beneath it. The Potential Well has dark working interiors; the
+        coil’s opening reveals the hull. Another possible difference is whether
+        the drawing shows the hull holding the equipment. These are separate
+        hypotheses, not established causes.
+      </p>
+      <p>
+        The unchanged reference, a contained interior and captured terminals are
+        shown beside the production Potential Well. Both ships appear with
+        equipment above the hull; Wasp also appears under wing. This separates
+        the mounting relationship from the chassis choice.
+      </p>
+      <GravityCoilSeating mounts={fitMounts} />
+      <p>
+        <strong>02.11 finding:</strong>
+        B reads as a special well or window; C makes the mismatch more
+        pronounced. Neither explains the stylistic problem. 1A still looks good
+        isolated and over space, but reads as an icon on the chassis.
+      </p>
+    </details>
+    <details>
+      <summary id="planes">02.12 / A symbol or a surface? — findings</summary>
+      <p>
+        The ship is described by a few broad planes. 1A repeats a small
+        dark-edged object eight times around a centre. This comparison tests
+        whether that surface organisation creates the icon reading, while
+        keeping the ring identity, opening and yellow ribbon.
+      </p>
+      <p>
+        B gives each existing sector one full face. C treats the winding as one
+        folded surface, deliberately removing the repeated divisions. The
+        unchanged 1A and production Potential Well remain alongside them. No
+        seating hardware or filled opening is added.
+      </p>
+      <GravityCoilPlanes mounts={fitMounts} />
+      <p>
+        <a href="/studies/gravity-coil/wasp-and-1a-editable.svg" download
+          >Download editable Wasp and original 1A SVG · 3× and 1×</a
+        >
+      </p>
+      <p>
+        <strong>02.12 finding:</strong>
+        Removing detail does not make the coil fit the chassis. The simplified
+        faces and continuous surface do not resolve the stylistic mismatch. 1A
+        remains the reference.
+      </p>
+    </details>
+    <details>
+      <summary id="construction">
+        02.13 / Winding, housing and ship — findings
+      </summary>
+      <p>
+        What visual construction makes a gravity coil feel like complete
+        equipment on its own and part of this game when fitted to a ship? The 1A
+        ring, opening and yellow connections stay. This comparison investigates
+        the relationship between working material and supporting structure
+        inside that established shape.
+      </p>
+      <p>
+        B tests shared material language with identical geometry. C gives the
+        working sectors a dark interior role and the light material a retaining
+        role around them. If B helps, material continuity is a useful direction.
+        If C helps beyond B, the arrangement of housing and working surfaces is
+        worth developing. If neither helps, these constructions can be ruled out
+        without reopening the silhouette.
+      </p>
+      <GravityCoilConstruction mounts={fitMounts} />
+      <p>
+        <strong>02.13 finding:</strong>
+        B and C both improve the fit, but neither resolves it. The intended
+        materials are ship and engine colours, with safety-yellow supports under
+        starlight. Palette and the way light describes the faces remain possible
+        causes.
+      </p>
+    </details>
+    <h3 id="light">02.14 / Same equipment, same starlight</h3>
+    <p>
+      The shape stays. This comparison separates two possibilities: the coil
+      uses an unrelated set of tones, or its faces imply lighting that disagrees
+      with the ship. The two improved constructions from 02.13 remain as
+      controls.
+    </p>
+    <p>
+      B uses production colours with the original face treatment, aligned to
+      upper-left light. C uses the same colours but treats the winding as one
+      assembly under upper-left light: an outside slope and an inside wall
+      cannot both face the light in the same direction. The yellow structure
+      follows that light too.
+    </p>
+    <GravityCoilLight mounts={fitMounts} />
+    <p>
+      <strong>02.14 finding:</strong>
+      C and D are the most promising directions. The plates lost their faceted
+      character; restore it while exploring the retaining ring beneath the
+      winding.
+    </p>
+    <h3 id="assembly">02.15 / What holds the winding together?</h3>
+    <p>
+      The promising C winding stays intact. Three assembly relationships compare
+      the exposed construction with a continuous carrier beneath it, then with
+      inner and outer supports joined by yellow retaining bridges. The question
+      is whether a visible supporting structure makes the coil feel complete and
+      fitted, or turns it back into an outlined icon.
+    </p>
+    <p>
+      A keeps C as the reference. B carries the plates on a ring visible around
+      the edge and through their gaps. C captures those same plates between
+      supports, making the connection explicit. Fighter, engines, mount and
+      lighting remain fixed.
+    </p>
+    <GravityCoilAssembly mounts={fitMounts} />
+  </section>
+  <section><h2>03 / To be developed after 02</h2></section>
 </StudyLayout>

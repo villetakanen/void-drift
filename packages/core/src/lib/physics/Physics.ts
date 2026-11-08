@@ -1,185 +1,185 @@
 import { solarCollectionRate, solarDamageRate } from "../solar";
 export class Vec2 {
-	constructor(
-		public x: number,
-		public y: number,
-	) {}
+  constructor(
+    public x: number,
+    public y: number,
+  ) {}
 
-	add(v: Vec2): Vec2 {
-		this.x += v.x;
-		this.y += v.y;
-		return this;
-	}
+  add(v: Vec2): Vec2 {
+    this.x += v.x;
+    this.y += v.y;
+    return this;
+  }
 
-	sub(v: Vec2): Vec2 {
-		this.x -= v.x;
-		this.y -= v.y;
-		return this;
-	}
+  sub(v: Vec2): Vec2 {
+    this.x -= v.x;
+    this.y -= v.y;
+    return this;
+  }
 
-	mult(s: number): Vec2 {
-		this.x *= s;
-		this.y *= s;
-		return this;
-	}
+  mult(s: number): Vec2 {
+    this.x *= s;
+    this.y *= s;
+    return this;
+  }
 
-	mag(): number {
-		return Math.hypot(this.x, this.y);
-	}
+  mag(): number {
+    return Math.hypot(this.x, this.y);
+  }
 
-	normalize(): Vec2 {
-		const m = this.mag();
-		if (m > 0) {
-			this.mult(1 / m);
-		}
-		return this;
-	}
+  normalize(): Vec2 {
+    const m = this.mag();
+    if (m > 0) {
+      this.mult(1 / m);
+    }
+    return this;
+  }
 
-	clone(): Vec2 {
-		return new Vec2(this.x, this.y);
-	}
+  clone(): Vec2 {
+    return new Vec2(this.x, this.y);
+  }
 
-	set(x: number, y: number): Vec2 {
-		this.x = x;
-		this.y = y;
-		return this;
-	}
+  set(x: number, y: number): Vec2 {
+    this.x = x;
+    this.y = y;
+    return this;
+  }
 }
 
 export interface GameObject {
-	pos: Vec2;
-	vel: Vec2;
-	acc: Vec2;
-	rotation: number; // Radians
-	radius: number;
+  pos: Vec2;
+  vel: Vec2;
+  acc: Vec2;
+  rotation: number; // Radians
+  radius: number;
 }
 
 export interface Star {
-	pos: Vec2;
-	radius: number; // Physical radius
-	influenceRadius: number; // Gravity well radius
-	mass: number; // Gravity strength factor
-	color: string;
-	glowColor: string;
-	type: SunType;
-	powerMultiplier: number;
-	burnMultiplier: number;
-	pulseSpeed: number;
-	/** The mass well law in play (docs/specs/gravity-field.md); without it, the study curve. */
-	massWell?: MassWell;
+  pos: Vec2;
+  radius: number; // Physical radius
+  influenceRadius: number; // Gravity well radius
+  mass: number; // Gravity strength factor
+  color: string;
+  glowColor: string;
+  type: SunType;
+  powerMultiplier: number;
+  burnMultiplier: number;
+  pulseSpeed: number;
+  /** The mass well law in play (docs/specs/gravity-field.md); without it, the study curve. */
+  massWell?: MassWell;
 }
 
 export const PlanetWellSchema = z.object({
-	reach: z.number().finite().positive(),
-	strength: z.number().finite().positive(),
-	curve: z.enum(["linear", "inverse-square"]).optional(), // Absent: inverse-square.
+  reach: z.number().finite().positive(),
+  strength: z.number().finite().positive(),
+  curve: z.enum(["linear", "inverse-square"]).optional(), // Absent: inverse-square.
 });
 
 /** A body's well under the mass law: its mass, the cut-off pull and the falloff. */
 export const MassWellSchema = z.object({
-	mass: z.number().finite().positive(),
-	cutoff: z.number().finite().positive(),
-	falloff: z.enum(["inverse-square", "inverse"]),
+  mass: z.number().finite().positive(),
+  cutoff: z.number().finite().positive(),
+  falloff: z.enum(["inverse-square", "inverse"]),
 });
 export type MassWell = z.infer<typeof MassWellSchema>;
 
 export interface Planet {
-	/** The configured planet's id, when it has one. */
-	id?: string;
-	/** The mass well law in play; takes precedence over `well`. */
-	massWell?: MassWell;
-	well?: z.infer<typeof PlanetWellSchema>; // Explicit independent well parameters when integrated.
-	pos: Vec2; // Current position (calculated from orbit)
-	orbitCenter: Vec2; // Center of orbit (usually star)
-	orbitRadius: number; // Distance from center
-	orbitSpeed: number; // Radians per second
-	orbitAngle: number; // Current angle
-	initialAngle: number; // Starting angle for resets
-	radius: number; // Physical size
-	mass: number; // Gravity strength
-	color: string; // Hex color
-	type: string; // Visual type (rock, gas, ocean, etc.)
-	hasRing: boolean; // Visual ring system
+  /** The configured planet's id, when it has one. */
+  id?: string;
+  /** The mass well law in play; takes precedence over `well`. */
+  massWell?: MassWell;
+  well?: z.infer<typeof PlanetWellSchema>; // Explicit independent well parameters when integrated.
+  pos: Vec2; // Current position (calculated from orbit)
+  orbitCenter: Vec2; // Center of orbit (usually star)
+  orbitRadius: number; // Distance from center
+  orbitSpeed: number; // Radians per second
+  orbitAngle: number; // Current angle
+  initialAngle: number; // Starting angle for resets
+  radius: number; // Physical size
+  mass: number; // Gravity strength
+  color: string; // Hex color
+  type: string; // Visual type (rock, gas, ocean, etc.)
+  hasRing: boolean; // Visual ring system
 }
 
 /** Shared circular motion for runtime bodies and design-study observations. */
 export function updatePlanetOrbit(planet: Planet, dt: number): void {
-	planet.orbitAngle += planet.orbitSpeed * dt;
-	planet.pos.x =
-		planet.orbitCenter.x + Math.cos(planet.orbitAngle) * planet.orbitRadius;
-	planet.pos.y =
-		planet.orbitCenter.y + Math.sin(planet.orbitAngle) * planet.orbitRadius;
+  planet.orbitAngle += planet.orbitSpeed * dt;
+  planet.pos.x =
+    planet.orbitCenter.x + Math.cos(planet.orbitAngle) * planet.orbitRadius;
+  planet.pos.y =
+    planet.orbitCenter.y + Math.sin(planet.orbitAngle) * planet.orbitRadius;
 }
 
 export interface CollisionEventData {
-	color?: string;
-	x?: number;
-	y?: number;
-	impactSpeed?: number;
+  color?: string;
+  x?: number;
+  y?: number;
+  impactSpeed?: number;
 }
 
 /** Reach of a planet without an explicit well: clamp(sqrt(mass) * massScale, minRadii * r, maxRadii * r). */
 export const PlanetReachRuleSchema = z
-	.object({
-		massScale: z.number().finite().positive(),
-		minRadii: z.number().finite().positive(),
-		maxRadii: z.number().finite().positive(),
-	})
-	.refine((rule) => rule.minRadii <= rule.maxRadii, {
-		message: "minRadii must not exceed maxRadii",
-	});
+  .object({
+    massScale: z.number().finite().positive(),
+    minRadii: z.number().finite().positive(),
+    maxRadii: z.number().finite().positive(),
+  })
+  .refine((rule) => rule.minRadii <= rule.maxRadii, {
+    message: "minRadii must not exceed maxRadii",
+  });
 export type PlanetReachRule = z.infer<typeof PlanetReachRuleSchema>;
 /** Studies and Lab inspectors only; play passes the game's tuned rule. */
 const STUDY_PLANET_REACH: PlanetReachRule = {
-	massScale: 10,
-	minRadii: 2,
-	maxRadii: 8,
+  massScale: 10,
+  minRadii: 2,
+  maxRadii: 8,
 };
 
 export function getPlanetInfluenceRadius(
-	planet: {
-		radius: number;
-		mass: number;
-		well?: { reach: number; strength: number };
-		massWell?: MassWell;
-	},
-	rule: PlanetReachRule = STUDY_PLANET_REACH,
+  planet: {
+    radius: number;
+    mass: number;
+    well?: { reach: number; strength: number };
+    massWell?: MassWell;
+  },
+  rule: PlanetReachRule = STUDY_PLANET_REACH,
 ): number {
-	if (planet.massWell)
-		return massWellReach(
-			planet.massWell.mass,
-			planet.massWell.cutoff,
-			planet.massWell.falloff,
-		);
-	if (planet.well) return planet.well.reach;
-	const massInfluence = Math.sqrt(planet.mass) * rule.massScale;
-	const maxInfluence = planet.radius * rule.maxRadii;
-	const minInfluence = planet.radius * rule.minRadii;
-	return Math.max(minInfluence, Math.min(massInfluence, maxInfluence));
+  if (planet.massWell)
+    return massWellReach(
+      planet.massWell.mass,
+      planet.massWell.cutoff,
+      planet.massWell.falloff,
+    );
+  if (planet.well) return planet.well.reach;
+  const massInfluence = Math.sqrt(planet.mass) * rule.massScale;
+  const maxInfluence = planet.radius * rule.maxRadii;
+  const minInfluence = planet.radius * rule.minRadii;
+  return Math.max(minInfluence, Math.min(massInfluence, maxInfluence));
 }
 
 import { z } from "zod";
 import { CONFIG, SURVIVAL_CONFIG } from "../config";
 
 export const FlightResistanceSchema = z.object({
-	drag: z.number().finite().nonnegative(),
-	speedLimit: z.number().finite().positive().nullable(),
+  drag: z.number().finite().nonnegative(),
+  speedLimit: z.number().finite().positive().nullable(),
 });
 export type FlightResistance = z.infer<typeof FlightResistanceSchema>;
 export const GravityFlightSchema = z.object({
-	engineSpeedScale: z.number().finite().positive(),
+  engineSpeedScale: z.number().finite().positive(),
 });
 /** Along-motion thrust fades; braking and transverse thrust retain full effectiveness. */
 export function engineEffectiveness(
-	velocity: Vec2,
-	direction: Vec2,
-	speedScale: number,
+  velocity: Vec2,
+  direction: Vec2,
+  speedScale: number,
 ): number {
-	const along = Math.max(
-		0,
-		velocity.x * direction.x + velocity.y * direction.y,
-	);
-	return 1 / (1 + (along / speedScale) ** 2);
+  const along = Math.max(
+    0,
+    velocity.x * direction.x + velocity.y * direction.y,
+  );
+  return 1 / (1 + (along / speedScale) ** 2);
 }
 
 export const WellCurveSchema = z.enum(["linear", "inverse-square"]);
@@ -194,24 +194,24 @@ export type MassWellFalloff = z.infer<typeof MassWellFalloffSchema>;
 
 /** A mass well's pull at a distance, with no cut-off. */
 export function massWellPull(
-	distance: number,
-	mass: number,
-	falloff: MassWellFalloff = "inverse-square",
+  distance: number,
+  mass: number,
+  falloff: MassWellFalloff = "inverse-square",
 ): number {
-	return falloff === "inverse"
-		? (MASS_WELL_G_2D * mass) / distance
-		: (MASS_WELL_G * mass) / (distance * distance);
+  return falloff === "inverse"
+    ? (MASS_WELL_G_2D * mass) / distance
+    : (MASS_WELL_G * mass) / (distance * distance);
 }
 
 /** A mass well's reach: where its pull falls to `cutoff`, a hard cut-off. */
 export function massWellReach(
-	mass: number,
-	cutoff: number,
-	falloff: MassWellFalloff = "inverse-square",
+  mass: number,
+  cutoff: number,
+  falloff: MassWellFalloff = "inverse-square",
 ): number {
-	return falloff === "inverse"
-		? (MASS_WELL_G_2D * mass) / cutoff
-		: Math.sqrt((MASS_WELL_G * mass) / cutoff);
+  return falloff === "inverse"
+    ? (MASS_WELL_G_2D * mass) / cutoff
+    : Math.sqrt((MASS_WELL_G * mass) / cutoff);
 }
 
 /**
@@ -221,27 +221,27 @@ export function massWellReach(
  * inside it.
  */
 export function massWellAcceleration(
-	distance: number,
-	mass: number,
-	cutoff: number,
-	falloff: MassWellFalloff = "inverse-square",
+  distance: number,
+  mass: number,
+  cutoff: number,
+  falloff: MassWellFalloff = "inverse-square",
 ): number {
-	if (distance <= 0 || distance >= massWellReach(mass, cutoff, falloff))
-		return 0;
-	return massWellPull(distance, mass, falloff);
+  if (distance <= 0 || distance >= massWellReach(mass, cutoff, falloff))
+    return 0;
+  return massWellPull(distance, mass, falloff);
 }
 
 /** Study comparison: both curves have acceleration strength / 2 at reach / 2. */
 export function wellAcceleration(
-	distance: number,
-	reach: number,
-	strength: number,
-	curve: WellCurve,
+  distance: number,
+  reach: number,
+  strength: number,
+  curve: WellCurve,
 ): number {
-	if (distance <= 0 || distance >= reach) return 0;
-	return curve === "inverse-square"
-		? (strength / 6) * ((reach / distance) ** 2 - 1)
-		: strength * (1 - distance / reach);
+  if (distance <= 0 || distance >= reach) return 0;
+  return curve === "inverse-square"
+    ? (strength / 6) * ((reach / distance) ** 2 - 1)
+    : strength * (1 - distance / reach);
 }
 
 import type { InputState } from "../entities/Input";
@@ -249,111 +249,111 @@ import type { Resources } from "../schemas/common";
 import type { SunType } from "../schemas/sun";
 
 export function updatePower(
-	resources: Resources,
-	distanceToSun: number,
-	sun: Star,
-	deltaTime: number,
-	thrustState: { left: boolean; right: boolean } = {
-		left: false,
-		right: false,
-	},
-	drainMultiplier = 1,
+  resources: Resources,
+  distanceToSun: number,
+  sun: Star,
+  deltaTime: number,
+  thrustState: { left: boolean; right: boolean } = {
+    left: false,
+    right: false,
+  },
+  drainMultiplier = 1,
 ): void {
-	const dt = deltaTime; // Already in seconds
+  const dt = deltaTime; // Already in seconds
 
-	// Consumption - varies based on thrust
-	let consumptionRate: number = SURVIVAL_CONFIG.POWER_CONSUMPTION_RATE;
-	if (thrustState.left && thrustState.right) {
-		consumptionRate = SURVIVAL_CONFIG.POWER_CONSUMPTION_DUAL_THRUST;
-	} else if (thrustState.left || thrustState.right) {
-		consumptionRate = SURVIVAL_CONFIG.POWER_CONSUMPTION_SINGLE_THRUST;
-	}
-	resources.power -=
-		(SURVIVAL_CONFIG.POWER_CONSUMPTION_RATE +
-			(consumptionRate - SURVIVAL_CONFIG.POWER_CONSUMPTION_RATE) *
-				drainMultiplier) *
-		dt;
+  // Consumption - varies based on thrust
+  let consumptionRate: number = SURVIVAL_CONFIG.POWER_CONSUMPTION_RATE;
+  if (thrustState.left && thrustState.right) {
+    consumptionRate = SURVIVAL_CONFIG.POWER_CONSUMPTION_DUAL_THRUST;
+  } else if (thrustState.left || thrustState.right) {
+    consumptionRate = SURVIVAL_CONFIG.POWER_CONSUMPTION_SINGLE_THRUST;
+  }
+  resources.power -=
+    (SURVIVAL_CONFIG.POWER_CONSUMPTION_RATE +
+      (consumptionRate - SURVIVAL_CONFIG.POWER_CONSUMPTION_RATE) *
+        drainMultiplier) *
+    dt;
 
-	resources.power += solarCollectionRate(distanceToSun, sun) * dt;
+  resources.power += solarCollectionRate(distanceToSun, sun) * dt;
 
-	// Clamp
-	resources.power = Math.max(0, Math.min(100, resources.power));
+  // Clamp
+  resources.power = Math.max(0, Math.min(100, resources.power));
 }
 
 export function updateHull(
-	resources: Resources,
-	distanceToSun: number,
-	sun: Star,
-	deltaTime: number,
-	hullMultiplier = 1,
+  resources: Resources,
+  distanceToSun: number,
+  sun: Star,
+  deltaTime: number,
+  hullMultiplier = 1,
 ): void {
-	const dt = deltaTime;
+  const dt = deltaTime;
 
-	// Star contact = instant death
-	if (distanceToSun < sun.radius) {
-		resources.hull = 0;
-		return;
-	}
+  // Star contact = instant death
+  if (distanceToSun < sun.radius) {
+    resources.hull = 0;
+    return;
+  }
 
-	resources.hull -= (solarDamageRate(distanceToSun) * dt) / hullMultiplier;
+  resources.hull -= (solarDamageRate(distanceToSun) * dt) / hullMultiplier;
 
-	// Clamp
-	resources.hull = Math.max(0, Math.min(100, resources.hull));
+  // Clamp
+  resources.hull = Math.max(0, Math.min(100, resources.hull));
 }
 
 export function applyPlanetCollisionDamage(resources: Resources): void {
-	resources.hull -= SURVIVAL_CONFIG.PLANET_COLLISION_DAMAGE;
-	resources.hull = Math.max(0, resources.hull);
+  resources.hull -= SURVIVAL_CONFIG.PLANET_COLLISION_DAMAGE;
+  resources.hull = Math.max(0, resources.hull);
 }
 
 /** A sun's pull at a point: inside its reach and outside its surface. */
 export function starPull(
-	at: { x: number; y: number },
-	star: Star,
-	curve: WellCurve,
+  at: { x: number; y: number },
+  star: Star,
+  curve: WellCurve,
 ): Vec2 {
-	const distVec = star.pos.clone().sub(new Vec2(at.x, at.y));
-	const dist = distVec.mag();
-	if (!(dist < star.influenceRadius && dist > star.radius))
-		return new Vec2(0, 0);
-	distVec.normalize();
-	const well = star.massWell;
-	return distVec.mult(
-		well
-			? massWellAcceleration(dist, well.mass, well.cutoff, well.falloff)
-			: wellAcceleration(dist, star.influenceRadius, star.mass, curve),
-	);
+  const distVec = star.pos.clone().sub(new Vec2(at.x, at.y));
+  const dist = distVec.mag();
+  if (!(dist < star.influenceRadius && dist > star.radius))
+    return new Vec2(0, 0);
+  distVec.normalize();
+  const well = star.massWell;
+  return distVec.mult(
+    well
+      ? massWellAcceleration(dist, well.mass, well.cutoff, well.falloff)
+      : wellAcceleration(dist, star.influenceRadius, star.mass, curve),
+  );
 }
 
 /** A planet's pull at a point: inside its reach and outside contact distance. */
 export function planetPull(
-	at: { x: number; y: number },
-	shipRadius: number,
-	planet: Planet,
+  at: { x: number; y: number },
+  shipRadius: number,
+  planet: Planet,
 ): { x: number; y: number } {
-	const dx = planet.pos.x - at.x;
-	const dy = planet.pos.y - at.y;
-	const distSq = dx * dx + dy * dy;
-	const dist = Math.sqrt(distSq);
-	if (
-		!(
-			dist < getPlanetInfluenceRadius(planet) &&
-			dist > planet.radius + shipRadius
-		)
-	)
-		return { x: 0, y: 0 };
-	const mass = planet.massWell;
-	const strength = mass
-		? massWellAcceleration(dist, mass.mass, mass.cutoff, mass.falloff)
-		: planet.well
-			? wellAcceleration(
-					dist,
-					planet.well.reach,
-					planet.well.strength,
-					planet.well.curve ?? "inverse-square",
-				)
-			: (planet.mass / distSq) * 1000;
-	return { x: (dx / dist) * strength, y: (dy / dist) * strength };
+  const dx = planet.pos.x - at.x;
+  const dy = planet.pos.y - at.y;
+  const distSq = dx * dx + dy * dy;
+  const dist = Math.sqrt(distSq);
+  if (
+    !(
+      dist < getPlanetInfluenceRadius(planet) &&
+      dist > planet.radius + shipRadius
+    )
+  )
+    return { x: 0, y: 0 };
+  const mass = planet.massWell;
+  const strength = mass
+    ? massWellAcceleration(dist, mass.mass, mass.cutoff, mass.falloff)
+    : planet.well
+      ? wellAcceleration(
+          dist,
+          planet.well.reach,
+          planet.well.strength,
+          planet.well.curve ?? "inverse-square",
+        )
+      : (planet.mass / distSq) * 1000;
+  return { x: (dx / dist) * strength, y: (dy / dist) * strength };
 }
 
 /**
@@ -362,199 +362,199 @@ export function planetPull(
  * restitution 0.8. Returns the speed at impact, or null without contact.
  */
 export function bounceOffSurface(
-	ship: { pos: Vec2; vel: Vec2 },
-	centre: { x: number; y: number },
-	contactDistance: number,
+  ship: { pos: Vec2; vel: Vec2 },
+  centre: { x: number; y: number },
+  contactDistance: number,
 ): number | null {
-	const dx = centre.x - ship.pos.x;
-	const dy = centre.y - ship.pos.y;
-	const dist = Math.sqrt(dx * dx + dy * dy);
-	if (!(dist < contactDistance)) return null;
-	const impactSpeed = Math.hypot(ship.vel.x, ship.vel.y);
+  const dx = centre.x - ship.pos.x;
+  const dy = centre.y - ship.pos.y;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  if (!(dist < contactDistance)) return null;
+  const impactSpeed = Math.hypot(ship.vel.x, ship.vel.y);
 
-	// Resolve overlap
-	const overlap = contactDistance - dist;
-	const nx = dist > 0 ? dx / dist : 1; // Vector pointing towards the centre
-	const ny = dist > 0 ? dy / dist : 0;
+  // Resolve overlap
+  const overlap = contactDistance - dist;
+  const nx = dist > 0 ? dx / dist : 1; // Vector pointing towards the centre
+  const ny = dist > 0 ? dy / dist : 0;
 
-	// Push ship out
-	ship.pos.x -= nx * overlap;
-	ship.pos.y -= ny * overlap;
+  // Push ship out
+  ship.pos.x -= nx * overlap;
+  ship.pos.y -= ny * overlap;
 
-	// Reflect velocity, V' = V - 2(V . N)N, about the outward normal N = -n
-	const normalX = -nx;
-	const normalY = -ny;
-	const dot = ship.vel.x * normalX + ship.vel.y * normalY;
-	const restitution = 0.8;
-	ship.vel.x = (ship.vel.x - 2 * dot * normalX) * restitution;
-	ship.vel.y = (ship.vel.y - 2 * dot * normalY) * restitution;
-	return impactSpeed;
+  // Reflect velocity, V' = V - 2(V . N)N, about the outward normal N = -n
+  const normalX = -nx;
+  const normalY = -ny;
+  const dot = ship.vel.x * normalX + ship.vel.y * normalY;
+  const restitution = 0.8;
+  ship.vel.x = (ship.vel.x - 2 * dot * normalX) * restitution;
+  ship.vel.y = (ship.vel.y - 2 * dot * normalY) * restitution;
+  return impactSpeed;
 }
 
 export function updateShip(
-	ship: GameObject,
-	input: InputState,
-	dt: number,
-	width: number,
-	height: number,
-	star?: Star,
-	planets: Planet[] = [],
-	resources?: Resources,
-	onCollision?: (
-		type: "planet" | "star",
-		magnitude: number,
-		data?: CollisionEventData,
-	) => void,
-	tuning = { thrustMultiplier: 1, turnMultiplier: 1, hullMultiplier: 1 },
-	resistance: FlightResistance = {
-		drag: CONFIG.SHIP_DRAG,
-		speedLimit: CONFIG.MAX_SPEED,
-	},
-	wellCurve: WellCurve = "linear",
-	engineSpeedScale: number | null = null,
-	engineCutoff: number | null = null,
+  ship: GameObject,
+  input: InputState,
+  dt: number,
+  width: number,
+  height: number,
+  star?: Star,
+  planets: Planet[] = [],
+  resources?: Resources,
+  onCollision?: (
+    type: "planet" | "star",
+    magnitude: number,
+    data?: CollisionEventData,
+  ) => void,
+  tuning = { thrustMultiplier: 1, turnMultiplier: 1, hullMultiplier: 1 },
+  resistance: FlightResistance = {
+    drag: CONFIG.SHIP_DRAG,
+    speedLimit: CONFIG.MAX_SPEED,
+  },
+  wellCurve: WellCurve = "linear",
+  engineSpeedScale: number | null = null,
+  engineCutoff: number | null = null,
 ) {
-	// 1. Rotation & Variable Thrust (Differential)
-	// Left Engine -> Rotate Right + 50% Thrust
-	// Right Engine -> Rotate Left + 50% Thrust
-	// Both -> 100% Thrust, No Rotate (impulses cancel out rotation)
+  // 1. Rotation & Variable Thrust (Differential)
+  // Left Engine -> Rotate Right + 50% Thrust
+  // Right Engine -> Rotate Left + 50% Thrust
+  // Both -> 100% Thrust, No Rotate (impulses cancel out rotation)
 
-	let thrustMultiplier = 0.0;
+  let thrustMultiplier = 0.0;
 
-	if (input.leftThruster && input.rightThruster) {
-		// Both active: Standard thrust, no rotation
-		thrustMultiplier = 1.0;
-	} else if (input.leftThruster) {
-		// Left only: Rotate + Double Thrust (was 0.5)
-		ship.rotation += CONFIG.ROTATION_SPEED * tuning.turnMultiplier * dt;
-		thrustMultiplier = 1.0;
-	} else if (input.rightThruster) {
-		// Right only: Rotate + Double Thrust (was 0.5)
-		ship.rotation -= CONFIG.ROTATION_SPEED * tuning.turnMultiplier * dt;
-		thrustMultiplier = 1.0;
-	}
+  if (input.leftThruster && input.rightThruster) {
+    // Both active: Standard thrust, no rotation
+    thrustMultiplier = 1.0;
+  } else if (input.leftThruster) {
+    // Left only: Rotate + Double Thrust (was 0.5)
+    ship.rotation += CONFIG.ROTATION_SPEED * tuning.turnMultiplier * dt;
+    thrustMultiplier = 1.0;
+  } else if (input.rightThruster) {
+    // Right only: Rotate + Double Thrust (was 0.5)
+    ship.rotation -= CONFIG.ROTATION_SPEED * tuning.turnMultiplier * dt;
+    thrustMultiplier = 1.0;
+  }
 
-	let deliveredFraction = thrustMultiplier;
-	if (engineCutoff !== null && thrustMultiplier > 0) {
-		const along =
-			ship.vel.x * Math.cos(ship.rotation) +
-			ship.vel.y * Math.sin(ship.rotation);
-		const active = Number(input.leftThruster) + Number(input.rightThruster);
-		const full = (CONFIG.THRUST_FORCE * tuning.thrustMultiplier * active) / 2;
-		const taper = Math.max(0, 1 - Math.max(0, along) / engineCutoff);
-		deliveredFraction =
-			full > 0
-				? Math.min(taper, Math.max(0, engineCutoff - along) / (full * dt))
-				: 0;
-		thrustMultiplier = (active / 2) * deliveredFraction;
-	} else if (engineSpeedScale !== null && thrustMultiplier > 0) {
-		deliveredFraction = engineEffectiveness(
-			ship.vel,
-			new Vec2(Math.cos(ship.rotation), Math.sin(ship.rotation)),
-			engineSpeedScale,
-		);
-		thrustMultiplier *= deliveredFraction;
-		if (!(input.leftThruster && input.rightThruster)) thrustMultiplier *= 0.5;
-	}
-	// Apply Thrust
-	if (thrustMultiplier > 0) {
-		const thrustX =
-			Math.cos(ship.rotation) *
-			CONFIG.THRUST_FORCE *
-			thrustMultiplier *
-			tuning.thrustMultiplier;
-		const thrustY =
-			Math.sin(ship.rotation) *
-			CONFIG.THRUST_FORCE *
-			thrustMultiplier *
-			tuning.thrustMultiplier;
-		ship.acc.x += thrustX;
-		ship.acc.y += thrustY;
-	}
+  let deliveredFraction = thrustMultiplier;
+  if (engineCutoff !== null && thrustMultiplier > 0) {
+    const along =
+      ship.vel.x * Math.cos(ship.rotation) +
+      ship.vel.y * Math.sin(ship.rotation);
+    const active = Number(input.leftThruster) + Number(input.rightThruster);
+    const full = (CONFIG.THRUST_FORCE * tuning.thrustMultiplier * active) / 2;
+    const taper = Math.max(0, 1 - Math.max(0, along) / engineCutoff);
+    deliveredFraction =
+      full > 0
+        ? Math.min(taper, Math.max(0, engineCutoff - along) / (full * dt))
+        : 0;
+    thrustMultiplier = (active / 2) * deliveredFraction;
+  } else if (engineSpeedScale !== null && thrustMultiplier > 0) {
+    deliveredFraction = engineEffectiveness(
+      ship.vel,
+      new Vec2(Math.cos(ship.rotation), Math.sin(ship.rotation)),
+      engineSpeedScale,
+    );
+    thrustMultiplier *= deliveredFraction;
+    if (!(input.leftThruster && input.rightThruster)) thrustMultiplier *= 0.5;
+  }
+  // Apply Thrust
+  if (thrustMultiplier > 0) {
+    const thrustX =
+      Math.cos(ship.rotation) *
+      CONFIG.THRUST_FORCE *
+      thrustMultiplier *
+      tuning.thrustMultiplier;
+    const thrustY =
+      Math.sin(ship.rotation) *
+      CONFIG.THRUST_FORCE *
+      thrustMultiplier *
+      tuning.thrustMultiplier;
+    ship.acc.x += thrustX;
+    ship.acc.y += thrustY;
+  }
 
-	// 2. Gravity Well (Star)
-	if (star) ship.acc.add(starPull(ship.pos, star, wellCurve));
+  // 2. Gravity Well (Star)
+  if (star) ship.acc.add(starPull(ship.pos, star, wellCurve));
 
-	// 3. Planet Interaction (Gravity + Collision)
-	for (const planet of planets) {
-		// Update Planet Position (Orbit)
-		updatePlanetOrbit(planet, dt);
+  // 3. Planet Interaction (Gravity + Collision)
+  for (const planet of planets) {
+    // Update Planet Position (Orbit)
+    updatePlanetOrbit(planet, dt);
 
-		const gravity = planetPull(ship.pos, ship.radius, planet);
-		ship.acc.x += gravity.x;
-		ship.acc.y += gravity.y;
+    const gravity = planetPull(ship.pos, ship.radius, planet);
+    ship.acc.x += gravity.x;
+    ship.acc.y += gravity.y;
 
-		// Collision (Elastic Bounce)
-		const impactSpeed = bounceOffSurface(
-			ship,
-			planet.pos,
-			planet.radius + ship.radius,
-		);
-		if (impactSpeed !== null) {
-			const impactMagnitude = Math.max(0.1, Math.min(1, impactSpeed / 550));
+    // Collision (Elastic Bounce)
+    const impactSpeed = bounceOffSurface(
+      ship,
+      planet.pos,
+      planet.radius + ship.radius,
+    );
+    if (impactSpeed !== null) {
+      const impactMagnitude = Math.max(0.1, Math.min(1, impactSpeed / 550));
 
-			if (resources) {
-				resources.hull = Math.max(
-					0,
-					resources.hull -
-						SURVIVAL_CONFIG.PLANET_COLLISION_DAMAGE / tuning.hullMultiplier,
-				);
-			}
+      if (resources) {
+        resources.hull = Math.max(
+          0,
+          resources.hull -
+            SURVIVAL_CONFIG.PLANET_COLLISION_DAMAGE / tuning.hullMultiplier,
+        );
+      }
 
-			if (onCollision) {
-				onCollision("planet", impactMagnitude, {
-					color: planet.color,
-					x: ship.pos.x,
-					y: ship.pos.y,
-					impactSpeed,
-				});
-			}
-		}
-	}
+      if (onCollision) {
+        onCollision("planet", impactMagnitude, {
+          color: planet.color,
+          x: ship.pos.x,
+          y: ship.pos.y,
+          impactSpeed,
+        });
+      }
+    }
+  }
 
-	// 4. Integration
-	// vel += acc * dt
+  // 4. Integration
+  // vel += acc * dt
 
-	ship.vel.x += ship.acc.x * dt;
-	ship.vel.y += ship.acc.y * dt;
+  ship.vel.x += ship.acc.x * dt;
+  ship.vel.y += ship.acc.y * dt;
 
-	// 5. Inertia Damping (Drag)
-	// Approx nonlinear drag: vel -= vel * DRAG * dt
-	// Or VEL *= (1 - DRAG * dt)
-	const dragFactor = 1 - resistance.drag * dt;
-	ship.vel.mult(Math.max(0, dragFactor)); // Prevent negative reversal if low FPS
+  // 5. Inertia Damping (Drag)
+  // Approx nonlinear drag: vel -= vel * DRAG * dt
+  // Or VEL *= (1 - DRAG * dt)
+  const dragFactor = 1 - resistance.drag * dt;
+  ship.vel.mult(Math.max(0, dragFactor)); // Prevent negative reversal if low FPS
 
-	// 6. Max Speed Cap
-	if (
-		resistance.speedLimit !== null &&
-		ship.vel.mag() > resistance.speedLimit
-	) {
-		ship.vel.normalize().mult(resistance.speedLimit);
-	}
+  // 6. Max Speed Cap
+  if (
+    resistance.speedLimit !== null &&
+    ship.vel.mag() > resistance.speedLimit
+  ) {
+    ship.vel.normalize().mult(resistance.speedLimit);
+  }
 
-	// pos += vel * dt
-	ship.pos.x += ship.vel.x * dt;
-	ship.pos.y += ship.vel.y * dt;
+  // pos += vel * dt
+  ship.pos.x += ship.vel.x * dt;
+  ship.pos.y += ship.vel.y * dt;
 
-	ship.acc.set(0, 0);
+  ship.acc.set(0, 0);
 
-	// 7. Wrapping (Circular Arena - R=1200)
-	const centerX = width / 2;
-	const centerY = height / 2;
-	const dx = ship.pos.x - centerX;
-	const dy = ship.pos.y - centerY;
-	const distSq = dx * dx + dy * dy;
-	const radiusSq = 1200 * 1200;
+  // 7. Wrapping (Circular Arena - R=1200)
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const dx = ship.pos.x - centerX;
+  const dy = ship.pos.y - centerY;
+  const distSq = dx * dx + dy * dy;
+  const radiusSq = 1200 * 1200;
 
-	if (distSq > radiusSq) {
-		// Antipodal Wrap: Teleport to opposite side
-		// Preserve velocity (so it points inward from the other side)
+  if (distSq > radiusSq) {
+    // Antipodal Wrap: Teleport to opposite side
+    // Preserve velocity (so it points inward from the other side)
 
-		// To prevent getting stuck in a loop due to floating point precision,
-		// wrap slightly inside the circle (0.99)
-		const distance = Math.hypot(dx, dy);
-		ship.pos.x = centerX - (dx / distance) * 1190;
-		ship.pos.y = centerY - (dy / distance) * 1190;
-	}
-	return deliveredFraction;
+    // To prevent getting stuck in a loop due to floating point precision,
+    // wrap slightly inside the circle (0.99)
+    const distance = Math.hypot(dx, dy);
+    ship.pos.x = centerX - (dx / distance) * 1190;
+    ship.pos.y = centerY - (dy / distance) * 1190;
+  }
+  return deliveredFraction;
 }

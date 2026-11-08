@@ -4,30 +4,30 @@ import StudyLayout from "../../../layouts/StudyLayout.astro";
 ---
 
 <StudyLayout>
-	{studies.map((study) => (
-		<article>
-			<p>
-				{study.phase} · {study.status}
-			</p>
-			<h2>
-				<a href={`/lab/studies/${study.slug}`}>{study.title} →</a>
-			</h2>
-			<p>{study.question}</p>
-		</article>
-	))}
-	<p>
-		Studies have four parts: design problem → exploration → readiness → scope. A
-		study is open until it ends as accepted, ruled out or stopped. Accepted
-		studies scope slices that are implemented as separate work; acceptance does
-		not imply implementation. Stopped studies retain their evidence in a closure
-		record. Study-quality evaluation is separate.
-	</p>
+  {studies.map((study) => (
+    <article>
+      <p>
+        {study.phase} · {study.status}
+      </p>
+      <h2>
+        <a href={`/lab/studies/${study.slug}`}>{study.title} →</a>
+      </h2>
+      <p>{study.question}</p>
+    </article>
+  ))}
+  <p>
+    Studies have four parts: design problem → exploration → readiness → scope. A
+    study is open until it ends as accepted, ruled out or stopped. Accepted
+    studies scope slices that are implemented as separate work; acceptance does
+    not imply implementation. Stopped studies retain their evidence in a closure
+    record. Study-quality evaluation is separate.
+  </p>
 </StudyLayout>
 <style>
 article {
-	border: var(--flight-border);
-	padding: var(--spacing-lg);
-	margin-bottom: var(--spacing-lg);
-	background: var(--color-void-light);
+  border: var(--flight-border);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  background: var(--color-void-light);
 }
 </style>

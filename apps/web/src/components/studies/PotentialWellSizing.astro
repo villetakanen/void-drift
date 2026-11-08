@@ -5,217 +5,217 @@ const ships = ["wasp", "scout", "fighter", "corvette"] as const;
 ---
 
 <div class="sizing" id="potential-sizing">
-	<div class="controls">
-		<label
-			>Variant<select data-variant>
-				<option value="battery">Potential Well</option>
-				<option value="heavy-well">Heavy Potential Well</option>
-			</select></label
-		>
-		<label
-			>Device scale <output>0.55× · decided</output>
-			<input
-				aria-label="Potential Well scale"
-				type="range"
-				min="0.15"
-				max="1.5"
-				step="0.025"
-				value="0.55"
-				disabled
-			></label
-		>
-		<label
-			>Layering
-			<select data-layer>
-				<option value="production">Production mount rules</option>
-				<option value="above">Above hull · comparison</option>
-				<option value="below">Below hull · comparison</option>
-			</select></label
-		>
-		<button type="button">Reset</button>
-	</div>
-	<p>
-		Shared size across all ships. Enlarged views 3×; lower views 0.65× flight
-		scale. Production equipment mounts are below Wasp and Scout, above Fighter
-		and Corvette.
-	</p>
-	<div class="ships">
-		{ships.map((id) => (
-			<figure>
-				<figcaption>{id}</figcaption>
-				<label>
-					Equipment mount
-					<select data-mount={id} aria-label={`${id} equipment mount`}>
-						{buildMounts(defaultLoadout(id))
-							.filter((m) => m.group === "hull")
-							.map((m, i) => (
-								<option value={i}>{m.label}</option>
-							))}
-					</select>
-				</label>
-				<div class="canvas-wrap">
-					<canvas
-						width="400"
-						height="450"
-						data-ship={id}
-						aria-label={`${id}, mounted Potential Well and Light ion engines`}
-					></canvas>
-				</div>
-				<p>
-					{id === "wasp"
-						? "1 Light ion · no aft mounts"
-						: `${2 + defaultLoadout(id).aft.length} Light ions including all aft mounts`}
-				</p>
-			</figure>
-		))}
-	</div>
+  <div class="controls">
+    <label
+      >Variant<select data-variant>
+        <option value="battery">Potential Well</option>
+        <option value="heavy-well">Heavy Potential Well</option>
+      </select></label
+    >
+    <label
+      >Device scale <output>0.55× · decided</output>
+      <input
+        aria-label="Potential Well scale"
+        type="range"
+        min="0.15"
+        max="1.5"
+        step="0.025"
+        value="0.55"
+        disabled
+      ></label
+    >
+    <label
+      >Layering
+      <select data-layer>
+        <option value="production">Production mount rules</option>
+        <option value="above">Above hull · comparison</option>
+        <option value="below">Below hull · comparison</option>
+      </select></label
+    >
+    <button type="button">Reset</button>
+  </div>
+  <p>
+    Shared size across all ships. Enlarged views 3×; lower views 0.65× flight
+    scale. Production equipment mounts are below Wasp and Scout, above Fighter
+    and Corvette.
+  </p>
+  <div class="ships">
+    {ships.map((id) => (
+      <figure>
+        <figcaption>{id}</figcaption>
+        <label>
+          Equipment mount
+          <select data-mount={id} aria-label={`${id} equipment mount`}>
+            {buildMounts(defaultLoadout(id))
+              .filter((m) => m.group === "hull")
+              .map((m, i) => (
+                <option value={i}>{m.label}</option>
+              ))}
+          </select>
+        </label>
+        <div class="canvas-wrap">
+          <canvas
+            width="400"
+            height="450"
+            data-ship={id}
+            aria-label={`${id}, mounted Potential Well and Light ion engines`}
+          ></canvas>
+        </div>
+        <p>
+          {id === "wasp"
+            ? "1 Light ion · no aft mounts"
+            : `${2 + defaultLoadout(id).aft.length} Light ions including all aft mounts`}
+        </p>
+      </figure>
+    ))}
+  </div>
 </div>
 <script>
 import {
-	buildMounts,
-	defaultLoadout,
-	drawBuild,
-	drawPotentialWell,
+  buildMounts,
+  defaultLoadout,
+  drawBuild,
+  drawPotentialWell,
 } from "@void-drift/mode-a";
 
 const ships = ["wasp", "scout", "fighter", "corvette"] as const;
 const host = document.querySelector<HTMLDivElement>("#potential-sizing");
 if (host) {
-	const slider = host.querySelector<HTMLInputElement>("input");
-	const layer = host.querySelector<HTMLSelectElement>("[data-layer]");
-	const variant = host.querySelector<HTMLSelectElement>("[data-variant]");
-	const draw = () => {
-		if (!slider || !layer) return;
-		const size = 0.55,
-			layering = layer.value;
-		const choices: Record<string, number> = {};
-		for (const id of ships)
-			choices[id] = Number(
-				host.querySelector<HTMLSelectElement>(`[data-mount="${id}"]`)?.value ??
-					0,
-			);
-		const output = host.querySelector("output");
-		if (output) output.textContent = `${size.toFixed(2)}×`;
-		for (const id of ships) {
-			const canvas = host.querySelector<HTMLCanvasElement>(
-				`canvas[data-ship="${id}"]`,
-			);
-			const ctx = canvas?.getContext("2d");
-			if (!ctx) continue;
-			const build = defaultLoadout(id);
-			build.side = "ion";
-			build.aft.fill("ion");
-			const mount = buildMounts(build).filter((m) => m.group === "hull")[
-				choices[id]
-			];
-			if (!mount) continue;
-			const below =
-				layering === "below" ||
-				(layering === "production" && (id === "scout" || id === "wasp"));
-			ctx.clearRect(0, 0, 400, 450);
-			for (const [x, y, zoom] of [
-				[200, 185, 3],
-				[200, 405, 0.65],
-			]) {
-				const part = () => {
-					ctx.save();
-					ctx.translate(x, y);
-					ctx.rotate(-Math.PI / 2);
-					ctx.scale(zoom, zoom);
-					ctx.translate(mount.x, mount.y);
-					ctx.rotate(mount.angle);
-					drawPotentialWell(ctx, variant?.value === "heavy-well");
-					ctx.restore();
-				};
-				if (layering === "production") {
-					build.hull[choices[id]] =
-						variant?.value === "heavy-well" ? "heavy-well" : "battery";
-					drawBuild(ctx, build, x, y, -Math.PI / 2, zoom);
-				} else {
-					if (below) part();
-					drawBuild(ctx, build, x, y, -Math.PI / 2, zoom);
-					if (!below) part();
-				}
-			}
-		}
-	};
-	host.addEventListener("input", draw);
-	host.addEventListener("change", draw);
-	host.querySelector("button")?.addEventListener("click", () => {
-		if (slider) slider.value = "0.55";
-		if (layer) layer.value = "production";
-		draw();
-	});
-	draw();
+  const slider = host.querySelector<HTMLInputElement>("input");
+  const layer = host.querySelector<HTMLSelectElement>("[data-layer]");
+  const variant = host.querySelector<HTMLSelectElement>("[data-variant]");
+  const draw = () => {
+    if (!slider || !layer) return;
+    const size = 0.55,
+      layering = layer.value;
+    const choices: Record<string, number> = {};
+    for (const id of ships)
+      choices[id] = Number(
+        host.querySelector<HTMLSelectElement>(`[data-mount="${id}"]`)?.value ??
+          0,
+      );
+    const output = host.querySelector("output");
+    if (output) output.textContent = `${size.toFixed(2)}×`;
+    for (const id of ships) {
+      const canvas = host.querySelector<HTMLCanvasElement>(
+        `canvas[data-ship="${id}"]`,
+      );
+      const ctx = canvas?.getContext("2d");
+      if (!ctx) continue;
+      const build = defaultLoadout(id);
+      build.side = "ion";
+      build.aft.fill("ion");
+      const mount = buildMounts(build).filter((m) => m.group === "hull")[
+        choices[id]
+      ];
+      if (!mount) continue;
+      const below =
+        layering === "below" ||
+        (layering === "production" && (id === "scout" || id === "wasp"));
+      ctx.clearRect(0, 0, 400, 450);
+      for (const [x, y, zoom] of [
+        [200, 185, 3],
+        [200, 405, 0.65],
+      ]) {
+        const part = () => {
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(-Math.PI / 2);
+          ctx.scale(zoom, zoom);
+          ctx.translate(mount.x, mount.y);
+          ctx.rotate(mount.angle);
+          drawPotentialWell(ctx, variant?.value === "heavy-well");
+          ctx.restore();
+        };
+        if (layering === "production") {
+          build.hull[choices[id]] =
+            variant?.value === "heavy-well" ? "heavy-well" : "battery";
+          drawBuild(ctx, build, x, y, -Math.PI / 2, zoom);
+        } else {
+          if (below) part();
+          drawBuild(ctx, build, x, y, -Math.PI / 2, zoom);
+          if (!below) part();
+        }
+      }
+    }
+  };
+  host.addEventListener("input", draw);
+  host.addEventListener("change", draw);
+  host.querySelector("button")?.addEventListener("click", () => {
+    if (slider) slider.value = "0.55";
+    if (layer) layer.value = "production";
+    draw();
+  });
+  draw();
 }
 </script>
 <style>
 .controls {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 1rem;
-	align-items: end;
-	position: sticky;
-	top: 0;
-	background: var(--color-void);
-	padding: 1rem;
-	z-index: 1;
-	border: 1px solid var(--color-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: end;
+  position: sticky;
+  top: 0;
+  background: var(--color-void);
+  padding: 1rem;
+  z-index: 1;
+  border: 1px solid var(--color-border);
 }
 label {
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-	font-size: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.875rem;
 }
 input {
-	width: 260px;
-	accent-color: var(--color-action);
+  width: 260px;
+  accent-color: var(--color-action);
 }
 select,
 button {
-	font: inherit;
-	background: var(--color-void);
-	color: var(--color-text);
-	border: 1px solid var(--color-border);
-	padding: 0.5rem;
+  font: inherit;
+  background: var(--color-void);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  padding: 0.5rem;
 }
 button {
-	cursor: pointer;
+  cursor: pointer;
 }
 .ships {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
 }
 figure {
-	margin: 0;
-	padding: 1rem;
-	border: 1px solid var(--color-border);
-	min-width: 0;
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  min-width: 0;
 }
 figcaption {
-	text-transform: capitalize;
-	font-weight: bold;
-	margin-bottom: 1rem;
+  text-transform: capitalize;
+  font-weight: bold;
+  margin-bottom: 1rem;
 }
 .canvas-wrap {
-	overflow: auto;
+  overflow: auto;
 }
 canvas {
-	display: block;
-	width: 400px;
-	height: 450px;
-	max-width: none;
-	margin: auto;
+  display: block;
+  width: 400px;
+  height: 450px;
+  max-width: none;
+  margin: auto;
 }
 p {
-	font-size: 0.875rem;
-	line-height: 1.5;
+  font-size: 0.875rem;
+  line-height: 1.5;
 }
 @media (max-width: 700px) {
-	.ships {
-		grid-template-columns: 1fr;
-	}
+  .ships {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

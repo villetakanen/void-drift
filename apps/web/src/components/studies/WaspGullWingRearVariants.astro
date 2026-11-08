@@ -3,1289 +3,1289 @@ import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
 
 type Point = readonly [number, number];
 type Facet = {
-	points: readonly Point[];
-	shade: 0 | 1 | 2 | 3 | 4 | 5;
+  points: readonly Point[];
+  shade: 0 | 1 | 2 | 3 | 4 | 5;
 };
 
 interface RearVariant {
-	name: string;
-	idea: string;
-	canopyAft?: readonly [Point, Point]; // Optional custom mid/aft canopy vertices [leftBot, centerTip]
-	aftFacets: readonly Facet[];
+  name: string;
+  idea: string;
+  canopyAft?: readonly [Point, Point]; // Optional custom mid/aft canopy vertices [leftBot, centerTip]
+  aftFacets: readonly Facet[];
 }
 
 const pts = (list: readonly Point[]) => list.map((p) => p.join(",")).join(" ");
 
 const palette = [
-	FIGHTER.facets[0], // #c8f4f0 (brightest upper-left)
-	FIGHTER.facets[1], // #83c7d0
-	FIGHTER.facets[5], // #6193a9
-	FIGHTER.facets[2], // #437e99
-	FIGHTER.facets[4], // #365d79
-	FIGHTER.facets[3], // #264d6b (deepest shadow lower-right)
+  FIGHTER.facets[0], // #c8f4f0 (brightest upper-left)
+  FIGHTER.facets[1], // #83c7d0
+  FIGHTER.facets[5], // #6193a9
+  FIGHTER.facets[2], // #437e99
+  FIGHTER.facets[4], // #365d79
+  FIGHTER.facets[3], // #264d6b (deepest shadow lower-right)
 ] as const;
 
 // Shared front nose + outer two gull-wing ribbons from 08 / Gull-wing ribbons
 const sharedForeFacets: readonly Facet[] = [
-	// Left & right nose planes
-	{
-		points: [
-			[-3, -25],
-			[0, -25],
-			[0, -16],
-			[-3, -10],
-			[-6, -10],
-		],
-		shade: 0,
-	},
-	{
-		points: [
-			[0, -25],
-			[3, -25],
-			[6, -10],
-			[3, -10],
-			[0, -16],
-		],
-		shade: 2,
-	},
-	// Outer gull-wing ribbon (shoulder to wingtip to outer lower corner)
-	{
-		points: [
-			[-6, -10],
-			[-13.5, 12.5],
-			[-18, 6.5],
-		],
-		shade: 3,
-	},
-	{
-		points: [
-			[6, -10],
-			[18, 6.5],
-			[13.5, 12.5],
-		],
-		shade: 5,
-	},
+  // Left & right nose planes
+  {
+    points: [
+      [-3, -25],
+      [0, -25],
+      [0, -16],
+      [-3, -10],
+      [-6, -10],
+    ],
+    shade: 0,
+  },
+  {
+    points: [
+      [0, -25],
+      [3, -25],
+      [6, -10],
+      [3, -10],
+      [0, -16],
+    ],
+    shade: 2,
+  },
+  // Outer gull-wing ribbon (shoulder to wingtip to outer lower corner)
+  {
+    points: [
+      [-6, -10],
+      [-13.5, 12.5],
+      [-18, 6.5],
+    ],
+    shade: 3,
+  },
+  {
+    points: [
+      [6, -10],
+      [18, 6.5],
+      [13.5, 12.5],
+    ],
+    shade: 5,
+  },
 ];
 
 const variants: readonly RearVariant[] = [
-	{
-		name: "08.01 / Tapered wasp keel",
-		idea: "The gull wings step inward from x=±9 to ±6 at y=12.5; a slim central spine tapers to ±1.8 at the stern between narrow tail cheeks (±4.2).",
-		aftFacets: [
-			// Mid & inner gull-wing ribbons
-			{
-				points: [
-					[-6, -10],
-					[-9, 12.5],
-					[-13.5, 12.5],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[6, -10],
-					[13.5, 12.5],
-					[9, 12.5],
-				],
-				shade: 4,
-			},
-			{
-				points: [
-					[-6, -10],
-					[-3, -10],
-					[-3, -1],
-					[-6, 12.5],
-					[-9, 12.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[6, -10],
-					[9, 12.5],
-					[6, 12.5],
-					[3, -1],
-					[3, -10],
-				],
-				shade: 2,
-			},
-			// Slim inner chassis & tapered keel
-			{
-				points: [
-					[-3, -1],
-					[0, 3.5],
-					[0, 24.5],
-					[-1.8, 24.5],
-					[-2.6, 12.5],
-				],
-				shade: 1,
-			},
-			{
-				points: [
-					[0, 3.5],
-					[3, -1],
-					[2.6, 12.5],
-					[1.8, 24.5],
-					[0, 24.5],
-				],
-				shade: 3,
-			},
-			{
-				points: [
-					[-3, -1],
-					[-2.6, 12.5],
-					[-6, 12.5],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[3, -1],
-					[6, 12.5],
-					[2.6, 12.5],
-				],
-				shade: 4,
-			},
-			// Slim tail cheeks (±6 at y=12.5 tapering to ±4.2 at y=24.5)
-			{
-				points: [
-					[-6, 12.5],
-					[-2.6, 12.5],
-					[-1.8, 24.5],
-					[-4.2, 24.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[2.6, 12.5],
-					[6, 12.5],
-					[4.2, 24.5],
-					[1.8, 24.5],
-				],
-				shade: 4,
-			},
-		],
-	},
-	{
-		name: "08.02 / Deep waist cut-in",
-		idea: "Behind the wing trailing edge (y=12.5), the hull steps deeply inward to x=±4.5, leaving a slender stinger tail (±3.4 at the stern) next to wide wings.",
-		aftFacets: [
-			{
-				points: [
-					[-6, -10],
-					[-9, 12.5],
-					[-13.5, 12.5],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[6, -10],
-					[13.5, 12.5],
-					[9, 12.5],
-				],
-				shade: 4,
-			},
-			{
-				points: [
-					[-6, -10],
-					[-3, -10],
-					[-3, -1],
-					[-4.5, 12.5],
-					[-9, 12.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[6, -10],
-					[9, 12.5],
-					[4.5, 12.5],
-					[3, -1],
-					[3, -10],
-				],
-				shade: 2,
-			},
-			// Mid-cockpit to waist
-			{
-				points: [
-					[-3, -1],
-					[0, 3.5],
-					[-2, 12.5],
-					[-4.5, 12.5],
-				],
-				shade: 1,
-			},
-			{
-				points: [
-					[0, 3.5],
-					[3, -1],
-					[4.5, 12.5],
-					[2, 12.5],
-				],
-				shade: 3,
-			},
-			// Slender stinger spine & flanks (±4.5 to ±3.4)
-			{
-				points: [
-					[0, 3.5],
-					[-2, 12.5],
-					[0, 24.5],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[0, 3.5],
-					[0, 24.5],
-					[2, 12.5],
-				],
-				shade: 4,
-			},
-			{
-				points: [
-					[-4.5, 12.5],
-					[-2, 12.5],
-					[0, 24.5],
-					[-3.4, 24.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[2, 12.5],
-					[4.5, 12.5],
-					[3.4, 24.5],
-					[0, 24.5],
-				],
-				shade: 3,
-			},
-		],
-	},
-	{
-		name: "08.03 / Parallel slim fuselage",
-		idea: "A straight 6-unit-wide central beam (x=±3) extends the cockpit width unbroken to the stern, with thin side bevels (±5.2 to ±3.8) supporting the wings.",
-		aftFacets: [
-			{
-				points: [
-					[-6, -10],
-					[-9, 12.5],
-					[-13.5, 12.5],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[6, -10],
-					[13.5, 12.5],
-					[9, 12.5],
-				],
-				shade: 4,
-			},
-			// Inner wing ribbon meets chassis beam at x=±5.2
-			{
-				points: [
-					[-6, -10],
-					[-3, -10],
-					[-3, -1],
-					[-5.2, 12.5],
-					[-9, 12.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[6, -10],
-					[9, 12.5],
-					[5.2, 12.5],
-					[3, -1],
-					[3, -10],
-				],
-				shade: 2,
-			},
-			// Parallel x=±3 dorsal beam from cockpit to stern
-			{
-				points: [
-					[-3, -1],
-					[0, 3.5],
-					[0, 24.5],
-					[-3, 24.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[0, 3.5],
-					[3, -1],
-					[3, 24.5],
-					[0, 24.5],
-				],
-				shade: 2,
-			},
-			// Thin side bevels alongside the beam
-			{
-				points: [
-					[-3, -1],
-					[-3, 24.5],
-					[-3.8, 24.5],
-					[-5.2, 12.5],
-				],
-				shade: 3,
-			},
-			{
-				points: [
-					[3, -1],
-					[5.2, 12.5],
-					[3.8, 24.5],
-					[3, 24.5],
-				],
-				shade: 5,
-			},
-		],
-	},
-	{
-		name: "08.04 / Needle stinger spine",
-		idea: "From mid-cockpit back, the chassis narrows into a sharp centerline ridge and a slender pointed tail cone (±5.5 at the wing step down to ±2.4 at y=25.5).",
-		canopyAft: [
-			[-2.5, -2],
-			[0, 4.5],
-		],
-		aftFacets: [
-			{
-				points: [
-					[-6, -10],
-					[-8.8, 12.5],
-					[-13.5, 12.5],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[6, -10],
-					[13.5, 12.5],
-					[8.8, 12.5],
-				],
-				shade: 4,
-			},
-			{
-				points: [
-					[-6, -10],
-					[-3, -10],
-					[-2.5, -2],
-					[-5.5, 12.5],
-					[-8.8, 12.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[6, -10],
-					[8.8, 12.5],
-					[5.5, 12.5],
-					[2.5, -2],
-					[3, -10],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[-2.5, -2],
-					[0, 4.5],
-					[0, 25.5],
-					[-5.5, 12.5],
-				],
-				shade: 1,
-			},
-			{
-				points: [
-					[0, 4.5],
-					[2.5, -2],
-					[5.5, 12.5],
-					[0, 25.5],
-				],
-				shade: 3,
-			},
-			{
-				points: [
-					[-5.5, 12.5],
-					[0, 25.5],
-					[-2.4, 25.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[5.5, 12.5],
-					[2.4, 25.5],
-					[0, 25.5],
-				],
-				shade: 4,
-			},
-		],
-	},
-	{
-		name: "08.05 / Forward-cut wing notch",
-		idea: "An angled relief cut from the inner wing corner (±8.8, 12.5) forward to (±4.6, 8.5) physically separates the trailing wing tips from the slim tail.",
-		aftFacets: [
-			{
-				points: [
-					[-6, -10],
-					[-8.8, 12.5],
-					[-13.5, 12.5],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[6, -10],
-					[13.5, 12.5],
-					[8.8, 12.5],
-				],
-				shade: 4,
-			},
-			// Inner wing ribbon ends with an upward/forward notch to (±4.6, 8.5)
-			{
-				points: [
-					[-6, -10],
-					[-3, -10],
-					[-3, -1],
-					[-4.6, 8.5],
-					[-8.8, 12.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[6, -10],
-					[8.8, 12.5],
-					[4.6, 8.5],
-					[3, -1],
-					[3, -10],
-				],
-				shade: 2,
-			},
-			// Slim tail chassis starting from the (±4.6, 8.5) notch
-			{
-				points: [
-					[-3, -1],
-					[0, 3.5],
-					[-2.2, 10],
-					[-4.6, 8.5],
-				],
-				shade: 1,
-			},
-			{
-				points: [
-					[0, 3.5],
-					[3, -1],
-					[4.6, 8.5],
-					[2.2, 10],
-				],
-				shade: 3,
-			},
-			{
-				points: [
-					[0, 3.5],
-					[-2.2, 10],
-					[0, 24.5],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[0, 3.5],
-					[0, 24.5],
-					[2.2, 10],
-				],
-				shade: 4,
-			},
-			{
-				points: [
-					[-4.6, 8.5],
-					[-2.2, 10],
-					[0, 24.5],
-					[-3.5, 24.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[2.2, 10],
-					[4.6, 8.5],
-					[3.5, 24.5],
-					[0, 24.5],
-				],
-				shade: 3,
-			},
-		],
-	},
-	{
-		name: "08.06 / Pinched wasp abdomen",
-		idea: "The chassis pinches inward behind the cockpit (±3.8 at y=8.5), swells slightly to ±5.4 at y=14, and tapers to a narrow ±3.2 stern.",
-		aftFacets: [
-			{
-				points: [
-					[-6, -10],
-					[-8.8, 12.5],
-					[-13.5, 12.5],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[6, -10],
-					[13.5, 12.5],
-					[8.8, 12.5],
-				],
-				shade: 4,
-			},
-			{
-				points: [
-					[-6, -10],
-					[-3, -10],
-					[-3, -1],
-					[-3.8, 8.5],
-					[-8.8, 12.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[6, -10],
-					[8.8, 12.5],
-					[3.8, 8.5],
-					[3, -1],
-					[3, -10],
-				],
-				shade: 2,
-			},
-			// Pinched waist facets
-			{
-				points: [
-					[-3, -1],
-					[0, 3.5],
-					[0, 11],
-					[-3.8, 8.5],
-				],
-				shade: 1,
-			},
-			{
-				points: [
-					[0, 3.5],
-					[3, -1],
-					[3.8, 8.5],
-					[0, 11],
-				],
-				shade: 3,
-			},
-			// Slim diamond abdomen (±3.8 at y=8.5 -> ±5.4 at y=14 -> ±3.2 at y=24.5)
-			{
-				points: [
-					[-3.8, 8.5],
-					[0, 11],
-					[-2, 16],
-					[-5.4, 14],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[0, 11],
-					[3.8, 8.5],
-					[5.4, 14],
-					[2, 16],
-				],
-				shade: 4,
-			},
-			{
-				points: [
-					[0, 11],
-					[-2, 16],
-					[0, 24.5],
-				],
-				shade: 1,
-			},
-			{
-				points: [
-					[0, 11],
-					[0, 24.5],
-					[2, 16],
-				],
-				shade: 3,
-			},
-			{
-				points: [
-					[-5.4, 14],
-					[-2, 16],
-					[0, 24.5],
-					[-3.2, 24.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[2, 16],
-					[5.4, 14],
-					[3.2, 24.5],
-					[0, 24.5],
-				],
-				shade: 3,
-			},
-		],
-	},
-	{
-		name: "08.07 / Split-prong engine tail",
-		idea: "A slim ±5.6-to-±3.8 tail cone terminates in a shallow V-notch at the stern, framing the single engine nozzle between two slender tail prongs.",
-		aftFacets: [
-			{
-				points: [
-					[-6, -10],
-					[-9, 12.5],
-					[-13.5, 12.5],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[6, -10],
-					[13.5, 12.5],
-					[9, 12.5],
-				],
-				shade: 4,
-			},
-			{
-				points: [
-					[-6, -10],
-					[-3, -10],
-					[-3, -1],
-					[-5.6, 12.5],
-					[-9, 12.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[6, -10],
-					[9, 12.5],
-					[5.6, 12.5],
-					[3, -1],
-					[3, -10],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[-3, -1],
-					[0, 3.5],
-					[0, 21.5],
-					[-2.8, 12.5],
-				],
-				shade: 1,
-			},
-			{
-				points: [
-					[0, 3.5],
-					[3, -1],
-					[2.8, 12.5],
-					[0, 21.5],
-				],
-				shade: 3,
-			},
-			{
-				points: [
-					[-3, -1],
-					[-2.8, 12.5],
-					[-5.6, 12.5],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[3, -1],
-					[5.6, 12.5],
-					[2.8, 12.5],
-				],
-				shade: 4,
-			},
-			// Split prongs at stern (center notch at y=21.5, outer tips at ±3.8, y=24.5)
-			{
-				points: [
-					[-5.6, 12.5],
-					[-2.8, 12.5],
-					[0, 21.5],
-					[-2.2, 24.5],
-					[-3.8, 24.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[2.8, 12.5],
-					[5.6, 12.5],
-					[3.8, 24.5],
-					[2.2, 24.5],
-					[0, 21.5],
-				],
-				shade: 4,
-			},
-		],
-	},
-	{
-		name: "08.08 / Recessed spine channel",
-		idea: "Two slim raised rails (x=±2.4 to ±4.8) flank a dark recessed central channel behind the cockpit, keeping the tail mechanical and narrow.",
-		aftFacets: [
-			{
-				points: [
-					[-6, -10],
-					[-9, 12.5],
-					[-13.5, 12.5],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[6, -10],
-					[13.5, 12.5],
-					[9, 12.5],
-				],
-				shade: 4,
-			},
-			{
-				points: [
-					[-6, -10],
-					[-3, -10],
-					[-3, -1],
-					[-5.4, 12.5],
-					[-9, 12.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[6, -10],
-					[9, 12.5],
-					[5.4, 12.5],
-					[3, -1],
-					[3, -10],
-				],
-				shade: 2,
-			},
-			// Dark recessed spinal channel
-			{
-				points: [
-					[-2, 0.5],
-					[0, 3.5],
-					[0, 24.5],
-					[-2, 24.5],
-				],
-				shade: 4,
-			},
-			{
-				points: [
-					[0, 3.5],
-					[2, 0.5],
-					[2, 24.5],
-					[0, 24.5],
-				],
-				shade: 5,
-			},
-			// Bright raised slim side rails
-			{
-				points: [
-					[-3, -1],
-					[-2, 0.5],
-					[-2, 24.5],
-					[-3.8, 24.5],
-					[-5.4, 12.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[2, 0.5],
-					[3, -1],
-					[5.4, 12.5],
-					[3.8, 24.5],
-					[2, 24.5],
-				],
-				shade: 2,
-			},
-		],
-	},
-	{
-		name: "08.09 / Swept wing-to-tail bridge",
-		idea: "Instead of a horizontal step at y=12.5, the inner wing trailing edge sweeps forward to (±5, 9), leaving a long, exposed slim tail cone.",
-		aftFacets: [
-			{
-				points: [
-					[-6, -10],
-					[-9.5, 11],
-					[-13.5, 12.5],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[6, -10],
-					[13.5, 12.5],
-					[9.5, 11],
-				],
-				shade: 4,
-			},
-			// Inner wing ribbon sweeps up to (±5, 9)
-			{
-				points: [
-					[-6, -10],
-					[-3, -10],
-					[-3, -1],
-					[-5, 9],
-					[-9.5, 11],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[6, -10],
-					[9.5, 11],
-					[5, 9],
-					[3, -1],
-					[3, -10],
-				],
-				shade: 2,
-			},
-			// Long exposed slim tail from y=9 to y=24.5 (±5 to ±3.3)
-			{
-				points: [
-					[-3, -1],
-					[0, 3.5],
-					[0, 24.5],
-					[-2.2, 11],
-				],
-				shade: 1,
-			},
-			{
-				points: [
-					[0, 3.5],
-					[3, -1],
-					[2.2, 11],
-					[0, 24.5],
-				],
-				shade: 3,
-			},
-			{
-				points: [
-					[-3, -1],
-					[-2.2, 11],
-					[-5, 9],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[3, -1],
-					[5, 9],
-					[2.2, 11],
-				],
-				shade: 4,
-			},
-			{
-				points: [
-					[-5, 9],
-					[-2.2, 11],
-					[0, 24.5],
-					[-3.3, 24.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[2.2, 11],
-					[5, 9],
-					[3.3, 24.5],
-					[0, 24.5],
-				],
-				shade: 3,
-			},
-		],
-	},
-	{
-		name: "08.10 / Long canopy & compact stinger",
-		idea: "Extends the cockpit taper from mid-canopy back to y=7, paired with a shorter, taut rear tail cone (±5.2 at y=12.5 to ±3.4 at y=22.5).",
-		canopyAft: [
-			[-2.6, 0.5],
-			[0, 7],
-		],
-		aftFacets: [
-			{
-				points: [
-					[-6, -10],
-					[-8.8, 12.5],
-					[-13.5, 12.5],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[6, -10],
-					[13.5, 12.5],
-					[8.8, 12.5],
-				],
-				shade: 4,
-			},
-			{
-				points: [
-					[-6, -10],
-					[-3, -10],
-					[-2.6, 0.5],
-					[-5.2, 12.5],
-					[-8.8, 12.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[6, -10],
-					[8.8, 12.5],
-					[5.2, 12.5],
-					[2.6, 0.5],
-					[3, -10],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[-2.6, 0.5],
-					[0, 7],
-					[-2, 13.5],
-					[-5.2, 12.5],
-				],
-				shade: 1,
-			},
-			{
-				points: [
-					[0, 7],
-					[2.6, 0.5],
-					[5.2, 12.5],
-					[2, 13.5],
-				],
-				shade: 3,
-			},
-			{
-				points: [
-					[0, 7],
-					[-2, 13.5],
-					[0, 22.5],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[0, 7],
-					[0, 22.5],
-					[2, 13.5],
-				],
-				shade: 4,
-			},
-			{
-				points: [
-					[-5.2, 12.5],
-					[-2, 13.5],
-					[0, 22.5],
-					[-3.4, 22.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[2, 13.5],
-					[5.2, 12.5],
-					[3.4, 22.5],
-					[0, 22.5],
-				],
-				shade: 3,
-			},
-		],
-	},
-	{
-		name: "08.11 / Stepped double-bevel tail",
-		idea: "Behind the wings, the rear steps inward in two crisp tiers: a short root collar (±6.6 to ±5.2) and a slim inner tail tube (±4.2 to ±3).",
-		aftFacets: [
-			{
-				points: [
-					[-6, -10],
-					[-9, 12.5],
-					[-13.5, 12.5],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[6, -10],
-					[13.5, 12.5],
-					[9, 12.5],
-				],
-				shade: 4,
-			},
-			{
-				points: [
-					[-6, -10],
-					[-3, -10],
-					[-3, -1],
-					[-6.6, 12.5],
-					[-9, 12.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[6, -10],
-					[9, 12.5],
-					[6.6, 12.5],
-					[3, -1],
-					[3, -10],
-				],
-				shade: 2,
-			},
-			// First step collar (y=12.5 to y=16.5, x=±6.6 to ±5.2)
-			{
-				points: [
-					[-3, -1],
-					[-4.2, 16.5],
-					[-5.2, 16.5],
-					[-6.6, 12.5],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[3, -1],
-					[6.6, 12.5],
-					[5.2, 16.5],
-					[4.2, 16.5],
-				],
-				shade: 4,
-			},
-			// Inner slim tail tube (x=±4.2 to ±3 at y=24.5)
-			{
-				points: [
-					[-3, -1],
-					[0, 3.5],
-					[0, 24.5],
-					[-1.6, 24.5],
-					[-4.2, 16.5],
-				],
-				shade: 1,
-			},
-			{
-				points: [
-					[0, 3.5],
-					[3, -1],
-					[4.2, 16.5],
-					[1.6, 24.5],
-					[0, 24.5],
-				],
-				shade: 3,
-			},
-			{
-				points: [
-					[-4.2, 16.5],
-					[-1.6, 24.5],
-					[-3, 24.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[4.2, 16.5],
-					[3, 24.5],
-					[1.6, 24.5],
-				],
-				shade: 4,
-			},
-		],
-	},
-	{
-		name: "08.12 / Ultra-slim dart core",
-		idea: "The narrowest rear hull: from mid-cockpit (±3, −1), the central body tapers straight to ±3.8 at y=12.5 and ±2.5 at the stern while the wings sit outboard.",
-		aftFacets: [
-			{
-				points: [
-					[-6, -10],
-					[-8.8, 12.5],
-					[-13.5, 12.5],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[6, -10],
-					[13.5, 12.5],
-					[8.8, 12.5],
-				],
-				shade: 4,
-			},
-			// Inner wing ribbon spans from shoulder (±6,-10) and cockpit (±3,-1) to (±8.8,12.5) and (±3.8,12.5)
-			{
-				points: [
-					[-6, -10],
-					[-3, -10],
-					[-3, -1],
-					[-3.8, 12.5],
-					[-8.8, 12.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[6, -10],
-					[8.8, 12.5],
-					[3.8, 12.5],
-					[3, -1],
-					[3, -10],
-				],
-				shade: 2,
-			},
-			// Ultra-slim dart tail (x=±3.8 at y=12.5 tapering to ±2.5 at y=24.5)
-			{
-				points: [
-					[-3, -1],
-					[0, 3.5],
-					[0, 24.5],
-					[-1.4, 12.5],
-				],
-				shade: 1,
-			},
-			{
-				points: [
-					[0, 3.5],
-					[3, -1],
-					[1.4, 12.5],
-					[0, 24.5],
-				],
-				shade: 3,
-			},
-			{
-				points: [
-					[-3, -1],
-					[-1.4, 12.5],
-					[-3.8, 12.5],
-				],
-				shade: 2,
-			},
-			{
-				points: [
-					[3, -1],
-					[3.8, 12.5],
-					[1.4, 12.5],
-				],
-				shade: 4,
-			},
-			{
-				points: [
-					[-3.8, 12.5],
-					[-1.4, 12.5],
-					[0, 24.5],
-					[-2.5, 24.5],
-				],
-				shade: 0,
-			},
-			{
-				points: [
-					[1.4, 12.5],
-					[3.8, 12.5],
-					[2.5, 24.5],
-					[0, 24.5],
-				],
-				shade: 4,
-			},
-		],
-	},
+  {
+    name: "08.01 / Tapered wasp keel",
+    idea: "The gull wings step inward from x=±9 to ±6 at y=12.5; a slim central spine tapers to ±1.8 at the stern between narrow tail cheeks (±4.2).",
+    aftFacets: [
+      // Mid & inner gull-wing ribbons
+      {
+        points: [
+          [-6, -10],
+          [-9, 12.5],
+          [-13.5, 12.5],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [6, -10],
+          [13.5, 12.5],
+          [9, 12.5],
+        ],
+        shade: 4,
+      },
+      {
+        points: [
+          [-6, -10],
+          [-3, -10],
+          [-3, -1],
+          [-6, 12.5],
+          [-9, 12.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [6, -10],
+          [9, 12.5],
+          [6, 12.5],
+          [3, -1],
+          [3, -10],
+        ],
+        shade: 2,
+      },
+      // Slim inner chassis & tapered keel
+      {
+        points: [
+          [-3, -1],
+          [0, 3.5],
+          [0, 24.5],
+          [-1.8, 24.5],
+          [-2.6, 12.5],
+        ],
+        shade: 1,
+      },
+      {
+        points: [
+          [0, 3.5],
+          [3, -1],
+          [2.6, 12.5],
+          [1.8, 24.5],
+          [0, 24.5],
+        ],
+        shade: 3,
+      },
+      {
+        points: [
+          [-3, -1],
+          [-2.6, 12.5],
+          [-6, 12.5],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [3, -1],
+          [6, 12.5],
+          [2.6, 12.5],
+        ],
+        shade: 4,
+      },
+      // Slim tail cheeks (±6 at y=12.5 tapering to ±4.2 at y=24.5)
+      {
+        points: [
+          [-6, 12.5],
+          [-2.6, 12.5],
+          [-1.8, 24.5],
+          [-4.2, 24.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [2.6, 12.5],
+          [6, 12.5],
+          [4.2, 24.5],
+          [1.8, 24.5],
+        ],
+        shade: 4,
+      },
+    ],
+  },
+  {
+    name: "08.02 / Deep waist cut-in",
+    idea: "Behind the wing trailing edge (y=12.5), the hull steps deeply inward to x=±4.5, leaving a slender stinger tail (±3.4 at the stern) next to wide wings.",
+    aftFacets: [
+      {
+        points: [
+          [-6, -10],
+          [-9, 12.5],
+          [-13.5, 12.5],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [6, -10],
+          [13.5, 12.5],
+          [9, 12.5],
+        ],
+        shade: 4,
+      },
+      {
+        points: [
+          [-6, -10],
+          [-3, -10],
+          [-3, -1],
+          [-4.5, 12.5],
+          [-9, 12.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [6, -10],
+          [9, 12.5],
+          [4.5, 12.5],
+          [3, -1],
+          [3, -10],
+        ],
+        shade: 2,
+      },
+      // Mid-cockpit to waist
+      {
+        points: [
+          [-3, -1],
+          [0, 3.5],
+          [-2, 12.5],
+          [-4.5, 12.5],
+        ],
+        shade: 1,
+      },
+      {
+        points: [
+          [0, 3.5],
+          [3, -1],
+          [4.5, 12.5],
+          [2, 12.5],
+        ],
+        shade: 3,
+      },
+      // Slender stinger spine & flanks (±4.5 to ±3.4)
+      {
+        points: [
+          [0, 3.5],
+          [-2, 12.5],
+          [0, 24.5],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [0, 3.5],
+          [0, 24.5],
+          [2, 12.5],
+        ],
+        shade: 4,
+      },
+      {
+        points: [
+          [-4.5, 12.5],
+          [-2, 12.5],
+          [0, 24.5],
+          [-3.4, 24.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [2, 12.5],
+          [4.5, 12.5],
+          [3.4, 24.5],
+          [0, 24.5],
+        ],
+        shade: 3,
+      },
+    ],
+  },
+  {
+    name: "08.03 / Parallel slim fuselage",
+    idea: "A straight 6-unit-wide central beam (x=±3) extends the cockpit width unbroken to the stern, with thin side bevels (±5.2 to ±3.8) supporting the wings.",
+    aftFacets: [
+      {
+        points: [
+          [-6, -10],
+          [-9, 12.5],
+          [-13.5, 12.5],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [6, -10],
+          [13.5, 12.5],
+          [9, 12.5],
+        ],
+        shade: 4,
+      },
+      // Inner wing ribbon meets chassis beam at x=±5.2
+      {
+        points: [
+          [-6, -10],
+          [-3, -10],
+          [-3, -1],
+          [-5.2, 12.5],
+          [-9, 12.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [6, -10],
+          [9, 12.5],
+          [5.2, 12.5],
+          [3, -1],
+          [3, -10],
+        ],
+        shade: 2,
+      },
+      // Parallel x=±3 dorsal beam from cockpit to stern
+      {
+        points: [
+          [-3, -1],
+          [0, 3.5],
+          [0, 24.5],
+          [-3, 24.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [0, 3.5],
+          [3, -1],
+          [3, 24.5],
+          [0, 24.5],
+        ],
+        shade: 2,
+      },
+      // Thin side bevels alongside the beam
+      {
+        points: [
+          [-3, -1],
+          [-3, 24.5],
+          [-3.8, 24.5],
+          [-5.2, 12.5],
+        ],
+        shade: 3,
+      },
+      {
+        points: [
+          [3, -1],
+          [5.2, 12.5],
+          [3.8, 24.5],
+          [3, 24.5],
+        ],
+        shade: 5,
+      },
+    ],
+  },
+  {
+    name: "08.04 / Needle stinger spine",
+    idea: "From mid-cockpit back, the chassis narrows into a sharp centerline ridge and a slender pointed tail cone (±5.5 at the wing step down to ±2.4 at y=25.5).",
+    canopyAft: [
+      [-2.5, -2],
+      [0, 4.5],
+    ],
+    aftFacets: [
+      {
+        points: [
+          [-6, -10],
+          [-8.8, 12.5],
+          [-13.5, 12.5],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [6, -10],
+          [13.5, 12.5],
+          [8.8, 12.5],
+        ],
+        shade: 4,
+      },
+      {
+        points: [
+          [-6, -10],
+          [-3, -10],
+          [-2.5, -2],
+          [-5.5, 12.5],
+          [-8.8, 12.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [6, -10],
+          [8.8, 12.5],
+          [5.5, 12.5],
+          [2.5, -2],
+          [3, -10],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [-2.5, -2],
+          [0, 4.5],
+          [0, 25.5],
+          [-5.5, 12.5],
+        ],
+        shade: 1,
+      },
+      {
+        points: [
+          [0, 4.5],
+          [2.5, -2],
+          [5.5, 12.5],
+          [0, 25.5],
+        ],
+        shade: 3,
+      },
+      {
+        points: [
+          [-5.5, 12.5],
+          [0, 25.5],
+          [-2.4, 25.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [5.5, 12.5],
+          [2.4, 25.5],
+          [0, 25.5],
+        ],
+        shade: 4,
+      },
+    ],
+  },
+  {
+    name: "08.05 / Forward-cut wing notch",
+    idea: "An angled relief cut from the inner wing corner (±8.8, 12.5) forward to (±4.6, 8.5) physically separates the trailing wing tips from the slim tail.",
+    aftFacets: [
+      {
+        points: [
+          [-6, -10],
+          [-8.8, 12.5],
+          [-13.5, 12.5],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [6, -10],
+          [13.5, 12.5],
+          [8.8, 12.5],
+        ],
+        shade: 4,
+      },
+      // Inner wing ribbon ends with an upward/forward notch to (±4.6, 8.5)
+      {
+        points: [
+          [-6, -10],
+          [-3, -10],
+          [-3, -1],
+          [-4.6, 8.5],
+          [-8.8, 12.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [6, -10],
+          [8.8, 12.5],
+          [4.6, 8.5],
+          [3, -1],
+          [3, -10],
+        ],
+        shade: 2,
+      },
+      // Slim tail chassis starting from the (±4.6, 8.5) notch
+      {
+        points: [
+          [-3, -1],
+          [0, 3.5],
+          [-2.2, 10],
+          [-4.6, 8.5],
+        ],
+        shade: 1,
+      },
+      {
+        points: [
+          [0, 3.5],
+          [3, -1],
+          [4.6, 8.5],
+          [2.2, 10],
+        ],
+        shade: 3,
+      },
+      {
+        points: [
+          [0, 3.5],
+          [-2.2, 10],
+          [0, 24.5],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [0, 3.5],
+          [0, 24.5],
+          [2.2, 10],
+        ],
+        shade: 4,
+      },
+      {
+        points: [
+          [-4.6, 8.5],
+          [-2.2, 10],
+          [0, 24.5],
+          [-3.5, 24.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [2.2, 10],
+          [4.6, 8.5],
+          [3.5, 24.5],
+          [0, 24.5],
+        ],
+        shade: 3,
+      },
+    ],
+  },
+  {
+    name: "08.06 / Pinched wasp abdomen",
+    idea: "The chassis pinches inward behind the cockpit (±3.8 at y=8.5), swells slightly to ±5.4 at y=14, and tapers to a narrow ±3.2 stern.",
+    aftFacets: [
+      {
+        points: [
+          [-6, -10],
+          [-8.8, 12.5],
+          [-13.5, 12.5],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [6, -10],
+          [13.5, 12.5],
+          [8.8, 12.5],
+        ],
+        shade: 4,
+      },
+      {
+        points: [
+          [-6, -10],
+          [-3, -10],
+          [-3, -1],
+          [-3.8, 8.5],
+          [-8.8, 12.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [6, -10],
+          [8.8, 12.5],
+          [3.8, 8.5],
+          [3, -1],
+          [3, -10],
+        ],
+        shade: 2,
+      },
+      // Pinched waist facets
+      {
+        points: [
+          [-3, -1],
+          [0, 3.5],
+          [0, 11],
+          [-3.8, 8.5],
+        ],
+        shade: 1,
+      },
+      {
+        points: [
+          [0, 3.5],
+          [3, -1],
+          [3.8, 8.5],
+          [0, 11],
+        ],
+        shade: 3,
+      },
+      // Slim diamond abdomen (±3.8 at y=8.5 -> ±5.4 at y=14 -> ±3.2 at y=24.5)
+      {
+        points: [
+          [-3.8, 8.5],
+          [0, 11],
+          [-2, 16],
+          [-5.4, 14],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [0, 11],
+          [3.8, 8.5],
+          [5.4, 14],
+          [2, 16],
+        ],
+        shade: 4,
+      },
+      {
+        points: [
+          [0, 11],
+          [-2, 16],
+          [0, 24.5],
+        ],
+        shade: 1,
+      },
+      {
+        points: [
+          [0, 11],
+          [0, 24.5],
+          [2, 16],
+        ],
+        shade: 3,
+      },
+      {
+        points: [
+          [-5.4, 14],
+          [-2, 16],
+          [0, 24.5],
+          [-3.2, 24.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [2, 16],
+          [5.4, 14],
+          [3.2, 24.5],
+          [0, 24.5],
+        ],
+        shade: 3,
+      },
+    ],
+  },
+  {
+    name: "08.07 / Split-prong engine tail",
+    idea: "A slim ±5.6-to-±3.8 tail cone terminates in a shallow V-notch at the stern, framing the single engine nozzle between two slender tail prongs.",
+    aftFacets: [
+      {
+        points: [
+          [-6, -10],
+          [-9, 12.5],
+          [-13.5, 12.5],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [6, -10],
+          [13.5, 12.5],
+          [9, 12.5],
+        ],
+        shade: 4,
+      },
+      {
+        points: [
+          [-6, -10],
+          [-3, -10],
+          [-3, -1],
+          [-5.6, 12.5],
+          [-9, 12.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [6, -10],
+          [9, 12.5],
+          [5.6, 12.5],
+          [3, -1],
+          [3, -10],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [-3, -1],
+          [0, 3.5],
+          [0, 21.5],
+          [-2.8, 12.5],
+        ],
+        shade: 1,
+      },
+      {
+        points: [
+          [0, 3.5],
+          [3, -1],
+          [2.8, 12.5],
+          [0, 21.5],
+        ],
+        shade: 3,
+      },
+      {
+        points: [
+          [-3, -1],
+          [-2.8, 12.5],
+          [-5.6, 12.5],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [3, -1],
+          [5.6, 12.5],
+          [2.8, 12.5],
+        ],
+        shade: 4,
+      },
+      // Split prongs at stern (center notch at y=21.5, outer tips at ±3.8, y=24.5)
+      {
+        points: [
+          [-5.6, 12.5],
+          [-2.8, 12.5],
+          [0, 21.5],
+          [-2.2, 24.5],
+          [-3.8, 24.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [2.8, 12.5],
+          [5.6, 12.5],
+          [3.8, 24.5],
+          [2.2, 24.5],
+          [0, 21.5],
+        ],
+        shade: 4,
+      },
+    ],
+  },
+  {
+    name: "08.08 / Recessed spine channel",
+    idea: "Two slim raised rails (x=±2.4 to ±4.8) flank a dark recessed central channel behind the cockpit, keeping the tail mechanical and narrow.",
+    aftFacets: [
+      {
+        points: [
+          [-6, -10],
+          [-9, 12.5],
+          [-13.5, 12.5],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [6, -10],
+          [13.5, 12.5],
+          [9, 12.5],
+        ],
+        shade: 4,
+      },
+      {
+        points: [
+          [-6, -10],
+          [-3, -10],
+          [-3, -1],
+          [-5.4, 12.5],
+          [-9, 12.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [6, -10],
+          [9, 12.5],
+          [5.4, 12.5],
+          [3, -1],
+          [3, -10],
+        ],
+        shade: 2,
+      },
+      // Dark recessed spinal channel
+      {
+        points: [
+          [-2, 0.5],
+          [0, 3.5],
+          [0, 24.5],
+          [-2, 24.5],
+        ],
+        shade: 4,
+      },
+      {
+        points: [
+          [0, 3.5],
+          [2, 0.5],
+          [2, 24.5],
+          [0, 24.5],
+        ],
+        shade: 5,
+      },
+      // Bright raised slim side rails
+      {
+        points: [
+          [-3, -1],
+          [-2, 0.5],
+          [-2, 24.5],
+          [-3.8, 24.5],
+          [-5.4, 12.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [2, 0.5],
+          [3, -1],
+          [5.4, 12.5],
+          [3.8, 24.5],
+          [2, 24.5],
+        ],
+        shade: 2,
+      },
+    ],
+  },
+  {
+    name: "08.09 / Swept wing-to-tail bridge",
+    idea: "Instead of a horizontal step at y=12.5, the inner wing trailing edge sweeps forward to (±5, 9), leaving a long, exposed slim tail cone.",
+    aftFacets: [
+      {
+        points: [
+          [-6, -10],
+          [-9.5, 11],
+          [-13.5, 12.5],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [6, -10],
+          [13.5, 12.5],
+          [9.5, 11],
+        ],
+        shade: 4,
+      },
+      // Inner wing ribbon sweeps up to (±5, 9)
+      {
+        points: [
+          [-6, -10],
+          [-3, -10],
+          [-3, -1],
+          [-5, 9],
+          [-9.5, 11],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [6, -10],
+          [9.5, 11],
+          [5, 9],
+          [3, -1],
+          [3, -10],
+        ],
+        shade: 2,
+      },
+      // Long exposed slim tail from y=9 to y=24.5 (±5 to ±3.3)
+      {
+        points: [
+          [-3, -1],
+          [0, 3.5],
+          [0, 24.5],
+          [-2.2, 11],
+        ],
+        shade: 1,
+      },
+      {
+        points: [
+          [0, 3.5],
+          [3, -1],
+          [2.2, 11],
+          [0, 24.5],
+        ],
+        shade: 3,
+      },
+      {
+        points: [
+          [-3, -1],
+          [-2.2, 11],
+          [-5, 9],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [3, -1],
+          [5, 9],
+          [2.2, 11],
+        ],
+        shade: 4,
+      },
+      {
+        points: [
+          [-5, 9],
+          [-2.2, 11],
+          [0, 24.5],
+          [-3.3, 24.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [2.2, 11],
+          [5, 9],
+          [3.3, 24.5],
+          [0, 24.5],
+        ],
+        shade: 3,
+      },
+    ],
+  },
+  {
+    name: "08.10 / Long canopy & compact stinger",
+    idea: "Extends the cockpit taper from mid-canopy back to y=7, paired with a shorter, taut rear tail cone (±5.2 at y=12.5 to ±3.4 at y=22.5).",
+    canopyAft: [
+      [-2.6, 0.5],
+      [0, 7],
+    ],
+    aftFacets: [
+      {
+        points: [
+          [-6, -10],
+          [-8.8, 12.5],
+          [-13.5, 12.5],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [6, -10],
+          [13.5, 12.5],
+          [8.8, 12.5],
+        ],
+        shade: 4,
+      },
+      {
+        points: [
+          [-6, -10],
+          [-3, -10],
+          [-2.6, 0.5],
+          [-5.2, 12.5],
+          [-8.8, 12.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [6, -10],
+          [8.8, 12.5],
+          [5.2, 12.5],
+          [2.6, 0.5],
+          [3, -10],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [-2.6, 0.5],
+          [0, 7],
+          [-2, 13.5],
+          [-5.2, 12.5],
+        ],
+        shade: 1,
+      },
+      {
+        points: [
+          [0, 7],
+          [2.6, 0.5],
+          [5.2, 12.5],
+          [2, 13.5],
+        ],
+        shade: 3,
+      },
+      {
+        points: [
+          [0, 7],
+          [-2, 13.5],
+          [0, 22.5],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [0, 7],
+          [0, 22.5],
+          [2, 13.5],
+        ],
+        shade: 4,
+      },
+      {
+        points: [
+          [-5.2, 12.5],
+          [-2, 13.5],
+          [0, 22.5],
+          [-3.4, 22.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [2, 13.5],
+          [5.2, 12.5],
+          [3.4, 22.5],
+          [0, 22.5],
+        ],
+        shade: 3,
+      },
+    ],
+  },
+  {
+    name: "08.11 / Stepped double-bevel tail",
+    idea: "Behind the wings, the rear steps inward in two crisp tiers: a short root collar (±6.6 to ±5.2) and a slim inner tail tube (±4.2 to ±3).",
+    aftFacets: [
+      {
+        points: [
+          [-6, -10],
+          [-9, 12.5],
+          [-13.5, 12.5],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [6, -10],
+          [13.5, 12.5],
+          [9, 12.5],
+        ],
+        shade: 4,
+      },
+      {
+        points: [
+          [-6, -10],
+          [-3, -10],
+          [-3, -1],
+          [-6.6, 12.5],
+          [-9, 12.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [6, -10],
+          [9, 12.5],
+          [6.6, 12.5],
+          [3, -1],
+          [3, -10],
+        ],
+        shade: 2,
+      },
+      // First step collar (y=12.5 to y=16.5, x=±6.6 to ±5.2)
+      {
+        points: [
+          [-3, -1],
+          [-4.2, 16.5],
+          [-5.2, 16.5],
+          [-6.6, 12.5],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [3, -1],
+          [6.6, 12.5],
+          [5.2, 16.5],
+          [4.2, 16.5],
+        ],
+        shade: 4,
+      },
+      // Inner slim tail tube (x=±4.2 to ±3 at y=24.5)
+      {
+        points: [
+          [-3, -1],
+          [0, 3.5],
+          [0, 24.5],
+          [-1.6, 24.5],
+          [-4.2, 16.5],
+        ],
+        shade: 1,
+      },
+      {
+        points: [
+          [0, 3.5],
+          [3, -1],
+          [4.2, 16.5],
+          [1.6, 24.5],
+          [0, 24.5],
+        ],
+        shade: 3,
+      },
+      {
+        points: [
+          [-4.2, 16.5],
+          [-1.6, 24.5],
+          [-3, 24.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [4.2, 16.5],
+          [3, 24.5],
+          [1.6, 24.5],
+        ],
+        shade: 4,
+      },
+    ],
+  },
+  {
+    name: "08.12 / Ultra-slim dart core",
+    idea: "The narrowest rear hull: from mid-cockpit (±3, −1), the central body tapers straight to ±3.8 at y=12.5 and ±2.5 at the stern while the wings sit outboard.",
+    aftFacets: [
+      {
+        points: [
+          [-6, -10],
+          [-8.8, 12.5],
+          [-13.5, 12.5],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [6, -10],
+          [13.5, 12.5],
+          [8.8, 12.5],
+        ],
+        shade: 4,
+      },
+      // Inner wing ribbon spans from shoulder (±6,-10) and cockpit (±3,-1) to (±8.8,12.5) and (±3.8,12.5)
+      {
+        points: [
+          [-6, -10],
+          [-3, -10],
+          [-3, -1],
+          [-3.8, 12.5],
+          [-8.8, 12.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [6, -10],
+          [8.8, 12.5],
+          [3.8, 12.5],
+          [3, -1],
+          [3, -10],
+        ],
+        shade: 2,
+      },
+      // Ultra-slim dart tail (x=±3.8 at y=12.5 tapering to ±2.5 at y=24.5)
+      {
+        points: [
+          [-3, -1],
+          [0, 3.5],
+          [0, 24.5],
+          [-1.4, 12.5],
+        ],
+        shade: 1,
+      },
+      {
+        points: [
+          [0, 3.5],
+          [3, -1],
+          [1.4, 12.5],
+          [0, 24.5],
+        ],
+        shade: 3,
+      },
+      {
+        points: [
+          [-3, -1],
+          [-1.4, 12.5],
+          [-3.8, 12.5],
+        ],
+        shade: 2,
+      },
+      {
+        points: [
+          [3, -1],
+          [3.8, 12.5],
+          [1.4, 12.5],
+        ],
+        shade: 4,
+      },
+      {
+        points: [
+          [-3.8, 12.5],
+          [-1.4, 12.5],
+          [0, 24.5],
+          [-2.5, 24.5],
+        ],
+        shade: 0,
+      },
+      {
+        points: [
+          [1.4, 12.5],
+          [3.8, 12.5],
+          [2.5, 24.5],
+          [0, 24.5],
+        ],
+        shade: 4,
+      },
+    ],
+  },
 ];
 ---
 
 <div class="wasp-rear-gallery">
-	<div class="cards">
-		{variants.map((v) => {
-			const [botL, tip] = v.canopyAft ?? [
-				[-3, -1],
-				[0, 3.5],
-			];
-			const botR: Point = [-botL[0], botL[1]];
-			return (
-				<figure>
-					<figcaption>{v.name}</figcaption>
-					<svg
-						viewBox="-24 -30 48 64"
-						role="img"
-						aria-label={`${v.name}. ${v.idea}`}
-					>
-						<g class="hull">
-							{sharedForeFacets.map((f) => (
-								<polygon points={pts(f.points)} fill={palette[f.shade]} />
-							))}
-							{v.aftFacets.map((f) => (
-								<polygon points={pts(f.points)} fill={palette[f.shade]} />
-							))}
-						</g>
-						<g class="canopy">
-							<polygon
-								points={pts([[0, -16], [-3, -10], botL, tip])}
-								fill="#050a0e"
-							/>
-							<polygon
-								points={pts([[0, -16], [3, -10], botR, tip])}
-								fill="#000000"
-							/>
-						</g>
-					</svg>
-					<p>{v.idea}</p>
-				</figure>
-			);
-		})}
-	</div>
+  <div class="cards">
+    {variants.map((v) => {
+      const [botL, tip] = v.canopyAft ?? [
+        [-3, -1],
+        [0, 3.5],
+      ];
+      const botR: Point = [-botL[0], botL[1]];
+      return (
+        <figure>
+          <figcaption>{v.name}</figcaption>
+          <svg
+            viewBox="-24 -30 48 64"
+            role="img"
+            aria-label={`${v.name}. ${v.idea}`}
+          >
+            <g class="hull">
+              {sharedForeFacets.map((f) => (
+                <polygon points={pts(f.points)} fill={palette[f.shade]} />
+              ))}
+              {v.aftFacets.map((f) => (
+                <polygon points={pts(f.points)} fill={palette[f.shade]} />
+              ))}
+            </g>
+            <g class="canopy">
+              <polygon
+                points={pts([[0, -16], [-3, -10], botL, tip])}
+                fill="#050a0e"
+              />
+              <polygon
+                points={pts([[0, -16], [3, -10], botR, tip])}
+                fill="#000000"
+              />
+            </g>
+          </svg>
+          <p>{v.idea}</p>
+        </figure>
+      );
+    })}
+  </div>
 </div>
 
 <style>
 .wasp-rear-gallery {
-	margin-block: var(--spacing-lg);
+  margin-block: var(--spacing-lg);
 }
 .cards {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: var(--spacing-md);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-md);
 }
 figure {
-	margin: 0;
-	padding: var(--spacing-md);
-	border: var(--flight-border);
-	background: var(--color-void-light, #070b10);
-	display: flex;
-	flex-direction: column;
+  margin: 0;
+  padding: var(--spacing-md);
+  border: var(--flight-border);
+  background: var(--color-void-light, #070b10);
+  display: flex;
+  flex-direction: column;
 }
 figcaption {
-	color: var(--color-acid-lime);
-	font: var(--font-small) var(--font-flight);
+  color: var(--color-acid-lime);
+  font: var(--font-small) var(--font-flight);
 }
 svg {
-	display: block;
-	width: 100%;
-	height: 290px;
-	margin-block: var(--spacing-sm);
+  display: block;
+  width: 100%;
+  height: 290px;
+  margin-block: var(--spacing-sm);
 }
 figure p {
-	margin: 0;
-	font-size: var(--font-small);
-	color: var(--color-text-dim);
+  margin: 0;
+  font-size: var(--font-small);
+  color: var(--color-text-dim);
 }
 @media (max-width: 900px) {
-	.cards {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 @media (max-width: 580px) {
-	.cards {
-		grid-template-columns: 1fr;
-	}
+  .cards {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

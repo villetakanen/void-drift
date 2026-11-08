@@ -1,12 +1,12 @@
 <script lang="ts">
 import type { Snippet } from "svelte";
 import {
-	type BurnId,
-	type FieldBody,
-	type Measure,
-	SECONDS,
-	TICK_RATE,
-	type Track,
+  type BurnId,
+  type FieldBody,
+  type Measure,
+  SECONDS,
+  TICK_RATE,
+  type Track,
 } from "../../../lib/instrument";
 import RingSlider from "../../inputs/RingSlider.svelte";
 import BurnRow from "./BurnRow.svelte";
@@ -22,34 +22,34 @@ import { GRAPH_MARGIN } from "./time-graph";
 // the time slider (right), and the legend below both. It scales to fill its
 // container. The pane overlays it with the host's content.
 let {
-	tracks,
-	tick = $bindable(7 * TICK_RATE),
-	scene,
-	burn = $bindable(),
-	measures,
-	bodies = [],
-	onmovewell,
-	label,
-	issues = [],
-	children,
+  tracks,
+  tick = $bindable(7 * TICK_RATE),
+  scene,
+  burn = $bindable(),
+  measures,
+  bodies = [],
+  onmovewell,
+  label,
+  issues = [],
+  children,
 }: {
-	tracks: Track[];
-	tick?: number;
-	/** Optional world rendering synchronized to the shared time cursor. */
-	scene?: Snippet<[number]>;
-	burn: BurnId;
-	/** Three or four graphs, top to bottom. */
-	measures:
-		| readonly [Measure, Measure, Measure]
-		| readonly [Measure, Measure, Measure, Measure];
-	/** Bodies under the paths, such as Gravity tuning's well. */
-	bodies?: FieldBody[];
-	onmovewell?: (index: number, x: number, y: number) => void;
-	label: string;
-	/** Problems with the host's document; listed in place of the screen. */
-	issues?: { path: (string | number)[]; message: string }[];
-	/** Pane content. */
-	children: Snippet;
+  tracks: Track[];
+  tick?: number;
+  /** Optional world rendering synchronized to the shared time cursor. */
+  scene?: Snippet<[number]>;
+  burn: BurnId;
+  /** Three or four graphs, top to bottom. */
+  measures:
+    | readonly [Measure, Measure, Measure]
+    | readonly [Measure, Measure, Measure, Measure];
+  /** Bodies under the paths, such as Gravity tuning's well. */
+  bodies?: FieldBody[];
+  onmovewell?: (index: number, x: number, y: number) => void;
+  label: string;
+  /** Problems with the host's document; listed in place of the screen. */
+  issues?: { path: (string | number)[]; message: string }[];
+  /** Pane content. */
+  children: Snippet;
 } = $props();
 
 // Layout, in logical pixels on the 4px grid.
@@ -66,7 +66,7 @@ const HEIGHT = BLOCK + CONTROL_GAP + CONTROL + LEGEND_GAP + LEGEND;
 const TOP = Math.floor((SCREEN.h - HEIGHT) / 2 / 4) * 4;
 const GRAPH_GAP = 24;
 const GRAPH = $derived(
-	(BLOCK - (measures.length - 1) * GRAPH_GAP) / measures.length,
+  (BLOCK - (measures.length - 1) * GRAPH_GAP) / measures.length,
 );
 const RIGHT = PAD + COL + GAP;
 const CONTROL_TOP = TOP + BLOCK + CONTROL_GAP;
@@ -79,145 +79,145 @@ const scale = $derived(Math.min(hostW / SCREEN.w, hostH / SCREEN.h));
 </script>
 
 <figure
-	class="host"
-	bind:clientWidth={hostW}
-	bind:clientHeight={hostH}
-	aria-label={label}
+  class="host"
+  bind:clientWidth={hostW}
+  bind:clientHeight={hostH}
+  aria-label={label}
 >
-	{#if !issues.length}
-		<div
-			class="screen"
-			style={`width:${SCREEN.w}px;height:${SCREEN.h}px;transform:translate(-50%,-50%) scale(${scale})`}
-		>
-			<div class="slot" style={`left:${PAD}px;top:${TOP}px`}>
-				{#if scene}
-					{@render scene(tick)}
-				{:else}
-					<PathPane
-						{tracks}
-						{bodies}
-						{onmovewell}
-						{tick}
-						{scale}
-						size={BLOCK}
-					/>
-				{/if}
-			</div>
-			<div
-				class="slot"
-				style={`left:${PAD}px;top:${CONTROL_TOP}px;width:${COL}px`}
-			>
-				<BurnRow bind:burn {tick} />
-			</div>
-			{#each measures as m, i}
-				<div
-					class="slot"
-					style={`left:${RIGHT}px;top:${TOP + i * (GRAPH + GRAPH_GAP)}px`}
-				>
-					<TimeGraph measure={m} {tracks} {tick} width={COL} height={GRAPH} />
-				</div>
-			{/each}
-			<div
-				class="slot"
-				style={`left:${RIGHT}px;top:${CONTROL_TOP}px;width:${COL}px;padding:0 ${SLIDER.right}px 0 ${SLIDER.left}px`}
-			>
-				<RingSlider
-					compact
-					label="Time"
-					unit="s"
-					digits={2}
-					min={0}
-					max={SECONDS}
-					step={1 / TICK_RATE}
-					bind:value={
-						() => tick / TICK_RATE,
-						(v) => (tick = Math.round(v * TICK_RATE))
-					}
-				/>
-				<span class="slider-label" aria-hidden="true">Time</span>
-				<span class="slider-end start" style={`left:${SLIDER.left + 8}px`}
-					>0</span
-				>
-				<span class="slider-end end" style={`right:${SLIDER.right + 8}px`}>
-					{SECONDS}
-					s
-				</span>
-			</div>
-			<div
-				class="slot"
-				style={`left:${PAD}px;top:${CONTROL_TOP + CONTROL + LEGEND_GAP}px;width:${SCREEN.w - 2 * PAD}px`}
-			>
-				<Legend {tracks} />
-			</div>
-		</div>
+  {#if !issues.length}
+    <div
+      class="screen"
+      style={`width:${SCREEN.w}px;height:${SCREEN.h}px;transform:translate(-50%,-50%) scale(${scale})`}
+    >
+      <div class="slot" style={`left:${PAD}px;top:${TOP}px`}>
+        {#if scene}
+          {@render scene(tick)}
+        {:else}
+          <PathPane
+            {tracks}
+            {bodies}
+            {onmovewell}
+            {tick}
+            {scale}
+            size={BLOCK}
+          />
+        {/if}
+      </div>
+      <div
+        class="slot"
+        style={`left:${PAD}px;top:${CONTROL_TOP}px;width:${COL}px`}
+      >
+        <BurnRow bind:burn {tick} />
+      </div>
+      {#each measures as m, i}
+        <div
+          class="slot"
+          style={`left:${RIGHT}px;top:${TOP + i * (GRAPH + GRAPH_GAP)}px`}
+        >
+          <TimeGraph measure={m} {tracks} {tick} width={COL} height={GRAPH} />
+        </div>
+      {/each}
+      <div
+        class="slot"
+        style={`left:${RIGHT}px;top:${CONTROL_TOP}px;width:${COL}px;padding:0 ${SLIDER.right}px 0 ${SLIDER.left}px`}
+      >
+        <RingSlider
+          compact
+          label="Time"
+          unit="s"
+          digits={2}
+          min={0}
+          max={SECONDS}
+          step={1 / TICK_RATE}
+          bind:value={
+            () => tick / TICK_RATE,
+            (v) => (tick = Math.round(v * TICK_RATE))
+          }
+        />
+        <span class="slider-label" aria-hidden="true">Time</span>
+        <span class="slider-end start" style={`left:${SLIDER.left + 8}px`}
+          >0</span
+        >
+        <span class="slider-end end" style={`right:${SLIDER.right + 8}px`}>
+          {SECONDS}
+          s
+        </span>
+      </div>
+      <div
+        class="slot"
+        style={`left:${PAD}px;top:${CONTROL_TOP + CONTROL + LEGEND_GAP}px;width:${SCREEN.w - 2 * PAD}px`}
+      >
+        <Legend {tracks} />
+      </div>
+    </div>
 
-		<!-- Unscaled: the menu, backdrop and pane sit on the container. -->
-		<OverlayPane> {@render children()} </OverlayPane>
-	{:else}
-		<div class="invalid" role="alert">
-			<h3>This configuration cannot be drawn</h3>
-			<ul>
-				{#each issues as issue}
-					<li>{issue.path.join(".") || "document"}: {issue.message}</li>
-				{/each}
-			</ul>
-		</div>
-	{/if}
+    <!-- Unscaled: the menu, backdrop and pane sit on the container. -->
+    <OverlayPane> {@render children()} </OverlayPane>
+  {:else}
+    <div class="invalid" role="alert">
+      <h3>This configuration cannot be drawn</h3>
+      <ul>
+        {#each issues as issue}
+          <li>{issue.path.join(".") || "document"}: {issue.message}</li>
+        {/each}
+      </ul>
+    </div>
+  {/if}
 </figure>
 
 <style>
 /* The console, elevation 1, fills the container, including any bands the
    screen's 16:10 shape leaves in other container shapes. */
 .host {
-	position: relative;
-	margin: 0;
-	width: 100%;
-	height: 100%;
-	aspect-ratio: 1440 / 900;
-	overflow: hidden;
-	background: var(--color-elev-1);
-	color: var(--color-text);
-	font-family: var(--font-family-ui);
+  position: relative;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1440 / 900;
+  overflow: hidden;
+  background: var(--color-elev-1);
+  color: var(--color-text);
+  font-family: var(--font-family-ui);
 }
 .screen {
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	transform-origin: center;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-origin: center;
 }
 .slot {
-	position: absolute;
-	box-sizing: border-box;
+  position: absolute;
+  box-sizing: border-box;
 }
 .slider-label {
-	position: absolute;
-	top: 50%;
-	right: calc(100% - 44px);
-	transform: translateY(-50%);
-	color: var(--color-text-muted);
-	font-size: 13px;
-	letter-spacing: 0.1em;
-	text-transform: uppercase;
+  position: absolute;
+  top: 50%;
+  right: calc(100% - 44px);
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 .slider-end {
-	position: absolute;
-	bottom: -2px;
-	color: var(--color-text-muted);
-	font-size: 13px;
+  position: absolute;
+  bottom: -2px;
+  color: var(--color-text-muted);
+  font-size: 13px;
 }
 .slider-end.start {
-	transform: translateX(-50%);
+  transform: translateX(-50%);
 }
 .slider-end.end {
-	transform: translateX(50%);
+  transform: translateX(50%);
 }
 h3 {
-	margin: 0;
-	font-size: 19px;
-	font-weight: normal;
+  margin: 0;
+  font-size: 19px;
+  font-weight: normal;
 }
 .invalid {
-	padding: var(--spacing-lg);
-	color: var(--color-caution-tape);
+  padding: var(--spacing-lg);
+  color: var(--color-caution-tape);
 }
 </style>

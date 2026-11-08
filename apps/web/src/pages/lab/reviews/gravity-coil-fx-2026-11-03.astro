@@ -2,108 +2,108 @@
 import StudyLayout from "../../../layouts/StudyLayout.astro";
 
 const review = {
-	slug: "gravity-coil-fx-2026-11-03",
-	title: "Gravity coil FX — study-quality review",
-	status: "accepted" as const,
-	phase: "scope" as const,
-	question:
-		"Evidence and remaining limits of the accepted gravity-collection trial.",
+  slug: "gravity-coil-fx-2026-11-03",
+  title: "Gravity coil FX — study-quality review",
+  status: "accepted" as const,
+  phase: "scope" as const,
+  question:
+    "Evidence and remaining limits of the accepted gravity-collection trial.",
 };
 const rows = [
-	[
-		"Purpose",
-		"Supported",
-		"The study connects gravity becoming potential to readable light alongside engine FX.",
-	],
-	[
-		"Investigation",
-		"Supported",
-		"Static alternatives progressed to a real powered flyby, then two coils and a turn through the field.",
-	],
-	[
-		"Alternatives and reasoning",
-		"Supported",
-		"Lines, Capture and condensed bright variants were rejected. Soft dispersed grains, larger size and original offset survived review.",
-	],
-	[
-		"Evidence fit",
-		"Partial",
-		"The flyby supports visual review. Collection, capacity, replay and force invariance have unit coverage; long-run balance and device performance remain unproven.",
-	],
-	[
-		"Cumulative agreement",
-		"Supported",
-		"The owner approved purple J at 250%, double size, original offset and additive light, then confirmed 1 energy/s per coil and full-storage shutoff.",
-	],
-	[
-		"Design coherence",
-		"Supported",
-		"The same shared fold and transparent additive FX surface serve fitted game flight and the Lab. Activity follows actual collection.",
-	],
-	[
-		"Remaining uncertainty",
-		"Partial",
-		"The alpha rate and 0.25-second activity fade still need play review; overlapping wells use nearest-planet visual direction without multiplying output.",
-	],
-	[
-		"Integration implications",
-		"Supported",
-		"Parts 03–04 identify power accounting, shared rendering, catalog, spec and verification work. No storage migration or gravity tuning is required.",
-	],
+  [
+    "Purpose",
+    "Supported",
+    "The study connects gravity becoming potential to readable light alongside engine FX.",
+  ],
+  [
+    "Investigation",
+    "Supported",
+    "Static alternatives progressed to a real powered flyby, then two coils and a turn through the field.",
+  ],
+  [
+    "Alternatives and reasoning",
+    "Supported",
+    "Lines, Capture and condensed bright variants were rejected. Soft dispersed grains, larger size and original offset survived review.",
+  ],
+  [
+    "Evidence fit",
+    "Partial",
+    "The flyby supports visual review. Collection, capacity, replay and force invariance have unit coverage; long-run balance and device performance remain unproven.",
+  ],
+  [
+    "Cumulative agreement",
+    "Supported",
+    "The owner approved purple J at 250%, double size, original offset and additive light, then confirmed 1 energy/s per coil and full-storage shutoff.",
+  ],
+  [
+    "Design coherence",
+    "Supported",
+    "The same shared fold and transparent additive FX surface serve fitted game flight and the Lab. Activity follows actual collection.",
+  ],
+  [
+    "Remaining uncertainty",
+    "Partial",
+    "The alpha rate and 0.25-second activity fade still need play review; overlapping wells use nearest-planet visual direction without multiplying output.",
+  ],
+  [
+    "Integration implications",
+    "Supported",
+    "Parts 03–04 identify power accounting, shared rendering, catalog, spec and verification work. No storage migration or gravity tuning is required.",
+  ],
 ];
 ---
 
 <StudyLayout study={review}>
-	<section>
-		<h2>Evidence assessment</h2>
-		<p>
-			This agent assessment is separate from the owner’s acceptance of the
-			visual treatment and collection rule. It does not claim human approval of
-			long-run balance or the implementation’s new fade.
-		</p>
-		<p>
-			<a href="/lab/studies/gravity-coil-fx-2026-11-03#planet-flight"
-				>Accepted flyby and parts 03–04</a
-			>
-		</p>
-		<table>
-			<thead>
-				<tr>
-					<th>Criterion</th>
-					<th>Assessment</th>
-					<th>Evidence / limits</th>
-				</tr>
-			</thead>
-			<tbody>
-				{rows.map(([criterion, assessment, evidence]) => (
-					<tr>
-						<td>{criterion}</td>
-						<td>{assessment}</td>
-						<td>{evidence}</td>
-					</tr>
-				))}
-			</tbody>
-		</table>
-	</section>
-	<section>
-		<h2>Local implementation evidence</h2>
-		<p>
-			Collection and shared flight rendering are implemented. Browser inspection
-			confirmed two coils collecting 2.0 energy/s with purple FX during the
-			turning flyby. The catalog/persistence/test-flight browser check passed.
-		</p>
-		<p>
-			Contracts, types and all unit tests passed in local verification run
-			<code>2026-11-03T09-58-44.023Z-1l12uW</code>. That partial run failed
-			repository-wide formatting on the pre-existing
-			<code>wasp-and-1a-editable.svg</code>. A regression covers power
-			exhaustion when generation is below baseline drain; collection cannot keep
-			a depleted ship alive on a net loss.
-		</p>
-		<p>
-			Full browser regression, backend/emulator checks and device performance
-			were not run for this change. No publication or push is implied. The rate
-			remains an alpha tuning choice.
-		</p>
-	</section>
+  <section>
+    <h2>Evidence assessment</h2>
+    <p>
+      This agent assessment is separate from the owner’s acceptance of the
+      visual treatment and collection rule. It does not claim human approval of
+      long-run balance or the implementation’s new fade.
+    </p>
+    <p>
+      <a href="/lab/studies/gravity-coil-fx-2026-11-03#planet-flight"
+        >Accepted flyby and parts 03–04</a
+      >
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Criterion</th>
+          <th>Assessment</th>
+          <th>Evidence / limits</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map(([criterion, assessment, evidence]) => (
+          <tr>
+            <td>{criterion}</td>
+            <td>{assessment}</td>
+            <td>{evidence}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </section>
+  <section>
+    <h2>Local implementation evidence</h2>
+    <p>
+      Collection and shared flight rendering are implemented. Browser inspection
+      confirmed two coils collecting 2.0 energy/s with purple FX during the
+      turning flyby. The catalog/persistence/test-flight browser check passed.
+    </p>
+    <p>
+      Contracts, types and all unit tests passed in local verification run
+      <code>2026-11-03T09-58-44.023Z-1l12uW</code>. That partial run failed
+      repository-wide formatting on the pre-existing
+      <code>wasp-and-1a-editable.svg</code>. A regression covers power
+      exhaustion when generation is below baseline drain; collection cannot keep
+      a depleted ship alive on a net loss.
+    </p>
+    <p>
+      Full browser regression, backend/emulator checks and device performance
+      were not run for this change. No publication or push is implied. The rate
+      remains an alpha tuning choice.
+    </p>
+  </section>
 </StudyLayout>

@@ -52,13 +52,13 @@ We use [nanostores](https://github.com/nanostores/nanostores) with the `@nanosto
 import { z } from "zod";
 
 export const SettingsSchema = z.object({
-	invertControls: z.boolean(),
+  invertControls: z.boolean(),
 });
 
 export type Settings = z.infer<typeof SettingsSchema>;
 
 export const DEFAULT_SETTINGS: Settings = {
-	invertControls: false,
+  invertControls: false,
 };
 ```
 
@@ -72,7 +72,7 @@ void-drift:settings
 
 ```json
 {
-	"invertControls": false
+  "invertControls": false
 }
 ```
 
@@ -86,25 +86,25 @@ void-drift:settings
 // apps/web/src/lib/stores/settings.ts
 import { persistentAtom } from "@nanostores/persistent";
 import {
-	SettingsSchema,
-	DEFAULT_SETTINGS,
-	type Settings,
+  SettingsSchema,
+  DEFAULT_SETTINGS,
+  type Settings,
 } from "@void-drift/mode-a";
 
 export const settings = persistentAtom<Settings>(
-	"void-drift:settings",
-	DEFAULT_SETTINGS,
-	{
-		encode: JSON.stringify,
-		decode: (str) => {
-			try {
-				const parsed = JSON.parse(str);
-				return SettingsSchema.parse(parsed);
-			} catch {
-				return DEFAULT_SETTINGS;
-			}
-		},
-	},
+  "void-drift:settings",
+  DEFAULT_SETTINGS,
+  {
+    encode: JSON.stringify,
+    decode: (str) => {
+      try {
+        const parsed = JSON.parse(str);
+        return SettingsSchema.parse(parsed);
+      } catch {
+        return DEFAULT_SETTINGS;
+      }
+    },
+  },
 );
 ```
 
@@ -119,9 +119,9 @@ export const settings = persistentAtom<Settings>(
 </script>
 
 <input
-	type="checkbox"
-	checked={$settings.invertControls}
-	onchange={() => settings.set({ ...$settings, invertControls: !$settings.invertControls })}
+  type="checkbox"
+  checked={$settings.invertControls}
+  onchange={() => settings.set({ ...$settings, invertControls: !$settings.invertControls })}
 >
 ```
 
@@ -133,7 +133,7 @@ import { settings } from "../lib/stores/settings";
 // Get current value (snapshot)
 const currentSettings = settings.get();
 if (currentSettings.invertControls) {
-	// swap controls
+  // swap controls
 }
 ```
 
@@ -175,16 +175,16 @@ When `invertControls` is `true`:
 
 ```typescript
 export function applyInputToShip(
-	input: InputState,
-	ship: Ship,
-	invertControls: boolean,
+  input: InputState,
+  ship: Ship,
+  invertControls: boolean,
 ): void {
-	const left = invertControls ? input.rightThruster : input.leftThruster;
-	const right = invertControls ? input.leftThruster : input.rightThruster;
+  const left = invertControls ? input.rightThruster : input.leftThruster;
+  const right = invertControls ? input.leftThruster : input.rightThruster;
 
-	// Apply thrust based on swapped values
-	if (left) ship.fireLeftThruster();
-	if (right) ship.fireRightThruster();
+  // Apply thrust based on swapped values
+  if (left) ship.fireLeftThruster();
+  if (right) ship.fireRightThruster();
 }
 ```
 

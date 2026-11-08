@@ -3,10 +3,10 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-	<script is:inline>
-	window.location.replace(
-		`/hangar${window.location.search}${window.location.hash}`,
-	);
-	</script>
-	<p>Hangar has moved. <a href="/hangar">Open Hangar</a>.</p>
+  <script is:inline>
+  window.location.replace(
+    `/hangar${window.location.search}${window.location.hash}`,
+  );
+  </script>
+  <p>Hangar has moved. <a href="/hangar">Open Hangar</a>.</p>
 </Layout>

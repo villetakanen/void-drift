@@ -11,221 +11,221 @@ import "../styles.css";
 const { title, wide = false } = Astro.props;
 const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
 const isActive = (href: string) =>
-	currentPath === href || currentPath.startsWith(`${href}/`);
+  currentPath === href || currentPath.startsWith(`${href}/`);
 const groups = labGroups.map((group) => ({
-	...group,
-	pages: listedLabPages.filter((page) => page.group === group.id),
+  ...group,
+  pages: listedLabPages.filter((page) => page.group === group.id),
 }));
 ---
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
-		<title>{title} | Void Drift Lab</title>
-	</head>
-	<body>
-		<div class:list={["lab-grid", { wide }]}>
-			<!-- Column 1: Nav Rail -->
-			<aside class="nav-rail">
-				<a class="logo-area" href="/lab"><Logo label="Void Drift Lab" /></a>
-				<nav class="tray" aria-label="Lab">
-					<a href="/lab" class:list={[{ active: currentPath === "/lab" }]}
-						>Index</a
-					>
-					{groups.map((group) => (
-						<section class="group" aria-label={group.label}>
-							<h2>{group.label}</h2>
-							{group.pages.map((page) => (
-								<a
-									href={page.href}
-									class:list={[{ active: isActive(page.href) }]}
-									aria-current={isActive(page.href) ? "page" : undefined}
-								>
-									{page.title}
-								</a>
-							))}
-						</section>
-					))}
-					<a href="/">← Back to Game</a>
-				</nav>
-			</aside>
+    <title>{title} | Void Drift Lab</title>
+  </head>
+  <body>
+    <div class:list={["lab-grid", { wide }]}>
+      <!-- Column 1: Nav Rail -->
+      <aside class="nav-rail">
+        <a class="logo-area" href="/lab"><Logo label="Void Drift Lab" /></a>
+        <nav class="tray" aria-label="Lab">
+          <a href="/lab" class:list={[{ active: currentPath === "/lab" }]}
+            >Index</a
+          >
+          {groups.map((group) => (
+            <section class="group" aria-label={group.label}>
+              <h2>{group.label}</h2>
+              {group.pages.map((page) => (
+                <a
+                  href={page.href}
+                  class:list={[{ active: isActive(page.href) }]}
+                  aria-current={isActive(page.href) ? "page" : undefined}
+                >
+                  {page.title}
+                </a>
+              ))}
+            </section>
+          ))}
+          <a href="/">← Back to Game</a>
+        </nav>
+      </aside>
 
-			<!-- Column 2 Row 1: Header -->
-			<header class="page-header">
-				<h1>Lab // {title}</h1>
-			</header>
+      <!-- Column 2 Row 1: Header -->
+      <header class="page-header">
+        <h1>Lab // {title}</h1>
+      </header>
 
-			<!-- Column 2 Row 2: Main Stage -->
-			<main class="main-stage">
-				<slot />
-			</main>
+      <!-- Column 2 Row 2: Main Stage -->
+      <main class="main-stage">
+        <slot />
+      </main>
 
-			<!-- Column 3: Inspector (Spans both rows) -->
-			<aside class="inspector-rail" hidden={wide}>
-				<slot name="inspector" />
-			</aside>
-		</div>
-	</body>
+      <!-- Column 3: Inspector (Spans both rows) -->
+      <aside class="inspector-rail" hidden={wide}>
+        <slot name="inspector" />
+      </aside>
+    </div>
+  </body>
 </html>
 
 <style>
 :global(body) {
-	margin: 0;
-	padding: 0;
-	overflow: hidden;
-	background: var(--color-void);
-	color: var(--color-text);
-	font-family: var(--font-family-ui);
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--color-void);
+  color: var(--color-text);
+  font-family: var(--font-family-ui);
 }
 
 .lab-grid {
-	display: grid;
-	grid-template-columns: 250px 1fr 300px;
-	grid-template-rows: auto 1fr;
-	grid-template-areas:
-		"nav header inspector"
-		"nav main   inspector";
-	height: 100vh;
-	width: 100vw;
-	overflow: hidden;
+  display: grid;
+  grid-template-columns: 250px 1fr 300px;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "nav header inspector"
+    "nav main   inspector";
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
 }
 
 /* Column 1: Nav Rail */
 .nav-rail {
-	grid-area: nav;
-	background: var(--color-elev-1);
-	border-right: 1px solid var(--color-border-subtle);
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
+  grid-area: nav;
+  background: var(--color-elev-1);
+  border-right: 1px solid var(--color-border-subtle);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .logo-area {
-	display: flex;
-	color: var(--color-brand);
-	padding: 1.5rem;
-	border-bottom: 1px solid var(--color-border-subtle);
-	flex-shrink: 0;
+  display: flex;
+  color: var(--color-brand);
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--color-border-subtle);
+  flex-shrink: 0;
 }
 
 .tray {
-	display: flex;
-	flex-direction: column;
-	padding: 1rem;
-	gap: 0.25rem;
-	overflow-y: auto;
-	flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 0.25rem;
+  overflow-y: auto;
+  flex: 1;
 }
 
 .group {
-	display: flex;
-	flex-direction: column;
-	gap: 0.25rem;
-	margin-top: var(--spacing-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: var(--spacing-sm);
 }
 
 .group h2 {
-	margin: 0;
-	padding: var(--spacing-xs) 1rem;
-	font-size: var(--font-size-caption);
-	font-weight: normal;
-	color: var(--color-text-muted);
-	letter-spacing: var(--tracking-eyebrow);
-	text-transform: uppercase;
-	opacity: 0.7;
+  margin: 0;
+  padding: var(--spacing-xs) 1rem;
+  font-size: var(--font-size-caption);
+  font-weight: normal;
+  color: var(--color-text-muted);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  opacity: 0.7;
 }
 
 /* Column 2 Row 1: Header */
 .page-header {
-	grid-area: header;
-	padding: 1rem 2rem;
-	border-bottom: 1px solid var(--color-border-subtle);
-	background: var(--color-void);
-	display: flex;
-	align-items: center;
+  grid-area: header;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--color-border-subtle);
+  background: var(--color-void);
+  display: flex;
+  align-items: center;
 }
 
 .page-header h1 {
-	margin: 0;
-	font-size: var(--font-size-caption);
-	color: var(--color-text-muted);
-	text-transform: uppercase;
-	letter-spacing: var(--tracking-eyebrow);
+  margin: 0;
+  font-size: var(--font-size-caption);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
 }
 
 /* Column 2 Row 2: Main Stage */
 .main-stage {
-	grid-area: main;
-	overflow-y: auto;
-	background: var(--color-void);
-	border-right: 1px solid var(--color-border-subtle);
-	display: flex;
-	flex-direction: column;
+  grid-area: main;
+  overflow-y: auto;
+  background: var(--color-void);
+  border-right: 1px solid var(--color-border-subtle);
+  display: flex;
+  flex-direction: column;
 }
 
 /* Column 3: Inspector */
 .inspector-rail {
-	grid-area: inspector;
-	background: var(--color-elev-1);
-	overflow-y: auto;
-	display: flex;
-	flex-direction: column;
+  grid-area: inspector;
+  background: var(--color-elev-1);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Link Styles */
 a {
-	text-decoration: none;
-	color: var(--color-text-muted);
-	padding: 0.6rem 1rem;
-	text-align: left;
-	border-radius: var(--radius-sm);
-	text-transform: uppercase;
-	font-size: var(--font-size-caption);
-	transition: all 0.2s;
-	border: 1px solid transparent;
-	display: block;
+  text-decoration: none;
+  color: var(--color-text-muted);
+  padding: 0.6rem 1rem;
+  text-align: left;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  font-size: var(--font-size-caption);
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  display: block;
 }
 
 a:hover {
-	color: var(--color-text);
-	background: var(--color-surface-hover);
+  color: var(--color-text);
+  background: var(--color-surface-hover);
 }
 
 a.active {
-	color: var(--color-selected);
-	border: 1px solid color-mix(in lch, var(--color-selected) 30%, transparent);
-	background: color-mix(in lch, var(--color-selected) 10%, transparent);
+  color: var(--color-selected);
+  border: 1px solid color-mix(in lch, var(--color-selected) 30%, transparent);
+  background: color-mix(in lch, var(--color-selected) 10%, transparent);
 }
 .lab-grid.wide {
-	grid-template-columns: 250px minmax(0, 1fr);
-	grid-template-areas: "nav header" "nav main";
+  grid-template-columns: 250px minmax(0, 1fr);
+  grid-template-areas: "nav header" "nav main";
 }
 .wide .inspector-rail {
-	display: none;
+  display: none;
 }
 @media (max-width: 800px) {
-	.lab-grid.wide {
-		grid-template-columns: 1fr;
-		grid-template-rows: auto auto minmax(0, 1fr);
-		grid-template-areas: "nav" "header" "main";
-	}
-	.wide .logo-area {
-		display: none;
-	}
-	.wide .tray {
-		flex-direction: row;
-		flex-wrap: wrap;
-		padding: var(--spacing-sm);
-	}
-	.wide .group {
-		display: contents;
-	}
-	.wide .group h2 {
-		display: none;
-	}
+  .lab-grid.wide {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-areas: "nav" "header" "main";
+  }
+  .wide .logo-area {
+    display: none;
+  }
+  .wide .tray {
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: var(--spacing-sm);
+  }
+  .wide .group {
+    display: contents;
+  }
+  .wide .group h2 {
+    display: none;
+  }
 }
 </style>

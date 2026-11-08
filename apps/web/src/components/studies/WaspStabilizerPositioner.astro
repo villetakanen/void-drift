@@ -4,166 +4,166 @@ import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
 
 type Point = readonly [number, number];
 type Facet = {
-	points: readonly Point[];
-	shade: 0 | 1 | 2 | 3 | 4 | 5;
+  points: readonly Point[];
+  shade: 0 | 1 | 2 | 3 | 4 | 5;
 };
 
 const pts = (list: readonly Point[]) => list.map((p) => p.join(",")).join(" ");
 
 const palette = [
-	FIGHTER.facets[0], // #c8f4f0 (0: brightest)
-	FIGHTER.facets[1], // #83c7d0 (1: light)
-	FIGHTER.facets[5], // #6193a9 (2: medium-light — side & rear winglet left)
-	FIGHTER.facets[2], // #437e99 (3: medium — outer wingtip left / AB-3 flank right)
-	FIGHTER.facets[4], // #365d79 (4: dark — side & rear winglet right)
-	FIGHTER.facets[3], // #264d6b (5: deepest shadow — outer wingtip right)
+  FIGHTER.facets[0], // #c8f4f0 (0: brightest)
+  FIGHTER.facets[1], // #83c7d0 (1: light)
+  FIGHTER.facets[5], // #6193a9 (2: medium-light — side & rear winglet left)
+  FIGHTER.facets[2], // #437e99 (3: medium — outer wingtip left / AB-3 flank right)
+  FIGHTER.facets[4], // #365d79 (4: dark — side & rear winglet right)
+  FIGHTER.facets[3], // #264d6b (5: deepest shadow — outer wingtip right)
 ] as const;
 
 // Approved plain hull: 06.9 / Unpinched + parallel trailing edge
 const hull069Facets: readonly Facet[] = [
-	{
-		points: [
-			[-3, -25],
-			[0, -25],
-			[0, -16],
-			[-3, -10],
-			[-6, -10],
-		],
-		shade: 0,
-	},
-	{
-		points: [
-			[0, -25],
-			[3, -25],
-			[6, -10],
-			[3, -10],
-			[0, -16],
-		],
-		shade: 2,
-	},
-	{
-		points: [
-			[-6, -10],
-			[-13.5, 12.5],
-			[-18, 6.5],
-		],
-		shade: 3,
-	},
-	{
-		points: [
-			[6, -10],
-			[18, 6.5],
-			[13.5, 12.5],
-		],
-		shade: 5,
-	},
-	{
-		points: [
-			[-6, -10],
-			[-7.4, 10.1],
-			[-9.5, 11],
-			[-13.5, 12.5],
-		],
-		shade: 2,
-	},
-	{
-		points: [
-			[6, -10],
-			[13.5, 12.5],
-			[9.5, 11],
-			[7.4, 10.1],
-		],
-		shade: 4,
-	},
-	{
-		points: [
-			[-6, -10],
-			[-3, -10],
-			[-3, -1],
-			[-5, 9],
-			[-7.4, 10.1],
-		],
-		shade: 0,
-	},
-	{
-		points: [
-			[6, -10],
-			[7.4, 10.1],
-			[5, 9],
-			[3, -1],
-			[3, -10],
-		],
-		shade: 2,
-	},
-	{
-		points: [
-			[-9.5, 11],
-			[-7.4, 10.1],
-			[-5, 9],
-			[-4, 17.4],
-			[-7.3, 18.8],
-		],
-		shade: 2,
-	},
-	{
-		points: [
-			[9.5, 11],
-			[7.3, 18.8],
-			[4, 17.4],
-			[5, 9],
-			[7.4, 10.1],
-		],
-		shade: 4,
-	},
-	{
-		points: [
-			[-3, -1],
-			[-1.4, 24.5],
-			[-3.3, 24.5],
-			[-5, 9],
-		],
-		shade: 0,
-	},
-	{
-		points: [
-			[3, -1],
-			[5, 9],
-			[3.3, 24.5],
-			[1.4, 24.5],
-		],
-		shade: 3,
-	},
-	{
-		points: [
-			[-3, -1],
-			[0, 3.5],
-			[0, 24.5],
-			[-1.4, 24.5],
-		],
-		shade: 1,
-	},
-	{
-		points: [
-			[0, 3.5],
-			[3, -1],
-			[1.4, 24.5],
-			[0, 24.5],
-		],
-		shade: 4,
-	},
+  {
+    points: [
+      [-3, -25],
+      [0, -25],
+      [0, -16],
+      [-3, -10],
+      [-6, -10],
+    ],
+    shade: 0,
+  },
+  {
+    points: [
+      [0, -25],
+      [3, -25],
+      [6, -10],
+      [3, -10],
+      [0, -16],
+    ],
+    shade: 2,
+  },
+  {
+    points: [
+      [-6, -10],
+      [-13.5, 12.5],
+      [-18, 6.5],
+    ],
+    shade: 3,
+  },
+  {
+    points: [
+      [6, -10],
+      [18, 6.5],
+      [13.5, 12.5],
+    ],
+    shade: 5,
+  },
+  {
+    points: [
+      [-6, -10],
+      [-7.4, 10.1],
+      [-9.5, 11],
+      [-13.5, 12.5],
+    ],
+    shade: 2,
+  },
+  {
+    points: [
+      [6, -10],
+      [13.5, 12.5],
+      [9.5, 11],
+      [7.4, 10.1],
+    ],
+    shade: 4,
+  },
+  {
+    points: [
+      [-6, -10],
+      [-3, -10],
+      [-3, -1],
+      [-5, 9],
+      [-7.4, 10.1],
+    ],
+    shade: 0,
+  },
+  {
+    points: [
+      [6, -10],
+      [7.4, 10.1],
+      [5, 9],
+      [3, -1],
+      [3, -10],
+    ],
+    shade: 2,
+  },
+  {
+    points: [
+      [-9.5, 11],
+      [-7.4, 10.1],
+      [-5, 9],
+      [-4, 17.4],
+      [-7.3, 18.8],
+    ],
+    shade: 2,
+  },
+  {
+    points: [
+      [9.5, 11],
+      [7.3, 18.8],
+      [4, 17.4],
+      [5, 9],
+      [7.4, 10.1],
+    ],
+    shade: 4,
+  },
+  {
+    points: [
+      [-3, -1],
+      [-1.4, 24.5],
+      [-3.3, 24.5],
+      [-5, 9],
+    ],
+    shade: 0,
+  },
+  {
+    points: [
+      [3, -1],
+      [5, 9],
+      [3.3, 24.5],
+      [1.4, 24.5],
+    ],
+    shade: 3,
+  },
+  {
+    points: [
+      [-3, -1],
+      [0, 3.5],
+      [0, 24.5],
+      [-1.4, 24.5],
+    ],
+    shade: 1,
+  },
+  {
+    points: [
+      [0, 3.5],
+      [3, -1],
+      [1.4, 24.5],
+      [0, 24.5],
+    ],
+    shade: 4,
+  },
 ];
 
 const cockpitLeft: readonly Point[] = [
-	[0, -16],
-	[-3, -10],
-	[-3, -1],
-	[0, 3.5],
+  [0, -16],
+  [-3, -10],
+  [-3, -1],
+  [0, 3.5],
 ];
 const cockpitRight: readonly Point[] = [
-	[0, -16],
-	[3, -10],
-	[3, -1],
-	[0, 3.5],
+  [0, -16],
+  [3, -10],
+  [3, -1],
+  [0, 3.5],
 ];
 
 // Approved rear engine Y from 02.7
@@ -172,785 +172,785 @@ const ENGINE_Y = 17.5;
 type EngineKey = "ion" | "heavy-ion" | "fusion" | "plasma";
 
 const engineCatalog: readonly {
-	id: EngineKey;
-	label: string;
-	shortLabel: string;
+  id: EngineKey;
+  label: string;
+  shortLabel: string;
 }[] = [
-	{ id: "ion", label: "Light Ion (ion)", shortLabel: "Light Ion" },
-	{
-		id: "heavy-ion",
-		label: "Heavy Ion (heavy-ion)",
-		shortLabel: "Heavy Ion",
-	},
-	{ id: "fusion", label: "Light Fusion (fusion)", shortLabel: "Light Fusion" },
-	{ id: "plasma", label: "Heavy Plasma (plasma)", shortLabel: "Heavy Plasma" },
+  { id: "ion", label: "Light Ion (ion)", shortLabel: "Light Ion" },
+  {
+    id: "heavy-ion",
+    label: "Heavy Ion (heavy-ion)",
+    shortLabel: "Heavy Ion",
+  },
+  { id: "fusion", label: "Light Fusion (fusion)", shortLabel: "Light Fusion" },
+  { id: "plasma", label: "Heavy Plasma (plasma)", shortLabel: "Heavy Plasma" },
 ];
 
 function getUprightEngineFaces(id: EngineKey) {
-	const faces = ENGINE_ART[id][3];
-	return faces.map((face) => ({
-		points: face.points.map(([ex, ey]) => [ey, -ex] as const),
-		color:
-			face.color === "currentColor"
-				? id === "fusion"
-					? "#c6ff32"
-					: "#ffb52e"
-				: face.color,
-	}));
+  const faces = ENGINE_ART[id][3];
+  return faces.map((face) => ({
+    points: face.points.map(([ex, ey]) => [ey, -ex] as const),
+    color:
+      face.color === "currentColor"
+        ? id === "fusion"
+          ? "#c6ff32"
+          : "#ffb52e"
+        : face.color,
+  }));
 }
 
 // Approved front (bow) and rear (winglet) stabilizer coordinates
 const DEFAULTS = {
-	frontX: 4.4,
-	frontY: -18.5,
-	frontAngle: 8.5,
-	rearX: 4.9,
-	rearY: 13.5,
-	rearAngle: -10.0,
+  frontX: 4.4,
+  frontY: -18.5,
+  frontAngle: 8.5,
+  rearX: 4.9,
+  rearY: 13.5,
+  rearAngle: -10.0,
 } as const;
 ---
 
 <div class="stab-positioner" id="wasp-stabilizer-positioner">
-	<div class="controls-grid">
-		<!-- Front (Nose) Pair Controls -->
-		<div class="pair-panel">
-			<div class="panel-header">
-				<span class="panel-title">Front Stabilizers (Nose Pair)</span>
-				<button
-					type="button"
-					class="reset-btn"
-					data-preset-front="4.4,-18.5,8.5"
-				>
-					Reset to approved
-				</button>
-			</div>
+  <div class="controls-grid">
+    <!-- Front (Nose) Pair Controls -->
+    <div class="pair-panel">
+      <div class="panel-header">
+        <span class="panel-title">Front Stabilizers (Nose Pair)</span>
+        <button
+          type="button"
+          class="reset-btn"
+          data-preset-front="4.4,-18.5,8.5"
+        >
+          Reset to approved
+        </button>
+      </div>
 
-			<div class="slider-row">
-				<label for="stab-front-y">Front Y</label>
-				<input
-					id="stab-front-y"
-					type="range"
-					min="-23"
-					max="-11"
-					step="0.25"
-					value={DEFAULTS.frontY}
-				>
-				<output id="stab-front-y-out" class="val-out">
-					{DEFAULTS.frontY.toFixed(2)}
-				</output>
-			</div>
+      <div class="slider-row">
+        <label for="stab-front-y">Front Y</label>
+        <input
+          id="stab-front-y"
+          type="range"
+          min="-23"
+          max="-11"
+          step="0.25"
+          value={DEFAULTS.frontY}
+        >
+        <output id="stab-front-y-out" class="val-out">
+          {DEFAULTS.frontY.toFixed(2)}
+        </output>
+      </div>
 
-			<div class="slider-row">
-				<label for="stab-front-x">Front |X|</label>
-				<input
-					id="stab-front-x"
-					type="range"
-					min="1.5"
-					max="6.5"
-					step="0.1"
-					value={DEFAULTS.frontX}
-				>
-				<output id="stab-front-x-out" class="val-out">
-					±{DEFAULTS.frontX.toFixed(1)}
-				</output>
-			</div>
+      <div class="slider-row">
+        <label for="stab-front-x">Front |X|</label>
+        <input
+          id="stab-front-x"
+          type="range"
+          min="1.5"
+          max="6.5"
+          step="0.1"
+          value={DEFAULTS.frontX}
+        >
+        <output id="stab-front-x-out" class="val-out">
+          ±{DEFAULTS.frontX.toFixed(1)}
+        </output>
+      </div>
 
-			<div class="slider-row">
-				<label for="stab-front-angle">Front Tilt</label>
-				<input
-					id="stab-front-angle"
-					type="range"
-					min="-25"
-					max="30"
-					step="0.5"
-					value={DEFAULTS.frontAngle}
-				>
-				<output id="stab-front-angle-out" class="val-out">
-					{DEFAULTS.frontAngle.toFixed(1)}°
-				</output>
-			</div>
-		</div>
+      <div class="slider-row">
+        <label for="stab-front-angle">Front Tilt</label>
+        <input
+          id="stab-front-angle"
+          type="range"
+          min="-25"
+          max="30"
+          step="0.5"
+          value={DEFAULTS.frontAngle}
+        >
+        <output id="stab-front-angle-out" class="val-out">
+          {DEFAULTS.frontAngle.toFixed(1)}°
+        </output>
+      </div>
+    </div>
 
-		<!-- Rear (Winglet) Pair Controls -->
-		<div class="pair-panel">
-			<div class="panel-header">
-				<span class="panel-title">Rear Stabilizers (Winglet Pair)</span>
-				<button type="button" class="reset-btn" data-preset-rear="4.9,13.5,-10">
-					Reset to approved
-				</button>
-			</div>
+    <!-- Rear (Winglet) Pair Controls -->
+    <div class="pair-panel">
+      <div class="panel-header">
+        <span class="panel-title">Rear Stabilizers (Winglet Pair)</span>
+        <button type="button" class="reset-btn" data-preset-rear="4.9,13.5,-10">
+          Reset to approved
+        </button>
+      </div>
 
-			<div class="slider-row">
-				<label for="stab-rear-y">Rear Y</label>
-				<input
-					id="stab-rear-y"
-					type="range"
-					min="10"
-					max="22"
-					step="0.25"
-					value={DEFAULTS.rearY}
-				>
-				<output id="stab-rear-y-out" class="val-out">
-					{DEFAULTS.rearY.toFixed(2)}
-				</output>
-			</div>
+      <div class="slider-row">
+        <label for="stab-rear-y">Rear Y</label>
+        <input
+          id="stab-rear-y"
+          type="range"
+          min="10"
+          max="22"
+          step="0.25"
+          value={DEFAULTS.rearY}
+        >
+        <output id="stab-rear-y-out" class="val-out">
+          {DEFAULTS.rearY.toFixed(2)}
+        </output>
+      </div>
 
-			<div class="slider-row">
-				<label for="stab-rear-x">Rear |X|</label>
-				<input
-					id="stab-rear-x"
-					type="range"
-					min="3.5"
-					max="10.5"
-					step="0.1"
-					value={DEFAULTS.rearX}
-				>
-				<output id="stab-rear-x-out" class="val-out">
-					±{DEFAULTS.rearX.toFixed(1)}
-				</output>
-			</div>
+      <div class="slider-row">
+        <label for="stab-rear-x">Rear |X|</label>
+        <input
+          id="stab-rear-x"
+          type="range"
+          min="3.5"
+          max="10.5"
+          step="0.1"
+          value={DEFAULTS.rearX}
+        >
+        <output id="stab-rear-x-out" class="val-out">
+          ±{DEFAULTS.rearX.toFixed(1)}
+        </output>
+      </div>
 
-			<div class="slider-row">
-				<label for="stab-rear-angle">Rear Tilt</label>
-				<input
-					id="stab-rear-angle"
-					type="range"
-					min="-35"
-					max="30"
-					step="0.5"
-					value={DEFAULTS.rearAngle}
-				>
-				<output id="stab-rear-angle-out" class="val-out">
-					{DEFAULTS.rearAngle.toFixed(1)}°
-				</output>
-			</div>
-		</div>
+      <div class="slider-row">
+        <label for="stab-rear-angle">Rear Tilt</label>
+        <input
+          id="stab-rear-angle"
+          type="range"
+          min="-35"
+          max="30"
+          step="0.5"
+          value={DEFAULTS.rearAngle}
+        >
+        <output id="stab-rear-angle-out" class="val-out">
+          {DEFAULTS.rearAngle.toFixed(1)}°
+        </output>
+      </div>
+    </div>
 
-		<!-- Engine & Overlay Controls -->
-		<div class="pair-panel">
-			<div class="panel-header">
-				<span class="panel-title">Rear Engine @ y = {ENGINE_Y}</span>
-			</div>
-			<div class="button-row">
-				{engineCatalog.map((eng, idx) => (
-					<button
-						type="button"
-						class:list={["chip-btn", { active: idx === 1 }]}
-						data-stab-engine-btn={eng.id}
-					>
-						{eng.shortLabel}
-					</button>
-				))}
-				<button type="button" class="chip-btn" data-stab-engine-btn="none">
-					Off (Bare)
-				</button>
-			</div>
-			<label class="toggle-check">
-				<input type="checkbox" id="stab-show-vectors">
-				<span>Show outward exhaust / torque vectors</span>
-			</label>
-		</div>
-	</div>
+    <!-- Engine & Overlay Controls -->
+    <div class="pair-panel">
+      <div class="panel-header">
+        <span class="panel-title">Rear Engine @ y = {ENGINE_Y}</span>
+      </div>
+      <div class="button-row">
+        {engineCatalog.map((eng, idx) => (
+          <button
+            type="button"
+            class:list={["chip-btn", { active: idx === 1 }]}
+            data-stab-engine-btn={eng.id}
+          >
+            {eng.shortLabel}
+          </button>
+        ))}
+        <button type="button" class="chip-btn" data-stab-engine-btn="none">
+          Off (Bare)
+        </button>
+      </div>
+      <label class="toggle-check">
+        <input type="checkbox" id="stab-show-vectors">
+        <span>Show outward exhaust / torque vectors</span>
+      </label>
+    </div>
+  </div>
 
-	<div class="readout-bar">
-		<span>
-			Front pair:
-			<strong data-stab-summary="front">
-				(±{DEFAULTS.frontX.toFixed(1)}, {DEFAULTS.frontY.toFixed(2)}) @{" "}
-				{DEFAULTS.frontAngle.toFixed(1)}°
-			</strong>
-		</span>
-		<span>
-			Rear pair:
-			<strong data-stab-summary="rear">
-				(±{DEFAULTS.rearX.toFixed(1)}, {DEFAULTS.rearY.toFixed(2)}) @{" "}
-				{DEFAULTS.rearAngle.toFixed(1)}°
-			</strong>
-		</span>
-		<span> Rear engine: <strong>y = {ENGINE_Y}</strong> </span>
-	</div>
+  <div class="readout-bar">
+    <span>
+      Front pair:
+      <strong data-stab-summary="front">
+        (±{DEFAULTS.frontX.toFixed(1)}, {DEFAULTS.frontY.toFixed(2)}) @{" "}
+        {DEFAULTS.frontAngle.toFixed(1)}°
+      </strong>
+    </span>
+    <span>
+      Rear pair:
+      <strong data-stab-summary="rear">
+        (±{DEFAULTS.rearX.toFixed(1)}, {DEFAULTS.rearY.toFixed(2)}) @{" "}
+        {DEFAULTS.rearAngle.toFixed(1)}°
+      </strong>
+    </span>
+    <span> Rear engine: <strong>y = {ENGINE_Y}</strong> </span>
+  </div>
 
-	<div class="main-stage">
-		<figure class="stage-card primary-stage">
-			<div class="stage-title">
-				<span>4-Stabilizer Inspector (1× Builder Scale)</span>
-				<span class="stage-sub" data-stab-summary="engine">
-					Heavy Ion (heavy-ion) @ y = 17.5
-				</span>
-			</div>
-			<svg
-				viewBox="-24 -30 48 68"
-				role="img"
-				aria-label="Interactive LHI Wasp 4-stabilizer positioner"
-			>
-				<line x1="0" y1="-29" x2="0" y2="36" class="axis" />
-				<line x1="-22" y1="0" x2="22" y2="0" class="axis" />
+  <div class="main-stage">
+    <figure class="stage-card primary-stage">
+      <div class="stage-title">
+        <span>4-Stabilizer Inspector (1× Builder Scale)</span>
+        <span class="stage-sub" data-stab-summary="engine">
+          Heavy Ion (heavy-ion) @ y = 17.5
+        </span>
+      </div>
+      <svg
+        viewBox="-24 -30 48 68"
+        role="img"
+        aria-label="Interactive LHI Wasp 4-stabilizer positioner"
+      >
+        <line x1="0" y1="-29" x2="0" y2="36" class="axis" />
+        <line x1="-22" y1="0" x2="22" y2="0" class="axis" />
 
-				{/* Hull 06.9 */}
-				{hull069Facets.map((f) => (
-					<polygon points={pts(f.points)} fill={palette[f.shade]} />
-				))}
-				<polygon points={pts(cockpitLeft)} fill="#000000" />
-				<polygon points={pts(cockpitRight)} fill="#000000" />
+        {/* Hull 06.9 */}
+        {hull069Facets.map((f) => (
+          <polygon points={pts(f.points)} fill={palette[f.shade]} />
+        ))}
+        <polygon points={pts(cockpitLeft)} fill="#000000" />
+        <polygon points={pts(cockpitRight)} fill="#000000" />
 
-				{/* 4 Stabilizer Slits (drawn on the hull, BEHIND slotted parts) */}
-				{(
-					["front-left", "front-right", "rear-left", "rear-right"] as const
-				).map((slot) => {
-					const isFront = slot.startsWith("front");
-					const isLeft = slot.endsWith("left");
-					const x =
-						(isLeft ? -1 : 1) * (isFront ? DEFAULTS.frontX : DEFAULTS.rearX);
-					const y = isFront ? DEFAULTS.frontY : DEFAULTS.rearY;
-					const angle = isFront ? DEFAULTS.frontAngle : DEFAULTS.rearAngle;
-					const transform = isLeft
-						? `translate(${x}, ${y}) rotate(${angle})`
-						: `translate(${x}, ${y}) scale(-1, 1) rotate(${angle})`;
-					return (
-						<g data-stab-slit={slot} transform={transform}>
-							<polygon
-								points="-1.2,-3.2 1,-2.6 1,2.6 -1.2,3.2"
-								fill="#080b13"
-							/>
-							<rect
-								x="-0.45"
-								y="-2.2"
-								width="0.9"
-								height="4.4"
-								fill="#303d4c"
-							/>
-							<line
-								x1="0.65"
-								y1="-2.5"
-								x2="0.65"
-								y2="2.5"
-								stroke="#718594"
-								stroke-width="0.25"
-							/>
-							<line
-								x1="-0.7"
-								y1="-2.3"
-								x2="-0.7"
-								y2="2.3"
-								stroke="#69cfff"
-								stroke-width="0.45"
-							/>
-							<g data-stab-vector style="display: none;">
-								<line
-									x1="-1.2"
-									y1="0"
-									x2="-5.2"
-									y2="0"
-									stroke="#69cfff"
-									stroke-width="0.35"
-									stroke-dasharray="0.6 0.4"
-								/>
-								<polygon points="-5.6,0 -4.6,-0.55 -4.6,0.55" fill="#69cfff" />
-							</g>
-						</g>
-					);
-				})}
+        {/* 4 Stabilizer Slits (drawn on the hull, BEHIND slotted parts) */}
+        {(
+          ["front-left", "front-right", "rear-left", "rear-right"] as const
+        ).map((slot) => {
+          const isFront = slot.startsWith("front");
+          const isLeft = slot.endsWith("left");
+          const x =
+            (isLeft ? -1 : 1) * (isFront ? DEFAULTS.frontX : DEFAULTS.rearX);
+          const y = isFront ? DEFAULTS.frontY : DEFAULTS.rearY;
+          const angle = isFront ? DEFAULTS.frontAngle : DEFAULTS.rearAngle;
+          const transform = isLeft
+            ? `translate(${x}, ${y}) rotate(${angle})`
+            : `translate(${x}, ${y}) scale(-1, 1) rotate(${angle})`;
+          return (
+            <g data-stab-slit={slot} transform={transform}>
+              <polygon
+                points="-1.2,-3.2 1,-2.6 1,2.6 -1.2,3.2"
+                fill="#080b13"
+              />
+              <rect
+                x="-0.45"
+                y="-2.2"
+                width="0.9"
+                height="4.4"
+                fill="#303d4c"
+              />
+              <line
+                x1="0.65"
+                y1="-2.5"
+                x2="0.65"
+                y2="2.5"
+                stroke="#718594"
+                stroke-width="0.25"
+              />
+              <line
+                x1="-0.7"
+                y1="-2.3"
+                x2="-0.7"
+                y2="2.3"
+                stroke="#69cfff"
+                stroke-width="0.45"
+              />
+              <g data-stab-vector style="display: none;">
+                <line
+                  x1="-1.2"
+                  y1="0"
+                  x2="-5.2"
+                  y2="0"
+                  stroke="#69cfff"
+                  stroke-width="0.35"
+                  stroke-dasharray="0.6 0.4"
+                />
+                <polygon points="-5.6,0 -4.6,-0.55 -4.6,0.55" fill="#69cfff" />
+              </g>
+            </g>
+          );
+        })}
 
-				{/* Locked Rear Engine at y = 17.5 (drawn ON TOP of hull and stabilizers) */}
-				<g transform={`translate(0, ${ENGINE_Y})`}>
-					{engineCatalog.map((eng, idx) => (
-						<g
-							data-stab-engine-layer={eng.id}
-							style={idx === 1 ? "" : "display: none;"}
-						>
-							{getUprightEngineFaces(eng.id).map((face) => (
-								<polygon points={pts(face.points)} fill={face.color} />
-							))}
-						</g>
-					))}
-				</g>
-			</svg>
-		</figure>
+        {/* Locked Rear Engine at y = 17.5 (drawn ON TOP of hull and stabilizers) */}
+        <g transform={`translate(0, ${ENGINE_Y})`}>
+          {engineCatalog.map((eng, idx) => (
+            <g
+              data-stab-engine-layer={eng.id}
+              style={idx === 1 ? "" : "display: none;"}
+            >
+              {getUprightEngineFaces(eng.id).map((face) => (
+                <polygon points={pts(face.points)} fill={face.color} />
+              ))}
+            </g>
+          ))}
+        </g>
+      </svg>
+    </figure>
 
-		<div class="four-up-panel">
-			<div class="stage-title">
-				<span>All 4 Engines @ y = 17.5 with Current Stabilizers</span>
-				<span class="stage-sub"
-					>Stabilizers rendered behind slotted engine parts</span
-				>
-			</div>
-			<div class="four-up-grid">
-				{engineCatalog.map((eng) => (
-					<figure class="mini-card">
-						<svg
-							viewBox="-22 -28 44 64"
-							role="img"
-							aria-label={`${eng.label} with 4 stabilizers on LHI Wasp`}
-						>
-							<line x1="0" y1="-27" x2="0" y2="34" class="axis" />
-							{hull069Facets.map((f) => (
-								<polygon points={pts(f.points)} fill={palette[f.shade]} />
-							))}
-							<polygon points={pts(cockpitLeft)} fill="#000000" />
-							<polygon points={pts(cockpitRight)} fill="#000000" />
+    <div class="four-up-panel">
+      <div class="stage-title">
+        <span>All 4 Engines @ y = 17.5 with Current Stabilizers</span>
+        <span class="stage-sub"
+          >Stabilizers rendered behind slotted engine parts</span
+        >
+      </div>
+      <div class="four-up-grid">
+        {engineCatalog.map((eng) => (
+          <figure class="mini-card">
+            <svg
+              viewBox="-22 -28 44 64"
+              role="img"
+              aria-label={`${eng.label} with 4 stabilizers on LHI Wasp`}
+            >
+              <line x1="0" y1="-27" x2="0" y2="34" class="axis" />
+              {hull069Facets.map((f) => (
+                <polygon points={pts(f.points)} fill={palette[f.shade]} />
+              ))}
+              <polygon points={pts(cockpitLeft)} fill="#000000" />
+              <polygon points={pts(cockpitRight)} fill="#000000" />
 
-							{(
-								[
-									"front-left",
-									"front-right",
-									"rear-left",
-									"rear-right",
-								] as const
-							).map((slot) => {
-								const isFront = slot.startsWith("front");
-								const isLeft = slot.endsWith("left");
-								const x =
-									(isLeft ? -1 : 1) *
-									(isFront ? DEFAULTS.frontX : DEFAULTS.rearX);
-								const y = isFront ? DEFAULTS.frontY : DEFAULTS.rearY;
-								const angle = isFront
-									? DEFAULTS.frontAngle
-									: DEFAULTS.rearAngle;
-								const transform = isLeft
-									? `translate(${x}, ${y}) rotate(${angle})`
-									: `translate(${x}, ${y}) scale(-1, 1) rotate(${angle})`;
-								return (
-									<g data-stab-slit={slot} transform={transform}>
-										<polygon
-											points="-1.2,-3.2 1,-2.6 1,2.6 -1.2,3.2"
-											fill="#080b13"
-										/>
-										<rect
-											x="-0.45"
-											y="-2.2"
-											width="0.9"
-											height="4.4"
-											fill="#303d4c"
-										/>
-										<line
-											x1="0.65"
-											y1="-2.5"
-											x2="0.65"
-											y2="2.5"
-											stroke="#718594"
-											stroke-width="0.25"
-										/>
-										<line
-											x1="-0.7"
-											y1="-2.3"
-											x2="-0.7"
-											y2="2.3"
-											stroke="#69cfff"
-											stroke-width="0.45"
-										/>
-									</g>
-								);
-							})}
+              {(
+                [
+                  "front-left",
+                  "front-right",
+                  "rear-left",
+                  "rear-right",
+                ] as const
+              ).map((slot) => {
+                const isFront = slot.startsWith("front");
+                const isLeft = slot.endsWith("left");
+                const x =
+                  (isLeft ? -1 : 1) *
+                  (isFront ? DEFAULTS.frontX : DEFAULTS.rearX);
+                const y = isFront ? DEFAULTS.frontY : DEFAULTS.rearY;
+                const angle = isFront
+                  ? DEFAULTS.frontAngle
+                  : DEFAULTS.rearAngle;
+                const transform = isLeft
+                  ? `translate(${x}, ${y}) rotate(${angle})`
+                  : `translate(${x}, ${y}) scale(-1, 1) rotate(${angle})`;
+                return (
+                  <g data-stab-slit={slot} transform={transform}>
+                    <polygon
+                      points="-1.2,-3.2 1,-2.6 1,2.6 -1.2,3.2"
+                      fill="#080b13"
+                    />
+                    <rect
+                      x="-0.45"
+                      y="-2.2"
+                      width="0.9"
+                      height="4.4"
+                      fill="#303d4c"
+                    />
+                    <line
+                      x1="0.65"
+                      y1="-2.5"
+                      x2="0.65"
+                      y2="2.5"
+                      stroke="#718594"
+                      stroke-width="0.25"
+                    />
+                    <line
+                      x1="-0.7"
+                      y1="-2.3"
+                      x2="-0.7"
+                      y2="2.3"
+                      stroke="#69cfff"
+                      stroke-width="0.45"
+                    />
+                  </g>
+                );
+              })}
 
-							<g transform={`translate(0, ${ENGINE_Y})`}>
-								{getUprightEngineFaces(eng.id).map((face) => (
-									<polygon points={pts(face.points)} fill={face.color} />
-								))}
-							</g>
-						</svg>
-						<figcaption>
-							<strong>{eng.shortLabel}</strong>
-							<span>y = 17.5</span>
-						</figcaption>
-					</figure>
-				))}
-			</div>
-		</div>
-	</div>
+              <g transform={`translate(0, ${ENGINE_Y})`}>
+                {getUprightEngineFaces(eng.id).map((face) => (
+                  <polygon points={pts(face.points)} fill={face.color} />
+                ))}
+              </g>
+            </svg>
+            <figcaption>
+              <strong>{eng.shortLabel}</strong>
+              <span>y = 17.5</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
 const root = document.getElementById("wasp-stabilizer-positioner");
 if (root) {
-	const frontYInput = root.querySelector<HTMLInputElement>("#stab-front-y");
-	const frontXInput = root.querySelector<HTMLInputElement>("#stab-front-x");
-	const frontAngleInput =
-		root.querySelector<HTMLInputElement>("#stab-front-angle");
-	const rearYInput = root.querySelector<HTMLInputElement>("#stab-rear-y");
-	const rearXInput = root.querySelector<HTMLInputElement>("#stab-rear-x");
-	const rearAngleInput =
-		root.querySelector<HTMLInputElement>("#stab-rear-angle");
+  const frontYInput = root.querySelector<HTMLInputElement>("#stab-front-y");
+  const frontXInput = root.querySelector<HTMLInputElement>("#stab-front-x");
+  const frontAngleInput =
+    root.querySelector<HTMLInputElement>("#stab-front-angle");
+  const rearYInput = root.querySelector<HTMLInputElement>("#stab-rear-y");
+  const rearXInput = root.querySelector<HTMLInputElement>("#stab-rear-x");
+  const rearAngleInput =
+    root.querySelector<HTMLInputElement>("#stab-rear-angle");
 
-	const frontYOut = root.querySelector<HTMLElement>("#stab-front-y-out");
-	const frontXOut = root.querySelector<HTMLElement>("#stab-front-x-out");
-	const frontAngleOut = root.querySelector<HTMLElement>(
-		"#stab-front-angle-out",
-	);
-	const rearYOut = root.querySelector<HTMLElement>("#stab-rear-y-out");
-	const rearXOut = root.querySelector<HTMLElement>("#stab-rear-x-out");
-	const rearAngleOut = root.querySelector<HTMLElement>("#stab-rear-angle-out");
+  const frontYOut = root.querySelector<HTMLElement>("#stab-front-y-out");
+  const frontXOut = root.querySelector<HTMLElement>("#stab-front-x-out");
+  const frontAngleOut = root.querySelector<HTMLElement>(
+    "#stab-front-angle-out",
+  );
+  const rearYOut = root.querySelector<HTMLElement>("#stab-rear-y-out");
+  const rearXOut = root.querySelector<HTMLElement>("#stab-rear-x-out");
+  const rearAngleOut = root.querySelector<HTMLElement>("#stab-rear-angle-out");
 
-	const summaryFront = root.querySelector<HTMLElement>(
-		'[data-stab-summary="front"]',
-	);
-	const summaryRear = root.querySelector<HTMLElement>(
-		'[data-stab-summary="rear"]',
-	);
-	const summaryEngine = root.querySelector<HTMLElement>(
-		'[data-stab-summary="engine"]',
-	);
+  const summaryFront = root.querySelector<HTMLElement>(
+    '[data-stab-summary="front"]',
+  );
+  const summaryRear = root.querySelector<HTMLElement>(
+    '[data-stab-summary="rear"]',
+  );
+  const summaryEngine = root.querySelector<HTMLElement>(
+    '[data-stab-summary="engine"]',
+  );
 
-	const presetFrontBtn = root.querySelector<HTMLButtonElement>(
-		"[data-preset-front]",
-	);
-	const presetRearBtn =
-		root.querySelector<HTMLButtonElement>("[data-preset-rear]");
-	const engineBtns = root.querySelectorAll<HTMLButtonElement>(
-		"[data-stab-engine-btn]",
-	);
-	const engineLayers = root.querySelectorAll<SVGGElement>(
-		"[data-stab-engine-layer]",
-	);
-	const vectorCheckbox =
-		root.querySelector<HTMLInputElement>("#stab-show-vectors");
-	const vectorLayers = root.querySelectorAll<SVGGElement>("[data-stab-vector]");
+  const presetFrontBtn = root.querySelector<HTMLButtonElement>(
+    "[data-preset-front]",
+  );
+  const presetRearBtn =
+    root.querySelector<HTMLButtonElement>("[data-preset-rear]");
+  const engineBtns = root.querySelectorAll<HTMLButtonElement>(
+    "[data-stab-engine-btn]",
+  );
+  const engineLayers = root.querySelectorAll<SVGGElement>(
+    "[data-stab-engine-layer]",
+  );
+  const vectorCheckbox =
+    root.querySelector<HTMLInputElement>("#stab-show-vectors");
+  const vectorLayers = root.querySelectorAll<SVGGElement>("[data-stab-vector]");
 
-	const frontLeftSlits = root.querySelectorAll<SVGGElement>(
-		'[data-stab-slit="front-left"]',
-	);
-	const frontRightSlits = root.querySelectorAll<SVGGElement>(
-		'[data-stab-slit="front-right"]',
-	);
-	const rearLeftSlits = root.querySelectorAll<SVGGElement>(
-		'[data-stab-slit="rear-left"]',
-	);
-	const rearRightSlits = root.querySelectorAll<SVGGElement>(
-		'[data-stab-slit="rear-right"]',
-	);
+  const frontLeftSlits = root.querySelectorAll<SVGGElement>(
+    '[data-stab-slit="front-left"]',
+  );
+  const frontRightSlits = root.querySelectorAll<SVGGElement>(
+    '[data-stab-slit="front-right"]',
+  );
+  const rearLeftSlits = root.querySelectorAll<SVGGElement>(
+    '[data-stab-slit="rear-left"]',
+  );
+  const rearRightSlits = root.querySelectorAll<SVGGElement>(
+    '[data-stab-slit="rear-right"]',
+  );
 
-	const engineNames: Record<string, string> = {
-		ion: "Light Ion (ion) @ y = 17.5",
-		"heavy-ion": "Heavy Ion (heavy-ion) @ y = 17.5",
-		fusion: "Light Fusion (fusion) @ y = 17.5",
-		plasma: "Heavy Plasma (plasma) @ y = 17.5",
-		none: "Bare 06.9 Hull (No engine)",
-	};
+  const engineNames: Record<string, string> = {
+    ion: "Light Ion (ion) @ y = 17.5",
+    "heavy-ion": "Heavy Ion (heavy-ion) @ y = 17.5",
+    fusion: "Light Fusion (fusion) @ y = 17.5",
+    plasma: "Heavy Plasma (plasma) @ y = 17.5",
+    none: "Bare 06.9 Hull (No engine)",
+  };
 
-	let currentEngine = "heavy-ion";
+  let currentEngine = "heavy-ion";
 
-	function updateSlits() {
-		const fx = Number(frontXInput?.value ?? 4.4);
-		const fy = Number(frontYInput?.value ?? -18.5);
-		const fa = Number(frontAngleInput?.value ?? 8.5);
+  function updateSlits() {
+    const fx = Number(frontXInput?.value ?? 4.4);
+    const fy = Number(frontYInput?.value ?? -18.5);
+    const fa = Number(frontAngleInput?.value ?? 8.5);
 
-		const rx = Number(rearXInput?.value ?? 4.9);
-		const ry = Number(rearYInput?.value ?? 13.5);
-		const ra = Number(rearAngleInput?.value ?? -10);
+    const rx = Number(rearXInput?.value ?? 4.9);
+    const ry = Number(rearYInput?.value ?? 13.5);
+    const ra = Number(rearAngleInput?.value ?? -10);
 
-		if (frontYOut) frontYOut.textContent = fy.toFixed(2);
-		if (frontXOut) frontXOut.textContent = `±${fx.toFixed(1)}`;
-		if (frontAngleOut) frontAngleOut.textContent = `${fa.toFixed(1)}°`;
+    if (frontYOut) frontYOut.textContent = fy.toFixed(2);
+    if (frontXOut) frontXOut.textContent = `±${fx.toFixed(1)}`;
+    if (frontAngleOut) frontAngleOut.textContent = `${fa.toFixed(1)}°`;
 
-		if (rearYOut) rearYOut.textContent = ry.toFixed(2);
-		if (rearXOut) rearXOut.textContent = `±${rx.toFixed(1)}`;
-		if (rearAngleOut) rearAngleOut.textContent = `${ra.toFixed(1)}°`;
+    if (rearYOut) rearYOut.textContent = ry.toFixed(2);
+    if (rearXOut) rearXOut.textContent = `±${rx.toFixed(1)}`;
+    if (rearAngleOut) rearAngleOut.textContent = `${ra.toFixed(1)}°`;
 
-		if (summaryFront) {
-			summaryFront.textContent = `(±${fx.toFixed(1)}, ${fy.toFixed(2)}) @ ${fa.toFixed(1)}°`;
-		}
-		if (summaryRear) {
-			summaryRear.textContent = `(±${rx.toFixed(1)}, ${ry.toFixed(2)}) @ ${ra.toFixed(1)}°`;
-		}
+    if (summaryFront) {
+      summaryFront.textContent = `(±${fx.toFixed(1)}, ${fy.toFixed(2)}) @ ${fa.toFixed(1)}°`;
+    }
+    if (summaryRear) {
+      summaryRear.textContent = `(±${rx.toFixed(1)}, ${ry.toFixed(2)}) @ ${ra.toFixed(1)}°`;
+    }
 
-		frontLeftSlits.forEach((el) => {
-			el.setAttribute("transform", `translate(${-fx}, ${fy}) rotate(${fa})`);
-		});
-		frontRightSlits.forEach((el) => {
-			el.setAttribute(
-				"transform",
-				`translate(${fx}, ${fy}) scale(-1, 1) rotate(${fa})`,
-			);
-		});
-		rearLeftSlits.forEach((el) => {
-			el.setAttribute("transform", `translate(${-rx}, ${ry}) rotate(${ra})`);
-		});
-		rearRightSlits.forEach((el) => {
-			el.setAttribute(
-				"transform",
-				`translate(${rx}, ${ry}) scale(-1, 1) rotate(${ra})`,
-			);
-		});
-	}
+    frontLeftSlits.forEach((el) => {
+      el.setAttribute("transform", `translate(${-fx}, ${fy}) rotate(${fa})`);
+    });
+    frontRightSlits.forEach((el) => {
+      el.setAttribute(
+        "transform",
+        `translate(${fx}, ${fy}) scale(-1, 1) rotate(${fa})`,
+      );
+    });
+    rearLeftSlits.forEach((el) => {
+      el.setAttribute("transform", `translate(${-rx}, ${ry}) rotate(${ra})`);
+    });
+    rearRightSlits.forEach((el) => {
+      el.setAttribute(
+        "transform",
+        `translate(${rx}, ${ry}) scale(-1, 1) rotate(${ra})`,
+      );
+    });
+  }
 
-	[
-		frontYInput,
-		frontXInput,
-		frontAngleInput,
-		rearYInput,
-		rearXInput,
-		rearAngleInput,
-	].forEach((input) => {
-		input?.addEventListener("input", updateSlits);
-	});
+  [
+    frontYInput,
+    frontXInput,
+    frontAngleInput,
+    rearYInput,
+    rearXInput,
+    rearAngleInput,
+  ].forEach((input) => {
+    input?.addEventListener("input", updateSlits);
+  });
 
-	presetFrontBtn?.addEventListener("click", () => {
-		if (frontXInput) frontXInput.value = "4.4";
-		if (frontYInput) frontYInput.value = "-18.5";
-		if (frontAngleInput) frontAngleInput.value = "8.5";
-		updateSlits();
-	});
+  presetFrontBtn?.addEventListener("click", () => {
+    if (frontXInput) frontXInput.value = "4.4";
+    if (frontYInput) frontYInput.value = "-18.5";
+    if (frontAngleInput) frontAngleInput.value = "8.5";
+    updateSlits();
+  });
 
-	presetRearBtn?.addEventListener("click", () => {
-		if (rearXInput) rearXInput.value = "4.9";
-		if (rearYInput) rearYInput.value = "13.5";
-		if (rearAngleInput) rearAngleInput.value = "-10";
-		updateSlits();
-	});
+  presetRearBtn?.addEventListener("click", () => {
+    if (rearXInput) rearXInput.value = "4.9";
+    if (rearYInput) rearYInput.value = "13.5";
+    if (rearAngleInput) rearAngleInput.value = "-10";
+    updateSlits();
+  });
 
-	engineBtns.forEach((btn) => {
-		btn.addEventListener("click", () => {
-			currentEngine = btn.getAttribute("data-stab-engine-btn") ?? "heavy-ion";
-			engineBtns.forEach((b) => {
-				b.classList.toggle(
-					"active",
-					b.getAttribute("data-stab-engine-btn") === currentEngine,
-				);
-			});
-			engineLayers.forEach((layer) => {
-				layer.style.display =
-					layer.getAttribute("data-stab-engine-layer") === currentEngine
-						? ""
-						: "none";
-			});
-			if (summaryEngine) {
-				summaryEngine.textContent =
-					engineNames[currentEngine] ?? engineNames["heavy-ion"];
-			}
-		});
-	});
+  engineBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      currentEngine = btn.getAttribute("data-stab-engine-btn") ?? "heavy-ion";
+      engineBtns.forEach((b) => {
+        b.classList.toggle(
+          "active",
+          b.getAttribute("data-stab-engine-btn") === currentEngine,
+        );
+      });
+      engineLayers.forEach((layer) => {
+        layer.style.display =
+          layer.getAttribute("data-stab-engine-layer") === currentEngine
+            ? ""
+            : "none";
+      });
+      if (summaryEngine) {
+        summaryEngine.textContent =
+          engineNames[currentEngine] ?? engineNames["heavy-ion"];
+      }
+    });
+  });
 
-	vectorCheckbox?.addEventListener("change", () => {
-		const show = vectorCheckbox.checked;
-		vectorLayers.forEach((el) => {
-			el.style.display = show ? "" : "none";
-		});
-	});
+  vectorCheckbox?.addEventListener("change", () => {
+    const show = vectorCheckbox.checked;
+    vectorLayers.forEach((el) => {
+      el.style.display = show ? "" : "none";
+    });
+  });
 
-	updateSlits();
+  updateSlits();
 }
 </script>
 
 <style>
 .stab-positioner {
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
-	margin: 1rem 0 1.5rem;
-	padding: 1rem;
-	background: var(--bg-secondary, #16162a);
-	border: 1px solid var(--border-default, rgba(255, 255, 255, 0.12));
-	border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 1rem 0 1.5rem;
+  padding: 1rem;
+  background: var(--bg-secondary, #16162a);
+  border: 1px solid var(--border-default, rgba(255, 255, 255, 0.12));
+  border-radius: 8px;
 }
 
 .controls-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-	gap: 0.85rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.85rem;
 }
 
 .pair-panel {
-	padding: 0.7rem;
-	background: rgba(10, 12, 22, 0.55);
-	border: 1px solid rgba(255, 255, 255, 0.08);
-	border-radius: 6px;
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
+  padding: 0.7rem;
+  background: rgba(10, 12, 22, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .panel-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	gap: 0.4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .panel-title {
-	font-family: var(--font-mono, monospace);
-	font-size: 0.74rem;
-	font-weight: 600;
-	text-transform: uppercase;
-	letter-spacing: 0.03em;
-	color: var(--text-primary, #f0f4f8);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-primary, #f0f4f8);
 }
 
 .reset-btn {
-	font-family: var(--font-mono, monospace);
-	font-size: 0.68rem;
-	padding: 0.2rem 0.45rem;
-	border-radius: 4px;
-	border: 1px solid rgba(255, 255, 255, 0.16);
-	background: rgba(15, 23, 42, 0.7);
-	color: var(--text-secondary, #94a3b8);
-	cursor: pointer;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.68rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(15, 23, 42, 0.7);
+  color: var(--text-secondary, #94a3b8);
+  cursor: pointer;
 }
 
 .slider-row {
-	display: grid;
-	grid-template-columns: 4.5rem 1fr 3.6rem;
-	align-items: center;
-	gap: 0.45rem;
-	font-family: var(--font-mono, monospace);
-	font-size: 0.73rem;
-	color: var(--text-secondary, #94a3b8);
+  display: grid;
+  grid-template-columns: 4.5rem 1fr 3.6rem;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.73rem;
+  color: var(--text-secondary, #94a3b8);
 }
 
 .val-out {
-	text-align: right;
-	font-weight: 600;
-	color: #69cfff;
+  text-align: right;
+  font-weight: 600;
+  color: #69cfff;
 }
 
 input[type="range"] {
-	width: 100%;
-	accent-color: #69cfff;
+  width: 100%;
+  accent-color: #69cfff;
 }
 
 .button-row {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.35rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
 }
 
 .chip-btn {
-	font-family: var(--font-mono, monospace);
-	font-size: 0.73rem;
-	padding: 0.28rem 0.52rem;
-	border-radius: 4px;
-	border: 1px solid rgba(255, 255, 255, 0.16);
-	background: rgba(15, 23, 42, 0.7);
-	color: var(--text-primary, #f0f4f8);
-	cursor: pointer;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.73rem;
+  padding: 0.28rem 0.52rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(15, 23, 42, 0.7);
+  color: var(--text-primary, #f0f4f8);
+  cursor: pointer;
 }
 
 .chip-btn.active {
-	background: rgba(105, 207, 255, 0.16);
-	border-color: #69cfff;
-	color: #69cfff;
+  background: rgba(105, 207, 255, 0.16);
+  border-color: #69cfff;
+  color: #69cfff;
 }
 
 .toggle-check {
-	display: flex;
-	align-items: center;
-	gap: 0.45rem;
-	font-size: 0.76rem;
-	color: var(--text-primary, #f0f4f8);
-	cursor: pointer;
-	margin-top: 0.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.76rem;
+  color: var(--text-primary, #f0f4f8);
+  cursor: pointer;
+  margin-top: 0.2rem;
 }
 
 .readout-bar {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 1.1rem;
-	padding: 0.55rem 0.75rem;
-	background: rgba(10, 12, 22, 0.65);
-	border: 1px solid rgba(255, 255, 255, 0.08);
-	border-radius: 6px;
-	font-family: var(--font-mono, monospace);
-	font-size: 0.75rem;
-	color: var(--text-secondary, #94a3b8);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+  padding: 0.55rem 0.75rem;
+  background: rgba(10, 12, 22, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  color: var(--text-secondary, #94a3b8);
 }
 
 .readout-bar strong {
-	color: var(--text-primary, #f0f4f8);
+  color: var(--text-primary, #f0f4f8);
 }
 
 .main-stage {
-	display: grid;
-	grid-template-columns: minmax(260px, 1fr) minmax(320px, 1.35fr);
-	gap: 1rem;
-	align-items: start;
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(320px, 1.35fr);
+  gap: 1rem;
+  align-items: start;
 }
 
 @media (max-width: 760px) {
-	.main-stage {
-		grid-template-columns: 1fr;
-	}
+  .main-stage {
+    grid-template-columns: 1fr;
+  }
 }
 
 .stage-card,
 .four-up-panel {
-	margin: 0;
-	padding: 0.75rem;
-	background: rgba(10, 12, 22, 0.55);
-	border: 1px solid rgba(255, 255, 255, 0.09);
-	border-radius: 6px;
-	display: flex;
-	flex-direction: column;
-	gap: 0.6rem;
+  margin: 0;
+  padding: 0.75rem;
+  background: rgba(10, 12, 22, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 
 .stage-title {
-	display: flex;
-	justify-content: space-between;
-	align-items: baseline;
-	gap: 0.5rem;
-	font-family: var(--font-mono, monospace);
-	font-size: 0.76rem;
-	color: var(--text-primary, #f0f4f8);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.76rem;
+  color: var(--text-primary, #f0f4f8);
 }
 
 .stage-sub {
-	font-size: 0.72rem;
-	color: var(--text-secondary, #94a3b8);
+  font-size: 0.72rem;
+  color: var(--text-secondary, #94a3b8);
 }
 
 .primary-stage svg {
-	width: 100%;
-	height: 390px;
-	display: block;
-	background: radial-gradient(
-		circle at 50% 45%,
-		rgba(97, 147, 169, 0.14),
-		rgba(10, 12, 22, 0.94) 75%
-	);
-	border-radius: 4px;
+  width: 100%;
+  height: 390px;
+  display: block;
+  background: radial-gradient(
+    circle at 50% 45%,
+    rgba(97, 147, 169, 0.14),
+    rgba(10, 12, 22, 0.94) 75%
+  );
+  border-radius: 4px;
 }
 
 .four-up-grid {
-	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-	gap: 0.65rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
 }
 
 .mini-card {
-	margin: 0;
-	padding: 0.5rem;
-	background: rgba(15, 20, 34, 0.75);
-	border: 1px solid rgba(255, 255, 255, 0.08);
-	border-radius: 4px;
-	display: flex;
-	flex-direction: column;
-	gap: 0.35rem;
+  margin: 0;
+  padding: 0.5rem;
+  background: rgba(15, 20, 34, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
 .mini-card svg {
-	width: 100%;
-	height: 170px;
-	display: block;
-	background: rgba(8, 10, 18, 0.85);
-	border-radius: 3px;
+  width: 100%;
+  height: 170px;
+  display: block;
+  background: rgba(8, 10, 18, 0.85);
+  border-radius: 3px;
 }
 
 .mini-card figcaption {
-	display: flex;
-	justify-content: space-between;
-	align-items: baseline;
-	gap: 0.4rem;
-	font-family: var(--font-mono, monospace);
-	font-size: 0.7rem;
-	color: var(--text-primary, #f0f4f8);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.7rem;
+  color: var(--text-primary, #f0f4f8);
 }
 
 .mini-card figcaption span {
-	color: var(--text-secondary, #94a3b8);
-	font-size: 0.66rem;
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.66rem;
 }
 
 .axis {
-	stroke: rgba(255, 255, 255, 0.06);
-	stroke-width: 0.25;
-	stroke-dasharray: 1 1;
+  stroke: rgba(255, 255, 255, 0.06);
+  stroke-width: 0.25;
+  stroke-dasharray: 1 1;
 }
 </style>

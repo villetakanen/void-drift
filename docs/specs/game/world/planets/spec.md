@@ -29,16 +29,16 @@ Planets supply the "Terrain" of the void. Unlike Stars, they are persistent obst
 type PlanetType = "rock" | "gas" | "ocean" | "desert" | "ice";
 
 interface Planet {
-	pos: Vec2;
-	orbitCenter: Vec2;
-	orbitRadius: number; // Distance from center (200-1000px)
-	orbitSpeed: number; // Radians per second
-	orbitAngle: number; // Current angle
-	radius: number; // Planet size (10-100px)
-	mass: number;
-	color: string;
-	type: PlanetType; // Visual type category
-	hasRing: boolean; // Ring system around planet
+  pos: Vec2;
+  orbitCenter: Vec2;
+  orbitRadius: number; // Distance from center (200-1000px)
+  orbitSpeed: number; // Radians per second
+  orbitAngle: number; // Current angle
+  radius: number; // Planet size (10-100px)
+  mass: number;
+  color: string;
+  type: PlanetType; // Visual type category
+  hasRing: boolean; // Ring system around planet
 }
 ```
 
@@ -117,14 +117,14 @@ Planets cannot overlap at any point in their orbits. For two planets with radii 
 
 ```typescript
 interface Planet {
-	pos: Vec2; // Current position (updated each frame)
-	orbitCenter: Vec2; // Center of orbit (usually star position)
-	orbitRadius: number; // Distance from center (700px)
-	orbitSpeed: number; // Angular velocity (0.05 rad/s - very slow)
-	orbitAngle: number; // Current angle in radians
-	radius: number; // Physical/collision radius (30px)
-	mass: number; // Gravitational mass (400)
-	color: string; // Visual color (Slate Blue)
+  pos: Vec2; // Current position (updated each frame)
+  orbitCenter: Vec2; // Center of orbit (usually star position)
+  orbitRadius: number; // Distance from center (700px)
+  orbitSpeed: number; // Angular velocity (0.05 rad/s - very slow)
+  orbitAngle: number; // Current angle in radians
+  radius: number; // Physical/collision radius (30px)
+  mass: number; // Gravitational mass (400)
+  color: string; // Visual color (Slate Blue)
 }
 ```
 

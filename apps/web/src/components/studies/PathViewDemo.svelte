@@ -4,6 +4,6 @@ import { speedCeilingStudy } from "./path-fixtures";
 </script>
 
 <PathView
-	series={speedCeilingStudy}
-	label="Study B paths: three vehicles at different speed ceilings"
+  series={speedCeilingStudy}
+  label="Study B paths: three vehicles at different speed ceilings"
 />

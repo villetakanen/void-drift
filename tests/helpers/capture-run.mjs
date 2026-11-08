@@ -5,7 +5,7 @@ import { z } from "zod";
 // images and the report stay together while separate invocations remain unique.
 process.env.VOID_DRIFT_CAPTURE_ID ??= `${new Date().toISOString().replaceAll(":", "-")}-${randomUUID()}`;
 const runId = z
-	.string()
-	.regex(/^[A-Za-z0-9][\w.-]*$/)
-	.parse(process.env.VOID_DRIFT_CAPTURE_ID);
+  .string()
+  .regex(/^[A-Za-z0-9][\w.-]*$/)
+  .parse(process.env.VOID_DRIFT_CAPTURE_ID);
 export const captureRunDirectory = `artifacts/review/${runId}`;

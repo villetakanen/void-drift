@@ -1,45 +1,45 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 40 40">
-	<title>Potential Well study: 5-large</title>
-	<path
-		d="M-8,-12.0H-7L-6,-11.0V11.0L-7,12.0H-8L-9,11.0V-11.0Z"
-		fill="#304759"
-	/>
-	<path d="M-8,-12.0H-7L-8,-11.0H-8V11.0L-9,11.0V-11.0Z" fill="#d1e5ec" />
-	<path d="M-7,-12.0L-6,-11.0V11.0L-7,12.0H-8L-7,11.0H-7Z" fill="#304759" />
-	<path d="M7,-12.0H8L9,-11.0V11.0L8,12.0H7L6,11.0V-11.0Z" fill="#304759" />
-	<path d="M7,-12.0H8L7,-11.0H7V11.0L6,11.0V-11.0Z" fill="#d1e5ec" />
-	<path d="M8,-12.0L9,-11.0V11.0L8,12.0H7L8,11.0H8Z" fill="#304759" />
-	<path d="M-6,-10H-3L-2,-9V-7L-3,-6H-6L-7,-7V-9Z" fill="#7894a4" />
-	<path d="M-6,-10H-3L-4,-9H-6V-7L-7,-7V-9Z" fill="#d1e5ec" />
-	<path d="M-3,-10L-2,-9V-7L-3,-6H-6L-5,-7H-3Z" fill="#304759" />
-	<path d="M3,-10H6L7,-9V-7L6,-6H3L2,-7V-9Z" fill="#7894a4" />
-	<path d="M3,-10H6L5,-9H3V-7L2,-7V-9Z" fill="#d1e5ec" />
-	<path d="M6,-10L7,-9V-7L6,-6H3L4,-7H6Z" fill="#304759" />
-	<path d="M-6,-5H-3L-2,-4V-2L-3,-1H-6L-7,-2V-4Z" fill="#7894a4" />
-	<path d="M-6,-5H-3L-4,-4H-6V-2L-7,-2V-4Z" fill="#d1e5ec" />
-	<path d="M-3,-5L-2,-4V-2L-3,-1H-6L-5,-2H-3Z" fill="#304759" />
-	<path d="M3,-5H6L7,-4V-2L6,-1H3L2,-2V-4Z" fill="#7894a4" />
-	<path d="M3,-5H6L5,-4H3V-2L2,-2V-4Z" fill="#d1e5ec" />
-	<path d="M6,-5L7,-4V-2L6,-1H3L4,-2H6Z" fill="#304759" />
-	<path d="M-6,0H-3L-2,1V3L-3,4H-6L-7,3V1Z" fill="#7894a4" />
-	<path d="M-6,0H-3L-4,1H-6V3L-7,3V1Z" fill="#d1e5ec" />
-	<path d="M-3,0L-2,1V3L-3,4H-6L-5,3H-3Z" fill="#304759" />
-	<path d="M3,0H6L7,1V3L6,4H3L2,3V1Z" fill="#7894a4" />
-	<path d="M3,0H6L5,1H3V3L2,3V1Z" fill="#d1e5ec" />
-	<path d="M6,0L7,1V3L6,4H3L4,3H6Z" fill="#304759" />
-	<path d="M-6,5H-3L-2,6V8L-3,9H-6L-7,8V6Z" fill="#7894a4" />
-	<path d="M-6,5H-3L-4,6H-6V8L-7,8V6Z" fill="#d1e5ec" />
-	<path d="M-3,5L-2,6V8L-3,9H-6L-5,8H-3Z" fill="#304759" />
-	<path d="M3,5H6L7,6V8L6,9H3L2,8V6Z" fill="#7894a4" />
-	<path d="M3,5H6L5,6H3V8L2,8V6Z" fill="#d1e5ec" />
-	<path d="M6,5L7,6V8L6,9H3L4,8H6Z" fill="#304759" />
-	<path
-		d="M-9,-13.0H9L10,-12.0V-11.0L9,-10.0H-9L-10,-11.0V-12.0Z"
-		fill="#cedb17"
-	/>
-	<path d="M-9,-13.0H9L8,-12.0H-9V-11.0L-10,-11.0V-12.0Z" fill="#e3ea76" />
-	<path d="M9,-13.0L10,-12.0V-11.0L9,-10.0H-9L-8,-11.0H9Z" fill="#87920f" />
-	<path d="M-9,10.0H9L10,11.0V12.0L9,13.0H-9L-10,12.0V11.0Z" fill="#cedb17" />
-	<path d="M-9,10.0H9L8,11.0H-9V12.0L-10,12.0V11.0Z" fill="#e3ea76" />
-	<path d="M9,10.0L10,11.0V12.0L9,13.0H-9L-8,12.0H9Z" fill="#87920f" />
+  <title>Potential Well study: 5-large</title>
+  <path
+    d="M-8,-12.0H-7L-6,-11.0V11.0L-7,12.0H-8L-9,11.0V-11.0Z"
+    fill="#304759"
+  />
+  <path d="M-8,-12.0H-7L-8,-11.0H-8V11.0L-9,11.0V-11.0Z" fill="#d1e5ec" />
+  <path d="M-7,-12.0L-6,-11.0V11.0L-7,12.0H-8L-7,11.0H-7Z" fill="#304759" />
+  <path d="M7,-12.0H8L9,-11.0V11.0L8,12.0H7L6,11.0V-11.0Z" fill="#304759" />
+  <path d="M7,-12.0H8L7,-11.0H7V11.0L6,11.0V-11.0Z" fill="#d1e5ec" />
+  <path d="M8,-12.0L9,-11.0V11.0L8,12.0H7L8,11.0H8Z" fill="#304759" />
+  <path d="M-6,-10H-3L-2,-9V-7L-3,-6H-6L-7,-7V-9Z" fill="#7894a4" />
+  <path d="M-6,-10H-3L-4,-9H-6V-7L-7,-7V-9Z" fill="#d1e5ec" />
+  <path d="M-3,-10L-2,-9V-7L-3,-6H-6L-5,-7H-3Z" fill="#304759" />
+  <path d="M3,-10H6L7,-9V-7L6,-6H3L2,-7V-9Z" fill="#7894a4" />
+  <path d="M3,-10H6L5,-9H3V-7L2,-7V-9Z" fill="#d1e5ec" />
+  <path d="M6,-10L7,-9V-7L6,-6H3L4,-7H6Z" fill="#304759" />
+  <path d="M-6,-5H-3L-2,-4V-2L-3,-1H-6L-7,-2V-4Z" fill="#7894a4" />
+  <path d="M-6,-5H-3L-4,-4H-6V-2L-7,-2V-4Z" fill="#d1e5ec" />
+  <path d="M-3,-5L-2,-4V-2L-3,-1H-6L-5,-2H-3Z" fill="#304759" />
+  <path d="M3,-5H6L7,-4V-2L6,-1H3L2,-2V-4Z" fill="#7894a4" />
+  <path d="M3,-5H6L5,-4H3V-2L2,-2V-4Z" fill="#d1e5ec" />
+  <path d="M6,-5L7,-4V-2L6,-1H3L4,-2H6Z" fill="#304759" />
+  <path d="M-6,0H-3L-2,1V3L-3,4H-6L-7,3V1Z" fill="#7894a4" />
+  <path d="M-6,0H-3L-4,1H-6V3L-7,3V1Z" fill="#d1e5ec" />
+  <path d="M-3,0L-2,1V3L-3,4H-6L-5,3H-3Z" fill="#304759" />
+  <path d="M3,0H6L7,1V3L6,4H3L2,3V1Z" fill="#7894a4" />
+  <path d="M3,0H6L5,1H3V3L2,3V1Z" fill="#d1e5ec" />
+  <path d="M6,0L7,1V3L6,4H3L4,3H6Z" fill="#304759" />
+  <path d="M-6,5H-3L-2,6V8L-3,9H-6L-7,8V6Z" fill="#7894a4" />
+  <path d="M-6,5H-3L-4,6H-6V8L-7,8V6Z" fill="#d1e5ec" />
+  <path d="M-3,5L-2,6V8L-3,9H-6L-5,8H-3Z" fill="#304759" />
+  <path d="M3,5H6L7,6V8L6,9H3L2,8V6Z" fill="#7894a4" />
+  <path d="M3,5H6L5,6H3V8L2,8V6Z" fill="#d1e5ec" />
+  <path d="M6,5L7,6V8L6,9H3L4,8H6Z" fill="#304759" />
+  <path
+    d="M-9,-13.0H9L10,-12.0V-11.0L9,-10.0H-9L-10,-11.0V-12.0Z"
+    fill="#cedb17"
+  />
+  <path d="M-9,-13.0H9L8,-12.0H-9V-11.0L-10,-11.0V-12.0Z" fill="#e3ea76" />
+  <path d="M9,-13.0L10,-12.0V-11.0L9,-10.0H-9L-8,-11.0H9Z" fill="#87920f" />
+  <path d="M-9,10.0H9L10,11.0V12.0L9,13.0H-9L-10,12.0V11.0Z" fill="#cedb17" />
+  <path d="M-9,10.0H9L8,11.0H-9V12.0L-10,12.0V11.0Z" fill="#e3ea76" />
+  <path d="M9,10.0L10,11.0V12.0L9,13.0H-9L-8,12.0H9Z" fill="#87920f" />
 </svg>

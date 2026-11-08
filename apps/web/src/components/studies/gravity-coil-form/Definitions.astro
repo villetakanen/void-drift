@@ -3,8 +3,8 @@ import { buildMounts, defaultLoadout } from "@void-drift/mode-a";
 import { ENGINE_ART } from "../../../../../../packages/mode-a/src/lib/engine-art";
 import { FIGHTER } from "../../../../../../packages/mode-a/src/lib/fighter";
 import {
-	POTENTIAL_WELL_ART,
-	POTENTIAL_WELL_SCALE,
+  POTENTIAL_WELL_ART,
+  POTENTIAL_WELL_SCALE,
 } from "../../../../../../packages/mode-a/src/lib/potential-well-art";
 import { slotAccepts } from "../../../../../../packages/mode-a/src/lib/schemas/loadout";
 import { WASP } from "../../../../../../packages/mode-a/src/lib/wasp";
@@ -14,187 +14,187 @@ import { surfaceCoil, surfaceStudies } from "./SurfaceRounds";
 import { underRing, underRings } from "./UnderRings";
 
 const fighter: Face[] = FIGHTER.hull.map((p, i) => {
-	const next = FIGHTER.hull[(i + 1) % FIGHTER.hull.length];
-	return {
-		points: [[-3, 0], p, next],
-		color: FIGHTER.facets[(p[1] + next[1]) / 2 < 0 ? i % 3 : 3 + (i % 3)],
-	};
+  const next = FIGHTER.hull[(i + 1) % FIGHTER.hull.length];
+  return {
+    points: [[-3, 0], p, next],
+    color: FIGHTER.facets[(p[1] + next[1]) / 2 < 0 ? i % 3 : 3 + (i % 3)],
+  };
 });
 fighter.push(
-	{ points: FIGHTER.ridge, color: "#a2d8df" },
-	{
-		points: [
-			[38, 0],
-			[-21, 0],
-			[-15, 4],
-		],
-		color: "#51869e",
-	},
-	{ points: FIGHTER.cockpit, color: "#000" },
+  { points: FIGHTER.ridge, color: "#a2d8df" },
+  {
+    points: [
+      [38, 0],
+      [-21, 0],
+      [-15, 4],
+    ],
+    color: "#51869e",
+  },
+  { points: FIGHTER.cockpit, color: "#000" },
 );
 const items = [
-	"ref-1a",
-	"ref-c",
-	"ref-d",
-	"well",
-	"shell",
-	"saddle",
-	...surfaceStudies,
-	...underRings.map((ring) => ring.id),
+  "ref-1a",
+  "ref-c",
+  "ref-d",
+  "well",
+  "shell",
+  "saddle",
+  ...surfaceStudies,
+  ...underRings.map((ring) => ring.id),
 ];
 ---
 
 <div class="definitions" aria-hidden="true" set:html={references} />
 <svg width="0" height="0" aria-hidden="true" class="definitions">
-	<defs>
-		<g id="form-ref-1a">
-			<use href="#form-ref-depth-full-0" transform="scale(.5) rotate(90)" />
-		</g>
-		<g id="form-ref-c">
-			<use href="#form-ref-light-coherent-full" transform="scale(.5)" />
-		</g>
-		<g id="form-ref-d">
-			<use href="#form-ref-construction-housing" transform="scale(.5)" />
-		</g>
-		{(["shell", "saddle"] as const).map((kind) => (
-			<g id={`form-${kind}`} transform="scale(.5)">
-				{coil(kind).map((f) => (
-					<polygon points={points(f.points)} fill={f.color} />
-				))}
-			</g>
-		))}
-		{surfaceStudies.map((kind) => (
-			<g id={`form-${kind}`} transform="scale(.5)">
-				{surfaceCoil(kind).map((f) => (
-					<polygon points={points(f.points)} fill={f.color} />
-				))}
-			</g>
-		))}
-		{underRings.map((ring) => (
-			<g id={`form-${ring.id}`}>
-				<g transform="scale(.5)" data-under-ring={ring.id}>
-					{underRing(ring.radius).map((f) => (
-						<polygon points={points(f.points)} fill={f.color} />
-					))}
-				</g>
-				<use href="#form-shell" />
-			</g>
-		))}
-		<g id="form-well" transform={`scale(${POTENTIAL_WELL_SCALE})`}>
-			{POTENTIAL_WELL_ART.normal.map((f) => (
-				<path
-					d={f.path}
-					fill={f.fill}
-					stroke={f.stroke}
-					stroke-width={f.width}
-				/>
-			))}
-		</g>
-		<g id="form-ion" transform="rotate(-90)">
-			{ENGINE_ART.ion[3].map((f) => (
-				<polygon points={points(f.points)} fill={f.color} />
-			))}
-		</g>
-		{(["wasp", "fighter"] as const).map((ship) => {
-			// Historical comparison mount: do not move the accepted reference when
-			// production Fighter equipment slots change later.
-			const mounts = buildMounts(defaultLoadout(ship)).map((mount) =>
-				ship === "fighter" && mount.group === "hull"
-					? { ...mount, x: 2 - mount.index * 12 }
-					: mount,
-			);
-			const engines = mounts.filter((m) => slotAccepts(m.type, "E"));
-			const mount = mounts.find((m) => m.group === "hull");
-			if (!mount) throw new Error(`Missing hull reference mount: ${ship}`);
-			return (
-				<>
-					<g
-						id={`form-ship-${ship}`}
-						transform="rotate(-90)"
-						data-engine-count={engines.length}
-					>
-						{[true, false].map((below) => (
-							<>
-								{!below &&
-									(ship === "wasp" ? WASP.facets : fighter).map((f) => (
-										<polygon points={points(f.points)} fill={f.color} />
-									))}
-								{engines
-									.filter(
-										(m) => (ship !== "wasp" && m.group === "side") === below,
-									)
-									.map((m) => (
-										<g
-											transform={`translate(${m.x} ${m.y}) rotate(${(m.angle * 180) / Math.PI})`}
-											data-engine-slot={m.key}
-										>
-											{ENGINE_ART.ion[
-												ship === "wasp"
-													? 3
-													: m.key === "left"
-														? 1
-														: m.key === "right"
-															? 2
-															: 3
-											].map((f) => (
-												<polygon points={points(f.points)} fill={f.color} />
-											))}
-										</g>
-									))}
-							</>
-						))}
-						{ship === "wasp" &&
-							[WASP.stabilizers.front, WASP.stabilizers.rear].flatMap(
-								(geometry) =>
-									[-1, 1].map((side) => (
-										<g
-											transform={`translate(${geometry.x} ${side * geometry.y}) rotate(${(Math.atan2(-side * geometry.fy, geometry.fx) * 180) / Math.PI})`}
-										>
-											<path d="M-1.2-3.2L1-2.6V2.6L-1.2 3.2Z" fill="#080b13" />
-											<path d="M-.45-2.2H.45V2.2H-.45Z" fill="#303d4c" />
-											<path
-												d="M.65-2.5V2.5"
-												stroke="#718594"
-												stroke-width=".25"
-											/>
-											<path
-												d="M-.7-2.3V2.3"
-												stroke="#69cfff"
-												stroke-width=".45"
-											/>
-										</g>
-									)),
-							)}
-					</g>
-					{items.map((item) =>
-						[false, true].map((below) => (
-							<g id={`form-${item}-${ship}-${below ? "under" : "over"}`}>
-								{below && (
-									<use
-										href={`#form-${item}`}
-										transform={`translate(${mount.y} ${-mount.x})`}
-									/>
-								)}
-								<use href={`#form-ship-${ship}`} />
-								{!below && (
-									<use
-										href={`#form-${item}`}
-										transform={`translate(${mount.y} ${-mount.x})`}
-									/>
-								)}
-							</g>
-						)),
-					)}
-				</>
-			);
-		})}
-	</defs>
+  <defs>
+    <g id="form-ref-1a">
+      <use href="#form-ref-depth-full-0" transform="scale(.5) rotate(90)" />
+    </g>
+    <g id="form-ref-c">
+      <use href="#form-ref-light-coherent-full" transform="scale(.5)" />
+    </g>
+    <g id="form-ref-d">
+      <use href="#form-ref-construction-housing" transform="scale(.5)" />
+    </g>
+    {(["shell", "saddle"] as const).map((kind) => (
+      <g id={`form-${kind}`} transform="scale(.5)">
+        {coil(kind).map((f) => (
+          <polygon points={points(f.points)} fill={f.color} />
+        ))}
+      </g>
+    ))}
+    {surfaceStudies.map((kind) => (
+      <g id={`form-${kind}`} transform="scale(.5)">
+        {surfaceCoil(kind).map((f) => (
+          <polygon points={points(f.points)} fill={f.color} />
+        ))}
+      </g>
+    ))}
+    {underRings.map((ring) => (
+      <g id={`form-${ring.id}`}>
+        <g transform="scale(.5)" data-under-ring={ring.id}>
+          {underRing(ring.radius).map((f) => (
+            <polygon points={points(f.points)} fill={f.color} />
+          ))}
+        </g>
+        <use href="#form-shell" />
+      </g>
+    ))}
+    <g id="form-well" transform={`scale(${POTENTIAL_WELL_SCALE})`}>
+      {POTENTIAL_WELL_ART.normal.map((f) => (
+        <path
+          d={f.path}
+          fill={f.fill}
+          stroke={f.stroke}
+          stroke-width={f.width}
+        />
+      ))}
+    </g>
+    <g id="form-ion" transform="rotate(-90)">
+      {ENGINE_ART.ion[3].map((f) => (
+        <polygon points={points(f.points)} fill={f.color} />
+      ))}
+    </g>
+    {(["wasp", "fighter"] as const).map((ship) => {
+      // Historical comparison mount: do not move the accepted reference when
+      // production Fighter equipment slots change later.
+      const mounts = buildMounts(defaultLoadout(ship)).map((mount) =>
+        ship === "fighter" && mount.group === "hull"
+          ? { ...mount, x: 2 - mount.index * 12 }
+          : mount,
+      );
+      const engines = mounts.filter((m) => slotAccepts(m.type, "E"));
+      const mount = mounts.find((m) => m.group === "hull");
+      if (!mount) throw new Error(`Missing hull reference mount: ${ship}`);
+      return (
+        <>
+          <g
+            id={`form-ship-${ship}`}
+            transform="rotate(-90)"
+            data-engine-count={engines.length}
+          >
+            {[true, false].map((below) => (
+              <>
+                {!below &&
+                  (ship === "wasp" ? WASP.facets : fighter).map((f) => (
+                    <polygon points={points(f.points)} fill={f.color} />
+                  ))}
+                {engines
+                  .filter(
+                    (m) => (ship !== "wasp" && m.group === "side") === below,
+                  )
+                  .map((m) => (
+                    <g
+                      transform={`translate(${m.x} ${m.y}) rotate(${(m.angle * 180) / Math.PI})`}
+                      data-engine-slot={m.key}
+                    >
+                      {ENGINE_ART.ion[
+                        ship === "wasp"
+                          ? 3
+                          : m.key === "left"
+                            ? 1
+                            : m.key === "right"
+                              ? 2
+                              : 3
+                      ].map((f) => (
+                        <polygon points={points(f.points)} fill={f.color} />
+                      ))}
+                    </g>
+                  ))}
+              </>
+            ))}
+            {ship === "wasp" &&
+              [WASP.stabilizers.front, WASP.stabilizers.rear].flatMap(
+                (geometry) =>
+                  [-1, 1].map((side) => (
+                    <g
+                      transform={`translate(${geometry.x} ${side * geometry.y}) rotate(${(Math.atan2(-side * geometry.fy, geometry.fx) * 180) / Math.PI})`}
+                    >
+                      <path d="M-1.2-3.2L1-2.6V2.6L-1.2 3.2Z" fill="#080b13" />
+                      <path d="M-.45-2.2H.45V2.2H-.45Z" fill="#303d4c" />
+                      <path
+                        d="M.65-2.5V2.5"
+                        stroke="#718594"
+                        stroke-width=".25"
+                      />
+                      <path
+                        d="M-.7-2.3V2.3"
+                        stroke="#69cfff"
+                        stroke-width=".45"
+                      />
+                    </g>
+                  )),
+              )}
+          </g>
+          {items.map((item) =>
+            [false, true].map((below) => (
+              <g id={`form-${item}-${ship}-${below ? "under" : "over"}`}>
+                {below && (
+                  <use
+                    href={`#form-${item}`}
+                    transform={`translate(${mount.y} ${-mount.x})`}
+                  />
+                )}
+                <use href={`#form-ship-${ship}`} />
+                {!below && (
+                  <use
+                    href={`#form-${item}`}
+                    transform={`translate(${mount.y} ${-mount.x})`}
+                  />
+                )}
+              </g>
+            )),
+          )}
+        </>
+      );
+    })}
+  </defs>
 </svg>
 <style>
 .definitions {
-	position: absolute;
-	width: 0;
-	height: 0;
-	overflow: hidden;
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
 }
 </style>

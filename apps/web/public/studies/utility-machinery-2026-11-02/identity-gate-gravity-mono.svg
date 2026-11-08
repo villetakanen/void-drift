@@ -1,45 +1,45 @@
 <svg
-	xmlns="http://www.w3.org/2000/svg"
-	width="240"
-	height="250"
-	viewBox="0 0 240 250"
+  xmlns="http://www.w3.org/2000/svg"
+  width="240"
+  height="250"
+  viewBox="0 0 240 250"
 >
-	<title>gate family cue on gravity, mono</title>
-	<g transform="translate(120.0 125.0) scale(6)">
-		<polygon points="12.0,0.0 8.49,8.49 4.95,4.95 7.0,0.0" fill="#d8d8d8" />
-		<polygon points="8.49,8.49 0.0,12.0 0.0,7.0 4.95,4.95" fill="#888888" />
-		<polygon points="0.0,12.0 -8.49,8.49 -4.95,4.95 0.0,7.0" fill="#494949" />
-		<polygon points="-8.49,8.49 -12.0,0.0 -7.0,0.0 -4.95,4.95" fill="#494949" />
-		<polygon
-			points="-12.0,0.0 -8.49,-8.49 -4.95,-4.95 -7.0,0.0"
-			fill="#888888"
-		/>
-		<polygon
-			points="-8.49,-8.49 -0.0,-12.0 -0.0,-7.0 -4.95,-4.95"
-			fill="#d8d8d8"
-		/>
-		<polygon
-			points="-0.0,-12.0 8.49,-8.49 4.95,-4.95 -0.0,-7.0"
-			fill="#d8d8d8"
-		/>
-		<polygon points="8.49,-8.49 12.0,0.0 7.0,0.0 4.95,-4.95" fill="#888888" />
-		<polygon points="-3,-4 -1,-6 1,-6 3,-4 3,4 1,6 -3,6" fill="#494949" />
-		<polygon points="-3,-4 -1,-6 -1,4 -3,6" fill="#d8d8d8" />
-		<polygon points="-1,-6 1,-6 1,4 -1,4" fill="#888888" />
-		<polygon points="-10,0 -8,-2 8,-2 10,0 10,0 8,2 -10,2" fill="#494949" />
-		<polygon points="-10,0 -8,-2 -8,0 -10,2" fill="#d8d8d8" />
-		<polygon points="-8,-2 8,-2 8,0 -8,0" fill="#888888" />
-		<polygon
-			points="-13,5 -11,3 -10,3 -8,5 -8,14 -10,16 -13,16"
-			fill="#565656"
-		/>
-		<polygon points="-13,5 -11,3 -11,14 -13,16" fill="#e5e5e5" />
-		<polygon points="-11,3 -10,3 -10,14 -11,14" fill="#b6b6b6" />
-		<polygon points="8,5 10,3 11,3 13,5 13,14 11,16 8,16" fill="#565656" />
-		<polygon points="8,5 10,3 10,14 8,16" fill="#e5e5e5" />
-		<polygon points="10,3 11,3 11,14 10,14" fill="#b6b6b6" />
-		<polygon points="-9,13 -7,11 7,11 9,13 9,14 7,16 -9,16" fill="#565656" />
-		<polygon points="-9,13 -7,11 -7,14 -9,16" fill="#e5e5e5" />
-		<polygon points="-7,11 7,11 7,14 -7,14" fill="#b6b6b6" />
-	</g>
+  <title>gate family cue on gravity, mono</title>
+  <g transform="translate(120.0 125.0) scale(6)">
+    <polygon points="12.0,0.0 8.49,8.49 4.95,4.95 7.0,0.0" fill="#d8d8d8" />
+    <polygon points="8.49,8.49 0.0,12.0 0.0,7.0 4.95,4.95" fill="#888888" />
+    <polygon points="0.0,12.0 -8.49,8.49 -4.95,4.95 0.0,7.0" fill="#494949" />
+    <polygon points="-8.49,8.49 -12.0,0.0 -7.0,0.0 -4.95,4.95" fill="#494949" />
+    <polygon
+      points="-12.0,0.0 -8.49,-8.49 -4.95,-4.95 -7.0,0.0"
+      fill="#888888"
+    />
+    <polygon
+      points="-8.49,-8.49 -0.0,-12.0 -0.0,-7.0 -4.95,-4.95"
+      fill="#d8d8d8"
+    />
+    <polygon
+      points="-0.0,-12.0 8.49,-8.49 4.95,-4.95 -0.0,-7.0"
+      fill="#d8d8d8"
+    />
+    <polygon points="8.49,-8.49 12.0,0.0 7.0,0.0 4.95,-4.95" fill="#888888" />
+    <polygon points="-3,-4 -1,-6 1,-6 3,-4 3,4 1,6 -3,6" fill="#494949" />
+    <polygon points="-3,-4 -1,-6 -1,4 -3,6" fill="#d8d8d8" />
+    <polygon points="-1,-6 1,-6 1,4 -1,4" fill="#888888" />
+    <polygon points="-10,0 -8,-2 8,-2 10,0 10,0 8,2 -10,2" fill="#494949" />
+    <polygon points="-10,0 -8,-2 -8,0 -10,2" fill="#d8d8d8" />
+    <polygon points="-8,-2 8,-2 8,0 -8,0" fill="#888888" />
+    <polygon
+      points="-13,5 -11,3 -10,3 -8,5 -8,14 -10,16 -13,16"
+      fill="#565656"
+    />
+    <polygon points="-13,5 -11,3 -11,14 -13,16" fill="#e5e5e5" />
+    <polygon points="-11,3 -10,3 -10,14 -11,14" fill="#b6b6b6" />
+    <polygon points="8,5 10,3 11,3 13,5 13,14 11,16 8,16" fill="#565656" />
+    <polygon points="8,5 10,3 10,14 8,16" fill="#e5e5e5" />
+    <polygon points="10,3 11,3 11,14 10,14" fill="#b6b6b6" />
+    <polygon points="-9,13 -7,11 7,11 9,13 9,14 7,16 -9,16" fill="#565656" />
+    <polygon points="-9,13 -7,11 -7,14 -9,16" fill="#e5e5e5" />
+    <polygon points="-7,11 7,11 7,14 -7,14" fill="#b6b6b6" />
+  </g>
 </svg>

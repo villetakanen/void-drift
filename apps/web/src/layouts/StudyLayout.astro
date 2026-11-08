@@ -6,82 +6,82 @@ import "@void-drift/core/styles/tokens.css";
 import "@void-drift/core/styles/typography.css";
 
 interface Props {
-	study?: Study;
+  study?: Study;
 }
 const { study } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-		<title>{study?.title ?? "Design studies"} | Void Drift</title>
-	</head>
-	<body>
-		<nav aria-label="Study navigation">
-			<a href="/lab">← Lab</a><a href="/lab/studies">Design studies</a
-			><span class="research"><Logo size="sm" /> / RESEARCH</span>
-		</nav>
-		<main class="prose">
-			<header>
-				<p class="eyebrow">
-					{study
-						? `STUDY / ${study.phase} / ${study.status}`
-						: "DESIGN FACTORY"}
-				</p>
-				<h1>{study?.title ?? "Design studies"}</h1>
-				<p class="lead">
-					{study?.question ?? "Problem, exploration, readiness, and scope."}
-				</p>
-			</header>
-			<slot />
-		</main>
-	</body>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <title>{study?.title ?? "Design studies"} | Void Drift</title>
+  </head>
+  <body>
+    <nav aria-label="Study navigation">
+      <a href="/lab">← Lab</a><a href="/lab/studies">Design studies</a
+      ><span class="research"><Logo size="sm" /> / RESEARCH</span>
+    </nav>
+    <main class="prose">
+      <header>
+        <p class="eyebrow">
+          {study
+            ? `STUDY / ${study.phase} / ${study.status}`
+            : "DESIGN FACTORY"}
+        </p>
+        <h1>{study?.title ?? "Design studies"}</h1>
+        <p class="lead">
+          {study?.question ?? "Problem, exploration, readiness, and scope."}
+        </p>
+      </header>
+      <slot />
+    </main>
+  </body>
 </html>
 <style>
 :global(body) {
-	margin: 0;
-	background: var(--color-void);
-	color: var(--color-text);
-	font-family: var(--font-family-prose);
+  margin: 0;
+  background: var(--color-void);
+  color: var(--color-text);
+  font-family: var(--font-family-prose);
 }
 nav {
-	display: flex;
-	gap: var(--spacing-lg);
-	padding: var(--spacing-md) var(--spacing-lg);
-	border-bottom: 1px solid var(--color-border);
-	flex-wrap: wrap;
+  display: flex;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
 }
 nav span {
-	margin-left: auto;
-	color: var(--color-text-muted);
-	font: var(--font-size-caption) var(--font-family-ui);
+  margin-left: auto;
+  color: var(--color-text-muted);
+  font: var(--font-size-caption) var(--font-family-ui);
 }
 .research {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--spacing-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
 }
 .research :global(.logomark) {
-	color: var(--color-brand);
+  color: var(--color-brand);
 }
 a {
-	color: var(--color-action);
+  color: var(--color-action);
 }
 main {
-	max-width: 1120px;
-	margin: auto;
-	padding: var(--spacing-lg);
+  max-width: 1120px;
+  margin: auto;
+  padding: var(--spacing-lg);
 }
 header {
-	padding-block: var(--spacing-lg);
-	max-width: 850px;
+  padding-block: var(--spacing-lg);
+  max-width: 850px;
 }
 .eyebrow {
-	color: var(--color-text-muted);
-	font: var(--font-size-caption) var(--font-family-ui);
-	letter-spacing: var(--tracking-eyebrow);
+  color: var(--color-text-muted);
+  font: var(--font-size-caption) var(--font-family-ui);
+  letter-spacing: var(--tracking-eyebrow);
 }
 </style>

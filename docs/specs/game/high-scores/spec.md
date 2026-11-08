@@ -52,18 +52,18 @@ Mode A's survival gameplay needs a competitive element to drive replayability. T
 import { z } from "zod";
 
 export const HighScoreSchema = z.object({
-	initials: z
-		.string()
-		.length(3)
-		.regex(/^[A-Z]{3}$/),
-	uidHash: z
-		.string()
-		.length(6)
-		.regex(/^[A-F0-9]{6}$/),
-	seconds: z.number().min(0).max(999999),
-	deathCause: z.enum(["STAR", "HULL", "POWER"]),
-	timestamp: z.number(), // Unix ms
-	userId: z.string(), // Raw UID for security rules
+  initials: z
+    .string()
+    .length(3)
+    .regex(/^[A-Z]{3}$/),
+  uidHash: z
+    .string()
+    .length(6)
+    .regex(/^[A-F0-9]{6}$/),
+  seconds: z.number().min(0).max(999999),
+  deathCause: z.enum(["STAR", "HULL", "POWER"]),
+  timestamp: z.number(), // Unix ms
+  userId: z.string(), // Raw UID for security rules
 });
 
 export type HighScore = z.infer<typeof HighScoreSchema>;
@@ -72,12 +72,12 @@ export type HighScore = z.infer<typeof HighScoreSchema>;
 **Document Structure:**
 ```json
 {
-	"initials": "ACE",
-	"uidHash": "A3F8B2",
-	"seconds": 142.35,
-	"deathCause": "HULL",
-	"timestamp": 1703001234567,
-	"userId": "abc123xyz..."
+  "initials": "ACE",
+  "uidHash": "A3F8B2",
+  "seconds": 142.35,
+  "deathCause": "HULL",
+  "timestamp": 1703001234567,
+  "userId": "abc123xyz..."
 }
 ```
 
@@ -86,14 +86,14 @@ export type HighScore = z.infer<typeof HighScoreSchema>;
 ```typescript
 // packages/mode-a/src/lib/auth/hash.ts
 export async function generateUidHash(uid: string): Promise<string> {
-	const encoder = new TextEncoder();
-	const data = encoder.encode(uid);
-	const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-	const hashArray = Array.from(new Uint8Array(hashBuffer));
-	const hashHex = hashArray
-		.map((b) => b.toString(16).padStart(2, "0"))
-		.join("");
-	return hashHex.substring(0, 6).toUpperCase();
+  const encoder = new TextEncoder();
+  const data = encoder.encode(uid);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return hashHex.substring(0, 6).toUpperCase();
 }
 ```
 

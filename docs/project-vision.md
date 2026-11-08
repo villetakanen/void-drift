@@ -230,14 +230,14 @@ match /artifacts/{appId}/public/data/highscores/{scoreId} {
 **Example (Mode A):**
 ```typescript
 const HighScoreSchema = z.object({
-	initials: z
-		.string()
-		.length(3)
-		.regex(/^[A-Z]{3}$/),
-	uidHash: z.string().length(6),
-	seconds: z.number().positive().max(999999),
-	timestamp: z.number(),
-	userId: z.string(),
+  initials: z
+    .string()
+    .length(3)
+    .regex(/^[A-Z]{3}$/),
+  uidHash: z.string().length(6),
+  seconds: z.number().positive().max(999999),
+  timestamp: z.number(),
+  userId: z.string(),
 });
 ```
 

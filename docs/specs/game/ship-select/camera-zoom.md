@@ -25,14 +25,14 @@ Create schema and typed config in `packages/mode-a/src/lib/schemas/ship-profile.
 import { z } from "zod";
 
 export const ShipProfileSchema = z.object({
-	id: z.enum(["scout", "balanced", "tank"]),
-	name: z.string().min(1),
-	thrustMultiplier: z.number().positive(),
-	turnMultiplier: z.number().positive(),
-	hullMultiplier: z.number().positive(),
-	powerDrainMultiplier: z.number().positive(),
-	zoomDefault: z.number().positive(),
-	tint: z.string(),
+  id: z.enum(["scout", "balanced", "tank"]),
+  name: z.string().min(1),
+  thrustMultiplier: z.number().positive(),
+  turnMultiplier: z.number().positive(),
+  hullMultiplier: z.number().positive(),
+  powerDrainMultiplier: z.number().positive(),
+  zoomDefault: z.number().positive(),
+  tint: z.string(),
 });
 
 export type ShipProfile = z.infer<typeof ShipProfileSchema>;

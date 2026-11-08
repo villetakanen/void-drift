@@ -2,145 +2,145 @@
 import { ENGINE_ART } from "../../../../../packages/mode-a/src/lib/engine-art";
 
 const variants = [
-	{
-		name: "A / Twin pressure vessels",
-		note: "Two faceted vessels sit in a low cradle. Broad ridge, shoulder and side planes should make each cell read as a volume.",
-		kind: 0,
-	},
-	{
-		name: "B / Clamped plate stack",
-		note: "A stack of thick energy plates sits between two end blocks. Recessed gaps expose assembly; the large end blocks carry depth.",
-		kind: 1,
-	},
-	{
-		name: "C / Split armored accumulator",
-		note: "Two raised shells leave the central conductor exposed. This tests whether a calm, substantial body belongs better beside the engine.",
-		kind: 2,
-	},
+  {
+    name: "A / Twin pressure vessels",
+    note: "Two faceted vessels sit in a low cradle. Broad ridge, shoulder and side planes should make each cell read as a volume.",
+    kind: 0,
+  },
+  {
+    name: "B / Clamped plate stack",
+    note: "A stack of thick energy plates sits between two end blocks. Recessed gaps expose assembly; the large end blocks carry depth.",
+    kind: 1,
+  },
+  {
+    name: "C / Split armored accumulator",
+    note: "Two raised shells leave the central conductor exposed. This tests whether a calm, substantial body belongs better beside the engine.",
+    kind: 2,
+  },
 ];
 ---
 
 <svg width="0" height="0" aria-hidden="true">
-	<defs>
-		{variants.map((v) => (
-			<g id={`volume-${v.kind}`}>
-				<path d="M-19-12L17-12L22-7V10L17 14H-19L-23 9V-8Z" fill="#242b32" />
-				<path d="M-23-8L-19-12H17L22-7H-19Z" fill="#6b7780" />
-				{v.kind === 0 &&
-					[-7, 7].map((y) => (
-						<g transform={`translate(0 ${y})`}>
-							<path d="M-17-3L-12-6H12L18-2V3L12 6H-12L-17 3Z" fill="#39454f" />
-							<path d="M-17-3L-12-6H12L18-2H-12Z" fill="#99adb5" />
-							<path d="M-12-2H18V2H-12Z" fill="#697e89" />
-							<path d="M-12 2H18L12 6H-12L-17 3Z" fill="#45545f" />
-							<path d="M-17-3L-12-2V2L-17 3Z" fill="#788d96" />
-							<path d="M-8-5H-5V5H-8Z M8-5H11V5H8Z" fill="#303b44" />
-						</g>
-					))}
-				{v.kind === 1 && (
-					<>
-						{[-12, -6, 0, 6, 12].map((x) => (
-							<g transform={`translate(${x} 0)`}>
-								<path d="M-2-10L1-13L4-9V8L1 12L-2 9Z" fill="#3a4b56" />
-								<path d="M-2-10L1-13V7L-2 9Z" fill="#a0b3ba" />
-								<path d="M1-13L4-9V8L1 12Z" fill="#637d8c" />
-							</g>
-						))}
-						<path
-							d="M-22-8L-18-12L-15-8V10L-19 13L-22 9Z M16-8L20-12L23-8V10L19 13L16 9Z"
-							fill="#81929b"
-						/>
-						<path
-							d="M-18-12L-15-8V10L-19 13Z M20-12L23-8V10L19 13Z"
-							fill="#46555f"
-						/>
-					</>
-				)}
-				{v.kind === 2 && (
-					<>
-						<path d="M-19-8L-13-13H12L19-8L13-3H-13Z" fill="#8199a6" />
-						<path d="M-13-13H12L19-8H-13Z" fill="#a2b7bf" />
-						<path d="M-19-8L-13-3H13L19-8V-2L13 1H-13L-19-3Z" fill="#3c515f" />
-						<path d="M-19 6L-13 2H12L19 6L13 11H-13Z" fill="#7b939f" />
-						<path
-							d="M-19 6L-13 11H13L19 6V11L13 15H-13L-19 11Z"
-							fill="#364854"
-						/>
-						<path d="M-14 0H14V2H-14Z" fill="#a9d3d8" />
-					</>
-				)}
-			</g>
-		))}
-	</defs>
+  <defs>
+    {variants.map((v) => (
+      <g id={`volume-${v.kind}`}>
+        <path d="M-19-12L17-12L22-7V10L17 14H-19L-23 9V-8Z" fill="#242b32" />
+        <path d="M-23-8L-19-12H17L22-7H-19Z" fill="#6b7780" />
+        {v.kind === 0 &&
+          [-7, 7].map((y) => (
+            <g transform={`translate(0 ${y})`}>
+              <path d="M-17-3L-12-6H12L18-2V3L12 6H-12L-17 3Z" fill="#39454f" />
+              <path d="M-17-3L-12-6H12L18-2H-12Z" fill="#99adb5" />
+              <path d="M-12-2H18V2H-12Z" fill="#697e89" />
+              <path d="M-12 2H18L12 6H-12L-17 3Z" fill="#45545f" />
+              <path d="M-17-3L-12-2V2L-17 3Z" fill="#788d96" />
+              <path d="M-8-5H-5V5H-8Z M8-5H11V5H8Z" fill="#303b44" />
+            </g>
+          ))}
+        {v.kind === 1 && (
+          <>
+            {[-12, -6, 0, 6, 12].map((x) => (
+              <g transform={`translate(${x} 0)`}>
+                <path d="M-2-10L1-13L4-9V8L1 12L-2 9Z" fill="#3a4b56" />
+                <path d="M-2-10L1-13V7L-2 9Z" fill="#a0b3ba" />
+                <path d="M1-13L4-9V8L1 12Z" fill="#637d8c" />
+              </g>
+            ))}
+            <path
+              d="M-22-8L-18-12L-15-8V10L-19 13L-22 9Z M16-8L20-12L23-8V10L19 13L16 9Z"
+              fill="#81929b"
+            />
+            <path
+              d="M-18-12L-15-8V10L-19 13Z M20-12L23-8V10L19 13Z"
+              fill="#46555f"
+            />
+          </>
+        )}
+        {v.kind === 2 && (
+          <>
+            <path d="M-19-8L-13-13H12L19-8L13-3H-13Z" fill="#8199a6" />
+            <path d="M-13-13H12L19-8H-13Z" fill="#a2b7bf" />
+            <path d="M-19-8L-13-3H13L19-8V-2L13 1H-13L-19-3Z" fill="#3c515f" />
+            <path d="M-19 6L-13 2H12L19 6L13 11H-13Z" fill="#7b939f" />
+            <path
+              d="M-19 6L-13 11H13L19 6V11L13 15H-13L-19 11Z"
+              fill="#364854"
+            />
+            <path d="M-14 0H14V2H-14Z" fill="#a9d3d8" />
+          </>
+        )}
+      </g>
+    ))}
+  </defs>
 </svg>
 <figure>
-	<svg
-		width="180"
-		height="100"
-		viewBox="-20 -11 40 22"
-		role="img"
-		aria-label="Established ion engine reference"
-	>
-		{ENGINE_ART.ion[0].map((f) => (
-			<polygon
-				points={f.points.map((p) => p.join(",")).join(" ")}
-				fill={f.color}
-			/>
-		))}
-	</svg>
-	<figcaption>Established ion engine · production polygons</figcaption>
+  <svg
+    width="180"
+    height="100"
+    viewBox="-20 -11 40 22"
+    role="img"
+    aria-label="Established ion engine reference"
+  >
+    {ENGINE_ART.ion[0].map((f) => (
+      <polygon
+        points={f.points.map((p) => p.join(",")).join(" ")}
+        fill={f.color}
+      />
+    ))}
+  </svg>
+  <figcaption>Established ion engine · production polygons</figcaption>
 </figure>
 <div class="variants">
-	{variants.map((v) => (
-		<article>
-			<h4>{v.name}</h4>
-			<svg viewBox="-32 -24 64 48" role="img" aria-label={v.name}>
-				<use href={`#volume-${v.kind}`} />
-			</svg>
-			<div class="small">
-				<svg
-					width="42"
-					height="32"
-					viewBox="-32 -24 64 48"
-					role="img"
-					aria-label={`${v.name} small scale`}
-				>
-					<use href={`#volume-${v.kind}`} />
-				</svg>
-				<span>0.65×</span>
-			</div>
-			<p>{v.note}</p>
-		</article>
-	))}
+  {variants.map((v) => (
+    <article>
+      <h4>{v.name}</h4>
+      <svg viewBox="-32 -24 64 48" role="img" aria-label={v.name}>
+        <use href={`#volume-${v.kind}`} />
+      </svg>
+      <div class="small">
+        <svg
+          width="42"
+          height="32"
+          viewBox="-32 -24 64 48"
+          role="img"
+          aria-label={`${v.name} small scale`}
+        >
+          <use href={`#volume-${v.kind}`} />
+        </svg>
+        <span>0.65×</span>
+      </div>
+      <p>{v.note}</p>
+    </article>
+  ))}
 </div>
 <style>
 .variants {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 1.5rem;
-	margin-block: 2rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-block: 2rem;
 }
 article > svg {
-	width: 100%;
-	height: auto;
+  width: 100%;
+  height: auto;
 }
 h4 {
-	font-size: 1rem;
+  font-size: 1rem;
 }
 .small {
-	display: flex;
-	align-items: center;
-	gap: 1rem;
-	margin: 1rem 0;
-	color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0;
+  color: var(--color-text-muted);
 }
 p {
-	font-size: 0.9rem;
-	line-height: 1.6;
+  font-size: 0.9rem;
+  line-height: 1.6;
 }
 @media (max-width: 700px) {
-	.variants {
-		grid-template-columns: 1fr;
-	}
+  .variants {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

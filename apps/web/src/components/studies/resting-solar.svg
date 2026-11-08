@@ -1,61 +1,61 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-30 -30 60 60">
-	<title>Resting solar</title>
-	<g transform="matrix(0.35, 0, 0, 1, 12, 0)" style="transform-origin:-5px 0px">
-		<g>
-			<polygon
-				points="-21,-9 -20,-10 -6,-10 -5,-9 -5,10 -21,10"
-				fill="#304759"
-			></polygon>
-			<polygon points="-21,-9 -20,-10 -20,9 -21,10" fill="#d1e5ec"></polygon>
-			<polygon points="-20,-10 -6,-10 -6,9 -20,9" fill="#7894a4"></polygon>
-		</g>
-		<path
-			d="M-19 -7H-7V-3H-19ZM-19 -1H-7V3H-19ZM-19 5H-7V8H-19Z"
-			fill="#174c70"
-		></path>
-	</g>
-	<g transform="matrix(0.35, 0, 0, 1, -12, 0)" style="transform-origin:5px 0px">
-		<g>
-			<polygon
-				points="5,-9 6,-10 20,-10 21,-9 21,10 5,10"
-				fill="#304759"
-			></polygon>
-			<polygon points="5,-9 6,-10 6,9 5,10" fill="#d1e5ec"></polygon>
-			<polygon points="6,-10 20,-10 20,9 6,9" fill="#7894a4"></polygon>
-		</g>
-		<path d="M7 -7H19V-3H7ZM7 -1H19V3H7ZM7 5H19V8H7Z" fill="#174c70"></path>
-	</g>
-	<g>
-		<polygon
-			points="-4,-11 -3,-12 3,-12 4,-11 4,12 -4,12"
-			fill="#304759"
-		></polygon>
-		<polygon points="-4,-11 -3,-12 -3,11 -4,12" fill="#d1e5ec"></polygon>
-		<polygon points="-3,-12 3,-12 3,11 -3,11" fill="#7894a4"></polygon>
-		<polygon
-			points="-7,-2 -6,-3 -3,-3 -2,-2 -2,4 -7,4"
-			fill="var(--family-accent)"
-			style="filter:brightness(.55)"
-		></polygon>
-		<polygon
-			points="-7,-2 -6,-3 -6,3 -7,4"
-			fill="var(--family-accent)"
-			style="filter:brightness(1.15)"
-		></polygon>
-		<polygon
-			points="-6,-3 -3,-3 -3,3 -6,3"
-			fill="var(--family-accent)"
-		></polygon>
-		<polygon
-			points="2,-2 3,-3 6,-3 7,-2 7,4 2,4"
-			fill="var(--family-accent)"
-			style="filter:brightness(.55)"
-		></polygon>
-		<polygon
-			points="2,-2 3,-3 3,3 2,4"
-			fill="var(--family-accent)"
-			style="filter:brightness(1.15)"
-		></polygon>
-		<polygon points="3,-3 6,-3 6,3 3,3" fill="var(--family-accent)"></polygon>
-	</g>
+  <title>Resting solar</title>
+  <g transform="matrix(0.35, 0, 0, 1, 12, 0)" style="transform-origin:-5px 0px">
+    <g>
+      <polygon
+        points="-21,-9 -20,-10 -6,-10 -5,-9 -5,10 -21,10"
+        fill="#304759"
+      ></polygon>
+      <polygon points="-21,-9 -20,-10 -20,9 -21,10" fill="#d1e5ec"></polygon>
+      <polygon points="-20,-10 -6,-10 -6,9 -20,9" fill="#7894a4"></polygon>
+    </g>
+    <path
+      d="M-19 -7H-7V-3H-19ZM-19 -1H-7V3H-19ZM-19 5H-7V8H-19Z"
+      fill="#174c70"
+    ></path>
+  </g>
+  <g transform="matrix(0.35, 0, 0, 1, -12, 0)" style="transform-origin:5px 0px">
+    <g>
+      <polygon
+        points="5,-9 6,-10 20,-10 21,-9 21,10 5,10"
+        fill="#304759"
+      ></polygon>
+      <polygon points="5,-9 6,-10 6,9 5,10" fill="#d1e5ec"></polygon>
+      <polygon points="6,-10 20,-10 20,9 6,9" fill="#7894a4"></polygon>
+    </g>
+    <path d="M7 -7H19V-3H7ZM7 -1H19V3H7ZM7 5H19V8H7Z" fill="#174c70"></path>
+  </g>
+  <g>
+    <polygon
+      points="-4,-11 -3,-12 3,-12 4,-11 4,12 -4,12"
+      fill="#304759"
+    ></polygon>
+    <polygon points="-4,-11 -3,-12 -3,11 -4,12" fill="#d1e5ec"></polygon>
+    <polygon points="-3,-12 3,-12 3,11 -3,11" fill="#7894a4"></polygon>
+    <polygon
+      points="-7,-2 -6,-3 -3,-3 -2,-2 -2,4 -7,4"
+      fill="var(--family-accent)"
+      style="filter:brightness(.55)"
+    ></polygon>
+    <polygon
+      points="-7,-2 -6,-3 -6,3 -7,4"
+      fill="var(--family-accent)"
+      style="filter:brightness(1.15)"
+    ></polygon>
+    <polygon
+      points="-6,-3 -3,-3 -3,3 -6,3"
+      fill="var(--family-accent)"
+    ></polygon>
+    <polygon
+      points="2,-2 3,-3 6,-3 7,-2 7,4 2,4"
+      fill="var(--family-accent)"
+      style="filter:brightness(.55)"
+    ></polygon>
+    <polygon
+      points="2,-2 3,-3 3,3 2,4"
+      fill="var(--family-accent)"
+      style="filter:brightness(1.15)"
+    ></polygon>
+    <polygon points="3,-3 6,-3 6,3 3,3" fill="var(--family-accent)"></polygon>
+  </g>
 </svg>

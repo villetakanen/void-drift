@@ -5,275 +5,275 @@ import LabLayout from "../../layouts/LabLayout.astro";
 const chassisIds = ["scout", "wasp", "fighter", "corvette", "fiddler"] as const;
 const engines = ["ion", "heavy-ion", "fusion", "plasma"] as const;
 const hullBases = chassisIds.map((id) => ({
-	name: id[0].toUpperCase() + id.slice(1),
-	base: CHASSIS[id].baseSpeed,
+  name: id[0].toUpperCase() + id.slice(1),
+  base: CHASSIS[id].baseSpeed,
 }));
 const contributions = engines.map((id) => ({
-	name: PARTS[id].name,
-	contribution: PARTS[id].speedContribution,
+  name: PARTS[id].name,
+  contribution: PARTS[id].speedContribution,
 }));
 const examples = chassisIds.map((chassis) => {
-	const build = defaultLoadout(chassis);
-	build.side = "ion";
-	build.aft = build.aft.map(() => "ion");
-	const light = buildStats(build);
-	build.side = "fusion";
-	build.aft = build.aft.map(() => "fusion");
-	const fission = buildStats(build);
-	return {
-		chassis,
-		count: light.engineBreakdown.reduce((n, item) => n + item.count, 0),
-		light: light.poweredCruiseCeiling,
-		fission: fission.poweredCruiseCeiling,
-	};
+  const build = defaultLoadout(chassis);
+  build.side = "ion";
+  build.aft = build.aft.map(() => "ion");
+  const light = buildStats(build);
+  build.side = "fusion";
+  build.aft = build.aft.map(() => "fusion");
+  const fission = buildStats(build);
+  return {
+    chassis,
+    count: light.engineBreakdown.reduce((n, item) => n + item.count, 0),
+    light: light.poweredCruiseCeiling,
+    fission: fission.poweredCruiseCeiling,
+  };
 });
 const mixed = defaultLoadout("fighter");
 mixed.side = "heavy-ion";
 mixed.aft = ["fusion", "plasma"];
 const mixedStats = buildStats(mixed);
 const mixedParts = mixedStats.engineBreakdown
-	.map(
-		(entry) =>
-			`${entry.count} ${PARTS[entry.id].name}: +${entry.contribution} u/s`,
-	)
-	.join(" · ");
+  .map(
+    (entry) =>
+      `${entry.count} ${PARTS[entry.id].name}: +${entry.contribution} u/s`,
+  )
+  .join(" · ");
 ---
 
 <LabLayout title="Ship propulsion">
-	<article class="reference">
-		<p class="eyebrow">PRODUCTION RULE / ASSEMBLED FLIGHT</p>
-		<h1>Powered cruise ceiling</h1>
-		<p class="lead">
-			The ceiling is the speed propulsion approaches. It is not a cap on
-			coasting or gravity-assisted velocity. Releasing controls does not change
-			it, and there is no temporary boost state.
-		</p>
+  <article class="reference">
+    <p class="eyebrow">PRODUCTION RULE / ASSEMBLED FLIGHT</p>
+    <h1>Powered cruise ceiling</h1>
+    <p class="lead">
+      The ceiling is the speed propulsion approaches. It is not a cap on
+      coasting or gravity-assisted velocity. Releasing controls does not change
+      it, and there is no temporary boost state.
+    </p>
 
-		<section>
-			<h2>One installed-build value</h2>
-			<p>
-				<code
-					>V = hull base speed + sum of installed main-engine speed
-					contributions</code
-				>
-			</p>
-			<p>
-				Each physical main engine contributes a fixed scalar. Its angle, thrust
-				strength, pulse timing, charge, linkage and power state do not change V.
-				Fitted inactive engines still count. Empty slots, equipment and
-				stabilizers contribute zero.
-			</p>
-			<div class="tables">
-				<table>
-					<caption>
-						Hull base speed
-					</caption>
-					<thead>
-						<tr>
-							<th>Hull</th>
-							<th>Base (u/s)</th>
-						</tr>
-					</thead>
-					<tbody>
-						{hullBases.map(({ name, base }) => (
-							<tr>
-								<td>{name}</td>
-								<td>{base}</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
-				<table>
-					<caption>
-						Contribution per installed engine
-					</caption>
-					<thead>
-						<tr>
-							<th>Engine</th>
-							<th>Contribution (u/s)</th>
-						</tr>
-					</thead>
-					<tbody>
-						{contributions.map(({ name, contribution }) => (
-							<tr>
-								<td>{name}</td>
-								<td>{contribution}</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
-			</div>
-			<p>
-				The Wasp has one centre main engine. Every other hull has two side
-				mains; fitted aft engines also count. Fiddler's required rear pair is
-				included.
-			</p>
-		</section>
+    <section>
+      <h2>One installed-build value</h2>
+      <p>
+        <code
+          >V = hull base speed + sum of installed main-engine speed
+          contributions</code
+        >
+      </p>
+      <p>
+        Each physical main engine contributes a fixed scalar. Its angle, thrust
+        strength, pulse timing, charge, linkage and power state do not change V.
+        Fitted inactive engines still count. Empty slots, equipment and
+        stabilizers contribute zero.
+      </p>
+      <div class="tables">
+        <table>
+          <caption>
+            Hull base speed
+          </caption>
+          <thead>
+            <tr>
+              <th>Hull</th>
+              <th>Base (u/s)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {hullBases.map(({ name, base }) => (
+              <tr>
+                <td>{name}</td>
+                <td>{base}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <table>
+          <caption>
+            Contribution per installed engine
+          </caption>
+          <thead>
+            <tr>
+              <th>Engine</th>
+              <th>Contribution (u/s)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {contributions.map(({ name, contribution }) => (
+              <tr>
+                <td>{name}</td>
+                <td>{contribution}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        The Wasp has one centre main engine. Every other hull has two side
+        mains; fitted aft engines also count. Fiddler's required rear pair is
+        included.
+      </p>
+    </section>
 
-		<section>
-			<h2>Maximum occupied engine complements</h2>
-			<p>
-				These values are calculated from valid loadouts and the same definitions
-				used by the builder and flight.
-			</p>
-			<table>
-				<thead>
-					<tr>
-						<th>Hull</th>
-						<th>Engine count</th>
-						<th>All Light ion</th>
-						<th>All Fission</th>
-					</tr>
-				</thead>
-				<tbody>
-					{examples.map((row) => (
-						<tr>
-							<td>{row.chassis[0].toUpperCase() + row.chassis.slice(1)}</td>
-							<td>{row.count}</td>
-							<td>{row.light} u/s</td>
-							<td>{row.fission} u/s</td>
-						</tr>
-					))}
-				</tbody>
-			</table>
-			<p>
-				Worked mixed build — Fighter: {PARTS["heavy-ion"].name} side pair and
-				one Fission plus one Plasma aft engine. {mixedParts}. V =
-				{mixedStats.hullBaseSpeed}
-				+ {mixedStats.installedEngineContribution} =
-				<strong>{mixedStats.poweredCruiseCeiling} u/s</strong>. Releasing either
-				control changes thrust delivery, not V.
-			</p>
-		</section>
+    <section>
+      <h2>Maximum occupied engine complements</h2>
+      <p>
+        These values are calculated from valid loadouts and the same definitions
+        used by the builder and flight.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Hull</th>
+            <th>Engine count</th>
+            <th>All Light ion</th>
+            <th>All Fission</th>
+          </tr>
+        </thead>
+        <tbody>
+          {examples.map((row) => (
+            <tr>
+              <td>{row.chassis[0].toUpperCase() + row.chassis.slice(1)}</td>
+              <td>{row.count}</td>
+              <td>{row.light} u/s</td>
+              <td>{row.fission} u/s</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p>
+        Worked mixed build — Fighter: {PARTS["heavy-ion"].name} side pair and
+        one Fission plus one Plasma aft engine. {mixedParts}. V =
+        {mixedStats.hullBaseSpeed}
+        + {mixedStats.installedEngineContribution} =
+        <strong>{mixedStats.poweredCruiseCeiling} u/s</strong>. Releasing either
+        control changes thrust delivery, not V.
+      </p>
+    </section>
 
-		<section>
-			<h2>How forward thrust fades</h2>
-			<p>
-				For straight forward thrust below V, acceleration follows
-				<code>a = a0 × max(0, 1 − speed / V)</code>, where a0 is the available
-				forward acceleration at rest. Remaining forward thrust is:
-			</p>
-			<table>
-				<thead>
-					<tr>
-						<th>Speed</th>
-						<th>Remaining forward thrust</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>0% of V</td>
-						<td>100%</td>
-					</tr>
-					<tr>
-						<td>50% of V</td>
-						<td>50%</td>
-					</tr>
-					<tr>
-						<td>90% of V</td>
-						<td>10%</td>
-					</tr>
-					<tr>
-						<td>100% of V</td>
-						<td>0%</td>
-					</tr>
-				</tbody>
-			</table>
-			<p>
-				With constant forward acceleration a0, from rest, no gravity, and
-				continuous engine delivery, the analytical reference is
-				<code>v(t) = V × (1 − exp(−a0 × t / V))</code>;
-				<code>t95 = −ln(0.05) × V / a0</code>. Fixed-step flight approaches this
-				curve within numerical tolerance. Pulse, charge, variable power and
-				turning do not meet those assumptions.
-			</p>
-			<p>
-				Braking and transverse steering remain available. Existing speed above V
-				is retained; propulsion does not clip it back. Gravity can add
-				overspeed. Stabilizers do not affect V.
-			</p>
-		</section>
+    <section>
+      <h2>How forward thrust fades</h2>
+      <p>
+        For straight forward thrust below V, acceleration follows
+        <code>a = a0 × max(0, 1 − speed / V)</code>, where a0 is the available
+        forward acceleration at rest. Remaining forward thrust is:
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Speed</th>
+            <th>Remaining forward thrust</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>0% of V</td>
+            <td>100%</td>
+          </tr>
+          <tr>
+            <td>50% of V</td>
+            <td>50%</td>
+          </tr>
+          <tr>
+            <td>90% of V</td>
+            <td>10%</td>
+          </tr>
+          <tr>
+            <td>100% of V</td>
+            <td>0%</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        With constant forward acceleration a0, from rest, no gravity, and
+        continuous engine delivery, the analytical reference is
+        <code>v(t) = V × (1 − exp(−a0 × t / V))</code>;
+        <code>t95 = −ln(0.05) × V / a0</code>. Fixed-step flight approaches this
+        curve within numerical tolerance. Pulse, charge, variable power and
+        turning do not meet those assumptions.
+      </p>
+      <p>
+        Braking and transverse steering remain available. Existing speed above V
+        is retained; propulsion does not clip it back. Gravity can add
+        overspeed. Stabilizers do not affect V.
+      </p>
+    </section>
 
-		<nav aria-label="Related references">
-			<h2>Related references</h2>
-			<ul>
-				<li>
-					<a href="/hangar">Ship builder</a>
-					· <a href="/lab/builder">Lab builder</a>
-				</li>
-				<li>
-					<a href="/lab/instrument">Motion instrument</a>
-					· <a href="/lab/gravity-tuning">Gravity tuning</a>
-				</li>
-				<li>
-					<a href="/lab/studies/ship-motion-laws-2026-11-04"
-						>Historical motion study</a
-					>
-					(its old ceiling comparisons are not current flight evidence)
-				</li>
-			</ul>
-		</nav>
-		<p>
-			Engine balance remains open for later work. Human handling review is still
-			needed, including angled-engine ships and the LHI Wasp and Fiddler.
-		</p>
-	</article>
+    <nav aria-label="Related references">
+      <h2>Related references</h2>
+      <ul>
+        <li>
+          <a href="/hangar">Ship builder</a>
+          · <a href="/lab/builder">Lab builder</a>
+        </li>
+        <li>
+          <a href="/lab/instrument">Motion instrument</a>
+          · <a href="/lab/gravity-tuning">Gravity tuning</a>
+        </li>
+        <li>
+          <a href="/lab/studies/ship-motion-laws-2026-11-04"
+            >Historical motion study</a
+          >
+          (its old ceiling comparisons are not current flight evidence)
+        </li>
+      </ul>
+    </nav>
+    <p>
+      Engine balance remains open for later work. Human handling review is still
+      needed, including angled-engine ships and the LHI Wasp and Fiddler.
+    </p>
+  </article>
 </LabLayout>
 
 <style>
 .reference {
-	max-width: 980px;
-	margin: 0 auto;
-	color: var(--color-text);
-	line-height: 1.65;
+  max-width: 980px;
+  margin: 0 auto;
+  color: var(--color-text);
+  line-height: 1.65;
 }
 .eyebrow {
-	color: var(--color-text-muted);
-	font-size: 0.8rem;
-	letter-spacing: 0.12em;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
 }
 h1 {
-	font-size: 2.5rem;
-	line-height: 1.1;
-	margin: 0.3em 0;
+  font-size: 2.5rem;
+  line-height: 1.1;
+  margin: 0.3em 0;
 }
 h2 {
-	font-size: 1.5rem;
-	line-height: 1.2;
-	margin-top: 2rem;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  margin-top: 2rem;
 }
 .lead {
-	font-size: 1.15rem;
-	max-width: 72ch;
+  font-size: 1.15rem;
+  max-width: 72ch;
 }
 .tables {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
 }
 table {
-	width: 100%;
-	border-collapse: collapse;
-	margin: 1rem 0;
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
 }
 caption {
-	text-align: left;
-	font-weight: 700;
-	padding: 0.5rem;
+  text-align: left;
+  font-weight: 700;
+  padding: 0.5rem;
 }
 th,
 td {
-	text-align: left;
-	padding: 0.55rem 0.7rem;
-	border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  padding: 0.55rem 0.7rem;
+  border-bottom: 1px solid var(--color-border);
 }
 th {
-	color: var(--color-text-muted);
+  color: var(--color-text-muted);
 }
 code {
-	color: var(--color-selected);
+  color: var(--color-selected);
 }
 nav ul {
-	padding-left: 1.3rem;
+  padding-left: 1.3rem;
 }
 </style>

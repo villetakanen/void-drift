@@ -1,113 +1,113 @@
 ---
 const ships = ["wasp", "scout", "fighter", "corvette"] as const;
 const views = [
-	{ label: "Enlarged · 3×", scale: 3, width: 240, height: 400 },
-	{ label: "Native · 1×", scale: 1, width: 120, height: 140 },
-	{ label: "Flight · 0.65×", scale: 0.65, width: 120, height: 140 },
+  { label: "Enlarged · 3×", scale: 3, width: 240, height: 400 },
+  { label: "Native · 1×", scale: 1, width: 120, height: 140 },
+  { label: "Flight · 0.65×", scale: 0.65, width: 120, height: 140 },
 ];
 ---
 
 <div class="fleet">
-	{ships.map((ship) => (
-		<article>
-			<h3>{ship}</h3>
-			{views.map((view) => (
-				<figure>
-					<figcaption>{view.label}</figcaption>
-					<div class="canvas-scroll">
-						<canvas
-							width={view.width}
-							height={view.height}
-							style={`width:${view.width}px;height:${view.height}px`}
-							data-gravity-hull={ship}
-							data-scale={view.scale}
-							aria-label={`${ship}, Gravity coils at 100% on every equipment mount, all engine slots fitted with Light ions, ${view.label}`}
-						/>
-					</div>
-				</figure>
-			))}
-		</article>
-	))}
+  {ships.map((ship) => (
+    <article>
+      <h3>{ship}</h3>
+      {views.map((view) => (
+        <figure>
+          <figcaption>{view.label}</figcaption>
+          <div class="canvas-scroll">
+            <canvas
+              width={view.width}
+              height={view.height}
+              style={`width:${view.width}px;height:${view.height}px`}
+              data-gravity-hull={ship}
+              data-scale={view.scale}
+              aria-label={`${ship}, Gravity coils at 100% on every equipment mount, all engine slots fitted with Light ions, ${view.label}`}
+            />
+          </div>
+        </figure>
+      ))}
+    </article>
+  ))}
 </div>
 <script>
 import {
-	defaultLoadout,
-	drawBuild,
-	ShipProfileIdSchema,
+  defaultLoadout,
+  drawBuild,
+  ShipProfileIdSchema,
 } from "@void-drift/mode-a";
 
 const canvases = document.querySelectorAll<HTMLCanvasElement>(
-	"canvas[data-gravity-hull]",
+  "canvas[data-gravity-hull]",
 );
 function drawFleet() {
-	for (const canvas of canvases) {
-		const chassis = ShipProfileIdSchema.parse(canvas.dataset.gravityHull);
-		const scale = Number(canvas.dataset.scale);
-		const width = scale === 3 ? 240 : 120;
-		const height = scale === 3 ? 400 : 140;
-		const dpr = window.devicePixelRatio || 1;
-		canvas.width = Math.round(width * dpr);
-		canvas.height = Math.round(height * dpr);
-		const ctx = canvas.getContext("2d");
-		if (!ctx) continue;
-		ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-		const build = defaultLoadout(chassis);
-		build.side = "ion";
-		build.aft.fill("ion");
-		build.hull.fill("gravity-coil");
-		drawBuild(
-			ctx,
-			build,
-			width / 2,
-			scale === 3 ? 205 : 70,
-			-Math.PI / 2,
-			scale,
-		);
-	}
+  for (const canvas of canvases) {
+    const chassis = ShipProfileIdSchema.parse(canvas.dataset.gravityHull);
+    const scale = Number(canvas.dataset.scale);
+    const width = scale === 3 ? 240 : 120;
+    const height = scale === 3 ? 400 : 140;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) continue;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const build = defaultLoadout(chassis);
+    build.side = "ion";
+    build.aft.fill("ion");
+    build.hull.fill("gravity-coil");
+    drawBuild(
+      ctx,
+      build,
+      width / 2,
+      scale === 3 ? 205 : 70,
+      -Math.PI / 2,
+      scale,
+    );
+  }
 }
 drawFleet();
 window.addEventListener("resize", drawFleet);
 </script>
 <style>
 .fleet {
-	display: grid;
-	grid-template-columns: repeat(4, minmax(0, 1fr));
-	gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
 }
 article {
-	min-width: 0;
-	border: 1px solid var(--color-border);
-	padding-block: 16px;
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  padding-block: 16px;
 }
 h3 {
-	margin: 0 0 16px;
-	text-align: center;
-	text-transform: capitalize;
+  margin: 0 0 16px;
+  text-align: center;
+  text-transform: capitalize;
 }
 figure {
-	margin: 0;
+  margin: 0;
 }
 figcaption {
-	text-align: center;
-	font: 12px var(--font-family-ui);
-	color: var(--color-text-muted);
+  text-align: center;
+  font: 12px var(--font-family-ui);
+  color: var(--color-text-muted);
 }
 .canvas-scroll {
-	overflow-x: auto;
+  overflow-x: auto;
 }
 canvas {
-	display: block;
-	margin-inline: auto;
-	max-width: none;
+  display: block;
+  margin-inline: auto;
+  max-width: none;
 }
 @media (max-width: 1050px) {
-	.fleet {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
+  .fleet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 @media (max-width: 600px) {
-	.fleet {
-		grid-template-columns: 1fr;
-	}
+  .fleet {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

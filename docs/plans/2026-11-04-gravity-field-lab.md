@@ -116,30 +116,30 @@ the real `Simulation`.
 
 ```json
 {
-	"version": 2,
-	"burn": "coast",
-	"field": {
-		"system": "game",
-		"orbits": "frozen",
-		"wells": [
-			{
-				"label": "W1",
-				"x": 1400,
-				"y": 300,
-				"reach": 260,
-				"strength": 900,
-				"curve": "inverse-square"
-			}
-		],
-		"changes": { "planetStrength": 450, "sunMultiplier": 5 }
-	},
-	"vehicles": [
-		{
-			"label": "Close pass",
-			"loadout": { "...": "game loadout" },
-			"start": { "x": 460, "y": 540, "heading": -90, "speed": 300 }
-		}
-	]
+  "version": 2,
+  "burn": "coast",
+  "field": {
+    "system": "game",
+    "orbits": "frozen",
+    "wells": [
+      {
+        "label": "W1",
+        "x": 1400,
+        "y": 300,
+        "reach": 260,
+        "strength": 900,
+        "curve": "inverse-square"
+      }
+    ],
+    "changes": { "planetStrength": 450, "sunMultiplier": 5 }
+  },
+  "vehicles": [
+    {
+      "label": "Close pass",
+      "loadout": { "...": "game loadout" },
+      "start": { "x": 460, "y": 540, "heading": -90, "speed": 300 }
+    }
+  ]
 }
 ```
 

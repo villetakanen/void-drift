@@ -4,17 +4,17 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-	<main>
-		<!-- @ts-ignore -->
-		<GameWrapper client:only="svelte" />
-	</main>
+  <main>
+    <!-- @ts-ignore -->
+    <GameWrapper client:only="svelte" />
+  </main>
 </Layout>
 
 <style>
 main {
-	width: 100vw;
-	height: 100dvh;
-	overflow: hidden;
-	background: var(--color-void);
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--color-void);
 }
 </style>

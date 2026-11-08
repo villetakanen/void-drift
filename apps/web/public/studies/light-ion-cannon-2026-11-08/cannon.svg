@@ -1,62 +1,62 @@
 <svg
-	xmlns:ns0="http://www.w3.org/2000/svg"
-	xmlns:ns1="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-	xmlns="http://www.w3.org/2000/svg"
-	viewBox="244.36673 41.378276 5.27832 19.501797"
+  xmlns:ns0="http://www.w3.org/2000/svg"
+  xmlns:ns1="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="244.36673 41.378276 5.27832 19.501797"
 >
-	<title>Light Ion Cannon artwork</title>
-	<ns0:g id="g9">
-		<ns0:rect
-			style="fill:#1b1d1f;fill-opacity:1;stroke-width:0.938663;paint-order:stroke fill markers"
-			id="rect2-6"
-			width="2.0370066"
-			height="19.501797"
-			x="246.21315"
-			y="41.378277"
-		/>
-		<ns0:path
-			style="fill:#3d4147;fill-opacity:1;stroke-width:1.13915;paint-order:stroke fill markers"
-			d="m 247.72051,41.684128 h -1.37854 l -0.58036,-0.305851 h 2.48854 z"
-			id="path5"
-			ns1:nodetypes="ccccc"
-		/>
-		<ns0:path
-			style="fill:#52575f;fill-opacity:1;stroke-width:1.13915;paint-order:stroke fill markers"
-			d="m 245.76162,41.378276 v 19.501797 h 0.58035 l 1e-5,-19.195946 z"
-			id="path7"
-		/>
-		<ns0:path
-			style="fill:#12171e;fill-opacity:1;stroke-width:1.13915;paint-order:stroke fill markers"
-			d="m 248.25015,41.378276 -1.90818,19.501797 h 1.90818 z"
-			id="path8"
-		/>
-		<ns0:path
-			d="M 246.91822,51.787451 V 41.378277 h 0.31343 v 10.409174 z"
-			fill="#29baff"
-			fill-rule="nonzero"
-			opacity="1"
-			id="path846-9"
-			style="stroke-width:1.36152"
-		/>
-		<ns0:path
-			style="fill:#c8f4f0;fill-opacity:1;stroke-width:1.05833;paint-order:stroke fill markers"
-			d="m 245.76162,49.860366 -1.39489,0.805336 v 7.383504 l 1.39489,0.805336 z"
-			id="path9"
-			ns1:nodetypes="ccccc"
-		/>
-		<ns0:path
-			style="fill:#437e99;fill-opacity:1;stroke-width:1.05833;paint-order:stroke fill markers"
-			d="m 248.25016,49.860366 1.39489,0.805336 v 7.383504 l -1.39489,0.805336 z"
-			id="path9-8"
-			ns1:nodetypes="ccccc"
-		/>
-		<ns0:rect
-			style="fill:#83c7d0;fill-opacity:1;stroke-width:0.986853;paint-order:stroke fill markers"
-			id="rect9"
-			width="3.8834298"
-			height="1.995883"
-			x="245.76161"
-			y="52.732132"
-		/>
-	</ns0:g>
+  <title>Light Ion Cannon artwork</title>
+  <ns0:g id="g9">
+    <ns0:rect
+      style="fill:#1b1d1f;fill-opacity:1;stroke-width:0.938663;paint-order:stroke fill markers"
+      id="rect2-6"
+      width="2.0370066"
+      height="19.501797"
+      x="246.21315"
+      y="41.378277"
+    />
+    <ns0:path
+      style="fill:#3d4147;fill-opacity:1;stroke-width:1.13915;paint-order:stroke fill markers"
+      d="m 247.72051,41.684128 h -1.37854 l -0.58036,-0.305851 h 2.48854 z"
+      id="path5"
+      ns1:nodetypes="ccccc"
+    />
+    <ns0:path
+      style="fill:#52575f;fill-opacity:1;stroke-width:1.13915;paint-order:stroke fill markers"
+      d="m 245.76162,41.378276 v 19.501797 h 0.58035 l 1e-5,-19.195946 z"
+      id="path7"
+    />
+    <ns0:path
+      style="fill:#12171e;fill-opacity:1;stroke-width:1.13915;paint-order:stroke fill markers"
+      d="m 248.25015,41.378276 -1.90818,19.501797 h 1.90818 z"
+      id="path8"
+    />
+    <ns0:path
+      d="M 246.91822,51.787451 V 41.378277 h 0.31343 v 10.409174 z"
+      fill="#29baff"
+      fill-rule="nonzero"
+      opacity="1"
+      id="path846-9"
+      style="stroke-width:1.36152"
+    />
+    <ns0:path
+      style="fill:#c8f4f0;fill-opacity:1;stroke-width:1.05833;paint-order:stroke fill markers"
+      d="m 245.76162,49.860366 -1.39489,0.805336 v 7.383504 l 1.39489,0.805336 z"
+      id="path9"
+      ns1:nodetypes="ccccc"
+    />
+    <ns0:path
+      style="fill:#437e99;fill-opacity:1;stroke-width:1.05833;paint-order:stroke fill markers"
+      d="m 248.25016,49.860366 1.39489,0.805336 v 7.383504 l -1.39489,0.805336 z"
+      id="path9-8"
+      ns1:nodetypes="ccccc"
+    />
+    <ns0:rect
+      style="fill:#83c7d0;fill-opacity:1;stroke-width:0.986853;paint-order:stroke fill markers"
+      id="rect9"
+      width="3.8834298"
+      height="1.995883"
+      x="245.76161"
+      y="52.732132"
+    />
+  </ns0:g>
 </svg>

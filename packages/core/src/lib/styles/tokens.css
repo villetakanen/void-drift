@@ -1,185 +1,185 @@
 @import "./fonts.css";
 
 :root {
-	/* Colour roles (design-system-core.md, Colour). Brand is the one lime; it
+  /* Colour roles (design-system-core.md, Colour). Brand is the one lime; it
 	   also marks what you can act on and what is selected. Informational text
 	   never uses it. */
-	--color-brand: lch(96.42% 84.18 104.87);
-	--color-action: var(--color-brand);
-	--color-selected: var(--color-brand);
-	--color-on-brand: var(--color-void);
+  --color-brand: lch(96.42% 84.18 104.87);
+  --color-action: var(--color-brand);
+  --color-selected: var(--color-brand);
+  --color-on-brand: var(--color-void);
 
-	/* Text */
-	--color-text: lch(99.7% 7.45 104.72);
-	--color-text-muted: lch(56.7% 0 0);
+  /* Text */
+  --color-text: lch(99.7% 7.45 104.72);
+  --color-text-muted: lch(56.7% 0 0);
 
-	/* Borders: white at fixed strengths, so they read on every surface. */
-	--color-border: lch(100% 0 0 / 0.141);
-	--color-border-subtle: lch(100% 0 0 / 0.094);
-	--color-border-faint: lch(100% 0 0 / 0.051);
-	--color-grid: lch(45.22% 12.57 223.2);
+  /* Borders: white at fixed strengths, so they read on every surface. */
+  --color-border: lch(100% 0 0 / 0.141);
+  --color-border-subtle: lch(100% 0 0 / 0.094);
+  --color-border-faint: lch(100% 0 0 / 0.051);
+  --color-grid: lch(45.22% 12.57 223.2);
 
-	/* Surfaces: the void is the page (elevation 0); --color-elev-1..3 step up.
+  /* Surfaces: the void is the page (elevation 0); --color-elev-1..3 step up.
 	   Glass is the void, translucent, over the stage. Hover tints any surface. */
-	--color-void: lch(1.57% 4.76 285.25);
-	--color-glass: lch(1.57% 4.76 285.25 / 0.91);
-	--color-surface-hover: lch(100% 0 0 / 0.051);
+  --color-void: lch(1.57% 4.76 285.25);
+  --color-glass: lch(1.57% 4.76 285.25 / 0.91);
+  --color-surface-hover: lch(100% 0 0 / 0.051);
 
-	/* Status */
-	--color-android-green: lch(78.31% 65.02 151.48);
-	--color-caution-tape: lch(91.22% 89.15 92.72);
-	--color-red: lch(56.91% 91.12 35.03);
+  /* Status */
+  --color-android-green: lch(78.31% 65.02 151.48);
+  --color-caution-tape: lch(91.22% 89.15 92.72);
+  --color-red: lch(56.91% 91.12 35.03);
 
-	/* Spacing & Shape relative to 4px grid */
-	--spacing-xs: 4px;
-	--spacing-sm: 8px;
-	--spacing-md: 16px;
-	--spacing-lg: 32px;
-	--spacing-xl: 64px;
+  /* Spacing & Shape relative to 4px grid */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 32px;
+  --spacing-xl: 64px;
 
-	/* Text fields only; surfaces and controls cut their corners. */
-	--radius-sm: 2px;
+  /* Text fields only; surfaces and controls cut their corners. */
+  --radius-sm: 2px;
 
-	/* Corner cuts (design-system-core.md, Surfaces): buttons, the toggle and
+  /* Corner cuts (design-system-core.md, Surfaces): buttons, the toggle and
 	   engine pads cut md; panels cut lg. Always the top-left and bottom-right. */
-	--cut-size-sm: 6px;
-	--cut-size-md: 10px;
-	--cut-size-lg: 16px;
+  --cut-size-sm: 6px;
+  --cut-size-md: 10px;
+  --cut-size-lg: 16px;
 
-	/* Layers (design-system-core.md, Layers): the only z-index values in
+  /* Layers (design-system-core.md, Layers): the only z-index values in
 	   shared UI. Gaps leave room for a later layer. */
-	--layer-under: -1;
-	--layer-base: 0;
-	--layer-raised: 1;
-	--layer-hud: 10;
-	--layer-overlay: 100;
-	--layer-toast: 200;
+  --layer-under: -1;
+  --layer-base: 0;
+  --layer-raised: 1;
+  --layer-hud: 10;
+  --layer-overlay: 100;
+  --layer-toast: 200;
 
-	/* Resource colours are game data. Power shares brand until S8 separates it. */
-	--color-resource-hull: lch(74.49% 48.47 234.45);
-	--color-resource-power: var(--color-brand);
-	--color-resource-warning: lch(76.72% 83.63 72.58);
-	--color-resource-danger: var(--color-red);
+  /* Resource colours are game data. Power shares brand until S8 separates it. */
+  --color-resource-hull: lch(74.49% 48.47 234.45);
+  --color-resource-power: var(--color-brand);
+  --color-resource-warning: lch(76.72% 83.63 72.58);
+  --color-resource-danger: var(--color-red);
 
-	/* Shared control, state and motion foundations */
-	--control-min-height: 44px;
-	--font-control-size: 1rem;
-	--font-weight-medium: 500;
-	--border-width-control: 2px;
-	--focus-ring-width: 2px;
-	--focus-ring-offset-inset: -5px;
-	--color-focus-ring: var(--color-text);
-	--state-disabled-opacity: 0.45;
-	--state-hover-brightness: 1.2;
-	--state-selected-indicator-width: var(--spacing-xs);
-	--duration-fast: 150ms;
-	--ease-standard: ease;
+  /* Shared control, state and motion foundations */
+  --control-min-height: 44px;
+  --font-control-size: 1rem;
+  --font-weight-medium: 500;
+  --border-width-control: 2px;
+  --focus-ring-width: 2px;
+  --focus-ring-offset-inset: -5px;
+  --color-focus-ring: var(--color-text);
+  --state-disabled-opacity: 0.45;
+  --state-hover-brightness: 1.2;
+  --state-selected-indicator-width: var(--spacing-xs);
+  --duration-fast: 150ms;
+  --ease-standard: ease;
 
-	/* Compatibility aliases: consumers may migrate without losing existing values. */
-	--button-padding-x: var(--spacing-lg);
-	--button-padding-y: var(--spacing-sm);
-	--button-font-size: var(--font-control-size);
-	--button-font-weight: var(--font-weight-medium);
-	--button-border-width: var(--border-width-control);
-	--button-min-height: var(--control-min-height);
-	--button-cut-size: var(--cut-size-md);
-	--button-border-radius: var(--radius-sm);
-	--button-transition:
-		background var(--duration-fast) var(--ease-standard),
-		color var(--duration-fast) var(--ease-standard),
-		border-color var(--duration-fast) var(--ease-standard),
-		filter var(--duration-fast) var(--ease-standard);
+  /* Compatibility aliases: consumers may migrate without losing existing values. */
+  --button-padding-x: var(--spacing-lg);
+  --button-padding-y: var(--spacing-sm);
+  --button-font-size: var(--font-control-size);
+  --button-font-weight: var(--font-weight-medium);
+  --button-border-width: var(--border-width-control);
+  --button-min-height: var(--control-min-height);
+  --button-cut-size: var(--cut-size-md);
+  --button-border-radius: var(--radius-sm);
+  --button-transition:
+    background var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    filter var(--duration-fast) var(--ease-standard);
 }
 
 :root {
-	/* Type roles (design-system-core.md): ui for game and interface text,
+  /* Type roles (design-system-core.md): ui for game and interface text,
 	   prose for studies, help and docs, display for headlines. */
-	--font-family-ui:
-		"B612 Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
-	--font-family-prose: "Noto Sans", system-ui, sans-serif;
-	--font-family-display: var(--font-family-prose);
-	--font-weight-regular: 400;
-	--font-weight-bold: 700;
-	--font-weight-display: 800;
-	--font-size-caption: 0.75rem;
-	--font-size-label: 0.875rem;
-	--font-size-body: 0.95rem;
-	--font-size-lead: 1.2rem;
-	--font-size-heading: 1.5rem;
-	--font-size-display: clamp(1.75rem, 4vw, 3.5rem);
-	--line-height-display: 1.05;
-	--line-height-heading: 1.1;
-	--line-height-ui: 1.5;
-	--line-height-prose: 1.65;
-	--tracking-eyebrow: 0.16em;
-	--tracking-display: 0.03em;
-	--measure-prose: 70ch;
+  --font-family-ui:
+    "B612 Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+  --font-family-prose: "Noto Sans", system-ui, sans-serif;
+  --font-family-display: var(--font-family-prose);
+  --font-weight-regular: 400;
+  --font-weight-bold: 700;
+  --font-weight-display: 800;
+  --font-size-caption: 0.75rem;
+  --font-size-label: 0.875rem;
+  --font-size-body: 0.95rem;
+  --font-size-lead: 1.2rem;
+  --font-size-heading: 1.5rem;
+  --font-size-display: clamp(1.75rem, 4vw, 3.5rem);
+  --line-height-display: 1.05;
+  --line-height-heading: 1.1;
+  --line-height-ui: 1.5;
+  --line-height-prose: 1.65;
+  --tracking-eyebrow: 0.16em;
+  --tracking-display: 0.03em;
+  --measure-prose: 70ch;
 
-	/* Elevation (lab-instrument study, 02.8). Each step keeps the background's
+  /* Elevation (lab-instrument study, 02.8). Each step keeps the background's
 	   hue, 290, and raises lightness by 5.5 and chroma by 5. */
-	--color-elev-1: lch(5.5% 10 290);
-	--color-elev-2: lch(11% 15 290);
-	--color-elev-3: lch(16.5% 20 290);
-	/* Instrument display: a console (elevation 1) holds displays with 4px
+  --color-elev-1: lch(5.5% 10 290);
+  --color-elev-2: lch(11% 15 290);
+  --color-elev-3: lch(16.5% 20 290);
+  /* Instrument display: a console (elevation 1) holds displays with 4px
 	   scanlines, a darkened edge, a thin dark bezel and a black shadow. */
-	--surface-display:
-		radial-gradient(ellipse at center, transparent 55%, lch(0% 0 0 / 0.4)),
-		repeating-linear-gradient(
-			0deg,
-			var(--color-elev-2) 0 2px,
-			lch(9% 15 290) 2px 4px
-		);
-	--shadow-display: inset 0 0 0 1px lch(4% 8 290), 0 8px 24px lch(0% 0 0 / 0.7);
-	/* Dims what an overlay covers. */
-	--color-backdrop: lch(0% 0 0 / 0.11);
-	/* Scrim, the offline feed (dialogs.md): while a dialog is open the stage
+  --surface-display:
+    radial-gradient(ellipse at center, transparent 55%, lch(0% 0 0 / 0.4)),
+    repeating-linear-gradient(
+      0deg,
+      var(--color-elev-2) 0 2px,
+      lch(9% 15 290) 2px 4px
+    );
+  --shadow-display: inset 0 0 0 1px lch(4% 8 290), 0 8px 24px lch(0% 0 0 / 0.7);
+  /* Dims what an overlay covers. */
+  --color-backdrop: lch(0% 0 0 / 0.11);
+  /* Scrim, the offline feed (dialogs.md): while a dialog is open the stage
 	   takes a small tint toward the elevation hue (which is the
 	   desaturation: colours stay, cooler and quieter), dims a little and
 	   blurs, and carries the display's scanlines and darkened edge. */
-	--scrim-filter: brightness(0.85) blur(2px);
-	--scrim-tint: color-mix(in lch, var(--color-elev-2) 27%, transparent);
-	--scrim-surface:
-		radial-gradient(ellipse at center, transparent 55%, lch(0% 0 0 / 0.3)),
-		repeating-linear-gradient(
-			0deg,
-			transparent 0 2px,
-			color-mix(in lch, var(--color-void) 35%, transparent) 2px 4px
-		);
-	/* Panel: elevation 2 on the console form, with the display's shadow. */
-	--panel-fill: var(--color-elev-2);
-	--panel-shadow: drop-shadow(0 8px 24px lch(0% 0 0 / 0.7));
+  --scrim-filter: brightness(0.85) blur(2px);
+  --scrim-tint: color-mix(in lch, var(--color-elev-2) 27%, transparent);
+  --scrim-surface:
+    radial-gradient(ellipse at center, transparent 55%, lch(0% 0 0 / 0.3)),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      color-mix(in lch, var(--color-void) 35%, transparent) 2px 4px
+    );
+  /* Panel: elevation 2 on the console form, with the display's shadow. */
+  --panel-fill: var(--color-elev-2);
+  --panel-shadow: drop-shadow(0 8px 24px lch(0% 0 0 / 0.7));
 
-	/* Logomark height steps (design-system-core.md, Identity). */
-	--logomark-height-sm: 1rem;
-	--logomark-height-md: 1.5rem;
-	--logomark-height-lg: 3rem;
+  /* Logomark height steps (design-system-core.md, Identity). */
+  --logomark-height-sm: 1rem;
+  --logomark-height-md: 1.5rem;
+  --logomark-height-lg: 3rem;
 
-	/* Deprecated aliases: remove once their last consumer migrates. */
-	--font-flight: var(--font-family-ui);
-	--font-display: var(--font-family-display);
-	--font-small: var(--font-size-caption);
-	--font-body: var(--font-size-body);
-	--font-large: var(--font-size-heading);
-	--font-title: var(--font-size-display);
-	--flight-header-height: 64px;
-	--flight-panel-width: 320px;
-	--flight-card-width: 480px;
-	--flight-canvas-max: 1600px;
-	--flight-engine-width: 148px;
-	--flight-engine-height: 64px;
-	--flight-textarea-height: 120px;
-	--flight-bar-width: 120px;
-	--flight-border: 1px solid var(--color-border);
-	--flight-glow: 0 0 30px
-		color-mix(in lch, var(--color-selected) 15%, transparent);
-	--color-flight-glass: var(--color-glass);
-	--color-flight-trail: var(--color-border-subtle);
-	/* Deprecated colour names (S3): they alias the roles above. */
-	--color-acid-lime: var(--color-brand);
-	--color-neon-blue: var(--color-action);
-	--color-neon-orange: var(--color-caution-tape);
-	--color-neon-green: var(--color-android-green);
-	--color-text-dim: var(--color-text-muted);
-	--color-void-light: var(--color-elev-1);
-	--color-overlay: var(--color-glass);
+  /* Deprecated aliases: remove once their last consumer migrates. */
+  --font-flight: var(--font-family-ui);
+  --font-display: var(--font-family-display);
+  --font-small: var(--font-size-caption);
+  --font-body: var(--font-size-body);
+  --font-large: var(--font-size-heading);
+  --font-title: var(--font-size-display);
+  --flight-header-height: 64px;
+  --flight-panel-width: 320px;
+  --flight-card-width: 480px;
+  --flight-canvas-max: 1600px;
+  --flight-engine-width: 148px;
+  --flight-engine-height: 64px;
+  --flight-textarea-height: 120px;
+  --flight-bar-width: 120px;
+  --flight-border: 1px solid var(--color-border);
+  --flight-glow: 0 0 30px
+    color-mix(in lch, var(--color-selected) 15%, transparent);
+  --color-flight-glass: var(--color-glass);
+  --color-flight-trail: var(--color-border-subtle);
+  /* Deprecated colour names (S3): they alias the roles above. */
+  --color-acid-lime: var(--color-brand);
+  --color-neon-blue: var(--color-action);
+  --color-neon-orange: var(--color-caution-tape);
+  --color-neon-green: var(--color-android-green);
+  --color-text-dim: var(--color-text-muted);
+  --color-void-light: var(--color-elev-1);
+  --color-overlay: var(--color-glass);
 }

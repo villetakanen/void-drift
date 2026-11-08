@@ -76,22 +76,22 @@ configuration and measurements are defined in [its spec](../gravity-tuning/spec.
 
 ```json
 {
-	"version": 1,
-	"burn": "course",
-	"properties": { "plasma": { "thrust": 46000 } },
-	"vehicles": [
-		{
-			"label": "Plasma aft",
-			"loadout": {
-				"version": 2,
-				"chassis": "balanced",
-				"side": "ion",
-				"stabilizers": true,
-				"hull": [null, null],
-				"aft": ["plasma", "plasma"]
-			}
-		}
-	]
+  "version": 1,
+  "burn": "course",
+  "properties": { "plasma": { "thrust": 46000 } },
+  "vehicles": [
+    {
+      "label": "Plasma aft",
+      "loadout": {
+        "version": 2,
+        "chassis": "balanced",
+        "side": "ion",
+        "stabilizers": true,
+        "hull": [null, null],
+        "aft": ["plasma", "plasma"]
+      }
+    }
+  ]
 }
 ```
 

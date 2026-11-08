@@ -12,40 +12,40 @@ const { title = "Void Drift" } = Astro.props;
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
-		>
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-		<meta name="generator" content={Astro.generator}>
-		<title>{title}</title>
+  <head>
+    <meta charset="UTF-8">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    >
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <meta name="generator" content={Astro.generator}>
+    <title>{title}</title>
 
-		<!-- Mobile UX Fidelity -->
-		<meta name="mobile-web-app-capable" content="yes">
-		<!-- --color-void in sRGB; meta cannot read tokens (check-contracts pins it). -->
-		<meta name="theme-color" content="#050510">
-		<meta name="apple-mobile-web-app-capable" content="yes">
-		<meta
-			name="apple-mobile-web-app-status-bar-style"
-			content="black-translucent"
-		>
-		<meta name="apple-mobile-web-app-title" content="Void Drift">
-	</head>
-	<body>
-		<slot />
-	</body>
+    <!-- Mobile UX Fidelity -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <!-- --color-void in sRGB; meta cannot read tokens (check-contracts pins it). -->
+    <meta name="theme-color" content="#050510">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    >
+    <meta name="apple-mobile-web-app-title" content="Void Drift">
+  </head>
+  <body>
+    <slot />
+  </body>
 </html>
 
 <style>
 html,
 body {
-	margin: 0;
-	width: 100%;
-	height: 100%;
-	background: var(--color-void);
-	color: var(--color-text);
-	overflow: hidden;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--color-void);
+  color: var(--color-text);
+  overflow: hidden;
 }
 </style>

@@ -2,185 +2,185 @@
 import { FIGHTER } from "../../../../../packages/mode-a/src/lib/fighter";
 
 const points = (p: readonly (readonly number[])[]) =>
-	p.map((v) => v.join(",")).join(" ");
+  p.map((v) => v.join(",")).join(" ");
 const sizes = [
-	{
-		id: "light",
-		name: "Light storage",
-		length: 20,
-		width: 12,
-		cells: 2,
-		note: "Trial: +50% of internal capacity · lower mass",
-	},
-	{
-		id: "heavy",
-		name: "Heavy storage",
-		length: 30,
-		width: 24,
-		cells: 3,
-		note: "Trial: +100% of internal capacity · higher mass",
-	},
+  {
+    id: "light",
+    name: "Light storage",
+    length: 20,
+    width: 12,
+    cells: 2,
+    note: "Trial: +50% of internal capacity · lower mass",
+  },
+  {
+    id: "heavy",
+    name: "Heavy storage",
+    length: 30,
+    width: 24,
+    cells: 3,
+    note: "Trial: +100% of internal capacity · higher mass",
+  },
 ];
 ---
 
 <div class="comparison">
-	{sizes.map((size) => (
-		<article>
-			<h4>{size.name}</h4>
-			<p>{size.note}</p>
-			<svg class="definitions" aria-hidden="true">
-				<defs>
-					<g id={`storage-${size.id}`}>
-						<polygon
-							points={`${-size.length / 2},${-size.width / 2} ${size.length / 2 - 3},${-size.width / 2} ${size.length / 2},${-size.width / 2 + 3} ${size.length / 2},${size.width / 2 - 3} ${size.length / 2 - 3},${size.width / 2} ${-size.length / 2},${size.width / 2}`}
-							fill="#566779"
-						/>
-						<path
-							d={`M ${-size.length / 2} ${-size.width / 2} H ${size.length / 2 - 3} L ${size.length / 2 - 5} ${-size.width / 2 + 3} H ${-size.length / 2 + 2} Z`}
-							fill="#c5d1d9"
-						/>
-						<path
-							d={`M ${-size.length / 2} ${size.width / 2} H ${size.length / 2 - 3} L ${size.length / 2} ${size.width / 2 - 3} H ${-size.length / 2 + 2} Z`}
-							fill="#283747"
-						/>
-						{Array.from({ length: size.cells }, (_, i) => (
-							<rect
-								x={-size.length / 2 + 4 + i * 7}
-								y={-size.width / 2 + 4}
-								width="4"
-								height={size.width - 8}
-								fill="#e7ac55"
-							/>
-						))}
-						<rect
-							x={-size.length / 2 - 2}
-							y="-2"
-							width="2"
-							height="4"
-							fill="#a3b4c2"
-						/>
-					</g>
-					<g id={`hull-${size.id}`}>
-						{FIGHTER.hull.map((p, i) => (
-							<polygon
-								points={points([
-									[-3, 0],
-									p,
-									FIGHTER.hull[(i + 1) % FIGHTER.hull.length],
-								])}
-								fill={FIGHTER.facets[i]}
-							/>
-						))}
-						<polygon points={points(FIGHTER.ridge)} fill="#83c7d0" />
-						<polygon points={points(FIGHTER.cockpit)} fill="#030609" />
-					</g>
-				</defs>
-			</svg>
-			{["Above", "Below"].map((layer) => (
-				<div class="pose">
-					<h5>{layer} hull</h5>
-					<svg
-						viewBox="-42 -55 84 92"
-						role="img"
-						aria-label={`${size.name}, ${layer.toLowerCase()} hull, top view`}
-					>
-						<g transform="rotate(-90)">
-							{layer === "Below" && (
-								<use
-									href={`#storage-${size.id}`}
-									transform="translate(-8 10)"
-								/>
-							)}
-							<use href={`#hull-${size.id}`} />
-							{layer === "Above" && (
-								<use
-									href={`#storage-${size.id}`}
-									transform="translate(-8 10)"
-								/>
-							)}
-						</g>
-					</svg>
-					<div class="small">
-						<span>0.65 scale</span>
-						<svg
-							width="64"
-							height="64"
-							viewBox="-32 -32 64 64"
-							role="img"
-							aria-label={`${size.name} ${layer.toLowerCase()} at flight scale`}
-						>
-							<g transform="rotate(-90) scale(.65)">
-								{layer === "Below" && (
-									<use
-										href={`#storage-${size.id}`}
-										transform="translate(-8 10)"
-									/>
-								)}
-								<use href={`#hull-${size.id}`} />
-								{layer === "Above" && (
-									<use
-										href={`#storage-${size.id}`}
-										transform="translate(-8 10)"
-									/>
-								)}
-							</g>
-						</svg>
-					</div>
-				</div>
-			))}
-			<p>Module alone · same scale for both sizes</p>
-			<svg
-				class="module"
-				viewBox="-24 -16 48 32"
-				role="img"
-				aria-label={`${size.name} isolated`}
-			>
-				<use href={`#storage-${size.id}`} />
-			</svg>
-		</article>
-	))}
+  {sizes.map((size) => (
+    <article>
+      <h4>{size.name}</h4>
+      <p>{size.note}</p>
+      <svg class="definitions" aria-hidden="true">
+        <defs>
+          <g id={`storage-${size.id}`}>
+            <polygon
+              points={`${-size.length / 2},${-size.width / 2} ${size.length / 2 - 3},${-size.width / 2} ${size.length / 2},${-size.width / 2 + 3} ${size.length / 2},${size.width / 2 - 3} ${size.length / 2 - 3},${size.width / 2} ${-size.length / 2},${size.width / 2}`}
+              fill="#566779"
+            />
+            <path
+              d={`M ${-size.length / 2} ${-size.width / 2} H ${size.length / 2 - 3} L ${size.length / 2 - 5} ${-size.width / 2 + 3} H ${-size.length / 2 + 2} Z`}
+              fill="#c5d1d9"
+            />
+            <path
+              d={`M ${-size.length / 2} ${size.width / 2} H ${size.length / 2 - 3} L ${size.length / 2} ${size.width / 2 - 3} H ${-size.length / 2 + 2} Z`}
+              fill="#283747"
+            />
+            {Array.from({ length: size.cells }, (_, i) => (
+              <rect
+                x={-size.length / 2 + 4 + i * 7}
+                y={-size.width / 2 + 4}
+                width="4"
+                height={size.width - 8}
+                fill="#e7ac55"
+              />
+            ))}
+            <rect
+              x={-size.length / 2 - 2}
+              y="-2"
+              width="2"
+              height="4"
+              fill="#a3b4c2"
+            />
+          </g>
+          <g id={`hull-${size.id}`}>
+            {FIGHTER.hull.map((p, i) => (
+              <polygon
+                points={points([
+                  [-3, 0],
+                  p,
+                  FIGHTER.hull[(i + 1) % FIGHTER.hull.length],
+                ])}
+                fill={FIGHTER.facets[i]}
+              />
+            ))}
+            <polygon points={points(FIGHTER.ridge)} fill="#83c7d0" />
+            <polygon points={points(FIGHTER.cockpit)} fill="#030609" />
+          </g>
+        </defs>
+      </svg>
+      {["Above", "Below"].map((layer) => (
+        <div class="pose">
+          <h5>{layer} hull</h5>
+          <svg
+            viewBox="-42 -55 84 92"
+            role="img"
+            aria-label={`${size.name}, ${layer.toLowerCase()} hull, top view`}
+          >
+            <g transform="rotate(-90)">
+              {layer === "Below" && (
+                <use
+                  href={`#storage-${size.id}`}
+                  transform="translate(-8 10)"
+                />
+              )}
+              <use href={`#hull-${size.id}`} />
+              {layer === "Above" && (
+                <use
+                  href={`#storage-${size.id}`}
+                  transform="translate(-8 10)"
+                />
+              )}
+            </g>
+          </svg>
+          <div class="small">
+            <span>0.65 scale</span>
+            <svg
+              width="64"
+              height="64"
+              viewBox="-32 -32 64 64"
+              role="img"
+              aria-label={`${size.name} ${layer.toLowerCase()} at flight scale`}
+            >
+              <g transform="rotate(-90) scale(.65)">
+                {layer === "Below" && (
+                  <use
+                    href={`#storage-${size.id}`}
+                    transform="translate(-8 10)"
+                  />
+                )}
+                <use href={`#hull-${size.id}`} />
+                {layer === "Above" && (
+                  <use
+                    href={`#storage-${size.id}`}
+                    transform="translate(-8 10)"
+                  />
+                )}
+              </g>
+            </svg>
+          </div>
+        </div>
+      ))}
+      <p>Module alone · same scale for both sizes</p>
+      <svg
+        class="module"
+        viewBox="-24 -16 48 32"
+        role="img"
+        aria-label={`${size.name} isolated`}
+      >
+        <use href={`#storage-${size.id}`} />
+      </svg>
+    </article>
+  ))}
 </div>
 <style>
 .comparison {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: var(--spacing-lg);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-lg);
 }
 article {
-	padding: var(--spacing-lg);
-	background: var(--color-void-light);
-	border: var(--flight-border);
+  padding: var(--spacing-lg);
+  background: var(--color-void-light);
+  border: var(--flight-border);
 }
 h4,
 h5 {
-	margin: 0;
+  margin: 0;
 }
 .pose {
-	display: inline-block;
-	width: 49%;
+  display: inline-block;
+  width: 49%;
 }
 .pose > svg {
-	width: 100%;
+  width: 100%;
 }
 .small {
-	display: flex;
-	align-items: center;
-	flex-direction: column;
-	font-size: var(--font-size-caption);
-	color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  font-size: var(--font-size-caption);
+  color: var(--color-text-muted);
 }
 .module {
-	width: 160px;
-	height: 110px;
+  width: 160px;
+  height: 110px;
 }
 .definitions {
-	position: absolute;
-	width: 0;
-	height: 0;
+  position: absolute;
+  width: 0;
+  height: 0;
 }
 @media (max-width: 650px) {
-	.comparison {
-		grid-template-columns: 1fr;
-	}
+  .comparison {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

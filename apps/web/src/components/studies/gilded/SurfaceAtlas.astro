@@ -1,118 +1,118 @@
 ---
 const forms = [
-	{
-		name: "Round dome",
-		shape: "M 100 25 A 75 75 0 1 1 99.99 25 Z",
-		note: "A continuous reflection bows around the dome. No artificial centre seam.",
-	},
-	{
-		name: "Long curved canopy",
-		shape:
-			"M100 12 C155 48 169 145 143 191 Q100 220 57 191 C31 145 45 48 100 12Z",
-		note: "The reflection stretches along the crown and rolls away toward the sides.",
-	},
-	{
-		name: "Cornered, smooth surface",
-		shape: "M100 12 159 70 150 178 100 210 50 178 41 70Z",
-		note: "Corners in the outline do not require a break in the reflection: this is one curved pane.",
-	},
-	{
-		name: "Two planar facets",
-		shape: "M100 12 151 79 151 157 100 210 49 157 49 79Z",
-		note: "The ridge changes surface direction. Each plane carries its own reflection; the seam stays crisp.",
-	},
+  {
+    name: "Round dome",
+    shape: "M 100 25 A 75 75 0 1 1 99.99 25 Z",
+    note: "A continuous reflection bows around the dome. No artificial centre seam.",
+  },
+  {
+    name: "Long curved canopy",
+    shape:
+      "M100 12 C155 48 169 145 143 191 Q100 220 57 191 C31 145 45 48 100 12Z",
+    note: "The reflection stretches along the crown and rolls away toward the sides.",
+  },
+  {
+    name: "Cornered, smooth surface",
+    shape: "M100 12 159 70 150 178 100 210 50 178 41 70Z",
+    note: "Corners in the outline do not require a break in the reflection: this is one curved pane.",
+  },
+  {
+    name: "Two planar facets",
+    shape: "M100 12 151 79 151 157 100 210 49 157 49 79Z",
+    note: "The ridge changes surface direction. Each plane carries its own reflection; the seam stays crisp.",
+  },
 ];
 ---
 
 <div class="atlas">
-	{forms.map((form, i) => (
-		<figure>
-			<svg
-				viewBox="0 0 200 230"
-				role="img"
-				aria-label={`${form.name}: green–space–gold material study`}
-			>
-				<defs>
-					<clipPath id={`glass-${i}`}>
-						<path d={form.shape} />
-					</clipPath>
-					<linearGradient id={`base-${i}`} x1="0" y1="0" x2="0.2" y2="1">
-						<stop offset="0" stop-color="#ecd365" />
-						<stop offset=".21" stop-color="#827331" />
-						<stop offset=".43" stop-color="#07121a" />
-						<stop offset=".57" stop-color="#03070c" />
-						<stop offset=".82" stop-color="#127045" />
-						<stop offset="1" stop-color="#71b76c" />
-					</linearGradient>
-					<radialGradient id={`roll-${i}`} cx="28%" cy="34%" r="75%">
-						<stop offset=".15" stop-color="#000000" stop-opacity="0" />
-						<stop offset=".7" stop-color="#02090e" stop-opacity=".25" />
-						<stop offset="1" stop-color="#02070e" stop-opacity=".95" />
-					</radialGradient>
-					<linearGradient id={`facet-${i}`} x1="0" y1="0" x2=".35" y2="1">
-						<stop stop-color="#527c35" />
-						<stop offset=".3" stop-color="#123b2c" />
-						<stop offset=".62" stop-color="#02070d" />
-						<stop offset="1" stop-color="#244952" />
-					</linearGradient>
-				</defs>
-				<g clip-path={`url(#glass-${i})`}>
-					<rect width="200" height="230" fill={`url(#base-${i})`} />
-					{i < 3 ? (
-						<>
-							<path
-								d={
-									i === 0
-										? "M-10 109 Q100 165 210 109 L210 150 Q100 205 -10 150Z"
-										: "M-10 115 Q85 145 210 70 L210 104 Q85 177 -10 149Z"
-								}
-								fill="#03070c"
-								opacity=".65"
-							/>
-							<rect width="200" height="230" fill={`url(#roll-${i})`} />
-						</>
-					) : (
-						<path d="M100 0H200V230H100Z" fill={`url(#facet-${i})`} />
-					)}
-				</g>
-			</svg>
-			<figcaption>
-				<h3>{form.name}</h3>
-				<p>{form.note}</p>
-			</figcaption>
-		</figure>
-	))}
+  {forms.map((form, i) => (
+    <figure>
+      <svg
+        viewBox="0 0 200 230"
+        role="img"
+        aria-label={`${form.name}: green–space–gold material study`}
+      >
+        <defs>
+          <clipPath id={`glass-${i}`}>
+            <path d={form.shape} />
+          </clipPath>
+          <linearGradient id={`base-${i}`} x1="0" y1="0" x2="0.2" y2="1">
+            <stop offset="0" stop-color="#ecd365" />
+            <stop offset=".21" stop-color="#827331" />
+            <stop offset=".43" stop-color="#07121a" />
+            <stop offset=".57" stop-color="#03070c" />
+            <stop offset=".82" stop-color="#127045" />
+            <stop offset="1" stop-color="#71b76c" />
+          </linearGradient>
+          <radialGradient id={`roll-${i}`} cx="28%" cy="34%" r="75%">
+            <stop offset=".15" stop-color="#000000" stop-opacity="0" />
+            <stop offset=".7" stop-color="#02090e" stop-opacity=".25" />
+            <stop offset="1" stop-color="#02070e" stop-opacity=".95" />
+          </radialGradient>
+          <linearGradient id={`facet-${i}`} x1="0" y1="0" x2=".35" y2="1">
+            <stop stop-color="#527c35" />
+            <stop offset=".3" stop-color="#123b2c" />
+            <stop offset=".62" stop-color="#02070d" />
+            <stop offset="1" stop-color="#244952" />
+          </linearGradient>
+        </defs>
+        <g clip-path={`url(#glass-${i})`}>
+          <rect width="200" height="230" fill={`url(#base-${i})`} />
+          {i < 3 ? (
+            <>
+              <path
+                d={
+                  i === 0
+                    ? "M-10 109 Q100 165 210 109 L210 150 Q100 205 -10 150Z"
+                    : "M-10 115 Q85 145 210 70 L210 104 Q85 177 -10 149Z"
+                }
+                fill="#03070c"
+                opacity=".65"
+              />
+              <rect width="200" height="230" fill={`url(#roll-${i})`} />
+            </>
+          ) : (
+            <path d="M100 0H200V230H100Z" fill={`url(#facet-${i})`} />
+          )}
+        </g>
+      </svg>
+      <figcaption>
+        <h3>{form.name}</h3>
+        <p>{form.note}</p>
+      </figcaption>
+    </figure>
+  ))}
 </div>
 <style>
 .atlas {
-	display: grid;
-	grid-template-columns: repeat(4, minmax(0, 1fr));
-	gap: var(--spacing-lg);
-	margin-block: var(--spacing-xl);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--spacing-lg);
+  margin-block: var(--spacing-xl);
 }
 figure {
-	margin: 0;
-	min-width: 0;
+  margin: 0;
+  min-width: 0;
 }
 svg {
-	width: 100%;
-	height: 260px;
-	background: var(--color-void);
+  width: 100%;
+  height: 260px;
+  background: var(--color-void);
 }
 h3 {
-	font-size: 1rem;
+  font-size: 1rem;
 }
 p {
-	font-size: 0.9rem;
+  font-size: 0.9rem;
 }
 @media (max-width: 750px) {
-	.atlas {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
+  .atlas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 @media (max-width: 420px) {
-	.atlas {
-		grid-template-columns: 1fr;
-	}
+  .atlas {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

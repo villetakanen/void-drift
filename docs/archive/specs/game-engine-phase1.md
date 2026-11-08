@@ -26,19 +26,19 @@ _Note: Although we use Zod for network boundaries, inside the hot loop we use ra
 ```typescript
 // packages/core/src/lib/physics/Physics.ts
 export class Vec2 {
-	constructor(
-		public x: number,
-		public y: number,
-	) {}
-	// Methods: add, sub, mult, mag, normalize (mutate self where possible)
+  constructor(
+    public x: number,
+    public y: number,
+  ) {}
+  // Methods: add, sub, mult, mag, normalize (mutate self where possible)
 }
 
 export interface GameObject {
-	pos: Vec2;
-	vel: Vec2;
-	acc: Vec2;
-	rotation: number; // Radians, 0 = Facing East
-	radius: number;
+  pos: Vec2;
+  vel: Vec2;
+  acc: Vec2;
+  rotation: number; // Radians, 0 = Facing East
+  radius: number;
 }
 ```
 

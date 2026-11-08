@@ -417,13 +417,13 @@ This block predates the PBI-022 lime and the S3 roles; see [Colour](#colour).
 
 ```css
 :root {
-	--color-void: #050510; /* Deep space background */
-	--color-neon-blue: #00f0ff; /* Primary accent (cyan) */
-	--color-neon-pink: #ff00ff; /* Secondary accent (magenta) */
-	--color-acid-lime: #d4ff00; /* Tertiary accent (lime) */
-	--color-text: #e0e0e0; /* Primary text (light gray) */
-	--color-text-dim: #808080; /* Secondary text (mid gray) */
-	--color-warning: #ff6600; /* Warning state (orange) */
+  --color-void: #050510; /* Deep space background */
+  --color-neon-blue: #00f0ff; /* Primary accent (cyan) */
+  --color-neon-pink: #ff00ff; /* Secondary accent (magenta) */
+  --color-acid-lime: #d4ff00; /* Tertiary accent (lime) */
+  --color-text: #e0e0e0; /* Primary text (light gray) */
+  --color-text-dim: #808080; /* Secondary text (mid gray) */
+  --color-warning: #ff6600; /* Warning state (orange) */
 }
 ```
 
@@ -431,11 +431,11 @@ This block predates the PBI-022 lime and the S3 roles; see [Colour](#colour).
 
 ```css
 :root {
-	--spacing-xs: 4px;
-	--spacing-sm: 8px;
-	--spacing-md: 16px;
-	--spacing-lg: 24px;
-	--spacing-xl: 32px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
 }
 ```
 
@@ -445,11 +445,11 @@ Superseded by [Typography](#typography).
 
 ```css
 :root {
-	--font-primary: "Noto Sans Math", sans-serif;
-	--font-size-small: 12px;
-	--font-size-base: 16px;
-	--font-size-large: 24px;
-	--font-size-logo: 48px;
+  --font-primary: "Noto Sans Math", sans-serif;
+  --font-size-small: 12px;
+  --font-size-base: 16px;
+  --font-size-large: 24px;
+  --font-size-logo: 48px;
 }
 ```
 
@@ -486,14 +486,14 @@ The examples use `--color-neon-blue`; read it as `--color-action`.
 ```css
 /* ❌ BAD - Hardcoded values */
 .element {
-	color: #00f0ff;
-	margin: 16px;
+  color: #00f0ff;
+  margin: 16px;
 }
 
 /* ✅ GOOD - Using tokens */
 .element {
-	color: var(--color-neon-blue);
-	margin: var(--spacing-md);
+  color: var(--color-neon-blue);
+  margin: var(--spacing-md);
 }
 ```
 
@@ -507,8 +507,8 @@ Superseded by [Typography](#typography): fonts are self-hosted and no CDN is use
 <!-- apps/web/src/layouts/Layout.astro -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link
-	href="https://fonts.googleapis.com/css2?family=Noto+Sans+Math&display=swap"
-	rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Noto+Sans+Math&display=swap"
+  rel="stylesheet"
 >
 ```
 
@@ -579,22 +579,22 @@ definitions are in core `styles/buttons.css`, with foundations in `styles/tokens
 All buttons share common styles:
 ```css
 .btn {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	padding: var(--button-padding-y) var(--button-padding-x);
-	min-height: var(--button-min-height);
-	font-family: var(--font-primary);
-	font-size: var(--font-size-base);
-	text-decoration: none;
-	cursor: pointer;
-	transition: var(--button-transition);
-	border-radius: var(--button-border-radius);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--button-padding-y) var(--button-padding-x);
+  min-height: var(--button-min-height);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-base);
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--button-transition);
+  border-radius: var(--button-border-radius);
 }
 
 .btn:focus-visible {
-	outline: 2px solid var(--color-neon-blue);
-	outline-offset: 2px;
+  outline: 2px solid var(--color-neon-blue);
+  outline-offset: 2px;
 }
 ```
 
@@ -603,14 +603,14 @@ All buttons share common styles:
 Transparent background with neon border - primary interactive style:
 ```css
 .btn-ghost {
-	background: transparent;
-	color: var(--color-neon-blue);
-	border: var(--button-border-width) solid var(--color-neon-blue);
+  background: transparent;
+  color: var(--color-neon-blue);
+  border: var(--button-border-width) solid var(--color-neon-blue);
 }
 
 .btn-ghost:hover {
-	background: rgba(0, 240, 255, 0.1);
-	box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+  background: rgba(0, 240, 255, 0.1);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
 }
 ```
 
@@ -619,14 +619,14 @@ Transparent background with neon border - primary interactive style:
 Solid background for primary actions:
 ```css
 .btn-filled {
-	background: var(--color-neon-blue);
-	color: var(--color-void);
-	border: var(--button-border-width) solid var(--color-neon-blue);
+  background: var(--color-neon-blue);
+  color: var(--color-void);
+  border: var(--button-border-width) solid var(--color-neon-blue);
 }
 
 .btn-filled:hover {
-	background: transparent;
-	color: var(--color-neon-blue);
+  background: transparent;
+  color: var(--color-neon-blue);
 }
 ```
 
@@ -635,15 +635,15 @@ Solid background for primary actions:
 Text-only style for navigation:
 ```css
 .btn-link {
-	background: transparent;
-	color: var(--color-text);
-	border: none;
-	padding: var(--spacing-sm);
-	min-height: auto;
+  background: transparent;
+  color: var(--color-text);
+  border: none;
+  padding: var(--spacing-sm);
+  min-height: auto;
 }
 
 .btn-link:hover {
-	color: var(--color-neon-blue);
+  color: var(--color-neon-blue);
 }
 ```
 

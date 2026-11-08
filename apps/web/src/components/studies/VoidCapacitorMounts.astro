@@ -1,217 +1,217 @@
 <div class="controls">
-	<label
-		>Engine reference
-		<select id="capacitor-engine">
-			<option value="ion">Light ion</option>
-			<option value="heavy-ion">Heavy ion</option>
-			<option value="fusion">Fusion</option>
-			<option value="plasma">Plasma</option>
-		</select></label
-	>
-	<label
-		>Mounting layer
-		<select id="capacitor-layer">
-			<option value="production">Current hull rules</option>
-			<option value="above">Above hull · experiment</option>
-			<option value="below">Below hull · experiment</option>
-		</select></label
-	>
+  <label
+    >Engine reference
+    <select id="capacitor-engine">
+      <option value="ion">Light ion</option>
+      <option value="heavy-ion">Heavy ion</option>
+      <option value="fusion">Fusion</option>
+      <option value="plasma">Plasma</option>
+    </select></label
+  >
+  <label
+    >Mounting layer
+    <select id="capacitor-layer">
+      <option value="production">Current hull rules</option>
+      <option value="above">Above hull · experiment</option>
+      <option value="below">Below hull · experiment</option>
+    </select></label
+  >
 </div>
 <div class="objects">
-	{["normal", "large"].map((size) => (
-		<figure>
-			<figcaption>
-				{size === "normal" ? "Normal · +85 · mass m" : "Large · +140 · mass 2m"}
-			</figcaption>
-			<canvas
-				width="300"
-				height="150"
-				data-capacitor-object={size}
-				aria-label={`${size} void capacitor, enlarged and flight scale`}
-			/>
-		</figure>
-	))}
+  {["normal", "large"].map((size) => (
+    <figure>
+      <figcaption>
+        {size === "normal" ? "Normal · +85 · mass m" : "Large · +140 · mass 2m"}
+      </figcaption>
+      <canvas
+        width="300"
+        height="150"
+        data-capacitor-object={size}
+        aria-label={`${size} void capacitor, enlarged and flight scale`}
+      />
+    </figure>
+  ))}
 </div>
 <div class="fleet">
-	{["wasp", "scout", "fighter", "corvette"].map((id) => (
-		<article>
-			<h4>{id}</h4>
-			<div class="sizes">
-				{["normal", "large"].map((size) => (
-					<figure>
-						<figcaption>{size}</figcaption>
-						<canvas
-							width="260"
-							height="340"
-							data-capacitor-ship={id}
-							data-size={size}
-							aria-label={`${id} with ${size} capacitor, enlarged and flight scale`}
-						/>
-					</figure>
-				))}
-			</div>
-		</article>
-	))}
+  {["wasp", "scout", "fighter", "corvette"].map((id) => (
+    <article>
+      <h4>{id}</h4>
+      <div class="sizes">
+        {["normal", "large"].map((size) => (
+          <figure>
+            <figcaption>{size}</figcaption>
+            <canvas
+              width="260"
+              height="340"
+              data-capacitor-ship={id}
+              data-size={size}
+              aria-label={`${id} with ${size} capacitor, enlarged and flight scale`}
+            />
+          </figure>
+        ))}
+      </div>
+    </article>
+  ))}
 </div>
 <script>
 import {
-	buildMounts,
-	defaultLoadout,
-	drawBuild,
-	EngineIdSchema,
-	ShipProfileIdSchema,
+  buildMounts,
+  defaultLoadout,
+  drawBuild,
+  EngineIdSchema,
+  ShipProfileIdSchema,
 } from "@void-drift/mode-a";
 
 function capacitor(ctx: CanvasRenderingContext2D, large: boolean) {
-	// Local +x forward, matching production equipment coordinates.
-	const half = large ? 5.7 : 4.3;
-	const depth = large ? 1.8 : 1;
-	function face(points: number[][], color: string) {
-		ctx.beginPath();
-		points.forEach(([x, y], i) => {
-			if (i) ctx.lineTo(x, y);
-			else ctx.moveTo(x, y);
-		});
-		ctx.closePath();
-		ctx.fillStyle = color;
-		ctx.fill();
-	}
-	face(
-		[
-			[-half - 1, -4],
-			[half + 1, -4],
-			[half + 1, 4 + depth],
-			[-half - 1, 4 + depth],
-		],
-		"#304759",
-	);
-	// Broad lattice plates separated by void gaps, no decorative mesh.
-	for (let i = 0; i < 3; i++) {
-		const y = -3.3 + i * 2.5;
-		face(
-			[
-				[-half, y],
-				[half, y],
-				[half, y + 1.3],
-				[-half, y + 1.3],
-			],
-			"#819eae",
-		);
-		face(
-			[
-				[-half, y],
-				[half, y],
-				[half - 0.5, y - 0.5],
-				[-half - 0.5, y - 0.5],
-			],
-			"#d1e5ec",
-		);
-		face(
-			[
-				[-half, y + 1.3],
-				[half, y + 1.3],
-				[half, y + 1.3 + depth * 0.35],
-				[-half, y + 1.3 + depth * 0.35],
-			],
-			"#304759",
-		);
-	}
-	for (const x of [-half - 1, half - 0.2]) {
-		const w = large ? 1.5 : 1.2;
-		face(
-			[
-				[x, -4.1],
-				[x + w, -4.1],
-				[x + w, 4.1],
-				[x, 4.1],
-			],
-			"#cedb17",
-		);
-		face(
-			[
-				[x, -4.1],
-				[x + w, -4.1],
-				[x + w - 0.4, -4.5],
-				[x - 0.4, -4.5],
-			],
-			"#edfc1a",
-		);
-		face(
-			[
-				[x, 4.1],
-				[x + w, 4.1],
-				[x + w, 4.1 + depth],
-				[x, 4.1 + depth],
-			],
-			"#71780d",
-		);
-	}
-	face(
-		[
-			[-1, -4.8],
-			[1, -4.8],
-			[1, -3.3],
-			[-1, -3.3],
-		],
-		"#cedb17",
-	);
+  // Local +x forward, matching production equipment coordinates.
+  const half = large ? 5.7 : 4.3;
+  const depth = large ? 1.8 : 1;
+  function face(points: number[][], color: string) {
+    ctx.beginPath();
+    points.forEach(([x, y], i) => {
+      if (i) ctx.lineTo(x, y);
+      else ctx.moveTo(x, y);
+    });
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+  }
+  face(
+    [
+      [-half - 1, -4],
+      [half + 1, -4],
+      [half + 1, 4 + depth],
+      [-half - 1, 4 + depth],
+    ],
+    "#304759",
+  );
+  // Broad lattice plates separated by void gaps, no decorative mesh.
+  for (let i = 0; i < 3; i++) {
+    const y = -3.3 + i * 2.5;
+    face(
+      [
+        [-half, y],
+        [half, y],
+        [half, y + 1.3],
+        [-half, y + 1.3],
+      ],
+      "#819eae",
+    );
+    face(
+      [
+        [-half, y],
+        [half, y],
+        [half - 0.5, y - 0.5],
+        [-half - 0.5, y - 0.5],
+      ],
+      "#d1e5ec",
+    );
+    face(
+      [
+        [-half, y + 1.3],
+        [half, y + 1.3],
+        [half, y + 1.3 + depth * 0.35],
+        [-half, y + 1.3 + depth * 0.35],
+      ],
+      "#304759",
+    );
+  }
+  for (const x of [-half - 1, half - 0.2]) {
+    const w = large ? 1.5 : 1.2;
+    face(
+      [
+        [x, -4.1],
+        [x + w, -4.1],
+        [x + w, 4.1],
+        [x, 4.1],
+      ],
+      "#cedb17",
+    );
+    face(
+      [
+        [x, -4.1],
+        [x + w, -4.1],
+        [x + w - 0.4, -4.5],
+        [x - 0.4, -4.5],
+      ],
+      "#edfc1a",
+    );
+    face(
+      [
+        [x, 4.1],
+        [x + w, 4.1],
+        [x + w, 4.1 + depth],
+        [x, 4.1 + depth],
+      ],
+      "#71780d",
+    );
+  }
+  face(
+    [
+      [-1, -4.8],
+      [1, -4.8],
+      [1, -3.3],
+      [-1, -3.3],
+    ],
+    "#cedb17",
+  );
 }
 const engine = document.querySelector<HTMLSelectElement>("#capacitor-engine");
 const layer = document.querySelector<HTMLSelectElement>("#capacitor-layer");
 function render() {
-	for (const canvas of document.querySelectorAll<HTMLCanvasElement>(
-		"canvas[data-capacitor-object]",
-	)) {
-		const ctx = canvas.getContext("2d");
-		if (!ctx) continue;
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		for (const [x, y, scale] of [
-			[100, 75, 9],
-			[245, 75, 0.65],
-		]) {
-			ctx.save();
-			ctx.translate(x, y);
-			ctx.rotate(-Math.PI / 2);
-			ctx.scale(scale, scale);
-			capacitor(ctx, canvas.dataset.capacitorObject === "large");
-			ctx.restore();
-		}
-	}
-	for (const canvas of document.querySelectorAll<HTMLCanvasElement>(
-		"canvas[data-capacitor-ship]",
-	)) {
-		const id = ShipProfileIdSchema.parse(canvas.dataset.capacitorShip);
-		const build = defaultLoadout(id);
-		build.hull = build.hull.map(() => null);
-		const e = EngineIdSchema.parse(engine?.value ?? "ion");
-		build.side = e;
-		build.aft = build.aft.map(() => e);
-		const mount = buildMounts(build).find((m) => m.group === "hull");
-		const ctx = canvas.getContext("2d");
-		if (!ctx || !mount) continue;
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		const below =
-			layer?.value === "below" ||
-			(layer?.value === "production" && (id === "wasp" || id === "scout"));
-		for (const [y, scale] of [
-			[140, 2.3],
-			[300, 0.65],
-		]) {
-			const drawPart = () => {
-				ctx.save();
-				ctx.translate(130, y);
-				ctx.rotate(-Math.PI / 2);
-				ctx.scale(scale, scale);
-				ctx.translate(mount.x, mount.y);
-				ctx.rotate(mount.angle);
-				capacitor(ctx, canvas.dataset.size === "large");
-				ctx.restore();
-			};
-			if (below) drawPart();
-			drawBuild(ctx, build, 130, y, -Math.PI / 2, scale);
-			if (!below) drawPart();
-		}
-	}
+  for (const canvas of document.querySelectorAll<HTMLCanvasElement>(
+    "canvas[data-capacitor-object]",
+  )) {
+    const ctx = canvas.getContext("2d");
+    if (!ctx) continue;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const [x, y, scale] of [
+      [100, 75, 9],
+      [245, 75, 0.65],
+    ]) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(-Math.PI / 2);
+      ctx.scale(scale, scale);
+      capacitor(ctx, canvas.dataset.capacitorObject === "large");
+      ctx.restore();
+    }
+  }
+  for (const canvas of document.querySelectorAll<HTMLCanvasElement>(
+    "canvas[data-capacitor-ship]",
+  )) {
+    const id = ShipProfileIdSchema.parse(canvas.dataset.capacitorShip);
+    const build = defaultLoadout(id);
+    build.hull = build.hull.map(() => null);
+    const e = EngineIdSchema.parse(engine?.value ?? "ion");
+    build.side = e;
+    build.aft = build.aft.map(() => e);
+    const mount = buildMounts(build).find((m) => m.group === "hull");
+    const ctx = canvas.getContext("2d");
+    if (!ctx || !mount) continue;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const below =
+      layer?.value === "below" ||
+      (layer?.value === "production" && (id === "wasp" || id === "scout"));
+    for (const [y, scale] of [
+      [140, 2.3],
+      [300, 0.65],
+    ]) {
+      const drawPart = () => {
+        ctx.save();
+        ctx.translate(130, y);
+        ctx.rotate(-Math.PI / 2);
+        ctx.scale(scale, scale);
+        ctx.translate(mount.x, mount.y);
+        ctx.rotate(mount.angle);
+        capacitor(ctx, canvas.dataset.size === "large");
+        ctx.restore();
+      };
+      if (below) drawPart();
+      drawBuild(ctx, build, 130, y, -Math.PI / 2, scale);
+      if (!below) drawPart();
+    }
+  }
 }
 engine?.addEventListener("change", render);
 layer?.addEventListener("change", render);
@@ -219,44 +219,44 @@ render();
 </script>
 <style>
 .controls {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 1.5rem;
-	margin: 1.5rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
 }
 label {
-	display: grid;
-	gap: 0.5rem;
+  display: grid;
+  gap: 0.5rem;
 }
 select {
-	font: inherit;
-	padding: 0.5rem;
-	background: #161820;
-	color: inherit;
+  font: inherit;
+  padding: 0.5rem;
+  background: #161820;
+  color: inherit;
 }
 .objects,
 .fleet {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
-	gap: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 1.5rem;
 }
 .sizes {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 figure {
-	margin: 0;
-	text-align: center;
+  margin: 0;
+  text-align: center;
 }
 canvas {
-	width: 100%;
-	height: auto;
+  width: 100%;
+  height: auto;
 }
 h4,
 figcaption {
-	text-transform: capitalize;
+  text-transform: capitalize;
 }
 article {
-	min-width: 0;
+  min-width: 0;
 }
 </style>

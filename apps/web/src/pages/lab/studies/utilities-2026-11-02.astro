@@ -10,299 +10,299 @@ const study = studies.find((entry) => entry.slug === "utilities-2026-11-02");
 ---
 
 <StudyLayout study={study}>
-	<aside aria-label="Study closure">
-		<h2>Closed / Failed study</h2>
-		<p>
-			Closed on 2 November 2026 by the designer: “Let's file this study as
-			completely failed and closed loop.” Status is stopped during exploration.
-			No utility design was accepted for implementation. Retained examples and
-			preferences are evidence of the exploration, not a successful design
-			conclusion.
-		</p>
-		<p>
-			The closure evidence is recorded in
-			<code>docs/loop-evidence/2026-11-02-utilities-failed-study.md</code>. No
-			causal lesson or standing process change is adopted by this closure.
-		</p>
-	</aside>
-	<section>
-		<details>
-			<summary>01 / Equipment that makes survival legible</summary>
-			<p>
-				A ship returning from a dangerous pass may have energy left but a
-				damaged hull—or an intact hull and almost no power. Utilities should
-				make those different needs understandable through both their effects and
-				their physical presence. Every chassis has internal energy storage that
-				is never visible. The visible storage studied here is optional extra
-				capacity. Every ship has, depending on ship type, a solar charger or a
-				gravity charger. These are givens for this study; gravity charging is a
-				new device to investigate.
-			</p>
-			<p>
-				The four roles are energy storage, solar charging, gravity charging and
-				automatic repair. Storage carries a reserve; chargers replenish it;
-				repair restores damage. The investigation must establish what each adds
-				to flying: when charging is earned, how the two sources differ, and
-				whether repair competes for energy. Current ships include a battery and
-				solar coil outside their optional slots; that implementation is a
-				starting point, not a decision about how the new equipment must be
-				mounted.
-			</p>
-			<p>
-				This cycle proposes to settle a coherent role and low-poly identity for
-				each utility, including how it reads in different slots above and below
-				the hull. Like engines, these should be convincing objects with
-				distinctive silhouettes and a few flat planes. Equipment may be compact
-				or bulky enough to obscure parts of the chassis and change its
-				character: a huge energy store could become the feature the ship is
-				known for. Neither restraint nor bulk is settled. Under-hull mounting
-				also raises the question of what remains visible from above. Builder
-				views and flight scale must both inform the comparison. Exact balance
-				values and final chassis assignments remain outside this first decision.
-			</p>
-			<p>
-				Animation is part of the inquiry. A solar charger might unfold wings
-				near the sun, a gravity charger might respond visibly inside a gravity
-				well, and an empty energy store might blink. These are possibilities,
-				not chosen behaviors. Movement could make equipment feel alive while
-				revealing its state; the study should explore that appeal alongside
-				shape and placement.
-			</p>
-		</details>
-	</section>
-	<section>
-		<h2>02 / Extra storage as a visible object</h2>
-		<details>
-			<summary>02.1 / Light and Heavy, above and below</summary>
-			<p>
-				Reviewed: this polygonal battery treatment does not fit the game’s
-				aesthetic. The case and amber-cell design is rejected; the comparison is
-				retained as evidence, not a direction to refine. Optional extra storage,
-				two possible sizes, and permission to change the ship’s character remain
-				part of the inquiry.
-			</p>
-			<p>
-				A chamfered armored case with recessed amber cells proposes a common
-				storage identity. Light carries two cells; Heavy broadens into a
-				three-cell block. Neither has an engine nozzle. The capacity labels are
-				comparison hypotheses relative to the invisible chassis battery; mass is
-				only ordered, not tuned.
-			</p>
-			<p>
-				This static fitting sketch uses the production Fighter hull geometry,
-				with engines omitted to isolate occlusion. Both modules share the same
-				illustrative mount at local (−8, 10). Above and below change drawing
-				order only; these are proposed placements, not validated production
-				slots. The underside module is honestly hidden where the hull covers it.
-				The isolated view explains the concealed object.
-			</p>
-			<UtilityStorageComparison />
-			<p>
-				The comparison exposed placement as a design concern alongside the
-				device itself. The designer identified Fighter utility slots as needing
-				reconsideration after engine-slot changes; moving one forward is a
-				possibility, not a settled layout. This fixture omitted engines and used
-				an illustrative mount, so it cannot establish production clearances or
-				the correct replacement positions. Later fitting comparisons must
-				include the actual engine arrangement and slot definitions.
-			</p>
-		</details>
+  <aside aria-label="Study closure">
+    <h2>Closed / Failed study</h2>
+    <p>
+      Closed on 2 November 2026 by the designer: “Let's file this study as
+      completely failed and closed loop.” Status is stopped during exploration.
+      No utility design was accepted for implementation. Retained examples and
+      preferences are evidence of the exploration, not a successful design
+      conclusion.
+    </p>
+    <p>
+      The closure evidence is recorded in
+      <code>docs/loop-evidence/2026-11-02-utilities-failed-study.md</code>. No
+      causal lesson or standing process change is adopted by this closure.
+    </p>
+  </aside>
+  <section>
+    <details>
+      <summary>01 / Equipment that makes survival legible</summary>
+      <p>
+        A ship returning from a dangerous pass may have energy left but a
+        damaged hull—or an intact hull and almost no power. Utilities should
+        make those different needs understandable through both their effects and
+        their physical presence. Every chassis has internal energy storage that
+        is never visible. The visible storage studied here is optional extra
+        capacity. Every ship has, depending on ship type, a solar charger or a
+        gravity charger. These are givens for this study; gravity charging is a
+        new device to investigate.
+      </p>
+      <p>
+        The four roles are energy storage, solar charging, gravity charging and
+        automatic repair. Storage carries a reserve; chargers replenish it;
+        repair restores damage. The investigation must establish what each adds
+        to flying: when charging is earned, how the two sources differ, and
+        whether repair competes for energy. Current ships include a battery and
+        solar coil outside their optional slots; that implementation is a
+        starting point, not a decision about how the new equipment must be
+        mounted.
+      </p>
+      <p>
+        This cycle proposes to settle a coherent role and low-poly identity for
+        each utility, including how it reads in different slots above and below
+        the hull. Like engines, these should be convincing objects with
+        distinctive silhouettes and a few flat planes. Equipment may be compact
+        or bulky enough to obscure parts of the chassis and change its
+        character: a huge energy store could become the feature the ship is
+        known for. Neither restraint nor bulk is settled. Under-hull mounting
+        also raises the question of what remains visible from above. Builder
+        views and flight scale must both inform the comparison. Exact balance
+        values and final chassis assignments remain outside this first decision.
+      </p>
+      <p>
+        Animation is part of the inquiry. A solar charger might unfold wings
+        near the sun, a gravity charger might respond visibly inside a gravity
+        well, and an empty energy store might blink. These are possibilities,
+        not chosen behaviors. Movement could make equipment feel alive while
+        revealing its state; the study should explore that appeal alongside
+        shape and placement.
+      </p>
+    </details>
+  </section>
+  <section>
+    <h2>02 / Extra storage as a visible object</h2>
+    <details>
+      <summary>02.1 / Light and Heavy, above and below</summary>
+      <p>
+        Reviewed: this polygonal battery treatment does not fit the game’s
+        aesthetic. The case and amber-cell design is rejected; the comparison is
+        retained as evidence, not a direction to refine. Optional extra storage,
+        two possible sizes, and permission to change the ship’s character remain
+        part of the inquiry.
+      </p>
+      <p>
+        A chamfered armored case with recessed amber cells proposes a common
+        storage identity. Light carries two cells; Heavy broadens into a
+        three-cell block. Neither has an engine nozzle. The capacity labels are
+        comparison hypotheses relative to the invisible chassis battery; mass is
+        only ordered, not tuned.
+      </p>
+      <p>
+        This static fitting sketch uses the production Fighter hull geometry,
+        with engines omitted to isolate occlusion. Both modules share the same
+        illustrative mount at local (−8, 10). Above and below change drawing
+        order only; these are proposed placements, not validated production
+        slots. The underside module is honestly hidden where the hull covers it.
+        The isolated view explains the concealed object.
+      </p>
+      <UtilityStorageComparison />
+      <p>
+        The comparison exposed placement as a design concern alongside the
+        device itself. The designer identified Fighter utility slots as needing
+        reconsideration after engine-slot changes; moving one forward is a
+        possibility, not a settled layout. This fixture omitted engines and used
+        an illustrative mount, so it cannot establish production clearances or
+        the correct replacement positions. Later fitting comparisons must
+        include the actual engine arrangement and slot definitions.
+      </p>
+    </details>
 
-		<details>
-			<summary>02.2 / Shape language before another fitting</summary>
-			<p>
-				The next inquiry is aesthetic discussion before further variants.
-				Engines offer a reference: charcoal bodies with a clear light at the
-				outlet. Utilities need an equally deliberate relationship between body,
-				silhouette and light, without assuming that a familiar battery icon
-				belongs in this world. Whether their forms should suggest grounded
-				machinery remains open. They must be identifiable when small and
-				compelling when enlarged.
-			</p>
-			<p>
-				The agreed direction is industrial machinery. Utilities may be less
-				clean and streamlined than other ship elements: their construction can
-				have a physical presence of its own. Industrial does not mean
-				deliberately ugly. The designer imagines guns as more pointed objects;
-				utilities have room for a different character. That comparison is an
-				aesthetic reference, not a settled weapon design.
-			</p>
-			<p>
-				Dark machinery is not an agreed requirement. Color and material
-				treatment remain open and will develop with the forms. As a next shape
-				hypothesis, a storage device could expose a few substantial cells,
-				clamps or a retaining frame, making its construction legible without
-				relying on tiny detail. No particular construction is selected yet. New
-				bodies, animations and slot changes remain unresolved; this sketch
-				establishes neither handling nor charging behavior.
-			</p>
-		</details>
+    <details>
+      <summary>02.2 / Shape language before another fitting</summary>
+      <p>
+        The next inquiry is aesthetic discussion before further variants.
+        Engines offer a reference: charcoal bodies with a clear light at the
+        outlet. Utilities need an equally deliberate relationship between body,
+        silhouette and light, without assuming that a familiar battery icon
+        belongs in this world. Whether their forms should suggest grounded
+        machinery remains open. They must be identifiable when small and
+        compelling when enlarged.
+      </p>
+      <p>
+        The agreed direction is industrial machinery. Utilities may be less
+        clean and streamlined than other ship elements: their construction can
+        have a physical presence of its own. Industrial does not mean
+        deliberately ugly. The designer imagines guns as more pointed objects;
+        utilities have room for a different character. That comparison is an
+        aesthetic reference, not a settled weapon design.
+      </p>
+      <p>
+        Dark machinery is not an agreed requirement. Color and material
+        treatment remain open and will develop with the forms. As a next shape
+        hypothesis, a storage device could expose a few substantial cells,
+        clamps or a retaining frame, making its construction legible without
+        relying on tiny detail. No particular construction is selected yet. New
+        bodies, animations and slot changes remain unresolved; this sketch
+        establishes neither handling nor charging behavior.
+      </p>
+    </details>
 
-		<details>
-			<summary>02.3 / Two industrial constructions</summary>
-			<p>
-				These isolated sketches compare an exposed clamped assembly with an open
-				retaining frame around the same three cells. Both use identical
-				provisional steel tones and small muted status marks; neither palette
-				nor cell geometry is accepted. Broad structural parts, gaps and stepped
-				ends carry the industrial character rather than surface decoration.
-			</p>
-			<StorageConstruction />
-			<p>
-				The small samples test only silhouette and grouping at 32 pixels, not
-				actual flight visibility. These are construction alternatives, not Light
-				and Heavy sizes. Ship fitting, actual slot clearances, capacity, weight
-				and animation are deliberately unresolved in this comparison. The
-				rejected fitted example above remains unchanged.
-			</p>
-		</details>
+    <details>
+      <summary>02.3 / Two industrial constructions</summary>
+      <p>
+        These isolated sketches compare an exposed clamped assembly with an open
+        retaining frame around the same three cells. Both use identical
+        provisional steel tones and small muted status marks; neither palette
+        nor cell geometry is accepted. Broad structural parts, gaps and stepped
+        ends carry the industrial character rather than surface decoration.
+      </p>
+      <StorageConstruction />
+      <p>
+        The small samples test only silhouette and grouping at 32 pixels, not
+        actual flight visibility. These are construction alternatives, not Light
+        and Heavy sizes. Ship fitting, actual slot clearances, capacity, weight
+        and animation are deliberately unresolved in this comparison. The
+        rejected fitted example above remains unchanged.
+      </p>
+    </details>
 
-		<details>
-			<summary>02.4 / Exposed machinery, nine small-cell forms</summary>
-			<p>
-				A from 02.3 is the preferred direction because the machinery itself is
-				visible. The next forms have no casing or surrounding protective frame:
-				think of exposed equipment attached to a space station. Small mounting
-				feet, connectors and working structures may remain; an enclosure should
-				not become the object.
-			</p>
-			<p>
-				These nine isolated construction sketches explore a single small
-				extra-storage device. A tank, paired vessels, a coil canted at 60°, and
-				other exposed assemblies provide different silhouettes. Cell count does
-				not set capacity here. All use the same provisional materials, viewing
-				scale and static lighting; color, energy technology and physical
-				operation remain undecided.
-			</p>
-			<ExposedStorageNine />
-			<p>
-				The 32-pixel samples compare silhouette only. These are not fitted ships
-				or verified flight-scale renders. Placement with the actual engines,
-				Light/Heavy sizing, mass, capacity and animation follow after a useful
-				construction direction emerges. Prior examples remain preserved.
-			</p>
-		</details>
+    <details>
+      <summary>02.4 / Exposed machinery, nine small-cell forms</summary>
+      <p>
+        A from 02.3 is the preferred direction because the machinery itself is
+        visible. The next forms have no casing or surrounding protective frame:
+        think of exposed equipment attached to a space station. Small mounting
+        feet, connectors and working structures may remain; an enclosure should
+        not become the object.
+      </p>
+      <p>
+        These nine isolated construction sketches explore a single small
+        extra-storage device. A tank, paired vessels, a coil canted at 60°, and
+        other exposed assemblies provide different silhouettes. Cell count does
+        not set capacity here. All use the same provisional materials, viewing
+        scale and static lighting; color, energy technology and physical
+        operation remain undecided.
+      </p>
+      <ExposedStorageNine />
+      <p>
+        The 32-pixel samples compare silhouette only. These are not fitted ships
+        or verified flight-scale renders. Placement with the actual engines,
+        Light/Heavy sizing, mass, capacity and animation follow after a useful
+        construction direction emerges. Prior examples remain preserved.
+      </p>
+    </details>
 
-		<details>
-			<summary>02.5 / Storage layers with visible machinery</summary>
-			<p>
-				The pancake stack is close, but neither its enlarged nor small
-				appearance is settled. The discarded first 02.5 lost the feeling of
-				multiple working parts. This new comparison returns to separated,
-				layered containers and investigates their construction: top hardware,
-				contacts, recesses, connectors and distinct plate materials.
-			</p>
-			<p>
-				The open helix and unequal pair from 02.4 have useful industrial
-				character at small size, but do not clearly suggest an energy reserve to
-				the designer. Their construction informs a few variants here while the
-				storage layers remain the main body. Deep black, industrial yellow and
-				the shared lime-yellow are exploratory accents; no palette or new color
-				role is adopted.
-			</p>
-			<TechnicalStorageNine />
-			<p>
-				All nine use three layers at the same scale. Shapes and color treatments
-				vary together to explore character, not to isolate a single cause. The
-				32-pixel samples remain a rough legibility check, not proof of in-game
-				readability. Slots, mass, capacity and final Light/Heavy sizes remain
-				unresolved. The later direction below supersedes earlier storage-state
-				and animation ideas.
-			</p>
+    <details>
+      <summary>02.5 / Storage layers with visible machinery</summary>
+      <p>
+        The pancake stack is close, but neither its enlarged nor small
+        appearance is settled. The discarded first 02.5 lost the feeling of
+        multiple working parts. This new comparison returns to separated,
+        layered containers and investigates their construction: top hardware,
+        contacts, recesses, connectors and distinct plate materials.
+      </p>
+      <p>
+        The open helix and unequal pair from 02.4 have useful industrial
+        character at small size, but do not clearly suggest an energy reserve to
+        the designer. Their construction informs a few variants here while the
+        storage layers remain the main body. Deep black, industrial yellow and
+        the shared lime-yellow are exploratory accents; no palette or new color
+        role is adopted.
+      </p>
+      <TechnicalStorageNine />
+      <p>
+        All nine use three layers at the same scale. Shapes and color treatments
+        vary together to explore character, not to isolate a single cause. The
+        32-pixel samples remain a rough legibility check, not proof of in-game
+        readability. Slots, mass, capacity and final Light/Heavy sizes remain
+        unresolved. The later direction below supersedes earlier storage-state
+        and animation ideas.
+      </p>
 
-			<p>
-				03 / External bus and 07 / Insulated layers are promising; 09 / Contact
-				shoes also works in the small image. These are qualities to carry
-				forward, not accepted whole designs. Orange is excluded from the storage
-				palette: yellow, brand lime-yellow and an Android-like green remain
-				candidates.
-			</p>
-			<h4>Direction clarified / engineered energy lattices</h4>
-			<p>
-				Storage means science-fiction energy held in lattices, surfaces or
-				fields, rather than an electrical battery. Hexagonal lattice forms fit
-				that idea, but their exact arrangement and construction remain open. The
-				equipment is deliberately engineered: rugged ship hardware or exposed
-				scientific apparatus, never improvised or haphazard.
-			</p>
-			<p>
-				Exposed machinery must still look substantial enough to belong on a
-				battleship and plausibly withstand a collision. This does not reverse
-				the preference for visible construction without a protective enclosure.
-				Structural members and working surfaces should convey strength
-				themselves.
-			</p>
-			<p>
-				The current storage direction has no visible charge-state indicators,
-				blinking lights or animation. Remaining energy should not be disclosed
-				through the exterior to an opponent. Earlier empty-state and
-				animated-storage proposals are superseded; this does not settle
-				animation for chargers or repair equipment. Yellow, brand lime-yellow
-				and green remain material or identity candidates, not charge gauges.
-			</p>
-		</details>
-		<details>
-			<summary>02.6 / Unexecuted recovery proposal</summary>
-			<p>
-				The two attempts at 02.6 moved away from the useful references.
-				Geometry, viewpoint, proportions and visual language changed together,
-				making earlier judgments difficult to carry forward. Lattices and fields
-				were interpreted as repeated hexagonal shapes before a convincing
-				physical construction had been established. The resulting drawings did
-				not answer the intended design question.
-			</p>
-			<p>
-				The stable references are the exact 02.5 / 03 External bus and 07
-				Insulated layers objects. Their exposed connections, insulation and
-				separate working parts are promising; neither whole object is accepted.
-				09 Contact shoes remains useful specifically for its small-scale
-				appearance. The database-like impression of the repeated tilted slabs is
-				still unresolved.
-			</p>
-			<p>
-				The brief remains exposed, deliberately engineered, substantial
-				science-fiction storage. Working surfaces hold energy; they are not
-				ordinary electrical batteries. No charge display or storage animation is
-				wanted. Yellow and green remain candidates, with orange excluded. These
-				agreements do not prescribe hexagonal holes, a flat lattice icon or a
-				new silhouette.
-			</p>
-			<h4>Next investigation / one construction change</h4>
-			<p>
-				Before another drawing, describe the apparent construction of 03 and 07
-				and identify one physical relationship worth varying. A useful starting
-				hypothesis is the relationship between each working surface, its edge
-				thickness and its connection to the neighboring surface. Choose one of
-				those relationships for a small comparison, retaining the reference's
-				other geometry, viewpoint, scale and colors.
-			</p>
-			<p>
-				The next example should show its unchanged reference beside a bounded
-				variation, so the effect can be judged directly. Another nine-option
-				grid is deferred until that comparison establishes a useful direction.
-				This section records a discussion reset, not a delivered visual
-				solution. Rendering correctness and build checks do not establish design
-				fidelity.
-			</p>
-		</details>
-	</section>
-	<section>
-		<h2>03–04 / Not reached</h2>
-		<p>
-			The study stopped without a readiness assessment or delivery scope. The
-			recovery proposal above was not executed before closure.
-		</p>
-	</section>
+      <p>
+        03 / External bus and 07 / Insulated layers are promising; 09 / Contact
+        shoes also works in the small image. These are qualities to carry
+        forward, not accepted whole designs. Orange is excluded from the storage
+        palette: yellow, brand lime-yellow and an Android-like green remain
+        candidates.
+      </p>
+      <h4>Direction clarified / engineered energy lattices</h4>
+      <p>
+        Storage means science-fiction energy held in lattices, surfaces or
+        fields, rather than an electrical battery. Hexagonal lattice forms fit
+        that idea, but their exact arrangement and construction remain open. The
+        equipment is deliberately engineered: rugged ship hardware or exposed
+        scientific apparatus, never improvised or haphazard.
+      </p>
+      <p>
+        Exposed machinery must still look substantial enough to belong on a
+        battleship and plausibly withstand a collision. This does not reverse
+        the preference for visible construction without a protective enclosure.
+        Structural members and working surfaces should convey strength
+        themselves.
+      </p>
+      <p>
+        The current storage direction has no visible charge-state indicators,
+        blinking lights or animation. Remaining energy should not be disclosed
+        through the exterior to an opponent. Earlier empty-state and
+        animated-storage proposals are superseded; this does not settle
+        animation for chargers or repair equipment. Yellow, brand lime-yellow
+        and green remain material or identity candidates, not charge gauges.
+      </p>
+    </details>
+    <details>
+      <summary>02.6 / Unexecuted recovery proposal</summary>
+      <p>
+        The two attempts at 02.6 moved away from the useful references.
+        Geometry, viewpoint, proportions and visual language changed together,
+        making earlier judgments difficult to carry forward. Lattices and fields
+        were interpreted as repeated hexagonal shapes before a convincing
+        physical construction had been established. The resulting drawings did
+        not answer the intended design question.
+      </p>
+      <p>
+        The stable references are the exact 02.5 / 03 External bus and 07
+        Insulated layers objects. Their exposed connections, insulation and
+        separate working parts are promising; neither whole object is accepted.
+        09 Contact shoes remains useful specifically for its small-scale
+        appearance. The database-like impression of the repeated tilted slabs is
+        still unresolved.
+      </p>
+      <p>
+        The brief remains exposed, deliberately engineered, substantial
+        science-fiction storage. Working surfaces hold energy; they are not
+        ordinary electrical batteries. No charge display or storage animation is
+        wanted. Yellow and green remain candidates, with orange excluded. These
+        agreements do not prescribe hexagonal holes, a flat lattice icon or a
+        new silhouette.
+      </p>
+      <h4>Next investigation / one construction change</h4>
+      <p>
+        Before another drawing, describe the apparent construction of 03 and 07
+        and identify one physical relationship worth varying. A useful starting
+        hypothesis is the relationship between each working surface, its edge
+        thickness and its connection to the neighboring surface. Choose one of
+        those relationships for a small comparison, retaining the reference's
+        other geometry, viewpoint, scale and colors.
+      </p>
+      <p>
+        The next example should show its unchanged reference beside a bounded
+        variation, so the effect can be judged directly. Another nine-option
+        grid is deferred until that comparison establishes a useful direction.
+        This section records a discussion reset, not a delivered visual
+        solution. Rendering correctness and build checks do not establish design
+        fidelity.
+      </p>
+    </details>
+  </section>
+  <section>
+    <h2>03–04 / Not reached</h2>
+    <p>
+      The study stopped without a readiness assessment or delivery scope. The
+      recovery proposal above was not executed before closure.
+    </p>
+  </section>
 </StudyLayout>
 
 <style>
 summary {
-	cursor: pointer;
-	font-weight: 600;
-	padding-block: var(--spacing-md);
+  cursor: pointer;
+  font-weight: 600;
+  padding-block: var(--spacing-md);
 }
 details {
-	border-bottom: var(--flight-border);
-	margin-block: var(--spacing-md);
+  border-bottom: var(--flight-border);
+  margin-block: var(--spacing-md);
 }
 </style>

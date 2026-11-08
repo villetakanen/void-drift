@@ -6,28 +6,28 @@ import ShipTuning from "./ShipTuning.svelte";
 // scrolled to. Pass the study's configuration document; see
 // docs/specs/motion-instrument.md.
 interface Props {
-	config: unknown;
-	label?: string;
+  config: unknown;
+  label?: string;
 }
 const { config, label } = Astro.props;
 ---
 
 <div class="instrument-embed">
-	<ShipTuning client:visible {config} {label} />
+  <ShipTuning client:visible {config} {label} />
 </div>
 
 <style is:global>
 /* A page holding the instrument snaps to it while scrolling past. */
 html:has(.instrument-embed) {
-	scroll-snap-type: y proximity;
-	overflow-x: clip;
+  scroll-snap-type: y proximity;
+  overflow-x: clip;
 }
 </style>
 <style>
 .instrument-embed {
-	width: 100vw;
-	height: 100svh;
-	margin-inline: calc(50% - 50vw);
-	scroll-snap-align: center;
+  width: 100vw;
+  height: 100svh;
+  margin-inline: calc(50% - 50vw);
+  scroll-snap-align: center;
 }
 </style>

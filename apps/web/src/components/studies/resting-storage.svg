@@ -1,42 +1,42 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-30 -30 60 60">
-	<title>Resting storage</title>
-	<g>
-		<polygon
-			points="-8,-11 -7,-12 -2,-12 -1,-11 -1,12 -8,12"
-			fill="#304759"
-		></polygon>
-		<polygon points="-8,-11 -7,-12 -7,11 -8,12" fill="#d1e5ec"></polygon>
-		<polygon points="-7,-12 -2,-12 -2,11 -7,11" fill="#7894a4"></polygon>
-		<polygon
-			points="1,-11 2,-12 7,-12 8,-11 8,12 1,12"
-			fill="#304759"
-		></polygon>
-		<polygon points="1,-11 2,-12 2,11 1,12" fill="#d1e5ec"></polygon>
-		<polygon points="2,-12 7,-12 7,11 2,11" fill="#7894a4"></polygon>
-		<polygon
-			points="-10,-7 -9,-8 9,-8 10,-7 10,-4 -10,-4"
-			fill="var(--family-accent)"
-			style="filter:brightness(.55)"
-		></polygon>
-		<polygon
-			points="-10,-7 -9,-8 -9,-5 -10,-4"
-			fill="var(--family-accent)"
-			style="filter:brightness(1.15)"
-		></polygon>
-		<polygon
-			points="-9,-8 9,-8 9,-5 -9,-5"
-			fill="var(--family-accent)"
-		></polygon>
-		<polygon
-			points="-10,6 -9,5 9,5 10,6 10,9 -10,9"
-			fill="var(--family-accent)"
-			style="filter:brightness(.55)"
-		></polygon>
-		<polygon
-			points="-10,6 -9,5 -9,8 -10,9"
-			fill="var(--family-accent)"
-			style="filter:brightness(1.15)"
-		></polygon>
-		<polygon points="-9,5 9,5 9,8 -9,8" fill="var(--family-accent)"></polygon>
-	</g>
+  <title>Resting storage</title>
+  <g>
+    <polygon
+      points="-8,-11 -7,-12 -2,-12 -1,-11 -1,12 -8,12"
+      fill="#304759"
+    ></polygon>
+    <polygon points="-8,-11 -7,-12 -7,11 -8,12" fill="#d1e5ec"></polygon>
+    <polygon points="-7,-12 -2,-12 -2,11 -7,11" fill="#7894a4"></polygon>
+    <polygon
+      points="1,-11 2,-12 7,-12 8,-11 8,12 1,12"
+      fill="#304759"
+    ></polygon>
+    <polygon points="1,-11 2,-12 2,11 1,12" fill="#d1e5ec"></polygon>
+    <polygon points="2,-12 7,-12 7,11 2,11" fill="#7894a4"></polygon>
+    <polygon
+      points="-10,-7 -9,-8 9,-8 10,-7 10,-4 -10,-4"
+      fill="var(--family-accent)"
+      style="filter:brightness(.55)"
+    ></polygon>
+    <polygon
+      points="-10,-7 -9,-8 -9,-5 -10,-4"
+      fill="var(--family-accent)"
+      style="filter:brightness(1.15)"
+    ></polygon>
+    <polygon
+      points="-9,-8 9,-8 9,-5 -9,-5"
+      fill="var(--family-accent)"
+    ></polygon>
+    <polygon
+      points="-10,6 -9,5 9,5 10,6 10,9 -10,9"
+      fill="var(--family-accent)"
+      style="filter:brightness(.55)"
+    ></polygon>
+    <polygon
+      points="-10,6 -9,5 -9,8 -10,9"
+      fill="var(--family-accent)"
+      style="filter:brightness(1.15)"
+    ></polygon>
+    <polygon points="-9,5 9,5 9,8 -9,8" fill="var(--family-accent)"></polygon>
+  </g>
 </svg>

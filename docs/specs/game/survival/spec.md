@@ -53,16 +53,16 @@ Phase 5 transforms the physics sandbox into a complete single-player survival ga
 import { z } from "zod";
 
 export const ResourcesSchema = z.object({
-	hull: z.number().min(0).max(100), // Percentage (100% = full health)
-	power: z.number().min(0).max(100), // Percentage (100% = full battery)
+  hull: z.number().min(0).max(100), // Percentage (100% = full health)
+  power: z.number().min(0).max(100), // Percentage (100% = full battery)
 });
 
 export const GameStateSchema = z.object({
-	status: z.enum(["MENU", "PLAYING", "GAME_OVER"]),
-	startTime: z.number().nullable(), // Unix timestamp (ms)
-	elapsedTime: z.number(), // Seconds (float)
-	resources: ResourcesSchema,
-	deathCause: z.enum(["STAR", "HULL", "POWER"]).nullable(),
+  status: z.enum(["MENU", "PLAYING", "GAME_OVER"]),
+  startTime: z.number().nullable(), // Unix timestamp (ms)
+  elapsedTime: z.number(), // Seconds (float)
+  resources: ResourcesSchema,
+  deathCause: z.enum(["STAR", "HULL", "POWER"]).nullable(),
 });
 
 export type GameState = z.infer<typeof GameStateSchema>;
@@ -97,15 +97,15 @@ MENU ──[first input]──> PLAYING ──[death]──> GAME_OVER ──[re
 ```typescript
 // Zone radii and rates are config params, not hardcoded
 const {
-	POWER_ZONE_1_RADIUS,
-	POWER_ZONE_2_RADIUS,
-	POWER_ZONE_3_RADIUS,
-	POWER_REGEN_ZONE_1,
-	POWER_REGEN_ZONE_2,
-	POWER_REGEN_ZONE_3,
-	HULL_BURN_ZONE_1,
-	HULL_BURN_ZONE_2,
-	HULL_BURN_ZONE_3,
+  POWER_ZONE_1_RADIUS,
+  POWER_ZONE_2_RADIUS,
+  POWER_ZONE_3_RADIUS,
+  POWER_REGEN_ZONE_1,
+  POWER_REGEN_ZONE_2,
+  POWER_REGEN_ZONE_3,
+  HULL_BURN_ZONE_1,
+  HULL_BURN_ZONE_2,
+  HULL_BURN_ZONE_3,
 } = SURVIVAL_CONFIG;
 
 const distanceToSun = Math.hypot(ship.x - sun.x, ship.y - sun.y);
@@ -115,21 +115,21 @@ let basePowerRegen = 0;
 let baseHullBurn = 0;
 
 if (distanceToSun < POWER_ZONE_1_RADIUS) {
-	// ZONE 1: High Risk / High Reward
-	basePowerRegen = POWER_REGEN_ZONE_1;
-	baseHullBurn = HULL_BURN_ZONE_1;
+  // ZONE 1: High Risk / High Reward
+  basePowerRegen = POWER_REGEN_ZONE_1;
+  baseHullBurn = HULL_BURN_ZONE_1;
 } else if (distanceToSun < POWER_ZONE_2_RADIUS) {
-	// ZONE 2: Medium Risk / Medium Reward
-	basePowerRegen = POWER_REGEN_ZONE_2;
-	baseHullBurn = HULL_BURN_ZONE_2;
+  // ZONE 2: Medium Risk / Medium Reward
+  basePowerRegen = POWER_REGEN_ZONE_2;
+  baseHullBurn = HULL_BURN_ZONE_2;
 } else if (distanceToSun < POWER_ZONE_3_RADIUS) {
-	// ZONE 3: Low Risk / Low Reward
-	basePowerRegen = POWER_REGEN_ZONE_3;
-	baseHullBurn = HULL_BURN_ZONE_3;
+  // ZONE 3: Low Risk / Low Reward
+  basePowerRegen = POWER_REGEN_ZONE_3;
+  baseHullBurn = HULL_BURN_ZONE_3;
 } else {
-	// ZONE 4: No refuel, no burn (gravity only)
-	basePowerRegen = 0;
-	baseHullBurn = 0;
+  // ZONE 4: No refuel, no burn (gravity only)
+  basePowerRegen = 0;
+  baseHullBurn = 0;
 }
 
 // Apply sun type multipliers (see star_mechanics.md for SUN_CONFIG)
@@ -197,29 +197,29 @@ import type { Ship, Star } from "@void-drift/core";
 import type { GameState, DeathCause } from "./schemas/game-state";
 
 function checkDeath(
-	state: GameState,
-	ship: Ship,
-	sun: Star,
+  state: GameState,
+  ship: Ship,
+  sun: Star,
 ): DeathCause | null {
-	// Priority order matters (star > hull > fuel)
+  // Priority order matters (star > hull > fuel)
 
-	// 1. Star contact (instant death)
-	const distanceToSun = Math.hypot(ship.x - sun.x, ship.y - sun.y);
-	if (distanceToSun < sun.radius) {
-		return "STAR";
-	}
+  // 1. Star contact (instant death)
+  const distanceToSun = Math.hypot(ship.x - sun.x, ship.y - sun.y);
+  if (distanceToSun < sun.radius) {
+    return "STAR";
+  }
 
-	// 2. Hull depletion
-	if (state.resources.hull <= 0) {
-		return "HULL";
-	}
+  // 2. Hull depletion
+  if (state.resources.hull <= 0) {
+    return "HULL";
+  }
 
-	// 3. Power depletion (life support failure)
-	if (state.resources.power <= 0) {
-		return "POWER";
-	}
+  // 3. Power depletion (life support failure)
+  if (state.resources.power <= 0) {
+    return "POWER";
+  }
 
-	return null;
+  return null;
 }
 ```
 
@@ -241,18 +241,18 @@ function checkDeath(
 let hasStarted = false;
 
 function handleInput(state: GameState) {
-	if (state.status === "MENU" && !hasStarted) {
-		state.status = "PLAYING";
-		state.startTime = Date.now();
-		hasStarted = true;
-	}
+  if (state.status === "MENU" && !hasStarted) {
+    state.status = "PLAYING";
+    state.startTime = Date.now();
+    hasStarted = true;
+  }
 }
 
 // Update elapsed time every frame
 function updateTimer(state: GameState) {
-	if (state.status === "PLAYING" && state.startTime) {
-		state.elapsedTime = (Date.now() - state.startTime) / 1000; // Convert to seconds
-	}
+  if (state.status === "PLAYING" && state.startTime) {
+    state.elapsedTime = (Date.now() - state.startTime) / 1000; // Convert to seconds
+  }
 }
 ```
 
@@ -275,7 +275,7 @@ function updateTimer(state: GameState) {
 import { z } from "zod";
 
 export const SettingsSchema = z.object({
-	invertControls: z.boolean().default(false),
+  invertControls: z.boolean().default(false),
 });
 
 export type Settings = z.infer<typeof SettingsSchema>;
@@ -283,31 +283,31 @@ export type Settings = z.infer<typeof SettingsSchema>;
 const SETTINGS_KEY = "void-drift:settings";
 
 export function loadSettings(): Settings {
-	if (typeof localStorage === "undefined") {
-		return { invertControls: false };
-	}
+  if (typeof localStorage === "undefined") {
+    return { invertControls: false };
+  }
 
-	try {
-		const stored = localStorage.getItem(SETTINGS_KEY);
-		if (!stored) return { invertControls: false };
+  try {
+    const stored = localStorage.getItem(SETTINGS_KEY);
+    if (!stored) return { invertControls: false };
 
-		const parsed = JSON.parse(stored);
-		return SettingsSchema.parse(parsed);
-	} catch (error) {
-		console.warn("Failed to load settings, using defaults:", error);
-		return { invertControls: false };
-	}
+    const parsed = JSON.parse(stored);
+    return SettingsSchema.parse(parsed);
+  } catch (error) {
+    console.warn("Failed to load settings, using defaults:", error);
+    return { invertControls: false };
+  }
 }
 
 export function saveSettings(settings: Settings): void {
-	if (typeof localStorage === "undefined") return;
+  if (typeof localStorage === "undefined") return;
 
-	try {
-		const validated = SettingsSchema.parse(settings);
-		localStorage.setItem(SETTINGS_KEY, JSON.stringify(validated));
-	} catch (error) {
-		console.error("Failed to save settings:", error);
-	}
+  try {
+    const validated = SettingsSchema.parse(settings);
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(validated));
+  } catch (error) {
+    console.error("Failed to save settings:", error);
+  }
 }
 ```
 
@@ -321,7 +321,7 @@ import Settings from '../components/Settings.svelte';
 ---
 
 <Layout title="Settings - Void Drift">
-	<Settings client:load />
+  <Settings client:load />
 </Layout>
 ```
 
@@ -341,23 +341,23 @@ import Settings from '../components/Settings.svelte';
 </script>
 
 <div class="settings-container">
-	<h1>Settings</h1>
+  <h1>Settings</h1>
 
-	<section class="setting-group">
-		<h2>Controls</h2>
+  <section class="setting-group">
+    <h2>Controls</h2>
 
-		<label class="toggle">
-			<input
-				type="checkbox"
-				checked={settings.invertControls}
-				onchange={toggleInvertControls}
-			>
-			<span>Invert Controls</span>
-			<p class="hint">Swap left/right engine controls</p>
-		</label>
-	</section>
+    <label class="toggle">
+      <input
+        type="checkbox"
+        checked={settings.invertControls}
+        onchange={toggleInvertControls}
+      >
+      <span>Invert Controls</span>
+      <p class="hint">Swap left/right engine controls</p>
+    </label>
+  </section>
 
-	<a href="/" class="back-button">Back to Game</a>
+  <a href="/" class="back-button">Back to Game</a>
 </div>
 
 <style>
@@ -410,25 +410,25 @@ import Settings from '../components/Settings.svelte';
 ```typescript
 // packages/core/src/lib/entities/Input.ts
 export function applyControls(
-	ship: Ship,
-	input: InputState,
-	invertControls: boolean,
+  ship: Ship,
+  input: InputState,
+  invertControls: boolean,
 ): void {
-	const leftActive = invertControls ? input.right : input.left;
-	const rightActive = invertControls ? input.left : input.right;
+  const leftActive = invertControls ? input.right : input.left;
+  const rightActive = invertControls ? input.left : input.right;
 
-	if (leftActive && rightActive) {
-		// Both engines = forward thrust
-		ship.thrust(ship.rotation, FULL_THRUST);
-	} else if (leftActive) {
-		// Left engine only = rotate left + partial thrust
-		ship.rotate(-ROTATION_SPEED);
-		ship.thrust(ship.rotation, PARTIAL_THRUST);
-	} else if (rightActive) {
-		// Right engine only = rotate right + partial thrust
-		ship.rotate(ROTATION_SPEED);
-		ship.thrust(ship.rotation, PARTIAL_THRUST);
-	}
+  if (leftActive && rightActive) {
+    // Both engines = forward thrust
+    ship.thrust(ship.rotation, FULL_THRUST);
+  } else if (leftActive) {
+    // Left engine only = rotate left + partial thrust
+    ship.rotate(-ROTATION_SPEED);
+    ship.thrust(ship.rotation, PARTIAL_THRUST);
+  } else if (rightActive) {
+    // Right engine only = rotate right + partial thrust
+    ship.rotate(ROTATION_SPEED);
+    ship.thrust(ship.rotation, PARTIAL_THRUST);
+  }
 }
 ```
 
@@ -481,28 +481,28 @@ export function applyControls(
 </script>
 
 <div class="hud">
-	<div class="hud-top">
-		<div class="logo">∅·Δ</div>
-		<div class="timer">{timeDisplay}</div>
-	</div>
+  <div class="hud-top">
+    <div class="logo">∅·Δ</div>
+    <div class="timer">{timeDisplay}</div>
+  </div>
 
-	<div class="resource-bar">
-		<div
-			class="bar-fill"
-			style:width="{hullPercent}%"
-			style:background-color={hullColor}
-		></div>
-		<span class="bar-label">HULL {hullPercent.toFixed(0)}%</span>
-	</div>
+  <div class="resource-bar">
+    <div
+      class="bar-fill"
+      style:width="{hullPercent}%"
+      style:background-color={hullColor}
+    ></div>
+    <span class="bar-label">HULL {hullPercent.toFixed(0)}%</span>
+  </div>
 
-	<div class="resource-bar">
-		<div
-			class="bar-fill"
-			style:width="{powerPercent}%"
-			style:background-color={powerColor}
-		></div>
-		<span class="bar-label">POWER {powerPercent.toFixed(0)}%</span>
-	</div>
+  <div class="resource-bar">
+    <div
+      class="bar-fill"
+      style:width="{powerPercent}%"
+      style:background-color={powerColor}
+    ></div>
+    <span class="bar-label">POWER {powerPercent.toFixed(0)}%</span>
+  </div>
 </div>
 
 <style>
@@ -607,18 +607,18 @@ export function applyControls(
 </script>
 
 <div class="game-over-overlay">
-	<div class="game-over-card">
-		<h1>MISSION FAILED</h1>
-		<p class="time">
-			You survived <strong>{state.elapsedTime.toFixed(2)}s</strong>
-		</p>
-		<p class="cause">Cause: {message}</p>
+  <div class="game-over-card">
+    <h1>MISSION FAILED</h1>
+    <p class="time">
+      You survived <strong>{state.elapsedTime.toFixed(2)}s</strong>
+    </p>
+    <p class="cause">Cause: {message}</p>
 
-		<div class="actions">
-			<button onclick={onRestart} class="primary">Try Again</button>
-			<a href="/leaderboard" class="secondary">Leaderboard</a>
-		</div>
-	</div>
+    <div class="actions">
+      <button onclick={onRestart} class="primary">Try Again</button>
+      <a href="/leaderboard" class="secondary">Leaderboard</a>
+    </div>
+  </div>
 </div>
 
 <style>
@@ -867,36 +867,36 @@ export function applyControls(
 
 ```typescript
 export const SURVIVAL_CONFIG = {
-	// Starting values
-	INITIAL_HULL: number, // Starting hull percentage
-	INITIAL_POWER: number, // Starting power percentage
+  // Starting values
+  INITIAL_HULL: number, // Starting hull percentage
+  INITIAL_POWER: number, // Starting power percentage
 
-	// Power consumption
-	POWER_CONSUMPTION_RATE: number, // Base drain % per second
-	POWER_CONSUMPTION_SINGLE_THRUST: number, // Drain when one engine active
-	POWER_CONSUMPTION_DUAL_THRUST: number, // Drain when both engines active
+  // Power consumption
+  POWER_CONSUMPTION_RATE: number, // Base drain % per second
+  POWER_CONSUMPTION_SINGLE_THRUST: number, // Drain when one engine active
+  POWER_CONSUMPTION_DUAL_THRUST: number, // Drain when both engines active
 
-	// Sun zones (distance from sun center in pixels)
-	POWER_ZONE_1_RADIUS: number, // High risk/reward zone
-	POWER_ZONE_2_RADIUS: number, // Medium risk/reward zone
-	POWER_ZONE_3_RADIUS: number, // Low risk/reward zone
+  // Sun zones (distance from sun center in pixels)
+  POWER_ZONE_1_RADIUS: number, // High risk/reward zone
+  POWER_ZONE_2_RADIUS: number, // Medium risk/reward zone
+  POWER_ZONE_3_RADIUS: number, // Low risk/reward zone
 
-	// Power regen rates (% per second, before sun type multiplier)
-	POWER_REGEN_ZONE_1: number,
-	POWER_REGEN_ZONE_2: number,
-	POWER_REGEN_ZONE_3: number,
+  // Power regen rates (% per second, before sun type multiplier)
+  POWER_REGEN_ZONE_1: number,
+  POWER_REGEN_ZONE_2: number,
+  POWER_REGEN_ZONE_3: number,
 
-	// Hull damage rates (% per second, before sun type multiplier)
-	HULL_BURN_ZONE_1: number,
-	HULL_BURN_ZONE_2: number,
-	HULL_BURN_ZONE_3: number,
+  // Hull damage rates (% per second, before sun type multiplier)
+  HULL_BURN_ZONE_1: number,
+  HULL_BURN_ZONE_2: number,
+  HULL_BURN_ZONE_3: number,
 
-	// Collision damage
-	PLANET_COLLISION_DAMAGE: number, // % hull per collision
+  // Collision damage
+  PLANET_COLLISION_DAMAGE: number, // % hull per collision
 
-	// Visual thresholds
-	WARNING_THRESHOLD: number, // % for yellow warning state
-	DANGER_THRESHOLD: number, // % for red danger state
+  // Visual thresholds
+  WARNING_THRESHOLD: number, // % for yellow warning state
+  DANGER_THRESHOLD: number, // % for red danger state
 } as const;
 ```
 

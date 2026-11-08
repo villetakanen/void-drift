@@ -1,9 +1,9 @@
 {
-	"version": 1,
-	"gravity": {
-		"falloff": "inverse-square",
-		"cutoff": 50,
-		"sunMass": 5250,
-		"planetMass": { "rock": 2250, "gas": 3500, "moon": 1450 }
-	}
+  "version": 1,
+  "gravity": {
+    "falloff": "inverse-square",
+    "cutoff": 50,
+    "sunMass": 5250,
+    "planetMass": { "rock": 2250, "gas": 3500, "moon": 1450 }
+  }
 }

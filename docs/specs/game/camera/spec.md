@@ -121,22 +121,22 @@ The game canvas is wrapped in a responsive container that:
 **CSS Implementation:**
 ```css
 .viewport-wrapper {
-	width: 100vw;
-	height: 100vh;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .game-container {
-	/* Width/height set dynamically via JS */
-	position: relative;
-	background: var(--color-void);
+  /* Width/height set dynamically via JS */
+  position: relative;
+  background: var(--color-void);
 }
 
 .game-canvas {
-	width: 100%;
-	height: 100%;
+  width: 100%;
+  height: 100%;
 }
 ```
 
@@ -146,13 +146,13 @@ const windowRatio = window.innerWidth / window.innerHeight;
 const targetRatio = 16 / 9;
 
 if (windowRatio > targetRatio) {
-	// Fit to height, letterbox sides
-	height = window.innerHeight;
-	width = height * targetRatio;
+  // Fit to height, letterbox sides
+  height = window.innerHeight;
+  width = height * targetRatio;
 } else {
-	// Fit to width, letterbox top/bottom
-	width = window.innerWidth;
-	height = width / targetRatio;
+  // Fit to width, letterbox top/bottom
+  width = window.innerWidth;
+  height = width / targetRatio;
 }
 ```
 
@@ -238,9 +238,9 @@ At smoothing = 0.1:
 ```typescript
 // Create camera with 16:9 viewport
 const camera = new Camera({
-	viewportWidth: 1920,
-	viewportHeight: 1080,
-	smoothing: 0.1,
+  viewportWidth: 1920,
+  viewportHeight: 1080,
+  smoothing: 0.1,
 });
 
 // Every frame

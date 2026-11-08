@@ -11,109 +11,109 @@
    The element itself is isolated and unclipped, so the shadow can spill. */
 .cut-surface,
 .panel {
-	--_cut: var(--cut-size-md);
-	--_edge-width: 1px;
-	--_edge: var(--color-border);
-	--_fill: var(--color-glass);
-	--_shadow: none;
-	/* How far the shadow may spill outside the shape. */
-	--_spill: 64px;
-	/* The inner corner of a diagonal edge sits 0.414 × its width further in. */
-	--_inner: calc(var(--_cut) + 0.4142 * var(--_edge-width));
-	position: relative;
-	isolation: isolate;
+  --_cut: var(--cut-size-md);
+  --_edge-width: 1px;
+  --_edge: var(--color-border);
+  --_fill: var(--color-glass);
+  --_shadow: none;
+  /* How far the shadow may spill outside the shape. */
+  --_spill: 64px;
+  /* The inner corner of a diagonal edge sits 0.414 × its width further in. */
+  --_inner: calc(var(--_cut) + 0.4142 * var(--_edge-width));
+  position: relative;
+  isolation: isolate;
 }
 .cut-surface::before,
 .panel::before,
 .cut-surface::after,
 .panel::after {
-	content: "";
-	position: absolute;
-	inset: 0;
-	z-index: var(--layer-under);
-	pointer-events: none;
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: var(--layer-under);
+  pointer-events: none;
 }
 .cut-surface::before,
 .panel::before {
-	background: var(--_fill);
-	clip-path: polygon(
-		var(--_cut) 0,
-		100% 0,
-		100% calc(100% - var(--_cut)),
-		calc(100% - var(--_cut)) 100%,
-		0 100%,
-		0 var(--_cut)
-	);
+  background: var(--_fill);
+  clip-path: polygon(
+    var(--_cut) 0,
+    100% 0,
+    100% calc(100% - var(--_cut)),
+    calc(100% - var(--_cut)) 100%,
+    0 100%,
+    0 var(--_cut)
+  );
 }
 .cut-surface::after,
 .panel::after {
-	--_shape-edge:
-		transparent calc(var(--_cut) * 0.7071),
-		var(--_edge) 0 calc(100% - var(--_cut) * 0.7071), transparent 0;
-	--_shape-base:
-		transparent calc(var(--_cut) * 0.7071),
-		var(--color-void) 0 calc(100% - var(--_cut) * 0.7071), transparent 0;
-	background:
-		linear-gradient(135deg, var(--_shape-edge)),
-		linear-gradient(135deg, var(--_shape-base));
-	filter: var(--_shadow);
-	clip-path: polygon(
-		evenodd,
-		calc(-1 * var(--_spill)) calc(-1 * var(--_spill)),
-		calc(100% + var(--_spill)) calc(-1 * var(--_spill)),
-		calc(100% + var(--_spill)) calc(100% + var(--_spill)),
-		calc(-1 * var(--_spill)) calc(100% + var(--_spill)),
-		calc(-1 * var(--_spill)) calc(-1 * var(--_spill)),
-		var(--_inner) var(--_edge-width),
-		calc(100% - var(--_edge-width)) var(--_edge-width),
-		calc(100% - var(--_edge-width)) calc(100% - var(--_inner)),
-		calc(100% - var(--_inner)) calc(100% - var(--_edge-width)),
-		var(--_edge-width) calc(100% - var(--_edge-width)),
-		var(--_edge-width) var(--_inner),
-		var(--_inner) var(--_edge-width),
-		calc(-1 * var(--_spill)) calc(-1 * var(--_spill))
-	);
+  --_shape-edge:
+    transparent calc(var(--_cut) * 0.7071),
+    var(--_edge) 0 calc(100% - var(--_cut) * 0.7071), transparent 0;
+  --_shape-base:
+    transparent calc(var(--_cut) * 0.7071),
+    var(--color-void) 0 calc(100% - var(--_cut) * 0.7071), transparent 0;
+  background:
+    linear-gradient(135deg, var(--_shape-edge)),
+    linear-gradient(135deg, var(--_shape-base));
+  filter: var(--_shadow);
+  clip-path: polygon(
+    evenodd,
+    calc(-1 * var(--_spill)) calc(-1 * var(--_spill)),
+    calc(100% + var(--_spill)) calc(-1 * var(--_spill)),
+    calc(100% + var(--_spill)) calc(100% + var(--_spill)),
+    calc(-1 * var(--_spill)) calc(100% + var(--_spill)),
+    calc(-1 * var(--_spill)) calc(-1 * var(--_spill)),
+    var(--_inner) var(--_edge-width),
+    calc(100% - var(--_edge-width)) var(--_edge-width),
+    calc(100% - var(--_edge-width)) calc(100% - var(--_inner)),
+    calc(100% - var(--_inner)) calc(100% - var(--_edge-width)),
+    var(--_edge-width) calc(100% - var(--_edge-width)),
+    var(--_edge-width) var(--_inner),
+    var(--_inner) var(--_edge-width),
+    calc(-1 * var(--_spill)) calc(-1 * var(--_spill))
+  );
 }
 
 /* The panel: elevation 2 on the console form (cut lg, 1px border role, the
    display's drop shadow). Use it for dialogs over the stage. */
 .panel {
-	--_cut: var(--cut-size-lg);
-	--_fill: var(--panel-fill);
-	--_shadow: var(--panel-shadow);
-	padding: var(--spacing-lg);
-	color: var(--color-text);
+  --_cut: var(--cut-size-lg);
+  --_fill: var(--panel-fill);
+  --_shadow: var(--panel-shadow);
+  padding: var(--spacing-lg);
+  color: var(--color-text);
 }
 /* The same shade without the shadow, for a surface that sits on the live
    game rather than over the feed, such as a status message. */
 .panel--flat {
-	--_shadow: none;
-	padding: var(--spacing-md);
+  --_shadow: none;
+  padding: var(--spacing-md);
 }
 
 /* The dialog layer (dialogs.md): fills its stage, carries the scrim and
    centres the panel. The stage it covers is a sibling marked data-stage. */
 .dialog-layer {
-	position: absolute;
-	inset: 0;
-	z-index: var(--layer-overlay);
-	display: grid;
-	place-items: center;
-	overflow: auto;
-	padding: var(--spacing-md);
+  position: absolute;
+  inset: 0;
+  z-index: var(--layer-overlay);
+  display: grid;
+  place-items: center;
+  overflow: auto;
+  padding: var(--spacing-md);
 }
 .dialog-scrim {
-	position: absolute;
-	inset: 0;
-	background: var(--scrim-surface);
-	animation: dialog-in var(--duration-fast) var(--ease-standard);
+  position: absolute;
+  inset: 0;
+  background: var(--scrim-surface);
+  animation: dialog-in var(--duration-fast) var(--ease-standard);
 }
 .dialog-layer > .panel:focus {
-	outline: none;
+  outline: none;
 }
 .scrim-stage {
-	filter: var(--scrim-filter);
-	transition: filter var(--duration-fast) var(--ease-standard);
+  filter: var(--scrim-filter);
+  transition: filter var(--duration-fast) var(--ease-standard);
 }
 /* The tint shifts the stage's hues toward the tint's hue (290) and keeps
    each pixel's own saturation and lightness. It sits inside the stage: the
@@ -121,26 +121,26 @@
    must paint an opaque background, or the tint shows as flat colour wherever
    it is transparent. */
 .scrim-stage::after {
-	content: "";
-	position: absolute;
-	inset: 0;
-	background: var(--scrim-tint);
-	mix-blend-mode: hue;
-	pointer-events: none;
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--scrim-tint);
+  mix-blend-mode: hue;
+  pointer-events: none;
 }
 .scrim-stage [data-hud] {
-	visibility: hidden;
+  visibility: hidden;
 }
 @keyframes dialog-in {
-	from {
-		opacity: 0;
-	}
+  from {
+    opacity: 0;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-	.dialog-scrim {
-		animation: none;
-	}
-	.scrim-stage {
-		transition: none;
-	}
+  .dialog-scrim {
+    animation: none;
+  }
+  .scrim-stage {
+    transition: none;
+  }
 }

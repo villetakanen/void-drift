@@ -1,60 +1,60 @@
 <svg
-	xmlns="http://www.w3.org/2000/svg"
-	width="100"
-	height="90"
-	viewBox="0 0 100 90"
+  xmlns="http://www.w3.org/2000/svg"
+  width="100"
+  height="90"
+  viewBox="0 0 100 90"
 >
-	<title>Armoured storage cassette</title>
-	<g transform="translate(50.0 45.0) scale(0.65)">
-		<polygon
-			points="-10,-12 -8,-14 8,-14 10,-12 10,12 8,14 -8,14 -10,12"
-			fill="#252d36"
-		/>
-		<polygon points="-10,-12 -8,-14 -8,11 -10,12" fill="#a1afb7" />
-		<polygon points="-8,-14 8,-14 8,11 -8,11" fill="#626e79" />
-		<polygon points="-8,11 8,11 10,12 8,14 -8,14 -10,12" fill="#37434f" />
-		<polygon
-			points="-8,-8 -6,-10 -3,-10 -1,-8 -1,8 -3,10 -6,10 -8,8"
-			fill="#273745"
-		/>
-		<polygon points="-8,-8 -6,-10 -6,8 -8,8" fill="#9ab7c1" />
-		<polygon points="-6,-10 -3,-10 -3,8 -6,8" fill="#668694" />
-		<polygon points="-3,-10 -1,-8 -1,8 -3,8" fill="#365361" />
-		<polygon points="-6,8 -3,8 -3,10 -6,10" fill="#1b232c" />
-		<polygon points="1,-8 3,-10 6,-10 8,-8 8,8 6,10 3,10 1,8" fill="#273745" />
-		<polygon points="1,-8 3,-10 3,8 1,8" fill="#9ab7c1" />
-		<polygon points="3,-10 6,-10 6,8 3,8" fill="#668694" />
-		<polygon points="6,-10 8,-8 8,8 6,8" fill="#365361" />
-		<polygon points="3,8 6,8 6,10 3,10" fill="#1b232c" />
-		<polygon
-			points="-11,-12 -9,-14 -8,-14 -6,-12 -6,12 -8,14 -9,14 -11,12"
-			fill="#252d36"
-		/>
-		<polygon points="-11,-12 -9,-14 -9,11 -11,12" fill="#a1afb7" />
-		<polygon points="-9,-14 -8,-14 -8,11 -9,11" fill="#626e79" />
-		<polygon points="-9,11 -8,11 -6,12 -8,14 -9,14 -11,12" fill="#37434f" />
-		<polygon
-			points="6,-12 8,-14 9,-14 11,-12 11,12 9,14 8,14 6,12"
-			fill="#252d36"
-		/>
-		<polygon points="6,-12 8,-14 8,11 6,12" fill="#a1afb7" />
-		<polygon points="8,-14 9,-14 9,11 8,11" fill="#626e79" />
-		<polygon points="8,11 9,11 11,12 9,14 8,14 6,12" fill="#37434f" />
-		<polygon
-			points="-7,-12 -5,-14 5,-14 7,-12 7,-11 5,-9 -5,-9 -7,-11"
-			fill="#252d36"
-		/>
-		<polygon points="-7,-12 -5,-14 -5,-12 -7,-11" fill="#a1afb7" />
-		<polygon points="-5,-14 5,-14 5,-12 -5,-12" fill="#626e79" />
-		<polygon points="-5,-12 5,-12 7,-11 5,-9 -5,-9 -7,-11" fill="#37434f" />
-		<polygon
-			points="-7,11 -5,9 5,9 7,11 7,12 5,14 -5,14 -7,12"
-			fill="#252d36"
-		/>
-		<polygon points="-7,11 -5,9 -5,11 -7,12" fill="#a1afb7" />
-		<polygon points="-5,9 5,9 5,11 -5,11" fill="#626e79" />
-		<polygon points="-5,11 5,11 7,12 5,14 -5,14 -7,12" fill="#37434f" />
-		<polygon points="-3,-13 3,-13 3,-11 -3,-11" fill="#c3d9df" />
-		<polygon points="-3,11 3,11 3,12 -3,12" fill="#41b9d4" />
-	</g>
+  <title>Armoured storage cassette</title>
+  <g transform="translate(50.0 45.0) scale(0.65)">
+    <polygon
+      points="-10,-12 -8,-14 8,-14 10,-12 10,12 8,14 -8,14 -10,12"
+      fill="#252d36"
+    />
+    <polygon points="-10,-12 -8,-14 -8,11 -10,12" fill="#a1afb7" />
+    <polygon points="-8,-14 8,-14 8,11 -8,11" fill="#626e79" />
+    <polygon points="-8,11 8,11 10,12 8,14 -8,14 -10,12" fill="#37434f" />
+    <polygon
+      points="-8,-8 -6,-10 -3,-10 -1,-8 -1,8 -3,10 -6,10 -8,8"
+      fill="#273745"
+    />
+    <polygon points="-8,-8 -6,-10 -6,8 -8,8" fill="#9ab7c1" />
+    <polygon points="-6,-10 -3,-10 -3,8 -6,8" fill="#668694" />
+    <polygon points="-3,-10 -1,-8 -1,8 -3,8" fill="#365361" />
+    <polygon points="-6,8 -3,8 -3,10 -6,10" fill="#1b232c" />
+    <polygon points="1,-8 3,-10 6,-10 8,-8 8,8 6,10 3,10 1,8" fill="#273745" />
+    <polygon points="1,-8 3,-10 3,8 1,8" fill="#9ab7c1" />
+    <polygon points="3,-10 6,-10 6,8 3,8" fill="#668694" />
+    <polygon points="6,-10 8,-8 8,8 6,8" fill="#365361" />
+    <polygon points="3,8 6,8 6,10 3,10" fill="#1b232c" />
+    <polygon
+      points="-11,-12 -9,-14 -8,-14 -6,-12 -6,12 -8,14 -9,14 -11,12"
+      fill="#252d36"
+    />
+    <polygon points="-11,-12 -9,-14 -9,11 -11,12" fill="#a1afb7" />
+    <polygon points="-9,-14 -8,-14 -8,11 -9,11" fill="#626e79" />
+    <polygon points="-9,11 -8,11 -6,12 -8,14 -9,14 -11,12" fill="#37434f" />
+    <polygon
+      points="6,-12 8,-14 9,-14 11,-12 11,12 9,14 8,14 6,12"
+      fill="#252d36"
+    />
+    <polygon points="6,-12 8,-14 8,11 6,12" fill="#a1afb7" />
+    <polygon points="8,-14 9,-14 9,11 8,11" fill="#626e79" />
+    <polygon points="8,11 9,11 11,12 9,14 8,14 6,12" fill="#37434f" />
+    <polygon
+      points="-7,-12 -5,-14 5,-14 7,-12 7,-11 5,-9 -5,-9 -7,-11"
+      fill="#252d36"
+    />
+    <polygon points="-7,-12 -5,-14 -5,-12 -7,-11" fill="#a1afb7" />
+    <polygon points="-5,-14 5,-14 5,-12 -5,-12" fill="#626e79" />
+    <polygon points="-5,-12 5,-12 7,-11 5,-9 -5,-9 -7,-11" fill="#37434f" />
+    <polygon
+      points="-7,11 -5,9 5,9 7,11 7,12 5,14 -5,14 -7,12"
+      fill="#252d36"
+    />
+    <polygon points="-7,11 -5,9 -5,11 -7,12" fill="#a1afb7" />
+    <polygon points="-5,9 5,9 5,11 -5,11" fill="#626e79" />
+    <polygon points="-5,11 5,11 7,12 5,14 -5,14 -7,12" fill="#37434f" />
+    <polygon points="-3,-13 3,-13 3,-11 -3,-11" fill="#c3d9df" />
+    <polygon points="-3,11 3,11 3,12 -3,12" fill="#41b9d4" />
+  </g>
 </svg>
