@@ -19,14 +19,15 @@ cite the source files. Today's quick verification run on `3b3eb94` is the only
 fresh check (contracts, lint, types and 308 unit tests passed; browser, build
 and backend stages were not run, so it is partial).
 
-| Appendix                                                     | Covers                                                                  |
-| ------------------------------------------------------------ | ----------------------------------------------------------------------- |
-| [loops-2026-10-29-to-11-02.md](loops-2026-10-29-to-11-02.md) | 22 loop records: planets, engines, ships, slots, colour, studies        |
-| [loops-2026-11-03-to-11-08.md](loops-2026-11-03-to-11-08.md) | 26 loop records: FX, camera, steering, derelicts, suns, releases 0.5.x  |
-| [factory-lessons.md](factory-lessons.md)                     | Lessons 001/002, experiment reports, audits, skills, memory rules       |
-| [tooling-and-harness.md](tooling-and-harness.md)             | Scripts, gates, CI, hooks, skills, configuration, factory DoD           |
-| [health-metrics.md](health-metrics.md)                       | Git, churn, size, tests, docs, debt markers, dependencies, working tree |
-| [plans-specs-releases.md](plans-specs-releases.md)           | Status of 16 plans, 29 specs, the 0.4.9 to 0.5.6 release line, branches |
+| Appendix                                                       | Covers                                                                  |
+| -------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| [loops-2026-10-29-to-11-02.md](loops-2026-10-29-to-11-02.md)   | 22 loop records: planets, engines, ships, slots, colour, studies        |
+| [loops-2026-11-03-to-11-08.md](loops-2026-11-03-to-11-08.md)   | 26 loop records: FX, camera, steering, derelicts, suns, releases 0.5.x  |
+| [factory-lessons.md](factory-lessons.md)                       | Lessons 001/002, experiment reports, audits, skills, memory rules       |
+| [tooling-and-harness.md](tooling-and-harness.md)               | Scripts, gates, CI, hooks, skills, configuration, factory DoD           |
+| [health-metrics.md](health-metrics.md)                         | Git, churn, size, tests, docs, debt markers, dependencies, working tree |
+| [plans-specs-releases.md](plans-specs-releases.md)             | Status of 16 plans, 29 specs, the 0.4.9 to 0.5.6 release line, branches |
+| [designer-findings-evidence.md](designer-findings-evidence.md) | Evidence for findings A, B and C, gathered 8 November after the review  |
 
 ## Where the project stands
 
