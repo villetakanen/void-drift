@@ -16,6 +16,7 @@
 			"!**/.vscode",
 			"!**/.claude",
 			"!artifacts",
+			"!docs/loop-evidence/artifacts",
 			"!playwright-report",
 			"!test-results",
 			"!pnpm-lock.yaml",

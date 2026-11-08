@@ -1,0 +1,60 @@
+{
+  "mode": "quick",
+  "partial": true,
+  "browserUrls": {
+    "browser": "http://127.0.0.1:4322",
+    "competition": "http://127.0.0.1:4323"
+  },
+  "skippedSteps": [
+    "check:commits",
+    "build",
+    "test:browser",
+    "test:rules",
+    "test:competition"
+  ],
+  "startedAt": "2026-11-08T11:15:38.346Z",
+  "revision": "5223ffb13b68a7f61d0f10a69781e78697d2c5bc",
+  "branch": "feat/0-5-0",
+  "workingTree": " M apps/web/src/components/studies/in-game-controllers/ControllerGeometryBench.svelte\n M apps/web/src/components/studies/in-game-controllers/StageMarginBench.svelte\n M apps/web/src/pages/lab/studies/in-game-controllers.astro\n M docs/development.md\n M docs/specs/factory/spec.md\n M scripts/check-contracts.mjs\n?? apps/web/src/components/studies/in-game-controllers/CssGutterBench.svelte",
+  "sourceFingerprint": "48e5ac356cab46c546f2165ce9db4fa83eece9250ec2bd4844a0faf362c2d292",
+  "node": "v24.14.0",
+  "platform": "darwin/arm64",
+  "steps": [
+    {
+      "command": "pnpm run check:contracts",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 5250,
+      "log": "artifacts/verification/2026-11-08T11-15-38.346Z-iBrm3J/check-contracts.log"
+    },
+    {
+      "command": "pnpm run lint",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 388,
+      "log": "artifacts/verification/2026-11-08T11-15-38.346Z-iBrm3J/lint.log"
+    },
+    {
+      "command": "pnpm run check:types",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 13643,
+      "log": "artifacts/verification/2026-11-08T11-15-38.346Z-iBrm3J/check-types.log"
+    },
+    {
+      "command": "pnpm run test",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 1796,
+      "log": "artifacts/verification/2026-11-08T11-15-38.346Z-iBrm3J/test.log"
+    }
+  ],
+  "finishedAt": "2026-11-08T11:15:59.525Z",
+  "sourceUnchanged": true,
+  "selectedChecksPassed": true,
+  "passed": false
+}

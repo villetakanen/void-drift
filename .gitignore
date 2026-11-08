@@ -28,7 +28,7 @@ dist-ssr
 .astro/
 
 # Local verification evidence and browser artifacts
-artifacts/
+/artifacts/
 playwright-report/
 test-results/
 
