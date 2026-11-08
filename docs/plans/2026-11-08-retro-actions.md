@@ -181,6 +181,29 @@ exploring and learning."
 
 No change named.
 
+### C. The design system is bypassed
+
+Evidence: no loop record names a component invented in place; the two
+design-system loops (`2026-11-03-square-switch.md`, `2026-11-01-s3-colour-roles.md`)
+build the system itself, and the six retro appendices do not mention the
+pattern. The code shows it. The input primitives are Toggle and RingSlider
+(1 November) and Switch (3 November), shown on `/lab/inputs`. Of 172 study
+files under `apps/web/src/components/studies/`, 20 import any shared
+primitive; 8 use RingSlider while 40 draw a native range slider (18 of them
+first committed after RingSlider existed); 2 use Switch while 36 draw a native
+checkbox (4 after Switch existed); 26 use native buttons without the design
+system's `.btn` classes. The fiddler, suns and in-game-controllers studies use
+the primitives; the gravity FX, derelict-three, ion and lab-instrument studies
+do not. The design-study skill never mentions the design system, the
+shared-components skill or `/lab/inputs`; it says only "reuse production
+simulation code".
+
+The designer, asked whether the bypass is the bench controls these counts
+show or something the counts miss: "Yes, the controls: studies drawing their
+own sliders, checkboxes and buttons instead of the Lab primitives."
+
+No change named.
+
 ### Item 1, plan status lines, raised as a quick win
 
 Not done. The designer, 8 November: "I don't know why plan files would have
