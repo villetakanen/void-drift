@@ -20,6 +20,44 @@ without exploring its finding, is half the work. Record each change next to
 the finding it came from, with the date the designer approved it.
 (Restated 8 November 2026; the earlier explore-only rule is withdrawn.)
 
+## How to continue
+
+Parked 8 November 2026 with the tree committed and the designer in the loop.
+A session that resumes this board works like this:
+
+1. **Read first**: this board; the designer's findings and their
+   [evidence](../reviews/2026-11-08-retro-0-6-0/designer-findings-evidence.md);
+   the [loop record](../loop-evidence/2026-11-08-retro-exploration.md) for
+   what the designer has said so far; `development.md` "Shared checkout".
+2. **Work with the designer, one question per turn.** The designer speaks to
+   the session; answers are testimony, not decisions, until the designer
+   decides. Record a decision on the board with its date. Do not write the
+   designer's words down verbatim anywhere; a reading goes into the loop
+   record as short attributed paraphrase.
+3. **Per item**: say what it is and what caused it, then decide together:
+   won't fix, defer, or do. For a do, show the exact diff and apply on the
+   designer's go. Move the item to Done with its commit hash. Items 2, 3, 4
+   showed the shape: spec material is corrected just in time, trivia is
+   won't fix.
+4. **Priority one (A, B, C)** is the point of the cycle. Each is explored but
+   has no cause agreed and no action. Take one at a time to its root cause
+   with the designer; where the cause needs the wider team, say so and record
+   the question instead of inventing an answer. When last asked, the designer
+   took B first.
+5. **Commits** save the whole shared checkout (see `development.md`); format
+   and check the whole tree before committing; one headline change per commit;
+   nothing is pushed without the designer's word.
+6. **Keep the loop record current**: changes delivered with hashes, checks
+   run, feedback as paraphrase. Close it with the close-loop skill when the
+   designer ends the cycle.
+7. **Words**: "the designer", never "owner"; plans are never offered for
+   deletion; playtesting by people is never asked for or recorded.
+
+State at parking: Done and won't-fix items are in the tables below. Open:
+7, 8, 10 (harness, one bounded change each, each with a failing-then-passing
+check) and 12 (waits on B). Deferred to the 0.6.0 retro: 14. The stash of
+5 November is kept by the designer's decision.
+
 ## The designer's findings, priority one
 
 Stated by the designer on 8 November after the review (spoken note, quoted in

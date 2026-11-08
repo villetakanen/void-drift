@@ -40,7 +40,7 @@ in-game-controllers study files were present and never staged.
 | `a6a6dd7` | Board: purpose restated, both halves in one cycle                                                 |
 | `0b236ee` | Board: technical items are priority two, not deferred                                             |
 | `3fd3ac1` | Board: item 6 marked a standing request from before the retro                                     |
-| see below | Review appendix `designer-findings-evidence.md`; board cut to finding, action, state; this record |
+| `2ec4537` | Review appendix `designer-findings-evidence.md`; board cut to finding, action, state; this record |
 
 ## Checks
 
@@ -127,3 +127,90 @@ verbatim, since a later session reads it as authority.
 - The counts in the appendix were taken on a tree holding another session's
   uncommitted files; those files are excluded only where a first-commit date
   is used.
+
+## Later on 8 November: acting on the items
+
+The same session continued after the board was cut back; the designer asked
+to comb the priority-two items and act on them. Parked at `HEAD` of this
+record's commit with an empty working tree.
+
+### Changes delivered
+
+| Commit    | Change                                                                                      |
+| --------- | ------------------------------------------------------------------------------------------- |
+| `fd2c5f0` | Board: items 2, 3, 4 won't fix                                                              |
+| `07dba17` | Board: item 5 widened to every document owing a feel review                                 |
+| `dbe1968` | Item 5: `AGENTS.md`, `design.md`, `development.md` no longer expect human experience review |
+| `c1e2c75` | Board: hash for item 5                                                                      |
+| `1c0a4ec` | Item 6: "owner" retired in three skills, current docs, specs, code comments (16 files)      |
+| `ac2dffd` | Board: hash for item 6, first part                                                          |
+| `99f6317` | Item 6: "owner" retired on fourteen Lab study and review pages                              |
+| `4de6e25` | Board: item 6 done                                                                          |
+| `387ac28` | Item 13: shared-checkout practice stated in four places; first whole-tree commit            |
+| `4c9fa0b` | Board: item 13 done                                                                         |
+| `512d4ad` | Board: item 9 covered by 13, item 11 done, item 14 deferred                                 |
+
+Outside commits: five merged worktrees under `.claude/worktrees` (10.5 GB)
+removed with their branches; eight further merged local branches deleted. The
+stash `0.5.0 wip before spec relocation` (5 November) was kept: 14 of its 199
+substantive added lines exist in the tree, so it holds work the tree lacks.
+
+Commits up to `4de6e25` were pathspec commits; from `387ac28` on, each commit
+saved the whole tree, as the practice recorded in that commit says.
+
+### Checks
+
+`biome format --write` and `biome check` on the changed files, then on the
+whole tree (800 files) from `387ac28` on; all passed. Two commit attempts were
+rejected by the hooks and corrected before landing: Lab pages needing reflow
+after the word change, and a commit body line over 100 characters. No
+verification gate was run on any revision.
+
+### Publication
+
+Nothing pushed. The branch `feat/0-5-0` is ahead of its remote by every
+commit listed in this record.
+
+### Human feedback, attributed paraphrase
+
+- Items 2 and 3: spec material is corrected just in time, when the spec is
+  next worked on; won't fix. Item 4: trivial; won't fix (decisions).
+- Item 5: applies to every document; the point is to scope out work the
+  agents and the team cannot do in the repo, and to stop asking for proof of
+  it (decision).
+- Item 6: critical (priority); extend to the Lab pages (decision).
+- Item 13: the single checkout is on purpose. Two to four sessions run at once
+  across Claude Code, Antigravity, Codex and pi; they share the checkout and
+  Zed, whose git pane the designer uses to monitor the work; the checkout is
+  committed whole to the active branch. Agents have mostly ignored this.
+  Worktrees are not forbidden, since isolation has merits, but a worktree's
+  result is merged into the local delta before the commit to the branch. The
+  rule should state the model, not say "never"; stating it steers enough
+  (decisions).
+- Items 9, 11, 14: 9 go; 11 delete if faster; 14 not understood, defer to the
+  0.6.0 retro. The stash: leave it (decisions).
+- The retro's method, said again: surface findings, discuss to the root
+  cause, fix what is fixable, take the complex ones to the team.
+
+### Findings (observations)
+
+- Nothing in the rules or docs stated why there is one checkout before
+  `387ac28`; `AGENTS.md` line 65 told agents to identify provenance before
+  committing, and every commit of this loop up to `4de6e25` was by pathspec.
+  Worktrees and a shared checkout had both been used on other days with no
+  recorded default.
+- The verification reports of the previous loop all ran on a dirty tree, and
+  no report matched a committed revision; the designer's git pane carried the
+  other session's files through nineteen commits.
+- Six spec definition-of-done lines still gate on the designer playing or
+  looking (effects FX-08, mount-planner, hangar, light-ion-cannon); item 5's
+  rule says not to. Left as just-in-time spec work by the items 2 and 3
+  decision.
+- The first whole-tree commit saved another session's in-progress study, as
+  the practice intends; the formatter fixed one of that session's files.
+
+### Evidence gaps
+
+- The two or three other sessions' state is unknown to this one; whether the
+  controllers study was complete when committed is not recorded.
+- No gate has run on any revision since `fa5ad4f` (previous loop, dirty tree).
