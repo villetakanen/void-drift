@@ -65,9 +65,11 @@ than silently testing another checkout. Verification reports record both resolve
 URLs under `browserUrls`, even when browser stages are skipped in quick mode.
 Emulators still use 8080/9099; these overrides do not isolate concurrent emulators. Offline browser tests
 blank live configuration and block external requests. Competition uses `demo-void-drift`,
-never the live project. GitHub Actions runs these same gates with Java 21 and Chromium.
-Superseded runs of the same event/ref are canceled. Push and pull-request checks
-remain distinct so branch-head and PR-merge verification both retain coverage.
+never the live project. GitHub Actions runs these same gates with Java 21 and Chromium
+on pushes to `main`, on `v*` tags and on pull requests only (trimmed 2026-11-08);
+feature-branch pushes rely on local verification. Superseded runs of the same
+event/ref are canceled. `main` requires the `verify` check and rejects force-push
+and deletion.
 
 `artifacts/verification/<timestamp>-<unique-suffix>/report.json` records revision,
 dirty state, source fingerprint, environment, commands and run-local log paths.

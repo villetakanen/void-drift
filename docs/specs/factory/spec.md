@@ -109,8 +109,8 @@ verification; browser harness and configuration TypeScript are included explicit
 Factory regression fixtures assert the identities of the required commands, inspect
 retained logs/reports, and exercise independent backend-suite and startup failures.
 The existing source fingerprint and partial/full distinction remain authoritative.
-CI cancels superseded runs for the same event/ref while preserving separate push
-and pull-request coverage.
+CI runs on pushes to `main`, on release tags and on pull requests, cancels
+superseded runs for the same event/ref, and is the required check on `main`.
 
 ### Prepared release artifacts
 
