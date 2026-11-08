@@ -57,7 +57,8 @@ Documents only. Pathspec commits. Items marked **quick win** are decided
 item per commit, without discussion. The others need evidence judgment and are
 explored with the designer first.
 
-1. **Plan status lines** (finding 5, quick win). Five plans contradict the tree:
+1. **Plan status lines** (finding 5). Dropped 8 November: plans carry no
+   status; see the exploration entry below. Five plans contradict the tree:
    `2026-11-04-lab-usability`, `2026-11-05-game-and-lab-spec-trees`,
    `2026-11-04-camera-trial-2`, `random-star-systems`,
    `2026-11-04-motion-instrument-conformance`. Evidence per plan in
@@ -153,3 +154,40 @@ else. [...] We're just throwing balls on the wall and see which one sticks. And
 if they don't, that's nobody's fault."
 
 No change named.
+
+### B. No rubric for the design question itself
+
+Evidence: the question is named as the problem in two records, path-instrument
+("this topic is either too broad, or then the design study is too nuanced",
+`2026-11-01-path-instrument-closure.md`) and suns ("the first one, zero one,
+should never proceed unless we have a clear problem worth studying"; "No skill,
+standing process or section-01 gate was changed by closure",
+`2026-11-07-suns-closure.md`); LHI Wasp's section 01 "framed a mechanic the
+owner considered settled as the unknown" (`2026-11-01-lhi-wasp-study.md`). The
+skill's part 01 says "propose one decision the cycle can settle"; the
+evaluation rubric's eight criteria
+(`docs/factory-building-lessons/design-study-evaluation.md`) judge purpose,
+unknowns, alternatives and phase advancement, none whether a study can answer
+the question at all. No record names the question as the cause at the time a
+study stopped; the ten stopped studies are logged as loops or model fault.
+
+The designer: "Most of the cases I've stopped the record unless there is this
+micro interaction self-correction overdrifting loop, it's always because of
+something in the study makes it like impossible to continue. The question is
+too large, the question is wrong, or something like that, and we just fail to
+record that. And even in the micro-interaction cases, I guess like 1/3 at
+least of them, is because of us having like a problem that cannot be solved by
+exploring and learning."
+
+No change named.
+
+### Item 1, plan status lines, raised as a quick win
+
+Not done. The designer, 8 November: "I don't know why plan files would have
+text like proposed, not started, or planned. Nothing that makes sense to me.
+The plan is a plan. It's like a map. It's not a territory. It's like a
+transitional object with kind of undefined something that we thought at some
+point was important. And we're mainly saving them because like future
+reference to see like what we were planning at some point. But status of a
+plan, it doesn't mean anything. [...] So I don't think the action like sounds
+sensible there. It sounds like an us trying to infer some meaning to slop."
