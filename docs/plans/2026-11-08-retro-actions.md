@@ -9,13 +9,23 @@ them without an answer.
 
 Status: open; started 8 November 2026.
 
-## Purpose and method, restated by the designer on 8 November
+## Purpose, in the designer's words, 8 November
 
-The retrospective exists to improve the human team's understanding of the
-harness, the project and the work. Fixes are secondary, and they are made
-human in the loop: each finding is explored with the designer before anything
-is changed, and one approved change at a time. A session that reads this board
-starts by exploring, not by fixing.
+Stated after the fourth restart of this work, when the board's earlier rule
+read "a session that reads this board starts by exploring, not by fixing":
+
+"The key point in all of these retros is to learn, and while learning, also do
+the improvements we learn that are necessary. The loops either seem to be
+learning or doing changes without telling me so. That's kind of the issue
+here. I don't know where we are. [...] Something in this work seems to be so
+that these loops and our cycles seem to lose sight of it: the fact that we
+need to do both, teach me and our team, and fix the things we learned."
+
+Both halves belong in one cycle: explore a finding with the designer, then
+make the change the learning calls for, telling the designer each time. A
+change made without the finding explored, and a finding explored without its
+change made, are each half the work. Record a change next to the finding it
+came from, with the date the designer approved it.
 
 ## The designer's findings, first
 
