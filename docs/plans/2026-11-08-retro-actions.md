@@ -75,11 +75,18 @@ confirmed item 6.
    reason as item 2.
 4. **Recover `docs/releases/0.5.3.md`** (finding 5). Won't fix, 8 November
    2026: trivial.
-5. **`AGENTS.md` experience-review line** (tension, quick win). Replace "Human experience
-   review assesses feel and fidelity separately from automated correctness"
-   with the decision of 8 November: playtests by people happen outside the
-   repo process, never gate it, and no agent requires or expects such reports.
-   Keep `AGENTS.md` under 80 lines.
+5. **Human experience review is out of scope** (tension, quick win; widened
+   8 November 2026). Three documents say feel is judged by people, separately
+   from automated checks: `AGENTS.md` ("Human experience review assesses feel
+   and fidelity separately from automated correctness"), `docs/design.md`
+   ("Feel and fidelity are judged by people playing"; "Human design review
+   judges whether the ship is identifiable") and `docs/development.md` (a
+   check "does not replace human experience review", twice). Agents read them
+   as a step owed to the repo and flagged its absence. Replace all of them
+   with the decision of 8 November: playtesting by people is outside what
+   agents or the team do in this repository; it never gates work; the
+   repository does not record it, and no definition of ready or done asks for
+   it; no agent asks for proof it happened. Keep `AGENTS.md` under 80 lines.
 6. **Retire "owner"** (quick win) in the three skills (`close-loop`,
    `shared-components`, `fx-development`) and in current docs (`development.md`,
    `design.md`, specs). Historic records and plans stay as written. Not a retro
