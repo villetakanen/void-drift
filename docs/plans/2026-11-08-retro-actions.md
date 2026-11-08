@@ -52,9 +52,12 @@ or the one after; take an item only when the designer says so.
 
 ## Open: plain fixes
 
-Documents only. No decision needed. Pathspec commits.
+Documents only. Pathspec commits. Items marked **quick win** are decided
+(8 November 2026) and may be taken on a single "go" from the designer, one
+item per commit, without discussion. The others need evidence judgment and are
+explored with the designer first.
 
-1. **Plan status lines** (finding 5). Five plans contradict the tree:
+1. **Plan status lines** (finding 5, quick win). Five plans contradict the tree:
    `2026-11-04-lab-usability`, `2026-11-05-game-and-lab-spec-trees`,
    `2026-11-04-camera-trial-2`, `random-star-systems`,
    `2026-11-04-motion-instrument-conformance`. Evidence per plan in
@@ -67,14 +70,14 @@ Documents only. No decision needed. Pathspec commits.
 3. **Stale spec status lines** (finding 5). `high-scores` and `ship-select`
    say PLANNED; `world/systems` DRAFT; four say COMPLETED (2024). Set each to
    what the tree and the release notes support. Specs carry no history.
-4. **Recover `docs/releases/0.5.3.md`** (finding 5) from branch
+4. **Recover `docs/releases/0.5.3.md`** (finding 5, quick win) from branch
    `codex/release-0.5.3` into the tree, unchanged.
-5. **`AGENTS.md` experience-review line** (tension). Replace "Human experience
+5. **`AGENTS.md` experience-review line** (tension, quick win). Replace "Human experience
    review assesses feel and fidelity separately from automated correctness"
    with the decision of 8 November: playtests by people happen outside the
    repo process, never gate it, and no agent requires or expects such reports.
    Keep `AGENTS.md` under 80 lines.
-6. **Retire "owner"** (tension) in the three skills (`close-loop`,
+6. **Retire "owner"** (tension, quick win) in the three skills (`close-loop`,
    `shared-components`, `fx-development`) and in current docs (`development.md`,
    `design.md`, specs). Historic records and plans stay as written.
 
@@ -113,3 +116,40 @@ No new machinery, no CI. Each change ships with a failing-then-passing check.
 Tensions the retro left open that need a definition, not a fix: lesson
 promotion timing, rejected-work handling (delete, archive or freeze), tone of
 voice. Listed in the retro README.
+
+## Exploration, 8 November 2026
+
+Evidence brought by the assistant from the loop records; the reading is the
+designer's, in the designer's words.
+
+### A. Exploration stops when it turns into discussion
+
+Evidence: the loop is named by the designer in ten of twelve stopped studies
+(`2026-10-29-planet-roles-cycle.md`, `2026-11-01-lab-instrument.md`,
+`2026-11-01-path-instrument-closure.md`, `2026-11-06-derelict-draft-two-closure.md`
+and the list in loops appendix A §2.1); the value sits early in each ("the only
+usefull excample was the first"); after a rejected guess the agent's next turn
+was often not a new guess ("how about asking them?", "concrete answers on the
+page rather than more process explanations", "neither recovery response
+delivered a replacement visual artifact"). The records are silent on what was
+visible in the turn before the designer called the loop.
+
+The designer, on the sign that shows before the loop is named: "the model
+answers to the chat and doesn't just continue the exploration. And then when
+I answer to the chat, it again answers to the chat and doesn't continue the
+exploration. If the agent then answers third time to the chat, instead of
+continuing the exploration, or by deleting the previous step and claiming it
+was a mistake, or no mistake was clearly flagged or removal of the step asked,
+we are clearly in a loop state. It's not the only one, and this is not some
+litmus test we can just run at that, but it's kind of the clearest pattern we
+have."
+
+On what the pattern is: "the agent starts defending its work and defending
+its rationals instead of just understanding that in a creative process like
+this, we fail forward, we don't care why we failed, let's just figure out
+something else. [...] We never must start defending or feel defensive because
+somebody is frustrated or something doesn't make sense. We just try something
+else. [...] We're just throwing balls on the wall and see which one sticks. And
+if they don't, that's nobody's fault."
+
+No change named.
