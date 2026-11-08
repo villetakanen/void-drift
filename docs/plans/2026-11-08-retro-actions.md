@@ -60,6 +60,7 @@ deferred (8 November 2026).
 | Retire "owner": three skills, current docs, specs and code comments                       | 6       | `1c0a4ec`        |
 | Retire "owner": fourteen Lab study and review pages                                       | 6       | `99f6317`        |
 | Shared checkout practice: `AGENTS.md`, `development.md`, commit skill, factory spec       | 13      | `387ac28`        |
+| Ref cleanup: five merged worktrees, thirteen merged branches, stash                       | 11      | no commit (refs) |
 
 To the designer these are four tasks, not seven: link repair with its gate,
 evidence and formatting, releases and CI, the 0.6.0 note (8 November).
@@ -95,20 +96,21 @@ No new machinery, no CI. Each change ships with a failing-then-passing check.
 8. **Preflight** (finding 3). Before gates run, name a held browser port and
    its process, missing Java, missing Chromium, a stale `.vite` cache. Fail
    with the name, not a timeout.
-9. **Close-loop record formatting** (finding 5). The close-loop skill runs
-   `biome format --write` on the record it writes before reporting.
+9. **Close-loop record formatting** (finding 5). Covered by item 13, 8 November
+   2026: the commit skill formats and checks the whole tree before any commit,
+   records included. No change to the close-loop skill.
 10. **Landing clock race** (finding 2). `tests/browser/landing.spec.ts` is
     intermittent on `clock.pauseAt`; make it deterministic without raising
     timeouts.
 
 ## Open: needs the designer
 
-11. **Ref cleanup** (finding 4). Sixteen merged local branches, the merged
-    worktrees under `.claude/worktrees` (11 GB), stash `0.5.0 wip before spec
-    relocation`. Present the exact list; delete only what is approved. The
-    unmerged `claude/camera-*` branches and the Codex worktree stay. Cause: no rule
-    said a worktree is removed once its delta has returned; `development.md`
-    now does.
+11. **Ref cleanup** (finding 4). Done 8 November 2026: five merged worktrees
+    under `.claude/worktrees` (10.5 GB) and thirteen merged local branches
+    removed; the stash of 5 November was kept: only 14 of 199 added lines are in the tree. Kept: the unmerged camera
+    branches and worktree, the `codex/archive-*` and `codex/release-0.5.3`
+    branches, the Codex plasma worktree. Cause: no rule said a worktree is
+    removed once its delta has returned; `development.md` now does.
 12. **Study harness replay** (finding 1). Lessons 001/002 say "adopted, not
     validated". Decide whether to run the evaluation protocol in
     `docs/factory-building-lessons/design-study-evaluation.md` before the
@@ -119,8 +121,8 @@ No new machinery, no CI. Each change ships with a failing-then-passing check.
     told agents to commit by path, which emptied the pane of meaning. Now stated
     in `AGENTS.md`, `development.md`, the commit-messages skill and the factory
     spec.
-14. **Root `artifacts/` retention** (finding 6). 2.9 GB, 152 runs, ignored.
-    Whether to prune runs older than the last release.
+14. **Root `artifacts/` retention** (finding 6). 2.9 GB of ignored local
+    verification runs. Deferred to the 0.6.0 retro, 8 November 2026.
 
 ## Not actions
 

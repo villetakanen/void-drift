@@ -9,10 +9,15 @@ import { expect, test } from "../helpers/local-browser";
 /** The stage fills the (safe-area-free) viewport with Survival's gutters. */
 async function expectStageFills(page: Page, width: number, height: number) {
   const stage = page.locator(".flight-stage");
+  // Resize callbacks land asynchronously; wait for the stage to follow.
+  await expect
+    .poll(async () => (await stage.boundingBox())?.width)
+    .toBeCloseTo(width, 0);
+  await expect
+    .poll(async () => (await stage.boundingBox())?.height)
+    .toBeCloseTo(height, 0);
   const box = await stage.boundingBox();
   if (!box) throw new Error("Stage missing");
-  expect(box.width).toBeCloseTo(width, 0);
-  expect(box.height).toBeCloseTo(height, 0);
   const geometry = await stage.evaluate((node) => {
     const style = getComputedStyle(node);
     return {
