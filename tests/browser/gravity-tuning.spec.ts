@@ -1,4 +1,3 @@
-import { GravityTuningConfig } from "../../apps/web/src/lib/gravity-tuning/config";
 import { expect, test } from "../helpers/local-browser";
 
 // Contract: docs/specs/gravity-tuning.md.
@@ -57,6 +56,9 @@ test("dragging the well moves it in the document", async ({ page }) => {
 	await page.goto("/lab/gravity-tuning");
 	// The handle is server-rendered; drag only once the bench has hydrated.
 	await page.waitForSelector("astro-island:not([ssr])");
+	await page.getByRole("button", { name: "Open values" }).click();
+	const defaults = JSON.parse((await documentText(page)) ?? "{}").well;
+	await page.getByRole("button", { name: "Close values" }).click();
 	const handle = page.locator(".handle");
 	const box = await handle.boundingBox();
 	if (!box) throw new Error("well handle not drawn");
@@ -68,7 +70,6 @@ test("dragging the well moves it in the document", async ({ page }) => {
 	await page.mouse.up();
 	await page.getByRole("button", { name: "Open values" }).click();
 	const doc = JSON.parse((await documentText(page)) ?? "{}");
-	const defaults = GravityTuningConfig.parse({ version: 1 }).well;
 	expect(doc.well.x).not.toBe(defaults.x);
 	expect(doc.well.y).not.toBe(defaults.y);
 });
