@@ -8,6 +8,9 @@ This review interprets. The loop records in `docs/loop-evidence/` stay the
 evidence; nothing here changes a skill, gate or standing rule. Candidates for
 rules are listed as questions at the end, for a separate decision.
 
+Acting on the findings is tracked on the
+[retro actions board](../../plans/2026-11-08-retro-actions.md). Start there.
+
 ## How this was made
 
 Six sub-agents each read one slice and wrote a digest. The digests are the
