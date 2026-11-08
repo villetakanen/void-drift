@@ -185,6 +185,33 @@ record that. And even in the micro-interaction cases, I guess like 1/3 at
 least of them, is because of us having like a problem that cannot be solved by
 exploring and learning."
 
+Second round, same day, in breadth. Evidence: the spec asks part 01 for "an
+answerable question"; the skill advances on "substantive agreement or a clear
+instruction to explore", and nothing tests answerability. The ten stopped
+studies' openings all read as finished problem statements; several carry more
+than one question (derelicts: identity and encounter legibility "together";
+open-frame machinery: one construction for four utilities, three of which never
+got an example; ship utility language defers the device's function as "a later
+concern"; path instrument opens as a contract for a measuring tool; plasma
+offers two rewards, "either or both"). Four name one object and one question.
+Nothing records what the designer saw in an opening when agreeing to explore
+it. The evaluation rubric judges the study's conduct, not part 01; the designer
+set it aside: "I don't know how it actually relates to step one at all."
+
+The designer, asked which of the ten openings they would have refused to
+explore: "I kind of learned that like afterwards. So I don't even know if you
+have good like baseline for what say a bad design question. I guess that's a
+key point when we kind of succeeded, then was that we limit a question. If
+you're trying to explore how engines work in the game, that's a question that's
+quite large. But if you study how engines should look in the game, so we could
+get the feel of them, and then do other things, that might work. If the study
+is able to produce something of value, so the question must be answerable in a
+way that the game can be changed in a very concrete way. If it can't, or if
+it's a very complex change, it's likely not a design study. It's more like a
+version of the game, if you will. Complexity is a hard thing to measure, but
+like how many things does it touch? Is it answerable by exploring? Those kind
+of things."
+
 ### C. The design system is bypassed
 
 Evidence: no loop record names a component invented in place; the two
