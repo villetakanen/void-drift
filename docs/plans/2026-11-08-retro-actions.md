@@ -45,8 +45,14 @@ These come before every item below.
   were invented in place instead of flagging that the design system lacks
   them or that the agent did not know how to use it.
 
-Everything else on this board is technical. It may wait for the next version
-or the one after; take an item only when the designer says so.
+Everything else on this board is technical, and open. The designer, 8 November,
+on the two groups: "These three are likely, from my experience, ones we would
+like to act on, and the rest might be something we might defer. But we don't
+know if we'll act on any of these A, B, C, or defer any of those other
+findings. It's just a prioritization thing: priority one issues and priority
+two issues. I don't see why we would at this point decide to defer any of the
+priority two issues." A, B and C are priority one; the numbered items are
+priority two. Nothing is deferred.
 
 ## Done
 
