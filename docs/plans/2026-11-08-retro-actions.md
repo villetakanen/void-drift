@@ -56,7 +56,7 @@ deferred (8 November 2026).
 | `main` fast-forwarded to `v0.5.6`, pushed, protected                                      | 8       | no commit (refs) |
 | Hosted CI removed, required check dropped                                                 | 9       | `09d57d9`        |
 | 0.6.0 scope recorded                                                                      | state   | `b3c1e51`        |
-| Human experience review out of scope: `AGENTS.md`, `design.md`, `development.md` reworded | tension | HEAD             |
+| Human experience review out of scope: `AGENTS.md`, `design.md`, `development.md` reworded | tension | `dbe1968`        |
 
 To the designer these are four tasks, not seven: link repair with its gate,
 evidence and formatting, releases and CI, the 0.6.0 note (8 November).
