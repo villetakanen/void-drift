@@ -59,7 +59,7 @@ deferred (8 November 2026).
 | Human experience review out of scope: `AGENTS.md`, `design.md`, `development.md` reworded | tension | `dbe1968`        |
 | Retire "owner": three skills, current docs, specs and code comments                       | 6       | `1c0a4ec`        |
 | Retire "owner": fourteen Lab study and review pages                                       | 6       | `99f6317`        |
-| Shared checkout practice: `AGENTS.md`, `development.md`, commit skill, factory spec       | 13      | HEAD             |
+| Shared checkout practice: `AGENTS.md`, `development.md`, commit skill, factory spec       | 13      | `387ac28`        |
 
 To the designer these are four tasks, not seven: link repair with its gate,
 evidence and formatting, releases and CI, the 0.6.0 note (8 November).
