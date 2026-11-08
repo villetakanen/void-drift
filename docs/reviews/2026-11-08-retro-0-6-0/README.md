@@ -272,4 +272,6 @@ kept it running, and nobody owned it. What to do with the workflow is a
 separate decision, including deleting it. Changes made after the review the
 same day, before this was recognised as a finding: `main` pushed and
 protected with the `verify` check required (admin bypass kept), workflow
-trimmed to `main`, tags and pull requests (`2beaf81`).
+trimmed to `main`, tags and pull requests (`2beaf81`). Decided the same
+afternoon: the workflow is deleted and the required check removed; `main` keeps
+its force-push and deletion blocks.

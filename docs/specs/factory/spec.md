@@ -42,7 +42,7 @@ New simulation/replay/network contracts require Zod schemas before game logic. F
 
 ### Definition of done
 
-- [ ] One documented command runs the required automated gates and exits nonzero on failure, locally and in CI.
+- [ ] One documented command runs the required automated gates and exits nonzero on failure.
 - [ ] Gates cover formatting/lint rules, strict types across workspace code, schema/behavior tests, production build, and browser gameplay smoke checks.
 - [ ] Each check produces a named pass/fail result; skipped or unavailable checks are explicit and cannot count as passes.
 - [ ] Check evidence identifies revision, dirty working-tree state, commands, and environment. A subsequent edit invalidates affected evidence.
@@ -109,8 +109,8 @@ verification; browser harness and configuration TypeScript are included explicit
 Factory regression fixtures assert the identities of the required commands, inspect
 retained logs/reports, and exercise independent backend-suite and startup failures.
 The existing source fingerprint and partial/full distinction remain authoritative.
-CI runs on pushes to `main`, on release tags and on pull requests, cancels
-superseded runs for the same event/ref, and is the required check on `main`.
+There is no hosted CI (removed 2026-11-08); the runner's retained reports are the
+verification evidence.
 
 ### Prepared release artifacts
 
@@ -244,7 +244,7 @@ Checkboxes above remain a review checklist, not an assertion of human acceptance
 Conventional Commit syntax is checked locally by Lefthook and commitlint.
 The short commit-messages skill guides semantic classification and breaking-change
 disclosure. The factory's `pnpm verify` also checks committed history after the
-documented adoption baseline; CI uses a full checkout. Malformed messages must
+documented adoption baseline over a full checkout. Malformed messages must
 fail both paths, while older history remains unchanged. Hooks do not prepare
 releases or publish. Meaning and compatibility still require diff review.
 

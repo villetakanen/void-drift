@@ -65,10 +65,8 @@ than silently testing another checkout. Verification reports record both resolve
 URLs under `browserUrls`, even when browser stages are skipped in quick mode.
 Emulators still use 8080/9099; these overrides do not isolate concurrent emulators. Offline browser tests
 blank live configuration and block external requests. Competition uses `demo-void-drift`,
-never the live project. GitHub Actions runs these same gates with Java 21 and Chromium
-on pushes to `main`, on `v*` tags and on pull requests only (trimmed 2026-11-08);
-feature-branch pushes rely on local verification. Superseded runs of the same
-event/ref are canceled. `main` requires the `verify` check and rejects force-push
+never the live project. There is no hosted CI (removed 2026-11-08); verification
+runs locally and its retained reports are the evidence. `main` rejects force-push
 and deletion.
 
 `artifacts/verification/<timestamp>-<unique-suffix>/report.json` records revision,
@@ -203,9 +201,9 @@ or breaking-change declaration accurately describes the diff.
 
 `pnpm check:commits` checks all commits after adoption baseline
 `841c975deee6f53db6b663f6a08047f8f8704e06` through HEAD. Older history is
-grandfathered. CI fetches full history and runs the same check through
-`pnpm verify`, including commits that bypassed local hooks. A shallow local
-checkout must fetch the missing history before this check can pass.
+grandfathered. `pnpm verify` runs the same check over full history, including
+commits that bypassed local hooks. A shallow checkout must fetch the missing
+history before this check can pass.
 The hook does not run the full game suite, bump versions, tag, or publish.
 
 ## Button study promotion — 2026-10-28
