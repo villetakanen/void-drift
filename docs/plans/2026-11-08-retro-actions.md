@@ -94,9 +94,17 @@ explored with the designer first.
    with the decision of 8 November: playtests by people happen outside the
    repo process, never gate it, and no agent requires or expects such reports.
    Keep `AGENTS.md` under 80 lines.
-6. **Retire "owner"** (tension, quick win) in the three skills (`close-loop`,
+6. **Retire "owner"** (quick win) in the three skills (`close-loop`,
    `shared-components`, `fx-development`) and in current docs (`development.md`,
-   `design.md`, specs). Historic records and plans stay as written.
+   `design.md`, specs). Historic records and plans stay as written. Not a retro
+   finding: the team asked for this before the retro. The designer, 8 November,
+   on why: "It's the main sign for AI-written slop nowadays, 'owner' somewhere,
+   unless the owner relates to a person who owns physical property or a
+   license. Aside from that, owner is a clear sign that it's a text not written
+   by a human, and doesn't really relate to the intent at all. Owner normally
+   in this situation tends to mean a person who's assumed to relate somehow to
+   the license key that's using the agent, but as we're putting text from many
+   people into the same box here, that owner isn't even a single person."
 
 ## Open: harness, one bounded change each
 
