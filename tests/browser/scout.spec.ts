@@ -11,7 +11,7 @@ test("Scout restores its four-slot save, fits equipment and engines and flies fr
 	const time = new Date("2026-11-03T00:00:00Z");
 	await page.clock.install({ time });
 	await page.clock.pauseAt(time);
-	await page.goto("/builder");
+	await page.goto("/hangar");
 	await page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }).click();
 	await page.getByRole("button", { name: /^Potential Well\b/ }).click();
 	await page
@@ -129,7 +129,7 @@ test("Scout restores its four-slot save, fits equipment and engines and flies fr
 test("invalid chassis deep links recover to the normal Fighter selection", async ({
 	page,
 }) => {
-	await page.goto("/builder?chassis=not-a-chassis");
+	await page.goto("/hangar?chassis=not-a-chassis");
 	await expect(
 		page.getByRole("radio", { name: "Fighter", exact: true }),
 	).toBeChecked();

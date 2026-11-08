@@ -6,7 +6,7 @@ test("armed practice has full resources, no encounters and fresh entry after abo
 	const time = new Date("2026-11-03T00:00:00Z");
 	await page.clock.install({ time });
 	await page.clock.pauseAt(time);
-	await page.goto("/builder?chassis=fighter");
+	await page.goto("/hangar?chassis=fighter");
 	await page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }).click();
 	await page.getByRole("button", { name: /^Rail gun\b/ }).click();
 	await page.getByRole("button", { name: "Test flight", exact: true }).click();
@@ -60,7 +60,7 @@ test("landscape practice retain simultaneous engine input and release", async ({
 	await page.clock.install({ time });
 	await page.clock.pauseAt(time);
 	await page.setViewportSize({ width: 844, height: 390 });
-	await page.goto("/builder?chassis=wasp");
+	await page.goto("/hangar?chassis=wasp");
 	await page
 		.getByRole("button", { name: "Left wing · Equipment: Empty" })
 		.click();

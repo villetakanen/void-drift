@@ -14,7 +14,7 @@ test("Derelicts shows a frozen transient score only after game over", async ({
 			return random(array);
 		}) as typeof crypto.getRandomValues;
 	});
-	await page.goto("/builder?chassis=wasp");
+	await page.goto("/hangar?chassis=wasp");
 	await page.getByRole("button", { name: "Derelicts", exact: true }).click();
 	await page.clock.runFor(3400);
 	await expect(page.locator(".timer")).toHaveCount(0);

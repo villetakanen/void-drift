@@ -132,7 +132,13 @@ test("reads require authentication and a bounded list query", async () => {
 	);
 });
 
-for (const challenge of ["gravity-1", "ion-1", "arrival-1", "arrival-2"]) {
+for (const challenge of [
+	"gravity-1",
+	"ion-1",
+	"arrival-1",
+	"arrival-2",
+	"arrival-3",
+]) {
 	test(`${challenge} scores are isolated from legacy personal bests`, async () => {
 		await assertSucceeds(setDoc(ref(), score));
 		const current = { ...score, challenge, seconds: 20 };

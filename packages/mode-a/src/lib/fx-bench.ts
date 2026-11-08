@@ -37,7 +37,11 @@ export class FxBench {
 		this.ships = Array.from({ length: 6 }, (_, i) => {
 			const loadout = starterLoadout("fighter");
 			loadout.hull.fill("gravity-coil");
-			if (this.weapons) loadout.hull[1] = i % 2 === 0 ? "laser" : "rail";
+			if (this.weapons) {
+				// Preserve collector and engines while twin cannons occupy existing universal slots.
+				if (i < 4) loadout.aft.fill("light-ion-cannon");
+				else loadout.hull[1] = i === 4 ? "laser" : "rail";
+			}
 			const sim = new Simulation({
 				...stockSettings("fighter"),
 				loadout,
@@ -190,5 +194,6 @@ export class FxBench {
 		for (const sim of this.ships)
 			if (sim.salvage && this.weapons)
 				drawSalvageApertures(target, sim.salvage);
+		for (const sim of this.ships) this.fx.drawLfx(target, sim);
 	}
 }

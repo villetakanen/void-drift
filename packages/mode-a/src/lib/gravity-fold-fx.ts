@@ -12,7 +12,7 @@ import {
 	type BuildMount,
 	buildMounts,
 } from "./build-renderer";
-import { stampWeaponLight } from "./salvage-renderer";
+import { drawIonCannonLight, stampWeaponLight } from "./salvage-renderer";
 import type { Loadout } from "./schemas/loadout";
 import type { Simulation } from "./simulation";
 
@@ -118,6 +118,7 @@ export class FlightFx {
 			}
 			this.weaponEvents.set(sim, seen);
 			stampWeaponLight(ctx, salvage, this.pass);
+			drawIonCannonLight(ctx, sim, true, this.pass);
 		}
 		if (fold && sim.settings.loadout && sim.gravityCollectionRate > 0)
 			drawGravityFold(
@@ -129,6 +130,9 @@ export class FlightFx {
 				sim.gravityFoldDirection,
 				this.pass,
 			);
+	}
+	drawLfx(ctx: CanvasRenderingContext2D, sim: Simulation) {
+		drawIonCannonLight(ctx, sim);
 	}
 	drawParticles(ctx: CanvasRenderingContext2D) {
 		this.weaponSparks.draw(ctx, this.pass);

@@ -1,0 +1,326 @@
+---
+import Comparison from "../../../components/studies/derelict-three/Comparison.svelte";
+import Damage from "../../../components/studies/derelict-three/Damage.svelte";
+import Progressive from "../../../components/studies/derelict-three/Progressive.svelte";
+import ShardMotion from "../../../components/studies/derelict-three/ShardMotion.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+import "@void-drift/core/styles/buttons.css";
+
+const study = studies.find(
+	(entry) => entry.slug === "derelict-three-2026-11-06",
+);
+---
+
+<StudyLayout study={study}>
+	<aside aria-label="Study outcome">
+		<h2>Completed / Visual direction accepted</h2>
+		<p>
+			Closed on 6 November 2026. The selected direction is the supplied artwork
+			at the working 110-unit extent, eight-piece B distributed shedding,
+			ejected energy and the expanding release pulse. Parts 03 and 04 define
+			readiness and implementation scope. The damage comparisons remain
+			unselected; closure does not turn their thresholds into gameplay
+			requirements.
+		</p>
+	</aside>
+	<section>
+		<h2>01 / A broken monument, still alive inside</h2>
+		<p>
+			A passing ship encounters a remnant of something vastly larger: two long,
+			fractured hulls joined underneath by darker material. The supplied
+			silhouette and its warm-to-cool, pale mineral colours give the structure
+			its identity. Inside, an enlarged hollow square turns independently,
+			throwing broad light across the break while its centre remains black. The
+			structure is broken; its energy is not spent.
+		</p>
+		<p>
+			The design tension is between the weight of the remnant and the invitation
+			of its energy. During flight, the hull must remain a recognisable place
+			with an interior, rather than disappear behind a bright marker.
+			Destruction should change that relationship: solid material becomes
+			physical shards, and contained energy becomes something the player can
+			pursue. The appearance, timing and separation of those events remain open.
+		</p>
+		<p>
+			This cycle follows the draft into an encounter, then into rupture and
+			pursuit. Relative size supports the investigation; 110 world units is the
+			provisional working extent established in 02.2. Wasp and Fiddler provide
+			contrasting familiar bodies against which to judge presence. Production
+			gameplay remains unchanged.
+		</p>
+	</section>
+	<details>
+		<summary>
+			Retained reference / hulls, light and initial Wasp comparison
+		</summary>
+		<img
+			src="/studies/derelict-draft-two-2026-11-06/retained-artwork.png"
+			alt="Retained draft artwork with two fractured hulls, a dark connecting structure and hollow luminous square"
+		>
+		<p>
+			The exact Inkscape paths, material colours, slightly enlarged rotating
+			square, broad glow and black hollow centre carry forward.
+			<a href="/lab/studies/derelict-draft-two-2026-11-06#ship-scale"
+				>The initial Wasp comparison</a
+			>
+			remains useful evidence of proportion; none of its sizes was accepted.
+			Both earlier studies remain intact.
+		</p>
+	</details>
+	<details>
+		<summary>02.1 / A structure around the energy</summary>
+		<h2>02.1 / A structure around the energy</h2>
+		<p>
+			The controlled comparison with Wasp and Fiddler ruled out extents above
+			120 world units as too large. It did not settle whether 120 itself is too
+			large. The hull geometry, material colours and hollow energy square remain
+			the reference.
+		</p>
+		<details>
+			<summary>Retained comparison / 120 and 300 units</summary>
+			<img
+				src="/studies/derelict-three-2026-11-06/controlled-120-300.png"
+				alt="Previous controlled comparison: identical Wasp and Fiddler beside 120- and 300-unit derelicts"
+			>
+		</details>
+	</details>
+	<details id="proportion">
+		<summary>02.2 / Working extent: 110 units</summary>
+		<h2>02.2 / Between 100 and 120</h2>
+		<p>
+			The 80, 100 and 120 comparison narrowed the useful range to between 100
+			and 120 world units. The midpoint, 110, now sits between those same
+			boundary references. Wasp and Fiddler stay identical in every group. Only
+			the derelict changes size; its geometry, colours, heading and energy phase
+			stay fixed. The question is which extent gives the broken structure
+			sufficient presence without overwhelming the ships.
+		</p>
+		<Comparison client:load />
+		<details>
+			<summary>Retained comparison / 80, 100 and 120</summary>
+			<img
+				src="/studies/derelict-three-2026-11-06/controlled-80-100-120.png"
+				alt="Controlled 80, 100 and 120 comparison that narrowed the desired derelict extent to between 100 and 120 world units"
+			>
+		</details>
+		<p>
+			The outer-glow switch and energy-phase control affect all three together.
+			110 world units is the working extent for the next exploration, following
+			visual review. It remains provisional. This comparison concerns appearance
+			and proportion; physical shards, rupture and released energy remain open.
+		</p>
+	</details>
+	<details>
+		<summary>02.3 / Release direction — ejection retained</summary>
+		<p>
+			Ejecting the energy is preferred to leaving it at the rupture point. The
+			four-part split established that comparison, but its fracture shapes were
+			not convincing and are not the fracture direction.
+		</p>
+		<img
+			src="/studies/derelict-three-2026-11-06/energy-release.png"
+			alt="Retained comparison of stationary and ejecting energy; ejection was preferred"
+		>
+	</details>
+	<details id="splinter-count">
+		<summary>02.4 / Eight-piece progressive splintering</summary>
+		<h2>02.4 / Shedding before containment fails</h2>
+		<p>
+			The same 110-unit structure breaks into 2, 5 or 8 unequal pieces. Cuts
+			follow uneven sites along the narrow hulls: long remnants, shorter hull
+			sections and small tips. All original material remains accounted for.
+			Ejection is retained in every proposal.
+		</p>
+		<Progressive client:load />
+		<p>
+			At 0.70 seconds, the five- and eight-piece proposals have shed tips and
+			edge sections while the energy stays inside the remaining structure. The
+			two-piece proposal holds together until release. At 1.00 seconds, the
+			remaining pieces separate and the energy ejects along the same path in all
+			three. Small early pieces travel farther; larger remnants move more
+			slowly.
+		</p>
+		<p>
+			This tests whether gradual loss of material gives the final release a
+			readable cause, and whether additional fragments enrich the breakup or
+			obscure it. The asymmetric fracture shapes and release order are
+			proposals, not accepted artwork. Bodies use production salvage movement
+			and lifetime; the existing circular collision proxies still need to be
+			fitted to the shard shapes before collision or collection risk can be
+			judged.
+		</p>
+	</details>
+	<details id="shard-motion">
+		<summary>02.5 / Distributed shedding selected</summary>
+		<h2>02.5 / Eight pieces, individual motion</h2>
+		<p>
+			Eight-piece progressive splintering is the preferred direction. A retains
+			that reference. B changes only the early shedding locations: a forward
+			tip, a side section and a lower end. C keeps B’s release order and gives
+			each piece its own drift and spin, including clockwise, counterclockwise
+			and nearly steady remnants. Energy ejection stays identical throughout.
+		</p>
+		<ShardMotion client:load />
+		<p>
+			Compare A with B during early shedding, then B with C after release. The
+			proposed variation is fixed and repeatable. Hull geometry, total material,
+			110-unit extent and viewing scale remain unchanged. B is selected:
+			distributed shedding with its existing drift and spin. C’s added motion
+			variation is not selected. Production gameplay has not changed.
+		</p>
+	</details>
+	<section id="release-cue">
+		<h2>02.6 / The instant containment fails</h2>
+		<p>
+			B’s distributed shedding is retained: eight pieces, early loss from tip,
+			side and lower edge, followed by energy ejection. These three views share
+			that exact breakup. Only the release cue changes.
+		</p>
+		<ShardMotion
+			client:load
+			releaseCues
+			label="Identical B breakup with movement alone, a brief flash, or an expanding pulse"
+		/>
+		<p>
+			Movement alone leaves the separating hull and departing square to carry
+			the event. The flash adds a compact light burst for 0.10 seconds. The
+			pulse expands from the rupture point for 0.28 seconds. Both fade with the
+			shared light persistence; neither changes the energy, shards or their
+			motion.
+		</p>
+		<p>
+			Release shows the first 0.08 seconds after containment fails. Afterglow
+			exposes how long each cue competes with the energy being released. Play
+			from intact to judge the event in sequence, or scrub and pause all three
+			together. The expanding pulse is selected. Movement alone and the brief
+			flash remain comparison evidence.
+		</p>
+	</section>
+	<section id="encounter">
+		<h2>02.7 / What does each hit change?</h2>
+		<p>
+			Each remnant receives the same five equal hits, worth 20 damage apiece. A
+			holds together until 100 damage. B sheds a tip, side section and lower end
+			at 20, 40 and 60, then releases the energy at 100. C sheds the same pieces
+			but loses containment at 80; the remaining hull breaks at 100.
+		</p>
+		<Damage client:load />
+		<p>
+			At three hits, compare whether visible shedding makes accumulated damage
+			understandable. At four hits, C offers the energy while five hull pieces
+			remain attached: pursuing the prize can replace finishing the structure.
+			At five hits, all three have released identical material. The selected
+			pulse accompanies actual energy release in each proposal.
+		</p>
+		<p>
+			The 110-unit artwork, eight fracture shapes, B’s shard velocities and
+			spin, ejection impulse and expanding pulse are fixed. Only damage
+			thresholds differ. Hits are a repeatable study fixture, not a weapon
+			balance proposal; these values are not production health or damage
+			settings. Hit location is intentionally held out: this experiment compares
+			total-damage rules, not local armour damage.
+		</p>
+	</section>
+	<section id="readiness">
+		<h2>03 / Feasible visuals; damage and collision decisions remain</h2>
+		<p>
+			The selected reference is 02.6’s expanding-pulse view: the supplied hull
+			geometry and colours, enlarged hollow square and broad glow, provisional
+			110-unit extent, eight-piece B breakup, distributed early shedding and
+			ejected energy. The pulse expands at the rupture point for 0.28 seconds
+			and then decays with the existing light surface. The retained example uses
+			seed 2026, fixed heading, viewing scale 1.60 and a repeatable two-second
+			sequence. Early releases occur at 0.25, 0.45 and 0.65 seconds; containment
+			fails at 1.00. Those times demonstrate the visual sequence, not damage
+			rules.
+		</p>
+		<p>
+			The artwork, fracture partitions and release cue are demonstrated. Current
+			salvage already supplies moving bodies, lifetimes, weapon hits and energy
+			collection; the effects surface supplies light persistence. Production
+			destruction currently emits four generic fragments and a cell immediately.
+			It does not yet represent a partially broken hull or staged containment
+			loss.
+		</p>
+		<p>
+			The remaining implementation decisions are: what damage releases each
+			piece and the energy; how collision boundaries follow the remaining hull
+			and long shards; and integration of the released energy with the owning
+			mode’s existing reward, lifetime and collection rules. Eight pieces is the
+			selected visual reference, not approval for randomly choosing two through
+			eight. 02.7 compares three damage policies, but no policy was selected.
+			Damage-triggered timing and variation need an explicit implementation
+			decision. Performance with several simultaneous breakups remains
+			unmeasured. Visual implementation is feasible with the existing renderer
+			and effects systems. Full gameplay integration is not ready until damage
+			progression and shape-matched collision are specified.
+		</p>
+	</section>
+	<section id="scope">
+		<h2>04 / Deliver the selected reference in bounded slices</h2>
+		<p>
+			<strong
+				>Art-direction decision required before production promotion:</strong
+			>
+			the retained Inkscape colour treatment includes a hue overlay. Production
+			hulls currently require flat fills in docs/design.md. Resolve whether to
+			bake the selected colours into flat planes or explicitly approve a scoped
+			exception. This study does not change that principle.
+		</p>
+		<ol>
+			<li>
+				<strong>Shared visual definition — small.</strong>
+				Promote the selected 110-unit artwork, eight fracture regions and pulse
+				into shared renderers. Keep the study as the visual reference; verify
+				intact and separated silhouettes, material continuity and fixed-scale
+				ship comparisons.
+			</li>
+			<li>
+				<strong>Damage and physical bodies — medium.</strong>
+				After agreeing the damage contract, define validated state for attached
+				and released pieces, containment and energy release. Adapt salvage
+				simulation and collision geometry. Verify material is released once,
+				retained hulls remain solid, and collisions agree with visible shapes.
+				This depends on slice one.
+			</li>
+			<li>
+				<strong>Energy and release feedback — small to medium.</strong>
+				Connect the pulse to actual containment loss and the selected square to
+				the moving collectible. Preserve B’s ejection reference. Verify
+				collection, expiry, pause and replay; reuse the owning mode’s reward,
+				lifetime and collection contract unless separately changed. This depends
+				on slices one and two.
+			</li>
+			<li>
+				<strong>Integrated trial — medium.</strong>
+				Exercise the agreed encounter in test flight and its Lab reference.
+				Update the owning Derelicts mode contract, test-flight reference and
+				effects contract alongside implementation. The current Derelicts spec
+				already records B’s visual direction and eight physical pieces;
+				reconcile the selected pulse and damage decision without changing
+				unrelated mode rules. Check keyboard and landscape touch, multiple
+				breakups, body/effect budgets and measured frame time. Human review
+				judges feel and visual fidelity separately from correctness.
+			</li>
+		</ol>
+		<p>
+			The study is completed with the visual direction accepted and the
+			implementation scope defined. No A/B/C damage policy in 02.7 is selected.
+			Production implementation remains separate work; no production code, push
+			or deployment is authorized by this closure.
+		</p>
+	</section>
+</StudyLayout>
+<style>
+details {
+	margin-block: var(--spacing-xl);
+}
+img {
+	display: block;
+	max-width: 100%;
+	max-height: 680px;
+	object-fit: contain;
+	margin-block: var(--spacing-lg);
+}
+</style>

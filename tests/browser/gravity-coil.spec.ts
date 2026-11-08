@@ -11,7 +11,7 @@ test("Gravity coil fits, persists and flies separately from solar Loading coil",
 	const fitted = defaultLoadout("fighter");
 	fitted.hull[0] = "gravity-coil";
 	fitted.aft[0] = "coil";
-	await page.goto("/builder");
+	await page.goto("/hangar");
 	await expect(page.getByRole("button", { name: /^Gravity coil/ })).toHaveCount(
 		0,
 	);

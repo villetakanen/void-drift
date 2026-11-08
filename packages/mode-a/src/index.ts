@@ -15,6 +15,7 @@ export * from "./lib/fx-bench";
 export * from "./lib/game-loop";
 export * from "./lib/gravity-collection";
 export * from "./lib/gravity-fold-fx";
+export * from "./lib/ion-cannon-art";
 export * from "./lib/landing-system";
 export * from "./lib/mount-planner";
 export * from "./lib/potential-well-art";

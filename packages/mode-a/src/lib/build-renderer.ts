@@ -9,6 +9,11 @@ import { CRUISER } from "./cruiser";
 import { ENGINE_ART } from "./engine-art";
 import { FIDDLER } from "./fiddler";
 import { FIGHTER } from "./fighter";
+import {
+	drawIonCannon,
+	ION_CANNON_MUZZLE,
+	ION_CANNON_MUZZLE_SIDE,
+} from "./ion-cannon-art";
 import { drawPotentialWell } from "./potential-well-art";
 import {
 	CHASSIS,
@@ -309,6 +314,10 @@ export function drawBuild(
 	mountOverride?: BuildMount[],
 	weaponAngles?: Readonly<Record<string, number>>,
 	cockpitMaterial = true,
+	fittingPainter?: (
+		ctx: CanvasRenderingContext2D,
+		mount: BuildMount,
+	) => boolean,
 ) {
 	ctx.save();
 	ctx.translate(x, y);
@@ -331,7 +340,8 @@ export function drawBuild(
 			if (PARTS[mount.part].category === "E") {
 				drawEngine(ctx, build, mount);
 			} else {
-				drawNonEngineFitting(ctx, mount, weaponAngles?.[mount.key]);
+				if (!fittingPainter?.(ctx, mount))
+					drawNonEngineFitting(ctx, mount, weaponAngles?.[mount.key]);
 			}
 			ctx.restore();
 		}
@@ -447,7 +457,8 @@ export function drawBuild(
 			const fit = Math.min(54 / 7 / mount.height, 64 / 7 / mount.width) * 0.65;
 			ctx.scale(fit, fit);
 		}
-		drawNonEngineFitting(ctx, mount, weaponAngles?.[mount.key]);
+		if (!fittingPainter?.(ctx, mount))
+			drawNonEngineFitting(ctx, mount, weaponAngles?.[mount.key]);
 
 		ctx.restore();
 	}
@@ -463,6 +474,11 @@ export function drawNonEngineFitting(
 	weaponAngle = mount.angle,
 ) {
 	if (!mount.part) return;
+	if (mount.part === "light-ion-cannon") {
+		drawIonCannon(ctx, BUILD_FLIGHT_SCALE);
+		return;
+	}
+
 	if (mount.part === "gravity-coil") {
 		drawUtilityArtwork(ctx, "gravity");
 		return;
@@ -694,6 +710,8 @@ function polygon(
 	ctx.fill();
 }
 export function barrelLength(mount: BuildMount) {
+	if (mount.part === "light-ion-cannon")
+		return ION_CANNON_MUZZLE / BUILD_FLIGHT_SCALE;
 	return mount.width / 2 + (mount.part === "rail" ? 1 : 0);
 }
 
@@ -709,12 +727,14 @@ export function weaponPose(
 	const y = ship.pos.y + (mount.x * sin + mount.y * cos) * BUILD_FLIGHT_SCALE;
 	const angle = ship.rotation + localAngle;
 	const length = barrelLength(mount) * BUILD_FLIGHT_SCALE;
+	const lateral =
+		mount.part === "light-ion-cannon" ? ION_CANNON_MUZZLE_SIDE : 0;
 	return {
 		x,
 		y,
 		angle,
-		muzzleX: x + Math.cos(angle) * length,
-		muzzleY: y + Math.sin(angle) * length,
+		muzzleX: x + Math.cos(angle) * length - Math.sin(angle) * lateral,
+		muzzleY: y + Math.sin(angle) * length + Math.cos(angle) * lateral,
 	};
 }
 
@@ -728,7 +748,9 @@ function baseBuildCollisionRadius(build: Loadout) {
 		);
 		const fittings = buildMounts(build).map((mount) => {
 			const forward =
-				mount.part === "rail" || mount.part === "laser"
+				mount.part === "light-ion-cannon" ||
+				mount.part === "rail" ||
+				mount.part === "laser"
 					? barrelLength(mount)
 					: mount.width / 2;
 			const rear =
@@ -762,7 +784,9 @@ function baseBuildCollisionRadius(build: Loadout) {
 		);
 		const fittings = buildMounts(build).map((mount) => {
 			const forward =
-				mount.part === "rail" || mount.part === "laser"
+				mount.part === "light-ion-cannon" ||
+				mount.part === "rail" ||
+				mount.part === "laser"
 					? barrelLength(mount)
 					: mount.width / 2;
 			const rear =
@@ -782,6 +806,17 @@ function baseBuildCollisionRadius(build: Loadout) {
 /** Include every actual accepted engine vertex, including the Scout mounting offset. */
 export function buildCollisionRadius(build: Loadout) {
 	let radius = baseBuildCollisionRadius(build);
+	for (const mount of buildMounts(build)) {
+		if (mount.part !== "light-ion-cannon") continue;
+		const tip = barrelLength(mount);
+		radius = Math.max(
+			radius,
+			Math.hypot(
+				mount.x + Math.cos(mount.angle) * tip,
+				mount.y + Math.sin(mount.angle) * tip,
+			) * BUILD_FLIGHT_SCALE,
+		);
+	}
 	for (const mount of buildMounts(build)) {
 		if (!mount.part || PARTS[mount.part].category !== "E") continue;
 		const offset = engineOffset(build, mount);

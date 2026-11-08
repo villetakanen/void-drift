@@ -1,6 +1,12 @@
 ---
-import ShipBuilder from "../components/ShipBuilder.svelte";
 import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout><ShipBuilder client:only="svelte" /></Layout>
+<Layout>
+	<script is:inline>
+	window.location.replace(
+		`/hangar${window.location.search}${window.location.hash}`,
+	);
+	</script>
+	<p>Hangar has moved. <a href="/hangar">Open Hangar</a>.</p>
+</Layout>

@@ -412,6 +412,7 @@ onMount(() => {
 				);
 			if (context && simulation.salvage)
 				drawSalvageApertures(context, simulation.salvage);
+			if (context) flightFx.drawLfx(context, simulation);
 			renderer.endCamera();
 		}
 		frame = requestAnimationFrame(draw);

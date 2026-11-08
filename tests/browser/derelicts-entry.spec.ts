@@ -6,7 +6,7 @@ test("Hangar opens the current Derelicts encounters with the fitted ship", async
 	const time = new Date("2026-11-03T00:00:00Z");
 	await page.clock.install({ time });
 	await page.clock.pauseAt(time);
-	await page.goto("/builder?chassis=fighter");
+	await page.goto("/hangar?chassis=fighter");
 	await page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }).click();
 	await page.getByRole("button", { name: /^Rail gun\b/ }).click();
 	await page.getByRole("button", { name: "Derelicts", exact: true }).click();

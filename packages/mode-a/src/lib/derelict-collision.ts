@@ -379,3 +379,43 @@ export function castDerelict(
 	}
 	return null;
 }
+
+/** Actual material clipped to a heading-aligned forward acquisition rectangle. */
+export function derelictForwardContacts(
+	shape: DerelictBodyShape,
+	x: number,
+	y: number,
+	angle: number,
+	width: number,
+	range: number,
+): Point[] {
+	const c = Math.cos(angle),
+		s = Math.sin(angle);
+	const boundary = [
+		{ x: 0, y: -width / 2 },
+		{ x: range, y: -width / 2 },
+		{ x: range, y: width / 2 },
+		{ x: 0, y: width / 2 },
+	];
+	return getDerelictWorldPolygons(shape).flatMap((poly) => {
+		const material = clip(
+			poly.map((p) => ({
+				x: (p.x - x) * c + (p.y - y) * s,
+				y: -(p.x - x) * s + (p.y - y) * c,
+			})),
+			boundary,
+		);
+		if (!material.length) return [];
+		const centre = material.reduce(
+			(v, p) => ({
+				x: v.x + p.x / material.length,
+				y: v.y + p.y / material.length,
+			}),
+			{ x: 0, y: 0 },
+		);
+		return [...material, centre].map((p) => ({
+			x: x + p.x * c - p.y * s,
+			y: y + p.x * s + p.y * c,
+		}));
+	});
+}

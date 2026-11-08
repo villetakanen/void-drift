@@ -21,7 +21,7 @@ async function setup(page: Page) {
 }
 
 async function launch(page: Page, source: "title" | "hangar") {
-	await page.goto(source === "title" ? "/" : "/builder?chassis=wasp");
+	await page.goto(source === "title" ? "/" : "/hangar?chassis=wasp");
 	await page
 		.getByRole("button", {
 			name: source === "title" ? "PRESS START" : "Start survival",
@@ -104,7 +104,7 @@ test("a Hangar choice does not change the Wasp launched from title", async ({
 	page,
 }) => {
 	await setup(page);
-	await page.goto("/builder");
+	await page.goto("/hangar");
 	await page
 		.getByRole("radiogroup", { name: "Choose chassis" })
 		.getByText("Corvette", { exact: true })

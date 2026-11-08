@@ -21,6 +21,7 @@ function drawArrival() {
 	if (!ctx) return;
 	const scale = 156 / WASP.fullLength;
 	const build = defaultLoadout("wasp");
+	build.hull[1] = "light-ion-cannon";
 	ctx.scale(2, 2);
 	ctx.translate(520, 90);
 	ctx.rotate(-Math.PI / 6);
@@ -95,7 +96,7 @@ onMount(() => {
 					>
 						PRESS START
 					</button>
-					<a href="/builder" class="btn btn-ghost">HANGAR</a>
+					<a href="/hangar" class="btn btn-ghost">HANGAR</a>
 					<a href="/leaderboard" class="btn btn-ghost">TOP SCORES</a>
 					<a href="/settings" class="btn btn-ghost">SETTINGS</a>
 					<a href="/credits" class="btn btn-ghost">CREDITS</a>

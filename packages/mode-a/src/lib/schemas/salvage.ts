@@ -9,6 +9,12 @@ const EventFields = {
 	time: z.number(),
 };
 export const WeaponEventSchema = z.discriminatedUnion("kind", [
+	z.object({
+		...EventFields,
+		kind: z.literal("ion-cannon"),
+		mountKey: z.string(),
+		distance: z.number().min(0).max(200),
+	}),
 	z.object({ ...EventFields, kind: z.literal("rail") }),
 	z.object({ ...EventFields, kind: z.literal("laser") }),
 	z.object({ ...EventFields, kind: z.literal("collision") }),
@@ -73,6 +79,29 @@ const ShotSchema = z.object({
 	cooldown: z.number().positive(),
 	range: z.number().positive(),
 });
+export const IonCannonSchema = z.object({
+	trigger: z.literal("ship-width-rectangle"),
+	range: z.literal(200),
+	cooldown: z.number().positive(),
+	energy: z.literal(0.2),
+	bands: z.tuple([z.literal(16), z.literal(12), z.literal(8), z.literal(4)]),
+	flashSeconds: z.literal(0.08),
+	dispersal: z.literal(0.65),
+});
+export const ION_CANNON = IonCannonSchema.parse({
+	trigger: "ship-width-rectangle",
+	range: 200,
+	cooldown: 1 / 3,
+	energy: 0.2,
+	bands: [16, 12, 8, 4],
+	flashSeconds: 0.08,
+	dispersal: 0.65,
+});
+export function ionCannonDamage(distance: number) {
+	if (!Number.isFinite(distance) || distance < 0 || distance > ION_CANNON.range)
+		return 0;
+	return ION_CANNON.bands[Math.min(3, Math.floor(distance / 50))];
+}
 export const WeaponConfigSchema = z.object({
 	reserve: z.number().nonnegative(),
 	rail: ShotSchema.extend({

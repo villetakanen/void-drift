@@ -1,0 +1,140 @@
+---
+import DraftBench from "../../../components/studies/derelict-draft-two/DraftBench.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+import "@void-drift/core/styles/buttons.css";
+
+const study = studies.find(
+	(entry) => entry.slug === "derelict-draft-two-2026-11-06",
+);
+---
+
+<StudyLayout study={study}>
+	<aside aria-label="Study outcome">
+		<h2>Aborted / Stopped after 02.2</h2>
+		<p>
+			This study was aborted on 6 November 2026 at the designer’s request. Work
+			through 02.2 was valuable: the hull translation, enlarged hollow energy
+			square, broad outer glow and initial ship comparison are retained. Size
+			was not settled. The subsequent camera comparison was unusable, and
+			repeated corrections followed by process discussion stopped the
+			exploration from progressing. The designer assessed this as a model-fault
+			loop. The rejected 02.3 viewer has been removed. Readiness and
+			implementation scope were not reached.
+		</p>
+	</aside>
+	<section>
+		<h2>01 / Carry the drawing into the game</h2>
+		<p>
+			A giant shard of a monumental space construct: two visible hulls, joined
+			underneath by a darker structure of the same material. Unequal spear-like
+			ends, long planes and the open interior carry its identity. It belongs to
+			a different family from the player’s ships. The supplied second draft
+			establishes the silhouette and colour language for this cycle.
+		</p>
+		<p>
+			A hollow brand-colour square rotates inside and leaves light on the
+			effects layer. The immediate question is how faithfully the drawing
+			survives the game’s rendering and smaller viewing sizes. The hull paths
+			are held fixed during this first translation. Connecting structure,
+			energy, and eventual physical splinters belong to the idea; rupture
+			choreography, collision geometry and encounter scale remain open.
+		</p>
+		<p>
+			The
+			<a href="/lab/studies/derelicts-2026-11-06">previous stopped study</a>
+			remains separate. Its proposed corrections do not define this draft.
+		</p>
+	</section>
+	<details id="translation" open>
+		<summary>02.1 / Same geometry, live light</summary>
+		<h2>02.1 / Same geometry, live light</h2>
+		<p>
+			The Canvas example below uses the supplied SVG’s actual paths and base
+			colours, including its warm-to-cool hue overlay. The dark connecting bed
+			is a flat material fill; the original baked illumination is replaced by
+			light from the rotating square. The square uses the current brand token,
+			which is brighter than the reference green.
+		</p>
+		<DraftBench client:load />
+		<p>
+			The inner square is enlarged by 20% from the initial translation, with a
+			broad halo reaching into the surrounding hulls. The rotating square keeps
+			a black, empty centre while the broad outer glow is retained. Rotation is
+			provisionally one turn in twelve seconds. Glow uses the production
+			persistent FX surface and its shared decay. Pause freezes both; switching
+			glow off lets the existing light fade while the solid square remains.
+			Reset clears the light history. This is a stationary artwork probe, not a
+			flight or breakup simulation.
+		</p>
+		<p>
+			The 36 px view probes the existing wreck’s approximate diameter, not an
+			agreed size for a monumental shard. The 72 and 180 px views leave that
+			design choice visible. Labels describe logical canvas pixels at the
+			bench’s native width.
+		</p>
+		<details>
+			<summary>Supplied second draft / visual anchor</summary>
+			<img
+				src="/studies/derelict-draft-two-2026-11-06/reference.png"
+				width="694"
+				height="1198"
+				alt="Inkscape draft: two long faceted hulls with pale mint, grey and warm upper planes, a dark connecting bed and a luminous hollow green square inside."
+			>
+			<p>
+				<a href="/studies/derelict-draft-two-2026-11-06/source.svg"
+					>Original Inkscape vector</a
+				>. Preserved as supplied. The interactive example draws extracted
+				geometry, not this image.
+			</p>
+		</details>
+		<p>
+			Import feasibility is demonstrated for the intact drawing and a separate
+			energy emitter. The enlarged square, outer glow and black centre received
+			positive visual review. Desired scale remains unresolved. The hue overlay
+			is retained as an explicit study experiment; adopting it for production
+			would need to resolve the flat-fill hull principle. No production
+			art-direction change is established here.
+		</p>
+	</details>
+	<section id="ship-scale">
+		<h2>02.2 / A ship beside a monumental remnant</h2>
+		<p>
+			The enlarged energy square, broad outer glow and black centre are retained
+			following visual review. This comparison changes only the derelict’s size.
+			Each candidate sits beside the same production LHI Wasp, drawn with its
+			starter fittings and the game’s 0.65 flight scale. All three pairs share
+			one viewing scale; the ship stays the same size.
+		</p>
+		<DraftBench
+			client:load
+			comparison
+			label="Derelict and Wasp scale comparison"
+		/>
+		<p>
+			Left: 120 px long. Middle: 240 px. Right: 420 px. The Wasp faces upward
+			beside each remnant, with engines idle. These are candidate on-screen
+			sizes at camera zoom 1, not fixed screen sizes across the game’s automatic
+			zoom. The middle candidate is a starting hypothesis for a substantial
+			encounter; the right tests whether the stronger sense of scale merits
+			occupying more of the view.
+		</p>
+		<p>
+			This stationary comparison establishes visual proportion only. Passing
+			distance, automatic camera framing, collision boundaries and breakup still
+			need a flight trial after a size direction is chosen.
+		</p>
+	</section>
+</StudyLayout>
+<style>
+img {
+	display: block;
+	max-height: 700px;
+	width: auto;
+	max-width: 100%;
+	margin-block: var(--spacing-lg);
+}
+details {
+	margin-block: var(--spacing-xl);
+}
+</style>

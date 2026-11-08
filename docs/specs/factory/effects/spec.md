@@ -361,3 +361,29 @@ opposite its velocity. It is visible throughout the countdown and fades over the
 first 1.5 seconds of flight. Its length scales with speed, capped at 420 world
 units. It uses the shared essential allowance and persistent light decay; pause
 and reset follow the existing surface lifecycle. It does not affect physics.
+
+## Light Ion Cannon LFX
+
+The [cannon](../../game/light-ion-cannon/spec.md) has two presentation passes.
+Its 80 ms active ray is fresh topmost LFX after world, ship, persistent FX and
+salvage apertures, below screen controls. `FlightFx.drawLfx` runs on the freshly
+redrawn scene; active-ray pixels never enter the history surface. A separate
+history canvas is unnecessary for this fresh pass. Play, the mixed-effects bench
+and equipment encounter share this production owner.
+
+LFX follows the current shared muzzle and fixed mount heading, clipping to the
+shorter of original discharge length and current nearest physical obstruction.
+This query never applies damage. Only the blue 65% dispersal treatment enters
+persistent FX, through its source allowance. Full profiles are cached; contact
+clips rather than rescales the transparent tip. Cannon hits activate the shared
+expanding impact plume at their actual contact.
+
+Work is bounded by installed mounts and the existing 128-event ring, with one
+current flash per cannon. No flash histories or emission backlogs are retained.
+Fresh LFX is empty between flashes. Pause redraws the same active flash without
+adding persistent brightness; reset/new simulation clears events and the surface.
+Camera pan/zoom transforms both current geometry and world-fixed history; wrap
+repositions fresh geometry without joining old and new muzzle positions. The
+mixed Lab Weapons workload includes simultaneous twin cannons beside collectors,
+engines, station, missile and fire effects. Performance acceptance remains governed
+by the whole-scene budget above and requires separate sustained measurements.

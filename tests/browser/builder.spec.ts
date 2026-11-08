@@ -14,7 +14,7 @@ test("fit, persist, practise, pause and return to an assembled ship", async ({
 	const fitted = defaultLoadout("fighter");
 	fitted.hull[0] = "heavy-well";
 	const capacity = String(buildStats(fitted).capacity);
-	await page.goto("/builder");
+	await page.goto("/hangar");
 	await expect(
 		page.getByRole("heading", { name: "Hangar", exact: true }),
 	).toBeVisible();
@@ -90,7 +90,7 @@ test("corrupt browser storage recovers to flyable defaults", async ({
 	await page.addInitScript(() =>
 		localStorage.setItem("void-drift-builds-v3", '{"broken":true}'),
 	);
-	await page.goto("/builder");
+	await page.goto("/hangar");
 	await expect(page.getByRole("status")).toContainText("Restored flyable");
 	await expect(
 		page.getByRole("button", {
@@ -220,7 +220,7 @@ test("new engine catalog resets old saves and exposes plasma charging in flight"
 			JSON.stringify({ balanced: {}, tank: {} }),
 		);
 	});
-	await page.goto("/builder");
+	await page.goto("/hangar");
 	await expect
 		.poll(() =>
 			page.evaluate(() => [

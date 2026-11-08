@@ -1,0 +1,176 @@
+---
+import DerelictConstruction from "../../../components/studies/DerelictConstruction.astro";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((entry) => entry.slug === "derelicts-2026-11-06");
+---
+
+<StudyLayout study={study}>
+	<aside aria-label="Study outcome">
+		<h2>Stopped / Not doable in this cycle</h2>
+		<p>
+			This design loop failed. It ended on 6 November 2026 after 02.3 without an
+			accepted derelict design. The retained sketches document the attempt; they
+			are not an approved direction. Readiness and implementation scope were not
+			reached. This outcome does not establish that derelicts are infeasible as
+			a game feature.
+		</p>
+	</aside>
+	<section>
+		<h2>01 / Something broken, still carrying energy</h2>
+		<p>
+			A derelict is a remnant of a broken megastructure, sent toward known
+			systems. Its passage through the solar system runs from border to border:
+			the player intercepts something already on a journey. Destroying it
+			creates physical splinters and releases an energy fragment for the player
+			to chase. The encounter moves from recognition, through rupture, into a
+			pursuit through dangerous debris.
+		</p>
+		<p>
+			The test-flight trial supplies the starting interaction: a passing wreck
+			breaks into four damaging fragments and one drifting energy pickup. Its
+			current near-ship spawning and finite lifetime do not yet establish a full
+			border-to-border pass. The study develops the object's identity and that
+			encounter's legibility together. A promising character is a vast structure
+			reduced to one stubborn, coherent remnant: broken edges imply its former
+			scale, while surviving connections make its eventual rupture meaningful.
+		</p>
+		<p>
+			The supplied Split Spine reference offers a distinct material palette,
+			long angular masses and readable planes. Its pieces are too disconnected
+			for the intact derelict, and its bright central crystal does not settle
+			the energy fragment's form. This cycle asks what connected construction,
+			material language and release sequence make the remnant, hazardous
+			splinters and desirable energy read clearly at flight scale. The
+			fragment's appearance and visibility before rupture remain open. The
+			sender, original megastructure's purpose, reward balance and wider
+			progression remain adjacent questions rather than prerequisites.
+		</p>
+		<figure>
+			<img
+				src="/studies/derelicts-2026-11-06/reference.png"
+				alt="Supplied Split Spine inspiration: long faceted grey masses separated around a speculative glowing crystal, with silhouette thumbnails and a small flight-scale view."
+				width="480"
+				height="738"
+			>
+			<figcaption>
+				Supplied visual reference. Material and shape inspiration; the separated
+				construction and crystal are unresolved.
+			</figcaption>
+		</figure>
+	</section>
+	<details id="construction">
+		<summary>02.1 / Blade language and depth</summary>
+		<p>
+			The reference’s long, almost blade-like parts are a quality to retain.
+			Connections and the background beneath the energy need a separate, much
+			darker value range, below both the outer shapes and the fragment.
+		</p>
+	</details>
+	<section id="blades">
+		<h2>02.2 / Geometry needs a character</h2>
+		<p>
+			Long, tapered shapes and a dark connecting bed did not establish what the
+			object was. The construction read as deliberately arranged blades. Shape
+			words alone were insufficient: the next proposal starts with the nature of
+			the original structure and the damage that produced the remnant.
+		</p>
+	</section>
+	<section id="torn-structure">
+		<h2>02.3 / Built before it was broken</h2>
+		<p class="character">
+			<strong
+				>A torn piece of something immense, still held together by a structure
+				that has survived its purpose.</strong
+			>
+		</p>
+		<p>
+			The desired feeling is monumental, wounded and inert, with something still
+			active inside. The sharpness comes from long fractures through structural
+			material. Repeated sections and uninterrupted planes recall its
+			construction; unequal ends and peeled layers describe what happened to it.
+		</p>
+		<div class="hero" id="remnant-portrait">
+			<DerelictConstruction />
+			<div class="scale">
+				<DerelictConstruction small />
+				<span>Approx. 36 px long · static scale probe</span>
+			</div>
+		</div>
+		<div class="comparison" id="structure-reasoning">
+			<article>
+				<h3>Before: a continuous structural member</h3>
+				<DerelictConstruction reconstruction />
+				<p>
+					Dashed continuations propose parallel ribs running far beyond this
+					piece. The repeated cross-section gives the long planes a structural
+					reason. This is a construction hypothesis, not settled megastructure
+					lore.
+				</p>
+			</article>
+			<article>
+				<h3>After: the tear makes the points</h3>
+				<p>
+					One rib stays long and largely whole. A second tears diagonally along
+					its length; a thin lower layer peels away. The other ends retain
+					blunt, broken sections. The result has no matching set of weapon tips
+					and no purposeful nose.
+				</p>
+				<p>
+					A continuous dark body sits underneath. It is the surviving depth of
+					the structure, rather than a set of added brackets. Its recessed
+					interior reserves darkness for the energy fragment, whose form remains
+					open.
+				</p>
+			</article>
+		</div>
+		<p>
+			This round tests whether construction and damage communicate the agreed
+			character. The exact form remains provisional. Ancient age is a story
+			direction, not something these flat planes alone establish. No flight,
+			collision or breakup behavior is demonstrated here; destruction still
+			creates splinters and releases the energy fragment for pursuit.
+		</p>
+	</section>
+</StudyLayout>
+
+<style>
+.hero {
+	max-width: 900px;
+	margin: var(--spacing-lg) auto;
+}
+.comparison {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--spacing-xl);
+	margin-block: var(--spacing-xl);
+}
+article {
+	padding: var(--spacing-lg);
+	border: 1px solid var(--color-border);
+}
+article p {
+	font-size: var(--font-size-body);
+}
+.scale {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-lg);
+	min-height: 64px;
+	color: var(--color-text-muted);
+}
+figure {
+	margin-block: var(--spacing-xl);
+}
+img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+figcaption {
+	max-width: 65ch;
+	margin-top: var(--spacing-md);
+	color: var(--color-text-muted);
+}
+</style>

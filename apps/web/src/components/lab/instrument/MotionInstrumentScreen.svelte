@@ -23,6 +23,8 @@ import { GRAPH_MARGIN } from "./time-graph";
 // container. The pane overlays it with the host's content.
 let {
 	tracks,
+	tick = $bindable(7 * TICK_RATE),
+	scene,
 	burn = $bindable(),
 	measures,
 	bodies = [],
@@ -32,6 +34,9 @@ let {
 	children,
 }: {
 	tracks: Track[];
+	tick?: number;
+	/** Optional world rendering synchronized to the shared time cursor. */
+	scene?: Snippet<[number]>;
 	burn: BurnId;
 	/** Three or four graphs, top to bottom. */
 	measures:
@@ -68,7 +73,6 @@ const CONTROL_TOP = TOP + BLOCK + CONTROL_GAP;
 // The slider's knob (16px) runs along the graphs' time axis.
 const SLIDER = { left: GRAPH_MARGIN.left - 8, right: GRAPH_MARGIN.right - 8 };
 
-let tick = $state(7 * TICK_RATE);
 let hostW = $state(1440);
 let hostH = $state(900);
 const scale = $derived(Math.min(hostW / SCREEN.w, hostH / SCREEN.h));
@@ -86,7 +90,18 @@ const scale = $derived(Math.min(hostW / SCREEN.w, hostH / SCREEN.h));
 			style={`width:${SCREEN.w}px;height:${SCREEN.h}px;transform:translate(-50%,-50%) scale(${scale})`}
 		>
 			<div class="slot" style={`left:${PAD}px;top:${TOP}px`}>
-				<PathPane {tracks} {bodies} {onmovewell} {tick} {scale} size={BLOCK} />
+				{#if scene}
+					{@render scene(tick)}
+				{:else}
+					<PathPane
+						{tracks}
+						{bodies}
+						{onmovewell}
+						{tick}
+						{scale}
+						size={BLOCK}
+					/>
+				{/if}
 			</div>
 			<div
 				class="slot"

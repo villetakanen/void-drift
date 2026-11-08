@@ -13,6 +13,7 @@ import {
 	engineArtId,
 	FIDDLER,
 	FIGHTER,
+	ION_CANNON_ART,
 	LIFE_SUPPORT_DRAIN,
 	PARTS,
 	type PartId,
@@ -41,6 +42,7 @@ let builds = $state(defaultBuilds());
 let chosen = $state<ShipProfileId>("fighter");
 let selected = $state("left");
 let previewMode = $state("Plan");
+let experimental = $state("Off");
 let flying = $state<"test" | "derelicts" | "survival" | null>(null);
 let ready = $state(false);
 let fontsLoaded = $state(false);
@@ -207,18 +209,38 @@ function choose(id: ShipProfileId) {
 {:else}
 	<main class="builder">
 		<header>
-			<a class="brand" href="/"><Logo size="sm" /></a
-			><span
-				>{lab
-					? "SHIP BUILDER LAB / SHARED SYSTEMS"
-					: `HANGAR / ${version}`}</span
-			><a href="/">Return to title screen</a>
+			<div class="brand-context">
+				<a class="brand" href="/" aria-label="Void Drift"><Logo size="sm" /></a>
+				<span
+					>{lab
+						? "SHIP BUILDER LAB / SHARED SYSTEMS"
+						: `HANGAR / ${version}`}</span
+				>
+			</div>
+			<a href="/">Return to title screen</a>
 		</header>
 		<div class="heading">
-			<h1>Hangar</h1>
-			<span class="saved"
-				>{ready ? "BUILDS SAVED ON THIS BROWSER" : "LOADING BUILDS"}</span
+			<div class="workspace-title">
+				<h1>Hangar</h1>
+				<span class="saved"
+					>{ready ? "BUILDS SAVED ON THIS BROWSER" : "LOADING BUILDS"}</span
+				>
+			</div>
+			<section
+				class="experimental"
+				aria-label="Experimental availability"
+				aria-describedby="experimental-availability"
 			>
+				<div class="experimental-control">
+					<span>Experimental</span>
+					<Toggle
+						label="Experimental"
+						options={["Off", "On"]}
+						bind:value={experimental}
+					/>
+				</div>
+				<span id="experimental-availability">Not available yet</span>
+			</section>
 		</div>
 		<div class="chassis">
 			<Toggle
@@ -381,6 +403,17 @@ function choose(id: ShipProfileId) {
 										{/each}
 									</g>
 								</svg>
+							{:else if part.id === "light-ion-cannon"}
+								<svg
+									viewBox="240 40 14 22"
+									width="72"
+									height="56"
+									aria-hidden="true"
+								>
+									{#each ION_CANNON_ART as [color, path]}
+										<path d={path} fill={color} />
+									{/each}
+								</svg>
 							{:else if part.id === "gravity-coil"}
 								<svg
 									viewBox="-24 -30 48 60"
@@ -439,9 +472,11 @@ function choose(id: ShipProfileId) {
 										? `+${part.capacity} energy capacity`
 										: part.id === "coil"
 											? "+1× solar charging"
-											: part.id === "rail" || part.id === "laser"
-												? `${part.id === "rail" ? "Fixed direction · automatic" : "Rotating point defence"} · ${WEAPONS[part.id].energy} energy/shot · Derelicts only`
-												: "Static fitting · no energy draw"}</small
+											: part.id === "light-ion-cannon"
+												? "12–48 damage/s · 3 shots/s · 200 units · 0.2p/shot"
+												: part.id === "rail" || part.id === "laser"
+													? `${part.id === "rail" ? "Fixed direction · automatic" : "Rotating point defence"} · ${WEAPONS[part.id].energy} energy/shot · Derelicts only`
+													: "Static fitting · no energy draw"}</small
 							>
 							{#if part.description}
 								<small>{part.description}</small>
@@ -615,7 +650,27 @@ header {
 	letter-spacing: 0.12em;
 }
 .heading {
-	margin: 26px 0;
+	margin: var(--spacing-lg) 0;
+}
+.brand-context,
+.workspace-title,
+.experimental-control {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-md);
+}
+.experimental {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: var(--spacing-xs);
+}
+.experimental-control {
+	font-size: var(--font-size-body);
+}
+#experimental-availability {
+	font-size: var(--font-size-caption);
+	color: var(--color-text-muted);
 }
 h1 {
 	font-size: var(--font-size-heading);

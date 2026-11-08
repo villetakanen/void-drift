@@ -1,4 +1,5 @@
 import { COLOR, FX_INK, type FxPass } from "@void-drift/core";
+import { weaponPose } from "./build-renderer";
 import { DERELICT_RELEASE_CUE } from "./derelict-geometry";
 import {
 	drawDerelict,
@@ -7,6 +8,8 @@ import {
 	stampDerelictRelease,
 } from "./derelict-renderer";
 import type { SalvageSystem } from "./salvage";
+import { ION_CANNON } from "./schemas/salvage";
+import type { Simulation } from "./simulation";
 
 const LASER_INK = "#ff1028";
 const RELEASE_REACH =
@@ -105,6 +108,7 @@ export function stampWeaponLight(
 				stampDerelictRelease(ctx, event.x, event.y, age, pass);
 			continue;
 		}
+		if (event.kind === "ion-cannon") continue;
 		const collision = event.kind === "collision";
 		if (age > (collision ? 0.2 : 0.08)) continue;
 		const radius = collision
@@ -179,4 +183,94 @@ export function drawSalvageApertures(
 				salvage.time,
 				"aperture",
 			);
+}
+
+// Cached complete blue profiles; clipping never stretches the accepted transparent tip.
+const ionStamps = new Map<boolean, HTMLCanvasElement>();
+function ionStamp(dispersal: boolean) {
+	let stamp = ionStamps.get(dispersal);
+	if (stamp) return stamp;
+	stamp = document.createElement("canvas");
+	stamp.width = 800;
+	stamp.height = 24;
+	const ctx = stamp.getContext("2d");
+	if (!ctx) throw new Error("Ion cannon requires Canvas 2D");
+	ctx.scale(4, 4);
+	ctx.translate(0, 3);
+	const g = ctx.createLinearGradient(0, 0, 200, 0);
+	g.addColorStop(0, dispersal ? "#8cddff" : "#eafaff");
+	g.addColorStop(0.25, "#8cddff");
+	g.addColorStop(0.65, "#29baff");
+	g.addColorStop(1, "#29baff00");
+	ctx.strokeStyle = g;
+	for (const [width, alpha] of [
+		[3, 0.09],
+		[1.333, 0.24],
+		[0.4, dispersal ? 0.65 : 1],
+	]) {
+		ctx.lineWidth = width;
+		ctx.globalAlpha = alpha;
+		ctx.beginPath();
+		ctx.moveTo(0, 0);
+		ctx.lineTo(200, 0);
+		ctx.stroke();
+	}
+	ionStamps.set(dispersal, stamp);
+	return stamp;
+}
+/** Current muzzle presentation is separate from the authoritative discharge hit. */
+export function drawIonCannonLight(
+	ctx: CanvasRenderingContext2D,
+	sim: Simulation,
+	dispersal = false,
+	pass?: FxPass,
+) {
+	const salvage = sim.salvage;
+	if (!salvage) return;
+	for (const weapon of salvage.weapons) {
+		if (weapon.kind !== "light-ion-cannon") continue;
+		const event = [...salvage.events]
+			.reverse()
+			.find((e) => e.kind === "ion-cannon" && e.mountKey === weapon.mount.key);
+		if (
+			event?.kind !== "ion-cannon" ||
+			salvage.time - event.time >= ION_CANNON.flashSeconds
+		)
+			continue;
+		const pose = weaponPose(sim.ship, weapon.mount);
+		const distance = Math.min(
+			event.distance,
+			salvage.ionContact(
+				pose.muzzleX,
+				pose.muzzleY,
+				pose.angle,
+				sim.star,
+				sim.planets,
+			).distance,
+		);
+		if (
+			pass &&
+			(!pass.visible(pose.muzzleX, pose.muzzleY, 200) ||
+				!pass.budget.take(true))
+		)
+			continue;
+		if (!(distance > 0)) continue;
+		ctx.save();
+		ctx.translate(pose.muzzleX, pose.muzzleY);
+		ctx.rotate(pose.angle);
+		ctx.globalCompositeOperation = "lighter";
+		ctx.globalAlpha = pass?.opacity ?? 1;
+		ctx.drawImage(
+			ionStamp(dispersal),
+			0,
+			0,
+			distance * 4,
+			24,
+			0,
+			-3,
+			distance,
+			6,
+		);
+		ctx.restore();
+	}
 }

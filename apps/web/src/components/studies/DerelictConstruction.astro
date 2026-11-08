@@ -1,0 +1,113 @@
+---
+interface Props {
+	reconstruction?: boolean;
+	small?: boolean;
+}
+const { reconstruction = false, small = false } = Astro.props;
+---
+
+<svg
+	viewBox="-250 -145 500 290"
+	role="img"
+	aria-label={reconstruction
+		? "Hypothetical continuous parallel structural ribs shown in outline around the surviving torn section"
+		: "A torn structural segment: long parallel planes, unequal diagonal fractures and a dark continuous lower body"}
+	class:list={["object", { small }]}
+>
+	<g transform="rotate(-17)">
+		{reconstruction && (
+			<g class="ghost">
+				<path d="M-245,-68 H245 V-30 H-245Z M-245,7 H245 V43 H-245Z M-245,55 H245 V73 H-245Z" />
+				<path d="M-245,-56 H245 M-245,19 H245 M-245,61 H245 M-156,-68 V73 M149,-68 V73" />
+			</g>
+		)}
+		<path
+			class="under"
+			d="M-147,-39 -104,-62 129,-56 164,-12 122,54 51,73 -96,65 -166,27 -128,8Z"
+		/>
+		<path
+			class="under-edge"
+			d="M-166,27 -96,65 51,73 122,54 101,46 45,58 -92,51Z"
+		/>
+		<path class="bed" d="M-109,-26 112,-24 128,-3 91,22 -104,26 -133,6Z" />
+		<!-- One surviving upper rib. Long original edges terminate in oblique tears. -->
+		<path
+			class="side"
+			d="M-214,-30 -126,-68 146,-68 121,-45 177,-32 102,-21 -148,-21Z"
+		/>
+		<path
+			class="body"
+			d="M-214,-38 -126,-76 146,-76 121,-53 177,-40 102,-29 -148,-29Z"
+		/>
+		<path class="light" d="M-214,-38 -126,-76 146,-76 116,-61 -129,-61Z" />
+		<path class="edge" d="M-214,-38 -126,-76 146,-76 139,-71 -125,-71Z" />
+		<path class="break" d="M146,-76 121,-53 177,-40 147,-40 107,-52 126,-67Z" />
+		<!-- A second rib follows the same section but splits lengthwise at the left. -->
+		<path
+			class="side"
+			d="M-189,66 -91,4 106,4 166,24 134,36 158,50 -84,50 -119,43Z"
+		/>
+		<path
+			class="body"
+			d="M-189,58 -91,-4 106,-4 166,16 134,28 158,42 -84,42 -119,35Z"
+		/>
+		<path class="light" d="M-189,58 -91,-4 106,-4 166,16 114,11 -86,11Z" />
+		<path class="edge" d="M-189,58 -91,-4 106,-4 123,1 -89,1Z" />
+		<path class="break" d="M166,16 134,28 158,42 132,38 121,26 148,17Z" />
+		<!-- A thin delaminated remnant retains the original parallel direction. -->
+		<path class="side" d="M-125,86 -56,53 97,53 62,74 -42,80Z" />
+		<path class="body" d="M-125,80 -56,47 97,47 62,68 -42,74Z" />
+		<path class="light" d="M-125,80 -56,47 97,47 80,53 -53,56Z" />
+		<path class="edge" d="M-125,80 -56,47 97,47 88,50 -55,51Z" />
+	</g>
+</svg>
+<style>
+.object {
+	/* Provisional material roles, shared by reconstruction and surviving form. */
+	--derelict-edge: #d6cbb5;
+	--derelict-light: #aaa9ad;
+	--derelict-body: #747886;
+	--derelict-side: #414350;
+	--derelict-break: #585967;
+	--derelict-under: #171820;
+	--derelict-under-edge: #242631;
+	--derelict-bed: #101118;
+	display: block;
+	width: 100%;
+	height: auto;
+}
+.small {
+	width: 46px;
+}
+.ghost {
+	fill: none;
+	stroke: var(--color-text-muted);
+	stroke-width: 1;
+	stroke-dasharray: 5 6;
+	opacity: 0.45;
+}
+.edge {
+	fill: var(--derelict-edge);
+}
+.light {
+	fill: var(--derelict-light);
+}
+.body {
+	fill: var(--derelict-body);
+}
+.side {
+	fill: var(--derelict-side);
+}
+.break {
+	fill: var(--derelict-break);
+}
+.under {
+	fill: var(--derelict-under);
+}
+.under-edge {
+	fill: var(--derelict-under-edge);
+}
+.bed {
+	fill: var(--derelict-bed);
+}
+</style>

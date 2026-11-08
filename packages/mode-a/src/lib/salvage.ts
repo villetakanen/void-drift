@@ -5,8 +5,17 @@ import type {
 	Resources,
 	Star,
 } from "@void-drift/core";
-import { type BuildMount, buildMounts, weaponPose } from "./build-renderer";
-import { castDerelict, getDerelictRadius } from "./derelict-collision";
+import {
+	BUILD_FLIGHT_SCALE,
+	type BuildMount,
+	buildMounts,
+	weaponPose,
+} from "./build-renderer";
+import {
+	castDerelict,
+	derelictForwardContacts,
+	getDerelictRadius,
+} from "./derelict-collision";
 import {
 	DERELICT_ENERGY_EJECTION,
 	DERELICT_ENERGY_SOURCE,
@@ -20,11 +29,13 @@ import {
 	type AssembledIonSettings,
 	ION_REFERENCE_MASS,
 } from "./schemas/ion";
-import { buildStats, type Loadout } from "./schemas/loadout";
+import { buildStats, CHASSIS, type Loadout } from "./schemas/loadout";
 import type { SalvagePhysicalState } from "./schemas/salvage";
 import {
 	type DestructionCause,
 	ENCOUNTER,
+	ION_CANNON,
+	ionCannonDamage,
 	SALVAGE,
 	WEAPONS,
 	type WeaponEvent,
@@ -58,7 +69,7 @@ export interface RailShot {
 }
 export interface WeaponState {
 	mount: BuildMount;
-	kind: "rail" | "laser";
+	kind: "rail" | "laser" | "light-ion-cannon";
 	angle: number;
 	readyAt: number;
 	target: number | null;
@@ -105,6 +116,7 @@ export class SalvageSystem {
 	destroyed = 0;
 	playerKills = 0;
 	shotsFired = 0;
+	ionDischarges = 0;
 	laserPulses = 0;
 	hits = 0;
 	energySpent = 0;
@@ -116,11 +128,14 @@ export class SalvageSystem {
 	private scheduleState: number;
 	private trajectoryState: number;
 	private readonly recoilAcceleration: number;
+	private readonly ionAcquisitionWidth: number;
 	constructor(
 		loadout: Loadout,
 		seed: number,
 		ion: AssembledIonSettings = ASSEMBLED_ION_DEFAULTS,
 	) {
+		this.ionAcquisitionWidth =
+			CHASSIS[loadout.chassis].width * BUILD_FLIGHT_SCALE;
 		this.randomState = seed >>> 0;
 		this.scheduleState = (seed ^ 0x9e3779b9) >>> 0;
 		this.trajectoryState = (seed ^ 0x85ebca6b) >>> 0;
@@ -129,7 +144,9 @@ export class SalvageSystem {
 			buildStats(loadout).mass;
 		this.weapons = buildMounts(loadout)
 			.flatMap((mount): WeaponState[] =>
-				mount.part === "rail" || mount.part === "laser"
+				mount.part === "light-ion-cannon" ||
+				mount.part === "rail" ||
+				mount.part === "laser"
 					? [
 							{
 								mount,
@@ -484,6 +501,109 @@ export class SalvageSystem {
 			? retained.body
 			: first?.body;
 	}
+	/** Instant physical contact. Presentation may query this without applying damage. */
+	ionContact(
+		x: number,
+		y: number,
+		angle: number,
+		star: Star,
+		planets: readonly Planet[],
+	) {
+		const dx = Math.cos(angle),
+			dy = Math.sin(angle);
+		let distance = ION_CANNON.range as number;
+		let hit: SalvageBody | undefined;
+		let blocked = false;
+		for (const object of [star, ...planets]) {
+			const d = contactTime(
+				x - object.pos.x,
+				y - object.pos.y,
+				dx,
+				dy,
+				object.radius,
+				ION_CANNON.range,
+			);
+			if (d <= distance) {
+				distance = d;
+				blocked = true;
+			}
+		}
+		for (const body of this.bodies) {
+			if (body.kind === "cell" || body.hull <= 0) continue;
+			const d = this.cast(body, x, y, dx, dy, 0, ION_CANNON.range);
+			if (d < distance || (d === distance && !blocked && !hit)) {
+				distance = d;
+				hit = body;
+			}
+		}
+		return { distance, hit };
+	}
+	/** Forward ship-width by 200 rectangle; acquisition does not steer muzzle rays. */
+	ionTrigger(ship: GameObject, star: Star, planets: readonly Planet[]) {
+		return this.bodies.some(
+			(body) =>
+				body.kind !== "cell" &&
+				body.hull > 0 &&
+				derelictForwardContacts(
+					{ ...body, kind: body.kind === "wreck" ? "wreck" : "fragment" },
+					ship.pos.x,
+					ship.pos.y,
+					ship.rotation,
+					this.ionAcquisitionWidth,
+					ION_CANNON.range,
+				).some((p) =>
+					this.lineClear(ship.pos.x, ship.pos.y, p.x, p.y, star, planets),
+				),
+		);
+	}
+	private fireIonCannons(
+		ship: GameObject,
+		star: Star,
+		resources: Resources,
+		planets: readonly Planet[],
+	) {
+		// Capture ready mounts and the trigger once; hits cannot cancel this volley.
+		const ready = this.weapons.filter(
+			(w) => w.kind === "light-ion-cannon" && this.time + 1e-9 >= w.readyAt,
+		);
+		if (!ready.length || !this.ionTrigger(ship, star, planets)) return;
+		for (const weapon of ready) {
+			if (resources.power + 1e-9 < ION_CANNON.energy) break;
+			const pose = weaponPose(ship, weapon.mount);
+			const { distance, hit } = this.ionContact(
+				pose.muzzleX,
+				pose.muzzleY,
+				pose.angle,
+				star,
+				planets,
+			);
+			resources.power = Math.max(0, resources.power - ION_CANNON.energy);
+			this.energySpent += ION_CANNON.energy;
+			weapon.readyAt = this.time + ION_CANNON.cooldown;
+			this.ionDischarges++;
+			const endX = pose.muzzleX + Math.cos(pose.angle) * distance;
+			const endY = pose.muzzleY + Math.sin(pose.angle) * distance;
+			// Same bounded event ring as other weapons, with current-pose identity for LFX.
+			if (this.events.length >= 128) this.events.shift();
+			this.events.push(
+				WeaponEventSchema.parse({
+					kind: "ion-cannon",
+					id: ++this.eventSequence,
+					x: pose.muzzleX,
+					y: pose.muzzleY,
+					endX,
+					endY,
+					time: this.time,
+					mountKey: weapon.mount.key,
+					distance,
+				}),
+			);
+			if (hit) {
+				this.damage(hit, ionCannonDamage(distance), this.time);
+				this.emit("collision", endX, endY);
+			}
+		}
+	}
 	private fireWeapons(
 		dt: number,
 		ship: GameObject,
@@ -491,7 +611,9 @@ export class SalvageSystem {
 		resources: Resources,
 		planets: readonly Planet[],
 	) {
+		this.fireIonCannons(ship, star, resources, planets);
 		for (const weapon of this.weapons) {
+			if (weapon.kind === "light-ion-cannon") continue;
 			const config = WEAPONS[weapon.kind];
 			let target: SalvageBody | undefined;
 			if (weapon.kind === "laser") {

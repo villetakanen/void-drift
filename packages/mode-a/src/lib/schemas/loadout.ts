@@ -17,6 +17,7 @@ import { ShipProfileIdSchema } from "./ship-profile";
 
 export const EngineIdSchema = z.enum(["ion", "heavy-ion", "fusion", "plasma"]);
 export const PartIdSchema = z.enum([
+	"light-ion-cannon",
 	"rail",
 	"laser",
 	"battery",
@@ -132,6 +133,17 @@ export const CHASSIS = {
 	}),
 };
 export const PARTS = {
+	"light-ion-cannon": PartSchema.parse({
+		id: "light-ion-cannon",
+		name: "Light Ion Cannon",
+		description:
+			"12–48 damage/s · 3 shots/s · 200-unit reach · 0.2p/shot (0.6p/s sustained). Ship-width forward acquisition; offset cannons may miss.",
+		category: "G",
+		mass: 9,
+		thrust: 0,
+		limit: 0,
+		draw: 0,
+	}),
 	rail: PartSchema.parse({
 		id: "rail",
 		name: "Rail gun",

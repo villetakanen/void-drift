@@ -13,7 +13,7 @@ pnpm exec playwright install chromium
 pnpm dev
 ```
 
-Open `http://localhost:4321` for play, `/builder` for Hangar test flight and `/lab`
+Open `http://localhost:4321` for play, `/hangar` for Hangar test flight and `/lab`
 for developer instruments and asset examples. Backend configuration is optional for local flight. Copy the public
 Firebase keys from `.env.example` into ignored `.env.local` to enable shared scores.
 Set `JAVA_HOME` and put its `bin` on `PATH` if Java is not installed system-wide.

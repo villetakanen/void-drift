@@ -1,0 +1,587 @@
+---
+import IonCannonEncounter from "../../../components/lab/IonCannonEncounter.svelte";
+import IonCannonFitting from "../../../components/studies/IonCannonFitting.svelte";
+import IonCannonFlight from "../../../components/studies/IonCannonFlight.svelte";
+import IonCannonTiming from "../../../components/studies/IonCannonTiming.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find(
+	(entry) => entry.slug === "light-ion-cannon-2026-11-08",
+);
+---
+
+<StudyLayout study={study}>
+	<aside aria-label="Study outcome">
+		<h2>Completed / Design and implementation scope accepted</h2>
+		<p>
+			Accepted on 8 November 2026. Parts 03 and 04 record the agreed weapon
+			behaviour, production readiness and ordered implementation scope. The
+			remaining integration questions are explicitly identified there.
+			Production implementation is separate work; acceptance does not claim
+			delivery.
+		</p>
+	</aside>
+	<section>
+		<h2>01 / One precise shot, a diminishing reach</h2>
+		<p>
+			Light Ion Cannon should become a dependable baseline weapon: a directional
+			fitting that fires along one straight line and hits immediately. Its
+			character is a thin, bright ion ray, leaning blue rather than green. The
+			supplied long, faceted barrel, cyan channel and pale side housing are the
+			near-final visual reference. Their proportions need to remain convincing
+			on a ship, both in the builder and at flight scale.
+		</p>
+		<p>
+			The central tension is immediacy against dissipation. A shot must read as
+			one decisive event, while its weakening end communicates limited reach. A
+			fading tip and lingering particles may express that loss, but must not
+			turn the ray into a travelling projectile or a line dragged by the ship. A
+			separate light-effects layer for the brief ray, with residue on the
+			existing persistent effects surface, is a hypothesis to compare in motion.
+		</p>
+		<p>
+			This cycle will investigate the shot’s appearance, useful length and
+			rhythm together with its mounting on real ships. A 100–200-unit reach and
+			one to three shots per second are starting ranges, not decisions. Damage
+			must diminish with distance in whole numbers; thresholds and values follow
+			the experience rather than determine it. Recoil is optional and initially
+			absent. Combat balance, energy cost and final firing controls remain
+			adjacent questions; the study must identify the shipbuilder and gameplay
+			integration needed before production delivery.
+		</p>
+		<figure>
+			<img
+				src="/studies/light-ion-cannon-2026-11-08/concept.png"
+				alt="Supplied Light Ion Cannon concept: long dark faceted barrel, bright blue channel and pale cyan side housing"
+			>
+			<figcaption>
+				Supplied cannon concept. The
+				<a href="/studies/light-ion-cannon-2026-11-08/concept.svg"
+					>original SVG</a
+				>
+				retains the ship comparisons and authored geometry. No world scale has
+				been selected.
+			</figcaption>
+		</figure>
+	</section>
+	<details id="persistence">
+		<summary>02.1 / What remains after an instant shot? — B retained</summary>
+		<h2>02.1 / What remains after an instant shot?</h2>
+		<p>
+			All three proposals fire the same complete 150-unit line at once. The
+			brightness falls towards a transparent tip; the line never grows forward.
+			A removes the ray after an 80 ms flash. B stamps that ray into the
+			existing effects surface. C keeps the brief ray separate and deposits only
+			scattered light into that surface. B tests whether a continuous afterimage
+			gives weight; C tests whether sparse residue preserves the precision of A
+			while making dissipation visible.
+		</p>
+		<IonCannonTiming client:load />
+		<p>
+			Replay a single shot first, then enable three shots at two per second. The
+			time cursor and marked instants expose what survives between shots. B and
+			C use the production persistent surface and its shared 0.1-second
+			half-life; A and C draw their flash directly. C’s residue is fixed,
+			deterministic light, not moving particles. The cannon uses the supplied
+			SVG paths at a provisional 24-unit length beside the production Wasp
+			renderer. This is an illustrative fitting, not an accepted mount or
+			loadout.
+		</p>
+		<p>
+			This stationary timing fixture isolates light persistence. It does not
+			simulate hits, damage, energy, recoil or flight, and cannot establish
+			drift during turns, camera changes or mounting clearance. The Motion
+			instrument currently lacks shot-event comparisons and separate
+			transient-light and residue passes; those are proposed capabilities for a
+			later flight trial, not changes to its contract. A separate production LFX
+			layer remains unselected.
+		</p>
+		<p>
+			At 100 ms after the single shot, A has disappeared, B still reads as a
+			continuous line and C leaves separated blue specks. This establishes a
+			visible difference in persistence, not a gameplay conclusion.
+			<a href="/studies/light-ion-cannon-2026-11-08/after-100ms.png"
+				>Retained 100 ms comparison</a
+			>
+			uses the single-shot default, stationary camera and deterministic residue;
+			no randomness or flight inputs are involved.
+		</p>
+		<p>
+			B / Whole ray afterglow is the preferred appearance and the working
+			hypothesis for continued exploration. Its continuous dispersal fits the
+			game’s FX language. The fading portion may be slightly too bright to read
+			as ion dispersal; that is a tuning question, not a rejection of the
+			continuous afterimage. Preserve this exact B as the comparison reference.
+			The next comparison should reduce the residual brightness while retaining
+			the initial strike, reach, timing and colour, so that dimming does not
+			quietly change the weapon’s rhythm. Range, cadence, fitting and final
+			rendering architecture remain provisional.
+		</p>
+	</details>
+
+	<details id="afterglow">
+		<summary>02.2 / Less light, the same dispersal — 65% selected</summary>
+		<h2>02.2 / Less light, the same dispersal</h2>
+		<p>
+			B’s continuous afterimage is retained. The upper row is the exact 02.1 B
+			reference; the next rows reduce residual brightness to 65% and 35%. All
+			three share the original strike for its first 80 ms. The dimmer proposals
+			then transition over 40 ms to their residual brightness, retaining the
+			same blue-to-transparent profile and production surface decay.
+		</p>
+		<IonCannonTiming afterglow client:load />
+		<p>
+			The initial view is 100 ms after firing, midway through the brightness
+			transition. Compare it with 250 ms, then replay to judge the full event.
+			The hypothesis is that a dimmer afterimage can suggest dispersal while
+			keeping B’s coherent line. Reduced visibility may also make the apparent
+			reach shorter; the physical 150-unit line is identical in every row.
+		</p>
+		<p>
+			This changes only the presentation gain of the accumulated light after the
+			strike, not the shared FX half-life or production renderer. The three-shot
+			option uses the same timing in every row; a new strike restores full gain,
+			including any surviving light from preceding shots. That coupling is a
+			limitation of this scene-surface comparison and should be judged during
+			replay. There are no moving particles, flight, collisions or random
+			inputs. The 65% residual-light variant is selected. The 35% version also
+			remained visually viable, but 65% gave the preferred balance.
+		</p>
+		<p>
+			The retained
+			<a href="/studies/light-ion-cannon-2026-11-08/afterglow-250ms.png"
+				>250 ms capture</a
+			>
+			records the single-shot comparison at 0.50 s. All three remain continuous,
+			with progressively less visible residual light. This is a visual
+			observation; the selected 65% variant carries forward with its unchanged
+			80 ms strike and 40 ms transition.
+		</p>
+	</details>
+
+	<details id="reach">
+		<summary>02.3 / How far should the line reach? — 200 selected</summary>
+		<h2>02.3 / How far should the line reach?</h2>
+		<p>
+			The selected 65% continuous afterglow now accompanies three reaches: 100,
+			150 and 200 world units. All rows use the same Wasp, cannon, scale,
+			initial brightness, 80 ms strike, 40 ms transition and shared decay. Only
+			the ray length changes. The blue-to-transparent profile stretches with it,
+			so each tip disappears at its own endpoint.
+		</p>
+		<IonCannonTiming ranges client:load />
+		<p>
+			The shorter proposal tests a compact, close-range character; 150 retains
+			the previous reference; 200 tests whether extra reach gives satisfying
+			presence or makes this light cannon feel too extensive. Read the common
+			50-unit ruler spacing against the identical ships. Replay once, then
+			enable the three-shot sequence to see the repeated impression.
+		</p>
+		<p>
+			This is an appearance comparison at a fixed camera and 3 px/unit, not a
+			combat trial. Longer rays contain more visible light because their width
+			and local brightness stay the same. No damage bands, targets or collisions
+			are implied by the rulers; the transparent endpoint is a visual limit, not
+			evidence of readable hit range. Flight-scale readability, aiming, mounting
+			and fire cadence still need investigation. 200 units is selected: it feels
+			fair and remains a local reach rather than an excessive one.
+		</p>
+		<p>
+			The
+			<a href="/studies/light-ion-cannon-2026-11-08/reach-30ms.png"
+				>retained reach comparison</a
+			>
+			records the single shot at 0.28 s, 30 ms after firing, with a stationary
+			camera and no randomness. It preserves the common scale and the three
+			stretched fade profiles for review.
+		</p>
+	</details>
+
+	<details id="cadence">
+		<summary>02.4 / A shot, or a stream? — 3/s selected</summary>
+		<h2>02.4 / A shot, or a stream?</h2>
+		<p>
+			200 units is retained with the selected 65% continuous afterglow. The
+			three rows now fire at one, two and three shots per second. Reach, cannon,
+			brightness, width, colour and decay are identical. Each train starts at
+			0.25 seconds; only the interval between shots changes.
+		</p>
+		<IonCannonTiming cadence client:load />
+		<p>
+			Replay to compare the gaps between shots: whether a deliberate pulse feels
+			satisfying, and whether the faster train still reads as separate strikes.
+			A common 1.5-second firing window produces two, three and five shots
+			respectively. The first-strike markers remain available for inspecting the
+			shared flash and dispersal. Three shots per second is selected: the faster
+			rhythm remains visually effective and supports keeping individual shot
+			damage low.
+		</p>
+		<p>
+			This silent, stationary timing study cannot establish aiming difficulty,
+			impact satisfaction, resource cost or combat balance. Damage remains
+			unspecified; faster firing does not imply greater intended damage per
+			second. As in 02.2, each row’s newest strike restores full presentation
+			gain for its surviving afterimage before returning to 65%, so
+			repeated-light overlap is part of the visual comparison. There is no
+			randomness, camera motion, recoil or flight input.
+		</p>
+		<p>
+			The
+			<a href="/studies/light-ion-cannon-2026-11-08/cadence-1290ms.png"
+				>retained 1.29 s capture</a
+			>
+			shows all three 40 ms after their coincident strike at 1.25 s. The faster
+			train retains more overlapping light. This snapshot records overlap;
+			playback is needed to judge rhythm.
+		</p>
+	</details>
+
+	<details id="flight">
+		<summary>02.5 / An afterimage is not the active ray</summary>
+		<h2>02.5 / An afterimage is not the active ray</h2>
+		<p>
+			The all-FX flight trial exposed a separation problem: the world-fixed
+			active line looked as though it was no longer coming from the moving ship.
+			World-fixed persistence remains suitable for ion dispersal, but the active
+			ray needs to follow the muzzle. The all-FX proposal is rejected and its
+			interactive example removed.
+		</p>
+	</details>
+	<section id="lfx">
+		<h2>02.6 / Hard light above, dispersal behind</h2>
+		<p>
+			The active ray now lives on a separate LFX canvas above the entire scene.
+			It clears every frame and draws the full 200-unit line from the current
+			muzzle and heading during each brief flash. Turning and translation carry
+			the active ray with the cannon; no active-ray pixels accumulate.
+		</p>
+		<IonCannonFlight client:load />
+		<p>
+			Only blue ion dispersal is stamped into the existing persistent FX
+			surface, from the current muzzle during the flash. Its emission is reduced
+			to 65%, with a softer core and the shared 0.1-second half-life. Once
+			stamped, dispersal stays in the world and is reprojected through the
+			following camera. LFX is composed last, above the ship and dispersal. This
+			separates active light from its fading history rather than dimming both
+			together.
+		</p>
+		<p>
+			The selected 200-unit reach and three shots per second remain. The
+			five-tick flash is approximately 80 ms at 60 Hz. B3 uses production Wasp
+			movement from rest, with four physics substeps per tick and no randomness;
+			B1 and B2 offer longer straight burns and turns. The instrument retains
+			its 14-second burn selector, graphs and time cursor. Pause before seeking;
+			backward seeks replay FX while LFX redraws the selected instant. The
+			camera follows position, not heading, at 1 px/unit with a 50-unit grid.
+		</p>
+		<p>
+			This study implements the proposed layer split only in the experiment. The
+			fitting remains illustrative. Gravity, engine FX, hits, damage, recoil,
+			arena wrapping and zoom jumps are excluded. A future hit must resolve once
+			at firing; the moving visible flash must not sweep additional damage. The
+			old 40 ms scene-wide dimming transition is replaced by dimmer dispersal at
+			emission; its appearance alongside hard light needs fresh review.
+		</p>
+		<p>
+			The
+			<a href="/studies/light-ion-cannon-2026-11-08/lfx-active-1300ms.png"
+				>retained active-turn view at 1.30 s</a
+			>
+			records B3 with the separate top-layer ray. Layer clearing and replay
+			correctness are checked separately from the visual judgment still needed.
+		</p>
+		<p>
+			The LFX/FX split is accepted: the ray belongs on the fresh topmost LFX
+			pass, and dispersal belongs on persistent FX. The improved connection to
+			the moving ship is the reason for retaining this separation.
+		</p>
+	</section>
+
+	<section id="fitting">
+		<h2>02.7 / A cannon mounted on a ship</h2>
+		<p>
+			The supplied artwork now sits on real weapon-compatible hull mounts of
+			Scout, Wasp, Fighter, Corvette and Fiddler. Its side housing is centred on
+			the mount, leaving the long barrel forward. The production fitting uses
+			the accepted 16-unit flight length. Earlier size comparisons remain in the
+			retained captures.
+		</p>
+		<IonCannonFitting client:load />
+		<p>
+			The left view uses the builder’s shared Preview and Plan renderer,
+			including actual hull occlusion, mount orientation, slot symbols and
+			selected-slot treatment. The right views show the same fitting at 0.65
+			flight scale and enlarged three times. Select a mount to compare
+			placement; the mirror switch fits its geometric counterpart only when a
+			compatible one exists. Other hull equipment is omitted to isolate the
+			cannon.
+		</p>
+		<p>
+			Preview judges the physical object; Plan judges its slot representation.
+			The existing slots, their placement and layering are accepted as given
+			with the selected 16-unit cannon. No mount redesign is required. The
+			production renderer uses the genuine validated part and shared procedural
+			artwork, retaining normal layering and Plan scaling. The Hangar saves and
+			launches this fitting.
+		</p>
+		<p>
+			This is a builder composition study rather than a working equipment
+			purchase or installation flow. The 16-unit flight length is selected,
+			preserving the supplied artwork’s proportions and housing-centred anchor.
+			Existing compatible slots remain unchanged. Multiplicity and firing
+			coordination are not settled by accepting the slot geometry. Catalogue
+			integration, exact muzzle geometry and fitting persistence remain
+			implementation and readiness questions.
+		</p>
+		<p>
+			At the initial 24-unit size, Wasp exposes a long barrel while partially
+			hiding its housing; Scout’s default compatible mount hides the cannon
+			beneath its hull. These are observations of the earlier 24-unit proposal;
+			they do not reopen the accepted slots at 16 units. Retained references
+			show
+			<a href="/studies/light-ion-cannon-2026-11-08/fitting-wasp-24.png"
+				>Wasp</a
+			>
+			and
+			<a href="/studies/light-ion-cannon-2026-11-08/fitting-scout-24.png"
+				>Scout</a
+			>
+			in Preview, single mount, fixed camera, with no randomness. Neither is an
+			accepted fit.
+		</p>
+	</section>
+
+	<section id="production">
+		<h2>Production / Playable cannon encounter</h2>
+		<p>
+			Playtest amendment: automatic acquisition uses a forward rectangle, one
+			flight-scale hull width across and 200 units long, rather than the earlier
+			centreline. Each funded cannon still casts its own straight muzzle ray and
+			can miss.
+		</p>
+		<p>
+			The four implementation slices use the genuine Light Ion Cannon, shared
+			artwork and muzzle, production simulation and production FX/LFX. The
+			experiments above remain supporting evidence. The fitting above now shows
+			the real accepted 16-unit equipment; it no longer uses the rail stand-in.
+			Gameplay and automated verification are separate from owner visual and
+			balance acceptance.
+		</p>
+		<IonCannonEncounter client:load />
+	</section>
+	<section id="readiness">
+		<h2>03 / Ready to scope an alpha weapon</h2>
+		<p>
+			The accepted weapon is a 16-unit fitting on existing compatible slots,
+			with a 200-unit instant ray at three shots per second. Four equal 50-unit
+			distance bands deal 16, 12, 8 and 4 integer damage per hit. The builder
+			displays 12–48 damage/s per cannon. Each actual discharge costs 0.2p;
+			sustained firing costs 0.6p/s per cannon.
+		</p>
+		<p>
+			Automatic fire is triggered by an object intersecting the ship’s forward
+			centreline within reach. The trigger fires all ready linear weapons. Each
+			cannon casts its own straight muzzle line, stops at its first target and
+			resolves damage once at discharge. A side-mounted cannon can miss the
+			small object that triggered the volley; that is intended. Hits add the
+			existing laser-style impact plume. The active ray remains on topmost LFX;
+			only dispersal persists on FX.
+		</p>
+		<p>
+			The current salvage system already owns weapon cooldowns, power debit,
+			ray/body intersection, first-contact obstruction and damage events. Its
+			laser aims independently and only fires after finding a muzzle-line hit;
+			the cannon instead needs a shared centreline trigger and must allow paid
+			discharges that miss. Existing first-hit and impact-event code is
+			reusable, but the new integer falloff must use each muzzle’s actual
+			contact distance. The current shared ten-power reserve is an existing
+			policy to reconcile explicitly with the new weapon, not an additional
+			agreed cannon cost.
+		</p>
+		<p>
+			Production delivery requires a genuine part identifier and Zod contracts,
+			shared procedural cannon artwork and muzzle geometry, catalogue
+			statistics, loadout persistence, and the LFX pass in the gameplay
+			renderer. The study’s rail stand-in and supplied-SVG painter are fixtures,
+			not production integration. The existing impact/collision FX provides the
+			plume machinery; its activation at the cannon’s actual contact must be
+			verified.
+		</p>
+		<p>
+			No further visual exploration blocks scoping. Implementation must define
+			exact band-edge conventions, eligible trigger objects and occlusion using
+			the game’s real collision geometry, plus deterministic allocation when
+			power cannot fund every ready cannon. These are bounded integration
+			details, with any consequential departure returned for design review.
+			Automated checks must cover centreline triggering, offset misses, first
+			contact, band boundaries, power debit, cooldowns and pause/reset; playable
+			review must assess hits and LFX attachment separately. Combat balance
+			remains provisional until that trial.
+		</p>
+	</section>
+	<section id="scope">
+		<h2>04 / Deliver one complete baseline weapon</h2>
+		<p>
+			The implementation target is a playable alpha Light Ion Cannon, fitted
+			through the existing Hangar and exercised through real encounters. Retain
+			the supplied form at 16 world units in flight, existing slots, a 200-unit
+			ray, three shots per second, integer 16/12/8/4 damage bands, 0.2p per
+			discharge, centreline-triggered automatic volleys, first-target stopping,
+			laser-style impact plume, fresh topmost LFX and 65% dispersal on FX.
+		</p>
+		<p>
+			<strong>Design-principle disclosure:</strong>
+			no change to
+			<code>docs/design.md</code>
+			is proposed. This agreed automatic weapon adds no firing button and does
+			not retune movement. The scope was accepted on 8 November 2026; production
+			implementation is separate work.
+		</p>
+
+		<h3>1 / Equipment and shared geometry — medium</h3>
+		<p>
+			Add a genuine Light Ion Cannon part ID and validated weapon definition
+			before changing consumers. Define the four damage bands, rate, energy per
+			shot and range together, rather than deriving gameplay from builder
+			strings. Convert the supplied paths to shared procedural Canvas artwork;
+			preserve their silhouette, colours, proportions and housing-centred mount
+			anchor. Derive the muzzle from that same geometry. A 16-unit flight extent
+			corresponds to the shared 0.65 hull-to-flight transform, not a second
+			independently scaled drawing.
+		</p>
+		<p>
+			Owners: mode-a loadout and salvage Zod schemas, part catalogue, build
+			renderer and weapon-pose geometry; shared artwork belongs in the
+			appropriate reusable drawing owner. Add a cannon contract under
+			<code>docs/specs/game/</code>
+			alongside its implementation. Deliver an inspectable real fitting in the
+			canonical equipment Lab and this study. Check compatible and incompatible
+			slots, geometry/muzzle agreement, existing saved-loadout parsing and
+			unchanged existing equipment. No new dependency is needed.
+		</p>
+
+		<h3>2 / Centreline-triggered instant volleys — large</h3>
+		<p>
+			Depends on slice 1. Extend the simulation-owned weapon system with one
+			ship-centreline detection result per firing update. Snapshot the eligible
+			ready cannons for a volley before resolving its hits, so destruction by
+			the first cannon cannot cancel the remaining volley. Each funded cannon
+			fires along its own muzzle line and pays 0.2p even when that line misses.
+			Resolve the nearest actual contact, apply one integer damage amount by
+			muzzle-to-contact distance, and start its one-third-second cooldown. Empty
+			centreline means no automatic discharge. Do not inherit rail recoil or
+			laser tracking.
+		</p>
+		<p>
+			Owners: salvage simulation, collision helpers and weapon-event schema. The
+			new cannon contract must specify exact edges at 50, 100, 150 and 200
+			units; intended default is the lower-damage band at each internal boundary
+			and inclusion of the 200-unit endpoint. Reuse current damageable encounter
+			objects and world obstruction geometry; exclude collectible energy from
+			triggering. Confirm those integration defaults, the existing ten-power
+			reserve and insufficient-volley-power allocation before implementing them
+			if they change intended behaviour. Do not silently give other weapons the
+			new trigger policy.
+		</p>
+		<p>
+			Evidence: deterministic tests for the four bands and their boundaries,
+			first-target blocking, no penetration, centreline activation, side-mounted
+			misses, all-ready volley behaviour when the first hit destroys the
+			trigger, per-cannon cooldowns, paid misses, low-power handling and
+			effects-disabled gameplay equivalence. This slice can deliver simulation
+			correctness before final visual integration.
+		</p>
+
+		<h3>3 / Production hard light, dispersal and impact — medium to large</h3>
+		<p>
+			Depends on slices 1 and 2. Add a bounded, fresh LFX pass above the game
+			scene, shared by play and the mixed-effects Lab. Active rays use the
+			current muzzle and heading for the approximately 80 ms visible flash;
+			damage stays tied to the single discharge event. Paint only blue dispersal
+			into the persistent FX surface at the selected 65% emission treatment.
+			Reuse the existing impact plume at the actual first contact. Keep the
+			accepted transparent tip and blue ion identity.
+		</p>
+		<p>
+			Owners: FlightFx, salvage renderer, FlightDeck and the mixed-effects
+			bench; update <code>docs/specs/factory/effects/spec.md</code> with LFX
+			ordering, bounded work and lifecycle. Separate hit data from current
+			presentation state. How a muzzle-following flash terminates against a
+			moving hit target needs an inspectable hit trial: it must not show
+			penetration or sweep fresh damage while turning. Treat an unresolved
+			result as a focused return to exploration, not permission to alter hit
+			semantics.
+		</p>
+		<p>
+			Check empty LFX between flashes, muzzle attachment during movement and
+			turns, dispersal remaining in world space, pause without accumulation,
+			reset, wrap without bridging, camera pan and zoom. Exercise sustained
+			multiple cannons alongside engines and impacts in the mixed Lab, measuring
+			against the existing effects budget. Passing lifecycle tests does not
+			establish visual fidelity or performance acceptance.
+		</p>
+
+		<h3>4 / Hangar delivery and playable review — medium</h3>
+		<p>
+			Catalogue and persistence work can follow slice 1; end-to-end review
+			depends on slices 2 and 3. Offer the real cannon through existing
+			compatible slots and both Preview/Plan views, without moving slots. Show
+			<strong>12–48 damage/s</strong>
+			per cannon, three shots/s, 200-unit reach and <strong>0.2p/shot</strong>;
+			0.6p/s is the continuous-fire equivalent, not an idle drain. Preserve
+			keyboard and landscape touch flight controls. Retain the intended low
+			per-hit damage rather than rebalancing before play.
+		</p>
+		<p>
+			Owners: ShipBuilder and its catalogue, loadout storage/handoff, title and
+			flight consumers. Update <code>docs/specs/game/hangar/spec.md</code> and
+			the cannon contract with actual delivered behaviour. Verify installation,
+			removal, multiple fittings, save/reload and launch handoff on real ships.
+			Keep existing outfits compatible; changing starter loadouts is outside
+			this slice unless explicitly agreed.
+		</p>
+		<p>
+			Finish with a playable small-target encounter demonstrating deliberate
+			side-cannon misses, a close and distant hit, a stopped ray and plume, and
+			a moving/turning volley. Inspect the cannon at builder and flight scale.
+			Run affected unit, browser, type, contract and build gates required by
+			development guidance; report failures and unavailable checks separately.
+			Human review judges connection, rhythm, impact and balance independently.
+		</p>
+
+		<h3>Delivery boundary</h3>
+		<p>
+			These are four reviewable slices, not four independent releases. Geometry
+			enables simulation and catalogue work; simulation enables real LFX/impact
+			events; the final encounter joins them. The largest uncertainty is
+			production layer lifecycle and hit presentation during turns, followed by
+			volley power policy. Sizes are relative implementation estimates,
+			excluding design-review waiting time. No multiplayer, new weapon families,
+			gravity/friction changes, mount redesign, paid services or publication is
+			included. Production behaviour remains unchanged by this scope document.
+		</p>
+	</section>
+</StudyLayout>
+
+<style>
+section > p {
+	max-width: 72ch;
+}
+figure {
+	margin: var(--spacing-lg) 0;
+}
+img {
+	display: block;
+	width: auto;
+	max-width: 100%;
+	height: 420px;
+	object-fit: contain;
+	background: var(--color-void);
+}
+figcaption {
+	margin-top: var(--spacing-md);
+	max-width: 72ch;
+	color: var(--color-text-muted);
+}
+</style>

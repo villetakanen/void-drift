@@ -49,7 +49,7 @@ $effect(() => {
 		aria-label="Flight-ready Fiddler with nine slots; centre weapon or support mount selected"
 	></canvas>
 	<p>187 hull mass · 9 slots · Wasp-size black glass</p>
-	<a class="btn btn-filled" href="/builder?chassis=fiddler"
+	<a class="btn btn-filled" href="/hangar?chassis=fiddler"
 		>Fit and fly Fiddler</a
 	>
 	<p>

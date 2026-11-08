@@ -1,5 +1,228 @@
 # Hangar
 
+## Purpose and intended game role
+
+### Blueprint
+
+The Hangar is the player's base for choosing, equipping and preparing the ship
+they actually play with. Players return here to develop their setup, understand
+equipment tradeoffs and test changes before flying. Test flight supports ship
+preparation; unrestricted experimentation is not the Hangar's enduring purpose.
+
+Choosing a ship and changing its loadout automatically establishes the active
+setup, without a separate Apply or Use this ship action. The title screen displays
+that ship and loadout, and Start launches that same setup. The Hangar is the home
+for building and returning to revise a setup, including trying newly developed
+ships and equipment.
+
+Equipment progression eventually involves earning and buying equipment. During
+alpha and potentially beta, Experimental mode provides access to experimental
+ships and equipment alongside content eligible for leaderboard play. With
+Experimental enabled, runs remain playable and display their run score, but are
+ineligible for leaderboard submission. “No scoring” means no leaderboard
+eligibility, not removal of the player's score feedback. Turning Experimental off
+is not by itself a promise of eligibility; handling a setup that still contains
+experimental content requires the decision below.
+
+This purpose guides the opening design; it does not require printing explanatory
+purpose text on the game screen or prescribe a component called Header. The
+opening identifies the preparation workspace and, when experimental functionality
+is implemented, communicates the experimental and leaderboard-eligibility state.
+
+### Contract
+
+#### Definition of Done
+
+These unchecked criteria express the agreed future game role, not implemented
+behavior. The bounded opening work below still reserves an inert toggle; connecting
+active setups, progression and experimental eligibility is separate implementation
+scope. The preserved lower specification is not refreshed by these decisions.
+
+- [ ] P1: After selecting a ship and changing its fittings in the Hangar, returning
+  to the title screen shows that ship with those fittings without an Apply action;
+  Start launches the same setup.
+- [ ] P2: With functional Experimental mode enabled, experimental ships and
+  equipment are available to try; completing a run displays its score while
+  leaderboard submission is unavailable and blocked.
+- [ ] P3: The player can identify experimental mode and leaderboard ineligibility
+  before starting an experimental run and in its results.
+
+#### Scenarios
+
+```gherkin
+Feature: Prepare the active ship and understand experimental play
+
+  Scenario: Carry a prepared setup to the main game
+    Given I select a ship and change its fittings in the Hangar
+    When I return to the title screen without applying or confirming the setup
+    Then the title screen displays that ship and loadout
+    When I press Start
+    Then the run uses that same setup
+
+  Scenario: Keep score feedback without leaderboard eligibility
+    Given functional Experimental mode is enabled
+    When I complete a run
+    Then I can see my run score
+    And the run cannot be submitted to the leaderboard
+```
+
+### Decisions reserved for later scope
+
+- **Progression:** earning and buying equipment is the intended direction; economy,
+  ownership and purchase rules require their own contracts.
+- **Experimental exit:** what happens when Experimental is turned off while the
+  active setup contains experimental content? Setup validity and eligibility must
+  be resolved before functional gating is implemented.
+- **Possible extensions:** multiple saved setups per ship, additional recreational
+  modes and Experimental unlocking all equipment regardless of ownership remain
+  possibilities, not requirements.
+- **Persistence:** active-setup retention across reloads, devices or accounts is
+  unspecified. Future data changes require Zod contracts before consumer changes.
+
+## Opening and navigation
+
+### Blueprint
+
+The Hangar opening identifies the destination and provides navigation back to the
+main title screen. This bounded redesign covers only the first two visual rows
+above ship selection and the public Hangar route. The ship selection row is the
+boundary: its layout, content and behavior, and everything below it, remain outside
+this redesign. The retained assembly specification below is not refreshed or
+revalidated by this opening contract.
+
+The intended public route is `/hangar`, replacing `/builder` as the destination of
+Hangar navigation. The logo links to the main title screen at `/`. The opening
+contains an **Experimental** control with **On** and **Off** states. Selecting either
+state updates the control's visible and accessible selection only; experimental
+functionality remains inactive in both states. This is a reserved control, not a
+feature gate for ships, fittings, flight or other existing behavior.
+
+The opening composes the existing shared brand and control definitions, following
+[the design system](../../factory/design-system/spec.md) and `docs/design.md`.
+The logo retains its accessible name and keyboard-operable link. The Experimental
+control uses the shared input interaction and focus conventions. Its presentation
+uses the label **Experimental**, ordered options **Off | On**, and supporting text
+**Not available yet** in both states. For this inert control, Off is the initial
+state on a fresh page load; selection is local UI state and is not persisted.
+Neither state makes a leaderboard-eligibility claim.
+
+#### Opening composition
+
+Use two compact rows, followed immediately by the existing ship selection row:
+
+```text
+∅·Δ  [quiet version/context]                     Return to title screen
+
+HANGAR  [quiet save status]                      Experimental  [ Off | On ]
+                                                Not available yet
+
+                     existing ship selection row
+```
+
+- **Navigation row:** the shared logo sits at the left; the explicit “Return to
+  title screen” link sits at the right. Both navigate to `/`. Existing version or
+  Lab-context information remains secondary beside the logo.
+- **Workspace row:** Hangar is the primary heading on the left, with browser-save
+  status as quiet supporting information. The Experimental control sits at the
+  right with its availability message directly below it.
+- Keep the opening compact and the ship chooser as the first prominent working
+  area. Use shared spacing, typography and control tokens. Exact spacing is an
+  implementation detail; the two-row grouping and relative emphasis are the design.
+- The opening contains no Apply action or purpose paragraph. Its name in this spec
+  is “Hangar opening”; semantic HTML and component ownership follow the existing
+  shared-component rules rather than requiring a component named Header.
+- When functional experimental mode is implemented in a later scope, availability
+  copy gives way to actual mode/eligibility feedback, such as “Experimental ·
+  Leaderboards disabled” when On. This opening implementation retains the inert
+  availability message.
+
+#### Source boundaries
+
+- `apps/web/src/pages/hangar.astro` mounts
+  `apps/web/src/components/ShipBuilder.svelte`. Its `<header>` and `.heading` are
+  the two opening rows; `.chassis` begins the excluded ship selection region.
+- The current header contains `apps/web/src/components/Logo.svelte`, Hangar/version
+  information and a separate “Return to title screen” link. The second row contains
+  the Hangar heading and browser-save status. Preserve their information and
+  truthful states in the two-row composition above.
+- `apps/web/src/components/TitleScreen.svelte` links Hangar to `/hangar`.
+  Player-facing Hangar entry links use the same public destination.
+- `apps/web/src/components/inputs/Toggle.svelte` owns shared option selection;
+  `packages/core/src/lib/styles/tokens.css` owns visual tokens. The header markup
+  is currently in `ShipBuilder`, rather than a separately imported header component.
+  The composition above settles placement; extracting a shared header component
+  is not a requirement of this change.
+- `/lab/builder` mounts the same assembly component. Renaming that Lab route is
+  outside this public-route requirement. Shared opening changes remain inspectable
+  in the Lab at widths of 1280px and above.
+- In this bounded opening work, the Experimental control has no loadout or
+  simulation contract. Existing save schemas and stored builds remain unchanged. Any future persisted setting requires
+  its own agreed contract and schema-first definition before consumers change.
+
+### Contract
+
+#### Definition of Done
+
+The bounded opening and public route are implemented. Automated checks cover
+navigation and local control state; owner visual and experience acceptance remains
+separate from implementation verification.
+
+- [x] O1: Opening `/hangar` displays the Hangar; player-facing Hangar entry links
+  target it. Valid `chassis` queries retain their selection behavior and invalid
+  queries retain safe fallback behavior at the new route.
+- [x] O2: Activating either the opening logo or “Return to title screen” link by
+  pointer or keyboard reaches the main title screen at `/`. The logo link has an
+  accessible name identifying Void Drift.
+- [x] O3: Experimental exposes On and Off, with a visible and accessible selected
+  state that changes through pointer and keyboard input. Its presentation makes
+  the lack of experimental functionality clear in either state.
+- [x] O4: Switching Experimental in either direction leaves the ship selection,
+  fittings, saved builds, available actions and flight behavior unchanged.
+- [ ] O5: Visual review confirms the agreed opening arrangement above ship
+  selection, with existing heading, version/context and save-status information
+  accounted for. The ship selection row and all lower regions retain their
+  content, arrangement and interactions. Shared composition is inspected in the
+  Lab at a supported width; automated checks do not establish visual acceptance.
+
+#### Regression guardrails
+
+Opening controls preserve the existing assembly and flight workflow. Route migration
+preserves supported ship deep links at `/hangar`. Save status continues to reflect
+loading, recovery and storage limits; changing placement does not establish that
+existing status defects are fixed. Shared logo and control definitions retain their
+accessibility and visual ownership. Lower-section discrepancies remain separate work.
+
+### Implementation boundary
+
+The opening uses the existing Logo and Toggle definitions in ShipBuilder, shared
+with `/lab/builder`. Experimental is local UI state, initially Off, with no
+loadout, persistence or simulation wiring. Active-setup handoff, equipment
+progression and functional experimental gating remain separate work.
+
+The public destination is `/hangar`. The agreed compatibility policy (2026-11-06)
+is to redirect `/builder` to `/hangar`, preserving query parameters. On this static
+site, the compatibility page uses `location.replace`, preserving the fragment too;
+it provides a plain Hangar link when JavaScript is unavailable. The Lab route stays
+`/lab/builder`.
+
+Implementation evidence: `tests/browser/hangar-opening.spec.ts` checks compatibility
+queries, invalid-chassis fallback, pointer/keyboard Experimental selection, unchanged
+assembly and stored builds, reload reset, and keyboard title navigation. The existing
+builder and launch-navigation browser suites cover fitting and flight return flows.
+Production and Lab opening captures at 1440×1000 were inspected for composition;
+O5 remains open for owner visual acceptance.
+
+## Preserved assembly specification
+
+The following sections retain their existing text, including implementation notes,
+acceptance criteria, evidence gaps and open decisions. They cover ship selection
+and the lower workflow and have not been refreshed in this cycle. Their existing
+`/builder` references describe the prior entry context; the opening contract above
+owns the intended public route. The purpose above owns the future active-setup and
+experimental-eligibility direction; retained statements about independent starter
+builds, free fitting and unranked custom survival describe the earlier scope, not
+that future contract. Existing evidence does not verify either intended change.
+
 ## Blueprint
 
 ### Context
@@ -292,3 +515,18 @@ uncommitted work. No tests were run for this specification review.
 
 Structure follows [The Spec](https://asdlc.io/patterns/the-spec/) and
 [Living Specs](https://asdlc.io/practices/living-specs/) (consulted 2026-11-03).
+
+## Light Ion Cannon fitting
+
+The genuine `light-ion-cannon` part is available on existing weapon-compatible
+slots in Preview and Plan, persists in version-2 saved builds and follows the
+normal flight handoff. Engine and support slots reject it. Its catalogue uses the
+same authored geometry as its installed procedural artwork at 16 flight units.
+It shows **12–48 damage/s**, **3 shots/s**, **200-unit reach** and **0.2p/shot**;
+0.6p/s is the continuous-fire equivalent, with zero idle drain. Its mass is 9.
+Existing outfits and starter fittings remain compatible and unchanged.
+
+Automatic fire operates in Derelicts encounters. Test flight retains its existing
+full-resource, encounter-free behavior. The equipment Lab and accepted study also
+provide a deterministic production encounter for inspection. See the
+[cannon contract](../light-ion-cannon/spec.md) for triggering, damage and power.

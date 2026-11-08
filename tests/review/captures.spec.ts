@@ -33,7 +33,7 @@ test("title composition at desktop, tablet and ultrawide sizes", async ({
 });
 
 test("Hangar test flight", async ({ page }, info) => {
-	await page.goto("/builder");
+	await page.goto("/hangar");
 	await page.getByRole("button", { name: "Test flight", exact: true }).click();
 	await capture(page, info, "hangar-test-flight");
 });
@@ -46,7 +46,7 @@ test("production ship preview and assembled hulls", async ({ page }, info) => {
 	await page.clock.runFor(32);
 	await capture(page.locator("canvas").first(), info, "corvette-lab");
 	for (const chassis of ["fighter", "scout", "corvette"]) {
-		await page.goto(`/builder?chassis=${chassis}`);
+		await page.goto(`/hangar?chassis=${chassis}`);
 		await expect(
 			page.getByRole("button", { name: "Test flight", exact: true }),
 		).toBeEnabled();
@@ -67,7 +67,7 @@ test("ion turn, release, counter-thrust and both-engine review", async ({
 }, info) => {
 	await freeze(page);
 	for (const chassis of ["fighter", "scout", "corvette"]) {
-		await page.goto(`/builder?chassis=${chassis}`);
+		await page.goto(`/hangar?chassis=${chassis}`);
 		await page.getByRole("checkbox", { name: "Ion stabilizers" }).check();
 		await page.getByRole("button", { name: /^Heavy ion\b/ }).click();
 		if (chassis === "corvette") {

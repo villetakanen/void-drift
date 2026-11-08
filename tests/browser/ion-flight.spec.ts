@@ -4,7 +4,7 @@ test("optional stabilizers and linked engines persist independently and reach fl
 	page,
 }) => {
 	await page.clock.install();
-	await page.goto("/builder?chassis=fighter");
+	await page.goto("/hangar?chassis=fighter");
 	const stabilizers = page.getByRole("checkbox", {
 		name: "Ion stabilizers",
 		exact: true,

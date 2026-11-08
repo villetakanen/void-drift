@@ -10,12 +10,44 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
 	{
+		slug: "light-ion-cannon-2026-11-08",
+		title: "Light Ion Cannon: an instant line of force",
+		status: "accepted",
+		phase: "scope",
+		question:
+			"How should an instant ion ray look and feel, and what reach and firing rhythm make it a satisfying baseline weapon?",
+	},
+	{
 		slug: "suns-2026-11-07",
 		title: "Suns: stellar character in play",
 		status: "accepted",
 		phase: "scope",
 		question:
 			"How should real stars and the game’s fiction shape suns whose character, behaviour and consequences are readable in play?",
+	},
+	{
+		slug: "derelict-three-2026-11-06",
+		title: "Derelict three: a broken monument, still alive",
+		status: "accepted",
+		phase: "scope",
+		question:
+			"How does the supplied draft become a monumental, broken structure with energy still active inside, while preserving its silhouette and colour language?",
+	},
+	{
+		slug: "derelict-draft-two-2026-11-06",
+		title: "Derelict draft two: the monumental shard",
+		status: "stopped",
+		phase: "exploration",
+		question:
+			"How faithfully can the supplied silhouette, material colours and rotating energy square carry into the game?",
+	},
+	{
+		slug: "derelicts-2026-11-06",
+		title: "Derelicts: a broken structure, a passing opportunity",
+		status: "stopped",
+		phase: "exploration",
+		question:
+			"How does a remnant of a broken megastructure read as one coherent object, then break into dangerous splinters and an energy fragment worth chasing?",
 	},
 	{
 		slug: "run-countdown-2026-11-05",

@@ -17,7 +17,7 @@ for (const width of [1280, 844]) {
 		await page.clock.install({ time });
 		await page.clock.pauseAt(time);
 		await page.setViewportSize({ width, height: width === 1280 ? 720 : 390 });
-		await page.goto("/builder?chassis=fighter");
+		await page.goto("/hangar?chassis=fighter");
 		await page
 			.getByRole("button", { name: "Hull 1 · Equipment: Empty" })
 			.click();
