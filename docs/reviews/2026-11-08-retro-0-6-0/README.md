@@ -241,3 +241,20 @@ Not decisions. Each one is a candidate for a separate review.
   design questions in one loop, not about agents or tooling. It belongs with
   the study-looping question, not the harness. The evidence-staleness command
   stays deferred; the harness loop proceeds on its own merits.
+
+## Findings after the review, 8 November
+
+- `main` was fast-forwarded to `v0.5.6` and pushed; protection now blocks
+  force-push and deletion and requires the `verify` check, with admin bypass
+  kept so a flaky run cannot lock the branch.
+- GitHub Actions has run the full gates on every push since the rebuild. Of the
+  fifteen runs since 5 November, four failed, all in the competition stage,
+  while the same release commit passed from its tag. The uploaded evidence of
+  [run 42461991028](https://github.com/villetakanen/void-drift/actions/runs/42461991028)
+  shows the page still at 2.9 s of survival when the 60 s test timeout hit:
+  software-rendered Chromium on the runner cannot drive the fake-clock frames
+  to the predicted run end in time. Same family as the landing clock race.
+  Harness item; not patched here.
+- The unanchored `artifacts/` ignore rule had hidden `docs/loop-evidence/artifacts/`
+  from git; fixed in `fa5ad4f`. The contracts gate had two regexes that assumed
+  tab indentation; fixed in `3d51381` with the move to two-space indentation.
