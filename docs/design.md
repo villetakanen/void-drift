@@ -14,8 +14,8 @@ in its part 04 (scope), flagged prominently; nothing else changes it.
 ## Intent
 
 A minimal, high-contrast neon space game with readable motion, satisfying inertia and
-short, challenging survival runs. Three ships are understandable choices. Feel and
-fidelity are judged by people playing; automated checks only establish that things work.
+short, challenging survival runs. Three ships are understandable choices. Automated
+checks only establish that things work; they say nothing about feel.
 
 ## Principles
 
@@ -77,7 +77,7 @@ is drawn or studied.
    where a small ship is under 30 pixels long. A detail that reads only when enlarged
    is not part of the ship.
 7. **Judge character, not rendering.** A body that renders correctly can still pose
-   no one. Human design review judges whether the ship is identifiable and has its feeling;
+   no one. The design study decides whether the ship is identifiable and has its feeling;
    automated checks only establish that it draws.
 
 ## Brand

@@ -47,15 +47,16 @@ deferred (8 November 2026).
 
 ## Done
 
-| Item                                                      | Finding | Commit           |
-| --------------------------------------------------------- | ------- | ---------------- |
-| Repair 133 missing Markdown link targets, skills included | 5       | `5223ffb`        |
-| Contracts gate fails on a missing link                    | 5       | `d8f98b9`        |
-| Track `docs/loop-evidence/artifacts/` (anchored ignore)   | 6       | `fa5ad4f`        |
-| Two-space indentation; gate regexes indentation-agnostic  | 5       | `3d51381`        |
-| `main` fast-forwarded to `v0.5.6`, pushed, protected      | 8       | no commit (refs) |
-| Hosted CI removed, required check dropped                 | 9       | `09d57d9`        |
-| 0.6.0 scope recorded                                      | state   | `b3c1e51`        |
+| Item                                                                                      | Finding | Commit           |
+| ----------------------------------------------------------------------------------------- | ------- | ---------------- |
+| Repair 133 missing Markdown link targets, skills included                                 | 5       | `5223ffb`        |
+| Contracts gate fails on a missing link                                                    | 5       | `d8f98b9`        |
+| Track `docs/loop-evidence/artifacts/` (anchored ignore)                                   | 6       | `fa5ad4f`        |
+| Two-space indentation; gate regexes indentation-agnostic                                  | 5       | `3d51381`        |
+| `main` fast-forwarded to `v0.5.6`, pushed, protected                                      | 8       | no commit (refs) |
+| Hosted CI removed, required check dropped                                                 | 9       | `09d57d9`        |
+| 0.6.0 scope recorded                                                                      | state   | `b3c1e51`        |
+| Human experience review out of scope: `AGENTS.md`, `design.md`, `development.md` reworded | tension | HEAD             |
 
 To the designer these are four tasks, not seven: link repair with its gate,
 evidence and formatting, releases and CI, the 0.6.0 note (8 November).
@@ -75,18 +76,8 @@ confirmed item 6.
    reason as item 2.
 4. **Recover `docs/releases/0.5.3.md`** (finding 5). Won't fix, 8 November
    2026: trivial.
-5. **Human experience review is out of scope** (tension, quick win; widened
-   8 November 2026). Three documents say feel is judged by people, separately
-   from automated checks: `AGENTS.md` ("Human experience review assesses feel
-   and fidelity separately from automated correctness"), `docs/design.md`
-   ("Feel and fidelity are judged by people playing"; "Human design review
-   judges whether the ship is identifiable") and `docs/development.md` (a
-   check "does not replace human experience review", twice). Agents read them
-   as a step owed to the repo and flagged its absence. Replace all of them
-   with the decision of 8 November: playtesting by people is outside what
-   agents or the team do in this repository; it never gates work; the
-   repository does not record it, and no definition of ready or done asks for
-   it; no agent asks for proof it happened. Keep `AGENTS.md` under 80 lines.
+5. **Human experience review is out of scope** (tension). Done 8 November
+   2026; see the Done table.
 6. **Retire "owner"** (quick win) in the three skills (`close-loop`,
    `shared-components`, `fx-development`) and in current docs (`development.md`,
    `design.md`, specs). Historic records and plans stay as written. Not a retro

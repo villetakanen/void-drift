@@ -153,7 +153,7 @@ identifiers reached the JavaScript, and smoke-tests that built site in Chromium:
 keyboard flight, pause and the FX Lab controls, with page/asset errors checked. External
 requests are blocked; preparation neither contacts the live backend nor verifies its
 availability. A failed build/smoke or a source edit during preparation cannot produce a
-prepared release. It does not replace full verification or human experience review.
+prepared release. It does not replace full verification.
 
 Each `artifacts/prepared-releases/<run>/` retains a report, build log and smoke captures.
 The report identifies revision, dirty state, source fingerprint, version, environment,
