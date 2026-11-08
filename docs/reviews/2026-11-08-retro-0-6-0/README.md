@@ -61,6 +61,38 @@ missing link targets; specs hold 135 checked and 166 unchecked boxes; the
 factory spec says "implemented alpha gates" with 0 of 13 definition-of-done
 boxes checked; 5 of 16 plans carry a status line the tree contradicts.
 
+## Purpose, restated
+
+Stated by the designer on 8 November after the review: the retrospective
+exists to improve the human team's understanding of the harness, the project
+and the work. Fixes are secondary and are made human in the loop, one approved
+change at a time, after the finding has been explored together. This session
+moved to fixes before that exploration; the record says so.
+
+## The designer's findings
+
+Stated by the designer on 8 November, after the review, as the findings that
+should have opened it. They come before the assistant's ranking below.
+
+- **A. Exploration stops when it turns into discussion.** Exploration is
+  confirming guesses and guessing again when a guess is wrong; it does not
+  discuss or explain. Studies fail when they loop over details that do not
+  answer the design question. The team now spots this more often, not always
+  in time. The assistant's issue 1 below is the evidence for it.
+- **B. No rubric for the design question itself.** The biggest finding: the
+  team often fails to see that a question is too winding, or missing
+  fundamentals, for the study format to answer at all. It gets logged as model
+  or loop failure; in reality part 01 has no way to be evaluated. The evidence
+  base touched this only as "broad scope" (factory lessons §3.9) and the suns
+  candidate lesson; the ranking below folded it into issue 1.
+- **C. The design system is bypassed.** In studies and screens, components
+  were invented in place instead of flagging that the design system lacks them
+  or that the agent did not know how to use it. The evidence digests did not
+  surface this at all; the loop records do not record it as a pattern.
+
+Everything else in this review the designer calls technical: worth learning
+from, not necessarily addressed before the next version or the one after.
+
 ## The pressing and repeating issues
 
 Ranked by how often the records show the issue and how much it costs.

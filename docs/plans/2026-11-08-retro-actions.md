@@ -9,6 +9,35 @@ them without an answer.
 
 Status: open; started 8 November 2026.
 
+## Purpose and method, restated by the designer on 8 November
+
+The retrospective exists to improve the human team's understanding of the
+harness, the project and the work. Fixes are secondary, and they are made
+human in the loop: each finding is explored with the designer before anything
+is changed, and one approved change at a time. A session that reads this board
+starts by exploring, not by fixing.
+
+## The designer's findings, first
+
+Stated by the designer on 8 November after the review (spoken note, quoted in
+[the retro README](../reviews/2026-11-08-retro-0-6-0/README.md#the-designers-findings)).
+These come before every item below.
+
+- **A. Exploration stops when it turns into discussion.** Exploration is
+  confirming guesses and guessing again when wrong; studies fail when they
+  loop over details that do not answer the design question. The team is
+  better at spotting it, not always in time.
+- **B. No rubric for the design question itself.** The biggest finding: the
+  team often fails to see that a question is too winding, or missing
+  fundamentals, for the study format to answer at all. Logged as model or loop
+  failure, it is a missing way to evaluate part 01.
+- **C. The design system is bypassed.** In studies and screens, components
+  were invented in place instead of flagging that the design system lacks
+  them or that the agent did not know how to use it.
+
+Everything else on this board is technical. It may wait for the next version
+or the one after; take an item only when the designer says so.
+
 ## Done
 
 | Item                                                      | Finding | Commit           |

@@ -118,6 +118,32 @@ competition. The same commit passed earlier from the `v0.5.6` tag (run
 - On perf machinery: "if we want to put in some machinery on perf testing,
   thats a big thing to do and maintain, while we still are in very early alpha".
 
+## Designer's note after closure, 8 November
+
+Added to the record after the first closure commit (`4f4749a`), from a spoken
+note the designer pasted. Attributed statements:
+
+- Purpose of the retro: "to improve the human team's understanding of the
+  harness, the project, and everything here"; improvements "are done
+  explicitly human in the loop. Not even like human on the loop"; "we tried to
+  start doing fixes. Instead of trying to explore. Issues."
+- Finding A: exploration "is a work where we confirm guess things, and they're
+  right or wrong. And if they're wrong, we guess new things. We don't discuss.
+  We don't explain"; studies fail because "we in the study start looping over
+  insignificant details which do not answer the design study question".
+- Finding B, "the biggest issue": "we fail to identify when the design question
+  is such that the study format cannot answer it"; "often logged as model
+  failure or loop failure" but in reality "missing any sense of a rubric, a
+  way to evaluate the design question, the zero one at all".
+- Finding C: "we failed to use the design system many times; the components
+  are invented in place instead of flagging that is missing from the design
+  system, or that the agent didn't know how to use the design system".
+- "Everything else is like technical findings, which we might or want to learn
+  from, but we don't even know if we want to address before, like, next
+  version, and one after that."
+- The designer's own assessment: "I should have pointed out my findings for
+  the 0.5 work" at the start.
+
 ## Findings (observations)
 
 - Sub-agent digests were used as the retro's evidence base. The assistant
