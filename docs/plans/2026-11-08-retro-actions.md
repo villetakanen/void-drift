@@ -64,21 +64,17 @@ evidence and formatting, releases and CI, the 0.6.0 note (8 November).
 
 Documents only. Pathspec commits. Items marked **quick win** were marked
 decided by the session of 8 November that wrote this board; the designer has
-confirmed item 6 and has not been asked to confirm items 4 and 5. The others
-need evidence judgment and are explored with the designer first.
+confirmed item 6.
 
 1. **Plan status lines** (finding 5). Dropped 8 November 2026: a plan is a
    map, not the territory, and a status line on it means nothing. Never
    delete a plan.
-2. **Factory definition of done** (finding 5). `docs/specs/factory/spec.md`
-   says "implemented alpha gates" with 0 of 13 boxes checked. Check each box
-   only with evidence (a script, a test, a record); leave unmet boxes
-   unchecked and make the status line true.
-3. **Stale spec status lines** (finding 5). `high-scores` and `ship-select`
-   say PLANNED; `world/systems` DRAFT; four say COMPLETED (2024). Set each to
-   what the tree and the release notes support. Specs carry no history.
-4. **Recover `docs/releases/0.5.3.md`** (finding 5, quick win) from branch
-   `codex/release-0.5.3` into the tree, unchanged.
+2. **Factory definition of done** (finding 5). Won't fix, 8 November 2026:
+   spec material is corrected just in time, when the spec is next worked on.
+3. **Stale spec status lines** (finding 5). Won't fix, 8 November 2026: same
+   reason as item 2.
+4. **Recover `docs/releases/0.5.3.md`** (finding 5). Won't fix, 8 November
+   2026: trivial.
 5. **`AGENTS.md` experience-review line** (tension, quick win). Replace "Human experience
    review assesses feel and fidelity separately from automated correctness"
    with the decision of 8 November: playtests by people happen outside the
