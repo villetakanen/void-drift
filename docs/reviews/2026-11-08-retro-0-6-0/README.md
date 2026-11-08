@@ -223,3 +223,21 @@ Not decisions. Each one is a candidate for a separate review.
    study, and against which model?
 8. What is the definition of a recorded human experience review, so that
    `AGENTS.md`, `design.md` and the memory rule agree?
+
+## Decisions taken on 8 November, after the review
+
+- 0.6.0 "the ion storm" scope is recorded in
+  [the plan](../../plans/2026-11-08-ion-storm-0-6-0.md).
+- Releases move to `main`: fast-forward it to `v0.5.6`, protect it, tag there.
+- A feature or study loop keeps its verification report and decisive logs
+  under `docs/loop-evidence/artifacts/<loop>/` before it closes.
+- Human experience review: playtests by people happen outside the repo process
+  and never gate it; no agent requires or expects such reports in the repo. The
+  `AGENTS.md` line on experience review is a misunderstanding to reword.
+- Memory is not a reliable channel; several agents, not all Claude, work the
+  repo. Durable decisions go into `AGENTS.md`, specs, plans or loop records.
+- The rotating ion point-defence system starts as a design study.
+- The "deeper root cause" mentioned on 5 November was about scope, two large
+  design questions in one loop, not about agents or tooling. It belongs with
+  the study-looping question, not the harness. The evidence-staleness command
+  stays deferred; the harness loop proceeds on its own merits.
