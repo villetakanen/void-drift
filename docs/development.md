@@ -23,17 +23,17 @@ Set `JAVA_HOME` and put its `bin` on `PATH` if Java is not installed system-wide
 `pnpm verify` runs every stage, retains individual results and exits nonzero on any
 failure or source change during verification. It never auto-fixes source.
 
-| Command                 | Evidence                                                                                                         |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `pnpm check:contracts`  | Context and Markdown links, CSS/Canvas parity, runner regressions; size/scope and link warnings are advisory     |
-| `pnpm check:commits`    | Conventional Commit syntax after the adoption baseline                                                           |
-| `pnpm lint`             | Biome formatting/imports/recommended rules, warnings fail                                                        |
-| `pnpm check:types`      | Astro, Svelte, workspace and browser-harness TypeScript; Astro/Svelte warnings fail                              |
-| `pnpm test`             | Physics, stock profile effects, replay, death/reset, camera/wrap                                                 |
-| `pnpm build`            | Static production build                                                                                          |
-| `pnpm test:browser`     | Keyboard/touch movement, cancel, pause, replay/import, saved settings, focus, death/restart and Canvas semantics |
-| `pnpm test:rules`       | Firestore emulator allowed/rejected access cases                                                                 |
-| `pnpm test:competition` | Two browser identities submit completed runs; third reads both scores via emulators                              |
+| Command                 | Evidence                                                                                                                       |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `pnpm check:contracts`  | Context and Markdown links, CSS/Canvas parity, runner regressions; missing link targets fail; size/scope warnings are advisory |
+| `pnpm check:commits`    | Conventional Commit syntax after the adoption baseline                                                                         |
+| `pnpm lint`             | Biome formatting/imports/recommended rules, warnings fail                                                                      |
+| `pnpm check:types`      | Astro, Svelte, workspace and browser-harness TypeScript; Astro/Svelte warnings fail                                            |
+| `pnpm test`             | Physics, stock profile effects, replay, death/reset, camera/wrap                                                               |
+| `pnpm build`            | Static production build                                                                                                        |
+| `pnpm test:browser`     | Keyboard/touch movement, cancel, pause, replay/import, saved settings, focus, death/restart and Canvas semantics               |
+| `pnpm test:rules`       | Firestore emulator allowed/rejected access cases                                                                               |
+| `pnpm test:competition` | Two browser identities submit completed runs; third reads both scores via emulators                                            |
 
 `pnpm verify:quick` runs contracts (including factory regression tests), lint, types
 and unit tests through the same recorded runner. It exits nonzero on failure or

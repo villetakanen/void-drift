@@ -22,7 +22,7 @@ console.log(
 	`Agent entry point: ${lineCount} lines; all context links resolve.`,
 );
 
-// Relative Markdown links across tracked docs warn when their target is missing.
+// Relative Markdown links across tracked docs fail the gate when their target is missing.
 // Links into ignored local evidence (artifacts/) are expected to be absent elsewhere.
 const markdownFiles = execFileSync(
 	"git",
@@ -31,7 +31,7 @@ const markdownFiles = execFileSync(
 )
 	.split("\0")
 	.filter((file) => file && existsSync(file));
-let brokenLinks = 0;
+const brokenLinks = [];
 for (const file of markdownFiles) {
 	const text = readFileSync(file, "utf8");
 	for (const match of text.matchAll(/\]\(([^)\s#]+)(?:#[^)]*)?\)/g)) {
@@ -39,12 +39,17 @@ for (const file of markdownFiles) {
 		if (/^(?:[a-z]+:|\/)/i.test(target)) continue;
 		const path = relative(process.cwd(), resolve(dirname(file), target));
 		if (path.startsWith("artifacts/") || existsSync(path)) continue;
-		brokenLinks += 1;
-		warn(`${file}: link target missing: ${target}`);
+		brokenLinks.push(`${file}: link target missing: ${target}`);
 	}
 }
 console.log(
-	`Markdown links: ${markdownFiles.length} files; ${brokenLinks} missing target(s).`,
+	`Markdown links: ${markdownFiles.length} files; ${brokenLinks.length} missing target(s).`,
+);
+for (const miss of brokenLinks) console.error(`FAIL: ${miss}`);
+assert.equal(
+	brokenLinks.length,
+	0,
+	`${brokenLinks.length} Markdown link target(s) missing`,
 );
 
 // docs/design.md holds experience principles, art direction and brand only.

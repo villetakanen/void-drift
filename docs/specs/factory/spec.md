@@ -148,6 +148,8 @@ provides separate browser/build evidence. Ignored local artifacts are not durabl
 scope. The owner decided on 2026-11-02 that these limits warn rather than block.
 
 - `AGENTS.md` at 80 lines or more. Missing context links still fail the gate.
+  Relative Markdown links in tracked `*.md` files also fail the gate when their target
+  is missing; links into `artifacts/` are exempt.
 - `docs/design.md` above 200 lines (consider moving brand into its own document).
 - In `docs/design.md`: a version or date in a heading, a `/lab/studies/` link, or a
   source path. These mark records, study history and values that belong in feature
