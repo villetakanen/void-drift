@@ -10,6 +10,14 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
   {
+    slug: "ion-point-defence-2026-11-08",
+    title: "Ion Point Defence: a turret that meets the threat",
+    status: "open",
+    phase: "problem",
+    question:
+      "How should a small rotating ion turret look, turn and fire so that it becomes the game’s dependable baseline defence?",
+  },
+  {
     slug: "light-ion-cannon-2026-11-08",
     title: "Light Ion Cannon: an instant line of force",
     status: "accepted",

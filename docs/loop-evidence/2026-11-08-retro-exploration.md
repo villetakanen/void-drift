@@ -2,8 +2,9 @@
 
 Record of the session that explored the designer's findings A, B and C with
 the designer, after the retrospective at 0.5.6. Started from a brief written
-by the previous session; base revision `5c5d736` on `feat/0-5-0`. The record
-is kept while the loop runs; later entries are dated.
+by the previous session; base revision `5c5d736` on `feat/0-5-0`. Closed at the
+designer's request on 8 November 2026 (Europe/Helsinki) at `2acd94f`; entries
+are dated.
 
 ## Intent and scope
 
@@ -131,8 +132,8 @@ verbatim, since a later session reads it as authority.
 ## Later on 8 November: acting on the items
 
 The same session continued after the board was cut back; the designer asked
-to comb the priority-two items and act on them. Parked at `HEAD` of this
-record's commit with an empty working tree.
+to comb the priority-two items and act on them. Parked at `2acd94f` with an
+empty working tree, then closed.
 
 ### Changes delivered
 
@@ -149,6 +150,7 @@ record's commit with an empty working tree.
 | `387ac28` | Item 13: shared-checkout practice stated in four places; first whole-tree commit            |
 | `4c9fa0b` | Board: item 13 done                                                                         |
 | `512d4ad` | Board: item 9 covered by 13, item 11 done, item 14 deferred                                 |
+| `2acd94f` | Board: "How to continue" section; this record's dated entry for the second half             |
 
 Outside commits: five merged worktrees under `.claude/worktrees` (10.5 GB)
 removed with their branches; eight further merged local branches deleted. The
@@ -168,8 +170,11 @@ verification gate was run on any revision.
 
 ### Publication
 
-Nothing pushed. The branch `feat/0-5-0` is ahead of its remote by every
-commit listed in this record.
+Nothing pushed by this session. Direct inspection at closure: `origin/feat/0-5-0`
+is at `206945a` (committed 15:00 Helsinki), so that commit and `7a0762c`'s
+predecessors reached the remote by a push this record does not account for;
+the local branch is 21 commits ahead. 23 commits since the board was created
+at `9f002b3`. No release, deployment or live verification.
 
 ### Human feedback, attributed paraphrase
 
@@ -189,6 +194,8 @@ commit listed in this record.
   (decisions).
 - Items 9, 11, 14: 9 go; 11 delete if faster; 14 not understood, defer to the
   0.6.0 retro. The stash: leave it (decisions).
+- Closing: good work; park here with instructions a later session can follow
+  on "see the instructions"; then close the loop (decisions).
 - The retro's method, said again: surface findings, discuss to the root
   cause, fix what is fixable, take the complex ones to the team.
 

@@ -1,0 +1,74 @@
+---
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find(
+  (entry) => entry.slug === "ion-point-defence-2026-11-08",
+);
+---
+
+<StudyLayout study={study}>
+  <section>
+    <h2>01 / A small turret that turns to meet the threat</h2>
+    <p>
+      Ion Point Defence becomes the game’s default defence: the reference
+      fitting every new ship starts with and every other defence is measured
+      against. It sits in a weapon slot, turns towards the closest target and
+      fires a light ion shot. The shot belongs to the Light Ion Cannon’s family,
+      a thin blue instant ray, with half its reach and, as a starting
+      assumption, half its damage. Like the cannon it fires automatically,
+      without a button.
+    </p>
+    <p>
+      The central tension is legibility against restraint. The player should see
+      the turret working: its round base turning as one solid object that
+      carries the barrel and housing with it, a moment of alignment, then the
+      shot. Yet a baseline fitting is always present on a small hull, so it must
+      not compete with flight or with the ship’s character. Whether a base of a
+      few pixels still reads as rotating at flight scale, and what turning speed
+      feels deliberate rather than snapping or sluggish, are open questions.
+    </p>
+    <p>
+      This cycle will settle the turret’s form, how its rotation reads, its shot
+      and its baseline behaviour: reach, firing rhythm, turning speed and which
+      target counts as closest. The supplied concept with the round base is the
+      likely form; the version without one is a comparison. Combat balance,
+      energy cost and the future of the existing red laser turret remain
+      adjacent questions.
+    </p>
+    <figure>
+      <img
+        src="/studies/ion-point-defence-2026-11-08/concept.png"
+        alt="Supplied concept: the Light Ion Cannon for scale, a point-defence turret with a dark round base under its barrel and pale housing, and the same turret without the base"
+      >
+      <figcaption>
+        Supplied concept. Left, the accepted Light Ion Cannon for comparison;
+        centre, the turret on its round base; right, the turret without a base.
+        No world scale has been selected.
+      </figcaption>
+    </figure>
+  </section>
+  <section><h2>02 / To be developed after 01</h2></section>
+</StudyLayout>
+
+<style>
+section > p {
+  max-width: 72ch;
+}
+figure {
+  margin: var(--spacing-lg) 0;
+}
+img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: 420px;
+  object-fit: contain;
+  background: var(--color-void);
+}
+figcaption {
+  margin-top: var(--spacing-md);
+  max-width: 72ch;
+  color: var(--color-text-muted);
+}
+</style>
