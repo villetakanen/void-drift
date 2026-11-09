@@ -10,7 +10,7 @@ Read for changes to structure, simulation, or data flow. Product intent belongs 
 - Mode A owns the fixed 60 Hz `Simulation`, seeded trials, ship profiles and Firebase boundary.
 - `FlightDeck.svelte` composes the same systems for the game and `/lab/flight`.
 - The FX correction accumulates new stamps on a shared persistent Canvas surface
-  above ships/world and below HUD. Overlap adds light; the whole image decays with
+  above ships/world and below the deck. Overlap adds light; the whole image decays with
   game time. Core owns buffers, stamp caches, bounded moving sparks and scene budgets;
   mode supplies actual engine and collector activity. Engines retain only current
   outlets, not trail history. `/lab/fx` exercises six production simulations together.
@@ -41,6 +41,22 @@ Read for changes to structure, simulation, or data flow. Product intent belongs 
 - Controls update the simulation immediately. If networked moving entities are
   introduced, interpolate snapshots and reconcile meaningful disagreement; send
   essential state. Arena wraps and resets have explicit transition contracts.
+
+## Canonical feature names
+
+Decision of 2026-11-09: the flight screen has two overlay layers, named by what
+they are attached to. Specs, code and Lab pages use these names.
+
+- **World HUD:** markings drawn on the canvas in world coordinates, under the
+  camera transform, such as the sun's field rings. They pan and zoom with the
+  world.
+- **Deck:** the screen-fixed frame around the active area, outside the camera
+  transform, drawn as page elements in the gutters. It holds:
+  - **Instruments:** hull and power in the left gutter; time and score in the
+    right.
+  - **Thrust pads:** at the bottom of each side gutter.
+  - **Info rows:** the top and bottom gutters, holding information such as the
+    mode label, key hints, status lines, the version and the logo.
 
 ## Backend and trust
 

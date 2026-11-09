@@ -25,8 +25,9 @@ never the run.
   [controls](../controls/spec.md) owns command mappings, input aggregation and
   the appearance and arrangement of the thrust pads within the side gutters;
   [dialogs](../dialogs/spec.md) owns modal behavior and focus management.
-  HUD instruments own their values and appearance; this screen provides their
-  placement bounds.
+  The deck's instruments own their values and appearance; this screen places
+  them. The [world HUD](../../../architecture.md#canonical-feature-names) is drawn
+  with the world and belongs to the features that draw it.
 - [Landing page](../landing-page/spec.md) owns the title composition and launch;
   [Test flight](../test-flight/spec.md) owns Practice rules and its return to
   the Hangar through Pause.
@@ -44,9 +45,24 @@ never the run.
 - The rendered scene fills the whole stage, behind every gutter. The active area
   is the camera-fitting boundary, not a rendering clip.
 - The side gutters hold the thrust pads; thrust touches register only on those
-  pads. The top and bottom gutters hold the HUD and play-session actions.
+  pads, at the bottom of each side gutter. At the top, the left gutter holds the
+  hull and power instruments and the right gutter the time and score
+  instruments.
+- At a safe viewport height of 700 CSS px and above, the side gutters hold
+  their instruments, deck buttons and full-height pads without overlap.
+- Just above each pad assembly sits one deck button: Pause on the left, and a
+  Weapons button on the right that shows whether weapons are active or
+  disabled. Each is white text in the pad marking type with a 1 CSS px white
+  border and no fill. Weapons is disabled in every mode and drawn at 50%
+  opacity.
+- The top and bottom gutters hold information, such as key hints, the version
+  and the logo. The bottom gutter holds the mode label and the mode's status
+  lines: `G CLASS / SHARED CHALLENGE` for the stock run, `GOD MODE` for
+  Practice, `UNRANKED` for any other run with parts the stock run does not
+  sanction, `WEAPONS AUTO` with its energy reserve in Derelicts, and engine
+  feedback. No chrome covers the active area.
 - Every flight mode fills the browser viewport with no header, footer, page
-  navigation or page scrolling; the HUD and play-session actions are the only
+  navigation or page scrolling; the deck is the only
   chrome. Play works within ordinary browser chrome, with browser fullscreen
   optional, and respects device safe areas.
 - Touch targets keep at least 44 CSS pixels and are laid out in CSS pixels,
@@ -89,8 +105,18 @@ never the run.
   and shows the rotate-to-continue message before further simulation advancement.
 - [x] Active play exposes no focusable page navigation; Pause and completed-run
   actions provide deliberate exits, preserving the correct launch-source return.
-- [ ] Two-finger engine input works without selection, callouts or document
+- [ ] Two-thumb pad input works without selection, callouts or document
   gestures on iPad Safari; cancellation and lost capture leave no stuck thrust.
+- [ ] Each side gutter holds its thrust pads at the bottom, its deck button
+  just above them (Pause left, Weapons right) and its instruments at the top
+  (hull and power left, time right); the bottom gutter holds the mode label and
+  status lines; no deck part covers the active area.
+- [ ] At a safe viewport height of 700 CSS px and above, each side gutter's
+  instruments, deck button and full-height pads do not overlap.
+- [ ] Pause toggles pause as Escape does; Weapons is disabled and drawn at 50%
+  opacity in every mode; both keep at least 44 CSS px of height.
+- [ ] The mode label reads `G CLASS / SHARED CHALLENGE` for the stock run,
+  `GOD MODE` for Practice and `UNRANKED` for any other run.
 - [ ] Restoring a 4:3 or wider viewport, or the foreground, preserves the run and
   requires Resume, without a time jump or stale thrust.
 - [ ] Pause and game-over dialogs retain keyboard focus behavior and editable
@@ -128,6 +154,13 @@ Scenario: Ultra-wide fills the screen
   When a run starts
   Then the stage fills the viewport without side bars
   And the active area widens with the viewport while the gutters keep their width
+
+Scenario: Deck at the design floor
+  Given a 1280 by 700 viewport
+  When a run starts
+  Then each side gutter shows its instruments, deck button and full-height pads
+  And none of them overlap one another or the active area
+  And the mode label sits in the bottom gutter
 
 Scenario: Narrow while thrusting
   Given a landscape iPad run with both engines held

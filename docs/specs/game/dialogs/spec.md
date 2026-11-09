@@ -43,8 +43,7 @@ Structure: the host is positioned and holds two siblings, the stage (`data-stage
 dialog. The dialog renders `.dialog-layer` (`--layer-overlay`) with the scrim and a `.panel`
 that is `role="dialog"`, `aria-modal="true"`, named by `label`, `tabindex="-1"`.
 
-In FlightDeck the stage is `.flight-stage-layer`: the canvas, the HUD, the engine feedback line
-and the engine pads.
+In FlightDeck the stage is `.flight-stage-layer`: the canvas and the deck.
 
 ## Behaviour
 
@@ -54,8 +53,8 @@ and the engine pads.
 2. **Page isolation.** Siblings along the dialog's ancestor path are inert, including the
    page header. Tab and Shift+Tab wrap within the dialog, and focus cannot move outside it.
    Existing inert state is preserved and counted across dialog handovers.
-3. **HUD and engine pads hide.** Parts marked `data-hud` inside an inert stage are
-   `visibility: hidden`: the HUD, the engine feedback line and the engine pads.
+3. **The deck hides.** Parts marked `data-deck` inside an inert stage are
+   `visibility: hidden`: instruments, thrust pads, deck buttons and info rows.
 4. **The scrim shades the stage.** A `scrim-stage` takes `--scrim-filter` and a `--scrim-tint` colour
    blend, and the scrim layer carries `--scrim-surface`: the game reads as an offline feed behind
    the panel, its colours kept but pulled toward hue 290.
@@ -76,7 +75,7 @@ and the engine pads.
 ### Definition of Done
 
 - [x] Every dialog uses `Dialog.svelte`; no other component sets `role="dialog"` in shared UI.
-- [x] While a dialog is open, its stage is `inert` and its `data-hud` parts are hidden.
+- [x] While a dialog is open, its stage is `inert` and its `data-deck` parts are hidden.
 - [x] Focus moves into a dialog on open and returns to the opener on close (pause, Lab demo).
 - [x] Escape resumes from pause; it does nothing on run complete.
 - [x] `/lab/surfaces` has a live dialog demo on the real component, usable from the keyboard.
@@ -86,7 +85,7 @@ and the engine pads.
 
 Focus remains within the active dialog and the rest of the page is unavailable.
 
-- Tab never reaches the HUD, the engine pads or the canvas while any dialog is open.
+- Tab never reaches the deck or the canvas while any dialog is open.
 - A dialog never leaves its stage inert after it closes.
 - Muted text on a panel keeps 4.5:1 with the star behind it (design-system-core.md, Panels).
 
@@ -96,13 +95,13 @@ Focus remains within the active dialog and the rest of the page is unavailable.
 Scenario: Dialog isolation
   Given any dialog is open
   When the player presses Tab repeatedly
-  Then focus never reaches the HUD, the engine pads or the canvas
+  Then focus never reaches the deck or the canvas
 
 Scenario: Pause and resume from the keyboard
   Given a run in progress with focus on the Pause control
   When the player presses Escape
   Then the Paused dialog opens with focus on Resume
-  And the HUD and engine pads are hidden
+  And the deck is hidden
   When the player presses Escape again
   Then the run resumes and focus returns to the Pause control
 

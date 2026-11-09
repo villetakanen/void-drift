@@ -1,46 +1,10 @@
-import type { Locator, Page } from "@playwright/test";
-import {
-  type PadSide,
-  padAssembly,
-} from "../../apps/web/src/components/inputs/thrust-pads";
-import {
-  type InputAction,
-  litPads,
-  THRUST_PADS,
-  type ThrustPad,
+import type {
+  InputAction,
+  ThrustPad,
 } from "../../packages/core/src/lib/entities/Input";
-import { expect, test } from "../helpers/local-browser";
-
-const PAD_SIDE: Record<ThrustPad, PadSide> = {
-  leftUpper: "left",
-  leftLower: "left",
-  rightUpper: "right",
-  rightLower: "right",
-};
-
-/** A page point inside `pad`, from the same geometry the component draws. */
-async function padPoint(page: Page, pad: ThrustPad) {
-  const side = PAD_SIDE[pad];
-  const box = await page
-    .locator(`.thrust-pads[data-side="${side}"]`)
-    .boundingBox();
-  if (!box) throw new Error(`${side} assembly missing`);
-  const pane = padAssembly(side, box.width, box.height).panes.find(
-    (candidate) => candidate.pad === pad,
-  );
-  if (!pane) throw new Error(`${pad} pane missing`);
-  return { x: box.x + pane.mark[0], y: box.y + pane.mark[1] };
-}
-
-async function expectLit(stage: Locator, action: InputAction | null) {
-  await expect(stage).toHaveAttribute("data-action", action ?? "none");
-  const lit = litPads(action);
-  for (const pad of THRUST_PADS)
-    await expect(stage.locator(`[data-pad="${pad}"]`)).toHaveAttribute(
-      "data-lit",
-      String(lit.includes(pad)),
-    );
-}
+import { THRUST_PADS } from "../../packages/core/src/lib/entities/Input";
+import { test } from "../helpers/local-browser";
+import { expectLit, padPoint } from "../helpers/thrust-pads";
 
 test.describe("thrust pads in the Lab", () => {
   test.beforeEach(async ({ page }) => {

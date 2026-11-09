@@ -14,13 +14,13 @@ const steps = [
 ];
 const cuts = [
   { token: "--cut-size-sm", use: "Small controls" },
-  { token: "--cut-size-md", use: "Buttons, toggle, engine pads" },
+  { token: "--cut-size-md", use: "Buttons and toggle" },
   { token: "--cut-size-lg", use: "Panels" },
 ];
 const layers = [
   { token: "--layer-toast", use: "Status messages over everything" },
   { token: "--layer-overlay", use: "Dialogs and their scrim" },
-  { token: "--layer-hud", use: "HUD and engine pads" },
+  { token: "--layer-hud", use: "Deck: instruments, pads and deck buttons" },
   { token: "--layer-raised", use: "Sticky footers; a pane over its backdrop" },
   { token: "--layer-base", use: "The stage and page content" },
   { token: "--layer-under", use: "Behind content inside an isolated part" },
@@ -139,9 +139,9 @@ let closable = $state(true);
       A live dialog using the game's <code>Dialog</code> component. Opening it
       makes the stage inert and shades it as an offline feed (a 27% pull toward
       the elevation hue, a little dimmed and blurred, with the display's
-      scanlines and darkened edge); the HUD and engine pads hide. Focus moves to
-      the dialog's first control and returns to the opener on close. Try it from
-      the keyboard: Tab never reaches the stage while the dialog is open.
+      scanlines and darkened edge); the deck hides. Focus moves to the dialog's
+      first control and returns to the opener on close. Try it from the
+      keyboard: Tab never reaches the stage while the dialog is open.
       <a href="/">Title screen →</a>
     </p>
     <label class="caption closable">
@@ -151,9 +151,8 @@ let closable = $state(true);
     <div class="feed demo-host">
       <div class="demo-stage" data-stage>
         <div class="star" aria-hidden="true"></div>
-        <p class="demo-hud" data-hud>HULL 100% · POWER 100%</p>
-        <div class="demo-pads" data-hud>
-          <button type="button" class="pad cut-surface">◀ Left</button>
+        <p class="demo-hud" data-deck>HULL 100% · POWER 100%</p>
+        <div class="demo-deck" data-deck>
           <button
             type="button"
             class="btn btn-link"
@@ -161,7 +160,6 @@ let closable = $state(true);
           >
             Open dialog
           </button>
-          <button type="button" class="pad cut-surface">Right ▶</button>
         </div>
       </div>
       {#if open}
@@ -325,25 +323,12 @@ let closable = $state(true);
   color: var(--color-text-muted);
   font-size: var(--font-size-caption);
 }
-.demo-pads {
+.demo-deck {
   position: absolute;
   z-index: var(--layer-hud);
   inset: auto var(--spacing-md) var(--spacing-md);
   display: flex;
-  justify-content: space-between;
-  align-items: end;
-}
-.pad {
-  min-width: 120px;
-  min-height: var(--control-min-height);
-  border: 0;
-  background: none;
-  color: var(--color-text-muted);
-  font: inherit;
-}
-.pad:focus-visible {
-  outline: var(--focus-ring-width) solid var(--color-focus-ring);
-  outline-offset: var(--focus-ring-offset-inset);
+  justify-content: center;
 }
 .display {
   width: 448px;

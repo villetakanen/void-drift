@@ -4,6 +4,7 @@ import {
   drawSunFields,
   Input,
   type InputAction,
+  litPads,
   paintCountdown,
   Renderer,
   type ThrustPad,
@@ -33,6 +34,8 @@ import { onMount } from "svelte";
 import { fitGameScreen, GAME_HEIGHT } from "../lib/game-screen";
 import { settings } from "../lib/stores/settings";
 import Dialog from "./Dialog.svelte";
+import ThrustPads from "./inputs/ThrustPads.svelte";
+import { PAD_ASSEMBLY_HEIGHT_PX } from "./inputs/thrust-pads";
 import TitleScreen from "./TitleScreen.svelte";
 
 let {
@@ -70,9 +73,8 @@ let cameraFitHeight = $state(0);
 let activeZoomSteps = $state(5);
 let ticks = $state(0);
 let runSeed = $state(0);
-let left = $state(false);
-let right = $state(false);
 let action = $state<InputAction | null>(null);
+const lit = $derived(litPads(action));
 let cause = $state("");
 let salvageFeedback = $state("");
 let salvageStats = $state({
@@ -109,6 +111,14 @@ function enterMenu() {
 let spin = $state(0);
 let message = $state("");
 let initials = $state("AAA");
+// The bottom gutter's mode label: only the stock run is ranked.
+const modeLabel = $derived(
+  testFlight
+    ? "GOD MODE"
+    : loadout || chosen === "fiddler"
+      ? "UNRANKED"
+      : "G CLASS / SHARED CHALLENGE",
+);
 let saving = $state(false);
 let scoreSaved = $state(false);
 function reset(start = false) {
@@ -201,7 +211,6 @@ function start() {
 }
 function suspend() {
   input?.reset();
-  left = right = false;
   action = null;
   lastFrameTime = performance.now();
   if (status === "PLAYING" || phase === "starting") paused = true;
@@ -244,16 +253,10 @@ async function save() {
     message = result.error;
   }
 }
-// The bottom engine buttons stand in for the upper turn pads until the side pads land.
-function press(event: PointerEvent, pad: ThrustPad) {
-  if (paused || narrow || document.hidden) return;
-  event.preventDefault();
-  const button = event.currentTarget as HTMLElement;
-  button.setPointerCapture(event.pointerId);
-  input?.setPointer(event.pointerId, pad);
-}
-function release(event: PointerEvent) {
-  input?.setPointer(event.pointerId, null);
+// Pad presses count only while flight runs; releases always clear.
+function padPress(pointerId: number, pad: ThrustPad | null) {
+  if (pad && (paused || narrow || document.hidden)) return;
+  input?.setPointer(pointerId, pad);
 }
 onMount(() => {
   renderer = new Renderer(canvas);
@@ -341,8 +344,6 @@ onMount(() => {
     const invert = settings.get().invertControls;
     const controls = input.getEffectiveState(invert);
     action = input.getAction(invert);
-    left = controls.leftThruster;
-    right = controls.rightThruster;
     if (
       !blocked &&
       !released &&
@@ -517,75 +518,66 @@ onMount(() => {
               ? "Fitted ship, star and orbiting planets"
               : "Ship, star and orbiting planets"}
         ></canvas>
-        <div class="flight-hud" data-hud>
-          <div>
-            <small>HULL</small><strong>{hull.toFixed(0)}%</strong
-            ><progress aria-label="Hull" max="100" value={hull}></progress>
-          </div>
-          <div>
-            <small>POWER</small><strong>{power.toFixed(0)}%</strong
-            ><progress
-              aria-label="Power"
-              max={activeLoadout ? buildStats(activeLoadout).capacity : 100}
-              value={power}
-            ></progress>
-          </div>
-          {#if mode === "survival"}
-            <div class="timer">
-              <small>SURVIVAL</small
-              ><strong class="time">{seconds.toFixed(1)}s</strong>
+        <!-- The deck: screen-fixed parts in the gutters, clear of the active
+             area. One grid holds both side gutters, so their rows and pads
+             share a height. -->
+        <div
+          class="deck"
+          data-deck
+          style:--deck-pad-height={`${PAD_ASSEMBLY_HEIGHT_PX}px`}
+        >
+          <div class="deck-instruments left">
+            <div>
+              <small>HULL</small><strong>{hull.toFixed(0)}%</strong
+              ><progress aria-label="Hull" max="100" value={hull}></progress>
             </div>
-          {/if}
-        </div>
-        {#if activeLoadout && engineFeedback}
-          <p class="engine-feedback" data-hud>{engineFeedback}</p>
-        {/if}
-        <div class="flight-controls" data-hud>
-          <button
-            type="button"
-            class:active={left}
-            class="engine cut-surface left"
-            aria-label="Left engine"
-            onpointerdown={(event) => press(event, "leftUpper")}
-            onpointerup={release}
-            onpointercancel={release}
-            onlostpointercapture={release}
-          >
-            ◀<span>LEFT ENGINE</span>
-          </button>
-          <div class="flight-actions">
-            {#if mode === "derelicts"}
-              <small role="status"
-                >{salvageFeedback || "WEAPONS AUTO · 10 ENERGY RESERVE"}</small
-              >
-            {/if}
-            {#if status === "PLAYING"}
-              <button type="button" class="btn btn-link" onclick={togglePause}>
-                {paused ? "Resume flight" : "Pause"}
-              </button>
-            {/if}
-            <small
-              >{loadout
-                ? testFlight
-                  ? "PRACTICE / FULL HEALTH AND ENERGY"
-                  : "CUSTOM BUILD / UNRANKED"
-                : chosen === "fiddler"
-                  ? "UNRANKED TRIAL"
-                  : "G CLASS / SHARED CHALLENGE"}</small
-            >
+            <div>
+              <small>POWER</small><strong>{power.toFixed(0)}%</strong
+              ><progress
+                aria-label="Power"
+                max={activeLoadout ? buildStats(activeLoadout).capacity : 100}
+                value={power}
+              ></progress>
+            </div>
           </div>
+          <div class="deck-instruments right">
+            {#if mode === "survival"}
+              <div class="timer">
+                <small>SURVIVAL</small
+                ><strong class="time">{seconds.toFixed(1)}s</strong>
+              </div>
+            {/if}
+          </div>
+          <!-- Pause keeps its place outside active play, so the pads never move. -->
           <button
             type="button"
-            class:active={right}
-            class="engine cut-surface right"
-            aria-label="Right engine"
-            onpointerdown={(event) => press(event, "rightUpper")}
-            onpointerup={release}
-            onpointercancel={release}
-            onlostpointercapture={release}
+            class="deck-button left"
+            class:standby={status !== "PLAYING"}
+            onclick={togglePause}
           >
-            ▶<span>RIGHT ENGINE</span>
+            Pause
           </button>
+          <!-- A placeholder until weapons get their own control. -->
+          <button type="button" class="deck-button right" disabled>
+            Weapons
+          </button>
+          <div class="deck-pads left">
+            <ThrustPads side="left" {lit} onpress={padPress} />
+          </div>
+          <div class="deck-pads right">
+            <ThrustPads side="right" {lit} onpress={padPress} />
+          </div>
+        </div>
+        <div class="deck-info" data-deck>
+          <small class="mode-label">{modeLabel}</small>
+          {#if mode === "derelicts"}
+            <small role="status"
+              >{salvageFeedback || "WEAPONS AUTO · 10 ENERGY RESERVE"}</small
+            >
+          {/if}
+          {#if activeLoadout && engineFeedback}
+            <small class="engine-feedback">{engineFeedback}</small>
+          {/if}
         </div>
       </div>
       {#if narrow && (phase !== "menu" || !landing)}
@@ -739,21 +731,11 @@ onMount(() => {
   width: 100%;
   height: 100%;
 }
-.title-active [data-hud] {
+.title-active [data-deck] {
   display: none;
 }
 
 .flight-stage.landing > .flight-stage-layer > canvas {
   object-fit: fill;
-}
-
-.engine-feedback {
-  position: absolute;
-  bottom: 100px;
-  left: 16px;
-  right: 16px;
-  pointer-events: none;
-  color: var(--color-text);
-  font-size: 12px;
 }
 </style>

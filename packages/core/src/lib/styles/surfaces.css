@@ -128,7 +128,7 @@
   mix-blend-mode: hue;
   pointer-events: none;
 }
-.scrim-stage [data-hud] {
+.scrim-stage [data-deck] {
   visibility: hidden;
 }
 @keyframes dialog-in {

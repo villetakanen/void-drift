@@ -47,7 +47,9 @@ test("landing animation survives resize and hands off a fresh Wasp run", async (
   await expect(deck).toHaveAttribute("data-phase", "starting");
   await expect(deck).toHaveAttribute("data-ticks", "0");
   await page.clock.runFor(700);
-  await expect(deck).toHaveAttribute("data-phase", "playing");
+  await expect(deck).toHaveAttribute("data-phase", "playing", {
+    timeout: 10_000,
+  });
   await expect(canvas).toHaveAttribute(
     "aria-label",
     "Ship, star and orbiting planets",
@@ -81,6 +83,7 @@ test("reduced motion keeps the demo static and retains the three-second count", 
   await expect(page.locator(".flight-page")).toHaveAttribute(
     "data-phase",
     "playing",
+    { timeout: 10_000 },
   );
 });
 

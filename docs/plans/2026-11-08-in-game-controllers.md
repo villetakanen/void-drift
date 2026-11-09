@@ -2,7 +2,7 @@
 
 Plan from the accepted
 [in-game controllers study](../../apps/web/src/pages/lab/studies/in-game-controllers.astro),
-agreed in conversation on 8 November 2026. Status: planned; no slice started.
+agreed in conversation on 8 November 2026. Status: S1–S5 done; S6 open.
 
 ## Decisions (2026-11-08)
 
@@ -91,6 +91,9 @@ review.
   top/bottom gutters or the HUD, clear of the pads.
 - Checks: browser tests for pad highlighting and hit-testing across the gutter,
   keyboard play unchanged, no touch thrust from the fly area.
+- Decided 2026-11-09: the Pause and Weapons deck buttons above the pads are
+  placeholders, as the bottom engine buttons were before the pads; their final
+  design needs its own study.
 
 ### S6. Game spec as a living spec (docs, small; after S2 and S3)
 

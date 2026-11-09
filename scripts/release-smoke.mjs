@@ -70,8 +70,10 @@ export async function smokeArtifact(directory, evidenceDirectory) {
     await expect(deck).toHaveAttribute("data-status", "PLAYING");
     const y = await deck.getAttribute("data-y");
     await page.keyboard.down("ArrowUp");
-    await expect(page.getByRole("button", { name: "Left engine" })).toHaveClass(
-      /active/,
+    // Forward lights both burn pads.
+    await expect(page.locator('[data-pad="leftLower"]')).toHaveAttribute(
+      "data-lit",
+      "true",
     );
     await expect(deck).not.toHaveAttribute("data-y", y ?? "");
     await page.keyboard.up("ArrowUp");

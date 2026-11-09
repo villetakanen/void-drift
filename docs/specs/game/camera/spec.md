@@ -21,8 +21,8 @@ run.
 - `packages/mode-a/src/lib/schemas/flight.ts` (`FlightSettingsSchema.camera`)
   validates the tunable zoom step count, padding and smoothing.
 - [Game screen](../game-screen/spec.md) owns the stage and the active area;
-  this contract consumes the active area in logical units. HUD instruments and
-  controls are DOM layers outside the camera transform.
+  this contract consumes the active area in logical units. The deck is a DOM
+  layer outside the camera transform.
 - Framing reads simulation state and writes none. Replays, scoring and physics
   are independent of the camera.
 
@@ -81,7 +81,7 @@ run.
 
 - Framing reads simulation state only; replays, seeds, physics and scores are
   identical with any stage size or zoom.
-- HUD instruments and controls stay outside the camera transform.
+- The deck stays outside the camera transform.
 - Trails and world effects keep their positions and age across zoom changes.
 - `FlightSettingsSchema` rejects fractional or out-of-range level counts.
 

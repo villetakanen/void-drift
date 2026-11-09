@@ -5,6 +5,7 @@ import {
   CHASSIS,
 } from "../../packages/mode-a/src/lib/schemas/loadout";
 import { expect, test } from "../helpers/local-browser";
+import { expectLit } from "../helpers/thrust-pads";
 
 test("Scout restores its four-slot save, fits equipment and engines and flies from the canonical Lab", async ({
   page,
@@ -98,14 +99,11 @@ test("Scout restores its four-slot save, fits equipment and engines and flies fr
   const tick = Number(await deck.getAttribute("data-ticks"));
   await page.keyboard.down("a");
   await page.clock.runFor(32);
-  await expect(
-    page.getByRole("button", { name: "Right engine", exact: true }),
-  ).toHaveClass(/active/);
+  // invertControls defaults on: left input turns right.
+  await expectLit(deck, "R");
   await page.keyboard.down("d");
   await page.clock.runFor(32);
-  await expect(
-    page.getByRole("button", { name: "Left engine", exact: true }),
-  ).toHaveClass(/active/);
+  await expectLit(deck, "LR");
   await page.clock.runFor(800);
   await expect
     .poll(async () => Number(await deck.getAttribute("data-ticks")))
@@ -126,9 +124,7 @@ test("Scout restores its four-slot save, fits equipment and engines and flies fr
   ).toBeVisible();
   await page.getByRole("button", { name: "Start survival" }).click();
   await expect(page.locator("header")).toHaveCount(0);
-  await expect(page.locator(".flight-actions")).toContainText(
-    "CUSTOM BUILD / UNRANKED",
-  );
+  await expect(page.locator(".deck-info")).toContainText("UNRANKED");
 });
 
 test("invalid chassis deep links recover to the normal Fighter selection", async ({

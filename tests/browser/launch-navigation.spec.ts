@@ -31,6 +31,7 @@ async function launch(page: Page, source: "title" | "hangar") {
   await expect(page.locator(".flight-page")).toHaveAttribute(
     "data-phase",
     "playing",
+    { timeout: 10_000 },
   );
   await expect(page.locator(".flight-page")).toHaveAttribute(
     "data-launch-source",

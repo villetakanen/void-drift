@@ -62,7 +62,7 @@ game's home and Hangar is an alternative launch point.
 - The lime logomark sits centred above a visible “VOID DRIFT” heading. The
   heading is ordinary text, not a new mark. Elsewhere lime marks actions on this
   screen. Informational text uses
-  the specified Android green for HUD elements, not the brand colour.
+  Android green, not the brand colour.
 - A text area to the right of the panel shows one short practical alpha hint at
   a time: flight controls, the survival objective, and guidance to visit Hangar
   to choose another ship. Messages rotate approximately every eight seconds with

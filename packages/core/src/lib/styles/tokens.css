@@ -40,8 +40,8 @@
   /* Text fields only; surfaces and controls cut their corners. */
   --radius-sm: 2px;
 
-  /* Corner cuts (design-system-core.md, Surfaces): buttons, the toggle and
-	   engine pads cut md; panels cut lg. Always the top-left and bottom-right. */
+  /* Corner cuts (design-system-core.md, Surfaces): buttons and the toggle
+	   cut md; panels cut lg. Always the top-left and bottom-right. */
   --cut-size-sm: 6px;
   --cut-size-md: 10px;
   --cut-size-lg: 16px;
@@ -179,8 +179,6 @@
   --flight-panel-width: 320px;
   --flight-card-width: 480px;
   --flight-canvas-max: 1600px;
-  --flight-engine-width: 148px;
-  --flight-engine-height: 64px;
   --flight-textarea-height: 120px;
   --flight-bar-width: 120px;
   --flight-border: 1px solid var(--color-border);

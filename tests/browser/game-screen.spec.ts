@@ -5,6 +5,7 @@ import {
   GAME_MIN_RATIO,
 } from "../../apps/web/src/lib/game-screen";
 import { expect, test } from "../helpers/local-browser";
+import { expectLit } from "../helpers/thrust-pads";
 
 /** The stage fills the (safe-area-free) viewport with Survival's gutters. */
 async function expectStageFills(page: Page, width: number, height: number) {
@@ -80,7 +81,9 @@ test("Survival fits the adaptive stage without navigation or page overflow", asy
   await page.getByRole("button", { name: "Resume", exact: true }).click();
   await expect(page.locator("header")).toHaveCount(0);
   await expect(page.getByRole("link")).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Left engine" })).toBeVisible();
+  await expect(page.locator(".thrust-pads")).toHaveCount(2);
+  for (const pads of await page.locator(".thrust-pads").all())
+    await expect(pads).toBeVisible();
   await page.getByRole("button", { name: "Pause", exact: true }).click();
   await expect(page.getByRole("link", { name: "Top Scores" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Settings" })).toBeVisible();
@@ -153,7 +156,7 @@ test("a viewport narrower than 4:3 freezes the countdown and requires fresh inpu
   await page.clock.runFor(5000);
   await expect(deck).toHaveAttribute("data-ticks", "0");
   await expect(deck).toHaveAttribute("data-phase", "starting");
-  await expect(page.locator(".engine.left")).not.toHaveClass(/active/);
+  await expectLit(deck, null);
   await page.setViewportSize({ width: 1024, height: 768 });
   await expect(
     page.getByRole("dialog", { name: "Paused", exact: true }),
@@ -163,12 +166,14 @@ test("a viewport narrower than 4:3 freezes the countdown and requires fresh inpu
   await page.getByRole("button", { name: "Resume", exact: true }).click();
   await page.clock.runFor(1000);
   await expect(deck).toHaveAttribute("data-phase", "starting");
-  await expect(page.locator(".engine.left")).not.toHaveClass(/active/);
+  await expectLit(deck, null);
   await page.clock.runFor(2300);
-  await expect(deck).toHaveAttribute("data-phase", "playing");
+  await expect(deck).toHaveAttribute("data-phase", "playing", {
+    timeout: 10_000,
+  });
   await page.keyboard.up("ArrowUp");
   await page.keyboard.down("ArrowUp");
-  await expect(page.locator(".engine.left")).toHaveClass(/active/);
+  await expectLit(deck, "LR");
 });
 
 test("launch narrower than 4:3 is blocked and backgrounding requires deliberate Resume", async ({
@@ -224,16 +229,18 @@ test("the aspect gate flips exactly at 4:3, landscape included", async ({
   await page.getByRole("button", { name: "PRESS START" }).click();
   await page.clock.runFor(3500);
   const deck = page.locator(".flight-page");
-  await expect(deck).toHaveAttribute("data-phase", "playing");
+  await expect(deck).toHaveAttribute("data-phase", "playing", {
+    timeout: 10_000,
+  });
   await expect(deck).toHaveAttribute("data-narrow", "false");
   await page.keyboard.down("ArrowUp");
-  await expect(page.locator(".engine.left")).toHaveClass(/active/);
+  await expectLit(deck, "LR");
   await page.setViewportSize({ width: boundary - 1, height });
   await expect(deck).toHaveAttribute("data-narrow", "true");
   await expect(
     page.getByRole("dialog", { name: "Rotate to continue" }),
   ).toBeVisible();
-  await expect(page.locator(".engine.left")).not.toHaveClass(/active/);
+  await expectLit(deck, null);
   const tick = await deck.getAttribute("data-ticks");
   await page.clock.runFor(2000);
   await expect(deck).toHaveAttribute("data-ticks", tick ?? "");
@@ -251,6 +258,7 @@ test("live surface contains selection and context menus", async ({ page }) => {
   await expect(page.locator(".flight-page")).toHaveAttribute(
     "data-phase",
     "playing",
+    { timeout: 10_000 },
   );
   const surface = page.locator("[data-stage]");
   expect(

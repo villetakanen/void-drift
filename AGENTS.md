@@ -56,7 +56,7 @@ Voice-led development of a procedural space survival game and its software facto
 - Use strict TypeScript; narrow `unknown` instead of introducing `any`.
 - Define or update Zod schemas before changing data contracts; parse external inputs.
 - Use Svelte 5 Runes, native CSS, shared tokens, and procedural Canvas assets.
-- Connect controls to the game loop; retain keyboard and landscape phone touch in play.
+- Connect controls to the game loop; retain keyboard and iPad landscape touch in play.
 - The Lab targets viewports 1280px wide and up; never design, test or fix it below that.
 
 ## Authority

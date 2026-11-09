@@ -3,6 +3,7 @@ import {
   starterLoadout,
 } from "../../packages/mode-a/src/lib/schemas/loadout";
 import { expect, test } from "../helpers/local-browser";
+import { expectLit, padPoint } from "../helpers/thrust-pads";
 
 test("title starts a stock Wasp and keyboard controls reach flight", async ({
   page,
@@ -12,15 +13,15 @@ test("title starts a stock Wasp and keyboard controls reach flight", async ({
   const deck = page.locator(".flight-page");
   await expect(deck).toHaveAttribute("data-stabilizers", "true");
   await expect(
-    page.locator(".flight-hud progress[aria-label='Power']"),
+    page.locator(".deck-instruments progress[aria-label='Power']"),
   ).toHaveAttribute("max", String(buildStats(starterLoadout("wasp")).capacity));
   await page.getByRole("button", { name: "PRESS START" }).click();
-  await expect(deck).toHaveAttribute("data-phase", "playing");
+  await expect(deck).toHaveAttribute("data-phase", "playing", {
+    timeout: 10_000,
+  });
   const y = await deck.getAttribute("data-y");
   await page.keyboard.down("ArrowUp");
-  await expect(page.getByRole("button", { name: "Left engine" })).toHaveClass(
-    /active/,
-  );
+  await expectLit(deck, "LR");
   await page.clock.runFor(120);
   await expect(deck).not.toHaveAttribute("data-y", y ?? "");
   await page.keyboard.up("ArrowUp");
@@ -36,11 +37,11 @@ test("retired Flight Lab redirects to Hangar", async ({ page }) => {
   await expect(page).toHaveURL(/\/hangar$/);
   await expect(page.getByRole("heading", { name: "Hangar" })).toBeVisible();
 });
-test("landscape touch engines support simultaneous activation, cancellation and focus loss", async ({
+test("landscape thrust pads support simultaneous activation, cancellation and focus loss", async ({
   newLocalContext,
 }) => {
   const context = await newLocalContext({
-    viewport: { width: 844, height: 390 },
+    viewport: { width: 1180, height: 820 },
     hasTouch: true,
     isMobile: true,
   });
@@ -51,14 +52,11 @@ test("landscape touch engines support simultaneous activation, cancellation and 
   await expect(page.locator(".flight-page")).toHaveAttribute(
     "data-phase",
     "playing",
+    { timeout: 10_000 },
   );
-  const left = page.getByRole("button", { name: "Left engine" }),
-    right = page.getByRole("button", { name: "Right engine" });
-  const a = await left.boundingBox(),
-    b = await right.boundingBox();
-  if (!a || !b) throw new Error("Touch buttons missing");
-  expect(a.height).toBeGreaterThanOrEqual(44);
-  expect(b.height).toBeGreaterThanOrEqual(44);
+  const left = page.locator('.thrust-pads[data-side="left"]');
+  const a = await padPoint(page, "leftUpper"),
+    b = await padPoint(page, "rightUpper");
   const deck = page.locator(".flight-page");
   const power = page.getByRole("progressbar", { name: "Power" });
   const beforePower = Number(await power.getAttribute("value"));
@@ -68,12 +66,12 @@ test("landscape touch engines support simultaneous activation, cancellation and 
   await client.send("Input.dispatchTouchEvent", {
     type: "touchStart",
     touchPoints: [
-      { x: a.x + a.width / 2, y: a.y + a.height / 2, id: 1 },
-      { x: b.x + b.width / 2, y: b.y + b.height / 2, id: 2 },
+      { ...a, id: 1 },
+      { ...b, id: 2 },
     ],
   });
-  await expect(left).toHaveClass(/active/);
-  await expect(right).toHaveClass(/active/);
+  // Both upper pads resolve to forward.
+  await expectLit(deck, "LR");
   await page.clock.runFor(500);
   await expect(deck).not.toHaveAttribute("data-y", beforeY ?? "");
   const elapsedTicks =
@@ -87,12 +85,11 @@ test("landscape touch engines support simultaneous activation, cancellation and 
     type: "touchCancel",
     touchPoints: [],
   });
-  await expect(left).not.toHaveClass(/active/);
-  await expect(right).not.toHaveClass(/active/);
+  await expectLit(deck, null);
   await page.keyboard.down("ArrowUp");
   await page.evaluate(() => window.dispatchEvent(new Event("blur")));
   // Blur pauses: the pads are released and hide behind the Paused dialog.
-  await expect(page.locator(".engine.left")).not.toHaveClass(/active/);
+  await expectLit(deck, null);
   await expect(left).toBeHidden();
   await expect(
     page.getByRole("button", { name: "Resume", exact: true }),

@@ -1,4 +1,5 @@
 import { expect, test } from "../helpers/local-browser";
+import { expectLit, padPoint } from "../helpers/thrust-pads";
 
 test("armed practice has full resources, no encounters and fresh entry after abort", async ({
   page,
@@ -59,36 +60,33 @@ test("landscape practice retain simultaneous engine input and release", async ({
   const time = new Date("2026-11-03T00:00:00Z");
   await page.clock.install({ time });
   await page.clock.pauseAt(time);
-  await page.setViewportSize({ width: 844, height: 390 });
+  await page.setViewportSize({ width: 1180, height: 820 });
   await page.goto("/hangar?chassis=wasp");
   await page
     .getByRole("button", { name: "Left wing · Equipment: Empty" })
     .click();
   await page.getByRole("button", { name: /^Laser\b/ }).click();
   await page.getByRole("button", { name: "Test flight", exact: true }).click();
-  const left = page.getByRole("button", { name: "Left engine", exact: true });
-  const right = page.getByRole("button", { name: "Right engine", exact: true });
-  const a = await left.boundingBox(),
-    b = await right.boundingBox();
-  if (!a || !b) throw new Error("Touch controls missing");
+  const deck = page.locator(".flight-page");
+  await expect(page.locator(".thrust-pads")).toHaveCount(2);
+  const a = await padPoint(page, "leftUpper"),
+    b = await padPoint(page, "rightUpper");
   const client = await context.newCDPSession(page);
   await client.send("Input.dispatchTouchEvent", {
     type: "touchStart",
     touchPoints: [
-      { x: a.x + a.width / 2, y: a.y + a.height / 2, id: 1 },
-      { x: b.x + b.width / 2, y: b.y + b.height / 2, id: 2 },
+      { ...a, id: 1 },
+      { ...b, id: 2 },
     ],
   });
   await page.clock.runFor(500);
-  await expect(left).toHaveClass(/active/);
-  await expect(right).toHaveClass(/active/);
+  await expectLit(deck, "LR");
   await client.send("Input.dispatchTouchEvent", {
     type: "touchCancel",
     touchPoints: [],
   });
   await page.clock.runFor(32);
-  await expect(left).not.toHaveClass(/active/);
-  await expect(right).not.toHaveClass(/active/);
+  await expectLit(deck, null);
   await expect(page.getByRole("button", { name: "Send derelict" })).toHaveCount(
     0,
   );

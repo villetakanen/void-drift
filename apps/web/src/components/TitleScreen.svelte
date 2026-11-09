@@ -55,7 +55,7 @@ function drawArrival() {
 let hint = $state(0);
 let narrow = $state(false);
 const hints = [
-  "A / D or ← / → steer. Hold both to accelerate. On touchscreens, use the engine pads.",
+  "A / D or ← / → steer. Hold both to accelerate. On touchscreens, use the thrust pads.",
   "Survive as long as you can. Keep clear of stars and planets.",
   "Visit Hangar to choose another ship and try a test flight.",
 ];

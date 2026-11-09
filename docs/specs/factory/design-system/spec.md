@@ -158,21 +158,21 @@ literal and never the palette name behind it.
 
 ### Text, border, surface and scrim
 
-| Role    | Token                               | Value                                  | Use                                                                                                                                                 |
-| ------- | ----------------------------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Text    | `--color-text`                      | `lch(99.7% 7.45 104.72)`               | Headings, values, body, descriptions                                                                                                                |
-| Text    | `--color-text-muted`                | `lch(56.7% 0 0)`                       | Eyebrows, tags, captions, secondary labels                                                                                                          |
-| Border  | `--color-border`                    | `lch(100% 0 0 / 0.141)`                | Panel, header and table edges                                                                                                                       |
-| Border  | `--color-border-subtle`             | `lch(100% 0 0 / 0.094)`                | Dividers inside panels; resource bar track                                                                                                          |
-| Border  | `--color-border-faint`              | `lch(100% 0 0 / 0.051)`                | Lab stage grids                                                                                                                                     |
-| Border  | `--color-grid`                      | `lch(45.22% 12.57 223.2)`              | Builder blueprint grid                                                                                                                              |
-| Surface | `--color-void`                      | `lch(1.57% 4.76 285.25)`               | The page and the canvas clear (elevation 0)                                                                                                         |
-| Surface | `--color-elev-1`..`-3`              | see [Elevation](#elevation-and-inputs) | Panels, displays, overlay panes                                                                                                                     |
-| Surface | `--color-glass`                     | `lch(1.57% 4.76 285.25 / 0.91)`        | The void over the live stage: engine pads. [DEPRECATED 2026-11-02] ~~menu overlay, pause banner~~ (see [Surfaces and layers](#surfaces-and-layers)) |
-| Surface | `--color-surface-hover`             | `lch(100% 0 0 / 0.051)`                | Hover tint on any surface                                                                                                                           |
-| Scrim   | `--color-backdrop`                  | `lch(0% 0 0 / 0.11)`                   | Dims what a Lab overlay pane covers                                                                                                                 |
-| Scrim   | `--scrim-filter`, `--scrim-surface` | see [Scrim](#scrim-the-offline-feed)   | Shades the stage behind a dialog                                                                                                                    |
-| Surface | `--panel-fill`                      | elev-2 at 65%                          | Panels; see [Panels](#panels)                                                                                                                       |
+| Role    | Token                               | Value                                  | Use                                                                             |
+| ------- | ----------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------- |
+| Text    | `--color-text`                      | `lch(99.7% 7.45 104.72)`               | Headings, values, body, descriptions                                            |
+| Text    | `--color-text-muted`                | `lch(56.7% 0 0)`                       | Eyebrows, tags, captions, secondary labels                                      |
+| Border  | `--color-border`                    | `lch(100% 0 0 / 0.141)`                | Panel, header and table edges                                                   |
+| Border  | `--color-border-subtle`             | `lch(100% 0 0 / 0.094)`                | Dividers inside panels; resource bar track                                      |
+| Border  | `--color-border-faint`              | `lch(100% 0 0 / 0.051)`                | Lab stage grids                                                                 |
+| Border  | `--color-grid`                      | `lch(45.22% 12.57 223.2)`              | Builder blueprint grid                                                          |
+| Surface | `--color-void`                      | `lch(1.57% 4.76 285.25)`               | The page and the canvas clear (elevation 0)                                     |
+| Surface | `--color-elev-1`..`-3`              | see [Elevation](#elevation-and-inputs) | Panels, displays, overlay panes                                                 |
+| Surface | `--color-glass`                     | `lch(1.57% 4.76 285.25 / 0.91)`        | The void over the live stage. (see [Surfaces and layers](#surfaces-and-layers)) |
+| Surface | `--color-surface-hover`             | `lch(100% 0 0 / 0.051)`                | Hover tint on any surface                                                       |
+| Scrim   | `--color-backdrop`                  | `lch(0% 0 0 / 0.11)`                   | Dims what a Lab overlay pane covers                                             |
+| Scrim   | `--scrim-filter`, `--scrim-surface` | see [Scrim](#scrim-the-offline-feed)   | Shades the stage behind a dialog                                                |
+| Surface | `--panel-fill`                      | elev-2 at 65%                          | Panels; see [Panels](#panels)                                                   |
 - Panels sit on `--color-elev-1`; `--color-void-light` now aliases it (panels rose from L 3.3 to
   5.5).
 - Borders are white at fixed strengths so one token reads on every surface.
@@ -289,7 +289,8 @@ arrangement, actions and lighting rules belong to the
 - Pads are borderless and uncut: two disjoint panes per gutter, so tints never
   stack, and stars stay visible through them at rest and lit.
 - Markings are `--color-text` in the UI type family; Android green stays
-  reserved for the live HUD.
+  reserved for the world HUD, the arrival countdown and title-screen
+  information.
 - `apps/web/src/components/inputs/ThrustPads.svelte` draws one gutter's
   assembly: its `side`, the pads to light, and pointer presses reported per pad.
   Drawing and hit-testing share one geometry, so what lights is what was
@@ -374,7 +375,7 @@ The only `z-index` values in shared UI. Gaps leave room for a later layer.
 | ----------------- | ----- | -------------------------------------------------------- |
 | `--layer-toast`   | 200   | Status messages over everything                          |
 | `--layer-overlay` | 100   | Dialogs and their scrim                                  |
-| `--layer-hud`     | 10    | HUD and thrust pads                                      |
+| `--layer-hud`     | 10    | Deck                                                     |
 | `--layer-raised`  | 1     | Sticky footers; a Lab pane over its backdrop             |
 | `--layer-base`    | 0     | The stage and page content                               |
 | `--layer-under`   | -1    | Behind content inside an isolated part (a button's fill) |

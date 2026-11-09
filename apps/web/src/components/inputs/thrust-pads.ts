@@ -19,6 +19,8 @@ export const BURN_HEIGHT_RATIO = 0.54;
 export const SEAM_SLOPE_DEG = 30;
 /** Markings sit this far in from the screen edge, the same on both pads. */
 export const MARK_INSET_PX = 72;
+/** Assembly height in CSS pixels (controls spec, Touch pads). */
+export const PAD_ASSEMBLY_HEIGHT_PX = 320;
 
 export const PAD_IDS = {
   left: { turn: "leftUpper", burn: "leftLower" },

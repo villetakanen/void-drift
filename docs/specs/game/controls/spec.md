@@ -57,6 +57,8 @@ scores do not depend on how the player flew.
   pad (`L` or `R`) and a lower burn pad (`LF` or `RF`) in the bottom corner, nested at 84%
   of the gutter width and 54% of the assembly height. A 60° seam, sloping 30°
   down from the bezel inward, divides them.
+- The assembly stands at the bottom of its gutter, 320 CSS px tall. The pads
+  are the only touch thrust; there are no other engine buttons.
 - The whole gutter width is touchable. Each pointer maps to the pad under it,
   and a thumb sliding across the seam switches pad without lifting. A
   pointer that leaves the assembly releases its press.
@@ -94,6 +96,8 @@ scores do not depend on how the player flew.
   only.
 - [ ] Each side gutter shows the pad assembly with the arrangement, glass
   states and markings above.
+- [ ] Each assembly stands at the bottom of its gutter, 320 CSS px tall; no
+  other touch control fires an engine.
 
 ### Regression guardrails
 
@@ -132,6 +136,11 @@ Scenario: Fly area is inert
   Given a touch player in flight
   When they touch the central fly area
   Then no action is held and no thruster fires
+
+Scenario: Cancelled touch
+  Given a thumb holding the right lower pad
+  When the touch is cancelled or loses pointer capture
+  Then no action is held and no pad lights
 
 Scenario: Inverted controls
   Given invertControls is on

@@ -84,9 +84,7 @@ test("fit, persist, practise, pause and return to an assembled ship", async ({
   await page.getByRole("button", { name: "Start survival" }).click();
   await page.clock.runFor(3200);
   await expect(page.locator("header")).toHaveCount(0);
-  await expect(page.locator(".flight-actions")).toContainText(
-    "CUSTOM BUILD / UNRANKED",
-  );
+  await expect(page.locator(".deck-info small").first()).toHaveText("UNRANKED");
 });
 
 test("corrupt browser storage recovers to flyable defaults", async ({
