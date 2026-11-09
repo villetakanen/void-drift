@@ -1,4 +1,5 @@
 ---
+import PointDefenceTurning from "../../../components/studies/PointDefenceTurning.svelte";
 import { studies } from "../../../data/studies";
 import StudyLayout from "../../../layouts/StudyLayout.astro";
 
@@ -11,13 +12,13 @@ const study = studies.find(
   <section>
     <h2>01 / A small turret that turns to meet the threat</h2>
     <p>
-      Ion Point Defence becomes the game’s default defence: the reference
-      fitting every new ship starts with and every other defence is measured
-      against. It sits in a weapon slot, turns towards the closest target and
-      fires a light ion shot. The shot belongs to the Light Ion Cannon’s family,
-      a thin blue instant ray, with half its reach and, as a starting
-      assumption, half its damage. Like the cannon it fires automatically,
-      without a button.
+      Ion Point Defence becomes the game’s baseline defence. Most equipment
+      needs a schematic bought with credits; as starter equipment, this one
+      never has to be bought, and every other defence is measured against it. It
+      sits in a weapon slot, turns towards the closest target and fires a light
+      ion shot. The shot belongs to the Light Ion Cannon’s family, a thin blue
+      instant ray, with half its reach and, as a starting assumption, half its
+      damage. Like the cannon it fires automatically, without a button.
     </p>
     <p>
       The central tension is legibility against restraint. The player should see
@@ -42,13 +43,345 @@ const study = studies.find(
         alt="Supplied concept: the Light Ion Cannon for scale, a point-defence turret with a dark round base under its barrel and pale housing, and the same turret without the base"
       >
       <figcaption>
-        Supplied concept. Left, the accepted Light Ion Cannon for comparison;
+        Supplied concept. Left, a ship with fitted weapons for comparison;
         centre, the turret on its round base; right, the turret without a base.
-        No world scale has been selected.
+        The turret uses the Light Ion Cannon’s parts, with a shorter barrel,
+        channel and side housing. The
+        <a href="/studies/ion-point-defence-2026-11-08/concept.svg"
+          >original SVG</a
+        >
+        also fits both weapons to Scout, Wasp and Fighter at a common scale.
       </figcaption>
     </figure>
   </section>
-  <section><h2>02 / To be developed after 01</h2></section>
+  <details id="turning">
+    <summary>02.1 / What makes the base read as turning? — B selected</summary>
+    <h2>02.1 / What makes the base read as turning?</h2>
+    <p>
+      A plain disc looks the same at every angle, so it cannot show rotation by
+      itself. A keeps the supplied base, lit from the ship’s left and therefore
+      still while the barrel and housing turn over it. B keeps that fixed
+      lighting but gives the base six rim slots and one pale index mark that
+      turn with the turret, so the disc itself is seen to move. C removes the
+      base; the cannon parts turn around the crossbar alone. The hypothesis is
+      that B carries the turning on the base without breaking the ship’s light.
+    </p>
+    <PointDefenceTurning client:load />
+    <p>
+      Each turret sits on the ship’s first free hull weapon mount, drawn by the
+      production ship renderer with the current starter outfit. For size, the
+      production Light Ion Cannon takes the next weapon-capable mount, replacing
+      a starter part where no mount is free; Scout has only one such mount and
+      shows the turret alone. A target stand-in jumps to a new bearing every 1.6
+      seconds, 55 units out, and drifts slowly; all three turrets turn at the
+      same provisional 180°/s and share one deterministic path, without
+      randomness. The close-up marks only the target’s bearing; the builder view
+      shows the whole ship, and the flight view shows true size and range at one
+      CSS pixel per unit. The 6- and 10-unit bases remain available for
+      comparison.
+    </p>
+    <p>
+      This isolates form and the reading of rotation. There is no shot,
+      targeting rule, damage, flight or camera motion; turning speed is fixed
+      for the comparison and remains open. Fighter and Corvette carry the turret
+      on top of the hull, where it can turn freely. Scout, Wasp and Fiddler draw
+      these weapon mounts beneath the hull: the Scout hides the turret
+      completely and the Wasp half of it. A starter turret has to work on every
+      ship, so where it sits on these hulls is a fitting question for a later
+      round, not a property of the three forms.
+    </p>
+    <p>
+      B / Base carries turning marks is selected, with an 8-unit base diameter
+      judged beside the 16-unit Light Ion Cannon on the same ships. Its rim
+      slots and index mark turn with the turret while the base keeps the ship’s
+      light. Turning speed remains open; later rounds use B at this size.
+    </p>
+  </details>
+  <details id="speed">
+    <summary>02.2 / How fast should it turn? — 180°/s selected</summary>
+    <h2>02.2 / How fast should it turn?</h2>
+    <p>
+      The selected B turret now turns at 90, 180 and 360°/s. The fastest matches
+      the existing red laser turret. The hypothesis is that a deliberate turn
+      shows the turret working: the player sees it swing, settle and point,
+      while a turn so fast that it snaps hides the motion that 02.1 made
+      readable, and a slow one leaves the turret visibly behind the threat.
+    </p>
+    <PointDefenceTurning
+      mode="speed"
+      label="The selected point-defence turret tracking a scripted target at three turning speeds, enlarged and at flight scale"
+      client:load
+    />
+    <p>
+      Every column uses the same ship, mount, cannon fitting, 8-unit B turret
+      and target script as 02.1. Turning the ship adds the production base turn
+      rate of 2.25 rad/s, about 129°/s, in a fixed left–right sequence with no
+      net rotation per loop. The target keeps its place in the world, so the
+      turret has to cancel the ship’s turn as well as follow the target. At
+      90°/s a ship turning away can outrun the turret.
+    </p>
+    <p>
+      Speed is judged here without a shot. How long the turret must stay aligned
+      before firing, and whether that delay changes the preferred speed, belongs
+      with the shot itself. Ship-specific turn multipliers and the Scout, Wasp
+      and Fiddler fitting remain outside this comparison.
+    </p>
+    <p>
+      180°/s is selected. It reads as slightly slow, while 360°/s is clearly too
+      fast: the turret snaps rather than swings. Later rounds keep 180°/s.
+    </p>
+  </details>
+  <details id="shot">
+    <summary>
+      02.3 / Alignment, then a shorter ion shot — 3 shots/s selected
+    </summary>
+    <h2>02.3 / Alignment, then a shorter ion shot</h2>
+    <p>
+      The selected turret now fires. Each shot is the Light Ion Cannon’s instant
+      blue ray with half its reach: the production light profile, transparent
+      tip and 65% dispersal, compressed to 100 units and stopped at the target.
+      A turret fires only once its barrel is within 2° of the target and the
+      target is in reach. The columns compare 1.5, 3 and 6 shots per second; the
+      cannon fires three.
+    </p>
+    <PointDefenceTurning
+      mode="shot"
+      label="The selected point-defence turret aligning and firing a 100-unit ion ray at three firing rates, close-up and at flight scale"
+      client:load
+    />
+    <p>
+      The hypothesis is that the half-length ray still reads as the cannon’s
+      family, and that the gap between turning and the first shot makes the
+      turret’s work visible. The target now changes range as well as bearing;
+      the third position, 120 units out, lies beyond reach, so no turret fires
+      at it. The dashed ring marks the 100-unit reach around the mount.
+    </p>
+    <p>
+      This is a fixture, not production simulation. The flash follows the
+      current muzzle for 80 ms and the dispersal stays where it was fired, as in
+      the cannon, but decays by its 0.1-second half-life without the shared
+      effects surface. There is no damage, energy, impact plume or occlusion by
+      the ship’s own hull. Damage per shot and energy cost follow the firing
+      rhythm rather than determine it.
+    </p>
+    <p>
+      Three shots per second is selected, the same rhythm as the Light Ion
+      Cannon. The 100-unit ray, 2° alignment and 180°/s turning carry forward.
+      Damage per shot remains the assumed half of the cannon’s.
+    </p>
+  </details>
+  <section id="fitting">
+    <h2>02.4 / A turret beneath the hull — accepted as hidden</h2>
+    <p>
+      As starter equipment the turret must work on every ship, but Scout, Wasp
+      and Fiddler draw all their weapon mounts beneath the hull. Production
+      mount layering is kept: the turret remains a fitting under the hull on
+      these ships, and choosing another mount cannot help, because none of their
+      weapon mounts is above it. Under that layering the Scout hides the turret
+      entirely, the Wasp half of it and the Fiddler’s blades part of it; only
+      the protruding barrel and the ray show its work.
+    </p>
+    <PointDefenceTurning
+      mode="fitting"
+      label="The selected point-defence turret under production mount layering, firing at three shots per second"
+      client:load
+    />
+    <p>
+      The example shows the selected turret: B at 8 units, 180°/s, 3 shots per
+      second and a 100-unit ray, on the same mount and target script as 02.3,
+      under production layering. It starts on Scout; select Wasp or Fiddler to
+      compare the partly hidden cases and Fighter or Corvette for a turret on
+      top of the hull.
+    </p>
+    <p>
+      A hidden turret is accepted. Where a ship carries its weapon mounts
+      beneath the hull, the point defence is read through its protruding barrel
+      and its ray; no marker is added to the hull. Its turning is therefore
+      fully visible only on ships whose mounts sit above the hull.
+    </p>
+  </section>
+  <section id="readiness">
+    <h2>03 / Ready to scope a starter turret</h2>
+    <p>
+      The accepted design is a rotating ion turret on any weapon-capable hull
+      mount. Its form is B, drawn from the supplied concept: the Light Ion
+      Cannon’s parts, with a shorter barrel, channel and side housing, on a
+      round base with an 8-unit diameter, whose six rim slots and pale index
+      mark turn while its light stays with the ship. It turns at 180°/s, fires
+      only within 2° of its target, three times a second, and casts the cannon’s
+      instant blue ray over 100 units: the same light profile and transparent
+      tip compressed to that reach, stopped at first contact. Production mount
+      layering is kept, so on Scout, Wasp and Fiddler the turret is partly or
+      wholly hidden and reads through its barrel and ray.
+    </p>
+    <p>
+      Most of the behaviour exists. The laser already gives each mount its own
+      turning angle, finite turn rate, alignment tolerance, retained target,
+      cooldown and power debit, and its angle already reaches the builder
+      renderer, so a hidden or visible turret can be drawn turning without new
+      plumbing. The cannon supplies the instant ray: first physical contact with
+      star and planet blocking, the 80 ms light-effects flash that follows the
+      muzzle, 65% dispersal on the persistent effects surface and the impact
+      plume. The validated part catalogue, saved fittings and Hangar handoff
+      accept a new weapon part as they accepted the cannon.
+    </p>
+    <p>
+      Delivery needs adaptations rather than new systems. The turret needs a
+      genuine part identifier, Zod definition and shared procedural artwork with
+      its muzzle derived from the same geometry. The study traced the concept
+      image; production artwork should convert the supplied SVG, whose turret
+      keeps the cannon’s barrel width, colours and crossbar but shortens the
+      barrel from 19.5 to 16.9 source units, the channel from 10.4 to 8.8 and
+      the side housing from 9.0 to 7.9, on two concentric base discs. Against
+      the cannon’s accepted 16-unit flight length, its base measures about 8.9
+      units across; the selected 8-unit diameter scales that geometry, and the
+      trace agrees with the SVG within its proportions. The cached ion light
+      profile is fixed at 200 units and must accept the turret’s 100-unit reach
+      without stretching or changing the cannon. Targeting must follow the
+      closest target, which replaces the laser’s threat priority for this part
+      rather than changing the laser.
+    </p>
+    <p>
+      Four choices remain open, each bounded. Damage is assumed at half the
+      cannon’s, which would be 8, 6, 4 and 2 in four 25-unit bands; energy per
+      shot and whether the shared ten-power reserve applies are not set, and
+      both are balance values to confirm before implementation. The fixture kept
+      turning towards a target beyond reach without firing; whether production
+      tracks only targets within 100 units, or pre-aims at the closest one
+      beyond it, is an integration choice. Closest needs a defined measure:
+      distance from the turret to actual collision geometry, with collectible
+      energy excluded as for other weapons.
+    </p>
+    <p>
+      Starter status cannot be delivered yet. No economy, schematic or ownership
+      system exists; the Hangar specification reserves those rules for their own
+      contracts and the 0.6.0 plan excludes them. The intent that this turret
+      never has to be bought is recorded for that future contract. Fitting it
+      into the fixed starter outfits is a separate decision, since existing
+      starter fittings are specified as unchanged. Whether the red laser remains
+      alongside it is likewise adjacent. None of these blocks a playable alpha
+      turret offered through the Hangar.
+    </p>
+  </section>
+  <section id="scope">
+    <h2>04 / Deliver one playable starter turret</h2>
+    <p>
+      The implementation target is a playable alpha Ion Point Defence, fitted
+      through the existing Hangar and exercised in a real encounter. Retain form
+      B with an 8-unit base diameter, existing weapon-capable hull mounts and
+      production layering, 180°/s turning, 2° alignment, three shots per second,
+      a 100-unit instant ray with the cannon’s light profile compressed to that
+      reach, first-target stopping, the impact plume, the 80 ms flash and 65%
+      dispersal. Damage, energy and tracking range stay provisional until
+      confirmed.
+    </p>
+    <p>
+      <strong>Design-principle disclosure:</strong>
+      no change to
+      <code>docs/design.md</code>
+      is proposed. The turret fires automatically, adds no button and does not
+      retune movement. Production implementation is separate work.
+    </p>
+
+    <h3>1 / Equipment and shared geometry — medium</h3>
+    <p>
+      Add a genuine Ion Point Defence part identifier and a validated weapon
+      definition before changing consumers: reach, turning speed, alignment
+      tolerance, cooldown, damage and energy defined together. Provisional
+      values are half the cannon’s damage, 8, 6, 4 and 2 in 25-unit bands, and
+      an energy cost per shot still to be set. Draw the turret as shared
+      procedural Canvas artwork converted from the supplied SVG at the selected
+      8-unit base diameter, adding B’s rim slots and index mark. Derive the
+      muzzle from that geometry; turning uses the weapon angle the renderer
+      already receives, so hidden mounts stay hidden.
+    </p>
+    <p>
+      Owners: mode-a loadout and salvage Zod schemas, part catalogue, build
+      renderer and a shared drawing owner beside the cannon artwork. Add a
+      turret contract under
+      <code>docs/specs/game/</code>
+      alongside the implementation. Check compatible and incompatible slots,
+      geometry and muzzle agreement, rotation in Preview and Plan, existing
+      saved-loadout parsing and unchanged existing equipment. No new dependency
+      is needed.
+    </p>
+
+    <h3>2 / Closest-target turning and instant shots — large</h3>
+    <p>
+      Depends on slice 1. Give the turret its own weapon state in the
+      simulation, reusing the laser’s per-mount angle, finite turn rate,
+      tolerance, target retention and cooldown, but choosing the closest
+      damageable target by distance to its actual collision geometry, with
+      collectible energy excluded and star and planets blocking the line. Fire
+      when aligned within 2° and the first contact lies within 100 units;
+      resolve damage once by muzzle-to-contact distance and start a one-third
+      second cooldown. Generalise the cannon’s instant contact to take the
+      part’s reach rather than duplicating it. The laser keeps its threat
+      priority and the cannon its forward trigger.
+    </p>
+    <p>
+      Confirm before implementing: the damage values, energy per shot, whether
+      the shared ten-power reserve applies, and whether the turret tracks only
+      targets within reach or pre-aims at the closest target beyond it. The
+      study fixture pre-aimed; either answer is a small change. Evidence:
+      deterministic tests for closest-target choice and its ties, turning
+      limits, alignment gating, band boundaries, first-contact stopping, star
+      and planet blocking, cooldown, power handling and pause or reset.
+    </p>
+
+    <h3>3 / Shorter ion light and impact — medium</h3>
+    <p>
+      Depends on slices 1 and 2. Let the cached ion light profile take a reach,
+      keeping the cannon’s 200-unit profile unchanged and adding the turret’s
+      100-unit profile with its own transparent tip. The flash follows the
+      turret’s current muzzle for 80 ms; only dispersal stamps into the
+      persistent effects surface at 65%; the existing impact plume marks the
+      contact. A flash from a hidden turret leaves its muzzle under the hull, as
+      accepted.
+    </p>
+    <p>
+      Owners: salvage renderer, FlightFx, FlightDeck and the mixed-effects
+      bench; update
+      <code>docs/specs/factory/effects/spec.md</code>
+      for the second profile. Check muzzle attachment while the turret and ship
+      turn, dispersal staying in world space, pause, reset, wrap, camera pan and
+      zoom, and several turrets with cannons and engines against the existing
+      effects budget. Passing tests do not establish visual fidelity.
+    </p>
+
+    <h3>4 / Hangar delivery and playable review — medium</h3>
+    <p>
+      Catalogue work can follow slice 1; end-to-end review depends on slices 2
+      and 3. Offer the turret through existing weapon-capable slots with its
+      reach, rhythm, damage and energy in the builder text. Keep starter
+      outfits, the red laser and keyboard and landscape touch controls
+      unchanged. Owners: ShipBuilder and its catalogue, loadout storage and
+      handoff; update
+      <code>docs/specs/game/hangar/spec.md</code>
+      and the turret contract with delivered behaviour.
+    </p>
+    <p>
+      Finish with a playable encounter in the equipment Lab and this study,
+      beside the Light Ion Cannon’s, showing closest-target switching, a target
+      out of reach, a hit stopped at first contact, a turning ship and a hidden
+      turret on Scout. Run the affected unit, browser, type, contract and build
+      gates; report failures and unavailable checks separately. Human review
+      judges turning, rhythm and balance independently.
+    </p>
+
+    <h3>Delivery boundary</h3>
+    <p>
+      These are four reviewable slices, not independent releases. Geometry
+      enables simulation and catalogue work; simulation supplies the shot events
+      that light and impact present; the encounter joins them. The largest
+      uncertainty is balance: damage, energy and reserve policy. Starter status
+      waits for the future economy contract; fitting the turret into the fixed
+      starter outfits, retiring or keeping the red laser, mount redesign or
+      layering changes, gravity or friction changes, paid services and
+      publication are excluded. Production behaviour remains unchanged by this
+      scope document.
+    </p>
+  </section>
 </StudyLayout>
 
 <style>

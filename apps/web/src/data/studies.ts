@@ -12,8 +12,8 @@ export const studies = z.array(studySchema).parse([
   {
     slug: "ion-point-defence-2026-11-08",
     title: "Ion Point Defence: a turret that meets the threat",
-    status: "open",
-    phase: "problem",
+    status: "accepted",
+    phase: "scope",
     question:
       "How should a small rotating ion turret look, turn and fire so that it becomes the game’s dependable baseline defence?",
   },
