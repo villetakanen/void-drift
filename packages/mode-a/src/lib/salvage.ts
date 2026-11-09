@@ -1,9 +1,10 @@
-import type {
-  GameObject,
-  InputState,
-  Planet,
-  Resources,
-  Star,
+import {
+  antipodalWrap,
+  type GameObject,
+  type InputState,
+  type Planet,
+  type Resources,
+  type Star,
 } from "@void-drift/core";
 import {
   BUILD_FLIGHT_SCALE,
@@ -60,7 +61,8 @@ export interface SalvageBody extends SalvagePhysicalState {
   vy: number;
   radius: number;
   hull: number;
-  life: number;
+  /** Seconds left; a shard has none and stays until destroyed. */
+  life?: number;
   rotation: number;
 }
 export interface RailShot {
@@ -239,7 +241,7 @@ export class SalvageSystem {
       vy,
       radius: config.radius,
       hull: "hull" in config ? config.hull : 1,
-      life: config.life,
+      ...("life" in config ? { life: config.life } : {}),
       rotation: this.random() * Math.PI * 2,
       ...(kind === "wreck"
         ? { initialHull: SALVAGE.wreck.hull, releasedMask: 0 }
@@ -1041,11 +1043,11 @@ export class SalvageSystem {
     // A body already touching a world hazard is gone before an instantaneous pulse.
     for (const body of existingBodies) {
       if (body.hull <= 0) continue;
-      if (body.life <= 0) {
+      if (body.life !== undefined && body.life <= 0) {
         this.destroy(body, "expiry");
         continue;
       }
-      if (outside(body.x, body.y)) {
+      if (body.kind !== "fragment" && outside(body.x, body.y)) {
         this.destroy(body, "exit");
         continue;
       }
@@ -1087,9 +1089,26 @@ export class SalvageSystem {
       body.previousY = body.y;
       body.x += body.vx * dt;
       body.y += body.vy * dt;
-      body.life -= dt;
+      if (body.life !== undefined) body.life -= dt;
       if (body.kind !== "cell")
         body.rotation += dt * (body.kind === "wreck" ? 0.3 : 0.8);
+      if (body.kind === "fragment") {
+        // A shard stays in the system: it reappears opposite, velocity and
+        // heading kept, as the ship does. The previous pose continues the
+        // motion so no sweep crosses the system.
+        const wrap = antipodalWrap(
+          body.x,
+          body.y,
+          ENCOUNTER.centerX,
+          ENCOUNTER.centerY,
+        );
+        if (wrap) {
+          body.x = wrap.x;
+          body.y = wrap.y;
+          body.previousX = wrap.x - body.vx * dt;
+          body.previousY = wrap.y - body.vy * dt;
+        }
+      }
     }
     type Terminal = { time: number; cause: "environment" | "expiry" | "exit" };
     const terminalTimes = new Map<
@@ -1115,9 +1134,12 @@ export class SalvageSystem {
         );
         if (time < result.time) result = { time, cause: "environment" };
       }
-      const expiry = body.life <= 0 ? Math.max(0, dt + body.life) : Infinity;
+      const expiry =
+        body.life !== undefined && body.life <= 0
+          ? Math.max(0, dt + body.life)
+          : Infinity;
       if (expiry < result.time) result = { time: expiry, cause: "expiry" };
-      if (outside(body.x, body.y)) {
+      if (body.kind !== "fragment" && outside(body.x, body.y)) {
         const x = body.previousX - ENCOUNTER.centerX,
           y = body.previousY - ENCOUNTER.centerY;
         const a = body.vx ** 2 + body.vy ** 2;

@@ -142,21 +142,24 @@ describe("boundary encounters", () => {
       b.system.bodies[0].vy,
     ]);
   });
-  it("keeps a group occupied until its last fragment, cell or wreck expires", () => {
+  it("keeps a group occupied until its last cell or wreck expires and its last shard is destroyed", () => {
     const s = scene();
     s.system.nextPass = Infinity;
     s.system.bodies = [
-      { ...fixed(42), id: 1, kind: "fragment", life: SALVAGE.fragment.life },
+      { ...fixed(42), id: 1, kind: "fragment", life: undefined },
       { ...fixed(42), id: 2, life: SALVAGE.cell.life },
       { ...fixed(42), id: 3, kind: "wreck", life: SALVAGE.wreck.life },
     ];
-    s.advance(12.001);
-    expect(s.system.bodies.map((body) => body.kind)).toEqual(["cell", "wreck"]);
+    s.advance(SALVAGE.cell.life + 0.001);
+    expect(s.system.bodies.map((body) => body.kind)).toEqual([
+      "fragment",
+      "wreck",
+    ]);
+    s.advance(SALVAGE.wreck.life);
+    expect(s.system.bodies.map((body) => body.kind)).toEqual(["fragment"]);
     expect(s.system.groups).toBe(1);
-    s.advance(8);
-    expect(s.system.bodies.map((body) => body.kind)).toEqual(["wreck"]);
-    expect(s.system.groups).toBe(1);
-    s.advance(10);
+    s.system.bodies[0].hull = 0;
+    s.advance(0.1);
     expect(s.system.groups).toBe(0);
   });
   it("keeps later timing and paths unchanged after combat consumes breakup randomness", () => {

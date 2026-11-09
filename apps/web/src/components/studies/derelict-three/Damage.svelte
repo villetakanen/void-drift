@@ -121,7 +121,6 @@ onMount(() => {
         vy: p.vy,
         radius: SALVAGE.fragment.radius,
         hull: SALVAGE.fragment.hull,
-        life: SALVAGE.fragment.life,
         rotation: 0,
       }),
     );

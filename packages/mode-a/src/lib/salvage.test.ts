@@ -11,7 +11,13 @@ import {
 import { createStar } from "./game-loop";
 import { type SalvageBody, SalvageSystem } from "./salvage";
 import { buildStats, defaultLoadout } from "./schemas/loadout";
-import { DerelictsResultSchema, SALVAGE, WEAPONS } from "./schemas/salvage";
+import {
+  DerelictsResultSchema,
+  ENCOUNTER,
+  SALVAGE,
+  SalvageBodySchema,
+  WEAPONS,
+} from "./schemas/salvage";
 import { Simulation, STEP, setStarMassWell, stockSettings } from "./simulation";
 
 const idle = {
@@ -180,6 +186,129 @@ describe("Derelicts weapons and salvage", () => {
       f.system.events.filter((e) => e.kind === "energy-release"),
     ).toHaveLength(0);
     expect(f.system.bodies.filter((b) => b.kind === "cell")).toHaveLength(0);
+  });
+
+  describe("system edge", () => {
+    const { centerX, centerY, radius } = ENCOUNTER;
+    function crossing(kind: SalvageBody["kind"], vx = 300, vy = 120) {
+      const f = fixture();
+      const length = Math.hypot(vx, vy);
+      // Just inside the edge on the line towards the heading, so one step crosses.
+      const b = body(
+        kind,
+        centerX + (vx / length) * (radius - 5),
+        centerY + (vy / length) * (radius - 5),
+        1,
+        vx,
+        vy,
+      );
+      if (kind === "fragment") b.life = undefined;
+      f.system.bodies = [b];
+      return { f, b, vx, vy };
+    }
+    it("wraps a shard to the opposite side with velocity and heading kept", () => {
+      const { f, b, vx, vy } = crossing("fragment");
+      const entry = { x: b.x - centerX, y: b.y - centerY };
+      const rotation = b.rotation;
+      f.system.step(0.1, f.ship, f.star, f.resources, 100, 400, 400, false);
+      expect(f.system.bodies).toEqual([b]);
+      expect(b.hull).toBeGreaterThan(0);
+      expect([b.vx, b.vy]).toEqual([vx, vy]);
+      expect(b.rotation).toBeGreaterThan(rotation);
+      const exit = { x: b.x - centerX, y: b.y - centerY };
+      // Opposite the crossing point, back inside the system.
+      expect(exit.x * entry.x + exit.y * entry.y).toBeLessThan(0);
+      expect(exit.x * entry.y - exit.y * entry.x).toBeCloseTo(0, 6);
+      expect(Math.hypot(exit.x, exit.y)).toBeLessThan(radius);
+      // The pose it will interpolate from continues the motion, not the jump.
+      expect(Math.hypot(b.x - b.previousX, b.y - b.previousY)).toBeCloseTo(
+        Math.hypot(vx, vy) * 0.1,
+        6,
+      );
+    });
+    it("keeps a shard far beyond the old fragment life and across many wraps", () => {
+      const { f, b } = crossing("fragment", 500, 0);
+      // A chord well clear of the star, so only the edge acts on it.
+      b.y = centerY + 700;
+      b.x = centerX + Math.sqrt(radius ** 2 - 700 ** 2) - 5;
+      b.previousX = b.x;
+      b.previousY = b.y;
+      f.system.step(0.1, f.ship, f.star, f.resources, 100, 400, 400, false);
+      const wrapped = b.x;
+      for (let i = 0; i < 50 * 60; i++)
+        f.system.step(
+          1 / 60,
+          f.ship,
+          f.star,
+          f.resources,
+          100,
+          400,
+          400,
+          false,
+        );
+      expect(f.system.bodies).toEqual([b]);
+      expect(f.system.time).toBeGreaterThan(50);
+      expect(b.hull).toBeGreaterThan(0);
+      expect(Math.hypot(b.x - centerX, b.y - centerY)).toBeLessThanOrEqual(
+        radius,
+      );
+      expect(b.vx).toBe(500);
+      expect(wrapped).toBeLessThan(centerX);
+    });
+    it("removes an intact derelict at the edge with no score, drop or release", () => {
+      for (const damage of [0, 40]) {
+        const { f, b } = crossing("wreck");
+        b.hull -= damage;
+        f.system.step(0.1, f.ship, f.star, f.resources, 100, 400, 400, false);
+        expect(f.system.bodies).toHaveLength(0);
+        expect(f.system.playerKills).toBe(0);
+        expect(f.system.destroyed).toBe(0);
+        expect(f.resources.power).toBe(100);
+        expect(f.system.events).toHaveLength(0);
+      }
+    });
+    it("removes a freed energy cell at the edge with no energy", () => {
+      const { f } = crossing("cell");
+      f.resources.power = 10;
+      f.system.step(0.1, f.ship, f.star, f.resources, 100, 400, 400, false);
+      expect(f.system.bodies).toHaveLength(0);
+      expect(f.resources.power).toBe(10);
+      expect(f.system.energyCollected).toBe(0);
+    });
+    it("requires a life for a wreck and a cell but not for a shard", () => {
+      const noLife = (kind: SalvageBody["kind"]) => {
+        const { life: _life, ...rest } = body(kind, 0, 0);
+        return SalvageBodySchema.safeParse(rest).success;
+      };
+      expect(noLife("wreck")).toBe(false);
+      expect(noLife("cell")).toBe(false);
+      expect(noLife("fragment")).toBe(true);
+      expect(SalvageBodySchema.safeParse(body("wreck", 0, 0)).success).toBe(
+        true,
+      );
+    });
+    it("still expires a derelict and a cell on their timers", () => {
+      const f = fixture();
+      const wreck = body("wreck", 700, 700, 1);
+      const cell = body("cell", 800, 700, 2);
+      wreck.life = 0.5;
+      cell.life = 0.5;
+      f.system.bodies = [wreck, cell];
+      f.system.step(0.4, f.ship, f.star, f.resources, 100, 400, 400, false);
+      expect(f.system.bodies).toHaveLength(2);
+      f.system.step(0.2, f.ship, f.star, f.resources, 100, 400, 400, false);
+      expect(f.system.bodies).toHaveLength(0);
+      expect(f.system.playerKills).toBe(0);
+    });
+    it("destroys a wrapped shard that meets the star", () => {
+      const { f, b } = crossing("fragment", 500, 0);
+      b.x = f.star.pos.x - f.star.radius - 30;
+      b.y = f.star.pos.y;
+      b.previousX = b.x;
+      b.previousY = b.y;
+      f.system.step(0.2, f.ship, f.star, f.resources, 100, 400, 400, false);
+      expect(f.system.bodies).toHaveLength(0);
+    });
   });
 
   it("freezes the final Derelicts score and keeps other runs result-free", () => {

@@ -391,6 +391,32 @@ export function bounceOffSurface(
   return impactSpeed;
 }
 
+/** The system radius: past it, the ship wraps and salvage bodies leave or wrap. */
+export const ARENA_RADIUS = 1200;
+/** Wrapped objects land slightly inside the circle so they do not wrap again. */
+export const ARENA_WRAP_RADIUS = 1190;
+
+/**
+ * Antipodal wrap for the circular arena: the point on the opposite side of the
+ * centre, or null while the point is still inside the system. Velocity is the
+ * caller's to keep.
+ */
+export function antipodalWrap(
+  x: number,
+  y: number,
+  centerX: number,
+  centerY: number,
+): { x: number; y: number } | null {
+  const dx = x - centerX;
+  const dy = y - centerY;
+  if (dx * dx + dy * dy <= ARENA_RADIUS * ARENA_RADIUS) return null;
+  const distance = Math.hypot(dx, dy);
+  return {
+    x: centerX - (dx / distance) * ARENA_WRAP_RADIUS,
+    y: centerY - (dy / distance) * ARENA_WRAP_RADIUS,
+  };
+}
+
 export function updateShip(
   ship: GameObject,
   input: InputState,
@@ -538,23 +564,11 @@ export function updateShip(
 
   ship.acc.set(0, 0);
 
-  // 7. Wrapping (Circular Arena - R=1200)
-  const centerX = width / 2;
-  const centerY = height / 2;
-  const dx = ship.pos.x - centerX;
-  const dy = ship.pos.y - centerY;
-  const distSq = dx * dx + dy * dy;
-  const radiusSq = 1200 * 1200;
-
-  if (distSq > radiusSq) {
-    // Antipodal Wrap: Teleport to opposite side
-    // Preserve velocity (so it points inward from the other side)
-
-    // To prevent getting stuck in a loop due to floating point precision,
-    // wrap slightly inside the circle (0.99)
-    const distance = Math.hypot(dx, dy);
-    ship.pos.x = centerX - (dx / distance) * 1190;
-    ship.pos.y = centerY - (dy / distance) * 1190;
+  // 7. Wrapping (Circular Arena)
+  const wrapped = antipodalWrap(ship.pos.x, ship.pos.y, width / 2, height / 2);
+  if (wrapped) {
+    ship.pos.x = wrapped.x;
+    ship.pos.y = wrapped.y;
   }
   return deliveredFraction;
 }

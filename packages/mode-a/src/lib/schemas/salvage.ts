@@ -51,8 +51,12 @@ export const SalvageBodySchema = SalvagePhysicalStateSchema.extend({
   vy: z.number(),
   radius: z.number().positive(),
   hull: z.number(),
-  life: z.number(),
+  /** Seconds left; required for a wreck and a cell, absent for a shard. */
+  life: z.number().optional(),
   rotation: z.number(),
+}).refine((body) => body.kind === "fragment" || body.life !== undefined, {
+  message: "A wreck and a cell need a life",
+  path: ["life"],
 });
 
 export const DestructionCauseSchema = z.enum([
@@ -228,7 +232,6 @@ export const SalvageConfigSchema = z.object({
     hull: z.number().positive(),
     radius: z.number().positive(),
     contact: z.number().positive(),
-    life: z.number().positive(),
     speed: z.number().positive(),
   }),
   cell: z.object({
@@ -239,6 +242,6 @@ export const SalvageConfigSchema = z.object({
 });
 export const SALVAGE = SalvageConfigSchema.parse({
   wreck: { hull: 85, radius: 18, life: 30, contact: 30 },
-  fragment: { count: 8, hull: 12, radius: 5, contact: 5, life: 12, speed: 60 },
+  fragment: { count: 8, hull: 12, radius: 5, contact: 5, speed: 60 },
   cell: { energy: 30, radius: 6, life: 20 },
 });

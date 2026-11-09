@@ -52,11 +52,13 @@ persistent records, leaderboard competition or progression rewards.
   radius 1200 u). Heading is within ±60° of the inward radial direction; initial
   speed is independently uniform from 100 to 500 u/s in system coordinates.
   Star contact remains possible; paths are not rerolled around hazards or the ship.
-- Wrecks expire after 30 gameplay seconds unless destroyed or leaving the system.
-  A diameter crossing at the slowest speed takes 24 seconds.
-- At most eight encounter groups coexist. Fragments and energy cells keep their
-  originating group alive. A scheduled arrival while full is skipped, without
-  a backlog or immediate replacement when a group clears.
+- Wrecks expire after 30 gameplay seconds unless destroyed or leaving at the
+  system edge (see System edge). A diameter crossing at the slowest speed takes
+  24 seconds.
+- At most eight encounter groups coexist. Pieces and energy cells keep their
+  originating group alive; a piece does so until it is destroyed. A scheduled
+  arrival while full is skipped, without a backlog or immediate replacement
+  when a group clears.
 - Timing and trajectory randomness use separate seeded streams from combat and
   breakup randomness. A skipped arrival consumes its scheduled trajectory too,
   so budget contention does not shift later timing or candidate paths.
@@ -145,7 +147,7 @@ B reference; C's additional varied drift and spin are not part of this choice.
   A fragment rotates around its source-site pivot and uses that region's material.
 - Released pieces inherit the parent's position, heading and translational
   velocity plus B's release impulse rotated into world space. Each fragment uses
-  B's 0.8 rad/s spin, 12 hull, 12-second lifetime and 5 contact damage.
+  B's 0.8 rad/s spin, 12 hull and 5 contact damage; a piece has no lifetime.
 - Rail rounds, laser pulses, ship contact and star/planet contact use fitted
   sweeps. Linear casts are analytic; rotating near-contact casts have a bounded
   0.0001-world-unit numerical tolerance. Contact plumes and release origins use
@@ -159,7 +161,13 @@ B reference; C's additional varied drift and spin are not part of this choice.
   pieces suppress that same ship overlap collectively until separation; early-shed
   pieces and later separate contacts retain their normal damage.
 - Expiry and system exit remove the parent without additional fragments or drops;
-  previously released pieces retain their own lifetime and collision state.
+  previously released pieces keep their own collision state.
+- System edge (radius 1200 u; the ship's wrap rule): a piece crossing it
+  reappears on the opposite side with the same velocity and heading. Pieces never
+  expire and stay until destroyed by a weapon, ship contact or contact with the
+  star or a planet. An intact derelict, damaged or not, that crosses the edge
+  leaves the system, as does a freed energy cell: removed with no score, drop or
+  energy. A derelict and a cell also keep their lifetimes.
 - The canonical Lab damage specimen uses production simulation and weapon hits,
   with optional fitted-material overlay. The separate timed reference remains a
   visual demonstration, not gameplay damage scheduling.
@@ -208,7 +216,7 @@ Initial values are tunable constants, not accepted balance:
 | Railgun  | 100 damage, 3 energy, 0.6 s cooldown, 600 u/s muzzle speed, 600 u acquisition, ±8° arc; 0.34-ion recoil for 0.22 s |
 | Laser    | 5 damage, 0.5 energy, 0.25 s cooldown, 160 u range, 360°/s tracking, 2° tolerance                                  |
 | Derelict | 85 hull, 30 contact damage                                                                                         |
-| Fragment | Eight physical pieces per wreck; B reference shapes and motion; 12 hull, 12 s lifetime, 5 contact damage           |
+| Fragment | Eight physical pieces per wreck; B reference shapes and motion; 12 hull, no lifetime, 5 contact damage             |
 | Cell     | 30 energy, 6 u radius, 20 s lifetime                                                                               |
 
 A rail hit destroys an intact derelict. A laser needs 17 pulses for a derelict
@@ -246,7 +254,7 @@ passing wreck within its shorter range. Approach and stay close, or combine guns
   retained ahead of ordinary impact traffic in the bounded 128-event ring. It
   replaces the generic
   player-break flash. Visibility and source budgets remain authoritative.
-- Star/planet destruction, expiry and exit produce neither this event nor a cell.
+- Star/planet destruction, expiry and exit at the edge produce neither this event nor a cell.
   Fragment destruction produces neither. Pause freezes square motion/phase, event
   age and light history; a fresh session clears the old release and pickup.
 - Collection keeps the 30-energy value, 6-unit collision radius and 20-second
