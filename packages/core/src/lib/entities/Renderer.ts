@@ -11,6 +11,7 @@ import type { Camera } from "../physics/Camera";
 import type { GameObject, Planet, Star } from "../physics/Physics";
 import { getPlanetInfluenceRadius } from "../physics/Physics";
 import { COLOR } from "../ui/colors";
+import { forEachStar, type WorldRect } from "./starfield";
 
 export class Renderer {
   private ctx: CanvasRenderingContext2D;
@@ -54,8 +55,31 @@ export class Renderer {
     this.ctx.fillRect(0, 0, this.width, this.height);
   }
 
-  drawBackground() {
+  private drawBackgroundStar = (
+    x: number,
+    y: number,
+    size: number,
+    alpha: number,
+  ) => {
+    this.ctx.globalAlpha = alpha;
+    this.ctx.beginPath();
+    this.ctx.arc(x, y, size, 0, Math.PI * 2);
+    this.ctx.fill();
+  };
+
+  /**
+   * Draws background stars inside the current world transform. With a `view`
+   * (the camera's visible world rectangle) the seeded starfield covers the
+   * whole view at any zoom; without one, the fixed 3000-unit star square is
+   * drawn, as Lab studies and the title backdrop use it.
+   */
+  drawBackground(view?: WorldRect) {
     this.ctx.fillStyle = "#ffffff";
+    if (view) {
+      forEachStar(view, this.drawBackgroundStar);
+      this.ctx.globalAlpha = 1.0;
+      return;
+    }
     for (const star of this.stars) {
       this.ctx.globalAlpha = star.alpha;
       this.ctx.beginPath();

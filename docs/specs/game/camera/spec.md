@@ -1,257 +1,113 @@
-> Historical specification. Current alpha behavior is defined in [playable-alpha.md](../spec.md).
-
-# Feature: Camera System
+# Camera
 
 ## Blueprint
 
 ### Context
 
-The Camera system provides smooth, cinematic tracking of game entities within a fixed 16:9 viewport. It decouples the logical game world from the physical screen dimensions, ensuring consistent gameplay across different display sizes and aspect ratios.
+The camera decides which part of the arena the player sees during flight. It
+keeps the ship and the star it orbits readable together, inside the part of the
+screen that controls and instruments leave free, and changes zoom in a few
+deliberate steps so the view stays calm. What the camera shows never changes the
+run.
 
-### Architecture
+### Architecture and boundaries
 
-#### Camera Class
+- `packages/core/src/lib/physics/Camera.ts` owns framing, zoom levels, smoothing
+  and the world-to-screen transform.
+- `apps/web/src/components/FlightDeck.svelte` frames the camera every simulation
+  step from the ship and the star and hands it the active area.
+- `packages/core/src/lib/entities/Renderer.ts` draws the world through the
+  camera transform, including the background starfield.
+- `packages/mode-a/src/lib/schemas/flight.ts` (`FlightSettingsSchema.camera`)
+  validates the tunable zoom step count, padding and smoothing.
+- [Game screen](../game-screen/spec.md) owns the stage and the active area;
+  this contract consumes the active area in logical units. HUD instruments and
+  controls are DOM layers outside the camera transform.
+- Framing reads simulation state and writes none. Replays, scoring and physics
+  are independent of the camera.
 
-- **Location:** `packages/core/src/lib/physics/Camera.ts`
-- **Responsibility:** Transform world coordinates to screen space with smooth interpolation
-- **Key Properties:**
-  - `pos: Vec2` - Current camera center in world space
-  - `target: Vec2` - Target position to interpolate toward
-  - `viewportWidth/Height` - Logical resolution (default 1920x1080)
-  - `smoothing` - Interpolation factor (0 = instant, higher = more lag)
+### Framing
 
-#### Coordinate Systems
+- The camera fits the ship and the star, with padding on every side, inside the
+  active area. Rendering still covers the whole stage; world objects continue
+  behind the gutters.
+- The view centres on the midpoint between ship and star. The active area is
+  centred on the stage, so the camera centre and the stage centre coincide.
+- Panning toward a new centre is smooth and frame-rate independent.
+- When the ship wraps across the arena edge, framing resets immediately instead
+  of panning across the arena.
+- A wider active area, as on ultra-wide screens, shows more of the arena across
+  at the same zoom; this is accepted for every mode, scored runs included.
 
-1. **World Space:** Absolute positions in the game world (e.g., ship at (1000, 500))
-2. **Screen Space:** Positions relative to the canvas (0,0 = top-left of viewport)
-3. **Window Space:** Browser window coordinates (for input handling)
+### Zoom levels
 
-#### Transform Pipeline
+- Zoom uses a fixed set of levels, geometrically spaced from the whole-system
+  view to a 1.6× close view. The whole-system view fits the 1200-unit-radius
+  arena, plus padding, across the shorter side of the active area.
+- The level count is an integer from 4 to 11, five by default; settings saved
+  without it use the default.
+- Automatic framing selects the closest level at which ship and star fit with
+  padding. Changing level snaps immediately in both directions and recentres;
+  zooming in needs 8% spare room, so the view does not flicker at a threshold.
+- Changing zoom keeps world-space trails and effects in place and does not
+  restart or age them.
 
-```
-World Position → Camera Transform → Screen Position → CSS Scale → Window Position
-     (1000, 500)      translate       (40, 50)         scale      (80, 100)
-```
+### Background starfield
 
-**Visual Diagram:**
-```
-┌─────────────────────────────────────────────────────────────┐
-│ Browser Window (e.g., 3840x1080 ultrawide)                  │
-│                                                               │
-│   ┌────────────────────────────────────────────────────┐    │
-│   │ Game Container (1920x1080 scaled, letterboxed)   │    │
-│   │                                                     │    │
-│   │  Canvas: 1920x1080 logical resolution              │    │
-│   │  ┌─────────────────────────────────────────────┐   │    │
-│   │  │                                             │   │    │
-│   │  │  Camera Viewport (1920x1080 world units)   │   │    │
-│   │  │  ┌───────────────────────────────────┐     │   │    │
-│   │  │  │                                   │     │   │    │
-│   │  │  │   Visible Game World              │     │   │    │
-│   │  │  │                                   │     │   │    │
-│   │  │  │   Camera.pos (center)             │     │   │    │
-│   │  │  │        ●                          │     │   │    │
-│   │  │  │                                   │     │   │    │
-│   │  │  │   Ship.pos (world space)          │     │   │    │
-│   │  │  │        ◆                          │     │   │    │
-│   │  │  │                                   │     │   │    │
-│   │  │  └───────────────────────────────────┘     │   │    │
-│   │  │                                             │   │    │
-│   │  └─────────────────────────────────────────────┘   │    │
-│   │                                                     │    │
-│   └────────────────────────────────────────────────────┘    │
-│                                                               │
-└─────────────────────────────────────────────────────────────┘
-
-Camera offset = camera.pos - (viewport.width/2, viewport.height/2)
-Screen X = World X - offset.x
-Screen Y = World Y - offset.y
-```
-
-### Key Methods
-
-#### `setTarget(x, y)`
-
-Sets the position the camera should follow. Typically called with the player ship's position each frame.
-
-#### `update(dt)`
-
-Interpolates camera position toward target using frame-rate independent smoothing:
-```
-factor = smoothing * dt * 60
-pos.x += (target.x - pos.x) * factor
-pos.y += (target.y - pos.y) * factor
-```
-
-#### `applyTransform(ctx)`
-
-Applies the camera offset to the rendering context. Call this before drawing game objects:
-```javascript
-const offset = camera.getViewOffset();
-ctx.translate(-offset.x, -offset.y);
-```
-
-#### `worldToScreen(x, y)` / `screenToWorld(x, y)`
-
-Convert between coordinate systems. Essential for mouse/touch input handling.
-
-### Integration with Renderer
-
-```typescript
-renderer.clear();
-renderer.beginCamera(camera); // ctx.save() + translate
-
-// Draw all game objects in world space
-renderer.drawStar(star);
-renderer.drawShip(ship);
-
-renderer.endCamera(); // ctx.restore()
-
-// Draw HUD in screen space (HTML overlay)
-```
-
-### Viewport Container
-
-The game canvas is wrapped in a responsive container that:
-1. Maintains strict 16:9 aspect ratio
-2. Scales to fit the browser window
-3. Letterboxes (black bars) when window ratio ≠ 16:9
-4. Prevents "ultrawide advantage" by fixing visible game area
-
-**CSS Implementation:**
-```css
-.viewport-wrapper {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.game-container {
-  /* Width/height set dynamically via JS */
-  position: relative;
-  background: var(--color-void);
-}
-
-.game-canvas {
-  width: 100%;
-  height: 100%;
-}
-```
-
-**JavaScript Resize Logic:**
-```javascript
-const windowRatio = window.innerWidth / window.innerHeight;
-const targetRatio = 16 / 9;
-
-if (windowRatio > targetRatio) {
-  // Fit to height, letterbox sides
-  height = window.innerHeight;
-  width = height * targetRatio;
-} else {
-  // Fit to width, letterbox top/bottom
-  width = window.innerWidth;
-  height = width / targetRatio;
-}
-```
-
-### Anti-Patterns
-
-- **Do NOT** allocate new Vec2 objects in the update loop (reuse target/pos)
-- **Do NOT** apply camera transform to HUD elements (use HTML overlay)
-- **Do NOT** hard-code viewport dimensions in game logic (use camera.viewportWidth/Height)
-- **Do NOT** forget to call `endCamera()` before drawing HUD (breaks transform state)
-- **Do NOT** use instant camera tracking (smoothing = 0); it feels robotic
-
-### Performance Characteristics
-
-- **CPU:** ~0.1ms per frame (Vec2 math + ctx.translate)
-- **Memory:** 48 bytes (2 Vec2 + 4 floats)
-- **Allocations:** Zero per frame (all math done in-place)
-
-### Configuration
-
-Default smoothing factor: `0.1`
-- Lower = snappier tracking (0.05 for action games)
-- Higher = more "floaty" camera (0.2 for cinematic feel)
-
-Formula for smoothing:
-```
-distance_covered_per_second = smoothing * 60 * distance_to_target
-```
-
-At smoothing = 0.1:
-- Camera covers ~50% of distance in ~0.12 seconds
-- Camera covers ~90% of distance in ~0.38 seconds
-
-### Testing Scenarios
-
-**Scenario: Camera Follows Ship**
-- Given: Ship at (500, 500), Camera at (0, 0), smoothing = 0.1
-- When: update(1/60) called 60 times
-- Then: Camera should be at ~(450, 450) after 1 second
-
-**Scenario: Window Resize**
-- Given: Game running on 1920x1080 window
-- When: Window resized to 3840x1080 (ultrawide)
-- Then: Game container remains 1920x1080 (letterboxed), no extra map visible
-
-**Scenario: Touch Input**
-- Given: User taps at screen position (100, 100)
-- When: screenToWorld(100, 100) called
-- Then: Returns world position accounting for camera offset
-
-### Future Enhancements
-
-1. **Dynamic Zoom:** Adjust viewportWidth/Height based on action intensity
-2. **Shake/Trauma:** Add procedural camera shake for impacts
-3. **Look-Ahead:** Offset camera slightly in direction of ship velocity
-4. **Multiplayer Framing:** Track centroid of all players + zoom to fit bounding box
+- Background stars are world-anchored, as today: they pan and zoom with the
+  world.
+- Stars cover the whole stage at every zoom level and every stage width, with no
+  empty bands at the sides or edges. The pattern is the same on every run and
+  every frame.
 
 ## Contract
 
 ### Definition of Done
 
-- [x] Camera class implemented with smooth interpolation
-- [x] Viewport constrained to 16:9 regardless of window size
-- [x] Camera follows ship without jitter or lag spikes
-- [x] worldToScreen/screenToWorld coordinate conversion working
-- [x] HUD elements remain in screen space (not affected by camera)
-- [x] Zero frame drops on 60Hz displays (iPhone 12+, desktop)
+- [ ] Ship and star, with padding, fit inside the active area at 4:3, 16:9 and
+  ultra-wide stages whenever they fit at the closest permitted level; the
+  rendered view still covers the whole stage.
+- [ ] The camera centre stays at the stage centre's world position for the
+  ship–star midpoint at every stage width.
+- [ ] The whole-system view contains the full arena, with padding, inside the
+  active area.
+- [ ] Zoom uses only the configured levels, snaps in both directions, holds the
+  wider level within the 8% threshold band and resets framing on a wrap.
+- [ ] Background stars cover the whole stage at every zoom level and stage
+  width, world-anchored and identical across runs and frames.
+- [x] Coordinates round-trip between world and screen at every level.
 
-### Regression Guardrails
+### Regression guardrails
 
-- **Aspect Ratio:** Must remain exactly 16:9 on all window sizes
-- **Performance:** Camera.update() must complete in <0.2ms
-- **Coordinate Accuracy:** worldToScreen(screenToWorld(x, y)) must return original (x, y)
-- **Smoothing:** Camera must reach target within 1 second (smoothing = 0.1)
+- Framing reads simulation state only; replays, seeds, physics and scores are
+  identical with any stage size or zoom.
+- HUD instruments and controls stay outside the camera transform.
+- Trails and world effects keep their positions and age across zoom changes.
+- `FlightSettingsSchema` rejects fractional or out-of-range level counts.
 
-### Dependencies
+### Scenarios
 
-- `Vec2` class from Physics module
-- `Renderer.beginCamera()` / `Renderer.endCamera()` methods
-- GameWrapper component for viewport container
+```gherkin
+Scenario: Subjects stay clear of the gutters
+  Given a 16:9 stage with its side and top/bottom gutters
+  When the ship flies far from the star at the arena edge
+  Then ship and star, with padding, appear inside the active area
+  And stars and world objects still render behind the gutters
 
-### Public API
+Scenario: Ultra-wide shows more across
+  Given the same run on a 16:9 and an ultra-wide stage of equal height
+  When the camera frames ship and star at the same level
+  Then the ultra-wide view shows more of the arena across
+  And background stars fill the whole ultra-wide stage
 
-```typescript
-// Create camera with 16:9 viewport
-const camera = new Camera({
-  viewportWidth: 1920,
-  viewportHeight: 1080,
-  smoothing: 0.1,
-});
+Scenario: Whole system at the widest level
+  Given a 4:3 stage
+  When the widest level is selected
+  Then the full arena with padding fits inside the active area
+  And background stars reach every edge of the stage
 
-// Every frame
-camera.setTarget(ship.pos.x, ship.pos.y);
-camera.update(deltaTime);
-
-// Rendering
-renderer.beginCamera(camera);
-// ... draw game objects ...
-renderer.endCamera();
-
-// Input handling
-const worldPos = camera.screenToWorld(touchX, touchY);
+Scenario: Wrap resets framing
+  Given the ship crosses the arena edge
+  When the simulation wraps it to the opposite side
+  Then the camera reframes immediately instead of panning across the arena
 ```

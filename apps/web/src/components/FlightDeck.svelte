@@ -63,6 +63,8 @@ let x = $state(460);
 let y = $state(540);
 let zoom = $state(1);
 let zoomLevel = $state(0);
+let cameraFitWidth = $state(0);
+let cameraFitHeight = $state(0);
 let activeZoomSteps = $state(5);
 let ticks = $state(0);
 let runSeed = $state(0);
@@ -175,6 +177,8 @@ function sync() {
   cause = simulation.state.deathCause ?? "";
   zoom = camera?.zoom ?? 1;
   zoomLevel = camera?.zoomLevel ?? 0;
+  cameraFitWidth = camera?.activeWidth ?? 0;
+  cameraFitHeight = camera?.activeHeight ?? 0;
   activeZoomSteps = simulation.settings.camera.zoomSteps;
 }
 function start() {
@@ -272,6 +276,12 @@ onMount(() => {
     );
     narrow = screen.narrow;
     if (narrow) suspend();
+    // Framing fits the active area; rendering still covers the whole stage.
+    camera.setActiveArea(
+      screen.active.logical.width,
+      screen.active.logical.height,
+    );
+    frameCamera();
     const bounds = stage.getBoundingClientRect();
     landingFrame = {
       width: bounds.width,
@@ -299,7 +309,7 @@ onMount(() => {
     const renderWidth = adaptive ? Math.round(screen.logicalWidth) : 1920;
     if (canvas.width !== renderWidth) {
       renderer.resize(renderWidth, GAME_HEIGHT);
-      // Update render geometry only; camera policy and fitting remain unchanged.
+      // Render geometry only; framing follows the active area set on measure.
       camera.viewportWidth = renderWidth;
     }
     lastFrameTime = time;
@@ -355,7 +365,7 @@ onMount(() => {
       context.restore();
     } else {
       renderer.beginCamera(camera);
-      renderer.drawBackground();
+      renderer.drawBackground(camera.getViewRect());
       renderer.drawArenaBoundary(1200);
       renderer.drawStar(simulation.star, simulation.ticks * STEP * 1000);
       if (context)
@@ -466,6 +476,8 @@ onMount(() => {
   data-zoom={zoom.toFixed(4)}
   data-zoom-level={zoomLevel}
   data-zoom-steps={activeZoomSteps}
+  data-camera-fit-width={cameraFitWidth}
+  data-camera-fit-height={cameraFitHeight}
 >
   <div class="flight-layout" bind:this={viewport}>
     <section

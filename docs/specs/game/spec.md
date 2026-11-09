@@ -3,7 +3,8 @@
 Status: implementation in progress, 2026-10-28. Scope approved in the voice-led rebuild conversation.
 
 Screen composition, viewport fitting and play availability follow
-[Game Screen](game-screen/spec.md).
+[Game Screen](game-screen/spec.md); framing, zoom levels and the
+background starfield follow [Camera](camera/spec.md).
 
 ## Architecture
 
@@ -77,27 +78,6 @@ Given a ship crosses the arena edge, it reappears inside the opposite boundary w
 inward momentum; the camera immediately reframes without a long pan.
 Given Firebase is absent, the game remains playable and shared scores explain their
 unavailability. Given valid configuration, separate anonymous players can compete.
-
-## Stepped zoom — patch 0.3.1
-
-Stage geometry and the active-area boundary follow
-[Game Screen](game-screen/spec.md); camera behavior is specified below.
-The shared camera defaults to five geometrically spaced levels from whole-system
-view (the 1200-unit-radius arena plus padding) to 1.6× close view. Automatic framing
-selects the closest level that fits ship and star with padding. Both zoom directions
-snap immediately, recentering on their midpoint; panning between changes remains
-smooth. Zoom-in requires 8% spare room to prevent threshold flicker. Wraps reset
-framing immediately. This supersedes the earlier continuous zoom behavior.
-
-FlightSettingsSchema validates an integer zoomSteps from 4 through 11; older settings
-without it default to five.
-
-Trails remain world-space samples, transformed together with the ship and planets.
-Changing zoom does not clear trails, advance simulation time, or restart effects.
-
-Acceptance: reject fractional/out-of-range counts; exercise snapping in both directions,
-threshold stability, coordinate round-trips, and existing keyboard/touch controls.
-Human review of reorientation and preferred level count remains pending.
 
 ## Player navigation and version labels — patch 0.3.2
 
