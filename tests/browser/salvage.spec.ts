@@ -62,9 +62,7 @@ test("landscape practice retain simultaneous engine input and release", async ({
   await page.clock.pauseAt(time);
   await page.setViewportSize({ width: 1180, height: 820 });
   await page.goto("/hangar?chassis=wasp");
-  await page
-    .getByRole("button", { name: "Left wing · Equipment: Empty" })
-    .click();
+  await page.getByRole("button", { name: /^Left wing · Equipment:/ }).click();
   await page.getByRole("button", { name: /^Laser\b/ }).click();
   await page.getByRole("button", { name: "Test flight", exact: true }).click();
   const deck = page.locator(".flight-page");
