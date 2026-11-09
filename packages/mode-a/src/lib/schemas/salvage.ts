@@ -15,6 +15,12 @@ export const WeaponEventSchema = z.discriminatedUnion("kind", [
     mountKey: z.string(),
     distance: z.number().min(0).max(200),
   }),
+  z.object({
+    ...EventFields,
+    kind: z.literal("point-defence"),
+    mountKey: z.string(),
+    distance: z.number().min(0).max(100),
+  }),
   z.object({ ...EventFields, kind: z.literal("rail") }),
   z.object({ ...EventFields, kind: z.literal("laser") }),
   z.object({ ...EventFields, kind: z.literal("collision") }),
@@ -101,6 +107,44 @@ export function ionCannonDamage(distance: number) {
   if (!Number.isFinite(distance) || distance < 0 || distance > ION_CANNON.range)
     return 0;
   return ION_CANNON.bands[Math.min(3, Math.floor(distance / 50))];
+}
+/** Ion Point Defence: closest-target turret with the cannon's instant ray family. */
+export const PointDefenceSchema = z.object({
+  reach: z.literal(100),
+  trackingRange: z.literal(200),
+  /** Radians per second. */
+  turnRate: z.literal(Math.PI),
+  /** Radians either side of the aim point's bearing. */
+  tolerance: z.literal((2 * Math.PI) / 180),
+  cooldown: z.literal(1 / 3),
+  energy: z.literal(0.1),
+  bands: z.tuple([z.literal(8), z.literal(6), z.literal(4), z.literal(2)]),
+  retention: z.literal(10),
+  flashSeconds: z.literal(ION_CANNON.flashSeconds),
+  dispersal: z.literal(ION_CANNON.dispersal),
+});
+export const POINT_DEFENCE = PointDefenceSchema.parse({
+  reach: 100,
+  trackingRange: 200,
+  turnRate: Math.PI,
+  tolerance: (2 * Math.PI) / 180,
+  cooldown: 1 / 3,
+  energy: 0.1,
+  bands: [8, 6, 4, 2],
+  retention: 10,
+  flashSeconds: 0.08,
+  dispersal: 0.65,
+});
+/** Muzzle-to-first-contact damage; internal boundaries take the lower band. */
+export function pointDefenceDamage(distance: number) {
+  if (
+    !Number.isFinite(distance) ||
+    distance < 0 ||
+    distance > POINT_DEFENCE.reach
+  )
+    return 0;
+  const band = POINT_DEFENCE.reach / POINT_DEFENCE.bands.length;
+  return POINT_DEFENCE.bands[Math.min(3, Math.floor(distance / band))];
 }
 export const WeaponConfigSchema = z.object({
   reserve: z.number().nonnegative(),

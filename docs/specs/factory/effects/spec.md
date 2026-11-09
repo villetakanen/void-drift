@@ -391,3 +391,23 @@ repositions fresh geometry without joining old and new muzzle positions. The
 mixed Lab Weapons workload includes simultaneous twin cannons beside collectors,
 engines, station, missile and fire effects. Performance acceptance remains governed
 by the whole-scene budget above and requires separate sustained measurements.
+
+## Ion Point Defence LFX
+
+The [turret](../../game/ion-point-defence/spec.md) shares the cannon's presentation
+owner and passes. Its 80 ms active ray is fresh topmost LFX drawn by
+`FlightFx.drawLfx`; it follows the current shared muzzle and the turret's current
+simulated heading, including a muzzle beneath the hull. Length is the shorter of
+the discharge distance and the current nearest physical obstruction within 100
+units; this query never applies damage.
+
+The cached ion profiles are keyed by reach. The turret uses a second, 100-unit
+blue profile with the cannon's light treatment and its own transparent tip; the
+cannon's 200-unit profile is unchanged. Contact clips rather than rescales either
+profile. Only the 65% dispersal treatment enters persistent FX, through its source
+allowance, under the shared decay, pause, camera, wrap and reset semantics. Turret
+hits activate the shared expanding impact plume at their actual contact.
+
+Work is bounded by installed mounts and the existing 128-event ring, with one
+current flash per turret. Fresh LFX is empty between flashes. The mixed Lab
+Weapons workload includes point-defence turrets firing beside twin cannons.

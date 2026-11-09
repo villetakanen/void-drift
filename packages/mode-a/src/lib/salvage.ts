@@ -13,6 +13,7 @@ import {
 } from "./build-renderer";
 import {
   castDerelict,
+  derelictClosestPoint,
   derelictForwardContacts,
   getDerelictRadius,
 } from "./derelict-collision";
@@ -36,6 +37,8 @@ import {
   ENCOUNTER,
   ION_CANNON,
   ionCannonDamage,
+  POINT_DEFENCE,
+  pointDefenceDamage,
   SALVAGE,
   WEAPONS,
   type WeaponEvent,
@@ -69,7 +72,7 @@ export interface RailShot {
 }
 export interface WeaponState {
   mount: BuildMount;
-  kind: "rail" | "laser" | "light-ion-cannon";
+  kind: "rail" | "laser" | "light-ion-cannon" | "ion-point-defence";
   angle: number;
   readyAt: number;
   target: number | null;
@@ -117,6 +120,7 @@ export class SalvageSystem {
   playerKills = 0;
   shotsFired = 0;
   ionDischarges = 0;
+  pointDefenceDischarges = 0;
   laserPulses = 0;
   hits = 0;
   energySpent = 0;
@@ -142,24 +146,24 @@ export class SalvageSystem {
     this.recoilAcceleration =
       (ion.acceleration * ION_REFERENCE_MASS * WEAPONS.rail.recoilStrength) /
       buildStats(loadout).mass;
-    this.weapons = buildMounts(loadout)
-      .flatMap((mount): WeaponState[] =>
-        mount.part === "light-ion-cannon" ||
-        mount.part === "rail" ||
-        mount.part === "laser"
-          ? [
-              {
-                mount,
-                kind: mount.part,
-                angle: mount.angle,
-                readyAt: 0,
-                target: null,
-                recoil: null,
-              },
-            ]
-          : [],
-      )
-      .sort((a, b) => Number(a.kind === "rail") - Number(b.kind === "rail"));
+    this.weapons = buildMounts(loadout).flatMap((mount): WeaponState[] =>
+      mount.part === "light-ion-cannon" ||
+      mount.part === "ion-point-defence" ||
+      mount.part === "rail" ||
+      mount.part === "laser"
+        ? [
+            {
+              mount,
+              kind: mount.part,
+              angle: mount.angle,
+              readyAt: 0,
+              target: null,
+              recoil: null,
+            },
+          ]
+        : [],
+    );
+    // Kept in build-mount order; fireWeapons applies class order (defence before guns).
     for (const weapon of this.weapons)
       this.angles[weapon.mount.key] = weapon.angle;
   }
@@ -508,10 +512,11 @@ export class SalvageSystem {
     angle: number,
     star: Star,
     planets: readonly Planet[],
+    reach: number = ION_CANNON.range,
   ) {
     const dx = Math.cos(angle),
       dy = Math.sin(angle);
-    let distance = ION_CANNON.range as number;
+    let distance = reach;
     let hit: SalvageBody | undefined;
     let blocked = false;
     for (const object of [star, ...planets]) {
@@ -521,7 +526,7 @@ export class SalvageSystem {
         dx,
         dy,
         object.radius,
-        ION_CANNON.range,
+        reach,
       );
       if (d <= distance) {
         distance = d;
@@ -530,7 +535,7 @@ export class SalvageSystem {
     }
     for (const body of this.bodies) {
       if (body.kind === "cell" || body.hull <= 0) continue;
-      const d = this.cast(body, x, y, dx, dy, 0, ION_CANNON.range);
+      const d = this.cast(body, x, y, dx, dy, 0, reach);
       if (d < distance || (d === distance && !blocked && !hit)) {
         distance = d;
         hit = body;
@@ -556,54 +561,215 @@ export class SalvageSystem {
         ),
     );
   }
-  private fireIonCannons(
+  /** Ready cannons and the trigger are captured once per update; hits cannot cancel this volley. */
+  private ionVolley(ship: GameObject, star: Star, planets: readonly Planet[]) {
+    const ready = new Set(
+      this.weapons.filter(
+        (w) => w.kind === "light-ion-cannon" && this.time + 1e-9 >= w.readyAt,
+      ),
+    );
+    return ready.size && this.ionTrigger(ship, star, planets)
+      ? ready
+      : new Set<WeaponState>();
+  }
+  /** One volley cannon; returns false once power cannot fund it, stopping the rest of the volley. */
+  private fireIonCannon(
+    weapon: WeaponState,
     ship: GameObject,
     star: Star,
     resources: Resources,
     planets: readonly Planet[],
   ) {
-    // Capture ready mounts and the trigger once; hits cannot cancel this volley.
-    const ready = this.weapons.filter(
-      (w) => w.kind === "light-ion-cannon" && this.time + 1e-9 >= w.readyAt,
+    if (resources.power + 1e-9 < ION_CANNON.energy) return false;
+    const pose = weaponPose(ship, weapon.mount);
+    const { distance, hit } = this.ionContact(
+      pose.muzzleX,
+      pose.muzzleY,
+      pose.angle,
+      star,
+      planets,
     );
-    if (!ready.length || !this.ionTrigger(ship, star, planets)) return;
-    for (const weapon of ready) {
-      if (resources.power + 1e-9 < ION_CANNON.energy) break;
-      const pose = weaponPose(ship, weapon.mount);
-      const { distance, hit } = this.ionContact(
-        pose.muzzleX,
-        pose.muzzleY,
-        pose.angle,
-        star,
-        planets,
-      );
-      resources.power = Math.max(0, resources.power - ION_CANNON.energy);
-      this.energySpent += ION_CANNON.energy;
-      weapon.readyAt = this.time + ION_CANNON.cooldown;
-      this.ionDischarges++;
-      const endX = pose.muzzleX + Math.cos(pose.angle) * distance;
-      const endY = pose.muzzleY + Math.sin(pose.angle) * distance;
-      // Same bounded event ring as other weapons, with current-pose identity for LFX.
-      if (this.events.length >= 128) this.events.shift();
-      this.events.push(
-        WeaponEventSchema.parse({
-          kind: "ion-cannon",
-          id: ++this.eventSequence,
-          x: pose.muzzleX,
-          y: pose.muzzleY,
-          endX,
-          endY,
-          time: this.time,
-          mountKey: weapon.mount.key,
-          distance,
-        }),
-      );
-      if (hit) {
-        this.damage(hit, ionCannonDamage(distance), this.time);
-        this.emit("collision", endX, endY);
-      }
+    resources.power = Math.max(0, resources.power - ION_CANNON.energy);
+    this.energySpent += ION_CANNON.energy;
+    weapon.readyAt = this.time + ION_CANNON.cooldown;
+    this.ionDischarges++;
+    const endX = pose.muzzleX + Math.cos(pose.angle) * distance;
+    const endY = pose.muzzleY + Math.sin(pose.angle) * distance;
+    // Same bounded event ring as other weapons, with current-pose identity for LFX.
+    if (this.events.length >= 128) this.events.shift();
+    this.events.push(
+      WeaponEventSchema.parse({
+        kind: "ion-cannon",
+        id: ++this.eventSequence,
+        x: pose.muzzleX,
+        y: pose.muzzleY,
+        endX,
+        endY,
+        time: this.time,
+        mountKey: weapon.mount.key,
+        distance,
+      }),
+    );
+    if (hit) {
+      this.damage(hit, ionCannonDamage(distance), this.time);
+      this.emit("collision", endX, endY);
     }
+    return true;
   }
+  /**
+   * Closest live wreck or fragment by distance from the pivot to its actual
+   * collision geometry, with a clear line to that closest point. A retained
+   * target yields only to a candidate at least the retention margin closer.
+   */
+  pointDefenceTarget(
+    weapon: WeaponState,
+    ship: Pick<GameObject, "pos" | "rotation">,
+    star: Star,
+    planets: readonly Planet[],
+  ) {
+    const pivot = weaponPose(ship, weapon.mount, weapon.angle);
+    type Candidate = {
+      body: SalvageBody;
+      x: number;
+      y: number;
+      distance: number;
+    };
+    // Visit bodies nearest-bound first so distant material is skipped cheaply.
+    const nearby = this.bodies
+      .flatMap((body) => {
+        if (body.kind === "cell" || body.hull <= 0) return [];
+        const shape = {
+          kind: body.kind,
+          x: body.x,
+          y: body.y,
+          rotation: body.rotation,
+          shardIndex: body.shardIndex ?? 0,
+          releasedMask: body.releasedMask ?? 0,
+        };
+        const bound = Math.max(
+          0,
+          Math.hypot(body.x - pivot.x, body.y - pivot.y) -
+            getDerelictRadius(shape),
+        );
+        return bound > POINT_DEFENCE.trackingRange
+          ? []
+          : [{ body, shape, bound }];
+      })
+      .sort((a, b) => a.bound - b.bound);
+    let best: Candidate | undefined;
+    let retained: Candidate | undefined;
+    for (const { body, shape, bound } of nearby) {
+      const current = body.id === weapon.target;
+      if (best && bound > best.distance && !current) continue;
+      const closest = derelictClosestPoint(
+        shape,
+        pivot,
+        current
+          ? POINT_DEFENCE.trackingRange
+          : (best?.distance ?? POINT_DEFENCE.trackingRange),
+      );
+      if (
+        closest.distance > POINT_DEFENCE.trackingRange ||
+        !this.lineClear(pivot.x, pivot.y, closest.x, closest.y, star, planets)
+      )
+        continue;
+      const candidate = { body, ...closest };
+      if (current) retained = candidate;
+      if (
+        !best ||
+        candidate.distance < best.distance ||
+        (candidate.distance === best.distance && body.id < best.body.id)
+      )
+        best = candidate;
+    }
+    return retained &&
+      best &&
+      best.distance > retained.distance - POINT_DEFENCE.retention
+      ? retained
+      : best;
+  }
+  /**
+   * One turret: target, turn, then fire in the world left by earlier shots.
+   * Returns false once power cannot fund a ready shot, which stops funding the
+   * remaining turrets without starting their cooldowns.
+   */
+  private firePointDefence(
+    weapon: WeaponState,
+    funded: boolean,
+    dt: number,
+    ship: GameObject,
+    star: Star,
+    resources: Resources,
+    planets: readonly Planet[],
+  ) {
+    const target = this.pointDefenceTarget(weapon, ship, star, planets);
+    weapon.target = target?.body.id ?? null;
+    if (!target) return funded;
+    const pivot = weaponPose(ship, weapon.mount, weapon.angle);
+    // Relative to the ship: a turning ship is cancelled within the turn-rate limit.
+    // A pivot inside material has no bearing: hold the angle, treated as aligned.
+    const desired =
+      target.distance > 0
+        ? Math.atan2(target.y - pivot.y, target.x - pivot.x) - ship.rotation
+        : weapon.angle;
+    const turn = POINT_DEFENCE.turnRate * dt;
+    weapon.angle = angleDifference(
+      weapon.angle +
+        Math.max(-turn, Math.min(turn, angleDifference(desired, weapon.angle))),
+      0,
+    );
+    this.angles[weapon.mount.key] = weapon.angle;
+    if (
+      !funded ||
+      this.time + 1e-9 < weapon.readyAt ||
+      Math.abs(angleDifference(desired, weapon.angle)) >
+        POINT_DEFENCE.tolerance + 1e-12
+    )
+      return funded;
+    const pose = weaponPose(ship, weapon.mount, weapon.angle);
+    const { distance, hit } = this.ionContact(
+      pose.muzzleX,
+      pose.muzzleY,
+      pose.angle,
+      star,
+      planets,
+      POINT_DEFENCE.reach,
+    );
+    // World geometry first, or nothing within reach: no discharge, cost or cooldown.
+    if (!hit || distance > POINT_DEFENCE.reach) return funded;
+    if (resources.power + 1e-9 < POINT_DEFENCE.energy) return false;
+    resources.power = Math.max(0, resources.power - POINT_DEFENCE.energy);
+    this.energySpent += POINT_DEFENCE.energy;
+    weapon.readyAt = this.time + POINT_DEFENCE.cooldown;
+    this.pointDefenceDischarges++;
+    const endX = pose.muzzleX + Math.cos(pose.angle) * distance;
+    const endY = pose.muzzleY + Math.sin(pose.angle) * distance;
+    if (this.events.length >= 128) this.events.shift();
+    this.events.push(
+      WeaponEventSchema.parse({
+        kind: "point-defence",
+        id: ++this.eventSequence,
+        x: pose.muzzleX,
+        y: pose.muzzleY,
+        endX,
+        endY,
+        time: this.time,
+        mountKey: weapon.mount.key,
+        distance,
+      }),
+    );
+    this.damage(hit, pointDefenceDamage(distance), this.time);
+    this.emit("collision", endX, endY);
+    return true;
+  }
+  /**
+   * Power after life support and engines goes to defence weapons (point
+   * defences, lasers), then guns (Light Ion Cannons, rails). `weapons` is in
+   * build-mount order, so each class walks it once in that order, drawing on the
+   * power and world the earlier shots left. The cannon volley is captured after
+   * the defence class and before the first gun; a cannon power shortfall stops
+   * the remaining cannons, while rails keep their own reserve check.
+   */
   private fireWeapons(
     dt: number,
     ship: GameObject,
@@ -611,173 +777,208 @@ export class SalvageSystem {
     resources: Resources,
     planets: readonly Planet[],
   ) {
-    this.fireIonCannons(ship, star, resources, planets);
-    for (const weapon of this.weapons) {
-      if (weapon.kind === "light-ion-cannon") continue;
-      const config = WEAPONS[weapon.kind];
-      let target: SalvageBody | undefined;
-      if (weapon.kind === "laser") {
-        target = this.targetLaser(weapon, ship, star, planets);
-        weapon.target = target?.id ?? null;
-        if (target) {
-          const base = weaponPose(ship, weapon.mount, weapon.angle);
-          const desired =
-            Math.atan2(target.y - base.y, target.x - base.x) - ship.rotation;
-          const delta = angleDifference(desired, weapon.angle);
-          weapon.angle += Math.max(
-            -WEAPONS.laser.turnSpeed * dt,
-            Math.min(WEAPONS.laser.turnSpeed * dt, delta),
-          );
-          weapon.angle = angleDifference(weapon.angle, 0);
-          if (
-            Math.abs(angleDifference(desired, weapon.angle)) >
-            WEAPONS.laser.tolerance
-          )
-            target = undefined;
-        }
-      } else weapon.angle = weapon.mount.angle;
-      this.angles[weapon.mount.key] = weapon.angle;
-      if (
-        this.time + 1e-9 < weapon.readyAt ||
-        resources.power - config.energy < WEAPONS.reserve
-      )
-        continue;
-      const pose = weaponPose(ship, weapon.mount, weapon.angle);
-      if (weapon.kind === "rail") {
-        if (this.shots.length >= 64) continue;
-        const dx = Math.cos(pose.angle),
-          dy = Math.sin(pose.angle);
-        const vx = ship.vel.x + dx * WEAPONS.rail.speed;
-        const vy = ship.vel.y + dy * WEAPONS.rail.speed;
-        let earliest = contactTime(
-          pose.muzzleX - star.pos.x,
-          pose.muzzleY - star.pos.y,
-          vx,
-          vy,
-          star.radius,
-          Infinity,
+    let turretsFunded = true;
+    for (const weapon of this.weapons)
+      if (weapon.kind === "ion-point-defence")
+        turretsFunded = this.firePointDefence(
+          weapon,
+          turretsFunded,
+          dt,
+          ship,
+          star,
+          resources,
+          planets,
         );
-        for (const body of this.bodies) {
-          if (
-            body.kind === "cell" ||
-            body.hull <= 0 ||
-            Math.hypot(body.x - pose.x, body.y - pose.y) > config.range ||
-            !this.lineClear(
-              pose.muzzleX,
-              pose.muzzleY,
-              body.x,
-              body.y,
-              star,
-              planets,
-            )
-          )
-            continue;
-          let t = this.cast(
-            body,
+      else if (weapon.kind === "laser")
+        this.fireRailOrLaser(weapon, dt, ship, star, resources, planets);
+    const volley = this.ionVolley(ship, star, planets);
+    let cannonsFunded = true;
+    for (const weapon of this.weapons)
+      if (weapon.kind === "light-ion-cannon") {
+        if (cannonsFunded && volley.has(weapon))
+          cannonsFunded = this.fireIonCannon(
+            weapon,
+            ship,
+            star,
+            resources,
+            planets,
+          );
+      } else if (weapon.kind === "rail")
+        this.fireRailOrLaser(weapon, dt, ship, star, resources, planets);
+  }
+  /** Laser and rail keep their own acquisition and ten-power reserve. */
+  private fireRailOrLaser(
+    weapon: WeaponState,
+    dt: number,
+    ship: GameObject,
+    star: Star,
+    resources: Resources,
+    planets: readonly Planet[],
+  ) {
+    if (weapon.kind !== "rail" && weapon.kind !== "laser") return;
+    const config = WEAPONS[weapon.kind];
+    let target: SalvageBody | undefined;
+    if (weapon.kind === "laser") {
+      target = this.targetLaser(weapon, ship, star, planets);
+      weapon.target = target?.id ?? null;
+      if (target) {
+        const base = weaponPose(ship, weapon.mount, weapon.angle);
+        const desired =
+          Math.atan2(target.y - base.y, target.x - base.x) - ship.rotation;
+        const delta = angleDifference(desired, weapon.angle);
+        weapon.angle += Math.max(
+          -WEAPONS.laser.turnSpeed * dt,
+          Math.min(WEAPONS.laser.turnSpeed * dt, delta),
+        );
+        weapon.angle = angleDifference(weapon.angle, 0);
+        if (
+          Math.abs(angleDifference(desired, weapon.angle)) >
+          WEAPONS.laser.tolerance
+        )
+          target = undefined;
+      }
+    } else weapon.angle = weapon.mount.angle;
+    this.angles[weapon.mount.key] = weapon.angle;
+    if (
+      this.time + 1e-9 < weapon.readyAt ||
+      resources.power - config.energy < WEAPONS.reserve
+    )
+      return;
+    const pose = weaponPose(ship, weapon.mount, weapon.angle);
+    if (weapon.kind === "rail") {
+      if (this.shots.length >= 64) return;
+      const dx = Math.cos(pose.angle),
+        dy = Math.sin(pose.angle);
+      const vx = ship.vel.x + dx * WEAPONS.rail.speed;
+      const vy = ship.vel.y + dy * WEAPONS.rail.speed;
+      let earliest = contactTime(
+        pose.muzzleX - star.pos.x,
+        pose.muzzleY - star.pos.y,
+        vx,
+        vy,
+        star.radius,
+        Infinity,
+      );
+      for (const body of this.bodies) {
+        if (
+          body.kind === "cell" ||
+          body.hull <= 0 ||
+          Math.hypot(body.x - pose.x, body.y - pose.y) > config.range ||
+          !this.lineClear(
             pose.muzzleX,
             pose.muzzleY,
-            vx - body.vx,
-            vy - body.vy,
-            0,
-            Infinity,
-          );
-          // Predict the target's bearing when the slug reaches its forward plane.
-          // The arc relaxes the trigger, never the fixed muzzle direction.
-          const forward =
-            (body.x - pose.muzzleX) * dx + (body.y - pose.muzzleY) * dy;
-          const closing = (vx - body.vx) * dx + (vy - body.vy) * dy;
-          if (forward > 0 && closing > 0) {
-            const crossing = forward / closing;
-            const leadX =
-              body.x - pose.muzzleX + (body.vx - ship.vel.x) * crossing;
-            const leadY =
-              body.y - pose.muzzleY + (body.vy - ship.vel.y) * crossing;
-            if (
-              Math.abs(angleDifference(Math.atan2(leadY, leadX), pose.angle)) <=
-              WEAPONS.rail.arc
-            )
-              t = Math.min(t, crossing);
-          }
-          if (
-            t < earliest &&
-            !outside(pose.muzzleX + vx * t, pose.muzzleY + vy * t)
-          ) {
-            earliest = t;
-            target = body;
-          }
-        }
-        weapon.target = target?.id ?? null;
-        if (!target) continue;
-        this.shots.push({
-          x: pose.muzzleX,
-          y: pose.muzzleY,
-          vx,
-          vy,
-          angle: pose.angle,
-        });
-        this.shotsFired++;
-        weapon.recoil = {
-          remaining: WEAPONS.rail.recoilDuration,
-          angle: pose.angle,
-        };
-        this.emit("rail", pose.muzzleX, pose.muzzleY);
-      } else {
-        if (!target) continue;
-        // The visible pulse follows the barrel; its first physical hit owns damage.
-        const dx = Math.cos(pose.angle),
-          dy = Math.sin(pose.angle);
-        let first = contactTime(
-          pose.muzzleX - star.pos.x,
-          pose.muzzleY - star.pos.y,
-          dx,
-          dy,
-          star.radius,
-          config.range,
-        );
-        for (const planet of planets)
-          first = Math.min(
-            first,
-            contactTime(
-              pose.muzzleX - planet.pos.x,
-              pose.muzzleY - planet.pos.y,
-              dx,
-              dy,
-              planet.radius,
-              config.range,
-            ),
-          );
-        let hit: SalvageBody | undefined;
-        for (const body of this.bodies) {
-          if (body.kind === "cell" || body.hull <= 0) continue;
-          const distance = this.cast(
-            body,
-            pose.muzzleX,
-            pose.muzzleY,
-            dx,
-            dy,
-            0,
-            config.range,
-          );
-          if (distance < first) {
-            first = distance;
-            hit = body;
-          }
-        }
-        if (!hit) continue;
-        this.emit(
-          "laser",
+            body.x,
+            body.y,
+            star,
+            planets,
+          )
+        )
+          continue;
+        let t = this.cast(
+          body,
           pose.muzzleX,
           pose.muzzleY,
-          pose.muzzleX + dx * first,
-          pose.muzzleY + dy * first,
+          vx - body.vx,
+          vy - body.vy,
+          0,
+          Infinity,
         );
-        this.laserPulses++;
-        this.damage(hit, config.damage, this.time - dt);
+        // Predict the target's bearing when the slug reaches its forward plane.
+        // The arc relaxes the trigger, never the fixed muzzle direction.
+        const forward =
+          (body.x - pose.muzzleX) * dx + (body.y - pose.muzzleY) * dy;
+        const closing = (vx - body.vx) * dx + (vy - body.vy) * dy;
+        if (forward > 0 && closing > 0) {
+          const crossing = forward / closing;
+          const leadX =
+            body.x - pose.muzzleX + (body.vx - ship.vel.x) * crossing;
+          const leadY =
+            body.y - pose.muzzleY + (body.vy - ship.vel.y) * crossing;
+          if (
+            Math.abs(angleDifference(Math.atan2(leadY, leadX), pose.angle)) <=
+            WEAPONS.rail.arc
+          )
+            t = Math.min(t, crossing);
+        }
+        if (
+          t < earliest &&
+          !outside(pose.muzzleX + vx * t, pose.muzzleY + vy * t)
+        ) {
+          earliest = t;
+          target = body;
+        }
       }
-      weapon.readyAt = this.time + config.cooldown;
-      resources.power -= config.energy;
-      this.energySpent += config.energy;
+      weapon.target = target?.id ?? null;
+      if (!target) return;
+      this.shots.push({
+        x: pose.muzzleX,
+        y: pose.muzzleY,
+        vx,
+        vy,
+        angle: pose.angle,
+      });
+      this.shotsFired++;
+      weapon.recoil = {
+        remaining: WEAPONS.rail.recoilDuration,
+        angle: pose.angle,
+      };
+      this.emit("rail", pose.muzzleX, pose.muzzleY);
+    } else {
+      if (!target) return;
+      // The visible pulse follows the barrel; its first physical hit owns damage.
+      const dx = Math.cos(pose.angle),
+        dy = Math.sin(pose.angle);
+      let first = contactTime(
+        pose.muzzleX - star.pos.x,
+        pose.muzzleY - star.pos.y,
+        dx,
+        dy,
+        star.radius,
+        config.range,
+      );
+      for (const planet of planets)
+        first = Math.min(
+          first,
+          contactTime(
+            pose.muzzleX - planet.pos.x,
+            pose.muzzleY - planet.pos.y,
+            dx,
+            dy,
+            planet.radius,
+            config.range,
+          ),
+        );
+      let hit: SalvageBody | undefined;
+      for (const body of this.bodies) {
+        if (body.kind === "cell" || body.hull <= 0) continue;
+        const distance = this.cast(
+          body,
+          pose.muzzleX,
+          pose.muzzleY,
+          dx,
+          dy,
+          0,
+          config.range,
+        );
+        if (distance < first) {
+          first = distance;
+          hit = body;
+        }
+      }
+      if (!hit) return;
+      this.emit(
+        "laser",
+        pose.muzzleX,
+        pose.muzzleY,
+        pose.muzzleX + dx * first,
+        pose.muzzleY + dy * first,
+      );
+      this.laserPulses++;
+      this.damage(hit, config.damage, this.time - dt);
     }
+    weapon.readyAt = this.time + config.cooldown;
+    resources.power -= config.energy;
+    this.energySpent += config.energy;
   }
   step(
     dt: number,

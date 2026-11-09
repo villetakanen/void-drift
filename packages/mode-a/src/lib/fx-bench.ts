@@ -41,6 +41,8 @@ export class FxBench {
         // Preserve collector and engines while twin cannons occupy existing universal slots.
         if (i < 4) loadout.aft.fill("light-ion-cannon");
         else loadout.hull[1] = i === 4 ? "laser" : "rail";
+        // Point-defence turrets work beside the cannons on two of those ships.
+        if (i === 1 || i === 3) loadout.hull[1] = "ion-point-defence";
       }
       const sim = new Simulation({
         ...stockSettings("fighter"),
@@ -73,9 +75,10 @@ export class FxBench {
       if (this.weapons && sim.salvage) {
         const targetX = x,
           targetY = y - 130;
+        // Bench ids sit above those the simulation assigns to its own bodies.
         sim.salvage.bodies.push({
-          id: 1,
-          group: 1,
+          id: 101,
+          group: 101,
           kind: "wreck",
           x: targetX,
           y: targetY,
@@ -88,6 +91,23 @@ export class FxBench {
           life: SALVAGE.wreck.life,
           rotation: 0,
         });
+        if (i === 1 || i === 3)
+          // A flank wreck inside turret reach, away from the planet and the cannons' line.
+          sim.salvage.bodies.push({
+            id: 102,
+            group: 102,
+            kind: "wreck",
+            x: x - 70,
+            y: y - 20,
+            previousX: x - 70,
+            previousY: y - 20,
+            vx: 0,
+            vy: 0,
+            radius: SALVAGE.wreck.radius,
+            hull: SALVAGE.wreck.hull,
+            life: SALVAGE.wreck.life,
+            rotation: 0,
+          });
       }
       sim.start();
       return sim;

@@ -17,6 +17,9 @@ import {
   LIFE_SUPPORT_DRAIN,
   PARTS,
   type PartId,
+  POINT_DEFENCE_BASE,
+  POINT_DEFENCE_GEOMETRY,
+  POINT_DEFENCE_TURRET,
   POTENTIAL_WELL_ART,
   SCOUT,
   SHIP_IDENTITY,
@@ -414,6 +417,43 @@ function choose(id: ShipProfileId) {
                     <path d={path} fill={color} />
                   {/each}
                 </svg>
+              {:else if part.id === "ion-point-defence"}
+                <svg
+                  viewBox="{POINT_DEFENCE_GEOMETRY.centreX - 7} 90.3 14 22"
+                  width="72"
+                  height="56"
+                  aria-hidden="true"
+                >
+                  <defs>
+                    {#each POINT_DEFENCE_BASE as disc, index}
+                      <linearGradient
+                        id="point-defence-base-{index}"
+                        gradientUnits="userSpaceOnUse"
+                        x1={disc.from[0]}
+                        y1={disc.from[1]}
+                        x2={disc.to[0]}
+                        y2={disc.to[1]}
+                      >
+                        <stop offset="0" stop-color={disc.stops[0]} />
+                        <stop offset="1" stop-color={disc.stops[1]} />
+                      </linearGradient>
+                    {/each}
+                  </defs>
+                  {#each POINT_DEFENCE_BASE as disc, index}
+                    <circle
+                      cx={POINT_DEFENCE_GEOMETRY.centreX}
+                      cy={POINT_DEFENCE_GEOMETRY.centreY}
+                      r={disc.radius}
+                      fill="url(#point-defence-base-{index})"
+                    />
+                  {/each}
+                  {#each POINT_DEFENCE_TURRET as [color, points]}
+                    <polygon
+                      points={points.map((p) => p.join(",")).join(" ")}
+                      fill={color}
+                    />
+                  {/each}
+                </svg>
               {:else if part.id === "gravity-coil"}
                 <svg
                   viewBox="-24 -30 48 60"
@@ -474,9 +514,11 @@ function choose(id: ShipProfileId) {
                       ? "+1× solar charging"
                       : part.id === "light-ion-cannon"
                         ? "12–48 damage/s · 3 shots/s · 200 units · 0.2p/shot"
-                        : part.id === "rail" || part.id === "laser"
-                          ? `${part.id === "rail" ? "Fixed direction · automatic" : "Rotating point defence"} · ${WEAPONS[part.id].energy} energy/shot · Derelicts only`
-                          : "Static fitting · no energy draw"}</small
+                        : part.id === "ion-point-defence"
+                          ? "8–24 damage/s · 3 shots/s · 100 units · 0.1p/shot"
+                          : part.id === "rail" || part.id === "laser"
+                            ? `${part.id === "rail" ? "Fixed direction · automatic" : "Rotating point defence"} · ${WEAPONS[part.id].energy} energy/shot · Derelicts only`
+                            : "Static fitting · no energy draw"}</small
               >
               {#if part.description}
                 <small>{part.description}</small>

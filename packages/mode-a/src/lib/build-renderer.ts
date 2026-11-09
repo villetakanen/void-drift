@@ -14,6 +14,11 @@ import {
   ION_CANNON_MUZZLE,
   ION_CANNON_MUZZLE_SIDE,
 } from "./ion-cannon-art";
+import {
+  drawPointDefence,
+  POINT_DEFENCE_MUZZLE,
+  POINT_DEFENCE_MUZZLE_SIDE,
+} from "./point-defence-art";
 import { drawPotentialWell } from "./potential-well-art";
 import {
   CHASSIS,
@@ -478,6 +483,11 @@ export function drawNonEngineFitting(
     drawIonCannon(ctx, BUILD_FLIGHT_SCALE);
     return;
   }
+  if (mount.part === "ion-point-defence") {
+    // The pivot sits on the mount; the turret turns by its simulated weapon angle.
+    drawPointDefence(ctx, BUILD_FLIGHT_SCALE, weaponAngle - mount.angle);
+    return;
+  }
 
   if (mount.part === "gravity-coil") {
     drawUtilityArtwork(ctx, "gravity");
@@ -712,6 +722,8 @@ function polygon(
 export function barrelLength(mount: BuildMount) {
   if (mount.part === "light-ion-cannon")
     return ION_CANNON_MUZZLE / BUILD_FLIGHT_SCALE;
+  if (mount.part === "ion-point-defence")
+    return POINT_DEFENCE_MUZZLE / BUILD_FLIGHT_SCALE;
   return mount.width / 2 + (mount.part === "rail" ? 1 : 0);
 }
 
@@ -728,7 +740,11 @@ export function weaponPose(
   const angle = ship.rotation + localAngle;
   const length = barrelLength(mount) * BUILD_FLIGHT_SCALE;
   const lateral =
-    mount.part === "light-ion-cannon" ? ION_CANNON_MUZZLE_SIDE : 0;
+    mount.part === "light-ion-cannon"
+      ? ION_CANNON_MUZZLE_SIDE
+      : mount.part === "ion-point-defence"
+        ? POINT_DEFENCE_MUZZLE_SIDE
+        : 0;
   return {
     x,
     y,
@@ -749,6 +765,7 @@ function baseBuildCollisionRadius(build: Loadout) {
     const fittings = buildMounts(build).map((mount) => {
       const forward =
         mount.part === "light-ion-cannon" ||
+        mount.part === "ion-point-defence" ||
         mount.part === "rail" ||
         mount.part === "laser"
           ? barrelLength(mount)
@@ -785,6 +802,7 @@ function baseBuildCollisionRadius(build: Loadout) {
     const fittings = buildMounts(build).map((mount) => {
       const forward =
         mount.part === "light-ion-cannon" ||
+        mount.part === "ion-point-defence" ||
         mount.part === "rail" ||
         mount.part === "laser"
           ? barrelLength(mount)
@@ -807,6 +825,15 @@ function baseBuildCollisionRadius(build: Loadout) {
 export function buildCollisionRadius(build: Loadout) {
   let radius = baseBuildCollisionRadius(build);
   for (const mount of buildMounts(build)) {
+    if (mount.part === "ion-point-defence") {
+      // The turret turns, so its muzzle may point anywhere about the pivot.
+      radius = Math.max(
+        radius,
+        (Math.hypot(mount.x, mount.y) + barrelLength(mount)) *
+          BUILD_FLIGHT_SCALE,
+      );
+      continue;
+    }
     if (mount.part !== "light-ion-cannon") continue;
     const tip = barrelLength(mount);
     radius = Math.max(

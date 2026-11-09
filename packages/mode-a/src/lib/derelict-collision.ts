@@ -216,6 +216,74 @@ function distanceToPolygon(
   }
   return { distance: inside ? 0 : best, point };
 }
+type Bounds = { x: number; y: number; radius: number };
+const bounds = new WeakMap<object, Bounds>();
+function boundsOf(key: object, source: () => readonly Point[]): Bounds {
+  let cached = bounds.get(key);
+  if (!cached) {
+    const points = source();
+    const x = points.reduce((sum, p) => sum + p.x, 0) / points.length,
+      y = points.reduce((sum, p) => sum + p.y, 0) / points.length;
+    let radius = 0;
+    for (const p of points)
+      radius = Math.max(radius, Math.hypot(p.x - x, p.y - y));
+    cached = { x, y, radius };
+    bounds.set(key, cached);
+  }
+  return cached;
+}
+/**
+ * Closest point of the actual shared collision polygons to `point`; a point
+ * inside material is its own closest point. Material further than `limit` may
+ * be skipped and then reports an infinite distance.
+ */
+export function derelictClosestPoint(
+  shape: DerelictBodyShape,
+  point: Point,
+  limit = Infinity,
+): { distance: number; x: number; y: number } {
+  const mask = (shape.releasedMask ?? 0) & 255;
+  const regions =
+    shape.kind === "fragment"
+      ? [fragments[shape.shardIndex ?? 0]].filter(Boolean)
+      : attached.filter((_, index) => !(mask & (1 << index)));
+  const c = Math.cos(shape.rotation),
+    s = Math.sin(shape.rotation);
+  const dx = point.x - shape.x,
+    dy = point.y - shape.y;
+  const local = { x: dx * c + dy * s, y: -dx * s + dy * c };
+  let best = Infinity,
+    closest = local;
+  // Region and polygon bounding circles skip material that cannot be closer.
+  for (const region of regions) {
+    const rb = boundsOf(region, () => region.polygons.flat());
+    if (
+      Math.hypot(local.x - rb.x, local.y - rb.y) - rb.radius >
+      Math.min(best, limit)
+    )
+      continue;
+    for (const poly of region.polygons) {
+      const pb = boundsOf(poly, () => poly);
+      if (
+        Math.hypot(local.x - pb.x, local.y - pb.y) - pb.radius >
+        Math.min(best, limit)
+      )
+        continue;
+      const found = distanceToPolygon(local, poly);
+      if (found.distance === 0) return { distance: 0, x: point.x, y: point.y };
+      if (found.distance < best) {
+        best = found.distance;
+        closest = found.point;
+      }
+    }
+  }
+  if (best === Infinity) return { distance: Infinity, x: point.x, y: point.y };
+  return {
+    distance: best,
+    x: shape.x + closest.x * c - closest.y * s,
+    y: shape.y + closest.x * s + closest.y * c,
+  };
+}
 function circleInterval(
   p: Point,
   v: Point,

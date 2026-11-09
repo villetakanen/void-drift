@@ -49,6 +49,8 @@ without a storage migration.
   last 0.2p; the rail/laser ten-power reserve does not apply to this part. Insufficient
   power stops funding the remaining ready cannons without starting their cooldowns.
   Rail and laser acquisition and reserve behavior retain their existing policy.
+  Guns draw power after defence weapons, as the
+  [point defence contract](../ion-point-defence/spec.md) orders it.
 - First contact stops the ray, applies integer damage once, and starts the existing
   impact plume at that contact. A moving visible flash never sweeps further damage.
 - For 80 ms after discharge, fresh topmost LFX follows the current muzzle and

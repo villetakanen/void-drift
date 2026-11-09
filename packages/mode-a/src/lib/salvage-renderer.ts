@@ -8,7 +8,7 @@ import {
   stampDerelictRelease,
 } from "./derelict-renderer";
 import type { SalvageSystem } from "./salvage";
-import { ION_CANNON } from "./schemas/salvage";
+import { ION_CANNON, POINT_DEFENCE } from "./schemas/salvage";
 import type { Simulation } from "./simulation";
 
 const LASER_INK = "#ff1028";
@@ -108,7 +108,7 @@ export function stampWeaponLight(
         stampDerelictRelease(ctx, event.x, event.y, age, pass);
       continue;
     }
-    if (event.kind === "ion-cannon") continue;
+    if (event.kind === "ion-cannon" || event.kind === "point-defence") continue;
     const collision = event.kind === "collision";
     if (age > (collision ? 0.2 : 0.08)) continue;
     const radius = collision
@@ -185,19 +185,24 @@ export function drawSalvageApertures(
       );
 }
 
-// Cached complete blue profiles; clipping never stretches the accepted transparent tip.
-const ionStamps = new Map<boolean, HTMLCanvasElement>();
-function ionStamp(dispersal: boolean) {
-  let stamp = ionStamps.get(dispersal);
+// Cached complete blue profiles per reach; clipping never stretches the accepted transparent tip.
+const ionStamps = new Map<string, HTMLCanvasElement>();
+function ionStamp(
+  profile: typeof ION_CANNON | typeof POINT_DEFENCE,
+  reach: number,
+  dispersal: boolean,
+) {
+  const key = `${reach}:${dispersal}`;
+  let stamp = ionStamps.get(key);
   if (stamp) return stamp;
   stamp = document.createElement("canvas");
-  stamp.width = 800;
+  stamp.width = reach * 4;
   stamp.height = 24;
   const ctx = stamp.getContext("2d");
-  if (!ctx) throw new Error("Ion cannon requires Canvas 2D");
+  if (!ctx) throw new Error("Ion light requires Canvas 2D");
   ctx.scale(4, 4);
   ctx.translate(0, 3);
-  const g = ctx.createLinearGradient(0, 0, 200, 0);
+  const g = ctx.createLinearGradient(0, 0, reach, 0);
   g.addColorStop(0, dispersal ? "#8cddff" : "#eafaff");
   g.addColorStop(0.25, "#8cddff");
   g.addColorStop(0.65, "#29baff");
@@ -206,19 +211,23 @@ function ionStamp(dispersal: boolean) {
   for (const [width, alpha] of [
     [3, 0.09],
     [1.333, 0.24],
-    [0.4, dispersal ? 0.65 : 1],
+    [0.4, dispersal ? profile.dispersal : 1],
   ]) {
     ctx.lineWidth = width;
     ctx.globalAlpha = alpha;
     ctx.beginPath();
     ctx.moveTo(0, 0);
-    ctx.lineTo(200, 0);
+    ctx.lineTo(reach, 0);
     ctx.stroke();
   }
-  ionStamps.set(dispersal, stamp);
+  ionStamps.set(key, stamp);
   return stamp;
 }
-/** Current muzzle presentation is separate from the authoritative discharge hit. */
+/**
+ * Current muzzle presentation is separate from the authoritative discharge hit.
+ * Cannons use the fixed mount heading and the 200-unit profile; point-defence
+ * turrets use their current simulated angle and the 100-unit profile.
+ */
 export function drawIonCannonLight(
   ctx: CanvasRenderingContext2D,
   sim: Simulation,
@@ -228,16 +237,27 @@ export function drawIonCannonLight(
   const salvage = sim.salvage;
   if (!salvage) return;
   for (const weapon of salvage.weapons) {
-    if (weapon.kind !== "light-ion-cannon") continue;
+    const turret = weapon.kind === "ion-point-defence";
+    if (weapon.kind !== "light-ion-cannon" && !turret) continue;
+    const kind = turret ? "point-defence" : "ion-cannon";
+    const profile = turret ? POINT_DEFENCE : ION_CANNON;
+    const reach = turret ? POINT_DEFENCE.reach : ION_CANNON.range;
     const event = [...salvage.events]
       .reverse()
-      .find((e) => e.kind === "ion-cannon" && e.mountKey === weapon.mount.key);
+      .find(
+        (e) =>
+          (e.kind === "ion-cannon" || e.kind === "point-defence") &&
+          e.kind === kind &&
+          e.mountKey === weapon.mount.key,
+      );
     if (
-      event?.kind !== "ion-cannon" ||
-      salvage.time - event.time >= ION_CANNON.flashSeconds
+      (event?.kind !== "ion-cannon" && event?.kind !== "point-defence") ||
+      salvage.time - event.time >= profile.flashSeconds
     )
       continue;
-    const pose = weaponPose(sim.ship, weapon.mount);
+    const pose = turret
+      ? weaponPose(sim.ship, weapon.mount, weapon.angle)
+      : weaponPose(sim.ship, weapon.mount);
     const distance = Math.min(
       event.distance,
       salvage.ionContact(
@@ -246,11 +266,12 @@ export function drawIonCannonLight(
         pose.angle,
         sim.star,
         sim.planets,
+        reach,
       ).distance,
     );
     if (
       pass &&
-      (!pass.visible(pose.muzzleX, pose.muzzleY, 200) ||
+      (!pass.visible(pose.muzzleX, pose.muzzleY, reach) ||
         !pass.budget.take(true))
     )
       continue;
@@ -261,7 +282,7 @@ export function drawIonCannonLight(
     ctx.globalCompositeOperation = "lighter";
     ctx.globalAlpha = pass?.opacity ?? 1;
     ctx.drawImage(
-      ionStamp(dispersal),
+      ionStamp(profile, reach, dispersal),
       0,
       0,
       distance * 4,

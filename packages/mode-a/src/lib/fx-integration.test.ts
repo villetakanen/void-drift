@@ -56,6 +56,21 @@ it("the armed mixed workload fires real weapons independently of effect settings
       0,
     ),
   ).toBeGreaterThan(0);
+  // Point-defence turrets fire beside the twin cannons.
+  const armed = a.ships.filter((sim) =>
+    sim.salvage?.weapons.some((w) => w.kind === "ion-point-defence"),
+  );
+  expect(armed.length).toBeGreaterThan(0);
+  for (const sim of armed)
+    expect(
+      sim.salvage?.weapons.some((w) => w.kind === "light-ion-cannon"),
+    ).toBe(true);
+  expect(
+    armed.reduce(
+      (sum, sim) => sum + (sim.salvage?.pointDefenceDischarges ?? 0),
+      0,
+    ),
+  ).toBeGreaterThan(0);
   for (let i = 0; i < 6; i++) {
     expect(a.ships[i].salvage).toEqual(b.ships[i].salvage);
     expect(a.ships[i].state).toEqual(b.ships[i].state);

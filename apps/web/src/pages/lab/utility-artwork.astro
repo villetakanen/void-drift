@@ -1,6 +1,7 @@
 ---
 import GravityCoilFleet from "../../components/lab/GravityCoilFleet.astro";
 import IonCannonEncounter from "../../components/lab/IonCannonEncounter.svelte";
+import PointDefenceEncounter from "../../components/lab/PointDefenceEncounter.svelte";
 import UtilityArtworkBench from "../../components/lab/UtilityArtwork.astro";
 import IonCannonFitting from "../../components/studies/IonCannonFitting.svelte";
 import PotentialWellSizing from "../../components/studies/PotentialWellSizing.astro";
@@ -33,6 +34,16 @@ import StudyLayout from "../../layouts/StudyLayout.astro";
   <h2>Light Ion Cannon / production fitting</h2>
   <IonCannonFitting client:load />
   <IonCannonEncounter client:load />
+  <h2 id="ion-point-defence">Ion Point Defence / production encounter</h2>
+  <p>
+    The genuine turret from the
+    <a href="/lab/studies/ion-point-defence-2026-11-08#production"
+      >accepted study</a
+    >, in the real simulation: closest-target switching, a target out of reach,
+    a hit stopped at first contact, a turning ship and the hidden turret on
+    Scout.
+  </p>
+  <PointDefenceEncounter client:load />
   <h2 id="gravity-coil">Gravity coil / production fleet comparison</h2>
   <p>
     The accepted 100% size on every equipment mount, with Light ions in all

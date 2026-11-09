@@ -18,6 +18,7 @@ import { ShipProfileIdSchema } from "./ship-profile";
 export const EngineIdSchema = z.enum(["ion", "heavy-ion", "fusion", "plasma"]);
 export const PartIdSchema = z.enum([
   "light-ion-cannon",
+  "ion-point-defence",
   "rail",
   "laser",
   "battery",
@@ -140,6 +141,17 @@ export const PARTS = {
       "12–48 damage/s · 3 shots/s · 200-unit reach · 0.2p/shot (0.6p/s sustained). Ship-width forward acquisition; offset cannons may miss.",
     category: "G",
     mass: 9,
+    thrust: 0,
+    limit: 0,
+    draw: 0,
+  }),
+  "ion-point-defence": PartSchema.parse({
+    id: "ion-point-defence",
+    name: "Ion Point Defence",
+    description:
+      "8–24 damage/s · 3 shots/s · 100-unit reach · 0.1p/shot (0.3p/s sustained). Turns at 180°/s towards the closest target within 200 units.",
+    category: "G",
+    mass: 10,
     thrust: 0,
     limit: 0,
     draw: 0,

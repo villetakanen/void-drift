@@ -530,3 +530,21 @@ Automatic fire operates in Derelicts encounters. Test flight retains its existin
 full-resource, encounter-free behavior. The equipment Lab and accepted study also
 provide a deterministic production encounter for inspection. See the
 [cannon contract](../light-ion-cannon/spec.md) for triggering, damage and power.
+
+## Ion Point Defence fitting
+
+The genuine `ion-point-defence` part is available on existing weapon-compatible
+slots in Preview and Plan, persists in version-2 saved builds and follows the
+normal flight handoff. Engine and support slots reject it. Its catalogue uses the
+same converted geometry as its installed procedural artwork, on an 8-unit flight
+base. It shows **8–24 damage/s**, **3 shots/s**, **100-unit reach** and
+**0.1p/shot**; 0.3p/s is the continuous-fire equivalent, with zero idle drain.
+Its mass is 10. Preview and Plan draw it along its mount direction; flight draws
+it at its simulated angle under normal mount layering, so Scout hides it.
+Existing outfits and starter fittings remain compatible and unchanged.
+
+Automatic fire operates in Derelicts encounters. Test flight retains its existing
+full-resource, encounter-free behavior. The equipment Lab and accepted study also
+provide a deterministic production encounter for inspection. See the
+[turret contract](../ion-point-defence/spec.md) for targeting, turning, damage and
+power.

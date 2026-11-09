@@ -1,4 +1,5 @@
 ---
+import PointDefenceEncounter from "../../../components/lab/PointDefenceEncounter.svelte";
 import PointDefenceTurning from "../../../components/studies/PointDefenceTurning.svelte";
 import { studies } from "../../../data/studies";
 import StudyLayout from "../../../layouts/StudyLayout.astro";
@@ -381,6 +382,18 @@ const study = studies.find(
       publication are excluded. Production behaviour remains unchanged by this
       scope document.
     </p>
+  </section>
+  <section id="production">
+    <h2>Production / Playable turret encounter</h2>
+    <p>
+      The delivered Ion Point Defence in the real simulation, with the genuine
+      part, artwork, targeting, damage, light and impact. Select an encounter to
+      inspect closest-target switching, a target out of reach, a hit stopped at
+      first contact, a turning ship and the hidden turret on Scout. Its contract
+      is
+      <code>docs/specs/game/ion-point-defence/spec.md</code>.
+    </p>
+    <PointDefenceEncounter client:load />
   </section>
 </StudyLayout>
 
