@@ -51,7 +51,9 @@ interactive examples, or flight trials according to the uncertainty. Do not defa
 to presets or a viewer. Explain what the chosen method cannot establish.
 
 Present a focused comparison for human judgment. Carry current-cycle agreed points and reasons
-forward each round; advance the next unknown. Reopen an agreement only with an
+forward each round; advance the next unknown. While the question is open, each new
+proposal gives a different answer to it, not a refinement of the last one; refine
+details only after the designer accepts a direction. Reopen an agreement only with an
 explicit reason. If the designer challenges the frame, return to purpose and identify
 what changed rather than polishing the same artifact. Recommend only with supporting
 reasoning; never manufacture evidence or acceptance.
