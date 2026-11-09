@@ -1,133 +1,140 @@
-> Historical specification. Current alpha behavior is defined in [playable-alpha.md](../spec.md).
-
-# Feature: Universal Input System
-
-**Status:** ✅ COMPLETED (2024)  
-**Current Version:** 0.0.4
+# Controls
 
 ## Blueprint
 
 ### Context
 
-To support both competitive Desktop play and accessible Mobile play, inputs must be normalized into an abstract "Intent" state. The physics engine should not know whether a "Left Turn" came from a keyboard or a touchscreen.
+A pilot flies with five actions: turn left (`L`), turn right (`R`), forward
+(`LR`, also called `F`), and forward while turning left or right (`LF`, `RF`).
+Keyboard and touch players reach all five. On touch, each thumb can turn or
+burn on its own side without crossing the screen, and the pads show which
+action is held. Every input source drives the same simulation, so replays and
+scores do not depend on how the player flew.
 
-**Achievement:** Cross-platform input system operational with keyboard (WASD/Arrows) and touch support.
+### Architecture and boundaries
 
-### Architecture
+- `packages/core/src/lib/entities/Input.ts` resolves keyboard and pointer input
+  into one of the five actions, exposes it for pad feedback, and writes the
+  simulation's `InputState` (`leftThruster`, `rightThruster`, `fire`).
+- Which engines an action fires depends on the chassis, stabilizers and linked
+  engines; `packages/mode-a/src/lib/build-flight.ts` owns that mapping.
+- The thrust-pad component (built in the Lab, used in
+  `apps/web/src/components/FlightDeck.svelte`) draws the pads in the side
+  gutters and turns pointer positions into pad presses.
+- [Game screen](../game-screen/spec.md) owns the gutters, gesture containment,
+  focus, and clearing input when flight is blocked or paused. This contract owns
+  the actions, how input resolves to them, and the pads' arrangement and
+  appearance.
+- [Options](../options/spec.md) owns the `invertControls` setting; this
+  contract applies it.
 
-- **Data Model:**
+### Actions
 
-  ```typescript
-  interface InputState {
-    leftThruster: boolean;
-    rightThruster: boolean;
-    fire: boolean;
-  }
-  ```
-- **Store:** `packages/core/src/lib/entities/Input.ts` (Input manager class).
-- **Mapping:**
-  - Desktop: WASD / Arrows.
-  - Mobile: Split-screen Touch Zones.
+| Action     | Keyboard                           | Touch                                |
+| ---------- | ---------------------------------- | ------------------------------------ |
+| `L`        | `A` / `←`                          | upper pad, left gutter               |
+| `R`        | `D` / `→`                          | upper pad, right gutter              |
+| `LR` (`F`) | `W` / `↑`, `A` + `D`, or all three | a pad in each gutter, upper or lower |
+| `LF`       | `W` + `A`                          | lower pad, left gutter               |
+| `RF`       | `W` + `D`                          | lower pad, right gutter              |
+- Everything held, from every source, resolves to one action: left only is
+  `L`; right only is `R`; forward alone, or anything on both sides, is `LR`;
+  forward with left only is `LF`; forward with right only is `RF`.
+- Today `LF` and `RF` fire the same engines as `LR` on every chassis, so the
+  `InputState` contract and replay input chunks are unchanged. A chassis that
+  gives `LF` or `RF` their own engine mapping needs `InputState` and its replay
+  schema extended first.
+- `invertControls` swaps the player's left and right input before it
+  resolves, so `L` and `R` swap, and so do `LF` and `RF`. It never remaps
+  engines; the engine mapping sees only the resolved action. The pads light for
+  that action.
+- Thrust comes only from the pads; touches in the central fly area issue no
+  action.
 
-### Anti-Patterns
+### Touch pads
 
-- **Do NOT** handle events (keydown/touchstart) inside the `GameLoop`. They must be handled in an `Input` manager that updates state.
-- **Do NOT** allow default browser behaviors (scrolling, zooming) on the game canvas.
-- **Do NOT** use `click` events for mobile steering; use `touchstart`/`touchend` for zero latency.
+- Each side gutter holds one pad assembly across its full width: an upper turn
+  pad (`L` or `R`) and a lower burn pad (`LF` or `RF`) in the bottom corner, nested at 84%
+  of the gutter width and 54% of the assembly height. A 60° seam, sloping 30°
+  down from the bezel inward, divides them.
+- The whole gutter width is touchable. Each pointer maps to the pad under it,
+  and a thumb sliding across the seam switches pad without lifting. A
+  pointer that leaves the assembly releases its press.
+- Independent pointers work together, on one side or both. Release,
+  cancellation and lost pointer capture clear that pointer's press.
+
+### Feedback
+
+- Pads are borderless, disjoint panes of translucent glass that let the stars
+  show through. At rest they are blue (`--color-elev-3`), the burn pad denser
+  than the turn pad. A lit pad turns to a thin yellow wash
+  (`--color-selected`), again denser on the burn pad.
+- Pads light for the resolved action, whatever the source: `L` or `R` lights
+  that side's turn pad; `LR` lights both burn pads, even when it comes from
+  the two upper pads, so forward always looks the same; `LF` or `RF` lights
+  both burn pads and that side's turn pad.
+- Each pad carries a white (`--color-text`) two-line marking, an arrow and a
+  caption (`◀ TURN · LEFT ENGINE`, `▶ TURN · RIGHT ENGINE`,
+  `▲ BURN · BOTH ENGINES`), set at the same distance from the screen edge on
+  both pads.
 
 ## Contract
 
 ### Definition of Done
 
-- [x] `InputState` interface is defined in `packages/core`.
-- [x] Desktop keys (A/D or Arrow keys) correctly toggle `leftThruster`/`rightThruster`.
-- [x] Desktop keys (A+D or both arrows) trigger forward thrust.
-- [x] Mobile touch zones (Left/Right half) correctly toggle `leftThruster`/`rightThruster`.
-- [x] Mobile touch feedback (visual highlight) indicates active zones.
-- [x] Browser default behaviors (scroll, zoom) prevented on game canvas.
+- [ ] Every combination of held keys and pads resolves to the action the
+  resolution rule gives, from keyboard, touch and both together.
+- [ ] `L` fires the left thruster, `R` the right, and `LR`, `LF` and `RF` both;
+  `invertControls` swaps left and right input, never engine outputs.
+- [ ] Touches in the central fly area issue no action.
+- [ ] A pointer sliding across the seam switches pad without lifting; leaving
+  the assembly, release, cancellation and lost capture clear that pointer's
+  press; independent pointers combine.
+- [ ] Pads light for the resolved action from any source, `LR` on the burn pads
+  only.
+- [ ] Each side gutter shows the pad assembly with the arrangement, glass
+  states and markings above.
 
-### Regression Guardrails
+### Regression guardrails
 
-- **Latency:** Input processing must happen before the physics update in the same frame.
-- **Multi-Touch:** The system must support at least 2 simultaneous touch points (for dual thrust).
-- **Stuck Keys:** State must clear correctly when keys/touches are released (even if focus is lost).
+- `InputState` and replay input chunks are unchanged; identical inputs replay
+  identically.
+- Keyboard play needs no pointer, and touch play needs no keyboard.
+- Blur, a hidden page, pause and the aspect gate clear every held key and press
+  before another simulation step.
 
 ### Scenarios
 
-**Scenario: Dual Thrust (Desktop)** ✅
-- Given I am pressing 'A' (Left)
-- When I also press 'D' (Right)
-- Then `InputState` shows `{ leftThruster: true, rightThruster: true }`
-- And the Ship accelerates forward
-- **Status:** VERIFIED - Differential thrust system operational
+```gherkin
+Scenario: Forward from two thumbs
+  Given a touch player in flight
+  When they hold the left and right upper pads
+  Then the action is LR and both thrusters fire
+  And only the two burn pads light
 
-**Scenario: Touch Drift (Mobile)** ✅
-- Given I touch the left side of the screen
-- When I hold my finger there
-- Then `InputState.leftThruster` is `true`
-- And the Ship rotates right (spirals)
-- **Status:** VERIFIED - Touch zones working on mobile devices
+Scenario: Forward while turning
+  Given a touch player in flight
+  When they hold the left lower pad
+  Then the action is LF
+  And both burn pads and the left turn pad light
 
-**Scenario: Prevent Scroll** ✅
-- Given I am on a mobile device
-- When I drag my finger across the canvas
-- Then the browser does NOT scroll or refresh the page
-- **Status:** VERIFIED - `preventDefault()` on touch events
+Scenario: Keyboard forward while turning
+  Given a keyboard player in flight
+  When they hold W and A
+  Then the action is LF and lights the same pads as the left lower pad
 
-## Current Implementation
+Scenario: Slide across the seam
+  Given a thumb holding the left upper pad
+  When it slides onto the left lower pad without lifting
+  Then the action changes from L to LF
 
-### Input Manager (`packages/core/src/lib/entities/Input.ts`)
+Scenario: Fly area is inert
+  Given a touch player in flight
+  When they touch the central fly area
+  Then no action is held and no thruster fires
 
-- **Architecture:** Framework-agnostic input manager class
-- **Event Listeners:** Registered on window for keyboard, on canvas for touch
-- **State Management:** Boolean flags for `leftThruster`, `rightThruster`, `fire`
-
-### Desktop Controls
-
-- **Primary:** WASD keys
-  - `KeyA` → Left thruster (rotate clockwise)
-  - `KeyD` → Right thruster (rotate counter-clockwise)
-  - `KeyA + KeyD` → Forward thrust (both engines)
-- **Alternative:** Arrow keys
-  - `ArrowLeft` → Left thruster
-  - `ArrowRight` → Right thruster
-  - `Both Arrows` → Forward thrust
-- **Fire:** `Space` key (reserved for future weapons)
-
-### Mobile Controls (`apps/web/src/components/GameWrapper.svelte`)
-
-- **Touch Zones:** Screen split into left/right halves
-- **Visual Feedback:** Zones highlight with `rgba(0, 255, 255, 0.1)` on touch
-- **Multi-Touch:** Supports simultaneous left+right for forward thrust
-- **Events:** `touchstart`, `touchend`, `touchmove` with `preventDefault()`
-
-### Portrait Mode Warning
-
-- **Component:** `GameWrapper.svelte` includes orientation check
-- **Behavior:** Full-screen overlay when device is in portrait
-- **Message:** "VOID DRIFT - Please Rotate Device"
-- **Styling:** Uses `--color-void` background with `--color-neon-blue` text
-
-### Controls Hint UI
-
-- **Desktop:** "WASD / Arrows to Thrust"
-- **Mobile:** "Tap Sides to Thrust"
-- **Location:** Bottom-center of HUD overlay
-- **Styling:** Subtle text using `--color-text-dim` token
-
-## Performance Characteristics
-
-- **Input Latency:** <1ms (events processed before physics update)
-- **Memory:** Zero allocations per frame (reuses state object)
-- **Touch Sampling:** Native browser rate (60Hz+ on modern devices)
-
-## Known Limitations
-
-- **Fire Button:** Not yet implemented (reserved for future weapons system)
-- **Gamepad Support:** Not implemented (future enhancement)
-- **Keyboard Remapping:** Hardcoded keys (no user configuration yet)
-
----
-
-**Input System Status: OPERATIONAL** 🎮  
-**Platforms:** Desktop (keyboard) + Mobile (touch)
+Scenario: Inverted controls
+  Given invertControls is on
+  When the player holds the left upper pad
+  Then the action is R, the right thruster fires and the right turn pad lights
+```

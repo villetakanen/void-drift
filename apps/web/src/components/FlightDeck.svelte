@@ -3,8 +3,10 @@ import {
   Camera,
   drawSunFields,
   Input,
+  type InputAction,
   paintCountdown,
   Renderer,
+  type ThrustPad,
 } from "@void-drift/core";
 import {
   BUILD_FLIGHT_SCALE,
@@ -70,6 +72,7 @@ let ticks = $state(0);
 let runSeed = $state(0);
 let left = $state(false);
 let right = $state(false);
+let action = $state<InputAction | null>(null);
 let cause = $state("");
 let salvageFeedback = $state("");
 let salvageStats = $state({
@@ -199,6 +202,7 @@ function start() {
 function suspend() {
   input?.reset();
   left = right = false;
+  action = null;
   lastFrameTime = performance.now();
   if (status === "PLAYING" || phase === "starting") paused = true;
 }
@@ -240,12 +244,13 @@ async function save() {
     message = result.error;
   }
 }
-function press(event: PointerEvent, side: "left" | "right") {
+// The bottom engine buttons stand in for the upper turn pads until the side pads land.
+function press(event: PointerEvent, pad: ThrustPad) {
   if (paused || narrow || document.hidden) return;
   event.preventDefault();
   const button = event.currentTarget as HTMLElement;
   button.setPointerCapture(event.pointerId);
-  input?.setPointer(event.pointerId, side);
+  input?.setPointer(event.pointerId, pad);
 }
 function release(event: PointerEvent) {
   input?.setPointer(event.pointerId, null);
@@ -254,7 +259,7 @@ onMount(() => {
   renderer = new Renderer(canvas);
   renderer.resize(1920, 1080);
   camera = new Camera();
-  input = new Input(canvas);
+  input = new Input();
   if (launchSource === "title") enterMenu();
   else reset(Boolean(loadout));
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -333,7 +338,9 @@ onMount(() => {
     }
     if (phase === "starting" && !landing && transitionTime >= 0.3 && !blocked)
       countTime = Math.min(3, countTime + dt);
-    const controls = input.getEffectiveState(settings.get().invertControls);
+    const invert = settings.get().invertControls;
+    const controls = input.getEffectiveState(invert);
+    action = input.getAction(invert);
     left = controls.leftThruster;
     right = controls.rightThruster;
     if (
@@ -455,6 +462,7 @@ onMount(() => {
   class="flight-page"
   class:title-active={Boolean(landing)}
   data-paused={paused}
+  data-action={action ?? "none"}
   data-narrow={narrow}
   data-launch-source={launchSource}
   data-status={status}
@@ -538,7 +546,7 @@ onMount(() => {
             class:active={left}
             class="engine cut-surface left"
             aria-label="Left engine"
-            onpointerdown={(event) => press(event, "left")}
+            onpointerdown={(event) => press(event, "leftUpper")}
             onpointerup={release}
             onpointercancel={release}
             onlostpointercapture={release}
@@ -571,7 +579,7 @@ onMount(() => {
             class:active={right}
             class="engine cut-surface right"
             aria-label="Right engine"
-            onpointerdown={(event) => press(event, "right")}
+            onpointerdown={(event) => press(event, "rightUpper")}
             onpointerup={release}
             onpointercancel={release}
             onlostpointercapture={release}
