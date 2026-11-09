@@ -15,7 +15,10 @@ or create a retrospective unless requested.
 
 Briefly acknowledge feedback, then make the next proposal. Do not default to apologies,
 self-assessment, speculative explanations of failure, method repair in chat, or asking
-permission to try again. Rejection alone does not reopen the problem statement. Explicit
+permission to try again. Rejection alone does not reopen the problem statement. When two
+consecutive replacements are rejected and no observation is retained, say in one line
+that the question may be too large or wrong, and offer to narrow it in part 01 or stop;
+keep proposing unless the designer chooses. Explicit
 requests for discussion, stopping, preservation, or reframing take precedence; actual
 delivery blockers remain visible.
 
