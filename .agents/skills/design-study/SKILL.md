@@ -26,6 +26,9 @@ and observations with their supporting evidence. Synthesize discussion into desi
 reasoning for the document’s readers; keep conversational attribution in chat. Contribute reasoning
 before asking focused questions about creative intent or boundaries. Unknown mechanics
 are investigation items, not homework the designer must finish before work can begin.
+State what the question holds fixed (accepted mechanics, established intent) and what it
+leaves open; exploration varies only the open part. A mechanic already settled in the
+game is fixed, not an unknown.
 
 Test that a study can answer the question: its answer changes the game in one concrete
 way and concerns one object or decision. Count the objects, systems and decisions it

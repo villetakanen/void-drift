@@ -34,12 +34,12 @@ Cycle zero is context gathering, not a mandatory page section.
 
 ### Four-part outputs
 
-| Part             | Result                                                                                                                                                                |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 01 / Problem     | Shared purpose, principles, design tension and an answerable question: one object or decision whose answer changes the game concretely, with adjacent scope explicit. |
-| 02 / Exploration | Concrete examples, useful discoveries, exact accepted variants and settled properties; remaining hypotheses and reference/replay conditions remain explicit.          |
-| 03 / Readiness   | Feasibility in the current setting: reusable systems, adaptations, dependencies, risks and unresolved choices, judged against the intended delivery.                  |
-| 04 / Scope       | Ordered, independently deliverable slices, affected systems/specs, rough size, dependencies and checks for correctness and fidelity.                                  |
+| Part             | Result                                                                                                                                                                                                    |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 01 / Problem     | Shared purpose, principles, design tension and an answerable question: one object or decision whose answer changes the game concretely, what it holds fixed and leaves open, and adjacent scope explicit. |
+| 02 / Exploration | Concrete examples, useful discoveries, exact accepted variants and settled properties; remaining hypotheses and reference/replay conditions remain explicit.                                              |
+| 03 / Readiness   | Feasibility in the current setting: reusable systems, adaptations, dependencies, risks and unresolved choices, judged against the intended delivery.                                                      |
+| 04 / Scope       | Ordered, independently deliverable slices, affected systems/specs, rough size, dependencies and checks for correctness and fidelity.                                                                      |
 
 Uncertainty is a normal input. Desired intent comes from the design inquiry; current
 code informs feasibility. Evidence must support the claim: visual examples do not by
