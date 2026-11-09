@@ -116,6 +116,7 @@ describe("Weapon energy floor", () => {
   it("reads the real build capacity through the simulation", () => {
     const loadout = defaultLoadout("fighter");
     loadout.hull[0] = "light-ion-cannon";
+    loadout.hull[1] = "battery";
     const capacity = buildStats(loadout).capacity;
     expect(capacity).not.toBe(100);
     const floor = capacity * WEAPONS.energyFloor;

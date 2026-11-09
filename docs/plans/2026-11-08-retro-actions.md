@@ -69,12 +69,16 @@ The designer's readings: [loop record](../loop-evidence/2026-11-08-retro-explora
 - **A. Exploration stops when it turns into discussion.** Exploration is
   confirming guesses and guessing again when wrong; studies fail when they
   loop over details that do not answer the design question. The team is
-  better at spotting it, not always in time. Explored once. No action yet.
+  better at spotting it, not always in time. Explored once. Two design-study
+  changes, 9 November 2026: a new proposal is a new answer; a stall offers to
+  narrow the question. Root cause not yet agreed.
 - **B. No rubric for the design question itself.** The biggest finding: the
   team often fails to see that a question is too winding, or missing
   fundamentals, for the study format to answer at all. Logged as model or loop
-  failure, it is a missing way to evaluate part 01. Explored twice. No action
-  yet.
+  failure, it is a missing way to evaluate part 01. Explored twice. Three
+  design-study changes, 9 November 2026: an answerability test before part 02,
+  fixed and open parts named, a stall offers to narrow the question. Not yet
+  validated on a study.
 - **C. The design system is bypassed.** In studies and screens, components
   were invented in place instead of flagging that the design system lacks
   them or that the agent did not know how to use it. Explored once; the
@@ -99,6 +103,10 @@ deferred (8 November 2026).
 | Retire "owner": fourteen Lab study and review pages                                       | 6       | `99f6317`        |
 | Shared checkout practice: `AGENTS.md`, `development.md`, commit skill, factory spec       | 13      | `387ac28`        |
 | Ref cleanup: five merged worktrees, thirteen merged branches, stash                       | 11      | no commit (refs) |
+| Design study: answerability test before part 02                                           | B       | `e93f02e`        |
+| Design study: question names what is fixed and what is open                               | B       | `e135244`        |
+| Design study: each open-question proposal is a new answer                                 | A       | `e85709e`        |
+| Design study: a stall offers to narrow the question                                       | A, B    | `24f114d`        |
 
 To the designer these are four tasks, not seven: link repair with its gate,
 evidence and formatting, releases and CI, the 0.6.0 note (8 November).
