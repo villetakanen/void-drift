@@ -93,7 +93,7 @@ is drawn or studied.
 
 - Tokens, type, colour roles, elevation, inputs, buttons, identity:
   [design system core](specs/factory/design-system/spec.md).
-- Flight, controls, camera and the Flight Lab: [playable alpha](specs/game/spec.md).
+- The game, its modes and its flight screen, controls and camera: [game](specs/game/spec.md) and its child specs.
 - Player assembly and flight handoff: [Hangar](specs/game/hangar/spec.md).
 - Recorded ship, engine and artwork decisions: [ship-builder history](history/ship-builder.md).
 - The Motion instrument: [motion instrument](specs/lab/motion-instrument/spec.md).

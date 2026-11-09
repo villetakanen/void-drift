@@ -1,7 +1,7 @@
 # Development and verification
 
 Develop through conversation and browser inspection; an IDE is optional.
-Product contracts live in [playable alpha](specs/game/spec.md).
+Product contracts live in the [game contract](specs/game/spec.md) and its child specs.
 
 ## Setup
 

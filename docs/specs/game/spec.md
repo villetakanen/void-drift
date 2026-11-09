@@ -1,163 +1,166 @@
-# Playable alpha contract
+# Game
 
-Status: implementation in progress, 2026-10-28. Scope approved in the voice-led rebuild conversation.
+## Blueprint
 
-Screen composition, viewport fitting and play availability follow
-[Game Screen](game-screen/spec.md); framing, zoom levels and the
-background starfield follow [Camera](camera/spec.md).
+### Context
 
-## Architecture
+Void Drift is a procedural space survival game played in the browser. A pilot flies a two-engine ship around a star, managing hull and power, and tries to survive as long as possible. Keyboard play on a laptop or desktop is the primary experience; iPad landscape touch plays the same game. Everything works without credentials, and shared scores are an optional, casual competition.
 
-`packages/mode-a/src/lib/simulation.ts` owns a fixed 60 Hz survival simulation.
-Game and production-backed Lab instruments share simulation and core rendering primitives.
-`schemas/flight.ts` validates flight settings and replay inputs; ship tuning uses the
-existing ship-profile schema. Assembled propulsion follows the shared
-[ship propulsion contract](ships/propulsion/spec.md); legacy stock trials retain their
-separate physics. Gravity: [gravity-field.md](world/gravity-field/spec.md).
+### Architecture and boundaries
 
-All ranked runs use the current challenge `CHALLENGE` (`arrival-3`), a fresh per-run seed, a G-class star, and stock profiles.
-Scoring is casual client-reported survival time, clearly labeled: Firestore rules
-validate ownership, shape, version and bounds, but do not prove an honest simulation.
-Each anonymous player keeps one best score per ranked ship, independently of other
-players and crafts. Successful saving opens Top Scores, which displays the 30
-longest times across crafts. The score heading, results and action strip share
-one design-system panel; long boards scroll with the page and narrow tables
-scroll within the panel. Equal or shorter runs retain the existing best. Different balance versions
-use separate boards. Lab runs and imported tuning cannot submit ranked scores.
-Firebase Auth and Firestore replace Supabase. Paths are
-`artifacts/{appId}/scores/{challenge}_{uid}_{shipId}`. Offline play remains available.
+- `packages/mode-a/src/lib/simulation.ts` owns a fixed 60 Hz simulation. `schemas/flight.ts` validates flight settings and replay inputs. Rendering reads simulation state and writes none.
+- The game and the Lab share the simulation, camera, configuration and drawing code.
+- This contract owns the game as a whole: its modes, launch and return, replay, ranking eligibility and the scoring boundary. Child contracts own the parts:
+  - **Flight screen:** [game screen](game-screen/spec.md), [camera](camera/spec.md), [controls](controls/spec.md), [dialogs](dialogs/spec.md)
+  - **Modes:** [Survival](survival/spec.md), [Practice](test-flight/spec.md), [Derelicts](derelicts/spec.md)
+  - **Launch and ships:** [title screen](landing-page/spec.md), [Hangar](hangar/spec.md), [propulsion](ships/propulsion/spec.md)
+  - **World:** [star](world/star/spec.md), [gravity](world/gravity-field/spec.md)
+  - **Scores and options:** [high scores](high-scores/spec.md), [options](options/spec.md)
+  - **Effects:** [FX](../factory/effects/spec.md)
 
-## Flight-mode migration — 7 November 2026
+### Rules
 
-Flight settings validate an explicit `mode`: `practice`, `derelicts` or `survival`.
-Omitted mode defaults to Survival; legacy inputs with only `testFlight: true` map
-to practice. An explicit mode takes precedence over the deprecated boolean.
-Launch source and mode are independent, and only Survival may use the existing
-ranked submission path (subject to its other eligibility checks).
-
-Practice uses the fixed default star-and-planet environment, full health and
-energy throughout flight, and normal physical interactions without encounters or
-failure. It offers Pause/Resume/Abort, with no Reset or survival timer. See the
-[practice contract](test-flight/spec.md).
-
-The Hangar also launches [Derelicts](derelicts/spec.md) with the fitted build,
-seeded boundary encounters and normal survival resources. Its transient result
-appears only at game over: gameplay seconds plus ten per player weapon/ram kill.
-The result is frozen, not saved or submitted, and does not alter Survival scoring.
-The intact hull uses shared 110-unit artwork with flat fills and contained energy.
-Physical shards and remaining hull share fitted material collision and staged
-damage release. Player destruction ejects the shared energy square with a fixed
-rupture pulse; environmental destruction loses that energy and awards no kill.
-The mode uses the default star system.
-Settings and replay consumers pass explicit modes; no build-store migration is
-required. Existing replay input chunks retain their schema.
+- **Modes:** flight settings name a mode: Survival, Practice or Derelicts. A missing mode means Survival, and a legacy `testFlight: true` with no mode means Practice.
+- **Launch and return:** a run starts from the title screen or the Hangar, independently of its mode. Abort and game over return to the place it started from.
+- **PRESS START:** it launches the stock Survival run: Wasp in its starter loadout (`starterLoadout("wasp")`), in a fresh seeded G-class system. The Hangar owns ship choice.
+- **Ranked runs:** only the PRESS START Survival run, under the current `CHALLENGE`, is ranked. Every Hangar run, and every Practice, Derelicts and Lab run, is unranked and cannot submit.
+- **Scores:** a score is a casual, client-reported survival time and is labelled as such. Firestore rules check ownership, shape, challenge and bounds, but cannot prove an honest run.
+  - Each anonymous player keeps one best per ship; an equal or shorter run keeps the existing best.
+  - Top Scores lists the 30 longest times.
+- **Replay:** identical validated settings and inputs reproduce the same world state, step for step.
+- **Offline:** without Firebase the game stays fully playable, and score features explain why they are unavailable.
+- **Version labels:** the title screen and the leaderboard show the web package version, which is separate from the challenge identifier.
+- **Run complete:** the dialog shows one vertical action group. On a ranked run, Save Score is primary when submission is available, and the dialog says why when it is not; unranked runs show no Save Score. Returning to where the run started is secondary, and so is Top Scores after a Survival run. Practice has no run complete.
 
 ## Contract
 
-- Three ships apply thrust, turning, hull and power-drain multipliers.
-- Fixed-step replay reproduces world state for identical validated settings and inputs.
-- Keyboard A/D or arrows activate differential engines; both produce forward thrust.
-- Landscape touch buttons support simultaneous presses, release/cancel and blur reset,
-  with targets of at least 44 CSS pixels. Laptop/desktop keyboard play is the primary
-  development experience. Controls give visible feedback when active.
-- Start, pause/resume, death and restart work without page reload or service credentials.
-- Camera frames ship and star, fits their extents with padding, snaps between discrete zoom levels, and snaps
-  framing at antipodal arena wrap while preserving ship velocity.
-- Firebase rules reject unauthenticated, other-owner, malformed, mismatched-document,
-  wrong-challenge, out-of-bounds, decreasing-score, extra-field and deletion writes.
-- Browser checks cover real displacement, all ships, touch release/cancel, pause,
-  death/restart, and unavailable leaderboard behavior.
-- Unit tests, Svelte/types, lint, build, browser and Firebase rule checks pass together.
-- Live release requires a selected Firebase project and deployment evidence.
+### Definition of Done
 
-## Scenarios
+- [x] `FlightSettingsSchema` resolves a missing mode to Survival and a
+  `testFlight: true` with no mode to Practice, accepts only Survival, Practice
+  and Derelicts, and lets an explicit mode take precedence over `testFlight`.
+- [x] A run launched from the title screen or the Hangar returns there on Abort
+  and on game over, without a page reload.
+- [x] PRESS START launches Survival with Wasp in its starter loadout
+  (`starterLoadout("wasp")`), a fresh random seed, the arrival entry and a
+  G-class star; a ship chosen in the Hangar does not change it.
+- [x] Hangar builds, Practice, Derelicts and Fiddler runs show no Save Score and
+  never call score submission; the submission schema rejects Fiddler.
+- [ ] Lab runs cannot submit a score.
+- [x] Firestore rules reject unauthenticated, other-owner, malformed,
+  mismatched-document, wrong-challenge, out-of-bounds, decreasing-score,
+  extra-field and deletion writes, and reject unbounded or unauthenticated
+  list queries.
+- [x] Submission writes `artifacts/void-drift/scores/{CHALLENGE}_{uid}_{shipId}`;
+  an equal or shorter time leaves the stored best unchanged.
+- [x] Top Scores queries the current `CHALLENGE` ordered by time, limited to 30
+  rows, and labels the times as casual and client-reported.
+- [x] Two anonymous players can each save a run and see both on the shared
+  board.
+- [x] Two simulations given the same validated settings and replay inputs end
+  with identical ship and world state; invalid replay input is rejected.
+- [x] With Firebase unconfigured, title and Hangar runs start, finish and return
+  normally, and the leaderboard explains that shared scores are unavailable and
+  offers Retry.
+- [ ] With Firebase unconfigured, run complete explains why Save Score is
+  unavailable.
+- [x] The title screen and the leaderboard show the version from
+  `apps/web/package.json`, independently of `CHALLENGE`.
+- [x] A ranked run complete shows one vertical action group: Save Score filled
+  and first, then return to the launch source and Top Scores as ghost actions.
+- [x] Every run complete offers return to the launch source, and a Survival run
+  complete also offers Top Scores.
 
-Given a stock ship, when both engines fire for 120 fixed steps, it moves and consumes
-power according to that profile. Resetting and replaying reproduces the same state.
-Given a ship crosses the arena edge, it reappears inside the opposite boundary with
-inward momentum; the camera immediately reframes without a long pan.
-Given Firebase is absent, the game remains playable and shared scores explain their
-unavailability. Given valid configuration, separate anonymous players can compete.
+### Regression guardrails
 
-## Player navigation and version labels — patch 0.3.2
+- Ranking is decided by the client from mode, build and ship; Firestore rules
+  bound the data but are never treated as proof of an honest run.
+- A new `CHALLENGE` value has a matching document-id rule in `firestore.rules`
+  and starts a separate board; Top Scores lists only the current challenge.
+- Launch source is independent of mode and ship; Hangar choices never change the
+  Wasp that PRESS START launches.
+- Practice and Derelicts results are never submitted and never alter Survival
+  scoring.
+- Rendering and effects read simulation state without changing it, so replay
+  stays deterministic whatever is drawn.
+- No score feature blocks starting, playing or finishing a run.
 
-The [title screen](landing-page/spec.md) exposes PRESS START, Hangar, Top Scores,
-Settings and Credits. PRESS START launches Wasp with an Ion Point Defence in its left
-hull mount, a Light Ion Cannon in its right and a light ion engine; Hangar owns ship choice. Runs retain
-their launch source for Abort and game-over return. Game and leaderboard labels use
-the web package version independently of the internal scoring challenge identifier.
+### Scenarios
 
-## Engine effects alpha — 30 October 2026 (historical painter)
+```gherkin
+Scenario: Fixed-step replay
+  Given a stock ship and validated flight settings
+  When both engines fire for 120 fixed steps
+  Then the ship has moved and its power has decreased
+  When a fresh simulation replays the same settings and inputs
+  Then its ship and world state equal the first run
 
-The surface recipe below records the 0.3-era implementation. Alpha 0.5.0 replaces
-its painting with the [arcade FX contract](../factory/effects/spec.md): sharp strokes, bounded
-world-space trails and a shared final pass. The behavior and output ownership
-remain; the old surface appearance is not an active constraint.
+Scenario: Legacy practice settings
+  Given flight settings with testFlight true and no mode
+  When they are validated
+  Then the mode is Practice
 
-The game and former flight Lab used the Engine Effects study's complete glowing surfaces
-instead of the position-line trace and attached flame. Core owns the drawing and
-bounded surface collection; simulation time advances it, so pause freezes the effect,
-reset creates an empty collection, and wrapping never joins distant emissions.
-Release stops new emissions while existing surfaces drift and fade over 0.65 seconds.
+Scenario: Missing mode
+  Given flight settings with neither mode nor testFlight
+  When they are validated
+  Then the mode is Survival
 
-The shared alpha cutoff is 750 units/s along the ship's facing direction, with a
-linear taper. Each engine supplies half the combined thrust; plume area follows its
-actual engine contribution, excluding gravity. Faster existing velocity is preserved;
-braking and sideways thrust remain possible. This is not a total-speed ceiling.
-Gravity and drag constants are unchanged. Angle, size, lifetime and cutoff are working
-values, not a final product contract. Existing replay inputs now produce the updated
-flight behaviour; recorded scores are not migrated by this change.
+Scenario: PRESS START
+  Given the player chose Corvette in the Hangar and returned to the title screen
+  When the player activates PRESS START
+  Then a Survival run starts with Wasp in its starter loadout
+  And the star is G-class and the seed is fresh
+  And the run is ranked
 
-Preserved comparisons and rationale remain at `/lab/studies/engine-effects`. Human full-scene feel and physical-device
-performance still need review.
+Scenario Outline: Return to the launch source
+  Given a run launched from <source>
+  When the player uses <action>
+  Then the player returns to <source>
 
-### Builder continuity — 0.4.0
+  Examples:
+    | source       | action           |
+    | title screen | pause Abort      |
+    | Hangar       | pause Abort      |
+    | title screen | game-over Return |
+    | Hangar       | game-over Return |
 
-The assembled ship path shares production EnginePlume rendering and lifecycle,
-with emitters placed at fitted nozzles. Alpha 0.5.0 uses the arcade FX painter in
-both assembled and stock paths. Emitter geometry and gravity remain unchanged. [Hangar](hangar/spec.md) owns the custom-flight handoff and test-fixture
-contract; shared engine decisions remain in the [ship-builder history](../../history/ship-builder.md).
+Scenario: Custom build is unranked
+  Given a Survival run launched from the Hangar with a fitted build
+  When the run ends
+  Then run complete shows no Save Score
+  And no score is submitted
 
-## Ship 05 flight trial — 3 November 2026
+Scenario: Equal run keeps the best
+  Given a player holds a best of 42 seconds with Wasp
+  When the player saves another 42-second Wasp run
+  Then the stored best stays unchanged
 
-The Hangar includes LHI Fiddler. Its default assembled fit is four Light
-ions, two Potential Wells in the lower pincer slots and a Gravity coil in the
-centre slot below the chassis; the forward weapon/support slots start empty.
-Fiddler runs are marked unranked and cannot submit to the existing challenge.
-The Hangar can fit and test the same ship. Full geometry, fitting and linked-drive
-behavior is specified in [Hangar](hangar/spec.md#fiddler-flight-trial--2026-11-03).
+Scenario Outline: Rules reject an invalid write
+  Given an anonymous player session
+  When the player writes a score that is <invalid>
+  Then Firestore rejects the write
 
-Run complete uses the shared dialog panel and one vertical action group: Save Score
-is filled and primary when score submission is available; return to the launch source
-and Top Scores are secondary actions.
+  Examples:
+    | invalid                                    |
+    | sent without authentication                |
+    | owned by another player                    |
+    | missing a field or of the wrong type       |
+    | stored under a mismatched document id      |
+    | for an unknown challenge                   |
+    | outside the time or initials bounds        |
+    | shorter than the stored best               |
+    | carrying an extra field                    |
+    | a deletion                                 |
 
-## Landing system — 2026-11-03
+Scenario: Separate anonymous players compete
+  Given valid Firebase configuration
+  When two anonymous players each save a ranked run
+  Then Top Scores shows both times on one board
 
-Landing planets never have rings.
-
-The production launcher follows the [title-screen composition](landing-page/spec.md):
-a left-side menu panel and right-side hints over the shared dialog scrim. A separate
-cosmetic system shows a random sun approximately at the centre of the bottom-right
-quadrant, below the hints, and three planets orbiting with 120–240 second periods.
-The system extends toward the upper-left corner, with its outer edge approximately
-reaching that corner; this is best-effort visual placement, not an exact fit calculation. Sun class, planet
-appearance, orbital phases and bounded orbit sizes vary per menu entry. Selection
-and resize preserve that system. The sun stays below the right-side hints, while circular
-outer orbits span the screen toward the upper-left. Planet sizes remain
-substantial and independent of orbit framing; all are unringed. Outer orbits may crop;
-the background fills the viewport independently of the centred 16:9 title content. No background ship, flight effects, arena
-boundary or gameplay influence guides are drawn. The shared procedural artwork
-and circular orbit update are reused; survival physics are not advanced.
-
-Start fades to void for 150 ms, replaces the demo with a fresh seeded G-class
-Survival run, and reveals it for 150 ms. A centred three-second 3, 2, 1 countdown
-then holds the world, resources and score timer still. GO releases flight; controls
-held through the count apply at release. Entry is at radius 1180, speed 600, heading
-37 degrees off inward, with a green speed line behind the ship. Repeated activation
-is ignored. Hidden pages and pause hold the count; blur leaves the new run paused.
-Returning to the title creates a new menu system. Hangar Test flight starts directly;
-Hangar Survival uses the arrival and returns to Hangar. Reduced motion keeps the
-static menu, skips the crossfade, and retains the count without ignition flicker.
-
-Automated checks establish generation bounds, orbital movement, reduced motion
-and the fresh-run handoff; they do not establish human visual acceptance.
+Scenario: Firebase absent
+  Given Firebase is not configured
+  When the player starts and finishes a run
+  Then the run plays and returns normally
+  When the player opens Top Scores
+  Then it explains that shared scores are unavailable
+```
