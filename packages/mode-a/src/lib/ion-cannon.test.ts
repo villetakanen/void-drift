@@ -22,6 +22,7 @@ function fixture() {
   };
   const star = createStar("G", 960, 540);
   const resources = { power: 100, hull: 100 };
+  const energy = { capacity: 100 };
   const step = (n = 1) => {
     for (let i = 0; i < n; i++)
       system.step(
@@ -29,7 +30,7 @@ function fixture() {
         ship,
         star,
         resources,
-        100,
+        energy.capacity,
         ship.pos.x,
         ship.pos.y,
         false,
@@ -59,7 +60,7 @@ function fixture() {
     system.bodies.push(body);
     return body;
   };
-  return { loadout, system, ship, star, resources, step, target };
+  return { loadout, system, ship, star, resources, energy, step, target };
 }
 describe("Light Ion Cannon", () => {
   it("validates old and new loadouts and uses compatible slots", () => {
@@ -112,8 +113,9 @@ describe("Light Ion Cannon", () => {
     f.step(2);
     expect(f.system.ionDischarges).toBe(4);
   });
-  it("allocates scarce power in stable mount order without a ten-power reserve", () => {
+  it("allocates scarce power in stable mount order", () => {
     const f = fixture();
+    f.energy.capacity = 1; // keeps the 10% floor below the shot cost
     f.target();
     f.resources.power = 0.3;
     f.step();

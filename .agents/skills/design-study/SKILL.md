@@ -27,8 +27,11 @@ reasoning for the document’s readers; keep conversational attribution in chat.
 before asking focused questions about creative intent or boundaries. Unknown mechanics
 are investigation items, not homework the designer must finish before work can begin.
 
-For a broad topic, propose one decision the cycle can settle and name adjacent questions
-outside it. Current implementation supplies available means and feasibility, not desired
+Test that a study can answer the question: its answer changes the game in one concrete
+way and concerns one object or decision. Count the objects, systems and decisions it
+touches; with more than one, propose the one this cycle settles and name the rest as
+adjacent questions outside it. A change that needs several together is a version of the
+game, not a study; say so instead of exploring it. Current implementation supplies available means and feasibility, not desired
 intent. Research missing knowledge when useful and distinguish it from game observations.
 
 Create the early page using StudyLayout and validated metadata in
@@ -38,8 +41,9 @@ The button opening's explanatory progression is the form reference, not its deci
 the specification describes enough to use it without reading the historical study.
 
 Update the page with useful reasoning and feedback in the same round. Advance when
-conversation establishes shared purpose/scope and resolves framing objections;
-substantive agreement or a clear instruction to explore suffices. Unknown mechanics
+the question passes that test and conversation establishes shared purpose/scope and
+resolves framing objections; substantive agreement or a clear instruction to explore
+suffices for the conversation. The designer may override a failed test after hearing it. Unknown mechanics
 can remain for exploration. Avoid a generic approval interview; silence is not agreement.
 
 ## 02 / Explore

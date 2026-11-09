@@ -75,8 +75,9 @@ without a storage migration. The [Hangar](../hangar/spec.md) and
 - First contact stops the ray, applies integer damage once and starts the existing
   impact plume at that contact. The contact may be material other than the target.
 - Each discharge debits 0.1p and starts its own 1/3-second cooldown: three shots/s,
-  0.3p/s continuous per turret, none while idle. A turret can spend the last 0.1p;
-  the rail/laser ten-power reserve does not apply to this part.
+  0.3p/s continuous per turret, none while idle. The shared weapon energy floor
+  gates every discharge: below 10% of the ship's energy capacity no turret fires,
+  takes power or starts a cooldown (tracking stays free); at exactly 10% it may fire.
 - Power is drawn in this order: life support, engines, defence weapons, guns.
   Defence weapons are point defences and lasers; guns are Light Ion Cannons and rails.
   Within an update, defence weapons resolve before any gun, each class in stable
@@ -113,7 +114,7 @@ without a storage migration. The [Hangar](../hangar/spec.md) and
 
 ### Regression guardrails
 
-Existing saves parse; the starter Wasp fits one point defence and no other chassis's starter outfit does; the laser's threat priority and reserve,
+Existing saves parse; the starter Wasp fits one point defence and no other chassis's starter outfit does; the laser's threat priority,
 the rail and the Light Ion Cannon keep their contracts. Keyboard and landscape touch
 continue through the normal flight loop. Gravity and friction constants stay fixed.
 

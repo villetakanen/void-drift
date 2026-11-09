@@ -190,9 +190,13 @@ B reference; C's additional varied drift and spin are not part of this choice.
   or distance, breaking ties by stable entity ID. A pulse damages its first hit.
   The beam is bright red with a narrow lighter core; its range is 160 u.
 - Each mount has independent cooldown/aim state. Defensive lasers receive weapon
-  energy before railguns; stable mount order settles remaining contention. Spend
-  only for a delivered shot whose full cost leaves at least 10 energy units.
-  Engine and life-support use of that reserve remains unrestricted.
+  energy before railguns; stable mount order settles remaining contention. No
+  weapon fires while the ship holds less than 10% of its energy capacity (exactly
+  10% may fire); below that floor a weapon takes no power and starts no cooldown.
+  This one rule covers lasers, railguns, Light Ion Cannons and ion point defences in
+  every mode. A shot must also be affordable: it is refused when the remaining
+  power cannot fund it. Spend only for a delivered shot. Engines and life support
+  may still draw below the floor.
 - Shots ignore their owning ship and energy cells. The star and planets block laser fire and
   absorb rail rounds. Unavailable energy prevents firing, while turret tracking
   itself is free. No separate fire control is needed on keyboard or touch.

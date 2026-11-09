@@ -61,6 +61,7 @@ function fixture(
   const star = createStar("G", 1800, 1000);
   const planets: ReturnType<typeof initializePlanets> = [];
   const resources = { power: 100, hull: 100 };
+  const energy = { capacity: 100 };
   const step = (n = 1, spin = 0) => {
     for (let i = 0; i < n; i++) {
       ship.rotation += spin * STEP;
@@ -69,7 +70,7 @@ function fixture(
         ship,
         star,
         resources,
-        100,
+        energy.capacity,
         ship.pos.x,
         ship.pos.y,
         false,
@@ -146,6 +147,7 @@ function fixture(
     star,
     planets,
     resources,
+    energy,
     step,
     body,
     turrets,
@@ -725,8 +727,9 @@ describe("Ion Point Defence firing", () => {
       ).toBe(true);
     },
   );
-  it("debits 0.1p per discharge, starts a 1/3-second cooldown and has no reserve", () => {
+  it("debits 0.1p per discharge, starts a 1/3-second cooldown", () => {
     const f = fixture((b) => (b.hull[0] = PART));
+    f.energy.capacity = 1; // keeps the 10% floor at the cost of one discharge
     const [w] = f.turrets();
     f.place(w, f.body(0, 0, "wreck"), 40, 0);
     f.align(w);
@@ -751,6 +754,7 @@ describe("Ion Point Defence firing", () => {
   });
   it("funds turrets in mount order: 0.15p fires only the first", () => {
     const f = fixture((b) => b.hull.fill(PART));
+    f.energy.capacity = 1;
     const [a, b] = f.turrets();
     f.place(a, f.body(0, 0, "wreck"), 30, 0);
     f.align(a);
@@ -763,11 +767,13 @@ describe("Ion Point Defence firing", () => {
     expect(b.readyAt).toBe(0);
   });
   it("draws defence power before guns: 0.15p fires the turret and leaves the cannon ready", () => {
+    // Capacity 1 keeps the 10% floor below one discharge.
     // The cannon precedes the turret in mount order; class order still wins.
     const f = fixture((b) => {
       b.hull[0] = "light-ion-cannon";
       b.hull[1] = PART;
     });
+    f.energy.capacity = 1;
     const [w] = f.turrets();
     const cannon = f.system.weapons.find((x) => x.kind === "light-ion-cannon");
     if (!cannon) throw new Error("Cannon missing");
@@ -786,7 +792,7 @@ describe("Ion Point Defence firing", () => {
     expect(cannon.readyAt).toBe(0);
     expect(f.system.events.some((e) => e.kind === "ion-cannon")).toBe(false);
   });
-  it("resolves a laser before a cannon, keeping the laser's reserve", () => {
+  it("resolves a laser before a cannon: the energy floor admits only the first shot", () => {
     const f = fixture((b) => {
       b.hull[0] = "light-ion-cannon";
       b.hull[1] = "laser";
@@ -802,26 +808,20 @@ describe("Ion Point Defence firing", () => {
     laser.angle =
       Math.atan2(wreck.y - base.y, wreck.x - base.x) - f.ship.rotation;
     expect(f.system.ionTrigger(f.ship, f.star, f.planets)).toBe(true);
-    // Enough for the laser above its reserve only if it draws first: the
-    // cannon first would leave less than the laser's cost plus reserve.
-    const laserCost = WEAPONS.laser.energy + WEAPONS.reserve;
-    f.resources.power = laserCost + ION_CANNON.energy / 2;
-    expect(f.resources.power - ION_CANNON.energy).toBeLessThan(laserCost);
+    // Above the floor by less than one cannon shot: whichever weapon draws
+    // first leaves the other below the floor.
+    const floor = f.energy.capacity * WEAPONS.energyFloor;
+    f.resources.power = floor + ION_CANNON.energy / 2;
     f.step();
     expect(f.system.laserPulses).toBe(1);
     expect(laser.readyAt).toBeGreaterThan(0);
-    // The gun then draws on what the laser left.
-    expect(f.system.ionDischarges).toBe(1);
+    expect(f.system.ionDischarges).toBe(0);
+    expect(cannon.readyAt).toBe(0);
     expect(f.resources.power).toBeCloseTo(
-      laserCost +
-        ION_CANNON.energy / 2 -
-        WEAPONS.laser.energy -
-        ION_CANNON.energy,
+      floor + ION_CANNON.energy / 2 - WEAPONS.laser.energy,
     );
   });
-  it("resolves guns in build-mount order: a rail mounted first spends before the cannon", () => {
-    // Rail cost plus its reserve, plus half a cannon shot.
-    const power = WEAPONS.rail.energy + WEAPONS.reserve + ION_CANNON.energy / 2;
+  it("resolves guns in build-mount order: the gun mounted first spends and the floor stops the other", () => {
     const gunOrder = (first: "rail" | "light-ion-cannon") => {
       const f = fixture((b) => {
         b.hull[0] = first;
@@ -838,27 +838,25 @@ describe("Ion Point Defence firing", () => {
       // Ahead of both fixed barrels and inside the cannon's acquisition.
       f.body(f.ship.pos.x + 120, f.ship.pos.y, "wreck");
       expect(f.system.ionTrigger(f.ship, f.star, f.planets)).toBe(true);
-      f.resources.power = power;
+      // Above the floor by less than one cannon shot, so one shot drops below it.
+      const floor = f.energy.capacity * WEAPONS.energyFloor;
+      f.resources.power = floor + ION_CANNON.energy / 2;
       f.step();
-      return { f, rail, cannon };
+      return { f, rail, cannon, floor };
     };
-    // Rail first: it keeps its reserve, and the cannon fires on what is left.
     const railFirst = gunOrder("rail");
     expect(railFirst.f.system.shotsFired).toBe(1);
-    expect(railFirst.f.system.ionDischarges).toBe(1);
+    expect(railFirst.f.system.ionDischarges).toBe(0);
+    expect(railFirst.cannon.readyAt).toBe(0);
     expect(railFirst.f.resources.power).toBeCloseTo(
-      power - WEAPONS.rail.energy - ION_CANNON.energy,
-    );
-    // Cannon first: its shot leaves the rail below its reserve.
-    expect(power - ION_CANNON.energy - WEAPONS.rail.energy).toBeLessThan(
-      WEAPONS.reserve,
+      railFirst.floor + ION_CANNON.energy / 2 - WEAPONS.rail.energy,
     );
     const cannonFirst = gunOrder("light-ion-cannon");
     expect(cannonFirst.f.system.ionDischarges).toBe(1);
     expect(cannonFirst.f.system.shotsFired).toBe(0);
     expect(cannonFirst.rail.readyAt).toBe(0);
     expect(cannonFirst.f.resources.power).toBeCloseTo(
-      power - ION_CANNON.energy,
+      cannonFirst.floor + ION_CANNON.energy / 2 - ION_CANNON.energy,
     );
   });
   it("evaluates the cannon trigger after defence: a turret kill of the only material leaves the cannon idle", () => {

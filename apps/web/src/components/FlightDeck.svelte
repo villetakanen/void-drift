@@ -572,7 +572,7 @@ onMount(() => {
           <small class="mode-label">{modeLabel}</small>
           {#if mode === "derelicts"}
             <small role="status"
-              >{salvageFeedback || "WEAPONS AUTO · 10 ENERGY RESERVE"}</small
+              >{salvageFeedback || "WEAPONS AUTO · 10% ENERGY FLOOR"}</small
             >
           {/if}
           {#if activeLoadout && engineFeedback}

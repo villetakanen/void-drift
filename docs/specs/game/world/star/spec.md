@@ -40,7 +40,7 @@ The shoulder extends 20 u beyond the radius-35 surface. The exact collection
 boundary includes its 0.75 E/s edge; gravity retains its existing exclusive cutoff.
 Capacity saturation wastes supply. Collection is gross incoming energy, not net
 battery gain. Stored energy and depleted propulsion retain production feedback.
-Life support is 0.8 E/s; Light ion is 1.0 E/s per fully firing physical engine.
+Life support is 0.8 E/s; Light ion is 1.75 E/s per fully firing physical engine.
 Other engine-family draw, thrust, handling and collisions remain unchanged.
 
 ### HUD

@@ -1,4 +1,6 @@
 export const LIFE_SUPPORT_DRAIN = 0.8;
+/** Light ion draw; Heavy ion draws 2× and full-duty stabilizers 0.25× this. */
+export const LIGHT_ION_DRAW = 1.75;
 
 import { z } from "zod";
 import { CRUISER } from "../cruiser";
@@ -160,7 +162,7 @@ export const PARTS = {
     id: "rail",
     name: "Rail gun",
     description:
-      "Automatically fires along the slot when a target approaches its firing line. Heavy hits and recoil; shots can miss. Active in Test flight; preserves 10 energy for flight systems.",
+      "Automatically fires along the slot when a target approaches its firing line. Heavy hits and recoil; shots can miss. Active in Test flight; fires only while energy is at least 10% of capacity.",
     category: "G",
     mass: 15,
     thrust: 0,
@@ -171,7 +173,7 @@ export const PARTS = {
     id: "laser",
     name: "Laser",
     description:
-      "Short-range rotating pulse laser. Prioritizes incoming debris, then derelicts. Active in Test flight; preserves 10 energy for flight systems.",
+      "Short-range rotating pulse laser. Prioritizes incoming debris, then derelicts. Active in Test flight; fires only while energy is at least 10% of capacity.",
     category: "G",
     mass: 9,
     thrust: 0,
@@ -232,7 +234,7 @@ export const PARTS = {
     thrust: ION_DEFAULTS.acceleration * ION_REFERENCE_MASS,
     speedContribution: 8,
     limit: ION_DEFAULTS.maxSpeed,
-    draw: 1,
+    draw: LIGHT_ION_DRAW,
   }),
 
   "heavy-ion": PartSchema.parse({
@@ -246,7 +248,7 @@ export const PARTS = {
     limit:
       ION_DEFAULTS.maxSpeed *
       (1 + ION_DEFAULTS.bonus * (1 - Math.exp(-ION_DEFAULTS.falloff * 0.75))),
-    draw: 2 * 1.75,
+    draw: 2 * LIGHT_ION_DRAW,
     response: "steady",
     chargeSeconds: 0,
   }),

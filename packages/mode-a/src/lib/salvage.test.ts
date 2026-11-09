@@ -11,7 +11,7 @@ import {
 import { createStar } from "./game-loop";
 import { type SalvageBody, SalvageSystem } from "./salvage";
 import { buildStats, defaultLoadout } from "./schemas/loadout";
-import { DerelictsResultSchema, SALVAGE } from "./schemas/salvage";
+import { DerelictsResultSchema, SALVAGE, WEAPONS } from "./schemas/salvage";
 import { Simulation, STEP, setStarMassWell, stockSettings } from "./simulation";
 
 const idle = {
@@ -33,6 +33,7 @@ function fixture(parts: ("rail" | "laser" | null)[] = []) {
   };
   const star = createStar("G", 960, 540);
   const resources = { hull: 100, power: 100 };
+  const energy = { capacity: 100 };
   const step = (count = 1) => {
     for (let i = 0; i < count; i++)
       system.step(
@@ -40,7 +41,7 @@ function fixture(parts: ("rail" | "laser" | null)[] = []) {
         ship,
         star,
         resources,
-        100,
+        energy.capacity,
         ship.pos.x,
         ship.pos.y,
         false,
@@ -350,7 +351,7 @@ describe("Derelicts weapons and salvage", () => {
     );
     f.step();
     expect(f.system.shots).toHaveLength(1);
-    f.resources.power = 10;
+    f.resources.power = 5; // below the energy floor: no further shots
     f.step(60);
     expect(f.system.hits).toBe(0);
     expect(f.system.events.some((event) => event.kind === "collision")).toBe(
@@ -368,7 +369,7 @@ describe("Derelicts weapons and salvage", () => {
       body("fragment", pose.muzzleX + 300, pose.muzzleY + 30),
     );
     f.step();
-    f.resources.power = 10;
+    f.resources.power = 5; // below the energy floor: no further shots
     const distant = body("wreck", pose.muzzleX + 900, pose.muzzleY, 2);
     distant.hull = 105;
     f.system.bodies.push(distant);
@@ -728,21 +729,21 @@ describe("Derelicts weapons and salvage", () => {
       );
     },
   );
-  it("charges for actual shots only, protects reserve, and budgets defence first", () => {
+  it("charges for actual shots only, gates on the energy floor, and budgets defence first", () => {
     const f = fixture(["rail", "laser"]);
     f.system.bodies.push(body("wreck", 550, 400));
-    f.resources.power = 10.4;
+    const floor = 100 * WEAPONS.energyFloor;
+    f.resources.power = floor - 0.1;
     f.step();
     expect(f.system.energySpent).toBe(0);
-    f.resources.power = 13;
+    // The laser draws first and leaves the rail under the floor.
+    f.resources.power = floor + WEAPONS.laser.energy - 0.1;
     f.step();
     expect(f.system.laserPulses).toBe(1);
     expect(f.system.shotsFired).toBe(0);
-    expect(f.resources.power).toBe(12.5);
+    expect(f.resources.power).toBeCloseTo(floor - 0.1);
     f.step(10);
-    expect(f.resources.power).toBe(12.5);
-    f.step(8);
-    expect(f.resources.power).toBe(12);
+    expect(f.resources.power).toBeCloseTo(floor - 0.1);
     f.resources.power = 0;
     f.step(60);
     expect(f.resources.power).toBe(0);

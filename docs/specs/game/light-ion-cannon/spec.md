@@ -45,10 +45,11 @@ without a storage migration.
   even if an earlier shot destroys the trigger; each then queries its own first
   contact in the resulting world. A side cannon can miss and still pays.
 - Allocation follows stable build-mount order. Each actual discharge debits 0.2p,
-  including misses, and starts its own 1/3-second cooldown. A cannon can spend the
-  last 0.2p; the rail/laser ten-power reserve does not apply to this part. Insufficient
-  power stops funding the remaining ready cannons without starting their cooldowns.
-  Rail and laser acquisition and reserve behavior retain their existing policy.
+  including misses, and starts its own 1/3-second cooldown. The shared weapon energy
+  floor gates every discharge: below 10% of the ship's energy capacity no cannon
+  fires, takes power or starts a cooldown; at exactly 10% it may fire. A shot the
+  remaining power cannot fund is refused the same way, and stops funding the
+  remaining ready cannons.
   Guns draw power after defence weapons, as the
   [point defence contract](../ion-point-defence/spec.md) orders it.
 - First contact stops the ray, applies integer damage once, and starts the existing

@@ -106,6 +106,17 @@ function outside(x: number, y: number) {
   );
 }
 
+/**
+ * The one firing gate for every weapon: the ship must hold at least the floor
+ * fraction of its capacity (so exactly 10% may fire) and afford the shot.
+ * A refused shot takes no power and starts no cooldown.
+ */
+function canFire(resources: Resources, capacity: number, cost: number) {
+  return (
+    resources.power + 1e-9 >= capacity * WEAPONS.energyFloor &&
+    resources.power + 1e-9 >= cost
+  );
+}
 /** Bounded, deterministic gameplay. No Canvas, wall clock, or cosmetic randomness. */
 export class SalvageSystem {
   readonly weapons: WeaponState[];
@@ -578,9 +589,10 @@ export class SalvageSystem {
     ship: GameObject,
     star: Star,
     resources: Resources,
+    capacity: number,
     planets: readonly Planet[],
   ) {
-    if (resources.power + 1e-9 < ION_CANNON.energy) return false;
+    if (!canFire(resources, capacity, ION_CANNON.energy)) return false;
     const pose = weaponPose(ship, weapon.mount);
     const { distance, hit } = this.ionContact(
       pose.muzzleX,
@@ -700,6 +712,7 @@ export class SalvageSystem {
     ship: GameObject,
     star: Star,
     resources: Resources,
+    capacity: number,
     planets: readonly Planet[],
   ) {
     const target = this.pointDefenceTarget(weapon, ship, star, planets);
@@ -737,7 +750,7 @@ export class SalvageSystem {
     );
     // World geometry first, or nothing within reach: no discharge, cost or cooldown.
     if (!hit || distance > POINT_DEFENCE.reach) return funded;
-    if (resources.power + 1e-9 < POINT_DEFENCE.energy) return false;
+    if (!canFire(resources, capacity, POINT_DEFENCE.energy)) return false;
     resources.power = Math.max(0, resources.power - POINT_DEFENCE.energy);
     this.energySpent += POINT_DEFENCE.energy;
     weapon.readyAt = this.time + POINT_DEFENCE.cooldown;
@@ -768,13 +781,14 @@ export class SalvageSystem {
    * build-mount order, so each class walks it once in that order, drawing on the
    * power and world the earlier shots left. The cannon volley is captured after
    * the defence class and before the first gun; a cannon power shortfall stops
-   * the remaining cannons, while rails keep their own reserve check.
+   * the remaining cannons, while rails check the energy floor themselves.
    */
   private fireWeapons(
     dt: number,
     ship: GameObject,
     star: Star,
     resources: Resources,
+    capacity: number,
     planets: readonly Planet[],
   ) {
     let turretsFunded = true;
@@ -787,10 +801,19 @@ export class SalvageSystem {
           ship,
           star,
           resources,
+          capacity,
           planets,
         );
       else if (weapon.kind === "laser")
-        this.fireRailOrLaser(weapon, dt, ship, star, resources, planets);
+        this.fireRailOrLaser(
+          weapon,
+          dt,
+          ship,
+          star,
+          resources,
+          capacity,
+          planets,
+        );
     const volley = this.ionVolley(ship, star, planets);
     let cannonsFunded = true;
     for (const weapon of this.weapons)
@@ -801,18 +824,28 @@ export class SalvageSystem {
             ship,
             star,
             resources,
+            capacity,
             planets,
           );
       } else if (weapon.kind === "rail")
-        this.fireRailOrLaser(weapon, dt, ship, star, resources, planets);
+        this.fireRailOrLaser(
+          weapon,
+          dt,
+          ship,
+          star,
+          resources,
+          capacity,
+          planets,
+        );
   }
-  /** Laser and rail keep their own acquisition and ten-power reserve. */
+  /** Laser and rail keep their own acquisition; the shared energy floor gates the shot. */
   private fireRailOrLaser(
     weapon: WeaponState,
     dt: number,
     ship: GameObject,
     star: Star,
     resources: Resources,
+    capacity: number,
     planets: readonly Planet[],
   ) {
     if (weapon.kind !== "rail" && weapon.kind !== "laser") return;
@@ -841,7 +874,7 @@ export class SalvageSystem {
     this.angles[weapon.mount.key] = weapon.angle;
     if (
       this.time + 1e-9 < weapon.readyAt ||
-      resources.power - config.energy < WEAPONS.reserve
+      !canFire(resources, capacity, config.energy)
     )
       return;
     const pose = weaponPose(ship, weapon.mount, weapon.angle);
@@ -1033,7 +1066,7 @@ export class SalvageSystem {
       )
         this.destroy(body, "environment");
     }
-    this.fireWeapons(dt, ship, star, resources, planets);
+    this.fireWeapons(dt, ship, star, resources, capacity, planets);
     for (const weapon of this.weapons) {
       if (!weapon.recoil) continue;
       const duration = Math.min(dt, weapon.recoil.remaining);

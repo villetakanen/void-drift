@@ -147,7 +147,8 @@ export function pointDefenceDamage(distance: number) {
   return POINT_DEFENCE.bands[Math.min(3, Math.floor(distance / band))];
 }
 export const WeaponConfigSchema = z.object({
-  reserve: z.number().nonnegative(),
+  /** Fraction of energy capacity below which no weapon fires. */
+  energyFloor: z.number().min(0).max(1),
   rail: ShotSchema.extend({
     speed: z.number().positive(),
     recoilStrength: z.number().nonnegative(),
@@ -165,7 +166,7 @@ export const WeaponConfigSchema = z.object({
 });
 /** Trial tuning, separate from engine draw and saved fittings. Angles are radians. */
 export const WEAPONS = WeaponConfigSchema.parse({
-  reserve: 10,
+  energyFloor: 0.1,
   rail: {
     damage: 100,
     energy: 3,

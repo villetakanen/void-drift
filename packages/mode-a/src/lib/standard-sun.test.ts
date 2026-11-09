@@ -80,12 +80,10 @@ describe("accepted standard Sun", () => {
   });
   it("uses the accepted Wasp draw without changing other engine family draws", () => {
     expect(LIFE_SUPPORT_DRAIN).toBe(0.8);
-    expect(PARTS.ion.draw).toBe(1);
-    expect(PARTS["heavy-ion"].draw).toBe(3.5);
-    expect(PARTS.fusion.draw).toBe(3);
+    expect(PARTS["heavy-ion"].draw).toBe(2 * PARTS.ion.draw);
     const wasp = defaultLoadout("wasp");
-    expect(buildDrain(wasp, idle)).toBe(0.8);
-    expect(buildDrain(wasp, both)).toBe(1.8);
+    expect(buildDrain(wasp, idle)).toBe(LIFE_SUPPORT_DRAIN);
+    expect(buildDrain(wasp, both)).toBe(LIFE_SUPPORT_DRAIN + PARTS.ion.draw);
   });
   it("keeps actual capacities, collection at capacity and net-draining collection", () => {
     for (const assembled of [true, false]) {

@@ -5,7 +5,7 @@
 The [standard Sun](../world/star/spec.md) owns the current collection and exposure
 profiles. These supersede the stepped zones and old consumption examples in the
 legacy implementation material below. Life support is exactly 0.8 E/s for every
-ship; Light ion draw is 1.0 E/s per firing engine, with existing steering duty.
+ship; Light ion draw is 1.75 E/s per firing engine, with existing steering duty.
 The legacy stock profile multiplier applies only to propulsion draw.
 Every ship inherently collects one solar equivalent; fitted collectors add.
 Assemblies retain their actual fitted energy capacity, stock ships retain 100 E,

@@ -63,11 +63,12 @@ Scenario: Unsupported old instrument ceiling
 
 ## Standard-Sun energy update — 2026-11-07
 
-Light ion draw is 1.0 E/s per fully firing physical engine, including the
-existing proportional stabilizer energy duty. Life support is 0.8 E/s. Heavy
-ion, Fission and Plasma costs are unchanged. This cost update changes no force,
+Light ion draw is 1.75 E/s per fully firing physical engine. Heavy ion draws
+2× Light ion (3.5 E/s); full-duty stabilizers draw 0.25× Light ion
+(0.4375 E/s), proportional to duty. Life support is 0.8 E/s. Fission and
+Plasma costs are unchanged. This cost update changes no force,
 torque, response timing, cruise ceiling, handling, gravity or friction.
-The Wasp's single Light ion plus life support draws 1.8 E/s in an unsteered
+The Wasp's single Light ion plus life support draws 2.55 E/s in an unsteered
 forward burn. Production storage limits and energy-limited delivery remain active.
 `buildDrain` supports a Light-ion-only draw scale for energy analysis without
 mutating the shared parts or altering calculated motion.
