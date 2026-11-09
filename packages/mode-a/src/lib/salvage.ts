@@ -3,8 +3,10 @@ import {
   type GameObject,
   type InputState,
   type Planet,
+  planetPull,
   type Resources,
   type Star,
+  starPull,
 } from "@void-drift/core";
 import {
   BUILD_FLIGHT_SCALE,
@@ -1087,6 +1089,18 @@ export class SalvageSystem {
       body.previousRotation = body.rotation;
       body.previousX = body.x;
       body.previousY = body.y;
+      // The ship's gravity field, evaluated the same way: the sun's pull, then
+      // each planet's, as an acceleration that ignores the body's mass.
+      // Velocity first, then position, as the ship integrates. The sweep below
+      // is linear along the new velocity within the sub-step.
+      const pull = starPull(body, star, "inverse-square");
+      for (const planet of planets) {
+        const planetAcc = planetPull(body, 0, planet);
+        pull.x += planetAcc.x;
+        pull.y += planetAcc.y;
+      }
+      body.vx += pull.x * dt;
+      body.vy += pull.y * dt;
       body.x += body.vx * dt;
       body.y += body.vy * dt;
       if (body.life !== undefined) body.life -= dt;

@@ -108,14 +108,16 @@ describe("boundary encounters", () => {
       b = scene();
     let previous = 3;
     const gaps: number[] = [];
-    b.system.bodies = Array.from({ length: 8 }, (_, i) => fixed(i + 10));
+    b.system.bodies = Array.from({ length: ENCOUNTER.groups }, (_, i) =>
+      fixed(i + 10),
+    );
     for (let i = 0; i < 100; i++) {
       a.system.bodies = [];
       const deadline = next(a);
       next(b);
       if (i) gaps.push(deadline - previous);
       previous = deadline;
-      expect(b.system.groups).toBe(8);
+      expect(b.system.groups).toBe(ENCOUNTER.groups);
       expect(b.system.passes).toBe(0);
       expect(b.system.nextPass).toBe(a.system.nextPass);
     }

@@ -51,11 +51,12 @@ persistent records, leaderboard competition or progression rewards.
 - Entries are uniform around the current system boundary (centre 960, 540;
   radius 1200 u). Heading is within ±60° of the inward radial direction; initial
   speed is independently uniform from 100 to 500 u/s in system coordinates.
-  Star contact remains possible; paths are not rerolled around hazards or the ship.
+  Paths are seeded and never rerolled around hazards or the ship; gravity
+  bends them, so star or planet contact remains possible.
 - Wrecks expire after 30 gameplay seconds unless destroyed or leaving at the
-  system edge (see System edge). A diameter crossing at the slowest speed takes
-  24 seconds.
-- At most eight encounter groups coexist. Pieces and energy cells keep their
+  system edge (see System edge). Ignoring gravity, a diameter crossing at the
+  slowest speed takes 24 seconds.
+- At most sixteen encounter groups coexist. Pieces and energy cells keep their
   originating group alive; a piece does so until it is destroyed. A scheduled
   arrival while full is skipped, without a backlog or immediate replacement
   when a group clears.
@@ -148,6 +149,12 @@ B reference; C's additional varied drift and spin are not part of this choice.
 - Released pieces inherit the parent's position, heading and translational
   velocity plus B's release impulse rotated into world space. Each fragment uses
   B's 0.8 rad/s spin, 12 hull and 5 contact damage; a piece has no lifetime.
+- Motion: every derelict, piece and energy cell feels the ship's gravity field
+  (see the gravity-field spec): per substep the sun's and each planet's pull
+  accelerate it by the same `starPull` and `planetPull`, with no dependence on
+  its kind or mass, before it moves on its new velocity. Planets themselves feel
+  no gravity. Between substeps a body's path is a straight sweep along that
+  velocity.
 - Rail rounds, laser pulses, ship contact and star/planet contact use fitted
   sweeps. Linear casts are analytic; rotating near-contact casts have a bounded
   0.0001-world-unit numerical tolerance. Contact plumes and release origins use

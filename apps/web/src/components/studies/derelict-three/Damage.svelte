@@ -150,7 +150,8 @@ onMount(() => {
       system.step(
         1 / 60,
         sim.ship,
-        sim.star,
+        // Historic study: no sun pull, as when accepted.
+        { ...sim.star, influenceRadius: 0 },
         sim.state.resources,
         100,
         100,

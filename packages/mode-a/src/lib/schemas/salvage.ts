@@ -212,7 +212,7 @@ export const ENCOUNTER = EncounterConfigSchema.parse({
   firstPass: 3,
   intervalMin: 6,
   intervalMax: 12,
-  groups: 8,
+  groups: 16,
   centerX: 960,
   centerY: 540,
   radius: 1200,

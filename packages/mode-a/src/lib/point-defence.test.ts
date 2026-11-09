@@ -449,6 +449,7 @@ describe("Ion Point Defence targeting and turning", () => {
     const planet = initializePlanets(960, 540)[0];
     planet.pos.set(p.x + 30, p.y);
     planet.radius = 10;
+    planet.well = { reach: 0, strength: 0 }; // Blocking, not motion in the well.
     f.planets.push(planet);
     expect(f.system.pointDefenceTarget(w, f.ship, f.star, f.planets)).toBe(
       undefined,
@@ -459,6 +460,7 @@ describe("Ion Point Defence targeting and turning", () => {
     f.planets.length = 0;
     f.star.pos.set(p.x + 30, p.y);
     f.star.radius = 10;
+    f.star.influenceRadius = 0; // Blocking, not motion in the well.
     f.step(60);
     expect(f.system.pointDefenceDischarges).toBe(0);
     expect(target.hull).toBe(1000);

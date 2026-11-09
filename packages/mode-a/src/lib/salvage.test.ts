@@ -815,6 +815,7 @@ describe("Derelicts weapons and salvage", () => {
     const f = fixture();
     f.star.pos.set(800, 400);
     f.star.radius = 30;
+    f.star.influenceRadius = 0; // Shot order, not motion in the well.
     const wreck = body("wreck", 700, 400, 1, 300, 0);
     f.system.bodies.push(wreck);
     f.system.shots.push({ x: start, y: 400, vx: 1000, vy: 0, angle: 0 });
@@ -898,6 +899,7 @@ describe("Derelicts weapons and salvage", () => {
   it("blocks laser and rail fire through the star and absorbs existing rounds", () => {
     const f = fixture(["rail", "laser"]);
     f.star.pos.set(470, 400);
+    f.star.influenceRadius = 0; // Blocking, not motion in the well.
     f.system.bodies.push(body("wreck", 550, 400));
     f.step(60);
     expect(f.system.energySpent).toBe(0);

@@ -62,6 +62,10 @@ Pulls add as vectors. Gravity does not depend on the ship, its speed, its mass o
 its engines. Bodies without a `massWell` (studies only) keep the study curve,
 `wellAcceleration`, or the legacy `mass / distance² · 1000`.
 
+In Derelicts mode every salvage body (derelict, piece, energy cell) takes the
+same sun and planet pulls each substep, with the planet's contact distance its
+surface alone (`planetPull` with radius 0). Only planets feel no gravity.
+
 ### Motion
 
 - Fixed tick `STEP = 1/60` s; `Simulation.step` runs four substeps of `STEP / 4`.
