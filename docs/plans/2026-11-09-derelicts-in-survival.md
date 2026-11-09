@@ -34,9 +34,26 @@ and for fun.
 
 ### System edge, in survival and Derelicts mode
 
-- Derelict debris (released pieces) wraps at the system edge, as the ship does.
-- A derelict whose energy has not been released leaves the system at the edge.
-- Released energy leaves the system at the edge.
+Only hazards stay in the system (decided 9 November 2026):
+
+- Derelict shards (released pieces) stay in the system: at the edge they
+  reappear on the opposite side with the same velocity and heading, as the
+  ship does. Shards never expire; they stay until destroyed.
+  Gravity eventually pulls them into a planet or the sun, which destroys
+  them.
+- An intact derelict, damaged or not, as long as it has not broken, leaves the
+  system at the edge.
+- Freed energy cells leave the system at the edge.
+- Intact derelicts and cells keep their life timers; leaving at the edge is an
+  added way out.
+
+### Gravity and occupancy, in survival and Derelicts mode (2026-11-09)
+
+- Everything passing through the system feels gravity, as the ship does;
+  only planets do not. That includes derelicts, shards and energy cells.
+- A full system takes no new derelict: a scheduled arrival while every group
+  is occupied is skipped. Survival allows 8 groups; Derelicts mode, a bashing
+  mode, allows 16.
 
 ### Weapon energy floor, in every mode
 
@@ -102,13 +119,24 @@ rail/laser ten-unit reserve.
 
 ### S3. System edge (mode-a, small; parallel with S1)
 
-- Pieces wrap at the system edge; intact derelicts and energy cells leave.
-  Applies to both modes.
+- Shards wrap at the system edge with velocity and heading kept; intact
+  derelicts (damaged or not) and freed energy cells leave. Applies to both
+  modes.
 - Update the derelicts spec's exit and lifetime rules.
 - Checks: a piece crossing the edge reappears opposite with its velocity; a
   derelict and a cell crossing it are removed with no score or drop.
 
-### S4. Derelicts in survival (mode-a and web, medium; needs S1–S3)
+### S3b. Salvage gravity and Derelicts-mode occupancy (mode-a, small; needs S3)
+
+- Derelicts, shards and cells take the ship's gravity model each step; no
+  gravity constant changes. Seeded runs stay deterministic.
+- Derelicts mode allows 16 groups. Survival's 8 lands with its config in S4.
+- Update the derelicts spec's motion and occupancy rules.
+- Checks: a body near the sun or a planet accelerates towards it and is
+  destroyed on contact; Derelicts mode accepts a ninth group and skips an
+  arrival at sixteen.
+
+### S4. Derelicts in survival (mode-a and web, medium; needs S1–S3b)
 
 - Survival runs the salvage encounter with its own config: 3 s first arrival,
   5–10 s gaps, 50–150 u/s, 40–50° entry to either side, forward tip aligned to
@@ -136,17 +164,12 @@ rail/laser ten-unit reserve.
 
 ## Open points
 
-1. **Wreck and cell lifetime.** Derelicts leave at the edge. Do intact
-   derelicts and cells still expire on a timer (30 s and 20 s today), or only
-   by leaving? At 50 u/s a 40–50° chord (about 1700 u) takes about 34 s.
-2. **Piece lifetime.** Wrapping pieces never leave on their own. Keep the 12 s
-   piece life?
-3. **Hits from experimental weapons.** Rail and laser runs are unscored for the
+1. **Hits from experimental weapons.** Rail and laser runs are unscored for the
    leaderboard; do their hits still count toward the shown score?
-4. **Energy tuning.** With Light ion at 1.75 E/s (uncommitted in the tree on
+2. **Energy tuning.** With Light ion at 1.75 E/s (uncommitted in the tree on
    9 November), two weapons, a 10% floor and 100 E, the Wasp's fire budget is
    small. Check in play after S4; derelict cells (30 E) are the refill.
 
 ## Order
 
-S1, S2 and S3 in parallel. S4 after all three. S5 after S4.
+S1, S2 and S3 in parallel. S3b after S3. S4 after S1–S3b. S5 after S4.
