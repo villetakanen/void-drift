@@ -3,8 +3,8 @@ import { COLOR, paintIonBeam } from "@void-drift/core";
 import {
   BUILD_FLIGHT_SCALE,
   buildPlumeEmitters,
-  defaultLoadout,
   drawBuild,
+  starterLoadout,
   WASP,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
@@ -21,8 +21,7 @@ function drawArrival() {
   const ctx = arrivalCanvas.getContext("2d");
   if (!ctx) return;
   const scale = 156 / WASP.fullLength;
-  const build = defaultLoadout("wasp");
-  build.hull[1] = "light-ion-cannon";
+  const build = starterLoadout("wasp");
   ctx.scale(2, 2);
   ctx.translate(520, 90);
   ctx.rotate(-Math.PI / 6);

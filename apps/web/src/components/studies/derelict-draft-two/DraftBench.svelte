@@ -1,11 +1,8 @@
 <script lang="ts">
 import { FxSurface } from "@void-drift/core";
-import {
-  BUILD_FLIGHT_SCALE,
-  drawBuild,
-  starterLoadout,
-} from "@void-drift/mode-a";
+import { BUILD_FLIGHT_SCALE, drawBuild } from "@void-drift/mode-a";
 import { onMount } from "svelte";
+import { studyStarterWasp } from "../starter-wasp-fixture";
 import { createDraftPainter } from "./renderer";
 
 let {
@@ -29,7 +26,7 @@ onMount(() => {
     time = 0;
     surface.clear();
   };
-  const ship = starterLoadout("wasp");
+  const ship = studyStarterWasp();
   const views = comparison
     ? [
         { x: 150, y: 295, length: 120 },

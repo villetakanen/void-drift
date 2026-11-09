@@ -206,7 +206,8 @@ describe("Ion Point Defence equipment", () => {
     expect(restored.fighter.hull[1]).toBe(PART);
     expect(restored.corvette.aft[1]).toBe(PART);
     for (const chassis of Object.keys(CHASSIS) as Loadout["chassis"][])
-      expect(starterLoadout(chassis).hull).not.toContain(PART);
+      if (chassis !== "wasp")
+        expect(starterLoadout(chassis).hull).not.toContain(PART);
   });
   it("derives the pivot and channel-tip muzzle from the same 8-unit base geometry", () => {
     const g = POINT_DEFENCE_GEOMETRY;

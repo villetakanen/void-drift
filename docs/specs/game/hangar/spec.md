@@ -275,7 +275,9 @@ prior work; it is not a competing current specification.
    by `slotAccepts` and `LoadoutSchema`, including equipment mounts accepting weapons.
 2. **Independent builds.** Each chassis retains its own fittings and system choices
    across switching and reloads when storage works. Hangar builds are independent
-   of the main game's `starterLoadout` fleet. Stored input must produce valid,
+   of the main game's `starterLoadout` fleet. A Wasp entry missing from storage gets
+   the starter Wasp fitting: a Light Ion Cannon and an Ion Point Defence in its hull
+   mounts, a light ion engine, stabilizers on. Stored input must produce valid,
    flyable ships or an explained recovery; storage failure leaves assembly and
    flight usable in memory.
 3. **Readable assembly.** The ship chooser, ship display, compatible parts, ship
@@ -524,7 +526,7 @@ normal flight handoff. Engine and support slots reject it. Its catalogue uses th
 same authored geometry as its installed procedural artwork at 16 flight units.
 It shows **12–48 damage/s**, **3 shots/s**, **200-unit reach** and **0.2p/shot**;
 0.6p/s is the continuous-fire equivalent, with zero idle drain. Its mass is 9.
-Existing outfits and starter fittings remain compatible and unchanged.
+Existing outfits remain compatible. Other chassis' starter fittings do not include it; the starter Wasp fits it.
 
 Automatic fire operates in Derelicts encounters. Test flight retains its existing
 full-resource, encounter-free behavior. The equipment Lab and accepted study also
@@ -541,7 +543,7 @@ base. It shows **8–24 damage/s**, **3 shots/s**, **100-unit reach** and
 **0.1p/shot**; 0.3p/s is the continuous-fire equivalent, with zero idle drain.
 Its mass is 10. Preview and Plan draw it along its mount direction; flight draws
 it at its simulated angle under normal mount layering, so Scout hides it.
-Existing outfits and starter fittings remain compatible and unchanged.
+Existing outfits remain compatible. Other chassis' starter fittings do not include it; the starter Wasp fits it.
 
 Automatic fire operates in Derelicts encounters. Test flight retains its existing
 full-resource, encounter-free behavior. The equipment Lab and accepted study also

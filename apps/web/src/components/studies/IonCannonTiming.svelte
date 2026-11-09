@@ -1,11 +1,8 @@
 <script lang="ts">
 import { FxSurface } from "@void-drift/core";
-import {
-  BUILD_FLIGHT_SCALE,
-  drawBuild,
-  starterLoadout,
-} from "@void-drift/mode-a";
+import { BUILD_FLIGHT_SCALE, drawBuild } from "@void-drift/mode-a";
 import { onMount } from "svelte";
+import { studyStarterWasp } from "./starter-wasp-fixture";
 import "@void-drift/core/styles/buttons.css";
 
 let {
@@ -60,7 +57,7 @@ onMount(() => {
   const surface = new FxSurface();
   let paintedTick = -1;
   let paintedBurst = false;
-  const build = starterLoadout("wasp");
+  const build = studyStarterWasp();
   // A stationary shot fixture: no invented flight or combat simulation.
   const muzzle = 310,
     reach = 450;

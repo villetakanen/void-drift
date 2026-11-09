@@ -1,5 +1,6 @@
 import { expect, it } from "vitest";
 import {
+  BuildStoreSchema,
   buildStats,
   defaultLoadout,
   fittedParts,
@@ -44,4 +45,27 @@ it("lists each installed part once per mount, including the Wasp's single engine
     aft: [],
   });
   expect(fittedParts(wasp)).toEqual(["plasma", "laser", "battery"]);
+});
+
+it("fits the starter Wasp with a cannon, a point defence and a light ion engine, in a fresh store too", () => {
+  const wasp = starterLoadout("wasp");
+  expect(wasp.hull).toContain("light-ion-cannon");
+  expect(wasp.hull).toContain("ion-point-defence");
+  expect(wasp.side).toBe("ion");
+  expect(wasp.stabilizers).toBe(true);
+  const fresh = BuildStoreSchema.parse({
+    scout: defaultLoadout("scout"),
+    fighter: defaultLoadout("fighter"),
+    corvette: defaultLoadout("corvette"),
+  });
+  expect(fresh.wasp).toEqual(wasp);
+  const saved = defaultLoadout("wasp");
+  saved.hull[0] = "laser";
+  const kept = BuildStoreSchema.parse({ ...fresh, wasp: saved });
+  expect(kept.wasp).toEqual(saved);
+});
+
+it("flies the starter Wasp loadout from the game settings", () => {
+  const sim = new Simulation(gameSettings("wasp"));
+  expect(sim.settings.loadout).toEqual(starterLoadout("wasp"));
 });

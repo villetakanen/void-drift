@@ -12,6 +12,7 @@ import {
   starterLoadout,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
+import { studyStarterWasp } from "./starter-wasp-fixture";
 import "@void-drift/core/styles/buttons.css";
 
 /**
@@ -166,7 +167,7 @@ function poly(
 }
 
 function fitted() {
-  const build = starterLoadout(ship);
+  const build = ship === "wasp" ? studyStarterWasp() : starterLoadout(ship);
   // Prefer free weapon-capable mounts; the cannon may replace a starter part.
   const candidates = buildMounts(build).filter(
     (m) => m.group === "hull" && slotAccepts(m.type, "G"),

@@ -7,6 +7,7 @@ import {
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import { createDraftPainter } from "../derelict-draft-two/renderer";
+import { studyStarterWasp } from "../starter-wasp-fixture";
 
 let { label = "Controlled derelict comparison" }: { label?: string } = $props();
 let canvas: HTMLCanvasElement;
@@ -18,7 +19,7 @@ onMount(() => {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
   const painter = createDraftPainter();
-  const wasp = starterLoadout("wasp");
+  const wasp = studyStarterWasp();
   const fiddler = starterLoadout("fiddler");
   const fx = new FxSurface();
   const scratch = document.createElement("canvas");

@@ -7,11 +7,11 @@ import {
   type SalvageBody,
   SalvageSystem,
   Simulation,
-  starterLoadout,
   stockSettings,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import { createDraftPainter } from "../derelict-draft-two/renderer";
+import { studyStarterWasp } from "../starter-wasp-fixture";
 
 let {
   label = "Intact derelict beside two controlled energy-release proposals",
@@ -55,7 +55,7 @@ onMount(() => {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
   const painter = createDraftPainter();
-  const build = starterLoadout("wasp");
+  const build = studyStarterWasp();
   const paths = pieces.map((p) => new Path2D(p.path));
   function frames(eject: boolean) {
     const sim = new Simulation({

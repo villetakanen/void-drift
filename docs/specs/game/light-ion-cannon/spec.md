@@ -15,7 +15,7 @@ equipment and universal slots accept it; support and engine slots reject it.
 `ion-cannon-art.ts` owns the supplied paths, housing-centred anchor and channel-tip
 muzzle. Canvas artwork, catalogue SVG and `build-renderer.ts` consume that owner.
 One 16-unit flight extent uses the existing 0.65 builder-to-flight transform.
-The fitting has 9 mass and zero idle draw; starter outfits stay unchanged.
+The fitting has 9 mass and zero idle draw. The starter Wasp fits one; no other chassis's starter outfit includes it.
 
 `salvage.ts` owns acquisition, power, cooldown, physical contact and damage.
 `salvage-renderer.ts` owns blue strike/dispersal artwork; `FlightFx` composes it
@@ -74,7 +74,7 @@ without a storage migration.
 
 ### Regression guardrails
 
-Existing saves parse, starter loadouts stay unchanged, and keyboard/landscape touch
+Existing saves parse, the starter Wasp fits one cannon (other starter loadouts fit none), and keyboard/landscape touch
 continue through the normal flight loop. Gravity and friction constants stay fixed.
 Automated correctness and captures cannot establish human visual acceptance.
 

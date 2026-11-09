@@ -6,12 +6,12 @@ import {
   buildMounts,
   drawBuild,
   type EngineTimers,
-  starterLoadout,
   weaponPose,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import { type BurnId, inputAt, type Track, traces } from "../../lib/instrument";
 import MotionInstrumentScreen from "../lab/instrument/MotionInstrumentScreen.svelte";
+import { studyStarterWasp } from "./starter-wasp-fixture";
 import "@void-drift/core/styles/buttons.css";
 
 let {
@@ -23,7 +23,7 @@ let playing = $state(false);
 let canvas: HTMLCanvasElement;
 let lfxCanvas: HTMLCanvasElement;
 let render = () => {};
-const build = starterLoadout("wasp");
+const build = studyStarterWasp();
 build.hull[0] = "light-ion-cannon";
 const cannonMount = buildMounts(build).find(
   (m) => m.part === "light-ion-cannon",

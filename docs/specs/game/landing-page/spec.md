@@ -50,9 +50,9 @@ game's home and Hangar is an alternative launch point.
   continue beyond the region to fill the viewport.
   The current title-screen target is iPad or larger.
 - A static, decorative 156px-long Wasp overlaps the panel’s bottom-right corner,
-  heading 30° above right. Its right hull slot carries one Light Ion Cannon and
-  its left hull slot stays empty, independently of the playable starter loadout.
-  Its single equipped ion engine has a luminous plume;
+  heading 30° above right. It carries the starter Wasp fitting
+  (`starterLoadout("wasp")`): a Light Ion Cannon in its right hull slot, an Ion
+  Point Defence in its left hull slot and one light ion engine with a luminous plume;
   a ship-wide, 450px arrival-green trail starts at the wing tips and fades aft
   from 22% opacity. Artwork may overflow
   the panel, is hidden from assistive technology and never intercepts input.
@@ -115,6 +115,9 @@ game's home and Hangar is an alternative launch point.
 
 - Launch source survives pause/resume and completion of the run.
 - Hangar ship choices do not change the Wasp launched by title-screen PRESS START.
+- PRESS START flies the starter Wasp: a Light Ion Cannon and an Ion Point Defence
+  in the hull mounts, a light ion engine and stabilizers on. The run is a scored
+  survival run.
 - Hangar remains a launch point for its configured ship.
 - Menu presentation does not advance survival state or scoring.
 - Automated navigation checks establish correctness; human review assesses arcade

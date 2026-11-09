@@ -11,6 +11,7 @@ import {
 describe("Gravity coil fitting", () => {
   it("fits and round-trips on every hull without adding solar charging, storage or draw", () => {
     const builds = defaultBuilds();
+    builds.wasp = defaultLoadout("wasp");
     for (const chassis of ["wasp", "scout", "fighter", "corvette"] as const) {
       const build = builds[chassis];
       const before = buildStats(build);

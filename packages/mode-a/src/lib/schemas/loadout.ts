@@ -337,7 +337,8 @@ export function starterLoadout(chassis: Loadout["chassis"]): Loadout {
   const build = defaultLoadout(chassis);
   build.stabilizers = true;
   build.aft.fill("ion");
-  if (chassis === "wasp") build.hull[0] = "gravity-coil";
+  if (chassis === "wasp")
+    build.hull = ["ion-point-defence", "light-ion-cannon"];
   if (chassis === "fiddler")
     build.hull = [null, null, "battery", "battery", "gravity-coil"];
   const packs = chassis === "fighter" ? 1 : chassis === "corvette" ? 2 : 0;
@@ -347,7 +348,7 @@ export function starterLoadout(chassis: Loadout["chassis"]): Loadout {
 export const BuildStoreSchema = z
   .object({
     fiddler: LoadoutSchema.default(() => starterLoadout("fiddler")),
-    wasp: LoadoutSchema.default(() => defaultLoadout("wasp")),
+    wasp: LoadoutSchema.default(() => starterLoadout("wasp")),
     scout: LoadoutSchema,
     fighter: LoadoutSchema,
     corvette: LoadoutSchema,
@@ -363,7 +364,7 @@ export const BuildStoreSchema = z
 export function defaultBuilds() {
   return {
     fiddler: starterLoadout("fiddler"),
-    wasp: defaultLoadout("wasp"),
+    wasp: starterLoadout("wasp"),
     scout: defaultLoadout("scout"),
     fighter: defaultLoadout("fighter"),
     corvette: defaultLoadout("corvette"),

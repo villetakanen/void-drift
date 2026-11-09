@@ -9,11 +9,11 @@ import {
   type SalvageBody,
   SalvageSystem,
   Simulation,
-  starterLoadout,
   stockSettings,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import { createDraftPainter } from "../derelict-draft-two/renderer";
+import { studyStarterWasp } from "../starter-wasp-fixture";
 
 let {
   releaseCues = false,
@@ -117,7 +117,7 @@ onMount(() => {
     stamp.fillRect(0, 0, 160, 160);
   }
 
-  const build = starterLoadout("wasp");
+  const build = studyStarterWasp();
   const paths = variantsPieces.map((pieces) =>
     pieces.map((p) => new Path2D(p.path)),
   );

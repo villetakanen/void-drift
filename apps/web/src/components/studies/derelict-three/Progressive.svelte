@@ -7,11 +7,11 @@ import {
   type SalvageBody,
   SalvageSystem,
   Simulation,
-  starterLoadout,
   stockSettings,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import { createDraftPainter } from "../derelict-draft-two/renderer";
+import { studyStarterWasp } from "../starter-wasp-fixture";
 
 let {
   label = "Two, five and eight physical splinters with staged shedding and energy ejection",
@@ -96,7 +96,7 @@ onMount(() => {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
   const painter = createDraftPainter();
-  const build = starterLoadout("wasp");
+  const build = studyStarterWasp();
   const paths = variantsPieces.map((pieces) =>
     pieces.map((p) => new Path2D(p.path)),
   );
