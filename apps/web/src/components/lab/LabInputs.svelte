@@ -8,6 +8,7 @@ let detailed = $state("Fighter");
 import RingSlider from "../inputs/RingSlider.svelte";
 import Switch from "../inputs/Switch.svelte";
 import Toggle from "../inputs/Toggle.svelte";
+import LabThrustPads from "./LabThrustPads.svelte";
 
 // Shared control references: multi-option Toggle, binary Switch and RingSlider.
 let { label = "Input design system" }: { label?: string } = $props();
@@ -159,6 +160,8 @@ let thrust = $state(38000);
       label line where the host shows it.
     </p>
   </section>
+
+  <LabThrustPads />
 </section>
 
 <style>

@@ -1,0 +1,136 @@
+import type { Locator, Page } from "@playwright/test";
+import {
+  type PadSide,
+  padAssembly,
+} from "../../apps/web/src/components/inputs/thrust-pads";
+import {
+  type InputAction,
+  litPads,
+  THRUST_PADS,
+  type ThrustPad,
+} from "../../packages/core/src/lib/entities/Input";
+import { expect, test } from "../helpers/local-browser";
+
+const PAD_SIDE: Record<ThrustPad, PadSide> = {
+  leftUpper: "left",
+  leftLower: "left",
+  rightUpper: "right",
+  rightLower: "right",
+};
+
+/** A page point inside `pad`, from the same geometry the component draws. */
+async function padPoint(page: Page, pad: ThrustPad) {
+  const side = PAD_SIDE[pad];
+  const box = await page
+    .locator(`.thrust-pads[data-side="${side}"]`)
+    .boundingBox();
+  if (!box) throw new Error(`${side} assembly missing`);
+  const pane = padAssembly(side, box.width, box.height).panes.find(
+    (candidate) => candidate.pad === pad,
+  );
+  if (!pane) throw new Error(`${pad} pane missing`);
+  return { x: box.x + pane.mark[0], y: box.y + pane.mark[1] };
+}
+
+async function expectLit(stage: Locator, action: InputAction | null) {
+  await expect(stage).toHaveAttribute("data-action", action ?? "none");
+  const lit = litPads(action);
+  for (const pad of THRUST_PADS)
+    await expect(stage.locator(`[data-pad="${pad}"]`)).toHaveAttribute(
+      "data-lit",
+      String(lit.includes(pad)),
+    );
+}
+
+test.describe("thrust pads in the Lab", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/lab/inputs");
+    await page.locator(".stage").scrollIntoViewIfNeeded();
+  });
+
+  test("pressing each pad lights the pads of its resolved action", async ({
+    page,
+  }) => {
+    const stage = page.locator(".stage");
+    await expectLit(stage, null);
+    const expected: Record<ThrustPad, InputAction> = {
+      leftUpper: "L",
+      leftLower: "LF",
+      rightUpper: "R",
+      rightLower: "RF",
+    };
+    for (const pad of THRUST_PADS) {
+      const point = await padPoint(page, pad);
+      await page.mouse.move(point.x, point.y);
+      await page.mouse.down();
+      await expectLit(stage, expected[pad]);
+      await page.mouse.up();
+      await expectLit(stage, null);
+    }
+  });
+
+  test("a pointer slides across the seam and releases on leaving the assembly", async ({
+    page,
+  }) => {
+    const stage = page.locator(".stage");
+    const upper = await padPoint(page, "leftUpper");
+    const lower = await padPoint(page, "leftLower");
+    await page.mouse.move(upper.x, upper.y);
+    await page.mouse.down();
+    await expectLit(stage, "L");
+    await page.mouse.move(lower.x, lower.y, { steps: 8 });
+    await expectLit(stage, "LF");
+    const box = await stage.boundingBox();
+    if (!box) throw new Error("stage missing");
+    await page.mouse.move(box.x + box.width / 2, lower.y, { steps: 8 });
+    await expectLit(stage, null);
+    // Coming back without lifting does not press again.
+    await page.mouse.move(lower.x, lower.y, { steps: 8 });
+    await expectLit(stage, null);
+    await page.mouse.up();
+  });
+
+  test("the state selector shows every lit state", async ({ page }) => {
+    const stage = page.locator(".stage");
+    const group = page.getByRole("radiogroup", { name: "Thrust pad state" });
+    for (const action of ["L", "R", "LR", "LF", "RF"] as const) {
+      await group.getByText(action, { exact: true }).click();
+      await expectLit(stage, action);
+    }
+  });
+});
+
+test("two thumbs on the upper pads resolve to forward and light only the burn pads", async ({
+  newLocalContext,
+}) => {
+  const context = await newLocalContext({
+    viewport: { width: 1280, height: 900 },
+    hasTouch: true,
+  });
+  const page = await context.newPage();
+  await page.goto("/lab/inputs");
+  await page.locator(".stage").scrollIntoViewIfNeeded();
+  const stage = page.locator(".stage");
+  const left = await padPoint(page, "leftUpper");
+  const right = await padPoint(page, "rightUpper");
+  const client = await context.newCDPSession(page);
+  await client.send("Input.dispatchTouchEvent", {
+    type: "touchStart",
+    touchPoints: [{ ...left, id: 1 }],
+  });
+  await expectLit(stage, "L");
+  await client.send("Input.dispatchTouchEvent", {
+    type: "touchStart",
+    touchPoints: [
+      { ...left, id: 1 },
+      { ...right, id: 2 },
+    ],
+  });
+  await expectLit(stage, "LR");
+  await client.send("Input.dispatchTouchEvent", {
+    type: "touchEnd",
+    touchPoints: [],
+  });
+  await expectLit(stage, null);
+  await context.close();
+});

@@ -145,6 +145,21 @@
       transparent 0 2px,
       color-mix(in lch, var(--color-void) 35%, transparent) 2px 4px
     );
+  /* Thrust pads (design system, Thrust pads): translucent glass over the
+	   stage, blue at rest and a thin selected wash when lit; the burn pad is
+	   denser than the turn pad in both states. */
+  --color-pad-turn: color-mix(in lch, var(--color-elev-3) 22%, transparent);
+  --color-pad-burn: color-mix(in lch, var(--color-elev-3) 36%, transparent);
+  --color-pad-turn-lit: color-mix(
+    in lch,
+    var(--color-selected) 9%,
+    transparent
+  );
+  --color-pad-burn-lit: color-mix(
+    in lch,
+    var(--color-selected) 16%,
+    transparent
+  );
   /* Panel: elevation 2 on the console form, with the display's shadow. */
   --panel-fill: var(--color-elev-2);
   --panel-shadow: drop-shadow(0 8px 24px lch(0% 0 0 / 0.7));

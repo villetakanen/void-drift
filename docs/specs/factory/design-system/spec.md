@@ -1,45 +1,40 @@
-# Feature: Design System Core
-
-**Status:** ✅ COMPLETED (2024)  
-**Current Version:** 0.0.4
+# Design system
 
 ## Blueprint
 
 ### Context
 
-This specification defines the "Experience Model" for Void Drift. It establishes the core visual axioms—Logo, Typography, and Color—that drive the application's "Vibe" (Newtonian Chaos / Utilitarian Sci-Fi). These rules ensure consistency across the game HUD, menus, and marketing pages.
+The design system is Void Drift's shared visual language: identity, typography,
+colour, elevation, surfaces, layers and inputs. It keeps the game HUD, menus and
+the Lab consistent in one register, utilitarian sci-fi neon on the void, so a
+screen composes shared definitions instead of inventing its own.
 
-**Achievement:** Full design token system operational with CSS variables defining all colors, spacing, and typography.
+### Architecture and boundaries
 
-### Architecture
+- `packages/core/src/lib/styles/tokens.css` is the single source of tokens.
+  `packages/core/src/lib/ui/colors.ts` mirrors the colours canvas needs;
+  `scripts/check-contracts.mjs` keeps them equal.
+- Shared CSS lives beside the tokens: `buttons.css`, `surfaces.css` and
+  `flight.css`. Shared input components live in `apps/web/src/components/inputs/`.
+- `apps/web/src/components/Logo.svelte` draws the logomark from SVG outlines;
+  fonts are self-hosted.
+- Each definition has a canonical Lab page: `/lab/tokens`, `/lab/typography`,
+  `/lab/surfaces`, `/lab/buttons` and `/lab/inputs`.
+- Feature specs consume the system. Changing a definition is design work,
+  recorded here and demonstrated on its Lab page in the same change.
 
-- **Tech Stack:** Vanilla CSS Variables (Tokens).
-- **Location:** [DEPRECATED 2026-11-01] ~~`apps/web/src/styles.css` (Single Source of Truth).~~ Tokens live in `packages/core/src/lib/styles/tokens.css`; see [Colour](#colour).
-- **Font:** [DEPRECATED 2026-11-01] ~~Noto Sans Math (Google Fonts, loaded via CDN).~~ See [Typography](#typography); fonts are self-hosted.
-- **Logo Symbolism:** ∅·Δ (Void × Drift). See [Identity](#identity).
-- **Implementation:** Zero hardcoded colors in components; all use `var(--token-name)`.
+### Rules
 
-### Anti-Patterns
-
-- **Do NOT** use hardcoded colour values in components or canvas; name a role (see [Colour](#colour)). [DEPRECATED 2026-11-01] ~~always use `var(--color-neon-blue)`.~~
-- **Do NOT** use Tailwind or other utility classes; use semantic CSS.
-- [DEPRECATED 2026-11-01] ~~**Do NOT** use image assets for the logo; use HTML entities for sharp scaling.~~ The logomark is inline SVG outlines; see [Identity](#identity).
-- [DEPRECATED 2026-11-01] ~~**Do NOT** use `var(--color-primary)` - this token does not exist. Use `var(--color-neon-blue)` for primary accent color.~~ Use `--color-action` for what you can act on.
-- **Do NOT** colour informational text with brand, action or selected.
-
-### Working rules
-
-Moved from `docs/design.md` on 2026-11-02.
-
-- Use shared variables for UI colours, fonts, spacing and sizes. Add a missing token
-  deliberately, with a Lab example, rather than accumulating component literals.
-- Use native CSS and global classes for basic HTML elements; avoid trivial component
-  wrappers for buttons and links. Larger interaction components remain appropriate.
-- Feature work consumes the established design system. Changing its definitions is
-  explicit design work, documented here and demonstrated in `/lab` in the same change.
-- Procedural drawing lives in `packages/core/src/lib/assets/`, effects in
-  `packages/core/src/lib/effects/`. Canvas geometry and simulation values belong in
-  their typed configuration, not CSS.
+- Components and canvas take colours, fonts, spacing, sizes, cuts and layers
+  from tokens, named by role. A missing token is added deliberately, with a Lab
+  example.
+- Basic HTML elements use native CSS and global classes; larger interactions
+  are components.
+- Informational text uses the text roles; brand, action and selected mark
+  identity, what can be acted on, and selection.
+- Procedural drawing lives in `packages/core/src/lib/assets/` and effects in
+  `packages/core/src/lib/effects/`; canvas geometry and simulation values live
+  in their typed configuration, not CSS.
 
 ## Contract
 
@@ -53,6 +48,8 @@ Moved from `docs/design.md` on 2026-11-02.
 - [x] All UI components use design tokens (no hardcoded hex values).
 - [x] Shared UI takes every `z-index` from a `--layer-*` token, and every cut corner from a `--cut-size-*` token (S6).
 - [x] Menu, pause and run complete sit on one `.panel`; the flight status message on `.panel--flat` (S6).
+- [ ] Thrust pad tokens and `ThrustPads` exist as specified, and `/lab/inputs`
+  demonstrates both sides in every lit state over a starfield.
 
 ### Regression Guardrails
 
@@ -277,6 +274,29 @@ implemented 2026-11-03.
 - Lime marks the selection and the knob; hover borrows it at low strength. Data and
   values stay neutral.
 
+### Thrust pads
+
+The flight thrust pads are translucent glass over the live stage. Their
+arrangement, actions and lighting rules belong to the
+[controls contract](../../game/controls/spec.md); this section owns their look.
+
+| Token                  | Value                     | Use              |
+| ---------------------- | ------------------------- | ---------------- |
+| `--color-pad-turn`     | `--color-elev-3` at 22%   | Turn pad at rest |
+| `--color-pad-burn`     | `--color-elev-3` at 36%   | Burn pad at rest |
+| `--color-pad-turn-lit` | `--color-selected` at 9%  | Lit turn pad     |
+| `--color-pad-burn-lit` | `--color-selected` at 16% | Lit burn pad     |
+- Pads are borderless and uncut: two disjoint panes per gutter, so tints never
+  stack, and stars stay visible through them at rest and lit.
+- Markings are `--color-text` in the UI type family; Android green stays
+  reserved for the live HUD.
+- `apps/web/src/components/inputs/ThrustPads.svelte` draws one gutter's
+  assembly: its `side`, the pads to light, and pointer presses reported per pad.
+  Drawing and hit-testing share one geometry, so what lights is what was
+  touched.
+- `/lab/inputs` demonstrates both sides in every lit state (none, `L`, `R`,
+  `LR`, `LF`, `RF`) over a starfield, and lets a pointer press them.
+
 ## Surfaces and layers
 
 **Status:** Implemented 2026-11-02 (opening-screen S6).
@@ -289,15 +309,13 @@ implemented 2026-11-03.
 One corner language: every surface and control cuts its **top-left and bottom-right**
 corners, as buttons do.
 
-| Token           | Value | Use                              |
-| --------------- | ----- | -------------------------------- |
-| `--cut-size-sm` | 6px   | Small controls                   |
-| `--cut-size-md` | 10px  | Buttons, the toggle, engine pads |
-| `--cut-size-lg` | 16px  | Panels                           |
+| Token           | Value | Use                 |
+| --------------- | ----- | ------------------- |
+| `--cut-size-sm` | 6px   | Small controls      |
+| `--cut-size-md` | 10px  | Buttons, the toggle |
+| `--cut-size-lg` | 16px  | Panels              |
 - `--button-cut-size` aliases `--cut-size-md`.
 - `--radius-sm` (2px) is for text fields only. Circles (knobs, swatches) stay round.
-- [DEPRECATED 2026-11-02] ~~`--flight-radius: 12px` on engine pads~~; removed. Engine pads are
-  cut surfaces at `md` in `--color-glass`.
 
 ### Cut surfaces
 
@@ -356,7 +374,7 @@ The only `z-index` values in shared UI. Gaps leave room for a later layer.
 | ----------------- | ----- | -------------------------------------------------------- |
 | `--layer-toast`   | 200   | Status messages over everything                          |
 | `--layer-overlay` | 100   | Dialogs and their scrim                                  |
-| `--layer-hud`     | 10    | HUD and engine pads                                      |
+| `--layer-hud`     | 10    | HUD and thrust pads                                      |
 | `--layer-raised`  | 1     | Sticky footers; a Lab pane over its backdrop             |
 | `--layer-base`    | 0     | The stage and page content                               |
 | `--layer-under`   | -1    | Behind content inside an isolated part (a button's fill) |
