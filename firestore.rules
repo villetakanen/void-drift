@@ -5,11 +5,12 @@ service cloud.firestore {
    function valid() {
     let d = request.resource.data;
     return appId == 'void-drift' && request.auth != null
-     && d.keys().hasAll(['initials','seconds','deathCause','shipId','challenge','userId'])
-     && d.keys().hasOnly(['initials','seconds','deathCause','shipId','challenge','userId'])
+     && d.keys().hasAll(['initials','seconds','score','deathCause','shipId','challenge','userId'])
+     && d.keys().hasOnly(['initials','seconds','score','deathCause','shipId','challenge','userId'])
      && d.userId == request.auth.uid
      && d.shipId in ['wasp','scout','fighter','corvette']
      && ((d.challenge == 'alpha-1' && scoreId == request.auth.uid + '_' + d.shipId)
+      || (d.challenge == 'ion-storm' && scoreId == 'ion-storm_' + request.auth.uid + '_' + d.shipId)
       || (d.challenge == 'arrival-3' && scoreId == 'arrival-3_' + request.auth.uid + '_' + d.shipId)
       || (d.challenge == 'arrival-2' && scoreId == 'arrival-2_' + request.auth.uid + '_' + d.shipId)
       || (d.challenge == 'arrival-1' && scoreId == 'arrival-1_' + request.auth.uid + '_' + d.shipId)
@@ -17,12 +18,16 @@ service cloud.firestore {
       || (d.challenge == 'gravity-1' && scoreId == 'gravity-1_' + request.auth.uid + '_' + d.shipId))
      && d.initials is string && d.initials.matches('^[A-Z]{3}$')
      && d.seconds is int && d.seconds >= 1 && d.seconds <= 3600
+     // Score counts whole seconds, so it is never below them. The ceiling is
+     // MAX_SCORE in packages/mode-a/src/schemas/highscore.ts: 3600 s + 720
+     // derelict groups x (91 hits + one 20-point cell) = 83 520, rounded up.
+     && d.score is int && d.score >= d.seconds && d.score <= 100000
      && d.deathCause in ['STAR','HULL','POWER'];
    }
    allow get: if appId == 'void-drift' && request.auth != null;
    allow list: if appId == 'void-drift' && request.auth != null && request.query.limit <= 30;
    allow create: if valid();
-   allow update: if valid() && request.resource.data.challenge == resource.data.challenge && resource.data.userId == request.auth.uid && request.resource.data.seconds > resource.data.seconds;
+   allow update: if valid() && request.resource.data.challenge == resource.data.challenge && resource.data.userId == request.auth.uid && request.resource.data.score > resource.data.score;
    allow delete: if false;
   }
  }

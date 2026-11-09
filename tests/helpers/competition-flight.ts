@@ -24,6 +24,8 @@ export function competitionFlightResult(
     cause: simulation.state.deathCause,
     ticks: simulation.ticks,
     elapsed: simulation.state.elapsedTime,
+    seconds: simulation.wholeSeconds,
+    score: simulation.survivalScore,
   };
 }
 

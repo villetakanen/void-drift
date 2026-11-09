@@ -13,6 +13,13 @@ import { version } from "../../package.json";
 import Logo from "./Logo.svelte";
 
 let rows = $state<HighScore[]>([]);
+let order = $state<"score" | "time">("score");
+// The query returns the top 30 by score; time re-sorts those rows in the client.
+const sorted = $derived(
+  order === "score"
+    ? rows
+    : [...rows].sort((a, b) => b.seconds - a.seconds || b.score - a.score),
+);
 let loading = $state(true);
 let error = $state("");
 async function load() {
@@ -38,7 +45,7 @@ onMount(() => {
       >
       <p class="eyebrow">G CLASS / TOP 30</p>
       <h1 id="scores-title">Top scores</h1>
-      <p>One best time per pilot, per craft.</p>
+      <p>One best score per pilot, per craft.</p>
     </header>
     <div class="score-results" aria-busy={loading}>
       {#if loading}
@@ -48,17 +55,37 @@ onMount(() => {
       {:else if rows.length === 0}
         <p>No scores yet. Set the first mark.</p>
       {:else}
-        <table aria-label="Top 30 survival times">
+        <div class="button-group-frame">
+          <div class="button-group button-group--strip">
+            <button
+              type="button"
+              class={order === "score" ? "btn btn-filled" : "btn btn-ghost"}
+              aria-pressed={order === "score"}
+              onclick={() => (order = "score")}
+            >
+              By score
+            </button><button
+              type="button"
+              class={order === "time" ? "btn btn-filled" : "btn btn-ghost"}
+              aria-pressed={order === "time"}
+              onclick={() => (order = "time")}
+            >
+              By time
+            </button>
+          </div>
+        </div>
+        <table aria-label="Top 30 survival scores, sorted by {order}">
           <thead>
             <tr>
               <th scope="col">Rank</th>
               <th scope="col">Pilot</th>
               <th scope="col">Ship</th>
-              <th scope="col">Survival</th>
+              <th scope="col">Score</th>
+              <th scope="col">Time</th>
             </tr>
           </thead>
           <tbody>
-            {#each rows as row, index}
+            {#each sorted as row, index}
               <tr>
                 <td>{index + 1}</td>
                 <td>
@@ -66,7 +93,8 @@ onMount(() => {
                   ><small>{row.userId.slice(-4)}</small>
                 </td>
                 <td>{SHIP_IDENTITY[row.shipId].shortName}</td>
-                <td>{row.seconds}s</td>
+                <td class:sorted={order === "score"}>{row.score}</td>
+                <td class:sorted={order === "time"}>{row.seconds}s</td>
               </tr>
             {/each}
           </tbody>
@@ -74,7 +102,7 @@ onMount(() => {
       {/if}
     </div>
     <p class="score-note">
-      Casual, client-reported times. Lab trials are unranked.
+      Casual, client-reported scores. Lab trials are unranked.
     </p>
     <div class="button-group-frame">
       <div class="button-group button-group--strip">
@@ -133,6 +161,9 @@ p {
   padding-block: var(--spacing-lg);
   text-align: center;
 }
+.score-results .button-group-frame {
+  margin-bottom: var(--spacing-md);
+}
 table {
   width: 100%;
   border-collapse: collapse;
@@ -149,16 +180,18 @@ th {
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-regular);
 }
-th:last-child,
-td:last-child {
+th:nth-last-child(-n + 2),
+td:nth-last-child(-n + 2) {
   text-align: right;
 }
 td:first-child {
   color: var(--color-text-muted);
 }
-td:last-child {
-  font-weight: var(--font-weight-bold);
+td:nth-last-child(-n + 2) {
   white-space: nowrap;
+}
+td.sorted {
+  font-weight: var(--font-weight-bold);
 }
 small {
   display: block;

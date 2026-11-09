@@ -24,9 +24,10 @@ Void Drift is a procedural space survival game played in the browser. A pilot fl
 - **Launch and return:** a run starts from the title screen or the Hangar, independently of its mode. Abort and game over return to the place it started from.
 - **PRESS START:** it launches the stock Survival run: Wasp in its starter loadout (`starterLoadout("wasp")`), in a fresh seeded G-class system. The Hangar owns ship choice.
 - **Ranked runs:** only the PRESS START Survival run, under the current `CHALLENGE`, is ranked. Every Hangar run, and every Practice, Derelicts and Lab run, is unranked and cannot submit.
-- **Scores:** a score is a casual, client-reported survival time and is labelled as such. Firestore rules check ownership, shape, challenge and bounds, but cannot prove an honest run.
-  - Each anonymous player keeps one best per ship; an equal or shorter run keeps the existing best.
-  - Top Scores lists the 30 longest times.
+- **Scores:** a score is a casual, client-reported [Survival score](survival/spec.md) with the run's whole seconds, labelled as such. Firestore rules check ownership, shape, challenge and bounds, but cannot prove an honest run.
+  - A row carries `score` (integer, at least the seconds and at most `MAX_SCORE`, 100000) and `seconds` (integer, 1–3600). `MAX_SCORE` bounds 3600 s, 720 derelict groups (first at 3 s, then at least 5 s apart) of at most 91 scoring hits each (43 on the wreck and 6 on each of eight pieces at the weakest 2-point band) and one 20-point cell each: 83 520, rounded up.
+  - Each anonymous player keeps one best per ship; a run whose score is not higher keeps the existing best.
+  - Top Scores lists the 30 highest scores, sorted by score; a control re-sorts the same rows by time in the client.
 - **Replay:** identical validated settings and inputs reproduce the same world state, step for step.
 - **Offline:** without Firebase the game stays fully playable, and score features explain why they are unavailable.
 - **Version labels:** the title screen and the leaderboard show the web package version, which is separate from the challenge identifier.
@@ -52,9 +53,13 @@ Void Drift is a procedural space survival game played in the browser. A pilot fl
   extra-field and deletion writes, and reject unbounded or unauthenticated
   list queries.
 - [x] Submission writes `artifacts/void-drift/scores/{CHALLENGE}_{uid}_{shipId}`;
-  an equal or shorter time leaves the stored best unchanged.
-- [x] Top Scores queries the current `CHALLENGE` ordered by time, limited to 30
-  rows, and labels the times as casual and client-reported.
+  an equal or lower score leaves the stored best unchanged.
+- [x] Firestore rules require `score`, reject a missing, non-integer, below-seconds or
+  above-`MAX_SCORE` value, and accept an update only when `score` grows.
+- [x] Top Scores queries the current `CHALLENGE` ordered by score, limited to 30
+  rows, shows score and time, and labels them as casual and client-reported.
+- [x] A By score and By time control re-sorts the loaded rows in the client, score
+  being the default.
 - [x] Two anonymous players can each save a run and see both on the shared
   board.
 - [x] Two simulations given the same validated settings and replay inputs end
@@ -131,8 +136,8 @@ Scenario: Custom build is unranked
   And no score is submitted
 
 Scenario: Equal run keeps the best
-  Given a player holds a best of 42 seconds with Wasp
-  When the player saves another 42-second Wasp run
+  Given a player holds a best score of 42 with Wasp
+  When the player saves another Wasp run scoring 42
   Then the stored best stays unchanged
 
 Scenario Outline: Rules reject an invalid write
@@ -147,15 +152,15 @@ Scenario Outline: Rules reject an invalid write
     | missing a field or of the wrong type       |
     | stored under a mismatched document id      |
     | for an unknown challenge                   |
-    | outside the time or initials bounds        |
-    | shorter than the stored best               |
+    | outside the time, score or initials bounds |
+    | lower than the stored best score           |
     | carrying an extra field                    |
     | a deletion                                 |
 
 Scenario: Separate anonymous players compete
   Given valid Firebase configuration
   When two anonymous players each save a ranked run
-  Then Top Scores shows both times on one board
+  Then Top Scores shows both scores and times on one board
 
 Scenario: Firebase absent
   Given Firebase is not configured

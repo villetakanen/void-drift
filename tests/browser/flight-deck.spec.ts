@@ -135,6 +135,20 @@ test("the deck sits in the gutters and never covers the active area", async ({
   }
 });
 
+test("the running score sits below the seconds in the right gutter", async ({
+  page,
+}) => {
+  await startSurvival(page, 1440, 900);
+  const timer = page.locator(".deck-instruments.right .timer");
+  const score = page.locator(".deck-instruments.right .score");
+  await expect(score.locator("small")).toHaveText("SCORE");
+  await expect(score.locator("strong")).toHaveText(/^\d+$/);
+  const [above, below] = [await box(timer), await box(score)];
+  expect(below.y).toBeGreaterThanOrEqual(above.y + above.height - EPSILON);
+  const rects = await screenRects(page);
+  expect(within(below, rects.right)).toBe(true);
+});
+
 test("at the 700 px design floor the pads stand full height without overlap", async ({
   page,
 }) => {
@@ -273,6 +287,7 @@ test("Practice labels itself GOD MODE in the bottom gutter", async ({
   await expect(page.locator(".deck-info small").first()).toHaveText("GOD MODE");
   // Practice shows no survival time.
   await expect(page.locator(".deck-instruments.right .timer")).toHaveCount(0);
+  await expect(page.locator(".deck-instruments.right .score")).toHaveCount(0);
 });
 
 test("both pad assemblies share one height that holds from countdown to play", async ({

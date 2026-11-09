@@ -61,6 +61,7 @@ let chosen = $derived<ShipProfileId>(loadout?.chassis ?? "wasp");
 let status = $state("MENU");
 let paused = $state(false);
 let seconds = $state(0);
+let score = $state(0);
 let derelictsResult = $state<Readonly<DerelictsResult> | null>(null);
 let hull = $state(100);
 let power = $state(100);
@@ -180,6 +181,7 @@ function sync() {
   spin = (simulation.angularMotion.velocity * 180) / Math.PI;
   status = simulation.state.status;
   seconds = simulation.state.elapsedTime;
+  score = simulation.survivalScore;
   derelictsResult = simulation.derelictsResult;
   hull = simulation.state.resources.hull;
   power = simulation.state.resources.power;
@@ -240,7 +242,8 @@ async function save() {
   saving = true;
   const result = await submitHighScore({
     initials,
-    seconds: Math.max(1, Math.floor(seconds)),
+    seconds: Math.max(1, simulation.wholeSeconds),
+    score: Math.max(1, simulation.survivalScore),
     shipId: chosen,
     challenge: CHALLENGE,
     deathCause: simulation.state.deathCause ?? "POWER",
@@ -546,6 +549,9 @@ onMount(() => {
                 <small>SURVIVAL</small
                 ><strong class="time">{seconds.toFixed(1)}s</strong>
               </div>
+              <div class="score">
+                <small>SCORE</small><strong class="points">{score}</strong>
+              </div>
             {/if}
           </div>
           <!-- Pause keeps its place outside active play, so the pads never move. -->
@@ -635,6 +641,9 @@ onMount(() => {
             </p>
           {:else}
             <h1>{seconds.toFixed(1)} seconds.</h1>
+            {#if mode === "survival"}
+              <p>Score {score}</p>
+            {/if}
             <p>Every orbit teaches you something.</p>
           {/if}
           {#if mode === "survival" && !loadout && chosen !== "fiddler"}

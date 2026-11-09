@@ -145,6 +145,10 @@ export class SalvageSystem {
   pointDefenceDischarges = 0;
   laserPulses = 0;
   hits = 0;
+  /** Point-defence and cannon hits on a wreck or a shard; they score in Survival. */
+  derelictIonHits = 0;
+  /** Derelict energy cells the ship has collected; each scores in Survival. */
+  cellsCollected = 0;
   energySpent = 0;
   energyCollected = 0;
   lastCollection = { time: -Infinity, amount: 0 };
@@ -447,9 +451,15 @@ export class SalvageSystem {
       this.emit("energy-release", x, y, x, y, time);
     }
   }
-  private damage(body: SalvageBody, amount: number, time = this.time) {
+  private damage(
+    body: SalvageBody,
+    amount: number,
+    time = this.time,
+    ionHit = false,
+  ) {
     if (body.hull <= 0) return;
     this.hits++;
+    if (ionHit && body.kind !== "cell") this.derelictIonHits++;
     if (body.kind === "wreck" && body.initialHull === undefined)
       body.initialHull = body.hull;
     if (body.hull <= amount) this.destroy(body, "player-weapon", time);
@@ -653,7 +663,7 @@ export class SalvageSystem {
       }),
     );
     if (hit) {
-      this.damage(hit, ionCannonDamage(distance), this.time);
+      this.damage(hit, ionCannonDamage(distance), this.time, true);
       this.emit("collision", endX, endY);
     }
     return true;
@@ -801,7 +811,7 @@ export class SalvageSystem {
         distance,
       }),
     );
-    this.damage(hit, pointDefenceDamage(distance), this.time);
+    this.damage(hit, pointDefenceDamage(distance), this.time, true);
     this.emit("collision", endX, endY);
     return true;
   }
@@ -1323,6 +1333,7 @@ export class SalvageSystem {
         );
         resources.power += amount;
         this.energyCollected += amount;
+        this.cellsCollected++;
         this.lastCollection = { time: this.time, amount };
         body.hull = 0;
         this.emit("collect", body.x, body.y);

@@ -46,8 +46,8 @@ never the run.
   is the camera-fitting boundary, not a rendering clip.
 - The side gutters hold the thrust pads; thrust touches register only on those
   pads, at the bottom of each side gutter. At the top, the left gutter holds the
-  hull and power instruments and the right gutter the time and score
-  instruments.
+  hull and power instruments and the right gutter the survival time with the
+  running [Survival score](../survival/spec.md) below it.
 - At a safe viewport height of 700 CSS px and above, the side gutters hold
   their instruments, deck buttons and full-height pads without overlap.
 - Just above each pad assembly sits one deck button: Pause on the left, and a
@@ -108,7 +108,7 @@ never the run.
   gestures on iPad Safari; cancellation and lost capture leave no stuck thrust.
 - [ ] Each side gutter holds its thrust pads at the bottom, its deck button
   just above them (Pause left, Weapons right) and its instruments at the top
-  (hull and power left, time right); the bottom gutter holds the mode label and
+  (hull and power left, time and score right); the bottom gutter holds the mode label and
   status lines; no deck part covers the active area.
 - [ ] At a safe viewport height of 700 CSS px and above, each side gutter's
   instruments, deck button and full-height pads do not overlap.

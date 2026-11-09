@@ -65,7 +65,7 @@ The new `void-drift-alpha` project uses Spark, with no billing upgrade. Old SQL 
 migration documents remain historical; scores are not migrated.
 
 - Documents live at `artifacts/void-drift/scores/{CHALLENGE}_{uid}_{shipId}`; `CHALLENGE`
-  (`packages/mode-a/src/schemas/highscore.ts`) is currently `arrival-3`.
+  (`packages/mode-a/src/schemas/highscore.ts`) is currently `ion-storm`.
 - A user retains one personal best per ship for the current challenge (seed 2026). Earlier
   challenges (`alpha-1`, `gravity-1`) retain their IDs.
 - `CHALLENGE` changes once per release, only when rules or tuning differ from the previous

@@ -45,6 +45,8 @@ import type { ShipProfileId } from "./schemas/ship-profile";
 import { GRAVITY_TUNING } from "./tuning";
 
 export const STEP = 1 / 60;
+/** Survival score points for each collected derelict energy cell. */
+export const CELL_SCORE = 20;
 export { CHALLENGE } from "../schemas/highscore";
 export const GRAVITY_FLIGHT = GravityFlightSchema.parse({
   engineSpeedScale: 600,
@@ -121,6 +123,22 @@ export class Simulation {
   private finalDerelictsResult: Readonly<DerelictsResult> | null = null;
   get derelictsResult(): Readonly<DerelictsResult> | null {
     return this.finalDerelictsResult;
+  }
+  /** Whole gameplay seconds survived; a partial second does not count. */
+  get wholeSeconds(): number {
+    return Math.floor(this.ticks * STEP + 1e-9);
+  }
+  /**
+   * Survival score: whole seconds, plus one per point-defence or cannon hit on
+   * a derelict or a derelict piece, plus 20 per derelict energy cell collected.
+   * Destroying a derelict, and rail and laser hits, add nothing.
+   */
+  get survivalScore(): number {
+    return (
+      this.wholeSeconds +
+      (this.salvage?.derelictIonHits ?? 0) +
+      CELL_SCORE * (this.salvage?.cellsCollected ?? 0)
+    );
   }
   gravityCollectionRate = 0;
   gravityFoldOpacity = 0;

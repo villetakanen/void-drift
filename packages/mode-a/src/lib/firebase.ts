@@ -82,7 +82,7 @@ export async function loadHighScores(): Promise<HighScore[]> {
         query(
           collection(db, "artifacts", "void-drift", "scores"),
           where("challenge", "==", CHALLENGE),
-          orderBy("seconds", "desc"),
+          orderBy("score", "desc"),
           limit(30),
         ),
       );
@@ -113,7 +113,7 @@ export async function submitHighScore(
           const previous = await transaction.get(reference);
           if (
             previous.exists() &&
-            HighScoreSchema.parse(previous.data()).seconds >= score.seconds
+            HighScoreSchema.parse(previous.data()).score >= score.score
           )
             return;
           transaction.set(reference, score);

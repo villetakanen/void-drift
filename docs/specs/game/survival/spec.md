@@ -1026,3 +1026,33 @@ has no encounters.
 - [x] A scheduled arrival is skipped while eight groups are occupied.
 - [x] Moving the player changes no arrival; the same seed gives the same arrivals.
 - [x] Starting survival from PRESS START meets the first derelict at 3 s of flight.
+
+## Survival score — 2026-11-09
+
+A Survival run scores whole gameplay seconds plus what the player does to derelicts:
+
+- 1 point per full gameplay second survived; a partial second does not count.
+- 1 point per Ion Point Defence or Light Ion Cannon hit on a derelict or a derelict
+  piece. The hit that destroys a derelict is a hit like any other.
+- 0 points for destroying a derelict.
+- 20 points per derelict energy cell the player collects, whatever energy it restores.
+- Rail and laser hits score nothing.
+
+The score counts only what the simulation did: `SalvageSystem.derelictIonHits` and
+`SalvageSystem.cellsCollected` accumulate in the fixed step, and
+`Simulation.survivalScore` adds them to whole seconds. Rendering never counts.
+Derelicts mode keeps its own transient score and never shares this formula.
+
+The running score shows in the right gutter below the seconds, and the run complete
+dialog states the final score. Which runs are ranked and what is submitted follow the
+[leaderboard rules](../spec.md); the score does not change them.
+
+### Acceptance criteria
+
+- [x] Over a seeded run the score equals whole seconds plus the simulation's ion hit
+  count plus 20 times its collected-cell count.
+- [x] A partial second adds nothing.
+- [x] Point Defence and Light Ion Cannon hits on a wreck or a piece add 1 each.
+- [x] Rail and laser hits add 0; destroying a derelict adds 0 beyond its hit.
+- [x] Collecting a cell adds 20 once.
+- [x] The running score shows in the right gutter below the seconds in Survival.

@@ -28,6 +28,7 @@ after(async () => environment?.cleanup());
 const score = {
   initials: "ACE",
   seconds: 42,
+  score: 60,
   deathCause: "POWER",
   shipId: "fighter",
   challenge: "alpha-1",
@@ -41,7 +42,7 @@ function ref(user = "pilot", id = "pilot_fighter", app = "void-drift") {
 }
 test("owner can create and improve a score", async () => {
   await assertSucceeds(setDoc(ref(), score));
-  await assertSucceeds(setDoc(ref(), { ...score, seconds: 50 }));
+  await assertSucceeds(setDoc(ref(), { ...score, seconds: 50, score: 80 }));
 });
 test("different players can contribute and read the shared board", async () => {
   await assertSucceeds(setDoc(ref(), score));
@@ -51,6 +52,7 @@ test("different players can contribute and read the shared board", async () => {
       userId: "rival",
       shipId: "scout",
       seconds: 51,
+      score: 70,
     }),
   );
   const db = environment.authenticatedContext("viewer").firestore();
@@ -72,10 +74,23 @@ test("identity and document shape cannot be forged", async () => {
   await assertFails(setDoc(ref(), { ...score, admin: true }));
   const { initials, ...missing } = score;
   await assertFails(setDoc(ref(), missing));
+  const { score: omitted, ...unscored } = score;
+  await assertFails(setDoc(ref(), unscored));
 });
 test("invalid types and bounds fail", async () => {
   for (const seconds of [-1, 0, 3601, 1.5, "42"])
     await assertFails(setDoc(ref(), { ...score, seconds }));
+  for (const value of [-1, 0, 41, 1.5, "60", 100001, null])
+    await assertFails(setDoc(ref(), { ...score, score: value }));
+  await assertSucceeds(setDoc(ref(), { ...score, score: 42 }));
+  await assertSucceeds(
+    setDoc(ref("rival", "rival_fighter"), {
+      ...score,
+      userId: "rival",
+      seconds: 3600,
+      score: 100000,
+    }),
+  );
   for (const initials of ["a", "TOOLONG", "<X>"])
     await assertFails(setDoc(ref(), { ...score, initials }));
 });
@@ -86,9 +101,12 @@ test("unknown challenge, ship and death cause fail", async () => {
 });
 test("scores cannot decrease, be overwritten by another owner, or be deleted", async () => {
   await assertSucceeds(setDoc(ref(), score));
-  await assertFails(setDoc(ref(), { ...score, seconds: 10 }));
+  await assertFails(setDoc(ref(), { ...score, score: 50 }));
   await assertFails(setDoc(ref(), score));
-  await assertFails(setDoc(ref("rival"), { ...score, seconds: 99 }));
+  // A longer run with a lower score is not an improvement.
+  await assertFails(setDoc(ref(), { ...score, seconds: 99, score: 59 }));
+  await assertSucceeds(setDoc(ref(), { ...score, seconds: 40, score: 61 }));
+  await assertFails(setDoc(ref("rival"), { ...score, seconds: 99, score: 99 }));
   await assertFails(deleteDoc(ref()));
 });
 test("reads require authentication and a bounded list query", async () => {
@@ -133,6 +151,7 @@ test("reads require authentication and a bounded list query", async () => {
 });
 
 for (const challenge of [
+  "ion-storm",
   "gravity-1",
   "ion-1",
   "arrival-1",
@@ -141,7 +160,7 @@ for (const challenge of [
 ]) {
   test(`${challenge} scores are isolated from legacy personal bests`, async () => {
     await assertSucceeds(setDoc(ref(), score));
-    const current = { ...score, challenge, seconds: 20 };
+    const current = { ...score, challenge, seconds: 20, score: 30 };
     const id = `${challenge}_pilot_fighter`;
     const target = ref("pilot", id);
     if (challenge === "ion-1") {
@@ -152,10 +171,12 @@ for (const challenge of [
       await assertFails(setDoc(gravity, current));
     }
     await assertSucceeds(setDoc(target, current));
-    await assertSucceeds(setDoc(target, { ...current, seconds: 25 }));
-    await assertFails(setDoc(target, { ...current, seconds: 10 }));
-    await assertFails(setDoc(ref(), { ...current, seconds: 100 }));
-    await assertFails(setDoc(target, { ...score, seconds: 100 }));
+    await assertSucceeds(
+      setDoc(target, { ...current, seconds: 25, score: 40 }),
+    );
+    await assertFails(setDoc(target, { ...current, seconds: 10, score: 20 }));
+    await assertFails(setDoc(ref(), { ...current, seconds: 100, score: 100 }));
+    await assertFails(setDoc(target, { ...score, seconds: 100, score: 100 }));
     await assertFails(setDoc(ref("rival", id), current));
   });
 }
@@ -166,8 +187,10 @@ test("each anonymous identity can keep a best on every ranked craft", async () =
       const target = ref(userId, `ion-1_${userId}_${shipId}`);
       const current = { ...score, userId, shipId, challenge: "ion-1" };
       await assertSucceeds(setDoc(target, current));
-      await assertSucceeds(setDoc(target, { ...current, seconds: 60 }));
-      await assertFails(setDoc(target, { ...current, seconds: 30 }));
+      await assertSucceeds(
+        setDoc(target, { ...current, seconds: 60, score: 90 }),
+      );
+      await assertFails(setDoc(target, { ...current, seconds: 30, score: 50 }));
     }
   }
 });

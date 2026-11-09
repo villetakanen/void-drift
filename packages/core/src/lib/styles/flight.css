@@ -89,8 +89,9 @@
   align-items: baseline;
   row-gap: var(--spacing-xs);
 }
-/* The timer stacks its label over a value that grows with the run. */
-.deck-instruments > .timer {
+/* The timer and score stack their label over a value that grows with the run. */
+.deck-instruments > .timer,
+.deck-instruments > .score {
   width: auto;
   grid-template-columns: auto;
   justify-items: end;

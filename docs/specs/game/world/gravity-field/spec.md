@@ -135,7 +135,7 @@ in play, receive no thrust input in `updateShip` at all; their thrust comes from
 ### Rules version
 
 Score documents carry the rules version `CHALLENGE` (`packages/mode-a/src/schemas/highscore.ts`,
-currently `ion-1`), which also prefixes score document IDs. Changing the values or
+currently `ion-storm`), which also prefixes score document IDs. Changing the values or
 rules in this spec changes trajectories for the same inputs, so scores from
 before and after such a change are never compared.
 
