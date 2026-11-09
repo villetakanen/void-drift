@@ -13,6 +13,8 @@ export const FlightSettingsSchema = z
       AssembledIonSettingsSchema.parse({}),
     ),
     arrival: z.boolean().default(false),
+    /** Whether the mode's derelict encounter runs; benches and studies turn it off. */
+    encounters: z.boolean().default(true),
     mode: FlightModeSchema.optional(),
     /** @deprecated Use mode. Retained for legacy flight settings. */
     testFlight: z.boolean().optional(),

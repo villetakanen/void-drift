@@ -35,7 +35,12 @@ import {
   PARTS,
   starterLoadout,
 } from "./schemas/loadout";
-import { type DerelictsResult, DerelictsResultSchema } from "./schemas/salvage";
+import {
+  type DerelictsResult,
+  DerelictsResultSchema,
+  ENCOUNTER,
+  SURVIVAL_ENCOUNTER,
+} from "./schemas/salvage";
 import type { ShipProfileId } from "./schemas/ship-profile";
 import { GRAVITY_TUNING } from "./tuning";
 
@@ -173,11 +178,17 @@ export class Simulation {
     this.state.sunType = "G";
     if (this.settings.loadout)
       this.state.resources.power = buildStats(this.settings.loadout).capacity;
-    if (this.settings.mode === "derelicts" && this.settings.loadout)
+    // Survival and Derelicts mode each run the encounter with their own rules.
+    if (
+      this.settings.loadout &&
+      this.settings.encounters &&
+      this.settings.mode !== "practice"
+    )
       this.salvage = new SalvageSystem(
         this.settings.loadout,
         this.settings.seed,
         this.settings.ion,
+        this.settings.mode === "derelicts" ? ENCOUNTER : SURVIVAL_ENCOUNTER,
       );
   }
   get engineFeedback() {

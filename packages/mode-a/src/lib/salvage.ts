@@ -38,6 +38,7 @@ import type { SalvagePhysicalState } from "./schemas/salvage";
 import {
   type DestructionCause,
   ENCOUNTER,
+  type EncounterConfig,
   ION_CANNON,
   ionCannonDamage,
   POINT_DEFENCE,
@@ -100,6 +101,12 @@ export function contactTime(
   const t = (-b - Math.sqrt(d)) / (2 * a);
   return t >= 0 && t <= horizon + 1e-9 ? t : Infinity;
 }
+/** Spin of a wreck that carries none of its own, radians per second. */
+const WRECK_SPIN = ENCOUNTER.wreckSpin.rate;
+/** Signed radians per second: a wreck's own spin, a shard's fixed one. */
+function spinOf(body: Pick<SalvageBody, "kind" | "spin">) {
+  return body.kind === "wreck" ? (body.spin ?? WRECK_SPIN) : 0.8;
+}
 function angleDifference(a: number, b: number) {
   return Math.atan2(Math.sin(a - b), Math.cos(a - b));
 }
@@ -129,7 +136,7 @@ export class SalvageSystem {
   shots: RailShot[] = [];
   events: WeaponEvent[] = [];
   time = 0;
-  nextPass = ENCOUNTER.firstPass;
+  nextPass: number;
   passes = 0;
   destroyed = 0;
   playerKills = 0;
@@ -152,7 +159,9 @@ export class SalvageSystem {
     loadout: Loadout,
     seed: number,
     ion: AssembledIonSettings = ASSEMBLED_ION_DEFAULTS,
+    private readonly encounter: EncounterConfig = ENCOUNTER,
   ) {
+    this.nextPass = encounter.firstPass;
     this.ionAcquisitionWidth =
       CHASSIS[loadout.chassis].width * BUILD_FLIGHT_SCALE;
     this.randomState = seed >>> 0;
@@ -261,27 +270,44 @@ export class SalvageSystem {
     return this.trajectoryState / 4294967296;
   }
   private spawn() {
+    const { encounter } = this;
     // Consume the complete trajectory even when the group budget is full.
     const angle = this.trajectoryRandom() * Math.PI * 2;
-    const heading =
-      angle +
-      Math.PI +
-      (this.trajectoryRandom() * 2 - 1) * ENCOUNTER.headingSpread;
+    let offset: number;
+    if (encounter.entryAngle) {
+      const side = this.trajectoryRandom() < 0.5 ? -1 : 1;
+      offset =
+        side *
+        (encounter.entryAngle.min +
+          this.trajectoryRandom() *
+            (encounter.entryAngle.max - encounter.entryAngle.min));
+    } else
+      offset =
+        (this.trajectoryRandom() * 2 - 1) * (encounter.headingSpread ?? 0);
+    const heading = angle + Math.PI + offset;
     const speed =
-      ENCOUNTER.speedMin +
-      this.trajectoryRandom() * (ENCOUNTER.speedMax - ENCOUNTER.speedMin);
-    if (this.groups >= ENCOUNTER.groups) return;
+      encounter.speedMin +
+      this.trajectoryRandom() * (encounter.speedMax - encounter.speedMin);
+    const spin =
+      encounter.wreckSpin.direction === "random" &&
+      this.trajectoryRandom() < 0.5
+        ? -encounter.wreckSpin.rate
+        : encounter.wreckSpin.rate;
+    if (this.groups >= encounter.groups) return;
     this.passes++;
-    this.bodies.push(
-      this.body(
-        "wreck",
-        this.passes,
-        ENCOUNTER.centerX + Math.cos(angle) * ENCOUNTER.radius,
-        ENCOUNTER.centerY + Math.sin(angle) * ENCOUNTER.radius,
-        Math.cos(heading) * speed,
-        Math.sin(heading) * speed,
-      ),
+    const wreck = this.body(
+      "wreck",
+      this.passes,
+      encounter.centerX + Math.cos(angle) * encounter.radius,
+      encounter.centerY + Math.sin(angle) * encounter.radius,
+      Math.cos(heading) * speed,
+      Math.sin(heading) * speed,
     );
+    wreck.spin = spin;
+    // The art's narrow tip is local up (-y), a quarter turn behind the +x axis.
+    if (encounter.orientation === "tip-first")
+      wreck.rotation = heading + Math.PI / 2;
+    this.bodies.push(wreck);
   }
   private cast(
     body: SalvageBody,
@@ -343,7 +369,7 @@ export class SalvageSystem {
         { x: vx, y: vy },
         radius,
         horizon,
-        previous ? (body.kind === "wreck" ? 0.3 : 0.8) * angularScale : 0,
+        previous ? spinOf(body) * angularScale : 0,
       )?.time ?? Infinity
     );
   }
@@ -1037,8 +1063,9 @@ export class SalvageSystem {
     while (this.time + 1e-9 >= this.nextPass) {
       this.spawn();
       this.nextPass +=
-        ENCOUNTER.intervalMin +
-        this.scheduleRandom() * (ENCOUNTER.intervalMax - ENCOUNTER.intervalMin);
+        this.encounter.intervalMin +
+        this.scheduleRandom() *
+          (this.encounter.intervalMax - this.encounter.intervalMin);
     }
     const hazards = [star, ...planets];
     const existingBodies = new Set(this.bodies);
@@ -1104,8 +1131,7 @@ export class SalvageSystem {
       body.x += body.vx * dt;
       body.y += body.vy * dt;
       if (body.life !== undefined) body.life -= dt;
-      if (body.kind !== "cell")
-        body.rotation += dt * (body.kind === "wreck" ? 0.3 : 0.8);
+      if (body.kind !== "cell") body.rotation += dt * spinOf(body);
       if (body.kind === "fragment") {
         // A shard stays in the system: it reappears opposite, velocity and
         // heading kept, as the ship does. The previous pose continues the
@@ -1243,8 +1269,7 @@ export class SalvageSystem {
         hit.x = hit.previousX + hit.vx * first;
         hit.y = hit.previousY + hit.vy * first;
         hit.rotation =
-          (hit.previousRotation ?? end.rotation) +
-          first * (hit.kind === "wreck" ? 0.3 : 0.8);
+          (hit.previousRotation ?? end.rotation) + first * spinOf(hit);
         this.damage(hit, WEAPONS.rail.damage, this.time - dt + first);
         if (hit.hull > 0) Object.assign(hit, end);
       }
@@ -1325,7 +1350,7 @@ export class SalvageSystem {
             },
             ship.radius,
             1,
-            0.3 * dt,
+            spinOf(body) * dt,
           );
           if (hit)
             this.emit(
@@ -1339,7 +1364,7 @@ export class SalvageSystem {
           body.y = body.previousY + (body.y - body.previousY) * contact;
           body.rotation =
             (body.previousRotation ?? body.rotation) +
-            dt * contact * (body.kind === "wreck" ? 0.3 : 0.8);
+            dt * contact * spinOf(body);
         }
         this.destroy(
           body,
@@ -1355,8 +1380,7 @@ export class SalvageSystem {
       body.x = body.previousX + body.vx * time;
       body.y = body.previousY + body.vy * time;
       body.rotation =
-        (body.previousRotation ?? body.rotation) +
-        time * (body.kind === "wreck" ? 0.3 : 0.8);
+        (body.previousRotation ?? body.rotation) + time * spinOf(body);
       this.destroy(body, cause);
     }
     this.bodies = this.bodies.filter((body) => body.hull > 0);

@@ -29,6 +29,11 @@ persistent records, leaderboard competition or progression rewards.
 
 ## Flight and encounters
 
+This spec owns Derelicts mode's arrival rules below and the wreck, piece, energy
+cell, weapon, system-edge and gravity rules shared with
+[Survival](../survival/spec.md), which has its own arrival rules (rate, speed,
+entry angle, orientation, spin and group limit).
+
 - Normal energy consumption, charging, damage and survival ending conditions
   apply, as owned by [Survival](../survival/spec.md). There is no practice immunity:
   star contact, depleted hull and depleted power can end the run.
@@ -53,6 +58,7 @@ persistent records, leaderboard competition or progression rewards.
   speed is independently uniform from 100 to 500 u/s in system coordinates.
   Paths are seeded and never rerolled around hazards or the ship; gravity
   bends them, so star or planet contact remains possible.
+- A wreck enters with a random orientation and turns at 0.3 rad/s one way.
 - Wrecks expire after 30 gameplay seconds unless destroyed or leaving at the
   system edge (see System edge). Ignoring gravity, a diameter crossing at the
   slowest speed takes 24 seconds.
@@ -67,7 +73,8 @@ persistent records, leaderboard competition or progression rewards.
   Legacy replay `sendDerelict` commands are accepted but have no gameplay effect.
 
 These values are initial tuning, not accepted difficulty balance. The validated
-encounter configuration in `packages/mode-a/src/lib/schemas/salvage.ts` owns them.
+encounter configuration `ENCOUNTER` in `packages/mode-a/src/lib/schemas/salvage.ts`
+owns them; Survival's `SURVIVAL_ENCOUNTER` lives beside it.
 
 ## Ending and return
 

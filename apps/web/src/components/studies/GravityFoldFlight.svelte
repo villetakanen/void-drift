@@ -52,7 +52,11 @@ onMount(() => {
   };
   let sim: Simulation;
   reset = () => {
-    sim = new Simulation({ ...stockSettings("fighter"), loadout });
+    sim = new Simulation({
+      ...stockSettings("fighter"),
+      loadout,
+      encounters: false,
+    });
     const p = sim.planets[0];
     // Reproducible powered pass: outside → inside → outside in three seconds.
     sim.ship.pos.set(p.pos.x - 350, p.pos.y - 140);

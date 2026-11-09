@@ -239,9 +239,9 @@ The designer-approved 0.4.0 scope, recorded in the archived
 sets free fitting in fixed mounts, desktop mouse and keyboard acceptance, and
 initially unranked custom survival. Mobile Hangar layout is deferred; existing
 landscape flight controls remain supported. Weapons are active in
-[Derelicts](../derelicts/spec.md), and remain static
-in custom survival. Buying parts, survival combat, mount authoring and flight tuning
-are separate work.
+[Derelicts](../derelicts/spec.md) and in custom survival under its
+[arrival rules](../survival/spec.md). Buying parts, mount authoring and flight
+tuning are separate work.
 
 This spec owns the player assembly workflow and its handoff to flight. Shared ship
 physics, balance and artwork can evolve independently. Their exact definitions
@@ -313,10 +313,12 @@ prior work; it is not a competing current specification.
    [Practice](../test-flight/spec.md) uses a fixed star-and-planet system, keeps
    health and energy full, retains normal physics, and has no encounters or failure.
    Pause/Resume/Abort preserves the setup; no Reset is offered. Survival retains
-   normal end conditions and is explicitly unranked, with submission excluded.
+   normal end conditions, meets derelicts under its own
+   [arrival rules](../survival/spec.md) and is explicitly unranked, with
+   submission excluded.
    The Derelicts action launches survival combat with automatic weapons, passing
    wrecks, physical debris and energy pickups. Its score appears at game over,
-   without saving or leaderboard submission. Weapon details say “Derelicts only”;
+   without saving or leaderboard submission. Weapon details carry no mode qualifier;
    the flight-action copy distinguishes safe practice, Derelicts and custom survival.
 
 Constraints 1–2, 4 and 6 carry the original brief and charter; later fitting and
@@ -528,7 +530,7 @@ It shows **12–48 damage/s**, **3 shots/s**, **200-unit reach** and **0.2p/shot
 0.6p/s is the continuous-fire equivalent, with zero idle drain. Its mass is 9.
 Existing outfits remain compatible. Other chassis' starter fittings do not include it; the starter Wasp fits it.
 
-Automatic fire operates in Derelicts encounters. Test flight retains its existing
+Automatic fire operates in Derelicts and survival encounters. Test flight retains its existing
 full-resource, encounter-free behavior. The equipment Lab and accepted study also
 provide a deterministic production encounter for inspection. See the
 [cannon contract](../light-ion-cannon/spec.md) for triggering, damage and power.
@@ -545,7 +547,7 @@ Its mass is 10. Preview and Plan draw it along its mount direction; flight draws
 it at its simulated angle under normal mount layering, so Scout hides it.
 Existing outfits remain compatible. Other chassis' starter fittings do not include it; the starter Wasp fits it.
 
-Automatic fire operates in Derelicts encounters. Test flight retains its existing
+Automatic fire operates in Derelicts and survival encounters. Test flight retains its existing
 full-resource, encounter-free behavior. The equipment Lab and accepted study also
 provide a deterministic production encounter for inspection. See the
 [turret contract](../ion-point-defence/spec.md) for targeting, turning, damage and

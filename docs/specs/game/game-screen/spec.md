@@ -59,8 +59,7 @@ never the run.
   and the logo. The bottom gutter holds the mode label and the mode's status
   lines: `G CLASS / SHARED CHALLENGE` for the stock run, `GOD MODE` for
   Practice, `UNRANKED` for any other run with parts the stock run does not
-  sanction, `WEAPONS AUTO` with its 10% energy floor in Derelicts, and engine
-  feedback. No chrome covers the active area.
+  sanction, and engine feedback. No chrome covers the active area.
 - Every flight mode fills the browser viewport with no header, footer, page
   navigation or page scrolling; the deck is the only
   chrome. Play works within ordinary browser chrome, with browser fullscreen

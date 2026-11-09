@@ -36,6 +36,8 @@ export const SalvagePhysicalStateSchema = z.object({
   releasedMask: z.number().int().min(0).max(255).optional(),
   shardIndex: z.number().int().min(0).max(7).optional(),
   previousRotation: z.number().optional(),
+  /** A wreck's signed spin in radians per second; absent means the shared default. */
+  spin: z.number().optional(),
   suppressShipContact: z.boolean().optional(),
 });
 export type SalvagePhysicalState = z.infer<typeof SalvagePhysicalStateSchema>;
@@ -191,6 +193,11 @@ export const WEAPONS = WeaponConfigSchema.parse({
     threatHorizon: 3,
   },
 });
+/** A wreck's spin: a rate in radians per second, one way or a side drawn per wreck. */
+const WreckSpinSchema = z.object({
+  rate: z.number().nonnegative(),
+  direction: z.enum(["fixed", "random"]),
+});
 export const EncounterConfigSchema = z
   .object({
     firstPass: z.number().nonnegative(),
@@ -202,12 +209,35 @@ export const EncounterConfigSchema = z
     radius: z.number().positive(),
     speedMin: z.number().positive(),
     speedMax: z.number().positive(),
+    /** Entry heading within this many radians either side of the inward radial. */
     headingSpread: z
       .number()
       .positive()
-      .lt(Math.PI / 2),
+      .lt(Math.PI / 2)
+      .optional(),
+    /** Entry heading between these radians off the inward radial, either side. */
+    entryAngle: z
+      .object({
+        min: z.number().nonnegative(),
+        max: z
+          .number()
+          .positive()
+          .lt(Math.PI / 2),
+      })
+      .refine((band) => band.max >= band.min)
+      .optional(),
+    /** A wreck enters turned at random, or narrow tip first along its velocity. */
+    orientation: z.enum(["random", "tip-first"]),
+    wreckSpin: WreckSpinSchema,
   })
-  .refine((c) => c.intervalMax >= c.intervalMin && c.speedMax >= c.speedMin);
+  .refine(
+    (c) =>
+      c.intervalMax >= c.intervalMin &&
+      c.speedMax >= c.speedMin &&
+      (c.headingSpread === undefined) !== (c.entryAngle === undefined),
+  );
+export type EncounterConfig = z.infer<typeof EncounterConfigSchema>;
+/** Derelicts mode: more and faster derelicts, for development and fun. */
 export const ENCOUNTER = EncounterConfigSchema.parse({
   firstPass: 3,
   intervalMin: 6,
@@ -219,6 +249,23 @@ export const ENCOUNTER = EncounterConfigSchema.parse({
   speedMin: 100,
   speedMax: 500,
   headingSpread: Math.PI / 3,
+  orientation: "random",
+  wreckSpin: { rate: 0.3, direction: "fixed" },
+});
+/** Survival's own encounter: fewer, slower derelicts entering tip first. */
+export const SURVIVAL_ENCOUNTER = EncounterConfigSchema.parse({
+  firstPass: 3,
+  intervalMin: 5,
+  intervalMax: 10,
+  groups: 8,
+  centerX: 960,
+  centerY: 540,
+  radius: 1200,
+  speedMin: 50,
+  speedMax: 150,
+  entryAngle: { min: (40 * Math.PI) / 180, max: (50 * Math.PI) / 180 },
+  orientation: "tip-first",
+  wreckSpin: { rate: (1 * Math.PI) / 180, direction: "random" },
 });
 export const SalvageConfigSchema = z.object({
   wreck: z.object({

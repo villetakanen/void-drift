@@ -570,10 +570,8 @@ onMount(() => {
         </div>
         <div class="deck-info" data-deck>
           <small class="mode-label">{modeLabel}</small>
-          {#if mode === "derelicts"}
-            <small role="status"
-              >{salvageFeedback || "WEAPONS AUTO · 10% ENERGY FLOOR"}</small
-            >
+          {#if mode === "derelicts" && salvageFeedback}
+            <small role="status">{salvageFeedback}</small>
           {/if}
           {#if activeLoadout && engineFeedback}
             <small class="engine-feedback">{engineFeedback}</small>

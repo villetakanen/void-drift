@@ -259,8 +259,8 @@ function choose(id: ShipProfileId) {
         bind:value={
           () => SHIP_IDENTITY[chosen].shortName,
           (name) => {
-	const id = shipIds.find((id) => SHIP_IDENTITY[id].shortName === name);
-	if (id) choose(id);
+  const id = shipIds.find((id) => SHIP_IDENTITY[id].shortName === name);
+  if (id) choose(id);
 }
         }
       />
@@ -517,7 +517,7 @@ function choose(id: ShipProfileId) {
                         : part.id === "ion-point-defence"
                           ? "8–24 damage/s · 3 shots/s · 100 units · 0.1p/shot"
                           : part.id === "rail" || part.id === "laser"
-                            ? `${part.id === "rail" ? "Fixed direction · automatic" : "Rotating point defence"} · ${WEAPONS[part.id].energy} energy/shot · Derelicts only`
+                            ? `${part.id === "rail" ? "Fixed direction · automatic" : "Rotating point defence"} · ${WEAPONS[part.id].energy} energy/shot`
                             : "Static fitting · no energy draw"}</small
               >
               {#if part.description}

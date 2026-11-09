@@ -16,7 +16,11 @@ import "@void-drift/core/styles/buttons.css";
 import RingSlider from "../inputs/RingSlider.svelte";
 
 const loadout = defaultLoadout("wasp");
-let sim = new Simulation({ ...gameSettings("wasp"), loadout });
+let sim = new Simulation({
+  ...gameSettings("wasp"),
+  loadout,
+  encounters: false,
+});
 let canvas: HTMLCanvasElement;
 let ready = $state(false);
 let distance = $state(180),
@@ -31,7 +35,7 @@ let power = $state(50),
   status = $state("PLAYING");
 const capacity = buildStats(loadout).capacity;
 function reset() {
-  sim = new Simulation({ ...gameSettings("wasp"), loadout });
+  sim = new Simulation({ ...gameSettings("wasp"), loadout, encounters: false });
   sim.planets.length = 0;
   sim.ship.pos.set(
     sim.star.pos.x + (Number.isFinite(distance) ? distance : 180),

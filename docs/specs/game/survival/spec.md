@@ -993,3 +993,36 @@ The revealed world holds still for three seconds: 3, 2, 1, then GO releases play
 Resources and scoring time do not advance during the count. Hidden pages and pause
 hold the count; held controls apply at release. Reduced motion retains the count
 without ignition flicker. Flight Lab and builder test flight keep their existing start.
+
+## Derelict arrivals — 2026-11-09
+
+Survival runs the salvage encounter with its own arrival rules; the
+[derelicts spec](../derelicts/spec.md) keeps the wreck, piece, energy cell,
+weapon, system-edge and gravity rules that both modes share. Applies to a run
+with a fitted ship (the stock Wasp included); [practice](../test-flight/spec.md)
+has no encounters.
+
+- The first derelict arrives at 3 gameplay seconds; each later gap is
+  independently uniform from 5 to 10 seconds.
+- Entry is uniform around the system boundary at an initial speed uniform
+  from 50 to 150 u/s.
+- A derelict enters 40–50° off the inward radial direction, to either side.
+- It enters narrow point first: its forward tip faces its direction of travel
+  at entry. The tip is the artwork's upper end, the end that sheds the first piece.
+- It rotates at 1°/s, left or right, chosen per derelict.
+- At most eight encounter groups coexist; a scheduled arrival while every group
+  is occupied is skipped, as in the derelicts spec.
+- Side, angle, speed and spin come from the seeded trajectory stream, so a run is
+  deterministic and no arrival depends on the player's position or motion.
+- `SURVIVAL_ENCOUNTER` in `packages/mode-a/src/lib/schemas/salvage.ts` owns these
+  values; Derelicts mode keeps `ENCOUNTER`.
+
+### Acceptance criteria
+
+- [x] Over a seeded run the first arrival is at 3 s and every later gap lies in 5–10 s.
+- [x] Entry speed lies in 50–150 u/s and the heading 40–50° off the inward radial, on both sides.
+- [x] At entry the forward tip points along the velocity.
+- [x] Spin is 1°/s in magnitude, with both signs over a seeded run.
+- [x] A scheduled arrival is skipped while eight groups are occupied.
+- [x] Moving the player changes no arrival; the same seed gives the same arrivals.
+- [x] Starting survival from PRESS START meets the first derelict at 3 s of flight.

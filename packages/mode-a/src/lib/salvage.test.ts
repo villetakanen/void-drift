@@ -1001,6 +1001,10 @@ describe("Derelicts weapons and salvage", () => {
     const survival = new Simulation({ ...settings, mode: "survival" });
     survival.start();
     survival.replay(replay);
-    expect(survival.salvage).toBeUndefined();
+    // Survival runs the encounter too, on its own schedule: one arrival so far.
+    expect(survival.salvage?.passes).toBe(1);
+    expect(survival.salvage?.nextPass).toBeGreaterThan(
+      (survival.salvage?.time ?? 0) + 1,
+    );
   });
 });
