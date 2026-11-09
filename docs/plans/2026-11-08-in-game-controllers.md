@@ -2,7 +2,7 @@
 
 Plan from the accepted
 [in-game controllers study](../../apps/web/src/pages/lab/studies/in-game-controllers.astro),
-agreed in conversation on 8 November 2026. Status: S1–S5 done; S6 open.
+agreed in conversation on 8 November 2026. Status: S1–S6 done.
 
 ## Decisions (2026-11-08)
 
