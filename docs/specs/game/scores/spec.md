@@ -35,18 +35,18 @@ for game design and is not shown to players.
 
 - **What a saved score holds.** Exactly these, and nothing else:
 
-  | Field           | Holds                                                    |
-  | --------------- | -------------------------------------------------------- |
-  | `initials`      | Three letters, A to Z, typed by the player               |
-  | `score`         | The run's Survival score, a whole number with no ceiling |
-  | `seconds`       | The time survived, in seconds with milliseconds          |
-  | `deathCause`    | How the run ended                                        |
-  | `shipId`        | The ship flown                                           |
-  | `fitting`       | The parts fitted to that ship, as a list of part ids     |
-  | `stabilizers`   | Whether the ship flew with stabilizers on                |
-  | `linkedEngines` | Whether the ship flew with linked engines on             |
-  | `challenge`     | The board the score belongs to                           |
-  | `userId`        | The anonymous player who saved it                        |
+  | Field           | Holds                                                       |
+  | --------------- | ----------------------------------------------------------- |
+  | `initials`      | Three letters, A to Z, typed by the player                  |
+  | `score`         | The run's Survival score, a whole number with no ceiling    |
+  | `seconds`       | The time survived, in seconds with milliseconds, no ceiling |
+  | `deathCause`    | How the run ended                                           |
+  | `shipId`        | The ship flown                                              |
+  | `fitting`       | The parts fitted to that ship, as a list of part ids        |
+  | `stabilizers`   | Whether the ship flew with stabilizers on                   |
+  | `linkedEngines` | Whether the ship flew with linked engines on                |
+  | `challenge`     | The board the score belongs to                              |
+  | `userId`        | The anonymous player who saved it                           |
 
 - **Any ship.** `shipId` can hold any ship in the game. The store keeps no list
   of ships of its own.
@@ -62,7 +62,8 @@ for game design and is not shown to players.
   casual and reported by players. The player can re-sort the listed rows by
   time. The fitting and the two ship choices are not shown.
 - **A challenge is a board.** Scores of different challenges never share a
-  board.
+  board. Only the current challenge accepts new or raised scores. Scores of
+  earlier challenges stay in the database and are not written again.
 - **Never in the way.** Without Firebase, or when saving fails, the game plays
   on and says why scores are unavailable.
 
@@ -76,7 +77,8 @@ for game design and is not shown to players.
   another player, malformed, under a mismatched document id, for an unknown
   challenge, lower than the stored score, carrying an extra field, or a
   deletion, and reject unbounded or unauthenticated list reads.
-- [ ] C3: `seconds` is saved with milliseconds, in the schema and the rules.
+- [ ] C3: `seconds` is saved with milliseconds and has no ceiling, in the
+  schema and the rules.
 - [ ] C4: `score` has no ceiling in the schema or the rules.
 - [ ] C5: `shipId` accepts any ship in the game, and the rules hold no list of
   ships.
@@ -91,6 +93,8 @@ for game design and is not shown to players.
 - [x] C10: Two anonymous players can each save a run and see both on the board.
 - [x] C11: With Firebase unconfigured, the board explains that shared scores are
   unavailable and offers Retry.
+- [ ] C12: Firestore rules accept writes for the current challenge only;
+  rows of earlier challenges remain stored.
 
 ### Regression guardrails
 
@@ -98,8 +102,8 @@ for game design and is not shown to players.
   in one and not the other.
 - Rules bound the data and its owner; they are never treated as proof of an
   honest run.
-- A new `CHALLENGE` value has a matching rule in `firestore.rules` and starts a
-  separate board.
+- A new `CHALLENGE` value has a matching rule in `firestore.rules`, starts a
+  separate board, and closes the previous board to writes.
 - A stored row that fails the current schema is skipped when the board loads,
   not shown and not an error.
 - No score feature blocks starting, playing or finishing a run.
@@ -137,6 +141,7 @@ Feature: Scores
       | missing a field or of the wrong type  |
       | stored under a mismatched document id |
       | for an unknown challenge              |
+      | for an earlier challenge              |
       | lower than the stored score           |
       | carrying an extra field               |
       | a deletion                            |
