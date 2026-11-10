@@ -20,15 +20,13 @@ export interface FlightSceneConfig {
 }
 
 /**
- * How the scene is looked at (02.2). `follow` centres the ship at that zoom in
- * place of the game camera; `magnify` enlarges the finished frame's pixels
- * around the ship.
+ * How the scene is looked at (02.2): the game camera, or the ship held at the
+ * centre at a fixed zoom.
  */
 export interface FlightSceneView {
   follow: number | null;
-  magnify: number;
 }
-export const GAME_VIEW: FlightSceneView = { follow: null, magnify: 1 };
+export const GAME_VIEW: FlightSceneView = { follow: null };
 
 /**
  * Flight scene study, 02.1: a burn flown by the production simulation and drawn
@@ -44,7 +42,6 @@ export class FlightScene {
   private readonly camera = new Camera();
   private readonly fx = new FlightFx();
   private view = GAME_VIEW;
-  private copy?: CanvasRenderingContext2D;
 
   constructor(
     private readonly ctx: CanvasRenderingContext2D,
@@ -179,38 +176,6 @@ export class FlightScene {
     this.fx.draw(ctx, sim);
     if (sim.salvage) drawSalvageApertures(ctx, sim.salvage);
     this.fx.drawLfx(ctx, sim);
-    const centre = new DOMPoint(sim.ship.pos.x, sim.ship.pos.y).matrixTransform(
-      ctx.getTransform(),
-    );
     ctx.restore();
-    if (this.view.magnify > 1) this.enlarge(centre.x, centre.y);
-  }
-  /** The finished frame's own pixels, enlarged around a point without smoothing. */
-  private enlarge(x: number, y: number) {
-    const { ctx } = this;
-    if (!this.copy) {
-      const canvas = document.createElement("canvas");
-      canvas.width = 1920;
-      canvas.height = 1080;
-      this.copy = canvas.getContext("2d") ?? undefined;
-    }
-    if (!this.copy) return;
-    this.copy.drawImage(ctx.canvas, 0, 0);
-    const w = 1920 / this.view.magnify,
-      h = 1080 / this.view.magnify;
-    this.renderer.clear();
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(
-      this.copy.canvas,
-      x - w / 2,
-      y - h / 2,
-      w,
-      h,
-      0,
-      0,
-      1920,
-      1080,
-    );
-    ctx.imageSmoothingEnabled = true;
   }
 }

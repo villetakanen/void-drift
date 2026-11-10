@@ -15,17 +15,16 @@ import { studyStarterWasp } from "./starter-wasp-fixture";
 import "@void-drift/core/styles/buttons.css";
 
 // Flight scene study, 02.2: the 02.1 screen with the accepted time model (a
-// jump flies the burn again and paints the whole flight's light) and four ways
-// of looking at the scene, switched on the scene itself.
+// jump flies the burn again and paints the whole flight's light) and the three
+// accepted ways of looking at the scene, switched on the scene itself.
 let {
   label = "Flight scene: a burn in the game’s layers",
 }: { label?: string } = $props();
 
 const VIEWS: Record<string, FlightSceneView> = {
-  Game: { follow: null, magnify: 1 },
-  "Game 3×": { follow: null, magnify: 3 },
-  Follow: { follow: 1.6, magnify: 1 },
-  "Follow 4×": { follow: 4, magnify: 1 },
+  Game: { follow: null },
+  Follow: { follow: 1.6 },
+  "Follow 4×": { follow: 4 },
 };
 
 const SCREEN = { w: 1440, h: 900 };

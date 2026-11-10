@@ -218,30 +218,26 @@ const study = studies.find(
     </p>
   </section>
   <section aria-labelledby="camera">
-    <h2 id="camera">02.2 / What should the scene be looked at through?</h2>
+    <h2 id="camera">
+      02.2 / What should the scene be looked at through? — the game camera and
+      two follow views
+    </h2>
+    <p>
+      <strong>Settled, 10 November 2026.</strong>
+      The instrument has three views: Game, Follow and Follow 4×. An enlargement
+      of the game’s own pixels was compared and not kept.
+    </p>
     <p>
       The game camera frames the ship and the sun together and jumps between
       five zoom levels. That framing is part of what the player sees, but it
       leaves the ship about twenty pixels long for most of a burn, too small to
-      judge a plume or a ray by. A closer look can be had in two ways that are
-      not the same thing: enlarge the picture the game made, or move the camera
-      in and let the game draw a new, sharper picture that no player ever gets.
-    </p>
-    <p>
-      The switch in the scene’s top-left corner offers four answers. Compare
-      them at 1.67 s on B1, with the engines and the cannon lit, and through the
-      zoom jump near 2.5 s.
+      judge a plume or a ray by. The two follow views move the camera in and
+      hold the ship at the centre.
     </p>
     <ul>
       <li>
         <strong>Game.</strong>
         The game camera, as in 02.1: true framing, true zoom jumps, small ship.
-      </li>
-      <li>
-        <strong>Game 3×.</strong>
-        The same frame with its pixels enlarged three times around the ship.
-        Everything is exactly what the player gets, only bigger; the zoom jumps
-        remain.
       </li>
       <li>
         <strong>Follow.</strong>
@@ -252,17 +248,15 @@ const study = studies.find(
         <strong>Follow 4×.</strong>
         The ship at the centre at a zoom the game never reaches. Ship art and
         light are drawn at that scale, so edges and afterglow are finer than in
-        play.
+        play. What looks right here still has to be checked in Game.
       </li>
     </ul>
     <div class="bleed"><FlightScene022 client:visible /></div>
     <p>
-      The hypothesis is that one view cannot serve: framing and zoom jumps need
-      Game, and an effect needs an enlargement, where Game 3× is the honest one
-      and Follow 4× the flattering one. The light surface is tied to the camera,
-      so switching the view flies the burn again. Scene, ship, wrecks and time
-      model are those of 02.1. The switch sits on the scene only for this
-      comparison; where it belongs is a layout question.
+      The light surface is tied to the camera, so switching the view flies the
+      burn again. Scene, ship, wrecks and time model are those of 02.1. The
+      switch sits on the scene for this comparison; where it belongs is a layout
+      question, as is whether the two follow zooms stay fixed at 1.6 and 4.
     </p>
   </section>
   <section><h2>03 / To be developed after 02</h2></section>
