@@ -10,7 +10,7 @@ test("landing animation survives resize and hands off a fresh Wasp run", async (
   const deck = page.locator(".flight-page");
   await expect(deck).toHaveAttribute("data-landing-sun", /[OBAFGKM]/);
   const sun = await deck.getAttribute("data-landing-sun");
-  const canvas = page.locator(".flight-stage-layer > canvas");
+  const canvas = page.locator('.flight-stage-layer canvas[data-layer="world"]');
   const before = await canvas.evaluate((node: HTMLCanvasElement) =>
     node.toDataURL(),
   );
@@ -65,7 +65,7 @@ test("reduced motion keeps the demo static and retains the three-second count", 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.clock.install();
   await page.goto("/");
-  const canvas = page.locator(".flight-stage-layer > canvas");
+  const canvas = page.locator('.flight-stage-layer canvas[data-layer="world"]');
   await expect(page.locator(".flight-page")).toHaveAttribute(
     "data-landing-sun",
     /[OBAFGKM]/,
@@ -134,7 +134,10 @@ test("title content uses a centred 16:9 region with native controls", async ({
       expect(box.x + box.width).toBeLessThanOrEqual(slot.x + slot.width + 1);
       expect(box.y + box.height).toBeLessThanOrEqual(slot.y + slot.height + 1);
     }
-    for (const selector of [".flight-stage-layer > canvas", ".dialog-scrim"]) {
+    for (const selector of [
+      '.flight-stage-layer canvas[data-layer="world"]',
+      ".dialog-scrim",
+    ]) {
       const box = await page.locator(selector).boundingBox();
       if (!box) throw new Error(`${selector} missing`);
       expect(box.x).toBeCloseTo(0, 0);

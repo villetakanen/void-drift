@@ -1,288 +1,78 @@
-# Settings System Specification
+# Options
 
-**Status:** IMPLEMENTED  
-**Phase:** 5 (Survival Core)  
-**Related PBI:** PBI-018
+## Blueprint
 
----
+### Context
 
-## Overview
+Options is where the player sets how the game behaves for them on this device.
+A choice applies at once and is still there on the next visit. It holds one
+setting: Invert controls, which swaps which side's input fires which engine.
 
-The settings system provides persistent user preferences for Void Drift. Settings are stored locally in the browser and apply immediately without requiring a game restart.
+### Architecture and boundaries
 
----
+- **Contract.** `SettingsSchema` in
+  `packages/mode-a/src/lib/schemas/settings.ts` validates the settings and
+  gives their defaults. A new setting is added there before anything reads it.
+- **Store.** `apps/web/src/lib/stores/settings.ts` is the one store. It keeps
+  the settings in this browser and parses them through the schema on load.
+- **Page.** `apps/web/src/pages/settings.astro` mounts
+  `apps/web/src/components/Settings.svelte` at `/settings`.
+- **Neighbours.** [Controls](../controls/spec.md) applies Invert controls in
+  flight. The [active ship](../active-ship/spec.md) owns which ship is flown,
+  and [Experimental mode](../experimental/spec.md) owns its own setting; neither
+  is kept here.
 
-## Design Goals
+### Rules
 
-1. **Simplicity** - Minimal API surface, easy to add new settings
-2. **Persistence** - Settings survive browser sessions (localStorage)
-3. **Reactivity** - UI and game logic react to setting changes automatically
-4. **Validation** - Runtime validation prevents corrupt state
-5. **Framework-agnostic storage** - Core logic independent of Svelte
+- **Applies at once.** Changing a setting takes effect without a save action
+  and without restarting a run.
+- **Kept on this device.** Settings are kept in this browser across visits.
+- **Safe fallback.** A stored value that is missing or fails the schema reads
+  as the default. Without browser storage the game runs on the defaults.
+- **Reachable and leavable.** The title screen leads to Options, and Options
+  leads back to the title screen.
+- **Input.** Every setting can be changed by pointer, keyboard and touch.
 
----
+## Contract
 
-## Architecture
+### Definition of Done
 
-### Why nanostores
+- [ ] O1: `/settings` shows Options with Invert controls, and returns to the
+  title screen.
+- [ ] O2: Changing Invert controls swaps the engine inputs in the next flight
+  input, with no save action and no restart.
+- [ ] O3: The choice survives a page reload.
+- [ ] O4: A missing or invalid stored value reads as the default, and
+  unavailable storage leaves the game playable.
+- [ ] O5: `SettingsSchema` holds no ship choice.
 
-We use [nanostores](https://github.com/nanostores/nanostores) with the `@nanostores/persistent` plugin for settings storage.
+### Regression guardrails
 
-**Rationale:**
-- Framework-agnostic atoms that work with Svelte, React, or vanilla JS
-- Built-in localStorage persistence with `persistentAtom`
-- Automatic JSON serialization/deserialization
-- Reactive subscriptions without boilerplate
-- Tiny footprint (~1KB)
-- Clean separation: storage logic lives outside Svelte components
+- One schema and one store hold the settings; nothing reads browser storage
+  for them directly.
+- A bad stored value never blocks starting, playing or finishing a run.
+- Settings never change a run's replay: the same inputs reach the simulation
+  whatever the preference.
 
-**Alternative considered:** Plain localStorage + Svelte `$state`
-- Rejected because it couples storage logic to Svelte components
-- Harder to share state between components
-- Manual subscription management
+### Scenarios
 
----
+```gherkin
+Feature: Options
 
-## Data Model
+  Scenario: Invert controls applies at once
+    Given I open Options
+    When I change Invert controls
+    And start a flight
+    Then my left and right inputs fire the swapped engines
 
-### Settings Schema
+  Scenario: The choice is kept
+    Given I changed Invert controls
+    When I reload the game
+    Then Invert controls is as I left it
 
-```typescript
-// packages/mode-a/src/lib/schemas/settings.ts
-import { z } from "zod";
-
-export const SettingsSchema = z.object({
-  invertControls: z.boolean(),
-});
-
-export type Settings = z.infer<typeof SettingsSchema>;
-
-export const DEFAULT_SETTINGS: Settings = {
-  invertControls: false,
-};
+  Scenario: A corrupted setting falls back
+    Given the stored settings are not valid
+    When I load the game
+    Then the settings are the defaults
+    And I can play
 ```
-
-### Storage Key
-
-```
-void-drift:settings
-```
-
-### Stored Format
-
-```json
-{
-  "invertControls": false
-}
-```
-
----
-
-## Store Implementation
-
-### Core Store
-
-```typescript
-// apps/web/src/lib/stores/settings.ts
-import { persistentAtom } from "@nanostores/persistent";
-import {
-  SettingsSchema,
-  DEFAULT_SETTINGS,
-  type Settings,
-} from "@void-drift/mode-a";
-
-export const settings = persistentAtom<Settings>(
-  "void-drift:settings",
-  DEFAULT_SETTINGS,
-  {
-    encode: JSON.stringify,
-    decode: (str) => {
-      try {
-        const parsed = JSON.parse(str);
-        return SettingsSchema.parse(parsed);
-      } catch {
-        return DEFAULT_SETTINGS;
-      }
-    },
-  },
-);
-```
-
-### Usage in Svelte
-
-```svelte
-<script lang="ts">
-  import { useStore } from '@nanostores/svelte';
-  import { settings } from '../lib/stores/settings';
-
-  const $settings = useStore(settings);
-</script>
-
-<input
-  type="checkbox"
-  checked={$settings.invertControls}
-  onchange={() => settings.set({ ...$settings, invertControls: !$settings.invertControls })}
->
-```
-
-### Usage in Engine (non-reactive read)
-
-```typescript
-import { settings } from "../lib/stores/settings";
-
-// Get current value (snapshot)
-const currentSettings = settings.get();
-if (currentSettings.invertControls) {
-  // swap controls
-}
-```
-
----
-
-## Settings Reference
-
-### v0.1.0 Settings
-
-| Key              | Type    | Default | Description                     |
-| ---------------- | ------- | ------- | ------------------------------- |
-| `invertControls` | boolean | `false` | Swap left/right engine controls |
-
-### Future Settings (Post-v0.1.0)
-
-These are **not** in scope for v0.1.0 but inform the extensible design:
-
-| Key                | Type    | Default | Description               |
-| ------------------ | ------- | ------- | ------------------------- |
-| `soundEnabled`     | boolean | `true`  | Master sound toggle       |
-| `musicVolume`      | number  | `0.7`   | Music volume (0-1)        |
-| `sfxVolume`        | number  | `0.8`   | SFX volume (0-1)          |
-| `showFPS`          | boolean | `false` | Debug FPS counter         |
-| `touchSensitivity` | number  | `1.0`   | Touch control sensitivity |
-
----
-
-## Control Inversion Logic
-
-When `invertControls` is `true`:
-
-| Input                   | Normal Behavior    | Inverted Behavior             |
-| ----------------------- | ------------------ | ----------------------------- |
-| Left key / Left touch   | Left engine fires  | Right engine fires            |
-| Right key / Right touch | Right engine fires | Left engine fires             |
-| Both keys / Both touch  | Both engines fire  | Both engines fire (unchanged) |
-
-**Implementation in Input handler:**
-
-```typescript
-export function applyInputToShip(
-  input: InputState,
-  ship: Ship,
-  invertControls: boolean,
-): void {
-  const left = invertControls ? input.rightThruster : input.leftThruster;
-  const right = invertControls ? input.leftThruster : input.rightThruster;
-
-  // Apply thrust based on swapped values
-  if (left) ship.fireLeftThruster();
-  if (right) ship.fireRightThruster();
-}
-```
-
----
-
-## Dependencies
-
-### npm packages
-
-```bash
-# In apps/web
-pnpm add nanostores @nanostores/persistent @nanostores/svelte
-```
-
-| Package                  | Version | Purpose                         |
-| ------------------------ | ------- | ------------------------------- |
-| `nanostores`             | ^0.11   | Core atom store                 |
-| `@nanostores/persistent` | ^0.10   | localStorage persistence        |
-| `@nanostores/svelte`     | ^0.5    | Svelte integration (`useStore`) |
-
----
-
-## File Structure
-
-```
-packages/mode-a/src/lib/
-└── schemas/
-    └── settings.ts          # Zod schema + defaults (mode-a specific)
-
-apps/web/src/
-├── lib/
-│   └── stores/
-│       └── settings.ts      # Persistent nanostore
-├── components/
-│   └── Settings.svelte      # Settings UI
-└── pages/
-    └── settings.astro       # Settings route
-```
-
----
-
-## Error Handling
-
-### Corrupt localStorage
-
-If localStorage contains invalid JSON or data that fails Zod validation:
-
-1. Log warning to console
-2. Return `DEFAULT_SETTINGS`
-3. Next `settings.set()` will overwrite corrupt data
-
-### localStorage unavailable
-
-If `localStorage` is undefined (SSR, private browsing restrictions):
-
-1. Store operates in memory-only mode
-2. Settings reset on page reload
-3. No error thrown (graceful degradation)
-
----
-
-## Testing Checklist
-
-### Unit Tests
-
-- [ ] `SettingsSchema.parse()` accepts valid settings
-- [ ] `SettingsSchema.parse()` rejects invalid settings
-- [ ] Default settings pass validation
-
-### Integration Tests
-
-- [ ] Settings persist across page reloads
-- [ ] Corrupt localStorage falls back to defaults
-- [ ] Control inversion applies immediately in-game
-- [ ] Settings UI reflects current store state
-
-### Manual Tests
-
-- [ ] Toggle works with mouse click
-- [ ] Toggle works with keyboard (Space/Enter)
-- [ ] Settings page is accessible via `/settings`
-- [ ] Return navigation opens the title screen
-- [ ] Mobile: toggle is tappable (44px target)
-
----
-
-## Out of Scope (v0.1.0)
-
-- Cloud sync (Firebase settings storage)
-- Settings import/export
-- Settings reset button
-- Gamepad-specific settings
-- Per-profile settings
-
----
-
-## References
-
-- [nanostores documentation](https://github.com/nanostores/nanostores)
-- [@nanostores/persistent](https://github.com/nanostores/persistent)
-- [Survival Core Spec](../survival/spec.md)

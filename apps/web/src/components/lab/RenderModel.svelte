@@ -1,6 +1,7 @@
 <script lang="ts">
-import { FLIGHT_PASSES, STEP } from "@void-drift/mode-a";
+import { FLIGHT_PASSES, type FlightLayerId, STEP } from "@void-drift/mode-a";
 import { onMount } from "svelte";
+import FlightLayers from "../FlightLayers.svelte";
 import { RenderModelScene } from "./render-model-scene";
 
 // Page elements that stack over the canvas, lowest first. Values are read
@@ -27,7 +28,7 @@ const ABOVE = [
 ];
 
 let { label = "Render model" }: { label?: string } = $props();
-let canvas: HTMLCanvasElement;
+let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
 let running = $state(true);
 let hidden = $state<string[]>([]);
 let solo = $state<string | null>(null);
@@ -55,9 +56,11 @@ onMount(() => {
   layers = Object.fromEntries(
     ABOVE.map(({ token }) => [token, css.getPropertyValue(token).trim()]),
   );
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return;
-  const scene = new RenderModelScene(ctx);
+  const world = canvases.world?.getContext("2d"),
+    fx = canvases.fx?.getContext("2d"),
+    lfx = canvases.lfx?.getContext("2d");
+  if (!world || !fx || !lfx) return;
+  const scene = new RenderModelScene({ world, fx, lfx });
   step = () => scene.step();
   restart = () => scene.restart();
   let last = performance.now(),
@@ -110,12 +113,12 @@ onMount(() => {
 >
   <div class="bench">
     <div class="frame">
-      <canvas
-        bind:this={canvas}
-        width="1920"
-        height="1080"
-        aria-label="The running flight frame, drawn from the selected passes"
-      ></canvas>
+      <div class="stage">
+        <FlightLayers
+          bind:canvases
+          label="The running flight frame, drawn from the selected passes"
+        />
+      </div>
       <div class="transport">
         <button
           type="button"
@@ -185,8 +188,8 @@ onMount(() => {
               Solo
             </button>
             <p>
+              <span class="tag">{pass.layer}</span>
               <span class="tag">{pass.space}</span>
-              <span class="tag">{pass.composite}</span>
               {pass.draws}
               <small>{pass.source}</small>
             </p>
@@ -271,10 +274,7 @@ onMount(() => {
   gap: var(--spacing-lg);
   align-items: start;
 }
-canvas {
-  display: block;
-  width: 100%;
-  height: auto;
+.stage {
   border: 1px solid var(--color-border);
 }
 .frame {

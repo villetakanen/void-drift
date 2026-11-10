@@ -21,8 +21,8 @@ game's home and Hangar is an alternative launch point.
   Astro continues to host the pages; this handoff does not require page navigation
   or an application-wide SPA conversion.
 - [Hangar](../hangar/spec.md) owns ship selection, fitting and training/test flight.
-- [Top Scores](../high-scores/spec.md), [Settings](../options/spec.md) and
-  [Dialogs](../dialogs/spec.md) own their respective behavior.
+- The [game contract](../spec.md) owns Top Scores; [Options](../options/spec.md)
+  and [Dialogs](../dialogs/spec.md) own their respective behavior.
 - Each run retains its launch source: title screen or Hangar. Abort and game-over
   return actions use that source, independently of the selected ship.
 - `packages/mode-a/src/lib/landing-system.ts` owns the cosmetic star system. It

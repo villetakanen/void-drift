@@ -37,11 +37,11 @@ async function expectStageFills(page: Page, width: number, height: number) {
   const scale = box.height / GAME_HEIGHT;
   expect(geometry.logicalWidth * scale).toBeCloseTo(geometry.width, 1);
   expect(geometry.logicalHeight * scale).toBeCloseTo(geometry.height, 1);
-  await expect(stage.locator("canvas")).toHaveAttribute(
+  await expect(stage.locator('canvas[data-layer="world"]')).toHaveAttribute(
     "width",
     String(Math.round((GAME_HEIGHT * width) / height)),
   );
-  await expect(stage.locator("canvas")).toHaveAttribute(
+  await expect(stage.locator('canvas[data-layer="world"]')).toHaveAttribute(
     "height",
     String(GAME_HEIGHT),
   );

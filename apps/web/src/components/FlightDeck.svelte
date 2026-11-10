@@ -263,17 +263,13 @@ function padPress(pointerId: number, pad: ThrustPad | null) {
   input?.setPointer(pointerId, pad);
 }
 onMount(() => {
-  const { world: canvas, fx, lfx } = canvases;
-  const context = canvas?.getContext("2d");
-  const fxContext = fx?.getContext("2d");
-  const lfxContext = lfx?.getContext("2d");
-  if (!canvas || !context || !fxContext || !lfxContext)
-    throw new Error("Flight layers require Canvas 2D");
-  const layers: FlightLayerContexts = {
-    world: context,
-    fx: fxContext,
-    lfx: lfxContext,
-  };
+  const world = canvases.world?.getContext("2d"),
+    fx = canvases.fx?.getContext("2d"),
+    lfx = canvases.lfx?.getContext("2d");
+  if (!world || !fx || !lfx) throw new Error("Flight layers require Canvas 2D");
+  const layers: FlightLayerContexts = { world, fx, lfx };
+  const context = layers.world,
+    canvas = context.canvas;
   renderer = new Renderer(canvas);
   resizeFlightLayers(layers, renderer, 1920, 1080);
   camera = new Camera();

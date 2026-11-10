@@ -94,10 +94,10 @@ place. Specs are ASDLC.io-style living specs; follow the `spec` skill.
 
 ### Incoherent or stale details noticed, not yet fixed
 
-- [Ship select](../specs/game/ship-select/spec.md): 0.4.0, "PLANNED", a
+- Ship select (spec deleted 10 November 2026): 0.4.0, "PLANNED", a
   title-screen ship selector persisted in settings. It contradicts the active
   ship and title screen specs.
-- [High scores](../specs/game/high-scores/spec.md): marked historical; the game
+- High scores (spec deleted 10 November 2026): marked historical; the game
   spec owns ranking and the leaderboard now. Unchecked items describe an old
   design.
 - [Survival](../specs/game/survival/spec.md): dated sections ("Interstellar

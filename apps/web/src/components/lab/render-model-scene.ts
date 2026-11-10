@@ -3,6 +3,8 @@ import {
   drawFlightFrame,
   type FlightFrameOptions,
   FlightFx,
+  type FlightLayerContexts,
+  resizeFlightLayers,
   SALVAGE,
   Simulation,
   STEP,
@@ -30,9 +32,9 @@ export class RenderModelScene {
   private readonly camera = new Camera();
   private readonly fx = new FlightFx();
 
-  constructor(private readonly ctx: CanvasRenderingContext2D) {
-    this.renderer = new Renderer(ctx.canvas);
-    this.renderer.resize(1920, 1080);
+  constructor(private readonly layers: FlightLayerContexts) {
+    this.renderer = new Renderer(layers.world.canvas);
+    resizeFlightLayers(layers, this.renderer, 1920, 1080);
     this.restart();
   }
   get ticks() {
@@ -110,7 +112,7 @@ export class RenderModelScene {
     if (onVoid) this.renderer.clear();
     drawFlightFrame(
       {
-        ctx: this.ctx,
+        layers: this.layers,
         renderer: this.renderer,
         camera: this.camera,
         sim: this.sim,
