@@ -11,6 +11,7 @@ export * from "./lib/fiddler";
 export * from "./lib/fiddler-form";
 export * from "./lib/fighter";
 export * from "./lib/firebase";
+export * from "./lib/flight-frame";
 export * from "./lib/fx-bench";
 export * from "./lib/game-loop";
 export * from "./lib/gravity-collection";

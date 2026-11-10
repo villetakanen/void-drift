@@ -161,6 +161,14 @@ export const labPages = z.array(labPageSchema).parse([
     source: "production",
   },
   {
+    href: "/lab/render-model",
+    title: "Render model",
+    purpose:
+      "The flight frame taken apart: passes, draw order, spaces and layers.",
+    group: "tools",
+    source: "production",
+  },
+  {
     href: "/lab/studies",
     title: "Design studies",
     purpose: "Every study with its phase and outcome.",

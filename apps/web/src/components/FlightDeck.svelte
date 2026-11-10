@@ -1,7 +1,6 @@
 <script lang="ts">
 import {
   Camera,
-  drawSunFields,
   Input,
   type InputAction,
   litPads,
@@ -10,13 +9,10 @@ import {
   type ThrustPad,
 } from "@void-drift/core";
 import {
-  BUILD_FLIGHT_SCALE,
   buildStats,
   CHALLENGE,
   type DerelictsResult,
-  drawBuild,
-  drawSalvage,
-  drawSalvageApertures,
+  drawFlightFrame,
   FlightFx,
   type FlightMode,
   type FlightTickInput,
@@ -360,8 +356,8 @@ onMount(() => {
       }
     } else accumulator = 0;
     sync();
-    renderer.clear();
     if (landing && context) {
+      renderer.clear();
       if (!document.hidden && !reducedMotion) landing.step(dt);
       // The title backdrop fills the viewport independently of the play stage.
       renderer.drawBackground();
@@ -374,49 +370,20 @@ onMount(() => {
         landingFrame.cardRight,
       );
       context.restore();
-    } else {
-      renderer.beginCamera(camera);
-      renderer.drawBackground(camera.getViewRect());
-      renderer.drawArenaBoundary(1200);
-      renderer.drawStar(simulation.star, simulation.ticks * STEP * 1000);
-      if (context)
-        drawSunFields(context, simulation.star, {
-          collecting: simulation.solarCollectionRate > 0,
-          damaging: simulation.solarDamageRate > 0,
-        });
-      for (const planet of simulation.planets) renderer.drawPlanet(planet);
-      if (context && simulation.salvage)
-        drawSalvage(context, simulation.salvage);
-      if (simulation.settings.loadout && context)
-        drawBuild(
-          context,
-          simulation.settings.loadout,
-          simulation.ship.pos.x,
-          simulation.ship.pos.y,
-          simulation.ship.rotation,
-          BUILD_FLIGHT_SCALE,
-          "",
-          undefined,
-          undefined,
-          simulation.salvage?.angles,
-        );
-      else if (chosen !== "fiddler")
-        renderer.drawShip(
-          simulation.ship,
-          simulation.settings.profile.tint,
-          chosen,
-        );
+    } else if (context) {
       const countCentre = camera.screenToWorld(
         canvas.width / 2,
         canvas.height / 2,
       );
-      if (context)
-        flightFx.draw(
-          context,
-          simulation,
-          true,
-          true,
-          Math.max(0, countTime) + simulation.ticks * STEP,
+      drawFlightFrame({
+        ctx: context,
+        renderer,
+        camera,
+        sim: simulation,
+        fx: flightFx,
+        stockShip: chosen === "fiddler" ? undefined : chosen,
+        lightTime: Math.max(0, countTime) + simulation.ticks * STEP,
+        lightOverlay:
           countTime < 0
             ? undefined
             : (light, pass) =>
@@ -429,11 +396,7 @@ onMount(() => {
                   camera.zoom,
                   reducedMotion,
                 ),
-        );
-      if (context && simulation.salvage)
-        drawSalvageApertures(context, simulation.salvage);
-      if (context) flightFx.drawLfx(context, simulation);
-      renderer.endCamera();
+      });
     }
     frame = requestAnimationFrame(draw);
   }

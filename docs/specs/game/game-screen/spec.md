@@ -15,6 +15,8 @@ never the run.
   availability to the simulation loop, input and renderer.
 - `apps/web/src/lib/game-screen.ts` defines the stage, gutter and active-area
   geometry.
+- `packages/mode-a/src/lib/flight-frame.ts` defines the in-flight frame's
+  canvas passes and their draw order; the screen draws the frame through it.
 - `apps/web/src/pages/index.astro`, `apps/web/src/layouts/Layout.astro` and
   `packages/core/src/lib/styles/flight.css` provide viewport containment.
 - This contract owns screen geometry, layer placement, browser interaction
