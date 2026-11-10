@@ -149,10 +149,10 @@ describe("LHI Fiddler flight trial", () => {
       0, 0, 0, 0,
     ]);
     expect(turn.output.stabilizers.map((n) => n > 0)).toEqual([
-      false,
-      true,
       true,
       false,
+      false,
+      true,
     ]);
     expect(turn.motion.velocity).toBeGreaterThan(0);
     expect(burn(right).motion.velocity).toBeCloseTo(-turn.motion.velocity);

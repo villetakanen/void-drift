@@ -314,11 +314,13 @@ export function applyBuildEngines(
   if (burn.side) {
     if (lhi) {
       if (burn.side === -1) {
-        output.stabilizers[1] = strength * power;
-        output.stabilizers[2] = strength * power;
-      } else {
+        // Visual outlets are ordered front(-y,+y), rear(-y,+y). Show exhaust
+        // whose moment opposes the positive turn that this command produces.
         output.stabilizers[0] = strength * power;
         output.stabilizers[3] = strength * power;
+      } else {
+        output.stabilizers[1] = strength * power;
+        output.stabilizers[2] = strength * power;
       }
     } else {
       output.stabilizers[burn.side === -1 ? 0 : 1] = strength * power;

@@ -56,7 +56,42 @@ test("flight scene replays through the shared layers at the Lab viewport", async
         getComputedStyle(canvas).mixBlendMode,
       ]),
     ),
-  ).toEqual(FLIGHT_LAYERS.map((layer) => [layer.id, 1920, 1080, layer.blend]));
+  ).toEqual(
+    FLIGHT_LAYERS.map((layer) => [
+      layer.id,
+      1920,
+      1080,
+      layer.id === "fx"
+        ? "screen"
+        : layer.id === "lfx"
+          ? "hard-light"
+          : layer.blend,
+    ]),
+  );
+  const fxFilter = scene.locator('canvas[data-layer="fx"]');
+  const lfxFilter = scene.locator('canvas[data-layer="lfx"]');
+  await expect(fxFilter).toHaveCSS("filter", /url\(/);
+  await expect(lfxFilter).toHaveCSS("filter", "none");
+  expect(
+    await scene
+      .locator("svg.filter-defs feMorphology")
+      .evaluateAll((items) => items.map((item) => item.getAttribute("radius"))),
+  ).toEqual(["4"]);
+  await page.setViewportSize({ width: 1280, height: 1000 });
+  await expect
+    .poll(() =>
+      scene.locator(".screen").evaluate((screen) => {
+        const matrix = new DOMMatrixReadOnly(
+          getComputedStyle(screen).transform,
+        );
+        const radius = Number(
+          screen.querySelector("feMorphology")?.getAttribute("radius"),
+        );
+        return radius * matrix.a;
+      }),
+    )
+    .toBeCloseTo(4, 4);
+  await page.setViewportSize({ width: 1440, height: 1000 });
   await expect(scene).toHaveAttribute("data-burn", "course");
   const time = scene.getByRole("slider", { name: "Time" });
   const seek = (seconds: number) =>
@@ -83,6 +118,14 @@ test("flight scene replays through the shared layers at the Lab viewport", async
   await expect(scene).toHaveAttribute("data-drawn-tick", "215");
   expect((await layerFingerprint(worldLayer)).coloredPixels).toBeGreaterThan(0);
   expect((await layerFingerprint(fxLayer)).visiblePixels).toBeGreaterThan(0);
+
+  // The normal Game view also carries the trial at both requested instants.
+  expect((await layerFingerprint(fxLayer)).visiblePixels).toBeGreaterThan(0);
+  await seek(100 / 60);
+  await expect(scene).toHaveAttribute("data-drawn-tick", "100");
+  expect((await layerFingerprint(fxLayer)).visiblePixels).toBeGreaterThan(0);
+  await seek(215 / 60);
+  await expect(scene).toHaveAttribute("data-drawn-tick", "215");
 
   // The study camera is a view over the same layers and preserves Follow 4×.
   await scene.getByRole("radio", { name: "Follow 4×" }).focus();

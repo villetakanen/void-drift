@@ -400,6 +400,13 @@ mixed Lab Weapons workload includes simultaneous twin cannons beside collectors,
 engines, station, missile and fire effects. Performance acceptance remains governed
 by the whole-scene budget above and requires separate sustained measurements.
 
+## Paired stabilizer exhaust
+
+Wasp and Fiddler use their shared production mount geometry for stabilizer
+plumes. The active visual outlet pair emits exhaust with angular moment opposite
+the commanded or braking torque. The output mapping is presentation data; it
+does not change flight impulses or angular integration.
+
 ## Ion Point Defence LFX
 
 The [turret](../../game/ion-point-defence/spec.md) shares the cannon's presentation

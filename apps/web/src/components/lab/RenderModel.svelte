@@ -1,9 +1,9 @@
 <script lang="ts">
-import { type FxPass, FxSurface, paintBeam } from "@void-drift/core";
+import { type FxPass, FxSurface } from "@void-drift/core";
 import {
-  defaultLoadout,
+  BUILD_FLIGHT_SCALE,
+  buildCollisionRadius,
   drawBuild,
-  drawDerelictShard,
   drawIonBeamMark,
   FLIGHT_LAYERS,
   type FlightLayerId,
@@ -11,10 +11,16 @@ import {
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import FlightLayers from "../FlightLayers.svelte";
+import {
+  advanceRenderModelHeading,
+  createRenderModelFixture,
+  isIonBeamPulseActive,
+  RENDER_MODEL_CENTER,
+} from "./render-model-fixture";
 
 const WIDTH = 1920;
 const HEIGHT = 1080;
-const SAMPLE_SCALE = 7;
+const SAMPLE_SCALE = 7.5;
 let instanceId = $props.id();
 const FILTER_ID = `render-model-filter-${instanceId}`;
 type FilterKind =
@@ -58,7 +64,8 @@ const COLORS = {
   fx: ["#52eaff", "#a875ff"],
   lfx: ["#b8ff52", "#ff8d3a"],
 } satisfies Record<FlightLayerId, readonly [string, string]>;
-const artworkBuild = defaultLoadout("fighter");
+const fixture = createRenderModelFixture();
+const artworkBuild = fixture.build;
 
 let { label = "Render model" }: { label?: string } = $props();
 let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
@@ -85,7 +92,9 @@ let filters = $derived<Record<FlightLayerId, string>>({
 let running = $state(false);
 let hasSample = $state(false);
 let ready = $state(false);
-let presentationTime = 0;
+let presentationTime = $state(0);
+let heading = $state(0);
+let ionPulse = $derived(isIonBeamPulseActive(presentationTime));
 let surface: FxSurface | undefined;
 let frame = 0;
 
@@ -166,13 +175,24 @@ function stampFx(ctx: CanvasRenderingContext2D, pass: FxPass) {
     ctx.restore();
     return;
   }
-  if (!pass.budget.take()) return;
   ctx.save();
   zoomSample(ctx);
-  ctx.translate(1040, 540);
   ctx.globalCompositeOperation = "lighter";
   ctx.globalAlpha = pass.opacity;
-  paintBeam(ctx, 3, "ion-light");
+  fixture.stamp(ctx, pass);
+  if (ionPulse) {
+    const sweep = buildCollisionRadius(artworkBuild) + 8;
+    for (const y of [-sweep, 0, sweep]) {
+      const x = RENDER_MODEL_CENTER.x - ION_CANNON.range / 2;
+      const py = RENDER_MODEL_CENTER.y + y;
+      if (!pass.visible(x, py, ION_CANNON.range) || !pass.budget.take(true))
+        continue;
+      ctx.save();
+      ctx.translate(x, py);
+      drawIonBeamMark(ctx, ION_CANNON.range, ION_CANNON.range, true);
+      ctx.restore();
+    }
+  }
   ctx.restore();
 }
 function zoomSample(ctx: CanvasRenderingContext2D) {
@@ -184,16 +204,35 @@ function drawArtworkWorld(world: CanvasRenderingContext2D) {
   world.save();
   world.globalCompositeOperation = "source-over";
   zoomSample(world);
-  drawBuild(world, artworkBuild, 946.7, 540, 0, 1);
-  drawDerelictShard(world, 975, 540, -0.2, 2);
+  drawBuild(
+    world,
+    artworkBuild,
+    RENDER_MODEL_CENTER.x,
+    RENDER_MODEL_CENTER.y,
+    heading,
+    BUILD_FLIGHT_SCALE,
+  );
   world.restore();
 }
 function drawArtworkLfx(lfx: CanvasRenderingContext2D) {
   lfx.save();
   zoomSample(lfx);
-  lfx.translate(850, 544);
-  drawIonBeamMark(lfx, ION_CANNON.range, ION_CANNON.range, false);
+  lfx.translate(RENDER_MODEL_CENTER.x, RENDER_MODEL_CENTER.y);
+  const sweep = buildCollisionRadius(artworkBuild) + 8;
+  if (!ionPulse) {
+    lfx.restore();
+    return;
+  }
+  for (const y of [-sweep, 0, sweep]) {
+    lfx.save();
+    lfx.translate(-ION_CANNON.range / 2, y);
+    drawIonBeamMark(lfx, ION_CANNON.range, ION_CANNON.range, false);
+    lfx.restore();
+  }
   lfx.restore();
+}
+function updatePlumes(dt: number) {
+  fixture.advance(dt, heading);
 }
 function drawArtwork(
   world: CanvasRenderingContext2D,
@@ -219,17 +258,20 @@ function paint() {
   const world = context("world");
   const lfx = context("lfx");
   if (!world || !lfx || !surface) return;
+  presentationTime += 1 / 60;
+  if (sample === "artwork") updatePlumes(1 / 60);
   clearLayer(world);
   clearLayer(lfx);
   if (sample === "artwork") drawArtwork(world, lfx);
   else drawCircles(world, lfx);
   hasSample = true;
-  presentationTime += 1 / 60;
   paintFx();
 }
 function chooseSample(next: "artwork" | "circles") {
   if (sample === next) return;
   sample = next;
+  heading = 0;
+  presentationTime = 0;
   clear();
   paint();
 }
@@ -248,11 +290,32 @@ function setRunning(next: boolean) {
   running = next;
   if (next) {
     let last: number | undefined;
+    let carry = 0;
+    const step = 1 / 60;
     const tick = (now: number) => {
       if (!running) return;
       if (last !== undefined) {
-        presentationTime += Math.min(0.1, Math.max(0, (now - last) / 1000));
-        const fx = context("fx");
+        carry += Math.min(0.1, Math.max(0, (now - last) / 1000));
+        while (carry >= step) {
+          carry -= step;
+          presentationTime += step;
+          const fx = context("fx");
+          if (sample === "artwork") {
+            heading = advanceRenderModelHeading(heading, step);
+            updatePlumes(step);
+            if (fx) {
+              clearLayer(fx);
+              surface?.draw(
+                fx,
+                presentationTime,
+                hasSample ? stampFx : () => {},
+              );
+            }
+          } else if (fx) {
+            clearLayer(fx);
+            surface?.draw(fx, presentationTime, () => {});
+          }
+        }
         const world = context("world");
         const lfx = context("lfx");
         if (world) clearLayer(world);
@@ -267,10 +330,6 @@ function setRunning(next: boolean) {
           clearLayer(lfx);
           drawArtworkLfx(lfx);
         } else if (lfx) clearLayer(lfx);
-        if (fx) {
-          clearLayer(fx);
-          surface?.draw(fx, presentationTime, () => {});
-        }
       }
       last = now;
       frame = requestAnimationFrame(tick);
@@ -309,6 +368,8 @@ onMount(() => {
   aria-label={label}
   data-ready={ready}
   data-running={running}
+  data-heading={heading}
+  data-ion-pulse={ionPulse}
 >
   <header>
     <div>
@@ -341,13 +402,14 @@ onMount(() => {
         {blends}
         {filters}
         visibility={visible}
-        label="Production artwork across World, FX and LFX"
+        label="Rotating Wasp across World, FX and LFX"
       />
     </div>
 
     <div class="layers">
       <section class="layer sample-controls">
         <h2>Picture sample</h2>
+        <p>180°/s · 2 s per turn · three 3 Hz beams flash for 80 ms.</p>
         <label class="blend"
           >Sample
           <select
@@ -356,7 +418,7 @@ onMount(() => {
             onchange={(event) =>
               chooseSample(event.currentTarget.value as "artwork" | "circles")}
           >
-            <option value="artwork">Production artwork</option>
+            <option value="artwork">Rotating Wasp</option>
             <option value="circles">Colour circles</option>
           </select>
         </label>
@@ -441,10 +503,10 @@ onMount(() => {
               <legend>{layer.name} production artwork</legend>
               <span
                 >{layer.id === "world"
-                  ? "Fighter + shard"
+                  ? "Wasp"
                   : layer.id === "fx"
-                    ? "Engine plume"
-                    : "Ion cannon ray"}</span
+                    ? "Mounted engine + stabilizers"
+                    : "Three horizontal ion beams"}</span
               >
             {/if}
           </fieldset>

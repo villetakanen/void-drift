@@ -88,7 +88,7 @@ describe("LHI Wasp integration", () => {
     expect(stats.turnRate).toBeGreaterThan(0);
   });
 
-  it("fires rear engine only on LR and diagonal stabilizer pairs on L or R", () => {
+  it("fires rear engine only on LR and opposite-moment stabilizer exhaust on L or R", () => {
     const build = defaultLoadout("wasp");
     const ship = {
       pos: new Vec2(0, 0),
@@ -110,11 +110,45 @@ describe("LHI Wasp integration", () => {
       motion,
     );
     expect(leftOut.left).toBe(0);
-    expect(leftOut.stabilizers[0]).toBe(0);
-    expect(leftOut.stabilizers[1]).toBeGreaterThan(0);
-    expect(leftOut.stabilizers[2]).toBeGreaterThan(0);
-    expect(leftOut.stabilizers[3]).toBe(0);
+    expect(leftOut.stabilizers.map((value) => value > 0)).toEqual([
+      true,
+      false,
+      false,
+      true,
+    ]);
     expect(motion.velocity).toBeGreaterThan(0);
+
+    const rightMotion = { velocity: 0 };
+    const rightOut = applyBuildEngines(
+      ship,
+      build,
+      { leftThruster: false, rightThruster: true, fire: false },
+      1 / 60,
+      true,
+      {},
+      1,
+      rightMotion,
+    );
+    expect(rightOut.stabilizers.map((value) => value > 0)).toEqual([
+      false,
+      true,
+      true,
+      false,
+    ]);
+    expect(rightMotion.velocity).toBeLessThan(0);
+
+    const emitters = buildPlumeEmitters(build);
+    const exhaustMoment = (outputs: typeof leftOut) =>
+      outputs.stabilizers.reduce((sum, output, index) => {
+        const emitter = emitters[index + 1];
+        const angle = emitter.angle + Math.PI;
+        return (
+          sum +
+          output * (emitter.x * Math.sin(angle) - emitter.y * Math.cos(angle))
+        );
+      }, 0);
+    expect(exhaustMoment(leftOut)).toBeLessThan(0);
+    expect(exhaustMoment(rightOut)).toBeGreaterThan(0);
 
     const bothOut = applyBuildEngines(
       ship,

@@ -7,10 +7,16 @@ layers: what each holds, how painted light fades, and how the browser combines
 colours across layers. It provides a shared picture for discussing and testing
 the renderer's Hi-Fi Lo-Fi character.
 
-The workbench has two selectable pictures: production artwork and the original
-coloured circles. It runs no game simulation, flight program, encounters or ship
-controls. The artwork is static World art with production engine and ion-cannon
-paint marks arranged to overlap in the same area.
+The workbench has two selectable pictures: a rotating production Wasp and the
+original coloured circles. It runs no game simulation, flight program,
+encounters or ship controls. The Wasp stays at the pane centre and rotates at
+the assembled ion maximum turn rate (180 degrees/second, a two-second turn).
+Production mounted main and direction-matched stabilizer plumes continuously
+stamp FX history. Three production ion-beam marks point right in fixed screen
+space: one through the centreline and two just outside the Wasp's sweep above
+and below. They flash for the production 80 ms window on a 1/3-second cadence;
+their dispersed marks also stamp into FX history. This is a rendering fixture,
+not flight certification.
 
 ## Architecture
 
@@ -38,10 +44,12 @@ and up. `apps/web/src/components/lab/RenderModel.svelte` composes the workbench.
 
 - One large pane shows World, FX and LFX in production stack order.
 - The pane stays in view while scrolling the controls.
-- Artwork is the default sample: a production-built ship and derelict shard in
-  World, a production engine plume in FX, and the shared production ion ray
-  painter in LFX. The FX/LFX marks cross the ship and shard. Circles remains
-  selectable as the original colour comparison sample.
+- Rotating Wasp is the default sample: one production-built Wasp at flight
+  scale in World, production mounted engine and stabilizer plume stamps in FX,
+  and three production ion-beam marks in LFX. The beams stay horizontal and
+  point right while the ship turns, flashing on the production cadence. Their
+  dispersed marks also stamp into FX. Circles remains selectable as the original
+  colour comparison sample.
 - Changing sample clears all layer images and FX history and paints the chosen
   sample fresh. It retains blend, visibility, filter and paused/running settings.
 - Each layer has a visibility control and a blend selector: Normal, Add, Screen,
@@ -58,8 +66,10 @@ and up. `apps/web/src/components/lab/RenderModel.svelte` composes the workbench.
 - Paint adds one fresh set of FX stamps and shows the World and LFX sample marks.
   It works while paused as an explicit painting action; subsequent paused frames
   add nothing. Repeated Paint actions can demonstrate accumulation.
-- Run advances the presentation clock so FX fades. Pause freezes that clock and
-  the accumulated image. World and LFX remain visible while FX fades away.
+- Run advances the presentation clock, rotates the Wasp and stamps its current
+  plume pose into the persistent FX surface. Ion beams pulse into LFX and add
+  dispersed light during each flash. Pause freezes angle, pulse phase and
+  history. World redraws at the held pose; LFX remains in fixed screen space.
 - Clear empties all sample marks and FX history immediately, even while paused.
   The pane stays empty until Paint; visibility and blend selections are retained.
 - The page opens paused with a sample already painted, ready for blend comparison.
@@ -68,8 +78,8 @@ and up. `apps/web/src/components/lab/RenderModel.svelte` composes the workbench.
   Labels distinguish a layer's blend with the layers beneath it from FX decay.
 
 Controls are deliberately limited to the questions above. Colour pickers, zoom,
-resolution, moving plumes and Deck overlays remain outside this experiment. All layers remain at production resolution in this
-version. Pass lists, source-file inventories, timing tables and scripted flight
+resolution and Deck overlays remain outside this experiment. All layers remain
+at production resolution. Pass lists, source-file inventories, timing tables and scripted flight
 are not part of the workbench.
 
 ## Contract
@@ -93,9 +103,15 @@ are not part of the workbench.
 - [x] The page is usable at 1280px and wider, with labelled keyboard-accessible
   controls and concise explanations of the visible experiment.
 - [x] The artwork pane remains visible while scrolling filter controls.
-- [x] Existing play and the Flight scene study retain their production layer
-  defaults and rendering behaviour (`tests/browser/alpha.spec.ts` and
-  `tests/browser/flight-scene.spec.ts`).
+- [x] Rotating Wasp stays centred, completes a two-second full turn, emits the
+  production main and direction-matched stabilizer plumes into persistent FX,
+  and holds angle/history on Pause; three production beams remain fixed and
+  point right, flashing at 3 Hz for 80 ms in LFX with dispersed FX stamps.
+  Production LHI stabilizer outputs select the exhaust pair whose moment
+  opposes turn direction.
+- [x] Existing play retains its production layer defaults and rendering
+  behaviour (`tests/browser/alpha.spec.ts`); the Flight scene study uses its
+  separately scoped layer instrument.
 
 ### Regression guardrails
 
@@ -141,4 +157,13 @@ Scenario: Hide a fading layer
   And FX is shown again
   Then its image reflects the elapsed decay
   And hiding it has not paused or restarted its history
+
+Scenario: Rotate the Wasp fixture
+  Given the paused Wasp sample
+  When Run advances by one full turn
+  Then the hull returns to its starting angle at the same centre
+  And each mounted plume pose has been stamped into persistent FX history
+  And the three LFX beams remain fixed and point right
+  When Pause is selected
+  Then angle and FX history stop changing
 ```
