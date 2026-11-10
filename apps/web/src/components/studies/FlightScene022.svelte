@@ -1,5 +1,5 @@
 <script lang="ts">
-import { LoadoutSchema } from "@void-drift/mode-a";
+import { type FlightLayerContexts, LoadoutSchema } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import {
   type BurnId,
@@ -7,6 +7,7 @@ import {
   TICK_RATE,
   TOTAL_TICKS,
 } from "../../lib/instrument";
+import FlightLayers from "../FlightLayers.svelte";
 import RingSlider from "../inputs/RingSlider.svelte";
 import Toggle from "../inputs/Toggle.svelte";
 import BurnRow from "../lab/instrument/BurnRow.svelte";
@@ -41,27 +42,38 @@ let burn = $state<BurnId>("course");
 let tick = $state(3 * TICK_RATE);
 let playing = $state(false);
 let view = $state("Game");
+let rendered = $state(false);
+let drawnTick = $state(-1);
+let drawnView = $state("");
+let drawnBurn = $state("");
 let lost = $state<{ seconds: number; cause?: string | null } | null>(null);
 let hostW = $state(SCREEN.w);
 let hostH = $state(SCREEN.h);
 const scale = $derived(Math.min(hostW / SCREEN.w, hostH / SCREEN.h));
-let canvas: HTMLCanvasElement;
+let canvases = $state<
+  Partial<Record<"world" | "fx" | "lfx", HTMLCanvasElement>>
+>({});
 
 const build = studyStarterWasp();
 build.hull[0] = "light-ion-cannon";
 const loadout = LoadoutSchema.parse(build);
 
 onMount(() => {
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return;
+  const world = canvases.world?.getContext("2d");
+  const fx = canvases.fx?.getContext("2d");
+  const lfx = canvases.lfx?.getContext("2d");
+  if (!world || !fx || !lfx) return;
   // Two wrecks ahead of the start heading, so the cannon has something to fire at.
-  const scene = new FlightScene(ctx, {
-    loadout,
-    targets: [
-      { x: 460, y: 340 },
-      { x: 520, y: 120 },
-    ],
-  });
+  const scene = new FlightScene(
+    { world, fx, lfx } satisfies FlightLayerContexts,
+    {
+      loadout,
+      targets: [
+        { x: 460, y: 340 },
+        { x: 520, y: 120 },
+      ],
+    },
+  );
   let shown = { burn: "", tick: -1, view: "" };
   let previous = performance.now(),
     accumulator = 0,
@@ -78,6 +90,10 @@ onMount(() => {
     if (shown.burn !== burn || shown.tick !== tick || shown.view !== view) {
       if (shown.view !== view) scene.restart(burn, VIEWS[view]);
       scene.seek(burn, tick, Infinity);
+      rendered = true;
+      drawnTick = tick;
+      drawnView = view;
+      drawnBurn = burn;
       shown = { burn, tick, view };
       lost = scene.lost;
     }
@@ -90,6 +106,13 @@ onMount(() => {
 
 <figure
   class="host"
+  data-rendered={rendered}
+  data-drawn-tick={drawnTick}
+  data-drawn-view={drawnView}
+  data-drawn-burn={drawnBurn}
+  data-burn={burn}
+  data-playing={playing}
+  data-tick={tick}
   bind:clientWidth={hostW}
   bind:clientHeight={hostH}
   aria-label={label}
@@ -98,14 +121,14 @@ onMount(() => {
     class="screen"
     style={`width:${SCREEN.w}px;height:${SCREEN.h}px;transform:translate(-50%,-50%) scale(${scale})`}
   >
-    <div class="slot" style={`left:${PAD}px;top:${TOP}px`}>
-      <canvas
-        bind:this={canvas}
-        width="1920"
-        height="1080"
-        style={`width:${SCENE.w}px;height:${SCENE.h}px`}
-        aria-label="The game’s layers at the current time"
-      ></canvas>
+    <div
+      class="slot"
+      style={`left:${PAD}px;top:${TOP}px;width:${SCENE.w}px;height:${SCENE.h}px`}
+    >
+      <FlightLayers
+        bind:canvases
+        label="The game’s layers at the current time"
+      />
       <div class="view">
         <Toggle
           compact
@@ -186,9 +209,13 @@ onMount(() => {
   position: absolute;
   box-sizing: border-box;
 }
-canvas {
-  display: block;
-  background: var(--color-void);
+.slot :global(.flight-layers) {
+  width: 100%;
+  height: 100%;
+}
+.slot :global(canvas) {
+  width: 100%;
+  height: 100%;
 }
 .view {
   position: absolute;

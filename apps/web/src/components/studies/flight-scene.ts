@@ -1,11 +1,10 @@
-import { Camera, drawSunFields, Renderer } from "@void-drift/core";
+import { Camera, Renderer } from "@void-drift/core";
 import {
-  BUILD_FLIGHT_SCALE,
-  drawBuild,
-  drawSalvage,
-  drawSalvageApertures,
+  drawFlightFrame,
   FlightFx,
+  type FlightLayerContexts,
   type Loadout,
+  resizeFlightLayers,
   SALVAGE,
   Simulation,
   STEP,
@@ -28,12 +27,7 @@ export interface FlightSceneView {
 }
 export const GAME_VIEW: FlightSceneView = { follow: null };
 
-/**
- * Flight scene study, 02.1: a burn flown by the production simulation and drawn
- * in the game's order. An instant is only reachable by flying to it, so a jump
- * re-flies the burn from its start; `history` is how many of the last ticks
- * also paint their light.
- */
+/** A production simulation replay drawn through the same layers as play. */
 export class FlightScene {
   tick = 0;
   private sim!: Simulation;
@@ -44,11 +38,11 @@ export class FlightScene {
   private view = GAME_VIEW;
 
   constructor(
-    private readonly ctx: CanvasRenderingContext2D,
+    private readonly layers: FlightLayerContexts,
     private readonly config: FlightSceneConfig,
   ) {
-    this.renderer = new Renderer(ctx.canvas);
-    this.renderer.resize(1920, 1080);
+    this.renderer = new Renderer(layers.world.canvas);
+    resizeFlightLayers(layers, this.renderer, 1920, 1080);
     this.restart("course");
   }
   get lost() {
@@ -92,6 +86,11 @@ export class FlightScene {
     this.frameCamera(true);
   }
   private frameCamera(snap = false) {
+    if (this.view.follow !== null) {
+      this.camera.pos.set(this.sim.ship.pos.x, this.sim.ship.pos.y);
+      this.camera.zoom = this.view.follow;
+      return;
+    }
     const c = this.sim.settings.camera;
     this.camera.frame(
       this.sim.ship.pos.x,
@@ -117,7 +116,7 @@ export class FlightScene {
         fire: false,
       });
       this.frameCamera(wraps !== this.sim.wraps);
-      this.camera.update(STEP);
+      if (this.view.follow === null) this.camera.update(STEP);
       this.tick++;
       if (to - this.tick < history && this.tick < to) this.light();
     }
@@ -125,57 +124,26 @@ export class FlightScene {
   }
   /** One tick of light on the surface; what it composites is drawn over. */
   private light() {
-    this.begin();
-    this.fx.draw(this.ctx, this.sim);
-    this.ctx.restore();
-  }
-  /** Applies the view's world transform and returns the visible world rectangle. */
-  private begin() {
-    const { ctx, camera, sim } = this;
-    const zoom = this.view.follow;
-    ctx.save();
-    if (zoom === null) {
-      camera.applyTransform(ctx);
-      return camera.getViewRect();
-    }
-    ctx.translate(960, 540);
-    ctx.scale(zoom, zoom);
-    ctx.translate(-sim.ship.pos.x, -sim.ship.pos.y);
-    return {
-      x: sim.ship.pos.x - 960 / zoom,
-      y: sim.ship.pos.y - 540 / zoom,
-      width: 1920 / zoom,
-      height: 1080 / zoom,
-    };
-  }
-  /** FlightDeck's in-flight draw order, without the countdown overlay. */
-  draw() {
-    const { ctx, sim, renderer } = this;
-    renderer.clear();
-    renderer.drawBackground(this.begin());
-    renderer.drawArenaBoundary(1200);
-    renderer.drawStar(sim.star, sim.ticks * STEP * 1000);
-    drawSunFields(ctx, sim.star, {
-      collecting: sim.solarCollectionRate > 0,
-      damaging: sim.solarDamageRate > 0,
-    });
-    for (const planet of sim.planets) renderer.drawPlanet(planet);
-    if (sim.salvage) drawSalvage(ctx, sim.salvage);
-    drawBuild(
-      ctx,
-      this.config.loadout,
-      sim.ship.pos.x,
-      sim.ship.pos.y,
-      sim.ship.rotation,
-      BUILD_FLIGHT_SCALE,
-      "",
-      undefined,
-      undefined,
-      sim.salvage?.angles,
+    drawFlightFrame(
+      {
+        layers: this.layers,
+        renderer: this.renderer,
+        camera: this.camera,
+        sim: this.sim,
+        fx: this.fx,
+      },
+      { include: (pass) => pass.layer === "fx" },
     );
-    this.fx.draw(ctx, sim);
-    if (sim.salvage) drawSalvageApertures(ctx, sim.salvage);
-    this.fx.drawLfx(ctx, sim);
-    ctx.restore();
+  }
+  /** Uses the production layer stack and ordered frame passes. */
+  draw() {
+    drawFlightFrame({
+      layers: this.layers,
+      renderer: this.renderer,
+      camera: this.camera,
+      sim: this.sim,
+      fx: this.fx,
+      stockShip: undefined,
+    });
   }
 }

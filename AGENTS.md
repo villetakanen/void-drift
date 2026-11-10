@@ -39,6 +39,7 @@ Voice-led development of a procedural space survival game and its software facto
 ## Working method
 
 - Read only the context needed for the task; follow the latest agreed project decisions.
+- Look up and search files with the Read and Grep tools; use shell pipelines or scripts only when those tools can't do the job.
 - Translate conversational requests into a small, explicit acceptance contract.
 - Clarify consequential ambiguity; resolve routine implementation details autonomously.
 - Implement bounded changes, verify them, and present playable or inspectable evidence.

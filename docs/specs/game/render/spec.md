@@ -23,6 +23,9 @@ and the one people point at when they discuss how the game renders.
   one canvas per layer, composited by CSS.
 - `apps/web/src/components/FlightDeck.svelte` runs the frame loop, hosts the
   layers and draws the in-flight frame only through `drawFlightFrame`.
+- `apps/web/src/components/studies/flight-scene.ts` uses the same layer stack
+  and ordered frame passes for the Flight scene instrument; its replay paints
+  historical light through the shared FX pass.
 - This contract owns frame time, the spaces, the layer model and the order of
   layers and passes.
 - [Camera](../camera/spec.md) owns the world-to-stage transform.
@@ -42,7 +45,9 @@ The renderer treats the browser as the machine a demo is written for. Demo
 coders made hardware do what it was not built for, such as drawing with sound
 circuits. Here the browser's page machinery is that hardware: blend modes,
 filters, image scaling, transforms and opacity, all built for laying out
-documents, are used to make arcade light.
+documents, are used to make cool, expressive graphics with inexpensive methods.
+This is the Hi-Fi Lo-Fi intent: use the artefacts of cheap rendering as part of
+the picture's character.
 
 - **Natives first.** An effect is looked for first in a browser native used
   sideways. Drawn code is the last resort, for what no native can do.
@@ -104,8 +109,10 @@ The in-flight stack, bottom to top:
 | LFX   | Live light, fresh every frame          | add    | immediate  |
 | Deck  | Page elements: instruments, pads, rows | normal | none       |
 
-The blend, resolution and filter of a layer are tuning. They are set in
-`FLIGHT_LAYERS`, judged by looking, and changing one changes no rule here.
+Blend, resolution and filter are tuning. They are set in `FLIGHT_LAYERS`, judged
+by looking, and changing one changes no rule here. For this iteration, FX remains
+at full stage resolution. Other layer resolutions may be explored without
+changing pass behavior.
 
 Three rules follow from the stack:
 
@@ -130,8 +137,10 @@ run resets. It meets three rules:
 - **Breaks:** a discontinuity in the simulation (arena wrap, reset, a source
   switching on) is a break in the mark. Nothing is drawn across it.
 
-These rules hold across the whole zoom range, from four times magnification
-out to the whole system in view, and at the layer's own resolution.
+These rules apply at the zooms used by play and explored in the Lab. Zoom limits
+remain exploratory: Follow 4× is a Lab hypothesis and reproduction view, not a
+guaranteed maximum, and the whole-system view is not a guaranteed minimum. FX
+remains full resolution while those limits are explored.
 
 ### The in-flight frame
 

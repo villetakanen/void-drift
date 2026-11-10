@@ -72,6 +72,14 @@ workload here; their gameplay implementation belongs to their own features.
 
 ### Constraints
 
+- **Hi-Fi Lo-Fi:** the picture uses inexpensive methods and their artefacts to
+  make cool, expressive graphics. Straight-burn Ion banding is acceptable as
+  part of that character; a turning plume should read as a continuous turn
+  rather than separated stationary beams.
+- **Exploratory zoom:** Lab views, including Follow 4×, are probes for judging
+  effects, not promises of the supported camera's minimum or maximum zoom. FX
+  stays at full stage resolution while zoom limits and other layer presentation
+  choices are explored.
 - **Output fidelity:** effect activity follows actual delivered output and gameplay
   events. An emitter identifies its source, transform, activity and lifecycle.
 - **Time and space:** effects advance with game time. Fresh stamps follow current
