@@ -18,7 +18,7 @@ and ends when the player chooses to leave.
 
 ## Ownership and boundaries
 
-The Hangar owns access to Test Flight and selection of the active setup. This
+The Hangar owns access to Test Flight and selection of the active ship. This
 spec owns Mode 1's environment, flight rules, ending and return behavior.
 
 Three modes are planned. This contract defines only Mode 1.
@@ -84,7 +84,7 @@ in the [implementation plan](../../../plans/2026-11-07-derelicts-mode.md).
 
 ## Acceptance criteria
 
-- [ ] Entering from the Hangar flies the active setup with its actual fittings,
+- [ ] Entering from the Hangar flies the active ship with its actual fittings,
   system choices, mass, thrust and handling.
 - [ ] Re-entering practice uses the same star-and-planet layout and starting
   flight conditions, with full build energy and health.
@@ -95,7 +95,7 @@ in the [implementation plan](../../../plans/2026-11-07-derelicts-mode.md).
   the ship as a practice-specific response.
 - [ ] No derelicts, salvage encounters or Send derelict action appear.
 - [ ] Pause freezes practice; Resume continues the same session; Pause → Abort
-  returns to the Hangar with the active setup unchanged.
+  returns to the Hangar with the active ship unchanged.
 - [ ] Neither play nor pause offers Reset, and returning to practice after Abort
   starts fresh rather than restoring the abandoned session.
 - [ ] Practice displays no score, offers no leaderboard submission, and produces

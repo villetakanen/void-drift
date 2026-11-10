@@ -114,7 +114,7 @@ without a storage migration. The [Hangar](../hangar/spec.md) and
 
 ### Regression guardrails
 
-Existing saves parse; the starter Wasp fits one point defence and no other chassis's starter outfit does; the laser's threat priority,
+Existing saves parse; a new device's Wasp is fitted with one point defence and no other chassis is by default; the laser's threat priority,
 the rail and the Light Ion Cannon keep their contracts. Keyboard and landscape touch
 continue through the normal flight loop. Gravity and friction constants stay fixed.
 

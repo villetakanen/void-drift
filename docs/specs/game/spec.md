@@ -10,10 +10,11 @@ Void Drift is a procedural space survival game played in the browser. A pilot fl
 
 - `packages/mode-a/src/lib/simulation.ts` owns a fixed 60 Hz simulation. `schemas/flight.ts` validates flight settings and replay inputs. Rendering reads simulation state and writes none.
 - The game and the Lab share the simulation, camera, configuration and drawing code.
+- The Lab is not part of the game. It holds game-designer tools that reuse game systems where they need them. Game specs describe the game only: they place no rule on the Lab, and nothing in them is changed by what the Lab does. The [Lab spec](../lab/spec.md) owns its own constraints.
 - This contract owns the game as a whole: its modes, launch and return, replay, ranking eligibility and the scoring boundary. Child contracts own the parts:
   - **Flight screen:** [game screen](game-screen/spec.md), [camera](camera/spec.md), [controls](controls/spec.md), [dialogs](dialogs/spec.md)
   - **Modes:** [Survival](survival/spec.md), [Practice](test-flight/spec.md), [Derelicts](derelicts/spec.md)
-  - **Launch and ships:** [title screen](landing-page/spec.md), [Hangar](hangar/spec.md), [propulsion](ships/propulsion/spec.md)
+  - **Launch and ships:** [title screen](landing-page/spec.md), [Hangar](hangar/spec.md), [active ship](active-ship/spec.md), [Experimental mode](experimental/spec.md), [propulsion](ships/propulsion/spec.md)
   - **World:** [star](world/star/spec.md), [gravity](world/gravity-field/spec.md)
   - **Scores and options:** [high scores](high-scores/spec.md), [options](options/spec.md)
   - **Effects:** [FX](../factory/effects/spec.md)
@@ -22,8 +23,8 @@ Void Drift is a procedural space survival game played in the browser. A pilot fl
 
 - **Modes:** flight settings name a mode: Survival, Practice or Derelicts. A missing mode means Survival, and a legacy `testFlight: true` with no mode means Practice.
 - **Launch and return:** a run starts from the title screen or the Hangar, independently of its mode. Abort and game over return to the place it started from.
-- **PRESS START:** it launches the stock Survival run: Wasp in its starter loadout (`starterLoadout("wasp")`), in a fresh seeded G-class system. The Hangar owns ship choice.
-- **Ranked runs:** only the PRESS START Survival run, under the current `CHALLENGE`, is ranked. Every Hangar run, and every Practice, Derelicts and Lab run, is unranked and cannot submit.
+- **PRESS START:** it launches a Survival run with the [active ship](active-ship/spec.md) in a fresh seeded G-class system. Every other launch flies the active ship too. The Hangar owns ship choice.
+- **Ranked runs:** a Survival run under the current `CHALLENGE`, started from the title screen or the Hangar while [Experimental mode](experimental/spec.md) is Off, is ranked. Every run while Experimental is On, and every Practice and Derelicts run, is unranked and cannot submit.
 - **Scores:** a score is a casual, client-reported [Survival score](survival/spec.md) with the run's whole seconds, labelled as such. Firestore rules check ownership, shape, challenge and bounds, but cannot prove an honest run.
   - A row carries `score` (integer, at least the seconds and at most `MAX_SCORE`, 100000) and `seconds` (integer, 1–3600). `MAX_SCORE` bounds 3600 s, 720 derelict groups (first at 3 s, then at least 5 s apart) of at most 91 scoring hits each (43 on the wreck and 6 on each of eight pieces at the weakest 2-point band) and one 20-point cell each: 83 520, rounded up.
   - Each anonymous player keeps one best per ship; a run whose score is not higher keeps the existing best.
@@ -42,12 +43,12 @@ Void Drift is a procedural space survival game played in the browser. A pilot fl
   and Derelicts, and lets an explicit mode take precedence over `testFlight`.
 - [x] A run launched from the title screen or the Hangar returns there on Abort
   and on game over, without a page reload.
-- [x] PRESS START launches Survival with Wasp in its starter loadout
-  (`starterLoadout("wasp")`), a fresh random seed, the arrival entry and a
-  G-class star; a ship chosen in the Hangar does not change it.
-- [x] Hangar builds, Practice, Derelicts and Fiddler runs show no Save Score and
-  never call score submission; the submission schema rejects Fiddler.
-- [ ] Lab runs cannot submit a score.
+- [ ] PRESS START launches Survival with the active ship, a fresh random seed,
+  the arrival entry and a G-class star.
+- [x] Practice, Derelicts and Fiddler runs show no Save Score and never call
+  score submission; the submission schema rejects Fiddler.
+- [ ] A Survival run launched from the Hangar with Experimental Off is ranked
+  like a title-screen run; with Experimental On, no run shows Save Score.
 - [x] Firestore rules reject unauthenticated, other-owner, malformed,
   mismatched-document, wrong-challenge, out-of-bounds, decreasing-score,
   extra-field and deletion writes, and reject unbounded or unauthenticated
@@ -78,12 +79,12 @@ Void Drift is a procedural space survival game played in the browser. A pilot fl
 
 ### Regression guardrails
 
-- Ranking is decided by the client from mode, build and ship; Firestore rules
+- Ranking is decided by the client from mode and the Experimental setting; Firestore rules
   bound the data but are never treated as proof of an honest run.
 - A new `CHALLENGE` value has a matching document-id rule in `firestore.rules`
   and starts a separate board; Top Scores lists only the current challenge.
-- Launch source is independent of mode and ship; Hangar choices never change the
-  Wasp that PRESS START launches.
+- Launch source is independent of mode, ship and ranking; PRESS START and the
+  Hangar launch the same active ship.
 - Practice and Derelicts results are never submitted and never alter Survival
   scoring.
 - Rendering and effects read simulation state without changing it, so replay
@@ -111,9 +112,10 @@ Scenario: Missing mode
   Then the mode is Survival
 
 Scenario: PRESS START
-  Given the player chose Corvette in the Hangar and returned to the title screen
+  Given Experimental is Off
+  And the player chose the Scout in the Hangar and returned to the title screen
   When the player activates PRESS START
-  Then a Survival run starts with Wasp in its starter loadout
+  Then a Survival run starts with the Scout in its Hangar fitting
   And the star is G-class and the seed is fresh
   And the run is ranked
 
@@ -129,10 +131,11 @@ Scenario Outline: Return to the launch source
     | title screen | game-over Return |
     | Hangar       | game-over Return |
 
-Scenario: Custom build is unranked
-  Given a Survival run launched from the Hangar with a fitted build
+Scenario: Experimental run is unranked
+  Given Experimental is On
+  And a Survival run launched from the Hangar
   When the run ends
-  Then run complete shows no Save Score
+  Then run complete shows the score and no Save Score
   And no score is submitted
 
 Scenario: Equal run keeps the best

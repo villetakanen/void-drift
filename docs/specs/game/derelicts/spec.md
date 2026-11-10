@@ -19,7 +19,7 @@ persistent records, leaderboard competition or progression rewards.
 ## Ownership and entry
 
 - The Hangar offers a Derelicts launch alongside Test flight and Start survival.
-  It owns access and the active setup; this spec owns Derelicts rules.
+  It owns access and the active ship; this spec owns Derelicts rules.
 - Enter with the active Hangar ship, fittings and system choices. Use its actual
   mass, thrust, handling and capacities, with normal fresh-run resources.
 - Use the default star system.
@@ -83,7 +83,7 @@ owns them; Survival's `SURVIVAL_ENCOUNTER` lives beside it.
 - Normal survival failure enters game over, showing the final score before
   returning to the Hangar. Scoring stops when the run ends.
 - There is no in-run Reset action.
-- Return preserves the active setup. The run is transient; a later entry starts
+- Return preserves the active ship. The run is transient; a later entry starts
   a new run, with no carried score or encounter state.
 
 ## Score and progression

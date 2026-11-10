@@ -4,8 +4,8 @@
 
 ### Context
 
-Give players an immediate arcade invitation to fly, with Wasp ready by
-default and other ships available through Hangar. Provide access to Hangar, Top Scores,
+Give players an immediate arcade invitation to fly, with the ship prepared in
+the Hangar, the [active ship](../active-ship/spec.md), ready to launch. Provide access to Hangar, Top Scores,
 Settings and Credits within the game's title-screen composition. Return interrupted
 or completed runs to the screen from which they launched.
 
@@ -58,10 +58,10 @@ game's home and Hangar is an alternative launch point.
   definitions; the content is not transformed or scaled. The background and scrim
   continue beyond the region to fill the viewport.
   The current title-screen target is iPad or larger.
-- A static, decorative 156px-long Wasp overlaps the panel’s bottom-right corner,
-  heading 30° above right. It carries the starter Wasp fitting
-  (`starterLoadout("wasp")`): a Light Ion Cannon in its right hull slot, an Ion
-  Point Defence in its left hull slot and one light ion engine with a luminous plume;
+- A static, decorative 156px-long ship overlaps the panel’s bottom-right corner,
+  heading 30° above right. It is the active ship in its fitting; a fitted Wasp
+  carries its Light Ion Cannon in the right hull slot, its Ion Point Defence in
+  the left hull slot and one light ion engine with a luminous plume;
   a ship-wide, 450px arrival-green trail starts at the wing tips and fades aft
   from 22% opacity. Artwork may overflow
   the panel, is hidden from assistive technology and never intercepts input.
@@ -83,7 +83,7 @@ game's home and Hangar is an alternative launch point.
   at 4:3 or wider,
   without taking focus, blocking navigation, resetting the menu or locking orientation.
 - PRESS START fades to void over 150 ms, replaces the scene with a fresh seeded
-  G-class Survival run with Wasp, and reveals it over 150 ms. Repeated
+  G-class Survival run with the active ship, and reveals it over 150 ms. Repeated
   activation during the start is ignored.
 - A centred three-second 3, 2, 1 countdown then holds the world, resources and
   score timer still. Movement and scoring begin at GO; controls held through
@@ -96,6 +96,10 @@ game's home and Hangar is an alternative launch point.
 - From Hangar, Survival uses the same arrival and countdown and returns to
   Hangar; Hangar test flight starts directly.
 - Ship selection belongs in Hangar; the title screen has no ship selector.
+- [Experimental mode](../experimental/spec.md) owns the experimental marker
+  beside PRESS START and the unavailable start, with its reason and the way to
+  the Hangar, while Experimental is Off and the active ship holds experimental
+  content.
 - The Hangar link reads “HANGAR”; the rotating hint explains ship choice.
 - Hangar, Top Scores, Settings and Credits are secondary game-menu destinations.
 - PRESS START receives initial keyboard focus. The menu focus order is PRESS START,
@@ -113,7 +117,7 @@ game's home and Hangar is an alternative launch point.
 
 ### Definition of Done
 
-- [ ] PRESS START launches Wasp without a ship-selection step.
+- [ ] PRESS START launches the active ship without a ship-selection step.
 - [ ] The title screen has no ship selector and identifies Hangar as the place to choose ships.
 - [ ] All destinations and return actions in the navigation contract are reachable.
 - [ ] Abort and game-over return resolve correctly for both launch sources.
@@ -143,10 +147,7 @@ game's home and Hangar is an alternative launch point.
 ### Regression Guardrails
 
 - Launch source survives pause/resume and completion of the run.
-- Hangar ship choices do not change the Wasp launched by title-screen PRESS START.
-- PRESS START flies the starter Wasp: a Light Ion Cannon and an Ion Point Defence
-  in the hull mounts, a light ion engine and stabilizers on. The run is a scored
-  survival run.
+- PRESS START flies the active ship shown on the title screen.
 - Hangar remains a launch point for its configured ship.
 - Menu presentation does not advance survival state or scoring.
 
@@ -154,9 +155,10 @@ game's home and Hangar is an alternative launch point.
 
 ```gherkin
 Scenario: Immediate flight
-  Given the player enters the title screen
+  Given a fresh device
+  And the player enters the title screen
   When the player activates PRESS START
-  Then a survival run starts with Wasp
+  Then a survival run starts with the active ship of a new device, the fitted Wasp
   And its launch source is the title screen
 
 Scenario: Choose another ship through Hangar
@@ -169,13 +171,14 @@ Scenario: Choose another ship through Hangar
 Scenario: Title-screen launch after a Hangar choice
   Given the player chose another ship in Hangar
   And returned to the title screen
+  Then the title screen shows that ship in its fitting
   When the player activates PRESS START
-  Then a survival run starts with Wasp
+  Then a survival run starts with that ship in its fitting
   And its launch source is the title screen
 
 Scenario: Scores after a Hangar run
   Given a run launched from Hangar has ended
   When the player opens Top Scores from game over
   And uses its return action
-  Then the title screen opens with PRESS START ready to launch Wasp
+  Then the title screen opens with PRESS START ready to launch the active ship
 ```

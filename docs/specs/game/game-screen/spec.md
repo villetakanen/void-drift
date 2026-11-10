@@ -57,9 +57,9 @@ never the run.
   opacity.
 - The top and bottom gutters hold information, such as key hints, the version
   and the logo. The bottom gutter holds the mode label and the mode's status
-  lines: `G CLASS / SHARED CHALLENGE` for the stock run, `GOD MODE` for
-  Practice, `UNRANKED` for any other run with parts the stock run does not
-  sanction, and engine feedback. No chrome covers the active area.
+  lines: `G CLASS / SHARED CHALLENGE` for a ranked run, `GOD MODE` for
+  Practice, `UNRANKED` for any other run (which runs are ranked follows the
+  [game contract](../spec.md)), and engine feedback. No chrome covers the active area.
 - Every flight mode fills the browser viewport with no header, footer, page
   navigation or page scrolling; the deck is the only
   chrome. Play works within ordinary browser chrome, with browser fullscreen
@@ -114,7 +114,7 @@ never the run.
   instruments, deck button and full-height pads do not overlap.
 - [ ] Pause toggles pause as Escape does; Weapons is disabled and drawn at 50%
   opacity in every mode; both keep at least 44 CSS px of height.
-- [ ] The mode label reads `G CLASS / SHARED CHALLENGE` for the stock run,
+- [ ] The mode label reads `G CLASS / SHARED CHALLENGE` for a ranked run,
   `GOD MODE` for Practice and `UNRANKED` for any other run.
 - [ ] Restoring a 4:3 or wider viewport, or the foreground, preserves the run and
   requires Resume, without a time jump or stale thrust.

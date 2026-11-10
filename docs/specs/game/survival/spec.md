@@ -999,7 +999,7 @@ without ignition flicker. Flight Lab and builder test flight keep their existing
 Survival runs the salvage encounter with its own arrival rules; the
 [derelicts spec](../derelicts/spec.md) keeps the wreck, piece, energy cell,
 weapon, system-edge and gravity rules that both modes share. Applies to a run
-with a fitted ship (the stock Wasp included); [practice](../test-flight/spec.md)
+with any active ship; [practice](../test-flight/spec.md)
 has no encounters.
 
 - The first derelict arrives at 3 gameplay seconds; each later gap is

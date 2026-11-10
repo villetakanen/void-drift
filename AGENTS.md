@@ -6,8 +6,8 @@ Voice-led development of a procedural space survival game and its software facto
 
 ```yaml
 - docs                  # Plans, specs, all docs here
-  - plans               # Planning material, a map is not the territory, always check staleness
-  - specs               # ASLDC.io style living specs defining intent, and expected high-level functionality of the apps
+  - plans               # Transient planning material, a map is not the territory, always check staleness
+  - specs               # ASLDC.io style living specs defining stable, expected intent, and expected functionality of the apps
 - apps/web/src
   - pages/lab                     # The Lab: component and entity pages
     - studies                     # Design studies, dated; archive/ holds retired ones
