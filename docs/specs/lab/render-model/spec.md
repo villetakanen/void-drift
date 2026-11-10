@@ -54,7 +54,7 @@ and up. `apps/web/src/components/lab/RenderModel.svelte` composes the workbench.
   sample fresh. It retains blend, visibility, filter and paused/running settings.
 - Each layer has a visibility control and a blend selector: Normal, Add, Screen,
   Multiply and Hard light. Add maps to CSS `plus-lighter`. Initial settings use
-  production defaults. A blend or visibility change immediately affects the
+  production layer blends, with FX CSS blur 2px and LFX no filter. A blend or visibility change immediately affects the
   composite, even while paused, without clearing, repainting or advancing time.
 - FX and LFX each have an independent native presentation filter: None, Blur,
   Brightness, Noise distortion, Offset, Offset spread or Expand, plus one
@@ -62,7 +62,8 @@ and up. `apps/web/src/components/lab/RenderModel.svelte` composes the workbench.
   and expand radius in CSS pixels; brightness shows its multiplier. CSS filters are used for
   blur/brightness; inline SVG filters provide static seeded turbulence,
   displacement, offsets, spread merge and morphology. Filter changes preserve
-  held pixels and do not advance time. Both filters default to None.
+  held pixels and do not advance time. FX defaults to CSS blur 2px; LFX defaults
+  to None. This FX blur is scoped to the render-model workbench.
 - Paint adds one fresh set of FX stamps and shows the World and LFX sample marks.
   It works while paused as an explicit painting action; subsequent paused frames
   add nothing. Repeated Paint actions can demonstrate accumulation.

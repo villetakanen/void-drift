@@ -12,6 +12,14 @@ test("render model compares held production layers and persistent FX", async ({
   await expect(model.locator("canvas[data-layer]")).toHaveCount(
     FLIGHT_LAYERS.length,
   );
+  await expect(model.locator('canvas[data-layer="fx"]')).toHaveCSS(
+    "filter",
+    "blur(2px)",
+  );
+  await expect(model.locator('canvas[data-layer="lfx"]')).toHaveCSS(
+    "filter",
+    "none",
+  );
 
   const layers = model.locator("canvas[data-layer]");
   expect(
@@ -58,14 +66,16 @@ test("render model compares held production layers and persistent FX", async ({
       let best = { x: 0, y: 0, alpha: 0 };
       for (let y = 0; y < 1080; y++) {
         for (let x = 0; x < 1920; x++) {
-          const alpha = pixels[(y * 1920 + x) * 4 + 3];
-          if (alpha > best.alpha) best = { x, y, alpha };
+          const offset = (y * 1920 + x) * 4;
+          const brightness =
+            pixels[offset] + pixels[offset + 1] + pixels[offset + 2];
+          if (brightness > best.alpha) best = { x, y, alpha: brightness };
         }
       }
       return { x: best.x, y: best.y };
     });
   const initialFx = await readPixel("fx", initialFxPoint.x, initialFxPoint.y);
-  expect(initialFx[3]).toBeGreaterThan(0);
+  expect(initialFx[0] + initialFx[1] + initialFx[2]).toBeGreaterThan(0);
   const initialWorld = await readPixel("world", 960, 540);
   const initialLfx = await readPixel("lfx", 950, 540);
   expect(initialWorld[3]).toBe(255);
@@ -129,9 +139,9 @@ test("render model compares held production layers and persistent FX", async ({
       kind === "none"
         ? "none"
         : kind === "blur"
-          ? "blur(10px)"
+          ? "blur(2px)"
           : kind === "brightness"
-            ? "brightness(1.4)"
+            ? "brightness(1.08)"
             : /url\(/;
     await expect(model.locator('canvas[data-layer="fx"]')).toHaveCSS(
       "filter",
@@ -149,7 +159,7 @@ test("render model compares held production layers and persistent FX", async ({
     .selectOption("blur");
   await expect(model.locator('canvas[data-layer="fx"]')).toHaveCSS(
     "filter",
-    "blur(10px)",
+    "blur(2px)",
   );
   await model
     .getByRole("combobox", { name: "FX filter", exact: true })
@@ -211,9 +221,10 @@ test("render model compares held production layers and persistent FX", async ({
     .selectOption("plus-lighter");
 
   await model.getByRole("button", { name: "Paint" }).click();
-  expect(
-    (await readPixel("fx", initialFxPoint.x, initialFxPoint.y))[3],
-  ).toBeGreaterThan(initialFx[3]);
+  const paintedFx = await readPixel("fx", initialFxPoint.x, initialFxPoint.y);
+  expect(paintedFx[0] + paintedFx[1] + paintedFx[2]).toBeGreaterThan(
+    initialFx[0] + initialFx[1] + initialFx[2],
+  );
   await model
     .getByRole("combobox", { name: "Picture sample" })
     .selectOption("circles");
@@ -228,7 +239,9 @@ test("render model compares held production layers and persistent FX", async ({
     .uncheck();
   await page.waitForTimeout(500);
   const faded = await readPixel("fx", 825, 540);
-  expect(faded[3]).toBeLessThan(circleFx[3]);
+  expect(faded[0] + faded[1] + faded[2]).toBeLessThan(
+    circleFx[0] + circleFx[1] + circleFx[2],
+  );
   await model
     .locator('[data-layer-controls="fx"]')
     .getByRole("checkbox", { name: "Visible" })
@@ -242,11 +255,11 @@ test("render model compares held production layers and persistent FX", async ({
 
   await model.getByRole("button", { name: "Run" }).click();
   await model.getByRole("button", { name: "Clear" }).click();
-  for (const id of ["world", "fx", "lfx"])
-    expect((await readPixel(id))[3]).toBe(0);
+  for (const id of ["world", "lfx"]) expect((await readPixel(id))[3]).toBe(0);
+  expect((await readPixel("fx")).slice(0, 3)).toEqual([0, 0, 0]);
   await page.waitForTimeout(120);
-  for (const id of ["world", "fx", "lfx"])
-    expect((await readPixel(id))[3]).toBe(0);
+  for (const id of ["world", "lfx"]) expect((await readPixel(id))[3]).toBe(0);
+  expect((await readPixel("fx")).slice(0, 3)).toEqual([0, 0, 0]);
   await model.getByRole("button", { name: "Pause" }).click();
   await model
     .locator('[data-layer-controls="world"]')
@@ -263,7 +276,7 @@ test("render model compares held production layers and persistent FX", async ({
   const freshFx = await readPixel("fx", 825, 540);
   await model.getByRole("button", { name: "Paint" }).click();
   const repaintedFx = await readPixel("fx", 825, 540);
-  expect(repaintedFx[3]).toBeGreaterThan(0);
+  expect(repaintedFx[0] + repaintedFx[1] + repaintedFx[2]).toBeGreaterThan(0);
   await expect(
     model.locator('[data-layer-controls="world"] select'),
   ).toHaveValue("multiply");
@@ -273,9 +286,10 @@ test("render model compares held production layers and persistent FX", async ({
   await expect(
     model.getByRole("combobox", { name: "LFX blend mode", exact: true }),
   ).toHaveValue("screen");
-  expect(repaintedFx[3]).toBe(circleFx[3]);
-  expect(freshFx[3]).toBe(0);
-  expect((await readPixel("fx", 825, 540))[3]).toBeGreaterThan(0);
+  expect(repaintedFx.slice(0, 3)).toEqual(circleFx.slice(0, 3));
+  expect(freshFx[0] + freshFx[1] + freshFx[2]).toBe(0);
+  const afterPaint = await readPixel("fx", 825, 540);
+  expect(afterPaint[0] + afterPaint[1] + afterPaint[2]).toBeGreaterThan(0);
   await expect(model).toHaveAttribute("data-running", "false");
   await expect(
     model.getByRole("combobox", { name: "FX blend mode", exact: true }),

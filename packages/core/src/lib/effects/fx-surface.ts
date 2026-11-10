@@ -2,8 +2,6 @@ import { FxPass } from "./arcade-fx";
 
 /** One game-time decay shared by every source's painted light. */
 export const FX_HALF_LIFE = 0.1;
-export const FX_QUIET_CLEAR = 0.8;
-export const FX_HISTORY_WINDOW = 0.5;
 export function fxRetention(seconds: number) {
   return 2 ** (-Math.max(0, seconds) / FX_HALF_LIFE);
 }
@@ -24,39 +22,37 @@ function buffer(width: number, height: number) {
   canvas.height = height;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("FX surface requires Canvas 2D");
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0, 0, width, height);
   return ctx;
-}
-interface LightImage {
-  ctx: CanvasRenderingContext2D;
-  camera?: DOMMatrix;
-  epoch: number;
 }
 
 /**
- * Pixels remember light, never individual trail objects. Two rolling image
- * windows receive the same decay. Retiring a whole old window guarantees that
- * 8-bit rounding residue disappears even while other sources keep emitting.
- * A third reusable buffer handles camera reprojection; all sources share these.
+ * One black image remembers light, never individual trail objects. Its contents
+ * fade continuously in game time. A reusable spare handles camera reprojection.
  */
 export class FxSurface {
   readonly pass = new FxPass();
-  private images: LightImage[] = [];
+  private history?: CanvasRenderingContext2D;
+  private camera?: DOMMatrix;
   private spare?: CanvasRenderingContext2D;
   private time: number | undefined;
-  private lastEmission = -Infinity;
 
-  private erase(image: LightImage) {
-    image.ctx.resetTransform();
-    image.ctx.clearRect(0, 0, image.ctx.canvas.width, image.ctx.canvas.height);
-    image.camera = undefined;
-  }
   clear() {
-    for (const image of this.images) {
-      this.erase(image);
-      image.epoch = -Infinity;
+    if (this.history) {
+      this.history.resetTransform();
+      this.history.fillStyle = "#000";
+      this.history.globalAlpha = 1;
+      this.history.globalCompositeOperation = "source-over";
+      this.history.fillRect(
+        0,
+        0,
+        this.history.canvas.width,
+        this.history.canvas.height,
+      );
     }
+    this.camera = undefined;
     this.time = undefined;
-    this.lastEmission = -Infinity;
     this.pass.budget.reset();
   }
 
@@ -74,14 +70,15 @@ export class FxSurface {
       this.spare.canvas.width !== width ||
       this.spare.canvas.height !== height
     ) {
-      this.images = Array.from({ length: 2 }, () => ({
-        ctx: buffer(width, height),
-        epoch: -Infinity,
-      }));
+      this.history = buffer(width, height);
       this.spare = buffer(width, height);
+      this.camera = undefined;
       this.clear();
     }
     if (this.time !== undefined && gameTime < this.time) this.clear();
+    let history = this.history;
+    let spare = this.spare;
+    if (!history || !spare) return;
     const camera = target.getTransform();
     const elapsed =
       this.time === undefined
@@ -89,38 +86,31 @@ export class FxSurface {
         : gameTime - this.time;
     this.time = gameTime;
     if (elapsed > 0) {
-      const epoch = Math.floor(gameTime / FX_HISTORY_WINDOW);
       const retention = fxRetention(elapsed);
-      for (let index = 0; index < this.images.length; index++) {
-        const image = this.images[index];
-        const expected = epoch - ((epoch - index + 2) % 2);
-        if (image.epoch !== expected) {
-          this.erase(image);
-          image.epoch = expected;
-        }
-        if (!image.camera) continue;
-        const ctx = image.ctx;
-        if (!sameCamera(camera, image.camera)) {
-          const next = this.spare;
-          next.resetTransform();
-          next.clearRect(0, 0, width, height);
-          next.setTransform(camera.multiply(image.camera.inverse()));
-          next.globalCompositeOperation = "source-over";
-          next.globalAlpha = retention;
-          next.drawImage(ctx.canvas, 0, 0);
-          this.spare = ctx;
-          image.ctx = next;
-        } else {
-          ctx.resetTransform();
-          ctx.globalCompositeOperation = "destination-out";
-          ctx.globalAlpha = 1 - retention;
-          ctx.fillStyle = "#000";
-          ctx.fillRect(0, 0, width, height);
-        }
-        image.camera = camera;
+      let ctx = history;
+      if (this.camera && !sameCamera(camera, this.camera)) {
+        const next = spare;
+        next.resetTransform();
+        next.fillStyle = "#000";
+        next.globalAlpha = 1;
+        next.globalCompositeOperation = "source-over";
+        next.fillRect(0, 0, width, height);
+        next.setTransform(camera.multiply(this.camera.inverse()));
+        next.globalAlpha = retention;
+        next.drawImage(ctx.canvas, 0, 0);
+        spare = ctx;
+        history = next;
+        this.spare = spare;
+        this.history = history;
+        ctx = next;
+      } else {
+        ctx.resetTransform();
+        ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = 1 - retention;
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, width, height);
       }
-      const active = this.images[epoch % 2];
-      const ctx = active.ctx;
+      this.camera = camera;
       ctx.setTransform(camera);
       // Integrate fresh emission over game time, with no catch-up queue.
       this.pass.begin(
@@ -133,27 +123,24 @@ export class FxSurface {
       } finally {
         this.pass.end(ctx);
       }
-      if (this.pass.budget.essential + this.pass.budget.decoration > 0) {
-        active.camera = camera;
-        this.lastEmission = gameTime;
-      } else if (gameTime - this.lastEmission >= FX_QUIET_CLEAR) {
-        for (const image of this.images) this.erase(image);
-      }
     }
     target.save();
     try {
-      target.globalCompositeOperation = additive ? "lighter" : "source-over";
+      // Black is neutral under both additive and screen composition. Source-over
+      // would let the opaque backing black cover the caller's existing world.
+      target.globalCompositeOperation = additive ? "lighter" : "screen";
       target.globalAlpha = 1;
       target.shadowBlur = 0;
       target.shadowColor = "transparent";
       target.shadowOffsetX = target.shadowOffsetY = 0;
       target.filter = "none";
-      for (const image of this.images) {
-        if (!image.camera) continue;
-        if (sameCamera(camera, image.camera)) target.resetTransform();
-        else target.setTransform(camera.multiply(image.camera.inverse()));
-        target.drawImage(image.ctx.canvas, 0, 0);
-      }
+      target.resetTransform();
+      target.fillStyle = "#000";
+      target.fillRect(0, 0, width, height);
+      if (this.camera && !sameCamera(camera, this.camera))
+        target.setTransform(camera.multiply(this.camera.inverse()));
+      else target.resetTransform();
+      target.drawImage(history.canvas, 0, 0);
     } finally {
       target.restore();
     }

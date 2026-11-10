@@ -246,7 +246,8 @@ Feature: Fast, expressive arcade effects
     Given two light surfaces have the same starting image and decay setting
     When equal game time passes with rendering at 30 and 60 frames per second
     Then both images have decayed by the same elapsed game time within raster precision
-    And a quiet surface eventually clears completely
+    And rounding residue may remain or settle at the darkest representable value
+    And no periodic cleanup removes it
 
   @FX-04
   Scenario: Turning and camera changes preserve spatial meaning
@@ -297,16 +298,16 @@ Feature: Fast, expressive arcade effects
 
 ## Implementation and evidence — surface correction
 
-One scene owns two rolling history images and one reusable reprojection buffer
-(about 24.9 MB of raw RGBA storage at 1920×1080, excluding browser overhead).
-Both images use the same decay. Each receives fresh stamps for a 0.5-second window;
-old windows are retired wholesale, so even 8-bit rounding residue is gone within
-one second of its last stamp while other sources keep firing. This is bounded image
-history, not per-source/mark histories. Stationary-camera images fade in place;
-camera movement combines reprojection and decay in a copy. Their combined light is
-added over the world. The shared half-life is 0.1 seconds; a wholly quiet surface
-also clears after 0.8 seconds. These are tunable
-implementation values. Different frame rates need not produce identical overlap pixels.
+One scene owns a persistent black light image and a bounded reusable spare for
+camera reprojection. Fresh stamps are added after every elapsed-time fade. The
+whole image decays by filling it with translucent black using source-over; the
+shared half-life is 0.1 seconds. No rolling history windows, quiet-time clear,
+alpha threshold, or periodic cleanup is permitted. Near-black 8-bit residue may
+remain or settle at the darkest representable value; it never vanishes through
+a cleanup pop. Camera
+movement reprojects the full image domain, including exposed edges, while keeping
+marks fixed in world space. FX is composited over World with CSS screen. These
+rules are specified in the [FX layer contract](../../game/render/fx.md).
 
 Limits remain 1,024 decorative and 128 source requests per advancing scene frame.
 Each ship holds at most eight current engine outlets, with no historical marks.

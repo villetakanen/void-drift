@@ -80,9 +80,9 @@ let visible = $state<Record<FlightLayerId, boolean>>({
   lfx: true,
 });
 let sample = $state<"artwork" | "circles">("artwork");
-let fxFilter = $state<FilterKind>("none");
+let fxFilter = $state<FilterKind>("blur");
 let lfxFilter = $state<FilterKind>("none");
-let fxAmount = $state(10);
+let fxAmount = $state(2);
 let lfxAmount = $state(10);
 let filters = $derived<Record<FlightLayerId, string>>({
   world: "none",

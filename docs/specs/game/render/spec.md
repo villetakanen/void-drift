@@ -102,17 +102,18 @@ it. Every canvas layer covers the whole stage and declares:
 
 The in-flight stack, bottom to top:
 
-| Layer | Holds                                  | Blend  | Memory     |
-| ----- | -------------------------------------- | ------ | ---------- |
-| World | Everything solid, and the World HUD    | normal | immediate  |
-| FX    | Accumulated light that fades           | add    | persistent |
-| LFX   | Live light, fresh every frame          | add    | immediate  |
-| Deck  | Page elements: instruments, pads, rows | normal | none       |
+| Layer | Holds                                  | Blend      | Memory     |
+| ----- | -------------------------------------- | ---------- | ---------- |
+| World | Everything solid, and the World HUD    | normal     | immediate  |
+| FX    | Accumulated light that fades           | screen     | persistent |
+| LFX   | Live light, fresh every frame          | hard-light | immediate  |
+| Deck  | Page elements: instruments, pads, rows | normal     | none       |
 
-Blend, resolution and filter are tuning. They are set in `FLIGHT_LAYERS`, judged
-by looking, and changing one changes no rule here. For this iteration, FX remains
-at full stage resolution. Other layer resolutions may be explored without
-changing pass behavior.
+Layer-specific contracts live in [World](world.md), [FX](fx.md), and
+[LFX](lfx.md). Blend, resolution and filter defaults are declared in
+`FLIGHT_LAYERS`, judged by looking, and changing one changes no pass behavior.
+FX defaults to CSS `screen`; LFX defaults to CSS `hard-light`. FX remains at
+full stage resolution.
 
 Three rules follow from the stack:
 
