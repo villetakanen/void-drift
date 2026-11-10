@@ -200,7 +200,13 @@ const WreckSpinSchema = z.object({
 });
 export const EncounterConfigSchema = z
   .object({
-    firstPass: z.number().nonnegative(),
+    /** The first arrival falls at a seeded time in this window. */
+    firstPass: z
+      .object({
+        min: z.number().nonnegative(),
+        max: z.number().nonnegative(),
+      })
+      .refine((window) => window.max >= window.min),
     intervalMin: z.number().positive(),
     intervalMax: z.number().positive(),
     groups: z.number().int().positive(),
@@ -239,7 +245,7 @@ export const EncounterConfigSchema = z
 export type EncounterConfig = z.infer<typeof EncounterConfigSchema>;
 /** Derelicts mode: more and faster derelicts, for development and fun. */
 export const ENCOUNTER = EncounterConfigSchema.parse({
-  firstPass: 3,
+  firstPass: { min: 3, max: 3 },
   intervalMin: 6,
   intervalMax: 12,
   groups: 16,
@@ -252,12 +258,12 @@ export const ENCOUNTER = EncounterConfigSchema.parse({
   orientation: "random",
   wreckSpin: { rate: 0.3, direction: "fixed" },
 });
-/** Survival's own encounter: fewer, slower derelicts entering tip first. */
+/** Survival's own encounter: rare, slow derelicts, one at a time, entering tip first. */
 export const SURVIVAL_ENCOUNTER = EncounterConfigSchema.parse({
-  firstPass: 3,
-  intervalMin: 5,
-  intervalMax: 10,
-  groups: 8,
+  firstPass: { min: 3, max: 50 },
+  intervalMin: 60,
+  intervalMax: 120,
+  groups: 1,
   centerX: 960,
   centerY: 540,
   radius: 1200,

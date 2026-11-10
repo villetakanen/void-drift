@@ -165,11 +165,13 @@ export class SalvageSystem {
     ion: AssembledIonSettings = ASSEMBLED_ION_DEFAULTS,
     private readonly encounter: EncounterConfig = ENCOUNTER,
   ) {
-    this.nextPass = encounter.firstPass;
     this.ionAcquisitionWidth =
       CHASSIS[loadout.chassis].width * BUILD_FLIGHT_SCALE;
     this.randomState = seed >>> 0;
     this.scheduleState = (seed ^ 0x9e3779b9) >>> 0;
+    const { min, max } = encounter.firstPass;
+    // A fixed first arrival draws nothing, so its later schedule is unchanged.
+    this.nextPass = max > min ? min + this.scheduleRandom() * (max - min) : min;
     this.trajectoryState = (seed ^ 0x85ebca6b) >>> 0;
     this.recoilAcceleration =
       (ion.acceleration * ION_REFERENCE_MASS * WEAPONS.rail.recoilStrength) /

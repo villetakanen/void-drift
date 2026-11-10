@@ -57,17 +57,25 @@ describe("survival encounter", () => {
   const runs = arrivals(200);
   const band = SURVIVAL_ENCOUNTER.entryAngle;
 
-  it("schedules the first arrival at three seconds and then every five to ten", () => {
+  it("schedules a seeded first arrival in its window, then rare later ones", () => {
+    const window = SURVIVAL_ENCOUNTER.firstPass;
+    const firsts = Array.from(
+      { length: 40 },
+      (_, seed) => scene(seed).system.nextPass,
+    );
+    for (const first of firsts) {
+      expect(first).toBeGreaterThanOrEqual(window.min);
+      expect(first).toBeLessThanOrEqual(window.max);
+    }
+    expect(new Set(firsts).size).toBeGreaterThan(1);
     const deadlines = runs.map((run) => run.deadline);
-    expect(deadlines[0]).toBe(SURVIVAL_ENCOUNTER.firstPass);
-    expect(SURVIVAL_ENCOUNTER.firstPass).toBe(3);
     const gaps = deadlines.slice(1).map((time, i) => time - deadlines[i]);
     for (const gap of gaps) {
-      expect(gap).toBeGreaterThanOrEqual(5 - 1e-9);
-      expect(gap).toBeLessThanOrEqual(10 + 1e-9);
+      expect(gap).toBeGreaterThanOrEqual(SURVIVAL_ENCOUNTER.intervalMin - 1e-9);
+      expect(gap).toBeLessThanOrEqual(SURVIVAL_ENCOUNTER.intervalMax + 1e-9);
     }
-    expect(Math.min(...gaps)).toBeLessThan(5.5);
-    expect(Math.max(...gaps)).toBeGreaterThan(9.5);
+    // A later derelict always comes well after the latest first one could.
+    expect(SURVIVAL_ENCOUNTER.intervalMin).toBeGreaterThan(window.max);
   });
   it("enters at 50 to 150 u/s", () => {
     const speeds = runs.map((run) => Math.hypot(run.wreck.vx, run.wreck.vy));
@@ -143,35 +151,25 @@ describe("survival encounter", () => {
       expect(second.wreck).toEqual(first.wreck);
     }
   });
-  it("takes no ninth group and skips that arrival", () => {
+  it("keeps one derelict in play and skips an arrival while it lasts", () => {
+    expect(SURVIVAL_ENCOUNTER.groups).toBe(1);
     const s = scene();
-    const occupied = (count: number): SalvageBody[] =>
-      Array.from({ length: count }, (_, i) => ({
-        id: 100 + i,
-        group: 100 + i,
-        kind: "cell",
-        x: 100,
-        y: 100,
-        previousX: 100,
-        previousY: 100,
-        vx: 0,
-        vy: 0,
-        radius: 6,
-        hull: 1,
-        life: 100000,
-        rotation: 0,
-      }));
-    s.system.bodies = occupied(SURVIVAL_ENCOUNTER.groups - 1);
-    const deadline = s.system.nextPass;
-    s.advance(deadline - s.system.time + 0.00001);
-    expect(s.system.groups).toBe(SURVIVAL_ENCOUNTER.groups);
-    s.system.bodies.push(...occupied(1).map((c) => ({ ...c, group: 999 })));
-    const passes = s.system.passes;
+    s.arrival();
+    expect(s.system.passes).toBe(1);
+    expect(s.system.groups).toBe(1);
+    // Keep the wreck in play, held still, until the next arrival is due.
+    const wreck = s.system.bodies[0] as SalvageBody;
     const next = s.system.nextPass;
-    s.advance(next - s.system.time + 0.00001);
-    expect(s.system.passes).toBe(passes);
-    expect(s.system.groups).toBe(SURVIVAL_ENCOUNTER.groups);
-    expect(SURVIVAL_ENCOUNTER.groups).toBe(8);
+    while (s.system.time < next) {
+      wreck.x = wreck.previousX = SURVIVAL_ENCOUNTER.centerX + 400;
+      wreck.y = wreck.previousY = SURVIVAL_ENCOUNTER.centerY;
+      wreck.vx = wreck.vy = 0;
+      wreck.life = 100000;
+      s.advance(Math.min(1, next - s.system.time + 0.00001));
+    }
+    expect(s.system.passes).toBe(1);
+    expect(s.system.groups).toBe(1);
+    expect(s.system.nextPass).toBeGreaterThan(next);
   });
 });
 
@@ -185,7 +183,7 @@ describe("encounter configs", () => {
     expect(ENCOUNTER.wreckSpin).not.toEqual(SURVIVAL_ENCOUNTER.wreckSpin);
     // Derelicts mode's own values drive its system, not survival's.
     const s = scene(2026, ENCOUNTER);
-    expect(s.system.nextPass).toBe(ENCOUNTER.firstPass);
+    expect(s.system.nextPass).toBe(ENCOUNTER.firstPass.min);
     const speeds = Array.from({ length: 50 }, () => {
       const { wreck } = s.arrival();
       return Math.hypot(wreck.vx, wreck.vy);
@@ -227,10 +225,12 @@ describe("encounter configs", () => {
   it("runs each mode on its own config", () => {
     const flight = (mode: "survival" | "derelicts" | "practice") =>
       new Simulation({ ...gameSettings("wasp"), mode });
-    expect(flight("survival").salvage?.nextPass).toBe(
-      SURVIVAL_ENCOUNTER.firstPass,
+    const survivalFirst = flight("survival").salvage?.nextPass ?? -1;
+    expect(survivalFirst).toBeGreaterThanOrEqual(
+      SURVIVAL_ENCOUNTER.firstPass.min,
     );
-    expect(flight("derelicts").salvage?.nextPass).toBe(ENCOUNTER.firstPass);
+    expect(survivalFirst).toBeLessThanOrEqual(SURVIVAL_ENCOUNTER.firstPass.max);
+    expect(flight("derelicts").salvage?.nextPass).toBe(ENCOUNTER.firstPass.min);
     expect(flight("practice").salvage).toBeUndefined();
     expect(
       new Simulation({ ...stockSettings("wasp"), mode: "survival" }).salvage,

@@ -58,9 +58,12 @@ Survival is the only mode whose runs can be ranked.
 - **Time.** The run's time is gameplay time: it stops while paused and when the
   run ends. A score counts whole seconds only.
 - **Derelicts.** Derelicts arrive on their own throughout a run. They are
-  sparse and slow, cross the system on paths that do not depend on where the
-  player is or how they move, and are the same for the same seed. A run can be
-  survived without touching one.
+  rare and slow, not targets to practise on: the first comes early in a run at
+  a seeded time, later ones come much further apart, and only one derelict is
+  in play at a time, its pieces included. An arrival due while one is in play
+  is skipped. Derelicts cross the system on paths that do not depend on where
+  the player is or how they move, and are the same for the same seed. A run
+  can be survived without touching one.
 - **Score.** The simulation computes the score from what happened in the run,
   by one formula. Rendering never counts toward it. The running score shows
   during flight and the final score on run complete, as the
@@ -85,7 +88,9 @@ Survival is the only mode whose runs can be ranked.
 - [x] S6: Exposure near the star and collisions with planets reduce hull.
 - [x] S7: Time freezes when the run ends and starts from zero on a fresh run.
 - [x] S8: Derelict arrivals follow `SURVIVAL_ENCOUNTER`, are deterministic for a
-  seed, and do not change with the player's position or motion.
+  seed, and do not change with the player's position or motion; the first
+  falls in its seeded window, every later gap is longer than that window, and
+  no arrival happens while a derelict or its pieces are in play.
 - [x] S9: The score equals `Simulation.survivalScore`, is deterministic for a
   seed, and counts whole seconds only.
 - [ ] S10: The running score shows during a scored run and the final score on
@@ -130,6 +135,12 @@ Feature: Survival
     When I fly close to the star
     Then my ship collects energy
     And close enough to the star my hull is damaged
+
+  Scenario: Derelicts are rare
+    Given a Survival run in progress
+    When a derelict or its pieces are still in play
+    Then no other derelict arrives
+    And the next derelict comes much later than the first did
 
   Scenario: Derelicts do not depend on me
     Given two Survival runs with the same seed
