@@ -17,6 +17,7 @@ never the run.
   geometry.
 - `packages/mode-a/src/lib/flight-frame.ts` defines the in-flight frame's
   canvas passes and their draw order; the screen draws the frame through it.
+  [Render](../render/spec.md) owns that model.
 - `apps/web/src/pages/index.astro`, `apps/web/src/layouts/Layout.astro` and
   `packages/core/src/lib/styles/flight.css` provide viewport containment.
 - This contract owns screen geometry, layer placement, browser interaction

@@ -10,52 +10,20 @@ apart, so a conversation about the render architecture points at the thing
 itself instead of at a description of it.
 
 It is a presentation and an instrument. It decides nothing: a change to the
-render model is made in the frame definition and its owning specs, and the page
+render model is made in the [render](../../game/render/spec.md) contract and
+the frame definition, and the page
 then shows it.
 
 ## Architecture
 
-### The frame, defined once
+### What it shows
 
-The in-flight frame is defined in `packages/mode-a/src/lib/flight-frame.ts`:
-
-- `FLIGHT_PASSES` is the ordered list of canvas passes. Array order is draw
-  order. Each pass carries its `id`, `name`, coordinate `space` (`screen` or
-  `world`), `composite` operation, a one-line `draws` description, the `source`
-  file that owns its drawing, and its `draw` function.
-- `drawFlightFrame(frame, options)` draws the passes in that order. Screen
-  passes draw untransformed; world passes draw under the camera transform. It
-  owns the camera save and restore.
-- `options.include` selects which passes draw; `options.observe` receives each
-  drawn pass's id and its draw time. Neither exists in play: the game draws
-  every pass, unobserved.
-
-`apps/web/src/components/FlightDeck.svelte` draws the in-flight frame through
-`drawFlightFrame`, and the page draws through the same function. A pass added,
-removed or reordered in `FLIGHT_PASSES` changes the game and the page together.
-
-The passes, in draw order:
-
-| Pass               | Space  | Composite   | What it draws                                                         |
-| ------------------ | ------ | ----------- | --------------------------------------------------------------------- |
-| Void               | screen | source-over | The clear to the void colour                                          |
-| Starfield          | world  | source-over | Seeded background stars across the camera's view                      |
-| Arena boundary     | world  | source-over | The arena's ring                                                      |
-| Star               | world  | source-over | The sun's body and glow                                               |
-| Sun fields         | world  | source-over | World HUD: the sun's collection and damage rings                      |
-| Planets            | world  | source-over | Each planet with its orbit path and influence ring                    |
-| Derelicts          | world  | source-over | Wrecks, fragments and released energy squares                         |
-| Ship               | world  | source-over | The fitted build, or the stock ship                                   |
-| Light surface      | world  | lighter     | The persistent FX image: fresh emission stamped in, history decayed   |
-| Derelict apertures | world  | source-over | Square apertures restored over the composited light                   |
-| Ion beams          | world  | source-over | Ion cannon and point-defence beams, drawn directly, never accumulated |
-
-The light surface's behaviour belongs to the
-[effects layer](../../factory/effects/spec.md); the
-[world HUD and deck](../../../architecture.md#canonical-feature-names) names,
-[camera](../../game/camera/spec.md) framing and
-[game screen](../../game/game-screen/spec.md) geometry belong to their own
-documents. This page shows them and restates none of their rules.
+The [render](../../game/render/spec.md) contract owns the model: frame time,
+spaces, pass kinds and the in-flight frame's pass order. The page draws through
+the game's `drawFlightFrame` and lists the game's `FLIGHT_PASSES`
+(`packages/mode-a/src/lib/flight-frame.ts`), using its `include` and `observe`
+options. A pass added, removed or reordered there changes the game and the page
+together. The page restates none of the model's rules.
 
 The title backdrop is a different frame and is outside this page.
 
@@ -105,13 +73,6 @@ own.
 
 ### Definition of Done
 
-- [x] `FLIGHT_PASSES` holds the eleven passes above with unique ids, and
-  `drawFlightFrame` draws them in array order
-  (`packages/mode-a/src/lib/flight-frame.test.ts`).
-- [x] `drawFlightFrame` with `include` draws exactly the included passes, in
-  order, and reports exactly those to `observe` (`flight-frame.test.ts`).
-- [x] `FlightDeck.svelte` draws the in-flight frame only through
-  `drawFlightFrame`.
 - [x] `/lab/render-model` lists one row per pass in draw order and draws a
   running frame (`tests/browser/render-model.spec.ts`).
 - [x] Hiding a pass, Solo and build-up change which passes are reported as
