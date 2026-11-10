@@ -93,6 +93,10 @@ Each step is usable before the next.
   removed before it is added, where before black was painted over light that
   had already clipped to white, so rim pixels under saturated light are
   brighter than they were.
+- **Resolution check:** with the FX layer set to a quarter resolution and no
+  other change, light stays registered with the world and turns soft, since
+  the browser scales it smoothly. Pixelated scaling is a CSS choice for step 5.
+- **Tests:** 496 unit tests and all 93 browser tests pass.
 - **Found on the way:** the sun's field rings size their dashes from the
   canvas's CSS width (`drawSunFields`), so the same frame draws different
   dashes in a differently sized element. The comparison had to correct for a

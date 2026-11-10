@@ -189,7 +189,7 @@ neither: it draws every pass, unobserved.
   canvas composite operation to blend one layer with another.
 - [x] The FX layer is cut over derelict apertures, and no solid pass draws
   above it.
-- [ ] A layer's resolution can be changed without changing any pass.
+- [x] A layer's resolution can be changed without changing any pass.
 - [x] A frame with an empty interval leaves the FX layer's image unchanged
   (`tests/browser/fx-surface.spec.ts`).
 - [ ] Interval coverage: a source that crosses several times its own width
