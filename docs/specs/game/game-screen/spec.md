@@ -47,7 +47,9 @@ never the run.
 - The side gutters hold the thrust pads; thrust touches register only on those
   pads, at the bottom of each side gutter. At the top, the left gutter holds the
   hull and power instruments and the right gutter the survival time with the
-  running [Survival score](../survival/spec.md) below it.
+  running [Survival score](../survival/spec.md) below it. With
+  [Experimental mode](../experimental/spec.md) On, the experimental notice takes
+  the score's place.
 - At a safe viewport height of 700 CSS px and above, the side gutters hold
   their instruments, deck buttons and full-height pads without overlap.
 - Just above each pad assembly sits one deck button: Pause on the left, and a

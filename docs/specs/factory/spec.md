@@ -24,7 +24,11 @@ composition and consumer verification. `AGENTS.md` routes portable agents to it;
 `CLAUDE.md` links to that entry point and `.claude/skills` links to `.agents/skills`,
 so Claude reads the same skill without a separate copy. The `fx-development` skill
 adds the game-time, scene-budget and profiling workflow for effects; the living
-[FX spec](effects/spec.md) retains its behavior and acceptance authority.
+[FX spec](effects/spec.md) retains its behavior and acceptance authority. The
+`daily-pop` and `daily-pop-sdlc` skills live beside these in `.agents/skills` and
+are available to Claude through the same symlink. They guide evidence-backed,
+authorized improvement discovery; project intent, behavior contracts, and factory
+rules remain owned by the linked vision, specs, and development documents.
 
 Flow: spoken intent → concise contract → bounded implementation → deterministic gates → browser/Lab evidence → human experience review → local commit → explicitly authorized publication.
 

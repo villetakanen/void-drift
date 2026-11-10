@@ -6,8 +6,11 @@
 
 The player flies one ship at a time: the active ship. It is what the title
 screen shows and what every launch flies. The Hangar is where the player makes
-a ship active and fits it; nothing else changes it. A new player must be able to
-fly at once, so a new device starts with one fitted ship.
+a ship active and fits it; nothing else changes it.
+
+A new player must be able to press Start without visiting the Hangar first. For
+that reason alone the Wasp comes fitted. It is not a suggested build, and no
+ship has a default fitting the player can return to.
 
 ### Architecture and boundaries
 
@@ -22,18 +25,20 @@ fly at once, so a new device starts with one fitted ship.
   active ship and the per-chassis fittings for the title page and the Hangar.
   `TitleScreen.svelte`, `GameWrapper.svelte`, `FlightDeck.svelte` and
   `ShipBuilder.svelte` read it; only the Hangar writes it.
-- **Neighbours.** [Hangar](../hangar/spec.md) owns how ships are chosen and
-  fitted on screen. [Experimental mode](../experimental/spec.md) owns which
+- **Neighbours.** [Ships](../ships/spec.md) and [parts](../parts/spec.md) own
+  what a ship and a fitting are. [Hangar](../hangar/spec.md) owns how ships are
+  chosen and fitted on screen. [Experimental mode](../experimental/spec.md) owns which
   ships and parts may be chosen and when launch is unavailable for experimental
   content. The [game contract](../spec.md) owns modes, ranking and launch
   sources. [Title screen](../landing-page/spec.md) owns how the ship is drawn.
 
 ### Rules
 
-- **New device.** The active ship is the Wasp with a light ion cannon and an ion
-  point defence in its hull mounts, one light ion engine and stabilizers on
-  (`starterLoadout("wasp")` in code). Every other ship starts with only its
-  required engines fitted and its optional mounts empty.
+- **New player.** With nothing stored, the active ship is the Wasp, fitted with
+  a light ion cannon, an ion point defence and one light ion engine, so that
+  PRESS START flies an armed ship at once. Every other ship can fly, because its
+  required engines are fitted; what else it carries is catalog data, not part of
+  this contract.
 - **Making a ship active.** Choosing a ship in the Hangar makes it the active
   ship at once, with no Apply or confirm step. Opening `/hangar?chassis=<id>`
   with a valid, available ship chooses it the same way; an invalid or
@@ -48,11 +53,10 @@ fly at once, so a new device starts with one fitted ship.
   experimental content follows [Experimental mode](../experimental/spec.md).
 - **Title screen.** The title screen shows the active ship in its fitting.
 - **Persistence.** The active ship and every chassis's fitting are kept in this
-  browser across visits. A missing store gives the new-device state. A stored
-  value that fails its schema falls back to the new-device state for what failed
-  and keeps every fitting that parses. Without browser storage the game runs on
-  the new-device state in memory, and the Hangar's save status says that
-  choices will not be kept.
+  browser across visits. A stored value that fails its schema is replaced by
+  what a new player would have for that value, and every fitting that parses is
+  kept. Without browser storage the game runs in memory from the new player's
+  ships, and the Hangar's save status says that choices will not be kept.
 - **Stable during a run.** The active ship never changes during a run, and a
   run's ship is fixed when it starts.
 
@@ -63,9 +67,9 @@ fly at once, so a new device starts with one fitted ship.
 - [ ] A1: `BuildStoreSchema` holds the active chassis alongside the per-chassis
   fittings; an existing `void-drift-builds-v3` store migrates with every
   fitting kept and the Wasp active.
-- [ ] A2: A new device's active ship is the Wasp with light ion cannon, ion
-  point defence, one light ion engine and stabilizers; every other chassis has
-  only its required engines fitted.
+- [ ] A2: With nothing stored, the active ship is the Wasp with a light ion
+  cannon, an ion point defence and one light ion engine, and every other ship
+  in the catalog is flyable.
 - [ ] A3: Choosing a ship in the Hangar, by pointer, keyboard or a valid
   `chassis` query, makes it active with no further action; an invalid or
   unavailable query leaves the active ship unchanged.
@@ -103,20 +107,20 @@ Feature: Active ship
 
   Scenario: Choosing a ship makes it active
     Given I open the Hangar
-    When I choose the Scout
+    When I choose another ship
     And return to the title screen
-    Then the title screen shows the Scout in its fitting
-    And PRESS START flies the Scout
+    Then the title screen shows that ship in its fitting
+    And PRESS START flies it
 
   Scenario: Fittings stay with their ship
-    Given I fitted the Fighter and then chose the Wasp
-    When I choose the Fighter again
-    Then the Fighter has the fitting I left on it
+    Given I fitted one ship and then chose another
+    When I choose the first ship again
+    Then it has the fitting I left on it
 
   Scenario: Every launch flies the active ship
-    Given the Scout is the active ship
+    Given a ship other than the Wasp is the active ship
     When I start Practice or Derelicts from the Hangar
-    Then the run flies the Scout in its fitting
+    Then the run flies that ship in its fitting
 
   Scenario: Required engines stay
     Given any ship in the Hangar
@@ -125,13 +129,8 @@ Feature: Active ship
 
   Scenario: A corrupt store keeps what it can
     Given the stored active chassis is not valid
-    And the Scout's stored fitting is valid
+    And another ship's stored fitting is valid
     When I load the game
     Then the Wasp is the active ship
-    And the Scout keeps its fitting
+    And the other ship keeps its fitting
 ```
-
-### Open decisions
-
-- **Restoring a fitting.** Whether the player can return a ship to its
-  new-device fitting from the Hangar.

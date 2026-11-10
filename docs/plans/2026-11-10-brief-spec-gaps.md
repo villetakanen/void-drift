@@ -80,7 +80,7 @@ place. Specs are ASDLC.io-style living specs; follow the `spec` skill.
 
 1. **The stable ships.** Nothing describes the Wasp, the Scout and the Fighter
    as ships (slots, hull, role, handling).
-   [Propulsion](../specs/game/ships/propulsion/spec.md) covers only the cruise
+   The former propulsion spec (now part of the [ships spec](../specs/game/ships/spec.md)) covered only the cruise
    ceiling. "Polish to stable quality" has nothing to be checked against.
 2. **Stable parts without a spec.** Light ion and heavy ion engines (only their
    speed contribution is specified), Potential Well (`battery`), Heavy

@@ -20,6 +20,17 @@ export interface FlightSceneConfig {
 }
 
 /**
+ * How the scene is looked at (02.2). `follow` centres the ship at that zoom in
+ * place of the game camera; `magnify` enlarges the finished frame's pixels
+ * around the ship.
+ */
+export interface FlightSceneView {
+  follow: number | null;
+  magnify: number;
+}
+export const GAME_VIEW: FlightSceneView = { follow: null, magnify: 1 };
+
+/**
  * Flight scene study, 02.1: a burn flown by the production simulation and drawn
  * in the game's order. An instant is only reachable by flying to it, so a jump
  * re-flies the burn from its start; `history` is how many of the last ticks
@@ -32,6 +43,8 @@ export class FlightScene {
   private readonly renderer: Renderer;
   private readonly camera = new Camera();
   private readonly fx = new FlightFx();
+  private view = GAME_VIEW;
+  private copy?: CanvasRenderingContext2D;
 
   constructor(
     private readonly ctx: CanvasRenderingContext2D,
@@ -46,7 +59,9 @@ export class FlightScene {
       ? null
       : { seconds: this.sim.ticks * STEP, cause: this.sim.state.deathCause };
   }
-  restart(burn: BurnId) {
+  /** The light surface follows the camera, so another view flies the burn again. */
+  restart(burn: BurnId, view = this.view) {
+    this.view = view;
     this.burn = burn;
     this.tick = 0;
     this.sim = new Simulation({
@@ -113,16 +128,34 @@ export class FlightScene {
   }
   /** One tick of light on the surface; what it composites is drawn over. */
   private light() {
-    this.renderer.beginCamera(this.camera);
+    this.begin();
     this.fx.draw(this.ctx, this.sim);
-    this.renderer.endCamera();
+    this.ctx.restore();
+  }
+  /** Applies the view's world transform and returns the visible world rectangle. */
+  private begin() {
+    const { ctx, camera, sim } = this;
+    const zoom = this.view.follow;
+    ctx.save();
+    if (zoom === null) {
+      camera.applyTransform(ctx);
+      return camera.getViewRect();
+    }
+    ctx.translate(960, 540);
+    ctx.scale(zoom, zoom);
+    ctx.translate(-sim.ship.pos.x, -sim.ship.pos.y);
+    return {
+      x: sim.ship.pos.x - 960 / zoom,
+      y: sim.ship.pos.y - 540 / zoom,
+      width: 1920 / zoom,
+      height: 1080 / zoom,
+    };
   }
   /** FlightDeck's in-flight draw order, without the countdown overlay. */
   draw() {
-    const { ctx, sim, renderer, camera } = this;
+    const { ctx, sim, renderer } = this;
     renderer.clear();
-    renderer.beginCamera(camera);
-    renderer.drawBackground(camera.getViewRect());
+    renderer.drawBackground(this.begin());
     renderer.drawArenaBoundary(1200);
     renderer.drawStar(sim.star, sim.ticks * STEP * 1000);
     drawSunFields(ctx, sim.star, {
@@ -146,6 +179,38 @@ export class FlightScene {
     this.fx.draw(ctx, sim);
     if (sim.salvage) drawSalvageApertures(ctx, sim.salvage);
     this.fx.drawLfx(ctx, sim);
-    renderer.endCamera();
+    const centre = new DOMPoint(sim.ship.pos.x, sim.ship.pos.y).matrixTransform(
+      ctx.getTransform(),
+    );
+    ctx.restore();
+    if (this.view.magnify > 1) this.enlarge(centre.x, centre.y);
+  }
+  /** The finished frame's own pixels, enlarged around a point without smoothing. */
+  private enlarge(x: number, y: number) {
+    const { ctx } = this;
+    if (!this.copy) {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1920;
+      canvas.height = 1080;
+      this.copy = canvas.getContext("2d") ?? undefined;
+    }
+    if (!this.copy) return;
+    this.copy.drawImage(ctx.canvas, 0, 0);
+    const w = 1920 / this.view.magnify,
+      h = 1080 / this.view.magnify;
+    this.renderer.clear();
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(
+      this.copy.canvas,
+      x - w / 2,
+      y - h / 2,
+      w,
+      h,
+      0,
+      0,
+      1920,
+      1080,
+    );
+    ctx.imageSmoothingEnabled = true;
   }
 }

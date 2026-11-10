@@ -19,7 +19,7 @@ Equipment progression eventually involves earning and buying equipment. During
 alpha and potentially beta, [Experimental mode](../experimental/spec.md) decides
 which ships and equipment the Hangar offers and whether runs are ranked: Off
 offers stable content only and ranks Survival runs; On offers everything and
-ranks nothing, while runs still show their score.
+scores nothing.
 
 This purpose guides the opening design; it does not require printing explanatory
 purpose text on the game screen or prescribe a component called Header. The
@@ -268,7 +268,7 @@ prior work; it is not a competing current specification.
    acceleration assumes full power, all fitted engines active and a start from
    rest; it is an instantaneous estimate before pulse or charge timing. Existing
    version-2 saved loadouts keep their IDs and restore without migration. The
-   [ship propulsion contract](../ships/propulsion/spec.md) owns values and flight law.
+   [ships contract](../ships/spec.md) owns the flight law.
 5. **System choices affect flight.** Stabilizers default on; explicit saved choices
    persist except that Wasp and Fiddler require them. Linked engines defaults off and changes
    the aft-engine command from both inputs to either input. Neither input commands

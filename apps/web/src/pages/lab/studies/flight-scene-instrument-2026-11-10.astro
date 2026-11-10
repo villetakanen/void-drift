@@ -1,5 +1,6 @@
 ---
 import FlightScene021 from "../../../components/studies/FlightScene021.svelte";
+import FlightScene022 from "../../../components/studies/FlightScene022.svelte";
 import { studies } from "../../../data/studies";
 import StudyLayout from "../../../layouts/StudyLayout.astro";
 
@@ -21,11 +22,12 @@ const study = studies.find(
       <a href="/lab/studies/gravity-coil-fx-2026-11-03">gravity fold flyby</a>
       and the
       <a href="/lab/studies/light-ion-cannon-2026-11-08">Light Ion Cannon</a>
-      ray each chose their own ship drawing, background, effects, flight script
-      and playback controls. One drew the hull by hand, several flew a private
-      approximation of the physics, and only one composed the layers the way the
-      game does. The effect is judged against a different picture every time,
-      and none of those pictures is quite the game.
+      ray each chose their own background, effects and playback controls. Two
+      shared a flight script and one borrowed the Motion instrument’s burns; the
+      rest wrote their own. One drew the hull by hand, several flew a private
+      approximation of the physics, and none composed every layer the game
+      draws. The effect is judged against a different picture every time, and
+      none of those pictures is quite the game.
     </p>
     <p>
       The Flight scene instrument is the Motion instrument’s sibling. It keeps
@@ -35,31 +37,37 @@ const study = studies.find(
       layers: stars, ship, engine effects, the light surface and weapon fire,
       drawn by the production renderers from the production simulation. An agent
       configures the ship and the scene; the designer picks a burn, moves
-      through time and looks.
+      through time and looks. The Light Ion Cannon study planted the seed: it
+      put a small game view in the Motion instrument’s path pane and repainted
+      its light from the start of the burn whenever the cursor moved back. The
+      scene has the game’s gravity and power limits, so a burn flies a different
+      path here than on the Motion instrument’s graphs.
     </p>
     <p>
       The tension is between a picture that can be inspected and a picture that
       is true. The game’s light is not a function of the moment: the effects
       surface is fading pixel history, sparks and the camera carry state, and
-      weapons fire by themselves only when a target is in line. A time slider
-      asks for any instant on demand; the game can only arrive at an instant by
-      flying there. How the instrument reconciles the two decides what a study
-      can trust it to show.
+      weapons fire by themselves only when a target is within their reach and
+      the ship has power. A time slider asks for any instant on demand; the game
+      can only arrive at an instant by flying there. How the instrument
+      reconciles the two decides what a study can trust it to show.
     </p>
     <h3>Held fixed</h3>
     <ul>
       <li>
         The Motion instrument’s burn programs B1, B2 and B3, their 14 seconds
-        and the shared time cursor.
+        and the time cursor that selects an instant.
       </li>
       <li>
         The full-window, snapping study embed and the pane that holds the values
         under investigation.
       </li>
       <li>
-        Production simulation, renderers and draw order. The instrument adds no
-        ship art, effect or physics of its own, and later production changes
-        show up in it.
+        Production simulation and renderers, drawn in the game’s order. The
+        instrument adds no ship art, effect or physics of its own, and later
+        production changes show up in it. The order itself is written only
+        inside the game’s flight screen today, so the instrument copies it until
+        it is shared.
       </li>
       <li>
         The agent supplies the configuration; the designer adjusts only what the
@@ -73,17 +81,18 @@ const study = studies.find(
         playback sit around it.
       </li>
       <li>
-        Time: whether the scene plays, scrubs or both, and what scrubbing shows
-        of light that depends on the preceding moments.
+        Time: what a jump to an instant shows of light that depends on the
+        preceding moments, and whether the scene also plays.
       </li>
       <li>
         The camera: the game’s framing and zoom jumps, a fixed view, or a
         choice.
       </li>
       <li>
-        The scene around the ship: what a configuration can place (a sun, a
-        planet, targets that make weapons fire) and which layers the designer
-        can switch off to isolate one.
+        The scene around the ship: what a configuration can change in the game’s
+        arena (where the ship starts, which bodies are present, targets that
+        make weapons fire) and which layers the designer can switch off to
+        isolate one.
       </li>
       <li>Whether one ship is enough or a comparison belongs on the screen.</li>
     </ul>
@@ -94,10 +103,167 @@ const study = studies.find(
       weapon inputs are adjacent questions. The game has no fire button, so a
       burn stays an engine program.
     </p>
+    <aside class="stamp" aria-labelledby="stamp">
+      <h3 id="stamp">Question check · 10 November 2026</h3>
+      <p>
+        An independent reviewer with no part in the framing tested this section
+        as first written. Grounded failed on how the section described what
+        exists, not on whether it exists; the text above was corrected
+        afterwards and has not been tested again.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Metric</th>
+            <th scope="col">Result</th>
+            <th scope="col">Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">One subject</th>
+            <td>Pass</td>
+            <td>
+              One object, the instrument. The five open items are facets of its
+              screen, and four adjacent questions are named.
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Grounded</th>
+            <td>Fail</td>
+            <td>
+              Every fixed item exists and every open item can be shown. The
+              section overstated how far the earlier views differed, left out
+              the Light Ion Cannon study’s scene in the Motion instrument,
+              called the draw order shared when it is written in one place, and
+              listed the time cursor as fixed while leaving scrubbing open.
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Consequence</th>
+            <td>Pass</td>
+            <td>
+              Studies judge flight on one shared screen instead of building
+              their own. The change is to the Lab, not the game, which the
+              test’s usual wording does not cover.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </aside>
   </section>
   <section aria-labelledby="time">
-    <h2 id="time">02.1 / Can the game’s light be reached by a jump?</h2>
+    <h2 id="time">
+      02.1 / Can the game’s light be reached by a jump? — yes, by flying there
+    </h2>
+    <p>
+      <strong>Settled, 10 November 2026.</strong>
+      A jump flies the burn again from its start and paints the whole flight’s
+      light, so the frame it lands on is the frame playing would have shown. The
+      scene both plays and jumps. The setting in this example’s menu stays as
+      the evidence; the instrument itself has no such setting.
+    </p>
+    <p>
+      The first example takes the time question, because every other choice
+      rests on it. The hypothesis: a jump can show the frame the game would have
+      shown, if the instrument flies the burn again from its start to reach it.
+      Light on the effects surface halves every tenth of a second, so painting
+      only the last second of that flight should be enough.
+    </p>
+    <p>
+      Press Play, or drag Time to jump. The menu in the top-right corner sets
+      what a jump paints: only the instant it lands on, the last second before
+      it, or the whole flight. Compare the three at a moment when the engine or
+      the cannon is lit, such as 1.67 s on B1.
+    </p>
     <div class="bleed"><FlightScene021 client:visible /></div>
+    <p>
+      The scene is the game’s arena under Derelicts rules, with the encounter
+      held off: sun, planets, boundary, starfield and the game camera, drawn in
+      the flight screen’s order. The starter Wasp carries a Light Ion Cannon on
+      its first hull mount and starts at rest where a run starts. Two wrecks are
+      placed ahead of it so the cannon fires. Nothing is random. The screen
+      borrows the Motion instrument’s size, burn row and slider; its layout is
+      provisional.
+    </p>
+    <h3>Measured</h3>
+    <ul>
+      <li>
+        At nine instants on B1, a jump painting the last second differs from one
+        painting the whole flight in at most 7 of 2,073,600 pixels.
+      </li>
+      <li>
+        Painting only the landing instant differs in 800 to 16,000 pixels
+        whenever an engine or the cannon is lit: the plume and the ray’s
+        afterglow are missing.
+      </li>
+      <li>
+        A jump to the end of the burn takes about 0.2 s. Almost all of it is
+        flying the simulation; painting the whole flight’s light adds about a
+        seventh.
+      </li>
+    </ul>
+    <p>
+      These figures come from one machine on 10 November 2026. Painting the
+      whole flight runs the same code as playing, tick for tick, but the two
+      were not compared pixel by pixel. The figures say a jump can be faithful;
+      they do not say whether a still instant is a useful way to judge an effect
+      that the player only ever sees moving.
+    </p>
+    <p>
+      Two things show up that belong to later rounds. The game camera zooms out
+      as the ship climbs away from the sun, so the ship is small for most of the
+      burn. And the first wreck is destroyed within two seconds, after which the
+      cannon has nothing to fire at.
+    </p>
+  </section>
+  <section aria-labelledby="camera">
+    <h2 id="camera">02.2 / What should the scene be looked at through?</h2>
+    <p>
+      The game camera frames the ship and the sun together and jumps between
+      five zoom levels. That framing is part of what the player sees, but it
+      leaves the ship about twenty pixels long for most of a burn, too small to
+      judge a plume or a ray by. A closer look can be had in two ways that are
+      not the same thing: enlarge the picture the game made, or move the camera
+      in and let the game draw a new, sharper picture that no player ever gets.
+    </p>
+    <p>
+      The switch in the scene’s top-left corner offers four answers. Compare
+      them at 1.67 s on B1, with the engines and the cannon lit, and through the
+      zoom jump near 2.5 s.
+    </p>
+    <ul>
+      <li>
+        <strong>Game.</strong>
+        The game camera, as in 02.1: true framing, true zoom jumps, small ship.
+      </li>
+      <li>
+        <strong>Game 3×.</strong>
+        The same frame with its pixels enlarged three times around the ship.
+        Everything is exactly what the player gets, only bigger; the zoom jumps
+        remain.
+      </li>
+      <li>
+        <strong>Follow.</strong>
+        The ship held at the centre at the game’s closest zoom level, 1.6. A
+        scale the game does reach, without the framing or the jumps.
+      </li>
+      <li>
+        <strong>Follow 4×.</strong>
+        The ship at the centre at a zoom the game never reaches. Ship art and
+        light are drawn at that scale, so edges and afterglow are finer than in
+        play.
+      </li>
+    </ul>
+    <div class="bleed"><FlightScene022 client:visible /></div>
+    <p>
+      The hypothesis is that one view cannot serve: framing and zoom jumps need
+      Game, and an effect needs an enlargement, where Game 3× is the honest one
+      and Follow 4× the flattering one. The light surface is tied to the camera,
+      so switching the view flies the burn again. Scene, ship, wrecks and time
+      model are those of 02.1. The switch sits on the scene only for this
+      comparison; where it belongs is a layout question.
+    </p>
   </section>
   <section><h2>03 / To be developed after 02</h2></section>
 </StudyLayout>
@@ -113,6 +279,30 @@ html:has(.bleed) {
 section > p,
 section > ul {
   max-width: 72ch;
+}
+/* The prose column's width; the stamp's own type is smaller. */
+.stamp {
+  box-sizing: border-box;
+  max-width: 41rem;
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+}
+.stamp table {
+  border-collapse: collapse;
+}
+.stamp th,
+.stamp td {
+  padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) 0;
+  text-align: left;
+  vertical-align: top;
+}
+.stamp tbody th {
+  white-space: nowrap;
+  font-weight: normal;
+  color: var(--color-text);
 }
 /* Full window band: the instrument fills it and snaps to its centre. */
 .bleed {

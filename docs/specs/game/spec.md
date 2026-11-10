@@ -14,7 +14,7 @@ Void Drift is a procedural space survival game played in the browser. A pilot fl
 - This contract owns the game as a whole: its modes, launch and return, replay, ranking eligibility and the scoring boundary. Child contracts own the parts:
   - **Flight screen:** [game screen](game-screen/spec.md), [camera](camera/spec.md), [controls](controls/spec.md), [dialogs](dialogs/spec.md)
   - **Modes:** [Survival](survival/spec.md), [Practice](test-flight/spec.md), [Derelicts](derelicts/spec.md)
-  - **Launch and ships:** [title screen](landing-page/spec.md), [Hangar](hangar/spec.md), [active ship](active-ship/spec.md), [Experimental mode](experimental/spec.md), [propulsion](ships/propulsion/spec.md)
+  - **Launch and ships:** [title screen](landing-page/spec.md), [Hangar](hangar/spec.md), [active ship](active-ship/spec.md), [Experimental mode](experimental/spec.md), [ships](ships/spec.md), [parts](parts/spec.md)
   - **World:** [star](world/star/spec.md), [gravity](world/gravity-field/spec.md)
   - **Scores and options:** [high scores](high-scores/spec.md), [options](options/spec.md)
   - **Effects:** [FX](../factory/effects/spec.md)
@@ -24,7 +24,7 @@ Void Drift is a procedural space survival game played in the browser. A pilot fl
 - **Modes:** flight settings name a mode: Survival, Practice or Derelicts. A missing mode means Survival, and a legacy `testFlight: true` with no mode means Practice.
 - **Launch and return:** a run starts from the title screen or the Hangar, independently of its mode. Abort and game over return to the place it started from.
 - **PRESS START:** it launches a Survival run with the [active ship](active-ship/spec.md) in a fresh seeded G-class system. Every other launch flies the active ship too. The Hangar owns ship choice.
-- **Ranked runs:** a Survival run under the current `CHALLENGE`, started from the title screen or the Hangar while [Experimental mode](experimental/spec.md) is Off, is ranked. Every run while Experimental is On, and every Practice and Derelicts run, is unranked and cannot submit.
+- **Ranked runs:** a Survival run under the current `CHALLENGE`, started from the title screen or the Hangar while [Experimental mode](experimental/spec.md) is Off, is scored and ranked. A Survival run while Experimental is On is not scored: it shows its time and the experimental notice in place of the score. Every run while Experimental is On, and every Practice and Derelicts run, is unranked and cannot submit.
 - **Scores:** a score is a casual, client-reported [Survival score](survival/spec.md) with the run's whole seconds, labelled as such. Firestore rules check ownership, shape, challenge and bounds, but cannot prove an honest run.
   - A row carries `score` (integer, at least the seconds and at most `MAX_SCORE`, 100000) and `seconds` (integer, 1–3600). `MAX_SCORE` bounds 3600 s, 720 derelict groups (first at 3 s, then at least 5 s apart) of at most 91 scoring hits each (43 on the wreck and 6 on each of eight pieces at the weakest 2-point band) and one 20-point cell each: 83 520, rounded up.
   - Each anonymous player keeps one best per ship; a run whose score is not higher keeps the existing best.
@@ -32,7 +32,7 @@ Void Drift is a procedural space survival game played in the browser. A pilot fl
 - **Replay:** identical validated settings and inputs reproduce the same world state, step for step.
 - **Offline:** without Firebase the game stays fully playable, and score features explain why they are unavailable.
 - **Version labels:** the title screen and the leaderboard show the web package version, which is separate from the challenge identifier.
-- **Run complete:** the dialog shows one vertical action group. On a ranked run, Save Score is primary when submission is available, and the dialog says why when it is not; unranked runs show no Save Score. Returning to where the run started is secondary, and so is Top Scores after a Survival run. Practice has no run complete.
+- **Run complete:** a ranked Survival run shows its score and the time survived; with Experimental On it shows the experimental notice in place of the score, and the time. The dialog shows one vertical action group. On a ranked run, Save Score is primary when submission is available, and the dialog says why when it is not; unranked runs show no Save Score. Returning to where the run started is secondary, and so is Top Scores after a Survival run. Practice has no run complete.
 
 ## Contract
 
@@ -48,7 +48,8 @@ Void Drift is a procedural space survival game played in the browser. A pilot fl
 - [x] Practice, Derelicts and Fiddler runs show no Save Score and never call
   score submission; the submission schema rejects Fiddler.
 - [ ] A Survival run launched from the Hangar with Experimental Off is ranked
-  like a title-screen run; with Experimental On, no run shows Save Score.
+  like a title-screen run; with Experimental On, no run shows a score or Save
+  Score, and a Survival run shows its time and the experimental notice.
 - [x] Firestore rules reject unauthenticated, other-owner, malformed,
   mismatched-document, wrong-challenge, out-of-bounds, decreasing-score,
   extra-field and deletion writes, and reject unbounded or unauthenticated
@@ -95,7 +96,7 @@ Void Drift is a procedural space survival game played in the browser. A pilot fl
 
 ```gherkin
 Scenario: Fixed-step replay
-  Given a stock ship and validated flight settings
+  Given a fitted ship and validated flight settings
   When both engines fire for 120 fixed steps
   Then the ship has moved and its power has decreased
   When a fresh simulation replays the same settings and inputs
@@ -113,9 +114,9 @@ Scenario: Missing mode
 
 Scenario: PRESS START
   Given Experimental is Off
-  And the player chose the Scout in the Hangar and returned to the title screen
+  And the player chose a ship in the Hangar and returned to the title screen
   When the player activates PRESS START
-  Then a Survival run starts with the Scout in its Hangar fitting
+  Then a Survival run starts with that ship in its Hangar fitting
   And the star is G-class and the seed is fresh
   And the run is ranked
 
@@ -131,11 +132,12 @@ Scenario Outline: Return to the launch source
     | title screen | game-over Return |
     | Hangar       | game-over Return |
 
-Scenario: Experimental run is unranked
+Scenario: Experimental run is unscored
   Given Experimental is On
   And a Survival run launched from the Hangar
   When the run ends
-  Then run complete shows the score and no Save Score
+  Then run complete shows the time and the experimental notice
+  And it shows no score and no Save Score
   And no score is submitted
 
 Scenario: Equal run keeps the best
