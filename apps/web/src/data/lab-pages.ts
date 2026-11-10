@@ -164,7 +164,7 @@ export const labPages = z.array(labPageSchema).parse([
     href: "/lab/render-model",
     title: "Render model",
     purpose:
-      "The flight frame taken apart: passes, draw order, spaces and layers.",
+      "Compare World, persistent FX and fresh LFX across browser blend modes.",
     group: "tools",
     source: "production",
   },

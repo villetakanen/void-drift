@@ -6,10 +6,15 @@ import { FLIGHT_LAYERS, type FlightLayerId } from "@void-drift/mode-a";
 let {
   canvases = $bindable({}),
   label,
+  blends = {},
+  visibility = {},
 }: {
   canvases?: Partial<Record<FlightLayerId, HTMLCanvasElement>>;
   /** Names the World canvas; the layers above it are decorative. */
   label: string;
+  /** Presentation-only overrides; omitted layers retain production defaults. */
+  blends?: Partial<Record<FlightLayerId, string>>;
+  visibility?: Partial<Record<FlightLayerId, boolean>>;
 } = $props();
 </script>
 
@@ -18,7 +23,8 @@ let {
     <canvas
       bind:this={canvases[layer.id]}
       data-layer={layer.id}
-      style:mix-blend-mode={layer.blend}
+      style:mix-blend-mode={blends[layer.id] ?? layer.blend}
+      style:visibility={visibility[layer.id] === false ? "hidden" : "visible"}
       aria-label={layer.id === "world" ? label : undefined}
       aria-hidden={layer.id === "world" ? undefined : true}
     ></canvas>

@@ -1,422 +1,396 @@
 <script lang="ts">
-import { FLIGHT_PASSES, type FlightLayerId, STEP } from "@void-drift/mode-a";
+import { type FxPass, FxSurface } from "@void-drift/core";
+import { FLIGHT_LAYERS, type FlightLayerId } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import FlightLayers from "../FlightLayers.svelte";
-import { RenderModelScene } from "./render-model-scene";
 
-// Page elements that stack over the canvas, lowest first. Values are read
-// from the tokens on mount.
-const ABOVE = [
-  {
-    token: "--layer-hud",
-    name: "Deck",
-    holds: "Instruments, thrust pads, deck buttons and info rows",
-    source: "packages/core/src/lib/styles/flight.css",
-  },
-  {
-    token: "--layer-overlay",
-    name: "Dialogs",
-    holds: "Pause, run complete and rotate dialogs with their scrim",
-    source: "packages/core/src/lib/styles/surfaces.css",
-  },
-  {
-    token: "--layer-toast",
-    name: "Status message",
-    holds: "The flight message over everything",
-    source: "packages/core/src/lib/styles/flight.css",
-  },
-];
+const WIDTH = 1920;
+const HEIGHT = 1080;
+type BlendMode =
+  | "normal"
+  | "plus-lighter"
+  | "screen"
+  | "multiply"
+  | "hard-light";
+const BLENDS = [
+  { label: "Normal", value: "normal" },
+  { label: "Add", value: "plus-lighter" },
+  { label: "Screen", value: "screen" },
+  { label: "Multiply", value: "multiply" },
+  { label: "Hard light", value: "hard-light" },
+] as const satisfies readonly { label: string; value: BlendMode }[];
+const COLORS = {
+  world: ["#ff426f", "#ffc857"],
+  fx: ["#52eaff", "#a875ff"],
+  lfx: ["#b8ff52", "#ff8d3a"],
+} satisfies Record<FlightLayerId, readonly [string, string]>;
 
 let { label = "Render model" }: { label?: string } = $props();
 let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
-let running = $state(true);
-let hidden = $state<string[]>([]);
-let solo = $state<string | null>(null);
-let upTo = $state(FLIGHT_PASSES.length);
-let ticks = $state(0);
-let drawn = $state<string[]>([]);
-let times = $state<Record<string, number>>({});
-let layers = $state<Record<string, string>>({});
-let step = () => {},
-  restart = () => {};
-
-const included = $derived(
-  FLIGHT_PASSES.filter((pass, index) =>
-    solo ? pass.id === solo : index < upTo && !hidden.includes(pass.id),
-  ).map((pass) => pass.id),
+let blends = $state<Record<FlightLayerId, string>>(
+  Object.fromEntries(
+    FLIGHT_LAYERS.map(({ id, blend }) => [id, blend]),
+  ) as Record<FlightLayerId, BlendMode>,
 );
-function toggle(id: string) {
-  hidden = hidden.includes(id)
-    ? hidden.filter((other) => other !== id)
-    : [...hidden, id];
+let visible = $state<Record<FlightLayerId, boolean>>({
+  world: true,
+  fx: true,
+  lfx: true,
+});
+let running = $state(false);
+let hasSample = $state(false);
+let ready = $state(false);
+let presentationTime = 0;
+let surface: FxSurface | undefined;
+let frame = 0;
+
+function context(id: FlightLayerId) {
+  return canvases[id]?.getContext("2d") ?? undefined;
+}
+function resolution(id: FlightLayerId) {
+  return FLIGHT_LAYERS.find((layer) => layer.id === id)?.resolution ?? 1;
+}
+function clearLayer(ctx: CanvasRenderingContext2D) {
+  ctx.resetTransform();
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  ctx.setTransform(
+    resolution(ctx.canvas.dataset.layer as FlightLayerId),
+    0,
+    0,
+    resolution(ctx.canvas.dataset.layer as FlightLayerId),
+    0,
+    0,
+  );
+}
+function drawSamples(
+  ctx: CanvasRenderingContext2D,
+  colors: readonly [string, string],
+  centers: readonly [number, number],
+) {
+  ctx.save();
+  ctx.resetTransform();
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  const scale = resolution(ctx.canvas.dataset.layer as FlightLayerId);
+  ctx.setTransform(scale, 0, 0, scale, 0, 0);
+  ctx.globalCompositeOperation = "source-over";
+  ctx.globalAlpha = 1;
+  for (const [index, x] of centers.entries()) {
+    ctx.fillStyle = colors[index];
+    ctx.beginPath();
+    ctx.arc(x, 540, 190, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+function stampFx(ctx: CanvasRenderingContext2D, pass: FxPass) {
+  if (!pass.budget.take()) return;
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  ctx.globalAlpha = pass.opacity;
+  ctx.fillStyle = COLORS.fx[0];
+  ctx.beginPath();
+  ctx.arc(825, 540, 175, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = COLORS.fx[1];
+  ctx.beginPath();
+  ctx.arc(1095, 540, 175, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+function paint() {
+  const world = context("world");
+  const fx = context("fx");
+  const lfx = context("lfx");
+  if (!world || !fx || !lfx || !surface) return;
+  drawSamples(world, COLORS.world, [700, 960]);
+  drawSamples(lfx, COLORS.lfx, [960, 1220]);
+  hasSample = true;
+  presentationTime += 1 / 60;
+  clearLayer(fx);
+  surface.draw(fx, presentationTime, stampFx);
+}
+function clear() {
+  for (const id of FLIGHT_LAYERS.map((layer) => layer.id)) {
+    const ctx = context(id);
+    if (ctx) {
+      ctx.resetTransform();
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+  }
+  surface?.clear();
+  hasSample = false;
+}
+function setRunning(next: boolean) {
+  running = next;
+  if (next) {
+    let last: number | undefined;
+    const tick = (now: number) => {
+      if (!running) return;
+      if (last !== undefined) {
+        presentationTime += Math.min(0.1, Math.max(0, (now - last) / 1000));
+        const fx = context("fx");
+        const world = context("world");
+        const lfx = context("lfx");
+        if (hasSample && world) drawSamples(world, COLORS.world, [700, 960]);
+        else if (world) clearLayer(world);
+        if (hasSample && lfx) drawSamples(lfx, COLORS.lfx, [960, 1220]);
+        else if (lfx) clearLayer(lfx);
+        if (fx) {
+          clearLayer(fx);
+          surface?.draw(fx, presentationTime, () => {});
+        }
+      }
+      last = now;
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+  } else cancelAnimationFrame(frame);
 }
 
 onMount(() => {
-  const css = getComputedStyle(document.documentElement);
-  layers = Object.fromEntries(
-    ABOVE.map(({ token }) => [token, css.getPropertyValue(token).trim()]),
-  );
-  const world = canvases.world?.getContext("2d"),
-    fx = canvases.fx?.getContext("2d"),
-    lfx = canvases.lfx?.getContext("2d");
-  if (!world || !fx || !lfx) return;
-  const scene = new RenderModelScene({ world, fx, lfx });
-  step = () => scene.step();
-  restart = () => scene.restart();
-  let last = performance.now(),
-    carry = 0,
-    frame = 0,
-    frames = 0;
-  const smoothed = new Map<string, number>();
-  const draw = (now: number) => {
-    if (running) {
-      carry += Math.min(0.1, (now - last) / 1000);
-      while (carry >= STEP) {
-        scene.step();
-        carry -= STEP;
-      }
-    } else carry = 0;
-    last = now;
-    const visible = included;
-    const passes: string[] = [];
-    scene.draw(
-      {
-        include: (pass) => visible.includes(pass.id),
-        observe: (pass, ms) => {
-          passes.push(pass.id);
-          const before = smoothed.get(pass.id);
-          smoothed.set(
-            pass.id,
-            before === undefined ? ms : before * 0.9 + ms * 0.1,
-          );
-        },
-      },
-      solo !== null,
-    );
-    for (const id of smoothed.keys())
-      if (!passes.includes(id)) smoothed.delete(id);
-    ticks = scene.ticks;
-    if (passes.join() !== drawn.join()) drawn = passes;
-    if (frames++ % 15 === 0) times = Object.fromEntries(smoothed);
-    frame = requestAnimationFrame(draw);
+  let disposed = false;
+  const initialize = () => {
+    if (disposed) return;
+    for (const { id, resolution } of FLIGHT_LAYERS) {
+      const canvas = canvases[id];
+      if (!canvas) throw new Error(`Missing ${id} FlightLayers canvas binding`);
+      canvas.width = Math.round(WIDTH * resolution);
+      canvas.height = Math.round(HEIGHT * resolution);
+    }
+    surface = new FxSurface();
+    paint();
+    ready = true;
   };
-  frame = requestAnimationFrame(draw);
-  return () => cancelAnimationFrame(frame);
+  const initializeFrame = requestAnimationFrame(initialize);
+  return () => {
+    disposed = true;
+    cancelAnimationFrame(initializeFrame);
+    running = false;
+    cancelAnimationFrame(frame);
+    surface?.clear();
+  };
 });
 </script>
 
 <section
   class="render-model"
   aria-label={label}
-  data-ticks={ticks}
-  data-drawn={drawn.join(" ")}
+  data-ready={ready}
+  data-running={running}
 >
-  <div class="bench">
-    <div class="frame">
-      <div class="stage">
-        <FlightLayers
-          bind:canvases
-          label="The running flight frame, drawn from the selected passes"
-        />
-      </div>
-      <div class="transport">
-        <button
-          type="button"
-          class="btn btn-ghost"
-          onclick={() => (running = !running)}
-        >
-          {running ? "Pause" : "Run"}
-        </button>
-        <button
-          type="button"
-          class="btn btn-ghost"
-          disabled={running}
-          onclick={() => step()}
-        >
-          Step
-        </button>
-        <button type="button" class="btn btn-ghost" onclick={() => restart()}>
-          Restart
-        </button>
-        <span class="reading"
-          >tick {ticks} · {(ticks * STEP).toFixed(2)} s</span
-        >
-      </div>
-    </div>
-
-    <div class="passes">
-      <h2>Canvas passes, first drawn at the top</h2>
-      <label class="build-up">
-        <span> Build up: {upTo} of {FLIGHT_PASSES.length} </span>
-        <input
-          type="range"
-          min="1"
-          max={FLIGHT_PASSES.length}
-          step="1"
-          bind:value={upTo}
-          disabled={solo !== null}
-        >
-      </label>
-      <ol>
-        {#each FLIGHT_PASSES as pass, index (pass.id)}
-          <li
-            data-pass={pass.id}
-            class:off={!included.includes(pass.id)}
-            class:solo={solo === pass.id}
-          >
-            <span class="order">{index + 1}</span>
-            <label>
-              <input
-                type="checkbox"
-                checked={!hidden.includes(pass.id)}
-                onchange={() => toggle(pass.id)}
-              >
-              {pass.name}
-            </label>
-            <span class="time">
-              {times[pass.id] === undefined
-                ? "–"
-                : `${times[pass.id].toFixed(2)} ms`}
-            </span>
-            <button
-              type="button"
-              class="solo-button"
-              aria-pressed={solo === pass.id}
-              aria-label={`Solo ${pass.name}`}
-              onclick={() => (solo = solo === pass.id ? null : pass.id)}
-            >
-              Solo
-            </button>
-            <p>
-              <span class="tag">{pass.layer}</span>
-              <span class="tag">{pass.space}</span>
-              {pass.draws}
-              <small>{pass.source}</small>
-            </p>
-          </li>
-        {/each}
-      </ol>
-      <p class="note">
-        Draw times are smoothed measurements on this machine, for comparing
-        passes with each other. Hiding a pass changes only what is drawn; the
-        simulation runs on.
+  <header>
+    <div>
+      <p class="eyebrow">Rendering workbench</p>
+      <h1>{label}</h1>
+      <p>
+        Compare how the browser combines World, accumulated FX and fresh LFX.
       </p>
     </div>
-  </div>
+    <fieldset class="transport">
+      <legend>Picture controls</legend>
+      <button type="button" class="btn btn-primary" onclick={paint}>
+        Paint
+      </button>
+      <button
+        type="button"
+        class="btn btn-ghost"
+        onclick={() => setRunning(!running)}
+      >
+        {running ? "Pause" : "Run"}
+      </button>
+      <button type="button" class="btn btn-ghost" onclick={clear}>Clear</button>
+    </fieldset>
+  </header>
 
-  <div class="notes">
-    <h2>Frame loop</h2>
-    <ol class="loop">
-      <li>
-        <strong>Input.</strong>
-        Keyboard and thrust pads are read into one control state. This page
-        flies a fixed input program instead.
-      </li>
-      <li>
-        <strong>Simulation.</strong>
-        Frame time accumulates and the simulation advances in fixed steps of
-        1/60 s. Rendering never changes simulation state.
-      </li>
-      <li>
-        <strong>Camera.</strong>
-        Each step reframes the camera on the ship; the result is one world to
-        screen transform for the frame.
-      </li>
-      <li>
-        <strong>Canvas passes.</strong>
-        The {FLIGHT_PASSES.length}
-        passes draw in order onto one 1920 by 1080 logical canvas. Screen passes
-        draw untransformed, world passes under the camera transform.
-      </li>
-      <li>
-        <strong>Page elements.</strong>
-        The browser stacks the deck, dialogs and messages over the canvas by
-        their layer tokens. They are outside the camera transform.
-      </li>
-    </ol>
+  <div class="workbench">
+    <div class="pane">
+      <FlightLayers
+        bind:canvases
+        {blends}
+        visibility={visible}
+        label="Overlapping sample marks across World, FX and LFX"
+      />
+    </div>
 
-    <h2>Above the canvas</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Layer</th>
-          <th>Token</th>
-          <th>Value</th>
-          <th>Holds</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each ABOVE as layer (layer.token)}
-          <tr data-token={layer.token}>
-            <td>{layer.name}</td>
-            <td><code>{layer.token}</code></td>
-            <td class="value">{layers[layer.token] ?? ""}</td>
-            <td>
-              {layer.holds}
-              <small>{layer.source}</small>
-            </td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
+    <div class="layers">
+      {#each FLIGHT_LAYERS as layer (layer.id)}
+        <section class="layer" data-layer-controls={layer.id}>
+          <div class="layer-heading">
+            <h2>{layer.name}</h2>
+            <label class="visibility"
+              ><input type="checkbox" bind:checked={visible[layer.id]}>
+              Visible</label
+            >
+          </div>
+          <p>
+            {layer.id === "world"
+              ? "Ordinary drawing, cleared and redrawn."
+              : layer.id === "fx"
+                ? "Accumulated light that fades while Run is active."
+                : "Fresh light redrawn without image history."}
+          </p>
+          <label class="blend"
+            >Blend with layers beneath
+            <select
+              aria-label={`${layer.name} blend mode`}
+              bind:value={blends[layer.id]}
+            >
+              {#each BLENDS as blend (blend.value)}
+                <option value={blend.value}>{blend.label}</option>
+              {/each}
+            </select>
+          </label>
+          <fieldset class="swatches">
+            <legend>{layer.name} sample colours</legend>
+            {#each COLORS[layer.id] as color}
+              <span style={`--swatch:${color}`} title={color}></span>
+            {/each}
+          </fieldset>
+        </section>
+      {/each}
+    </div>
   </div>
+  <p class="note">
+    Blend changes recomposite the held picture. Paint adds one fresh set of
+    light; Run advances its presentation clock and Pause holds it. Clear empties
+    all three layers.
+  </p>
 </section>
 
 <style>
 .render-model {
+  box-sizing: border-box;
   width: 100%;
   padding: var(--spacing-lg);
-  box-sizing: border-box;
 }
-.bench {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 400px;
-  gap: var(--spacing-lg);
-  align-items: start;
-}
-.stage {
-  border: 1px solid var(--color-border);
-}
-.frame {
-  position: sticky;
-  top: var(--spacing-lg);
-}
-.transport {
+header {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-sm);
-  align-items: center;
-  margin-top: var(--spacing-md);
+  justify-content: space-between;
+  align-items: end;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
 }
-.reading,
-.time,
-.value {
-  font-variant-numeric: tabular-nums;
+h1 {
+  margin: 0;
+  font-size: var(--font-size-heading);
 }
-.reading {
-  margin-left: var(--spacing-sm);
+header p {
+  margin: var(--spacing-xs) 0 0;
   color: var(--color-text-muted);
-  font-size: var(--font-size-label);
 }
-h2 {
-  margin: var(--spacing-lg) 0 var(--spacing-sm);
-  font-size: var(--font-size-label);
-  font-weight: normal;
+.eyebrow {
   color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
   text-transform: uppercase;
   letter-spacing: var(--tracking-eyebrow);
 }
-.passes h2 {
-  margin-top: 0;
-}
-.loop {
-  margin: 0;
-  padding-left: var(--spacing-lg);
-  max-width: 75ch;
-  font-family: var(--font-family-prose);
-  font-size: var(--font-size-body);
-  line-height: 1.5;
-}
-.loop li {
-  margin-bottom: var(--spacing-xs);
-}
-table {
-  width: 100%;
-  max-width: 75ch;
-  border-collapse: collapse;
-  font-size: var(--font-size-label);
-}
-th,
-td {
-  padding: var(--spacing-sm);
-  text-align: left;
-  vertical-align: top;
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-th {
-  font-weight: normal;
-  color: var(--color-text-muted);
-}
-small {
-  display: block;
-  color: var(--color-text-muted);
-  font-size: var(--font-size-caption);
-  overflow-wrap: anywhere;
-}
-.build-up {
-  display: grid;
-  gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-sm);
-  font-size: var(--font-size-label);
-}
-input[type="range"],
-input[type="checkbox"] {
-  accent-color: var(--color-action);
-}
-.passes ol {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  border-top: 1px solid var(--color-border-subtle);
-}
-.passes li {
-  display: grid;
-  grid-template-columns: 2ch minmax(0, 1fr) auto auto;
-  column-gap: var(--spacing-sm);
-  align-items: center;
-  padding: var(--spacing-sm) 0;
-  border-bottom: 1px solid var(--color-border-subtle);
-  font-size: var(--font-size-label);
-}
-.passes li.off > :not(.solo-button) {
-  opacity: var(--state-disabled-opacity);
-}
-.order,
-.time {
-  color: var(--color-text-muted);
-}
-.passes li label {
+.transport {
   display: flex;
   gap: var(--spacing-sm);
-  align-items: center;
+  border: 0;
 }
-.passes li p {
-  grid-column: 2 / -1;
-  margin: var(--spacing-xs) 0 0;
+.transport legend {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+}
+.pane {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: #080b12;
+}
+.workbench {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 350px);
+  gap: var(--spacing-lg);
+  align-items: start;
+}
+.pane :global(.flight-layers) {
+  width: 100%;
+  height: 100%;
+}
+.layers {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+.layer {
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border-subtle);
+}
+.layer-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+}
+h2 {
+  margin: 0;
+  font-size: var(--font-size-label);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+}
+.layer p,
+.note {
   color: var(--color-text-muted);
   font-size: var(--font-size-caption);
   line-height: 1.5;
 }
-.tag {
-  margin-right: var(--spacing-xs);
-  padding: 0 var(--spacing-xs);
-  border: 1px solid var(--color-border);
-  color: var(--color-text);
+.blend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-label);
 }
-.solo-button {
+select {
   padding: var(--spacing-xs) var(--spacing-sm);
-  font: inherit;
   color: var(--color-text);
-  background: none;
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
-  cursor: pointer;
+  font: inherit;
 }
-.solo-button:hover {
-  background: var(--color-surface-hover);
+.visibility {
+  display: flex;
+  gap: var(--spacing-xs);
+  align-items: center;
+  font-size: var(--font-size-label);
 }
-.solo-button[aria-pressed="true"] {
-  color: var(--color-on-brand);
-  background: var(--color-selected);
-  border-color: var(--color-selected);
+input {
+  accent-color: var(--color-action);
 }
-.solo-button:focus-visible {
-  outline: var(--focus-ring-width) solid var(--color-focus-ring);
-  outline-offset: 2px;
+.swatches {
+  display: flex;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-md);
+  border: 0;
+  padding: 0;
+}
+.swatches legend {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+}
+.swatches span {
+  display: block;
+  width: 1.2rem;
+  height: 1.2rem;
+  background: var(--swatch);
+  border-radius: 50%;
 }
 .note {
-  margin-top: var(--spacing-md);
-  color: var(--color-text-muted);
-  font-size: var(--font-size-caption);
-  line-height: 1.5;
+  margin: var(--spacing-md) 0 0;
+}
+@media (max-width: 1100px) {
+  header {
+    align-items: start;
+    flex-direction: column;
+  }
+  .workbench {
+    grid-template-columns: 1fr;
+  }
+  .layers {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 </style>

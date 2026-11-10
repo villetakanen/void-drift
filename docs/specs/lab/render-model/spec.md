@@ -2,125 +2,128 @@
 
 ## Context
 
-The render model page is where the people building the game look at how a
-flight frame is put together and talk about it: which passes exist, in what
-order they draw, which coordinate space each one lives in, how each is
-composited and what sits above the canvas. It shows the game's own frame, taken
-apart, so a conversation about the render architecture points at the thing
-itself instead of at a description of it.
+The Render model Lab is a small workbench for understanding the actual rendering
+layers: what each holds, how painted light fades, and how the browser combines
+colours across layers. It provides a shared picture for discussing and testing
+the renderer's Hi-Fi Lo-Fi character.
 
-It is a presentation and an instrument. It decides nothing: a change to the
-render model is made in the [render](../../game/render/spec.md) contract and
-the frame definition, and the page
-then shows it.
+The workbench paints simple coloured marks. It runs no game simulation, flight
+program, encounters or ship controls. A ship or planet may be useful as a drawing
+sample in a later experiment; gameplay is not the subject of this page.
 
 ## Architecture
 
-### What it shows
+The [render contract](../../game/render/spec.md) owns the layer model.
+`FLIGHT_LAYERS` in `packages/mode-a/src/lib/flight-frame.ts` supplies the production
+stack and defaults. `apps/web/src/components/FlightLayers.svelte` supplies the
+same isolated canvas stack used by play. Persistent FX uses the production
+`FxSurface` from `packages/core/src/lib/effects/fx-surface.ts`, including its
+emission budget and decay. The workbench supplies test marks and a presentation
+clock, not an alternative accumulation algorithm.
 
-The [render](../../game/render/spec.md) contract owns the model: frame time,
-spaces, pass kinds and the in-flight frame's pass order. The page draws through
-the game's `drawFlightFrame` and lists the game's `FLIGHT_PASSES`
-(`packages/mode-a/src/lib/flight-frame.ts`), using its `include` and `observe`
-options. A pass added, removed or reordered there changes the game and the page
-together. The page restates none of the model's rules.
+World is cleared and redrawn with ordinary marks. FX receives fresh stamps and
+retains their fading image. LFX is cleared and redraws its current marks without
+image history. CSS on each canvas composites the layers; controls change how
+the existing image is displayed, not the pixels already held by that layer.
 
-The title backdrop is a different frame and is outside this page.
+The page owns temporary experiment settings. They do not change production
+defaults or persist across reloads. Inputs use a finite set of supported choices;
+there is no external configuration or storage contract.
 
-### The scene
+## The workbench
 
-One production `Simulation` in Derelicts mode with a fitted, armed ship and
-wrecks supplied by the page, flown by a fixed input program, framed by the
-production `Camera` with the simulation's own camera settings and drawn by the
-production `Renderer` and `FlightFx` on a 1920 by 1080 logical canvas. The
-scene restarts when the run ends or its program completes. Nothing is scored or
-saved.
+`/lab/render-model` remains in the Lab's Tools group, for viewports 1280px wide
+and up. `apps/web/src/components/lab/RenderModel.svelte` composes the workbench.
 
-### The page
+- One large pane shows World, FX and LFX in production stack order.
+- A fixed set of overlapping coloured shapes makes individual colours and their
+  intersections easy to compare. Each layer's marks and colour are identified
+  beside the pane. Shapes and colours are simple experiment fixtures, not a
+  permanent art recipe.
+- Each layer has a visibility control and a blend selector: Normal, Add, Screen,
+  Multiply and Hard light. Add maps to CSS `plus-lighter`. Initial settings use
+  production defaults. A blend or visibility change immediately affects the
+  composite, even while paused, without clearing, repainting or advancing time.
+- Paint adds one fresh set of FX stamps and shows the World and LFX sample marks.
+  It works while paused as an explicit painting action; subsequent paused frames
+  add nothing. Repeated Paint actions can demonstrate accumulation.
+- Run advances the presentation clock so FX fades. Pause freezes that clock and
+  the accumulated image. World and LFX remain visible while FX fades away.
+- Clear empties all sample marks and FX history immediately, even while paused.
+  The pane stays empty until Paint; visibility and blend selections are retained.
+- The page opens paused with a sample already painted, ready for blend comparison.
+- Brief plain-language explanations identify World as ordinary drawing, FX as
+  accumulated fading light, and LFX as fresh light with no retained image.
+  Labels distinguish a layer's blend with the layers beneath it from FX decay.
 
-`/lab/render-model`, named "Render model" in the Lab's Tools group, for
-viewports 1280px wide and up. The component is
-`apps/web/src/components/lab/RenderModel.svelte`.
-
-- **Frame:** the live canvas.
-- **Passes:** one row per entry of `FLIGHT_PASSES`, in draw order, numbered,
-  showing its name, space, composite operation, description, source file and
-  recent draw time. Each row has a visibility toggle and a Solo control. Solo
-  shows that pass alone on the void; choosing it again returns to the toggled
-  set. A build-up control draws the first _n_ passes, so the frame can be
-  walked from the void to the complete image.
-- **Transport:** Run or Pause, Step one simulation tick while paused, and
-  Restart.
-- **Frame loop:** the order of one animation frame: input, fixed-step
-  simulation, camera, the canvas passes, then the page elements above the
-  canvas.
-- **Above the canvas:** the page-element layers that stack over the frame (the
-  deck, dialogs and status messages) with their `--layer-*` tokens and the
-  values read live from `packages/core/src/lib/styles/tokens.css`.
-
-With the Void pass hidden nothing clears the canvas, so each frame draws over
-the last; that is what the pass is for, and the page shows it.
-
-Visibility, Solo and build-up change only which passes draw. The simulation,
-the camera and every drawn pass's own output are unaffected. A hidden light
-surface accumulates no history; shown again, it starts from fresh emission.
-
-Draw times are measurements on the viewing machine, for comparing passes with
-each other. They are not a performance contract; the effects layer owns its
-own.
+Controls are deliberately limited to the questions above. Colour pickers, zoom,
+resolution, filters, moving plumes and Deck overlays can be added when a specific
+experiment calls for them. All layers remain at production resolution in this
+version. Pass lists, source-file inventories, timing tables and scripted flight
+are not part of the workbench.
 
 ## Contract
 
 ### Definition of Done
 
-- [x] `/lab/render-model` lists one row per pass in draw order and draws a
-  running frame (`tests/browser/render-model.spec.ts`).
-- [x] Hiding a pass, Solo and build-up change which passes are reported as
-  drawn while the simulation's tick count keeps advancing
-  (`tests/browser/render-model.spec.ts`).
-- [x] The page is listed in `apps/web/src/data/lab-pages.ts` under Tools with
-  source `production`.
+- [x] The page shows the production three-layer stack in one isolated pane,
+  with visible overlapping test marks and no game simulation.
+- [x] Each layer's visibility and all five blend choices affect CSS immediately
+  while paused, preserving its backing pixels and other layer settings.
+- [x] Paint emits into the shared FX surface; successive painting accumulates
+  light, Run fades it, and Pause keeps its pixels stable.
+- [x] World and LFX retain their current sample while FX fades; LFX retains no
+  previous image when redrawn.
+- [x] Clear removes all marks and history while paused or running; Paint after
+  Clear starts fresh, and experiment settings survive Clear.
+- [x] The page is usable at 1280px and wider, with labelled keyboard-accessible
+  controls and concise explanations of the visible experiment.
+- [x] Existing play and the Flight scene study retain their production layer
+  defaults and rendering behaviour (`tests/browser/alpha.spec.ts` and
+  `tests/browser/flight-scene.spec.ts`).
 
 ### Regression guardrails
 
-- The pass list on the page is read from `FLIGHT_PASSES`; the page holds no
-  pass names, order or descriptions of its own.
-- The page imports no game mode (`scripts/check-contracts.mjs`).
-- The page's controls never change the simulation's state or the game's frame.
-- Layer values shown for page elements are read from the tokens, never typed
-  into the page.
+- Shared layer and persistence owners provide the rendering machinery. The Lab
+  supplies only marks, presentation time and temporary display settings.
+- Hiding a layer changes its visibility, not whether its clock or history runs.
+- An untouched paused frame neither emits nor fades. Explicit Paint and Clear
+  are permitted edits to the paused picture.
+- The page does not import or instantiate a game simulation or modify game data.
+- Tests protect layer semantics and control behaviour; fixed art screenshots do
+  not become a permanent recipe for the experiment.
 
 ### Scenarios
 
 ```gherkin
-Scenario: Read the frame's order
-  Given the render model page
-  When it loads
-  Then the passes are listed in the order the game draws them
-  And the canvas shows the complete running frame
+Scenario: Compare blending on a held picture
+  Given the initial paused overlapping marks
+  When Screen is changed to Hard light on LFX
+  Then the browser recomposites the same layer images immediately
+  And FX does not emit, fade or clear
 
-Scenario: Look at one pass alone
-  Given the complete running frame
-  When the developer chooses Solo on the light surface
-  Then only the light surface draws, on the void
-  And the simulation keeps running
-  When the developer chooses Solo on it again
-  Then the previously visible passes draw again
+Scenario: Observe persistent and fresh light
+  Given freshly painted marks on all layers
+  When Run advances presentation time
+  Then FX fades through the production surface decay
+  And World and LFX continue showing their current marks
+  When Pause is selected
+  Then the accumulated image stops changing
 
-Scenario: Walk the frame from the void
-  Given the build-up control at its first step
-  When the developer advances it one step at a time
-  Then each step adds the next pass in draw order
-  And the last step shows the complete frame
+Scenario: Paint and clear while paused
+  Given a paused picture with chosen layer blends
+  When Paint is pressed again
+  Then fresh FX light accumulates once
+  When Clear is pressed
+  Then all sample marks and FX history disappear
+  And the selected blends remain unchanged
+  When Paint is pressed
+  Then a fresh sample appears without old history
 
-Scenario: Hide a pass
-  Given the complete running frame
-  When the developer hides the starfield
-  Then every other pass draws as before
-  And the starfield reports no draw time
-
-Scenario: The run ends
-  Given the scene's ship is lost
-  When the next frame is drawn
-  Then the scene restarts from its beginning
+Scenario: Hide a fading layer
+  Given a running picture with fresh FX light
+  When FX is hidden and presentation time passes
+  And FX is shown again
+  Then its image reflects the elapsed decay
+  And hiding it has not paused or restarted its history
 ```

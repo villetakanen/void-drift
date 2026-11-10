@@ -1,91 +1,163 @@
-import {
-  FLIGHT_LAYERS,
-  FLIGHT_PASSES,
-} from "../../packages/mode-a/src/lib/flight-frame";
+import { FLIGHT_LAYERS } from "../../packages/mode-a/src/lib/flight-frame";
 import { expect, test } from "../helpers/local-browser";
 
-const ids = FLIGHT_PASSES.map((pass) => pass.id);
-
-test("render model lists the game's passes and draws the selected ones", async ({
+test("render model compares held production layers and persistent FX", async ({
   page,
 }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/lab/render-model");
   const model = page.getByRole("region", { name: "Render model" });
-  const ticks = async () => Number(await model.getAttribute("data-ticks"));
-  const advancing = async () => {
-    const from = await ticks();
-    await expect.poll(ticks).not.toBe(from);
-  };
-  await expect.poll(ticks).toBeGreaterThan(10);
+  await expect(model).toHaveAttribute("data-ready", "true");
+  await expect(model.getByRole("button", { name: "Pause" })).toHaveCount(0);
+  await expect(model.locator("canvas[data-layer]")).toHaveCount(
+    FLIGHT_LAYERS.length,
+  );
 
-  const rows = model.locator("[data-pass]");
+  const layers = model.locator("canvas[data-layer]");
   expect(
-    await rows.evaluateAll((items) =>
-      items.map((item) => item.getAttribute("data-pass")),
-    ),
-  ).toEqual(ids);
-  await expect(model).toHaveAttribute("data-drawn", ids.join(" "));
-
-  // One canvas per layer, in stack order, blended by the browser.
-  expect(
-    await model
-      .locator("canvas[data-layer]")
-      .evaluateAll((canvases) =>
-        canvases.map((canvas) => [
+    await layers.evaluateAll((items) =>
+      items.map((element) => {
+        const canvas = element as HTMLCanvasElement;
+        return [
           canvas.getAttribute("data-layer"),
           getComputedStyle(canvas).mixBlendMode,
-        ]),
-      ),
-  ).toEqual(FLIGHT_LAYERS.map((layer) => [layer.id, layer.blend]));
+          canvas.width,
+          canvas.height,
+        ];
+      }),
+    ),
+  ).toEqual(
+    FLIGHT_LAYERS.map((layer) => [
+      layer.id,
+      layer.blend,
+      Math.round(1920 * layer.resolution),
+      Math.round(1080 * layer.resolution),
+    ]),
+  );
   expect(
     await model
       .locator(".flight-layers")
       .evaluate((stack) => getComputedStyle(stack).isolation),
   ).toBe("isolate");
 
-  // Hiding one pass leaves the others, and the simulation keeps running.
-  const hiddenPass = FLIGHT_PASSES[1];
-  await model.getByRole("checkbox", { name: hiddenPass.name }).uncheck();
-  await expect(model).toHaveAttribute(
-    "data-drawn",
-    ids.filter((id) => id !== hiddenPass.id).join(" "),
-  );
-  await advancing();
-
-  // Solo shows one pass; leaving it restores the toggled set.
-  const soloPass = FLIGHT_PASSES[FLIGHT_PASSES.length - 3];
-  const solo = model.getByRole("button", { name: `Solo ${soloPass.name}` });
-  await solo.click();
-  await expect(model).toHaveAttribute("data-drawn", soloPass.id);
-  await advancing();
-  await solo.click();
-  await expect(model).toHaveAttribute(
-    "data-drawn",
-    ids.filter((id) => id !== hiddenPass.id).join(" "),
-  );
-  await model.getByRole("checkbox", { name: hiddenPass.name }).check();
-
-  // Build-up draws the first passes in order.
-  await model.getByRole("slider").fill("3");
-  await expect(model).toHaveAttribute("data-drawn", ids.slice(0, 3).join(" "));
-  await advancing();
-
-  // Pause holds the tick; Step advances it by one.
-  await model.getByRole("button", { name: "Pause", exact: true }).click();
-  const held = await ticks();
-  await model.getByRole("button", { name: "Step", exact: true }).click();
-  await expect(model).toHaveAttribute("data-ticks", String(held + 1));
-
-  // Layer values come from the tokens.
-  for (const row of await model.locator("[data-token]").all()) {
-    const token = (await row.getAttribute("data-token")) ?? "";
-    const value = await page.evaluate(
-      (name) =>
-        getComputedStyle(document.documentElement)
-          .getPropertyValue(name)
-          .trim(),
-      token,
+  const readPixel = (id: string, x = 825, y = 540): Promise<number[]> =>
+    model.locator(`canvas[data-layer="${id}"]`).evaluate(
+      (canvas, point) => {
+        const context = (canvas as HTMLCanvasElement).getContext("2d");
+        if (!context) throw new Error("Canvas 2D unavailable");
+        return [...context.getImageData(point.x, point.y, 1, 1).data];
+      },
+      { x, y },
     );
-    await expect(row.locator(".value")).toHaveText(value);
+  const initialFx = await readPixel("fx");
+  expect(initialFx[3]).toBeGreaterThan(0);
+  const initialWorld = await readPixel("world", 700, 540);
+  const initialLfx = await readPixel("lfx", 960, 540);
+  expect(initialWorld[3]).toBe(255);
+  expect(initialLfx[3]).toBe(255);
+
+  // CSS presentation edits leave every held canvas pixel alone while paused.
+  const modes = ["normal", "plus-lighter", "screen", "multiply", "hard-light"];
+  for (const layer of FLIGHT_LAYERS) {
+    const sample =
+      layer.id === "world"
+        ? initialWorld
+        : layer.id === "fx"
+          ? initialFx
+          : initialLfx;
+    const point =
+      layer.id === "world"
+        ? { x: 700, y: 540 }
+        : layer.id === "fx"
+          ? { x: 825, y: 540 }
+          : { x: 960, y: 540 };
+    for (const mode of modes) {
+      await model
+        .locator(`[data-layer-controls="${layer.id}"]`)
+        .getByRole("combobox")
+        .selectOption(mode);
+      await expect(model.locator(`canvas[data-layer="${layer.id}"]`)).toHaveCSS(
+        "mix-blend-mode",
+        mode,
+      );
+      expect(await readPixel(layer.id, point.x, point.y)).toEqual(sample);
+    }
   }
+  await model
+    .getByRole("combobox", { name: "LFX blend mode" })
+    .selectOption("hard-light");
+  await model
+    .locator('[data-layer-controls="fx"]')
+    .getByRole("checkbox", { name: "Visible" })
+    .uncheck();
+  expect(await readPixel("fx")).toEqual(initialFx);
+  await expect(model.locator('canvas[data-layer="fx"]')).toHaveCSS(
+    "visibility",
+    "hidden",
+  );
+  await model
+    .locator('[data-layer-controls="fx"]')
+    .getByRole("checkbox", { name: "Visible" })
+    .check();
+  await model
+    .getByRole("combobox", { name: "LFX blend mode" })
+    .selectOption("plus-lighter");
+
+  await model.getByRole("button", { name: "Paint" }).click();
+  expect((await readPixel("fx"))[3]).toBeGreaterThan(initialFx[3]);
+  await model.getByRole("button", { name: "Run" }).click();
+  await expect(model).toHaveAttribute("data-running", "true");
+  await model
+    .locator('[data-layer-controls="fx"]')
+    .getByRole("checkbox", { name: "Visible" })
+    .uncheck();
+  await page.waitForTimeout(500);
+  const faded = await readPixel("fx");
+  expect(faded[3]).toBeLessThan(initialFx[3]);
+  await model
+    .locator('[data-layer-controls="fx"]')
+    .getByRole("checkbox", { name: "Visible" })
+    .check();
+  expect(await readPixel("world", 700, 540)).toEqual(initialWorld);
+  expect(await readPixel("lfx", 960, 540)).toEqual(initialLfx);
+  await model.getByRole("button", { name: "Pause" }).click();
+  const held = await readPixel("fx");
+  await page.waitForTimeout(180);
+  expect(await readPixel("fx")).toEqual(held);
+
+  await model.getByRole("button", { name: "Run" }).click();
+  await model.getByRole("button", { name: "Clear" }).click();
+  for (const id of ["world", "fx", "lfx"])
+    expect((await readPixel(id))[3]).toBe(0);
+  await page.waitForTimeout(120);
+  for (const id of ["world", "fx", "lfx"])
+    expect((await readPixel(id))[3]).toBe(0);
+  await model.getByRole("button", { name: "Pause" }).click();
+  await model
+    .locator('[data-layer-controls="world"]')
+    .getByRole("combobox")
+    .selectOption("multiply");
+  await model
+    .locator('[data-layer-controls="fx"]')
+    .getByRole("combobox")
+    .selectOption("normal");
+  await model
+    .locator('[data-layer-controls="lfx"]')
+    .getByRole("combobox")
+    .selectOption("screen");
+  const freshFx = await readPixel("fx");
+  await model.getByRole("button", { name: "Paint" }).click();
+  const repaintedFx = await readPixel("fx");
+  expect(repaintedFx[3]).toBeGreaterThan(0);
+  await expect(
+    model.locator('[data-layer-controls="world"] select'),
+  ).toHaveValue("multiply");
+  await expect(model.locator('[data-layer-controls="fx"] select')).toHaveValue(
+    "normal",
+  );
+  await expect(model.locator('[data-layer-controls="lfx"] select')).toHaveValue(
+    "screen",
+  );
+  expect(repaintedFx).toEqual(initialFx);
+  expect(freshFx[3]).toBe(0);
 });
