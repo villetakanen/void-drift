@@ -1,6 +1,8 @@
 ---
 import FlightScene021 from "../../../components/studies/FlightScene021.svelte";
 import FlightScene022 from "../../../components/studies/FlightScene022.svelte";
+import FlightScene023 from "../../../components/studies/FlightScene023.svelte";
+import FlightScene024 from "../../../components/studies/FlightScene024.svelte";
 import { studies } from "../../../data/studies";
 import StudyLayout from "../../../layouts/StudyLayout.astro";
 
@@ -152,122 +154,450 @@ const study = studies.find(
       </table>
     </aside>
   </section>
-  <section aria-labelledby="time">
-    <h2 id="time">
+  <details id="time">
+    <summary>
       02.1 / Can the game’s light be reached by a jump? — yes, by flying there
-    </h2>
-    <p>
-      <strong>Settled, 10 November 2026.</strong>
-      A jump flies the burn again from its start and paints the whole flight’s
-      light, so the frame it lands on is the frame playing would have shown. The
-      scene both plays and jumps. The setting in this example’s menu stays as
-      the evidence; the instrument itself has no such setting.
-    </p>
-    <p>
-      The first example takes the time question, because every other choice
-      rests on it. The hypothesis: a jump can show the frame the game would have
-      shown, if the instrument flies the burn again from its start to reach it.
-      Light on the effects surface halves every tenth of a second, so painting
-      only the last second of that flight should be enough.
-    </p>
-    <p>
-      Press Play, or drag Time to jump. The menu in the top-right corner sets
-      what a jump paints: only the instant it lands on, the last second before
-      it, or the whole flight. Compare the three at a moment when the engine or
-      the cannon is lit, such as 1.67 s on B1.
-    </p>
-    <div class="bleed"><FlightScene021 client:visible /></div>
-    <p>
-      The scene is the game’s arena under Derelicts rules, with the encounter
-      held off: sun, planets, boundary, starfield and the game camera, drawn in
-      the flight screen’s order. The starter Wasp carries a Light Ion Cannon on
-      its first hull mount and starts at rest where a run starts. Two wrecks are
-      placed ahead of it so the cannon fires. Nothing is random. The screen
-      borrows the Motion instrument’s size, burn row and slider; its layout is
-      provisional.
-    </p>
-    <h3>Measured</h3>
-    <ul>
-      <li>
-        At nine instants on B1, a jump painting the last second differs from one
-        painting the whole flight in at most 7 of 2,073,600 pixels.
-      </li>
-      <li>
-        Painting only the landing instant differs in 800 to 16,000 pixels
-        whenever an engine or the cannon is lit: the plume and the ray’s
-        afterglow are missing.
-      </li>
-      <li>
-        A jump to the end of the burn takes about 0.2 s. Almost all of it is
-        flying the simulation; painting the whole flight’s light adds about a
-        seventh.
-      </li>
-    </ul>
-    <p>
-      These figures come from one machine on 10 November 2026. Painting the
-      whole flight runs the same code as playing, tick for tick, but the two
-      were not compared pixel by pixel. The figures say a jump can be faithful;
-      they do not say whether a still instant is a useful way to judge an effect
-      that the player only ever sees moving.
-    </p>
-    <p>
-      Two things show up that belong to later rounds. The game camera zooms out
-      as the ship climbs away from the sun, so the ship is small for most of the
-      burn. And the first wreck is destroyed within two seconds, after which the
-      cannon has nothing to fire at.
-    </p>
-  </section>
-  <section aria-labelledby="camera">
-    <h2 id="camera">
+    </summary>
+    <section>
+      <p>
+        <strong>Settled, 10 November 2026.</strong>
+        A jump flies the burn again from its start and paints the whole flight’s
+        light, so the frame it lands on is the frame playing would have shown.
+        The scene both plays and jumps. The setting in this example’s menu stays
+        as the evidence; the instrument itself has no such setting.
+      </p>
+      <p>
+        The first example takes the time question, because every other choice
+        rests on it. The hypothesis: a jump can show the frame the game would
+        have shown, if the instrument flies the burn again from its start to
+        reach it. Light on the effects surface halves every tenth of a second,
+        so painting only the last second of that flight should be enough.
+      </p>
+      <p>
+        Press Play, or drag Time to jump. The menu in the top-right corner sets
+        what a jump paints: only the instant it lands on, the last second before
+        it, or the whole flight. Compare the three at a moment when the engine
+        or the cannon is lit, such as 1.67 s on B1.
+      </p>
+      <div class="bleed"><FlightScene021 client:visible /></div>
+      <p>
+        The scene is the game’s arena under Derelicts rules, with the encounter
+        held off: sun, planets, boundary, starfield and the game camera, drawn
+        in the flight screen’s order. The starter Wasp carries a Light Ion
+        Cannon on its first hull mount and starts at rest where a run starts.
+        Two wrecks are placed ahead of it so the cannon fires. Nothing is
+        random. The screen borrows the Motion instrument’s size, burn row and
+        slider; its layout is provisional.
+      </p>
+      <h3>Measured</h3>
+      <ul>
+        <li>
+          At nine instants on B1, a jump painting the last second differs from
+          one painting the whole flight in at most 7 of 2,073,600 pixels.
+        </li>
+        <li>
+          Painting only the landing instant differs in 800 to 16,000 pixels
+          whenever an engine or the cannon is lit: the plume and the ray’s
+          afterglow are missing.
+        </li>
+        <li>
+          A jump to the end of the burn takes about 0.2 s. Almost all of it is
+          flying the simulation; painting the whole flight’s light adds about a
+          seventh.
+        </li>
+      </ul>
+      <p>
+        These figures come from one machine on 10 November 2026. Painting the
+        whole flight runs the same code as playing, tick for tick, but the two
+        were not compared pixel by pixel. The figures say a jump can be
+        faithful; they do not say whether a still instant is a useful way to
+        judge an effect that the player only ever sees moving.
+      </p>
+      <p>
+        Two things show up that belong to later rounds. The game camera zooms
+        out as the ship climbs away from the sun, so the ship is small for most
+        of the burn. And the first wreck is destroyed within two seconds, after
+        which the cannon has nothing to fire at.
+      </p>
+    </section>
+  </details>
+  <details id="camera">
+    <summary>
       02.2 / What should the scene be looked at through? — the game camera and
       two follow views
+    </summary>
+    <section>
+      <p>
+        <strong>Settled, 10 November 2026.</strong>
+        The instrument has three views: Game, Follow and Follow 4×. An
+        enlargement of the game’s own pixels was compared and not kept.
+      </p>
+      <p>
+        The game camera frames the ship and the sun together and jumps between
+        five zoom levels. That framing is part of what the player sees, but it
+        leaves the ship about twenty pixels long for most of a burn, too small
+        to judge a plume or a ray by. The two follow views move the camera in
+        and hold the ship at the centre.
+      </p>
+      <ul>
+        <li>
+          <strong>Game.</strong>
+          The game camera, as in 02.1: true framing, true zoom jumps, small
+          ship.
+        </li>
+        <li>
+          <strong>Follow.</strong>
+          The ship held at the centre at the game’s closest zoom level, 1.6. A
+          scale the game does reach, without the framing or the jumps.
+        </li>
+        <li>
+          <strong>Follow 4×.</strong>
+          The ship at the centre at a zoom the game never reaches. Ship art and
+          light are drawn at that scale, so edges and afterglow are finer than
+          in play. What looks right here still has to be checked in Game.
+        </li>
+      </ul>
+      <div class="bleed"><FlightScene022 client:visible /></div>
+      <p>
+        The light surface is tied to the camera, so switching the view flies the
+        burn again. Scene, ship, wrecks and time model are those of 02.1. The
+        switch sits on the scene for this comparison; where it belongs is a
+        layout question, as is whether the two follow zooms stay fixed at 1.6
+        and 4.
+      </p>
+    </section>
+  </details>
+  <details id="scene">
+    <summary>
+      02.3 / What does a study set around the ship? — its start, its targets and
+      the layers shown
+    </summary>
+    <section>
+      <p>
+        <strong>Settled, 10 November 2026.</strong>
+        A configuration sets where the ship starts and what it has to fire at,
+        including a wreck held ahead of it for the whole burn. The designer can
+        hide each of the three layers.
+      </p>
+      <p>
+        So far the ship starts where a run starts and two wrecks sit ahead of
+        it. That scene has two limits, both seen in 02.1: the first wreck is
+        gone within two seconds, after which the cannon is silent, and every
+        burn is judged against the same patch of the arena. This example puts
+        three things a configuration could set into the menu in the top-right
+        corner, to see which of them the instrument needs.
+      </p>
+      <ul>
+        <li>
+          <strong>Where the ship starts.</strong>
+          At rest, at the run’s start, close to the sun, or far out. The arena,
+          its sun and its planets stay the game’s own; only the ship’s first
+          position and heading move.
+        </li>
+        <li>
+          <strong>Targets.</strong>
+          None; two wrecks placed ahead of the start, as before; or one wreck
+          held 140 units ahead of the ship for the whole burn and replaced each
+          time it breaks.
+        </li>
+        <li>
+          <strong>Layers.</strong>
+          World, FX and LFX are the game’s three stacked layers. Each can be
+          hidden to look at the others alone.
+        </li>
+      </ul>
+      <div class="bleed"><FlightScene023 client:visible /></div>
+      <p>
+        The held wreck is where the instrument steps in: it moves the wreck with
+        the ship every tick and replaces it when it breaks. The cannon, its
+        damage, the break and the shards are the game’s. The game keeps shards
+        for good, and a wreck replaced for a whole burn buried the scene in
+        them, so the held wreck’s shards are removed two seconds after release.
+        Placed wrecks keep the game’s behaviour. Hiding a layer hides its
+        canvas; the layer is still drawn, so the picture underneath is
+        unchanged.
+      </p>
+      <p>
+        Where the ship starts decides whether a burn can be flown at all. Flown
+        to the end on 10 November 2026: from the run’s start B3 ends in the sun
+        at about 10 s; close to the sun B2 ends there at about 7 s and B3 at
+        about 14 s; far out all three burns complete. The scene says when the
+        ship is lost. These were read once from the running page and not
+        repeated.
+      </p>
+    </section>
+  </details>
+  <section aria-labelledby="layout">
+    <h2 id="layout">
+      02.4 / How is the screen arranged? — the scene is the screen
     </h2>
     <p>
       <strong>Settled, 10 November 2026.</strong>
-      The instrument has three views: Game, Follow and Follow 4×. An enlargement
-      of the game’s own pixels was compared and not kept.
+      The scene fills the instrument’s whole screen. Burn and time float over
+      its lower edge, the view switch sits in its top-left corner and the values
+      stay in the menu in the top-right.
     </p>
     <p>
-      The game camera frames the ship and the sun together and jumps between
-      five zoom levels. That framing is part of what the player sees, but it
-      leaves the ship about twenty pixels long for most of a burn, too small to
-      judge a plume or a ray by. The two follow views move the camera in and
-      hold the ship at the centre.
+      The examples before this one borrowed the Motion instrument’s arrangement:
+      a 16:9 scene above a row of controls. Two alternatives were compared with
+      the one kept here and not retained: that arrangement, and a 4:3 scene
+      beside a rail that always showed the view and the values. The rail kept
+      everything in sight and nothing over the picture, at the cost of about two
+      fifths of its area.
     </p>
-    <ul>
-      <li>
-        <strong>Game.</strong>
-        The game camera, as in 02.1: true framing, true zoom jumps, small ship.
-      </li>
-      <li>
-        <strong>Follow.</strong>
-        The ship held at the centre at the game’s closest zoom level, 1.6. A
-        scale the game does reach, without the framing or the jumps.
-      </li>
-      <li>
-        <strong>Follow 4×.</strong>
-        The ship at the centre at a zoom the game never reaches. Ship art and
-        light are drawn at that scale, so edges and afterglow are finer than in
-        play. What looks right here still has to be checked in Game.
-      </li>
-    </ul>
-    <div class="bleed"><FlightScene022 client:visible /></div>
+    <div class="bleed"><FlightScene024 client:visible /></div>
     <p>
-      The light surface is tied to the camera, so switching the view flies the
-      burn again. Scene, ship, wrecks and time model are those of 02.1. The
-      switch sits on the scene for this comparison; where it belongs is a layout
-      question, as is whether the two follow zooms stay fixed at 1.6 and 4.
-    </p>
-    <p>
-      <strong>Study trial:</strong>
-      02.1 and 02.2 temporarily show FX with Screen blending and a 4 CSS-pixel
-      SVG expand, and LFX with Hard light blending. The expand stays 4 displayed
-      pixels as the study screen is fitted; camera zoom does not change its
-      radius. This is a presentation comparison across Game, Follow and Follow
-      4×, not an adopted game setting.
+      The scene is drawn at 16:10. The game draws at any width for its fixed
+      height, so this is a picture the game can show. The menu still opens over
+      the right half of the scene while a value is being changed.
     </p>
   </section>
-  <section><h2>03 / To be developed after 02</h2></section>
+  <section aria-labelledby="ships">
+    <h2 id="ships">02.5 / One ship or a comparison? — one ship</h2>
+    <p>
+      <strong>Settled, 10 November 2026.</strong>
+      The instrument shows one ship. A study that compares two engines or two
+      loadouts embeds two instruments one after the other. Splitting the screen
+      would halve the picture that 02.4 chose to make as large as possible. No
+      example was built for this; it follows from 02.4.
+    </p>
+    <h3>What part 02 settled</h3>
+    <ul>
+      <li>
+        <strong>Time.</strong>
+        The scene plays and jumps. A jump flies the burn again from its start
+        and paints the whole flight’s light.
+      </li>
+      <li>
+        <strong>Camera.</strong>
+        Game, Follow at 1.6 and Follow 4×; switching flies the burn again.
+      </li>
+      <li>
+        <strong>Scene.</strong>
+        A configuration sets the ship’s start and its targets: none, wrecks
+        placed in the arena, or one wreck held 140 units ahead whose shards are
+        removed after two seconds. The designer can hide World, FX and LFX.
+      </li>
+      <li>
+        <strong>Screen.</strong>
+        The scene fills the 1440 × 900 screen at 16:10. Burn and time float over
+        its lower edge, the view switch is top-left, the values menu top-right.
+      </li>
+      <li><strong>Ships.</strong> One per screen.</li>
+    </ul>
+    <p>
+      The reference is the 02.4 example: the starter Wasp with a Light Ion
+      Cannon on its first hull mount, Derelicts rules with the encounter held
+      off, burns B1 to B3 at 60 ticks a second, no randomness. The two follow
+      zooms, the 140 units and the two seconds are working values, not tuned
+      ones.
+    </p>
+  </section>
+  <section aria-labelledby="readiness">
+    <h2 id="readiness">03 / The parts exist; the instrument is not yet one</h2>
+    <p>
+      The intended delivery is a shared instrument for studies: a study embeds
+      it with one configuration, the way it embeds the Motion instrument, and a
+      page in the Lab shows it in its default setting as the reference, in the
+      design-system sense, for anyone who uses it. Everything the examples do
+      runs on production code today. What is missing is the step from four study
+      examples to one shared component with a contract.
+    </p>
+    <h3>Reusable as it stands</h3>
+    <ul>
+      <li>
+        The production simulation, and the game’s frame: since the layer split
+        the flight screen and this study draw through the same ordered passes
+        onto the same three stacked layers, with the game’s blending and bloom.
+        The draw order is no longer copied by hand, which section 01 had to
+        allow for.
+      </li>
+      <li>
+        The Motion instrument’s burn programs, burn row, time slider, switches,
+        values menu and the full-window snapping band.
+      </li>
+      <li>
+        The study’s scene engine: replay by flying, the three views, the start
+        position, placed and held targets, and a render width that follows the
+        screen’s shape.
+      </li>
+    </ul>
+    <h3>Needs adapting</h3>
+    <ul>
+      <li>
+        The engine and the 02.4 screen live among the study’s components. They
+        move beside the Motion instrument’s parts as one component, with an
+        embed for study pages.
+      </li>
+      <li>
+        A configuration contract. Today each example hard-codes its ship, start
+        and targets. The instrument needs one validated document: ship and
+        loadout, start, targets, the opening burn, view and time, and which
+        values the designer may change.
+      </li>
+      <li>
+        Room for a study’s own values in the menu, as the Motion instrument
+        gives a study its pane.
+      </li>
+      <li>
+        Its own specification and test. The browser test that exists is tied to
+        this page and its sections.
+      </li>
+    </ul>
+    <h3>Depends on</h3>
+    <ul>
+      <li>
+        The simulation has no doorway for staging. The instrument moves the ship
+        after the simulation is built, postpones the encounter, adds wrecks to
+        the encounter’s list and gives shards a lifetime, all by writing to
+        fields the game happens to leave open. A change inside the game can
+        break any of these without warning. That is accepted (10 November 2026):
+        the instrument is a tool for studies, it stages from the Lab side, and
+        its own test is the guard that catches a break. The game gains no
+        staging code for it.
+      </li>
+      <li>
+        An embedded instrument is live only while its study runs. A finished
+        study keeps captured images or video of what its instruments showed, so
+        later changes to the instrument or the game do not matter to it.
+        Replacing live instruments with captures when a study ends is intended
+        and not yet practised.
+      </li>
+    </ul>
+    <h3>Risks</h3>
+    <ul>
+      <li>
+        <strong>Engine light is still a ladder of stamps.</strong>
+        Seen again on 10 November at Follow 4× after the layer split. Until that
+        fault is fixed, Follow 4× shows it in every turn, and a study cannot
+        judge an engine trail there.
+      </li>
+      <li>
+        <strong>A jump may not equal play.</strong>
+        A jump paints light once per tick; play paints once per drawn frame. The
+        two were never compared pixel by pixel, and they can differ whenever a
+        frame covers more or less than one tick.
+      </li>
+      <li>
+        <strong>Bloom size against the picture.</strong>
+        The bloom is set in screen pixels and the instrument scales its whole
+        screen to fit its band. Whether the glow is the same size against the
+        ship as in the game at a given window was not checked.
+      </li>
+      <li>
+        <strong>Cost.</strong>
+        The 0.2 s jump was measured before the layer split and the bloom. A page
+        with several instruments runs several simulations and filters; none of
+        that was measured since.
+      </li>
+      <li>
+        <strong>A burn can end early.</strong>
+        From the run’s start B3 flies into the sun at about 10 s. The scene says
+        so, but a configuration has to choose a start its burns survive.
+      </li>
+    </ul>
+    <h3>Unresolved</h3>
+    <ul>
+      <li>
+        Whether the follow zooms, the held wreck’s distance and its shard
+        lifetime are fixed or part of the configuration.
+      </li>
+      <li>
+        The values menu opens over the right half of the scene. Accepted in
+        02.4; a study that changes values constantly may want it narrower.
+      </li>
+    </ul>
+    <p>
+      Not checked in this study: the page at 1280 pixels wide, playback speed in
+      a visible window, and B2 and B3 in every view. Nothing found blocks
+      building the instrument. The stamp fault limits what it can be trusted to
+      show at 4× and is fixed elsewhere, not here.
+    </p>
+  </section>
+  <section aria-labelledby="scope">
+    <h2 id="scope">04 / One component, its reference page and its embed</h2>
+    <p>
+      The target is the Flight scene instrument as settled in part 02 and
+      referenced by the 02.4 example: one shared component driven by one
+      validated configuration, a Lab page that shows it in its default setting,
+      and an embed for study pages. It stages scenes from the Lab side; the
+      game’s code does not change.
+    </p>
+    <p>
+      <strong>Design-principle disclosure:</strong>
+      no change to
+      <code>docs/design.md</code>
+      is proposed. The instrument is a study tool and changes nothing a player
+      sees. Writing this scope does not start the work.
+    </p>
+
+    <h3>1 / Configuration and shared component — medium</h3>
+    <p>
+      Define the configuration as a Zod schema first: loadout, start position
+      and heading, placed targets, the held target with its distance and shard
+      lifetime, the two follow zooms, and the opening burn, view and time. The
+      defaults are the working values of part 02: zooms 1.6 and 4, 140 units,
+      two seconds. Move the scene engine out of the study’s components and build
+      one instrument component from the 02.4 screen that parses that document,
+      with a slot for a study’s own values in the menu. The study’s four
+      examples keep running against the moved engine.
+    </p>
+    <p>
+      Owners: a new
+      <code>apps/web/src/lib/flight-scene/</code>
+      for the schema, starter document and engine, and a component beside the
+      Motion instrument’s parts. Write
+      <code>docs/specs/lab/flight-scene-instrument/spec.md</code>
+      in the same change. Checks, as relations: an invalid document is refused;
+      flying to an instant twice gives the same simulation state; a backward
+      jump equals a fresh flight to the same instant; the held target stays
+      within the cannon’s reach for a whole burn; its shards are gone after
+      their lifetime while a placed wreck’s remain. No new dependency.
+    </p>
+
+    <h3>2 / Lab reference page — small</h3>
+    <p>
+      Depends on slice 1. Add a Lab page that mounts the instrument with the
+      starter document and nothing else, registered in the Lab’s page map beside
+      the Motion instrument’s. It is the place to see the instrument’s default
+      look and controls. Move the browser test from this study’s page to it: the
+      three layers mount with the game’s blending and bloom, the scene plays and
+      pauses, a jump lands on the requested instant, each view draws, each layer
+      hides, at 1280 and 1440 pixels wide. Update the Lab specification’s list
+      of instruments.
+    </p>
+
+    <h3>3 / Study embed — small</h3>
+    <p>
+      Depends on slice 1. Add the embed a study page uses: the full-window band
+      that snaps into place, sharing its rules with the Motion instrument’s
+      embed instead of repeating them, and passing the study’s configuration and
+      menu content through. Name the instrument in the design-study procedure
+      next to the Motion instrument, as the tool for judging how something looks
+      in flight. That procedure is a factory document; confirm before changing
+      it.
+    </p>
+
+    <h3>4 / Close what readiness left unmeasured — small</h3>
+    <p>
+      Depends on slice 2, which gives a page to measure on. Compare a jump with
+      continuous play pixel by pixel at several instants; compare the bloom’s
+      size against the ship with the game’s at the same window; measure a jump
+      to the end of a burn and a page holding three instruments. Record the
+      results in the instrument’s specification. A difference between jump and
+      play is a finding to report, not something this slice repairs.
+    </p>
+
+    <h3>Order and limits</h3>
+    <p>
+      Slice 1 first; 2 and 3 are independent of each other; 4 last. Outside this
+      scope: the engine-light stamp fault, moving earlier studies onto the
+      instrument, replacing a finished study’s live instruments with captures,
+      flying by hand, burns with weapon inputs and a comparison of two ships on
+      one screen. Until the stamp fault is fixed, the reference page and every
+      study using Follow 4× will show it.
+    </p>
+  </section>
 </StudyLayout>
 
 <style is:global>
@@ -278,6 +608,9 @@ html:has(.bleed) {
 }
 </style>
 <style>
+summary {
+  cursor: pointer;
+}
 section > p,
 section > ul {
   max-width: 72ch;

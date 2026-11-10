@@ -16,7 +16,17 @@ import { type BurnId, inputAt, TOTAL_TICKS } from "../../lib/instrument";
 export interface FlightSceneConfig {
   loadout: Loadout;
   targets: { x: number; y: number }[];
+  /** Where the ship starts, at rest; absent means where a run starts. */
+  start?: { x: number; y: number; rotation: number };
+  /**
+   * A wreck held this far ahead of the ship and replaced when it breaks
+   * (02.3), so a forward weapon has a target for the whole burn. Its shards
+   * are cleared two seconds after release.
+   */
+  escort?: number;
 }
+const ESCORT_ID = 100;
+const ESCORT_SHARD_LIFE = 2;
 
 /**
  * How the scene is looked at (02.2): the game camera, or the ship held at the
@@ -39,16 +49,73 @@ export class FlightScene {
 
   constructor(
     private readonly layers: FlightLayerContexts,
-    private readonly config: FlightSceneConfig,
+    private config: FlightSceneConfig,
+    /** Render width at the game's 1080 height; the game varies it with the window. */
+    width = 1920,
   ) {
     this.renderer = new Renderer(layers.world.canvas);
-    resizeFlightLayers(layers, this.renderer, 1920, 1080);
+    resizeFlightLayers(layers, this.renderer, width, 1080);
+    this.camera.viewportWidth = width;
     this.restart("course");
   }
   get lost() {
     return this.sim.state.status === "PLAYING"
       ? null
       : { seconds: this.sim.ticks * STEP, cause: this.sim.state.deathCause };
+  }
+  /** Another scene flies the burn again from its start. */
+  configure(config: FlightSceneConfig) {
+    this.config = config;
+    this.restart(this.burn);
+  }
+  private wreck(id: number, x: number, y: number) {
+    return {
+      id,
+      group: id,
+      kind: "wreck" as const,
+      x,
+      y,
+      previousX: x,
+      previousY: y,
+      vx: 0,
+      vy: 0,
+      radius: SALVAGE.wreck.radius,
+      hull: SALVAGE.wreck.hull,
+      life: SALVAGE.wreck.life,
+      rotation: 0,
+    };
+  }
+  /** Holds the escort wreck ahead of the ship; a broken one is replaced. */
+  private holdEscort() {
+    const { salvage, ship } = this.sim;
+    if (!salvage || this.config.escort === undefined) return;
+    const x = ship.pos.x + Math.cos(ship.rotation) * this.config.escort;
+    const y = ship.pos.y + Math.sin(ship.rotation) * this.config.escort;
+    // The game keeps shards for good; a wreck that is replaced all burn would
+    // bury the scene, so the escort's shards expire by the game's own expiry.
+    for (const shard of salvage.bodies)
+      if (
+        shard.kind === "fragment" &&
+        shard.group === ESCORT_ID &&
+        shard.life === undefined
+      )
+        shard.life = ESCORT_SHARD_LIFE;
+    let body = salvage.bodies.find(
+      (b) => b.id === ESCORT_ID && b.kind === "wreck",
+    );
+    if (!body) {
+      body = this.wreck(ESCORT_ID, x, y);
+      salvage.bodies.push(body);
+    }
+    Object.assign(body, {
+      x,
+      y,
+      previousX: x,
+      previousY: y,
+      vx: ship.vel.x,
+      vy: ship.vel.y,
+      life: SALVAGE.wreck.life,
+    });
   }
   /** The light surface follows the camera, so another view flies the burn again. */
   restart(burn: BurnId, view = this.view) {
@@ -65,21 +132,12 @@ export class FlightScene {
       // The scene supplies its own targets instead of waiting for encounters.
       salvage.nextPass = Infinity;
       for (const [index, { x, y }] of this.config.targets.entries())
-        salvage.bodies.push({
-          id: 101 + index,
-          group: 101 + index,
-          kind: "wreck",
-          x,
-          y,
-          previousX: x,
-          previousY: y,
-          vx: 0,
-          vy: 0,
-          radius: SALVAGE.wreck.radius,
-          hull: SALVAGE.wreck.hull,
-          life: SALVAGE.wreck.life,
-          rotation: 0,
-        });
+        salvage.bodies.push(this.wreck(101 + index, x, y));
+    }
+    const start = this.config.start;
+    if (start) {
+      this.sim.ship.pos.set(start.x, start.y);
+      this.sim.ship.rotation = start.rotation;
     }
     this.sim.start();
     this.fx.clear();
@@ -110,6 +168,7 @@ export class FlightScene {
     while (this.tick < to) {
       const input = inputAt(this.burn, this.tick);
       const wraps = this.sim.wraps;
+      this.holdEscort();
       this.sim.step({
         leftThruster: input.left,
         rightThruster: input.right,

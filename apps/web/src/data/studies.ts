@@ -12,8 +12,8 @@ export const studies = z.array(studySchema).parse([
   {
     slug: "flight-scene-instrument-2026-11-10",
     title: "Flight scene: one screen for seeing a burn in the game",
-    status: "open",
-    phase: "exploration",
+    status: "accepted",
+    phase: "scope",
     question:
       "What does one shared instrument look like that plays a fixed burn through the game’s own layers, so a study can judge how a ship, its effects and its weapons look in flight?",
   },

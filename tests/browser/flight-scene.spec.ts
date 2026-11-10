@@ -38,13 +38,36 @@ test("flight scene replays through the shared layers at the Lab viewport", async
   test.setTimeout(60000);
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/lab/studies/flight-scene-instrument-2026-11-10#camera");
-  const scene = page
-    .getByRole("figure", {
-      name: "Flight scene: a burn in the game’s layers",
-    })
-    .last();
+  // 02.2 is an older retained step, collapsed by default.
+  await page.locator("details#camera > summary").click();
+  const scenes = page.locator("details#camera").getByRole("figure", {
+    name: "Flight scene: a burn in the game’s layers",
+  });
+  await scenes.first().scrollIntoViewIfNeeded();
+  await expect(scenes.first()).toHaveAttribute("data-rendered", "true");
+  const scene = scenes.last();
   await scene.scrollIntoViewIfNeeded();
   await expect(scene).toHaveAttribute("data-rendered", "true");
+  const stackBloomIds = await page
+    .locator("svg.filter-defs filter[id^='flight-layers-bloom-']")
+    .evaluateAll((filters) => filters.map((filter) => filter.id));
+  // One bloom filter per mounted layer stack, however many steps the page shows.
+  expect(stackBloomIds).toHaveLength(
+    await page.locator(".flight-layers").count(),
+  );
+  expect(new Set(stackBloomIds).size).toBe(stackBloomIds.length);
+  const layerFilterRefs = await page
+    .locator(".flight-layers")
+    .evaluateAll((stacks) =>
+      stacks.map((stack) => {
+        const canvas = stack.querySelector('canvas[data-layer="fx"]');
+        const match =
+          canvas && getComputedStyle(canvas).filter.match(/#([^)'"]+)/);
+        return Boolean(match && document.getElementById(match[1]));
+      }),
+    );
+  expect(layerFilterRefs.length).toBeGreaterThanOrEqual(2);
+  expect(layerFilterRefs.every(Boolean)).toBe(true);
   const layers = scene.locator("canvas[data-layer]");
   await expect(layers).toHaveCount(FLIGHT_LAYERS.length);
   expect(
@@ -72,25 +95,26 @@ test("flight scene replays through the shared layers at the Lab viewport", async
   const lfxFilter = scene.locator('canvas[data-layer="lfx"]');
   await expect(fxFilter).toHaveCSS("filter", /url\(/);
   await expect(lfxFilter).toHaveCSS("filter", "none");
-  expect(
-    await scene
-      .locator("svg.filter-defs feMorphology")
-      .evaluateAll((items) => items.map((item) => item.getAttribute("radius"))),
-  ).toEqual(["4"]);
-  await page.setViewportSize({ width: 1280, height: 1000 });
-  await expect
-    .poll(() =>
-      scene.locator(".screen").evaluate((screen) => {
-        const matrix = new DOMMatrixReadOnly(
-          getComputedStyle(screen).transform,
-        );
-        const radius = Number(
-          screen.querySelector("feMorphology")?.getAttribute("radius"),
-        );
-        return radius * matrix.a;
-      }),
-    )
-    .toBeCloseTo(4, 4);
+  const bloom = await fxFilter.evaluate((canvas) => {
+    const match = getComputedStyle(canvas).filter.match(/#([^)'"]+)/);
+    if (!match) throw new Error("FX filter URL is missing");
+    const filter = document.getElementById(match[1]);
+    if (!filter) throw new Error("FX filter definition is missing");
+    return {
+      glow: filter
+        .querySelector("feGaussianBlur")
+        ?.getAttribute("stdDeviation"),
+      distortion: filter
+        .querySelector("feDisplacementMap")
+        ?.getAttribute("scale"),
+      strength: filter.querySelector("feColorMatrix")?.getAttribute("values"),
+    };
+  });
+  expect(bloom).toEqual({
+    glow: "12",
+    distortion: "16",
+    strength: expect.stringMatching(/^0\.9 0 0 0 0/),
+  });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await expect(scene).toHaveAttribute("data-burn", "course");
   const time = scene.getByRole("slider", { name: "Time" });
@@ -188,11 +212,11 @@ test("02.1 flight scene also mounts the shared production layers", async ({
 }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/lab/studies/flight-scene-instrument-2026-11-10#time");
-  const scene = page
-    .getByRole("figure", {
-      name: "Flight scene: a burn in the game’s layers",
-    })
-    .first();
+  // 02.1 is an older retained step, collapsed by default.
+  await page.locator("details#time > summary").click();
+  const scene = page.locator("details#time").getByRole("figure", {
+    name: "Flight scene: a burn in the game’s layers",
+  });
   await scene.scrollIntoViewIfNeeded();
   await expect(scene).toHaveAttribute("data-rendered", "true");
   const layers = scene.locator("canvas[data-layer]");

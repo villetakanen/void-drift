@@ -7,11 +7,11 @@ import {
   TICK_RATE,
   TOTAL_TICKS,
 } from "../../lib/instrument";
+import FlightLayers from "../FlightLayers.svelte";
 import RingSlider from "../inputs/RingSlider.svelte";
 import Toggle from "../inputs/Toggle.svelte";
 import BurnRow from "../lab/instrument/BurnRow.svelte";
 import { FlightScene, type FlightSceneView } from "./flight-scene";
-import StudyFlightLayers from "./StudyFlightLayers.svelte";
 import { studyStarterWasp } from "./starter-wasp-fixture";
 import "@void-drift/core/styles/buttons.css";
 
@@ -125,14 +125,10 @@ onMount(() => {
       class="slot"
       style={`left:${PAD}px;top:${TOP}px;width:${SCENE.w}px;height:${SCENE.h}px`}
     >
-      <StudyFlightLayers
+      <FlightLayers
         bind:canvases
         label="The game’s layers at the current time"
-        displayScale={scale}
       />
-      <p class="fx-trial">
-        Study trial · FX Screen + Expand 4px · LFX Hard light
-      </p>
       <div class="view">
         <Toggle
           compact
@@ -216,19 +212,6 @@ onMount(() => {
 .slot :global(.flight-layers) {
   width: 100%;
   height: 100%;
-}
-.fx-trial {
-  position: absolute;
-  right: 8px;
-  bottom: 8px;
-  z-index: 2;
-  margin: 0;
-  padding: 4px 7px;
-  background: rgb(0 0 0 / 65%);
-  color: var(--color-text);
-  font-size: 11px;
-  line-height: 1.2;
-  pointer-events: none;
 }
 .slot :global(canvas) {
   width: 100%;
