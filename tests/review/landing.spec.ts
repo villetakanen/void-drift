@@ -16,7 +16,7 @@ for (const [name, random] of [
       const time = new Date("2026-11-03T00:00:00Z");
       await page.clock.install({ time });
       await page.clock.pauseAt(time);
-      await page.goto("/lab/landing");
+      await page.goto("/");
       await expect(page.locator(".flight-page")).toHaveAttribute(
         "data-landing-sun",
         name,

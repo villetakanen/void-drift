@@ -25,8 +25,6 @@ export const labPageSchema = z.object({
   purpose: z.string().min(1),
   group: labGroupSchema,
   source: z.enum(["production", "sketch", "record"]),
-  /** Another page's href when this route only keeps an old link working. */
-  aliasOf: z.string().optional(),
 });
 export type LabPage = z.infer<typeof labPageSchema>;
 
@@ -66,14 +64,6 @@ export const labPages = z.array(labPageSchema).parse([
     purpose: "Buttons, toggle and ring slider in every state.",
     group: "design-system",
     source: "production",
-  },
-  {
-    href: "/lab/buttons",
-    title: "Buttons",
-    purpose: "The button reference, on the inputs page.",
-    group: "design-system",
-    source: "production",
-    aliasOf: "/lab/inputs",
   },
   {
     href: "/lab/logomark",
@@ -131,13 +121,6 @@ export const labPages = z.array(labPageSchema).parse([
     group: "ships-and-world",
     source: "production",
   },
-  {
-    href: "/lab/ion-engines",
-    title: "Ion effects",
-    purpose: "Ion engine sizes, from the accepted study comparison.",
-    group: "ships-and-world",
-    source: "sketch",
-  },
 
   {
     href: "/lab/instrument",
@@ -163,13 +146,6 @@ export const labPages = z.array(labPageSchema).parse([
     source: "production",
   },
   {
-    href: "/lab/builder",
-    title: "Ship builder",
-    purpose: "The hangar with Lab builds.",
-    group: "tools",
-    source: "production",
-  },
-  {
     href: "/lab/ship-propulsion",
     title: "Ship propulsion",
     purpose:
@@ -185,13 +161,6 @@ export const labPages = z.array(labPageSchema).parse([
     source: "production",
   },
   {
-    href: "/lab/landing",
-    title: "Opening screen",
-    purpose: "The game's opening screen on its own route.",
-    group: "tools",
-    source: "production",
-  },
-  {
     href: "/lab/studies",
     title: "Design studies",
     purpose: "Every study with its phase and outcome.",
@@ -199,6 +168,3 @@ export const labPages = z.array(labPageSchema).parse([
     source: "record",
   },
 ]);
-
-/** Pages shown in navigation: aliases stay routable but unlisted. */
-export const listedLabPages = labPages.filter((page) => !page.aliasOf);

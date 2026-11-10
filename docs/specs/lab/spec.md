@@ -31,10 +31,11 @@ after they reach the game.
 
 ### Definition of Done
 
-- [ ] No Lab page offers a game mode or a run that ends in a score to save.
-- [ ] No Lab page imports or calls score submission.
+- [x] No Lab page offers a game mode or a run that ends in a score to save.
+- [x] No Lab page imports or calls score submission.
 
 ### Regression guardrails
 
-- A Lab demo that reuses flight still never reaches score submission.
+- No Lab file imports the flight shell, the Hangar, the title screen or score
+  submission; `scripts/check-contracts.mjs` fails the gate if one does.
 - Adding a Lab page never changes game behaviour.

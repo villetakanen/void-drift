@@ -1,11 +1,11 @@
 ---
-import { labGroups, listedLabPages } from "../../data/lab-pages";
+import { labGroups, labPages } from "../../data/lab-pages";
 import { studies } from "../../data/studies";
 import LabLayout from "../../layouts/LabLayout.astro";
 
 const groups = labGroups.map((group) => ({
   ...group,
-  pages: listedLabPages.filter((page) => page.group === group.id),
+  pages: labPages.filter((page) => page.group === group.id),
 }));
 // The registry lists the newest studies first.
 const latestStudies = studies.slice(0, 4);

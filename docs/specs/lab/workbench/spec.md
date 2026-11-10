@@ -16,7 +16,7 @@ To decouple asset development from gameplay logic, we have implemented a "Lab" r
 - **Base Route:** `/lab` (Index of all experiments).
 - **Sub-Routes:**
   - **Entity Labs:** `/lab/entities/ship`, `/lab/entities/star`, `/lab/entities/planet`.
-  - **System Labs:** `/lab/resources`, `/lab/typography`, `/lab/buttons`.
+  - **System Labs:** `/lab/resources`, `/lab/typography`, `/lab/inputs`.
 - **Location:**
   - Entities: `apps/web/src/pages/lab/entities/*.astro`
   - Systems: `apps/web/src/pages/lab/*.astro`

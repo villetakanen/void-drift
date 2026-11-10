@@ -40,7 +40,8 @@ import Logo from "./Logo.svelte";
 
 const shipIds = ["wasp", "scout", "fighter", "corvette", "fiddler"] as const;
 
-let { lab = false }: { lab?: boolean } = $props();
+// Explicit Astro hydration attributes avoid the empty-props integration mismatch.
+let _props: { "client:only"?: string } = $props();
 let builds = $state(defaultBuilds());
 let chosen = $state<ShipProfileId>("fighter");
 let selected = $state("left");
@@ -214,11 +215,7 @@ function choose(id: ShipProfileId) {
     <header>
       <div class="brand-context">
         <a class="brand" href="/" aria-label="Void Drift"><Logo size="sm" /></a>
-        <span
-          >{lab
-            ? "SHIP BUILDER LAB / SHARED SYSTEMS"
-            : `HANGAR / ${version}`}</span
-        >
+        <span>HANGAR / {version}</span>
       </div>
       <a href="/">Return to title screen</a>
     </header>

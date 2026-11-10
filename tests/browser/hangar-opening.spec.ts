@@ -62,17 +62,12 @@ test("reserved Experimental selection preserves the build and resets on reload",
   await expect(page).toHaveURL(/\/$/);
 });
 
-test("shared Lab opening", async ({ page }) => {
+test("Hangar opening", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto("/lab/builder");
+  await page.goto("/hangar");
   await expect(
     page.getByRole("heading", { name: "Hangar", exact: true }),
   ).toBeVisible();
-  await expect(
-    page.getByText("SHIP BUILDER LAB / SHARED SYSTEMS"),
-  ).toBeVisible();
-  await page.screenshot({ path: "artifacts/hangar-opening-lab.png" });
-  await page.goto("/hangar");
   await expect(
     page.getByRole("radio", { name: "Off", exact: true }),
   ).toBeChecked();

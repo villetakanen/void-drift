@@ -118,7 +118,7 @@ const shipStatsGroups = $derived([
   </div>
   <p>
     Shared fitting geometry. Fly and fire these weapons in the
-    <a href="/lab/builder">Hangar Lab</a>.
+    <a href="/hangar">Hangar</a>.
   </p>
 </Controls>
 

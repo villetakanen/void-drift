@@ -103,8 +103,8 @@ HANGAR  [quiet save status]                      Experimental  [ Off | On ]
 ```
 
 - **Navigation row:** the shared logo sits at the left; the explicit “Return to
-  title screen” link sits at the right. Both navigate to `/`. Existing version or
-  Lab-context information remains secondary beside the logo.
+  title screen” link sits at the right. Both navigate to `/`. Version
+  information remains secondary beside the logo.
 - **Workspace row:** Hangar is the primary heading on the left, with browser-save
   status as quiet supporting information. The Experimental control sits at the
   right with the experimental marker, when On, directly below it.
@@ -131,9 +131,6 @@ HANGAR  [quiet save status]                      Experimental  [ Off | On ]
   is currently in `ShipBuilder`, rather than a separately imported header component.
   The composition above settles placement; extracting a shared header component
   is not a requirement of this change.
-- `/lab/builder` mounts the same assembly component. Renaming that Lab route is
-  outside this public-route requirement. Shared opening changes remain inspectable
-  in the Lab at widths of 1280px and above.
 - The Experimental setting's schema, storage and effects belong to
   [Experimental mode](../experimental/spec.md).
 
@@ -159,8 +156,7 @@ separate from implementation verification.
 - [ ] O5: Visual review confirms the agreed opening arrangement above ship
   selection, with existing heading, version/context and save-status information
   accounted for. The ship selection row and all lower regions retain their
-  content, arrangement and interactions. Shared composition is inspected in the
-  Lab at a supported width; automated checks do not establish visual acceptance.
+  content, arrangement and interactions. Automated checks do not establish visual acceptance.
 
 #### Regression guardrails
 
@@ -172,19 +168,18 @@ accessibility and visual ownership. Lower-section discrepancies remain separate 
 
 ### Implementation boundary
 
-The opening uses the existing Logo and Toggle definitions in ShipBuilder, shared
-with `/lab/builder`. Equipment progression remains separate work.
+The opening uses the existing Logo and Toggle definitions in ShipBuilder.
+Equipment progression remains separate work.
 
 The public destination is `/hangar`. The agreed compatibility policy (2026-11-06)
 is to redirect `/builder` to `/hangar`, preserving query parameters. On this static
 site, the compatibility page uses `location.replace`, preserving the fragment too;
-it provides a plain Hangar link when JavaScript is unavailable. The Lab route stays
-`/lab/builder`.
+it provides a plain Hangar link when JavaScript is unavailable.
 
 Implementation evidence: `tests/browser/hangar-opening.spec.ts` checks compatibility
 queries, invalid-chassis fallback, pointer/keyboard Experimental selection and
 keyboard title navigation. The existing builder and launch-navigation browser suites cover fitting and flight return flows.
-Production and Lab opening captures at 1440×1000 were inspected for composition;
+The production opening capture at 1440×1000 was inspected for composition;
 O5 remains open for the designer's visual acceptance.
 
 ## Preserved assembly specification
@@ -229,13 +224,13 @@ prior work; it is not a competing current specification.
 
 | Boundary              | Canonical implementation / contract                                                                                                                                                                                                                                                                                                                   |
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Entry and state       | [`builder.astro`](../../../../apps/web/src/pages/builder.astro) and [`lab/builder.astro`](../../../../apps/web/src/pages/lab/builder.astro) compose the same [`ShipBuilder.svelte`](../../../../apps/web/src/components/ShipBuilder.svelte). It owns selection, fitting, browser persistence and flight entry.                                        |
+| Entry and state       | [`builder.astro`](../../../../apps/web/src/pages/builder.astro) redirects to [`hangar.astro`](../../../../apps/web/src/pages/hangar.astro), which mounts [`ShipBuilder.svelte`](../../../../apps/web/src/components/ShipBuilder.svelte). It owns selection, fitting, browser persistence and flight entry.                                            |
 | Ship identity         | `SHIP_IDENTITY` in [`config.ts`](../../../../packages/mode-a/src/lib/config.ts), validated by `ShipProfileIdSchema` / `ShipIdentitiesSchema` in [`ship-profile.ts`](../../../../packages/mode-a/src/lib/schemas/ship-profile.ts). Short names identify choices; the long name identifies the displayed ship.                                          |
 | Fittings and saves    | [`loadout.ts`](../../../../packages/mode-a/src/lib/schemas/loadout.ts): `PartSchema`, `ChassisSchema`, `LoadoutSchema`, `BuildStoreSchema`, `slotAccepts`, `defaultBuilds`. Browser data is parsed before use; a loadout is parsed again through [`FlightSettingsSchema`](../../../../packages/mode-a/src/lib/schemas/flight.ts) at simulation entry. |
 | Mounts and appearance | `buildMounts` and `drawBuild` in [`build-renderer.ts`](../../../../packages/mode-a/src/lib/build-renderer.ts) supply production mounts and ship drawing. The Hangar consumes these definitions; the [mount planner](mount-planner/spec.md) authors proposed geometry separately.                                                                      |
 | Information           | `PARTS`, `CHASSIS`, `fittedParts` and `buildStats` in `loadout.ts` supply catalog values and assembled estimates. Numerical catalogs, slot counts, coordinates and formulas are maintained there rather than copied into this spec.                                                                                                                   |
 | Flight handoff        | [`FlightDeck.svelte`](../../../../apps/web/src/components/FlightDeck.svelte) receives `loadout`, `mode` and `onReturn`. [`Simulation`](../../../../packages/mode-a/src/lib/simulation.ts) owns resources and termination; [`build-flight.ts`](../../../../packages/mode-a/src/lib/build-flight.ts) owns engine commands and power demand.             |
-| Shared interface      | [`Toggle.svelte`](../../../../apps/web/src/components/inputs/Toggle.svelte) and the [design system](../../factory/design-system/spec.md) supply controls and visual foundations. `/lab/builder` is the inspectable production composition.                                                                                                            |
+| Shared interface      | [`Toggle.svelte`](../../../../apps/web/src/components/inputs/Toggle.svelte) and the [design system](../../factory/design-system/spec.md) supply controls and visual foundations.                                                                                                                                                                      |
 
 ### Constraints
 
@@ -365,8 +360,7 @@ These are acceptance criteria, not claims that checks have passed.
   only as a valid engine choice. (D1–D3)
 - Selection, preview mode and flight reset preserve saved assembly; editing one
   valid chassis build preserves the others. (D2–D4, D7)
-- Hangar and flight consume the same mounts, part identities and loadout. Lab entry
-  exercises the same component. Shared changes must remain inspectable there. (D4–D7)
+- Hangar and flight consume the same mounts, part identities and loadout. (D4–D7)
 - Browser-storage failure leaves a usable in-memory workflow with truthful status.
   Custom loadouts remain outside ranked submission and fixed starter builds. (D3, D8)
 - Keyboard operation and existing landscape touch flight remain available. Human

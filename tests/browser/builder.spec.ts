@@ -129,7 +129,7 @@ test("preserves other chassis saves and independently selects tight aft mounts",
     },
   };
   await page.clock.install();
-  await page.goto("/lab/builder");
+  await page.goto("/hangar");
   await page.evaluate(
     (value) =>
       localStorage.setItem("void-drift-builds-v3", JSON.stringify(value)),

@@ -1,0 +1,124 @@
+---
+import FlightScene021 from "../../../components/studies/FlightScene021.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find(
+  (entry) => entry.slug === "flight-scene-instrument-2026-11-10",
+);
+---
+
+<StudyLayout study={study}>
+  <section aria-labelledby="problem">
+    <h2 id="problem">01 / Every study builds its own window into the game</h2>
+    <p>
+      A study about an engine plume, a cannon ray or a gravity fold has to show
+      the thing in flight. Each one so far has built that view itself. The
+      <a href="/lab/studies/ion-engines-2026-10-31">ion engine</a>
+      streams, the
+      <a href="/lab/studies/lhi-wasp#flight-demo">Wasp flight demo</a>, the
+      <a href="/lab/studies/base-movement-ion">stabilizer flight</a>, the
+      <a href="/lab/studies/gravity-coil-fx-2026-11-03">gravity fold flyby</a>
+      and the
+      <a href="/lab/studies/light-ion-cannon-2026-11-08">Light Ion Cannon</a>
+      ray each chose their own ship drawing, background, effects, flight script
+      and playback controls. One drew the hull by hand, several flew a private
+      approximation of the physics, and only one composed the layers the way the
+      game does. The effect is judged against a different picture every time,
+      and none of those pictures is quite the game.
+    </p>
+    <p>
+      The Flight scene instrument is the Motion instrument’s sibling. It keeps
+      the same burns and the same time slider, and the same full-window band
+      that snaps into the reading flow. Where the Motion instrument draws
+      graphs, this one gives the screen to a single large view of the game’s own
+      layers: stars, ship, engine effects, the light surface and weapon fire,
+      drawn by the production renderers from the production simulation. An agent
+      configures the ship and the scene; the designer picks a burn, moves
+      through time and looks.
+    </p>
+    <p>
+      The tension is between a picture that can be inspected and a picture that
+      is true. The game’s light is not a function of the moment: the effects
+      surface is fading pixel history, sparks and the camera carry state, and
+      weapons fire by themselves only when a target is in line. A time slider
+      asks for any instant on demand; the game can only arrive at an instant by
+      flying there. How the instrument reconciles the two decides what a study
+      can trust it to show.
+    </p>
+    <h3>Held fixed</h3>
+    <ul>
+      <li>
+        The Motion instrument’s burn programs B1, B2 and B3, their 14 seconds
+        and the shared time cursor.
+      </li>
+      <li>
+        The full-window, snapping study embed and the pane that holds the values
+        under investigation.
+      </li>
+      <li>
+        Production simulation, renderers and draw order. The instrument adds no
+        ship art, effect or physics of its own, and later production changes
+        show up in it.
+      </li>
+      <li>
+        The agent supplies the configuration; the designer adjusts only what the
+        study exposes.
+      </li>
+    </ul>
+    <h3>Left open</h3>
+    <ul>
+      <li>
+        The screen: how large the scene is, and where the burn row, time and
+        playback sit around it.
+      </li>
+      <li>
+        Time: whether the scene plays, scrubs or both, and what scrubbing shows
+        of light that depends on the preceding moments.
+      </li>
+      <li>
+        The camera: the game’s framing and zoom jumps, a fixed view, or a
+        choice.
+      </li>
+      <li>
+        The scene around the ship: what a configuration can place (a sun, a
+        planet, targets that make weapons fire) and which layers the designer
+        can switch off to isolate one.
+      </li>
+      <li>Whether one ship is enough or a comparison belongs on the screen.</li>
+    </ul>
+    <h3>Outside this cycle</h3>
+    <p>
+      Moving earlier studies’ benches onto the instrument, a permanent Lab room
+      for it, flying it by hand with the keyboard, and new burns that include
+      weapon inputs are adjacent questions. The game has no fire button, so a
+      burn stays an engine program.
+    </p>
+  </section>
+  <section aria-labelledby="time">
+    <h2 id="time">02.1 / Can the game’s light be reached by a jump?</h2>
+    <div class="bleed"><FlightScene021 client:visible /></div>
+  </section>
+  <section><h2>03 / To be developed after 02</h2></section>
+</StudyLayout>
+
+<style is:global>
+/* A page holding the instrument snaps to it while scrolling past. */
+html:has(.bleed) {
+  scroll-snap-type: y proximity;
+  overflow-x: clip;
+}
+</style>
+<style>
+section > p,
+section > ul {
+  max-width: 72ch;
+}
+/* Full window band: the instrument fills it and snaps to its centre. */
+.bleed {
+  width: 100vw;
+  height: 100svh;
+  margin-inline: calc(50% - 50vw);
+  scroll-snap-align: center;
+}
+</style>

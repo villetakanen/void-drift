@@ -32,11 +32,6 @@ test("title starts a stock Wasp and keyboard controls reach flight", async ({
   await page.getByRole("button", { name: "Resume", exact: true }).click();
 });
 
-test("retired Flight Lab redirects to Hangar", async ({ page }) => {
-  await page.goto("/lab/flight?trial=old");
-  await expect(page).toHaveURL(/\/hangar$/);
-  await expect(page.getByRole("heading", { name: "Hangar" })).toBeVisible();
-});
 test("landscape thrust pads support simultaneous activation, cancellation and focus loss", async ({
   newLocalContext,
 }) => {

@@ -141,3 +141,29 @@ assert.equal(
   "--color-void changed: update theme-color in Layout.astro to match",
 );
 console.log("theme-color matches --color-void.");
+
+// The Lab has no game modes: nothing in it imports the flight shell, the
+// Hangar, the title screen or score submission.
+const labFiles = execFileSync(
+  "git",
+  [
+    "ls-files",
+    "-z",
+    "--",
+    "apps/web/src/pages/lab",
+    "apps/web/src/components/lab",
+    "apps/web/src/components/studies",
+  ],
+  { encoding: "utf8" },
+)
+  .split("\0")
+  .filter((file) => file && existsSync(file));
+const gameModeImport =
+  /^import\b[^;]*\b(?:FlightDeck|ShipBuilder|TitleScreen|GameWrapper|submitHighScore)\b[^;]*;/m;
+const labGameModes = labFiles.filter((file) =>
+  gameModeImport.test(readFileSync(file, "utf8")),
+);
+for (const file of labGameModes)
+  console.error(`FAIL: ${file} imports a game mode`);
+assert.equal(labGameModes.length, 0, "Lab files must not import a game mode");
+console.log(`Lab: ${labFiles.length} files; none imports a game mode.`);

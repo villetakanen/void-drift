@@ -3,7 +3,7 @@ import { expect, test } from "../helpers/local-browser";
 test("canonical buttons share tokens, spacing, states and responsive composition", async ({
   page,
 }) => {
-  await page.goto("/lab/buttons");
+  await page.goto("/lab/inputs");
   const vertical = page.getByTestId("vertical-buttons");
   const strip = page.getByTestId("strip-buttons");
   await expect(vertical).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");

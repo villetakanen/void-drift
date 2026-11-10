@@ -1,6 +1,6 @@
 ---
 import Logo from "../components/Logo.svelte";
-import { labGroups, listedLabPages } from "../data/lab-pages";
+import { labGroups, labPages } from "../data/lab-pages";
 import "@void-drift/core/styles/reset.css";
 import "@void-drift/core/styles/tokens.css";
 import "@void-drift/core/styles/buttons.css";
@@ -14,7 +14,7 @@ const isActive = (href: string) =>
   currentPath === href || currentPath.startsWith(`${href}/`);
 const groups = labGroups.map((group) => ({
   ...group,
-  pages: listedLabPages.filter((page) => page.group === group.id),
+  pages: labPages.filter((page) => page.group === group.id),
 }));
 ---
 

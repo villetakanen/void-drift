@@ -7,7 +7,7 @@ import {
 import { expect, test } from "../helpers/local-browser";
 import { expectLit } from "../helpers/thrust-pads";
 
-test("Scout restores its four-slot save, fits equipment and engines and flies from the canonical Lab", async ({
+test("Scout restores its four-slot save, fits equipment and engines and flies from the Hangar", async ({
   page,
 }) => {
   const time = new Date("2026-11-03T00:00:00Z");
@@ -26,7 +26,7 @@ test("Scout restores its four-slot save, fits equipment and engines and flies fr
     localStorage.getItem("void-drift-builds-v3"),
   );
   if (!before) throw new Error("Initial chassis builds not saved");
-  await page.goto("/lab/builder?chassis=scout");
+  await page.goto("/hangar?chassis=scout");
   await expect(
     page.getByRole("radio", { name: "Scout", exact: true }),
   ).toBeChecked();

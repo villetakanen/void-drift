@@ -125,8 +125,10 @@ test("production mixed and ion effects at fixed times", async ({
   await page.clock.runFor(1000);
   await scene.getByRole("button", { name: "Pause", exact: true }).click();
   await capture(scene, info, "mixed-fx-1000ms");
-  await page.goto("/lab/ion-engines");
-  const region = page.getByRole("region", { name: "Production ion effects" });
+  await page.goto("/lab/studies/ion-engines-2026-10-31");
+  const region = page.getByRole("region", {
+    name: "Light and Heavy ion visual comparison",
+  });
   await region
     .getByRole("button", { name: "Firing · 0.75 s", exact: true })
     .click();

@@ -19,7 +19,7 @@ screen composes shared definitions instead of inventing its own.
 - `apps/web/src/components/Logo.svelte` draws the logomark from SVG outlines;
   fonts are self-hosted.
 - Each definition has a canonical Lab page: `/lab/tokens`, `/lab/typography`,
-  `/lab/surfaces`, `/lab/buttons` and `/lab/inputs`.
+  `/lab/surfaces` and `/lab/inputs`.
 - Feature specs consume the system. Changing a definition is design work,
   recorded here and demonstrated on its Lab page in the same change.
 
@@ -543,7 +543,7 @@ Superseded by [Typography](#typography): fonts are self-hosted and no CDN is use
 
 Moved from `docs/design.md` on 2026-11-02. These rules are current; the subsections
 after them predate the promotion. The accepted study at `/lab/studies/buttons` records
-the rationale; `/lab/buttons` is the canonical interactive reference. Shared
+the rationale; `/lab/inputs` is the canonical interactive reference. Shared
 definitions are in core `styles/buttons.css`, with foundations in `styles/tokens.css`.
 
 - Game startup, pause/continue, setup and mode-selection buttons navigate game states.

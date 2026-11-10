@@ -65,7 +65,6 @@ game's home and Hangar is an alternative launch point.
   a ship-wide, 450px arrival-green trail starts at the wing tips and fades aft
   from 22% opacity. Artwork may overflow
   the panel, is hidden from assistive technology and never intercepts input.
-  The production composition is also visible at `/lab/landing`.
 - The version label sits at the bottom inside the menu panel, in small muted
   caption text.
 - The lime logomark sits centred above a visible “VOID DRIFT” heading. The

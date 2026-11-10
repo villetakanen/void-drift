@@ -8,7 +8,7 @@ Read for changes to structure, simulation, or data flow. Product intent belongs 
 - pnpm workspace; strict TypeScript, Astro routes, Svelte 5 and Vite.
 - Core owns physics, camera, input, procedural drawing and shared styles.
 - Mode A owns the fixed 60 Hz `Simulation`, seeded trials, ship profiles and Firebase boundary.
-- `FlightDeck.svelte` composes the same systems for the game and `/lab/flight`.
+- `FlightDeck.svelte` composes the same systems for every game mode; the Lab never mounts it.
 - The FX correction accumulates new stamps on a shared persistent Canvas surface
   above ships/world and below the deck. Overlap adds light; the whole image decays with
   game time. Core owns buffers, stamp caches, bounded moving sparks and scene budgets;
@@ -111,7 +111,7 @@ missing shared foundations, and structural CSS/fixtures. Record derivations and
 ownership, rather than demanding a public token for every value. Existing global
 `--button-*` names remain compatibility aliases. Shared buttons now own private
 composition properties; shared button groups own `--_group-spacing` and
-`--_stack-max`. The canonical `/lab/buttons` and application consume these same
+`--_stack-max`. The canonical `/lab/inputs` and application consume these same
 definitions from core styles/buttons.css.
 
 ## Ship builder alpha — 0.4.0
@@ -120,7 +120,7 @@ definitions from core styles/buttons.css.
 `build-flight.ts` owns assembled propulsion and energy calculations; Simulation
 branches on an optional validated loadout while preserving legacy stock trials.
 `build-renderer.ts` draws the same procedural fittings in the builder and flight.
-`/builder` and `/lab/builder` compose the same ShipBuilder and FlightDeck components.
+`/hangar` composes the ShipBuilder and FlightDeck components; `/builder` redirects to it.
 Resource power is absolute nonnegative energy; runtime clamps it to build capacity.
 Custom runs are unranked and cannot use the stock score submission path.
 See [Hangar](specs/game/hangar/spec.md) for assembly and flight handoff; the

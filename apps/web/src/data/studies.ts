@@ -10,6 +10,14 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
   {
+    slug: "flight-scene-instrument-2026-11-10",
+    title: "Flight scene: one screen for seeing a burn in the game",
+    status: "open",
+    phase: "problem",
+    question:
+      "What does one shared instrument look like that plays a fixed burn through the game’s own layers, so a study can judge how a ship, its effects and its weapons look in flight?",
+  },
+  {
     slug: "ion-point-defence-2026-11-08",
     title: "Ion Point Defence: a turret that meets the threat",
     status: "accepted",
