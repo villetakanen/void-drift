@@ -77,7 +77,9 @@ placeholders; see the Terms section of the 0.6.0 plan.
   are all stable; nothing else keeps its own list.
 - `HighScoreSubmissionSchema` accepts only stable chassis, derived from the
   catalog. `firestore.rules` accepts `shipId` in wasp, scout and fighter.
-- Spec: E1, E10.
+- Spec: E1, E10. Changed 10 November 2026: the
+  [scores spec](../specs/game/scores/spec.md) accepts any ship and keeps no
+  ship list in the schema or `firestore.rules`; this slice needs replanning.
 - Checks: the schema rejects an entry without a class; the helper on a stock
   Wasp, an experimental chassis and an experimental part; submission and the
   rules emulator reject Corvette and Fiddler.

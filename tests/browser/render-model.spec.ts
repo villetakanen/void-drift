@@ -1,4 +1,7 @@
-import { FLIGHT_PASSES } from "../../packages/mode-a/src/lib/flight-frame";
+import {
+  FLIGHT_LAYERS,
+  FLIGHT_PASSES,
+} from "../../packages/mode-a/src/lib/flight-frame";
 import { expect, test } from "../helpers/local-browser";
 
 const ids = FLIGHT_PASSES.map((pass) => pass.id);
@@ -22,6 +25,23 @@ test("render model lists the game's passes and draws the selected ones", async (
     ),
   ).toEqual(ids);
   await expect(model).toHaveAttribute("data-drawn", ids.join(" "));
+
+  // One canvas per layer, in stack order, blended by the browser.
+  expect(
+    await model
+      .locator("canvas[data-layer]")
+      .evaluateAll((canvases) =>
+        canvases.map((canvas) => [
+          canvas.getAttribute("data-layer"),
+          getComputedStyle(canvas).mixBlendMode,
+        ]),
+      ),
+  ).toEqual(FLIGHT_LAYERS.map((layer) => [layer.id, layer.blend]));
+  expect(
+    await model
+      .locator(".flight-layers")
+      .evaluate((stack) => getComputedStyle(stack).isolation),
+  ).toBe("isolate");
 
   // Hiding one pass leaves the others, and the simulation keeps running.
   const hiddenPass = FLIGHT_PASSES[1];
@@ -57,8 +77,8 @@ test("render model lists the game's passes and draws the selected ones", async (
   await expect(model).toHaveAttribute("data-ticks", String(held + 1));
 
   // Layer values come from the tokens.
-  for (const row of await model.locator("[data-layer]").all()) {
-    const token = (await row.getAttribute("data-layer")) ?? "";
+  for (const row of await model.locator("[data-token]").all()) {
+    const token = (await row.getAttribute("data-token")) ?? "";
     const value = await page.evaluate(
       (name) =>
         getComputedStyle(document.documentElement)

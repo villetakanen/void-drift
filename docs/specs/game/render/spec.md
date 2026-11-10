@@ -19,9 +19,10 @@ and the one people point at when they discuss how the game renders.
 - `packages/mode-a/src/lib/flight-frame.ts` defines the in-flight frame:
   `FLIGHT_LAYERS`, the ordered layers, `FLIGHT_PASSES`, the ordered passes with
   the layer each draws on, and `drawFlightFrame`, which draws them.
+- `apps/web/src/components/FlightLayers.svelte` is the stage's canvas stack:
+  one canvas per layer, composited by CSS.
 - `apps/web/src/components/FlightDeck.svelte` runs the frame loop, hosts the
-  layers in the stage and draws the in-flight frame only through
-  `drawFlightFrame`.
+  layers and draws the in-flight frame only through `drawFlightFrame`.
 - This contract owns frame time, the spaces, the layer model and the order of
   layers and passes.
 - [Camera](../camera/spec.md) owns the world-to-stage transform.
@@ -96,12 +97,15 @@ it. Every canvas layer covers the whole stage and declares:
 
 The in-flight stack, bottom to top:
 
-| Layer | Holds                                  | Blend      | Memory     |
-| ----- | -------------------------------------- | ---------- | ---------- |
-| World | Everything solid, and the World HUD    | normal     | immediate  |
-| FX    | Accumulated light that fades           | add        | persistent |
-| LFX   | Live light, fresh every frame          | hard-light | immediate  |
-| Deck  | Page elements: instruments, pads, rows | normal     | none       |
+| Layer | Holds                                  | Blend  | Memory     |
+| ----- | -------------------------------------- | ------ | ---------- |
+| World | Everything solid, and the World HUD    | normal | immediate  |
+| FX    | Accumulated light that fades           | add    | persistent |
+| LFX   | Live light, fresh every frame          | add    | immediate  |
+| Deck  | Page elements: instruments, pads, rows | normal | none       |
+
+The blend, resolution and filter of a layer are tuning. They are set in
+`FLIGHT_LAYERS`, judged by looking, and changing one changes no rule here.
 
 Three rules follow from the stack:
 
@@ -133,19 +137,20 @@ out to the whole system in view, and at the layer's own resolution.
 
 Array order in `FLIGHT_PASSES` is draw order within each layer.
 
-| Layer | Pass              | Space  | What it draws                                      |
-| ----- | ----------------- | ------ | -------------------------------------------------- |
-| World | Void              | screen | The clear to the void colour                       |
-| World | Starfield         | world  | Seeded background stars across the camera's view   |
-| World | Arena boundary    | world  | The arena's ring                                   |
-| World | Star              | world  | The sun's body and glow                            |
-| World | Sun fields        | world  | World HUD: the sun's collection and damage rings   |
-| World | Planets           | world  | Each planet with its orbit path and influence ring |
-| World | Derelicts         | world  | Wrecks, fragments and released energy squares      |
-| World | Ship              | world  | The fitted build, or the stock ship                |
-| FX    | Accumulated light | world  | Fresh emission added, history faded                |
-| FX    | Aperture cut      | world  | Light removed over derelict apertures              |
-| LFX   | Ion beams         | world  | Ion cannon and point-defence beams, live           |
+| Layer | Pass               | Space  | What it draws                                      |
+| ----- | ------------------ | ------ | -------------------------------------------------- |
+| World | Void               | screen | The clear to the void colour                       |
+| World | Starfield          | world  | Seeded background stars across the camera's view   |
+| World | Arena boundary     | world  | The arena's ring                                   |
+| World | Star               | world  | The sun's body and glow                            |
+| World | Sun fields         | world  | World HUD: the sun's collection and damage rings   |
+| World | Planets            | world  | Each planet with its orbit path and influence ring |
+| World | Derelicts          | world  | Wrecks, fragments and released energy squares      |
+| World | Ship               | world  | The fitted build, or the stock ship                |
+| World | Derelict apertures | world  | The hollow centre of each wreck and energy cell    |
+| FX    | Accumulated light  | world  | Fresh emission added, history faded                |
+| FX    | Aperture cut       | world  | Light removed over derelict apertures              |
+| LFX   | Ion beams          | world  | Ion cannon and point-defence beams, live           |
 
 Within World, passes draw far to near: the void, the background, the world's
 bodies, then the ship.
@@ -168,19 +173,21 @@ neither: it draws every pass, unobserved.
 
 - [x] `FLIGHT_PASSES` holds its passes with unique ids, and `drawFlightFrame`
   draws them in array order (`packages/mode-a/src/lib/flight-frame.test.ts`).
-- [x] World passes draw inside the camera bracket and screen passes outside it
-  (`flight-frame.test.ts`).
+- [x] Each pass draws on its own layer, world passes under the camera transform
+  and screen passes without it (`flight-frame.test.ts`).
 - [x] `drawFlightFrame` with `include` draws exactly the included passes, in
   order, and reports exactly those to `observe` (`flight-frame.test.ts`).
 - [x] `FlightDeck.svelte` draws the in-flight frame only through
   `drawFlightFrame`.
-- [ ] `FLIGHT_LAYERS` holds World, FX and LFX in stack order, each with its
-  blend, memory and resolution, and every pass names one of them.
-- [ ] The stage hosts one canvas per layer, in stack order, each composited by
-  its declared CSS blend mode inside an isolated stage.
-- [ ] No pass draws another layer's image onto its own, and no game code sets a
+- [x] `FLIGHT_LAYERS` holds World, FX and LFX in stack order, each with its
+  blend, memory and resolution, and every pass names one of them
+  (`flight-frame.test.ts`).
+- [x] The stage hosts one canvas per layer, in stack order, each composited by
+  its declared CSS blend mode inside an isolated stage
+  (`tests/browser/render-model.spec.ts`).
+- [x] No pass draws another layer's image onto its own, and no game code sets a
   canvas composite operation to blend one layer with another.
-- [ ] The FX layer is cut over derelict apertures, and no solid pass draws
+- [x] The FX layer is cut over derelict apertures, and no solid pass draws
   above it.
 - [ ] A layer's resolution can be changed without changing any pass.
 - [x] A frame with an empty interval leaves the FX layer's image unchanged

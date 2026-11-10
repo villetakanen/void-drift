@@ -72,9 +72,10 @@ Experimental On, a ship carrying only stable parts still flies an unscored run.
 - **Persistence.** The Experimental setting is kept on this device across
   visits; a fresh device starts Off. The [active ship](../active-ship/spec.md)
   owns how the ship and its fitting are kept.
-- **Leaderboard.** Submission accepts only stable ships; an experimental
-  chassis is rejected by `HighScoreSubmissionSchema`
-  (`packages/mode-a/src/schemas/highscore.ts`).
+- **Leaderboard.** The setting alone keeps experimental content off the board:
+  with it Off only stable ships and parts fly, and with it On nothing is
+  submitted. The [scores contract](../scores/spec.md) accepts any ship and
+  keeps no list of stable ones.
 
 ## Contract
 
@@ -105,7 +106,8 @@ Experimental On, a ship carrying only stable parts still flies an unscored run.
   name stating that runs are not scored; with Off it is absent.
 - [ ] E9: Only the Hangar's Experimental control changes the setting; choosing
   ships, fitting parts and flying runs leave it unchanged.
-- [ ] E10: `HighScoreSubmissionSchema` rejects every experimental chassis.
+- [ ] E10: No saved score carries an experimental ship or part, and neither
+  the score schema nor `firestore.rules` keeps a list of stable ships.
 - [ ] E11: The class names and the marker and notice text are chosen in a design
   study with a live prototype on the title screen, Hangar, flight screen and
   run complete.

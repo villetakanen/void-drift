@@ -76,6 +76,30 @@ Each step is usable before the next.
    shared stage, starting with the flight-scene study, which is the blocker's
    reproduction.
 
+## Step 2 as built, 10 November 2026
+
+- `FLIGHT_LAYERS` and a layer on every pass in `flight-frame.ts`; the stage's
+  canvases are `apps/web/src/components/FlightLayers.svelte`, used by
+  `FlightDeck` and the render model page. FX and LFX are composited by CSS
+  `plus-lighter` inside an isolated stack.
+- **LFX is add today, not hard-light.** The ion beams were already drawn with
+  the canvas `lighter` operation, so `plus-lighter` is what keeps the picture.
+  Hard-light against screen is still step 5.
+- **Apertures:** the black hollow centre is now a World pass after the ship,
+  and the FX layer is cut with the same shape.
+- **Picture check:** the render model scene was captured at five fixed ticks
+  before and after, 410 293 pixels each. Two ticks match within one colour
+  level. Three differ on 41 to 179 pixels, all at aperture rims: light is now
+  removed before it is added, where before black was painted over light that
+  had already clipped to white, so rim pixels under saturated light are
+  brighter than they were.
+- **Found on the way:** the sun's field rings size their dashes from the
+  canvas's CSS width (`drawSunFields`), so the same frame draws different
+  dashes in a differently sized element. The comparison had to correct for a
+  2px border.
+- **Not done here:** studies and Lab benches that draw the frame themselves
+  (`FxBench`, the flight-scene study) still use one canvas.
+
 ## Risks and unknowns
 
 - **iPad Safari performance** with full-screen blended canvases. Desktop frame

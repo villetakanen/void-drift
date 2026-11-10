@@ -247,7 +247,7 @@ onMount(() => {
       </thead>
       <tbody>
         {#each ABOVE as layer (layer.token)}
-          <tr data-layer={layer.token}>
+          <tr data-token={layer.token}>
             <td>{layer.name}</td>
             <td><code>{layer.token}</code></td>
             <td class="value">{layers[layer.token] ?? ""}</td>
