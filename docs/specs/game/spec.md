@@ -15,16 +15,16 @@ Void Drift is a procedural space survival game played in the browser. A pilot fl
   - **Flight screen:** [game screen](game-screen/spec.md), [render](render/spec.md), [camera](camera/spec.md), [controls](controls/spec.md), [dialogs](dialogs/spec.md)
   - **Modes:** [Survival](survival/spec.md), [Practice](test-flight/spec.md), [Derelicts](derelicts/spec.md)
   - **Launch and ships:** [title screen](landing-page/spec.md), [Hangar](hangar/spec.md), [active ship](active-ship/spec.md), [Experimental mode](experimental/spec.md), [ships](ships/spec.md), [parts](parts/spec.md)
-  - **World:** [star](world/star/spec.md), [gravity](world/gravity-field/spec.md)
+  - **World:** [star](world/star/spec.md), [gravity](world/gravity-field/spec.md), [derelict](world/derelict/spec.md)
   - **Scores and options:** [high scores](high-scores/spec.md), [options](options/spec.md)
   - **Effects:** [FX](../factory/effects/spec.md)
 
 ### Rules
 
-- **Modes:** flight settings name a mode: Survival, Practice or Derelicts. A missing mode means Survival, and a legacy `testFlight: true` with no mode means Practice.
+- **Modes:** the game has four modes: Survival, Practice, Derelicts and Gauntlet. Survival is the full game and the only scored mode. Each of the others is a mode of its own with its own purpose, stated in its own contract; none is a variant or a setting of another, and they are not merged. Gauntlet is planned and cannot be started yet. Flight settings name a mode: Survival, Practice or Derelicts. A missing mode means Survival, and a legacy `testFlight: true` with no mode means Practice.
 - **Launch and return:** a run starts from the title screen or the Hangar, independently of its mode. Abort and game over return to the place it started from.
 - **PRESS START:** it launches a Survival run with the [active ship](active-ship/spec.md) in a fresh seeded G-class system. Every other launch flies the active ship too. The Hangar owns ship choice.
-- **Ranked runs:** a Survival run under the current `CHALLENGE`, started from the title screen or the Hangar while [Experimental mode](experimental/spec.md) is Off, is scored and ranked. A Survival run while Experimental is On is not scored: it shows its time and the experimental notice in place of the score. Every run while Experimental is On, and every Practice and Derelicts run, is unranked and cannot submit.
+- **Ranked runs:** a Survival run under the current `CHALLENGE`, started from the title screen or the Hangar while [Experimental mode](experimental/spec.md) is Off, is scored and ranked. A Survival run while Experimental is On is not scored: it shows its time and the experimental notice in place of the score. Practice and Derelicts have no score. Every run while Experimental is On, and every Practice and Derelicts run, is unranked and cannot submit.
 - **Scores:** a score is a casual, client-reported [Survival score](survival/spec.md) with the run's whole seconds, labelled as such. Firestore rules check ownership, shape, challenge and bounds, but cannot prove an honest run.
   - A row carries `score` (integer, at least the seconds and at most `MAX_SCORE`, 100000) and `seconds` (integer, 1–3600). `MAX_SCORE` bounds 3600 s, 720 derelict groups (first at 3 s, then at least 5 s apart) of at most 91 scoring hits each (43 on the wreck and 6 on each of eight pieces at the weakest 2-point band) and one 20-point cell each: 83 520, rounded up.
   - Each anonymous player keeps one best per ship; a run whose score is not higher keeps the existing best.
@@ -86,8 +86,8 @@ Void Drift is a procedural space survival game played in the browser. A pilot fl
   and starts a separate board; Top Scores lists only the current challenge.
 - Launch source is independent of mode, ship and ranking; PRESS START and the
   Hangar launch the same active ship.
-- Practice and Derelicts results are never submitted and never alter Survival
-  scoring.
+- Only Survival has a score; Practice and Derelicts show none, submit nothing
+  and never alter Survival scoring.
 - Rendering and effects read simulation state without changing it, so replay
   stays deterministic whatever is drawn.
 - No score feature blocks starting, playing or finishing a run.

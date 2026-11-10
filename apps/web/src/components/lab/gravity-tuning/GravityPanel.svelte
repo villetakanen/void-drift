@@ -122,13 +122,13 @@ function load() {
       bind:value={
         () => config.well.falloff,
         (v) => {
-	const result = editGravityTuning($state.snapshot(config), (d) => {
-		d.well.falloff = v as typeof d.well.falloff;
-	});
-	if (result.ok) {
-		config = result.doc;
-		error = "";
-	} else error = result.message;
+  const result = editGravityTuning($state.snapshot(config), (d) => {
+    d.well.falloff = v as typeof d.well.falloff;
+  });
+  if (result.ok) {
+    config = result.doc;
+    error = "";
+  } else error = result.message;
 }
       }
     />

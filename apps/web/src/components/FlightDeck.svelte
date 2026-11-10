@@ -11,14 +11,18 @@ import {
 import {
   buildStats,
   CHALLENGE,
+  clearFlightLayer,
   type DerelictsResult,
   drawFlightFrame,
   FlightFx,
+  type FlightLayerContexts,
+  type FlightLayerId,
   type FlightMode,
   type FlightTickInput,
   gameSettings,
   LandingSystem,
   type Loadout,
+  resizeFlightLayers,
   type ShipProfileId,
   Simulation,
   STEP,
@@ -30,6 +34,7 @@ import { onMount } from "svelte";
 import { fitGameScreen, GAME_HEIGHT } from "../lib/game-screen";
 import { settings } from "../lib/stores/settings";
 import Dialog from "./Dialog.svelte";
+import FlightLayers from "./FlightLayers.svelte";
 import ThrustPads from "./inputs/ThrustPads.svelte";
 import { PAD_ASSEMBLY_HEIGHT_PX } from "./inputs/thrust-pads";
 import TitleScreen from "./TitleScreen.svelte";
@@ -47,7 +52,7 @@ let {
 } = $props();
 // Practice skips the arrival countdown and labels itself; its screen is Survival's.
 const testFlight = $derived(mode === "practice");
-let canvas: HTMLCanvasElement;
+let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
 let simulation: Simulation;
 let input: Input;
 let renderer: Renderer;
@@ -258,8 +263,19 @@ function padPress(pointerId: number, pad: ThrustPad | null) {
   input?.setPointer(pointerId, pad);
 }
 onMount(() => {
+  const { world: canvas, fx, lfx } = canvases;
+  const context = canvas?.getContext("2d");
+  const fxContext = fx?.getContext("2d");
+  const lfxContext = lfx?.getContext("2d");
+  if (!canvas || !context || !fxContext || !lfxContext)
+    throw new Error("Flight layers require Canvas 2D");
+  const layers: FlightLayerContexts = {
+    world: context,
+    fx: fxContext,
+    lfx: lfxContext,
+  };
   renderer = new Renderer(canvas);
-  renderer.resize(1920, 1080);
+  resizeFlightLayers(layers, renderer, 1920, 1080);
   camera = new Camera();
   input = new Input();
   if (launchSource === "title") enterMenu();
@@ -304,8 +320,7 @@ onMount(() => {
   lastFrameTime = performance.now();
   let accumulator = 0;
   let frame = 0;
-  const context = canvas.getContext("2d");
-  const playSurface = canvas.parentElement;
+  const playSurface = canvas.closest(".flight-stage-layer");
   const preventMenu = (event: Event) => event.preventDefault();
   playSurface?.addEventListener("contextmenu", preventMenu);
   function draw(time: number) {
@@ -315,7 +330,7 @@ onMount(() => {
     if (blocked) input.reset();
     const renderWidth = adaptive ? Math.round(screen.logicalWidth) : 1920;
     if (canvas.width !== renderWidth) {
-      renderer.resize(renderWidth, GAME_HEIGHT);
+      resizeFlightLayers(layers, renderer, renderWidth, GAME_HEIGHT);
       // Render geometry only; framing follows the active area set on measure.
       camera.viewportWidth = renderWidth;
     }
@@ -356,8 +371,10 @@ onMount(() => {
       }
     } else accumulator = 0;
     sync();
-    if (landing && context) {
+    if (landing) {
       renderer.clear();
+      clearFlightLayer(layers.fx);
+      clearFlightLayer(layers.lfx);
       if (!document.hidden && !reducedMotion) landing.step(dt);
       // The title backdrop fills the viewport independently of the play stage.
       renderer.drawBackground();
@@ -370,13 +387,13 @@ onMount(() => {
         landingFrame.cardRight,
       );
       context.restore();
-    } else if (context) {
+    } else {
       const countCentre = camera.screenToWorld(
         canvas.width / 2,
         canvas.height / 2,
       );
       drawFlightFrame({
-        ctx: context,
+        layers,
         renderer,
         camera,
         sim: simulation,
@@ -476,14 +493,14 @@ onMount(() => {
         class:scrim-stage={Boolean(landing)}
         data-stage
       >
-        <canvas
-          bind:this={canvas}
-          aria-label={landing
+        <FlightLayers
+          bind:canvases
+          label={landing
             ? "Decorative star and orbiting planets"
             : testFlight
               ? "Fitted ship, star and orbiting planets"
               : "Ship, star and orbiting planets"}
-        ></canvas>
+        />
         <!-- The deck: screen-fixed parts in the gutters, clear of the active
              area. One grid holds both side gutters, so their rows and pads
              share a height. -->
@@ -705,7 +722,7 @@ onMount(() => {
   display: none;
 }
 
-.flight-stage.landing > .flight-stage-layer > canvas {
+.flight-stage.landing > .flight-stage-layer :global(canvas) {
   object-fit: fill;
 }
 </style>

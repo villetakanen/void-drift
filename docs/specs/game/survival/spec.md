@@ -1,1058 +1,143 @@
-# Feature: Survival Core (Mode A Gameplay)
-
-## Current standard-Sun resource contract — 2026-11-07
-
-The [standard Sun](../world/star/spec.md) owns the current collection and exposure
-profiles. These supersede the stepped zones and old consumption examples in the
-legacy implementation material below. Life support is exactly 0.8 E/s for every
-ship; Light ion draw is 1.75 E/s per firing engine, with existing steering duty.
-The legacy stock profile multiplier applies only to propulsion draw.
-Every ship inherently collects one solar equivalent; fitted collectors add.
-Assemblies retain their actual fitted energy capacity, stock ships retain 100 E,
-and both clamp stored energy and preserve depletion/death and collision behavior.
-Gross collection remains active at saturation and during net battery drain.
-Practice's explicit resource protection remains distinct from Survival.
-
-The remainder preserves earlier implementation examples and evidence; its old
-Sun zones, costs and completion claims do not establish current verification.
-
-
-**Status:** ✅ COMPLETE  
-**Version:** v0.1.0  
-**Phase:** 5 (Survival Core)
-
----
+# Survival
 
 ## Blueprint
 
 ### Context
 
-Phase 5 transforms the physics sandbox into a complete single-player survival game. This feature introduces resource management (hull + fuel), three distinct death conditions, a game state machine, and player settings persistence.
-
-**Why This Exists:**
-- Mode A requires a win/loss condition beyond physics experimentation
-- Fuel/hull creates risk/reward tension (sun proximity = refuel + danger)
-- Settings allow accessibility (control inversion for left-handed players)
-- Timer + death cause tracking enable leaderboard system (Phase 6)
-
-**Dependencies:**
-- ✅ Phase 4 complete (camera, viewport, star, planet, controls)
-- ❌ Firebase (deferred to Phase 6)
-- ❌ Leaderboard UI (deferred to Phase 6)
-
----
-
-### Architecture
-
-#### 1. Resource System
-
-**Data Model:**
-
-```typescript
-// packages/mode-a/src/lib/schemas/game-state.ts
-import { z } from "zod";
-
-export const ResourcesSchema = z.object({
-  hull: z.number().min(0).max(100), // Percentage (100% = full health)
-  power: z.number().min(0).max(100), // Percentage (100% = full battery)
-});
-
-export const GameStateSchema = z.object({
-  status: z.enum(["MENU", "PLAYING", "GAME_OVER"]),
-  startTime: z.number().nullable(), // Unix timestamp (ms)
-  elapsedTime: z.number(), // Seconds (float)
-  resources: ResourcesSchema,
-  deathCause: z.enum(["STAR", "HULL", "POWER"]).nullable(),
-});
-
-export type GameState = z.infer<typeof GameStateSchema>;
-export type DeathCause = "STAR" | "HULL" | "POWER";
-```
-
-**State Transitions:**
-
-```
-MENU ──[first input]──> PLAYING ──[death]──> GAME_OVER ──[restart]──> MENU
-  │                        │                      │
-  │                        │                      └─> [view leaderboard]
-  └────────────────────────┴─────────────────────────> [settings]
-```
-
----
-
-#### 2. Power System
-
-**Consumption:**
-- Power depletes constantly at a fixed rate
-- Ship life support consumes **1.5 energy per second** (constant drain).
-  Assembled-flight supply and engine-demand calculations both use
-  `LIFE_SUPPORT_DRAIN` from `packages/mode-a/src/lib/schemas/loadout.ts`;
-  low-draw steering and stabilizer braking receive their requested power.
-- Life support and basic systems consume power regardless of thrusting
-
-**Regeneration (Sun Proximity):**
-
-**Config Location:** `packages/mode-a/src/lib/config.ts`
-
-```typescript
-// Zone radii and rates are config params, not hardcoded
-const {
-  POWER_ZONE_1_RADIUS,
-  POWER_ZONE_2_RADIUS,
-  POWER_ZONE_3_RADIUS,
-  POWER_REGEN_ZONE_1,
-  POWER_REGEN_ZONE_2,
-  POWER_REGEN_ZONE_3,
-  HULL_BURN_ZONE_1,
-  HULL_BURN_ZONE_2,
-  HULL_BURN_ZONE_3,
-} = SURVIVAL_CONFIG;
-
-const distanceToSun = Math.hypot(ship.x - sun.x, ship.y - sun.y);
-
-// Base rates from config (modified by sun type multipliers)
-let basePowerRegen = 0;
-let baseHullBurn = 0;
-
-if (distanceToSun < POWER_ZONE_1_RADIUS) {
-  // ZONE 1: High Risk / High Reward
-  basePowerRegen = POWER_REGEN_ZONE_1;
-  baseHullBurn = HULL_BURN_ZONE_1;
-} else if (distanceToSun < POWER_ZONE_2_RADIUS) {
-  // ZONE 2: Medium Risk / Medium Reward
-  basePowerRegen = POWER_REGEN_ZONE_2;
-  baseHullBurn = HULL_BURN_ZONE_2;
-} else if (distanceToSun < POWER_ZONE_3_RADIUS) {
-  // ZONE 3: Low Risk / Low Reward
-  basePowerRegen = POWER_REGEN_ZONE_3;
-  baseHullBurn = HULL_BURN_ZONE_3;
-} else {
-  // ZONE 4: No refuel, no burn (gravity only)
-  basePowerRegen = 0;
-  baseHullBurn = 0;
-}
-
-// Apply sun type multipliers (see star_mechanics.md for SUN_CONFIG)
-const powerRegenRate = basePowerRegen * sun.powerMultiplier;
-const hullDamageRate = baseHullBurn * sun.burnMultiplier;
-```
-
-**Sun Type Effects:**
-
-| Sun Type     | Power Multiplier | Burn Multiplier | Strategy                  |
-| ------------ | ---------------- | --------------- | ------------------------- |
-| Red Giant    | < 1.0x           | < 1.0x          | Safe but slow refuel      |
-| Yellow Dwarf | 1.0x             | 1.0x            | Balanced risk/reward      |
-| Blue Dwarf   | > 1.0x           | > 1.0x          | Fast refuel but dangerous |
-
-**Implementation Location:**
-- `packages/mode-a/src/lib/physics.ts` — `updatePower()` method
-- `packages/core/src/lib/physics/Physics.ts` — Shared physics (gravity, collision)
-- Call in main game loop after `applyGravity()`, before `applyVelocity()`
-
-**Imports:**
-```typescript
-import { updatePower, SURVIVAL_CONFIG } from "@void-drift/mode-a";
-import { Ship } from "@void-drift/core";
-```
-
----
-
-#### 3. Hull System
-
-**Damage Sources:**
-
-1. **Planet Collision:**
-   - Fixed damage: **-7% hull** per collision
-   - Applied on elastic bounce (existing collision detection)
-   - Visual feedback: Screen shake (2px, 150ms)
-
-2. **Sun Proximity:**
-   - Distance-based damage (see zones above)
-   - Applied continuously per frame (scaled by deltaTime)
-   - Visual feedback: Red vignette at < 25% hull
-
-3. **Star Contact (Instant Death):**
-   - If `distanceToSun < sun.radius` → `hull = 0` immediately
-   - Triggers death state with cause: `STAR`
-
-**Hull Recovery:**
-- No healing mechanic in v0.1.0
-- Hull damage is permanent (encourages conservative play)
-
-**Implementation Location:**
-- `packages/mode-a/src/lib/physics.ts` — `updateHull()` method
-- `packages/core/src/lib/physics/Physics.ts` — Planet collision detection
-- Sun damage: Call in `updateHull()` alongside power regen logic
-
----
-
-#### 4. Death Detection
-
-**Three Fail States:**
-
-```typescript
-// packages/mode-a/src/lib/death.ts
-import type { Ship, Star } from "@void-drift/core";
-import type { GameState, DeathCause } from "./schemas/game-state";
-
-function checkDeath(
-  state: GameState,
-  ship: Ship,
-  sun: Star,
-): DeathCause | null {
-  // Priority order matters (star > hull > fuel)
-
-  // 1. Star contact (instant death)
-  const distanceToSun = Math.hypot(ship.x - sun.x, ship.y - sun.y);
-  if (distanceToSun < sun.radius) {
-    return "STAR";
-  }
-
-  // 2. Hull depletion
-  if (state.resources.hull <= 0) {
-    return "HULL";
-  }
-
-  // 3. Power depletion (life support failure)
-  if (state.resources.power <= 0) {
-    return "POWER";
-  }
-
-  return null;
-}
-```
-
-**Death Flow:**
-1. Detect death cause
-2. Set `state.status = 'GAME_OVER'`
-3. Set `state.deathCause = cause`
-4. Freeze physics (stop ship momentum)
-5. Show Game Over screen with time + cause
-
----
-
-#### 5. Timer System
-
-**Timing Logic:**
-
-```typescript
-// Start timer on first input (not on page load)
-let hasStarted = false;
-
-function handleInput(state: GameState) {
-  if (state.status === "MENU" && !hasStarted) {
-    state.status = "PLAYING";
-    state.startTime = Date.now();
-    hasStarted = true;
-  }
-}
-
-// Update elapsed time every frame
-function updateTimer(state: GameState) {
-  if (state.status === "PLAYING" && state.startTime) {
-    state.elapsedTime = (Date.now() - state.startTime) / 1000; // Convert to seconds
-  }
-}
-```
-
-**Display Format:**
-- HUD: `123.4s` (1 decimal place, updates every frame)
-- Game Over: `123.45s` (2 decimal places, final time)
-
-**Implementation Location:**
-- `packages/mode-a/src/lib/game-loop.ts` — `updateTimer()` function
-- `apps/web/src/components/HUD.svelte` — Display timer using `$derived`
-
----
-
-#### 6. Settings System
-
-**Data Model:**
-
-```typescript
-// apps/web/src/lib/settings.ts
-import { z } from "zod";
-
-export const SettingsSchema = z.object({
-  invertControls: z.boolean().default(false),
-});
-
-export type Settings = z.infer<typeof SettingsSchema>;
-
-const SETTINGS_KEY = "void-drift:settings";
-
-export function loadSettings(): Settings {
-  if (typeof localStorage === "undefined") {
-    return { invertControls: false };
-  }
-
-  try {
-    const stored = localStorage.getItem(SETTINGS_KEY);
-    if (!stored) return { invertControls: false };
-
-    const parsed = JSON.parse(stored);
-    return SettingsSchema.parse(parsed);
-  } catch (error) {
-    console.warn("Failed to load settings, using defaults:", error);
-    return { invertControls: false };
-  }
-}
-
-export function saveSettings(settings: Settings): void {
-  if (typeof localStorage === "undefined") return;
-
-  try {
-    const validated = SettingsSchema.parse(settings);
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(validated));
-  } catch (error) {
-    console.error("Failed to save settings:", error);
-  }
-}
-```
-
-**Settings Route:**
-
-```astro
----
-// apps/web/src/pages/settings.astro
-import Layout from '../layouts/Layout.astro';
-import Settings from '../components/Settings.svelte';
----
-
-<Layout title="Settings - Void Drift">
-  <Settings client:load />
-</Layout>
-```
-
-**Settings Component:**
-
-```svelte
-<!-- apps/web/src/components/Settings.svelte -->
-<script lang="ts">
-  import { loadSettings, saveSettings, type Settings } from '../lib/settings';
-  
-  let settings = $state<Settings>(loadSettings());
-  
-  function toggleInvertControls() {
-    settings.invertControls = !settings.invertControls;
-    saveSettings(settings);
-  }
-</script>
-
-<div class="settings-container">
-  <h1>Settings</h1>
-
-  <section class="setting-group">
-    <h2>Controls</h2>
-
-    <label class="toggle">
-      <input
-        type="checkbox"
-        checked={settings.invertControls}
-        onchange={toggleInvertControls}
-      >
-      <span>Invert Controls</span>
-      <p class="hint">Swap left/right engine controls</p>
-    </label>
-  </section>
-
-  <a href="/" class="back-button">Back to Game</a>
-</div>
-
-<style>
-  .settings-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: var(--spacing-lg);
-  }
-  
-  h1 {
-    color: var(--color-neon-blue);
-    font-size: 2rem;
-    margin-bottom: var(--spacing-lg);
-  }
-  
-  .setting-group {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--color-neon-blue);
-    border-radius: 8px;
-    padding: var(--spacing-md);
-    margin-bottom: var(--spacing-md);
-  }
-  
-  .toggle {
-    display: flex;
-    flex-direction: column;
-    cursor: pointer;
-  }
-  
-  .hint {
-    font-size: 0.875rem;
-    color: var(--color-gray);
-    margin-top: var(--spacing-xs);
-  }
-  
-  .back-button {
-    display: inline-block;
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: var(--color-neon-blue);
-    color: var(--color-void);
-    text-decoration: none;
-    border-radius: 4px;
-    margin-top: var(--spacing-lg);
-  }
-</style>
-```
-
-**Control Inversion Logic:**
-
-```typescript
-// packages/core/src/lib/entities/Input.ts
-export function applyControls(
-  ship: Ship,
-  input: InputState,
-  invertControls: boolean,
-): void {
-  const leftActive = invertControls ? input.right : input.left;
-  const rightActive = invertControls ? input.left : input.right;
-
-  if (leftActive && rightActive) {
-    // Both engines = forward thrust
-    ship.thrust(ship.rotation, FULL_THRUST);
-  } else if (leftActive) {
-    // Left engine only = rotate left + partial thrust
-    ship.rotate(-ROTATION_SPEED);
-    ship.thrust(ship.rotation, PARTIAL_THRUST);
-  } else if (rightActive) {
-    // Right engine only = rotate right + partial thrust
-    ship.rotate(ROTATION_SPEED);
-    ship.thrust(ship.rotation, PARTIAL_THRUST);
-  }
-}
-```
-
----
-
-#### 7. HUD Design
-
-**Layout (16:9 Viewport):**
-
-```
-┌─────────────────────────────────────────┐
-│  ∅·Δ                          123.4s    │ ← Logo + Timer
-│                                         │
-│                                         │
-│                                         │
-│                                         │
-│  ███████████░ POWER 91%                 │ ← Power Bar (Stacked on Hull)
-│  ████████░░ HULL 82%                    │ ← Hull Bar (Bottom Left)
-└─────────────────────────────────────────┘
-```
-
-**HUD Component:**
-
-```svelte
-<!-- apps/web/src/components/HUD.svelte -->
-<script lang="ts">
-  import type { GameState } from '@void-drift/engine';
-  
-  let { state }: { state: GameState } = $props();
-  
-  const hullPercent = $derived(state.resources.hull);
-  const powerPercent = $derived(state.resources.power);
-  const timeDisplay = $derived(
-    state.status === 'PLAYING' 
-      ? `${state.elapsedTime.toFixed(1)}s`
-      : '0.0s'
-  );
-  
-  const hullColor = $derived(
-    hullPercent < 25 ? 'var(--color-danger)' :
-    hullPercent < 50 ? 'var(--color-warning)' :
-    'var(--color-neon-blue)'
-  );
-  
-  const powerColor = $derived(
-    powerPercent < 25 ? 'var(--color-danger)' :
-    powerPercent < 50 ? 'var(--color-warning)' :
-    'var(--color-acid-lime)'
-  );
-</script>
-
-<div class="hud">
-  <div class="hud-top">
-    <div class="logo">∅·Δ</div>
-    <div class="timer">{timeDisplay}</div>
-  </div>
-
-  <div class="resource-bar">
-    <div
-      class="bar-fill"
-      style:width="{hullPercent}%"
-      style:background-color={hullColor}
-    ></div>
-    <span class="bar-label">HULL {hullPercent.toFixed(0)}%</span>
-  </div>
-
-  <div class="resource-bar">
-    <div
-      class="bar-fill"
-      style:width="{powerPercent}%"
-      style:background-color={powerColor}
-    ></div>
-    <span class="bar-label">POWER {powerPercent.toFixed(0)}%</span>
-  </div>
-</div>
-
-<style>
-  .hud {
-    position: absolute;
-    top: var(--spacing-sm);
-    left: var(--spacing-sm);
-    right: var(--spacing-sm);
-    pointer-events: none;
-    z-index: 100;
-  }
-  
-  .hud-top {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: var(--spacing-sm);
-  }
-  
-  .logo {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    color: var(--color-neon-blue);
-  }
-  
-  .timer {
-    font-size: 1.25rem;
-    color: var(--color-white);
-    font-variant-numeric: tabular-nums;
-  }
-  
-  .resource-bar {
-    position: relative;
-    height: 24px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--color-neon-blue);
-    margin-bottom: var(--spacing-xs);
-    overflow: hidden;
-  }
-  
-  .bar-fill {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    transition: width 0.1s linear, background-color 0.3s ease;
-  }
-  
-  .bar-label {
-    position: relative;
-    display: block;
-    text-align: center;
-    line-height: 24px;
-    font-size: 0.875rem;
-    color: var(--color-white);
-    text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
-    font-weight: bold;
-  }
-</style>
-```
-
----
-
-#### 8. Game Over Screen
-
-**Layout:**
-
-```
-┌─────────────────────────────────────────┐
-│                                         │
-│          MISSION FAILED                 │
-│                                         │
-│       You survived 142.35 seconds       │
-│                                         │
-│         Cause: Hull Failure             │
-│                                         │
-│      [Try Again]  [Leaderboard]         │
-│                                         │
-└─────────────────────────────────────────┘
-```
-
-**Component:**
-
-```svelte
-<!-- apps/web/src/components/GameOver.svelte -->
-<script lang="ts">
-  import type { GameState } from '@void-drift/engine';
-  
-  let { state, onRestart }: { 
-    state: GameState, 
-    onRestart: () => void 
-  } = $props();
-  
-  const deathMessages = {
-    STAR: 'Incinerated by the star',
-    HULL: 'Hull failure',
-    POWER: 'Out of power',
-  };
-  
-  const message = $derived(
-    state.deathCause ? deathMessages[state.deathCause] : 'Unknown cause'
-  );
-</script>
-
-<div class="game-over-overlay">
-  <div class="game-over-card">
-    <h1>MISSION FAILED</h1>
-    <p class="time">
-      You survived <strong>{state.elapsedTime.toFixed(2)}s</strong>
-    </p>
-    <p class="cause">Cause: {message}</p>
-
-    <div class="actions">
-      <button onclick={onRestart} class="primary">Try Again</button>
-      <a href="/leaderboard" class="secondary">Leaderboard</a>
-    </div>
-  </div>
-</div>
-
-<style>
-  .game-over-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(10, 10, 15, 0.95);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    animation: fadeIn 0.3s ease;
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  
-  .game-over-card {
-    text-align: center;
-    padding: var(--spacing-xl);
-    border: 2px solid var(--color-danger);
-    background: rgba(255, 0, 100, 0.1);
-    border-radius: 8px;
-    max-width: 500px;
-  }
-  
-  h1 {
-    color: var(--color-danger);
-    font-size: 2.5rem;
-    margin-bottom: var(--spacing-md);
-    text-transform: uppercase;
-  }
-  
-  .time {
-    font-size: 1.5rem;
-    color: var(--color-white);
-    margin-bottom: var(--spacing-sm);
-  }
-  
-  .cause {
-    font-size: 1.125rem;
-    color: var(--color-neon-pink);
-    margin-bottom: var(--spacing-lg);
-  }
-  
-  .actions {
-    display: flex;
-    gap: var(--spacing-md);
-    justify-content: center;
-  }
-  
-  button, a {
-    padding: var(--spacing-sm) var(--spacing-lg);
-    font-size: 1.125rem;
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-  }
-  
-  .primary {
-    background: var(--color-neon-blue);
-    color: var(--color-void);
-    border: none;
-  }
-  
-  .secondary {
-    background: transparent;
-    color: var(--color-neon-blue);
-    border: 2px solid var(--color-neon-blue);
-  }
-</style>
-```
-
----
-
-### Anti-Patterns
-
-**NEVER:**
-- Update `hull` or `fuel` outside of the physics loop (causes desyncs)
-- Allow negative fuel/hull values (clamp to 0 immediately)
-- Start timer on page load (must start on first input)
-- Save settings to Firestore (localStorage only for browser-specific settings)
-- Hard-code distance thresholds (use named constants)
-
-**AVOID:**
-- Creating new objects in fuel/hull update loops (GC pauses)
-- Using `setInterval` for timer (use `Date.now()` delta)
-- Checking death state in render loop (physics only)
-- Updating HUD every frame if values haven't changed (use `$derived`)
-
----
+Survival is the main game. The pilot arrives in a star system and stays alive
+as long as they can. Energy runs down and the star is where it is collected,
+but the star also pulls, burns and kills on contact. Derelicts drift through
+now and then: shooting them and collecting what they release earns score and
+energy, at the cost of weapon energy and the risk of a collision.
+
+A run ends when the ship is lost. Its result is a score and the time survived.
+Survival is the only mode whose runs can be ranked.
+
+### Architecture and boundaries
+
+- **Simulation.** `packages/mode-a/src/lib/simulation.ts` owns the run: its
+  fixed step, resources, endings, time and score. Rendering and effects read
+  it and change nothing.
+- **Run state.** `packages/mode-a/src/lib/schemas/game-state.ts` validates the
+  run's status, resources and the cause of its ending.
+- **Encounters.** `SURVIVAL_ENCOUNTER` in
+  `packages/mode-a/src/lib/schemas/salvage.ts` holds Survival's derelict
+  arrival tuning, validated by its schema. It is runtime configuration.
+- **Score.** `Simulation.survivalScore` is the one score formula. Its terms and
+  point values are runtime configuration in code, not part of this contract.
+- **Neighbours.**
+  - The [game contract](../spec.md) owns launch, return, ranking and
+    submission.
+  - [Ships](../ships/spec.md) and [parts](../parts/spec.md) own energy, flight
+    and weapons.
+  - The [star](../world/star/spec.md), [gravity](../world/gravity-field/spec.md)
+    and [planets](../world/planets/spec.md) own the world.
+  - The [derelict contract](../world/derelict/spec.md) owns the derelict
+    itself. [Derelicts mode](../derelicts/spec.md) is a different game with
+    its own arrivals.
+  - The [game screen](../game-screen/spec.md) and [dialogs](../dialogs/spec.md)
+    own what is shown; [Experimental mode](../experimental/spec.md) owns when
+    a run is scored.
+
+### Rules
+
+- **A fresh system.** Every Survival launch gets a fresh seed. The seed decides
+  the system and where the ship enters it.
+- **Arrival.** The ship arrives at the edge of the system, already moving
+  inward at speed. The world is shown and held still for a 3, 2, 1 count, and
+  GO releases play. Time, resources and score do not advance during the count;
+  pause and a hidden page hold it; controls held through the count apply at
+  release.
+- **Two resources.** The ship has hull and energy. A run starts with both full.
+  Energy follows the [ship's energy rules](../ships/spec.md).
+- **Hull loss.** Hull is lost to exposure close to the star, to collisions with
+  planets, and to contact with derelicts and their pieces.
+- **Endings.** A run ends on contact with the star, when hull reaches zero, or
+  when energy reaches zero. When more than one applies in the same step, the
+  cause is the first of these in that order. The run records its cause.
+- **Time.** The run's time is gameplay time: it stops while paused and when the
+  run ends. A score counts whole seconds only.
+- **Derelicts.** Derelicts arrive on their own throughout a run. They are
+  sparse and slow, cross the system on paths that do not depend on where the
+  player is or how they move, and are the same for the same seed. A run can be
+  survived without touching one.
+- **Score.** The simulation computes the score from what happened in the run,
+  by one formula. Rendering never counts toward it. The running score shows
+  during flight and the final score on run complete, as the
+  [game screen](../game-screen/spec.md) and the [game contract](../spec.md)
+  state.
+- **Same run everywhere.** Survival is the same from the title screen and from
+  the Hangar, and for every ship.
 
 ## Contract
 
 ### Definition of Done
 
-**Core Gameplay:**
-- [x] Player starts with 100% hull and 100% power
-- [x] Power consumes 1.0% per second (constant decay)
-- [x] Sun proximity refuels power based on distance zones (4 zones defined)
-- [x] Sun proximity burns hull based on distance zones
-- [x] Planet collisions deduct 7% hull with visual feedback
-- [x] Star contact triggers instant death (`STAR` cause)
-- [x] Hull = 0% triggers death (`HULL` cause)
-- [x] Power = 0% triggers death (`POWER` cause)
+- [x] S1: Every Survival launch uses a fresh seed; the same seed gives the same
+  system, entry and derelict arrivals.
+- [x] S2: The ship enters at the system edge moving inward at speed.
+- [ ] S3: The world holds still through a 3, 2, 1 count with time, resources and
+  score not advancing; pause and a hidden page hold the count; GO releases
+  play with held controls applied.
+- [x] S4: A run starts with full hull and full energy for the fitted ship.
+- [x] S5: Star contact, zero hull and zero energy each end the run and record
+  their cause, with star contact first and hull before energy.
+- [x] S6: Exposure near the star and collisions with planets reduce hull.
+- [x] S7: Time freezes when the run ends and starts from zero on a fresh run.
+- [x] S8: Derelict arrivals follow `SURVIVAL_ENCOUNTER`, are deterministic for a
+  seed, and do not change with the player's position or motion.
+- [x] S9: The score equals `Simulation.survivalScore`, is deterministic for a
+  seed, and counts whole seconds only.
+- [ ] S10: The running score shows during a scored run and the final score on
+  run complete.
 
-**UI/UX:**
-- [x] HUD displays hull bar (color-coded: green/yellow/red)
-- [x] HUD displays power bar (color-coded: green/yellow/red)
-- [x] HUD displays timer (1 decimal place, updates smoothly)
-- [x] Timer starts on first input, not page load
-- [x] Game Over screen shows final time (2 decimal places)
-- [x] Game Over screen shows death cause with descriptive text
-- [x] Restart button resets all state (ship, hull, power, timer, arena)
+### Regression guardrails
 
-**Settings:**
-- [x] `/settings` route exists and is accessible
-- [x] Settings page has "Invert Controls" toggle
-- [x] Toggle saves to localStorage immediately
-- [x] Inverted controls apply in-game without restart
-- [x] Settings persist across browser sessions
-- [x] Settings page has "Back to Game" link
-
-**Technical:**
-- [x] Zero TypeScript errors in `pnpm -r check`
-- [x] Game state machine enforces valid transitions
-- [x] No state leaks between game sessions
-- [x] 60 FPS maintained with all systems active
-- [x] Fuel/hull updates use deltaTime (frame-rate independent)
-
----
-
-### Regression Guardrails
-
-**Performance:**
-- `updatePower()` + `updateHull()` must execute < 0.5ms combined
-- HUD re-renders only when values change (Svelte reactivity)
-- No garbage collection pauses > 5ms during gameplay
-
-**Physics Integrity:**
-- Power/hull updates must occur AFTER input but BEFORE collision detection
-- Death detection must occur AFTER all physics updates
-- Timer must be monotonically increasing (no backwards jumps)
-
-**State Safety:**
-- `hull` and `power` clamped to [0, 100] range
-- `elapsedTime` must be ≥ 0
-- `deathCause` must be null during `PLAYING` state
-
----
+- The simulation alone decides resources, endings, time and score; nothing
+  drawn changes them.
+- One score formula serves the flight screen, run complete and submission.
+- Changing what scores or how much needs a decision on the `CHALLENGE` board,
+  as the [game contract](../spec.md) states.
+- Survival's derelict arrivals and Derelicts mode's are separate
+  configurations; changing one never changes the other.
+- No arrival is aimed at, or placed relative to, the player.
 
 ### Scenarios
 
-**Scenario 1: Power Depletion Death** ✅ TO VERIFY
-- **Given:** Player is flying with 5% power remaining
-- **When:** Player flies for 5 seconds without refueling
-- **Then:** Power reaches 0%, death is triggered with cause `POWER`, Game Over screen displays "Out of power"
+```gherkin
+Feature: Survival
 
----
+  Scenario: Arriving in a system
+    When I start a Survival run
+    Then my ship is at the edge of a fresh system, moving inward
+    And the world holds still for a count of 3, 2, 1
+    And my time, resources and score do not change until GO
 
-**Scenario 2: Hull Depletion from Planets** ✅ TO VERIFY
-- **Given:** Player has 20% hull remaining
-- **When:** Player collides with a planet 3 times (3 × 7% = 21% damage)
-- **Then:** Hull reaches 0%, death is triggered with cause `HULL`, Game Over screen displays "Hull failure"
+  Scenario Outline: A run ends
+    Given a Survival run in progress
+    When <event>
+    Then the run ends with the cause <cause>
+    And the time stops
 
----
+    Examples:
+      | event                    | cause |
+      | my ship touches the star | STAR  |
+      | my hull reaches zero     | HULL  |
+      | my energy reaches zero   | POWER |
 
-**Scenario 3: Star Contact Instant Death** ✅ TO VERIFY
-- **Given:** Player is maneuvering near the star with 80% hull and 60% power
-- **When:** Player's ship position enters the star's radius (distanceToSun < star.radius)
-- **Then:** Death is triggered immediately with cause `STAR`, ignoring current hull/power values, Game Over screen displays "Incinerated by the star"
+  Scenario: Collecting energy at a price
+    Given my energy is low
+    When I fly close to the star
+    Then my ship collects energy
+    And close enough to the star my hull is damaged
 
----
+  Scenario: Derelicts do not depend on me
+    Given two Survival runs with the same seed
+    When I fly them differently
+    Then the same derelicts arrive at the same times on the same paths
 
-**Scenario 4: Sun Refuel Zone Strategy** ✅ TO VERIFY
-- **Given:** Player has 30% power and 100% hull
-- **When:** Player enters Zone 2 (150-250px from sun) for 10 seconds
-- **Then:** Power increases by ~20% (2% per second × 10s), hull decreases by ~5% (0.5% per second × 10s), player survives and can continue
-
----
-
-**Scenario 5: Control Inversion Toggle** ✅ TO VERIFY
-- **Given:** Player is on `/settings` page with normal controls (invertControls = false)
-- **When:** Player clicks "Invert Controls" toggle
-- **Then:** localStorage is updated with `invertControls: true`, player navigates back to game, pressing left input activates right engine and vice versa
-
----
-
-**Scenario 6: Settings Persistence** ✅ TO VERIFY
-- **Given:** Player has enabled control inversion and saved settings
-- **When:** Player closes browser and reopens game in a new session
-- **Then:** Control inversion remains enabled (loaded from localStorage), no re-configuration required
-
----
-
-**Scenario 7: Restart Flow Cleanup** ✅ TO VERIFY
-- **Given:** Player has died with 15% hull, 0% power, after 85.23 seconds
-- **When:** Player clicks "Try Again" on Game Over screen
-- **Then:** Game transitions to MENU state, then PLAYING on first input, ship resets to spawn position with 100% hull and 100% power, timer resets to 0.0s, planet positions reset to initial orbit
-
----
-
-## Implementation Notes
-
-### Phase 5 Checklist ✅ COMPLETE
-
-**Week 1: Core Systems**
-- [x] Create `game-state.ts` schema with Zod validation
-- [x] Implement game state machine (MENU → PLAYING → GAME_OVER)
-- [x] Add `updatePower()` to physics loop with consumption logic
-- [x] Add `updateHull()` to physics loop with planet collision hook
-- [x] Implement sun proximity zones (refuel + burn calculations)
-- [x] Add `checkDeath()` with three fail states
-
-**Week 2: UI Components**
-- [x] Build HUD component with hull/power bars
-- [x] Implement timer display with deltaTime tracking
-- [x] Create Game Over screen component
-- [x] Add restart flow logic
-- [x] Implement color-coded warnings (< 25% = red)
-
-**Week 3: Settings System**
-- [x] Create `/settings` Astro route
-- [x] Build Settings.svelte component
-- [x] Implement nanostores with localStorage persistence
-- [x] Add control inversion logic to input handler
-- [x] Test settings persistence across sessions
-
-**Week 4: Polish & Testing**
-- [x] Tune power consumption rate (playtest for ~60-90s initial runs)
-- [x] Tune sun zone distances (risk/reward balance)
-- [x] Power consumption scales with thrust (50%/75% more when thrusting)
-- [x] Menu overlay with TAP TO START + Settings link
-- [x] Performance audit (power/hull updates < 0.5ms)
-- [x] Cross-browser testing (Chrome, Firefox, Safari)
-- [x] Mobile testing (touch + inverted controls)
-
----
-
-### Config Structure
-
-**Config Location:** `packages/mode-a/src/lib/config.ts`
-
-```typescript
-export const SURVIVAL_CONFIG = {
-  // Starting values
-  INITIAL_HULL: number, // Starting hull percentage
-  INITIAL_POWER: number, // Starting power percentage
-
-  // Power consumption
-  POWER_CONSUMPTION_RATE: number, // Base drain % per second
-  POWER_CONSUMPTION_SINGLE_THRUST: number, // Drain when one engine active
-  POWER_CONSUMPTION_DUAL_THRUST: number, // Drain when both engines active
-
-  // Sun zones (distance from sun center in pixels)
-  POWER_ZONE_1_RADIUS: number, // High risk/reward zone
-  POWER_ZONE_2_RADIUS: number, // Medium risk/reward zone
-  POWER_ZONE_3_RADIUS: number, // Low risk/reward zone
-
-  // Power regen rates (% per second, before sun type multiplier)
-  POWER_REGEN_ZONE_1: number,
-  POWER_REGEN_ZONE_2: number,
-  POWER_REGEN_ZONE_3: number,
-
-  // Hull damage rates (% per second, before sun type multiplier)
-  HULL_BURN_ZONE_1: number,
-  HULL_BURN_ZONE_2: number,
-  HULL_BURN_ZONE_3: number,
-
-  // Collision damage
-  PLANET_COLLISION_DAMAGE: number, // % hull per collision
-
-  // Visual thresholds
-  WARNING_THRESHOLD: number, // % for yellow warning state
-  DANGER_THRESHOLD: number, // % for red danger state
-} as const;
+  Scenario: Score comes from the simulation
+    Given a Survival run with a known seed and inputs
+    When the run is replayed
+    Then the score is the same
 ```
-
-**Note:** Actual values are tunable and defined in the config file, not in specs. Values are balanced through playtesting.
-
----
-
-### File Structure
-
-```
-void-drift/
-├── packages/core/src/
-│   ├── lib/
-│   │   ├── physics/
-│   │   │   └── Physics.ts            # Shared physics (gravity, collision)
-│   │   ├── entities/
-│   │   │   ├── Input.ts              # Input handling with invertControls
-│   │   │   └── Ship.ts               # Ship entity
-│   │   ├── assets/                   # Procedural drawing functions
-│   │   └── config.ts                 # PHYSICS constants
-│   └── index.ts                      # Public exports
-│
-├── packages/mode-a/src/
-│   ├── lib/
-│   │   ├── schemas/
-│   │   │   └── game-state.ts         # GameState, Resources, DeathCause
-│   │   ├── game-loop.ts              # Survival game loop, updateTimer()
-│   │   ├── death.ts                  # checkDeath(), handleDeath()
-│   │   └── config.ts                 # SURVIVAL_CONFIG
-│   └── index.ts                      # Public exports
-│
-├── apps/web/src/
-│   ├── pages/
-│   │   ├── index.astro               # EDIT: Wire up new game state
-│   │   └── settings.astro            # NEW: Settings route
-│   ├── components/
-│   │   ├── HUD.svelte                # EDIT: Add hull/fuel bars, timer
-│   │   ├── GameOver.svelte           # NEW: Game Over screen
-│   │   └── Settings.svelte           # NEW: Settings UI
-│   └── lib/
-│       └── settings.ts               # NEW: localStorage wrapper
-│
-└── docs/
-    └── specs/
-        └── survival-core.md          # THIS FILE
-```
-
----
-
-## Known Limitations
-
-**v0.1.0:**
-- No sound effects (deferred to Phase 7)
-- No visual effects for fuel regen or hull damage (deferred to Phase 7)
-- No gamepad support for settings
-- No cloud sync for settings (localStorage only)
-- No difficulty levels (fixed constants)
-- No tutorial or help screen
-
-**Post-v0.1.0:**
-- Phase 6 will add Firebase leaderboard
-- Phase 7 will add sound FX and particle effects
-- Phase 8 will add analytics and social sharing
-
----
-
-## Future Enhancements
-
-- [ ] Difficulty modes (Easy: slower fuel burn, more regen)
-- [ ] Power-ups (temporary shield, fuel boost)
-- [ ] Hazard variety (asteroid belt, black holes)
-- [ ] Visual feedback (hull damage cracks, fuel regen glow)
-- [ ] Sound effects (thrust loop, collision impact, death explosion)
-- [ ] Achievements (survive 60s without refueling, 100+ sun visits)
-- [ ] Replay system (save last death for analysis)
-- [ ] Tutorial overlay (first-time player guidance)
-
----
-
-**Next Steps:**
-1. Review this spec with stakeholders
-2. Create PBI-015 (Timer & Death Logic)
-3. Create PBI-016 (Hull & Fuel Systems)
-4. Create PBI-017 (Settings Route)
-5. Begin implementation (Week 1: Core Systems)
-
-## Interstellar arrival — 2026-11-05
-
-Every Survival launch and restart chooses a fresh seed. The seed determines orbit
-phase and a uniform full-circle entry position 1180 units from the system centre
-(inside the 1200-unit wrap boundary). Heading and velocity point 37 degrees off
-inward radial, at speed 600. Existing engine ceilings and physics remain in force.
-The revealed world holds still for three seconds: 3, 2, 1, then GO releases play.
-Resources and scoring time do not advance during the count. Hidden pages and pause
-hold the count; held controls apply at release. Reduced motion retains the count
-without ignition flicker. Flight Lab and builder test flight keep their existing start.
-
-## Derelict arrivals — 2026-11-09
-
-Survival runs the salvage encounter with its own arrival rules; the
-[derelicts spec](../derelicts/spec.md) keeps the wreck, piece, energy cell,
-weapon, system-edge and gravity rules that both modes share. Applies to a run
-with any active ship; [practice](../test-flight/spec.md)
-has no encounters.
-
-- The first derelict arrives at 3 gameplay seconds; each later gap is
-  independently uniform from 5 to 10 seconds.
-- Entry is uniform around the system boundary at an initial speed uniform
-  from 50 to 150 u/s.
-- A derelict enters 40–50° off the inward radial direction, to either side.
-- It enters narrow point first: its forward tip faces its direction of travel
-  at entry. The tip is the artwork's upper end, the end that sheds the first piece.
-- It rotates at 1°/s, left or right, chosen per derelict.
-- At most eight encounter groups coexist; a scheduled arrival while every group
-  is occupied is skipped, as in the derelicts spec.
-- Side, angle, speed and spin come from the seeded trajectory stream, so a run is
-  deterministic and no arrival depends on the player's position or motion.
-- `SURVIVAL_ENCOUNTER` in `packages/mode-a/src/lib/schemas/salvage.ts` owns these
-  values; Derelicts mode keeps `ENCOUNTER`.
-
-### Acceptance criteria
-
-- [x] Over a seeded run the first arrival is at 3 s and every later gap lies in 5–10 s.
-- [x] Entry speed lies in 50–150 u/s and the heading 40–50° off the inward radial, on both sides.
-- [x] At entry the forward tip points along the velocity.
-- [x] Spin is 1°/s in magnitude, with both signs over a seeded run.
-- [x] A scheduled arrival is skipped while eight groups are occupied.
-- [x] Moving the player changes no arrival; the same seed gives the same arrivals.
-- [x] Starting survival from PRESS START meets the first derelict at 3 s of flight.
-
-## Survival score — 2026-11-09
-
-A Survival run scores whole gameplay seconds plus what the player does to derelicts:
-
-- 1 point per full gameplay second survived; a partial second does not count.
-- 1 point per Ion Point Defence or Light Ion Cannon hit on a derelict or a derelict
-  piece. The hit that destroys a derelict is a hit like any other.
-- 0 points for destroying a derelict.
-- 20 points per derelict energy cell the player collects, whatever energy it restores.
-- Rail and laser hits score nothing.
-
-The score counts only what the simulation did: `SalvageSystem.derelictIonHits` and
-`SalvageSystem.cellsCollected` accumulate in the fixed step, and
-`Simulation.survivalScore` adds them to whole seconds. Rendering never counts.
-Derelicts mode keeps its own transient score and never shares this formula.
-
-The running score shows in the right gutter below the seconds, and the run complete
-dialog states the final score. Which runs are ranked and what is submitted follow the
-[leaderboard rules](../spec.md); the score does not change them.
-
-### Acceptance criteria
-
-- [x] Over a seeded run the score equals whole seconds plus the simulation's ion hit
-  count plus 20 times its collected-cell count.
-- [x] A partial second adds nothing.
-- [x] Point Defence and Light Ion Cannon hits on a wreck or a piece add 1 each.
-- [x] Rail and laser hits add 0; destroying a derelict adds 0 beyond its hit.
-- [x] Collecting a cell adds 20 once.
-- [x] The running score shows in the right gutter below the seconds in Survival.

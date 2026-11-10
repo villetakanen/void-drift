@@ -90,7 +90,7 @@ placeholders; see the Terms section of the 0.6.0 plan.
 - One shared web module reads and writes both, used by the title page and the
   Hangar; `ShipBuilder` stops owning the store alone. A `chassis` query still
   selects a ship in the Hangar and makes it active.
-- Spec: E2, E9, Hangar P2.
+- Spec: E2, E9, active ship A7.
 - Checks: round trip, missing and corrupt values, migration of a v3 store, a
   fresh device yields Off and the starter Wasp.
 
@@ -102,7 +102,7 @@ placeholders; see the Terms section of the 0.6.0 plan.
   is Off, whatever the launch source. The mode label, `save()`, initials and
   Save Score read that one rule.
 - Spec: game rules and DoD, title-screen DoD and scenarios, game-screen mode
-  label, Hangar P1.
+  label, active ship A3 and A4.
 - Checks: after choosing the Scout in the Hangar the title shows and launches
   the Scout; a Hangar Survival run with Off offers Save Score; Practice and
   Derelicts never do; a fresh device launches the starter Wasp, ranked.
@@ -117,7 +117,7 @@ placeholders; see the Terms section of the 0.6.0 plan.
   the Hangar.
 - On: everything is selectable; every run is unranked, Save Score absent and
   submission never called.
-- Spec: E3–E7, Hangar O4.
+- Spec: E3–E7, Hangar H4.
 - Checks: both toggle directions with an experimental part fitted and with an
   experimental chassis active; launch returns after refitting; On with only
   stable parts shows the score and no Save Score; no network submission.

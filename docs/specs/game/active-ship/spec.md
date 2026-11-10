@@ -40,9 +40,8 @@ ship has a default fitting the player can return to.
   required engines are fitted; what else it carries is catalog data, not part of
   this contract.
 - **Making a ship active.** Choosing a ship in the Hangar makes it the active
-  ship at once, with no Apply or confirm step. Opening `/hangar?chassis=<id>`
-  with a valid, available ship chooses it the same way; an invalid or
-  unavailable id leaves the active ship unchanged.
+  ship at once, with no Apply or confirm step. Nothing outside the Hangar's
+  chooser, including a link or a query, changes the active ship.
 - **Fitting.** Changing the active ship's fitting in the Hangar changes the
   active ship at once.
 - **Always flyable.** Required engines are always fitted: they can be swapped
@@ -70,9 +69,9 @@ ship has a default fitting the player can return to.
 - [ ] A2: With nothing stored, the active ship is the Wasp with a light ion
   cannon, an ion point defence and one light ion engine, and every other ship
   in the catalog is flyable.
-- [ ] A3: Choosing a ship in the Hangar, by pointer, keyboard or a valid
-  `chassis` query, makes it active with no further action; an invalid or
-  unavailable query leaves the active ship unchanged.
+- [ ] A3: Choosing a ship in the Hangar, by pointer, keyboard or touch, makes it
+  active with no further action; a `chassis` query leaves the active ship
+  unchanged.
 - [ ] A4: Returning to the title screen shows the active ship in its fitting,
   and PRESS START flies it.
 - [ ] A5: Survival from the Hangar, Practice and Derelicts fly the active ship

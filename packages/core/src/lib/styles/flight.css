@@ -39,6 +39,12 @@
   overflow: hidden;
   background: var(--color-void);
 }
+/* The canvas layers (FlightLayers.svelte) fill the stage layer; each canvas
+   letterboxes the same way, so the layers stay registered. */
+.flight-stage .flight-layers {
+  width: 100%;
+  height: 100%;
+}
 .flight-stage canvas {
   width: 100%;
   height: 100%;

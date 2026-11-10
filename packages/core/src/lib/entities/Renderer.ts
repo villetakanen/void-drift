@@ -50,9 +50,13 @@ export class Renderer {
     this.ctx.canvas.height = h;
   }
 
+  /** Fills the whole canvas, whatever transform is in force. */
   clear() {
+    this.ctx.save();
+    this.ctx.resetTransform();
     this.ctx.fillStyle = COLOR.void;
     this.ctx.fillRect(0, 0, this.width, this.height);
+    this.ctx.restore();
   }
 
   private drawBackgroundStar = (

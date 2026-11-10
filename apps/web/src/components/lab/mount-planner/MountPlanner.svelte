@@ -497,8 +497,8 @@ onMount(() => {
           bind:value={
             () => zoom,
             (v) => {
-	autoFit = false;
-	zoom = v;
+  autoFit = false;
+  zoom = v;
 }
           }
         />

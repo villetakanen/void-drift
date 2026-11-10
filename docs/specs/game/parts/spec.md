@@ -47,9 +47,10 @@ own only when its behaviour in flight needs one, as the
   the floor.
 - **Weapon order.** Defence weapons take energy before guns; mount order
   settles the rest.
-- **Support.** A support part adds energy storage or energy collection. Storage
-  adds to the ship's capacity. Collection adds energy under the part's own
-  condition, up to capacity.
+- **Support.** A support part works on the ship's resources, for example by
+  adding energy storage or energy collection. Storage adds to the ship's
+  capacity. Collection adds energy under the part's own condition, up to
+  capacity.
 - **Release class.** Each part is stable or experimental, as
   [Experimental mode](../experimental/spec.md) defines.
 
