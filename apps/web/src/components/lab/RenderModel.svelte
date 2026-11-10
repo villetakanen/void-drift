@@ -1,11 +1,45 @@
 <script lang="ts">
-import { type FxPass, FxSurface } from "@void-drift/core";
-import { FLIGHT_LAYERS, type FlightLayerId } from "@void-drift/mode-a";
+import { type FxPass, FxSurface, paintBeam } from "@void-drift/core";
+import {
+  defaultLoadout,
+  drawBuild,
+  drawDerelictShard,
+  drawIonBeamMark,
+  FLIGHT_LAYERS,
+  type FlightLayerId,
+  ION_CANNON,
+} from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import FlightLayers from "../FlightLayers.svelte";
 
 const WIDTH = 1920;
 const HEIGHT = 1080;
+const SAMPLE_SCALE = 7;
+let instanceId = $props.id();
+const FILTER_ID = `render-model-filter-${instanceId}`;
+type FilterKind =
+  | "none"
+  | "blur"
+  | "brightness"
+  | "noise"
+  | "offset"
+  | "spread"
+  | "expand";
+const FILTERS: readonly { label: string; value: FilterKind }[] = [
+  { label: "None", value: "none" },
+  { label: "Blur", value: "blur" },
+  { label: "Brightness", value: "brightness" },
+  { label: "Noise distortion", value: "noise" },
+  { label: "Offset", value: "offset" },
+  { label: "Offset spread", value: "spread" },
+  { label: "Expand", value: "expand" },
+];
+const VECTOR_FILTERS: readonly FilterKind[] = [
+  "noise",
+  "offset",
+  "spread",
+  "expand",
+];
 type BlendMode =
   | "normal"
   | "plus-lighter"
@@ -24,6 +58,7 @@ const COLORS = {
   fx: ["#52eaff", "#a875ff"],
   lfx: ["#b8ff52", "#ff8d3a"],
 } satisfies Record<FlightLayerId, readonly [string, string]>;
+const artworkBuild = defaultLoadout("fighter");
 
 let { label = "Render model" }: { label?: string } = $props();
 let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
@@ -36,6 +71,16 @@ let visible = $state<Record<FlightLayerId, boolean>>({
   world: true,
   fx: true,
   lfx: true,
+});
+let sample = $state<"artwork" | "circles">("artwork");
+let fxFilter = $state<FilterKind>("none");
+let lfxFilter = $state<FilterKind>("none");
+let fxAmount = $state(10);
+let lfxAmount = $state(10);
+let filters = $derived<Record<FlightLayerId, string>>({
+  world: "none",
+  fx: filterValue(fxFilter, fxAmount, "fx"),
+  lfx: filterValue(lfxFilter, lfxAmount, "lfx"),
 });
 let running = $state(false);
 let hasSample = $state(false);
@@ -82,32 +127,111 @@ function drawSamples(
   }
   ctx.restore();
 }
+function filterValue(kind: FilterKind, amount: number, layer: "fx" | "lfx") {
+  if (kind === "blur") return `blur(${amount}px)`;
+  if (kind === "brightness") return `brightness(${(100 + amount * 4) / 100})`;
+  if (VECTOR_FILTERS.includes(kind))
+    return `url(#${FILTER_ID}-${layer}-${kind})`;
+  return "none";
+}
+function filterAmountLabel(kind: FilterKind) {
+  if (kind === "blur") return "Blur radius · CSS px";
+  if (kind === "brightness") return "Brightness multiplier";
+  if (kind === "noise") return "Displacement scale · CSS px";
+  if (kind === "offset") return "Offset · CSS px";
+  if (kind === "spread") return "Offset spread · CSS px";
+  if (kind === "expand") return "Expand radius · CSS px";
+  return "Amount";
+}
+function setFilter(layer: "fx" | "lfx", value: string) {
+  if (layer === "fx") fxFilter = value as FilterKind;
+  else lfxFilter = value as FilterKind;
+}
+function setFilterAmount(layer: "fx" | "lfx", value: string) {
+  if (layer === "fx") fxAmount = Number(value);
+  else lfxAmount = Number(value);
+}
 function stampFx(ctx: CanvasRenderingContext2D, pass: FxPass) {
+  if (sample === "circles") {
+    if (!pass.budget.take()) return;
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = pass.opacity;
+    for (const [index, x] of [825, 1095].entries()) {
+      ctx.fillStyle = COLORS.fx[index];
+      ctx.beginPath();
+      ctx.arc(x, 540, 175, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    return;
+  }
   if (!pass.budget.take()) return;
   ctx.save();
+  zoomSample(ctx);
+  ctx.translate(1040, 540);
   ctx.globalCompositeOperation = "lighter";
   ctx.globalAlpha = pass.opacity;
-  ctx.fillStyle = COLORS.fx[0];
-  ctx.beginPath();
-  ctx.arc(825, 540, 175, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = COLORS.fx[1];
-  ctx.beginPath();
-  ctx.arc(1095, 540, 175, 0, Math.PI * 2);
-  ctx.fill();
+  paintBeam(ctx, 3, "ion-light");
   ctx.restore();
+}
+function zoomSample(ctx: CanvasRenderingContext2D) {
+  ctx.translate(WIDTH / 2, HEIGHT / 2);
+  ctx.scale(SAMPLE_SCALE, SAMPLE_SCALE);
+  ctx.translate(-WIDTH / 2, -HEIGHT / 2);
+}
+function drawArtworkWorld(world: CanvasRenderingContext2D) {
+  world.save();
+  world.globalCompositeOperation = "source-over";
+  zoomSample(world);
+  drawBuild(world, artworkBuild, 946.7, 540, 0, 1);
+  drawDerelictShard(world, 975, 540, -0.2, 2);
+  world.restore();
+}
+function drawArtworkLfx(lfx: CanvasRenderingContext2D) {
+  lfx.save();
+  zoomSample(lfx);
+  lfx.translate(850, 544);
+  drawIonBeamMark(lfx, ION_CANNON.range, ION_CANNON.range, false);
+  lfx.restore();
+}
+function drawArtwork(
+  world: CanvasRenderingContext2D,
+  lfx: CanvasRenderingContext2D,
+) {
+  drawArtworkWorld(world);
+  drawArtworkLfx(lfx);
+}
+function drawCircles(
+  world: CanvasRenderingContext2D,
+  lfx: CanvasRenderingContext2D,
+) {
+  drawSamples(world, COLORS.world, [700, 960]);
+  drawSamples(lfx, COLORS.lfx, [960, 1220]);
+}
+function paintFx() {
+  const fx = context("fx");
+  if (!fx || !surface) return;
+  clearLayer(fx);
+  surface.draw(fx, presentationTime, stampFx);
 }
 function paint() {
   const world = context("world");
-  const fx = context("fx");
   const lfx = context("lfx");
-  if (!world || !fx || !lfx || !surface) return;
-  drawSamples(world, COLORS.world, [700, 960]);
-  drawSamples(lfx, COLORS.lfx, [960, 1220]);
+  if (!world || !lfx || !surface) return;
+  clearLayer(world);
+  clearLayer(lfx);
+  if (sample === "artwork") drawArtwork(world, lfx);
+  else drawCircles(world, lfx);
   hasSample = true;
   presentationTime += 1 / 60;
-  clearLayer(fx);
-  surface.draw(fx, presentationTime, stampFx);
+  paintFx();
+}
+function chooseSample(next: "artwork" | "circles") {
+  if (sample === next) return;
+  sample = next;
+  clear();
+  paint();
 }
 function clear() {
   for (const id of FLIGHT_LAYERS.map((layer) => layer.id)) {
@@ -131,10 +255,18 @@ function setRunning(next: boolean) {
         const fx = context("fx");
         const world = context("world");
         const lfx = context("lfx");
-        if (hasSample && world) drawSamples(world, COLORS.world, [700, 960]);
-        else if (world) clearLayer(world);
-        if (hasSample && lfx) drawSamples(lfx, COLORS.lfx, [960, 1220]);
-        else if (lfx) clearLayer(lfx);
+        if (world) clearLayer(world);
+        if (lfx) clearLayer(lfx);
+        if (hasSample && world) {
+          if (sample === "artwork") drawArtworkWorld(world);
+          else drawSamples(world, COLORS.world, [700, 960]);
+        } else if (world) clearLayer(world);
+        if (hasSample && lfx && sample === "circles")
+          drawSamples(lfx, COLORS.lfx, [960, 1220]);
+        else if (hasSample && lfx) {
+          clearLayer(lfx);
+          drawArtworkLfx(lfx);
+        } else if (lfx) clearLayer(lfx);
         if (fx) {
           clearLayer(fx);
           surface?.draw(fx, presentationTime, () => {});
@@ -207,12 +339,28 @@ onMount(() => {
       <FlightLayers
         bind:canvases
         {blends}
+        {filters}
         visibility={visible}
-        label="Overlapping sample marks across World, FX and LFX"
+        label="Production artwork across World, FX and LFX"
       />
     </div>
 
     <div class="layers">
+      <section class="layer sample-controls">
+        <h2>Picture sample</h2>
+        <label class="blend"
+          >Sample
+          <select
+            aria-label="Picture sample"
+            value={sample}
+            onchange={(event) =>
+              chooseSample(event.currentTarget.value as "artwork" | "circles")}
+          >
+            <option value="artwork">Production artwork</option>
+            <option value="circles">Colour circles</option>
+          </select>
+        </label>
+      </section>
       {#each FLIGHT_LAYERS as layer (layer.id)}
         <section class="layer" data-layer-controls={layer.id}>
           <div class="layer-heading">
@@ -240,16 +388,138 @@ onMount(() => {
               {/each}
             </select>
           </label>
+          {#if layer.id === "fx" || layer.id === "lfx"}
+            {@const selectedFilter = layer.id === "fx" ? fxFilter : lfxFilter}
+            {@const amount = layer.id === "fx" ? fxAmount : lfxAmount}
+            <label class="blend"
+              >Presentation filter
+              <select
+                aria-label={`${layer.name} filter`}
+                value={selectedFilter}
+                onchange={(event) =>
+                  setFilter(
+                    layer.id as "fx" | "lfx",
+                    event.currentTarget.value,
+                  )}
+              >
+                {#each FILTERS as filter (filter.value)}
+                  <option value={filter.value}>{filter.label}</option>
+                {/each}
+              </select>
+            </label>
+            {#if selectedFilter !== "none"}
+              <label class="blend"
+                >{filterAmountLabel(selectedFilter)}
+                <input
+                  type="range"
+                  min="1"
+                  max="24"
+                  step="1"
+                  value={amount}
+                  aria-label={`${layer.name} filter amount`}
+                  oninput={(event) =>
+                    setFilterAmount(
+                      layer.id as "fx" | "lfx",
+                      event.currentTarget.value,
+                    )}
+                >
+                <output
+                  >{selectedFilter === "brightness"
+                    ? `${(1 + amount * 0.04).toFixed(2)}×`
+                    : `${amount} px`}</output
+                >
+              </label>
+            {/if}
+          {/if}
           <fieldset class="swatches">
-            <legend>{layer.name} sample colours</legend>
-            {#each COLORS[layer.id] as color}
-              <span style={`--swatch:${color}`} title={color}></span>
-            {/each}
+            {#if sample === "circles"}
+              <legend>{layer.name} circle colours</legend>
+              {#each COLORS[layer.id] as color}
+                <span style={`--swatch:${color}`} title={color}></span>
+              {/each}
+            {:else}
+              <legend>{layer.name} production artwork</legend>
+              <span
+                >{layer.id === "world"
+                  ? "Fighter + shard"
+                  : layer.id === "fx"
+                    ? "Engine plume"
+                    : "Ion cannon ray"}</span
+              >
+            {/if}
           </fieldset>
         </section>
       {/each}
     </div>
   </div>
+  <svg
+    class="filter-defs"
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    {#each [
+      { id: "fx", amount: fxAmount },
+      { id: "lfx", amount: lfxAmount },
+    ] as target (target.id)}
+      {#each VECTOR_FILTERS as kind (kind)}
+        <filter
+          id={`${FILTER_ID}-${target.id}-${kind}`}
+          x="-35%"
+          y="-35%"
+          width="170%"
+          height="170%"
+          color-interpolation-filters="sRGB"
+        >
+          {#if kind === "noise"}
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.035"
+              numOctaves="2"
+              seed="7"
+              result="noise"
+            />
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="noise"
+              scale={target.amount}
+              xChannelSelector="R"
+              yChannelSelector="G"
+            />
+          {:else if kind === "offset"}
+            <feOffset
+              in="SourceGraphic"
+              dx={target.amount}
+              dy={-target.amount / 2}
+            />
+          {:else if kind === "spread"}
+            <feOffset
+              in="SourceGraphic"
+              dx={target.amount / 2}
+              dy={-target.amount / 2}
+              result="a"
+            />
+            <feOffset
+              in="SourceGraphic"
+              dx={-target.amount / 2}
+              dy={target.amount / 2}
+              result="b"
+            />
+            <feMerge>
+              <feMergeNode in="a" />
+              <feMergeNode in="SourceGraphic" />
+              <feMergeNode in="b" />
+            </feMerge>
+          {:else}
+            <feMorphology
+              in="SourceGraphic"
+              operator="dilate"
+              radius={target.amount}
+            />
+          {/if}
+        </filter>
+      {/each}
+    {/each}
+  </svg>
   <p class="note">
     Blend changes recomposite the held picture. Paint adds one fresh set of
     light; Run advances its presentation clock and Pause holds it. Clear empties
@@ -294,6 +564,9 @@ header p {
   font-size: var(--font-size-caption);
 }
 .pane {
+  position: sticky;
+  top: var(--spacing-lg);
+  align-self: start;
   width: 100%;
   aspect-ratio: 16 / 9;
   overflow: hidden;
@@ -337,6 +610,19 @@ h2 {
   font-size: var(--font-size-caption);
   line-height: 1.5;
 }
+.filter-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+.blend output {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+}
+.blend input[type="range"] {
+  width: 100%;
+}
 .blend {
   display: flex;
   flex-direction: column;
@@ -376,6 +662,13 @@ input {
   height: 1.2rem;
   background: var(--swatch);
   border-radius: 50%;
+}
+.swatches span:not([style]) {
+  width: auto;
+  height: auto;
+  color: var(--color-text-muted);
+  background: none;
+  border-radius: 0;
 }
 .note {
   margin: var(--spacing-md) 0 0;

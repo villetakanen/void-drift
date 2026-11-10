@@ -281,17 +281,30 @@ export function drawIonCannonLight(
     ctx.rotate(pose.angle);
     ctx.globalCompositeOperation = "lighter";
     ctx.globalAlpha = pass?.opacity ?? 1;
-    ctx.drawImage(
-      ionStamp(profile, reach, dispersal),
-      0,
-      0,
-      distance * 4,
-      24,
-      0,
-      -3,
-      distance,
-      6,
-    );
+    drawIonBeamMark(ctx, reach, distance, dispersal, turret);
     ctx.restore();
   }
+}
+
+/** Shared production ray mark for current cannon flashes and static Lab samples. */
+export function drawIonBeamMark(
+  ctx: CanvasRenderingContext2D,
+  reach: number,
+  distance: number,
+  dispersal = false,
+  pointDefence = false,
+) {
+  if (!(distance > 0)) return;
+  const profile = pointDefence ? POINT_DEFENCE : ION_CANNON;
+  ctx.drawImage(
+    ionStamp(profile, reach, dispersal),
+    0,
+    0,
+    distance * 4,
+    24,
+    0,
+    -3,
+    distance,
+    6,
+  );
 }

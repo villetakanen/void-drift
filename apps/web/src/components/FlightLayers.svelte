@@ -7,6 +7,7 @@ let {
   canvases = $bindable({}),
   label,
   blends = {},
+  filters = {},
   visibility = {},
 }: {
   canvases?: Partial<Record<FlightLayerId, HTMLCanvasElement>>;
@@ -14,6 +15,7 @@ let {
   label: string;
   /** Presentation-only overrides; omitted layers retain production defaults. */
   blends?: Partial<Record<FlightLayerId, string>>;
+  filters?: Partial<Record<FlightLayerId, string>>;
   visibility?: Partial<Record<FlightLayerId, boolean>>;
 } = $props();
 </script>
@@ -24,6 +26,7 @@ let {
       bind:this={canvases[layer.id]}
       data-layer={layer.id}
       style:mix-blend-mode={blends[layer.id] ?? layer.blend}
+      style:filter={filters[layer.id] ?? "none"}
       style:visibility={visibility[layer.id] === false ? "hidden" : "visible"}
       aria-label={layer.id === "world" ? label : undefined}
       aria-hidden={layer.id === "world" ? undefined : true}

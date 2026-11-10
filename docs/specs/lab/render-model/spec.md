@@ -7,9 +7,10 @@ layers: what each holds, how painted light fades, and how the browser combines
 colours across layers. It provides a shared picture for discussing and testing
 the renderer's Hi-Fi Lo-Fi character.
 
-The workbench paints simple coloured marks. It runs no game simulation, flight
-program, encounters or ship controls. A ship or planet may be useful as a drawing
-sample in a later experiment; gameplay is not the subject of this page.
+The workbench has two selectable pictures: production artwork and the original
+coloured circles. It runs no game simulation, flight program, encounters or ship
+controls. The artwork is static World art with production engine and ion-cannon
+paint marks arranged to overlap in the same area.
 
 ## Architecture
 
@@ -36,14 +37,24 @@ there is no external configuration or storage contract.
 and up. `apps/web/src/components/lab/RenderModel.svelte` composes the workbench.
 
 - One large pane shows World, FX and LFX in production stack order.
-- A fixed set of overlapping coloured shapes makes individual colours and their
-  intersections easy to compare. Each layer's marks and colour are identified
-  beside the pane. Shapes and colours are simple experiment fixtures, not a
-  permanent art recipe.
+- The pane stays in view while scrolling the controls.
+- Artwork is the default sample: a production-built ship and derelict shard in
+  World, a production engine plume in FX, and the shared production ion ray
+  painter in LFX. The FX/LFX marks cross the ship and shard. Circles remains
+  selectable as the original colour comparison sample.
+- Changing sample clears all layer images and FX history and paints the chosen
+  sample fresh. It retains blend, visibility, filter and paused/running settings.
 - Each layer has a visibility control and a blend selector: Normal, Add, Screen,
   Multiply and Hard light. Add maps to CSS `plus-lighter`. Initial settings use
   production defaults. A blend or visibility change immediately affects the
   composite, even while paused, without clearing, repainting or advancing time.
+- FX and LFX each have an independent native presentation filter: None, Blur,
+  Brightness, Noise distortion, Offset, Offset spread or Expand, plus one
+  amount control. The UI labels blur radius, displacement scale, offset, spread
+  and expand radius in CSS pixels; brightness shows its multiplier. CSS filters are used for
+  blur/brightness; inline SVG filters provide static seeded turbulence,
+  displacement, offsets, spread merge and morphology. Filter changes preserve
+  held pixels and do not advance time. Both filters default to None.
 - Paint adds one fresh set of FX stamps and shows the World and LFX sample marks.
   It works while paused as an explicit painting action; subsequent paused frames
   add nothing. Repeated Paint actions can demonstrate accumulation.
@@ -57,8 +68,7 @@ and up. `apps/web/src/components/lab/RenderModel.svelte` composes the workbench.
   Labels distinguish a layer's blend with the layers beneath it from FX decay.
 
 Controls are deliberately limited to the questions above. Colour pickers, zoom,
-resolution, filters, moving plumes and Deck overlays can be added when a specific
-experiment calls for them. All layers remain at production resolution in this
+resolution, moving plumes and Deck overlays remain outside this experiment. All layers remain at production resolution in this
 version. Pass lists, source-file inventories, timing tables and scripted flight
 are not part of the workbench.
 
@@ -70,6 +80,10 @@ are not part of the workbench.
   with visible overlapping test marks and no game simulation.
 - [x] Each layer's visibility and all five blend choices affect CSS immediately
   while paused, preserving its backing pixels and other layer settings.
+- [x] Artwork uses shared production painters; sample switching clears history and
+  repaints while retaining presentation settings.
+- [x] FX and LFX have independent native filters, default None; changing a filter
+  changes presentation while paused without changing backing pixels or time.
 - [x] Paint emits into the shared FX surface; successive painting accumulates
   light, Run fades it, and Pause keeps its pixels stable.
 - [x] World and LFX retain their current sample while FX fades; LFX retains no
@@ -78,6 +92,7 @@ are not part of the workbench.
   Clear starts fresh, and experiment settings survive Clear.
 - [x] The page is usable at 1280px and wider, with labelled keyboard-accessible
   controls and concise explanations of the visible experiment.
+- [x] The artwork pane remains visible while scrolling filter controls.
 - [x] Existing play and the Flight scene study retain their production layer
   defaults and rendering behaviour (`tests/browser/alpha.spec.ts` and
   `tests/browser/flight-scene.spec.ts`).
