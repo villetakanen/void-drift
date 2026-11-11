@@ -18,6 +18,7 @@ import {
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import { version } from "../../package.json";
+import { LANDING_HINTS } from "../data/landing-hints";
 import { isNarrowerThanMinRatio } from "../lib/game-screen";
 import Logo from "./Logo.svelte";
 import PreviewMarker from "./PreviewMarker.svelte";
@@ -108,11 +109,6 @@ function drawArrival() {
 }
 let hint = $state(0);
 let narrow = $state(false);
-const hints = [
-  "A / D or ← / → steer. Hold both to accelerate. On touchscreens, use the thrust pads.",
-  "Survive as long as you can. Keep clear of stars and planets.",
-  "Visit Hangar to choose another ship and try a test flight.",
-];
 
 onMount(() => {
   drawArrival();
@@ -126,7 +122,7 @@ onMount(() => {
   else startButton.focus();
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const timer = window.setInterval(() => {
-    if (!motion.matches && !narrow) hint = (hint + 1) % hints.length;
+    if (!motion.matches && !narrow) hint = (hint + 1) % LANDING_HINTS.length;
   }, 8000);
   return () => {
     window.removeEventListener("resize", resize);
@@ -180,7 +176,7 @@ onMount(() => {
         aria-hidden="true"
       ></canvas>
     </section>
-    <aside class="hint" aria-label="Flight hint">
+    <aside class="hint" aria-label="Title-screen hints">
       {#if narrow}
         <p role="status" class="orientation-warning">
           Rotate your screen to landscape.
@@ -190,7 +186,7 @@ onMount(() => {
         <p role="status" class="launch-blocked">{blockedReason}</p>
       {:else if !narrow}
         {#key hint}
-          <p>{hints[hint]}</p>
+          <p>{LANDING_HINTS[hint].text}</p>
         {/key}
       {/if}
     </aside>

@@ -11,8 +11,9 @@ their bearings and get a sense of the setting.
 ## Architecture
 
 - `apps/web/src/data/landing-hints.ts` is the ordered source of authored hint
-  content. It is static TypeScript data shipped with the game, not player state
-  or remotely fetched content.
+  content. Each entry has an editorial kind (`news`, `lore` or `hint`) and text.
+  It is static TypeScript data shipped with the game, not player state or
+  remotely fetched content.
 - `apps/web/src/components/TitleScreen.svelte` presents one entry at a time and
   owns its rotation and reduced-motion behavior.
 - The [title-screen spec](spec.md) owns the hint area's placement and the
@@ -24,11 +25,12 @@ their bearings and get a sense of the setting.
 - The rotation is fixed and identical for every player; it does not depend on
   the player's setup, history or actions.
 - The first entry is the current alpha news lead: a noteworthy new feature or
-  change. Further current news may follow it in the authored order. When the
-  lead changes, replace the previous lead; the list is not a release archive.
+  change. Further news, lore and hints follow in their authored order. When the
+  lead changes, replace the previous lead; stale news is not kept as a release
+  archive.
 - Lore entries are atmospheric teasers. They may invite curiosity without
   explaining the mystery.
-- Practical entries give brief, accurate guidance about controls, play or
+- Hint entries give brief, accurate guidance about controls, play or
   where to find a game feature.
 - Entries are concise and shown one at a time. They rotate approximately every
   eight seconds with a subtle fade.
@@ -44,18 +46,18 @@ their bearings and get a sense of the setting.
 
 ### Definition of Done
 
-- [ ] The title screen reads its ordered hint entries from the static TypeScript
+- [x] The title screen reads its ordered hint entries from the static TypeScript
   data module.
-- [ ] The first entry is the current alpha news lead, followed by the authored
-  mix of current news, lore teasers and practical guidance.
-- [ ] The same ordered rotation is shown to every player and starts with the
+- [x] The first entry is the current alpha news lead, followed by the authored
+  mix of news, lore teasers and hints.
+- [x] The same ordered rotation is shown to every player and starts with the
   news lead when the title screen opens.
-- [ ] The previous lead is replaced when the current alpha news changes; stale
+- [x] The previous lead is replaced when the current alpha news changes; stale
   news is not retained as a release archive.
-- [ ] One entry is shown at a time and advances approximately every eight
+- [x] One entry is shown at a time and advances approximately every eight
   seconds with a subtle fade.
-- [ ] Reduced motion keeps the first entry static and removes the transition.
-- [ ] The narrow-screen orientation status replaces the rotating entry and
+- [x] Reduced motion keeps the first entry static and removes the transition.
+- [x] The narrow-screen orientation status replaces the rotating entry and
   clears at 4:3 or wider without taking focus or blocking navigation.
 
 ### Regression Guardrails
@@ -73,7 +75,7 @@ Scenario: Current alpha news leads the rotation
   Given the title screen opens
   When the hint area appears
   Then it shows the current alpha news lead first
-  And later entries follow the authored mix of news, lore and practical hints
+  And later entries follow the authored mix of news, lore and hints
 
 Scenario: The alpha news lead changes
   Given the current news lead is no longer current

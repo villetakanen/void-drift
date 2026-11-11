@@ -132,6 +132,7 @@ export class FlightFx {
       );
   }
   drawLfx(ctx: CanvasRenderingContext2D, sim: Simulation) {
+    sim.plume.drawCharge(ctx);
     drawIonCannonLight(ctx, sim);
   }
   drawParticles(ctx: CanvasRenderingContext2D) {

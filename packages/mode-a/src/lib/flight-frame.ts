@@ -226,8 +226,8 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
     name: "Ion beams",
     layer: "lfx",
     space: "world",
-    draws: "Ion cannon and point-defence beams, live",
-    source: "packages/mode-a/src/lib/salvage-renderer.ts",
+    draws: "Plasma charge light and ion weapon beams, live",
+    source: "packages/mode-a/src/lib/gravity-fold-fx.ts",
     draw: ({ sim, fx }, ctx) => fx.drawLfx(ctx, sim),
   },
 ];

@@ -3,6 +3,7 @@ import type { GameObject } from "../physics/Physics";
 import type { FxPass } from "./arcade-fx";
 import { FxSurface } from "./fx-surface";
 import { type PlumeStyle, paintBeam } from "./ion-beam";
+import { paintPlasmaCharge } from "./plasma-charge";
 import { paintPlasmaPlume } from "./plasma-plume";
 
 export const PlumeProportionsSchema = z.object({
@@ -114,7 +115,14 @@ export class EnginePlume {
     const radius = 80 * Math.max(proportions.length, proportions.width);
     for (let i = 0; i < this.active; i++) {
       const outlet = this.outlets[i];
-      if (!(outlet.size > 0)) continue;
+      const charge =
+        outlet.style === "plasma" &&
+        outlet.size === 0 &&
+        outlet.charge !== undefined &&
+        outlet.charge < 1
+          ? outlet.charge
+          : undefined;
+      if (!(outlet.size > 0) && (charge === undefined || painter)) continue;
       const outletRadius = outlet.style === "plasma" ? radius * 1.5 : radius;
       const visible = transformVisibility
         ? (() => {
@@ -132,7 +140,10 @@ export class EnginePlume {
       ctx.rotate(outlet.angle);
       ctx.scale(proportions.length, proportions.width);
       ctx.globalAlpha = pass.opacity * proportions.opacity;
-      if (painter) painter(ctx, outlet.size);
+      if (charge !== undefined) {
+        ctx.globalAlpha *= 0.4;
+        paintPlasmaCharge(ctx, charge);
+      } else if (painter) painter(ctx, outlet.size);
       else if (outlet.style === "plasma")
         paintPlasmaPlume(
           ctx,
@@ -142,6 +153,24 @@ export class EnginePlume {
           () => pass.budget.take(),
         );
       else paintBeam(ctx, outlet.size, outlet.style);
+      ctx.restore();
+    }
+  }
+  /** Redraw live charging light from current state, independently of FX history. */
+  drawCharge(ctx: CanvasRenderingContext2D) {
+    for (let i = 0; i < this.active; i++) {
+      const outlet = this.outlets[i];
+      if (
+        outlet.style !== "plasma" ||
+        outlet.size > 0 ||
+        outlet.charge === undefined ||
+        outlet.charge >= 1
+      )
+        continue;
+      ctx.save();
+      ctx.translate(outlet.x, outlet.y);
+      ctx.rotate(outlet.angle);
+      paintPlasmaCharge(ctx, outlet.charge);
       ctx.restore();
     }
   }

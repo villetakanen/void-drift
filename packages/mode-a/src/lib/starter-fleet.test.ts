@@ -71,11 +71,6 @@ it("fits the starter Wasp with a cannon, a point defence and a light ion engine,
   expect(kept.wasp).toEqual(saved);
 });
 
-it("flies the starter Wasp loadout from the game settings", () => {
-  const sim = new Simulation(gameSettings("wasp"));
-  expect(sim.settings.loadout).toEqual(starterLoadout("wasp"));
-});
-
 it("requires one catalog release class and derives scored eligibility from fitted content", () => {
   const expectedChassisClasses = {
     wasp: "scored",

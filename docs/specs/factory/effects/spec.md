@@ -415,8 +415,15 @@ output and flares as charge releases, settling into steady thrust. Its animated
 lobes hold their frame and angle across several ticks. Source and decorative
 work use the shared scene budget; release stops new thrust stamps. Play and the
 Flight scene instrument share the production effect. The
-[thrust comparison](/lab/plasma-thrust-comparison) shows production alongside
-the accepted study reference without charge light.
+[plasma comparison](/lab/plasma-thrust-comparison) shows production alongside
+the accepted study reference.
+
+## Plasma charge light
+
+A charging plasma engine shows a cached, tightening and brightening bead at its
+outlet on live LFX and stamps a faint trace into persistent FX. It follows the
+engine's delivered charge state and stops when charging ends or power is lost.
+Pause redraws the live bead without adding persistent light; reset clears it.
 
 ## Paired stabilizer exhaust
 
