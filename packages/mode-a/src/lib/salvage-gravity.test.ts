@@ -39,7 +39,7 @@ function scene(seed = 2026) {
   return { system, star, planets, ship, step };
 }
 function body(
-  kind: SalvageBody["kind"],
+  kind: Exclude<SalvageBody["kind"], "ship">,
   x: number,
   y: number,
   vx = 0,

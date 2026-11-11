@@ -5,6 +5,7 @@
  */
 export const COLOR = {
   countdown: "lch(78.31% 65.02 151.48)",
+  spacePurple: "lch(25% 32 290)",
   brand: "lch(96.42% 84.18 104.87)",
   action: "lch(96.42% 84.18 104.87)",
   selected: "lch(96.42% 84.18 104.87)",
@@ -30,6 +31,7 @@ export const COLOR = {
 /** The CSS custom property each canvas colour mirrors. */
 export const COLOR_TOKEN: Record<keyof typeof COLOR, string> = {
   countdown: "--color-android-green",
+  spacePurple: "--color-bracket",
   brand: "--color-brand",
   action: "--color-action",
   selected: "--color-selected",

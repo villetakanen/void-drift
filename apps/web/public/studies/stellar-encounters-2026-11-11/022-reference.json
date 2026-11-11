@@ -1,0 +1,598 @@
+{
+  "schema": 1,
+  "capturedAt": "2026-11-11T20:16:02.952Z",
+  "baseRevision": "449c8ff43854821c531960ceb3c84e410f7b4289",
+  "dirty": true,
+  "sourceHashes": {
+    "apps/web/src/components/studies/stellar-encounters/fields.ts": "08e631368f1566b2e7f8f70e6511a015a38c83a5dbedc85c7abbf403157e34be",
+    "apps/web/src/components/studies/stellar-encounters/flight.ts": "26115cff72a3f4959762970acf62a7ce5dfa035a960878179b9e0b65ba91788c",
+    "apps/web/src/lib/instrument/calculate.ts": "d4d50e947bbcf05b0b729a4eab227f8b3bb0df6687248f3a591ed4f2e4e751f8",
+    "apps/web/src/lib/instrument/burns.ts": "45af2eeada103fecab1075c8aebd5b45ad786f7edc6db0c67c8e93291f3b89bb",
+    "packages/core/src/lib/physics/Physics.ts": "e3cebc9142ebbcfd359bb4bb2704e6591c813b7e35c272460aa865af678f3166",
+    "packages/core/src/lib/solar.ts": "adb7e1acfbdbfe2af9078136fbc1891ccfb927c67ea6775d2b177b77a042ac65",
+    "packages/mode-a/src/lib/build-flight.ts": "8a1376a9d73b7707ae0a87681cc05f9f3e93628200c4337a3a00059dcf2c645d",
+    "packages/mode-a/src/lib/schemas/loadout.ts": "b90095720f4739450e6818eaa70388c74608c322fd7beeb926cf184cbd9570c1",
+    "packages/mode-a/src/lib/tuning.json": "7cf133eb7e07326cda1483a316d08e9c517a204f54e59ba3a8b4dacc579b747b"
+  },
+  "viewport": {
+    "width": 1280,
+    "height": 1000
+  },
+  "checks": {
+    "budgetsDoNotChangeMotion": true,
+    "prefixSame": true,
+    "contactStopped": true,
+    "settingsValid": true
+  },
+  "errors": [],
+  "configuration": "stellar-022-fixed-G-wasp",
+  "settings": {
+    "burn": "course",
+    "startSpeed": 120
+  },
+  "offsets": [80, 160, 260],
+  "startX": -400,
+  "centre": {
+    "x": 960,
+    "y": 540
+  },
+  "initialHeading": 0,
+  "initialSpin": 0,
+  "randomness": "none",
+  "duration": 14,
+  "tickRate": 60,
+  "substeps": 4,
+  "powerFeedback": "excluded",
+  "exposureFeedback": "excluded",
+  "camera": {
+    "mode": "Default scale",
+    "scale": 0.2,
+    "centre": {
+      "x": 960,
+      "y": 540
+    },
+    "cursorSeconds": 1.5
+  },
+  "burn": {
+    "label": "B1",
+    "name": "Course",
+    "segments": [
+      {
+        "input": "LR",
+        "ticks": 60
+      },
+      {
+        "input": "LR",
+        "ticks": 60
+      },
+      {
+        "input": "–",
+        "ticks": 60
+      },
+      {
+        "input": "L",
+        "ticks": 60
+      },
+      {
+        "input": "–",
+        "ticks": 60
+      },
+      {
+        "input": "LR",
+        "ticks": 60
+      },
+      {
+        "input": "–",
+        "ticks": 60
+      },
+      {
+        "input": "R",
+        "ticks": 60
+      },
+      {
+        "input": "–",
+        "ticks": 60
+      },
+      {
+        "input": "R",
+        "ticks": 60
+      },
+      {
+        "input": "–",
+        "ticks": 60
+      },
+      {
+        "input": "LR",
+        "ticks": 60
+      },
+      {
+        "input": "LR",
+        "ticks": 60
+      },
+      {
+        "input": "LR",
+        "ticks": 60
+      }
+    ]
+  },
+  "gravity": {
+    "falloff": "inverse-square",
+    "cutoff": 50,
+    "sunMass": 5250,
+    "planetMass": {
+      "rock": 2250,
+      "gas": 3500,
+      "moon": 1450
+    },
+    "reach": 324.037034920393,
+    "G": 1000
+  },
+  "ion": {
+    "acceleration": 220,
+    "maxTurn": 180
+  },
+  "parts": {
+    "light-ion-cannon": {
+      "id": "light-ion-cannon",
+      "releaseClass": "scored",
+      "description": "12–48 damage/s · 3 shots/s · 300-unit reach · 0.2p/shot (0.6p/s sustained). Ship-width forward acquisition; offset cannons may miss.",
+      "fluff": "Shoots straight. Keep your expectations close.",
+      "solarMultiplier": 0,
+      "capacity": 0,
+      "name": "Light Ion Cannon",
+      "category": "G",
+      "mass": 9,
+      "thrust": 0,
+      "speedContribution": 0,
+      "limit": 0,
+      "draw": 0,
+      "response": "steady",
+      "chargeSeconds": 0,
+      "pulsePeriod": 0.45,
+      "pulseOn": 0.18
+    },
+    "ion-point-defence": {
+      "id": "ion-point-defence",
+      "releaseClass": "scored",
+      "description": "8–24 damage/s · 3 shots/s · 200-unit reach · 0.1p/shot (0.3p/s sustained). Turns at 180°/s towards the closest target within 300 units.",
+      "fluff": "Quick on the draw. A little light on the punch.",
+      "solarMultiplier": 0,
+      "capacity": 0,
+      "name": "Ion Point Defence",
+      "category": "G",
+      "mass": 10,
+      "thrust": 0,
+      "speedContribution": 0,
+      "limit": 0,
+      "draw": 0,
+      "response": "steady",
+      "chargeSeconds": 0,
+      "pulsePeriod": 0.45,
+      "pulseOn": 0.18
+    },
+    "rail": {
+      "id": "rail",
+      "releaseClass": "preview",
+      "description": "Automatically fires along the slot when a target approaches its firing line. Heavy hits and recoil; shots can miss. Active in Test flight; fires only while energy is at least 10% of capacity.",
+      "fluff": "",
+      "solarMultiplier": 0,
+      "capacity": 0,
+      "name": "Rail gun",
+      "category": "G",
+      "mass": 15,
+      "thrust": 0,
+      "speedContribution": 0,
+      "limit": 0,
+      "draw": 0,
+      "response": "steady",
+      "chargeSeconds": 0,
+      "pulsePeriod": 0.45,
+      "pulseOn": 0.18
+    },
+    "laser": {
+      "id": "laser",
+      "releaseClass": "preview",
+      "description": "Short-range rotating pulse laser. Prioritizes incoming debris, then derelicts. Active in Test flight; fires only while energy is at least 10% of capacity.",
+      "fluff": "",
+      "solarMultiplier": 0,
+      "capacity": 0,
+      "name": "Laser",
+      "category": "G",
+      "mass": 9,
+      "thrust": 0,
+      "speedContribution": 0,
+      "limit": 0,
+      "draw": 0,
+      "response": "steady",
+      "chargeSeconds": 0,
+      "pulsePeriod": 0.45,
+      "pulseOn": 0.18
+    },
+    "battery": {
+      "id": "battery",
+      "releaseClass": "scored",
+      "description": "A bank of well containment units stores potential in subspace, ready to supply the ship with matter and energy as needed.",
+      "fluff": "Enough to get you into trouble.",
+      "solarMultiplier": 0,
+      "capacity": 85,
+      "name": "Potential Well",
+      "category": "U",
+      "mass": 18,
+      "thrust": 0,
+      "speedContribution": 0,
+      "limit": 0,
+      "draw": 0,
+      "response": "steady",
+      "chargeSeconds": 0,
+      "pulsePeriod": 0.45,
+      "pulseOn": 0.18
+    },
+    "heavy-well": {
+      "id": "heavy-well",
+      "releaseClass": "scored",
+      "description": "A bank of well containment units stores potential in subspace, ready to supply the ship with matter and energy as needed.",
+      "fluff": "Enough to get you back out. Hopefully.",
+      "solarMultiplier": 0,
+      "capacity": 140,
+      "name": "Heavy Potential Well",
+      "category": "U",
+      "mass": 36,
+      "thrust": 0,
+      "speedContribution": 0,
+      "limit": 0,
+      "draw": 0,
+      "response": "steady",
+      "chargeSeconds": 0,
+      "pulsePeriod": 0.45,
+      "pulseOn": 0.18
+    },
+    "coil": {
+      "id": "coil",
+      "releaseClass": "preview",
+      "description": "",
+      "fluff": "",
+      "solarMultiplier": 1,
+      "capacity": 0,
+      "name": "Loading coil",
+      "category": "U",
+      "mass": 10,
+      "thrust": 0,
+      "speedContribution": 0,
+      "limit": 0,
+      "draw": 0,
+      "response": "steady",
+      "chargeSeconds": 0,
+      "pulsePeriod": 0.45,
+      "pulseOn": 0.18
+    },
+    "gravity-coil": {
+      "id": "gravity-coil",
+      "releaseClass": "scored",
+      "description": "Generates 1 energy/s inside a planet’s gravity well, up to storage capacity.",
+      "fluff": "Free energy. Just mind the planet.",
+      "solarMultiplier": 0,
+      "capacity": 0,
+      "name": "Gravity coil",
+      "category": "U",
+      "mass": 10,
+      "thrust": 0,
+      "speedContribution": 0,
+      "limit": 0,
+      "draw": 0,
+      "response": "steady",
+      "chargeSeconds": 0,
+      "pulsePeriod": 0.45,
+      "pulseOn": 0.18
+    },
+    "ion": {
+      "id": "ion",
+      "releaseClass": "scored",
+      "description": "+8 u/s to ship cruise ceiling.",
+      "fluff": "Small, cheap, reliable. What’s not to like?",
+      "solarMultiplier": 0,
+      "capacity": 0,
+      "name": "Light ion",
+      "category": "E",
+      "mass": 10,
+      "thrust": 25300,
+      "speedContribution": 8,
+      "limit": 340,
+      "draw": 1.75,
+      "response": "steady",
+      "chargeSeconds": 0,
+      "pulsePeriod": 0.45,
+      "pulseOn": 0.18
+    },
+    "heavy-ion": {
+      "id": "heavy-ion",
+      "releaseClass": "scored",
+      "description": "+11 u/s to ship cruise ceiling.",
+      "fluff": "Still reliable. Not that cheap, though.",
+      "solarMultiplier": 0,
+      "capacity": 0,
+      "name": "Heavy ion",
+      "category": "E",
+      "mass": 20,
+      "thrust": 44275,
+      "speedContribution": 11,
+      "limit": 401.3616174912124,
+      "draw": 3.5,
+      "response": "steady",
+      "chargeSeconds": 0,
+      "pulsePeriod": 0.45,
+      "pulseOn": 0.18
+    },
+    "fusion": {
+      "id": "fusion",
+      "releaseClass": "preview",
+      "description": "+17 u/s to ship cruise ceiling.",
+      "fluff": "",
+      "solarMultiplier": 0,
+      "capacity": 0,
+      "name": "Fission",
+      "category": "E",
+      "mass": 16,
+      "thrust": 48000,
+      "speedContribution": 17,
+      "limit": 550,
+      "draw": 3,
+      "response": "pulse",
+      "chargeSeconds": 0,
+      "pulsePeriod": 0.45,
+      "pulseOn": 0.18
+    },
+    "plasma": {
+      "id": "plasma",
+      "releaseClass": "preview",
+      "description": "+9 u/s to ship cruise ceiling.",
+      "fluff": "",
+      "solarMultiplier": 0,
+      "capacity": 0,
+      "name": "Plasma",
+      "category": "E",
+      "mass": 24,
+      "thrust": 38000,
+      "speedContribution": 9,
+      "limit": 700,
+      "draw": 5,
+      "response": "delayed",
+      "chargeSeconds": 0.2,
+      "pulsePeriod": 0.45,
+      "pulseOn": 0.18
+    }
+  },
+  "loadout": {
+    "version": 2,
+    "chassis": "wasp",
+    "side": "ion",
+    "stabilizers": true,
+    "linkedEngines": false,
+    "hull": [null, null],
+    "aft": []
+  },
+  "stats": {
+    "poweredCruiseCeiling": 428,
+    "hullBaseSpeed": 420,
+    "installedEngineContribution": 8,
+    "engineBreakdown": [
+      {
+        "id": "ion",
+        "count": 1,
+        "contribution": 8
+      }
+    ],
+    "mass": 70,
+    "capacity": 100,
+    "coils": 1,
+    "engineDraw": 2.1875,
+    "drain": 2.9875,
+    "acceleration": 361.42857142857144,
+    "turnRate": 8.427097318835187,
+    "endurance": 125,
+    "fullEndurance": 33.47280334728033
+  },
+  "shipRadius": 19.100161810603066,
+  "summaries": [
+    {
+      "encounter": {
+        "id": "sun",
+        "name": "G / Standard Sun",
+        "character": "The familiar reference",
+        "color": "#ffaa00",
+        "radius": 35,
+        "collection": {
+          "reach": 324.037034920393,
+          "shoulder": 55,
+          "peak": 7.5,
+          "outerFraction": 0.1
+        },
+        "exposure": {
+          "reach": 100,
+          "shoulder": 55,
+          "peak": 1.5,
+          "outerFraction": 0
+        }
+      },
+      "band": {
+        "inner": 100,
+        "outer": 252.29382560828822,
+        "width": 152.29382560828822
+      },
+      "runs": [
+        {
+          "offset": 80,
+          "contact": true,
+          "duration": 1.45,
+          "collectionSeconds": 0.9500000000000013,
+          "netGainWithoutExposureSeconds": 0.49999999999999994,
+          "minClearance": -0.5785850735422322,
+          "energyChange": 0.1511123314819276,
+          "exposureBudget": 0.1357693766206469,
+          "outcome": "Star contact",
+          "samples": 88,
+          "maxGravity": 1832.7427281705588
+        },
+        {
+          "offset": 160,
+          "contact": false,
+          "duration": 14,
+          "collectionSeconds": 1.7833333333333319,
+          "netGainWithoutExposureSeconds": 1.4499999999999997,
+          "minClearance": 82.47363394739155,
+          "energyChange": -17.248600898787082,
+          "exposureBudget": 0,
+          "outcome": "Outside the well at 14 s",
+          "samples": 841,
+          "maxGravity": 281.4650943019822
+        },
+        {
+          "offset": 260,
+          "contact": false,
+          "duration": 14,
+          "collectionSeconds": 1.2333333333333338,
+          "netGainWithoutExposureSeconds": 0.3333333333333333,
+          "minClearance": 196.50249078942906,
+          "energyChange": -21.10942217177807,
+          "exposureBudget": 0,
+          "outcome": "Outside the well at 14 s",
+          "samples": 841,
+          "maxGravity": 83.59647714288887
+        }
+      ]
+    },
+    {
+      "encounter": {
+        "id": "dwarf",
+        "name": "K / Quiet orange dwarf",
+        "character": "Go close for a modest refill",
+        "color": "#ff8800",
+        "radius": 25,
+        "collection": {
+          "reach": 180,
+          "shoulder": 45,
+          "peak": 4.5,
+          "outerFraction": 0.1
+        },
+        "exposure": {
+          "reach": 72,
+          "shoulder": 45,
+          "peak": 0.8,
+          "outerFraction": 0
+        }
+      },
+      "band": {
+        "inner": 72,
+        "outer": 110,
+        "width": 38
+      },
+      "runs": [
+        {
+          "offset": 80,
+          "contact": false,
+          "duration": 14,
+          "collectionSeconds": 0.9166666666666679,
+          "netGainWithoutExposureSeconds": 0.24999999999999997,
+          "minClearance": 5.366138925402314,
+          "energyChange": -21.075444804757854,
+          "exposureBudget": 0.10730640537524264,
+          "outcome": "Outside the well at 14 s",
+          "samples": 841,
+          "maxGravity": 2145.5588756896204
+        },
+        {
+          "offset": 160,
+          "contact": false,
+          "duration": 14,
+          "collectionSeconds": 0.6666666666666671,
+          "netGainWithoutExposureSeconds": 0,
+          "minClearance": 92.47363394739155,
+          "energyChange": -22.63611232855979,
+          "exposureBudget": 0,
+          "outcome": "Outside the well at 14 s",
+          "samples": 841,
+          "maxGravity": 281.4650943019822
+        },
+        {
+          "offset": 260,
+          "contact": false,
+          "duration": 14,
+          "collectionSeconds": 0,
+          "netGainWithoutExposureSeconds": 0,
+          "minClearance": 206.50249078942906,
+          "energyChange": -23.4937500000003,
+          "exposureBudget": 0,
+          "outcome": "Outside the well at 14 s",
+          "samples": 841,
+          "maxGravity": 83.59647714288887
+        }
+      ]
+    },
+    {
+      "encounter": {
+        "id": "giant",
+        "name": "Cool giant / Evolved star",
+        "character": "Harvest wide; leave room",
+        "color": "#ff8800",
+        "radius": 110,
+        "collection": {
+          "reach": 520,
+          "shoulder": 130,
+          "peak": 12,
+          "outerFraction": 0.1
+        },
+        "exposure": {
+          "reach": 230,
+          "shoulder": 130,
+          "peak": 3,
+          "outerFraction": 0
+        }
+      },
+      "band": {
+        "inner": 230,
+        "outer": 471.25,
+        "width": 241.25
+      },
+      "runs": [
+        {
+          "offset": 80,
+          "contact": true,
+          "duration": 1.2,
+          "collectionSeconds": 1.183333333333334,
+          "netGainWithoutExposureSeconds": 0.850000000000001,
+          "minClearance": -1.184426698503156,
+          "energyChange": 6.005421994659967,
+          "exposureBudget": 0.496030629695862,
+          "outcome": "Star contact",
+          "samples": 73,
+          "maxGravity": 320.8568839042648
+        },
+        {
+          "offset": 160,
+          "contact": false,
+          "duration": 14,
+          "collectionSeconds": 2.9999999999999942,
+          "netGainWithoutExposureSeconds": 1.9333333333333313,
+          "minClearance": 7.473633947391551,
+          "energyChange": -0.798083832780598,
+          "exposureBudget": 1.8613464084325657,
+          "outcome": "Outside the well at 14 s",
+          "samples": 841,
+          "maxGravity": 281.4650943019822
+        },
+        {
+          "offset": 260,
+          "contact": false,
+          "duration": 14,
+          "collectionSeconds": 2.8666666666666614,
+          "netGainWithoutExposureSeconds": 2.8166666666666615,
+          "minClearance": 121.50249078942905,
+          "energyChange": -6.765642840859651,
+          "exposureBudget": 0,
+          "outcome": "Outside the well at 14 s",
+          "samples": 841,
+          "maxGravity": 83.59647714288887
+        }
+      ]
+    }
+  ]
+}

@@ -10,6 +10,22 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
   {
+    slug: "stellar-encounters-2026-11-11",
+    title: "Stellar encounters: different stars, different decisions",
+    status: "open",
+    phase: "scope",
+    question:
+      "How should different kinds of stars create recognisably different situations, so that a pilot can read what they are approaching and adapt how they fly—while the stars remain grounded in real stellar physics at an arcade scale?",
+  },
+  {
+    slug: "fission-light-2026-11-11",
+    title: "Fission light: a push, then a wait",
+    status: "open",
+    phase: "exploration",
+    question:
+      "How does a fission engine’s light show each separate push as a very big one, and the wait before the next, and stay distinct from ion and plasma light?",
+  },
+  {
     slug: "ship-slots-2026-11-11",
     title: "Ship slots: a part outside the scored rules",
     status: "stopped",

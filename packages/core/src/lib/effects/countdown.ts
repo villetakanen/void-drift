@@ -11,10 +11,15 @@ export function paintCountdown(
   y: number,
   zoom: number,
   reduced = false,
+  variant: "standard" | "space-purple" = "standard",
 ) {
   if (time < 0 || time >= 3.4) return;
   const text =
-    time < 3 ? (String(3 - Math.floor(time)) as "1" | "2" | "3") : "GO";
+    time < 3
+      ? (String(3 - Math.floor(time)) as "1" | "2" | "3")
+      : variant === "space-purple"
+        ? "FIGHT"
+        : "GO";
   const local = time % 1;
   if (time < 3 && local >= 0.8) return;
   const hash = (Math.imul(Math.floor(local * 30) + 7, 2654435761) >>> 0) % 5;
@@ -27,31 +32,50 @@ export function paintCountdown(
           ? 0.5
           : 1;
   if (!on || !pass.budget.take(true)) return;
-  let stamp = stamps.get(text);
+  const color =
+    variant === "space-purple" ? COLOR.spacePurple : COLOR.countdown;
+  const key = `${variant}:${text}`;
+  let stamp = stamps.get(key);
   if (!stamp) {
-    const glyph = countdownGlyphs[text];
-    const scale = 420 / glyph.em;
     stamp = document.createElement("canvas");
-    stamp.width = Math.ceil(glyph.width * scale + 180);
-    stamp.height = 600;
+    let path: Path2D | undefined;
+    if (text !== "FIGHT") {
+      const glyph = countdownGlyphs[text];
+      const scale = 420 / glyph.em;
+      stamp.width = Math.ceil(glyph.width * scale + 180);
+      stamp.height = 600;
+      path = new Path2D(glyph.path);
+    } else {
+      stamp.width = 1000;
+      stamp.height = 600;
+    }
     const c = stamp.getContext("2d");
     if (!c) return;
-    const path = new Path2D(glyph.path);
-    c.translate(90, 450);
-    c.scale(scale, scale);
-    c.fillStyle = COLOR.countdown;
-    c.shadowColor = COLOR.countdown;
+    c.fillStyle = color;
+    c.shadowColor = color;
     c.shadowBlur = 48;
     c.globalAlpha = 0.55;
-    c.fill(path);
+    if (path) {
+      const glyph = countdownGlyphs[text as "1" | "2" | "3" | "GO"];
+      c.translate(90, 450);
+      c.scale(420 / glyph.em, 420 / glyph.em);
+      c.fill(path);
+    } else {
+      c.font = "700 180px 'B612 Mono', monospace";
+      c.textAlign = "center";
+      c.textBaseline = "middle";
+      c.fillText(text, 500, 300);
+    }
     c.shadowBlur = 0;
     c.globalAlpha = 1;
-    c.fill(path);
+    if (path) c.fill(path);
+    else c.fillText(text, 500, 300);
     c.globalCompositeOperation = "lighter";
     c.fillStyle = COLOR.text;
     c.globalAlpha = 0.3;
-    c.fill(path);
-    stamps.set(text, stamp);
+    if (path) c.fill(path);
+    else c.fillText(text, 500, 300);
+    stamps.set(key, stamp);
   }
   ctx.save();
   ctx.globalAlpha = pass.opacity * on * (time < 3 ? 0.45 : 0.6);

@@ -439,6 +439,7 @@ export function updateShip(
   wellCurve: WellCurve = "linear",
   engineSpeedScale: number | null = null,
   engineCutoff: number | null = null,
+  advancePlanetOrbits = true,
 ) {
   // 1. Rotation & Variable Thrust (Differential)
   // Left Engine -> Rotate Right + 50% Thrust
@@ -504,7 +505,7 @@ export function updateShip(
   // 3. Planet Interaction (Gravity + Collision)
   for (const planet of planets) {
     // Update Planet Position (Orbit)
-    updatePlanetOrbit(planet, dt);
+    if (advancePlanetOrbits) updatePlanetOrbit(planet, dt);
 
     const gravity = planetPull(ship.pos, ship.radius, planet);
     ship.acc.x += gravity.x;

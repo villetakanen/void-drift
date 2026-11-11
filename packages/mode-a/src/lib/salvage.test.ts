@@ -42,7 +42,7 @@ function fixture(parts: ("rail" | "laser" | null)[] = []) {
   return { system, loadout, ship, star, resources, step };
 }
 function body(
-  kind: SalvageBody["kind"],
+  kind: Exclude<SalvageBody["kind"], "ship">,
   x: number,
   y: number,
   id = 1,

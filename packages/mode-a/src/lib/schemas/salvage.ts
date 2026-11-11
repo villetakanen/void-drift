@@ -44,7 +44,7 @@ export type SalvagePhysicalState = z.infer<typeof SalvagePhysicalStateSchema>;
 export const SalvageBodySchema = SalvagePhysicalStateSchema.extend({
   id: z.number().int(),
   group: z.number().int(),
-  kind: z.enum(["wreck", "fragment", "cell"]),
+  kind: z.enum(["wreck", "fragment", "cell", "ship"]),
   x: z.number(),
   y: z.number(),
   previousX: z.number(),
@@ -56,10 +56,14 @@ export const SalvageBodySchema = SalvagePhysicalStateSchema.extend({
   /** Seconds left; required for a wreck and a cell, absent for a shard. */
   life: z.number().optional(),
   rotation: z.number(),
-}).refine((body) => body.kind === "fragment" || body.life !== undefined, {
-  message: "A wreck and a cell need a life",
-  path: ["life"],
-});
+}).refine(
+  (body) =>
+    body.kind === "fragment" || body.kind === "ship" || body.life !== undefined,
+  {
+    message: "A wreck and a cell need a life",
+    path: ["life"],
+  },
+);
 
 export const DestructionCauseSchema = z.enum([
   "player-weapon",

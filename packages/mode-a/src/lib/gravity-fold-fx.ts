@@ -4,16 +4,25 @@ import {
   FxSparks,
   FxSurface,
   type GameObject,
+  type Planet,
   paintArc,
   paintSpeedLine,
+  type Star,
 } from "@void-drift/core";
 import {
   BUILD_FLIGHT_SCALE,
   type BuildMount,
   buildMounts,
+  weaponPose,
 } from "./build-renderer";
-import { drawIonCannonLight, stampWeaponLight } from "./salvage-renderer";
+import type { SalvageSystem } from "./salvage";
+import {
+  drawIonBeamMark,
+  drawIonCannonLight,
+  stampWeaponLight,
+} from "./salvage-renderer";
 import type { Loadout } from "./schemas/loadout";
+import { ION_CANNON, POINT_DEFENCE } from "./schemas/salvage";
 import type { Simulation } from "./simulation";
 
 // Parsed loadouts are stable during a run. Mount geometry is shared with drawing.
@@ -96,6 +105,18 @@ export class FlightFx {
       );
     }
     sim.plume.stamp(ctx, this.pass);
+    const opponent = sim.opponent;
+    if (opponent && opponent.lifecycle !== "destroyed") {
+      opponent.plume.stamp(ctx, this.pass);
+      stampWeaponLight(ctx, opponent.combat, this.pass);
+      this.drawActorIonCannonLight(
+        ctx,
+        opponent.ship,
+        opponent.combat,
+        sim.star,
+        sim.planets,
+      );
+    }
     if (sim.salvage) {
       const salvage = sim.salvage;
       this.weaponSparks.step(Math.max(0, salvage.time - this.weaponTime));
@@ -131,9 +152,67 @@ export class FlightFx {
         this.pass,
       );
   }
+  private drawActorIonCannonLight(
+    ctx: CanvasRenderingContext2D,
+    ship: GameObject,
+    combat: SalvageSystem,
+    star: Star,
+    planets: readonly Planet[],
+  ) {
+    for (const weapon of combat.weapons) {
+      const turret = weapon.kind === "ion-point-defence";
+      if (weapon.kind !== "light-ion-cannon" && !turret) continue;
+      const kind = turret ? "point-defence" : "ion-cannon";
+      const profile = turret ? POINT_DEFENCE : ION_CANNON;
+      const reach = turret ? POINT_DEFENCE.reach : ION_CANNON.range;
+      const event = [...combat.events]
+        .reverse()
+        .find(
+          (item) =>
+            (item.kind === "point-defence" || item.kind === "ion-cannon") &&
+            item.kind === kind &&
+            item.mountKey === weapon.mount.key,
+        );
+      if (
+        (event?.kind !== "point-defence" && event?.kind !== "ion-cannon") ||
+        combat.time - event.time >= profile.flashSeconds
+      )
+        continue;
+      const pose = turret
+        ? weaponPose(ship, weapon.mount, combat.angles[weapon.mount.key])
+        : weaponPose(ship, weapon.mount);
+      const distance = Math.min(
+        event.distance,
+        combat.ionContact(
+          pose.muzzleX,
+          pose.muzzleY,
+          pose.angle,
+          star,
+          planets,
+          reach,
+        ).distance,
+      );
+      if (
+        !this.pass.visible(pose.muzzleX, pose.muzzleY, reach) ||
+        !this.pass.budget.take(true) ||
+        !(distance > 0)
+      )
+        continue;
+      ctx.save();
+      ctx.translate(pose.muzzleX, pose.muzzleY);
+      ctx.rotate(pose.angle);
+      ctx.globalAlpha = this.pass.opacity;
+      ctx.globalCompositeOperation = "lighter";
+      drawIonBeamMark(ctx, reach, distance, false, turret);
+      ctx.restore();
+    }
+  }
   drawLfx(ctx: CanvasRenderingContext2D, sim: Simulation) {
     sim.plume.drawCharge(ctx);
     drawIonCannonLight(ctx, sim);
+    const opponent = sim.opponent;
+    if (opponent && opponent.lifecycle !== "destroyed")
+      opponent.plume.drawCharge(ctx);
   }
   drawParticles(ctx: CanvasRenderingContext2D) {
     this.weaponSparks.draw(ctx, this.pass);

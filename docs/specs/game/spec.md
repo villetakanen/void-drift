@@ -41,7 +41,7 @@ with one meaning each.
 - The Lab is not part of the game. It holds game-designer tools that reuse game systems where they need them. Game specs describe the game only: they place no rule on the Lab, and nothing in them is changed by what the Lab does. The [Lab spec](../lab/spec.md) owns its own constraints.
 - This contract owns the game as a whole: its modes, launch and return, replay, ranking eligibility and the scoring boundary. Child contracts own the parts:
   - **Flight screen:** [game screen](game-screen/spec.md), [render](render/spec.md), [camera](camera/spec.md), [controls](controls/spec.md), [dialogs](dialogs/spec.md)
-  - **Modes:** [Survival](survival/spec.md), [Practice](test-flight/spec.md), [Derelicts](derelicts/spec.md)
+  - **Modes:** [Survival](survival/spec.md), [Practice](test-flight/spec.md), [Derelicts](derelicts/spec.md), [Gauntlet](gauntlet/spec.md)
   - **Launch and ships:** [title screen](landing-page/spec.md), [Hangar](hangar/spec.md), [active ship](active-ship/spec.md), [Playground](experimental/spec.md), [ships](ships/spec.md), [parts](parts/spec.md)
   - **World:** [star](world/star/spec.md), [gravity](world/gravity-field/spec.md), [derelict](world/derelict/spec.md)
   - **Scores and options:** [scores](scores/spec.md), [options](options/spec.md)
@@ -49,10 +49,10 @@ with one meaning each.
 
 ### Rules
 
-- **Modes:** the game has four modes: Survival, Practice, Derelicts and Gauntlet. Survival is the full game and the only scored mode. Each of the others is a mode of its own with its own purpose, stated in its own contract; none is a variant or a setting of another, and they are not merged. Gauntlet is planned and cannot be started yet. Flight settings name a mode: Survival, Practice or Derelicts. A missing mode means Survival, and a legacy `testFlight: true` with no mode means Practice.
+- **Modes:** the game has four modes: Survival, Practice, Derelicts and Gauntlet. Survival is the full game and the only scored mode. Each other mode has its own purpose, stated in its own contract; none is a variant or a setting of another, and they are not merged. Gauntlet is an experimental single-opponent combat entry described in [its contract](gauntlet/spec.md); it does not establish a future mode design. Flight settings name a mode: Survival, Practice, Derelicts or Gauntlet. A missing mode means Survival, and a legacy `testFlight: true` with no mode means Practice.
 - **Launch and return:** a run starts from the title screen or the Hangar, independently of its mode. Abort and game over return to the place it started from.
 - **PRESS START:** it launches a Survival run with the [active ship](active-ship/spec.md) in a fresh seeded G-class system. Every other launch flies the active ship too. The Hangar owns ship choice.
-- **Ranked runs:** a Survival run under the current `CHALLENGE`, started from the title screen or the Hangar while [Playground](experimental/spec.md) is Off, is scored and ranked. A Survival run while Playground is On is not scored: it shows its time and the scoring-off notice in place of the score. Practice and Derelicts have no score. Every run while Playground is On, and every Practice and Derelicts run, is unranked and cannot submit.
+- **Ranked runs:** a Survival run under the current `CHALLENGE`, started from the title screen or the Hangar while [Playground](experimental/spec.md) is Off, is scored and ranked. A Survival run while Playground is On is not scored: it shows its time and the scoring-off notice in place of the score. Practice, Derelicts and Gauntlet have no score. Every run while Playground is On, and every Practice, Derelicts and Gauntlet run, is unranked and cannot submit.
 - **Scores:** a ranked run can be saved to the shared board. The [scores contract](scores/spec.md) owns what is saved, the board and its rules.
 - **Replay:** identical validated settings and inputs reproduce the same world state, step for step.
 - **Offline:** without Firebase the game stays fully playable, and score features explain why they are unavailable.
@@ -70,7 +70,7 @@ with one meaning each.
   and on game over, without a page reload.
 - PRESS START launches Survival with the active ship, a fresh random seed,
   the arrival entry and a G-class star.
-- Practice and Derelicts runs show no Save Score and never call score
+- Practice, Derelicts and Gauntlet runs show no Save Score and never call score
   submission.
 - A Survival run launched from the Hangar with Playground Off is ranked
   like a title-screen run; with Playground On, no run shows a score or Save
@@ -96,7 +96,7 @@ with one meaning each.
 - Ranking is decided by the client from mode and the Playground setting.
 - Launch source is independent of mode, ship and ranking; PRESS START and the
   Hangar launch the same active ship.
-- Only Survival has a score; Practice and Derelicts show none, submit nothing
+- Only Survival has a score; Practice, Derelicts and Gauntlet show none, submit nothing
   and never alter Survival scoring.
 - Rendering and effects read simulation state without changing it, so replay
   stays deterministic whatever is drawn.

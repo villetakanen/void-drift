@@ -1,0 +1,123 @@
+---
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const results = [
+  [
+    "One subject",
+    "Pass",
+    "One initial set of stellar encounters, comparing appearance and behaviour through the pilot decisions they create. The open ship-motion study owns changes to handling, which this opening holds fixed; no open study owns the stellar answer.",
+  ],
+  [
+    "Grounded",
+    "Pass with findings",
+    "The fixed Sun baseline matches its specification and implementation: collection, gravitational pull, exposure and lethal contact. The earlier study distinguishes the stated stellar properties, and the open families, behaviour and cues can be compared in built flight examples. Comparison conditions needed clarification.",
+  ],
+  [
+    "Consequence",
+    "Pass",
+    "The game gains a small initial set of additional stellar encounter identities whose readable opportunities and dangers change how a pilot approaches, collects and escapes. Travel and progression are outside this cycle.",
+  ],
+] as const;
+---
+
+<StudyLayout>
+  <section>
+    <h2>Stellar encounters — question review of 01</h2>
+    <p>
+      <a href="/lab/studies/stellar-encounters-2026-11-11"
+        >Return to the study</a
+      >
+    </p>
+    <p>
+      Tested on 11 November 2026 by a clean-context, read-only reviewer with no
+      part in framing and no expected outcome. This tests whether the question
+      can be answered, not design quality or gameplay success. The opening was
+      corrected after the review and has not been retested.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>Result</th>
+          <th>Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        {results.map(([metric, result, reason]) => (
+          <tr>
+            <th scope="row">{metric}</th>
+            <td>{result}</td>
+            <td>{reason}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    <h2>Findings and responses</h2>
+    <p>
+      <strong>1 / Comparison controls were incomplete.</strong>
+      “Same ship and starting resources” left fitting and flight mode implicit.
+      Hull and fitting determine handling, collection and capacity; practice
+      suppresses applied exposure and death. Corrected in 01: retain the same
+      fitting and resource protection rules as well. This was an omission, not a
+      false claim or failed metric.
+    </p>
+    <p>
+      Evidence: <code>docs/specs/game/ships/spec.md:40–45,73–82</code>;
+      <code>docs/specs/game/world/star/spec.md:57</code>;
+      <code>packages/mode-a/src/lib/simulation.ts:474,497</code>.
+    </p>
+    <p>
+      <strong>2 / The handling baseline needs a reproducible snapshot.</strong>
+      “Current ship handling” is specified, but the related motion study remains
+      open. The eventual comparison evidence must name its production
+      build/configuration. Retained as an evidence requirement for exploration;
+      no change to the opening’s scope is needed, and the open motion study is
+      not a dependency.
+    </p>
+    <p>
+      Evidence: <code>docs/specs/game/ships/spec.md:62–72</code>; the
+      ship-motion entry in <code>apps/web/src/data/studies.ts</code>.
+    </p>
+    <h2>Grounding evidence</h2>
+    <p>
+      Standard-Sun intent and mechanics:
+      <code>docs/specs/game/world/star/spec.md:5–6,19–28</code>; collection,
+      exposure and contact:
+      <code>packages/core/src/lib/physics/Physics.ts:277–298,310–325</code>;
+      production Sun and death handling:
+      <code>packages/mode-a/src/lib/simulation.ts:123,381–383</code>. Stellar
+      dimensions:
+      <a href="/lab/studies/suns-2026-11-07#stellar-model"
+        >earlier Sun study, 02.1</a
+      >. The registry and study contract were also inspected for ownership and
+      cycle-zero authority. Historical proposals were not treated as production
+      contracts.
+    </p>
+    <h2>Not checked by the reviewer</h2>
+    <p>
+      Rendered layout, keyboard operation, builds, automated tests, gameplay
+      outcomes, design quality and external astrophysical accuracy. No new
+      encounter examples existed to inspect. The astrophysics wording was
+      checked against the referenced repository study; scientific research and
+      concrete encounter comparisons remain exploration work.
+    </p>
+  </section>
+</StudyLayout>
+
+<style>
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-block: var(--spacing-lg);
+}
+th,
+td {
+  padding: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+}
+code {
+  overflow-wrap: anywhere;
+}
+</style>

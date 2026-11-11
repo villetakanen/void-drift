@@ -55,7 +55,7 @@ export type FlightTickInput = InputState & { sendDerelict?: boolean };
 export interface SalvageBody extends SalvagePhysicalState {
   id: number;
   group: number;
-  kind: "wreck" | "fragment" | "cell";
+  kind: "wreck" | "fragment" | "cell" | "ship";
   x: number;
   y: number;
   previousX: number;
@@ -67,6 +67,34 @@ export interface SalvageBody extends SalvagePhysicalState {
   /** Seconds left; a shard has none and stays until destroyed. */
   life?: number;
   rotation: number;
+  /** Set only for a temporary opposing ship contact supplied to weapon queries. */
+  onDamage?: (amount: number) => void;
+}
+/** Temporary circle target inserted only while an existing weapon pass queries a live opponent. */
+export function liveShipBody(
+  id: number,
+  ship: GameObject,
+  hull: number,
+  onDamage: (amount: number) => void,
+  previous?: { x: number; y: number },
+): SalvageBody {
+  const x = previous?.x ?? ship.pos.x;
+  const y = previous?.y ?? ship.pos.y;
+  return {
+    id,
+    group: id,
+    kind: "ship",
+    x,
+    y,
+    previousX: x,
+    previousY: y,
+    vx: ship.vel.x,
+    vy: ship.vel.y,
+    radius: ship.radius,
+    hull,
+    rotation: ship.rotation,
+    onDamage,
+  };
 }
 export interface RailShot {
   x: number;
@@ -326,7 +354,7 @@ export class SalvageSystem {
     previous = false,
     angularScale = 1,
   ) {
-    if (body.kind === "cell")
+    if (body.kind === "cell" || body.kind === "ship")
       return contactTime(
         x - (previous ? body.previousX : body.x),
         y - (previous ? body.previousY : body.y),
@@ -460,6 +488,12 @@ export class SalvageSystem {
     ionHit = false,
   ) {
     if (body.hull <= 0) return;
+    if (body.kind === "ship") {
+      body.onDamage?.(amount);
+      body.hull = Math.max(0, body.hull - amount);
+      if (body.hull > 0) this.emit("impact", body.x, body.y);
+      return;
+    }
     this.hits++;
     if (ionHit && body.kind !== "cell") this.derelictIonHits++;
     if (body.kind === "wreck" && body.initialHull === undefined)
@@ -598,21 +632,34 @@ export class SalvageSystem {
   }
   /** Forward ship-width by 300 rectangle; acquisition does not steer muzzle rays. */
   ionTrigger(ship: GameObject, star: Star, planets: readonly Planet[]) {
-    return this.bodies.some(
-      (body) =>
-        body.kind !== "cell" &&
-        body.hull > 0 &&
-        derelictForwardContacts(
-          { ...body, kind: body.kind === "wreck" ? "wreck" : "fragment" },
-          ship.pos.x,
-          ship.pos.y,
-          ship.rotation,
-          this.ionAcquisitionWidth,
-          ION_CANNON.range,
-        ).some((p) =>
-          this.lineClear(ship.pos.x, ship.pos.y, p.x, p.y, star, planets),
-        ),
-    );
+    return this.bodies.some((body) => {
+      if (body.kind === "cell" || body.hull <= 0) return false;
+      if (body.kind === "ship") {
+        const dx = body.x - ship.pos.x;
+        const dy = body.y - ship.pos.y;
+        const forward =
+          dx * Math.cos(ship.rotation) + dy * Math.sin(ship.rotation);
+        const lateral = Math.abs(
+          -dx * Math.sin(ship.rotation) + dy * Math.cos(ship.rotation),
+        );
+        return (
+          forward > 0 &&
+          forward <= ION_CANNON.range + body.radius &&
+          lateral <= this.ionAcquisitionWidth / 2 + body.radius &&
+          this.lineClear(ship.pos.x, ship.pos.y, body.x, body.y, star, planets)
+        );
+      }
+      return derelictForwardContacts(
+        { ...body, kind: body.kind === "wreck" ? "wreck" : "fragment" },
+        ship.pos.x,
+        ship.pos.y,
+        ship.rotation,
+        this.ionAcquisitionWidth,
+        ION_CANNON.range,
+      ).some((p) =>
+        this.lineClear(ship.pos.x, ship.pos.y, p.x, p.y, star, planets),
+      );
+    });
   }
   /** Ready cannons and the trigger are captured once per update; hits cannot cancel this volley. */
   private ionVolley(ship: GameObject, star: Star, planets: readonly Planet[]) {
@@ -688,10 +735,43 @@ export class SalvageSystem {
       y: number;
       distance: number;
     };
+    type CandidateOption = {
+      body: SalvageBody;
+      shape: {
+        kind: "wreck" | "fragment";
+        x: number;
+        y: number;
+        rotation: number;
+        shardIndex: number;
+        releasedMask: number;
+      } | null;
+      bound: number;
+      closest: { distance: number; x: number; y: number } | null;
+    };
     // Visit bodies nearest-bound first so distant material is skipped cheaply.
     const nearby = this.bodies
-      .flatMap((body) => {
+      .flatMap<CandidateOption>((body) => {
         if (body.kind === "cell" || body.hull <= 0) return [];
+        if (body.kind === "ship") {
+          const dx = body.x - pivot.x;
+          const dy = body.y - pivot.y;
+          const centreDistance = Math.hypot(dx, dy);
+          const distance = Math.max(0, centreDistance - body.radius);
+          if (distance > POINT_DEFENCE.trackingRange) return [];
+          const scale = centreDistance > 0 ? distance / centreDistance : 0;
+          return [
+            {
+              body,
+              shape: null,
+              bound: distance,
+              closest: {
+                distance,
+                x: pivot.x + dx * scale,
+                y: pivot.y + dy * scale,
+              },
+            },
+          ];
+        }
         const shape = {
           kind: body.kind,
           x: body.x,
@@ -707,21 +787,26 @@ export class SalvageSystem {
         );
         return bound > POINT_DEFENCE.trackingRange
           ? []
-          : [{ body, shape, bound }];
+          : [{ body, shape, bound, closest: null }];
       })
       .sort((a, b) => a.bound - b.bound);
     let best: Candidate | undefined;
     let retained: Candidate | undefined;
-    for (const { body, shape, bound } of nearby) {
+    for (const { body, shape, bound, closest: shipClosest } of nearby) {
       const current = body.id === weapon.target;
       if (best && bound > best.distance && !current) continue;
-      const closest = derelictClosestPoint(
-        shape,
-        pivot,
-        current
-          ? POINT_DEFENCE.trackingRange
-          : (best?.distance ?? POINT_DEFENCE.trackingRange),
-      );
+      const closest =
+        shipClosest ??
+        (shape
+          ? derelictClosestPoint(
+              shape,
+              pivot,
+              current
+                ? POINT_DEFENCE.trackingRange
+                : (best?.distance ?? POINT_DEFENCE.trackingRange),
+            )
+          : null);
+      if (!closest) continue;
       if (
         closest.distance > POINT_DEFENCE.trackingRange ||
         !this.lineClear(pivot.x, pivot.y, closest.x, closest.y, star, planets)
@@ -1055,6 +1140,72 @@ export class SalvageSystem {
     resources.power -= config.energy;
     this.energySpent += config.energy;
   }
+
+  /** Runs this ship's normal weapon pipeline against one temporary live ship. */
+  stepWeapons(
+    dt: number,
+    ship: GameObject,
+    star: Star,
+    resources: Resources,
+    capacity: number,
+    planets: readonly Planet[],
+    target: SalvageBody,
+  ) {
+    this.time += dt;
+    this.events = this.events.filter((event) => this.time - event.time <= 0.2);
+    this.bodies.push(target);
+    this.fireWeapons(dt, ship, star, resources, capacity, [...planets]);
+    this.bodies = this.bodies.filter((body) => body !== target);
+
+    this.shots = this.shots.filter((shot) => {
+      let first = contactTime(
+        shot.x - star.pos.x,
+        shot.y - star.pos.y,
+        shot.vx,
+        shot.vy,
+        star.radius,
+        dt,
+      );
+      for (const planet of planets)
+        first = Math.min(
+          first,
+          contactTime(
+            shot.x - planet.pos.x,
+            shot.y - planet.pos.y,
+            shot.vx,
+            shot.vy,
+            planet.radius,
+            dt,
+          ),
+        );
+      const targetTime = contactTime(
+        shot.x - target.previousX,
+        shot.y - target.previousY,
+        shot.vx - target.vx,
+        shot.vy - target.vy,
+        target.radius,
+        dt,
+      );
+      const hitTarget = targetTime < first;
+      if (hitTarget) first = targetTime;
+      shot.x += shot.vx * Math.min(dt, first);
+      shot.y += shot.vy * Math.min(dt, first);
+      if (hitTarget)
+        this.damage(target, WEAPONS.rail.damage, this.time - dt + first);
+      if (first !== Infinity) this.emit("collision", shot.x, shot.y);
+      return first === Infinity && !outside(shot.x, shot.y);
+    });
+    for (const weapon of this.weapons) {
+      if (!weapon.recoil) continue;
+      const duration = Math.min(dt, weapon.recoil.remaining);
+      const impulse = this.recoilAcceleration * duration;
+      ship.vel.x -= Math.cos(weapon.recoil.angle) * impulse;
+      ship.vel.y -= Math.sin(weapon.recoil.angle) * impulse;
+      weapon.recoil.remaining -= duration;
+      if (weapon.recoil.remaining <= 1e-9) weapon.recoil = null;
+    }
+  }
+
   step(
     dt: number,
     ship: GameObject,

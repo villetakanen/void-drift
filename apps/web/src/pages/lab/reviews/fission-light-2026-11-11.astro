@@ -1,0 +1,172 @@
+---
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const stamps = [
+  [
+    "One subject",
+    "Pass with findings",
+    "One object: the fission engine's light, in its two states (push, wait) and beside ion and plasma light, which one built example can show together. No open study owns part of the answer, but the registry question and title stated the hypothesis as if it were settled.",
+  ],
+  [
+    "Grounded",
+    "Pass with findings",
+    "Every number and behaviour claim checked out against code, and every open item can be shown and judged by looking. The layer rule as worded is not in a specification, and several descriptions were imprecise.",
+  ],
+  [
+    "Consequence",
+    "Pass",
+    "The answer changes one named thing: what a fission engine paints in flight, where today it paints the shared amber beam and nothing in the wait. A reader can say that from the section alone.",
+  ],
+] as const;
+
+const findings = [
+  [
+    "“Effects live only on FX or LFX.”",
+    "Imprecision. The render specification says solid things are drawn on World only and nothing solid sits above light. No specification confines light to FX and LFX; World carries the sun's glow and rings. The sentence came from the plasma-light study and its delivery plan.",
+    "Corrected: the layers are named with World for what is solid, and fission's light goes on FX, LFX or both.",
+  ],
+  [
+    "Title “one explosion for every push”; question “show each push as an explosion”.",
+    "Imprecision. Section 01 calls the explosion the hypothesis and leaves what one push looks like open.",
+    "Corrected: the title and question no longer name the explosion.",
+  ],
+  [
+    "“the wait paints nothing”",
+    "Imprecision. No new light is stamped in the wait, but the push's light is still fading on the persistent surface through it.",
+    "Corrected: the wait adds no light, so the beam fades through it.",
+  ],
+  [
+    "“the amber beam that engines without a design of their own share”",
+    "Imprecision. Fission is the only catalogue engine with the default style; the only other user is the stock ship's legacy outlets.",
+    "Corrected: the light of an engine with no design of its own.",
+  ],
+  [
+    "“without burying the ship or its trail”",
+    "Imprecision. The trail is not a separate object; it is the engine's own fading light, which is the light under study.",
+    "Corrected: the trail is removed from the sentence.",
+  ],
+  [
+    "“a preview part outside scored play”",
+    "Imprecision of wording. The code value is preview; the specification names the class unsanctioned, a boundary of the rules and not a stage of development.",
+    "Corrected: an unsanctioned part.",
+  ],
+  [
+    "“the mint of ion light”",
+    "Imprecision. Only Light ion and the stabilizers are mint; Heavy ion is a cooler cyan.",
+    "Corrected: both colours are named.",
+  ],
+  [
+    "“0.18 seconds of thrust in every 0.45”",
+    "Omission. This holds while held; releasing during a push cuts thrust at once, so a push can be shorter.",
+    "Corrected: while held, and releasing cuts a push short.",
+  ],
+  [
+    "“on the same ship”, beside “a Wasp or Scout”",
+    "Imprecision. A Wasp has one engine mount and can show fission beside ion stabilizer light, never beside plasma; a Scout can carry both.",
+    "Corrected: “on the same ship” is removed from the question.",
+  ],
+  [
+    "Held fixed: fission is pulsed; the engine body's yellow-green.",
+    "For the designer to confirm. Both rest on code and the accepted engine-identities study; the parts specification only says engines respond steadily, in pulses or after a charge.",
+    "Open: put to the designer in the study conversation.",
+  ],
+] as const;
+---
+
+<StudyLayout>
+  <section>
+    <h1>Fission light — question review of 01</h1>
+    <p>
+      <a href="/lab/studies/fission-light-2026-11-11">Return to the study</a>
+    </p>
+    <p>
+      Section 01 tested on 11 November 2026 against the question test, by a
+      clean-context agent with read-only access, no part in the framing and no
+      expected result. This is separate from feasibility, implementation
+      authorization and human judgment. The section was corrected after the run;
+      the corrected text has not been tested. Example 02.1 was already on the
+      page when the test ran and was not reviewed.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Stamp</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          {stamps.map(([metric, stamp, reason]) => (
+            <tr>
+              <th scope="row">{metric}</th>
+              <td>{stamp}</td>
+              <td>{reason}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <h2>Findings, most serious first</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>What the section said</th>
+            <th>What the repository shows</th>
+            <th>After the run</th>
+          </tr>
+        </thead>
+        <tbody>
+          {findings.map(([claim, found, after], index) => (
+            <tr>
+              <th scope="row">{index + 1}</th>
+              <td>{claim}</td>
+              <td>{found}</td>
+              <td>{after}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <h2>What checked out</h2>
+    <p>
+      Fission is pulsed at 0.18 seconds in every 0.45; releasing does not
+      shorten the wait; one push is 1.9 times a Light ion’s thrust and the mean
+      over the cycle is below it; fission paints the default amber beam in the
+      Light ion beam’s shape; the engine body’s accent is yellow-green; plasma
+      is amber; the three layers exist as specified; the Flight scene instrument
+      accepts a study’s light on FX and LFX and tuning of the pulse; no open
+      study owns part of the answer, and the plasma-light study hands fission’s
+      light to its own study.
+    </p>
+    <h2>Not checked</h2>
+    <p>
+      Nothing was rendered or run: colour names were judged from values in code,
+      and the flickering look was not observed. Also unchecked: the instrument’s
+      implementation of tuning and study light, whether fission fits every
+      chassis, behaviour under power loss, each hull’s drawing, and the expected
+      rhythm of 0.9 seconds held with tapping, which is an expectation and not a
+      fact of the game.
+    </p>
+  </section>
+</StudyLayout>
+<style>
+.table-wrap {
+  overflow-x: auto;
+  margin-block: var(--spacing-lg);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th,
+td {
+  padding: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.6;
+}
+</style>

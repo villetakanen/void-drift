@@ -169,7 +169,8 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
     draws: "The fitted build, or the stock ship",
     source: "packages/mode-a/src/lib/build-renderer.ts",
     draw: ({ renderer, sim, stockShip }, ctx) => {
-      if (sim.settings.loadout)
+      if (sim.settings.loadout) {
+        const weaponAngles = sim.salvage?.angles;
         drawBuild(
           ctx,
           sim.settings.loadout,
@@ -180,10 +181,28 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
           "",
           undefined,
           undefined,
-          sim.salvage?.angles,
+          weaponAngles,
         );
-      else if (stockShip)
+      } else if (stockShip)
         renderer.drawShip(sim.ship, sim.settings.profile.tint, stockShip);
+      const opponent = sim.opponent;
+      if (opponent && opponent.lifecycle !== "destroyed") {
+        drawBuild(
+          ctx,
+          opponent.loadout,
+          opponent.ship.pos.x,
+          opponent.ship.pos.y,
+          opponent.ship.rotation,
+          BUILD_FLIGHT_SCALE,
+          "",
+          undefined,
+          undefined,
+          opponent.combat.angles,
+          true,
+          undefined,
+          "charcoal",
+        );
+      }
     },
   },
   {

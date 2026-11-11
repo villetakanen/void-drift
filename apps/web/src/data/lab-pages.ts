@@ -204,6 +204,20 @@ export const labPages = z.array(labPageSchema).parse([
     source: "production",
   },
   {
+    href: "/lab/gauntlet",
+    title: "Gauntlet",
+    purpose:
+      "Play the first pirate encounter through the production simulation and render stack.",
+    group: "tools",
+    source: "production",
+    defines: [
+      "packages/mode-a/src/lib/gauntlet.ts",
+      "packages/mode-a/src/lib/flight-frame.ts",
+      "packages/mode-a/src/lib/build-renderer.ts",
+    ],
+    spec: "docs/specs/lab/gauntlet-bench/spec.md#contract",
+  },
+  {
     href: "/lab/plasma-thrust-comparison",
     title: "Plasma thrust comparison",
     purpose:

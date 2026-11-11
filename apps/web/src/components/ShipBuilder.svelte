@@ -43,7 +43,9 @@ let _props: { "client:only"?: string } = $props();
 let chosen = $derived($shipSetup.builds.activeChassis);
 let selected = $state("left");
 let previewMode = $state("Plan");
-let flying = $state<"test" | "derelicts" | "survival" | null>(null);
+let flying = $state<"test" | "derelicts" | "gauntlet" | "survival" | null>(
+  null,
+);
 let fontsLoaded = $state(false);
 let canvas = $state<HTMLCanvasElement>();
 const build = $derived($shipSetup.builds[chosen]);
@@ -188,7 +190,7 @@ function choose(id: ShipProfileId) {
   setActiveChassis(id);
   selected = "left";
 }
-function launch(mode: "test" | "derelicts" | "survival") {
+function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
   if (!canLaunch) return;
   flying = mode;
 }
@@ -481,7 +483,14 @@ function launch(mode: "test" | "derelicts" | "survival") {
         >
           Derelicts
         </button>
-        <button type="button" class="btn btn-normal" disabled>Gauntlet</button>
+        <button
+          type="button"
+          class="btn btn-normal"
+          disabled={!canLaunch}
+          onclick={() => launch("gauntlet")}
+        >
+          Gauntlet
+        </button>
         <button
           type="button"
           class="btn btn-filled"
@@ -494,9 +503,10 @@ function launch(mode: "test" | "derelicts" | "survival") {
     </footer>
     <p class="footnote">
       Practice: fly a repeatable star system with full health and energy.
-      Derelicts: survive, destroy wrecks and collect energy. Survival is ranked
-      while Playground is Off and your active setup is eligible. Pause to resume
-      or abort back to the Hangar.
+      Derelicts: survive, destroy wrecks and collect energy. Gauntlet: an
+      unranked first pirate encounter. Survival is ranked while Playground is
+      Off and your active setup is eligible. Pause to resume or abort back to
+      the Hangar.
     </p>
   </main>
 {/if}
