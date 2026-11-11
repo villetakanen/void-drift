@@ -29,7 +29,11 @@ export const FIGHTER = {
   turnResponse: 2.5,
   // The designer retained the original production angle after flight review.
   angle: (26 * Math.PI) / 180,
-  hullMounts: [37, -1],
+  // Paired equipment mounts sit outboard of the centreline, beneath the hull.
+  hullMounts: [
+    [5, -11],
+    [5, 11],
+  ],
   length: 48,
   width: 20,
 } as const;

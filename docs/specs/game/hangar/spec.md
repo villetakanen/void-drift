@@ -60,6 +60,28 @@ Earning and buying parts is the intended direction for later. During alpha,
   A linked engine pair is one choice, made on its primary slot; the other
   slot shows that it is linked. A change applies at once and touches only that
   slot or pair.
+- **Part chooser.** Each compatible part is a 300-pixel card owned by
+  `components/hangar/PartCard.svelte`: a small unframed drawing at top left,
+  name and two lines of prose beside it, and one bottom line of up to four
+  icon-and-number figures, mass first. Figures are 12 pixels, inset 16 pixels
+  horizontally and 8 vertically. Sanctioned parts precede unsanctioned parts,
+  retaining catalog order within each class. Optional slots start with Keep
+  empty; required or linked slots have no empty choice. Keep empty replaces
+  Remove fitting and shows the fitted state when the slot is empty.
+- **Card states.** Cards use the shared action frame with no raised fill or
+  pressed underline. Fitted means black ground and lit brackets. Unsanctioned
+  means a hatched closing band following the bracket colour, with an accessible
+  description. With Playground Off an unfitted unsanctioned card stays listed,
+  fades as a whole to quarter opacity, remains keyboard discoverable, and cannot
+  activate by pointer, keyboard or touch. An unsanctioned fitting remains full
+  strength with red brackets, band and a faint red ground until replaced or
+  removed. Its accessible description explains the remedy. State changes use
+  the shared short fade and respect reduced motion.
+- **Columns.** The parts pane is 342 pixels wide including its padding and
+  border; cards stay 300 pixels at desktop and 1024-pixel landscape widths.
+  The ship column keeps at least 360 pixels and estimates narrow and wrap
+  first. Below the three-column layout the regions stack without horizontal
+  scrolling. The ship tabs retain their shared selection behaviour.
 - **Plan and View.** Plan shows the slots, what occupies them, what fits and
   which are linked. View shows the ship as it flies, with no markings. Switching
   keeps the fitting and the selection, and parts can be fitted in both.
@@ -107,6 +129,8 @@ Earning and buying parts is the intended direction for later. During alpha,
 - H7: Fitting or emptying a slot changes only that slot or its linked
   pair; a required engine has no empty choice; parts the slot does not accept
   are unavailable.
+- Part cards retain their fixed width, sanctioned-first order and every state
+  above; Keep empty removes only the selected optional fitting.
 - H8: Plan shows slots, occupancy and links; View shows the ship without
   markings; switching keeps fitting and selection, and fitting works in both.
 - H9: The stabilizer and linked-engines choices are kept per ship and

@@ -1,11 +1,29 @@
 ---
+import { PARTS, type PartId } from "@void-drift/mode-a";
 import PartRows021 from "../../../components/studies/PartRows021.svelte";
 import PartRows022 from "../../../components/studies/PartRows022.svelte";
 import PartRows023 from "../../../components/studies/PartRows023.svelte";
 import PartRows026 from "../../../components/studies/PartRows026.svelte";
+import PartRows028 from "../../../components/studies/PartRows028.svelte";
+import PartRows029 from "../../../components/studies/PartRows029.svelte";
+import PartRows0210 from "../../../components/studies/PartRows0210.svelte";
+import PartRows0211 from "../../../components/studies/PartRows0211.svelte";
+import PartRows0212 from "../../../components/studies/PartRows0212.svelte";
+import PartRows0213 from "../../../components/studies/PartRows0213.svelte";
+import PartRows0214 from "../../../components/studies/PartRows0214.svelte";
+import PartRows0215 from "../../../components/studies/PartRows0215.svelte";
+import PartRows0216 from "../../../components/studies/PartRows0216.svelte";
+import PartRows0217 from "../../../components/studies/PartRows0217.svelte";
+import PartRows0218 from "../../../components/studies/PartRows0218.svelte";
+import { PART_PROSE } from "../../../components/studies/part-prose";
 import { studies } from "../../../data/studies";
 import StudyLayout from "../../../layouts/StudyLayout.astro";
 
+const proseRows = (Object.keys(PART_PROSE) as PartId[]).map((id) => ({
+  name: PARTS[id].name,
+  prose: PART_PROSE[id],
+  catalog: PARTS[id].description,
+}));
 const study = studies.find((entry) => entry.slug === "part-rows-2026-11-11");
 ---
 
@@ -120,6 +138,73 @@ const study = studies.find((entry) => entry.slug === "part-rows-2026-11-11");
         </tbody>
       </table>
     </aside>
+  </section>
+  <section>
+    <h2 id="settled">02 / Settled so far</h2>
+    <ul>
+      <li>
+        <strong>The subject</strong>
+        is the tool for choosing the part for a slot: bespoke, amended and not
+        reinvented (<a href="#anatomy">02.3</a>).
+      </li>
+      <li>
+        <strong>The words</strong>
+        are settled and held in the game spec (<a href="#terms">02.5</a>).
+      </li>
+      <li>
+        <strong>The hatched band</strong>
+        marks an unsanctioned part, in the colour of its component's border (<a
+          href="#band"
+          >02.6</a
+        >).
+      </li>
+      <li>
+        <strong>A row keeps</strong>
+        the name, a small drawing and one line of figures. Sentences of
+        description do not belong in that line (<a href="#content">02.7</a>).
+      </li>
+      <li>
+        <strong>The figures</strong>
+        are a part's key game facts: one to four of them, each an icon and a
+        number, always starting with mass, on one line at the bottom of the row
+        (<a href="#density">02.8</a>).
+      </li>
+      <li>
+        <strong>The card</strong>
+        has a small drawing in its top left corner with little space around it,
+        the name beside it, two lines of prose under the name, and the figures
+        along the bottom. The prose says what the part is about and carries no
+        figures (<a href="#card">02.10</a>).
+      </li>
+      <li>
+        <strong>The line of figures</strong>
+        has four columns, mass first. It stands 16 pixels from the card's left
+        and right edges and 8 from what is above and below it. The figures are
+        12 pixels (<a href="#prose">02.11</a>, <a href="#air">02.12</a>).
+      </li>
+      <li>
+        <strong>With Playground off,</strong>
+        unsanctioned parts stay in the list, under the sanctioned ones, and
+        cannot be fitted. The hypothesis in section 01, that they are hidden,
+        did not hold: a part that vanishes when another is pressed looks wrong (<a
+          href="#close"
+          >02.17</a
+        >).
+      </li>
+      <li>
+        <strong>The box</strong>
+        has a button's cut shape and brackets and no fill of its own, on a pane
+        at the first surface step. Fitted is a black ground with lit brackets. A
+        part that has to come off has a faint red tint. An unavailable part is
+        the whole card faded. The list opens with Keep empty (<a href="#empty"
+          >02.18</a
+        >).
+      </li>
+      <li>
+        <strong>The card is 300 pixels wide,</strong>
+        always. The Hangar's other columns give way to it, the estimates first.
+      </li>
+    </ul>
   </section>
   <section>
     <details id="pane">
@@ -385,262 +470,1306 @@ const study = studies.find((entry) => entry.slug === "part-rows-2026-11-11");
     </details>
   </section>
   <section>
-    <h2 id="terms">02.5 / What things are called</h2>
+    <details id="terms">
+      <summary>02.5 / What things are called</summary>
+
+      <p>
+        Before the tool can be amended it has to be possible to talk about it.
+        The game, its specs and its code use several words for the same thing,
+        and one word for different things. This round collects them. The last
+        column records what was settled in review on 11 November 2026. The game
+        spec now holds them as its terms. The screens and the code have not been
+        changed to match.
+      </p>
+      <div class="terms">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">The thing</th>
+              <th scope="col">The game says today</th>
+              <th scope="col">Specs, plan and code say</th>
+              <th scope="col">After review, 11 November 2026</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row" class="thing">
+                The place on a ship where a part goes
+              </th>
+              <td>
+                Mount: “Selected mount”, “Fixed mounts”. Slot: “3 slots” on a
+                ship tab, “Required propulsion slot”, “under-wing equipment
+                slots”.
+              </td>
+              <td>
+                Specs say mount about four times as often as slot. Code has
+                both: the mount record, and the slot types and slot overlay. The
+                accepted study is “Ship slots”.
+              </td>
+              <td>Settled: slot</td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">What a slot accepts</th>
+              <td>
+                On the ship: Engines, Weapons, Support, Equipment, Universal,
+                with the letters E, W, S, Q and +. In the pane's heading:
+                “Engine”, “Equipment”, “Universal”, “mirrored E”, “Engine pair”,
+                “Weapon / support”.
+              </td>
+              <td>Slot type: engine, weapon, support, equipment, universal.</td>
+              <td>
+                Settled: slot type. Engine, Weapon and Support each take one
+                kind. Hardpoint takes a weapon or a support part; Equipment is
+                dropped. Universal takes any part.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">The thing that is fitted</th>
+              <td>
+                Part: “Every installed part adds mass”. Also fitting: “Remove
+                fitting”, “Static fitting”, “weapon/support fittings”.
+              </td>
+              <td>Part, throughout.</td>
+              <td>Settled: part, or ship part in full</td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">The kind of part</th>
+              <td>A letter on the row: E, G or U. No words.</td>
+              <td>
+                Parts spec: engine, weapon, support. Code: categories E, G and
+                U. The 0.6 plan lists the support parts under “Equipment”.
+              </td>
+              <td>Settled: engine, weapon, support</td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">A part being in a slot</th>
+              <td>
+                “Fitted” on the row. “Installed” and “fittings” in the ship's
+                description.
+              </td>
+              <td>Specs: fit, fitted, empty. Code: install, installed.</td>
+              <td>Settled: fitted. A part is fitted to a slot, and removed.</td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">Everything fitted to one ship</th>
+              <td>
+                “Setup”: “your active setup”, “this setup requires Playground”.
+                “Build”: “Unsanctioned build”.
+              </td>
+              <td>
+                Specs: fitting, and setup for the ship with its fitting. Code:
+                loadout and build. The saved score has a field named fitting.
+                The 0.6 plan marks “fitting” a placeholder.
+              </td>
+              <td>
+                Settled: three words. The ship is the body, the fitting is the
+                parts on it, and the build is the two together. Setup and
+                loadout go. One part is never “a fitting”.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">The ship as a body</th>
+              <td>
+                Ship. Hull appears for the hit points, for “Hull base” speed and
+                for “Hull 1” slots.
+              </td>
+              <td>
+                Specs: ship and hull. Code and one Hangar spec line: chassis.
+              </td>
+              <td>Settled: ship. Chassis is unwanted in code too.</td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">The ship that will fly</th>
+              <td>Not named on screen.</td>
+              <td>Active ship, chosen 10 November 2026.</td>
+              <td>Settled: active ship</td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">The setting</th>
+              <td>Playground, Off or On.</td>
+              <td>
+                Playground, chosen 11 November 2026. Code, the stored key and
+                the spec's folder still say experimental.
+              </td>
+              <td>Settled: Playground</td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">
+                The two classes of ship and part
+              </th>
+              <td>
+                “Unsanctioned” on a part, since today. “Unsanctioned build” on
+                the title screen.
+              </td>
+              <td>
+                Specs: stable and experimental, marked as placeholders; also
+                eligible and excluded. Code: scored and preview. This study:
+                sanctioned and unsanctioned.
+              </td>
+              <td>
+                Sanctioned and unsanctioned, for the rules of ranked play only.
+                See below.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">
+                An unsanctioned part fitted with Playground off
+              </th>
+              <td>
+                Title: “Unsanctioned build / Playground required”. Flight: “this
+                setup requires Playground”.
+              </td>
+              <td>No word. This study's working word is forbidden.</td>
+              <td>
+                Settled: no new word. Not “forbidden”. The game's present
+                wording for ranked play stands.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">Whether a run counts</th>
+              <td>
+                Scoring: “Scoring off”, “Top scores”, “Save score”. Ranking:
+                “Survival is ranked”, “Unranked play”, “Unranked”.
+              </td>
+              <td>Specs use both: a run is scored, and ranked on the board.</td>
+              <td>Settled: ranked, unranked</td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">Two slots that change together</th>
+              <td>
+                “Mirrored pair”, “Engine pair”, “linked”. “Linked engines” is
+                also the name of a different setting.
+              </td>
+              <td>
+                Mirrored pair, linked mount; Linked engines for the setting.
+              </td>
+              <td>
+                Settled: linked slots, never mirrored. There may be more than
+                two, and they always hold the same part.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>Two reasons a part cannot be fitted</h3>
+      <p>
+        Sanctioned and unsanctioned say one thing: whether the rules of ranked
+        play admit a ship or a part. A second reason is expected later and must
+        not share those words. A player may not have the schematic for a part or
+        a ship. A sanctioned part without its schematic still cannot be fitted
+        for ranked play. The working words for that second axis are available
+        and unavailable, to the player. Nothing in 0.6 builds it; the words are
+        reserved so that the marks chosen here do not have to change.
+      </p>
+      <p>
+        This bears on the tool now. The hatched band means unsanctioned for now.
+        Whether it later also covers parts flown in Playground without their
+        schematic, or those get another colour, is left for then. The Playground
+        spec and the ship tabs use “unavailable” for an unsanctioned ship or
+        part with Playground off, which is the word the second axis needs.
+      </p>
+      <p>Where one word means two things:</p>
+      <ul>
+        <li>
+          <strong>Equipment</strong>
+          is a slot type that accepts weapons and support parts, and in the 0.6
+          plan it is the support parts themselves.
+        </li>
+        <li>
+          <strong>Fitting</strong>
+          is one fitted part (“Remove fitting”) and everything fitted to a ship.
+        </li>
+        <li>
+          <strong>Hull</strong>
+          is the ship's hit points, the ship's body in the speed figures, and a
+          group of slots.
+        </li>
+        <li>
+          <strong>Linked</strong>
+          covers two things on purpose. Linked slots hold the same part: fitting
+          one fits the others. Linked engines fire together. Both are
+          connections between places on the ship, and both are to be drawn as
+          lines on the ship drawing.
+        </li>
+      </ul>
+      <p>
+        Smaller things seen on the way: part names are not cased alike (“Light
+        ion”, “Light Ion Cannon”), and Practice is called test in code and in
+        its spec's folder. Names of parts, ships and modes were not otherwise
+        reviewed.
+      </p>
+    </details>
+  </section>
+  <section>
+    <details id="band">
+      <summary>02.6 / Today's row, with the band and nothing else</summary>
+
+      <p>
+        The smallest step: take the row exactly as the Hangar draws it and add
+        the one mark that has held up, the hatched band, to unsanctioned parts.
+        The band fills the row's existing right padding, so nothing in the row
+        moves. Both columns show the four weapons as a slot offers them with
+        Playground on, with the Light Ion Cannon fitted.
+      </p>
+      <PartRows026 client:load />
+      <p>This round can settle one thing and show one more.</p>
+      <ul>
+        <li>
+          <strong>Settle:</strong>
+          whether the band works on the row as it is. If it does, the
+          unsanctioned mark is done and can go into the Hangar without waiting
+          for anything else.
+        </li>
+        <li>
+          <strong>Show:</strong>
+          what else in today's row now looks wrong beside it. That is the list
+          of amendments still owed, and it should be short. The first candidate
+          is the “Unsanctioned” caption, which the band may make unnecessary or
+          may need as its explanation.
+        </li>
+      </ul>
+      <p>
+        The rows are copies of the Hangar's, not the Hangar. They react to a
+        pointer and do nothing when pressed. Fitted, and a forbidden part, are
+        untouched here on purpose.
+      </p>
+      <p>
+        Seen while copying the row: in the Hangar today an unsanctioned row
+        shows its mass in larger text than the other rows. The caption above it
+        interrupts the rule that makes the mass small. The copies keep this,
+        since it is what the Hangar does.
+      </p>
+      <h3>What 02.6 settled</h3>
+      <p>
+        The hatched band is the mark of an unsanctioned part. It works on the
+        row as it is. One rule goes with it: the band takes the colour of the
+        border of the thing it marks, and follows that border when it changes.
+        Where a thing has no border, the band takes the colour its border would
+        have. The example above now shows this: the band is the row's faint edge
+        at rest and turns lime with the edge under a pointer. This is part of
+        the game's design language from 11 November 2026.
+      </p>
+      <p>
+        One consequence shows at once. Today's row has a very faint border, so
+        at rest the band is barely visible; it is clear only under a pointer,
+        when the border turns lime. The rule holds, and it makes the row's
+        border the first amendment still owed.
+      </p>
+    </details>
+  </section>
+  <section>
+    <details id="content">
+      <summary>02.7 / What a row has to say</summary>
+
+      <p>
+        Before the row's look, its content. This round asks what a player needs
+        from a row when choosing a part for a slot, and compares that with what
+        the row says today. It draws nothing.
+      </p>
+      <h3>What the row says today</h3>
+      <p>
+        Every row has a drawing where the part has one, the name, a letter for
+        the kind, and then three lines of text. The lines differ by kind:
+      </p>
+      <div class="terms">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Part</th>
+              <th scope="col">First line</th>
+              <th scope="col">Second line</th>
+              <th scope="col">Third line</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row" class="thing">Light ion (engine)</th>
+              <td>10 mass · 1.75 energy/s</td>
+              <td>25,300 thrust · Immediate / steady</td>
+              <td>+8 u/s to ship cruise ceiling.</td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">Light Ion Cannon (weapon)</th>
+              <td>9 mass</td>
+              <td>12–48 damage/s · 3 shots/s · 200 units · 0.2p/shot</td>
+              <td>
+                The same four figures again, then: (0.6p/s sustained).
+                Ship-width forward acquisition; offset cannons may miss.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">Rail gun (weapon, unsanctioned)</th>
+              <td>15 mass</td>
+              <td>Fixed direction · automatic · 3 energy/shot</td>
+              <td>Three sentences, 33 words, on how it fires. No drawing.</td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">Potential Well (support)</th>
+              <td>18 mass</td>
+              <td>+85 energy capacity</td>
+              <td>One sentence of fiction, 21 words. It states no effect.</td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">Gravity coil (support)</th>
+              <td>10 mass</td>
+              <td>Static fitting · no energy draw</td>
+              <td>
+                Generates 1 energy/s inside a planet’s gravity well, up to
+                storage capacity.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">
+                Loading coil (support, unsanctioned)
+              </th>
+              <td>10 mass</td>
+              <td>+1× solar charging</td>
+              <td>None. No drawing.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>
+          A row is 188 to 274 pixels tall in the Hangar, so the pane shows two
+          or three parts at once.
+        </li>
+        <li>
+          The two ion weapons give their figures twice, and the third line of a
+          Potential Well gives none.
+        </li>
+        <li>
+          Nothing on the row leads except the name. Mass, figures and
+          description are the same small grey text.
+        </li>
+      </ul>
+      <h3>What the player is asking</h3>
+      <div class="terms">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">The question</th>
+              <th scope="col">Where the answer is today</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row" class="thing">Which part is this?</th>
+              <td>Name and drawing, on the row.</td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">Is it the one in the slot?</th>
+              <td>
+                “Fitted” on the row, and the part drawn in the slot on the ship.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">May I fly it ranked?</th>
+              <td>
+                The band on the row, once it is in the Hangar. Nothing on the
+                ship yet.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">What does it cost the ship?</th>
+              <td>
+                Mass on every row. Energy on some: per second for engines, per
+                shot for weapons, in a unit written “p” that the Hangar does not
+                explain.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">What does it give?</th>
+              <td>
+                A different set of figures for each kind: thrust and cruise
+                ceiling, damage and reach, capacity, charging.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">How does it behave?</th>
+              <td>
+                A phrase on engines (“Immediate / steady”), sentences on
+                weapons, nothing on storage.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">
+                What will my ship be like with it?
+              </th>
+              <td>
+                Not on the row. The flight estimates beside the list show it,
+                after the part is fitted.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        One fact limits the problem. Fitting applies at once and can be undone
+        at once, and the flight estimates sit beside the list. Trying a part is
+        cheap. So the row may not need to predict what a part does to the ship.
+        It needs to let the player tell the alternatives apart and pick one to
+        try. This is a hypothesis.
+      </p>
+      <h3>Candidates for the row</h3>
+      <ul>
+        <li>
+          <strong>Certain:</strong>
+          the name, the small drawing, whether it is fitted, and the
+          unsanctioned band.
+        </li>
+        <li>
+          <strong>Likely:</strong>
+          mass, since every part has it and it is the one cost all parts share;
+          and the one or two figures that differ between parts of the same kind.
+        </li>
+        <li>
+          <strong>In doubt:</strong>
+          the sentences of description, figures stated twice, the letter for the
+          kind, and how a part behaves beyond a word or two.
+        </li>
+      </ul>
+      <p>
+        Left open by this: if the description leaves the row, where a player
+        reads it. Today the row is the only place it appears.
+      </p>
+    </details>
+  </section>
+  <section>
+    <details id="density">
+      <summary>02.8 / How much a row carries</summary>
+
+      <p>
+        A naive block: a drawing, a name and one line of figures in a plain box.
+        It is shown four times, each with a little more in it, for two engines,
+        two weapons and two wells. The block is not a proposal for how the row
+        looks. It is there to judge how much is enough. Each column is as wide
+        as the Hangar's parts pane. At that width even the fullest version fits
+        on one line, and every block is 44 pixels tall, against 188 to 274 for a
+        row today.
+      </p>
+      <PartRows028 client:load />
+      <ul>
+        <li><strong>Mass</strong> is the one figure every part has.</li>
+        <li>
+          <strong>What it gives</strong>
+          is one figure per kind: thrust for an engine, damage per second for a
+          weapon, energy capacity for a well. A weapon's damage is a range
+          because it falls with distance; shots per second are left out.
+        </li>
+        <li>
+          <strong>Running cost and one more</strong>
+          adds energy per second, so that an engine and a weapon can be compared
+          on the same figure, and one further figure: what an engine adds to the
+          cruise ceiling, or a weapon's reach. A well has nothing to add.
+        </li>
+      </ul>
+      <p>
+        Every figure is computed from the game's data. The icons are
+        placeholders drawn for this page; the game has no icons for these yet,
+        and what they should be is its own question. Hover an icon for its
+        meaning.
+      </p>
+    </details>
+  </section>
+  <section>
+    <h3>What 02.8 settled</h3>
     <p>
-      Before the tool can be amended it has to be possible to talk about it. The
-      game, its specs and its code use several words for the same thing, and one
-      word for different things. This round collects them. The last column
-      records what was settled in review on 11 November 2026. The game spec now
-      holds them as its terms. The screens and the code have not been changed to
-      match.
+      The fullest version is right. A part's key game facts are one to four
+      figures, each an icon and a number, always starting with mass, on one line
+      at the bottom of the row. Because that line is so small, the row has room
+      left. What else goes in, and how large the name and drawing can be, is the
+      next question.
+    </p>
+  </section>
+  <section>
+    <details id="room">
+      <summary>02.9 / What else fits in a row</summary>
+
+      <p>
+        The line of figures is small, so a row can hold more. This round shows
+        the block in four versions. Each adds something above the figures: a
+        larger name and drawing, then one line of text, then two.
+      </p>
+      <p>
+        Every version is drawn at the same width and cut off at the same height,
+        so they can be compared. The width can be changed with the control above
+        the examples. Three widths are offered:
+      </p>
+      <ul>
+        <li>
+          299 pixels, the width of the parts column today in a 1280 window.
+        </li>
+        <li>222 pixels, its width today on an iPad in landscape.</li>
+        <li>400 pixels, a wider column, as an example.</li>
+      </ul>
+      <p>
+        Today's widths are not limits. Only the ship's column is fixed. How wide
+        the parts column is has not been decided, and neither has whether the
+        estimates column stays open beside it on an iPad. The height is the part
+        of the list that shows above the launch row today.
+      </p>
+      <p>
+        The list is the eight parts a Hardpoint slot offers with Playground on.
+        The dashed line is where the list is cut off. The number under each
+        example is how many parts show whole above that line.
+      </p>
+      <PartRows029 client:load />
+      <div class="terms">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Parts showing, of eight</th>
+              <th scope="col">222 wide</th>
+              <th scope="col">299 wide</th>
+              <th scope="col">400 wide</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row" class="thing">1 / Name and figures</th>
+              <td>4</td>
+              <td>8</td>
+              <td>8</td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">2 / Larger name and drawing</th>
+              <td>3</td>
+              <td>5</td>
+              <td>6</td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">3 / One line of text</th>
+              <td>2</td>
+              <td>4</td>
+              <td>5</td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">4 / Two lines of text</th>
+              <td>2</td>
+              <td>3</td>
+              <td>4</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>At 400 wide the figures stay on one line in every version.</li>
+        <li>
+          At 299 wide they stay on one line only in the first version. With a
+          larger drawing, a weapon's four figures take two lines.
+        </li>
+        <li>
+          At 222 wide the figures take two lines in every version, and the name
+          “Heavy Potential Well” takes two as well.
+        </li>
+      </ul>
+      <p>Two things about the content:</p>
+      <ul>
+        <li>
+          The text in versions 3 and 4 is the catalog's description, cut short.
+          Those descriptions are long and some repeat the figures. If a row
+          keeps text, the text has to be rewritten for it.
+        </li>
+        <li>
+          Loading coil and Gravity coil show only mass. The game's data has no
+          other figure for them; what they do is written only as a sentence.
+        </li>
+      </ul>
+      <p>
+        The block is still plain on purpose. It has no fitted state and says
+        nothing about how the row should look.
+      </p>
+    </details>
+  </section>
+  <section>
+    <h3>What 02.9 showed</h3>
+    <p>
+      In 02.9 the drawing was given room of its own: a column beside the text,
+      with space around it. That treats the drawing as content. It is a mark
+      that helps tell parts apart, and it should take little room. The same
+      column also squeezed the figures, which is why they wrapped.
+    </p>
+  </section>
+  <section>
+    <details id="card">
+      <summary>
+        02.10 / The drawing in the corner, the figures along the bottom
+      </summary>
+
+      <p>
+        The same four versions, the same list and the same three widths as 02.9.
+        One thing is rearranged. The drawing sits in the top left corner of the
+        card with 4 pixels around it. The name, and any text, stand beside it.
+        The line of figures starts under the drawing and runs the full width of
+        the card, as its bottom line.
+      </p>
+      <PartRows0210 client:load />
+      <div class="terms">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Parts showing, of eight</th>
+              <th scope="col">222 wide</th>
+              <th scope="col">299 wide</th>
+              <th scope="col">400 wide</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row" class="thing">1 / Name and figures</th>
+              <td>4</td>
+              <td>6</td>
+              <td>6</td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">2 / Larger name and drawing</th>
+              <td>3</td>
+              <td>5</td>
+              <td>5</td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">3 / One line of text</th>
+              <td>3</td>
+              <td>5</td>
+              <td>5</td>
+            </tr>
+            <tr>
+              <th scope="row" class="thing">4 / Two lines of text</th>
+              <td>2</td>
+              <td>4</td>
+              <td>4</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Compared with 02.9:</p>
+      <ul>
+        <li>
+          The figures now fit on one line at 299 and at 400 wide in every
+          version. At 222 wide the three weapons with four figures still take
+          two lines.
+        </li>
+        <li>
+          The fuller versions show as many parts as before, or one more. The
+          smallest version shows fewer, six where 02.9 showed eight at 299 wide,
+          because the figures now have a line of their own.
+        </li>
+        <li>
+          Cards are not all the same height. A part with no drawing has a
+          shorter card than one with a drawing, because the drawing sets the
+          height of the top of the card.
+        </li>
+      </ul>
+      <p>
+        The card is still plain on purpose: no fitted state, and nothing decided
+        about its colours or edges. The text is still the catalog's description,
+        cut short.
+      </p>
+    </details>
+  </section>
+  <section>
+    <h3>What 02.10 settled</h3>
+    <p>
+      Version 4 is the model: a card with a small drawing in the top left
+      corner, the name, two lines of text and the figures along the bottom. A
+      larger drawing with less space around it works. The two lines are prose
+      about the part, and every figure belongs in the bottom line. Sizes and
+      spacing still need work, the bottom line first.
+    </p>
+  </section>
+  <section>
+    <details id="prose">
+      <summary>
+        02.11 / The bottom line's spacing, and the two lines of prose
+      </summary>
+
+      <p>
+        Two things are tried on the card from 02.10. Six parts stand for the
+        twelve.
+      </p>
+      <p>
+        <strong>The bottom line</strong>
+        is spaced three ways. In A the figures are packed to the left, as
+        before. In B they sit in four columns with mass always first, so the
+        same figure lines up from card to card. C is B with a thin line above
+        the figures.
+      </p>
+      <p>
+        <strong>The two lines of text</strong>
+        are new prose, written for this page as a draft. Each says what the part
+        is about and has no figure in it. All twelve are listed under the
+        examples, beside the catalog's present description.
+      </p>
+      <PartRows0211 client:load />
+      <ul>
+        <li>
+          At 299 wide every card is the same height, 86 pixels, in A and B. The
+          rule in C adds 9.
+        </li>
+        <li>
+          At 400 wide the prose fits on one line, so the card has an empty line.
+        </li>
+        <li>
+          At 222 wide four columns do not fit: in B and C the last figure runs
+          past the edge of the card. Packed figures wrap onto a second line
+          there.
+        </li>
+      </ul>
+      <div class="terms">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Part</th>
+              <th scope="col">Draft prose for the card</th>
+              <th scope="col">Catalog description today</th>
+            </tr>
+          </thead>
+          <tbody>
+            {proseRows.map((row) => (
+              <tr>
+                <th scope="row" class="thing">
+                  {row.name}
+                </th>
+                <td class="draft">{row.prose}</td>
+                <td class="plain">{row.catalog || "None."}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        The drafts are mine and are not approved copy. The game's tone of voice
+        has not been decided, so they are plain. Each is kept near 54
+        characters, which fills two lines on the card when the column is 299
+        pixels wide.
+      </p>
+    </details>
+  </section>
+  <section>
+    <h3>What 02.11 settled</h3>
+    <p>
+      The figures sit in four columns, mass first. There is width enough for
+      four. What is missing is room around them: the figures stand too close to
+      the walls of the card and need space of their own. The draft prose has not
+      been reviewed yet.
+    </p>
+  </section>
+  <section>
+    <details id="air">
+      <summary>02.12 / Room around the figures</summary>
+
+      <p>
+        One thing changes between the three examples: how far the line of
+        figures stands from the left, right and bottom edges of the card, and
+        from the prose above it. Everything else is the card from 02.11. The
+        drawing keeps its 4 pixels in the corner.
+      </p>
+      <PartRows0212 client:load />
+      <p>
+        At 299 and 400 wide the card is 90, 98 and 106 pixels tall in the three
+        examples, so each step of room costs 8 pixels of height. The four
+        columns fit in all three. At 222 wide they do not fit in any of them, as
+        in 02.11.
+      </p>
+    </details>
+  </section>
+  <section>
+    <h3>What 02.12 settled</h3>
+    <p>
+      The room around the figures is two numbers, as it is for a button: 16
+      pixels to the left and right, 8 above and below.
+    </p>
+  </section>
+  <section>
+    <details id="size">
+      <summary>02.13 / The figures a little larger</summary>
+
+      <p>
+        Both examples use the spacing from 02.12. The only difference is the
+        size of the figures: 12 pixels as before, and 14.
+      </p>
+      <PartRows0213 client:load />
+      <ul>
+        <li>
+          At 299 wide both sizes fit in four columns. At 14 pixels the columns
+          are full: on an engine or a weapon one figure nearly touches the next.
+        </li>
+        <li>The card grows by 2 pixels, from 94 to 96.</li>
+        <li>At 400 wide the larger figures have room.</li>
+        <li>
+          At 222 wide neither size fits, and the larger runs further past the
+          edge.
+        </li>
+      </ul>
+    </details>
+  </section>
+  <section>
+    <h3>What 02.13 settled</h3>
+    <p>
+      The figures stay at 12 pixels. Larger would be welcome, but the card has
+      no room for it. With that, what the card holds is known: a small drawing,
+      the name, two lines of prose and the line of figures. What is open is the
+      box itself.
+    </p>
+  </section>
+  <section>
+    <details id="box">
+      <summary>02.14 / The box in its states</summary>
+
+      <p>
+        One answer to how the box looks. It takes the box from the slot on the
+        ship drawing, because the card is what goes in that slot. On the ship a
+        slot with a part in it has a lime edge, and the slot being edited has
+        lime brackets at its corners.
+      </p>
+      <ul>
+        <li>
+          <strong>Available:</strong>
+          a quiet edge and nothing else. A pointer gives the card a faint lime
+          tint.
+        </li>
+        <li>
+          <strong>Fitted:</strong>
+          the edge turns lime, as a filled slot's does, and the card gets the
+          slot's corner brackets. The word Fitted stands beside the name.
+        </li>
+        <li>
+          <strong>Unsanctioned:</strong>
+          the hatched band, in the colour of the card's edge. It is quiet on an
+          available card and lime on a fitted one.
+        </li>
+        <li>
+          <strong>Unsanctioned and still fitted with Playground off:</strong>
+          the fitted card in red: edge, brackets, band and the word
+          Unsanctioned.
+        </li>
+      </ul>
+      <PartRows0214 client:load />
+      <p>
+        The cards can be pressed, and a press fits the part in that list only.
+        In the third list the other unsanctioned part is hidden, as the
+        hypothesis in section 01 has it. The list stands on the page's black;
+        the pane around it is not part of this round.
+      </p>
+      <p>
+        One fault is visible. At 299 wide the word beside the name leaves too
+        little room for the name: “Light Ion Cannon” and “Rail gun” break onto
+        two lines, and the fitted card grows from 94 to 108 pixels.
+      </p>
+    </details>
+  </section>
+  <section>
+    <h3>What 02.14 showed</h3>
+    <p>
+      The slot's language does not carry over to the card. A slot on the ship is
+      a target: a box you click to aim the tool at a place on a grid. A card is
+      pressed to make something happen, so it is closer to a button. The raised
+      panes of 02.1 worked better than these outlined boxes for that reason. The
+      card does not take its look from the slot.
+    </p>
+  </section>
+  <section>
+    <details id="button">
+      <summary>02.15 / The card as a button</summary>
+
+      <p>
+        The second answer for the box. The card is the game's normal button,
+        made tall. It uses the button's own rules unchanged: the pane, the cut
+        corners, the dim brackets at each end, the brackets lighting under a
+        pointer and on keyboard focus, and the pane tinting while held. Only
+        three things are added.
+      </p>
+      <ul>
+        <li>
+          <strong>The layout inside,</strong>
+          as settled: drawing in the corner, name, prose, figures along the
+          bottom.
+        </li>
+        <li>
+          <strong>Fitted:</strong>
+          the brackets stay lit lime and a lime bar closes the bottom of the
+          card. There is no word.
+        </li>
+        <li>
+          <strong>The hatched band,</strong>
+          in the colour of the button's edge. A button's edge is its brackets,
+          so the band is dim at rest and lights with them.
+        </li>
+      </ul>
+      <p>
+        An unsanctioned part still fitted with Playground off is the fitted card
+        in red: brackets, bar and band.
+      </p>
+      <PartRows0215 client:load />
+      <p>
+        The lists and what a press does are the same as in 02.14. The cards
+        stand on the page's black, where a button's pane is the second surface
+        step.
+      </p>
+    </details>
+  </section>
+  <section>
+    <h3>What 02.15 showed</h3>
+    <p>
+      A list of buttons does not work. When every card is a raised button the
+      tool looks like a web game from the early 2000s, where everything was a
+      button. Two parts of the button did hold up: the bracketed edge and the
+      cut corner. The open question is whether a card can keep those without
+      being a button.
+    </p>
+  </section>
+  <section>
+    <details id="edge">
+      <summary>02.16 / The button's edge without its body</summary>
+
+      <p>
+        The same cards as 02.15, with two changes. They stand on a pane at the
+        first surface step, which is where they will be in the Hangar. And they
+        have no fill of their own. The pane shows through each card, and only
+        the cut shape and the brackets at its ends mark it.
+      </p>
+      <p>
+        Nothing else is different. A pointer or keyboard focus lights the
+        brackets, and holding tints the card. Fitted keeps its lit brackets and
+        lime bar. The hatched band takes the bracket colour.
+      </p>
+      <PartRows0216 client:load />
+    </details>
+  </section>
+  <section>
+    <h3>What 02.16 showed</h3>
+    <p>
+      The card without a fill, on its pane, with a cut shape and brackets, is
+      close. Four things were wrong: the cards stood too near each other, the
+      bar along the bottom of the fitted card looked like web design, the
+      hatched band was too narrow, and the part that has to come off needed more
+      than red lines.
+    </p>
+  </section>
+  <section>
+    <details id="close">
+      <summary>02.17 / Four corrections</summary>
+
+      <ul>
+        <li>
+          <strong>The gap</strong>
+          between cards is 8 pixels, as between buttons in a vertical group.
+        </li>
+        <li>
+          <strong>The fitted card</strong>
+          stands on black, as the fitted row does in the Hangar today, with its
+          brackets lit. No card has a bar along its bottom.
+        </li>
+        <li>
+          <strong>The hatched band</strong>
+          is as wide as the card's corner cut, 10 pixels.
+        </li>
+        <li>
+          <strong>The part that has to come off</strong>
+          has a faint red tint behind it, with red brackets and a red band.
+        </li>
+      </ul>
+      <PartRows0217 client:load />
+    </details>
+  </section>
+  <section>
+    <h3>What 02.17 showed</h3>
+    <p>
+      The card is nearly there. Three things came out of using it. A slot needs
+      a way to be emptied from the list itself. A change of state should not
+      snap. And the hypothesis from section 01 failed: with Playground off,
+      pressing another part made the unsanctioned one vanish from the list,
+      which looks wrong. Unsanctioned parts have to stay listed and be
+      unavailable, placed under the sanctioned ones.
+    </p>
+  </section>
+  <section>
+    <h2 id="empty">02.18 / Keep empty, a fade, and parts that stay listed</h2>
+    <ul>
+      <li>
+        <strong>Keep empty.</strong>
+        The list opens with a short card that holds the words Keep empty, in the
+        type of a part's name, with no drawing. Pressing it empties the slot.
+        When the slot is empty, this card is the fitted one.
+      </li>
+      <li>
+        <strong>A fade.</strong>
+        When a card becomes fitted or stops being fitted, its black ground and
+        its brackets fade over the same short time the game's buttons use.
+      </li>
+      <li>
+        <strong>Unsanctioned parts stay listed.</strong>
+        They come after the sanctioned parts. With Playground off they cannot be
+        pressed. The whole card is faded to a quarter of its strength, band
+        included, and a pointer does nothing. Nothing in the card is turned
+        grey.
+      </li>
+    </ul>
+    <PartRows0218 client:load />
+    <p>
+      In the third list, press another part: the Rail gun stops being red and
+      stays in the list, unavailable, beside the Laser. A slot that cannot be
+      left empty, such as a required engine, would have no Keep empty card; that
+      is not shown here.
+    </p>
+  </section>
+  <section>
+    <h3>What 02.18 settled</h3>
+    <p>
+      The card in 02.18 is the result of the exploration. One more thing is
+      fixed with it: the card is always 300 pixels wide. It does not stretch or
+      shrink with the window. Where the Hangar is short of width, as on an iPad
+      in landscape, the estimates column narrows; the card and the ship chooser
+      keep their sizes.
+    </p>
+  </section>
+  <section>
+    <h2 id="readiness">03 / What the Hangar has, and what it lacks</h2>
+    <p>
+      This part compares the card in 02.18 with the Hangar as it is built today,
+      for delivery in 0.6.
+    </p>
+    <h3>Already there</h3>
+    <ul>
+      <li>
+        Which parts a slot accepts, fitting on a press, linked slots and
+        required engines. None of this changes.
+      </li>
+      <li>
+        The shared button rules. They give the card its cut shape, its brackets,
+        what happens under a pointer, on focus and when held, and the timing of
+        the fade.
+      </li>
+      <li>
+        Each part's class, sanctioned or unsanctioned, and each part's drawing.
+      </li>
+      <li>The parts pane, which already stands at the first surface step.</li>
+    </ul>
+    <h3>Has to change</h3>
+    <ul>
+      <li>
+        <strong
+          >The row is built inside the Hangar's one large component,</strong
+        >
+        markup and styles together. The card needs to be a component of its own.
+      </li>
+      <li>
+        <strong>Two shared button rules do not suit the card:</strong>
+        the pane behind a button, and the lime bar under a pressed button. The
+        examples switch them off locally. The game needs a stated way to do
+        that.
+      </li>
+      <li>
+        <strong>The figures.</strong>
+        The Hangar writes most of them as fixed text, and one of those texts
+        disagrees with the game's data. The examples compute them. That
+        computing has to live with the game's rules, and Loading coil and
+        Gravity coil need a figure in the data; today they have only mass.
+      </li>
+      <li>
+        <strong>The prose.</strong>
+        The catalog's descriptions are long and some repeat the figures. Twelve
+        short lines replace them.
+      </li>
+      <li>
+        <strong>The order.</strong>
+        The catalog mixes the classes. The list has to put sanctioned parts
+        first.
+      </li>
+      <li>
+        <strong>Emptying a slot.</strong>
+        Keep empty replaces the Remove fitting button under the list. One
+        browser test presses that button by name.
+      </li>
+      <li>
+        <strong>The caption.</strong>
+        The word Unsanctioned on the row goes; the band says it. The same marker
+        component is still used on a Lab page.
+      </li>
+      <li>
+        <strong>The column.</strong>
+        The Hangar's three columns are flexible: the ship column is at least 360
+        pixels, the parts column at least 250, the estimates at least 270, with
+        20 between. For a 300 pixel card the parts column has to be fixed at
+        342. The three then need 1012 pixels at their narrowest. The page keeps
+        36 pixels on each side, so a window 1024 wide, an iPad in landscape,
+        leaves the columns 952. The estimates column has to give up at least 60
+        pixels there, or fold away.
+      </li>
+    </ul>
+    <h3>Missing</h3>
+    <ul>
+      <li>
+        <strong>Icons.</strong>
+        The seven icons in the examples are placeholders. The game has none for
+        mass, thrust, energy, cruise ceiling, damage, reach or capacity.
+      </li>
+      <li>
+        <strong>Approved words.</strong>
+        The twelve lines of prose are drafts, and the game's tone of voice is
+        not decided.
+      </li>
+    </ul>
+    <h3>Still open</h3>
+    <ul>
+      <li>
+        A pointer and the fitted state both light the brackets. Only the black
+        ground tells them apart.
+      </li>
+      <li>
+        Keyboard and touch were not tried on the card. Whether an unavailable
+        card can take keyboard focus is not decided.
+      </li>
+      <li>
+        The slot on the ship has to show the same states. That is the
+        <a href="/lab/studies/ship-slots-2026-11-11">ship-slots study</a>.
+      </li>
+      <li>
+        The faded card means unsanctioned with Playground off. A part the player
+        has no schematic for will need a look of its own later.
+      </li>
+      <li>Three parts have no drawing, so their corner is empty.</li>
+    </ul>
+    <p>
+      Nothing here blocks delivery in 0.6. The icons and the prose can ship as
+      provisional and be replaced.
+    </p>
+  </section>
+  <section>
+    <h2 id="scope">04 / The work, in slices</h2>
+    <aside class="nb">
+      <h3>Design principles</h3>
+      <p>
+        This study proposes no change to <code>docs/design.md</code>. The
+        hatched band and the card belong in the design system's and the Hangar's
+        specs.
+      </p>
+    </aside>
+    <p>
+      The reference for all of it is the example in
+      <a href="#empty">02.18</a>
+      at 300 pixels wide. Each slice can be delivered by itself, in this order.
     </p>
     <div class="terms">
       <table>
         <thead>
           <tr>
-            <th scope="col">The thing</th>
-            <th scope="col">The game says today</th>
-            <th scope="col">Specs, plan and code say</th>
-            <th scope="col">After review, 11 November 2026</th>
+            <th scope="col">Slice</th>
+            <th scope="col">What it does</th>
+            <th scope="col">Size and what it needs</th>
+            <th scope="col">How to check it</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <th scope="row" class="thing">
-              The place on a ship where a part goes
-            </th>
+            <th scope="row" class="thing">1 / The hatched band</th>
             <td>
-              Mount: “Selected mount”, “Fixed mounts”. Slot: “3 slots” on a ship
-              tab, “Required propulsion slot”, “under-wing equipment slots”.
+              Write the rule into the design system's spec and give the shared
+              styles one way to draw it: as wide as the corner cut, in the
+              colour of the thing's edge.
             </td>
-            <td>
-              Specs say mount about four times as often as slot. Code has both:
-              the mount record, and the slot types and slot overlay. The
-              accepted study is “Ship slots”.
-            </td>
-            <td>Settled: slot</td>
-          </tr>
-          <tr>
-            <th scope="row" class="thing">What a slot accepts</th>
-            <td>
-              On the ship: Engines, Weapons, Support, Equipment, Universal, with
-              the letters E, W, S, Q and +. In the pane's heading: “Engine”,
-              “Equipment”, “Universal”, “mirrored E”, “Engine pair”, “Weapon /
-              support”.
-            </td>
-            <td>Slot type: engine, weapon, support, equipment, universal.</td>
-            <td>
-              Settled: slot type. Engine, Weapon and Support each take one kind.
-              Hardpoint takes a weapon or a support part; Equipment is dropped.
-              Universal takes any part.
+            <td class="plain">Small. Nothing first.</td>
+            <td class="plain">
+              The design system's Lab page shows the band on a dim, a lit and a
+              red edge, and it follows the edge when that changes.
             </td>
           </tr>
           <tr>
-            <th scope="row" class="thing">The thing that is fitted</th>
+            <th scope="row" class="thing">2 / Key figures</th>
             <td>
-              Part: “Every installed part adds mass”. Also fitting: “Remove
-              fitting”, “Static fitting”, “weapon/support fittings”.
+              Move the computing of a part's figures into the game's rules
+              package. Give Loading coil and Gravity coil a figure in the data.
+              Remove the fixed figure text from the Hangar.
             </td>
-            <td>Part, throughout.</td>
-            <td>Settled: part, or ship part in full</td>
-          </tr>
-          <tr>
-            <th scope="row" class="thing">The kind of part</th>
-            <td>A letter on the row: E, G or U. No words.</td>
-            <td>
-              Parts spec: engine, weapon, support. Code: categories E, G and U.
-              The 0.6 plan lists the support parts under “Equipment”.
+            <td class="plain">
+              Small to medium. Nothing first. Changes the parts spec.
             </td>
-            <td>Settled: engine, weapon, support</td>
-          </tr>
-          <tr>
-            <th scope="row" class="thing">A part being in a slot</th>
-            <td>
-              “Fitted” on the row. “Installed” and “fittings” in the ship's
-              description.
-            </td>
-            <td>Specs: fit, fitted, empty. Code: install, installed.</td>
-            <td>Settled: fitted. A part is fitted to a slot, and removed.</td>
-          </tr>
-          <tr>
-            <th scope="row" class="thing">Everything fitted to one ship</th>
-            <td>
-              “Setup”: “your active setup”, “this setup requires Playground”.
-              “Build”: “Unsanctioned build”.
-            </td>
-            <td>
-              Specs: fitting, and setup for the ship with its fitting. Code:
-              loadout and build. The saved score has a field named fitting. The
-              0.6 plan marks “fitting” a placeholder.
-            </td>
-            <td>
-              Settled: three words. The ship is the body, the fitting is the
-              parts on it, and the build is the two together. Setup and loadout
-              go. One part is never “a fitting”.
+            <td class="plain">
+              A weapon's figures come from the same values its firing uses. No
+              figure is written as text anywhere.
             </td>
           </tr>
           <tr>
-            <th scope="row" class="thing">The ship as a body</th>
+            <th scope="row" class="thing">3 / Prose</th>
             <td>
-              Ship. Hull appears for the hit points, for “Hull base” speed and
-              for “Hull 1” slots.
+              Replace the catalog's twelve descriptions with two-line prose that
+              carries no figure.
             </td>
-            <td>
-              Specs: ship and hull. Code and one Hangar spec line: chassis.
+            <td class="plain">
+              Small. Needs the words reviewed. Changes the parts spec, which
+              today asks for a description that states what the part does.
             </td>
-            <td>Settled: ship. Chassis is unwanted in code too.</td>
-          </tr>
-          <tr>
-            <th scope="row" class="thing">The ship that will fly</th>
-            <td>Not named on screen.</td>
-            <td>Active ship, chosen 10 November 2026.</td>
-            <td>Settled: active ship</td>
-          </tr>
-          <tr>
-            <th scope="row" class="thing">The setting</th>
-            <td>Playground, Off or On.</td>
-            <td>
-              Playground, chosen 11 November 2026. Code, the stored key and the
-              spec's folder still say experimental.
-            </td>
-            <td>Settled: Playground</td>
-          </tr>
-          <tr>
-            <th scope="row" class="thing">The two classes of ship and part</th>
-            <td>
-              “Unsanctioned” on a part, since today. “Unsanctioned build” on the
-              title screen.
-            </td>
-            <td>
-              Specs: stable and experimental, marked as placeholders; also
-              eligible and excluded. Code: scored and preview. This study:
-              sanctioned and unsanctioned.
-            </td>
-            <td>
-              Sanctioned and unsanctioned, for the rules of ranked play only.
-              See below.
+            <td class="plain">
+              Every line fits two lines on a 300 pixel card. None contains a
+              number.
             </td>
           </tr>
           <tr>
-            <th scope="row" class="thing">
-              An unsanctioned part fitted with Playground off
-            </th>
+            <th scope="row" class="thing">4 / The card</th>
             <td>
-              Title: “Unsanctioned build / Playground required”. Flight: “this
-              setup requires Playground”.
+              Build the card as its own Hangar component with its states:
+              available, fitted, unsanctioned, has to come off, unavailable. Add
+              Keep empty and remove the Remove fitting button. List sanctioned
+              parts first. Remove the caption from the row.
             </td>
-            <td>No word. This study's working word is forbidden.</td>
-            <td>
-              Settled: no new word. Not “forbidden”. The game's present wording
-              for ranked play stands.
+            <td class="plain">
+              Medium to large. Needs slices 1 and 2; works with today's
+              descriptions until 3. Changes the Hangar and Playground specs, and
+              the design system's where the two button rules are concerned.
+            </td>
+            <td class="plain">
+              Side by side with 02.18 at 300 wide, state by state. The Hangar's
+              browser tests pass, with the one that presses Remove fitting
+              rewritten for Keep empty. Keyboard and iPad touch are tried.
             </td>
           </tr>
           <tr>
-            <th scope="row" class="thing">Whether a run counts</th>
+            <th scope="row" class="thing">5 / The columns</th>
             <td>
-              Scoring: “Scoring off”, “Top scores”, “Save score”. Ranking:
-              “Survival is ranked”, “Unranked play”, “Unranked”.
+              Fix the parts column so the card is 300 pixels wide at every
+              window size. Let the estimates column narrow, and decide what it
+              does on an iPad in landscape.
             </td>
-            <td>Specs use both: a run is scored, and ranked on the board.</td>
-            <td>Settled: ranked, unranked</td>
+            <td class="plain">
+              Small to medium. Best with slice 4. Changes the Hangar spec.
+            </td>
+            <td class="plain">
+              The card measures 300 at 1280 wide and at 1024 wide. Nothing in
+              the Hangar scrolls sideways.
+            </td>
           </tr>
           <tr>
-            <th scope="row" class="thing">Two slots that change together</th>
+            <th scope="row" class="thing">6 / Icons</th>
             <td>
-              “Mirrored pair”, “Engine pair”, “linked”. “Linked engines” is also
-              the name of a different setting.
+              Draw the seven icons for the figures and replace the placeholders.
             </td>
-            <td>
-              Mirrored pair, linked mount; Linked engines for the setting.
+            <td class="plain">
+              Design work first, then small. Can follow the release; the
+              placeholders stay until then.
             </td>
-            <td>
-              Settled: linked slots, never mirrored. There may be more than two,
-              and they always hold the same part.
+            <td class="plain">
+              Each icon is told from the others at 10 pixels.
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-    <h3>Two reasons a part cannot be fitted</h3>
-    <p>
-      Sanctioned and unsanctioned say one thing: whether the rules of ranked
-      play admit a ship or a part. A second reason is expected later and must
-      not share those words. A player may not have the schematic for a part or a
-      ship. A sanctioned part without its schematic still cannot be fitted for
-      ranked play. The working words for that second axis are available and
-      unavailable, to the player. Nothing in 0.6 builds it; the words are
-      reserved so that the marks chosen here do not have to change.
-    </p>
-    <p>
-      This bears on the tool now. The hatched band means unsanctioned for now.
-      Whether it later also covers parts flown in Playground without their
-      schematic, or those get another colour, is left for then. The Playground
-      spec and the ship tabs use “unavailable” for an unsanctioned ship or part
-      with Playground off, which is the word the second axis needs.
-    </p>
-    <p>Where one word means two things:</p>
+    <p>Not part of this work:</p>
     <ul>
       <li>
-        <strong>Equipment</strong>
-        is a slot type that accepts weapons and support parts, and in the 0.6
-        plan it is the support parts themselves.
+        Changing the words on screen to the settled terms, such as mount to
+        slot.
       </li>
-      <li>
-        <strong>Fitting</strong>
-        is one fitted part (“Remove fitting”) and everything fitted to a ship.
-      </li>
-      <li>
-        <strong>Hull</strong>
-        is the ship's hit points, the ship's body in the speed figures, and a
-        group of slots.
-      </li>
-      <li>
-        <strong>Linked</strong>
-        covers two things on purpose. Linked slots hold the same part: fitting
-        one fits the others. Linked engines fire together. Both are connections
-        between places on the ship, and both are to be drawn as lines on the
-        ship drawing.
-      </li>
+      <li>How the slot on the ship shows these states.</li>
+      <li>Schematics, and the look of a part the player does not have.</li>
+      <li>The game's tone of voice.</li>
     </ul>
     <p>
-      Smaller things seen on the way: part names are not cased alike (“Light
-      ion”, “Light Ion Cannon”), and Practice is called test in code and in its
-      spec's folder. Names of parts, ships and modes were not otherwise
-      reviewed.
+      This scope sizes the work. It does not start it; building it needs its own
+      go-ahead.
     </p>
   </section>
-  <section>
-    <h2 id="band">02.6 / Today's row, with the band and nothing else</h2>
-    <p>
-      The smallest step: take the row exactly as the Hangar draws it and add the
-      one mark that has held up, the hatched band, to unsanctioned parts. The
-      band fills the row's existing right padding, so nothing in the row moves.
-      Both columns show what a Hardpoint slot offers with Playground on.
-    </p>
-    <PartRows026 client:load />
-    <p>This round can settle one thing and show one more.</p>
-    <ul>
-      <li>
-        <strong>Settle:</strong>
-        whether the band works on the row as it is. If it does, the unsanctioned
-        mark is done and can go into the Hangar without waiting for anything
-        else.
-      </li>
-      <li>
-        <strong>Show:</strong>
-        what else in today's row now looks wrong beside it. That is the list of
-        amendments still owed, and it should be short. The first candidate is
-        the “Unsanctioned” caption, which the band may make unnecessary or may
-        need as its explanation.
-      </li>
-    </ul>
-    <p>
-      The rows are copies of the Hangar's, not the Hangar. They react to a
-      pointer and do nothing when pressed. Fitted, and a forbidden part, are
-      untouched here on purpose.
-    </p>
-  </section>
-  <section><h2>03 / To be developed after 02</h2></section>
 </StudyLayout>
 <style>
 dl {
@@ -676,10 +1805,18 @@ dd {
   width: 16%;
   font-weight: var(--font-weight-bold);
 }
+.terms td.draft {
+  color: var(--color-text);
+}
 .terms td:last-child {
   width: 20%;
   color: var(--color-text);
   font-weight: var(--font-weight-bold);
+}
+.terms td.plain {
+  width: auto;
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-regular);
 }
 .stamp {
   box-sizing: border-box;

@@ -22,7 +22,7 @@ test("Gravity coil fits, persists and flies separately from solar Loading coil",
     .getByRole("button", { name: "Hull 1 · Equipment: Empty", exact: true })
     .click();
   const part = page.getByRole("button", { name: /^Gravity coil/ });
-  await expect(part).toContainText(PARTS["gravity-coil"].description);
+  await expect(part).toContainText(PARTS["gravity-coil"].fluff);
   await part.click();
   await page
     .getByRole("button", { name: "Aft 1 · Universal: Empty", exact: true })
@@ -64,9 +64,7 @@ test("Gravity coil fits, persists and flies separately from solar Loading coil",
       exact: true,
     })
     .click();
-  await page
-    .getByRole("button", { name: "Remove fitting", exact: true })
-    .click();
+  await page.getByRole("button", { name: "Keep empty", exact: true }).click();
   await expect(
     page.getByRole("button", {
       name: "Hull 1 · Equipment: Empty",

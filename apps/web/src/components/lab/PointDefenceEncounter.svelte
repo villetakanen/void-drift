@@ -105,10 +105,11 @@ onMount(() => {
     };
     if (scenario === "switch") {
       // Retained fragment beyond reach; a wreck closes in until it is 10 units closer.
-      body(101, "fragment", -60, 135);
-      body(102, "wreck", 70, 200, 30, 70);
+      body(101, "fragment", -60, POINT_DEFENCE.reach + 35);
+      body(102, "wreck", 70, POINT_DEFENCE.reach + 100, 30, 70);
     } else if (scenario === "reach") {
-      body(101, "wreck", 135, 165);
+      // The fitted hull extends towards the pivot: keep its surface beyond reach.
+      body(101, "wreck", 135, POINT_DEFENCE.trackingRange);
     } else if (scenario === "first-contact") {
       // The near wreck stops every ray; the wreck behind it on the same line is untouched.
       body(101, "wreck", 30, 45);
@@ -151,7 +152,7 @@ onMount(() => {
     const salvage = sim.salvage;
     const turret = salvage?.weapons.find((w) => w.kind === "ion-point-defence");
     if (turret) {
-      // Lab guides: 100-unit reach and 200-unit tracking range about the pivot.
+      // Lab guides use the production reach and tracking range about the pivot.
       const pivot = weaponPose(sim.ship, turret.mount, turret.angle);
       ctx.save();
       ctx.strokeStyle = "#437e99";
@@ -292,7 +293,8 @@ onMount(() => {
     {seconds.toFixed(2)}
     s · {shots} discharges · {hits} hits · {spent.toFixed(1)}p spent · target
     {target || "none"}
-    · 50-unit grid; dashed rings mark 100-unit reach and 200-unit tracking
+    · 50-unit grid; dashed rings mark {POINT_DEFENCE.reach}-unit reach and
+    {POINT_DEFENCE.trackingRange}-unit tracking
   </p>
   <canvas
     bind:this={canvas}

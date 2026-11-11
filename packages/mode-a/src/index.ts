@@ -19,6 +19,7 @@ export * from "./lib/gravity-fold-fx";
 export * from "./lib/ion-cannon-art";
 export * from "./lib/landing-system";
 export * from "./lib/mount-planner";
+export * from "./lib/part-figures";
 export * from "./lib/point-defence-art";
 export * from "./lib/potential-well-art";
 export * from "./lib/salvage";

@@ -103,7 +103,7 @@ Playground On, a ship carrying only sanctioned parts still flies an unscored run
   Hangar with unavailable ship tabs and marked parts, and cannot be selected or fitted by
   pointer or keyboard.
 - E4: Turning Playground Off with unsanctioned content in the active
-  build leaves that content in place, marked and disabled, and makes every
+  build leaves that content in place, marked and unable to be fitted again, and makes every
   flight launch unavailable from the title screen and the Hangar.
 - E5: In that state the title screen explains why launch is unavailable and
   offers the Hangar; choosing a sanctioned ship with only sanctioned parts, or
@@ -214,3 +214,8 @@ Feature: Playground
 
 - **Marker:** how an unsanctioned part is marked in the Hangar, explored in
   the [part-rows study](../../../../apps/web/src/pages/lab/studies/part-rows-2026-11-11.astro).
+
+The Hangar keeps unsanctioned parts after sanctioned parts. Unfitted parts
+with Playground Off fade to quarter strength; a forbidden fitted part instead
+keeps a red frame, a faint red fill and the sanction band until removed or
+replaced. The [Hangar contract](../hangar/spec.md) defines the card states.

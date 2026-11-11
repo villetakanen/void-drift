@@ -2,9 +2,10 @@
 // Part rows study, 02.6: today's row with one change. Both columns copy the
 // Hangar's part row as it is: its markup order, its styles, its texts and the
 // marker component. The right column adds the hatched band in the row's
-// existing right padding on unsanctioned parts, and nothing else. The list is
-// what a Hardpoint slot offers with Playground on, with the Light Ion Cannon
-// fitted. Fixture: the rows respond to a pointer and do nothing when pressed.
+// existing right padding on unsanctioned parts, in the colour of the row's
+// border, and nothing else. The list is
+// the four weapons as a slot offers them with Playground on, with the Light
+// Ion Cannon fitted. Fixture: the rows respond to a pointer and do nothing when pressed.
 import { PARTS, type PartId, WEAPONS } from "@void-drift/mode-a";
 import PreviewMarker from "../PreviewMarker.svelte";
 import PartDrawing from "./PartDrawing.svelte";
@@ -42,7 +43,7 @@ function figures(id: PartId) {
             class:band={band && part.releaseClass === "preview"}
             aria-pressed={id === fitted}
           >
-            <span class="art"><PartDrawing {id} /></span>
+            <PartDrawing {id} />
             <span class="part-name"
               >{part.name}<small
                 >{id === fitted ? "FITTED" : part.category}</small
@@ -85,7 +86,8 @@ h4 {
   text-align: left;
   background: transparent;
   color: inherit;
-  border: 1px solid var(--color-border-subtle);
+  --_edge: var(--color-border-subtle);
+  border: 1px solid var(--_edge);
   padding: 14px;
   cursor: pointer;
   display: grid;
@@ -94,7 +96,7 @@ h4 {
 }
 .part:hover,
 .part.installed {
-  border-color: var(--color-selected);
+  --_edge: var(--color-selected);
 }
 .part.installed {
   background: var(--color-void);
@@ -112,16 +114,12 @@ h4 {
 .part-name small {
   color: var(--color-text-muted);
 }
-.art {
-  display: block;
+.part > :global(svg) {
   width: 72px;
   height: 56px;
 }
-.art :global(svg) {
-  width: 72px;
-  height: 56px;
-}
-/* The one change: the band fills the row's existing 14px right padding. */
+/* The one change: the band fills the row's existing 14px right padding, in
+   the colour of the row's border, whatever that is at the moment. */
 .part.band {
   position: relative;
 }
@@ -132,7 +130,7 @@ h4 {
   width: 14px;
   background: repeating-linear-gradient(
     -45deg,
-    var(--color-text-muted) 0 2px,
+    var(--_edge) 0 2px,
     transparent 2px 6px
   );
 }

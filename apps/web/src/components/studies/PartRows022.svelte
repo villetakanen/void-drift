@@ -1,4 +1,6 @@
 <script lang="ts">
+let _props: { "client:load"?: boolean } = $props();
+
 // Part rows study, 02.2: the list as one display on a console. Rows are lines
 // of the list, not separate buttons. The drawing leaves the row for a readout
 // above the list, which shows the line under the pointer or focus and falls
@@ -154,7 +156,9 @@ function reset() {
                 class:forbidden
                 aria-pressed={isFitted}
                 aria-disabled={forbidden ? "true" : undefined}
-                aria-description={unsanctioned ? "Unsanctioned" : undefined}
+                aria-label={unsanctioned
+                  ? `${part.name}, Unsanctioned`
+                  : undefined}
                 onpointerenter={() => {
                   peek[entry.id] = part.id;
                 }}

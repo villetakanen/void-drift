@@ -1,3 +1,4 @@
+import { POINT_DEFENCE } from "../../packages/mode-a/src/lib/schemas/salvage";
 import { chooseShip, enablePreviewContent } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 
@@ -21,11 +22,16 @@ test("genuine turret is offered in compatible slots only, persists and launches 
   ).toHaveCount(0);
   await page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }).click();
   const turret = page.getByRole("button", { name: /^Ion Point Defence\b/ });
-  await expect(turret).toContainText("8–24 damage/s");
-  await expect(turret).toContainText("3 shots/s");
-  await expect(turret).toContainText("100 units");
-  await expect(turret).toContainText("0.1p/shot");
-  await expect(turret).toContainText("10 mass");
+  await expect(
+    turret.getByTitle("damage per second", { exact: true }),
+  ).toContainText(
+    `${Math.round(Math.min(...POINT_DEFENCE.bands) / POINT_DEFENCE.cooldown)}–${Math.round(Math.max(...POINT_DEFENCE.bands) / POINT_DEFENCE.cooldown)}/s`,
+  );
+  await expect(turret.getByTitle("reach in units")).toHaveText(
+    "reach in units200",
+  );
+  await expect(turret).toContainText("0.3/s");
+  await expect(turret).toContainText("mass10");
   await expect(turret.locator("svg circle")).toHaveCount(2);
   await turret.click();
   await page.getByRole("button", { name: "Aft 1 · Universal: Empty" }).click();
@@ -124,7 +130,7 @@ for (const path of [
     expect(Number(await scene.getAttribute("data-shots"))).toBeGreaterThan(0);
   });
 
-test("turret LFX follows the current muzzle and heading, keeps its 100-unit profile and never changes gameplay", async ({
+test("turret LFX follows the current muzzle and heading, keeps its production range profile and never changes gameplay", async ({
   page,
 }, testInfo) => {
   await page.goto("/lab/fx");
@@ -136,6 +142,7 @@ test("turret LFX follows the current muzzle and heading, keeps its 100-unit prof
       weaponPose,
       FlightFx,
       WeaponEventSchema,
+      POINT_DEFENCE,
     } = await import(path);
     const loadout = defaultLoadout("scout");
     loadout.hull[0] = "ion-point-defence";
@@ -157,11 +164,11 @@ test("turret LFX follows the current muzzle and heading, keeps its 100-unit prof
         kind: "point-defence",
         id: 1,
         mountKey: weapon.mount.key,
-        distance: 100,
+        distance: POINT_DEFENCE.reach,
         time: 0,
         x: 200,
         y: 200,
-        endX: 300,
+        endX: 200 + POINT_DEFENCE.reach,
         endY: 200,
       }),
     );
@@ -211,10 +218,10 @@ test("turret LFX follows the current muzzle and heading, keeps its 100-unit prof
     };
     const p = weaponPose(sim.ship, weapon.mount, weapon.angle);
     render();
-    // Light leaves the muzzle under the hull; the 100-unit profile ends before 100 units.
+    // Light leaves the muzzle under the hull and ends at the production reach.
     const attached = along(p, 20);
-    const beyond = along(p, 110);
-    const tip = { near: peak(p, 20), end: peak(p, 95) };
+    const beyond = along(p, POINT_DEFENCE.reach + 10);
+    const tip = { near: peak(p, 20), end: peak(p, POINT_DEFENCE.reach - 5) };
     const first = ctx.getImageData(0, 0, 512, 512).data.slice();
     render();
     const second = ctx.getImageData(0, 0, 512, 512).data;
@@ -237,8 +244,8 @@ test("turret LFX follows the current muzzle and heading, keeps its 100-unit prof
       .getImageData(0, 0, 512, 512)
       .data.some((v: number) => v > 0);
     weapon.angle = 0;
-    // A cannon discharge clipped at the same 100 units keeps its 200-unit
-    // profile, which is still bright where the turret profile fades to its tip.
+    // A cannon clipped at turret reach retains its longer production profile,
+    // which is still bright where the turret profile fades to its tip.
     const gunLoadout = defaultLoadout("scout");
     gunLoadout.hull[0] = "light-ion-cannon";
     const gun = new Simulation({
@@ -261,18 +268,21 @@ test("turret LFX follows the current muzzle and heading, keeps its 100-unit prof
         kind: "ion-cannon",
         id: 1,
         mountKey: cannon.mount.key,
-        distance: 100,
+        distance: POINT_DEFENCE.reach,
         time: 0,
         x: 200,
         y: 200,
-        endX: 300,
+        endX: 200 + POINT_DEFENCE.reach,
         endY: 200,
       }),
     );
     ctx.clearRect(0, 0, 512, 512);
     new FlightFx().drawLfx(ctx, gun);
     const c = weaponPose(gun.ship, cannon.mount);
-    const clipped = { near: peak(c, 20), end: peak(c, 95) };
+    const clipped = {
+      near: peak(c, 20),
+      end: peak(c, POINT_DEFENCE.reach - 5),
+    };
     return {
       tip,
       clipped,
@@ -288,7 +298,7 @@ test("turret LFX follows the current muzzle and heading, keeps its 100-unit prof
   }, modeA(testInfo.project.testDir));
   expect(result.attached).toBeGreaterThan(0);
   expect(result.beyond).toBe(0);
-  // Near its 100-unit end the turret's own transparent tip is dimmer, relative
+  // Near its end the turret's own transparent tip is dimmer, relative
   // to its body, than a cannon profile clipped at the same distance.
   expect(result.tip.near).toBeGreaterThan(0);
   expect(result.clipped.near).toBeGreaterThan(0);

@@ -13,13 +13,13 @@ export const WeaponEventSchema = z.discriminatedUnion("kind", [
     ...EventFields,
     kind: z.literal("ion-cannon"),
     mountKey: z.string(),
-    distance: z.number().min(0).max(200),
+    distance: z.number().min(0).max(300),
   }),
   z.object({
     ...EventFields,
     kind: z.literal("point-defence"),
     mountKey: z.string(),
-    distance: z.number().min(0).max(100),
+    distance: z.number().min(0).max(200),
   }),
   z.object({ ...EventFields, kind: z.literal("rail") }),
   z.object({ ...EventFields, kind: z.literal("laser") }),
@@ -93,7 +93,7 @@ const ShotSchema = z.object({
 });
 export const IonCannonSchema = z.object({
   trigger: z.literal("ship-width-rectangle"),
-  range: z.literal(200),
+  range: z.literal(300),
   cooldown: z.number().positive(),
   energy: z.literal(0.2),
   bands: z.tuple([z.literal(16), z.literal(12), z.literal(8), z.literal(4)]),
@@ -102,7 +102,7 @@ export const IonCannonSchema = z.object({
 });
 export const ION_CANNON = IonCannonSchema.parse({
   trigger: "ship-width-rectangle",
-  range: 200,
+  range: 300,
   cooldown: 1 / 3,
   energy: 0.2,
   bands: [16, 12, 8, 4],
@@ -112,12 +112,14 @@ export const ION_CANNON = IonCannonSchema.parse({
 export function ionCannonDamage(distance: number) {
   if (!Number.isFinite(distance) || distance < 0 || distance > ION_CANNON.range)
     return 0;
-  return ION_CANNON.bands[Math.min(3, Math.floor(distance / 50))];
+  return ION_CANNON.bands[
+    Math.min(3, Math.floor(distance / (ION_CANNON.range / 4)))
+  ];
 }
 /** Ion Point Defence: closest-target turret with the cannon's instant ray family. */
 export const PointDefenceSchema = z.object({
-  reach: z.literal(100),
-  trackingRange: z.literal(200),
+  reach: z.literal(200),
+  trackingRange: z.literal(300),
   /** Radians per second. */
   turnRate: z.literal(Math.PI),
   /** Radians either side of the aim point's bearing. */
@@ -130,8 +132,8 @@ export const PointDefenceSchema = z.object({
   dispersal: z.literal(ION_CANNON.dispersal),
 });
 export const POINT_DEFENCE = PointDefenceSchema.parse({
-  reach: 100,
-  trackingRange: 200,
+  reach: 200,
+  trackingRange: 300,
   turnRate: Math.PI,
   tolerance: (2 * Math.PI) / 180,
   cooldown: 1 / 3,
@@ -246,14 +248,14 @@ export type EncounterConfig = z.infer<typeof EncounterConfigSchema>;
 /** Derelicts mode: more and faster derelicts, for development and fun. */
 export const ENCOUNTER = EncounterConfigSchema.parse({
   firstPass: { min: 3, max: 3 },
-  intervalMin: 6,
-  intervalMax: 12,
+  intervalMin: 2,
+  intervalMax: 7,
   groups: 16,
   centerX: 960,
   centerY: 540,
   radius: 1200,
-  speedMin: 100,
-  speedMax: 500,
+  speedMin: 50,
+  speedMax: 400,
   headingSpread: Math.PI / 3,
   orientation: "random",
   wreckSpin: { rate: 0.3, direction: "fixed" },

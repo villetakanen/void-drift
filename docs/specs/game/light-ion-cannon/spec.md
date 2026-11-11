@@ -25,15 +25,15 @@ without a storage migration.
 
 ## Contract
 
-- An instant 200-unit ray fires at three shots/s from each ready cannon's own
+- An instant 300-unit ray fires at three shots/s from each ready cannon's own
   channel-tip muzzle along its fixed mount direction. There is no tracking or recoil.
-- Damage uses actual muzzle-to-first-contact distance: [0,50) → 16;
-  [50,100) → 12; [100,150) → 8; [150,200] → 4. Internal boundaries use the
-  lower-damage band; the 200 endpoint is included. No damage beyond 200.
-- The builder shows 12–48 damage/s per cannon, three shots/s, 200 units and
+- Damage uses actual muzzle-to-first-contact distance: [0,75) → 16;
+  [75,150) → 12; [150,225) → 8; [225,300] → 4. Internal boundaries use the
+  lower-damage band; the 300 endpoint is included. No damage beyond 300.
+- The builder shows 12–48 damage/s per cannon, three shots/s, 300 units and
   0.2p/shot. Continuous firing is 0.6p/s per cannon; idle fittings consume none.
 - A forward heading-aligned acquisition rectangle starts at the ship position and
-  extends 200 units. Its width is the chassis hull width at the shared 0.65 flight
+  extends 300 units. Its width is the chassis hull width at the shared 0.65 flight
   scale, centred laterally; boundary contact counts.
   Live wrecks and fragments use their actual shared polygon collision geometry;
   collectible energy is transparent to acquisition and rays. Star and planet
@@ -59,7 +59,7 @@ without a storage migration.
   obstruction. A moving target can shorten the visible line; leaving that line
   cannot extend it through the original hit. This presentation query does no damage.
 - Only the selected blue dispersal profile (65% core emission, softer core) stamps
-  into persistent FX. The complete blue profile retains its transparent 200-unit
+  into persistent FX. The complete blue profile retains its transparent 300-unit
   tip; a hit clips it rather than stretching it. Cached profiles avoid per-frame
   gradient creation. Existing shared decay, pause, camera and reset semantics apply.
 

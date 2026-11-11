@@ -8,8 +8,8 @@ test("genuine cannon installs, persists, removes and launches through Hangar", a
   await chooseShip(page, "Fighter");
   await page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }).click();
   const cannon = page.getByRole("button", { name: /^Light Ion Cannon\b/ });
-  await expect(cannon).toContainText("12–48 damage/s");
-  await expect(cannon.locator("svg path")).toHaveCount(8);
+  await expect(cannon).toContainText("12–48/s");
+  await expect(cannon.locator(".drawing svg path")).toHaveCount(8);
   await cannon.click();
   await page.getByRole("button", { name: "Hull 2 · Equipment: Empty" }).click();
   await cannon.click();
@@ -23,7 +23,7 @@ test("genuine cannon installs, persists, removes and launches through Hangar", a
   await page
     .getByRole("button", { name: "Hull 1 · Equipment: Light Ion Cannon" })
     .click();
-  await page.getByRole("button", { name: /Remove/ }).click();
+  await page.getByRole("button", { name: "Keep empty", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }),
   ).toBeVisible();

@@ -1,4 +1,6 @@
 <script lang="ts">
+let _props: { "client:load"?: boolean } = $props();
+
 // Part rows study, 02.1: the row as a console pane. Four part lists stand
 // side by side, each one case of the question. Parts, their classes, mass and
 // descriptions, the compatibility rule and the drawings are production.

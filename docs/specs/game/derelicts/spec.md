@@ -45,7 +45,9 @@ Derelicts is a mode of its own, as the [game contract](../spec.md) lists it.
   energy.
 - **Arrivals.** Derelicts arrive on their own at the system edge, often and
   fast, so that several are usually in the system at once, at a steady rate
-  that does not change as the run goes on. Their paths
+  that does not change as the run goes on. The first spawn is at 3 seconds;
+  later spawns are 2–7 seconds apart (4.5 seconds on average). Starting speeds
+  range from 50 to 400 world units per second. Their paths
   are set by the seed and never depend on where the player is or how they
   move. The number present at once is limited; an arrival that finds the limit
   reached is skipped, with no backlog.

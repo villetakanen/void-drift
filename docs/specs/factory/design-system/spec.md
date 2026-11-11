@@ -657,3 +657,12 @@ accepted reference is `/lab/studies/buttons-2026-11-11#whole`.
 **Coverage:** 100% of UI components
 
 Survival countdown uses Saira Stencil 700 outlines (SIL OFL), in Android green, as transient run-status information.
+
+### Part-choice frames and sanction marker
+
+The `btn-card` variant of a normal button keeps the cut shape, brackets,
+pointer, keyboard focus, held feedback and transitions, with a transparent
+resting body and no pressed underline. Its composed owner supplies the fitted
+or blocked fill. An `unsanctioned-band` is as wide as the button corner cut,
+uses the host's `--btn-edge`, and follows that edge through dim, lit and red
+states. `/lab/ds/actions` demonstrates these shared definitions.

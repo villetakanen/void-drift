@@ -16,6 +16,41 @@ const body = () => ({
 });
 
 describe("stabilizers", () => {
+  it("fires the Fighter bow jet on the commanded side and reinforces its turn", () => {
+    const build = { ...defaultLoadout("fighter"), stabilizers: true };
+    for (const side of ["left", "right"] as const) {
+      const input = { ...idle, [`${side}Thruster`]: true };
+      const assisted = { velocity: 0 };
+      const unassisted = { velocity: 0 };
+      const output = applyBuildEngines(
+        body(),
+        build,
+        input,
+        STEP / 4,
+        true,
+        {},
+        1,
+        assisted,
+      );
+      applyBuildEngines(
+        body(),
+        { ...build, stabilizers: false },
+        input,
+        STEP / 4,
+        true,
+        {},
+        1,
+        unassisted,
+      );
+      expect(output.stabilizers[side === "left" ? 0 : 1]).toBeGreaterThan(0);
+      expect(output.stabilizers[side === "left" ? 1 : 0]).toBe(0);
+      expect(Math.sign(assisted.velocity)).toBe(Math.sign(unassisted.velocity));
+      expect(Math.abs(assisted.velocity)).toBeGreaterThan(
+        Math.abs(unassisted.velocity),
+      );
+    }
+  });
+
   it("brake spin to rest without reversing it", () => {
     const build = { ...defaultLoadout("fighter"), stabilizers: true };
     const ship = body(),

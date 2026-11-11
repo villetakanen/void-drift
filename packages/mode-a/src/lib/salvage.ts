@@ -596,7 +596,7 @@ export class SalvageSystem {
     }
     return { distance, hit };
   }
-  /** Forward ship-width by 200 rectangle; acquisition does not steer muzzle rays. */
+  /** Forward ship-width by 300 rectangle; acquisition does not steer muzzle rays. */
   ionTrigger(ship: GameObject, star: Star, planets: readonly Planet[]) {
     return this.bodies.some(
       (body) =>

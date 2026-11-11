@@ -16,7 +16,8 @@ test("canonical buttons share tokens, spacing, states and responsive composition
   const primary = vertical.getByRole("button", { name: "Continue game" });
   await primary.focus();
   await expect(primary).toBeFocused();
-  await expect(primary).not.toHaveCSS("outline-style", "none");
+  await expect(primary).toHaveCSS("--_edge-width", "2px");
+  await expect(primary).toHaveCSS("--_edge-inset", "3px");
   await page.keyboard.press("Enter");
   await expect(page.getByRole("status")).toHaveText("Continue game selected.");
   const save = page.getByRole("button", { name: "Save settings" });
@@ -40,7 +41,11 @@ test("canonical buttons share tokens, spacing, states and responsive composition
   await page.evaluate(() =>
     document.documentElement.style.removeProperty("--spacing-sm"),
   );
-  await page.setViewportSize({ width: 600, height: 390 });
+  // Exercise the composition threshold inside a supported Lab viewport.
+  await strip.locator("..").evaluate((element) => {
+    element.style.width = "560px";
+    element.style.maxWidth = "100%";
+  });
   await expect(strip).toHaveCSS("display", "grid");
   expect(
     await page.evaluate(

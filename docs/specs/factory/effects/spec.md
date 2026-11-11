@@ -438,12 +438,12 @@ The [turret](../../game/ion-point-defence/spec.md) shares the cannon's presentat
 owner and passes. Its 80 ms active ray is fresh topmost LFX drawn by
 `FlightFx.drawLfx`; it follows the current shared muzzle and the turret's current
 simulated heading, including a muzzle beneath the hull. Length is the shorter of
-the discharge distance and the current nearest physical obstruction within 100
+the discharge distance and the current nearest physical obstruction within 200
 units; this query never applies damage.
 
-The cached ion profiles are keyed by reach. The turret uses a second, 100-unit
+The cached ion profiles are keyed by reach. The turret uses a second, 200-unit
 blue profile with the cannon's light treatment and its own transparent tip; the
-cannon's 200-unit profile is unchanged. Contact clips rather than rescales either
+cannon uses a 300-unit profile. Contact clips rather than rescales either
 profile. Only the 65% dispersal treatment enters persistent FX, through its source
 allowance, under the shared decay, pause, camera, wrap and reset semantics. Turret
 hits activate the shared expanding impact plume at their actual contact.

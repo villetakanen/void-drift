@@ -225,8 +225,8 @@ function ionStamp(
 }
 /**
  * Current muzzle presentation is separate from the authoritative discharge hit.
- * Cannons use the fixed mount heading and the 200-unit profile; point-defence
- * turrets use their current simulated angle and the 100-unit profile.
+ * Cannons use the fixed mount heading and the 300-unit profile; point-defence
+ * turrets use their current simulated angle and the 200-unit profile.
  */
 export function drawIonCannonLight(
   ctx: CanvasRenderingContext2D,

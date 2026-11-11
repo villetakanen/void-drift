@@ -177,7 +177,7 @@ test("hints rotate without starting survival and reduced motion keeps one hint",
 }) => {
   await page.clock.install();
   await page.goto("/");
-  const hint = page.getByRole("complementary", { name: "Flight hint" });
+  const hint = page.getByRole("complementary", { name: "Title-screen hints" });
   const initial = await hint.textContent();
   await page.clock.runFor(8500);
   await expect(hint).not.toHaveText(initial ?? "");

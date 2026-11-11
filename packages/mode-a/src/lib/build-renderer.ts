@@ -199,15 +199,21 @@ export function buildMounts(build: Loadout): BuildMount[] {
           build.chassis === "corvette"
             ? CRUISER.hullMounts[index]
             : build.chassis === "fighter"
-              ? FIGHTER.hullMounts[index]
+              ? FIGHTER.hullMounts[index][0]
               : SCOUT.hullX,
-        y: build.chassis !== "scout" ? 0 : (index - (c.hull - 1) / 2) * 10,
+        y:
+          build.chassis === "fighter"
+            ? FIGHTER.hullMounts[index][1]
+            : build.chassis !== "scout"
+              ? 0
+              : (index - (c.hull - 1) / 2) * 10,
         angle: 0,
         part,
         group: "hull",
         index,
         width: build.chassis !== "scout" ? 11 : 10,
         height: build.chassis !== "scout" ? 9 : 8,
+        ...(build.chassis === "fighter" ? { underHull: true } : {}),
       }),
     ),
     ...build.aft.map(

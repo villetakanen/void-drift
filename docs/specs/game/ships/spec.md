@@ -1,5 +1,18 @@
 # Ships
 
+## Fighter bow stabilizers
+
+For Ion Storm, the Fighter places its two stabilizer slits on the bow chines, ahead
+of the canopy, with slits parallel to the sloping hull edges and exhaust normal
+to those edges. Both jets sit inward far enough to leave a visible strip of hull
+outside the slits. A left main-engine command fires the left
+bow jet; a right command fires the right bow jet. Their force reinforces the
+commanded turn. Release braking, energy delivery, the turn limit and the optional
+stabilizer fitting remain in effect. Production and Lab use the same mount geometry.
+This is the standard Fighter layout. The shared mount definition in
+`packages/mode-a/src/lib/stabilizers.ts` owns placement, exhaust direction and
+the resulting steering lever.
+
 ## Blueprint
 
 ### Context
@@ -11,8 +24,8 @@ real choice about how to fly.
 
 The game is in alpha and shows every ship being designed. This contract says
 what a ship is. It keeps no list of ships: the catalog in code is the list, and
-ships come, change and go there without changing this contract. The Wasp is the
-one ship named in the game's contracts, because a new player
+ships come, change and go there without changing this contract. The Wasp is named
+in the game's contracts because a new player
 [starts with it](../active-ship/spec.md).
 
 ### Architecture and boundaries
@@ -44,6 +57,8 @@ one ship named in the game's contracts, because a new player
 - **Required engines.** Every hull has required main-engine slots that are
   always fitted, so every ship can fly. A linked pair of engines is one
   choice. Other slots may be empty.
+- **Fighter equipment mounts.** The two weapon/support mounts sit at ship-local
+  `(5, -11)` and `(5, 11)` and their fittings draw beneath the hull.
 - **One derivation.** The figures the Hangar shows and the ship that flies come
   from the same derivation of the same hull and fitting. More fitted mass means
   less acceleration and slower turning.
@@ -80,6 +95,10 @@ one ship named in the game's contracts, because a new player
 - Every engine on a ship accelerates toward the same ceiling.
 - A ship above its ceiling keeps its speed, and can still brake and steer.
 - More fitted mass lowers acceleration and turn rate.
+- The Fighter's bow stabilizer on the commanded main-engine side reinforces
+  its turn; releasing input brakes spin without reversing it.
+- Fighter stabilizer slits follow the bow edges, leaving hull visible outside;
+  flight exhaust and steering use the same geometry as the Hangar and Lab.
 - Flight, Hangar estimates, exhaust and collision use the same slot
   geometry for a hull.
 - A hull with built-in stabilizers has them on whatever is stored; other

@@ -6,29 +6,19 @@ import {
   CHASSIS,
   CRUISER,
   drawBuild,
-  ENGINE_ACCENT,
-  ENGINE_ART,
-  engineArtId,
   FIDDLER,
   FIGHTER,
-  ION_CANNON_ART,
   isScoredEligible,
   LIFE_SUPPORT_DRAIN,
   LoadoutSchema,
   PARTS,
   type PartId,
-  POINT_DEFENCE_BASE,
-  POINT_DEFENCE_GEOMETRY,
-  POINT_DEFENCE_TURRET,
-  POTENTIAL_WELL_ART,
   SCOUT,
   SHIP_IDENTITY,
   type ShipProfileId,
   SLOT_STYLE,
   slotAccepts,
-  UTILITY_ART,
   WASP,
-  WEAPONS,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import {
@@ -40,11 +30,11 @@ import {
   shipSetupStatus,
 } from "../lib/stores/ship-setup";
 import FlightDeck from "./FlightDeck.svelte";
+import PartCard from "./hangar/PartCard.svelte";
 import Switch from "./inputs/Switch.svelte";
 import Tabs from "./inputs/Tabs.svelte";
 import Toggle from "./inputs/Toggle.svelte";
 import Logo from "./Logo.svelte";
-import PreviewMarker from "./PreviewMarker.svelte";
 
 const shipIds = ["wasp", "scout", "fighter", "corvette", "fiddler"] as const;
 
@@ -131,7 +121,13 @@ const mount = $derived(
   mounts.find((item) => item.key === selected) ?? mounts[0],
 );
 const compatible = $derived(
-  Object.values(PARTS).filter((part) => slotAccepts(mount.type, part.category)),
+  Object.values(PARTS)
+    .filter((part) => slotAccepts(mount.type, part.category))
+    .sort(
+      (a, b) =>
+        Number(a.releaseClass === "preview") -
+        Number(b.releaseClass === "preview"),
+    ),
 );
 onMount(() => {
   loadCanvasFonts().then(() => {
@@ -355,174 +351,25 @@ function launch(mode: "test" | "derelicts" | "survival") {
                   : "Swap freely. Empty is a valid choice."}
             </p>
             <div class="part-list">
-              {#each compatible as part}
-                <button
-                  type="button"
-                  class="part"
-                  class:installed={mount.part === part.id}
-                  disabled={experimental === "Off" &&
-                    part.releaseClass === "preview"}
-                  aria-pressed={mount.part === part.id}
-                  onclick={() => install(part.id)}
-                >
-                  {#if part.category === "E"}
-                    <svg
-                      viewBox="-18 -20 36 40"
-                      width="72"
-                      height="56"
-                      aria-hidden="true"
-                      style:color={part.id === "fusion"
-                        ? ENGINE_ACCENT.fusion
-                        : part.id === "plasma"
-                          ? ENGINE_ACCENT.plasma
-                          : ENGINE_ACCENT.ion}
-                    >
-                      <g transform="rotate(-90)">
-                        {#each ENGINE_ART[engineArtId(part.id)][0] as face}
-                          <polygon
-                            points={face.points
-                              .map((p) => p.join(","))
-                              .join(" ")}
-                            fill={face.color}
-                          />
-                        {/each}
-                      </g>
-                    </svg>
-                  {:else if part.id === "light-ion-cannon"}
-                    <svg
-                      viewBox="240 40 14 22"
-                      width="72"
-                      height="56"
-                      aria-hidden="true"
-                    >
-                      {#each ION_CANNON_ART as [color, path]}
-                        <path d={path} fill={color} />
-                      {/each}
-                    </svg>
-                  {:else if part.id === "ion-point-defence"}
-                    <svg
-                      viewBox="{POINT_DEFENCE_GEOMETRY.centreX - 7} 90.3 14 22"
-                      width="72"
-                      height="56"
-                      aria-hidden="true"
-                    >
-                      <defs>
-                        {#each POINT_DEFENCE_BASE as disc, index}
-                          <linearGradient
-                            id="point-defence-base-{index}"
-                            gradientUnits="userSpaceOnUse"
-                            x1={disc.from[0]}
-                            y1={disc.from[1]}
-                            x2={disc.to[0]}
-                            y2={disc.to[1]}
-                          >
-                            <stop offset="0" stop-color={disc.stops[0]} />
-                            <stop offset="1" stop-color={disc.stops[1]} />
-                          </linearGradient>
-                        {/each}
-                      </defs>
-                      {#each POINT_DEFENCE_BASE as disc, index}
-                        <circle
-                          cx={POINT_DEFENCE_GEOMETRY.centreX}
-                          cy={POINT_DEFENCE_GEOMETRY.centreY}
-                          r={disc.radius}
-                          fill="url(#point-defence-base-{index})"
-                        />
-                      {/each}
-                      {#each POINT_DEFENCE_TURRET as [color, points]}
-                        <polygon
-                          points={points.map((p) => p.join(",")).join(" ")}
-                          fill={color}
-                        />
-                      {/each}
-                    </svg>
-                  {:else if part.id === "gravity-coil"}
-                    <svg
-                      viewBox="-24 -30 48 60"
-                      width="72"
-                      height="56"
-                      aria-hidden="true"
-                    >
-                      <g transform="rotate(-90)">
-                        {#each UTILITY_ART.gravity as face}
-                          <path
-                            d={face.contours
-                              .map(
-                                (c) =>
-                                  `M${c.map((p) => p.join(",")).join("L")}Z`,
-                              )
-                              .join(" ")}
-                            fill={face.color}
-                            fill-rule={face.fillRule}
-                          />
-                        {/each}
-                      </g>
-                    </svg>
-                  {:else if part.capacity > 0}
-                    <svg
-                      viewBox="-24 -30 48 60"
-                      width="72"
-                      height="56"
-                      aria-hidden="true"
-                    >
-                      {#each POTENTIAL_WELL_ART[
-                        part.id === "heavy-well" ? "heavy" : "normal"
-                      ] as face}
-                        <path
-                          d={face.path}
-                          fill={face.fill}
-                          stroke={face.stroke}
-                          stroke-width={face.width}
-                        />
-                      {/each}
-                    </svg>
-                  {/if}
-                  <span class="part-name"
-                    >{part.name}<small
-                      >{mount.part === part.id
-                        ? "FITTED"
-                        : part.category}</small
-                    ></span
-                  >
-                  {#if part.releaseClass === "preview"}
-                    <PreviewMarker item />
-                  {/if}
-                  <span
-                    >{part.mass}
-                    mass{part.category === "E"
-                      ? ` · ${part.draw} energy/s`
-                      : ""}</span
-                  >
-                  <small
-                    >{part.category === "E"
-                      ? `${part.thrust.toLocaleString()} thrust · ${part.response === "pulse" ? "0.18s pulse / 0.45s cycle" : part.response === "delayed" ? `${part.chargeSeconds}s charge, then sustained` : "Immediate / steady"}`
-                      : part.capacity > 0
-                        ? `+${part.capacity} energy capacity`
-                        : part.id === "coil"
-                          ? "+1× solar charging"
-                          : part.id === "light-ion-cannon"
-                            ? "12–48 damage/s · 3 shots/s · 200 units · 0.2p/shot"
-                            : part.id === "ion-point-defence"
-                              ? "8–24 damage/s · 3 shots/s · 100 units · 0.1p/shot"
-                              : part.id === "rail" || part.id === "laser"
-                                ? `${part.id === "rail" ? "Fixed direction · automatic" : "Rotating point defence"} · ${WEAPONS[part.id].energy} energy/shot`
-                                : "Static fitting · no energy draw"}</small
-                  >
-                  {#if part.description}
-                    <small>{part.description}</small>
-                  {/if}
-                </button>
-              {/each}
               {#if mount.group !== "side" && !mount.required}
                 <button
                   type="button"
-                  class="btn btn-normal"
-                  disabled={!mount.part}
+                  class="btn btn-normal btn-card empty-choice"
+                  class:fitted={!mount.part}
+                  aria-pressed={!mount.part}
                   onclick={() => install(null)}
                 >
-                  Remove fitting
+                  Keep empty
                 </button>
               {/if}
+              {#each compatible as part (part.id)}
+                <PartCard
+                  id={part.id}
+                  fitted={mount.part === part.id}
+                  playground={experimental === "On"}
+                  onchoose={() => install(part.id)}
+                />
+              {/each}
             </div>
           </section>
           <aside class="numbers" aria-label="Build statistics">
@@ -719,10 +566,7 @@ p {
 }
 .workbench {
   display: grid;
-  grid-template-columns: minmax(360px, 1.4fr) minmax(250px, 1fr) minmax(
-      270px,
-      1fr
-    );
+  grid-template-columns: minmax(360px, 1.4fr) 342px minmax(0, 1fr);
   gap: 20px;
 }
 .parts,
@@ -824,43 +668,26 @@ canvas {
 }
 .part-list {
   display: grid;
-  gap: 10px;
+  gap: var(--spacing-sm);
   margin-top: 20px;
 }
-.part {
-  text-align: left;
-  background: transparent;
-  color: inherit;
-  border: 1px solid var(--color-border-subtle);
-  padding: 14px;
-  cursor: pointer;
-  display: grid;
-  gap: 7px;
+.empty-choice {
+  width: 300px;
+  font-size: var(--font-control-size);
+  font-weight: var(--font-weight-medium);
 }
-.part:hover,
-.part.installed {
-  border-color: var(--color-selected);
+.empty-choice.fitted {
+  --btn-edge: var(--color-selected);
+  --_fill: var(--color-void);
 }
-.part.installed {
-  background: var(--color-void);
-}
-.part-name {
-  display: flex;
-  justify-content: space-between;
-  font-weight: 700;
-}
-.part small,
-.part > span + span {
-  font-size: 11px;
-  color: var(--color-text-muted);
-}
-.part-name small {
-  color: var(--color-text-muted);
+.numbers {
+  min-width: 0;
 }
 dl {
   margin: 20px 0;
 }
 dl div {
+  flex-wrap: wrap;
   display: flex;
   justify-content: space-between;
   gap: 12px;

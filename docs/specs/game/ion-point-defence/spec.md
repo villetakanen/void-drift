@@ -30,7 +30,7 @@ mounts drawn beneath a hull partly or wholly hide the turret.
 `salvage.ts` owns targeting, turning, power, cooldown, physical contact and damage.
 The cannon's instant contact takes the part's reach rather than being duplicated.
 Each turret's angle reaches `build-renderer.ts` through the existing per-mount
-weapon angles. `salvage-renderer.ts` owns the 100-unit ion profile; `FlightFx`
+weapon angles. `salvage-renderer.ts` owns the 200-unit ion profile; `FlightFx`
 composes it in play, the equipment encounter and the mixed-effects Lab. Presentation
 cannot apply damage. Existing Hangar persistence and launch handoff carry the part
 without a storage migration. The [Hangar](../hangar/spec.md) and
@@ -51,7 +51,7 @@ without a storage migration. The [Hangar](../hangar/spec.md) and
 
 ### Targeting
 
-- Candidates are live wrecks and fragments within 200 units of the pivot, measured
+- Candidates are live wrecks and fragments within 300 units of the pivot, measured
   to the closest point of their actual shared polygon collision geometry. Collectible
   energy is never a candidate. A candidate needs an unobstructed segment from the
   pivot to that closest point; star and planet circles block it.
@@ -66,12 +66,12 @@ without a storage migration. The [Hangar](../hangar/spec.md) and
 
 - A ready turret fires when its barrel is within 2° of the aim point's bearing and
   the first physical contact along the barrel from its muzzle is damageable material
-  within 100 units. Contact with a star or planet first, or no contact within
-  100 units, means no discharge, no cost and no cooldown. Collectible energy is
+  within 200 units. Contact with a star or planet first, or no contact within
+  200 units, means no discharge, no cost and no cooldown. Collectible energy is
   transparent to the ray.
-- Damage uses actual muzzle-to-first-contact distance: [0,25) → 8; [25,50) → 6;
-  [50,75) → 4; [75,100] → 2. Internal boundaries use the lower-damage band; the
-  100 endpoint is included.
+- Damage uses actual muzzle-to-first-contact distance: [0,50) → 8; [50,100) → 6;
+  [100,150) → 4; [150,200] → 2. Internal boundaries use the lower-damage band; the
+  200 endpoint is included.
 - First contact stops the ray, applies integer damage once and starts the existing
   impact plume at that contact. The contact may be material other than the target.
 - Each discharge debits 0.1p and starts its own 1/3-second cooldown: three shots/s,
@@ -84,15 +84,15 @@ without a storage migration. The [Hangar](../hangar/spec.md) and
   build-mount order, each shot querying contact in the world left by earlier shots.
   Each class draws on the power the earlier classes leave. Insufficient power stops
   funding the remaining turrets without starting their cooldowns.
-- The builder shows 8–24 damage/s, three shots/s, 100 units and 0.1p/shot.
+- The builder shows 8–24 damage/s, three shots/s, 200 units and 0.1p/shot.
 
 ### Light
 
 - For 80 ms after discharge, fresh topmost LFX follows the current muzzle and turret
   heading, also from a muzzle under the hull. Its length is capped by both discharge
   distance and current physical obstruction; this query does no damage.
-- A cached 100-unit blue profile keeps the cannon's light profile and its own
-  transparent tip; a hit clips it rather than stretching it. The cannon's 200-unit
+- A cached 200-unit blue profile keeps the cannon's light profile and its own
+  transparent tip; a hit clips it rather than stretching it. The cannon's 300-unit
   profile is unchanged. Only the 65% dispersal stamps into persistent FX under the
   shared decay, pause, camera, wrap and reset semantics.
 
@@ -128,13 +128,13 @@ Scenario: The turret switches to a clearly closer target
   And fires only once its barrel is within 2° of the wreck's aim point
 
 Scenario: A target beyond reach is tracked without firing
-  Given a ready turret whose only candidate lies 150 units away
+  Given a ready turret whose only candidate lies 250 units away
   When updates run with enough power
   Then the turret aligns with the candidate
-  And no discharge, power debit or cooldown occurs until first contact is within 100 units
+  And no discharge, power debit or cooldown occurs until first contact is within 200 units
 
 Scenario: A planet blocks the shot
-  Given a fragment within 100 units whose closest point is behind a planet
+  Given a fragment within 200 units whose closest point is behind a planet
   When the firing update runs
   Then the fragment is not a candidate and the turret does not fire
 

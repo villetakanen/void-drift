@@ -1,4 +1,6 @@
 <script lang="ts">
+let _props: { "client:load"?: boolean } = $props();
+
 // Part rows study, 02.3: what a row has to hold, judged beside the ship. A
 // slice of the Hangar: the Wasp in Plan view, a mount chooser, the Playground
 // switch and the part list for the selected mount. The ship, its mounts,
@@ -161,7 +163,7 @@ const specimens: { label: string; id: PartId; shown: Shown }[] = [
     class:last={!press}
     aria-pressed={Boolean(shown.fitted)}
     aria-disabled={shown.forbidden ? "true" : undefined}
-    aria-description={unsanctioned ? "Unsanctioned" : undefined}
+    aria-label={unsanctioned ? `${part.name}, Unsanctioned` : undefined}
     tabindex={press ? undefined : -1}
     onclick={() => {
       if (!shown.forbidden) press?.();

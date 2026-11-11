@@ -17,9 +17,10 @@ own only when its behaviour in flight needs one, as the
 ### Architecture and boundaries
 
 - **Catalog.** `PARTS` in `packages/mode-a/src/lib/schemas/loadout.ts` holds
-  every part, validated by `PartSchema`: its name, description, category, mass
-  and the values of its kind. The Hangar shows the catalog's name and
-  description.
+  every part, validated by `PartSchema`: its name, description, short fluff, category, mass
+  and the values of its kind. The Hangar shows the catalog's name and approved fluff, falling back to
+  the technical description for unsanctioned parts. `partFigures` computes its
+  figures from the same catalog and firing/collection rules used in flight.
 - **Compatibility.** `slotAccepts` in `loadout.ts` is the one rule for which
   category fits which slot type. The Hangar and `LoadoutSchema` both use it, so
   what can be fitted and what can be loaded agree.
@@ -71,8 +72,15 @@ own only when its behaviour in flight needs one, as the
   exactly a tenth it fires; this holds for every weapon and every capacity.
 - A held charged engine first thrusts once its charge length has elapsed;
   releasing the input or losing power resets the charge.
-- Every part shown in the Hangar has a catalog description that states what
-  it does.
+- Sanctioned part cards use approved short prose in the catalog's `fluff`
+  field: practical, affectionate pilot humour, without numeric specifications.
+  It fits two lines on a 300-pixel card. Unsanctioned prose is not rewritten
+  as part of this work.
+- Each part shows mass first and up to three further figures computed by
+  `partFigures`: engine thrust, draw and cruise contribution; weapon damage
+  range per second, sustained energy draw and reach; storage capacity; or
+  collection rate with its condition. Solar multipliers come from the catalog
+  and gravity collection from the shared collection rule. Glyphs are provisional.
 
 ### Regression guardrails
 

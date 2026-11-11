@@ -204,6 +204,30 @@ let message = $state("Interactive examples only; nothing is changed.");
   </section>
 </section>
 
+<section aria-label="Part card brackets and sanction band">
+  <h2>Part card frame</h2>
+  <p>
+    Cards use the action frame without a raised fill or pressed bar. The band
+    follows the edge.
+  </p>
+  <button type="button" class="btn btn-normal btn-card">
+    Unsanctioned<span class="unsanctioned-band" aria-hidden="true"></span>
+  </button>
+  <button
+    type="button"
+    class="btn btn-normal btn-card"
+    data-lab-state="pointer"
+  >
+    Lit edge<span class="unsanctioned-band" aria-hidden="true"></span>
+  </button>
+  <button
+    type="button"
+    class="btn btn-normal btn-card"
+    style="--btn-edge: var(--color-red)"
+  >
+    Must come off<span class="unsanctioned-band" aria-hidden="true"></span>
+  </button>
+</section>
 <style>
 .ground {
   display: grid;

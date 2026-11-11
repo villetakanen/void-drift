@@ -606,6 +606,12 @@ positions to the shared mount builder, production rendering and builder hit
 targets. The submitted Heavy Potential Well loadout was a preview; default
 equipment and saved loadouts are unchanged.
 
+## Fighter equipment-mount placement — 2026-11-11
+
+The two Fighter weapon/support mounts now sit at integer ship-local positions
+`(5, -11)` and `(5, 11)`. Fitted parts on both mounts draw beneath the hull. Their
+slot identities, dimensions, accepted parts, and existing loadouts are unchanged.
+
 ## Hangar control alignment — 2026-11-03
 
 The Hangar uses the shared `Toggle` for its four ship choices, labelled with

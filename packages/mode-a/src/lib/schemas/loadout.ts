@@ -38,6 +38,8 @@ export const PartSchema = z.object({
   id: PartIdSchema,
   releaseClass: ReleaseClassSchema,
   description: z.string().max(220).default(""),
+  fluff: z.string().max(80).default(""),
+  solarMultiplier: z.number().nonnegative().default(0),
   capacity: z.number().nonnegative().default(0),
   name: z.string(),
   category: z.enum(["G", "U", "E"]),
@@ -151,10 +153,11 @@ export const CHASSIS = {
 export const PARTS = {
   "light-ion-cannon": PartSchema.parse({
     id: "light-ion-cannon",
+    fluff: "Shoots straight. Keep your expectations close.",
     releaseClass: "scored",
     name: "Light Ion Cannon",
     description:
-      "12–48 damage/s · 3 shots/s · 200-unit reach · 0.2p/shot (0.6p/s sustained). Ship-width forward acquisition; offset cannons may miss.",
+      "12–48 damage/s · 3 shots/s · 300-unit reach · 0.2p/shot (0.6p/s sustained). Ship-width forward acquisition; offset cannons may miss.",
     category: "G",
     mass: 9,
     thrust: 0,
@@ -163,10 +166,11 @@ export const PARTS = {
   }),
   "ion-point-defence": PartSchema.parse({
     id: "ion-point-defence",
+    fluff: "Quick on the draw. A little light on the punch.",
     releaseClass: "scored",
     name: "Ion Point Defence",
     description:
-      "8–24 damage/s · 3 shots/s · 100-unit reach · 0.1p/shot (0.3p/s sustained). Turns at 180°/s towards the closest target within 200 units.",
+      "8–24 damage/s · 3 shots/s · 200-unit reach · 0.1p/shot (0.3p/s sustained). Turns at 180°/s towards the closest target within 300 units.",
     category: "G",
     mass: 10,
     thrust: 0,
@@ -199,6 +203,7 @@ export const PARTS = {
   }),
   battery: PartSchema.parse({
     id: "battery",
+    fluff: "Enough to get you into trouble.",
     releaseClass: "scored",
     name: "Potential Well",
     description:
@@ -212,6 +217,7 @@ export const PARTS = {
   }),
   "heavy-well": PartSchema.parse({
     id: "heavy-well",
+    fluff: "Enough to get you back out. Hopefully.",
     releaseClass: "scored",
     name: "Heavy Potential Well",
     description:
@@ -225,6 +231,7 @@ export const PARTS = {
   }),
   coil: PartSchema.parse({
     id: "coil",
+    solarMultiplier: 1,
     releaseClass: "preview",
     name: "Loading coil",
     category: "U",
@@ -235,6 +242,7 @@ export const PARTS = {
   }),
   "gravity-coil": PartSchema.parse({
     id: "gravity-coil",
+    fluff: "Free energy. Just mind the planet.",
     releaseClass: "scored",
     name: "Gravity coil",
     description:
@@ -248,6 +256,7 @@ export const PARTS = {
   }),
   ion: PartSchema.parse({
     id: "ion",
+    fluff: "Small, cheap, reliable. What’s not to like?",
     releaseClass: "scored",
     name: "Light ion",
     description: "+8 u/s to ship cruise ceiling.",
@@ -261,6 +270,7 @@ export const PARTS = {
 
   "heavy-ion": PartSchema.parse({
     id: "heavy-ion",
+    fluff: "Still reliable. Not that cheap, though.",
     releaseClass: "scored",
     name: "Heavy ion",
     description: "+11 u/s to ship cruise ceiling.",
@@ -432,7 +442,7 @@ export function buildStats(build: Loadout, parts: typeof PARTS = PARTS) {
     if (!id) continue;
     mass += parts[id].mass;
     capacity += parts[id].capacity;
-    if (id === "coil") coils++;
+    coils += parts[id].solarMultiplier;
     engineDraw += parts[id].draw;
     if (parts[id].category === "E") {
       installedEngineContribution += parts[id].speedContribution;

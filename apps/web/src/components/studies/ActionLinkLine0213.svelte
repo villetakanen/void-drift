@@ -98,15 +98,6 @@ const menu = ["HANGAR", "TOP SCORES", "SETTINGS"];
   margin: 0;
   max-width: none;
 }
-.key dt {
-  margin: 0;
-  font: var(--font-weight-bold) var(--font-size-label) var(--font-family-ui);
-}
-.key dd {
-  margin: var(--spacing-xs) 0 0;
-  color: var(--color-text-muted);
-  font: var(--font-size-caption) / var(--line-height-ui) var(--font-family-ui);
-}
 .column {
   display: grid;
   gap: var(--spacing-md);

@@ -7,6 +7,7 @@ import {
   drawSalvage,
   drawSalvageApertures,
   FlightFx,
+  ION_CANNON,
   LoadoutSchema,
   type SalvageBody,
   Simulation,
@@ -147,7 +148,7 @@ onMount(() => {
       ctx.setLineDash([3, 4]);
       const width =
         CHASSIS[sim.settings.loadout.chassis].width * BUILD_FLIGHT_SCALE;
-      ctx.strokeRect(0, -width / 2, 200, width);
+      ctx.strokeRect(0, -width / 2, ION_CANNON.range, width);
       ctx.restore();
     }
     if (sim.salvage) drawSalvage(ctx, sim.salvage);

@@ -6,7 +6,6 @@ import { SCOUT } from "./scout";
 import { WASP } from "./wasp";
 
 export const STABILIZER_PLACEMENTS = {
-  fighter: { back: 77, inset: 10, angle: 37.7 },
   scout: { back: 67, inset: 38, angle: 67 },
   corvette: { back: 76, inset: 23, angle: 63 },
 } as const;
@@ -37,6 +36,24 @@ export function stabilizerMount(chassis: ShipProfileId) {
   const stern = Math.min(...points.map((p) => p[0]));
   const width = 2 * Math.max(...points.map((p) => Math.abs(p[1])));
   const length = nose - stern;
+  if (chassis === "fighter") {
+    // Follow the bow edge from (-18, ±20) to (48, 0). The force is normal
+    // to that edge, so the recessed slits run along the hull's silhouette.
+    const x = 34;
+    const y = 2.5;
+    const edgeLength = Math.hypot(66, 20);
+    const fx = -20 / edgeLength;
+    const fy = 66 / edgeLength;
+    return {
+      x,
+      y,
+      fx,
+      fy,
+      lever: x * fy + y * fx,
+      inertiaPerMass:
+        (length ** 2 + width ** 2) / 12 + ((nose + stern) / 2) ** 2,
+    };
+  }
   const placement = STABILIZER_PLACEMENTS[chassis];
   const x = nose - (length * placement.back) / 100;
   const y = width * (0.5 - placement.inset / 100);

@@ -364,3 +364,23 @@
     transition: none;
   }
 }
+
+/* Part-choice cards share action geometry without a raised body or pressed bar. */
+.btn-normal.btn-card {
+  --_fill: transparent;
+}
+.btn.btn-card[aria-pressed="true"] {
+  box-shadow: none;
+}
+/* Sanction marker follows its host's edge, including hover and blocked states. */
+.unsanctioned-band {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: var(--button-cut-size);
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--btn-edge) 0 2px,
+    transparent 2px 6px
+  );
+}
