@@ -1,4 +1,5 @@
 import { expect, it } from "vitest";
+import { TOTAL_TICKS } from "../../../../apps/web/src/components/studies/movement-bench";
 import {
   plasmaVariants,
   simulatePlasma,
@@ -18,7 +19,7 @@ it("includes immediate stabilizer assistance and coast braking in all six config
     );
   }
   for (const run of runs) {
-    expect(run).toHaveLength(841);
+    expect(run).toHaveLength(TOTAL_TICKS + 1);
     expect(run.every((p) => Number.isFinite(p.x) && Number.isFinite(p.y))).toBe(
       true,
     );

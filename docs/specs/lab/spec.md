@@ -34,8 +34,8 @@ after they reach the game.
 
 ### Definition of Done
 
-- [x] No Lab page offers a game mode or a run that ends in a score to save.
-- [x] No Lab page imports or calls score submission.
+- No Lab page offers a game mode or a run that ends in a score to save.
+- No Lab page imports or calls score submission.
 
 ### Regression guardrails
 

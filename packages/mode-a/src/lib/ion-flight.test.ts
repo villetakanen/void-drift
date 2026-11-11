@@ -42,7 +42,6 @@ describe("accepted ion flight", () => {
       applyBuildEngines(a, build, both, STEP, true);
     const ceiling = buildStats(build).poweredCruiseCeiling;
     expect(a.vel.mag()).toBeCloseTo(ceiling, 5);
-    expect(ceiling).toBe(346);
     expect(ionCeiling(1000)).toBeCloseTo(
       ION_DEFAULTS.maxSpeed * (1 + ION_DEFAULTS.bonus),
     );

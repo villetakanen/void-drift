@@ -215,10 +215,7 @@ describe("salvage gravity", () => {
 });
 
 describe("Derelicts-mode occupancy", () => {
-  it("allows sixteen groups", () => {
-    expect(ENCOUNTER.groups).toBe(16);
-  });
-  it("accepts a ninth group and skips an arrival when all are occupied", () => {
+  it("accepts the last free group and skips an arrival when all are occupied", () => {
     const s = scene();
     const occupy = (n: number) => {
       s.system.bodies = Array.from({ length: n }, (_, i) => {
@@ -227,11 +224,11 @@ describe("Derelicts-mode occupancy", () => {
         return cell;
       });
     };
-    occupy(8);
+    occupy(ENCOUNTER.groups - 1);
     s.system.nextPass = s.system.time + DT / 2;
     s.step(false);
     expect(s.system.passes).toBe(1);
-    expect(s.system.groups).toBe(9);
+    expect(s.system.groups).toBe(ENCOUNTER.groups);
     occupy(ENCOUNTER.groups);
     s.system.passes = 0;
     s.system.nextPass = s.system.time + DT / 2;

@@ -63,20 +63,20 @@ Derelicts is a mode of its own, as the [game contract](../spec.md) lists it.
 
 ### Definition of Done
 
-- [ ] M1: The Hangar's Derelicts action flies the active ship in its fitting in
+- M1: The Hangar's Derelicts action flies the active ship in its fitting in
   a fresh seeded system.
-- [x] M2: Derelicts arrive at the system edge under `ENCOUNTER`, independent of
+- M2: Derelicts arrive at the system edge under `ENCOUNTER`, independent of
   the player's position and motion and deterministic for a seed.
-- [x] M3: The arrival rate does not change with elapsed time, and an arrival is
+- M3: The arrival rate does not change with elapsed time, and an arrival is
   skipped without backlog while the limit of derelicts present is reached.
-- [ ] M4: Star contact, zero hull and zero energy each end the run with game
+- M4: Star contact, zero hull and zero energy each end the run with game
   over.
-- [ ] M5: The mode shows no score in flight or at game over; game over states
+- M5: The mode shows no score in flight or at game over; game over states
   the time survived and the derelicts the player destroyed; nothing is
   submitted or stored.
-- [ ] M6: Pause freezes arrivals and the run; Resume continues; Abort and game
+- M6: Pause freezes arrivals and the run; Resume continues; Abort and game
   over return to the Hangar with the ship unchanged; no reset is offered.
-- [x] M7: Changing this mode's arrival configuration leaves Survival's
+- M7: Changing this mode's arrival configuration leaves Survival's
   unchanged, and the reverse.
 
 ### Regression guardrails

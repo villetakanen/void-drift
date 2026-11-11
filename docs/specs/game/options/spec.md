@@ -37,14 +37,14 @@ setting: Invert controls, which swaps which side's input fires which engine.
 
 ### Definition of Done
 
-- [ ] O1: `/settings` shows Options with Invert controls, and returns to the
+- O1: `/settings` shows Options with Invert controls, and returns to the
   title screen.
-- [ ] O2: Changing Invert controls swaps the engine inputs in the next flight
+- O2: Changing Invert controls swaps the engine inputs in the next flight
   input, with no save action and no restart.
-- [ ] O3: The choice survives a page reload.
-- [ ] O4: A missing or invalid stored value reads as the default, and
+- O3: The choice survives a page reload.
+- O4: A missing or invalid stored value reads as the default, and
   unavailable storage leaves the game playable.
-- [x] O5: `SettingsSchema` holds no ship choice.
+- O5: `SettingsSchema` holds no ship choice.
 
 ### Regression guardrails
 

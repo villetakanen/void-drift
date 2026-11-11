@@ -51,7 +51,9 @@ describe("flight scene document", () => {
     expect(accepts({ targets: [{ x: Number.NaN, y: 0 }] })).toBe(false);
     expect(accepts({ extra: 1 })).toBe(false);
     expect(
-      accepts({ targets: Array.from({ length: 17 }, () => ({ x: 0, y: 0 })) }),
+      accepts({
+        targets: Array.from({ length: 10000 }, () => ({ x: 0, y: 0 })),
+      }),
     ).toBe(false);
     expect(accepts({ start: { x: 0, y: 0 } })).toBe(false);
   });

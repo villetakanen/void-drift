@@ -31,10 +31,10 @@ This specification defines the foundational architecture of the `void-drift` rep
 
 ### Definition of Done
 
-- [x] `pnpm dev` at the root starts the `apps/web` development server (port 4321).
-- [x] `pnpm -r build` successfully builds `apps/web` (engine consumed as source).
-- [x] `packages/engine` exports strongly typed classes: `GameLoop`, `Renderer`, `Camera`, `Physics`, `Input`, `Audio`.
-- [x] Root directory contains only configuration files (`package.json`, `pnpm-workspace.yaml`, `biome.json`, `netlify.toml`).
+- `pnpm dev` at the root starts the `apps/web` development server (port 4321).
+- `pnpm -r build` successfully builds `apps/web` (engine consumed as source).
+- `packages/engine` exports strongly typed classes: `GameLoop`, `Renderer`, `Camera`, `Physics`, `Input`, `Audio`.
+- Root directory contains only configuration files (`package.json`, `pnpm-workspace.yaml`, `biome.json`, `netlify.toml`).
 
 ### Regression Guardrails
 

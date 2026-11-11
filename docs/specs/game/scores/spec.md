@@ -71,29 +71,29 @@ for game design and is not shown to players.
 
 ### Definition of Done
 
-- [x] C1: Saving writes `artifacts/void-drift/scores/{challenge}_{userId}_{shipId}`,
+- C1: Saving writes `artifacts/void-drift/scores/{challenge}_{userId}_{shipId}`,
   and an equal or lower score leaves the stored one unchanged.
-- [x] C2: Firestore rules reject a write that is unauthenticated, owned by
+- C2: Firestore rules reject a write that is unauthenticated, owned by
   another player, malformed, under a mismatched document id, for an unknown
   challenge, lower than the stored score, carrying an extra field, or a
   deletion, and reject unbounded or unauthenticated list reads.
-- [ ] C3: `seconds` is saved with milliseconds and has no ceiling, in the
+- C3: `seconds` is saved with milliseconds and has no ceiling, in the
   schema and the rules.
-- [ ] C4: `score` has no ceiling in the schema or the rules.
-- [ ] C5: `shipId` accepts any ship in the game, and the rules hold no list of
+- C4: `score` has no ceiling in the schema or the rules.
+- C5: `shipId` accepts any ship in the game, and the rules hold no list of
   ships.
-- [ ] C6: `fitting` is saved as the list of the flown ship's part ids, with
+- C6: `fitting` is saved as the list of the flown ship's part ids, with
   `stabilizers` and `linkedEngines` as flown, and each is
   required by the schema and the rules.
-- [x] C7: Top Scores lists the current challenge's 30 highest scores with score
+- C7: Top Scores lists the current challenge's 30 highest scores with score
   and time, labelled as casual and reported by players.
-- [x] C8: The player can re-sort the listed rows by score or by time, score
+- C8: The player can re-sort the listed rows by score or by time, score
   first.
-- [ ] C9: The board shows no fitting and neither ship choice.
-- [x] C10: Two anonymous players can each save a run and see both on the board.
-- [x] C11: With Firebase unconfigured, the board explains that shared scores are
+- C9: The board shows no fitting and neither ship choice.
+- C10: Two anonymous players can each save a run and see both on the board.
+- C11: With Firebase unconfigured, the board explains that shared scores are
   unavailable and offers Retry.
-- [ ] C12: Firestore rules accept writes for the current challenge only;
+- C12: Firestore rules accept writes for the current challenge only;
   rows of earlier challenges remain stored.
 
 ### Regression guardrails

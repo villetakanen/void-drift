@@ -6,6 +6,7 @@ import {
   MAX_SAMPLES,
   pushSample,
   summarize,
+  WARMUP_SECONDS,
 } from "./render-performance-metrics";
 
 describe("render performance timing summaries", () => {
@@ -13,7 +14,7 @@ describe("render performance timing summaries", () => {
     const metrics = emptyMetrics();
     let warmupFrames = 0;
     while (!pushSample(metrics, 1 / 60, 2)) warmupFrames++;
-    expect(warmupFrames).toBeGreaterThanOrEqual(120);
+    expect(warmupFrames).toBeGreaterThanOrEqual(WARMUP_SECONDS * 60);
     expect(pushSample(metrics, 11, 9)).toBe(true);
     expect(metrics.samples.at(-1)?.interval).toBe(11);
     expect(summarize(metrics).intervalP95).toBeGreaterThan(1);
@@ -32,16 +33,17 @@ describe("render performance timing summaries", () => {
 
   it("reports shared budget accounting with attempted equal to accepted plus dropped", () => {
     const metrics = emptyMetrics();
-    // Production's reserved shared allowance is 128; a 25-cell flash requests
-    // 75 plume + 75 dispersal stamps on the same budget.
+    // A 25-cell flash requests 75 plume + 75 dispersal stamps on the same
+    // budget, more than its reserved shared allowance.
+    const attempted = 150;
     const budget = new FxBudget();
-    for (let index = 0; index < 150; index++) budget.take(true);
+    for (let index = 0; index < attempted; index++) budget.take(true);
     const accepted = budget.essential + budget.decoration;
     addStamps(metrics, accepted, budget.dropped);
     expect(metrics.stamps).toEqual({
-      attempted: 150,
-      accepted: 128,
-      dropped: 22,
+      attempted,
+      accepted: Math.min(attempted, FxBudget.ESSENTIAL),
+      dropped: Math.max(0, attempted - FxBudget.ESSENTIAL),
     });
   });
 });

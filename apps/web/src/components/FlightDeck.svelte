@@ -21,6 +21,7 @@ import {
   type FlightLayerId,
   type FlightMode,
   type FlightTickInput,
+  fittedParts,
   HighScoreSubmissionSchema,
   isScoredEligible,
   LandingSystem,
@@ -278,6 +279,7 @@ async function save() {
   if (
     mode !== "survival" ||
     !rankedRun ||
+    !runLoadout ||
     status !== "GAME_OVER" ||
     saving ||
     scoreSaved
@@ -285,9 +287,12 @@ async function save() {
     return;
   const submission = HighScoreSubmissionSchema.safeParse({
     initials,
-    seconds: Math.max(1, simulation.wholeSeconds),
+    seconds: Math.max(0.001, simulation.elapsedSeconds),
     score: Math.max(1, simulation.survivalScore),
     shipId: chosen,
+    fitting: fittedParts(runLoadout),
+    stabilizers: runLoadout.stabilizers,
+    linkedEngines: runLoadout.linkedEngines ?? false,
     challenge: CHALLENGE,
     deathCause: simulation.state.deathCause ?? "POWER",
   });

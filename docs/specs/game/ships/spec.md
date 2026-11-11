@@ -72,23 +72,23 @@ one ship named in the game's contracts, because a new player
 
 ### Definition of Done
 
-- [x] Every hull's values pass `ChassisSchema`, and a fitting that does not match
+- Every hull's values pass `ChassisSchema`, and a fitting that does not match
   its hull's mounts is rejected by `LoadoutSchema`.
-- [x] The cruise ceiling is hull base speed plus every installed main engine's
+- The cruise ceiling is hull base speed plus every installed main engine's
   contribution; an installed engine counts while inactive, and parts that are
   not engines and stabilizers add nothing.
-- [x] Every engine on a ship accelerates toward the same ceiling.
-- [x] A ship above its ceiling keeps its speed, and can still brake and steer.
-- [x] More fitted mass lowers acceleration and turn rate.
-- [x] Flight, Hangar estimates, exhaust and collision use the same mount
+- Every engine on a ship accelerates toward the same ceiling.
+- A ship above its ceiling keeps its speed, and can still brake and steer.
+- More fitted mass lowers acceleration and turn rate.
+- Flight, Hangar estimates, exhaust and collision use the same mount
   geometry for a hull.
-- [x] A hull with built-in stabilizers has them on whatever is stored; other
+- A hull with built-in stabilizers has them on whatever is stored; other
   hulls keep the player's choice, on by default.
-- [x] With linked engines on, every aft engine fires on either input with
+- With linked engines on, every aft engine fires on either input with
   matching energy draw; with it off, on both inputs only.
-- [x] A ship cannot thrust on energy it does not have, and uses incoming charge
+- A ship cannot thrust on energy it does not have, and uses incoming charge
   while controls are held.
-- [ ] The Hangar shows the cruise ceiling with its hull and engine parts, and
+- The Hangar shows the cruise ceiling with its hull and engine parts, and
   each engine's contribution.
 
 ### Regression guardrails

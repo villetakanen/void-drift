@@ -1,3 +1,4 @@
+import { ASSEMBLED_ION_DEFAULTS, ION_CANNON } from "@void-drift/mode-a";
 import { describe, expect, it } from "vitest";
 import {
   advanceRenderModelHeading,
@@ -7,12 +8,13 @@ import {
 } from "./render-model-fixture";
 
 describe("render model Wasp fixture", () => {
-  it("completes and wraps a full production-rate turn in two seconds", () => {
-    expect(advanceRenderModelHeading(0, 1)).toBeCloseTo(Math.PI);
-    expect(advanceRenderModelHeading(0, 2)).toBeCloseTo(0);
-    expect(advanceRenderModelHeading(Math.PI * 1.9, 0.2)).toBeCloseTo(
-      Math.PI * 0.1,
-    );
+  it("completes and wraps a full turn at the production turn rate", () => {
+    const fullTurn = 360 / ASSEMBLED_ION_DEFAULTS.maxTurn;
+    expect(advanceRenderModelHeading(0, fullTurn / 2)).toBeCloseTo(Math.PI);
+    expect(advanceRenderModelHeading(0, fullTurn)).toBeCloseTo(0);
+    expect(
+      advanceRenderModelHeading(Math.PI * 1.9, fullTurn * 0.1),
+    ).toBeCloseTo(Math.PI * 0.1);
   });
 
   it("keeps the hull centre fixed and rotates its production plume mounts", () => {
@@ -68,10 +70,11 @@ describe("render model Wasp fixture", () => {
   });
 
   it("matches the production cannon flash and cooldown cadence", () => {
+    const { cooldown, flashSeconds } = ION_CANNON;
     expect(isIonBeamPulseActive(0)).toBe(true);
-    expect(isIonBeamPulseActive(0.079)).toBe(true);
-    expect(isIonBeamPulseActive(0.08)).toBe(false);
-    expect(isIonBeamPulseActive(1 / 3)).toBe(true);
-    expect(isIonBeamPulseActive(1 / 3 + 0.08)).toBe(false);
+    expect(isIonBeamPulseActive(flashSeconds * 0.99)).toBe(true);
+    expect(isIonBeamPulseActive(flashSeconds)).toBe(false);
+    expect(isIonBeamPulseActive(cooldown)).toBe(true);
+    expect(isIonBeamPulseActive(cooldown + flashSeconds)).toBe(false);
   });
 });

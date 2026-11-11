@@ -1,15 +1,18 @@
 import { Vec2 } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { weaponPose } from "./build-renderer";
-import { castDerelict } from "./derelict-collision";
+import { castDerelict, getDerelictRadius } from "./derelict-collision";
 import {
+  DERELICT_ENERGY_EJECTION,
   DERELICT_ENERGY_SOURCE,
   DERELICT_ORIGIN,
+  DERELICT_RELEASE_CUE,
   DERELICT_SCALE,
   DERELICT_SHARDS,
 } from "./derelict-geometry";
 import { createStar } from "./game-loop";
 import { type SalvageBody, SalvageSystem } from "./salvage";
+import { ASSEMBLED_ION_DEFAULTS, ION_REFERENCE_MASS } from "./schemas/ion";
 import { buildStats, defaultLoadout } from "./schemas/loadout";
 import {
   DerelictsResultSchema,
@@ -25,6 +28,14 @@ const idle = {
   rightThruster: false,
   fire: false as const,
 };
+/** The spin of a wreck that carries none of its own. */
+const WRECK_SPIN = ENCOUNTER.wreckSpin.rate;
+/** Steps a round needs to cross the whole system. */
+const CROSSING_STEPS = Math.ceil(
+  (2 * ENCOUNTER.radius) / WEAPONS.rail.speed / STEP,
+);
+/** Under the energy floor of the fixture's 100 capacity: no further shots. */
+const UNDER_FLOOR = (100 * WEAPONS.energyFloor) / 2;
 function fixture(parts: ("rail" | "laser" | null)[] = []) {
   const loadout = defaultLoadout("fighter");
   loadout.hull = [parts[0] ?? null, parts[1] ?? null];
@@ -125,7 +136,7 @@ describe("Derelicts weapons and salvage", () => {
     ]);
     expect(f.system.energySpent).toBe(0);
     expect(f.system.shots).toHaveLength(0);
-    expect(f.system.bodies[0].hull).toBe(85);
+    expect(f.system.bodies[0].hull).toBe(SALVAGE.wreck.hull);
     expect(f.system.playerKills).toBe(0);
   });
 
@@ -167,12 +178,12 @@ describe("Derelicts weapons and salvage", () => {
     ).toHaveLength(1);
     f.system.events = [];
     const damaged = body("wreck", 550, 400, 3);
-    damaged.hull = 200;
+    damaged.hull = 2 * WEAPONS.rail.damage;
     f.system.bodies = [damaged];
     f.system.shots = [];
     f.system.shots.push({ x: 550, y: 400, vx: 0, vy: 0, angle: 0 });
     f.step();
-    expect(damaged.hull).toBe(100);
+    expect(damaged.hull).toBe(WEAPONS.rail.damage);
     damaged.x = f.star.pos.x;
     damaged.y = f.star.pos.y;
     const expired = body("wreck", 550, 400, 4);
@@ -406,19 +417,19 @@ describe("Derelicts weapons and salvage", () => {
       angle: Math.PI / 2,
     });
     f.ship.vel.x = 45;
+    const pose = weaponPose(f.ship, f.system.weapons[0].mount);
     f.system.bodies.push(body("wreck", 412, 550, 1, 45));
     f.step();
     const shot = f.system.shots[0];
     expect(shot).toBeDefined();
     expect(shot.vx).toBeCloseTo(45);
-    expect(shot.vy).toBeCloseTo(600);
-    expect(shot.x - shot.vx * STEP).toBeCloseTo(407.8);
-    // x=400 + 12*0.65; y=400 - 8*0.65 + (11/2+1)*0.65.
-    expect(shot.y - shot.vy * STEP).toBeCloseTo(399.025);
+    expect(shot.vy).toBeCloseTo(WEAPONS.rail.speed);
+    expect(shot.x - shot.vx * STEP).toBeCloseTo(pose.muzzleX);
+    expect(shot.y - shot.vy * STEP).toBeCloseTo(pose.muzzleY);
     f.system.bodies[0].y += 100;
     f.step();
     expect(shot.vx).toBeCloseTo(45);
-    expect(shot.vy).toBeCloseTo(600);
+    expect(shot.vy).toBeCloseTo(WEAPONS.rail.speed);
   });
   it("waits for an intercept and catches fast relative crossings between ticks", () => {
     const f = fixture(["rail"]);
@@ -445,30 +456,34 @@ describe("Derelicts weapons and salvage", () => {
     );
     f.step();
     expect(f.system.shotsFired).toBe(1);
-    f.step(8);
+    for (let i = 0; i < CROSSING_STEPS && f.system.bodies.length; i++) f.step();
     expect(f.system.bodies).toHaveLength(0);
+    // The first round intercepted it.
+    expect(f.system.shotsFired).toBe(1);
   });
-  it.each([-9, -7, 7, 9])(
-    "uses the firing arc at %s degrees without steering the barrel",
-    (degrees) => {
+  it.each([-1.125, -0.875, 0.875, 1.125])(
+    "uses the firing arc at %s half-arcs off the barrel without steering it",
+    (arcs) => {
       const f = fixture(["rail"]);
       f.ship.rotation = 0.4;
       f.system.weapons[0].mount.angle = 0.3;
       const pose = weaponPose(f.ship, f.system.weapons[0].mount);
-      const bearing = pose.angle + (degrees * Math.PI) / 180;
+      const bearing = pose.angle + arcs * WEAPONS.rail.arc;
+      const reach = WEAPONS.rail.range / 2;
       f.system.bodies.push(
         body(
           "fragment",
-          pose.muzzleX + Math.cos(bearing) * 300,
-          pose.muzzleY + Math.sin(bearing) * 300,
+          pose.muzzleX + Math.cos(bearing) * reach,
+          pose.muzzleY + Math.sin(bearing) * reach,
         ),
       );
       f.step();
-      expect(f.system.shotsFired).toBe(Math.abs(degrees) < 8 ? 1 : 0);
+      expect(f.system.shotsFired).toBe(Math.abs(arcs) < 1 ? 1 : 0);
       if (f.system.shots[0]) {
+        const { speed } = WEAPONS.rail;
         expect(f.system.shots[0].angle).toBeCloseTo(pose.angle);
-        expect(f.system.shots[0].vx).toBeCloseTo(Math.cos(pose.angle) * 600);
-        expect(f.system.shots[0].vy).toBeCloseTo(Math.sin(pose.angle) * 600);
+        expect(f.system.shots[0].vx).toBeCloseTo(Math.cos(pose.angle) * speed);
+        expect(f.system.shots[0].vy).toBeCloseTo(Math.sin(pose.angle) * speed);
       }
     },
   );
@@ -480,15 +495,18 @@ describe("Derelicts weapons and salvage", () => {
     );
     f.step();
     expect(f.system.shots).toHaveLength(1);
-    f.resources.power = 5; // below the energy floor: no further shots
-    f.step(60);
+    f.resources.power = UNDER_FLOOR;
+    // Long enough to fly past acquisition range.
+    f.step(Math.ceil(WEAPONS.rail.range / WEAPONS.rail.speed / STEP) + 1);
     expect(f.system.hits).toBe(0);
     expect(f.system.events.some((event) => event.kind === "collision")).toBe(
       false,
     );
     expect(f.system.shots).toHaveLength(1);
-    expect(f.system.shots[0].x - pose.muzzleX).toBeGreaterThan(600);
-    f.step(120);
+    expect(f.system.shots[0].x - pose.muzzleX).toBeGreaterThan(
+      WEAPONS.rail.range,
+    );
+    f.step(CROSSING_STEPS);
     expect(f.system.shots).toHaveLength(0);
   });
   it("hits beyond acquisition range and emits its plume at the swept contact point", () => {
@@ -498,11 +516,16 @@ describe("Derelicts weapons and salvage", () => {
       body("fragment", pose.muzzleX + 300, pose.muzzleY + 30),
     );
     f.step();
-    f.resources.power = 5; // below the energy floor: no further shots
-    const distant = body("wreck", pose.muzzleX + 900, pose.muzzleY, 2);
-    distant.hull = 105;
+    f.resources.power = UNDER_FLOOR;
+    const distant = body(
+      "wreck",
+      pose.muzzleX + 1.5 * WEAPONS.rail.range,
+      pose.muzzleY,
+      2,
+    );
+    distant.hull = WEAPONS.rail.damage + 5;
     f.system.bodies.push(distant);
-    for (let i = 0; i < 100 && f.system.hits === 0; i++) f.step();
+    for (let i = 0; i < CROSSING_STEPS && f.system.hits === 0; i++) f.step();
     expect(distant.hull).toBe(5);
     expect(f.system.shots).toHaveLength(0);
     const impacts = f.system.events.filter(
@@ -510,56 +533,71 @@ describe("Derelicts weapons and salvage", () => {
     );
     expect(impacts).toHaveLength(1);
     expect(impacts[0].x).toBeLessThan(distant.x);
-    expect(impacts[0].x).toBeGreaterThan(distant.x - 60);
+    expect(impacts[0].x).toBeGreaterThan(
+      distant.x - getDerelictRadius({ ...distant, kind: "wreck" }),
+    );
     expect(impacts[0].y).toBeCloseTo(distant.y);
   });
-  it("deals 100 rail damage to an 85-hull wreck and 5 laser damage to a 12-hull shard", () => {
+  it("destroys a stock wreck with rail rounds and wears a shard down by laser pulses", () => {
     const rail = fixture(["rail"]);
     rail.system.bodies.push(body("wreck", 550, 400));
-    rail.step(12);
-    expect(rail.system.shotsFired).toBe(1);
+    for (let i = 0; i < 10 * CROSSING_STEPS && !rail.system.destroyed; i++)
+      rail.step();
     expect(rail.system.destroyed).toBe(1);
-    expect(rail.system.energySpent).toBe(3);
+    expect(rail.system.shotsFired).toBe(
+      Math.ceil(SALVAGE.wreck.hull / WEAPONS.rail.damage),
+    );
+    expect(rail.system.energySpent).toBeCloseTo(
+      rail.system.shotsFired * WEAPONS.rail.energy,
+    );
     const laser = fixture(["laser"]);
+    const { damage, cooldown, range } = WEAPONS.laser;
+    const pulse = Math.round(cooldown / STEP);
     const pose = weaponPose(laser.ship, laser.system.weapons[0].mount);
-    const shard = body("fragment", pose.x + 100, pose.y);
+    const shard = body("fragment", pose.x + range / 2, pose.y);
+    shard.hull = 3 * damage - 1;
     laser.system.bodies.push(shard);
     laser.step();
-    expect(shard.hull).toBe(7);
-    laser.step(15);
-    expect(shard.hull).toBe(2);
-    laser.step(15);
+    expect(shard.hull).toBe(2 * damage - 1);
+    laser.step(pulse);
+    expect(shard.hull).toBe(damage - 1);
+    laser.step(pulse);
     expect(laser.system.bodies).toHaveLength(0);
     expect(laser.system.laserPulses).toBe(3);
   });
-  it("limits laser acquisition to 160 units", () => {
+  it("limits laser acquisition to its range", () => {
     const f = fixture(["laser"]);
     const pose = weaponPose(f.ship, f.system.weapons[0].mount);
-    const wreck = body("wreck", pose.x + 161, pose.y);
+    const wreck = body("wreck", pose.x + WEAPONS.laser.range + 1, pose.y);
     f.system.bodies.push(wreck);
     f.step(30);
     expect(f.system.laserPulses).toBe(0);
-    wreck.x = pose.x + 159;
+    wreck.x = pose.x + WEAPONS.laser.range - 1;
     f.step();
     expect(f.system.laserPulses).toBe(1);
   });
-  it("applies a mass-scaled 0.34-ion recoil for exactly 0.22 seconds in the shot direction", () => {
+  it("applies a mass-scaled recoil for exactly its duration in the shot direction", () => {
     const f = fixture(["rail"]);
     f.system.bodies.push(body("wreck", 550, 400));
     f.step();
-    const acceleration = (220 * 115 * 0.34) / buildStats(f.loadout).mass;
+    const { recoilStrength, recoilDuration, speed, energy } = WEAPONS.rail;
+    const acceleration =
+      (ASSEMBLED_ION_DEFAULTS.acceleration *
+        ION_REFERENCE_MASS *
+        recoilStrength) /
+      buildStats(f.loadout).mass;
     expect(f.ship.vel.x).toBeCloseTo(-acceleration * STEP);
     const shot = f.system.shots[0];
-    expect(shot.vx).toBe(600);
+    expect(shot.vx).toBe(speed);
     f.resources.power = 10;
     f.ship.rotation = Math.PI / 2;
-    f.step(13);
-    expect(f.ship.vel.x).toBeCloseTo(-acceleration * 0.22);
+    f.step(Math.ceil(recoilDuration / STEP));
+    expect(f.ship.vel.x).toBeCloseTo(-acceleration * recoilDuration);
     expect(f.ship.vel.y).toBeCloseTo(0);
     expect(f.system.weapons[0].recoil).toBeNull();
     f.step(30);
-    expect(f.ship.vel.x).toBeCloseTo(-acceleration * 0.22);
-    expect(f.system.energySpent).toBe(3);
+    expect(f.ship.vel.x).toBeCloseTo(-acceleration * recoilDuration);
+    expect(f.system.energySpent).toBe(energy);
   });
   it("tracks at a finite rate and gives an incoming fragment priority over a wreck", () => {
     const f = fixture(["laser"]);
@@ -569,9 +607,13 @@ describe("Derelicts weapons and salvage", () => {
     );
     f.step();
     expect(f.system.weapons[0].target).toBe(2);
-    expect(f.system.weapons[0].angle).toBeCloseTo(Math.PI / 30);
+    expect(f.system.weapons[0].angle).toBeCloseTo(
+      WEAPONS.laser.turnSpeed * STEP,
+    );
     expect(f.system.laserPulses).toBe(0);
-    f.step(50);
+    // Until the fragment would reach the ship.
+    for (let i = 0; i < 120 && f.system.bodies.some((b) => b.id === 2); i++)
+      f.step();
     expect(f.system.bodies.some((b) => b.id === 2)).toBe(false);
     expect(f.resources.hull).toBe(100);
   });
@@ -580,12 +622,16 @@ describe("Derelicts weapons and salvage", () => {
     f.system.bodies.push(body("wreck", 550, 400));
     for (let i = 0; i < 360 && f.system.destroyed === 0; i++) f.step();
     expect(f.system.destroyed).toBe(1);
-    expect(f.system.laserPulses).toBe(17);
+    expect(f.system.laserPulses).toBe(
+      Math.ceil(SALVAGE.wreck.hull / WEAPONS.laser.damage),
+    );
     expect(f.system.bodies.filter((b) => b.kind === "fragment")).toHaveLength(
-      8,
+      SALVAGE.fragment.count,
     );
     expect(f.system.bodies.filter((b) => b.kind === "cell")).toHaveLength(1);
-    expect(f.system.energySpent).toBe(8.5);
+    expect(f.system.energySpent).toBeCloseTo(
+      f.system.laserPulses * WEAPONS.laser.energy,
+    );
   });
   it("releases a moving wreck's fragment from its swept rail contact pose", () => {
     const f = fixture();
@@ -597,7 +643,7 @@ describe("Derelicts weapons and salvage", () => {
       { x: 5900, y: 0 },
       0,
       STEP,
-      0.3,
+      WRECK_SPIN,
     );
     expect(impact).not.toBeNull();
     if (!impact) throw new Error("Missing impact");
@@ -610,7 +656,7 @@ describe("Derelicts weapons and salvage", () => {
     expect(fragment).toBeDefined();
     if (!fragment) throw new Error("Missing fragment");
     const site = DERELICT_SHARDS[0],
-      angle = impact.time * 0.3;
+      angle = impact.time * WRECK_SPIN;
     const dx = (site.x - DERELICT_ORIGIN.x) * DERELICT_SCALE;
     const dy = (site.y - DERELICT_ORIGIN.y) * DERELICT_SCALE;
     expect(fragment.x).toBeCloseTo(
@@ -635,7 +681,7 @@ describe("Derelicts weapons and salvage", () => {
       { x: 5900, y: 0 },
       0,
       STEP,
-      0.3,
+      WRECK_SPIN,
     );
     if (!impact) throw new Error("Missing impact");
     f.system.bodies.push(wreck);
@@ -647,7 +693,7 @@ describe("Derelicts weapons and salvage", () => {
     expect(releases).toHaveLength(1);
     const cell = cells[0],
       event = releases[0],
-      angle = 0.7 + impact.time * 0.3;
+      angle = 0.7 + impact.time * WRECK_SPIN;
     const dx = (DERELICT_ENERGY_SOURCE.x - DERELICT_ORIGIN.x) * DERELICT_SCALE;
     const dy = (DERELICT_ENERGY_SOURCE.y - DERELICT_ORIGIN.y) * DERELICT_SCALE;
     expect(cell.x).toBeCloseTo(
@@ -656,16 +702,22 @@ describe("Derelicts weapons and salvage", () => {
     expect(cell.y).toBeCloseTo(
       400 + dx * Math.sin(angle) + dy * Math.cos(angle),
     );
-    expect(cell.vx).toBeCloseTo(100 + 45 * Math.sin(angle));
-    expect(cell.vy).toBeCloseTo(-45 * Math.cos(angle));
+    const eject = DERELICT_ENERGY_EJECTION;
+    expect(cell.vx).toBeCloseTo(
+      100 + eject.x * Math.cos(angle) - eject.y * Math.sin(angle),
+    );
+    expect(cell.vy).toBeCloseTo(
+      eject.x * Math.sin(angle) + eject.y * Math.cos(angle),
+    );
     expect(cell.rotation).toBeCloseTo(angle);
     expect(event.x).toBe(cell.x);
     expect(event.y).toBe(cell.y);
-    f.step(10);
+    // Inside the cue's life, then past it.
+    f.step(Math.floor(DERELICT_RELEASE_CUE.duration / STEP) - 2);
     expect(cell.rotation).toBeCloseTo(angle);
     expect(cell.x).not.toBe(event.x);
     expect(f.system.events).toContain(event);
-    f.step(8);
+    f.step(4);
     expect(f.system.events).not.toContain(event);
   });
   it("keeps the active release cue when impact traffic fills the bounded event ring", () => {
@@ -673,7 +725,9 @@ describe("Derelicts weapons and salvage", () => {
     f.system.bodies.push(body("wreck", 550, 400, 1000));
     f.system.shots.push({ x: 550, y: 400, vx: 0, vy: 0, angle: 0 });
     f.step();
-    for (let batch = 0; batch < 2; batch++) {
+    // Each batch adds 64 impacts; a bounded ring stops growing.
+    const lengths: number[] = [];
+    for (let batch = 0; batch < 6; batch++) {
       for (let round = 0; round < 64; round++)
         f.system.shots.push({
           x: f.star.pos.x,
@@ -683,8 +737,10 @@ describe("Derelicts weapons and salvage", () => {
           angle: 0,
         });
       f.step();
+      lengths.push(f.system.events.length);
     }
-    expect(f.system.events).toHaveLength(128);
+    expect(lengths.at(-1)).toBe(lengths.at(-2));
+    expect(lengths.at(-1)).toBeLessThan(6 * 64);
     expect(
       f.system.events.some((event) => event.kind === "energy-release"),
     ).toBe(true);
@@ -739,6 +795,7 @@ describe("Derelicts weapons and salvage", () => {
     const wreck = body("wreck", 550, 400);
     f.system.bodies.push(wreck);
     const seen: number[] = [];
+    let shed = 0;
     for (let i = 0; i < 360 && wreck.hull > 0; i++) {
       f.step();
       for (const piece of f.system.bodies.filter(
@@ -747,11 +804,17 @@ describe("Derelicts weapons and salvage", () => {
         if (!seen.includes(piece.shardIndex ?? -1))
           seen.push(piece.shardIndex ?? -1);
       }
-      if (wreck.hull > 0)
+      if (wreck.hull > 0) {
+        shed = seen.length;
         expect(f.system.bodies.some((b) => b.kind === "cell")).toBe(false);
+      }
     }
-    expect(seen.slice(0, 3)).toEqual([0, 6, 3]);
-    expect(seen.slice().sort()).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
+    // Some pieces left before destruction released the rest.
+    expect(shed).toBeGreaterThan(0);
+    expect(shed).toBeLessThan(SALVAGE.fragment.count);
+    expect(seen.slice().sort()).toEqual(
+      Array.from({ length: SALVAGE.fragment.count }, (_, i) => i),
+    );
     expect(f.system.playerKills).toBe(1);
   });
   it.each(["star", "planet"] as const)(
@@ -789,7 +852,7 @@ describe("Derelicts weapons and salvage", () => {
         f.system.events.filter((e) => e.kind === "energy-release"),
       ).toHaveLength(0);
       expect(f.system.bodies.filter((b) => b.kind === "fragment")).toHaveLength(
-        7,
+        SALVAGE.fragment.count - 1,
       );
       expect(f.system.bodies.filter((b) => b.kind === "cell")).toHaveLength(0);
       expect(wreck.x).toBeLessThan(hazard.pos.x - hazard.radius);
@@ -827,7 +890,7 @@ describe("Derelicts weapons and salvage", () => {
   });
   it.each([
     { name: "rail before ram", start: 550, damage: 0 },
-    { name: "ram before rail", start: 680, damage: 30 },
+    { name: "ram before rail", start: 680, damage: SALVAGE.wreck.contact },
   ])("orders $name within the same step", ({ start, damage }) => {
     const f = fixture();
     const wreck = body("wreck", 500, 400, 1, -300, 0);
@@ -894,7 +957,7 @@ describe("Derelicts weapons and salvage", () => {
     expect(f.system.bodies.filter((b) => b.kind === "cell")).toHaveLength(1);
     expect(
       f.system.bodies.filter((b) => b.kind === "fragment").length,
-    ).toBeLessThanOrEqual(8);
+    ).toBeLessThanOrEqual(SALVAGE.fragment.count);
   });
   it("blocks laser and rail fire through the star and absorbs existing rounds", () => {
     const f = fixture(["rail", "laser"]);
@@ -912,18 +975,23 @@ describe("Derelicts weapons and salvage", () => {
     });
     f.step();
     expect(f.system.shots).toHaveLength(0);
-    expect(f.system.bodies[0].hull).toBe(85);
+    expect(f.system.bodies[0].hull).toBe(SALVAGE.wreck.hull);
   });
   it("applies fragment damage and capped collection once, with cells immune to weapons", () => {
     const f = fixture();
-    f.resources.power = 90;
+    // Room for half a cell, so collection is capped.
+    const room = SALVAGE.cell.energy / 2;
+    f.resources.power = 100 - room;
     f.system.bodies.push(body("fragment", 400, 400), body("cell", 400, 400, 2));
     f.step(2);
-    expect(f.resources).toEqual({ hull: 95, power: 100 });
+    expect(f.resources).toEqual({
+      hull: 100 - SALVAGE.fragment.contact,
+      power: 100,
+    });
     expect(f.system.events.some((event) => event.kind === "collision")).toBe(
       false,
     );
-    expect(f.system.energyCollected).toBe(10);
+    expect(f.system.energyCollected).toBe(room);
     expect(f.system.bodies).toHaveLength(0);
     const armed = fixture(["rail", "laser"]);
     armed.system.bodies.push(body("cell", 550, 400));
@@ -931,21 +999,31 @@ describe("Derelicts weapons and salvage", () => {
     expect(armed.system.energySpent).toBe(0);
     expect(armed.system.bodies).toHaveLength(1);
   });
-  it("deals 30 on wreck contact with one shared impact plume, and never sweeps across a player wrap", () => {
+  it("deals wreck contact damage with one shared impact plume, and never sweeps across a player wrap", () => {
     const f = fixture();
     f.system.bodies.push(body("wreck", 420, 400));
+    // Where the ship's circle first meets the wreck's material.
+    const contact = castDerelict(
+      { kind: "wreck", x: 420, y: 400, rotation: 0 },
+      { x: f.ship.pos.x, y: f.ship.pos.y },
+      { x: 0, y: 0 },
+      f.ship.radius,
+      1,
+      WRECK_SPIN * STEP,
+    );
+    if (!contact) throw new Error("Missing contact");
     f.step();
-    expect(f.resources.hull).toBe(70);
+    expect(f.resources.hull).toBe(100 - SALVAGE.wreck.contact);
     expect(f.system.destroyed).toBe(1);
     const plumes = f.system.events.filter(
       (event) => event.kind === "collision",
     );
     expect(plumes).toHaveLength(1);
-    expect(plumes[0].x).toBeCloseTo(402.772, 2);
-    expect(plumes[0].y).toBeCloseTo(397.743, 2);
+    expect(plumes[0].x).toBeCloseTo(contact.surfaceX, 2);
+    expect(plumes[0].y).toBeCloseTo(contact.surfaceY, 2);
     expect(
       f.system.bodies.filter((body) => body.kind === "fragment"),
-    ).toHaveLength(8);
+    ).toHaveLength(SALVAGE.fragment.count);
     expect(f.system.bodies.filter((body) => body.kind === "cell")).toHaveLength(
       1,
     );
@@ -982,9 +1060,14 @@ describe("Derelicts weapons and salvage", () => {
       b = new Simulation(settings);
     a.start();
     b.start();
+    // Past the first arrival, before the earliest second one.
+    const { firstPass, intervalMin } = ENCOUNTER;
+    const half = Math.round(
+      (firstPass.max + firstPass.min + intervalMin) / 2 / 2 / STEP,
+    );
     const replay = [
-      { ...idle, ticks: 180, sendDerelict: true },
-      { ...idle, ticks: 180 },
+      { ...idle, ticks: half, sendDerelict: true },
+      { ...idle, ticks: half },
     ];
     a.replay(replay);
     b.replay(replay);

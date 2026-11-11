@@ -84,11 +84,11 @@ Planets cannot overlap at any point in their orbits. For two planets with radii 
 
 ### Definition of Done
 
-- [x] Planet renders with a distinct visual style (flat vector, solid color) distinguishable from the Star.
-- [x] Physics engine applies local gravity near the planet (inverse square law).
-- [x] Ships collide/bounce off the planet surface (elastic collision with restitution 0.8).
-- [x] Planet orbits around a center point with configurable speed.
-- [x] Orbit path visualized with faint line.
+- Planet renders with a distinct visual style (flat vector, solid color) distinguishable from the Star.
+- Physics engine applies local gravity near the planet (inverse square law).
+- Ships collide/bounce off the planet surface (elastic collision with restitution 0.8).
+- Planet orbits around a center point with configurable speed.
+- Orbit path visualized with faint line.
 
 ### Regression Guardrails
 
@@ -187,11 +187,11 @@ Specified in [gravity-field.md](../gravity-field/spec.md#bodies-in-play).
 
 ## Future Enhancements
 
-- [ ] Add planet rotation animation
-- [ ] Add surface detail (procedural craters, terrain)
-- [ ] Add ship damage on high-velocity impacts
-- [ ] Add atmospheric drag near large planets
-- [ ] Ring collision detection
+- Add planet rotation animation
+- Add surface detail (procedural craters, terrain)
+- Add ship damage on high-velocity impacts
+- Add atmospheric drag near large planets
+- Ring collision detection
 
 ---
 

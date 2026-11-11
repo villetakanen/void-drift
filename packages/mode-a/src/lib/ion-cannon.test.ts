@@ -1,6 +1,6 @@
 import { Vec2 } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
-import { BUILD_FLIGHT_SCALE, buildMounts, weaponPose } from "./build-renderer";
+import { buildMounts, weaponPose } from "./build-renderer";
 import { createStar } from "./game-loop";
 import { ION_CANNON_MUZZLE } from "./ion-cannon-art";
 import { type SalvageBody, SalvageSystem } from "./salvage";
@@ -68,7 +68,7 @@ describe("Light Ion Cannon", () => {
       true,
     );
     const f = fixture();
-    expect(f.system.weapons).toHaveLength(2);
+    expect(f.system.weapons).toHaveLength(f.loadout.hull.length);
     expect(slotAccepts("engine", "G")).toBe(false);
     expect(slotAccepts("support", "G")).toBe(false);
     expect(slotAccepts("equipment", "G")).toBe(true);
@@ -79,7 +79,6 @@ describe("Light Ion Cannon", () => {
       expect(Math.hypot(p.muzzleX - p.x, p.muzzleY - p.y)).toBeCloseTo(
         ION_CANNON_MUZZLE,
       );
-      expect(ION_CANNON_MUZZLE / BUILD_FLIGHT_SCALE).toBeGreaterThan(16);
     }
   });
   it.each([
@@ -103,26 +102,30 @@ describe("Light Ion Cannon", () => {
   });
   it("fires the ready volley, charges every miss, respects independent cooldowns and has no recoil", () => {
     const f = fixture();
+    const volley = f.system.weapons.length;
+    const cooldown = Math.round(ION_CANNON.cooldown / STEP);
     f.target();
     f.step();
-    expect(f.system.ionDischarges).toBe(2);
-    expect(f.system.energySpent).toBeCloseTo(0.4);
+    expect(f.system.ionDischarges).toBe(volley);
+    expect(f.system.energySpent).toBeCloseTo(volley * ION_CANNON.energy);
     expect(f.system.weapons.every((w) => w.recoil === null)).toBe(true);
-    f.step(18);
-    expect(f.system.ionDischarges).toBe(2);
+    f.step(cooldown - 2);
+    expect(f.system.ionDischarges).toBe(volley);
     f.step(2);
-    expect(f.system.ionDischarges).toBe(4);
+    expect(f.system.ionDischarges).toBe(2 * volley);
   });
   it("allocates scarce power in stable mount order", () => {
     const f = fixture();
-    f.energy.capacity = 1; // keeps the 10% floor below the shot cost
+    // A two-shot capacity keeps the energy floor below the power left for a shot.
+    f.energy.capacity = 2 * ION_CANNON.energy;
     f.target();
-    f.resources.power = 0.3;
+    // Funds one shot, not two.
+    f.resources.power = 1.5 * ION_CANNON.energy;
     f.step();
     expect(f.system.ionDischarges).toBe(1);
     expect(f.system.weapons[0].readyAt).toBeGreaterThan(0);
     expect(f.system.weapons[1].readyAt).toBe(0);
-    expect(f.resources.power).toBeCloseTo(0.1);
+    expect(f.resources.power).toBeCloseTo(0.5 * ION_CANNON.energy);
   });
   it("stops at the first real hull and blocks the trigger behind world geometry", () => {
     const f = fixture();
@@ -162,9 +165,10 @@ describe("Light Ion Cannon", () => {
       }
     expect(found).toBe(true);
     expect(f.system.ionContact(400, 400, 0, f.star, []).hit).toBe(t);
+    const volley = f.system.weapons.length;
     f.step();
-    expect(f.system.ionDischarges).toBe(2);
-    expect(f.system.energySpent).toBeCloseTo(0.4);
+    expect(f.system.ionDischarges).toBe(volley);
+    expect(f.system.energySpent).toBeCloseTo(volley * ION_CANNON.energy);
     expect(
       f.system.events
         .filter((e) => e.kind === "ion-cannon")
@@ -178,7 +182,7 @@ describe("Light Ion Cannon", () => {
     const t = f.target();
     t.hull = 1;
     f.step();
-    expect(f.system.ionDischarges).toBe(2);
+    expect(f.system.ionDischarges).toBe(f.system.weapons.length);
     expect(f.system.playerKills).toBe(1);
     const spent = f.system.energySpent;
     f.step(3);
@@ -202,7 +206,7 @@ describe("Light Ion Cannon", () => {
       }
     expect(found).toBe(true);
     f.step();
-    expect(f.system.ionDischarges).toBe(2);
+    expect(f.system.ionDischarges).toBe(f.system.weapons.length);
   });
   it("does not acquire material outside the rectangle or behind the ship", () => {
     const f = fixture();

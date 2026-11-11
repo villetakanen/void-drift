@@ -76,24 +76,24 @@ Survival is the only mode whose runs can be ranked.
 
 ### Definition of Done
 
-- [x] S1: Every Survival launch uses a fresh seed; the same seed gives the same
+- S1: Every Survival launch uses a fresh seed; the same seed gives the same
   system, entry and derelict arrivals.
-- [x] S2: The ship enters at the system edge moving inward at speed.
-- [ ] S3: The world holds still through a 3, 2, 1 count with time, resources and
+- S2: The ship enters at the system edge moving inward at speed.
+- S3: The world holds still through a 3, 2, 1 count with time, resources and
   score not advancing; pause and a hidden page hold the count; GO releases
   play with held controls applied.
-- [x] S4: A run starts with full hull and full energy for the fitted ship.
-- [x] S5: Star contact, zero hull and zero energy each end the run and record
+- S4: A run starts with full hull and full energy for the fitted ship.
+- S5: Star contact, zero hull and zero energy each end the run and record
   their cause, with star contact first and hull before energy.
-- [x] S6: Exposure near the star and collisions with planets reduce hull.
-- [x] S7: Time freezes when the run ends and starts from zero on a fresh run.
-- [x] S8: Derelict arrivals follow `SURVIVAL_ENCOUNTER`, are deterministic for a
+- S6: Exposure near the star and collisions with planets reduce hull.
+- S7: Time freezes when the run ends and starts from zero on a fresh run.
+- S8: Derelict arrivals follow `SURVIVAL_ENCOUNTER`, are deterministic for a
   seed, and do not change with the player's position or motion; the first
   falls in its seeded window, every later gap is longer than that window, and
   no arrival happens while a derelict or its pieces are in play.
-- [x] S9: The score equals `Simulation.survivalScore`, is deterministic for a
+- S9: The score equals `Simulation.survivalScore`, is deterministic for a
   seed, and counts whole seconds only.
-- [ ] S10: The running score shows during a scored run and the final score on
+- S10: The running score shows during a scored run and the final score on
   run complete.
 
 ### Regression guardrails

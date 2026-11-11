@@ -130,6 +130,10 @@ export class Simulation {
   get derelictsResult(): Readonly<DerelictsResult> | null {
     return this.finalDerelictsResult;
   }
+  /** Gameplay seconds survived, rounded to the millisecond. */
+  get elapsedSeconds(): number {
+    return Math.round(this.ticks * STEP * 1000) / 1000;
+  }
   /** Whole gameplay seconds survived; a partial second does not count. */
   get wholeSeconds(): number {
     return Math.floor(this.ticks * STEP + 1e-9);

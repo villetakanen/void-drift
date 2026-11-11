@@ -96,34 +96,34 @@ never the run.
 
 ### Definition of Done
 
-- [ ] Every flight mode fills the viewport without a header, footer or document
+- Every flight mode fills the viewport without a header, footer or document
   overflow.
-- [ ] At 4:3 and every wider ratio, ultra-wide included, the stage fills the
+- At 4:3 and every wider ratio, ultra-wide included, the stage fills the
   safe viewport with a logical height of 1080 and a logical width that follows
   the viewport ratio.
-- [ ] Side gutters are 180 CSS px and top and bottom gutters 48 CSS px at every
+- Side gutters are 180 CSS px and top and bottom gutters 48 CSS px at every
   stage size; the active area is the safe viewport less 360 × 96 CSS px, exposed
   in CSS pixels and logical units, centred, and independent of the rendering
   bounds.
-- [ ] A viewport narrower than 4:3 blocks flight and countdown, clears input,
+- A viewport narrower than 4:3 blocks flight and countdown, clears input,
   and shows the rotate-to-continue message before further simulation advancement.
-- [x] Active play exposes no focusable page navigation; Pause and completed-run
+- Active play exposes no focusable page navigation; Pause and completed-run
   actions provide deliberate exits, preserving the correct launch-source return.
-- [ ] Two-thumb pad input works without selection, callouts or document
+- Two-thumb pad input works without selection, callouts or document
   gestures on iPad Safari; cancellation and lost capture leave no stuck thrust.
-- [ ] Each side gutter holds its thrust pads at the bottom, its deck button
+- Each side gutter holds its thrust pads at the bottom, its deck button
   just above them (Pause left, Weapons right) and its instruments at the top
   (hull and power left, time and score right); the bottom gutter holds the mode label and
   status lines; no deck part covers the active area.
-- [ ] At a safe viewport height of 700 CSS px and above, each side gutter's
+- At a safe viewport height of 700 CSS px and above, each side gutter's
   instruments, deck button and full-height pads do not overlap.
-- [ ] Pause toggles pause as Escape does; Weapons is disabled and drawn at 50%
+- Pause toggles pause as Escape does; Weapons is disabled and drawn at 50%
   opacity in every mode; both keep at least 44 CSS px of height.
-- [ ] The mode label reads `G CLASS / SHARED CHALLENGE` for a ranked run,
+- The mode label reads `G CLASS / SHARED CHALLENGE` for a ranked run,
   `GOD MODE` for Practice and `UNRANKED` for any other run.
-- [ ] Restoring a 4:3 or wider viewport, or the foreground, preserves the run and
+- Restoring a 4:3 or wider viewport, or the foreground, preserves the run and
   requires Resume, without a time jump or stale thrust.
-- [ ] Pause and game-over dialogs retain keyboard focus behavior and editable
+- Pause and game-over dialogs retain keyboard focus behavior and editable
   initials; gameplay gesture containment does not interfere with those fields.
 
 ### Regression guardrails

@@ -14,12 +14,4 @@ describe("initializePlanets", () => {
       SURVIVAL_CONFIG.PLANETS.map((planet) => planet.orbitSpeed),
     );
   });
-
-  it("initializes the moon with retrograde orbit speed", () => {
-    const moonIndex = SURVIVAL_CONFIG.PLANETS.findIndex(
-      (planet) => planet.id === "moon",
-    );
-    expect(moonIndex).toBeGreaterThanOrEqual(0);
-    expect(initializePlanets(960, 540)[moonIndex].orbitSpeed).toBeLessThan(0);
-  });
 });

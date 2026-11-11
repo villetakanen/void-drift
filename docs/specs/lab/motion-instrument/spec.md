@@ -187,32 +187,32 @@ and measurements. The time cursor selects a point in the existing results.
 
 ### Definition of Done
 
-- [ ] The designer can export current values; the pane has no configuration-import
+- The designer can export current values; the pane has no configuration-import
   control. Agent-supplied configurations remain schema-validated.
-- [ ] Moving the time cursor or changing the path view updates the presentation
+- Moving the time cursor or changing the path view updates the presentation
   while preserving experiment settings and calculated paths and measurements.
-- [ ] Export contains the experiment's current configured values and leaves game
+- Export contains the experiment's current configured values and leaves game
   values unchanged.
-- [x] Every Ship tuning burn is exactly 840 ticks (unit test).
-- [ ] The configuration schema and controls express tuning values at experiment
+- Every Ship tuning burn is exactly 840 ticks (unit test).
+- The configuration schema and controls express tuning values at experiment
   scope rather than as per-vehicle property overrides. Update validation and export
   together; reject invalid loadouts, unknown tuning fields and unknown burns.
-- [ ] A ship and its no-gravity shadow use identical hull and equipment properties,
+- A ship and its no-gravity shadow use identical hull and equipment properties,
   motion settings, burn and starting state; gravity is their only condition difference.
-- [ ] Ships with the same hull and equipment in the same mounts produce identical
+- Ships with the same hull and equipment in the same mounts produce identical
   paths and measurements under identical starting conditions, burn inputs,
   environment and motion settings.
-- [ ] Simulation uses the current production functions with the experiment’s
+- Simulation uses the current production functions with the experiment’s
   configured values; verify this independently of historical study calculations.
-- [ ] Multiple instances in one study have independent configurations and results;
+- Multiple instances in one study have independent configurations and results;
   editing an exposed variable preserves fixed conditions and other instances.
-- [x] `/lab/instrument` renders the starting document with three vehicles in the
+- `/lab/instrument` renders the starting document with three vehicles in the
   legend and three graphs (browser test).
-- [x] Switching the burn redraws every view and changes the document (browser test).
-- [x] The pane opens from the menu button, moves focus to its close button, and
+- Switching the burn redraws every view and changes the document (browser test).
+- The pane opens from the menu button, moves focus to its close button, and
   closes on Escape with focus returned (browser test).
-- [x] An edited value updates the graphs and the document (browser test).
-- [x] Each reference page renders its components (browser test).
+- An edited value updates the graphs and the document (browser test).
+- Each reference page renders its components (browser test).
 
 ### Regression Guardrails
 

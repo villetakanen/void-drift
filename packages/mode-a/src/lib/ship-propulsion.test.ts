@@ -1,6 +1,7 @@
 import { massWellAcceleration, massWellReach, Vec2 } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { applyBuildEngines, type EngineTimers } from "./build-flight";
+import { buildMounts } from "./build-renderer";
 import {
   buildStats,
   CHASSIS,
@@ -34,24 +35,7 @@ function fullComplement(
 }
 
 describe("ship propulsion contract", () => {
-  it("owns the accepted hull and engine values with strict numeric validation", () => {
-    expect(
-      Object.fromEntries(
-        Object.entries(CHASSIS).map(([id, hull]) => [id, hull.baseSpeed]),
-      ),
-    ).toEqual({
-      fiddler: 280,
-      wasp: 420,
-      scout: 370,
-      fighter: 330,
-      corvette: 240,
-    });
-    expect([
-      PARTS.ion.speedContribution,
-      PARTS["heavy-ion"].speedContribution,
-      PARTS.fusion.speedContribution,
-      PARTS.plasma.speedContribution,
-    ]).toEqual([8, 11, 17, 9]);
+  it("strictly validates hull base speeds and engine speed contributions", () => {
     expect(
       ChassisSchema.safeParse({ ...CHASSIS.scout, baseSpeed: Infinity })
         .success,
@@ -69,32 +53,28 @@ describe("ship propulsion contract", () => {
   });
 
   it("counts physical main engines, including Wasp centre and Fiddler aft pair", () => {
-    const counts = Object.fromEntries(
-      (["scout", "wasp", "fighter", "corvette", "fiddler"] as const).map(
-        (hull) => [
-          hull,
-          buildStats(fullComplement(hull, "ion")).engineBreakdown[0].count,
-        ],
-      ),
-    );
-    expect(counts).toEqual({
-      scout: 3,
-      wasp: 1,
-      fighter: 4,
-      corvette: 5,
-      fiddler: 4,
-    });
-    expect(
-      (["scout", "wasp", "fighter", "corvette", "fiddler"] as const).map(
-        (hull) => buildStats(fullComplement(hull, "ion")).poweredCruiseCeiling,
-      ),
-    ).toEqual([394, 428, 362, 280, 312]);
-    expect(
-      (["scout", "wasp", "fighter", "corvette", "fiddler"] as const).map(
-        (hull) =>
-          buildStats(fullComplement(hull, "fusion")).poweredCruiseCeiling,
-      ),
-    ).toEqual([421, 437, 398, 325, 348]);
+    for (const hull of [
+      "scout",
+      "wasp",
+      "fighter",
+      "corvette",
+      "fiddler",
+    ] as const) {
+      for (const engine of ["ion", "fusion"] as const) {
+        const build = fullComplement(hull, engine);
+        const engineMounts = buildMounts(build).filter(
+          (mount) => mount.group !== "hull",
+        ).length;
+        const stats = buildStats(build);
+        expect(stats.engineBreakdown, hull).toEqual([
+          expect.objectContaining({ id: engine, count: engineMounts }),
+        ]);
+        expect(stats.poweredCruiseCeiling, hull).toBe(
+          CHASSIS[hull].baseSpeed +
+            engineMounts * PARTS[engine].speedContribution,
+        );
+      }
+    }
   });
 
   it("equipment and stabilizers contribute nothing; every fitted engine counts while inactive", () => {
@@ -104,10 +84,14 @@ describe("ship propulsion contract", () => {
     build.stabilizers = !build.stabilizers;
     expect(buildStats(build).poweredCruiseCeiling).toBe(initial);
     build.aft[0] = "plasma";
-    expect(buildStats(build).poweredCruiseCeiling).toBe(initial + 9);
+    expect(buildStats(build).poweredCruiseCeiling).toBe(
+      initial + PARTS.plasma.speedContribution,
+    );
     const craft = ship();
     applyBuildEngines(craft, build, idle, 1 / 60, false);
-    expect(buildStats(build).poweredCruiseCeiling).toBe(initial + 9);
+    expect(buildStats(build).poweredCruiseCeiling).toBe(
+      initial + PARTS.plasma.speedContribution,
+    );
   });
 
   it.each(["plasma", "fusion"] as const)(

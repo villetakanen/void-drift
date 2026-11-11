@@ -213,38 +213,38 @@ tests/review/flight-scene-fidelity.spec.ts`), which writes
 
 ### Definition of Done
 
-- [x] The schema accepts a valid document and refuses an invalid one, including
+- The schema accepts a valid document and refuses an invalid one, including
   unknown fields, out-of-range values, too many targets and a `start` without
   `rotation` (unit test).
-- [ ] The component shows an invalid document's issues in place of the scene
+- The component shows an invalid document's issues in place of the scene
   (browser test).
-- [x] The simulation half runs without a canvas; flying to the same instant twice,
+- The simulation half runs without a canvas; flying to the same instant twice,
   or after a backward jump, gives the same ship pose and velocity, tick count and
   salvage bodies as a fresh flight (unit test).
-- [x] A live held wreck stays within the Light Ion Cannon's reach across a burn;
+- A live held wreck stays within the Light Ion Cannon's reach across a burn;
   held shards expire after their lifetime and placed shards remain (unit test).
-- [x] The document determines which target choices exist (unit test).
-- [x] The Lab page offers the document's target choices with its default chosen;
+- The document determines which target choices exist (unit test).
+- The Lab page offers the document's target choices with its default chosen;
   the component keeps the `data-*` attributes above (browser test).
-- [ ] Without a `pane` the component shows no menu (browser test).
-- [x] A pane receives a read-only copy of the document (unit test).
-- [x] The four dated study examples keep rendering on the shared engine
+- Without a `pane` the component shows no menu (browser test).
+- A pane receives a read-only copy of the document (unit test).
+- The four dated study examples keep rendering on the shared engine
   (browser test).
-- [x] The Lab shows the instrument in its default setting as a reference page:
+- The Lab shows the instrument in its default setting as a reference page:
   three layers with their own blend modes, the bloom filter, jump, play and
   pause, each view, each layer switch (browser test).
-- [ ] A study page embeds the instrument through `FlightSceneEmbed`, hydrated and
+- A study page embeds the instrument through `FlightSceneEmbed`, hydrated and
   filling the band (browser test).
-- [x] The instrument's fidelity to play, its bloom size against the game's and
+- The instrument's fidelity to play, its bloom size against the game's and
   its cost are measured and recorded (measurement script).
-- [x] The study light's state reports a delayed engine's charge rising with no
+- The study light's state reports a delayed engine's charge rising with no
   output, then output at full charge (unit test).
-- [x] A replaced part's plume stays dark while other outlets stay lit, and the
+- A replaced part's plume stays dark while other outlets stay lit, and the
   flight is the same with and without a study light (unit test).
-- [x] Tuning a delayed part's charge moves its release, reaches a study light's
+- Tuning a delayed part's charge moves its release, reaches a study light's
   engine state and leaves the game's parts unchanged; an untuned flight runs on
   the game's own parts (unit test).
-- [x] The Lab page's study light switch shows the light's caption and flies the
+- The Lab page's study light switch shows the light's caption and flies the
   burn again at the same instant (browser test).
 
 ### Regression guardrails

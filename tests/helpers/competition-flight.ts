@@ -1,5 +1,8 @@
 import type { Page } from "@playwright/test";
-import { defaultLoadout } from "../../packages/mode-a/src/lib/schemas/loadout";
+import {
+  defaultLoadout,
+  fittedParts,
+} from "../../packages/mode-a/src/lib/schemas/loadout";
 import {
   gameSettings,
   Simulation,
@@ -13,6 +16,11 @@ export function competitionFlightResult(
   chassis: CompetitionChassis,
   seed: number,
 ) {
+  const loadout =
+    chassis === "wasp"
+      ? gameSettings(chassis).loadout
+      : defaultLoadout(chassis);
+  if (!loadout) throw new Error("A ranked flight has a loadout.");
   const simulation = new Simulation({
     ...(chassis === "wasp"
       ? gameSettings(chassis)
@@ -28,8 +36,11 @@ export function competitionFlightResult(
     cause: simulation.state.deathCause,
     ticks: simulation.ticks,
     elapsed: simulation.state.elapsedTime,
-    seconds: simulation.wholeSeconds,
+    seconds: simulation.elapsedSeconds,
     score: simulation.survivalScore,
+    fitting: fittedParts(loadout),
+    stabilizers: loadout.stabilizers,
+    linkedEngines: loadout.linkedEngines ?? false,
   };
 }
 

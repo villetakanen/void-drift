@@ -63,24 +63,24 @@ ship has a default fitting the player can return to.
 
 ### Definition of Done
 
-- [x] A1: `BuildStoreSchema` holds the active chassis alongside the per-chassis
+- A1: `BuildStoreSchema` holds the active chassis alongside the per-chassis
   fittings; an existing `void-drift-builds-v3` store migrates with every
   fitting kept and the Wasp active.
-- [x] A2: With nothing stored, the active ship is the Wasp with a light ion
+- A2: With nothing stored, the active ship is the Wasp with a light ion
   cannon, an ion point defence and one light ion engine, and every other ship
   in the catalog is flyable.
-- [x] A3: Choosing a ship in the Hangar, by pointer, keyboard or touch, makes it
+- A3: Choosing a ship in the Hangar, by pointer, keyboard or touch, makes it
   active with no further action; a `chassis` query leaves the active ship
   unchanged.
-- [x] A4: Returning to the title screen shows the active ship in its fitting,
+- A4: Returning to the title screen shows the active ship in its fitting,
   and PRESS START flies it.
-- [x] A5: Survival from the Hangar, Practice and Derelicts fly the active ship
+- A5: Survival from the Hangar, Practice and Derelicts fly the active ship
   in its fitting.
-- [x] A6: Required engines cannot be removed from any ship; every stored fitting
+- A6: Required engines cannot be removed from any ship; every stored fitting
   that parses is flyable.
-- [x] A7: The active ship and each chassis's fitting survive a page reload;
+- A7: The active ship and each chassis's fitting survive a page reload;
   switching away and back restores a chassis's fitting.
-- [x] A8: A corrupt store falls back per failed value and keeps every fitting
+- A8: A corrupt store falls back per failed value and keeps every fitting
   that parses; unavailable storage leaves the game playable in memory, and the
   Hangar's save status says choices will not be kept.
 

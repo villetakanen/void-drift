@@ -44,6 +44,7 @@ Voice-led development of a procedural space survival game and its software facto
 - Clarify consequential ambiguity; resolve routine implementation details autonomously.
 - Implement bounded changes, verify them, and present playable or inspectable evidence.
 - Update the relevant spec in the same change as the behavior it describes.
+- Keep specs as intent: acceptance criteria are plain statements, never status checkboxes.
 - Reuse real game systems in the Lab; demonstrate shared visual definition changes there.
 - Keep this file under 80 lines. Put detailed guidance in its authoritative document.
 

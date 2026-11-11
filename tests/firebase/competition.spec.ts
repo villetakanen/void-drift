@@ -43,6 +43,15 @@ test("title and Hangar pilots complete ranked runs, retry a rejected write and s
     { chassis: "scout", initials: "HGR", seed: 158, source: "hangar" },
   ];
   const expected = new Map<string, { seconds: number; score: number }>();
+  const flown = new Map<
+    string,
+    {
+      shipId: string;
+      fitting: string[];
+      stabilizers: boolean;
+      linkedEngines: boolean;
+    }
+  >();
   for (const pilot of pilots) {
     const chassis = pilot.chassis;
     const context = await newLocalContext();
@@ -93,6 +102,12 @@ test("title and Hangar pilots complete ranked runs, retry a rejected write and s
     expect(predicted.cause).toBe("STAR");
     expect(predicted.ticks).toBeLessThan(1000);
     expected.set(pilot.initials, predicted);
+    flown.set(pilot.initials, {
+      shipId: chassis,
+      fitting: predicted.fitting,
+      stabilizers: predicted.stabilizers,
+      linkedEngines: predicted.linkedEngines,
+    });
     await page.clock.runFor((predicted.ticks * 1000) / 60 + 40);
     await expect(
       page.getByRole("dialog", { name: "Run complete" }),
@@ -147,10 +162,13 @@ test("title and Hangar pilots complete ranked runs, retry a rejected write and s
       data: {
         fields: {
           initials: { stringValue: "SEE" },
-          seconds: { integerValue: "3" },
+          seconds: { doubleValue: 3.5 },
           score: { integerValue: "500" },
           deathCause: { stringValue: "STAR" },
           shipId: { stringValue: "scout" },
+          fitting: { arrayValue: { values: [{ stringValue: "ion" }] } },
+          stabilizers: { booleanValue: true },
+          linkedEngines: { booleanValue: false },
           challenge: { stringValue: CHALLENGE },
           userId: { stringValue: "seeded" },
         },
@@ -158,7 +176,39 @@ test("title and Hangar pilots complete ranked runs, retry a rejected write and s
     },
   );
   expect(seeded.ok(), "seed a high-score, short-run row").toBe(true);
-  expected.set("SEE", { seconds: 3, score: 500 });
+  expected.set("SEE", { seconds: 3.5, score: 500 });
+  // Each saved row carries the ship, the fitting and both flags as flown.
+  const stored = await request.get(
+    `${firestore}/v1/projects/demo-void-drift/databases/(default)/documents/artifacts/void-drift/scores`,
+    { headers: { Authorization: "Bearer owner" } },
+  );
+  expect(stored.ok(), "read the saved rows").toBe(true);
+  type StoredValue = {
+    stringValue?: string;
+    booleanValue?: boolean;
+    integerValue?: string;
+    doubleValue?: number;
+    arrayValue: { values?: { stringValue: string }[] };
+  };
+  const rows: { fields: Record<string, StoredValue> }[] = (await stored.json())
+    .documents;
+  for (const [initials, run] of flown) {
+    const row = rows.find((r) => r.fields.initials?.stringValue === initials);
+    expect(row, `saved row for ${initials}`).toBeDefined();
+    const fields = row?.fields ?? {};
+    expect(fields.shipId.stringValue).toBe(run.shipId);
+    expect(
+      fields.fitting.arrayValue.values?.map(
+        (value: { stringValue: string }) => value.stringValue,
+      ),
+    ).toEqual(run.fitting);
+    expect(fields.stabilizers.booleanValue).toBe(run.stabilizers);
+    expect(fields.linkedEngines.booleanValue).toBe(run.linkedEngines);
+    const seconds = Number(
+      fields.seconds.doubleValue ?? fields.seconds.integerValue,
+    );
+    expect(seconds).toBe(expected.get(initials)?.seconds);
+  }
   const context = await newLocalContext();
   const page = await context.newPage();
   await page.goto("/leaderboard");
@@ -177,6 +227,16 @@ test("title and Hangar pilots complete ranked runs, retry a rejected write and s
     await expect(row.getByRole("cell").nth(3)).toHaveText(String(result.score));
     await expect(row.getByRole("cell").nth(4)).toHaveText(`${result.seconds}s`);
   }
+  // The board shows score and time only, never the fitting or the ship choices.
+  const table = page.getByRole("table");
+  await expect(table.getByRole("columnheader")).toHaveText([
+    "Rank",
+    "Pilot",
+    "Ship",
+    "Score",
+    "Time",
+  ]);
+  await expect(table).not.toContainText(/stabiliz|linked|ion-point-defence/i);
   const rankedPilots = () =>
     page.locator("tbody tr td:nth-child(2) strong").allTextContents();
   const byKey = (key: "score" | "seconds") =>

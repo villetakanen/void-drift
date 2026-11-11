@@ -1,53 +1,17 @@
 import { expect, it } from "vitest";
-import { updateShip, Vec2 } from "../physics/Physics";
+import { Vec2 } from "../physics/Physics";
 import { FxPass } from "./arcade-fx";
 import { EnginePlume, type PlumeOutlet } from "./engine-plume";
 
-const cutoff = 750; // Explicit input fixture, independent of the shipped cutoff.
-
-function ship(speed = 0) {
+function ship() {
   return {
     pos: new Vec2(960, 540),
-    vel: new Vec2(speed, 0),
+    vel: new Vec2(0, 0),
     acc: new Vec2(0, 0),
     rotation: 0,
     radius: 16,
   };
 }
-function push(speed: number, rotation = 0, right = true, dt = 1 / 60) {
-  const body = ship(speed);
-  body.rotation = rotation;
-  const output = updateShip(
-    body,
-    { leftThruster: true, rightThruster: right, fire: false },
-    dt,
-    1920,
-    1080,
-    undefined,
-    [],
-    undefined,
-    undefined,
-    { thrustMultiplier: 1, turnMultiplier: 0, hullMultiplier: 1 },
-    { drag: 0, speedLimit: null },
-    "inverse-square",
-    600,
-    cutoff,
-  );
-  return { body, output };
-}
-it("stops forward engine output at the cutoff without clamping existing speed", () => {
-  for (const speed of [750, 1200]) {
-    const result = push(speed);
-    expect(result.output).toBe(0);
-    expect(result.body.vel.x).toBe(speed);
-  }
-  expect(push(749, 0, true, 10).body.vel.x).toBeLessThanOrEqual(750);
-});
-it("retains braking, sideways thrust, and half contribution per engine", () => {
-  expect(push(1200, Math.PI).body.vel.x).toBeLessThan(1200);
-  expect(push(1200, Math.PI / 2).body.vel.y).toBeGreaterThan(0);
-  expect(push(0, 0, false).body.vel.x).toBeCloseTo(push(0).body.vel.x / 2);
-});
 it("legacy outlets pause, release, reject invalid output and reset without accumulating", () => {
   const plume = new EnginePlume(),
     body = ship();

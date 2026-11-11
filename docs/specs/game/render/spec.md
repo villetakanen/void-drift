@@ -183,35 +183,35 @@ neither: it draws every pass, unobserved.
 
 ### Definition of Done
 
-- [x] `FLIGHT_PASSES` holds its passes with unique ids, and `drawFlightFrame`
+- `FLIGHT_PASSES` holds its passes with unique ids, and `drawFlightFrame`
   draws them in array order (`packages/mode-a/src/lib/flight-frame.test.ts`).
-- [x] Each pass draws on its own layer, world passes under the camera transform
+- Each pass draws on its own layer, world passes under the camera transform
   and screen passes without it (`flight-frame.test.ts`).
-- [x] `drawFlightFrame` with `include` draws exactly the included passes, in
+- `drawFlightFrame` with `include` draws exactly the included passes, in
   order, and reports exactly those to `observe` (`flight-frame.test.ts`).
-- [x] `FlightDeck.svelte` draws the in-flight frame only through
+- `FlightDeck.svelte` draws the in-flight frame only through
   `drawFlightFrame`.
-- [x] `FLIGHT_LAYERS` holds World, FX and LFX in stack order, each with its
+- `FLIGHT_LAYERS` holds World, FX and LFX in stack order, each with its
   blend, memory and resolution, and every pass names one of them
   (`flight-frame.test.ts`).
-- [x] The stage hosts one canvas per layer, in stack order, each composited by
+- The stage hosts one canvas per layer, in stack order, each composited by
   its declared CSS blend mode inside an isolated stage
   (`tests/browser/render-model.spec.ts`).
-- [x] No pass draws another layer's image onto its own, and no game code sets a
+- No pass draws another layer's image onto its own, and no game code sets a
   canvas composite operation to blend one layer with another.
-- [x] The FX layer is cut over derelict apertures, and no solid pass draws
+- The FX layer is cut over derelict apertures, and no solid pass draws
   above it.
-- [x] A layer's resolution can be changed without changing any pass.
-- [x] A frame with an empty interval leaves the FX layer's image unchanged
+- A layer's resolution can be changed without changing any pass.
+- A frame with an empty interval leaves the FX layer's image unchanged
   (`tests/browser/fx-surface.spec.ts`).
-- [ ] Interval coverage: a source that crosses several times its own width
+- Interval coverage: a source that crosses several times its own width
   during one interval leaves light along the whole path between its two
   positions.
-- [ ] Rate independence: the same ticks presented one per frame and two per
+- Rate independence: the same ticks presented one per frame and two per
   frame give the same FX image, within tolerance.
-- [ ] Breaks: after an arena wrap or a reset, no light lies between the old
+- Breaks: after an arena wrap or a reset, no light lies between the old
   position and the new one.
-- [x] Changing which effects draw leaves the simulation's state identical
+- Changing which effects draw leaves the simulation's state identical
   (`packages/mode-a/src/lib/fx-integration.test.ts`).
 
 ### Regression guardrails

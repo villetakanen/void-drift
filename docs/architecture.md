@@ -66,8 +66,8 @@ migration documents remain historical; scores are not migrated.
 
 - Documents live at `artifacts/void-drift/scores/{CHALLENGE}_{uid}_{shipId}`; `CHALLENGE`
   (`packages/mode-a/src/schemas/highscore.ts`) is currently `ion-storm`.
-- A user retains one personal best per ship for the current challenge (seed 2026). Earlier
-  challenges (`alpha-1`, `gravity-1`) retain their IDs.
+- A user retains one personal best per ship for the current challenge (seed 2026). Rows of
+  earlier boards stay stored; only the current challenge accepts writes.
 - `CHALLENGE` changes once per release, only when rules or tuning differ from the previous
   release; see `docs/development.md#release`.
 - Zod checks network data; tested Firestore rules enforce ownership, exact fields,

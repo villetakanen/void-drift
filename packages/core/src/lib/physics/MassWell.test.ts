@@ -66,13 +66,18 @@ describe("mass well law", () => {
 });
 
 describe("surface bounce", () => {
-  it("places the ship on the surface and reflects its velocity, scaled by 0.8", () => {
+  it("places the ship on the surface and reflects its velocity, losing speed", () => {
     const ship = { pos: new Vec2(-30, 0), vel: new Vec2(100, 20) };
     const speed = bounceOffSurface(ship, { x: 0, y: 0 }, 50);
     expect(speed).toBeCloseTo(Math.hypot(100, 20), 9);
     expect(Math.hypot(ship.pos.x, ship.pos.y)).toBeCloseTo(50, 9);
-    expect(ship.vel.x).toBeCloseTo(-80, 9);
-    expect(ship.vel.y).toBeCloseTo(16, 9);
+    // The surface normal is the x axis here: the normal component reverses,
+    // and the whole velocity keeps one share of its speed below 1.
+    const restitution = ship.vel.mag() / Math.hypot(100, 20);
+    expect(restitution).toBeGreaterThan(0);
+    expect(restitution).toBeLessThan(1);
+    expect(ship.vel.x).toBeCloseTo(-100 * restitution, 9);
+    expect(ship.vel.y).toBeCloseTo(20 * restitution, 9);
   });
   it("leaves a ship outside contact distance alone", () => {
     const ship = { pos: new Vec2(-60, 0), vel: new Vec2(100, 0) };

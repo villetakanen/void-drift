@@ -4,7 +4,7 @@ import { createStar } from "./game-loop";
 import { type SalvageBody, SalvageSystem } from "./salvage";
 import { defaultLoadout } from "./schemas/loadout";
 import { ENCOUNTER, EncounterConfigSchema, SALVAGE } from "./schemas/salvage";
-import { Simulation, stockSettings } from "./simulation";
+import { Simulation, STEP, stockSettings } from "./simulation";
 
 const idle = {
   leftThruster: false,
@@ -52,11 +52,11 @@ function fixed(group: number): SalvageBody {
 }
 describe("boundary encounters", () => {
   it("validates encounter ranges and strictly inward headings", () => {
-    expect(SALVAGE.wreck.life).toBeGreaterThanOrEqual(
-      (2 * ENCOUNTER.radius) / ENCOUNTER.speedMin,
-    );
     expect(
-      EncounterConfigSchema.safeParse({ ...ENCOUNTER, speedMin: 501 }).success,
+      EncounterConfigSchema.safeParse({
+        ...ENCOUNTER,
+        speedMin: ENCOUNTER.speedMax + 1,
+      }).success,
     ).toBe(false);
     expect(
       EncounterConfigSchema.safeParse({ ...ENCOUNTER, intervalMin: NaN })
@@ -76,6 +76,8 @@ describe("boundary encounters", () => {
     b.ship.vel.set(900, -800);
     b.ship.rotation = 2.4;
     const speeds: number[] = [];
+    const inward = -Math.cos(ENCOUNTER.headingSpread ?? 0);
+    const span = ENCOUNTER.speedMax - ENCOUNTER.speedMin;
     for (let i = 0; i < 300; i++) {
       a.system.bodies = [];
       b.system.bodies = [];
@@ -92,7 +94,7 @@ describe("boundary encounters", () => {
       expect(Math.hypot(x, y)).toBeCloseTo(ENCOUNTER.radius, 7);
       expect(
         (x * body.vx + y * body.vy) / (ENCOUNTER.radius * speed),
-      ).toBeLessThanOrEqual(-0.5 + 1e-9);
+      ).toBeLessThanOrEqual(inward + 1e-9);
       expect([body.x, body.y, body.vx, body.vy]).toEqual([
         other.x,
         other.y,
@@ -100,13 +102,15 @@ describe("boundary encounters", () => {
         other.vy,
       ]);
     }
-    expect(Math.min(...speeds)).toBeLessThan(105);
-    expect(Math.max(...speeds)).toBeGreaterThan(495);
+    expect(Math.min(...speeds)).toBeGreaterThanOrEqual(ENCOUNTER.speedMin);
+    expect(Math.min(...speeds)).toBeLessThan(ENCOUNTER.speedMin + span / 80);
+    expect(Math.max(...speeds)).toBeLessThanOrEqual(ENCOUNTER.speedMax);
+    expect(Math.max(...speeds)).toBeGreaterThan(ENCOUNTER.speedMax - span / 80);
   });
   it("schedules independent steady gaps, skips full groups without backlog, and preserves later paths", () => {
     const a = scene(),
       b = scene();
-    let previous = 3;
+    let previous = 0;
     const gaps: number[] = [];
     b.system.bodies = Array.from({ length: ENCOUNTER.groups }, (_, i) =>
       fixed(i + 10),
@@ -121,12 +125,15 @@ describe("boundary encounters", () => {
       expect(b.system.passes).toBe(0);
       expect(b.system.nextPass).toBe(a.system.nextPass);
     }
-    expect(Math.min(...gaps)).toBeGreaterThanOrEqual(6);
-    expect(Math.min(...gaps)).toBeLessThan(6.2);
-    expect(Math.max(...gaps)).toBeLessThanOrEqual(12);
-    expect(Math.max(...gaps)).toBeGreaterThan(11.8);
-    expect(gaps.reduce((x, y) => x + y, 0) / gaps.length).toBeGreaterThan(8);
-    expect(gaps.reduce((x, y) => x + y, 0) / gaps.length).toBeLessThan(10);
+    const { intervalMin, intervalMax } = ENCOUNTER;
+    const third = (intervalMax - intervalMin) / 3;
+    const mean = gaps.reduce((x, y) => x + y, 0) / gaps.length;
+    expect(Math.min(...gaps)).toBeGreaterThanOrEqual(intervalMin);
+    expect(Math.min(...gaps)).toBeLessThan(intervalMin + third / 10);
+    expect(Math.max(...gaps)).toBeLessThanOrEqual(intervalMax);
+    expect(Math.max(...gaps)).toBeGreaterThan(intervalMax - third / 10);
+    expect(mean).toBeGreaterThan(intervalMin + third);
+    expect(mean).toBeLessThan(intervalMax - third);
     a.system.bodies = [];
     b.system.bodies = [];
     next(a);
@@ -205,15 +212,18 @@ describe("boundary encounters", () => {
     };
     const a = new Simulation(settings),
       b = new Simulation(settings);
+    // Just before the earliest first arrival, and a second past the latest.
+    const beforeFirst = Math.floor(ENCOUNTER.firstPass.min / STEP) - 2;
+    const ticks = Math.ceil(ENCOUNTER.firstPass.max / STEP) + 60;
     a.ship.pos.set(-100, 540);
     b.ship.pos.set(-100, 540);
     expect(a.salvage).toBeDefined();
     a.start();
     b.start();
-    for (let i = 0; i < 240; i++) {
+    for (let i = 0; i < ticks; i++) {
       a.step({ ...idle, sendDerelict: true });
       b.step(idle);
-      if (i === 178) expect(a.salvage?.passes).toBe(0);
+      if (i === beforeFirst) expect(a.salvage?.passes).toBe(0);
     }
     expect(a.salvage?.passes).toBe(1);
     expect(a.salvage).toEqual(b.salvage);
@@ -226,7 +236,7 @@ describe("boundary encounters", () => {
     const reset = new Simulation(settings);
     reset.ship.pos.set(-100, 540);
     reset.start();
-    for (let i = 0; i < 240; i++) reset.step(idle);
+    for (let i = 0; i < ticks; i++) reset.step(idle);
     expect(reset.salvage).toEqual(b.salvage);
   });
 });

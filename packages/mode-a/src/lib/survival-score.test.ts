@@ -3,10 +3,11 @@ import { describe, expect, it } from "vitest";
 import { createStar } from "./game-loop";
 import { type SalvageBody, SalvageSystem } from "./salvage";
 import { defaultLoadout, LoadoutSchema, type PartId } from "./schemas/loadout";
-import { SALVAGE } from "./schemas/salvage";
+import { WEAPONS } from "./schemas/salvage";
 import { CELL_SCORE, gameSettings, Simulation, STEP } from "./simulation";
 
 const idle = { leftThruster: false, rightThruster: false, fire: false };
+const SECOND = Math.round(1 / STEP);
 
 /** A fighter with `part` in both hull mounts, over a bare salvage system. */
 function fixture(part: PartId) {
@@ -66,7 +67,7 @@ function fixture(part: PartId) {
 }
 
 describe("survival score formula on a seeded run", () => {
-  it("is whole seconds plus ion hits plus 20 per cell, from the simulation's counters", () => {
+  it("is whole seconds plus ion hits plus the cell score per cell, from the simulation's counters", () => {
     for (const seed of [2, 157, 158, 2026]) {
       const sim = new Simulation({
         ...gameSettings("wasp"),
@@ -79,7 +80,7 @@ describe("survival score formula on a seeded run", () => {
       const salvage = sim.salvage;
       if (!salvage) throw new Error("Survival needs the encounter");
       expect(sim.survivalScore).toBe(
-        Math.floor(sim.ticks / 60) +
+        Math.floor(sim.ticks / SECOND) +
           salvage.derelictIonHits +
           CELL_SCORE * salvage.cellsCollected,
       );
@@ -89,15 +90,16 @@ describe("survival score formula on a seeded run", () => {
     const sim = new Simulation({ ...gameSettings("wasp"), seed: 2 });
     sim.start();
     const scores: number[] = [];
-    for (let i = 0; i < 121; i++) {
+    // scores[i] is the score after i + 1 ticks.
+    for (let i = 0; i <= 2 * SECOND; i++) {
       sim.step(idle);
       scores.push(sim.survivalScore);
     }
-    expect(scores[58]).toBe(0);
-    expect(scores[59]).toBe(1);
-    expect(scores[118]).toBe(1);
-    expect(scores[119]).toBe(2);
-    expect(scores[120]).toBe(2);
+    expect(scores[SECOND - 2]).toBe(0);
+    expect(scores[SECOND - 1]).toBe(1);
+    expect(scores[2 * SECOND - 2]).toBe(1);
+    expect(scores[2 * SECOND - 1]).toBe(2);
+    expect(scores[2 * SECOND]).toBe(2);
   });
   it("is deterministic for one seed", () => {
     const run = () => {
@@ -141,12 +143,13 @@ describe("survival score sources", () => {
   });
   it("destroying a derelict adds nothing beyond its hit", () => {
     const rail = fixture("rail");
-    rail.add("wreck", 500, SALVAGE.wreck.hull);
-    rail.step(60);
+    // One round destroys it, however far it has to fly.
+    rail.add("wreck", 500, WEAPONS.rail.damage);
+    for (let i = 0; i < 600 && rail.system.destroyed < 1; i++) rail.step();
     expect(rail.system.destroyed).toBe(1);
     expect(rail.system.derelictIonHits).toBe(0);
     const cannon = fixture("light-ion-cannon");
-    cannon.add("wreck", 500, 10);
+    cannon.add("wreck", 500, 1);
     for (let i = 0; i < 60 && cannon.system.ionDischarges < 1; i++)
       cannon.step();
     // The kill is a hit like any other; the destruction itself adds nothing.

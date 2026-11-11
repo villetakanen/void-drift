@@ -90,37 +90,37 @@ Earning and buying parts is the intended direction for later. During alpha,
 
 ### Definition of Done
 
-- [x] H1: `/hangar` shows the Hangar, and player-facing Hangar links target it.
-- [x] H2: The logo reaches `/` by pointer and keyboard; its accessible name
+- H1: `/hangar` shows the Hangar, and player-facing Hangar links target it.
+- H2: The logo reaches `/` by pointer and keyboard; its accessible name
   identifies Void Drift. One Hangar heading and the Playground Switch share a
   compact header row whose height is unchanged by Playground.
-- [x] H3: Experimental uses the shared binary `Switch`, labeled Playground,
+- H3: Experimental uses the shared binary `Switch`, labeled Playground,
   with a visible Off/On state and checkbox semantics; pointer and Space change it.
-- [x] H4: Switching Playground changes the Hangar and launch as
+- H4: Switching Playground changes the Hangar and launch as
   [Playground](../experimental/spec.md) states.
-- [x] H5: The Hangar opens on the active ship in its fitting, and a `chassis`
+- H5: The Hangar opens on the active ship in its fitting, and a `chassis`
   query changes nothing.
-- [x] H6: Choosing a ship shows its kept fitting and makes it the active ship
+- H6: Choosing a ship shows its kept fitting and makes it the active ship
   ([active ship](../active-ship/spec.md) A3). The shared tab row owns the
   workbench panel, uses manual keyboard activation, and stays one button tall
   with Playground Off or On at supported landscape iPad widths.
-- [x] H7: Fitting or emptying a mount changes only that mount or its mirrored
+- H7: Fitting or emptying a mount changes only that mount or its mirrored
   pair; a required engine has no empty choice; parts the mount does not accept
   are unavailable.
-- [x] H8: Plan shows mounts, occupancy and links; View shows the ship without
+- H8: Plan shows mounts, occupancy and links; View shows the ship without
   markings; switching keeps fitting and selection, and fitting works in both.
-- [x] H9: The stabilizer and linked-engines choices are kept per ship and
+- H9: The stabilizer and linked-engines choices are kept per ship and
   govern the same ship in flight.
-- [x] H10: The figures shown match `buildStats` for the fitted ship and update
+- H10: The figures shown match `buildStats` for the fitted ship and update
   when a fitting changes.
-- [x] H11: The flight actions appear in the order Practice, Derelicts, Gauntlet,
+- H11: The flight actions appear in the order Practice, Derelicts, Gauntlet,
   Survival; Survival is the primary action, Gauntlet is disabled, and each of
   the others launches the active ship.
-- [x] H12: Abort and game over return to the Hangar with the ship and its
+- H12: Abort and game over return to the Hangar with the ship and its
   fitting unchanged.
-- [x] H13: The save status reports loading, recovery and unavailable storage
+- H13: The save status reports loading, recovery and unavailable storage
   truthfully, and never claims a save that did not happen.
-- [x] H14: Choosing, fitting, systems and flight actions all work by keyboard,
+- H14: Choosing, fitting, systems and flight actions all work by keyboard,
   by pointer, and by touch on an iPad in landscape.
 
 ### Regression guardrails

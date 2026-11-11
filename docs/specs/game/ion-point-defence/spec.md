@@ -98,19 +98,19 @@ without a storage migration. The [Hangar](../hangar/spec.md) and
 
 ### Definition of Done
 
-- [x] Automated tests cover fitting acceptance and rejection, saved-build parsing,
+- Automated tests cover fitting acceptance and rejection, saved-build parsing,
   geometry–muzzle agreement and the turret drawn at its weapon angle.
-- [x] Automated tests cover closest-target choice and ties, the retention margin,
+- Automated tests cover closest-target choice and ties, the retention margin,
   energy exclusion, star and planet blocking, turn-rate limits with a turning ship,
   2° gating, tracking beyond reach without firing, band boundaries, first-contact
   stopping, cooldown, scarce power across turrets and cannons, and pause or reset.
-- [x] Production LFX lifecycle and effects-disabled gameplay equivalence are checked.
-- [x] The Hangar offers the part with its builder text in compatible slots only.
-- [x] A playable production encounter in the equipment Lab
+- Production LFX lifecycle and effects-disabled gameplay equivalence are checked.
+- The Hangar offers the part with its builder text in compatible slots only.
+- A playable production encounter in the equipment Lab
   (`apps/web/src/pages/lab/utility-artwork.astro`) and the study shows target
   switching, a target out of reach, a hit stopped at first contact, a turning ship
   and a hidden turret on Scout.
-- [x] The mixed-effects Lab Weapons workload includes turrets beside cannons.
+- The mixed-effects Lab Weapons workload includes turrets beside cannons.
 
 ### Regression guardrails
 

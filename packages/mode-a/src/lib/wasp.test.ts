@@ -59,7 +59,7 @@ describe("LHI Wasp integration", () => {
   it("exposes three unlinked mounts and five plume emitters", () => {
     const build = defaultLoadout("wasp");
     const mounts = buildMounts(build);
-    expect(mounts).toHaveLength(3);
+    expect(mounts).toHaveLength(build.hull.length + 1);
     expect(mounts.every((m) => !m.linkedTo)).toBe(true);
     const [left, right, engine] = mounts;
     expect(left.type).toBe("equipment");
@@ -69,7 +69,20 @@ describe("LHI Wasp integration", () => {
     expect(engine.y).toBe(0);
 
     const emitters = buildPlumeEmitters(build);
-    expect(emitters).toHaveLength(5);
+    const slits = applyBuildEngines(
+      {
+        pos: new Vec2(0, 0),
+        vel: new Vec2(0, 0),
+        acc: new Vec2(0, 0),
+        rotation: 0,
+        radius: 16,
+      },
+      build,
+      { leftThruster: false, rightThruster: false, fire: false },
+      1 / 60,
+      true,
+    ).stabilizers.length;
+    expect(emitters).toHaveLength(1 + slits);
     for (const facet of WASP.facets)
       for (const [x, y] of facet.points)
         expect(Math.hypot(x, y) * BUILD_FLIGHT_SCALE).toBeLessThanOrEqual(

@@ -65,13 +65,13 @@ without a storage migration.
 
 ### Definition of Done
 
-- [x] Automated tests cover real fitting/persistence, damage boundaries, triggering,
+- Automated tests cover real fitting/persistence, damage boundaries, triggering,
   paid offset misses, first contact, cooldown, scarce power and post-destruction volley.
-- [x] Production LFX lifecycle and effects-disabled gameplay equivalence are checked.
-- [x] A playable production encounter is inspectable in the equipment Lab and study.
-- [ ] The designer accepts fitting fidelity, muzzle connection during movement, rhythm,
+- Production LFX lifecycle and effects-disabled gameplay equivalence are checked.
+- A playable production encounter is inspectable in the equipment Lab and study.
+- The designer accepts fitting fidelity, muzzle connection during movement, rhythm,
   impact and provisional combat balance after playing.
-- [ ] Named sustained mixed-effects measurements establish the effects budget.
+- Named sustained mixed-effects measurements establish the effects budget.
 
 ### Regression guardrails
 

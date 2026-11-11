@@ -40,17 +40,17 @@ screen composes shared definitions instead of inventing its own.
 
 ### Definition of Done
 
-- [x] Global CSS file exists at `apps/web/src/styles.css`.
-- [x] CSS Variables for all defined colors are present in `:root`.
-- [ ] [DEPRECATED 2026-11-01] ~~Font "Noto Sans Math" loads correctly via Google Fonts.~~ The CDN link was removed on 2026-10-28 (`3041a80`); nothing has loaded it since.
-- [ ] [DEPRECATED 2026-11-01] ~~Logo component renders ∅·Δ glyphs correctly using Noto Sans Math.~~ Replaced by SVG outlines in opening-screen S2.
-- [x] `Logo.svelte` draws ∅·Δ from committed SVG outlines and appears in every shared header, the Lab rail and the favicon.
-- [x] All UI components use design tokens (no hardcoded hex values).
-- [x] Shared UI takes every `z-index` from a `--layer-*` token, and every cut corner from a `--cut-size-*` token (S6).
-- [x] Menu, pause and run complete sit on one `.panel`; the flight status message on `.panel--flat` (S6).
-- [ ] Thrust pad tokens and `ThrustPads` exist as specified, and `/lab/inputs`
+- Global CSS file exists at `apps/web/src/styles.css`.
+- CSS Variables for all defined colors are present in `:root`.
+- [DEPRECATED 2026-11-01] ~~Font "Noto Sans Math" loads correctly via Google Fonts.~~ The CDN link was removed on 2026-10-28 (`3041a80`); nothing has loaded it since.
+- [DEPRECATED 2026-11-01] ~~Logo component renders ∅·Δ glyphs correctly using Noto Sans Math.~~ Replaced by SVG outlines in opening-screen S2.
+- `Logo.svelte` draws ∅·Δ from committed SVG outlines and appears in every shared header, the Lab rail and the favicon.
+- All UI components use design tokens (no hardcoded hex values).
+- Shared UI takes every `z-index` from a `--layer-*` token, and every cut corner from a `--cut-size-*` token (S6).
+- Menu, pause and run complete sit on one `.panel`; the flight status message on `.panel--flat` (S6).
+- Thrust pad tokens and `ThrustPads` exist as specified, and `/lab/inputs`
   demonstrates both sides in every lit state over a starfield.
-- [x] `Tabs` exists as specified in [Tabs](#tabs), and `/lab/ds/tabs`
+- `Tabs` exists as specified in [Tabs](#tabs), and `/lab/ds/tabs`
   demonstrates facts, a row without them, an unavailable tab, both
   activation modes, a row that overflows its host and a stretched row.
 
@@ -634,10 +634,10 @@ accepted reference is `/lab/studies/buttons-2026-11-11#whole`.
 
 ## Future Enhancements
 
-- [ ] Add animation tokens (duration, easing curves)
-- [ ] Add shadow/glow effect tokens for consistent visual effects
-- [ ] Add breakpoint tokens for responsive design
-- [x] Self-host fonts (2026-11-01, opening-screen S1)
+- Add animation tokens (duration, easing curves)
+- Add shadow/glow effect tokens for consistent visual effects
+- Add breakpoint tokens for responsive design
+- Self-host fonts (2026-11-01, opening-screen S1)
 
 ---
 

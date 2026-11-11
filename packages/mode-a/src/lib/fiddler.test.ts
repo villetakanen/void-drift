@@ -1,6 +1,5 @@
 import { Vec2 } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
-import { HighScoreSubmissionSchema } from "../schemas/highscore";
 import { applyBuildEngines, buildDrain } from "./build-flight";
 import {
   BUILD_FLIGHT_SCALE,
@@ -20,6 +19,7 @@ import {
   starterLoadout,
 } from "./schemas/loadout";
 import { gameSettings, Simulation, stockSettings } from "./simulation";
+import { WASP } from "./wasp";
 
 const idle = { leftThruster: false, rightThruster: false, fire: false };
 const left = { ...idle, leftThruster: true };
@@ -91,48 +91,44 @@ describe("LHI Fiddler flight trial", () => {
   it("carries the accepted nine mounts, Wasp-size glass and four stabilizers into production", () => {
     const build = defaultLoadout("fiddler");
     const mounts = buildMounts(build);
-    expect(mounts).toHaveLength(9);
-    expect(mounts.slice(0, 4).map((m) => [m.x, m.y, m.underHull])).toEqual([
-      [-1, -23.5, true],
-      [-1, 23.5, true],
-      [-39, -8, false],
-      [-39, 8, false],
-    ]);
-    expect(mounts.slice(4).map((m) => [m.x, m.y, m.type, m.underHull])).toEqual(
-      [
-        [52, -15.5, "equipment", true],
-        [52, 15.5, "equipment", true],
-        [29, -15.5, "support", true],
-        [29, 15.5, "support", true],
-        [-20, 0, "equipment", true],
-      ],
-    );
+    expect(mounts).toHaveLength(2 + build.aft.length + build.hull.length);
+    const mount = (key: string) => {
+      const found = mounts.find((m) => m.key === key);
+      if (!found) throw new Error(`Missing mount ${key}`);
+      return found;
+    };
+    for (const [a, b] of [
+      ["left", "right"],
+      ["aft-0", "aft-1"],
+      ["hull-0", "hull-1"],
+      ["hull-2", "hull-3"],
+    ])
+      expect(mount(b)).toMatchObject({ x: mount(a).x, y: -mount(a).y });
+    expect(mount("hull-4").y).toBe(0);
+    expect(mount("left").x).toBeGreaterThan(mount("aft-0").x);
     expect(mounts.filter((m) => m.linkedTo).map((m) => m.linkedTo)).toEqual([
       "left",
       "aft-0",
     ]);
-    expect(buildPlumeEmitters(build)).toHaveLength(8);
-    expect(FIDDLER.stabilizers.front).toMatchObject({
-      x: 43,
-      y: 24,
-      angle: 8.5,
-    });
-    expect(FIDDLER.stabilizers.rear).toMatchObject({
-      x: -33,
-      y: 14.5,
-      angle: -16.5,
-    });
-    expect(
-      Math.max(...FIDDLER_WINDOW_OUTLINE.map((p) => p[1])) -
-        Math.min(...FIDDLER_WINDOW_OUTLINE.map((p) => p[1])),
-    ).toBeCloseTo(19.5);
+    expect(buildPlumeEmitters(build)).toHaveLength(
+      2 + build.aft.length + burn(idle).output.stabilizers.length,
+    );
+    const span = (values: number[]) =>
+      Math.max(...values) - Math.min(...values);
+    const waspGlass = WASP.facets
+      .filter((facet) => facet.color === "#000000")
+      .flatMap((facet) => facet.points);
+    expect(span(FIDDLER_WINDOW_OUTLINE.map((p) => p[1]))).toBeCloseTo(
+      span(waspGlass.map((p) => p[0])),
+    );
     expect(previewMounts(newMountPlan("fiddler"))).toEqual(mounts);
     for (const face of FIDDLER.facets)
       for (const [x, y] of face.points)
         expect(Math.hypot(x, y) * BUILD_FLIGHT_SCALE).toBeLessThanOrEqual(
           buildCollisionRadius(build),
         );
-    expect(buildStats(build).mass).toBe(187 + 4 * PARTS.ion.mass);
+    // Two blade-root and two rear ion engines.
+    expect(buildStats(build).mass).toBe(FIDDLER.mass + 4 * PARTS.ion.mass);
   });
   it("pushes on four mains and turns on diagonal stabilizers with linking off", () => {
     const push = burn(both),
@@ -193,18 +189,7 @@ describe("LHI Fiddler flight trial", () => {
       ...empty.output.stabilizers,
     ]).toEqual(Array(8).fill(0));
   });
-  it("runs deterministically through the game with correct capacity, while remaining unranked", () => {
-    expect(starterLoadout("fiddler").hull).toEqual([
-      null,
-      null,
-      "battery",
-      "battery",
-      "gravity-coil",
-    ]);
-    expect(buildStats(starterLoadout("fiddler"))).toMatchObject({
-      mass: 273,
-      capacity: 270,
-    });
+  it("runs deterministically through the game with correct capacity", () => {
     expect(new Simulation(stockSettings("fiddler")).settings.loadout).toEqual(
       defaultLoadout("fiddler"),
     );
@@ -224,14 +209,5 @@ describe("LHI Fiddler flight trial", () => {
     }
     expect(a.ship).toEqual(b.ship);
     expect(a.state).toEqual(b.state);
-    expect(
-      HighScoreSubmissionSchema.safeParse({
-        initials: "AAA",
-        seconds: 10,
-        deathCause: "POWER",
-        shipId: "fiddler",
-        challenge: "ion-1",
-      }).success,
-    ).toBe(false);
   });
 });

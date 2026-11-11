@@ -125,12 +125,14 @@ describe("Planet gravity (mass-based influence)", () => {
     };
   }
 
+  // A fixture reach rule, so the cases below follow from the test's own inputs.
+  const rule = { massScale: 10, minRadii: 2, maxRadii: 8 };
   it.each([
     { mass: 400, radius: 30, expected: 200 },
     { mass: 10000, radius: 50, expected: 400 },
     { mass: 1, radius: 80, expected: 160 },
   ])("derives reach $expected from mass $mass and radius $radius", (planet) => {
-    expect(getPlanetInfluenceRadius(planet)).toBe(planet.expected);
+    expect(getPlanetInfluenceRadius(planet, rule)).toBe(planet.expected);
   });
 
   it("uses explicit well reach independently of physical size and mass", () => {
@@ -156,8 +158,8 @@ describe("Planet gravity (mass-based influence)", () => {
       radius: 30,
     });
 
-    // Ship 100px to the left of planet (within influence radius of 200)
-    const ship = makeShip(500, 600);
+    // Ship halfway into the planet's influence radius, to its left
+    const ship = makeShip(600 - getPlanetInfluenceRadius(planet) / 2, 600);
 
     updateShip(ship, noInput, 1 / 60, arenaSize, arenaSize, undefined, [
       planet,
@@ -212,8 +214,8 @@ describe("Planet gravity (mass-based influence)", () => {
       radius: 30,
     });
 
-    // Influence = 200px, place ship 300px away (outside)
-    const ship = makeShip(300, 600);
+    // Place the ship half again its influence radius away (outside)
+    const ship = makeShip(600 - getPlanetInfluenceRadius(planet) * 1.5, 600);
 
     updateShip(ship, noInput, 1 / 60, arenaSize, arenaSize, undefined, [
       planet,

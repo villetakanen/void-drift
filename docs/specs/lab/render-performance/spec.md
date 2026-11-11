@@ -88,19 +88,19 @@ rolling ten-second active-time window:
 
 ### Definition of Done
 
-- [x] Tools navigation and Lab index link the dedicated URL; the Lab spec links
+- Tools navigation and Lab index link the dedicated URL; the Lab spec links
   this living spec.
-- [x] Both workloads draw the real shared fixture using exactly three visible
+- Both workloads draw the real shared fixture using exactly three visible
   canvases, one scene surface, one clock and unchanged backing sizes.
-- [x] Shared transforms align hulls, plumes and all three beams per scenario;
+- Shared transforms align hulls, plumes and all three beams per scenario;
   production timing and default layer presentation are preserved.
-- [x] Pause, reset, repeated Run, background suspension and unmount obey lifecycle.
-- [x] Warm-up/inactive intervals are excluded; settings changes reset measurements;
+- Pause, reset, repeated Run, background suspension and unmount obey lifecycle.
+- Warm-up/inactive intervals are excluded; settings changes reset measurements;
   slow callbacks remain represented and timing storage is bounded.
-- [x] Stamp reports count real accepted and rejected production budget requests,
+- Stamp reports count real accepted and rejected production budget requests,
   including saturation, without increasing limits or thinning the workload.
-- [x] Copyable results include reproducibility context and timing limitations.
-- [x] Correctness checks, visible-browser measurements and visual judgement are
+- Copyable results include reproducibility context and timing limitations.
+- Correctness checks, visible-browser measurements and visual judgement are
   reported separately; affected shared consumers are exercised.
 
 ### Regression guardrails

@@ -74,12 +74,12 @@ In FlightDeck the stage is `.flight-stage-layer`: the canvas and the deck.
 
 ### Definition of Done
 
-- [x] Every dialog uses `Dialog.svelte`; no other component sets `role="dialog"` in shared UI.
-- [x] While a dialog is open, its stage is `inert` and its `data-deck` parts are hidden.
-- [x] Focus moves into a dialog on open and returns to the opener on close (pause, Lab demo).
-- [x] Escape resumes from pause; it does nothing on run complete.
-- [x] `/lab/surfaces` has a live dialog demo on the real component, usable from the keyboard.
-- [x] Browser tests cover dialog isolation and focus return (`tests/browser/dialogs.spec.ts`).
+- Every dialog uses `Dialog.svelte`; no other component sets `role="dialog"` in shared UI.
+- While a dialog is open, its stage is `inert` and its `data-deck` parts are hidden.
+- Focus moves into a dialog on open and returns to the opener on close (pause, Lab demo).
+- Escape resumes from pause; it does nothing on run complete.
+- `/lab/surfaces` has a live dialog demo on the real component, usable from the keyboard.
+- Browser tests cover dialog isolation and focus return (`tests/browser/dialogs.spec.ts`).
 
 ### Regression Guardrails
 

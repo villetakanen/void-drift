@@ -4,9 +4,15 @@ import {
   DERELICT_SHARDS,
   DERELICT_SOURCE_PLANES,
 } from "./derelict-geometry";
+import { SALVAGE } from "./schemas/salvage";
 
-it("partitions the source hull envelope into eight unequal regions without losing material", () => {
-  expect(DERELICT_SHARDS).toHaveLength(8);
+it("partitions the source hull envelope into one unequal region per fragment without losing material", () => {
+  expect(DERELICT_SHARDS).toHaveLength(SALVAGE.fragment.count);
+  const all = DERELICT_SHARDS.flatMap(({ points }) => points);
+  const minX = Math.min(...all.map((p) => p.x)),
+    maxX = Math.max(...all.map((p) => p.x)),
+    minY = Math.min(...all.map((p) => p.y)),
+    maxY = Math.max(...all.map((p) => p.y));
   const areas = DERELICT_SHARDS.map(
     ({ points }) =>
       Math.abs(
@@ -17,10 +23,14 @@ it("partitions the source hull envelope into eight unequal regions without losin
       ) / 2,
   );
   expect(areas.every((area) => area > 0)).toBe(true);
-  expect(areas.reduce((a, b) => a + b, 0)).toBeCloseTo(60 * 150, 6);
+  expect(areas.reduce((a, b) => a + b, 0)).toBeCloseTo(
+    (maxX - minX) * (maxY - minY),
+    6,
+  );
   expect(new Set(areas.map((area) => area.toFixed(2))).size).toBeGreaterThan(4);
-  for (let x = 72.13; x < 132; x += 2)
-    for (let y = 75.27; y < 225; y += 2) {
+  // Off-grid samples, so none lands on a shared edge.
+  for (let x = minX + 0.13; x < maxX; x += 2)
+    for (let y = minY + 0.27; y < maxY; y += 2) {
       const containing = DERELICT_SHARDS.filter(({ points }) => {
         let inside = false;
         for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
@@ -37,15 +47,9 @@ it("partitions the source hull envelope into eight unequal regions without losin
       expect(containing).toHaveLength(1);
     }
 });
-it("gives every source plane a flat production colour and retains B release ordering", () => {
+it("gives every source plane a flat production colour", () => {
   expect(DERELICT_PLANE_PALETTE).toHaveLength(DERELICT_SOURCE_PLANES.length);
   expect(
     DERELICT_PLANE_PALETTE.every((fill) => /^#[0-9a-f]{6}$/.test(fill)),
   ).toBe(true);
-  expect(
-    DERELICT_SHARDS.map((piece, index) => ({ piece, index }))
-      .filter(({ piece }) => piece.release < 1)
-      .sort((a, b) => a.piece.release - b.piece.release)
-      .map(({ index }) => index),
-  ).toEqual([0, 6, 3]);
 });

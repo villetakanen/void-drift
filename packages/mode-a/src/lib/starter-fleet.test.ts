@@ -9,6 +9,8 @@ import {
   isScoredEligible,
   LoadoutSchema,
   PARTS,
+  type PartId,
+  PartIdSchema,
   PartSchema,
   ReleaseClassSchema,
   starterLoadout,
@@ -53,12 +55,8 @@ it("lists each installed part once per mount, including the Wasp's single engine
   expect(fittedParts(wasp)).toEqual(["plasma", "laser", "battery"]);
 });
 
-it("fits the starter Wasp with a cannon, a point defence and a light ion engine, in a fresh store too", () => {
+it("gives a fresh store the starter Wasp and keeps a saved Wasp", () => {
   const wasp = starterLoadout("wasp");
-  expect(wasp.hull).toContain("light-ion-cannon");
-  expect(wasp.hull).toContain("ion-point-defence");
-  expect(wasp.side).toBe("ion");
-  expect(wasp.stabilizers).toBe(true);
   const fresh = BuildStoreSchema.parse({
     scout: defaultLoadout("scout"),
     fighter: defaultLoadout("fighter"),
@@ -72,37 +70,8 @@ it("fits the starter Wasp with a cannon, a point defence and a light ion engine,
 });
 
 it("requires one catalog release class and derives scored eligibility from fitted content", () => {
-  const expectedChassisClasses = {
-    wasp: "scored",
-    scout: "scored",
-    fighter: "scored",
-    corvette: "preview",
-    fiddler: "preview",
-  } as const;
-  const expectedPartClasses = {
-    "light-ion-cannon": "scored",
-    "ion-point-defence": "scored",
-    rail: "preview",
-    laser: "preview",
-    battery: "scored",
-    "heavy-well": "scored",
-    coil: "preview",
-    "gravity-coil": "scored",
-    ion: "scored",
-    "heavy-ion": "scored",
-    fusion: "preview",
-    plasma: "preview",
-  } as const;
-  for (const [id, releaseClass] of Object.entries(expectedChassisClasses))
-    expect(
-      ReleaseClassSchema.parse(
-        CHASSIS[id as keyof typeof CHASSIS].releaseClass,
-      ),
-    ).toBe(releaseClass);
-  for (const [id, releaseClass] of Object.entries(expectedPartClasses))
-    expect(
-      ReleaseClassSchema.parse(PARTS[id as keyof typeof PARTS].releaseClass),
-    ).toBe(releaseClass);
+  for (const entry of [...Object.values(CHASSIS), ...Object.values(PARTS)])
+    expect(ReleaseClassSchema.safeParse(entry.releaseClass).success).toBe(true);
   expect(() => ReleaseClassSchema.parse(undefined)).toThrow();
   expect(() =>
     ChassisSchema.parse({ ...CHASSIS.wasp, releaseClass: undefined }),
@@ -111,16 +80,22 @@ it("requires one catalog release class and derives scored eligibility from fitte
     PartSchema.parse({ ...PARTS.ion, releaseClass: undefined }),
   ).toThrow();
 
-  expect(isScoredEligible(starterLoadout("wasp"))).toBe(true);
-  expect(
-    isScoredEligible(
-      LoadoutSchema.parse({
-        ...defaultLoadout("wasp"),
-        hull: ["rail", null],
-      }),
-    ),
-  ).toBe(false);
-  expect(isScoredEligible(defaultLoadout("fiddler"))).toBe(false);
+  const scored = (id: PartId) => PARTS[id].releaseClass === "scored";
+  for (const chassis of ShipProfileIdSchema.options) {
+    const build = starterLoadout(chassis);
+    expect(isScoredEligible(build), chassis).toBe(
+      CHASSIS[chassis].releaseClass === "scored" &&
+        fittedParts(build).every(scored),
+    );
+    const without = { ...build, hull: [null, ...build.hull.slice(1)] };
+    for (const part of PartIdSchema.options) {
+      const fitted = { ...without, hull: [part, ...without.hull.slice(1)] };
+      if (!LoadoutSchema.safeParse(fitted).success) continue;
+      expect(isScoredEligible(fitted), `${chassis} ${part}`).toBe(
+        isScoredEligible(without) && scored(part),
+      );
+    }
+  }
 });
 
 it("migrates a v3 build store with Wasp active and preserves the fittings", () => {

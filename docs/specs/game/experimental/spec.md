@@ -70,10 +70,14 @@ Playground On, a ship carrying only stable parts still flies an unscored run.
   time and, where the running score would be, the scoring-off notice. Run
   complete shows the time survived and the same notice in place of the score,
   offers no Save Score, and never calls submission.
-- **Run status.** With Playground On, the title screen shows scoring-off
-  status beside Start. The Hangar places “Playground · Scoring off” beside the
-  launch actions, keeping its header unchanged. These notices are absent with
-  Off. Individual catalog-item markers are a separate presentation concern.
+- **Run status.** The title screen uses the red status slot below the menu
+  panel, above the decorative ship. With Playground On it reads “PLAYGROUND
+  ACTIVE” and “UNRANKED PLAY” on separate lines. With Playground Off and an
+  ineligible active setup, it reads “UNSANCTIONED BUILD” and “PLAYGROUND
+  REQUIRED” on separate lines. The blocked warning does not replace the title
+  hints; their normal rotation behavior continues. These indications are absent
+  with Off and an eligible setup. In the Hangar, the status appears beside the launch actions without
+  changing the header. Individual catalog-item markers are a separate concern.
 - **Persistence.** The Playground setting is kept on this device across
   visits; a fresh device starts Off. The [active ship](../active-ship/spec.md)
   owns how the ship and its fitting are kept.
@@ -86,36 +90,40 @@ Playground On, a ship carrying only stable parts still flies an unscored run.
 
 ### Definition of Done
 
-- [x] E1: Every `CHASSIS` and `PARTS` entry has exactly one release class, the
+- E1: Every `CHASSIS` and `PARTS` entry has exactly one release class, the
   catalog schema rejects an entry without one, and no consumer keeps its own
   list of stable or experimental items.
-- [x] E2: The Playground setting is defined by a Zod schema, survives a page
+- E2: The Playground setting is defined by a Zod schema, survives a page
   reload, and reads as Off when the stored value is missing or invalid.
-- [x] E3: With Playground Off, experimental ships and parts appear in the
+- E3: With Playground Off, experimental ships and parts appear in the
   Hangar with unavailable ship tabs and marked parts, and cannot be selected or fitted by
   pointer or keyboard.
-- [x] E4: Turning Playground Off with experimental content in the active
+- E4: Turning Playground Off with experimental content in the active
   setup leaves that content in place, marked and disabled, and makes every
   flight launch unavailable from the title screen and the Hangar.
-- [x] E5: In that state the title screen explains why launch is unavailable and
+- E5: In that state the title screen explains why launch is unavailable and
   offers the Hangar; choosing a stable ship with only stable parts, or
   removing the experimental parts, makes launch available again.
-- [x] E6: With Playground On, every ship and part is selectable and fittable,
+- E6: With Playground On, every ship and part is selectable and fittable,
   with ordinary ship tabs and marked excluded parts.
-- [x] E7: With Playground On, a Survival run shows the time and the
+- E7: With Playground On, a Survival run shows the time and the
   scoring-off notice in place of the score, in flight and on run complete,
   shows no Save Score, and never calls score submission, even when every fitted
   item is stable.
-- [x] E8: With Playground On, scoring-off status is visible beside title-screen
-  Start and in the Hangar launch row; the Hangar header gains no notice or extra
-  height. With Off, the run-status notices are absent.
-- [x] E9: Only the Hangar's Playground control changes the setting; choosing
+- E8: Before starting a new game, the title status slot shows “PLAYGROUND
+  ACTIVE” and “UNRANKED PLAY” when Playground is On, or “UNSANCTIONED BUILD”
+  and “PLAYGROUND REQUIRED” when Playground is Off and the active setup is
+  ineligible. It is separate from the PRESS START control group. The blocked
+  warning does not replace or interrupt the title hints' normal rotation. In
+  the Hangar, the status appears beside the launch actions without changing
+  the header.
+- E9: Only the Hangar's Playground control changes the setting; choosing
   ships, fitting parts and flying runs leave it unchanged.
-- [ ] E10: No saved score carries an experimental ship or part, and neither
+- E10: No saved score carries an experimental ship or part, and neither
   the score schema nor `firestore.rules` keeps a list of stable ships.
-- [ ] E11: Catalog class names and item-marker presentation are settled on a
-  live prototype. Playground is the settled setting name; run status communicates
-  that scoring is off.
+- E11: Catalog class names and item-marker presentation are settled on a live
+  prototype. Playground is the setting name, and title run status distinguishes
+  Playground play from ranked play.
 
 ### Regression guardrails
 
@@ -170,10 +178,21 @@ Feature: Playground
     Then run complete shows my time and the scoring-off notice, and no score
     And no Save Score is offered
 
-  Scenario: The marker shows before flight
+  Scenario: Playground status is visible before flight
     Given Playground is On
     When I view the title screen
-    Then the catalog marker is visible beside the start action
+    Then I can readily recognize that Playground is active and the run will be unranked
+    And the status is separate from the Start control group
+
+  Scenario: A blocked build warning leaves title hints rotating
+    Given Playground is Off
+    And the active setup includes an experimental ship or part
+    And reduced motion is not requested
+    And the viewport supports rotating title hints
+    When I view the title screen
+    Then the red status reads “UNSANCTIONED BUILD” and “PLAYGROUND REQUIRED”
+    And PRESS START is unavailable
+    And the rotating title hints continue to change
 
   Scenario: A corrupted setting falls back to Off
     Given the stored Playground setting is not valid
@@ -189,6 +208,6 @@ Feature: Playground
 
 ### Open decisions
 
-- **Wording:** the class names and the marker and notice text, explored in the
-  [run-status study](../../../../apps/web/src/pages/lab/studies/run-status-2026-11-10.astro).
-  Its current wording is provisional until the designer accepts it.
+- **Wording:** catalog class names and item-marker presentation, explored in
+  the [run-status study](../../../../apps/web/src/pages/lab/studies/run-status-2026-11-10.astro).
+  Title run-status wording is settled in this contract.

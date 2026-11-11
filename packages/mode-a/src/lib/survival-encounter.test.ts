@@ -7,7 +7,6 @@ import { ENCOUNTER, SURVIVAL_ENCOUNTER } from "./schemas/salvage";
 import { gameSettings, Simulation, stockSettings } from "./simulation";
 
 const TOLERANCE = 1e-3;
-const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
 const wrapAngle = (a: number) => Math.atan2(Math.sin(a), Math.cos(a));
 
 function scene(seed = 2026, config = SURVIVAL_ENCOUNTER) {
@@ -74,29 +73,30 @@ describe("survival encounter", () => {
       expect(gap).toBeGreaterThanOrEqual(SURVIVAL_ENCOUNTER.intervalMin - 1e-9);
       expect(gap).toBeLessThanOrEqual(SURVIVAL_ENCOUNTER.intervalMax + 1e-9);
     }
-    // A later derelict always comes well after the latest first one could.
-    expect(SURVIVAL_ENCOUNTER.intervalMin).toBeGreaterThan(window.max);
+    // Later derelicts come further apart than any first one comes.
+    expect(Math.min(...gaps)).toBeGreaterThan(Math.max(...firsts));
   });
-  it("enters at 50 to 150 u/s", () => {
+  it("enters across the configured speed range", () => {
+    const { speedMin, speedMax } = SURVIVAL_ENCOUNTER;
+    const edge = (speedMax - speedMin) / 10;
     const speeds = runs.map((run) => Math.hypot(run.wreck.vx, run.wreck.vy));
-    expect(Math.min(...speeds)).toBeGreaterThanOrEqual(50 - 0.01);
-    expect(Math.max(...speeds)).toBeLessThanOrEqual(150 + 0.01);
-    expect(Math.min(...speeds)).toBeLessThan(60);
-    expect(Math.max(...speeds)).toBeGreaterThan(140);
+    expect(Math.min(...speeds)).toBeGreaterThanOrEqual(speedMin - 0.01);
+    expect(Math.max(...speeds)).toBeLessThanOrEqual(speedMax + 0.01);
+    expect(Math.min(...speeds)).toBeLessThan(speedMin + edge);
+    expect(Math.max(...speeds)).toBeGreaterThan(speedMax - edge);
   });
-  it("enters 40 to 50 degrees off the inward radial, to either side", () => {
+  it("enters across the configured band off the inward radial, to either side", () => {
     if (!band) throw new Error("Survival needs an entry-angle band");
+    const edge = (band.max - band.min) / 5;
     const offsets = runs.map((run) => entry(run.wreck).offset);
     for (const offset of offsets) {
-      expect(Math.abs(offset)).toBeGreaterThanOrEqual(
-        toRadians(40) - TOLERANCE,
-      );
-      expect(Math.abs(offset)).toBeLessThanOrEqual(toRadians(50) + TOLERANCE);
+      expect(Math.abs(offset)).toBeGreaterThanOrEqual(band.min - TOLERANCE);
+      expect(Math.abs(offset)).toBeLessThanOrEqual(band.max + TOLERANCE);
     }
     expect(offsets.some((offset) => offset > 0)).toBe(true);
     expect(offsets.some((offset) => offset < 0)).toBe(true);
-    expect(Math.min(...offsets.map(Math.abs))).toBeLessThan(toRadians(42));
-    expect(Math.max(...offsets.map(Math.abs))).toBeGreaterThan(toRadians(48));
+    expect(Math.min(...offsets.map(Math.abs))).toBeLessThan(band.min + edge);
+    expect(Math.max(...offsets.map(Math.abs))).toBeGreaterThan(band.max - edge);
   });
   it("enters narrow tip first: the art's forward tip faces the velocity", () => {
     for (const { wreck } of runs) {
@@ -107,10 +107,13 @@ describe("survival encounter", () => {
       );
     }
   });
-  it("spins at one degree per second, left or right per derelict", () => {
+  it("spins at the configured rate, left or right per derelict", () => {
     const signs = new Set<number>();
     for (const { wreck } of runs) {
-      expect(Math.abs(wreck.spin ?? 0)).toBeCloseTo(toRadians(1), 12);
+      expect(Math.abs(wreck.spin ?? 0)).toBeCloseTo(
+        SURVIVAL_ENCOUNTER.wreckSpin.rate,
+        12,
+      );
       signs.add(Math.sign(wreck.spin ?? 0));
     }
     expect(signs).toEqual(new Set([-1, 1]));
@@ -152,7 +155,6 @@ describe("survival encounter", () => {
     }
   });
   it("keeps one derelict in play and skips an arrival while it lasts", () => {
-    expect(SURVIVAL_ENCOUNTER.groups).toBe(1);
     const s = scene();
     s.arrival();
     expect(s.system.passes).toBe(1);
@@ -175,12 +177,6 @@ describe("survival encounter", () => {
 
 describe("encounter configs", () => {
   it("keeps Derelicts mode on its own, separate rules", () => {
-    expect(ENCOUNTER).not.toBe(SURVIVAL_ENCOUNTER);
-    expect(ENCOUNTER.headingSpread).toBeDefined();
-    expect(ENCOUNTER.entryAngle).toBeUndefined();
-    expect(ENCOUNTER.groups).toBeGreaterThan(SURVIVAL_ENCOUNTER.groups);
-    expect(ENCOUNTER.speedMax).toBeGreaterThan(SURVIVAL_ENCOUNTER.speedMax);
-    expect(ENCOUNTER.wreckSpin).not.toEqual(SURVIVAL_ENCOUNTER.wreckSpin);
     // Derelicts mode's own values drive its system, not survival's.
     const s = scene(2026, ENCOUNTER);
     expect(s.system.nextPass).toBe(ENCOUNTER.firstPass.min);

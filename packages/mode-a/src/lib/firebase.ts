@@ -111,11 +111,11 @@ export async function submitHighScore(
         );
         await runTransaction(db, async (transaction) => {
           const previous = await transaction.get(reference);
-          if (
-            previous.exists() &&
-            HighScoreSchema.parse(previous.data()).score >= score.score
-          )
-            return;
+          // An unreadable stored row is left to the rules to judge.
+          const stored = z
+            .object({ score: z.number() })
+            .safeParse(previous.data());
+          if (stored.success && stored.data.score >= score.score) return;
           transaction.set(reference, score);
         });
         return reference.id;

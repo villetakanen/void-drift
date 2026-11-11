@@ -1,4 +1,4 @@
-import { Vec2 } from "@void-drift/core";
+import { SURVIVAL_CONFIG, Vec2 } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { applyBuildEngines, buildDrain, engineImpulse } from "./build-flight";
 import {
@@ -120,7 +120,7 @@ describe("ship builder contract", () => {
     b.step(both);
     expect(b.state.status).toBe("PLAYING");
     expect(b.engineOutput.left).toBeGreaterThan(0);
-    expect(b.state.resources.hull).toBe(100);
+    expect(b.state.resources.hull).toBe(SURVIVAL_CONFIG.INITIAL_HULL);
     expect(b.state.resources.power).toBe(
       buildStats({ ...defaultLoadout("fighter"), hull: ["battery", null] })
         .capacity,
@@ -189,14 +189,20 @@ it("supplies current outlets for every engine delivering output", () => {
   });
   sim.ship.pos.set(1800, 540);
   sim.start();
+  const delivering = () => {
+    const { left, right, aft, stabilizers } = sim.engineOutput;
+    return [left, right, ...aft, ...stabilizers].filter((v) => v > 0).length;
+  };
   sim.step(both);
-  expect(sim.plume.activeCount).toBe(4);
+  expect(delivering()).toBeGreaterThan(0);
+  expect(sim.plume.activeCount).toBe(delivering());
   sim.step(idle);
   expect(sim.plume.activeCount).toBe(0);
   for (let i = 0; i < 40; i++) sim.step(idle);
   expect(sim.plume.activeCount).toBe(0);
   sim.step({ ...idle, leftThruster: true });
-  expect(sim.plume.activeCount).toBe(1);
+  expect(delivering()).toBeGreaterThan(0);
+  expect(sim.plume.activeCount).toBe(delivering());
 });
 
 it.each(["scout", "fighter", "corvette"] as const)(
@@ -342,7 +348,7 @@ it("keeps practice healthy and in normal motion through star contact", () => {
   const before = { x: sim.ship.pos.x, y: sim.ship.pos.y };
   for (let i = 0; i < 30; i++) sim.step(both);
   expect(sim.state.status).toBe("PLAYING");
-  expect(sim.state.resources.hull).toBe(100);
+  expect(sim.state.resources.hull).toBe(SURVIVAL_CONFIG.INITIAL_HULL);
   expect(sim.state.resources.power).toBe(
     buildStats({ ...defaultLoadout("fighter"), hull: ["battery", null] })
       .capacity,

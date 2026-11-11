@@ -143,24 +143,24 @@ game through the tuning workflow owned by [Gravity field](../../game/world/gravi
 
 ### Definition of Done
 
-- [ ] The pane offers export of current settings without a configuration-import
+- The pane offers export of current settings without a configuration-import
   control; agent-supplied configurations remain schema-validated.
-- [ ] Switching from B1 to B2 recalculates every ship and its no-well reference
+- Switching from B1 to B2 recalculates every ship and its no-well reference
   using B2, records the selection and preserves all other experiment settings.
-- [ ] Changing well strength from 10000 to 10001 uses 10001 in the simulation
+- Changing well strength from 10000 to 10001 uses 10001 in the simulation
   and exported configuration, with all other experiment settings unchanged.
-- [x] The document schema accepts the default document and rejects an unknown
+- The document schema accepts the default document and rejects an unknown
   key, a negative starting speed, a zero strength, a zero cut-off, an
   unknown falloff, a body radius at or beyond the reach and a burn outside B1–B3
   (`gravity-tuning.test.ts`).
-- [ ] The configured well values reach the production gravity and contact
+- The configured well values reach the production gravity and contact
   functions through the shared calculation; paths, gravity measurements and
   contact markers display the resulting samples and events.
-- [ ] Each no-well shadow retains the same build, hull and equipment properties,
+- Each no-well shadow retains the same build, hull and equipment properties,
   motion settings, burn and starting state as its configured-well run; gravity is
   the only condition difference.
-- [x] Each ship's thrust is the peak of its unaffected path's acceleration (`gravity-tuning.test.ts`).
-- [x] `/lab/gravity-tuning` draws four paths and four dotted unaffected paths,
+- Each ship's thrust is the peak of its unaffected path's acceleration (`gravity-tuning.test.ts`).
+- `/lab/gravity-tuning` draws four paths and four dotted unaffected paths,
   the well's surface and reach, three graphs with four thrust lines on the
   gravity graph; an edited setting redraws them and reaches the document, an
   impossible one is refused with its reason; dragging the well moves it (`tests/browser/gravity-tuning.spec.ts`).

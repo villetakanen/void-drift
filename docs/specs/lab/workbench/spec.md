@@ -47,10 +47,10 @@ Pure functions accepting `ctx` and `props`.
 
 ### Definition of Done
 
-- [x] Visiting `/lab` loads the Lab Index.
-- [x] Visiting `/lab/entities/ship` loads the Ship Workbench.
-- [x] Lab uses the same render functions as production game (no duplication).
-- [x] Lab routes are completely separate from game route.
+- Visiting `/lab` loads the Lab Index.
+- Visiting `/lab/entities/ship` loads the Ship Workbench.
+- Lab uses the same render functions as production game (no duplication).
+- Lab routes are completely separate from game route.
 
 ### Regression Guardrails
 

@@ -147,27 +147,27 @@ step belongs to the release procedure in `docs/development.md`.
 
 ### Definition of Done
 
-- [x] The mass law pulls `G × mass / d²` (or `G₂ × mass / d`) inside the reach and
+- The mass law pulls `G × mass / d²` (or `G₂ × mass / d`) inside the reach and
   nothing at or beyond it; the pull at the reach equals the cut-off; a lower
   cut-off extends the reach without changing the pull inside; twice the mass
   pulls twice as hard (`MassWell.test.ts`).
-- [x] The study curve is zero at and beyond reach and equals `strength / 2` at
+- The study curve is zero at and beyond reach and equals `strength / 2` at
   half reach (`WellCurve.test.ts`); planets with a study well are inert outside
   it and pull with their own curve (`Physics.test.ts`).
-- [x] `updateShip`'s well can be escaped with thrust, on a fixture sun with the
+- `updateShip`'s well can be escaped with thrust, on a fixture sun with the
   stock thrust path (`simulation.test.ts`); unpowered, a loadout ship coasts
   above the old speed cap with planets removed (same file).
-- [x] The close-pass and too-deep scenarios below pass on a `Simulation` with the
+- The close-pass and too-deep scenarios below pass on a `Simulation` with the
   game sun (`sun.test.ts`).
-- [x] The same replay gives the same trajectory twice under one rules version
+- The same replay gives the same trajectory twice under one rules version
   (`simulation.test.ts`, "reproduces validated replay exactly").
-- [x] Every gravity value in play is read from the tuning file: the simulation's
+- Every gravity value in play is read from the tuning file: the simulation's
   bodies equal those built from `GRAVITY_TUNING`, every configured planet has a
   mass, the sun's reach is where its pull meets the cut-off, and changing each
   value changes the bodies (`tuning.test.ts`).
-- [x] Each planet pulls 0.75–1.5× and the sun 1.5–3× the reference ship's thrust
+- Each planet pulls 0.75–1.5× and the sun 1.5–3× the reference ship's thrust
   at contact; the cut-off is 5–20 % of it (`game-gravity.test.ts`).
-- [x] Planet contact bounces the ship with the shared `bounceOffSurface`
+- Planet contact bounces the ship with the shared `bounceOffSurface`
   (`MassWell.test.ts`; game planet contact unchanged by the extraction).
 
 ### Regression Guardrails

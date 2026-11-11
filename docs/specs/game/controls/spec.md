@@ -84,19 +84,19 @@ scores do not depend on how the player flew.
 
 ### Definition of Done
 
-- [ ] Every combination of held keys and pads resolves to the action the
+- Every combination of held keys and pads resolves to the action the
   resolution rule gives, from keyboard, touch and both together.
-- [ ] `L` fires the left thruster, `R` the right, and `LR`, `LF` and `RF` both;
+- `L` fires the left thruster, `R` the right, and `LR`, `LF` and `RF` both;
   `invertControls` swaps left and right input, never engine outputs.
-- [ ] Touches in the central fly area issue no action.
-- [ ] A pointer sliding across the seam switches pad without lifting; leaving
+- Touches in the central fly area issue no action.
+- A pointer sliding across the seam switches pad without lifting; leaving
   the assembly, release, cancellation and lost capture clear that pointer's
   press; independent pointers combine.
-- [ ] Pads light for the resolved action from any source, `LR` on the burn pads
+- Pads light for the resolved action from any source, `LR` on the burn pads
   only.
-- [ ] Each side gutter shows the pad assembly with the arrangement, glass
+- Each side gutter shows the pad assembly with the arrangement, glass
   states and markings above.
-- [ ] Each assembly stands at the bottom of its gutter, 320 CSS px tall; no
+- Each assembly stands at the bottom of its gutter, 320 CSS px tall; no
   other touch control fires an engine.
 
 ### Regression guardrails

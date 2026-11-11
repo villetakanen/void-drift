@@ -37,6 +37,9 @@ description: Create, reverse-engineer, or update a living feature specification 
   - Error and edge-case behavior
 
 ### 3) Author the Spec
+
+Acceptance criteria are plain statements of intent, never task checkboxes or completion markers. Track implementation and verification status in delivery records or evidence, not in the living spec.
+
 - Write or update `docs/specs/<domain>.md`.
 - State constraints positively and make them machine-verifiable.
 - Use concrete file paths, not abstract references.
@@ -58,8 +61,8 @@ Why this exists and what user/system problem it solves.
 
 ## Contract
 ### Definition of Done
-- [ ] Verifiable criterion 1
-- [ ] Verifiable criterion 2
+- Verifiable criterion 1
+- Verifiable criterion 2
 
 ### Regression Guardrails
 - Invariant that must always hold

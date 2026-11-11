@@ -46,19 +46,19 @@ New simulation/replay/network contracts require Zod schemas before game logic. F
 
 ### Definition of done
 
-- [ ] One documented command runs the required automated gates and exits nonzero on failure.
-- [ ] Gates cover formatting/lint rules, strict types across workspace code, schema/behavior tests, production build, and browser gameplay smoke checks.
-- [ ] Each check produces a named pass/fail result; skipped or unavailable checks are explicit and cannot count as passes.
-- [ ] Check evidence identifies revision, dirty working-tree state, commands, and environment. A subsequent edit invalidates affected evidence.
-- [ ] A known failing contract is detected by the gate; correcting it restores success without weakening the assertion.
-- [ ] A clean checkout can launch the local game and Lab with documented setup and no live backend credentials.
-- [ ] Fixed seed, simulation steps, configuration, and input sequence reproduce the same gameplay state in the supported test runtime.
-- [ ] Browser checks exercise ship selection, keyboard movement, two simultaneous touch controls, release/cancel of inputs, game over, and restart.
-- [ ] Lab scenarios have reproducible identifiers and configuration export suitable for sharing in conversation.
-- [ ] Visual comparisons hold viewport, seed, simulation time, and browser environment fixed. Baseline changes require visual review; captures are never silently refreshed to hide failures.
-- [ ] A playable checkpoint includes links to the relevant game/Lab scenario, automated results, known gaps, and a focused experience-review question.
-- [ ] Commit and release status reports distinguish working changes, local commit, pushed revision, and verified deployed revision. Unknown remote/deployment state is reported as unknown.
-- [ ] A factory experiment can be reconstructed from its intent, change, checks, human assessment, and resulting lesson candidate.
+- One documented command runs the required automated gates and exits nonzero on failure.
+- Gates cover formatting/lint rules, strict types across workspace code, schema/behavior tests, production build, and browser gameplay smoke checks.
+- Each check produces a named pass/fail result; skipped or unavailable checks are explicit and cannot count as passes.
+- Check evidence identifies revision, dirty working-tree state, commands, and environment. A subsequent edit invalidates affected evidence.
+- A known failing contract is detected by the gate; correcting it restores success without weakening the assertion.
+- A clean checkout can launch the local game and Lab with documented setup and no live backend credentials.
+- Fixed seed, simulation steps, configuration, and input sequence reproduce the same gameplay state in the supported test runtime.
+- Browser checks exercise ship selection, keyboard movement, two simultaneous touch controls, release/cancel of inputs, game over, and restart.
+- Lab scenarios have reproducible identifiers and configuration export suitable for sharing in conversation.
+- Visual comparisons hold viewport, seed, simulation time, and browser environment fixed. Baseline changes require visual review; captures are never silently refreshed to hide failures.
+- A playable checkpoint includes links to the relevant game/Lab scenario, automated results, known gaps, and a focused experience-review question.
+- Commit and release status reports distinguish working changes, local commit, pushed revision, and verified deployed revision. Unknown remote/deployment state is reported as unknown.
+- A factory experiment can be reconstructed from its intent, change, checks, human assessment, and resulting lesson candidate.
 
 Verification reports and stage logs are retained per invocation under
 `artifacts/verification/<timestamp>-<unique-suffix>/`; `latest.json` is only a

@@ -1,4 +1,4 @@
-import { solarCollectionRate } from "@void-drift/core";
+import { STANDARD_SUN, solarCollectionRate } from "@void-drift/core";
 import { gameSettings, Simulation } from "@void-drift/mode-a";
 import { describe, expect, it } from "vitest";
 import {
@@ -6,6 +6,7 @@ import {
   chargingRuns,
   coastDrain,
   collection,
+  FIELD_PROFILES,
   initialIonDraw,
   initialPeak,
   poweredDrain,
@@ -17,9 +18,9 @@ describe("sun charging study", () => {
   it("retains selected-shoulder parity with the implemented standard Sun", () => {
     const star = new Simulation(gameSettings("wasp")).star;
     for (const d of [35, 55, 80, 100, 200, reach, reach + 1])
-      expect(collection(d, 7.5, "shoulder")).toBeCloseTo(
-        solarCollectionRate(d, star),
-      );
+      expect(
+        collection(d, STANDARD_SUN.collectionPeak, "shoulder"),
+      ).toBeCloseTo(solarCollectionRate(d, star));
   });
   it("has an exact zero at the gravity boundary and a coasting break-even inside it", () => {
     expect(collection(reach, initialPeak)).toBe(0);
@@ -86,9 +87,13 @@ describe("sun charging study", () => {
     }
   });
   it("compares edge and shoulder profiles without changing motion", () => {
-    expect(collection(reach, 7.5, "edge")).toBeCloseTo(0.75);
+    expect(collection(reach, 7.5, "edge")).toBeCloseTo(
+      7.5 * FIELD_PROFILES.edge.edge,
+    );
     expect(collection(reach + 0.001, 7.5, "edge")).toBe(0);
-    expect(collection(radius + 20, 7.5, "shoulder")).toBeCloseTo(7.5);
+    expect(
+      collection(radius + FIELD_PROFILES.shoulder.shoulder, 7.5, "shoulder"),
+    ).toBeCloseTo(7.5);
     for (const profile of ["edge", "shoulder"] as const) {
       const crossing = breakEven(0.8, 7.5, profile);
       if (crossing === null) throw Error("Missing crossing");

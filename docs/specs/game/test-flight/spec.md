@@ -49,19 +49,19 @@ Practice is a mode of its own, as the [game contract](../spec.md) lists it.
 
 ### Definition of Done
 
-- [ ] P1: The Hangar's Practice action flies the active ship in its fitting
+- P1: The Hangar's Practice action flies the active ship in its fitting
   with its real mass, thrust and handling.
-- [x] P2: Every entry starts in the same system with the same conditions,
+- P2: Every entry starts in the same system with the same conditions,
   whatever the seed, and with full energy and hull.
-- [ ] P3: Sustained use of engines and systems leaves energy full and never
+- P3: Sustained use of engines and systems leaves energy full and never
   causes a shortage.
-- [x] P4: Contact with the star and planets keeps normal motion, leaves hull
+- P4: Contact with the star and planets keeps normal motion, leaves hull
   full, ends nothing and does not reposition the ship.
-- [ ] P5: No derelicts or encounters appear.
-- [ ] P6: Pause freezes the session; Resume continues it; Abort returns to the
+- P5: No derelicts or encounters appear.
+- P6: Pause freezes the session; Resume continues it; Abort returns to the
   Hangar with the ship unchanged; no reset is offered, and a later entry starts
   fresh.
-- [ ] P7: Practice shows no score, offers no submission and stores nothing.
+- P7: Practice shows no score, offers no submission and stores nothing.
 
 ### Regression guardrails
 

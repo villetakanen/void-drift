@@ -20,6 +20,8 @@ const sorted = $derived(
     ? rows
     : [...rows].sort((a, b) => b.seconds - a.seconds || b.score - a.score),
 );
+// Time is saved to the millisecond; the board shows up to three decimals without trailing zeros.
+const formatSeconds = (seconds: number) => String(Number(seconds.toFixed(3)));
 let loading = $state(true);
 let error = $state("");
 async function load() {
@@ -94,7 +96,9 @@ onMount(() => {
                 </td>
                 <td>{SHIP_IDENTITY[row.shipId].shortName}</td>
                 <td class:sorted={order === "score"}>{row.score}</td>
-                <td class:sorted={order === "time"}>{row.seconds}s</td>
+                <td class:sorted={order === "time"}>
+                  {formatSeconds(row.seconds)}s
+                </td>
               </tr>
             {/each}
           </tbody>

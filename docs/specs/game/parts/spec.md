@@ -60,18 +60,18 @@ own only when its behaviour in flight needs one, as the
 
 ### Definition of Done
 
-- [x] Every catalog entry passes `PartSchema`.
-- [x] `slotAccepts` decides compatibility for the Hangar and for
+- Every catalog entry passes `PartSchema`.
+- `slotAccepts` decides compatibility for the Hangar and for
   `LoadoutSchema`; a part in a mount that does not accept it is rejected on
   load.
-- [x] A fitted part's mass counts toward the ship's mass.
-- [x] A storage part raises the ship's energy capacity, and a run starts with
+- A fitted part's mass counts toward the ship's mass.
+- A storage part raises the ship's energy capacity, and a run starts with
   the whole capacity full.
-- [x] Below a tenth of capacity no weapon fires, draws or starts a cooldown; at
+- Below a tenth of capacity no weapon fires, draws or starts a cooldown; at
   exactly a tenth it fires; this holds for every weapon and every capacity.
-- [x] A held charged engine first thrusts once its charge length has elapsed;
+- A held charged engine first thrusts once its charge length has elapsed;
   releasing the input or losing power resets the charge.
-- [ ] Every part shown in the Hangar has a catalog description that states what
+- Every part shown in the Hangar has a catalog description that states what
   it does.
 
 ### Regression guardrails

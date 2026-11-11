@@ -1,4 +1,10 @@
-import { CONFIG, SURVIVAL_CONFIG, updateShip, Vec2 } from "@void-drift/core";
+import {
+  CONFIG,
+  STANDARD_SUN,
+  SURVIVAL_CONFIG,
+  updateShip,
+  Vec2,
+} from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { Simulation, stockSettings } from "./simulation";
 
@@ -103,7 +109,10 @@ describe("flight contract", () => {
     );
     for (const sim of runs) {
       sim.start();
-      sim.ship.pos.set(1040, 540);
+      sim.ship.pos.set(
+        sim.star.pos.x + (STANDARD_SUN.shoulder + STANDARD_SUN.damageReach) / 2,
+        sim.star.pos.y,
+      );
       sim.step(idle);
     }
     expect(runs[0].state.resources.hull).toBeCloseTo(
@@ -177,7 +186,7 @@ describe("integrated gravity flight", () => {
   it("ends solar contact and resolves planetary contact with damage", () => {
     const sun = new Simulation();
     sun.start();
-    sun.ship.pos.set(1000, 540);
+    sun.ship.pos.set(sun.star.pos.x + sun.star.radius - 1, sun.star.pos.y);
     sun.step(idle);
     expect(sun.state.deathCause).toBe("STAR");
     const s = new Simulation();
@@ -191,7 +200,7 @@ describe("integrated gravity flight", () => {
     s.ship.vel.set(100, 0);
     s.step(idle);
     expect(s.ship.vel.x).toBeLessThan(0);
-    expect(s.state.resources.hull).toBeLessThan(100);
+    expect(s.state.resources.hull).toBeLessThan(SURVIVAL_CONFIG.INITIAL_HULL);
     expect(s.ship.pos.x).toBeLessThanOrEqual(
       1500 - planet.radius - s.ship.radius,
     );
@@ -212,5 +221,20 @@ describe("integrated gravity flight", () => {
     });
     expect(runs[0].ship.vel.x).toBeLessThan(0);
     expect(runs[1].ship.vel).toEqual(runs[0].ship.vel);
+  });
+});
+
+describe("elapsedSeconds", () => {
+  it("keeps millisecond precision and stays within a second of the whole seconds", () => {
+    const simulation = new Simulation(stockSettings("wasp"));
+    for (let tick = 0; tick < 1500; tick++) {
+      const { elapsedSeconds, wholeSeconds } = simulation;
+      expect(
+        Math.abs(elapsedSeconds * 1000 - Math.round(elapsedSeconds * 1000)),
+      ).toBeLessThan(1e-6);
+      expect(elapsedSeconds - wholeSeconds).toBeGreaterThanOrEqual(0);
+      expect(elapsedSeconds - wholeSeconds).toBeLessThan(1);
+      simulation.ticks++;
+    }
   });
 });

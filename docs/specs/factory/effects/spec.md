@@ -112,21 +112,21 @@ workload here; their gameplay implementation belongs to their own features.
 These criteria persist across implementations. Tags in the scenarios trace back to
 these identifiers; unchecked items represent outstanding acceptance work.
 
-- [ ] **FX-01 — Composition:** shared play/Lab effects appear above the world while
+- **FX-01 — Composition:** shared play/Lab effects appear above the world while
   HUD and controls remain readable and operable. Human inspection verifies layering.
-- [x] **FX-02 — Activity:** engine and collector cues represent delivered output,
+- **FX-02 — Activity:** engine and collector cues represent delivered output,
   stop new stamping on release/inactivity, and leave light to the shared decay.
-- [x] **FX-03 — Lifecycle:** pause, resume and reset preserve game-time semantics;
+- **FX-03 — Lifecycle:** pause, resume and reset preserve game-time semantics;
   equal elapsed game time gives equivalent shared decay at 30 and 60 fps.
-- [x] **FX-04 — Placement:** source stamps follow turning mounts, accumulated light retains
+- **FX-04 — Placement:** source stamps follow turning mounts, accumulated light retains
   its painted world position, and camera/wrap transitions preserve this meaning.
-- [x] **FX-05 — Isolation:** identical gameplay inputs yield identical gameplay state
+- **FX-05 — Isolation:** identical gameplay inputs yield identical gameplay state
   across supported effects settings, including presentation disabled.
-- [x] **FX-06 — Capacity:** overload stays within declared scene work/memory limits
+- **FX-06 — Capacity:** overload stays within declared scene work/memory limits
   while retaining essential cues and accepting keyboard/touch input normally.
-- [ ] **FX-07 — Performance:** the mixed-scene workload meets the budget below on
+- **FX-07 — Performance:** the mixed-scene workload meets the budget below on
   named reference environments, with sustained frame pacing and profiling evidence.
-- [ ] **FX-08 — Experience:** the designer reviews a playable mixed scene and records
+- **FX-08 — Experience:** the designer reviews a playable mixed scene and records
   whether its effects feel sharp, sparkly, electric and readable at gameplay zoom.
   The designer's builder playtest on 2026-11-03 approved the ion/gravity appearance as matching
   the intended effect; the entire diagnostic workload has not had designer review.

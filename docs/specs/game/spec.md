@@ -35,30 +35,30 @@ Void Drift is a procedural space survival game played in the browser. A pilot fl
 
 ### Definition of Done
 
-- [x] `FlightSettingsSchema` resolves a missing mode to Survival and a
+- `FlightSettingsSchema` resolves a missing mode to Survival and a
   `testFlight: true` with no mode to Practice, accepts only Survival, Practice
   and Derelicts, and lets an explicit mode take precedence over `testFlight`.
-- [x] A run launched from the title screen or the Hangar returns there on Abort
+- A run launched from the title screen or the Hangar returns there on Abort
   and on game over, without a page reload.
-- [x] PRESS START launches Survival with the active ship, a fresh random seed,
+- PRESS START launches Survival with the active ship, a fresh random seed,
   the arrival entry and a G-class star.
-- [x] Practice and Derelicts runs show no Save Score and never call score
+- Practice and Derelicts runs show no Save Score and never call score
   submission.
-- [x] A Survival run launched from the Hangar with Playground Off is ranked
+- A Survival run launched from the Hangar with Playground Off is ranked
   like a title-screen run; with Playground On, no run shows a score or Save
   Score, and a Survival run shows its time and the scoring-off notice.
-- [x] Two simulations given the same validated settings and replay inputs end
+- Two simulations given the same validated settings and replay inputs end
   with identical ship and world state; invalid replay input is rejected.
-- [x] With Firebase unconfigured, title and Hangar runs start, finish and return
+- With Firebase unconfigured, title and Hangar runs start, finish and return
   normally, and the leaderboard explains that shared scores are unavailable and
   offers Retry.
-- [x] With Firebase unconfigured, run complete explains why Save Score is
+- With Firebase unconfigured, run complete explains why Save Score is
   unavailable.
-- [x] The title screen and the leaderboard show the version from
+- The title screen and the leaderboard show the version from
   `apps/web/package.json`, independently of `CHALLENGE`.
-- [x] A ranked run complete shows one vertical action group: Save Score filled
+- A ranked run complete shows one vertical action group: Save Score filled
   and first, then return to the launch source and Top Scores as ghost actions.
-- [x] Every run complete offers return to the launch source, and a Survival run
+- Every run complete offers return to the launch source, and a Survival run
   complete also offers Top Scores.
 
 ### Regression guardrails

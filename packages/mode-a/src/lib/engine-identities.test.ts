@@ -140,7 +140,6 @@ describe("four-engine player trial", () => {
       );
     for (let i = 0; i < 12000; i++) step();
     const ceiling = buildStats(build, parts).poweredCruiseCeiling;
-    expect(ceiling).toBe(377);
     expect(ship.vel.mag()).toBeGreaterThan(ceiling - 1);
     expect(ship.vel.mag()).toBeLessThanOrEqual(ceiling + 0.000001);
     ship.vel.set(1000, 0);

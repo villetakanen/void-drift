@@ -131,7 +131,8 @@ Platform to work around setup failures. Public web configuration is local, not c
 Before preparing, decide the rules version. If gameplay rules or any tuning-file value
 differ from the previous release, change `CHALLENGE` in
 `packages/mode-a/src/schemas/highscore.ts` once for this release; new scores then use
-new document IDs and queries. Otherwise leave it unchanged. Editing tuning values
+new document IDs and queries, and change the challenge named in `firestore.rules` to
+match, which closes the previous board to writes. Otherwise leave it unchanged. Editing tuning values
 between releases never changes it ([gravity-field.md](specs/game/world/gravity-field/spec.md#rules-version)).
 
 After the full verification gates pass on a stable candidate, prepare the production

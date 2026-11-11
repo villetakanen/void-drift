@@ -128,20 +128,20 @@ or assess handling; human layout review and automated fidelity checks are separa
 
 ### Definition of Done
 
-- [ ] Every production chassis opens with geometry equal to `buildMounts`.
-- [ ] Dragging, rotation controls and numeric edits update preview and export.
-- [ ] Required production links and designer-created mirror pairs obey reflection
+- Every production chassis opens with geometry equal to `buildMounts`.
+- Dragging, rotation controls and numeric edits update preview and export.
+- Required production links and designer-created mirror pairs obey reflection
   when either member is edited; invalid pairs are rejected.
-- [ ] Undo, redo and reset restore geometry and link state atomically.
-- [ ] Production art previews empty and fitted mounts, enlarged and at flight scale.
-- [ ] Original/draft comparison uses identical framing; view changes preserve values.
-- [ ] Copy/load round-trips all mount values, identities, links and preview loadout.
-- [ ] Strict schema validation rejects malformed documents without losing edits.
-- [ ] Baseline mismatch identifies stale layouts without silently adopting them.
-- [ ] Clipboard failure exposes a complete manual-copy fallback.
-- [ ] A representative exported layout applied to production reproduces the
+- Undo, redo and reset restore geometry and link state atomically.
+- Production art previews empty and fitted mounts, enlarged and at flight scale.
+- Original/draft comparison uses identical framing; view changes preserve values.
+- Copy/load round-trips all mount values, identities, links and preview loadout.
+- Strict schema validation rejects malformed documents without losing edits.
+- Baseline mismatch identifies stale layouts without silently adopting them.
+- Clipboard failure exposes a complete manual-copy fallback.
+- A representative exported layout applied to production reproduces the
   planner's geometry, fitting placement, nozzle origins and hit targets.
-- [ ] The designer reviews manipulation, linked editing, readability and visual fidelity
+- The designer reviews manipulation, linked editing, readability and visual fidelity
   on a screen 1280px wide or more. Record this separately from automated results.
   The Lab targets 1280px and up.
 

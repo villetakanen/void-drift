@@ -132,13 +132,13 @@ A static-first site that rehydrates Svelte components.
 
 ## 5. Success Criteria - ALL MET ✅
 
-- [x] Project root contains clearly defined `apps/` and `packages/`.
-- [x] `packages/engine` exports core game logic successfully.
-- [x] `apps/web` consumes `@void-drift/engine` via Vite alias.
-- [x] Browsing `localhost:4321/gallery` shows the workbench.
-- [x] Browsing `localhost:4321/` plays the game.
-- [x] Zero TypeScript errors or warnings.
-- [x] Root directory contains only configuration files.
+- Project root contains clearly defined `apps/` and `packages/`.
+- `packages/engine` exports core game logic successfully.
+- `apps/web` consumes `@void-drift/engine` via Vite alias.
+- Browsing `localhost:4321/gallery` shows the workbench.
+- Browsing `localhost:4321/` plays the game.
+- Zero TypeScript errors or warnings.
+- Root directory contains only configuration files.
 
 ## 6. Current State (Post-Migration)
 

@@ -57,12 +57,12 @@ This spec establishes the contract for planet count, orbital identity, physics b
 
 ### Definition of Done
 
-- [ ] Mode A initializes exactly 3 planets from deterministic config for default gameplay.
-- [ ] All 3 planets maintain stable orbital motion around star center with distinct speed/phase values.
-- [ ] Ship receives cumulative gravity influence from star plus all active planets.
-- [ ] Planet collisions trigger elastic bounce and apply one collision damage event per impact.
-- [ ] Average desktop runtime remains 60 FPS with 3 planets active in normal play.
-- [ ] Mobile play on mid-range devices remains stable enough for progression to PBI-035 audit.
+- Mode A initializes exactly 3 planets from deterministic config for default gameplay.
+- All 3 planets maintain stable orbital motion around star center with distinct speed/phase values.
+- Ship receives cumulative gravity influence from star plus all active planets.
+- Planet collisions trigger elastic bounce and apply one collision damage event per impact.
+- Average desktop runtime remains 60 FPS with 3 planets active in normal play.
+- Mobile play on mid-range devices remains stable enough for progression to PBI-035 audit.
 
 ### Regression Guardrails
 

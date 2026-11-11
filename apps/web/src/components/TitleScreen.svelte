@@ -21,7 +21,6 @@ import { version } from "../../package.json";
 import { LANDING_HINTS } from "../data/landing-hints";
 import { isNarrowerThanMinRatio } from "../lib/game-screen";
 import Logo from "./Logo.svelte";
-import PreviewMarker from "./PreviewMarker.svelte";
 
 let {
   onStart,
@@ -133,58 +132,64 @@ onMount(() => {
 
 <div class="title-screen">
   <div class="title-slot">
-    <section class="title-panel panel" aria-label="Game menu">
-      <div class="identity">
-        <Logo size="sm" />
-        <h1>VOID DRIFT</h1>
-      </div>
-      <nav aria-label="Title screen">
-        <div class="button-group button-group--vertical">
-          <div class="start-action">
-            <button
-              bind:this={startButton}
-              type="button"
-              class="btn btn-filled"
-              {disabled}
-              onclick={onStart}
-            >
-              PRESS START
-            </button>
-            {#if experimental === "On"}
-              <PreviewMarker />
-            {/if}
-          </div>
-          <a bind:this={hangarLink} href="/hangar" class="btn btn-normal"
-            >HANGAR</a
-          >
-          <a href="/leaderboard" class="btn btn-normal">TOP SCORES</a>
-          <a href="/settings" class="btn btn-normal">SETTINGS</a>
-          <a href="/credits" class="btn btn-normal">CREDITS</a>
+    <div class="title-menu">
+      <section class="title-panel panel" aria-label="Game menu">
+        <div class="identity">
+          <Logo size="sm" />
+          <h1>VOID DRIFT</h1>
         </div>
-      </nav>
-      <p class="version">
-        <span class="active-ship">
-          ACTIVE SHIP · {SHIP_IDENTITY[loadout.chassis].shortName}
-        </span>
-        <span>{version}</span>
-      </p>
-      <canvas
-        class="arrival-wasp"
-        bind:this={arrivalCanvas}
-        width="1200"
-        height="800"
-        aria-hidden="true"
-      ></canvas>
-    </section>
+        <nav aria-label="Title screen">
+          <div class="button-group button-group--vertical">
+            <div class="start-action">
+              <button
+                bind:this={startButton}
+                type="button"
+                class="btn btn-filled"
+                {disabled}
+                onclick={onStart}
+              >
+                PRESS START
+              </button>
+            </div>
+            <a bind:this={hangarLink} href="/hangar" class="btn btn-normal"
+              >HANGAR</a
+            >
+            <a href="/leaderboard" class="btn btn-normal">TOP SCORES</a>
+            <a href="/settings" class="btn btn-normal">SETTINGS</a>
+            <a href="/credits" class="btn btn-normal">CREDITS</a>
+          </div>
+        </nav>
+        <p class="version">
+          <span class="active-ship">
+            ACTIVE SHIP · {SHIP_IDENTITY[loadout.chassis].shortName}
+          </span>
+          <span>{version}</span>
+        </p>
+        <canvas
+          class="arrival-wasp"
+          bind:this={arrivalCanvas}
+          width="1200"
+          height="800"
+          aria-hidden="true"
+        ></canvas>
+      </section>
+      {#if blockedReason}
+        <p class="playground-status" role="status">
+          UNSANCTIONED BUILD<br>PLAYGROUND REQUIRED
+        </p>
+      {:else if experimental === "On"}
+        <p class="playground-status" role="status">
+          PLAYGROUND ACTIVE<br>UNRANKED PLAY
+        </p>
+      {/if}
+    </div>
     <aside class="hint" aria-label="Title-screen hints">
       {#if narrow}
         <p role="status" class="orientation-warning">
           Rotate your screen to landscape.
         </p>
       {/if}
-      {#if blockedReason}
-        <p role="status" class="launch-blocked">{blockedReason}</p>
-      {:else if !narrow}
+      {#if !narrow}
         {#key hint}
           <p>{LANDING_HINTS[hint].text}</p>
         {/key}
@@ -212,10 +217,13 @@ onMount(() => {
   padding: var(--spacing-md);
   box-sizing: border-box;
 }
+.title-menu {
+  position: relative;
+  justify-self: center;
+  width: min(100%, 26rem);
+}
 .title-panel {
   width: 100%;
-  max-width: 26rem;
-  justify-self: center;
   padding: var(--spacing-md);
   display: flex;
   flex-direction: column;
@@ -230,6 +238,22 @@ onMount(() => {
   max-width: none;
   left: calc(100% - 520px);
   top: calc(100% - 90px);
+  pointer-events: none;
+}
+.playground-status {
+  position: absolute;
+  top: calc(100% + var(--spacing-sm));
+  left: 50%;
+  z-index: var(--layer-hud);
+  width: max-content;
+  max-width: calc(100vw - var(--spacing-xl));
+  margin: 0;
+  transform: translateX(-50%);
+  color: var(--color-red);
+  font: var(--font-size-caption) var(--font-family-ui);
+  letter-spacing: var(--tracking-eyebrow);
+  line-height: var(--line-height-ui);
+  text-align: center;
   pointer-events: none;
 }
 .identity {
@@ -250,12 +274,6 @@ onMount(() => {
   font: var(--font-size-caption) var(--font-family-ui);
   letter-spacing: var(--tracking-eyebrow);
 }
-.launch-blocked {
-  margin: 0;
-  color: var(--color-text-muted);
-  line-height: var(--line-height-ui);
-  text-align: center;
-}
 .title-panel nav {
   width: 100%;
 }
@@ -267,9 +285,6 @@ onMount(() => {
 .start-action .btn {
   width: 100%;
   white-space: nowrap;
-}
-.start-action :global(.preview-marker) {
-  align-self: flex-end;
 }
 .hint {
   max-width: 32rem;

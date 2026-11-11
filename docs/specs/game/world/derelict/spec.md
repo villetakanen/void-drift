@@ -62,25 +62,25 @@ derelicts arrive belongs to the mode: [Survival](../../survival/spec.md) and
 
 ### Definition of Done
 
-- [x] D1: A derelict sheds pieces as cumulative damage passes its thresholds
+- D1: A derelict sheds pieces as cumulative damage passes its thresholds
   and releases the remaining pieces once at destruction, with no duplicates.
-- [x] D2: Collision for a wreck and for each piece uses the drawn shape, and a
+- D2: Collision for a wreck and for each piece uses the drawn shape, and a
   released piece's material is removed from the parent.
-- [x] D3: Destroying a derelict with a weapon or by ramming releases exactly one
+- D3: Destroying a derelict with a weapon or by ramming releases exactly one
   energy cell, even when several hits land together.
-- [x] D4: Destruction by the star or a planet, expiry and exit release no cell
+- D4: Destruction by the star or a planet, expiry and exit release no cell
   and count as no kill.
-- [x] D5: Collecting a cell adds energy up to capacity once and consumes it;
+- D5: Collecting a cell adds energy up to capacity once and consumes it;
   weapons do not affect cells.
-- [x] D6: A ship takes wreck contact damage once per contact, and piece contact
+- D6: A ship takes wreck contact damage once per contact, and piece contact
   damage once with the piece consumed.
-- [x] D7: Gravity accelerates wrecks, pieces and cells as it does a ship,
+- D7: Gravity accelerates wrecks, pieces and cells as it does a ship,
   independent of kind and mass.
-- [x] D8: A piece wraps at the system edge and persists; an intact derelict and
+- D8: A piece wraps at the system edge and persists; an intact derelict and
   a free cell are removed there.
-- [x] D9: Within a step the earlier contact wins, and the environment wins a
+- D9: Within a step the earlier contact wins, and the environment wins a
   tie with the player.
-- [x] D10: Pause freezes derelicts, pieces, cells and their events; a fresh run
+- D10: Pause freezes derelicts, pieces, cells and their events; a fresh run
   starts with none.
 
 ### Regression guardrails

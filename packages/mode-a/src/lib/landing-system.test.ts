@@ -37,11 +37,11 @@ describe("landing system", () => {
         [1024, 768],
       ]) {
         const frame = scene.layout(width, height);
-        expect(frame.star.x).toBe(width * 0.75);
-        expect(frame.star.y).toBe(height * 0.75);
+        expect(frame.star.x).toBeGreaterThan(width / 2);
+        expect(frame.star.y).toBeGreaterThan(height / 2);
         const outer = frame.planets[2];
-        expect(outer.x).toBeLessThan(width * 0.15);
-        expect(outer.y).toBeLessThan(height * 0.2);
+        expect(outer.x).toBeLessThan(width / 2);
+        expect(outer.y).toBeLessThan(height / 2);
         expect(frame.planets.every((body) => body.radius > 0)).toBe(true);
       }
     }

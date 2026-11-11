@@ -78,14 +78,16 @@ test("the title launches its active ship and freezes it for the run", async ({
 test("Experimental and blocked title states retain portrait framing and native controls", async ({
   page,
 }) => {
+  await page.clock.install();
   const viewport = { width: 768, height: 1024 };
   await page.setViewportSize(viewport);
   await page.goto("/hangar");
   await enablePreviewContent(page);
   await page.getByRole("link", { name: "Void Drift", exact: true }).click();
-  await expect(
-    page.locator(".title-panel").getByText("SCORING OFF"),
-  ).toBeVisible();
+  await expect(page.locator(".playground-status")).toHaveText(
+    "PLAYGROUND ACTIVEUNRANKED PLAY",
+  );
+  await expect(page.locator(".playground-status br")).toHaveCount(1);
 
   const slot = page.locator(".title-slot");
   const assertFrame = async () => {
@@ -121,13 +123,24 @@ test("Experimental and blocked title states retain portrait framing and native c
   await expect(
     page.getByRole("button", { name: "PRESS START", exact: true }),
   ).toBeDisabled();
-  await expect(
-    page.getByRole("status").filter({ hasText: "Playground is Off" }),
-  ).toBeVisible();
+  await expect(page.locator(".playground-status")).toHaveText(
+    "UNSANCTIONED BUILDPLAYGROUND REQUIRED",
+  );
+  await expect(page.locator(".playground-status br")).toHaveCount(1);
   await expect(
     page.getByRole("link", { name: "HANGAR", exact: true }),
   ).toBeFocused();
   await assertFrame();
+
+  await page.setViewportSize({ width: 1280, height: 800 });
+  const rotatingHint = page.locator(".hint p");
+  await expect(rotatingHint).toBeVisible();
+  const firstHint = await rotatingHint.textContent();
+  await page.clock.runFor(8000);
+  await expect(rotatingHint).not.toHaveText(firstHint ?? "");
+  await expect(page.locator(".playground-status")).toHaveText(
+    "UNSANCTIONED BUILDPLAYGROUND REQUIRED",
+  );
 });
 
 test("turning Experimental Off preserves a preview ship and blocks both launch sources", async ({

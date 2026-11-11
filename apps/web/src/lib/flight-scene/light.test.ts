@@ -109,6 +109,6 @@ describe("part tuning", () => {
     expect(engine(run).charge).toBeCloseTo(0.5, 1);
   });
   it("flies the game's own parts when nothing is tuned", () => {
-    expect(new FlightRun(doc, "course").sim.parts).toBe(PARTS);
+    expect(new FlightRun(doc, "course").sim.parts).toEqual(PARTS);
   });
 });

@@ -97,34 +97,34 @@ are not part of the workbench.
 
 ### Definition of Done
 
-- [x] The page shows the production three-layer stack in one isolated pane,
+- The page shows the production three-layer stack in one isolated pane,
   with visible overlapping test marks and no game simulation.
-- [x] Each layer's visibility and all five blend choices affect CSS immediately
+- Each layer's visibility and all five blend choices affect CSS immediately
   while paused, preserving its backing pixels and other layer settings.
-- [x] Artwork uses shared production painters; sample switching clears history and
+- Artwork uses shared production painters; sample switching clears history and
   repaints while retaining presentation settings.
-- [x] FX and LFX have independent native filters, initially using production
+- FX and LFX have independent native filters, initially using production
   Turbulent bloom and LFX None; changing a filter changes presentation while paused without changing
   backing pixels or time.
-- [x] FX Turbulent bloom keeps the original light core, screens a static
+- FX Turbulent bloom keeps the original light core, screens a static
   attenuated displaced/blurred copy, and exposes three bounded controls without
   changing backing pixels, LFX settings or presentation time.
-- [x] Paint emits into the shared FX surface; successive painting accumulates
+- Paint emits into the shared FX surface; successive painting accumulates
   light, Run fades it, and Pause keeps its pixels stable.
-- [x] World and LFX retain their current sample while FX fades; LFX retains no
+- World and LFX retain their current sample while FX fades; LFX retains no
   previous image when redrawn.
-- [x] Clear removes all marks and history while paused or running; Paint after
+- Clear removes all marks and history while paused or running; Paint after
   Clear starts fresh, and experiment settings survive Clear.
-- [x] The page is usable at 1280px and wider, with labelled keyboard-accessible
+- The page is usable at 1280px and wider, with labelled keyboard-accessible
   controls and concise explanations of the visible experiment.
-- [x] The artwork pane remains visible while scrolling filter controls.
-- [x] Rotating Wasp stays centred, completes a two-second full turn, emits the
+- The artwork pane remains visible while scrolling filter controls.
+- Rotating Wasp stays centred, completes a two-second full turn, emits the
   production main and direction-matched stabilizer plumes into persistent FX,
   and holds angle/history on Pause; three production beams remain fixed and
   point right, flashing at 3 Hz for 80 ms in LFX with dispersed FX stamps.
   Production LHI stabilizer outputs select the exhaust pair whose moment
   opposes turn direction.
-- [x] Existing play and the ongoing Flight scene study use the shared
+- Existing play and the ongoing Flight scene study use the shared
   production layer defaults and rendering behavior. The study remains in
   exploration; resolving the layer-model blocker does not accept the study.
 

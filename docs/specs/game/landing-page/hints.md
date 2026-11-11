@@ -46,18 +46,18 @@ their bearings and get a sense of the setting.
 
 ### Definition of Done
 
-- [x] The title screen reads its ordered hint entries from the static TypeScript
+- The title screen reads its ordered hint entries from the static TypeScript
   data module.
-- [x] The first entry is the current alpha news lead, followed by the authored
+- The first entry is the current alpha news lead, followed by the authored
   mix of news, lore teasers and hints.
-- [x] The same ordered rotation is shown to every player and starts with the
+- The same ordered rotation is shown to every player and starts with the
   news lead when the title screen opens.
-- [x] The previous lead is replaced when the current alpha news changes; stale
+- The previous lead is replaced when the current alpha news changes; stale
   news is not retained as a release archive.
-- [x] One entry is shown at a time and advances approximately every eight
+- One entry is shown at a time and advances approximately every eight
   seconds with a subtle fade.
-- [x] Reduced motion keeps the first entry static and removes the transition.
-- [x] The narrow-screen orientation status replaces the rotating entry and
+- Reduced motion keeps the first entry static and removes the transition.
+- The narrow-screen orientation status replaces the rotating entry and
   clears at 4:3 or wider without taking focus or blocking navigation.
 
 ### Regression Guardrails

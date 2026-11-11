@@ -89,10 +89,10 @@ game's home and Hangar is an alternative launch point.
 - From Hangar, Survival uses the same arrival and countdown and returns to
   Hangar; Hangar test flight starts directly.
 - Ship selection belongs in Hangar; the title screen has no ship selector.
-- [Playground](../experimental/spec.md) owns the catalog marker
-  beside PRESS START and the unavailable start, with its reason and the way to
-  the Hangar, while Playground is Off and the active ship holds experimental
-  content.
+- [Playground](../experimental/spec.md) owns the status copy and states. The
+  title-screen status slot sits below the menu panel and above the decorative
+  ship, separate from the menu's control group. A blocked-build warning does not
+  replace the title hints or interrupt their normal rotation behavior.
 - The Hangar link reads “HANGAR”; ship selection belongs in the Hangar.
 - Hangar, Top Scores, Settings and Credits are secondary game-menu destinations.
 - PRESS START receives initial keyboard focus when available; when launch is
@@ -111,29 +111,32 @@ game's home and Hangar is an alternative launch point.
 
 ### Definition of Done
 
-- [x] PRESS START launches the active ship without a ship-selection step.
-- [ ] The title screen has no ship selector and identifies Hangar as the place to choose ships.
-- [ ] All destinations and return actions in the navigation contract are reachable.
-- [ ] Abort and game-over return resolve correctly for both launch sources.
-- [ ] The title screen presents a unified game composition without a website shell.
-- [ ] A random star-system background contains no ships, derelicts or gameplay clutter.
-- [ ] The background uses the shared dialog scrim beneath title-screen content.
-- [ ] The identity and menu are grouped inside a visible panel above the scrim.
-- [ ] The panel sits on the left within the centred 16:9 composition and remains usable
+- PRESS START launches the active ship without a ship-selection step.
+- The title screen has no ship selector and identifies Hangar as the place to choose ships.
+- All destinations and return actions in the navigation contract are reachable.
+- Abort and game-over return resolve correctly for both launch sources.
+- The title screen presents a unified game composition without a website shell.
+- A random star-system background contains no ships, derelicts or gameplay clutter.
+- The background uses the shared dialog scrim beneath title-screen content.
+- The identity and menu are grouped inside a visible panel above the scrim.
+- The panel sits on the left within the centred 16:9 composition and remains usable
   when the slot scales to iPad-sized and larger views.
-- [ ] Keyboard users can launch and reach each menu destination in the specified
+- Keyboard users can launch and reach each menu destination in the specified
   order, starting with focus on PRESS START and without a modal focus trap.
-- [ ] The title screen presents the content and behavior defined by
+- The title screen presents the content and behavior defined by
   [Title-screen hints](hints.md).
-- [x] The cosmetic system has three unringed planets with 120–240 second
+- The Playground status slot appears below the menu panel, above the decorative
+  ship, and outside the menu control group. A blocked-build warning leaves the
+  title hints' normal behavior unchanged.
+- The cosmetic system has three unringed planets with 120–240 second
   periods, separated orbits and the G-class sun, placed in the lower right and
   extending toward the upper left.
-- [x] The menu scene keeps its sun through resize and moves its orbits without
+- The menu scene keeps its sun through resize and moves its orbits without
   advancing survival ticks.
-- [x] PRESS START hands off a fresh active-ship run whose countdown holds position,
+- PRESS START hands off a fresh active-ship run whose countdown holds position,
   power and ticks until GO, with controls held through the count applying at
   release.
-- [x] Reduced motion keeps the menu scene static and retains the three-second
+- Reduced motion keeps the menu scene static and retains the three-second
   count.
 
 ### Regression Guardrails

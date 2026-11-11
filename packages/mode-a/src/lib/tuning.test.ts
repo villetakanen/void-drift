@@ -29,8 +29,12 @@ describe("gravity tuning", () => {
   });
 
   it("gives every configured planet a mass", () => {
-    for (const { id } of SURVIVAL_CONFIG.PLANETS)
-      expect(GRAVITY_TUNING.planetMass[id]).toBeGreaterThan(0);
+    const { planets } = bodies(GRAVITY_TUNING);
+    expect(planets.map((p) => p.id)).toEqual(
+      SURVIVAL_CONFIG.PLANETS.map((p) => p.id),
+    );
+    for (const planet of planets)
+      expect(planet.massWell?.mass, planet.id).toBeGreaterThan(0);
     const { [SURVIVAL_CONFIG.PLANETS[0].id]: _, ...missing } =
       GRAVITY_TUNING.planetMass;
     expect(() => bodies({ ...GRAVITY_TUNING, planetMass: missing })).toThrow();

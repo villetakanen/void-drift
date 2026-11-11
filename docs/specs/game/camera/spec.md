@@ -64,18 +64,18 @@ run.
 
 ### Definition of Done
 
-- [ ] Ship and star, with padding, fit inside the active area at 4:3, 16:9 and
+- Ship and star, with padding, fit inside the active area at 4:3, 16:9 and
   ultra-wide stages whenever they fit at the closest permitted level; the
   rendered view still covers the whole stage.
-- [ ] The camera centre stays at the stage centre's world position for the
+- The camera centre stays at the stage centre's world position for the
   ship–star midpoint at every stage width.
-- [ ] The whole-system view contains the full arena, with padding, inside the
+- The whole-system view contains the full arena, with padding, inside the
   active area.
-- [ ] Zoom uses only the configured levels, snaps in both directions, holds the
+- Zoom uses only the configured levels, snaps in both directions, holds the
   wider level within the 8% threshold band and resets framing on a wrap.
-- [ ] Background stars cover the whole stage at every zoom level and stage
+- Background stars cover the whole stage at every zoom level and stage
   width, world-anchored and identical across runs and frames.
-- [x] Coordinates round-trip between world and screen at every level.
+- Coordinates round-trip between world and screen at every level.
 
 ### Regression guardrails
 
