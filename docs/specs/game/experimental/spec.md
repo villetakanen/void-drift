@@ -47,7 +47,8 @@ Playground On, a ship carrying only stable parts still flies an unscored run.
 - **Wording.** The setting is named **Playground** and uses the shared binary
   Switch. “Scoring off” communicates the enabled run's consequence without a
   confirmation dialog. Names and presentation for individual catalog classes
-  remain open; “in development” does not express their intended meaning.
+  remain open; until they are settled an excluded part's marker reads
+  “UNSANCTIONED”, the title screen's word.
 
 ### Rules
 

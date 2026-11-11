@@ -5,8 +5,8 @@ let { item = false }: { item?: boolean } = $props();
 <span
   class="preview-marker"
   role="note"
-  aria-label={item ? "In development" : "Playground is on. Scoring is off."}
-  >{item ? "IN DEVELOPMENT" : "SCORING OFF"}</span
+  aria-label={item ? "Unsanctioned" : "Playground is on. Scoring is off."}
+  >{item ? "UNSANCTIONED" : "SCORING OFF"}</span
 >
 
 <style>

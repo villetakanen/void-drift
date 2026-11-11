@@ -10,6 +10,22 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
   {
+    slug: "ship-slots-2026-11-11",
+    title: "Ship slots: a part outside the scored rules",
+    status: "stopped",
+    phase: "exploration",
+    question:
+      "How does a slot on the ship drawing show that the part fitted in it sits outside the scored rules: permitted and unscored with Playground on, forbidden and blocking launch with Playground off?",
+  },
+  {
+    slug: "part-rows-2026-11-11",
+    title: "Part rows: offered, fitted, unsanctioned, forbidden",
+    status: "open",
+    phase: "exploration",
+    question:
+      "How does a part look in the Hangar’s part list when it is offered, fitted, unsanctioned or forbidden?",
+  },
+  {
     slug: "buttons-2026-11-11",
     title: "Actions: quiet buttons and links beside one lit call",
     status: "accepted",

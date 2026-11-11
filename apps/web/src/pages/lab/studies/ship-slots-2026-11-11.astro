@@ -1,0 +1,184 @@
+---
+import SlotBlocked022 from "../../../components/studies/SlotBlocked022.svelte";
+import SlotOutsideRules021 from "../../../components/studies/SlotOutsideRules021.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((entry) => entry.slug === "ship-slots-2026-11-11");
+---
+
+<StudyLayout study={study}>
+  <section>
+    <h2>01 / A slot for a part outside the scored rules</h2>
+    <p>
+      In <a href="/hangar">the Hangar</a>'s Plan view every mount on the ship
+      drawing has a slot: a marked rectangle that shows what the mount accepts,
+      whether it is filled and whether it is selected. A filled slot has a lime
+      border and a lime type label on a dark fill.
+    </p>
+    <p>
+      Playground is the Hangar setting that allows parts outside the scored
+      rules. With Playground on, such a part can be fitted and the run is
+      unscored. With Playground off, a fitted one stays on the ship and blocks
+      every launch. In both cases its slot looks like any other filled slot. The
+      launch buttons are unavailable with no reason given, and the player finds
+      the part by selecting mounts one at a time and reading each mount's part
+      list.
+    </p>
+    <p>
+      The lime border and label already mean fitted, and the new state has to be
+      readable in the same rectangle. The Fiddler, the ship with the most slots,
+      has nine. A slot marks where a part is placed, and the part can reach
+      beyond it; Plan view today shrinks weapons and utilities to fit inside the
+      slot, which is a defect.
+    </p>
+    <p>
+      Fixed: the slot's geometry; its empty, filled and selected states; slots
+      drawn only in Plan view; Playground's behaviour; and the linked mount, the
+      second engine of a mirrored pair, which copies the first and cannot be
+      selected. Open: what a filled slot shows when its part is outside the
+      scored rules, with Playground on and with it off, selected and not, and on
+      a linked mount. It is judged on the whole Fiddler. The answer changes the
+      slot drawing that the Hangar and the Lab's mount tools share. Out of
+      scope:
+      <a href="/lab/studies/part-rows-2026-11-11">the rows of the part list</a>,
+      <a href="/lab/studies/run-status-2026-11-10"
+        >what parts outside the scored rules are called</a
+      >, a ship that is itself outside the scored rules, and repairing that
+      defect.
+    </p>
+
+    <aside class="stamp" aria-labelledby="stamp">
+      <h3 id="stamp">Question check · 11 November 2026</h3>
+      <p>
+        An independent reviewer with no part in the framing tested the first
+        draft of this section against the question rubric. Two claims were
+        false. The section was then cut to a third of its length, corrected for
+        every finding and edited for plain wording; this text has not been
+        tested again.
+        <a href="/lab/reviews/ship-slots-2026-11-11">Full result and findings</a
+        >.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Metric</th>
+            <th scope="col">Stamp</th>
+            <th scope="col">Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">One subject</th>
+            <td>Pass</td>
+            <td>
+              One object, the slot, gaining a state for a part outside the
+              scored rules; its conditions are facets one example shows.
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Grounded</th>
+            <td>Fail</td>
+            <td>
+              Every fixed item exists, but the draft counted eight slots where
+              the Fiddler has nine, and said a ship's tab shows its class, which
+              it does not with Playground on.
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Consequence</th>
+            <td>Pass</td>
+            <td>
+              A slot shows when its part is outside the scored rules, so a ship
+              that cannot launch no longer looks ready.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </aside>
+  </section>
+  <section>
+    <h2>02 / Marking the slot on a whole Fiddler</h2>
+    <h3 id="02-1">02.1 / A corner for the class, red for forbidden</h3>
+    <p>
+      The first answer treats the two conditions as one fact at two strengths. A
+      slot whose part is outside the scored rules gets a filled corner. With
+      Playground on the corner is caution yellow and the slot stays lime: the
+      part is fitted and allowed, and the corner is information. With Playground
+      off the corner is red and red replaces lime in the border, the type label
+      and the pair's connector, because lime there would say the part is fine.
+      Selection corners stay lime in both.
+    </p>
+    <SlotOutsideRules021 client:load />
+    <p>
+      Settled on 11 November 2026: a part outside the scored rules is marked by
+      a filled corner in the colour of its slot's border, yellow on the
+      Playground-on ship and red on the Playground-off ship. A corner triangle
+      is a stock web pattern, which the game otherwise avoids; it is accepted
+      here. Not settled: the red slot does not yet identify the part that blocks
+      launch.
+    </p>
+    <h3 id="02-2">02.2 / A heavier border on the slot that blocks launch</h3>
+    <p>
+      The corner and its colour rule are kept. One thing changes: with
+      Playground off, the red border of a blocking slot is drawn at the weight
+      of the selection corners, dashed on the linked engine. In 02.1 that border
+      was the slot's thinnest line. The ships are drawn larger than in 02.1,
+      nearer the Hangar's size.
+    </p>
+    <SlotBlocked022 client:load />
+    <p>
+      To notice: whether the three blocking slots are the first thing seen on
+      the right-hand ship, and whether a selected blocking slot, lime corners
+      around a red border, still reads as selected. The heavy border is drawn
+      over the part and would cross a barrel that reaches beyond the slot. The
+      selection glow on a blocked engine is still lime.
+    </p>
+    <h3 id="stopped">Stopped on 11 November 2026</h3>
+    <p>
+      The study was stopped as inconclusive before 02.2 was judged. The
+      exploration had stopped advancing, and the slot needs a language that does
+      not exist yet: how the game marks a part outside the scored rules at all.
+      That language is to be developed first in the
+      <a href="/lab/studies/part-rows-2026-11-11">part-rows study</a>. What
+      remains from this study: the question in 01 and its
+      <a href="/lab/reviews/ship-slots-2026-11-11">review</a>; the note under
+      02.1; and two observations from the examples, that the slot's border is
+      too thin to carry a state alone and that the parts cover the slot's fill.
+      02.2 is an unjudged proposal. The closure record is
+      <code>docs/loop-evidence/2026-11-11-ship-slots-study.md</code>.
+    </p>
+  </section>
+</StudyLayout>
+<style>
+/* The prose column's width; the stamp's own type is smaller. */
+.stamp {
+  box-sizing: border-box;
+  max-width: 41rem;
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+}
+.stamp h3 {
+  margin-top: 0;
+}
+.stamp table {
+  border-collapse: collapse;
+}
+.stamp th,
+.stamp td {
+  padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) 0;
+  text-align: left;
+  vertical-align: top;
+}
+.stamp td:not(:last-child) {
+  white-space: nowrap;
+}
+.stamp tbody th {
+  white-space: nowrap;
+  font-weight: normal;
+  color: var(--color-text);
+}
+</style>

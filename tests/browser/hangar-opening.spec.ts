@@ -179,7 +179,7 @@ test("ship tabs own the workbench and activate only on deliberate selection", as
     await enablePreviewContent(page);
     await expect(corvette).toBeEnabled();
     expect((await row.boundingBox())?.height).toBe(off?.height);
-    await expect(row.getByText(/in development/i)).toHaveCount(0);
+    await expect(row.getByText(/unsanctioned/i)).toHaveCount(0);
     await chooseShip(page, "Corvette");
     await expect(corvette).toHaveAttribute("aria-selected", "true");
     await expect(

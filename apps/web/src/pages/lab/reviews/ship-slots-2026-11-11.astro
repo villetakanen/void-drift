@@ -1,0 +1,182 @@
+---
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const stamps = [
+  [
+    "One subject",
+    "Pass",
+    "One object: the slot overlay on the Hangar's ship drawing, gaining a state for a part outside the scored rules. The two Playground conditions, selected and unselected, focus and the linked mount are facets shown by the same built example. Five adjacent items were named.",
+  ],
+  [
+    "Grounded",
+    "Fail",
+    "Every held-fixed item exists in code or a spec and every open item can be built and judged by looking. One claim was false and one was false in half its cases (findings 1 and 2). Both are wording, not a fault in the question.",
+  ],
+  [
+    "Consequence",
+    "Pass",
+    "From the section alone: “After this, a slot on the Hangar's ship drawing shows when the part in it is outside the scored rules, so a ship that cannot launch no longer looks ready and the player can see which part has to come off.”",
+  ],
+] as const;
+
+const findings = [
+  [
+    "“Up to eight slots share one hull.”",
+    "False. The Fiddler has nine mounts: two engine pairs and five hull mounts. Eight is the Corvette. The most crowded ship is the one the answer has to be judged on.",
+    "Corrected: nine, and the Fiddler is named as the ship the answer is judged on.",
+  ],
+  [
+    "“A ship that is itself outside the scored rules: its tab carries that.”",
+    "False with Playground on: a tab is marked unavailable only with Playground off, and otherwise shows nothing about the class.",
+    "The claim is removed. A ship outside the rules stays another question.",
+  ],
+  [
+    "Adjacent: “the launch row's own explanation of why launch is unavailable.”",
+    "Does not exist. With Playground off and a blocked ship the Hangar's launch buttons are only unavailable; the explanation is on the title screen. The Playground contract places a status beside the launch actions, and the blocked case is not built.",
+    "The section now says the buttons are unavailable without saying why.",
+  ],
+  [
+    "“A mount stays selectable whatever it holds.”",
+    "Imprecise. A linked mount is never selectable or focusable; it is reached through its primary and never draws selection corners.",
+    "Corrected in the fixed items.",
+  ],
+  [
+    "“Information is never lime.”",
+    "Omission. A filled slot already draws its type text in lime, and the design system lists occupied slots under the selected colour.",
+    "The section now names the type text as part of what lime already says.",
+  ],
+  [
+    "The list of means the slot has: fill, border, corners, type text, number, a mark of its own.",
+    "Omission. Selecting an engine also lights a lime glow on the engine's drawing, the only selection signal a linked mount gets, and Plan draws the hull at 70% opacity.",
+    "The shortened section lists no means. Both are carried into exploration as existing means.",
+  ],
+  [
+    "Reach: “the Hangar's Plan view and the Lab's mount tools.”",
+    "Incomplete. The Lab's mount planner, the Fiddler pincer editor and two study components (the ion cannon fitting and the Fiddler's flight-ready view) also draw the shared overlay. The Wasp side-slot positioner keeps its own copy.",
+    "The section now says wherever it is drawn. The list belongs to scope.",
+  ],
+  [
+    "“The slot language's description of what a filled slot means changes with it.”",
+    "Imprecise. No spec describes the slot language beyond one clause in the design system and one in the Hangar contract; it lives in the earlier study page and the drawing code.",
+    "Removed. Which documents change belongs to scope.",
+  ],
+  [
+    "“At the Hangar's drawing size.”",
+    "Imprecise. The drawing scales to its panel and the ship's bounds, so the nine-slot Fiddler draws its slots smallest.",
+    "Replaced by judging on the whole Fiddler.",
+  ],
+] as const;
+---
+
+<StudyLayout>
+  <section>
+    <h1>Ship slots — question review of 01</h1>
+    <p>
+      <a href="/lab/studies/ship-slots-2026-11-11">Return to the study</a>
+    </p>
+    <p>
+      The first draft of section 01 was tested on 11 November 2026 against the
+      part 01 question rubric (<code
+        >docs/plans/2026-11-10-part-01-question-rubric.md</code
+      >), a proposal and not yet a standing rule. The run used a clean-context
+      agent with read-only access, no part in the framing and no expected
+      result. This is separate from feasibility, implementation authorization
+      and human judgment.
+    </p>
+    <p>
+      One run. The draft it tested carried Fixed, Open, Reach and Adjacent lists
+      and ran to about 560 words. After the run the section was cut to about a
+      third of that and corrected for every finding below. The shortened section
+      has not been tested again; the draft is in the session's working history
+      only and was never committed.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Stamp</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          {stamps.map(([metric, stamp, reason]) => (
+            <tr>
+              <th scope="row">{metric}</th>
+              <td>{stamp}</td>
+              <td>{reason}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <h2>Findings, most serious first</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>What the draft said</th>
+            <th>What the repository shows</th>
+            <th>After the run</th>
+          </tr>
+        </thead>
+        <tbody>
+          {findings.map(([claim, found, after], index) => (
+            <tr>
+              <th scope="row">{index + 1}</th>
+              <td>{claim}</td>
+              <td>{found}</td>
+              <td>{after}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <h2>What checked out</h2>
+    <p>
+      The slot's geometry, markings and states, and that the overlay never reads
+      a part's class; slots in Plan only; mounts and what they accept; one class
+      for every part in the catalog; the Playground rules, off and on; that the
+      class shows only on part rows; the two jobs of lime; the mount's focus
+      ring; the two linked studies; and that parts exist to build every open
+      case, an engine outside the rules on a mirrored pair included.
+    </p>
+    <h2>Not checked</h2>
+    <p>
+      Nothing was rendered. Also unchecked: whether the slot language was
+      settled before parts had classes, the title screen's blocked status in
+      code, and whether the overlay can read the Playground setting, which is a
+      readiness question.
+    </p>
+    <h2>Human judgment</h2>
+    <p>
+      On 11 November 2026, while the run was under way, the designer held that
+      the draft copied the length of the actions study's opening without that
+      study's reach, and set a target of about a third of that length, filled
+      only as far as the question needs. The designer also corrected a claim the
+      run had passed: the draft said each part's drawing sits inside its slot. A
+      slot marks where a part is placed and the part can reach beyond it; Plan
+      view scales weapons and utilities down to fit, which is a defect. The
+      section now says so.
+    </p>
+  </section>
+</StudyLayout>
+<style>
+.table-wrap {
+  overflow-x: auto;
+  margin-block: var(--spacing-lg);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th,
+td {
+  padding: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.6;
+}
+</style>

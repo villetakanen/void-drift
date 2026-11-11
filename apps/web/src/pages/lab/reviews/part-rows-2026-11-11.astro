@@ -1,0 +1,153 @@
+---
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const stamps = [
+  [
+    "One subject",
+    "Pass with findings",
+    "Counted one object, the part row in the Hangar's part list, with four states (offered, fitted, unsanctioned, fitted and forbidden) and the class names as shown on it; the slot on the ship drawing is named as outside. Two things ride along: which parts the list contains with Playground off, which is a Playground rule and not a property of the row, and the naming of the classes.",
+  ],
+  [
+    "Grounded",
+    "Pass with findings",
+    "Every fixed item exists as described and no false claim was found. Two omissions matter for exploration and two imprecisions are listed. Every open item can be built and judged by looking.",
+  ],
+  [
+    "Consequence",
+    "Pass",
+    "From the section alone: “Afterwards a row in the Hangar's part list shows plainly whether its part is fitted and whether it is unsanctioned, and a fitted part that is forbidden no longer looks fine.”",
+  ],
+] as const;
+
+const findings = [
+  [
+    "A fitted unsanctioned part “stays and says it must come off”.",
+    "Omission. No row removes a part: removal is the Remove fitting button, shown only for optional mounts, and a required engine can be swapped but not removed. Two unsanctioned parts are engines.",
+    "Corrected: removed or, on a required engine, replaced.",
+  ],
+  [
+    "“With Playground off, the list hides unsanctioned parts, except a fitted one.”",
+    "Omission. The list today shows every compatible part and disables unsanctioned ones with Playground off, as the Playground contract requires. If the hypothesis fails, that unavailable row is a state the question does not list.",
+    "Corrected: the section now says what the contract does today.",
+  ],
+  [
+    "Open includes “what the two classes are called on it”.",
+    "Omission. The Playground contract and the ship-slots study both send class naming to the run-status study, which is open at its first part. Three studies could settle the names differently.",
+    "Declined. The designer put the names inside this question on 11 November 2026. The pointers in the contract and in the ship-slots study are unchanged and now stale.",
+  ],
+  [
+    "“Lime's two jobs”, beside “Lime means selected and actionable”.",
+    "Imprecision. The design principles count lime's two jobs as the brand, and marking what can be acted on or is selected; the section's meaning is right and its count is not.",
+    "Corrected: “What lime means.”",
+  ],
+  [
+    "“Pressing a row fits the part.”",
+    "Imprecision. Not true of an unsanctioned row with Playground off, which is disabled.",
+    "Covered by the second correction.",
+  ],
+] as const;
+---
+
+<StudyLayout>
+  <section>
+    <h1>Part rows — question review of 01</h1>
+    <p>
+      <a href="/lab/studies/part-rows-2026-11-11">Return to the study</a>
+    </p>
+    <p>
+      Section 01 tested on 11 November 2026 against the part 01 question rubric
+      (<code>docs/plans/2026-11-10-part-01-question-rubric.md</code>), a
+      proposal and not yet a standing rule, by a clean-context agent with
+      read-only access, no part in the framing and no expected result. This is
+      separate from feasibility, implementation authorization and human
+      judgment. The section was corrected after the run, then reworded for
+      readability after a separate writing audit; the current text has not been
+      tested.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Stamp</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          {stamps.map(([metric, stamp, reason]) => (
+            <tr>
+              <th scope="row">{metric}</th>
+              <td>{stamp}</td>
+              <td>{reason}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <h2>Findings, most serious first</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>What the section said</th>
+            <th>What the repository shows</th>
+            <th>After the run</th>
+          </tr>
+        </thead>
+        <tbody>
+          {findings.map(([claim, found, after], index) => (
+            <tr>
+              <th scope="row">{index + 1}</th>
+              <td>{claim}</td>
+              <td>{found}</td>
+              <td>{after}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <h2>What checked out</h2>
+    <p>
+      The list offers what the mount accepts and a press fits at once; every
+      part has one of two classes; nothing is scored in Playground; turning
+      Playground off removes nothing and can block launch; a fitted row differs
+      from a hovered one by little, and a fitted, forbidden row looks like any
+      fitted row with a caption; the linked study exists and names this one in
+      return; the registry entry matches the section.
+    </p>
+    <h2>Not checked</h2>
+    <p>
+      Nothing was rendered. Also unchecked: the browser tests that hold today's
+      disabled row, whether any saved fitting carries an unsanctioned part, and
+      keyboard and focus behaviour of the rows.
+    </p>
+    <h2>Earlier runs</h2>
+    <p>
+      Three runs the same day tested earlier, longer texts of this section. The
+      first failed Grounded on two false claims; the second and third found
+      none. The designer then had the section rewritten: about 200 words, in the
+      words sanctioned and unsanctioned, with the list's behaviour as a
+      hypothesis and not a decision, and with the names of the classes inside
+      the question. Those results do not describe the current text.
+    </p>
+  </section>
+</StudyLayout>
+<style>
+.table-wrap {
+  overflow-x: auto;
+  margin-block: var(--spacing-lg);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th,
+td {
+  padding: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.6;
+}
+</style>

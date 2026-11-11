@@ -1,0 +1,454 @@
+---
+import PartRows021 from "../../../components/studies/PartRows021.svelte";
+import PartRows022 from "../../../components/studies/PartRows022.svelte";
+import PartRows023 from "../../../components/studies/PartRows023.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((entry) => entry.slug === "part-rows-2026-11-11");
+---
+
+<StudyLayout study={study}>
+  <section>
+    <h2>01 / A row that says whether the part is sanctioned</h2>
+    <aside class="nb" aria-labelledby="nb">
+      <h3 id="nb">Nota bene · the real goal, found in 02.3</h3>
+      <p>
+        The subject is the tool the player uses to choose the part for a slot.
+        It is one bespoke thing in the Hangar. It has to do its own job well and
+        conform enough to not feel off. It does not have to be a reusable
+        pattern.
+      </p>
+      <p>
+        The text below is the question as first asked. It leaves open what the
+        row is made of without saying what the row belongs to, and the first
+        three rounds answered it as a general list control.
+        <a href="#tool">02.4</a>
+        starts again from the tool.
+      </p>
+    </aside>
+    <p>
+      In <a href="/hangar">the Hangar</a> the player selects a mount, and a list
+      shows one row for each part that mount accepts. Pressing a row fits its
+      part. A part is either sanctioned for scored play or unsanctioned.
+      Unsanctioned parts can be fitted only while Playground is on, when nothing
+      is scored. The row has to say what the part is, whether it is fitted, and
+      whether it is sanctioned. Today the fitted row is hard to tell from the
+      row under the pointer, and an unsanctioned part carries only a small grey
+      caption.
+    </p>
+    <p>
+      The hard case is a forbidden part: an unsanctioned part that is still
+      fitted when Playground is off. Turning Playground off unfits nothing, so
+      the part stays on its mount and blocks launch. The fitted row is lime, the
+      colour of a choice made. This row is fitted too, and it has to show that
+      the choice must be undone.
+    </p>
+    <dl>
+      <dt>Fixed</dt>
+      <dd>
+        Which parts a mount accepts, that pressing a row fits its part
+        immediately, Playground's rules for launch and scoring, and what lime
+        means.
+      </dd>
+      <dt>Hypothesis</dt>
+      <dd>
+        With Playground off, the list hides unsanctioned parts. A forbidden part
+        stays in the list, and its row says the part must be removed, or
+        replaced if the mount cannot be left empty. With Playground on,
+        unsanctioned parts are listed and marked. This would change the
+        Playground spec, which today shows them as unavailable.
+      </dd>
+      <dt>Open</dt>
+      <dd>
+        What the row is made of, how it shows each of the four states, and what
+        words it uses for sanctioned and unsanctioned.
+      </dd>
+      <dt>Outside</dt>
+      <dd>
+        How the mount on the ship drawing shows the same states. The
+        <a href="/lab/studies/ship-slots-2026-11-11">ship-slots study</a>
+        covers that, and its answer must match this one.
+      </dd>
+    </dl>
+
+    <aside class="stamp" aria-labelledby="stamp">
+      <h3 id="stamp">Question check · 11 November 2026</h3>
+      <p>
+        An independent reviewer tested this section against the question rubric
+        and found no false claim. Of five findings, four are corrected above and
+        one was declined. The section was then reworded for readability. The
+        current text has not been retested.
+        <a href="/lab/reviews/part-rows-2026-11-11">Full result and findings</a
+        >.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Criterion</th>
+            <th scope="col">Result</th>
+            <th scope="col">Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">One subject</th>
+            <td>Pass with findings</td>
+            <td>
+              The study has one subject, the part row in four states. It also
+              asks what the list contains and what the classes are called.
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Grounded</th>
+            <td>Pass with findings</td>
+            <td>
+              Every fixed item exists as described. The section left out how a
+              fitted part is removed and what the Playground spec says today.
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Consequence</th>
+            <td>Pass</td>
+            <td>
+              If the study succeeds, a row shows plainly whether its part is
+              fitted and whether it is sanctioned, and a forbidden part looks
+              blocked.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </aside>
+  </section>
+  <section>
+    <details id="pane">
+      <summary>02.1 / The row as a pane of the console</summary>
+      <p>
+        The first answer builds the row the way the tabs are built. A row is a
+        pane on the console surface with two cut corners and no outline. The
+        drawing sits in a small dark window, so its colours hold in every state.
+        The name leads, the catalog description follows in small text, and mass
+        closes the row. The category letter is gone.
+      </p>
+      <ul>
+        <li>
+          <strong>Fitted</strong>
+          fills the pane lime, as the selected tab does, and says Fitted. A
+          pointer tints the other rows faintly and leaves the fitted row alone.
+        </li>
+        <li>
+          <strong>Unsanctioned</strong>
+          closes the row with a hatched band and replaces the description with
+          “Unsanctioned · no score”. The band takes the row's own quiet colour,
+          so it carries onto the lime of a fitted row.
+        </li>
+        <li>
+          <strong>Forbidden</strong>
+          loses the fill and becomes a red frame. It keeps Fitted and the hatch,
+          names the remedy, and cannot be pressed. The mount is emptied with
+          Remove fitting, or another row is pressed.
+        </li>
+      </ul>
+      <p>
+        The four lists follow the hypothesis: with Playground off, unsanctioned
+        parts are hidden unless fitted. Rows can be pressed, and in the two
+        lower lists the forbidden row leaves once its part is gone. Parts,
+        classes, descriptions and drawings are the game's own. Each list keeps
+        its own mount and fitting on this page only.
+      </p>
+      <PartRows021 client:load />
+      <p>
+        This shows how the rows look and behave in a list. It does not show them
+        in the Hangar's column beside the ship, at the Hangar's width, or by
+        touch. The words on the row are working words.
+      </p>
+      <h3>What 02.1 showed</h3>
+      <ul>
+        <li>
+          <strong>Kept: the hatched band.</strong>
+          Diagonal lines in the padding at the end of the row mark an
+          unsanctioned part. It reads as this game's own and it carries onto a
+          fitted row. It is the working answer for the unsanctioned mark, not
+          yet final.
+        </li>
+        <li>
+          <strong>Stacked panes read as push buttons.</strong>
+          The tabs work because they share one line whose two cut ends make it a
+          single sliding control. Rows cut one by one and piled up lose that:
+          each becomes a button, and a list of parts is not a set of buttons.
+        </li>
+        <li>
+          <strong>The dark window is wrong.</strong>
+          A drawing boxed in black inside each row belongs to web games of the
+          early 2000s, not to the 1980s games this one looks to.
+        </li>
+        <li>
+          <strong>The row needs its container.</strong>
+          Where the list sits, whether in a pane or in something that scrolls,
+          is part of the answer and 02.1 did not give one.
+        </li>
+      </ul>
+    </details>
+  </section>
+  <section>
+    <details id="display">
+      <summary>02.2 / One display, with the drawing outside the rows</summary>
+      <p>
+        The second answer stops building rows as controls. The list is one
+        display set into a console pane, and a row is a line of it: a name, a
+        short word at the end, a hairline beneath. Nothing is cut or raised per
+        row. The display shows five lines and scrolls inside itself when the
+        mount accepts more.
+      </p>
+      <p>
+        The drawing leaves the row. A readout above the display shows one part
+        at a time, larger and with no box around it: its drawing, name,
+        description and figures. It shows the line under the pointer or keyboard
+        focus, and otherwise the fitted part, so parts are compared by moving
+        down the list before one is pressed.
+      </p>
+      <ul>
+        <li>
+          <strong>Fitted</strong>
+          is the lit line: lime with dark text, ending in Fitted.
+        </li>
+        <li>
+          <strong>Unsanctioned</strong>
+          keeps the hatched band at the end of its line. The words “Unsanctioned
+          · no score” are in the readout.
+        </li>
+        <li>
+          <strong>Forbidden</strong>
+          is a red line with a red bar at its start, ending in Remove or
+          Replace. It cannot be pressed; the readout names the remedy.
+        </li>
+      </ul>
+      <PartRows022 client:load />
+      <p>
+        The first list uses a universal mount so that it is long enough to
+        scroll. The readout following the pointer does nothing on a touch
+        screen, where a part's details would appear only once it is fitted. This
+        still does not show the list beside the ship in the Hangar.
+      </p>
+      <h3>What 02.2 showed</h3>
+      <ul>
+        <li>
+          <strong>The row keeps its drawing, name and some figures.</strong>
+          A readout outside the list does not work, because the list is never
+          used alone. It is part of the Hangar, and the large picture of a part
+          is already there: on the ship and its mount.
+        </li>
+        <li>
+          <strong>The drawing in the row is a small helper.</strong>
+          It makes the row look like this game and lets ion be told from plasma
+          by colour. It does not need to be large.
+        </li>
+        <li>
+          <strong>The open question is the minimum.</strong>
+          What a row has to hold to work, and no more, has to be settled before
+          its look.
+        </li>
+      </ul>
+    </details>
+  </section>
+  <section>
+    <h2 id="anatomy">02.3 / What a row holds, beside the ship</h2>
+    <p>
+      The third answer puts the list where it is used: beside the ship, in a
+      slice of the Hangar. Choose a mount under the ship and the list shows its
+      parts; fitting one changes the ship. The slice starts with Playground off
+      and a rail gun on the first wing mount, so the forbidden row is the first
+      thing shown.
+    </p>
+    <p>
+      A row holds four things: a small drawing with no frame, the name, one line
+      of figures, and a closing word only when the part is fitted. The fitted
+      row alone adds the catalog description. The rows are lines of one list in
+      the parts pane, which scrolls inside itself when the list is long.
+    </p>
+    <p>Two marks carry the states, and they do not share a place.</p>
+    <ul>
+      <li>
+        <strong>A bar at the start says fitted.</strong>
+        Lime with the word Fitted when the part is permitted, red with Remove or
+        Replace when it is forbidden. The row is not filled, so the drawing
+        keeps its colours.
+      </li>
+      <li>
+        <strong>The hatched band at the end says unsanctioned</strong>, as kept
+        from 02.1. With Playground on, one line under the list explains it.
+      </li>
+    </ul>
+    <PartRows023 client:load />
+    <p>
+      The strip under the slice shows the row in each state at once. The slice's
+      ship, mounts and fitting rules are the game's; its setting and fitting
+      live only on this page. The slice is narrower than the Hangar and leaves
+      out its other panes. It has not been tried by touch.
+    </p>
+  </section>
+  <section>
+    <h3>What 02.3 showed</h3>
+    <p>
+      Rounds 02.1 to 02.3 each designed a row for a list, borrowing from the
+      tabs and other shared controls. None of them looked as if it belonged in
+      the Hangar. The reason is the subject, not the styling. The subject is the
+      tool the player uses to choose the part for a slot. It is one bespoke
+      thing in the Hangar. It has to do its own job well and conform enough to
+      not feel off. It does not have to be a reusable pattern. Its nearest
+      relative is the slot on the ship drawing, which it serves, and not the
+      tabs. The work is to amend the tool that is in the Hangar, not to invent
+      another. How it works is known, and so is where it sits: in its pane
+      beside the ship. That pane predates the design system and needs a small
+      change to join it. This is the main finding of the study so far.
+    </p>
+  </section>
+  <section>
+    <h2 id="tool">02.4 / The tool as it stands, beside its slot</h2>
+    <p>
+      This round proposes nothing. It looks at the tool in the game today, with
+      a slot selected, to see what it does and what it already shares with the
+      slot. Below is the Hangar itself, live. It shows and changes the ship kept
+      in this browser, and it will change when the Hangar does.
+    </p>
+    <div class="frame">
+      <iframe src="/hangar" title="The Hangar, live" loading="lazy"></iframe>
+    </div>
+    <p>Carried in from the earlier rounds:</p>
+    <ul>
+      <li>
+        A hatched band at the end of the row marks an unsanctioned part. It is
+        the working answer.
+      </li>
+      <li>
+        The row keeps a small drawing, the name and some figures. The drawing is
+        a helper for telling parts apart, and the large picture is on the ship.
+      </li>
+    </ul>
+    <p>What the Hangar shows today:</p>
+    <ul>
+      <li>
+        <strong>The tool already names its slot.</strong>
+        It is headed “Selected mount” with the slot's name, and one sentence
+        says whether the slot can be left empty. It does not repeat the number
+        the slot carries on the ship.
+      </li>
+      <li>
+        <strong>Fitted is said the same way in both places.</strong>
+        A filled slot on the ship is a thin lime rectangle around the part. The
+        fitted row is a thin lime rectangle around the part. Whether by intent
+        or not, the row already reads as the slot's contents.
+      </li>
+      <li>
+        <strong>The same drawing appears twice.</strong>
+        The part in the fitted row and the part in the slot are one drawing at
+        two sizes.
+      </li>
+      <li>
+        <strong>Selection belongs to the slot only.</strong>
+        Lime corner brackets mark the slot being edited. Nothing in the tool is
+        selected; its rows are fitted or not.
+      </li>
+      <li>
+        <strong>The two disagree on words.</strong>
+        The slot is labelled Engine, Equipment or Universal; a row is tagged E,
+        G or U.
+      </li>
+      <li>
+        <strong>Neither says anything about class today</strong>
+        beyond the small caption on the row. A forbidden part looks the same on
+        the ship as a permitted one.
+      </li>
+      <li>
+        <strong>A row is tall.</strong>
+        Drawing, name, two lines of figures and a description make each row
+        about a fifth of the pane's height, so two or three alternatives are
+        visible at once, and the launch row covers the bottom of the list.
+      </li>
+    </ul>
+    <p>
+      What this suggests, to be tested and not yet shown: keep the tool and its
+      pane, and amend the rows. They may take their language from the slot, with
+      the fitted part as the slot's contents and the other rows as what could go
+      in. Fitted, unsanctioned and forbidden would then be said once, the same
+      way on the ship and in the tool.
+    </p>
+  </section>
+  <section><h2>03 / To be developed after 02</h2></section>
+</StudyLayout>
+<style>
+dl {
+  max-width: var(--measure-prose);
+}
+dt {
+  margin-top: var(--spacing-md);
+  font-weight: var(--font-weight-bold);
+}
+dd {
+  margin: var(--spacing-xs) 0 0;
+}
+.stamp {
+  box-sizing: border-box;
+  max-width: 41rem;
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+}
+.stamp h3 {
+  margin-top: 0;
+}
+.stamp table {
+  border-collapse: collapse;
+}
+.stamp th,
+.stamp td {
+  padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) 0;
+  text-align: left;
+  vertical-align: top;
+}
+.stamp td:not(:last-child) {
+  white-space: nowrap;
+}
+.stamp tbody th {
+  white-space: nowrap;
+  font-weight: normal;
+  color: var(--color-text);
+}
+section > ul,
+details > ul,
+h3 + ul {
+  max-width: var(--measure-prose);
+}
+.nb {
+  box-sizing: border-box;
+  max-width: 41rem;
+  margin-block: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-left: var(--state-selected-indicator-width) solid var(--color-text);
+  background: var(--color-elev-1);
+}
+.nb h3 {
+  margin-top: 0;
+}
+.nb p:last-child {
+  margin-bottom: 0;
+  color: var(--color-text-muted);
+}
+/* The live Hangar at its 1280px layout, scaled to the page's canvas. */
+.frame {
+  width: 1088px;
+  height: 680px;
+  margin-block: var(--spacing-lg);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+.frame iframe {
+  width: 1280px;
+  height: 800px;
+  border: 0;
+  transform: scale(0.85);
+  transform-origin: 0 0;
+}
+</style>

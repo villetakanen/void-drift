@@ -30,11 +30,12 @@ State what the question holds fixed (accepted mechanics, established intent) and
 leaves open; exploration varies only the open part. A mechanic already settled in the
 game is fixed, not an unknown.
 
-Test that a study can answer the question: its answer changes the game in one concrete
-way and concerns one object or decision. Count the objects, systems and decisions it
-touches; with more than one, propose the one this cycle settles and name the rest as
-adjacent questions outside it. A change that needs several together is a version of the
-game, not a study; say so instead of exploring it. Current implementation supplies available means and feasibility, not desired
+A study answers a question that concerns one object or decision and changes one named
+thing in the game or the Lab. With more than one, propose the one this cycle settles and
+name the rest as adjacent questions outside it. A change that needs several together is
+a version of the game, not a study; say so instead of exploring it. When section 01 is
+drafted, have the [question test](references/question-test.md) run by a clean-context
+reviewer, answer its findings in the section and stamp the result. Current implementation supplies available means and feasibility, not desired
 intent. Research missing knowledge when useful and distinguish it from game observations.
 
 Create the early page using StudyLayout and validated metadata in
@@ -44,9 +45,10 @@ The button opening's explanatory progression is the form reference, not its deci
 the specification describes enough to use it without reading the historical study.
 
 Update the page with useful reasoning and feedback in the same round. Advance when
-the question passes that test and conversation establishes shared purpose/scope and
-resolves framing objections; substantive agreement or a clear instruction to explore
-suffices for the conversation. The designer may override a failed test after hearing it. Unknown mechanics
+the question test has run and been heard, and conversation establishes shared
+purpose/scope and resolves framing objections; substantive agreement or a clear
+instruction to explore suffices for the conversation. The designer may proceed after a
+failed test; record it as overridden. Unknown mechanics
 can remain for exploration. Avoid a generic approval interview; silence is not agreement.
 
 ## 02 / Explore
@@ -98,7 +100,8 @@ Report automated correctness, visual inspection and human judgment separately; p
 the review URL. One lead owns synthesis; delegate only when authorized and useful.
 
 Ordinary studies retain their design reasoning, readiness, scope and human judgment.
-Use the optional study-quality rubric only for a requested factory evaluation or targeted
-investigation; follow the specification's evaluation contract then. Do not generate a
+The whole-study quality evaluation is separate from the question test: use it only for
+a requested factory evaluation or targeted investigation, under the specification's
+evaluation contract. Do not generate a
 separate ratings report by default. New interpretations of factory evidence still need
 review before becoming standing guidance.

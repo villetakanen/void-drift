@@ -58,6 +58,12 @@ State at parking: Done and won't-fix items are in the tables below. Open:
 check) and 12 (waits on B). Deferred to the 0.6.0 retro: 14. The stash of
 5 November is kept by the designer's decision.
 
+State on 11 November 2026, after reading the eleven loop records closed since
+parking (8 to 11 November): A, B and C below carry what those records show;
+item 12 is superseded; items 7, 8 and 10 are still open; the
+[later findings](#seen-in-the-loop-records-8-to-11-november-2026) have no
+agreed action. Nothing in this update is a new decision except item 12.
+
 ## The designer's findings, priority one
 
 Stated by the designer on 8 November after the review (spoken note, quoted in
@@ -72,17 +78,45 @@ The designer's readings: [loop record](../loop-evidence/2026-11-08-retro-explora
   better at spotting it, not always in time. Explored once. Two design-study
   changes, 9 November 2026: a new proposal is a new answer; a stall offers to
   narrow the question. Root cause not yet agreed.
+  State 11 November 2026: the render performance bench and the flight scene
+  study explored as intended. The ship slots study stopped in part 02 with a
+  different shape: a step's outcome was recorded with details the designer had
+  not given, and two remarks were followed by three rebuilds, one after a
+  request for advice only. The review of the point defence study found the
+  same family in parts 03 and 04: background context in the study, givens
+  presented as open choices, repetition. The skill does not cover recording
+  more than was judged. No action agreed.
 - **B. No rubric for the design question itself.** The biggest finding: the
   team often fails to see that a question is too winding, or missing
   fundamentals, for the study format to answer at all. Logged as model or loop
   failure, it is a missing way to evaluate part 01. Explored twice. Three
   design-study changes, 9 November 2026: an answerability test before part 02,
-  fixed and open parts named, a stall offers to narrow the question. Not yet
-  validated on a study.
+  fixed and open parts named, a stall offers to narrow the question.
+  State 11 November 2026: a
+  [three-metric rubric](2026-11-10-part-01-question-rubric.md), still a
+  proposal outside the skill, has run on three studies (flight scene, actions,
+  ship slots) by clean-context reviewers. Each run found false or wrong
+  claims about the code that the author's own check had passed. On ship slots
+  it passed a question that the designer then stopped because another study
+  had to answer first, and it confirmed a claim against code that implements
+  a defect. No corrected section has been re-tested; corrections lengthen the
+  opening. Adopted 11 November 2026 as the design-study skill's question
+  test, with a fail heard and not blocking, no required re-test, the length
+  target kept, and two additions from the ship slots run: an unfinished study
+  owning part of the answer fails One subject, and a fixed item resting only
+  on current behaviour is a finding to confirm. Uncommitted. Not yet run in
+  its adopted form.
 - **C. The design system is bypassed.** In studies and screens, components
   were invented in place instead of flagging that the design system lacks
   them or that the agent did not know how to use it. Explored once; the
-  designer confirms the pattern is the bench controls. No action yet.
+  designer confirms the pattern is the bench controls.
+  State 11 November 2026: the actions study was accepted on 11 November; its
+  scope moves about fifteen Lab components onto the shared button and turns
+  switch-like bench buttons into switches or toggles
+  ([handoff](2026-11-11-actions-implementation-handoff.md)). Its first slice
+  is in `d29128b`, whose message does not name it, and the handoff calls it
+  unverified. The study has no loop record. The remaining slices are not
+  started.
 
 The numbered items below are priority two: technical findings, open, none
 deferred (8 November 2026).
@@ -138,7 +172,10 @@ No new machinery, no CI. Each change ships with a failing-then-passing check.
 
 7. **Retain evidence by default** (finding 6). `scripts/verify.mjs --retain
    <loop-slug>` copies `report.json` and failed-stage logs into
-   `docs/loop-evidence/artifacts/<loop-slug>/`.
+   `docs/loop-evidence/artifacts/<loop-slug>/`. State 11 November 2026: not
+   built. None of the eleven loops since kept evidence in that folder; two of
+   them ran the verify script at all. The gaps the records name are subagent
+   reports and screenshots, which this change would not keep.
 8. **Preflight** (finding 3). Before gates run, name a held browser port and
    its process, missing Java, missing Chromium, a stale `.vite` cache. Fail
    with the name, not a timeout.
@@ -160,7 +197,9 @@ No new machinery, no CI. Each change ships with a failing-then-passing check.
 12. **Study harness replay** (finding 1). Lessons 001/002 say "adopted, not
     validated". Decide whether to run the evaluation protocol in
     `docs/factory-building-lessons/design-study-evaluation.md` before the
-    point-defence study, and against which model.
+    point-defence study, and against which model. Superseded, 11 November
+    2026: the point-defence study has run, and the part 01 rubric is being
+    tried on real studies instead (see B).
 13. **Shared checkout practice recorded** (finding 4). Done 8 November 2026;
     see the Done table. The checkout is shared by every session and tool on
     purpose, and the designer monitors the work through the git pane; the rules
@@ -169,6 +208,44 @@ No new machinery, no CI. Each change ships with a failing-then-passing check.
     spec.
 14. **Root `artifacts/` retention** (finding 6). 2.9 GB of ignored local
     verification runs. Deferred to the 0.6.0 retro, 8 November 2026.
+
+## Seen in the loop records, 8 to 11 November 2026
+
+Read on 11 November 2026 from the eleven records closed since parking. Each
+is a finding with no agreed action; the evidence is in the records named.
+
+15. **Evidence kept in the repo before a loop closes** (finding 6). Decided
+    8 November; followed by none of the eleven loops. The decision is written
+    in the retro README only, not in the close-loop skill. See item 7.
+16. **Whole-tree commits** (finding 4). Three loops committed by path or by
+    hunk after 8 November (point defence implementation, derelicts S1, flight
+    scene). Whole-tree commits `84e304a`, `1358e15`, `570ab80` and `d29128b`
+    carry other sessions' work under messages that do not name it.
+17. **Formatter reverts** (finding 4). In two loops (derelicts S1, Lab game
+    modes) the formatter was run over the tree and its changes to files of
+    other sessions were undone with `git checkout`; whether uncommitted edits
+    were lost is unknown.
+18. **No full verification since 0.5.6** (finding 2). 83 commits; every loop
+    closed on partial checks on a dirty tree.
+19. **Test failures reported and not investigated** (finding 2): the survival
+    score unit test timing out in a full run; the armed-practice salvage
+    browser test in three rounds; the factory emulator test with a missing
+    file in two loops; a point defence browser test once; the 700px flight
+    deck case once.
+20. **Checks relayed, not inspected.** Four loops delegated implementation and
+    review to subagents; the main session recorded their check results from
+    their reports. One unit test count differed between reports (405 and 407)
+    and was not explained.
+21. **Study lessons held in one tool's memory** (finding 7). Lessons from the
+    11 November studies (build one example and replace it on failure, the
+    short opening, interpreting dictated input) were saved to Claude's memory,
+    which the other tools working the repo do not read.
+22. **Untracked loose ends.** The page review asked for on the point defence
+    study; Plan view scaling weapons and utilities down to fit their slot; the
+    Hangar not explaining a blocked launch. None is in a plan or spec.
+
+Items 2 and 3 above: specs no longer carry checkboxes or status lines since
+11 November 2026 (`AGENTS.md`, the spec skill), so both are moot.
 
 ## Not actions
 

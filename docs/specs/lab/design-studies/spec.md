@@ -63,7 +63,9 @@ about the design. Requirements, hypotheses, observations and decisions should be
 recognizable from their substance and evidence. Attribute external sources when they
 support a claim; conversational speakers and approval exchanges belong in chat.
 Review questions, coordination and process evaluation also belong in chat or their
-separate evidence records. Necessary control labels remain on the page. Historical
+separate evidence records. The one exception is the question test: section 01 ends
+with its dated result for each metric and a link to the full result at
+`/lab/reviews/<study-slug>`. Necessary control labels remain on the page. Historical
 conditions and check results are labeled and linked to their specific evidence.
 
 The opening contains exactly one substantive numbered section 01 and an unfilled
@@ -135,6 +137,10 @@ shared production behavior remains unchanged until implementation is authorized.
 
 Given the designer ends a failed study, its stopped state retains both the failure
 assessment and the project's value in stopping and collecting evidence.
+
+Given section 01 is drafted, a reviewer with no part in the framing tests whether a
+study can answer the question; the result is heard before part 02, and the designer
+may proceed after a fail, which is recorded as overridden.
 
 Given an ordinary study completes, no separate rubric report is required. Given a
 requested factory evaluation, the linked assessment includes evidence and human judgment.

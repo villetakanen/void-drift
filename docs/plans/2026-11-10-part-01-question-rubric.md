@@ -1,7 +1,15 @@
 # Planned rubric: is the design question ready for part 02?
 
-Written 10 November 2026. A proposal, not a standing rule: it is not in the
-design-study skill or the study spec. It answers finding B in the
+Adopted 11 November 2026: the procedure now lives in the design-study skill's
+[question test](../../.agents/skills/design-study/references/question-test.md)
+and the study spec allows its stamp on section 01. That file is the rule; this
+plan keeps the runs and the reasoning. Decided with it: a fail is heard and
+does not block; a corrected section need not be re-tested but says whether it
+was; the opening's length target holds; One subject also fails a question
+whose answer partly belongs to an open or unfinished study; a fixed item that
+rests only on current behaviour is a finding to confirm.
+
+Written 10 November 2026 as a proposal. It answers finding B in the
 [retro actions](2026-11-08-retro-actions.md), "No rubric for the design question
 itself", and builds on the answerability test added to the skill on 9 November.
 It has been run once, on the study below.
