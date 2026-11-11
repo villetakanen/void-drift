@@ -99,8 +99,15 @@ rather than losing the final verification report. A failing rules suite does not
 an unavailable stage cannot count as passed. Standalone rules/competition commands
 remain available; `pnpm test:backend` exercises the shared lifecycle directly.
 
-Browser correctness checks own real input-to-simulation wiring, persistence,
-hydration, focus and Canvas semantics. Numerical matrices stay in unit tests.
+Browser correctness checks retain significant regression guards: real input reaching
+simulation and clearing on release, saved fittings surviving initialization and
+editing, eligibility boundaries, modal isolation, suspension without catch-up,
+run reset and subtle Canvas-history invariants. Representative journeys establish
+playability; every control, route, part, viewport and Lab demonstration does not
+need its own lasting browser test. A retained test protects against a meaningful
+failure that other guards would miss, at a maintenance cost worth paying.
+Numerical matrices stay in meaningful unit guards. Lab and visual behaviour remains
+part of the product contract even when its implementation demonstration is pruned.
 `pnpm test:capture` owns deliberate review screenshots with explicit scenario,
 viewport and simulation time; it is opt-in and produces run-local artifacts.
 Failure screenshots and traces remain part of ordinary browser verification.

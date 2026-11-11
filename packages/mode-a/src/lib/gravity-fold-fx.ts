@@ -105,18 +105,18 @@ export class FlightFx {
       );
     }
     sim.plume.stamp(ctx, this.pass);
-    const opponent = sim.opponent;
-    if (opponent && opponent.lifecycle !== "destroyed") {
-      opponent.plume.stamp(ctx, this.pass);
-      stampWeaponLight(ctx, opponent.combat, this.pass);
-      this.drawActorIonCannonLight(
-        ctx,
-        opponent.ship,
-        opponent.combat,
-        sim.star,
-        sim.planets,
-      );
-    }
+    for (const opponent of sim.opponents)
+      if (opponent.lifecycle !== "destroyed") {
+        opponent.plume.stamp(ctx, this.pass);
+        stampWeaponLight(ctx, opponent.combat, this.pass);
+        this.drawActorIonCannonLight(
+          ctx,
+          opponent.ship,
+          opponent.combat,
+          sim.star,
+          sim.planets,
+        );
+      }
     if (sim.salvage) {
       const salvage = sim.salvage;
       this.weaponSparks.step(Math.max(0, salvage.time - this.weaponTime));
@@ -210,9 +210,8 @@ export class FlightFx {
   drawLfx(ctx: CanvasRenderingContext2D, sim: Simulation) {
     sim.plume.drawCharge(ctx);
     drawIonCannonLight(ctx, sim);
-    const opponent = sim.opponent;
-    if (opponent && opponent.lifecycle !== "destroyed")
-      opponent.plume.drawCharge(ctx);
+    for (const opponent of sim.opponents)
+      if (opponent.lifecycle !== "destroyed") opponent.plume.drawCharge(ctx);
   }
   drawParticles(ctx: CanvasRenderingContext2D) {
     this.weaponSparks.draw(ctx, this.pass);

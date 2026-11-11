@@ -21,6 +21,8 @@ let _props: { "client:load"?: boolean } = $props();
 let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
 let hull = $state(100);
 let pirateHull = $state(100);
+let pirateTwoHull = $state(100);
+let opponentCount = $state(0);
 let elapsed = $state(0);
 let result = $state("FIGHTING");
 let pilotPlan = $state<Simulation["opponentPlan"]>(null);
@@ -63,16 +65,22 @@ onMount(() => {
     camera.frame(sim.ship.pos.x, sim.ship.pos.y, 960, 540, 220, 5, true);
     hull = sim.state.resources.hull;
     pirateHull = sim.opponent?.resources.hull ?? 100;
+    pirateTwoHull = sim.opponents[1]?.resources.hull ?? 100;
+    opponentCount = sim.opponents.length;
     elapsed = 0;
     result = "FIGHTING";
     pilotPlan = sim.opponentPlan;
     ticks = 0;
     x = sim.ship.pos.x;
     y = sim.ship.pos.y;
-    range = sim.opponent
-      ? Math.hypot(
-          sim.ship.pos.x - sim.opponent.ship.pos.x,
-          sim.ship.pos.y - sim.opponent.ship.pos.y,
+    range = sim.opponents.length
+      ? Math.min(
+          ...sim.opponents.map((actor) =>
+            Math.hypot(
+              sim.ship.pos.x - actor.ship.pos.x,
+              sim.ship.pos.y - actor.ship.pos.y,
+            ),
+          ),
         )
       : 0;
     resetCount++;
@@ -111,26 +119,24 @@ onMount(() => {
         accumulated -= STEP;
       }
     } else accumulated = 0;
-    const opponentShip = sim.opponent?.ship;
-    const centerX = opponentShip
-      ? (sim.ship.pos.x + opponentShip.pos.x) / 2
-      : sim.ship.pos.x;
-    const centerY = opponentShip
-      ? (sim.ship.pos.y + opponentShip.pos.y) / 2
-      : sim.ship.pos.y;
-    const padding = opponentShip
-      ? Math.hypot(
-          sim.ship.pos.x - opponentShip.pos.x,
-          sim.ship.pos.y - opponentShip.pos.y,
-        ) /
-          2 +
-        280
-      : 220;
+    const ships = [sim.ship, ...sim.opponents.map((actor) => actor.ship)];
+    const centerX =
+      ships.reduce((sum, ship) => sum + ship.pos.x, 0) / ships.length;
+    const centerY =
+      ships.reduce((sum, ship) => sum + ship.pos.y, 0) / ships.length;
+    const padding = Math.max(
+      220,
+      ...ships.map(
+        (ship) => Math.hypot(ship.pos.x - centerX, ship.pos.y - centerY) + 280,
+      ),
+    );
     camera.frame(centerX, centerY, centerX, centerY, padding, 5, false);
     camera.update(dt);
     drawFlightFrame({ layers, renderer, camera, sim, fx });
     hull = sim.state.resources.hull;
     pirateHull = sim.opponent?.resources.hull ?? 0;
+    pirateTwoHull = sim.opponents[1]?.resources.hull ?? 0;
+    opponentCount = sim.opponents.length;
     elapsed = sim.ticks * STEP;
     result = sim.gauntletResult
       ? `${sim.gauntletResult.winner.toUpperCase()} · ${sim.gauntletResult.cause.toUpperCase()}`
@@ -140,10 +146,14 @@ onMount(() => {
     ticks = sim.ticks;
     x = sim.ship.pos.x;
     y = sim.ship.pos.y;
-    range = opponentShip
-      ? Math.hypot(
-          sim.ship.pos.x - opponentShip.pos.x,
-          sim.ship.pos.y - opponentShip.pos.y,
+    range = sim.opponents.length
+      ? Math.min(
+          ...sim.opponents.map((actor) =>
+            Math.hypot(
+              sim.ship.pos.x - actor.ship.pos.x,
+              sim.ship.pos.y - actor.ship.pos.y,
+            ),
+          ),
         )
       : 0;
     rendered = true;
@@ -162,6 +172,7 @@ onMount(() => {
 
 <main
   class="gauntlet-bench"
+  data-opponents={opponentCount}
   data-ticks={ticks}
   data-rendered={rendered}
   data-sim-status={simStatus}
@@ -177,7 +188,7 @@ onMount(() => {
     <div>
       <p class="eyebrow">PRODUCTION SIMULATION · UNRANKED</p>
       <h1>Gauntlet · pirate Scout</h1>
-      <p>Move with A/D or ←/→. The pirate pilots and fires automatically.</p>
+      <p>Move with A/D or ←/→. Both pirates pilot and fire automatically.</p>
     </div>
     <button type="button" class="btn btn-normal" onclick={resetEncounter}>
       Reset encounter
@@ -195,6 +206,9 @@ onMount(() => {
       <p><span>TIME</span><strong>{elapsed.toFixed(1)} s</strong></p>
       <p><span>PLAYER HULL</span><strong>{hull.toFixed(0)}%</strong></p>
       <p><span>PIRATE HULL</span><strong>{pirateHull.toFixed(0)}%</strong></p>
+      <p>
+        <span>PIRATE 2 HULL</span><strong>{pirateTwoHull.toFixed(0)}%</strong>
+      </p>
       {#if pilotPlan}
         <section class="pilot-plan" aria-label="Pirate pilot plan">
           <h2>PILOT COMMAND</h2>

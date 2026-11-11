@@ -98,9 +98,10 @@ let hull = $state(100);
 let power = $state(100);
 let x = $state(460);
 let y = $state(540);
-let hostileBearing = $state<{ x: number; y: number; angle: number } | null>(
-  null,
-);
+let hostileBearings = $state<
+  Array<{ id: string; x: number; y: number; angle: number }>
+>([]);
+let gauntletOpponentCount = $state(0);
 let zoom = $state(1);
 let zoomLevel = $state(0);
 let cameraFitWidth = $state(0);
@@ -227,39 +228,49 @@ function sync() {
   score = simulation.survivalScore;
   derelictsResult = simulation.derelictsResult;
   gauntletResult = simulation.gauntletResult;
+  gauntletOpponentCount = simulation.opponents.length;
   hull = simulation.state.resources.hull;
   power = simulation.state.resources.power;
   x = simulation.ship.pos.x;
   y = simulation.ship.pos.y;
-  const opponent = simulation.opponent;
-  if (mode === "gauntlet" && opponent && opponent.lifecycle !== "destroyed") {
-    const point = camera.worldToScreen(
-      opponent.ship.pos.x,
-      opponent.ship.pos.y,
-    );
-    if (
-      point.x < 0 ||
-      point.x > camera.viewportWidth ||
-      point.y < 0 ||
-      point.y > camera.viewportHeight
-    ) {
-      const centerX = screen.width / 2;
-      const centerY = screen.height / 2;
-      const targetX = (point.x / camera.viewportWidth) * screen.width;
-      const targetY = (point.y / camera.viewportHeight) * screen.height;
-      const dx = targetX - centerX;
-      const dy = targetY - centerY;
-      const scale = Math.min(
-        (centerX - 28) / Math.max(1, Math.abs(dx)),
-        (centerY - 28) / Math.max(1, Math.abs(dy)),
-      );
-      hostileBearing = {
-        x: centerX + dx * scale,
-        y: centerY + dy * scale,
-        angle: (Math.atan2(dy, dx) * 180) / Math.PI,
-      };
-    } else hostileBearing = null;
-  } else hostileBearing = null;
+  hostileBearings =
+    mode === "gauntlet"
+      ? simulation.opponents.flatMap((opponent) => {
+          if (opponent.lifecycle === "destroyed") return [];
+          const point = camera.worldToScreen(
+            opponent.ship.pos.x,
+            opponent.ship.pos.y,
+          );
+          if (
+            point.x < 0 ||
+            point.x > camera.viewportWidth ||
+            point.y < 0 ||
+            point.y > camera.viewportHeight
+          ) {
+            const centerX = screen.width / 2;
+            const centerY = screen.height / 2;
+            const targetX = (point.x / camera.viewportWidth) * screen.width;
+            const targetY = (point.y / camera.viewportHeight) * screen.height;
+            const dx = targetX - centerX;
+            const dy = targetY - centerY;
+            const scale = Math.min(
+              (centerX - 28) / Math.max(1, Math.abs(dx)),
+              (centerY - 28) / Math.max(1, Math.abs(dy)),
+            );
+            return [
+              {
+                id: opponent.id,
+                ...{
+                  x: centerX + dx * scale,
+                  y: centerY + dy * scale,
+                  angle: (Math.atan2(dy, dx) * 180) / Math.PI,
+                },
+              },
+            ];
+          }
+          return [];
+        })
+      : [];
   ticks = simulation.ticks;
   runSeed = simulation.settings.seed;
   cause = simulation.state.deathCause ?? "";
@@ -561,6 +572,7 @@ onMount(() => {
   data-experimental={runExperimental}
   data-ranked={rankedRun}
   data-gauntlet-result={gauntletResult?.winner ?? "none"}
+  data-gauntlet-opponents={gauntletOpponentCount}
   data-salvage-passes={salvageStats.passes}
   data-salvage-destroyed={salvageStats.destroyed}
   data-rail-shots={salvageStats.rail}
@@ -682,15 +694,17 @@ onMount(() => {
           {/if}
         </div>
       </div>
-      {#if hostileBearing && !landing}
-        <div
-          class="hostile-bearing"
-          style:left={`${hostileBearing.x}px`}
-          style:top={`${hostileBearing.y}px`}
-          style:--bearing-angle={`${hostileBearing.angle}deg`}
-          aria-label="Hostile pirate offscreen"
-          role="img"
-        ></div>
+      {#if hostileBearings.length && !landing}
+        {#each hostileBearings as hostileBearing (hostileBearing.id)}
+          <div
+            class="hostile-bearing"
+            style:left={`${hostileBearing.x}px`}
+            style:top={`${hostileBearing.y}px`}
+            style:--bearing-angle={`${hostileBearing.angle}deg`}
+            aria-label="Hostile pirate offscreen"
+            role="img"
+          ></div>
+        {/each}
       {/if}
       {#if narrow && (phase !== "menu" || !landing)}
         <Dialog

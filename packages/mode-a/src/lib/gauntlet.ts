@@ -36,7 +36,7 @@ import {
 export type GauntletLifecycle = z.infer<typeof GauntletLifecycleSchema>;
 export const GAUNTLET_SHIP_CONTACT = { restitution: 0.25, damage: 5 } as const;
 export interface GauntletActor {
-  id: "pirate-1";
+  id: "pirate-1" | "pirate-2";
   allegiance: "hostile";
   lifecycle: GauntletLifecycle;
   ship: GameObject;
@@ -162,6 +162,7 @@ export function createPirate(
   angle: number,
   seed = 1,
   ion: AssembledIonSettings = ASSEMBLED_ION_DEFAULTS,
+  id: GauntletActor["id"] = "pirate-1",
 ): GauntletActor {
   const allegiance = GauntletAllegianceSchema.parse("hostile");
   if (allegiance !== "hostile")
@@ -179,7 +180,7 @@ export function createPirate(
   };
   ship.vel.set(600 * Math.cos(ship.rotation), 600 * Math.sin(ship.rotation));
   return {
-    id: GauntletActorIdSchema.parse("pirate-1"),
+    id: GauntletActorIdSchema.parse(id),
     allegiance,
     lifecycle: GauntletLifecycleSchema.parse("arriving"),
     ship,

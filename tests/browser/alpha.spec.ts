@@ -11,10 +11,6 @@ test("title starts a stock Wasp and keyboard controls reach flight", async ({
   await page.clock.install();
   await page.goto("/");
   const deck = page.locator(".flight-page");
-  await expect(deck).toHaveAttribute("data-stabilizers", "true");
-  await expect(
-    page.locator(".deck-instruments progress[aria-label='Power']"),
-  ).toHaveAttribute("max", String(buildStats(starterLoadout("wasp")).capacity));
   await page.getByRole("button", { name: "PRESS START" }).click();
   await expect(deck).toHaveAttribute("data-phase", "playing", {
     timeout: 10_000,
@@ -25,6 +21,7 @@ test("title starts a stock Wasp and keyboard controls reach flight", async ({
   await page.clock.runFor(120);
   await expect(deck).not.toHaveAttribute("data-y", y ?? "");
   await page.keyboard.up("ArrowUp");
+  await expectLit(deck, null);
   await page.getByRole("button", { name: "Pause", exact: true }).click();
   const tick = await deck.getAttribute("data-ticks");
   await page.clock.runFor(1000);

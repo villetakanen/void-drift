@@ -195,15 +195,14 @@ neither: it draws every pass, unobserved.
 - `FLIGHT_LAYERS` holds World, FX and LFX in stack order, each with its
   blend, memory and resolution, and every pass names one of them.
 - The stage hosts one canvas per layer, in stack order, each composited by
-  its declared CSS blend mode inside an isolated stage
-  (`tests/browser/render-model.spec.ts`).
+  its declared CSS blend mode inside an isolated stage.
 - No pass draws another layer's image onto its own, and no game code sets a
   canvas composite operation to blend one layer with another.
 - The FX layer is cut over derelict apertures, and no solid pass draws
   above it.
-- Gauntlet draws its hostile fitted ship and weapon pose through the shared
+- Gauntlet draws each living hostile fitted ship and weapon pose through the shared
   build renderer, with its charcoal Scout palette defined by that renderer.
-- An offscreen hostile Gauntlet actor has a screen-fixed bearing cue; the cue
+- Each offscreen hostile Gauntlet actor has a screen-fixed bearing cue; the cue
   does not alter camera or simulation state.
 - A layer's resolution can be changed without changing any pass.
 - A frame with an empty interval leaves the FX layer's image unchanged

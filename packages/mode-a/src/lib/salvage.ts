@@ -158,6 +158,7 @@ function canFire(resources: Resources, capacity: number, cost: number) {
 }
 /** Bounded, deterministic gameplay. No Canvas, wall clock, or cosmetic randomness. */
 export class SalvageSystem {
+  private aimingBodies: readonly SalvageBody[] | null = null;
   readonly weapons: WeaponState[];
   readonly angles: Record<string, number> = {};
   bodies: SalvageBody[] = [];
@@ -551,7 +552,7 @@ export class SalvageSystem {
     planets: readonly Planet[],
   ) {
     const pose = weaponPose(ship, weapon.mount, weapon.angle);
-    const candidates = this.bodies
+    const candidates = (this.aimingBodies ?? this.bodies)
       .flatMap((body) => {
         const distance = Math.hypot(body.x - pose.x, body.y - pose.y);
         if (
@@ -632,7 +633,7 @@ export class SalvageSystem {
   }
   /** Forward ship-width by 300 rectangle; acquisition does not steer muzzle rays. */
   ionTrigger(ship: GameObject, star: Star, planets: readonly Planet[]) {
-    return this.bodies.some((body) => {
+    return (this.aimingBodies ?? this.bodies).some((body) => {
       if (body.kind === "cell" || body.hull <= 0) return false;
       if (body.kind === "ship") {
         const dx = body.x - ship.pos.x;
@@ -749,7 +750,7 @@ export class SalvageSystem {
       closest: { distance: number; x: number; y: number } | null;
     };
     // Visit bodies nearest-bound first so distant material is skipped cheaply.
-    const nearby = this.bodies
+    const nearby = (this.aimingBodies ?? this.bodies)
       .flatMap<CandidateOption>((body) => {
         if (body.kind === "cell" || body.hull <= 0) return [];
         if (body.kind === "ship") {
@@ -1149,13 +1150,20 @@ export class SalvageSystem {
     resources: Resources,
     capacity: number,
     planets: readonly Planet[],
-    target: SalvageBody,
+    targets: SalvageBody | readonly SalvageBody[],
+    aimTargets?: readonly SalvageBody[],
   ) {
+    const targetList = Array.isArray(targets) ? targets : [targets];
     this.time += dt;
     this.events = this.events.filter((event) => this.time - event.time <= 0.2);
-    this.bodies.push(target);
-    this.fireWeapons(dt, ship, star, resources, capacity, [...planets]);
-    this.bodies = this.bodies.filter((body) => body !== target);
+    this.bodies.push(...targetList);
+    this.aimingBodies = aimTargets ?? null;
+    try {
+      this.fireWeapons(dt, ship, star, resources, capacity, [...planets]);
+    } finally {
+      this.aimingBodies = null;
+    }
+    this.bodies = this.bodies.filter((body) => !targetList.includes(body));
 
     this.shots = this.shots.filter((shot) => {
       let first = contactTime(
@@ -1178,20 +1186,26 @@ export class SalvageSystem {
             dt,
           ),
         );
-      const targetTime = contactTime(
-        shot.x - target.previousX,
-        shot.y - target.previousY,
-        shot.vx - target.vx,
-        shot.vy - target.vy,
-        target.radius,
-        dt,
-      );
-      const hitTarget = targetTime < first;
-      if (hitTarget) first = targetTime;
+      let hitTarget: SalvageBody | undefined;
+      for (const target of targetList) {
+        if (target.hull <= 0) continue;
+        const targetTime = contactTime(
+          shot.x - target.previousX,
+          shot.y - target.previousY,
+          shot.vx - target.vx,
+          shot.vy - target.vy,
+          target.radius,
+          dt,
+        );
+        if (targetTime < first) {
+          first = targetTime;
+          hitTarget = target;
+        }
+      }
       shot.x += shot.vx * Math.min(dt, first);
       shot.y += shot.vy * Math.min(dt, first);
       if (hitTarget)
-        this.damage(target, WEAPONS.rail.damage, this.time - dt + first);
+        this.damage(hitTarget, WEAPONS.rail.damage, this.time - dt + first);
       if (first !== Infinity) this.emit("collision", shot.x, shot.y);
       return first === Infinity && !outside(shot.x, shot.y);
     });

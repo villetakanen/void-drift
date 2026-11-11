@@ -10,6 +10,14 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
   {
+    slug: "stellar-characters-2026-11-11",
+    title: "Stellar characters",
+    status: "open",
+    phase: "exploration",
+    question:
+      "What distinct stellar characters can Void Drift offer, and how should their colour, surface and surrounding activity communicate the opportunities and dangers of approaching them?",
+  },
+  {
     slug: "stellar-encounters-2026-11-11",
     title: "Stellar encounters: different stars, different decisions",
     status: "open",

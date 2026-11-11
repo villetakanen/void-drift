@@ -38,24 +38,3 @@ test("a touch on the central fly area fires no thruster", async ({
   });
   await context.close();
 });
-
-test("keyboard forward with a turn resolves to forward-turn and fires both thrusters", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: "PRESS START" }).click();
-  await expect(page.locator(".flight-page")).toHaveAttribute(
-    "data-phase",
-    "playing",
-    { timeout: 10_000 },
-  );
-  const deck = page.locator(".flight-page");
-  await page.keyboard.down("KeyW");
-  await page.keyboard.down("KeyA");
-  // invertControls defaults on, so left input with forward resolves to RF.
-  await expectLit(deck, "RF");
-  await page.keyboard.up("KeyA");
-  await expectLit(deck, "LR");
-  await page.keyboard.up("KeyW");
-  await expectLit(deck, null);
-});

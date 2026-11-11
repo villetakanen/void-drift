@@ -185,24 +185,24 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
         );
       } else if (stockShip)
         renderer.drawShip(sim.ship, sim.settings.profile.tint, stockShip);
-      const opponent = sim.opponent;
-      if (opponent && opponent.lifecycle !== "destroyed") {
-        drawBuild(
-          ctx,
-          opponent.loadout,
-          opponent.ship.pos.x,
-          opponent.ship.pos.y,
-          opponent.ship.rotation,
-          BUILD_FLIGHT_SCALE,
-          "",
-          undefined,
-          undefined,
-          opponent.combat.angles,
-          true,
-          undefined,
-          "charcoal",
-        );
-      }
+      for (const opponent of sim.opponents)
+        if (opponent.lifecycle !== "destroyed") {
+          drawBuild(
+            ctx,
+            opponent.loadout,
+            opponent.ship.pos.x,
+            opponent.ship.pos.y,
+            opponent.ship.rotation,
+            BUILD_FLIGHT_SCALE,
+            "",
+            undefined,
+            undefined,
+            opponent.combat.angles,
+            true,
+            undefined,
+            "charcoal",
+          );
+        }
     },
   },
   {

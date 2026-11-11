@@ -143,8 +143,12 @@ export class Simulation {
   readonly plume = new EnginePlume();
   readonly gravity: GravityTuning = GRAVITY_TUNING;
   readonly salvage?: SalvageSystem;
-  readonly opponent: GauntletActor | null;
+  readonly opponents: GauntletActor[];
+  get opponent(): GauntletActor | null {
+    return this.opponents[0] ?? null;
+  }
   opponentPlan: PiratePilotPlan | null = null;
+  opponentPlans: Array<PiratePilotPlan | null> = [];
   get playerWeapons(): readonly WeaponState[] {
     return this.salvage?.weapons ?? [];
   }
@@ -152,7 +156,7 @@ export class Simulation {
     return this.salvage?.events ?? [];
   }
   gauntletResult: GauntletResult | null = null;
-  private opponentCommand: PilotCommand = NO_PILOT_COMMAND;
+  private opponentCommands: PilotCommand[] = [];
   private finalDerelictsResult: Readonly<DerelictsResult> | null = null;
   get derelictsResult(): Readonly<DerelictsResult> | null {
     return this.finalDerelictsResult;
@@ -241,14 +245,39 @@ export class Simulation {
       entrySeparation < 100
         ? proposedPirateAngle + Math.PI
         : proposedPirateAngle;
-    this.opponent =
+    const secondPirateArrivalAngle = [
+      pirateArrivalAngle + Math.PI,
+      pirateArrivalAngle + (2 * Math.PI) / 3,
+      pirateArrivalAngle - (2 * Math.PI) / 3,
+    ].sort((a, b) => {
+      const separation = (angle: number, other: number) =>
+        2360 * Math.abs(Math.sin((angle - other) / 2));
+      const score = (angle: number) =>
+        Math.min(
+          separation(angle, pirateArrivalAngle),
+          separation(angle, playerArrivalAngle),
+        );
+      return score(b) - score(a);
+    })[0];
+    this.opponents =
       this.settings.mode === "gauntlet"
-        ? createPirate(
-            pirateArrivalAngle,
-            (this.settings.seed ^ 0x51ed270b) >>> 0,
-            this.settings.ion,
-          )
-        : null;
+        ? [
+            createPirate(
+              pirateArrivalAngle,
+              (this.settings.seed ^ 0x51ed270b) >>> 0,
+              this.settings.ion,
+              "pirate-1",
+            ),
+            createPirate(
+              secondPirateArrivalAngle,
+              (this.settings.seed ^ 0x2c1b3c6d) >>> 0,
+              this.settings.ion,
+              "pirate-2",
+            ),
+          ]
+        : [];
+    this.opponentPlans = this.opponents.map(() => null);
+    this.opponentCommands = this.opponents.map(() => NO_PILOT_COMMAND);
     if (this.settings.loadout)
       this.state.resources.power = buildStats(this.settings.loadout).capacity;
     // Survival and Derelicts mode each run the encounter with their own rules.
@@ -306,7 +335,7 @@ export class Simulation {
     let collected = 0;
     let solarCollected = 0;
     let playerCombatDamage = 0;
-    let pirateCombatDamage = 0;
+    const pirateCombatDamage = this.opponents.map(() => 0);
     let substeps = 0;
     // Four substeps resolve stronger close passes without changing the replay tick rate.
     for (let substep = 0; substep < 4; substep++) {
@@ -314,9 +343,10 @@ export class Simulation {
         for (const planet of this.planets) updatePlanetOrbit(planet, STEP / 4);
       const previousX = this.ship.pos.x,
         previousY = this.ship.pos.y;
-      const opponentPrevious = this.opponent
-        ? { x: this.opponent.ship.pos.x, y: this.opponent.ship.pos.y }
-        : null;
+      const opponentPrevious = this.opponents.map((pirate) => ({
+        x: pirate.ship.pos.x,
+        y: pirate.ship.pos.y,
+      }));
       if (this.settings.mode === "practice" && !this.settings.loadout)
         this.state.resources.power = 100;
       if (this.settings.loadout) {
@@ -364,119 +394,196 @@ export class Simulation {
         );
       }
       substeps++;
-      if (this.opponent) {
-        const pirate = this.opponent;
-        const centreDistance = Math.hypot(
-          pirate.ship.pos.x - 960,
-          pirate.ship.pos.y - 540,
-        );
-        if (pirate.lifecycle === "arriving" && centreDistance < 1150)
-          pirate.lifecycle = "active";
-        const playerCanFire =
-          this.state.resources.hull - playerCombatDamage > 0;
-        const pirateCanFire = pirate.resources.hull - pirateCombatDamage > 0;
-        if (pirate.lifecycle === "active") {
-          if (substep === 1 && this.ticks % 8 === 0)
-            this.opponentPlan = planPirate(
+      const playerHullAtSubstep =
+        this.state.resources.hull - playerCombatDamage;
+      const playerCanFire = playerHullAtSubstep > 0;
+      const piratesCanFire = this.opponents.map(
+        (pirate, index) =>
+          pirate.lifecycle === "active" &&
+          pirate.resources.hull - pirateCombatDamage[index] > 0,
+      );
+      if (this.opponents.length) {
+        for (let index = 0; index < this.opponents.length; index++) {
+          const pirate = this.opponents[index];
+          if (pirate.lifecycle === "destroyed") continue;
+          const centreDistance = Math.hypot(
+            pirate.ship.pos.x - 960,
+            pirate.ship.pos.y - 540,
+          );
+          if (pirate.lifecycle === "arriving" && centreDistance < 1150)
+            pirate.lifecycle = "active";
+          if (
+            pirate.lifecycle === "active" &&
+            substep === 1 &&
+            (this.ticks + index * 4) % 8 === 0
+          ) {
+            this.opponentPlans[index] = planPirate(
               pirate,
               this.ship,
               this.star,
               this.planets,
               this.settings.ion,
             );
-          if (this.opponentPlan)
-            this.opponentCommand = this.opponentPlan.command;
-        }
-        stepGauntletActor(
-          pirate,
-          pirate.lifecycle === "active"
-            ? this.opponentCommand
-            : NO_PILOT_COMMAND,
-          STEP / 4,
-          this.star,
-          this.planets,
-          this.settings.ion,
-        );
-        if (opponentPrevious && this.settings.loadout) {
-          const relativeX = previousX - opponentPrevious.x;
-          const relativeY = previousY - opponentPrevious.y;
-          const relativeMoveX =
-            this.ship.pos.x -
-            previousX -
-            (pirate.ship.pos.x - opponentPrevious.x);
-          const relativeMoveY =
-            this.ship.pos.y -
-            previousY -
-            (pirate.ship.pos.y - opponentPrevious.y);
-          const contact = contactTime(
-            relativeX,
-            relativeY,
-            relativeMoveX,
-            relativeMoveY,
-            this.ship.radius + pirate.ship.radius,
-            1,
+            if (index === 0) this.opponentPlan = this.opponentPlans[index];
+            this.opponentCommands[index] =
+              this.opponentPlans[index]?.command ?? NO_PILOT_COMMAND;
+          }
+          stepGauntletActor(
+            pirate,
+            pirate.lifecycle === "active"
+              ? this.opponentCommands[index]
+              : NO_PILOT_COMMAND,
+            STEP / 4,
+            this.star,
+            this.planets,
+            this.settings.ion,
           );
-          if (Number.isFinite(contact)) {
+        }
+        if (this.settings.loadout) {
+          for (let index = 0; index < this.opponents.length; index++) {
+            const pirate = this.opponents[index];
+            if (pirate.lifecycle === "destroyed") continue;
+            const prior = opponentPrevious[index];
+            const relX = previousX - prior.x,
+              relY = previousY - prior.y;
+            const relMoveX =
+              this.ship.pos.x - previousX - (pirate.ship.pos.x - prior.x);
+            const relMoveY =
+              this.ship.pos.y - previousY - (pirate.ship.pos.y - prior.y);
+            const contact = contactTime(
+              relX,
+              relY,
+              relMoveX,
+              relMoveY,
+              this.ship.radius + pirate.ship.radius,
+              1,
+            );
+            if (!Number.isFinite(contact)) continue;
             const t = Math.max(0, Math.min(1, contact));
-            const playerContactX =
-              previousX + (this.ship.pos.x - previousX) * t;
-            const playerContactY =
-              previousY + (this.ship.pos.y - previousY) * t;
-            const pirateContactX =
-              opponentPrevious.x + (pirate.ship.pos.x - opponentPrevious.x) * t;
-            const pirateContactY =
-              opponentPrevious.y + (pirate.ship.pos.y - opponentPrevious.y) * t;
-            const dx = playerContactX - pirateContactX;
-            const dy = playerContactY - pirateContactY;
-            const separation = Math.hypot(dx, dy) || 1;
-            const nx = dx / separation;
-            const ny = dy / separation;
-            const relativeNormal =
+            const px = previousX + (this.ship.pos.x - previousX) * t;
+            const py = previousY + (this.ship.pos.y - previousY) * t;
+            const ox = prior.x + (pirate.ship.pos.x - prior.x) * t;
+            const oy = prior.y + (pirate.ship.pos.y - prior.y) * t;
+            const distance = Math.hypot(px - ox, py - oy) || 1;
+            const nx = (px - ox) / distance,
+              ny = (py - oy) / distance;
+            const closing =
               (this.ship.vel.x - pirate.ship.vel.x) * nx +
               (this.ship.vel.y - pirate.ship.vel.y) * ny;
-            if (relativeNormal < 0) {
-              const playerMass = buildStats(this.settings.loadout).mass;
-              const pirateMass = buildStats(pirate.loadout).mass;
+            if (closing < 0) {
+              const pm = buildStats(this.settings.loadout).mass,
+                om = buildStats(pirate.loadout).mass;
               const impulse =
-                -((1 + GAUNTLET_SHIP_CONTACT.restitution) * relativeNormal) /
-                (1 / playerMass + 1 / pirateMass);
-              this.ship.vel.x += (impulse * nx) / playerMass;
-              this.ship.vel.y += (impulse * ny) / playerMass;
-              pirate.ship.vel.x -= (impulse * nx) / pirateMass;
-              pirate.ship.vel.y -= (impulse * ny) / pirateMass;
+                -((1 + GAUNTLET_SHIP_CONTACT.restitution) * closing) /
+                (1 / pm + 1 / om);
+              this.ship.vel.x += (impulse * nx) / pm;
+              this.ship.vel.y += (impulse * ny) / pm;
+              pirate.ship.vel.x -= (impulse * nx) / om;
+              pirate.ship.vel.y -= (impulse * ny) / om;
             }
-            const halfContact = (this.ship.radius + pirate.ship.radius) / 2;
-            const midpointX = (playerContactX + pirateContactX) / 2;
-            const midpointY = (playerContactY + pirateContactY) / 2;
-            const remaining = (1 - t) * (STEP / 4);
+            const half = (this.ship.radius + pirate.ship.radius) / 2;
+            const mx = (px + ox) / 2,
+              my = (py + oy) / 2,
+              remaining = ((1 - t) * STEP) / 4;
             this.ship.pos.set(
-              midpointX + nx * halfContact + this.ship.vel.x * remaining,
-              midpointY + ny * halfContact + this.ship.vel.y * remaining,
+              mx + nx * half + this.ship.vel.x * remaining,
+              my + ny * half + this.ship.vel.y * remaining,
             );
             pirate.ship.pos.set(
-              midpointX - nx * halfContact + pirate.ship.vel.x * remaining,
-              midpointY - ny * halfContact + pirate.ship.vel.y * remaining,
+              mx - nx * half + pirate.ship.vel.x * remaining,
+              my - ny * half + pirate.ship.vel.y * remaining,
             );
             playerCombatDamage += GAUNTLET_SHIP_CONTACT.damage;
-            pirateCombatDamage += GAUNTLET_SHIP_CONTACT.damage;
+            pirateCombatDamage[index] += GAUNTLET_SHIP_CONTACT.damage;
           }
-        }
-        if (
-          pirate.lifecycle === "active" &&
-          this.salvage &&
-          this.settings.loadout
-        ) {
-          if (playerCanFire) {
-            const target = liveShipBody(
-              900001,
-              pirate.ship,
-              pirate.resources.hull - pirateCombatDamage,
-              (amount) => (pirateCombatDamage += amount),
-              opponentPrevious ?? {
-                x: pirate.ship.pos.x,
-                y: pirate.ship.pos.y,
-              },
-            );
+          for (let first = 0; first < this.opponents.length; first++) {
+            const a = this.opponents[first];
+            if (
+              a.lifecycle === "destroyed" ||
+              a.resources.hull - pirateCombatDamage[first] <= 0
+            )
+              continue;
+            for (
+              let second = first + 1;
+              second < this.opponents.length;
+              second++
+            ) {
+              const b = this.opponents[second];
+              if (
+                b.lifecycle === "destroyed" ||
+                b.resources.hull - pirateCombatDamage[second] <= 0
+              )
+                continue;
+              const pa = opponentPrevious[first],
+                pb = opponentPrevious[second];
+              const contact = contactTime(
+                pa.x - pb.x,
+                pa.y - pb.y,
+                a.ship.pos.x - pa.x - (b.ship.pos.x - pb.x),
+                a.ship.pos.y - pa.y - (b.ship.pos.y - pb.y),
+                a.ship.radius + b.ship.radius,
+                1,
+              );
+              if (!Number.isFinite(contact)) continue;
+              const t = Math.max(0, Math.min(1, contact));
+              const ax = pa.x + (a.ship.pos.x - pa.x) * t,
+                ay = pa.y + (a.ship.pos.y - pa.y) * t;
+              const bx = pb.x + (b.ship.pos.x - pb.x) * t,
+                by = pb.y + (b.ship.pos.y - pb.y) * t;
+              const length = Math.hypot(ax - bx, ay - by) || 1,
+                nx = (ax - bx) / length,
+                ny = (ay - by) / length;
+              const closing =
+                (a.ship.vel.x - b.ship.vel.x) * nx +
+                (a.ship.vel.y - b.ship.vel.y) * ny;
+              const am = buildStats(a.loadout).mass,
+                bm = buildStats(b.loadout).mass;
+              if (closing < 0) {
+                const impulse =
+                  -((1 + GAUNTLET_SHIP_CONTACT.restitution) * closing) /
+                  (1 / am + 1 / bm);
+                a.ship.vel.x += (impulse * nx) / am;
+                a.ship.vel.y += (impulse * ny) / am;
+                b.ship.vel.x -= (impulse * nx) / bm;
+                b.ship.vel.y -= (impulse * ny) / bm;
+              }
+              const half = (a.ship.radius + b.ship.radius) / 2,
+                mx = (ax + bx) / 2,
+                my = (ay + by) / 2,
+                remaining = ((1 - t) * STEP) / 4;
+              a.ship.pos.set(
+                mx + nx * half + a.ship.vel.x * remaining,
+                my + ny * half + a.ship.vel.y * remaining,
+              );
+              b.ship.pos.set(
+                mx - nx * half + b.ship.vel.x * remaining,
+                my - ny * half + b.ship.vel.y * remaining,
+              );
+              pirateCombatDamage[first] += GAUNTLET_SHIP_CONTACT.damage;
+              pirateCombatDamage[second] += GAUNTLET_SHIP_CONTACT.damage;
+            }
+          }
+          const piratesAsTargets = this.opponents.flatMap(
+            (target, targetIndex) =>
+              target.lifecycle === "destroyed" ||
+              target.resources.hull - pirateCombatDamage[targetIndex] <= 0
+                ? []
+                : [
+                    liveShipBody(
+                      900001 + targetIndex,
+                      target.ship,
+                      target.resources.hull - pirateCombatDamage[targetIndex],
+                      (amount) => {
+                        pirateCombatDamage[targetIndex] += amount;
+                      },
+                      opponentPrevious[targetIndex],
+                    ),
+                  ],
+          );
+          const arrivalsComplete = this.opponents.every(
+            (actor) => actor.lifecycle !== "arriving",
+          );
+          if (this.salvage && arrivalsComplete && playerCanFire) {
             this.salvage.stepWeapons(
               STEP / 4,
               this.ship,
@@ -484,17 +591,25 @@ export class Simulation {
               this.state.resources,
               buildStats(this.settings.loadout).capacity,
               this.planets,
-              target,
+              piratesAsTargets,
             );
           }
-          if (pirateCanFire) {
-            const target = liveShipBody(
+          for (let index = 0; index < this.opponents.length; index++) {
+            const pirate = this.opponents[index];
+            if (!arrivalsComplete || !piratesCanFire[index]) continue;
+            const playerTarget = liveShipBody(
               900000,
               this.ship,
-              this.state.resources.hull - playerCombatDamage,
-              (amount) => (playerCombatDamage += amount),
+              playerCanFire ? playerHullAtSubstep : 0,
+              (amount) => {
+                playerCombatDamage += amount;
+              },
               { x: previousX, y: previousY },
             );
+            const targets = [
+              playerTarget,
+              ...piratesAsTargets.filter((body) => body.id !== 900001 + index),
+            ];
             pirate.combat.stepWeapons(
               STEP / 4,
               pirate.ship,
@@ -502,11 +617,12 @@ export class Simulation {
               pirate.resources,
               buildStats(pirate.loadout).capacity,
               this.planets,
-              target,
+              targets,
+              [playerTarget],
             );
+            pirate.weaponEvents = pirate.combat.events;
+            pirate.weapons = pirate.combat.weapons;
           }
-          pirate.weaponEvents = pirate.combat.events;
-          pirate.weapons = pirate.combat.weapons;
         }
       }
       if (
@@ -533,8 +649,12 @@ export class Simulation {
       )
         break;
     }
-    if (this.opponent) {
-      const pirate = this.opponent;
+    for (const pirate of this.opponents) {
+      if (pirate.lifecycle === "destroyed") {
+        pirate.plume.clear();
+        for (const emitter of pirate.emitters) emitter.output = 0;
+        continue;
+      }
       const outputs = [
         pirate.engineOutput.left,
         pirate.engineOutput.right,
@@ -626,44 +746,54 @@ export class Simulation {
         this.thrust,
         this.settings.profile.powerDrainMultiplier,
       );
-    if (this.opponent) {
+    if (this.opponents.length) {
       this.state.resources.hull = Math.max(
         0,
         this.state.resources.hull - playerCombatDamage,
       );
-      this.opponent.resources.hull = Math.max(
-        0,
-        this.opponent.resources.hull - pirateCombatDamage,
-      );
+      for (const [index, pirate] of this.opponents.entries())
+        pirate.resources.hull = Math.max(
+          0,
+          pirate.resources.hull - pirateCombatDamage[index],
+        );
     }
     const hullBeforeSun = this.state.resources.hull;
     updateHull(this.state.resources, distance, this.star, STEP);
-    if (this.opponent && this.settings.loadout) {
-      const pirate = this.opponent;
-      const pirateDistance = Math.hypot(
-        pirate.ship.pos.x - this.star.pos.x,
-        pirate.ship.pos.y - this.star.pos.y,
-      );
-      const pirateHullBeforeWorld = pirate.resources.hull;
-      updateHull(pirate.resources, pirateDistance, this.star, STEP);
+    if (this.opponents.length && this.settings.loadout) {
+      const pirateDeaths = this.opponents.map((pirate) => {
+        const pirateDistance = Math.hypot(
+          pirate.ship.pos.x - this.star.pos.x,
+          pirate.ship.pos.y - this.star.pos.y,
+        );
+        const hullBeforeWorld = pirate.resources.hull;
+        updateHull(pirate.resources, pirateDistance, this.star, STEP);
+        const environment =
+          pirateDistance < this.star.radius + pirate.ship.radius ||
+          (hullBeforeWorld > 0 && pirate.resources.hull <= 0) ||
+          pirate.resources.power <= 0;
+        const dead = environment || pirate.resources.hull <= 0;
+        if (dead) {
+          pirate.lifecycle = "destroyed";
+          pirate.plume.clear();
+        }
+        return { dead, environment };
+      });
       const playerEnvironmentDeath =
         distance < this.star.radius + this.ship.radius ||
         (hullBeforeSun > 0 && this.state.resources.hull <= 0) ||
         this.state.resources.power <= 0;
-      const pirateEnvironmentDeath =
-        pirateDistance < this.star.radius + pirate.ship.radius ||
-        (pirateHullBeforeWorld > 0 && pirate.resources.hull <= 0) ||
-        pirate.resources.power <= 0;
       const playerDead =
         playerEnvironmentDeath || this.state.resources.hull <= 0;
-      const pirateDead = pirateEnvironmentDeath || pirate.resources.hull <= 0;
-      if (pirateDead) pirate.lifecycle = "destroyed";
-      if (playerDead || pirateDead) {
+      const piratesDead = pirateDeaths.every((death) => death.dead);
+      const pirateEnvironmentDeath = pirateDeaths.some(
+        (death) => death.environment,
+      );
+      if (playerDead || piratesDead) {
         this.gauntletResult = GauntletResultSchema.parse({
-          winner: playerDead ? (pirateDead ? "mutual" : "pirate") : "player",
+          winner: playerDead ? (piratesDead ? "mutual" : "pirate") : "player",
           cause:
             (playerDead && playerEnvironmentDeath) ||
-            (pirateDead && pirateEnvironmentDeath)
+            (piratesDead && pirateEnvironmentDeath)
               ? "environment"
               : "combat",
         });
