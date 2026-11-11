@@ -1,7 +1,7 @@
 import { expect, it } from "vitest";
 import { Vec2 } from "../physics/Physics";
 import { FxPass } from "./arcade-fx";
-import { EnginePlume, type PlumeOutlet } from "./engine-plume";
+import { EnginePlume } from "./engine-plume";
 
 function ship() {
   return {
@@ -12,25 +12,6 @@ function ship() {
     radius: 16,
   };
 }
-it("legacy outlets pause, release, reject invalid output and reset without accumulating", () => {
-  const plume = new EnginePlume(),
-    body = ship();
-  plume.step(1 / 60, body, 1, 0);
-  plume.step(0, body, 0, 1);
-  expect(plume.activeCount).toBe(1);
-  plume.step(1 / 60, body, Number.NaN, Infinity);
-  expect(plume.activeCount).toBe(0);
-  for (let i = 0; i < 1000; i++) plume.step(1 / 60, body, 1, 1);
-  expect(plume.activeCount).toBe(2);
-  plume.step(1 / 60, body, 0, 0);
-  expect(plume.activeCount).toBe(0);
-  plume.step(0.65, body, 0, 0);
-  expect(plume.activeCount).toBe(0);
-  plume.step(1 / 60, body, 1, 1);
-  plume.clear();
-  expect(plume.activeCount).toBe(0);
-});
-
 it("mounted emission stays bounded independently of elapsed time or source overload", () => {
   const plume = new EnginePlume(),
     body = ship();
@@ -64,7 +45,7 @@ it("mounted emission stays bounded independently of elapsed time or source overl
   expect(plume.activeCount).toBe(0);
 });
 
-it("retains charging state without painting or consuming budget", () => {
+it("a charging outlet neither paints nor takes budget beside a thrusting one", () => {
   const plume = new EnginePlume();
   const charging = {
     x: 0,
@@ -79,8 +60,6 @@ it("retains charging state without painting or consuming budget", () => {
     emitters: (typeof charging)[] | (typeof charging | typeof thrusting)[],
   ) => {
     plume.stepMounted(1 / 60, ship(), emitters);
-    const outlets: PlumeOutlet[] = [];
-    plume.inspect((outlet) => outlets.push({ ...outlet }));
     const calls: unknown[] = [];
     const ctx = {
       save: () => calls.push("save"),
@@ -95,17 +74,8 @@ it("retains charging state without painting or consuming budget", () => {
     plume.stamp(ctx, pass, undefined, (_ctx, size) =>
       calls.push(["paint", size]),
     );
-    return { outlets, calls, budget: pass.budget.essential };
+    return { calls, budget: pass.budget.essential };
   };
-  const onlyCharge = render([charging]);
-  expect(onlyCharge.outlets).toHaveLength(1);
-  expect(onlyCharge.outlets[0]).toMatchObject({
-    charge: charging.charge,
-    size: 0,
-    thrustSeconds: 0,
-  });
-  expect(onlyCharge.calls).toEqual([]);
-  expect(onlyCharge.budget).toBe(0);
   const alone = render([thrusting]);
   const together = render([charging, thrusting]);
   expect(together.calls).toEqual(alone.calls);

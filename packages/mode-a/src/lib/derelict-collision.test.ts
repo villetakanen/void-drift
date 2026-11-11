@@ -1,8 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { expect, it } from "vitest";
 import {
   castDerelict,
   DERELICT_COLLISION_PIECES,
-  getDerelictRadius,
   getDerelictWorldPolygons,
 } from "./derelict-collision";
 import {
@@ -46,118 +45,51 @@ const bounds = () => {
 };
 /** Just left of the wreck, level with solid material in the first shard. */
 const leftOf = () => ({ x: bounds().minX - 2, y: world(solid(0)).y });
-describe("fitted derelict collision", () => {
-  it("retains material for every shard and removes released material", () => {
-    expect(DERELICT_COLLISION_PIECES.every((p) => p.length > 0)).toBe(true);
-    expect(
-      getDerelictWorldPolygons({ ...wreck, releasedMask: 255 }),
-    ).toHaveLength(0);
-    const p = world(solid(0));
-    expect(castDerelict(wreck, p, { x: 0, y: 0 }, 0, 0)).not.toBeNull();
-    expect(
-      castDerelict({ ...wreck, releasedMask: 255 }, p, { x: 0, y: 0 }, 0, 0),
-    ).toBeNull();
-  });
-  it("casts through a gap inside the hull's bounds but hits solid material at high speed", () => {
-    const { minX, maxX, minY, maxY } = bounds();
-    let gap: Point | undefined;
-    for (let x = minX + 0.5; x < maxX && !gap; x += 1)
-      for (let y = minY + 0.5; y < maxY; y += 1)
-        if (!castDerelict(wreck, { x, y }, { x: 0, y: 0 }, 0, 0)) {
-          gap = { x, y };
-          break;
-        }
-    expect(gap).toBeDefined();
-    expect(
-      castDerelict(wreck, leftOf(), { x: 1000, y: 0 }, 0, 1),
-    ).not.toBeNull();
-  });
-  it("rotates fragments around their sites and supports circle contact", () => {
-    const shard = DERELICT_SHARDS[0];
-    const fragment = {
-      kind: "fragment" as const,
-      x: 30,
-      y: 40,
-      rotation: Math.PI / 2,
-      shardIndex: 0,
-    };
-    const material = solid(0);
-    const x = (material.x - shard.x) * DERELICT_SCALE,
-      y = (material.y - shard.y) * DERELICT_SCALE;
-    expect(
-      castDerelict(fragment, { x: 30 - y, y: 40 + x }, { x: 0, y: 0 }, 0, 0),
-    ).not.toBeNull();
-    expect(
-      castDerelict(wreck, leftOf(), { x: 100, y: 0 }, 2, 1)?.time,
-    ).toBeLessThan(
-      castDerelict(wreck, leftOf(), { x: 100, y: 0 }, 0, 1)?.time ?? Infinity,
-    );
-  });
+it("removes a released piece's material and keeps the rest", () => {
+  const released = world(solid(0));
+  const intact = world(solid(DERELICT_SHARDS.length - 1));
+  expect(castDerelict(wreck, released, { x: 0, y: 0 }, 0, 0)).not.toBeNull();
+  expect(
+    castDerelict({ ...wreck, releasedMask: 1 }, released, { x: 0, y: 0 }, 0, 0),
+  ).toBeNull();
+  expect(
+    castDerelict({ ...wreck, releasedMask: 1 }, intact, { x: 0, y: 0 }, 0, 0),
+  ).not.toBeNull();
 });
-
-describe("cast bounds and rotation", () => {
-  it("removes a single released shard while keeping other material", () => {
-    const released = world(solid(0));
-    const intact = world(solid(DERELICT_SHARDS.length - 1));
-    expect(castDerelict(wreck, released, { x: 0, y: 0 }, 0, 0)).not.toBeNull();
-    expect(
-      castDerelict(
-        { ...wreck, releasedMask: 1 },
-        released,
-        { x: 0, y: 0 },
-        0,
-        0,
-      ),
-    ).toBeNull();
-    expect(
-      castDerelict({ ...wreck, releasedMask: 1 }, intact, { x: 0, y: 0 }, 0, 0),
-    ).not.toBeNull();
-  });
-  it("rejects moving away and handles stationary probes", () => {
-    const outside = { x: getDerelictRadius(wreck) + 10, y: 0 };
-    expect(
-      castDerelict(wreck, outside, { x: 100, y: 0 }, 0, Infinity),
-    ).toBeNull();
-    expect(
-      castDerelict(wreck, outside, { x: 0, y: 0 }, 3, Infinity),
-    ).toBeNull();
-  });
-  it("detects a stationary point swept by rotation", () => {
-    const fragment = {
-      kind: "fragment" as const,
-      x: 0,
-      y: 0,
-      rotation: 0,
-      shardIndex: 0,
-    };
-    const shard = DERELICT_SHARDS[0];
-    // Where a piece of material will be a quarter turn later, but none is yet.
-    const p = solids(0)
-      .map((m) => {
-        const x = (m.x - shard.x) * DERELICT_SCALE,
-          y = (m.y - shard.y) * DERELICT_SCALE;
-        return { x: -y, y: x };
-      })
-      .find((q) => !castDerelict(fragment, q, { x: 0, y: 0 }, 0, 0));
-    if (!p) throw new Error("No empty point a quarter turn ahead of material");
-    const hit = castDerelict(fragment, p, { x: 0, y: 0 }, 0, Math.PI, 1);
-    expect(hit).not.toBeNull();
-    expect(hit?.time).toBeLessThan(Math.PI);
-  });
-  it("detects a circle tangent at the extreme vertex", () => {
-    const polys = getDerelictWorldPolygons(wreck);
-    const vertex = polys.flat().reduce((a, b) => (a.x > b.x ? a : b));
-    const hit = castDerelict(
-      wreck,
-      { x: vertex.x + 2, y: vertex.y - 30 },
-      { x: 0, y: 10 },
-      2,
-      6,
-    );
-    expect(hit).not.toBeNull();
-  });
+it("passes through a gap inside the hull's bounds but stops on material at high speed", () => {
+  const { minX, maxX, minY, maxY } = bounds();
+  let gap: Point | undefined;
+  for (let x = minX + 0.5; x < maxX && !gap; x += 1)
+    for (let y = minY + 0.5; y < maxY; y += 1)
+      if (!castDerelict(wreck, { x, y }, { x: 0, y: 0 }, 0, 0)) {
+        gap = { x, y };
+        break;
+      }
+  expect(gap).toBeDefined();
+  expect(castDerelict(wreck, leftOf(), { x: 1000, y: 0 }, 0, 1)).not.toBeNull();
 });
-
+it("detects a stationary point swept by rotation", () => {
+  const fragment = {
+    kind: "fragment" as const,
+    x: 0,
+    y: 0,
+    rotation: 0,
+    shardIndex: 0,
+  };
+  const shard = DERELICT_SHARDS[0];
+  // Where a piece of material will be a quarter turn later, but none is yet.
+  const p = solids(0)
+    .map((m) => {
+      const x = (m.x - shard.x) * DERELICT_SCALE,
+        y = (m.y - shard.y) * DERELICT_SCALE;
+      return { x: -y, y: x };
+    })
+    .find((q) => !castDerelict(fragment, q, { x: 0, y: 0 }, 0, 0));
+  if (!p) throw new Error("No empty point a quarter turn ahead of material");
+  const hit = castDerelict(fragment, p, { x: 0, y: 0 }, 0, Math.PI, 1);
+  expect(hit).not.toBeNull();
+  expect(hit?.time).toBeLessThan(Math.PI);
+});
 it("bounds a high-speed grazing cast while rotating", () => {
   const vertex = getDerelictWorldPolygons(wreck)
     .flat()

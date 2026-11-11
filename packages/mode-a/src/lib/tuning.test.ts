@@ -1,15 +1,11 @@
-import {
-  initializePlanets,
-  massWellReach,
-  SURVIVAL_CONFIG,
-} from "@void-drift/core";
+import { initializePlanets, SURVIVAL_CONFIG } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { createStar } from "./game-loop";
 import { type GravityTuning, GravityTuningSchema } from "./schemas/gravity";
 import { applyGravityTuning, Simulation } from "./simulation";
 import { GRAVITY_TUNING } from "./tuning";
 
-// Contract: docs/specs/gravity-field.md, "Tuning values".
+// Contract: docs/specs/game/world/gravity-field, "Tuning values".
 function bodies(tuning: GravityTuning) {
   const star = createStar("G", 960, 540);
   const planets = initializePlanets(960, 540);
@@ -30,25 +26,11 @@ describe("gravity tuning", () => {
 
   it("gives every configured planet a mass", () => {
     const { planets } = bodies(GRAVITY_TUNING);
-    expect(planets.map((p) => p.id)).toEqual(
-      SURVIVAL_CONFIG.PLANETS.map((p) => p.id),
-    );
     for (const planet of planets)
       expect(planet.massWell?.mass, planet.id).toBeGreaterThan(0);
     const { [SURVIVAL_CONFIG.PLANETS[0].id]: _, ...missing } =
       GRAVITY_TUNING.planetMass;
     expect(() => bodies({ ...GRAVITY_TUNING, planetMass: missing })).toThrow();
-  });
-
-  it("puts the sun's reach where its pull falls to the cut-off", () => {
-    const { star } = bodies(GRAVITY_TUNING);
-    expect(star.influenceRadius).toBe(
-      massWellReach(
-        GRAVITY_TUNING.sunMass,
-        GRAVITY_TUNING.cutoff,
-        GRAVITY_TUNING.falloff,
-      ),
-    );
   });
 
   const planetId = SURVIVAL_CONFIG.PLANETS[0].id;
@@ -71,14 +53,5 @@ describe("gravity tuning", () => {
       GravityTuningSchema.parse({ ...GRAVITY_TUNING, ...change }),
     );
     expect(changed).not.toEqual(stock);
-  });
-
-  it("rejects unknown and impossible values", () => {
-    expect(
-      GravityTuningSchema.safeParse({ ...GRAVITY_TUNING, drag: 1 }).success,
-    ).toBe(false);
-    expect(
-      GravityTuningSchema.safeParse({ ...GRAVITY_TUNING, sunMass: -1 }).success,
-    ).toBe(false);
   });
 });

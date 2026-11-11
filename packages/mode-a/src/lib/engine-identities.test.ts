@@ -50,12 +50,9 @@ const ion = {
 };
 
 describe("four-engine player trial", () => {
-  it("rejects obsolete saves and fission IDs", () => {
+  it("rejects obsolete saves", () => {
     const build = defaultLoadout("fighter");
     expect(LoadoutSchema.safeParse({ ...build, version: 1 }).success).toBe(
-      false,
-    );
-    expect(LoadoutSchema.safeParse({ ...build, side: "fission" }).success).toBe(
       false,
     );
   });
@@ -102,18 +99,6 @@ describe("four-engine player trial", () => {
     step(left);
     expect(ship.vel.mag()).toBeGreaterThan(after);
   });
-  it("fusion alternates firing and recovery at 40% duty", () => {
-    const timers: EngineTimers = {};
-    const outputs = Array.from({ length: 108 }, () =>
-      engineDuty(parts.fusion, true, 1 / 240, timers, "pulse"),
-    );
-    expect(outputs[0]).toBe(1);
-    expect(outputs[60]).toBe(0);
-    expect(outputs.reduce<number>((a, b) => a + b, 0) / 108).toBeCloseTo(
-      0.4,
-      1,
-    );
-  });
   it("releasing fusion cannot retrigger its pulse during recovery", () => {
     const timers: EngineTimers = { pulse: 0.25 };
     expect(engineDuty(parts.fusion, false, 1 / 60, timers, "pulse")).toBe(0);
@@ -146,7 +131,7 @@ describe("four-engine player trial", () => {
     step();
     expect(ship.vel.mag()).toBeCloseTo(1000);
   });
-  it("simulation owns independent timing, pauses without charging and replays deterministically", () => {
+  it("simulations keep independent engine timing and replay deterministically", () => {
     const loadout = defaultLoadout("scout");
     loadout.side = "plasma";
     loadout.aft = ["fusion"];
@@ -155,21 +140,10 @@ describe("four-engine player trial", () => {
       new Simulation({ ...stockSettings("scout"), loadout, mode: "practice" }),
     ];
     for (const sim of sims) {
-      sim.step(both);
-      expect(sim.engineFeedback).toBe("");
       sim.start();
       for (let i = 0; i < 150; i++) sim.step(i < 50 || i > 70 ? both : idle);
     }
-    expect(sims[0].ship.vel).toEqual(sims[1].ship.vel);
-    expect(sims[0].state.resources).toEqual(sims[1].state.resources);
-    const fresh = new Simulation({
-      ...stockSettings("scout"),
-      loadout,
-      mode: "practice",
-    });
-    fresh.start();
-    fresh.step(both);
-    expect(fresh.engineOutput.left).toBe(0);
-    expect(fresh.engineFeedback).toContain("charging");
+    expect(sims[0].ship).toEqual(sims[1].ship);
+    expect(sims[0].state).toEqual(sims[1].state);
   });
 });

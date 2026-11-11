@@ -222,8 +222,8 @@ tests/review/flight-scene-fidelity.spec.ts`), which writes
   or after a backward jump, gives the same ship pose and velocity, tick count and
   salvage bodies as a fresh flight (unit test).
 - A live held wreck stays within the Light Ion Cannon's reach across a burn;
-  held shards expire after their lifetime and placed shards remain (unit test).
-- The document determines which target choices exist (unit test).
+  held shards expire after their lifetime and placed shards remain.
+- The document determines which target choices exist.
 - The Lab page offers the document's target choices with its default chosen;
   the component keeps the `data-*` attributes above (browser test).
 - Without a `pane` the component shows no menu (browser test).
@@ -238,7 +238,7 @@ tests/review/flight-scene-fidelity.spec.ts`), which writes
 - The instrument's fidelity to play, its bloom size against the game's and
   its cost are measured and recorded (measurement script).
 - The study light's state reports a delayed engine's charge rising with no
-  output, then output at full charge (unit test).
+  output, then output at full charge.
 - A replaced part's plume stays dark while other outlets stay lit, and the
   flight is the same with and without a study light (unit test).
 - Tuning a delayed part's charge moves its release, reaches a study light's

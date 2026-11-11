@@ -159,7 +159,7 @@ game through the tuning workflow owned by [Gravity field](../../game/world/gravi
 - Each no-well shadow retains the same build, hull and equipment properties,
   motion settings, burn and starting state as its configured-well run; gravity is
   the only condition difference.
-- Each ship's thrust is the peak of its unaffected path's acceleration (`gravity-tuning.test.ts`).
+- Each ship's thrust is the peak of its unaffected path's acceleration.
 - `/lab/gravity-tuning` draws four paths and four dotted unaffected paths,
   the well's surface and reach, three graphs with four thrust lines on the
   gravity graph; an edited setting redraws them and reaches the document, an

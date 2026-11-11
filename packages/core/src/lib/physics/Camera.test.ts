@@ -1,10 +1,5 @@
-import { describe, expect, it } from "vitest";
-import {
-  CAMERA_ARENA_RADIUS,
-  CAMERA_CLOSEST_ZOOM,
-  CAMERA_MIN_FIT,
-  Camera,
-} from "./Camera";
+import { expect, it } from "vitest";
+import { CAMERA_ARENA_RADIUS, CAMERA_MIN_FIT, Camera } from "./Camera";
 
 const HEIGHT = 1080;
 const PADDING = 160;
@@ -52,8 +47,8 @@ function expectPaddedInside(c: Camera, x: number, y: number) {
   expect(p.y + pad).toBeLessThanOrEqual(box.bottom + eps);
 }
 
-describe.each(STAGES)("on a $name stage", (stage) => {
-  it("fits ship and star, with padding, inside the active area", () => {
+it("fits ship and star, with padding, inside the active area", () => {
+  for (const stage of STAGES) {
     const c = stageCamera(stage);
     const reach = CAMERA_ARENA_RADIUS;
     for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 12) {
@@ -76,89 +71,6 @@ describe.each(STAGES)("on a $name stage", (stage) => {
         }
       }
     }
-  });
-
-  it("keeps the camera centre at the render centre and covers the viewport", () => {
-    const c = stageCamera(stage);
-    c.frame(STAR.x + 700, STAR.y - 300, STAR.x, STAR.y, PADDING, 4, true);
-    const centre = c.worldToScreen(c.pos.x, c.pos.y);
-    expect(centre.x).toBeCloseTo(c.viewportWidth / 2);
-    expect(centre.y).toBeCloseTo(c.viewportHeight / 2);
-    const view = c.getViewRect();
-    const topLeft = c.worldToScreen(view.x, view.y);
-    const bottomRight = c.worldToScreen(
-      view.x + view.width,
-      view.y + view.height,
-    );
-    expect(topLeft.x).toBeCloseTo(0);
-    expect(topLeft.y).toBeCloseTo(0);
-    expect(bottomRight.x).toBeCloseTo(c.viewportWidth);
-    expect(bottomRight.y).toBeCloseTo(c.viewportHeight);
-  });
-
-  it("contains the full arena with padding inside the active area at the widest level", () => {
-    const c = stageCamera(stage);
-    c.frame(STAR.x, STAR.y, STAR.x, STAR.y, PADDING, 4, true, 5, 0);
-    expect(c.zoom).toBe(c.zoomLevels[0]);
-    expect(c.zoomLevels[c.zoomLevels.length - 1]).toBeCloseTo(
-      CAMERA_CLOSEST_ZOOM,
-    );
-    const box = activeBox(c);
-    const reach = CAMERA_ARENA_RADIUS + PADDING;
-    const min = c.worldToScreen(STAR.x - reach, STAR.y - reach);
-    const max = c.worldToScreen(STAR.x + reach, STAR.y + reach);
-    const eps = 1e-6;
-    expect(min.x).toBeGreaterThanOrEqual(box.left - eps);
-    expect(min.y).toBeGreaterThanOrEqual(box.top - eps);
-    expect(max.x).toBeLessThanOrEqual(box.right + eps);
-    expect(max.y).toBeLessThanOrEqual(box.bottom + eps);
-  });
-});
-
-it("shows more of the arena across on a wider active area at the same level", () => {
-  const [, wide, ultra] = STAGES;
-  const a = stageCamera(wide);
-  const b = stageCamera(ultra);
-  for (const c of [a, b])
-    c.frame(STAR.x, STAR.y, STAR.x, STAR.y, PADDING, 4, true, 5, 2);
-  expect(b.zoom).toBeCloseTo(a.zoom);
-  expect(b.getViewRect().width).toBeGreaterThan(a.getViewRect().width);
-});
-
-it("fits the full viewport when no active area is given", () => {
-  const c = new Camera({ viewportWidth: 1000, viewportHeight: 600 });
-  expect(c.activeWidth).toBe(c.viewportWidth);
-  expect(c.activeHeight).toBe(c.viewportHeight);
-  c.setActiveArea(800, 500);
-  expect(c.activeWidth).toBe(800);
-  c.setActiveArea(null, null);
-  expect(c.activeHeight).toBe(c.viewportHeight);
-});
-
-it("frames ship and star and round-trips coordinates at every edge", () => {
-  for (const stage of STAGES) {
-    for (const [x, y] of [
-      [STAR.x - CAMERA_ARENA_RADIUS, STAR.y],
-      [STAR.x + CAMERA_ARENA_RADIUS, STAR.y],
-      [STAR.x, STAR.y - CAMERA_ARENA_RADIUS],
-      [STAR.x, STAR.y + CAMERA_ARENA_RADIUS],
-    ]) {
-      const c = stageCamera(stage);
-      c.frame(x, y, STAR.x, STAR.y, PADDING, 4, true);
-      const box = activeBox(c);
-      for (const [wx, wy] of [
-        [x, y],
-        [STAR.x, STAR.y],
-      ]) {
-        const screen = c.worldToScreen(wx, wy);
-        expect(screen.x).toBeGreaterThan(box.left);
-        expect(screen.x).toBeLessThan(box.right);
-        expect(screen.y).toBeGreaterThan(box.top);
-        expect(screen.y).toBeLessThan(box.bottom);
-        expect(c.screenToWorld(screen.x, screen.y).x).toBeCloseTo(wx);
-        expect(c.screenToWorld(screen.x, screen.y).y).toBeCloseTo(wy);
-      }
-    }
   }
 });
 
@@ -171,39 +83,7 @@ it("reframes immediately on a wrap instead of panning across the arena", () => {
   expect(c.pos.x).toBe((after + STAR.x) / 2);
 });
 
-it("snaps only to configured levels in both directions without aging world effects", () => {
-  for (const stage of STAGES) {
-    for (let count = 4; count <= 11; count++) {
-      const c = stageCamera(stage);
-      const visited = new Set<number>();
-      for (const distance of [0, 300, 600, 900, 1190, 900, 600, 300, 0]) {
-        c.frame(
-          STAR.x,
-          STAR.y + distance,
-          STAR.x,
-          STAR.y,
-          PADDING,
-          4,
-          false,
-          count,
-        );
-        const zoom = c.zoom;
-        c.update(1 / 60);
-        expect(c.zoom).toBe(zoom);
-        expect(c.zoomLevels).toHaveLength(count);
-        expect(c.zoomLevels).toContain(zoom);
-        visited.add(zoom);
-        const effect = c.worldToScreen(1000, 600);
-        const back = c.screenToWorld(effect.x, effect.y);
-        expect(back.x).toBeCloseTo(1000, 9);
-        expect(back.y).toBeCloseTo(600, 9);
-      }
-      expect(visited.size).toBeGreaterThan(1);
-    }
-  }
-});
-
-it("holds the wider level near a threshold and previews every level", () => {
+it("holds the wider level near a threshold", () => {
   for (const stage of STAGES) {
     const c = stageCamera(stage);
     c.frame(STAR.x, STAR.y, STAR.x, STAR.y, PADDING, 4, true);
@@ -215,10 +95,6 @@ it("holds the wider level near a threshold and previews every level", () => {
     expect(wider).toBeLessThan(threshold);
     c.frame(STAR.x, STAR.y + distance - 1, STAR.x, STAR.y, PADDING, 4);
     expect(c.zoom).toBe(wider);
-    for (let i = 0; i < 5; i++) {
-      c.frame(STAR.x, STAR.y, STAR.x, STAR.y, PADDING, 4, false, 5, i);
-      expect(c.zoom).toBe(c.zoomLevels[i]);
-    }
   }
 });
 

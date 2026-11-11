@@ -204,7 +204,7 @@ Angles are shown directly in radians. Empty-background dragging pans the view;
 rotation and zoom are view controls. Mount types and dimensions remain fixed.
 
 The document schema and geometry helpers live in
-`packages/mode-a/src/lib/mount-planner.ts`, with unit coverage beside them.
+`packages/mode-a/src/lib/mount-planner.ts`.
 Browser coverage lives in `tests/browser/mount-planner.spec.ts`. The renderer
 accepts optional mount geometry; its default production behavior is unchanged.
 Mirrored comparisons use an absolute tolerance of 1e-10.

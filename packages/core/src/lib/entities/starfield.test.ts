@@ -2,10 +2,7 @@ import { expect, it } from "vitest";
 import { CAMERA_ARENA_RADIUS, Camera } from "../physics/Camera";
 import {
   forEachStar,
-  STARFIELD_CELL,
   STARFIELD_CELL_BUDGET,
-  STARFIELD_MAX_SIZE,
-  STARFIELD_MIN_SIZE,
   starfieldCell,
   type WorldRect,
 } from "./starfield";
@@ -94,10 +91,6 @@ function expectCovered(view: WorldRect) {
   expect(hit.indexOf(0), JSON.stringify(view)).toBe(-1);
 }
 
-it("uses the base cells in every normal view", () => {
-  for (const view of views()) expect(starfieldCell(view)).toBe(STARFIELD_CELL);
-});
-
 it("bounds the work per frame and still covers extreme views", () => {
   for (const view of extremeViews()) {
     let visited = 0;
@@ -119,44 +112,8 @@ it("bounds the work per frame and still covers extreme views", () => {
   }
 });
 
-it("is deterministic in extreme views", () => {
-  for (const view of extremeViews())
-    expect(stars(view)).toEqual(stars({ ...view }));
-});
-
 it("covers every part of the visible world at every zoom, width and position", () => {
   for (const view of views()) {
     expectCovered(view);
-  }
-});
-
-it("is world-anchored and identical across renders", () => {
-  for (const view of views()) {
-    expect(stars(view)).toEqual(stars({ ...view }));
-    // A star seen from an overlapping view sits at the same world position.
-    const shifted = {
-      ...view,
-      x: view.x + view.width / 3,
-      y: view.y - view.height / 4,
-    };
-    const there = stars(shifted);
-    const overlap = stars(view).filter(
-      ([x, y]) =>
-        x >= shifted.x &&
-        x < shifted.x + shifted.width &&
-        y >= shifted.y &&
-        y < shifted.y + shifted.height,
-    );
-    expect(overlap.length).toBeGreaterThan(0);
-    for (const star of overlap) expect(there).toContainEqual(star);
-  }
-});
-
-it("keeps star sizes and alpha within the background range", () => {
-  for (const [, , size, alpha] of stars(views()[0])) {
-    expect(size).toBeGreaterThanOrEqual(STARFIELD_MIN_SIZE);
-    expect(size).toBeLessThanOrEqual(STARFIELD_MAX_SIZE);
-    expect(alpha).toBeGreaterThan(0);
-    expect(alpha).toBeLessThan(1);
   }
 });

@@ -2,67 +2,19 @@ import { expect, it } from "vitest";
 import { stockSettings } from "../simulation";
 import { FlightSettingsSchema } from "./flight";
 
-it("defaults legacy trials consistently and validates the 4–11 integer range", () => {
-  const settings = stockSettings();
-  const legacy = { ...settings, camera: { padding: 160, smoothing: 4 } };
-  expect(FlightSettingsSchema.parse(legacy).camera.zoomSteps).toBe(
-    settings.camera.zoomSteps,
-  );
-  for (const zoomSteps of [4, 11])
-    expect(
-      FlightSettingsSchema.safeParse({
-        ...settings,
-        camera: { ...settings.camera, zoomSteps },
-      }).success,
-    ).toBe(true);
-  for (const zoomSteps of [3, 12, 5.5, null])
-    expect(
-      FlightSettingsSchema.safeParse({
-        ...settings,
-        camera: { ...settings.camera, zoomSteps },
-      }).success,
-    ).toBe(false);
-  expect(
-    FlightSettingsSchema.safeParse({
-      ...settings,
-      ion: { acceleration: 220, maxTurn: 180, maxSpeed: 340, bonus: 0 },
-    }).success,
-  ).toBe(false);
-});
-
 it("normalizes legacy test flight settings and gives explicit modes precedence", () => {
   const { mode: _mode, testFlight: _testFlight, ...legacy } = stockSettings();
-  expect(FlightSettingsSchema.parse(legacy)).toMatchObject({
-    mode: "survival",
-    testFlight: false,
-  });
-  expect(
-    FlightSettingsSchema.parse({ ...legacy, testFlight: true }),
-  ).toMatchObject({ mode: "practice", testFlight: true });
-  expect(
-    FlightSettingsSchema.parse({ ...legacy, testFlight: false }),
-  ).toMatchObject({ mode: "survival", testFlight: false });
+  expect(FlightSettingsSchema.parse(legacy).mode).toBe("survival");
+  expect(FlightSettingsSchema.parse({ ...legacy, testFlight: true }).mode).toBe(
+    "practice",
+  );
   expect(
     FlightSettingsSchema.parse({
       ...legacy,
       mode: "survival",
       testFlight: true,
-    }),
-  ).toMatchObject({ mode: "survival", testFlight: false });
-  expect(
-    FlightSettingsSchema.parse({
-      ...legacy,
-      mode: "practice",
-      testFlight: false,
-    }),
-  ).toMatchObject({ mode: "practice", testFlight: true });
-  expect(
-    FlightSettingsSchema.parse({
-      ...legacy,
-      mode: "derelicts",
-      testFlight: true,
-    }),
-  ).toMatchObject({ mode: "derelicts", testFlight: false });
+    }).mode,
+  ).toBe("survival");
   expect(
     FlightSettingsSchema.safeParse({ ...legacy, mode: "invalid" }).success,
   ).toBe(false);

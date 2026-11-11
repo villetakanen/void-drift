@@ -184,16 +184,16 @@ neither: it draws every pass, unobserved.
 ### Definition of Done
 
 - `FLIGHT_PASSES` holds its passes with unique ids, and `drawFlightFrame`
-  draws them in array order (`packages/mode-a/src/lib/flight-frame.test.ts`).
+  draws them in array order.
 - Each pass draws on its own layer, world passes under the camera transform
-  and screen passes without it (`flight-frame.test.ts`).
+  and screen passes without it.
 - `drawFlightFrame` with `include` draws exactly the included passes, in
-  order, and reports exactly those to `observe` (`flight-frame.test.ts`).
+  order, and reports exactly those to `observe`
+  (`packages/mode-a/src/lib/flight-frame.test.ts`).
 - `FlightDeck.svelte` draws the in-flight frame only through
   `drawFlightFrame`.
 - `FLIGHT_LAYERS` holds World, FX and LFX in stack order, each with its
-  blend, memory and resolution, and every pass names one of them
-  (`flight-frame.test.ts`).
+  blend, memory and resolution, and every pass names one of them.
 - The stage hosts one canvas per layer, in stack order, each composited by
   its declared CSS blend mode inside an isolated stage
   (`tests/browser/render-model.spec.ts`).

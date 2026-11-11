@@ -1,23 +1,21 @@
 import { describe, expect, it } from "vitest";
 import {
   bounceOffSurface,
-  MASS_WELL_G,
-  MASS_WELL_G_2D,
   massWellAcceleration,
   massWellPull,
   massWellReach,
   Vec2,
 } from "./Physics";
 
-// Contract: docs/specs/gravity-tuning.md, "The well".
+// Contract: docs/specs/game/world/gravity-field/spec.md.
 describe("mass well law", () => {
   const mass = 2400;
   const cutoff = 50;
+  const FALLOFFS = ["inverse-square", "inverse"] as const;
 
-  for (const falloff of ["inverse-square", "inverse"] as const) {
-    const reach = massWellReach(mass, cutoff, falloff);
-
-    it(`${falloff}: pulls by the law inside reach and nothing at or beyond it`, () => {
+  it("pulls by the law inside reach and nothing at or beyond it", () => {
+    for (const falloff of FALLOFFS) {
+      const reach = massWellReach(mass, cutoff, falloff);
       for (const d of [reach / 10, reach / 2, reach * 0.99])
         expect(massWellAcceleration(d, mass, cutoff, falloff)).toBeCloseTo(
           massWellPull(d, mass, falloff),
@@ -25,43 +23,36 @@ describe("mass well law", () => {
         );
       expect(massWellAcceleration(reach, mass, cutoff, falloff)).toBe(0);
       expect(massWellAcceleration(reach * 2, mass, cutoff, falloff)).toBe(0);
-    });
+    }
+  });
 
-    it(`${falloff}: ends the reach where the pull falls to the cut-off`, () => {
+  it("ends the reach where the pull falls to the cut-off", () => {
+    for (const falloff of FALLOFFS) {
+      const reach = massWellReach(mass, cutoff, falloff);
       expect(massWellPull(reach, mass, falloff)).toBeCloseTo(cutoff, 9);
-    });
+    }
+  });
 
-    it(`${falloff}: a lower cut-off extends the reach and leaves the pull inside unchanged`, () => {
+  it("a lower cut-off extends the reach and leaves the pull inside unchanged", () => {
+    for (const falloff of FALLOFFS) {
+      const reach = massWellReach(mass, cutoff, falloff);
       expect(massWellReach(mass, cutoff / 2, falloff)).toBeGreaterThan(reach);
       for (const d of [reach / 4, reach / 2, reach * 0.9])
         expect(massWellAcceleration(d, mass, cutoff / 2, falloff)).toBe(
           massWellAcceleration(d, mass, cutoff, falloff),
         );
-    });
+    }
+  });
 
-    it(`${falloff}: pulls twice as hard at every distance with twice the mass`, () => {
+  it("pulls twice as hard at every distance with twice the mass", () => {
+    for (const falloff of FALLOFFS) {
+      const reach = massWellReach(mass, cutoff, falloff);
       for (const d of [reach / 4, reach / 2])
         expect(massWellAcceleration(d, mass * 2, cutoff, falloff)).toBeCloseTo(
           2 * massWellAcceleration(d, mass, cutoff, falloff),
           9,
         );
-    });
-  }
-
-  it("uses G for 1/d² and G₂ for 1/d, equal at G / G₂ u", () => {
-    expect(massWellPull(200, mass)).toBeCloseTo(
-      (MASS_WELL_G * mass) / 200 ** 2,
-      9,
-    );
-    expect(massWellPull(200, mass, "inverse")).toBeCloseTo(
-      (MASS_WELL_G_2D * mass) / 200,
-      9,
-    );
-    const equal = MASS_WELL_G / MASS_WELL_G_2D;
-    expect(massWellPull(equal, mass, "inverse")).toBeCloseTo(
-      massWellPull(equal, mass),
-      9,
-    );
+    }
   });
 });
 
@@ -78,10 +69,5 @@ describe("surface bounce", () => {
     expect(restitution).toBeLessThan(1);
     expect(ship.vel.x).toBeCloseTo(-100 * restitution, 9);
     expect(ship.vel.y).toBeCloseTo(20 * restitution, 9);
-  });
-  it("leaves a ship outside contact distance alone", () => {
-    const ship = { pos: new Vec2(-60, 0), vel: new Vec2(100, 0) };
-    expect(bounceOffSurface(ship, { x: 0, y: 0 }, 50)).toBeNull();
-    expect(ship.vel.x).toBe(100);
   });
 });

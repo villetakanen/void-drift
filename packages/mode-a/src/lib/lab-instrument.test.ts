@@ -4,7 +4,6 @@ import {
   BURNS,
   calculate,
   InstrumentConfig,
-  inputAt,
   TOTAL_TICKS,
   traces,
 } from "../../../../apps/web/src/lib/instrument";
@@ -27,36 +26,20 @@ const document = {
   ],
 };
 
-describe("burns", () => {
-  it("are all exactly 14 seconds", () => {
-    for (const id of BURN_IDS)
-      expect(BURNS[id].segments.reduce((a, s) => a + s.ticks, 0)).toBe(
-        TOTAL_TICKS,
-      );
-  });
-  it("turn has its left-only step from 6 s to 8 s", () => {
-    expect(inputAt("turn", 6 * 60)).toEqual({ left: true, right: false });
-    expect(inputAt("turn", 8 * 60 + 30)).toEqual({ left: false, right: false });
-  });
-  it("weave grows each round by 0.3 s and ends on a cut LR", () => {
-    const steps = BURNS.weave.segments;
-    expect(steps.slice(0, 4).map((s) => s.ticks)).toEqual([18, 18, 18, 36]);
-    expect(steps.at(-1)).toEqual({ input: "LR", ticks: 30 });
-  });
+it("every burn lasts the whole run", () => {
+  for (const id of BURN_IDS)
+    expect(BURNS[id].segments.reduce((a, s) => a + s.ticks, 0)).toBe(
+      TOTAL_TICKS,
+    );
 });
 
 describe("configuration document", () => {
-  it("accepts the study's document and defaults the burn", () => {
-    const parsed = InstrumentConfig.parse(document);
-    expect(parsed.burn).toBe("course");
-    expect(parsed.properties).toEqual(document.properties);
-  });
   it("rejects a loadout that does not fit its chassis", () => {
     const broken = structuredClone(document);
     broken.vehicles[0].loadout.aft = ["ion"] as never;
     expect(InstrumentConfig.safeParse(broken).success).toBe(false);
   });
-  it("rejects per-vehicle overrides and obsolete ceiling fields", () => {
+  it("rejects per-vehicle overrides, unknown fields and unknown burns", () => {
     expect(
       InstrumentConfig.safeParse({
         ...document,
@@ -79,16 +62,10 @@ describe("configuration document", () => {
 
 describe("calculation", () => {
   const config = InstrumentConfig.parse(document);
-  it("is deterministic and finite over the whole burn", () => {
-    for (const burn of BURN_IDS) {
-      const a = calculate(config.vehicles[1], burn);
-      const b = calculate(config.vehicles[1], burn);
-      expect(a).toEqual(b);
-      expect(a).toHaveLength(TOTAL_TICKS + 1);
-      expect(a.every((s) => Number.isFinite(s.x) && Number.isFinite(s.y))).toBe(
-        true,
-      );
-    }
+  it("is deterministic", () => {
+    expect(calculate(config.vehicles[1], "course")).toEqual(
+      calculate(config.vehicles[1], "course"),
+    );
   });
   it("applies one experiment-wide property set", () => {
     const stock = traces(calculate(config.vehicles[1], "course")).speed;

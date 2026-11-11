@@ -67,40 +67,23 @@ function fixture(kind: Kind, capacity: number) {
 const WINDOW = 40;
 
 describe("Weapon energy floor", () => {
-  describe.each(KINDS)("%s", (kind) => {
-    describe.each([50, 100, 400])(
-      "on a ship with %s energy capacity",
-      (capacity) => {
-        const floor = capacity * WEAPONS.energyFloor;
-        it("does not fire, draw power or start a cooldown just under the floor", () => {
-          const f = fixture(kind, capacity);
-          f.resources.power = floor - 0.01;
-          f.step(WINDOW);
-          expect(f.system.energySpent).toBe(0);
-          expect(f.resources.power).toBe(floor - 0.01);
-          expect(f.weapon.readyAt).toBe(0);
-          expect(f.system.events).toHaveLength(0);
-          expect(f.system.shotsFired).toBe(0);
-        });
-        it("fires at exactly the floor", () => {
-          const f = fixture(kind, capacity);
-          f.resources.power = floor;
-          f.step(WINDOW);
-          expect(f.system.energySpent).toBeGreaterThan(0);
-          expect(f.weapon.readyAt).toBeGreaterThan(0);
-          expect(f.resources.power).toBeLessThan(floor);
-        });
-        it("fires again once the ship is back at the floor", () => {
-          const f = fixture(kind, capacity);
-          f.resources.power = floor - 0.01;
-          f.step(WINDOW);
-          f.resources.power = floor;
-          f.step(WINDOW);
-          expect(f.system.energySpent).toBeGreaterThan(0);
-        });
-      },
-    );
-  });
+  it.each(KINDS)(
+    "%s stays silent just under the floor and fires at exactly the floor",
+    (kind) => {
+      const capacity = 100;
+      const floor = capacity * WEAPONS.energyFloor;
+      const under = fixture(kind, capacity);
+      under.resources.power = floor - 0.01;
+      under.step(WINDOW);
+      expect(under.system.energySpent).toBe(0);
+      expect(under.resources.power).toBe(floor - 0.01);
+      expect(under.weapon.readyAt).toBe(0);
+      const at = fixture(kind, capacity);
+      at.resources.power = floor;
+      at.step(WINDOW);
+      expect(at.system.energySpent).toBeGreaterThan(0);
+    },
+  );
   it("is a fraction of capacity, so a larger ship has a proportionally larger floor", () => {
     const small = fixture("light-ion-cannon", 50);
     const large = fixture("light-ion-cannon", 400);

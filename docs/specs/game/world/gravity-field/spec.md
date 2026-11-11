@@ -155,8 +155,8 @@ step belongs to the release procedure in `docs/development.md`.
   half reach (`WellCurve.test.ts`); planets with a study well are inert outside
   it and pull with their own curve (`Physics.test.ts`).
 - `updateShip`'s well can be escaped with thrust, on a fixture sun with the
-  stock thrust path (`simulation.test.ts`); unpowered, a loadout ship coasts
-  above the old speed cap with planets removed (same file).
+  stock thrust path; unpowered, a loadout ship coasts above the old speed cap
+  with planets removed (`simulation.test.ts`).
 - The close-pass and too-deep scenarios below pass on a `Simulation` with the
   game sun (`sun.test.ts`).
 - The same replay gives the same trajectory twice under one rules version

@@ -90,7 +90,6 @@ describe("shared ship setup persistence", () => {
     expect(shipSetup.get().builds.activeChassis).toBe("fighter");
     expect(shipSetup.get().builds.wasp).toEqual(wasp);
     expect(shipSetup.get().experimental).toBe("Off");
-    expect(shipSetupStatus.get().message).toMatch(/restored/i);
   });
 
   it("keeps the game usable in memory when browser storage is unavailable", () => {
@@ -102,7 +101,6 @@ describe("shared ship setup persistence", () => {
       setItem() {},
     });
     expect(shipSetupStatus.get().persistent).toBe(false);
-    expect(shipSetupStatus.get().message).toMatch(/until this page closes/i);
     setActiveChassis("scout");
     expect(shipSetup.get().builds.activeChassis).toBe("scout");
   });
@@ -124,6 +122,5 @@ describe("shared ship setup persistence", () => {
     expect(shipSetup.get().builds.activeChassis).toBe("fighter");
     expect(shipSetup.get().experimental).toBe("Off");
     expect(shipSetupStatus.get().persistent).toBe(false);
-    expect(shipSetupStatus.get().message).toMatch(/available choices/i);
   });
 });

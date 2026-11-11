@@ -21,15 +21,16 @@ const contactPull = (radius: number, mass: number) =>
   massWellPull(radius + shipRadius, mass, GRAVITY_TUNING.falloff) / thrust;
 
 describe("game gravity against the reference ship's thrust", () => {
-  for (const planet of SURVIVAL_CONFIG.PLANETS)
-    it(`${planet.id} pulls 0.75–1.5× thrust at contact`, () => {
+  it("each planet pulls 0.75–1.5× thrust at contact", () => {
+    for (const planet of SURVIVAL_CONFIG.PLANETS) {
       const ratio = contactPull(
         planet.radius,
         GRAVITY_TUNING.planetMass[planet.id],
       );
-      expect(ratio).toBeGreaterThanOrEqual(0.75);
-      expect(ratio).toBeLessThanOrEqual(1.5);
-    });
+      expect(ratio, planet.id).toBeGreaterThanOrEqual(0.75);
+      expect(ratio, planet.id).toBeLessThanOrEqual(1.5);
+    }
+  });
 
   it("the play sun pulls 1.5–3× thrust at contact", () => {
     const ratio = contactPull(SUN_CONFIG.G.radius, GRAVITY_TUNING.sunMass);

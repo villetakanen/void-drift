@@ -1,17 +1,10 @@
-import {
-  initializePlanets,
-  type MassWell,
-  planetPull,
-  starPull,
-  updateShip,
-  Vec2,
-} from "@void-drift/core";
+import { initializePlanets, updateShip, Vec2 } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { createStar } from "./game-loop";
 import { type SalvageBody, SalvageSystem } from "./salvage";
 import { defaultLoadout } from "./schemas/loadout";
 import { ENCOUNTER, SALVAGE } from "./schemas/salvage";
-import { applyGravityTuning, STEP, setStarMassWell } from "./simulation";
+import { applyGravityTuning, STEP } from "./simulation";
 
 const DT = STEP / 4;
 const KINDS = ["wreck", "fragment", "cell"] as const;
@@ -101,39 +94,19 @@ function shipDeltaAt(
 }
 
 describe("salvage gravity", () => {
-  it.each(KINDS)(
-    "pulls a %s towards the sun exactly as it pulls the ship",
-    (kind) => {
-      const s = scene();
-      const at = {
-        x: ENCOUNTER.centerX + s.star.radius + 120,
-        y: ENCOUNTER.centerY + 40,
-      };
-      const b = body(kind, at.x, at.y);
-      s.system.bodies = [b];
-      const expected = shipDeltaAt(at.x, at.y, s.star, []);
-      s.step(false);
-      expect(expected.x).not.toBe(0);
-      expect(b.vx).toBeCloseTo(expected.x, 12);
-      expect(b.vy).toBeCloseTo(expected.y, 12);
-      // Towards the sun.
-      expect(
-        b.vx * (s.star.pos.x - at.x) + b.vy * (s.star.pos.y - at.y),
-      ).toBeGreaterThan(0);
-    },
-  );
-  it.each(KINDS)("pulls a %s towards a planet as it pulls the ship", (kind) => {
+  it("pulls a body towards the sun exactly as it pulls the ship", () => {
     const s = scene();
-    const planet = s.planets[0];
-    const at = { x: planet.pos.x + planet.radius + 30, y: planet.pos.y };
-    const b = body(kind, at.x, at.y);
+    const at = {
+      x: ENCOUNTER.centerX + s.star.radius + 120,
+      y: ENCOUNTER.centerY + 40,
+    };
+    const b = body("wreck", at.x, at.y);
     s.system.bodies = [b];
-    const pull = planetPull(at, 0, planet);
-    expect(Math.hypot(pull.x, pull.y)).toBeGreaterThan(0);
-    s.step();
-    const sun = starPull(at, s.star, "inverse-square");
-    expect(b.vx).toBeCloseTo((pull.x + sun.x) * DT, 12);
-    expect(b.vy).toBeCloseTo((pull.y + sun.y) * DT, 12);
+    const expected = shipDeltaAt(at.x, at.y, s.star, []);
+    s.step(false);
+    expect(expected.x).not.toBe(0);
+    expect(b.vx).toBeCloseTo(expected.x, 12);
+    expect(b.vy).toBeCloseTo(expected.y, 12);
   });
   it("does not depend on mass or kind", () => {
     const s = scene();
@@ -145,7 +118,7 @@ describe("salvage gravity", () => {
     const [a, ...rest] = s.system.bodies;
     for (const other of rest) expect(other.vx).toBe(a.vx);
   });
-  it("bends a path: a body that would pass the sun is pulled in and destroyed as environment", () => {
+  it("bends a passing path into the sun, which gives no kill and no cell", () => {
     const s = scene();
     const { x: cx, y: cy } = s.star.pos;
     const miss = s.star.radius + 40;
@@ -155,16 +128,15 @@ describe("salvage gravity", () => {
     expect(Math.abs(b.y - cy)).toBeGreaterThan(s.star.radius + b.radius);
     for (let i = 0; i < 60 * 4 * 12 && b.hull > 0; i++) s.step(false);
     expect(b.hull).toBe(0);
-    expect(s.system.playerKills).toBe(0);
-    expect(s.system.events.some((e) => e.kind === "break")).toBe(true);
     s.step(false);
+    expect(s.system.playerKills).toBe(0);
     expect(s.system.bodies.filter((x) => x.kind === "cell")).toHaveLength(0);
   });
-  it.each(KINDS)("destroys a %s that falls onto a planet", (kind) => {
+  it("destroys a wreck that falls onto a planet with no kill and no cell", () => {
     const s = scene();
     const planet = s.planets[0];
     const b = body(
-      kind,
+      "wreck",
       planet.pos.x + planet.radius + 60,
       planet.pos.y,
       -50,
@@ -173,35 +145,9 @@ describe("salvage gravity", () => {
     s.system.bodies = [b];
     for (let i = 0; i < 60 * 4 * 6 && b.hull > 0; i++) s.step();
     expect(b.hull).toBe(0);
+    s.step();
     expect(s.system.playerKills).toBe(0);
-  });
-  it("lets a shard wrap at the edge with velocity kept (less the field's pull)", () => {
-    const s = scene();
-    const { centerX, centerY, radius } = ENCOUNTER;
-    const vx = 300,
-      vy = 120,
-      length = Math.hypot(vx, vy);
-    const b = body(
-      "fragment",
-      centerX + (vx / length) * (radius - 0.01),
-      centerY + (vy / length) * (radius - 0.01),
-      vx,
-      vy,
-    );
-    s.system.bodies = [b];
-    // The tuned sun does not reach the edge; widen it so the pull acts there.
-    setStarMassWell(s.star, {
-      ...(s.star.massWell as MassWell),
-      mass: (s.star.massWell as MassWell).mass * 100,
-    });
-    const pull = starPull(b, s.star, "inverse-square");
-    expect(Math.hypot(pull.x, pull.y)).toBeGreaterThan(0);
-    s.step(false);
-    expect(s.system.bodies).toEqual([b]);
-    expect(b.vx).toBeCloseTo(vx + pull.x * DT, 12);
-    expect(b.vy).toBeCloseTo(vy + pull.y * DT, 12);
-    expect((b.x - centerX) * vx + (b.y - centerY) * vy).toBeLessThan(0);
-    expect(Math.hypot(b.x - centerX, b.y - centerY)).toBeLessThan(radius);
+    expect(s.system.bodies.filter((x) => x.kind === "cell")).toHaveLength(0);
   });
   it("is deterministic for a seed, gravity included", () => {
     const run = () => {

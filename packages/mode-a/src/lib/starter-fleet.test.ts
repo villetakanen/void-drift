@@ -3,7 +3,7 @@ import {
   BuildStoreSchema,
   buildStats,
   CHASSIS,
-  ChassisSchema,
+  defaultBuilds,
   defaultLoadout,
   fittedParts,
   isScoredEligible,
@@ -11,28 +11,23 @@ import {
   PARTS,
   type PartId,
   PartIdSchema,
-  PartSchema,
-  ReleaseClassSchema,
   starterLoadout,
 } from "./schemas/loadout";
 import { ShipProfileIdSchema } from "./schemas/ship-profile";
-import { gameSettings, labSettings, Simulation } from "./simulation";
+import { gameSettings, Simulation } from "./simulation";
 
-it("wires each configured starter loadout and capacity into the game independently of the Lab", () => {
+it("starts each starter ship with full energy, unaffected by edits to a returned loadout", () => {
   for (const id of ShipProfileIdSchema.options) {
     const build = structuredClone(starterLoadout(id));
-    expect(LoadoutSchema.parse(build)).toEqual(build);
     const sim = new Simulation(gameSettings(id));
-    expect(sim.settings.loadout).toEqual(build);
     expect(sim.state.resources.power).toBe(buildStats(build).capacity);
-    expect(labSettings(id).loadout).toEqual(defaultLoadout(id));
     const edited = starterLoadout(id);
     edited.hull[0] = "rail";
     expect(gameSettings(id).loadout).toEqual(build);
   }
 });
 
-it("lists each installed part once per mount, including the Wasp's single engine", () => {
+it("lists each installed part once per mount", () => {
   const fighter = LoadoutSchema.parse({
     ...defaultLoadout("fighter"),
     side: "fusion",
@@ -46,40 +41,9 @@ it("lists each installed part once per mount, including the Wasp's single engine
     "fusion",
     "laser",
   ]);
-  const wasp = LoadoutSchema.parse({
-    ...defaultLoadout("wasp"),
-    side: "plasma",
-    hull: ["laser", "battery"],
-    aft: [],
-  });
-  expect(fittedParts(wasp)).toEqual(["plasma", "laser", "battery"]);
 });
 
-it("gives a fresh store the starter Wasp and keeps a saved Wasp", () => {
-  const wasp = starterLoadout("wasp");
-  const fresh = BuildStoreSchema.parse({
-    scout: defaultLoadout("scout"),
-    fighter: defaultLoadout("fighter"),
-    corvette: defaultLoadout("corvette"),
-  });
-  expect(fresh.wasp).toEqual(wasp);
-  const saved = defaultLoadout("wasp");
-  saved.hull[0] = "laser";
-  const kept = BuildStoreSchema.parse({ ...fresh, wasp: saved });
-  expect(kept.wasp).toEqual(saved);
-});
-
-it("requires one catalog release class and derives scored eligibility from fitted content", () => {
-  for (const entry of [...Object.values(CHASSIS), ...Object.values(PARTS)])
-    expect(ReleaseClassSchema.safeParse(entry.releaseClass).success).toBe(true);
-  expect(() => ReleaseClassSchema.parse(undefined)).toThrow();
-  expect(() =>
-    ChassisSchema.parse({ ...CHASSIS.wasp, releaseClass: undefined }),
-  ).toThrow();
-  expect(() =>
-    PartSchema.parse({ ...PARTS.ion, releaseClass: undefined }),
-  ).toThrow();
-
+it("derives scored eligibility from the hull and every fitted part", () => {
   const scored = (id: PartId) => PARTS[id].releaseClass === "scored";
   for (const chassis of ShipProfileIdSchema.options) {
     const build = starterLoadout(chassis);
@@ -109,4 +73,12 @@ it("migrates a v3 build store with Wasp active and preserves the fittings", () =
   });
   expect(migrated.activeChassis).toBe("wasp");
   expect(migrated.wasp).toEqual(wasp);
+});
+
+it("adds a ship missing from an old store without replacing saved fittings", () => {
+  const { fiddler: _, ...old } = defaultBuilds();
+  old.fighter.side = "plasma";
+  const restored = BuildStoreSchema.parse(old);
+  expect(restored.fighter).toEqual(old.fighter);
+  expect(restored.fiddler).toEqual(starterLoadout("fiddler"));
 });

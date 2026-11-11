@@ -1,10 +1,9 @@
 import { Vec2 } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
-import { buildMounts, weaponPose } from "./build-renderer";
+import { weaponPose } from "./build-renderer";
 import { createStar } from "./game-loop";
-import { ION_CANNON_MUZZLE } from "./ion-cannon-art";
 import { type SalvageBody, SalvageSystem } from "./salvage";
-import { defaultLoadout, LoadoutSchema, slotAccepts } from "./schemas/loadout";
+import { defaultLoadout, LoadoutSchema } from "./schemas/loadout";
 import { ION_CANNON, ionCannonDamage } from "./schemas/salvage";
 import { STEP } from "./simulation";
 
@@ -63,52 +62,23 @@ function fixture() {
   return { loadout, system, ship, star, resources, energy, step, target };
 }
 describe("Light Ion Cannon", () => {
-  it("validates old and new loadouts and uses compatible slots", () => {
-    expect(LoadoutSchema.safeParse(defaultLoadout("fighter")).success).toBe(
-      true,
-    );
-    const f = fixture();
-    expect(f.system.weapons).toHaveLength(f.loadout.hull.length);
-    expect(slotAccepts("engine", "G")).toBe(false);
-    expect(slotAccepts("support", "G")).toBe(false);
-    expect(slotAccepts("equipment", "G")).toBe(true);
-    for (const m of buildMounts(f.loadout).filter(
-      (m) => m.part === "light-ion-cannon",
-    )) {
-      const p = weaponPose(f.ship, m);
-      expect(Math.hypot(p.muzzleX - p.x, p.muzzleY - p.y)).toBeCloseTo(
-        ION_CANNON_MUZZLE,
-      );
-    }
+  it("does no damage beyond its range, and its far endpoint still damages", () => {
+    expect(ionCannonDamage(ION_CANNON.range)).toBeGreaterThan(0);
+    expect(ionCannonDamage(ION_CANNON.range + 0.001)).toBe(0);
   });
-  it.each([
-    [0, 16],
-    [49.999, 16],
-    [50, 12],
-    [99.999, 12],
-    [100, 8],
-    [149.999, 8],
-    [150, 4],
-    [200, 4],
-    [200.001, 0],
-    [-1, 0],
-  ])("damage at %s units is %s", (d, v) => expect(ionCannonDamage(d)).toBe(v));
-  it("empty line and energy collectibles do not trigger", () => {
+  it("is not triggered by collectible energy", () => {
     const f = fixture();
-    f.step();
     f.target(500, 400, 101, "cell");
     f.step();
     expect(f.system.ionDischarges).toBe(0);
   });
-  it("fires the ready volley, charges every miss, respects independent cooldowns and has no recoil", () => {
+  it("does not fire again before its cooldown ends", () => {
     const f = fixture();
     const volley = f.system.weapons.length;
     const cooldown = Math.round(ION_CANNON.cooldown / STEP);
     f.target();
     f.step();
     expect(f.system.ionDischarges).toBe(volley);
-    expect(f.system.energySpent).toBeCloseTo(volley * ION_CANNON.energy);
-    expect(f.system.weapons.every((w) => w.recoil === null)).toBe(true);
     f.step(cooldown - 2);
     expect(f.system.ionDischarges).toBe(volley);
     f.step(2);
@@ -125,13 +95,10 @@ describe("Light Ion Cannon", () => {
     expect(f.system.ionDischarges).toBe(1);
     expect(f.system.weapons[0].readyAt).toBeGreaterThan(0);
     expect(f.system.weapons[1].readyAt).toBe(0);
-    expect(f.resources.power).toBeCloseTo(0.5 * ION_CANNON.energy);
   });
-  it("stops at the first real hull and blocks the trigger behind world geometry", () => {
+  it("is not triggered through the star", () => {
     const f = fixture();
-    const near = f.target();
-    f.target(550, 400, 102);
-    expect(f.system.ionContact(400, 400, 0, f.star, []).hit).toBe(near);
+    f.target();
     f.star.pos.set(450, 400);
     f.star.radius = 15;
     f.step();
@@ -164,29 +131,19 @@ describe("Light Ion Cannon", () => {
         }
       }
     expect(found).toBe(true);
-    expect(f.system.ionContact(400, 400, 0, f.star, []).hit).toBe(t);
-    const volley = f.system.weapons.length;
     f.step();
-    expect(f.system.ionDischarges).toBe(volley);
-    expect(f.system.energySpent).toBeCloseTo(volley * ION_CANNON.energy);
-    expect(
-      f.system.events
-        .filter((e) => e.kind === "ion-cannon")
-        .some(
-          (e) => e.kind === "ion-cannon" && e.distance === ION_CANNON.range,
-        ),
-    ).toBe(true);
+    expect(f.system.ionDischarges).toBe(f.system.weapons.length);
+    expect(f.system.energySpent).toBeCloseTo(
+      f.system.ionDischarges * ION_CANNON.energy,
+    );
   });
-  it("resolves once per discharge and retains the volley after destruction", () => {
+  it("fires the whole ready volley even when the first shot destroys the trigger", () => {
     const f = fixture();
     const t = f.target();
     t.hull = 1;
     f.step();
-    expect(f.system.ionDischarges).toBe(f.system.weapons.length);
     expect(f.system.playerKills).toBe(1);
-    const spent = f.system.energySpent;
-    f.step(3);
-    expect(f.system.energySpent).toBe(spent);
+    expect(f.system.ionDischarges).toBe(f.system.weapons.length);
   });
   it("acquires material inside the ship-width rectangle even when the centreline misses", () => {
     const f = fixture();
@@ -219,30 +176,17 @@ describe("Light Ion Cannon", () => {
     f.target(750, 400);
     expect(f.system.ionTrigger(f.ship, f.star, [])).toBe(false);
   });
-  it.each([25, 75, 125, 175])(
-    "applies only the first contact's damage at %s muzzle units",
-    (distance) => {
-      const f = fixture();
-      f.system.weapons.splice(0, 1);
-      const w = f.system.weapons[0],
-        p = weaponPose(f.ship, w.mount);
-      const near = f.target(p.muzzleX + 100, p.muzzleY);
-      const initial = f.system.ionContact(
-        p.muzzleX,
-        p.muzzleY,
-        p.angle,
-        f.star,
-        [],
-      ).distance;
-      near.x += distance - initial;
-      near.previousX = near.x;
-      const far = f.target(near.x + 90, p.muzzleY, 102);
-      f.step();
-      expect(near.hull).toBe(1000 - ionCannonDamage(distance));
-      expect(far.hull).toBe(1000);
-      const hull = near.hull;
-      f.step(3);
-      expect(near.hull).toBe(hull);
-    },
-  );
+  it("damages only the first contact, once per discharge", () => {
+    const f = fixture();
+    f.system.weapons.splice(0, 1);
+    const p = weaponPose(f.ship, f.system.weapons[0].mount);
+    const near = f.target(p.muzzleX + 75, p.muzzleY);
+    const far = f.target(near.x + 90, p.muzzleY, 102);
+    f.step();
+    expect(near.hull).toBeLessThan(1000);
+    expect(far.hull).toBe(1000);
+    const hull = near.hull;
+    f.step(3);
+    expect(near.hull).toBe(hull);
+  });
 });

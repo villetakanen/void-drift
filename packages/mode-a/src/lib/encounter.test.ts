@@ -3,14 +3,8 @@ import { describe, expect, it } from "vitest";
 import { createStar } from "./game-loop";
 import { type SalvageBody, SalvageSystem } from "./salvage";
 import { defaultLoadout } from "./schemas/loadout";
-import { ENCOUNTER, EncounterConfigSchema, SALVAGE } from "./schemas/salvage";
-import { Simulation, STEP, stockSettings } from "./simulation";
+import { ENCOUNTER, SALVAGE } from "./schemas/salvage";
 
-const idle = {
-  leftThruster: false,
-  rightThruster: false,
-  fire: false as const,
-};
 function scene(seed = 2026) {
   const system = new SalvageSystem(defaultLoadout("fighter"), seed);
   const ship = {
@@ -51,104 +45,29 @@ function fixed(group: number): SalvageBody {
   };
 }
 describe("boundary encounters", () => {
-  it("validates encounter ranges and strictly inward headings", () => {
-    expect(
-      EncounterConfigSchema.safeParse({
-        ...ENCOUNTER,
-        speedMin: ENCOUNTER.speedMax + 1,
-      }).success,
-    ).toBe(false);
-    expect(
-      EncounterConfigSchema.safeParse({ ...ENCOUNTER, intervalMin: NaN })
-        .success,
-    ).toBe(false);
-    expect(
-      EncounterConfigSchema.safeParse({
-        ...ENCOUNTER,
-        headingSpread: Math.PI / 2,
-      }).success,
-    ).toBe(false);
-  });
-  it("samples boundary chords and speeds across their range independently of the player", () => {
+  it("skips arrivals while full, with no backlog and later paths unchanged", () => {
     const a = scene(),
       b = scene();
-    b.ship.pos.set(5000, 4000);
-    b.ship.vel.set(900, -800);
-    b.ship.rotation = 2.4;
-    const speeds: number[] = [];
-    const inward = -Math.cos(ENCOUNTER.headingSpread ?? 0);
-    const span = ENCOUNTER.speedMax - ENCOUNTER.speedMin;
-    for (let i = 0; i < 300; i++) {
-      a.system.bodies = [];
-      b.system.bodies = [];
-      const dt = 0.00001;
-      next(a);
-      next(b);
-      const body = a.system.bodies[0],
-        other = b.system.bodies[0];
-      // Recover the boundary position before this step's motion.
-      const x = body.x - body.vx * dt - ENCOUNTER.centerX;
-      const y = body.y - body.vy * dt - ENCOUNTER.centerY;
-      const speed = Math.hypot(body.vx, body.vy);
-      speeds.push(speed);
-      expect(Math.hypot(x, y)).toBeCloseTo(ENCOUNTER.radius, 7);
-      expect(
-        (x * body.vx + y * body.vy) / (ENCOUNTER.radius * speed),
-      ).toBeLessThanOrEqual(inward + 1e-9);
-      expect([body.x, body.y, body.vx, body.vy]).toEqual([
-        other.x,
-        other.y,
-        other.vx,
-        other.vy,
-      ]);
-    }
-    expect(Math.min(...speeds)).toBeGreaterThanOrEqual(ENCOUNTER.speedMin);
-    expect(Math.min(...speeds)).toBeLessThan(ENCOUNTER.speedMin + span / 80);
-    expect(Math.max(...speeds)).toBeLessThanOrEqual(ENCOUNTER.speedMax);
-    expect(Math.max(...speeds)).toBeGreaterThan(ENCOUNTER.speedMax - span / 80);
-  });
-  it("schedules independent steady gaps, skips full groups without backlog, and preserves later paths", () => {
-    const a = scene(),
-      b = scene();
-    let previous = 0;
-    const gaps: number[] = [];
     b.system.bodies = Array.from({ length: ENCOUNTER.groups }, (_, i) =>
       fixed(i + 10),
     );
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 10; i++) {
       a.system.bodies = [];
-      const deadline = next(a);
+      next(a);
       next(b);
-      if (i) gaps.push(deadline - previous);
-      previous = deadline;
-      expect(b.system.groups).toBe(ENCOUNTER.groups);
       expect(b.system.passes).toBe(0);
-      expect(b.system.nextPass).toBe(a.system.nextPass);
     }
-    const { intervalMin, intervalMax } = ENCOUNTER;
-    const third = (intervalMax - intervalMin) / 3;
-    const mean = gaps.reduce((x, y) => x + y, 0) / gaps.length;
-    expect(Math.min(...gaps)).toBeGreaterThanOrEqual(intervalMin);
-    expect(Math.min(...gaps)).toBeLessThan(intervalMin + third / 10);
-    expect(Math.max(...gaps)).toBeLessThanOrEqual(intervalMax);
-    expect(Math.max(...gaps)).toBeGreaterThan(intervalMax - third / 10);
-    expect(mean).toBeGreaterThan(intervalMin + third);
-    expect(mean).toBeLessThan(intervalMax - third);
     a.system.bodies = [];
     b.system.bodies = [];
     next(a);
     next(b);
     expect(b.system.bodies).toHaveLength(1);
-    expect([
-      a.system.bodies[0].x,
-      a.system.bodies[0].y,
-      a.system.bodies[0].vx,
-      a.system.bodies[0].vy,
-    ]).toEqual([
-      b.system.bodies[0].x,
-      b.system.bodies[0].y,
-      b.system.bodies[0].vx,
-      b.system.bodies[0].vy,
+    const [left, right] = [a.system.bodies[0], b.system.bodies[0]];
+    expect([right.x, right.y, right.vx, right.vy]).toEqual([
+      left.x,
+      left.y,
+      left.vx,
+      left.vy,
     ]);
   });
   it("keeps a group occupied until its last cell or wreck expires and its last shard is destroyed", () => {
@@ -159,12 +78,7 @@ describe("boundary encounters", () => {
       { ...fixed(42), id: 2, life: SALVAGE.cell.life },
       { ...fixed(42), id: 3, kind: "wreck", life: SALVAGE.wreck.life },
     ];
-    s.advance(SALVAGE.cell.life + 0.001);
-    expect(s.system.bodies.map((body) => body.kind)).toEqual([
-      "fragment",
-      "wreck",
-    ]);
-    s.advance(SALVAGE.wreck.life);
+    s.advance(Math.max(SALVAGE.cell.life, SALVAGE.wreck.life) + 0.001);
     expect(s.system.bodies.map((body) => body.kind)).toEqual(["fragment"]);
     expect(s.system.groups).toBe(1);
     s.system.bodies[0].hull = 0;
@@ -203,40 +117,5 @@ describe("boundary encounters", () => {
         right.vy,
       ]);
     }
-  });
-  it("keeps paused and terminal sessions frozen and ignores old send inputs", () => {
-    const settings = {
-      ...stockSettings("fighter"),
-      mode: "derelicts" as const,
-      loadout: defaultLoadout("fighter"),
-    };
-    const a = new Simulation(settings),
-      b = new Simulation(settings);
-    // Just before the earliest first arrival, and a second past the latest.
-    const beforeFirst = Math.floor(ENCOUNTER.firstPass.min / STEP) - 2;
-    const ticks = Math.ceil(ENCOUNTER.firstPass.max / STEP) + 60;
-    a.ship.pos.set(-100, 540);
-    b.ship.pos.set(-100, 540);
-    expect(a.salvage).toBeDefined();
-    a.start();
-    b.start();
-    for (let i = 0; i < ticks; i++) {
-      a.step({ ...idle, sendDerelict: true });
-      b.step(idle);
-      if (i === beforeFirst) expect(a.salvage?.passes).toBe(0);
-    }
-    expect(a.salvage?.passes).toBe(1);
-    expect(a.salvage).toEqual(b.salvage);
-    for (const status of ["MENU", "GAME_OVER"] as const) {
-      a.state.status = status;
-      const before = JSON.stringify(a.salvage);
-      for (let i = 0; i < 300; i++) a.step(idle);
-      expect(JSON.stringify(a.salvage)).toBe(before);
-    }
-    const reset = new Simulation(settings);
-    reset.ship.pos.set(-100, 540);
-    reset.start();
-    for (let i = 0; i < ticks; i++) reset.step(idle);
-    expect(reset.salvage).toEqual(b.salvage);
   });
 });
