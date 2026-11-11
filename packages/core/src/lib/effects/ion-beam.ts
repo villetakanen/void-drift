@@ -1,13 +1,19 @@
 import { z } from "zod";
 
-export const PlumeStyleSchema = z.enum(["default", "ion-light", "ion-heavy"]);
+export const PlumeStyleSchema = z.enum([
+  "default",
+  "ion-light",
+  "ion-heavy",
+  "plasma",
+]);
 export type PlumeStyle = z.infer<typeof PlumeStyleSchema>;
-export type IonStyle = Exclude<PlumeStyle, "default">;
+export type IonStyle = Extract<PlumeStyle, "ion-light" | "ion-heavy">;
+type BeamStyle = Exclude<PlumeStyle, "plasma">;
 const stamps = new Map<PlumeStyle, HTMLCanvasElement>();
 const SCALE = 4;
 
 /** Cache the complete luminous mark once. Gradients never run in the frame loop. */
-function stamp(style: PlumeStyle) {
+function stamp(style: BeamStyle) {
   const cached = stamps.get(style);
   if (cached) return cached;
   const heavy = style === "ion-heavy";
@@ -50,7 +56,7 @@ export function paintIonBeam(
 export function paintBeam(
   ctx: CanvasRenderingContext2D,
   size: number,
-  style: PlumeStyle,
+  style: BeamStyle,
 ) {
   if (!(size > 0)) return;
   const image = stamp(style);

@@ -32,7 +32,7 @@ one ship named in the game's contracts, because a new player
   with a fitting.
 - **Neighbours.** [Parts](../parts/spec.md) own what can be fitted and where.
   The [active ship](../active-ship/spec.md) owns which ship is flown and how it
-  is kept. [Experimental mode](../experimental/spec.md) owns the release class
+  is kept. [Playground](../experimental/spec.md) owns the release class
   and what it allows. The [Hangar](../hangar/spec.md) owns choosing and fitting
   on screen. [Survival](../survival/spec.md) owns what ends a run.
 
@@ -66,7 +66,7 @@ one ship named in the game's contracts, because a new player
   aft engines fire when both inputs are held. On: aft engines fire on either
   input. No input commands no aft thrust.
 - **Release class.** Each ship is stable or experimental, as
-  [Experimental mode](../experimental/spec.md) defines.
+  [Playground](../experimental/spec.md) defines.
 
 ## Contract
 

@@ -29,6 +29,8 @@ game's home and Hangar is an alternative launch point.
   reuses the shared procedural star and planet artwork and the circular orbit
   update, and never advances survival physics. Its composition follows the
   constraints below.
+- The [Title-screen hints spec](hints.md) defines the hint area's content and
+  behavior; this spec owns its placement in the title-screen composition.
 
 ### Constraints
 
@@ -71,16 +73,8 @@ game's home and Hangar is an alternative launch point.
   heading is ordinary text, not a new mark. Elsewhere lime marks actions on this
   screen. Informational text uses
   Android green, not the brand colour.
-- A text area to the right of the panel shows one short practical hint at
-  a time: flight controls, the survival objective, and guidance to visit Hangar
-  to choose another ship. Messages rotate approximately every eight seconds with
-  a subtle fade. Reduced motion presents a static message. World-flavour copy
-  waits until the game voice is established.
-- In viewports narrower than 4:3, the same aspect limit that blocks flight in the
-  [game screen](../game-screen/spec.md), the hint area instead shows the persistent
-  Android green status “Rotate your screen to landscape.” It clears automatically
-  at 4:3 or wider,
-  without taking focus, blocking navigation, resetting the menu or locking orientation.
+- A text area to the right of the panel presents the rotating entries and
+  narrow-screen status defined by [Title-screen hints](hints.md).
 - PRESS START fades to void over 150 ms, replaces the scene with a fresh seeded
   G-class Survival run with the active ship, and reveals it over 150 ms. Repeated
   activation during the start is ignored.
@@ -95,14 +89,15 @@ game's home and Hangar is an alternative launch point.
 - From Hangar, Survival uses the same arrival and countdown and returns to
   Hangar; Hangar test flight starts directly.
 - Ship selection belongs in Hangar; the title screen has no ship selector.
-- [Experimental mode](../experimental/spec.md) owns the experimental marker
+- [Playground](../experimental/spec.md) owns the catalog marker
   beside PRESS START and the unavailable start, with its reason and the way to
-  the Hangar, while Experimental is Off and the active ship holds experimental
+  the Hangar, while Playground is Off and the active ship holds experimental
   content.
-- The Hangar link reads “HANGAR”; the rotating hint explains ship choice.
+- The Hangar link reads “HANGAR”; ship selection belongs in the Hangar.
 - Hangar, Top Scores, Settings and Credits are secondary game-menu destinations.
-- PRESS START receives initial keyboard focus. The menu focus order is PRESS START,
-  Hangar, Top Scores, Settings, Credits.
+- PRESS START receives initial keyboard focus when available; when launch is
+  blocked, Hangar receives focus instead. The menu focus order is PRESS START,
+  Hangar, Top Scores, Settings, Credits, skipping unavailable actions.
 - Hangar provides training/test flight, start game and return to title screen.
 - Top Scores, Settings and Credits each provide return to title screen.
 - Pause provides Abort, returning to the run's launch source.
@@ -116,7 +111,7 @@ game's home and Hangar is an alternative launch point.
 
 ### Definition of Done
 
-- [ ] PRESS START launches the active ship without a ship-selection step.
+- [x] PRESS START launches the active ship without a ship-selection step.
 - [ ] The title screen has no ship selector and identifies Hangar as the place to choose ships.
 - [ ] All destinations and return actions in the navigation contract are reachable.
 - [ ] Abort and game-over return resolve correctly for both launch sources.
@@ -128,16 +123,14 @@ game's home and Hangar is an alternative launch point.
   when the slot scales to iPad-sized and larger views.
 - [ ] Keyboard users can launch and reach each menu destination in the specified
   order, starting with focus on PRESS START and without a modal focus trap.
-- [ ] Practical hints appear one at a time and rotate approximately every eight
-  seconds with a subtle fade; reduced motion shows a static message.
-- [ ] Viewports narrower than 4:3 show the orientation warning without interrupting
-  navigation; it clears at 4:3 or wider.
+- [ ] The title screen presents the content and behavior defined by
+  [Title-screen hints](hints.md).
 - [x] The cosmetic system has three unringed planets with 120–240 second
   periods, separated orbits and the G-class sun, placed in the lower right and
   extending toward the upper left.
 - [x] The menu scene keeps its sun through resize and moves its orbits without
   advancing survival ticks.
-- [x] PRESS START hands off a fresh Wasp run whose countdown holds position,
+- [x] PRESS START hands off a fresh active-ship run whose countdown holds position,
   power and ticks until GO, with controls held through the count applying at
   release.
 - [x] Reduced motion keeps the menu scene static and retains the three-second

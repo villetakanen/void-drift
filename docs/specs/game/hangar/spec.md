@@ -14,7 +14,7 @@ Whatever the player chooses and fits here is the
 screen shows it and every launch flies it.
 
 Earning and buying parts is the intended direction for later. During alpha,
-[Experimental mode](../experimental/spec.md) decides what the Hangar offers.
+[Playground](../experimental/spec.md) decides what the Hangar offers.
 
 ### Architecture and boundaries
 
@@ -27,27 +27,34 @@ Earning and buying parts is the intended direction for later. During alpha,
   `buildStats` ([ships](../ships/spec.md), [parts](../parts/spec.md)).
 - **State.** The Hangar reads and writes the active ship and each ship's
   fitting through the module the [active ship](../active-ship/spec.md) contract
-  names, and the Experimental setting through its own.
+  names, and the Playground setting through its own.
 - **Flight.** `apps/web/src/components/FlightDeck.svelte` receives the active
   ship, the mode and the return to the Hangar.
-- **Interface.** The opening uses the shared `Logo` and `Toggle`; controls and
+- **Interface.** The opening uses the shared `Logo`, `Switch` for the binary Playground setting, and `Tabs`
+  for ship workspaces. Plan/View uses `Toggle`; controls and
   visual tokens follow the [design system](../../factory/design-system/spec.md).
 
 ### Rules
 
-- **Opening.** Two compact rows sit above the ship chooser. The navigation row
-  has the logo on the left and "Return to title screen" on the right; both go
-  to `/`, and the version sits quietly beside the logo. The workspace row has
-  the Hangar heading with the save status on the left, and the Experimental
-  control, **Off | On**, on the right with the experimental marker below it
-  when On. There is no Apply action and no purpose text.
+- **Opening.** One compact row sits above the ship chooser: the linked logo
+  and one Hangar heading on the left, the labeled Playground Switch on the
+  right. The logo returns to `/`. The header does not wrap within supported
+  landscape iPad widths, and switching Playground leaves its height unchanged.
+  There is no duplicate return link, version label, routine save-status line,
+  or scoring explanation in the header.
 - **Regions.** Below the opening the Hangar has distinct regions for the ship
   chooser, the ship display, the parts, the ship's systems, the flight
   estimates and the flight actions.
 - **Opens on the active ship.** The Hangar opens showing the active ship in its
   fitting. No link or query chooses a ship.
 - **Choosing.** The chooser shows every ship in the catalog. Choosing one makes
-  it the active ship and shows the fitting the player left on it.
+  it the active ship and shows the fitting the player left on it. Shared `Tabs`
+  owns the workbench panel. Each tab shows the ship's short name, slot count
+  and chassis mass, with no catalog badge. The row stretches across its host
+  and stays one button tall. Playground Off makes excluded ships unavailable
+  using the shared tab state; an already active excluded ship stays selected.
+  Keyboard activation is manual: arrows, Home and End move focus without saving
+  a choice; Enter or Space selects. Pointer and touch select immediately.
 - **Fitting.** The player selects a mount and fits a part the mount accepts, or
   empties an optional mount. A required engine can be swapped but not removed.
   A mirrored engine pair is one choice, made on its primary mount; the other
@@ -63,14 +70,19 @@ Earning and buying parts is the intended direction for later. During alpha,
   engine parts, and each engine shows its contribution.
 - **Flight actions.** The Hangar offers, in this order, Practice, Derelicts,
   Gauntlet and Survival. Survival is the primary action; Practice and Derelicts
-  are ghost actions; Gauntlet is shown disabled and cannot be started. Every
+  are normal actions; Gauntlet is shown disabled and cannot be started. Every
   launch flies the active ship, and Abort or game over returns to the Hangar
   with the ship unchanged.
-- **Experimental.** The Experimental control is the only place the setting
+- **Experimental.** The Playground control is the only place the setting
   changes. What it locks, marks and blocks is owned by
-  [Experimental mode](../experimental/spec.md).
-- **Save status.** The save status says truthfully whether choices are being
-  kept in this browser.
+  [Playground](../experimental/spec.md).
+- **Launch context.** With Playground On, the launch row says “Playground ·
+  Scoring off”; with Off this notice is absent. This replaces the engine-key
+  explanation beside the flight actions. The current sticky launch-row behavior,
+  including its overlap with scrolling content, is retained.
+- **Save status.** Loading, recovery and unavailable-storage messages appear in
+  the launch context when relevant. Successful ordinary persistence adds no
+  permanent status text to the header.
 - **Input.** Everything in the Hangar works with pointer and keyboard on a
   desktop and by touch on an iPad in landscape.
 
@@ -79,33 +91,36 @@ Earning and buying parts is the intended direction for later. During alpha,
 ### Definition of Done
 
 - [x] H1: `/hangar` shows the Hangar, and player-facing Hangar links target it.
-- [x] H2: The logo and "Return to title screen" both reach `/` by pointer and
-  keyboard; the logo link's accessible name identifies Void Drift.
-- [x] H3: Experimental shows Off and On with a visible and accessible selected
-  state that changes by pointer and keyboard.
-- [ ] H4: Switching Experimental changes the Hangar and launch as
-  [Experimental mode](../experimental/spec.md) states.
-- [ ] H5: The Hangar opens on the active ship in its fitting, and a `chassis`
+- [x] H2: The logo reaches `/` by pointer and keyboard; its accessible name
+  identifies Void Drift. One Hangar heading and the Playground Switch share a
+  compact header row whose height is unchanged by Playground.
+- [x] H3: Experimental uses the shared binary `Switch`, labeled Playground,
+  with a visible Off/On state and checkbox semantics; pointer and Space change it.
+- [x] H4: Switching Playground changes the Hangar and launch as
+  [Playground](../experimental/spec.md) states.
+- [x] H5: The Hangar opens on the active ship in its fitting, and a `chassis`
   query changes nothing.
-- [ ] H6: Choosing a ship shows its kept fitting and makes it the active ship
-  ([active ship](../active-ship/spec.md) A3).
-- [ ] H7: Fitting or emptying a mount changes only that mount or its mirrored
+- [x] H6: Choosing a ship shows its kept fitting and makes it the active ship
+  ([active ship](../active-ship/spec.md) A3). The shared tab row owns the
+  workbench panel, uses manual keyboard activation, and stays one button tall
+  with Playground Off or On at supported landscape iPad widths.
+- [x] H7: Fitting or emptying a mount changes only that mount or its mirrored
   pair; a required engine has no empty choice; parts the mount does not accept
   are unavailable.
-- [ ] H8: Plan shows mounts, occupancy and links; View shows the ship without
+- [x] H8: Plan shows mounts, occupancy and links; View shows the ship without
   markings; switching keeps fitting and selection, and fitting works in both.
-- [ ] H9: The stabilizer and linked-engines choices are kept per ship and
+- [x] H9: The stabilizer and linked-engines choices are kept per ship and
   govern the same ship in flight.
-- [ ] H10: The figures shown match `buildStats` for the fitted ship and update
+- [x] H10: The figures shown match `buildStats` for the fitted ship and update
   when a fitting changes.
-- [ ] H11: The flight actions appear in the order Practice, Derelicts, Gauntlet,
+- [x] H11: The flight actions appear in the order Practice, Derelicts, Gauntlet,
   Survival; Survival is the primary action, Gauntlet is disabled, and each of
   the others launches the active ship.
-- [ ] H12: Abort and game over return to the Hangar with the ship and its
+- [x] H12: Abort and game over return to the Hangar with the ship and its
   fitting unchanged.
-- [ ] H13: The save status reports loading, recovery and unavailable storage
+- [x] H13: The save status reports loading, recovery and unavailable storage
   truthfully, and never claims a save that did not happen.
-- [ ] H14: Choosing, fitting, systems and flight actions all work by keyboard,
+- [x] H14: Choosing, fitting, systems and flight actions all work by keyboard,
   by pointer, and by touch on an iPad in landscape.
 
 ### Regression guardrails

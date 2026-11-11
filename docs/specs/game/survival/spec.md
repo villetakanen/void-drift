@@ -36,7 +36,7 @@ Survival is the only mode whose runs can be ranked.
     itself. [Derelicts mode](../derelicts/spec.md) is a different game with
     its own arrivals.
   - The [game screen](../game-screen/spec.md) and [dialogs](../dialogs/spec.md)
-    own what is shown; [Experimental mode](../experimental/spec.md) owns when
+    own what is shown; [Playground](../experimental/spec.md) owns when
     a run is scored.
 
 ### Rules

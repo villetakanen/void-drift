@@ -19,7 +19,7 @@ screen composes shared definitions instead of inventing its own.
 - `apps/web/src/components/Logo.svelte` draws the logomark from SVG outlines;
   fonts are self-hosted.
 - Each definition has a canonical Lab page: `/lab/tokens`, `/lab/typography`,
-  `/lab/surfaces` and `/lab/inputs`.
+  `/lab/surfaces`, `/lab/inputs`, `/lab/ds/tabs` and `/lab/ds/actions`.
 - Feature specs consume the system. Changing a definition is design work,
   recorded here and demonstrated on its Lab page in the same change.
 
@@ -50,6 +50,9 @@ screen composes shared definitions instead of inventing its own.
 - [x] Menu, pause and run complete sit on one `.panel`; the flight status message on `.panel--flat` (S6).
 - [ ] Thrust pad tokens and `ThrustPads` exist as specified, and `/lab/inputs`
   demonstrates both sides in every lit state over a starfield.
+- [x] `Tabs` exists as specified in [Tabs](#tabs), and `/lab/ds/tabs`
+  demonstrates facts, a row without them, an unavailable tab, both
+  activation modes, a row that overflows its host and a stretched row.
 
 ### Regression Guardrails
 
@@ -245,10 +248,20 @@ implemented 2026-11-03.
   see [Colour](#colour).
 - `Toggle` takes `options`, a bindable `value` and a group `label`; `compact` sets
   8px side padding and `stretch` fills the width. Native radios give arrow keys.
-  The game menu's ship selector (01–04) is a `Toggle` (opening-screen spike, 2026-11-02).
+  `disabledOptions` keeps unavailable options visible, disables their native
+  radios, skips them during keyboard selection and suppresses hover treatment.
+  A selected option can remain selected while disabled; the control does not
+  silently change its value. An optional `optionSuffix` snippet receives the
+  option label and supplies supporting content; it leaves the native radio's
+  accessible name intact. The Hangar's ship chooser uses this control.
+  `/lab/inputs` demonstrates disabled options and suffix composition.
 - `RingSlider` wraps a native range input (keys, touch and forms unchanged) at a
   44px touch height; `compact` hides its label line where the host shows it. Its
   value is announced through the input, not a live region.
+- Use `Switch` for enabling or disabling one setting, including Playground,
+  Ion stabilizers and Linked engines. Use `Toggle` to choose one value from a
+  set, such as a ship or Plan/View; two labels alone do not make a binary setting
+  a segmented choice.
 - `Switch` is a binary on/off setting, distinct from the multi-option `Toggle`.
   It binds `checked` and optionally accepts `disabled`; a surrounding label supplies
   its accessible name. The native checkbox preserves checkbox semantics and
@@ -259,10 +272,11 @@ implemented 2026-11-03.
   its text uses `--color-on-brand`. Focus, hover, disabled and reduced-motion states
   use the shared control foundations.
 - `/lab/inputs` demonstrates the switch in off, on and disabled states. The Hangar
-  uses it for Ion stabilizers and Linked engines.
+  uses it for Playground, Ion stabilizers and Linked engines.
 - The toggle is one button-shaped control split into equal parts: cut corners
-  outside, a straight split inside, the selected part filled lime, the others a
-  faint fill that takes a faint lime tint under a pointer.
+  outside, a straight split inside, the selected part filled lime, the others on
+  `--color-elev-2`, the surface the switch track and tabs share, taking a faint
+  lime tint under a pointer.
 - The detailed selector variant adds optional `details` keyed by option label.
   Each segment lays out its name and supporting facts with wrapping inline flex.
   `stretch` fills the host width with equal segments. Facts use caption text,
@@ -273,6 +287,55 @@ implemented 2026-11-03.
   label and value stay neutral, and the unfilled track takes the same tint on hover.
 - Lime marks the selection and the knob; hover borrows it at low strength. Data and
   values stay neutral.
+
+### Tabs
+
+**Source of truth:** `apps/web/src/components/inputs/Tabs.svelte`.
+**Reference:** `/lab/ds/tabs`. Behaviour follows the WAI-ARIA Authoring
+Practices tabs pattern.
+
+Choose the control by what it does:
+
+| Control  | Use for                                          | Owns content        | Semantics                    |
+| -------- | ------------------------------------------------ | ------------------- | ---------------------------- |
+| `Tabs`   | Sibling views of one area, one visible at a time | Yes: one panel each | `tablist`, `tab`, `tabpanel` |
+| `Toggle` | One value from a small set                       | No                  | Native radio group           |
+| `Switch` | Enabling or disabling one setting                | No                  | Native checkbox              |
+- Tabs are not for form values, commands or page navigation. A control that
+  swaps the whole area beneath it is tabs, however few options it has; a control
+  whose value the host merely reads is a toggle. Tabs share the toggle's look
+  and differ in what they do; tab roles are never put on a radio group.
+- `Tabs` takes `tabs` (each an `id`, a `label`, optional `facts` and
+  `unavailable`), a bindable `value` holding the selected id, a `label` naming
+  the row, `activation`, `stretch` and a `panel` snippet that receives the
+  selected tab. The component renders the panel element and links tab and panel
+  to each other; the host supplies the panel's content.
+- The row is the toggle's shape: one cut button split into parts, straight
+  splits inside. The selected part is filled with the selected colour; the
+  others sit on `--color-elev-2`, the switch track's surface, and take a faint
+  action tint under a pointer. Focus is the shared inset ring. The component
+  draws no surface around the panel.
+- A tab holds its name and up to two short facts. The name leads the part and
+  the facts close it: caption text, stacked, muted when unselected and on-brand
+  when selected. Facts are the default; a row may omit them. The row is exactly
+  one button tall with or without facts, and text never wraps. Anything richer
+  belongs in the panel. The label is the tab's accessible name; the facts are
+  its description.
+- An unavailable tab stays in the row as an empty frame: no fill, an
+  `--color-elev-2` edge and muted text at full strength. It takes no hover
+  treatment, keeps keyboard focus so its facts can be read, and is never
+  selected by pointer or key. A selected tab that becomes unavailable stays
+  selected; the component never changes `value` on its own.
+- The row is one tab stop, entered at the selected tab. Left and Right move
+  between tabs and wrap; Home and End reach the ends. With `automatic`
+  activation, the default, focusing a tab selects it; with `manual`, Enter or
+  Space selects. Use `manual` when showing a panel is slow or consequential.
+  The panel is the next tab stop.
+- Tabs size to their content and never shrink. A row wider than its host
+  scrolls sideways inside itself and brings the focused tab into view; neither
+  the host nor the page widens. `stretch` shares the host width between tabs.
+  A row that scrolls at its normal host width has too many tabs or too much in
+  them.
 
 ### Thrust pads
 
@@ -539,147 +602,35 @@ Superseded by [Typography](#typography): fonts are self-hosted and no CDN is use
 
 ## Button System
 
-### Current rules — button study promotion, 2026-10-28
+Shared definitions live in `packages/core/src/lib/styles/buttons.css` and
+`tokens.css`; `/lab/ds/actions` demonstrates the action language. The
+accepted reference is `/lab/studies/buttons-2026-11-11#whole`.
 
-Moved from `docs/design.md` on 2026-11-02. These rules are current; the subsections
-after them predate the promotion. The accepted study at `/lab/studies/buttons` records
-the rationale; `/lab/inputs` is the canonical interactive reference. Shared
-definitions are in core `styles/buttons.css`, with foundations in `styles/tokens.css`.
-
-- Game startup, pause/continue, setup and mode-selection buttons navigate game states.
-  Player actions save designs/settings or reset data. Hierarchy follows the current
-  user goal, so navigation can be primary. Use links for URL navigation and buttons
-  for in-app state transitions or commands. Settings persist on change.
-- `.button-group.button-group--vertical` makes transparent equal-width menu groups,
-  with a private 320px maximum width. `.button-group.button-group--strip` makes
-  anchored groups on a solid void surface; related actions go in
-  `.button-group__section`, and strip hosts use `.button-group-frame` for container
-  queries. Both modes use 8px padding and minimum gaps; strips stack below 580px of
-  host width and remove the group background. Only horizontal rows have the solid black background. Preserve meaningful DOM/tab order.
-- Buttons keep angled corners, lime filled/ghost variants and red consequences. Shared
-  states: an inset focus ring, disabled opacity with suppressed hover, selected
-  indication and reduced motion. Busy buttons must be disabled by the owning
-  interaction; ARIA alone does not prevent activation. Link buttons keep 44px minimum
-  targets. Native game touch controls remain specialized controls.
-- Public foundations express shared control/state/motion values; `--_name` properties
-  own component composition (see `docs/architecture.md`). `--button-*` names remain
-  compatibility aliases. Do not reuse unrelated tokens merely because numbers match.
-- Consumers: game start/pause/run-complete groups, flight Lab commands, settings
-  navigation, leaderboard action strip, the canonical Lab and study examples.
-
-[DEPRECATED 2026-11-01] Colour names in this section predate S3: `--color-neon-blue` is
-`--color-action`, `--color-void` text on a fill is `--color-on-brand`, and the pressed state is
-`--color-selected`. The focus ring is `--color-focus-ring`.
-
-### Button Tokens
-
-**Token Location:** `apps/web/src/styles.css` (in `:root`)
-
-```css
-:root {
-  /* Button sizing - values tunable */
-  --button-padding-x: <spacing-token>;
-  --button-padding-y: <spacing-token>;
-  --button-min-height: <size>;          /* Minimum 44px for touch targets */
-  --button-border-width: <size>;
-  --button-border-radius: <size>;
-  
-  /* Button transitions - values tunable */
-  --button-transition: <transition>;
-}
-```
-
-**Note:** Actual values defined in styles.css, not in specs. Design tokens reference existing spacing tokens where possible.
-
-### Button Classes
-
-#### Base Button (`.btn`)
-
-All buttons share common styles:
-```css
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--button-padding-y) var(--button-padding-x);
-  min-height: var(--button-min-height);
-  font-family: var(--font-primary);
-  font-size: var(--font-size-base);
-  text-decoration: none;
-  cursor: pointer;
-  transition: var(--button-transition);
-  border-radius: var(--button-border-radius);
-}
-
-.btn:focus-visible {
-  outline: 2px solid var(--color-neon-blue);
-  outline-offset: 2px;
-}
-```
-
-#### Ghost Button (`.btn-ghost`)
-
-Transparent background with neon border - primary interactive style:
-```css
-.btn-ghost {
-  background: transparent;
-  color: var(--color-neon-blue);
-  border: var(--button-border-width) solid var(--color-neon-blue);
-}
-
-.btn-ghost:hover {
-  background: rgba(0, 240, 255, 0.1);
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
-}
-```
-
-#### Filled Button (`.btn-filled`)
-
-Solid background for primary actions:
-```css
-.btn-filled {
-  background: var(--color-neon-blue);
-  color: var(--color-void);
-  border: var(--button-border-width) solid var(--color-neon-blue);
-}
-
-.btn-filled:hover {
-  background: transparent;
-  color: var(--color-neon-blue);
-}
-```
-
-#### Link Button (`.btn-link`)
-
-Text-only style for navigation:
-```css
-.btn-link {
-  background: transparent;
-  color: var(--color-text);
-  border: none;
-  padding: var(--spacing-sm);
-  min-height: auto;
-}
-
-.btn-link:hover {
-  color: var(--color-neon-blue);
-}
-```
-
-### Usage Guidelines
-
-- **Ghost buttons:** Default for most UI actions (Start Game, Settings)
-- **Filled buttons:** Primary calls-to-action (Try Again after death)
-- **Link buttons:** Navigation and secondary actions (Back to Game)
-- **Minimum touch target:** 44x44px for accessibility
-
-### Migration Status
-
-- [ ] Add button tokens to `apps/web/src/styles.css`
-- [ ] Add global `.btn` classes to `apps/web/src/styles.css`
-- [ ] Refactor `MenuOverlay.svelte` to use `.btn .btn-ghost`
-- [ ] Refactor `GameOver.svelte` to use `.btn .btn-filled`
-- [ ] Refactor `Settings.svelte` to use `.btn .btn-link`
+- Actions command; links belong in sentences. Use a single filled call to
+  action alongside normal actions. Buttons have cut corners, a minimum 44px
+  target, and 8px vertical and 16px horizontal padding.
+- `.btn.btn-normal` has a regular label and a pane at elevation 2 on the
+  void or elevation 3 on a panel, supplied by `--button-ground`. Its 1px
+  brackets leave the middle 40% open across top and bottom. Brackets use
+  `--color-bracket` at rest, action lime on hover and keyboard focus.
+  Held, the pane takes a 28% action tint.
+- `.btn.btn-filled` retains its lime fill and pointer brightness; held it
+  dims to 0.85 brightness. Keyboard focus draws dark 2px brackets inset 3px.
+- Unavailable normal and filled buttons have no fill, a muted label and
+  full-opacity brackets; the filled button's brackets remain lime. This frame
+  is the one exception to lime marking what can be acted on or selected.
+  Unavailable controls do not respond visually to a pointer.
+- `.text-link` uses lime text and a 1px underline at 20% lime; hover,
+  focus and held brighten the line to full lime. Unavailable links have muted
+  text and no line. Owners must suppress activation of aria-disabled links.
+- Bracket and underline changes ease over the fast duration; reduced motion
+  removes transitions. Focus brackets have not been measured against focus
+  visibility guidelines; the design has not been checked on a touch screen.
+- The red button is unsettled. Existing ghost, danger and link-button
+  variants remain available, as do the shared focus ring, disabled fade and
+  pressed indicator for their existing consumers.
+- Vertical groups retain 8px gaps. Existing strip groups remain on a void
+  surface and stack below 580px of host width. Preserve DOM and tab order.
 
 ## Future Enhancements
 

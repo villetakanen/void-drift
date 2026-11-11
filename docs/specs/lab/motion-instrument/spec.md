@@ -174,7 +174,10 @@ and measurements. The time cursor selects a point in the existing results.
 
 - In a study page: `<InstrumentEmbed config={document} />` from
   `components/lab/instrument/InstrumentEmbed.astro`. It takes the full window and
-  snaps into place.
+  snaps into place, through the shared `InstrumentBand.astro` in the same folder,
+  which the Flight scene instrument's embed uses too. A study that needs its own
+  pane content writes a Svelte wrapper around `ShipTuning` and places it inside
+  `<InstrumentBand>`.
 - In the Lab: `/lab/instrument` opens with the starting document
   (`apps/web/src/lib/instrument/starter.ts`), supplied by the page.
 - Custom pane content: pass a `pane` snippet to `ShipTuning`; it receives the

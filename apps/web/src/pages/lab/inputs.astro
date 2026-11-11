@@ -1,6 +1,7 @@
 ---
 import LabButtons from "../../components/lab/LabButtons.svelte";
 import LabInputs from "../../components/lab/LabInputs.svelte";
+import LabRunStatus from "../../components/lab/LabRunStatus.svelte";
 import LabLayout from "../../layouts/LabLayout.astro";
 ---
 
@@ -8,4 +9,5 @@ import LabLayout from "../../layouts/LabLayout.astro";
 <LabLayout title="Inputs" wide>
   <LabButtons client:load />
   <LabInputs client:load />
+  <LabRunStatus />
 </LabLayout>

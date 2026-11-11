@@ -53,6 +53,20 @@ describe("render model Wasp fixture", () => {
     }
   });
 
+  it("uses the fitted engine's production plume and advances its thrust time", () => {
+    const ion = createRenderModelFixture();
+    const plasma = createRenderModelFixture(RENDER_MODEL_CENTER, "plasma");
+    ion.advance(1 / 60, 0);
+    plasma.advance(1 / 60, 0);
+    expect(plasma.emitters[0].style).not.toBe(ion.emitters[0].style);
+    expect(plasma.emitters[0].style).toBe("plasma");
+    const elapsed = plasma.emitters[0].thrustSeconds ?? 0;
+    plasma.advance(1 / 60, 0);
+    expect(plasma.emitters[0].thrustSeconds).toBeGreaterThan(elapsed);
+    plasma.advance(0, 0);
+    expect(plasma.emitters[0].thrustSeconds).toBe(0);
+  });
+
   it("matches the production cannon flash and cooldown cadence", () => {
     expect(isIonBeamPulseActive(0)).toBe(true);
     expect(isIonBeamPulseActive(0.079)).toBe(true);

@@ -3,7 +3,9 @@ import {
   buildStats,
   CHASSIS,
   defaultLoadout,
+  PARTS,
 } from "../../packages/mode-a/src/lib/schemas/loadout";
+import { chooseShip, enablePreviewContent } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 
 test("fit, persist, practise, pause and return to an assembled ship", async ({
@@ -16,6 +18,7 @@ test("fit, persist, practise, pause and return to an assembled ship", async ({
   fitted.hull[0] = "heavy-well";
   const capacity = String(buildStats(fitted).capacity);
   await page.goto("/hangar");
+  await chooseShip(page, "Fighter");
   await expect(
     page.getByRole("heading", { name: "Hangar", exact: true }),
   ).toBeVisible();
@@ -34,11 +37,11 @@ test("fit, persist, practise, pause and return to an assembled ship", async ({
       .getByRole("button", { name: /Hull 1.*Potential Well/ }),
   ).toBeVisible();
   await expect(
-    page.getByRole("radio", { name: "Scout", exact: true }),
+    page.getByRole("tab", { name: "Scout", exact: true }),
   ).toBeEnabled();
   await expect(
-    page.getByRole("radio", { name: "Corvette", exact: true }),
-  ).toBeEnabled();
+    page.getByRole("tab", { name: "Corvette", exact: true }),
+  ).toBeDisabled();
   await page.reload();
   await expect(
     page.getByRole("button", {
@@ -50,7 +53,7 @@ test("fit, persist, practise, pause and return to an assembled ship", async ({
     width: 1440,
     height: (1440 * GAME_MIN_RATIO.height) / GAME_MIN_RATIO.width,
   });
-  await page.getByRole("button", { name: "Test flight", exact: true }).click();
+  await page.getByRole("button", { name: "Practice", exact: true }).click();
   await expect(page.locator(".flight-page")).toHaveAttribute(
     "data-status",
     "PLAYING",
@@ -81,10 +84,12 @@ test("fit, persist, practise, pause and return to an assembled ship", async ({
       name: "Hull 1 · Equipment: Heavy Potential Well",
     }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Start survival" }).click();
+  await page.getByRole("button", { name: "Survival" }).click();
   await page.clock.runFor(3200);
   await expect(page.locator("header")).toHaveCount(0);
-  await expect(page.locator(".deck-info small").first()).toHaveText("UNRANKED");
+  await expect(page.locator(".deck-info small").first()).toHaveText(
+    "G CLASS / SHARED CHALLENGE",
+  );
 });
 
 test("corrupt browser storage recovers to flyable defaults", async ({
@@ -94,12 +99,13 @@ test("corrupt browser storage recovers to flyable defaults", async ({
     localStorage.setItem("void-drift-builds-v3", '{"broken":true}'),
   );
   await page.goto("/hangar");
-  await expect(page.getByRole("status")).toContainText("Restored flyable");
+  await expect(page.getByRole("status")).toContainText(/restored/i);
   await expect(
-    page.getByRole("button", {
-      name: "Left side · mirrored E: Light ion",
-    }),
-  ).toBeVisible();
+    page.getByRole("tab", { name: "Wasp", exact: true }),
+  ).toHaveAttribute("aria-selected", "true");
+  await expect(
+    page.getByRole("button", { name: "Practice", exact: true }),
+  ).toBeEnabled();
 });
 
 test("preserves other chassis saves and independently selects tight aft mounts", async ({
@@ -137,8 +143,10 @@ test("preserves other chassis saves and independently selects tight aft mounts",
   );
   await page.reload();
   await expect(
-    page.getByRole("radio", { name: "Fighter", exact: true }),
-  ).toBeChecked();
+    page.getByRole("tab", { name: "Wasp", exact: true }),
+  ).toHaveAttribute("aria-selected", "true");
+  await enablePreviewContent(page);
+  await chooseShip(page, "Fighter");
   await page.getByRole("button", { name: "Aft 1 · Universal: Empty" }).click();
   await page.getByRole("button", { name: /^Rail gun\b/ }).click();
   await page.getByRole("button", { name: "Aft 2 · Universal: Empty" }).focus();
@@ -152,7 +160,7 @@ test("preserves other chassis saves and independently selects tight aft mounts",
   expect(restored.corvette).toEqual({ ...saved.corvette, stabilizers: true });
   expect(restored.fighter.aft).toEqual(["rail", "ion"]);
   await page
-    .getByRole("radiogroup", { name: "Choose chassis" })
+    .getByRole("tablist", { name: "Choose chassis" })
     .getByText("Corvette", { exact: true })
     .click();
   await expect(
@@ -165,14 +173,14 @@ test("preserves other chassis saves and independently selects tight aft mounts",
   await page.getByRole("button", { name: /^Light ion\b/ }).click();
   await page.reload();
   await page
-    .getByRole("radiogroup", { name: "Choose chassis" })
+    .getByRole("tablist", { name: "Choose chassis" })
     .getByText("Corvette", { exact: true })
     .click();
   await expect(
     page.getByRole("button", { name: "Aft 2 · Universal: Light ion" }),
   ).toBeVisible();
   await page
-    .getByRole("radiogroup", { name: "Choose chassis" })
+    .getByRole("tablist", { name: "Choose chassis" })
     .getByText("Fighter", { exact: true })
     .click();
   await expect(
@@ -184,7 +192,7 @@ test("preserves other chassis saves and independently selects tight aft mounts",
   await expect(
     page.getByRole("button", { name: "Aft 1 · Universal: Rail gun" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Start survival" }).click();
+  await page.getByRole("button", { name: "Survival" }).click();
   await page.clock.runFor(3200);
   await page.keyboard.down("ArrowRight");
   await page.clock.runFor(750);
@@ -213,9 +221,14 @@ test("preserves other chassis saves and independently selects tight aft mounts",
   ).toBeVisible();
 });
 
-test("new engine catalog resets old saves and exposes plasma charging in flight", async ({
+test("legacy saves leave new ships usable and plasma charging reaches flight", async ({
   page,
 }) => {
+  // Fake time makes the short charge window deterministic.
+  const time = new Date("2026-11-03T00:00:00Z");
+  await page.clock.install({ time });
+  await page.clock.pauseAt(time);
+  const chargeMs = Math.round(PARTS.plasma.chargeSeconds * 1000);
   await page.addInitScript(() => {
     localStorage.setItem("void-drift-builds-v1", JSON.stringify({ old: true }));
     localStorage.setItem(
@@ -224,14 +237,8 @@ test("new engine catalog resets old saves and exposes plasma charging in flight"
     );
   });
   await page.goto("/hangar");
-  await expect
-    .poll(() =>
-      page.evaluate(() => [
-        localStorage.getItem("void-drift-builds-v1"),
-        localStorage.getItem("void-drift-builds-v2"),
-      ]),
-    )
-    .toEqual([null, null]);
+  await chooseShip(page, "Fighter");
+  await enablePreviewContent(page);
   await expect(page.getByText("could not be read")).toHaveCount(0);
   await expect(
     page.getByRole("button", { name: /^Heavy ion\b/ }),
@@ -240,13 +247,23 @@ test("new engine catalog resets old saves and exposes plasma charging in flight"
   await expect(
     page.getByRole("button", { name: "Right side · mirrored E: Plasma" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Test flight", exact: true }).click();
+  await page.getByRole("button", { name: "Practice", exact: true }).click();
+  await expect(page.locator(".flight-page")).toHaveAttribute(
+    "data-status",
+    "PLAYING",
+  );
+  const feedback = page.locator(".engine-feedback");
   await page.keyboard.down("a");
-  await expect(page.locator(".engine-feedback")).toContainText("charging");
-  await expect(page.locator(".engine-feedback")).toContainText("firing");
+  await page.clock.runFor(chargeMs / 2);
+  await expect(feedback).toContainText("charging");
+  await expect(feedback).not.toContainText("firing");
+  await page.clock.runFor(chargeMs + 200);
+  await expect(feedback).toContainText("firing");
   await page.keyboard.up("a");
-  await expect(page.locator(".engine-feedback")).toHaveCount(0);
+  await page.clock.runFor(100);
+  await expect(feedback).toHaveCount(0);
   await page.keyboard.down("a");
-  await expect(page.locator(".engine-feedback")).toContainText("charging");
+  await page.clock.runFor(chargeMs / 2);
+  await expect(feedback).toContainText("charging");
   await page.keyboard.up("a");
 });

@@ -27,9 +27,10 @@ describe("Gravity coil fitting", () => {
       expect(after.coils).toBe(before.coils);
       expect(after.engineDraw).toBe(before.engineDraw);
     }
-    expect(BuildStoreSchema.parse(JSON.parse(JSON.stringify(builds)))).toEqual(
-      builds,
-    );
+    expect(BuildStoreSchema.parse(JSON.parse(JSON.stringify(builds)))).toEqual({
+      ...builds,
+      activeChassis: "wasp",
+    });
     const solar = defaultLoadout("fighter");
     const originalCoils = buildStats(solar).coils;
     solar.hull[0] = "coil";

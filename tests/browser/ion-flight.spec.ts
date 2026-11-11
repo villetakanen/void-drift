@@ -1,10 +1,12 @@
+import { chooseShip } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 
 test("optional stabilizers and linked engines persist independently and reach flight", async ({
   page,
 }) => {
   await page.clock.install();
-  await page.goto("/hangar?chassis=fighter");
+  await page.goto("/hangar");
+  await chooseShip(page, "Fighter");
   const stabilizers = page.getByRole("checkbox", {
     name: "Ion stabilizers",
     exact: true,
@@ -20,7 +22,7 @@ test("optional stabilizers and linked engines persist independently and reach fl
   await page.reload();
   await expect(stabilizers).not.toBeChecked();
   await expect(linked).toBeChecked();
-  await page.getByRole("button", { name: "Test flight", exact: true }).click();
+  await page.getByRole("button", { name: "Practice", exact: true }).click();
   await expect(page.locator(".flight-page")).toHaveAttribute(
     "data-stabilizers",
     "false",
@@ -33,7 +35,7 @@ test("optional stabilizers and linked engines persist independently and reach fl
   await expect(stabilizers).toBeChecked();
   await expect(linked).not.toBeChecked();
   await page.getByRole("button", { name: /^Heavy ion\b/ }).click();
-  await page.getByRole("button", { name: "Test flight", exact: true }).click();
+  await page.getByRole("button", { name: "Practice", exact: true }).click();
   const deck = page.locator(".flight-page");
   await expect(deck).toHaveAttribute("data-stabilizers", "true");
   await page.keyboard.down("d");
@@ -48,7 +50,7 @@ test("optional stabilizers and linked engines persist independently and reach fl
   await page.getByRole("button", { name: "Pause", exact: true }).click();
   await page.getByRole("button", { name: "Abort", exact: true }).click();
   await page
-    .getByRole("radiogroup", { name: "Choose chassis" })
+    .getByRole("tablist", { name: "Choose chassis" })
     .getByText("Scout", { exact: true })
     .click();
   await expect(stabilizers).toBeChecked();

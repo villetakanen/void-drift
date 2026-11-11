@@ -24,12 +24,12 @@ const body = () => ({
 });
 
 // Test-owned timings and ceilings: production balance remains freely tunable.
+// Plasma keeps its production charge length; the charge test follows it.
 const parts = {
   ...PARTS,
   plasma: {
     ...PARTS.plasma,
     response: "delayed" as const,
-    chargeSeconds: 0.6,
     thrust: 50000,
   },
   fusion: {
@@ -80,7 +80,10 @@ describe("four-engine player trial", () => {
         ion,
         parts,
       );
-    for (let i = 0; i < 36; i++) step(left);
+    const dt = 1 / 60;
+    // Ticks fully spent charging before the next one thrusts.
+    const chargeTicks = Math.ceil(parts.plasma.chargeSeconds / dt - 1e-9);
+    for (let i = 0; i < chargeTicks; i++) step(left);
     expect(ship.vel.mag()).toBe(0);
     expect(ship.rotation).toBe(0);
     step(left);
@@ -88,9 +91,16 @@ describe("four-engine player trial", () => {
     expect(ship.rotation).toBeGreaterThan(0);
     step(idle);
     expect(timers.left).toBe(0);
-    for (let i = 0; i < 20; i++) step(left);
+    // A reset charge must elapse again before the next thrust.
+    const after = ship.vel.mag();
+    for (let i = 0; i < chargeTicks; i++) step(left);
+    expect(ship.vel.mag()).toBe(after);
     step(left, false);
     expect(timers.left).toBe(0);
+    for (let i = 0; i < chargeTicks; i++) step(left);
+    expect(ship.vel.mag()).toBe(after);
+    step(left);
+    expect(ship.vel.mag()).toBeGreaterThan(after);
   });
   it("fusion alternates firing and recovery at 40% duty", () => {
     const timers: EngineTimers = {};

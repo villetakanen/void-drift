@@ -1,6 +1,7 @@
 import { expect, it } from "vitest";
 import { FxBench } from "./fx-bench";
-import { Simulation } from "./simulation";
+import { defaultLoadout, PARTS } from "./schemas/loadout";
+import { Simulation, STEP, stockSettings } from "./simulation";
 
 const both = { leftThruster: true, rightThruster: true, fire: false };
 const idle = { leftThruster: false, rightThruster: false, fire: false };
@@ -75,4 +76,43 @@ it("the armed mixed workload fires real weapons independently of effect settings
     expect(a.ships[i].salvage).toEqual(b.ships[i].salvage);
     expect(a.ships[i].state).toEqual(b.ships[i].state);
   }
+});
+
+it("delivers charging and thrust time to a real plasma outlet and clears on release", () => {
+  const loadout = defaultLoadout("wasp");
+  loadout.side = "plasma";
+  const sim = new Simulation({
+    ...stockSettings("wasp"),
+    loadout,
+    mode: "practice",
+  });
+  sim.start();
+  const chargeTicks = Math.ceil(PARTS.plasma.chargeSeconds / STEP - 1e-9);
+  let previous = -1;
+  for (let i = 0; i < chargeTicks; i++) {
+    sim.step(both);
+    const outlet = sim.emitters[0];
+    expect(outlet.output).toBe(0);
+    expect(outlet.charge).toBeGreaterThan(previous);
+    previous = outlet.charge ?? -1;
+    const outlets: { size: number; charge?: number; thrustSeconds?: number }[] =
+      [];
+    sim.plume.inspect((item) => outlets.push({ ...item }));
+    expect(outlets).toContainEqual(
+      expect.objectContaining({
+        size: 0,
+        charge: outlet.charge,
+        thrustSeconds: 0,
+      }),
+    );
+  }
+  sim.step(both);
+  expect(sim.emitters[0].output).toBeGreaterThan(0);
+  const elapsed = sim.emitters[0].thrustSeconds ?? 0;
+  sim.step(both);
+  expect(sim.emitters[0].thrustSeconds).toBeGreaterThan(elapsed);
+  sim.step(idle);
+  expect(sim.emitters[0].charge).toBeUndefined();
+  expect(sim.emitters[0].output).toBe(0);
+  expect(sim.plume.activeCount).toBe(0);
 });

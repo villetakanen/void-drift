@@ -5,6 +5,13 @@ session that specified the render model and split the flight canvas into
 layers. It is a brief, not a decision record: check it against the specs and
 the code before acting.
 
+> **Current decision (10 November 2026):** The designer has resolved the
+> rendering-layer-model blocker for further large-game testing. Adopt World
+> normal, FX screen with Turbulent bloom at 12 CSS px glow / 16 CSS px
+> distortion / 90% strength, and LFX hard-light without a filter. This clears
+> the layer-model testing gate; it does not resolve the engine-stamp continuity
+> criteria in this brief.
+
 ## Your task
 
 Fix the engine light's stamp gaps on the FX layer. This is step 3 of the

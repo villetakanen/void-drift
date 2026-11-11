@@ -81,6 +81,8 @@
   --_cut: var(--cut-size-lg);
   --_fill: var(--panel-fill);
   --_shadow: var(--panel-shadow);
+  /* A button's pane on a panel stands one step above it. */
+  --button-ground: var(--color-elev-3);
   padding: var(--spacing-lg);
   color: var(--color-text);
 }

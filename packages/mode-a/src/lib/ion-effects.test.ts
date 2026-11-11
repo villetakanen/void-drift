@@ -2,7 +2,7 @@ import { expect, it } from "vitest";
 import { buildPlumeEmitters } from "./build-renderer";
 import { defaultLoadout } from "./schemas/loadout";
 
-it("assigns ion styles per mount without restyling fusion or plasma", () => {
+it("assigns each engine's style per mount without restyling fusion", () => {
   for (const chassis of ["fighter", "scout", "corvette"] as const) {
     for (const side of ["ion", "heavy-ion", "fusion", "plasma"] as const) {
       const build = defaultLoadout(chassis);
@@ -17,7 +17,9 @@ it("assigns ion styles per mount without restyling fusion or plasma", () => {
             ? "ion-light"
             : side === "heavy-ion"
               ? "ion-heavy"
-              : "default",
+              : side === "plasma"
+                ? "plasma"
+                : "default",
         ),
       );
       expect(styles[2]).toBe("ion-heavy");

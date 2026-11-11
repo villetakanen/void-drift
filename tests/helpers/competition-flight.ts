@@ -1,10 +1,12 @@
 import type { Page } from "@playwright/test";
+import { defaultLoadout } from "../../packages/mode-a/src/lib/schemas/loadout";
 import {
   gameSettings,
   Simulation,
+  stockSettings,
 } from "../../packages/mode-a/src/lib/simulation";
 
-export type CompetitionChassis = "wasp";
+export type CompetitionChassis = "wasp" | "scout";
 
 /** Predict a seeded arrival through the real production simulation. */
 export function competitionFlightResult(
@@ -12,7 +14,9 @@ export function competitionFlightResult(
   seed: number,
 ) {
   const simulation = new Simulation({
-    ...gameSettings(chassis),
+    ...(chassis === "wasp"
+      ? gameSettings(chassis)
+      : { ...stockSettings(chassis), loadout: defaultLoadout(chassis) }),
     arrival: true,
     seed,
   });

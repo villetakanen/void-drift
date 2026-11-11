@@ -1,6 +1,7 @@
 import { expect, it } from "vitest";
 import { updateShip, Vec2 } from "../physics/Physics";
-import { EnginePlume } from "./engine-plume";
+import { FxPass } from "./arcade-fx";
+import { EnginePlume, type PlumeOutlet } from "./engine-plume";
 
 const cutoff = 750; // Explicit input fixture, independent of the shipped cutoff.
 
@@ -97,4 +98,52 @@ it("mounted emission stays bounded independently of elapsed time or source overl
   expect(plume.activeCount).toBe(count);
   plume.stepMounted(0.65, body, emitters);
   expect(plume.activeCount).toBe(0);
+});
+
+it("retains charging state without painting or consuming budget", () => {
+  const plume = new EnginePlume();
+  const charging = {
+    x: 0,
+    y: 0,
+    angle: 0,
+    output: 0,
+    charge: 0.5,
+    thrustSeconds: 0,
+  };
+  const thrusting = { x: -3, y: 2, angle: 0.2, output: 0.7 };
+  const render = (
+    emitters: (typeof charging)[] | (typeof charging | typeof thrusting)[],
+  ) => {
+    plume.stepMounted(1 / 60, ship(), emitters);
+    const outlets: PlumeOutlet[] = [];
+    plume.inspect((outlet) => outlets.push({ ...outlet }));
+    const calls: unknown[] = [];
+    const ctx = {
+      save: () => calls.push("save"),
+      restore: () => calls.push("restore"),
+      translate: (...args: number[]) => calls.push(["translate", ...args]),
+      rotate: (angle: number) => calls.push(["rotate", angle]),
+      scale: (...args: number[]) => calls.push(["scale", ...args]),
+      globalAlpha: 1,
+    } as unknown as CanvasRenderingContext2D;
+    const pass = new FxPass();
+    pass.visible = () => true;
+    plume.stamp(ctx, pass, undefined, (_ctx, size) =>
+      calls.push(["paint", size]),
+    );
+    return { outlets, calls, budget: pass.budget.essential };
+  };
+  const onlyCharge = render([charging]);
+  expect(onlyCharge.outlets).toHaveLength(1);
+  expect(onlyCharge.outlets[0]).toMatchObject({
+    charge: charging.charge,
+    size: 0,
+    thrustSeconds: 0,
+  });
+  expect(onlyCharge.calls).toEqual([]);
+  expect(onlyCharge.budget).toBe(0);
+  const alone = render([thrusting]);
+  const together = render([charging, thrusting]);
+  expect(together.calls).toEqual(alone.calls);
+  expect(together.budget).toBe(alone.budget);
 });

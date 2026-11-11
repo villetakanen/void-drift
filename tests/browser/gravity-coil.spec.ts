@@ -3,6 +3,7 @@ import {
   defaultLoadout,
   PARTS,
 } from "../../packages/mode-a/src/lib/schemas/loadout";
+import { chooseShip, enablePreviewContent } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 
 test("Gravity coil fits, persists and flies separately from solar Loading coil", async ({
@@ -12,6 +13,8 @@ test("Gravity coil fits, persists and flies separately from solar Loading coil",
   fitted.hull[0] = "gravity-coil";
   fitted.aft[0] = "coil";
   await page.goto("/hangar");
+  await chooseShip(page, "Fighter");
+  await enablePreviewContent(page);
   await expect(page.getByRole("button", { name: /^Gravity coil/ })).toHaveCount(
     0,
   );
@@ -38,7 +41,7 @@ test("Gravity coil fits, persists and flies separately from solar Loading coil",
       exact: true,
     }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Test flight", exact: true }).click();
+  await page.getByRole("button", { name: "Practice", exact: true }).click();
   await expect(page.locator(".flight-page")).toHaveAttribute(
     "data-status",
     "PLAYING",

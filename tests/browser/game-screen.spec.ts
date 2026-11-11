@@ -97,7 +97,7 @@ test("Practice fills the viewport with no header and leaves through Pause and Ab
   await page.clock.install();
   await page.setViewportSize({ width, height });
   await page.goto("/hangar");
-  await page.getByRole("button", { name: "Test flight", exact: true }).click();
+  await page.getByRole("button", { name: "Practice", exact: true }).click();
   const deck = page.locator(".flight-page");
   await expect(deck).toHaveAttribute("data-status", "PLAYING");
   await expect(page.locator("header")).toHaveCount(0);
@@ -135,7 +135,7 @@ test("Practice fills the viewport with no header and leaves through Pause and Ab
   await page.getByRole("button", { name: "Abort", exact: true }).click();
   await expect(deck).toHaveCount(0);
   await expect(
-    page.getByRole("button", { name: "Test flight", exact: true }),
+    page.getByRole("button", { name: "Practice", exact: true }),
   ).toBeVisible();
 });
 

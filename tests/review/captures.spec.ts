@@ -1,4 +1,5 @@
 import type { Locator, Page, TestInfo } from "@playwright/test";
+import { chooseShip, enablePreviewContent } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 
 // Human review artifacts only: these scenarios deliberately have no pixel goldens.
@@ -34,7 +35,7 @@ test("title composition at desktop, tablet and ultrawide sizes", async ({
 
 test("Hangar test flight", async ({ page }, info) => {
   await page.goto("/hangar");
-  await page.getByRole("button", { name: "Test flight", exact: true }).click();
+  await page.getByRole("button", { name: "Practice", exact: true }).click();
   await capture(page, info, "hangar-test-flight");
 });
 
@@ -46,15 +47,15 @@ test("production ship preview and assembled hulls", async ({ page }, info) => {
   await page.clock.runFor(32);
   await capture(page.locator("canvas").first(), info, "corvette-lab");
   for (const chassis of ["fighter", "scout", "corvette"]) {
-    await page.goto(`/hangar?chassis=${chassis}`);
+    await page.goto("/hangar");
+    await enablePreviewContent(page);
+    await chooseShip(page, chassis[0].toUpperCase() + chassis.slice(1));
     await expect(
-      page.getByRole("button", { name: "Test flight", exact: true }),
+      page.getByRole("button", { name: "Practice", exact: true }),
     ).toBeEnabled();
     await page.clock.runFor(32);
     await capture(page, info, `${chassis}-builder`);
-    await page
-      .getByRole("button", { name: "Test flight", exact: true })
-      .click();
+    await page.getByRole("button", { name: "Practice", exact: true }).click();
     await page.keyboard.down("ArrowUp");
     await page.clock.runFor(500);
     await capture(page, info, `${chassis}-flight-500ms`);
@@ -67,7 +68,9 @@ test("ion turn, release, counter-thrust and both-engine review", async ({
 }, info) => {
   await freeze(page);
   for (const chassis of ["fighter", "scout", "corvette"]) {
-    await page.goto(`/hangar?chassis=${chassis}`);
+    await page.goto("/hangar");
+    await enablePreviewContent(page);
+    await chooseShip(page, chassis[0].toUpperCase() + chassis.slice(1));
     await page.getByRole("checkbox", { name: "Ion stabilizers" }).check();
     await page.getByRole("button", { name: /^Heavy ion\b/ }).click();
     if (chassis === "corvette") {
@@ -78,9 +81,7 @@ test("ion turn, release, counter-thrust and both-engine review", async ({
         await page.getByRole("button", { name: /^Heavy ion\b/ }).click();
       }
     }
-    await page
-      .getByRole("button", { name: "Test flight", exact: true })
-      .click();
+    await page.getByRole("button", { name: "Practice", exact: true }).click();
     await page.keyboard.down("d");
     await page.clock.runFor(500);
     await capture(page, info, `ion-${chassis}-left-500ms`);

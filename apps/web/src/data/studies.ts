@@ -10,6 +10,30 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
   {
+    slug: "buttons-2026-11-11",
+    title: "Actions: quiet buttons and links beside one lit call",
+    status: "accepted",
+    phase: "scope",
+    question:
+      "What are actions made of beside the filled call to action, as quiet buttons and as links, in every state and among other actions, so that they belong to the same console as the tabs, toggle and switch?",
+  },
+  {
+    slug: "plasma-light-2026-11-11",
+    title: "Plasma light: power gathered, then released",
+    status: "accepted",
+    phase: "scope",
+    question:
+      "How does a plasma engine’s light show power gathering through its charge and then released, and stay distinct from ion light on the same ship?",
+  },
+  {
+    slug: "run-status-2026-11-10",
+    title: "Run status: a promise before launch",
+    status: "open",
+    phase: "problem",
+    question:
+      "What words and shared marker make it clear, before launch and during flight, that Playground permits unrestricted selection and turns scoring off?",
+  },
+  {
     slug: "flight-scene-instrument-2026-11-10",
     title: "Flight scene: one screen for seeing a burn in the game",
     status: "accepted",

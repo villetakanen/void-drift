@@ -1,0 +1,828 @@
+---
+import InstrumentBand from "../../../components/lab/instrument/InstrumentBand.astro";
+import PlasmaLight026 from "../../../components/studies/PlasmaLight026.svelte";
+import PlasmaLight027 from "../../../components/studies/PlasmaLight027.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((entry) => entry.slug === "plasma-light-2026-11-11");
+---
+
+<StudyLayout study={study}>
+  <section>
+    <h2 id="problem">01 / A dark charge, then a borrowed flame</h2>
+    <p>
+      A plasma engine, a preview part outside scored play, does not answer at
+      once. Holding thrust starts a charge of 0.6 seconds that already draws
+      energy and moves nothing; then the engine delivers its thrust and sustains
+      it until release. That delay is the engine’s character: power gathered
+      before it is let go. In numbers the release is one and a half times a
+      Light ion engine’s thrust and below a Heavy ion’s, so the sense of immense
+      power has to come from how the engine looks, not from its force alone.
+    </p>
+    <p>
+      In flight the engine’s light shows none of this. During the charge it
+      paints no light, so on the ship a charging engine and a dead one look the
+      same; only a line of text in the deck’s gutter reports the charge. When
+      thrust arrives it uses the amber beam that every engine without a design
+      of its own shares: the Light ion beam’s shape and length in amber, with no
+      build-up of its own. Plasma has to read as the opposite of ion’s steady
+      light on the same ship, next to ion stabilizers that answer at once: first
+      a build-up the player can see, then a release that looks immense.
+    </p>
+    <p>
+      The tension is between power and readability. The charge must read as
+      charging, without looking like thrust. The release must feel immense on a
+      Wasp or Scout, whose whole hull is shorter than a single ion beam, without
+      burying the ship, the ion light beside it or the trail that shows where it
+      has been.
+    </p>
+
+    <h3>Held fixed</h3>
+    <ul>
+      <li>
+        Plasma’s flight behaviour: the 0.6 second charge, sustained thrust, and
+        the reset on release or missing power.
+      </li>
+      <li>The engine body, the ship drawings and the ion plumes.</li>
+      <li>
+        The three canvas layers and their rules: World, persistent FX light with
+        its fade and bloom, and fresh LFX light redrawn each frame. Engine
+        plumes and other effects live only on FX or LFX; World holds what is
+        solid.
+      </li>
+    </ul>
+
+    <h3>Left open</h3>
+    <ul>
+      <li>What the charge looks like, and where on the ship it shows.</li>
+      <li>
+        The moment of release, and whether it differs from sustained thrust.
+      </li>
+      <li>
+        The sustained plume: shape, colour, size and what it leaves behind.
+      </li>
+      <li>Which layer carries each of these.</li>
+    </ul>
+
+    <h3>Outside this study</h3>
+    <ul>
+      <li>
+        Fission’s pulsed light, which borrows the same amber beam and needs its
+        own answer.
+      </li>
+      <li>
+        Whether plasma’s delay is worth flying, and whether a player can time a
+        burn by the charge; those are balance and play, not light.
+      </li>
+      <li>
+        How well the
+        <a href="/lab/flight-scene">Flight scene instrument</a>
+        serves a study. This is its first use on a design question of its own,
+        so part 02 shows its examples there and notes what the instrument could
+        not show. It shows one ship at a time and has no readout of engine
+        state. It drew only what the game draws; for this study it gained a way
+        for a study to paint its own light for an engine in place of the game’s.
+      </li>
+    </ul>
+
+    <aside class="stamp" aria-labelledby="stamp">
+      <h3 id="stamp">Question check · 11 November 2026</h3>
+      <p>
+        Two independent reviewers with no part in the framing tested this
+        section, the second without seeing the first result. The first tested it
+        as first written; the section was corrected and the second tested the
+        corrected text. The one claim the second run failed, the ship’s length
+        in pixels, was then replaced with a comparison that run had verified.
+        The section has not been tested a third time.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Metric</th>
+            <th scope="col">First</th>
+            <th scope="col">Corrected</th>
+            <th scope="col">Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">One subject</th>
+            <td>Fail</td>
+            <td>Pass</td>
+            <td>
+              One object, plasma’s light in flight; charge, release, plume and
+              layer are facets of it. The first text put the Flight scene
+              instrument on trial under its own heading; it is now one of three
+              named adjacent questions.
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Grounded</th>
+            <td>Fail</td>
+            <td>Fail</td>
+            <td>
+              Every fixed item exists and every open item can be shown and
+              judged by looking. The first text said nothing of the charge is
+              visible, called plasma far stronger than ion and left out that the
+              instrument draws only what the game draws. The corrected text
+              failed on one claim: a Wasp or Scout is not under 30 pixels long
+              in flight.
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Consequence</th>
+            <td>Pass</td>
+            <td>Pass</td>
+            <td>
+              A charging plasma engine shows a build-up on the ship, and its
+              thrust has a light of its own instead of the shared amber beam.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </aside>
+  </section>
+
+  <details id="held-thrown">
+    <summary>02.1 / A press must be answered at once</summary>
+    <section>
+      <p>
+        <strong>Retained as a finding, 11 November 2026.</strong>
+        The first example gave each phase its own layer: a bead of live light at
+        the nozzle that tightened as the charge filled, a wide flare thrown into
+        the persistent light at release, then a short flame. Its look for plasma
+        was not right and is not carried forward; the scene is removed.
+      </p>
+      <p>
+        What it showed is that how the engine looks is part of how it plays.
+        With the game’s light, the first 0.6 seconds of a press show nothing at
+        the ship, and the press feels unanswered. With any light at the nozzle
+        from the first frame, the same delay reads as an engine doing something.
+        The finding: a press gets an immediate visible answer at the ship, even
+        when what it starts arrives later. It applies to any part that charges,
+        an engine or a weapon, and it is the existing principle that every
+        control answers, applied to delayed parts.
+      </p>
+      <ul>
+        <li>
+          A light that grows through the charge also promises more power as it
+          loads. Whether plasma should make that promise is open.
+        </li>
+        <li>Whether the answer belongs on FX or LFX is open.</li>
+        <li>
+          A plume’s size follows delivered thrust, which falls as the ship nears
+          its cruise ceiling. Whether plasma’s light should shrink that way is
+          open.
+        </li>
+      </ul>
+    </section>
+  </details>
+  <details id="press-answer">
+    <summary>02.2 / Plasma’s live light needs its residue</summary>
+    <section>
+      <p>
+        <strong>Retained as a finding, 11 November 2026.</strong>
+        Three answers to the press were compared in one scene, each changing
+        only the charge: a spark of live light on the press, a small pilot flame
+        in the persistent light, and a steady live glow at the nozzle. None is
+        carried forward as plasma’s answer; the scene is removed.
+      </p>
+      <p>
+        The comparison showed how the two light layers work together for plasma.
+        Live light on LFX stays exactly on the ship, which is what an instant
+        answer needs. On its own it leaves nothing in the persistent light,
+        where the trail of the flight is held. The finding: what plasma draws
+        live on LFX, a spark, a glow or the body of its plume, also leaves a
+        residue in FX.
+      </p>
+      <ul>
+        <li>
+          This is a finding about plasma. Effects live only on FX or LFX, and
+          beyond that no rule assigns engines to layers: either of the two stays
+          open to any engine, and each engine’s own design decides. An engine
+          that touched no persistent light at all is conceivable.
+        </li>
+        <li>
+          The Flight scene instrument served to learn this and is not kept as
+          the record. The written finding is the record.
+        </li>
+      </ul>
+    </section>
+  </details>
+  <details id="light-language">
+    <summary>02.3 / The light language the answer has to speak</summary>
+    <section>
+      <p>
+        A comparison of three ways to split one plume between live light and
+        residue was removed. Its plain placeholder shapes did not belong to the
+        game, so it could not help answer anything. Before another example, the
+        study states the language plasma’s light has to be drawn in.
+      </p>
+      <h3>Established</h3>
+      <p>
+        From the <a href="/lab/studies/engine-effects">engine effects</a> and
+        <a href="/lab/studies/ion-engines-2026-10-31">ion engine</a>
+        studies and the effects specification:
+      </p>
+      <ul>
+        <li>
+          <strong>Hi-Fi Lo-Fi.</strong>
+          Sharp, sparkly, electric 1990s effects. Inexpensive rendering supplies
+          the character: hard strokes, small sprites, palette changes, arcs,
+          saturation, stepping, jaggedness and interference are wanted, not
+          smoothed away.
+        </li>
+        <li>
+          <strong>Ion’s plume lives on.</strong>
+          An ion engine stamps one complete luminous mark, with its core, halo
+          and transparent end, into the persistent light. What trails behind is
+          that mark fading. An attached shape with a separate faint residue was
+          rejected for ion. This is ion’s accepted identity, not a rule for
+          other engines.
+        </li>
+        <li>
+          <strong>Live light has one precedent.</strong>
+          The ion cannon and point defence draw their ray live on LFX for 80
+          milliseconds and put a dispersed treatment of it into FX.
+        </li>
+        <li>
+          <strong>Effects follow what the game delivers.</strong>
+          An effect’s activity follows delivered output and gameplay events, not
+          the state of a button.
+        </li>
+      </ul>
+      <h3>Open, for plasma</h3>
+      <ul>
+        <li>
+          Where the body of plasma’s light lives: stamped into the persistent
+          surface, or drawn live on the ship with its residue behind it.
+        </li>
+        <li>
+          The finding in 02.1 answers a press before any thrust is delivered.
+          Whether plasma’s charge counts as something the game delivers, or the
+          delivered-output rule needs an exception for it, is not settled.
+        </li>
+        <li>What plasma’s own mark is, distinct from ion’s.</li>
+      </ul>
+    </section>
+  </details>
+  <details id="mark-two-ways">
+    <summary>02.4 / Plasma’s body of light is stamped</summary>
+    <section>
+      <p>
+        <strong>Settled, 11 November 2026.</strong>
+        One proposed mark, a chain of hard shock diamonds, was drawn two ways on
+        the same flight: stamped into the persistent FX surface each tick, or
+        drawn live on LFX with a fainter copy stamped behind it. The body of
+        plasma’s light belongs stamped in the persistent surface, where it
+        blooms, adds up and becomes its own trail. Live light is kept for the
+        charge at the nozzle. The scene is removed.
+      </p>
+      <ul>
+        <li>
+          This settles the layer for plasma’s thrust. It does not accept the
+          diamond chain as plasma’s mark; that is the next question.
+        </li>
+        <li>
+          Both ways showed the charge, which assumes a charge is something the
+          game delivers. That is still not settled.
+        </li>
+      </ul>
+    </section>
+  </details>
+  <details id="mark">
+    <summary>02.5 / What is plasma’s mark? A churning fireball</summary>
+    <section>
+      <p>
+        With the layer settled, the open part is the mark itself: what the
+        engine stamps while it thrusts. This is the question the study set out
+        to answer. Three geometric marks, a chain of diamonds, thrown rings and
+        a rake of parallel strokes, were removed as far from the game. They
+        showed the direction: plasma’s mark is not a shape with edges but
+        something closer to an explosion held at the engine, a ball of
+        turbulent, violent flame.
+      </p>
+      <p>
+        <strong>Kept as a reference, 11 November 2026.</strong>
+        The example built that ball as a sprite 16 cells across, the way 1990s
+        demos built plasma: a few sine waves interfering inside a round falloff,
+        with a ragged edge, cut into a stepped palette from dark red through
+        amber to white. Eight frames are cached. Each tick one frame is stamped
+        into the persistent surface behind the nozzle, turned a quarter at a
+        time, and three hard sparks are flung from it. Through the charge a
+        small copy of the ball gathers live at the nozzle.
+      </p>
+      <h3>What it established</h3>
+      <ul>
+        <li>
+          <strong>The model works.</strong>
+          A cached image stamped into the FX layer each tick is the right way to
+          make this light. The stamp fading into the persistent surface reads as
+          flame, in the 1990s language the game wants.
+        </li>
+        <li>
+          <strong>This stamp is from another genre.</strong>
+          Its chunky cells are pixel art, and the game’s drawing is clean and
+          closer to vector work. The mark does not have to be vectors, but it
+          cannot look like a sprite from a different kind of game.
+        </li>
+        <li>
+          <strong>The pixel ball fails as live light.</strong>
+          Drawn on LFX for the charge it looks silly. The smooth bead of 02.1,
+          with gradients and fades, served better as the answer to the press.
+        </li>
+      </ul>
+      <h3>The stamps</h3>
+      <figure class="plates stamps">
+        <div>
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((frame) => (
+            <img
+              src={`/studies/plasma-light-2026-11-11/fireball-stamp-${frame}.png`}
+              alt={`Fireball stamp, frame ${frame} of 8`}
+              width="16"
+              height="16"
+            />
+          ))}
+        </div>
+        <figcaption>
+          The eight cached frames exactly as stamped, each 16 by 16 pixels,
+          shown enlarged six times. Exported from the example’s own code on 11
+          November 2026.
+        </figcaption>
+      </figure>
+      <h3>What they made in flight</h3>
+      <figure class="plates results">
+        <div>
+          <img
+            src="/studies/plasma-light-2026-11-11/fireball-charge.png"
+            alt="A Wasp with a small red crackling ball at its engine nozzle"
+            width="300"
+            height="300"
+          >
+          <img
+            src="/studies/plasma-light-2026-11-11/fireball-release.png"
+            alt="A Wasp with a large ball of blocky amber and white fire behind its engine"
+            width="300"
+            height="300"
+          >
+          <img
+            src="/studies/plasma-light-2026-11-11/fireball-thrust.png"
+            alt="A Wasp trailing a soft amber smear in steady thrust"
+            width="300"
+            height="300"
+          >
+          <img
+            src="/studies/plasma-light-2026-11-11/fireball-restart.png"
+            alt="A Wasp at speed with a ball of fire and a long fading tail"
+            width="300"
+            height="300"
+          >
+        </div>
+        <figcaption>
+          A Wasp with a Plasma engine on burn B1 at four times the follow zoom,
+          in the Flight scene instrument: the charge at 0.45 s, the release at
+          0.68 s, steady thrust at 1.1 s and a later release at speed at 5.9 s.
+          The ship, fade and bloom are the game’s; the ball is the stamps above.
+        </figcaption>
+      </figure>
+    </section>
+  </details>
+  <section>
+    <h2 id="luminous">02.6 / The same model, a luminous stamp</h2>
+    <p>
+      <strong>Direction carried forward, 11 November 2026.</strong>
+      The luminous stamp is close to what plasma should look like. It is the
+      direction for plasma’s mark; its details are not yet settled.
+    </p>
+    <p>
+      This example keeps the model of 02.5 and changes only what is stamped.
+      Each cached frame is smooth light, built as ion’s stamp is: gradients
+      drawn once into the cache, a white-hot core, an amber body and a
+      transparent edge. Five lobes drift round the centre between frames, so the
+      ball is lumpy and restless without a hard pixel. Each tick a frame is
+      stamped behind the nozzle, holding its frame and angle for three ticks so
+      the lumps show, a little longer along the exhaust than across it, with two
+      of the game’s own small sparks flung from it. The charge is the bead of
+      02.1 made smooth: it tightens and whitens live at the nozzle and leaves a
+      faint trace in the persistent light.
+    </p>
+    <p>
+      The scene keeps the 0.6 second charge it was made with. It opens just
+      after the first release. Drag Time back to 0.3 s for the charge and on to
+      1 s for steady thrust; 5 s and 11 s show later releases at speed. In the
+      menu, the Luminous ball switch shows the game’s light on the same flight.
+    </p>
+  </section>
+  <InstrumentBand><PlasmaLight026 client:visible /></InstrumentBand>
+  <section>
+    <ul>
+      <li>
+        The ball’s size follows delivered thrust, as every plume in the game
+        does, so it shrinks as the ship nears its cruise ceiling.
+      </li>
+      <li>
+        Sizes, colours, the number of lobes and frames and the flare’s duration
+        are working values.
+      </li>
+      <li>
+        The scene paints once a tick on a fixed burn. It shows how the light
+        looks, not how pressing feels.
+      </li>
+      <li>
+        Reference conditions: a Wasp with a Plasma main engine and ion
+        stabilizers, at rest at the run start, burn B1, the Follow view, no
+        randomness.
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2 id="charge-feel">02.7 / How long the charge is, and how it shows</h2>
+    <p>
+      <strong>Accepted, 11 November 2026.</strong>
+      Plasma charges for 0.2 seconds, and its charge shows at four times the
+      indicator’s size and twice its intensity. With the luminous ball of 02.6
+      these are plasma’s values from here on. Plasma stays a preview part: its
+      thrust, mass, speed contribution and energy draw have not been decided, so
+      this study does not sanction it for scored play. The scene below opens on
+      these values and stays adjustable.
+    </p>
+    <p>
+      The luminous ball is close; the hunch is that what remains is the charge:
+      how long it lasts and how strongly it shows. This example makes both
+      adjustable on the same flight. The stamp, the sparks and the release are
+      those of 02.6.
+    </p>
+    <p>
+      The delay was held fixed in 01 at 0.6 seconds. From here it is open. What
+      matters is how the charge and release feel, not exact manoeuvrability, so
+      a delay anywhere from about 0.1 to 0.9 seconds is acceptable if it feels
+      right.
+    </p>
+    <ul>
+      <li>
+        <strong>Charge delay.</strong>
+        How long plasma charges before it thrusts, from 0.05 to 1.2 seconds.
+        This changes the flight itself: the ship leaves later or sooner.
+      </li>
+      <li>
+        <strong>Indicator size.</strong>
+        The scale of the bead that shows the charge at the nozzle.
+      </li>
+      <li>
+        <strong>Indicator intensity.</strong>
+        The strength of the bead’s light, both live on the ship and as its faint
+        trace in the persistent light. At zero the charge is dark, as it is in
+        the game today.
+      </li>
+    </ul>
+    <p>
+      The three sliders are in the menu in the top-right corner, with the
+      current values written under them. The scene opens at the first press;
+      press Play to watch the charge and release, and again after a change. The
+      burn presses again at 5 s and 11 s.
+    </p>
+  </section>
+  <InstrumentBand><PlasmaLight027 client:visible /></InstrumentBand>
+  <section>
+    <ul>
+      <li>
+        The sliders apply to this scene’s flight only; they do not change the
+        game.
+      </li>
+      <li>
+        The scene plays a fixed burn, so it shows how a delay looks. How it
+        feels under the hand needs the game.
+      </li>
+      <li>
+        Reference conditions: a Wasp with a Plasma main engine and ion
+        stabilizers, at rest at the run start, burn B1, the Follow view, no
+        randomness.
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h3 id="accepted">The accepted variant</h3>
+    <figure class="plates results">
+      <div>
+        <img
+          src="/studies/plasma-light-2026-11-11/accepted-charge.png"
+          alt="A Wasp with a wide soft amber glow around its engine and a white point at the nozzle"
+          width="300"
+          height="300"
+        >
+        <img
+          src="/studies/plasma-light-2026-11-11/accepted-release.png"
+          alt="A Wasp with lumpy amber fire bursting behind its engine"
+          width="300"
+          height="300"
+        >
+        <img
+          src="/studies/plasma-light-2026-11-11/accepted-thrust.png"
+          alt="A Wasp in steady thrust trailing a lumpy amber flame"
+          width="300"
+          height="300"
+        >
+        <img
+          src="/studies/plasma-light-2026-11-11/accepted-restart.png"
+          alt="A Wasp at speed just after a release, with a ball of flame and a fading tail"
+          width="300"
+          height="300"
+        >
+      </div>
+      <figcaption>
+        The accepted variant at four times the follow zoom: the charge at 0.1 s,
+        the release at 0.25 s, steady thrust at 0.8 s and a later release at
+        speed at 5.4 s. Captured 11 November 2026.
+      </figcaption>
+    </figure>
+    <h3>What exactly was accepted</h3>
+    <ul>
+      <li>
+        <strong>Charge:</strong>
+        0.2 seconds from press to thrust.
+      </li>
+      <li>
+        <strong>Charge light:</strong>
+        a smooth bead at the nozzle, white-hot centre through amber to a
+        transparent edge, 32 world units in radius at the press and tightening
+        to 16 as the charge fills while its centre whitens. It is drawn live on
+        LFX at full strength and leaves a trace in FX at 0.4 strength. The
+        slider’s 2× is capped at full strength for the live bead, so 2× and 1×
+        differ only in the trace.
+      </li>
+      <li>
+        <strong>Thrust light:</strong>
+        the luminous ball of 02.6, eight cached frames of five drifting lobes
+        round a hot core, 26 units across at full thrust and 1.3 times as long
+        as wide, stamped into FX each tick, holding a frame and its angle for
+        three ticks, with two small sparks a tick.
+      </li>
+      <li>
+        <strong>Release:</strong>
+        the ball starts 2.2 times its size and settles over 0.22 seconds.
+      </li>
+      <li>
+        <strong>Seen on:</strong>
+        a Wasp with one Plasma engine, burn B1, no randomness. Other ships and
+        several plasma engines together were not looked at.
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2 id="readiness">
+      03 / The parts exist; the charge has no way into the light
+    </h2>
+    <p>
+      The accepted light can be built from what the game has. The persistent
+      surface, cached stamps, the live layer and the plume’s place in the frame
+      are all there. One thing is missing: the game’s effects are told how hard
+      an engine is thrusting, not that it is charging, so a charging engine
+      cannot yet be drawn.
+    </p>
+    <h3>Reusable as it stands</h3>
+    <ul>
+      <li>
+        The persistent FX surface with its fade, bloom and budget, and the way
+        ion caches a complete luminous stamp once and draws it each frame.
+      </li>
+      <li>
+        The engine plume already takes a painter per outlet, and the frame
+        already has a live pass on LFX, used by the ion cannon and point
+        defence.
+      </li>
+      <li>
+        The Flight scene instrument and this study’s light, as the reference to
+        compare production against.
+      </li>
+    </ul>
+    <h3>Needs adapting</h3>
+    <ul>
+      <li>
+        <strong>Engine state for effects.</strong>
+        A plume outlet exists only while output is above zero. The plume needs
+        each engine’s charge progress and the time since its release, which the
+        simulation holds but passes to no effect.
+      </li>
+      <li>
+        <strong>A plasma style.</strong>
+        Plasma, like Fission, falls to the shared amber beam. It needs its own
+        style, its own multi-frame stamp cache and a painter that places the
+        ball behind the nozzle.
+      </li>
+      <li>
+        <strong>Engine light on LFX.</strong>
+        The live pass draws weapons only. The charge bead has to be added to it,
+        as a cached stamp: the study drew its gradient every frame, which the
+        effects contract does not allow in play.
+      </li>
+      <li>
+        <strong>The effects contract.</strong>
+        It says effects follow delivered output and not button state. A charge
+        is a state of the engine, not of the button, but the contract has to say
+        so.
+      </li>
+    </ul>
+    <h3>Depends on</h3>
+    <ul>
+      <li>
+        The open blocker on engine light: light is stamped once per drawn frame
+        with nothing filling the path between, so a fast ship leaves separate
+        stamps. A 26-unit ball hides this better than ion’s thin beam but is
+        subject to it.
+      </li>
+    </ul>
+    <h3>Risks</h3>
+    <ul>
+      <li>
+        <strong>Balance.</strong>
+        A shorter charge makes plasma easier to fly while its thrust, mass,
+        speed contribution and energy draw stay as they were. Those are
+        undecided, which is why plasma stays a preview part.
+      </li>
+      <li>
+        <strong>Size.</strong>
+        The bead starts at twice the Wasp’s length across. On a Scout’s two side
+        engines or a Corvette’s five mounts the beads and balls will overlap,
+        and nobody has looked.
+      </li>
+      <li>
+        <strong>Cost.</strong>
+        One large stamp per plasma engine per tick is within the scene budget on
+        paper. It has not been measured on the mixed-effects bench.
+      </li>
+      <li>
+        <strong>Evidence.</strong>
+        The look was judged on a fixed burn in the instrument, painting once a
+        tick. The feel of a 0.2 second delay under the hand has not been tried
+        in the game.
+      </li>
+    </ul>
+    <h3>Unresolved</h3>
+    <ul>
+      <li>
+        Whether plasma’s ball should shrink as the ship nears its cruise
+        ceiling, as every plume does today.
+      </li>
+      <li>
+        Fission keeps the shared amber beam and still needs its own study.
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2 id="scope">04 / Four slices, from a number to the light in play</h2>
+    <p>
+      <strong
+        >No change to the experience principles in <code>docs/design.md</code>
+        is proposed.</strong
+      >
+      Answering a press at once is the existing principle that every control
+      answers. The effects specification changes instead, in slice 2.
+    </p>
+    <h3>1 / Plasma charges for 0.2 seconds — small</h3>
+    <ul>
+      <li>
+        <strong>Delivered 11 November 2026</strong>
+        as a working change, not yet committed: the part’s charge length, the
+        Hangar’s description built from it, the charge test following the part’s
+        value, and the parts specification.
+      </li>
+      <li>
+        Change the part’s charge length, with the tests, Lab starters and the
+        parts specification that state it.
+      </li>
+      <li>
+        Check: a held plasma engine first thrusts after the new charge, and
+        release or missing power still resets it.
+      </li>
+    </ul>
+    <h3>2 / Effects can see an engine charging — small to medium</h3>
+    <ul>
+      <li>
+        <strong>Delivered 11 November 2026</strong>
+        as a working change, not yet committed: engine charge and thrust time
+        reach the plume without painting charging outlets.
+      </li>
+      <li>
+        The plume receives each engine’s charge progress and time since release,
+        and keeps an outlet for a charging engine.
+      </li>
+      <li>
+        The effects specification states that an engine’s charge is something
+        the game delivers, so its light may show before thrust.
+      </li>
+      <li>
+        Check: a charging engine has an outlet with rising progress and no
+        output; ion plumes are pixel-for-pixel what they were.
+      </li>
+    </ul>
+    <h3>3 / Plasma’s thrust light — medium, after 2</h3>
+    <ul>
+      <li>
+        <strong>Delivered 11 November 2026</strong>
+        as a working change, not yet committed: the shared plasma thrust plume
+        and a mixed ion and plasma performance workload.
+      </li>
+      <li>
+        A plasma plume style with its cached frames and painter, in the shared
+        effects, used wherever a plasma engine is mounted.
+      </li>
+      <li>
+        Check for fidelity: in the Flight scene instrument, the game’s own light
+        matches this study’s light on the reference flight during thrust. Check
+        for cost on the mixed-effects bench.
+      </li>
+    </ul>
+    <h3>4 / Plasma’s charge light — medium, after 2</h3>
+    <ul>
+      <li>
+        The bead as a cached stamp, drawn in the live pass with its trace in the
+        persistent surface; the render specification’s LFX page gains engine
+        light.
+      </li>
+      <li>
+        Check for fidelity as in slice 3, during the charge. Check that pause
+        redraws the bead without adding brightness.
+      </li>
+    </ul>
+    <h3>Order and limits</h3>
+    <ul>
+      <li>
+        Slice 1 can ship alone. Slices 3 and 4 are independent of each other.
+      </li>
+      <li>
+        Provisional: the bead’s and ball’s exact sizes on ships other than the
+        Wasp, and whether the ball shrinks near the cruise ceiling.
+      </li>
+      <li>
+        Outside this scope: moving plasma into scored play. That waits for a
+        decision on its thrust, mass, speed contribution and energy draw.
+      </li>
+      <li>This scope sizes the work. It does not start it.</li>
+    </ul>
+  </section>
+</StudyLayout>
+
+<style>
+.plates {
+  margin: var(--spacing-lg) 0;
+}
+.plates div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--color-void);
+  border: 1px solid var(--color-border);
+  width: fit-content;
+}
+.plates img {
+  display: block;
+}
+/* The stamps are tiny; enlarge them without smoothing their cells. */
+.stamps img {
+  width: 96px;
+  height: 96px;
+  image-rendering: pixelated;
+}
+.results img {
+  width: 240px;
+  height: 240px;
+}
+.plates figcaption {
+  max-width: 72ch;
+  margin-top: var(--spacing-sm);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+}
+summary {
+  cursor: pointer;
+}
+/* The prose column's width; the stamp's own type is smaller. */
+.stamp {
+  box-sizing: border-box;
+  max-width: 41rem;
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+}
+.stamp table {
+  border-collapse: collapse;
+}
+.stamp th,
+.stamp td {
+  padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) 0;
+  text-align: left;
+  vertical-align: top;
+}
+.stamp td:not(:last-child) {
+  white-space: nowrap;
+}
+.stamp tbody th {
+  white-space: nowrap;
+  font-weight: normal;
+  color: var(--color-text);
+}
+</style>

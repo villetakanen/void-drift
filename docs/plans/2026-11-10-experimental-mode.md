@@ -1,5 +1,9 @@
 # Experimental mode and the active setup
 
+> Authorized delivery now follows [Active ship and Experimental delivery](2026-11-10-active-ship-delivery.md).
+> This earlier draft includes superseded ranking, query-selection and saved-score
+> assumptions. The current feature specs and the delivery plan take precedence.
+
 Deliverable 3 of [0.6.0 "The ion storm"](2026-11-08-ion-storm-0-6-0.md), scoped
 in conversation on 10 November 2026. Contract:
 [Experimental mode spec](../specs/game/experimental/spec.md), with the

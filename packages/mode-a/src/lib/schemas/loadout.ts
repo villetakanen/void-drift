@@ -18,6 +18,7 @@ import {
 import { ShipProfileIdSchema } from "./ship-profile";
 
 export const EngineIdSchema = z.enum(["ion", "heavy-ion", "fusion", "plasma"]);
+export const ReleaseClassSchema = z.enum(["scored", "preview"]);
 export const PartIdSchema = z.enum([
   "light-ion-cannon",
   "ion-point-defence",
@@ -35,6 +36,7 @@ export const PartIdSchema = z.enum([
 export type PartId = z.infer<typeof PartIdSchema>;
 export const PartSchema = z.object({
   id: PartIdSchema,
+  releaseClass: ReleaseClassSchema,
   description: z.string().max(220).default(""),
   capacity: z.number().nonnegative().default(0),
   name: z.string(),
@@ -74,6 +76,7 @@ export function slotAccepts(type: SlotType, category: "E" | "G" | "U") {
   );
 }
 export const ChassisSchema = z.object({
+  releaseClass: ReleaseClassSchema,
   mass: z.number().positive(),
   baseSpeed: z.number().finite().positive(),
   hull: z.number().int().positive(),
@@ -86,8 +89,15 @@ export const ChassisSchema = z.object({
   width: z.number().positive(),
 });
 export const CHASSIS = {
-  fiddler: ChassisSchema.parse({ ...FIDDLER, hull: 5, aft: 2, baseSpeed: 280 }),
+  fiddler: ChassisSchema.parse({
+    ...FIDDLER,
+    releaseClass: "preview",
+    hull: 5,
+    aft: 2,
+    baseSpeed: 280,
+  }),
   wasp: ChassisSchema.parse({
+    releaseClass: "scored",
     mass: WASP.mass,
     baseSpeed: 420,
     hull: 2,
@@ -100,6 +110,7 @@ export const CHASSIS = {
     width: WASP.width,
   }),
   scout: ChassisSchema.parse({
+    releaseClass: "scored",
     mass: SCOUT.mass,
     baseSpeed: 370,
     hull: 1,
@@ -112,6 +123,7 @@ export const CHASSIS = {
     width: SCOUT.width,
   }),
   fighter: ChassisSchema.parse({
+    releaseClass: "scored",
     mass: 95,
     baseSpeed: 330,
     hull: 2,
@@ -124,6 +136,7 @@ export const CHASSIS = {
     width: FIGHTER.width,
   }),
   corvette: ChassisSchema.parse({
+    releaseClass: "preview",
     mass: 140,
     baseSpeed: 240,
     hull: 3,
@@ -138,6 +151,7 @@ export const CHASSIS = {
 export const PARTS = {
   "light-ion-cannon": PartSchema.parse({
     id: "light-ion-cannon",
+    releaseClass: "scored",
     name: "Light Ion Cannon",
     description:
       "12–48 damage/s · 3 shots/s · 200-unit reach · 0.2p/shot (0.6p/s sustained). Ship-width forward acquisition; offset cannons may miss.",
@@ -149,6 +163,7 @@ export const PARTS = {
   }),
   "ion-point-defence": PartSchema.parse({
     id: "ion-point-defence",
+    releaseClass: "scored",
     name: "Ion Point Defence",
     description:
       "8–24 damage/s · 3 shots/s · 100-unit reach · 0.1p/shot (0.3p/s sustained). Turns at 180°/s towards the closest target within 200 units.",
@@ -160,6 +175,7 @@ export const PARTS = {
   }),
   rail: PartSchema.parse({
     id: "rail",
+    releaseClass: "preview",
     name: "Rail gun",
     description:
       "Automatically fires along the slot when a target approaches its firing line. Heavy hits and recoil; shots can miss. Active in Test flight; fires only while energy is at least 10% of capacity.",
@@ -171,6 +187,7 @@ export const PARTS = {
   }),
   laser: PartSchema.parse({
     id: "laser",
+    releaseClass: "preview",
     name: "Laser",
     description:
       "Short-range rotating pulse laser. Prioritizes incoming debris, then derelicts. Active in Test flight; fires only while energy is at least 10% of capacity.",
@@ -182,6 +199,7 @@ export const PARTS = {
   }),
   battery: PartSchema.parse({
     id: "battery",
+    releaseClass: "scored",
     name: "Potential Well",
     description:
       "A bank of well containment units stores potential in subspace, ready to supply the ship with matter and energy as needed.",
@@ -194,6 +212,7 @@ export const PARTS = {
   }),
   "heavy-well": PartSchema.parse({
     id: "heavy-well",
+    releaseClass: "scored",
     name: "Heavy Potential Well",
     description:
       "A bank of well containment units stores potential in subspace, ready to supply the ship with matter and energy as needed.",
@@ -206,6 +225,7 @@ export const PARTS = {
   }),
   coil: PartSchema.parse({
     id: "coil",
+    releaseClass: "preview",
     name: "Loading coil",
     category: "U",
     mass: 10,
@@ -215,6 +235,7 @@ export const PARTS = {
   }),
   "gravity-coil": PartSchema.parse({
     id: "gravity-coil",
+    releaseClass: "scored",
     name: "Gravity coil",
     description:
       "Generates 1 energy/s inside a planet’s gravity well, up to storage capacity.",
@@ -227,6 +248,7 @@ export const PARTS = {
   }),
   ion: PartSchema.parse({
     id: "ion",
+    releaseClass: "scored",
     name: "Light ion",
     description: "+8 u/s to ship cruise ceiling.",
     category: "E",
@@ -239,6 +261,7 @@ export const PARTS = {
 
   "heavy-ion": PartSchema.parse({
     id: "heavy-ion",
+    releaseClass: "scored",
     name: "Heavy ion",
     description: "+11 u/s to ship cruise ceiling.",
     category: "E",
@@ -254,6 +277,7 @@ export const PARTS = {
   }),
   fusion: PartSchema.parse({
     id: "fusion",
+    releaseClass: "preview",
     name: "Fission",
     description: "+17 u/s to ship cruise ceiling.",
     category: "E",
@@ -267,6 +291,7 @@ export const PARTS = {
   }),
   plasma: PartSchema.parse({
     id: "plasma",
+    releaseClass: "preview",
     name: "Plasma",
     description: "+9 u/s to ship cruise ceiling.",
     category: "E",
@@ -276,7 +301,7 @@ export const PARTS = {
     limit: 700,
     draw: 5,
     response: "delayed",
-    chargeSeconds: 0.6,
+    chargeSeconds: 0.2,
   }),
 };
 export const LoadoutSchema = z
@@ -349,12 +374,14 @@ export function starterLoadout(chassis: Loadout["chassis"]): Loadout {
 }
 export const BuildStoreSchema = z
   .object({
+    activeChassis: ShipProfileIdSchema.default("wasp"),
     fiddler: LoadoutSchema.default(() => starterLoadout("fiddler")),
     wasp: LoadoutSchema.default(() => starterLoadout("wasp")),
     scout: LoadoutSchema,
     fighter: LoadoutSchema,
     corvette: LoadoutSchema,
   })
+  .strict()
   .refine(
     (builds) =>
       builds.fiddler.chassis === "fiddler" &&
@@ -372,6 +399,9 @@ export function defaultBuilds() {
     corvette: defaultLoadout("corvette"),
   };
 }
+export function defaultBuildStore(): z.infer<typeof BuildStoreSchema> {
+  return { ...defaultBuilds(), activeChassis: "wasp" as const };
+}
 /** Every fitted part, one entry per mount: the Wasp has one side mount, other chassis two. */
 export function fittedParts(build: Loadout): PartId[] {
   const ids =
@@ -379,6 +409,13 @@ export function fittedParts(build: Loadout): PartId[] {
       ? [build.side, ...build.hull]
       : [build.side, build.side, ...build.hull, ...build.aft];
   return ids.filter((id): id is PartId => id !== null);
+}
+/** Whether this complete fitting uses only catalog entries eligible for scored play. */
+export function isScoredEligible(build: Loadout): boolean {
+  return (
+    CHASSIS[build.chassis].releaseClass === "scored" &&
+    fittedParts(build).every((id) => PARTS[id].releaseClass === "scored")
+  );
 }
 export function buildStats(build: Loadout, parts: typeof PARTS = PARTS) {
   const chassis = CHASSIS[build.chassis];

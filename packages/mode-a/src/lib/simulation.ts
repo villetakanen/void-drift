@@ -1,4 +1,10 @@
-import type { GameObject, MassWell, Planet, Star } from "@void-drift/core";
+import type {
+  GameObject,
+  MassWell,
+  Planet,
+  PlumeEmitter,
+  Star,
+} from "@void-drift/core";
 import {
   CONFIG,
   ENGINE_CUTOFF,
@@ -150,6 +156,11 @@ export class Simulation {
     stabilizers: [0, 0],
   };
   readonly angularMotion = { velocity: 0 };
+  /**
+   * The part definitions the engines run on: the game's own. A Lab instrument
+   * may stage tuned copies here before a flight; play never does.
+   */
+  parts: typeof PARTS = PARTS;
   private readonly buildEmitters;
   private readonly engineTimers: Record<string, number> = {};
   ticks = 0;
@@ -209,6 +220,14 @@ export class Simulation {
         this.settings.mode === "derelicts" ? ENCOUNTER : SURVIVAL_ENCOUNTER,
       );
   }
+  /** The plume emitters in mount order, with this tick's output; read-only. */
+  get emitters(): readonly Readonly<PlumeEmitter>[] {
+    return this.buildEmitters;
+  }
+  /** Seconds each main engine has been held, by mount key; read-only. */
+  get engineSeconds(): Readonly<Record<string, number>> {
+    return this.engineTimers;
+  }
   get engineFeedback() {
     const build = this.settings.loadout;
     if (!build) return "";
@@ -219,7 +238,7 @@ export class Simulation {
           ? build.aft[Number(key.slice(4))]
           : build.side;
         if (!id) return "";
-        const part = PARTS[id];
+        const part = this.parts[id];
         if (part.response === "delayed" && time < part.chargeSeconds)
           return `${key}: charging ${Math.floor((time / part.chargeSeconds) * 100)}%`;
         if (part.response === "pulse")
@@ -317,6 +336,7 @@ export class Simulation {
           engineFraction,
           this.angularMotion,
           this.settings.ion,
+          this.parts,
         );
       }
       delivered += updateShip(
@@ -383,8 +403,41 @@ export class Simulation {
               }),
               ...this.engineOutput.stabilizers,
             ];
-      for (const [index, emitter] of this.buildEmitters.entries())
+      const loadout = this.settings.loadout;
+      const engines = [
+        { key: "left", part: loadout.side },
+        ...(loadout.chassis === "wasp"
+          ? []
+          : [
+              { key: "right", part: loadout.side },
+              ...loadout.aft.flatMap((part, index) =>
+                part && PARTS[part].category === "E"
+                  ? [{ key: `aft-${index}`, part }]
+                  : [],
+              ),
+            ]),
+      ];
+      for (const [index, emitter] of this.buildEmitters.entries()) {
         emitter.output = outputs[index];
+        const engine = engines[index];
+        const part = engine && this.parts[engine.part];
+        const held = engine ? (this.engineTimers[engine.key] ?? 0) : 0;
+        const delayed = part?.response === "delayed" && part.chargeSeconds > 0;
+        emitter.charge =
+          delayed &&
+          held > 0 &&
+          (emitter.output > 0 || held <= part.chargeSeconds + 1e-9)
+            ? Math.min(1, held / part.chargeSeconds)
+            : undefined;
+        emitter.thrustSeconds =
+          engine && held > 0
+            ? delayed
+              ? held <= part.chargeSeconds + 1e-9
+                ? 0
+                : held - part.chargeSeconds
+              : held
+            : 0;
+      }
       this.plume.stepMounted(STEP, this.ship, this.buildEmitters);
     } else
       this.plume.step(

@@ -1,7 +1,12 @@
 # FX layer
 
 FX holds accumulated light history in a persistent, full-stage-resolution
-surface. It defaults to CSS `screen`, which keeps black neutral over World.
+surface. It defaults to CSS `screen` with the shared static seeded Turbulent
+bloom presentation (12 CSS px glow, 16 CSS px distortion, 90% strength). Screen
+keeps black neutral over World; bloom preserves the source and screens an
+attenuated displaced and blurred copy. The browser filter changes presentation
+only; it does not alter the held canvas image, source marks or presentation
+clock. An explicit layer filter override, including `none`, replaces the default.
 For each elapsed timestep the surface first fades the whole held image with a
 translucent black source-over fill, then adds fresh stamps. Its
 current half-life is 0.1 seconds. Fading and emission happen only when game time
@@ -30,3 +35,6 @@ history cleanup.
 - Fresh source stamps have priority over secondary decoration under the shared
   scene budget.
 - The FX CSS blend remains screen by default in play and Lab.
+- Production play, the Render Model workbench and the render performance bench
+  use the same reusable Turbulent bloom filter definition and defaults. The
+  workbench may tune its values or select another filter for comparison.

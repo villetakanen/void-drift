@@ -159,7 +159,13 @@ test("title menu order and all secondary destinations return to title", async ({
   }
   for (const name of [/HANGAR/, /TOP SCORES/, /SETTINGS/, /CREDITS/]) {
     await page.getByRole("link", { name }).click();
-    await page.getByRole("link", { name: /^Return to title screen$/i }).click();
+    await page
+      .getByRole("link", {
+        name:
+          name.source === "HANGAR" ? "Void Drift" : /^Return to title screen$/i,
+        exact: true,
+      })
+      .click();
     await expect(
       page.getByRole("button", { name: "PRESS START" }),
     ).toBeFocused();

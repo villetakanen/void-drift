@@ -1,21 +1,13 @@
 <script lang="ts">
 import { type FxPass, FxSurface } from "@void-drift/core";
-import {
-  BUILD_FLIGHT_SCALE,
-  buildCollisionRadius,
-  drawBuild,
-  drawIonBeamMark,
-  FLIGHT_LAYERS,
-  type FlightLayerId,
-  ION_CANNON,
-} from "@void-drift/mode-a";
+import { FLIGHT_LAYERS, type FlightLayerId } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import FlightLayers from "../FlightLayers.svelte";
+import { TURBULENT_BLOOM_DEFAULTS } from "../turbulent-bloom";
 import {
   advanceRenderModelHeading,
   createRenderModelFixture,
   isIonBeamPulseActive,
-  RENDER_MODEL_CENTER,
 } from "./render-model-fixture";
 
 const WIDTH = 1920;
@@ -30,7 +22,8 @@ type FilterKind =
   | "noise"
   | "offset"
   | "spread"
-  | "expand";
+  | "expand"
+  | "turbulent-bloom";
 const FILTERS: readonly { label: string; value: FilterKind }[] = [
   { label: "None", value: "none" },
   { label: "Blur", value: "blur" },
@@ -39,6 +32,7 @@ const FILTERS: readonly { label: string; value: FilterKind }[] = [
   { label: "Offset", value: "offset" },
   { label: "Offset spread", value: "spread" },
   { label: "Expand", value: "expand" },
+  { label: "Turbulent bloom", value: "turbulent-bloom" },
 ];
 const VECTOR_FILTERS: readonly FilterKind[] = [
   "noise",
@@ -65,7 +59,6 @@ const COLORS = {
   lfx: ["#b8ff52", "#ff8d3a"],
 } satisfies Record<FlightLayerId, readonly [string, string]>;
 const fixture = createRenderModelFixture();
-const artworkBuild = fixture.build;
 
 let { label = "Render model" }: { label?: string } = $props();
 let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
@@ -80,13 +73,18 @@ let visible = $state<Record<FlightLayerId, boolean>>({
   lfx: true,
 });
 let sample = $state<"artwork" | "circles">("artwork");
-let fxFilter = $state<FilterKind>("blur");
+let fxFilter = $state<FilterKind>("turbulent-bloom");
 let lfxFilter = $state<FilterKind>("none");
 let fxAmount = $state(2);
 let lfxAmount = $state(10);
-let filters = $derived<Record<FlightLayerId, string>>({
+let bloomGlowSize = $state<number>(TURBULENT_BLOOM_DEFAULTS.glowSize);
+let bloomDistortion = $state<number>(TURBULENT_BLOOM_DEFAULTS.distortion);
+let bloomStrength = $state<number>(TURBULENT_BLOOM_DEFAULTS.strength);
+let filters = $derived<Partial<Record<FlightLayerId, string>>>({
   world: "none",
-  fx: filterValue(fxFilter, fxAmount, "fx"),
+  ...(fxFilter === "turbulent-bloom"
+    ? {}
+    : { fx: filterValue(fxFilter, fxAmount, "fx") }),
   lfx: filterValue(lfxFilter, lfxAmount, "lfx"),
 });
 let running = $state(false);
@@ -179,20 +177,7 @@ function stampFx(ctx: CanvasRenderingContext2D, pass: FxPass) {
   zoomSample(ctx);
   ctx.globalCompositeOperation = "lighter";
   ctx.globalAlpha = pass.opacity;
-  fixture.stamp(ctx, pass);
-  if (ionPulse) {
-    const sweep = buildCollisionRadius(artworkBuild) + 8;
-    for (const y of [-sweep, 0, sweep]) {
-      const x = RENDER_MODEL_CENTER.x - ION_CANNON.range / 2;
-      const py = RENDER_MODEL_CENTER.y + y;
-      if (!pass.visible(x, py, ION_CANNON.range) || !pass.budget.take(true))
-        continue;
-      ctx.save();
-      ctx.translate(x, py);
-      drawIonBeamMark(ctx, ION_CANNON.range, ION_CANNON.range, true);
-      ctx.restore();
-    }
-  }
+  fixture.stampFx(ctx, pass, ionPulse, SAMPLE_SCALE);
   ctx.restore();
 }
 function zoomSample(ctx: CanvasRenderingContext2D) {
@@ -204,31 +189,13 @@ function drawArtworkWorld(world: CanvasRenderingContext2D) {
   world.save();
   world.globalCompositeOperation = "source-over";
   zoomSample(world);
-  drawBuild(
-    world,
-    artworkBuild,
-    RENDER_MODEL_CENTER.x,
-    RENDER_MODEL_CENTER.y,
-    heading,
-    BUILD_FLIGHT_SCALE,
-  );
+  fixture.drawWorld(world, heading);
   world.restore();
 }
 function drawArtworkLfx(lfx: CanvasRenderingContext2D) {
   lfx.save();
   zoomSample(lfx);
-  lfx.translate(RENDER_MODEL_CENTER.x, RENDER_MODEL_CENTER.y);
-  const sweep = buildCollisionRadius(artworkBuild) + 8;
-  if (!ionPulse) {
-    lfx.restore();
-    return;
-  }
-  for (const y of [-sweep, 0, sweep]) {
-    lfx.save();
-    lfx.translate(-ION_CANNON.range / 2, y);
-    drawIonBeamMark(lfx, ION_CANNON.range, ION_CANNON.range, false);
-    lfx.restore();
-  }
+  fixture.drawLfx(lfx, ionPulse);
   lfx.restore();
 }
 function updatePlumes(dt: number) {
@@ -401,6 +368,11 @@ onMount(() => {
         bind:canvases
         {blends}
         {filters}
+        bloom={{
+          glowSize: bloomGlowSize,
+          distortion: bloomDistortion,
+          strength: bloomStrength,
+        }}
         visibility={visible}
         label="Rotating Wasp across World, FX and LFX"
       />
@@ -464,33 +436,84 @@ onMount(() => {
                     event.currentTarget.value,
                   )}
               >
-                {#each FILTERS as filter (filter.value)}
+                {#each FILTERS.filter(
+                  (filter) =>
+                    layer.id === "fx" || filter.value !== "turbulent-bloom",
+                ) as filter (filter.value)}
                   <option value={filter.value}>{filter.label}</option>
                 {/each}
               </select>
             </label>
             {#if selectedFilter !== "none"}
-              <label class="blend"
-                >{filterAmountLabel(selectedFilter)}
-                <input
-                  type="range"
-                  min="1"
-                  max="24"
-                  step="1"
-                  value={amount}
-                  aria-label={`${layer.name} filter amount`}
-                  oninput={(event) =>
-                    setFilterAmount(
-                      layer.id as "fx" | "lfx",
-                      event.currentTarget.value,
-                    )}
-                >
-                <output
-                  >{selectedFilter === "brightness"
-                    ? `${(1 + amount * 0.04).toFixed(2)}×`
-                    : `${amount} px`}</output
-                >
-              </label>
+              {#if layer.id === "fx" && selectedFilter === "turbulent-bloom"}
+                <label class="blend">
+                  Glow size · CSS px
+                  <input
+                    type="range"
+                    min="1"
+                    max="12"
+                    step="1"
+                    value={bloomGlowSize}
+                    aria-label="FX glow size"
+                    oninput={(event) => {
+                      bloomGlowSize = Number(event.currentTarget.value);
+                    }}
+                  >
+                  <output>{bloomGlowSize} px</output>
+                </label>
+                <label class="blend">
+                  Distortion amount · CSS px
+                  <input
+                    type="range"
+                    min="0"
+                    max="16"
+                    step="1"
+                    value={bloomDistortion}
+                    aria-label="FX distortion amount"
+                    oninput={(event) => {
+                      bloomDistortion = Number(event.currentTarget.value);
+                    }}
+                  >
+                  <output>{bloomDistortion} px</output>
+                </label>
+                <label class="blend">
+                  Glow strength · %
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="5"
+                    value={bloomStrength}
+                    aria-label="FX glow strength"
+                    oninput={(event) => {
+                      bloomStrength = Number(event.currentTarget.value);
+                    }}
+                  >
+                  <output>{bloomStrength}%</output>
+                </label>
+              {:else}
+                <label class="blend"
+                  >{filterAmountLabel(selectedFilter)}
+                  <input
+                    type="range"
+                    min="1"
+                    max="24"
+                    step="1"
+                    value={amount}
+                    aria-label={`${layer.name} filter amount`}
+                    oninput={(event) =>
+                      setFilterAmount(
+                        layer.id as "fx" | "lfx",
+                        event.currentTarget.value,
+                      )}
+                  >
+                  <output
+                    >{selectedFilter === "brightness"
+                      ? `${(1 + amount * 0.04).toFixed(2)}×`
+                      : `${amount} px`}</output
+                  >
+                </label>
+              {/if}
             {/if}
           {/if}
           <fieldset class="swatches">

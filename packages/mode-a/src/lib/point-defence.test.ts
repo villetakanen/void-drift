@@ -199,9 +199,10 @@ describe("Ion Point Defence equipment", () => {
   });
   it("parses existing saves unchanged and round-trips a saved turret fitting", () => {
     const builds = defaultBuilds();
-    expect(BuildStoreSchema.parse(JSON.parse(JSON.stringify(builds)))).toEqual(
-      builds,
-    );
+    expect(BuildStoreSchema.parse(JSON.parse(JSON.stringify(builds)))).toEqual({
+      ...builds,
+      activeChassis: "wasp",
+    });
     builds.fighter.hull[1] = PART;
     builds.corvette.aft[1] = PART;
     const restored = BuildStoreSchema.parse(JSON.parse(JSON.stringify(builds)));

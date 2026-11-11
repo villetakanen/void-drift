@@ -5,6 +5,7 @@ import {
   competitionFlightResult,
   waitForFlightPhase,
 } from "../helpers/competition-flight";
+import { chooseShip, enablePreviewContent } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 
 const firestore = "http://127.0.0.1:8080";
@@ -25,17 +26,21 @@ test.beforeAll(async ({ request }) => {
   expect(response.ok(), "reset demo Firestore before competition").toBe(true);
 });
 
-test("two anonymous pilots complete runs, retry a rejected write and see a shared leaderboard", async ({
+test("title and Hangar pilots complete ranked runs, retry a rejected write and share a leaderboard", async ({
   newLocalContext,
   request,
 }) => {
+  // Three actual seeded flights plus authentication, retry and board inspection.
+  test.setTimeout(120_000);
   const pilots: {
     chassis: CompetitionChassis;
     initials: string;
     seed: number;
+    source?: "hangar";
   }[] = [
     { chassis: "wasp", initials: "ONE", seed: 158 },
     { chassis: "wasp", initials: "TWO", seed: 2 },
+    { chassis: "scout", initials: "HGR", seed: 158, source: "hangar" },
   ];
   const expected = new Map<string, { seconds: number; score: number }>();
   for (const pilot of pilots) {
@@ -56,13 +61,20 @@ test("two anonymous pilots complete runs, retry a rejected write and see a share
       });
     }, arrivalSeed);
     await page.clock.install({ time: new Date("2026-11-03T00:00:00Z") });
-    await page.goto("/");
-    await expect(page.locator(".flight-page")).toHaveAttribute(
-      "data-stabilizers",
-      "true",
-    );
+    await page.goto(pilot.source === "hangar" ? "/hangar" : "/");
+    if (pilot.source === "hangar") await chooseShip(page, "Scout");
+    else
+      await expect(page.locator(".flight-page")).toHaveAttribute(
+        "data-stabilizers",
+        "true",
+      );
     await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
-    await page.getByRole("button", { name: "PRESS START" }).click();
+    await page
+      .getByRole("button", {
+        name: pilot.source === "hangar" ? "Survival" : "PRESS START",
+        exact: true,
+      })
+      .click();
     await waitForFlightPhase(page, "playing");
     await expect(page.locator(".flight-page")).toHaveAttribute(
       "data-status",
@@ -127,7 +139,7 @@ test("two anonymous pilots complete runs, retry a rejected write and see a share
     await expect(page).toHaveURL(/\/leaderboard$/, { timeout: 15000 });
     await context.close();
   }
-  // A third row with a high score from a short run, so the two orders differ.
+  // An additional row with a high score from a short run, so the two orders differ.
   const seeded = await request.patch(
     `${firestore}/v1/projects/demo-void-drift/databases/(default)/documents/artifacts/void-drift/scores/${CHALLENGE}_seeded_scout`,
     {
@@ -150,7 +162,7 @@ test("two anonymous pilots complete runs, retry a rejected write and see a share
   const context = await newLocalContext();
   const page = await context.newPage();
   await page.goto("/leaderboard");
-  for (const initials of ["ONE", "TWO"])
+  for (const initials of ["ONE", "TWO", "HGR"])
     await expect(
       page.getByRole("cell", { name: new RegExp(`^${initials}\\b`) }),
     ).toBeVisible();
@@ -181,5 +193,50 @@ test("two anonymous pilots complete runs, retry a rejected write and see a share
   expect(await rankedPilots()).toEqual(byKey("seconds"));
   await byScore.click();
   expect(await rankedPilots()).toEqual(byKey("score"));
+  await context.close();
+});
+
+test("Experimental On completes a stable ship run without submitting a score", async ({
+  newLocalContext,
+}) => {
+  const context = await newLocalContext();
+  const page = await context.newPage();
+  const commits: string[] = [];
+  page.on("request", (request) => {
+    const url = new URL(request.url());
+    if (url.origin === firestore && url.pathname.endsWith("/documents:commit"))
+      commits.push(request.url());
+  });
+  await page.addInitScript(() => {
+    const random = crypto.getRandomValues.bind(crypto);
+    Object.defineProperty(crypto, "getRandomValues", {
+      value(array: ArrayBufferView) {
+        const result = random(array);
+        if (result instanceof Uint32Array && result.length === 1)
+          result[0] = 157;
+        return result;
+      },
+    });
+  });
+  await page.clock.install({ time: new Date("2026-11-03T00:00:00Z") });
+  await page.goto("/hangar");
+  await enablePreviewContent(page);
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await page.getByRole("button", { name: "Survival", exact: true }).click();
+  await waitForFlightPhase(page, "playing");
+  const predicted = competitionFlightResult("wasp", 158);
+  await page.clock.runFor((predicted.ticks * 1000) / 60 + 40);
+  const result = page.getByRole("dialog", { name: "Run complete" });
+  await expect(result).toBeVisible();
+  await expect(
+    result.getByText("No score for this run.", { exact: true }),
+  ).toBeVisible();
+  await expect(result.getByRole("button", { name: "Save Score" })).toHaveCount(
+    0,
+  );
+  await expect(result.getByText(/^Score /)).toHaveCount(0);
+  await expect(result.getByRole("link", { name: "Top Scores" })).toBeVisible();
+  await page.clock.runFor(1000);
+  expect(commits).toEqual([]);
   await context.close();
 });

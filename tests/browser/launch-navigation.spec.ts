@@ -1,8 +1,9 @@
 import type { Page } from "@playwright/test";
 import {
   buildStats,
-  starterLoadout,
+  defaultLoadout,
 } from "../../packages/mode-a/src/lib/schemas/loadout";
+import { chooseShip } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 
 async function setup(page: Page) {
@@ -24,7 +25,7 @@ async function launch(page: Page, source: "title" | "hangar") {
   await page.goto(source === "title" ? "/" : "/hangar?chassis=wasp");
   await page
     .getByRole("button", {
-      name: source === "title" ? "PRESS START" : "Start survival",
+      name: source === "title" ? "PRESS START" : "Survival",
     })
     .click();
   await page.clock.runFor(3400);
@@ -101,16 +102,13 @@ test("scores from a Hangar run return to title", async ({ page }) => {
   await expect(page.getByRole("button", { name: "PRESS START" })).toBeFocused();
 });
 
-test("a Hangar choice does not change the Wasp launched from title", async ({
+test("a Hangar choice becomes the ship launched from title", async ({
   page,
 }) => {
   await setup(page);
   await page.goto("/hangar");
-  await page
-    .getByRole("radiogroup", { name: "Choose chassis" })
-    .getByText("Corvette", { exact: true })
-    .click();
-  await page.getByRole("link", { name: "Return to title screen" }).click();
+  await chooseShip(page, "Scout");
+  await page.getByRole("link", { name: "Void Drift", exact: true }).click();
   await page.getByRole("button", { name: "PRESS START" }).click();
   await page.clock.runFor(3400);
   await expect(page.locator(".flight-page")).toHaveAttribute(
@@ -119,5 +117,8 @@ test("a Hangar choice does not change the Wasp launched from title", async ({
   );
   await expect(
     page.getByRole("progressbar", { name: "Power" }),
-  ).toHaveAttribute("max", String(buildStats(starterLoadout("wasp")).capacity));
+  ).toHaveAttribute(
+    "max",
+    String(buildStats(defaultLoadout("scout")).capacity),
+  );
 });

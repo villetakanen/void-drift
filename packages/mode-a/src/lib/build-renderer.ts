@@ -656,7 +656,9 @@ export function buildPlumeEmitters(build: Loadout): PlumeEmitter[] {
           ? "ion-light"
           : mount.part === "heavy-ion"
             ? "ion-heavy"
-            : "default",
+            : mount.part === "plasma"
+              ? "plasma"
+              : "default",
       x:
         (mount.x +
           (engineOffset(build, mount) - nozzleOffset(mount)) *

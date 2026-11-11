@@ -1,0 +1,24 @@
+---
+// The full-window band every instrument takes inside a study page: it breaks
+// out of the text column to the width and height of the window and snaps into
+// place as it is scrolled to. The slot holds the instrument; a study that needs
+// its own values in an instrument's menu places its own Svelte wrapper here.
+---
+
+<div class="instrument-embed"><slot /></div>
+
+<style is:global>
+/* A page holding an instrument snaps to it while scrolling past. */
+html:has(.instrument-embed) {
+  scroll-snap-type: y proximity;
+  overflow-x: clip;
+}
+</style>
+<style>
+.instrument-embed {
+  width: 100vw;
+  height: 100svh;
+  margin-inline: calc(50% - 50vw);
+  scroll-snap-align: center;
+}
+</style>

@@ -80,13 +80,19 @@ workload here; their gameplay implementation belongs to their own features.
   effects, not promises of the supported camera's minimum or maximum zoom. FX
   stays at full stage resolution while zoom limits and other layer presentation
   choices are explored.
-- **Output fidelity:** effect activity follows actual delivered output and gameplay
-  events. An emitter identifies its source, transform, activity and lifecycle.
+- **Output fidelity:** effect activity follows actual delivered output, engine charge
+  state and gameplay events, not button state. The game delivers engine charge as
+  engine state. An emitter identifies its source, transform, activity and lifecycle.
 - **Time and space:** effects advance with game time. Fresh stamps follow current
   mounts. Accumulated light remains at its painted world position and shares the
   surface decay; it carries no per-mark velocity. Camera changes preserve this
   placement. Arena wrap starts stamping at the new location without a connecting
   streak; previous light fades at its old location. Reset clears the whole surface.
+- **Layer presentation:** production and Lab use the shared render-layer stack.
+  World is normal with no filter, FX is screen with the shared static seeded
+  Turbulent bloom (12 CSS px glow, 16 CSS px distortion, 90% strength), and LFX
+  is hard-light with no filter. Explicit presentation overrides remain supported;
+  `none` removes a layer filter.
 - **Simulation authority:** gameplay results and input semantics are invariant under
   changes to effect density, appearance or backend. Replay reproduces game state;
   incidental sparkle patterns may vary.
@@ -400,6 +406,17 @@ repositions fresh geometry without joining old and new muzzle positions. The
 mixed Lab Weapons workload includes simultaneous twin cannons beside collectors,
 engines, station, missile and fire effects. Performance acceptance remains governed
 by the whole-scene budget above and requires separate sustained measurements.
+
+## Plasma thrust light
+
+A thrusting plasma engine stamps its cached luminous ball and sparks behind its
+outlet into persistent FX. The ball scales with the square root of delivered
+output and flares as charge releases, settling into steady thrust. Its animated
+lobes hold their frame and angle across several ticks. Source and decorative
+work use the shared scene budget; release stops new thrust stamps. Play and the
+Flight scene instrument share the production effect. The
+[thrust comparison](/lab/plasma-thrust-comparison) shows production alongside
+the accepted study reference without charge light.
 
 ## Paired stabilizer exhaust
 

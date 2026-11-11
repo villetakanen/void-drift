@@ -1,6 +1,6 @@
 import { expect, test } from "../helpers/local-browser";
 
-test("Derelicts shows a frozen transient score only after game over", async ({
+test("Derelicts shows frozen time and destruction facts without a score", async ({
   page,
 }) => {
   await page.clock.install();
@@ -33,15 +33,9 @@ test("Derelicts shows a frozen transient score only after game over", async ({
   const result = page.getByRole("dialog", { name: "Run complete" });
   await expect(result).toBeVisible();
   const heading = result.getByRole("heading");
-  await expect(heading).toHaveText(/\d+\.\d points\./);
-  const breakdown = await result.getByText(/seconds ·/).textContent();
-  const parts = breakdown?.match(
-    /([\d.]+)\s+seconds\s+·\s+(\d+)\s+derelicts destroyed/,
-  );
-  if (!parts) throw new Error("Missing Derelicts result breakdown");
-  expect(await heading.textContent()).toBe(
-    `${(Number(parts[1]) + 10 * Number(parts[2])).toFixed(1)} points.`,
-  );
+  await expect(heading).toHaveText(/\d+\.\d seconds\./);
+  await expect(result.getByText(/\d+ derelicts destroyed/)).toBeVisible();
+  await expect(result.getByText(/points\.|^Score /)).toHaveCount(0);
   const final = (await heading.textContent()) ?? "";
   await page.clock.runFor(1000);
   await expect(heading).toHaveText(final);

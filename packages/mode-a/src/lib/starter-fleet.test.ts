@@ -2,9 +2,15 @@ import { expect, it } from "vitest";
 import {
   BuildStoreSchema,
   buildStats,
+  CHASSIS,
+  ChassisSchema,
   defaultLoadout,
   fittedParts,
+  isScoredEligible,
   LoadoutSchema,
+  PARTS,
+  PartSchema,
+  ReleaseClassSchema,
   starterLoadout,
 } from "./schemas/loadout";
 import { ShipProfileIdSchema } from "./schemas/ship-profile";
@@ -68,4 +74,69 @@ it("fits the starter Wasp with a cannon, a point defence and a light ion engine,
 it("flies the starter Wasp loadout from the game settings", () => {
   const sim = new Simulation(gameSettings("wasp"));
   expect(sim.settings.loadout).toEqual(starterLoadout("wasp"));
+});
+
+it("requires one catalog release class and derives scored eligibility from fitted content", () => {
+  const expectedChassisClasses = {
+    wasp: "scored",
+    scout: "scored",
+    fighter: "scored",
+    corvette: "preview",
+    fiddler: "preview",
+  } as const;
+  const expectedPartClasses = {
+    "light-ion-cannon": "scored",
+    "ion-point-defence": "scored",
+    rail: "preview",
+    laser: "preview",
+    battery: "scored",
+    "heavy-well": "scored",
+    coil: "preview",
+    "gravity-coil": "scored",
+    ion: "scored",
+    "heavy-ion": "scored",
+    fusion: "preview",
+    plasma: "preview",
+  } as const;
+  for (const [id, releaseClass] of Object.entries(expectedChassisClasses))
+    expect(
+      ReleaseClassSchema.parse(
+        CHASSIS[id as keyof typeof CHASSIS].releaseClass,
+      ),
+    ).toBe(releaseClass);
+  for (const [id, releaseClass] of Object.entries(expectedPartClasses))
+    expect(
+      ReleaseClassSchema.parse(PARTS[id as keyof typeof PARTS].releaseClass),
+    ).toBe(releaseClass);
+  expect(() => ReleaseClassSchema.parse(undefined)).toThrow();
+  expect(() =>
+    ChassisSchema.parse({ ...CHASSIS.wasp, releaseClass: undefined }),
+  ).toThrow();
+  expect(() =>
+    PartSchema.parse({ ...PARTS.ion, releaseClass: undefined }),
+  ).toThrow();
+
+  expect(isScoredEligible(starterLoadout("wasp"))).toBe(true);
+  expect(
+    isScoredEligible(
+      LoadoutSchema.parse({
+        ...defaultLoadout("wasp"),
+        hull: ["rail", null],
+      }),
+    ),
+  ).toBe(false);
+  expect(isScoredEligible(defaultLoadout("fiddler"))).toBe(false);
+});
+
+it("migrates a v3 build store with Wasp active and preserves the fittings", () => {
+  const wasp = starterLoadout("wasp");
+  wasp.hull[0] = "laser";
+  const migrated = BuildStoreSchema.parse({
+    wasp,
+    scout: defaultLoadout("scout"),
+    fighter: defaultLoadout("fighter"),
+    corvette: defaultLoadout("corvette"),
+  });
+  expect(migrated.activeChassis).toBe("wasp");
+  expect(migrated.wasp).toEqual(wasp);
 });

@@ -4,6 +4,7 @@ import {
   buildStats,
   CHASSIS,
 } from "../../packages/mode-a/src/lib/schemas/loadout";
+import { chooseShip, enablePreviewContent } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 import { expectLit } from "../helpers/thrust-pads";
 
@@ -14,10 +15,12 @@ test("Scout restores its four-slot save, fits equipment and engines and flies fr
   await page.clock.install({ time });
   await page.clock.pauseAt(time);
   await page.goto("/hangar");
+  await chooseShip(page, "Fighter");
+  await enablePreviewContent(page);
   await page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }).click();
   await page.getByRole("button", { name: /^Potential Well\b/ }).click();
   await page
-    .getByRole("radiogroup", { name: "Choose chassis" })
+    .getByRole("tablist", { name: "Choose chassis" })
     .getByText("Corvette", { exact: true })
     .click();
   await page.getByRole("button", { name: "Hull 2 · Equipment: Empty" }).click();
@@ -26,10 +29,11 @@ test("Scout restores its four-slot save, fits equipment and engines and flies fr
     localStorage.getItem("void-drift-builds-v3"),
   );
   if (!before) throw new Error("Initial chassis builds not saved");
-  await page.goto("/hangar?chassis=scout");
+  await chooseShip(page, "Scout");
+  await page.reload();
   await expect(
-    page.getByRole("radio", { name: "Scout", exact: true }),
-  ).toBeChecked();
+    page.getByRole("tab", { name: "Scout", exact: true }),
+  ).toHaveAttribute("aria-selected", "true");
   await expect(page.locator(".mount")).toHaveCount(
     2 + CHASSIS.scout.hull + CHASSIS.scout.aft,
   );
@@ -92,7 +96,7 @@ test("Scout restores its four-slot save, fits equipment and engines and flies fr
     width: 1440,
     height: (1440 * GAME_MIN_RATIO.height) / GAME_MIN_RATIO.width,
   });
-  await page.getByRole("button", { name: "Test flight", exact: true }).click();
+  await page.getByRole("button", { name: "Practice", exact: true }).click();
   const deck = page.locator(".flight-page");
   await expect(deck).toHaveAttribute("data-status", "PLAYING");
   const x = await deck.getAttribute("data-x");
@@ -122,16 +126,16 @@ test("Scout restores its four-slot save, fits equipment and engines and flies fr
   await expect(
     page.getByRole("button", { name: "Aft 1 · Universal: Light ion" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Start survival" }).click();
+  await page.getByRole("button", { name: "Survival" }).click();
   await expect(page.locator("header")).toHaveCount(0);
   await expect(page.locator(".deck-info")).toContainText("UNRANKED");
 });
 
-test("invalid chassis deep links recover to the normal Fighter selection", async ({
+test("invalid chassis deep links leave the fresh Wasp active", async ({
   page,
 }) => {
   await page.goto("/hangar?chassis=not-a-chassis");
   await expect(
-    page.getByRole("radio", { name: "Fighter", exact: true }),
-  ).toBeChecked();
+    page.getByRole("tab", { name: "Wasp", exact: true }),
+  ).toHaveAttribute("aria-selected", "true");
 });

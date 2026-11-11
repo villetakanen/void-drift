@@ -1,3 +1,4 @@
+import { chooseShip, enablePreviewContent } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 import { expectLit, padPoint } from "../helpers/thrust-pads";
 
@@ -7,10 +8,12 @@ test("armed practice has full resources, no encounters and fresh entry after abo
   const time = new Date("2026-11-03T00:00:00Z");
   await page.clock.install({ time });
   await page.clock.pauseAt(time);
-  await page.goto("/hangar?chassis=fighter");
+  await page.goto("/hangar");
+  await chooseShip(page, "Fighter");
+  await enablePreviewContent(page);
   await page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }).click();
   await page.getByRole("button", { name: /^Rail gun\b/ }).click();
-  await page.getByRole("button", { name: "Test flight", exact: true }).click();
+  await page.getByRole("button", { name: "Practice", exact: true }).click();
   const flight = page.locator(".flight-page");
   const initialX = await flight.getAttribute("data-x");
   const initialY = await flight.getAttribute("data-y");
@@ -47,7 +50,7 @@ test("armed practice has full resources, no encounters and fresh entry after abo
   await expect(
     page.getByRole("button", { name: "Hull 1 · Equipment: Rail gun" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Test flight", exact: true }).click();
+  await page.getByRole("button", { name: "Practice", exact: true }).click();
   await expect(flight).toHaveAttribute("data-x", initialX ?? "");
   await expect(flight).toHaveAttribute("data-y", initialY ?? "");
   await expect(page.getByRole("button", { name: "Save Score" })).toHaveCount(0);
@@ -61,10 +64,11 @@ test("landscape practice retain simultaneous engine input and release", async ({
   await page.clock.install({ time });
   await page.clock.pauseAt(time);
   await page.setViewportSize({ width: 1180, height: 820 });
-  await page.goto("/hangar?chassis=wasp");
+  await page.goto("/hangar");
+  await enablePreviewContent(page);
   await page.getByRole("button", { name: /^Left wing · Equipment:/ }).click();
   await page.getByRole("button", { name: /^Laser\b/ }).click();
-  await page.getByRole("button", { name: "Test flight", exact: true }).click();
+  await page.getByRole("button", { name: "Practice", exact: true }).click();
   const deck = page.locator(".flight-page");
   await expect(page.locator(".thrust-pads")).toHaveCount(2);
   const a = await padPoint(page, "leftUpper"),

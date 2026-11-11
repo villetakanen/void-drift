@@ -14,14 +14,18 @@ import {
   clearFlightLayer,
   type DerelictsResult,
   drawFlightFrame,
+  type ExperimentalSetting,
+  ExperimentalSettingSchema,
   FlightFx,
   type FlightLayerContexts,
   type FlightLayerId,
   type FlightMode,
   type FlightTickInput,
-  gameSettings,
+  HighScoreSubmissionSchema,
+  isScoredEligible,
   LandingSystem,
   type Loadout,
+  LoadoutSchema,
   resizeFlightLayers,
   type ShipProfileId,
   Simulation,
@@ -31,12 +35,15 @@ import {
   submitHighScore,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
+import { NO_SCORE_NOTICE } from "../lib/experimental";
 import { fitGameScreen, GAME_HEIGHT } from "../lib/game-screen";
 import { settings } from "../lib/stores/settings";
+import { initializeShipSetup, shipSetup } from "../lib/stores/ship-setup";
 import Dialog from "./Dialog.svelte";
 import FlightLayers from "./FlightLayers.svelte";
 import ThrustPads from "./inputs/ThrustPads.svelte";
 import { PAD_ASSEMBLY_HEIGHT_PX } from "./inputs/thrust-pads";
+import PreviewMarker from "./PreviewMarker.svelte";
 import TitleScreen from "./TitleScreen.svelte";
 
 let {
@@ -58,7 +65,28 @@ let input: Input;
 let renderer: Renderer;
 let camera: Camera;
 const flightFx = new FlightFx();
-let chosen = $derived<ShipProfileId>(loadout?.chassis ?? "wasp");
+const currentLoadout = $derived(
+  loadout ?? $shipSetup.builds[$shipSetup.builds.activeChassis],
+);
+let runLoadout = $state<Loadout>();
+let runExperimental = $state<ExperimentalSetting>("Off");
+let launchBlocked = $state(false);
+let chosen = $derived<ShipProfileId>((runLoadout ?? currentLoadout).chassis);
+const currentLaunchAvailable = $derived(
+  $shipSetup.experimental === "On" || isScoredEligible(currentLoadout),
+);
+const blockedReason = $derived(
+  currentLaunchAvailable
+    ? ""
+    : "Playground is Off; this setup requires Playground. Change it in Hangar or turn Playground on.",
+);
+const experimentalRun = $derived(runExperimental === "On");
+const rankedRun = $derived(
+  mode === "survival" &&
+    runLoadout !== undefined &&
+    runExperimental === "Off" &&
+    isScoredEligible(runLoadout),
+);
 let status = $state("MENU");
 let paused = $state(false);
 let seconds = $state(0);
@@ -105,6 +133,9 @@ let reducedMotion = false;
 let stage: HTMLElement;
 let landingFrame = { width: 1920, height: 1080, cardRight: 1200 };
 function enterMenu() {
+  runLoadout = undefined;
+  runExperimental = $shipSetup.experimental;
+  launchBlocked = false;
   landing = new LandingSystem();
   sceneOpacity = 1;
   phase = "menu";
@@ -113,13 +144,13 @@ function enterMenu() {
 let spin = $state(0);
 let message = $state("");
 let initials = $state("AAA");
-// The bottom gutter's mode label: only the stock run is ranked.
+// The bottom gutter describes the captured run, independently of launch source.
 const modeLabel = $derived(
   testFlight
     ? "GOD MODE"
-    : loadout || chosen === "fiddler"
-      ? "UNRANKED"
-      : "G CLASS / SHARED CHALLENGE",
+    : mode === "survival" && rankedRun
+      ? "G CLASS / SHARED CHALLENGE"
+      : "UNRANKED",
 );
 let saving = $state(false);
 let scoreSaved = $state(false);
@@ -127,9 +158,13 @@ function reset(start = false) {
   if (phase !== "starting") phase = start ? "playing" : "menu";
   input?.reset();
   simulation = new Simulation(
-    loadout
-      ? { ...stockSettings(loadout.chassis), loadout, mode }
-      : { ...gameSettings("wasp"), mode },
+    runLoadout
+      ? { ...stockSettings(runLoadout.chassis), loadout: runLoadout, mode }
+      : {
+          ...stockSettings(currentLoadout.chassis),
+          loadout: currentLoadout,
+          mode,
+        },
   );
   if (start && !testFlight) {
     simulation = new Simulation({
@@ -199,6 +234,15 @@ function sync() {
 }
 function start() {
   if (phase === "starting") return;
+  const selectedLoadout = LoadoutSchema.parse(currentLoadout);
+  const selectedExperimental = ExperimentalSettingSchema.parse(
+    shipSetup.get().experimental,
+  );
+  if (selectedExperimental === "Off" && !isScoredEligible(selectedLoadout))
+    return;
+  runLoadout = selectedLoadout;
+  runExperimental = selectedExperimental;
+  launchBlocked = false;
   if (launchSource === "title" && !reducedMotion && landing) {
     phase = "starting";
     transitionTime = 0;
@@ -233,15 +277,13 @@ function advance(state: FlightTickInput) {
 async function save() {
   if (
     mode !== "survival" ||
-    loadout ||
-    chosen === "fiddler" ||
+    !rankedRun ||
     status !== "GAME_OVER" ||
     saving ||
     scoreSaved
   )
     return;
-  saving = true;
-  const result = await submitHighScore({
+  const submission = HighScoreSubmissionSchema.safeParse({
     initials,
     seconds: Math.max(1, simulation.wholeSeconds),
     score: Math.max(1, simulation.survivalScore),
@@ -249,6 +291,12 @@ async function save() {
     challenge: CHALLENGE,
     deathCause: simulation.state.deathCause ?? "POWER",
   });
+  if (!submission.success) {
+    message = "This setup cannot be submitted for a score.";
+    return;
+  }
+  saving = true;
+  const result = await submitHighScore(submission.data);
   saving = false;
   scoreSaved = result.success;
   if (result.success) {
@@ -274,8 +322,20 @@ onMount(() => {
   resizeFlightLayers(layers, renderer, 1920, 1080);
   camera = new Camera();
   input = new Input();
+  initializeShipSetup();
   if (launchSource === "title") enterMenu();
-  else reset(Boolean(loadout));
+  else {
+    const selectedLoadout = LoadoutSchema.parse(currentLoadout);
+    const selectedExperimental = shipSetup.get().experimental;
+    if (selectedExperimental === "Off" && !isScoredEligible(selectedLoadout)) {
+      launchBlocked = true;
+      reset(false);
+    } else {
+      runLoadout = selectedLoadout;
+      runExperimental = selectedExperimental;
+      reset(true);
+    }
+  }
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const updateMotion = () => {
     reducedMotion = motion.matches;
@@ -446,6 +506,9 @@ onMount(() => {
   data-narrow={narrow}
   data-launch-source={launchSource}
   data-status={status}
+  data-chassis={chosen}
+  data-experimental={runExperimental}
+  data-ranked={rankedRun}
   data-salvage-passes={salvageStats.passes}
   data-salvage-destroyed={salvageStats.destroyed}
   data-rail-shots={salvageStats.rail}
@@ -525,9 +588,16 @@ onMount(() => {
                 <small>SURVIVAL</small
                 ><strong class="time">{seconds.toFixed(1)}s</strong>
               </div>
-              <div class="score">
-                <small>SCORE</small><strong class="points">{score}</strong>
-              </div>
+              {#if experimentalRun}
+                <div class="score experimental-score">
+                  <PreviewMarker />
+                  <small>{NO_SCORE_NOTICE}</small>
+                </div>
+              {:else}
+                <div class="score">
+                  <small>SCORE</small><strong class="points">{score}</strong>
+                </div>
+              {/if}
             {/if}
           </div>
           <!-- Pause keeps its place outside active play, so the pads never move. -->
@@ -586,20 +656,39 @@ onMount(() => {
             </button>
             <button
               type="button"
-              class="btn btn-ghost"
+              class="btn btn-normal"
               onclick={() => (onReturn ? onReturn() : enterMenu())}
             >
               Abort
             </button>
             {#if mode === "survival"}
-              <a class="btn btn-ghost" href="/leaderboard">Top Scores</a>
-              <a class="btn btn-ghost" href="/settings">Settings</a>
+              <a class="btn btn-normal" href="/leaderboard">Top Scores</a>
+              <a class="btn btn-normal" href="/settings">Settings</a>
             {/if}
           </div>
         </Dialog>
+      {:else if launchBlocked}
+        <Dialog label="Flight unavailable" class="flight-card">
+          <h1>Flight unavailable</h1>
+          <p>{blockedReason}</p>
+          <button
+            type="button"
+            class="btn btn-filled"
+            data-autofocus
+            onclick={() => (onReturn ? onReturn() : enterMenu())}
+          >
+            Return to Hangar
+          </button>
+        </Dialog>
       {:else if landing}
         <div class="dialog-scrim" aria-hidden="true"></div>
-        <TitleScreen onStart={start} disabled={phase === "starting"} />
+        <TitleScreen
+          onStart={start}
+          loadout={currentLoadout}
+          experimental={$shipSetup.experimental}
+          disabled={phase === "starting" || !currentLaunchAvailable}
+          {blockedReason}
+        />
       {:else if status === "GAME_OVER"}
         <Dialog label="Run complete" class="flight-card">
           <p class="eyebrow">
@@ -610,19 +699,25 @@ onMount(() => {
                 : "POWER DEPLETED"}
           </p>
           {#if mode === "derelicts" && derelictsResult}
-            <h1>{derelictsResult.score.toFixed(1)} points.</h1>
-            <p>
-              {derelictsResult.seconds.toFixed(1)}
-              seconds · {derelictsResult.playerKills} derelicts destroyed
-            </p>
+            <h1>{seconds.toFixed(1)} seconds.</h1>
+            <p>{derelictsResult.playerKills} derelicts destroyed</p>
+            {#if experimentalRun}
+              <PreviewMarker />
+              <p>{NO_SCORE_NOTICE}</p>
+            {/if}
           {:else}
             <h1>{seconds.toFixed(1)} seconds.</h1>
             {#if mode === "survival"}
-              <p>Score {score}</p>
+              {#if experimentalRun}
+                <PreviewMarker />
+                <p>{NO_SCORE_NOTICE}</p>
+              {:else}
+                <p>Score {score}</p>
+              {/if}
             {/if}
             <p>Every orbit teaches you something.</p>
           {/if}
-          {#if mode === "survival" && !loadout && chosen !== "fiddler"}
+          {#if rankedRun}
             <label for="initials">Your initials</label>
             <input
               id="initials"
@@ -638,7 +733,7 @@ onMount(() => {
             <p role="status" class="flight-message">{message}</p>
           {/if}
           <div class="button-group button-group--vertical">
-            {#if mode === "survival" && !loadout && chosen !== "fiddler"}
+            {#if rankedRun}
               <button
                 type="button"
                 class="btn btn-filled"
@@ -650,10 +745,13 @@ onMount(() => {
               >
                 {saving ? "Saving…" : scoreSaved ? "Saved" : "Save Score"}
               </button>
+              {#if !scoresAvailable()}
+                <p role="status">Score submission is currently unavailable.</p>
+              {/if}
             {/if}
             <button
               type="button"
-              class="btn btn-ghost"
+              class="btn btn-normal"
               data-autofocus
               onclick={() => (onReturn ? onReturn() : enterMenu())}
             >
@@ -662,7 +760,7 @@ onMount(() => {
                 : "Return to title screen"}
             </button>
             {#if mode === "survival"}
-              <a class="btn btn-ghost" href="/leaderboard">Top Scores</a>
+              <a class="btn btn-normal" href="/leaderboard">Top Scores</a>
             {/if}
           </div>
         </Dialog>

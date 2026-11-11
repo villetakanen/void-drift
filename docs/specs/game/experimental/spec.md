@@ -1,75 +1,80 @@
-# Experimental mode
+# Playground
 
 ## Blueprint
 
 ### Context
 
-Void Drift is in alpha and grows new ships and parts in the open: the player
-can fly everything being designed. A ship or part is **stable** when its
-developers judge it good enough for alpha play to be scored: it may still
-change, but not in ways expected to affect scores. Everything else is
-**experimental**. Experimental mode lets the player fly everything, while
-keeping scores to the content whose scores should stay valid.
+Playground lets the player play around with ships and parts outside the rules
+for the core scored game. This is a scoring-eligibility boundary. An excluded
+ship or part can be complete and intentionally available for play, and may
+remain outside those rules indefinitely. No eventual promotion is promised.
 
-The player makes one choice: Experimental **Off** or **On**.
+In the current game, Playground makes every catalog ship and compatible part
+available. It keeps the selected flight mode and its simulation rules.
+
+The player makes one choice: Playground **Off** or **On**.
 
 - **Off:** only stable ships and parts can be flown, and every Survival run
   that starts is scored and ranked.
 - **On:** every ship and part can be flown, and no run is scored. The run shows
-  its time, and an experimental notice where the score would be.
+  its time, and a scoring-off notice where the score would be.
 
-Experimental is not a game mode of its own: it is the same Survival, Practice
+Playground is not a game mode of its own: it is the same Survival, Practice
 and Derelicts. What is fitted never changes scoring on its own: with
-Experimental On, a ship carrying only stable parts still flies an unscored run.
+Playground On, a ship carrying only stable parts still flies an unscored run.
 
 ### Architecture and boundaries
 
-- **Release class.** Every chassis in `CHASSIS` and every part in `PARTS`
-  (`packages/mode-a/src/lib/schemas/loadout.ts`) carries exactly one release
-  class: stable or experimental. The class lives in that catalog data, is
-  validated by its Zod schema, and is the only source the game reads. Promoting
-  or demoting an item is a data change, not a spec change. Stabilizers are a
+- **Catalog eligibility.** Every chassis in `CHASSIS` and every part in `PARTS`
+  (`packages/mode-a/src/lib/schemas/loadout.ts`) carries exactly one scoring-eligibility
+  class. “Stable” and “experimental” remain internal discussion placeholders
+  for eligible content and content requiring Playground; they describe no
+  development lifecycle. The class lives in that catalog data, is
+  validated by its Zod schema, and is the only source the game reads. Changing
+  an item's eligibility is a data change, not a spec change. Stabilizers are a
   ship option and follow their ship.
-- **Setting.** Experimental is a per-device player setting, defined by a Zod
-  schema in `packages/mode-a/src/lib/schemas/` before any consumer reads it. It
-  is stored in the browser, parsed on load, and a missing or invalid value
-  reads as Off.
-- **Control.** The Experimental control lives in the [Hangar](../hangar/spec.md)
+- **Setting.** `ExperimentalSettingSchema` in
+  `packages/mode-a/src/lib/schemas/settings.ts` defines the per-device setting.
+  `apps/web/src/lib/stores/ship-setup.ts` owns it alongside the active ship,
+  stores it at `void-drift:experimental`, parses it on load, and reads a missing
+  or invalid value as Off.
+- **Control.** The Playground control lives in the [Hangar](../hangar/spec.md)
   opening. Nothing else changes the setting, and it cannot change during a run.
 - **Eligibility.** The [game contract](../spec.md) owns which runs are ranked;
-  this contract supplies the Experimental condition it reads. Firestore rules
+  this contract supplies the Playground condition it reads. Firestore rules
   bound submitted data and cannot see the setting; the leaderboard stays casual
   and client-reported.
-- **Wording.** "Active ship" is a decided term. "Stable", "experimental" and
-  "fitting" are placeholders, not names for the game, its copy or its code. The
-  player-facing names for the two classes and the text of the experimental
-  marker and notice are chosen in a design study with a live prototype on the
-  real screens.
+- **Wording.** The setting is named **Playground** and uses the shared binary
+  Switch. “Scoring off” communicates the enabled run's consequence without a
+  confirmation dialog. Names and presentation for individual catalog classes
+  remain open; “in development” does not express their intended meaning.
 
 ### Rules
 
-- **Off, catalog.** Experimental ships and parts are visible in the Hangar,
-  carry the experimental marker and are disabled: they cannot be selected or
-  fitted.
-- **Off, existing setup.** Turning Experimental Off removes nothing. An active
+- **Off, catalog.** Excluded ships and parts remain visible in the Hangar
+  and cannot be selected or fitted. Ship tabs use the shared unavailable state
+  without a catalog badge; parts retain their catalog marker.
+- **Off, existing setup.** Turning Playground Off removes nothing. An active
   ship that is experimental, or a fitted part that is experimental, stays in the
-  setup, shown disabled with the experimental marker.
+  setup. Its ship tab stays selected and unavailable; fitted parts retain their
+  catalog marker and disabled state.
 - **Off, launch.** While the active ship contains an experimental ship or
   part, every flight launch is unavailable, from the title screen and from the
   Hangar. The title screen says why and leads to the Hangar. Launch becomes
   available as soon as the player picks a stable ship whose fitted parts
   are all stable, or removes the experimental parts.
-- **On, catalog.** Every ship and part is selectable and fittable. Experimental
-  items keep their marker so the player can tell them apart.
+- **On, catalog.** Every ship and part is selectable and fittable. Ship tabs
+  use the ordinary available state without a catalog badge; excluded parts
+  retain their marker.
 - **On, runs.** No run is scored. In a Survival run the flight screen shows the
-  time and, where the running score would be, the experimental notice. Run
+  time and, where the running score would be, the scoring-off notice. Run
   complete shows the time survived and the same notice in place of the score,
   offers no Save Score, and never calls submission.
-- **Marker.** While Experimental is On, an experimental marker sits in a corner
-  of the title screen beside the start action and in the Hangar opening. The
-  marker is short, readable at a glance, and has an accessible name stating
-  that runs are not scored.
-- **Persistence.** The Experimental setting is kept on this device across
+- **Run status.** With Playground On, the title screen shows scoring-off
+  status beside Start. The Hangar places “Playground · Scoring off” beside the
+  launch actions, keeping its header unchanged. These notices are absent with
+  Off. Individual catalog-item markers are a separate presentation concern.
+- **Persistence.** The Playground setting is kept on this device across
   visits; a fresh device starts Off. The [active ship](../active-ship/spec.md)
   owns how the ship and its fitting are kept.
 - **Leaderboard.** The setting alone keeps experimental content off the board:
@@ -81,45 +86,45 @@ Experimental On, a ship carrying only stable parts still flies an unscored run.
 
 ### Definition of Done
 
-- [ ] E1: Every `CHASSIS` and `PARTS` entry has exactly one release class, the
+- [x] E1: Every `CHASSIS` and `PARTS` entry has exactly one release class, the
   catalog schema rejects an entry without one, and no consumer keeps its own
   list of stable or experimental items.
-- [ ] E2: The Experimental setting is defined by a Zod schema, survives a page
+- [x] E2: The Playground setting is defined by a Zod schema, survives a page
   reload, and reads as Off when the stored value is missing or invalid.
-- [ ] E3: With Experimental Off, experimental ships and parts appear in the
-  Hangar with the experimental marker and cannot be selected or fitted by
+- [x] E3: With Playground Off, experimental ships and parts appear in the
+  Hangar with unavailable ship tabs and marked parts, and cannot be selected or fitted by
   pointer or keyboard.
-- [ ] E4: Turning Experimental Off with experimental content in the active
+- [x] E4: Turning Playground Off with experimental content in the active
   setup leaves that content in place, marked and disabled, and makes every
   flight launch unavailable from the title screen and the Hangar.
-- [ ] E5: In that state the title screen explains why launch is unavailable and
+- [x] E5: In that state the title screen explains why launch is unavailable and
   offers the Hangar; choosing a stable ship with only stable parts, or
   removing the experimental parts, makes launch available again.
-- [ ] E6: With Experimental On, every ship and part is selectable and fittable,
-  and experimental items keep their marker.
-- [ ] E7: With Experimental On, a Survival run shows the time and the
-  experimental notice in place of the score, in flight and on run complete,
+- [x] E6: With Playground On, every ship and part is selectable and fittable,
+  with ordinary ship tabs and marked excluded parts.
+- [x] E7: With Playground On, a Survival run shows the time and the
+  scoring-off notice in place of the score, in flight and on run complete,
   shows no Save Score, and never calls score submission, even when every fitted
   item is stable.
-- [ ] E8: With Experimental On, the experimental marker is visible on the title
-  screen beside the start action and in the Hangar opening, with an accessible
-  name stating that runs are not scored; with Off it is absent.
-- [ ] E9: Only the Hangar's Experimental control changes the setting; choosing
+- [x] E8: With Playground On, scoring-off status is visible beside title-screen
+  Start and in the Hangar launch row; the Hangar header gains no notice or extra
+  height. With Off, the run-status notices are absent.
+- [x] E9: Only the Hangar's Playground control changes the setting; choosing
   ships, fitting parts and flying runs leave it unchanged.
 - [ ] E10: No saved score carries an experimental ship or part, and neither
   the score schema nor `firestore.rules` keeps a list of stable ships.
-- [ ] E11: The class names and the marker and notice text are chosen in a design
-  study with a live prototype on the title screen, Hangar, flight screen and
-  run complete.
+- [ ] E11: Catalog class names and item-marker presentation are settled on a
+  live prototype. Playground is the settled setting name; run status communicates
+  that scoring is off.
 
 ### Regression guardrails
 
 - The release class in the catalog data is the only source of stable versus
   experimental; screens, launch gates and submission all read it.
-- With Experimental Off, no run that starts carries an experimental ship or
+- With Playground Off, no run that starts carries an experimental ship or
   part.
-- With Experimental On, no run shows a score or reaches score submission.
-- Turning Experimental Off never deletes, replaces or refits anything the
+- With Playground On, no run shows a score or reaches score submission.
+- Turning Playground Off never deletes, replaces or refits anything the
   player fitted.
 - Every Survival run shows its time, whatever the setting.
 - The setting never changes during a run, and changing it never alters a run
@@ -129,25 +134,25 @@ Experimental On, a ship carrying only stable parts still flies an unscored run.
 ### Scenarios
 
 ```gherkin
-Feature: Experimental mode
+Feature: Playground
 
   Scenario: Stable play is ranked
-    Given Experimental is Off
+    Given Playground is Off
     And the active ship and all its fitted parts are stable
     When I start a Survival run and complete it
     Then I can see my score
     And I can save it to the leaderboard
 
   Scenario: Experimental content is locked while Off
-    Given Experimental is Off
+    Given Playground is Off
     When I open the Hangar
-    Then experimental ships and parts show the experimental marker
+    Then excluded ship tabs are unavailable and excluded parts show the catalog marker
     And I cannot select or fit them
 
   Scenario: Turning Off blocks launch until the setup is stable
-    Given Experimental is On
+    Given Playground is On
     And the active ship has an experimental part fitted
-    When I turn Experimental Off
+    When I turn Playground Off
     Then the part stays fitted, marked and disabled
     And I cannot start a flight from the Hangar
     When I return to the title screen
@@ -157,32 +162,33 @@ Feature: Experimental mode
     Then I can start a flight again
 
   Scenario: On means unscored, whatever is fitted
-    Given Experimental is On
+    Given Playground is On
     And the active ship and all its fitted parts are stable
     When I fly a Survival run
-    Then the flight screen shows my time and the experimental notice, and no score
+    Then the flight screen shows my time and the scoring-off notice, and no score
     When the run ends
-    Then run complete shows my time and the experimental notice, and no score
+    Then run complete shows my time and the scoring-off notice, and no score
     And no Save Score is offered
 
   Scenario: The marker shows before flight
-    Given Experimental is On
+    Given Playground is On
     When I view the title screen
-    Then the experimental marker is visible beside the start action
+    Then the catalog marker is visible beside the start action
 
   Scenario: A corrupted setting falls back to Off
-    Given the stored Experimental setting is not valid
+    Given the stored Playground setting is not valid
     When I load the game
-    Then Experimental is Off
+    Then Playground is Off
 
   Scenario: Choices survive a visit
-    Given I turned Experimental On, chose another ship and refitted it
+    Given I turned Playground On, chose another ship and refitted it
     When I reload the game
-    Then Experimental is On
+    Then Playground is On
     And the title screen shows that ship with that fitting
 ```
 
 ### Open decisions
 
-- **Wording:** the class names and the marker and notice text, chosen in the
-  design study that E11 names.
+- **Wording:** the class names and the marker and notice text, explored in the
+  [run-status study](../../../../apps/web/src/pages/lab/studies/run-status-2026-11-10.astro).
+  Its current wording is provisional until the designer accepts it.

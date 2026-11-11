@@ -11,6 +11,41 @@ import { expectLit, padPoint } from "../helpers/thrust-pads";
 
 type Box = { x: number; y: number; width: number; height: number };
 
+test("game flight layers use the adopted presentation defaults", async ({
+  page,
+}) => {
+  await startSurvival(page, 1440, 1000);
+  const world = page.locator('canvas[data-layer="world"]');
+  const fx = page.locator('canvas[data-layer="fx"]');
+  const lfx = page.locator('canvas[data-layer="lfx"]');
+  await expect(world).toHaveCSS("mix-blend-mode", "normal");
+  await expect(world).toHaveCSS("filter", "none");
+  await expect(fx).toHaveCSS("mix-blend-mode", "screen");
+  await expect(lfx).toHaveCSS("mix-blend-mode", "hard-light");
+  await expect(lfx).toHaveCSS("filter", "none");
+  const bloom = await fx.evaluate((canvas) => {
+    const match = getComputedStyle(canvas).filter.match(/#([^)'"]+)/);
+    if (!match)
+      throw new Error("FX default filter did not resolve to an SVG filter");
+    const filter = document.getElementById(match[1]);
+    if (!filter) throw new Error("FX default SVG filter definition is missing");
+    return {
+      id: filter.id,
+      glow: filter
+        .querySelector("feGaussianBlur")
+        ?.getAttribute("stdDeviation"),
+      distortion: filter
+        .querySelector("feDisplacementMap")
+        ?.getAttribute("scale"),
+      strength: filter.querySelector("feColorMatrix")?.getAttribute("values"),
+    };
+  });
+  expect(bloom.id).toMatch(/^flight-layers-bloom-/);
+  expect(bloom.glow).toBe("12");
+  expect(bloom.distortion).toBe("16");
+  expect(bloom.strength).toMatch(/^0\.9 0 0 0 0/);
+});
+
 /** Sub-pixel layout rounding. */
 const EPSILON = 0.5;
 
@@ -279,7 +314,7 @@ test("Practice labels itself GOD MODE in the bottom gutter", async ({
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/hangar");
-  await page.getByRole("button", { name: "Test flight", exact: true }).click();
+  await page.getByRole("button", { name: "Practice", exact: true }).click();
   await expect(page.locator(".flight-page")).toHaveAttribute(
     "data-status",
     "PLAYING",

@@ -1,0 +1,17 @@
+---
+import InstrumentBand from "../instrument/InstrumentBand.astro";
+import FlightSceneInstrument from "./FlightSceneInstrument.svelte";
+
+// The Flight scene instrument inside a study page, in the shared full-window
+// band. Pass the study's configuration document; see
+// docs/specs/lab/flight-scene-instrument/spec.md.
+interface Props {
+  config: unknown;
+  label?: string;
+}
+const { config, label } = Astro.props;
+---
+
+<InstrumentBand>
+  <FlightSceneInstrument client:visible {config} {label} />
+</InstrumentBand>

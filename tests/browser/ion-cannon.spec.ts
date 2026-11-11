@@ -1,9 +1,11 @@
+import { chooseShip } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 
 test("genuine cannon installs, persists, removes and launches through Hangar", async ({
   page,
 }) => {
-  await page.goto("/hangar?chassis=fighter");
+  await page.goto("/hangar");
+  await chooseShip(page, "Fighter");
   await page.getByRole("button", { name: "Hull 1 · Equipment: Empty" }).click();
   const cannon = page.getByRole("button", { name: /^Light Ion Cannon\b/ });
   await expect(cannon).toContainText("12–48 damage/s");

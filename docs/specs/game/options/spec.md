@@ -19,7 +19,7 @@ setting: Invert controls, which swaps which side's input fires which engine.
   `apps/web/src/components/Settings.svelte` at `/settings`.
 - **Neighbours.** [Controls](../controls/spec.md) applies Invert controls in
   flight. The [active ship](../active-ship/spec.md) owns which ship is flown,
-  and [Experimental mode](../experimental/spec.md) owns its own setting; neither
+  and [Playground](../experimental/spec.md) owns its own setting; neither
   is kept here.
 
 ### Rules
@@ -44,7 +44,7 @@ setting: Invert controls, which swaps which side's input fires which engine.
 - [ ] O3: The choice survives a page reload.
 - [ ] O4: A missing or invalid stored value reads as the default, and
   unavailable storage leaves the game playable.
-- [ ] O5: `SettingsSchema` holds no ship choice.
+- [x] O5: `SettingsSchema` holds no ship choice.
 
 ### Regression guardrails
 

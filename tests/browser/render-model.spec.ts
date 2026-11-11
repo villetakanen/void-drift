@@ -14,12 +14,24 @@ test("render model compares held production layers and persistent FX", async ({
   );
   await expect(model.locator('canvas[data-layer="fx"]')).toHaveCSS(
     "filter",
-    "blur(2px)",
+    /url\(/,
   );
   await expect(model.locator('canvas[data-layer="lfx"]')).toHaveCSS(
     "filter",
     "none",
   );
+  await expect(
+    model.getByRole("combobox", { name: "FX filter", exact: true }),
+  ).toHaveValue("turbulent-bloom");
+  await expect(model.getByRole("slider", { name: "FX glow size" })).toHaveValue(
+    "12",
+  );
+  await expect(
+    model.getByRole("slider", { name: "FX distortion amount" }),
+  ).toHaveValue("16");
+  await expect(
+    model.getByRole("slider", { name: "FX glow strength" }),
+  ).toHaveValue("90");
 
   const layers = model.locator("canvas[data-layer]");
   expect(
@@ -161,6 +173,78 @@ test("render model compares held production layers and persistent FX", async ({
     "filter",
     "blur(2px)",
   );
+  const heldTime = await model.getAttribute("data-heading");
+  const heldFxBeforeBloom = await layerPixels("fx");
+  const heldLfxBeforeBloom = await layerPixels("lfx");
+  await model
+    .getByRole("combobox", { name: "FX filter", exact: true })
+    .selectOption("turbulent-bloom");
+  await expect(model.locator('canvas[data-layer="fx"]')).toHaveCSS(
+    "filter",
+    /url\(/,
+  );
+  await expect(model.getByRole("slider", { name: "FX glow size" })).toHaveValue(
+    "12",
+  );
+  await expect(
+    model.getByRole("slider", { name: "FX distortion amount" }),
+  ).toHaveValue("16");
+  await expect(
+    model.getByRole("slider", { name: "FX glow strength" }),
+  ).toHaveValue("90");
+  const lfxFilterControl = model.getByRole("combobox", {
+    name: "LFX filter",
+    exact: true,
+  });
+  await expect(
+    lfxFilterControl.locator('option[value="turbulent-bloom"]'),
+  ).toHaveCount(0);
+  await expect(lfxFilterControl).toHaveValue("none");
+  await expect(model.locator('canvas[data-layer="lfx"]')).toHaveCSS(
+    "filter",
+    "none",
+  );
+  const bloomFilter = model.locator(
+    "svg.filter-defs filter[id^='flight-layers-bloom-']",
+  );
+  await expect(bloomFilter.locator("feTurbulence")).toHaveAttribute(
+    "seed",
+    "7",
+  );
+  await expect(bloomFilter.locator("feBlend")).toHaveAttribute(
+    "mode",
+    "screen",
+  );
+  await expect(bloomFilter.locator("feGaussianBlur")).toHaveAttribute(
+    "stdDeviation",
+    "12",
+  );
+  await model.getByRole("slider", { name: "FX glow size" }).fill("8");
+  await model.getByRole("slider", { name: "FX distortion amount" }).fill("12");
+  await model.getByRole("slider", { name: "FX glow strength" }).fill("75");
+  await expect(bloomFilter.locator("feGaussianBlur")).toHaveAttribute(
+    "stdDeviation",
+    "8",
+  );
+  await expect(bloomFilter.locator("feDisplacementMap")).toHaveAttribute(
+    "scale",
+    "12",
+  );
+  await expect(bloomFilter.locator("feColorMatrix")).toHaveAttribute(
+    "values",
+    /0\.75/,
+  );
+  await model.getByRole("slider", { name: "FX glow strength" }).fill("0");
+  await expect(bloomFilter.locator("feColorMatrix")).toHaveAttribute(
+    "values",
+    /^0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0$/,
+  );
+  expect(await layerPixels("fx")).toBe(heldFxBeforeBloom);
+  expect(await layerPixels("lfx")).toBe(heldLfxBeforeBloom);
+  expect(await model.getAttribute("data-heading")).toBe(heldTime);
+  await model
+    .getByRole("combobox", { name: "FX filter", exact: true })
+    .selectOption("blur");
   await model
     .getByRole("combobox", { name: "FX filter", exact: true })
     .selectOption("none");

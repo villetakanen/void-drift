@@ -1,15 +1,15 @@
 import { z } from "zod";
-import { DEFAULT_SHIP_PROFILE_ID } from "../config";
-import { ShipProfileIdSchema } from "./ship-profile";
 
 export const SettingsSchema = z.object({
   invertControls: z.boolean(),
-  selectedShipId: ShipProfileIdSchema,
 });
 
 export type Settings = z.infer<typeof SettingsSchema>;
 
 export const DEFAULT_SETTINGS: Settings = {
   invertControls: true,
-  selectedShipId: DEFAULT_SHIP_PROFILE_ID,
 };
+
+/** Player choice for exposing content outside the scored catalog. */
+export const ExperimentalSettingSchema = z.enum(["Off", "On"]).default("Off");
+export type ExperimentalSetting = z.infer<typeof ExperimentalSettingSchema>;

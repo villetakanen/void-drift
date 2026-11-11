@@ -8,6 +8,9 @@
   --color-action: var(--color-brand);
   --color-selected: var(--color-brand);
   --color-on-brand: var(--color-void);
+  /* The resting bracket of a quiet button: a dim step of the elevation hue,
+	   lit to the action colour under a pointer and on focus. */
+  --color-bracket: lch(25% 32 290);
 
   /* Text */
   --color-text: lch(99.7% 7.45 104.72);
@@ -71,6 +74,7 @@
   --color-focus-ring: var(--color-text);
   --state-disabled-opacity: 0.45;
   --state-hover-brightness: 1.2;
+  --state-held-brightness: 0.85;
   --state-selected-indicator-width: var(--spacing-xs);
   --duration-fast: 150ms;
   --ease-standard: ease;
@@ -120,6 +124,10 @@
   --color-elev-1: lch(5.5% 10 290);
   --color-elev-2: lch(11% 15 290);
   --color-elev-3: lch(16.5% 20 290);
+  /* The ground a surface gives the buttons on it: a button's pane stands one
+	   step above. The page is the void, so the default is elevation 2; a
+	   .panel raises it (surfaces.css). Only buttons read it. */
+  --button-ground: var(--color-elev-2);
   /* Instrument display: a console (elevation 1) holds displays with 4px
 	   scanlines, a darkened edge, a thin dark bezel and a black shadow. */
   --surface-display:

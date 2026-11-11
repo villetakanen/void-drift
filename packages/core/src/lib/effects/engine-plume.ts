@@ -3,6 +3,7 @@ import type { GameObject } from "../physics/Physics";
 import type { FxPass } from "./arcade-fx";
 import { FxSurface } from "./fx-surface";
 import { type PlumeStyle, paintBeam } from "./ion-beam";
+import { paintPlasmaPlume } from "./plasma-plume";
 
 export const PlumeProportionsSchema = z.object({
   length: z.number().positive().max(4).default(1),
@@ -11,6 +12,11 @@ export const PlumeProportionsSchema = z.object({
 });
 export type PlumeProportions = z.infer<typeof PlumeProportionsSchema>;
 const DEFAULT_PROPORTIONS = PlumeProportionsSchema.parse({});
+export type FxVisibilityTransform = (
+  x: number,
+  y: number,
+  radius: number,
+) => { x: number; y: number; radius: number };
 export const ENGINE_CUTOFF = 750;
 const MAX_EMITTERS = 8;
 export interface PlumeEmitter {
@@ -19,6 +25,8 @@ export interface PlumeEmitter {
   y: number;
   angle: number;
   output: number;
+  charge?: number;
+  thrustSeconds?: number;
 }
 export interface PlumeOutlet {
   style: PlumeStyle;
@@ -26,6 +34,8 @@ export interface PlumeOutlet {
   y: number;
   angle: number;
   size: number;
+  charge?: number;
+  thrustSeconds?: number;
 }
 
 /** Current outlet state only. Painted light belongs to the scene's FxSurface. */
@@ -76,13 +86,21 @@ export class EnginePlume {
     this.active = 0;
     for (let i = 0; i < Math.min(MAX_EMITTERS, emitters.length); i++) {
       const emitter = emitters[i];
-      if (!(emitter.output > 0) || !Number.isFinite(emitter.output)) continue;
+      const thrusting = emitter.output > 0 && Number.isFinite(emitter.output);
+      const charging =
+        emitter.charge !== undefined &&
+        Number.isFinite(emitter.charge) &&
+        emitter.charge >= 0 &&
+        emitter.charge <= 1;
+      if (!thrusting && !charging) continue;
       const outlet = this.outlets[this.active++];
       outlet.style = emitter.style ?? "default";
       outlet.x = ship.pos.x + emitter.x * cos - emitter.y * sin;
       outlet.y = ship.pos.y + emitter.x * sin + emitter.y * cos;
       outlet.angle = ship.rotation + emitter.angle;
-      outlet.size = Math.sqrt(Math.min(1, emitter.output));
+      outlet.size = thrusting ? Math.sqrt(Math.min(1, emitter.output)) : 0;
+      outlet.charge = emitter.charge;
+      outlet.thrustSeconds = emitter.thrustSeconds;
     }
   }
   /** Stamp current outlets once into the scene; the surface supplies persistence. */
@@ -91,18 +109,38 @@ export class EnginePlume {
     pass: FxPass,
     proportions: PlumeProportions = DEFAULT_PROPORTIONS,
     painter?: (ctx: CanvasRenderingContext2D, size: number) => void,
+    transformVisibility?: FxVisibilityTransform,
   ) {
     const radius = 80 * Math.max(proportions.length, proportions.width);
     for (let i = 0; i < this.active; i++) {
       const outlet = this.outlets[i];
-      if (!pass.visible(outlet.x, outlet.y, radius) || !pass.budget.take(true))
-        continue;
+      if (!(outlet.size > 0)) continue;
+      const outletRadius = outlet.style === "plasma" ? radius * 1.5 : radius;
+      const visible = transformVisibility
+        ? (() => {
+            const bounds = transformVisibility(
+              outlet.x,
+              outlet.y,
+              outletRadius,
+            );
+            return pass.visible(bounds.x, bounds.y, bounds.radius);
+          })()
+        : pass.visible(outlet.x, outlet.y, outletRadius);
+      if (!visible || !pass.budget.take(true)) continue;
       ctx.save();
       ctx.translate(outlet.x, outlet.y);
       ctx.rotate(outlet.angle);
       ctx.scale(proportions.length, proportions.width);
       ctx.globalAlpha = pass.opacity * proportions.opacity;
       if (painter) painter(ctx, outlet.size);
+      else if (outlet.style === "plasma")
+        paintPlasmaPlume(
+          ctx,
+          outlet.size,
+          outlet.thrustSeconds ?? 0,
+          Math.round(this.time * 60),
+          () => pass.budget.take(),
+        );
       else paintBeam(ctx, outlet.size, outlet.style);
       ctx.restore();
     }

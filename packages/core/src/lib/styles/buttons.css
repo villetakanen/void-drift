@@ -133,6 +133,178 @@
   box-shadow: inset 0 calc(-1 * var(--state-selected-indicator-width))
     var(--color-selected);
 }
+
+/* Actions (actions study, 2026-11-11, 02.14): the normal button, the call to
+   action and the link. A normal button is a pane standing one step above its
+   ground with a bracket around each end; the call to action is the one lime
+   fill. Both draw their edge on ::after, inside the button's own clip: a 1px
+   edge along the cut, left open across the middle 40% of the top and bottom.
+   `data-lab-state` forces pointer, held or focus for the Lab's reference
+   page; nothing in the game sets it. */
+@property --btn-edge {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+.btn-normal,
+.btn-filled {
+  --_edge-width: 1px;
+  --_edge-inset: 0px;
+  --_arm: 30%;
+  --_transition:
+    var(--button-transition),
+    /* biome-ignore lint/correctness/noMissingVarFunction: this names the registered property. */
+    --btn-edge var(--duration-fast) var(--ease-standard);
+}
+.btn-normal::after,
+.btn-filled::after {
+  /* The inner corner of a diagonal edge sits 0.414 × its width further in. */
+  --_inner: calc(var(--_cut-size) + 0.4142 * var(--_edge-width));
+  content: "";
+  position: absolute;
+  inset: var(--_edge-inset);
+  z-index: var(--layer-under);
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    var(--btn-edge) 0 var(--_arm),
+    transparent var(--_arm) calc(100% - var(--_arm)),
+    var(--btn-edge) calc(100% - var(--_arm))
+  );
+  clip-path: polygon(
+    evenodd,
+    var(--_cut-size) 0,
+    100% 0,
+    100% calc(100% - var(--_cut-size)),
+    calc(100% - var(--_cut-size)) 100%,
+    0 100%,
+    0 var(--_cut-size),
+    var(--_cut-size) 0,
+    var(--_inner) var(--_edge-width),
+    calc(100% - var(--_edge-width)) var(--_edge-width),
+    calc(100% - var(--_edge-width)) calc(100% - var(--_inner)),
+    calc(100% - var(--_inner)) calc(100% - var(--_edge-width)),
+    var(--_edge-width) calc(100% - var(--_edge-width)),
+    var(--_edge-width) var(--_inner),
+    var(--_inner) var(--_edge-width),
+    var(--_cut-size) 0
+  );
+}
+
+/* The normal button: a pane on the ground, a regular label, dim brackets.
+   Pointer and focus light the brackets; held tints the pane. */
+.btn-normal {
+  --_fill: var(--button-ground);
+  --btn-edge: var(--color-bracket);
+  background: none;
+  color: var(--color-text);
+  font-weight: var(--font-weight-regular);
+}
+.btn-normal::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: var(--layer-under);
+  pointer-events: none;
+  background: var(--_fill);
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+.btn-normal:is(
+  :hover,
+  :focus-visible,
+  :active,
+  [data-lab-state="pointer"],
+  [data-lab-state="focus"],
+  [data-lab-state="held"]
+) {
+  --btn-edge: var(--color-action);
+}
+.btn-normal:is(:active, [data-lab-state="held"]) {
+  --_fill: color-mix(in srgb, var(--color-action) 28%, transparent);
+}
+
+/* The call to action keeps its fill at rest and under a pointer. Held dims
+   the fill; keyboard focus draws dark brackets inside it. */
+.btn-filled {
+  --btn-edge: transparent;
+}
+.btn-filled[data-lab-state="pointer"] {
+  filter: brightness(var(--state-hover-brightness));
+}
+.btn-filled:active:not(:disabled):not([aria-disabled="true"]),
+.btn-filled[data-lab-state="held"] {
+  filter: brightness(var(--state-held-brightness));
+}
+.btn-filled:is(:focus-visible, [data-lab-state="focus"]) {
+  --btn-edge: var(--color-on-brand);
+  --_edge-width: 2px;
+  --_edge-inset: 3px;
+}
+
+/* Focus is the brackets, not the shared ring. */
+.btn-normal:focus-visible,
+.btn-filled:focus-visible {
+  outline: none;
+}
+
+/* Unavailable: an empty frame and a muted label, with no fade and no change
+   under a pointer. The call to action's frame stays lime, the one place lime
+   marks something that cannot be acted on. Declared after every state. */
+.btn-normal:is(:disabled, [aria-disabled="true"]),
+.btn-filled:is(:disabled, [aria-disabled="true"]) {
+  --_fill: transparent;
+  --_edge-width: 1px;
+  --_edge-inset: 0px;
+  background: none;
+  color: var(--color-text-muted);
+  filter: none;
+  opacity: 1;
+}
+.btn-normal:is(:disabled, [aria-disabled="true"]) {
+  --btn-edge: var(--color-bracket);
+}
+.btn-filled:is(:disabled, [aria-disabled="true"]) {
+  --btn-edge: var(--color-action);
+}
+
+/* The link: lime words on a 1px lime line at 20%; under a pointer and on
+   focus the line goes to full lime. On an anchor or on a .btn. */
+.text-link {
+  color: var(--color-action);
+  text-decoration: underline;
+  text-decoration-color: color-mix(
+    in srgb,
+    var(--color-action) 20%,
+    transparent
+  );
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.35em;
+  transition: text-decoration-color var(--duration-fast) var(--ease-standard);
+}
+.btn.text-link {
+  background: none;
+  font-weight: var(--font-weight-regular);
+}
+.text-link:is(
+  :hover,
+  :focus-visible,
+  :active,
+  [data-lab-state="pointer"],
+  [data-lab-state="focus"],
+  [data-lab-state="held"]
+) {
+  text-decoration-color: var(--color-action);
+}
+.text-link:focus-visible {
+  outline: none;
+}
+.text-link:is(:disabled, [aria-disabled="true"]) {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  opacity: 1;
+  cursor: not-allowed;
+}
+
 /* aria-disabled communicates state; callers must also suppress link activation. */
 .button-group-frame {
   container-type: inline-size;
@@ -187,7 +359,8 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .btn,
-  .btn::before {
+  .btn::before,
+  .text-link {
     transition: none;
   }
 }

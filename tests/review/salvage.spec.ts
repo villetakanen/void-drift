@@ -1,3 +1,4 @@
+import { chooseShip, enablePreviewContent } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 
 test("shared weapon fitting and turret geometry", async ({ page }, info) => {
@@ -17,7 +18,9 @@ for (const width of [1280, 844]) {
     await page.clock.install({ time });
     await page.clock.pauseAt(time);
     await page.setViewportSize({ width, height: width === 1280 ? 720 : 390 });
-    await page.goto("/hangar?chassis=fighter");
+    await page.goto("/hangar");
+    await enablePreviewContent(page);
+    await chooseShip(page, "Fighter");
     await page
       .getByRole("button", { name: "Hull 1 · Equipment: Empty" })
       .click();
@@ -26,9 +29,7 @@ for (const width of [1280, 844]) {
       .getByRole("button", { name: "Hull 2 · Equipment: Empty" })
       .click();
     await page.getByRole("button", { name: /^Rail gun\b/ }).click();
-    await page
-      .getByRole("button", { name: "Test flight", exact: true })
-      .click();
+    await page.getByRole("button", { name: "Practice", exact: true }).click();
     const capture = async (name: string) => {
       const path = info.outputPath(`${name}.png`);
       await page.screenshot({ path });

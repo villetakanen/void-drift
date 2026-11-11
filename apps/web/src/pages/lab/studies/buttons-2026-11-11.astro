@@ -1,0 +1,1291 @@
+---
+import ActionBracket024 from "../../../components/studies/ActionBracket024.svelte";
+import ActionBracketTone025 from "../../../components/studies/ActionBracketTone025.svelte";
+import ActionEdge023 from "../../../components/studies/ActionEdge023.svelte";
+import ActionFocus028 from "../../../components/studies/ActionFocus028.svelte";
+import ActionHeld027 from "../../../components/studies/ActionHeld027.svelte";
+import ActionLinkLine0213 from "../../../components/studies/ActionLinkLine0213.svelte";
+import ActionLinks0212 from "../../../components/studies/ActionLinks0212.svelte";
+import ActionMaterials021 from "../../../components/studies/ActionMaterials021.svelte";
+import ActionPointer026 from "../../../components/studies/ActionPointer026.svelte";
+import ActionRest022 from "../../../components/studies/ActionRest022.svelte";
+import ActionSheet0214 from "../../../components/studies/ActionSheet0214.svelte";
+import ActionStrip0211 from "../../../components/studies/ActionStrip0211.svelte";
+import ActionTogether0210 from "../../../components/studies/ActionTogether0210.svelte";
+import ActionUnavailable029 from "../../../components/studies/ActionUnavailable029.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((entry) => entry.slug === "buttons-2026-11-11");
+---
+
+<StudyLayout study={study}>
+  <section>
+    <h2>01 / One lit action among quiet controls</h2>
+    <p>
+      The interface is meant to read as one console of lit, almost holographic
+      controls. The design system already names its surfaces console and
+      display; the holographic reading is this study's and is not yet in the
+      design principles. An action is what a player presses to make something
+      happen or to go somewhere: a button or a link. On
+      <a href="/">the title screen</a>
+      a filled lime button says Press start, and the four actions beneath it
+      each wear a full lime outline. In
+      <a href="/hangar">the Hangar</a>
+      the launch row sets three outlined buttons beside the filled Survival, on
+      the same screen as ship tabs, a toggle and switches that are made
+      differently: cut surfaces raised above their background, with no outline
+      while available and a lime fill only on what is selected. A pointer tints
+      a tab or a toggle part with faint lime and brightens a switch's track. The
+      actions predate that language. They read as shapes drawn on a page; the
+      newer controls read as panes of the console.
+    </p>
+    <p>
+      The outline also spends lime on every action at once. Five lime shapes in
+      a column leave the call to action only a little ahead, and a pointer fills
+      an outlined button solid lime, so for a moment it is the call to action.
+      Keyboard focus draws a second, pale ring inside the first outline. An
+      unavailable button is the same outline at lower opacity, which in a row
+      still reads as an offer. Every action that leads to another page is
+      dressed as a button; the game has almost no text links, so there is no
+      quieter way to offer one. Yet lime is what says a thing can be acted on. A
+      quieter action must stay recognisably pressable, and must not be taken for
+      a tab, a toggle part or a label: those choose and inform, an action
+      commands.
+    </p>
+    <dl>
+      <dt>Fixed</dt>
+      <dd>
+        The filled lime call to action, at rest and under a pointer. The
+        top-left and bottom-right cut corners of a button. The 44px minimum
+        target. Which actions each screen offers, and their order.
+      </dd>
+      <dt>Open: the action</dt>
+      <dd>
+        What the quiet button and the text link are made of at rest and under a
+        pointer, and what every action, the call to action included, shows when
+        held down, focused from the keyboard and unavailable. Held down has no
+        treatment today; focus and unavailable are each one rule shared by every
+        button. A third shared rule marks a button selected with a lime bar
+        along its bottom edge, used in the game only by the Leaderboard's sort
+        pair, where the selected button is also filled lime and the bar cannot
+        be seen; whether an action keeps a selected state at all is open. The
+        newer controls do not agree on unavailable: a tab becomes an empty
+        frame, a toggle part and a switch fade.
+      </dd>
+      <dt>Open: the action among others</dt>
+      <dd>
+        An action is almost never seen alone, so how it looks beside other
+        actions is part of what it is made of: how the call to action leads the
+        quiet ones, which actions are buttons and which are links, how an
+        unavailable one sits in a row, and the surface, gaps and widths that
+        make a set read as one piece. This is one question with the material,
+        not a second one. Today the title screen, pause and run complete share a
+        vertical group on a panel, where each outlined button's interior is the
+        void; Settings and the Leaderboard share a horizontal strip that paints
+        its own void surface, on the Leaderboard inside a panel; the Hangar's
+        launch row is built separately, on the void, with its own spacing and
+        widths. Remove fitting, the Credits return link and the filled Return to
+        Hangar on the flight-unavailable dialog stand alone. On Settings,
+        Credits and an unranked run complete there is no call to action, so a
+        quiet action is the only one offered.
+      </dd>
+      <dt>Links today</dt>
+      <dd>
+        The stylesheet has a link button: lime text without a cut or a surface,
+        turning pale under a pointer. Only the Lab uses it. Links in study and
+        Lab prose are lime. In the game the only links that are not dressed as
+        buttons are the logomark in page headers and a fallback sentence on the
+        page that redirects the old builder address, which a player normally
+        never sees. The stylesheet also has a muted, caption-size link for
+        flight dialogs that nothing uses.
+      </dd>
+      <dt>Reach</dt>
+      <dd>
+        The answer changes the shared outlined button and link button wherever
+        they are used: the title menu, the Hangar's launch row and Remove
+        fitting, the pause and run-complete dialogs, the return links on
+        Settings and Credits, the Leaderboard's Refresh and the unselected half
+        of its sort pair, and the Lab pages that use them. The shared state
+        rules reach every button, the red one included, and the Lab buttons that
+        carry no variant or one that has no rule. The answer is judged in the
+        title screen's group and the Hangar's launch row. A text link, a
+        selected button and the horizontal strip do not occur in those two
+        places; each is shown in a built example beside them. From this study
+        on, buttons and links are documented together on one canonical page,
+        <code>/lab/ds/actions</code>; buttons leave <code>/lab/inputs</code>.
+      </dd>
+      <dt>Not actions</dt>
+      <dd>
+        The flight deck is its own instrument. Its Pause and Weapons controls
+        and the thrust pads share the design system's tokens and nothing else
+        with the standard actions; nothing here applies to them and they are not
+        documented on the actions page. The Hangar's mount and part controls,
+        like tabs, the toggle and the switch, are selection tools: they choose,
+        they do not command.
+      </dd>
+      <dt>Adjacent</dt>
+      <dd>
+        The Leaderboard's sort pair is a choice built from two buttons, with the
+        filled one meaning selected, so two filled buttons show there at once.
+        Its look follows the answer; whether it should be a selection tool
+        instead is a separate question. The design system lists a red button for
+        consequences, but it exists only in the stylesheet and the Lab and no
+        game screen uses it; it is not a given here and this study does not
+        settle it.
+      </dd>
+    </dl>
+
+    <aside class="stamp" aria-labelledby="stamp">
+      <h3 id="stamp">Question check · 11 November 2026</h3>
+      <p>
+        An independent reviewer with no part in the framing tested this section
+        against the question rubric as adjusted that day. It was the fourth run;
+        the section and the rubric both changed after the first three. The
+        reviewer found no false claim and listed six omissions and imprecisions.
+        Each is now answered in the text above, which has not been tested again.
+        <a href="/lab/reviews/buttons-2026-11-11">Full result and findings</a>.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Metric</th>
+            <th scope="col">Stamp</th>
+            <th scope="col">Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">One subject</th>
+            <td>Pass with findings</td>
+            <td>
+              One object, the action that is not the call to action, as a quiet
+              button and as a text link, in its states and among other actions.
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Grounded</th>
+            <td>Pass with findings</td>
+            <td>
+              Every fixed item exists as described and no claim about the
+              current interface is false.
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Consequence</th>
+            <td>Pass</td>
+            <td>
+              The shared outlined button and link button change wherever they
+              are used, and both are documented together afterwards.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </aside>
+  </section>
+
+  <section>
+    <details id="materials">
+      <summary>02.1 / Four materials for a quiet action</summary>
+      <p>
+        The first round asks the widest version of the question: what is a quiet
+        action made of at all? Four different answers stand below today's
+        outlined button, each in the title screen's group on a panel, in the
+        Hangar's launch row on the void, and in a strip of its states. The call
+        to action is the production button in every one.
+      </p>
+      <ul>
+        <li>
+          <strong>What is held still.</strong>
+          Each set keeps today's arrangement: the shared vertical group, and the
+          Hangar row's own gaps and widths. Every action stays a button; no
+          variant yet turns one into a link. Focus is one proposal shared by A
+          to D: the edge of the cut shape lights pale, in place of the ring
+          inside it.
+        </li>
+        <li>
+          <strong>What to look for.</strong>
+          Whether the call to action is the only thing that reads as lit;
+          whether a quiet action still reads as pressable; whether it could be
+          taken for a tab; and whether Gauntlet, unavailable in the row, still
+          reads as an offer.
+        </li>
+        <li>
+          <strong>What this cannot show.</strong>
+          The states are forced copies, so the strip shows their look and not
+          their feel; the live buttons respond to a pointer and to the keyboard
+          but do nothing. Motion between states, the selected state, the
+          horizontal strip, touch, and the call to action's own held, focused
+          and unavailable looks are not in this round.
+        </li>
+      </ul>
+      <ActionMaterials021 client:load />
+      <h3>Result</h3>
+      <p>
+        A / Pane is taken forward. It is the closest to the language the tabs,
+        toggle and switch already speak, and on the title screen it is the only
+        set that reads as balanced and as part of this world. Two things are
+        wrong with it as shown: the quiet actions do not stand out enough as
+        things to press, and the plain pane is too sleek, not technical enough.
+        Its link, its focus and its pointer wash are not accepted; the wash
+        reads as blinking. B, C and D are not pursued.
+      </p>
+    </details>
+  </section>
+
+  <section>
+    <details id="rest">
+      <summary>02.2 / The quiet button at rest</summary>
+      <p>
+        The pane had two faults: the quiet buttons did not stand out enough as
+        things to press, and it was too sleek. Dressing it with marks, or
+        replacing it with another kind of object, answered a different question
+        and both attempts were discarded. This round changes only what the
+        design system already has: the weight of the label and how far the
+        surface stands above its background. Each version sits in a slice of the
+        title screen and of the Hangar, among the production logomark, tabs,
+        switch and call to action.
+      </p>
+      <ul>
+        <li>
+          <strong>What to look for.</strong>
+          Whether the quiet buttons read as things to press beside the tabs and
+          the switch, and whether the call to action still leads.
+        </li>
+        <li>
+          <strong>What this cannot show.</strong>
+          The quiet buttons have no pointer, held, focus or unavailable design
+          here; Gauntlet is only dimmed as a stand-in. The ship facts are sample
+          values. The tabs and the switch are live.
+        </li>
+      </ul>
+      <ActionRest022 client:load />
+      <h3>Result</h3>
+      <p>
+        Neither change is kept. The heavier label and the extra elevation step
+        both look out of place: each bends a rule of the design language, and
+        the result reads as a mistake instead of as emphasis. The quiet button
+        keeps the regular label and the surface of 02.1. The lesson reaches past
+        this round: the quiet button cannot be improved by working against the
+        constraints of the language. Something has to be added to it.
+      </p>
+    </details>
+  </section>
+
+  <section>
+    <details id="edges">
+      <summary>02.3 / A partial edge</summary>
+      <p>
+        If something is added to the pane, it should come from the instruments
+        of a ship and not from web pages. This round tries an edge that is
+        deliberately incomplete: drawn around part of the pane and left open
+        elsewhere, the way a display frames a reading or a sight frames a
+        target. It is dim and never lime, so the call to action stays the one
+        lit shape. A partial edge is new to the design system; if one is kept it
+        becomes part of the language and is recorded in the scope.
+      </p>
+      <ul>
+        <li>
+          <strong>What to look for.</strong>
+          Whether the quiet buttons now read as equipment and as things to
+          press; whether an edge reads as a ship's instrument or as a web
+          border; how five framed shapes sit in the title column; and whether
+          the frame separates a button from the tabs above the launch row.
+        </li>
+        <li>
+          <strong>What this cannot show.</strong>
+          The quiet buttons have no pointer, held, focus or unavailable design
+          here; Gauntlet is only dimmed as a stand-in. The ship facts are sample
+          values. The tabs and the switch are live.
+        </li>
+      </ul>
+      <ActionEdge023 client:load />
+      <h3>Result</h3>
+      <p>
+        1 / Brackets is kept as the working hypothesis. The incomplete edge is a
+        technical detail that does not come from web pages, and it makes the
+        quiet buttons read as things to press. Two reservations go with it: the
+        edge is too bright as drawn, and it stands a little apart from the call
+        to action, which has no such frame; the second is accepted for now.
+        Heavy sides and the stand-off frame are not pursued.
+      </p>
+    </details>
+  </section>
+
+  <section>
+    <details id="tone">
+      <summary>02.4 / How bright a bracket is</summary>
+      <p>
+        The brackets should be a detail that is found on a second look, not the
+        first thing seen. Their shape is held still here, the same arms and the
+        same gap as in 02.3, and only their colour changes: fainter, in the
+        pane's own hue, or in a dim trace of the brand colour.
+      </p>
+      <ul>
+        <li>
+          <strong>What to look for.</strong>
+          At what strength the brackets stop dominating and still read as a
+          frame; whether a tone holds on both the panel and the void; and
+          whether dim lime on four quiet buttons takes anything from the call to
+          action.
+        </li>
+        <li>
+          <strong>What this cannot show.</strong>
+          The length of the arms and the width of the gap are not varied. The
+          quiet buttons have no pointer, held, focus or unavailable design here;
+          Gauntlet is only dimmed as a stand-in. The ship facts are sample
+          values.
+        </li>
+      </ul>
+      <ActionBracket024 client:load />
+      <h3>Result</h3>
+      <p>
+        2 / The pane's hue is kept. A bracket in a lighter tone of the surface's
+        own violet belongs to the pane instead of sitting on it, and it holds on
+        both the panel and the void. It may still be too bright. The fainter
+        neutral and the dim brand colour are not pursued.
+      </p>
+    </details>
+  </section>
+
+  <section>
+    <details id="lightness">
+      <summary>02.5 / Bright enough to see, dim enough to recede</summary>
+      <p>
+        The bracket has to be bright enough to be seen and dim enough to fall
+        into the background. This round is a fine adjustment of one number. The
+        hue and the chroma of 02.4 are held, and the lightness steps down from
+        40% by five at a time. For scale, the pane itself is 11% light on the
+        void and 16.5% on a panel. The steps stand side by side so that
+        neighbours can be compared.
+      </p>
+      <ul>
+        <li>
+          <strong>What to look for.</strong>
+          The lowest step at which the brackets still read as a frame on the
+          panel, where the pane is lighter, and the highest at which they recede
+          on the void; and whether one step serves both.
+        </li>
+        <li>
+          <strong>What this cannot show.</strong>
+          The title panels are narrowed to fit five in a row, so their buttons
+          are narrower than in the game. Arm length and gap are not varied. The
+          quiet buttons have no pointer, held, focus or unavailable design here;
+          Gauntlet is only dimmed as a stand-in.
+        </li>
+      </ul>
+      <ActionBracketTone025 client:load />
+      <h3>Result</h3>
+      <p>
+        25% is chosen. The bracket is <code>lch(25% 32 290)</code>: the pane's
+        hue, visible on the void and close to the surface on a panel. With it
+        the quiet button at rest is settled: the pane, a regular label, and a
+        1px bracket around each end that leaves the middle 40% of the top and
+        bottom open.
+      </p>
+    </details>
+  </section>
+
+  <section>
+    <details id="pointer">
+      <summary>02.6 / Under a pointer</summary>
+      <p>
+        A pointer has to get an answer, and the answer should be calm: in 02.1 a
+        lime wash over the whole pane read as blinking. The brackets give the
+        button a part of its own that can answer instead. Four answers follow.
+        The first is what the tabs and the toggle already do, as the reference;
+        the other three move or light the brackets and leave the pane alone.
+        Each change eases over the interface's short duration.
+      </p>
+      <ul>
+        <li>
+          <strong>What to look for.</strong>
+          Move a pointer down a column and along a row. Whether the answer is
+          noticed without flicker; whether it belongs to this ship; whether lime
+          under a pointer competes with the call to action; and whether a button
+          should answer differently from the tabs above it.
+        </li>
+        <li>
+          <strong>What this cannot show.</strong>
+          The title panels are narrowed to fit four in a row. Touch has no
+          pointer state. Held, focus and unavailable are not designed here;
+          Gauntlet is only dimmed and does not answer.
+        </li>
+      </ul>
+      <ActionPointer026 client:load />
+      <h3>Result</h3>
+      <p>
+        2 / Brackets light is chosen. Under a pointer the brackets turn lime and
+        keep their gap; the pane and the label do not change. The tabs' tint and
+        the closing brackets, lit or unlit, are not used for the pointer.
+      </p>
+    </details>
+  </section>
+
+  <section>
+    <details id="held">
+      <summary>02.7 / Held down</summary>
+      <p>
+        Buttons have no held look today. A press should be felt as taken before
+        the screen changes, and a held button is already pointed at, so its
+        brackets are already lit. The question is what more it shows. Four
+        answers follow, from nothing to the whole pane lit.
+      </p>
+      <ul>
+        <li>
+          <strong>What to look for.</strong>
+          Press and hold the live buttons. Whether the press is felt; whether
+          the step from pointed at to held is clear but not loud; and whether a
+          held quiet button can be mistaken for the call to action.
+        </li>
+        <li>
+          <strong>What this cannot show.</strong>
+          The title panels are narrowed to fit four in a row. A real press is
+          brief, and the action that follows it is not shown. Touch is not
+          checked. Focus and unavailable are not designed here; Gauntlet is only
+          dimmed and does not answer.
+        </li>
+      </ul>
+      <ActionHeld027 client:load />
+      <h3>Result</h3>
+      <p>
+        2 / Pane lights is chosen. While a quiet button is held, its pane takes
+        the faint lime tint a tab shows under a pointer, inside the lit
+        brackets. The closing brackets and the full lime fill are not used.
+      </p>
+    </details>
+  </section>
+
+  <section>
+    <details id="focus">
+      <summary>02.8 / Keyboard focus</summary>
+      <p>
+        The game is played from the keyboard first, so focus has to be found at
+        a glance on any button, the call to action included. Today's ring is
+        drawn inside the button because the button clips itself to its cut shape
+        and would cut off anything outside. It doubles the old outline, and on
+        the lime call to action a pale ring barely shows. Three answers follow
+        the reference. Two use the bracket the quiet button now has; the third
+        stands outside the button and so is the same on every button.
+      </p>
+      <ul>
+        <li>
+          <strong>What to look for.</strong>
+          Press Tab through a column and a row. Whether focus is found at once
+          on a quiet button and on the call to action; whether it can be told
+          from a pointer; and whether a quiet button and the call to action
+          should show focus the same way.
+        </li>
+        <li>
+          <strong>What this cannot show.</strong>
+          The title panels are narrowed to fit four in a row. The call to action
+          here is a copy rebuilt without clipping; a frame outside the button
+          needs the production button rebuilt the same way, which is a readiness
+          question. The tabs and switch keep their own focus. Unavailable is not
+          designed; Gauntlet is only dimmed.
+        </li>
+      </ul>
+      <ActionFocus028 client:load />
+      <h3>Result</h3>
+      <p>
+        1 / As a pointer is chosen. Keyboard focus is the keyboard's pointer: a
+        focused quiet button lights its brackets lime, exactly as under a
+        pointer. The call to action, which has no brackets at rest, shows dark
+        ones just inside its fill. Today's ring, the closing frame and the sight
+        are not used, so the production button does not need rebuilding for a
+        frame outside its shape.
+      </p>
+    </details>
+  </section>
+
+  <section>
+    <details id="unavailable">
+      <summary>02.9 / Unavailable</summary>
+      <p>
+        An unavailable action keeps its place, so the screen does not rearrange,
+        but it must not read as an offer. Today every button fades to 45%, the
+        call to action included: the shape, the outline and the lime all stay,
+        only weaker, and in a row the result still looks like something to
+        press. The game has two cases: one action out of several, as Gauntlet in
+        the Hangar; and a whole set, as when a ship cannot launch or the title
+        screen is still loading.
+      </p>
+      <ul>
+        <li>
+          <strong>What to look for.</strong>
+          Whether Gauntlet stops reading as an offer and still holds its place;
+          whether a whole row that cannot launch reads as one switched-off
+          instrument; and whether an unavailable call to action should stay
+          recognisably the call to action.
+        </li>
+        <li>
+          <strong>What this cannot show.</strong>
+          The title panels are narrowed to fit four in a row. Why an action is
+          unavailable is told by the text beside it, not by the button, and is
+          not shown. Both buttons are scoped copies.
+        </li>
+      </ul>
+      <ActionUnavailable029 client:load />
+      <h3>Result</h3>
+      <p>
+        1 / Empty frame is chosen, with one change for the call to action. An
+        unavailable quiet button loses its pane and keeps its dim brackets
+        around a muted label, as an unavailable tab keeps its frame. An
+        unavailable call to action loses its fill and keeps brackets in the
+        brand lime, so it stays recognisable as the call to action. One
+        consequence to watch: lime brackets are also what a quiet button shows
+        under a pointer; there the pane and a pale label remain, here neither
+        does.
+      </p>
+    </details>
+  </section>
+
+  <section>
+    <details id="together">
+      <summary>02.10 / How far apart</summary>
+      <p>
+        The button is settled in every state, so the question turns to buttons
+        beside each other. Today the title screen's group leaves 8px between
+        buttons and the Hangar's launch row, built separately, leaves 20px. The
+        brackets change what a gap does: each button now carries its own frame,
+        and the distance between two frames decides whether a set reads as one
+        instrument or as separate controls. Widths are held as they are: the
+        title screen's buttons fill their group and the Hangar's are 180px each.
+      </p>
+      <ul>
+        <li>
+          <strong>What to look for.</strong>
+          Whether one gap can serve both a column and a row; whether the set
+          reads as one piece of equipment; and whether the call to action still
+          stands apart from its neighbours when they are close.
+        </li>
+        <li>
+          <strong>What this cannot show.</strong>
+          The title panels are narrowed to fit four in a row. The horizontal
+          strip of Settings and the Leaderboard, and the padding around a set,
+          are not in this round. Touch targets are 44px tall in every version;
+          whether a 4px gap is comfortable under a finger is not checked.
+        </li>
+      </ul>
+      <ActionTogether0210 client:load />
+      <h3>Result</h3>
+      <p>
+        The gap depends on direction. Buttons stacked top to bottom stand 8px
+        apart, as the title screen's group already does. Buttons set start to
+        end stand 16px apart, so the Hangar's launch row closes from 20px to
+        16px. One gap for both directions is not used.
+      </p>
+    </details>
+  </section>
+
+  <section>
+    <details id="strip">
+      <summary>02.11 / The surface behind a row</summary>
+      <p>
+        The Leaderboard and Settings put their buttons on a strip that paints
+        its own band of the void. The band was made for the outlined button,
+        whose interior is the void: on a panel it gave the outline a matching
+        ground. A pane needs no such ground, because it steps up from whatever
+        it stands on. On the void page of Settings the band is invisible, so the
+        question shows only inside a panel, as on the Leaderboard.
+      </p>
+      <ul>
+        <li>
+          <strong>What to look for.</strong>
+          Whether the band still earns its place; whether the buttons belong to
+          the panel without it; and whether the set needs anything to part it
+          from the content above.
+        </li>
+        <li>
+          <strong>What this cannot show.</strong>
+          The panels are narrowed to fit three in a row, and Return to title
+          screen is shortened to fit. The Leaderboard's sort pair, which stands
+          on the same kind of strip, is adjacent and left out. Below 580px of
+          width the strip stacks its buttons; that is not shown.
+        </li>
+      </ul>
+      <ActionStrip0211 client:load />
+      <h3>Result</h3>
+      <p>
+        0 / Today's band is kept, with its spacing brought into the rhythm of
+        the gaps. A row of buttons stands on a band of the void, so a quiet
+        button looks the same wherever a row appears. The band is always a
+        single flex row. It has 8px above and below and 16px at each end, the
+        same one, two and four grid units as the gaps between buttons. How the
+        row is distributed is the host's choice: buttons pushed to the two ends,
+        as on the Leaderboard, or gathered at one end, as in the Hangar. A band
+        never wraps or stacks; a row that does not fit holds too many buttons.
+      </p>
+    </details>
+  </section>
+
+  <section>
+    <details id="links">
+      <summary>02.12 / Links</summary>
+      <p>
+        A link is an action written into words: it goes somewhere, and it has no
+        shape of its own. The game has almost none today, so every way out of a
+        screen is a button. The stylesheet's link button is lime words that turn
+        pale under a pointer, used only in the Lab. Three materials follow. Each
+        is shown in a sentence on a panel and on the void, and standing alone in
+        the title screen's group, where CREDITS takes the place of a fifth
+        button so that a link can be seen beside buttons. Focus follows the rule
+        of 02.8: a focused link looks as it does under a pointer.
+      </p>
+      <ul>
+        <li>
+          <strong>What to look for.</strong>
+          Whether a link is found in a sentence without shouting; whether it
+          reads as a quieter kind of action than a button; whether lime words
+          compete with the call to action; and whether a link standing alone in
+          a set of buttons belongs there.
+        </li>
+        <li>
+          <strong>What this cannot show.</strong>
+          The sentences are sample wording. Whether any action in the game
+          becomes a link, CREDITS included, is not decided by this round. Links
+          in the Lab's and the studies' prose are not shown. The panels are
+          narrowed to fit three in a row.
+        </li>
+      </ul>
+      <ActionLinks0212 client:load />
+      <h3>Result</h3>
+      <p>
+        1 / Lime, underlined is chosen. A link has to look like a link, even in
+        this interface: words in the brand colour on a line. Two details are not
+        settled: the line should probably be dimmer than shown, and the pointer
+        answer is not yet accepted. A link standing among buttons, as CREDITS
+        does here, is meant to look a little out of place; whether any action
+        becomes one is still not decided.
+      </p>
+    </details>
+  </section>
+
+  <section>
+    <details id="line">
+      <summary>02.13 / A link's line</summary>
+      <p>
+        Two fine adjustments, shown together so they can be chosen together. The
+        four columns step the line's strength at rest down from the 40% of 02.12
+        to 10%. Under each, the same link is held in three pointer answers that
+        start from that column's line. The words stay lime throughout. A fourth
+        specimen proposes an unavailable link: muted words and no line.
+      </p>
+      <ul>
+        <li>
+          <strong>What to look for.</strong>
+          The faintest line that still marks the words as a link in a sentence
+          and on CREDITS standing alone; then which pointer answer is noticed
+          from that starting point without becoming loud.
+        </li>
+        <li>
+          <strong>What this cannot show.</strong>
+          The live links answer a pointer in the first way only. A held link and
+          a visited link are not shown; neither has a design. The panels are
+          narrowed to fit four in a row and the sentences are sample wording.
+        </li>
+      </ul>
+      <ActionLinkLine0213 client:load />
+      <h3>Result</h3>
+      <p>
+        The line is 20% and the pointer answer is a. A link is lime words on a
+        lime line at 20% strength, one pixel thick; under a pointer, and on
+        keyboard focus, the line lights to full lime and the words do not
+        change.
+      </p>
+    </details>
+  </section>
+
+  <section>
+    <h2 id="whole">02.14 / The whole action</h2>
+    <p>
+      Every item on the list is settled. This round changes nothing; it puts the
+      decisions together so they can be seen as one thing and checked against
+      each other.
+    </p>
+    <ol class="ledger">
+      <li>
+        <strong>The surface.</strong>
+        The pane: one elevation step above a panel, two above the void.
+      </li>
+      <li>
+        <strong>At rest.</strong>
+        A regular label and a 1px bracket around each end, open across the
+        middle 40% of the top and bottom, in <code>lch(25% 32 290)</code>.
+      </li>
+      <li>
+        <strong>Under a pointer.</strong>
+        The brackets turn lime and keep their gap.
+      </li>
+      <li>
+        <strong>Held down.</strong>
+        The pane takes a 28% lime tint inside the lit brackets.
+      </li>
+      <li>
+        <strong>Keyboard focus.</strong>
+        As a pointer. The call to action shows dark brackets inside its fill.
+      </li>
+      <li>
+        <strong>Unavailable.</strong>
+        An empty frame with a muted label; the call to action's frame is lime.
+      </li>
+      <li>
+        <strong>Together.</strong>
+        8px top to bottom, 16px start to end. A row stands on a band of the
+        void, always one flex row, with 8px above and below and 16px at each
+        end.
+      </li>
+      <li>
+        <strong>Links.</strong>
+        Lime words on a lime line at 20%; the line lights under a pointer and on
+        focus.
+      </li>
+    </ol>
+    <p>
+      Four things were never put to a choice. They are shown here as proposals,
+      marked in yellow, so the set is complete; each stands unless it is
+      objected to.
+    </p>
+    <ul>
+      <li>
+        <strong>The call to action held down.</strong>
+        Proposed: its fill dims a step. It brightens under a pointer today, so
+        dimming is the press.
+      </li>
+      <li>
+        <strong>A link held down.</strong>
+        Proposed: no more than under a pointer.
+      </li>
+      <li>
+        <strong>An unavailable link.</strong>
+        Proposed: muted words and no line.
+      </li>
+      <li>
+        <strong>The selected mark.</strong>
+        Proposed: actions lose it. An action commands; what is selected belongs
+        to the tabs, the toggle and the switch. The Leaderboard's sort pair, its
+        only user in the game, is the adjacent question named in 01.
+      </li>
+    </ul>
+    <p>
+      One open item of 01 ends without a change: which actions are buttons and
+      which are links. Nothing in the game becomes a link. A link is for words
+      inside a sentence; a link standing among buttons looks out of place, as
+      CREDITS did in 02.12.
+    </p>
+    <ActionSheet0214 client:load />
+    <h3>Result</h3>
+    <p>
+      The four proposals stand. The sheet above is the accepted design and the
+      reference for what follows: every value in it is settled, and nothing in
+      part 02 remains open.
+    </p>
+  </section>
+  <section>
+    <h2 id="readiness">03 / What the design asks of the code</h2>
+    <p>
+      The accepted design can be built on the shared button as it stands. No
+      part of it needs the button rebuilt, and nothing has to return to
+      exploration. It does reach further than the stylesheet: into a test that
+      asserts the old behaviour, into Lab tools that lean on a rule the design
+      removes, and into the examples of earlier studies. Seven choices are left
+      for the scope to settle; none of them is a design question.
+    </p>
+
+    <h3>What can be used as it is</h3>
+    <ul>
+      <li>
+        <strong>The button's shape.</strong>
+        The shared button clips itself to its cut shape. Brackets, the dark
+        focus brackets on the call to action and the empty frame are all drawn
+        inside that shape, so the clipping stays. A frame outside the button
+        would have forced a rebuild; 02.8 did not choose one.
+      </li>
+      <li>
+        <strong>The call to action</strong>
+        at rest and under a pointer, the 44px target and the label size.
+      </li>
+      <li>
+        <strong>The column.</strong>
+        The shared vertical group already has 8px gaps. The title screen, pause
+        and run complete use it and need no change.
+      </li>
+      <li>
+        <strong>The values.</strong>
+        8px and 16px are steps of the spacing scale. The held tint is the mix
+        the tabs and the toggle already use under a pointer.
+      </li>
+      <li>
+        <strong>The markup of the game.</strong>
+        Six game files use the outlined button. If the class keeps its name,
+        none of them changes for the button itself.
+      </li>
+      <li>
+        <strong>The Lab page pattern.</strong>
+        Tabs already have a page of their own under the design-system group; the
+        actions page follows it.
+      </li>
+    </ul>
+
+    <h3>What has to change</h3>
+    <ul>
+      <li>
+        <strong>The outlined button's rules</strong>
+        are replaced: a pane in place of an outline around the void, brackets,
+        and the pointer, held, focus and unavailable looks.
+      </li>
+      <li>
+        <strong>A button must know what it stands on.</strong>
+        A pane is one step above a panel and two above the void. Nothing tells a
+        control its ground today; the tabs, toggle and switch use one surface
+        everywhere. A panel and a band each need to say what stands on them.
+      </li>
+      <li>
+        <strong>One new colour</strong>
+        for the brackets. It is not needed on canvas, so the canvas mirror and
+        its contract check are untouched.
+      </li>
+      <li>
+        <strong>Focus and unavailable for buttons</strong>
+        leave the shared inset ring and the shared fade. Both stay in use by the
+        tabs, toggle and switch, so their tokens remain.
+      </li>
+      <li>
+        <strong>The call to action</strong>
+        gains a held look, focus brackets and an empty lime frame.
+      </li>
+      <li>
+        <strong>The strip becomes the band:</strong>
+        8px above and below, 16px at the ends and between buttons, always one
+        row. Its stacking below 580px and the frame that measures it go. The
+        Hangar's launch row, built separately today, adopts the band and closes
+        from 20px to 16px.
+      </li>
+      <li>
+        <strong>The link button</strong>
+        takes the link's line, and gains an unavailable look.
+      </li>
+      <li>
+        <strong>The selected rule</strong>
+        on buttons is removed.
+      </li>
+      <li>
+        <strong>The Lab.</strong>
+        A new canonical page for buttons and links; the Inputs page loses its
+        button section; the Lab's page list and the design system's list of
+        canonical pages follow.
+      </li>
+      <li>
+        <strong>The design-system spec.</strong>
+        Its button section is rewritten to the accepted design. Most of that
+        section already describes buttons that no longer exist.
+      </li>
+      <li>
+        <strong>One browser test.</strong>
+        The button test checks that focus draws an outline and that the strip
+        becomes a stacked grid at 600px. Both are behaviours the design removes,
+        so the test is rewritten to the new contract. The title screen's checks
+        of the 44px target and label size still hold.
+      </li>
+    </ul>
+
+    <h3>What it touches beyond buttons</h3>
+    <ul>
+      <li>
+        <strong>Lab tools that use a button as a switch.</strong>
+        The effects bench, the mount planner and two catalogue examples mark a
+        pressed button with the selected rule. Without it they show no state.
+        They become switches or toggles in the same change, or the change breaks
+        them.
+      </li>
+      <li>
+        <strong>The Leaderboard's sort pair</strong>
+        keeps working, because it swaps the filled and quiet buttons itself. It
+        still shows two lime fills at once, which the new quiet button makes
+        more obvious. It remains the adjacent question.
+      </li>
+      <li>
+        <strong>Lab buttons with no variant.</strong>
+        Three benches use a variant that has no rule and three use the bare
+        button. They need to name the quiet button or the call to action.
+      </li>
+      <li>
+        <strong>Earlier studies.</strong>
+        About twenty-five earlier study files use the outlined button from the
+        shared stylesheet, the accepted button study among them. Changing the
+        shared rule changes what those studies show. Their examples have to be
+        frozen first.
+      </li>
+      <li>
+        <strong>The red button</strong>
+        is drawn as an outline, like the old quiet button, and exists only in
+        the Lab. This study does not settle it, so it would be the one button
+        left in the old language.
+      </li>
+    </ul>
+
+    <h3>Risks</h3>
+    <ul>
+      <li>
+        <strong>Focus is thin.</strong>
+        On a quiet button, focus is a one-pixel lime line, and it is the same as
+        a pointer by design. On the call to action it is two pixels, dark on
+        lime. The game is played from the keyboard first. This was chosen with
+        the alternatives in view; it has not been measured against any focus
+        visibility guideline.
+      </li>
+      <li>
+        <strong>Two looks are close.</strong>
+        An unavailable call to action and a quiet button under a pointer both
+        show lime brackets. They differ in pane and label.
+      </li>
+      <li>
+        <strong>Touch.</strong>
+        A finger has no pointer state, so the held tint is the only answer a
+        touch gets. Nothing in this study was checked on a touch screen.
+      </li>
+      <li>
+        <strong>Easing the brackets' colour</strong>
+        needs a registered custom property. Browsers without it change the
+        colour at once, which is acceptable.
+      </li>
+      <li>
+        <strong>A row that never wraps.</strong>
+        The Hangar's four buttons at 180px each need 800px. Today that row wraps
+        below 1000px.
+      </li>
+    </ul>
+
+    <h3>Left for the scope to settle</h3>
+    <ol>
+      <li>Whether the quiet button keeps the outlined button's class name.</li>
+      <li>How a panel and a band tell a button what it stands on.</li>
+      <li>How earlier studies keep the old outlined button.</li>
+      <li>What the Lab's switch-like buttons become.</li>
+      <li>Whether the red button is left alone or removed.</li>
+      <li>
+        Whether links in the prose of the Lab and the studies take the new line.
+      </li>
+      <li>
+        What the Hangar's row does below 800px: narrower buttons, or a row that
+        is allowed to be too wide there.
+      </li>
+    </ol>
+  </section>
+  <section>
+    <h2 id="scope">04 / Five slices</h2>
+
+    <aside class="principles" aria-labelledby="principles">
+      <h3 id="principles">Two proposed changes to the design principles</h3>
+      <p>
+        Neither is made by this study. Each needs explicit agreement before
+        <code>docs/design.md</code>
+        changes, and the slices below do not depend on either.
+      </p>
+      <ul>
+        <li>
+          <strong>Brand: what lime means.</strong>
+          The principles give lime two jobs: the brand, and what can be acted on
+          or is selected. An unavailable call to action keeps a lime frame,
+          which is neither. Either the principle gains a line, that lime also
+          keeps the place of the call to action while it is unavailable, or the
+          design-system spec records this as the one exception. Recommended: the
+          exception in the spec, and no change to the principles.
+        </li>
+        <li>
+          <strong>Art direction: controls belong to a console.</strong>
+          This study worked from an intent the principles do not state: the
+          interface reads as the lit panes and frames of one ship's console, and
+          not as web buttons. It decided two rounds of exploration. Recommended:
+          add it to the art direction as one sentence, so the next control
+          starts from it.
+        </li>
+      </ul>
+    </aside>
+
+    <p>
+      The work is cut so that each slice can be delivered and checked on its
+      own, and so that the game never shows a half-changed screen. The seven
+      choices left by part 03 are settled here as recommendations; each is
+      marked where it is used.
+    </p>
+
+    <h3>The choices, settled</h3>
+    <ol>
+      <li>
+        <strong>The quiet button gets a new class name.</strong>
+        The old outlined rules stay under the old name, untouched.
+      </li>
+      <li>
+        <strong>Earlier studies keep the old name,</strong>
+        and so keep the outlined button exactly as they show it. One decision
+        answers both choices: nothing is copied and no study file changes.
+      </li>
+      <li>
+        <strong>A surface says what stands on it</strong>
+        through one custom property: the page default is the void's step, a
+        panel raises it, a band sets it back. Only buttons read it. The tabs,
+        toggle and switch are not changed.
+      </li>
+      <li>
+        <strong>The Lab's switch-like buttons</strong>
+        become the switch where they turn one thing on or off, and the toggle
+        where they choose between two.
+      </li>
+      <li>
+        <strong>The red button is left alone:</strong>
+        its rule stays, it is not shown on the actions page, and the spec says
+        it is unsettled.
+      </li>
+      <li>
+        <strong>Links in Lab and study prose take the new line,</strong>
+        so there is one link.
+      </li>
+      <li>
+        <strong>Below 800px the Hangar's four buttons share the row</strong>
+        and grow narrower than 180px. The row stays one row.
+      </li>
+    </ol>
+
+    <h3>The slices</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Slice</th>
+            <th scope="col">What it delivers</th>
+            <th scope="col">Touches</th>
+            <th scope="col">Size</th>
+            <th scope="col">Needs</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">1 / The language</th>
+            <td>
+              The quiet button in every state under its new class; the call to
+              action's held, focus and unavailable looks; the link; the bracket
+              colour and the ground property. A canonical page for actions shows
+              all of it. The game's call to action changes at once in focus,
+              held and unavailable; its quiet buttons do not change yet.
+            </td>
+            <td>
+              Shared button styles and tokens; the surface styles; a new Lab
+              page and the Lab's page list; the design-system spec's button
+              section and list of canonical pages.
+            </td>
+            <td>Medium</td>
+            <td>Nothing</td>
+          </tr>
+          <tr>
+            <th scope="row">2 / The game</th>
+            <td>
+              Every quiet action in the game becomes the new button: the title
+              menu, the Hangar's launch row and Remove fitting, pause and run
+              complete, the return links on Settings and Credits, the
+              Leaderboard's Refresh and sort pair.
+            </td>
+            <td>
+              Six game files, one class name each. The game specs that describe
+              those screens' buttons, where they name the outline.
+            </td>
+            <td>Small</td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <th scope="row">3 / The band</th>
+            <td>
+              The strip becomes the band: one row, 8px above and below, 16px at
+              the ends and between buttons, no stacking. The Hangar's launch row
+              adopts it and shares its width below 800px. Columns are unchanged.
+            </td>
+            <td>
+              Shared group styles; the Hangar, Settings and Leaderboard footers;
+              the button browser test's stacking check; the design-system spec.
+            </td>
+            <td>Small</td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <th scope="row">4 / The Lab</th>
+            <td>
+              Lab tools use the new button. Buttons with no variant name one.
+              Switch-like buttons become switches and toggles, and the selected
+              rule on buttons is removed. The Inputs page loses its button
+              section, and the button browser test moves to the actions page and
+              its new contract.
+            </td>
+            <td>
+              About fifteen Lab components; the Inputs page; the button browser
+              test; the Lab spec.
+            </td>
+            <td>Medium</td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <th scope="row">5 / One link</th>
+            <td>
+              Links in the prose of the Lab and the studies take the link's
+              line. The old link button rule and the strip's measuring frame are
+              removed once nothing uses them.
+            </td>
+            <td>Shared type and button styles; the study and Lab layouts.</td>
+            <td>Small</td>
+            <td>1, 3, 4</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Slices 2, 3 and 4 can be taken in any order after 1. Between slices the
+      game is consistent: after 1 its quiet buttons are still the old outline
+      everywhere; after 2 they are the new button everywhere.
+    </p>
+
+    <h3>Checks</h3>
+    <ul>
+      <li>
+        <strong>Correctness, each slice.</strong>
+        The repository's lint, type, contract and browser gates pass. The title
+        screen's existing checks of the 44px target and label size keep passing
+        unchanged.
+      </li>
+      <li>
+        <strong>Correctness, the new contract.</strong>
+        The button browser test is rewritten to relations, not values: a focused
+        button looks different from the same button at rest; an unavailable
+        button does not change under a pointer; a band stays one row at a narrow
+        width and the page does not scroll sideways; with reduced motion nothing
+        eases.
+      </li>
+      <li>
+        <strong>Fidelity.</strong>
+        The actions page is compared, state by state, with the sheet in 02.14,
+        which holds the accepted values. After slice 2 the title screen and the
+        Hangar's launch row are compared with the same sheet's column and row.
+      </li>
+      <li>
+        <strong>Earlier studies.</strong>
+        After slice 1 the accepted button study and one other study that uses
+        the outlined button render as before.
+      </li>
+    </ul>
+
+    <h3>Still provisional</h3>
+    <ul>
+      <li>
+        Focus on a quiet button is the same one-pixel line as a pointer. It is
+        accepted as designed and unmeasured.
+      </li>
+      <li>
+        Nothing in this design has been seen on a touch screen. A finger gets
+        only the held tint.
+      </li>
+      <li>
+        The proposals of 02.14 were accepted as a set, without alternatives: the
+        call to action held, a link held, an unavailable link, and no selected
+        mark.
+      </li>
+    </ul>
+
+    <h3>Outside this scope</h3>
+    <ul>
+      <li>
+        The Leaderboard's sort pair becoming a toggle. It keeps working and
+        keeps showing two lime fills.
+      </li>
+      <li>The red button.</li>
+      <li>
+        The tabs, toggle and switch learning what they stand on, as buttons now
+        do.
+      </li>
+      <li>
+        The flight deck's controls and the Hangar's mount and part controls,
+        which are not actions.
+      </li>
+    </ul>
+    <p>
+      This scope sizes the work. It does not start it; implementation needs its
+      own go-ahead.
+    </p>
+  </section>
+</StudyLayout>
+<style>
+dl {
+  max-width: var(--measure-prose);
+}
+dt {
+  margin-top: var(--spacing-md);
+  font-weight: var(--font-weight-bold);
+}
+dd {
+  margin: var(--spacing-xs) 0 0;
+}
+/* The prose column's width; the stamp's own type is smaller. */
+.stamp {
+  box-sizing: border-box;
+  max-width: 41rem;
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+}
+.stamp h3 {
+  margin-top: 0;
+}
+.stamp table {
+  border-collapse: collapse;
+}
+.stamp th,
+.stamp td {
+  padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) 0;
+  text-align: left;
+  vertical-align: top;
+}
+.stamp td:not(:last-child) {
+  white-space: nowrap;
+}
+.stamp tbody th {
+  white-space: nowrap;
+  font-weight: normal;
+  color: var(--color-text);
+}
+section > :is(ul, ol) {
+  max-width: var(--measure-prose);
+}
+.principles {
+  box-sizing: border-box;
+  max-width: 41rem;
+  margin-block: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 2px solid var(--color-caution-tape);
+}
+.principles h3 {
+  margin-top: 0;
+}
+.table-wrap {
+  overflow-x: auto;
+  margin-block: var(--spacing-md);
+}
+.table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table-wrap :is(th, td) {
+  padding: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.5;
+}
+.table-wrap tbody th {
+  white-space: nowrap;
+}
+summary {
+  cursor: pointer;
+  font:
+    var(--font-weight-display) var(--font-size-heading) /
+    var(--line-height-heading) var(--font-family-display);
+}
+</style>

@@ -4,6 +4,7 @@ import { CHASSIS, SHIP_IDENTITY } from "@void-drift/mode-a";
 
 const ships = ["wasp", "scout", "fighter", "corvette"] as const;
 let detailed = $state("Fighter");
+let availability = $state("Scout");
 
 import RingSlider from "../inputs/RingSlider.svelte";
 import Switch from "../inputs/Switch.svelte";
@@ -29,8 +30,9 @@ let thrust = $state(38000);
     <p>
       One button-shaped control split into equal parts, one per option. The
       outer edge has the buttons' cut corners; the split inside is straight. The
-      selected part is filled lime; the others are a faint fill that takes a
-      faint lime tint under a pointer. Arrow keys move the selection.
+      selected part is filled lime; the others sit on the elevation 2 surface,
+      as the switch track and tabs do, and take a faint lime tint under a
+      pointer. Arrow keys move the selection.
       <a href="/lab/studies/lab-instrument-2026-11-01#toggle">Study →</a>
     </p>
     <div class="example">
@@ -49,6 +51,21 @@ let thrust = $state(38000);
           bind:value={detailed}
         />
       </div>
+      <span class="caption"
+        >Unavailable choice · arrows skip the disabled option</span
+      >
+      <Toggle
+        label="Ship availability example"
+        options={["Wasp", "Scout", "Corvette"]}
+        disabledOptions={["Corvette"]}
+        bind:value={availability}
+      >
+        {#snippet optionSuffix(option)}
+          {#if option === "Corvette"}
+            <span class="caption">Unavailable</span>
+          {/if}
+        {/snippet}
+      </Toggle>
       <span class="caption">Two options</span>
       <Toggle
         label="Path scale"
@@ -79,6 +96,9 @@ let thrust = $state(38000);
       <code>stretch</code>
       to fill the width. Optional <code>details</code> maps option names to
       supporting facts, arranged in wrapping inline flex segments.
+      <code>disabledOptions</code>
+      leaves unavailable choices visible and disables their native radios for
+      pointer and keyboard input.
     </p>
   </section>
 

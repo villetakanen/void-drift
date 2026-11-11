@@ -145,8 +145,8 @@ $effect(() => {
       bind:value={
         () => descriptor.short,
         (id) => {
-	const slot = PINCER_SLOTS.find((item) => item.short === id);
-	if (slot) selected = slot.id;
+  const slot = PINCER_SLOTS.find((item) => item.short === id);
+  if (slot) selected = slot.id;
 }
       }
     />
@@ -197,8 +197,8 @@ $effect(() => {
         bind:value={
           () => draft.slots[selected].layer,
           (layer) => {
-	if (layer === "Above" || layer === "Below")
-		draft.slots[selected].layer = layer;
+  if (layer === "Above" || layer === "Below")
+    draft.slots[selected].layer = layer;
 }
         }
       />

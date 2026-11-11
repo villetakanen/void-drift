@@ -1,0 +1,40 @@
+---
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find((entry) => entry.slug === "run-status-2026-11-10");
+---
+
+<StudyLayout study={study}>
+  <section>
+    <h2>01 / Know what this launch means</h2>
+    <p>
+      Choosing a ship should leave the player certain what will happen when they
+      launch. Some ships and parts belong within the scored game's rules while
+      others remain available for unrestricted play, potentially indefinitely.
+      The Hangar's switch changes that promise for the whole run, even when the
+      fitted ship happens to use only parts ready for scoring.
+    </p>
+    <p>
+      The marker needs to say two things with very little space: this setting
+      allows ships and parts outside scored-play rules, and this run has no
+      score. A short technical label alone leaves the consequence unclear. A
+      long explanation beside every part would crowd the chooser and hide the
+      ship. The same small shared marker must make sense beside Start, beside
+      the switch and on an unavailable catalog choice; a sentence can carry the
+      consequence where the score normally appears.
+    </p>
+    <p>
+      The rules are fixed: Off restricts launch, On makes every run unscored,
+      and turning Off preserves fitted parts. This study concerns the words and
+      marker that communicate those rules. It leaves ship balance, progression
+      and the Hangar's overall layout outside the question. The current screens
+      at <a href="/">the title</a> and
+      <a href="/hangar">the Hangar</a>
+      provide the live implementation surface. The setting name Playground is
+      accepted; individual catalog class names and badge presentation remain
+      open.
+    </p>
+  </section>
+  <section><h2>02 / To be developed after 01</h2></section>
+</StudyLayout>

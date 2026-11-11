@@ -1,0 +1,9 @@
+---
+import LabActions from "../../../components/lab/LabActions.svelte";
+import LabLayout from "../../../layouts/LabLayout.astro";
+---
+
+<!-- The shared actions on their own: normal button, call to action and link, every state. -->
+<LabLayout title="Actions" wide>
+  <LabActions client:load />
+</LabLayout>

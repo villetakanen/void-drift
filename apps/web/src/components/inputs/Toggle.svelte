@@ -1,8 +1,10 @@
 <script lang="ts">
 // Design-system input (lab-instrument study, 02.4 and 02.6): one button-shaped
 // control split into equal parts, one per option. The selected part is filled
-// lime; the others are a faint fill that takes a faint lime tint under a
-// pointer. Native radios give arrow-key selection.
+// lime; the others sit on the elevation 2 surface and take a faint lime tint
+// under a pointer. Native radios give arrow-key selection.
+import type { Snippet } from "svelte";
+
 let {
   options,
   value = $bindable(),
@@ -10,6 +12,8 @@ let {
   compact = false,
   stretch = false,
   details,
+  disabledOptions = [],
+  optionSuffix,
 }: {
   options: string[];
   value: string;
@@ -21,6 +25,10 @@ let {
   stretch?: boolean;
   /** Optional supporting facts inside each option; enables the detailed variant. */
   details?: Record<string, string>;
+  /** Options present in the current state but unavailable for selection. */
+  disabledOptions?: string[];
+  /** Optional trailing content owned and supplied by the consumer. */
+  optionSuffix?: Snippet<[string]>;
 } = $props();
 
 const name = `toggle-${Math.random().toString(36).slice(2, 8)}`;
@@ -36,18 +44,26 @@ const name = `toggle-${Math.random().toString(36).slice(2, 8)}`;
   style={`--_n:${options.length}`}
 >
   {#each options as option, index}
-    <label class="part" class:selected={value === option}>
+    <label
+      class="part"
+      class:selected={value === option}
+      class:unavailable={disabledOptions.includes(option)}
+    >
       <input
         type="radio"
         {name}
         value={option}
         bind:group={value}
+        disabled={disabledOptions.includes(option)}
         aria-label={option}
         aria-describedby={details?.[option]
           ? `${name}-detail-${index}`
           : undefined}
       >
       <span>{option}</span>
+      {#if optionSuffix}
+        {@render optionSuffix(option)}
+      {/if}
       {#if details?.[option]}
         <span class="detail" id={`${name}-detail-${index}`}
           >{details[option]}</span
@@ -89,9 +105,13 @@ const name = `toggle-${Math.random().toString(36).slice(2, 8)}`;
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
-  background: var(--color-border-subtle);
+  background: var(--color-elev-2);
   color: var(--color-text);
   transition: var(--button-transition);
+}
+.unavailable {
+  cursor: not-allowed;
+  opacity: 0.58;
 }
 .detailed .part {
   flex-wrap: wrap;

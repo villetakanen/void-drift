@@ -1,0 +1,176 @@
+---
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const stamps = [
+  [
+    "One subject",
+    "Pass with findings",
+    "One object, the action that is not the call to action, in two forms (quiet button, text link), in its states and among other actions. Two open items are not visible in the two named judging places (finding 3).",
+  ],
+  [
+    "Grounded",
+    "Pass with findings",
+    "Every fixed item exists as described and no false claim was found. Two omissions and three imprecisions are listed below.",
+  ],
+  [
+    "Consequence",
+    "Pass",
+    "One named thing changes, the shared outlined button and link button, with reach listed screen by screen. From the section alone: “After the answer, the shared outlined button and the link button look different everywhere they are used, so that the filled call to action is the only fully lit action and the others read as quiet panes of the same console as the tabs, toggle and switch; buttons and links are then documented together at /lab/ds/actions.”",
+  ],
+] as const;
+
+const findings = [
+  [
+    "“The game has almost no text links, so there is no quieter way to offer one.”",
+    "Omission. The shared stylesheet already has a quiet link for flight dialogs: muted, caption size, 44px high. No link uses it.",
+    "Added to Links today.",
+  ],
+  [
+    "The selected bar is “used in the game only by the Leaderboard's sort pair”.",
+    "Omission. There the selected button is also filled lime, so the lime bar is drawn on a lime fill and cannot be seen.",
+    "Added.",
+  ],
+  [
+    "“The answer is judged in the title screen's group and the Hangar's launch row.”",
+    "Imprecision. Neither place holds a selected button, a text link or a horizontal strip, so those open items cannot be judged there.",
+    "The section now says each is shown in a built example beside the two places.",
+  ],
+  [
+    "Reach ends with “the Lab pages that use them”.",
+    "Omission. Lab pages also carry buttons with no variant, or with a variant that has no rule; the shared state rules reach them.",
+    "Added to Reach.",
+  ],
+  [
+    "“The Leaderboard's retry.”",
+    "Imprecision. The button reads Refresh and becomes Retry only after a load error.",
+    "Renamed Refresh.",
+  ],
+  [
+    "“One sentence on the page that redirects the old builder address.”",
+    "Imprecision. The page redirects by script on load, so the link is a fallback a player normally never sees.",
+    "Now described as a fallback.",
+  ],
+] as const;
+---
+
+<StudyLayout>
+  <section>
+    <h1>Buttons — question review of 01</h1>
+    <p>
+      <a href="/lab/studies/buttons-2026-11-11">Return to the study</a>
+    </p>
+    <p>
+      Section 01 tested on 11 November 2026 against the part 01 question rubric
+      (<code>docs/plans/2026-11-10-part-01-question-rubric.md</code>), a
+      proposal and not yet a standing rule. Each run used a clean-context agent
+      with read-only access, no part in the framing and no expected result. This
+      is separate from feasibility, implementation authorization and human
+      judgment.
+    </p>
+    <p>
+      This is the fourth run and the result stamped on section 01. Runs one to
+      three used the rubric's first wording and stamped Grounded Fail each time,
+      and One subject Pass, Fail and Fail. After the third, the subject became
+      actions, with links inside the question and the flight deck and selection
+      tools outside it, and the rubric was adjusted: One subject counts objects
+      and not facets, and Grounded fails on a false claim or a missing fixed
+      item while omissions are findings the section must answer. Every finding
+      below was answered in the section after this run; the section has not been
+      tested again.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Stamp</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          {stamps.map(([metric, stamp, reason]) => (
+            <tr>
+              <th scope="row">{metric}</th>
+              <td>{stamp}</td>
+              <td>{reason}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <h2>Findings, most serious first</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>What the section said</th>
+            <th>What the repository shows</th>
+            <th>After the run</th>
+          </tr>
+        </thead>
+        <tbody>
+          {findings.map(([claim, found, after], index) => (
+            <tr>
+              <th scope="row">{index + 1}</th>
+              <td>{claim}</td>
+              <td>{found}</td>
+              <td>{after}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <h2>What checked out</h2>
+    <p>
+      The four fixed items; the outlined button and its pointer fill; the shared
+      focus, unavailable and selected rules and the absence of a held rule; the
+      tabs, toggle and switch as described; the three group arrangements and the
+      actions that stand alone; the screens with no call to action; the link
+      button and where it is used; the account of links in the game; the red
+      button; the console and display names; the flight deck's controls sharing
+      only tokens; and buttons living on <code>/lab/inputs</code>.
+    </p>
+    <h2>Not checked</h2>
+    <p>
+      Nothing was rendered, so every visual claim was inferred from styles and
+      tokens. Also unchecked: contrast and computed colours, the strip's
+      narrow-container behaviour, Lab-wide link colours, and button use inside
+      study pages and components.
+    </p>
+    <h2>Human judgment</h2>
+    <p>
+      On 11 November 2026 the designer held that how a button looks and how it
+      looks beside other buttons are two sides of one question, after the second
+      run failed One subject for joining them; that the flight deck is its own
+      instrument and its controls are not actions; that the Hangar's mount and
+      part controls are selection tools; and that links are actions and belong
+      in the question. The designer directed that the rubric be adjusted where
+      needed and its result stamped on section 01.
+    </p>
+    <p>
+      The designer accepted the study on 11 November 2026, after part 04. The
+      acceptance covers the design recorded in 02.14 and the scope's five
+      slices. It does not cover the two proposed changes to the design
+      principles, which were not agreed, and it does not start implementation.
+    </p>
+  </section>
+</StudyLayout>
+<style>
+.table-wrap {
+  overflow-x: auto;
+  margin-block: var(--spacing-lg);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th,
+td {
+  padding: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.6;
+}
+</style>

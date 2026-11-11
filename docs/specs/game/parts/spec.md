@@ -26,7 +26,7 @@ own only when its behaviour in flight needs one, as the
 - **Weapons in flight.** `packages/mode-a/src/lib/salvage.ts` owns targeting,
   firing, energy and damage, with tuning in `schemas/salvage.ts`.
 - **Neighbours.** [Ships](../ships/spec.md) own mounts, the energy model and
-  the derived figures. [Experimental mode](../experimental/spec.md) owns the
+  the derived figures. [Playground](../experimental/spec.md) owns the
   release class. The [Hangar](../hangar/spec.md) owns fitting on screen.
 
 ### Rules
@@ -37,7 +37,9 @@ own only when its behaviour in flight needs one, as the
 - **Mass.** Every part has mass, and a fitted part's mass is part of the ship.
 - **Engines.** An engine gives thrust, adds to the ship's cruise ceiling and
   draws energy while it fires. Engines differ in how they respond: steadily, in
-  pulses or after a charge.
+  pulses or after a charge. A charged engine gives no thrust or steering until
+  its input has been held for the part's charge length; releasing the input or
+  losing power resets the charge.
 - **Weapons.** Weapons fire on their own; there is no fire control on keyboard
   or touch. A weapon draws energy per shot and none while idle.
 - **Weapon energy floor.** No weapon fires while the ship holds less than a
@@ -52,7 +54,7 @@ own only when its behaviour in flight needs one, as the
   capacity. Collection adds energy under the part's own condition, up to
   capacity.
 - **Release class.** Each part is stable or experimental, as
-  [Experimental mode](../experimental/spec.md) defines.
+  [Playground](../experimental/spec.md) defines.
 
 ## Contract
 
@@ -67,6 +69,8 @@ own only when its behaviour in flight needs one, as the
   the whole capacity full.
 - [x] Below a tenth of capacity no weapon fires, draws or starts a cooldown; at
   exactly a tenth it fires; this holds for every weapon and every capacity.
+- [x] A held charged engine first thrusts once its charge length has elapsed;
+  releasing the input or losing power resets the charge.
 - [ ] Every part shown in the Hangar has a catalog description that states what
   it does.
 

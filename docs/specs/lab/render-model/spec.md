@@ -54,16 +54,26 @@ and up. `apps/web/src/components/lab/RenderModel.svelte` composes the workbench.
   sample fresh. It retains blend, visibility, filter and paused/running settings.
 - Each layer has a visibility control and a blend selector: Normal, Add, Screen,
   Multiply and Hard light. Add maps to CSS `plus-lighter`. Initial settings use
-  production layer blends, with FX CSS blur 2px and LFX no filter. A blend or visibility change immediately affects the
-  composite, even while paused, without clearing, repainting or advancing time.
+  production layer blends, including FX screen and LFX hard-light. FX uses the
+  shared Turbulent bloom defaults; LFX has no filter. A blend or visibility
+  change immediately affects the composite, even while paused, without clearing,
+  repainting or advancing time.
 - FX and LFX each have an independent native presentation filter: None, Blur,
   Brightness, Noise distortion, Offset, Offset spread or Expand, plus one
   amount control. The UI labels blur radius, displacement scale, offset, spread
   and expand radius in CSS pixels; brightness shows its multiplier. CSS filters are used for
   blur/brightness; inline SVG filters provide static seeded turbulence,
   displacement, offsets, spread merge and morphology. Filter changes preserve
-  held pixels and do not advance time. FX defaults to CSS blur 2px; LFX defaults
-  to None. This FX blur is scoped to the render-model workbench.
+  held pixels and do not advance time. FX initially uses Turbulent bloom,
+  matching production; LFX defaults to None.
+- FX offers an optional Turbulent bloom presentation preset. It preserves
+  the original FX image and screen-blends a static seeded, low-frequency
+  displaced and blurred copy. Glow size (1–12 CSS px), distortion (0–16 CSS
+  px), and glow strength (0–100%) are independent labelled controls. Strength
+  attenuates only the copy's RGB while preserving alpha, so black remains
+  neutral. The preset is FX-only; it changes held presentation pixels without
+  repainting a canvas or advancing presentation time. Initial settings are
+  12px glow, 16px distortion and 90% strength.
 - Paint adds one fresh set of FX stamps and shows the World and LFX sample marks.
   It works while paused as an explicit painting action; subsequent paused frames
   add nothing. Repeated Paint actions can demonstrate accumulation.
@@ -93,8 +103,12 @@ are not part of the workbench.
   while paused, preserving its backing pixels and other layer settings.
 - [x] Artwork uses shared production painters; sample switching clears history and
   repaints while retaining presentation settings.
-- [x] FX and LFX have independent native filters, default None; changing a filter
-  changes presentation while paused without changing backing pixels or time.
+- [x] FX and LFX have independent native filters, initially using production
+  Turbulent bloom and LFX None; changing a filter changes presentation while paused without changing
+  backing pixels or time.
+- [x] FX Turbulent bloom keeps the original light core, screens a static
+  attenuated displaced/blurred copy, and exposes three bounded controls without
+  changing backing pixels, LFX settings or presentation time.
 - [x] Paint emits into the shared FX surface; successive painting accumulates
   light, Run fades it, and Pause keeps its pixels stable.
 - [x] World and LFX retain their current sample while FX fades; LFX retains no
@@ -110,9 +124,9 @@ are not part of the workbench.
   point right, flashing at 3 Hz for 80 ms in LFX with dispersed FX stamps.
   Production LHI stabilizer outputs select the exhaust pair whose moment
   opposes turn direction.
-- [x] Existing play retains its production layer defaults and rendering
-  behaviour (`tests/browser/alpha.spec.ts`); the Flight scene study uses its
-  separately scoped layer instrument.
+- [x] Existing play and the ongoing Flight scene study use the shared
+  production layer defaults and rendering behavior. The study remains in
+  exploration; resolving the layer-model blocker does not accept the study.
 
 ### Regression guardrails
 

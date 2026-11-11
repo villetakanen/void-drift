@@ -6,6 +6,12 @@ the way. What follows is what we know, what we ruled out, and our assumptions
 about the way out. The assumptions are assumptions: check them against the code
 before building on them.
 
+> **Current decision (10 November 2026):** The designer has resolved the
+> separate rendering-layer-model blocker for further large-game testing. The
+> adopted presentation is World normal, FX screen with 12 CSS px / 16 CSS px /
+> 90% Turbulent bloom, and LFX hard-light without a filter. This does not close
+> the interval coverage, rate independence, or break criteria described here.
+
 ## The fault
 
 Light on the effects surface is stamped once per rendered frame at each

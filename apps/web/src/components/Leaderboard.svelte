@@ -59,14 +59,14 @@ onMount(() => {
           <div class="button-group button-group--strip">
             <button
               type="button"
-              class={order === "score" ? "btn btn-filled" : "btn btn-ghost"}
+              class={order === "score" ? "btn btn-filled" : "btn btn-normal"}
               aria-pressed={order === "score"}
               onclick={() => (order = "score")}
             >
               By score
             </button><button
               type="button"
-              class={order === "time" ? "btn btn-filled" : "btn btn-ghost"}
+              class={order === "time" ? "btn btn-filled" : "btn btn-normal"}
               aria-pressed={order === "time"}
               onclick={() => (order = "time")}
             >
@@ -108,7 +108,7 @@ onMount(() => {
       <div class="button-group button-group--strip">
         <button
           type="button"
-          class="btn btn-ghost"
+          class="btn btn-normal"
           onclick={load}
           disabled={loading}
         >

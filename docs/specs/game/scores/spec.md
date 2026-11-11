@@ -26,7 +26,7 @@ for game design and is not shown to players.
   anonymously, saves a score and loads the board.
   `apps/web/src/components/Leaderboard.svelte` shows it.
 - **Neighbours.** The [game contract](../spec.md) and
-  [Experimental mode](../experimental/spec.md) own which runs may be saved.
+  [Playground](../experimental/spec.md) own which runs may be saved.
   [Survival](../survival/spec.md) owns the score and the time. The
   [active ship](../active-ship/spec.md) owns the ship and fitting that a run
   flew.

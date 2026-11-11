@@ -21,13 +21,13 @@ ship has a default fitting the player can return to.
   by `BuildStoreSchema` (`packages/mode-a/src/lib/schemas/loadout.ts`). The
   stored active chassis is part of that Zod contract, defined there before any
   consumer reads it.
-- **One owner in the web app.** A single shared module reads and writes the
+- **One owner in the web app.** `apps/web/src/lib/stores/ship-setup.ts` reads and writes the
   active ship and the per-chassis fittings for the title page and the Hangar.
   `TitleScreen.svelte`, `GameWrapper.svelte`, `FlightDeck.svelte` and
   `ShipBuilder.svelte` read it; only the Hangar writes it.
 - **Neighbours.** [Ships](../ships/spec.md) and [parts](../parts/spec.md) own
   what a ship and a fitting are. [Hangar](../hangar/spec.md) owns how ships are
-  chosen and fitted on screen. [Experimental mode](../experimental/spec.md) owns which
+  chosen and fitted on screen. [Playground](../experimental/spec.md) owns which
   ships and parts may be chosen and when launch is unavailable for experimental
   content. The [game contract](../spec.md) owns modes, ranking and launch
   sources. [Title screen](../landing-page/spec.md) owns how the ship is drawn.
@@ -49,7 +49,7 @@ ship has a default fitting the player can return to.
   fly.
 - **Every launch flies it.** PRESS START, Survival from the Hangar, Practice and
   Derelicts all fly the active ship in its fitting. Launch availability for
-  experimental content follows [Experimental mode](../experimental/spec.md).
+  experimental content follows [Playground](../experimental/spec.md).
 - **Title screen.** The title screen shows the active ship in its fitting.
 - **Persistence.** The active ship and every chassis's fitting are kept in this
   browser across visits. A stored value that fails its schema is replaced by
@@ -63,24 +63,24 @@ ship has a default fitting the player can return to.
 
 ### Definition of Done
 
-- [ ] A1: `BuildStoreSchema` holds the active chassis alongside the per-chassis
+- [x] A1: `BuildStoreSchema` holds the active chassis alongside the per-chassis
   fittings; an existing `void-drift-builds-v3` store migrates with every
   fitting kept and the Wasp active.
-- [ ] A2: With nothing stored, the active ship is the Wasp with a light ion
+- [x] A2: With nothing stored, the active ship is the Wasp with a light ion
   cannon, an ion point defence and one light ion engine, and every other ship
   in the catalog is flyable.
-- [ ] A3: Choosing a ship in the Hangar, by pointer, keyboard or touch, makes it
+- [x] A3: Choosing a ship in the Hangar, by pointer, keyboard or touch, makes it
   active with no further action; a `chassis` query leaves the active ship
   unchanged.
-- [ ] A4: Returning to the title screen shows the active ship in its fitting,
+- [x] A4: Returning to the title screen shows the active ship in its fitting,
   and PRESS START flies it.
-- [ ] A5: Survival from the Hangar, Practice and Derelicts fly the active ship
+- [x] A5: Survival from the Hangar, Practice and Derelicts fly the active ship
   in its fitting.
-- [ ] A6: Required engines cannot be removed from any ship; every stored fitting
+- [x] A6: Required engines cannot be removed from any ship; every stored fitting
   that parses is flyable.
-- [ ] A7: The active ship and each chassis's fitting survive a page reload;
+- [x] A7: The active ship and each chassis's fitting survive a page reload;
   switching away and back restores a chassis's fitting.
-- [ ] A8: A corrupt store falls back per failed value and keeps every fitting
+- [x] A8: A corrupt store falls back per failed value and keeps every fitting
   that parses; unavailable storage leaves the game playable in memory, and the
   Hangar's save status says choices will not be kept.
 

@@ -110,10 +110,12 @@ The in-flight stack, bottom to top:
 | Deck  | Page elements: instruments, pads, rows | normal     | none       |
 
 Layer-specific contracts live in [World](world.md), [FX](fx.md), and
-[LFX](lfx.md). Blend, resolution and filter defaults are declared in
-`FLIGHT_LAYERS`, judged by looking, and changing one changes no pass behavior.
-FX defaults to CSS `screen`; LFX defaults to CSS `hard-light`. FX remains at
-full stage resolution.
+[LFX](lfx.md). Blend and resolution defaults are declared in `FLIGHT_LAYERS`;
+presentation filters are owned by `apps/web/src/components/FlightLayers.svelte`
+and judged by looking. Changing them changes no pass behavior. World defaults
+to normal with no filter. FX defaults to CSS `screen` with the shared Turbulent
+bloom filter (12 CSS px glow, 16 CSS px distortion, 90% strength). LFX defaults
+to CSS `hard-light` with no filter. FX remains at full stage resolution.
 
 Three rules follow from the stack:
 

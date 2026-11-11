@@ -1,3 +1,4 @@
+import { chooseShip, enablePreviewContent } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 
 const modeA = (testDir: string) =>
@@ -6,7 +7,8 @@ const modeA = (testDir: string) =>
 test("genuine turret is offered in compatible slots only, persists and launches through Hangar", async ({
   page,
 }) => {
-  await page.goto("/hangar?chassis=fighter");
+  await page.goto("/hangar");
+  await chooseShip(page, "Fighter");
   // The engine slot is selected first: its catalogue offers engines only.
   await page
     .getByRole("button", { name: "Left side · mirrored E: Light ion" })
@@ -45,7 +47,9 @@ test("genuine turret is offered in compatible slots only, persists and launches 
   await expect(
     page.getByRole("button", { name: "Hull 1 · Equipment: Ion Point Defence" }),
   ).toBeVisible();
-  await page.goto("/hangar?chassis=fiddler");
+  await page.goto("/hangar");
+  await enablePreviewContent(page);
+  await chooseShip(page, "Fiddler");
   const support = page.getByRole("button", { name: /· Support: / }).first();
   await support.click();
   await expect(

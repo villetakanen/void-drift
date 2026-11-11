@@ -66,6 +66,20 @@ export const labPages = z.array(labPageSchema).parse([
     source: "production",
   },
   {
+    href: "/lab/ds/actions",
+    title: "Actions",
+    purpose: "Normal button, call to action and link in every state.",
+    group: "design-system",
+    source: "production",
+  },
+  {
+    href: "/lab/ds/tabs",
+    title: "Tabs",
+    purpose: "Tabs and their panels; when to use Tabs, Toggle or Switch.",
+    group: "design-system",
+    source: "production",
+  },
+  {
     href: "/lab/logomark",
     title: "Logomark",
     purpose: "The mark and its sizes.",
@@ -131,6 +145,22 @@ export const labPages = z.array(labPageSchema).parse([
     source: "production",
   },
   {
+    href: "/lab/flight-scene",
+    title: "Flight scene",
+    purpose:
+      "One ship flying a fixed burn through the game's own layers and frame passes.",
+    group: "tools",
+    source: "production",
+  },
+  {
+    href: "/lab/plasma-thrust-comparison",
+    title: "Plasma thrust comparison",
+    purpose:
+      "Compare the production plasma plume with its accepted study reference.",
+    group: "tools",
+    source: "production",
+  },
+  {
     href: "/lab/gravity-tuning",
     title: "Gravity tuning",
     purpose:
@@ -165,6 +195,13 @@ export const labPages = z.array(labPageSchema).parse([
     title: "Render model",
     purpose:
       "Compare World, persistent FX and fresh LFX across browser blend modes.",
+    group: "tools",
+    source: "production",
+  },
+  {
+    href: "/lab/render-performance",
+    title: "Render performance",
+    purpose: "Measure overlapping production rendering with real FX budgets.",
     group: "tools",
     source: "production",
   },

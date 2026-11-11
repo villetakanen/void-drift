@@ -19,8 +19,10 @@ after they reach the game.
 - Children: [workbench](workbench/spec.md),
   [design studies](design-studies/spec.md),
   [motion instrument](motion-instrument/spec.md),
+  [flight scene instrument](flight-scene-instrument/spec.md),
   [gravity tuning](gravity-tuning/spec.md),
-  [render model](render-model/spec.md).
+  [render model](render-model/spec.md),
+  [render performance](render-performance/spec.md).
 
 ### Constraints
 
