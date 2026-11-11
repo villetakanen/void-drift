@@ -28,7 +28,7 @@ ship has a default fitting the player can return to.
 - **Neighbours.** [Ships](../ships/spec.md) and [parts](../parts/spec.md) own
   what a ship and a fitting are. [Hangar](../hangar/spec.md) owns how ships are
   chosen and fitted on screen. [Playground](../experimental/spec.md) owns which
-  ships and parts may be chosen and when launch is unavailable for experimental
+  ships and parts may be chosen and when launch is unavailable for unsanctioned
   content. The [game contract](../spec.md) owns modes, ranking and launch
   sources. [Title screen](../landing-page/spec.md) owns how the ship is drawn.
 
@@ -45,11 +45,11 @@ ship has a default fitting the player can return to.
 - **Fitting.** Changing the active ship's fitting in the Hangar changes the
   active ship at once.
 - **Always flyable.** Required engines are always fitted: they can be swapped
-  but never removed. Optional mounts may be empty. Every valid active ship can
+  but never removed. Optional slots may be empty. Every valid active ship can
   fly.
 - **Every launch flies it.** PRESS START, Survival from the Hangar, Practice and
   Derelicts all fly the active ship in its fitting. Launch availability for
-  experimental content follows [Playground](../experimental/spec.md).
+  unsanctioned content follows [Playground](../experimental/spec.md).
 - **Title screen.** The title screen shows the active ship in its fitting.
 - **Persistence.** The active ship and every chassis's fitting are kept in this
   browser across visits. A stored value that fails its schema is replaced by
@@ -123,7 +123,7 @@ Feature: Active ship
 
   Scenario: Required engines stay
     Given any ship in the Hangar
-    When I try to empty a required engine mount
+    When I try to empty a required engine slot
     Then the engine can only be swapped, not removed
 
   Scenario: A corrupt store keeps what it can

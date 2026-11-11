@@ -25,6 +25,13 @@ export const labPageSchema = z.object({
   purpose: z.string().min(1),
   group: labGroupSchema,
   source: z.enum(["production", "sketch", "record"]),
+  // Design-system pages: the shared files the page demonstrates, and the
+  // section of the contract that defines them. /lab/ds lists both.
+  defines: z.array(z.string().min(1)).optional(),
+  spec: z
+    .string()
+    .regex(/^docs\/specs\/.+\.md#[a-z0-9-]+$/)
+    .optional(),
 });
 export type LabPage = z.infer<typeof labPageSchema>;
 
@@ -38,11 +45,23 @@ export const labPages = z.array(labPageSchema).parse([
     source: "production",
   },
   {
+    href: "/lab/ds",
+    title: "Overview",
+    purpose: "Every shared part with its page, source files and contract.",
+    group: "design-system",
+    source: "record",
+  },
+  {
     href: "/lab/tokens",
     title: "Colour roles",
     purpose: "Colour tokens and the roles each one may play.",
     group: "design-system",
     source: "production",
+    defines: [
+      "packages/core/src/lib/styles/tokens.css",
+      "packages/core/src/lib/ui/colors.ts",
+    ],
+    spec: "docs/specs/factory/design-system/spec.md#colour",
   },
   {
     href: "/lab/typography",
@@ -50,6 +69,12 @@ export const labPages = z.array(labPageSchema).parse([
     purpose: "Type families, scale and tracking.",
     group: "design-system",
     source: "production",
+    defines: [
+      "packages/core/src/lib/styles/typography.css",
+      "packages/core/src/lib/styles/fonts.css",
+      "packages/core/src/lib/ui/typography.ts",
+    ],
+    spec: "docs/specs/factory/design-system/spec.md#typography",
   },
   {
     href: "/lab/surfaces",
@@ -57,6 +82,8 @@ export const labPages = z.array(labPageSchema).parse([
     purpose: "Cut surfaces, panels and their elevation.",
     group: "design-system",
     source: "production",
+    defines: ["packages/core/src/lib/styles/surfaces.css"],
+    spec: "docs/specs/factory/design-system/spec.md#surfaces-and-layers",
   },
   {
     href: "/lab/inputs",
@@ -64,6 +91,13 @@ export const labPages = z.array(labPageSchema).parse([
     purpose: "Buttons, toggle and ring slider in every state.",
     group: "design-system",
     source: "production",
+    defines: [
+      "apps/web/src/components/inputs/Toggle.svelte",
+      "apps/web/src/components/inputs/RingSlider.svelte",
+      "apps/web/src/components/inputs/Switch.svelte",
+      "apps/web/src/components/inputs/ThrustPads.svelte",
+    ],
+    spec: "docs/specs/factory/design-system/spec.md#elevation-and-inputs",
   },
   {
     href: "/lab/ds/actions",
@@ -71,6 +105,8 @@ export const labPages = z.array(labPageSchema).parse([
     purpose: "Normal button, call to action and link in every state.",
     group: "design-system",
     source: "production",
+    defines: ["packages/core/src/lib/styles/buttons.css"],
+    spec: "docs/specs/factory/design-system/spec.md#button-system",
   },
   {
     href: "/lab/ds/tabs",
@@ -78,6 +114,8 @@ export const labPages = z.array(labPageSchema).parse([
     purpose: "Tabs and their panels; when to use Tabs, Toggle or Switch.",
     group: "design-system",
     source: "production",
+    defines: ["apps/web/src/components/inputs/Tabs.svelte"],
+    spec: "docs/specs/factory/design-system/spec.md#tabs",
   },
   {
     href: "/lab/logomark",
@@ -85,6 +123,8 @@ export const labPages = z.array(labPageSchema).parse([
     purpose: "The mark and its sizes.",
     group: "design-system",
     source: "production",
+    defines: ["apps/web/src/components/Logo.svelte"],
+    spec: "docs/specs/factory/design-system/spec.md#identity",
   },
   {
     href: "/lab/graphs",
@@ -92,6 +132,11 @@ export const labPages = z.array(labPageSchema).parse([
     purpose: "The Motion instrument's path and trace graphs.",
     group: "design-system",
     source: "production",
+    defines: [
+      "apps/web/src/components/lab/instrument/PathPane.svelte",
+      "apps/web/src/components/lab/instrument/TimeGraph.svelte",
+    ],
+    spec: "docs/specs/lab/motion-instrument/spec.md#components",
   },
   {
     href: "/lab/instrument-parts",
@@ -99,6 +144,12 @@ export const labPages = z.array(labPageSchema).parse([
     purpose: "The Motion instrument's panes and controls on their own.",
     group: "design-system",
     source: "production",
+    defines: [
+      "apps/web/src/components/lab/instrument/BurnRow.svelte",
+      "apps/web/src/components/lab/instrument/Legend.svelte",
+      "apps/web/src/components/lab/instrument/OverlayPane.svelte",
+    ],
+    spec: "docs/specs/lab/motion-instrument/spec.md#components",
   },
   {
     href: "/lab/entities/ship",

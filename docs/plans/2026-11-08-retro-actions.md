@@ -227,11 +227,13 @@ is a finding with no agreed action; the evidence is in the records named.
     were lost is unknown.
 18. **No full verification since 0.5.6** (finding 2). 83 commits; every loop
     closed on partial checks on a dirty tree.
-19. **Test failures reported and not investigated** (finding 2): the survival
-    score unit test timing out in a full run; the armed-practice salvage
-    browser test in three rounds; the factory emulator test with a missing
-    file in two loops; a point defence browser test once; the 700px flight
-    deck case once.
+19. **One unexplained test failure** (finding 2): the factory emulator test
+    failed with a missing file on a temp path in two loops (9 November). Four
+    other failures in the records are explained and are not findings: a
+    closed laptop lid (armed-practice salvage, per the designer, 11 November
+    2026), machine load, another session's write reloading the dev server,
+    and one that passed on rerun. A test failing while several sessions write
+    is expected; it is rerun.
 20. **Checks relayed, not inspected.** Four loops delegated implementation and
     review to subagents; the main session recorded their check results from
     their reports. One unit test count differed between reports (405 and 407)

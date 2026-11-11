@@ -11,6 +11,9 @@ not in whichever screen first needs the change.
 ## Establish ownership
 
 - Read the relevant feature spec, docs/design.md and current design-system rules.
+- Start from the design-system overview at `/lab/ds` (the Design system group in
+  `apps/web/src/data/lab-pages.ts`): each shared part with its page, files and
+  contract section. A part missing there is flagged, not built in place.
 - Inspect existing implementations and their canonical Lab examples.
 - Search both Lab and production consumers before creating or changing a part.
 - Identify the owning layer:

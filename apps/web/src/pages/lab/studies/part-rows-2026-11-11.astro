@@ -2,6 +2,7 @@
 import PartRows021 from "../../../components/studies/PartRows021.svelte";
 import PartRows022 from "../../../components/studies/PartRows022.svelte";
 import PartRows023 from "../../../components/studies/PartRows023.svelte";
+import PartRows026 from "../../../components/studies/PartRows026.svelte";
 import { studies } from "../../../data/studies";
 import StudyLayout from "../../../layouts/StudyLayout.astro";
 
@@ -252,40 +253,45 @@ const study = studies.find((entry) => entry.slug === "part-rows-2026-11-11");
     </details>
   </section>
   <section>
-    <h2 id="anatomy">02.3 / What a row holds, beside the ship</h2>
-    <p>
-      The third answer puts the list where it is used: beside the ship, in a
-      slice of the Hangar. Choose a mount under the ship and the list shows its
-      parts; fitting one changes the ship. The slice starts with Playground off
-      and a rail gun on the first wing mount, so the forbidden row is the first
-      thing shown.
-    </p>
-    <p>
-      A row holds four things: a small drawing with no frame, the name, one line
-      of figures, and a closing word only when the part is fitted. The fitted
-      row alone adds the catalog description. The rows are lines of one list in
-      the parts pane, which scrolls inside itself when the list is long.
-    </p>
-    <p>Two marks carry the states, and they do not share a place.</p>
-    <ul>
-      <li>
-        <strong>A bar at the start says fitted.</strong>
-        Lime with the word Fitted when the part is permitted, red with Remove or
-        Replace when it is forbidden. The row is not filled, so the drawing
-        keeps its colours.
-      </li>
-      <li>
-        <strong>The hatched band at the end says unsanctioned</strong>, as kept
-        from 02.1. With Playground on, one line under the list explains it.
-      </li>
-    </ul>
-    <PartRows023 client:load />
-    <p>
-      The strip under the slice shows the row in each state at once. The slice's
-      ship, mounts and fitting rules are the game's; its setting and fitting
-      live only on this page. The slice is narrower than the Hangar and leaves
-      out its other panes. It has not been tried by touch.
-    </p>
+    <details id="anatomy">
+      <summary>02.3 / What a row holds, beside the ship</summary>
+
+      <p>
+        The third answer puts the list where it is used: beside the ship, in a
+        slice of the Hangar. Choose a mount under the ship and the list shows
+        its parts; fitting one changes the ship. The slice starts with
+        Playground off and a rail gun on the first wing mount, so the forbidden
+        row is the first thing shown.
+      </p>
+      <p>
+        A row holds four things: a small drawing with no frame, the name, one
+        line of figures, and a closing word only when the part is fitted. The
+        fitted row alone adds the catalog description. The rows are lines of one
+        list in the parts pane, which scrolls inside itself when the list is
+        long.
+      </p>
+      <p>Two marks carry the states, and they do not share a place.</p>
+      <ul>
+        <li>
+          <strong>A bar at the start says fitted.</strong>
+          Lime with the word Fitted when the part is permitted, red with Remove
+          or Replace when it is forbidden. The row is not filled, so the drawing
+          keeps its colours.
+        </li>
+        <li>
+          <strong>The hatched band at the end says unsanctioned</strong>, as
+          kept from 02.1. With Playground on, one line under the list explains
+          it.
+        </li>
+      </ul>
+      <PartRows023 client:load />
+      <p>
+        The strip under the slice shows the row in each state at once. The
+        slice's ship, mounts and fitting rules are the game's; its setting and
+        fitting live only on this page. The slice is narrower than the Hangar
+        and leaves out its other panes. It has not been tried by touch.
+      </p>
+    </details>
   </section>
   <section>
     <h3>What 02.3 showed</h3>
@@ -304,74 +310,334 @@ const study = studies.find((entry) => entry.slug === "part-rows-2026-11-11");
     </p>
   </section>
   <section>
-    <h2 id="tool">02.4 / The tool as it stands, beside its slot</h2>
+    <details id="tool">
+      <summary>02.4 / The tool as it stands, beside its slot</summary>
+
+      <p>
+        This round proposes nothing. It looks at the tool in the game today,
+        with a slot selected, to see what it does and what it already shares
+        with the slot. Below is the Hangar itself, live. It shows and changes
+        the ship kept in this browser, and it will change when the Hangar does.
+      </p>
+      <div class="frame">
+        <iframe src="/hangar" title="The Hangar, live" loading="lazy"></iframe>
+      </div>
+      <p>Carried in from the earlier rounds:</p>
+      <ul>
+        <li>
+          A hatched band at the end of the row marks an unsanctioned part. It is
+          the working answer.
+        </li>
+        <li>
+          The row keeps a small drawing, the name and some figures. The drawing
+          is a helper for telling parts apart, and the large picture is on the
+          ship.
+        </li>
+      </ul>
+      <p>What the Hangar shows today:</p>
+      <ul>
+        <li>
+          <strong>The tool already names its slot.</strong>
+          It is headed “Selected mount” with the slot's name, and one sentence
+          says whether the slot can be left empty. It does not repeat the number
+          the slot carries on the ship.
+        </li>
+        <li>
+          <strong>Fitted is said the same way in both places.</strong>
+          A filled slot on the ship is a thin lime rectangle around the part.
+          The fitted row is a thin lime rectangle around the part. Whether by
+          intent or not, the row already reads as the slot's contents.
+        </li>
+        <li>
+          <strong>The same drawing appears twice.</strong>
+          The part in the fitted row and the part in the slot are one drawing at
+          two sizes.
+        </li>
+        <li>
+          <strong>Selection belongs to the slot only.</strong>
+          Lime corner brackets mark the slot being edited. Nothing in the tool
+          is selected; its rows are fitted or not.
+        </li>
+        <li>
+          <strong>The two disagree on words.</strong>
+          The slot is labelled Engine, Equipment or Universal; a row is tagged
+          E, G or U.
+        </li>
+        <li>
+          <strong>Neither says anything about class today</strong>
+          beyond the small caption on the row. A forbidden part looks the same
+          on the ship as a permitted one.
+        </li>
+        <li>
+          <strong>A row is tall.</strong>
+          Drawing, name, two lines of figures and a description make each row
+          about a fifth of the pane's height, so two or three alternatives are
+          visible at once, and the launch row covers the bottom of the list.
+        </li>
+      </ul>
+      <p>
+        What this suggests, to be tested and not yet shown: keep the tool and
+        its pane, and amend the rows. They may take their language from the
+        slot, with the fitted part as the slot's contents and the other rows as
+        what could go in. Fitted, unsanctioned and forbidden would then be said
+        once, the same way on the ship and in the tool.
+      </p>
+    </details>
+  </section>
+  <section>
+    <h2 id="terms">02.5 / What things are called</h2>
     <p>
-      This round proposes nothing. It looks at the tool in the game today, with
-      a slot selected, to see what it does and what it already shares with the
-      slot. Below is the Hangar itself, live. It shows and changes the ship kept
-      in this browser, and it will change when the Hangar does.
+      Before the tool can be amended it has to be possible to talk about it. The
+      game, its specs and its code use several words for the same thing, and one
+      word for different things. This round collects them. The last column
+      records what was settled in review on 11 November 2026. The game spec now
+      holds them as its terms. The screens and the code have not been changed to
+      match.
     </p>
-    <div class="frame">
-      <iframe src="/hangar" title="The Hangar, live" loading="lazy"></iframe>
+    <div class="terms">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">The thing</th>
+            <th scope="col">The game says today</th>
+            <th scope="col">Specs, plan and code say</th>
+            <th scope="col">After review, 11 November 2026</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row" class="thing">
+              The place on a ship where a part goes
+            </th>
+            <td>
+              Mount: “Selected mount”, “Fixed mounts”. Slot: “3 slots” on a ship
+              tab, “Required propulsion slot”, “under-wing equipment slots”.
+            </td>
+            <td>
+              Specs say mount about four times as often as slot. Code has both:
+              the mount record, and the slot types and slot overlay. The
+              accepted study is “Ship slots”.
+            </td>
+            <td>Settled: slot</td>
+          </tr>
+          <tr>
+            <th scope="row" class="thing">What a slot accepts</th>
+            <td>
+              On the ship: Engines, Weapons, Support, Equipment, Universal, with
+              the letters E, W, S, Q and +. In the pane's heading: “Engine”,
+              “Equipment”, “Universal”, “mirrored E”, “Engine pair”, “Weapon /
+              support”.
+            </td>
+            <td>Slot type: engine, weapon, support, equipment, universal.</td>
+            <td>
+              Settled: slot type. Engine, Weapon and Support each take one kind.
+              Hardpoint takes a weapon or a support part; Equipment is dropped.
+              Universal takes any part.
+            </td>
+          </tr>
+          <tr>
+            <th scope="row" class="thing">The thing that is fitted</th>
+            <td>
+              Part: “Every installed part adds mass”. Also fitting: “Remove
+              fitting”, “Static fitting”, “weapon/support fittings”.
+            </td>
+            <td>Part, throughout.</td>
+            <td>Settled: part, or ship part in full</td>
+          </tr>
+          <tr>
+            <th scope="row" class="thing">The kind of part</th>
+            <td>A letter on the row: E, G or U. No words.</td>
+            <td>
+              Parts spec: engine, weapon, support. Code: categories E, G and U.
+              The 0.6 plan lists the support parts under “Equipment”.
+            </td>
+            <td>Settled: engine, weapon, support</td>
+          </tr>
+          <tr>
+            <th scope="row" class="thing">A part being in a slot</th>
+            <td>
+              “Fitted” on the row. “Installed” and “fittings” in the ship's
+              description.
+            </td>
+            <td>Specs: fit, fitted, empty. Code: install, installed.</td>
+            <td>Settled: fitted. A part is fitted to a slot, and removed.</td>
+          </tr>
+          <tr>
+            <th scope="row" class="thing">Everything fitted to one ship</th>
+            <td>
+              “Setup”: “your active setup”, “this setup requires Playground”.
+              “Build”: “Unsanctioned build”.
+            </td>
+            <td>
+              Specs: fitting, and setup for the ship with its fitting. Code:
+              loadout and build. The saved score has a field named fitting. The
+              0.6 plan marks “fitting” a placeholder.
+            </td>
+            <td>
+              Settled: three words. The ship is the body, the fitting is the
+              parts on it, and the build is the two together. Setup and loadout
+              go. One part is never “a fitting”.
+            </td>
+          </tr>
+          <tr>
+            <th scope="row" class="thing">The ship as a body</th>
+            <td>
+              Ship. Hull appears for the hit points, for “Hull base” speed and
+              for “Hull 1” slots.
+            </td>
+            <td>
+              Specs: ship and hull. Code and one Hangar spec line: chassis.
+            </td>
+            <td>Settled: ship. Chassis is unwanted in code too.</td>
+          </tr>
+          <tr>
+            <th scope="row" class="thing">The ship that will fly</th>
+            <td>Not named on screen.</td>
+            <td>Active ship, chosen 10 November 2026.</td>
+            <td>Settled: active ship</td>
+          </tr>
+          <tr>
+            <th scope="row" class="thing">The setting</th>
+            <td>Playground, Off or On.</td>
+            <td>
+              Playground, chosen 11 November 2026. Code, the stored key and the
+              spec's folder still say experimental.
+            </td>
+            <td>Settled: Playground</td>
+          </tr>
+          <tr>
+            <th scope="row" class="thing">The two classes of ship and part</th>
+            <td>
+              “Unsanctioned” on a part, since today. “Unsanctioned build” on the
+              title screen.
+            </td>
+            <td>
+              Specs: stable and experimental, marked as placeholders; also
+              eligible and excluded. Code: scored and preview. This study:
+              sanctioned and unsanctioned.
+            </td>
+            <td>
+              Sanctioned and unsanctioned, for the rules of ranked play only.
+              See below.
+            </td>
+          </tr>
+          <tr>
+            <th scope="row" class="thing">
+              An unsanctioned part fitted with Playground off
+            </th>
+            <td>
+              Title: “Unsanctioned build / Playground required”. Flight: “this
+              setup requires Playground”.
+            </td>
+            <td>No word. This study's working word is forbidden.</td>
+            <td>
+              Settled: no new word. Not “forbidden”. The game's present wording
+              for ranked play stands.
+            </td>
+          </tr>
+          <tr>
+            <th scope="row" class="thing">Whether a run counts</th>
+            <td>
+              Scoring: “Scoring off”, “Top scores”, “Save score”. Ranking:
+              “Survival is ranked”, “Unranked play”, “Unranked”.
+            </td>
+            <td>Specs use both: a run is scored, and ranked on the board.</td>
+            <td>Settled: ranked, unranked</td>
+          </tr>
+          <tr>
+            <th scope="row" class="thing">Two slots that change together</th>
+            <td>
+              “Mirrored pair”, “Engine pair”, “linked”. “Linked engines” is also
+              the name of a different setting.
+            </td>
+            <td>
+              Mirrored pair, linked mount; Linked engines for the setting.
+            </td>
+            <td>
+              Settled: linked slots, never mirrored. There may be more than two,
+              and they always hold the same part.
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-    <p>Carried in from the earlier rounds:</p>
+    <h3>Two reasons a part cannot be fitted</h3>
+    <p>
+      Sanctioned and unsanctioned say one thing: whether the rules of ranked
+      play admit a ship or a part. A second reason is expected later and must
+      not share those words. A player may not have the schematic for a part or a
+      ship. A sanctioned part without its schematic still cannot be fitted for
+      ranked play. The working words for that second axis are available and
+      unavailable, to the player. Nothing in 0.6 builds it; the words are
+      reserved so that the marks chosen here do not have to change.
+    </p>
+    <p>
+      This bears on the tool now. The hatched band means unsanctioned for now.
+      Whether it later also covers parts flown in Playground without their
+      schematic, or those get another colour, is left for then. The Playground
+      spec and the ship tabs use “unavailable” for an unsanctioned ship or part
+      with Playground off, which is the word the second axis needs.
+    </p>
+    <p>Where one word means two things:</p>
     <ul>
       <li>
-        A hatched band at the end of the row marks an unsanctioned part. It is
-        the working answer.
+        <strong>Equipment</strong>
+        is a slot type that accepts weapons and support parts, and in the 0.6
+        plan it is the support parts themselves.
       </li>
       <li>
-        The row keeps a small drawing, the name and some figures. The drawing is
-        a helper for telling parts apart, and the large picture is on the ship.
-      </li>
-    </ul>
-    <p>What the Hangar shows today:</p>
-    <ul>
-      <li>
-        <strong>The tool already names its slot.</strong>
-        It is headed “Selected mount” with the slot's name, and one sentence
-        says whether the slot can be left empty. It does not repeat the number
-        the slot carries on the ship.
+        <strong>Fitting</strong>
+        is one fitted part (“Remove fitting”) and everything fitted to a ship.
       </li>
       <li>
-        <strong>Fitted is said the same way in both places.</strong>
-        A filled slot on the ship is a thin lime rectangle around the part. The
-        fitted row is a thin lime rectangle around the part. Whether by intent
-        or not, the row already reads as the slot's contents.
+        <strong>Hull</strong>
+        is the ship's hit points, the ship's body in the speed figures, and a
+        group of slots.
       </li>
       <li>
-        <strong>The same drawing appears twice.</strong>
-        The part in the fitted row and the part in the slot are one drawing at
-        two sizes.
-      </li>
-      <li>
-        <strong>Selection belongs to the slot only.</strong>
-        Lime corner brackets mark the slot being edited. Nothing in the tool is
-        selected; its rows are fitted or not.
-      </li>
-      <li>
-        <strong>The two disagree on words.</strong>
-        The slot is labelled Engine, Equipment or Universal; a row is tagged E,
-        G or U.
-      </li>
-      <li>
-        <strong>Neither says anything about class today</strong>
-        beyond the small caption on the row. A forbidden part looks the same on
-        the ship as a permitted one.
-      </li>
-      <li>
-        <strong>A row is tall.</strong>
-        Drawing, name, two lines of figures and a description make each row
-        about a fifth of the pane's height, so two or three alternatives are
-        visible at once, and the launch row covers the bottom of the list.
+        <strong>Linked</strong>
+        covers two things on purpose. Linked slots hold the same part: fitting
+        one fits the others. Linked engines fire together. Both are connections
+        between places on the ship, and both are to be drawn as lines on the
+        ship drawing.
       </li>
     </ul>
     <p>
-      What this suggests, to be tested and not yet shown: keep the tool and its
-      pane, and amend the rows. They may take their language from the slot, with
-      the fitted part as the slot's contents and the other rows as what could go
-      in. Fitted, unsanctioned and forbidden would then be said once, the same
-      way on the ship and in the tool.
+      Smaller things seen on the way: part names are not cased alike (“Light
+      ion”, “Light Ion Cannon”), and Practice is called test in code and in its
+      spec's folder. Names of parts, ships and modes were not otherwise
+      reviewed.
+    </p>
+  </section>
+  <section>
+    <h2 id="band">02.6 / Today's row, with the band and nothing else</h2>
+    <p>
+      The smallest step: take the row exactly as the Hangar draws it and add the
+      one mark that has held up, the hatched band, to unsanctioned parts. The
+      band fills the row's existing right padding, so nothing in the row moves.
+      Both columns show what a Hardpoint slot offers with Playground on.
+    </p>
+    <PartRows026 client:load />
+    <p>This round can settle one thing and show one more.</p>
+    <ul>
+      <li>
+        <strong>Settle:</strong>
+        whether the band works on the row as it is. If it does, the unsanctioned
+        mark is done and can go into the Hangar without waiting for anything
+        else.
+      </li>
+      <li>
+        <strong>Show:</strong>
+        what else in today's row now looks wrong beside it. That is the list of
+        amendments still owed, and it should be short. The first candidate is
+        the “Unsanctioned” caption, which the band may make unnecessary or may
+        need as its explanation.
+      </li>
+    </ul>
+    <p>
+      The rows are copies of the Hangar's, not the Hangar. They react to a
+      pointer and do nothing when pressed. Fitted, and a forbidden part, are
+      untouched here on purpose.
     </p>
   </section>
   <section><h2>03 / To be developed after 02</h2></section>
@@ -386,6 +652,34 @@ dt {
 }
 dd {
   margin: var(--spacing-xs) 0 0;
+}
+.terms {
+  margin-block: var(--spacing-lg);
+  font-size: var(--font-size-label);
+}
+.terms table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.terms th,
+.terms td {
+  padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.5;
+}
+.terms td {
+  color: var(--color-text-muted);
+}
+.terms .thing {
+  width: 16%;
+  font-weight: var(--font-weight-bold);
+}
+.terms td:last-child {
+  width: 20%;
+  color: var(--color-text);
+  font-weight: var(--font-weight-bold);
 }
 .stamp {
   box-sizing: border-box;

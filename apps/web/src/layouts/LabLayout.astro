@@ -10,8 +10,15 @@ import "../styles.css";
 
 const { title, wide = false } = Astro.props;
 const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
-const isActive = (href: string) =>
+const covers = (href: string) =>
   currentPath === href || currentPath.startsWith(`${href}/`);
+// The deepest listed page that covers the path is the active one, so an
+// overview is not lit alongside the pages beneath it.
+const activeHref = labPages
+  .map((page) => page.href)
+  .filter(covers)
+  .sort((a, b) => b.length - a.length)[0];
+const isActive = (href: string) => href === activeHref;
 const groups = labGroups.map((group) => ({
   ...group,
   pages: labPages.filter((page) => page.group === group.id),

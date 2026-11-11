@@ -5,7 +5,7 @@
 ### Context
 
 A ship is a hull that the player fits with [parts](../parts/spec.md). The hull
-fixes what the Hangar cannot change: its shape, mass, mounts, base speed and how
+fixes what the Hangar cannot change: its shape, mass, slots, base speed and how
 it turns. The fitting decides the rest. Ships differ so that choosing one is a
 real choice about how to fly.
 
@@ -21,8 +21,8 @@ one ship named in the game's contracts, because a new player
   every hull, validated by `ChassisSchema`. `SHIP_IDENTITY` in
   `packages/mode-a/src/lib/config.ts` holds each ship's names. These are the
   only definitions of which ships exist and what their values are.
-- **Mounts and drawing.** `buildMounts` and `drawBuild` in
-  `packages/mode-a/src/lib/build-renderer.ts` give each hull its mounts and its
+- **Slots and drawing.** `buildMounts` and `drawBuild` in
+  `packages/mode-a/src/lib/build-renderer.ts` give each hull its slots and its
   appearance, for the Hangar and for flight alike.
 - **Derived figures.** `buildStats` in `loadout.ts` derives mass, energy
   capacity, draw, acceleration, turn rate and cruise ceiling from a hull and its
@@ -32,25 +32,25 @@ one ship named in the game's contracts, because a new player
   with a fitting.
 - **Neighbours.** [Parts](../parts/spec.md) own what can be fitted and where.
   The [active ship](../active-ship/spec.md) owns which ship is flown and how it
-  is kept. [Playground](../experimental/spec.md) owns the release class
-  and what it allows. The [Hangar](../hangar/spec.md) owns choosing and fitting
+  is kept. [Playground](../experimental/spec.md) owns which ships
+  are sanctioned and what that allows. The [Hangar](../hangar/spec.md) owns choosing and fitting
   on screen. [Survival](../survival/spec.md) owns what ends a run.
 
 ### Rules
 
 - **The hull is fixed.** A hull sets its mass, base speed, size, the number and
-  slot type of its mounts, its engine layout and its stabilizer arrangement. The
+  slot type of its slots, its engine layout and its stabilizer arrangement. The
   player changes none of these.
-- **Required engines.** Every hull has required main-engine mounts that are
-  always fitted, so every ship can fly. A mirrored pair of engines is one
-  choice. Other mounts may be empty.
+- **Required engines.** Every hull has required main-engine slots that are
+  always fitted, so every ship can fly. A linked pair of engines is one
+  choice. Other slots may be empty.
 - **One derivation.** The figures the Hangar shows and the ship that flies come
   from the same derivation of the same hull and fitting. More fitted mass means
   less acceleration and slower turning.
 - **Cruise ceiling.** A ship's powered cruise ceiling is its hull base speed
   plus the contribution of every installed main engine. An installed engine
   counts whether or not it is firing, powered or commanded. Parts that are not
-  engines, empty mounts and stabilizers add nothing.
+  engines, empty slots and stabilizers add nothing.
 - **Approaching the ceiling.** Forward acceleration tapers linearly to zero at
   the ceiling, and every engine on the ship uses the same ceiling. Propulsion
   never reduces speed the ship already has: coasting and gravity can carry it
@@ -65,7 +65,7 @@ one ship named in the game's contracts, because a new player
 - **Linked engines.** Each ship has a linked-engines choice, off by default. Off:
   aft engines fire when both inputs are held. On: aft engines fire on either
   input. No input commands no aft thrust.
-- **Release class.** Each ship is stable or experimental, as
+- **Sanctioned or unsanctioned.** Each ship is one or the other, as
   [Playground](../experimental/spec.md) defines.
 
 ## Contract
@@ -73,14 +73,14 @@ one ship named in the game's contracts, because a new player
 ### Definition of Done
 
 - Every hull's values pass `ChassisSchema`, and a fitting that does not match
-  its hull's mounts is rejected by `LoadoutSchema`.
+  its hull's slots is rejected by `LoadoutSchema`.
 - The cruise ceiling is hull base speed plus every installed main engine's
   contribution; an installed engine counts while inactive, and parts that are
   not engines and stabilizers add nothing.
 - Every engine on a ship accelerates toward the same ceiling.
 - A ship above its ceiling keeps its speed, and can still brake and steer.
 - More fitted mass lowers acceleration and turn rate.
-- Flight, Hangar estimates, exhaust and collision use the same mount
+- Flight, Hangar estimates, exhaust and collision use the same slot
   geometry for a hull.
 - A hull with built-in stabilizers has them on whatever is stored; other
   hulls keep the player's choice, on by default.

@@ -21,9 +21,9 @@ Earning and buying parts is the intended direction for later. During alpha,
 - **Route.** `apps/web/src/pages/hangar.astro` mounts
   `apps/web/src/components/ShipBuilder.svelte` at `/hangar`. `/builder`
   redirects there. Every player-facing Hangar link targets `/hangar`.
-- **Shared definitions.** The Hangar keeps no ship, part, mount or figure of its
+- **Shared definitions.** The Hangar keeps no ship, part, slot or figure of its
   own. Ships and parts come from the catalogs, compatibility from `slotAccepts`,
-  mounts and drawing from `buildMounts` and `drawBuild`, and figures from
+  slots and drawing from `buildMounts` and `drawBuild`, and figures from
   `buildStats` ([ships](../ships/spec.md), [parts](../parts/spec.md)).
 - **State.** The Hangar reads and writes the active ship and each ship's
   fitting through the module the [active ship](../active-ship/spec.md) contract
@@ -51,16 +51,16 @@ Earning and buying parts is the intended direction for later. During alpha,
   it the active ship and shows the fitting the player left on it. Shared `Tabs`
   owns the workbench panel. Each tab shows the ship's short name, slot count
   and chassis mass, with no catalog badge. The row stretches across its host
-  and stays one button tall. Playground Off makes excluded ships unavailable
-  using the shared tab state; an already active excluded ship stays selected.
+  and stays one button tall. Playground Off makes unsanctioned ships unavailable
+  using the shared tab state; an already active unsanctioned ship stays selected.
   Keyboard activation is manual: arrows, Home and End move focus without saving
   a choice; Enter or Space selects. Pointer and touch select immediately.
-- **Fitting.** The player selects a mount and fits a part the mount accepts, or
-  empties an optional mount. A required engine can be swapped but not removed.
-  A mirrored engine pair is one choice, made on its primary mount; the other
-  mount shows that it is linked. A change applies at once and touches only that
-  mount or pair.
-- **Plan and View.** Plan shows the mounts, what occupies them, what fits and
+- **Fitting.** The player selects a slot and fits a part the slot accepts, or
+  empties an optional slot. A required engine can be swapped but not removed.
+  A linked engine pair is one choice, made on its primary slot; the other
+  slot shows that it is linked. A change applies at once and touches only that
+  slot or pair.
+- **Plan and View.** Plan shows the slots, what occupies them, what fits and
   which are linked. View shows the ship as it flies, with no markings. Switching
   keeps the fitting and the selection, and parts can be fitted in both.
 - **Systems.** The stabilizer and linked-engines choices of the
@@ -73,7 +73,7 @@ Earning and buying parts is the intended direction for later. During alpha,
   are normal actions; Gauntlet is shown disabled and cannot be started. Every
   launch flies the active ship, and Abort or game over returns to the Hangar
   with the ship unchanged.
-- **Experimental.** The Playground control is the only place the setting
+- **Playground.** The Playground control is the only place the setting
   changes. What it locks, marks and blocks is owned by
   [Playground](../experimental/spec.md).
 - **Launch context.** With Playground On, the launch row says “Playground ·
@@ -94,7 +94,7 @@ Earning and buying parts is the intended direction for later. During alpha,
 - H2: The logo reaches `/` by pointer and keyboard; its accessible name
   identifies Void Drift. One Hangar heading and the Playground Switch share a
   compact header row whose height is unchanged by Playground.
-- H3: Experimental uses the shared binary `Switch`, labeled Playground,
+- H3: The setting uses the shared binary `Switch`, labeled Playground,
   with a visible Off/On state and checkbox semantics; pointer and Space change it.
 - H4: Switching Playground changes the Hangar and launch as
   [Playground](../experimental/spec.md) states.
@@ -104,10 +104,10 @@ Earning and buying parts is the intended direction for later. During alpha,
   ([active ship](../active-ship/spec.md) A3). The shared tab row owns the
   workbench panel, uses manual keyboard activation, and stays one button tall
   with Playground Off or On at supported landscape iPad widths.
-- H7: Fitting or emptying a mount changes only that mount or its mirrored
-  pair; a required engine has no empty choice; parts the mount does not accept
+- H7: Fitting or emptying a slot changes only that slot or its linked
+  pair; a required engine has no empty choice; parts the slot does not accept
   are unavailable.
-- H8: Plan shows mounts, occupancy and links; View shows the ship without
+- H8: Plan shows slots, occupancy and links; View shows the ship without
   markings; switching keeps fitting and selection, and fitting works in both.
 - H9: The stabilizer and linked-engines choices are kept per ship and
   govern the same ship in flight.
@@ -125,7 +125,7 @@ Earning and buying parts is the intended direction for later. During alpha,
 
 ### Regression guardrails
 
-- The Hangar and flight use the same mounts, parts and fitting.
+- The Hangar and flight use the same slots, parts and fitting.
 - What the Hangar lets the player fit, `LoadoutSchema` accepts; what it refuses,
   the schema rejects.
 - Editing one ship never changes another ship's fitting.
@@ -142,25 +142,25 @@ Feature: Hangar
     When I open the Hangar
     Then it shows that ship in its fitting
 
-  Scenario: Fit an optional mount
-    Given an optional mount selected in Plan
-    When I fit a part the mount accepts
+  Scenario: Fit an optional slot
+    Given an optional slot selected in Plan
+    When I fit a part the slot accepts
     Then the part appears on the ship at once
     And the estimates change
-    When I empty the mount
-    Then the mount is empty and the other fittings are unchanged
+    When I empty the slot
+    Then the slot is empty and the other fittings are unchanged
 
-  Scenario: A mirrored engine pair is one choice
-    Given a ship with a mirrored engine pair
-    When I fit another engine on the primary mount
+  Scenario: A linked engine pair is one choice
+    Given a ship with a linked engine pair
+    When I fit another engine on the primary slot
     Then both engines of the pair change
-    And the linked mount shows that it follows the primary
+    And the linked slot shows that it follows the primary
     And there is no choice that leaves the pair empty
 
   Scenario: Look at the ship as flown
-    Given a fitted ship with a mount selected in Plan
+    Given a fitted ship with a slot selected in Plan
     When I switch to View
-    Then the ship is drawn as it flies, without mount markings
+    Then the ship is drawn as it flies, without slot markings
     And the fitting and the selection are unchanged
 
   Scenario: Try a change and come back

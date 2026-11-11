@@ -1,0 +1,92 @@
+---
+import "../../../components/lab/catalog.css";
+import { labPages } from "../../../data/lab-pages";
+import LabLayout from "../../../layouts/LabLayout.astro";
+
+// Every shared part of the design system, read from the Lab's page list:
+// its Lab page, the files that define it and the section of its contract.
+const parts = labPages
+  .filter((page) => page.group === "design-system" && page.href !== "/lab/ds")
+  .map((page) => {
+    const [file, anchor] = (page.spec ?? "").split("#");
+    return {
+      ...page,
+      specFile: file,
+      specSection: anchor,
+      atHome: page.href.startsWith("/lab/ds/"),
+    };
+  });
+const awayFromHome = parts.filter((part) => !part.atHome).length;
+---
+
+<LabLayout title="Design system" wide>
+  <div class="catalog">
+    <section>
+      <p>
+        The shared parts every screen composes: {parts.length} pages. A part
+        that is not listed here does not exist yet; say so instead of building
+        it in place.
+      </p>
+      <p class="caption">
+        Design-system pages live at <code>/lab/ds/&lt;name&gt;</code>.
+        {awayFromHome}
+        still have an earlier address and move when next changed.
+      </p>
+    </section>
+    {parts.map((part) => (
+      <section aria-labelledby={`part-${part.href.split("/").pop()}`}>
+        <h2 id={`part-${part.href.split("/").pop()}`}>
+          <a href={part.href}>{part.title}</a>
+        </h2>
+        <p>{part.purpose}</p>
+        <dl>
+          <dt>Page</dt>
+          <dd>
+            <code>{part.href}</code>
+            {!part.atHome && <span class="caption"> earlier address</span>}
+          </dd>
+          <dt>Defined in</dt>
+          <dd>
+            <ul>
+              {(part.defines ?? []).map((file) => (
+                <li>
+                  <code>{file}</code>
+                </li>
+              ))}
+            </ul>
+          </dd>
+          <dt>Contract</dt>
+          <dd>
+            <code>{part.specFile}</code>, section
+            <code>{part.specSection}</code>
+          </dd>
+        </dl>
+      </section>
+    ))}
+  </div>
+</LabLayout>
+
+<style>
+dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--spacing-xs) var(--spacing-md);
+  margin: 0;
+  font-family: var(--font-family-ui);
+  font-size: var(--font-size-label);
+}
+
+dt {
+  color: var(--color-text-muted);
+}
+
+dd {
+  margin: 0;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+</style>

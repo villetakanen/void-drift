@@ -6,6 +6,34 @@
 
 Void Drift is a procedural space survival game played in the browser. A pilot flies a two-engine ship around a star, managing hull and power, and tries to survive as long as possible. Keyboard play on a laptop or desktop is the primary experience; iPad landscape touch plays the same game. Everything works without credentials, and shared scores are an optional, casual competition.
 
+### Terms
+
+These are the game's words for its own things. Screens and contracts use them
+with one meaning each.
+
+- **Ship:** the body a player flies.
+- **Slot:** a place on a ship where a part goes.
+- **Slot type:** what a slot accepts. Engine, Weapon and Support each accept
+  one kind of part. Hardpoint accepts a weapon or a support part. Universal
+  accepts any part.
+- **Part**, in full **ship part:** a thing fitted to a slot. A part is an
+  engine, a weapon or a support part.
+- **Fitted:** a part is fitted to a slot, and removed from it.
+- **Fitting:** the parts fitted to one ship. A single part is never called a
+  fitting.
+- **Build:** a ship together with its fitting.
+- **Active ship:** the ship the player has chosen to fly.
+- **Linked:** connected so that one acts for all. Linked slots hold the same
+  part: fitting one fits the others. Linked engines fire together.
+- **Playground:** the setting that lets every ship and part be flown and makes
+  every run unranked.
+- **Sanctioned, unsanctioned:** whether the rules of ranked play admit a ship
+  or a part.
+- **Available, unavailable:** whether the player has a ship or a part. These
+  words are kept for that meaning and are not used for sanctioning.
+- **Ranked, unranked:** whether a run counts. A ranked run's number is its
+  score.
+
 ### Architecture and boundaries
 
 - `packages/mode-a/src/lib/simulation.ts` owns a fixed 60 Hz simulation. `schemas/flight.ts` validates flight settings and replay inputs. Rendering reads simulation state and writes none.
@@ -60,6 +88,8 @@ Void Drift is a procedural space survival game played in the browser. A pilot fl
   and first, then return to the launch source and Top Scores as ghost actions.
 - Every run complete offers return to the launch source, and a Survival run
   complete also offers Top Scores.
+- Screens name ships, slots, slot types, parts, fittings, builds and runs by
+  the terms above.
 
 ### Regression guardrails
 
@@ -112,7 +142,7 @@ Scenario Outline: Return to the launch source
     | title screen | game-over Return |
     | Hangar       | game-over Return |
 
-Scenario: Experimental run is unscored
+Scenario: Playground run is unscored
   Given Playground is On
   And a Survival run launched from the Hangar
   When the run ends

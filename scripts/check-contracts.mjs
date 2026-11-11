@@ -167,3 +167,122 @@ for (const file of labGameModes)
   console.error(`FAIL: ${file} imports a game mode`);
 assert.equal(labGameModes.length, 0, "Lab files must not import a game mode");
 console.log(`Lab: ${labFiles.length} files; none imports a game mode.`);
+
+// The design system has one home in the Lab. Its pages live at /lab/ds/<name>;
+// each names the shared files it demonstrates and the section of its contract;
+// and every shared input and stylesheet is demonstrated by one of them.
+// Pages still at an earlier address are listed here. The list only shrinks:
+// a page moves when it is next changed, and its line goes with it.
+const earlierDesignSystemAddresses = [
+  "/lab/tokens",
+  "/lab/typography",
+  "/lab/surfaces",
+  "/lab/inputs",
+  "/lab/logomark",
+  "/lab/graphs",
+  "/lab/instrument-parts",
+];
+// Shared stylesheets that are page plumbing, not parts to demonstrate.
+const stylesWithoutPage = ["reset.css", "flight.css"];
+
+const labPageList = readFileSync("apps/web/src/data/lab-pages.ts", "utf8");
+const designSystemPages = [
+  ...labPageList.matchAll(/\n {2}\{\n([\s\S]*?)\n {2}\},/g),
+]
+  .map(([, body]) => ({
+    href: body.match(/href: "([^"]+)"/)?.[1],
+    group: body.match(/group: "([^"]+)"/)?.[1],
+    defines: [
+      ...(body.match(/defines: \[([\s\S]*?)\]/)?.[1] ?? "").matchAll(
+        /"([^"]+)"/g,
+      ),
+    ].map((match) => match[1]),
+    spec: body.match(/spec: "([^"]+)"/)?.[1],
+  }))
+  .filter((page) => page.group === "design-system");
+assert(
+  designSystemPages.length > 0,
+  "No design-system pages found in lab-pages.ts",
+);
+
+const headingSlug = (heading) =>
+  heading
+    .toLowerCase()
+    .replace(/[^a-z0-9 -]/g, "")
+    .trim()
+    .replace(/ +/g, "-");
+const designSystemFailures = [];
+for (const page of designSystemPages) {
+  const atHome = page.href === "/lab/ds" || page.href.startsWith("/lab/ds/");
+  if (!atHome && !earlierDesignSystemAddresses.includes(page.href))
+    designSystemFailures.push(
+      `${page.href}: a design-system page lives at /lab/ds/<name>`,
+    );
+  if (page.href === "/lab/ds") continue;
+  if (page.defines.length === 0)
+    designSystemFailures.push(
+      `${page.href}: name the shared files it demonstrates in "defines"`,
+    );
+  for (const file of page.defines)
+    if (!existsSync(file))
+      designSystemFailures.push(
+        `${page.href}: defines ${file}, which is missing`,
+      );
+  const [specFile, section] = (page.spec ?? "").split("#");
+  if (!specFile || !existsSync(specFile)) {
+    designSystemFailures.push(`${page.href}: "spec" must name its contract`);
+  } else if (
+    !readFileSync(specFile, "utf8")
+      .split("\n")
+      .some(
+        (line) =>
+          /^#+ /.test(line) &&
+          headingSlug(line.replace(/^#+ /, "")) === section,
+      )
+  ) {
+    designSystemFailures.push(
+      `${page.href}: ${specFile} has no section "${section}"`,
+    );
+  }
+}
+for (const href of earlierDesignSystemAddresses)
+  if (!designSystemPages.some((page) => page.href === href))
+    designSystemFailures.push(
+      `${href} has moved: remove it from earlierDesignSystemAddresses`,
+    );
+const demonstrated = new Set(designSystemPages.flatMap((page) => page.defines));
+const sharedParts = execFileSync(
+  "git",
+  [
+    "ls-files",
+    "-z",
+    "--others",
+    "--cached",
+    "--exclude-standard",
+    "--",
+    "apps/web/src/components/inputs/*.svelte",
+    "packages/core/src/lib/styles/*.css",
+  ],
+  { encoding: "utf8" },
+)
+  .split("\0")
+  .filter(
+    (file) =>
+      file &&
+      existsSync(file) &&
+      !stylesWithoutPage.some((name) => file.endsWith(`/${name}`)),
+  );
+for (const file of sharedParts)
+  if (!demonstrated.has(file))
+    designSystemFailures.push(
+      `${file} is a shared part with no design-system page: add one at /lab/ds/<name> or name the file in an existing page's "defines"`,
+    );
+for (const failure of designSystemFailures) console.error(`FAIL: ${failure}`);
+assert.equal(
+  designSystemFailures.length,
+  0,
+  "The design system's Lab pages do not match its shared parts",
+);
+console.log(
+  `Design system: ${designSystemPages.length} Lab pages cover ${sharedParts.length} shared parts; ${earlierDesignSystemAddresses.length} still at an earlier address.`,
+);

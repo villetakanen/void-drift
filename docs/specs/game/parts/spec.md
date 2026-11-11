@@ -5,7 +5,7 @@
 ### Context
 
 Parts are what the player fits to a [ship](../ships/spec.md): engines, weapons
-and support equipment. Each part trades mass and energy for something the ship
+and support parts. Each part trades mass and energy for something the ship
 can do, and those trades are what make fitting a decision.
 
 This contract says what kinds of part exist and the rules they share. It keeps
@@ -25,14 +25,14 @@ own only when its behaviour in flight needs one, as the
   what can be fitted and what can be loaded agree.
 - **Weapons in flight.** `packages/mode-a/src/lib/salvage.ts` owns targeting,
   firing, energy and damage, with tuning in `schemas/salvage.ts`.
-- **Neighbours.** [Ships](../ships/spec.md) own mounts, the energy model and
-  the derived figures. [Playground](../experimental/spec.md) owns the
-  release class. The [Hangar](../hangar/spec.md) owns fitting on screen.
+- **Neighbours.** [Ships](../ships/spec.md) own slots, the energy model and
+  the derived figures. [Playground](../experimental/spec.md) owns which
+  parts are sanctioned. The [Hangar](../hangar/spec.md) owns fitting on screen.
 
 ### Rules
 
 - **Category and slot.** Every part has one category: engine, weapon or
-  support. Every mount has one slot type, and a part can be fitted only where
+  support. Every slot has one slot type, and a part can be fitted only where
   the slot type accepts its category.
 - **Mass.** Every part has mass, and a fitted part's mass is part of the ship.
 - **Engines.** An engine gives thrust, adds to the ship's cruise ceiling and
@@ -47,13 +47,13 @@ own only when its behaviour in flight needs one, as the
   a weapon takes no energy and starts no cooldown, and a shot the remaining
   energy cannot pay for is not fired. Engines and life support still draw below
   the floor.
-- **Weapon order.** Defence weapons take energy before guns; mount order
+- **Weapon order.** Defence weapons take energy before guns; slot order
   settles the rest.
 - **Support.** A support part works on the ship's resources, for example by
   adding energy storage or energy collection. Storage adds to the ship's
   capacity. Collection adds energy under the part's own condition, up to
   capacity.
-- **Release class.** Each part is stable or experimental, as
+- **Sanctioned or unsanctioned.** Each part is one or the other, as
   [Playground](../experimental/spec.md) defines.
 
 ## Contract
@@ -62,7 +62,7 @@ own only when its behaviour in flight needs one, as the
 
 - Every catalog entry passes `PartSchema`.
 - `slotAccepts` decides compatibility for the Hangar and for
-  `LoadoutSchema`; a part in a mount that does not accept it is rejected on
+  `LoadoutSchema`; a part in a slot that does not accept it is rejected on
   load.
 - A fitted part's mass counts toward the ship's mass.
 - A storage part raises the ship's energy capacity, and a run starts with
@@ -89,9 +89,9 @@ own only when its behaviour in flight needs one, as the
 Feature: Parts
 
   Scenario: A part fits only where its category is accepted
-    Given a mount selected in the Hangar
+    Given a slot selected in the Hangar
     When I look at the parts I can fit
-    Then only parts whose category the mount accepts are available
+    Then only parts whose category the slot accepts are available
 
   Scenario: Storage raises capacity
     Given a ship with a storage part fitted

@@ -18,8 +18,19 @@ screen composes shared definitions instead of inventing its own.
   `flight.css`. Shared input components live in `apps/web/src/components/inputs/`.
 - `apps/web/src/components/Logo.svelte` draws the logomark from SVG outlines;
   fonts are self-hosted.
-- Each definition has a canonical Lab page: `/lab/tokens`, `/lab/typography`,
-  `/lab/surfaces`, `/lab/inputs`, `/lab/ds/tabs` and `/lab/ds/actions`.
+- The design system has one home in the Lab, `/lab/ds`. Each shared part has
+  one canonical page at `/lab/ds/<name>`, and the overview at `/lab/ds` lists
+  every page with the files that define the part and the section of this
+  contract that describes it. The list is the Design system group in
+  `apps/web/src/data/lab-pages.ts`.
+- A part that is not on the overview does not exist. Work that needs one
+  says so; it does not build the part in place.
+- `scripts/check-contracts.mjs` keeps the home true: a design-system page is
+  at `/lab/ds/<name>`, names its files and its section, and every shared
+  input and stylesheet is named by a page. Pages at an earlier address
+  (`/lab/tokens`, `/lab/typography`, `/lab/surfaces`, `/lab/inputs`,
+  `/lab/logomark`, `/lab/graphs`, `/lab/instrument-parts`) are listed in that
+  check and move to `/lab/ds/<name>` in the change that next touches them.
 - Feature specs consume the system. Changing a definition is design work,
   recorded here and demonstrated on its Lab page in the same change.
 
