@@ -82,7 +82,9 @@ competition servers, defaulting to 4322 and 4323. The Zod contract in
 `packages/core/src/lib/schemas/verification-ports.mjs` rejects malformed,
 out-of-range or equal ports before checks start. Both Playwright configurations
 use the resolved URL for navigation and server readiness, start their own server,
-and retain `reuseExistingServer: false`. Verification reports retain both URLs.
+and retain `reuseExistingServer: false`. Verification reports retain both URLs. Verification servers isolate their Vite
+caches by port and disable hot reload so local development servers cannot reset
+an in-progress verification flight. Ordinary development retains hot reload.
 Port overrides do not isolate Firebase emulator ports.
 
 ### Pruned verification and review captures

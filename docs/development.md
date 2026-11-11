@@ -63,6 +63,9 @@ settings work with `pnpm test:browser` and `pnpm test:competition`. Tests always
 start their own server (`reuseExistingServer: false`); occupied ports fail rather
 than silently testing another checkout. Verification reports record both resolved
 URLs under `browserUrls`, even when browser stages are skipped in quick mode.
+The harness supplies `VOID_DRIFT_VERIFY_PORT` to give each verification server
+its own ignored Vite cache and disable hot reload during its stable-candidate
+checks. Ordinary development keeps its usual cache and hot reload.
 Emulators still use 8080/9099; these overrides do not isolate concurrent emulators. Offline browser tests
 blank live configuration and block external requests. Competition uses `demo-void-drift`,
 never the live project. There is no hosted CI (removed 2026-11-08); verification

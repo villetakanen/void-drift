@@ -18,6 +18,7 @@ export default defineConfig({
     url: baseURL,
     reuseExistingServer: false,
     env: {
+      VOID_DRIFT_VERIFY_PORT: new URL(baseURL).port,
       PUBLIC_FIREBASE_API_KEY: "demo-key",
       PUBLIC_FIREBASE_PROJECT_ID: "demo-void-drift",
       PUBLIC_FIREBASE_APP_ID: "demo-app",

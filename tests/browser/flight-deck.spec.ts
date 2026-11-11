@@ -141,10 +141,10 @@ test("the deck sits in the gutters and never covers the active area", async ({
   ]) {
     await page.setViewportSize({ width, height });
     await page.clock.runFor(100);
-    const rects = await screenRects(page);
     await expect
       .poll(async () => (await box(page.locator(".flight-stage"))).width)
       .toBeCloseTo(width, 0);
+    const rects = await screenRects(page);
     for (const side of ["left", "right"] as const) {
       const parts = gutterParts(page, side);
       for (const part of [parts.instruments, parts.button, parts.pads]) {
