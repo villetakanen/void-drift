@@ -110,6 +110,20 @@
   background: var(--scrim-surface);
   animation: dialog-in var(--duration-fast) var(--ease-standard);
 }
+/* Lift the feed toward the elevation family without tinting the panel. */
+.dialog-scrim::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    var(--color-elev-2) 30%,
+    color-mix(in lch, var(--color-elev-2) 70%, transparent) 100%
+  );
+  mix-blend-mode: screen;
+  opacity: 0.35;
+  pointer-events: none;
+}
 .dialog-layer > .panel:focus {
   outline: none;
 }

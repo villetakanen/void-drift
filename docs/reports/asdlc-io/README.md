@@ -12,6 +12,8 @@ The case is particularly useful for distinguishing inquiry from assembly, permis
 
 ## Reading order
 
+**Postscript, 12 November:** [Test retention and the KonMari work](07-postscript-test-retention.md) adds a previously undercovered distinction between checks used to deliver a change and regression guards worth maintaining. It supplies one supplementary finding and documentation proposal; the original eight findings and nine proposals remain unchanged.
+
 | Report                                                   | Contents                                                                       |
 | -------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | [Method and sources](01-method-and-sources.md)           | Baselines, corpus coverage, sampling, evidence IDs and limitations             |

@@ -435,7 +435,9 @@ console display rather than live.
   [DEPRECATED 2026-11-02] ~~`mix-blend-mode: color`~~: it takes chroma from the low-chroma tint
   and so desaturated heavily instead of moving hues toward 290.
 - `--scrim-surface` on the scrim layer over it: a darkened edge (30% black, from 55% out) and
-  2px-on/2px-off scanlines in `--color-void` at 35%.
+  2px-on/2px-off scanlines in `--color-void` at 35%. An elevation-2 layer at 35% opacity uses
+  `screen` blending to lift the feed into the surface family without tinting the panel. The lift
+  tapers to 70% of its centre strength at the edges.
 - Both ease in over `--duration-fast`; with reduced motion they appear at once.
 - The panel is clean: scanlines belong to the feed, not to the pane in front of it.
 - `--color-backdrop` (black at 11%) stays the dim behind a Lab overlay pane; game dialogs use
