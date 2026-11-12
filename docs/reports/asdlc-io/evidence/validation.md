@@ -22,8 +22,20 @@ Three Luna High passes challenged reports 02–06. They are retained as review e
 | Learning: E-G/C-G compound references obscured evidence identity                        | Replaced them with the actual C-G episode identifiers                                                                    |
 | Learning: committed records could be confused with committed historical implementation  | Clarified the distinct record and source-state claims                                                                    |
 
-The design challenge and final mechanical validation results are recorded below after completion.
+The [design challenge](challenge-design.md) led to four refinements: textual tension/ambiguity replaces a stronger implication of contradictory intended authority; F-01 now refers to several sampled studies rather than implying a population frequency; P-02 is labelled a cross-case teaching composite with field-level source basis; and the button pilot's retrospective provenance is explicit. Remaining cautions concern transfer and causal limits already stated in the reports. No challenge found material project-remediation scope drift. These challenge records remain pre-correction snapshots; their quotations of old wording are not unresolved report findings.
+
+## Final edition and shared-checkout boundary
+
+At a closing source-status inspection, HEAD had advanced to `682fd13dfebec0e5b20bc4b4bda6053ba7ee25fa`. The intervening history contains `bb0aff01` (assessment collection) and `682fd13d` (pointer-loss regression fix), made outside this assessment's tool actions. Some intermediate report files were therefore committed by another session while this work continued. Final report edits include working changes and new files; no claim is made that those intermediate commits contain this completed edition.
+
+An inspection of changes from the assessment baseline to that HEAD found no changes in `docs/loop-evidence/`, `docs/reviews/`, `docs/factory-building-lessons/`, `docs/specs/factory/` or `AGENTS.md`. A concurrent working change to `tests/browser/flight-deck.spec.ts` was observed and left untouched. The assessment retains its original source baseline; later unrelated code changes are not assessed here. A subsequent closing check observed `1a967f860e49280038af3d2efcaeaf6b652f97e7`, another concurrent pointer-loss verification commit that also saved report work. Its only additional change in the inspected authority/evidence families condenses three AGENTS learning/playtesting bullets into one; the substantive separation is preserved. This later wording is disclosed but excluded from the baseline assessment. No new loop, retrospective or factory-lesson records appeared in that comparison.
+
+## Report checks
+
+Local-link targets and linked Markdown heading fragments were checked across the collection and plan. JSON registers were parsed, and all report Markdown was checked for trailing whitespace and unresolved drafting markers. An initial marker scan also matched the old citation spelling quoted in the challenge/disposition records; the final scan distinguishes those historical examples from live report citations. Results are retained in [report-checks.json](report-checks.json).
+
+`git diff --check` was also run for the assessment plan and report directory. The custom file checks include new/untracked files that a normal diff check would omit. External URLs were successfully captured for the source register; they were not re-fetched by the final local-link checker.
 
 ## Checks not performed
 
-No build, unit/browser/backend test suite, verification runner, release preparation, deployment, live service check, benchmark, study replay or human playtesting was run for this assessment. No findings were promoted into standing rules. No source commit, push or external feedback was made. Software results cited in the reports are historical, bounded evidence.
+No build, unit/browser/backend test suite, verification runner, release preparation, deployment, live service check, benchmark, study replay or human playtesting was run for this assessment. No findings were promoted into standing rules. This assessment made no commit, push or external feedback; concurrent commits are described above. Software results cited in the reports are historical, bounded evidence.
