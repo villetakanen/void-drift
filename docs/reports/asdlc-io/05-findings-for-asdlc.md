@@ -4,7 +4,7 @@ These are analyst findings for review, not adopted framework policy. Confidence 
 
 ## F-01 — A design-led factory needs an explicit inquiry mode
 
-**Claim.** In this case, a study's decisive output was often a property or alternative made judgeable through a comparison. A correct artifact or polished problem statement could still leave the question unanswered. C-02–04 and C-08; E-D03–07, E-L01–03.
+**Claim.** In several sampled studies, a decisive output was a property or alternative made judgeable through a comparison. A correct artifact or polished problem statement could still leave the question unanswered. C-02–04 and C-08; E-D03–07, E-L01–03.
 
 **Guidance relation.** Double Diamond and Requirement Review address framing; Learning Loop legitimises discovery; Experience Modeling protects a defined visual vocabulary. The case connects these activities through a concrete inquiry instrument rather than a simple document handoff. G-D05/07/08/10.
 
@@ -18,7 +18,7 @@ These are analyst findings for review, not adopted framework policy. Confidence 
 
 **Claim.** The project combines shared visual/behavior definitions with deliberate exploration that can extend them. Not every composed value is a global token, and using a shared renderer does not make an instrument identical to the game. C-01/04/08; E-D01–02 and E-R05.
 
-**Guidance relation.** Experience Modeling's strict consumption boundary explains part of this architecture but under-describes how a new vocabulary is investigated and promoted. Its separate model-change route already acknowledges change. G-D05.
+**Guidance relation.** Experience Modeling's strict consumption boundary explains part of this architecture but under-describes how a new vocabulary is investigated and promoted. Its feedback arrow, explicit request-for-change route and human override already acknowledge model evolution. The narrower opportunity is a worked example of inquiry evidence and approval criteria, not invention of a missing change route. G-D05.
 
 **Counterevidence.** The records also describe bypassing existing shared styles and inventing components unnecessarily; exploration cannot be used to rationalise every local variant. The present source sample establishes specific reuse, not universal conformity.
 
@@ -86,7 +86,7 @@ These are analyst findings for review, not adopted framework policy. Confidence 
 
 ## F-08 — Retained evidence and retained machinery have different lifespans
 
-**Claim.** The writing/closure decision preserves useful records while allowing temporary study components to retire. Elsewhere, summaries outlive ignored or temporary logs, limiting reconstruction. Shared-tree commits also show that commit identity and session ownership are different. C-06/09; E-L07, E-G/C-G05, G-C07/10.
+**Claim.** The writing/closure decision preserves useful records while allowing temporary study components to retire. Elsewhere, summaries outlive ignored or temporary logs, limiting reconstruction. Shared-tree commits also show that commit identity and session ownership are different. C-06/09; E-L07, C-G05, G-C07/10.
 
 **Counterevidence.** Some instruments remain useful and are explicitly retained; deleting them would lose capability. No maintenance savings were measured. Micro-Commits already recommends isolated worktrees, so this is an example and clarification, not a newly discovered omission.
 

@@ -61,7 +61,7 @@ Full verification names nine stages: contracts, commit syntax, lint, types, unit
 | Designer accepted a design property | Recorded decision with scope                                  | Integration, release or general workflow effectiveness |
 | Lesson adopted                      | Authorized guidance change                                    | Improvement on subsequent comparable work              |
 
-The inspected release function enforces artifact identity; its authorization requirement is procedural at that function boundary. No repository approval-token enforcement was established. Similarly, selected review episodes demonstrate critic involvement, but the assessment does not establish a universal automated adversarial-review gate. These are descriptions of the observed operating model, not project change requests.
+Documentation and operating procedure require authorization before invoking publication. The inspected release function enforces bundle identity, not permission; no repository approval-token enforcement was established. Similarly, selected review episodes demonstrate critic involvement, but the assessment does not establish a universal automated adversarial-review gate. These are descriptions of the observed operating model, not project change requests.
 
 ## Dated evolution
 

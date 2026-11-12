@@ -1,6 +1,14 @@
 # ASDLC.io assessment through Void Drift
 
-Date: 2026-11-12. Status: initial execution plan; detailed sampling and evidence cutoff remain to be settled.
+Date: 2026-11-12. Status: assessment edition completed; findings and proposals await substantive review, not execution approval.
+
+## Execution record — 12 November
+
+Following the designer's instruction to start and notify on completion, the assessment was completed in [docs/reports/asdlc-io](../reports/asdlc-io/README.md). The coordinator fixed this edition to commit `49336a6e5675da1b50b7179f3baaf28f6d3a7bb4`; the two 12 November closure records were already included. Later work is reserved for an addendum rather than silently mixed into the baseline. No claim is made that all other chats had finished.
+
+The source register covers 86 captured guidance URLs (47 direct semantic readings) and a metadata inventory of 69 committed loop records. Three Luna High project packets cite 18 distinct loop records, supplemented by current code/contracts and historical collateral. Two additional Luna High guidance packets, coordinator source checks and three challenge passes supported synthesis. The final collection contains six substantive reports, eight findings and nine proposed ASDLC.io documentation changes. No product/factory behavior was changed, and no feedback was published or sent.
+
+The originally proposed in-process designer discussion is represented by explicit unknowns and review-ready interpretations in the finished report, consistent with the instruction to complete the work. It is not represented as designer endorsement. [Validation](../reports/asdlc-io/evidence/validation.md) records checks and challenge dispositions. The planning sections below are retained as the original work design; their future-tense milestones do not mean the delivered edition is unfinished.
 
 ## Mandate and acceptance contract
 

@@ -76,6 +76,4 @@ Voice-led development of a procedural space survival game and its software facto
 - Distinguish working changes, local commits, pushed revisions, and verified deployments.
 - Report failed, skipped, and unavailable checks explicitly; never count them as passes.
 - Repair failures without weakening contracts just to make checks green.
-- Playtesting by people happens outside this repository; never gate on it, record it, or ask for proof of it.
-- A finding is not a signal. Keep loop evidence collection separate from interpretation.
-- Review proposed lessons separately before making them standing rules.
+- Keep human playtesting outside the repo: never gate, record, or ask for proof; separate evidence from findings, signals and interpretation, and review lessons before adoption.

@@ -14,7 +14,10 @@ test("losing pointer capture clears a held flight action", async ({ page }) => {
     node.addEventListener(
       "pointerdown",
       (event) => {
-        if (!(event.target instanceof Element))
+        if (
+          !(event instanceof PointerEvent) ||
+          !(event.target instanceof Element)
+        )
           throw new Error("Thrust press has no capture target");
         event.target.setAttribute(
           "data-test-captured-pointer",

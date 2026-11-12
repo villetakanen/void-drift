@@ -1,6 +1,6 @@
 # ASDLC guidance: gates, factory, autonomy, and workflow
 
-**Capture identity.** Pages were read from `/tmp/asdlc-assessment-corpus/*.txt`, captured 2026-11-12 around 06:21 UTC. `docs/reports/asdlc-io/evidence/guidance-capture.json` gives per-page canonical/resolved URL, status, modified field, retrieval time, and HTML/text SHA-256. I report status and “Last Updated” from the actual page text below; where the capture manifest has no such fields (Getting Started), I do not infer a status. The displayed site release label was v0.27.2; it is not a source revision. Statements below paraphrase captured page text, not independent validation of cited studies/examples.
+**Capture identity.** Pages were read from `/tmp/asdlc-assessment-corpus/*.txt`, captured 2026-11-12 around 06:21 UTC. `docs/reports/asdlc-io/evidence/guidance-capture.json` gives per-page requested URL/canonical metadata, status, modified field, retrieval time, and HTML/text SHA-256. I report status and “Last Updated” from the actual page text below; where the capture manifest has no such fields (Getting Started), I do not infer a status. The displayed site release label was v0.27.2; it is not a source revision. Statements below paraphrase captured page text, not independent validation of cited studies/examples.
 
 ## Page propositions
 

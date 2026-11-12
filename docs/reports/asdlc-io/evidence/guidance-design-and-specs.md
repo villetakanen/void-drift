@@ -2,7 +2,7 @@
 
 ## Capture identity and reading scope
 
-Pages below were captured from their canonical `asdlc.io` URLs on 12 November 2026, around 06:21 UTC. The capture manifest is `evidence/guidance-capture.json` (within this report collection); it records resolved URL, retrieval time, visible status, page update date where exposed, release label, and HTML/text SHA-256. The site displayed release label `v0.27.2`; this is not a verified source revision. Raw text and HTML are temporary captures under `/tmp/asdlc-assessment-corpus/`, not durable report attachments. Pages are summarized below in my own words; no page summary exceeds 120 words.
+Pages below were captured from their canonical `asdlc.io` URLs on 12 November 2026, around 06:21 UTC. The capture manifest is `evidence/guidance-capture.json` (within this report collection); it records canonical URL metadata, retrieval time, visible status, page update date where exposed, release label, and HTML/text SHA-256. The site displayed release label `v0.27.2`; this is not a verified source revision. Raw text and HTML are temporary captures under `/tmp/asdlc-assessment-corpus/`, not durable report attachments. Pages are summarized below in my own words; no page summary exceeds 120 words.
 
 **Semantically read:** all 16 requested pattern/practice/concept pages listed as G-D01–G-D16, and all three requested-adjacent recipe pages G-D17–G-D19. **Context-only:** captured `/`, `/getting-started/`, `/patterns/`, `/practices/`, `/concepts/`, `/resources/`, and `/recipes/` indexes were used for page discovery and release identity, not as substitutes for page reading. Other captured site pages were not semantically assessed for this packet.
 
