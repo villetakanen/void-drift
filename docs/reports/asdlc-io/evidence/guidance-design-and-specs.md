@@ -18,7 +18,7 @@ Pages below were captured from their canonical `asdlc.io` URLs on 12 November 20
 
 ### G-D03 — [Spec-Driven Development](https://asdlc.io/concepts/spec-driven-development/)
 
-**Status:** Live; updated 2026-05-26. **Headings:** “Key Characteristics”; “Levels of SDD Adoption”; “Anti-Patterns”; “ASDLC Usage.” SDD means defining specifications before implementation and evolving them with the code. Its target maturity is spec-anchored, while spec-first discards its spec and spec-as-source makes generated code the only human-edited artifact. The page accepts implementation discovery and iterative refinement, emphasizes deterministic orchestration for mechanical rules, and warns against treating visual mockups as complete technical requirements.
+**Status:** Live; updated 2026-05-26. **Headings:** “Key Characteristics”; “Levels of SDD Adoption”; “Anti-Patterns”; “ASDLC Usage.” SDD means defining specifications before implementation and evolving them with the code. Its target maturity is spec-anchored, while spec-first discards its spec and spec-as-source makes the specification the only human-edited source, with code generated from it. The page accepts implementation discovery and iterative refinement, emphasizes deterministic orchestration for mechanical rules, and warns against treating visual mockups as complete technical requirements.
 
 ### G-D04 — [Spec Reversing](https://asdlc.io/patterns/spec-reversing/)
 
@@ -26,7 +26,7 @@ Pages below were captured from their canonical `asdlc.io` URLs on 12 November 20
 
 ### G-D05 — [Experience Modeling](https://asdlc.io/patterns/experience-modeling/)
 
-**Status:** Live; updated 2026-01-25. **Headings:** “The Problem: Design Drift”; “The Experience Schema”; “The Context Gate”; “Read-Only Enforcement.” It proposes treating a design system as a queryable, constrained UI vocabulary that implementation agents consume, with checks for token use, schema/document parity, and isolated build. During feature assembly the model is read-only; changing it is a separate human-governed decision. The page describes hard isolation and toolchain enforcement as different implementation options. This is a design-system integrity pattern, not evidence that every product design choice can be reduced to a component schema.
+**Status:** Live; updated 2026-01-25. **Headings:** “The Problem: Design Drift”; “The Solution: The Experience Schema”; “2. The Context Gate (The Enforcer)”; “3. Read-Only Enforcement (The Governance).” It proposes treating a design system as a queryable, constrained UI vocabulary that implementation agents consume, with checks for token use, schema/document parity, and isolated build. During feature assembly the model is read-only; changing it is a separate human-governed decision. The page describes hard isolation and toolchain enforcement as different implementation options. This is a design-system integrity pattern, not evidence that every product design choice can be reduced to a component schema.
 
 ### G-D06 — [Product Vision](https://asdlc.io/patterns/product-vision/)
 
@@ -54,7 +54,7 @@ Pages below were captured from their canonical `asdlc.io` URLs on 12 November 20
 
 ### G-D12 — [AGENTS.md Specification: The Standard AI Context File Convention](https://asdlc.io/practices/agents-md-spec/)
 
-**Status:** Live; updated 2026-03-16. **Headings:** “Core Philosophy”; “Standard AGENTS.md Format & Recommended Sections”; “What to Audit Out”; “Format Philosophy.” Recommends concise, developer-authored project context that agents cannot infer, routes deterministic rules to tool config, session procedures to skills, and feature rules to specs/PBIs. Judgment boundaries, skill roster, and optional context map can be included when useful. It describes format as adaptable and says signal density matters more than exact compliance; its extensive example/template is guidance for larger or complex settings, not a universal schema.
+**Status:** Live; updated 2026-03-16. **Headings:** “Core Philosophy”; “Standard agents.md Format & Recommended Sections”; “What to Audit Out”; “Format Philosophy.” Recommends concise, developer-authored project context that agents cannot infer, routes deterministic rules to tool config, session procedures to skills, and feature rules to specs/PBIs. Judgment boundaries, skill roster, and optional context map can be included when useful. It describes format as adaptable and says signal density matters more than exact compliance; its extensive example/template is guidance for larger or complex settings, not a universal schema.
 
 ### G-D13 — [The PBI](https://asdlc.io/patterns/the-pbi/)
 
