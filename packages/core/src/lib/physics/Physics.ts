@@ -65,6 +65,11 @@ export interface Star {
   powerMultiplier: number;
   burnMultiplier: number;
   pulseSpeed: number;
+  /** Optional flight presentation and field overrides for stellar families. */
+  appearance?: "yellow-family";
+  designation?: string;
+  collectionField?: EnergyField;
+  damageField?: EnergyField;
   /** The mass well law in play (docs/specs/gravity-field.md); without it, the study curve. */
   massWell?: MassWell;
 }
@@ -246,7 +251,7 @@ export function wellAcceleration(
 
 import type { InputState } from "../entities/Input";
 import type { Resources } from "../schemas/common";
-import type { SunType } from "../schemas/sun";
+import type { EnergyField, SunType } from "../schemas/sun";
 
 export function updatePower(
   resources: Resources,
@@ -295,7 +300,7 @@ export function updateHull(
     return;
   }
 
-  resources.hull -= (solarDamageRate(distanceToSun) * dt) / hullMultiplier;
+  resources.hull -= (solarDamageRate(distanceToSun, sun) * dt) / hullMultiplier;
 
   // Clamp
   resources.hull = Math.max(0, Math.min(100, resources.hull));

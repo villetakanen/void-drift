@@ -1,0 +1,180 @@
+{
+  "viewport": {
+    "width": 1280,
+    "height": 1000
+  },
+  "url": "http://127.0.0.1:4356/lab/studies/stellar-encounters-2026-11-11",
+  "errors": [],
+  "mechanics": {
+    "parity": true,
+    "profiles": [
+      {
+        "id": "sun",
+        "name": "G / Standard Sun",
+        "character": "The familiar reference",
+        "color": "#ffaa00",
+        "radius": 35,
+        "collection": {
+          "reach": 324.037034920393,
+          "shoulder": 55,
+          "peak": 7.5,
+          "outerFraction": 0.1
+        },
+        "exposure": {
+          "reach": 100,
+          "shoulder": 55,
+          "peak": 1.5,
+          "outerFraction": 0
+        }
+      },
+      {
+        "id": "dwarf",
+        "name": "K / Quiet orange dwarf",
+        "character": "Go close for a modest refill",
+        "color": "#ff8800",
+        "radius": 25,
+        "collection": {
+          "reach": 180,
+          "shoulder": 45,
+          "peak": 4.5,
+          "outerFraction": 0.1
+        },
+        "exposure": {
+          "reach": 72,
+          "shoulder": 45,
+          "peak": 0.8,
+          "outerFraction": 0
+        }
+      },
+      {
+        "id": "giant",
+        "name": "Cool giant / Evolved star",
+        "character": "Harvest wide; leave room",
+        "color": "#ff8800",
+        "radius": 110,
+        "collection": {
+          "reach": 520,
+          "shoulder": 130,
+          "peak": 12,
+          "outerFraction": 0.1
+        },
+        "exposure": {
+          "reach": 230,
+          "shoulder": 130,
+          "peak": 3,
+          "outerFraction": 0
+        }
+      }
+    ],
+    "loadout": {
+      "version": 2,
+      "chassis": "wasp",
+      "side": "ion",
+      "stabilizers": true,
+      "linkedEngines": false,
+      "hull": [null, null],
+      "aft": []
+    },
+    "shipRadius": 19.100161810603066,
+    "coast": 0.8,
+    "powered": 2.55,
+    "readings": [
+      {
+        "distance": 100,
+        "stars": [
+          {
+            "id": "sun",
+            "contact": false,
+            "collection": 6.370973284068945,
+            "exposure": 0,
+            "net": 5.570973284068945,
+            "clearance": 45.89983818939693
+          },
+          {
+            "id": "dwarf",
+            "contact": false,
+            "collection": 2.8499999999999996,
+            "exposure": 0,
+            "net": 2.05,
+            "clearance": 55.89983818939693
+          },
+          {
+            "id": "giant",
+            "contact": true,
+            "collection": 12,
+            "exposure": 3,
+            "net": 11.2,
+            "clearance": -29.100161810603066
+          }
+        ]
+      },
+      {
+        "distance": 160,
+        "stars": [
+          {
+            "id": "sun",
+            "contact": false,
+            "collection": 4.865604329494204,
+            "exposure": 0,
+            "net": 4.065604329494204,
+            "clearance": 105.89983818939693
+          },
+          {
+            "id": "dwarf",
+            "contact": false,
+            "collection": 1.0499999999999998,
+            "exposure": 0,
+            "net": 0.24999999999999978,
+            "clearance": 115.89983818939693
+          },
+          {
+            "id": "giant",
+            "contact": false,
+            "collection": 11.169230769230769,
+            "exposure": 2.0999999999999996,
+            "net": 10.369230769230768,
+            "clearance": 30.899838189396934
+          }
+        ]
+      },
+      {
+        "distance": 240,
+        "stars": [
+          {
+            "id": "sun",
+            "contact": false,
+            "collection": 2.8584457233945497,
+            "exposure": 0,
+            "net": 2.0584457233945495,
+            "clearance": 185.89983818939695
+          },
+          {
+            "id": "dwarf",
+            "contact": false,
+            "collection": 0,
+            "exposure": 0,
+            "net": -0.8,
+            "clearance": 195.89983818939695
+          },
+          {
+            "id": "giant",
+            "contact": false,
+            "collection": 8.953846153846154,
+            "exposure": 0,
+            "net": 8.153846153846153,
+            "clearance": 110.89983818939693
+          }
+        ]
+      }
+    ]
+  },
+  "checks": [
+    "production Sun rate parity",
+    "100/160/240 u states",
+    "engine-state consumption",
+    "slider keyboard",
+    "engine toggle keyboard",
+    "profile disclosure",
+    "no horizontal overflow"
+  ]
+}

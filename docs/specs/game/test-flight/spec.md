@@ -32,7 +32,9 @@ Practice is a mode of its own, as the [game contract](../spec.md) lists it.
 - **Entry.** Practice starts from the Hangar and flies the active ship in its
   fitting, with its real mass, thrust and handling.
 - **A fixed system.** Every entry uses the same star-and-planet system and the
-  same starting conditions. Play begins at once.
+  same starting conditions. Its star uses the G7 reference profile at a fixed
+  70 u surface radius and the World HUD labels it `G7, Sun`. Play begins at
+  once.
 - **Real flight.** Controls, movement, gravity and contact with the star and
   planets work as in any flight. Contact never repositions the ship.
 - **Nothing runs out.** Energy stays full at the ship's capacity and never

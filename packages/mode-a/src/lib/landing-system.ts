@@ -6,17 +6,23 @@ import {
   type Planet,
   updatePlanetOrbit,
   Vec2,
+  type YellowStarPalette,
+  yellowStarPalette,
 } from "@void-drift/core";
 import { createStar } from "./game-loop";
 
 /** Cosmetic state only: never supplied to the survival simulation. */
 export class LandingSystem {
   readonly star;
+  readonly starPalette: YellowStarPalette;
   readonly planets: Planet[];
   time = 0;
 
   constructor(random: () => number = Math.random) {
     this.star = createStar("G", 0, 0);
+    // The title-only star samples the study's accepted size and palette range.
+    this.star.radius = 36 + random() * (140 - 36);
+    this.starPalette = yellowStarPalette(this.star.radius);
     const appearances = Object.values(PLANET_TYPES);
     this.planets = Array.from({ length: 3 }, (_, index) => {
       const type = appearances[Math.floor(random() * appearances.length)];
@@ -86,7 +92,13 @@ export class LandingSystem {
   ) {
     const frame = this.layout(width, height, cardRight);
     context.save();
-    drawStar(context, { ...this.star, ...frame.star, time: this.time * 1000 });
+    drawStar(context, {
+      ...this.star,
+      ...frame.star,
+      time: this.time * 1000,
+      appearance: "yellow-family",
+      yellowPalette: this.starPalette,
+    });
     for (const body of frame.planets) {
       context.strokeStyle = COLOR.borderFaint;
       context.lineWidth = 1;

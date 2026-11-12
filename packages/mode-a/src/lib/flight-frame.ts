@@ -131,7 +131,7 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
     name: "Sun fields",
     layer: "world",
     space: "world",
-    draws: "World HUD: the sun's collection and damage rings",
+    draws: "World HUD: the star's gravity, collection, damage and denomination",
     source: "packages/core/src/lib/assets/sun-fields.ts",
     draw: ({ sim }, ctx) =>
       drawSunFields(ctx, sim.star, {

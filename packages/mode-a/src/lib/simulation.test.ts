@@ -1,11 +1,45 @@
 import { STANDARD_SUN, SURVIVAL_CONFIG } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
-import { Simulation, stockSettings } from "./simulation";
+import { gameSettings, Simulation, stockSettings } from "./simulation";
 
 const both = { leftThruster: true, rightThruster: true, fire: false };
 const idle = { leftThruster: false, rightThruster: false, fire: false };
 
 describe("flight contract", () => {
+  it("uses the seeded yellow family in Derelicts and Gauntlet, not Survival", () => {
+    const settings = {
+      ...gameSettings("wasp"),
+      mode: "derelicts" as const,
+      seed: 8172,
+    };
+    const first = new Simulation(settings).star;
+    const repeated = new Simulation(settings).star;
+    const other = new Simulation({ ...settings, seed: 8173 }).star;
+    const gauntlet = new Simulation({ ...settings, mode: "gauntlet" }).star;
+
+    expect(first.radius).toBe(repeated.radius);
+    expect(first.influenceRadius).toBe(repeated.influenceRadius);
+    expect(first.collectionField).toEqual(repeated.collectionField);
+    expect(first.damageField).toEqual(repeated.damageField);
+    expect(first.radius).not.toBe(other.radius);
+    expect(first.appearance).toBe("yellow-family");
+    expect(gauntlet.radius).toBe(first.radius);
+    expect(gauntlet.influenceRadius).toBe(first.influenceRadius);
+    expect(gauntlet.collectionField).toEqual(first.collectionField);
+    expect(gauntlet.damageField).toEqual(first.damageField);
+
+    const practice = new Simulation({ ...settings, mode: "practice" }).star;
+    expect(practice.radius).toBe(70);
+    expect(practice.designation).toBe("G7, Sun");
+    expect(practice.appearance).toBe("yellow-family");
+
+    const survival = new Simulation({ ...settings, mode: "survival" }).star;
+    expect(survival.radius).toBe(35);
+    expect(survival.collectionField).toBeUndefined();
+    expect(survival.damageField).toBeUndefined();
+    expect(survival.appearance).toBeUndefined();
+  });
+
   it("reproduces validated replay exactly", () => {
     const a = new Simulation(),
       b = new Simulation();

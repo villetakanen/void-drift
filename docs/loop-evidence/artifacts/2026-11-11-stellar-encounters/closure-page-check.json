@@ -1,0 +1,14 @@
+{
+  "viewport": {
+    "width": 1280,
+    "height": 1000
+  },
+  "pageStatus": 200,
+  "studyStatus": "stopped",
+  "interactiveIslands": 0,
+  "imagesChecked": 4,
+  "dataLinksChecked": 2,
+  "review": "historical label present",
+  "errors": [],
+  "scope": "new static closure document only; no historical experiments rerun"
+}

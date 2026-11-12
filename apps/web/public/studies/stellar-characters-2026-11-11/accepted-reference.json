@@ -1,0 +1,94 @@
+{
+  "status": "Accepted design reference; not production tuning",
+  "accepted": "2026-11-11",
+  "family": "Stable yellow / G-inspired arcade family; not an astrophysical radius-temperature law",
+  "surfaceRange": [36, 140],
+  "referenceSurface": 70,
+  "gravityReachExponent": 1.45,
+  "referenceGravity": {
+    "mass": 5250,
+    "falloff": "inverse-square",
+    "cutoff": 50,
+    "G": 1000,
+    "reach": 324.037034920393
+  },
+  "formulae": {
+    "size": "surfaceRadius / 70",
+    "hazard": "100 * size",
+    "collection": "referenceReach * size",
+    "gravity": "referenceReach * size ** 1.45",
+    "mass": "5250 * size ** 2.9",
+    "pull": "G * mass / distance ** 2 inside gravity reach and outside body; zero beyond hard cutoff"
+  },
+  "palette": {
+    "method": "Clamped linear interpolation per sRGB byte, rounded to nearest integer",
+    "surfaceAnchors": [24, 70, 190],
+    "bodyAndRings": ["#e88724", "#ffaa00", "#ffe5a5"],
+    "coronaInner": ["#e88a38", "#ffb950", "#ffe8b5"],
+    "coronaOuter": ["#e46e26", "#ff9e30", "#ffd076"],
+    "note": "Accepted range36\u2013140 uses the interior portion of these exploration palette anchors; do not remap endpoints"
+  },
+  "samples": [
+    {
+      "surfaceRadius": 36,
+      "size": 0.5142857142857142,
+      "hazardRadius": 51.42857142857142,
+      "collectionRadius": 166.64761795905926,
+      "gravityRadius": 123.5495356907062,
+      "mass": 763.2243884694542,
+      "outerPull": 0,
+      "palette": {
+        "bodyAndRings": "#ee901b",
+        "coronaInner": "#ee963e",
+        "coronaOuter": "#eb7b29"
+      }
+    },
+    {
+      "surfaceRadius": 70,
+      "size": 1.0,
+      "hazardRadius": 100.0,
+      "collectionRadius": 324.037034920393,
+      "gravityRadius": 324.037034920393,
+      "mass": 5250.0,
+      "outerPull": 78.12499999999999,
+      "palette": {
+        "bodyAndRings": "#ffaa00",
+        "coronaInner": "#ffb950",
+        "coronaOuter": "#ff9e30"
+      }
+    },
+    {
+      "surfaceRadius": 140,
+      "size": 2.0,
+      "hazardRadius": 200.0,
+      "collectionRadius": 648.074069840786,
+      "gravityRadius": 885.2952687611734,
+      "mass": 39187.38564454591,
+      "outerPull": 145.78640492762614,
+      "palette": {
+        "bodyAndRings": "#ffcc60",
+        "coronaInner": "#ffd48b",
+        "coronaOuter": "#ffbb59"
+      }
+    }
+  ],
+  "conditions": {
+    "seed": 2401,
+    "inspectionSeconds": 1.5,
+    "logicalView": [520, 440],
+    "closeupZoom": 1,
+    "closeupCamera": [990, 540],
+    "starCentre": [960, 540],
+    "ship": "Default production Wasp, both thrust inputs held, staged position every tick",
+    "shipCentreDistances": [43.714285714285715, 85, 170],
+    "overviewZoom": 0.22026549432809098,
+    "layers": "World body and HUD; persistent FX corona; current outward rings on LFX",
+    "fixture": "Practice resource protection, no planets/encounters; does not substitute candidate collection/exposure profiles"
+  },
+  "unsettled": [
+    "Collection/exposure interior profiles and peak rates",
+    "Seeded size distribution and encounter placement",
+    "Playground expansion beyond mode rules",
+    "Release number"
+  ]
+}

@@ -131,12 +131,18 @@ The selected Firebase project is `void-drift-alpha` (Spark), database `(default)
 `eur3`. Anonymous authentication must be enabled. Do not upgrade billing or Identity
 Platform to work around setup failures. Public web configuration is local, not committed.
 
-Before preparing, decide the rules version. If gameplay rules or any tuning-file value
-differ from the previous release, change `CHALLENGE` in
-`packages/mode-a/src/schemas/highscore.ts` once for this release; new scores then use
-new document IDs and queries, and change the challenge named in `firestore.rules` to
-match, which closes the previous board to writes. Otherwise leave it unchanged. Editing tuning values
-between releases never changes it ([gravity-field.md](specs/game/world/gravity-field/spec.md#rules-version)).
+Before preparing, decide whether ranked Survival scores remain comparable to the
+previous release. Change `CHALLENGE` in `packages/mode-a/src/schemas/highscore.ts`
+only when a change to rules applied to score-eligible ranked Survival runs makes
+old and new scores unfair to compare. This includes changes to ranked Survival
+trajectories, survival conditions, scoring, or score eligibility; a tuning value
+matters only when it changes one of those rules in ranked Survival. Changes limited
+to other modes, the Lab, or presentation leave the challenge unchanged. When the
+challenge changes, update the matching value and document ID prefix in
+`firestore.rules`; this starts a new board and closes the previous board to writes.
+Record the ranked Survival comparison decision and its reason in the release note.
+Make the decision against the last published release, not intermediate edits
+([gravity-field.md](specs/game/world/gravity-field/spec.md#rules-version)).
 
 After the full verification gates pass on a stable candidate, prepare the production
 artifact locally:

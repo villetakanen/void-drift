@@ -27,8 +27,10 @@ game's home and Hangar is an alternative launch point.
   return actions use that source, independently of the selected ship.
 - `packages/mode-a/src/lib/landing-system.ts` owns the cosmetic star system. It
   reuses the shared procedural star and planet artwork and the circular orbit
-  update, and never advances survival physics. Its composition follows the
-  constraints below.
+  update, and never advances survival physics. The title scene opts into the
+  accepted yellow-family G appearance through the shared star painter; this
+  visual trial does not supply a star to any game mode. Its composition follows
+  the constraints below.
 - The [Title-screen hints spec](hints.md) defines the hint area's content and
   behavior; this spec owns its placement in the title-screen composition.
 
@@ -41,7 +43,10 @@ game's home and Hangar is an alternative launch point.
   the hints. Let the star system extend diagonally toward the upper-left corner,
   with its outer edge approximately reaching that corner. This is a best-effort
   visual composition guide, not an exact geometric calculation or fit constraint.
-- The system has the standard G-class sun and three planets on circular orbits
+- The system has a yellow-family G star with a new surface radius sampled from
+  36–140 u whenever the title screen is entered. Its body, ring tint and corona
+  use the study's matching warm palette interpolation; the title gives no size
+  readout. The system also has three planets on circular orbits
   with 120–240 second periods. Landing planets never have rings. Planet
   appearance, orbital phases and bounded orbit sizes vary each time the title
   screen is entered; menu navigation and resize keep the same system, and returning
