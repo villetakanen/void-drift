@@ -1,0 +1,19 @@
+{
+  "created": "2026-11-12",
+  "method": "Built-in image_gen; original study-only raster concepts. No source images sampled.",
+  "status": "Unaccepted visual hypotheses; not production assets",
+  "variants": [
+    {
+      "id": "mineral",
+      "prompt": "Use case: stylized-concept. Asset: original raster concept sprite for an arcade space game, airless rocky planet, direction A 'Mineral mosaic'. One circular globe ONLY, centered, diameter 85% of square frame, transparent outside silhouette. Compose it to suggest a world rather than reproduce a photograph. High-fidelity low-fi computer game art, continuous painted raster edges, no pixel grid. Surface: angular-edged irregular interlocking mineral deposits, muted blue slate and bronze ochre over charcoal stone, mineral shapes follow spherical curvature; dry dense stone, no cloud bands. A few quiet fractured seams, tiny faint weathered impact traces subordinate to broad composition. Light from left, right hemisphere visibly dimmer but legible, no near-black hemisphere. Three-quarter lit solid sphere, smooth circular outer contour. Distinct large mineral shapes and selective mid-scale broken detail readable when reduced to 54 pixels diameter. Limit detail; avoid photographic noise, tiny stippling, repeated circular crater icons, cartoon outlines, polygon facets, ship-panel geometry, metal plating, atmosphere, glow, haze, rings, gas clouds, horizontal or diagonal banding. No text, no stars, no shadow outside globe."
+    },
+    {
+      "id": "highlands",
+      "prompt": "Use case: stylized-concept. Original raster concept sprite for an arcade space game, airless rocky planet, B 'Ancient highlands'. One circular globe ONLY centered, diameter 85% of square frame, transparent outside. Deliberately composed to suggest a world. High-fidelity low-fi computer art, restrained painted raster, no pixel grid. Dense dry stone globe: broad charcoal basalt plain with uneven irregular boundary on lower left, surrounded by warm grey worn highlands; one pale irregular ejecta scar interrupted by the plain. Dry contiguous geological masses curve across sphere. Chipped highland edges suggest relief without outlined craters. Left lit, three-quarter illuminated, right hemisphere dimmer but legible. Bold material distribution and restrained mid-scale topology survive at 54px diameter. Muted grey-beige stone, subtle cool shadow. Avoid photographic grain, radial crater symbols, concentric bowls, plastic, stippling, vectors, pixel art, faceted mesh, metal panels, atmosphere, halo, clouds, bands. No text, stars or shadows outside globe."
+    },
+    {
+      "id": "impact",
+      "prompt": "Use case: stylized-concept. Original raster concept sprite for an arcade space game, airless rocky planet, C 'Impact palimpsest'. One circular globe ONLY centered, diameter 85% of square frame, transparent outside. Deliberately composed to suggest a world. High-fidelity low-fi arcade art, clean painted raster without pixel grid. Dense iron-grey rock sphere, muted rust mineral patches. Two broad overlapping ancient impact terrains expressed by broken irregular value boundaries and one asymmetric pale ejecta streak with sparse discontinuous branching marks following curvature. No raised circular crater bowl or crater icon. Worn stone, sparse crisp mineral accents amid quiet surface areas. Left lit, three-quarter illumination, right hemisphere dimmer but legible. Designed to read at 54px diameter using limited deliberate mid-scale shapes. Avoid flowing cloudy swirls and banding, photographic grain, sharp polygon facets, ship plating, cartoon outline, atmosphere, halo, stars, rings, glow, text, shadows outside globe."
+    }
+  ]
+}

@@ -156,43 +156,54 @@ export class Renderer {
     );
   }
 
-  drawPlanet(planet: Planet) {
-    // Draw Orbit Path (Faint)
-    this.ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
-    this.ctx.lineWidth = 1;
-    this.ctx.beginPath();
-    this.ctx.arc(
-      planet.orbitCenter.x,
-      planet.orbitCenter.y,
-      planet.orbitRadius,
-      0,
-      Math.PI * 2,
-    );
-    this.ctx.stroke();
+  drawPlanet(
+    planet: Planet,
+    {
+      worldHud = true,
+      body = true,
+    }: { worldHud?: boolean; body?: boolean } = {},
+  ) {
+    if (worldHud) {
+      // Draw Orbit Path (Faint)
+      this.ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+      this.ctx.lineWidth = 1;
+      this.ctx.beginPath();
+      this.ctx.arc(
+        planet.orbitCenter.x,
+        planet.orbitCenter.y,
+        planet.orbitRadius,
+        0,
+        Math.PI * 2,
+      );
+      this.ctx.stroke();
+    }
 
-    this.renderWrapped(
-      planet.pos.x,
-      planet.pos.y,
-      planet.radius,
-      (offX, offY) => {
-        drawPlanet(this.ctx, {
-          x: planet.pos.x + offX,
-          y: planet.pos.y + offY,
-          radius: planet.radius,
-          color: planet.color,
-          hasRing: planet.hasRing,
-        });
-      },
-    );
+    if (body)
+      this.renderWrapped(
+        planet.pos.x,
+        planet.pos.y,
+        planet.radius,
+        (offX, offY) => {
+          drawPlanet(this.ctx, {
+            x: planet.pos.x + offX,
+            y: planet.pos.y + offY,
+            radius: planet.radius,
+            color: planet.color,
+            hasRing: planet.hasRing,
+          });
+        },
+      );
 
-    const gravityRadius = getPlanetInfluenceRadius(planet);
-    this.ctx.strokeStyle = "rgba(120, 220, 255, 0.2)";
-    this.ctx.lineWidth = 1;
-    this.ctx.setLineDash([6, 6]);
-    this.ctx.beginPath();
-    this.ctx.arc(planet.pos.x, planet.pos.y, gravityRadius, 0, Math.PI * 2);
-    this.ctx.stroke();
-    this.ctx.setLineDash([]);
+    if (worldHud) {
+      const gravityRadius = getPlanetInfluenceRadius(planet);
+      this.ctx.strokeStyle = "rgba(120, 220, 255, 0.2)";
+      this.ctx.lineWidth = 1;
+      this.ctx.setLineDash([6, 6]);
+      this.ctx.beginPath();
+      this.ctx.arc(planet.pos.x, planet.pos.y, gravityRadius, 0, Math.PI * 2);
+      this.ctx.stroke();
+      this.ctx.setLineDash([]);
+    }
   }
 
   drawDamageFlash(flash: DamageFlash) {

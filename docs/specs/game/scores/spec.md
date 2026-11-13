@@ -6,7 +6,8 @@
 
 Players can save a Survival score to a shared board and see how they compare.
 The competition is casual: scores are reported by the player's own browser and
-nobody signs up. The current board is the Ion Storm challenge.
+nobody signs up. Each [ruleset](../spec.md) has its own board, and a client
+uses the board of the ruleset it carries.
 
 A saved score also records what was flown, the ship, its fitting and its
 stabilizer and linked-engines choices, so the
@@ -17,8 +18,8 @@ for game design and is not shown to players.
 
 - **Contract.** `HighScoreSubmissionSchema` and `HighScoreSchema` in
   `packages/mode-a/src/schemas/highscore.ts` define the saved score, and
-  `CHALLENGE` there names the current board. A change to what is saved is made
-  in these schemas first.
+  `CHALLENGE` there names the client's ruleset and so its board. A change to
+  what is saved is made in these schemas first.
 - **Store.** Scores live in Firestore at
   `artifacts/void-drift/scores/{challenge}_{userId}_{shipId}`. `firestore.rules`
   enforces the same shape as the schemas and who may write.
@@ -45,7 +46,7 @@ for game design and is not shown to players.
   | `fitting`       | The parts fitted to that ship, as a list of part ids        |
   | `stabilizers`   | Whether the ship flew with stabilizers on                   |
   | `linkedEngines` | Whether the ship flew with linked engines on                |
-  | `challenge`     | The board the score belongs to                              |
+  | `challenge`     | The name of the ruleset the run was flown under             |
   | `userId`        | The anonymous player who saved it                           |
 
 - **Any ship.** `shipId` can hold any ship in the game. The store keeps no list
@@ -57,13 +58,17 @@ for game design and is not shown to players.
   player who saved it.
 - **Anonymous.** The player is signed in anonymously and automatically. Reading
   the board needs that sign-in, and a read is limited to the board's length.
-- **The board.** Top Scores lists the 30 highest scores of the current
-  challenge, highest first, with score and time, and says that scores are
+- **The board.** Top Scores lists the 30 highest scores of the client's
+  ruleset, highest first, with score and time, and says that scores are
   casual and reported by players. The player can re-sort the listed rows by
   time. The fitting and the two ship choices are not shown.
-- **A challenge is a board.** Scores of different challenges never share a
-  board. Only the current challenge accepts new or raised scores. Scores of
-  earlier challenges stay in the database and are not written again.
+- **A ruleset is a board.** Scores of different rulesets never share a board.
+  A client saves to, raises and lists the board of its own ruleset only, and
+  shows no other board. Every client that carries a ruleset shares its board.
+- **Boards stay open.** `firestore.rules` holds one rule for each ruleset a
+  released client carries, and a ruleset's rule is not removed when another
+  ruleset is added. Rows of a ruleset the rules do not name stay stored and
+  are not written.
 - **Never in the way.** Without Firebase, or when saving fails, the game plays
   on and says why scores are unavailable.
 
@@ -74,8 +79,8 @@ for game design and is not shown to players.
 - C1: Saving writes `artifacts/void-drift/scores/{challenge}_{userId}_{shipId}`,
   and an equal or lower score leaves the stored one unchanged.
 - C2: Firestore rules reject a write that is unauthenticated, owned by
-  another player, malformed, under a mismatched document id, for an unknown
-  challenge, lower than the stored score, carrying an extra field, or a
+  another player, malformed, under a mismatched document id, for a ruleset
+  the rules do not name, lower than the stored score, carrying an extra field, or a
   deletion, and reject unbounded or unauthenticated list reads.
 - C3: `seconds` is saved with milliseconds and has no ceiling, in the
   schema and the rules.
@@ -85,7 +90,7 @@ for game design and is not shown to players.
 - C6: `fitting` is saved as the list of the flown ship's part ids, with
   `stabilizers` and `linkedEngines` as flown, and each is
   required by the schema and the rules.
-- C7: Top Scores lists the current challenge's 30 highest scores with score
+- C7: Top Scores lists the 30 highest scores of the client's ruleset with score
   and time, labelled as casual and reported by players.
 - C8: The player can re-sort the listed rows by score or by time, score
   first.
@@ -93,8 +98,9 @@ for game design and is not shown to players.
 - C10: Two anonymous players can each save a run and see both on the board.
 - C11: With Firebase unconfigured, the board explains that shared scores are
   unavailable and offers Retry.
-- C12: Firestore rules accept writes for the current challenge only;
-  rows of earlier challenges remain stored.
+- C12: Firestore rules accept a write only for a ruleset they name, and a
+  raised score keeps its ruleset; rows of a ruleset the rules do not name
+  remain stored and readable.
 
 ### Regression guardrails
 
@@ -102,9 +108,11 @@ for game design and is not shown to players.
   in one and not the other.
 - Rules bound the data and its owner; they are never treated as proof of an
   honest run.
-- A new `CHALLENGE` value has a matching rule in `firestore.rules`, starts a
-  separate board, and closes the previous board to writes.
-- A stored row that fails the current schema is skipped when the board loads,
+- A new `CHALLENGE` value adds a matching rule to `firestore.rules` and
+  starts a separate board. The rules of rulesets that released clients carry
+  stay in place.
+- A client never reads or writes a board other than its own ruleset's.
+- A stored row that fails the client's schema is skipped when the board loads,
   not shown and not an error.
 - No score feature blocks starting, playing or finishing a run.
 
@@ -116,7 +124,7 @@ Feature: Scores
   Scenario: Saving a score records what was flown
     Given I finished a ranked Survival run
     When I enter my initials and save
-    Then my score, time, ship and fitting are saved to the current board
+    Then my score, time, ship and fitting are saved to my client's board
     And whether I flew with stabilizers and with linked engines
 
   Scenario: An equal run keeps the best
@@ -140,8 +148,7 @@ Feature: Scores
       | owned by another player               |
       | missing a field or of the wrong type  |
       | stored under a mismatched document id |
-      | for an unknown challenge              |
-      | for an earlier challenge              |
+      | for a ruleset the rules do not name   |
       | lower than the stored score           |
       | carrying an extra field               |
       | a deletion                            |

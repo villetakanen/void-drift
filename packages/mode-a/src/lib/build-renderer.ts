@@ -62,6 +62,27 @@ export interface BuildMount {
   width: number;
   height: number;
 }
+/** Schematic paths in ship-local units; shared by drawing and preview bounds. */
+export function buildSlotLinks(
+  chassis: Loadout["chassis"],
+  mounts: readonly BuildMount[],
+) {
+  return mounts.flatMap((secondary) => {
+    if (!secondary.linkedTo) return [];
+    const primary = mounts.find((mount) => mount.key === secondary.linkedTo);
+    if (!primary) return [];
+    const lineX = CHASSIS[chassis].slotLinkLines[secondary.key];
+    if (lineX === undefined)
+      throw new Error(`Missing slot link line for ${chassis}:${secondary.key}`);
+    const points: [number, number][] = [
+      [primary.x, primary.y],
+      [lineX, primary.y],
+      [lineX, secondary.y],
+      [secondary.x, secondary.y],
+    ];
+    return [{ primary, secondary, points }];
+  });
+}
 export function buildMounts(build: Loadout): BuildMount[] {
   const c = CHASSIS[build.chassis];
   if (build.chassis === "fiddler") {
@@ -436,20 +457,16 @@ export function drawBuild(
     drawStabilizerSlits(ctx, lhi.rear);
   }
   if (slots) {
-    for (const secondary of mounts.filter((m) => m.linkedTo)) {
-      const primary = mounts.find((m) => m.key === secondary.linkedTo);
-      if (!primary) continue;
+    for (const { primary, points } of buildSlotLinks(build.chassis, mounts)) {
       ctx.save();
       ctx.strokeStyle = primary.part ? slots.lime : slots.dark;
       ctx.lineWidth = 1 / 7;
       ctx.setLineDash([4 / 7, 4 / 7]);
-      const rear =
-        Math.max(CHASSIS[build.chassis].length, ...mounts.map((m) => m.x)) + 8;
       ctx.beginPath();
-      ctx.moveTo(primary.x, primary.y);
-      ctx.lineTo(rear, primary.y);
-      ctx.lineTo(rear, secondary.y);
-      ctx.lineTo(secondary.x, secondary.y);
+      points.forEach(([x, y], index) => {
+        if (index === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
       ctx.stroke();
       ctx.restore();
     }
@@ -474,22 +491,12 @@ export function drawBuild(
           mount,
           !!slots && (selected === mount.key || selected === mount.linkedTo),
         );
-      if (slots) drawSlot(ctx, mount, index + 1, selected === mount.key, slots);
-      ctx.restore();
-      continue;
+    } else if (mount.part && (slots || !below(mount))) {
+      if (!fittingPainter?.(ctx, mount))
+        drawNonEngineFitting(ctx, mount, weaponAngles?.[mount.key]);
     }
+    // Keep Plan outlines and labels above every kind of fitting.
     if (slots) drawSlot(ctx, mount, index + 1, selected === mount.key, slots);
-    if (!mount.part || (!slots && below(mount))) {
-      ctx.restore();
-      continue;
-    }
-    if (slots) {
-      const fit = Math.min(54 / 7 / mount.height, 64 / 7 / mount.width) * 0.65;
-      ctx.scale(fit, fit);
-    }
-    if (!fittingPainter?.(ctx, mount))
-      drawNonEngineFitting(ctx, mount, weaponAngles?.[mount.key]);
-
     ctx.restore();
   }
   if (!lhi && build.stabilizers)

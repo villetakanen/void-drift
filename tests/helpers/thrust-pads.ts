@@ -2,7 +2,7 @@ import type { Locator, Page } from "@playwright/test";
 import {
   type PadSide,
   padAssembly,
-} from "../../apps/web/src/components/inputs/thrust-pads";
+} from "../../apps/web/src/components/controls/thrust-pads";
 import {
   type InputAction,
   litPads,

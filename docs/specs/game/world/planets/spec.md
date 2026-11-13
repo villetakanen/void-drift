@@ -82,6 +82,53 @@ Planets cannot overlap at any point in their orbits. For two planets with radii 
 
 ## Contract
 
+### Mercurial mineral-rock size
+
+The airless mineral-rock type explored in the Mercury study uses a radius of
+16–36 world units. This range belongs to that type, not every rock planet.
+Practice's innermost stock rock (`id: moon`, the Mercury application) has radius
+27u, giving a diameter of 54u. Its centre-to-centre orbital distance is 258u; the size and placement selection
+originally retained its existing mass. Practice now uses mass 870 (3/5 of the
+previous 1450), from `gravity.practicePlanetMass.moon`; other modes retain 1450. Its whole surface stays outside the Sun's danger reach and at least
+part of its surface lies inside the charging reach. In Practice, this body uses
+the accepted mineral surface, independent 31.3-second spin, Sun-facing LFX and
+Mercury world HUD.
+
+### Practice Venus
+
+Practice replaces the stock middle gas planet with one named `venus`, before
+applying gravity tuning. The outer rock and Mercury remain; other modes retain
+all three stock planets. Planet identities remain strings and gravity masses are keyed by identity;
+optional `practicePlanetMass` overrides apply only in Practice.
+
+- Radius: `27 × (1 + (12104 / 4879 − 1) / 3)` ≈ 40.327526u.
+- Orbit: `258 × 108.2 / 57.9` ≈ 482.134715u, circular, centre to centre.
+- Travel speed: `4 × 35 / 47.4` ≈ 2.953586u/s, positive angular speed
+  equal to travel speed / orbit radius; initial phase inherited from the replaced
+  middle planet and Practice's fixed phase seed.
+- Mass: independently stored `gravity.planetMass.venus = 2844.850580940663`.
+  Recalculated on 13 November at the designer's request using
+  `870 × (accepted radius / 27)² × (1 + (8.87 / 3.70 − 1) / 3)`.
+  Later radius or Mercury tuning changes must not automatically recompute it.
+- Material: deterministic 02.3 B broad cloud regions, 02.6 B amber
+  RGB (246, 195, 113), 60-second right-to-left turn driven by simulation ticks.
+  `cloudAtlas`, `SphericalSurface` and `CloudBodyPainter` in core own the reusable
+  appearance; atlas generation is cached, with no per-frame noise generation.
+- Presentation: cloud body and provisional atmospheric arc on World; shared
+  Sun-facing hard-light mask on LFX. Arc width is 6.5% of body radius, minimum
+  0.65 stage pixels, with the accepted angular extent. Orbit, gravity boundary
+  and upright Venus label use shared World HUD primitives. All follow the
+  same planet; pause freezes cloud and orbital time. A failed material setup
+  uses the amber stock-disc fallback and retains the Venus HUD and physics.
+- Contact, summed gravity and hard cut-off use the existing rules; the visual
+  atmosphere adds no collision, drag or damage region. Whole circular orbits
+  remain separated by more than their bodies' radii, and the fixed spawn is clear.
+
+The canonical [Practice planet preview](/lab/entities/planet/practice) uses the
+production simulation and flight passes at 0.4, 0.7 and 3.2 px/u, including pause.
+Other planets retain the flat-disc presentation. The flat-vector descriptions
+elsewhere in this document describe that legacy renderer, not Mercury or Venus.
+
 ### Definition of Done
 
 - Planet renders with a distinct visual style (flat vector, solid color) distinguishable from the Star.

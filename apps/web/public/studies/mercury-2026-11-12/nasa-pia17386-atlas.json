@@ -1,0 +1,13 @@
+{
+  "id": "PIA17386",
+  "title": "Enhanced Color Mercury Map",
+  "source": "https://science.nasa.gov/photojournal/enhanced-color-mercury-map/",
+  "download": "https://assets.science.nasa.gov/dynamicimage/assets/science/psd/photojournal/pia/pia17/pia17386/PIA17386.jpg",
+  "retrieved": "2026-11-13",
+  "credit": "NASA/Johns Hopkins University Applied Physics Laboratory/Carnegie Institution of Washington",
+  "sourceDimensions": [1280, 640],
+  "sourceSha256": "9e358314df4f148ce176d7e8f85473a3da4c4bbd932fe63ae4e312ae88ba89a6",
+  "retainedDimensions": [384, 192],
+  "treatment": "Full cylindrical map reduced with Lanczos, WebP quality 95; no crop, recolouring, contrast enhancement or de-lighting. Study reference, not adopted game asset.",
+  "projection": "Simple cylindrical; centre longitude 180 E; enhanced colour, not human-eye colour."
+}

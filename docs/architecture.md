@@ -25,6 +25,9 @@ Read for changes to structure, simulation, or data flow. Product intent belongs 
 
 - Core remains independent of the web application and survival mode. Mode may use
   core; web composes both. Use existing packages rather than a new engine framework.
+- Game artwork is procedural. No external image or audio assets unless there is
+  no other way. Art direction belongs in [Design](design.md); ship construction
+  follows the [ship drawing guide](ship-drawing.md).
 - The current renderer uses `CanvasRenderingContext2D`. Reuse vectors/buffers in
   hot loops; prefer scalar arithmetic and `Math.hypot` where appropriate.
   Decision of 2026-11-03: the [FX layer](specs/factory/effects/spec.md) may use a different
@@ -66,12 +69,16 @@ migration documents remain historical; scores are not migrated.
 
 - Documents live at `artifacts/void-drift/scores/{CHALLENGE}_{uid}_{shipId}`; `CHALLENGE`
   (`packages/mode-a/src/schemas/highscore.ts`) is currently `ion-storm`.
-- A user retains one personal best per ship for the current challenge (seed 2026). Rows of
-  earlier boards stay stored; only the current challenge accepts writes.
-- `CHALLENGE` changes once per release, only when rules or tuning differ from the previous
-  release; see `docs/development.md#release`.
+- `CHALLENGE` names the client's ruleset: the simulation, its parameters, and the
+  sanctioned ships and parts. A ruleset has one board and never changes once it has one.
+  Clients that carry the same ruleset share its board; controls are the client's own.
+- A user retains one personal best per ship on a board (seed 2026). A client reads and
+  writes its own ruleset's board only. Boards do not close: `firestore.rules` keeps a
+  rule for each ruleset a released client carries.
+- A release decides once whether it carries a new ruleset; see
+  `docs/development.md#release`.
 - Zod checks network data; tested Firestore rules enforce ownership, exact fields,
-  bounds, challenge identity and increasing scores. Queries are bounded to 30 rows.
+  bounds, ruleset name and increasing scores. Queries are bounded to 30 rows.
 - Scores are **client-reported casual competition**, not cheat-resistant records.
   An attacker can fabricate a plausible score; no server simulation or rate limiting exists.
 - Lab tuning is unranked. Only stock game configuration offers submission.
@@ -111,7 +118,7 @@ missing shared foundations, and structural CSS/fixtures. Record derivations and
 ownership, rather than demanding a public token for every value. Existing global
 `--button-*` names remain compatibility aliases. Shared buttons now own private
 composition properties; shared button groups own `--_group-spacing` and
-`--_stack-max`. The canonical `/lab/inputs` and application consume these same
+`--_stack-max`. The canonical `/lab/ds/actions` and application consume these same
 definitions from core styles/buttons.css.
 
 ## Ship builder alpha — 0.4.0

@@ -1,20 +1,24 @@
 # Void Drift
 
-Voice-led development of a procedural space survival game and its software factory.
+Voice-led game design, and development development of a space shooter inspired by Star Control 2: Super melee, and 1990s indie games.
 
 ## Repository map
 
 ```yaml
-- docs                  # Plans, specs, all docs here
-  - plans               # Transient planning material, a map is not the territory, always check staleness
-  - specs               # ASLDC.io style living specs defining stable, expected intent, and expected functionality of the apps
+- docs/                  # Plans, specs, all docs here
+  - plans/               # Transient planning material, a map is not the territory, always check staleness
+  - specs/               # ASLDC.io style living specs defining stable, expected intent, and expected functionality of the apps
+  - vision.md           # Our vision for the game
+  - architrcture.md     # Solution architecture, vocabulary, and dev principles
+  - design.md           # Design principles, including branding
+  - development.md      # Dev principles
 - apps/web/src
   - pages/lab                     # The Lab: component and entity pages
     - studies                     # Design studies, dated; archive/ holds retired ones
     - reviews                     # Design reviews
   - data/studies.ts               # Study registry
   - components/studies            # Study components and benches
-  - components/FlightDeck.svelte  # rAF game loop, keyboard and touch input wiring
+  - components/FlightDeck.svelte  # A game loop, keyboard and touch input wiring
 - packages
   - core                          # Shared engine: physics, input, renderer, asset generators
     - src/lib/schemas             # Shared Zod contracts
@@ -26,54 +30,22 @@ Voice-led development of a procedural space survival game and its software facto
     - src/schemas/highscore.ts    # Leaderboard contract
 ```
 
-## Read on demand
+## ASDLC.io
 
-- Scope or priority: the latest agreed project decisions; intent in `docs/vision.md`, active work in `docs/plans/`.
-- Structure, simulation, data: `docs/architecture.md`.
-- New design work (a study, a feature's look or feel): `docs/design.md`.
-- UI/game visuals: `.agents/skills/shared-components/SKILL.md`; FX: `.agents/skills/fx-development/SKILL.md`.
-- Setup, gates, release: `docs/development.md`.
-- Feature work: its spec in `docs/specs/`.
-- Changing the factory or its gates: `docs/specs/factory/spec.md`.
-
-## Working method
-
-- Read only the context needed for the task; follow the latest agreed project decisions.
-- Look up and search files with the Read and Grep tools; use shell pipelines or scripts only when those tools can't do the job.
-- Translate conversational requests into a small, explicit acceptance contract.
-- Clarify consequential ambiguity; resolve routine implementation details autonomously.
-- Implement bounded changes, verify them, and present playable or inspectable evidence.
-- Update the relevant spec in the same change as the behavior it describes.
-- Keep specs as intent: acceptance criteria are plain statements, never status checkboxes.
-- Reuse real game systems in the Lab; demonstrate shared visual definition changes there.
-- Keep this file under 80 lines. Put detailed guidance in its authoritative document.
+- We use ASDLC.io living specs methodology, and align with the principles presented in the site
 
 ## Local Java
 
 - Use Java 21 at `tools.local/java21/jdk/Contents/Home` (`JAVA_HOME`) for Firebase checks.
-- If missing, install Temurin 21 for the host OS/architecture there; keep the runtime in ignored `tools.local/`, never commit it.
-
+- If missing, install Temurin 21 for the host OS/architecture there; keep the runtime in git-ignored `tools.local/`
+-
 ## Engineering essentials
 
-- Use strict TypeScript; narrow `unknown` instead of introducing `any`.
 - Define or update Zod schemas before changing data contracts; parse external inputs.
 - Use Svelte 5 Runes, native CSS, shared tokens, and procedural Canvas assets.
 - Connect controls to the game loop; retain keyboard and iPad landscape touch in play.
 - The Lab targets viewports 1280px wide and up; never design, test or fix it below that.
 
-## Authority
-
-- Implement, repair, test, and make local commits within the agreed scope.
-- Every session and tool shares this checkout; a commit saves the whole tree to the active branch, other sessions' work included.
-- Ask before adding npm dependencies or changing gravity/friction constants; never introduce paid or card-requiring services.
-- Existing explicit approval covers the authorized action; do not ask again for it.
-- Obtain explicit authorization before pushing, publishing, or sending external feedback.
-- Keep `docs/project-vision.md` (a historic artefact humans read) and every `docs/plans/` file; plans leave only after a separate human review.
-
 ## Evidence and learning
 
-- Inspect current evidence before reporting branch, check, commit, or release status.
-- Distinguish working changes, local commits, pushed revisions, and verified deployments.
-- Report failed, skipped, and unavailable checks explicitly; never count them as passes.
-- Repair failures without weakening contracts just to make checks green.
 - Keep human playtesting outside the repo: never gate, record, or ask for proof; separate evidence from findings, signals and interpretation, and review lessons before adoption.

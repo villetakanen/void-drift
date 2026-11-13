@@ -7,6 +7,7 @@ import {
   type FlightFrame,
   type FlightLayerContexts,
   type FlightLayerId,
+  type FlightPass,
 } from "./flight-frame";
 
 // Each pass's drawing is replaced by a recorder and each layer by a recording
@@ -57,5 +58,41 @@ describe("flight frame", () => {
     });
     expect(drawn(calls)).toEqual(some);
     expect(observed).toEqual(some);
+  });
+  it("renders scene-supplied solid and light passes on their own camera-transformed layers", () => {
+    const { calls, frame } = record();
+    const passes: FlightPass[] = [
+      {
+        id: "rock",
+        name: "Rock",
+        layer: "world",
+        space: "world",
+        draws: "body",
+        source: "study",
+        draw: (_frame, ctx) => {
+          expect(ctx).toBe(frame.layers.world);
+          calls.push("draw:rock");
+        },
+      },
+      {
+        id: "rock-light",
+        name: "Rock light",
+        layer: "lfx",
+        space: "world",
+        draws: "shade",
+        source: "study",
+        draw: (_frame, ctx) => {
+          expect(ctx).toBe(frame.layers.lfx);
+          calls.push("draw:rock-light");
+        },
+      },
+    ];
+    drawFlightFrame(frame, { passes });
+    expect(drawn(calls)).toEqual(["rock", "rock-light"]);
+    expect(calls.filter((call) => call.startsWith("camera:"))).toEqual([
+      "camera:world",
+      "camera:lfx",
+    ]);
+    expect(FLIGHT_PASSES.map((pass) => pass.id)).toEqual(ids);
   });
 });

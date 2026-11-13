@@ -1,0 +1,1780 @@
+---
+import referenceDocument from "../../../../public/studies/mercury-2026-11-12/references.json";
+import framing from "../../../components/studies/rock-planets/art-029-framing.json";
+import RockArt029 from "../../../components/studies/rock-planets/RockArt029.svelte";
+import RockComparison from "../../../components/studies/rock-planets/RockComparison.svelte";
+import RockFlight015 from "../../../components/studies/rock-planets/RockFlight015.svelte";
+import RockLight030 from "../../../components/studies/rock-planets/RockLight030.svelte";
+import RockSize026 from "../../../components/studies/rock-planets/RockSize026.svelte";
+import RockSurface016 from "../../../components/studies/rock-planets/RockSurface016.svelte";
+import RockTerrain025 from "../../../components/studies/rock-planets/RockTerrain025.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const references = referenceDocument.references;
+const astronomy = referenceDocument.astronomy;
+const concepts = [
+  {
+    id: "mineral" as const,
+    title: "A / Mineral mosaic",
+    cue: "Mineral colour carries the material: slate and ochre deposits interrupt a dark stone body.",
+    reference: "02.2 · Mercury’s enhanced colour",
+    limitation:
+      "The strong colour boundaries may suggest exposed stone slabs rather than planetary geology.",
+  },
+  {
+    id: "highlands" as const,
+    title: "B / Ancient highlands",
+    cue: "A broad dark plain and worn bright highlands carry the world through landform and value.",
+    reference: "02.1 · Escape Velocity’s form hierarchy; 02.2 · lunar plains",
+    limitation: "Restrained colour may lose material identity beside the Sun.",
+  },
+  {
+    id: "impact" as const,
+    title: "C / Impact palimpsest",
+    cue: "Broken terrain boundaries and a sparse pale impact trace carry the surface’s history.",
+    reference: "02.2 · Mercury’s bright rays and muted rock",
+    limitation:
+      "Impact traces may become decoration, or disappear at the smallest diameter.",
+  },
+];
+
+function imageFraming(id: keyof typeof framing) {
+  const frame = framing[id];
+  return `width: ${(100 * frame.width) / frame.side}%; height: ${(100 * frame.height) / frame.side}%; left: ${(-100 * frame.x) / frame.side}%; top: ${(-100 * frame.y) / frame.side}%;`;
+}
+
+const study = studies.find((entry) => entry.slug === "mercury-2026-11-12");
+---
+
+<StudyLayout study={study}>
+  <section>
+    <h2>01 / A first planetary language</h2>
+    <p>
+      Today’s planets are flat coloured discs with pale outlines. Airless rock
+      planets inside stellar charging fields begin the game’s planetary visual
+      language: barren worlds exposed to severe sunlight, with material
+      character and boundaries readable against stellar effects. The result must
+      work across physical sizes and viewing scales. Mercury is a reference and
+      the first practice-world application, not the limit of this planet kind.
+    </p>
+    <p>
+      Open: surface structure, colour, light and shadow, detail across scales,
+      and nearby HUD treatments such as orbit-line colour. Examples must compare
+      several sizes together and state the production star profile, body radii
+      and camera scale. Comparison values are fixtures, not accepted tuning or
+      limits on the family. Mercury’s
+      <a href="https://science.nasa.gov/mercury/facts/"
+        >cratered rock and thin exosphere</a
+      >
+      anchor the airless reading. “Scorched” is an impression; molten or
+      luminous ground is not a requirement.
+    </p>
+    <p>
+      Procedural drawing and readability before realism guide the work. Orbits,
+      collisions and gravitational pull provide context without fixing every
+      rule; the size–mass relationship remains unresolved. The flat-disc visual
+      contract is open to replacement. Mechanical questions arising from visual
+      examples need bounded investigation, not a general physics redesign. For
+      now, airless rock is the only intended planet kind inside charging fields.
+      Other planet kinds, new heat mechanics and a general lighting overhaul are
+      outside this cycle. The answer changes the shared rock-planet drawing
+      across modes.
+      <a href="/lab/reviews/mercury-2026-11-12#references"
+        >Period-art comparisons</a
+      >
+      inform it; practice’s reconstructed home system, Mercury’s name and
+      eventual HUD label remain application context.
+    </p>
+    <aside aria-label="Question test">
+      <p>
+        Question test rerun · 12 November 2026: One subject — Pass; Grounded —
+        Pass with findings; Consequence — Pass. The reviewer found comparison
+        conditions imprecise and the opening too long, with no additional
+        finding on the mechanics boundary. The opening was shortened and the
+        comparison requirement clarified afterwards; these edits were not
+        retested.
+        <a href="/lab/reviews/mercury-2026-11-12">Full result and responses</a>.
+      </p>
+    </aside>
+  </section>
+  <section>
+    <h2>02 / Exploration</h2>
+    <details>
+      <summary id="02-1">02.1 / What carries a planet at a glance?</summary>
+      <p>
+        Four games offer contrasting ways to convey a planetary surface and
+        form. These reduced, attributed excerpts support visual commentary. Full
+        frames are retained at no more than 320 × 240 pixels, without crops or
+        recolouring; each source links to its context. Their art remains
+        reference material.
+      </p>
+      <div class="reference-board">
+        {references.map((reference) => (
+          <figure>
+            <h4>{reference.title}</h4>
+            <p class="reference-context">{reference.year}</p>
+            <a
+              class="reference-image"
+              href={reference.source}
+              aria-label={`Source for ${reference.title}`}
+            >
+              <img
+                src={reference.image}
+                width={reference.width}
+                height={reference.height}
+                alt={reference.alt}
+                loading="lazy"
+              />
+            </a>
+            <figcaption>
+              <p class="reference-credit">
+                {reference.credit}.{" "}
+                <a href={reference.source}>Source and context ↗</a>
+              </p>
+              <p>
+                <strong>Visible:</strong> {reference.observation}
+              </p>
+              <p>
+                <strong>For our rock planets:</strong> {reference.implication}
+              </p>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+      <h3>Directions to put into our own examples</h3>
+      <p>
+        A broad light-and-shadow structure can carry the globe before surface
+        detail carries its material. Two useful alternatives follow: sparse
+        crater marks over large rock planes, and denser mottling within a
+        simpler shaded sphere. Compare both with the same untextured silhouette,
+        across several body sizes beside the practice G7 Sun. The question is
+        how little surface information can still feel like exposed rock while
+        keeping the boundary clear.
+      </p>
+      <p>
+        These are provisional directions to reconsider alongside the
+        astronomical references in 02.2. The images use different cameras and
+        scales; reducing a screenshot also shrinks its planet, so this board
+        cannot establish equal-scale readability. None demonstrates our
+        charging-field overlap. The SC2 image shows surface exploration, not a
+        Super Melee planet. The Earth-like examples show useful form cues while
+        making the atmosphere and material differences explicit.
+      </p>
+    </details>
+    <details>
+      <summary id="02-2">
+        02.2 / Rock seen through light and colour processing
+      </summary>
+      <p>
+        Astronomy supplies both the material reference and ways of seeing it.
+        These NASA figures distinguish a restrained visible-colour
+        interpretation from algorithmic enhancement of measured differences. The
+        processing is part of each caption; colour alone cannot establish heat,
+        atmosphere or emitted light. The Moon contributes an airless-rock
+        comparison alongside Mercury, rather than another planet inside a
+        charging field.
+      </p>
+      <div class="reference-board">
+        {astronomy.map((reference) => (
+          <figure>
+            <h4>{reference.title}</h4>
+            <p class="reference-context">{reference.year}</p>
+            <a
+              class="reference-image"
+              href={reference.source}
+              aria-label={`Source for ${reference.title}`}
+            >
+              <img
+                src={reference.image}
+                width={reference.width}
+                height={reference.height}
+                alt={reference.alt}
+                loading="lazy"
+              />
+            </a>
+            <figcaption>
+              <p class="reference-credit">
+                {reference.credit}.{" "}
+                <a href={reference.source}>NASA image and method ↗</a>
+              </p>
+              <p>
+                <strong>Image method:</strong> {reference.observation}
+              </p>
+              <p>
+                <strong>For our rock planets:</strong> {reference.implication}
+              </p>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+      <p>
+        Together, these references suggest separating three choices in our own
+        examples: the rock structure, its illumination, and its colour
+        treatment. Craters, plains and rays can remain consistent while a
+        restrained or enhanced palette changes. That would let 02.3 compare
+        natural-looking and more expressive rock without making every
+        close-to-star planet molten. This is a proposed experiment, not an
+        accepted palette or renderer.
+      </p>
+    </details>
+    <details>
+      <summary id="02-3">02.3 / One rock, three colour readings</summary>
+      <p>
+        The first translation into the game separates material from colour. Each
+        column uses the same crater positions, broad terrain regions,
+        directional light and camera. Only the three material colours change.
+        This tests whether restrained stone, warm rock or enhanced mineral
+        colour best holds the airless reading beside the Sun, before we tune
+        detail or choose a palette.
+      </p>
+      <div class="colour-comparison">
+        <article>
+          <h4>A / Restrained stone</h4>
+          <p>Grey-brown regions; shape and relief do most of the work.</p>
+          <RockComparison treatment="stone" client:load />
+        </article>
+        <article>
+          <h4>B / Warm rock</h4>
+          <p>The same regions interpreted through ochre and warm stone.</p>
+          <RockComparison treatment="warm" client:load />
+        </article>
+        <article>
+          <h4>C / Enhanced minerals</h4>
+          <p>Blue-violet and gold distinguish the same material regions.</p>
+          <RockComparison treatment="enhanced" client:load />
+        </article>
+      </div>
+      <p>
+        Reference: Practice G7, the current non-ranked yellow-family Sun, using
+        its production body and field painters at 1.8 seconds. Ranked currently
+        retains the legacy Sun; the yellow-family model is planned for ranked
+        outside Playground in 0.7.0. That transition is context, not delivered
+        by this study. The collection field is shown active. Three rock bodies
+        have radii 18, 30 and 45 u at centre distance 255 u, all wholly inside
+        the roughly 324 u charging reach; the field view uses 0.7 CSS pixels per
+        world unit. The enlarged comparisons use radius 30 at 1.8 pixels per
+        unit.
+      </p>
+      <p>
+        Study-local sketches: a deterministic material map, no borrowed image
+        textures, atmosphere or emission. Lighting follows the direction to the
+        star with a provisional night-side floor. Colour is an artistic
+        interpretation, not a calibrated reconstruction of NASA filters.
+        Position and time are frozen for comparison; there is no flight, orbit
+        or mass experiment here. The current disc beside each enlarged sketch
+        comes from the production planet painter. Surface, lighting and scale
+        choices are provisional; no direction has been selected.
+      </p>
+      <h4>Findings / Field context before colour</h4>
+      <p>
+        The comparison establishes three requirements for this case. The Sun’s
+        gravity, charging and danger boundaries must be drawn so that the
+        planet’s placement can be understood. A mercurial rock planet’s entire
+        surface must remain outside the solar danger zone. At least part of its
+        surface must lie inside the solar charging zone; the whole body may lie
+        inside it. “Mercurial” is a working name for this environmental case,
+        not a settled planet taxonomy or a restriction to the named Mercury.
+      </p>
+      <p>
+        The step is useful for exposing the surrounding fields and placement
+        requirements, but it does not establish a colour preference. These
+        sketches introduce a way of drawing planets that is substantially
+        different from the game’s other objects, so colour cannot yet be judged
+        independently of form and shading. Smooth, strongly volumetric shading
+        raises a question about how much dimensionality belongs here; a more
+        three-dimensional planet has not been ruled out. Neither the material
+        map nor its shading treatment is accepted by the usefulness of this
+        comparison.
+      </p>
+      <p>
+        The next proposed investigation is the drawing language itself: hold
+        colour and field context steady while comparing a graphic disc with
+        sparse relief, a globe built from a few flat planes, and a smoothly
+        shaded globe. Judge them beside the same production Sun and a real ship
+        at flight scale, with enlarged views for examining construction. Colour
+        can be revisited once the planet has a convincing place in the game’s
+        visual language.
+      </p>
+    </details>
+    <details>
+      <summary id="02-4">
+        02.4 / Finding: planets need a material language
+      </summary>
+      <p>
+        Comparing a graphic disc, a globe of hull-like planes and a smoothly
+        shaded globe beside the Wasp exposed the wrong premise. Borrowing the
+        construction of ships and fittings did not bring the planets closer to
+        the game and astronomy references in 02.1 and 02.2. Their surface
+        character remained six large crater symbols over broad patches. The
+        three drawings are retired; the useful result is that a planet needs its
+        own geological material and rendering language. Colour remains
+        undecided, and dimensionality itself has not been rejected.
+      </p>
+      <p>
+        The <a href="/lab/studies/plasma-light-2026-11-11#mark">plasma study</a>
+        records a related distinction: chains of diamonds, rings and strokes
+        failed to convey turbulent flame. A cached luminous stamp supplied its
+        character; an overly blocky sprite was also rejected before the
+        <a href="/lab/studies/plasma-light-2026-11-11#luminous"
+          >luminous treatment</a
+        >
+        emerged. Hi-Fi Lo-Fi supports rich, expressive images made with
+        inexpensive rendering. Hull planes are a language for manufactured
+        objects, not a rule every natural body or effect must inherit.
+      </p>
+    </details>
+    <details>
+      <summary id="02-5">02.5 / A surface made of terrain</summary>
+      <p>
+        This step builds one materially richer planet before returning to colour
+        alternatives. Many overlapping impacts, rough ground, a darker plain and
+        bright ejecta replace the six-symbol surface. The terrain is mapped onto
+        a sphere, so features compress toward the limb and relief participates
+        in the light. A restrained warm-grey palette keeps the question on the
+        surface.
+      </p>
+      <RockTerrain025 client:load />
+      <p>
+        The left view reuses the Practice G7 Sun, its gravity, charging and
+        danger markings, and the production starter Wasp. Body radii 18, 30 and
+        45 u sit at distances 220, 260 and 330 u. Each entire surface stays
+        outside the 100 u danger reach; the outer body intersects the roughly
+        324 u charging boundary, while the smaller two are wholly inside. The
+        camera uses 0.9 px/u. The top-right detail uses radius 45 at 3 px/u; the
+        lower row shows three seeded surfaces at 1.1 px/u. Ship drawings keep
+        the production flight scale of 0.65 within each view. Time is frozen at
+        1.8 seconds.
+      </p>
+      <p>
+        The study-local terrain is baked once into a 192 × 192 image using
+        three-dimensional noise, 180 seeded impacts plus one fixed rayed impact,
+        and a relief-derived normal. Thirty-two luminance steps and subtle
+        dithering give the raster a limited tonal vocabulary without drawing
+        large pixel cells. No source photograph is sampled. The same terrain
+        seed appears at all three sizes and in the enlarged view; two additional
+        crater seeds test reuse. The light and night-side visibility floor are
+        provisional. This static scene does not establish motion, rotation,
+        performance in play, or an accepted art direction.
+      </p>
+      <h4>Finding / The geological direction is closer</h4>
+      <p>
+        Terrain supplies a more convincing planetary character than the earlier
+        symbolic surfaces. The example remains too realistic and detailed, its
+        dark side falls too far into the void, and its dithered finish reads too
+        much like pixel art. The next interpretation should keep a material-rich
+        globe while simplifying the surface and making the unlit side readable.
+        NASA Mercury, SC2 Mercury and this procedural example provide a range to
+        work between; none alone defines the intended result.
+      </p>
+    </details>
+    <details>
+      <summary id="02-6">
+        02.6 / Finding: smoothness does not establish representation
+      </summary>
+      <p>
+        A version with fewer impacts, smoother colour and a brighter dark side
+        was no improvement. Both terrain examples were closer than the ship-like
+        constructions, but the difference did not establish a better planet. The
+        softer variant is retired. The useful direction is a corporeal,
+        game-like representation; a procedural map, a smooth finish and a final
+        palette all remain open. This differs from plasma’s turbulence question.
+      </p>
+      <h4>Accepted principle / Suggest a world</h4>
+      <p>
+        <strong>Accepted art-direction principle, 12 November 2026:</strong>
+        deliberately compose the image to suggest a world rather than trying to
+        reproduce one. This distillation has been adopted in
+        <code>docs/design.md</code>. The designer assesses the study as already
+        successful for clarifying that intent, independently of the eventual
+        planet result. The study remains open: no planet appearance, procedural
+        map requirement or delivery scope is accepted by that assessment.
+      </p>
+    </details>
+    <details>
+      <summary id="02-7">
+        02.7 / Finding: crater symbols distort the scale
+      </summary>
+      <p>
+        Composed light and material remain useful, but the oversized, naive
+        crater forms invite the pixel-art reading. The problem is more specific
+        than smoothness, fidelity or the rendering medium. Craters were made to
+        announce “rock planet” at a scale where they may not need to be
+        individually visible. The large crater landmarks are retired. This
+        finding does not establish that every rocky planet needs a procedural
+        map, nor that relief must become visible at a particular zoom.
+      </p>
+    </details>
+    <details>
+      <summary id="02-8">
+        02.8 / Finding: removing relief does not establish rock
+      </summary>
+      <p>
+        A crater-free sphere with broad, smoothly varying colour read as a
+        photorealistic gas giant. Removing oversized crater symbols did not
+        establish a rocky material. Crater visibility remains open; the surface
+        needs a composed material identity before its rendering method is
+        chosen.
+      </p>
+    </details>
+    <details>
+      <summary id="02-9">02.9 / Three composed rock worlds</summary>
+      <p>
+        These original image concepts translate three qualities from 02.1 and
+        02.2: mineral colour, broad landforms and sparse impact traces. Each
+        uses a round body lit from the left, a readable shadow and a dry
+        surface. This comparison tests their whole impression at flight size; it
+        does not select an image-production technique or a palette for the game.
+      </p>
+      <div class="art-directions">
+        {concepts.map((concept) => (
+          <figure>
+            <h4>{concept.title}</h4>
+            <p>{concept.cue}</p>
+            <div class="flight-sprites">
+              {[32, 54, 81].map((diameter) => (
+                <div>
+                  <span
+                    class="planet-frame"
+                    style={`--diameter: ${diameter}px`}
+                  >
+                    <img
+                      src={`/studies/mercury-2026-11-12/art-029-${concept.id}.png`}
+                      style={imageFraming(concept.id)}
+                      alt={`${concept.title}, ${diameter}-pixel body`}
+                    />
+                  </span>
+                  <small>{diameter} px</small>
+                </div>
+              ))}
+            </div>
+            <figcaption>
+              <p>{concept.reference}.</p>
+              <p>{concept.limitation}</p>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+      <RockArt029 client:load />
+      <p>
+        Matched context: production Practice G7 Sun and field markings, starter
+        Wasp, 0.9 px/u. Each radius-30 planet is 230 world units from the Sun’s
+        centre, entirely outside danger and inside charging. The same image is
+        rescaled for each diameter; these are static art concepts, with no
+        rotation or gameplay changes. Source framing is normalized to the
+        visible body.
+      </p>
+      <details>
+        <summary>Inspect the authored images at 162-pixel diameter</summary>
+        <div class="art-directions">
+          {concepts.map((concept) => (
+            <figure>
+              <h4>{concept.title}</h4>
+              <span class="planet-frame" style="--diameter: 162px">
+                <img
+                  src={`/studies/mercury-2026-11-12/art-029-${concept.id}.png`}
+                  style={imageFraming(concept.id)}
+                  alt={`${concept.title}, enlarged for inspection`}
+                />
+              </span>
+            </figure>
+          ))}
+        </div>
+      </details>
+      <p>
+        Created with the built-in image generator as study-only raster concepts;
+        the references were interpreted, not sampled into these images. Matching
+        lighting is an authoring instruction, not a calibrated shared shader.
+        All three improve on the earlier examples: concrete, relatively
+        believable surfaces make the disc feel like a planetary body. Detail and
+        shading can support the intended representation; “too photorealistic”
+        was too broad a diagnosis to guide further work. This establishes a
+        useful quality, without choosing a variant, final fidelity or production
+        technique.
+        <a href="/studies/mercury-2026-11-12/art-029-prompts.json"
+          >Prompts and provenance</a
+        >.
+      </p>
+    </details>
+    <details>
+      <summary id="02-10">02.10 / A solid world facing its Sun</summary>
+      <p>
+        Keep the believable stone surface and compare three light treatments:
+        fixed left-side shade, Sun-facing shade drawn into the body, and the
+        same Sun-facing light field through the production LFX hard-light blend.
+        Surface markings remain in place. The highlands image is a convenient
+        specimen, not the selected planet design.
+      </p>
+      <RockLight030 client:load />
+      <p>
+        All three use one neutrally illuminated image derived from 02.9 B. This
+        edit preserves the large composition approximately; local painted relief
+        remains, so it is not measured albedo or a recovered normal map. A and B
+        multiply the material by a broad sphere-light field. C keeps the
+        material on World and paints that field, clipped to the body, on LFX.
+        Mid-grey is neutral in hard-light; darker and lighter values change
+        contrast and highlights differently from multiplying the surface colour.
+        B and C receive the same field, so their response is the comparison.
+      </p>
+      <p>
+        Each panel uses the real FlightLayers stack and its production blending;
+        FX is empty and LFX is populated only in C. Sun, fields and Wasp use
+        production drawing. Fixture bodies have radius 45, centre distance 220
+        and camera scale 0.6 px/u: 54-pixel diameters, wholly outside danger and
+        inside charging. Lower views are 81 pixels. The illustrative light field
+        runs from 0.29 to 0.65; doubling it gives the multiplication treatment a
+        58% shadow floor. Surface orientation is fixed. These are static
+        examples, without overlapping transient effects or a performance
+        measurement.
+      </p>
+      <p>
+        LFX’s hard-light character may be useful for reflected surface light as
+        well as the live emitters it currently carries. This comparison tests
+        that possibility before deciding layer ownership. Body masks, overlap
+        with other effects and drawing cost would need investigation before
+        adoption.
+        <strong
+          >Preferred direction: 02.10 C, Sun-facing LFX hard-light.</strong
+        >
+        Its washed, semi-realistic appearance gives the surface a convincing
+        planetary presence. This selects the light treatment for further study;
+        exact shadow depth, colour response, material and delivery remain open.
+        <a href="/studies/mercury-2026-11-12/art-030-provenance.json"
+          >Material-edit prompt and provenance</a
+        >.
+      </p>
+    </details>
+    <details>
+      <summary id="02-11">
+        02.11 / A little more shadow, a little Sun colour
+      </summary>
+      <p>
+        Retain the preferred LFX treatment and compare two small changes. A
+        reproduces 02.10 C. B deepens only the shadow, C colours only the light
+        facing the Sun, and D combines them. Material, light direction, body
+        size, positions and peak neutral light level stay the same. The four
+        panels separate shadow depth from colour response.
+      </p>
+      <RockLight030 round="tuning" client:load />
+      <p>
+        The neutral light field’s minimum changes from 0.29 to 0.25 while its
+        maximum stays 0.65: the darkest material response falls from 58% to 50%.
+        This is a modest test, not a return to a black night side. All light is
+        still composited through real LFX hard-light. Scene diameters remain 54
+        pixels; lower examples are 81 pixels, with the same 02.10 fixtures.
+      </p>
+      <p>
+        The colour hypothesis takes the production G7 body colour from
+        <code>yellowStarPalette</code>. A restrained 12% chromatic contribution
+        affects only the light field above neutral grey; its mean channel value
+        stays unchanged. Shadow colour and the underlying rock image are
+        untouched. This is an art-directed response, not physical colour
+        rendering. It tests a steady yellow Sun before adding variable corona or
+        flare colours; no new star palette, animated flare response or
+        production light system is introduced by this step.
+      </p>
+    </details>
+    <details>
+      <summary id="02-12">
+        02.12 / Can generated stone keep the planetary character?
+      </summary>
+      <p>
+        The retained image is the visual target. Beside it, one generated
+        surface composes a broad dark plain, worn highlands and a broken pale
+        junction from raster material regions. Both use the preferred 02.10 C
+        light field, including the original shadow depth and neutral colour. The
+        02.11 tuning candidates remain separate, so a lighting change cannot
+        disguise a material difference.
+      </p>
+      <RockLight030 round="transfer" client:load />
+      <p>
+        Matched production Sun, Wasp, World/LFX stack and transforms: radius 45,
+        centre distance 220, 0.6 px/u and 54-pixel bodies; lower details are 81
+        pixels. The candidate is a deterministic 192-pixel Canvas raster
+        computed once on mount, with broad authored regions, noise-broken
+        boundaries and restrained local relief. It samples no image, adds no
+        crater symbols and carries no broad painted illumination. No new image
+        was generated for this round.
+      </p>
+      <p>
+        This is a transfer specimen, not a replacement for the accepted visual
+        target. Its material remains study-local until its character earns a
+        shared implementation. It covers one projected hemisphere, without a
+        planet-family recipe, rotation, wrapping or transient-light overlap
+        tests. Cached drawing is demonstrated; production frame cost is not
+        measured. A flatter or less corporeal result would identify a
+        material-generation gap, not reopen the preferred art direction.
+      </p>
+      <p>
+        <strong>Finding:</strong>
+        the original image still looks better, but the difference is small
+        enough to move on from fidelity tuning. The generated specimen is
+        sufficiently close for studying variety. Further crispness can be
+        revisited if needed; matching the reference’s finest detail is not the
+        current priority. This does not settle a final material recipe.
+      </p>
+    </details>
+    <details>
+      <summary id="02-13">
+        02.13 / Different worlds from the same material method
+      </summary>
+      <p>
+        Three compositions—mineral-rich stone, basalt with highlands and scarred
+        ironstone—each use the same seeds 71, 97 and 153. Seed 71 is left, 97 is
+        above and 153 is right; lower views repeat them at 81 pixels. All scenes
+        use radius 45, centre distance 220, 0.6 px/u and the neutral 02.10 C LFX
+        treatment. The examples remain available as evidence of the material
+        gap.
+      </p>
+      <RockLight030 round="family" client:load />
+      <p>
+        The mineral and scarred-ironstone proposals do not work as game planets;
+        their soft, mottled surfaces suggest candy popcorn rather than rock.
+        Basalt and highlands remains the more useful specimen, but the family
+        test shows that the procedural transfer is not yet convincing. The image
+        references retain stronger crisp features and local contrast. A lack of
+        those qualities is a hypothesis to test, rather than a settled diagnosis
+        or a request for ever finer detail. These examples are retained for
+        comparison and further investigation.
+      </p>
+    </details>
+    <details>
+      <summary id="02-14">
+        02.14 / Does local contrast carry the missing structure?
+      </summary>
+      <p>
+        Compare the retained image with the unchanged generated highlands and
+        the exact same highlands with stronger local contrast. No landforms,
+        palette or light settings change between B and C. This isolates whether
+        stronger edges and local value differences can recover some of the
+        reference’s rocky character, before redesigning the material again.
+      </p>
+      <RockLight030 round="contrast" client:load />
+      <p>
+        C amplifies mean-channel value differences from alpha-weighted
+        neighbourhood means at two and six pixels in the 192-pixel material. The
+        added difference is bounded to ±32 channel values, with colour
+        differences and transparency preserved. This diagnostic changes existing
+        features; it cannot invent ridges, fractures or better landforms. A
+        merely harsher mottled result would leave that structural gap
+        unresolved.
+      </p>
+      <p>
+        Same 02.10 C neutral LFX hard-light, radius-45 bodies, distance 220 and
+        0.6 px/u: 54-pixel scene diameters and 81-pixel details. All three
+        panels use fixed surface orientation and matching Sun directions. This
+        is a bounded contrast test, not a new accepted design or production
+        filter.
+      </p>
+      <p>
+        In this specimen, the boost makes fine grain more conspicuous while the
+        underlying mottled landforms remain. It does not recover the reference’s
+        organized, broken features. This limits the tested correction: local
+        contrast applied after generation is insufficient here. Feature shape
+        and selective contrast remain unresolved; the boosted specimen is
+        retained to show that distinction, not as a proposed production surface.
+      </p>
+    </details>
+    <details>
+      <summary id="02-15">02.15 / Fly among three composed rock worlds</summary>
+      <p>
+        This candidate carries the successful composed surfaces into a playable
+        scene. Mineral rock, Mercury’s highlands and iron rock have distinct
+        authored maps, shared Sun-facing LFX hard-light and solid collision
+        bodies. Use System view to compare their presence together, then Follow
+        ship to approach their surfaces and fly through the charging field.
+        Reset repeats the same scene.
+      </p>
+      <RockFlight015 client:load />
+      <p>
+        The three surfaces reuse the existing 02.9/02.10 study images. Highlands
+        uses its neutral material; the other maps receive approximate broad
+        de-lighting, retaining painted local relief. The shared rock painter
+        caches the material discs and a bounded set of directional masks. It
+        does not sample the procedural recipes or apply the contrast filter. The
+        maps are authored study assets, not an accepted final asset policy, a
+        continuous spherical texture or a procedural planet-family solution. No
+        new image-generation round is involved.
+      </p>
+      <p>
+        Production Practice simulation, Wasp, input, touch pads, camera, FX and
+        layered flight rendering drive this scene. Only the planet fixture and
+        its World/LFX painters are substituted. Planet radii are 28, 45 and 60;
+        orbital distances 170, 250 and 360 keep every surface outside danger and
+        at least partly in charging. Orbit speeds are 0.025, 0.032 and 0.039
+        rad/s, with initial phases 2.1, 0 and 4.2 radians. Existing stock masses
+        are retained as fixture values, not a size–mass decision. Materials do
+        not spin; the light direction follows each orbit. Masks use 256 angular
+        bins and a 24-entry cache. This is not a performance acceptance result.
+      </p>
+      <p>
+        The existing Flight scene instrument replays fixed burns and does not
+        offer manual piloting or staged planet materials. This study’s manual
+        fixture therefore composes the production simulation and flight pipeline
+        directly; it does not extend the instrument’s configuration contract.
+        Pausing and loss stop input; Reset restarts the simulation and clears
+        light history. The stock game planets remain unchanged.
+      </p>
+      <p>
+        <strong
+          >Finding / convincing stills do not establish convincing
+          motion.</strong
+        >
+        The composed surfaces look pleasing while stationary, but in orbital
+        motion they read as photographs being carried around a circle rather
+        than planetary bodies present in the world. The richer surface makes
+        this discrepancy noticeable where a plain moving disc did not. This
+        limits the stationary result; it does not overturn the useful material
+        and LFX direction. The cause and remedy remain open: the finding does
+        not yet establish a requirement for spin, a particular projection or a
+        different orbit speed. The scene is retained as evidence of the gap.
+      </p>
+      <details>
+        <summary>Retained image targets / three composed surfaces</summary>
+        <div class="art-directions">
+          {concepts.map((concept) => (
+            <figure>
+              <h4>{concept.title}</h4>
+              <span class="planet-frame" style="--diameter: 162px">
+                <img
+                  src={`/studies/mercury-2026-11-12/art-029-${concept.id}.png`}
+                  style={imageFraming(concept.id)}
+                  alt={`${concept.title}, retained visual target`}
+                />
+              </span>
+            </figure>
+          ))}
+        </div>
+      </details>
+    </details>
+    <details>
+      <summary id="02-16">
+        02.16 / Let the surface turn through the limb
+      </summary>
+      <p>
+        The proposal is to anchor the surface to a sphere: markings travel
+        across its face, narrow toward the limb and pass out of view. A retains
+        the fixed projected face from 02.15; B uses a central crop of that
+        highlands material as a wrapping surface map and turns it on a sphere.
+        Both follow the same orbit with identical Sun-facing LFX lighting. The
+        lower sequences hold light fixed to show only the surface change at 0, 6
+        and 12 seconds.
+      </p>
+      <RockSurface016 client:load />
+      <p>
+        Play or scrub the 24-second comparison. The production orbit function
+        uses radius 250, initial phase −0.6 and speed 0.032 rad/s; body radius
+        is 45 and camera scale 0.7 px/u. The candidate turns around an upright
+        axis once every 18 seconds, an illustrative rate rather than an accepted
+        planetary day. The body’s circular silhouette stays fixed. This tests
+        whether surface projection and independent turning improve the moving
+        body’s presence; it does not separate those two contributions yet.
+      </p>
+      <p>
+        A finished globe image already contains perspective. B instead
+        interprets the central 68% square of its stone material as a
+        longitude/latitude tile, mirrored onto the second hemisphere. Its
+        geography therefore differs from A even at rest: this is a proposed
+        surface construction, not a pixel-matched spin test. Repeated geography
+        and painted local relief remain limitations of this temporary atlas.
+        Sampling stays at 192 pixels; no new terrain or sharpening is added.
+        Both columns use the shared rock painter, production Sun and
+        FlightLayers. The fixed-burn Motion instrument has no surface-spin
+        configuration; this focused object-motion scene reuses its time-slider
+        control and the production orbital function, without piloting.
+      </p>
+      <p>
+        <strong>Preferred construction: 02.16 B.</strong>
+        The turning spherical surface works as the next direction. Its travel
+        and spin are too fast together and can appear coupled. That leaves orbit
+        speed, spin rate and axis orientation open; it does not establish a
+        locked relationship.
+      </p>
+    </details>
+    <details>
+      <summary id="02-17">02.17 / Slow travel, independent turning</summary>
+      <p>
+        Both panels now use the preferred spherical construction. A retains the
+        earlier pace. B proposes orbital travel eight times slower and a gentler
+        two-minute surface turn. Playback is real time; the slider covers a
+        minute so the slower changes remain inspectable. The lower sequence
+        compares surface change over that same minute, with lighting held fixed.
+      </p>
+      <RockSurface016
+        mode="pace"
+        label="Earlier pace versus slow orbital travel and independent spin"
+        client:load
+      />
+      <table>
+        <thead>
+          <tr>
+            <th>At orbit radius 250</th>
+            <th>A / Earlier</th>
+            <th>B / Proposed</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Orbital angular speed</td>
+            <td>0.032 rad/s</td>
+            <td>0.004 rad/s</td>
+          </tr>
+          <tr>
+            <td>Travel along orbit</td>
+            <td>8 u/s</td>
+            <td>1 u/s</td>
+          </tr>
+          <tr>
+            <td>Complete orbit</td>
+            <td>3.27 minutes</td>
+            <td>26.18 minutes</td>
+          </tr>
+          <tr>
+            <td>Surface turn</td>
+            <td>18 seconds</td>
+            <td>120 seconds</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        The proposed orbit moves about 0.7 screen pixels per second at this
+        camera scale. It should remain observable while feeling much more
+        settled than A. Spin phase is calculated independently from elapsed
+        time, not from orbital angle. This proposes a pace to judge, not a
+        universal rule or a change to production orbit speeds. Choosing angular
+        speed for every world would make more distant bodies travel faster;
+        choosing travel speed instead would imply different angular speeds.
+      </p>
+    </details>
+    <details>
+      <summary id="02-18">
+        02.18 / Selected motion for this rock-planet type
+      </summary>
+      <p>
+        <strong
+          >Decided: orbital travel of 3–5 world units per second, with
+          independent axial rotation halfway between 02.17 A and B’s
+          rates.</strong
+        >
+        The spherical surface from 02.16 B is retained. The earlier fast motion
+        made orbit and spin appear synchronized; this gives the body a more
+        settled presence while keeping both movements visible.
+      </p>
+      <p>
+        Halfway is taken between angular rotation rates, giving one turn every
+        31.3 seconds (about 11.5° per second). It is not the midpoint of the two
+        turn durations. The two panels show the selected orbital range’s
+        endpoints with that same independent spin. At radius 250, a complete
+        orbit takes about 8.7 minutes at 3 u/s or 5.2 minutes at 5 u/s.
+      </p>
+      <RockSurface016
+        mode="selected"
+        label="Selected rock-planet motion: three and five world units per second"
+        client:load
+      />
+      <p>
+        The range applies to this airless rock-planet type. For an orbit of
+        radius r, angular speed is travel speed divided by r; spin is driven
+        separately by elapsed time. This reference retains the radius-45 body,
+        radius-250 orbit, fixed vertical spin axis, initial orbital angle −0.6
+        radians, zero initial spin phase and camera scale 0.7 px/u. Playback
+        uses no random variation. The instrument remains available to compare
+        the range before production adoption; production motion is unchanged.
+      </p>
+      <h4>Axis orientation is a separate choice</h4>
+      <p>
+        Travel is tangential to the orbital path; spin happens around an axis
+        through the planet’s centre. The axis can keep its own orientation
+        rather than following that tangent or the Sun direction. This proposal
+        keeps a fixed vertical axis in the image, as in 02.16 B. Different
+        tilts, reverse spin or different periods per world remain possible, but
+        are not added to this pace comparison. There is no deliberate orbit–spin
+        lock.
+      </p>
+      <h4>Size against the production Sun range remains open</h4>
+      <p>
+        The current yellow-family production radii are 36–140 world units, with
+        Practice G7 at 70. Those bounds are independent of the illustrative
+        palette anchors. A radius-45 rock is larger than the smallest Sun by
+        silhouette, but less than one third the largest Sun’s radius; accepting
+        that relationship is a design choice still to make. Candidate radii
+        below are comparison values, not selected limits or a mass law.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Rock radius</th>
+            <th>Sun r36</th>
+            <th>Practice r70</th>
+            <th>Sun r140</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>18</td>
+            <td>50%</td>
+            <td>26%</td>
+            <td>13%</td>
+          </tr>
+          <tr>
+            <td>45</td>
+            <td>125%</td>
+            <td>64%</td>
+            <td>32%</td>
+          </tr>
+          <tr>
+            <td>60</td>
+            <td>167%</td>
+            <td>86%</td>
+            <td>43%</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        Percentages compare radii, equally applicable to diameters. Field
+        placement remains the established requirement: for planet radius R,
+        orbit distance D, danger reach H and charging reach C, require D − R
+        &gt; H and D − R &lt; C. Size, silhouette relative to the Sun, and room
+        for flight remain deferred while the different rock surfaces are
+        compared in 02.19.
+      </p>
+    </details>
+    <details>
+      <summary id="02-19">
+        02.19 / Three rock worlds in the same conditions
+      </summary>
+      <p>
+        Mineral mosaic, ancient highlands and impact palimpsest return from 02.9
+        with the spherical surface and Sun-facing LFX hard light. All three use
+        the same radius-45 body, radius-250 orbit, 4 u/s travel and 31.3-second
+        independent spin, with identical initial phase, vertical axis and
+        camera. Only the source material changes. Play or scrub the shared
+        minute to compare how each surface reads as it turns through the limb.
+      </p>
+      <RockSurface016
+        mode="family"
+        label="Three rock surfaces with identical lighting and motion"
+        client:load
+      />
+      <p>
+        The lower rows show 0, 8 and 16 seconds with fixed left lighting at an
+        enlarged scale. Look for distinct rock character, solid form and whether
+        the surface remains convincing in motion. These are candidate
+        appearances, not settled planet classes. Size and axis variations are
+        deferred while we judge this family.
+      </p>
+      <p>
+        These are the existing authored study materials, not new procedural
+        results. All three use the same spherical mapping, including its
+        mirrored continuation. Mineral mosaic and impact palimpsest retain
+        painted local relief after approximate broad de-lighting; highlands uses
+        the neutralized source from 02.10. The LFX treatment is identical, but
+        those source differences remain a limitation of the comparison.
+      </p>
+    </details>
+    <details>
+      <summary id="02-20">
+        02.20 / Can a repeatable method supply the surface?
+      </summary>
+      <p>
+        All three authored appearances in 02.19 work. Their surface-making
+        method remains unresolved. This comparison keeps the highlands image as
+        a quality reference and tries two methods across three predetermined
+        seeds, without selecting the best-looking seed. Lighting, spherical
+        mapping, size and motion match 02.19. Each row has its own shared
+        timeline.
+      </p>
+      <p>
+        Procedural: nine irregular material provinces, quiet darker areas,
+        broken shelves and concentrated detail along contacts. Hybrid: the same
+        province layout filled with patches from the three existing authored
+        images. The hybrid therefore depends on that bitmap library and retains
+        some painted relief. Neither method is a geological simulation or a
+        demonstrated production solution. No NASA images are sampled.
+      </p>
+      {[71, 97, 153].map((seed) => (
+        <div>
+          <h4>Seed {seed} / image reference, procedural, hybrid</h4>
+          <RockSurface016
+            mode="methods"
+            seed={seed}
+            label={`Surface-making methods, seed ${seed}`}
+            client:load
+          />
+        </div>
+      ))}
+      <p>
+        Judge the distribution of quiet areas, definite irregular boundaries and
+        concentrated detail, then watch whether those structures still read as
+        rock in motion. The enlarged lower sequence exposes surface character. A
+        method needs to hold up across the rows; one appealing specimen is
+        insufficient. The existing image library remains a viable option if
+        neither method meets the reference quality. Acceptance is still open.
+      </p>
+    </details>
+    <details>
+      <summary id="02-21">02.21 / A family around hybrid 153</summary>
+      <p>
+        <strong>Hybrid 153 is a usable candidate:</strong>
+        it may lack some structure, but its material character is close enough
+        to work. Keep that exact surface as the baseline. These four controlled
+        variations test whether its recipe supports a useful family before
+        adding new detail.
+      </p>
+      <h4>Region placement / unchanged scale</h4>
+      <p>
+        Baseline at left; move the region layout right by 10% of the material
+        width, or up by 10% of its height. The texture samples stay in place,
+        changing which material occupies each area without selecting new
+        patches.
+      </p>
+      <RockSurface016
+        mode="variations"
+        variation="placement"
+        label="Hybrid 153: baseline and two region placement variations"
+        client:load
+      />
+      <h4>Region scale / unchanged centre</h4>
+      <p>
+        Repeat the unchanged baseline at left; reduce region scale to 80% or
+        increase it to 120% about the material centre. Texture sampling scale,
+        palette, seed, contact treatment and lighting remain unchanged.
+      </p>
+      <RockSurface016
+        mode="variations"
+        variation="scale"
+        label="Hybrid 153: baseline and two region scale variations"
+        client:load
+      />
+      <p>
+        Every panel retains the same radius-45 body, radius-250 orbit, 4 u/s
+        travel, 31.3-second independent spin, initial phase, vertical axis and
+        camera as 02.19. Each row shares a timeline; the lower sequence shows 0,
+        8 and 16 seconds under fixed left light. The baseline calls the original
+        hybrid-153 recipe without variation parameters. Existing texture-library
+        dependence, painted local relief and mirrored atlas continuation remain.
+      </p>
+      <p>
+        Look for distinct but related worlds that retain the baseline’s
+        convincing material through a turn. The question is whether controlled
+        composition gives us several usable surfaces, not whether arbitrary
+        seeds always work. These variations are proposals; the baseline is
+        preserved regardless of which ones are useful. A curated bitmap family
+        remains a possible delivery.
+      </p>
+    </details>
+    <details>
+      <summary id="02-22">02.22 / A brighter mercurial rock type</summary>
+      <p>
+        <strong>Rejected:</strong>
+        the recoloured regions fulfilled the requested colours but did not
+        establish a convincing Mercury surface. This branch is stopped; the
+        example is retained for comparison.
+      </p>
+      <p>
+        The hybrid-153 family works as a candidate with an icy-rock appearance.
+        Keep it intact and try a second material character: bright copper, blue,
+        pale mineral and violet regions against deeper dark terrain. The first
+        panel retains hybrid 153; the others apply the new recipe to seeds 153
+        and 97. The same-seed pair isolates the material change; the third panel
+        checks another composition.
+      </p>
+      <RockSurface016
+        mode="mercurial"
+        label="Retained hybrid and two Mercury-inspired mineral surfaces"
+        client:load
+      />
+      <p>
+        The reference is
+        <a
+          href="https://www.nasa.gov/image-article/colors-of-innermost-planet-mercury/"
+          >NASA’s enhanced-colour Mercury</a
+        >, whose colours emphasize differences between surface rocks rather than
+        reproduce their appearance to the human eye. This is a game
+        interpretation of that mineral separation, not a sampled NASA texture or
+        a true-colour reconstruction. Fine structure still comes from the
+        existing authored stone patches; regional colour and value separation
+        are generated.
+      </p>
+      <p>
+        All panels share the radius-45 body, radius-250 orbit, 4 u/s travel,
+        31.3-second independent spin, initial phase, camera and Sun-facing LFX
+        hard light. Stronger material contrast lets dark terrain and local
+        relief read deeper without changing the shared night-side lighting.
+        Judge whether this feels like a distinct dry mineral world, with bright
+        areas and deep darks that retain structure through the turn. The earlier
+        family’s icy appearance is a visual finding, not a decision to place ice
+        inside stellar charging fields. Neither new example is accepted yet.
+      </p>
+    </details>
+    <details>
+      <summary id="02-23">
+        02.23 / Mercury’s surface through the game’s rendering
+      </summary>
+      <p>
+        Keep hybrid 153 unchanged at left. At right, use NASA’s complete Mercury
+        surface map through the same spherical renderer, Sun-facing LFX hard
+        light and motion. This tests whether the reference’s connected material
+        structure gives us the Mercury-like body we want before choosing how to
+        make one. No new generator, palette assignments or contrast tuning are
+        involved.
+      </p>
+      <RockSurface016
+        mode="reference"
+        label="Hybrid 153 versus NASA Mercury surface in identical lighting and motion"
+        client:load
+      />
+      <p>
+        <a
+          href="https://science.nasa.gov/photojournal/enhanced-color-mercury-map/"
+          >NASA PIA17386 · Enhanced Color Mercury Map</a
+        >. Credit: NASA/Johns Hopkins University Applied Physics
+        Laboratory/Carnegie Institution of Washington. The full cylindrical map
+        is reduced to 384×192 without recolouring or contrast changes. Its
+        enhanced colours distinguish surface rocks; they are not human-eye
+        colour. The map’s recorded local relief and acquisition lighting remain
+        in the source; this is not a recovered pure albedo map.
+      </p>
+      <figure>
+        <img
+          src="/studies/mercury-2026-11-12/nasa-pia17386-atlas.webp"
+          width="384"
+          height="192"
+          alt="Full cylindrical enhanced-colour Mercury map, with connected blue-grey and warm mineral terrains, fine impact markings and bright rays."
+        >
+        <figcaption>
+          Source atlas · full longitude and latitude extent; no mirrored
+          hemisphere or repeated crop on the Mercury example.
+        </figcaption>
+      </figure>
+      <p>
+        Both bodies use radius 45, orbit radius 250, travel 4 u/s, one
+        independent turn every 31.3 seconds, initial orbital angle −0.6 radians,
+        zero spin phase, a vertical axis and camera scale 0.7 px/u. The lower
+        sequence shows 0, 8 and 16 seconds with fixed left light at an enlarged
+        scale. Hybrid 153 keeps its original mirrored-tile mapping; Mercury uses
+        full-map longitude wrapping with the same sphere geometry and light. No
+        random variation is introduced in the reference.
+      </p>
+      <p>
+        Judge whether Mercury’s surface organization reads as the desired rock
+        world at scene scale and through a turn. If it does, it supplies a
+        concrete target for an authored or hybrid surface; if it does not, the
+        visual target still needs work. This does not establish a generation
+        method, a complete family or production use of NASA imagery. Hybrid 153
+        remains usable; the recolouring branch in 02.22 is stopped.
+      </p>
+      <p>
+        <strong>Finding:</strong>
+        NASA’s mapped surface gives the desired Mercury-like character, but the
+        earlier mineral mosaic image communicates it better at game scale. That
+        composed image is the preferred visual target for this material type;
+        the NASA map remains the grounding reference.
+      </p>
+    </details>
+    <details>
+      <summary id="02-24">02.24 / Mineral mosaic at game scale</summary>
+      <p>
+        Bring the original mineral mosaic material from 02.19 A back beside the
+        NASA Mercury map, with identical lighting, size and motion. No new
+        generation, palette changes or contrast treatment: the purpose is to
+        carry the preferred composed surface forward as a concrete visual
+        target.
+      </p>
+      <RockSurface016
+        mode="reference"
+        referenceSource="mineral"
+        label="Original mineral mosaic beside NASA Mercury in the same lighting and motion"
+        client:load
+      />
+      <p>
+        The left panel reuses the original 02.9 mineral artwork through the same
+        material preparation and mirrored spherical mapping as 02.19 A. It is
+        not the complete original globe pasted onto an orbit. Its approximate
+        broad de-lighting and painted local relief remain unchanged. The right
+        panel retains NASA PIA17386’s complete cylindrical map, source credit
+        and treatment described in 02.23.
+      </p>
+      <p>
+        Both use radius 45, orbit radius 250, travel 4 u/s, a 31.3-second
+        independent spin, initial angle −0.6 radians, zero spin phase, vertical
+        axis, camera scale 0.7 px/u and Sun-facing LFX hard light. The upper
+        scene is the game-scale comparison; the enlarged 0/8/16-second sequence
+        explains how the material changes through a turn. The preferred surface
+        does not yet establish a repeatable generation method or a complete
+        global atlas.
+      </p>
+    </details>
+    <details>
+      <summary id="02-25">02.25 / Mineral mosaic as a surface exemplar</summary>
+      <p>
+        Use the preferred mineral mosaic itself to make new surface maps. Keep
+        the original at left; compose two full cylindrical atlases from its
+        stone patches. This tests whether its connected detail and colour
+        relationships survive rearrangement, rather than approximating them with
+        noise or assigning colours to unrelated regions.
+      </p>
+      <RockSurface016
+        mode="quilting"
+        label="Original mineral mosaic and two exemplar-quilted surface maps"
+        client:load
+      />
+      <p>
+        The method follows the idea of
+        <a href="https://people.eecs.berkeley.edu/~efros/research/quilting.html"
+          >image quilting by Efros and Freeman (2001)</a
+        >: choose overlapping source patches by how well they match existing
+        pixels, then cut joins along low-error paths. Here, 72px patches overlap
+        by 20px; 32 candidate positions are compared at each placement, with
+        seeded choice among near-best matches. Source patches come from the
+        established central mineral material. No recolouring, sharpening or new
+        image generation is applied. An 8px edge blend closes longitude on each
+        384×192 atlas.
+      </p>
+      <p>
+        Both maps use only the mineral mosaic artwork, so the source image
+        remains an asset dependency. This is exemplar-based synthesis, not a
+        learned model or an unlimited generator of new geology. Repeated
+        features, inherited painted relief, patch joins and pole distortion
+        remain possible. The original retains its mirrored crop mapping; the new
+        atlases wrap their full maps around the same sphere.
+      </p>
+      <p>
+        Lighting, motion and scene geometry match 02.24: radius 45, orbit radius
+        250, 4 u/s travel, 31.3-second independent spin, initial angle −0.6
+        radians, zero spin phase, vertical axis and camera scale 0.7 px/u. The
+        enlarged 0/8/16-second sequence exposes the surface through a turn.
+        Judge whether both maps retain the original’s mineral character at scene
+        scale and supply useful variation. Their quality is still open for
+        judgment.
+      </p>
+      <p>
+        <strong>Accepted for the Mercury case:</strong>
+        the exemplar-quilted surface is good enough to carry into size and
+        placement. This does not establish every rock-planet type or
+        arbitrary-seed reliability.
+      </p>
+    </details>
+    <h3 id="02-26">02.26 / Planet size and a safe orbit</h3>
+    <p>
+      Use the accepted quilted mineral surface (seed 153) while changing the
+      production yellow Sun’s size and the rock’s size. The Sun slider spans the
+      actual radius range 36–140; its gravity, charging and danger fields follow
+      the production profile together. Planet radius is the selected 16–36u
+      range for this airless mineral-rock type; Practice Mercury is set to
+      radius 27u. Body size does not assign planet mass in this comparison.
+    </p>
+    <p>
+      <strong>Size decision:</strong>
+      this type uses radii 16–36 world units. Practice Mercury uses radius 27u
+      (diameter 54u). The instrument starts and resets at that size; its slider
+      now spans the accepted family range. Practice’s existing innermost rock
+      receives radius 27u and a selected centre-to-centre orbital distance of
+      258u, with its existing mass retained. Surface-rendering adoption and
+      world HUD remain delivery work.
+    </p>
+    <RockSize026 client:load />
+    <p>
+      Orbital distance is centre to centre. Its valid range is recomputed after
+      either size changes: at least one unit beyond the larger of the Sun’s body
+      or danger reach, including the rock’s radius; at least one unit of the
+      surface must remain inside charging. The distance slider is clamped into
+      this band when necessary and otherwise retains its value. Circular motion
+      keeps these clearances constant around the full orbit.
+    </p>
+    <p>
+      Start at camera scale 0.70 px/u to judge the smallest readable planet,
+      then use the same scale across Sun sizes. Camera scale is adjustable for
+      inspecting larger systems; zooming out also makes the rock smaller on
+      screen. Orbit speed stays within the selected 3–5 u/s range; independent
+      spin remains one turn per 31.3 seconds. Changes retain orbital phase;
+      Reset restores the complete starting example. Use the displayed radii,
+      distance, speed and camera scale to identify a candidate configuration.
+    </p>
+    <p>
+      This study-specific size instrument reuses production Sun profiles,
+      orbital motion, field markings, body lighting and flight layers. The
+      shared Motion instrument’s current ship-and-burn configuration does not
+      expose this Sun/planet composition; reusable configuration and export for
+      such scenes remain an instrument extension to scope separately. This
+      example tests visual size and placement, not ship flight or a new HUD.
+    </p>
+    <h3 id="02-27">02.27 / Mercury in the world HUD</h3>
+    <p>
+      Practice Mercury uses radius 27u and the selected orbital distance 258u.
+      Add its name with a short outward leader and a quiet, short-dashed orbit.
+      The label, leader and orbit use the design system’s Android green. The
+      orbit’s short dashes and subdued brightness distinguish it from the Sun’s
+      gravity/charging fields; danger retains its amber marking. Mercury’s
+      moving gravity boundary uses the same dim Android-green 5/5 dash treatment
+      as Sun gravity, with reach calculated from its actual Practice mass well.
+      The label stays upright with a consistent text size while following the
+      moving body; the Sun retains its existing designation treatment.
+    </p>
+    <p>
+      Mercury’s own gravity-well marking follows the moving body. Its radius
+      comes from the production cut-off calculation for the Practice Mercury
+      mass well, with dim Android green and 5/5 screen-pixel dashes, matching
+      the Sun’s gravity language. Body size does not rescale its mass or reach.
+      Overlap with the Sun’s fields is shown directly.
+    </p>
+    <RockSize026
+      hud={true}
+      label="Mercury label and orbit beside the Sun fields"
+      client:load
+    />
+    <p>
+      Toggle the label, orbit and Mercury gravity boundary independently, then
+      play or scrub the 480-second timeline, which includes a full orbit at the
+      starting configuration. The orbit is drawn beneath the body, and the
+      label’s thin dark halo keeps text readable over field markings. Size,
+      placement and zoom controls are retained to expose crowding, including
+      smaller planets and larger Suns. Reset restores radius 27u, orbital
+      distance 258u, travel 4 u/s and camera scale 0.7 px/u; spin remains 31.3
+      seconds per turn. The source surface is unchanged from 02.26.
+    </p>
+    <p>
+      This is a HUD proposal for judging identity and path together with the
+      planet and Sun. Android green follows the established World HUD role.
+      Orbit style, brightness, leader placement and their behaviour near other
+      world labels remain open. Shared drawing primitives supply the proposal,
+      but production label/orbit rendering is not changed. The selected Practice
+      radius and 258u orbit are applied independently of accepting this HUD.
+    </p>
+  </section>
+  <section>
+    <h2 id="03">03 / Ready to deliver a Practice Mercury trial</h2>
+    <p>
+      <strong
+        >The Mercury design is ready for a bounded Practice
+        implementation.</strong
+      >
+      The composed mineral surface, spherical turning, Sun-facing hard light,
+      size and world HUD establish the intended corporeal, game-like planet. The
+      final orbital distance is <strong>258u</strong>, superseding the earlier
+      232u setting. Further surface exploration is not required for this case.
+      Production still needs the accepted rendering and motion wired into its
+      flight passes; this assessment is not a claim that the visual feature has
+      already shipped.
+    </p>
+    <h3>Accepted reference to preserve</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Practice delivery reference</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Surface</td>
+          <td>
+            02.25 exemplar quilting from the original mineral mosaic; seed 153
+            is the concrete trial map. The original artwork remains its source
+            dependency.
+          </td>
+        </tr>
+        <tr>
+          <td>Body</td>
+          <td>
+            Airless mineral-rock type, radius 16–36u. Mercury radius 27u; no
+            atmosphere or ring.
+          </td>
+        </tr>
+        <tr>
+          <td>Placement</td>
+          <td>
+            258u circular orbit around the production G7 Sun, radius 70u.
+            Nearest surface is 231u from the Sun: 131u outside danger and about
+            93u inside charging.
+          </td>
+        </tr>
+        <tr>
+          <td>Motion</td>
+          <td>
+            Orbital travel 3–5 u/s; use the demonstrated 4 u/s for the trial.
+            Independent surface turn every 31.3 seconds, fixed vertical axis as
+            demonstrated.
+          </td>
+        </tr>
+        <tr>
+          <td>Light</td>
+          <td>
+            Existing Sun-facing LFX hard-light treatment, separate from the
+            rotating material. Retain its readable shadow and washed mineral
+            character.
+          </td>
+        </tr>
+        <tr>
+          <td>World HUD</td>
+          <td>
+            02.27: upright Mercury label with outward leader, short-dashed
+            orbit, and moving gravity boundary, all Android green. Gravity reach
+            follows the current Practice mass well, about 170.3u, independently
+            of body size.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      The comparison reference is the 02.27 instrument reset state at camera
+      scale 0.7 px/u: initial orbital angle −0.6 radians, zero surface spin
+      phase, travel 4 u/s, quilt seed 153, and the final 258u orbit. Its
+      480-second timeline covers a full orbit at these settings. Keep that
+      instrument available as the visual handoff and for inspecting field and
+      label overlap. The exact phase is a comparison condition, not a
+      replacement for Practice’s existing deterministic starting-phase rule.
+    </p>
+    <h3>Already available</h3>
+    <p>
+      Practice now applies the shared 27u radius and 258u orbit to its existing
+      innermost rock (<code>id: moon</code>). Its mass and gravity tuning remain
+      unchanged. Core supplies circular orbit updates, the solid-material and
+      directional-light painter, Sun field markings and the new world-HUD
+      drawing primitives. The flight pipeline already provides World and
+      hard-light LFX canvases and configurable passes. No new rendering
+      technology is needed.
+    </p>
+    <h3>Adaptations needed before the trial is usable</h3>
+    <ul>
+      <li>
+        <strong>Own the surface as a game asset.</strong>
+        Move the accepted mineral source and deterministic quilt recipe out of
+        study-only ownership, or bake the selected 384×192 atlas with its recipe
+        and provenance. Keep expensive surface composition outside the frame
+        loop. NASA imagery is a reference, not a delivery dependency.
+      </li>
+      <li>
+        <strong>Connect the renderer and visual spin.</strong>
+        Promote the study’s spherical atlas projection into the shared asset
+        path. Render Mercury’s material on World and its Sun-facing mask on LFX,
+        reusing the same camera geometry. Advance visual spin with simulation
+        time so pause, reset and replay retain a deterministic surface phase.
+        Preserve other planet types while making this one identifiable
+        independently of the historical <code>moon</code> id.
+      </li>
+      <li>
+        <strong>Apply the selected motion and HUD.</strong>
+        Practice still inherits its old orbital angular speed; replace it with
+        the selected linear travel speed divided by orbital radius. Wire the
+        name, orbit and gravity boundary into the normal planet pass, keeping
+        text and dash sizes readable under camera zoom and suppressing duplicate
+        legacy markings.
+      </li>
+      <li>
+        <strong>Reconcile the owning contracts.</strong>
+        The planet spec still describes flat vector discs and legacy orbit
+        styling. Update that visual contract for this mineral-rock type, plus
+        the rendering and Practice contracts, as part of delivery rather than
+        treating the study bench as the production implementation.
+      </li>
+    </ul>
+    <h3>Verification and remaining limits</h3>
+    <p>
+      Check the full turn for joins and repeated features at radii 16, 27 and
+      36u; check labels, gravity overlap and light through the actual Practice
+      camera. Verify pause/reset/replay timing, body collision geometry and the
+      two field-placement inequalities. Exercise the shared frame with ship FX
+      and overlapping light, and measure sustained frame cost before making a
+      performance claim. Existing bench playback and automated checks establish
+      feasibility; they do not establish sustained production performance.
+    </p>
+    <p>
+      A general rock-planet taxonomy, success for arbitrary seeds, other spin
+      axes and a universal size–mass relationship remain outside this trial. The
+      accepted map can retain some painted local relief and quilting repeats;
+      those are known limitations, not reasons to reopen the successful Mercury
+      appearance. Parts 03 and 04 can now carry this one usable result to
+      delivery without solving every planet family. The study remains open; part
+      04 scopes this Practice delivery.
+    </p>
+  </section>
+  <section>
+    <h2 id="04">04 / Put Mercury into Practice</h2>
+    <p>
+      <strong>Design-principle disclosure: docs/design.md.</strong>
+      “Deliberately compose the image to suggest a world rather than trying to
+      reproduce one” was adopted during this study. This delivery applies that
+      principle; it proposes no further experience, branding or art-direction
+      change.
+    </p>
+    <p>
+      Deliver one fixed Mercury in Practice: the accepted mineral surface and
+      Sun-facing LFX, radius 27u, orbit 258u, travel 4 u/s, independent
+      31.3-second surface turn, and the Android-green label, orbit and gravity
+      markings from 02.27. Keep the current G7 Sun, deterministic starting
+      conditions and existing Mercury mass. The family’s 16–36u radius range is
+      recorded for reuse; Practice ships one selected size and surface, not a
+      random planet generator.
+    </p>
+    <h3>Ordered delivery slices</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Slice</th>
+          <th>Deliverable</th>
+          <th>Size / dependency</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1 / Surface asset</td>
+          <td>
+            A reproducible, versioned mineral atlas and shared spherical
+            projection, demonstrated in the Lab.
+          </td>
+          <td>Small–medium; independent foundation.</td>
+        </tr>
+        <tr>
+          <td>2 / Playable Mercury</td>
+          <td>
+            Practice renders the selected surface and LFX, with correct orbital
+            travel and simulation-timed spin.
+          </td>
+          <td>Medium; depends on 1.</td>
+        </tr>
+        <tr>
+          <td>3 / World HUD and completion</td>
+          <td>
+            Mercury’s name, orbit and actual gravity boundary work in the real
+            Practice camera; contracts and integration checks match delivery.
+          </td>
+          <td>Small–medium; depends on 2.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Sizes describe relative engineering scope, not elapsed-time promises. The
+      whole feature is a medium implementation across assets, simulation and
+      rendering. The main uncertainty is maintaining the accepted look and frame
+      cost in the real flight composition, rather than new physics or additional
+      surface design.
+    </p>
+    <h3>1 / Give the accepted surface a production owner</h3>
+    <p>
+      Bake the seed-153 exemplar quilt into one 384×192 cylindrical atlas during
+      development. Retain the source mineral artwork, its image-generation
+      provenance and the deterministic quilting recipe in versioned asset
+      authoring material. Runtime loads the selected map once; it does not quilt
+      a new world on entry. Promote the atlas projection from
+      <code>spherical-surface.ts</code>
+      into core’s shared asset path and have the study consume that owner too.
+      Keep the source appearance and accepted mapping intact while moving
+      ownership.
+    </p>
+    <p>
+      <strong>Owners:</strong>
+      core asset generation/projection and web-served game assets; the Lab
+      remains a consumer. Define and validate any new profile/asset metadata
+      contract with Zod before consuming it. Keep the Practice profile small and
+      explicit, referencing its material and display name without renaming the
+      existing gravity-tuning id.
+      <strong>Check:</strong>
+      compare the baked atlas through a complete sphere turn against 02.25/02.27
+      at radii 16, 27 and 36u; inspect longitude joins, poles, alpha edges and
+      repeated features. Deliverable 1 is reusable even before the flight scene
+      adopts it.
+    </p>
+    <h3>2 / Wire one usable planet into real Practice flight</h3>
+    <p>
+      Use the Practice profile to select Mercury’s material in the normal planet
+      pass. Draw its solid surface on World and the existing
+      <code>RockBodyPainter</code>
+      directional mask on LFX with the same world transform. Decode/cache the
+      asset and reuse projection buffers; do not move surface synthesis or
+      per-frame allocation into
+      <code>FlightDeck.svelte</code>. The other planets continue through their
+      current drawing path.
+    </p>
+    <p>
+      Set Mercury’s angular orbit speed from the selected travel speed:
+      <code>4 / 258</code>
+      rad/s, in the demonstrated direction. Keep the shared circular-motion law,
+      collision radius 27u, current mass well and existing deterministic orbital
+      start. Drive independent visual spin from simulation ticks at one turn per
+      31.3 seconds, not browser time or orbital phase. Pause holds the surface;
+      a fresh Practice entry restarts it deterministically. A seek/replay
+      reconstruction derives the same visible phase from the same simulation
+      time.
+    </p>
+    <p>
+      <strong>Owners:</strong>
+      <code>packages/mode-a/src/lib/mercurial-rock.ts</code>,
+      <code>simulation.ts</code>, <code>flight-frame.ts</code> and core’s planet
+      asset painter. Extend the shared frame’s render input/pass only as needed;
+      keep rendering state out of ship input and gameplay resources.
+      <strong>Check:</strong>
+      fresh-entry determinism, pause/resume, replay phase, constant 4 u/s
+      travel, unchanged mass and radius-27 contact. Confirm the body stays
+      outside danger and inside charging at orbit 258u. Existing Practice
+      energy/hull protection and return-to-Hangar behavior stay intact.
+    </p>
+    <h3>3 / Complete the HUD and verify the composed scene</h3>
+    <p>
+      Use the shared <code>world-hud.ts</code> primitives in the real planet
+      pass: Mercury’s Android-green name and outward leader, dim short-dashed
+      orbit, and dim 5/5 gravity boundary from
+      <code>getPlanetInfluenceRadius</code>. Project each from the same body and
+      camera geometry, retaining readable text and dash sizes. Suppress
+      Mercury’s duplicate legacy orbit/influence drawing; retain the Sun’s
+      existing field markings. Do not introduce a new HUD system or a
+      multi-label placement solver for this one-body delivery.
+    </p>
+    <p>
+      <strong>Check:</strong>
+      compare the composed Practice scene with the 02.27 reset reference and
+      through a full orbit at several camera zooms. Verify body, label, leader
+      and gravity ring move together and that field overlap remains readable.
+      Check keyboard and iPad-landscape touch flight and the existing
+      pause/return flow. Exercise the renderer with ship FX and overlapping LFX;
+      measure sustained frame cost and bound any caches. Run focused
+      simulation/frame tests, type/contract checks and the web build. Automated
+      correctness, visual comparison and measured performance are separate
+      results; none substitutes for the others.
+    </p>
+    <h3>Owning contracts and completion boundary</h3>
+    <ul>
+      <li>
+        <code>docs/specs/game/world/planets/spec.md</code>: replace the
+        flat-disc requirement for this mineral-rock presentation, record the
+        surface reference, size range, motion and HUD, and retain other planet
+        types’ behavior.
+      </li>
+      <li>
+        <code>docs/specs/game/test-flight/spec.md</code>: add Mercury to
+        Practice’s fixed system with radius 27u, orbit 258u and the selected
+        appearance/motion; preserve all Practice flight rules.
+      </li>
+      <li>
+        <code>docs/specs/game/render/spec.md</code>
+        and its World/LFX contracts: describe solid material, directional light,
+        simulation-time spin and world-HUD composition under the shared camera.
+      </li>
+      <li>
+        The Lab study and reusable planet example consume the same shipped asset
+        and painter. Keep 02.27 as the named visual comparison during delivery;
+        reconcile the completed implementation back into parts 03/04.
+      </li>
+    </ul>
+    <p>
+      Completion means the actual Hangar-launched Practice session contains the
+      accepted Mercury, rather than only the study bench. Surface, light,
+      motion, HUD and field placement work together with the active ship. Ranked
+      and other modes receive no planet appearance or behavior migration in this
+      delivery. General planet families, extra maps, arbitrary-seed generation,
+      other spin axes, mass–size rules and Sun changes are outside scope.
+    </p>
+    <p>
+      <strong>Implementation update:</strong>
+      Practice now selects the seed-153 mineral surface, turns it on the
+      31.3-second simulation clock, lights it from the Sun on LFX, and draws the
+      Mercury label, orbit and gravity boundary. The existing rock keeps its
+      mass and now travels at 4u/s on the 258u orbit with radius 27u. The study
+      helper code is shared with the Practice asset loader. Baking the map as a
+      versioned production atlas and completing the composed-scene visual, input
+      and performance checks remain before the study can be closed.
+    </p>
+  </section>
+</StudyLayout>
+
+<style>
+.reference-board {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-xl);
+  margin-block: var(--spacing-lg);
+}
+figure {
+  margin: 0;
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--spacing-md);
+}
+figure h4 {
+  margin: 0;
+}
+.reference-context,
+.reference-credit {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+}
+.reference-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 256px;
+  background: var(--color-void);
+}
+.reference-image img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+figcaption {
+  max-width: 48ch;
+}
+</style>
+
+<style>
+.colour-comparison {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-md);
+  margin-block: var(--spacing-lg);
+}
+.colour-comparison article p {
+  min-height: 4.5em;
+  color: var(--color-text-muted);
+}
+summary {
+  cursor: pointer;
+  font-weight: 700;
+  margin-block: var(--spacing-lg);
+}
+</style>
+
+<style>
+.art-directions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-lg);
+  margin-block: var(--spacing-xl);
+}
+.art-directions figure > p {
+  min-height: 5em;
+}
+.art-directions figcaption {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-muted);
+}
+.flight-sprites {
+  display: flex;
+  align-items: end;
+  justify-content: space-evenly;
+  gap: var(--spacing-sm);
+  min-height: 130px;
+  padding-block: var(--spacing-lg);
+  background: var(--color-void);
+}
+.flight-sprites > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+.flight-sprites small {
+  color: var(--color-text-muted);
+}
+.planet-frame {
+  display: block;
+  position: relative;
+  width: var(--diameter);
+  height: var(--diameter);
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--color-void);
+}
+.planet-frame img {
+  position: absolute;
+  max-width: none;
+}
+</style>

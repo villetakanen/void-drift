@@ -1,0 +1,9 @@
+---
+import LabThrustPads from "../../components/lab/LabThrustPads.svelte";
+import LabLayout from "../../layouts/LabLayout.astro";
+---
+
+<!-- Production touch thrust pads over their live-stage reference. -->
+<LabLayout title="Flight controls" wide>
+  <LabThrustPads client:load />
+</LabLayout>

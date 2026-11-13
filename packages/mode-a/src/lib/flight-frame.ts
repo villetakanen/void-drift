@@ -1,11 +1,20 @@
 import {
   type Camera,
+  type CloudBodyPainter,
   drawSunFields,
+  drawWorldGravity,
+  drawWorldLabel,
+  drawWorldOrbit,
   type FxPass,
+  getPlanetInfluenceRadius,
+  type Planet,
   type Renderer,
+  type RockBodyPainter,
 } from "@void-drift/core";
 import { BUILD_FLIGHT_SCALE, drawBuild } from "./build-renderer";
 import type { FlightFx } from "./gravity-fold-fx";
+import { PRACTICE_MERCURY_SPIN_SECONDS } from "./mercurial-rock";
+import { PRACTICE_VENUS_SPIN_SECONDS } from "./practice-venus";
 import { drawSalvage, drawSalvageApertures } from "./salvage-renderer";
 import type { ShipProfileId } from "./schemas/ship-profile";
 import { type Simulation, STEP } from "./simulation";
@@ -71,6 +80,15 @@ export interface FlightFrame {
   lightTime?: number;
   /** Extra emission stamped into the light surface, such as the countdown. */
   lightOverlay?: (ctx: CanvasRenderingContext2D, pass: FxPass) => void;
+  venus?: {
+    painter: CloudBodyPainter;
+    surface: { canvas: HTMLCanvasElement; draw(phase: number): void };
+  };
+  /** Optional production surface painter used only for Practice Mercury. */
+  mercury?: {
+    painter: RockBodyPainter;
+    surface: { canvas: HTMLCanvasElement; draw(phase: number): void };
+  };
 }
 
 export interface FlightPass {
@@ -146,8 +164,113 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
     space: "world",
     draws: "Each planet with its orbit path and influence ring",
     source: "packages/core/src/lib/assets/planet.ts",
-    draw: ({ renderer, sim }) => {
-      for (const planet of sim.planets) renderer.drawPlanet(planet);
+    draw: ({ renderer, sim, mercury, venus, camera }, ctx) => {
+      for (const planet of sim.planets) {
+        if (
+          sim.settings.mode === "practice" &&
+          planet.id === "venus" &&
+          venus
+        ) {
+          venus.surface.draw(
+            (sim.ticks * STEP * 2 * Math.PI) / PRACTICE_VENUS_SPIN_SECONDS,
+          );
+          venus.painter.body(ctx, 0, planet.pos.x, planet.pos.y, planet.radius);
+          venus.painter.atmosphere(
+            ctx,
+            planet.pos.x,
+            planet.pos.y,
+            planet.radius,
+            sim.star.pos.x,
+            sim.star.pos.y,
+            camera.zoom,
+          );
+          renderer.drawPlanet(planet, { worldHud: false, body: false });
+          continue;
+        }
+        if (sim.settings.mode === "practice" && planet.id === "venus") {
+          renderer.drawPlanet(planet, { worldHud: false });
+          continue;
+        }
+        const isMercury = isPracticeMercury(sim, planet) && mercury;
+        if (!isMercury) {
+          renderer.drawPlanet(planet);
+          continue;
+        }
+        mercury.surface.draw(
+          (sim.ticks * STEP * 2 * Math.PI) / PRACTICE_MERCURY_SPIN_SECONDS,
+        );
+        mercury.painter.body(ctx, 0, planet.pos.x, planet.pos.y, planet.radius);
+        renderer.drawPlanet(planet, { worldHud: false, body: false });
+      }
+    },
+  },
+  {
+    id: "mercury-hud",
+    name: "Mercury HUD",
+    layer: "world",
+    space: "screen",
+    draws: "Practice Mercury orbit, gravity boundary and upright label",
+    source: "packages/core/src/lib/assets/world-hud.ts",
+    draw: ({ sim, camera, mercury }, ctx) => {
+      if (!mercury || sim.settings.mode !== "practice") return;
+      const planet = sim.planets.find((item) => item.id === "moon");
+      if (!planet) return;
+      drawPracticePlanetHud(ctx, camera, planet, "Mercury");
+    },
+  },
+  {
+    id: "venus-hud",
+    name: "Venus HUD",
+    layer: "world",
+    space: "screen",
+    draws: "Practice Venus orbit, gravity boundary and upright label",
+    source: "packages/core/src/lib/assets/world-hud.ts",
+    draw: ({ sim, camera }, ctx) => {
+      if (sim.settings.mode !== "practice") return;
+      const planet = sim.planets.find((item) => item.id === "venus");
+      if (planet) drawPracticePlanetHud(ctx, camera, planet, "Venus");
+    },
+  },
+  {
+    id: "venus-light",
+    name: "Venus light",
+    layer: "lfx",
+    space: "world",
+    draws: "Sun-facing hard light on Practice Venus",
+    source: "packages/core/src/lib/assets/cloud-body.ts",
+    draw: ({ sim, venus }, ctx) => {
+      if (!venus || sim.settings.mode !== "practice") return;
+      const planet = sim.planets.find((item) => item.id === "venus");
+      if (planet)
+        venus.painter.light(
+          ctx,
+          planet.pos.x,
+          planet.pos.y,
+          planet.radius,
+          sim.star.pos.x,
+          sim.star.pos.y,
+        );
+    },
+  },
+  {
+    id: "mercury-light",
+    name: "Mercury light",
+    layer: "lfx",
+    space: "world",
+    draws: "Sun-facing hard light on Practice Mercury",
+    source: "packages/core/src/lib/assets/rock-body.ts",
+    draw: ({ sim, mercury }, ctx) => {
+      if (!mercury || sim.settings.mode !== "practice") return;
+      const planet = sim.planets.find((item) => item.id === "moon");
+      if (planet)
+        mercury.painter.light(
+          ctx,
+          planet.pos.x,
+          planet.pos.y,
+          planet.radius,
+          sim.star.pos.x,
+          sim.star.pos.y,
+        );
     },
   },
   {
@@ -251,6 +374,10 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
   },
 ];
 
+function isPracticeMercury(sim: Simulation, planet: Planet) {
+  return sim.settings.mode === "practice" && planet.id === "moon";
+}
+
 function resolutionOf(id: FlightLayerId) {
   return FLIGHT_LAYERS.find((layer) => layer.id === id)?.resolution ?? 1;
 }
@@ -284,6 +411,8 @@ export function clearFlightLayer(ctx: CanvasRenderingContext2D) {
 }
 
 export interface FlightFrameOptions {
+  /** A configured Lab scene may substitute painters while retaining layer/camera handling. */
+  passes?: readonly FlightPass[];
   /** Which passes draw; every pass when omitted. */
   include?: (pass: FlightPass) => boolean;
   /** Receives each drawn pass and its draw time in milliseconds. */
@@ -296,12 +425,12 @@ export interface FlightFrameOptions {
  */
 export function drawFlightFrame(
   frame: FlightFrame,
-  { include, observe }: FlightFrameOptions = {},
+  { include, observe, passes = FLIGHT_PASSES }: FlightFrameOptions = {},
 ) {
   // World clears itself with the Void pass; the layers above start empty.
   clearFlightLayer(frame.layers.fx);
   clearFlightLayer(frame.layers.lfx);
-  for (const pass of FLIGHT_PASSES) {
+  for (const pass of passes) {
     if (include && !include(pass)) continue;
     const ctx = frame.layers[pass.layer];
     const resolution = resolutionOf(pass.layer);
@@ -313,4 +442,35 @@ export function drawFlightFrame(
     ctx.restore();
     observe?.(pass, performance.now() - start);
   }
+}
+
+function drawPracticePlanetHud(
+  ctx: CanvasRenderingContext2D,
+  camera: Camera,
+  planet: Planet,
+  label: string,
+) {
+  const pos = camera.worldToScreen(planet.pos.x, planet.pos.y);
+  const centre = camera.worldToScreen(
+    planet.orbitCenter.x,
+    planet.orbitCenter.y,
+  );
+  drawWorldOrbit(ctx, centre.x, centre.y, planet.orbitRadius * camera.zoom);
+  drawWorldGravity(
+    ctx,
+    pos.x,
+    pos.y,
+    getPlanetInfluenceRadius(planet) * camera.zoom,
+  );
+  drawWorldLabel(
+    ctx,
+    label,
+    pos.x,
+    pos.y,
+    planet.radius * camera.zoom,
+    Math.atan2(
+      planet.pos.y - planet.orbitCenter.y,
+      planet.pos.x - planet.orbitCenter.x,
+    ),
+  );
 }

@@ -63,6 +63,18 @@ the picture's character.
   the browser has no native that accumulates.
 - **A native changes how a layer is shown, never what the layer holds.**
 
+### Named Practice planets
+
+Practice Mercury and Venus supply shared material painters to `FlightFrame`.
+Their bodies draw on World, Sun-facing directional masks on LFX, and labels,
+orbits and mass-derived gravity boundaries in stage coordinates. Venus's
+provisional lit atmospheric arc belongs to World with its cloud body. Surface
+phase comes from simulation ticks, independently of orbital phase and lighting;
+repeated paused frames reuse the same projected surface. Material preparation
+failure preserves the stock body and working simulation. The core asset owner
+caches each deterministic atlas; each Venus flight owns its projected surface.
+The canonical planet preview uses these production passes directly.
+
 ### Time
 
 - **Tick:** one fixed simulation step of 1/60 s. Game time is the tick count
@@ -268,3 +280,10 @@ Scenario: A layer's look is changed
   Then the picture changes
   And the image the FX layer holds follows the same rules as before
 ```
+
+### Configured Lab painters
+
+A configured Lab flight can supply its own ordered pass list to `drawFlightFrame`.
+The frame retains layer clearing, camera transforms, resolution and observation for
+those passes. Omitting a custom list uses the production passes. A study can replace
+a solid-body painter and add its matching LFX painter without changing play’s defaults.

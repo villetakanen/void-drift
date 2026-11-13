@@ -8,6 +8,28 @@ const study = studies.find(
 ---
 
 <StudyLayout study={study}>
+  <section id="projector-recoil">
+    <h2>Stopped · study failed</h2>
+    <p>
+      Closed 13 November 2026 at the designer's request. This study failed to
+      establish how the Plasma Projector should feel and look in the game. No
+      final weapon design, artwork or implementation scope was accepted.
+    </p>
+    <p>
+      The designer's assessment: theoretical vector diagrams and numerical
+      questions took precedence before the in-game experience was established.
+      Later revisions and repeated discussion did not advance the design
+      question. Harness, model and context problems were suggested as possible
+      contributors; no cause was established. This is a failed study, not a
+      successful conclusion inferred from its intermediate decisions.
+    </p>
+    <p>
+      Section 01 is preserved unchanged as the starting premise for a fresh
+      study elsewhere. A future study must establish the in-game experience
+      first; this closure does not start one or carry provisional mechanics into
+      it as mandatory constraints.
+    </p>
+  </section>
   <section>
     <h2>01 / Commit to the approach, survive the escape</h2>
     <p>
@@ -87,12 +109,99 @@ const study = studies.find(
       >. Energy and motion boundaries clarified after review; not rerun.
     </p>
   </section>
-  <section><h2>02 / To be developed after 01</h2></section>
+  <section>
+    <h2>02 / Decisions and observations retained from exploration</h2>
+    <p>
+      These record what was agreed during this attempt. They do not resolve its
+      failed design question or select a production recipe.
+    </p>
+    <ul>
+      <li>
+        A concentrated primary blast with longer, weaker side shoulders was
+        preferred. The shoulders vent before the primary and read as cooling
+        exhaust from that release, not separate guns. Diagram edges were never
+        production geometry; the vector illustrations served an earlier inquiry.
+      </li>
+      <li>
+        Target loss can cancel the primary while venting shoulders with weak
+        incidental damage. Preparation covers this cheap residue; the primary
+        carries the large release cost and destructive force.
+      </li>
+      <li>
+        Residue-only recovery is quick; primary recovery is long. Check
+        full-shot affordability before charging under the existing weapon
+        energy-floor rule. This does not reserve energy or guarantee escape
+        power.
+      </li>
+      <li>
+        The primary falloff took a middle direction between the alternatives.
+        Plasma should devastate the wreck and most fragments caught in its
+        powerful region; a conserved global damage budget was rejected.
+      </li>
+      <li>
+        The moving-ship trial supported live LFX at the emitter with persistent
+        FX history, and a backward translational kick at primary release. The
+        designer liked the slowing and improved attachment. No angular reversal
+        was intended.
+      </li>
+    </ul>
+    <figure>
+      <img
+        src="/studies/plasma-projector-2026-11-11/structure-reference.svg"
+        alt="Schematic short primary framed by two longer shoulders, facing right"
+        width="640"
+        height="280"
+      >
+      <figcaption>
+        Static structure reference reconstructed at closure from the original
+        study paths: 02.2 B primary and 02.3 B shoulders extended 35%. This is
+        schematic evidence of the preferred composition, not accepted artwork,
+        game scale, damage boundaries or a capture of the retired replay.
+      </figcaption>
+    </figure>
+    <h3>Unresolved</h3>
+    <p>
+      The actual appearance and feel in the game remain unresolved. The luminous
+      replacements and latest comparisons were not accepted. All exact damage,
+      costs, timings, reach, recovery, recoil magnitude and mount form remain
+      provisional. Stationary and offset-mount recoil, real destruction, moving
+      enemies, power loss and escape balance were not established.
+    </p>
+    <p>
+      Reference conditions of the retired forward-flight trial: default Wasp, B1
+      course, start (960, −360), heading zero, intact reference derelict held
+      100 units ahead. Charge at 1.00 s, shoulders at 1.60 s, primary at 1.68 s;
+      staged tick-101 impulse reduced forward velocity from 325 to 255 units/s.
+      These were inspection conditions, not accepted tuning. No retained
+      recording demonstrates the slowing; that finding relies on the designer's
+      feedback and the simulation check reported during the session.
+    </p>
+    <p>
+      Temporary study components and painters have been retired. The shared
+      flight instrument and its staged-impulse capability remain. Failed visual
+      proposals are not retained as references for the next study.
+    </p>
+  </section>
+  <section>
+    <h2>03 / Readiness not reached</h2>
+    <p>
+      The in-game experience was not established. This study cannot justify
+      production delivery.
+    </p>
+  </section>
+  <section>
+    <h2>04 / No delivery scope</h2>
+    <p>Stopped before a supported implementation scope could be defined.</p>
+  </section>
 </StudyLayout>
-
 <style>
-ul {
+figure img {
+  max-width: 100%;
+  height: auto;
+}
+figcaption {
   max-width: 70ch;
+  color: var(--color-text-muted);
 }
 li + li {
   margin-top: var(--spacing-md);

@@ -167,7 +167,8 @@ and measurements. The time cursor selects a point in the existing results.
 | `MotionInstrumentScreen` (shared screen) | same folder                               | `/lab/instrument`         |
 | `PathPane`, `TimeGraph`                  | same folder                               | `/lab/graphs`             |
 | `BurnRow`, `Legend`, `OverlayPane`       | same folder                               | `/lab/instrument-parts`   |
-| `Toggle`, `RingSlider`                   | `apps/web/src/components/inputs/`         | `/lab/inputs`             |
+| `Toggle`                                 | `apps/web/src/components/inputs/`         | `/lab/ds/choices`         |
+| `RingSlider`                             | `apps/web/src/components/inputs/`         | `/lab/ds/slider`          |
 | Elevation and display tokens             | `packages/core/src/lib/styles/tokens.css` | `/lab/surfaces`           |
 
 ### Using it

@@ -149,6 +149,10 @@ function drawPlanetPreview(ctx: CanvasRenderingContext2D) {
 }
 </script>
 
+<a class="practice-link" href="/lab/entities/planet/practice"
+  >Practice system · Mercury and Venus →</a
+>
+
 <div
   class="stage-content"
   bind:clientWidth={stageWidth}
@@ -158,6 +162,9 @@ function drawPlanetPreview(ctx: CanvasRenderingContext2D) {
 </div>
 
 <style>
+.practice-link {
+  padding: var(--spacing-md);
+}
 .stage-content {
   flex: 1;
   display: flex;

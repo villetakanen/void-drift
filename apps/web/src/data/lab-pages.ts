@@ -86,18 +86,25 @@ export const labPages = z.array(labPageSchema).parse([
     spec: "docs/specs/factory/design-system/spec.md#surfaces-and-layers",
   },
   {
-    href: "/lab/inputs",
-    title: "Inputs",
-    purpose: "Buttons, toggle and ring slider in every state.",
+    href: "/lab/ds/choices",
+    title: "Choices",
+    purpose: "Toggle and Switch for values and independent settings.",
     group: "design-system",
     source: "production",
     defines: [
       "apps/web/src/components/inputs/Toggle.svelte",
-      "apps/web/src/components/inputs/RingSlider.svelte",
       "apps/web/src/components/inputs/Switch.svelte",
-      "apps/web/src/components/inputs/ThrustPads.svelte",
     ],
-    spec: "docs/specs/factory/design-system/spec.md#elevation-and-inputs",
+    spec: "docs/specs/factory/design-system/spec.md#toggle-and-switch",
+  },
+  {
+    href: "/lab/ds/slider",
+    title: "Slider",
+    purpose: "Ring slider for bounded numeric values.",
+    group: "design-system",
+    source: "production",
+    defines: ["apps/web/src/components/inputs/RingSlider.svelte"],
+    spec: "docs/specs/factory/design-system/spec.md#ring-slider",
   },
   {
     href: "/lab/ds/actions",
@@ -168,7 +175,15 @@ export const labPages = z.array(labPageSchema).parse([
   {
     href: "/lab/entities/planet",
     title: "Planets",
-    purpose: "Planet types and drawing; sliders preview only.",
+    purpose:
+      "Planet types and drawing, plus the production Practice planet preview.",
+    defines: [
+      "packages/core/src/lib/assets/cloud-body.ts",
+      "packages/core/src/lib/assets/spherical-surface.ts",
+      "packages/mode-a/src/lib/practice-venus.ts",
+      "packages/mode-a/src/lib/flight-frame.ts",
+    ],
+    spec: "docs/specs/game/world/planets/spec.md#practice-venus",
     group: "ships-and-world",
     source: "production",
   },
@@ -187,6 +202,15 @@ export const labPages = z.array(labPageSchema).parse([
     source: "production",
   },
 
+  {
+    href: "/lab/controls",
+    title: "Flight controls",
+    purpose: "Production touch thrust pads and their resolved action feedback.",
+    group: "tools",
+    source: "production",
+    defines: ["apps/web/src/components/controls/ThrustPads.svelte"],
+    spec: "docs/specs/game/controls/spec.md#touch-pads",
+  },
   {
     href: "/lab/instrument",
     title: "Ship tuning",

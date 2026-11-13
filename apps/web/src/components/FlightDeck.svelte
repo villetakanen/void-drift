@@ -36,14 +36,16 @@ import {
   submitHighScore,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
+import { createPracticeVenus } from "../lib/assets/practice-venus";
+import { loadPracticeMercury } from "../lib/assets/rock-planets/authored-materials";
 import { NO_SCORE_NOTICE } from "../lib/experimental";
 import { fitGameScreen, GAME_HEIGHT } from "../lib/game-screen";
 import { settings } from "../lib/stores/settings";
 import { initializeShipSetup, shipSetup } from "../lib/stores/ship-setup";
+import ThrustPads from "./controls/ThrustPads.svelte";
+import { PAD_ASSEMBLY_HEIGHT_PX } from "./controls/thrust-pads";
 import Dialog from "./Dialog.svelte";
 import FlightLayers from "./FlightLayers.svelte";
-import ThrustPads from "./inputs/ThrustPads.svelte";
-import { PAD_ASSEMBLY_HEIGHT_PX } from "./inputs/thrust-pads";
 import PreviewMarker from "./PreviewMarker.svelte";
 import TitleScreen from "./TitleScreen.svelte";
 
@@ -62,6 +64,10 @@ let {
 const testFlight = $derived(mode === "practice");
 let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
 let simulation: Simulation;
+let practiceVenus: ReturnType<typeof createPracticeVenus> | undefined;
+let practiceMercury:
+  | Awaited<ReturnType<typeof loadPracticeMercury>>
+  | undefined;
 let input: Input;
 let renderer: Renderer;
 let camera: Camera;
@@ -167,10 +173,16 @@ function reset(start = false) {
   input?.reset();
   simulation = new Simulation(
     runLoadout
-      ? { ...stockSettings(runLoadout.chassis), loadout: runLoadout, mode }
+      ? {
+          ...stockSettings(runLoadout.chassis),
+          loadout: runLoadout,
+          experimental: runExperimental,
+          mode,
+        }
       : {
           ...stockSettings(currentLoadout.chassis),
           loadout: currentLoadout,
+          experimental: runExperimental,
           mode,
         },
   );
@@ -363,6 +375,20 @@ function padPress(pointerId: number, pad: ThrustPad | null) {
   input?.setPointer(pointerId, pad);
 }
 onMount(() => {
+  if (mode === "practice") {
+    try {
+      practiceVenus = createPracticeVenus();
+    } catch {
+      /* Use the stock body if Canvas material preparation fails. */
+    }
+    void loadPracticeMercury()
+      .then((asset) => {
+        practiceMercury = asset;
+      })
+      .catch(() => {
+        /* Keep the stock body when the material is unavailable. */
+      });
+  }
   const world = canvases.world?.getContext("2d"),
     fx = canvases.fx?.getContext("2d"),
     lfx = canvases.lfx?.getContext("2d");
@@ -506,6 +532,8 @@ onMount(() => {
         camera,
         sim: simulation,
         fx: flightFx,
+        mercury: mode === "practice" ? practiceMercury : undefined,
+        venus: mode === "practice" ? practiceVenus : undefined,
         stockShip: chosen === "fiddler" ? undefined : chosen,
         lightTime: Math.max(0, countTime) + simulation.ticks * STEP,
         lightOverlay:

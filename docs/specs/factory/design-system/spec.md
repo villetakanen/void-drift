@@ -28,8 +28,8 @@ screen composes shared definitions instead of inventing its own.
 - `scripts/check-contracts.mjs` keeps the home true: a design-system page is
   at `/lab/ds/<name>`, names its files and its section, and every shared
   input and stylesheet is named by a page. Pages at an earlier address
-  (`/lab/tokens`, `/lab/typography`, `/lab/surfaces`, `/lab/inputs`,
-  `/lab/logomark`, `/lab/graphs`, `/lab/instrument-parts`) are listed in that
+  (`/lab/tokens`, `/lab/typography`, `/lab/surfaces`, `/lab/logomark`,
+  `/lab/graphs`, `/lab/instrument-parts`) are listed in that
   check and move to `/lab/ds/<name>` in the change that next touches them.
 - Feature specs consume the system. Changing a definition is design work,
   recorded here and demonstrated on its Lab page in the same change.
@@ -59,7 +59,7 @@ screen composes shared definitions instead of inventing its own.
 - All UI components use design tokens (no hardcoded hex values).
 - Shared UI takes every `z-index` from a `--layer-*` token, and every cut corner from a `--cut-size-*` token (S6).
 - Menu, pause and run complete sit on one `.panel`; the flight status message on `.panel--flat` (S6).
-- Thrust pad tokens and `ThrustPads` exist as specified, and `/lab/inputs`
+- Thrust pad tokens and `ThrustPads` exist as specified, and `/lab/controls`
   demonstrates both sides in every lit state over a starfield.
 - `Tabs` exists as specified in [Tabs](#tabs), and `/lab/ds/tabs`
   demonstrates facts, a row without them, an unavailable tab, both
@@ -243,7 +243,7 @@ implemented 2026-11-03.
 **Source of truth:** `packages/core/src/lib/styles/tokens.css`,
 `apps/web/src/components/inputs/Toggle.svelte`, `apps/web/src/components/inputs/RingSlider.svelte`,
 `apps/web/src/components/inputs/Switch.svelte`.
-**References:** `/lab/surfaces`, `/lab/inputs`.
+**References:** `/lab/surfaces`, `/lab/ds/choices`, `/lab/ds/slider`.
 
 | Token               | Value                                              | Use                       |
 | ------------------- | -------------------------------------------------- | ------------------------- |
@@ -257,6 +257,10 @@ implemented 2026-11-03.
   and chroma by 5.
 - The elevation steps are the surface roles and `--color-backdrop` is the scrim role;
   see [Colour](#colour).
+### Toggle and switch
+
+**Reference:** `/lab/ds/choices`.
+
 - `Toggle` takes `options`, a bindable `value` and a group `label`; `compact` sets
   8px side padding and `stretch` fills the width. Native radios give arrow keys.
   `disabledOptions` keeps unavailable options visible, disables their native
@@ -265,10 +269,7 @@ implemented 2026-11-03.
   silently change its value. An optional `optionSuffix` snippet receives the
   option label and supplies supporting content; it leaves the native radio's
   accessible name intact. The Hangar's ship chooser uses this control.
-  `/lab/inputs` demonstrates disabled options and suffix composition.
-- `RingSlider` wraps a native range input (keys, touch and forms unchanged) at a
-  44px touch height; `compact` hides its label line where the host shows it. Its
-  value is announced through the input, not a live region.
+  `/lab/ds/choices` demonstrates disabled options and suffix composition.
 - Use `Switch` for enabling or disabling one setting, including Playground,
   Ion stabilizers and Linked engines. Use `Toggle` to choose one value from a
   set, such as a ship or Plan/View; two labels alone do not make a binary setting
@@ -282,7 +283,7 @@ implemented 2026-11-03.
   explicit `OFF` and `ON` states. The selected marker uses `--color-selected`;
   its text uses `--color-on-brand`. Focus, hover, disabled and reduced-motion states
   use the shared control foundations.
-- `/lab/inputs` demonstrates the switch in off, on and disabled states. The Hangar
+- `/lab/ds/choices` demonstrates the switch in off, on and disabled states. The Hangar
   uses it for Playground, Ion stabilizers and Linked engines.
 - The toggle is one button-shaped control split into equal parts: cut corners
   outside, a straight split inside, the selected part filled lime, the others on
@@ -292,8 +293,16 @@ implemented 2026-11-03.
   Each segment lays out its name and supporting facts with wrapping inline flex.
   `stretch` fills the host width with equal segments. Facts use caption text,
   muted when unselected and on-brand when selected. Native radio names remain
-  the option labels; facts are accessible descriptions. `/lab/inputs` demonstrates
+  the option labels; facts are accessible descriptions. `/lab/ds/choices` demonstrates
   this variant with ship slot counts and chassis mass; the Hangar consumes it.
+
+### Ring slider
+
+**Reference:** `/lab/ds/slider`.
+
+- `RingSlider` wraps a native range input (keys, touch and forms unchanged) at a
+  44px touch height; `compact` hides its label line where the host shows it. Its
+  value is announced through the input, not a live region.
 - The ring slider is a faint 2px track, lime to the value, and a lime ring knob;
   label and value stay neutral, and the unfilled track takes the same tint on hover.
 - Lime marks the selection and the knob; hover borrows it at low strength. Data and
@@ -365,11 +374,11 @@ arrangement, actions and lighting rules belong to the
 - Markings are `--color-text` in the UI type family; Android green stays
   reserved for the world HUD, the arrival countdown and title-screen
   information.
-- `apps/web/src/components/inputs/ThrustPads.svelte` draws one gutter's
+- `apps/web/src/components/controls/ThrustPads.svelte` draws one gutter's
   assembly: its `side`, the pads to light, and pointer presses reported per pad.
   Drawing and hit-testing share one geometry, so what lights is what was
   touched.
-- `/lab/inputs` demonstrates both sides in every lit state (none, `L`, `R`,
+- `/lab/controls` demonstrates both sides in every lit state (none, `L`, `R`,
   `LR`, `LF`, `RF`) over a starfield, and lets a pointer press them.
 
 ## Surfaces and layers

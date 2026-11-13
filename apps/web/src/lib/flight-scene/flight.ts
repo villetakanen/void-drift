@@ -1,4 +1,5 @@
 import {
+  buildStats,
   type Loadout,
   type PartId,
   SALVAGE,
@@ -176,6 +177,13 @@ export class FlightRun {
       fire: false,
     });
     this.tick++;
+    for (const impulse of this.doc.impulses) {
+      if (impulse.tick !== this.tick) continue;
+      const delta =
+        impulse.backwardMomentum / buildStats(this.doc.loadout).mass;
+      this.sim.ship.vel.x -= Math.cos(this.sim.ship.rotation) * delta;
+      this.sim.ship.vel.y -= Math.sin(this.sim.ship.rotation) * delta;
+    }
     this.silence();
     return wraps !== this.sim.wraps;
   }

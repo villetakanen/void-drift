@@ -33,6 +33,22 @@ an agent-supplied document; the starter is `STARTER_FLIGHT_SCENE` in
 | `follow`  | `{near, far}` zoom of the two follow views, positive with `near < far`; defaults 1.6 and 4.                      |
 | `opening` | `{burn, view, tick}`: what is shown on opening; defaults `course`, `follow`, 180. The tick lies within the burn. |
 
+### Staged impulses
+
+A document may supply `impulses`, default empty: up to sixteen strict objects
+with `tick` (an integer from 1 through the burn's final tick) and finite,
+nonnegative `backwardMomentum`. At the named post-step tick boundary, the
+instrument subtracts momentum divided by the assembled ship's production mass
+along its current forward axis. Rotation and angular velocity are unchanged.
+Events at the same tick add. This is an explicitly staged experiment condition,
+not a production weapon, spending rule or change to gravity/friction.
+
+Drawing never applies impulses. Backward seek or restart reconstructs the flight,
+so each event occurs once in that replay and never accumulates from inspection.
+An absent or empty list retains the original flight. Configured study light may
+place an active eruption on LFX and reduced emission history on FX; the shared
+surface still owns world-space decay. This does not select a projector recipe.
+
 The default zoom and held values are working values, not tuned ones.
 
 ### Engine

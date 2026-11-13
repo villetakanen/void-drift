@@ -10,10 +10,26 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
   {
+    slug: "venus-2026-11-13",
+    title: "Venus-like planets",
+    status: "open",
+    phase: "scope",
+    question:
+      "What cloud, light and motion treatment gives a Venus-like planet a dense, enveloped character beside Mercury, while keeping its body readable at flight scale?",
+  },
+  {
+    slug: "mercury-2026-11-12",
+    title: "Rock planets in the charging field · v0.1",
+    status: "open",
+    phase: "scope",
+    question:
+      "What visual language makes airless rock planets of different sizes feel like barren worlds exposed to a nearby star, while keeping their surfaces and boundaries readable inside its charging field?",
+  },
+  {
     slug: "plasma-projector-2026-11-11",
     title: "Plasma Projector",
-    status: "open",
-    phase: "problem",
+    status: "stopped",
+    phase: "exploration",
     question:
       "How should a plasma projector gather and release a close-range burst so that approaching, devastating a target and escaping becomes a distinct flying manoeuvre?",
   },

@@ -1,0 +1,122 @@
+{
+  "retrieved": "2026-11-12",
+  "treatment": "Reduced full frames, no crops or recolouring; retained for attributed visual commentary, not game assets.",
+  "references": [
+    {
+      "id": "sc2-mercury",
+      "title": "Star Control II · Mercury’s surface",
+      "year": "1992 game · UQM v0.2 capture",
+      "credit": "Toys for Bob / Accolade; port capture from The Ur-Quan Masters project",
+      "source": "https://sc2.sourceforge.net/screenshots/mercury.php",
+      "original": "https://sc2.sourceforge.net/screenshots/mercury.jpg",
+      "alt": "Orange-red Mercury terrain above a yellow cratered surface map in The Ur-Quan Masters.",
+      "observation": "Warm colour and crater marks make a hostile surface immediately distinct. The terrain fills the view; it does not have to describe a round body.",
+      "implication": "Try a restrained set of crater and terrain marks for material identity. This image cannot tell us how those marks survive on a small globe, and its orange palette does not establish what Mercury must look like.",
+      "sourceDimensions": [640, 480],
+      "width": 320,
+      "height": 240,
+      "image": "/studies/mercury-2026-11-12/sc2-mercury.webp"
+    },
+    {
+      "id": "escape-velocity",
+      "title": "Escape Velocity · a planet during flight",
+      "year": "1996 Macintosh game · modern emulator capture",
+      "credit": "Matt Burch / Ambrosia Software; capture from Macemu",
+      "source": "https://macemu.com/run/escape-velocity/",
+      "original": "https://macemu.com/run/escape-velocity/screenshot.png",
+      "alt": "A small shaded blue-green planet, ships and grey asteroids against black space in Escape Velocity.",
+      "observation": "The planet remains a compact circle beside ships and asteroids. A broad light-to-dark change gives it volume; small colour flecks sit inside that larger structure.",
+      "implication": "Establish the globe and its light before adding fine relief. Blue-green colour suggests a different material from our bare rock; borrow the hierarchy, not that palette.",
+      "sourceDimensions": [798, 599],
+      "width": 320,
+      "height": 240,
+      "image": "/studies/mercury-2026-11-12/escape-velocity.webp"
+    },
+    {
+      "id": "master-of-orion",
+      "title": "Master of Orion · planet and nearby star",
+      "year": "1993 DOS game · archive capture",
+      "credit": "Simtex / MicroProse; screenshot by OldGames, via OldGames.sk",
+      "source": "https://www.oldgames.sk/en/game/master-of-orion/screenshots",
+      "original": "https://www.oldgames.sk/storage/images/games/strategy/master-of-orion/screenshots/orion-009.png",
+      "alt": "A large green textured planet labelled terran environment, with a yellow star in the upper right.",
+      "observation": "Dense mottling creates surface material within a clean curved edge. The huge foreground planet stays visually distinct from the small luminous star.",
+      "implication": "Compare coarse terrain patches with fine mottling on our small bodies. The portrait scale gives texture much more room than flight does; its Terran label and green surface are context, not an airless-rock reference.",
+      "sourceDimensions": [320, 200],
+      "width": 320,
+      "height": 200,
+      "image": "/studies/mercury-2026-11-12/master-of-orion.webp"
+    },
+    {
+      "id": "frontier",
+      "title": "Frontier: Elite II · broad surface shapes",
+      "year": "1993 game · archive capture; platform unspecified",
+      "credit": "David Braben / Frontier; published by GameTek / Konami; capture via Retrorama",
+      "source": "https://retrorama.fr/en/game/frontier-elite-ii",
+      "original": "https://retrorama.fr/assets/images/screenshots/hd/screenshot-291144.jpg",
+      "alt": "An external ship view over Earth, with broad green and blue surface shapes and a pale layered rim.",
+      "observation": "Large areas of flat colour and a strong curved limb carry the planet without fine terrain texture. The pale layered rim is a conspicuous atmospheric cue.",
+      "implication": "Test a few large surface shapes as an alternative to mottling. For airless rock, examine how much form remains when the atmospheric rim is absent; this Earth view does not demonstrate that result.",
+      "sourceDimensions": [1728, 1080],
+      "width": 320,
+      "height": 200,
+      "image": "/studies/mercury-2026-11-12/frontier.webp"
+    }
+  ],
+  "astronomy": [
+    {
+      "id": "nasa-mercury-colour",
+      "title": "Mercury · one globe, several colour treatments",
+      "year": "MESSENGER / MDIS · 6 October 2008 · PIA11364",
+      "credit": "NASA / Johns Hopkins University Applied Physics Laboratory / Carnegie Institution of Washington",
+      "source": "https://science.nasa.gov/photojournal/mercurys-true-color-is-in-the-eye-of-the-beholder/",
+      "original": "https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia11/pia11364/PIA11364.jpg",
+      "alt": "Four views of Mercury with the same craters and rays: monochrome and three subtly different colour composites.",
+      "observation": "Upper left is monochrome. The other views combine red, green and blue filter measurements with different brightness/contrast adjustments. NASA describes visible colour differences as subtle; none is a perfect unprocessed human-eye view.",
+      "implication": "The same rocky structure survives grey, warm and cooler treatments. Large shaded form, craters and bright rays offer stronger identity cues than a saturated heat palette. Natural colour remains an interpreted measurement.",
+      "sourceDimensions": [1204, 1280],
+      "width": 226,
+      "height": 240,
+      "image": "/studies/mercury-2026-11-12/nasa-mercury-colour.webp"
+    },
+    {
+      "id": "nasa-mercury-enhanced",
+      "title": "Mercury · natural-looking and statistically enhanced",
+      "year": "MESSENGER / MDIS · Thākur crater · PIA11365",
+      "credit": "NASA / Johns Hopkins University Applied Physics Laboratory / Carnegie Institution of Washington",
+      "source": "https://science.nasa.gov/photojournal/exposing-mercurys-colors/",
+      "original": "https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia11/pia11365/PIA11365.jpg",
+      "alt": "The same cratered Mercury terrain shown in muted grey-brown on the left and enhanced blue-yellow colour on the right.",
+      "observation": "Left: three visible bands approximate eye-like colour. Right: statistical comparison of eleven bands, including wavelengths outside human vision, exaggerates compositional differences. Relief stays in place while the colour treatment changes.",
+      "implication": "Algorithmic colour can express differences in rock without inventing new terrain. A vivid palette could be a deliberate game interpretation; the blue and yellow here are not visible glow or temperature.",
+      "sourceDimensions": [640, 420],
+      "width": 320,
+      "height": 210,
+      "image": "/studies/mercury-2026-11-12/nasa-mercury-enhanced.webp"
+    },
+    {
+      "id": "nasa-lunar-colour",
+      "title": "The Moon · rock variation in mapped colour",
+      "year": "Lunar Reconnaissance Orbiter / LROC · 2010 · PIA13517",
+      "credit": "NASA / GSFC / Arizona State University",
+      "source": "https://science.nasa.gov/photojournal/color-of-the-moon/",
+      "original": "https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia13/pia13517/PIA13517.jpg",
+      "alt": "A lunar mosaic with dark plains, bright crater rays and subdued brown-blue areas, interrupted by black data gaps.",
+      "observation": "This is a false-colour composite: ultraviolet 320 nm is mapped to blue, 415 nm to green and 689 nm to red. Iron and titanium variations influence the mapped differences. Black seams and blocks are gaps in this mosaic, not terrain.",
+      "implication": "Airless rock has broad material regions as well as craters. Use the Moon as an airless-body comparison, not as a planet or evidence of near-star heating; compositional colour need not look like atmosphere.",
+      "sourceDimensions": [800, 800],
+      "width": 240,
+      "height": 240,
+      "image": "/studies/mercury-2026-11-12/nasa-lunar-colour.webp"
+    }
+  ],
+  "scaleReference": {
+    "source": "https://www.nasa.gov/image-article/colors-of-innermost-planet-mercury/",
+    "original": "https://www.nasa.gov/wp-content/uploads/2023/03/729223main_728322main_messenger_orbit_image20130218_2_full_full_full.jpg",
+    "credit": "NASA / Johns Hopkins University Applied Physics Laboratory / Carnegie Institution of Washington",
+    "sourceDimensions": [1041, 586],
+    "image": "/studies/mercury-2026-11-12/nasa-mercury-whole.webp",
+    "processing": "NASA enhanced colour; retained full frame reduced to 320px, without recolouring or sharpening.",
+    "retrieved": "2026-11-12"
+  }
+}

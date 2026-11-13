@@ -21,6 +21,7 @@ import { version } from "../../package.json";
 import { LANDING_HINTS } from "../data/landing-hints";
 import { isNarrowerThanMinRatio } from "../lib/game-screen";
 import Logo from "./Logo.svelte";
+import PlaygroundStatus from "./PlaygroundStatus.svelte";
 
 let {
   onStart,
@@ -173,14 +174,13 @@ onMount(() => {
           aria-hidden="true"
         ></canvas>
       </section>
-      {#if blockedReason}
-        <p class="playground-status" role="status">
-          UNSANCTIONED BUILD<br>PLAYGROUND REQUIRED
-        </p>
-      {:else if experimental === "On"}
-        <p class="playground-status" role="status">
-          PLAYGROUND ACTIVE<br>UNRANKED PLAY
-        </p>
+      {#if blockedReason || experimental === "On"}
+        <div class="playground-status">
+          <PlaygroundStatus
+            active={experimental === "On"}
+            blocked={Boolean(blockedReason)}
+          />
+        </div>
       {/if}
     </div>
     <aside class="hint" aria-label="Title-screen hints">
@@ -249,10 +249,6 @@ onMount(() => {
   max-width: calc(100vw - var(--spacing-xl));
   margin: 0;
   transform: translateX(-50%);
-  color: var(--color-red);
-  font: var(--font-size-caption) var(--font-family-ui);
-  letter-spacing: var(--tracking-eyebrow);
-  line-height: var(--line-height-ui);
   text-align: center;
   pointer-events: none;
 }

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 280">
+  <title>Plasma projector structure reference</title>
+  <rect width="640" height="280" fill="#10101b" />
+  <g transform="translate(170 140) scale(1.7)">
+    <path d="M -50,-12 -12,-5 0,0 -12,5 -50,12 -40,0 Z" fill="#99b8c8" />
+    <path
+      d="M 8,-16 Q 47,-66 133,-72 L 117,-49 148,-47 111,-31 Q 62,-24 27,-6 Z M 8,16 Q 47,66 133,72 L 117,49 148,47 111,31 Q 62,24 27,6 Z"
+      transform="scale(1.35 1)"
+      fill="#d98934"
+      opacity=".65"
+    />
+    <path
+      d="M 0,-12 24,-25 44,-23 55,-35 77,-26 91,-30 108,-14 98,0 111,17 86,23 72,35 51,26 30,29 0,12 Z"
+      fill="#fff0c7"
+    />
+  </g>
+</svg>

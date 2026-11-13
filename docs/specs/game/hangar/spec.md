@@ -33,6 +33,8 @@ Earning and buying parts is the intended direction for later. During alpha,
 - **Interface.** The opening uses the shared `Logo`, `Switch` for the binary Playground setting, and `Tabs`
   for ship workspaces. Plan/View uses `Toggle`; controls and
   visual tokens follow the [design system](../../factory/design-system/spec.md).
+  Parts and flight-estimate panes use the shared `cut-surface` with large
+  corner cuts and elevation-1 fill; the shared surface owns their edges.
 
 ### Rules
 
@@ -60,7 +62,8 @@ Earning and buying parts is the intended direction for later. During alpha,
   A linked engine pair is one choice, made on its primary slot; the other
   slot shows that it is linked. A change applies at once and touches only that
   slot or pair.
-- **Part chooser.** Each compatible part is a 300-pixel card owned by
+- **Part chooser.** The selected slot name leads directly into the choices,
+  with no helper paragraph between them. Each compatible part is a 300-pixel card owned by
   `components/hangar/PartCard.svelte`: a small unframed drawing at top left,
   name and two lines of prose beside it, and one bottom line of up to four
   icon-and-number figures, mass first. Figures are 12 pixels, inset 16 pixels
@@ -85,6 +88,13 @@ Earning and buying parts is the intended direction for later. During alpha,
 - **Plan and View.** Plan shows the slots, what occupies them, what fits and
   which are linked. View shows the ship as it flies, with no markings. Switching
   keeps the fitting and the selection, and parts can be fitted in both.
+  Fitted parts retain the same size relative to the hull in both modes;
+  Plan does not shrink them to fit inside slot markers.
+  Slot outlines, selection brackets and labels draw above all fitted parts.
+  Linked-pair crossbars use the chassis's authored `slotLinkLines` positions,
+  in ship-local forward coordinates, keyed by the secondary mount. Drawing and
+  Hangar framing use the same `buildSlotLinks` paths. These values only route
+  the schematic; they do not move mounts or change fitting coupling.
 - **Systems.** The stabilizer and linked-engines choices of the
   [ship](../ships/spec.md) are made here, per ship.
 - **Estimates.** The Hangar shows the assembled ship's figures and says under
@@ -98,8 +108,9 @@ Earning and buying parts is the intended direction for later. During alpha,
 - **Playground.** The Playground control is the only place the setting
   changes. What it locks, marks and blocks is owned by
   [Playground](../experimental/spec.md).
-- **Launch context.** With Playground On, the launch row says “Playground ·
-  Scoring off”; with Off this notice is absent. This replaces the engine-key
+- **Launch context.** With Playground On, the launch row uses the title screen's
+  shared red `PlaygroundStatus`: “PLAYGROUND ACTIVE” and “UNRANKED PLAY” on
+  separate lines; with Off this notice is absent. This replaces the engine-key
   explanation beside the flight actions. The current sticky launch-row behavior,
   including its overlap with scrolling content, is retained.
 - **Save status.** Loading, recovery and unavailable-storage messages appear in

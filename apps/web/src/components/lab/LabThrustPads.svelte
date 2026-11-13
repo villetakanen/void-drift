@@ -9,11 +9,12 @@ import {
   type ThrustPad,
 } from "@void-drift/core";
 import { GAME_GUTTER_PX, GAME_HEIGHT } from "../../lib/game-screen";
-import ThrustPads from "../inputs/ThrustPads.svelte";
+import ThrustPads from "../controls/ThrustPads.svelte";
 import Toggle from "../inputs/Toggle.svelte";
 
 // Both gutters' pads over the seeded starfield: a selector shows each lit
 // state, and live presses resolve through the real input rules.
+let { label = "Flight controls" }: { label?: string } = $props();
 const STATES = ["none", "L", "R", "LR", "LF", "RF"] as const;
 let shown = $state<string>("none");
 let pointers = $state<Record<number, ThrustPad>>({});
@@ -61,7 +62,7 @@ $effect(() => {
 });
 </script>
 
-<section aria-labelledby="thrust-pads-heading">
+<section aria-labelledby="thrust-pads-heading" aria-label={label}>
   <h2 id="thrust-pads-heading">Thrust pads</h2>
   <p>
     Each side gutter holds one assembly: an upper turn pad and a burn pad nested

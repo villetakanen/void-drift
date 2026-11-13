@@ -4,6 +4,12 @@
     "falloff": "inverse-square",
     "cutoff": 50,
     "sunMass": 5250,
-    "planetMass": { "rock": 2250, "gas": 3500, "moon": 1450 }
+    "planetMass": {
+      "rock": 2250,
+      "gas": 3500,
+      "moon": 1450,
+      "venus": 2844.850580940663
+    },
+    "practicePlanetMass": { "moon": 870 }
   }
 }

@@ -18,9 +18,9 @@ scores do not depend on how the player flew.
   simulation's `InputState` (`leftThruster`, `rightThruster`, `fire`).
 - Which engines an action fires depends on the chassis, stabilizers and linked
   engines; `packages/mode-a/src/lib/build-flight.ts` owns that mapping.
-- The thrust-pad component (built in the Lab, used in
-  `apps/web/src/components/FlightDeck.svelte`) draws the pads in the side
-  gutters and turns pointer positions into pad presses.
+- `apps/web/src/components/controls/ThrustPads.svelte` draws the pads in the
+  side gutters and turns pointer positions into pad presses. `/lab/controls`
+  demonstrates both assemblies over the production starfield.
 - [Game screen](../game-screen/spec.md) owns the gutters, gesture containment,
   focus, and clearing input when flight is blocked or paused. This contract owns
   the actions, how input resolves to them, and the pads' arrangement and

@@ -1,0 +1,364 @@
+---
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+---
+
+<StudyLayout>
+  <section>
+    <h1>Rock planets v0.1 — question test and reference brief</h1>
+    <p>
+      12 November 2026.
+      <a href="/lab/studies/mercury-2026-11-12">Study opening</a>.
+    </p>
+    <h2>Current question test · rerun on 12 November 2026</h2>
+    <p>
+      Independent, clean-context, read-only review of the revised section 01,
+      after the mechanics-boundary correction. Prior stamps and findings were
+      not used to derive this result.
+    </p>
+    <p>
+      <strong>One subject — Pass.</strong>
+      One reusable object: airless rock planets across sizes and stellar
+      surroundings. The complete registry has no other open study owning the
+      answer; adjacent mechanics and other kinds are bounded.
+    </p>
+    <p>
+      <strong>Grounded — Pass with findings.</strong>
+      The drawing, principles and mechanical context have code/spec support.
+      Surface, colour, illumination, detail and boundary treatments can be
+      inspected together; comparison conditions remain imprecise.
+    </p>
+    <p>
+      <strong>Consequence — Pass.</strong>
+      The shared rock-planet drawing changes inside charging fields across
+      modes. Mercury is an application.
+    </p>
+    <h3>Findings and responses</h3>
+    <ol>
+      <li>
+        Comparison conditions were unspecified: “a production star” does not
+        identify its field profile or the physical-size/viewing-scale bounds.
+        Response: section 01 now requires each comparison to state its star
+        profile, radii and camera scale. Initial exploration will use practice
+        G7 and the current roster’s radii 18, 30 and 45 at matched camera
+        scales; exact views must be recorded with the examples. These are
+        starting fixtures, not family limits or accepted tuning.
+      </li>
+      <li>
+        The opening substantially exceeded its normal 150–250-word editing
+        target, carrying scope management, lore and delivery detail. Response:
+        it was shortened; the home-system lore remains recorded below rather
+        than repeated in full. These editorial corrections were not
+        independently tested again.
+      </li>
+    </ol>
+    <p>
+      No additional finding on the mechanics boundary: section 01 treats
+      existing motion, gravity and contact as context, leaves size–mass
+      unresolved and bounds mechanical follow-up. Code support does not freeze
+      current tuning.
+    </p>
+    <h3>Evidence and limits</h3>
+    <p>
+      Checked the complete study registry and study contract;
+      packages/core/src/lib/assets/planet.ts (body and outline),
+      packages/core/src/lib/physics/Physics.ts (orbit, gravity and contact),
+      packages/core/src/lib/entities/Renderer.ts (orbit/influence treatments);
+      docs/design.md (procedural art and readability);
+      docs/specs/game/world/planets/spec.md (reopened flat-disc presentation),
+      gravity-field/spec.md and star/spec.md (mechanics and varying field
+      profiles); docs/specs/game/test-flight/spec.md (fixed practice system);
+      and NASA’s linked Mercury facts (rock, craters and thin exosphere).
+    </p>
+    <p>
+      Not checked: browser rendering, keyboard/1280px presentation, gameplay
+      feel, proposed visuals, reference-gallery quality, feasibility,
+      implementation scope or design acceptance. Parts 02–04 remain unfilled;
+      the whole-study rubric was not applied. The reviewer ran no tests and
+      edited no files.
+    </p>
+    <h2>Boundary correction after review</h2>
+    <p>
+      The family-level review verified that existing mechanics had repository
+      support; it did not establish a designer decision to freeze their details.
+      Section 01 previously treated current gravity, collision, orbit and
+      charging rules as fixed. That was too broad. Orbits, contact and
+      gravitational pull now supply starting context. Body size does not settle
+      mass, and orbit HUD colour is open where it affects the visual result.
+      Current numbers can make comparisons reproducible without becoming
+      accepted tuning.
+    </p>
+    <p>
+      The subject remains the airless rock planet inside a charging field.
+      Mechanical questions arising from an example must be named and bounded
+      before experiments change them; they do not require a general mechanics
+      redesign within this study. No production constants or contracts were
+      changed by this correction. The question wording is unchanged and the
+      correction was not independently reviewed again.
+    </p>
+    <h2>Earlier framing review — superseded</h2>
+    <p>
+      The Mercury-only opening received One subject — Pass, Grounded — Pass with
+      findings, and Consequence — Pass. That review confirmed the current
+      innermost body’s placement, distinguished supplied lore from
+      implementation, and identified stale claims in the planet spec. Its narrow
+      subject failed to capture the intended reusable planet language; its
+      stamps do not apply to the revised question. The existing Moon’s radius
+      and orbit are one use case, not constraints on all examples.
+    </p>
+    <h2 id="references">1990s games that depicted planets</h2>
+    <p>
+      This survey identifies games with visible planets, rather than only named
+      worlds in their fiction. The descriptions distinguish combat bodies,
+      system views, planet portraits and landable worlds. They establish a
+      reference pool. Selected images and visual commentary are now in
+      <a href="/lab/studies/mercury-2026-11-12#02-1"
+        >02.1 / Game-art references</a
+      >;
+      <a href="/lab/studies/mercury-2026-11-12#02-2"
+        >02.2 / Astronomical references</a
+      >
+      adds NASA images with their colour methods identified.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Game / release</th>
+          <th>Planet depiction</th>
+          <th>Source</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Starflight / Genesis version, 1991</td>
+          <td>
+            Orbital exploration and surface landing; a 1990s version of a 1986
+            game.
+          </td>
+          <td>
+            <a
+              href="https://gamefaqs.gamespot.com/genesis/586489-starflight/faqs/7072"
+              >Version-specific guide</a
+            >
+          </td>
+        </tr>
+        <tr>
+          <td>Star Control II, 1992</td>
+          <td>
+            Super Melee combat planets, system bodies and planetary inspection.
+          </td>
+          <td>
+            <a href="https://wiki.uqm.stack.nl/Star_Control_II"
+              >Game reference</a
+            >
+          </td>
+        </tr>
+        <tr>
+          <td>Master of Orion, 1993</td>
+          <td>
+            Planet portraits and distinct environments including barren, dead
+            and inferno.
+          </td>
+          <td>
+            <a
+              href="https://drwjf.github.io/ad3/references/Master_of_Orion_1993_Manual_EN.pdf"
+              >Original manual</a
+            >
+          </td>
+        </tr>
+        <tr>
+          <td>Frontier: Elite II, 1993</td>
+          <td>Solid 3D planets approached from space and landed on.</td>
+          <td>
+            <a href="https://en.wikipedia.org/wiki/Frontier%3A_Elite_II"
+              >Game overview</a
+            >
+          </td>
+        </tr>
+        <tr>
+          <td>Ascendancy, 1995</td>
+          <td>
+            Planet sprites in navigable system views and separate surface
+            management.
+          </td>
+          <td>
+            <a href="https://forceforgood.co.uk/strategy/ascendancy/"
+              >Illustrated review</a
+            >
+          </td>
+        </tr>
+        <tr>
+          <td>Master of Orion II, 1996</td>
+          <td>
+            Multiple planets per system, planet pictures and colony views;
+            barren rock is an explicit environment.
+          </td>
+          <td>
+            <a
+              href="https://device.report/m/10c6fa2556c2241e320074ec5681b9755caccc87749e24e5a1e301d1be60c9f0.pdf"
+              >Original manual</a
+            >
+          </td>
+        </tr>
+        <tr>
+          <td>Escape Velocity, 1996</td>
+          <td>Planet bodies in top-down flight and landing destinations.</td>
+          <td>
+            <a href="https://www.macintoshrepository.org/6700-escape-velocity"
+              >Game and screenshots</a
+            >
+          </td>
+        </tr>
+        <tr>
+          <td>Imperium Galactica, 1997</td>
+          <td>Planetary colonies and surface construction views.</td>
+          <td>
+            <a href="https://www.mobygames.com/game/280/imperium-galactica/"
+              >Game overview</a
+            >
+          </td>
+        </tr>
+        <tr>
+          <td>Star Trek: Birth of the Federation, 1999</td>
+          <td>
+            Small system-view planets with classes and terraforming states.
+          </td>
+          <td>
+            <a
+              href="https://gaming.trekcore.com/birthofthefederation/downloads/tutorial.pdf"
+              >Original tutorial</a
+            >
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      For this study, the strongest initial comparisons are Star Control II’s
+      combat planet and Escape Velocity’s flight bodies for gameplay-scale
+      reading, plus Master of Orion I/II for environmental identity. This is a
+      relevance judgment, not a selected art direction. Frontier supplies a
+      contrasting solid-3D approach; colony surface views are less direct
+      references for a whole planet seen during flight.
+    </p>
+    <h3>Supporting reference notes</h3>
+    <dl>
+      <dt>
+        <a href="https://science.nasa.gov/mercury/facts/"
+          >NASA: Mercury facts</a
+        >
+      </dt>
+      <dd>
+        Physical anchor: grey-brown rock, impact craters, extreme day/night
+        temperatures and a thin exosphere. Inference for exploration: test harsh
+        directional light and restrained relief before using lava as shorthand
+        for proximity. The charging field is a game mechanic, not a scientific
+        boundary around the real Sun.
+      </dd>
+      <dt>
+        <a
+          href="https://science.nasa.gov/photojournal/mercurys-true-color-is-in-the-eye-of-the-beholder/"
+          >NASA: Mercury’s “True” Color</a
+        >
+      </dt>
+      <dd>
+        Distinguishes subtle visible colour from enhanced-colour imagery. Useful
+        for separating surface material from an artistic heat palette; it does
+        not prescribe the game’s palette.
+      </dd>
+      <dt>
+        <a href="https://sc2.sourceforge.net/screenshots.php"
+          >Star Control II / The Ur-Quan Masters: project screenshots</a
+        >
+      </dt>
+      <dd>
+        <a href="https://wiki.uqm.stack.nl/Star_Control_II"
+          >Star Control II (1992)</a
+        >
+        supplies both the Super Melee combat planet and larger planetary
+        inspection views. The combat planet is the direct reference for a body
+        seen during flight; inspection views offer a separate surface-detail
+        comparison. The Ur-Quan Masters is a later port, so its screenshot
+        versions must be distinguished from original DOS/3DO captures. Images
+        are considered in section 02.1 through the Mercury surface capture.
+      </dd>
+      <dt>
+        <a
+          href="https://drwjf.github.io/ad3/references/Master_of_Orion_1993_Manual_EN.pdf"
+          >Master of Orion (1993): original manual</a
+        >
+      </dt>
+      <dd>
+        Printed page 12 separates barren, dead and inferno environments;
+        barrenness and extreme heat are not interchangeable categories.
+        Comparison target: how planet portraits communicate material and
+        environment with limited colour. Manual text was inspected; portrait is
+        compared in 02.1 through a Terran portrait sourced from OldGames.sk.
+      </dd>
+      <dt>
+        <a
+          href="https://gaming.trekcore.com/birthofthefederation/downloads/tutorial.pdf"
+          >Star Trek: Birth of the Federation (1999): tutorial</a
+        >
+      </dt>
+      <dd>
+        Printed pages 5–6 describe the small planet icons and their class
+        labels. Comparison target: what the body communicates unaided and what
+        relies on adjacent text. Tutorial text was inspected; screenshot
+        rendering was unavailable in the research tool, so no visual conclusion
+        is recorded. This is one concrete Star Trek reference, not an assumed
+        identification of every title mentioned in the brief.
+      </dd>
+    </dl>
+    <p>
+      These sources start the comparison set. Neither their art nor NASA
+      photographs become shipped assets. External reference research does not
+      relax the current procedural-art direction.
+    </p>
+    <h2>Current implementation evidence</h2>
+    <p>
+      packages/core/src/lib/assets/planet.ts draws the disc, outline and
+      optional ring. packages/core/src/lib/config.ts supplies a radius-18 rock
+      named “The Moon” at orbit radius 300, the innermost of three configured
+      bodies; there is no Mercury identity yet. initializePlanets in
+      packages/core/src/lib/physics/planets.ts supplies the roster shared by
+      modes. packages/mode-a/src/lib/simulation.ts fixes the practice phase and
+      assigns “G7, Sun”. Mercury is intended for practice; the shared roster
+      must not accidentally rename the body in every mode. The visual language,
+      however, is intended for rock planets in charging fields across modes and
+      sizes; the current roster does not bound the design.
+    </p>
+    <p>
+      docs/design.md owns procedural art and readability. The planet feature
+      spec (docs/specs/game/world/planets/spec.md) describes the existing flat
+      style but includes historical random-spawn claims that differ from the
+      deterministic production initializer. It supplies no authority for a new
+      surface design. The virtual-home-system lore and Mercury identity are
+      supplied intent for this cycle, not claims that those features already
+      exist in play.
+    </p>
+  </section>
+</StudyLayout>
+
+<style>
+table {
+  border-collapse: collapse;
+  max-width: 100%;
+}
+th,
+td {
+  text-align: left;
+  vertical-align: top;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+}
+dl {
+  max-width: 65ch;
+  line-height: 1.65;
+}
+dt {
+  margin-top: var(--spacing-lg);
+}
+dd {
+  margin: var(--spacing-sm) 0 0;
+  color: var(--color-text-muted);
+}
+</style>

@@ -18,6 +18,18 @@ export const FlightSceneDocumentSchema = z
   .object({
     /** One game loadout; it should carry a forward weapon to have something to show. */
     loadout: gameSchema<Loadout>(LoadoutSchema),
+    /** Staged study impulses, applied once at a tick boundary, never during drawing. */
+    impulses: z
+      .array(
+        z
+          .object({
+            tick: z.number().int().min(1).max(TOTAL_TICKS),
+            backwardMomentum: z.number().finite().nonnegative(),
+          })
+          .strict(),
+      )
+      .max(16)
+      .default([]),
     /** Where the ship starts, at rest; absent means where a run starts. */
     start: z
       .object({
