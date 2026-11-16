@@ -1,6 +1,7 @@
 # Practice planets: render model remediation
 
-Status: plan, 2026-11-16. Nothing here is applied. It follows a review of how
+Status: plan, 2026-11-16. Step 3 is now a reversible trial in Practice; the other
+steps are not applied. It follows a review of how
 Practice Mercury and Venus are drawn against the render model in
 `docs/specs/game/render/`. The planets stay. This plan brings them inside the model
 so that a later planet can be added as data.
@@ -277,6 +278,44 @@ Proposed, not decided:
 
 - Rotation is drawn with the browser's image drawing, as step 3 tries. This
   replaces the earlier baked-frames proposal, which is kept only as the fallback.
+
+## Step 3 trial, 2026-11-16
+
+The Practice deck opts Mercury and Venus into core's `StripSphericalSurface`.
+The previous projector remains available; study consumers keep their previous
+implementation. No Lab page was added or changed. This is the rotation trial
+only, without culling, new body passes, HUD changes or asset migration.
+
+The candidate keeps the 192px surface buffer and uses 64 column image draws,
+then 192 row image draws per changing phase (256 total, rather than the estimated
+150). Latitude resampling and strip geometry are prepared once. It uses the
+accepted atlases, simulation phase and existing World/LFX painters.
+
+Local headless Chromium measurement, 30 warm-up and 240 measured redraws per case;
+script time for Mercury projection plus drawing to the stated destination size:
+
+| Diameter | Existing per-pixel | Native image draws |
+| -------- | ------------------ | ------------------ |
+| 54px     | 2.07 ms            | 1.00 ms            |
+| 323px    | 2.45 ms            | 0.90 ms            |
+| 800px    | 1.98 ms            | 0.90 ms            |
+
+A separate production-pass comparison on a 1920×1080 canvas measured the planets
+pass at 5.71 / 3.51 ms (existing / candidate) at 1 px/u, and 5.05 / 2.05 ms at
+3.2 px/u. Runs varied; these are same-run comparisons, not directly comparable to
+the original review's timings or a guarantee of browser raster/compositing cost.
+
+Five evenly spaced phases of the accepted Mercury atlas were visually compared
+at 323px: the mineral arrangement and turn direction are retained, with a slightly
+different sampled limb. A transparent test map retained both clear and visible
+areas, and a full-turn return reproduced the same image. Practice was launched
+through the Hangar with no browser errors; pause held ticks and the World image
+unchanged, and Resume advanced ticks again. TypeScript and the frame-pass tests
+passed. The broader Svelte check still reports two implicit-any errors and 34
+warnings in four untouched rock-study components.
+
+This remains a trial for review in actual Practice. iPad cost and the sustained
+raster/compositing cost are unmeasured; offscreen culling is still separate work.
 
 ## Not checked by the review
 
