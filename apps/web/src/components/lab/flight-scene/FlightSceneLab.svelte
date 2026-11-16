@@ -29,6 +29,15 @@ const LABELS: Record<TargetMode, string> = {
   held: "Held ahead",
 };
 let sceneKind = $state("Wrecks");
+let starColour = $state("Stock");
+const starAppearance = $derived(
+  starColour === "Stock"
+    ? undefined
+    : {
+        color: starColour === "Warm" ? "#ff7d24" : "#718fff",
+        glowColor: starColour === "Warm" ? "#ff7d24" : "#718fff",
+      },
+);
 const planetDoc = FlightSceneDocumentSchema.parse({
   loadout: starterLoadout("wasp"),
   planet: { reference: "practice-venus", orbitAngle: 0 },
@@ -73,6 +82,7 @@ const id = $props.id();
     config={activeDoc}
     targets={sceneKind === "Planet" ? "none" : targets}
     {layers}
+    {starAppearance}
     light={lit ? EXAMPLE_LIGHT : undefined}
   >
     {#snippet pane()}
@@ -88,6 +98,16 @@ const id = $props.id();
           production body drawing.
         </p>
       {/if}
+      <p>Star colour · presentation only</p>
+      <Toggle
+        label="Star colour"
+        options={["Stock", "Warm", "Cool"]}
+        bind:value={starColour}
+      />
+      <p>
+        Warm/Cool use the standard star body and glow; gravity, collection,
+        damage, radius and replay are unchanged.
+      </p>
       <p>Targets</p>
       <Toggle
         stretch

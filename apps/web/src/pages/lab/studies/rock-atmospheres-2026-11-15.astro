@@ -190,146 +190,846 @@ const study = studies.find(
         </p>
       </details>
     </details>
-    <h3 id="02-3">02.3 / Three ways to make the rock feel surrounded by air</h3>
-    <p>
-      Compare three atmospheric treatments in the same flight scenario. Limb
-      haze retains the initial silhouette-focused treatment. Thin veil carries
-      more air across the face, softening terrain contrast toward the limb.
-      Layered air combines a denser low layer with a restrained outer haze,
-      testing whether visible depth makes entry easier to anticipate.
-    </p>
-    <p>
-      Impact and 1.45× shadow are the starting conditions. Colour, 10u radial
-      interaction depth, drag, airflow feedback, rotation and B1–B3 burns stay
-      fixed across the treatments. Their differences are visual; none changes
-      where entry occurs or what happens to the ship. The appearance selector is
-      in the burger pane. No treatment is selected as the outcome.
-    </p>
-    <p>
-      Judge approach, entry and exit at flight scale: whether the rock retains
-      its material character, the envelope reads as air, and entry is
-      foreseeable. Use Follow 4× to inspect construction, then return to Follow
-      for the whole planet beside the ship.
-    </p>
-    <p>
-      <strong>Findings · 16 November 2026:</strong>
-      this is a useful comparison that advances the atmosphere design. A
-      stronger shadow, perhaps 1.75×, may still work, but 1.45× remains the
-      agreed baseline. That possibility is not a new selected value.
-    </p>
-    <p>
-      Atmospheric entry is hard to identify when the air has no clearly visible
-      boundary. A thin upper layer is a promising next investigation, not an
-      accepted border treatment. Its appearance should help anticipate the
-      actual interaction boundary.
-    </p>
-    <p>
-      Gas without clouds feels very thin. It has an appealing appearance, but
-      may not provide the atmospheric presence this game needs. Cloud-bearing
-      alternatives are worth comparing while preserving the existing rock's
-      character; neither clouds nor a particular cloud treatment is selected.
-    </p>
-    <figure>
-      <img
-        src="/studies/rock-atmospheres-2026-11-15/02-3-limb-haze-flight-reconstruction.png"
-        alt="Limb haze at flight scale beside the Wasp"
-        width="1280"
-        height="1000"
-        loading="lazy"
-      >
-      <figcaption>
-        02.3 reconstruction · 16 November 2026, before opening 02.4. Impact,
-        Limb haze, shadow 1.45×, B1 at 0.5s, Follow; 1280 × 1000 browser. This
-        retains the baseline conditions, not the earlier observation itself.
-      </figcaption>
-    </figure>
     <details>
-      <summary>02.3 / Reconstructed treatment comparison</summary>
-      {[
-        ["limb-haze", "Limb haze"],
-        ["thin-veil", "Thin veil"],
-        ["layered-air", "Layered air"],
-      ].map(([slug, name]) => (
+      <summary id="02-3">
+        02.3 / Three ways to make the rock feel surrounded by air
+      </summary>
+      <p>
+        Compare three atmospheric treatments in the same flight scenario. Limb
+        haze retains the initial silhouette-focused treatment. Thin veil carries
+        more air across the face, softening terrain contrast toward the limb.
+        Layered air combines a denser low layer with a restrained outer haze,
+        testing whether visible depth makes entry easier to anticipate.
+      </p>
+      <p>
+        Impact and 1.45× shadow are the starting conditions. Colour, 10u radial
+        interaction depth, drag, airflow feedback, rotation and B1–B3 burns stay
+        fixed across the treatments. Their differences are visual; none changes
+        where entry occurs or what happens to the ship. The appearance selector
+        is in the burger pane. No treatment is selected as the outcome.
+      </p>
+      <p>
+        Judge approach, entry and exit at flight scale: whether the rock retains
+        its material character, the envelope reads as air, and entry is
+        foreseeable. Use Follow 4× to inspect construction, then return to
+        Follow for the whole planet beside the ship.
+      </p>
+      <p>
+        <strong>Findings · 16 November 2026:</strong>
+        this is a useful comparison that advances the atmosphere design. A
+        stronger shadow, perhaps 1.75×, may still work, but 1.45× remains the
+        agreed baseline. That possibility is not a new selected value.
+      </p>
+      <p>
+        Atmospheric entry is hard to identify when the air has no clearly
+        visible boundary. A thin upper layer is a promising next investigation,
+        not an accepted border treatment. Its appearance should help anticipate
+        the actual interaction boundary.
+      </p>
+      <p>
+        Gas without clouds feels very thin. It has an appealing appearance, but
+        may not provide the atmospheric presence this game needs. Cloud-bearing
+        alternatives are worth comparing while preserving the existing rock's
+        character; neither clouds nor a particular cloud treatment is selected.
+      </p>
+      <figure>
+        <img
+          src="/studies/rock-atmospheres-2026-11-15/02-3-limb-haze-flight-reconstruction.png"
+          alt="Limb haze at flight scale beside the Wasp"
+          width="1280"
+          height="1000"
+          loading="lazy"
+        >
+        <figcaption>
+          02.3 reconstruction · 16 November 2026, before opening 02.4. Impact,
+          Limb haze, shadow 1.45×, B1 at 0.5s, Follow; 1280 × 1000 browser. This
+          retains the baseline conditions, not the earlier observation itself.
+        </figcaption>
+      </figure>
+      <details>
+        <summary>02.3 / Reconstructed treatment comparison</summary>
+        {[
+          ["limb-haze", "Limb haze"],
+          ["thin-veil", "Thin veil"],
+          ["layered-air", "Layered air"],
+        ].map(([slug, name]) => (
+          <figure>
+            <img
+              src={`/studies/rock-atmospheres-2026-11-15/02-3-${slug}-flight-reconstruction.png`}
+              alt={`${name} at Follow flight scale`}
+              width="1280"
+              height="1000"
+              loading="lazy"
+            />
+            <img
+              src={`/studies/rock-atmospheres-2026-11-15/02-3-${slug}-close-reconstruction.png`}
+              alt={`${name} enlarged at Follow 4×`}
+              width="1280"
+              height="1000"
+              loading="lazy"
+            />
+            <figcaption>
+              {name}: Follow and Follow 4×, same B1 opening and material.
+              Reconstructed 16 November 2026. Stills preserve appearance; they
+              do not establish the earlier motion judgment.
+            </figcaption>
+          </figure>
+        ))}
+      </details>
+    </details>
+    <details>
+      <summary id="02-4">
+        02.4 / An upper extent and something within it
+      </summary>
+      <p>
+        A visible upper layer could make the approaching edge easier to
+        anticipate. Clouds could give the volume substance while openings keep
+        the authored rock visible. These are separate hypotheses: a cloudless
+        upper layer isolates the first, and two kinds of cloud cover test the
+        second against that same edge.
+      </p>
+      <ul>
+        <li>
+          <strong>Limb haze:</strong>
+          the unchanged 02.3 starting reference.
+        </li>
+        <li>
+          <strong>Upper layer:</strong>
+          a thin, softly bounded shell just inside the 10u extent, with the
+          original low haze beneath it. Tests whether a visible edge reads as
+          air or becomes too much like a ring.
+        </li>
+        <li>
+          <strong>Cloud banks:</strong>
+          broken pale masses below that shell, leaving openings onto the rock.
+          Tests substance through local overlap.
+        </li>
+        <li>
+          <strong>Cloud bands:</strong>
+          broader, winding coverage beneath the same shell. Tests whether
+          continuity gives the air more presence or conceals too much terrain.
+        </li>
+      </ul>
+      <p>
+        Impact, 1.45× shadow, the original 31.3s rock turn, 10u depth, 0.8/s
+        drag and B1–B3 remain fixed. Cloud cover is a procedural translucent
+        overlay at 4.2u altitude with a provisional 38s turn; it does not
+        replace the rock material or change flight. Its pattern follows
+        simulation time through pause and seek. All three original materials and
+        the shadow slider remain available. No appearance is selected as the
+        outcome.
+      </p>
+      <p>
+        Compare the approach at 0.30s, entry at about 0.37s, the 0.50s skim and
+        exit by 0.60s in Follow beside the ship. Entry is collision-circle
+        overlap, so the hull reaches the air before the ship centre crosses the
+        visible edge. Follow 4× explains the shell and cloud construction;
+        return to Follow to assess their presence in flight. Stills cannot
+        settle encounter feel.
+      </p>
+      <p>
+        <strong
+          >Round closed · 16 November 2026. Very good, useful
+          comparison.</strong
+        >
+        A visible atmospheric edge is cleaner than haze alone and is the
+        direction to explore further. The current thin line is still naive and
+        its appearance is not accepted. Air must also read over the planet’s
+        face; an envelope visible only outside the rock feels disconnected from
+        it.
+      </p>
+      <p>
+        Stronger rock shadows beneath illuminated air remain a possibility, not
+        a selected lighting value. Light reaching the atmosphere and clouds may
+        explain the missing presence before any shadow increase is needed. 1.45×
+        remains the baseline. Neither cloud pattern is selected.
+      </p>
+      <figure>
+        <img
+          src="/studies/rock-atmospheres-2026-11-15/02-4-designer-observation.png"
+          alt="Designer’s 02.4 observation: pale cloud cover and a thin upper edge around the rock beside the Wasp"
+          width="1260"
+          height="900"
+          loading="lazy"
+        >
+        <figcaption>
+          Designer-supplied 02.4 observation, 16 November 2026. The crop shows
+          the edge and cloud-covered face. The controls are outside the crop;
+          exact material, shadow, burn, instant and view are unverified. It is
+          not the controlled comparison below.
+        </figcaption>
+      </figure>
+      <details>
+        <summary>02.4 / Retained controlled comparison</summary>
+        {["Limb haze", "Upper layer", "Cloud banks", "Cloud bands"].map(
+          (name) => (
+            <figure>
+              <img
+                src={`/studies/rock-atmospheres-2026-11-15/02-4-${name.replaceAll(" ", "-")}-flight-reconstruction.png`}
+                alt={`${name}, Follow flight scale`}
+                width="1280"
+                height="1000"
+                loading="lazy"
+              />
+              <img
+                src={`/studies/rock-atmospheres-2026-11-15/02-4-${name.replaceAll(" ", "-")}-close-reconstruction.png`}
+                alt={`${name}, Follow 4× construction view`}
+                width="1280"
+                height="1000"
+                loading="lazy"
+              />
+              <figcaption>
+                {name}, Impact, shadow 1.45×, B1 at 0.50s; Follow then Follow
+                4×. Reconstructed 16 November 2026 before implementing 02.5, at
+                1280 × 1000. These stills record conditions, not the earlier
+                assessment or motion.
+              </figcaption>
+            </figure>
+          ),
+        )}
+      </details>
+    </details>
+    <details>
+      <summary id="02-5">
+        02.5 / Light the air without lifting the rock’s shadow
+      </summary>
+      <p>
+        The previous composition shades clouds, then applies the rock’s shadow
+        over both terrain and air across the face. That may suppress the
+        separate atmospheric layer. Isolate that overlap before increasing
+        shadow strength: compare the same cloud banks, upper edge and 1.45× rock
+        shadow with three treatments of Sun light.
+      </p>
+      <ul>
+        <li>
+          <strong>02.4 light:</strong>
+          the unchanged reference, with the rock’s light mask also affecting air
+          and clouds over its disc.
+        </li>
+        <li>
+          <strong>Separate air:</strong>
+          apply the same light mask to rock alone; retain the existing
+          Sun-facing colour of air and clouds above it. This tests whether the
+          lighting overlap accounts for the missing layer.
+        </li>
+        <li>
+          <strong>Face scatter:</strong>
+          the same separation plus a restrained projected column of sunlit air
+          across the face. This tests whether visible air between the pilot and
+          terrain is also needed.
+        </li>
+      </ul>
+      <p>
+        Cloud banks are the diagnostic starting example, not an accepted
+        pattern. Upper layer removes clouds for the same comparison; all 02.4
+        appearances remain available in this single instrument. Hold the
+        material and shadow fixed while switching light at the same burn and
+        instant. The original rock materials, rotation, cloud pattern and turn,
+        boundary, depth and drag remain unchanged. Follow judges entry beside
+        the ship; Follow 4× explains the face, terminator and edge before
+        returning to flight scale.
+      </p>
+      <p>
+        This is a study-local Sun-light composition using the shared rock
+        painter, not a production lighting change or a physically based
+        scattering model. In the two proposals the rock’s existing hard-light
+        mask is composed into its own material before the air is drawn, instead
+        of darkening the combined image from LFX. Nearby engine and weapon light
+        reception remains open; this round does not simulate it. Stronger rock
+        shadows and a more natural upper-edge treatment remain subsequent
+        questions once face visibility is understood.
+      </p>
+      <p>
+        <strong>Finding carried into discussion · 16 November 2026:</strong>
+        light cloud banks work substantially better at game scale, but the
+        clouds remain difficult to distinguish from terrain across the face. No
+        one lighting option was identified as accepted. The comparison isolates
+        a lighting overlap, not the adequacy of the cloud material itself.
+      </p>
+      <details>
+        <summary>02.5 / Retained light comparison</summary>
+        {["02.4 light", "Separate air", "Face scatter"].map((name) => (
+          <figure>
+            <img
+              src={`/studies/rock-atmospheres-2026-11-15/02-5-${name.replaceAll(" ", "-")}-flight-reconstruction.png`}
+              alt={`${name}, Cloud banks at Follow flight scale`}
+              width="1280"
+              height="1000"
+              loading="lazy"
+            />
+            <img
+              src={`/studies/rock-atmospheres-2026-11-15/02-5-${name.replaceAll(" ", "-")}-close-reconstruction.png`}
+              alt={`${name}, Cloud banks at Follow 4×`}
+              width="1280"
+              height="1000"
+              loading="lazy"
+            />
+            <figcaption>
+              Impact, Cloud banks, 1.45× shadow, B1 at 0.50s, Follow then Follow
+              4×. Reconstructed 16 November 2026 before 02.7; these captures
+              retain conditions, not the earlier observation itself.
+            </figcaption>
+          </figure>
+        ))}
+      </details>
+    </details>
+    <details>
+      <summary id="02-6">
+        02.6 / Preserve the rock through openings in the clouds
+      </summary>
+      <p>
+        <strong>Design discussion · 16 November 2026.</strong>
+        The scope remains the smallest useful combined problem: a playable
+        atmosphere that feels convincing around the existing rock. A readable
+        encounter and a convincing world must coexist. The body is deliberately
+        small and the air deep enough to fly through; photographic proportions
+        would avoid that gameplay requirement rather than solve it.
+      </p>
+      <p>
+        The authored rock materials are the fixed quality reference. Their
+        appearance is not reopened. Clouds must be able to hide terrain locally;
+        preserving the rock’s identity means leaving sufficient openings, not
+        making every cloud transparent. Thin air can transmit terrain, while
+        substantial cloud masses can obscure it completely. Coverage and opacity
+        are independent: sparse clouds can be opaque, and broad cover can be
+        thin.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Variable</th>
+            <th>Meaning in this study</th>
+            <th>Decision</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Coverage</td>
+            <td>Where clouds occur and where rock is exposed</td>
+            <td>Use openings to preserve rock identity</td>
+          </tr>
+          <tr>
+            <td>Opacity</td>
+            <td>How much terrain is visible through a cloud</td>
+            <td>Allow fully obscuring cloud cores</td>
+          </tr>
+          <tr>
+            <td>Cloud structure</td>
+            <td>Masses, edges, curls and internal detail</td>
+            <td>Current procedural pattern is provisional</td>
+          </tr>
+          <tr>
+            <td>Light and shadow</td>
+            <td>How rock, clouds and gas respond together</td>
+            <td>Distinct materials need distinguishable responses</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        The supplied satellite reference helps explain material separation:
+        recognisable cloud masses and openings distinguish cloud from ground. It
+        does not prescribe white clouds, Earth geography or its lighting. In the
+        study image, pale cloud and pale rock merge across the face; cloud
+        becomes easiest to identify beyond the rock’s silhouette. Lighting
+        improvements alone cannot establish whether the provisional cloud shapes
+        are adequate.
+      </p>
+      <p>
+        A small library of composed cloud textures is a plausible future means
+        of obtaining crisp, intentional structures. Neither its production
+        method nor its size is selected. A single convincing reference could be
+        enough to judge light before building a library. Fully cloud-obscured
+        worlds are a possible extension, not a new requirement for this
+        rock-preserving comparison. Surface replacement and planet taxonomy
+        remain outside scope.
+      </p>
+      <p>
+        Rock, clouds and gas each have colour, texture and light/shadow
+        behaviour; their combination must remain coherent under a shared Sun.
+        Future changes in Sun colour and atmosphere colour will need examination
+        after a stable example exists. World and LFX are rendering tools, not
+        physical material categories: where light and shadow are composed should
+        serve the desired image. Nearby engine and weapon illumination,
+        cloud-cast shadows and a refined atmospheric edge remain unresolved.
+      </p>
+      <p>
+        The next comparison fixes the existing material, cloud pattern, gas,
+        lighting and flight, and separates cloud coverage from opacity. This can
+        establish whether local concealment with clear openings improves the
+        material reading before a new texture changes the shapes as well. It
+        cannot select a final cloud material or lighting architecture.
+      </p>
+    </details>
+    <details>
+      <summary id="02-7">02.7 / Opaque clouds with room for the rock</summary>
+      <p>
+        Compare Sparse / Thin against Sparse / Opaque to isolate transmission
+        through the same cloud footprint. Then compare Sparse / Opaque against
+        Broad / Opaque to isolate the amount of exposed terrain. Broad / Thin
+        completes the comparison. Both coverage proposals use the same
+        underlying cloud field and edge transition; only its coverage threshold
+        changes. Opaque cores fully conceal terrain, while cloud edges retain a
+        soft transition.
+      </p>
+      <p>
+        The opening is Sparse / Opaque. Thin caps opacity at 62%; Opaque reaches
+        100% inside its cores. These describe optical transmission, not a
+        simulated cloud thickness. Sparse and Broad name relative coverage, not
+        measured percentages of the globe. The 02.5 footprint with Thin retains
+        the earlier mask as a reference under the same Separate air lighting.
+      </p>
+      <p>
+        Impact and shadow 1.45× remain the starting reference. Cloud banks,
+        Separate air, the pale cloud colour, 38s cloud turn, original 31.3s rock
+        turn, upper edge, 10u air depth and 0.8/s drag stay fixed across the
+        four comparisons. Separate air is an experimental condition, not an
+        accepted outcome of 02.5. The material and shadow controls remain
+        available for secondary checks; keep them fixed for the primary
+        comparison.
+      </p>
+      <p>
+        Use Follow at approach (0.30s), entry (about 0.37s), skim (0.50s) and
+        exit (0.60s). Inspect cloud cores and openings in Follow 4×, then return
+        to Follow beside the Wasp. This round tests concealment and exposed
+        rock; the procedural shapes and the naive upper line remain provisional.
+      </p>
+      <p>
+        <strong>Accepted quality · 16 November 2026:</strong>
+        opaque cloud masses with openings are a major improvement. The cloud
+        layer reads above the rock while remaining attached to the rotating
+        sphere; exposed terrain retains the body’s identity. The strongest
+        references are 02.5 / Opaque and Sparse / Opaque, under Separate air
+        lighting. Broad opaque cover also improves on the earlier translucent
+        treatment. These qualities are convincing at game and Follow scale,
+        close to useful for a game trial.
+      </p>
+      <p>
+        The visible upper edge makes an encounter foreseeable. Its naive line
+        treatment, cloud texture, colour and detailed lighting are still
+        provisional; enlarged texture weaknesses do not overturn the successful
+        flight-scale reading. This accepts the layered arrangement and local
+        concealment, not production rollout or the end of exploration.
+        <a href="#03">Readiness</a>
+        and <a href="#04">bounded trial scope</a>
+        preserve the usable result while the next round investigates the edge.
+      </p>
+      <details>
+        <summary>02.7 / Retained successful opaque-cloud references</summary>
+        {["02.5", "Sparse"].map((name) => (
+          <figure>
+            <img
+              src={`/studies/rock-atmospheres-2026-11-15/02-7-${name}-Opaque-flight-reconstruction.png`}
+              alt={`${name} coverage with opaque clouds, Follow scale`}
+              width="1280"
+              height="1000"
+              loading="lazy"
+            />
+            <img
+              src={`/studies/rock-atmospheres-2026-11-15/02-7-${name}-Opaque-close-reconstruction.png`}
+              alt={`${name} coverage with opaque clouds, Follow 4×`}
+              width="1280"
+              height="1000"
+              loading="lazy"
+            />
+            <figcaption>
+              {name} / Opaque, Impact, Cloud banks, Separate air, 1.45× shadow,
+              B1 at 0.50s. Follow then Follow 4×, 1280 × 1000. Reconstructed 16
+              November 2026 before 02.8; not a capture of the earlier judgment.
+              Fixed fixture, deterministic cloud field, no random seed; original
+              rock turn 31.3s and cloud turn 38s.
+            </figcaption>
+          </figure>
+        ))}
+      </details>
+    </details>
+    <details>
+      <summary id="02-8">
+        02.8 / Connect the readable edge to the world beneath it
+      </summary>
+      <p>
+        Keep the successful 02.5 / Opaque cloud arrangement fixed and vary only
+        the atmospheric envelope. The boundary must retain its useful promise of
+        entry while feeling connected to the air over the body.
+      </p>
+      <ul>
+        <li><strong>Current line:</strong> the unchanged 02.7 reference.</li>
+        <li>
+          <strong>Soft layer:</strong>
+          the same outer extent and peak, with a wider inward fade. Tests an
+          upper layer instead of a thin contour.
+        </li>
+        <li>
+          <strong>Connected air:</strong>
+          that same upper layer plus a continuous air column toward the cloud
+          layer and over exposed rock. Tests whether filling the visual gap
+          joins the envelope to the body.
+        </li>
+      </ul>
+      <p>
+        Impact, opaque 02.5 cloud coverage, cloud colour and turn, Separate air
+        lighting, 1.45× shadow and rock rotation stay fixed. All proposals stop
+        at the same 10u radial interaction extent; neither drag nor the ship’s
+        path changes. The soft layer extends inward, not into a larger
+        interaction region. Connected air changes gas drawing only; it does not
+        change cloud opacity, texture or lighting.
+      </p>
+      <p>
+        Compare approach at 0.30s, entry around 0.37s, skim at 0.50s and exit by
+        0.60s using the same burn. Follow beside the Wasp is the judgment scale;
+        Follow 4× explains the layer construction. No boundary treatment has
+        been selected. Cloud texture refinement and nearby engine/weapon
+        illumination remain subsequent investigations.
+      </p>
+      <p>
+        <strong>Finding · 16 November 2026:</strong>
+        increasing the apparent gas volume at the rim makes a bubble or solid
+        ball, rather than the intended luminous atmospheric edge. These examples
+        remain useful demonstrations of that distinction. The next investigation
+        changes the source of visible contrast from material opacity to light;
+        it retains the accepted opaque clouds and the requirement for a readable
+        encounter.
+      </p>
+      <details>
+        <summary>02.8 / Retained gas-volume comparison</summary>
+        {["Current line", "Soft layer", "Connected air"].map((name) => (
+          <figure>
+            <img
+              src={`/studies/rock-atmospheres-2026-11-15/02-8-${name.replaceAll(" ", "-")}-flight-reconstruction.png`}
+              alt={`${name} at Follow scale`}
+              width="1280"
+              height="1000"
+              loading="lazy"
+            />
+            <img
+              src={`/studies/rock-atmospheres-2026-11-15/02-8-${name.replaceAll(" ", "-")}-close-reconstruction.png`}
+              alt={`${name} at Follow 4×`}
+              width="1280"
+              height="1000"
+              loading="lazy"
+            />
+            <figcaption>
+              Reconstructed 16 November 2026 before 02.9. Impact, 02.5 / Opaque
+              clouds, Separate air, shadow 1.45×, B1 at 0.50s; Follow then
+              Follow 4× at 1280 × 1000. These retain the examples, not the
+              earlier observation itself.
+            </figcaption>
+          </figure>
+        ))}
+      </details>
+    </details>
+    <h3 id="02-9">02.9 / Reveal the air through light</h3>
+    <details>
+      <summary>02.9 / Supplied horizon-light reference</summary>
+      <figure>
+        <img
+          src="/studies/rock-atmospheres-2026-11-15/02-9-supplied-horizon-reference.jpeg"
+          alt="Supplied ISS and Earth-horizon image, with a blue luminous atmospheric edge"
+          width="2048"
+          height="1363"
+          loading="lazy"
+        >
+        <figcaption>
+          Supplied for this discussion, 16 November 2026. Visual inspiration for
+          a luminous edge; original creator, provenance and depicted light
+          mechanism are unverified. Not a study result.
+        </figcaption>
+      </figure>
+    </details>
+    <p>
+      The supplied ISS/horizon image suggests a luminous blue edge above visible
+      cloud and ground. Its useful quality is light revealing an atmosphere
+      without making its upper extent look like a material membrane. The image’s
+      provenance and physical light mechanism are not established here; it is an
+      appearance reference, not evidence that the depicted glow is ionization.
+    </p>
+    <p>
+      The supplied atmosphere diagram is
+      <a
+        href="https://commons.wikimedia.org/wiki/File:Comparison_US_standard_atmosphere_1962.svg"
+        >Cmglee’s comparison of the 1962 standard atmosphere</a
+      >. Its local .svg file is a saved Commons HTML page, rather than the
+      vector itself. It distinguishes density and pressure from altitude; the
+      study should not equate a bright outer limb with a dense upper shell.
+      Looking tangentially through a layer gives a different optical path from
+      looking straight through its face. Apparent edge brightness and material
+      density are separate quantities.
+    </p>
+    <p>
+      <a
+        href="https://www.nasa.gov/solar-system/why-nasa-watches-airglow-the-colors-of-the-upper-atmospheric-wind/"
+        >NASA describes airglow</a
+      >
+      as light emitted by atmospheric gases excited by sunlight, with colour
+      depending on gas and excitation. This supplies a second visual hypothesis
+      alongside Sun-facing light. These examples are stylised cues, not optical
+      simulations or a scientific identification of the supplied image. Their
+      blue colour is provisional; no ionization or damage mechanic is implied.
+    </p>
+    <ul>
+      <li>
+        <strong>Current line:</strong>
+        the unchanged material reference from 02.7 and 02.8, preserving its
+        useful crossing cue.
+      </li>
+      <li>
+        <strong>Sunlit rim:</strong>
+        a bright narrow core with a restrained glow, strongest toward the Sun
+        and almost absent on the night side. Tests light revealing an edge
+        without closing a bright circle.
+      </li>
+      <li>
+        <strong>Airglow:</strong>
+        the same core and glow with substantial night-side visibility. Tests an
+        emitting upper layer that keeps the crossing visible away from the Sun,
+        with a risk of reading as a shield.
+      </li>
+    </ul>
+    <p>
+      All light proposals remove the upper material shell and retain only the
+      existing low haze on World. The rim is cached fresh LFX using the shared
+      hard-light pass, with no accumulated trail or animated pulse. It does not
+      increase gas opacity, cloud coverage or physical density. The optical
+      feather extends up to 3u beyond the unchanged 10u interaction depth; its
+      bright core remains 0.7u inside that extent. This is a display cue, not an
+      exact collision outline. The ship’s collision circle triggers entry.
+    </p>
+    <p>
+      Hold Impact, 02.5 / Opaque clouds, Separate air, 1.45× rock shadow,
+      rotation, depth, drag and burn fixed. Judge approach, skim and exit in
+      Follow, then use Follow 4× to explain the core and glow. The question is
+      whether emitted-looking light communicates air without a bubble, while
+      retaining enough night-side visibility for play. Sunlit rim is the
+      preferred reference, not a final placement or colour. Nearby engine and
+      weapon illumination remains open.
+    </p>
+    <p>
+      <strong>In-round finding · 16 November 2026:</strong>
+      varying the rim’s brightness is the right direction. Sunlit rim is
+      substantially better than the gas-volume options, but its brightest point
+      directly toward the Sun feels misplaced. Explore two bright side regions,
+      optionally shifted behind the tangents toward the night side, with subdued
+      front and back. This is a visual hypothesis, not a claim about ionization
+      physics.
+    </p>
+    <ul>
+      <li>
+        <strong>Tangents:</strong>
+        symmetric brightness peaks 90° from the Sun-facing axis, with an 18°
+        falloff scale.
+      </li>
+      <li>
+        <strong>Nightward:</strong>
+        the same peaks moved 20° toward the night side, to 110° from the
+        Sun-facing axis.
+      </li>
+      <li>
+        <strong>Broad arcs:</strong>
+        those same nightward centres, with a 36° falloff scale to test a more
+        continuous sweep of light.
+      </li>
+    </ul>
+    <p>
+      These are two sides relative to the Sun, not planetary poles. The existing
+      Sunlit rim and Airglow remain available. Blue colour, peak intensity,
+      radial core/halo, low haze and opaque cloud layer are unchanged; the new
+      options vary only angular brightness. Broad arcs has more total light
+      because the peaks are wider. Colour and physical interpretation remain
+      open rather than being inferred from an Earth-like identity.
+    </p>
+    <p>
+      <strong>Settled direction · 16 November 2026:</strong>
+      retain the blue light profile and narrow paired arcs, with one final
+      placement change: Dayward moves each tangent peak 20° toward the Sun, to
+      70° from its direction. Nightward was the best built comparison, but
+      Dayward is the selected direction for believability. Colour, radial core
+      and halo, peak intensity and 18° angular falloff are settled for this
+      example. This does not select a universal atmosphere colour for all
+      planets. The remaining check is its response beside different star
+      colours.
+    </p>
+    <details>
+      <summary>02.9 / Retained placement references</summary>
+      {["Sunlit rim", "Nightward"].map((name) => (
         <figure>
           <img
-            src={`/studies/rock-atmospheres-2026-11-15/02-3-${slug}-flight-reconstruction.png`}
-            alt={`${name} at Follow flight scale`}
+            src={`/studies/rock-atmospheres-2026-11-15/02-9-${name.replaceAll(" ", "-")}-flight-reconstruction.png`}
+            alt={`${name} at Follow scale`}
             width="1280"
             height="1000"
             loading="lazy"
           />
           <img
-            src={`/studies/rock-atmospheres-2026-11-15/02-3-${slug}-close-reconstruction.png`}
-            alt={`${name} enlarged at Follow 4×`}
+            src={`/studies/rock-atmospheres-2026-11-15/02-9-${name.replaceAll(" ", "-")}-close-reconstruction.png`}
+            alt={`${name} at Follow 4×`}
             width="1280"
             height="1000"
             loading="lazy"
           />
           <figcaption>
-            {name}: Follow and Follow 4×, same B1 opening and material.
-            Reconstructed 16 November 2026. Stills preserve appearance; they do
-            not establish the earlier motion judgment.
+            Reconstructed 16 November 2026 before the Dayward colour check.
+            Impact, 02.5 / Opaque, Separate air, shadow 1.45×, B1 0.50s; Follow
+            and Follow 4× at 1280 × 1000. These preserve the built references;
+            Dayward was selected as a modification, not seen here.
           </figcaption>
         </figure>
       ))}
     </details>
-    <h3 id="02-4">02.4 / An upper extent and something within it</h3>
+    <h3 id="02-10">02.10 / The blue Dayward rim beside different stars</h3>
     <p>
-      A visible upper layer could make the approaching edge easier to
-      anticipate. Clouds could give the volume substance while openings keep the
-      authored rock visible. These are separate hypotheses: a cloudless upper
-      layer isolates the first, and two kinds of cloud cover test the second
-      against that same edge.
+      Dayward fixes the selected narrow arcs 20° toward the Sun from each
+      tangent. The slider changes the displayed star colour from 2300 to 12000
+      K, opening at 5800 K. The star body and glow use interpolated anchors from
+      <a href="https://doi.org/10.1002/asna.202113868"
+        >Harre and Heller’s stellar-colour study, Table 5</a
+      >. This provides warm orange, near-white and blue-white references rather
+      than a rainbow hue sweep. Interpolation and the game renderer are
+      approximations, not a spectrum or a prediction of perceived astronomical
+      brightness.
     </p>
     <ul>
       <li>
-        <strong>Limb haze:</strong>
-        the unchanged 02.3 starting reference.
+        <strong>Fixed blue:</strong>
+        the chosen rim’s light pixels remain unchanged. The test is whether that
+        fixed emission looks coherent beside the changing star.
       </li>
       <li>
-        <strong>Upper layer:</strong>
-        a thin, softly bounded shell just inside the 10u extent, with the
-        original low haze beneath it. Tests whether a visible edge reads as air
-        or becomes too much like a ring.
-      </li>
-      <li>
-        <strong>Cloud banks:</strong>
-        broken pale masses below that shell, leaving openings onto the rock.
-        Tests substance through local overlap.
-      </li>
-      <li>
-        <strong>Cloud bands:</strong>
-        broader, winding coverage beneath the same shell. Tests whether
-        continuity gives the air more presence or conceals too much terrain.
+        <strong>Star tint:</strong>
+        an explicitly provisional response that filters the same blue emission
+        by the star’s RGB channels. This may dim or shift the rim; it does not
+        replace the selected source colour. It tests an alternative visual
+        response, not atmospheric chemistry.
       </li>
     </ul>
     <p>
-      Impact, 1.45× shadow, the original 31.3s rock turn, 10u depth, 0.8/s drag
-      and B1–B3 remain fixed. Cloud cover is a procedural translucent overlay at
-      4.2u altitude with a provisional 38s turn; it does not replace the rock
-      material or change flight. Its pattern follows simulation time through
-      pause and seek. All three original materials and the shadow slider remain
-      available. No appearance is selected as the outcome.
+      Compare 2300, 5800 and 12000 K at the same burn/time, first in Follow
+      where the star and planet are visible together, then in Follow 4× for rim
+      detail. The slider changes display colour only. Radius, pulse timing,
+      orbit, gravity, charging, damage and drag remain fixed; temperature does
+      not drive luminosity or ultraviolet output. Palette anchors use a
+      normalised peak channel, so perceived brightness may vary with hue. The
+      shared instrument uses the standard star body/glow for this override; the
+      old G7 Sun HUD denotes the unchanged fixture, not spectral
+      reclassification.
     </p>
     <p>
-      Compare the approach at 0.30s, entry at about 0.37s, the 0.50s skim and
-      exit by 0.60s in Follow beside the ship. Entry is collision-circle
-      overlap, so the hull reaches the air before the ship centre crosses the
-      visible edge. Follow 4× explains the shell and cloud construction; return
-      to Follow to assess their presence in flight. Stills cannot settle
-      encounter feel.
+      Rock, clouds and low haze keep their existing light treatment. This
+      isolates the rim response rather than simulating whole-scene illumination.
+      Fixed emission staying blue is a model assumption, not evidence that real
+      ionization is independent of a star’s spectrum. No response model is
+      selected yet. The accepted cloud arrangement, Dayward geometry and blue
+      source colour are held fixed throughout this check.
+    </p>
+    <p>
+      <strong>Decision · 16 November 2026:</strong>
+      keep the fixed blue Dayward rim. Star tint is not needed; the chosen blue,
+      narrow arcs and 20° dayward placement are settled for this reference.
+      Further rim tuning is outside the next experiment. The star-colour check
+      intentionally held rock and cloud lighting fixed, so it does not establish
+      their response to coloured starlight. That material-light interaction
+      remains a separate open item.
     </p>
     <InstrumentBand
       ><AtmosphereFlight
-        label="Air around rock worlds: boundary and substance comparison"
+        label="Air around rock worlds: Dayward rim and star colour"
         client:load
       /></InstrumentBand
     >
   </section>
-  <section><h2 id="03">03 / To be developed after 02</h2></section>
+  <section>
+    <h2 id="03">03 / Readiness of the opaque-cloud arrangement</h2>
+    <p>
+      Scoped assessment · 16 November 2026. The independently useful result is a
+      rotating rock with locally opaque clouds and clear openings, judged at
+      flight scale. The study remains open in 02 for boundary design. A trial
+      can retain the provisional pattern and colour; it need not wait for a
+      texture library or variable star colours.
+    </p>
+    <p>
+      Core already provides SphericalSurface and RockBodyPainter. The study
+      composes those with a deterministic cloud atlas and Sun-facing cloud
+      colour. Production’s flight-frame planet passes already support rotating
+      Mercury and Venus materials, World bodies and Sun-facing LFX. However,
+      this study’s opaque-alpha projector and separate rock-light composition
+      live in study code, and its authored material loader is owned by the web
+      Lab. Production has no generic adoption path for this combination yet.
+    </p>
+    <p>
+      A trial needs an explicitly selected target body/mode and approved access
+      to the reference rock materials, shared ownership of the cloud painter and
+      composed material, and a production rendering/lifecycle check. Sustained
+      cost for this CPU projection and multiple bodies has not been measured.
+      Check pause, reset, camera scale and the interaction of the local
+      rock-light composition with other LFX. The existing stock fallback must
+      remain usable if material loading fails.
+    </p>
+    <p>
+      The 10u air depth and 0.8/s drag are still an experimental Flight scene
+      fixture. Production Venus’s atmosphere has no drag region. A visual trial
+      must not silently adopt that mechanic or imply that its visible boundary
+      already slows the ship. A playable braking encounter needs a separate
+      explicit mechanics decision. This assessment authorises neither trial
+      installation nor changes to production Venus.
+    </p>
+  </section>
+  <section>
+    <h2 id="04">04 / A bounded game-trial scope</h2>
+    <p>
+      <strong>No design-principle change is proposed.</strong>
+      This scope preserves the successful material relationship within the
+      current art direction. Sizes describe implementation breadth, not
+      committed dates. Production implementation and deployment remain separate
+      authorisations.
+    </p>
+    <ol>
+      <li>
+        <strong>Define the trial — small.</strong>
+        Select the target body and mode, choose 02.5 / Opaque or Sparse /
+        Opaque, and state whether the trial is appearance-only. Record the
+        provisional edge and colour in the planet spec. If configuration is
+        needed, define its Zod contract before consumers. Depends on the target
+        and trial decision.
+      </li>
+      <li>
+        <strong>Share the material composition — medium.</strong>
+        Move the reusable cloud projection and rock/cloud composition into core
+        assets, keeping authored inputs and experiment controls out of core.
+        Provide production material loading and a fallback through the existing
+        flight-frame setup. Match the retained Follow references and check
+        opaque cores, clear openings and simulation-time rotation. Depends on
+        the trial definition.
+      </li>
+      <li>
+        <strong>Wire and assess the selected trial — medium.</strong>
+        Mount through the existing World/LFX passes and canonical Practice
+        planet preview where applicable. Check camera scales, pause/reset,
+        existing ship controls and unchanged gravity/contact; measure sustained
+        rendering cost at the intended body count. Revisit readiness if layering
+        or performance requires a new renderer. Depends on shared composition.
+      </li>
+    </ol>
+    <p>
+      Atmospheric drag/damage, new planet types, variable Sun colours,
+      cloud-cast shadows, richer textures and a production texture library are
+      outside these slices. Their unresolved status does not erase the usable
+      cloud result; their adoption would require its own concrete decisions.
+    </p>
+  </section>
 </StudyLayout>
 
 <style>
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: var(--spacing-lg) 0;
+}
+th,
+td {
+  padding: var(--spacing-sm) var(--spacing-md);
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--color-text-muted);
+}
+
 figure {
   margin: var(--spacing-xl) 0;
 }

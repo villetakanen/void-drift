@@ -6,19 +6,23 @@ import RingSlider from "../../inputs/RingSlider.svelte";
 import Toggle from "../../inputs/Toggle.svelte";
 import FlightSceneInstrument from "../../lab/flight-scene/FlightSceneInstrument.svelte";
 import { makeRockAppearances } from "./appearance";
-import {
-  AIR_DEPTH,
-  ATMOSPHERE_TREATMENTS,
-  type AtmosphereTreatment,
-  DRAG_RATE,
-} from "./atmosphere";
+import { AIR_DEPTH, type AirBoundary, DRAG_RATE } from "./atmosphere";
 import { ROCK_ATMOSPHERE_SCENE as config } from "./fixture";
+import { starColour } from "./star-colour";
 
 let { label = "Air around rock worlds" }: { label?: string } = $props();
 const names = ["Mineral", "Highlands", "Impact"];
 const fullNames = ["Mineral mosaic", "Ancient highlands", "Impact palimpsest"];
 let shadowIntensity = $state(1.45);
-let atmosphereTreatment = $state<AtmosphereTreatment>("Limb haze");
+const atmosphereTreatment = "Cloud banks";
+const airLighting = "Separate air";
+const coverage = "02.5";
+const opacity = "Opaque";
+const boundary: AirBoundary = "Dayward";
+let kelvin = $state(5800);
+const response = "Fixed blue";
+const colour = $derived(starColour(kelvin));
+const starAppearance = $derived({ color: colour, glowColor: colour });
 let material = $state(names[2]),
   treatment = $state("Air + drag");
 let appearances = $state<PlanetAppearance[][]>([]),
@@ -36,7 +40,7 @@ const appearance = $derived.by(() => {
   return chosen
     ? {
         ...chosen,
-        label: `${chosen.label} · ${atmosphereTreatment} · shadow ${shadowIntensity.toFixed(2)}×`,
+        label: `${chosen.label} · ${boundary} · ${kelvin} K · ${response}`,
       }
     : undefined;
 });
@@ -49,6 +53,11 @@ onMount(() => {
           materials,
           () => shadowIntensity,
           () => atmosphereTreatment,
+          () => airLighting,
+          () => coverage,
+          () => opacity,
+          () => boundary,
+          () => "#ffffff",
         );
     })
     .catch((error) => {
@@ -65,9 +74,38 @@ onMount(() => {
     {config}
     {label}
     {planet}
+    {starAppearance}
     planetAppearance={appearance}
   >
     {#snippet pane()}
+      <p>Dayward · settled blue rim and narrow peaks, 20° toward the Sun</p>
+      <RingSlider
+        label="Star colour temperature"
+        min={2300}
+        max={12000}
+        step={100}
+        digits={0}
+        unit="K"
+        bind:value={kelvin}
+      />
+      <p>
+        Warm orange → near-white → blue-white. 5800 K is the opening reference.
+        Approximate display colours; star size, pulse and flight stay fixed.
+      </p>
+      <p>
+        Fixed blue emission is settled. The star slider remains a context check;
+        it does not change the selected rim.
+      </p>
+      <p>
+        The star body and glow change; rock, clouds and low haze retain their
+        existing lighting. This isolates the rim response, not whole-scene
+        colour grading.
+      </p>
+      <p>
+        Fixed: 02.5 cloud footprint / Opaque, Separate air lighting, pale colour
+        and cloud rotation. Compare at 1.45× before changing the reference
+        controls.
+      </p>
       <p>Rock material · {fullNames[names.indexOf(material)]}</p>
       <Toggle label="Rock material" options={names} bind:value={material} />
       <RingSlider
@@ -90,22 +128,6 @@ onMount(() => {
         options={["Bare rock", "Air + drag"]}
         bind:value={treatment}
       />
-      <p>Atmospheric appearance</p>
-      <Toggle
-        label="Atmospheric appearance"
-        options={[...ATMOSPHERE_TREATMENTS]}
-        details={{
-          "Limb haze": "02.3 baseline",
-          "Upper layer": "Clear edge",
-          "Cloud banks": "Broken cover",
-          "Cloud bands": "Broad cover",
-        }}
-        bind:value={atmosphereTreatment}
-      />
-      <p>
-        Same 10u interaction depth and drag in every treatment. Bare rock hides
-        the air but preserves the chosen treatment.
-      </p>
       <p>
         Body r40.33u · air depth 10u · provisional drag 0.8/s at full density.
       </p>

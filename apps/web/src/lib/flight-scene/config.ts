@@ -7,6 +7,15 @@ import { gameSchema } from "../instrument/external-schema";
 // and a study embeds. The designer's changes (targets, layers, time) are view
 // state in the component and are not written back.
 
+/** Presentation only: no stellar physics or gameplay retuning. */
+export const StarAppearanceSchema = z
+  .object({
+    color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+    glowColor: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+  })
+  .strict();
+export type StarAppearance = z.infer<typeof StarAppearanceSchema>;
+
 const Point = z
   .object({ x: z.number().finite(), y: z.number().finite() })
   .strict();

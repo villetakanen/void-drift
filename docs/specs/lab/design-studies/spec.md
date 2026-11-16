@@ -72,8 +72,7 @@ that remain provisional; acceptance of one quality does not settle every propert
 of its example.
 Review questions, coordination and process evaluation also belong in chat or their
 separate evidence records. The one exception is the question test: section 01 ends
-with its dated result for each metric and a link to the full result at
-`/lab/reviews/<study-slug>`. Necessary control labels remain on the page. Historical
+with its dated result and reason for each metric. Necessary control labels remain on the page. Historical
 conditions and check results are labeled and linked to their specific evidence.
 
 The opening contains exactly one substantive numbered section 01 and an unfilled

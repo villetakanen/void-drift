@@ -1,154 +1,184 @@
 # Design-study skill set 2.0
 
-Status: plan for review, revised 2026-11-16. Nothing here is applied.
+Status: plan for review, revised 2026-11-16 (fourth revision). Step S1 is applied and
+committed in `bdfc4759`; step S2 is applied and not yet committed.
 
 Proposed 2026-11-15 in conversation: split the single design-study skill into a
 conductor, working skills and reviewers, and write down how a study moves between
 parts, including back from exploration to the question.
 
-Revised 2026-11-16 after two decisions in conversation:
+## Decisions so far, all 2026-11-16 in conversation
 
-- The study spec describes the artefact: the study page, the registry, the review
-  pages and the repository after a study closes. Each sentence in it can be checked
-  from those by someone who did not watch the study. How a study is conducted
-  belongs to the skills. The first version of this plan put part transitions, the
-  amendment procedure and the end check into the spec; they now go to the skills,
-  and procedure the spec already holds moves out.
-- The steps are ordered so that each one is a small change with its own value and
-  its own check. The split into folders comes late, as a move of text that is
-  already right.
+- **The spec is about the product.** From the product's side a study is an entry
+  in a collection: a file, its metadata, its assets and the layout that renders it.
+  The spec does not describe what a study says. The four-part structure, what each
+  part contains, prose rules, end-state content and decision authority belong to the
+  practice, which lives in the skills.
+- **A study page is self-contained.** Separate review pages under `/lab/reviews`
+  are a defect. A study leaves nothing outside its own file and asset folder.
+- **Closing a study compacts it.** A closed study keeps the question, the decisions
+  with their exact variants, the reasons, the media needed to read them, what was
+  ruled out and why, and where the work went. The sequence of exploration steps is
+  working material and is removed.
+- **Older studies are historical artefacts.** They are not preserved in full.
+  Compacting them and moving studies to a content collection are known debt.
+- **The study skills are meant to leave this repo.** They name no instrument,
+  layout, registry or path of this project. The Motion instrument and the Flight
+  scene instrument have their own repo skills, which a study uses; the repo's own
+  instructions say which ones apply here.
+- **Study text is Markdown wherever it can be.** Studies are expected to become MDX.
+  Forms the skills prescribe, such as the question-test stamp, are written as
+  Markdown and need no component or script.
+- **Each step is small, with its own value and its own check.** The split into
+  skill folders comes late, as a move of text that is already right.
 
-Related plans: the [move menu draft](2026-11-13-exploration-move-menu.md) is step 3
+Related plans: the [move menu draft](2026-11-13-exploration-move-menu.md) is step S3
 here. The [question rubric plan](2026-11-10-part-01-question-rubric.md) is already in
 the skill as the question test. Findings A and B in the
-[retro actions](2026-11-08-retro-actions.md) are the reason for steps 1 and 3.
+[retro actions](2026-11-08-retro-actions.md) are the reason for steps S1 and S3.
 
 ## Where each kind of text lives
 
-| Text                                                                                 | Home                                    |
-| ------------------------------------------------------------------------------------ | --------------------------------------- |
-| What the page, registry, review pages and repository must show                       | `docs/specs/lab/design-studies/spec.md` |
-| Which part is active, which part can follow which, amending the question, end states | Conductor skill                         |
-| What a part needs on the page before it starts and what it leaves                    | Top of that part's working skill        |
-| How to do the work of a part                                                         | That part's working skill               |
-| How to write study prose                                                             | `references/writing.md`, shared         |
+| Text                                                                               | Home                                    |
+| ---------------------------------------------------------------------------------- | --------------------------------------- |
+| Routes, entry metadata, layout, asset location, scoped styles, keyboard and 1280px | `docs/specs/lab/design-studies/spec.md` |
+| Which part is active, moves between parts, amending the question, end states       | Conductor skill                         |
+| What a part contains, what it needs before it starts, how to do its work           | That part's working skill               |
+| What a closed study keeps                                                          | Close skill                             |
+| How to write study prose                                                           | `references/writing.md`, shared         |
 
-No practice guide and no page template carry structure. A guide would be a third
-copy that no skill is forced to load. A template describes the page, so it follows
-the spec and cannot say when a part is complete.
+No practice guide and no page template carry structure.
 
-## The skill set at the end of the plan
+## State on 2026-11-16
 
-| Skill                 | Kind      | Owns                                                                                                                                 | Text comes from (current section headings)                                                                                                  |
-| --------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `design-study`        | Conductor | Starting from established reality, active part, moves between parts, question amendment, end states, checks that apply to every part | Intro, "Start from established reality", "Moving between parts" (step 1), the first paragraph of "Finish and verify" and its closing checks |
-| `study-frame`         | Working   | Section 01 and page creation                                                                                                         | "01 / Develop the problem"                                                                                                                  |
-| `study-explore`       | Working   | Part 02 rounds                                                                                                                       | "02 / Explore", all of `references/exploration.md`                                                                                          |
-| `study-deliver`       | Working   | Parts 03 and 04                                                                                                                      | "03 / Assess readiness", "04 / Size the work"                                                                                               |
-| `study-close`         | Working   | Consolidating findings, capturing evidence, retiring study code, registry status                                                     | The closing procedure in "Finish and verify"                                                                                                |
-| `study-question-test` | Reviewer  | Whether a study can answer the question as written                                                                                   | `references/question-test.md`                                                                                                               |
-| `study-end-check`     | Reviewer  | Whether a closing study leaves a usable record                                                                                       | New, only if decided (step 8)                                                                                                               |
+- 49 studies in the registry: 28 accepted, 15 stopped, 6 open. All are `.astro`
+  pages under `apps/web/src/pages/lab/studies` with a hand-kept registry in
+  `apps/web/src/data/studies.ts`.
+- 16 review pages under `apps/web/src/pages/lab/reviews`; 16 other source files
+  link to them.
+- The study spec is about 170 lines, of which roughly 25 describe the product.
 
-`flight-scene-study` already exists as its own skill and is unchanged;
-`study-explore` links to it. `references/writing.md` stays under `design-study/`.
+## Two tracks
 
-## Steps
+The skill track depends on nothing. The debt track waits on step S4, so that old
+studies are compacted by the same rule new studies will use.
 
-### 1. Moves between parts and question amendment, in the current skill
+| Track | Steps                                                                             |
+| ----- | --------------------------------------------------------------------------------- |
+| Skill | S1 to S12                                                                         |
+| Debt  | D1 compact closed studies; D2 retire review pages; D3 content collection; D4 spec |
 
-Applied 2026-11-16, not committed. Three files in `.agents/skills/design-study/`:
+## Skill track
 
-- `SKILL.md` has a new section "Moving between parts" with the table of moves and
-  "Amend the question", placed before "01 / Develop the problem". The wording was
-  shortened from the first proposal after a clean-context edit pass.
-- `references/exploration.md`, "Discard and replace": the sentence about two
-  consecutive rejected replacements now points to "Amend the question".
-- `references/question-test.md`, "After the run": a corrected section is run again
-  when the question was amended during exploration.
+### S1. Moves between parts and question amendment. Done
 
-The amendment part was rewritten the same day after discussion. When the question
-is known to be wrong (an observation contradicts a fixed item, a hypothesis failed,
-the designer restates the purpose), the agent builds the next example on the
-amended question and says so in one line; section 01 changes only when the designer
-accepts that example. When the question may be wrong (two replacements rejected
-with nothing retained, an open item that cannot be shown and judged), the agent
-says so in one line and keeps proposing on the current question. A different
-subject is a new study and nothing is built until the designer decides.
+Applied 2026-11-16, committed in `bdfc4759`. `SKILL.md` has "Moving between parts"
+with the table of moves and "Amend the question". When the question is known to be
+wrong, the agent builds the next example on the amended question and says so in one
+line; section 01 changes only when the designer accepts that example. When the
+question may be wrong, the agent says so and keeps proposing. A different subject
+is a new study and nothing is built until the designer decides.
 
-Check, run 2026-11-16 with clean-context Sonnet agents given only `SKILL.md` and
-the exploration guide, one run per cell. "Before" is the skill as it stood that
-morning; the last two situations were only run on the final text.
+Checked with clean-context Sonnet agents given only the skill and the exploration
+guide, one run per situation. The skill as it stood that morning failed the first
+and third; the final text passed all five.
 
-| Situation                                                          | Text before                                                             | Final text                                                                                                 |
-| ------------------------------------------------------------------ | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| A retained observation contradicts an item section 01 holds fixed. | Built another example on the old premise and left section 01 as it was. | Built the next example on the amended question, said what it sets aside, left section 01 until acceptance. |
-| One proposal rejected, one observation retained.                   | Replaced the proposal.                                                  | Replaced the proposal and left section 01 alone.                                                           |
-| The designer restates the subject as a different object.           | Rewrote section 01 into the new subject in the same round.              | Built nothing and proposed ending the study and starting a new one.                                        |
-| The designer rejects an example built on an amended question.      | Not run.                                                                | Discarded it, kept section 01 and built a new example on the question as written.                          |
-| Two replacements rejected, nothing retained.                       | Not run.                                                                | Said in one line that the question may be wrong, offered to narrow or stop, and proposed again.            |
+| Situation                                                          | Final text                                                                                  |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| A retained observation contradicts an item section 01 holds fixed. | Built the next example on the amended question and left section 01 until acceptance.        |
+| One proposal rejected, one observation retained.                   | Replaced the proposal and left section 01 alone.                                            |
+| The designer restates the subject as a different object.           | Built nothing and proposed ending the study and starting a new one.                         |
+| The designer rejects an example built on an amended question.      | Discarded it, kept section 01 and built a new example on the question as written.           |
+| Two replacements rejected, nothing retained.                       | Said in one line that the question may be wrong, offered to narrow or stop, proposed again. |
 
-### 2. The spec says what an amended page shows
+### S2. The question test leaves no review page. Done
 
-Add to "Current study presentation" in the study spec:
+Applied 2026-11-16, not yet committed. Three review pages were added on 2026-11-14
+and 2026-11-15, one per new study; this stops new ones.
 
-```markdown
-When the question changes during exploration, section 01 states the current
-question and carries the question-test result for it. The exploration step whose
-example was built on the changed question opens with one dated line saying what
-changed and why. Earlier
-steps that no longer bear on the question are marked as observations outside it.
-```
+`references/question-test.md` now stamps the result at the end of section 01 as a
+`<details>` block holding the reviewer's own table of metric, result and reason,
+and one closing line saying whether the section was corrected, rerun or overridden.
+The block is open while section 01 is active and closed from part 02 on; a rerun
+replaces it. The reason for a declined finding and the unchecked items stay in
+chat. No review page is created and nothing is linked. The study spec's clause
+about the stamp no longer mentions a link.
 
-Add one scenario: "Given the question changed during exploration, the page states
-the current question, its test result, and where and why it changed."
+Checked with two clean-context Sonnet agents given the skill, the question test and
+a returned result with two findings, one corrected and one declined, one run each.
 
-Check: `pnpm check:contracts`; the three sentences can each be verified on a page.
+| Text                  | What the agent would write                                                                          |
+| --------------------- | --------------------------------------------------------------------------------------------------- |
+| Before (that morning) | A review page, a link to it, a prose stamp, and the declining reason inside section 01.             |
+| After                 | The correction and the stamp block in section 01, in the page's own markup. No other file, no link. |
 
-### 3. Move menu in the exploration guide
+The agent on the new text noted that none of the four closing lines names a
+declined finding and used "Corrected after the test, not rerun."
 
-Apply the proposed text from the [move menu draft](2026-11-13-exploration-move-menu.md)
-after its three open points are settled. Check: a clean-context agent given a
-question state names a move from the matching group, for one state per group.
+### S3. Move menu in the exploration guide
 
-### 4. Procedure leaves the spec
+Apply the [move menu draft](2026-11-13-exploration-move-menu.md) after an edit pass
+for length, after its three open points are settled, and after its first pivot is
+reconciled with "the question may be wrong" from S1. Check: for one question state
+per group, a clean-context agent names a move from that group where today's text
+does not.
 
-Sorted by section of the study spec as it stands on 2026-11-16:
+### S4. Closing compacts the study
 
-| Section                           | Stays                                                                                                                                                                       | Moves to the skill                                                                                                                                                                 |
-| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Context and ownership             | All; the pointer is updated in step 7                                                                                                                                       | None                                                                                                                                                                               |
-| Contract (bullets)                | URLs, registry validation, Flight scene instrument use, scoped styles, stable URL and recorded decisions, slices as separate work, keyboard and 1280px support              | "reviewed separately from gameplay feel" (the conductor's closing checks already say it)                                                                                           |
-| Cycle zero                        | "Earlier artifacts remain separately available, and rejected drafts stay out of the new page."                                                                              | The rest, to "Start from established reality", which today only points at it                                                                                                       |
-| Four-part outputs                 | The table; evidence must support the claim; unsupported parts left unfilled; a study does not authorize implementation or publication; the `docs/design.md` flag in part 04 | "Uncertainty is a normal input. Desired intent comes from the design inquiry; current code informs feasibility" (already in "01 / Develop the problem"); "and in the chat handoff" |
-| Current study presentation        | All but the last paragraph's middle                                                                                                                                         | "Explicit requests for conceptual discussion, stopping, preservation or reframing govern" and the pointer to replacement procedure (already in the exploration guide)              |
-| Ending a study                    | Status meaning, the three end states and what each leaves, the durable record, repository state after close                                                                 | The "Reached after" column, which duplicates the conductor's table from step 1                                                                                                     |
-| Optional study-quality evaluation | The review location `/lab/reviews/<study-slug>`, already stated under presentation                                                                                          | The whole section is deleted; see decisions                                                                                                                                        |
-| Scenarios                         | First, third and fourth                                                                                                                                                     | The second is reworded to end on "shared production behavior is unchanged until implementation is authorized"; the fifth is deleted                                                |
+Rewrite the closing procedure in "Finish and verify" around the compact record: the
+question, decisions with exact variants, reasons, the media needed to read them,
+what was ruled out and why, and where the work went. Exploration steps, question-test
+stamps and study-only apparatus are removed. Check: one closed study is compacted by
+the rule, and a clean-context reader given only the compacted page states what was
+decided, why, and what changed in the game or the Lab. This is the pilot for D1.
 
-The skill's last paragraph about the whole-study evaluation is deleted with the
-section. `docs/factory-building-lessons/design-study-evaluation.md` stays as a
-historical record that the spec stops linking to.
+### S5. Content rules leave the spec
 
-Check: `pnpm check:contracts`; every sentence left in the spec can be verified from
-a page, the registry, a review page or the tree; no sentence removed from the spec
-is absent from the skill unless the table above says it is deleted.
+Every rule about what a study says moves from the spec into the skill: cycle zero,
+the four-part outputs, "Current study presentation", the content half of "Ending a
+study". The optional evaluation section and the skill's paragraph about it are
+deleted. The spec keeps the product items in the table above, described for the
+mechanism as it is today. Check: `pnpm check:contracts`; no sentence removed from
+the spec is absent from the skill unless it is listed as deleted.
 
-### 5. Entry and exit at the head of each part
+### S6. Entry and exit at the head of each part
 
-Each part section of `SKILL.md` gains two short lists: what must be on the page
-before the part starts, and what it leaves there. The content is the "Needs on the
-page" and "Leaves on the page" columns of the part table in the first version of
-this plan. Check: for one existing page per part, a clean-context agent given only
-that part's section states whether the part can start.
+Each part section of the skill gains two short lists: what must be on the page
+before the part starts and what it leaves there. Check: for one existing page per
+part, a clean-context agent given only that part's section states whether the part
+can start.
 
-### 6. Split into skill folders
+### S6a. Repo-specific text leaves the study skills
+
+Move every mention of this project's instruments, components and paths out of the
+study skill: the Motion instrument and Flight scene paragraphs in part 02,
+`StudyLayout`, `apps/web/src/data/studies.ts`, the links to this repo's spec and
+`docs/design.md`, and the 1280px rule. They go to one short repo-side text that the
+study skill is told to read when it exists (a section of the root agent
+instructions, or a small repo skill). Check: a search of the study skill for
+`apps/`, `docs/`, `Motion`, `Flight` and `StudyLayout` finds nothing, and a
+clean-context agent given the study skill plus the repo-side text still names the
+Flight scene instrument for a visual that needs flight context.
+
+### S7. Split into skill folders
 
 Create `study-frame`, `study-explore`, `study-deliver`, `study-close` and
-`study-question-test` under `.agents/skills/`, each with frontmatter and the text
-listed in the skill set table, moved without rewording. `design-study/SKILL.md`
-keeps the conductor's text and gains a table linking each working skill, with the
-rule that a working skill returns to the conductor at its exit. Delete
-`references/exploration.md` and `references/question-test.md`.
+`study-question-test` under `.agents/skills/`, each with frontmatter and its text
+moved without rewording. `design-study/SKILL.md` keeps the conductor's text and
+links each working skill, with the rule that a working skill returns to the
+conductor at its exit. Delete `references/exploration.md` and
+`references/question-test.md`; `references/writing.md` stays.
+
+| Skill                 | Kind      | Owns                                                                                   |
+| --------------------- | --------- | -------------------------------------------------------------------------------------- |
+| `design-study`        | Conductor | Established reality, active part, moves, question amendment, end states, shared checks |
+| `study-frame`         | Working   | Section 01 and page creation                                                           |
+| `study-explore`       | Working   | Part 02 rounds and the move menu                                                       |
+| `study-deliver`       | Working   | Parts 03 and 04                                                                        |
+| `study-close`         | Working   | Compacting the study, retiring apparatus, registry status                              |
+| `study-question-test` | Reviewer  | Whether a study can answer the question as written                                     |
+
+`flight-scene-study` already exists and is unchanged; `study-explore` links to it.
 
 Descriptions, so the right skill loads:
 
@@ -160,85 +190,105 @@ Descriptions, so the right skill loads:
   move, build the example, replace rejected proposals. Used from design-study."
 - `study-deliver`: "Assess readiness and size the work for an accepted design-study
   conclusion (parts 03 and 04). Used from design-study."
-- `study-close`: "Close a design study: consolidate findings, capture evidence,
-  retire study code, set the registry status. Used from design-study."
+- `study-close`: "Close a design study: compact it to its decisions and evidence,
+  retire study code, set the status. Used from design-study."
 - `study-question-test`: "Clean-context review of whether a study can answer its
   question. Run by a reviewer with no part in the framing."
 
-### 7. Repair links, in the same change as step 6
+### S8. Repair links, in the same change as S7
 
-Update the spec's ownership paragraph to name the skill set, and repair every link
-to the two deleted references and to moved headings. Found on 2026-11-16 with
-`grep -rn 'design-study/' --include='*.md' docs .agents`:
+Update the spec's ownership paragraph and every link to the deleted references and
+moved headings. Find them when applying with
+`grep -rn 'design-study/' --include='*.md' docs .agents`. On 2026-11-16 that gave
+the study spec, `docs/factory-building-lessons/002-phased-design-studies.md`,
+`docs/factory-report-design-study-form-drift.md` and two loop-evidence records.
+Check: `pnpm check:contracts` passes, and a diff of old against new skill text
+shows moves and link changes only.
 
-- `docs/specs/lab/design-studies/spec.md` (ownership paragraph)
-- `docs/factory-building-lessons/002-phased-design-studies.md` (five links)
-- `docs/factory-report-design-study-form-drift.md` (one link with a heading anchor)
-- `docs/loop-evidence/2026-11-03-factory-harness-amendments.md` and
-  `docs/loop-evidence/2026-11-11-design-study-writing-and-closure.md` (links to the
-  exploration guide)
+### S9. End check, only if decided
 
-Run the grep again when applying; other sessions add records. Check: `pnpm
-check:contracts` passes, and a diff of old against new skill text shows moves and
-link changes only.
+A reviewer with no part in the study reads the compacted page against four metrics
+and reports in chat. Nothing is stored.
 
-### 8. End check, only if decided
+| Metric      | Passes when                                                                                |
+| ----------- | ------------------------------------------------------------------------------------------ |
+| Decisions   | Each decision names its exact variant, the properties settled and what stays provisional.  |
+| Evidence    | Each decision has the image, clip or values needed to read it, with its conditions.        |
+| Consequence | A reader can say from the page what changes in the game or the Lab, or why nothing does.   |
+| Apparatus   | No study-specific component, script or fixture remains without a named continuing purpose. |
 
-Create `study-end-check/SKILL.md`: a reviewer with no part in the study checks the
-closed page and the registry against four metrics, with the question test's output
-format. The result is heard and does not gate anything. It is stored at
-`/lab/reviews/<study-slug>` with the question-test result.
-
-| Metric      | Passes when                                                                                                                                                       |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Decisions   | Each decision names its exact variant, the properties settled and what stays provisional.                                                                         |
-| Evidence    | Each retained observation has the image, clip or values needed to interpret it, with its conditions; evidence gaps are stated.                                    |
-| Consequence | A reader can say from the page what changes in the game or the Lab: the slices for an accepted study, the reason for a ruled-out one, what blocked a stopped one. |
-| Apparatus   | No study-specific component, script or fixture remains without a named continuing purpose.                                                                        |
-
-The spec gains one sentence under presentation: a closed study's review page may
-hold an end-check result beside the question-test result.
-
-### 9. Cold-start check
+### S10. Cold-start check
 
 For each working skill, a clean-context agent is given one study page at that part
 and only that skill plus the conductor, and states the next action and what it
-would write to the page. Pages: Run status (frame), Plasma projector (explore), LHI
-Fiddler (deliver, read-only), Stellar encounters (close, read-only). A skill passes
-when the stated action matches its entry and exit lists without the agent asking
-for context that is not on the page. Gaps go back into the skill.
+would write to the page. A skill passes when the stated action matches its entry
+and exit lists without the agent asking for context that is not on the page.
 
-### 10. First study on the new set
+### S11. First study on the new set
 
-The next study that is started uses the set as it is. Its close-loop record notes
-which skill each part loaded and any point where the agent lacked a rule. No study
-is started for the purpose of this plan.
+The next study that is started uses the set as it is. No study is started for the
+purpose of this plan.
 
-### 11. Record
+### S12. Record
 
 Add the split and its reasons to `docs/factory-building-lessons/` as a lesson
 candidate for review, and mark this plan decided with a date.
 
+## Debt track
+
+None of these is applied without a separate go-ahead; D1 to D3 delete or rewrite
+existing pages.
+
+### D1. Compact the closed studies
+
+Apply the S4 rule to the 43 accepted and stopped studies. Their exploration steps
+were the source for the move analysis of 2026-11-13; any further study of past
+explorations happens before this step. Git keeps every page as it was. Check: each
+compacted page passes the S4 reader check on a sample, the Lab builds, and no
+study-only component is left without a consumer.
+
+### D2. Retire the review pages
+
+Remove `apps/web/src/pages/lab/reviews` and the links to it. For closed studies this
+falls out of D1, since compaction removes the stamps. For open studies the stamps
+stay and the link goes. Check: no source file references `/lab/reviews`; the Lab
+builds.
+
+### D3. Studies as a content collection
+
+Move studies to an Astro content collection of MDX entries. The registry fields
+become frontmatter validated by the collection schema, and `data/studies.ts` goes.
+Compacted studies are prose and static media, so they convert mechanically; open
+studies keep their components. Check: every study URL resolves as before; the
+listing shows the same titles and statuses.
+
+### D4. The spec describes the collection
+
+Rewrite the product items in the spec for the collection mechanism: routes, the
+frontmatter schema with one line of meaning per status and phase value, what the
+layout provides, the asset folder, scoped styles, keyboard and 1280px. Check:
+`pnpm check:contracts`; every sentence describes something the Lab does.
+
 ## Decisions needed
 
-None blocks steps 1 and 2.
-
-- **Before step 3:** the three open points in the move menu draft.
-- **Before step 4:** whether the optional evaluation section is deleted with
-  nothing in its place, or replaced by the end check in step 8. The plan deletes it
-  in step 4 either way and treats step 8 as optional.
-- **Before step 6:** 03 and 04 as one skill or two (the plan uses one,
-  `study-deliver`); skill names `study-*` or `design-study-*`.
-- **Open, no step waits on it:** a limit on amendments per study. The plan sets
-  none because no record supports a number.
+- **Before S3:** the three open points in the move menu draft.
+- **Before S4:** whether an accepted study's slices stay on the compacted page or
+  only a link to where they were delivered.
+- **Before S6a:** where the repo-side text lives, in the root agent instructions or
+  in a small repo skill.
+- **Before S7:** 03 and 04 as one skill or two (the plan uses one); skill names
+  `study-*` or `design-study-*`.
+- **Before D1:** a go-ahead to rewrite existing study pages, and whether any
+  further analysis of past explorations is wanted first.
+- **Open, no step waits on it:** whether S9 is built at all; a limit on amendments
+  per study.
 
 ## Notes for whoever applies this
 
 - `.claude/skills` is a link to `.agents/skills`, so one copy serves both.
 - Sandboxed shell commands cannot write under `.agents/skills`; use the file
   editing tools there.
-- The skill and the spec both had uncommitted edits from another session on
-  2026-11-16 (the Flight scene instrument text). Section headings are used above in
+- Other sessions edit the skill and the spec. Section headings are used above in
   place of line numbers for that reason.
-- Steps 6 and 7 are safest as one commit with no other changes in the tree, because
+- S7 and S8 are safest as one commit with no other changes in the tree, because
   every session shares this checkout.

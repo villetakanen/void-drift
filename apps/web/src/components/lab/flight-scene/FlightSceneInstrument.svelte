@@ -11,6 +11,7 @@ import {
   type PartTuning,
   type PlanetAppearance,
   readOnlyCopy,
+  type StarAppearance,
   type StudyLight,
   type TargetMode,
 } from "../../../lib/flight-scene";
@@ -42,6 +43,7 @@ let {
   tuning,
   planet,
   planetAppearance,
+  starAppearance,
 }: {
   /** The configuration document; parsed here, so it may come from anywhere. */
   config: unknown;
@@ -69,6 +71,7 @@ let {
   /** Validated replacement for the document's staged planet; undefined preserves it. */
   planet?: unknown;
   planetAppearance?: PlanetAppearance;
+  starAppearance?: StarAppearance;
 } = $props();
 
 // The document is read once; the designer's changes are view state. The engine
@@ -144,6 +147,7 @@ onMount(() => {
     tuning: untrack(() => JSON.stringify(tuning ?? {})),
     planet: untrack(() => planetKey),
     appearance: untrack(() => planetAppearance),
+    star: "",
   };
   let previous = performance.now(),
     accumulator = 0,
@@ -169,12 +173,15 @@ onMount(() => {
         drawn.light !== shownLight ||
         drawn.tuning !== tuned ||
         drawn.planet !== planetKey ||
-        drawn.appearance !== planetAppearance)
+        drawn.appearance !== planetAppearance ||
+        drawn.star !== JSON.stringify(starAppearance))
     ) {
       if (drawn.tuning !== tuned) scene.setTuning(tuning);
       if (drawn.light !== shownLight) scene.setLight(shownLight);
       if (drawn.targets !== targets || drawn.planet !== planetKey)
         scene.configure(activeDoc, targets);
+      if (drawn.star !== JSON.stringify(starAppearance))
+        scene.setStarAppearance(starAppearance);
       if (drawn.appearance !== planetAppearance)
         scene.setPlanetAppearance(planetAppearance);
       if (drawn.view !== view) scene.restart(burn, view);
@@ -192,6 +199,7 @@ onMount(() => {
         tuning: tuned,
         planet: planetKey,
         appearance: planetAppearance,
+        star: JSON.stringify(starAppearance),
       };
       lost = scene.lost;
     }
@@ -212,6 +220,7 @@ onMount(() => {
     data-burn={burn}
     data-playing={playing}
     data-tick={tick}
+    data-star-color={starAppearance?.color}
     data-planet={activeDoc?.planet?.reference}
     data-planet-appearance={planetAppearance?.label}
     data-study-light={light ? "true" : undefined}

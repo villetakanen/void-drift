@@ -360,3 +360,16 @@ pane; the wrapper does not supply another timeline or flight loop.
 
 The rock-atmospheres study is the first configured use. The canonical Flight scene
 Lab also offers a planet encounter to expose the shared staging capability.
+
+### Star colour inspection — 16 November 2026
+
+Optional reactive `starAppearance` supplies strict six-digit hex `color` and
+`glowColor`, validated by `StarAppearanceSchema`. The scene redraws the same
+burn/time with the production standard star painter. An override uses the
+standard body rather than the yellow-family palette; clearing it restores the
+original painter and palette. This is a display override only: the simulation's
+star, mass, radius, fields, collection, damage and flight state are untouched.
+Planet appearance callbacks receive the displayed star colours in their frozen
+snapshot. They decide whether to respond; this input does not automatically
+relight materials. The canonical Flight scene page offers Stock/Warm/Cool.
+`data-star-color` reports the supplied display body colour when present.

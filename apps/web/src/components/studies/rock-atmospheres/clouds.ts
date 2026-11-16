@@ -1,5 +1,10 @@
 import type { AtmosphereTreatment } from "./atmosphere";
 
+export const CLOUD_COVERAGE = ["02.5", "Sparse", "Broad"] as const;
+export type CloudCoverage = (typeof CLOUD_COVERAGE)[number];
+export const CLOUD_OPACITY = ["Thin", "Opaque"] as const;
+export type CloudOpacity = (typeof CLOUD_OPACITY)[number];
+
 // Study-only translucent cloud cover. A periodic scalar atlas keeps holes in
 // the cover; the opaque authored-rock projector deliberately fills such holes.
 export function makeCloudPainter() {
@@ -23,8 +28,7 @@ export function makeCloudPainter() {
               Math.cos(lon * 7 - lat * 5) * 0.28 +
               detail
             : Math.cos(lat * 14 + curl * 1.3) * 0.55 + detail;
-        const cover = Math.max(0, Math.min(1, (shape - 0.04) * 2.3));
-        field[y * width + x] = cover * cover * (3 - 2 * cover);
+        field[y * width + x] = shape;
       }
     }
     fields.set(kind, field);
@@ -41,10 +45,24 @@ export function makeCloudPainter() {
     kind: AtmosphereTreatment,
     seconds: number,
     sunAngle: number,
+    coverage: CloudCoverage = "02.5",
+    opacity: CloudOpacity = "Thin",
   ) => {
     const field = fields.get(kind);
     if (!field) return;
-    const key = `${kind}:${seconds}:${sunAngle}`;
+    const key = `${kind}:${seconds}:${sunAngle}:${coverage}:${opacity}`;
+    const mask = (value: number) => {
+      const t = Math.max(
+        0,
+        Math.min(
+          1,
+          coverage === "02.5"
+            ? (value - 0.04) * 2.3
+            : (value - (coverage === "Sparse" ? 0.18 : -0.18)) / 0.18,
+        ),
+      );
+      return t * t * (3 - 2 * t);
+    };
     if (key !== previous) {
       previous = key;
       const phase = (seconds * Math.PI * 2) / 38;
@@ -66,11 +84,13 @@ export function makeCloudPainter() {
           const fx = u - ix,
             fy = v - iy;
           const a =
-            field[iy * width + ix] * (1 - fx) +
-            field[iy * width + ((ix + 1) % width)] * fx;
+            mask(field[iy * width + ix]) * (1 - fx) +
+            mask(field[iy * width + ((ix + 1) % width)]) * fx;
           const b =
-            field[Math.min(height - 1, iy + 1) * width + ix] * (1 - fx) +
-            field[Math.min(height - 1, iy + 1) * width + ((ix + 1) % width)] *
+            mask(field[Math.min(height - 1, iy + 1) * width + ix]) * (1 - fx) +
+            mask(
+              field[Math.min(height - 1, iy + 1) * width + ((ix + 1) % width)],
+            ) *
               fx;
           const light =
             0.42 +
@@ -80,7 +100,10 @@ export function makeCloudPainter() {
           pixels.data[at + 1] = 216 * light;
           pixels.data[at + 2] = 222 * light;
           pixels.data[at + 3] =
-            255 * (a * (1 - fy) + b * fy) * 0.62 * Math.min(1, nz * 8);
+            255 *
+            (a * (1 - fy) + b * fy) *
+            (opacity === "Opaque" ? 1 : 0.62) *
+            Math.min(1, nz * 8);
         }
       ctx.putImageData(pixels, 0, 0);
     }

@@ -9,7 +9,12 @@ import {
   STEP,
 } from "@void-drift/mode-a";
 import type { BurnId } from "../instrument/burns";
-import type { FlightSceneDocument, FlightView } from "./config";
+import {
+  type FlightSceneDocument,
+  type FlightView,
+  type StarAppearance,
+  StarAppearanceSchema,
+} from "./config";
 import { defaultTargets, FlightRun, type TargetMode } from "./flight";
 import { type PartTuning, type StudyLight, studyLightState } from "./light";
 import type { PlanetAppearance } from "./planet";
@@ -17,6 +22,12 @@ import { readOnlyCopy } from "./read-only";
 
 /** A production simulation replay drawn through the same layers as play. */
 export class FlightScene {
+  private starAppearance?: StarAppearance;
+  setStarAppearance(appearance?: StarAppearance) {
+    this.starAppearance = appearance
+      ? StarAppearanceSchema.parse(appearance)
+      : undefined;
+  }
   private run: FlightRun;
   private readonly renderer: Renderer;
   private readonly camera = new Camera();
@@ -154,7 +165,7 @@ export class FlightScene {
       const state = readOnlyCopy({
         planet: sim.planets[0],
         ship: sim.ship,
-        sun: sim.star,
+        sun: { ...sim.star, ...this.starAppearance },
         seconds: sim.ticks * STEP,
       });
       passes = [
@@ -180,6 +191,23 @@ export class FlightScene {
           draw: (_frame, ctx) => appearance.lfx?.(ctx, state),
         },
       ];
+    }
+    if (this.starAppearance) {
+      const star = {
+        ...this.run.sim.star,
+        ...this.starAppearance,
+        appearance: undefined,
+      };
+      passes = (passes ?? FLIGHT_PASSES).map((pass) =>
+        pass.id === "star"
+          ? {
+              ...pass,
+              source: "Flight scene star appearance",
+              draw: ({ renderer, sim }) =>
+                renderer.drawStar(star, sim.ticks * STEP * 1000),
+            }
+          : pass,
+      );
     }
     drawFlightFrame(this.frame(), { passes });
     const paint = this.studyLight?.lfx;
