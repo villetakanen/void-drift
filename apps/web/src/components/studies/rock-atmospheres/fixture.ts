@@ -23,3 +23,26 @@ export const ROCK_ATMOSPHERE_SCENE = FlightSceneDocumentSchema.parse({
   follow: { near: 0.8, far: 4 },
   opening: { burn: "course", view: "follow", tick: 30 },
 });
+
+// Same atmosphere and ship: change approach clearance only for the heat study.
+export const HEAT_APPROACHES = ["Outside", "Skim", "Deeper", "02.15 pass"];
+export function heatStart(approach: string) {
+  const offset =
+    approach === "Outside"
+      ? 88
+      : approach === "Skim"
+        ? 84
+        : approach === "Deeper"
+          ? 80
+          : 82;
+  if (!ROCK_ATMOSPHERE_SCENE.start) throw new Error("Atmosphere start missing");
+  return {
+    ...ROCK_ATMOSPHERE_SCENE.start,
+    x: 960 + PRACTICE_VENUS_ORBIT - offset,
+  };
+}
+export const ROCK_HEAT_SCENE = FlightSceneDocumentSchema.parse({
+  ...ROCK_ATMOSPHERE_SCENE,
+  start: heatStart("Skim"),
+  opening: { ...ROCK_ATMOSPHERE_SCENE.opening, tick: 27 },
+});

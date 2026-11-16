@@ -38,6 +38,15 @@ export type StagedPlanet = z.infer<typeof StagedPlanetSchema>;
 export const FLIGHT_VIEWS = ["game", "follow", "follow-far"] as const;
 export type FlightView = (typeof FLIGHT_VIEWS)[number];
 
+export const StagedStartSchema = z
+  .object({
+    x: z.number().finite(),
+    y: z.number().finite(),
+    rotation: z.number().finite(),
+    velocity: Point.optional(),
+  })
+  .strict();
+
 export const FlightSceneDocumentSchema = z
   .object({
     planet: StagedPlanetSchema.optional(),
@@ -56,15 +65,7 @@ export const FlightSceneDocumentSchema = z
       .max(16)
       .default([]),
     /** Where the ship starts, at rest; absent means where a run starts. */
-    start: z
-      .object({
-        x: z.number().finite(),
-        y: z.number().finite(),
-        rotation: z.number().finite(),
-        velocity: Point.optional(),
-      })
-      .strict()
-      .optional(),
+    start: StagedStartSchema.optional(),
     /** Wrecks placed in the arena, in world units. */
     targets: z.array(Point).max(16).default([]),
     /** A wreck held ahead of the ship, replaced when it breaks; absent offers none. */

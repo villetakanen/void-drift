@@ -159,25 +159,14 @@ remains full resolution while those limits are explored.
 
 ### The in-flight frame
 
-Array order in `FLIGHT_PASSES` is draw order within each layer.
+`FLIGHT_PASSES` in `packages/mode-a/src/lib/flight-frame.ts` is the list of passes.
+Each entry names its layer, its space and what it draws. The
+[render model page](../../lab/render-model/spec.md) lists them beside its workbench.
 
-| Layer | Pass               | Space  | What it draws                                                  |
-| ----- | ------------------ | ------ | -------------------------------------------------------------- |
-| World | Void               | screen | The clear to the void colour                                   |
-| World | Starfield          | world  | Seeded background stars across the camera's view               |
-| World | Arena boundary     | world  | The arena's ring                                               |
-| World | Star               | world  | The sun's body and glow                                        |
-| World | Sun fields         | world  | World HUD: the sun's collection and damage rings               |
-| World | Planets            | world  | Each planet with its orbit path and influence ring             |
-| World | Derelicts          | world  | Wrecks, fragments and released energy squares                  |
-| World | Ships              | world  | The fitted player build, hostile Gauntlet ships, or stock ship |
-| World | Derelict apertures | world  | The hollow centre of each wreck and energy cell                |
-| FX    | Accumulated light  | world  | Fresh emission added, history faded                            |
-| FX    | Aperture cut       | world  | Light removed over derelict apertures                          |
-| LFX   | Ion beams          | world  | Ion cannon and point-defence beams, live                       |
-
-Within World, passes draw far to near: the void, the background, the world's
-bodies, then the ship.
+- Array order is draw order within each layer.
+- Within World, passes draw far to near: the void, the background, the world's
+  bodies, then the ship.
+- A new pass takes the position its depth gives it in that order.
 
 ### Authority
 

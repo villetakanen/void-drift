@@ -2,12 +2,14 @@ import { z } from "zod";
 
 export const SettingsSchema = z.object({
   invertControls: z.boolean(),
+  speedCamera: z.boolean().default(false),
 });
 
 export type Settings = z.infer<typeof SettingsSchema>;
 
 export const DEFAULT_SETTINGS: Settings = {
   invertControls: true,
+  speedCamera: false,
 };
 
 /** Player choice for exposing content outside the scored catalog. */

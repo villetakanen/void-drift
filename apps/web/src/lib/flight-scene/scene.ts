@@ -78,7 +78,12 @@ export class FlightScene {
     this.planetAppearance = appearance;
   }
   private get state() {
-    return studyLightState(this.run.sim, this.doc.loadout, this.run.tick);
+    return studyLightState(
+      this.run.sim,
+      this.doc.loadout,
+      this.run.tick,
+      this.doc.planet?.atmosphere?.depth,
+    );
   }
   get tick() {
     return this.run.tick;

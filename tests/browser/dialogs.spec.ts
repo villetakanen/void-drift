@@ -23,10 +23,29 @@ test("pause is modal and restores focus to the game", async ({ page }) => {
   const pause = page.getByRole("button", { name: "Pause", exact: true });
   await pause.focus();
   await page.keyboard.press("Escape");
+  const dialog = page.getByRole("dialog", { name: "Paused" });
+  await expect(
+    dialog.getByRole("button", { name: "Resume", exact: true }),
+  ).toBeFocused();
   await expectModal(page, "Paused");
+  // Pause is actions/navigation only; preferences belong on the separate page.
+  await expect(
+    dialog.locator(
+      "input, select, textarea, [role=switch], [role=slider], [role=combobox]",
+    ),
+  ).toHaveCount(0);
+  await expect(
+    dialog.getByRole("link", { name: "Settings", exact: true }),
+  ).toHaveAttribute("href", "/settings");
   await expect(page.locator("header")).toHaveCount(0);
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog", { name: "Paused" })).toBeHidden();
   await expect(page.locator("[data-stage]")).not.toHaveAttribute("inert");
   await expect(pause).toBeFocused();
+  await pause.click();
+  await dialog.getByRole("link", { name: "Settings", exact: true }).click();
+  await expect(page).toHaveURL(/\/settings\/?$/);
+  await expect(
+    page.getByRole("checkbox", { name: "Speed camera", exact: true }),
+  ).toBeVisible();
 });

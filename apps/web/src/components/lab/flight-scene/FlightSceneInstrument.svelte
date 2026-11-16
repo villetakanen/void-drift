@@ -44,6 +44,7 @@ let {
   planet,
   planetAppearance,
   starAppearance,
+  start,
 }: {
   /** The configuration document; parsed here, so it may come from anywhere. */
   config: unknown;
@@ -72,6 +73,8 @@ let {
   planet?: unknown;
   planetAppearance?: PlanetAppearance;
   starAppearance?: StarAppearance;
+  /** Validated initial pose/velocity override; replays the selected burn/time. */
+  start?: unknown;
 } = $props();
 
 // The document is read once; the designer's changes are view state. The engine
@@ -86,11 +89,14 @@ const activeParsed = $derived(
     ? FlightSceneDocumentSchema.safeParse({
         ...doc,
         planet: planet ?? doc.planet,
+        start: start ?? doc.start,
       })
     : null,
 );
 const activeDoc = $derived(activeParsed?.success ? activeParsed.data : null);
-const planetKey = $derived(JSON.stringify(activeDoc?.planet));
+const planetKey = $derived(
+  JSON.stringify({ planet: activeDoc?.planet, start: activeDoc?.start }),
+);
 
 const SCREEN = { w: 1440, h: 900 };
 // 16:10 at the game's 1080 height; the game varies its render width the same way.
@@ -256,15 +262,16 @@ onMount(() => {
         </div>
         {#if activeParsed && !activeParsed.success}
           <p class="lost" role="alert">
-            Invalid planet staging:
+            Invalid scene staging:
             {activeParsed.error.issues.map((issue) => issue.message).join("; ")}
           </p>
         {/if}
-        {#if planetAppearance && activeDoc?.planet}
-          <p class="study-light">Study planet: {planetAppearance.label}</p>
-        {/if}
-        {#if light}
-          <p class="study-light">Study light: {light.label}</p>
+        {#if (planetAppearance && activeDoc?.planet) || light}
+          <p class="study-light">
+            {planetAppearance && activeDoc?.planet
+              ? planetAppearance.label
+              : ""}{light ? ` · ${light.label}` : ""}
+          </p>
         {/if}
         {#if lost}
           <p class="lost" role="status">

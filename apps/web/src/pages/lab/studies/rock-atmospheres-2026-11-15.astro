@@ -11,6 +11,64 @@ const study = studies.find(
 
 <StudyLayout {study}>
   <section>
+    <h2>Accepted / Placeholder Earth for Practice</h2>
+    <p>
+      16 November 2026. Impact with the accepted Cirrus atmosphere is selected
+      as placeholder Earth in Practice. The atmosphere and ship-entry treatment
+      are accepted; Earth and inhabited-world exploration concludes for now.
+      This is a playable placeholder, not an accepted Earth geography or
+      habitation design.
+    </p>
+    <p>
+      Use Cirrus, 91% lit-cloud brightness, the original 02.11 shadow (42%),
+      shared sunlight, 1.45× rock shadow and the fixed blue Dayward rim, peaking
+      20° toward the Sun. Keep opaque clouds with openings, the current
+      atmosphere extent, and the accepted soft planet-facing LFX glow. Heat FX
+      uses the curved band at 180% brightness and 150% width, stronger toward
+      the planet.
+    </p>
+    <p>
+      Accepted production behavior: 1 hull/s in the outermost 30% of the
+      atmosphere and 2 hull/s deeper inside, plus a small deceleration opposite
+      current travel. This slows the ship without steering it. The drag
+      coefficient remains implementation tuning; the study’s 0.8/s fixture is
+      not a production value. No accumulated-temperature or delayed-damage model
+      is required. This behavior is not currently installed in Practice.
+    </p>
+    <figure>
+      <img
+        src="/studies/rock-atmospheres-2026-11-15/02-16-accepted-heat.png"
+        alt="Accepted curved-band heat around a Wasp skimming the Impact atmosphere"
+        loading="lazy"
+      >
+      <figcaption>
+        Accepted visual settings, captured 16 November: B1, Skim, 0.45s, Follow
+        4×. Impact/Cirrus, 180% band brightness, 150% band width, soft LFX
+        contact glow. This visual fixture does not apply atmospheric damage.
+      </figcaption>
+    </figure>
+    <figure>
+      <img
+        src="/studies/rock-atmospheres-2026-11-15/02-16-accepted-heat-flight.png"
+        alt="The accepted atmospheric heat cue at Follow flight scale"
+        loading="lazy"
+      >
+      <figcaption>
+        The same settings and instant at Follow scale. Stills retain the
+        appearance; the instrument below retains the entry/exit motion
+        reference.
+      </figcaption>
+    </figure>
+    <p>
+      The Flight instrument remains as the integration reference for comparing a
+      future production adoption against accepted appearance, entry and fading
+      exit at identical burns and times. Its earlier options are diagnostic
+      references, not reopened decisions. The production adoption was removed
+      after its shared-rendering changes caused regressions; Practice remains on
+      its prior rendering and simulation paths.
+    </p>
+  </section>
+  <section>
     <h2 id="01">01 / Air the pilot can read</h2>
     <p>
       A close pass should reveal air before the ship enters it. The envelope
@@ -717,301 +775,765 @@ const study = studies.find(
         ))}
       </details>
     </details>
-    <h3 id="02-9">02.9 / Reveal the air through light</h3>
     <details>
-      <summary>02.9 / Supplied horizon-light reference</summary>
-      <figure>
-        <img
-          src="/studies/rock-atmospheres-2026-11-15/02-9-supplied-horizon-reference.jpeg"
-          alt="Supplied ISS and Earth-horizon image, with a blue luminous atmospheric edge"
-          width="2048"
-          height="1363"
-          loading="lazy"
-        >
-        <figcaption>
-          Supplied for this discussion, 16 November 2026. Visual inspiration for
-          a luminous edge; original creator, provenance and depicted light
-          mechanism are unverified. Not a study result.
-        </figcaption>
-      </figure>
-    </details>
-    <p>
-      The supplied ISS/horizon image suggests a luminous blue edge above visible
-      cloud and ground. Its useful quality is light revealing an atmosphere
-      without making its upper extent look like a material membrane. The image’s
-      provenance and physical light mechanism are not established here; it is an
-      appearance reference, not evidence that the depicted glow is ionization.
-    </p>
-    <p>
-      The supplied atmosphere diagram is
-      <a
-        href="https://commons.wikimedia.org/wiki/File:Comparison_US_standard_atmosphere_1962.svg"
-        >Cmglee’s comparison of the 1962 standard atmosphere</a
-      >. Its local .svg file is a saved Commons HTML page, rather than the
-      vector itself. It distinguishes density and pressure from altitude; the
-      study should not equate a bright outer limb with a dense upper shell.
-      Looking tangentially through a layer gives a different optical path from
-      looking straight through its face. Apparent edge brightness and material
-      density are separate quantities.
-    </p>
-    <p>
-      <a
-        href="https://www.nasa.gov/solar-system/why-nasa-watches-airglow-the-colors-of-the-upper-atmospheric-wind/"
-        >NASA describes airglow</a
-      >
-      as light emitted by atmospheric gases excited by sunlight, with colour
-      depending on gas and excitation. This supplies a second visual hypothesis
-      alongside Sun-facing light. These examples are stylised cues, not optical
-      simulations or a scientific identification of the supplied image. Their
-      blue colour is provisional; no ionization or damage mechanic is implied.
-    </p>
-    <ul>
-      <li>
-        <strong>Current line:</strong>
-        the unchanged material reference from 02.7 and 02.8, preserving its
-        useful crossing cue.
-      </li>
-      <li>
-        <strong>Sunlit rim:</strong>
-        a bright narrow core with a restrained glow, strongest toward the Sun
-        and almost absent on the night side. Tests light revealing an edge
-        without closing a bright circle.
-      </li>
-      <li>
-        <strong>Airglow:</strong>
-        the same core and glow with substantial night-side visibility. Tests an
-        emitting upper layer that keeps the crossing visible away from the Sun,
-        with a risk of reading as a shield.
-      </li>
-    </ul>
-    <p>
-      All light proposals remove the upper material shell and retain only the
-      existing low haze on World. The rim is cached fresh LFX using the shared
-      hard-light pass, with no accumulated trail or animated pulse. It does not
-      increase gas opacity, cloud coverage or physical density. The optical
-      feather extends up to 3u beyond the unchanged 10u interaction depth; its
-      bright core remains 0.7u inside that extent. This is a display cue, not an
-      exact collision outline. The ship’s collision circle triggers entry.
-    </p>
-    <p>
-      Hold Impact, 02.5 / Opaque clouds, Separate air, 1.45× rock shadow,
-      rotation, depth, drag and burn fixed. Judge approach, skim and exit in
-      Follow, then use Follow 4× to explain the core and glow. The question is
-      whether emitted-looking light communicates air without a bubble, while
-      retaining enough night-side visibility for play. Sunlit rim is the
-      preferred reference, not a final placement or colour. Nearby engine and
-      weapon illumination remains open.
-    </p>
-    <p>
-      <strong>In-round finding · 16 November 2026:</strong>
-      varying the rim’s brightness is the right direction. Sunlit rim is
-      substantially better than the gas-volume options, but its brightest point
-      directly toward the Sun feels misplaced. Explore two bright side regions,
-      optionally shifted behind the tangents toward the night side, with subdued
-      front and back. This is a visual hypothesis, not a claim about ionization
-      physics.
-    </p>
-    <ul>
-      <li>
-        <strong>Tangents:</strong>
-        symmetric brightness peaks 90° from the Sun-facing axis, with an 18°
-        falloff scale.
-      </li>
-      <li>
-        <strong>Nightward:</strong>
-        the same peaks moved 20° toward the night side, to 110° from the
-        Sun-facing axis.
-      </li>
-      <li>
-        <strong>Broad arcs:</strong>
-        those same nightward centres, with a 36° falloff scale to test a more
-        continuous sweep of light.
-      </li>
-    </ul>
-    <p>
-      These are two sides relative to the Sun, not planetary poles. The existing
-      Sunlit rim and Airglow remain available. Blue colour, peak intensity,
-      radial core/halo, low haze and opaque cloud layer are unchanged; the new
-      options vary only angular brightness. Broad arcs has more total light
-      because the peaks are wider. Colour and physical interpretation remain
-      open rather than being inferred from an Earth-like identity.
-    </p>
-    <p>
-      <strong>Settled direction · 16 November 2026:</strong>
-      retain the blue light profile and narrow paired arcs, with one final
-      placement change: Dayward moves each tangent peak 20° toward the Sun, to
-      70° from its direction. Nightward was the best built comparison, but
-      Dayward is the selected direction for believability. Colour, radial core
-      and halo, peak intensity and 18° angular falloff are settled for this
-      example. This does not select a universal atmosphere colour for all
-      planets. The remaining check is its response beside different star
-      colours.
-    </p>
-    <details>
-      <summary>02.9 / Retained placement references</summary>
-      {["Sunlit rim", "Nightward"].map((name) => (
+      <summary id="02-9">02.9 / Reveal the air through light</summary>
+      <details>
+        <summary>02.9 / Supplied horizon-light reference</summary>
         <figure>
           <img
-            src={`/studies/rock-atmospheres-2026-11-15/02-9-${name.replaceAll(" ", "-")}-flight-reconstruction.png`}
-            alt={`${name} at Follow scale`}
-            width="1280"
-            height="1000"
+            src="/studies/rock-atmospheres-2026-11-15/02-9-supplied-horizon-reference.jpeg"
+            alt="Supplied ISS and Earth-horizon image, with a blue luminous atmospheric edge"
+            width="2048"
+            height="1363"
             loading="lazy"
-          />
-          <img
-            src={`/studies/rock-atmospheres-2026-11-15/02-9-${name.replaceAll(" ", "-")}-close-reconstruction.png`}
-            alt={`${name} at Follow 4×`}
-            width="1280"
-            height="1000"
-            loading="lazy"
-          />
+          >
           <figcaption>
-            Reconstructed 16 November 2026 before the Dayward colour check.
-            Impact, 02.5 / Opaque, Separate air, shadow 1.45×, B1 0.50s; Follow
-            and Follow 4× at 1280 × 1000. These preserve the built references;
-            Dayward was selected as a modification, not seen here.
+            Supplied for this discussion, 16 November 2026. Visual inspiration
+            for a luminous edge; original creator, provenance and depicted light
+            mechanism are unverified. Not a study result.
           </figcaption>
         </figure>
-      ))}
+      </details>
+      <p>
+        The supplied ISS/horizon image suggests a luminous blue edge above
+        visible cloud and ground. Its useful quality is light revealing an
+        atmosphere without making its upper extent look like a material
+        membrane. The image’s provenance and physical light mechanism are not
+        established here; it is an appearance reference, not evidence that the
+        depicted glow is ionization.
+      </p>
+      <p>
+        The supplied atmosphere diagram is
+        <a
+          href="https://commons.wikimedia.org/wiki/File:Comparison_US_standard_atmosphere_1962.svg"
+          >Cmglee’s comparison of the 1962 standard atmosphere</a
+        >. Its local .svg file is a saved Commons HTML page, rather than the
+        vector itself. It distinguishes density and pressure from altitude; the
+        study should not equate a bright outer limb with a dense upper shell.
+        Looking tangentially through a layer gives a different optical path from
+        looking straight through its face. Apparent edge brightness and material
+        density are separate quantities.
+      </p>
+      <p>
+        <a
+          href="https://www.nasa.gov/solar-system/why-nasa-watches-airglow-the-colors-of-the-upper-atmospheric-wind/"
+          >NASA describes airglow</a
+        >
+        as light emitted by atmospheric gases excited by sunlight, with colour
+        depending on gas and excitation. This supplies a second visual
+        hypothesis alongside Sun-facing light. These examples are stylised cues,
+        not optical simulations or a scientific identification of the supplied
+        image. Their blue colour is provisional; no ionization or damage
+        mechanic is implied.
+      </p>
+      <ul>
+        <li>
+          <strong>Current line:</strong>
+          the unchanged material reference from 02.7 and 02.8, preserving its
+          useful crossing cue.
+        </li>
+        <li>
+          <strong>Sunlit rim:</strong>
+          a bright narrow core with a restrained glow, strongest toward the Sun
+          and almost absent on the night side. Tests light revealing an edge
+          without closing a bright circle.
+        </li>
+        <li>
+          <strong>Airglow:</strong>
+          the same core and glow with substantial night-side visibility. Tests
+          an emitting upper layer that keeps the crossing visible away from the
+          Sun, with a risk of reading as a shield.
+        </li>
+      </ul>
+      <p>
+        All light proposals remove the upper material shell and retain only the
+        existing low haze on World. The rim is cached fresh LFX using the shared
+        hard-light pass, with no accumulated trail or animated pulse. It does
+        not increase gas opacity, cloud coverage or physical density. The
+        optical feather extends up to 3u beyond the unchanged 10u interaction
+        depth; its bright core remains 0.7u inside that extent. This is a
+        display cue, not an exact collision outline. The ship’s collision circle
+        triggers entry.
+      </p>
+      <p>
+        Hold Impact, 02.5 / Opaque clouds, Separate air, 1.45× rock shadow,
+        rotation, depth, drag and burn fixed. Judge approach, skim and exit in
+        Follow, then use Follow 4× to explain the core and glow. The question is
+        whether emitted-looking light communicates air without a bubble, while
+        retaining enough night-side visibility for play. Sunlit rim is the
+        preferred reference, not a final placement or colour. Nearby engine and
+        weapon illumination remains open.
+      </p>
+      <p>
+        <strong>In-round finding · 16 November 2026:</strong>
+        varying the rim’s brightness is the right direction. Sunlit rim is
+        substantially better than the gas-volume options, but its brightest
+        point directly toward the Sun feels misplaced. Explore two bright side
+        regions, optionally shifted behind the tangents toward the night side,
+        with subdued front and back. This is a visual hypothesis, not a claim
+        about ionization physics.
+      </p>
+      <ul>
+        <li>
+          <strong>Tangents:</strong>
+          symmetric brightness peaks 90° from the Sun-facing axis, with an 18°
+          falloff scale.
+        </li>
+        <li>
+          <strong>Nightward:</strong>
+          the same peaks moved 20° toward the night side, to 110° from the
+          Sun-facing axis.
+        </li>
+        <li>
+          <strong>Broad arcs:</strong>
+          those same nightward centres, with a 36° falloff scale to test a more
+          continuous sweep of light.
+        </li>
+      </ul>
+      <p>
+        These are two sides relative to the Sun, not planetary poles. The
+        existing Sunlit rim and Airglow remain available. Blue colour, peak
+        intensity, radial core/halo, low haze and opaque cloud layer are
+        unchanged; the new options vary only angular brightness. Broad arcs has
+        more total light because the peaks are wider. Colour and physical
+        interpretation remain open rather than being inferred from an Earth-like
+        identity.
+      </p>
+      <p>
+        <strong>Settled direction · 16 November 2026:</strong>
+        retain the blue light profile and narrow paired arcs, with one final
+        placement change: Dayward moves each tangent peak 20° toward the Sun, to
+        70° from its direction. Nightward was the best built comparison, but
+        Dayward is the selected direction for believability. Colour, radial core
+        and halo, peak intensity and 18° angular falloff are settled for this
+        example. This does not select a universal atmosphere colour for all
+        planets. The remaining check is its response beside different star
+        colours.
+      </p>
+      <details>
+        <summary>02.9 / Retained placement references</summary>
+        {["Sunlit rim", "Nightward"].map((name) => (
+          <figure>
+            <img
+              src={`/studies/rock-atmospheres-2026-11-15/02-9-${name.replaceAll(" ", "-")}-flight-reconstruction.png`}
+              alt={`${name} at Follow scale`}
+              width="1280"
+              height="1000"
+              loading="lazy"
+            />
+            <img
+              src={`/studies/rock-atmospheres-2026-11-15/02-9-${name.replaceAll(" ", "-")}-close-reconstruction.png`}
+              alt={`${name} at Follow 4×`}
+              width="1280"
+              height="1000"
+              loading="lazy"
+            />
+            <figcaption>
+              Reconstructed 16 November 2026 before the Dayward colour check.
+              Impact, 02.5 / Opaque, Separate air, shadow 1.45×, B1 0.50s;
+              Follow and Follow 4× at 1280 × 1000. These preserve the built
+              references; Dayward was selected as a modification, not seen here.
+            </figcaption>
+          </figure>
+        ))}
+      </details>
     </details>
-    <h3 id="02-10">02.10 / The blue Dayward rim beside different stars</h3>
+    <details>
+      <summary id="02-10">
+        02.10 / The blue Dayward rim beside different stars
+      </summary>
+      <p>
+        Dayward fixes the selected narrow arcs 20° toward the Sun from each
+        tangent. The slider changes the displayed star colour from 2300 to 12000
+        K, opening at 5800 K. The star body and glow use interpolated anchors
+        from
+        <a href="https://doi.org/10.1002/asna.202113868"
+          >Harre and Heller’s stellar-colour study, Table 5</a
+        >. This provides warm orange, near-white and blue-white references
+        rather than a rainbow hue sweep. Interpolation and the game renderer are
+        approximations, not a spectrum or a prediction of perceived astronomical
+        brightness.
+      </p>
+      <ul>
+        <li>
+          <strong>Fixed blue:</strong>
+          the chosen rim’s light pixels remain unchanged. The test is whether
+          that fixed emission looks coherent beside the changing star.
+        </li>
+        <li>
+          <strong>Star tint:</strong>
+          an explicitly provisional response that filters the same blue emission
+          by the star’s RGB channels. This may dim or shift the rim; it does not
+          replace the selected source colour. It tests an alternative visual
+          response, not atmospheric chemistry.
+        </li>
+      </ul>
+      <p>
+        Compare 2300, 5800 and 12000 K at the same burn/time, first in Follow
+        where the star and planet are visible together, then in Follow 4× for
+        rim detail. The slider changes display colour only. Radius, pulse
+        timing, orbit, gravity, charging, damage and drag remain fixed;
+        temperature does not drive luminosity or ultraviolet output. Palette
+        anchors use a normalised peak channel, so perceived brightness may vary
+        with hue. The shared instrument uses the standard star body/glow for
+        this override; the old G7 Sun HUD denotes the unchanged fixture, not
+        spectral reclassification.
+      </p>
+      <p>
+        Rock, clouds and low haze keep their existing light treatment. This
+        isolates the rim response rather than simulating whole-scene
+        illumination. Fixed emission staying blue is a model assumption, not
+        evidence that real ionization is independent of a star’s spectrum. The
+        alternatives below describe the comparison before the decision. The
+        accepted cloud arrangement, Dayward geometry and blue source colour are
+        held fixed throughout this check.
+      </p>
+      <p>
+        <strong>Decision · 16 November 2026:</strong>
+        keep the fixed blue Dayward rim. Star tint is not needed; the chosen
+        blue, narrow arcs and 20° dayward placement are settled for this
+        reference. Further rim tuning is outside the next experiment. The
+        star-colour check intentionally held rock and cloud lighting fixed, so
+        it does not establish their response to coloured starlight. That
+        material-light interaction remains a separate open item.
+      </p>
+      <details>
+        <summary>02.10 / Retained fixed-blue reference</summary>
+        <figure>
+          <img
+            src="/studies/rock-atmospheres-2026-11-15/02-10-fixed-blue-reconstruction.png"
+            alt="Fixed blue Dayward rim around the opaque-cloud rock with the previous lighting"
+            loading="lazy"
+          >
+          <figcaption>
+            Reconstructed 16 November 2026 during 02.11: Impact, Cloud banks,
+            02.5 / Opaque, Separate air, shadow 1.45×, 5800 K, B1 at 0.50s,
+            Follow 4×. New sunlight disabled.
+          </figcaption>
+        </figure>
+      </details>
+    </details>
+    <details>
+      <summary id="02-11">02.11 / Shared sunlight on rock and clouds</summary>
+      <p>
+        With the blue Dayward rim settled, does coloured sunlight help the rock
+        and opaque clouds belong to the same world? Compare
+        <strong>02.10 light</strong>
+        with <strong>Shared sunlight</strong> at 5800 K, then 2300 and 12000 K.
+        The proposal adds a sunward highlight through LFX to both visible
+        materials; the reference retains the preceding lighting unchanged. The
+        rim’s colour, placement and brightness remain fixed in both.
+      </p>
+      <p>
+        Start with Impact, Cloud banks, 02.5 / Opaque, Separate air and shadow
+        1.45×. Compare B1 at 0.50s in Follow, then Follow 4×. Judge whether
+        cloud openings still reveal the rock clearly, the lit clouds retain
+        their own material, and the shaded side remains readable. This is an
+        additive light study with existing shadows held constant, not a physical
+        scattering model or a test of cloud-cast shadows. The highlight is
+        masked to the rock and cloud coverage; low gas receives no new light
+        treatment.
+      </p>
+      <p>
+        Useful controls remain in the pane: atmosphere material, cloud
+        footprint, opacity, underlying lighting, rock material and shadow
+        intensity. Defaults isolate the primary comparison; changing these
+        controls enables secondary checks without resetting the burn or time.
+        Settled rim settings are kept fixed. The 02.10 light option reconstructs
+        that round with its reference defaults. Shared sunlight was accepted on
+        16 November 2026: the response works as intended. Keep this lighting as
+        the reference for the shadow-side study.
+      </p>
+      <details>
+        <summary>02.11 / Accepted shared-sunlight reference</summary>
+        <figure>
+          <img
+            src="/studies/rock-atmospheres-2026-11-15/02-11-shared-sunlight-reference.png"
+            alt="Shared sunlight on the rock and opaque clouds, with the fixed blue Dayward rim"
+            loading="lazy"
+          >
+          <figcaption>
+            Captured during 02.11 on 16 November 2026: Impact, Cloud banks, 02.5
+            / Opaque, Separate air, shadow 1.45×, 5800 K, B1 at 0.50s, Follow
+            4×. This preserves the built setup accepted in discussion.
+          </figcaption>
+        </figure>
+      </details>
+    </details>
+    <details>
+      <summary id="02-12">
+        02.12 / Keep opaque clouds believable in shadow
+      </summary>
+      <p>
+        Shared sunlight and the blue Dayward rim are now accepted. The next
+        isolated question is how much of the cloud layer should remain visible
+        on the night side. The rock already has its own shadow; clouds currently
+        retain a flat 42% brightness wherever they face away from the Sun. Test
+        whether reducing that floor makes the two materials read as one shaded
+        world while preserving their separation.
+      </p>
+      <ul>
+        <li>
+          <strong>02.11 shadow:</strong>
+          unchanged 42% cloud floor; accepted lighting reference.
+        </li>
+        <li>
+          <strong>Readable night:</strong>
+          an 18% floor preserves subdued cloud shapes.
+        </li>
+        <li>
+          <strong>Deep night:</strong>
+          a 4% floor lets the night-side clouds nearly disappear.
+        </li>
+      </ul>
+      <p>
+        The two proposals use the same transition width, changing cloud RGB in
+        World only on the shaded hemisphere. Their opacity and openings stay
+        identical: dark clouds still block the rock. Day-side material, shared
+        sunlight in LFX, low haze and the rim remain unchanged. These are
+        artistic brightness floors, not measured atmospheric values. This does
+        not yet test cloud-cast shadows or gas shadowing.
+      </p>
+      <p>
+        Compare B1 at 0.50s, first Follow, then Follow 4×. Start with Impact,
+        Cloud banks, 02.5 / Opaque, Separate air, 5800 K and rock shadow 1.45×.
+        Look for coherent shading without losing the sense of clouds above rock.
+        Then use Sparse and Broad to check whether the result depends on
+        coverage. All prior tools remain available; keep their defaults for the
+        first comparison. No new shadow treatment is selected yet.
+      </p>
+      <p>
+        <strong>Assessment · 16 November 2026:</strong>
+        Readable night is the closest option but still too dark. The brightness
+        slider opens at that 18% reference and allows intermediate values up to
+        the original 42%; the three presets remain available. A value between
+        the two is a direction to explore, not an accepted setting.
+      </p>
+      <p>
+        Shading also exposes a material limitation: the current clouds can read
+        as smudges across the available patterns and older lighting options.
+        Brighter or whiter clouds may not address that loss of cloud structure.
+        Keep the accepted opaque coverage, shared sunlight and rim while
+        separating brightness tuning from a subsequent material comparison.
+        Cloud shape, internal detail and edge character are candidates for that
+        comparison; the cause is not yet established.
+      </p>
+      <p>
+        <strong>Decision · 16 November 2026:</strong>
+        select 24% night-side cloud brightness. The useful range was close,
+        around 23–25%; 24% brightens the preferred Readable night reference
+        without returning to the original 42%. Keep the slider and earlier
+        presets. The remaining smudgy appearance is carried into a material
+        experiment, not treated as a reason to keep changing the accepted
+        lighting.
+      </p>
+      <details>
+        <summary>02.12 / Selected 24% reference</summary>
+        <figure>
+          <img
+            src="/studies/rock-atmospheres-2026-11-15/02-12-selected-24-reconstruction.png"
+            alt="Procedural cloud banks with the selected 24 percent night-side brightness"
+            loading="lazy"
+          >
+          <figcaption>
+            Reconstructed 16 November 2026 for the material comparison: Impact,
+            procedural Cloud banks, 02.5 / Opaque, Separate air, shared
+            sunlight, 5800 K, rock shadow 1.45×, cloud night brightness 24%,
+            Dayward blue rim, B1 at 0.50s, Follow 4×.
+          </figcaption>
+        </figure>
+      </details>
+    </details>
+    <details>
+      <summary id="02-13">
+        02.13 / Earth-style cloud materials under the settled light
+      </summary>
+      <p>
+        Can generated cloud structure keep the shaded cover recognizable as
+        clouds? Generated maps replace the procedural pattern while retaining
+        the rock material, opaque coverage model, rotation, shared sunlight,
+        Dayward blue rim and selected 24% night-side brightness. The 40%
+        coverage map is an opening example, not a selected material. Procedural
+        restores the earlier banks and bands for comparison.
+      </p>
+      <p>
+        The prompts explore Cumulus clusters, sweeping Fronts, Cellular decks,
+        Cirrus streamers and Mixed weather. The generated outputs overlap in
+        character and are Earth-inspired interpretations, not satellite
+        observations or exact cloud classifications. Start at B1 0.50s in
+        Follow, then Follow 4×: do the shaded shapes now read as clouds, and do
+        the openings still reveal the rock? Use the same footprint and opacity
+        across maps before changing those retained controls. Maps differ in
+        actual covered area; this is a material comparison, not a
+        coverage-normalized measurement.
+      </p>
+      <p>
+        <strong>Coverage comparison:</strong>
+        the first five maps varied structure but remained too similar in covered
+        area. Four additional maps target roughly 20%, 40%, 60% and 80% cover,
+        from isolated banks and large clear regions to connected decks with
+        small openings. These are independently generated arrangements, not
+        opacity adjustments to the same image. The default density threshold is
+        calibrated to roughly the named percentage of source-map area above half
+        opacity. This is not the exact fraction visible on the current
+        hemisphere. Start with 02.5 footprint / Opaque; the retained
+        Sparse/Broad/Thin tools alter the resulting coverage.
+      </p>
+      <details>
+        <summary>Generated source maps and interpretation</summary>
+        <p>
+          <a
+            href="/studies/rock-atmospheres-2026-11-15/cloud-materials/coverage-prompts.json"
+            >Coverage generation prompts</a
+          >
+        </p>
+        <p>
+          Eight retained 1774 × 887 originals, generated with the built-in image
+          tool. Black becomes clear sky; grayscale becomes density and subtle
+          internal material detail. It is not a black surface layer. Dense cores
+          remain opaque. The renderer applies the existing pale cloud colour and
+          lighting. Generated maps project at 384 × 384 to retain detail in
+          Follow 4×; the procedural reference retains its original 128 × 128
+          projection. This tests the image material with adequate sampling, not
+          resolution alone. Longitude wraps; seamless joins and polar distortion
+          remain inspection items. Coverage calibration uses source-map pixels,
+          not spherical surface-area weighting. No production texture pipeline
+          or performance budget is selected.
+          <a
+            href="/studies/rock-atmospheres-2026-11-15/cloud-materials/prompts.json"
+            >Exact generation prompts</a
+          >.
+        </p>
+        {[
+          "cover-20",
+          "cover-40",
+          "cover-60",
+          "cover-80",
+          "cumulus",
+          "fronts",
+          "cellular",
+          "cirrus",
+        ].map((name) => (
+          <figure>
+            <img
+              src={`/studies/rock-atmospheres-2026-11-15/cloud-materials/${name}.png`}
+              alt={`Generated ${name} cloud density map, white clouds on black clear sky`}
+              loading="lazy"
+            />
+            <figcaption>{name} · generated density source</figcaption>
+          </figure>
+        ))}
+      </details>
+      <p>
+        <strong>Assessment · 16 November 2026:</strong>
+        the material and coverage comparisons are useful: they expose gray,
+        goo-like clouds on the camera-facing part of the world even with the new
+        textures. The dark side can stay dark, but the visible lit material
+        should remain nearly white, with direct sunlight making it brighter.
+        Rotation of clouds and rock is successful; exploring different rotation
+        speeds is explicitly outside this study.
+      </p>
+      <details>
+        <summary>02.13 / Retained shading reference</summary>
+        <figure>
+          <img
+            src="/studies/rock-atmospheres-2026-11-15/02-13-gray-face-reference.png"
+            alt="Generated 40 percent cloud cover under the earlier gray face shading"
+            loading="lazy"
+          >
+          <figcaption>
+            Captured during 02.13 on 16 November 2026: Impact, 40% map, 02.5 /
+            Opaque, Separate air, shared sunlight at 5800 K, rock shadow 1.45×,
+            cloud night brightness 24%, Dayward blue, B1 0.50s, Follow 4×.
+          </figcaption>
+        </figure>
+      </details>
+    </details>
+    <details>
+      <summary id="02-14">
+        02.14 / White cloud material before the sunlight highlight
+      </summary>
+      <p>
+        The current shader reduces camera-facing cloud brightness to 42% before
+        adding sunlight, then darkens it again using image density. That makes
+        gray cloud material even where the texture has a useful shape. Compare
+        <strong>02.13 shading</strong>
+        with <strong>Bright face</strong> using the same 40% map and instant.
+        Bright face keeps the lit material near white with modest internal
+        variation, then blends into the unchanged dark-side RGB over the
+        existing shadow transition. Texture density still controls coverage and
+        opacity; it no longer creates strongly gray pigment on the lit face.
+      </p>
+      <p>
+        This is an artistic material-and-shading proposal, not a new physical
+        light model. Shared sunlight in LFX remains unchanged and can still add
+        warmth or cool highlights. Rock, gas, Dayward rim, coverage, opacity,
+        rotation and the selected 24% dark-side setting stay fixed. Use Follow
+        first, then Follow 4×; inspect both bright cloud cores and their
+        transition into shadow. All earlier tools remain available. No face
+        treatment is selected yet.
+      </p>
+      <p>
+        <strong>Geometry correction · 16 November 2026:</strong>
+        the cloud shader omitted the camera-facing component of the rock’s light
+        direction, producing a straight shadow band across the disc. Clouds and
+        their sunlight highlight now share the rock painter’s 3D surface-light
+        calculation, so the transition curves around the sphere. This fixes both
+        live face treatments; retained earlier captures show the pre-fix
+        geometry. Coverage, opacity, brightness settings and rim placement are
+        unchanged, but the shadow now falls on the correctly oriented surface.
+      </p>
+      <p>
+        <strong>Assessment · 16 November 2026:</strong>
+        the corrected white clouds are too bright and can feel chunky against
+        the game’s materials. With white clouds, the original 02.11 shadow at
+        42% is preferred. The earlier 24% choice compensated for the old double
+        darkening and is superseded for this material. Keep that history and its
+        slider access. Cloud colour stays white; the next variable is lit-face
+        brightness, not new textures.
+      </p>
+      <details>
+        <summary>02.14 / Corrected spherical shading reference</summary>
+        <figure>
+          <img
+            src="/studies/rock-atmospheres-2026-11-15/02-14-bright-face-reference.png"
+            alt="Bright white clouds after the spherical shading correction"
+            loading="lazy"
+          >
+          <figcaption>
+            Captured during 02.14: 40% coverage map, Bright face at full
+            brightness, then-current 24% dark side, shared sunlight 5800 K,
+            Impact, 02.5 / Opaque, Separate air, rock shadow 1.45×, Dayward rim,
+            B1 0.50s, Follow 4×.
+          </figcaption>
+        </figure>
+      </details>
+    </details>
+    <h3 id="02-15">02.15 / Set the prominence of white clouds</h3>
     <p>
-      Dayward fixes the selected narrow arcs 20° toward the Sun from each
-      tangent. The slider changes the displayed star colour from 2300 to 12000
-      K, opening at 5800 K. The star body and glow use interpolated anchors from
-      <a href="https://doi.org/10.1002/asna.202113868"
-        >Harre and Heller’s stellar-colour study, Table 5</a
-      >. This provides warm orange, near-white and blue-white references rather
-      than a rainbow hue sweep. Interpolation and the game renderer are
-      approximations, not a spectrum or a prediction of perceived astronomical
-      brightness.
+      Keep the corrected spherical shading and white cloud colour. Restore the
+      accepted 42% dark-side setting, then adjust only the lit-cloud brightness
+      from the 100% reference down toward 40%. The slider scales lit material
+      RGB and blends into the unchanged dark side; it does not thin the clouds
+      or change their openings. Shared sunlight still adds highlights in LFX.
+      The original 02.13 shading remains available, but this new control applies
+      to Bright face only.
     </p>
-    <ul>
-      <li>
-        <strong>Fixed blue:</strong>
-        the chosen rim’s light pixels remain unchanged. The test is whether that
-        fixed emission looks coherent beside the changing star.
-      </li>
-      <li>
-        <strong>Star tint:</strong>
-        an explicitly provisional response that filters the same blue emission
-        by the star’s RGB channels. This may dim or shift the rim; it does not
-        replace the selected source colour. It tests an alternative visual
-        response, not atmospheric chemistry.
-      </li>
-    </ul>
     <p>
-      Compare 2300, 5800 and 12000 K at the same burn/time, first in Follow
-      where the star and planet are visible together, then in Follow 4× for rim
-      detail. The slider changes display colour only. Radius, pulse timing,
-      orbit, gravity, charging, damage and drag remain fixed; temperature does
-      not drive luminosity or ultraviolet output. Palette anchors use a
-      normalised peak channel, so perceived brightness may vary with hue. The
-      shared instrument uses the standard star body/glow for this override; the
-      old G7 Sun HUD denotes the unchanged fixture, not spectral
-      reclassification.
+      Start with the 40% coverage map at B1 0.50s in Follow. Lower brightness
+      until clouds sit comfortably beside the ship and rock while remaining
+      clearly above the surface. Check 20% and 80% cover at the same value, then
+      inspect Follow 4×. This tests whether brightness accounts for the chunky
+      impression; it does not assume the cloud shapes are resolved. The decision
+      below settles the appearance reference. Rotation-speed exploration stays
+      out of scope.
     </p>
     <p>
-      Rock, clouds and low haze keep their existing light treatment. This
-      isolates the rim response rather than simulating whole-scene illumination.
-      Fixed emission staying blue is a model assumption, not evidence that real
-      ionization is independent of a star’s spectrum. No response model is
-      selected yet. The accepted cloud arrangement, Dayward geometry and blue
-      source colour are held fixed throughout this check.
+      <strong>Appearance accepted · 16 November 2026:</strong>
+      Cirrus is the preferred default with Bright face at 91%, 02.11 cloud
+      shadow at 42%, shared sunlight, rock shadow 1.45× and the Dayward blue
+      rim. The 20% and 40% coverage maps and Cumulus also work. This appearance
+      works across Mineral, Highlands and Impact. The scene retains 02.5
+      footprint / Opaque and Separate air as its comparison conditions. Mixed
+      weather is ruled out as an offered material: one recognizable cloud form
+      is more readable for this illustrative game treatment. No broader planet
+      taxonomy is settled.
+    </p>
+    <figure>
+      <img
+        src="/studies/rock-atmospheres-2026-11-15/02-15-accepted-cirrus.png"
+        alt="Accepted Cirrus atmosphere with 91 percent lit-cloud brightness"
+        loading="lazy"
+      >
+      <figcaption>
+        Reconstructed 16 November 2026 from the accepted settings: Impact,
+        Cirrus, 91% lit brightness, 42% night brightness, shared sunlight 5800
+        K, 1.45× rock shadow, Bright face, 02.5 / Opaque, Separate air, Dayward
+        blue rim. Wasp, B1 0.50s, Follow 4×. The existing fixture is
+        deterministic, with no random seed; rock and clouds rotate with
+        simulation time.
+      </figcaption>
+    </figure>
+    <p>
+      <strong>Next question:</strong>
+      how should the ship’s passage through the atmosphere look against this
+      accepted world? A shallow coast or skim would isolate the transition from
+      outside to inside, sustained near-edge travel, and exit. Compare boundary
+      readability, ship visibility and airflow cues at flight scale. Stage that
+      encounter before adding new effects; keep the accepted appearance and
+      provisional mechanics fixed. The existing fast crossing remains below as a
+      reference, not evidence for a sustained skim. Rotation-speed exploration
+      stays out of scope.
+    </p>
+    <h3 id="02-16">02.16 / Make atmospheric entry feel hot</h3>
+    <p>
+      Proposed emphasis · 16 November 2026: entry should read as a shallow heat
+      hazard; drag is secondary. The accepted Cirrus atmosphere stays fixed.
+      This example tests a warm leading-edge envelope and trailing flame as the
+      warning cue, before deciding heat damage or a temperature model. Compare
+      <strong>None</strong>, the earlier <strong>Airflow</strong> arcs and
+      <strong>Heat envelope</strong>
+      at the same burn and instant.
     </p>
     <p>
-      <strong>Decision · 16 November 2026:</strong>
-      keep the fixed blue Dayward rim. Star tint is not needed; the chosen blue,
-      narrow arcs and 20° dayward placement are settled for this reference.
-      Further rim tuning is outside the next experiment. The star-colour check
-      intentionally held rock and cloud lighting fixed, so it does not establish
-      their response to coloured starlight. That material-light interaction
-      remains a separate open item.
+      <strong>Accepted · 16 November:</strong>
+      soft glow on live LFX, on the planet-facing side of the ship. Stronger
+      flame emission on that side also works. These stay fixed while the FX mark
+      is explored. The tapered crescent remains an earlier reference in the
+      pane; it is not the selected contact light.
+    </p>
+    <p>
+      <strong>Current question:</strong>
+      what should we stamp into FX to make atmospheric burning? The
+      <a href="/lab/studies/plasma-light-2026-11-11#luminous">plasma study</a>
+      showed that a source mark and its accumulated result are different things.
+      Borrowing plasma’s luminous blobs made this effect look like plasma and
+      was rejected. Here the pane shows the actual source mark before the shared
+      layer adds filtering, overlap and fading.
+    </p>
+    <p>
+      Compare <strong>Current envelope</strong>, <strong>Soft patch</strong>,
+      <strong>Tapered streak</strong>
+      and <strong>Curved band</strong> at the same instant. The current source
+      has four animation frames; the three new marks are static. Each mark is
+      mirrored around the direction of travel, weighted toward the planet, and
+      stamped at the same rate with the same colour range and baseline emission
+      gain. Their areas differ, so total emitted light is not equal. The curved
+      band is the preferred shape, but its skim cue was too faint. It now opens
+      at a proposed 180% brightness and 150% width. Two sliders separate those
+      adjustments; 100% on both restores the previous band. Width thickens the
+      band at the same radius, and brightness lifts faint emission up to its
+      existing cap. LFX, colour, sidedness and encounter mechanics stay fixed.
+      180% brightness and 150% width were subsequently accepted.
+    </p>
+    <p>
+      Fresh light follows planet-relative velocity and grows with overlap and
+      speed. The shared FX surface owns its history and fade after exit; there
+      are no separately aged trail marks. LFX remains the accepted soft contact
+      glow. This is a visual excitation proxy, not temperature, accumulated dose
+      or hull damage. Judge the result in flight, using the source preview to
+      understand what went into it.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Approach</th>
+          <th>Measured B1–B3 encounter</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Outside</td>
+          <td>No atmospheric overlap</td>
+          <td>No heat emission; baseline flight</td>
+        </tr>
+        <tr>
+          <td>Skim</td>
+          <td>Entry 0.38–0.40s; exit 0.52–0.55s; peak density 0.22–0.33</td>
+          <td>Brief, shallow warning</td>
+        </tr>
+        <tr>
+          <td>Deeper</td>
+          <td>Entry 0.35s; exit 0.57–0.62s; peak density 0.70–0.81</td>
+          <td>Stronger exposure, still escaping the air</td>
+        </tr>
+        <tr>
+          <td>02.15 pass</td>
+          <td>Previous appearance-study trajectory</td>
+          <td>Retained reference</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      The scene opens at 0.45s in Skim. Inspect approach at 0.30s, peak entry
+      around 0.45s, then exit and fading light through 1.2s. Use Follow for
+      flight scale and Follow 4× for the envelope’s construction. The ship’s
+      initial clearance changes by only a few world units between cases;
+      atmosphere depth remains 10u and drag remains 0.8/s. Each case was run
+      through all 840 ticks of all three burns without solid contact; hull stays
+      at 100. No atmospheric damage is applied. B1/B2 engines fire during entry,
+      so this is a grazing-entry comparison, not a sustained engine-off coast.
+    </p>
+    <p>
+      Approach and effect changes preserve the selected burn/time and rebuild
+      the shared replay. All atmosphere tools remain available below. Different
+      cloud/rock rotation speeds remain out of scope. The unresolved question is
+      whether this envelope communicates “I am burning; get out” clearly enough
+      to support a later heat-damage experiment. The soft LFX glow and
+      planet-facing emphasis are accepted; the curved band at 180% brightness
+      and 150% width is accepted.
     </p>
     <InstrumentBand
       ><AtmosphereFlight
-        label="Air around rock worlds: Dayward rim and star colour"
+        label="Air around rock worlds: atmospheric heat envelope"
         client:load
       /></InstrumentBand
     >
   </section>
   <section>
-    <h2 id="03">03 / Readiness of the opaque-cloud arrangement</h2>
+    <h2 id="03">03 / Implementation assessment</h2>
     <p>
-      Scoped assessment · 16 November 2026. The independently useful result is a
-      rotating rock with locally opaque clouds and clear openings, judged at
-      flight scale. The study remains open in 02 for boundary design. A trial
-      can retain the provisional pattern and colour; it need not wait for a
-      texture library or variable star colours.
+      The accepted appearance and interaction are recorded here and in the
+      retained Flight instrument. Practice has not adopted them. Its existing
+      production renderer and simulation remain unchanged; the atmosphere,
+      sunlight, cloud and heat painters belong to this study instrument. A prior
+      integration attempt modified shared rock lighting and production passes,
+      introduced regressions, and has been removed.
     </p>
     <p>
-      Core already provides SphericalSurface and RockBodyPainter. The study
-      composes those with a deterministic cloud atlas and Sun-facing cloud
-      colour. Production’s flight-frame planet passes already support rotating
-      Mercury and Venus materials, World bodies and Sun-facing LFX. However,
-      this study’s opaque-alpha projector and separate rock-light composition
-      live in study code, and its authored material loader is owned by the web
-      Lab. Production has no generic adoption path for this combination yet.
+      The accepted boundary is ship-hull overlap. Production behavior, when
+      implemented, should use that same overlap for visible entry, damage, drag
+      and heat activation. The intended rates are 1 hull/s in the outer 30% and
+      2 hull/s deeper inside, integrated with simulation time and normal hull
+      lifecycle. Exact classification at the 30% boundary is not a design
+      requirement.
     </p>
     <p>
-      A trial needs an explicitly selected target body/mode and approved access
-      to the reference rock materials, shared ownership of the cloud painter and
-      composed material, and a production rendering/lifecycle check. Sustained
-      cost for this CPU projection and multiple bodies has not been measured.
-      Check pause, reset, camera scale and the interaction of the local
-      rock-light composition with other LFX. The existing stock fallback must
-      remain usable if material loading fails.
-    </p>
-    <p>
-      The 10u air depth and 0.8/s drag are still an experimental Flight scene
-      fixture. Production Venus’s atmosphere has no drag region. A visual trial
-      must not silently adopt that mechanic or imply that its visible boundary
-      already slows the ship. A playable braking encounter needs a separate
-      explicit mechanics decision. This assessment authorises neither trial
-      installation nor changes to production Venus.
+      The implementation attempt was not retained as a production baseline. This
+      study remains available for integration comparison; any future work must
+      be checked against the established renderer and other active workspace
+      changes before adoption.
     </p>
   </section>
   <section>
-    <h2 id="04">04 / A bounded game-trial scope</h2>
+    <h2 id="04">04 / Impact as Practice’s placeholder Earth</h2>
     <p>
       <strong>No design-principle change is proposed.</strong>
-      This scope preserves the successful material relationship within the
-      current art direction. Sizes describe implementation breadth, not
-      committed dates. Production implementation and deployment remain separate
-      authorisations.
+      The accepted production scope below remains pending. This record closes
+      design exploration while retaining the instrument as an integration
+      reference.
     </p>
     <ol>
       <li>
-        <strong>Define the trial — small.</strong>
-        Select the target body and mode, choose 02.5 / Opaque or Sparse /
-        Opaque, and state whether the trial is appearance-only. Record the
-        provisional edge and colour in the planet spec. If configuration is
-        needed, define its Zod contract before consumers. Depends on the target
-        and trial decision.
+        <strong>Shared appearance and Practice body — pending.</strong>
+        Promote the accepted rock/cloud/rim composition only through established
+        renderer owners. Define any new data contract with Zod before consumers.
+        Add Impact as placeholder Earth to Practice and its canonical preview
+        while preserving the existing bodies and loading fallback.
       </li>
       <li>
-        <strong>Share the material composition — medium.</strong>
-        Move the reusable cloud projection and rock/cloud composition into core
-        assets, keeping authored inputs and experiment controls out of core.
-        Provide production material loading and a fallback through the existing
-        flight-frame setup. Match the retained Follow references and check
-        opaque cores, clear openings and simulation-time rotation. Depends on
-        the trial definition.
+        <strong>Atmospheric gameplay — pending.</strong>
+        Add the accepted hull-overlap damage rates and modest,
+        direction-preserving drag to production simulation. Keep existing
+        gravity, solid contact and death behavior intact. Verify outside,
+        shallow, boundary, deep, exit, reset, pause, fatal damage and equal
+        simulated time.
       </li>
       <li>
-        <strong>Wire and assess the selected trial — medium.</strong>
-        Mount through the existing World/LFX passes and canonical Practice
-        planet preview where applicable. Check camera scales, pause/reset,
-        existing ship controls and unchanged gravity/contact; measure sustained
-        rendering cost at the intended body count. Revisit readiness if layering
-        or performance requires a new renderer. Depends on shared composition.
+        <strong>Heat cue and integration — pending.</strong>
+        Integrate the accepted curved band and soft LFX glow with actual overlap
+        and planet-relative motion through established FX ownership. Preserve
+        the shared FX lifecycle and verify entry, fading exit, replay/wrap,
+        production scales and keyboard/touch play.
       </li>
     </ol>
     <p>
-      Atmospheric drag/damage, new planet types, variable Sun colours,
-      cloud-cast shadows, richer textures and a production texture library are
-      outside these slices. Their unresolved status does not erase the usable
-      cloud result; their adoption would require its own concrete decisions.
+      Earth geography, habitation, new cloud materials, differential cloud
+      rotation, temperature accumulation and further planet taxonomy remain out
+      of scope. Earlier Earth studies remain stopped; this accepted placeholder
+      satisfies the immediate Practice need without retroactively accepting
+      their rejected designs. Further Earth exploration is deferred.
     </p>
   </section>
 </StudyLayout>

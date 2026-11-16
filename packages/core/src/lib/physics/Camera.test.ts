@@ -115,3 +115,518 @@ it("shrinks the widest level continuously as the active area collapses", () => {
   full.frame(STAR.x, STAR.y, STAR.x, STAR.y, PADDING, 4, true, 5, 0);
   expect(zooms[zooms.length - 1]).toBeLessThan(full.zoom);
 });
+
+it("speed framing has continuous bounded outward demand", () => {
+  const c = stageCamera(STAGES[1]);
+  let extent = 0;
+  for (let speed = 0; speed <= 2000; speed += 5) {
+    c.frameSpeed(460, 540, speed, 0, 40, true);
+    expect(c.activeHeight / c.zoom).toBeGreaterThanOrEqual(extent);
+    extent = c.activeHeight / c.zoom;
+    const p = c.worldToScreen(460, 540);
+    expect(p.x).toBeLessThanOrEqual(c.viewportWidth / 2 + 1e-8);
+    expect(p.y).toBeCloseTo(c.viewportHeight / 2, 10);
+  }
+  const wide = c.zoom;
+  c.frameSpeed(460, 540, 1e6, 0, 40, true);
+  expect(c.zoom).toBe(wide);
+  c.frameSpeed(460, 540, 0, 0, 40, true);
+  expect(c.worldToScreen(460, 540).x).toBeCloseTo(c.viewportWidth / 2, 10);
+  expect(c.worldToScreen(460, 540).y).toBeCloseTo(c.viewportHeight / 2, 10);
+});
+
+it("settles with equivalent simulation time at different update rates", () => {
+  const result = (hz: number) => {
+    const c = stageCamera(STAGES[1]);
+    c.frameSpeed(460, 540, 0, 0, 40, true);
+    for (let i = 0; i < hz * 2; i++) {
+      c.frameSpeed(460, 540, 300, -300, 40);
+      c.update(1 / hz);
+    }
+    return c;
+  };
+  const a = result(30),
+    b = result(144);
+  expect(a.zoom).toBeCloseTo(b.zoom, 10);
+  expect(a.pos.x).toBeCloseTo(b.pos.x, 10);
+  expect(a.pos.y).toBeCloseTo(b.pos.y, 10);
+  const previous = a.zoom;
+  a.frameSpeed(460, 540, 300, -300, 40);
+  a.update(10);
+  expect(Math.abs(a.zoom - previous)).toBeLessThan(0.00001);
+});
+
+it("contains the body through reversals, wraps, resizing and both policy transitions", () => {
+  for (const stage of STAGES) {
+    const c = stageCamera(stage);
+    const radius = 90;
+    let x = 460,
+      y = 540;
+    const inside = () => {
+      const p = c.worldToScreen(x, y),
+        box = activeBox(c),
+        hull = radius * c.zoom;
+      expect(p.x - hull).toBeGreaterThan(box.left);
+      expect(p.x + hull).toBeLessThan(box.right);
+      expect(p.y - hull).toBeGreaterThan(box.top);
+      expect(p.y + hull).toBeLessThan(box.bottom);
+      const world = c.screenToWorld(p.x, p.y);
+      expect(world.x).toBeCloseTo(x, 8);
+      expect(world.y).toBeCloseTo(y, 8);
+    };
+    c.frame(x, y, STAR.x, STAR.y, PADDING, 4, true);
+    const before = { x: c.pos.x, y: c.pos.y, zoom: c.zoom };
+    c.frameSpeed(x, y, 300, -300, radius);
+    expect({ x: c.pos.x, y: c.pos.y, zoom: c.zoom }).toEqual(before);
+    for (let i = 0; i < 600; i++) {
+      const vx = i < 150 ? 1800 : -1800;
+      x += vx / 60;
+      const wrap = Math.abs(x - STAR.x) > CAMERA_ARENA_RADIUS;
+      if (wrap) x = STAR.x - Math.sign(x - STAR.x) * (CAMERA_ARENA_RADIUS - 1);
+      c.frameSpeed(x, y, vx, -20, radius, wrap);
+      c.update(1 / 60);
+      inside();
+      if (i === 200) {
+        c.setActiveArea(140, 120);
+        inside();
+      }
+      if (i === 220) c.setActiveArea(stage.fitWidth, stage.fitHeight);
+    }
+    const speedZoom = c.zoom;
+    c.frame(x, y, STAR.x, STAR.y, PADDING, 4);
+    expect(c.zoom).toBe(speedZoom);
+    for (let i = 0; i < 1200; i++) {
+      c.frame(x, y, STAR.x, STAR.y, PADDING, 4);
+      c.keepShipVisible(x, y, radius);
+      c.update(1 / 60);
+      inside();
+    }
+    expect(c.zoomLevels).toContain(c.zoom);
+  }
+});
+
+function wideSpeedCamera() {
+  const camera = stageCamera(STAGES[1]);
+  camera.frameSpeed(460, 540, 1e6, 0, 40, true);
+  return { camera, widest: camera.zoom };
+}
+
+/** Find input for a relative demand without pinning world-speed tuning. */
+function speedForMagnification(magnification: number) {
+  const { camera, widest } = wideSpeedCamera();
+  let lower = 0,
+    upper = 1e6;
+  for (let i = 0; i < 64; i++) {
+    const speed = (lower + upper) / 2;
+    camera.frameSpeed(460, 540, speed, 0, 40, true);
+    if (camera.zoom / widest > magnification) lower = speed;
+    else upper = speed;
+  }
+  return (lower + upper) / 2;
+}
+
+function advanceSpeed(camera: Camera, seconds: number, speed = 0, radius = 40) {
+  camera.frameSpeed(460, 540, speed, 0, radius);
+  camera.update(seconds);
+}
+
+it("holds every inward scale for 1.5 active seconds and cuts one relative level at a time", () => {
+  for (const hz of [30, 60, 144]) {
+    const { camera, widest } = wideSpeedCamera();
+    let previous = widest;
+    for (const magnification of [2, 4, 8]) {
+      for (let tick = 0; tick < 1.5 * hz - 1; tick++) {
+        advanceSpeed(camera, 1 / hz);
+        expect(camera.zoom).toBe(previous);
+      }
+      advanceSpeed(camera, 1 / hz);
+      expect(camera.zoom / widest).toBeCloseTo(magnification, 10);
+      previous = camera.zoom;
+    }
+    advanceSpeed(camera, 20);
+    expect(camera.zoom).toBe(previous);
+  }
+});
+
+it("selects the next level above an outward between-level scale and never creeps towards demand", () => {
+  const { camera, widest } = wideSpeedCamera();
+  camera.frameSpeed(460, 540, 0, 0, 40, true);
+  const outwardSpeed = speedForMagnification(1.6);
+  // Smooth outward response remains continuous, immediate and bounded.
+  advanceSpeed(camera, 0.01, outwardSpeed);
+  expect(camera.zoom / widest).toBeGreaterThan(1.6);
+  expect(camera.zoom / widest).toBeLessThan(8);
+  advanceSpeed(camera, 10, outwardSpeed);
+  expect(camera.zoom / widest).toBeCloseTo(1.6, 10);
+  const held = camera.zoom;
+  const inwardSpeed = speedForMagnification(2.5);
+  advanceSpeed(camera, 1.49, inwardSpeed);
+  expect(camera.zoom).toBe(held);
+  advanceSpeed(camera, 0.01, inwardSpeed);
+  expect(camera.zoom / widest).toBeCloseTo(2, 10);
+  const cut = camera.zoom;
+  advanceSpeed(camera, 20, inwardSpeed);
+  expect(camera.zoom).toBe(cut);
+});
+
+it("acceleration cancels qualification even when the same inward candidate stays eligible", () => {
+  const { camera, widest } = wideSpeedCamera();
+  advanceSpeed(camera, 1, speedForMagnification(3));
+  advanceSpeed(camera, 0.5, speedForMagnification(2.5));
+  expect(camera.zoom).toBe(widest);
+  advanceSpeed(camera, 1.49, speedForMagnification(2.5));
+  expect(camera.zoom).toBe(widest);
+  advanceSpeed(camera, 0.01, speedForMagnification(2.5));
+  expect(camera.zoom / widest).toBeCloseTo(2, 10);
+  // Outward demand is effective on its first step, despite the inward hold.
+  advanceSpeed(camera, 0.01, 1e6);
+  expect(camera.zoom / widest).toBeLessThan(2);
+  expect(camera.zoom / widest).toBeGreaterThan(1);
+  const held = camera.zoom;
+  advanceSpeed(camera, 1.49);
+  expect(camera.zoom).toBe(held);
+  advanceSpeed(camera, 0.01);
+  expect(camera.zoom / widest).toBeCloseTo(2, 10);
+});
+
+it("lost hull eligibility and a changed candidate each require a fresh wait", () => {
+  const { camera, widest } = wideSpeedCamera();
+  advanceSpeed(camera, 1);
+  const largeHull =
+    Math.min(camera.activeWidth, camera.activeHeight) / (2 * widest * 1.2);
+  advanceSpeed(camera, 0.5, 0, largeHull);
+  expect(camera.zoom).toBe(widest);
+  advanceSpeed(camera, 1.49);
+  expect(camera.zoom).toBe(widest);
+  advanceSpeed(camera, 0.01);
+  expect(camera.zoom / widest).toBeCloseTo(2, 10);
+  // Begin waiting for 4x, then safety changes the next candidate back to 2x.
+  advanceSpeed(camera, 1);
+  advanceSpeed(camera, 0.01, 0, largeHull);
+  const held = camera.zoom;
+  expect(held / widest).toBeLessThan(2);
+  advanceSpeed(camera, 1.49);
+  expect(camera.zoom).toBe(held);
+  advanceSpeed(camera, 0.01);
+  expect(camera.zoom / widest).toBeCloseTo(2, 10);
+});
+
+it("freezes qualification without simulation updates and clears it on resize or policy changes", () => {
+  for (const interrupt of [
+    (c: Camera) => c.setActiveArea(c.activeWidth - 10, c.activeHeight),
+    (c: Camera) => c.resetSpeedEligibility(), // A preference edit while paused.
+    (c: Camera) => {
+      c.frame(460, 540, STAR.x, STAR.y, PADDING, 4);
+      c.frameSpeed(460, 540, 0, 0, 40);
+    },
+  ]) {
+    const { camera, widest } = wideSpeedCamera();
+    advanceSpeed(camera, 1);
+    // Measuring/reframing a paused scene and zero elapsed time cannot qualify it.
+    for (let i = 0; i < 100; i++) {
+      camera.setActiveArea(camera.activeWidth, camera.activeHeight);
+      advanceSpeed(camera, 0);
+    }
+    advanceSpeed(camera, 0.49);
+    expect(camera.zoom).toBe(widest);
+    interrupt(camera);
+    advanceSpeed(camera, 1.49);
+    expect(camera.zoom).toBe(widest);
+    advanceSpeed(camera, 0.01);
+    expect(camera.zoom / widest).toBeCloseTo(2, 10);
+  }
+  const { camera, widest } = wideSpeedCamera();
+  advanceSpeed(camera, 1);
+  // Unchanged policy on Resume retains the first second.
+  camera.update(0);
+  advanceSpeed(camera, 0.49);
+  expect(camera.zoom).toBe(widest);
+  advanceSpeed(camera, 0.01);
+  expect(camera.zoom / widest).toBeCloseTo(2, 10);
+});
+
+it("reset and wrap snap to the resulting demand and position with fresh inward eligibility", () => {
+  const { camera, widest } = wideSpeedCamera();
+  advanceSpeed(camera, 1.49);
+  camera.frameSpeed(-200, -300, 1e6, 0, 40, true);
+  expect(camera.zoom).toBe(widest);
+  const p = camera.worldToScreen(-200, -300);
+  expect(p.x).toBeCloseTo(camera.viewportWidth / 2, 10);
+  expect(p.y).toBeCloseTo(camera.viewportHeight / 2, 10);
+  camera.frameSpeed(-200, -300, 0, 0, 40);
+  camera.update(1.49);
+  expect(camera.zoom).toBe(widest);
+  camera.update(0.01);
+  expect(camera.zoom / widest).toBeCloseTo(2, 10);
+});
+
+it("cuts preserve ship screen position while follow pan continues independently", () => {
+  const a = wideSpeedCamera(),
+    b = wideSpeedCamera();
+  const initialSpeed = speedForMagnification(1.6);
+  const demandSpeed = speedForMagnification(2.5);
+  for (const c of [a.camera, b.camera]) {
+    c.setOffset(12, -8);
+    c.frameSpeed(460, 540, initialSpeed, 0, 40, true);
+    c.pos.x += (c.activeWidth * 0.4) / c.zoom;
+    c.keepShipVisible(460, 540, 40);
+    advanceSpeed(c, 1.49, demandSpeed);
+  }
+  // Both cameras take the same pan step; only a is allowed to cut.
+  b.camera.resetSpeedEligibility();
+  advanceSpeed(a.camera, 0.01, demandSpeed);
+  advanceSpeed(b.camera, 0.01, demandSpeed);
+  expect(a.camera.zoom / a.widest).toBeCloseTo(2, 10);
+  expect(b.camera.zoom / b.widest).toBeCloseTo(1.6, 10);
+  const cut = a.camera.worldToScreen(460, 540),
+    held = b.camera.worldToScreen(460, 540);
+  expect(cut.x).toBeCloseTo(held.x, 10);
+  expect(cut.y).toBeCloseTo(held.y, 10);
+  expect(cut.x).toBeLessThan(a.camera.viewportWidth / 2);
+  const world = a.camera.screenToWorld(cut.x, cut.y);
+  expect(world.x).toBeCloseTo(460, 10);
+  expect(world.y).toBeCloseTo(540, 10);
+});
+
+it("containment can correct cut anchoring when the larger projected hull needs room", () => {
+  const { camera, widest } = wideSpeedCamera();
+  const radius = 200;
+  advanceSpeed(camera, 1.49, 0, radius);
+  camera.pos.x += 1e6;
+  camera.keepShipVisible(460, 540, radius);
+  camera.update(0.01);
+  expect(camera.zoom / widest).toBeCloseTo(2, 10);
+  const p = camera.worldToScreen(460, 540),
+    box = activeBox(camera),
+    hull = radius * camera.zoom;
+  expect(p.x - hull).toBeGreaterThan(box.left);
+  expect(p.x + hull).toBeLessThan(box.right);
+  expect(p.y - hull).toBeGreaterThan(box.top);
+  expect(p.y + hull).toBeLessThan(box.bottom);
+});
+
+it("entering speed framing from a wider standard view holds the transform before its first cut", () => {
+  const camera = stageCamera(STAGES[1]);
+  camera.frame(460, 540, STAR.x, STAR.y, PADDING, 4, true, 5, 0);
+  const before = { x: camera.pos.x, y: camera.pos.y, zoom: camera.zoom };
+  const widest = wideSpeedCamera().widest;
+  expect(camera.zoom).toBeLessThan(widest);
+  camera.frameSpeed(460, 540, 0, 0, 40);
+  expect({ x: camera.pos.x, y: camera.pos.y, zoom: camera.zoom }).toEqual(
+    before,
+  );
+  advanceSpeed(camera, 1.49);
+  expect(camera.zoom).toBe(before.zoom);
+  advanceSpeed(camera, 0.01);
+  expect(camera.zoom).toBe(widest);
+});
+
+it("allows visible travel and slowly recentres a stopped ship", () => {
+  const { camera, widest } = wideSpeedCamera();
+  const centre = { x: camera.pos.x, y: camera.pos.y };
+  const x = 460 + (camera.activeWidth * 0.25) / widest;
+  const y = 540 + (camera.activeHeight * 0.2) / widest;
+  camera.frameSpeed(x, y, 1e6, 0, 40);
+  camera.update(1 / 60);
+  expect(camera.pos.x).toBeGreaterThan(centre.x);
+  expect(camera.pos.x - centre.x).toBeLessThan((x - centre.x) / 10);
+  expect(camera.pos.y).toBeGreaterThan(centre.y);
+  expect(camera.pos.y - centre.y).toBeLessThan((y - centre.y) / 10);
+  const stopped = camera.worldToScreen(x, y);
+  expect(stopped.x).toBeGreaterThan(camera.viewportWidth / 2);
+  expect(stopped.y).toBeGreaterThan(camera.viewportHeight / 2);
+  // Stopping can qualify inward cuts, with slow centring independent of them.
+  let previous = stopped;
+  for (let i = 0; i < 60; i++) {
+    camera.frameSpeed(x, y, 0, 0, 40);
+    camera.update(1);
+    const p = camera.worldToScreen(x, y);
+    expect(p.x).toBeLessThanOrEqual(previous.x + 1e-8);
+    expect(p.y).toBeLessThanOrEqual(previous.y + 1e-8);
+    expect(p.x).toBeGreaterThanOrEqual(camera.viewportWidth / 2 - 1e-8);
+    expect(p.y).toBeGreaterThanOrEqual(camera.viewportHeight / 2 - 1e-8);
+    if (i === 0)
+      expect(p.x - camera.viewportWidth / 2).toBeGreaterThan(
+        (stopped.x - camera.viewportWidth / 2) / 2,
+      );
+    previous = p;
+  }
+  expect(camera.zoom / widest).toBeCloseTo(8, 10);
+  expect(previous.x - camera.viewportWidth / 2).toBeLessThan(1);
+  expect(previous.y - camera.viewportHeight / 2).toBeLessThan(1);
+});
+
+it("recentres an offset view with equivalent elapsed time", () => {
+  const result = (hz: number) => {
+    const { camera, widest } = wideSpeedCamera();
+    const initial = camera.pos.x;
+    const x = 460;
+    camera.pos.x -= (camera.activeWidth * 0.44) / widest;
+    camera.keepShipVisible(x, 540, 40);
+    const displacedCentre = camera.pos.x;
+    camera.frameSpeed(x, 540, 1e6, 0, 40);
+    camera.update(1 / hz);
+    expect(camera.pos.x).toBeGreaterThan(displacedCentre);
+    expect(camera.pos.x).toBeLessThan(
+      displacedCentre + (initial - displacedCentre) / 10,
+    );
+    for (let i = 1; i < hz; i++) {
+      camera.frameSpeed(x, 540, 1e6, 0, 40);
+      camera.update(1 / hz);
+    }
+    return { camera, x };
+  };
+  const a = result(30),
+    b = result(144);
+  expect(a.camera.pos.x).toBeCloseTo(b.camera.pos.x, 8);
+  const initialOffset =
+    a.camera.worldToScreen(a.x, 540).x - a.camera.viewportWidth / 2;
+  for (let i = 0; i < 10; i++) {
+    a.camera.frameSpeed(a.x, 540, 0, 0, 40);
+    a.camera.update(1);
+  }
+  const finalOffset =
+    a.camera.worldToScreen(a.x, 540).x - a.camera.viewportWidth / 2;
+  expect(finalOffset).toBeGreaterThan(0);
+  expect(finalOffset).toBeLessThan(initialOffset);
+});
+
+it("outward zoom starts gently, accelerates, then eases out without overshoot", () => {
+  const { camera, widest } = wideSpeedCamera();
+  camera.frameSpeed(460, 540, 0, 0, 40, true);
+  const close = camera.zoom;
+  advanceSpeed(camera, 0.01, 1e6);
+  const first = close - camera.zoom;
+  expect(first).toBeGreaterThan(0);
+  const afterFirst = camera.zoom;
+  advanceSpeed(camera, 0.01, 1e6);
+  const second = afterFirst - camera.zoom;
+  expect(second).toBeGreaterThan(first);
+  let previous = camera.zoom;
+  for (let i = 0; i < 100; i++) {
+    advanceSpeed(camera, 0.01, 1e6);
+    expect(camera.zoom).toBeLessThanOrEqual(previous);
+    expect(camera.zoom).toBeGreaterThanOrEqual(widest);
+    previous = camera.zoom;
+  }
+  advanceSpeed(camera, 0.01, 1e6);
+  expect(previous - camera.zoom).toBeLessThan(second);
+});
+
+it("outward retargeting cannot creep inward, and reset clears its previous response", () => {
+  const { camera, widest } = wideSpeedCamera();
+  camera.frameSpeed(460, 540, 0, 0, 40, true);
+  advanceSpeed(camera, 0.2, 1e6);
+  let previous = camera.zoom;
+  const slower = speedForMagnification(2.5);
+  for (let i = 0; i < 100; i++) {
+    advanceSpeed(camera, 0.01, slower);
+    expect(camera.zoom).toBeLessThanOrEqual(previous);
+    expect(camera.zoom / widest).toBeGreaterThanOrEqual(2.5 - 1e-10);
+    previous = camera.zoom;
+  }
+  camera.frameSpeed(-200, -300, 0, 0, 40, true);
+  const fresh = wideSpeedCamera().camera;
+  fresh.frameSpeed(-200, -300, 0, 0, 40, true);
+  for (const c of [camera, fresh]) {
+    c.frameSpeed(-200, -300, 1e6, 0, 40);
+    c.update(0.01);
+  }
+  expect(camera.zoom).toBe(fresh.zoom);
+});
+
+it("lets a coasting ship leave centre, then recentres at propulsion and arrival speeds", () => {
+  for (const velocity of [
+    { x: 200, y: 0 },
+    { x: 400, y: 0 },
+    { x: 600, y: 0 },
+    { x: -240, y: -320 },
+  ]) {
+    const runs = [];
+    for (const hz of [30, 60, 144]) {
+      const { camera } = wideSpeedCamera();
+      camera.frameSpeed(460, 540, velocity.x, velocity.y, 40, true);
+      let peak = 0;
+      for (let i = 1; i <= 20 * hz; i++) {
+        const x = 460 + (velocity.x * i) / hz;
+        const y = 540 + (velocity.y * i) / hz;
+        camera.frameSpeed(x, y, velocity.x, velocity.y, 40);
+        camera.update(1 / hz);
+        const p = camera.worldToScreen(x, y);
+        const distance = Math.hypot(
+          p.x - camera.viewportWidth / 2,
+          p.y - camera.viewportHeight / 2,
+        );
+        peak = Math.max(peak, distance);
+        if (i === 20 * hz) expect(distance).toBeLessThan(1e-8);
+      }
+      expect(peak).toBeGreaterThan(camera.activeHeight * 0.05);
+      runs.push({ peak, x: camera.pos.x, y: camera.pos.y });
+    }
+    expect(runs[0].peak).toBeCloseTo(runs[2].peak, 1);
+    expect(runs[0].x).toBeCloseTo(runs[2].x, 8);
+    expect(runs[0].y).toBeCloseTo(runs[2].y, 8);
+  }
+});
+
+it("holds the upper zoom label until each outward level is reached", () => {
+  const { camera, widest } = wideSpeedCamera();
+  for (const [magnification, label] of [
+    [8, 8],
+    [6, 8],
+    [4.01, 8],
+    [4, 4],
+    [3.9, 4],
+    [2.01, 4],
+    [2, 2],
+    [1.5, 2],
+    [1, 1],
+  ]) {
+    camera.zoom = widest * magnification;
+    expect(camera.speedZoomMode).toBe(label);
+  }
+});
+
+it("returns to an 8x cut and readout while a slow ship keeps moving", () => {
+  const { camera, widest } = wideSpeedCamera();
+  const speed = 10;
+  let x = 460;
+  for (const label of [2, 4, 8]) {
+    for (let tick = 0; tick < 90; tick++) {
+      x += speed / 60;
+      camera.frameSpeed(x, 540, speed, 0, 40);
+      camera.update(1 / 60);
+    }
+    expect(camera.zoom / widest).toBeCloseTo(label, 10);
+    expect(camera.speedZoomMode).toBe(label);
+  }
+  // Widen, then earn the closest level again without stopping the ship.
+  advanceSpeed(camera, 2, 400);
+  expect(camera.speedZoomMode).toBeLessThan(8);
+  for (let tick = 0; tick < 270; tick++) {
+    x += speed / 60;
+    camera.frameSpeed(x, 540, speed, 0, 40);
+    camera.update(1 / 60);
+  }
+  expect(camera.zoom / widest).toBeCloseTo(8, 10);
+  expect(camera.speedZoomMode).toBe(8);
+});
+
+it("allows closer inward cuts throughout their propulsion-speed bands", () => {
+  for (const [speed, expected] of [
+    [100, 8],
+    [200, 4],
+    [300, 2],
+    [400, 1],
+  ]) {
+    const { camera, widest } = wideSpeedCamera();
+    let x = 460;
+    for (let tick = 0; tick < 480; tick++) {
+      x += speed / 60;
+      camera.frameSpeed(x, 540, speed, 0, 40);
+      camera.update(1 / 60);
+    }
+    expect(camera.zoom / widest).toBeCloseTo(expected, 10);
+    expect(camera.speedZoomMode).toBe(expected);
+  }
+});

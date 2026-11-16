@@ -50,6 +50,15 @@ const planetDoc = FlightSceneDocumentSchema.parse({
   follow: { near: 0.8, far: 4 },
   opening: { burn: "course", view: "follow", tick: 30 },
 });
+let planetApproach = $state("Reference");
+const stagedStart = $derived(
+  sceneKind === "Planet" && planetDoc.start
+    ? {
+        ...planetDoc.start,
+        x: planetDoc.start.x + (planetApproach === "Deeper" ? 2 : 0),
+      }
+    : undefined,
+);
 const activeDoc = $derived(sceneKind === "Planet" ? planetDoc : doc);
 const modes = $derived(targetModes(activeDoc));
 
@@ -83,6 +92,7 @@ const id = $props.id();
     targets={sceneKind === "Planet" ? "none" : targets}
     {layers}
     {starAppearance}
+    start={stagedStart}
     light={lit ? EXAMPLE_LIGHT : undefined}
   >
     {#snippet pane()}
@@ -93,6 +103,12 @@ const id = $props.id();
         bind:value={sceneKind}
       />
       {#if sceneKind === "Planet"}
+        <p>Approach · changing start preserves the selected burn and time</p>
+        <Toggle
+          label="Planet approach"
+          options={["Reference", "Deeper"]}
+          bind:value={planetApproach}
+        />
         <p>
           Current Practice Venus staged beside a Wasp. Fixed burns and timeline;
           production body drawing.

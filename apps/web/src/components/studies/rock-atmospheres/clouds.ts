@@ -1,16 +1,27 @@
 import type { AtmosphereTreatment } from "./atmosphere";
+import type { CloudFields } from "./cloud-materials";
 
 export const CLOUD_COVERAGE = ["02.5", "Sparse", "Broad"] as const;
 export type CloudCoverage = (typeof CLOUD_COVERAGE)[number];
 export const CLOUD_OPACITY = ["Thin", "Opaque"] as const;
 export type CloudOpacity = (typeof CLOUD_OPACITY)[number];
 
-// Study-only translucent cloud cover. A periodic scalar atlas keeps holes in
+export const CLOUD_SHADOWS = [
+  "02.11 shadow",
+  "Readable night",
+  "Deep night",
+] as const;
+
+// Study-only cloud cover. A periodic scalar atlas keeps holes in
 // the cover; the opaque authored-rock projector deliberately fills such holes.
-export function makeCloudPainter() {
+export function makeCloudPainter(
+  textures: CloudFields = new Map(),
+  material: () => string = () => "Procedural",
+  generatedSize = 384,
+) {
   const width = 384,
-    height = 192,
-    size = 128;
+    height = 192;
+  let size = 128;
   const fields = new Map<string, Float32Array>();
   for (const kind of ["Cloud banks", "Cloud bands"]) {
     const field = new Float32Array(width * height);
@@ -37,7 +48,7 @@ export function makeCloudPainter() {
   canvas.width = canvas.height = size;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Cloud canvas unavailable");
-  const pixels = ctx.createImageData(size, size);
+  let pixels = ctx.createImageData(size, size);
   let previous = "";
   return (
     target: CanvasRenderingContext2D,
@@ -47,11 +58,45 @@ export function makeCloudPainter() {
     sunAngle: number,
     coverage: CloudCoverage = "02.5",
     opacity: CloudOpacity = "Thin",
+    shadowFloor = 0.42,
+    brightFace = false,
+    dayBrightness = 1,
   ) => {
-    const field = fields.get(kind);
-    if (!field) return;
-    const key = `${kind}:${seconds}:${sunAngle}:${coverage}:${opacity}`;
+    const procedural = fields.get(kind);
+    if (!procedural) return;
+    const texture = textures.get(material());
+    const field = texture?.density ?? procedural;
+    const w = texture?.width ?? width;
+    const h = texture?.height ?? height;
+    const desiredSize = texture ? generatedSize : 128;
+    if (size !== desiredSize) {
+      size = desiredSize;
+      canvas.width = canvas.height = size;
+      pixels = ctx.createImageData(size, size);
+      previous = "";
+    }
+    const key = `${material()}:${kind}:${seconds}:${sunAngle}:${coverage}:${opacity}:${shadowFloor}:${brightFace}:${dayBrightness}`;
     const mask = (value: number) => {
+      if (texture?.coverageThreshold !== undefined) {
+        const offset =
+          coverage === "Sparse" ? 0.12 : coverage === "Broad" ? -0.08 : 0;
+        const center = Math.max(
+          0.002,
+          Math.min(0.98, texture.coverageThreshold + offset),
+        );
+        const halfWidth = Math.min(0.2, center * 0.95);
+        const t = Math.max(
+          0,
+          Math.min(1, (value - center) / (2 * halfWidth) + 0.5),
+        );
+        return t * t * (3 - 2 * t);
+      }
+      if (texture) {
+        const threshold =
+          coverage === "Sparse" ? 0.28 : coverage === "Broad" ? 0.02 : 0.1;
+        const t = Math.max(0, Math.min(1, (value - threshold) / 0.4));
+        return t * t * (3 - 2 * t);
+      }
       const t = Math.max(
         0,
         Math.min(
@@ -76,29 +121,54 @@ export function makeCloudPainter() {
           if (r2 >= 1) continue;
           const nz = Math.sqrt(1 - r2);
           const lon = Math.atan2(nx, nz) + phase;
-          const u =
-            ((((lon / (Math.PI * 2) + 0.5) * width) % width) + width) % width;
-          const v = (Math.asin(ny) / Math.PI + 0.5) * (height - 1);
+          const u = ((((lon / (Math.PI * 2) + 0.5) * w) % w) + w) % w;
+          const v = (Math.asin(ny) / Math.PI + 0.5) * (h - 1);
           const ix = Math.floor(u),
             iy = Math.floor(v);
           const fx = u - ix,
             fy = v - iy;
           const a =
-            mask(field[iy * width + ix]) * (1 - fx) +
-            mask(field[iy * width + ((ix + 1) % width)]) * fx;
+            mask(field[iy * w + ix]) * (1 - fx) +
+            mask(field[iy * w + ((ix + 1) % w)]) * fx;
           const b =
-            mask(field[Math.min(height - 1, iy + 1) * width + ix]) * (1 - fx) +
-            mask(
-              field[Math.min(height - 1, iy + 1) * width + ((ix + 1) % width)],
-            ) *
-              fx;
+            mask(field[Math.min(h - 1, iy + 1) * w + ix]) * (1 - fx) +
+            mask(field[Math.min(h - 1, iy + 1) * w + ((ix + 1) % w)]) * fx;
+          const density = texture
+            ? (field[iy * w + ix] * (1 - fx) +
+                field[iy * w + ((ix + 1) % w)] * fx) *
+                (1 - fy) +
+              (field[Math.min(h - 1, iy + 1) * w + ix] * (1 - fx) +
+                field[Math.min(h - 1, iy + 1) * w + ((ix + 1) % w)] * fx) *
+                fy
+            : 1;
+          // Retain density detail in opaque cores as well as the coverage edges.
+          const detail = texture ? 0.7 + 0.3 * density : 1;
+          const facing =
+            nx * Math.cos(sunAngle) * 0.88 +
+            ny * Math.sin(sunAngle) * 0.88 +
+            Math.sqrt(Math.max(0, 1 - nx * nx - ny * ny)) * 0.475;
+          const night = Math.min(1, Math.max(0, -facing / 0.25));
+          const blend = night * night * (3 - 2 * night);
+          // Change RGB on the shaded hemisphere only. Never make opaque clouds
+          // transparent to obtain darkness; openings and the sunlit side stay fixed.
           const light =
-            0.42 +
-            0.58 *
-              Math.max(0, nx * Math.cos(sunAngle) + ny * Math.sin(sunAngle));
-          pixels.data[at] = 193 * light;
-          pixels.data[at + 1] = 216 * light;
-          pixels.data[at + 2] = 222 * light;
+            0.42 + 0.58 * Math.max(0, facing) - (0.42 - shadowFloor) * blend;
+          pixels.data[at] = 193 * light * detail;
+          pixels.data[at + 1] = 216 * light * detail;
+          pixels.data[at + 2] = 222 * light * detail;
+          if (brightFace) {
+            // Density controls coverage; do not turn gray density samples into
+            // dark pigment. Preserve the old fully shaded RGB exactly.
+            const whiteDetail = texture ? 0.94 + 0.06 * density : 1;
+            const daylight =
+              (0.94 + 0.06 * Math.max(0, facing)) * whiteDetail * dayBrightness;
+            pixels.data[at] =
+              193 * light * detail * blend + 245 * daylight * (1 - blend);
+            pixels.data[at + 1] =
+              216 * light * detail * blend + 248 * daylight * (1 - blend);
+            pixels.data[at + 2] =
+              222 * light * detail * blend + 250 * daylight * (1 - blend);
+          }
           pixels.data[at + 3] =
             255 *
             (a * (1 - fy) + b * fy) *

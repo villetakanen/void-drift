@@ -12,8 +12,8 @@ export const studies = z.array(studySchema).parse([
   {
     slug: "rock-atmospheres-2026-11-15",
     title: "Air around rock worlds",
-    status: "open",
-    phase: "exploration",
+    status: "accepted",
+    phase: "scope",
     question:
       "What atmospheric envelope makes the existing rotating rock worlds feel surrounded by air and gives a pilot a readable choice when skimming their edge?",
   },

@@ -52,7 +52,13 @@ never the run.
   hull and power instruments and the right gutter the survival time with the
   running [Survival score](../survival/spec.md) below it. With
   [Playground](../experimental/spec.md) On, the scoring-off notice takes
-  the score's place.
+  the score's place. With [Speed camera](../camera/speed-camera/spec.md) On,
+  the left gutter shows a passive ZOOM readout below Hull and Power. It is absent
+  with Speed camera Off and follows the deck's visibility rules. Values are
+  `1×`, `2×`, `4×` or `8×`: outward zoom holds `8×` until actual `4×`, then
+  `4×` until actual `2×`, then `2×` until actual `1×`. Exact levels show their
+  own label; no decimal values or nearest-level rounding appear. The camera
+  contract owns the scale and label calculation.
 - At a safe viewport height of 700 CSS px and above, the side gutters hold
   their instruments, deck buttons and full-height pads without overlap.
 - Just above each pad assembly sits one deck button: Pause on the left, and a
@@ -73,7 +79,10 @@ never the run.
   never by scaling a whole DOM scene.
 - During active flight, the screen exposes gameplay controls and Pause.
   Links to other pages and return/abort actions live in paused or completed-run
-  UI. Keyboard focus reaches only visible controls during play.
+  UI. Pause contains actions and navigation only, never settings controls;
+  its Settings action navigates to the separate Options page. Speed camera is
+  controlled exclusively there. Keyboard focus reaches only visible controls
+  during play.
 - Touching, holding or dragging the live play surface and its controls operates
   the game without selecting text, invoking a text/image callout, dragging page
   content, scrolling or triggering page zoom. Containment is scoped to play;

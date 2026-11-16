@@ -17,12 +17,13 @@ import {
   RIM_LIGHTS,
   SPIN_SECONDS,
 } from "./atmosphere";
-
+import type { CloudFields } from "./cloud-materials";
 import {
   type CloudCoverage,
   type CloudOpacity,
   makeCloudPainter,
 } from "./clouds";
+import { makeSunlightPainter } from "./sunlight";
 
 export function makeRockAppearances(
   materials: HTMLCanvasElement[],
@@ -33,6 +34,13 @@ export function makeRockAppearances(
   opacity: () => CloudOpacity = () => "Thin",
   boundary: () => AirBoundary = () => "Current line",
   rimTint: () => string = () => "#ffffff",
+  sharedSunlight: () => boolean = () => false,
+  cloudShadow: () => number = () => 0.42,
+  cloudFields: CloudFields = new Map(),
+  cloudMaterial: () => string = () => "Procedural",
+  brightCloudFace: () => boolean = () => false,
+  cloudDayBrightness: () => number = () => 1,
+  showAirflow: () => boolean = () => true,
 ) {
   const envelopeSet = (scatter: boolean) =>
     new Map(
@@ -54,7 +62,8 @@ export function makeRockAppearances(
   let tintedRim:
     | { key: string; value: ReturnType<typeof makeRimLight> }
     | undefined;
-  const clouds = makeCloudPainter();
+  const clouds = makeCloudPainter(cloudFields, cloudMaterial);
+  const sunlight = makeSunlightPainter(cloudFields, cloudMaterial);
   const names = ["Mineral mosaic", "Ancient highlands", "Impact palimpsest"];
   return materials.map((material, index) => {
     const surface = new SphericalSurface(material, "tile");
@@ -116,8 +125,12 @@ export function makeRockAppearances(
             Math.atan2(sun.pos.y - p.pos.y, sun.pos.x - p.pos.x),
             coverage(),
             opacity(),
+            cloudShadow(),
+            brightCloudFace(),
+            cloudDayBrightness(),
           );
           ctx.restore();
+          if (!showAirflow()) return;
           const sample = atmosphereSample(ship, p, AIR_DEPTH);
           const vx = ship.vel.x - sample.vx,
             vy = ship.vel.y - sample.vy;
@@ -141,7 +154,7 @@ export function makeRockAppearances(
           }
           ctx.restore();
         },
-        lfx(ctx, { planet: p, sun }) {
+        lfx(ctx, { planet: p, sun, seconds }) {
           if (!air || lighting() === "02.4 light")
             painter.light(
               ctx,
@@ -151,6 +164,19 @@ export function makeRockAppearances(
               sun.pos.x,
               sun.pos.y,
               shadowIntensity(),
+            );
+          if (sharedSunlight())
+            sunlight(
+              ctx,
+              p.radius,
+              p.pos.x,
+              p.pos.y,
+              Math.atan2(sun.pos.y - p.pos.y, sun.pos.x - p.pos.x),
+              sun.color,
+              seconds,
+              air ? treatment() : "Limb haze",
+              coverage(),
+              opacity(),
             );
           const kind = boundary();
           let rim = air ? rimLights.get(kind) : undefined;

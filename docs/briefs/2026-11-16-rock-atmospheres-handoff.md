@@ -1,3 +1,11 @@
+> Superseded on 16 November 2026 by the accepted study’s closure and production scope:
+> `/lab/studies/rock-atmospheres-2026-11-15#04`. Impact/Cirrus is selected as
+> placeholder Earth for Practice, with soft planet-facing LFX, curved-band FX
+> at 180% brightness / 150% width, 1 hull/s in the outer 30% of atmosphere,
+> 2 hull/s deeper, and small direction-preserving deceleration. Production
+> installation remains pending; Earth exploration is deferred. The continuation
+> instructions below preserve the earlier 02.4 handoff and are no longer current.
+
 # Continue the rock-atmosphere study at 02.4
 
 Work in `/Users/ville.takanen/dev/void-drift`. Use `design-study` and

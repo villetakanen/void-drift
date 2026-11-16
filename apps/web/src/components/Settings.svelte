@@ -1,6 +1,7 @@
 <script lang="ts">
 import { settings } from "../lib/stores/settings";
 import Logo from "./Logo.svelte";
+import SpeedCameraSetting from "./SpeedCameraSetting.svelte";
 
 // Svelte's $ prefix subscribes to nanostores automatically
 const currentSettings = $derived($settings);
@@ -42,6 +43,11 @@ function handleKeydown(event: KeyboardEvent) {
         <span class="toggle-hint">Swap left/right engine controls</span>
       </div>
     </label>
+  </section>
+
+  <section class="setting-group">
+    <h2>Camera</h2>
+    <SpeedCameraSetting />
   </section>
 
   <footer class="button-group-frame">

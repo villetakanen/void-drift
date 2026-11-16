@@ -45,6 +45,8 @@ Voice-led game design, and development development of a space shooter inspired b
 - Use Svelte 5 Runes, native CSS, shared tokens, and procedural Canvas assets.
 - Connect controls to the game loop; retain keyboard and iPad landscape touch in play.
 - The Lab targets viewports 1280px wide and up; never design, test or fix it below that.
+- Never promote code from a study without planning, speccing, architectural review and explicit instruction.
+- A study's decisions hold only inside the study. To the project and its specs they are proposals: examine each claim, decide, and write the decision into a spec before changing code. A study names the spec changes it would need; the project decides them.
 
 ## Evidence and learning
 

@@ -373,3 +373,23 @@ Planet appearance callbacks receive the displayed star colours in their frozen
 snapshot. They decide whether to respond; this input does not automatically
 relight materials. The canonical Flight scene page offers Stock/Warm/Cool.
 `data-star-color` reports the supplied display body colour when present.
+
+
+### Atmospheric study light and reactive approach — 16 November 2026
+
+The optional `start` prop accepts the existing strict `StagedStartSchema` pose
+and velocity. Like `planet`, it is validated in the complete document and a change
+replays the selected burn to the selected tick without resetting the view. Invalid
+staging is reported instead of silently applied. The canonical Flight scene planet
+example offers Reference/Deeper start positions. The rock-atmospheres study supplies
+Outside/Skim/Deeper approaches through this shared input rather than another loop.
+
+`StudyLightState.ship.radius` supplies the simulation collision radius. For a
+staged atmosphere, optional `atmosphere` contains current overlap `density`, world-unit
+`clearance`, planet-relative `vx`/`vy` in u/s, and the unit direction towards
+the body as `inwardX`/`inwardY`. Without an atmosphere it is absent.
+These are copied numeric presentation values; study light cannot change gameplay.
+Effects can emit through the existing budgeted `StudyLight.fx` callback into the
+shared persistent surface, which owns pause, reset, seek and decay. This capability
+adds no temperature, dose, damage or new simulation rules. The heat study uses it
+for a provisional visual cue, with a filled planet-facing LFX contact highlight; engine output remains the game's own.

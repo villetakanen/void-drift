@@ -6,21 +6,94 @@ import RingSlider from "../../inputs/RingSlider.svelte";
 import Toggle from "../../inputs/Toggle.svelte";
 import FlightSceneInstrument from "../../lab/flight-scene/FlightSceneInstrument.svelte";
 import { makeRockAppearances } from "./appearance";
-import { AIR_DEPTH, type AirBoundary, DRAG_RATE } from "./atmosphere";
-import { ROCK_ATMOSPHERE_SCENE as config } from "./fixture";
+import {
+  AIR_DEPTH,
+  AIR_LIGHTING,
+  type AirBoundary,
+  type AirLighting,
+  ATMOSPHERE_TREATMENTS,
+  type AtmosphereTreatment,
+  DRAG_RATE,
+} from "./atmosphere";
+import {
+  CLOUD_MATERIALS,
+  COVERAGE_MATERIALS,
+  loadCloudMaterials,
+} from "./cloud-materials";
+import {
+  CLOUD_COVERAGE,
+  CLOUD_OPACITY,
+  CLOUD_SHADOWS,
+  type CloudCoverage,
+  type CloudOpacity,
+} from "./clouds";
+import {
+  ROCK_HEAT_SCENE as config,
+  HEAT_APPROACHES,
+  heatStart,
+} from "./fixture";
+import { HEAT_STAMPS, heatSourceStamp, makeHeatLight } from "./heat";
 import { starColour } from "./star-colour";
 
 let { label = "Air around rock worlds" }: { label?: string } = $props();
 const names = ["Mineral", "Highlands", "Impact"];
 const fullNames = ["Mineral mosaic", "Ancient highlands", "Impact palimpsest"];
+let approach = $state("Skim");
+let heatMode = $state("Heat envelope");
+let contactShape = $state("Soft glow");
+let heatSource = $state("Curved band");
+let bandBrightness = $state(180);
+let bandWidth = $state(150);
+let sourceReady = $state(false);
+let sourceImages = $state<Record<string, string>>({});
+onMount(() => {
+  sourceReady = true;
+});
+$effect(() => {
+  if (!sourceReady) return;
+  sourceImages = Object.fromEntries(
+    HEAT_STAMPS.map((kind) => [
+      kind,
+      heatSourceStamp(kind, 1, bandWidth / 100).toDataURL(),
+    ]),
+  );
+});
+const start = $derived(heatStart(approach));
+const light = $derived(
+  heatMode === "Heat envelope"
+    ? makeHeatLight(
+        contactShape,
+        heatSource,
+        bandBrightness / 100,
+        bandWidth / 100,
+      )
+    : undefined,
+);
 let shadowIntensity = $state(1.45);
-const atmosphereTreatment = "Cloud banks";
-const airLighting = "Separate air";
-const coverage = "02.5";
-const opacity = "Opaque";
+let atmosphereTreatment = $state<AtmosphereTreatment>("Cloud banks");
+let airLighting = $state<AirLighting>("Separate air");
+let coverage = $state<CloudCoverage>("02.5");
+let opacity = $state<CloudOpacity>("Opaque");
+let cloudShadowPercent = $state(42);
+let cloudDayPercent = $state(91);
+let cloudMaterial = $state("Cirrus");
+let cloudFace = $state("Bright face");
+const shadowPresets: Record<string, number> = {
+  "02.11 shadow": 42,
+  "Readable night": 18,
+  "Deep night": 4,
+};
+const cloudShadow = $derived(
+  Object.keys(shadowPresets).find(
+    (name) => shadowPresets[name] === cloudShadowPercent,
+  ) ?? "",
+);
+function selectCloudShadow(name: string) {
+  if (name in shadowPresets) cloudShadowPercent = shadowPresets[name];
+}
+let sunlight = $state("Shared sunlight");
 const boundary: AirBoundary = "Dayward";
 let kelvin = $state(5800);
-const response = "Fixed blue";
 const colour = $derived(starColour(kelvin));
 const starAppearance = $derived({ color: colour, glowColor: colour });
 let material = $state(names[2]),
@@ -35,19 +108,34 @@ const planet = $derived({
     : {}),
 });
 const appearance = $derived.by(() => {
+  // Each appearance tool requests a redraw at the same simulation instant.
+  void [
+    atmosphereTreatment,
+    airLighting,
+    coverage,
+    opacity,
+    shadowIntensity,
+    cloudShadowPercent,
+    cloudMaterial,
+    cloudFace,
+    cloudDayPercent,
+    heatMode,
+    sunlight,
+    kelvin,
+  ];
   const chosen =
     appearances[names.indexOf(material)]?.[treatment === "Air + drag" ? 1 : 0];
   return chosen
     ? {
         ...chosen,
-        label: `${chosen.label} · ${boundary} · ${kelvin} K · ${response}`,
+        label: `${material} · Dayward blue`,
       }
     : undefined;
 });
 onMount(() => {
   let disposed = false;
-  loadAuthoredRockMaterials()
-    .then((materials) => {
+  Promise.all([loadAuthoredRockMaterials(), loadCloudMaterials()])
+    .then(([materials, cloudFields]) => {
       if (!disposed)
         appearances = makeRockAppearances(
           materials,
@@ -58,6 +146,13 @@ onMount(() => {
           () => opacity,
           () => boundary,
           () => "#ffffff",
+          () => sunlight === "Shared sunlight",
+          () => cloudShadowPercent / 100,
+          cloudFields,
+          () => cloudMaterial,
+          () => cloudFace === "Bright face",
+          () => cloudDayPercent / 100,
+          () => heatMode === "Airflow",
         );
     })
     .catch((error) => {
@@ -75,9 +170,106 @@ onMount(() => {
     {label}
     {planet}
     {starAppearance}
+    {start}
+    {light}
     planetAppearance={appearance}
   >
     {#snippet pane()}
+      <p>02.16 · Atmospheric heat envelope</p>
+      <Toggle
+        label="Heat cue"
+        options={["None", "Airflow", "Heat envelope"]}
+        bind:value={heatMode}
+        details={{}}
+      />
+      <p>FX source · what gets stamped</p>
+      <Toggle
+        label="Heat stamp"
+        compact
+        details={{}}
+        options={HEAT_STAMPS}
+        bind:value={heatSource}
+      />
+      {#if heatSource === "Curved band"}
+        <RingSlider
+          label="Band brightness"
+          min={100}
+          max={250}
+          step={5}
+          digits={0}
+          unit="%"
+          bind:value={bandBrightness}
+        />
+        <RingSlider
+          label="Band width"
+          min={100}
+          max={220}
+          step={5}
+          digits={0}
+          unit="%"
+          bind:value={bandWidth}
+        />
+        <p>
+          100% on both restores the previous band. Opening proposal: 180%
+          brightness, 150% width. Width thickens the band without moving it away
+          from the hull. Brightness boosts faint entry, with emission capped at
+          full strength.
+        </p>
+      {/if}
+      {#if sourceImages[heatSource]}
+        <figure class="heat-source">
+          <img
+            src={sourceImages[heatSource]}
+            width="320"
+            height="256"
+            alt={`${heatSource}: raw FX source mark, forward to the right`}
+          >
+          <figcaption>
+            {heatSource}
+            · forward → · before FX filtering and fading
+          </figcaption>
+        </figure>
+      {/if}
+      <p>
+        This is one source mark. Flight mirrors it around the ship’s motion and
+        weights the planet-facing side more brightly. The three new marks are
+        static; Current envelope retains its four frames. The band controls
+        change FX only; its source preview shows the width before emission gain.
+      </p>
+      <p>
+        Soft LFX glow and planet-facing emphasis are accepted and held fixed for
+        this comparison. Use the same time and burn when switching stamps.
+      </p>
+      <details>
+        <summary>Earlier LFX comparison</summary>
+        <Toggle
+          label="Contact light"
+          options={["Soft glow", "Tapered crescent"]}
+          bind:value={contactShape}
+        />
+        <p>
+          Soft glow is selected. The crescent remains available as a reference.
+        </p>
+      </details>
+      <p>Approach · same ship, speed, atmosphere and fixed burns</p>
+      <Toggle
+        label="Atmospheric approach"
+        options={HEAT_APPROACHES}
+        bind:value={approach}
+        details={{}}
+      />
+      <p>
+        Open at 0.45s. Skim: brief shallow exposure; Deeper: stronger, longer
+        exposure. Outside misses the air. 02.15 pass restores the appearance
+        study’s trajectory. All offered burns avoid the rock.
+      </p>
+      <p>
+        Warm leading-edge light and trailing flame follow atmospheric overlap
+        and planet-relative speed. Shared FX history fades after exit. This is a
+        proposed danger cue, not applied heat damage: hull remains unchanged by
+        air. Drag is still provisional at 0.8/s. B1/B2 are firing during entry;
+        these are grazing passes, not sustained engine-off coasts.
+      </p>
       <p>Dayward · settled blue rim and narrow peaks, 20° toward the Sun</p>
       <RingSlider
         label="Star colour temperature"
@@ -96,15 +288,113 @@ onMount(() => {
         Fixed blue emission is settled. The star slider remains a context check;
         it does not change the selected rim.
       </p>
+      <p>02.15 · Lit-cloud brightness</p>
+      <RingSlider
+        label="Lit-cloud brightness"
+        min={40}
+        max={100}
+        step={1}
+        digits={0}
+        unit="%"
+        bind:value={cloudDayPercent}
+      />
       <p>
-        The star body and glow change; rock, clouds and low haze retain their
-        existing lighting. This isolates the rim response, not whole-scene
-        colour grading.
+        100% restores the bright white reference. Lower this to soften its
+        prominence without changing colour, cloud coverage or the 42% dark side.
+        This control applies to Bright face; 02.13 shading remains the old
+        comparison. 91% is selected; 100% retains the full-bright comparison.
+      </p>
+      <p>Cloud face · retained comparison</p>
+      <Toggle
+        label="Cloud face"
+        options={["02.13 shading", "Bright face"]}
+        bind:value={cloudFace}
+      />
+      <p>
+        Bright face keeps the lit cloud material near white, with subtle
+        internal detail. It blends into the selected 42% dark-side appearance.
+        Coverage, opacity, shared sunlight and the blue rim stay fixed. The
+        shadow slider still adjusts the dark side; rotation-speed exploration is
+        out of scope.
+      </p>
+      <p>02.13 · Cloud coverage maps</p>
+      <Toggle
+        label="Coverage map"
+        options={COVERAGE_MATERIALS}
+        bind:value={cloudMaterial}
+        details={{}}
+      />
+      <p>
+        Four separately generated maps calibrated to approximate covered area.
+        Compare with 02.5 footprint / Opaque first; Sparse, Broad and Thin
+        remain available below but alter the displayed coverage. Cloud opacity
+        and night-side brightness are separate controls.
+      </p>
+      <p>Cloud structure alternatives · retained first set</p>
+      <Toggle
+        label="Cloud material"
+        options={CLOUD_MATERIALS.slice(0, 3)}
+        bind:value={cloudMaterial}
+        details={{}}
+      />
+      <Toggle
+        label="More cloud materials"
+        options={CLOUD_MATERIALS.slice(3)}
+        bind:value={cloudMaterial}
+        details={{}}
+      />
+      <p>
+        Four retained Earth-style density maps and the procedural baseline.
+        Generated maps replace the pattern in either cloud-bearing treatment;
+        choose Procedural to compare the earlier banks and bands. Gas-only
+        treatments still have no clouds. Lighting, pale colour and rotation stay
+        fixed.
+      </p>
+      <p>Night-side brightness · 42% restored for white clouds</p>
+      <Toggle
+        label="Cloud shadow"
+        options={[...CLOUD_SHADOWS]}
+        bind:value={() => cloudShadow, selectCloudShadow}
+        details={{}}
+      />
+      <RingSlider
+        label="Night-side cloud brightness"
+        min={4}
+        max={42}
+        step={1}
+        digits={0}
+        unit="%"
+        bind:value={cloudShadowPercent}
+      />
+      <p>
+        {cloudShadow ||
+          (cloudShadowPercent === 42 ? "Selected shadow" : "Custom shadow")}
+        · 42% is now the selected reference for white clouds; 24% remains
+        available on the slider. This changes material brightness, not cloud
+        transparency. Earlier presets remain available for comparison.
       </p>
       <p>
-        Fixed: 02.5 cloud footprint / Opaque, Separate air lighting, pale colour
-        and cloud rotation. Compare at 1.45× before changing the reference
-        controls.
+        02.11 shadow preserves the accepted reference. Readable night lowers the
+        unlit cloud brightness from 42% to 18%; Deep night lowers it to 4%. Both
+        blend into shadow over the same narrow band. Cloud opacity, openings,
+        day-side light and the blue rim stay unchanged.
+      </p>
+      <p>Accepted material lighting · retained comparison</p>
+      <Toggle
+        label="Material lighting"
+        options={["02.10 light", "Shared sunlight"]}
+        bind:value={sunlight}
+        details={{}}
+      />
+      <p>
+        Compare the unchanged 02.10 light with a coloured sunward LFX highlight
+        shared by rock and clouds. Existing shadows remain; the blue rim stays
+        fixed. Start at 5800 K, then compare warm and cool stars at the same
+        instant.
+      </p>
+      <p>
+        Reference defaults: Cloud banks, 02.5 / Opaque, Separate air, shadow
+        1.45×. Retained tools below remain available for secondary checks.
       </p>
       <p>Rock material · {fullNames[names.indexOf(material)]}</p>
       <Toggle label="Rock material" options={names} bind:value={material} />
@@ -128,6 +418,39 @@ onMount(() => {
         options={["Bare rock", "Air + drag"]}
         bind:value={treatment}
       />
+      <details open>
+        <summary>Atmosphere and cloud tools</summary>
+        <p>Atmosphere material</p>
+        <Toggle
+          label="Atmosphere material"
+          options={[...ATMOSPHERE_TREATMENTS]}
+          bind:value={atmosphereTreatment}
+          details={{}}
+        />
+        <p>Cloud footprint · used by Cloud banks and Cloud bands</p>
+        <Toggle
+          label="Cloud footprint"
+          options={[...CLOUD_COVERAGE]}
+          bind:value={coverage}
+        />
+        <p>Cloud opacity · density within the covered areas</p>
+        <Toggle
+          label="Cloud opacity"
+          options={[...CLOUD_OPACITY]}
+          bind:value={opacity}
+        />
+        <p>Underlying lighting comparison</p>
+        <Toggle
+          label="Air lighting"
+          options={[...AIR_LIGHTING]}
+          bind:value={airLighting}
+          details={{}}
+        />
+        <p>
+          These tools change the reference conditions without resetting flight.
+          The accepted Dayward blue rim stays selected.
+        </p>
+      </details>
       <p>
         Body r40.33u · air depth 10u · provisional drag 0.8/s at full density.
       </p>
@@ -142,5 +465,18 @@ onMount(() => {
     {/snippet}
   </FlightSceneInstrument>
 {:else}
-  <p role="status">{failed || "Loading the three original rock materials…"}</p>
+  <p role="status">{failed || "Loading rock materials and cloud maps…"}</p>
 {/if}
+
+<style>
+.heat-source {
+  margin: 0;
+}
+.heat-source img {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  background: #080810;
+}
+</style>

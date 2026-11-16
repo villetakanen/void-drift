@@ -110,6 +110,7 @@ let hostileBearings = $state<
 let gauntletOpponentCount = $state(0);
 let zoom = $state(1);
 let zoomLevel = $state(0);
+let speedZoomMode = $state(1);
 let cameraFitWidth = $state(0);
 let cameraFitHeight = $state(0);
 let activeZoomSteps = $state(5);
@@ -202,8 +203,20 @@ function reset(start = false) {
   frameCamera(true);
   sync();
 }
-function frameCamera(snap = false) {
+function frameCamera(snap = false, speedCamera = $settings.speedCamera) {
   if (!camera || !simulation) return;
+  const ship = simulation.ship;
+  if (!landing && speedCamera) {
+    camera.frameSpeed(
+      ship.pos.x,
+      ship.pos.y,
+      ship.vel.x,
+      ship.vel.y,
+      ship.radius,
+      snap,
+    );
+    return;
+  }
   const c = simulation.settings.camera;
   camera.frame(
     simulation.ship.pos.x,
@@ -216,6 +229,7 @@ function frameCamera(snap = false) {
     c.zoomSteps,
     null,
   );
+  camera.keepShipVisible(ship.pos.x, ship.pos.y, ship.radius);
 }
 function sync() {
   const salvage = simulation.salvage;
@@ -288,6 +302,7 @@ function sync() {
   cause = simulation.state.deathCause ?? "";
   zoom = camera?.zoom ?? 1;
   zoomLevel = camera?.zoomLevel ?? 0;
+  speedZoomMode = camera?.speedZoomMode ?? 1;
   cameraFitWidth = camera?.activeWidth ?? 0;
   cameraFitHeight = camera?.activeHeight ?? 0;
   activeZoomSteps = simulation.settings.camera.zoomSteps;
@@ -399,6 +414,10 @@ onMount(() => {
   renderer = new Renderer(canvas);
   resizeFlightLayers(layers, renderer, 1920, 1080);
   camera = new Camera();
+  const stopCameraPreference = settings.listen((next, previous) => {
+    if (next.speedCamera !== previous.speedCamera)
+      camera.resetSpeedEligibility();
+  });
   input = new Input();
   initializeShipSetup();
   if (launchSource === "title") enterMenu();
@@ -438,7 +457,7 @@ onMount(() => {
       screen.active.logical.width,
       screen.active.logical.height,
     );
-    frameCamera();
+    frameCamera(false, camera.speedFraming);
     const bounds = stage.getBoundingClientRect();
     landingFrame = {
       width: bounds.width,
@@ -567,6 +586,7 @@ onMount(() => {
   frame = requestAnimationFrame(draw);
   return () => {
     cancelAnimationFrame(frame);
+    stopCameraPreference();
     playSurface?.removeEventListener("contextmenu", preventMenu);
     resize.disconnect();
     motion.removeEventListener("change", updateMotion);
@@ -673,6 +693,11 @@ onMount(() => {
                 value={power}
               ></progress>
             </div>
+            {#if $settings.speedCamera && !landing}
+              <div>
+                <small>ZOOM</small><strong>{speedZoomMode}×</strong>
+              </div>
+            {/if}
           </div>
           <div class="deck-instruments right">
             {#if mode === "survival"}

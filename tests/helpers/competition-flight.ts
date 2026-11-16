@@ -3,6 +3,7 @@ import {
   defaultLoadout,
   fittedParts,
 } from "../../packages/mode-a/src/lib/schemas/loadout";
+import type { ExperimentalSetting } from "../../packages/mode-a/src/lib/schemas/settings";
 import {
   gameSettings,
   Simulation,
@@ -15,6 +16,7 @@ export type CompetitionChassis = "wasp" | "scout";
 export function competitionFlightResult(
   chassis: CompetitionChassis,
   seed: number,
+  experimental: ExperimentalSetting = "Off",
 ) {
   const loadout =
     chassis === "wasp"
@@ -27,6 +29,7 @@ export function competitionFlightResult(
       : { ...stockSettings(chassis), loadout: defaultLoadout(chassis) }),
     arrival: true,
     seed,
+    experimental,
   });
   simulation.start();
   while (simulation.state.status === "PLAYING" && simulation.ticks < 36000)

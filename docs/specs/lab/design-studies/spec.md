@@ -20,7 +20,12 @@ owner rather than repeating them here.
   piloting. Extend shared staging when the experiment needs an unsupported scene.
 - Experimental styles remain scoped to study components; fixture behavior is labeled.
 - A cycle keeps a stable URL and records significant feedback, decisions and reasons.
-- Accepted slices are separate implementation work; the study links to their delivery.
+- Decisions recorded in a study hold inside that study. To the project and its specs
+  they are proposals, including scope, slices, values and anything the study calls
+  accepted or decided.
+- Accepted slices are proposals for separate work. The project examines each claim,
+  decides, and writes the decision into a living spec before implementation; the study
+  links to the delivery.
 - Keyboard operation and the narrowest supported window (1280px) are reviewed
   separately from gameplay feel. The Lab targets 1280px and up; study pages are not
   checked below that.
@@ -51,7 +56,9 @@ iteration; unsupported future parts are left unfilled.
 
 Scope sizes the work; completing or accepting a study does not implicitly authorize
 implementation. Existing explicit implementation authorization still counts. Publication
-requires separate authorization.
+requires separate authorization. Part 03 names the living specs that would need to
+change if the study goes forward, and how. Those are proposed changes; a living spec
+changes when the project decides it does.
 
 **Flag `docs/design.md` changes prominently in part 04, before the slices, and in the
 chat handoff.** Changes to experience principles, non-goals, art direction or brand
@@ -108,7 +115,7 @@ the study's design quality or overwrite the designer's assessment of failure.
 
 | End state | Reached after | Leaves behind                                                     |
 | --------- | ------------- | ----------------------------------------------------------------- |
-| Accepted  | 04 / Scope    | Slices to implement, fully or partly, as separate work.           |
+| Accepted  | 04 / Scope    | Proposed slices for the project to examine and decide on.         |
 | Ruled out | 02 or 03      | Why the concept does not fit the game, recorded on the page.      |
 | Stopped   | Any part      | Evidence of what blocked the study, collected through close-loop. |
 

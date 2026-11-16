@@ -5,6 +5,21 @@ export const CAMERA_ARENA_RADIUS = 1200;
 export const CAMERA_MIN_FIT = 1;
 /** Scale of the closest zoom level. */
 export const CAMERA_CLOSEST_ZOOM = 1.6;
+/** Speed framing tuning: extents in world units, speed in world units/second,
+ * clearance in logical pixels, response rates in inverse seconds. */
+const SPEED_CAMERA = {
+  wideExtent: 2100,
+  wideSpeed: 400,
+  closeSpeed: 100,
+  clearance: 16,
+  centreRate: 0.5,
+  velocityMatchRate: 1.5,
+  settlePixels: 0.05,
+  widenRate: 8,
+  standardTightenRate: 2,
+  inwardMagnifications: [1, 2, 4, 8],
+  inwardHoldSeconds: 1.5,
+};
 export interface CameraOptions {
   smoothing?: number;
   viewportWidth?: number;
@@ -26,6 +41,18 @@ export class Camera {
    */
   public fitWidth: number | null;
   public fitHeight: number | null;
+  public speedFraming = false;
+  private returning = false;
+  // Ship displacement from the view centre, in logical screen units.
+  private speedPan = new Vec2(0, 0);
+  private panVelocity = new Vec2(0, 0);
+  private previousPanSubject = new Vec2(0, 0);
+  private widenFilterZoom: number | null = null;
+  private lastSpeed: number | null = null;
+  private accelerating = false;
+  private inwardCandidate: number | null = null;
+  private inwardSeconds = 0;
+  private subject: { x: number; y: number; radius: number } | null = null;
   private target = new Vec2(960, 540);
   private targetZoom = 1;
   private smoothing: number;
@@ -53,10 +80,26 @@ export class Camera {
       ? this.viewportHeight
       : Math.max(CAMERA_MIN_FIT, this.fitHeight);
   }
+  /** Hold the upper label until the next outward level is reached. */
+  get speedZoomMode() {
+    const widest =
+      Math.min(this.activeWidth, this.activeHeight) / SPEED_CAMERA.wideExtent;
+    const magnification = this.zoom / widest;
+    const levels = SPEED_CAMERA.inwardMagnifications;
+    return (
+      levels.find((level) => magnification <= level * (1 + 1e-10)) ??
+      levels[levels.length - 1]
+    );
+  }
   /** Sets the centred fitting box; `null` fits the full viewport again. */
   setActiveArea(width: number | null, height: number | null) {
+    if (this.fitWidth !== width || this.fitHeight !== height) {
+      this.resetSpeedEligibility();
+      this.widenFilterZoom = null;
+    }
     this.fitWidth = width;
     this.fitHeight = height;
+    this.containShip();
   }
   setTarget(x: number, y: number) {
     this.target.set(x, y);
@@ -75,6 +118,13 @@ export class Camera {
     zoomSteps = 5,
     previewLevel: number | null = null,
   ) {
+    this.resetSpeedEligibility();
+    this.widenFilterZoom = null;
+    this.lastSpeed = null;
+    const previous = { x: this.pos.x, y: this.pos.y, zoom: this.zoom };
+    if (this.speedFraming) this.returning = !snap;
+    this.speedFraming = false;
+    if (snap) this.returning = false;
     this.smoothing = smoothing;
     this.target.set((shipX + starX) / 2, (shipY + starY) / 2);
     // Framing fits the active area; the active area and the viewport share a
@@ -115,11 +165,230 @@ export class Camera {
     }
     this.zoomLevel = level;
     this.zoom = this.targetZoom;
+    if (this.returning) {
+      this.pos.set(previous.x, previous.y);
+      this.zoom = previous.zoom;
+      this.containShip();
+    } else this.subject = null;
+  }
+  /** Speed selects zoom; motion matching and residual centring select pan. */
+  frameSpeed(
+    x: number,
+    y: number,
+    velocityX: number,
+    velocityY: number,
+    radius: number,
+    snap = false,
+  ) {
+    const entering = !this.speedFraming;
+    if (entering || snap) {
+      this.resetSpeedEligibility();
+      this.widenFilterZoom = null;
+      this.lastSpeed = null;
+      this.panVelocity.set(0, 0);
+      this.previousPanSubject.set(x, y);
+    }
+    this.speedFraming = true;
+    this.returning = false;
+    this.subject = { x, y, radius };
+    const speed = Math.hypot(velocityX, velocityY);
+    this.accelerating = this.lastSpeed !== null && speed > this.lastSpeed;
+    if (this.accelerating) this.resetSpeedEligibility();
+    this.lastSpeed = speed;
+    const influence = Math.max(
+      0,
+      Math.min(
+        (speed - SPEED_CAMERA.closeSpeed) /
+          (SPEED_CAMERA.wideSpeed - SPEED_CAMERA.closeSpeed),
+        1,
+      ),
+    );
+    const shortSide = Math.min(this.activeWidth, this.activeHeight);
+    // Equal speed bands halve desired magnification: 8x through 100u/s,
+    // 4x at 200u/s, 2x at 300u/s and 1x at 400u/s. Demand stays continuous.
+    this.targetZoom =
+      (shortSide / SPEED_CAMERA.wideExtent) * 8 ** (1 - influence);
+    if (snap) {
+      this.zoom = this.targetZoom;
+      this.pos.set(x - this.offset.x, y - this.offset.y);
+    }
+    // Preserve the current transform until the next simulation-time update.
+    // Containment measures displacement for motion matching and anchored zoom.
+    this.containShip();
+  }
+  /** Clear pending qualification without moving the camera, including in Pause. */
+  resetSpeedEligibility() {
+    this.inwardCandidate = null;
+    this.inwardSeconds = 0;
+  }
+  private placeSpeedCamera() {
+    if (!this.subject) return;
+    this.pos.set(
+      this.subject.x + this.speedPan.x / this.zoom - this.offset.x,
+      this.subject.y + this.speedPan.y / this.zoom - this.offset.y,
+    );
+    this.containShip();
+  }
+  private shipFitZoom() {
+    if (!this.subject) return Number.POSITIVE_INFINITY;
+    const shortSide = Math.min(this.activeWidth, this.activeHeight);
+    const clearance = Math.min(SPEED_CAMERA.clearance, shortSide / 4);
+    return (shortSide / 2 - clearance) / Math.max(this.subject.radius, 1);
+  }
+  private updateSpeedZoom(dt: number) {
+    if (this.targetZoom < this.zoom) {
+      this.resetSpeedEligibility();
+      // Two equal-rate filters give a critically damped step response: zero
+      // initial slope, then acceleration and a gentle settle. Integrate exactly
+      // for simulation-time equivalence; retarget within the outward interval.
+      const filtered = Math.max(
+        this.targetZoom,
+        Math.min(this.zoom, this.widenFilterZoom ?? this.zoom),
+      );
+      const decay = Math.exp(-SPEED_CAMERA.widenRate * dt);
+      this.zoom = Math.min(
+        this.zoom,
+        this.targetZoom +
+          (this.zoom -
+            this.targetZoom +
+            SPEED_CAMERA.widenRate * (filtered - this.targetZoom) * dt) *
+            decay,
+      );
+      this.widenFilterZoom =
+        this.targetZoom + (filtered - this.targetZoom) * decay;
+      return;
+    }
+    this.widenFilterZoom = null;
+    const widest =
+      Math.min(this.activeWidth, this.activeHeight) / SPEED_CAMERA.wideExtent;
+    const candidate = SPEED_CAMERA.inwardMagnifications
+      .map((magnification) => widest * magnification)
+      .find((level) => level > this.zoom * (1 + 1e-10));
+    if (
+      this.accelerating ||
+      candidate === undefined ||
+      candidate > this.targetZoom * (1 + 1e-10) ||
+      candidate > this.shipFitZoom()
+    ) {
+      this.resetSpeedEligibility();
+      return;
+    }
+    if (candidate !== this.inwardCandidate) {
+      this.resetSpeedEligibility();
+      this.inwardCandidate = candidate;
+    }
+    this.inwardSeconds += dt;
+    if (this.inwardSeconds + 1e-9 >= SPEED_CAMERA.inwardHoldSeconds) {
+      this.zoom = candidate;
+      this.resetSpeedEligibility();
+    }
+  }
+  /** Refresh the subject during standard-policy transitions and geometry changes. */
+  keepShipVisible(x: number, y: number, radius: number) {
+    if (!this.speedFraming && !this.returning) return;
+    this.subject = { x, y, radius };
+    this.containShip();
+  }
+  private containShip() {
+    if (!this.subject) return;
+    const { x, y, radius } = this.subject;
+    const shortSide = Math.min(this.activeWidth, this.activeHeight);
+    // Retain positive clearance even while the aspect gate collapses the box.
+    const clearance = Math.min(SPEED_CAMERA.clearance, shortSide / 4);
+    this.zoom = Math.min(this.zoom, this.shipFitZoom());
+    const halfX = (this.activeWidth / 2 - clearance) / this.zoom - radius;
+    const halfY = (this.activeHeight / 2 - clearance) / this.zoom - radius;
+    this.pos.x =
+      Math.max(x - halfX, Math.min(x + halfX, this.pos.x + this.offset.x)) -
+      this.offset.x;
+    this.pos.y =
+      Math.max(y - halfY, Math.min(y + halfY, this.pos.y + this.offset.y)) -
+      this.offset.y;
+    if (this.speedFraming) {
+      this.speedPan.set(
+        (this.pos.x + this.offset.x - x) * this.zoom,
+        (this.pos.y + this.offset.y - y) * this.zoom,
+      );
+    }
+  }
+  /** Exact coupled velocity matching and centring for one constant-motion step. */
+  private followAxis(
+    displacement: number,
+    movement: number,
+    axis: "x" | "y",
+    dt: number,
+  ) {
+    const velocity = movement / dt;
+    // Do not carry faster or reversed camera travel into a brake/reversal.
+    // At rest this removes momentum, leaving monotonic residual centring.
+    const tracked =
+      velocity >= 0
+        ? Math.max(0, Math.min(velocity, this.panVelocity[axis]))
+        : Math.min(0, Math.max(velocity, this.panVelocity[axis]));
+    const centreDecay = Math.exp(-SPEED_CAMERA.centreRate * dt);
+    const velocityDecay = Math.exp(-SPEED_CAMERA.velocityMatchRate * dt);
+    const relativeVelocity = tracked - velocity;
+    const rateDifference =
+      SPEED_CAMERA.centreRate - SPEED_CAMERA.velocityMatchRate;
+    const response =
+      Math.abs(rateDifference) < 1e-9
+        ? dt * centreDecay
+        : (velocityDecay - centreDecay) / rateDifference;
+    // frameSpeed receives the position AFTER the simulation step. Recover its
+    // starting displacement, then integrate both responses over that step.
+    const result =
+      (displacement + movement * this.zoom) * centreDecay +
+      relativeVelocity * this.zoom * response;
+    this.panVelocity[axis] = velocity + relativeVelocity * velocityDecay;
+    return Math.abs(result) < SPEED_CAMERA.settlePixels &&
+      Math.abs(relativeVelocity) * this.zoom * dt < SPEED_CAMERA.settlePixels
+      ? 0
+      : result;
   }
   update(dt: number) {
+    if (this.speedFraming) {
+      if (dt <= 0 || !this.subject) return;
+      // Use actual unwrapped travel for pan; world velocity still selects zoom.
+      // Reset/wrap set the baseline directly, so neither invents camera speed.
+      this.speedPan.x = this.followAxis(
+        this.speedPan.x,
+        this.subject.x - this.previousPanSubject.x,
+        "x",
+        dt,
+      );
+      this.speedPan.y = this.followAxis(
+        this.speedPan.y,
+        this.subject.y - this.previousPanSubject.y,
+        "y",
+        dt,
+      );
+      this.previousPanSubject.set(this.subject.x, this.subject.y);
+      this.updateSpeedZoom(dt);
+      // Zoom anchors the ship independently of ordinary follow pan; safety wins.
+      this.placeSpeedCamera();
+      return;
+    }
     const amount = 1 - Math.exp(-this.smoothing * dt);
     this.pos.x += (this.target.x - this.pos.x) * amount;
     this.pos.y += (this.target.y - this.pos.y) * amount;
+    if (this.returning) {
+      const rate =
+        this.targetZoom < this.zoom
+          ? SPEED_CAMERA.widenRate
+          : SPEED_CAMERA.standardTightenRate;
+      this.zoom += (this.targetZoom - this.zoom) * (1 - Math.exp(-rate * dt));
+      this.containShip();
+      if (
+        this.returning &&
+        Math.abs(this.zoom - this.targetZoom) < 0.00001 &&
+        Math.hypot(this.target.x - this.pos.x, this.target.y - this.pos.y) <
+          0.01
+      ) {
+        this.zoom = this.targetZoom;
+        this.returning = false;
+        this.subject = null;
+      }
+    }
   }
   getViewOffset() {
     this.view.x =

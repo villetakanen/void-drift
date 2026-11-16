@@ -10,6 +10,12 @@ screen that controls and instruments leave free, and changes zoom in a few
 deliberate steps so the view stays calm. What the camera shows never changes the
 run.
 
+This is the standard camera policy, selected when the personal Speed camera
+preference is Off. [Speed camera](speed-camera/spec.md) defines the experimental
+ship-only policy and transitions between policies. The framing and discrete-zoom
+requirements below apply to the settled standard policy; shared rendering,
+coordinate-transform and simulation-independence invariants apply to both.
+
 ### Architecture and boundaries
 
 - `packages/core/src/lib/physics/Camera.ts` owns framing, zoom levels, smoothing

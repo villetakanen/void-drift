@@ -18,6 +18,11 @@ and below. They flash for the production 80 ms window on a 1/3-second cadence;
 their dispersed marks also stamp into FX history. This is a rendering fixture,
 not flight certification.
 
+The frame reference sits beside the workbench on the same page. It is the bench's
+collateral: the documents a person at the bench reaches for. It lists what the
+game's own frame draws on the same three layers, read from the production pass
+list, so the bench's sample marks can be related to the real frame.
+
 ## Architecture
 
 The [render contract](../../game/render/spec.md) owns the layer model.
@@ -90,8 +95,23 @@ and up. `apps/web/src/components/lab/RenderModel.svelte` composes the workbench.
 
 Controls are deliberately limited to the questions above. Colour pickers, zoom,
 resolution and Deck overlays remain outside this experiment. All layers remain
-at production resolution. Pass lists, source-file inventories, timing tables and scripted flight
-are not part of the workbench.
+at production resolution. Timing tables and scripted flight are not part of the
+workbench.
+
+## The frame reference
+
+`apps/web/src/components/lab/FrameReference.svelte` renders the reference from
+`FLIGHT_LAYERS` and `FLIGHT_PASSES` in `packages/mode-a/src/lib/flight-frame.ts`.
+`apps/web/src/pages/lab/render-model.astro` places it directly after the workbench.
+
+- Layers appear in stack order, bottom to top, each with its blend and memory.
+- Under each layer its passes appear in draw order, each with its name, its space,
+  what it draws and the file that owns its drawing.
+- Every row comes from the pass list. The reference holds no pass or layer text of
+  its own, so a pass added to the frame appears here without editing the page.
+- The reference is static: it has no controls and runs no frame.
+- Collateral for the bench stays on this page with the bench. Replacing or
+  reworking the workbench keeps the reference.
 
 ## Contract
 
@@ -118,6 +138,8 @@ are not part of the workbench.
 - The page is usable at 1280px and wider, with labelled keyboard-accessible
   controls and concise explanations of the visible experiment.
 - The artwork pane remains visible while scrolling filter controls.
+- The frame reference lists every layer in `FLIGHT_LAYERS` and every pass in
+  `FLIGHT_PASSES`, in stack and draw order, on the same page as the workbench.
 - Rotating Wasp stays centred, completes a two-second full turn, emits the
   production main and direction-matched stabilizer plumes into persistent FX,
   and holds angle/history on Pause; three production beams remain fixed and
@@ -136,6 +158,9 @@ are not part of the workbench.
 - An untouched paused frame neither emits nor fades. Explicit Paint and Clear
   are permitted edits to the paused picture.
 - The page does not import or instantiate a game simulation or modify game data.
+- The frame reference shows the pass list as code declares it; the page carries no
+  second copy of it.
+- The workbench and its frame reference live on one page.
 - Tests protect layer semantics and control behaviour; fixed art screenshots do
   not become a permanent recipe for the experiment.
 
@@ -172,6 +197,18 @@ Scenario: Hide a fading layer
   And FX is shown again
   Then its image reflects the elapsed decay
   And hiding it has not paused or restarted its history
+
+Scenario: Read what the game draws on a layer
+  Given the Render model page
+  When I look beside the workbench
+  Then each layer lists its passes in draw order
+  And each pass names its space, what it draws and its source file
+
+Scenario: The frame gains a pass
+  Given a pass is added to the production pass list
+  When the Render model page is opened
+  Then the frame reference lists that pass under its layer
+  And the page's own source is unchanged
 
 Scenario: Rotate the Wasp fixture
   Given the paused Wasp sample
