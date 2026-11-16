@@ -75,6 +75,17 @@ failure preserves the stock body and working simulation. The core asset owner
 caches each deterministic atlas; each Venus flight owns its projected surface.
 The canonical planet preview uses these production passes directly.
 
+### Practice rotation trial
+
+The Practice deck trials `StripSphericalSurface` beside the existing projector.
+It draws a scrolling cylindrical atlas in image strips, then scales each row to
+its spherical width using native Canvas image drawing. Latitude resampling and
+strip geometry are prepared at load; no frame reads or writes individual pixels.
+This native image scaling is drawing marks under the demo-scene method. The
+surface remains unlit on World, with the existing directional mask on LFX.
+Simulation ticks still determine its phase. Study consumers retain the existing
+projector during this reversible trial; adoption beyond Practice is not implied.
+
 ### Time
 
 - **Tick:** one fixed simulation step of 1/60 s. Game time is the tick count

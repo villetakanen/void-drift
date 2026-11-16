@@ -68,6 +68,14 @@ expressive when deliberately composed, as in the demoscene reference. Judge
 the result by its presence, clarity and motion. Low-fi describes the means and
 the vocabulary; it is not an excuse for an unfinished result.
 
+The renderer carries the demoscene reference out as a method. It treats the
+browser as the machine a demo is written for and builds effects from the
+browser's own blending, scaling and filters. The stepping, banding and hard
+blends that come from doing this cheaply are kept as part of the picture's
+character. This is rendering character from today's machine; the game still does
+not imitate the look of old hardware. The
+[render contract](specs/game/render/spec.md) states the method and its rules.
+
 ### Suggest a world
 
 Deliberately compose the image to suggest a world rather than trying to

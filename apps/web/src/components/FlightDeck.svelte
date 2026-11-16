@@ -392,11 +392,11 @@ function padPress(pointerId: number, pad: ThrustPad | null) {
 onMount(() => {
   if (mode === "practice") {
     try {
-      practiceVenus = createPracticeVenus();
+      practiceVenus = createPracticeVenus(true);
     } catch {
       /* Use the stock body if Canvas material preparation fails. */
     }
-    void loadPracticeMercury()
+    void loadPracticeMercury(true)
       .then((asset) => {
         practiceMercury = asset;
       })

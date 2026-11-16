@@ -8,6 +8,7 @@ Voice-led game design, and development development of a space shooter inspired b
 - docs/                  # Plans, specs, all docs here
   - plans/               # Transient planning material, a map is not the territory, always check staleness
   - specs/               # ASLDC.io style living specs defining stable, expected intent, and expected functionality of the apps
+    - game/render/       # Render model: layers, ordered passes and the demo-scene method
   - vision.md           # Our vision for the game
   - architrcture.md     # Solution architecture, vocabulary, and dev principles
   - design.md           # Design principles, including branding
@@ -26,6 +27,7 @@ Voice-led game design, and development development of a space shooter inspired b
     - src/lib/ui/colors.ts        # Canvas mirror of tokens; parity checked by scripts/check-contracts.mjs
   - mode-a                        # Game rules, ships, simulation, Firebase client
     - src/lib/game-loop.ts        # Death checks and loop rules
+    - src/lib/flight-frame.ts     # The in-flight frame: its layers and ordered passes
     - src/lib/schemas             # Game-state, flight, loadout, settings, ship Zod contracts
     - src/schemas/highscore.ts    # Leaderboard contract
 ```
@@ -42,7 +44,8 @@ Voice-led game design, and development development of a space shooter inspired b
 ## Engineering essentials
 
 - Define or update Zod schemas before changing data contracts; parse external inputs.
-- Use Svelte 5 Runes, native CSS, shared tokens, and procedural Canvas assets.
+- Use Svelte 5 Runes, native CSS and shared tokens. Game artwork is procedural Canvas drawing; authored raster art is allowed for planet surfaces.
+- Draw in flight only through the render model in `docs/specs/game/render/spec.md`: game code draws shapes, images and cached stamps onto layers and the browser blends, scales and filters them. Never loop over pixels per frame, and do no work for things outside the camera's view.
 - Connect controls to the game loop; retain keyboard and iPad landscape touch in play.
 - The Lab targets viewports 1280px wide and up; never design, test or fix it below that.
 - Never promote code from a study without planning, speccing, architectural review and explicit instruction.

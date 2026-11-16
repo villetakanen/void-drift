@@ -15,6 +15,14 @@ Read for changes to structure, simulation, or data flow. Product intent belongs 
   mode supplies actual engine and collector activity. Engines retain only current
   outlets, not trail history. `/lab/fx` exercises six production simulations together.
   The [FX contract](specs/factory/effects/spec.md) owns lifecycle and performance acceptance.
+- The in-flight picture follows the [render model](specs/game/render/spec.md). It is a
+  stack of canvas layers the browser composites: World for everything solid and the
+  World HUD, FX for accumulated light, LFX for live light, with the Deck above them
+  as page elements. `packages/mode-a/src/lib/flight-frame.ts` lists the layers and the
+  ordered passes that draw on them. The method treats the browser as the machine a
+  demo is written for: game code draws shapes, images and cached stamps, and the
+  browser's own blending, scaling and filters do the rest. No game code loops over
+  pixels per frame.
 - Replay takes validated settings and ordered input/tick chunks. Rendering reads state;
   simulation time drives orbits and animation. Camera zoom frames the ship and star,
   with an explicit snap when crossing the circular arena boundary.
@@ -26,7 +34,8 @@ Read for changes to structure, simulation, or data flow. Product intent belongs 
 - Core remains independent of the web application and survival mode. Mode may use
   core; web composes both. Use existing packages rather than a new engine framework.
 - Game artwork is procedural. No external image or audio assets unless there is
-  no other way. Art direction belongs in [Design](design.md); ship construction
+  no other way. Decision of 2026-11-16: authored raster art is acceptable for
+  planet surfaces. Art direction belongs in [Design](design.md); ship construction
   follows the [ship drawing guide](ship-drawing.md).
 - The current renderer uses `CanvasRenderingContext2D`. Reuse vectors/buffers in
   hot loops; prefer scalar arithmetic and `Math.hypot` where appropriate.
@@ -50,9 +59,11 @@ Read for changes to structure, simulation, or data flow. Product intent belongs 
 Decision of 2026-11-09: the flight screen has two overlay layers, named by what
 they are attached to. Specs, code and Lab pages use these names.
 
-- **World HUD:** markings drawn on the canvas in world coordinates, under the
-  camera transform, such as the sun's field rings. They pan and zoom with the
-  world.
+- **World HUD:** markings drawn on the World layer and anchored to things in the
+  world, such as the sun's field rings and a planet's orbit, gravity boundary and
+  name. They move with the world; their strokes, dashes and text keep their size
+  on screen as the world zooms. Decision of 2026-11-16: every planet has the same
+  World HUD.
 - **Deck:** the screen-fixed frame around the active area, outside the camera
   transform, drawn as page elements in the gutters. It holds:
   - **Instruments:** hull and power in the left gutter; time and score in the

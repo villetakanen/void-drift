@@ -1,4 +1,4 @@
-import { RockBodyPainter } from "@void-drift/core";
+import { RockBodyPainter, StripSphericalSurface } from "@void-drift/core";
 import framing from "./art-029-framing.json";
 import neutralFrame from "./art-030-framing.json";
 import { quiltMineralMaterial } from "./quilted-material";
@@ -75,18 +75,27 @@ export async function loadMercuryReferenceAtlas() {
   return canvas;
 }
 
-let practiceMercury: ReturnType<typeof createPracticeMercury> | undefined;
+const practiceMercury = new Map<
+  boolean,
+  ReturnType<typeof createPracticeMercury>
+>();
 
 /** Accepted seed-153 mineral atlas, prepared once and reused by Practice. */
-function createPracticeMercury() {
+function createPracticeMercury(browserRotation: boolean) {
   return loadAuthoredRockMaterials().then(([mineral]) => {
     const atlas = quiltMineralMaterial(mineral, 153);
-    const surface = new SphericalSurface(atlas, "atlas");
+    const surface = browserRotation
+      ? new StripSphericalSurface(atlas)
+      : new SphericalSurface(atlas, "atlas");
     return { painter: new RockBodyPainter([surface.canvas]), surface };
   });
 }
 
-export function loadPracticeMercury() {
-  practiceMercury ??= createPracticeMercury();
-  return practiceMercury;
+export function loadPracticeMercury(browserRotation = false) {
+  let asset = practiceMercury.get(browserRotation);
+  if (!asset) {
+    asset = createPracticeMercury(browserRotation);
+    practiceMercury.set(browserRotation, asset);
+  }
+  return asset;
 }

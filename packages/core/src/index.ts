@@ -7,6 +7,7 @@ export * from "./lib/assets/rock-body";
 export * from "./lib/assets/ship";
 export * from "./lib/assets/spherical-surface";
 export * from "./lib/assets/star";
+export * from "./lib/assets/strip-spherical-surface";
 export * from "./lib/assets/sun-fields";
 export {
   drawWorldGravity,
