@@ -26,6 +26,10 @@ owner rather than repeating them here.
 - Accepted slices are proposals for separate work. The project examines each claim,
   decides, and writes the decision into a living spec before implementation; the study
   links to the delivery.
+- For each proposal the project settles two things before any spec or code changes:
+  whether it wants the change, and what the change applies to. A study examines one
+  subject; the project decides whether the change is for that subject or for everything
+  of its kind.
 - Keyboard operation and the narrowest supported window (1280px) are reviewed
   separately from gameplay feel. The Lab targets 1280px and up; study pages are not
   checked below that.
