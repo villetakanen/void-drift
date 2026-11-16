@@ -1,7 +1,7 @@
 # Design-study skill set 2.0
 
 Status: plan for review, revised 2026-11-16 (fourth revision). Step S1 is applied and
-committed in `bdfc4759`; step S2 is committed in `49c2db95`; the first half of S3 is
+committed in `bdfc4759`; step S2 is committed in `49c2db95`; S3 is committed in `9a42f658`; S3b is
 applied.
 
 Proposed 2026-11-15 in conversation: split the single design-study skill into a
@@ -144,6 +144,26 @@ produced the same round.
 What the section changed in this test is the opening round, the number of variants
 when narrowing, and that the agent names its move. With nothing picked, the agent on
 the new text opened with a spread and not with one example.
+
+### S3b. One live instrument, in the active step. Done
+
+Applied 2026-11-16, from the first finding of a study run on the new text: the agent
+kept a live instrument mounted in every exploration step. The guide said to preserve
+comparisons and placed captures only in the closing procedure, so the agent followed
+it. The exploration guide now says that only the active step holds anything live.
+On advancing, the instrument is captured as the step leaves it, the captioned capture
+takes its place, the instrument moves to the new step, and what only the earlier
+step used is removed. The rock atmospheres study ended in this form; many of its
+captures are reconstructions made later, which the rule's "capture now" is there to
+avoid. The skill's sentence that left all replacement to closing is corrected.
+
+Checked with two clean-context Sonnet agents, one run each, advancing an invented
+study from 02.3 to 02.4 with live mounts in 02.1 to 02.3.
+
+| Text   | What the agent would do                                                                                                                                                                                                      |
+| ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Before | Add a fourth mount in 02.4 and keep all three earlier mounts and configurations. "Capture happens at study close."                                                                                                           |
+| After  | Capture 02.3 as a clip, put it in place of the instrument, move the one instrument to 02.4, capture and remove the 02.1 and 02.2 mounts and mark those captures as reconstructions, delete what only the earlier steps used. |
 
 ### S3a. "Change the move when a round fails"
 

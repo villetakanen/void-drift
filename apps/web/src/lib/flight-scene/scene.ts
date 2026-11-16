@@ -1,7 +1,9 @@
-import { Camera, type FxPass, Renderer } from "@void-drift/core";
+import { Camera, type FxPass, type Planet, Renderer } from "@void-drift/core";
 import {
+  type BodyAppearance,
   drawFlightFrame,
   FLIGHT_PASSES,
+  type FlightFrame,
   FlightFx,
   type FlightLayerContexts,
   type FlightPass,
@@ -15,9 +17,10 @@ import {
   type StarAppearance,
   StarAppearanceSchema,
 } from "./config";
+import type { FlightExperiment } from "./experiment";
 import { defaultTargets, FlightRun, type TargetMode } from "./flight";
 import { type PartTuning, type StudyLight, studyLightState } from "./light";
-import type { PlanetAppearance } from "./planet";
+import type { PlanetAppearance, PlanetSceneState } from "./planet";
 import { readOnlyCopy } from "./read-only";
 
 /** A production simulation replay drawn through the same layers as play. */
@@ -34,6 +37,8 @@ export class FlightScene {
   private readonly fx = new FlightFx();
   private view: FlightView;
   private targets: TargetMode;
+  private bodyAppearances?: ReadonlyMap<number, BodyAppearance>;
+  private bodyAppearanceState?: PlanetSceneState;
 
   constructor(
     private readonly layers: FlightLayerContexts,
@@ -46,6 +51,7 @@ export class FlightScene {
     /** A study's tuning of the delayed and pulsed parts. */
     private tuning: PartTuning = {},
     private planetAppearance?: PlanetAppearance,
+    private experiment?: FlightExperiment,
   ) {
     this.targets = targets;
     this.view = doc.opening.view;
@@ -54,6 +60,7 @@ export class FlightScene {
     this.camera.viewportWidth = width;
     this.run = this.fly(doc.opening.burn);
     this.restart(doc.opening.burn);
+    this.setPlanetAppearance(this.planetAppearance);
   }
   private fly(burn: BurnId) {
     return new FlightRun(
@@ -62,7 +69,13 @@ export class FlightScene {
       this.targets,
       this.studyLight?.replaces,
       this.tuning,
+      this.experiment,
     );
+  }
+  /** Replacement creates fresh experimental state before replay. */
+  setExperiment(experiment?: FlightExperiment) {
+    this.experiment = experiment;
+    this.restart(this.run.burn);
   }
   /** Other part tuning flies the burn again from its start. */
   setTuning(tuning: PartTuning = {}) {
@@ -76,6 +89,37 @@ export class FlightScene {
   }
   setPlanetAppearance(appearance?: PlanetAppearance) {
     this.planetAppearance = appearance;
+    const planet = this.doc.planet ? this.run.sim.planets[0] : undefined;
+    if (!appearance || !planet) {
+      this.bodyAppearances = undefined;
+      this.bodyAppearanceState = undefined;
+      return;
+    }
+    const position = planet.systemPosition;
+    if (!Number.isInteger(position) || position === undefined || position <= 0)
+      throw new Error(
+        "Planet appearance requires a validated full-system position",
+      );
+    const state = () => {
+      if (!this.bodyAppearanceState)
+        throw new Error("Planet appearance state is unavailable while drawing");
+      return this.bodyAppearanceState;
+    };
+    const descriptor: BodyAppearance = {
+      worldBounds: (_frame, _planet) => appearance.worldBounds(state()),
+      drawWorld: (_frame, ctx) => appearance.world(ctx, state()),
+      ...(appearance.lfx
+        ? {
+            light: {
+              bounds: (_frame: FlightFrame, _planet: Planet) =>
+                appearance.lfxBounds(state()),
+              draw: (_frame: FlightFrame, ctx: CanvasRenderingContext2D) =>
+                appearance.lfx(ctx, state()),
+            },
+          }
+        : {}),
+    };
+    this.bodyAppearances = new Map([[position, descriptor]]);
   }
   private get state() {
     return studyLightState(
@@ -96,6 +140,7 @@ export class FlightScene {
     this.doc = doc;
     this.targets = targets;
     this.restart(this.run.burn);
+    this.setPlanetAppearance(this.planetAppearance);
   }
   /** Zoom of a view; null is the game's own camera. */
   private zoom(view: FlightView): number | null {
@@ -154,47 +199,28 @@ export class FlightScene {
       camera: this.camera,
       sim: this.run.sim,
       fx: this.fx,
+      bodyAppearances: this.bodyAppearances,
       stockShip: undefined,
-      lightOverlay: paint
-        ? (ctx: CanvasRenderingContext2D, pass: FxPass) =>
-            paint(ctx, pass, this.state)
-        : undefined,
+      lightOverlay: (ctx: CanvasRenderingContext2D, pass: FxPass) => {
+        paint?.(ctx, pass, this.state);
+        this.run.experimentRun?.fx?.(ctx, pass);
+      },
     };
   }
   /** Uses the production layer stack and ordered frame passes. */
   draw() {
     const appearance = this.planetAppearance;
-    let passes: readonly FlightPass[] | undefined;
+    this.bodyAppearanceState = undefined;
     if (this.doc.planet && appearance) {
       const sim = this.run.sim;
-      const state = readOnlyCopy({
+      this.bodyAppearanceState = readOnlyCopy({
         planet: sim.planets[0],
         ship: sim.ship,
         sun: { ...sim.star, ...this.starAppearance },
         seconds: sim.ticks * STEP,
       });
-      passes = [
-        ...FLIGHT_PASSES.map(
-          (pass): FlightPass =>
-            pass.id === "planets"
-              ? {
-                  ...pass,
-                  source: "study planet appearance",
-                  draw: (_frame, ctx) => appearance.world(ctx, state),
-                }
-              : pass,
-        ),
-        {
-          id: "staged-planet-light",
-          name: appearance.label,
-          layer: "lfx",
-          space: "world",
-          source: "study planet appearance",
-          draws: "Staged planet lighting",
-          draw: (_frame, ctx) => appearance.lfx?.(ctx, state),
-        },
-      ];
     }
+    let passes: readonly FlightPass[] | undefined;
     if (this.starAppearance) {
       const star = {
         ...this.run.sim.star,
@@ -212,6 +238,8 @@ export class FlightScene {
           : pass,
       );
     }
+    const extra = this.run.experimentRun?.passes;
+    if (extra) passes = [...(passes ?? FLIGHT_PASSES), ...extra];
     drawFlightFrame(this.frame(), { passes });
     const paint = this.studyLight?.lfx;
     if (!paint) return;

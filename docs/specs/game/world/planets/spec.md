@@ -38,13 +38,13 @@ interface Planet {
   mass: number;
   color: string;
   type: PlanetType; // Visual type category
-  hasRing: boolean; // Ring system around planet
 }
 ```
 
 #### Dynamic Spawning
 
-Each new game generates 0-5 planets randomly using the following parameter ranges:
+The optional experimental `initializeRandomPlanets()` factory can generate 0-5
+planets using the following parameter ranges:
 
 | Parameter     | Range                     | Notes                     |
 | ------------- | ------------------------- | ------------------------- |
@@ -53,7 +53,6 @@ Each new game generates 0-5 planets randomly using the following parameter range
 | Planet Radius | 10-100px                  | Physical size             |
 | Orbit Speed   | ±0.02-0.15 rad/s          | Sign determines direction |
 | Type          | rock/gas/ocean/desert/ice | Random selection          |
-| Ring          | 20% probability           | Visual ring system        |
 
 **Non-Overlap Constraint:**
 Planets cannot overlap at any point in their orbits. For two planets with radii `r1` and `r2`:
@@ -107,7 +106,8 @@ upright name. Its shared `world-hud` pass runs once for the full system before
 any planet body is drawn, independent of material readiness. Strokes are 1 CSS
 px and text is 14 CSS px at every zoom. The
 [render contract](../../render/spec.md#world-bodies) defines pass order and
-screen sizing.
+screen sizing. Planets have no separate decorative ring system. Collision and
+gravity use the planet body radius and mass.
 
 ### Mercurial mineral-rock size
 
@@ -236,9 +236,10 @@ Specified in [gravity-field.md](../gravity-field/spec.md#bodies-in-play).
 
 ### Configuration
 
-- **Current Setup:** 0-5 dynamically spawned planets per game (PBI-038)
-- **Spawning:** `initializePlanets()` in `packages/core/src/lib/physics/planets.ts`
-- **Variability:** Random count, type, orbit, size, speed, and ring per game restart
+- **Production:** `initializePlanets()` in `packages/core/src/lib/physics/planets.ts`
+  creates the three configured planets from `SURVIVAL_CONFIG.PLANETS`.
+- **Experiment:** `initializeRandomPlanets()` can create 0-5 planets with random
+  count, type, orbit, size and speed.
 
 ## Performance Characteristics
 
@@ -256,7 +257,6 @@ Specified in [gravity-field.md](../gravity-field/spec.md#bodies-in-play).
 ## Known Limitations
 
 - **Ship Damage:** No health system (collision bounces but doesn't damage)
-- **Rings:** Ring rendering is visual-only (no collision)
 
 ## Future Enhancements
 
@@ -264,7 +264,6 @@ Specified in [gravity-field.md](../gravity-field/spec.md#bodies-in-play).
 - Add surface detail (procedural craters, terrain)
 - Add ship damage on high-velocity impacts
 - Add atmospheric drag near large planets
-- Ring collision detection
 
 ---
 

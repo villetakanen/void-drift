@@ -36,6 +36,7 @@ import {
   submitHighScore,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
+import { practicePlanetAppearances } from "../lib/assets/practice-planet-appearances";
 import { createPracticeVenus } from "../lib/assets/practice-venus";
 import { loadPracticeMercury } from "../lib/assets/rock-planets/authored-materials";
 import { NO_SCORE_NOTICE } from "../lib/experimental";
@@ -67,6 +68,9 @@ let simulation: Simulation;
 let practiceVenus: ReturnType<typeof createPracticeVenus> | undefined;
 let practiceMercury:
   | Awaited<ReturnType<typeof loadPracticeMercury>>
+  | undefined;
+let practiceBodyAppearances:
+  | ReturnType<typeof practicePlanetAppearances>
   | undefined;
 let input: Input;
 let renderer: Renderer;
@@ -196,12 +200,22 @@ function reset(start = false) {
     countTime = 0;
     phase = "starting";
   } else countTime = -1;
+  refreshPracticeAppearances();
   if (start) simulation.start();
   paused = start && narrow;
   scoreSaved = false;
   message = "";
   frameCamera(true);
   sync();
+}
+function refreshPracticeAppearances() {
+  practiceBodyAppearances =
+    mode === "practice"
+      ? practicePlanetAppearances(simulation.planets, {
+          mercury: practiceMercury,
+          venus: practiceVenus,
+        })
+      : undefined;
 }
 function frameCamera(snap = false, speedCamera = $settings.speedCamera) {
   if (!camera || !simulation) return;
@@ -393,12 +407,14 @@ onMount(() => {
   if (mode === "practice") {
     try {
       practiceVenus = createPracticeVenus(true);
+      refreshPracticeAppearances();
     } catch {
       /* Use the stock body if Canvas material preparation fails. */
     }
     void loadPracticeMercury(true)
       .then((asset) => {
         practiceMercury = asset;
+        refreshPracticeAppearances();
       })
       .catch(() => {
         /* Keep the stock body when the material is unavailable. */
@@ -551,8 +567,8 @@ onMount(() => {
         camera,
         sim: simulation,
         fx: flightFx,
-        mercury: mode === "practice" ? practiceMercury : undefined,
-        venus: mode === "practice" ? practiceVenus : undefined,
+        bodyAppearances:
+          mode === "practice" ? practiceBodyAppearances : undefined,
         stockShip: chosen === "fiddler" ? undefined : chosen,
         lightTime: Math.max(0, countTime) + simulation.ticks * STEP,
         lightOverlay:

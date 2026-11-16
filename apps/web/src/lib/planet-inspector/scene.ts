@@ -9,6 +9,7 @@ import {
   updatePlanetOrbit,
 } from "@void-drift/core";
 import {
+  type BodyAppearance,
   drawFlightFrame,
   FlightFx,
   type FlightLayerContexts,
@@ -19,6 +20,7 @@ import {
   STEP,
   stockSettings,
 } from "@void-drift/mode-a";
+import { practicePlanetAppearances } from "../assets/practice-planet-appearances";
 import { createPracticeVenus } from "../assets/practice-venus";
 import { createPracticeMercury } from "../assets/rock-planets/authored-materials";
 import type { PlanetInspectorDocument } from "./config";
@@ -43,8 +45,7 @@ const PASSES = new Set([
   "sun-fields",
   "world-hud",
   "planets",
-  "mercury-light",
-  "venus-light",
+  "body-light",
 ]);
 const HUD = new Set(["sun-fields", "world-hud"]);
 
@@ -57,6 +58,7 @@ export class PlanetInspectorScene {
   private fx = new FlightFx();
   private mercury?: Awaited<ReturnType<typeof createPracticeMercury>>;
   private venus?: ReturnType<typeof createPracticeVenus>;
+  private bodyAppearances: ReadonlyMap<number, BodyAppearance> = new Map();
   private samples: { at: number; ms: number; redraws: number }[] = [];
   private measurementStart = performance.now();
   status: string;
@@ -101,6 +103,9 @@ export class PlanetInspectorScene {
         }
         material.painter.prepareLighting(this.lighting);
         this.mercury = material;
+        this.bodyAppearances = practicePlanetAppearances(this.sim.planets, {
+          mercury: material,
+        });
         pendingPainter = undefined;
       } else {
         const material = createPracticeVenus(true);
@@ -112,6 +117,9 @@ export class PlanetInspectorScene {
         }
         material.painter.prepareLighting(this.lighting);
         this.venus = material;
+        this.bodyAppearances = practicePlanetAppearances(this.sim.planets, {
+          venus: material,
+        });
         pendingPainter = undefined;
       }
       if (this.disposed) return;
@@ -192,8 +200,7 @@ export class PlanetInspectorScene {
         camera: this.camera,
         sim: this.sim,
         fx: this.fx,
-        mercury: this.mercury,
-        venus: this.venus,
+        bodyAppearances: this.bodyAppearances,
       },
       {
         include: (pass) => PASSES.has(pass.id) && (hud || !HUD.has(pass.id)),
@@ -217,6 +224,7 @@ export class PlanetInspectorScene {
     this.venus?.painter.dispose();
     this.mercury = undefined;
     this.venus = undefined;
+    this.bodyAppearances = new Map();
     this.samples = [];
     this.fx.clear();
   }

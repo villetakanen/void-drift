@@ -236,7 +236,6 @@ export class Simulation {
         venus.mass = planetMass("venus", this.gravity);
         venus.color = "#f6c371";
         venus.type = "rock";
-        venus.hasRing = false;
       }
     }
     const massTuning =

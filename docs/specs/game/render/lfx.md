@@ -8,8 +8,8 @@ point-defence beams occupy this layer for their active 80 ms window; dispersed
 light is separately emitted into FX.
 
 A [world body's](spec.md#world-bodies) light and dark side is also drawn here, as
-one stamp per body. It is the first thing drawn on the layer, and its dark half
-may darken World and FX beneath it.
+one stamp per body through the shared `body-light` pass. It is the first thing
+drawn on the layer, and its dark half may darken World and FX beneath it.
 
 Bodies sharing incoming-light intensity, shadow intensity and incident-light
 temperature share one prepared stamp. Its pixels are independent of star
@@ -29,5 +29,8 @@ alongside the shared production default.
 - Reset/new simulation clears events and makes the layer fresh.
 - LFX is composited inside the isolated stage, above FX and below Deck controls.
 - World body stamps are drawn before every other mark on the layer.
+- The shared `body-light` pass draws all prepared body appearances before other
+  LFX passes; an appearance that draws light supplies inclusive world-coordinate
+  bounds for the complete light composition.
 - Drawing a body stamp never prepares or rebuilds pixel data.
 - Changing a prepared body-light parameter does not advance simulation or orbit.

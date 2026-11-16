@@ -27,7 +27,6 @@ export function initializePlanets(centerX: number, centerY: number): Planet[] {
     mass: config.mass,
     color: config.color,
     type: config.type,
-    hasRing: config.hasRing,
   }));
   return assignPlanetSystemPositions(planets);
 }
@@ -102,7 +101,6 @@ export function initializeRandomPlanets(
           mass: Math.round(radius * 10),
           color: type.color,
           type: type.id,
-          hasRing: Math.random() < cfg.ringProbability,
         };
         break;
       }

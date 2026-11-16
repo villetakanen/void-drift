@@ -121,7 +121,6 @@ export interface Planet {
   mass: number; // Gravity strength
   color: string; // Hex color
   type: string; // Visual type (rock, gas, ocean, etc.)
-  hasRing: boolean; // Visual ring system
 }
 
 /** Optional display name plus required, validated full-system ordinal. */

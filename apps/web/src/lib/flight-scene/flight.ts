@@ -10,6 +10,7 @@ import {
 } from "@void-drift/mode-a";
 import { type BurnId, inputAt, TOTAL_TICKS } from "../instrument/burns";
 import type { FlightSceneDocument } from "./config";
+import type { FlightExperiment, FlightExperimentRun } from "./experiment";
 import { mainEngines, type PartTuning, tunedParts } from "./light";
 import { atmosphereSample } from "./planet";
 
@@ -59,6 +60,7 @@ function wreck(id: number, x: number, y: number) {
 export class FlightRun {
   tick = 0;
   sim: Simulation;
+  experimentRun?: FlightExperimentRun;
 
   constructor(
     readonly doc: FlightSceneDocument,
@@ -68,8 +70,10 @@ export class FlightRun {
     readonly replaces: readonly PartId[] = [],
     /** Tuning of the delayed and pulsed parts; the game's values when empty. */
     readonly tuning: PartTuning = {},
+    readonly experiment?: FlightExperiment,
   ) {
     this.sim = this.build();
+    this.experimentRun = this.experiment?.create(this.sim);
   }
 
   get lost() {
@@ -82,6 +86,7 @@ export class FlightRun {
   restart() {
     this.tick = 0;
     this.sim = this.build();
+    this.experimentRun = this.experiment?.create(this.sim);
   }
 
   /** A fresh simulation of the document, staged and started. */
@@ -208,6 +213,8 @@ export class FlightRun {
       this.sim.ship.vel.x -= Math.cos(this.sim.ship.rotation) * delta;
       this.sim.ship.vel.y -= Math.sin(this.sim.ship.rotation) * delta;
     }
+    if (this.sim.state.status === "PLAYING")
+      this.experimentRun?.step(this.sim, this.tick);
     this.silence();
     return wraps !== this.sim.wraps;
   }

@@ -82,6 +82,17 @@ export function makeRockAppearances(
       return [false, true].map(
         (air): PlanetAppearance => ({
           label: `${names[index]} · ${air ? "air + drag" : "bare rock"}`,
+          worldBounds({ planet: p, ship }) {
+            const bodyExtent = p.radius + AIR_DEPTH;
+            const shipExtent =
+              Math.hypot(ship.radius + 18, ship.radius + 6) + 0.5;
+            return {
+              left: Math.min(p.pos.x - bodyExtent, ship.pos.x - shipExtent),
+              top: Math.min(p.pos.y - bodyExtent, ship.pos.y - shipExtent),
+              right: Math.max(p.pos.x + bodyExtent, ship.pos.x + shipExtent),
+              bottom: Math.max(p.pos.y + bodyExtent, ship.pos.y + shipExtent),
+            };
+          },
           world(ctx, { planet: p, ship, sun, seconds }) {
             surface.draw((seconds * 2 * Math.PI) / SPIN_SECONDS);
             if (air && lighting() !== "02.4 light") {
@@ -158,6 +169,15 @@ export function makeRockAppearances(
               ctx.stroke();
             }
             ctx.restore();
+          },
+          lfxBounds({ planet: p }) {
+            const extent = p.radius + AIR_DEPTH + 3;
+            return {
+              left: p.pos.x - extent,
+              top: p.pos.y - extent,
+              right: p.pos.x + extent,
+              bottom: p.pos.y + extent,
+            };
           },
           lfx(ctx, { planet: p, sun, seconds }) {
             if (!air || lighting() === "02.4 light")

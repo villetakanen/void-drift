@@ -33,7 +33,9 @@ This spec establishes the contract for planet count, orbital identity, physics b
 
 - **Runtime Planet Shape (existing):**
   - `packages/core/src/lib/physics/Physics.ts`
-  - `Planet` includes `pos`, `orbitCenter`, `orbitRadius`, `orbitSpeed`, `orbitAngle`, `initialAngle`, `radius`, `mass`, `color`, `type`, `hasRing`.
+  - `Planet` includes position, orbit, physical radius, mass and visual type data.
+    Planets have no separate decorative ring system; collision and gravity use
+    the planet body radius and mass.
 - **Spawn Contract (existing):**
   - `packages/core/src/lib/config.ts`
   - `SURVIVAL_CONFIG.PLANET_SPAWN_CONFIG` defines count range and orbital ranges.

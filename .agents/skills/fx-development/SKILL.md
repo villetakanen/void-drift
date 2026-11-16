@@ -4,66 +4,93 @@ description: Implement, tune or diagnose Void Drift game effects and their share
 ---
 # FX development
 
-Read `docs/specs/factory/effects/spec.md` for the current behavior, scene budget and acceptance
-contract. Use `.agents/skills/shared-components/SKILL.md` for shared ownership and
-composition. The spec owns requirements; this skill guides how to work on them.
+Read the [render model](../../../docs/specs/game/render/spec.md),
+[FX contract](../../../docs/specs/game/render/fx.md),
+[LFX contract](../../../docs/specs/game/render/lfx.md) and
+[effects contract](../../../docs/specs/factory/effects/spec.md).
+Inspect the current layer configuration for blending, filters and persistence.
+Use [shared-components](../shared-components/SKILL.md) for ownership and composition.
 
-## Treat rendering as an instrument
+## Design through the layers
 
-Cheap rendering methods supply the character: hard strokes, small sprites, palette
-changes, arcs, saturation and interference. Develop the quirks through play instead
-of gradually replacing them with expensive smooth light. The appearance is tunable;
-a previous painter or screenshot is evidence, not a permanent recipe.
+Design the source mark together with the layer that presents it. Shapes, colour,
+opacity and falloff combine with accumulation, blending and filtering to make
+the visible effect. The source may look different from the finished picture.
 
-Choose technology from measurements and the desired result. Start with existing
-shared primitives when suitable. A GPU/WASM/CSS alternative is useful when it solves
-a demonstrated bottleneck or expressive need; a language change alone does not make
-browser rasterization cheaper.
+- **FX** accumulates light in world space. Overlap, shared decay, screen blending
+  and the shared bloom filter shape its appearance. Inspect repeated emission
+  as well as a single mark.
+- **LFX** redraws current light without history. Its hard-light blend interacts
+  with the colours beneath it, with no default bloom. Saturated fills alone
+  do not guarantee brightness; dark source channels can darken the scene.
 
-## Use the persistent light surface
+Choose either layer or both for the effect. Use shapes, gradients, strokes,
+sprites or cached stamps as needed. Let the browser blend, scale and filter;
+never loop over pixels per frame.
 
-The accumulated image holds visual history. Stamp only new light into the shared
-scene surface; overlap adds brightness and the whole image decays with game time.
-Keep emitter state and any genuinely moving particles small and bounded. Do not
-reintroduce per-engine trail-mark lists with their own ages and redraw loops, or
-replace the surface with a fresh drawing-order pass.
+Existing effects offer examples, not a required recipe. When changing an
+existing effect, check its specific appearance contract. Ion's accepted core,
+halo and transparent end belong to one emitted mark; that treatment does not
+prescribe other engines or weapons.
 
-Cache a complete luminous stamp when its appearance needs repeated work. Ion's
-accepted core, colour, halo and transparent end belong to the same stamp. Inspect
-the preserved 02.3/02.4 references before changing that identity; an attached rod
-plus faint residue was rejected. Recipes can evolve while preserving this intent.
+## Inspect in flight
 
-Camera movement, pause, reset and seek belong to the surface lifecycle. Paused
-frames must neither fade nor add brightness; seeking must replay painting as well
-as state. The current Canvas buffers are replaceable implementation details.
-Browser-transformed or tiled surfaces remain candidates to measure, not requirements.
+Use the shared Flight scene to inspect activation, movement, sustained emission
+where relevant, and cessation at flight scale. Inspect the source separately
+when diagnosing how accumulation, blending or filtering changes it.
 
-## Wire the real effect
+Judge appearance in the composed scene. If an effect looks pasted on, examine
+its source and layer treatment before adding detail.
 
-- Identify its gameplay cause, source transform, emission behavior and
-  motion. Let the shared surface own painted-light persistence. Use delivered output and actual collection/events, not button state.
-- Keep gameplay authoritative. Decoration consumes state and uses the game's pause,
-  resume, reset and wrap lifecycle. Painted light stays at its world position;
-  wrap stamps at the new position without joining the two locations.
-- Locate the production owner before changing a Lab demo. Core owns reusable FX;
-  mode supplies game meaning; screens compose them. Share mount geometry and timing.
-- Use the common surface and its reserved source/decorative stamping allowances.
-  Bound storage, emission and queued work; keep important cues when decoration drops.
-- Reuse storage and precompute stable geometry. Inspect the complete drawing path:
-  even native Canvas operations can become costly through blur, blending or copies.
+## Keep history in the surface
 
-## Measure and judge separately
+Stamp new light into the shared persistent surface. The image holds painted
+history and decays with game time. Keep emitter state and moving particle
+storage bounded; do not retain individually aged trail marks for redrawing.
 
-Exercise the production path in the mixed-effects Lab and in play. Measure sustained
-movement, turns, overlaps and bursts at the workload in the spec. Record browser,
-hardware, backing resolution, frame intervals, update/submission costs and raster/
-compositor evidence. A single frozen frame or short callback is partial evidence.
+Paint the complete light treatment intended to accumulate. Cache repeated
+source construction and precompute stable geometry. Canvas buffers and their
+count remain implementation choices.
 
-Tests protect activation, source/coordinate meaning, shared decay, lifecycle, bounded
-work and unchanged gameplay. Use captures and human play review for sparkle, colour,
-interference and character. Retire obsolete painter-equality assertions when changing
-their intended contract; retain the behavioral coverage they were mixed with.
+Preserve the surface lifecycle:
 
-Report measured performance, automated correctness and the designer's acceptance separately.
-Update the living spec for changed contracts; keep diagnosis, competing approaches
-and historical recipes in supporting documents.
+- Camera movement keeps painted light at its world position.
+- Wrap starts emission at the new position without connecting it to old light.
+- Pause adds no light and causes no decay.
+- Reset clears history and pending effects.
+- Seek replays painting as well as simulation state.
+
+## Connect to the game
+
+Use simulation state, including charge and delivered output, and actual events
+to drive effects, rather than button state. Follow shared mount geometry, timing
+and game time. Drawing reads state; it does not change gameplay.
+
+Find the production owner before changing a Lab demo. Core owns reusable effects,
+mode supplies gameplay meaning, and screens compose them. Studies use the shared
+production frame and layers while keeping experimental recipes in study code.
+
+Use the common surface and its source and decorative stamping allowances.
+Bound storage, emission and queued work. Cull offscreen emission, avoid
+backlogs, and preserve important cues when decoration is dropped.
+
+Reuse storage. Inspect the full drawing path for costs from blur, blending
+and image copies, including work performed by the browser.
+
+## Verify behavior and performance
+
+Check activity, placement, shared decay, pause/reset/wrap/seek behavior,
+bounded work and unchanged gameplay.
+
+For performance work, exercise the production path in the mixed-effects Lab
+and in play. Use the workload and budget in the effects contract, including
+sustained movement, turns, overlaps and bursts. Report browser, hardware,
+backing resolution, sample duration, frame intervals, update/submission costs
+and raster/compositor evidence. A frozen frame or short callback measurement
+cannot establish sustained performance.
+
+Keep automated correctness, measured performance and visual judgment separate.
+Correctness checks do not establish appearance or designer acceptance.
+
+Change shared contracts only within the authorized scope. Keep experimental
+choices and historical findings in the study.

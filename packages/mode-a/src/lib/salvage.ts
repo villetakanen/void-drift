@@ -36,6 +36,7 @@ import {
 import { buildStats, CHASSIS, type Loadout } from "./schemas/loadout";
 import type { SalvagePhysicalState } from "./schemas/salvage";
 import {
+  DamageAmountSchema,
   type DestructionCause,
   ENCOUNTER,
   type EncounterConfig,
@@ -481,6 +482,13 @@ export class SalvageSystem {
       this.bodies.push(cell);
       this.emit("energy-release", x, y, x, y, time);
     }
+  }
+  /** Shared weapon damage entry point; preserves production breakup and events. */
+  applyDamage(body: SalvageBody, amount: number) {
+    const damage = DamageAmountSchema.parse(amount);
+    if (!this.bodies.includes(body))
+      throw new Error("Damage target is not in this simulation");
+    this.damage(body, damage);
   }
   private damage(
     body: SalvageBody,

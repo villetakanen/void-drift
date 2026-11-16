@@ -12,14 +12,21 @@ Where it stands:
 - Inspector lighting controls and shared 1.35 light/shadow defaults are implemented.
 - Shared planet World HUD and names are now implemented and reviewed. Every HUD
   line is 1 CSS px and text is 14 CSS px; planet HUD draws before bodies.
-- Rotation trial closure remains with its existing session. Remaining light/stock
-  culling, general body passes, engine material ownership and the full Flight
-  instrument rename remain open. Comparable performance evidence remains open.
+- Decorative rings are removed and stock/fallback body and planet light culling
+  are implemented and reviewed; World HUD remains independent. These edits are
+  included in the current shared commit snapshot.
+- Shared body/light passes are implemented and approved in two review rounds.
+- Rotation trial closure remains with its existing session. Engine material
+  ownership and the full Flight instrument rename remain open.
+  Script comparisons are recorded below; production raster/compositor evidence
+  remains open.
 
 Lead owns planning and review only. Luna implemented the bounded deliveries and
 Terra reviewed them. During HUD work, another session saved the shared checkout as
-`9a42f658`, capturing some in-flight specs and schema changes; the remaining HUD
-implementation is still uncommitted. This lead made no new commit or push.
+`9a42f658`, capturing some in-flight specs and schema changes. The lead subsequently
+committed and pushed the remaining HUD work and the shared checkout as `9dc8b444`.
+The user has requested a new whole-checkout commit and push containing ring
+removal, culling and the shared body/light passes, plus concurrent work.
 
 This plan is a provisional map of what seemed sensible when it was written.
 Its steps, scope, dependencies and technical details are working assumptions to
@@ -102,10 +109,11 @@ contracts, lint and all 237 tests. The broad type gate still reports the existin
 run, so this is not stable-candidate verification or release approval. No additional
 server or deployment is part of this save point.
 
-Next limited deliverable, proposed only: offscreen planets do no body or light
+The proposal below is now assigned in the active delivery section: offscreen planets do no body or light
 painting. Extend the existing textured-surface visibility rule to stock/fallback
-bodies and the two body-light passes. Bounds include the stock ring, body outline,
-atmosphere and light stamp as applicable; partial visibility remains drawn. Keep
+bodies and the two body-light passes. Remove decorative stock rings as part of this delivery. Remaining bounds include
+the body outline, atmosphere and light stamp as applicable; partial visibility
+remains drawn. Keep
 HUD visibility independent, so an orbit or gravity boundary crossing the view still
 shows when its planet is offscreen. Retain current names, lighting and rotation.
 No general-body interface, material migration or Flight instrument rename in this
@@ -113,11 +121,250 @@ slice. Reserve one frame owner again before assignment.
 
 Before code, make the existing body-cost contract explicit about complete visual
 bounds and independent HUD visibility. Verify no body/light draw calls for fully
-outside bodies, no clipping at ring/atmosphere edges, correct return into view at the
+outside bodies, no clipping at body-outline/atmosphere edges, correct return into view at the
 current tick, and retained crossing HUD marks. Use the original production-pass
 measurement method and a fresh before/after sample; distinguish script timings from
 raster/compositing. This closes a concrete cost-rule gap without depending on the
-larger appearance-data refactor. It is not assigned by this proposal.
+larger appearance-data refactor. The active delivery below records its assignment.
+
+### Ring removal added to the proposed culling delivery
+
+User approved retiring the decorative stock-planet ring functionality. Source
+inspection confirms `hasRing` selects artwork only: the stock planet painter draws
+a tilted ellipse, while collision and gravity use the body's radius and mass.
+Ranked production uses configured planet initialization; ring probability belongs
+to the separate random experimental factory. Removing the artwork does not change
+ranked gameplay rules or require a new score challenge.
+
+Before implementation, update the planet contract to state: “Planets have no
+separate decorative ring system. Collision, gravity and body dimensions are
+unchanged.” Remove obsolete ring fields, probability, drawing options/branch and
+ring-only assertions from active contracts and code rather than retain a deprecated
+switch. Historical study prose remains historical; adjust executable consumers only
+as needed. Orbit and gravity HUD rings are unrelated and remain.
+
+The deliverable is now: remove decorative stock rings and make offscreen body/light
+drawing cost nothing, retaining independently visible World HUD. This is a scope
+update; the subsequent active delivery records implementation ownership.
+
+## Delivered: ring removal and body/light culling
+
+User authorized Luna development and Terra review, at most three formal rounds.
+Baseline is `9dc8b444`. Lead verified no pending frame edits and idle prior rotation,
+Inspector and former lead sessions. Luna alone owns `flight-frame.ts` during this
+delivery; lead/reviewer stay read-only. The active Plasma Projector study and its
+pending files belong to another session and remain untouched. No commit/push is
+part of this assignment.
+
+Update current specs before implementation. Remove decorative ring code, fields and
+probability rather than retaining a disabled option; preserve planet physics and
+ranked rules. Cull stock/fallback bodies and both planet light passes with complete
+visual bounds. Stock outline half-width is included; Venus atmosphere already has
+its own bound. Keep textured rotation behavior, current-tick reentry, names and
+1.35 lighting defaults. The World HUD remains independently drawn, including
+crossing orbits/gravity boundaries when bodies are outside the camera. Its CSS sizes
+and depth ordering are unchanged. General body passes/material ownership/rename are
+not part of this delivery.
+
+Luna completed implementation and Terra approved in one formal review round with
+no blocking findings. Lead inspected the scoped code/spec diff and independently
+passed 31 tests across frame, World HUD, Physics, LandingSystem and Simulation.
+Production-pass guards cover outline overlap and tangency, Mercury returning at an
+advanced tick, Venus atmosphere-only overlap at zoom 0.5, light-disc culling, and
+HUD circles drawn while the body is suppressed. Active apps/packages/specs contain
+no `hasRing` or `ringProbability` references. Ring-only executable fixture fields
+and assertion were removed; historical prose remains untouched.
+
+Luna reports Astro check (305 files, zero diagnostics), standalone TypeScript,
+whole-tree lint (1094 files) and whitespace checks passed. Lead independently
+confirmed whitespace checks. Terra's final scoped approval stands. The optional
+random planet factory consumes one fewer random number per accepted planet; its
+subsequent experimental random sequence can change. Production uses configured
+initialization; radius, mass, collision, gravity and ranked rules are unchanged.
+
+The original 240-frame before/after production timing comparison was not run.
+Draw-call guards establish skipped drawing, not a measured frame-time improvement;
+raster/compositing and GPU cost remain unmeasured. Luna inspected the existing
+Inspector in Chrome at 1512×860: Mercury and Venus materials loaded, labels stayed
+visible and bodies covered orbit/gravity dashes with World HUD enabled. This was
+not an offscreen-culling browser test; no capture was saved. Human acceptance is
+not claimed. No commit or push was made for this delivery. Luna has finished frame
+edits; a subsequent task must reserve ownership again. Concurrent Flight instrument, salvage and Plasma Projector work belongs
+to the other session and was preserved.
+
+Next limited target: settle and implement the appearance-data interface and general
+body/light passes under one explicit frame owner, preserving these culling bounds
+and independent HUD. Engine material ownership follows that interface; rename is
+independent collateral. This is a recommendation, not an assignment.
+
+## Measured after culling, 16 November 2026
+
+Lead ran temporary browser harnesses against the existing server, without changing
+production code or starting a server. Local raw samples and runnable harnesses are
+in `artifacts/measurements/2026-11-16-planet-culling/` (git-ignored). Hardware:
+Apple M4 Max; Chromium headless 156.0.8078.4; 1920×1080 backing and CSS stage,
+DPR 1, three real Canvas layers. Current Practice simulation supplies three planets
+(stock rock, Mercury, Venus); production materials use browser rotation and default
+lighting. Rotation time advances one simulation tick per animation frame, with
+orbital positions held fixed. Simulation stepping/input costs are not measured.
+
+The paired control transpiles the `9dc8b444` frame module in memory and uses the
+same current materials, painters, simulation and browser. Thus it isolates the
+latest frame culling changes, not ring artwork removal or the earlier rotation and
+stamp work. No checkout rollback. All production passes run; pass observations and
+painter-call counters add the same overhead to both versions. Thirty warmup frames
+precede each 240-frame sample; order alternates between versions.
+
+A first run used three repeats of six cases (onscreen, offscreen, close Venus,
+paused, stock onscreen/offscreen). A second run used an isolated blank host page to
+exclude Inspector UI activity, two repeats of four cases. The isolated repeat is
+the primary result below: mean script milliseconds per rendered frame.
+
+| Case                           | Body pass before → after | Both light passes before → after | Whole draw before → after |
+| ------------------------------ | ------------------------ | -------------------------------- | ------------------------- |
+| All planets onscreen, ticking  | 0.0565 → 0.0544          | 0.0067 → 0.0050                  | 0.420 → 0.400             |
+| All planets offscreen, ticking | 0.0031 → 0.0025          | 0.0077 → 0.0015                  | 0.372 → 0.383             |
+| Close Venus, 3.2 px/u          | 0.4681 → 0.4733          | 0.0090 → 0.0058                  | 0.823 → 0.809             |
+| Stock/fallback discs offscreen | 0.0060 → 0.0015          | 0.0017 → 0.0006                  | 0.345 → 0.348             |
+
+Each fully offscreen 240-frame sample previously submitted 240 stock-body calls
+and 480 light calls, versus zero now. Stock-only offscreen samples went from 720
+body calls to zero. Onscreen body/light counts were unchanged. Close Venus retains
+Venus body/atmosphere/light while skipping the invisible stock body and Mercury
+light. Textured offscreen surfaces were already skipped before this change.
+World HUD continued to execute independently in all cases.
+
+The isolated offscreen body-plus-light passes fell from about 0.011 to 0.004 ms.
+Whole-frame improvement is not established: the first run showed 0.375 → 0.355 ms
+offscreen, but the isolated repeat showed 0.372 → 0.383 ms. Variability elsewhere
+in the frame exceeds the small culling saving. No material visible-path regression
+was established; close Venus body timing remains about 0.47 ms. Frame intervals
+(p95 roughly 17–19 ms here) are browser scheduling observations, not GPU timings.
+Headless software rendering does not certify production raster/compositor cost;
+that remains unmeasured. Surface draw calls are not surface redraw counts.
+
+The historical 3.96 ms whole-frame / 3.86 ms planets baseline used per-pixel
+rotation and a different browser/workload. Current onscreen body cost around
+0.05–0.06 ms is consistent with the earlier rotation-trial improvement, but these
+runs do not isolate that change or justify a directly comparable percentage.
+The preliminary paused body pass was about 0.015 ms; that case was not repeated
+on the isolated page. No ring-removal-only timing claim or human acceptance claim.
+
+Lead reran the 13 frame and World HUD tests: all passed. Whitespace checks passed.
+Conclusion: the culling target is met, with zero unwanted drawing submissions and
+a small measurable reduction in the relevant passes; no whole-frame speedup claim.
+
+Recommended next bounded task: replace planet-specific frame material fields and
+branches with a typed appearance collection and general body/light passes, wiring
+Deck, Flight instrument and Inspector to that interface. Preserve fallback,
+lighting defaults, culling bounds, rotation timing and independent World HUD.
+Do not include material/asset migration or rename. Reserve one frame editor and
+coordinate consumer edit windows with their owners first. Existing render identity
+contract authorizes this direction; settle any missing appearance/lifecycle
+contract before implementation. No implementer has been assigned for this proposal.
+
+## Delivered: shared body and light passes
+
+User assigned Luna development and Terra review, maximum three formal rounds.
+Lead coordinates and reviews, with no production edits. Baseline is the shared
+checkout at `9dc8b444` plus the reviewed, uncommitted ring/culling changes. Luna
+owns the frame edit window; those pending frame changes are Luna's prior delivery.
+Rotation and Inspector sessions are idle. The previous Flight instrument tooling
+session is idle; the active Plasma Projector continuation explicitly keeps its new
+work study-local and reuses the shared experiment API. Luna may migrate the frame
+consumer in Flight instrument while preserving pending experiment hooks, star
+overrides and appended experiment passes. Study files and unrelated changes stay
+with their owners.
+
+Target: appearance data drives general body and light passes, without planet/mode
+branches in the frame. Migrate Deck, Flight instrument custom appearances and
+Inspector together. Keep World HUD independent and behind bodies, preserve CSS
+sizing, complete culling bounds, material fallback, current-tick rotation and
+lighting defaults. No material migration, assets, loader/strip changes, rename or
+rotation-trial closure. Missing composition/bounds/lifecycle requirements must be
+specified before implementation. Design approved: a typed runtime appearance map uses full-system outward positions
+and required world-space bounds for body/light callbacks. Missing appearances use
+stock fallback; no new skip-fallback policy. Prepared materials share one adapter
+between Deck and Inspector, with no per-frame painter/stamp allocation. Custom
+instrument compositions declare conservative bounds including detached marks and
+enter the shared light pass before other LFX. Retaining the generic `planets` ID
+avoids needless consumer churn; the two named light passes become `body-light`.
+Luna updated specs before implementation and delivered the shared passes. Terra
+approved in round two. Round one found that the custom atmosphere's rotated ship
+airflow could exceed its AABB; the bound now covers rotated controls/endpoints and
+stroke. The frame no longer contains Mercury/Venus or mode branches. Deck and
+Inspector use `practice-planet-appearances.ts`; Flight instrument supplies its
+custom composition through the same frame interface instead of replacing passes.
+Existing experiment hooks and star overrides were preserved. The general frame
+and adapter were checked for material readiness, filtering/replay identities and
+first-LFX ordering. Material/asset ownership migration remains open.
+
+Lead independently passed 17 tests across frame, real Practice adapter, World HUD
+and Flight instrument experiment behavior. Terra independently passed nine frame
+and adapter tests. The adapter test exercises real adapter callbacks through
+production passes, including reentry phase, atmosphere-only visibility and light
+culling. Generic descriptor coverage exercises an additional composition without
+frame branches. The protected loaders, strip surface and Toggle have no new diffs.
+Luna reports Astro check (305 files, zero diagnostics), scoped Biome and scoped
+whitespace checks passed. Lead independently ran standalone TypeScript: passed.
+In Chrome at 1512×805 on the existing server, Luna checked Mercury and Venus in
+Inspector, then the recent rock-atmospheres custom Flight instrument composition
+at B1 / 0.45 s. Textured bodies, atmosphere and HUD were visible, and browser console
+errors were empty. No material-failure browser injection or full gameplay journey
+was run. No commit/push was made. Luna has released the frame edit window; a later
+assignment must reserve ownership again.
+
+Lead measured the shared passes against a saved pre-generalization frame using
+the same current materials and real Canvas layers. Two alternating rounds of 240
+frames per case after 30 warmups, isolated host page, Chromium headless 156 on
+Apple M4 Max, 1920×1080 CSS/backing, DPR 1. Tick-based rotation advances once per
+frame; orbital positions stay fixed. This is script submission, not simulation,
+raster or compositor timing. Local harness/raw data/saved baseline live in
+`artifacts/measurements/2026-11-16-shared-body-passes/` (git-ignored).
+
+| Case                            | Whole draw before → after | Body pass before → after |
+| ------------------------------- | ------------------------- | ------------------------ |
+| All planets onscreen            | 0.429 → 0.426 ms          | 0.058 → 0.059 ms         |
+| All planets offscreen           | 0.348 → 0.359 ms          | 0.0004 → 0.0031 ms       |
+| Close Venus at 3.2 px/u         | 0.850 → 0.845 ms          | 0.471 → 0.481 ms         |
+| Stock/fallback bodies offscreen | 0.375 → 0.379 ms          | 0.0023 → 0.0019 ms       |
+
+Painter-call counts match the pre-refactor frame in every case, including zero
+body/light calls offscreen. Small differences do not establish a whole-frame
+speedup or material performance regression. GPU/raster cost and human acceptance
+are not claimed. This delivers the data-driven frame target; no next implementation
+is assigned.
+
+## Shared snapshot and next proposed deliverable
+
+User requested committing and pushing the entire shared checkout after the shared
+body/light delivery. This snapshot also includes concurrent Flight instrument
+experiment/damage tooling, the Plasma Projector study and skill updates. Quick
+verification `artifacts/verification/2026-11-16T18-59-00.105Z-bJZUnN/report.json`
+passed contracts and all 255 tests. Initial lint flagged a concurrent temporary
+browser test and plan formatting. The other session removed its temporary browser
+test; lead formatted the plan. Final whole-tree lint passed across 1,096 files,
+and a fresh full unit run again passed all 255 tests. Broad type checking still reports the previously
+known two implicit-any errors and 34 warnings in historical studies. Source changed
+during the run, so this is not stable-candidate verification or release approval.
+No deployment is requested.
+
+Next proposed limited deliverable: give production Mercury one prepared atlas and
+an engine-owned material factory. Play and Inspector should load that one asset
+outside `/studies/`, retain the current accepted appearance/rotation/light behavior,
+and use the existing shared appearance adapter and stock fallback. Remove the
+production dependency on loading all three study candidate images and quilting
+Mercury on page load. Preserve provenance and historical study evidence.
+
+This advances the material-ownership and production-asset targets without bundling
+Venus migration, Flight instrument rename or rotation-trial closure. First reserve
+the Mercury-loader edit window with the rotation owner, verify existing material
+requirements, and specify any missing asset/preparation contract before assignment.
+Acceptance should cover one production atlas request, no production study-image
+fetches for Mercury, both play/Inspector using the same engine preparation,
+unchanged bounds/HUD/lighting and failure fallback. Compare the delivered rendering
+and load work with the current path; script measurements do not certify GPU cost.
+This is a recommendation only; no implementation has been assigned.
 
 ## What the review found
 
@@ -263,7 +510,8 @@ Nothing in Practice is that large; Venus at 4 px/u is 323 px.
 Implemented, uncommitted, in the bounded Luna delivery reviewed by Terra. Core's
 RockBodyPainter prepares and shares one canonical stamp per active intensity plus
 the permanent default; light drawing rotates it with Canvas and creates no pixels.
-CloudBodyPainter inherits it. Default production construction prepares intensity 1.
+CloudBodyPainter inherits it. Current production defaults are incoming 1.35,
+shadow 1.35 and temperature 5800 K; stamps are shared by the full prepared tuple.
 The recent atmosphere study prepares custom values before publishing redraw state
 and releases leases on change/unmount. Existing first-on-LFX ordering is unchanged.
 Three review rounds finished with no blocking code findings. Comparable 240-frame
@@ -271,12 +519,15 @@ performance timing and the full visual matrix are still missing; see delivery re
 
 ### 5. Skip bodies outside the view
 
-Done for the textured surface and its rotation, with step 3. Left: the light passes
-still draw a stamp for a planet outside the view, and stock planets are not tested.
-The HUD pass decides separately, since an orbit can cross the view when its planet
-does not. Size: small. Depends on: nothing.
+Implemented and reviewed for textured, stock/fallback bodies and both light passes.
+Full outline/atmosphere bounds retain partial visibility. World HUD remains
+independent. See the delivered culling record above for checks and measurement limits.
 
 ### 6. General body passes driven by data
+
+Implemented and reviewed; see the shared-pass delivery above. The original scope
+below is historical planning context, not remaining work. Material migration is
+still separate.
 
 Replace `FlightFrame.mercury` and `FlightFrame.venus` with a set of body appearances
 keyed by planet identity, and the four planet-specific passes with one body pass and

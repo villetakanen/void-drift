@@ -1,17 +1,13 @@
 import {
   type Camera,
-  type CloudBodyPainter,
   drawSunFields,
   drawWorldHud,
   type FxPass,
   type Planet,
   type Renderer,
-  type RockBodyPainter,
 } from "@void-drift/core";
 import { BUILD_FLIGHT_SCALE, drawBuild } from "./build-renderer";
 import type { FlightFx } from "./gravity-fold-fx";
-import { PRACTICE_MERCURY_SPIN_SECONDS } from "./mercurial-rock";
-import { PRACTICE_VENUS_SPIN_SECONDS } from "./practice-venus";
 import { drawSalvage, drawSalvageApertures } from "./salvage-renderer";
 import type { ShipProfileId } from "./schemas/ship-profile";
 import { type Simulation, STEP } from "./simulation";
@@ -63,6 +59,32 @@ export type FlightLayerContexts = Record<
   CanvasRenderingContext2D
 >;
 
+/** Inclusive axis-aligned bounds in world units. */
+export interface BodyAppearanceBounds {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+}
+
+/** Runtime appearance data for one simulation planet's ordered composition. */
+export interface BodyAppearance {
+  worldBounds(frame: FlightFrame, planet: Planet): BodyAppearanceBounds;
+  drawWorld(
+    frame: FlightFrame,
+    ctx: CanvasRenderingContext2D,
+    planet: Planet,
+  ): void;
+  light?: {
+    bounds(frame: FlightFrame, planet: Planet): BodyAppearanceBounds;
+    draw(
+      frame: FlightFrame,
+      ctx: CanvasRenderingContext2D,
+      planet: Planet,
+    ): void;
+  };
+}
+
 /** What one in-flight frame is drawn from. */
 export interface FlightFrame {
   /** One context per layer; `world` is the renderer's own canvas. */
@@ -77,21 +99,8 @@ export interface FlightFrame {
   lightTime?: number;
   /** Extra emission stamped into the light surface, such as the countdown. */
   lightOverlay?: (ctx: CanvasRenderingContext2D, pass: FxPass) => void;
-  venus?: {
-    painter: CloudBodyPainter;
-    surface: {
-      canvas: HTMLCanvasElement;
-      draw(phase: number, diameter?: number): void;
-    };
-  };
-  /** Optional production surface painter used only for Practice Mercury. */
-  mercury?: {
-    painter: RockBodyPainter;
-    surface: {
-      canvas: HTMLCanvasElement;
-      draw(phase: number, diameter?: number): void;
-    };
-  };
+  /** Prepared appearances keyed by validated full-system planet ordinal. */
+  bodyAppearances?: ReadonlyMap<number, BodyAppearance>;
 }
 
 export interface FlightPass {
@@ -107,7 +116,7 @@ export interface FlightPass {
   draw(frame: FlightFrame, ctx: CanvasRenderingContext2D): void;
 }
 
-/** The in-flight frame's passes, grouped by layer in stack order. Array order is draw order. */
+/** The in-flight frame's ordered passes. Each pass names its own layer context. */
 export const FLIGHT_PASSES: readonly FlightPass[] = [
   {
     id: "void",
@@ -175,110 +184,38 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
     name: "Planets",
     layer: "world",
     space: "world",
-    draws: "Each planet body and any material-specific atmosphere",
-    source: "packages/core/src/lib/assets/planet.ts",
-    draw: ({ renderer, sim, mercury, venus, camera }, ctx) => {
+    draws: "Each planet's prepared body composition, or its stock body",
+    source: "packages/mode-a/src/lib/flight-frame.ts",
+    draw: (frame, ctx) => {
+      const { renderer, sim, bodyAppearances, camera } = frame;
       for (const planet of sim.planets) {
-        if (
-          sim.settings.mode === "practice" &&
-          planet.id === "venus" &&
-          venus
-        ) {
-          if (
-            planetBodyInView(
-              camera,
-              planet,
-              Math.max(0.325 / camera.zoom, planet.radius * 0.0325),
-            )
-          ) {
-            venus.surface.draw(
-              (sim.ticks * STEP * 2 * Math.PI) / PRACTICE_VENUS_SPIN_SECONDS,
-              planet.radius * 2 * camera.zoom,
-            );
-            venus.painter.body(
-              ctx,
-              0,
-              planet.pos.x,
-              planet.pos.y,
-              planet.radius,
-            );
-            venus.painter.atmosphere(
-              ctx,
-              planet.pos.x,
-              planet.pos.y,
-              planet.radius,
-              sim.star.pos.x,
-              sim.star.pos.y,
-              camera.zoom,
-            );
-          }
-          continue;
-        }
-        if (sim.settings.mode === "practice" && planet.id === "venus") {
+        const appearance = bodyAppearanceFor(bodyAppearances, planet);
+        if (appearance) {
+          const bounds = appearance.worldBounds(frame, planet);
+          if (boundsInView(camera, bounds))
+            appearance.drawWorld(frame, ctx, planet);
+        } else if (
+          planetBodyInView(camera, planet, stockPlanetOutlineHalfWidth(planet))
+        )
           renderer.drawPlanet(planet);
-          continue;
-        }
-        const isMercury = isPracticeMercury(sim, planet) && mercury;
-        if (!isMercury) {
-          renderer.drawPlanet(planet);
-          continue;
-        }
-        if (planetBodyInView(camera, planet)) {
-          mercury.surface.draw(
-            (sim.ticks * STEP * 2 * Math.PI) / PRACTICE_MERCURY_SPIN_SECONDS,
-            planet.radius * 2 * camera.zoom,
-          );
-          mercury.painter.body(
-            ctx,
-            0,
-            planet.pos.x,
-            planet.pos.y,
-            planet.radius,
-          );
-        }
       }
     },
   },
   {
-    id: "venus-light",
-    name: "Venus light",
+    id: "body-light",
+    name: "Body light",
     layer: "lfx",
     space: "world",
-    draws: "Sun-facing hard light on Practice Venus",
-    source: "packages/core/src/lib/assets/cloud-body.ts",
-    draw: ({ sim, venus }, ctx) => {
-      if (!venus || sim.settings.mode !== "practice") return;
-      const planet = sim.planets.find((item) => item.id === "venus");
-      if (planet)
-        venus.painter.light(
-          ctx,
-          planet.pos.x,
-          planet.pos.y,
-          planet.radius,
-          sim.star.pos.x,
-          sim.star.pos.y,
-        );
-    },
-  },
-  {
-    id: "mercury-light",
-    name: "Mercury light",
-    layer: "lfx",
-    space: "world",
-    draws: "Sun-facing hard light on Practice Mercury",
-    source: "packages/core/src/lib/assets/rock-body.ts",
-    draw: ({ sim, mercury }, ctx) => {
-      if (!mercury || sim.settings.mode !== "practice") return;
-      const planet = sim.planets.find((item) => item.id === "moon");
-      if (planet)
-        mercury.painter.light(
-          ctx,
-          planet.pos.x,
-          planet.pos.y,
-          planet.radius,
-          sim.star.pos.x,
-          sim.star.pos.y,
-        );
+    draws: "Each prepared body's sun-facing light stamp",
+    source: "packages/mode-a/src/lib/flight-frame.ts",
+    draw: (frame, ctx) => {
+      const { camera, sim, bodyAppearances } = frame;
+      for (const planet of sim.planets) {
+        const light = bodyAppearanceFor(bodyAppearances, planet)?.light;
+        if (!light) continue;
+        if (boundsInView(camera, light.bounds(frame, planet)))
+          light.draw(frame, ctx, planet);
+      }
     },
   },
   {
@@ -382,8 +319,12 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
   },
 ];
 
-function isPracticeMercury(sim: Simulation, planet: Planet) {
-  return sim.settings.mode === "practice" && planet.id === "moon";
+function bodyAppearanceFor(
+  appearances: ReadonlyMap<number, BodyAppearance> | undefined,
+  planet: Planet,
+) {
+  const position = planet.systemPosition;
+  return position === undefined ? undefined : appearances?.get(position);
 }
 
 function resolutionOf(id: FlightLayerId) {
@@ -462,4 +403,29 @@ function planetBodyInView(camera: Camera, planet: Planet, margin = 0) {
     planet.pos.y + radius >= view.y &&
     planet.pos.y - radius <= view.y + view.height
   );
+}
+
+/** Validates inclusive custom world bounds and culls only wholly outside boxes. */
+function boundsInView(camera: Camera, bounds: BodyAppearanceBounds) {
+  if (
+    !Number.isFinite(bounds.left) ||
+    !Number.isFinite(bounds.top) ||
+    !Number.isFinite(bounds.right) ||
+    !Number.isFinite(bounds.bottom) ||
+    bounds.left > bounds.right ||
+    bounds.top > bounds.bottom
+  )
+    throw new RangeError("Body appearance bounds must be finite and ordered");
+  const view = camera.getViewRect();
+  return (
+    bounds.right >= view.x &&
+    bounds.left <= view.x + view.width &&
+    bounds.bottom >= view.y &&
+    bounds.top <= view.y + view.height
+  );
+}
+
+/** Half-width of the stock disc outline, in world units. */
+function stockPlanetOutlineHalfWidth(planet: Planet) {
+  return Math.max(1, planet.radius * 0.06) / 2;
 }

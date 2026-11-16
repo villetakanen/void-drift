@@ -13,9 +13,9 @@ export const studies = z.array(studySchema).parse([
     slug: "plasma-projector-2026-11-16",
     title: "Plasma Projector",
     status: "open",
-    phase: "problem",
+    phase: "exploration",
     question:
-      "How should the Plasma Projector’s discharge and its effect on the firing ship make a delayed close-range strike feel visceral and overwhelmingly powerful, yet sharply limited and demanding commitment?",
+      "How should the Plasma Projector’s energy-spending charge, target-conditioned close eruption and staghorn cooling exhaust look and affect flight so its power and commitment feel tangible?",
   },
   {
     slug: "rock-atmospheres-2026-11-15",

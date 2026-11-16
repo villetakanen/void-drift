@@ -2,81 +2,200 @@
 layout: ../../../layouts/StudyLayout.astro
 ---
 
+import InstrumentBand from '../../../components/lab/instrument/InstrumentBand.astro';
+import Plasma023 from '../../../components/studies/plasma-projector-2026-11-16/Plasma023.svelte';
+
 import StudySection from '../../../components/studies/plasma-projector-2026-11-16/StudySection.astro';
 
 <StudySection>
 
-## 01 / Commit before it lands
+## 01 / Charging commits; cooling still escapes
 
-A ship closes on a target with momentum still carrying it forward. Using the
-projector must be a commitment made before the hit: its effect does not arrive
-instantly, and the interval should make anticipation and exposure tangible. The
-release should feel extremely visceral, powerful and impactful, yet sharply
-limited. The tension is overwhelming force within a narrow opportunity: getting
-close and committing should matter, rather than making the weapon feel effortlessly
-available whenever a target appears.
+A ship closes on a target while the Plasma Projector gathers energy. Starting
+that charge spends energy: commitment precedes impact. Charging produces timed,
+staghorn-like exhaust plumes that arc to the sides, reaching farther than the
+main strike with weaker, less reliable damage. That venting happens even if the
+main strike never fires. When charged with a target in its close hit zone, the
+weapon erupts in a massive plasma explosion immediately ahead of the ship. A
+successful strike still vents the staghorns: the weapon cools in either case.
+This fictional mechanism connects preparation, destruction and the residual
+opportunity after a missed approach.
 
-These are design requirements, not claims about an existing weapon. Close range,
-a perceptible interval before the main impact, and constrained power are fixed intent. How the discharge gathers, erupts, reaches
-its target and dies away must be seen alongside what firing does to the ship's
-movement. Exact timing, reach, duration and visible recovery remain provisional.
-A backward push that checks the approach is one hypothesis, not a requirement.
-The hull, target and continuing flight must stay readable through the violence.
-The result is one proposed firing event whose light, rhythm and ship response
-make both its power and its limits felt.
+That sequence is the agreed foundation for this study, not an existing
+production weapon or a project decision. The question is how its charge,
+concentrated eruption and branching cooling exhaust should look and affect
+flight so the weapon feels visceral, overwhelmingly powerful and sharply limited.
+The delay comes from preparation; the primary is a close eruption, not a volley
+of travelling projectiles. The ship, target and continuing flight must remain
+readable. A backward response that checks the approach is a promising observation
+from earlier work; its strength and timing remain provisional.
 
-Existing ship flight, engine behaviour and rendering remain the baseline; shared
-motion laws are not reopened. Every round shows one proposal firing in the real
-Flight scene, using fixed burns, its timeline and burger-pane options, without
-manual piloting. Approach, commitment, release and aftermath belong in the same
-example. Damage belongs in this inquiry: main discharge and secondary exhaust must be
-examined against targets, debris and newly exposed fragments. Damage strength,
-reach and persistence are open design choices; final balance numbers remain
-provisional. Energy funding, target-selection rules and fitting artwork remain
-adjacent unless the firing event requires them to be reconsidered.
+The unresolved work is convincing plasma in the actual game: its substance,
+light, motion and connection to the firing ship. The central eruption and timed
+staghorn exhaust supply structure, not vector outlines to reproduce. Exact
+energy costs, charge and vent timings, reach, damage, recovery and ship response
+remain provisional. Existing engine behaviour and shared flight laws stay fixed.
+Weapon response acts on the current production flight model, without retuning
+gravity, friction or engines; the Flight scene instrument contract
+(`docs/specs/lab/flight-scene-instrument/spec.md`) owns that baseline.
 
-### Exhaust beyond the main strike
+### What the example must make visible
 
-The firing event includes secondary exhaust plumes that arc outward to the sides,
-reach farther than the main discharge and can cause weaker, much less reliable
-damage. They remain an opportunity even when the main attack misses or its
-commitment is not completed. This is retained design intent for this cycle, not
-proof that the previous study demonstrated the behaviour or a decision for the
-project. The secondary reach should make a near miss interesting without erasing
-the main strike’s demand for a committed close approach.
+- Show approach, energy-spending charge, the target-conditioned main eruption,
+  cooling exhaust and continuing flight in the shared Flight scene.
+- Show both a successful close strike and loss of the main opportunity after
+  charging begins. Exhaust survives either outcome because it vents the charged
+  weapon; it is not an unrelated secondary gun.
+- Examine damage to targets, debris and newly exposed fragments. Separate actual
+  contact and breakup from the appearance of contact.
+- Use fixed burns, the timeline and burger-pane study options. No manual piloting,
+  schematic, graph or calculation substitutes for a firing example.
 
-Their shape, timing, spread and relationship to an incomplete main discharge
-remain open. Each round must show the main strike and side plumes as one firing
-event, including a missed or incomplete main strike where their independent
-opportunity can be judged. Whether the plumes actually intercept a target must be
-checked separately from how convincing their light looks; damage amounts remain
-provisional.
+Energy spending and target presence are part of the mechanism, not adjacent
+scope. Their exact thresholds and balance, target prioritisation, fitting artwork
+and production delivery are not settled here. Each round must state any staged
+condition or omitted behaviour so a timer cannot silently stand in for the
+weapon's target condition. No new manual firing control is implied.
 
 <details>
-<summary>Starting evidence and exploration boundary</summary>
+<summary>Earlier evidence and the boundary of this revision</summary>
 
-| Evidence | What it means here |
+| Evidence | Use in this study |
 | --- | --- |
-| The preceding study was stopped as failed on 13 November 2026. Its closure records the designer's assessment that vectors and calculations came before an established in-game appearance and feel. | Begin with the firing event in the real scene. No schematic, graph or calculation constitutes an exploration round. |
-| The closure records liked slowing and a live/persistent light split, but no retained motion recording or resolved appearance. | These observations alone select no mechanics, artwork or defaults. The secondary exhaust requirement above is explicitly retained for this cycle; it does not adopt the earlier study wholesale. |
-| The shared Flight scene supports study light and staged backward impulses. | Current staging applies discrete backward impulses along the ship’s forward axis, not arbitrary directional or sustained forces. Name any missing capability before extending the instrument; this does not select a recoil model. |
+| The earlier study retained a concentrated primary, cooling shoulders, preparation paying for residue and target loss cancelling the primary. | The mechanism above is explicitly carried forward by the designer on 16 November. Failure to resolve appearance does not discard that foundation. Exact values and unconfirmed mechanics are not inherited. |
+| The designer liked slowing in the earlier moving-ship trial; no motion recording was retained. | Explore that flight response with provisional values. The recorded observation is not proof of resolved tuning or flight feel. |
+| Vector outlines and pixel-like replacements did not establish convincing plasma. | Preserve the eruption and exhaust relationship, not rejected source shapes or engine-stamp imitations. Earlier images are evidence of failed appearance, not visual starting points. |
+| Rounds 02.1 and 02.2 used the broader framing that omitted much of this mechanism. | 02.1 remains collapsed evidence only. 02.2 was rejected and removed. Neither establishes a visual direction or supersedes the revised foundation. |
 
-The baseline is the production simulation used by the Flight scene contract
-(`docs/specs/lab/flight-scene-instrument/spec.md`) and the shared render contract
-(`docs/specs/game/render/spec.md`). Each built example will name its loadout,
-initial conditions and burn, separating those conditions from the added projector response.
+The study supplies experimental behaviour through the shared Flight experiment
+attachment; the instrument supplies fixed ticks, reset, replay and production
+rendering. The production damage operation supplies wreck and fragment breakup.
+Name any missing staging capability before extending shared tooling. This revision
+changes no project spec.
 
-Source: `docs/loop-evidence/2026-11-13-plasma-projector-study-failed.md`,
-with the [preserved study](/lab/studies/plasma-projector-2026-11-11).
+Sources: [earlier study](/lab/studies/plasma-projector-2026-11-11) and
+`docs/loop-evidence/2026-11-13-plasma-projector-study-failed.md`.
 
 </details>
 
+<details open>
+<summary>Question test · 16 November 2026 · revised foundation</summary>
 
+| Metric | Result | Reason |
+| --- | --- | --- |
+| One subject | Pass | Charge, close eruption, cooling exhaust and the resulting ship response are facets of one Plasma Projector firing sequence that one Flight example can show together. The earlier projector study is stopped, and retaining existing engines and shared flight laws avoids taking over the open engine-light and ship-motion studies. |
+| Grounded | Pass with findings | The proposed mechanism is explicitly a current-study foundation, while the shared Flight instrument, experiment attachment, replay lifecycle and production breakup operation exist in both code and specifications. The open appearance and flight-response choices can be shown in a firing example, but “existing engine behaviour and shared flight laws” leaves the exact held-fixed baseline implicit. |
+| Consequence | Pass | The answer gives the Plasma Projector a concrete charge, eruption, cooling-exhaust appearance and provisional effect on the firing ship. Section 01 makes that change understandable while keeping production adoption outside this study. |
+
+Corrected after the test, not rerun.
+
+</details>
 
 </StudySection>
 
 <StudySection>
 
-## 02 / To be developed after 01
+## 02 / Exploration from the revised foundation
+
+<details>
+<summary>02.1 / Pressure, then rupture — rejected appearance and retained evidence</summary>
+
+![02.1: saturated flame polygons ahead of the Wasp, with side packets beside the wrecks.](/studies/plasma-projector-2026-11-16/02-1-b1-2_70-follow.png)
+
+*Appearance capture · 16 November 2026 · B1 / Course, 2.70 s, Follow (1.6×),
+1440 px viewport. Complete commitment; persistent discharge light on; all production
+layers visible; placed targets; standard Wasp engines and stabilizers.*
+
+The round demonstrated experimental simulation, damage and replay. The designer
+found its appearance disconnected from the game and the design question.
+**No visual direction was accepted.** The interactive example and its dedicated
+implementation have been retired; the screenshot preserves appearance only.
+It does not prove motion, damage or replay.
+
+<details>
+<summary>02.1 / Separate simulation evidence</summary>
+
+| Evidence | Scope and limits |
+| --- | --- |
+| The round's automated simulation check passed again before removal on 16 November 2026. | For B1 and B2, exhaust contacted wrecks and completed release contacted fragments; interruption withheld main contact. B3 missed and later lost the ship. Backward seek reconstructed ship, body and contact state. |
+| The screenshot above was captured before replacement. | It records one composed appearance at the stated settings. It is separate from the simulation check and establishes no motion quality or accepted direction. |
+
+</details>
+
+</details>
+
+02.2 was rejected and its interactive example and dedicated code removed on
+16 November 2026. Its travelling pressure fronts did not carry the weapon's
+charge, target-conditioned eruption and cooling mechanism forward.
+
+### 02.3 / Gather, erupt, vent
+
+One paid charge gathers at the nose while cooling plasma curls away to the sides.
+The main volume ignites immediately ahead of the ship only if the charged weapon
+finds a body in its close zone. A brief backward force checks the approach; the
+engines and the shared flight laws continue unchanged.
+
+The proposal uses a dense, short eruption and thinner branching exhaust. Their
+fresh marks overlap in the shared FX surface, whose decay, screen blend and
+Turbulent bloom supply the visible light. No travelling primary front is emitted.
+Appearance and response tuning remain proposals awaiting designer feedback.
+
+</StudySection>
+
+<InstrumentBand>
+  <Plasma023 client:load label="02.3 · Plasma Projector" />
+</InstrumentBand>
+
+<StudySection>
+
+Use **B1 / Close pass** for the strike and **Missed pass** for the lost opportunity.
+Play from zero to see approach and preparation; continue beyond the eruption to
+see cooling and flight. The burger pane compares backward response magnitude and
+preparation/release timing without changing engine, friction or gravity settings.
+
+<details>
+<summary>02.3 / Staged conditions and provisional values</summary>
+
+| Condition | Proposal and limit |
+| --- | --- |
+| Charge request | One scripted request at 0.50 s spends 18 energy from the real ship resource. Insufficient energy prevents charging. No manual firing, repeat-fire or target prioritisation is proposed. |
+| Readiness and target gate | Ready after 0.90 s of preparation. A body must enter 28–108 u ahead and within 30 u plus its radius sideways before 1.85 s. An empty zone never produces the primary. |
+| Close eruption | A stationary 46 u radius volume centred 68 u ahead at release, active for 16 ticks. Damage is 420/s; continued contact can damage newly released fragments on later ticks. |
+| Cooling | Four timed vents occur regardless of strike success, each emitting over 0.10 s. Moving parcels fork and bend outward, delivering 2.4 damage/s per overlapping parcel. Sparse contact makes this weaker and less reliable than the primary. |
+| Flight response | Default 65 u/s backward velocity change spread over 0.40 s during preparation. The pane offers 0–120 u/s and release timing; these may change whether the approach succeeds. Zero is the production flight baseline. |
+| Targets | Three placed wrecks, no held target or respawn. A Wasp retains its default engines and stabilizers; the starter ion cannon is removed to isolate projector damage. Missed pass changes the initial heading by 0.34 rad; it does not disable firing. Contact uses body-radius overlap, not artwork silhouettes. Production damage supplies breakup, fragments and impact effects. |
+| Rendering | Study-owned sources enter the existing FX surface. No shared layer/filter changes, custom loop or retained trail-mark history. The whole scene remains production-rendered. |
+| Omitted | Weapon fitting artwork, repeated cycles, balance, sound and enemy decision-making. The provisional nose origin does not settle a production mount. |
+
+</details>
+
+<details>
+<summary>02.3 / Mechanism, contact and replay checks · 16 November 2026</summary>
+
+| Check | Observed result at default response |
+| --- | --- |
+| Mechanism | Charge deducts 18 energy at 0.50 s. B1 and B2 close passes erupt at 1.40 s; B3 at 1.55 s. All altered-heading passes withhold the primary. All six sequences produce the four scheduled vents. An empty scene cannot fire; insufficient energy cannot charge. |
+| Contact and damage | B1 primary delivers 85 damage to an intact wreck and 60 to released fragments. Cooling contacts another wreck. In the missed pass, exhaust contacts wreck and fragment bodies without primary damage. Production collision can also create debris; contact assertions distinguish the projector's own damage. |
+| Replay | All three burns and both headings ran through the full 14 s timeline. Backward seek and fresh runs reconstruct identical ship, resource, salvage and experimental contact state. Response endpoints and timing choices also reconstruct without accumulating force. |
+| Continuing flight | Both B1 passes survive 14 s. B2 close pass reaches the star at 6.87 s; its missed pass survives. B3 reaches the star at 2.23 s / 2.73 s, so it cannot show a complete aftermath. These are production flight outcomes, not charge cancellation. |
+| Browser reconstruction | Temporary Chromium checks at 1440 × 900 and 1280 × 900 passed: pause preserves layer images; backward seek reconstructs the same pixels; keyboard pane choices preserve the selected timeline. Game and Follow composed captures and a playback sequence were inspected separately from those assertions. |
+| Boundaries | Simulation tests establish mechanism and contact, not appearance. The source keeps at most 128 moving parcels; all checked sequences stay within that bound. No sustained performance claim is made. |
+
+![02.3 proposal: the close eruption and thinner cooling exhaust in the composed Flight scene.](/studies/plasma-projector-2026-11-16/02-3-proposal-1_50.png)
+
+*Appearance capture · B1 / Close pass, 1.50 s, Follow (1.6×), 1440 × 900,
+default 65 u/s preparation response. A still records appearance only.*
+
+Checks live beside the proposal in `round023.check.test.ts`. Shared experiment
+lifecycle and damage validation checks also pass. The inspected sequence keeps the eruption local while the ship flies through its
+short aftermath. The thinner exhaust currently reads as forked fans of light;
+whether that carries convincing plasma substance remains unresolved. Native
+Chrome inspection was unavailable while the workstation was locked; inspection
+used headless Chromium playback captures. No appearance property has been
+accepted by the designer in this round.
+
+</details>
+
+## 03 / To be developed after 02
 
 </StudySection>

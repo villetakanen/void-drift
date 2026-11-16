@@ -1,4 +1,5 @@
 export * from "./config";
+export * from "./experiment";
 export * from "./flight";
 export * from "./light";
 export * from "./planet";

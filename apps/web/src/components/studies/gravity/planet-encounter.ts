@@ -31,7 +31,6 @@ export function planetEncounter(raw: unknown, moving: boolean) {
     mass: 1,
     color: "#8B7355",
     type: "rock",
-    hasRing: false,
   };
   const y0 = (c.reach * c.aim) / 100;
   const pos = new Vec2(-Math.sqrt(c.reach ** 2 - y0 ** 2), y0);

@@ -4,6 +4,7 @@ import { onMount, type Snippet, untrack } from "svelte";
 import {
   type DeepReadonly,
   defaultTargets,
+  type FlightExperiment,
   FlightScene,
   type FlightSceneDocument,
   FlightSceneDocumentSchema,
@@ -35,6 +36,7 @@ import "@void-drift/core/styles/buttons.css";
 // top-right.
 let {
   config,
+  experiment,
   label = "Flight scene: a burn in the game’s layers",
   pane,
   light,
@@ -48,6 +50,7 @@ let {
 }: {
   /** The configuration document; parsed here, so it may come from anywhere. */
   config: unknown;
+  experiment?: FlightExperiment;
   label?: string;
   /**
    * The menu's content: the controls of the study or Lab page that mounts the
@@ -141,6 +144,7 @@ onMount(() => {
     untrack(() => light),
     untrack(() => tuning),
     untrack(() => planetAppearance),
+    untrack(() => experiment),
   );
   // The constructor already flew the opening burn in the opening view and the
   // chosen targets, so the first frame only seeks.
@@ -154,6 +158,7 @@ onMount(() => {
     planet: untrack(() => planetKey),
     appearance: untrack(() => planetAppearance),
     star: "",
+    experiment: untrack(() => experiment),
   };
   let previous = performance.now(),
     accumulator = 0,
@@ -172,7 +177,8 @@ onMount(() => {
     const targets = staged;
     if (
       activeDoc &&
-      (drawn.burn !== burn ||
+      (drawn.experiment !== experiment ||
+        drawn.burn !== burn ||
         drawn.tick !== tick ||
         drawn.view !== view ||
         drawn.targets !== targets ||
@@ -182,6 +188,7 @@ onMount(() => {
         drawn.appearance !== planetAppearance ||
         drawn.star !== JSON.stringify(starAppearance))
     ) {
+      if (drawn.experiment !== experiment) scene.setExperiment(experiment);
       if (drawn.tuning !== tuned) scene.setTuning(tuning);
       if (drawn.light !== shownLight) scene.setLight(shownLight);
       if (drawn.targets !== targets || drawn.planet !== planetKey)
@@ -206,6 +213,7 @@ onMount(() => {
         planet: planetKey,
         appearance: planetAppearance,
         star: JSON.stringify(starAppearance),
+        experiment,
       };
       lost = scene.lost;
     }
@@ -265,11 +273,13 @@ onMount(() => {
             {activeParsed.error.issues.map((issue) => issue.message).join("; ")}
           </p>
         {/if}
-        {#if (planetAppearance && activeDoc?.planet) || light}
+        {#if (planetAppearance && activeDoc?.planet) || light || experiment}
           <p class="study-light">
             {planetAppearance && activeDoc?.planet
               ? planetAppearance.label
-              : ""}{light ? ` · ${light.label}` : ""}
+              : ""}{light ? ` · ${light.label}` : ""}{experiment
+              ? ` · ${experiment.label}`
+              : ""}
           </p>
         {/if}
         {#if lost}

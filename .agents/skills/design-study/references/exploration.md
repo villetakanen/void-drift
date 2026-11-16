@@ -35,6 +35,26 @@ For example, at 02.4 show 02.3 and 02.4, with retained 02.1 and 02.2 collapsed.
 Inspect the rendered page to confirm the default open/closed state. This applies to
 retained useful work; unusable attempts are deleted under the rule above.
 
+## One live instrument, in the active step
+
+Only the active step holds anything live: an instrument, an interactive example or a
+running simulation. Earlier steps hold captures.
+
+When advancing to a new step, before changing the instrument:
+
+1. Capture the instrument as the step leaves it: a still, or a recorded clip when a
+   still would lose the motion being judged. Capture now; a capture rebuilt later is
+   a reconstruction, and say so when that is all there is.
+2. Put the capture in the step in place of the instrument. Caption it with what the
+   round was testing, what the instrument was set to, and what was observed.
+3. Move the instrument to the new step and reconfigure it there. Do not mount a
+   second copy for the earlier step.
+4. Remove components, scripts and configuration only the earlier step used, after
+   checking consumers.
+
+Several live instances side by side are fine inside the active step when the round
+compares them. The step before the active one stays visible with its capture.
+
 ## Make the question inspectable
 
 Once purpose is shared, deliver the smallest concrete example that makes the current
@@ -119,8 +139,8 @@ Record the deliberate question change and any unresolved prior question.
 
 During active inquiry, preserve useful evidence and the conditions needed to interpret
 it when a question is answered or changes. Record observations and limits, not invented
-conclusions. Give a new question a separate example or preserved variant instead of
-tuning away the comparison. Preserving evidence does not require keeping its tools
-running: when ending the study, follow the main skill's closing procedure to replace
-temporary examples with durable records and retire unused study code. These retention
+conclusions. Before a new question retunes the instrument, capture the earlier comparison with its
+conditions so it is not tuned away. Preserving evidence never requires keeping its
+tools running: earlier steps hold captures as above, and when ending the study the
+main skill's closing procedure retires what is still live. These retention
 instructions apply to useful evidence; discard unusable proposals as above.

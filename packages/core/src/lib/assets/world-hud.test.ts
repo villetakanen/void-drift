@@ -103,7 +103,6 @@ describe("World HUD CSS sizing", () => {
       mass: 100,
       color: "#fff",
       type: "rock",
-      hasRing: false,
       displayName: "Mercury",
       systemPosition: 1,
     } as Planet;
@@ -219,7 +218,6 @@ describe("World HUD CSS sizing", () => {
       mass: 10,
       color: "#fff",
       type: "rock",
-      hasRing: false,
       displayName: "Inner",
     } as Planet;
     const unnamedOuter = {
@@ -233,7 +231,6 @@ describe("World HUD CSS sizing", () => {
       mass: 10,
       color: "#fff",
       type: "rock",
-      hasRing: false,
     } as Planet;
     const namedMiddle = {
       pos: new Vec2(20, 0),
@@ -246,7 +243,6 @@ describe("World HUD CSS sizing", () => {
       mass: 10,
       color: "#fff",
       type: "rock",
-      hasRing: false,
       displayName: "Middle",
     } as Planet;
     const fullSystem = [unnamedOuter, namedMiddle, namedInner];

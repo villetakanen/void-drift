@@ -1,4 +1,5 @@
 import type { GameObject, Planet, Star } from "@void-drift/core";
+import type { BodyAppearanceBounds } from "@void-drift/mode-a";
 import type { DeepReadonly } from "./read-only";
 
 /** A presentation snapshot: painters cannot mutate the simulation. */
@@ -9,11 +10,19 @@ export interface PlanetSceneState {
   seconds: number;
 }
 
-export interface PlanetAppearance {
+export type PlanetAppearance = {
   label: string;
+  /** Inclusive finite world-coordinate bounds for every World part. */
+  worldBounds(state: PlanetSceneState): BodyAppearanceBounds;
   world(ctx: CanvasRenderingContext2D, state: PlanetSceneState): void;
-  lfx?(ctx: CanvasRenderingContext2D, state: PlanetSceneState): void;
-}
+} & (
+  | {
+      /** Required when LFX is drawn; includes every LFX mark in the composition. */
+      lfxBounds(state: PlanetSceneState): BodyAppearanceBounds;
+      lfx(ctx: CanvasRenderingContext2D, state: PlanetSceneState): void;
+    }
+  | { lfxBounds?: undefined; lfx?: undefined }
+);
 
 /** Linear overlap density; atmosphere moves with the body's orbital velocity. */
 export function atmosphereSample(

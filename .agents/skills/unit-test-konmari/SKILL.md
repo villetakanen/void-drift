@@ -1,9 +1,18 @@
 ---
 name: unit-test-konmari
-description: Keep the unit tests that guard silent, significant regressions; remove tests that restate code, pin configuration or fail loudly elsewhere. Use when pruning, reviewing or adding unit tests.
+description: Prune an existing unit-test suite during an explicitly requested test-maintenance pass. Identify redundant tests and tests whose ongoing maintenance exceeds their regression value. Do not invoke when adding tests, implementing features, debugging, or verifying a development round.
 ---
 
-A test earns its place by catching a regression that would otherwise ship
+## Timing
+
+This skill governs later retention, not test creation. Read and apply it only
+when the user explicitly requests pruning or test-suite maintenance; never infer
+that request from adding or running tests. During development, add whatever tests
+help verify and understand the work. Temporary verification tests are welcome;
+deciding whether to retain them is later work. Preserve checks still needed by
+an ongoing development round.
+
+A test earns its long-term place by catching a regression that would otherwise ship
 unnoticed. Coverage is not a goal: every test costs tokens and edits on every
 change that touches it.
 
@@ -43,12 +52,6 @@ Keep a test when 1 and 2 are yes. When 3 is yes, reduce it to the one relation t
 - Never target a count; the count is the outcome.
 - Flag files with someone else's uncommitted changes, and leave their lines alone.
 - When asked for a percentage, answer in edits per change, false failures and run time. List removals that need a product decision, such as retiring a study or a legacy path.
-
-## Adding tests
-
-- Agents may write tests while building to verify their work; they can stay until the next KonMari.
-- Run a KonMari from time to time to keep only what passes the three questions.
-- Before adding a guard, check whether one already covers the contract.
 
 ## Report
 

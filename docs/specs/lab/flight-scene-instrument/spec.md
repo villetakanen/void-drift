@@ -352,11 +352,18 @@ Changes replay from the start to the selected burn/time, reconstructing drag exa
 once per tick. Backward seek reconstructs the same state as a fresh flight.
 
 Optional `planetAppearance` supplies a label and World/LFX painters receiving frozen
-copies of the staged planet, ship, Sun and simulation seconds. This replaces the
-staged body's drawing without permitting painters to change flight state. Without
-it the production body drawing remains. Appearance changes redraw the same instant;
-material rotation derives only from simulation time. Options belong in the existing
-pane; the wrapper does not supply another timeline or flight loop.
+copies of the staged planet, ship, Sun and simulation seconds. Its typed runtime
+descriptor is keyed by the staged planet's validated full-system ordinal and enters
+the shared `planets` and `body-light` passes; it does not add planet-specific passes.
+The World callback may draw ordered parts. It supplies inclusive finite world-space
+axis-aligned bounds for the complete composition, including any ship-relative
+decoration; when an LFX callback exists it also supplies bounds for that complete
+light composition. The staged body's production appearance is replaced without
+permitting painters to change flight state. Without an appearance the production
+body drawing remains. The shared body-light pass draws this appearance before other
+LFX marks. Appearance changes redraw the same instant; material rotation derives
+only from simulation time. Options belong in the existing pane; the wrapper does
+not supply another timeline or flight loop.
 
 The shared planet `world-hud` pass remains active with a custom appearance. It
 uses the staged simulation's retained full-system position and identity, so a
@@ -397,3 +404,27 @@ Effects can emit through the existing budgeted `StudyLight.fx` callback into the
 shared persistent surface, which owns pause, reset, seek and decay. This capability
 adds no temperature, dose, damage or new simulation rules. The heat study uses it
 for a provisional visual cue, with a filled planet-facing LFX contact highlight; engine output remains the game's own.
+
+## Experiment attachment
+
+`FlightSceneInstrument` accepts an optional trusted-code `FlightExperiment`.
+Its factory receives the production simulation after initial staging and creates
+fresh experiment state for each run. Its `step` runs once after each production
+tick while the ship remains alive. The experiment supplies behaviour; the host
+contains no rules for its weapons or objects. Initial options are validated by
+the supplying study before creating the experiment.
+
+An experiment may supply additional World/LFX production `FlightPass` painters and fresh FX
+emission through the existing persistent surface and its culling/budget interface.
+Painters read state and never advance it. The shared frame, camera, layers and FX
+history remain authoritative. New behaviour and artwork remain study-owned.
+
+Reset, backward seek and replacement of an experiment create fresh state and replay
+from the start. Replacement preserves the selected burn and time. Pause never
+steps behaviour or adds light. A run without an experiment retains its existing
+behaviour. Tests verify reset/replay equivalence and isolation between runs.
+
+Experiments can use the shared `SalvageSystem.applyDamage` operation for registered
+bodies: it validates positive finite damage and reuses production breakup and
+impact events. This is a combat operation, not an instrument-specific damage model.
+The experiment determines contact and damage; the instrument does neither.

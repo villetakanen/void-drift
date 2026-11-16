@@ -108,7 +108,6 @@ onMount(() => {
               orbitAngle: body.angle,
               initialAngle: body.angle,
               orbitSpeed: 0.025 + index * 0.007,
-              hasRing: false,
             };
             updatePlanetOrbit(planet, 0);
             return planet;

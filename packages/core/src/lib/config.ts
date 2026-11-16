@@ -66,7 +66,6 @@ export const SURVIVAL_CONFIG = {
       mass: 400,
       color: "#8B7355",
       type: "rock",
-      hasRing: false,
     },
     {
       id: "gas",
@@ -78,7 +77,6 @@ export const SURVIVAL_CONFIG = {
       mass: 1200,
       color: "#6B4C9A",
       type: "gas",
-      hasRing: true,
     },
     {
       id: "moon",
@@ -90,7 +88,6 @@ export const SURVIVAL_CONFIG = {
       mass: 220,
       color: "#D0D0D0",
       type: "rock",
-      hasRing: false,
     },
   ],
 
@@ -101,7 +98,6 @@ export const SURVIVAL_CONFIG = {
     orbitRange: { min: 200, max: 1000 },
     radiusRange: { min: 10, max: 100 },
     speedRange: { min: 0.02, max: 0.15 },
-    ringProbability: 0.2, // 20% chance
   },
 } as const;
 

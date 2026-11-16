@@ -167,7 +167,6 @@ export class Renderer {
             y: planet.pos.y + offY,
             radius: planet.radius,
             color: planet.color,
-            hasRing: planet.hasRing,
           });
         },
       );

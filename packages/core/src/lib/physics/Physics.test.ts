@@ -71,7 +71,6 @@ describe("planet with a study well", () => {
       mass: 400,
       color: "#8B7355",
       type: "rock",
-      hasRing: false,
       ...overrides,
     };
   }

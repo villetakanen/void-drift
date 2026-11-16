@@ -34,10 +34,12 @@ belong to the [Flight instrument](../flight-scene-instrument/spec.md).
   game's definitions and factories, without a copied Lab preset.
 - The scene calls `drawFlightFrame` from
   `packages/mode-a/src/lib/flight-frame.ts` with production passes unchanged,
-  selecting them only with `include`. It supplies production material objects
-  unchanged and prepares the existing painter with local lighting parameters.
-  The Inspector never substitutes a pass, painter, surface wrapper, copied
-  orbit formula or inspection-specific visibility test.
+  selecting them only with `include`. Ready materials are projected through the
+  same shared production body-appearance adapter used by FlightDeck; the adapter
+  supplies the generic `planets` and `body-light` passes with prepared World and
+  LFX callbacks keyed by the selected planet's validated full-system ordinal.
+  The Inspector does not substitute a pass or painter, wrap a surface draw call,
+  copy an orbit formula or implement an inspection-specific visibility test.
 - The production `Simulation` advances orbit and scene time. The Lab stages one
   selected planet and its Sun and excludes unrelated body/ship drawing.
   `FlightLayers.svelte` supplies production layer compositing. Shared HUD,
@@ -203,7 +205,8 @@ tokens. The Lab supports viewports 1280px wide and above.
 
 - The Lab lists Planet Inspector and opens it paused on Mercury at 1×.
 - Named Mercury and Venus resolve Practice state and unchanged production
-  materials, including Venus's atmosphere line.
+  materials, including Venus's atmosphere line, through the shared production
+  body-appearance adapter.
 - `drawFlightFrame` receives no substituted passes or wrapped materials.
 - Surface rotation scrubs one spin period of scene time while preserving the
   staged orbit. Orbit changes orbital angle while preserving scene time. Both

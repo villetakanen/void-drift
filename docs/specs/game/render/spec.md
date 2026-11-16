@@ -72,8 +72,9 @@ the same way; what differs between bodies is data.
 - **Parts on World.** A body is a stack of parts, such as a surface, clouds and an
   atmosphere, drawn far to near on World. Each part is drawn without light or
   shade of its own.
-- **Light and dark on LFX.** A body's light and dark side is one stamp on LFX,
-  turned to face its star. It is drawn before every other LFX pass, so beams and
+- **Light and dark on LFX.** Each body's light and dark side is one stamp on LFX,
+  turned to face its star. The shared `body-light` pass draws these stamps before
+  every other LFX pass, so beams and
   halos are drawn over it. It may darken whatever lies beneath it; over a ship
   this reads as the body's shadow.
 - The stamp has incoming-light intensity, shadow intensity and incident-light
@@ -98,7 +99,21 @@ the same way; what differs between bodies is data.
   screen and redrawn only when the surface has visibly moved. The same tick gives
   the same picture, whatever frames were drawn before it.
 - **Cost.** No game code loops over pixels per frame; pixel work happens at load.
-  A body outside the camera's view costs no drawing work.
+  Visibility uses each body's complete visual bounds. A stock or fallback disc
+  includes half its outline stroke, `max(1, radius × 0.06) / 2` world units;
+  Venus's body bounds also include half its atmosphere stroke,
+  `max(0.65 / zoom, radius × 0.065) / 2` world units; a light stamp uses its
+  disc radius. The `planets` pass draws the complete body composition when its combined
+  visible bounds intersect or touch the view, and skips body, surface and
+  atmosphere drawing when they are wholly outside. The light pass draws when its
+  stamp bounds intersect or touch the view, and skips it when wholly outside.
+  A body appearance supplies inclusive world-coordinate bounds for its complete
+  World composition and, when it supplies a light callback, its LFX composition.
+  Bounds must be finite and ordered; invalid appearance bounds are a development
+  error. Missing appearance data uses the stock body; a body without a light
+  callback contributes no light stamp.
+  World HUD visibility is independent: an orbit or gravity boundary that crosses
+  the view remains visible when its body's visual bounds are outside.
 - **World HUD.** Every planet has the same orbit, gravity boundary and upright
   name. One shared screen-space `world-hud` pass draws these marks for the full
   planet list after the star and before the planets pass. Bodies therefore cover
@@ -114,8 +129,12 @@ the same way; what differs between bodies is data.
   occupy an ordinal. The full system assigns ordinals before any instrument
   filters the list, so filtering never renumbers a planet. See the
   [planet contract](../world/planets/spec.md#names).
-- **Identity.** No pass is written for a particular body. Passes read each body's
-  identity and appearance from its data.
+- **Identity.** No pass is written for a particular body. A typed runtime map
+  associates appearances with each simulation body's validated, unique
+  full-system `systemPosition`; filtering or replaying a simulation preserves
+  the association. Missing ordinals cannot select a custom appearance and use
+  stock drawing. The `planets` and `body-light` passes read the map and draw each
+  body's ordered World parts and optional LFX part.
 - **Ownership.** Body painters and their material preparation live in
   `packages/core`. Play loads no asset from a study folder. A surface map may be
   authored raster art.
@@ -267,10 +286,13 @@ neither: it draws every pass, unobserved.
 - Every planet in every mode shows the same World HUD elements, drawn by one
   pass.
 - No pass id and no pass code names a particular planet.
-- A body's light and dark stamp is drawn before every other LFX pass.
+- The `body-light` pass draws each body's light and dark stamp before every other
+  LFX pass.
 - The `world-hud` pass draws every planet's HUD before the planets pass draws any body.
 - World HUD strokes remain 1 CSS px and text remains 14 CSS px at every zoom.
-- A frame in which every body is outside the view does no surface drawing.
+- A frame in which every body's visual bounds are outside the view does no body,
+  surface, atmosphere or light drawing. World HUD marks crossing the view remain
+  visible independently.
 - A paused frame redraws no body surface.
 
 ### Regression guardrails
@@ -327,9 +349,15 @@ Scenario: A planet turns
   And its light and dark side keeps facing the star
 
 Scenario: A planet is outside the view
-  Given every planet is outside the camera's view
+  Given a planet's complete visual bounds are outside the camera's view
   When a frame is drawn
-  Then no planet surface is redrawn
+  Then no planet body, surface, atmosphere or light is drawn
+  And any orbit or gravity boundary crossing the view remains visible
+
+Scenario: A planet's visual edge touches the view
+  Given the body outline or atmospheric stroke touches the camera's view
+  When a frame is drawn
+  Then the planet is drawn without clipping its visible edge
 
 Scenario: A layer's look is changed
   Given the FX layer at full resolution with no filter

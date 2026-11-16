@@ -12,7 +12,6 @@ describe("landing system", () => {
       expect(scene.star.type).toBe("G");
       expect(scene.planets).toHaveLength(3);
       for (const [index, planet] of scene.planets.entries()) {
-        expect(planet.hasRing).toBe(false);
         expect(planet.orbitRadius - planet.radius).toBeGreaterThan(
           scene.star.radius,
         );

@@ -132,8 +132,9 @@ accepts the requirement. Reuse production simulation code for experiments.
 
 For recorded findings, retain written conclusions and suitable static or recorded
 evidence of the observed results. Instruments use current production simulation code;
-later production changes may alter or invalidate old examples. The closing procedure
-below governs replacing temporary interactive examples and retiring their code.
+later production changes may alter or invalidate old examples. The exploration
+guide replaces each earlier step's live example with a capture when the study advances;
+the closing procedure below retires what is still live at the end.
 
 ## 03 / Assess readiness
 

@@ -304,3 +304,6 @@ export const SALVAGE = SalvageConfigSchema.parse({
   fragment: { count: 8, hull: 12, radius: 5, contact: 5, speed: 60 },
   cell: { energy: 30, radius: 6, life: 20 },
 });
+
+/** Positive finite damage delivered through the shared combat operation. */
+export const DamageAmountSchema = z.number().finite().positive();
