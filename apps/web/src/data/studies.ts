@@ -15,7 +15,7 @@ export const studies = z.array(studySchema).parse([
     status: "open",
     phase: "exploration",
     question:
-      "How should the Plasma Projector’s energy-spending charge, target-conditioned close eruption and staghorn cooling exhaust look and affect flight so its power and commitment feel tangible?",
+      "How should the Plasma Projector’s charge, close eruption and staghorn cooling exhaust express the established plasma family in flight, using earlier timing and response findings as starting hypotheses?",
   },
   {
     slug: "rock-atmospheres-2026-11-15",
