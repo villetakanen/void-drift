@@ -77,7 +77,6 @@ const mounts = [
 <div class="toolbar">
   <Toggle
     {label}
-    compact
     options={["Hull", "Slots", "Engines", "Fitted"]}
     bind:value={view}
   />
@@ -130,14 +129,12 @@ const mounts = [
   <p><strong>E1 + E2 · linked blade-root engines</strong></p>
   <Toggle
     label="E1 and E2 engine type"
-    compact
     options={engineChoices.map((option) => option.name)}
     bind:value={() => PARTS[fit.roots].name, (name) => choose("roots", name)}
   />
   <p><strong>E3 + E4 · linked rear engines</strong></p>
   <Toggle
     label="E3 and E4 engine type"
-    compact
     options={engineChoices.map((option) => option.name)}
     bind:value={() => PARTS[fit.rear].name, (name) => choose("rear", name)}
   />

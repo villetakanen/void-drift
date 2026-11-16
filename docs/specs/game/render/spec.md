@@ -54,7 +54,8 @@ the picture's character.
 - **Cheap is the look.** The artefacts of doing it cheaply (stepping, banding,
   pixelation, hard blends) belong to the style and are kept, not corrected.
 - **Game code draws marks:** shapes, images and cached stamps, onto a layer's
-  canvas.
+  canvas. Having the browser scale and draw images counts as drawing marks;
+  looping over pixels per frame does not.
 - **The browser composites:** a layer's blend mode, its scaling from its own
   resolution to the stage, its filter and its opacity are CSS on the layer's
   element.
@@ -63,28 +64,52 @@ the picture's character.
   the browser has no native that accumulates.
 - **A native changes how a layer is shown, never what the layer holds.**
 
-### Named Practice planets
+### World bodies
 
-Practice Mercury and Venus supply shared material painters to `FlightFrame`.
-Their bodies draw on World, Sun-facing directional masks on LFX, and labels,
-orbits and mass-derived gravity boundaries in stage coordinates. Venus's
-provisional lit atmospheric arc belongs to World with its cloud body. Surface
-phase comes from simulation ticks, independently of orbital phase and lighting;
-repeated paused frames reuse the same projected surface. Material preparation
-failure preserves the stock body and working simulation. The core asset owner
-caches each deterministic atlas; each Venus flight owns its projected surface.
-The canonical planet preview uses these production passes directly.
+A world body is a planet or another natural body in flight. Every body is drawn
+the same way; what differs between bodies is data.
 
-### Practice rotation trial
-
-The Practice deck trials `StripSphericalSurface` beside the existing projector.
-It draws a scrolling cylindrical atlas in image strips, then scales each row to
-its spherical width using native Canvas image drawing. Latitude resampling and
-strip geometry are prepared at load; no frame reads or writes individual pixels.
-This native image scaling is drawing marks under the demo-scene method. The
-surface remains unlit on World, with the existing directional mask on LFX.
-Simulation ticks still determine its phase. Study consumers retain the existing
-projector during this reversible trial; adoption beyond Practice is not implied.
+- **Parts on World.** A body is a stack of parts, such as a surface, clouds and an
+  atmosphere, drawn far to near on World. Each part is drawn without light or
+  shade of its own.
+- **Light and dark on LFX.** A body's light and dark side is one stamp on LFX,
+  turned to face its star. It is drawn before every other LFX pass, so beams and
+  halos are drawn over it. It may darken whatever lies beneath it; over a ship
+  this reads as the body's shadow.
+- The stamp has incoming-light intensity, shadow intensity and incident-light
+  temperature parameters. At incoming intensity 1, shadow intensity 1 and the
+  neutral 5800 K reference, its original grayscale baseline is unchanged. The
+  shared production and Inspector defaults are incoming intensity 1.35, shadow
+  intensity 1.35 and neutral-reference temperature 5800 K.
+  Incoming intensity scales only values above the hard-light neutral 0.5;
+  shadow intensity scales only values below it. Temperature tints only the
+  bright side, relative to 5800 K; every tinted bright channel stays at or
+  above 0.5. The temperature mapping is a display approximation, not
+  colorimetry or a stellar spectrum.
+- Bodies with the same prepared parameter tuple share one stamp. Star direction
+  changes only the Canvas transform, never the stamp's pixels. Preparation
+  finishes before frame drawing; drawing only looks up and draws a prepared
+  stamp and never creates or rebuilds a pixel mask. Prepared storage contains
+  the production default and tuples with active users; it releases custom
+  tuples when their users stop needing them.
+- **Rotation.** A surface's turn comes from simulation ticks, independently of
+  its orbit and its light. The turning surface is drawn with the browser's image
+  drawing from a map prepared at load. It is sized to the body's diameter on
+  screen and redrawn only when the surface has visibly moved. The same tick gives
+  the same picture, whatever frames were drawn before it.
+- **Cost.** No game code loops over pixels per frame; pixel work happens at load.
+  A body outside the camera's view costs no drawing work.
+- **World HUD.** Every planet has the same World HUD: its orbit, its gravity
+  boundary and its upright name, drawn by one pass on World in stage coordinates.
+  Strokes, dashes and text keep their size on screen at every zoom. Names follow
+  the [planet contract](../world/planets/spec.md#names).
+- **Identity.** No pass is written for a particular body. Passes read each body's
+  identity and appearance from its data.
+- **Ownership.** Body painters and their material preparation live in
+  `packages/core`. Play loads no asset from a study folder. A surface map may be
+  authored raster art.
+- **Failure.** When a body's material cannot be prepared, the stock body is drawn
+  with the same World HUD, and the simulation is unaffected.
 
 ### Time
 
@@ -228,6 +253,12 @@ neither: it draws every pass, unobserved.
   position and the new one.
 - Changing which effects draw leaves the simulation's state identical
   (`packages/mode-a/src/lib/fx-integration.test.ts`).
+- Every planet in every mode shows the same World HUD elements, drawn by one
+  pass.
+- No pass id and no pass code names a particular planet.
+- A body's light and dark stamp is drawn before every other LFX pass.
+- A frame in which every body is outside the view does no surface drawing.
+- A paused frame redraws no body surface.
 
 ### Regression guardrails
 
@@ -237,6 +268,8 @@ neither: it draws every pass, unobserved.
 - Persistent state is never read by the simulation.
 - Blend, scale and filter are CSS on a layer's element, never drawn code.
 - The game's frame takes no `include` or `observe`.
+- No game code reads or writes individual pixels per frame.
+- A body's parts on World carry no light or shade of their own.
 
 ### Scenarios
 
@@ -273,6 +306,17 @@ Scenario: Light over a derelict
   Given accumulated light covering a wreck
   When the frame is drawn
   Then the wreck's aperture shows the World layer, with no light over it
+
+Scenario: A planet turns
+  Given a planet in view while the simulation advances
+  When frames are drawn
+  Then its surface turns with simulation time
+  And its light and dark side keeps facing the star
+
+Scenario: A planet is outside the view
+  Given every planet is outside the camera's view
+  When a frame is drawn
+  Then no planet surface is redrawn
 
 Scenario: A layer's look is changed
   Given the FX layer at full resolution with no filter

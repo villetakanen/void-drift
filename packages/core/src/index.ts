@@ -31,6 +31,7 @@ export * from "./lib/physics/Camera";
 export * from "./lib/physics/Physics";
 export * from "./lib/physics/planets";
 export * from "./lib/schemas/common";
+export * from "./lib/schemas/rock-body-lighting";
 export * from "./lib/schemas/sun";
 export * from "./lib/solar";
 // UI Utilities

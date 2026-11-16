@@ -37,6 +37,14 @@ export type LabPage = z.infer<typeof labPageSchema>;
 
 export const labPages = z.array(labPageSchema).parse([
   {
+    href: "/lab/planet-inspector",
+    title: "Planet Inspector",
+    purpose:
+      "Planet surface, spin, Sun-facing light, orbit and world HUD in a live preview.",
+    group: "tools",
+    source: "production",
+  },
+  {
     href: "/lab/entities/derelict",
     title: "Derelict",
     purpose:
@@ -169,21 +177,6 @@ export const labPages = z.array(labPageSchema).parse([
     href: "/lab/entities/star",
     title: "Suns",
     purpose: "The standard Sun: collection, exposure and live field feedback.",
-    group: "ships-and-world",
-    source: "production",
-  },
-  {
-    href: "/lab/entities/planet",
-    title: "Planets",
-    purpose:
-      "Planet types and drawing, plus the production Practice planet preview.",
-    defines: [
-      "packages/core/src/lib/assets/cloud-body.ts",
-      "packages/core/src/lib/assets/spherical-surface.ts",
-      "packages/mode-a/src/lib/practice-venus.ts",
-      "packages/mode-a/src/lib/flight-frame.ts",
-    ],
-    spec: "docs/specs/game/world/planets/spec.md#practice-venus",
     group: "ships-and-world",
     source: "production",
   },

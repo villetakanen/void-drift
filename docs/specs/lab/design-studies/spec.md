@@ -18,6 +18,9 @@ owner rather than repeating them here.
 - Study flight uses the shared Flight scene instrument, fixed burn sequences and
   its timeline; study options belong in its burger pane. Studies never add manual
   piloting. Extend shared staging when the experiment needs an unsupported scene.
+- Planet appearance studies use the shared [Planet Inspector](../planet-inspector/spec.md)
+  to inspect surface, spin, Sun-facing light, orbit and world HUD in motion or at a
+  held pose. Ship approaches and contact experiments remain Flight scene work.
 - Experimental styles remain scoped to study components; fixture behavior is labeled.
 - A cycle keeps a stable URL and records significant feedback, decisions and reasons.
 - Decisions recorded in a study hold inside that study. To the project and its specs

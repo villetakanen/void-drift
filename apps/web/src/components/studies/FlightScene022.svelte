@@ -130,12 +130,7 @@ onMount(() => {
         label="The game’s layers at the current time"
       />
       <div class="view">
-        <Toggle
-          compact
-          label="View"
-          options={Object.keys(VIEWS)}
-          bind:value={view}
-        />
+        <Toggle label="View" options={Object.keys(VIEWS)} bind:value={view} />
       </div>
       {#if lost}
         <p class="lost" role="status">

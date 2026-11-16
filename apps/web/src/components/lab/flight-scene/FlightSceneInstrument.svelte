@@ -246,7 +246,6 @@ onMount(() => {
         />
         <div class="view">
           <Toggle
-            compact
             label="View"
             options={viewOptions}
             bind:value={

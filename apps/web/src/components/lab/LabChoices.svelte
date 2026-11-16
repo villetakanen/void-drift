@@ -10,6 +10,7 @@ let availability = $state("Scout");
 let two = $state("Fit all");
 let three = $state("B1");
 let stretched = $state("B2");
+let zoom = $state("1×");
 let stabilizers = $state(true);
 let linkedEngines = $state(false);
 let forcedOn = $state(true);
@@ -29,6 +30,14 @@ let { label = "Choices design system" }: { label?: string } = $props();
       <a href="/lab/studies/lab-instrument-2026-11-01#toggle">Study →</a>
     </p>
     <div class="example">
+      <span class="caption"
+        >Five zoom levels · 8px inline padding per option</span
+      >
+      <Toggle
+        label="Zoom example"
+        options={["1×", "2×", "4×", "8×", "16×"]}
+        bind:value={zoom}
+      />
       <span class="caption">Detailed selector · full width</span>
       <div style="width:100%">
         <Toggle
@@ -65,13 +74,8 @@ let { label = "Choices design system" }: { label?: string } = $props();
         options={["Fit all", "Default scale"]}
         bind:value={two}
       />
-      <span class="caption">Three options, compact, beside a diagram</span>
-      <Toggle
-        compact
-        label="Burn"
-        options={["B1", "B2", "B3"]}
-        bind:value={three}
-      />
+      <span class="caption">Three options beside a diagram</span>
+      <Toggle label="Burn" options={["B1", "B2", "B3"]} bind:value={three} />
       <span class="caption">Stretched to its container</span>
       <div style="width: 100%; max-width: 480px">
         <Toggle
@@ -85,7 +89,7 @@ let { label = "Choices design system" }: { label?: string } = $props();
     <p>
       <code>Toggle</code>: <code>options</code>, bindable <code>value</code>,
       <code>label</code>
-      for the group, <code>compact</code> for 8px side padding,
+      for the group. Every option has 8px inline padding;
       <code>stretch</code>
       to fill the width. Optional
       <code>details</code>

@@ -261,8 +261,9 @@ implemented 2026-11-03.
 
 **Reference:** `/lab/ds/choices`.
 
-- `Toggle` takes `options`, a bindable `value` and a group `label`; `compact` sets
-  8px side padding and `stretch` fills the width. Native radios give arrow keys.
+- `Toggle` takes `options`, a bindable `value` and a group `label`. Every option
+  has 8px inline padding (`--spacing-sm`), and `stretch` fills the width.
+  Native radios give arrow keys.
   `disabledOptions` keeps unavailable options visible, disables their native
   radios, skips them during keyboard selection and suppresses hover treatment.
   A selected option can remain selected while disabled; the control does not

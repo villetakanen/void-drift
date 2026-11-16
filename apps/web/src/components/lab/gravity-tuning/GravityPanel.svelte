@@ -116,7 +116,6 @@ function load() {
     class:changed={config.well.falloff !== DEFAULT_DOCUMENT.well.falloff}
   >
     <Toggle
-      compact
       label="Falloff"
       options={["inverse-square", "inverse"]}
       bind:value={

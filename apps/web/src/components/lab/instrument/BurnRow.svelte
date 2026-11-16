@@ -40,7 +40,6 @@ const seconds = Array.from({ length: SECONDS + 1 }, (_, i) => i);
 
 <div class="row">
   <Toggle
-    compact
     label="Burn"
     options={BURN_IDS.map((id) => BURNS[id].label)}
     bind:value={

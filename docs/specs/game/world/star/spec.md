@@ -27,7 +27,8 @@ above. This is an initial playable trial; the selected field profiles are
 hypotheses for play, not claims of balance. The title screen separately uses a
 cosmetic sample across the same surface range through its independent landing
 scene. Practice uses the G7 reference profile at a fixed 70 u surface radius
-and labels it `G7, Sun`. Ranked Survival retains the existing Sun.
+and labels it `G7 Sun`: a star is named by its type, followed by its name
+if it has one. Ranked Survival retains the existing Sun.
 The study recommends retaining the existing decorative landing Sun; this trial
 supersedes that recommendation for the title scene only. Playground also enables this world-feature trial in Survival; with it Off,
 Survival retains the 0.6.0 launch-era ranked rules under `ion-storm`. The size distribution and field profiles are initial trial
@@ -45,7 +46,7 @@ Derelicts, Gauntlet and Playground Survival place the selected `G4`–`G14` deno
 and to the right of the star surface in the World HUD. The integer is the
 surface radius in tens of world units, rounded to the nearest class; radius 70
 is G7 and radius 140 is G14. The label uses the World HUD's Android green and
-remains screen-readable as the camera zooms. Practice shows `G7, Sun` in that
+remains screen-readable as the camera zooms. Practice shows `G7 Sun` in that
 position.
 
 ## Architecture

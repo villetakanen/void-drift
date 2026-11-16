@@ -70,6 +70,7 @@ const light = $derived(
     : undefined,
 );
 let shadowIntensity = $state(1.45);
+let preparedShadowIntensity = $state(1.45);
 let atmosphereTreatment = $state<AtmosphereTreatment>("Cloud banks");
 let airLighting = $state<AirLighting>("Separate air");
 let coverage = $state<CloudCoverage>("02.5");
@@ -100,6 +101,8 @@ let material = $state(names[2]),
   treatment = $state("Air + drag");
 let appearances = $state<PlanetAppearance[][]>([]),
   failed = $state("");
+let disposeAppearances = $state<() => void>(() => {});
+let prepareAppearanceIntensity = $state<(intensity: number) => void>(() => {});
 const planet = $derived({
   reference: "practice-venus" as const,
   orbitAngle: 0,
@@ -114,7 +117,7 @@ const appearance = $derived.by(() => {
     airLighting,
     coverage,
     opacity,
-    shadowIntensity,
+    preparedShadowIntensity,
     cloudShadowPercent,
     cloudMaterial,
     cloudFace,
@@ -136,10 +139,10 @@ onMount(() => {
   let disposed = false;
   Promise.all([loadAuthoredRockMaterials(), loadCloudMaterials()])
     .then(([materials, cloudFields]) => {
-      if (!disposed)
-        appearances = makeRockAppearances(
+      if (!disposed) {
+        const next = makeRockAppearances(
           materials,
-          () => shadowIntensity,
+          () => preparedShadowIntensity,
           () => atmosphereTreatment,
           () => airLighting,
           () => coverage,
@@ -154,13 +157,27 @@ onMount(() => {
           () => cloudDayPercent / 100,
           () => heatMode === "Airflow",
         );
+        disposeAppearances();
+        appearances = next.appearances;
+        disposeAppearances = next.dispose;
+        prepareAppearanceIntensity = next.prepareShadowIntensity;
+      }
     })
     .catch((error) => {
       if (!disposed) failed = String(error);
     });
   return () => {
     disposed = true;
+    disposeAppearances();
   };
+});
+$effect(() => {
+  try {
+    prepareAppearanceIntensity(shadowIntensity);
+    preparedShadowIntensity = shadowIntensity;
+  } catch (error) {
+    failed = String(error);
+  }
 });
 </script>
 
@@ -185,7 +202,6 @@ onMount(() => {
       <p>FX source · what gets stamped</p>
       <Toggle
         label="Heat stamp"
-        compact
         details={{}}
         options={HEAT_STAMPS}
         bind:value={heatSource}

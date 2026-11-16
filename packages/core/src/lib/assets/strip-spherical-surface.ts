@@ -7,6 +7,7 @@ export class StripSphericalSurface {
   readonly canvas: HTMLCanvasElement;
   private readonly ctx: CanvasRenderingContext2D;
   private readonly map: HTMLCanvasElement;
+  private readonly atlas: HTMLCanvasElement;
   private readonly buffer: CanvasRenderingContext2D;
   private readonly columns: {
     x: number;
@@ -15,24 +16,41 @@ export class StripSphericalSurface {
     span: number;
   }[] = [];
   private readonly rows: { x: number; width: number }[] = [];
-  private phase: number | undefined;
+  private phaseBin: number | undefined;
+  private redraws = 0;
+
+  /** Completed surface projections, including preparation; observing never draws. */
+  get redrawCount(): number {
+    return this.redraws;
+  }
 
   constructor(atlas: HTMLCanvasElement, size = 192) {
-    const canvas = (width: number, height: number) => {
-      const element = document.createElement("canvas");
-      element.width = width;
-      element.height = height;
-      const context = element.getContext("2d");
-      if (!context) throw new Error("Strip sphere canvas unavailable");
-      return context;
-    };
-    this.ctx = canvas(size, size);
-    this.canvas = this.ctx.canvas;
-    this.buffer = canvas(size, size);
+    this.atlas = atlas;
+    this.canvas = document.createElement("canvas");
+    this.ctx = this.context(this.canvas);
+    this.buffer = this.context(document.createElement("canvas"));
+    this.map = document.createElement("canvas");
+    this.canvas.width = 0;
+    this.draw(0, size);
+  }
+
+  private context(canvas: HTMLCanvasElement) {
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("Strip sphere canvas unavailable");
+    return context;
+  }
+
+  private resize(size: number) {
+    const atlas = this.atlas;
+    this.canvas.width = this.canvas.height = size;
+    this.buffer.canvas.width = this.buffer.canvas.height = size;
+    this.map.width = atlas.width * 3;
+    this.map.height = size;
+    const map = this.context(this.map);
+    this.columns.length = this.rows.length = 0;
+    this.phaseBin = undefined;
     // Three copies let any visible half-turn cross longitude zero without a
     // split draw or clamped sampling at the atlas edge.
-    const map = canvas(atlas.width * 3, size);
-    this.map = map.canvas;
     for (let y = 0; y < size; y++) {
       const ny = ((y + 0.5) * 2) / size - 1;
       const v = (Math.asin(ny) / Math.PI + 0.5) * atlas.height;
@@ -64,14 +82,22 @@ export class StripSphericalSurface {
         span: (right - left) * atlas.width,
       });
     }
-    this.draw(0);
   }
 
-  draw(phase: number) {
-    if (phase === this.phase) return;
-    this.phase = phase;
-    const size = this.canvas.width;
-    const turn = (((phase / (2 * Math.PI) + 0.5) % 1) + 1) % 1;
+  draw(phase: number, diameter = this.canvas.width) {
+    // Coarser steps for close views avoid reallocating on small zoom changes.
+    const step = diameter <= 128 ? 8 : diameter <= 512 ? 32 : 64;
+    const size = Math.max(8, Math.ceil(diameter / step) * step);
+    if (size !== this.canvas.width) this.resize(size);
+    // One bin moves the equator at most one buffer pixel. Absolute phase bins
+    // make the image independent of which ticks were actually drawn.
+    const tau = 2 * Math.PI;
+    const bins = Math.ceil(Math.PI * size);
+    const cycle = ((phase % tau) + tau) % tau;
+    const bin = Math.floor((cycle / tau) * bins + 1e-9) % bins;
+    if (bin === this.phaseBin) return;
+    this.phaseBin = bin;
+    const turn = (bin / bins + 0.5) % 1;
     const width = this.map.width / 3;
     this.buffer.clearRect(0, 0, size, size);
     for (const column of this.columns)
@@ -106,5 +132,6 @@ export class StripSphericalSurface {
       );
     }
     this.ctx.restore();
+    this.redraws++;
   }
 }

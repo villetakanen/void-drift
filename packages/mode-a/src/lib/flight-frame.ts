@@ -82,12 +82,18 @@ export interface FlightFrame {
   lightOverlay?: (ctx: CanvasRenderingContext2D, pass: FxPass) => void;
   venus?: {
     painter: CloudBodyPainter;
-    surface: { canvas: HTMLCanvasElement; draw(phase: number): void };
+    surface: {
+      canvas: HTMLCanvasElement;
+      draw(phase: number, diameter?: number): void;
+    };
   };
   /** Optional production surface painter used only for Practice Mercury. */
   mercury?: {
     painter: RockBodyPainter;
-    surface: { canvas: HTMLCanvasElement; draw(phase: number): void };
+    surface: {
+      canvas: HTMLCanvasElement;
+      draw(phase: number, diameter?: number): void;
+    };
   };
 }
 
@@ -171,19 +177,34 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
           planet.id === "venus" &&
           venus
         ) {
-          venus.surface.draw(
-            (sim.ticks * STEP * 2 * Math.PI) / PRACTICE_VENUS_SPIN_SECONDS,
-          );
-          venus.painter.body(ctx, 0, planet.pos.x, planet.pos.y, planet.radius);
-          venus.painter.atmosphere(
-            ctx,
-            planet.pos.x,
-            planet.pos.y,
-            planet.radius,
-            sim.star.pos.x,
-            sim.star.pos.y,
-            camera.zoom,
-          );
+          if (
+            planetBodyInView(
+              camera,
+              planet,
+              Math.max(0.325 / camera.zoom, planet.radius * 0.0325),
+            )
+          ) {
+            venus.surface.draw(
+              (sim.ticks * STEP * 2 * Math.PI) / PRACTICE_VENUS_SPIN_SECONDS,
+              planet.radius * 2 * camera.zoom,
+            );
+            venus.painter.body(
+              ctx,
+              0,
+              planet.pos.x,
+              planet.pos.y,
+              planet.radius,
+            );
+            venus.painter.atmosphere(
+              ctx,
+              planet.pos.x,
+              planet.pos.y,
+              planet.radius,
+              sim.star.pos.x,
+              sim.star.pos.y,
+              camera.zoom,
+            );
+          }
           renderer.drawPlanet(planet, { worldHud: false, body: false });
           continue;
         }
@@ -196,10 +217,19 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
           renderer.drawPlanet(planet);
           continue;
         }
-        mercury.surface.draw(
-          (sim.ticks * STEP * 2 * Math.PI) / PRACTICE_MERCURY_SPIN_SECONDS,
-        );
-        mercury.painter.body(ctx, 0, planet.pos.x, planet.pos.y, planet.radius);
+        if (planetBodyInView(camera, planet)) {
+          mercury.surface.draw(
+            (sim.ticks * STEP * 2 * Math.PI) / PRACTICE_MERCURY_SPIN_SECONDS,
+            planet.radius * 2 * camera.zoom,
+          );
+          mercury.painter.body(
+            ctx,
+            0,
+            planet.pos.x,
+            planet.pos.y,
+            planet.radius,
+          );
+        }
         renderer.drawPlanet(planet, { worldHud: false, body: false });
       }
     },
@@ -472,5 +502,17 @@ function drawPracticePlanetHud(
       planet.pos.y - planet.orbitCenter.y,
       planet.pos.x - planet.orbitCenter.x,
     ),
+  );
+}
+
+/** Body bounds only: orbit/HUD drawing retains its independent visibility. */
+function planetBodyInView(camera: Camera, planet: Planet, margin = 0) {
+  const view = camera.getViewRect();
+  const radius = planet.radius + margin;
+  return (
+    planet.pos.x + radius >= view.x &&
+    planet.pos.x - radius <= view.x + view.width &&
+    planet.pos.y + radius >= view.y &&
+    planet.pos.y - radius <= view.y + view.height
   );
 }

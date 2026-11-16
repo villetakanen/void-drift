@@ -81,14 +81,18 @@ const practiceMercury = new Map<
 >();
 
 /** Accepted seed-153 mineral atlas, prepared once and reused by Practice. */
-function createPracticeMercury(browserRotation: boolean) {
-  return loadAuthoredRockMaterials().then(([mineral]) => {
-    const atlas = quiltMineralMaterial(mineral, 153);
-    const surface = browserRotation
-      ? new StripSphericalSurface(atlas)
-      : new SphericalSurface(atlas, "atlas");
-    return { painter: new RockBodyPainter([surface.canvas]), surface };
-  });
+let practiceAtlas: Promise<HTMLCanvasElement> | undefined;
+
+/** Independent projection and mask caches; only the immutable atlas is shared. */
+export async function createPracticeMercury(browserRotation = true) {
+  practiceAtlas ??= loadAuthoredRockMaterials().then(([mineral]) =>
+    quiltMineralMaterial(mineral, 153),
+  );
+  const atlas = await practiceAtlas;
+  const surface = browserRotation
+    ? new StripSphericalSurface(atlas)
+    : new SphericalSurface(atlas, "atlas");
+  return { painter: new RockBodyPainter([surface.canvas]), surface };
 }
 
 export function loadPracticeMercury(browserRotation = false) {

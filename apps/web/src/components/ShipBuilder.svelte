@@ -247,7 +247,6 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
                 {/if}
                 <div class="preview-mode">
                   <Toggle
-                    compact
                     label="Ship preview mode"
                     options={["Plan", "View"]}
                     bind:value={previewMode}

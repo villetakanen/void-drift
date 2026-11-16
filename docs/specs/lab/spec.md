@@ -20,6 +20,7 @@ after they reach the game.
   [design studies](design-studies/spec.md),
   [motion instrument](motion-instrument/spec.md),
   [flight scene instrument](flight-scene-instrument/spec.md),
+  [planet inspector](planet-inspector/spec.md),
   [gravity tuning](gravity-tuning/spec.md),
   [render model](render-model/spec.md),
   [render performance](render-performance/spec.md).

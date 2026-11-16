@@ -82,6 +82,23 @@ Planets cannot overlap at any point in their orbits. For two planets with radii 
 
 ## Contract
 
+### Names
+
+A planet with a name of its own shows that name and no number. A planet without
+one is named after its star, a full stop, and its position counted outward from
+the centre. It takes the star's name, or the star's type when the star has no
+name. Named planets count in that position.
+
+A G7 star named Sun with four planets, the third unnamed, reads: Mercury, Venus,
+Sun.3, Mars. The first planet of an unnamed G11 star is G11.1. Star names are
+defined in the [star contract](../star/spec.md).
+
+### World HUD
+
+Every planet in every mode has the same World HUD: its orbit, its gravity
+boundary and its upright name. The [render contract](../../render/spec.md#world-bodies)
+defines how it is drawn.
+
 ### Mercurial mineral-rock size
 
 The airless mineral-rock type explored in the Mercury study uses a radius of
@@ -91,8 +108,7 @@ Practice's innermost stock rock (`id: moon`, the Mercury application) has radius
 originally retained its existing mass. Practice now uses mass 870 (3/5 of the
 previous 1450), from `gravity.practicePlanetMass.moon`; other modes retain 1450. Its whole surface stays outside the Sun's danger reach and at least
 part of its surface lies inside the charging reach. In Practice, this body uses
-the accepted mineral surface, independent 31.3-second spin, Sun-facing LFX and
-Mercury world HUD.
+the accepted mineral surface, independent 31.3-second spin and Sun-facing LFX.
 
 ### Practice Venus
 
@@ -124,10 +140,10 @@ optional `practicePlanetMass` overrides apply only in Practice.
   atmosphere adds no collision, drag or damage region. Whole circular orbits
   remain separated by more than their bodies' radii, and the fixed spawn is clear.
 
-The canonical [Practice planet preview](/lab/entities/planet/practice) uses the
-production simulation and flight passes at 0.4, 0.7 and 3.2 px/u, including pause.
-Other planets retain the flat-disc presentation. The flat-vector descriptions
-elsewhere in this document describe that legacy renderer, not Mercury or Venus.
+A planet without a surface map is drawn as a flat disc. The flat-vector
+descriptions elsewhere in this document describe that disc, not Mercury or Venus.
+All planets are drawn under the render contract's
+[world bodies](../../render/spec.md#world-bodies) rules.
 
 ### Definition of Done
 
@@ -244,14 +260,21 @@ Specified in [gravity-field.md](../gravity-field/spec.md#bodies-in-play).
 
 **Planet System Status: OPERATIONAL** 🪐  
 **Dynamic Spawning:** 0-5 planets per game  
-**Types:** rock, gas, ocean, desert, ice  
-**Lab:** Parameter exploration at `/lab/entities/planet`
+**Types:** rock, gas, ocean, desert, ice
 
 
 ### Rock shadow inspection
 
-The shared rock painter accepts an optional shadow-intensity multiplier from 0 to
-2, defaulting to 1 (the established rendering). It scales only the hard-light
-mask's darkening below neutral 0.5; sunlit mask values and direction stay fixed.
-The angular/intensity mask cache remains bounded. This capability supports the
-rock-atmospheres study's 02.2 comparison; it does not select new production tuning.
+The shared rock painter accepts incoming-light and shadow-intensity multipliers
+from 0 to 2. Both default to 1.35; incident-light temperature defaults to the
+neutral-reference 5800 K. These are shared production defaults. Incoming
+intensity scales only the hard-light stamp's bright values above neutral 0.5;
+shadow intensity scales only its darkening below 0.5. The Planet Inspector
+exposes all three parameters for visual inspection; changing them there is local
+to the instrument and does not select other production tuning.
+Bodies using the same prepared light, shadow and temperature tuple share one
+stamp, turned toward the star with the Canvas transform. Preparation happens
+before drawing. Storage holds the production defaults and stamps for actively
+prepared tuples; releasing the last user releases that custom stamp. The
+shadow-intensity capability supports the rock-atmospheres study's 02.2
+comparison.
