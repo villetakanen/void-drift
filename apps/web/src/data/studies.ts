@@ -10,6 +10,30 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
   {
+    slug: "rock-atmospheres-2026-11-15",
+    title: "Air around rock worlds",
+    status: "open",
+    phase: "exploration",
+    question:
+      "What atmospheric envelope makes the existing rotating rock worlds feel surrounded by air and gives a pilot a readable choice when skimming their edge?",
+  },
+  {
+    slug: "inhabited-worlds-2026-11-15",
+    title: "Inhabited worlds · Earth prototype",
+    status: "stopped",
+    phase: "exploration",
+    question:
+      "What visual treatment makes an inhabited world with an atmosphere convincing at flight scale, using recognizable Earth to establish a language for fictional worlds?",
+  },
+  {
+    slug: "earth-2026-11-14",
+    title: "Earth-like planets",
+    status: "stopped",
+    phase: "exploration",
+    question:
+      "What visual treatment makes an inhabited Earth-like planet feel like a convincing world beside Mercury and Venus at flight scale, using Earth as the first prototype?",
+  },
+  {
     slug: "venus-2026-11-13",
     title: "Venus-like planets",
     status: "open",

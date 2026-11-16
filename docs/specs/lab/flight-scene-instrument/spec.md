@@ -27,7 +27,7 @@ an agent-supplied document; the starter is `STARTER_FLIGHT_SCENE` in
 | Field     | Meaning                                                                                                          |
 | --------- | ---------------------------------------------------------------------------------------------------------------- |
 | `loadout` | The ship: a game `LoadoutSchema` loadout (`packages/mode-a`).                                                    |
-| `start`   | Optional `{x, y, rotation}`; the ship starts there at rest. Absent: where a run starts.                          |
+| `start`   | Optional `{x, y, rotation, velocity?}`; starts at rest unless velocity is supplied. Absent: where a run starts.  |
 | `targets` | Wrecks placed in the arena, `{x, y}` in world units. Default none.                                               |
 | `held`    | Optional `{distance, shardLife}`, both positive; defaults 140 units and 2 seconds.                               |
 | `follow`  | `{near, far}` zoom of the two follow views, positive with `near < far`; defaults 1.6 and 4.                      |
@@ -66,15 +66,21 @@ The default zoom and held values are working values, not tuned ones.
 ### Component
 
 `apps/web/src/components/lab/flight-scene/FlightSceneInstrument.svelte` takes
-`config: unknown`, `label?`, and five optional inputs from whoever mounts it:
+`config: unknown`, `label?`, and optional inputs from whoever mounts it:
 a `pane` snippet, a `light` (a [study light](#study-light)), `targets` (which
 targets are staged; the document's default when absent), `layers` (which
-layers are shown; all by default) and `tuning` ([part tuning](#part-tuning)). It parses the document once; an invalid
+layers are shown; all by default) and `tuning` ([part tuning](#part-tuning)), plus `planet` and `planetAppearance` ([planet encounters](#planet-encounters--15-november-2026)). It parses the document once; an invalid
 document renders a visible message listing the issues in place of the scene. A
 change to `config` after mount is ignored. The scene fills the 1440 × 900
 logical screen, drawn at render width 1728 (16:10 at the game's 1080 height).
 Burn and time float over the screen's lower edge and the view switch is at the
 top left.
+
+The shared burger pane occupies the smaller golden-ratio share of its positioned
+CSS container: `1 / φ² ≈ 38.1966%` of the container's width, leaving approximately
+61.8034% of the scene exposed. Its border-box width follows that container on resize,
+not the viewport or the instrument's fixed logical drawing width. It remains
+right-aligned, full-height and internally scrollable.
 
 The menu (the Motion instrument's overlay pane, top right) belongs to the study
 or Lab page that mounts the instrument. Its content is the `pane` snippet and
@@ -316,3 +322,41 @@ Scenario: Refuse a bad document
   When the instrument opens
   Then it shows the issue and no scene
 ```
+
+
+## Planet encounters — 15 November 2026
+
+Study flight never adds manual piloting. The shared fixed burns, timeline, views
+and burger pane remain the interaction model. Studies extend shared staging instead
+of introducing their own flight controls.
+
+The strict document accepts optional `planet` staging: `reference: "practice-venus"`,
+a finite `orbitAngle` (default zero), and optional `atmosphere` with positive world-unit
+`depth` and nonnegative `dragRate` in inverse seconds. This selects a Practice
+simulation with its Sun and the current Venus body's radius, orbit, speed and mass;
+other planets are removed. Wreck targets/held staging cannot be combined with this
+mode. Documents without `planet` preserve the existing Derelicts scene.
+
+`start.velocity` optionally supplies finite world-space x/y velocity in u/s;
+omitting it retains the original at-rest start. Fixed burn inputs remain unchanged.
+Atmospheric drag is an explicit experimental rule, not production behavior. Each
+post-step tick damps planet-relative velocity exponentially by dragRate × overlap
+density × dt. Density increases from zero when the ship's collision circle reaches
+the outer edge to one at solid contact. Air translates with orbital velocity; winds
+and co-rotation are omitted. No atmospheric damage is added. Production gravity,
+engine rules, collision and hull damage remain active.
+
+`FlightSceneInstrument` accepts an optional `planet` override, validated through
+the full document schema. An invalid override reports an error and is not applied.
+Changes replay from the start to the selected burn/time, reconstructing drag exactly
+once per tick. Backward seek reconstructs the same state as a fresh flight.
+
+Optional `planetAppearance` supplies a label and World/LFX painters receiving frozen
+copies of the staged planet, ship, Sun and simulation seconds. This replaces the
+staged body's drawing without permitting painters to change flight state. Without
+it the production body drawing remains. Appearance changes redraw the same instant;
+material rotation derives only from simulation time. Options belong in the existing
+pane; the wrapper does not supply another timeline or flight loop.
+
+The rock-atmospheres study is the first configured use. The canonical Flight scene
+Lab also offers a planet encounter to expose the shared staging capability.

@@ -11,11 +11,27 @@ const Point = z
   .object({ x: z.number().finite(), y: z.number().finite() })
   .strict();
 
+export const StagedPlanetSchema = z
+  .object({
+    reference: z.literal("practice-venus"),
+    orbitAngle: z.number().finite().default(0),
+    atmosphere: z
+      .object({
+        depth: z.number().finite().positive(),
+        dragRate: z.number().finite().nonnegative(),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict();
+export type StagedPlanet = z.infer<typeof StagedPlanetSchema>;
+
 export const FLIGHT_VIEWS = ["game", "follow", "follow-far"] as const;
 export type FlightView = (typeof FLIGHT_VIEWS)[number];
 
 export const FlightSceneDocumentSchema = z
   .object({
+    planet: StagedPlanetSchema.optional(),
     /** One game loadout; it should carry a forward weapon to have something to show. */
     loadout: gameSchema<Loadout>(LoadoutSchema),
     /** Staged study impulses, applied once at a tick boundary, never during drawing. */
@@ -36,6 +52,7 @@ export const FlightSceneDocumentSchema = z
         x: z.number().finite(),
         y: z.number().finite(),
         rotation: z.number().finite(),
+        velocity: Point.optional(),
       })
       .strict()
       .optional(),
@@ -70,5 +87,9 @@ export const FlightSceneDocumentSchema = z
       .strict()
       .default({}),
   })
-  .strict();
+  .strict()
+  .refine((doc) => !doc.planet || (!doc.targets.length && !doc.held), {
+    message: "Planet encounters and wreck staging are separate scene modes",
+    path: ["planet"],
+  });
 export type FlightSceneDocument = z.infer<typeof FlightSceneDocumentSchema>;

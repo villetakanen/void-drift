@@ -1,0 +1,54 @@
+{
+  "retrieved": "2026-11-15",
+  "treatment": "Original source files, except Mass Effect image extracted without recolouring from PDF page 744 using pdfimages. Browser sizing only.",
+  "video": {
+    "url": "https://www.youtube.com/watch?v=XPpYAUmNzY8",
+    "title": "Star Control 2 3DO Ending video",
+    "uploader": "xSeRosiSx",
+    "verification": "YouTube oEmbed title and uploader confirmed; frame-specific visual analysis not performed."
+  },
+  "assets": [
+    {
+      "file": "xcom-geoscape.jpg",
+      "title": "A / UFO: Enemy Unknown \u00b7 Geoscape (1994)",
+      "source_page": "https://en.wikipedia.org/wiki/UFO:_Enemy_Unknown",
+      "download": "https://upload.wikimedia.org/wikipedia/en/4/4c/UFO_Geoscape.jpg",
+      "sha256": "c718c031e613fd9488ff5a80b24a73cf1f2aacba742234d64c5856e1e1788b7e"
+    },
+    {
+      "file": "sc2-starbase-earth.png",
+      "title": "B / Star Control II \u00b7 Earth behind the shield",
+      "source_page": "https://www.hardcoregaming101.net/star-control-ii/amp/",
+      "download": "https://www.hardcoregaming101.net/wp-content/uploads/2017/07/starcon2-30.png",
+      "sha256": "748fbc0b183d7583c276d329d974fb8bd369ca65dc0483f33023a3e6b3d846be"
+    },
+    {
+      "file": "mass-effect-guide-earth.png",
+      "title": "D / Mass Effect \u00b7 Earth globe in an archived ME3 guide",
+      "source_page": "https://www.bazicenter.com/features/ign_guides/mass-effect-3.pdf#page=744",
+      "download": "https://www.bazicenter.com/features/ign_guides/mass-effect-3.pdf",
+      "sha256": "7e26e5883bdac2d5a834808db726f68a4644e43ab9fbbbb6d41d845e3001fe6a"
+    },
+    {
+      "file": "halo3-orbital-earth.jpg",
+      "title": "E / Halo 3 \u00b7 Orbital multiplayer location",
+      "source_page": "https://www.halopedia.org/File:Earth_Orbit.jpg",
+      "download": "https://halo.wiki.gallery/images/1/1a/Earth_Orbit.jpg",
+      "sha256": "433d2bf69aebc71dbb915aa334afd5bec0d3cbbb1052e9ca512dfb97565d9f69"
+    },
+    {
+      "file": "halo2a-earth.png",
+      "title": "F / Halo 2: Anniversary \u00b7 Cairo Station view (2014)",
+      "source_page": "https://www.halopedia.org/Earth",
+      "download": "https://halo.wiki.gallery/images/4/4e/H2ACampaign_HomeFleetInEarthOrbit.png",
+      "sha256": "2ab1857c51a93d8ef498dd83d5948856310a5f8b012abf250d41a9427e92015c"
+    },
+    {
+      "file": "halo2-earth.jpg",
+      "title": "G / Halo 2 \u00b7 announcement-trailer press image",
+      "source_page": "https://www.halopedia.org/File:H2_X02_Earth.jpg",
+      "download": "https://halo.wiki.gallery/images/3/35/H2_X02_Earth.jpg",
+      "sha256": "cf47949fdf11e2c15baffcb4b8fca495f391c787f5d4df35f4d77a8392abcddb"
+    }
+  ]
+}

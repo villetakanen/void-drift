@@ -143,7 +143,10 @@ One 1440 × 900 logical screen, scaled to fit its container, on the console
   along the graphs' time axis.
 - Below both, 24px down: the legend, naming every vehicle in its colour.
 - The pane overlay, unscaled on the container: menu button in the top-right
-  corner, elevation 3, 45% of the container wide, over an 11% backdrop. Default
+  corner, elevation 3, the smaller golden-ratio share of its positioned CSS
+  container (`1 / φ² ≈ 38.1966%` wide), over an 11% backdrop. Its border-box
+  width follows that container on resize; it stays full-height and internally
+  scrollable. Default
   content: the experiment’s shared tuning values and Copy JSON for exporting the
   current settings.
 

@@ -1,0 +1,73 @@
+{
+  "date": "2026-11-14",
+  "tool": "built-in imagegen",
+  "references": ["celestia-earth.jpg", "ne2-global.jpg"],
+  "treatment": "Whole generated images; no edits. Display bounds approximately cx640 cy625 radius525. Lighting and geography vary despite common prompt constraints.",
+  "prompts": [
+    "Use case: stylized-concept. Generate ONE square Earth appearance-study image. Single globe centered precisely at canvas center, diameter 80% of image width, entire circular silhouette visible. Pure black background, no stars, no text. Earth geography recognizable, Africa centered, Europe above, Atlantic left, Indian Ocean right, north upright. Sun upper left, soft terminator towards lower right, most disc lit. Sparse wispy cloud covering under 10%, restrained thin atmosphere identical in intent across variants. Muted analog photographic feeling, no grain or vintage filter. No cities or technology. Not a toy, not candy, not pixel art. Reference inspiration: Apollo Earthrise's pale photographic restraint, ISS silver sunglint, Celestia's subdued land and integrated haze, Natural Earth's softly blended land-cover and ocean relief. Ocean-floor motifs, where requested, are subtle artistic interpretation rather than scientific visibility. Variant: P1 photographic pale: slate blue-grey ocean, muted olive and sand land, gentle milky photographic softness.",
+    "Use case: stylized-concept. Generate ONE square Earth appearance-study image. Single globe centered precisely at canvas center, diameter 80% of image width, entire circular silhouette visible. Pure black background, no stars, no text. Earth geography recognizable, Africa centered, Europe above, Atlantic left, Indian Ocean right, north upright. Sun upper left, soft terminator towards lower right, most disc lit. Sparse wispy cloud covering under 10%, restrained thin atmosphere identical in intent across variants. Muted analog photographic feeling, no grain or vintage filter. No cities or technology. Not a toy, not candy, not pixel art. Reference inspiration: Apollo Earthrise's pale photographic restraint, ISS silver sunglint, Celestia's subdued land and integrated haze, Natural Earth's softly blended land-cover and ocean relief. Ocean-floor motifs, where requested, are subtle artistic interpretation rather than scientific visibility. Variant: P2 photographic smoky: smoky charcoal teal water, grey-green land, soft diffuse surface transitions.",
+    "Use case: stylized-concept. Generate ONE square Earth appearance-study image. Single globe centered precisely at canvas center, diameter 80% of image width, entire circular silhouette visible. Pure black background, no stars, no text. Earth geography recognizable, Africa centered, Europe above, Atlantic left, Indian Ocean right, north upright. Sun upper left, soft terminator towards lower right, most disc lit. Sparse wispy cloud covering under 10%, restrained thin atmosphere identical in intent across variants. Muted analog photographic feeling, no grain or vintage filter. No cities or technology. Not a toy, not candy, not pixel art. Reference inspiration: Apollo Earthrise's pale photographic restraint, ISS silver sunglint, Celestia's subdued land and integrated haze, Natural Earth's softly blended land-cover and ocean relief. Ocean-floor motifs, where requested, are subtle artistic interpretation rather than scientific visibility. Variant: P3 photographic dark: deep low-saturation navy ocean, muted ochre land, small restrained silver ocean reflection.",
+    "Use case: stylized-concept. Generate ONE square Earth appearance-study image. Single globe centered precisely at canvas center, diameter 80% of image width, entire circular silhouette visible. Pure black background, no stars, no text. Earth geography recognizable, Africa centered, Europe above, Atlantic left, Indian Ocean right, north upright. Sun upper left, soft terminator towards lower right, most disc lit. Sparse wispy cloud covering under 10%, restrained thin atmosphere identical in intent across variants. Muted analog photographic feeling, no grain or vintage filter. No cities or technology. Not a toy, not candy, not pixel art. Reference inspiration: Apollo Earthrise's pale photographic restraint, ISS silver sunglint, Celestia's subdued land and integrated haze, Natural Earth's softly blended land-cover and ocean relief. Ocean-floor motifs, where requested, are subtle artistic interpretation rather than scientific visibility. Variant: C1 cartographic slate: Natural Earth inspired fine seabed ridge patterns barely visible in dark slate water, soft shaded land relief, subdued sage and sand palette. Darker than pastel atlas.",
+    "Use case: stylized-concept. Generate ONE square Earth appearance-study image. Single globe centered precisely at canvas center, diameter 80% of image width, entire circular silhouette visible. Pure black background, no stars, no text. Earth geography recognizable, Africa centered, Europe above, Atlantic left, Indian Ocean right, north upright. Sun upper left, soft terminator towards lower right, most disc lit. Sparse wispy cloud covering under 10%, restrained thin atmosphere identical in intent across variants. Muted analog photographic feeling, no grain or vintage filter. No cities or technology. Not a toy, not candy, not pixel art. Reference inspiration: Apollo Earthrise's pale photographic restraint, ISS silver sunglint, Celestia's subdued land and integrated haze, Natural Earth's softly blended land-cover and ocean relief. Ocean-floor motifs, where requested, are subtle artistic interpretation rather than scientific visibility. Variant: C2 cartographic teal: subtle ocean depth gradients in desaturated dark grey-teal, gently blended terrain, fine geographic detail, restrained brightness.",
+    "Use case: stylized-concept. Generate ONE square Earth appearance-study image. Single globe centered precisely at canvas center, diameter 80% of image width, entire circular silhouette visible. Pure black background, no stars, no text. Earth geography recognizable, Africa centered, Europe above, Atlantic left, Indian Ocean right, north upright. Sun upper left, soft terminator towards lower right, most disc lit. Sparse wispy cloud covering under 10%, restrained thin atmosphere identical in intent across variants. Muted analog photographic feeling, no grain or vintage filter. No cities or technology. Not a toy, not candy, not pixel art. Reference inspiration: Apollo Earthrise's pale photographic restraint, ISS silver sunglint, Celestia's subdued land and integrated haze, Natural Earth's softly blended land-cover and ocean relief. Ocean-floor motifs, where requested, are subtle artistic interpretation rather than scientific visibility. Variant: C3 cartographic graphite: near charcoal ocean with delicate tonal ocean relief, low contrast parchment-taupe and olive continents, graphic but volumetric.",
+    "Use case: stylized-concept. Generate ONE square Earth appearance-study image. Single globe centered precisely at canvas center, diameter 80% of image width, entire circular silhouette visible. Pure black background, no stars, no text. Earth geography recognizable, Africa centered, Europe above, Atlantic left, Indian Ocean right, north upright. Sun upper left, soft terminator towards lower right, most disc lit. Sparse wispy cloud covering under 10%, restrained thin atmosphere identical in intent across variants. Muted analog photographic feeling, no grain or vintage filter. No cities or technology. Not a toy, not candy, not pixel art. Reference inspiration: Apollo Earthrise's pale photographic restraint, ISS silver sunglint, Celestia's subdued land and integrated haze, Natural Earth's softly blended land-cover and ocean relief. Ocean-floor motifs, where requested, are subtle artistic interpretation rather than scientific visibility. Variant: H1 hybrid silver: photographic Earth depth with a broad soft silver glint over blue-grey water, faint cartographic underwater texture elsewhere, realistic muted land.",
+    "Use case: stylized-concept. Generate ONE square Earth appearance-study image. Single globe centered precisely at canvas center, diameter 80% of image width, entire circular silhouette visible. Pure black background, no stars, no text. Earth geography recognizable, Africa centered, Europe above, Atlantic left, Indian Ocean right, north upright. Sun upper left, soft terminator towards lower right, most disc lit. Sparse wispy cloud covering under 10%, restrained thin atmosphere identical in intent across variants. Muted analog photographic feeling, no grain or vintage filter. No cities or technology. Not a toy, not candy, not pixel art. Reference inspiration: Apollo Earthrise's pale photographic restraint, ISS silver sunglint, Celestia's subdued land and integrated haze, Natural Earth's softly blended land-cover and ocean relief. Ocean-floor motifs, where requested, are subtle artistic interpretation rather than scientific visibility. Variant: H2 hybrid mineral: photographic hazy globe with muted mineral teal ocean and understated depth structure, natural soft land cover.",
+    "Use case: stylized-concept. Generate ONE square Earth appearance-study image. Single globe centered precisely at canvas center, diameter 80% of image width, entire circular silhouette visible. Pure black background, no stars, no text. Earth geography recognizable, Africa centered, Europe above, Atlantic left, Indian Ocean right, north upright. Sun upper left, soft terminator towards lower right, most disc lit. Sparse wispy cloud covering under 10%, restrained thin atmosphere identical in intent across variants. Muted analog photographic feeling, no grain or vintage filter. No cities or technology. Not a toy, not candy, not pixel art. Reference inspiration: Apollo Earthrise's pale photographic restraint, ISS silver sunglint, Celestia's subdued land and integrated haze, Natural Earth's softly blended land-cover and ocean relief. Ocean-floor motifs, where requested, are subtle artistic interpretation rather than scientific visibility. Variant: H3 hybrid dusk: photographic dark desaturated blue water with faint oceanic ridge motifs, dusty olive continents and quiet soft atmospheric depth."
+  ],
+  "assets": [
+    {
+      "file": "02-6-1.png",
+      "generation_source": "/Users/ville.takanen/.codex/generated_images/01a1d8d9-d684-76f1-beab-307784f10f5d/exec-d6abe2ed-8e28-4352-9a95-0a830ae3c0fa.png",
+      "prompt_index": 0,
+      "sha256": "689d22028efe3590556197617449587ee9eb3e9961d2063c980edac0c49f573a"
+    },
+    {
+      "file": "02-6-2.png",
+      "generation_source": "/Users/ville.takanen/.codex/generated_images/01a1d8d9-d684-76f1-beab-307784f10f5d/exec-ed61bd93-e404-4889-93e7-5a37aba2841b.png",
+      "prompt_index": 1,
+      "sha256": "4dc3153380abbf3bb3b6b4833199799cb2462015e9ea12ca4fdb5e98749c3270"
+    },
+    {
+      "file": "02-6-3.png",
+      "generation_source": "/Users/ville.takanen/.codex/generated_images/01a1d8d9-d684-76f1-beab-307784f10f5d/exec-309532f8-320f-4668-89a7-a281671f3225.png",
+      "prompt_index": 2,
+      "sha256": "295f05e56c9ce5ec16aa641dc6ce9fb253ac54141401dd94714470dcb8be807e"
+    },
+    {
+      "file": "02-6-4.png",
+      "generation_source": "/Users/ville.takanen/.codex/generated_images/01a1d8d9-d684-76f1-beab-307784f10f5d/exec-2e6f67f8-11e9-401a-bc85-c4c22d1b35bf.png",
+      "prompt_index": 3,
+      "sha256": "08bbf591018927ac149ae40c704ea560a7bdec186c61310aeba5f02fb3f4d6fe"
+    },
+    {
+      "file": "02-6-5.png",
+      "generation_source": "/Users/ville.takanen/.codex/generated_images/01a1d8d9-d684-76f1-beab-307784f10f5d/exec-3d90c692-357e-425b-9f06-4c3da1284291.png",
+      "prompt_index": 4,
+      "sha256": "73c59292bd53a3704dea643477b1c170708ce74a49f5fd06d15d8b1adcaf8f1f"
+    },
+    {
+      "file": "02-6-6.png",
+      "generation_source": "/Users/ville.takanen/.codex/generated_images/01a1d8d9-d684-76f1-beab-307784f10f5d/exec-1e180b87-db47-4fbc-8865-4b3fbae390b1.png",
+      "prompt_index": 5,
+      "sha256": "f72afb7b54d9e780e178a3e91217df24128fd9c36150ba88567287a1745a0d76"
+    },
+    {
+      "file": "02-6-7.png",
+      "generation_source": "/Users/ville.takanen/.codex/generated_images/01a1d8d9-d684-76f1-beab-307784f10f5d/exec-af1e8bd5-5ee7-48ee-a1a3-3376e814cd42.png",
+      "prompt_index": 6,
+      "sha256": "3d0966187c1e0f6fdb7bd0d813e1bdca983e759ebc7542114e3b0841b55e6b66"
+    },
+    {
+      "file": "02-6-8.png",
+      "generation_source": "/Users/ville.takanen/.codex/generated_images/01a1d8d9-d684-76f1-beab-307784f10f5d/exec-b278f04b-98c0-4dfc-a70a-5ecbccb72c8e.png",
+      "prompt_index": 7,
+      "sha256": "38bc782849799069071b8f10b3bc139ad22895e305d961617a94bc283c443037"
+    },
+    {
+      "file": "02-6-9.png",
+      "generation_source": "/Users/ville.takanen/.codex/generated_images/01a1d8d9-d684-76f1-beab-307784f10f5d/exec-7b8611a9-2ba8-4899-aea3-f6787fc59121.png",
+      "prompt_index": 8,
+      "sha256": "42327dc4a9284cd359a23b6204cce4ea083b349d468183f9db9859bc4fce4d03"
+    }
+  ]
+}

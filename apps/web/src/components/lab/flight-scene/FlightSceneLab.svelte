@@ -1,4 +1,9 @@
 <script lang="ts">
+import {
+  PRACTICE_VENUS_ORBIT,
+  PRACTICE_VENUS_TRAVEL_SPEED,
+  starterLoadout,
+} from "@void-drift/mode-a";
 import { untrack } from "svelte";
 import {
   defaultTargets,
@@ -23,7 +28,21 @@ const LABELS: Record<TargetMode, string> = {
   placed: "Placed",
   held: "Held ahead",
 };
-const modes = targetModes(doc);
+let sceneKind = $state("Wrecks");
+const planetDoc = FlightSceneDocumentSchema.parse({
+  loadout: starterLoadout("wasp"),
+  planet: { reference: "practice-venus", orbitAngle: 0 },
+  start: {
+    x: 960 + PRACTICE_VENUS_ORBIT - 90,
+    y: 440,
+    rotation: Math.PI / 2,
+    velocity: { x: 0, y: 230 + PRACTICE_VENUS_TRAVEL_SPEED },
+  },
+  follow: { near: 0.8, far: 4 },
+  opening: { burn: "course", view: "follow", tick: 30 },
+});
+const activeDoc = $derived(sceneKind === "Planet" ? planetDoc : doc);
+const modes = $derived(targetModes(activeDoc));
 
 /** A plain marker at each firing main engine, to show where a study paints. */
 const EXAMPLE_LIGHT: StudyLight = {
@@ -49,41 +68,55 @@ let lit = $state(false);
 const id = $props.id();
 </script>
 
-<FlightSceneInstrument
-  {config}
-  {targets}
-  {layers}
-  light={lit ? EXAMPLE_LIGHT : undefined}
->
-  {#snippet pane()}
-    <p>Targets</p>
-    <Toggle
-      stretch
-      label="Targets"
-      options={modes.map((mode) => LABELS[mode])}
-      bind:value={
-        () => LABELS[targets],
-        (v) => {
+{#key sceneKind}
+  <FlightSceneInstrument
+    config={activeDoc}
+    targets={sceneKind === "Planet" ? "none" : targets}
+    {layers}
+    light={lit ? EXAMPLE_LIGHT : undefined}
+  >
+    {#snippet pane()}
+      <p>Scene</p>
+      <Toggle
+        label="Scene"
+        options={["Wrecks", "Planet"]}
+        bind:value={sceneKind}
+      />
+      {#if sceneKind === "Planet"}
+        <p>
+          Current Practice Venus staged beside a Wasp. Fixed burns and timeline;
+          production body drawing.
+        </p>
+      {/if}
+      <p>Targets</p>
+      <Toggle
+        stretch
+        label="Targets"
+        options={modes.map((mode) => LABELS[mode])}
+        bind:value={
+          () => LABELS[targets],
+          (v) => {
   targets = modes.find((mode) => LABELS[mode] === v) ?? targets;
 }
-      }
-    />
-    <p>Layers</p>
-    <div class="rows">
-      <label for={`${id}-world`}>World</label>
-      <Switch id={`${id}-world`} bind:checked={layers.world} />
-      <label for={`${id}-fx`}>FX</label>
-      <Switch id={`${id}-fx`} bind:checked={layers.fx} />
-      <label for={`${id}-lfx`}>LFX</label>
-      <Switch id={`${id}-lfx`} bind:checked={layers.lfx} />
-    </div>
-    <p>Study light</p>
-    <div class="rows">
-      <label for={`${id}-light`}>{EXAMPLE_LIGHT.label}</label>
-      <Switch id={`${id}-light`} bind:checked={lit} />
-    </div>
-  {/snippet}
-</FlightSceneInstrument>
+        }
+      />
+      <p>Layers</p>
+      <div class="rows">
+        <label for={`${id}-world`}>World</label>
+        <Switch id={`${id}-world`} bind:checked={layers.world} />
+        <label for={`${id}-fx`}>FX</label>
+        <Switch id={`${id}-fx`} bind:checked={layers.fx} />
+        <label for={`${id}-lfx`}>LFX</label>
+        <Switch id={`${id}-lfx`} bind:checked={layers.lfx} />
+      </div>
+      <p>Study light</p>
+      <div class="rows">
+        <label for={`${id}-light`}>{EXAMPLE_LIGHT.label}</label>
+        <Switch id={`${id}-light`} bind:checked={lit} />
+      </div>
+    {/snippet}
+  </FlightSceneInstrument>
+{/key}
 
 <style>
 .rows {

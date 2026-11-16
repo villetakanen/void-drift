@@ -89,9 +89,10 @@ const six = named([
     <p>
       Placed on its container, unscaled. A menu button in the top-right corner
       opens it; its close button takes that corner; Escape closes it and returns
-      focus to the menu. It is elevation 3, 45% of the container wide, over an
-      11% backdrop. What it holds is up to the host; the instrument fills it
-      with the values under investigation and the document.
+      focus to the menu. It is elevation 3, the smaller golden-ratio share of
+      its CSS container (about 38.2% wide), over an 11% backdrop. What it holds
+      is up to the host; the instrument fills it with the values under
+      investigation and the document.
       <a href="/lab/studies/lab-instrument-2026-11-01#readiness">Study →</a>
     </p>
     <div class="example overlay-demo">

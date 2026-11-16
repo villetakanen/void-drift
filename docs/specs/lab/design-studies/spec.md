@@ -15,6 +15,9 @@ owner rather than repeating them here.
 
 - `/lab/studies` lists studies; `/lab/studies/<slug>` provides a stable review URL.
 - `apps/web/src/data/studies.ts` validates metadata with Zod before rendering.
+- Study flight uses the shared Flight scene instrument, fixed burn sequences and
+  its timeline; study options belong in its burger pane. Studies never add manual
+  piloting. Extend shared staging when the experiment needs an unsupported scene.
 - Experimental styles remain scoped to study components; fixture behavior is labeled.
 - A cycle keeps a stable URL and records significant feedback, decisions and reasons.
 - Accepted slices are separate implementation work; the study links to their delivery.

@@ -38,6 +38,7 @@ proceeds after hearing a fail. An override is recorded as such, never as a pass.
 - Answer each finding in section 01: correct it, or decline it with a reason. Keep
   the opening within its length target; a correction replaces words, and scope lists
   that will not fit go on the review page.
-- A corrected section need not be run again. Say on the page whether it was.
+- A corrected section need not be run again, unless the question was amended during
+  exploration. Say on the page whether it was.
 - Stamp the three results at the end of section 01, dated. Put the full result, with
   findings and what was not checked, at `/lab/reviews/<study-slug>` and link it.

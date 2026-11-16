@@ -1,0 +1,346 @@
+---
+import InstrumentBand from "../../../components/lab/instrument/InstrumentBand.astro";
+import AtmosphereFlight from "../../../components/studies/rock-atmospheres/AtmosphereFlight.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find(
+  (item) => item.slug === "rock-atmospheres-2026-11-15",
+);
+---
+
+<StudyLayout {study}>
+  <section>
+    <h2 id="01">01 / Air the pilot can read</h2>
+    <p>
+      A close pass should reveal air before the ship enters it. The envelope
+      needs enough presence to make entry foreseeable, while leaving the rock's
+      mineral regions, worn terrain and turning limb legible. Its consequence
+      should give the pilot a small, understandable flying choice. Pleasurable
+      flight, responsive feedback and convincing material guide this balance.
+    </p>
+    <p>
+      Use
+      <a href="/lab/studies/mercury-2026-11-12#02-19"
+        >Mercury 02.19's three authored Lab exemplars</a
+      >, selected for this cycle—Mineral mosaic, Ancient highlands and Impact
+      palimpsest—with their spherical mapping, independent 31.3-second turns and
+      Sun-facing light. Begin at current Practice Venus's approximately 40.33u
+      body radius, beside the real fitted Wasp at flight scale. Size is a
+      comparison condition, not an Earth-like identity. Existing gravity,
+      controls and solid-body contact supply the flight baseline; the first
+      fixture borrows Practice Venus's orbit and gravity without retuning
+      either.
+    </p>
+    <p>
+      Production Venus has a visual atmosphere without drag or atmospheric
+      damage. Appearance and entry response remain open together. A shallow drag
+      layer is the first hypothesis: stay outside to preserve speed, or skim
+      through air to shed it. Its proposed 10u radial depth is in world units,
+      not typographic points or damage points; thickness, colour and drag
+      strength are provisional. Danger is a possibility, not a required damage
+      rule. Surface redesign, Earth-like geography, habitation and a planet
+      taxonomy are outside this question. Venus's body/envelope separation and
+      return to whole-planet views inform the method without prescribing its
+      appearance.
+    </p>
+    <p class="question-test">
+      Question test · 15 November 2026: One subject — Pass; Grounded — Pass with
+      findings; Consequence — Pass. The opening now distinguishes Lab exemplars
+      from production adoption and the proposed mechanics from Venus's visual
+      atmosphere. Not rerun after correction.
+      <a href="/lab/reviews/rock-atmospheres-2026-11-15">Full review</a>.
+    </p>
+  </section>
+  <section>
+    <h2 id="02">02 / Skim the air</h2>
+    <details>
+      <summary id="02-1">
+        02.1 / A visible envelope with a small braking consequence
+      </summary>
+      <p>
+        The first proposal adds a pale mineral-blue column of air: faint over
+        the face, stronger at the limb, falling away into space. Its light
+        follows the Sun while the original rock turns beneath it. Colour,
+        opacity, depth and drag are experimental values, not selected
+        properties.
+      </p>
+      <p>
+        <strong>Successful, usable step · 15 November 2026.</strong>
+        The Flight scene instrument is the right setting for this investigation.
+        Its standard game look and feel, real ship and predictable burn
+        scenarios give a useful feel for how an atmospheric encounter could work
+        in the game. The shared timeline makes approach, entry and exit
+        inspectable and repeatable.
+      </p>
+      <p>
+        This accepts the usefulness of the example and the instrument as the
+        working method. The pale envelope and drag are a usable starting point;
+        their exact appearance, thickness and strength are still provisional.
+        The planet's existing shadow remains a working value, not a settled
+        lighting decision.
+      </p>
+      <figure>
+        <img
+          src="/studies/rock-atmospheres-2026-11-15/02-1-flight.png"
+          alt="02.1 mineral rock and Wasp at flight scale in the Flight scene instrument"
+          width="1280"
+          height="1000"
+          loading="lazy"
+        >
+        <figcaption>
+          Retained 02.1 frame: Mineral mosaic, air + drag, B1 at 0.5s, Follow
+          0.8, original shadow, 1280 × 1000 browser. Captured before the 02.2
+          controls.
+        </figcaption>
+      </figure>
+      <details>
+        <summary>02.1 / Enlarged construction reference</summary>
+        <img
+          src="/studies/rock-atmospheres-2026-11-15/02-1-close.png"
+          alt="The same 02.1 entry at Follow 4× with the original shadow"
+          width="1280"
+          height="1000"
+          loading="lazy"
+        >
+        <p>
+          Same material, burn and instant at Follow 4×. These stills retain the
+          visual reference; they do not reproduce the motion or establish
+          gameplay feel.
+        </p>
+      </details>
+      <p>
+        At 10u depth, B1 and B2 enter at approximately 0.37s and leave by 0.55s;
+        B3 leaves by 0.58s. The opening at 0.5s is inside the air. All three
+        skim without solid contact over the full 14-second sequence. These are
+        measured fixture conditions, not a judgment of interaction quality.
+      </p>
+      <p>
+        The envelope extends 10u beyond the solid radius of 40.33u. Entry begins
+        when the ship's collision circle overlaps that shell; density increases
+        linearly with penetration to the surface. Each 1/60-second step
+        multiplies planet-relative velocity by exp(−0.8 × density × dt). This is
+        a fixture approximation of drag, not a new production physics law. Air
+        has the planet's orbital velocity; winds and atmospheric co-rotation are
+        omitted. There is no atmospheric damage. Solid contact retains the
+        game's bounce and hull cost.
+      </p>
+      <p>
+        Conditions: production Practice Wasp with starter fitting, current Venus
+        radius, orbit, travel speed and gravity; one planet at orbital angle
+        zero, with the production Sun retained. Other planets are omitted. The
+        ship starts 82u left and 100u above the planet, heading down, with
+        downward speed 230u/s plus the planet's orbital speed. B1 opens at 0.5
+        seconds. The original materials retain Mercury 02.19's mirrored
+        spherical mapping and independent 31.3-second turn. Follow uses 0.8
+        render px/u before the instrument's display scaling; Follow 4× uses 4
+        render px/u before display scaling.
+      </p>
+      <p>
+        The shared Flight scene instrument now owns planet staging and
+        repeatable atmospheric drag. The study supplies only material/envelope
+        painters and pane options. Its production ship, fixed burns, timeline,
+        views and layer composition remain the instrument's. Study flight never
+        uses manual piloting.
+      </p>
+    </details>
+    <details>
+      <summary id="02-2">02.2 / Shadow depth beneath the atmosphere</summary>
+      <p>
+        Impact palimpsest is the default reference for this round. With air
+        around the body, the current shadow feels light. Varying shadow
+        intensity tests whether stronger depth changes the feel of the planet
+        and its initial atmospheric treatment without changing the surface,
+        envelope or flight.
+      </p>
+      <p>
+        The burger pane now includes Planet shadow intensity. 1× exactly
+        restores the 02.1 lighting; 0× removes its shadow darkening, and 2×
+        doubles it. Only the darkening side of the Sun-facing light mask
+        changes. Sunlit highlights, light direction, material rotation and
+        atmospheric drawing remain fixed. Because the body's light pass also
+        shades the air over its face, that overlap changes with the shadow; the
+        outer envelope keeps its original drawing.
+      </p>
+      <p>
+        <strong>Finding · 15 November 2026:</strong>
+        shadow intensity can reach 1.45× without making bare planets feel
+        plastic or rendered. The same strength also works with the initial
+        atmosphere. This establishes a usable range up to 1.45×, not a universal
+        final lighting value.
+      </p>
+      <p>
+        Carry 1.45× into the next comparison as its default, with Impact
+        palimpsest retained as the reference material. The slider remains
+        available. The atmosphere's initial appearance remains provisional.
+      </p>
+      <details>
+        <summary>02.2 / Retained 1.45× reference</summary>
+        <img
+          src="/studies/rock-atmospheres-2026-11-15/02-2-shadow-145-reference.png"
+          alt="Impact with the initial limb haze and 1.45× shadow beside the Wasp"
+          width="1280"
+          height="1000"
+          loading="lazy"
+        >
+        <p>
+          Impact, initial limb haze, 1.45× shadow, B1 at 0.5s, Follow 4×, 1280 ×
+          1000 browser. Reconstructed when opening 02.3 to retain the comparison
+          conditions; this is not a capture of the earlier assessment.
+        </p>
+      </details>
+    </details>
+    <h3 id="02-3">02.3 / Three ways to make the rock feel surrounded by air</h3>
+    <p>
+      Compare three atmospheric treatments in the same flight scenario. Limb
+      haze retains the initial silhouette-focused treatment. Thin veil carries
+      more air across the face, softening terrain contrast toward the limb.
+      Layered air combines a denser low layer with a restrained outer haze,
+      testing whether visible depth makes entry easier to anticipate.
+    </p>
+    <p>
+      Impact and 1.45× shadow are the starting conditions. Colour, 10u radial
+      interaction depth, drag, airflow feedback, rotation and B1–B3 burns stay
+      fixed across the treatments. Their differences are visual; none changes
+      where entry occurs or what happens to the ship. The appearance selector is
+      in the burger pane. No treatment is selected as the outcome.
+    </p>
+    <p>
+      Judge approach, entry and exit at flight scale: whether the rock retains
+      its material character, the envelope reads as air, and entry is
+      foreseeable. Use Follow 4× to inspect construction, then return to Follow
+      for the whole planet beside the ship.
+    </p>
+    <p>
+      <strong>Findings · 16 November 2026:</strong>
+      this is a useful comparison that advances the atmosphere design. A
+      stronger shadow, perhaps 1.75×, may still work, but 1.45× remains the
+      agreed baseline. That possibility is not a new selected value.
+    </p>
+    <p>
+      Atmospheric entry is hard to identify when the air has no clearly visible
+      boundary. A thin upper layer is a promising next investigation, not an
+      accepted border treatment. Its appearance should help anticipate the
+      actual interaction boundary.
+    </p>
+    <p>
+      Gas without clouds feels very thin. It has an appealing appearance, but
+      may not provide the atmospheric presence this game needs. Cloud-bearing
+      alternatives are worth comparing while preserving the existing rock's
+      character; neither clouds nor a particular cloud treatment is selected.
+    </p>
+    <figure>
+      <img
+        src="/studies/rock-atmospheres-2026-11-15/02-3-limb-haze-flight-reconstruction.png"
+        alt="Limb haze at flight scale beside the Wasp"
+        width="1280"
+        height="1000"
+        loading="lazy"
+      >
+      <figcaption>
+        02.3 reconstruction · 16 November 2026, before opening 02.4. Impact,
+        Limb haze, shadow 1.45×, B1 at 0.5s, Follow; 1280 × 1000 browser. This
+        retains the baseline conditions, not the earlier observation itself.
+      </figcaption>
+    </figure>
+    <details>
+      <summary>02.3 / Reconstructed treatment comparison</summary>
+      {[
+        ["limb-haze", "Limb haze"],
+        ["thin-veil", "Thin veil"],
+        ["layered-air", "Layered air"],
+      ].map(([slug, name]) => (
+        <figure>
+          <img
+            src={`/studies/rock-atmospheres-2026-11-15/02-3-${slug}-flight-reconstruction.png`}
+            alt={`${name} at Follow flight scale`}
+            width="1280"
+            height="1000"
+            loading="lazy"
+          />
+          <img
+            src={`/studies/rock-atmospheres-2026-11-15/02-3-${slug}-close-reconstruction.png`}
+            alt={`${name} enlarged at Follow 4×`}
+            width="1280"
+            height="1000"
+            loading="lazy"
+          />
+          <figcaption>
+            {name}: Follow and Follow 4×, same B1 opening and material.
+            Reconstructed 16 November 2026. Stills preserve appearance; they do
+            not establish the earlier motion judgment.
+          </figcaption>
+        </figure>
+      ))}
+    </details>
+    <h3 id="02-4">02.4 / An upper extent and something within it</h3>
+    <p>
+      A visible upper layer could make the approaching edge easier to
+      anticipate. Clouds could give the volume substance while openings keep the
+      authored rock visible. These are separate hypotheses: a cloudless upper
+      layer isolates the first, and two kinds of cloud cover test the second
+      against that same edge.
+    </p>
+    <ul>
+      <li>
+        <strong>Limb haze:</strong>
+        the unchanged 02.3 starting reference.
+      </li>
+      <li>
+        <strong>Upper layer:</strong>
+        a thin, softly bounded shell just inside the 10u extent, with the
+        original low haze beneath it. Tests whether a visible edge reads as air
+        or becomes too much like a ring.
+      </li>
+      <li>
+        <strong>Cloud banks:</strong>
+        broken pale masses below that shell, leaving openings onto the rock.
+        Tests substance through local overlap.
+      </li>
+      <li>
+        <strong>Cloud bands:</strong>
+        broader, winding coverage beneath the same shell. Tests whether
+        continuity gives the air more presence or conceals too much terrain.
+      </li>
+    </ul>
+    <p>
+      Impact, 1.45× shadow, the original 31.3s rock turn, 10u depth, 0.8/s drag
+      and B1–B3 remain fixed. Cloud cover is a procedural translucent overlay at
+      4.2u altitude with a provisional 38s turn; it does not replace the rock
+      material or change flight. Its pattern follows simulation time through
+      pause and seek. All three original materials and the shadow slider remain
+      available. No appearance is selected as the outcome.
+    </p>
+    <p>
+      Compare the approach at 0.30s, entry at about 0.37s, the 0.50s skim and
+      exit by 0.60s in Follow beside the ship. Entry is collision-circle
+      overlap, so the hull reaches the air before the ship centre crosses the
+      visible edge. Follow 4× explains the shell and cloud construction; return
+      to Follow to assess their presence in flight. Stills cannot settle
+      encounter feel.
+    </p>
+    <InstrumentBand
+      ><AtmosphereFlight
+        label="Air around rock worlds: boundary and substance comparison"
+        client:load
+      /></InstrumentBand
+    >
+  </section>
+  <section><h2 id="03">03 / To be developed after 02</h2></section>
+</StudyLayout>
+
+<style>
+figure {
+  margin: var(--spacing-xl) 0;
+}
+img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+figcaption {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+  margin-top: var(--spacing-sm);
+}
+</style>

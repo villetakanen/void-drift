@@ -1,0 +1,315 @@
+---
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+---
+
+<StudyLayout>
+  <section>
+    <h1>Earth-like planets — question test and rubric</h1>
+    <p>
+      14 November 2026. Assessment of
+      <a href="/lab/studies/earth-2026-11-14"
+        >01 / A living world beneath an atmosphere</a
+      >. This records framing and research, not acceptance of an Earth design.
+    </p>
+    <h2>Reframed question test · 14 November 2026</h2>
+    <p>
+      Independent clean-context review of the revised 01 and registry, study
+      contract and relevant code/specifications.
+    </p>
+    <ul>
+      <li>
+        <strong>One subject — Pass.</strong>
+        One Earth’s appearance at flight scale; the implemented Mercury and
+        Venus are fixed references.
+      </li>
+      <li>
+        <strong>Grounded — Pass with findings.</strong>
+        Fixed planets, Sun, controls, gravity and contact have specification and
+        code support. Clarify which remaining physical choices belong to later
+        delivery rather than the image comparison.
+      </li>
+      <li>
+        <strong>Consequence — Pass with findings.</strong>
+        One Practice Earth is the intended outcome; explicitly connect the
+        visual qualities selected here to its appearance target.
+      </li>
+    </ul>
+    <p>
+      Both framing findings are addressed in 01: chosen qualities become the
+      prototype’s appearance target, while placement, motion, mass and roster
+      choice remain later delivery work outside this appearance question.
+      Corrections were not rerun. Prior negative judgments are retained designer
+      observations, not independent aesthetic findings by the reviewer.
+    </p>
+    <p>
+      Grounding: <code>docs/specs/game/test-flight/spec.md</code> lines 34–50;
+      <code>docs/specs/game/world/planets/spec.md</code>
+      lines 87–130;
+      <code>simulation.ts</code>
+      lines 226–290;
+      <code>flight-frame.ts</code>
+      lines 170–276; controls specification and FlightDeck wiring;
+      <code>docs/design.md</code>
+      (“Suggest a world”); full study registry. No fixed item relied solely on
+      undocumented code.
+    </p>
+    <p>
+      Limits: no aesthetic, browser, performance, gameplay or external-source
+      audit. The reference component was not yet present when the reviewer read
+      the draft; it has since been implemented and inspected separately. These
+      stamps concern answerability, not acceptance.
+    </p>
+    <h2>Earlier question test · before reframing</h2>
+    <p>
+      Independent, clean-context, read-only review of the opening, full
+      registry, study contract, relevant specifications and code.
+    </p>
+    <ul>
+      <li>
+        <strong>One subject — Pass.</strong>
+        Day, night, clouds and habitation belong to one composed Earth. The
+        adopted Mercury and Venus references do not depend on finishing those
+        open studies.
+      </li>
+      <li>
+        <strong>Grounded — Pass with findings.</strong>
+        Fixed items have spec and implementation support. The opening omitted
+        whether Earth replaces the outer rock or adds another body.
+      </li>
+      <li>
+        <strong>Consequence — Pass.</strong>
+        Practice gains one named Earth with recognizable geography, weather and
+        inhabited darkness.
+      </li>
+    </ul>
+    <p>
+      Finding addressed: 01 now explicitly leaves replacement versus addition
+      open. This clarification was not rerun through the question test.
+    </p>
+    <p>
+      Reviewer evidence: <code>docs/specs/game/test-flight/spec.md</code> lines
+      34–47; <code>docs/specs/game/world/planets/spec.md</code> lines 85–123;
+      <code>docs/specs/game/controls/spec.md</code>
+      line 9;
+      <code>docs/specs/game/render/spec.md</code>
+      line 68;
+      <code>packages/mode-a/src/lib/simulation.ts</code>
+      lines 226–261;
+      <code>apps/web/src/components/FlightDeck.svelte</code>
+      lines 378 and 535; and the complete study registry. No fixed item rests
+      solely on undocumented behaviour. The linked NASA resources were also
+      checked.
+    </p>
+    <p>
+      The question reviewer did not inspect browser rendering, keyboard or
+      viewport behaviour, visual success, performance, asset-use suitability,
+      climate plausibility or implementation readiness.
+    </p>
+    <h2>What the earlier planets establish</h2>
+    <p>
+      <a href="/lab/studies/mercury-2026-11-12#02-23"
+        >Mercury’s NASA-map comparison</a
+      >
+      found recognizable surface organization useful, but the composed mineral
+      mosaic read better at game scale. The delivered surface uses the authored
+      exemplar, quilted into a wrapped atlas; it is not the NASA map. Practice
+      loads that material through <code>authored-materials.ts</code> and the
+      shared spherical projection. Its radius is 27u, orbit 258u, travel 4u/s
+      and independent turn 31.3 seconds. Earth’s explicit imagery direction does
+      not inherit Mercury’s synthesis method.
+    </p>
+    <p>
+      <a href="/lab/studies/venus-2026-11-13#02-1"
+        >Venus’s first opaque cloud patterns</a
+      >
+      read as gas giants. The eventual body uses broad faint cloud structure,
+      amber colour and strong shaded depth. Lifting the whole shadow lost depth.
+      The wider atmospheric arc improved small-view presence but remained
+      provisional enlarged. These findings motivate inspecting Earth’s whole
+      globe at both scales; they do not prescribe an amber palette, opaque
+      clouds or Venus’s arc for Earth.
+    </p>
+    <p>
+      Current delivery is visible in the
+      <a href="/lab/entities/planet/practice">production Practice preview</a>:
+      Venus replaces the middle gas planet, while Mercury and the outer stock
+      rock remain. Venus has radius about 40.33u, orbit 482.13u, travel 2.954u/s
+      and a 60-second cloud turn. Both planets use simulation time, shared
+      Sun-facing lighting and world labels/orbit/gravity markings. The relevant
+      integration is <code>simulation.ts</code>, <code>flight-frame.ts</code>,
+      <code>FlightDeck.svelte</code>
+      and the core body painters. Earth needs a source-image material and a
+      night emission treatment; existing hard light alone does not supply city
+      lights.
+    </p>
+    <p>
+      <a href="/lab/studies/venus-2026-11-13#03">The later Practice retuning</a>
+      reduced Mercury’s mass from 1450 to 870 and recalculated Venus’s
+      separately stored mass to 2844.850580940663. Their reaches are about
+      131.91u and 238.53u at the unchanged cut-off; size and motion stayed
+      unchanged.
+      <code>packages/mode-a/src/lib/tuning.json</code>
+      and the planets and gravity-field contracts agree. The older study
+      comparisons retain the original masses. These are adopted tuning changes,
+      not evidence here about human playtesting or proof of encounter quality.
+      Earth’s radius must not silently determine its mass. Whether Earth
+      replaces the outer rock or adds a body, and its safe orbital placement,
+      remain delivery choices after the visual direction is established.
+    </p>
+    <h2>Source material and its limits</h2>
+    <ul>
+      <li>
+        <a
+          href="https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-map/"
+          >NASA Blue Marble: Next Generation base maps</a
+        >: a starting point for recognizable land and ocean. Prefer a surface
+        map to a globe photograph with its terminator already baked in. Asset
+        resolution, processing and credits remain to be selected.
+      </li>
+      <li>
+        <a
+          href="https://science.nasa.gov/earth/earth-observatory/the-blue-marble-true-color-global-imagery-at-1km-resolution/"
+          >NASA’s 2002 Blue Marble construction</a
+        >: surface observations are composited over time, and its cloud image
+        combines observations from several days. Such a composite is a rendering
+        source, not one simultaneous photograph or a future weather prediction.
+      </li>
+      <li>
+        <a
+          href="https://science.nasa.gov/earth/earth-observatory/earth-at-night/maps/"
+          >NASA Black Marble flat maps</a
+        >: observed 2016 night lights offer geographically grounded habitation.
+        Their distribution is a historical reference, not a map of civilization
+        in 2400. Surface and light maps must share geographic alignment; cloud
+        coverage and daylight suppression of lights remain visual questions.
+      </li>
+      <li>
+        <a
+          href="https://www.ipcc.ch/report/ar6/wg1/chapter/summary-for-policymakers/"
+          >IPCC AR6 physical-science summary</a
+        >: long-term sea-level outcomes depend on emissions and ice-sheet
+        uncertainty. It does not supply a definitive 2100–2400 globe. Reduced
+        ice, changed vegetation or altered coasts are possible authored
+        directions to research if chosen, not selected outcomes. No numerical
+        climate scenario is adopted here.
+      </li>
+    </ul>
+    <p>
+      The first useful comparison is an unaltered, source-based Earth against
+      any proposed future treatment, under identical light and scale. This can
+      distinguish a legibility adjustment from a fictional change to geography.
+      The study permits source imagery as Earth’s material; it does not change
+      the game-wide procedural art principle. Natural bodies already have
+      distinct construction methods under <code>docs/design.md</code>.
+    </p>
+    <h2>Atmosphere emphasis · 14 November 2026</h2>
+    <p>
+      The revised question and opening make atmospheric presence central rather
+      than one item in a list of visual properties. Deliberate rendering is
+      permitted independently of fictional climate changes: exaggerating haze or
+      apparent thickness for legibility does not require inventing a different
+      Earth. The intended quality is a substantial world seen through air, with
+      weather and inhabited darkness, belonging beside Mercury and Venus. Exact
+      treatment remains open. The question-test stamps above describe the
+      earlier framing; this revision has not been independently rerun.
+    </p>
+    <h2>Study-quality rubric · section 01 only</h2>
+    <p>
+      Author assessment using the study contract’s eight criteria. Ratings are
+      not averaged; later-stage gaps are explicit rather than presumed solved.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Criterion</th>
+          <th>Rating</th>
+          <th>Evidence and remaining gap</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Purpose</td>
+          <td>Supported</td>
+          <td>
+            01 connects recognizable Earth and visible habitation to a third
+            planetary character in Practice, with a concrete prototype outcome.
+          </td>
+        </tr>
+        <tr>
+          <td>Investigation</td>
+          <td>Partial</td>
+          <td>
+            Earlier designs, current integration, revised masses and NASA source
+            types are distinguished above. No Earth material has yet been
+            rendered.
+          </td>
+        </tr>
+        <tr>
+          <td>Alternatives and reasoning</td>
+          <td>Partial</td>
+          <td>
+            Actual imagery is the chosen starting constraint; source Earth
+            versus a future interpretation gives a useful comparison. No visual
+            treatment has been selected.
+          </td>
+        </tr>
+        <tr>
+          <td>Evidence fit</td>
+          <td>Supported</td>
+          <td>
+            Code supports delivery facts; sources support imagery provenance.
+            Visual risks are hypotheses, future changes fiction, and tuning
+            changes make no claim about encounter feel.
+          </td>
+        </tr>
+        <tr>
+          <td>Cumulative agreement</td>
+          <td>Supported</td>
+          <td>
+            01 preserves the imagery direction, inhabited world, optional future
+            changes and Practice destination. It does not reopen Mercury or
+            Venus or infer acceptance of Earth.
+          </td>
+        </tr>
+        <tr>
+          <td>Design coherence</td>
+          <td>Partial</td>
+          <td>
+            Atmosphere is a defining material: limb light, surface haze, clouds
+            and night transition must suggest air around solid Earth. Apparent
+            thickness, colour and softness may be exaggerated, while geography,
+            habitation and kinship with neighbouring planets remain readable.
+            Whether this avoids a graphic outline or energy-field reading is
+            untested.
+          </td>
+        </tr>
+        <tr>
+          <td>Remaining uncertainty</td>
+          <td>Supported</td>
+          <td>
+            01 names the open visual properties, era and changes; this record
+            separates roster, placement and mass decisions from the visual
+            question.
+          </td>
+        </tr>
+        <tr>
+          <td>Integration implications</td>
+          <td>Partial</td>
+          <td>
+            Existing projection, timing, lighting and HUD are available. Night
+            emission, source preparation, chosen scale and placement still need
+            concrete exploration before readiness and scope.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Limits</h2>
+    <p>
+      At section 01, no Earth prototype, performance measurement, asset-use
+      clearance, future-climate model or design acceptance is claimed. Human
+      playtesting remains outside this repository. Section 02 was unfilled at
+      that assessment. Subsequent exploration and findings are on the study
+      page.
+    </p>
+  </section>
+</StudyLayout>

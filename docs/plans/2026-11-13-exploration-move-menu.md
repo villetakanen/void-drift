@@ -5,6 +5,10 @@ new section in `.agents/skills/design-study/references/exploration.md`, placed a
 "Make the question inspectable". The factory spec allows only approved lessons to
 become standing guidance, so the guide is unchanged until this is reviewed.
 
+2026-11-15: this draft is step 8 of the
+[skill set 2.0 plan](2026-11-15-design-study-skillset-2.md), where the text would go
+into the explore skill.
+
 ## Evidence
 
 - 284 part-02 steps from 44 study pages, indexed and labelled by move and result

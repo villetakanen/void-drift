@@ -1,0 +1,30 @@
+{
+  "retrieved": "2026-11-14",
+  "treatment": "Natural Earth display exports described per asset. Other new images unmodified; existing day.jpg provenance in sources.json.",
+  "assets": [
+    {
+      "file": "scope-day.jpg",
+      "url": "https://www.solarsystemscope.com/textures/download/2k_earth_daymap.jpg",
+      "sha256": "767ee1dc6eb3802699bfccf6f264880f8acd0b80de3191cd24984fe279b07b7c"
+    },
+    {
+      "file": "blue-marble-2002.png",
+      "url": "https://svs.gsfc.nasa.gov/vis/a000000/a002900/a002915/bluemarble-2048.png",
+      "sha256": "ae6214b078ed0864c96f74bcb10ae3021f6eb116f8059797efe0fa9ea8b89d35"
+    },
+    {
+      "file": "ne1-global.jpg",
+      "url": "https://naciscdn.org/naturalearth/50m/raster/NE1_50M_SR_W.zip",
+      "source_tiff_sha256": "22a4d66193002df6d4f1fa59655196cde48eba232fd7f60ed2f3bba5004a65ee",
+      "sha256": "9686d8a7301392ecd5587fca2fe46a556e76ea8a8c981f10bc928448149f0421",
+      "treatment": "GeoTIFF resized proportionally to 2400x1200 and exported to JPEG quality 94; no palette or contrast adjustment."
+    },
+    {
+      "file": "ne2-global.jpg",
+      "url": "https://naciscdn.org/naturalearth/50m/raster/NE2_50M_SR_W.zip",
+      "source_tiff_sha256": "02ae944d9ee8a64ccacbd4f535220aac10b5c95e874118b6db8d6f07cea48e71",
+      "sha256": "987c1e3bd922c44b8ff569edca7e16da2c32b4600ad9fa059ac6bbcdc5a57909",
+      "treatment": "GeoTIFF resized proportionally to 2400x1200 and exported to JPEG quality 94; no palette or contrast adjustment."
+    }
+  ]
+}

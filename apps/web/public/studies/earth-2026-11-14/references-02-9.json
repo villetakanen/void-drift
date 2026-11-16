@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-15",
+  "tool": "built-in imagegen",
+  "reference": "02-6-7.png",
+  "purpose": "Explore surface simplification at flight scale; reference is an anchor, not a selected winner.",
+  "prompts": [
+    "Use case: style-transfer. Asset type: Earth concept sprite for Void Drift game design study. Edit target: attached earlier Earth sketch. Produce ONE square image, same full globe position, size, orientation facing Africa and Europe, black background, same muted slate-blue sea, sage land, sandy desert and upper-left illumination. Change the surface drawing language to softly painted broad landforms: remove tiny terrain detail, island noise and ocean ridges; compose large subtle tonal masses, a few broad coastal shelves and recognizable continental silhouettes. Retain convincing spherical volume and water versus land, natural continuous tonal transitions, thin restrained atmospheric limb and sparse wispy clouds. A deliberately authored game world with photographic restraint, not a satellite map, not candy colours, not posterization or pixel art. Keep the globe fully visible with generous black margin, centered, approximately 84 percent of square width. No text, stars, labels, UI or decorative border. Do not add night lights in this daylight comparison.",
+    "Use case: style-transfer. Asset type: Earth concept sprite for Void Drift. Edit target: attached Earth sketch. Produce ONE square image of this same full globe facing Africa/Europe, centered at same size on pure black. Explore a MUCH more simplified authored game planet, with almost vector-drawn continental silhouettes and only a few broad smoothly shaded regions for desert/vegetation/water. Deliberately simplify and slightly exaggerate the Mediterranean opening, African silhouette and European land shapes so Earth reads when tiny. Remove all small terrain ridges, ocean ripples, island clutter and photographic surface noise. Keep rich softly shaded spherical volume rather than flat icon, and restrained muted slate blue/sage/sand colours from reference. Ocean broad and smooth with very subtle broad shelf shapes, no contour lines. Thin atmospheric limb and a few simple delicate cloud sweeps still convey air. Same upper-left illumination. Not pixel art, not colour quantization, not geometric triangulation, no candy colours, no toy gloss. Major departure in shape economy while retaining a convincing inhabited-world character. Full globe with black margin approximately84percent of image width. No text, stars, UI or labels. Daylight view, no night lights."
+  ],
+  "assets": [
+    {
+      "file": "02-9-b.png",
+      "prompt_index": 0,
+      "sha256": "0cd7dc6bab82dcbde66a781d309e498adc603f6d5edbd6748137bb8f6e8eb0d6"
+    },
+    {
+      "file": "02-9-c.png",
+      "prompt_index": 1,
+      "sha256": "149d2060d07df20ee8d98750bdd72e862a1eb8c82754053bc18dd7b5254cf2d2"
+    }
+  ],
+  "conditions": "Intact generated portraits; approximate common bounds cx640 cy625 r525. Same requested palette, orientation and light; actual clouds, tones and geography differ. Not an isolated geometry test, layered asset demonstration or night-lighting test."
+}

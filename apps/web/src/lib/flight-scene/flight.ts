@@ -1,3 +1,4 @@
+import { updatePlanetOrbit } from "@void-drift/core";
 import {
   buildStats,
   type Loadout,
@@ -10,6 +11,7 @@ import {
 import { type BurnId, inputAt, TOTAL_TICKS } from "../instrument/burns";
 import type { FlightSceneDocument } from "./config";
 import { mainEngines, type PartTuning, tunedParts } from "./light";
+import { atmosphereSample } from "./planet";
 
 // The simulation half of the instrument: no canvas, so it runs anywhere.
 // Staging happens here, from the Lab side: the game has no code for placed or
@@ -89,8 +91,15 @@ export class FlightRun {
     const sim = new Simulation({
       ...stockSettings(loadout.chassis),
       loadout,
-      mode: "derelicts",
+      mode: doc.planet ? "practice" : "derelicts",
     });
+    if (doc.planet) {
+      const planet = sim.planets.find((item) => item.id === "venus");
+      if (!planet) throw new Error("Practice Venus reference unavailable");
+      sim.planets.splice(0, sim.planets.length, planet);
+      planet.orbitAngle = doc.planet.orbitAngle;
+      updatePlanetOrbit(planet, 0);
+    }
     sim.parts = tunedParts(this.tuning);
     const salvage = sim.salvage;
     if (salvage) {
@@ -103,6 +112,8 @@ export class FlightRun {
     if (doc.start) {
       sim.ship.pos.set(doc.start.x, doc.start.y);
       sim.ship.rotation = doc.start.rotation;
+      if (doc.start.velocity)
+        sim.ship.vel.set(doc.start.velocity.x, doc.start.velocity.y);
     }
     sim.start();
     return sim;
@@ -176,6 +187,19 @@ export class FlightRun {
       rightThruster: input.right,
       fire: false,
     });
+    const air = this.doc.planet?.atmosphere;
+    if (air && this.sim.state.status === "PLAYING") {
+      const sample = atmosphereSample(
+        this.sim.ship,
+        this.sim.planets[0],
+        air.depth,
+      );
+      const retain = Math.exp(-air.dragRate * sample.density * STEP);
+      this.sim.ship.vel.set(
+        sample.vx + (this.sim.ship.vel.x - sample.vx) * retain,
+        sample.vy + (this.sim.ship.vel.y - sample.vy) * retain,
+      );
+    }
     this.tick++;
     for (const impulse of this.doc.impulses) {
       if (impulse.tick !== this.tick) continue;

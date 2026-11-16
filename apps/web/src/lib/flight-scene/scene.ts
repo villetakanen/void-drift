@@ -1,8 +1,10 @@
 import { Camera, type FxPass, Renderer } from "@void-drift/core";
 import {
   drawFlightFrame,
+  FLIGHT_PASSES,
   FlightFx,
   type FlightLayerContexts,
+  type FlightPass,
   resizeFlightLayers,
   STEP,
 } from "@void-drift/mode-a";
@@ -10,6 +12,8 @@ import type { BurnId } from "../instrument/burns";
 import type { FlightSceneDocument, FlightView } from "./config";
 import { defaultTargets, FlightRun, type TargetMode } from "./flight";
 import { type PartTuning, type StudyLight, studyLightState } from "./light";
+import type { PlanetAppearance } from "./planet";
+import { readOnlyCopy } from "./read-only";
 
 /** A production simulation replay drawn through the same layers as play. */
 export class FlightScene {
@@ -30,6 +34,7 @@ export class FlightScene {
     private studyLight?: StudyLight,
     /** A study's tuning of the delayed and pulsed parts. */
     private tuning: PartTuning = {},
+    private planetAppearance?: PlanetAppearance,
   ) {
     this.targets = targets;
     this.view = doc.opening.view;
@@ -57,6 +62,9 @@ export class FlightScene {
   setLight(light?: StudyLight) {
     this.studyLight = light;
     this.restart(this.run.burn);
+  }
+  setPlanetAppearance(appearance?: PlanetAppearance) {
+    this.planetAppearance = appearance;
   }
   private get state() {
     return studyLightState(this.run.sim, this.doc.loadout, this.run.tick);
@@ -139,7 +147,41 @@ export class FlightScene {
   }
   /** Uses the production layer stack and ordered frame passes. */
   draw() {
-    drawFlightFrame(this.frame());
+    const appearance = this.planetAppearance;
+    let passes: readonly FlightPass[] | undefined;
+    if (this.doc.planet && appearance) {
+      const sim = this.run.sim;
+      const state = readOnlyCopy({
+        planet: sim.planets[0],
+        ship: sim.ship,
+        sun: sim.star,
+        seconds: sim.ticks * STEP,
+      });
+      passes = [
+        ...FLIGHT_PASSES.filter(
+          (pass) => !["venus-hud", "mercury-hud"].includes(pass.id),
+        ).map(
+          (pass): FlightPass =>
+            pass.id === "planets"
+              ? {
+                  ...pass,
+                  source: "study planet appearance",
+                  draw: (_frame, ctx) => appearance.world(ctx, state),
+                }
+              : pass,
+        ),
+        {
+          id: "staged-planet-light",
+          name: appearance.label,
+          layer: "lfx",
+          space: "world",
+          source: "study planet appearance",
+          draws: "Staged planet lighting",
+          draw: (_frame, ctx) => appearance.lfx?.(ctx, state),
+        },
+      ];
+    }
+    drawFlightFrame(this.frame(), { passes });
     const paint = this.studyLight?.lfx;
     if (!paint) return;
     // After the game's LFX pass, under the same camera transform.

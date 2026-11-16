@@ -129,22 +129,57 @@ ruleset's board, and every new ruleset would be implemented twice. Estimated
 at months against weeks. Reconsider only if webview
 performance on real devices turns out unacceptable.
 
+## Repository setup
+
+Decided 2026-11-15.
+
+- Packaged releases live in one private repository with its own licence. It
+  holds the game client, the Capacitor shell, the Electron shell, and the
+  signing and store configuration. Store credentials and signing keys never
+  enter this repository.
+- The release repository takes a snapshot of the game from this repository at
+  a ruleset. That forces a release path in which the ruleset is frozen. The
+  imported simulation, parameters and sanctioned catalogue are not edited
+  there. Screens, controls and shells are the release repository's own.
+- Fixes are made in this repository and reach a release by a new snapshot.
+  Nothing flows back from the release repository.
+
+What this requires here:
+
+- **A defined import set.** The rules live in `packages/core` and
+  `packages/mode-a`, but the game's screens live in `apps/web` beside the Lab.
+  The snapshot needs a stated list of game files, or the screens moved into a
+  package of their own.
+- **A maintenance line per released ruleset.** A fix that does not affect
+  ranked play, such as a Hangar defect, must reach the store without bringing
+  along whatever ruleset the web has moved to. That needs a branch kept at
+  each released ruleset, where such fixes are applied and from which
+  snapshots are taken. A fix that does affect ranked play is a new ruleset.
+- **Licence housekeeping.** The copyright holder can release the same code
+  under another licence. The bundled fonts and the npm dependencies keep
+  their own licences and notices in the store builds.
+
+The source of every ruleset stays public under MIT in this repository. The
+private repository protects the shells, the mobile controls, the store assets
+and the credentials. It does not make the game itself closed.
+
 ## Work needed
 
-| Work                                                                                                                                                                                                                                    | Needed for                | Estimate                                                                                                         |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| Game-only client: a second app beside `apps/web` that uses `packages/core` and `packages/mode-a` at a chosen ruleset, with title, Hangar, flight, scores, settings and credits, and no Lab, Practice, Derelicts, Gauntlet or Playground | All                       | 3–5 days                                                                                                         |
-| Offline bundle, manifest, icons, safe areas, orientation lock                                                                                                                                                                           | All                       | 2–3 days                                                                                                         |
-| Mobile controls, designed for the client                                                                                                                                                                                                | Mobile                    | Design work, not estimated                                                                                       |
-| Gamepad input and glyphs                                                                                                                                                                                                                | Steam; optional on mobile | 2–4 days                                                                                                         |
-| Sound                                                                                                                                                                                                                                   | All, in practice          | Unknown. No audio design exists. `docs/architecture.md` prefers procedural audio, which fits Web Audio synthesis |
-| Electron shell, Steam integration, store page, itch.io build                                                                                                                                                                            | Steam                     | 4–7 days, plus lead time                                                                                         |
-| Capacitor shells, haptics, privacy labels, store listings                                                                                                                                                                               | Mobile                    | 5–8 days, plus review and the Play closed test                                                                   |
-| Phone layout                                                                                                                                                                                                                            | Phones                    | Design work, not estimated                                                                                       |
-| Score integrity: replay submission checked by a Cloud Function                                                                                                                                                                          | Optional                  | 5–10 days, and the Blaze plan                                                                                    |
+| Work                                                                                                                                                                             | Needed for                | Estimate                                                                                                         |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Game-only client in the release repository: title, Hangar, flight, scores, settings and credits, imported at a ruleset, with no Lab, Practice, Derelicts, Gauntlet or Playground | All                       | 3–5 days                                                                                                         |
+| Import path: a defined set of game files in this repository, and a script that snapshots them at a ruleset into the release repository                                           | All                       | 2–4 days                                                                                                         |
+| Offline bundle, manifest, icons, safe areas, orientation lock                                                                                                                    | All                       | 2–3 days                                                                                                         |
+| Mobile controls, designed for the client                                                                                                                                         | Mobile                    | Design work, not estimated                                                                                       |
+| Gamepad input and glyphs                                                                                                                                                         | Steam; optional on mobile | 2–4 days                                                                                                         |
+| Sound                                                                                                                                                                            | All, in practice          | Unknown. No audio design exists. `docs/architecture.md` prefers procedural audio, which fits Web Audio synthesis |
+| Electron shell, Steam integration, store page, itch.io build                                                                                                                     | Steam                     | 4–7 days, plus lead time                                                                                         |
+| Capacitor shells, haptics, privacy labels, store listings                                                                                                                        | Mobile                    | 5–8 days, plus review and the Play closed test                                                                   |
+| Phone layout                                                                                                                                                                     | Phones                    | Design work, not estimated                                                                                       |
+| Score integrity: replay submission checked by a Cloud Function                                                                                                                   | Optional                  | 5–10 days, and the Blaze plan                                                                                    |
 
-Wrappers and shared groundwork come to roughly four to six weeks of work
-before sound and before any phone layout.
+Wrappers and shared groundwork come to roughly three to five weeks of work
+before sound, mobile controls and any phone layout.
 
 ## Cost
 

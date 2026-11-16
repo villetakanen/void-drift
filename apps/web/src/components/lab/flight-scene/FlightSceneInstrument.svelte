@@ -9,6 +9,7 @@ import {
   FlightSceneDocumentSchema,
   type FlightView,
   type PartTuning,
+  type PlanetAppearance,
   readOnlyCopy,
   type StudyLight,
   type TargetMode,
@@ -39,6 +40,8 @@ let {
   targets,
   layers = { world: true, fx: true, lfx: true },
   tuning,
+  planet,
+  planetAppearance,
 }: {
   /** The configuration document; parsed here, so it may come from anywhere. */
   config: unknown;
@@ -63,6 +66,9 @@ let {
    * values when absent. Other values fly the burn again to the same instant.
    */
   tuning?: PartTuning;
+  /** Validated replacement for the document's staged planet; undefined preserves it. */
+  planet?: unknown;
+  planetAppearance?: PlanetAppearance;
 } = $props();
 
 // The document is read once; the designer's changes are view state. The engine
@@ -71,6 +77,17 @@ const parsed = untrack(() => FlightSceneDocumentSchema.safeParse(config));
 const doc = parsed.success ? parsed.data : null;
 const paneDoc = doc ? readOnlyCopy(doc) : null;
 const issues = parsed.success ? [] : parsed.error.issues;
+
+const activeParsed = $derived(
+  doc
+    ? FlightSceneDocumentSchema.safeParse({
+        ...doc,
+        planet: planet ?? doc.planet,
+      })
+    : null,
+);
+const activeDoc = $derived(activeParsed?.success ? activeParsed.data : null);
+const planetKey = $derived(JSON.stringify(activeDoc?.planet));
 
 const SCREEN = { w: 1440, h: 900 };
 // 16:10 at the game's 1080 height; the game varies its render width the same way.
@@ -109,11 +126,12 @@ onMount(() => {
   if (!doc || !world || !fx || !lfx) return;
   const scene = new FlightScene(
     { world, fx, lfx } satisfies FlightLayerContexts,
-    doc,
+    untrack(() => activeDoc) ?? doc,
     RENDER_WIDTH,
     untrack(() => staged),
     untrack(() => light),
     untrack(() => tuning),
+    untrack(() => planetAppearance),
   );
   // The constructor already flew the opening burn in the opening view and the
   // chosen targets, so the first frame only seeks.
@@ -124,6 +142,8 @@ onMount(() => {
     targets: untrack(() => staged) as string,
     light: untrack(() => light),
     tuning: untrack(() => JSON.stringify(tuning ?? {})),
+    planet: untrack(() => planetKey),
+    appearance: untrack(() => planetAppearance),
   };
   let previous = performance.now(),
     accumulator = 0,
@@ -141,24 +161,38 @@ onMount(() => {
     const tuned = JSON.stringify(tuning ?? {});
     const targets = staged;
     if (
-      doc &&
+      activeDoc &&
       (drawn.burn !== burn ||
         drawn.tick !== tick ||
         drawn.view !== view ||
         drawn.targets !== targets ||
         drawn.light !== shownLight ||
-        drawn.tuning !== tuned)
+        drawn.tuning !== tuned ||
+        drawn.planet !== planetKey ||
+        drawn.appearance !== planetAppearance)
     ) {
       if (drawn.tuning !== tuned) scene.setTuning(tuning);
       if (drawn.light !== shownLight) scene.setLight(shownLight);
-      if (drawn.targets !== targets) scene.configure(doc, targets);
+      if (drawn.targets !== targets || drawn.planet !== planetKey)
+        scene.configure(activeDoc, targets);
+      if (drawn.appearance !== planetAppearance)
+        scene.setPlanetAppearance(planetAppearance);
       if (drawn.view !== view) scene.restart(burn, view);
       scene.seek(burn, tick, Infinity);
       rendered = true;
       drawnTick = tick;
       drawnView = view;
       drawnBurn = burn;
-      drawn = { burn, tick, view, targets, light: shownLight, tuning: tuned };
+      drawn = {
+        burn,
+        tick,
+        view,
+        targets,
+        light: shownLight,
+        tuning: tuned,
+        planet: planetKey,
+        appearance: planetAppearance,
+      };
       lost = scene.lost;
     }
     raf = requestAnimationFrame(frame);
@@ -178,6 +212,8 @@ onMount(() => {
     data-burn={burn}
     data-playing={playing}
     data-tick={tick}
+    data-planet={activeDoc?.planet?.reference}
+    data-planet-appearance={planetAppearance?.label}
     data-study-light={light ? "true" : undefined}
     bind:clientWidth={hostW}
     bind:clientHeight={hostH}
@@ -209,6 +245,15 @@ onMount(() => {
             }
           />
         </div>
+        {#if activeParsed && !activeParsed.success}
+          <p class="lost" role="alert">
+            Invalid planet staging:
+            {activeParsed.error.issues.map((issue) => issue.message).join("; ")}
+          </p>
+        {/if}
+        {#if planetAppearance && activeDoc?.planet}
+          <p class="study-light">Study planet: {planetAppearance.label}</p>
+        {/if}
         {#if light}
           <p class="study-light">Study light: {light.label}</p>
         {/if}

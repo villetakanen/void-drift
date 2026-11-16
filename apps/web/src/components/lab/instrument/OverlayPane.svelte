@@ -4,8 +4,8 @@ import { onMount, type Snippet, tick as settled } from "svelte";
 // The pane overlay (lab-instrument study, 01 and 03). Placed on its container,
 // unscaled: hidden at first; a menu button in the container's top-right corner
 // opens it; its close button takes that corner; Escape closes it when focus is
-// inside, returning focus to the menu. Elevation 3, 45% wide, over an 11%
-// backdrop. The host must be positioned.
+// inside, returning focus to the menu. Elevation 3, the smaller golden-ratio
+// share of its container, over an 11% backdrop. The host must be positioned.
 let {
   title = "Values",
   label = "Values under investigation",
@@ -99,7 +99,8 @@ const id = `pane-${Math.random().toString(36).slice(2, 8)}`;
   inset-block: 0;
   right: 0;
   z-index: var(--layer-raised);
-  width: 45%;
+  /* 1 / φ²: the smaller golden-ratio share of the positioned CSS container. */
+  width: 38.196601125%;
   box-sizing: border-box;
   overflow: auto;
   padding: 0 var(--spacing-md) var(--spacing-md);

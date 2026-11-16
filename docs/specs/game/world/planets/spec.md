@@ -246,3 +246,12 @@ Specified in [gravity-field.md](../gravity-field/spec.md#bodies-in-play).
 **Dynamic Spawning:** 0-5 planets per game  
 **Types:** rock, gas, ocean, desert, ice  
 **Lab:** Parameter exploration at `/lab/entities/planet`
+
+
+### Rock shadow inspection
+
+The shared rock painter accepts an optional shadow-intensity multiplier from 0 to
+2, defaulting to 1 (the established rendering). It scales only the hard-light
+mask's darkening below neutral 0.5; sunlit mask values and direction stay fixed.
+The angular/intensity mask cache remains bounded. This capability supports the
+rock-atmospheres study's 02.2 comparison; it does not select new production tuning.
