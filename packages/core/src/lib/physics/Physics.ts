@@ -62,6 +62,10 @@ export interface Star {
   color: string;
   glowColor: string;
   type: SunType;
+  /** Explicit star name, separate from the label shown by the HUD. */
+  name?: string;
+  /** More specific stellar class or family denomination, without the name. */
+  denomination?: string;
   powerMultiplier: number;
   burnMultiplier: number;
   pulseSpeed: number;
@@ -91,6 +95,10 @@ export type MassWell = z.infer<typeof MassWellSchema>;
 export interface Planet {
   /** The configured planet's id, when it has one. */
   id?: string;
+  /** Optional World HUD name supplied by the planet definition. */
+  displayName?: string;
+  /** Outward position in the full system, assigned before consumer filtering. */
+  systemPosition?: number;
   /** The mass well law in play; takes precedence over `well`. */
   massWell?: MassWell;
   well?: z.infer<typeof PlanetWellSchema>; // Explicit independent well parameters when integrated.
@@ -106,6 +114,17 @@ export interface Planet {
   type: string; // Visual type (rock, gas, ocean, etc.)
   hasRing: boolean; // Visual ring system
 }
+
+/** Optional display name plus required, validated full-system ordinal. */
+export const PlanetWorldHudIdentitySchema = z
+  .object({
+    displayName: z.string().trim().min(1).optional(),
+    systemPosition: z.number().int().positive(),
+  })
+  .strict();
+export type PlanetWorldHudIdentity = z.infer<
+  typeof PlanetWorldHudIdentitySchema
+>;
 
 /** Shared circular motion for runtime bodies and design-study observations. */
 export function updatePlanetOrbit(planet: Planet, dt: number): void {

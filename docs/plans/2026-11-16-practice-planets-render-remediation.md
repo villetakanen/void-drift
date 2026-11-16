@@ -31,6 +31,31 @@ establishes implementation state; recorded measurements describe only their stat
 runs. The answers listed below bind where a current spec states them. Re-plan
 against the targets whenever current evidence suggests a better next delivery.
 
+## Active delivery: shared World HUD and names
+
+User authorized Luna development and Terra review, maximum three formal rounds, after
+the shared snapshot was committed and pushed as`c7b754eb`. Lead coordinates/reviews
+and edits this plan only. Checkout was clean at assignment. Status snapshots showed
+rotation, previous lead and Inspector sessions idle with completed turns; Luna is the
+sole `flight-frame.ts` editor for this delivery. Reviewer/lead are read-only there.
+Preserve the rotation implementation; loaders, StripSphericalSurface and Toggle stay
+outside scope. No new commit/push is assigned by this delivery request.
+
+User clarified the target: every World HUD line is1 CSS px and every World HUD text
+is14 CSS px, independent of camera zoom and stage-to-screen scaling. This applies to
+Sun and planet HUD, not Deck controls. Planet orbits must appear behind planet bodies,
+including in the Inspector. Specs must state those requirements before code changes.
+One planet HUD pass precedes the full body pass, serving named, stock, loading and
+failed-material bodies. Names use own name or star name/type plus full-system outward
+position; filtering the Inspector must not renumber a planet. Practice star says
+`G7 Sun`. Existing light defaults1.35/1.35/5800 remain unchanged.
+
+Luna is preparing the schema/integration design; Terra is reviewing risks before
+implementation. Current issues include stage-sized12px labels, separate per-planet
+HUD passes after body drawing, and stock renderer HUD duplication. No formal review
+round has begun. General-body passes, remaining culling and material migration remain
+separate tasks.
+
 ## What the review found
 
 Measured on 16 November 2026 on one Mac, with the production passes and the Practice

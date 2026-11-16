@@ -358,6 +358,10 @@ it the production body drawing remains. Appearance changes redraw the same insta
 material rotation derives only from simulation time. Options belong in the existing
 pane; the wrapper does not supply another timeline or flight loop.
 
+The shared planet `world-hud` pass remains active with a custom appearance. It
+uses the staged simulation's retained full-system position and identity, so a
+single staged planet keeps its outward ordinal and its production name rule.
+
 The rock-atmospheres study is the first configured use. The canonical Flight scene
 Lab also offers a planet encounter to expose the shared staging capability.
 

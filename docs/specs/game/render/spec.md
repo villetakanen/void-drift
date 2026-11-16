@@ -99,10 +99,21 @@ the same way; what differs between bodies is data.
   the same picture, whatever frames were drawn before it.
 - **Cost.** No game code loops over pixels per frame; pixel work happens at load.
   A body outside the camera's view costs no drawing work.
-- **World HUD.** Every planet has the same World HUD: its orbit, its gravity
-  boundary and its upright name, drawn by one pass on World in stage coordinates.
-  Strokes, dashes and text keep their size on screen at every zoom. Names follow
-  the [planet contract](../world/planets/spec.md#names).
+- **World HUD.** Every planet has the same orbit, gravity boundary and upright
+  name. One shared screen-space `world-hud` pass draws these marks for the full
+  planet list after the star and before the planets pass. Bodies therefore cover
+  orbit, gravity and leader lines. The existing world-space `sun-fields` pass
+  draws the star's field rings and designation before `world-hud`.
+- World HUD strokes are 1 CSS px and all World HUD text is 14 CSS px, independent
+  of camera zoom and canvas backing resolution. Each pass derives its drawing
+  scale from the canvas's displayed CSS size and current transform once, then
+  shares it across its marks. Production stages preserve a uniform CSS scale.
+- Planet identity and full-system ordinal come from validated HUD identity data.
+  A name is drawn as supplied; an unnamed planet uses its star's name, otherwise
+  denomination or type, followed by `.` and its outward ordinal. Named planets
+  occupy an ordinal. The full system assigns ordinals before any instrument
+  filters the list, so filtering never renumbers a planet. See the
+  [planet contract](../world/planets/spec.md#names).
 - **Identity.** No pass is written for a particular body. Passes read each body's
   identity and appearance from its data.
 - **Ownership.** Body painters and their material preparation live in
@@ -257,6 +268,8 @@ neither: it draws every pass, unobserved.
   pass.
 - No pass id and no pass code names a particular planet.
 - A body's light and dark stamp is drawn before every other LFX pass.
+- The `world-hud` pass draws every planet's HUD before the planets pass draws any body.
+- World HUD strokes remain 1 CSS px and text remains 14 CSS px at every zoom.
 - A frame in which every body is outside the view does no surface drawing.
 - A paused frame redraws no body surface.
 

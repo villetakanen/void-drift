@@ -84,10 +84,17 @@ Planets cannot overlap at any point in their orbits. For two planets with radii 
 
 ### Names
 
-A planet with a name of its own shows that name and no number. A planet without
-one is named after its star, a full stop, and its position counted outward from
-the centre. It takes the star's name, or the star's type when the star has no
-name. Named planets count in that position.
+A planet may carry an optional display name and a positive `systemPosition`.
+The shared `PlanetWorldHudIdentitySchema` validates this HUD identity. The full
+system assigns positions by increasing orbital radius, with existing source
+order breaking ties, after mode-specific orbit setup and before any consumer
+filters the planet list. Named planets count in that position; filtering an
+inspector view never renumbers the remaining planets.
+
+A planet with a display name shows that name without a number. An unnamed planet
+is named after its star, a full stop, and its system position. The star name is
+used when present; otherwise the star's denomination or type is used. Star
+identity is defined in the [star contract](../star/spec.md).
 
 A G7 star named Sun with four planets, the third unnamed, reads: Mercury, Venus,
 Sun.3, Mars. The first planet of an unnamed G11 star is G11.1. Star names are
@@ -95,9 +102,12 @@ defined in the [star contract](../star/spec.md).
 
 ### World HUD
 
-Every planet in every mode has the same World HUD: its orbit, its gravity
-boundary and its upright name. The [render contract](../../render/spec.md#world-bodies)
-defines how it is drawn.
+Every planet in every mode has the same World HUD: orbit, gravity boundary and
+upright name. Its shared `world-hud` pass runs once for the full system before
+any planet body is drawn, independent of material readiness. Strokes are 1 CSS
+px and text is 14 CSS px at every zoom. The
+[render contract](../../render/spec.md#world-bodies) defines pass order and
+screen sizing.
 
 ### Mercurial mineral-rock size
 

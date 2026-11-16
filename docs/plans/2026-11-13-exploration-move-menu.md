@@ -9,6 +9,14 @@ become standing guidance, so the guide is unchanged until this is reviewed.
 [skill set 2.0 plan](2026-11-15-design-study-skillset-2.md), where the text would go
 into the explore skill.
 
+2026-11-16: "Choose the move" is applied to the exploration guide with nine moves.
+Decided in conversation, for now: "Combine" and "Next dependent decision" are left
+out; the rates stay out of the guide and are kept in the
+[rates record](../reports/2026-11-13-exploration-move-rates.md); the sentence
+preferring a spread to a single first example is removed. "Change the move when a
+round fails" is not applied. The proposed text below is the draft as written, not
+the applied text.
+
 ## Evidence
 
 - 284 part-02 steps from 44 study pages, indexed and labelled by move and result

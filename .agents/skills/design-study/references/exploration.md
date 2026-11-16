@@ -46,6 +46,47 @@ Define consumed objects and conditions. Keep prose brief: what to notice, limita
 and the uncertainty the example addresses. Put the review question in chat. Inspect the rendered example before presenting it. Report actual blockers as incomplete work; explicit requests for conceptual
 discussion override this default. Do not overbuild a final solution to provide evidence.
 
+## Choose the move
+
+Each round makes one move. Choose it from the state of the question, and name the
+move to yourself before building. The designer sees the example, never the move name.
+
+The question is open and no answer has been picked:
+
+- Spread: build several whole answers that differ from each other in kind.
+- Start from an accepted thing: copy real geometry, a production effect or today's
+  component, and change one property. Use it when earlier proposals did not look
+  like they belong to the product.
+- Settle the foundation: when the examples cannot be judged because a name, promise,
+  term or content list is undefined, decide that one thing in a few sentences, then
+  return to examples in the same round.
+
+The designer picked an answer and named what is wrong with it:
+
+- Narrow: keep the pick intact and vary only the named part.
+
+The form is accepted and a value or position is open:
+
+- Ladder: step one value through three to five settings with everything else fixed.
+- Hand over the control: give the designer sliders for the open values on the real
+  object, with a reset to the starting values, and record what they set.
+
+Something is settled in isolation:
+
+- Put it where it lives: show it on the real objects, at the scale and in the tool
+  or situation where it will be used. Do this only with a form the designer has
+  accepted.
+- Assemble: when three or more decisions stand apart, show them together on one
+  sheet and mark anything on it the designer has not judged.
+
+The question is about how the product behaves:
+
+- Run the real system: run production simulation on one fixed input sequence and
+  starting condition, and keep that fixture unchanged across the steps that compare
+  against it.
+
+## Compare and carry forward
+
 Connect each alternative to agreed purpose, a hypothesis, a suitable investigation,
 and a decision the result could inform. Choose research, scenarios, sketches,
 interactive examples, or flight trials according to the uncertainty. Do not default

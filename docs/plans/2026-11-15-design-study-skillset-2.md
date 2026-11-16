@@ -1,7 +1,8 @@
 # Design-study skill set 2.0
 
 Status: plan for review, revised 2026-11-16 (fourth revision). Step S1 is applied and
-committed in `bdfc4759`; step S2 is applied and not yet committed.
+committed in `bdfc4759`; step S2 is committed in `49c2db95`; the first half of S3 is
+applied.
 
 Proposed 2026-11-15 in conversation: split the single design-study skill into a
 conductor, working skills and reviewers, and write down how a study moves between
@@ -93,7 +94,7 @@ and third; the final text passed all five.
 
 ### S2. The question test leaves no review page. Done
 
-Applied 2026-11-16, not yet committed. Three review pages were added on 2026-11-14
+Applied 2026-11-16, committed in `49c2db95`. Three review pages were added on 2026-11-14
 and 2026-11-15, one per new study; this stops new ones.
 
 `references/question-test.md` now stamps the result at the end of section 01 as a
@@ -115,13 +116,42 @@ a returned result with two findings, one corrected and one declined, one run eac
 The agent on the new text noted that none of the four closing lines names a
 declined finding and used "Corrected after the test, not rerun."
 
-### S3. Move menu in the exploration guide
+### S3. "Choose the move" in the exploration guide. Done
 
-Apply the [move menu draft](2026-11-13-exploration-move-menu.md) after an edit pass
-for length, after its three open points are settled, and after its first pivot is
-reconciled with "the question may be wrong" from S1. Check: for one question state
-per group, a clean-context agent names a move from that group where today's text
-does not.
+Applied 2026-11-16. The exploration guide has a new section that maps the state of
+the question to a move, taken from the [move menu draft](2026-11-13-exploration-move-menu.md)
+with nine moves. Left out for now, decided in conversation: "Combine" and "Next
+dependent decision"; the rates, which are kept in the
+[rates record](../reports/2026-11-13-exploration-move-rates.md); and the sentence
+preferring a spread to a single first example. The text names no object of this
+project. The paragraphs that followed in the guide now sit under their own heading,
+"Compare and carry forward".
+
+Checked with ten clean-context Sonnet agents, one run each, on an invented study:
+five question states, each against the guide before and after. The check as planned
+asked for a move from the right group where the earlier text gave none. It was met
+in one state and partly in a second; in the other three the earlier text already
+produced the same round.
+
+| State of the question         | Before                                | After                                            |
+| ----------------------------- | ------------------------------------- | ------------------------------------------------ |
+| Open, nothing picked          | One example.                          | Spread: several whole answers differing in kind. |
+| A pick with a named fault     | The pick with one gentler fade.       | Narrow: the pick with several fades.             |
+| Form accepted, one value open | The form at several thicknesses.      | Ladder: the same.                                |
+| Settled in isolation          | The result on a ship in a real scene. | Put it where it lives: the same.                 |
+| A question about behaviour    | A repeatable run with fixed inputs.   | Run the real system: the same.                   |
+
+What the section changed in this test is the opening round, the number of variants
+when narrowing, and that the agent names its move. With nothing picked, the agent on
+the new text opened with a spread and not with one example.
+
+### S3a. "Change the move when a round fails"
+
+The second half of the draft: six pivots for a failed round. Before applying,
+reconcile the first pivot with "the question may be wrong" from S1 and settle
+whether the last pivot repeats the existing rule that described alternatives are
+insufficient. Check: for each pivot, a clean-context agent given the failed round
+changes the kind of round where the earlier text repeats it.
 
 ### S4. Closing compacts the study
 
@@ -271,7 +301,8 @@ layout provides, the asset folder, scoped styles, keyboard and 1280px. Check:
 
 ## Decisions needed
 
-- **Before S3:** the three open points in the move menu draft.
+- **Before S3a:** whether the last pivot in the move menu draft stays, given that it
+  repeats an existing rule.
 - **Before S4:** whether an accepted study's slices stay on the compacted page or
   only a link to where they were delivered.
 - **Before S6a:** where the repo-side text lives, in the root agent instructions or

@@ -85,7 +85,10 @@ without a fixed aspect ratio, CSS scaling of the picture or letterboxing.
 Changing zoom or resizing preserves simulation time and orbital angle, and keeps
 the planet centered. The options pane shows the current CSS px/u.
 World, FX and LFX visibility switches start enabled; a world-HUD switch selects
-HUD passes independently of bodies. These controls change inspection visibility.
+the production `sun-fields` and shared planet `world-hud` passes independently
+of bodies. Planet HUD remains the shared stage-coordinate display even when a
+material is still loading or unavailable. These controls change inspection
+visibility.
 
 ### Scene time and staged orbit
 
@@ -223,10 +226,10 @@ tokens. The Lab supports viewports 1280px wide and above.
   copies, material draw wrappers, pass replacements or copied orbital integrator.
 - Lighting controls parameterize the selected production painter only and do not
   change the star body, star type, designation, physics or orbital state.
-- Drawing, the shared light-mask owner and failure behavior remain
-  production-owned. The Inspector sets only its painter instance's validated
-  light parameters. No game definitions, shared HUD, material ownership or
-  score paths change for inspection.
+- Drawing, the shared World HUD, light-mask owner and failure behavior remain
+  production-owned. The Inspector selects the shared HUD passes and sets only
+  its painter instance's validated light parameters. No game definitions,
+  material ownership or score paths change for inspection.
 - Keyboard controls and visible layout work at the Lab's 1280px minimum width.
 
 ### Scenarios
