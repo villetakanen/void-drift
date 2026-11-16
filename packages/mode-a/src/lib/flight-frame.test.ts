@@ -48,6 +48,12 @@ const drawn = (calls: string[]) =>
 afterEach(() => vi.restoreAllMocks());
 
 describe("flight frame", () => {
+  it("draws the shared planet HUD once before every planet body", () => {
+    expect(ids.filter((id) => id === "world-hud")).toHaveLength(1);
+    expect(ids).not.toContain("mercury-hud");
+    expect(ids).not.toContain("venus-hud");
+    expect(ids.indexOf("world-hud")).toBeLessThan(ids.indexOf("planets"));
+  });
   it("draws and reports exactly the included passes, in order", () => {
     const { calls, frame } = record();
     const some = ids.filter((_, index) => index % 2 === 1);

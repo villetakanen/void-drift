@@ -10,6 +10,14 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
   {
+    slug: "plasma-projector-2026-11-16",
+    title: "Plasma Projector",
+    status: "open",
+    phase: "problem",
+    question:
+      "How should the Plasma Projector’s discharge and its effect on the firing ship make a delayed close-range strike feel visceral and overwhelmingly powerful, yet sharply limited and demanding commitment?",
+  },
+  {
     slug: "rock-atmospheres-2026-11-15",
     title: "Air around rock worlds",
     status: "accepted",

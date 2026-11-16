@@ -1,5 +1,5 @@
 import type { GameObject, Star, SunType } from "@void-drift/core";
-import { SUN_CONFIG, Vec2 } from "@void-drift/core";
+import { StarWorldHudIdentitySchema, SUN_CONFIG, Vec2 } from "@void-drift/core";
 import type { DeathCause, GameState } from "./schemas/game-state";
 
 export function checkDeath(
@@ -65,8 +65,10 @@ export function createStar(
   reachFactor = 9,
 ): Star {
   const config = SUN_CONFIG[type];
+  const identity = StarWorldHudIdentitySchema.parse({ denomination: type });
   return {
     type,
+    ...identity,
     pos: new Vec2(x, y),
     radius: config.radius,
     influenceRadius: config.radius * reachFactor,

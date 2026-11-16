@@ -2,20 +2,21 @@ import type { Star } from "../physics/Physics";
 import { STANDARD_SUN } from "../solar";
 import { COLOR } from "../ui/colors";
 import { canvasFont } from "../ui/typography";
+import { worldHudUserUnitsPerCssPixel } from "./world-hud";
 
 /** World-anchored geometry, with CSS-pixel stroke/dash/offset dimensions. */
 export function drawSunFields(
   ctx: CanvasRenderingContext2D,
   star: Star,
   effects: { collecting: boolean; damaging: boolean },
-  cssWidth = ctx.canvas.getBoundingClientRect().width,
+  cssWidth?: number,
   radii?: { hazard: number; gravity: number; collection: number },
+  userUnitsPerCssPixel?: number,
 ) {
-  const transform = ctx.getTransform();
-  const pixelsPerUnit =
-    (Math.hypot(transform.a, transform.b) * cssWidth) / ctx.canvas.width;
-  if (!(pixelsPerUnit > 0)) return;
-  const pixel = 1 / pixelsPerUnit;
+  const pixel =
+    userUnitsPerCssPixel ?? worldHudUserUnitsPerCssPixel(ctx, cssWidth);
+  if (!pixel) return;
+  const pixelsPerUnit = 1 / pixel;
   ctx.save();
   ctx.lineWidth = pixel;
   const circle = (
@@ -59,7 +60,7 @@ export function drawSunFields(
   if (star.designation) {
     ctx.globalAlpha = 1;
     ctx.fillStyle = COLOR.countdown;
-    ctx.font = canvasFont(12 / pixelsPerUnit, 700);
+    ctx.font = canvasFont(14 / pixelsPerUnit, 700);
     ctx.textAlign = "left";
     ctx.textBaseline = "bottom";
     ctx.shadowColor = COLOR.void;

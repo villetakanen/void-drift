@@ -11,8 +11,10 @@ export * from "./lib/assets/strip-spherical-surface";
 export * from "./lib/assets/sun-fields";
 export {
   drawWorldGravity,
+  drawWorldHud,
   drawWorldLabel,
   drawWorldOrbit,
+  worldHudUserUnitsPerCssPixel,
 } from "./lib/assets/world-hud";
 export * from "./lib/config";
 export * from "./lib/effects/arcade-fx";

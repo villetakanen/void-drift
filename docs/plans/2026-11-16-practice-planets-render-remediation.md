@@ -7,22 +7,19 @@ be added as data.
 
 Where it stands:
 
-- The rules are written into the specs (step 1).
-- Rotation drawn by the browser runs in Practice for Mercury and Venus as a trial
-  (step 3), with culling of the surface work (part of step 5).
-- Legacy Lab planet routes and their exclusive components are deleted, uncommitted
-  (step 8); the Lab registry now points to Planet Inspector.
-- Planet Inspector is present as untracked work in its second review round, owned
-  by another implementer (step 9). Its current spec includes the review requests.
-- Shared prepared light stamps and Canvas rotation are implemented, uncommitted,
-  after three Luna/Terra review rounds. Comparable performance evidence is open.
-- HUD unification, remaining culling, general body passes, engine material ownership
-  and the full Flight instrument rename remain undone.
+- The shared snapshot `c7b754eb` committed the render rules, browser rotation trial,
+  legacy Lab-page deletions, Planet Inspector and prepared shared light stamps.
+- Inspector lighting controls and shared 1.35 light/shadow defaults are implemented.
+- Shared planet World HUD and names are now implemented and reviewed. Every HUD
+  line is 1 CSS px and text is 14 CSS px; planet HUD draws before bodies.
+- Rotation trial closure remains with its existing session. Remaining light/stock
+  culling, general body passes, engine material ownership and the full Flight
+  instrument rename remain open. Comparable performance evidence remains open.
 
-These are checkout observations on 16 November, not completion or acceptance of
-other sessions' work. The spec changes and rotation changes are also uncommitted.
-This lead owns planning and review only. The user has authorized the bounded light
-stamp delivery below, with Luna developing and Terra reviewing.
+Lead owns planning and review only. Luna implemented the bounded deliveries and
+Terra reviewed them. During HUD work, another session saved the shared checkout as
+`9a42f658`, capturing some in-flight specs and schema changes; the remaining HUD
+implementation is still uncommitted. This lead made no new commit or push.
 
 This plan is a provisional map of what seemed sensible when it was written.
 Its steps, scope, dependencies and technical details are working assumptions to
@@ -31,30 +28,96 @@ establishes implementation state; recorded measurements describe only their stat
 runs. The answers listed below bind where a current spec states them. Re-plan
 against the targets whenever current evidence suggests a better next delivery.
 
-## Active delivery: shared World HUD and names
+## Delivered: shared World HUD and names
 
 User authorized Luna development and Terra review, maximum three formal rounds, after
-the shared snapshot was committed and pushed as`c7b754eb`. Lead coordinates/reviews
+the shared snapshot was committed and pushed as `c7b754eb`. Lead coordinates/reviews
 and edits this plan only. Checkout was clean at assignment. Status snapshots showed
 rotation, previous lead and Inspector sessions idle with completed turns; Luna is the
 sole `flight-frame.ts` editor for this delivery. Reviewer/lead are read-only there.
 Preserve the rotation implementation; loaders, StripSphericalSurface and Toggle stay
 outside scope. No new commit/push is assigned by this delivery request.
 
-User clarified the target: every World HUD line is1 CSS px and every World HUD text
-is14 CSS px, independent of camera zoom and stage-to-screen scaling. This applies to
+User clarified the target: every World HUD line is 1 CSS px and every World HUD text
+is 14 CSS px, independent of camera zoom and stage-to-screen scaling. This applies to
 Sun and planet HUD, not Deck controls. Planet orbits must appear behind planet bodies,
 including in the Inspector. Specs must state those requirements before code changes.
 One planet HUD pass precedes the full body pass, serving named, stock, loading and
 failed-material bodies. Names use own name or star name/type plus full-system outward
 position; filtering the Inspector must not renumber a planet. Practice star says
-`G7 Sun`. Existing light defaults1.35/1.35/5800 remain unchanged.
+`G7 Sun`. Existing light defaults 1.35/1.35/5800 remain unchanged.
 
-Luna is preparing the schema/integration design; Terra is reviewing risks before
-implementation. Current issues include stage-sized12px labels, separate per-planet
-HUD passes after body drawing, and stock renderer HUD duplication. No formal review
-round has begun. General-body passes, remaining culling and material migration remain
-separate tasks.
+Delivered with Luna as the sole frame editor and Terra reviewing in three rounds.
+The `world-hud` screen-space pass draws all planet HUD before the entire `planets`
+body pass. `sun-fields` stays separate and shares CSS sizing. Stock Renderer draws
+bodies only. Inspector toggles both HUD passes; custom Flight instrument appearances
+retain the shared HUD. No loaders, StripSphericalSurface or Toggle changes were
+made for this task.
+
+Validated planet identities store optional names and outward positions assigned to
+the full system after Practice orbit setup; filtering does not renumber them.
+Validated star names and denominations are separate from display labels. Existing
+stock names The Rock, The Gas and The Moon remain; Practice uses Mercury/Venus.
+Unnamed planets use the star's own name or denomination/type and their position.
+
+Review findings addressed: explicit CSS-width overrides continue to work for
+unmeasured/offscreen canvases; a tautological test was replaced with actual filtered
+label coverage; star identity now has schema validation; actual Sun field drawing
+has its own world-transform sizing guard. Final Terra review approved with no
+blocking findings. Luna owns no further frame edits after this delivery; subsequent
+work must establish a fresh edit window with the rotation owner.
+
+Evidence and limits:
+
+- Lead independently ran 26 tests across World HUD, Physics, Simulation and frame:
+  all passed. They cover fallback labels such as Sun.3/G11.3, explicit-name
+  precedence, retained full-system positions, pass order, and actual Sun/planet
+  drawing at a 2:1 backing-to-CSS ratio. Strokes convert to 1 CSS px and fonts to
+  14 CSS px, including camera zoom changes.
+- Luna reports Astro check (299 files, zero diagnostics), standalone TypeScript
+  and scoped Biome passed. Terra independently ran the six World HUD tests.
+- Luna inspected Chrome at 1512×804 on the existing server: Mercury at 1× and 16×,
+  Venus at 1×, and the HUD switch. At 16× the body covers orbit/gravity lines;
+  disabling HUD removes markings and labels while the body remains. G7 Sun and
+  planet names were visible. These are developer observations, not independently
+  reproduced visual findings by this lead.
+- Live material-load failure was not induced. Source review verifies HUD uses the
+  planet list independently of optional material objects. Full production-flight
+  browser coverage, a new performance benchmark, GPU cost and human acceptance are
+  not claimed. Historical direct stock-renderer studies are not compatibility gates.
+- Concurrent unrelated study/build edits were left alone. No commit or push was
+  made by this lead for the HUD task.
+
+Next target: finish body/light culling with independent HUD visibility, after a new
+frame ownership check. General passes and engine material ownership follow; the
+Flight instrument rename remains independent collateral.
+
+## HUD snapshot and next proposed bounded delivery
+
+User requested committing and pushing the shared checkout after reviewing the HUD.
+The snapshot includes concurrent MDX/Plasma Projector study setup. Quick verification
+run `artifacts/verification/2026-11-16T17-51-35.665Z-7qq1rl/report.json` passed
+contracts, lint and all 237 tests. The broad type gate still reports the existing
+2 errors and 34 study warnings. The runner also detected source changes during the
+run, so this is not stable-candidate verification or release approval. No additional
+server or deployment is part of this save point.
+
+Next limited deliverable, proposed only: offscreen planets do no body or light
+painting. Extend the existing textured-surface visibility rule to stock/fallback
+bodies and the two body-light passes. Bounds include the stock ring, body outline,
+atmosphere and light stamp as applicable; partial visibility remains drawn. Keep
+HUD visibility independent, so an orbit or gravity boundary crossing the view still
+shows when its planet is offscreen. Retain current names, lighting and rotation.
+No general-body interface, material migration or Flight instrument rename in this
+slice. Reserve one frame owner again before assignment.
+
+Before code, make the existing body-cost contract explicit about complete visual
+bounds and independent HUD visibility. Verify no body/light draw calls for fully
+outside bodies, no clipping at ring/atmosphere edges, correct return into view at the
+current tick, and retained crossing HUD marks. Use the original production-pass
+measurement method and a fresh before/after sample; distinguish script timings from
+raster/compositing. This closes a concrete cost-rule gap without depending on the
+larger appearance-data refactor. It is not assigned by this proposal.
 
 ## What the review found
 
@@ -155,6 +218,8 @@ Left over: the planets spec still carries older status markers and flat-vector
 descriptions from before this work. They are not touched here.
 
 ### 2. One planet HUD and names for all planets
+
+Implemented and reviewed; see the delivery record above. The original scope follows.
 
 - Add a display name to the planet data, schema first, and derive default names by
   the planets spec's rule.
@@ -501,17 +566,16 @@ changed for this delivery, and nothing was committed.
 
 Lead disposition: bounded code delivery complete and reviewed; performance evidence
 remains open. No measured speedup, full-plan completion or human acceptance is claimed.
-The next valuable delivery remains one World HUD and correct names for all planets,
-subject to a reserved frame-edit window and Inspector-owner integration. It is not
-assigned by this record.
+At that point the next proposed delivery was the shared World HUD. Its completed
+delivery is recorded above; remaining culling is now the next proposed target.
 
 ### Provisional remaining sequence by deliverable
 
 1. Existing owners finish rotation and Inspector review in their own sessions.
    The shared light-stamp code delivery is complete; remaining measurement work
    does not establish completion of rotation or Inspector review.
-2. Deliver one World HUD and correct names for every planet, including loading and
-   failure fallback, with one reserved frame owner and coordinated Lab consumers.
+2. Shared World HUD and names are delivered, with one reserved frame owner and
+   coordinated Lab consumers; live failure-path inspection remains unchecked.
 3. Finish body/light culling with independent HUD visibility. Stock body bounds
    must include visible rings, not just the collision disc. This shares the frame
    and stock renderer with HUD work, so serialize their edits.

@@ -50,8 +50,9 @@ remains screen-readable as the camera zooms. Practice shows `G7 Sun` in that
 position.
 
 World HUD identity stores a star's optional name separately from its
-denomination. A denomination is initialized from the star type and may be made
-more specific by the selected family profile. Practice stores name `Sun` and
+denomination. `StarWorldHudIdentitySchema` validates these optional nonblank
+fields. A denomination is initialized from the star type and may be made more
+specific by the selected family profile. Practice stores name `Sun` and
 denomination `G7`, and displays `G7 Sun`. Planet fallback names use the stored
 star name when present, otherwise its denomination or type; they never parse a
 display label.

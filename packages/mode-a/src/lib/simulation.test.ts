@@ -23,6 +23,20 @@ describe("flight contract", () => {
       SURVIVAL_CONFIG.PLANETS.find((planet) => planet.id === "moon")?.radius,
     );
   });
+  it("assigns stable outward HUD identities before a scene filters planets", () => {
+    const practice = new Simulation({ ...stockSettings(), mode: "practice" });
+    const mercury = practice.planets.find((planet) => planet.id === "moon");
+    const venus = practice.planets.find((planet) => planet.id === "venus");
+    expect(mercury?.displayName).toBe("Mercury");
+    expect(venus?.displayName).toBe("Venus");
+    const outward = [...practice.planets].sort(
+      (a, b) => a.orbitRadius - b.orbitRadius,
+    );
+    expect(outward.map((planet) => planet.systemPosition)).toEqual(
+      outward.map((_, index) => index + 1),
+    );
+    expect(venus?.systemPosition).toBeGreaterThan(mercury?.systemPosition ?? 0);
+  });
   it("keeps ranked Survival on the legacy Sun while Playground uses the seeded family", () => {
     const settings = {
       ...gameSettings("wasp"),
@@ -47,7 +61,9 @@ describe("flight contract", () => {
 
     const practice = new Simulation({ ...settings, mode: "practice" }).star;
     expect(practice.radius).toBe(70);
-    expect(practice.designation).toBe("G7, Sun");
+    expect(practice.name).toBe("Sun");
+    expect(practice.denomination).toBe("G7");
+    expect(practice.designation).toBe("G7 Sun");
     expect(practice.appearance).toBe("yellow-family");
 
     const playground = new Simulation({

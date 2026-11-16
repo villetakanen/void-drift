@@ -6,12 +6,14 @@ import type {
   Star,
 } from "@void-drift/core";
 import {
+  assignPlanetSystemPositions,
   CONFIG,
   ENGINE_CUTOFF,
   EnginePlume,
   GravityFlightSchema,
   initializePlanets,
   massWellReach,
+  StarWorldHudIdentitySchema,
   updateHull,
   updatePlanetOrbit,
   updatePower,
@@ -264,17 +266,25 @@ export class Simulation {
         YELLOW_FAMILY_RADIUS.reference,
         this.gravity,
       );
-      this.star.designation = "G7, Sun";
+      Object.assign(
+        this.star,
+        StarWorldHudIdentitySchema.parse({ name: "Sun", denomination: "G7" }),
+      );
+      this.star.designation = "G7 Sun";
       // The innermost stock rock is Practice's Mercury application.
       const mercury = this.planets.find((planet) => planet.id === "moon");
       if (mercury) {
+        mercury.displayName = "Mercury";
         mercury.mass = planetMass(mercury.id, massTuning);
         mercury.radius = MERCURIAL_ROCK_RADIUS.practice;
         mercury.orbitRadius = PRACTICE_MERCURY_ORBIT;
         mercury.orbitSpeed =
           PRACTICE_MERCURY_TRAVEL_SPEED / PRACTICE_MERCURY_ORBIT;
       }
+      const venus = this.planets.find((planet) => planet.id === "venus");
+      if (venus) venus.displayName = "Venus";
     }
+    assignPlanetSystemPositions(this.planets);
     // Seed changes orbit phase, not flight tuning.
     const phase =
       (((this.settings.mode === "practice"

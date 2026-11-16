@@ -2,11 +2,8 @@ import {
   type Camera,
   type CloudBodyPainter,
   drawSunFields,
-  drawWorldGravity,
-  drawWorldLabel,
-  drawWorldOrbit,
+  drawWorldHud,
   type FxPass,
-  getPlanetInfluenceRadius,
   type Planet,
   type Renderer,
   type RockBodyPainter,
@@ -164,11 +161,21 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
       }),
   },
   {
+    id: "world-hud",
+    name: "World HUD",
+    layer: "world",
+    space: "screen",
+    draws: "Every planet's orbit, gravity boundary and name",
+    source: "packages/core/src/lib/assets/world-hud.ts",
+    draw: ({ sim, camera }, ctx) =>
+      drawWorldHud(ctx, camera, sim.star, sim.planets),
+  },
+  {
     id: "planets",
     name: "Planets",
     layer: "world",
     space: "world",
-    draws: "Each planet with its orbit path and influence ring",
+    draws: "Each planet body and any material-specific atmosphere",
     source: "packages/core/src/lib/assets/planet.ts",
     draw: ({ renderer, sim, mercury, venus, camera }, ctx) => {
       for (const planet of sim.planets) {
@@ -205,11 +212,10 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
               camera.zoom,
             );
           }
-          renderer.drawPlanet(planet, { worldHud: false, body: false });
           continue;
         }
         if (sim.settings.mode === "practice" && planet.id === "venus") {
-          renderer.drawPlanet(planet, { worldHud: false });
+          renderer.drawPlanet(planet);
           continue;
         }
         const isMercury = isPracticeMercury(sim, planet) && mercury;
@@ -230,35 +236,7 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
             planet.radius,
           );
         }
-        renderer.drawPlanet(planet, { worldHud: false, body: false });
       }
-    },
-  },
-  {
-    id: "mercury-hud",
-    name: "Mercury HUD",
-    layer: "world",
-    space: "screen",
-    draws: "Practice Mercury orbit, gravity boundary and upright label",
-    source: "packages/core/src/lib/assets/world-hud.ts",
-    draw: ({ sim, camera, mercury }, ctx) => {
-      if (!mercury || sim.settings.mode !== "practice") return;
-      const planet = sim.planets.find((item) => item.id === "moon");
-      if (!planet) return;
-      drawPracticePlanetHud(ctx, camera, planet, "Mercury");
-    },
-  },
-  {
-    id: "venus-hud",
-    name: "Venus HUD",
-    layer: "world",
-    space: "screen",
-    draws: "Practice Venus orbit, gravity boundary and upright label",
-    source: "packages/core/src/lib/assets/world-hud.ts",
-    draw: ({ sim, camera }, ctx) => {
-      if (sim.settings.mode !== "practice") return;
-      const planet = sim.planets.find((item) => item.id === "venus");
-      if (planet) drawPracticePlanetHud(ctx, camera, planet, "Venus");
     },
   },
   {
@@ -472,37 +450,6 @@ export function drawFlightFrame(
     ctx.restore();
     observe?.(pass, performance.now() - start);
   }
-}
-
-function drawPracticePlanetHud(
-  ctx: CanvasRenderingContext2D,
-  camera: Camera,
-  planet: Planet,
-  label: string,
-) {
-  const pos = camera.worldToScreen(planet.pos.x, planet.pos.y);
-  const centre = camera.worldToScreen(
-    planet.orbitCenter.x,
-    planet.orbitCenter.y,
-  );
-  drawWorldOrbit(ctx, centre.x, centre.y, planet.orbitRadius * camera.zoom);
-  drawWorldGravity(
-    ctx,
-    pos.x,
-    pos.y,
-    getPlanetInfluenceRadius(planet) * camera.zoom,
-  );
-  drawWorldLabel(
-    ctx,
-    label,
-    pos.x,
-    pos.y,
-    planet.radius * camera.zoom,
-    Math.atan2(
-      planet.pos.y - planet.orbitCenter.y,
-      planet.pos.x - planet.orbitCenter.x,
-    ),
-  );
 }
 
 /** Body bounds only: orbit/HUD drawing retains its independent visibility. */

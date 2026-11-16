@@ -41,13 +41,12 @@ const PASSES = new Set([
   "starfield",
   "star",
   "sun-fields",
+  "world-hud",
   "planets",
-  "mercury-hud",
-  "venus-hud",
   "mercury-light",
   "venus-light",
 ]);
-const HUD = new Set(["sun-fields", "mercury-hud", "venus-hud"]);
+const HUD = new Set(["sun-fields", "world-hud"]);
 
 /** The bench stages time; production owns simulation, passes and materials. */
 export class PlanetInspectorScene {

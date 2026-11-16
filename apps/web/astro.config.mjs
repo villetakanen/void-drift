@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import mdx from "@astrojs/mdx";
 import svelte from "@astrojs/svelte";
 import { defineConfig } from "astro/config";
 
@@ -13,7 +14,7 @@ const verificationPort = process.env.VOID_DRIFT_VERIFY_PORT;
 export default defineConfig({
   devToolbar: { enabled: false },
   envDir: "../../",
-  integrations: [svelte()],
+  integrations: [svelte(), mdx()],
   vite: {
     // Verification owns a stable candidate; other local servers must not reload it.
     cacheDir: verificationPort

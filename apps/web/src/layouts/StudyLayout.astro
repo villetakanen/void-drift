@@ -1,6 +1,6 @@
 ---
 import Logo from "../components/Logo.svelte";
-import type { Study } from "../data/studies";
+import { type Study, studies } from "../data/studies";
 import "@void-drift/core/styles/reset.css";
 import "@void-drift/core/styles/tokens.css";
 import "@void-drift/core/styles/typography.css";
@@ -8,7 +8,8 @@ import "@void-drift/core/styles/typography.css";
 interface Props {
   study?: Study;
 }
-const { study } = Astro.props;
+const slug = Astro.url.pathname.replace(/\/$/, "").split("/").pop();
+const study = Astro.props.study ?? studies.find((entry) => entry.slug === slug);
 ---
 
 <!doctype html>

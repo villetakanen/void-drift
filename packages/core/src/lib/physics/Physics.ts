@@ -78,6 +78,15 @@ export interface Star {
   massWell?: MassWell;
 }
 
+/** Optional validated star identity used by the World HUD fallback. */
+export const StarWorldHudIdentitySchema = z
+  .object({
+    name: z.string().trim().min(1).optional(),
+    denomination: z.string().trim().min(1).optional(),
+  })
+  .strict();
+export type StarWorldHudIdentity = z.infer<typeof StarWorldHudIdentitySchema>;
+
 export const PlanetWellSchema = z.object({
   reach: z.number().finite().positive(),
   strength: z.number().finite().positive(),

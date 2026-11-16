@@ -174,9 +174,7 @@ export class FlightScene {
         seconds: sim.ticks * STEP,
       });
       passes = [
-        ...FLIGHT_PASSES.filter(
-          (pass) => !["venus-hud", "mercury-hud"].includes(pass.id),
-        ).map(
+        ...FLIGHT_PASSES.map(
           (pass): FlightPass =>
             pass.id === "planets"
               ? {
