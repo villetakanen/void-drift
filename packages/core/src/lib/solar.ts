@@ -17,6 +17,7 @@ export function fieldRate(distance: number, field: EnergyField): number {
   return field.peak * (1 - fraction * (1 - field.outerFraction));
 }
 export function solarField(star: Star): EnergyField {
+  if (star.collectionField) return star.collectionField;
   return {
     reach: star.influenceRadius,
     shoulder: STANDARD_SUN.shoulder,
@@ -31,11 +32,14 @@ export function solarCollectionRate(
 ) {
   return fieldRate(distance, solarField(star)) * collectors;
 }
-export function solarDamageRate(distance: number) {
-  return fieldRate(distance, {
-    reach: STANDARD_SUN.damageReach,
-    shoulder: STANDARD_SUN.shoulder,
-    peak: STANDARD_SUN.damagePeak,
-    outerFraction: 0,
-  });
+export function solarDamageRate(distance: number, star?: Star) {
+  return fieldRate(
+    distance,
+    star?.damageField ?? {
+      reach: STANDARD_SUN.damageReach,
+      shoulder: STANDARD_SUN.shoulder,
+      peak: STANDARD_SUN.damagePeak,
+      outerFraction: 0,
+    },
+  );
 }

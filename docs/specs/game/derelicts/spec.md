@@ -24,6 +24,10 @@ Derelicts is a mode of its own, as the [game contract](../spec.md) lists it.
 - **Arrivals.** `ENCOUNTER` in `packages/mode-a/src/lib/schemas/salvage.ts`
   holds this mode's arrival tuning, validated by its schema and separate from
   Survival's. It is runtime configuration.
+- **Star.** `packages/mode-a/src/lib/yellow-star-family.ts` selects a yellow-family
+  size from the run seed and derives the star's gravity, collection and damage
+  fields. Core consumes those independent fields for flight physics and the
+  shared star renderer supplies its appearance.
 - **Screen.** `apps/web/src/components/FlightDeck.svelte` provides flight,
   pause, game over and the return.
 - **Neighbours.**
@@ -39,7 +43,11 @@ Derelicts is a mode of its own, as the [game contract](../spec.md) lists it.
 
 - **Entry.** Derelicts starts from the Hangar and flies the active ship in its
   fitting. Every launch gets a fresh seeded system and arrives as a Survival
-  run does.
+  run does. The seed selects one yellow-family star size from 36–140 u for the
+  whole run; its colour, gravity reach, collection reach and danger reach follow
+  that size. The World HUD labels the star `G4`–`G14`, with the 70 u reference
+  star labeled `G7`. This is a playable trial of the accepted family, not a
+  balance claim.
 - **Nothing shoots back.** Nothing in the mode attacks the player. The ship is
   lost only through its own contact with something, or by running out of
   energy.
@@ -80,6 +88,12 @@ Derelicts is a mode of its own, as the [game contract](../spec.md) lists it.
   over return to the Hangar with the ship unchanged; no reset is offered.
 - M7: Changing this mode's arrival configuration leaves Survival's
   unchanged, and the reverse.
+- M8: The same seed selects the same star size and fields; different seeds can
+  select different sizes. The star remains constant for the run.
+- M9: Yellow-family appearance and size-linked gravity, collection and danger
+  fields apply in Derelicts. Survival retains its existing star; Practice
+  retains its fixed G7 reference profile; landing remains cosmetic.
+- M10: Gauntlet uses the same seed-selected yellow-family profile as Derelicts.
 
 ### Regression guardrails
 
@@ -98,7 +112,14 @@ Feature: Derelicts mode
     Given a fitted active ship
     When I start Derelicts from the Hangar
     Then I fly that ship in a fresh system
+    And the seed selects one yellow-family star size and its associated fields
     And derelicts begin to arrive at the system edge
+
+  Scenario: Star size follows the run seed
+    Given two Derelicts runs with the same seed
+    Then their star size, gravity, collection and danger fields match
+    Given Derelicts runs with different seeds
+    Then their selected sizes can differ across the 36–140 u range
 
   Scenario: Arrivals do not follow me
     Given two Derelicts runs with the same seed

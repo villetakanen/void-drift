@@ -150,6 +150,7 @@ export class Renderer {
           glowColor: star.glowColor,
           time: time,
           pulseSpeed: star.pulseSpeed,
+          ...(star.appearance ? { appearance: star.appearance } : {}),
         });
       },
     );

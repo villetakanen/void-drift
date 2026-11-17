@@ -1,0 +1,100 @@
+---
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find(
+  (entry) => entry.slug === "plasma-projector-2026-11-11",
+);
+---
+
+<StudyLayout study={study}>
+  <section>
+    <h2>01 / Commit to the approach, survive the escape</h2>
+    <p>
+      A pilot drives towards a derelict or a Gauntlet pirate, gets dangerously
+      close and releases enough fire to devastate it. The Plasma Projector is a
+      shotgun in role: immense damage nearby, a weaker wash farther out, then a
+      vulnerable escape. Its high energy cost and spent interval must make that
+      approach a commitment. A recovery as long as ten seconds is worth
+      exploring, not a settled cooldown.
+    </p>
+    <p>
+      The plasma engine already gathers light before releasing turbulent fire;
+      that family character is the reference. The projector should erupt as one
+      broad, brief volume in front of the ship. Ion's precise instant ray
+      remains distinct, and another travelling bullet is outside this brief. The
+      central tension is overwhelming close-range power against the danger of
+      reaching the target and leaving with enough energy to fly.
+    </p>
+    <p>
+      The weapon's close-range role and plasma character are fixed intent; its
+      fitting, discharge shape, timing and values remain open. Existing engine
+      behaviour, other weapons and current ship-motion laws, including gravity
+      and friction, stay fixed. This question concerns one new fitting, not a
+      plasma resource system, star redesign or release plan. Readable arcade
+      behaviour takes priority over a physical plasma model.
+    </p>
+    <h3>What the burst needs to resolve</h3>
+    <ul>
+      <li>
+        <strong>Preparation and trigger.</strong>
+        Does proximity start the glow, with a tighter range triggering automatic
+        discharge? Can it hold a charge, and what happens when the target leaves
+        or power runs short? Exact release timing remains open within automatic
+        firing; no new firing control is proposed.
+      </li>
+      <li>
+        <strong>Reach and destruction.</strong>
+        What breadth, duration and damage falloff reward a close approach
+        without making every pass a hit? Can the brief eruption keep consuming
+        fragments as a derelict breaks up, rather than spending all its force on
+        the first surface? Obstruction and damage through newly exposed material
+        need an explicit answer.
+      </li>
+      <li>
+        <strong>Cost and recovery.</strong>
+        How much energy remains for escape, and how long is the projector
+        unavailable afterwards? A long recovery should make the strike
+        consequential; its spent state and return to readiness need to be
+        readable on the fitting.
+      </li>
+      <li>
+        <strong>Recoil and approach speed.</strong>
+        Could a backwards kick help arrest the approach without automatically
+        rescuing a reckless charge? The effect on different ship masses and
+        offset mounts remains open.
+      </li>
+      <li>
+        <strong>Form and light.</strong>
+        How does the mounted device contain the gathering energy, then release
+        turbulent fire without hiding the target, ship or escape route? Charge,
+        eruption and recovery must read at flight scale. Derelict destruction
+        and a moving pirate are the intended encounter contexts, not claims of
+        demonstrated behaviour.
+      </li>
+    </ul>
+    <p>
+      Existing weapon funding rules remain the baseline: per-shot spending, zero
+      idle draw, the 10% energy floor and refusal of unaffordable shots. Whether
+      charging needs an exception is an explicit design question, not an assumed
+      change to those rules.
+    </p>
+    <p>
+      Question test · 11 November 2026: One subject — Pass with findings;
+      Grounded — Pass with findings; Consequence — Pass.
+      <a href="/lab/reviews/plasma-projector-2026-11-11"
+        >Full review and responses</a
+      >. Energy and motion boundaries clarified after review; not rerun.
+    </p>
+  </section>
+  <section><h2>02 / To be developed after 01</h2></section>
+</StudyLayout>
+
+<style>
+ul {
+  max-width: 70ch;
+}
+li + li {
+  margin-top: var(--spacing-md);
+}
+</style>

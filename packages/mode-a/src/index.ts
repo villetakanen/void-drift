@@ -41,4 +41,5 @@ export * from "./lib/tuning";
 export * from "./lib/utility-art";
 // Svelte Components
 export * from "./lib/wasp";
+export * from "./lib/yellow-star-family";
 export * from "./schemas/highscore";

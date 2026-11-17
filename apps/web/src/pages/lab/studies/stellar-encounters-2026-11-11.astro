@@ -1,199 +1,113 @@
 ---
-import InstrumentBand from "../../../components/lab/instrument/InstrumentBand.astro";
-import FieldComparison from "../../../components/studies/stellar-encounters/FieldComparison.svelte";
-import { encounters } from "../../../components/studies/stellar-encounters/fields";
-import {
-  flyEncounter,
-  gravityReach,
-  poweredBand,
-  startingFlight,
-} from "../../../components/studies/stellar-encounters/flight";
-import MotionComparison from "../../../components/studies/stellar-encounters/MotionComparison.svelte";
+import reference from "../../../../public/studies/stellar-encounters-2026-11-11/022-reference.json";
 import { studies } from "../../../data/studies";
 import StudyLayout from "../../../layouts/StudyLayout.astro";
 
 const study = studies.find(
   (entry) => entry.slug === "stellar-encounters-2026-11-11",
 );
-const reference = encounters.map((encounter) => ({
-  encounter,
-  band: poweredBand(encounter),
-  runs: flyEncounter(encounter, startingFlight),
-}));
 ---
 
 <StudyLayout study={study}>
   <section>
-    <h2>01 / A new star asks for a different approach</h2>
+    <h2>01 / Stopped: the exploration missed the intended breadth</h2>
     <p>
-      Approaching an unfamiliar star should invite recognition and a decision:
-      what opportunity does this place offer, what threatens the ship, and how
-      should the pilot approach or escape? The implemented standard Sun is the
-      fixed reference: collect energy while managing gravitational pull,
-      exposure and terminal contact. This study defines a small initial set of
-      additional stellar encounter identities, each changing a pilot decision in
-      a way its appearance and behaviour help communicate.
+      Closed on 11 November 2026 as stopped. The designer assessed this study as
+      a failure to answer the intended design question. Ending it preserves that
+      assessment and the limited useful evidence; it does not make the design
+      outcome successful. The proposed roster, masses and implementation scope
+      were not accepted.
     </p>
     <p>
-      Real stellar relationships guide the design; distances, timescales and
-      visual differences are compressed for readable arcade play. The
-      <a href="/lab/studies/suns-2026-11-07#stellar-model">earlier Sun study</a>
-      distinguishes temperature and colour, size, mass, radiant output and
-      activity. Those are investigation dimensions, not a requirement to vary
-      everything or adopt its proposed encounters. The tension is between
-      coherent stellar character and differences that matter in flight. Our
-      starting hypothesis is that stars offer different combinations of
-      opportunity and danger rather than only an ascending difficulty ladder.
+      The intended subject was distinct stellar natures: how different stars
+      look and behave, what opportunities and dangers they create, and how
+      colour, surface activity and aura help a pilot recognise them. The
+      exploration instead compared a standard Sun with a compact orange dwarf
+      and a larger cool giant, concentrating on field geometry and resource
+      rates. The designer later described the gap as wanting stars in general,
+      “not just three different sizes of sun”.
     </p>
     <p>
-      The families, their number, their encounter behaviour and their readable
-      cues remain open. Compare them with the same ship, fitting, starting
-      resources and resource protection rules, using production flight systems
-      to observe approach, collection and escape; a colour comparison alone
-      cannot establish a different challenge. The standard Sun’s mechanics and
-      current ship handling remain fixed. Future travel between systems could
-      make these identities meaningful destinations; travel, destination
-      selection and progression are adjacent questions outside this cycle.
+      The designer had accepted spatial variation as one interesting ingredient:
+      a dwarf could demand precise collection near gravity and a lethal body; a
+      giant could provide room to stay and fight. That agreement did not select
+      the stellar roster or establish the visual and behavioural identities
+      sought by the wider inquiry. The assistant acknowledged treating that
+      limited agreement as a broader answer and moving into readiness and scope
+      prematurely.
     </p>
-    <aside class="question-check" aria-label="Question test result">
-      <p>
-        Question test · 11 November 2026: One subject — Pass; Grounded — Pass
-        with findings; Consequence — Pass. The comparison controls were
-        clarified after independent review; the corrected opening was not
-        retested.
-        <a href="/lab/reviews/stellar-encounters-2026-11-11"
-          >Full result and responses</a
-        >
-      </p>
-    </aside>
+    <p>
+      Historical question test, 11 November 2026: One subject — Pass; Grounded —
+      Pass with findings; Consequence — Pass. It tested the original opening,
+      which was corrected without a rerun, and did not establish the study’s
+      eventual usefulness or design success.
+      <a href="/lab/reviews/stellar-encounters-2026-11-11"
+        >Original review and findings</a
+      >.
+    </p>
   </section>
   <section>
     <h2 id="spatial-identities">
-      02.1 / Two orange stars, two different approaches
+      02.1 / Retained observation: spatial variety can matter
     </h2>
     <p>
-      The first proposal contrasts a quiet K dwarf with a cool evolved giant,
-      against the standard Sun. Both new encounters can look orange. The dwarf
-      asks for a close approach to earn a modest refill; the giant offers
-      collection farther out but occupies much more space. These are proposed
-      encounter characters, not an accepted roster or difficulty ranking.
+      The first example used the production plateau/linear collection law and
+      Wasp energy costs to compare local collection, exposure and hull
+      clearance. Its dwarf had a 25 u body and collection ending at 180 u; the
+      giant had a 110 u body and collection ending at 520 u. These were
+      deliberately compressed candidate profiles, not measured stellar
+      properties.
     </p>
-    <h3>What the science gives us</h3>
+    <figure>
+      <img
+        src="/studies/stellar-encounters-2026-11-11/021-fields-160.png"
+        alt="Captured radial field comparison of the standard Sun, quiet dwarf and cool giant, with the Wasp centre at 160 units"
+        loading="lazy"
+      >
+      <figcaption>
+        Original 02.1 capture, 11 November 2026, 1280 px browser viewport. At
+        160 u, coasting consumption is 0.8 E/s. The dwarf provides 1.05 E/s with
+        no exposure; the giant provides 11.17 E/s with 2.10 hull/s exposure.
+        This is a local field calculation, with no gravitational motion,
+        resource limits or enemies.
+      </figcaption>
+    </figure>
     <p>
-      Colour describes temperature, not total output or stellar life stage. K
-      dwarfs are cooler and less luminous than the Sun. An evolved star can
-      instead expand into a cool, luminous giant. That gives us two different
-      spatial situations without inventing a colour-coded danger scale.
-      <a
-        href="https://science.nasa.gov/missions/hubble/goldilocks-stars-are-best-places-to-look-for-life/"
-        >NASA: K dwarfs</a
-      >;
-      <a
-        href="https://science.nasa.gov/missions/hubble/hubble-witnesses-the-final-blaze-of-glory-of-sun-like-stars/"
-        >NASA: cool, luminous giants</a
-      >. “Giant” describes an evolved structure, not an extra letter after the
-      O–B–A–F–G–K–M temperature sequence.
-    </p>
-    <p>
-      The translation into collectable energy and hull loss is our arcade model.
-      The candidate reaches and rates below are deliberately compressed design
-      hypotheses, not measurements or a physical flux calculation. Their damage
-      envelopes represent the ship’s protection being exceeded; orange light by
-      itself does not establish how dangerous exposure is. Quiet is a chosen
-      activity state, not a property promised by the letter K.
-    </p>
-    <h3>Where would the same approach put the ship?</h3>
-    <p>
-      Move the distance marker inward from 240 u through 160 u to 100 u. At 240
-      u the dwarf supplies nothing, while the giant still offers a refill
-      without radiation damage in this proposal. At 160 u the standard Sun
-      remains free of radiation damage but the giant costs hull. At 100 u the
-      giant’s body has already blocked the approach. Switch the main engine on
-      to see which collection rates also pay for thrust.
-    </p>
-    <FieldComparison client:load />
-    <h3>Accepted direction / Space to manoeuvre changes the encounter</h3>
-    <p>
-      Spatial variation alone is accepted as a worthwhile source of stellar
-      encounter variety. The quiet dwarf in 02.1 has a distinct appeal: earning
-      energy in a compact collection region asks for precise flying near a
-      lethal body while gravity still matters. Its smaller manoeuvring space
-      supplies the intended challenge. The giant instead offers room to remain
-      in the collection field and fight approaching enemies. These support
-      different ways of inhabiting an encounter, beyond differences in refill
-      rate.
-    </p>
-    <p>
-      The retained reference is the dwarf and giant pair shown in 02.1, with
-      their exact working profiles available in the comparison’s disclosure. The
-      accepted properties are the dwarf’s tight collection space and the giant’s
-      broad collection space around a much larger body. Their numerical tuning,
-      gravity profiles and eventual roster remain provisional. No flare mechanic
-      is required to justify pursuing this spatial direction.
-    </p>
-    <p>
-      The giant’s farther collection is an explicit candidate departure from the
-      standard Sun’s shared collection/gravity boundary. A sustained
-      hold-and-fight position is a possible encounter character. Whether it
-      permits indefinite survival and score accumulation remains a gameplay
-      hypothesis: this cross-section includes neither gravitational motion nor
-      enemy pressure, weapon energy use or resource limits. The next comparison
-      should investigate how the useful collection space relates to the pull and
-      the ship’s room to manoeuvre, retaining these two spatial identities.
-    </p>
-    <p>
-      This is a local field cross-section, not a flight experiment: gravity,
-      escape, capacity and depletion are not evaluated. No gravity or friction
-      values change. The next motion comparison must retain a named production
-      configuration, identical Wasp fittings and starting reserves, and the same
-      resource protection rules; analytical paths cannot stand in for
-      resource-limited survival. New instrument support for candidate exposure
-      and capacity feedback may be needed and remains an investigation item.
-    </p>
-    <p>
-      Activity offers a separate kind of difference: a small cool star can flare
-      violently, as observed on Proxima Centauri. A later comparison could test
-      timing an approach between events instead of adding another steady radial
-      profile. Advance warning and an arcade event cadence would be fictional
-      design choices; neither is implied by the science or modelled here.
-      <a
-        href="https://science.nasa.gov/universe/exoplanets/neighboring-stars-bad-behavior-large-and-frequent-flares/"
-        >NASA: Proxima’s observed flares</a
-      >. Hotter stars and compact remnants remain possible alternatives, not
-      commitments to expand this first comparison.
+      The designer found the dwarf’s limited manoeuvring space interesting and
+      the giant’s broad field illustrative of a different situation. This is a
+      retained design judgment about one ingredient, not acceptance of these
+      candidates as the answer to stellar variety.
+      <a href="/studies/stellar-encounters-2026-11-11/021-reference.json"
+        >Original field conditions and readings</a
+      >.
     </p>
   </section>
   <section>
-    <h2 id="room-under-pull">02.2 / Collection space under the same pull</h2>
+    <h2 id="room-under-pull">
+      02.2 / Retained check: geometry under one gravity profile
+    </h2>
     <p>
-      Keep the accepted tight dwarf and broad giant, and give all three stars
-      the standard Sun’s production mass, cutoff and falloff. This isolates
-      geometry: the same approach meets the same pull until body contact, while
-      the available collection space changes. It is a controlled comparison, not
-      a proposed claim that these stellar families have equal mass.
+      The Motion instrument compared the same Wasp, fittings and burn against
+      three body/field profiles, keeping standard-Sun gravity identical. B1
+      began at x −400 u relative to the star, offsets +80, +160 and +260 u,
+      speed 120 u/s along +x, zero spin, for 14 s at 60 Hz with four substeps.
+      There were no planets, enemies, wrapping or randomness. Energy and
+      exposure budgets did not alter motion; contact ended a trace.
     </p>
-    <p>
-      With the main engine firing, the dwarf’s radiation-free net-positive
-      collection span is narrow and wholly inside the well. The giant’s span
-      extends beyond the well’s {gravityReach.toFixed(0)} u cutoff. That outer
-      part permits collection with no stellar pull in this fixture: staying
-      there may be an intentional fighting position, with its challenge coming
-      from combat rather than gravity.
-    </p>
-    <table class="reference-table">
+    <table>
       <caption>
-        Local collection spans / same Wasp, full forward thrust, zero spin
+        Captured local spans that pay for full forward thrust without exposure
       </caption>
       <thead>
         <tr>
-          <th>Encounter</th>
-          <th>No exposure, positive net</th>
-          <th>Radial width</th>
+          <th>Candidate</th>
+          <th>Centre-distance span</th>
+          <th>Width</th>
           <th>Width beyond gravity</th>
         </tr>
       </thead>
       <tbody>
-        {reference.map(({ encounter, band }) => (
+        {reference.summaries.map(({ encounter, band }) => (
           <tr>
             <th scope="row">{encounter.name}</th>
             <td>
@@ -203,7 +117,7 @@ const reference = encounters.map((encounter) => ({
             <td>
               {Math.max(
                 0,
-                band.outer - Math.max(band.inner, gravityReach),
+                band.outer - Math.max(band.inner, reference.gravity.reach),
               ).toFixed(0)}{" "}
               u
             </td>
@@ -212,323 +126,152 @@ const reference = encounters.map((encounter) => ({
       </tbody>
     </table>
     <p>
-      These are centre-distance spans, not safe orbits or travel corridors. Net
-      gain reaches zero at each outer limit; figures are rounded. The ship still
-      needs to steer, and other burn states consume different amounts.
+      In the captured B1 run, the 80 u approach hit the standard Sun but cleared
+      the dwarf with about 5.4 u of hull clearance and less than a second of
+      collection. The giant’s 160 u approach cleared its body by about 7.5 u
+      with an analytical exposure budget of 1.86 hull. Its broad collection
+      profile included a region outside the gravity cutoff. These checks put
+      numbers to the spatial idea; they did not establish sustained survival,
+      score balance or a new stellar character.
     </p>
-    <h3>Repeat the same approach</h3>
-    <p>
-      The Motion instrument runs the same Wasp from x −400 u at three offsets:
-      80, 160 and 260 u. Open the menu to switch stars or change starting speed;
-      B1, B2 and B3 remain the shared input programs. The path pane shows the
-      body, gravity boundary and collection boundary; the graphs connect
-      distance and pull to net energy and accumulated energy change. A diamond
-      ends a path at hull contact. Use Default scale when comparing space across
-      stars.
-    </p>
-  </section>
-  <InstrumentBand><MotionComparison client:load /></InstrumentBand>
-  <section>
-    <h3>B1 at 120 u/s / the starting comparison</h3>
-    <p>
-      These rows recalculate the opening configuration from current production
-      definitions, independently of later menu edits. Collection and exposure
-      are budgets over unlimited-power motion: capacity, depletion and hull loss
-      do not feed back into a path. Negative energy change means reserve would
-      be spent, not that a ship with an unspecified starting battery could
-      finish the pass.
-    </p>
-    <table class="reference-table">
-      <thead>
-        <tr>
-          <th>Encounter / offset</th>
-          <th>Collection time</th>
-          <th>Net energy</th>
-          <th>Exposure budget</th>
-          <th>End of trace</th>
-        </tr>
-      </thead>
-      <tbody>
-        {reference.flatMap(({ encounter, runs }) =>
-          runs.map((run) => (
-            <tr>
-              <th scope="row">
-                {encounter.name} / {run.offset} u
-              </th>
-              <td>{run.collectionSeconds.toFixed(2)} s</td>
-              <td>
-                {run.energyChange > 0 ? "+" : ""}
-                {run.energyChange.toFixed(2)} E
-              </td>
-              <td>{run.exposureBudget.toFixed(2)} hull</td>
-              <td>
-                {run.outcome} · {run.duration.toFixed(2)} s
-              </td>
-            </tr>
-          )),
-        )}
-      </tbody>
-    </table>
-    <p>
-      In the reference captured on 11 November 2026, the 80 u approach contacts
-      the standard Sun but clears the dwarf with about 5.4 u of hull clearance,
-      collecting for less than a second. The giant’s 160 u approach clears its
-      body by about 7.5 u and incurs an analytical exposure budget of 1.86 hull;
-      the standard Sun’s same approach has no exposure. Holding the pull fixed
-      still changes both which passes fit and what they cost. The full 14 s
-      energy budgets also include outbound flight after collection ends; they do
-      not measure the value of staying near the star.
-    </p>
+    <figure>
+      <img
+        src="/studies/stellar-encounters-2026-11-11/022-dwarf.png"
+        alt="Recorded dwarf trajectories and distance, gravity and energy graphs"
+        loading="lazy"
+      >
+      <figcaption>
+        Dwarf reference, captured 11 November 2026. Full B1 trajectories, with
+        the cursor at 1.5 s; path scale 0.2 px/u centred on the star. The close
+        trajectory survives contact but its full 14 s budget spends reserve.
+      </figcaption>
+    </figure>
     <details>
-      <summary>Captured B1 reference / 11 November 2026</summary>
-      <p>
-        Same world scale, 0.2 px/u, centred on the star; cursor at 1.5 s.
-        <a href="/studies/stellar-encounters-2026-11-11/022-dwarf.png"
-          >Dwarf capture</a
-        >,
-        <a href="/studies/stellar-encounters-2026-11-11/022-sun.png"
-          >standard Sun capture</a
-        >,
-        <a href="/studies/stellar-encounters-2026-11-11/022-giant.png"
-          >giant capture</a
-        >. The
-        <a href="/studies/stellar-encounters-2026-11-11/022-reference.json"
-          >reference conditions and results</a
+      <summary>Standard Sun and giant captures, with exact conditions</summary>
+      <figure>
+        <img
+          src="/studies/stellar-encounters-2026-11-11/022-sun.png"
+          alt="Recorded standard Sun trajectories, including terminal contact on the close approach"
+          loading="lazy"
         >
-        retain the burn’s tick sequence, initial states, production
-        configuration, source hashes and uncommitted working-tree qualification.
-        The live instrument uses current production code; later changes can
-        alter its results.
+        <figcaption>
+          Standard Sun, same B1 inputs, initial states, camera scale and 1.5 s
+          cursor. The close trace stops at contact.
+        </figcaption>
+      </figure>
+      <figure>
+        <img
+          src="/studies/stellar-encounters-2026-11-11/022-giant.png"
+          alt="Recorded giant trajectories showing the larger body and collection boundary"
+          loading="lazy"
+        >
+        <figcaption>
+          Giant, same B1 inputs, initial states, camera scale and 1.5 s cursor.
+          The collection boundary extends beyond the dashed gravity cutoff.
+        </figcaption>
+      </figure>
+      <p>
+        <a href="/studies/stellar-encounters-2026-11-11/022-reference.json"
+          >Captured reference configuration, results and source hashes</a
+        >. Base revision {reference.baseRevision}, with uncommitted changes. The
+        record retains the burn sequence, original game definitions and
+        settings. These images show complete recorded trajectories, not
+        player-controlled flying or a perceptual motion assessment. No motion
+        clip was retained.
       </p>
     </details>
-    <p>
-      This round investigates how the accepted spatial characters behave under
-      pull. It does not select final masses, prove indefinite survival or decide
-      scoring balance. A resource-limited comparison with enemy pressure remains
-      necessary to assess the giant’s sustained fighting position. Candidate
-      exposure feedback is still a missing instrument capability; this round
-      uses the existing analytical measurements without extending the
-      instrument.
-    </p>
   </section>
   <section>
     <h2 id="readiness">
-      03 / Ready to build a trial with real resource limits
+      03 / The intended stellar identities remained unanswered
     </h2>
     <p>
-      The accepted result is spatial variety: a tight collection region asks for
-      precise flying, while a broad region permits staying and fighting. The
-      initial delivery proposal is the standard Sun plus the quiet orange dwarf
-      and cool giant from 02.1. Their exact profiles remain provisional. The
-      motion comparison checks consequences under one gravitational profile; it
-      supports taking the direction into a trial, without establishing sustained
-      survival, score balance or final family tuning.
-    </p>
-    <h3>Give the trial coherent stellar identities</h3>
-    <p>
-      The dwarf should be less massive and less luminous than the standard Sun.
-      A cool evolved giant can be much larger and more luminous while retaining
-      roughly Sun-like mass; large size does not require a stronger well.
-      <a
-        href="https://science.nasa.gov/missions/hubble/goldilocks-stars-are-best-places-to-look-for-life/"
-        >NASA: orange dwarfs</a
-      >;
-      <a href="https://www.eso.org/public/news/eso1741/"
-        >ESO: a cool giant’s size and mass</a
-      >. A proposed starting mass is 0.7 times the standard Sun for the dwarf
-      and 1.0 for the giant. These are provisional game presets, not measured
-      values or accepted tuning. Retain 02.1’s body and field profiles as the
-      starting proposal, with the existing force law and cutoff. The equal-mass
-      02.2 reference remains a separate controlled experiment.
+      The designer clarified that examples such as a white giant, a blue dwarf,
+      or a star too violent to harvest without damage were prompts for a broader
+      inquiry. The missing result was a considered set of different stellar
+      natures, connecting scientific basis, pilot experience and visible
+      identity. Their names were not a settled taxonomy. This cycle did not
+      resolve those characters or how colour, surface behaviour and aura would
+      communicate them.
     </p>
     <p>
-      Temperature class and evolutionary family need separate identities: a cool
-      giant is not a new letter in the spectral sequence. Colour continues to
-      signal temperature; body size and the field boundaries communicate the
-      spatial encounter. The existing procedural star renderer can supply the
-      trial. Recognition at flight zoom still needs inspection before treating
-      those cues as sufficient. Flares, new artwork and a complete stellar
-      catalogue are outside this delivery proposal.
-    </p>
-    <h3>Reuse the laws; remove standard-Sun assumptions</h3>
-    <table class="reference-table">
-      <thead>
-        <tr>
-          <th>Existing system</th>
-          <th>Adaptation required</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th scope="row">Collection and exposure</th>
-          <td>
-            The shared field schema and plateau/linear law already work.
-            Production collection still takes its reach from gravity, and
-            exposure still uses the standard Sun globally. Both must read the
-            selected star’s independent fields, for stock and assembled ships
-            and every affected actor.
-          </td>
-        </tr>
-        <tr>
-          <th scope="row">Gravity and identity</th>
-          <td>
-            Production creates G and applies one tuned Sun mass. Resolve a
-            named, validated profile before constructing the star; retain a
-            separate family identity and supply its mass to the existing mass
-            well. The old seven-class appearance table is not an adopted
-            encounter catalogue.
-          </td>
-        </tr>
-        <tr>
-          <th scope="row">HUD and artwork</th>
-          <td>
-            The approved field renderer still assumes coincident collection and
-            gravity boundaries and a 100 u hazard edge. Read all three actual
-            reaches; apply the 2 CSS px inset only to coincident boundaries.
-            Preserve line styles, active effects, collector scaling and terminal
-            contact.
-          </td>
-        </tr>
-        <tr>
-          <th scope="row">Trial and reproducibility</th>
-          <td>
-            The Suns Lab already embeds the real Simulation with battery
-            capacity, depletion and applied damage. Configure that shared
-            simulation through a validated profile identifier, rather than
-            duplicating mechanics in a new study simulator. Retain the profile
-            identity with the flight conditions used to reproduce a trial.
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <p>
-      Profile plumbing and a resource-limited Lab trial are feasible without a
-      new physics system or a Motion instrument extension. The concrete blockers
-      are the hardcoded fields, star selection and matching HUD geometry. Exact
-      masses and rates can remain configurable trial values. The trial must
-      revisit whether the lower-mass dwarf still rewards precise flying and how
-      the giant behaves with finite capacity and real propulsion costs. Combat
-      balance remains outside the evidence gathered here.
+      The original spatial model remains limited evidence. Final families,
+      masses, artwork, activity behaviour, resource-limited flight and combat
+      balance are unresolved. The passing question test and automated checks do
+      not override the designer’s assessment that this study failed its purpose.
     </p>
   </section>
   <section>
-    <h2 id="scope">04 / A shared profile model, then two trial encounters</h2>
+    <h2 id="scope">04 / No accepted implementation scope</h2>
     <p>
-      <strong
-        >No change to the standing experience-design principles is
-        proposed.</strong
+      The assistant drafted shared star profiles, simulation/HUD integration and
+      a Suns Lab trial, with proposed dwarf/giant mass ratios of 0.7/1.0
+      relative to the standard Sun. Those proposals were not accepted and do not
+      carry forward as requirements or delivery authorization. The pre-closure
+      page is retained in repository history at
+      d718d29bfd169bae421410246cbfb168ed6b21bb.
+    </p>
+    <p>
+      The temporary interactive comparisons and their dedicated code were
+      retired after checking consumers. Shared production systems and reusable
+      instruments remain. This static record preserves the useful observations
+      and their limits without requiring historical simulation code to execute.
+    </p>
+    <p>
+      A separate
+      <a href="/lab/studies/stellar-characters-2026-11-11"
+        >Stellar characters study</a
       >
-    </p>
-    <p>
-      This is a proposed delivery scope for the accepted spatial direction. It
-      leaves the study open and does not settle the roster or provisional
-      masses. The first trial belongs in the existing Suns Lab; normal scored
-      play and the decorative landing system retain the standard Sun. Random
-      system selection, score-rule changes and travel remain separate decisions.
-    </p>
-    <ol class="delivery-slices">
-      <li>
-        <h3>Validated profiles / small–medium</h3>
-        <p>
-          Define the shared profile shape before changing consumers: stable
-          identity, family and spectral class, body and appearance, mass, and
-          independent collection/exposure fields. Keep named game presets in
-          mode-a and generic schemas and field math in core. Default to the
-          exact standard Sun; add the dwarf and giant as explicitly provisional
-          trial profiles. Extend flight settings to carry a validated profile
-          identity and retain the standard default for old settings.
-        </p>
-        <p>
-          Owns: core Sun/field schemas, mode-a profile definitions and flight
-          settings; star and gravity specs. Check invalid identities and field
-          geometry, body/shoulder consistency, and standard-Sun value parity.
-        </p>
-      </li>
-      <li>
-        <h3>Simulation and field HUD / medium · depends on 1</h3>
-        <p>
-          Construct the chosen star once; route its mass and fields through
-          production gravity, both charging paths, exposure and the world HUD.
-          Keep inherent and fitted collection additive, capacity and starvation
-          real, and practice’s resource protection explicit. Render separated
-          and coincident boundaries from the same definitions that produce
-          effects.
-        </p>
-        <p>
-          Owns: core solar math, Physics and field renderer; mode-a Simulation
-          and flight rendering; star, gravity and game-screen specs. Check field
-          edges and shoulders, capacity, depletion, contact, applied exposure,
-          actor parity and HUD geometry across zoom and display density. Prove
-          that choosing the standard profile preserves its current behaviour.
-        </p>
-      </li>
-      <li>
-        <h3>Resource-limited Suns Lab trial / medium · depends on 2</h3>
-        <p>
-          Extend the existing Suns reference with a profile selector and
-          repeatable starting conditions using the real Simulation. Show the
-          current star, actual stored energy, hull and collection/damage rates.
-          Compare the dwarf’s close manoeuvring and the giant’s broad collection
-          space with identical Wasp fittings and reserves; retain the starting
-          profiles and observed outcomes. Existing keyboard and landscape touch
-          controls stay available in play.
-        </p>
-        <p>
-          Owns: Suns Lab bench/article and its owning star spec. Inspect the Lab
-          at 1280 px or wider, controls by keyboard, low reserves, full
-          capacity, collecting during net drain and loss of hull. Update the
-          article from current production energy costs; it still quotes the
-          former Light ion draw. This slice establishes a concrete trial, not a
-          difficulty rating.
-        </p>
-      </li>
-    </ol>
-    <p>
-      After the trial, retain or revise the provisional profiles according to
-      their intended character. Wider stellar families and activity mechanics
-      can build on the same model if they offer another pilot decision. A
-      decision to enable stellar variety in scored play must separately define
-      which encounters occur and how their differing survival opportunities
-      belong in the score rules; that rollout is not hidden inside this patch.
+      already records the broader inquiry. The
+      <a href="/lab/reviews/stellar-encounters-2026-11-11"
+        >historical question review</a
+      >
+      remains available. The evidence closure is recorded in
+      <code>docs/loop-evidence/2026-11-11-stellar-encounters-closure.md</code>.
+      No factory lessons or standing rules were adopted as part of closure.
     </p>
   </section>
 </StudyLayout>
 
 <style>
-.delivery-slices {
-  padding-left: var(--spacing-lg);
+figure {
+  margin: var(--spacing-lg) 0;
 }
-.delivery-slices li {
-  margin-block: var(--spacing-xl);
+img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
-.delivery-slices p {
+figcaption {
   max-width: var(--measure-prose);
-  margin-block: var(--spacing-md);
+  margin-top: var(--spacing-sm);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
 }
-.reference-table {
+summary {
+  color: var(--color-action);
+  cursor: pointer;
+  padding-block: var(--spacing-md);
+}
+table {
   width: 100%;
   border-collapse: collapse;
   margin-block: var(--spacing-lg);
   font-size: var(--font-size-label);
 }
-.reference-table caption {
+caption {
   text-align: left;
-  margin-bottom: var(--spacing-md);
   color: var(--color-text-muted);
+  margin-bottom: var(--spacing-md);
 }
-.reference-table th,
-.reference-table td {
+th,
+td {
   padding: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border);
   text-align: left;
   vertical-align: top;
-  border-bottom: 1px solid var(--color-border);
 }
-.question-check {
-  max-width: var(--measure-prose);
-  margin-top: var(--spacing-lg);
-  padding-top: var(--spacing-md);
-  border-top: 1px solid var(--color-border);
-  color: var(--color-text-muted);
-  font-size: var(--font-size-caption);
+code {
+  overflow-wrap: anywhere;
 }
 </style>

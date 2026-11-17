@@ -10,17 +10,25 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
   {
+    slug: "plasma-projector-2026-11-11",
+    title: "Plasma Projector",
+    status: "open",
+    phase: "problem",
+    question:
+      "How should a plasma projector gather and release a close-range burst so that approaching, devastating a target and escaping becomes a distinct flying manoeuvre?",
+  },
+  {
     slug: "stellar-characters-2026-11-11",
     title: "Stellar characters",
-    status: "open",
-    phase: "exploration",
+    status: "accepted",
+    phase: "scope",
     question:
       "What distinct stellar characters can Void Drift offer, and how should their colour, surface and surrounding activity communicate the opportunities and dangers of approaching them?",
   },
   {
     slug: "stellar-encounters-2026-11-11",
     title: "Stellar encounters: different stars, different decisions",
-    status: "open",
+    status: "stopped",
     phase: "scope",
     question:
       "How should different kinds of stars create recognisably different situations, so that a pilot can read what they are approaching and adapt how they fly—while the stars remain grounded in real stellar physics at an arcade scale?",

@@ -63,6 +63,11 @@ import {
 } from "./schemas/salvage";
 import type { ShipProfileId } from "./schemas/ship-profile";
 import { GRAVITY_TUNING } from "./tuning";
+import {
+  applyYellowFamilyProfile,
+  YELLOW_FAMILY_RADIUS,
+  yellowFamilyRadius,
+} from "./yellow-star-family";
 
 export const STEP = 1 / 60;
 /** Survival score points for each collected derelict energy cell. */
@@ -209,6 +214,20 @@ export class Simulation {
     if (this.settings.loadout)
       this.ship.radius = buildCollisionRadius(this.settings.loadout);
     applyGravityTuning(this.star, this.planets, this.gravity);
+    if (this.settings.mode === "derelicts" || this.settings.mode === "gauntlet")
+      applyYellowFamilyProfile(
+        this.star,
+        yellowFamilyRadius(this.settings.seed),
+        this.gravity,
+      );
+    if (this.settings.mode === "practice") {
+      applyYellowFamilyProfile(
+        this.star,
+        YELLOW_FAMILY_RADIUS.reference,
+        this.gravity,
+      );
+      this.star.designation = "G7, Sun";
+    }
     // Seed changes orbit phase, not flight tuning.
     const phase =
       (((this.settings.mode === "practice"

@@ -1,6 +1,7 @@
 import type { Star } from "../physics/Physics";
 import { STANDARD_SUN } from "../solar";
 import { COLOR } from "../ui/colors";
+import { canvasFont } from "../ui/typography";
 
 /** World-anchored geometry, with CSS-pixel stroke/dash/offset dimensions. */
 export function drawSunFields(
@@ -8,6 +9,7 @@ export function drawSunFields(
   star: Star,
   effects: { collecting: boolean; damaging: boolean },
   cssWidth = ctx.canvas.getBoundingClientRect().width,
+  radii?: { hazard: number; gravity: number; collection: number },
 ) {
   const transform = ctx.getTransform();
   const pixelsPerUnit =
@@ -35,9 +37,12 @@ export function drawSunFields(
     ctx.setLineDash(dash.map((value) => value * pixel));
     ctx.stroke();
   };
-  circle(star.influenceRadius, COLOR.countdown, 0.35, [5, 5]);
+  const gravity = radii?.gravity ?? star.influenceRadius;
+  const collection =
+    radii?.collection ?? star.collectionField?.reach ?? star.influenceRadius;
+  circle(gravity, COLOR.countdown, 0.35, [5, 5]);
   circle(
-    star.influenceRadius - 2 * pixel,
+    collection - (Math.abs(collection - gravity) < 2 * pixel ? 2 * pixel : 0),
     COLOR.countdown,
     effects.collecting ? 1 : 0.35,
     [],
@@ -45,11 +50,25 @@ export function drawSunFields(
   );
   ctx.lineCap = "round";
   circle(
-    STANDARD_SUN.damageReach,
+    radii?.hazard ?? star.damageField?.reach ?? STANDARD_SUN.damageReach,
     effects.damaging ? COLOR.resourceDanger : COLOR.resourceWarning,
     effects.damaging ? 1 : 0.6,
     [1, 4],
     effects.damaging ? 0.11 : 0,
   );
+  if (star.designation) {
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = COLOR.countdown;
+    ctx.font = canvasFont(12 / pixelsPerUnit, 700);
+    ctx.textAlign = "left";
+    ctx.textBaseline = "bottom";
+    ctx.shadowColor = COLOR.void;
+    ctx.shadowBlur = 3 / pixelsPerUnit;
+    ctx.fillText(
+      star.designation,
+      star.pos.x + star.radius + 6 / pixelsPerUnit,
+      star.pos.y - star.radius - 4 / pixelsPerUnit,
+    );
+  }
   ctx.restore();
 }

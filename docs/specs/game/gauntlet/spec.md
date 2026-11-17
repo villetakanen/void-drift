@@ -13,6 +13,9 @@ progression.
   Defence, one Light Ion Cannon and two Light Ion engines. Each pirate owns its
   identity, loadout, hull, energy, pilot, weapons and effects. All three actors
   use the shared arena, gravity and flight physics.
+- The run seed selects a yellow-family star size from 36–140 u using the same
+  profile as Derelicts. Its appearance, gravity, collection and danger fields
+  follow that size; the World HUD shows its `G4`–`G14` denomination.
 - All ships start with full normal hull and energy. Seeded, separated arrivals
   complete before any ship can fire. Each pirate independently pilots with the
   same bounded sampled commands and deterministic tie breaking, targeting the
@@ -39,6 +42,11 @@ Scenario: Fresh Hangar encounter
   When the player launches Gauntlet
   Then two fully fitted hostile Scouts arrive in the same system
   And all three ships remain unable to fire until both pirate arrivals complete
+
+Scenario: Star size follows the run seed
+  Given two Gauntlet runs with the same seed
+  Then their star size, gravity, collection and danger fields match
+  And their yellow-family profile matches Derelicts with that seed
 
 Scenario: Combat result
   Given two pirates and the player are active in a Gauntlet encounter

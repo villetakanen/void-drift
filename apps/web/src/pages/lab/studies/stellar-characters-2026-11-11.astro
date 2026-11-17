@@ -1,5 +1,4 @@
 ---
-import StellarCharacterSketch from "../../../components/studies/StellarCharacterSketch.svelte";
 import { studies } from "../../../data/studies";
 import StudyLayout from "../../../layouts/StudyLayout.astro";
 
@@ -9,6 +8,13 @@ const study = studies.find(
 ---
 
 <StudyLayout study={study}>
+  <p class="outcome">
+    <strong>Accepted · 11 November 2026.</strong>
+    Carry the stable-yellow family into Derelicts and Gauntlet: larger surfaces,
+    warm size colours and independent fields. The broader roster is deferred.
+    <a href="#03">Readiness</a>
+    · <a href="#04">Delivery scope</a>.
+  </p>
   <section>
     <h2>01 / Recognising what lies ahead</h2>
     <p>
@@ -53,309 +59,980 @@ const study = studies.find(
       >.
     </p>
   </section>
-  <section>
-    <h2 id="021">02.1 / Wind, eruption, wreckage, sweep</h2>
-    <p>
-      Four encounter hypotheses beside the unchanged Sun. Each plate has a close
-      view and three smaller encounter frames, read left to right. The Wasp
-      stays in place so the changing surroundings carry the comparison. These
-      are procedural concept storyboards, not simulated approaches or proposed
-      field boundaries. Body sizes are pictorial; the close views are enlarged
-      independently. Neither sizes nor intervals specify game tuning.
-    </p>
-    <p>
-      The Sun and Wasp use their production drawing functions. Candidate artwork
-      is study-local. All sequences are static, deterministic and equally
-      inspectable without animation. Surface detail may suggest a nature at
-      close range; the smaller frames test which surrounding cues could carry it
-      in flight. The interaction-led direction is retained below; no exact
-      artwork, mechanic, numerical profile or complete roster is selected.
-    </p>
-    <h3>Reference / The steady bargain</h3>
-    <StellarCharacterSketch
-      client:load
-      kind="sun"
-      label="Production standard Sun: flat amber body and three decorative expanding rings, with the same Wasp in three fixed compositions"
-      moments={["01 / STEADY", "02 / STEADY", "03 / STEADY"]}
-    />
-    <p class="caption">
-      Unchanged G artwork at illustrative zooms, sampled at 700, 1150 and 1600
-      ms. Its rings are decorative, not warnings of timed damage. Collection,
-      pull, exposure and contact retain the
-      <a href="/lab/entities/star">standard Sun’s rules</a>.
-    </p>
-  </section>
+  <details class="retained-round">
+    <summary>02.1 / Four stellar natures and the retained direction</summary>
+    <section>
+      <h2 id="021">02.1 / Wind, eruption, wreckage, sweep</h2>
+      <p>
+        Four encounter hypotheses beside the unchanged Sun. Each plate has a
+        close view and three smaller encounter frames, read left to right. The
+        Wasp stays in place so the changing surroundings carry the comparison.
+        These are procedural concept storyboards, not simulated approaches or
+        proposed field boundaries. Body sizes are pictorial; the close views are
+        enlarged independently. Neither sizes nor intervals specify game tuning.
+      </p>
+      <p>
+        The Sun and Wasp use their production drawing functions. Candidate
+        artwork is study-local. All sequences are static, deterministic and
+        equally inspectable without animation. Surface detail may suggest a
+        nature at close range; the smaller frames test which surrounding cues
+        could carry it in flight. The interaction-led direction is retained
+        below; no exact artwork, mechanic, numerical profile or complete roster
+        is selected.
+      </p>
+      <h3>Reference / The steady bargain</h3>
+      <img
+        class="evidence"
+        src="/studies/stellar-characters-2026-11-11/021-plate-0.png"
+        alt="Standard Sun reference: close view and three steady compositions"
+        loading="lazy"
+      >
+      <p class="caption">
+        Unchanged G artwork at illustrative zooms, sampled at 700, 1150 and 1600
+        ms. Its rings are decorative, not warnings of timed damage. Collection,
+        pull, exposure and contact retain the
+        <a href="/lab/entities/star">standard Sun’s rules</a>.
+      </p>
+    </section>
 
-  <section class="candidate" id="white-supergiant">
-    <p class="candidate-id">A / WHITE SUPERGIANT · OBSERVED NATURE</p>
-    <h3>A luminous sea that pours outward</h3>
-    <StellarCharacterSketch
-      client:load
-      kind="giant"
-      label="White supergiant concept: pearl-white mottled photosphere and separated radial wind streaks persist through three flight compositions"
-      moments={["01 / OUTFLOW", "02 / OUTFLOW", "03 / OUTFLOW"]}
-    />
-    <div class="reading">
-      <p>
-        <strong>Basis.</strong>
-        The white-giant prompt becomes a specific A-type supergiant, inspired by
-        Deneb: an evolved luminous star with a stellar wind. Observations
-        support mass outflow and time-dependent ejections, rather than a large
-        copy of the Sun.
-        <a href="https://arxiv.org/abs/1007.2095"
-          >Deneb and Rigel spectroscopy / interferometry</a
-        >.
+    <section class="candidate" id="white-supergiant">
+      <p class="candidate-id">A / WHITE SUPERGIANT · OBSERVED NATURE</p>
+      <h3>A luminous sea that pours outward</h3>
+      <img
+        class="evidence"
+        src="/studies/stellar-characters-2026-11-11/021-plate-1.png"
+        alt="White supergiant concept: bright surface and persistent radial outflow"
+        loading="lazy"
+      >
+      <div class="reading">
+        <p>
+          <strong>Basis.</strong>
+          The white-giant prompt becomes a specific A-type supergiant, inspired
+          by Deneb: an evolved luminous star with a stellar wind. Observations
+          support mass outflow and time-dependent ejections, rather than a large
+          copy of the Sun.
+          <a href="https://arxiv.org/abs/1007.2095"
+            >Deneb and Rigel spectroscopy / interferometry</a
+          >.
+        </p>
+        <p>
+          <strong>Pilot hypothesis.</strong>
+          Abundant light tempts a sustained collection pass, but the outflow
+          makes lingering costly. Enter obliquely, take energy and turn away.
+          The distinctive choice is exposure to a persistent hostile
+          environment, rather than waiting for an eruption.
+        </p>
+        <p>
+          <strong>Visible identity.</strong>
+          A pearl-white photosphere, fine luminous mottling and disconnected
+          outward streaks. Their persistence should say “this environment stays
+          hostile”. The cool-looking colour must not imply safety.
+        </p>
+      </div>
+      <p class="caption">
+        <strong>Arcade abstraction:</strong>
+        visible wind strokes, exaggerated surface texture, compressed distances
+        and survivable harvesting. Wind is plasma, not air resistance; no
+        outward push or propulsion benefit follows from this sketch. It does not
+        predict collection yield or damage.
       </p>
-      <p>
-        <strong>Pilot hypothesis.</strong>
-        Abundant light tempts a sustained collection pass, but the outflow makes
-        lingering costly. Enter obliquely, take energy and turn away. The
-        distinctive choice is exposure to a persistent hostile environment,
-        rather than waiting for an eruption.
-      </p>
-      <p>
-        <strong>Visible identity.</strong>
-        A pearl-white photosphere, fine luminous mottling and disconnected
-        outward streaks. Their persistence should say “this environment stays
-        hostile”. The cool-looking colour must not imply safety.
-      </p>
-    </div>
-    <p class="caption">
-      <strong>Arcade abstraction:</strong>
-      visible wind strokes, exaggerated surface texture, compressed distances
-      and survivable harvesting. Wind is plasma, not air resistance; no outward
-      push or propulsion benefit follows from this sketch. It does not predict
-      collection yield or damage.
-    </p>
-  </section>
+    </section>
 
-  <section class="candidate" id="flare-dwarf">
-    <p class="candidate-id">B / ACTIVE RED DWARF · OBSERVED NATURE</p>
-    <h3>A dim ember with a violent temper</h3>
-    <StellarCharacterSketch
-      client:load
-      kind="flare"
-      label="Active red dwarf replacement concept: mottled red-orange surface, scattered bright arcs and an encompassing bloom that brightens and spreads, then subsides"
-      moments={["01 / ACTIVE ATMOSPHERE", "02 / BROAD BLOOM", "03 / SUBSIDING"]}
-    />
-    <div class="reading">
-      <p>
-        <strong>Basis.</strong>
-        Proxima Centauri is a red dwarf with observed powerful flares. Low
-        steady luminosity does not make an active small star benign.
-        <a
-          href="https://science.nasa.gov/universe/exoplanets/neighboring-stars-bad-behavior-large-and-frequent-flares/"
-          >NASA’s Proxima flare observations</a
-        >.
+    <section class="candidate" id="flare-dwarf">
+      <p class="candidate-id">B / ACTIVE RED DWARF · OBSERVED NATURE</p>
+      <h3>A dim ember with a violent temper</h3>
+      <img
+        class="evidence"
+        src="/studies/stellar-characters-2026-11-11/021-plate-2.png"
+        alt="Active red dwarf concept: surface activity and widening bloom"
+        loading="lazy"
+      >
+      <div class="reading">
+        <p>
+          <strong>Basis.</strong>
+          Proxima Centauri is a red dwarf with observed powerful flares. Low
+          steady luminosity does not make an active small star benign.
+          <a
+            href="https://science.nasa.gov/universe/exoplanets/neighboring-stars-bad-behavior-large-and-frequent-flares/"
+            >NASA’s Proxima flare observations</a
+          >.
+        </p>
+        <p>
+          <strong>Pilot hypothesis.</strong>
+          Surface activity and a broad luminous atmosphere suggest greater
+          exposure reach than the other encounters. Collection may still tempt
+          an approach, but the pilot should expect to keep more distance.
+          Whether activity also creates collection windows remains open.
+        </p>
+        <p>
+          <strong>Visible identity.</strong>
+          Dark patches and orange cells distinguish the surface. Scattered arcs
+          and an encompassing bloom carry that activity beyond the body when
+          surface detail disappears at flight scale. This replacement tests a
+          broad exposure cue; its exact texture and bloom are provisional.
+        </p>
+      </div>
+      <p class="caption">
+        <strong>Arcade abstraction:</strong>
+        visible circumstellar bloom and its relation to a larger gameplay hazard
+        region. The storyboard shows increasing activity, not an accepted
+        warning timer or a measured damage boundary. Bloom does not establish a
+        safe edge.
       </p>
-      <p>
-        <strong>Pilot hypothesis.</strong>
-        Surface activity and a broad luminous atmosphere suggest greater
-        exposure reach than the other encounters. Collection may still tempt an
-        approach, but the pilot should expect to keep more distance. Whether
-        activity also creates collection windows remains open.
-      </p>
-      <p>
-        <strong>Visible identity.</strong>
-        Dark patches and orange cells distinguish the surface. Scattered arcs
-        and an encompassing bloom carry that activity beyond the body when
-        surface detail disappears at flight scale. This replacement tests a
-        broad exposure cue; its exact texture and bloom are provisional.
-      </p>
-    </div>
-    <p class="caption">
-      <strong>Arcade abstraction:</strong>
-      visible circumstellar bloom and its relation to a larger gameplay hazard
-      region. The storyboard shows increasing activity, not an accepted warning
-      timer or a measured damage boundary. Bloom does not establish a safe edge.
-    </p>
-  </section>
+    </section>
 
-  <section class="candidate" id="white-dwarf">
-    <p class="candidate-id">C / DEBRIS-BEARING WHITE DWARF · OBSERVED NATURE</p>
-    <h3>A hard light among the remains</h3>
-    <StellarCharacterSketch
-      client:load
-      kind="ember"
-      label="Debris-bearing white dwarf concept: compact white point with a hard cross of glare and a broken copper-coloured elliptical debris belt advancing around it"
-      moments={["01 / FRAGMENTS", "02 / BELT ADVANCES", "03 / BELT ADVANCES"]}
-    />
-    <div class="reading">
+    <section class="candidate" id="white-dwarf">
+      <p class="candidate-id">
+        C / DEBRIS-BEARING WHITE DWARF · OBSERVED NATURE
+      </p>
+      <h3>A hard light among the remains</h3>
+      <img
+        class="evidence"
+        src="/studies/stellar-characters-2026-11-11/021-plate-3.png"
+        alt="Debris-bearing white dwarf concept: hard light within moving remains"
+        loading="lazy"
+      >
+      <div class="reading">
+        <p>
+          <strong>Basis.</strong>
+          A white dwarf is a dense stellar remnant, no longer powered by core
+          fusion. Disrupted planetary material is observed around some white
+          dwarfs; the debris belongs to this particular encounter, not the
+          entire family.
+          <a
+            href="https://science.nasa.gov/exoplanets/resources/life-and-death/chapter-7/"
+            >NASA on remnants</a
+          >;
+          <a
+            href="https://astrobiology.nasa.gov/news/asteroid-remains-around-dead-stars-reveal-the-likely-fate-of-our-solar-system/"
+            >observed planetary debris</a
+          >.
+        </p>
+        <p>
+          <strong>Pilot hypothesis.</strong>
+          A small luminous target sits within a moving obstacle belt. Collect on
+          the near side, watch fragments crossing the exit, and resist diving
+          toward the point. Compact appearance must not imply a weak
+          gravitational commitment.
+        </p>
+        <p>
+          <strong>Visible identity.</strong>
+          Almost featureless white glare contrasts with a broken, warm debris
+          belt. The surroundings carry the character when the body is only a
+          dot. A torn belt should read as material crossing a path, distinct
+          from the Sun’s decorative rings.
+        </p>
+      </div>
+      <p class="caption">
+        <strong>Arcade abstraction:</strong>
+        individually visible, widely spaced fragments, traversable gaps and
+        survivable near-remnant flight. The belt’s projection and drift are
+        illustrative. No salvage reward, collision law, mass or collection reach
+        is established.
+      </p>
+    </section>
+
+    <section class="candidate" id="pulsar">
+      <p class="candidate-id">D / PULSAR · OBSERVED REMNANT</p>
+      <h3>A lighthouse with no safe side forever</h3>
+      <img
+        class="evidence"
+        src="/studies/stellar-characters-2026-11-11/021-plate-4.png"
+        alt="Pulsar concept: a sweeping pair of beams"
+        loading="lazy"
+      >
+      <div class="reading">
+        <p>
+          <strong>Basis.</strong>
+          A pulsar is a rotating neutron-star remnant whose radiation beams can
+          sweep across an observer like a lighthouse. It is neither a blue Sun
+          nor a periodically exploding star.
+          <a href="https://www.nasa.gov/universe/stars/neutron-stars/pulsars/"
+            >NASA on pulsars</a
+          >.
+        </p>
+        <p>
+          <strong>Pilot hypothesis.</strong>
+          Follow a rotating gap or cross just after the sweep; keeping one
+          distance no longer answers the danger. The first opportunity could be
+          passage through the encounter rather than collection. Ordinary solar
+          collectors’ response to the emission remains an unresolved fiction
+          choice.
+        </p>
+        <p>
+          <strong>Visible identity.</strong>
+          An almost point-like white core, sparse violet structure and two
+          continuous opposing beams. Rotation, rather than an expanding circular
+          pulse, carries the warning. The central surface is deliberately not
+          the main recognition cue.
+        </p>
+      </div>
+      <p class="caption">
+        <strong>Arcade abstraction:</strong>
+        normally invisible emission made visible, a three-dimensional beam
+        mapped into the play plane, a greatly slowed sweep and survivable gaps.
+        The sketch establishes no radius beyond which the beam is safe.
+      </p>
+    </section>
+
+    <section>
+      <h3>The blue-dwarf prompt / a different kind of uncertainty</h3>
       <p>
-        <strong>Basis.</strong>
-        A white dwarf is a dense stellar remnant, no longer powered by core
-        fusion. Disrupted planetary material is observed around some white
-        dwarfs; the debris belongs to this particular encounter, not the entire
+        Stellar-evolution calculations predict that some red dwarfs eventually
+        become hotter blue dwarfs, on timescales longer than the current age of
+        the Universe. This is a predicted future state, not an observed
+        present-day population, and “blue” does not mean cold.
+        <a href="https://onlinelibrary.wiley.com/doi/10.1002/asna.200510440"
+          >Adams, Bodenheimer and Laughlin’s evolution calculations</a
+        >. It could belong in far-future fiction, but that basis alone supplies
+        no distinctive surface activity or pilot decision. A blue-painted small
+        Sun would not answer this study. Its encounter character remains
+        unresolved; it is neither selected nor scientifically ruled out.
+      </p>
+      <h3>What this comparison can settle</h3>
+      <p>
+        These alternatives separate persistent outflow, broad stellar activity,
+        moving material and a rotating sweep. Their colours support temperature
+        and contrast; surface and surroundings carry the stronger distinctions.
+        The saturated palettes, glare and exaggerated structure are graphic
+        proposals, not naked-eye reconstructions of the objects.
+      </p>
+      <p>
+        The plates make the proposed characters inspectable together. They do
+        not establish that warnings are sufficient during a real approach, or
+        that collection is worth the danger. A retained direction would next
+        need its cue tested in a moving production flight composition with the
+        actual HUD, ship, camera and competing effects. Field profiles and
+        timing would follow that design evidence. No finding from the earlier
+        spatial study selects any of these directions.
+      </p>
+    </section>
+    <section>
+      <h3 id="retained-direction">
+        Retained direction / Light, reach and exposure must agree
+      </h3>
+      <p>
+        Stellar variety changes how a star interacts with its surroundings, with
+        visible identity communicating those differences. A colour substitution
+        alone is insufficient. The standard Sun remains the established
+        reference; its simple artwork does not limit the visual vocabulary of
+        other natures. The comparison supports this direction, not acceptance of
+        every depicted object or effect.
+      </p>
+      <p>
+        The white supergiant’s abundant outward light suggests collection from
+        farther away. The debris-bearing remnant suggests a smaller energy
+        opportunity, while surface activity and atmospheric bloom suggest a
+        larger exposure region for the active star. These relationships are
+        intended game characters, not tuned profiles or measurements inferred
+        from picture brightness. In particular, a hot white dwarf still
+        radiates; compact size alone does not determine collector income. Exact
+        yields and reaches remain open, and all cues must eventually agree with
+        the actual fields.
+      </p>
+      <p>
+        Surface differentiation and surrounding light are retained qualities for
+        the active star. The local eruption drawing is replaced by the
+        broad-bloom proposal above; the replacement’s appearance and event
+        timing remain unaccepted. The pulsar remains optional. A vertical,
+        bottom-to-top light axis with pulsing is a possible alternative to the
+        rotating sweep, still requiring a concrete comparison. An intensity
+        pulse on a fixed axis would be a deliberate arcade translation of pulsar
+        emission, not the same phenomenon as a lighthouse beam crossing the
+        observer.
+      </p>
+      <h3>One nature across World, FX and LFX</h3>
+      <p>
+        The encounter can use the three existing rendering layers together. A
+        proposed division gives World the body, surface and physical
+        surroundings; persistent FX the emitted light and fading aftermath; and
+        LFX the current glare, bloom or active pulse. Their contributions should
+        express the same stellar state. This does not require every star to use
+        every layer, and fading history must not masquerade as a current hazard
+        boundary. The plates remain single-canvas sketches; they do not
+        demonstrate that composition in the production stack.
+      </p>
+      <p>
+        Field geometry and collection strength already have limited supporting
+        evidence from the earlier study. Repeating collection flights does not
+        address the remaining uncertainty: which one additional stellar
+        character complements the standard Sun without requiring a catalogue of
+        variants. Exact artwork, field tuning and pulsar inclusion remain open.
+      </p>
+    </section>
+  </details>
+  <details class="retained-round">
+    <summary>02.2 / Surface, emitted light and a changing temperament</summary>
+    <section>
+      <h2 id="022">02.2 / One steady bargain, one changing temperament</h2>
+      <p>
+        The active star is the selected direction for this comparison, not yet
+        an approved production star. This experiment adds time: a pilot can
+        learn the standard Sun’s steady radial tradeoff, while the active star
+        also asks whether this is a good moment to approach. That is an
+        additional kind of difference, beyond the static contrast now
+        prioritised below. The supergiant, debris-bearing remnant and pulsar
+        remain available alternatives outside this focused round.
+      </p>
+      <p>
+        The retained sequence samples four moments of the illustrative cycle.
+        Both bodies have the same apparent radius and the same stationary Wasp
+        alongside them, removing size as an explanation for the difference. The
+        active surface gathers bright regions, short arcs intensify, and its
+        luminous atmosphere spreads before subsiding. The Sun’s decorative rings
+        continue throughout; they imply no change to its established hazard.
+      </p>
+      <div class="sequence">
+        <figure>
+          <img
+            class="evidence"
+            src="/studies/stellar-characters-2026-11-11/022-quiet.png"
+            alt="Quiet active star beside the steady Sun"
+            loading="lazy"
+          >
+          <figcaption>Quiet · 1 s</figcaption>
+        </figure>
+        <figure>
+          <img
+            class="evidence"
+            src="/studies/stellar-characters-2026-11-11/022-buildup.png"
+            alt="Gathering hotspots and widening atmosphere"
+            loading="lazy"
+          >
+          <figcaption>Buildup · 4.8 s</figcaption>
+        </figure>
+        <figure>
+          <img
+            class="evidence"
+            src="/studies/stellar-characters-2026-11-11/022-peak.png"
+            alt="Peak arcs and broad active-star bloom"
+            loading="lazy"
+          >
+          <figcaption>Peak · 6.8 s</figcaption>
+        </figure>
+        <figure>
+          <img
+            class="evidence"
+            src="/studies/stellar-characters-2026-11-11/022-recovery.png"
+            alt="Activity subsides during recovery"
+            loading="lazy"
+          >
+          <figcaption>Recovery · 10 s</figcaption>
+        </figure>
+      </div>
+      <p class="caption">
+        Deterministic art fixture, sampled in four paused moments. Fixed view,
+        1040 × 420 logical pixels, equal 46 px body radii, production Wasp
+        drawings at flight scale. The illustrative 12 s cycle has Quiet at 0–3
+        s, Buildup at 3–6 s, Peak at 6–8 s and Recovery at 8–12 s. These are
+        inspection intervals, not accepted event timing. Retained moments are 1,
+        4.8, 6.8 and 10 s, captured at closure on 11 November 2026; these are
+        not earlier-run recordings.
+      </p>
+      <h3>What the activity should tell the pilot</h3>
+      <p>
+        Quiet is an invitation to consider approaching, not a claim of safety.
+        Gathering surface light and a widening atmosphere propose “prepare to
+        leave”; the peak proposes “keep away”; subsiding light permits a new
+        assessment. Reliable buildup and an escape-length warning would be
+        arcade inventions, rather than promises supplied by observed stellar
+        flares. Whether higher activity enlarges exposure reach, increases
+        damage, or both remains open. Collection does not automatically rise
+        with the flash.
+      </p>
+      <h3>Surface, emitted light and present activity</h3>
+      <p>
+        This fixture uses the shared FlightLayers composition, including its FX
+        bloom and layer blends, and the shared FxSurface for fading light. World
+        carries the proposed surface; FX carries emitted arcs and their brief
+        residue; LFX carries the present luminous atmosphere. Layer switches in
+        the retired fixture exposed those contributions. Each captured moment
+        rebuilt light history at 60 Hz, with the image held without adding
+        light. The stellar painter is local to this study, and the retained 02.1
+        plate remains a separate fixed variant.
+      </p>
+      <p>
+        The example tests a changing character alongside the Sun, not approach
+        survival. It runs no flight physics, collection, damage or candidate
+        hazard boundaries, and contains no full flight HUD or competing combat
+        effects. A bloom’s visible edge is not a damage edge. The remaining
+        visual question is whether the buildup reads as a change of danger
+        before the brightest moment, rather than as decoration or a promise of
+        extra energy. The exact surface, light treatment, timing and production
+        implementation are unaccepted.
+      </p>
+      <h3>Implication / Static contrasts before an activity cycle</h3>
+      <p>
+        The layered example usefully separates surface, emitted light and
+        present luminosity, but an activity cycle exceeds the immediate need. A
+        second stellar character can instead have constant fields with different
+        relationships. Ordinary stars could keep similar body, hazard and
+        collection proportions across their sizes, while gravity reach crosses
+        from slightly inside collection for small stars to slightly outside it
+        for large ones. That is a proposed family rule, not adopted gravity
+        tuning or an established physical scaling law.
+      </p>
+      <p>
+        A contrasting static encounter could offer little collectable energy yet
+        remain dangerous across a broad region, possibly beyond its collection
+        reach, with gravity defined independently. “Cold but dangerous” is a
+        working character prompt; its scientific basis and temperature remain to
+        be chosen. The useful contrast is the relationship of opportunity to
+        danger, rather than a requirement for timed eruptions. Neither field
+        ratios nor hazard extending beyond collection are settled. Existing
+        spatial evidence is sufficient to motivate this comparison without
+        another collection-flight experiment.
+      </p>
+      <p>
+        Production currently draws the standard Sun’s body and decorative
+        expanding rings together on World: the star pass in
+        <code>packages/mode-a/src/lib/flight-frame.ts</code>
+        calls
+        <code>packages/core/src/lib/assets/star.ts</code>. The painter’s
+        <code>glowColor</code>
+        colours those strokes; it does not supply a separate FX bloom. The field
+        HUD is also on World, in a separate pass. Separating the star’s emitted
+        light from its body is therefore a distinct rendering question worth
+        investigating even for steady stars; it requires no fluctuating gameplay
+        fields. This study has not changed production rendering.
+      </p>
+    </section>
+  </details>
+  <details class="retained-round">
+    <summary>02.3 / Two steady families and their first size curves</summary>
+    <section>
+      <h2 id="023">02.3 / Two steady families, each with its own size curve</h2>
+      <p>
+        “Stable yellow” is a working game-family name, with the standard Sun as
+        its reference, not a claim that one scientific stellar class spans this
+        size range. The second family is defined first by its bargain: low
+        collection yield and broad danger, with gravity independent of either.
+        Its colour, name and scientific identity remain open. Surface and
+        surrounding light should distinguish the two before their HUD lines
+        explain the difference.
+      </p>
+      <p>
+        The retained capture shows both stars at size 1 with the field HUD
+        enabled. Both graphs show the full earlier proposed gradient, with a
+        cursor at the inspected size. Body size means radius; every field reach
+        is measured from the centre. The scenes share a fixed camera scale and
+        fixed Wasp positions. Enlarged surface views retain the size
+        relationship. The scene and graphs read the same profile function, so
+        changing size changes the body, light, HUD and numeric readouts
+        together.
+      </p>
+      <img
+        class="evidence"
+        src="/studies/stellar-characters-2026-11-11/023-two-families.png"
+        alt="Earlier yellow and low-yield hypotheses at size one, HUD enabled, with radius and gravity-strength curves"
+        loading="lazy"
+      >
+      <h3>Starting curves / explicit hypotheses</h3>
+      <p>
+        Size runs from 0.5 to 2 times the reference radius. In the yellow
+        family, body, hazard and collection radii grow linearly; gravity reach
+        grows with size to the power 1.12. Size 1 retains the standard Sun’s
+        radius, field reaches and peak collection. Gravity therefore ends a
+        little inside collection at the small end and a little outside it at the
+        large end. This is a proposed game relationship, not an astrophysical
+        scaling law.
+      </p>
+      <p>
+        The contrasting family starts with the same body radius, 42% of the
+        Sun’s collection reach, 155% of its hazard reach and 90% of its gravity
+        reach. Their size exponents are respectively 1, 0.85, 1.05 and 1.25. The
+        chosen example keeps peak collection at 2 E/s per collector-equivalent,
+        versus the yellow family’s 7.5 E/s. These values make the proposed
+        relationship inspectable; none is accepted tuning. At some sizes the
+        hazard exceeds collection, meaning that collecting would require
+        exposure. That consequence is visible, not a settled requirement for the
         family.
-        <a
-          href="https://science.nasa.gov/exoplanets/resources/life-and-death/chapter-7/"
-          >NASA on remnants</a
-        >;
-        <a
-          href="https://astrobiology.nasa.gov/news/asteroid-remains-around-dead-stars-reveal-the-likely-fate-of-our-solar-system/"
-          >observed planetary debris</a
-        >.
       </p>
       <p>
-        <strong>Pilot hypothesis.</strong>
-        A small luminous target sits within a moving obstacle belt. Collect on
-        the near side, watch fragments crossing the exit, and resist diving
-        toward the point. Compact appearance must not imply a weak gravitational
-        commitment.
+        Gravity strength is shown separately at a fixed 100 u from the centre.
+        The study derives a hypothetical mass for each proposed reach using the
+        existing gravity law and cutoff; it changes no gravity constants or
+        production settings. The shared mass-law functions produce reach and
+        pull. No ship trajectory or survival outcome is inferred from the
+        graphs.
       </p>
+      <h3>Appearance before taxonomy</h3>
       <p>
-        <strong>Visible identity.</strong>
-        Almost featureless white glare contrasts with a broken, warm debris
-        belt. The surroundings carry the character when the body is only a dot.
-        A torn belt should read as material crossing a path, distinct from the
-        Sun’s decorative rings.
+        Both examples deliberately stay near the warm palette. The yellow family
+        keeps its smooth body and decorative rings, with a proposed steady LFX
+        halo. The contrasting family proposes a mottled surface and broken
+        circumstellar light through persistent FX and its shared bloom. This
+        tests whether structure and luminous extent can carry identity without
+        relying on blue versus yellow. Neither the palette nor these exact layer
+        assignments are selected. The new halo is a study proposal, not current
+        production Sun artwork.
       </p>
-    </div>
-    <p class="caption">
-      <strong>Arcade abstraction:</strong>
-      individually visible, widely spaced fragments, traversable gaps and
-      survivable near-remnant flight. The belt’s projection and drift are
-      illustrative. No salvage reward, collision law, mass or collection reach
-      is established.
-    </p>
-  </section>
-
-  <section class="candidate" id="pulsar">
-    <p class="candidate-id">D / PULSAR · OBSERVED REMNANT</p>
-    <h3>A lighthouse with no safe side forever</h3>
-    <StellarCharacterSketch
-      client:load
-      kind="pulsar"
-      label="Pulsar concept: a tiny white-violet point and two opposed pale beams rotate from above the fixed Wasp, across it, then below it"
-      moments={[
-        "01 / SWEEP APPROACHES",
-        "02 / BEAM CROSSES",
-        "03 / SWEEP PASSES",
-      ]}
-    />
-    <div class="reading">
-      <p>
-        <strong>Basis.</strong>
-        A pulsar is a rotating neutron-star remnant whose radiation beams can
-        sweep across an observer like a lighthouse. It is neither a blue Sun nor
-        a periodically exploding star.
-        <a href="https://www.nasa.gov/universe/stars/neutron-stars/pulsars/"
-          >NASA on pulsars</a
-        >.
+      <p class="caption">
+        Static deterministic fixture: 1040 × 470 logical pixels, 0.28 px/u, no
+        random seed, Sun artwork sampled at 900 ms. FX reconstructs a steady
+        half-second history through the shared FxSurface; no cycle runs. World,
+        FX and LFX use shared FlightLayers. HUD lines use the proposed profile
+        geometry: the production Sun HUD still assumes coincident collection and
+        gravity reaches and cannot express this comparison directly. This sketch
+        runs no collection, damage or physics simulation. Light extent is a cue,
+        not an exact field boundary; the revealed HUD supplies those boundaries.
       </p>
-      <p>
-        <strong>Pilot hypothesis.</strong>
-        Follow a rotating gap or cross just after the sweep; keeping one
-        distance no longer answers the danger. The first opportunity could be
-        passage through the encounter rather than collection. Ordinary solar
-        collectors’ response to the emission remains an unresolved fiction
-        choice.
-      </p>
-      <p>
-        <strong>Visible identity.</strong>
-        An almost point-like white core, sparse violet structure and two
-        continuous opposing beams. Rotation, rather than an expanding circular
-        pulse, carries the warning. The central surface is deliberately not the
-        main recognition cue.
-      </p>
-    </div>
-    <p class="caption">
-      <strong>Arcade abstraction:</strong>
-      normally invisible emission made visible, a three-dimensional beam mapped
-      into the play plane, a greatly slowed sweep and survivable gaps. The
-      sketch establishes no radius beyond which the beam is safe.
-    </p>
-  </section>
-
+    </section>
+  </details>
   <section>
-    <h3>The blue-dwarf prompt / a different kind of uncertainty</h3>
+    <h2 id="024">02.4 / The yellow star beside a firing ship</h2>
     <p>
-      Stellar-evolution calculations predict that some red dwarfs eventually
-      become hotter blue dwarfs, on timescales longer than the current age of
-      the Universe. This is a predicted future state, not an observed
-      present-day population, and “blue” does not mean cold.
-      <a href="https://onlinelibrary.wiley.com/doi/10.1002/asna.200510440"
-        >Adams, Bodenheimer and Laughlin’s evolution calculations</a
-      >. It could belong in far-future fiction, but that basis alone supplies no
-      distinctive surface activity or pilot decision. A blue-painted small Sun
-      would not answer this study. Its encounter character remains unresolved;
-      it is neither selected nor scientifically ruled out.
-    </p>
-    <h3>What this comparison can settle</h3>
-    <p>
-      These alternatives separate persistent outflow, broad stellar activity,
-      moving material and a rotating sweep. Their colours support temperature
-      and contrast; surface and surroundings carry the stronger distinctions.
-      The saturated palettes, glare and exaggerated structure are graphic
-      proposals, not naked-eye reconstructions of the objects.
+      The earlier intended roster was two families: stable yellows, with the Sun
+      as their reference, and low-yields. Their size gradients are a retained
+      direction; 02.3’s exact curves remain proposals. The low-yield’s final
+      identity and appearance are open, including whether any qualities of the
+      hard light among remains belong to it. The closing decision takes the
+      yellow family forward alone; low-yields remain outside delivery.
     </p>
     <p>
-      The plates make the proposed characters inspectable together. They do not
-      establish that warnings are sufficient during a real approach, or that
-      collection is worth the danger. A retained direction would next need its
-      cue tested in a moving production flight composition with the actual HUD,
-      ship, camera and competing effects. Field profiles and timing would follow
-      that design evidence. No finding from the earlier spatial study selects
-      any of these directions.
+      Outward stellar rings should be judged beside something they can cross.
+      This comparison holds a real Wasp near the Sun, with its ion engine
+      firing. The left scene retains production rendering. The right keeps the
+      same yellow body on World and moves the existing outward rings to LFX,
+      above the ship and accumulated engine light. The two retained moments show
+      the rings at different positions beside the same firing ship. These are
+      composition samples, not a flight trajectory.
+    </p>
+    <figure>
+      <img
+        class="evidence"
+        src="/studies/stellar-characters-2026-11-11/024-layers-1_5s.png"
+        alt="Production World-only star beside accepted World body, FX corona and LFX rings, both next to a firing Wasp at 1.5 seconds"
+        loading="lazy"
+      >
+      <figcaption>
+        Layer composition reference · 1.5 s, radius 35, ship distance 85 u.
+      </figcaption>
+    </figure>
+    <details>
+      <summary>Second moment / live rings cross the ship</summary>
+      <img
+        class="evidence"
+        src="/studies/stellar-characters-2026-11-11/024-layers-2_5s.png"
+        alt="Same layer comparison at 2.5 seconds, with rings in their new positions"
+        loading="lazy"
+      >
+      <p class="caption">
+        Same seed, fixed ship and layer settings; inspection time 2.5 s. This
+        pair retains two positions, not a continuous recording of smoothness or
+        persistence.
+      </p>
+    </details>
+    <h3>Live rings first; persistent glow as a separate choice</h3>
+    <p>
+      LFX redraws the rings at their current positions. They cross the ship
+      without leaving old circles behind. The optional steady FX corona adds a
+      cached warm glow through the same persistent light surface as the engine.
+      The combined World body, FX corona and LFX rings are the accepted
+      yellow-star composition reference. The World-only view is the baseline;
+      only the right scene with all three layers visible is accepted. Its
+      radius-35 surface is superseded by the enlarged 02.5 family.
+    </p>
+    <h3 id="accepted-yellow">Accepted / A solid body inside light</h3>
+    <p>
+      The warm corona gives the yellow body a luminous presence, while the
+      outward rings cross a nearby ship and its engine light instead of sitting
+      behind them. This combination supplies the standard-size composition
+      reference; 02.5 subsequently settles the family’s larger surface
+      proportions. The exact retained variant is the right scene with rings set
+      to LFX, steady FX corona enabled, and World, FX and LFX all visible. Its
+      default inspection moment remains 1.5 s, ship distance 85 u and rotation
+      off; those are replay conditions, not gameplay constraints.
+    </p>
+    <p>
+      Retain the existing ring effect while the family is explored. It works in
+      the accepted composition; acceptance does not claim that circles are the
+      only or best possible stellar rays. A little irregularity or breathing in
+      the corona remains optional future visual exploration. Steady light is
+      sufficient for the accepted reference, and cosmetic variation would not
+      imply fluctuating collection, danger or gravity. The low-yield appearance
+      is still open; it should be investigated against this yellow reference.
+    </p>
+    <p>
+      Both scenes use the production Simulation, engine output, ship painter,
+      FlightFx, ordered frame passes and FlightLayers composition. The right
+      scene splits the existing star painter with body and outside-body clips;
+      it invents no second formula for the rings. The corona alone is new study
+      artwork. Production stars, field HUD and gameplay are unchanged.
+      Decorative rings do not indicate an expanding damage boundary.
+    </p>
+    <p class="caption">
+      Retained held-pose rendering fixture at 1.5 and 2.5 s, captured at
+      closure. Seed 2401, default Wasp, both thrust inputs held, no weapons,
+      Practice resource protection, encounters off and planets removed. Ship
+      position and velocity are staged before every production 1/60 s tick.
+      Initial centre-distance 85 u, selectable 60–150 u; heading π, optional
+      rotation 0.45 rad/s. Each view is 520 × 440 logical pixels, zoom 2, camera
+      centred at (990, 540); Sun at (960, 540), radius 35. Seeking rebuilds
+      engine and light history. The engine readout reports delivered output.
+      This shows composition and overlap, not flight handling, exposure cost or
+      escape.
     </p>
   </section>
   <section>
-    <h3 id="retained-direction">
-      Retained direction / Light, reach and exposure must agree
+    <h2 id="025">02.5 / A warm size range with a stronger gravity contrast</h2>
+    <p>
+      The yellow family is accepted on 11 November 2026. Their World body, FX
+      corona and LFX rings supply the retained composition. The relative size
+      range, warm palette and gravity-reach exponent 1.45 are retained
+      directions. The remaining proportion was the surface against the ship: all
+      three bodies looked too small. This revision doubles surface radii while
+      preserving every field’s centre-distance radius and gravity mass. The
+      enlarged variant is the final visual reference; production delivery
+      remains separate work.
+    </p>
+    <p>
+      The revised surface radii are 36 / 70 / 140 u, replacing 18 / 35 / 70 u.
+      These are radii, so their diameters are 72 / 140 / 280 u. Collection
+      remains 167 / 324 / 648 u and hazard remains 51 / 100 / 200 u from the
+      centre; gravity retains its previous reach and pull at each family size.
+      Fields do not move outward with the surface. The wider control limits were
+      inspection bounds; the accepted initial surface range is 36–140 u. The
+      same firing Wasp provides a size reference in every view. The small end
+      should remain recognisable as a star beside the ship; the large end should
+      feel imposing without losing the ability to read its body and surrounding
+      light together.
+    </p>
+    <figure>
+      <img
+        class="evidence"
+        src="/studies/stellar-characters-2026-11-11/025-accepted-family.png"
+        alt="Accepted yellow family: surface radii 36, 70 and 140 beside the same Wasp, with complete HUD field overviews and fixed field dimensions"
+      >
+      <figcaption>
+        Accepted variant · doubled surfaces, warm colour enabled, exponent 1.45.
+        The control positions in this retained capture identify the inspected
+        settings.
+      </figcaption>
+    </figure>
+    <figure>
+      <img
+        class="evidence"
+        src="/studies/stellar-characters-2026-11-11/025-accepted-curves.png"
+        alt="Accepted radius and outer collection pull curves, compared with the earlier exponent 1.12"
+        loading="lazy"
+      >
+      <figcaption>
+        The same family profile drives both graphs. The hard gravity cutoff
+        causes the jump in the pull graph.
+      </figcaption>
+    </figure>
+    <p class="caption">
+      <a
+        href="/studies/stellar-characters-2026-11-11/025-before-surface-enlargement.png"
+        >Earlier surface comparison</a
+      >: radii 18 / 35 / 70 u, exponent 1.45, warm colour enabled, the same
+      ship, field boundaries and camera scales. The larger surfaces reduce the
+      gap to the unchanged hazard boundary: the revised standard Sun has 30 u
+      between its radius-70 surface and radius-100 hazard reach.
+    </p>
+    <h3>
+      Make smaller collection gentler and larger collection more committed
     </h3>
     <p>
-      Stellar variety changes how a star interacts with its surroundings, with
-      visible identity communicating those differences. A colour substitution
-      alone is insufficient. The standard Sun remains the established reference;
-      its simple artwork does not limit the visual vocabulary of other natures.
-      The comparison supports this direction, not acceptance of every depicted
-      object or effect.
+      Surface, hazard and collection radii grow linearly within the revised
+      family; the surface alone is twice its earlier size. The retained starting
+      gravity-reach exponent is 1.45, versus 1.12 in 02.3. Both curves meet the
+      reference fields at the revised Sun surface radius 70. At the default
+      small end, gravity reaches about 74% of collection; at the large end,
+      about 137%. The retained exponent changes the family’s mass scaling
+      without changing the gravity force law or cutoff constant.
     </p>
     <p>
-      The white supergiant’s abundant outward light suggests collection from
-      farther away. The debris-bearing remnant suggests a smaller energy
-      opportunity, while surface activity and atmospheric bloom suggest a larger
-      exposure region for the active star. These relationships are intended game
-      characters, not tuned profiles or measurements inferred from picture
-      brightness. In particular, a hot white dwarf still radiates; compact size
-      alone does not determine collector income. Exact yields and reaches remain
-      open, and all cues must eventually agree with the actual fields.
+      A second graph samples pull at 80% of each star’s collection reach. This
+      compares the same relative place to collect, rather than the same absolute
+      distance from differently sized bodies. The proposed small star has an
+      outer collection region beyond gravity’s cutoff; the large star pulls
+      harder there than under 02.3’s curve. That is a concrete opportunity and
+      commitment difference. It does not by itself establish survival difficulty
+      or net energy gain; collection rates, propulsion and hazard still matter.
     </p>
+    <h3>One warm family, with variation across size</h3>
     <p>
-      Surface differentiation and surrounding light are retained qualities for
-      the active star. The local eruption drawing is replaced by the broad-bloom
-      proposal above; the replacement’s appearance and event timing remain
-      unaccepted. The pulsar remains optional. A vertical, bottom-to-top light
-      axis with pulsing is a possible alternative to the rotating sweep, still
-      requiring a concrete comparison. An intensity pulse on a fixed axis would
-      be a deliberate arcade translation of pulsar emission, not the same
-      phenomenon as a lighthouse beam crossing the observer.
+      The proposed palette goes from deeper warm orange at the small end,
+      through the established Sun amber at surface radius 70, toward pale gold
+      at the large end. The body, ring tint and cached corona change together;
+      the composition stays World + FX + LFX. The comparison also isolated size
+      by turning colour variation off; the accepted variant keeps it on. This is
+      an arcade family cue, not an adopted relationship between physical radius
+      and stellar temperature, and it introduces no blue or separate stellar
+      taxonomy.
     </p>
-    <h3>One nature across World, FX and LFX</h3>
-    <p>
-      The encounter can use the three existing rendering layers together. A
-      proposed division gives World the body, surface and physical surroundings;
-      persistent FX the emitted light and fading aftermath; and LFX the current
-      glare, bloom or active pulse. Their contributions should express the same
-      stellar state. This does not require every star to use every layer, and
-      fading history must not masquerade as a current hazard boundary. The
-      plates remain single-canvas sketches; they do not demonstrate that
-      composition in the production stack.
-    </p>
-    <p>
-      The next focused comparison should test an accepted character relationship
-      in the shared flight composition: whether distant collection, low yield or
-      greater exposure is anticipated from the star while the real HUD and ship
-      compete for attention. Exact artwork, field tuning and pulsar inclusion
-      remain exploration choices before readiness and scope can be settled.
+    <p class="caption">
+      Fixed 1.5 s inspection moment, seed 2401, default Wasp with both thrust
+      inputs held, Practice protection, no encounters or planets. Each panel
+      used the study’s 02.4 light rig, zoom 1, the same 520 × 440 logical view
+      and camera centre (990, 540). The additional HUD overviews centre on the
+      star at (960, 540), share a scale fitted to the largest proposed field,
+      and use the shared HUD painter with the proposed field radii. Their
+      inactive rings show geometry rather than collection or damage activity.
+      Ship centre-distance remains 44 / 85 / 170 u at the default sizes (85/70
+      times the revised surface radius); the ship keeps its production size. The
+      corona and decorative rays follow the enlarged body, while HUD field
+      boundaries retain their previous radii. Candidate gravity masses are
+      derived with the existing law. Production collection/exposure profiles are
+      not replaced in the held rendering fixture; the graphs describe the
+      proposed family, not a resource-limited simulation. These captures
+      establish the accepted initial family limits, not production tuning or
+      verified gameplay balance. 02.3 remains separately available.
     </p>
   </section>
   <section>
-    <h2>03 / To be developed after exploration</h2>
+    <h2 id="03">03 / One accepted family, with separate fields</h2>
+    <p>
+      This study closes <strong>accepted</strong>, with a positive design
+      assessment. The useful result is a coherent stable-yellow / G-inspired
+      game family: different size, colour and gravitational commitment,
+      expressed through a solid World body, warm persistent FX corona and
+      outward LFX rings. The enlarged surfaces beside the unchanged ship resolve
+      the final proportion concern. “G-class” is the game-family shorthand here;
+      this arcade gradient is not a physical law for real G spectral-class
+      stars.
+    </p>
+    <p>
+      The opening sought substantially different stellar natures. Exploration
+      showed that static field relationships and a better yellow reference
+      already supply a valuable, manageable delivery. The closing decision
+      intentionally narrows the result to that family. Low-yields, white
+      supergiants, debris-bearing remnants, pulsars and activity cycles are
+      retained ideas, not an accepted roster or delivery dependency. The earlier
+      failed study’s proposed scope does not return through this closure.
+    </p>
+    <h3>Accepted dimensions and visible identity</h3>
+    <p>
+      Let <code>s = surface radius / 70</code>, with an initial range
+      <code>36/70 ≤ s ≤ 2</code>. Surface radius is <code>70s</code>, hazard
+      radius <code>100s</code>, collection radius <code>R₀s</code> and gravity
+      radius <code>R₀s^1.45</code>, where <code>R₀ ≈ 324.037 u</code> is the
+      existing reference gravity reach. All reaches are measured from the
+      centre. Doubling the surface does not add that increase to any field. With
+      the current inverse-square law, mass is <code>5250s^2.9</code>; falloff,
+      gravitational constant and cutoff remain unchanged.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Initial example</th>
+          <th>Surface radius</th>
+          <th>Hazard</th>
+          <th>Collection</th>
+          <th>Gravity</th>
+          <th>Pull at 0.8 × collection</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Small</th>
+          <td>36 u</td>
+          <td>51 u</td>
+          <td>167 u</td>
+          <td>123.5 u</td>
+          <td>0 u/s²</td>
+        </tr>
+        <tr>
+          <th>Reference</th>
+          <td>70 u</td>
+          <td>100 u</td>
+          <td>324 u</td>
+          <td>324 u</td>
+          <td>78.1 u/s²</td>
+        </tr>
+        <tr>
+          <th>Large</th>
+          <td>140 u</td>
+          <td>200 u</td>
+          <td>648 u</td>
+          <td>885 u</td>
+          <td>145.8 u/s²</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Small stars leave outer collection space beyond gravity’s cutoff. Large
+      stars pull before collection begins and pull harder at the same relative
+      collection distance. The enlarged standard surface leaves 30 u before the
+      hazard boundary. These are geometric and force-law consequences, not
+      measured survival difficulty or net energy gain.
+    </p>
+    <p>
+      Keep the accepted deeper orange → amber → pale gold gradient, with the
+      reference amber at radius 70; body, decorative ring tint and corona vary
+      together. World HUD retains solid green collection, dashed green gravity
+      and dotted amber danger, including distinct independent boundaries. The
+      complete colour anchors, interpolation and numeric samples are retained in
+      <a href="/studies/stellar-characters-2026-11-11/accepted-reference.json"
+        >the reference data</a
+      >. Cosmetic corona breathing is optional later work; no timed gameplay
+      field or new light-ray design is required.
+    </p>
+    <h3>Reusable systems and required adaptations</h3>
+    <p>
+      Reuse the shared star painter, FlightLayers, ordered flight-frame passes,
+      FlightFx persistence, cached emission stamps and existing mass-law
+      functions. The study’s body/rings clipping demonstrates layering;
+      production should expose body and ring drawing through their shared owner
+      rather than maintain a separate study renderer. The shared HUD painter
+      already supports independent proposed hazard and gravity radii.
+    </p>
+    <p>
+      Production still creates one radius-35 G Sun for every mode. In
+      <code>setStarMassWell</code>, <code>influenceRadius</code> follows
+      gravity;
+      <code>solarField</code>
+      reads that same value as collection reach.
+      <code>starPull</code>
+      also uses it as the gravity gate. Damage uses the global standard-Sun
+      profile. Separate validated per-star collection, exposure and mass-well
+      definitions are therefore required before these pictures can become
+      gameplay. Stock ships, assembled builds, derelicts and Gauntlet actors
+      must consume the same definitions, not HUD-only radii.
+    </p>
+    <p>
+      The accepted result settles field boundaries, surface scaling and visible
+      identity. It does not settle the collection/exposure shoulder or peaks,
+      size distribution, or encounter placement. Enlarging the body changes
+      collision clearance and can place the old radius-55 shoulder below its
+      surface. A conservative implementation proposal preserves the existing
+      centre-distance profile scaled by <code>s</code>, including shoulder
+      <code>55s</code>, peaks 7.5 E/s and 1.5 hull/s and collection edge
+      fraction 0.1; this remains a proposal requiring an explicit implementation
+      decision, not an inference from the held-pose artwork. Do not silently
+      attach a new shoulder to the enlarged surface.
+    </p>
+    <h3>Modes, Playground and the challenge boundary</h3>
+    <p>
+      The accepted mode boundary is <strong>Derelicts and Gauntlet</strong>.
+      Recommended first delivery: select a deterministic size within 36–140 u
+      from the run seed in those modes, using an isolated random stream so the
+      selection does not perturb other encounters. The sampling distribution is
+      still provisional; it is not a new player tuning control. Keep the Sun
+      steady for the whole run. Survival and Practice retain their existing Sun,
+      physics and rendering; the decorative landing system also stays on its
+      existing definition.
+    </p>
+    <p>
+      Playground currently unlocks ships and parts and disables scoring while
+      retaining the selected mode’s simulation. The recommendation is to keep
+      that meaning: Derelicts and Gauntlet get the family with Playground Off or
+      On; switching Playground does not independently change Survival or
+      Practice stars. Extending Playground into a world-feature switch remains
+      an unresolved product choice outside this first scope. This recommendation
+      does not record that extension as approved.
+    </p>
+    <p>
+      The app version and leaderboard challenge identifier are independent. With
+      scored Survival untouched, this scope alone supplies no reason to rotate
+      its challenge or change score records and Firestore rules. Revisit that
+      decision if Survival rules change. A release such as 0.7 can communicate
+      the gameplay addition, but the release number is not selected here and
+      this study changes no version or challenge identifier.
+    </p>
+    <h3>Evidence and limits</h3>
+    <p>
+      The retained 02.5 composition is the accepted final variant: radii 36 / 70
+      / 140, exponent 1.45, warm colour enabled, World + FX + LFX visible, HUD
+      shown. Seed 2401, default Wasp, both thrust inputs held, fixed 1.5 s
+      moment, Practice resource protection, no planets or encounters. Close-ups
+      share zoom 1; complete overviews share a scale fitted to the largest
+      gravity field. Ship centres remain about 44 / 85 / 170 u from the star.
+      Captures were made at closure, 11 November 2026; they preserve the
+      selected conditions rather than proving earlier states.
+    </p>
+    <p>
+      The designer accepted the visual proportions, colours, field relationships
+      and gravity curve and judged the study successful. Earlier numerical and
+      visual checks establish rendering and type correctness separately from
+      that judgment. The examples held the ship in place and did not substitute
+      candidate resource profiles: no resource balance, escape success, AI
+      navigation, collision safety or performance in combat was established. Two
+      02.4 moments retain ring positions; continuous motion quality has no
+      retained recording. The four 02.2 moments preserve a proposed cycle, not
+      accepted warning timing.
+    </p>
+  </section>
+  <section>
+    <h2 id="04">04 / Deliver the yellow family in two modes</h2>
+    <p>
+      No change to <code>docs/design.md</code> principles is proposed. This is
+      accepted implementation scope, not production delivery. Build the shared
+      definitions first, then deliver the family in Derelicts; add Gauntlet
+      using that same implementation. Low-yields and the wider stellar roster
+      remain separate future design work.
+    </p>
+    <ol>
+      <li>
+        <strong
+          >Shared family profile and canonical Lab reference — medium.</strong
+        >
+        Define Zod contracts before adding per-star data. Put surface, colour,
+        independent energy/exposure fields and mass-well configuration in shared
+        owners in core and mode-a; preserve the legacy Sun as the fallback.
+        Resolve the profile-shape proposal above. Extend the shared star painter
+        and flight-frame composition for World body, FX corona and LFX rings;
+        demonstrate the accepted three sizes at <code>/lab/entities/star</code>
+        using those production definitions. Update the star, gravity and render
+        specs. Verify exact centre-distance boundaries, palette anchors, field
+        samples, cutoff semantics, independent HUD lines and legacy defaults. No
+        live mode opts in yet; this slice is independently inspectable.
+      </li>
+      <li>
+        <strong>Derelicts opt-in — medium, after slice 1.</strong>
+        Select and retain one seeded family size for each run in Simulation,
+        with no mid-run variation. Wire collection, hull damage, gravity and
+        terminal contact for player and encounter actors to the shared profile.
+        Review spawn, arrival, orbit and salvage-clearance assumptions against
+        the radius-140 extreme. Update the Derelicts, systems and star specs;
+        verify repeated seeds, minimum/reference/maximum cases, frame-rate
+        independence and absence of changes in Survival, Practice and landing.
+        Check keyboard and landscape touch play. This yields the first playable
+        delivery without waiting for new star types.
+      </li>
+      <li>
+        <strong>Gauntlet opt-in — small to medium, after slice 2.</strong>
+        Reuse the same selection and profile, ensuring pirate pilots and all
+        ships read the same surface and fields. Verify arrival separation, pilot
+        avoidance, death/result handling and restart determinism across the
+        three reference sizes. Update the Gauntlet spec. Preserve Playground
+        scoring semantics and confirm the recommended mode matrix before
+        shipping; expanding Playground’s purpose is a separate decision.
+      </li>
+      <li>
+        <strong
+          >Release verification — small, after each playable slice.</strong
+        >
+        Run affected physics/resource/seed tests, type and contract gates and
+        release smoke. Inspect the shared Lab and target modes for engine/star
+        overlap, independent HUD boundaries, FX budget and camera jumps at the
+        two size extremes. Report automated checks and visual inspection
+        separately. Check that ranked Survival remains on its existing Sun and
+        challenge; select release numbering through the normal release process.
+      </li>
+    </ol>
+    <p>
+      Estimates are relative work sizes, not schedules. No production gameplay,
+      global gravity/friction tuning, package version, score schema, challenge
+      or deployment changes are included in this closure. Temporary interactive
+      study apparatus has been replaced by these versioned captures and written
+      definitions; shared game, layer, HUD and Lab systems remain.
+    </p>
   </section>
 </StudyLayout>
 
 <style>
+.retained-round {
+  border-block: 1px solid var(--color-border);
+  padding-block: var(--spacing-md);
+  margin-block: var(--spacing-lg);
+}
+.retained-round > summary {
+  cursor: pointer;
+  margin-bottom: var(--spacing-md);
+}
 .question-check {
   max-width: var(--measure-prose);
   margin-top: var(--spacing-lg);
@@ -395,5 +1072,51 @@ section > .caption {
   color: var(--color-text-muted);
   font-size: var(--font-size-caption);
   margin-top: var(--spacing-md);
+}
+</style>
+
+<style>
+.evidence {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--color-border);
+}
+figure {
+  margin: var(--spacing-lg) 0;
+}
+figcaption {
+  margin-top: var(--spacing-sm);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+}
+.sequence {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+}
+.sequence figure {
+  margin: 0;
+}
+.outcome {
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-caption);
+  margin-block: var(--spacing-lg);
+}
+th,
+td {
+  text-align: left;
+  padding: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+li {
+  margin-block: var(--spacing-lg);
+  max-width: var(--measure-prose);
 }
 </style>

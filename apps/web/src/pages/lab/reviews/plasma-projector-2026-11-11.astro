@@ -1,0 +1,73 @@
+---
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+---
+
+<StudyLayout>
+  <section>
+    <h1>Plasma Projector — question test</h1>
+    <p>
+      11 November 2026. Independent, clean-context, read-only framing review.
+    </p>
+    <p>
+      <a href="/lab/studies/plasma-projector-2026-11-11"
+        >Return to section 01</a
+      >
+    </p>
+    <h2>Results</h2>
+    <p>
+      <strong>One subject — Pass with findings.</strong>
+      Trigger, burst, recovery, recoil and form belong to one fitting. Current
+      motion laws need an explicit boundary against the adjacent open motion
+      study.
+    </p>
+    <p>
+      <strong>Grounded — Pass with findings.</strong>
+      Plasma charge/fire, instant ion contact, destructible fragments and moving
+      pirates have code and specification support. Shared weapon funding rules
+      were omitted.
+    </p>
+    <p>
+      <strong>Consequence — Pass.</strong>
+      One new fitting makes close approach, destructive discharge and recovery a
+      distinct manoeuvre.
+    </p>
+    <h2>Findings and responses</h2>
+    <p>
+      The Parts contract (docs/specs/game/parts/spec.md, Weapons) and salvage.ts
+      funding check establish automatic firing, per-shot spending, zero idle
+      draw, the 10% floor and refusal of unaffordable shots. Section 01 now
+      preserves that baseline and names a charging exception as a question
+      requiring an explicit decision. Automatic trigger timing remains open.
+    </p>
+    <p>
+      The open ship-motion-laws-2026-11-04 study owns motion-law choices.
+      Section 01 now fixes current ship-motion laws; projector recoil may use
+      them without reopening them. The ships specification establishes mass
+      behaviour; rail recoil in salvage.ts supplies available means, not a
+      decision about projector recoil or offset mounts.
+    </p>
+    <p>
+      The reviewer noted the opening's length. The three-paragraph framing stays
+      compact; the detailed question list is retained deliberately to preserve
+      unresolved mechanics and their reasons in this startup record. No
+      exploration has been undertaken. Corrections were not reviewed again.
+    </p>
+    <h2>Evidence and limits</h2>
+    <p>
+      Grounding: docs/specs/factory/effects/spec.md (plasma light),
+      packages/core/src/lib/effects/engine-plume.ts and plasma-plume.ts;
+      docs/specs/game/light-ion-cannon/spec.md and
+      packages/mode-a/src/lib/salvage.ts (instant contact and fragment
+      creation); docs/specs/game/world/derelict/spec.md;
+      docs/specs/game/gauntlet/spec.md and packages/mode-a/src/lib/gauntlet.ts
+      (independent enemy actors). The full study registry was checked for
+      overlap.
+    </p>
+    <p>
+      High cost, devastation, broad brief fire, ten-second recovery and recoil
+      are intent or open questions, not implemented behaviour. The reviewer did
+      not check rendering, keyboard access, flight readability, balance,
+      feasibility, performance or demonstrated escape risk, and ran no tests.
+    </p>
+  </section>
+</StudyLayout>

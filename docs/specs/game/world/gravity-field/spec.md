@@ -134,14 +134,18 @@ in play, receive no thrust input in `updateShip` at all; their thrust comes from
 
 ### Rules version
 
-Score documents carry the rules version `CHALLENGE` (`packages/mode-a/src/schemas/highscore.ts`,
-currently `ion-storm`), which also prefixes score document IDs. Changing the values or
-rules in this spec changes trajectories for the same inputs, so scores from
-before and after such a change are never compared.
+Score documents carry the ranked Survival rules version `CHALLENGE`
+(`packages/mode-a/src/schemas/highscore.ts`, currently `ion-storm`), which also
+prefixes score document IDs. A release changes `CHALLENGE` only when changes to
+rules applied to score-eligible ranked Survival runs make scores from before and
+after the release unfair to compare. This includes changes to ranked Survival
+trajectories, survival conditions, scoring, or score eligibility. A tuning value
+matters only if it changes one of those rules in ranked Survival. Changes limited
+to another mode, the Lab, or presentation do not change `CHALLENGE`.
 
-`CHALLENGE` changes once per release, at release, and only when rules or tuning
-differ from the previous release; editing tuning values never changes it. The
-step belongs to the release procedure in `docs/development.md`.
+Decide once at release against the last published release, not against
+intermediate edits. When `CHALLENGE` changes, update its matching Firestore rule
+and document ID prefix. Follow the release procedure in `docs/development.md`.
 
 ## Contract
 
@@ -176,8 +180,8 @@ step belongs to the release procedure in `docs/development.md`.
 - Gravity depends only on the ship's position and the bodies, never on its
   engines, speed or loadout.
 - Play has no passive drag and no speed cap.
-- A release whose gravity values or rules differ from the previous release
-  changes `CHALLENGE`; nothing else changes it.
+- A release whose gravity values or rules change ranked Survival trajectories
+  changes `CHALLENGE`; gravity changes confined to other modes do not.
 - The Gravity tuning bench changes no game value.
 
 ### Scenarios
