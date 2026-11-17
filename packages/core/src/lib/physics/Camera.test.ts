@@ -630,3 +630,122 @@ it("allows closer inward cuts throughout their propulsion-speed bands", () => {
     expect(camera.speedZoomMode).toBe(expected);
   }
 });
+
+/** A stage of `cssHeight` CSS pixels, its logical height fixed at 1080. */
+function cssStage(cssHeight: number) {
+  const camera = stageCamera(STAGES[1]);
+  camera.setActiveArea(
+    STAGES[1].fitWidth,
+    STAGES[1].fitHeight,
+    cssHeight / HEIGHT,
+  );
+  return camera;
+}
+
+const cssPerUnit = (camera: Camera) => camera.zoom * camera.cssScale;
+
+it("fixes the speed levels in CSS pixels per world unit on every stage", () => {
+  const widths = [600, 1080, 1600].map((cssHeight) => {
+    const camera = cssStage(cssHeight);
+    const levels = camera.speedZoomLevels.map(
+      (level) => level * camera.cssScale,
+    );
+    expect(levels[0]).toBeCloseTo(0.5, 12);
+    for (let i = 1; i < levels.length; i++)
+      expect(levels[i]).toBeCloseTo(levels[i - 1] * 2, 12);
+    // The widest demand is the 1x level, on every stage.
+    camera.frameSpeed(460, 540, 1e6, 0, 40, true);
+    expect(cssPerUnit(camera)).toBeCloseTo(levels[0], 12);
+    return {
+      levels,
+      worldShown:
+        (camera.activeHeight * cssHeight) / HEIGHT / cssPerUnit(camera),
+    };
+  });
+  for (const { levels } of widths)
+    for (const [i, level] of levels.entries())
+      expect(level).toBeCloseTo(widths[0].levels[i], 12);
+  // The amount of world shown at 1x follows the screen's size.
+  expect(widths[1].worldShown).toBeGreaterThan(widths[0].worldShown);
+  expect(widths[2].worldShown).toBeGreaterThan(widths[1].worldShown);
+});
+
+/** Arrive at the arena edge, moving fast towards the star as a new run does. */
+function enter(cssHeight: number, distance = 1180) {
+  const camera = cssStage(cssHeight);
+  const star = { x: STAR.x, y: STAR.y, radius: 60 };
+  const ship = {
+    x: STAR.x + distance * 0.6,
+    y: STAR.y - distance * 0.8,
+    radius: 40,
+  };
+  camera.frameSpeed(ship.x, ship.y, 0, 600, ship.radius, true, star);
+  return { camera, star, ship };
+}
+
+function contains(
+  camera: Camera,
+  body: { x: number; y: number; radius: number },
+) {
+  const p = camera.worldToScreen(body.x, body.y);
+  const box = activeBox(camera);
+  const r = body.radius * camera.zoom;
+  return (
+    p.x - r >= box.left &&
+    p.x + r <= box.right &&
+    p.y - r >= box.top &&
+    p.y + r <= box.bottom
+  );
+}
+
+it("shows the star and the ship in the first view of a new run on small and large stages", () => {
+  for (const cssHeight of [500, 2400]) {
+    for (const distance of [300, 1180, 4000]) {
+      const { camera, star, ship } = enter(cssHeight, distance);
+      expect(contains(camera, star)).toBe(true);
+      expect(contains(camera, ship)).toBe(true);
+    }
+  }
+});
+
+it("cuts the entrance view to 1x after the hold only when it is wider than 1x", () => {
+  const hold = (
+    camera: Camera,
+    ship: { x: number; y: number; radius: number },
+    seconds: number,
+  ) => {
+    for (let t = 0; t < Math.round(seconds * 60); t++) {
+      camera.frameSpeed(ship.x, ship.y, 0, 600, ship.radius);
+      camera.update(1 / 60);
+    }
+  };
+  // A small stage needs a view wider than 1x to hold both bodies.
+  const small = enter(500);
+  const oneX = small.camera.speedZoomLevels[0];
+  const entrance = small.camera.zoom;
+  expect(entrance).toBeLessThan(oneX);
+  expect(small.camera.speedZoomMode).toBe(1);
+  hold(small.camera, small.ship, 1.4);
+  expect(small.camera.zoom).toBe(entrance);
+  hold(small.camera, small.ship, 0.2);
+  expect(small.camera.zoom).toBeCloseTo(oneX, 12);
+  // Accelerating during the hold resets it, as for every inward cut.
+  const accelerating = enter(500);
+  for (let t = 0; t < 120; t++) {
+    accelerating.camera.frameSpeed(
+      accelerating.ship.x,
+      accelerating.ship.y,
+      0,
+      600 + t,
+      40,
+    );
+    accelerating.camera.update(1 / 60);
+  }
+  expect(accelerating.camera.zoom).toBeLessThan(oneX);
+  // On a large stage 1x already holds both: no entrance cut, speed demand rules.
+  const large = enter(2400);
+  const largeOneX = large.camera.speedZoomLevels[0];
+  expect(large.camera.zoom).toBeCloseTo(largeOneX, 12);
+  hold(large.camera, large.ship, 3);
+  expect(large.camera.zoom).toBeCloseTo(largeOneX, 12);
+});

@@ -5,10 +5,11 @@ export const CAMERA_ARENA_RADIUS = 1200;
 export const CAMERA_MIN_FIT = 1;
 /** Scale of the closest zoom level. */
 export const CAMERA_CLOSEST_ZOOM = 1.6;
-/** Speed framing tuning: extents in world units, speed in world units/second,
- * clearance in logical pixels, response rates in inverse seconds. */
+/** Speed framing tuning: the widest level in CSS pixels per world unit, speed
+ * in world units/second, clearance in logical pixels, response rates in
+ * inverse seconds. */
 const SPEED_CAMERA = {
-  wideExtent: 2100,
+  widestCssPerUnit: 0.5,
   wideSpeed: 400,
   closeSpeed: 100,
   clearance: 16,
@@ -41,6 +42,8 @@ export class Camera {
    */
   public fitWidth: number | null;
   public fitHeight: number | null;
+  /** CSS pixels per logical unit of the stage; speed levels are fixed in CSS. */
+  public cssScale = 1;
   public speedFraming = false;
   private returning = false;
   // Ship displacement from the view centre, in logical screen units.
@@ -80,25 +83,45 @@ export class Camera {
       ? this.viewportHeight
       : Math.max(CAMERA_MIN_FIT, this.fitHeight);
   }
+  /** The 1× speed level in logical pixels per world unit. */
+  get speedWidestZoom() {
+    return SPEED_CAMERA.widestCssPerUnit / this.cssScale;
+  }
+  /** The 1×, 2×, 4× and 8× speed levels in logical pixels per world unit. */
+  get speedZoomLevels() {
+    const widest = this.speedWidestZoom;
+    return SPEED_CAMERA.inwardMagnifications.map((level) => widest * level);
+  }
   /** Hold the upper label until the next outward level is reached. */
   get speedZoomMode() {
-    const widest =
-      Math.min(this.activeWidth, this.activeHeight) / SPEED_CAMERA.wideExtent;
-    const magnification = this.zoom / widest;
+    const magnification = this.zoom / this.speedWidestZoom;
     const levels = SPEED_CAMERA.inwardMagnifications;
     return (
       levels.find((level) => magnification <= level * (1 + 1e-10)) ??
       levels[levels.length - 1]
     );
   }
-  /** Sets the centred fitting box; `null` fits the full viewport again. */
-  setActiveArea(width: number | null, height: number | null) {
-    if (this.fitWidth !== width || this.fitHeight !== height) {
+  /**
+   * Sets the centred fitting box; `null` fits the full viewport again.
+   * `cssScale` is the stage's CSS pixels per logical unit.
+   */
+  setActiveArea(
+    width: number | null,
+    height: number | null,
+    cssScale = this.cssScale,
+  ) {
+    const scale = cssScale > 0 && Number.isFinite(cssScale) ? cssScale : 1;
+    if (
+      this.fitWidth !== width ||
+      this.fitHeight !== height ||
+      this.cssScale !== scale
+    ) {
       this.resetSpeedEligibility();
       this.widenFilterZoom = null;
     }
     this.fitWidth = width;
     this.fitHeight = height;
+    this.cssScale = scale;
     this.containShip();
   }
   setTarget(x: number, y: number) {
@@ -171,7 +194,11 @@ export class Camera {
       this.containShip();
     } else this.subject = null;
   }
-  /** Speed selects zoom; motion matching and residual centring select pan. */
+  /**
+   * Speed selects zoom; motion matching and residual centring select pan.
+   * `entrance` is the star on a new run: the first view then contains both
+   * the star and the ship, and the ordinary inward rule takes over from it.
+   */
   frameSpeed(
     x: number,
     y: number,
@@ -179,6 +206,7 @@ export class Camera {
     velocityY: number,
     radius: number,
     snap = false,
+    entrance: { x: number; y: number; radius: number } | null = null,
   ) {
     const entering = !this.speedFraming;
     if (entering || snap) {
@@ -203,12 +231,27 @@ export class Camera {
         1,
       ),
     );
-    const shortSide = Math.min(this.activeWidth, this.activeHeight);
     // Equal speed bands halve desired magnification: 8x through 100u/s,
     // 4x at 200u/s, 2x at 300u/s and 1x at 400u/s. Demand stays continuous.
-    this.targetZoom =
-      (shortSide / SPEED_CAMERA.wideExtent) * 8 ** (1 - influence);
-    if (snap) {
+    this.targetZoom = this.speedWidestZoom * 8 ** (1 - influence);
+    if (snap && entrance) {
+      // Centre the bounding box of both bodies and fit it within the safe area.
+      const left = Math.min(x - radius, entrance.x - entrance.radius);
+      const right = Math.max(x + radius, entrance.x + entrance.radius);
+      const top = Math.min(y - radius, entrance.y - entrance.radius);
+      const bottom = Math.max(y + radius, entrance.y + entrance.radius);
+      const shortSide = Math.min(this.activeWidth, this.activeHeight);
+      const clearance = Math.min(SPEED_CAMERA.clearance, shortSide / 4);
+      const fit = Math.min(
+        (this.activeWidth / 2 - clearance) / Math.max((right - left) / 2, 1),
+        (this.activeHeight / 2 - clearance) / Math.max((bottom - top) / 2, 1),
+      );
+      this.zoom = Math.min(this.targetZoom, fit);
+      this.pos.set(
+        (left + right) / 2 - this.offset.x,
+        (top + bottom) / 2 - this.offset.y,
+      );
+    } else if (snap) {
       this.zoom = this.targetZoom;
       this.pos.set(x - this.offset.x, y - this.offset.y);
     }
@@ -259,11 +302,9 @@ export class Camera {
       return;
     }
     this.widenFilterZoom = null;
-    const widest =
-      Math.min(this.activeWidth, this.activeHeight) / SPEED_CAMERA.wideExtent;
-    const candidate = SPEED_CAMERA.inwardMagnifications
-      .map((magnification) => widest * magnification)
-      .find((level) => level > this.zoom * (1 + 1e-10));
+    const candidate = this.speedZoomLevels.find(
+      (level) => level > this.zoom * (1 + 1e-10),
+    );
     if (
       this.accelerating ||
       candidate === undefined ||

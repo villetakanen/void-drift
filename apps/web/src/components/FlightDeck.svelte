@@ -209,7 +209,8 @@ function reset(start = false) {
   paused = start && narrow;
   scoreSaved = false;
   message = "";
-  frameCamera(true);
+  // A new run enters the star system: the speed camera shows star and ship.
+  frameCamera(true, $settings.speedCamera, true);
   sync();
 }
 function refreshPracticeAppearances() {
@@ -222,10 +223,15 @@ function refreshPracticeAppearances() {
         })
       : undefined;
 }
-function frameCamera(snap = false, speedCamera = $settings.speedCamera) {
+function frameCamera(
+  snap = false,
+  speedCamera = $settings.speedCamera,
+  entrance = false,
+) {
   if (!camera || !simulation) return;
   const ship = simulation.ship;
   if (!landing && speedCamera) {
+    const star = simulation.star;
     camera.frameSpeed(
       ship.pos.x,
       ship.pos.y,
@@ -233,6 +239,7 @@ function frameCamera(snap = false, speedCamera = $settings.speedCamera) {
       ship.vel.y,
       ship.radius,
       snap,
+      entrance ? { x: star.pos.x, y: star.pos.y, radius: star.radius } : null,
     );
     return;
   }
@@ -449,6 +456,26 @@ onMount(() => {
   });
   input = new Input();
   initializeShipSetup();
+  const fitStage = () => {
+    const available = viewport.getBoundingClientRect();
+    const css = getComputedStyle(viewport);
+    screen = fitGameScreen(
+      available.width -
+        parseFloat(css.paddingLeft) -
+        parseFloat(css.paddingRight),
+      available.height -
+        parseFloat(css.paddingTop) -
+        parseFloat(css.paddingBottom),
+    );
+    // Framing fits the active area; rendering still covers the whole stage.
+    camera.setActiveArea(
+      screen.active.logical.width,
+      screen.active.logical.height,
+      screen.scale,
+    );
+  };
+  // A new run's entrance view needs the stage geometry before it is framed.
+  fitStage();
   if (launchSource === "title") enterMenu();
   else {
     const selectedLoadout = LoadoutSchema.parse(currentLoadout);
@@ -469,23 +496,9 @@ onMount(() => {
   updateMotion();
   motion.addEventListener("change", updateMotion);
   const measure = () => {
-    const available = viewport.getBoundingClientRect();
-    const css = getComputedStyle(viewport);
-    screen = fitGameScreen(
-      available.width -
-        parseFloat(css.paddingLeft) -
-        parseFloat(css.paddingRight),
-      available.height -
-        parseFloat(css.paddingTop) -
-        parseFloat(css.paddingBottom),
-    );
+    fitStage();
     narrow = screen.narrow;
     if (narrow) suspend();
-    // Framing fits the active area; rendering still covers the whole stage.
-    camera.setActiveArea(
-      screen.active.logical.width,
-      screen.active.logical.height,
-    );
     frameCamera(false, camera.speedFraming);
     const bounds = stage.getBoundingClientRect();
     landingFrame = {

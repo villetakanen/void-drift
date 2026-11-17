@@ -57,7 +57,8 @@ never the run.
   with Speed camera Off and follows the deck's visibility rules. Values are
   `1×`, `2×`, `4×` or `8×`: outward zoom holds `8×` until actual `4×`, then
   `4×` until actual `2×`, then `2×` until actual `1×`. Exact levels show their
-  own label; no decimal values or nearest-level rounding appear. The camera
+  own label; no decimal values or nearest-level rounding appear. The entrance
+  view at the start of a run, which is wider than `1×`, shows `1×`. The camera
   contract owns the scale and label calculation.
 - At a safe viewport height of 700 CSS px and above, the side gutters hold
   their instruments, deck buttons and full-height pads without overlap.
