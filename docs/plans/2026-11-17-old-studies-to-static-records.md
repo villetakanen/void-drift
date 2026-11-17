@@ -313,6 +313,30 @@ Still open from that run:
   wrote them: "the shared baseline", "feedback framing", and revert and reset
   "placed apart by consequence".
 
+## Parked: `engine-effects`, 2026-11-17
+
+Work stopped mid-conversion because git history needs fixing first. Nothing is
+committed. Row 4 stays `in progress` until this is resumed or reverted.
+
+- Full-version reference: `6c2949f8`, page `apps/web/src/pages/lab/studies/engine-effects.astro`.
+- Rendered words before: 1,824.
+- In the working tree: `engine-effects.astro` deleted (staged) and
+  `engine-effects.mdx` written; stills in `apps/web/public/studies/engine-effects/`
+  (six, untracked); components in `apps/web/src/components/studies/engines/`
+  deleted with `git rm` (staged). Nothing else imported them.
+- Stages 0 to 4 are done. The deslop reviewer rewrote the Question line, which is
+  the registry question quoted verbatim; restore it from the registry. It could
+  not interpret "fluid transformation" and "balanced ship"; resolve them from the
+  full version.
+- Not done: stage 5 checks (lint, test, types, build; a test and type run was
+  interrupted), the "after" word count, the full-version last line, the ledger
+  row, the commit.
+- Not copied from the components: their control instructions, which no longer
+  apply to stills. The one design sentence (a plume can grow again in a turn) is
+  kept.
+- To resume, check that the staged deletions and untracked files above survived
+  the history repair before continuing from stage 5.
+
 ## Ledger
 
 States: `todo`, `in progress`, `done <date>`, `skip: open`.
@@ -324,7 +348,7 @@ study component or use `client:`.
 | 1   | `buttons.astro`                              | 2026-10-28 | 163   | 3    | accepted        | done 2026-11-17 |
 | 2   | `gravity-wells.astro`                        | 2026-10-29 | 230   | 5    | accepted        | done 2026-11-17 |
 | 3   | `archive/fighter-canopy-soft.astro`          | 2026-10-30 | 21    | 1    | not in registry | done 2026-11-17 |
-| 4   | `engine-effects.astro`                       | 2026-10-30 | 292   | 9    | accepted        | todo            |
+| 4   | `engine-effects.astro`                       | 2026-10-30 | 292   | 9    | accepted        | in progress     |
 | 5   | `heavy-cruiser-slots.astro`                  | 2026-10-30 | 556   | 6    | accepted        | todo            |
 | 6   | `ship-silhouettes.astro`                     | 2026-10-30 | 566   | 10   | stopped         | todo            |
 | 7   | `archive/scout-firefly-rounded-bodies.astro` | 2026-10-31 | 22    | 1    | not in registry | todo            |

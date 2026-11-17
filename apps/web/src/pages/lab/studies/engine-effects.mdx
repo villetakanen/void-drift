@@ -1,0 +1,124 @@
+---
+layout: ../../../layouts/StudyLayout.astro
+---
+
+**Accepted · 30 October 2026.** The designer accepted the study and its
+implementation plan. The values remained provisional. The same day the plan was
+implemented in the shared game and the [flight Lab](/hangar): complete fading
+plumes, output-based size, and the provisional 750 directional cutoff.
+
+## Question
+
+How can engine effects make flight look flashy and graphic through shaped
+surfaces, glow and fluid transformation?
+
+The visual reference was the late-nineties and early-two-thousands vector art and
+effects era: flashy, graphic and sharply composed. Here “vector” means surfaces,
+glows, interpolation and effects, not lines pointing in different directions.
+Engine activity should be readable at once and leave a playful trace that
+fades.
+
+## What was accepted
+
+**Glowing surfaces left behind that vanish over time · 30 October 2026.** A
+filled, curved plume with a bright core and soft glow. Impressions of it remain
+in space, spread and fade over 1.5 seconds. The designer judged this a match for
+the intended aesthetic. The straight-back engine orientation was incomplete, and
+exact colour, timing and geometry were not settled.
+
+![A turning ship with a bright glowing plume; a line of fading oval impressions trails behind it.](/studies/engine-effects/021-surfaces-both-engines.png)
+
+*The 02.1 sketch at 2.5 s of its 6 s timeline, both engines firing, glow on.
+Production balanced ship, engine physics and drawing; gravity, hazards and arena
+wrapping omitted. Captured 17 November 2026 at 1440px from the study’s example
+running today’s code; a reconstruction.*
+
+**The plume fades out after release · 30 October 2026.** Each engine emits complete,
+softly bounded glowing surfaces. They overlap into the flame, drift, expand and
+fade. Release stops new emission, and even the newest surface keeps its remaining
+lifetime, so there is no flame object to switch off and no ribbon to cut. The
+designer confirmed this as the intended plume lifecycle. Engines point 12° off
+straight back. Trial values, not accepted tuning: each surface lives 0.65
+seconds, keeps 80% of the ship’s velocity at emission and drifts backward at 45
+units/s. There is no connected strip and no distance cutoff.
+
+![Two views. Left: a straight ship with two soft glowing plumes. Right: a turning ship with one curved soft plume.](/studies/engine-effects/023-lifecycle-firing.png)
+
+*Plume lifecycle, about 1.5 s of firing. Left: straight flight, both engines.
+Right: turning, one engine. Captured 17 November 2026 at 1440px; a
+reconstruction.*
+
+![Two coasting ships. Behind each, the last emitted plume surfaces have detached, drifted back and are fading.](/studies/engine-effects/023-lifecycle-released.png)
+
+*The same, about 0.3 s after release: the emitted surfaces drift and fade.
+Captured 17 November 2026 at 1440px; a reconstruction.*
+
+**Directional thrust cutoff · designer direction, 30 October 2026.** Engines add
+no further thrust at roughly 750 units/s in the direction they push. Thrust
+tapers linearly from full contribution at rest to zero at 750. The intent was
+agreed; the value and the taper shape remained tuning proposals. Motion already
+faster is kept, and braking and sideways thrust remain available. The cutoff is a
+starting interpretation and does not cap total speed.
+
+**Plume size follows delivered thrust.** “Power” here means the thrust an engine
+delivers on a simulation step, not the ship’s stored energy or its speed. Plume
+area is proportional to the engine’s fraction of full thrust, so length and width
+each scale by its square root. Each surface keeps its emission size through its
+fade. The study called this mapping exploratory. The implementation plan sized
+each plume by the engine’s contribution.
+
+![A ship flying right with two glowing plumes behind it.](/studies/engine-effects/024-from-rest.png)
+
+*Starting at rest, both engines, about 1.2 s in: 385 units/s, each engine at 49%
+thrust. Captured 17 November 2026 at 1440px; a reconstruction.*
+
+![A ship flying right with no plume.](/studies/engine-effects/024-from-750.png)
+
+*Starting at 750 units/s with both engines on: 0% thrust per engine and no plume.
+A turn can bring the plume back. Captured 17 November 2026 at 1440px; a
+reconstruction.*
+
+The implementation plan asked for:
+
+- the fading surfaces to replace the game’s separate flame and line trail
+- plume size from each engine’s contribution, not from velocity changes caused by
+  gravity
+- the 750 rule in the shared engine calculation as a shared constant, with no new
+  settings system
+- surfaces aged by simulation time, frozen on pause, cleared on reset, and with
+  no streaks across arena wraps
+- the Lab and the game using the same effect code
+
+## Ruled out
+
+- **Separate stamped impressions.** The angled plumes were liked, but their
+  residue neither followed a turn convincingly nor combined into one flame in
+  straight flight.
+- **A connected, tapering tail.** Both engines fed one central tail and a turning
+  engine fed an angled tail. Residue moved backward at 70 units/s, faded over
+  1.2 s, with a distance fade over 145 units. On release the residue showed a flat
+  cutoff while the attached flame disappeared instantly. The ribbon construction
+  was overcomplicated and did not give the intended arcade effect.
+
+![Two coasting ships. Left: no flame or tail. Right: only a short curved ribbon remains behind the ship.](/studies/engine-effects/022-tail-released.png)
+
+*Connected tail, about 0.35 s after release: the attached flames are gone and
+the residue ends in a flat cut. Captured 17 November 2026 at 1440px; a
+reconstruction.*
+
+## What remained uncertain
+
+- The exact reference within the vector era had no shared visual basis.
+- Cutoff, taper, plume size, angle and lifetime could change in use.
+- Whether a shrinking plume makes an engine’s declining contribution clear, and
+  whether its growth through a turn feels right.
+- Readability at normal scale and among planets, full-scene feel, and
+  performance on a phone.
+
+## Where the work went
+
+Commit `97190680` shipped the fading plumes and the thrust cutoff in release
+0.3.5. The cutoff is `ENGINE_CUTOFF` in
+`packages/core/src/lib/effects/engine-plume.ts`. The effects spec,
+`docs/specs/factory/effects/spec.md`, and the engine taper section of
+`docs/specs/game/world/gravity-field/spec.md` state the intent.

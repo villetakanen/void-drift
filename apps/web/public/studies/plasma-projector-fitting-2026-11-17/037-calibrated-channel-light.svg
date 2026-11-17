@@ -247,7 +247,7 @@
   <text x="396" y="30" class="title">A / Tight falloff</text>
   <text x="660" y="30" class="title">B / Rounded falloff</text>
   <text x="924" y="30" class="title">C / Broad falloff</text>
-  <text x="660" y="70">1× · 0.5 CSS px / world u</text>
+  <text x="660" y="88">1× · 0.5 CSS px / world u</text>
   <g
     id="ion-1"
     transform="translate(132 145) scale(0.4102186070340082) translate(-247.00589 -51.1291745)"
@@ -344,7 +344,7 @@
   <text x="924" y="222" class="small">Channel 0.8 × 4.1 CSS px</text>
   <text x="924" y="241" class="small">Core 1 CSS px wide · over channel</text>
   <path class="line" d="M0 260H1056" />
-  <text x="660" y="250">2× · 1 CSS px / world u</text>
+  <text x="660" y="268">2× · 1 CSS px / world u</text>
   <g
     id="ion-2"
     transform="translate(132 325) scale(0.8204372140680164) translate(-247.00589 -51.1291745)"
@@ -441,7 +441,7 @@
   <text x="924" y="402" class="small">Channel 1.6 × 8.2 CSS px</text>
   <text x="924" y="421" class="small">Core 2 CSS px wide · over channel</text>
   <path class="line" d="M0 440H1056" />
-  <text x="660" y="430">4× · 2 CSS px / world u</text>
+  <text x="660" y="448">4× · 2 CSS px / world u</text>
   <g
     id="ion-4"
     transform="translate(132 505) scale(1.6408744281360328) translate(-247.00589 -51.1291745)"
@@ -538,7 +538,7 @@
   <text x="924" y="582" class="small">Channel 3.2 × 16.4 CSS px</text>
   <text x="924" y="601" class="small">Core 4 CSS px wide · over channel</text>
   <path class="line" d="M0 620H1056" />
-  <text x="660" y="610">8× · 4 CSS px / world u</text>
+  <text x="660" y="628">8× · 4 CSS px / world u</text>
   <g
     id="ion-8"
     transform="translate(132 685) scale(3.2817488562720656) translate(-247.00589 -51.1291745)"
@@ -635,7 +635,7 @@
   <text x="924" y="762" class="small">Channel 6.4 × 32.8 CSS px</text>
   <text x="924" y="781" class="small">Core 8 CSS px wide · over channel</text>
   <path class="line" d="M0 800H1056" />
-  <text x="660" y="790">16× · 8 CSS px / world u</text>
+  <text x="660" y="808">16× · 8 CSS px / world u</text>
   <g
     id="ion-16"
     transform="translate(132 865) scale(6.563497712544131) translate(-247.00589 -51.1291745)"
