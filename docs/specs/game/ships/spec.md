@@ -41,6 +41,10 @@ in the game's contracts because a new player
   crossbar position along ship-local +x (forward), keyed by its secondary mount.
   Every production pair has an explicit finite position; unlinked ships have
   an empty map. These positions do not affect flight or saved fittings.
+- **Engine placement.** A fitted engine sits at its slot plus the part's
+  [mount point](../parts/spec.md). A hull may add its own alignment on top;
+  the Scout aligns each side engine's front with its hull edge, reading the
+  front from the engine's art.
 - **Derived figures.** `buildStats` in `loadout.ts` derives mass, energy
   capacity, draw, acceleration, turn rate and cruise ceiling from a hull and its
   fitting. Derived values are never stored.
@@ -105,6 +109,9 @@ in the game's contracts because a new player
   flight exhaust and steering use the same geometry as the Hangar and Lab.
 - Flight, Hangar estimates, exhaust and collision use the same slot
   geometry for a hull.
+- An engine is drawn at its slot plus its part's mount point and any hull
+  alignment, and its exhaust starts at the nozzle so drawn; no hull keeps a
+  list of engine ids for its alignment.
 - A hull with built-in stabilizers has them on whatever is stored; other
   hulls keep the player's choice, on by default.
 - With linked engines on, every aft engine fires on either input with

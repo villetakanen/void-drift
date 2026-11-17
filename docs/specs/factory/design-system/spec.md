@@ -5,7 +5,8 @@
 ### Context
 
 The design system is Void Drift's shared visual language: identity, typography,
-colour, elevation, surfaces, layers and inputs. It keeps the game HUD, menus and
+colour, elevation, surfaces, layers, inputs and the shared marks on ship
+part artwork. It keeps the game HUD, menus and
 the Lab consistent in one register, utilitarian sci-fi neon on the void, so a
 screen composes shared definitions instead of inventing its own.
 
@@ -64,6 +65,11 @@ screen composes shared definitions instead of inventing its own.
 - `Tabs` exists as specified in [Tabs](#tabs), and `/lab/ds/tabs`
   demonstrates facts, a row without them, an unavailable tab, both
   activation modes, a row that overflows its host and a stretched row.
+- Each ship part with an SVG master is shown on its family's page under
+  `/lab/ds/`, master beside its rendered poses, as
+  [Ship part artwork](#ship-part-artwork) specifies.
+- The testing-only marking is drawn from one shared definition, and
+  `/lab/ds/engines` shows it on every testing-only engine.
 
 ### Regression Guardrails
 
@@ -475,6 +481,43 @@ The only `z-index` values in shared UI. Gaps leave room for a later layer.
   isolates itself with `isolation: isolate` rather than taking a `z-index`.
 - Inventory before S6: 7 literals in shared UI (`buttons.css` 1, -1, -1; `flight.css` 2, 5; the
   builder footer 2; the Lab overlay pane 1). Preserved studies keep theirs.
+
+## Ship part artwork
+
+Ship parts, the engines, weapons and support parts a player fits, are game art
+drawn procedurally on canvas. [Parts](../../game/parts/spec.md) requires each
+new part's art to have an SVG master, technical artefacts converted from it and
+a design-system page. This section says where those pages live and defines the
+marks that ship part art shares.
+
+### Pages
+
+- Ship part art is shown by family, one page per family at `/lab/ds/<family>`:
+  `/lab/ds/engines` for engines. Each page lists its parts from the catalog.
+- For each part with a master, the page shows the SVG master beside canvas
+  renderings of its technical artefacts: every pose, the part on a ship, and
+  for an engine its plume at full output. Parts without a master are listed
+  as having none.
+- The pages are part of the Design system group in
+  `apps/web/src/data/lab-pages.ts` and follow its rules: each names its files
+  and this section.
+
+### Testing-only marking
+
+The testing-only marking says that a part is made for testing. It is static art
+in the part's master and appears in every pose and on the Hangar card. It is
+not a sanction mark: it stays when a part is sanctioned.
+
+- Parallel lines at 45° to the part's axis, rising to the right when the part
+  is drawn nose up, in `COLOR.brand`.
+- The gap between lines is twice the line width, the ratio of the Playground
+  band's hatching.
+- The lines cover the outer half of one side of the part's body, from half its
+  width to its edge, clipped to the body. Additions such as rails or mounts,
+  and the nozzle, stay bare.
+- The line width is set per part in its master, in the part's own units.
+- In flight the marking is drawn from a cached stamp, not stroked line by line
+  each frame.
 
 ## Identity
 
