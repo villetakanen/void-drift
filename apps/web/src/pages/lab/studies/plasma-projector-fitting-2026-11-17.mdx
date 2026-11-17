@@ -760,17 +760,59 @@ colour through antialiasing without occupying a full pixel of width.
 
 ### Channel sizing for the next experiment
 
-A roughly 1 CSS px-wide hot core at 2× corresponds to about 1 world unit.
-A 1.6 CSS px-wide channel at that zoom is **1.6 world units**, providing about
-0.3 CSS px clearance on each side of that core. At 1× these widths become
-0.5 and 0.8 CSS px respectively; loss of a distinct plasma shape there is
-acceptable. This is a sizing target for the next light experiment, not final
-weapon dimensions or a selected gradient.
+The corrected target for 02.17 is a **2 CSS px-wide hot core over a 1.6 CSS
+px-wide channel at 2×**. At this zoom, those are 2 and 1.6 world units. The
+core is painted on LFX above the equipment and overlaps each channel edge by
+0.2 u. The earlier assumption that the core must fit inside the channel is
+superseded; this is light over a physical opening, not an insert fitted into it.
 
 02.15 used a 1.5 u-wide opening, drawn 48 CSS px wide in its 32 CSS px/u main
 view. At the expected camera zooms, that existing opening would be 0.75, 1.5,
 3, 6 and 12 CSS px wide. 02.15 is preserved; its next version in 02.17 can use
 this calibrated sizing discussion. No camera code has been changed here.
+
+</StudySection>
+
+<StudySection>
+
+## 02.17 / Channel light at the intended camera sizes
+
+The physical channel is **1.6 world units wide**. The nominal hot plasma core
+is **2 world units wide**, painted on LFX above the equipment. At the Planet
+Inspector's 2× zoom, this is a **2 CSS px core over a 1.6 CSS px channel**:
+the core overlaps each edge by 0.2 CSS px. It is not fitted or clipped into the
+opening. All three profiles share that core; only orange falloff varies.
+
+<figure>
+  <a href="/studies/plasma-projector-fitting-2026-11-17/037-calibrated-channel-light.svg" aria-label="Open the channel-light profiles with same-scale ion cannon references">
+    <img src="/studies/plasma-projector-fitting-2026-11-17/037-calibrated-channel-light.svg" alt="One production ion cannon beside each of five zoom rows, with three hard-light profiles showing a 2 u hot core above a narrower 1.6 u physical channel; each drawing labels its CSS dimensions" width="1056" height="1060" />
+  </a>
+  <figcaption>One unchanged production ion cannon per row at that row's exact scale. Fifteen plasma compositions use native hard-light above fixed neutral equipment, with no filter or bloom. The hot core is wider than the opening; only the axial ends fade, with no lateral channel clipping. All labels are exact geometry at the native 1056 CSS px sheet width. 02.15 and its source SVG remain unchanged.</figcaption>
+</figure>
+
+| Expected zoom | CSS px per world unit | Channel width × length, CSS px | Hot-core width, CSS px | Ion cannon length, CSS px |
+| --- | --- | --- | --- | --- |
+| 1× | 0.5 | 0.8 × 4.1 | 1 | 8 |
+| 2× | 1 | 1.6 × 8.2 | 2 | 16 |
+| 4× | 2 | 3.2 × 16.4 | 4 | 32 |
+| 8× | 4 | 6.4 × 32.8 | 8 | 64 |
+| 16× | 8 | 12.8 × 65.6 | 16 | 128 |
+
+**A / Tight falloff** keeps the orange shoulder close to the hot core.
+**B / Rounded falloff** spreads it farther over the borders.
+**C / Broad falloff** extends it across more of the surrounding equipment.
+All three use the same 2 u pale core and the same 8.2 u axial length.
+
+The light is composited after the equipment, so it can paint over the channel
+walls. Apparent brightness and crispness still depend on hard-light and
+antialiasing; the labels describe the source geometry. At 1× the core is now
+1 CSS px wide over a 0.8 CSS px channel. This supersedes the previous
+half-pixel-core assumption.
+
+This remains a static appearance study. No finished weapon body, charging
+sequence, accumulated FX, final light profile or production implementation is
+selected. Camera code is unchanged; the Planet Inspector mapping supplies the
+expected zooms. The ion cannon reference uses exact production paths.
 
 </StudySection>
 
