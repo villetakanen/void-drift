@@ -1,5 +1,10 @@
 # Continue the plasma fitting study
 
+**Superseded · 17 November 2026.** The fitting study has completed physical
+exploration and parts 03–04 with an accepted result. Use
+[the final handoff](2026-11-17-plasma-rifle-handoff.md) and the study’s 02.30, 03
+and 04. The continuation prompt below is historical, not current work instructions.
+
 Continuation prompt prepared 17 November 2026. This resumes the existing study in
 a fresh conversation; it does not start a new design cycle or accept a fitting.
 

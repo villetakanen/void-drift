@@ -133,6 +133,16 @@ export const labPages = z.array(labPageSchema).parse([
     spec: "docs/specs/factory/design-system/spec.md#tabs",
   },
   {
+    href: "/lab/ds/weapons",
+    title: "Weapons",
+    purpose:
+      "Unlit SVG master, shared catalog and Canvas artwork, and production fittings.",
+    group: "design-system",
+    source: "production",
+    defines: ["packages/mode-a/src/lib/plasma-rifle-art.ts"],
+    spec: "docs/specs/factory/design-system/spec.md#ship-part-artwork",
+  },
+  {
     href: "/lab/ds/engines",
     title: "Engines",
     purpose:

@@ -9,6 +9,7 @@ import {
   ION_CANNON_ART,
   PARTS,
   type PartId,
+  PLASMA_RIFLE_PATHS,
   POINT_DEFENCE_BASE,
   POINT_DEFENCE_GEOMETRY,
   POINT_DEFENCE_TURRET,
@@ -64,6 +65,16 @@ const marking = $derived(
         </g>
       {/if}
     </g>
+  </svg>
+{:else if part.id === "plasma-rifle"}
+  <svg aria-hidden="true" viewBox="-8 -26 16 40">
+    {#each PLASMA_RIFLE_PATHS as face}
+      <path
+        d={face.path}
+        fill={face.fill}
+        transform="matrix({face.matrix.join(" ")})"
+      />
+    {/each}
   </svg>
 {:else if part.id === "light-ion-cannon"}
   <svg aria-hidden="true" viewBox="240 40 14 22">

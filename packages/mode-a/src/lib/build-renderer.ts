@@ -14,6 +14,7 @@ import {
   ION_CANNON_MUZZLE,
   ION_CANNON_MUZZLE_SIDE,
 } from "./ion-cannon-art";
+import { drawPlasmaRifle, PLASMA_RIFLE_ENVELOPE } from "./plasma-rifle-art";
 import {
   drawPointDefence,
   POINT_DEFENCE_MUZZLE,
@@ -521,6 +522,10 @@ export function drawNonEngineFitting(
   weaponAngle = mount.angle,
 ) {
   if (!mount.part) return;
+  if (mount.part === "plasma-rifle") {
+    drawPlasmaRifle(ctx, BUILD_FLIGHT_SCALE);
+    return;
+  }
   if (mount.part === "light-ion-cannon") {
     drawIonCannon(ctx, BUILD_FLIGHT_SCALE);
     return;
@@ -862,6 +867,20 @@ function baseBuildCollisionRadius(build: Loadout) {
 /** Include every actual accepted engine vertex, including the Scout mounting offset. */
 export function buildCollisionRadius(build: Loadout) {
   let radius = baseBuildCollisionRadius(build);
+  for (const mount of buildMounts(build)) {
+    if (mount.part !== "plasma-rifle") continue;
+    const cos = Math.cos(mount.angle),
+      sin = Math.sin(mount.angle);
+    for (const [forward, across] of PLASMA_RIFLE_ENVELOPE) {
+      radius = Math.max(
+        radius,
+        Math.hypot(
+          mount.x * BUILD_FLIGHT_SCALE + forward * cos - across * sin,
+          mount.y * BUILD_FLIGHT_SCALE + forward * sin + across * cos,
+        ),
+      );
+    }
+  }
   for (const mount of buildMounts(build)) {
     if (mount.part === "ion-point-defence") {
       // The turret turns, so its muzzle may point anywhere about the pivot.

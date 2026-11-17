@@ -12,8 +12,8 @@ export const studies = z.array(studySchema).parse([
   {
     slug: "plasma-projector-fitting-2026-11-17",
     title: "Plasma Projector · the fitting",
-    status: "open",
-    phase: "exploration",
+    status: "accepted",
+    phase: "scope",
     question:
       "What physical construction gives the Plasma Projector a convincing identity within the game’s weapon language?",
   },
@@ -28,7 +28,7 @@ export const studies = z.array(studySchema).parse([
   {
     slug: "plasma-projector-2026-11-16",
     title: "Plasma Projector",
-    status: "blocked",
+    status: "open",
     phase: "exploration",
     question:
       "What visual identity makes the Plasma Projector’s loading, close eruption and continuously thrusting residual vents read as one distinctive heavy weapon in the plasma family?",

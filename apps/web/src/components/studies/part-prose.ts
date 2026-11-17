@@ -2,6 +2,7 @@
 import { PARTS, type PartId } from "@void-drift/mode-a";
 
 export const PART_PROSE: Record<PartId, string> = {
+  "plasma-rifle": PARTS["plasma-rifle"].fluff,
   "light-ion-cannon": PARTS["light-ion-cannon"].fluff,
   "ion-point-defence": PARTS["ion-point-defence"].fluff,
   rail: "Heavy slug down the barrel line. Kicks the ship back.",

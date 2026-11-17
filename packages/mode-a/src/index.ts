@@ -22,6 +22,7 @@ export * from "./lib/landing-system";
 export * from "./lib/mercurial-rock";
 export * from "./lib/mount-planner";
 export * from "./lib/part-figures";
+export * from "./lib/plasma-rifle-art";
 export * from "./lib/point-defence-art";
 export * from "./lib/potential-well-art";
 export * from "./lib/practice-cradle";

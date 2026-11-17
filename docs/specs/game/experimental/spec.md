@@ -56,6 +56,10 @@ Playground On, a ship carrying only sanctioned parts still flies an unscored run
   ([terms](../spec.md#terms)), and an unsanctioned part's marker reads
   “UNSANCTIONED”. How the marker looks is open.
 
+The Plasma rifle is a decorative, weighted unsanctioned fitting available through
+this same Playground boundary. Its mass and collision envelope apply in flight;
+it does not shoot.
+
 ### Rules
 
 - **Off, catalog.** Unsanctioned ships and parts remain visible in the Hangar

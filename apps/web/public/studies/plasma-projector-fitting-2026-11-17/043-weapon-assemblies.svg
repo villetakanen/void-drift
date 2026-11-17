@@ -1,0 +1,417 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+  width="1056"
+  height="1370"
+  viewBox="0 0 1056 1370"
+  style="isolation:isolate"
+>
+  <title>
+    Eight plasma weapon assemblies using the manual channel and the fleet’s
+    planar drawing language
+  </title>
+  <style>
+  text {
+    font-family: system-ui, sans-serif;
+    fill: #e9edf1;
+  }
+  .h {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .n {
+    font-size: 11px;
+    fill: #b3bdc8;
+  }
+  .pale {
+    fill: #c8f4f0;
+  }
+  .mid {
+    fill: #83c7d0;
+  }
+  .blue {
+    fill: #437e99;
+  }
+  .deep {
+    fill: #264d6b;
+  }
+  </style>
+  <defs>
+    <linearGradient
+      inkscape:collect="always"
+      xlink:href="#linearGradient1"
+      id="linearGradient2"
+      x1="72.76149"
+      y1="11.90625"
+      x2="72.76149"
+      y2="31.408047"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(-9.432905,65.179248)"
+    />
+    <linearGradient id="linearGradient1" inkscape:collect="always">
+      <stop style="stop-color:#ffff3d;stop-opacity:0;" offset="0" id="stop1" />
+      <stop
+        style="stop-color:#ffce2a;stop-opacity:0.68235294;"
+        offset="0.37547892"
+        id="stop8"
+      />
+      <stop style="stop-color:#ff7e0c;stop-opacity:1;" offset="1" id="stop2" />
+    </linearGradient>
+    <g id="manual-front" transform="translate(-63.328584 -98.597267)">
+      <g id="layer1">
+        <path
+          style="fill:#12171e;fill-opacity:1;stroke-width:1.05833;paint-order:stroke fill markers"
+          d="m 62.332394,76.556331 -0.373458,-1.679248 -0.726173,0.518695 -0.643181,18.517496 0.456452,0.456451 v 2.759456 l 1.390099,-0.06224 z"
+          id="path6"
+        />
+        <path
+          style="fill:#12171e;fill-opacity:1;stroke-width:1.05833;paint-order:stroke fill markers"
+          d="m 64.324775,76.556331 0.373458,-1.679248 0.726173,0.518694 0.643181,18.517497 -0.456452,0.456451 v 2.759456 l -1.390099,-0.06224 z"
+          id="path6-2"
+        />
+        <path
+          style="fill:#52575f;fill-opacity:1;stroke-width:1.05833;paint-order:stroke fill markers"
+          d="m 61.741083,97.098061 0.217853,-22.220978 -0.726173,0.518695 -0.643181,18.517496 0.456452,0.456451 v 2.759456 z"
+          id="path11"
+        />
+        <path
+          style="fill:#1b1d1f;fill-opacity:1;stroke-width:1.05833;paint-order:stroke fill markers"
+          d="m 64.916083,97.098061 -0.21785,-22.220978 -0.373459,1.679248 -0.103738,20.51061 z"
+          id="path12"
+        />
+        <rect
+          style="mix-blend-mode:hard-light;fill:url(#linearGradient2);fill-opacity:1;stroke-width:1.03749;paint-order:stroke fill markers"
+          id="rect2-6-3-3-8"
+          width="2.4885366"
+          height="19.501797"
+          x="62.084316"
+          y="77.085495"
+        />
+        <path
+          style="fill:#52575f;fill-opacity:1;stroke-width:1.05833;paint-order:stroke fill markers"
+          d="m 63.328582,95.979365 h -1.989611 l -0.186087,0.700972 -0.510961,1.906934 2.686661,0.0099 z"
+          id="path13"
+        />
+        <path
+          style="fill:#12171e;fill-opacity:1;stroke-width:1.05833;paint-order:stroke fill markers"
+          d="m 63.328586,95.979365 h 1.989611 l 0.186087,0.700972 0.510961,1.906934 -2.686661,0.0099 z"
+          id="path13-8"
+        />
+        <path
+          id="rect12"
+          style="fill:#3d4147;stroke-width:1.05833;paint-order:stroke fill markers"
+          d="m 61.525057,95.886322 h 1.803524 v 0.700972 h -1.98961 z"
+        />
+        <path
+          id="rect12-5"
+          style="fill:#1b1d1f;fill-opacity:1;stroke-width:1.05833;paint-order:stroke fill markers"
+          d="m 65.132105,95.886322 h -1.803524 v 0.700972 h 1.98961 z"
+        />
+        <path
+          id="rect12-3-8"
+          style="fill:#3d4147;stroke-width:1.05833;paint-order:stroke fill markers"
+          d="m 61.152885,97.288266 2.175698,2e-6 v 0.700972 l -2.361784,-2e-6 z"
+        />
+        <path
+          id="rect12-3-8-8"
+          style="fill:#1b1d1f;fill-opacity:1;stroke-width:1.05833;paint-order:stroke fill markers"
+          d="m 65.504281,97.288266 -2.175698,2e-6 v 0.700972 l 2.361784,-2e-6 z"
+        />
+      </g>
+    </g>
+    <g id="chamber">
+      <path fill="#52575f" d="M-1.3 -1.9H0V.6H-1.3Z" />
+      <path fill="#12171e" d="M0 -1.9H1.3V.6H0Z" />
+      <g transform="translate(0 2.7) scale(.34) rotate(-90)">
+        <polygon
+          points="10,-2 8,-5 -4.5,-5 -6,0 -4.5,5 8,5 10,2"
+          fill="rgb(33,38,44)"
+        />
+        <polygon points="10,0 8,-3.8 -4.5,-3.8 -6,0" fill="rgb(103,111,118)" />
+        <polygon points="10,0 8,3.8 -4.5,3.8 -6,0" fill="rgb(17,19,21)" />
+        <polygon
+          points="8,-5 -4.5,-5 -4.5,-3.8 8,-3.8"
+          fill="rgb(116,126,136)"
+        />
+      </g>
+    </g>
+    <g id="a">
+      <path class="pale" d="M-2.25 -3.2 -3.8 -1.8 -3.1 1.9 -1.7 2.7 -1.7 .4Z" />
+      <path class="mid" d="M-2.25 -3.2 -1.7 .4 -1.7 2.7 -2.35 1.7Z" />
+      <path class="blue" d="M2.25 -3.2 3.8 -1.8 3.1 1.9 1.7 2.7 1.7 .4Z" />
+      <path class="deep" d="M2.25 -3.2 3.8 -1.8 3.1 1.9 2.35 1.7Z" />
+      <path class="mid" d="M-3.1 1H3.1L2.8 1.65H-2.8Z" />
+    </g>
+    <g id="b">
+      <path class="pale" d="M-2.3 -3.7 -3.7 -.8 -2.7 4.1 -1.2 5.3 -1.7 .5Z" />
+      <path class="blue" d="M-3.7 -.8 -2.7 4.1 -1.2 5.3 -2.4 1.4Z" />
+      <path class="blue" d="M2.3 -3.7 3.7 -.8 2.7 4.1 1.2 5.3 1.7 .5Z" />
+      <path class="deep" d="M3.7 -.8 2.7 4.1 1.2 5.3 2.4 1.4Z" />
+      <path class="mid" d="M-2.6 .1H2.6L2.4 .7H-2.4Z" />
+    </g>
+    <g id="c">
+      <path class="pale" d="M-2.2 -2.5 -4.5 -.3 -3.3 1.2 -1.4 1.9 -1.6 -.2Z" />
+      <path class="blue" d="M-4.5 -.3 -3.3 1.2 -1.4 1.9 -2.4 .2Z" />
+      <path class="blue" d="M2.2 -2.5 4.5 -.3 3.3 1.2 1.4 1.9 1.6 -.2Z" />
+      <path class="deep" d="M4.5 -.3 3.3 1.2 1.4 1.9 2.4 .2Z" />
+      <path class="mid" d="M-3.3 .7 0 .3 3.3 .7 2.6 1.3H-2.6Z" />
+    </g>
+    <g id="d">
+      <path
+        class="pale"
+        d="M-2.2 -2.7 -3.6 -.5 -3.2 3.6 -1.3 5.7 -1.4 3.4 -1.45 .3Z"
+      />
+      <path class="mid" d="M-2.2 -2.7 -1.45 .3 -1.4 3.4 -2.2 2.1Z" />
+      <path class="blue" d="M-3.6 -.5 -3.2 3.6 -1.3 5.7 -2.2 2.1Z" />
+      <path
+        class="blue"
+        d="M2.2 -2.7 3.6 -.5 3.2 3.6 1.3 5.7 1.4 3.4 1.45 .3Z"
+      />
+      <path class="deep" d="M3.6 -.5 3.2 3.6 1.3 5.7 2.2 2.1Z" />
+      <path class="mid" d="M-2.7 3.1 0 3.5 2.7 3.1 2.3 4.2H-2.3Z" />
+    </g>
+    <g id="e">
+      <path class="mid" d="M-2.1 -5.3 -4.3 -.7 -3.7 3.5 -2.2 2.4 -2 .1Z" />
+      <path class="pale" d="M-2.1 -5.3 -2.9 -.5 -2.2 2.4 -2 .1Z" />
+      <path class="blue" d="M-4.3 -.7 -3.7 3.5 -2.2 2.4 -2.9 -.5Z" />
+      <path class="blue" d="M2.1 -5.3 4.3 -.7 3.7 3.5 2.2 2.4 2 .1Z" />
+      <path class="deep" d="M4.3 -.7 3.7 3.5 2.2 2.4 2.9 -.5Z" />
+      <path class="mid" d="M-2.8 .3H2.8L2.9 1H-2.9Z" />
+    </g>
+    <g id="f">
+      <path
+        class="pale"
+        d="M-2.25 -2.4 -3.2 -.9 -2.5 1.7 -3.5 4.5 -1.5 6.5 -1.3 4.1 -1.5 .7Z"
+      />
+      <path class="blue" d="M-3.5 4.5 -1.5 6.5 -1.3 4.1 -2.1 3Z" />
+      <path
+        class="blue"
+        d="M2.25 -2.4 3.2 -.9 2.5 1.7 3.5 4.5 1.5 6.5 1.3 4.1 1.5 .7Z"
+      />
+      <path class="deep" d="M3.5 4.5 1.5 6.5 1.3 4.1 2.1 3Z" />
+      <path class="mid" d="M-2.1 4.8 0 4.3 2.1 4.8 1.5 6.5H-1.5Z" />
+    </g>
+    <g id="g">
+      <path class="pale" d="M-2.2 -4.3 -4 -.8 -3.4 3.7 -1.2 5 -1.7 .7Z" />
+      <path class="blue" d="M-4 -.8 -3.4 3.7 -1.2 5 -2.6 1.5Z" />
+      <path class="blue" d="M2.25 -2.5 3.2 -1.6 2.9 1.3 1.55 2.2 1.7 .4Z" />
+      <path class="deep" d="M3.2 -1.6 2.9 1.3 1.55 2.2 2.3 .6Z" />
+      <path class="mid" d="M-2.6 .5H2.9L2.6 1.15H-2.7Z" />
+    </g>
+    <g id="h-back">
+      <path
+        class="mid"
+        d="M-2.1 -.2 -4.4 3.4 -2.5 5.4 0 6.8 2.5 5.4 4.4 3.4 2.1 -.2Z"
+      />
+      <path class="pale" d="M-2.1 -.2 0 1.5 -2.5 5.4 -4.4 3.4Z" />
+      <path class="blue" d="M2.1 -.2 4.4 3.4 2.5 5.4 0 1.5Z" />
+      <path class="blue" d="M-4.4 3.4 -2.5 5.4 0 6.8 0 3Z" />
+      <path class="deep" d="M4.4 3.4 2.5 5.4 0 6.8V3Z" />
+    </g>
+    <g id="h">
+      <path class="pale" d="M-2.2 -2.5 -3 -1.5 -2.8 .8 -1.4 1.4 -1.7 -.2Z" />
+      <path class="blue" d="M2.2 -2.5 3 -1.5 2.8 .8 1.4 1.4 1.7 -.2Z" />
+      <path class="mid" d="M-2.8 .3H2.8V.85H-2.8Z" />
+    </g>
+    <g id="assembly-a">
+      <use href="#chamber" />
+      <use href="#manual-front" />
+      <use href="#a" />
+    </g>
+    <g id="assembly-b">
+      <use href="#chamber" />
+      <use href="#manual-front" />
+      <use href="#b" />
+    </g>
+    <g id="assembly-c">
+      <use href="#chamber" />
+      <use href="#manual-front" />
+      <use href="#c" />
+    </g>
+    <g id="assembly-d">
+      <use href="#chamber" />
+      <use href="#manual-front" />
+      <use href="#d" />
+    </g>
+    <g id="assembly-e">
+      <use href="#chamber" />
+      <use href="#manual-front" />
+      <use href="#e" />
+    </g>
+    <g id="assembly-f">
+      <use href="#chamber" />
+      <use href="#manual-front" />
+      <use href="#f" />
+    </g>
+    <g id="assembly-g">
+      <use href="#chamber" />
+      <use href="#manual-front" />
+      <use href="#g" />
+    </g>
+    <g id="assembly-h">
+      <use href="#h-back" />
+      <use href="#chamber" />
+      <use href="#manual-front" />
+      <use href="#h" />
+    </g>
+  </defs>
+  <rect width="1056" height="1370" fill="#05070a" />
+  <text x="18" y="30" class="h">
+    Plasma weapon / supporting solids, sloping faces and exposed machinery
+  </text>
+  <text x="18" y="52" class="n">
+    Eight original SVG proposals. Your channel and its source-art scale stay
+    fixed; the common chamber is provisional. No exhausts.
+  </text>
+  <g transform="translate(0 75)">
+    <path d="M0 0H264M0 0V610" stroke="#26313c" fill="none" />
+    <text x="16" y="28" class="h">A / Compact shoulders</text>
+    <text x="16" y="49" class="n">
+      Short raised blocks; chamber projects aft.
+    </text>
+    <g
+      class="whole"
+      transform="translate(132 257) scale(8)"
+      style="isolation:isolate"
+    >
+      <use href="#assembly-a" />
+    </g>
+    <text x="16" y="340" class="n">ASSEMBLY DETAIL / 2.5×</text>
+    <svg x="16" y="352" width="232" height="252" viewBox="-5.8 -5.6 11.6 12.6">
+      <title>043 weapon assemblies</title>
+      <g style="isolation:isolate"><use href="#assembly-a" /></g>
+    </svg>
+  </g>
+  <g transform="translate(264 75)">
+    <path d="M0 0H264M0 0V610" stroke="#26313c" fill="none" />
+    <text x="16" y="28" class="h">B / Long chines</text>
+    <text x="16" y="49" class="n">Tapered sides carry the chamber length.</text>
+    <g
+      class="whole"
+      transform="translate(132 257) scale(8)"
+      style="isolation:isolate"
+    >
+      <use href="#assembly-b" />
+    </g>
+    <text x="16" y="340" class="n">ASSEMBLY DETAIL / 2.5×</text>
+    <svg x="16" y="352" width="232" height="252" viewBox="-5.8 -5.6 11.6 12.6">
+      <title>043 weapon assemblies</title>
+      <g style="isolation:isolate"><use href="#assembly-b" /></g>
+    </svg>
+  </g>
+  <g transform="translate(528 75)">
+    <path d="M0 0H264M0 0V610" stroke="#26313c" fill="none" />
+    <text x="16" y="28" class="h">C / Broad yoke</text>
+    <text x="16" y="49" class="n">A short, wide support around the root.</text>
+    <g
+      class="whole"
+      transform="translate(132 257) scale(8)"
+      style="isolation:isolate"
+    >
+      <use href="#assembly-c" />
+    </g>
+    <text x="16" y="340" class="n">ASSEMBLY DETAIL / 2.5×</text>
+    <svg x="16" y="352" width="232" height="252" viewBox="-5.8 -5.6 11.6 12.6">
+      <title>043 weapon assemblies</title>
+      <g style="isolation:isolate"><use href="#assembly-c" /></g>
+    </svg>
+  </g>
+  <g transform="translate(792 75)">
+    <path d="M0 0H264M0 0V610" stroke="#26313c" fill="none" />
+    <text x="16" y="28" class="h">D / Inset chamber</text>
+    <text x="16" y="49" class="n">
+      Sloping covers bury more of the canister.
+    </text>
+    <g
+      class="whole"
+      transform="translate(132 257) scale(8)"
+      style="isolation:isolate"
+    >
+      <use href="#assembly-d" />
+    </g>
+    <text x="16" y="340" class="n">ASSEMBLY DETAIL / 2.5×</text>
+    <svg x="16" y="352" width="232" height="252" viewBox="-5.8 -5.6 11.6 12.6">
+      <title>043 weapon assemblies</title>
+      <g style="isolation:isolate"><use href="#assembly-d" /></g>
+    </svg>
+  </g>
+  <g transform="translate(0 705)">
+    <path d="M0 0H264M0 0V610" stroke="#26313c" fill="none" />
+    <text x="16" y="28" class="h">E / Swept blades</text>
+    <text x="16" y="49" class="n">
+      Thin projections; height stays at the joint.
+    </text>
+    <g
+      class="whole"
+      transform="translate(132 257) scale(8)"
+      style="isolation:isolate"
+    >
+      <use href="#assembly-e" />
+    </g>
+    <text x="16" y="340" class="n">ASSEMBLY DETAIL / 2.5×</text>
+    <svg x="16" y="352" width="232" height="252" viewBox="-5.8 -5.6 11.6 12.6">
+      <title>043 weapon assemblies</title>
+      <g style="isolation:isolate"><use href="#assembly-e" /></g>
+    </svg>
+  </g>
+  <g transform="translate(264 705)">
+    <path d="M0 0H264M0 0V610" stroke="#26313c" fill="none" />
+    <text x="16" y="28" class="h">F / Rear shoulders</text>
+    <text x="16" y="49" class="n">
+      Support gathers around the chamber’s rear.
+    </text>
+    <g
+      class="whole"
+      transform="translate(132 257) scale(8)"
+      style="isolation:isolate"
+    >
+      <use href="#assembly-f" />
+    </g>
+    <text x="16" y="340" class="n">ASSEMBLY DETAIL / 2.5×</text>
+    <svg x="16" y="352" width="232" height="252" viewBox="-5.8 -5.6 11.6 12.6">
+      <title>043 weapon assemblies</title>
+      <g style="isolation:isolate"><use href="#assembly-f" /></g>
+    </svg>
+  </g>
+  <g transform="translate(528 705)">
+    <path d="M0 0H264M0 0V610" stroke="#26313c" fill="none" />
+    <text x="16" y="28" class="h">G / Unequal shoulders</text>
+    <text x="16" y="49" class="n">
+      A long left solid and a shorter right one.
+    </text>
+    <g
+      class="whole"
+      transform="translate(132 257) scale(8)"
+      style="isolation:isolate"
+    >
+      <use href="#assembly-g" />
+    </g>
+    <text x="16" y="340" class="n">ASSEMBLY DETAIL / 2.5×</text>
+    <svg x="16" y="352" width="232" height="252" viewBox="-5.8 -5.6 11.6 12.6">
+      <title>043 weapon assemblies</title>
+      <g style="isolation:isolate"><use href="#assembly-g" /></g>
+    </svg>
+  </g>
+  <g transform="translate(792 705)">
+    <path d="M0 0H264M0 0V610" stroke="#26313c" fill="none" />
+    <text x="16" y="28" class="h">H / Raised canister</text>
+    <text x="16" y="49" class="n">Dark chamber stands above a swept deck.</text>
+    <g
+      class="whole"
+      transform="translate(132 257) scale(8)"
+      style="isolation:isolate"
+    >
+      <use href="#assembly-h" />
+    </g>
+    <text x="16" y="340" class="n">ASSEMBLY DETAIL / 2.5×</text>
+    <svg x="16" y="352" width="232" height="252" viewBox="-5.8 -5.6 11.6 12.6">
+      <title>043 weapon assemblies</title>
+      <g style="isolation:isolate"><use href="#assembly-h" /></g>
+    </svg>
+  </g>
+  <text x="18" y="1350" class="n">
+    Drawing enlargements, not camera zooms. Pale and blue planes describe raised
+    housings; dark working parts remain separate solids.
+  </text>
+</svg>

@@ -215,3 +215,8 @@ Feature: Hangar
     Then I can still fly it
     And the save status says the choices will not be kept
 ```
+
+The Plasma rifle uses the shared unlit weapon artwork on its card and ship, with
+the white-blue housing centred on its slot. It shows its approved fluff and mass;
+its unsanctioned description identifies it as inert. Existing slot compatibility,
+save/load and Playground launch gating apply.

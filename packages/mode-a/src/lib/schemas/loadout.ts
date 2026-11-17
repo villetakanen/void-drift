@@ -27,6 +27,7 @@ export const EngineIdSchema = z.enum([
 ]);
 export const ReleaseClassSchema = z.enum(["scored", "preview"]);
 export const PartIdSchema = z.enum([
+  "plasma-rifle",
   "light-ion-cannon",
   "ion-point-defence",
   "rail",
@@ -190,6 +191,19 @@ export const CHASSIS = {
   }),
 };
 export const PARTS = {
+  "plasma-rifle": PartSchema.parse({
+    id: "plasma-rifle",
+    name: "Plasma rifle",
+    fluff: "Floor is lava, jump!",
+    description:
+      "Decorative plasma rifle. Adds mass and collision extent; does not charge or shoot.",
+    releaseClass: "preview",
+    category: "G",
+    mass: 24.3,
+    thrust: 0,
+    limit: 0,
+    draw: 0,
+  }),
   "light-ion-cannon": PartSchema.parse({
     id: "light-ion-cannon",
     fluff: "Shoots straight. Keep your expectations close.",

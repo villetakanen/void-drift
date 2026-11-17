@@ -484,6 +484,12 @@ The only `z-index` values in shared UI. Gaps leave room for a later layer.
 
 ## Ship part artwork
 
+The Plasma rifle's canonical example is `/lab/ds/weapons`: it compares the
+unlit SVG master with its derived Canvas paths, shared catalog drawing and
+production hull fittings. `scripts/plasma-rifle-art-from-svg.mjs` derives paths,
+transforms and conservative bounds from the master; `--check` verifies parity.
+The charged study prototype is not production artwork.
+
 Ship parts, the engines, weapons and support parts a player fits, are game art
 drawn procedurally on canvas. [Parts](../../game/parts/spec.md) requires each
 new part's art to have an SVG master, technical artefacts converted from it and
@@ -493,7 +499,7 @@ marks that ship part art shares.
 ### Pages
 
 - Ship part art is shown by family, one page per family at `/lab/ds/<family>`:
-  `/lab/ds/engines` for engines. Each page lists its parts from the catalog.
+  `/lab/ds/engines` for engines and `/lab/ds/weapons` for weapons. Each page lists its parts from the catalog.
 - For each part with a master, the page shows the SVG master beside canvas
   renderings of its technical artefacts: every pose, the part on a ship, and
   for an engine its plume at full output. Parts without a master are listed
