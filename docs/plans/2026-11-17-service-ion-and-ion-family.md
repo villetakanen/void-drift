@@ -130,7 +130,11 @@ Written 17 November 2026 into the parts, design-system and ships specs.
    share of the light ion; its plume is shorter and narrower than the light
    ion's in the same ink; the plume starts at the drawn nozzle on every hull;
    the card and the ship draw the same form; the marking stays inside the body.
-4. **Lab references.** Whatever step 1 did not already make catalog-driven.
+4. **Lab references.** _Done 17 November 2026, no code change:_ the
+   instrument's family mapping, the ship propulsion page and the engines page
+   read the catalog, and the propulsion page lists the Service ion at +1 u/s.
+   The Lab's remaining engine ids are fixture loadouts, not lists. Original
+   intent: Whatever step 1 did not already make catalog-driven.
    _Size: extra small._
 
 Sanctioning the Service ion for ranked play is not part of this plan.
