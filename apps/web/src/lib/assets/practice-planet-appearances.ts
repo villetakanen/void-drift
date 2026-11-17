@@ -82,8 +82,14 @@ export function practicePlanetAppearances(
       right: target.pos.x + extent,
       bottom: target.pos.y + extent,
     });
-    const turn = (frame: FlightFrame, seconds: number) =>
-      (frame.sim.ticks * STEP * 2 * Math.PI) / seconds;
+    // The two surfaces take turns: the ground's turn advances on even ticks
+    // and the clouds' on odd ticks, so they never redraw in the same tick.
+    // The picture still depends only on the tick.
+    const turn = (frame: FlightFrame, seconds: number, slot: 0 | 1) => {
+      const ticks = frame.sim.ticks;
+      const held = ticks - ((ticks + slot) % 2);
+      return (held * STEP * 2 * Math.PI) / seconds;
+    };
     appearances.set(position, {
       worldBounds(_frame, target) {
         return square(
@@ -95,13 +101,13 @@ export function practicePlanetAppearances(
         const zoom = frame.camera.zoom;
         const { x, y } = target.pos;
         material.surface.draw(
-          turn(frame, PRACTICE_CRADLE_SPIN_SECONDS),
+          turn(frame, PRACTICE_CRADLE_SPIN_SECONDS, 0),
           target.radius * 2 * zoom,
         );
         material.painter.body(ctx, 0, x, y, target.radius);
         const clouds = cloudRadius(target);
         material.clouds.draw(
-          turn(frame, PRACTICE_CRADLE_CLOUD_SPIN_SECONDS),
+          turn(frame, PRACTICE_CRADLE_CLOUD_SPIN_SECONDS, 1),
           clouds * 2 * zoom,
         );
         ctx.drawImage(

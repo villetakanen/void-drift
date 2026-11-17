@@ -103,7 +103,9 @@ the same way; what differs between bodies is data.
   turning surface is drawn with the browser's image drawing from a map prepared
   at load. It is sized to its own diameter on screen and redrawn only when that
   surface has visibly moved. The same tick gives the same picture, whatever
-  frames were drawn before it.
+  frames were drawn before it. A body's two surfaces take turns: the ground's
+  turn advances only on even ticks and the upper surface's only on odd ticks,
+  so they never redraw in the same tick.
 - **Cost.** No game code loops over pixels per frame; pixel work happens at load.
   Visibility uses each body's complete visual bounds. A stock or fallback disc
   includes half its outline stroke, `max(1, radius × 0.06) / 2` world units;
