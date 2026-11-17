@@ -108,14 +108,19 @@ let { label = "Choices design system" }: { label?: string } = $props();
       uses a native checkbox for keyboard behavior.
     </p>
     <div class="example switch-examples">
-      <label class="switch-example" for="lab-stabilizers"
-        ><span class="switch-example__copy"
-          ><span class="switch-example__name">Ion stabilizers</span
-          ><span class="switch-example__help"
+      <div class="switch-example">
+        <span class="switch-example__copy"
+          ><label class="switch-example__name" for="lab-stabilizers"
+            >Ion stabilizers</label
+          ><span class="switch-example__help" id="lab-stabilizers-help"
             >Assist turns and brake spin.</span
           ></span
-        ><Switch id="lab-stabilizers" bind:checked={stabilizers} /></label
-      >
+        ><Switch
+          id="lab-stabilizers"
+          aria-describedby="lab-stabilizers-help"
+          bind:checked={stabilizers}
+        />
+      </div>
       <label class="switch-example" for="lab-linkedEngines"
         ><span class="switch-example__copy"
           ><span class="switch-example__name">Linked engines</span
@@ -137,7 +142,8 @@ let { label = "Choices design system" }: { label?: string } = $props();
       <code>Switch</code>
       exposes a bindable boolean and optional <code>disabled</code> state. The
       adjacent setting name labels the checkbox; ON/OFF stays visible in the
-      sliding square.
+      sliding square. Optional <code>aria-describedby</code> links supporting
+      copy as an accessible description.
     </p>
   </section>
 </section>

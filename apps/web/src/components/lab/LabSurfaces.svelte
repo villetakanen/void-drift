@@ -90,12 +90,14 @@ let closable = $state(true);
       that follows the cut, and the display's drop shadow outside the shape.
       <code>.panel--flat</code>
       drops the shadow, for a surface on the live game such as a status message.
+      Menus and dialogs share this appearance; the host owns arrangement and
+      whether interaction is modal.
     </p>
     <div class="feed panels">
       <div class="star" aria-hidden="true"></div>
       <div class="panel">
         <p class="eyebrow">.panel</p>
-        <p>Dialogs over the stage.</p>
+        <p>Game menus and dialogs over the stage.</p>
         <p class="muted">Muted text on the shade.</p>
       </div>
       <div class="panel panel--flat">

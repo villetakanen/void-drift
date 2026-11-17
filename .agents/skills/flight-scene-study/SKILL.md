@@ -1,17 +1,29 @@
 ---
 name: flight-scene-study
-description: Evaluate ships, effects, weapons and world objects in Void Drift design studies using the shared Flight scene instrument. Use Motion for paths and measurements.
+description: Use the shared Flight scene instrument when a design study needs to observe FX or an in-game scenario during flight. Excludes equipment construction, material studies, mounting diagrams and static scale comparisons. Use Motion for path and measurement investigations.
 ---
 
 # Flight scene study
 
-Show the proposed visual with a real fitted ship in the game's standard look. Rendering does not establish gameplay acceptance.
+Use this skill when the study's question requires seeing an effect or interaction
+play out in flight—for example, a discharge beside a moving ship, a trail through
+a turn, an impact, or an approach to a world.
+
+Identify the event or interaction the scene needs to reveal. Choose staging that
+makes that question inspectable.
+
+Physical form, construction, materials, attachment points and size can be judged
+through shared artwork, Preview/Plan and scale comparisons. “At flight scale”
+does not require a running flight scene. Loading this skill does not itself
+require embedding the instrument.
+
+Rendering does not establish gameplay acceptance.
 
 Read the [Flight scene contract](../../../docs/specs/lab/flight-scene-instrument/spec.md) and inspect `/lab/flight-scene`. Follow [design-study](../design-study/SKILL.md) for framing, decisions and round retention. Use [Motion](../../../docs/specs/lab/motion-instrument/spec.md) for path/graph questions.
 
 ## Compose
 
-Mount `FlightSceneInstrument` with its standard burns, timeline, views and burger pane. Never substitute a custom scene or add manual flight controls.
+When an in-flight scene is needed, mount `FlightSceneInstrument` with its standard burns, timeline, views and burger pane. Never substitute a custom scene or add manual flight controls.
 
 - Without study controls, use `FlightSceneEmbed.astro`.
 - With controls or painters, use a small Svelte wrapper around `FlightSceneInstrument.svelte`, supplying its `pane` snippet and supported inputs. Mount in `InstrumentBand.astro` with a client directive and a prop.

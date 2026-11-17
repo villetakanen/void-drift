@@ -7,8 +7,8 @@ drawn through the [render contract](../../game/render/spec.md)'s layers.
 
 ## Context
 
-A study about a ship, its effects or its weapons has to show the thing in
-flight. The Flight scene instrument is the shared way to do that: one ship
+When a study's question requires observing FX or an in-game scenario during
+flight, the Flight scene instrument is the shared way to do that: one ship
 flies one of the Motion instrument's fixed burns through the production
 simulation, and the result is drawn through the game's own layers and frame
 passes, so a study judges what play would show. It shows one ship; a study that
@@ -418,6 +418,19 @@ An experiment may supply additional World/LFX production `FlightPass` painters a
 emission through the existing persistent surface and its culling/budget interface.
 Painters read state and never advance it. The shared frame, camera, layers and FX
 history remain authoritative. New behaviour and artwork remain study-owned.
+An experiment may name `hiddenMounts`: mount keys of the player's ship that the
+ship pass draws empty, so a study can paint its own fitting there with a World
+pass. The fitted part still flies, weighs and emits as the game's; only its
+drawing is withheld.
+
+An optional `fittingPainter(ctx, mount)` reuses the build renderer's existing
+artwork callback inside the ship pass. It receives occupied mounts in builder
+coordinates at their local origin and returns true when it replaces their artwork.
+The shared renderer retains mount orientation, flight scale and hull occlusion;
+hidden mounts remain empty and take precedence. This is trusted local drawing code,
+not a serializable document field or a gameplay part. The canonical Flight scene
+page offers an example fitting marker. Appearance replacement preserves flight,
+mass, power and weapons. No production fitting is added by this capability.
 
 Reset, backward seek and replacement of an experiment create fresh state and replay
 from the start. Replacement preserves the selected burn and time. Pause never

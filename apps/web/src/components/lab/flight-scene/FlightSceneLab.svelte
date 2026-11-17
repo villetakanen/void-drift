@@ -7,6 +7,7 @@ import {
 import { untrack } from "svelte";
 import {
   defaultTargets,
+  type FlightExperiment,
   FlightSceneDocumentSchema,
   STARTER_FLIGHT_SCENE,
   type StudyLight,
@@ -83,6 +84,21 @@ const EXAMPLE_LIGHT: StudyLight = {
 let targets = $state<TargetMode>(defaultTargets(doc));
 let layers = $state({ world: true, fx: true, lfx: true });
 let lit = $state(false);
+let fitting = $state(false);
+const EXAMPLE_FITTING: FlightExperiment = {
+  label: "Example fitting marker under the production hull",
+  create() {
+    return {
+      step() {},
+      fittingPainter(ctx, mount) {
+        if (mount.key !== "hull-0") return false;
+        ctx.fillStyle = "#747e88";
+        ctx.fillRect(-3, -3, 20, 6);
+        return true;
+      },
+    };
+  },
+};
 const id = $props.id();
 </script>
 
@@ -94,6 +110,7 @@ const id = $props.id();
     {starAppearance}
     start={stagedStart}
     light={lit ? EXAMPLE_LIGHT : undefined}
+    experiment={fitting ? EXAMPLE_FITTING : undefined}
   >
     {#snippet pane()}
       <p>Scene</p>
@@ -150,6 +167,16 @@ const id = $props.id();
         <label for={`${id}-light`}>{EXAMPLE_LIGHT.label}</label>
         <Switch id={`${id}-light`} bind:checked={lit} />
       </div>
+      <p>Study fitting</p>
+      <div class="rows">
+        <label for={`${id}-fitting`}>Example fitting marker</label>
+        <Switch id={`${id}-fitting`} bind:checked={fitting} />
+      </div>
+      <p>
+        Replaces hull-0 artwork inside the shared ship drawing, preserving its
+        mount transform and hull occlusion. Flight and weapon behavior stay
+        unchanged.
+      </p>
     {/snippet}
   </FlightSceneInstrument>
 {/key}

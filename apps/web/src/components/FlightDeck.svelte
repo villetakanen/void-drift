@@ -35,7 +35,7 @@ import {
   stockSettings,
   submitHighScore,
 } from "@void-drift/mode-a";
-import { onMount } from "svelte";
+import { onMount, type Snippet } from "svelte";
 import { practicePlanetAppearances } from "../lib/assets/practice-planet-appearances";
 import { createPracticeVenus } from "../lib/assets/practice-venus";
 import { loadPracticeMercury } from "../lib/assets/rock-planets/authored-materials";
@@ -55,11 +55,14 @@ let {
   launchSource = "title",
   mode = "survival",
   onReturn,
+  menu,
 }: {
   loadout?: Loadout;
   launchSource?: "title" | "hangar";
   mode?: FlightMode;
   onReturn?: () => void;
+  /** A nonmodal menu foreground over the existing landing scene and scrim. */
+  menu?: Snippet;
 } = $props();
 // Practice skips the arrival countdown and labels itself; its screen is Survival's.
 const testFlight = $derived(mode === "practice");
@@ -827,13 +830,17 @@ onMount(() => {
         </Dialog>
       {:else if landing}
         <div class="dialog-scrim" aria-hidden="true"></div>
-        <TitleScreen
-          onStart={start}
-          loadout={currentLoadout}
-          experimental={$shipSetup.experimental}
-          disabled={phase === "starting" || !currentLaunchAvailable}
-          {blockedReason}
-        />
+        {#if menu}
+          {@render menu()}
+        {:else}
+          <TitleScreen
+            onStart={start}
+            loadout={currentLoadout}
+            experimental={$shipSetup.experimental}
+            disabled={phase === "starting" || !currentLaunchAvailable}
+            {blockedReason}
+          />
+        {/if}
       {:else if status === "GAME_OVER"}
         <Dialog label="Run complete" class="flight-card">
           {#if mode === "gauntlet" && gauntletResult}

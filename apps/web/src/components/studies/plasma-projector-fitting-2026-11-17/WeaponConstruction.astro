@@ -1,0 +1,108 @@
+---
+import {
+  ION_CANNON_ART,
+  ION_CANNON_GEOMETRY,
+  POINT_DEFENCE_BASE,
+  POINT_DEFENCE_GEOMETRY,
+  POINT_DEFENCE_SOURCE_SCALE,
+  POINT_DEFENCE_TURRET,
+} from "@void-drift/mode-a";
+
+const cannon = ION_CANNON_GEOMETRY;
+const cannonScale = (12 * cannon.length) / cannon.sourceLength;
+const cannonTransform = (x: number) =>
+  `translate(${x} 245) scale(${cannonScale}) translate(${-cannon.centreX} ${-cannon.anchorY})`;
+const pd = POINT_DEFENCE_GEOMETRY;
+const turretTransform = `translate(837 245) scale(${12 * POINT_DEFENCE_SOURCE_SCALE}) translate(${-pd.centreX} ${-pd.centreY})`;
+---
+
+<figure>
+  <svg
+    viewBox="0 0 1040 390"
+    role="img"
+    aria-label="Production weapon construction: complete cannon, its barrel and channel, its housing and crossbar, and point defence on its base"
+  >
+    <defs>
+      {POINT_DEFENCE_BASE.map((disc, i) => (
+        <linearGradient
+          id={`weapon-base-${i}`}
+          gradientUnits="userSpaceOnUse"
+          x1={disc.from[0]}
+          y1={disc.from[1]}
+          x2={disc.to[0]}
+          y2={disc.to[1]}
+        >
+          <stop offset="0" stop-color={disc.stops[0]} />
+          <stop offset="1" stop-color={disc.stops[1]} />
+        </linearGradient>
+      ))}
+    </defs>
+    <text x="130" y="32">Complete cannon</text>
+    <text x="365" y="32">Barrel + channel</text>
+    <text x="600" y="32">Housing + crossbar</text>
+    <text x="837" y="32">Point defence</text>
+    {[130, 365, 600].map((x, i) => (
+      <g transform={cannonTransform(x)}>
+        {ION_CANNON_ART.filter(
+          (_face, j) => i === 0 || (i === 1 ? j < 5 : j >= 5),
+        ).map(([color, d]) => (
+          <path fill={color} d={d} />
+        ))}
+      </g>
+    ))}
+    <g transform={turretTransform}>
+      {POINT_DEFENCE_BASE.map((disc, i) => (
+        <circle
+          cx={pd.centreX}
+          cy={pd.centreY}
+          r={disc.radius}
+          fill={`url(#weapon-base-${i})`}
+        />
+      ))}
+      {POINT_DEFENCE_TURRET.map(([color, points]) => (
+        <polygon
+          fill={color}
+          points={points.map((point) => point.join(",")).join(" ")}
+        />
+      ))}
+    </g>
+    <text x="130" y="350">Long, narrow firing axis</text>
+    <text x="365" y="350">Dark solid · bright channel</text>
+    <text x="600" y="350">A separate coloured solid</text>
+    <text x="837" y="350">Assembly around a pivot</text>
+    <text x="520" y="379" class="note">
+      Current production geometry · equal 12 px/u in this diagram's coordinate
+      space
+    </text>
+  </svg>
+  <figcaption>
+    Artwork comes directly from the production definitions. The two middle
+    drawings separate the cannon's existing parts without redesigning them. This
+    is construction evidence, not a proposed plasma form.
+  </figcaption>
+</figure>
+
+<style>
+figure {
+  margin: var(--spacing-lg) 0;
+}
+svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-block: 1px solid var(--color-border);
+}
+text {
+  fill: var(--color-text);
+  font: 13px var(--font-family-ui);
+  text-anchor: middle;
+}
+.note {
+  fill: var(--color-text-muted);
+  font-size: 11px;
+}
+figcaption {
+  color: var(--color-text-muted);
+  margin-top: var(--spacing-sm);
+}
+</style>

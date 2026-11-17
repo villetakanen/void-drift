@@ -1,6 +1,9 @@
 import { Camera, type FxPass, type Planet, Renderer } from "@void-drift/core";
 import {
   type BodyAppearance,
+  BUILD_FLIGHT_SCALE,
+  buildMounts,
+  drawBuild,
   drawFlightFrame,
   FLIGHT_PASSES,
   type FlightFrame,
@@ -234,6 +237,42 @@ export class FlightScene {
               source: "Flight scene star appearance",
               draw: ({ renderer, sim }) =>
                 renderer.drawStar(star, sim.ticks * STEP * 1000),
+            }
+          : pass,
+      );
+    }
+    const hidden = this.run.experimentRun?.hiddenMounts;
+    const fittingPainter = this.run.experimentRun?.fittingPainter;
+    if (hidden?.length || fittingPainter) {
+      // The staged scene has no opponents; only the player's build is drawn.
+      passes = (passes ?? FLIGHT_PASSES).map((pass) =>
+        pass.id === "ship"
+          ? {
+              ...pass,
+              source: "Flight scene experiment: fitting artwork",
+              draw: ({ sim }, ctx) => {
+                const loadout = sim.settings.loadout;
+                if (!loadout) return;
+                const mounts = buildMounts(loadout).map((mount) =>
+                  hidden?.includes(mount.key)
+                    ? { ...mount, part: null }
+                    : mount,
+                );
+                drawBuild(
+                  ctx,
+                  loadout,
+                  sim.ship.pos.x,
+                  sim.ship.pos.y,
+                  sim.ship.rotation,
+                  BUILD_FLIGHT_SCALE,
+                  "",
+                  undefined,
+                  mounts,
+                  sim.salvage?.angles,
+                  true,
+                  fittingPainter,
+                );
+              },
             }
           : pass,
       );

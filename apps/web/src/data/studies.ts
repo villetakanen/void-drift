@@ -3,19 +3,35 @@ import { z } from "astro/zod";
 export const studySchema = z.object({
   slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   title: z.string().min(1),
-  status: z.enum(["open", "accepted", "ruled-out", "stopped"]),
+  status: z.enum(["open", "blocked", "accepted", "ruled-out", "stopped"]),
   phase: z.enum(["problem", "exploration", "readiness", "scope"]),
   question: z.string().min(1),
 });
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
   {
-    slug: "plasma-projector-2026-11-16",
-    title: "Plasma Projector",
+    slug: "plasma-projector-fitting-2026-11-17",
+    title: "Plasma Projector · the fitting",
     status: "open",
     phase: "exploration",
     question:
-      "How should the Plasma Projector’s charge, close eruption and staghorn cooling exhaust express the established plasma family in flight, using earlier timing and response findings as starting hypotheses?",
+      "What physical form gives one heavy plasma weapon a distinctive presence, exposed or partly buried, and believable origins for its central strike and paired exhausts?",
+  },
+  {
+    slug: "maintenance-drive-2026-11-17",
+    title: "Maintenance drive",
+    status: "open",
+    phase: "exploration",
+    question:
+      "What can change within the ion engines’ shared form and plume, and what name, to make a drive at a third of a light ion’s thrust read as the smallest ion engine rather than a stabilizer?",
+  },
+  {
+    slug: "plasma-projector-2026-11-16",
+    title: "Plasma Projector",
+    status: "blocked",
+    phase: "exploration",
+    question:
+      "What visual identity makes the Plasma Projector’s loading, close eruption and continuously thrusting residual vents read as one distinctive heavy weapon in the plasma family?",
   },
   {
     slug: "rock-atmospheres-2026-11-15",

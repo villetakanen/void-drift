@@ -56,7 +56,7 @@ whole-checkout fingerprint or a verification certificate.
 - [Settings recovery guards](../../apps/web/src/lib/stores/settings.test.ts)
 - [FlightDeck wiring and readout](../../apps/web/src/components/FlightDeck.svelte)
 - [Options](../../apps/web/src/components/Settings.svelte)
-- [Speed camera control composition](../../apps/web/src/components/SpeedCameraSetting.svelte)
+- [Speed camera control composition](../../apps/web/src/components/Settings.svelte)
 - [Preference browser journey](../../tests/browser/control-default.spec.ts)
 - [Pause isolation, focus and navigation guard](../../tests/browser/dialogs.spec.ts)
 - [Competition journey](../../tests/firebase/competition.spec.ts)

@@ -13,7 +13,7 @@ import {
   Simulation,
   stockSettings,
 } from "@void-drift/mode-a";
-import { onMount } from "svelte";
+import { onMount, untrack } from "svelte";
 import FlightLayers from "../../FlightLayers.svelte";
 import RingSlider from "../../inputs/RingSlider.svelte";
 import {
@@ -48,25 +48,27 @@ let {
   variation?: "placement" | "scale";
 } = $props();
 let layerSets = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>[]>(
-  Array.from(
-    {
-      length:
-        mode === "family" ||
-        mode === "methods" ||
-        mode === "variations" ||
-        mode === "mercurial" ||
-        mode === "quilting"
-          ? 3
-          : 2,
-    },
-    () => ({}),
+  untrack(() =>
+    Array.from(
+      {
+        length:
+          mode === "family" ||
+          mode === "methods" ||
+          mode === "variations" ||
+          mode === "mercurial" ||
+          mode === "quilting"
+            ? 3
+            : 2,
+      },
+      () => ({}),
+    ),
   ),
 );
 let seconds = $state(0),
   playing = $state(false),
   ready = $state(false),
   failed = $state("");
-const configs =
+const configs = untrack(() =>
   mode === "quilting"
     ? [
         "Mineral mosaic · original",
@@ -172,10 +174,11 @@ const configs =
                         orbit: 0.032,
                         spin: 18,
                       },
-                    ];
+                    ],
+);
 const names = configs.map((config) => config.label);
-const duration = mode !== "surface" ? 60 : 24;
-const sequenceTimes =
+const duration = untrack(() => (mode !== "surface" ? 60 : 24));
+const sequenceTimes = untrack(() =>
   mode === "family" ||
   mode === "methods" ||
   mode === "variations" ||
@@ -185,7 +188,8 @@ const sequenceTimes =
     ? [0, 8, 16]
     : mode !== "surface"
       ? [0, 30, 60]
-      : [0, 6, 12];
+      : [0, 6, 12],
+);
 onMount(() => {
   let disposed = false,
     raf = 0;

@@ -20,7 +20,7 @@ import {
   stockSettings,
   YELLOW_FAMILY_RADIUS,
 } from "@void-drift/mode-a";
-import { onMount } from "svelte";
+import { onMount, untrack } from "svelte";
 import FlightLayers from "../../FlightLayers.svelte";
 import RingSlider from "../../inputs/RingSlider.svelte";
 import { loadAuthoredRockMaterials } from "./authored-materials";
@@ -33,7 +33,7 @@ let {
   hud = false,
 }: { label?: string; hud?: boolean } = $props();
 
-const motionDuration = hud ? 480 : 120;
+const motionDuration = untrack(() => (hud ? 480 : 120));
 
 const sim = new Simulation({ ...stockSettings(), mode: "practice" });
 const mercury = sim.planets.find((planet) => planet.id === "moon");

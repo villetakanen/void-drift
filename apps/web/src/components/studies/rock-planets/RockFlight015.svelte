@@ -46,7 +46,7 @@ let shipX = $state(0),
 let action = () => {},
   reset = () => {};
 let visit = (_index: number) => {};
-let press = (_id: number, _pad: ThrustPad | null) => {};
+let press = $state((_id: number, _pad: ThrustPad | null) => {});
 
 onMount(() => {
   let disposed = false,
@@ -156,7 +156,10 @@ onMount(() => {
             : {
                 ...pass,
                 source: "packages/core/src/lib/assets/rock-body.ts",
-                draw: (_frame, ctx) => {
+                draw: (
+                  _frame: Parameters<FlightPass["draw"]>[0],
+                  ctx: CanvasRenderingContext2D,
+                ) => {
                   sim.planets.forEach((planet, index) => {
                     ctx.strokeStyle = COLOR.border;
                     ctx.lineWidth = 0.7;
@@ -195,7 +198,10 @@ onMount(() => {
           space: "world",
           source: "packages/core/src/lib/assets/rock-body.ts",
           draws: "Sun-facing hard-light clipped to solid rock discs",
-          draw: (_frame, ctx) => {
+          draw: (
+            _frame: Parameters<FlightPass["draw"]>[0],
+            ctx: CanvasRenderingContext2D,
+          ) => {
             for (const planet of sim.planets)
               painter.light(
                 ctx,

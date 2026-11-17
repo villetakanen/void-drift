@@ -23,6 +23,10 @@ owner rather than repeating them here.
   held pose. Ship approaches and contact experiments remain Flight scene work.
 - Experimental styles remain scoped to study components; fixture behavior is labeled.
 - A cycle keeps a stable URL and records significant feedback, decisions and reasons.
+- At the designer's request, a study may be parked as `blocked` on a named
+  dependency. This is a nonterminal status: the page records the useful findings,
+  what is missing and the condition for resuming; the existing end states remain
+  accepted, ruled out and stopped.
 - Decisions recorded in a study hold inside that study. To the project and its specs
   they are proposals, including scope, slices, values and anything the study calls
   accepted or decided.

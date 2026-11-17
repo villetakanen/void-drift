@@ -186,7 +186,7 @@ literal and never the palette name behind it.
 | Surface | `--color-surface-hover`             | `lch(100% 0 0 / 0.051)`                | Hover tint on any surface                                                       |
 | Scrim   | `--color-backdrop`                  | `lch(0% 0 0 / 0.11)`                   | Dims what a Lab overlay pane covers                                             |
 | Scrim   | `--scrim-filter`, `--scrim-surface` | see [Scrim](#scrim-the-offline-feed)   | Shades the stage behind a dialog                                                |
-| Surface | `--panel-fill`                      | elev-2 at 65%                          | Panels; see [Panels](#panels)                                                   |
+| Surface | `--panel-fill`                      | elev-2                                 | Panels; see [Panels](#panels)                                                   |
 - Panels sit on `--color-elev-1`; `--color-void-light` now aliases it (panels rose from L 3.3 to
   5.5).
 - Borders are white at fixed strengths so one token reads on every surface.
@@ -284,7 +284,10 @@ implemented 2026-11-03.
   explicit `OFF` and `ON` states. The selected marker uses `--color-selected`;
   its text uses `--color-on-brand`. Focus, hover, disabled and reduced-motion states
   use the shared control foundations.
-- `/lab/ds/choices` demonstrates the switch in off, on and disabled states. The Hangar
+- `Switch` accepts optional `aria-describedby` to link supporting copy without
+  adding it to the setting name.
+- `/lab/ds/choices` demonstrates the switch in off, on and disabled states,
+  including a setting with an accessible description. The Hangar
   uses it for Playground, Ion stabilizers and Linked engines.
 - The toggle is one button-shaped control split into equal parts: cut corners
   outside, a straight split inside, the selected part filled lime, the others on
@@ -417,13 +420,16 @@ fill can be translucent while the edge and shadow follow the cut:
 
 ### Panels
 
-| Class          | Fill                    | Edge             | Corners | Shadow                             | Use                              |
-| -------------- | ----------------------- | ---------------- | ------- | ---------------------------------- | -------------------------------- |
-| `.panel`       | `--panel-fill` (elev-2) | `--color-border` | `lg`    | `--panel-shadow` (0 8px 24px, 70%) | Dialogs over the stage           |
-| `.panel--flat` | the same                | `--color-border` | `lg`    | none                               | Status messages on the live game |
+| Class          | Fill                    | Edge             | Corners | Shadow                             | Use                                   |
+| -------------- | ----------------------- | ---------------- | ------- | ---------------------------------- | ------------------------------------- |
+| `.panel`       | `--panel-fill` (elev-2) | `--color-border` | `lg`    | `--panel-shadow` (0 8px 24px, 70%) | Game menus and dialogs over the stage |
+| `.panel--flat` | the same                | `--color-border` | `lg`    | none                               | Status messages on the live game      |
+- Panels give game menus and dialogs the same surface treatment. The host
+  owns content and arrangement; using a panel or scrim does not make a menu
+  modal.
 - The panel is elevation 2 on the console form: the instrument display's edge and shadow (decided
   2026-11-02). [DEPRECATED 2026-11-02] ~~A frosted translucent shade~~.
-- Consumers: the game menu, pause and run complete (`.flight-card` on the panel) and the flight
+- Consumers: the title and Options menus, pause and run complete (`.flight-card` on the panel) and the flight
   status message (`.flight-message`, flat).
 
 ### Scrim (the offline feed)

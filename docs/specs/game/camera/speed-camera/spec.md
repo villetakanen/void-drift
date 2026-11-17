@@ -25,8 +25,8 @@ the repository and is not an acceptance gate or evidence requirement.
 - `apps/web/src/lib/stores/settings.ts` owns persistence under the existing
   `void-drift:settings` key and validates stored input through `SettingsSchema`.
   Older settings without this field retain their other valid choices and use Off.
-- `apps/web/src/components/Settings.svelte` exposes the preference in Options.
-  `apps/web/src/components/SpeedCameraSetting.svelte` composes its shared Switch.
+- `apps/web/src/components/Settings.svelte` composes the shared Switch for the
+  preference in Options.
   `apps/web/src/components/FlightDeck.svelte` selects camera behaviour from the
   live store; it does not expose a settings control.
 - `apps/web/src/components/inputs/Switch.svelte` supplies the shared binary

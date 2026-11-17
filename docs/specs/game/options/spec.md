@@ -17,7 +17,10 @@ experimental [Speed camera](../camera/speed-camera/spec.md) preference.
 - **Store.** `apps/web/src/lib/stores/settings.ts` is the one store. It keeps
   the settings in this browser and parses them through the schema on load.
 - **Page.** `apps/web/src/pages/settings.astro` mounts
-  `apps/web/src/components/Settings.svelte` at `/settings`.
+  `apps/web/src/components/Settings.svelte` at `/settings`. It supplies the
+  Options menu to the existing game screen, which owns the decorative scene
+  and shared scrim. Options is a navigation destination, with ordinary keyboard
+  navigation and no modal focus trap.
 - **Neighbours.** [Controls](../controls/spec.md) applies Invert controls in
   flight. The [active ship](../active-ship/spec.md) owns which ship is flown,
   and [Playground](../experimental/spec.md) owns its own setting; neither
@@ -34,7 +37,9 @@ experimental [Speed camera](../camera/speed-camera/spec.md) preference.
   persisted for another visit.
 - **Reachable and leavable.** The title screen leads to Options, and Options
   leads back to the title screen.
-- **Input.** Every setting can be changed by pointer, keyboard and touch.
+- **Input.** Every setting can be changed by pointer, keyboard and touch. Each
+  control has its setting name as its accessible name and its supporting copy
+  as its accessible description.
 - **Speed camera.** The shared binary Switch selects speed framing, Off by
   default, with an Experimental label in the Camera section. Options is its
   only control location. The in-flight ZOOM readout is passive. The

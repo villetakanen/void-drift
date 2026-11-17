@@ -76,7 +76,7 @@
 }
 
 /* The panel: elevation 2 on the console form (cut lg, 1px border role, the
-   display's drop shadow). Use it for dialogs over the stage. */
+   display's drop shadow). Use it for game menus and dialogs over the stage. */
 .panel {
   --_cut: var(--cut-size-lg);
   --_fill: var(--panel-fill);

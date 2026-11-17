@@ -99,6 +99,11 @@ carry its identity at flight scale. Hulls use flat planes; cockpit glass has
 its own approved material language. The [ship drawing guide](ship-drawing.md)
 preserves the construction method, lighting and material rules.
 
+The cannon and point defence are assemblies with distinct working parts, housings and attachments.
+The [weapon drawing guide](weapon-drawing.md) describes that construction in the
+current cannon and point defence, including their material separation and
+emission origins.
+
 ## Interface
 
 The interface should feel like a starship UI. Typography, lit panes, frames and

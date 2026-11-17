@@ -14,7 +14,7 @@ import {
   starterLoadout,
   stockSettings,
 } from "@void-drift/mode-a";
-import { onMount } from "svelte";
+import { onMount, untrack } from "svelte";
 import FlightLayers from "../../FlightLayers.svelte";
 import frame from "./art-030-framing.json";
 import {
@@ -31,7 +31,7 @@ let {
   round?: "comparison" | "tuning" | "transfer" | "contrast" | "family";
 } = $props();
 
-const modes =
+const modes = untrack(() =>
   round === "family"
     ? [
         {
@@ -130,9 +130,11 @@ const modes =
                 floor: 0.29,
                 warmth: 0,
               },
-            ];
-const columns =
-  round === "comparison" || round === "contrast" || round === "family" ? 3 : 2;
+            ],
+);
+const columns = untrack(() =>
+  round === "comparison" || round === "contrast" || round === "family" ? 3 : 2,
+);
 const panelWidth = columns === 3 ? 344 : 516;
 let layerSets = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>[]>(
   modes.map(() => ({})),

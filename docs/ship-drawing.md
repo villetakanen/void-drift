@@ -2,8 +2,9 @@
 
 The construction guide for Void Drift's ship artwork. Overall experience and
 art direction live in [Design](design.md); this guide applies that direction to
-the planar hull language. Natural bodies and effects have their own drawing
-languages.
+the planar hull language. The [weapon drawing guide](weapon-drawing.md) describes
+the construction of the current weapons. Natural bodies and effects have their
+own drawing languages.
 
 ## Character and construction
 

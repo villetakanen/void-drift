@@ -117,7 +117,7 @@ established references and useful current-cycle agreements; carry out supported
 conclusions and remaining uncertainties. The guide owns concrete proposals, feedback,
 retention, focus protection and the recommendation to finish independently usable results.
 
-For visuals that need real flight context, use
+For questions that require observing FX or an in-game scenario during flight, use
 [flight-scene-study](../flight-scene-study/SKILL.md): mount the actual Flight scene
 instrument with fixed burns, its timeline and study options in its burger pane.
 Studies never add manual piloting. Verify that the configured scenarios exercise
