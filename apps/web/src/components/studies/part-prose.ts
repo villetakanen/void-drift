@@ -12,6 +12,7 @@ export const PART_PROSE: Record<PartId, string> = {
   "gravity-coil": PARTS["gravity-coil"].fluff,
   ion: PARTS.ion.fluff,
   "heavy-ion": PARTS["heavy-ion"].fluff,
+  "service-ion": PARTS["service-ion"].fluff,
   fusion: "Thrust in hard pulses. Fast, and never smooth.",
   plasma: "Charges, then holds a strong burn. Commit first.",
 };

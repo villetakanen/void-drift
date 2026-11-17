@@ -39,6 +39,7 @@ export * from "./lib/schemas/ship-profile";
 export * from "./lib/scout";
 export * from "./lib/simulation";
 export * from "./lib/stabilizers";
+export * from "./lib/testing-marking";
 export * from "./lib/tuning";
 export * from "./lib/utility-art";
 // Svelte Components

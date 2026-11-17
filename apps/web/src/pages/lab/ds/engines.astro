@@ -1,0 +1,21 @@
+---
+import LabEngines from "../../../components/lab/LabEngines.svelte";
+import LabLayout from "../../../layouts/LabLayout.astro";
+
+// Every engine's SVG master, keyed by the part id it names.
+const files = import.meta.glob(
+  "../../../../../../packages/mode-a/src/lib/art/engines/*.svg",
+  { query: "?raw", import: "default", eager: true },
+) as Record<string, string>;
+const masters = Object.fromEntries(
+  Object.values(files).map((svg) => [
+    svg.match(/data-part="([^"]+)"/)?.[1] ?? "",
+    svg,
+  ]),
+);
+---
+
+<!-- Engine artwork: each SVG master beside the art the game draws from it. -->
+<LabLayout title="Engines" wide>
+  <LabEngines masters={masters} client:load />
+</LabLayout>

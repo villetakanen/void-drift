@@ -104,14 +104,19 @@ Written 17 November 2026 into the parts, design-system and ships specs.
    The Scout's engine fronts come from the art. _Size: medium._ _Checks:_
    existing flight and plume tests pass unchanged; the stamp is built once per
    style; the light and heavy plumes match their current captures.
-2. **Art pipeline.** Make an engine's SVG master the source and its
+2. **Art pipeline.** _Done 17 November 2026, uncommitted, with step 3:_
+   masters in `packages/mode-a/src/lib/art/engines/`, converted by
+   `scripts/engine-art-from-svg.mjs`, kept equal by `engine-masters.test.ts`
+   (a test, not `check-contracts.mjs`); `/lab/ds/engines`. Original intent: Make an engine's SVG master the source and its
    `engine-art.ts` entry the conversion, with a parity check alongside the
    token parity in `scripts/check-contracts.mjs`, for engines that have a
    master. Add the design-system page for engine parts, next to the Lab's
    utility artwork: master, the four poses, and the plume at full output. The
    light and heavy ion are not backfilled; step 1 changes their data, not
    their art. _Size: small._
-3. **The Service ion.** SVG master from the study's accepted geometry
+3. **The Service ion.** _Done 17 November 2026, uncommitted:_ side-pose
+   rails take their tones from the body faces whose aft-pose colours the
+   study used (front −y face, front +y face, long +y face). Original intent: SVG master from the study's accepted geometry
    (`drive-family.ts`: form A at 0.7 × 0.7, the 02.4 rails, the 02.6 marking);
    the four poses, side poses derived by the same rule as the aft pose; the
    marking as part of a cached stamp; plume proportions 0.7 × 0.7 in the light

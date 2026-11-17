@@ -116,9 +116,10 @@ own only when its behaviour in flight needs one, as the
   card, whether it is sanctioned or not; the marking stays inside the part's
   body.
 - A part added to the catalog has an SVG master, technical artefacts
-  converted from it, and a design-system page showing both;
-  `scripts/check-contracts.mjs` keeps the artefacts equal to the master for
-  every part that has one.
+  converted from it, and a design-system page showing both. Engine masters
+  live in `packages/mode-a/src/lib/art/engines/<id>.svg`;
+  `scripts/engine-art-from-svg.mjs` converts one into its art module, and
+  `engine-masters.test.ts` keeps every engine's art equal to its master.
 - Sanctioned part cards use approved short prose in the catalog's `fluff`
   field: practical, affectionate pilot humour, without numeric specifications.
   It fits two lines on a 300-pixel card. Unsanctioned prose is not rewritten

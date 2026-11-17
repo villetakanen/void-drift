@@ -18,7 +18,13 @@ import {
 } from "./ion";
 import { ShipProfileIdSchema } from "./ship-profile";
 
-export const EngineIdSchema = z.enum(["ion", "heavy-ion", "fusion", "plasma"]);
+export const EngineIdSchema = z.enum([
+  "ion",
+  "heavy-ion",
+  "service-ion",
+  "fusion",
+  "plasma",
+]);
 export const ReleaseClassSchema = z.enum(["scored", "preview"]);
 export const PartIdSchema = z.enum([
   "light-ion-cannon",
@@ -31,10 +37,13 @@ export const PartIdSchema = z.enum([
   "gravity-coil",
   "ion",
   "heavy-ion",
+  "service-ion",
   "fusion",
   "plasma",
 ]);
 export type PartId = z.infer<typeof PartIdSchema>;
+/** One and a half stabilizer outlets: a third of a light ion. */
+const SERVICE_ION_STRENGTH = 1.5 * STABILIZER_STRENGTH;
 export const PartSchema = z
   .object({
     id: PartIdSchema,
@@ -54,6 +63,13 @@ export const PartSchema = z
     chargeSeconds: z.number().nonnegative().default(0),
     pulsePeriod: z.number().positive().default(0.45),
     pulseOn: z.number().positive().default(0.18),
+    /**
+     * Where the part's art sits along its slot's axis, in part units (+x
+     * forward). Applies on every hull.
+     */
+    mount: z.number().finite().default(0),
+    /** Made for testing: its art carries the testing-only marking. */
+    testingOnly: z.boolean().default(false),
     /**
      * Present on the ion engines, one family: strength is thrust as a multiple
      * of the light ion's; beam is the plume's proportions and ink.
@@ -311,6 +327,28 @@ export const PARTS = {
     ion: {
       strength: 1.75,
       beam: { length: 1.4, width: 1.45, ink: "112,226,255" },
+    },
+  }),
+  "service-ion": PartSchema.parse({
+    id: "service-ion",
+    fluff: "Built for the yard. Flies, technically.",
+    releaseClass: "preview",
+    name: "Service ion",
+    description:
+      "+1 u/s to ship cruise ceiling. A third of a light ion’s thrust, for slow test flights.",
+    category: "E",
+    mass: 7,
+    thrust:
+      ION_DEFAULTS.acceleration * ION_REFERENCE_MASS * SERVICE_ION_STRENGTH,
+    speedContribution: 1,
+    limit: ION_DEFAULTS.maxSpeed * SERVICE_ION_STRENGTH,
+    draw: LIGHT_ION_DRAW * SERVICE_ION_STRENGTH,
+    response: "steady",
+    mount: -1,
+    testingOnly: true,
+    ion: {
+      strength: SERVICE_ION_STRENGTH,
+      beam: { length: 0.7, width: 0.7, ink: "112,255,226" },
     },
   }),
   fusion: PartSchema.parse({

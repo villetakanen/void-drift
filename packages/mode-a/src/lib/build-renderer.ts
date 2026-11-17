@@ -6,7 +6,7 @@ import {
 } from "@void-drift/core";
 import { drawCockpitMaterial } from "./cockpit-material";
 import { CRUISER } from "./cruiser";
-import { ENGINE_ART } from "./engine-art";
+import { ENGINE_ART, ENGINE_MARKINGS } from "./engine-art";
 import { FIDDLER } from "./fiddler";
 import { FIGHTER } from "./fighter";
 import {
@@ -35,6 +35,7 @@ import {
   lhiStabilizers,
   stabilizerMount,
 } from "./stabilizers";
+import { drawTestingMarking } from "./testing-marking";
 import { drawUtilityArtwork } from "./utility-art";
 import { WASP } from "./wasp";
 export const BUILD_FLIGHT_SCALE = 0.65;
@@ -292,13 +293,15 @@ export function engineArtId(id: PartId) {
   return id;
 }
 export function engineOffset(build: Loadout, mount: BuildMount) {
-  if (build.chassis !== "scout") return 0;
+  // The part's own mount point applies on every hull.
+  const own = mount.part ? PARTS[mount.part].mount : 0;
+  if (build.chassis !== "scout") return own;
   // The Scout aligns each side engine's front, read from its art, with its hull edge.
   const art = mount.part ? ENGINE_ART[engineArtId(mount.part)]?.[0] : undefined;
   const front = art
     ? Math.max(...art.flatMap((face) => face.points.map((p) => p[0])))
     : 10;
-  return 36 / 7 - front;
+  return 36 / 7 - front + own;
 }
 function drawEngine(
   ctx: CanvasRenderingContext2D,
@@ -344,6 +347,9 @@ function drawEngine(
           : ENGINE_ACCENT.plasma
         : face.color,
     );
+  const marking = ENGINE_MARKINGS[id];
+  if (PARTS[mount.part].testingOnly && marking)
+    drawTestingMarking(ctx, marking);
   ctx.restore();
 }
 export function drawBuild(

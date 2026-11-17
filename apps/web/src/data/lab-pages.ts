@@ -133,6 +133,19 @@ export const labPages = z.array(labPageSchema).parse([
     spec: "docs/specs/factory/design-system/spec.md#tabs",
   },
   {
+    href: "/lab/ds/engines",
+    title: "Engines",
+    purpose:
+      "Engine artwork: SVG masters, poses, plume and the testing-only marking.",
+    group: "design-system",
+    source: "production",
+    defines: [
+      "packages/mode-a/src/lib/art/engines/service-ion.svg",
+      "packages/mode-a/src/lib/testing-marking.ts",
+    ],
+    spec: "docs/specs/factory/design-system/spec.md#ship-part-artwork",
+  },
+  {
     href: "/lab/logomark",
     title: "Logomark",
     purpose: "The mark and its sizes.",
