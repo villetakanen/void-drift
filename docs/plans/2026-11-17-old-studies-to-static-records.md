@@ -201,57 +201,57 @@ States: `todo`, `in progress`, `done <date>`, `skip: open`.
 Order is the date the file was first committed. "Refs" counts lines that import a
 study component or use `client:`.
 
-| #   | Page                                         | Added      | Lines | Refs | Registry status | State      |
-| --- | -------------------------------------------- | ---------- | ----- | ---- | --------------- | ---------- |
-| 1   | `buttons.astro`                              | 2026-10-28 | 163   | 3    | accepted        | todo       |
-| 2   | `gravity-wells.astro`                        | 2026-10-29 | 230   | 5    | accepted        | todo       |
-| 3   | `archive/fighter-canopy-soft.astro`          | 2026-10-30 | 21    | 1    | not in registry | todo       |
-| 4   | `engine-effects.astro`                       | 2026-10-30 | 292   | 9    | accepted        | todo       |
-| 5   | `heavy-cruiser-slots.astro`                  | 2026-10-30 | 556   | 6    | accepted        | todo       |
-| 6   | `ship-silhouettes.astro`                     | 2026-10-30 | 566   | 10   | stopped         | todo       |
-| 7   | `archive/scout-firefly-rounded-bodies.astro` | 2026-10-31 | 22    | 1    | not in registry | todo       |
-| 8   | `ship-slot-language.astro`                   | 2026-10-31 | 128   | 2    | accepted        | todo       |
-| 9   | `ion-engines-2026-10-31.astro`               | 2026-10-31 | 273   | 7    | accepted        | todo       |
-| 10  | `scout-firefly.astro`                        | 2026-10-31 | 503   | 7    | accepted        | todo       |
-| 11  | `engine-identities.astro`                    | 2026-10-31 | 541   | 15   | accepted        | todo       |
-| 12  | `archive/ion-ceiling-rules.astro`            | 2026-11-01 | 21    | 2    | not in registry | todo       |
-| 13  | `path-instrument-2026-11-01.astro`           | 2026-11-01 | 193   | 5    | stopped         | todo       |
-| 14  | `plasma-behaviour-2026-11-01.astro`          | 2026-11-01 | 301   | 7    | stopped         | todo       |
-| 15  | `base-movement-ion.astro`                    | 2026-11-01 | 539   | 11   | accepted        | todo       |
-| 16  | `lhi-wasp.astro`                             | 2026-11-01 | 605   | 13   | accepted        | todo       |
-| 17  | `lab-instrument-2026-11-01.astro`            | 2026-11-01 | 838   | 12   | accepted        | todo       |
-| 18  | `in-game-controllers.astro`                  | 2026-11-02 | 491   | 12   | accepted        | todo       |
-| 19  | `resource-capacity-2026-11-02.astro`         | 2026-11-02 | 568   | 5    | accepted        | todo       |
-| 20  | `utility-machinery-2026-11-02.astro`         | 2026-11-02 | 889   | 1    | accepted        | todo       |
-| 21  | `open-frame-machinery-2026-11-02.astro`      | 2026-11-03 | 156   | 3    | stopped         | todo       |
-| 22  | `ship-utility-language-2026-11-02.astro`     | 2026-11-03 | 172   | 4    | stopped         | todo       |
-| 23  | `gilded-surfaces-2026-11-03.astro`           | 2026-11-03 | 204   | 8    | accepted        | todo       |
-| 24  | `utilities-2026-11-02.astro`                 | 2026-11-03 | 308   | 4    | stopped         | todo       |
-| 25  | `gravity-coil-fx-2026-11-03.astro`           | 2026-11-03 | 316   | 10   | accepted        | todo       |
-| 26  | `gravity-coil-form-2026-11-03.astro`         | 2026-11-03 | 526   | 2    | accepted        | todo       |
-| 27  | `gravity-coil-2026-11-03.astro`              | 2026-11-03 | 569   | 15   | stopped         | todo       |
-| 28  | `energy-support-2026-11-02.astro`            | 2026-11-03 | 614   | 2    | stopped         | todo       |
-| 29  | `lhi-fiddler-2026-11-03.astro`               | 2026-11-03 | 930   | 29   | accepted        | todo       |
-| 30  | `ship-motion-laws-2026-11-04.astro`          | 2026-11-04 | 571   | 0    | open            | skip: open |
-| 31  | `run-countdown-2026-11-05.astro`             | 2026-11-05 | 226   | 2    | accepted        | todo       |
-| 32  | `suns-2026-11-07.astro`                      | 2026-11-07 | 977   | 6    | accepted        | todo       |
-| 33  | `derelict-draft-two-2026-11-06.astro`        | 2026-11-08 | 140   | 3    | stopped         | todo       |
-| 34  | `derelicts-2026-11-06.astro`                 | 2026-11-08 | 176   | 1    | stopped         | todo       |
-| 35  | `derelict-three-2026-11-06.astro`            | 2026-11-08 | 326   | 9    | accepted        | todo       |
-| 36  | `ion-point-defence-2026-11-08.astro`         | 2026-11-08 | 420   | 6    | accepted        | todo       |
-| 37  | `light-ion-cannon-2026-11-08.astro`          | 2026-11-08 | 587   | 10   | accepted        | todo       |
-| 38  | `flight-scene-instrument-2026-11-10.astro`   | 2026-11-10 | 649   | 8    | accepted        | todo       |
-| 39  | `run-status-2026-11-10.astro`                | 2026-11-11 | 40    | 0    | open            | skip: open |
-| 40  | `ship-slots-2026-11-11.astro`                | 2026-11-11 | 184   | 4    | stopped         | todo       |
-| 41  | `fission-light-2026-11-11.astro`             | 2026-11-11 | 205   | 2    | open            | skip: open |
-| 42  | `stellar-encounters-2026-11-11.astro`        | 2026-11-11 | 277   | 0    | stopped         | todo       |
-| 43  | `plasma-light-2026-11-11.astro`              | 2026-11-11 | 833   | 4    | accepted        | todo       |
-| 44  | `stellar-characters-2026-11-11.astro`        | 2026-11-11 | 1122  | 0    | accepted        | todo       |
-| 45  | `buttons-2026-11-11.astro`                   | 2026-11-11 | 1291  | 28   | accepted        | todo       |
-| 46  | `part-rows-2026-11-11.astro`                 | 2026-11-11 | 1885  | 31   | accepted        | todo       |
-| 47  | `plasma-projector-2026-11-11.astro`          | 2026-11-12 | 209   | 0    | stopped         | todo       |
-| 48  | `venus-2026-11-13.astro`                     | 2026-11-13 | 1101  | 17   | open            | skip: open |
-| 49  | `mercury-2026-11-12.astro`                   | 2026-11-13 | 1780  | 32   | open            | skip: open |
-| 50  | `inhabited-worlds-2026-11-15.astro`          | 2026-11-16 | 446   | 0    | stopped         | todo       |
-| 51  | `earth-2026-11-14.astro`                     | 2026-11-16 | 1420  | 0    | stopped         | todo       |
-| 52  | `rock-atmospheres-2026-11-15.astro`          | 2026-11-16 | 1568  | 2    | accepted        | todo       |
+| #   | Page                                         | Added      | Lines | Refs | Registry status | State           |
+| --- | -------------------------------------------- | ---------- | ----- | ---- | --------------- | --------------- |
+| 1   | `buttons.astro`                              | 2026-10-28 | 163   | 3    | accepted        | done 2026-11-17 |
+| 2   | `gravity-wells.astro`                        | 2026-10-29 | 230   | 5    | accepted        | todo            |
+| 3   | `archive/fighter-canopy-soft.astro`          | 2026-10-30 | 21    | 1    | not in registry | todo            |
+| 4   | `engine-effects.astro`                       | 2026-10-30 | 292   | 9    | accepted        | todo            |
+| 5   | `heavy-cruiser-slots.astro`                  | 2026-10-30 | 556   | 6    | accepted        | todo            |
+| 6   | `ship-silhouettes.astro`                     | 2026-10-30 | 566   | 10   | stopped         | todo            |
+| 7   | `archive/scout-firefly-rounded-bodies.astro` | 2026-10-31 | 22    | 1    | not in registry | todo            |
+| 8   | `ship-slot-language.astro`                   | 2026-10-31 | 128   | 2    | accepted        | todo            |
+| 9   | `ion-engines-2026-10-31.astro`               | 2026-10-31 | 273   | 7    | accepted        | todo            |
+| 10  | `scout-firefly.astro`                        | 2026-10-31 | 503   | 7    | accepted        | todo            |
+| 11  | `engine-identities.astro`                    | 2026-10-31 | 541   | 15   | accepted        | todo            |
+| 12  | `archive/ion-ceiling-rules.astro`            | 2026-11-01 | 21    | 2    | not in registry | todo            |
+| 13  | `path-instrument-2026-11-01.astro`           | 2026-11-01 | 193   | 5    | stopped         | todo            |
+| 14  | `plasma-behaviour-2026-11-01.astro`          | 2026-11-01 | 301   | 7    | stopped         | todo            |
+| 15  | `base-movement-ion.astro`                    | 2026-11-01 | 539   | 11   | accepted        | todo            |
+| 16  | `lhi-wasp.astro`                             | 2026-11-01 | 605   | 13   | accepted        | todo            |
+| 17  | `lab-instrument-2026-11-01.astro`            | 2026-11-01 | 838   | 12   | accepted        | todo            |
+| 18  | `in-game-controllers.astro`                  | 2026-11-02 | 491   | 12   | accepted        | todo            |
+| 19  | `resource-capacity-2026-11-02.astro`         | 2026-11-02 | 568   | 5    | accepted        | todo            |
+| 20  | `utility-machinery-2026-11-02.astro`         | 2026-11-02 | 889   | 1    | accepted        | todo            |
+| 21  | `open-frame-machinery-2026-11-02.astro`      | 2026-11-03 | 156   | 3    | stopped         | todo            |
+| 22  | `ship-utility-language-2026-11-02.astro`     | 2026-11-03 | 172   | 4    | stopped         | todo            |
+| 23  | `gilded-surfaces-2026-11-03.astro`           | 2026-11-03 | 204   | 8    | accepted        | todo            |
+| 24  | `utilities-2026-11-02.astro`                 | 2026-11-03 | 308   | 4    | stopped         | todo            |
+| 25  | `gravity-coil-fx-2026-11-03.astro`           | 2026-11-03 | 316   | 10   | accepted        | todo            |
+| 26  | `gravity-coil-form-2026-11-03.astro`         | 2026-11-03 | 526   | 2    | accepted        | todo            |
+| 27  | `gravity-coil-2026-11-03.astro`              | 2026-11-03 | 569   | 15   | stopped         | todo            |
+| 28  | `energy-support-2026-11-02.astro`            | 2026-11-03 | 614   | 2    | stopped         | todo            |
+| 29  | `lhi-fiddler-2026-11-03.astro`               | 2026-11-03 | 930   | 29   | accepted        | todo            |
+| 30  | `ship-motion-laws-2026-11-04.astro`          | 2026-11-04 | 571   | 0    | open            | skip: open      |
+| 31  | `run-countdown-2026-11-05.astro`             | 2026-11-05 | 226   | 2    | accepted        | todo            |
+| 32  | `suns-2026-11-07.astro`                      | 2026-11-07 | 977   | 6    | accepted        | todo            |
+| 33  | `derelict-draft-two-2026-11-06.astro`        | 2026-11-08 | 140   | 3    | stopped         | todo            |
+| 34  | `derelicts-2026-11-06.astro`                 | 2026-11-08 | 176   | 1    | stopped         | todo            |
+| 35  | `derelict-three-2026-11-06.astro`            | 2026-11-08 | 326   | 9    | accepted        | todo            |
+| 36  | `ion-point-defence-2026-11-08.astro`         | 2026-11-08 | 420   | 6    | accepted        | todo            |
+| 37  | `light-ion-cannon-2026-11-08.astro`          | 2026-11-08 | 587   | 10   | accepted        | todo            |
+| 38  | `flight-scene-instrument-2026-11-10.astro`   | 2026-11-10 | 649   | 8    | accepted        | todo            |
+| 39  | `run-status-2026-11-10.astro`                | 2026-11-11 | 40    | 0    | open            | skip: open      |
+| 40  | `ship-slots-2026-11-11.astro`                | 2026-11-11 | 184   | 4    | stopped         | todo            |
+| 41  | `fission-light-2026-11-11.astro`             | 2026-11-11 | 205   | 2    | open            | skip: open      |
+| 42  | `stellar-encounters-2026-11-11.astro`        | 2026-11-11 | 277   | 0    | stopped         | todo            |
+| 43  | `plasma-light-2026-11-11.astro`              | 2026-11-11 | 833   | 4    | accepted        | todo            |
+| 44  | `stellar-characters-2026-11-11.astro`        | 2026-11-11 | 1122  | 0    | accepted        | todo            |
+| 45  | `buttons-2026-11-11.astro`                   | 2026-11-11 | 1291  | 28   | accepted        | todo            |
+| 46  | `part-rows-2026-11-11.astro`                 | 2026-11-11 | 1885  | 31   | accepted        | todo            |
+| 47  | `plasma-projector-2026-11-11.astro`          | 2026-11-12 | 209   | 0    | stopped         | todo            |
+| 48  | `venus-2026-11-13.astro`                     | 2026-11-13 | 1101  | 17   | open            | skip: open      |
+| 49  | `mercury-2026-11-12.astro`                   | 2026-11-13 | 1780  | 32   | open            | skip: open      |
+| 50  | `inhabited-worlds-2026-11-15.astro`          | 2026-11-16 | 446   | 0    | stopped         | todo            |
+| 51  | `earth-2026-11-14.astro`                     | 2026-11-16 | 1420  | 0    | stopped         | todo            |
+| 52  | `rock-atmospheres-2026-11-15.astro`          | 2026-11-16 | 1568  | 2    | accepted        | todo            |
