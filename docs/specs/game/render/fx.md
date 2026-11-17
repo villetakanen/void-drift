@@ -43,6 +43,7 @@ that ship:
 The cue is a display of air contact. It does no damage and reads nothing back
 into the simulation.
 
+## Contract
 
 - Memory is persistent and owned by the FX presentation surface, never the
   simulation.

@@ -7,9 +7,9 @@ import type {
   Star,
 } from "@void-drift/core";
 import {
-  airSample,
   assignPlanetSystemPositions,
   CONFIG,
+  densestAirSample,
   ENGINE_CUTOFF,
   EnginePlume,
   GravityFlightSchema,
@@ -109,13 +109,7 @@ export function playerAirSample(
   ship: GameObject,
   planets: readonly Planet[],
 ): AirSample | null {
-  let densest: AirSample | null = null;
-  for (const planet of planets) {
-    const sample = airSample(ship, planet);
-    if (sample && (!densest || sample.density > densest.density))
-      densest = sample;
-  }
-  return densest;
+  return densestAirSample(ship, planets);
 }
 export function planetMass(
   id: string | undefined,

@@ -20,6 +20,7 @@ export {
 } from "./lib/assets/world-hud";
 export * from "./lib/config";
 export * from "./lib/effects/arcade-fx";
+export * from "./lib/effects/atmospheric-heat";
 // Svelte Components
 export { paintCountdown } from "./lib/effects/countdown";
 export * from "./lib/effects/damage-feedback";

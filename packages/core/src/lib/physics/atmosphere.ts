@@ -83,6 +83,20 @@ export function airSample(ship: AirShip, planet: AirPlanet): AirSample | null {
   };
 }
 
+/** The densest air the ship is in, or null outside every atmosphere. */
+export function densestAirSample(
+  ship: AirShip,
+  planets: readonly AirPlanet[],
+): AirSample | null {
+  let densest: AirSample | null = null;
+  for (const planet of planets) {
+    const sample = airSample(ship, planet);
+    if (sample && (!densest || sample.density > densest.density))
+      densest = sample;
+  }
+  return densest;
+}
+
 /**
  * Scales the ship's velocity relative to the air by `exp(−k × density × dt)`.
  * It slows and never turns that relative velocity.

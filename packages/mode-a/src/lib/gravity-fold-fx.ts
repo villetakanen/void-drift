@@ -1,4 +1,6 @@
 import {
+  densestAirSample,
+  drawHeatGlow,
   FX_INK,
   type FxPass,
   FxSparks,
@@ -7,7 +9,9 @@ import {
   type Planet,
   paintArc,
   paintSpeedLine,
+  prepareAtmosphericHeat,
   type Star,
+  stampHeatBand,
 } from "@void-drift/core";
 import {
   BUILD_FLIGHT_SCALE,
@@ -82,6 +86,9 @@ export class FlightFx {
   private readonly weaponSparks = new FxSparks();
   private weaponEvents = new WeakMap<Simulation, number>();
   private weaponTime = 0;
+  constructor() {
+    prepareAtmosphericHeat();
+  }
   get pass() {
     return this.surface.pass;
   }
@@ -105,9 +112,16 @@ export class FlightFx {
       );
     }
     sim.plume.stamp(ctx, this.pass);
+    stampHeatBand(ctx, this.pass, sim.ship, sim.airSample);
     for (const opponent of sim.opponents)
       if (opponent.lifecycle !== "destroyed") {
         opponent.plume.stamp(ctx, this.pass);
+        stampHeatBand(
+          ctx,
+          this.pass,
+          opponent.ship,
+          densestAirSample(opponent.ship, sim.planets),
+        );
         stampWeaponLight(ctx, opponent.combat, this.pass);
         this.drawActorIonCannonLight(
           ctx,
@@ -210,8 +224,16 @@ export class FlightFx {
   drawLfx(ctx: CanvasRenderingContext2D, sim: Simulation) {
     sim.plume.drawCharge(ctx);
     drawIonCannonLight(ctx, sim);
+    drawHeatGlow(ctx, sim.ship, sim.airSample);
     for (const opponent of sim.opponents)
-      if (opponent.lifecycle !== "destroyed") opponent.plume.drawCharge(ctx);
+      if (opponent.lifecycle !== "destroyed") {
+        opponent.plume.drawCharge(ctx);
+        drawHeatGlow(
+          ctx,
+          opponent.ship,
+          densestAirSample(opponent.ship, sim.planets),
+        );
+      }
   }
   drawParticles(ctx: CanvasRenderingContext2D) {
     this.weaponSparks.draw(ctx, this.pass);

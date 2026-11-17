@@ -730,46 +730,47 @@ inquiry retains the eventual action and integration.
 
 <StudySection>
 
-## 02.16 / The ion cannon from 1× to 16×
+## 02.16 / The ion cannon at the expected camera zooms
 
-The current Light Ion Cannon provides an established weapon-size reference.
-Here **1× means one CSS pixel per world unit**, so its 16 u length occupies
-16 CSS px. Each doubling below changes only the display scale; the equipment
-remains 16 u long. All five drawings use the exact production SVG paths.
+The Planet Inspector supplies the proper expected camera zooms: **1×, 2×, 4×,
+8× and 16× mean 0.5, 1, 2, 4 and 8 CSS px per world unit**. The current camera
+implementation has not yet been corrected to those values; it is not this
+study's calibration source. This sheet uses the instrument's exact mapping.
 
 <figure>
-  <a href="/studies/plasma-projector-fitting-2026-11-17/036-ion-cannon-scales.svg" aria-label="Open the ion cannon scale reference at native size">
-    <img src="/studies/plasma-projector-fitting-2026-11-17/036-ion-cannon-scales.svg" alt="Current ion cannon at 1, 2, 4, 8 and 16 CSS pixels per world unit, each labelled with its displayed width, length and narrow blue channel width" width="1056" height="466" />
+  <a href="/studies/plasma-projector-fitting-2026-11-17/036-ion-cannon-scales.svg" aria-label="Open the cannon at the expected camera zooms">
+    <img src="/studies/plasma-projector-fitting-2026-11-17/036-ion-cannon-scales.svg" alt="Production ion cannon at the expected zooms 1, 2, 4, 8 and 16 times: exactly 8, 16, 32, 64 and 128 CSS pixels long, with footprint and channel-width labels" width="1056" height="360" />
   </a>
-  <figcaption>Production ION_CANNON_ART and ION_CANNON_GEOMETRY, measured in the browser and converted once from source coordinates to world units. The sheet is displayed at 1056 CSS px wide at the supported 1280 px viewport. Width × length labels describe the coloured artwork footprint, not the surrounding SVG frame. All forward tips are aligned.</figcaption>
+  <figcaption>Exact production ION_CANNON_ART and ION_CANNON_GEOMETRY; every cannon remains 16 world units long. Native sheet width is 1056 CSS px. Width × length labels describe the coloured artwork, not the surrounding frame. All forward tips are aligned. The earlier speed-camera-derived lengths have been replaced.</figcaption>
 </figure>
 
-| Display scale | CSS px per world unit | Cannon footprint, CSS px (width × length) | Blue channel width, CSS px |
+| Expected zoom | CSS px per world unit | Cannon footprint, CSS px (width × length) | Ion blue-channel width, CSS px |
 | --- | --- | --- | --- |
-| 1× | 1 | 4.33 × 16 | 0.257 |
-| 2× | 2 | 8.66 × 32 | 0.514 |
-| 4× | 4 | 17.32 × 64 | 1.029 |
-| 8× | 8 | 34.64 × 128 | 2.057 |
-| 16× | 16 | 69.29 × 256 | 4.114 |
+| 1× | 0.5 | 2.17 × 8 | 0.129 |
+| 2× | 1 | 4.33 × 16 | 0.257 |
+| 4× | 2 | 8.66 × 32 | 0.514 |
+| 8× | 4 | 17.32 × 64 | 1.029 |
+| 16× | 8 | 34.64 × 128 | 2.057 |
 
-CSS pixels are browser layout units, not physical display pixels. A high-density
-screen can use several device pixels to display one CSS pixel without changing
-any value above. The artwork is redrawn as vector geometry at each size, rather
-than enlarging a captured bitmap. A subpixel channel can still contribute colour
-through antialiasing, but it is not a full pixel-wide detail at 1×.
+The mapping is defined by the Planet Inspector contract and implemented as
+<code>pixelsPerUnit = zoom × 0.5</code> in PlanetInspectorView.svelte. CSS pixels
+are browser layout units; device pixel density does not change these sizes.
+All drawings rerender the same vector paths. A subpixel channel can contribute
+colour through antialiasing without occupying a full pixel of width.
 
-The weapon footprint is approximately 4.331 × 16 world units. Its blue channel
-is approximately 0.257 u wide and 8.540 u long. These are measurements of the
-current ion artwork, not a proposed size requirement for plasma equipment.
+### Channel sizing for the next experiment
 
-02.15 used a 1.5 u-wide channel: roughly 5.8 times the ion cannon's blue-channel
-width. Its main drawing was at 32 CSS px/u, giving that opening 48 CSS px of
-width. At 1×, the same opening is only 1.5 CSS px wide. Those dimensions are
-conditions of the experiment, not a selected plasma fitting size.
+A roughly 1 CSS px-wide hot core at 2× corresponds to about 1 world unit.
+A 1.6 CSS px-wide channel at that zoom is **1.6 world units**, providing about
+0.3 CSS px clearance on each side of that core. At 1× these widths become
+0.5 and 0.8 CSS px respectively; loss of a distinct plasma shape there is
+acceptable. This is a sizing target for the next light experiment, not final
+weapon dimensions or a selected gradient.
 
-This step establishes the display-size reference for discussion. 02.15 remains
-unchanged; its light profiles can be revisited in 02.17 once the intended weapon
-and channel scale are clear. No plasma geometry or light profile is selected here.
+02.15 used a 1.5 u-wide opening, drawn 48 CSS px wide in its 32 CSS px/u main
+view. At the expected camera zooms, that existing opening would be 0.75, 1.5,
+3, 6 and 12 CSS px wide. 02.15 is preserved; its next version in 02.17 can use
+this calibrated sizing discussion. No camera code has been changed here.
 
 </StudySection>
 
