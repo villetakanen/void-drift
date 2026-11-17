@@ -1,0 +1,39 @@
+<figure class="reference">
+  <div><slot name="image" /></div>
+  <figcaption><slot /></figcaption>
+</figure>
+
+<style>
+.reference {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: var(--spacing-xl);
+  align-items: start;
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--spacing-lg);
+  margin: var(--spacing-xl) 0;
+}
+.reference :global(img) {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.reference figcaption {
+  margin: 0;
+  color: var(--color-text);
+}
+.reference :global(h3) {
+  margin-top: 0;
+}
+.reference :global(p) {
+  margin-block: var(--spacing-md);
+}
+.reference :global(.credit) {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+}
+.reference :global(a:focus-visible) {
+  outline: 2px solid var(--color-selected);
+  outline-offset: 4px;
+}
+</style>

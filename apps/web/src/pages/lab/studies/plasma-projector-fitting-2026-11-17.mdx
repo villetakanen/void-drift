@@ -3,8 +3,10 @@ layout: ../../../layouts/StudyLayout.astro
 ---
 
 import StudySection from '../../../components/studies/plasma-projector-fitting-2026-11-17/StudySection.astro';
-import FittingBench from '../../../components/studies/plasma-projector-fitting-2026-11-17/FittingBench.svelte';
 import WeaponConstruction from '../../../components/studies/plasma-projector-fitting-2026-11-17/WeaponConstruction.astro';
+import PlasmaReferences from '../../../components/studies/plasma-projector-fitting-2026-11-17/PlasmaReferences.astro';
+import TacticalReferences from '../../../components/studies/plasma-projector-fitting-2026-11-17/TacticalReferences.astro';
+import ReferenceFigure from '../../../components/studies/plasma-projector-fitting-2026-11-17/ReferenceFigure.astro';
 
 <StudySection>
 
@@ -122,6 +124,9 @@ remain references for the shared views, physical attachment and emission geometr
 
 <StudySection>
 
+<details className="retained-round">
+<summary>02.3 / A pale shroud around a dark emitter</summary>
+
 ## 02.3 / A pale shroud around a dark emitter
 
 **Retained finding · 17 November:** the assembly now reads as a weapon, supporting
@@ -146,7 +151,18 @@ contrast. Heat staining, steam, moving coils and new thermal rules are outside
 this form round. The core and slots illuminate only in the corresponding
 inspection states; the idle object must carry its identity through construction.
 
-<FittingBench client:load label="Rail-shrouded plasma weapon: dark, loading and vent inspection" />
+<figure>
+  <img src="/studies/plasma-projector-fitting-2026-11-17/023-rail-shroud-preview.png" alt="Retained 02.3 rail shroud: dark, loading and vents, enlarged, mounted under the left Wasp wing, and at flight scale; production references below" width="1056" height="979" />
+  <figcaption>02.3 retained comparison · captured from the restored drawing on 17 November 2026. Preview, Left, Under hull, anchors Off; construction 7 px/u, mounted 4 px/u, flight row 1 CSS px/u. Captured controls are part of the image. The later unchanged comparison is retained as a capture in 02.4.</figcaption>
+</figure>
+
+<details className="retained-round">
+<summary>02.3 / Plan, exposed and emission anchors</summary>
+<figure>
+  <img src="/studies/plasma-projector-fitting-2026-11-17/023-rail-shroud-plan-anchors.png" alt="Retained 02.3 rail shroud in Plan, on the right Wasp slot, exposed above the hull, with construction anchor rings" width="1056" height="979" />
+  <figcaption>Same restored geometry and capture date. Plan, Right, Exposed, anchors On. All three inspection states and production references are preserved.</figcaption>
+</figure>
+</details>
 
 The complete object and its protruding portion use the same geometry. Preview
 and Plan are the production build renderer, with the same slot transforms and
@@ -205,6 +221,290 @@ power pack's contribution to its silhouette, and the relationship between the
 recessed core and the eventual eruption. Final FX, weapon naming, mass, power,
 recovery, damage, force and production delivery remain unsettled. The parked
 study stays blocked until the physical reference is taken up.
+
+</details>
+
+</StudySection>
+
+<StudySection>
+
+<details className="retained-round">
+<summary>02.4 / Give the energy a physical presence</summary>
+
+## 02.4 / Give the energy a physical presence
+
+The fitting should be a **compact, elongated sci-fi gun with a clear forward
+firing axis**. Shotgun proportions can shorten it while preserving a projecting
+working head and distinct muzzle. Heavy commitment describes its action; it does
+not require a bulky body. This character is now a constraint within the study.
+
+Titanfall, Star Citizen and District 9 supply the intended reference family.
+Their details organise an already directional gun. These images are construction
+and character references; only the Kastak Arms example is identified here as a
+plasma weapon. The observations and proposed transfers are interpretations.
+
+<TacticalReferences />
+
+<details className="retained-round">
+<summary>Earlier reference pull · useful construction observations, bulk not carried forward</summary>
+
+The DOOM and Halo comparison remains useful for reading working parts, exposed
+energy and their supporting structure. Its proposed move toward a substantial
+ribbed chamber is not the chosen character. The compact gun constraint above
+limits how these observations can be used.
+
+02.3 established a weapon assembly; its plasma identity remains unresolved.
+Two production artworks offer concrete relationships to examine: **a substantial
+ribbed working body** and **an exposed luminous face framed by a shell**. The
+readings below are design interpretations of visible parts. They establish
+neither a universal plasma vocabulary nor the internals of a real machine.
+
+<PlasmaReferences />
+
+<details className="retained-round">
+<summary>Earlier recommendation · superseded by the elongated gun direction</summary>
+
+The ribbed working body is the stronger starting point for the requested tactical
+character. A next drawing could place a **substantial, visibly contained working
+chamber inside a pale protective assembly**, with a short, reinforced discharge
+face. A few broad openings would expose that chamber during loading. This gives
+us one specific relationship to judge before refining slots, cables or materials.
+Halo's reference contributes the clear relationship between shell and exposed
+working surface; its alien silhouette need not carry over.
+
+The proposed chamber must still read as one weapon with one central strike and
+two subordinate exhaust outlets. Its size, muzzle shape and the placement of
+those outlets remain open. Neither a fitting nor a vent effect is selected, and
+the reported FX offset remains a later check against a useful physical reference.
+The white/gunmetal/amber direction remains available; this round does not make
+colour, exposed forks or a glowing strip sufficient evidence of plasma identity.
+
+</details>
+
+</details>
+
+### Reading the retained fitting
+
+In 02.3 the strongest shapes are the pale side housings and long dark centre.
+Its energy and vent cues occupy small details within that assembly. The scale
+reading below remains useful, but does not establish that the weapon needs more
+bulk. The next form needs clearer working features along its firing axis.
+
+<figure>
+  <img src="/studies/plasma-projector-fitting-2026-11-17/024-cue-reading.png" alt="Unchanged rail shroud, dark and loading at 8, 3 and 1 CSS pixel per world unit" width="1056" height="388" />
+  <figcaption>02.4 reading captured before advancing, 17 November 2026, at a 1440 px viewport. The 3.3 × 0.9 u loading strip and 0.6 × 1.3 u shoulder cuts occupy less than one pixel in their narrow dimension at 1 CSS px/u. The pale housing and dark centre dominate. Displayed capture may scale with the page.</figcaption>
+</figure>
+
+| Cue | What 02.3 actually shows | What a next drawing could test |
+| --- | --- | --- |
+| Working volume | A narrow illuminated strip near the forward end; the emitter's dark length dominates. | A clearly bounded energy-bearing surface or recess along the projecting head, exposed through the shroud during loading. |
+| Heat management | Three small cuts in each pale shoulder. At 1 px/u each cut is less than a pixel wide. | A few legible ribs or slots arranged along the head, preserving the elongated silhouette. |
+| Power connection | An angled rear pack with no prominent visible route to the emitter. | An integrated power connection or angled pack that supports the gun's directional silhouette. |
+
+These are hypotheses for a drawing, not new weapon mechanics. A still image
+cannot prove that a viewer will read “plasma,” and these references do not settle
+our heavy close-discharge role. Their handheld views also differ from our top-down
+ship view: a gap visible from the side may disappear from above.
+
+### The next form starts with the firing axis
+
+Begin with a compact receiver and a longer projecting emitter, carried within
+an angular pale shroud. Keep the whole object visibly longer than it is wide.
+The working head can be shorter than a rifle's while still pointing decisively
+forward. Its relation to the receiver should carry the gun reading before light
+is added.
+
+Plasma identity can then come from a visible energy-bearing recess, a few slotted
+openings and an integrated power supply along that axis. Their exact construction
+is still open. This narrows the next drawing; it does not select a fitting or
+require every cue to appear together. The handheld references' grips and stocks
+do not transfer automatically to ship equipment.
+
+The single fitting still needs one central strike and two secondary exhaust
+outlets. The required loading, close eruption and rotation-free backward forces
+remain unchanged. Neither vent effect is selected. Final FX, balance and the
+reported emission offset remain outside this reference comparison.
+
+### A sketch makes the hierarchy concrete
+
+<ReferenceFigure>
+  <a slot="image" href="/studies/plasma-projector-fitting-2026-11-17/024-designer-sketch.png" aria-label="Enlarge the supplied plasma fitting sketch">
+    <img src="/studies/plasma-projector-fitting-2026-11-17/024-designer-sketch.png" alt="Supplied sketch: a long dark head with diagonal ribs over a warm interior, a separate cyan housing around its base, and two shorter angled dark pieces at the shoulders" width="552" height="782" />
+  </a>
+  <h3>Energy occupies the working head</h3>
+  <p>The long head projects well beyond the coloured housing. Broad repeated ribs cross a visible warm interior between dark side members. This gives the energy a place within the assembly and carries the forward direction through its construction.</p>
+  <p>The housing and crossbar hold the dark central assembly, continuing the weapon language in 02.2. The two shorter angled pieces read as possible paired exhausts belonging to that one weapon. Their function is an interpretation of the unlabelled sketch.</p>
+  <p>This sketch illustrates a direction; its form is not a proposed final design or a template to reproduce. A new design must earn its appearance. The rib pattern, housing shape, colours and proportions remain freely open, as do the discharge opening, exhaust mouths, attachment and world scale. The angled pieces do not prescribe effect trajectories.</p>
+  <p class="credit">Designer-supplied illustrative sketch, 17 November 2026, retained unaltered. Its purpose is to explain the direction, not select the final form.</p>
+</ReferenceFigure>
+
+The next proposal should develop a compelling original weapon from this
+direction, shown dark and with restrained internal light. The sketch remains
+a reference for the discussion, without requiring its silhouette or individual
+parts to survive. Shared mounted views and actual flight scale can then test
+what survives on the ship; visibility is a fit check, not a reason to turn the
+object into a bulky body.
+
+<details className="retained-round">
+<summary>Unchanged 02.3 fitting comparison · Preview, Plan, sides and anchors</summary>
+
+<figure>
+  <img src="/studies/plasma-projector-fitting-2026-11-17/024-retained-bench.png" alt="Unchanged rail shroud comparison captured before advancing: Dark, Loading and Vents, Preview, Left, Under hull, anchors off" width="1022" height="980" />
+  <figcaption>Captured live before advancing to 02.5 on 17 November 2026, 1440 px viewport. Original geometry; Preview, Left, Under hull, anchors Off. Construction 7 px/u, mounted 4 px/u and flight row 1 CSS px/u. The complementary Plan, Right, Exposed and anchors On record remains in 02.3; form.ts and FittingBench.svelte retain the original construction and integration.</figcaption>
+</figure>
+
+</details>
+
+</details>
+
+</StudySection>
+
+<StudySection>
+
+<details className="retained-round">
+<summary>02.5 / Operable construction, incomplete family resemblance</summary>
+
+## 02.5 / Operable construction, incomplete family resemblance
+
+The split-head drawing brought the proposal closer to an operable weapon.
+Examples and manual drafting helped make the intended relationships concrete.
+That improvement did not settle the form: it still drifted from 02.2's weapon
+language. The long working head and visible contained energy remain useful;
+the relationship between the working head, supporting housing and attachment
+still needs to belong to that language.
+
+<figure>
+  <img src="/studies/plasma-projector-fitting-2026-11-17/025-split-head-proposal.png" alt="02.5 split-head comparison, dark and with contained energy" width="1056" height="615" />
+  <figcaption>02.5 · captured before advancing, at a 1280 px viewport. Same geometry in both states, 12 CSS px/u; envelope 30 × 10.4 u. More operable than the earlier proposals, but insufficiently connected to the established weapon assembly. This retains a useful observation, not acceptance of the silhouette.</figcaption>
+</figure>
+
+New artwork in this study is drafted directly in SVG so the image can be judged
+before renderer implementation. No fitting is selected. The next comparison judges distinct whole assemblies
+on the Wasp before detailed construction.
+
+</details>
+
+</StudySection>
+
+<StudySection>
+
+<details className="retained-round">
+<summary>02.7 / Three assemblies on the Wasp</summary>
+
+## 02.7 / Three assemblies on the Wasp
+
+Three rough SVG proposals vary the construction of the whole weapon. Each uses
+separate working parts, a supporting housing and an attachment, with simple
+planes and material separation drawn from 02.2. The same left Wasp slot and
+hull serve every comparison; the exposed row changes drawing order only.
+
+<figure>
+  <a href="/studies/plasma-projector-fitting-2026-11-17/027-three-on-wasp.svg" aria-label="Open the three rough SVG proposals at native size">
+    <img src="/studies/plasma-projector-fitting-2026-11-17/027-three-on-wasp.svg" alt="Three distinct plasma weapon drafts: Spine, Split crown and Offset breech, each dark and loading, isolated and on the Wasp exposed and under the hull, enlarged and at game scale" width="1056" height="890" />
+  </a>
+  <figcaption>Directly drafted SVG, not renderer implementation. Whole weapons above; exposed and under-hull comparisons at 4 image px/u; bottom drawings at 1 image px/u. The bottom row is exactly 1 CSS px/u when the sheet is displayed at its native 1056 px width. The SVG link opens the source image. Hull facets and palette are copied from the current Wasp definition, converted once by the production 0.65 flight scale. Cockpit is flat and the engine is omitted consistently.</figcaption>
+</figure>
+
+### Retained finding · 17 November 2026
+
+Putting the proposals on the ship made their mismatch with the intended game
+more visible. The sheet is useful negative evidence: none of the three forms
+is a direction to develop. Their relationship to the Wasp is unconvincing, and
+the assembly and light do not explain the weapon clearly enough in context.
+
+Material agreement is partial. The darks are closer; the pale equipment planes
+still drift toward grey instead of the ship's blue family. The orange working
+surface has not earned its place in the composition. Its connection to the
+plasma-engine reference does not establish a successful equipment material.
+
+Excessive size is a hypothesis, not the established cause. A reduction of about
+20% might help some forms, but has not been compared. The draft lengths of
+19–25 u are roughly 59–78% of the Wasp's 32.175 u axial hull span; size needs
+to be judged alongside the placement and material relationships.
+
+The ship reference is incomplete. Its hull facets and mounts are current, but
+the drawing replaced the approved cockpit with flat black and omitted the
+engine. Current Wasp glass has two green–space–gold panes, reflections and a
+gold perimeter, provided by cockpit-material.ts. The sheet therefore does not
+show the complete current ship appearance. Preserve it as the comparison that
+revealed the mismatch; subsequent comparisons need the actual ship materials.
+No further fitting direction is selected by these observations.
+
+**A / Spine** gives most of the length to a narrow working head in a short
+saddle. A recessed energy channel and two small forward relief tips project
+beyond the receiver. Its draft envelope is 25 × 6.8 u. It tests whether a lean,
+continuous firing axis can carry the plasma character.
+
+**B / Split crown** uses a shorter, open working bed between two stout jaws,
+carried by a transverse receiver. Its draft envelope is 19 × 12 u. The open
+centre is one primary discharge opening; the short outboard lips are paired
+secondary outlets. It tests a close-discharge weapon with a broader face.
+
+**C / Offset breech** places a stepped barrel beside a longer side housing.
+Its draft envelope is 22.2 × 9.5 u. A broad recessed working surface occupies
+one side of the head, while the connecting bridge and paired relief tips keep
+the assembly legible. It tests an asymmetric power-and-emitter relationship.
+
+The rough lighting distinguishes a warm inactive working surface from a
+contained loading cue; it does not demonstrate the eventual action. Dimensions,
+palette and outlet positions are provisional. The single-slot assembly,
+loading and close eruption, lost-target venting, continuous backward thrust and
+rotation-free handling remain fixed. Neither a fitting nor a vent effect is
+selected. The enlarged drawings expose construction; the small mounted row
+shows which distinctions survive at game scale.
+
+</details>
+
+</StudySection>
+
+<StudySection>
+
+## 02.9 / A compact receiver and projecting working head
+
+One new SVG proposal joins a compact cyan-and-blue receiver to a longer dark
+head. The head continues through the receiver into a short rear terminal.
+A single metal bridge divides its recessed working volume into two bays;
+paired short relief mouths attach to the forward shoulders. The central
+opening is cut into the squared muzzle.
+
+<figure>
+  <a href="/studies/plasma-projector-fitting-2026-11-17/029-projector.svg" aria-label="Open the new plasma projector SVG drawing">
+    <img src="/studies/plasma-projector-fitting-2026-11-17/029-projector.svg" alt="One new plasma projector drawn dark and with pale gold internal energy, and fitted beneath the left wing of the complete current Wasp; small dark and loading drawings show game scale" width="1056" height="690" />
+  </a>
+  <figcaption>Direct SVG draft · complete equipment 17 image px/u, mounted 10, small drawings 1. The same weapon paths appear at each size. The sheet displays at its native 1056 px width in the supported 1280 px viewport. The ship is an unchanged shared drawBuild capture with the current cockpit, stabilizers and plasma engine. The existing left mount remains at (0.975, −7.8) world units; hull coverage is preserved.</figcaption>
+</figure>
+
+The receiver uses the existing weapon and hull palette: pale cyan on the lit
+cheek, cyan on the connector and blue on the receding housing. Dark machinery
+surrounds the working bays. The inactive interior is dark blue-black; loading
+adds restrained pale gold inside the recesses, leaving the housing unlit.
+That light is a proposed equipment cue, not final plasma FX.
+
+### Retained findings · 17 November 2026
+
+The drawing is a modest improvement that establishes two useful findings within
+this study. The weapon must not become large or bulky merely because the plasma
+engine is: its construction serves a different role. Outside FX or LFX, orange
+must be limited to small, bright LED-like or neon-tube features. Broad orange or
+brown surfaces must not act as world-layer state information.
+
+These findings constrain the next drawing; they do not accept this whole form,
+its dimensions or its light treatment. The gold-filled bays in this example
+remain historical evidence, not the material direction to carry forward.
+
+The provisional envelope is 18.5 × 6.4 u. In drawing coordinates (across, aft),
+the attachment is (0, 0), the primary opening (0, −13.5), and the paired
+relief mouths approximately (±2.25, −8.1). Outlet directions and the hardware
+remain subject to design judgment. One fitting occupies one existing slot;
+the retained loading, close eruption, lost-target venting, backward thrust
+and rotation-free handling are unchanged.
+
+The preceding baseline exercise corrected the ship reference but did not
+produce an actionable design finding. Its diagnosis about competing
+silhouettes was an interpretation, not an accepted conclusion. This drawing
+returns to proposing the weapon itself; the retained earlier findings do not
+establish acceptance of this form. No renderer integration or production
+weapon has been implemented.
 
 </StudySection>
 

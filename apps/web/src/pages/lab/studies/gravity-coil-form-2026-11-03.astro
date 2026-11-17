@@ -1,8 +1,6 @@
 ---
 import Comparison from "../../../components/studies/gravity-coil-form/Comparison.astro";
 import Definitions from "../../../components/studies/gravity-coil-form/Definitions.astro";
-import FleetSizing from "../../../components/studies/gravity-coil-form/FleetSizing.svelte";
-import UnderRingComparison from "../../../components/studies/gravity-coil-form/UnderRingComparison.astro";
 import { studies } from "../../../data/studies";
 import StudyLayout from "../../../layouts/StudyLayout.astro";
 
@@ -311,7 +309,12 @@ const references = [
       broad dark border could also strengthen the icon reading; neither outcome
       is assumed.
     </p>
-    <UnderRingComparison />
+    <img
+      class="capture"
+      src="/studies/gravity-coil-form-2026-11-03/025-under-rings.png"
+      alt="E without a ring and the J, K, L and M ring options, each alone at 6× and on the Fighter and Wasp at 2×, with 1× samples beneath"
+      loading="lazy"
+    >
     <p id="decision">
       <strong>Selected: M / Inset ring.</strong>
       E’s creased sector shells, open centre and yellow connections remain
@@ -343,7 +346,22 @@ const references = [
       parts for comparison. <strong>100% is the final selected size.</strong>
       The size control is fixed to preserve that decision.
     </p>
-    <FleetSizing client:load />
+    <figure class="capture">
+      <img
+        src="/studies/gravity-coil-form-2026-11-03/026-fleet-sizing-normal-layer.png"
+        alt="M at 100% with Light ions on the Wasp, Scout, Fighter and Corvette, on each ship's normal equipment layer"
+        loading="lazy"
+      >
+      <figcaption>Ship’s normal layer</figcaption>
+    </figure>
+    <figure class="capture">
+      <img
+        src="/studies/gravity-coil-form-2026-11-03/026-fleet-sizing-above-hull.png"
+        alt="The same fleet with every equipment part drawn above the hull for comparison"
+        loading="lazy"
+      >
+      <figcaption>Above hull · comparison</figcaption>
+    </figure>
     <p class="small">
       Mounting context is preserved as reviewed. A subsequent, separate Fighter
       mount decision moved its equipment slots from (2, 0) and (-10, 0) to (37,
@@ -436,6 +454,23 @@ const references = [
   </section>
 </StudyLayout>
 <style>
+.capture {
+  display: block;
+  margin: 1.5rem 0;
+}
+.capture,
+.capture img {
+  width: 100%;
+  height: auto;
+}
+.capture img {
+  display: block;
+}
+figcaption {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
 .small {
   font-size: 13px;
   color: var(--color-text-muted);

@@ -2,14 +2,10 @@
 import InstrumentEmbed from "../../../components/lab/instrument/InstrumentEmbed.astro";
 import BrandSliderComparison from "../../../components/studies/BrandSliderComparison.svelte";
 import BurnStripComparison from "../../../components/studies/BurnStripComparison.svelte";
-import InstrumentView from "../../../components/studies/InstrumentView.svelte";
 import LabInstrument021 from "../../../components/studies/LabInstrument021.svelte";
 import LabInstrumentConfigDemo023 from "../../../components/studies/LabInstrumentConfigDemo023.svelte";
 import LabInstrumentConfigDemo027 from "../../../components/studies/LabInstrumentConfigDemo027.svelte";
 import OptionToggleComparison from "../../../components/studies/OptionToggleComparison.svelte";
-import PathToolComparison from "../../../components/studies/PathToolComparison.svelte";
-import PathToolComparison028 from "../../../components/studies/PathToolComparison028.svelte";
-import TraceGraphsExample from "../../../components/studies/TraceGraphsExample.svelte";
 import { studies } from "../../../data/studies";
 import StudyLayout from "../../../layouts/StudyLayout.astro";
 import { STARTER_DOCUMENT } from "../../../lib/instrument/starter";
@@ -384,8 +380,39 @@ const study = studies.find(
         and a darkened edge.
       </li>
     </ul>
-    <div class="wide">
-      <PathToolComparison028 client:load />
+    <div class="material-shots">
+      <figure>
+        <img
+          src="/studies/lab-instrument-2026-11-01/028-tinted-void.png"
+          alt="The 02.8 path tool on the tinted void elevation material"
+          loading="lazy"
+        >
+        <figcaption>Tinted void</figcaption>
+      </figure>
+      <figure>
+        <img
+          src="/studies/lab-instrument-2026-11-01/028-lit-plate.png"
+          alt="The 02.8 path tool on the lit plate elevation material"
+          loading="lazy"
+        >
+        <figcaption>Lit plate</figcaption>
+      </figure>
+      <figure>
+        <img
+          src="/studies/lab-instrument-2026-11-01/028-glass-over-space.png"
+          alt="The 02.8 path tool on the glass over space elevation material"
+          loading="lazy"
+        >
+        <figcaption>Glass over space</figcaption>
+      </figure>
+      <figure>
+        <img
+          src="/studies/lab-instrument-2026-11-01/028-instrument-display.png"
+          alt="The 02.8 path tool on the instrument display elevation material"
+          loading="lazy"
+        >
+        <figcaption>Instrument display</figcaption>
+      </figure>
     </div>
     <h3>Accepted: instrument display</h3>
     <p>
@@ -409,12 +436,15 @@ const study = studies.find(
       the grid spacing and the scale. Nothing sits above the display any more,
       so the tool is the square itself.
     </p>
-    <div class="wide">
-      <PathToolComparison client:load />
-    </div>
+    <img
+      class="capture"
+      src="/studies/lab-instrument-2026-11-01/029-path-tool-display.png"
+      alt="The path tool as a display, its name, area, grid spacing and scale on one line in the bottom-right corner"
+      loading="lazy"
+    >
     <p class="limits">
-      Study-local and still in time; drag the display in default scale. The
-      numbers read over the grid and paths without a backing.
+      Captured still at 7 s. The numbers read over the grid and paths without a
+      backing.
     </p>
   </section>
 
@@ -448,14 +478,16 @@ const study = studies.find(
         16px gaps leave 112px of the path tool's 672px for the lanes and slider.
       </li>
     </ul>
-    <div class="wide">
-      <TraceGraphsExample client:load />
-    </div>
+    <img
+      class="capture"
+      src="/studies/lab-instrument-2026-11-01/0210-time-graphs.png"
+      alt="Speed, acceleration and turn acceleration graphs on fixed scales, the time cursor at 7 s"
+      loading="lazy"
+    >
     <p class="limits">
-      Study-local and still in time (7 s). A first round put the name and range
-      on the display over the data, with no axes; it is not kept. The lanes and
-      slider are not drawn here, and the burn switcher's place beside them is
-      open.
+      Captured still at 7 s. A first round put the name and range on the display
+      over the data, with no axes; it is not kept. The lanes and slider are not
+      drawn here, and the burn switcher's place beside them is open.
     </p>
   </section>
 
@@ -482,12 +514,35 @@ const study = studies.find(
       line. The path tool keeps its own switch between fitting all paths and the
       default scale.
     </p>
-    <div class="bleed">
-      <InstrumentView client:load />
+    <div class="composed-shots">
+      <figure>
+        <img
+          src="/studies/lab-instrument-2026-11-01/0211-composed-b1-course.png"
+          alt="The composed instrument view on burn B1, Course, at 7 s"
+          loading="lazy"
+        >
+        <figcaption>B1 / Course</figcaption>
+      </figure>
+      <figure>
+        <img
+          src="/studies/lab-instrument-2026-11-01/0211-composed-b2-turn.png"
+          alt="The composed instrument view on burn B2, Turn, at 7 s"
+          loading="lazy"
+        >
+        <figcaption>B2 / Turn</figcaption>
+      </figure>
+      <figure>
+        <img
+          src="/studies/lab-instrument-2026-11-01/0211-composed-b3-weave.png"
+          alt="The composed instrument view on burn B3, Weave, at 7 s"
+          loading="lazy"
+        >
+        <figcaption>B3 / Weave</figcaption>
+      </figure>
     </div>
     <p class="limits">
-      Study-local. Switching the burn recalculates every diagram; drag the
-      slider or the path tool in default scale.
+      Captured at 7 s, one still per burn; switching the burn recalculated every
+      diagram.
     </p>
   </section>
 
@@ -730,6 +785,50 @@ html {
   height: 100svh;
   margin-inline: calc(50% - 50vw);
   scroll-snap-align: center;
+}
+/* 02.8 captures: the retired comparison, one image per elevation material. */
+.material-shots {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-lg);
+  margin-block: var(--spacing-lg);
+}
+.capture {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-block: var(--spacing-lg);
+}
+.composed-shots {
+  display: grid;
+  gap: var(--spacing-lg);
+  margin-block: var(--spacing-lg);
+}
+.composed-shots img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.composed-shots figure {
+  margin: 0;
+}
+.composed-shots figcaption {
+  color: var(--color-text-dim);
+  font: var(--font-small) var(--font-flight);
+  margin-top: var(--spacing-sm);
+}
+.material-shots figure {
+  margin: 0;
+}
+.material-shots img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.material-shots figcaption {
+  color: var(--color-text-dim);
+  font: var(--font-small) var(--font-flight);
+  margin-top: var(--spacing-sm);
 }
 .limits {
   color: var(--color-text-dim);

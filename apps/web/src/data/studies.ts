@@ -20,10 +20,10 @@ export const studies = z.array(studySchema).parse([
   {
     slug: "maintenance-drive-2026-11-17",
     title: "Maintenance drive",
-    status: "open",
-    phase: "exploration",
+    status: "accepted",
+    phase: "scope",
     question:
-      "What can change within the ion engines’ shared form and plume, and what name, to make a drive at a third of a light ion’s thrust read as the smallest ion engine rather than a stabilizer?",
+      "What can change within the ion engines’ shared form and plume, and what name, mass, energy draw and cruise contribution, make a drive at a third of a light ion’s thrust read as the smallest ion engine rather than a stabilizer?",
   },
   {
     slug: "plasma-projector-2026-11-16",

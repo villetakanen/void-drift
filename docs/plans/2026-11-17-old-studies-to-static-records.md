@@ -1,6 +1,7 @@
 # Old studies become static records
 
-Status: plan, 2026-11-17, requested in conversation. Nothing is converted yet. This
+Status: plan, 2026-11-17, requested in conversation. The test case, `buttons`, is
+converted in `f1727c35`, and this file is corrected from that run. This
 is the debt item "Compact the closed studies" from the
 [skill set 2.0 plan](2026-11-15-design-study-skillset-2.md), given its own procedure,
 prompt and ledger.
@@ -59,6 +60,9 @@ A converted study:
   `in progress` and save the file before doing anything else, so another session in
   this checkout sees it.
 - Record the current commit hash; it is the "full version" reference.
+- Open the page in the browser and record the word count of its rendered text.
+  This is the "before" size. Lines of the source file do not measure it, because
+  the old pages load most of their content from components.
 
 ### Stage 1. Make the page static
 
@@ -67,6 +71,11 @@ A converted study:
   a still, or a short clip when the text judges motion. For an example with
   controls, capture the default state and each variant the text names as accepted,
   selected or rejected with a reason. Do not capture every state.
+- Take captures with Playwright from this repository against the running dev
+  server. A sandboxed shell cannot reach `localhost:4321`; run the capture command
+  outside the sandbox.
+- Text and tables that a component rendered are not captured as images. Copy them
+  into the page as text.
 - Store media in `apps/web/public/studies/<slug>/`, named by step.
 - Replace each example on the page with its capture in a `<figure>` with a caption:
   what it shows, the settings, the capture date, and that it is a reconstruction.
@@ -75,7 +84,7 @@ A converted study:
 
 Check: the page renders at its URL with no console error; every image loads; the
 file has no `components/studies` import, no `client:`, no `<script>`, no `<style>`;
-the text of the page is unchanged apart from the captions.
+the rendered text of the page is unchanged apart from the captions.
 
 ### Stage 2. Change the page to MDX
 
@@ -83,6 +92,8 @@ the text of the page is unchanged apart from the captions.
   studies do. Convert the HTML to Markdown: headings, paragraphs, lists, tables,
   images, and native `<details>` where a collapsed block remains.
 - Escape `{` and `<` in prose.
+- Search the repository for the old file name. Correct links to it in source and
+  docs. Leave build logs and other recorded artifacts as they are.
 
 Check: the URL renders; the visible text and images are the same as after stage 1;
 the study index still lists the study with the same title and status.
@@ -106,6 +117,10 @@ observation, question-test stamps, process and review remarks, repeated framing,
 readiness and scope text that restates the decisions, and media nothing in the
 record refers to.
 
+Remove inventories and value tables whose values now live in code, tokens or a
+spec: audits, measured values before a change, lists of every setting. Keep the
+decision the table led to and the values that decision names.
+
 Before rewriting, write the keep list: every decision, value, reason, ruled-out
 item and uncertainty found on the page. After rewriting, check the list against the
 record.
@@ -126,74 +141,120 @@ do, repetition and invented jargon. Write plain literal sentences. Change no num
 name, value, date, decision or reason. Remove no item. Report anything it could not
 understand instead of rewriting it.
 
+For each phrase the reviewer reports, read the full page in the "full version"
+commit. If the study explains the phrase, replace it with the plain meaning. If it
+does not, leave the phrase as the study wrote it and list it in the hand-off.
+
 Check: the same facts are present before and after: compare numbers, names and the
-keep list. The record is not longer than before the pass.
+keep list. The record has no more characters than before the pass.
 
 ### Stage 5. Retire the apparatus and finish
 
 - For each component, script, fixture and test the page used before stage 1, search
   for other consumers. Delete those with none. Leave shared instruments, shared
   components and anything another page imports.
-- Run `pnpm lint`, `pnpm test`, `pnpm check:types` and `pnpm build`.
+- Run `pnpm lint`, `pnpm test`, `pnpm check:types` and `pnpm build`. A failure in a
+  file this conversion did not touch is reported and not fixed.
+- Record the word count of the rendered record. This is the "after" size.
 - Add the last line to the page: the commit that holds the full version.
 - Set the ledger row to `done` with the date. Commit the study, its media, the
   removed apparatus and the ledger together. The row carries the date; the commit
   message names the study, so the commit is found from the page name.
 
-Check: all four commands pass; the page renders; the ledger row is `done`.
+Check: all four commands pass, or fail only in files this conversion did not touch;
+the page renders; the ledger row is `done`.
 
 ## The prompt
 
 One session per study. Paste as is.
 
 ```text
-Convert one old design study into a static record, following
-docs/plans/2026-11-17-old-studies-to-static-records.md. Read that file first and
-follow its stages and checks in order. Do not use the design-study skill's
-procedure for running a study; this is a conversion of a finished one.
+Convert one old design study into a static record. The full procedure is in
+docs/plans/2026-11-17-old-studies-to-static-records.md. Read that whole file
+first. Follow its stages 0 to 5 in order. Do not use the design-study skill;
+this converts a finished study and does not run one.
 
-1. Take the first row in the ledger whose state is "todo". If its "Added" date is
-   five days ago or less, stop and tell me nothing is eligible. Otherwise set it to
-   "in progress" and save the plan file before any other change. If a row is
-   already "in progress", stop and tell me.
-2. Run stages 1 to 5 on that study only. Run each stage's check before starting
-   the next stage. If a check fails and you cannot fix it within the stage's own
-   rules, stop, leave the row "in progress", and tell me what failed.
-3. Stage 4 is done by a reviewer with a clean context, given only the files the
-   plan names. Do not do that pass yourself.
+Before each stage, tell me in one line which stage you are starting. After each
+stage, run that stage's check from the plan and tell me in one line whether it
+passed. Do not start the next stage until the check has passed.
+
+Stage 0:
+- Open the ledger at the end of the plan. Find the first row whose state is
+  "todo".
+- If a row above it is "in progress", stop and tell me.
+- If the row's "Added" date is five days ago or less, stop and tell me nothing
+  is eligible.
+- Otherwise change that row's state to "in progress" and save the plan file
+  before you change anything else.
+
+Stages 1 to 5: do exactly what the plan says for that one study.
+
+Stage 4 is not yours to do. Start a subagent with a clean context. Give it only
+the record and the two writing files the plan names, and the brief from the
+plan. If you cannot start a subagent, stop and tell me.
 
 Rules:
-- Touch only this study's page, its media folder, its registry entry if the file
-  name requires it, apparatus that only this study used, and the ledger row.
-- The dev server runs at localhost:4321. Do not start another. Capture at 1280px
-  or wider.
-- Do not repair an example that no longer renders. Record the gap on the page.
-- Do not change any number, value, name or decision the study recorded. Do not
-  add conclusions the page does not state.
-- A study's decisions are proposals to the project. Change no spec.
-- Other sessions share this checkout. Commit only the files named above, with a
-  conventional commit message naming the study. Do not push.
+- Touch only: this study's page, its media folder under
+  apps/web/public/studies/, its registry entry if the file name requires it,
+  components and tests that only this study used, links to the renamed page,
+  and its ledger row.
+- Before deleting any component, search the whole repository for its name. If
+  anything else imports it, leave it.
+- The dev server already runs at localhost:4321. Do not start another. Capture
+  at 1280px wide or wider.
+- If an example does not render, do not repair it. Write on the page that it
+  could not be captured.
+- Do not change any number, value, name, date or decision the study recorded.
+  Do not add a conclusion the page does not state.
+- Change no spec and no skill.
+- Other sessions share this checkout and have unfinished work in it. Do not
+  stage or commit their files. Commit only the files listed above, by path,
+  with a conventional commit message that names the study. Do not push.
+- If lint, tests, types or the build fail because of files you did not touch,
+  do not fix them. Tell me which files failed and continue.
+- If anything in the plan is unclear or contradicts what you find, stop and ask
+  me. Do not guess.
 
-When done, give me: the URL, the page length before and after in lines, the
-media kept, the apparatus deleted, anything dropped from the keep list with the
-reason, any gap recorded, and anything in the plan that was wrong or unclear.
+When done, report:
+1. The URL.
+2. The rendered word count before and after.
+3. The media files kept.
+4. The components and tests deleted.
+5. Anything from the keep list that is not in the record, with the reason.
+6. Any example that could not be captured.
+7. Any phrase the reviewer could not interpret and what you did with it.
+8. Anything in the plan that was wrong or unclear.
 ```
 
-## After the test case
+## The test case
 
-The first study is `buttons`. Its opening, "Situations before styling", is cited by
-the study spec and the design-study skill as the form reference for an opening.
-Compacting it changes that text; the spec says it describes enough to use the form
-without reading the study. Check that claim when reviewing the test case.
+`buttons` was converted on 2026-11-17 in `f1727c35`. The rendered text went from
+about 2,970 words to about 1,400. Three stills are kept, 178 kB together. Two
+components with 934 lines were deleted. Tests, types and the build passed; lint
+failed only in three files of other sessions.
 
-Review before running the rest:
+Corrections made to this file from that run:
 
-- Does the record still say what was decided and why, to a reader who never saw the
-  study?
-- Were the captures worth their size?
-- Which instructions did the session misread or work around?
+- Text and tables rendered by a component are copied into the page as text.
+- Size is measured as the word count of the rendered page.
+- "Not longer" after the deslop pass is measured in characters.
+- Links to the renamed page are corrected as part of stage 2.
+- Captures are taken with Playwright, outside the sandbox.
+- Phrases the reviewer cannot interpret are resolved from the full page or left as
+  written and reported.
+- Failures in files the conversion did not touch are reported and not fixed.
+- Decided 2026-11-17: value tables and inventories are dropped from a record. The
+  22-row token table was removed from the buttons record afterwards.
 
-Correct this file, then run the remaining studies with the same prompt.
+Still open from that run:
+
+- The study spec and the design-study skill cite the buttons opening, "Situations
+  before styling", as the form reference for an opening. The heading remains; the
+  text under it is now the compact record. Whether to remove the citation is a
+  decision about the spec.
+- Three phrases the reviewer could not interpret are in the record as the study
+  wrote them: "the shared baseline", "feedback framing", and revert and reset
+  "placed apart by consequence".
 
 ## Ledger
 

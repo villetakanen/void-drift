@@ -100,33 +100,6 @@ The promotion on 28 October 2026 implemented:
   dimensions, demonstration delays, preview widths and feedback framing stay
   outside the button contract.
 
-The audit’s pre-promotion values, with the proposal made for each:
-
-| Property | Value | Source | Proposal |
-| --- | --- | --- | --- |
-| Horizontal / vertical padding | 32px / 8px | --button-padding-x → --spacing-lg; --button-padding-y → --spacing-sm | Private --\_padding-x and --\_padding-y |
-| Minimum height | 44px | --button-min-height | --control-min-height |
-| Font size | 1rem | --button-font-size | --font-control-size (--font-body is 0.95rem, not equivalent) |
-| Font weight | 500 | --button-font-weight | --font-weight-medium |
-| Line height | 1 | Literal in .btn | Private --\_line-height |
-| Outline shell thickness | 2px | --button-border-width | Shared --border-width-control; private --\_outline-inset derived from it |
-| Corner radius | 2px | --button-border-radius → --radius-sm | Private --\_radius |
-| Angled corner cut | 10px | --button-cut-size | Private --\_cut-size, until several surface types share the shape |
-| Primary fill / text | #eeff41 / #050510 | --color-neon-blue → --color-acid-lime / --color-void | Backed; the neon-blue alias resolves to lime |
-| Ghost outline and text / interior | #eeff41 / #050510 | as primary | Backed; hover fills lime, text becomes void |
-| Danger outline and text / interior | #ff3333 / #050510 | --color-red / --color-void | Backed; hover fills red, text becomes --color-text (#fffff0) |
-| Link variant | transparent; lime → ivory on hover; 8px padding | --color-neon-blue; --color-text; --spacing-sm | No additional public token |
-| Primary hover brightness | 1.2 | Literal | --state-hover-brightness |
-| Transition | 150ms ease | --button-transition | Public --duration-fast and --ease-standard; private --\_transition |
-| Production keyboard focus | 2px lime outline, +4px offset | Literals | Shared focus width/offset tokens |
-| Study keyboard focus | 2px ivory outline, −5px offset | Literals | --focus-ring-width: 2px, --focus-ring-offset-inset: −5px |
-| Selected indicator | inset 0 −4px lime shadow | Literal 4px | --state-selected-indicator-width: 4px |
-| Disabled / busy | opacity 0.45; not-allowed cursor | Literal | --state-disabled-opacity: 0.45 |
-| Group padding / gap | 8px / 8px | --\_group-spacing → --spacing-sm | Implemented |
-| Vertical group width | min(100%, 320px) | Literal | Private --\_stack-max: 320px |
-| Strip background | #050510 | --color-void | Backed; solid in wide and narrow modes |
-| Space before a container | 32px | --spacing-lg | Backed |
-
 ## Ruled out
 
 - **A generic discard confirmation as the lead example** (revision 2): the

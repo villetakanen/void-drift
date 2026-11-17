@@ -52,10 +52,3 @@ This project is a Monorepo managed by `pnpm`:
 
 Run `pnpm verify` for the combined checks and a local evidence report. The rebuild
 starts with known legacy lint/type debt; see the development guide for current coverage.
-
-## OpenCode Config
-
-This repo includes an OpenCode project config at `opencode.json`.
-
-- MCP server: `ASDLC` (remote)
-- URL: `https://asdlc.io/mcp`
