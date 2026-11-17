@@ -199,8 +199,11 @@ planet with one. Venus's arc is drawing only and is not an atmosphere.
 - **No damage.** The air does no hull damage and keeps no temperature.
 - **Every ship, every mode.** Drag applies to every ship near any planet with
   an atmosphere, in every mode; only Practice has such a planet.
-- The simulation exposes each ship's air sample, validated by Zod: density,
-  the direction to the planet and the ship's velocity relative to the planet.
+- A ship's air sample holds density, the direction to the planet and the
+  ship's velocity relative to the planet's air, in the shape `AirSampleSchema`
+  defines in `packages/core/src/lib/physics/atmosphere.ts`. It is computed
+  from simulation state, not parsed from outside input; the simulation exposes
+  the player's sample each tick, and any ship's can be computed the same way.
   Drawing reads it and never changes it.
 
 A planet without a surface map is drawn as a flat disc. The flat-vector
