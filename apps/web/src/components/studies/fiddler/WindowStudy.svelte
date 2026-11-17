@@ -54,7 +54,6 @@ $effect(() => {
 <div class="toolbar">
   <Toggle
     label="Window study view"
-    compact
     options={["Fitted", "Hull"]}
     bind:value={view}
   />

@@ -1,0 +1,177 @@
+<script lang="ts">
+import "./catalog.css";
+import { CHASSIS, SHIP_IDENTITY } from "@void-drift/mode-a";
+import Switch from "../inputs/Switch.svelte";
+import Toggle from "../inputs/Toggle.svelte";
+
+const ships = ["wasp", "scout", "fighter", "corvette"] as const;
+let detailed = $state("Fighter");
+let availability = $state("Scout");
+let two = $state("Fit all");
+let three = $state("B1");
+let stretched = $state("B2");
+let zoom = $state("1×");
+let stabilizers = $state(true);
+let linkedEngines = $state(false);
+let forcedOn = $state(true);
+
+let { label = "Choices design system" }: { label?: string } = $props();
+</script>
+
+<section class="catalog" aria-label={label}>
+  <section>
+    <h2>Toggle</h2>
+    <p>
+      One button-shaped control split into equal parts, one per option. The
+      outer edge has the buttons' cut corners; the split inside is straight. The
+      selected part is filled lime; the others sit on the elevation 2 surface,
+      as the switch track and tabs do, and take a faint lime tint under a
+      pointer. Arrow keys move the selection.
+      <a href="/lab/studies/lab-instrument-2026-11-01#toggle">Study →</a>
+    </p>
+    <div class="example">
+      <span class="caption"
+        >Five zoom levels · 8px inline padding per option</span
+      >
+      <Toggle
+        label="Zoom example"
+        options={["1×", "2×", "4×", "8×", "16×"]}
+        bind:value={zoom}
+      />
+      <span class="caption">Detailed selector · full width</span>
+      <div style="width:100%">
+        <Toggle
+          stretch
+          label="Ship, detailed"
+          options={ships.map((id) => SHIP_IDENTITY[id].shortName)}
+          details={Object.fromEntries(
+            ships.map((id) => [
+              SHIP_IDENTITY[id].shortName,
+              `${(id === "wasp" ? 1 : 2) + CHASSIS[id].hull + CHASSIS[id].aft} slots · ${CHASSIS[id].mass} mass`,
+            ]),
+          )}
+          bind:value={detailed}
+        />
+      </div>
+      <span class="caption"
+        >Unavailable choice · arrows skip the disabled option</span
+      >
+      <Toggle
+        label="Ship availability example"
+        options={["Wasp", "Scout", "Corvette"]}
+        disabledOptions={["Corvette"]}
+        bind:value={availability}
+      >
+        {#snippet optionSuffix(option)}
+          {#if option === "Corvette"}
+            <span class="caption">Unavailable</span>
+          {/if}
+        {/snippet}
+      </Toggle>
+      <span class="caption">Two options</span>
+      <Toggle
+        label="Path scale"
+        options={["Fit all", "Default scale"]}
+        bind:value={two}
+      />
+      <span class="caption">Three options beside a diagram</span>
+      <Toggle label="Burn" options={["B1", "B2", "B3"]} bind:value={three} />
+      <span class="caption">Stretched to its container</span>
+      <div style="width: 100%; max-width: 480px">
+        <Toggle
+          stretch
+          label="Burn, stretched"
+          options={["B1", "B2", "B3"]}
+          bind:value={stretched}
+        />
+      </div>
+    </div>
+    <p>
+      <code>Toggle</code>: <code>options</code>, bindable <code>value</code>,
+      <code>label</code>
+      for the group. Every option has 8px inline padding;
+      <code>stretch</code>
+      to fill the width. Optional
+      <code>details</code>
+      maps option names to supporting facts;
+      <code>disabledOptions</code>
+      leaves unavailable choices visible and disables their native radios for
+      pointer and keyboard input.
+    </p>
+  </section>
+
+  <section>
+    <h2>Switch</h2>
+    <p>
+      A square marker slides between labeled states for an independent on/off
+      setting. The control keeps a 44px hit area around its shorter track. It
+      uses a native checkbox for keyboard behavior.
+    </p>
+    <div class="example switch-examples">
+      <div class="switch-example">
+        <span class="switch-example__copy"
+          ><label class="switch-example__name" for="lab-stabilizers"
+            >Ion stabilizers</label
+          ><span class="switch-example__help" id="lab-stabilizers-help"
+            >Assist turns and brake spin.</span
+          ></span
+        ><Switch
+          id="lab-stabilizers"
+          aria-describedby="lab-stabilizers-help"
+          bind:checked={stabilizers}
+        />
+      </div>
+      <label class="switch-example" for="lab-linkedEngines"
+        ><span class="switch-example__copy"
+          ><span class="switch-example__name">Linked engines</span
+          ><span class="switch-example__help"
+            >One input fires the aft engines.</span
+          ></span
+        ><Switch id="lab-linkedEngines" bind:checked={linkedEngines} /></label
+      >
+      <label class="switch-example" for="lab-forcedOn"
+        ><span class="switch-example__copy"
+          ><span class="switch-example__name">Forced on</span
+          ><span class="switch-example__help"
+            >Disabled, with its saved state visible.</span
+          ></span
+        ><Switch id="lab-forcedOn" bind:checked={forcedOn} disabled /></label
+      >
+    </div>
+    <p>
+      <code>Switch</code>
+      exposes a bindable boolean and optional <code>disabled</code> state. The
+      adjacent setting name labels the checkbox; ON/OFF stays visible in the
+      sliding square. Optional <code>aria-describedby</code> links supporting
+      copy as an accessible description.
+    </p>
+  </section>
+</section>
+
+<style>
+.switch-examples {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
+  align-items: start;
+}
+.switch-example {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  min-height: var(--control-min-height);
+  padding: var(--spacing-sm);
+  background: var(--color-void);
+}
+.switch-example__copy {
+  display: grid;
+  gap: var(--spacing-xs);
+}
+.switch-example__name {
+  color: var(--color-text);
+  font-size: var(--font-size-label);
+}
+.switch-example__help {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+}
+</style>

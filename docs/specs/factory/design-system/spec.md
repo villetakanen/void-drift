@@ -28,8 +28,8 @@ screen composes shared definitions instead of inventing its own.
 - `scripts/check-contracts.mjs` keeps the home true: a design-system page is
   at `/lab/ds/<name>`, names its files and its section, and every shared
   input and stylesheet is named by a page. Pages at an earlier address
-  (`/lab/tokens`, `/lab/typography`, `/lab/surfaces`, `/lab/inputs`,
-  `/lab/logomark`, `/lab/graphs`, `/lab/instrument-parts`) are listed in that
+  (`/lab/tokens`, `/lab/typography`, `/lab/surfaces`, `/lab/logomark`,
+  `/lab/graphs`, `/lab/instrument-parts`) are listed in that
   check and move to `/lab/ds/<name>` in the change that next touches them.
 - Feature specs consume the system. Changing a definition is design work,
   recorded here and demonstrated on its Lab page in the same change.
@@ -59,7 +59,7 @@ screen composes shared definitions instead of inventing its own.
 - All UI components use design tokens (no hardcoded hex values).
 - Shared UI takes every `z-index` from a `--layer-*` token, and every cut corner from a `--cut-size-*` token (S6).
 - Menu, pause and run complete sit on one `.panel`; the flight status message on `.panel--flat` (S6).
-- Thrust pad tokens and `ThrustPads` exist as specified, and `/lab/inputs`
+- Thrust pad tokens and `ThrustPads` exist as specified, and `/lab/controls`
   demonstrates both sides in every lit state over a starfield.
 - `Tabs` exists as specified in [Tabs](#tabs), and `/lab/ds/tabs`
   demonstrates facts, a row without them, an unavailable tab, both
@@ -186,7 +186,7 @@ literal and never the palette name behind it.
 | Surface | `--color-surface-hover`             | `lch(100% 0 0 / 0.051)`                | Hover tint on any surface                                                       |
 | Scrim   | `--color-backdrop`                  | `lch(0% 0 0 / 0.11)`                   | Dims what a Lab overlay pane covers                                             |
 | Scrim   | `--scrim-filter`, `--scrim-surface` | see [Scrim](#scrim-the-offline-feed)   | Shades the stage behind a dialog                                                |
-| Surface | `--panel-fill`                      | elev-2 at 65%                          | Panels; see [Panels](#panels)                                                   |
+| Surface | `--panel-fill`                      | elev-2                                 | Panels; see [Panels](#panels)                                                   |
 - Panels sit on `--color-elev-1`; `--color-void-light` now aliases it (panels rose from L 3.3 to
   5.5).
 - Borders are white at fixed strengths so one token reads on every surface.
@@ -243,7 +243,7 @@ implemented 2026-11-03.
 **Source of truth:** `packages/core/src/lib/styles/tokens.css`,
 `apps/web/src/components/inputs/Toggle.svelte`, `apps/web/src/components/inputs/RingSlider.svelte`,
 `apps/web/src/components/inputs/Switch.svelte`.
-**References:** `/lab/surfaces`, `/lab/inputs`.
+**References:** `/lab/surfaces`, `/lab/ds/choices`, `/lab/ds/slider`.
 
 | Token               | Value                                              | Use                       |
 | ------------------- | -------------------------------------------------- | ------------------------- |
@@ -257,18 +257,20 @@ implemented 2026-11-03.
   and chroma by 5.
 - The elevation steps are the surface roles and `--color-backdrop` is the scrim role;
   see [Colour](#colour).
-- `Toggle` takes `options`, a bindable `value` and a group `label`; `compact` sets
-  8px side padding and `stretch` fills the width. Native radios give arrow keys.
+### Toggle and switch
+
+**Reference:** `/lab/ds/choices`.
+
+- `Toggle` takes `options`, a bindable `value` and a group `label`. Every option
+  has 8px inline padding (`--spacing-sm`), and `stretch` fills the width.
+  Native radios give arrow keys.
   `disabledOptions` keeps unavailable options visible, disables their native
   radios, skips them during keyboard selection and suppresses hover treatment.
   A selected option can remain selected while disabled; the control does not
   silently change its value. An optional `optionSuffix` snippet receives the
   option label and supplies supporting content; it leaves the native radio's
   accessible name intact. The Hangar's ship chooser uses this control.
-  `/lab/inputs` demonstrates disabled options and suffix composition.
-- `RingSlider` wraps a native range input (keys, touch and forms unchanged) at a
-  44px touch height; `compact` hides its label line where the host shows it. Its
-  value is announced through the input, not a live region.
+  `/lab/ds/choices` demonstrates disabled options and suffix composition.
 - Use `Switch` for enabling or disabling one setting, including Playground,
   Ion stabilizers and Linked engines. Use `Toggle` to choose one value from a
   set, such as a ship or Plan/View; two labels alone do not make a binary setting
@@ -282,7 +284,10 @@ implemented 2026-11-03.
   explicit `OFF` and `ON` states. The selected marker uses `--color-selected`;
   its text uses `--color-on-brand`. Focus, hover, disabled and reduced-motion states
   use the shared control foundations.
-- `/lab/inputs` demonstrates the switch in off, on and disabled states. The Hangar
+- `Switch` accepts optional `aria-describedby` to link supporting copy without
+  adding it to the setting name.
+- `/lab/ds/choices` demonstrates the switch in off, on and disabled states,
+  including a setting with an accessible description. The Hangar
   uses it for Playground, Ion stabilizers and Linked engines.
 - The toggle is one button-shaped control split into equal parts: cut corners
   outside, a straight split inside, the selected part filled lime, the others on
@@ -292,8 +297,16 @@ implemented 2026-11-03.
   Each segment lays out its name and supporting facts with wrapping inline flex.
   `stretch` fills the host width with equal segments. Facts use caption text,
   muted when unselected and on-brand when selected. Native radio names remain
-  the option labels; facts are accessible descriptions. `/lab/inputs` demonstrates
+  the option labels; facts are accessible descriptions. `/lab/ds/choices` demonstrates
   this variant with ship slot counts and chassis mass; the Hangar consumes it.
+
+### Ring slider
+
+**Reference:** `/lab/ds/slider`.
+
+- `RingSlider` wraps a native range input (keys, touch and forms unchanged) at a
+  44px touch height; `compact` hides its label line where the host shows it. Its
+  value is announced through the input, not a live region.
 - The ring slider is a faint 2px track, lime to the value, and a lime ring knob;
   label and value stay neutral, and the unfilled track takes the same tint on hover.
 - Lime marks the selection and the knob; hover borrows it at low strength. Data and
@@ -365,11 +378,11 @@ arrangement, actions and lighting rules belong to the
 - Markings are `--color-text` in the UI type family; Android green stays
   reserved for the world HUD, the arrival countdown and title-screen
   information.
-- `apps/web/src/components/inputs/ThrustPads.svelte` draws one gutter's
+- `apps/web/src/components/controls/ThrustPads.svelte` draws one gutter's
   assembly: its `side`, the pads to light, and pointer presses reported per pad.
   Drawing and hit-testing share one geometry, so what lights is what was
   touched.
-- `/lab/inputs` demonstrates both sides in every lit state (none, `L`, `R`,
+- `/lab/controls` demonstrates both sides in every lit state (none, `L`, `R`,
   `LR`, `LF`, `RF`) over a starfield, and lets a pointer press them.
 
 ## Surfaces and layers
@@ -407,13 +420,16 @@ fill can be translucent while the edge and shadow follow the cut:
 
 ### Panels
 
-| Class          | Fill                    | Edge             | Corners | Shadow                             | Use                              |
-| -------------- | ----------------------- | ---------------- | ------- | ---------------------------------- | -------------------------------- |
-| `.panel`       | `--panel-fill` (elev-2) | `--color-border` | `lg`    | `--panel-shadow` (0 8px 24px, 70%) | Dialogs over the stage           |
-| `.panel--flat` | the same                | `--color-border` | `lg`    | none                               | Status messages on the live game |
+| Class          | Fill                    | Edge             | Corners | Shadow                             | Use                                   |
+| -------------- | ----------------------- | ---------------- | ------- | ---------------------------------- | ------------------------------------- |
+| `.panel`       | `--panel-fill` (elev-2) | `--color-border` | `lg`    | `--panel-shadow` (0 8px 24px, 70%) | Game menus and dialogs over the stage |
+| `.panel--flat` | the same                | `--color-border` | `lg`    | none                               | Status messages on the live game      |
+- Panels give game menus and dialogs the same surface treatment. The host
+  owns content and arrangement; using a panel or scrim does not make a menu
+  modal.
 - The panel is elevation 2 on the console form: the instrument display's edge and shadow (decided
   2026-11-02). [DEPRECATED 2026-11-02] ~~A frosted translucent shade~~.
-- Consumers: the game menu, pause and run complete (`.flight-card` on the panel) and the flight
+- Consumers: the title and Options menus, pause and run complete (`.flight-card` on the panel) and the flight
   status message (`.flight-message`, flat).
 
 ### Scrim (the offline feed)
@@ -435,7 +451,9 @@ console display rather than live.
   [DEPRECATED 2026-11-02] ~~`mix-blend-mode: color`~~: it takes chroma from the low-chroma tint
   and so desaturated heavily instead of moving hues toward 290.
 - `--scrim-surface` on the scrim layer over it: a darkened edge (30% black, from 55% out) and
-  2px-on/2px-off scanlines in `--color-void` at 35%.
+  2px-on/2px-off scanlines in `--color-void` at 35%. An elevation-2 layer at 35% opacity uses
+  `screen` blending to lift the feed into the surface family without tinting the panel. The lift
+  tapers to 70% of its centre strength at the edges.
 - Both ease in over `--duration-fast`; with reduced motion they appear at once.
 - The panel is clean: scanlines belong to the feed, not to the pane in front of it.
 - `--color-backdrop` (black at 11%) stays the dim behind a Lab overlay pane; game dialogs use

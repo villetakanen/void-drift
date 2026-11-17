@@ -33,6 +33,15 @@ Not dialogs:
   moves to its close button, Escape closes it and returns focus to the menu button.
 - The opening screen is a normal game menu, with the shared scrim appearance but no modal behavior.
 
+## Pause content boundary
+
+The Pause dialog contains run actions and navigation only. Settings controls
+never appear inside it: no preference switches, sliders, selectors or embedded
+settings panels, including experimental features such as
+[Speed camera](../camera/speed-camera/spec.md). Its control belongs exclusively
+to [Options](../options/spec.md). The Settings action navigates
+to the separate Options page; it does not reveal settings inside the dialog.
+
 ## Architecture
 
 `Dialog.svelte` is the only dialog implementation. Props: `label` (accessible name),
@@ -78,6 +87,7 @@ In FlightDeck the stage is `.flight-stage-layer`: the canvas and the deck.
 - While a dialog is open, its stage is `inert` and its `data-deck` parts are hidden.
 - Focus moves into a dialog on open and returns to the opener on close (pause, Lab demo).
 - Escape resumes from pause; it does nothing on run complete.
+- Pause contains no settings controls. Its Settings action navigates to Options.
 - `/lab/surfaces` has a live dialog demo on the real component, usable from the keyboard.
 - Browser tests cover dialog isolation and focus return (`tests/browser/dialogs.spec.ts`).
 

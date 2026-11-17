@@ -5,8 +5,9 @@
 ### Context
 
 Options is where the player sets how the game behaves for them on this device.
-A choice applies at once and is still there on the next visit. It holds one
-setting: Invert controls, which swaps which side's input fires which engine.
+A choice applies without saving and is still there on the next visit. It holds
+Invert controls, which swaps which side's input fires which engine, and the
+experimental [Speed camera](../camera/speed-camera/spec.md) preference.
 
 ### Architecture and boundaries
 
@@ -16,7 +17,10 @@ setting: Invert controls, which swaps which side's input fires which engine.
 - **Store.** `apps/web/src/lib/stores/settings.ts` is the one store. It keeps
   the settings in this browser and parses them through the schema on load.
 - **Page.** `apps/web/src/pages/settings.astro` mounts
-  `apps/web/src/components/Settings.svelte` at `/settings`.
+  `apps/web/src/components/Settings.svelte` at `/settings`. It supplies the
+  Options menu to the existing game screen, which owns the decorative scene
+  and shared scrim. Options is a navigation destination, with ordinary keyboard
+  navigation and no modal focus trap.
 - **Neighbours.** [Controls](../controls/spec.md) applies Invert controls in
   flight. The [active ship](../active-ship/spec.md) owns which ship is flown,
   and [Playground](../experimental/spec.md) owns its own setting; neither
@@ -28,16 +32,25 @@ setting: Invert controls, which swaps which side's input fires which engine.
   and without restarting a run.
 - **Kept on this device.** Settings are kept in this browser across visits.
 - **Safe fallback.** A stored value that is missing or fails the schema reads
-  as the default. Without browser storage the game runs on the defaults.
+  as the default. Without browser storage the game starts with defaults and
+  remains playable; changes remain usable in memory even when they cannot be
+  persisted for another visit.
 - **Reachable and leavable.** The title screen leads to Options, and Options
   leads back to the title screen.
-- **Input.** Every setting can be changed by pointer, keyboard and touch.
+- **Input.** Every setting can be changed by pointer, keyboard and touch. Each
+  control has its setting name as its accessible name and its supporting copy
+  as its accessible description.
+- **Speed camera.** The shared binary Switch selects speed framing, Off by
+  default, with an Experimental label in the Camera section. Options is its
+  only control location. The in-flight ZOOM readout is passive. The
+  Pause dialog contains no settings controls; its Settings action navigates to
+  Options. Speed camera is independent of Playground and scoring.
 
 ## Contract
 
 ### Definition of Done
 
-- O1: `/settings` shows Options with Invert controls, and returns to the
+- O1: `/settings` shows Options with Invert controls and Speed camera, and returns to the
   title screen.
 - O2: Changing Invert controls swaps the engine inputs in the next flight
   input, with no save action and no restart.
@@ -45,6 +58,9 @@ setting: Invert controls, which swaps which side's input fires which engine.
 - O4: A missing or invalid stored value reads as the default, and
   unavailable storage leaves the game playable.
 - O5: `SettingsSchema` holds no ship choice.
+- O6: Speed camera uses the shared Switch, defaults to Off, persists across
+  reloads and is presented only in Options. Legacy settings retain their valid
+  Invert controls choice when the Speed camera field is missing.
 
 ### Regression guardrails
 

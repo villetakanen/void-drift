@@ -9,7 +9,6 @@ let {
   options,
   value = $bindable(),
   label,
-  compact = false,
   stretch = false,
   details,
   disabledOptions = [],
@@ -19,8 +18,6 @@ let {
   value: string;
   /** Accessible name of the group. */
   label: string;
-  /** Narrow side padding, for short labels set beside a diagram. */
-  compact?: boolean;
   /** Fills the width of its container. */
   stretch?: boolean;
   /** Optional supporting facts inside each option; enables the detailed variant. */
@@ -36,7 +33,6 @@ const name = `toggle-${Math.random().toString(36).slice(2, 8)}`;
 
 <div
   class="toggle"
-  class:compact
   class:stretch
   class:detailed={!!details}
   role="radiogroup"
@@ -101,7 +97,7 @@ const name = `toggle-${Math.random().toString(36).slice(2, 8)}`;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--button-padding-y) var(--button-padding-x);
+  padding: var(--button-padding-y) var(--spacing-sm);
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
@@ -130,9 +126,6 @@ const name = `toggle-${Math.random().toString(36).slice(2, 8)}`;
 }
 .detailed .part:not(.selected):hover .detail {
   color: var(--color-text);
-}
-.compact .part {
-  padding-inline: var(--spacing-sm);
 }
 /* Each end keeps its own outer cut. */
 .part:first-child {

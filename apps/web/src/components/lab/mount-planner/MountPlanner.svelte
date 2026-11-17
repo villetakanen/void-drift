@@ -425,7 +425,6 @@ onMount(() => {
     <div class="toolbar">
       <Toggle
         label="Ship"
-        compact
         options={Object.keys(CHASSIS)}
         bind:value={
           () => plan.chassis,
@@ -473,7 +472,6 @@ onMount(() => {
     <div class="toolbar">
       <Toggle
         label="Layout view"
-        compact
         options={["Draft", "Original"]}
         bind:value={
           () => (original ? "Original" : "Draft"),
@@ -482,7 +480,6 @@ onMount(() => {
       />
       <Toggle
         label="Mount contents"
-        compact
         options={["Fitted", "In-game", "Empty"]}
         bind:value={contents}
       />

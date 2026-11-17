@@ -1,8 +1,10 @@
 ---
+import FrameReference from "../../components/lab/FrameReference.svelte";
 import RenderModelWorkbench from "../../components/lab/RenderModel.svelte";
 import LabLayout from "../../layouts/LabLayout.astro";
 ---
 
 <LabLayout title="Render model" wide>
   <RenderModelWorkbench client:load />
+  <FrameReference />
 </LabLayout>

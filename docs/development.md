@@ -137,9 +137,11 @@ only when a change to rules applied to score-eligible ranked Survival runs makes
 old and new scores unfair to compare. This includes changes to ranked Survival
 trajectories, survival conditions, scoring, or score eligibility; a tuning value
 matters only when it changes one of those rules in ranked Survival. Changes limited
-to other modes, the Lab, or presentation leave the challenge unchanged. When the
-challenge changes, update the matching value and document ID prefix in
-`firestore.rules`; this starts a new board and closes the previous board to writes.
+to other modes, the Lab, or presentation leave the challenge unchanged. A ruleset
+is never changed under its name once it has a board. When the challenge changes,
+add a rule for the new name and document ID prefix to `firestore.rules`; this
+starts a new board. Keep the rule of every ruleset that a released client still
+carries, so that client keeps its board.
 Record the ranked Survival comparison decision and its reason in the release note.
 Make the decision against the last published release, not intermediate edits
 ([gravity-field.md](specs/game/world/gravity-field/spec.md#rules-version)).

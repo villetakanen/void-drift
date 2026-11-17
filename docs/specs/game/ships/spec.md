@@ -37,6 +37,10 @@ in the game's contracts because a new player
 - **Slots and drawing.** `buildMounts` and `drawBuild` in
   `packages/mode-a/src/lib/build-renderer.ts` give each hull its slots and its
   appearance, for the Hangar and for flight alike.
+  The chassis catalog's `slotLinkLines` records each linked pair's schematic
+  crossbar position along ship-local +x (forward), keyed by its secondary mount.
+  Every production pair has an explicit finite position; unlinked ships have
+  an empty map. These positions do not affect flight or saved fittings.
 - **Derived figures.** `buildStats` in `loadout.ts` derives mass, energy
   capacity, draw, acceleration, turn rate and cruise ceiling from a hull and its
   fitting. Derived values are never stored.

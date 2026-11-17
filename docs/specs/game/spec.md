@@ -33,6 +33,11 @@ with one meaning each.
   words are kept for that meaning and are not used for sanctioning.
 - **Ranked, unranked:** whether a run counts. A ranked run's number is its
   score.
+- **Ruleset:** the simulation, its parameters, and the sanctioned ships and
+  parts, taken together. A ruleset has a name, such as `ion-storm`, and one
+  ranked board. Controls are not part of a ruleset.
+- **Client:** a build of the game that players run, such as the web game or
+  an installed app. A client carries at most one ruleset.
 
 ### Architecture and boundaries
 
@@ -52,11 +57,12 @@ with one meaning each.
 - **Modes:** the game has four modes: Survival, Practice, Derelicts and Gauntlet. Survival is the full game and the only scored mode. Each other mode has its own purpose, stated in its own contract; none is a variant or a setting of another, and they are not merged. Gauntlet is an experimental two-opponent combat entry described in [its contract](gauntlet/spec.md); it does not establish a future mode design. Flight settings name a mode: Survival, Practice, Derelicts or Gauntlet. A missing mode means Survival, and a legacy `testFlight: true` with no mode means Practice.
 - **Launch and return:** a run starts from the title screen or the Hangar, independently of its mode. Abort and game over return to the place it started from.
 - **PRESS START:** it launches a Survival run with the [active ship](active-ship/spec.md) in a fresh seeded G-class system. Every other launch flies the active ship too. The Hangar owns ship choice.
-- **Ranked runs:** a Survival run under the current `CHALLENGE`, started from the title screen or the Hangar while [Playground](experimental/spec.md) is Off, is scored and ranked. A Survival run while Playground is On is not scored: it shows its time and the scoring-off notice in place of the score. Practice, Derelicts and Gauntlet have no score. Every run while Playground is On, and every Practice, Derelicts and Gauntlet run, is unranked and cannot submit.
+- **Rulesets:** a ruleset never changes once it has a board. A change to the simulation, its parameters, or the sanctioned ships and parts that affects ranked Survival is a new ruleset with a new name and a new board. A client is ranked only when its Survival runs a named ruleset exactly; `CHALLENGE` in `packages/mode-a/src/schemas/highscore.ts` holds that name. Clients that carry the same ruleset share its board, whatever their controls. A client reads and writes the board of its own ruleset and no other. Boards do not close.
+- **Ranked runs:** a Survival run under the client's ruleset, started from the title screen or the Hangar while [Playground](experimental/spec.md) is Off, is scored and ranked. A Survival run while Playground is On is not scored: it shows its time and the scoring-off notice in place of the score. Practice, Derelicts and Gauntlet have no score. Every run while Playground is On, and every Practice, Derelicts and Gauntlet run, is unranked and cannot submit.
 - **Scores:** a ranked run can be saved to the shared board. The [scores contract](scores/spec.md) owns what is saved, the board and its rules.
 - **Replay:** identical validated settings and inputs reproduce the same world state, step for step.
 - **Offline:** without Firebase the game stays fully playable, and score features explain why they are unavailable.
-- **Version labels:** the title screen and the leaderboard show the web package version, which is separate from the challenge identifier.
+- **Version labels:** the title screen and the leaderboard show the web package version, which is separate from the ruleset name.
 - **Run complete:** a ranked Survival run shows its score and the time survived; with Playground On it shows the scoring-off notice in place of the score, and the time. The dialog shows one vertical action group. On a ranked run, Save Score is primary when submission is available, and the dialog says why when it is not; unranked runs show no Save Score. Returning to where the run started is secondary, and so is Top Scores after a Survival run. Practice has no run complete.
 
 ## Contract

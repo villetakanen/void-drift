@@ -9,7 +9,8 @@ service cloud.firestore {
      && d.keys().hasAll(fields)
      && d.keys().hasOnly(fields)
      && d.userId == request.auth.uid
-     // Only the current challenge is written; earlier boards stay stored and readable.
+     // One rule per ruleset. A new ruleset adds its own rule; this one stays
+     // for as long as a released client carries it.
      && d.challenge == 'ion-storm'
      && d.shipId is string && d.shipId.size() >= 1 && d.shipId.size() <= 32
      && scoreId == 'ion-storm_' + request.auth.uid + '_' + d.shipId

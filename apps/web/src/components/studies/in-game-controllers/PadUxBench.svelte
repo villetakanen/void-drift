@@ -369,7 +369,6 @@ function applyPreset(p: (typeof PRESETS)[number]) {
       <div class="control-block">
         <span class="control-caption">A · Resting background fill</span>
         <Toggle
-          compact
           label="Resting background fill"
           options={[...FILL_OPTIONS]}
           bind:value={fillStyle}
@@ -379,7 +378,6 @@ function applyPreset(p: (typeof PRESETS)[number]) {
       <div class="control-block">
         <span class="control-caption">B · Border / outline treatment</span>
         <Toggle
-          compact
           label="Border outline treatment"
           options={[...BORDER_OPTIONS]}
           bind:value={borderStyle}
@@ -389,7 +387,6 @@ function applyPreset(p: (typeof PRESETS)[number]) {
       <div class="control-block">
         <span class="control-caption">C · Pad markings / iconography</span>
         <Toggle
-          compact
           label="Pad markings"
           options={[...MARKING_OPTIONS]}
           bind:value={markingStyle}
@@ -399,7 +396,6 @@ function applyPreset(p: (typeof PRESETS)[number]) {
       <div class="control-block">
         <span class="control-caption">D · Pressed / active state response</span>
         <Toggle
-          compact
           label="Pressed state response"
           options={[...ACTIVE_OPTIONS]}
           bind:value={activeStyle}

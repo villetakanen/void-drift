@@ -6,12 +6,14 @@ import type {
   Star,
 } from "@void-drift/core";
 import {
+  assignPlanetSystemPositions,
   CONFIG,
   ENGINE_CUTOFF,
   EnginePlume,
   GravityFlightSchema,
   initializePlanets,
   massWellReach,
+  StarWorldHudIdentitySchema,
   updateHull,
   updatePlanetOrbit,
   updatePower,
@@ -34,6 +36,16 @@ import {
   stepMountedActor,
 } from "./gauntlet";
 import { GRAVITY_COLLECTION } from "./gravity-collection";
+import {
+  MERCURIAL_ROCK_RADIUS,
+  PRACTICE_MERCURY_ORBIT,
+  PRACTICE_MERCURY_TRAVEL_SPEED,
+} from "./mercurial-rock";
+import {
+  PRACTICE_VENUS_ORBIT,
+  PRACTICE_VENUS_RADIUS,
+  PRACTICE_VENUS_TRAVEL_SPEED,
+} from "./practice-venus";
 import type { WeaponEvent, WeaponState } from "./salvage";
 import {
   contactTime,
@@ -213,8 +225,35 @@ export class Simulation {
       : [];
     if (this.settings.loadout)
       this.ship.radius = buildCollisionRadius(this.settings.loadout);
-    applyGravityTuning(this.star, this.planets, this.gravity);
-    if (this.settings.mode === "derelicts" || this.settings.mode === "gauntlet")
+    // Venus replaces the middle gas world only in Practice, before mass lookup.
+    if (this.settings.mode === "practice") {
+      const venus = this.planets.find((planet) => planet.id === "gas");
+      if (venus) {
+        venus.id = "venus";
+        venus.radius = PRACTICE_VENUS_RADIUS;
+        venus.orbitRadius = PRACTICE_VENUS_ORBIT;
+        venus.orbitSpeed = PRACTICE_VENUS_TRAVEL_SPEED / PRACTICE_VENUS_ORBIT;
+        venus.mass = planetMass("venus", this.gravity);
+        venus.color = "#f6c371";
+        venus.type = "rock";
+      }
+    }
+    const massTuning =
+      this.settings.mode === "practice"
+        ? {
+            ...this.gravity,
+            planetMass: {
+              ...this.gravity.planetMass,
+              ...this.gravity.practicePlanetMass,
+            },
+          }
+        : this.gravity;
+    applyGravityTuning(this.star, this.planets, massTuning);
+    if (
+      this.settings.mode === "derelicts" ||
+      this.settings.mode === "gauntlet" ||
+      (this.settings.mode === "survival" && this.settings.experimental === "On")
+    )
       applyYellowFamilyProfile(
         this.star,
         yellowFamilyRadius(this.settings.seed),
@@ -226,8 +265,25 @@ export class Simulation {
         YELLOW_FAMILY_RADIUS.reference,
         this.gravity,
       );
-      this.star.designation = "G7, Sun";
+      Object.assign(
+        this.star,
+        StarWorldHudIdentitySchema.parse({ name: "Sun", denomination: "G7" }),
+      );
+      this.star.designation = "G7 Sun";
+      // The innermost stock rock is Practice's Mercury application.
+      const mercury = this.planets.find((planet) => planet.id === "moon");
+      if (mercury) {
+        mercury.displayName = "Mercury";
+        mercury.mass = planetMass(mercury.id, massTuning);
+        mercury.radius = MERCURIAL_ROCK_RADIUS.practice;
+        mercury.orbitRadius = PRACTICE_MERCURY_ORBIT;
+        mercury.orbitSpeed =
+          PRACTICE_MERCURY_TRAVEL_SPEED / PRACTICE_MERCURY_ORBIT;
+      }
+      const venus = this.planets.find((planet) => planet.id === "venus");
+      if (venus) venus.displayName = "Venus";
     }
+    assignPlanetSystemPositions(this.planets);
     // Seed changes orbit phase, not flight tuning.
     const phase =
       (((this.settings.mode === "practice"

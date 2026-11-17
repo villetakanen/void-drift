@@ -15,9 +15,28 @@ owner rather than repeating them here.
 
 - `/lab/studies` lists studies; `/lab/studies/<slug>` provides a stable review URL.
 - `apps/web/src/data/studies.ts` validates metadata with Zod before rendering.
+- Study flight uses the shared Flight scene instrument, fixed burn sequences and
+  its timeline; study options belong in its burger pane. Studies never add manual
+  piloting. Extend shared staging when the experiment needs an unsupported scene.
+- Planet appearance studies use the shared [Planet Inspector](../planet-inspector/spec.md)
+  to inspect surface, spin, Sun-facing light, orbit and world HUD in motion or at a
+  held pose. Ship approaches and contact experiments remain Flight scene work.
 - Experimental styles remain scoped to study components; fixture behavior is labeled.
 - A cycle keeps a stable URL and records significant feedback, decisions and reasons.
-- Accepted slices are separate implementation work; the study links to their delivery.
+- At the designer's request, a study may be parked as `blocked` on a named
+  dependency. This is a nonterminal status: the page records the useful findings,
+  what is missing and the condition for resuming; the existing end states remain
+  accepted, ruled out and stopped.
+- Decisions recorded in a study hold inside that study. To the project and its specs
+  they are proposals, including scope, slices, values and anything the study calls
+  accepted or decided.
+- Accepted slices are proposals for separate work. The project examines each claim,
+  decides, and writes the decision into a living spec before implementation; the study
+  links to the delivery.
+- For each proposal the project settles two things before any spec or code changes:
+  whether it wants the change, and what the change applies to. A study examines one
+  subject; the project decides whether the change is for that subject or for everything
+  of its kind.
 - Keyboard operation and the narrowest supported window (1280px) are reviewed
   separately from gameplay feel. The Lab targets 1280px and up; study pages are not
   checked below that.
@@ -48,7 +67,9 @@ iteration; unsupported future parts are left unfilled.
 
 Scope sizes the work; completing or accepting a study does not implicitly authorize
 implementation. Existing explicit implementation authorization still counts. Publication
-requires separate authorization.
+requires separate authorization. Part 03 names the living specs that would need to
+change if the study goes forward, and how. Those are proposed changes; a living spec
+changes when the project decides it does.
 
 **Flag `docs/design.md` changes prominently in part 04, before the slices, and in the
 chat handoff.** Changes to experience principles, non-goals, art direction or brand
@@ -69,8 +90,7 @@ that remain provisional; acceptance of one quality does not settle every propert
 of its example.
 Review questions, coordination and process evaluation also belong in chat or their
 separate evidence records. The one exception is the question test: section 01 ends
-with its dated result for each metric and a link to the full result at
-`/lab/reviews/<study-slug>`. Necessary control labels remain on the page. Historical
+with its dated result and reason for each metric. Necessary control labels remain on the page. Historical
 conditions and check results are labeled and linked to their specific evidence.
 
 The opening contains exactly one substantive numbered section 01 and an unfilled
@@ -106,7 +126,7 @@ the study's design quality or overwrite the designer's assessment of failure.
 
 | End state | Reached after | Leaves behind                                                     |
 | --------- | ------------- | ----------------------------------------------------------------- |
-| Accepted  | 04 / Scope    | Slices to implement, fully or partly, as separate work.           |
+| Accepted  | 04 / Scope    | Proposed slices for the project to examine and decide on.         |
 | Ruled out | 02 or 03      | Why the concept does not fit the game, recorded on the page.      |
 | Stopped   | Any part      | Evidence of what blocked the study, collected through close-loop. |
 

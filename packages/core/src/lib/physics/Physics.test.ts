@@ -2,9 +2,22 @@ import { describe, expect, it } from "vitest";
 import { SURVIVAL_CONFIG } from "../config";
 import type { InputState } from "../entities/Input";
 import type { GameObject, Planet, Star } from "./Physics";
-import { updatePower, updateShip, Vec2 } from "./Physics";
+import {
+  StarWorldHudIdentitySchema,
+  updatePower,
+  updateShip,
+  Vec2,
+} from "./Physics";
 
 describe("updatePower", () => {
+  it("validates optional World HUD star names and denominations", () => {
+    expect(
+      StarWorldHudIdentitySchema.parse({ name: " Sun ", denomination: "G7" }),
+    ).toEqual({ name: "Sun", denomination: "G7" });
+    expect(StarWorldHudIdentitySchema.safeParse({ name: " " }).success).toBe(
+      false,
+    );
+  });
   const sun: Star = {
     pos: new Vec2(0, 0),
     influenceRadius: 360,
@@ -58,7 +71,6 @@ describe("planet with a study well", () => {
       mass: 400,
       color: "#8B7355",
       type: "rock",
-      hasRing: false,
       ...overrides,
     };
   }

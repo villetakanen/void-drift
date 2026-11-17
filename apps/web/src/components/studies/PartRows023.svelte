@@ -225,7 +225,6 @@ const specimens: { label: string; id: PartId; shown: Shown }[] = [
         options={mounts.map(short)}
         bind:value={mountName}
         label="Selected mount"
-        compact
       />
     </div>
     <div class="parts">

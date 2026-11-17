@@ -76,7 +76,6 @@ $effect(() => {
 <div class="toolbar">
   <Toggle
     label="Stabilizer placement view"
-    compact
     options={["Hull", "Engines", "Fitted"]}
     bind:value={view}
   />
@@ -103,7 +102,6 @@ $effect(() => {
     <div class="pair-selector">
       <Toggle
         label="Turning-thruster pair"
-        compact
         options={["Front", "Rear"]}
         bind:value={selected}
       />

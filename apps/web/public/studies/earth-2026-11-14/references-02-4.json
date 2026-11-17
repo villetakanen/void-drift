@@ -1,0 +1,36 @@
+{
+  "retrieved": "2026-11-14",
+  "treatment": "Original provider files; browser sizing only. Research references, not selected game assets.",
+  "assets": [
+    {
+      "file": "rosetta-2007.webp",
+      "url": "https://media.esa.int/legacy/web/images/esa_multimedia/images/2007/11/earth_s_true_colours/9863431-3-eng-GB/80498/image-thumb__80498__fit_large/Earth_s_true_colours~-~media--92aa2fb2--query.98f860a3.webp",
+      "sha256": "c1b6e20232cdf47bd0ab034c4e79637361452af81ee5996e026ea17aa4d0867a"
+    },
+    {
+      "file": "meteosat-2023.jpg",
+      "url": "https://www-cdn.eumetsat.int/files/2023-04/full_disk_FCI_true_color_202303181150-MTG-i1.jpg",
+      "sha256": "42f324aab054671422fe49e39d64fea875463739bb5fc6855e9a2b9c3742df63"
+    },
+    {
+      "file": "earthrise.jpg",
+      "url": "https://assets.science.nasa.gov/content/dam/science/psd/solar/2023/09/a/as08-14-2383.jpg",
+      "sha256": "4b1484e9bb55652e30a56c03c27141938885a09e4b3c0bcabb8841e1e94ed9d9"
+    },
+    {
+      "file": "celestia-earth.jpg",
+      "url": "https://celestiaproject.space/images/gallery/earth.jpg",
+      "sha256": "4d41cdb0be24cc4dfe9638615b8a1a5925395b51493416675b22ab984e5f7ea1"
+    },
+    {
+      "file": "celestia-earth-low.jpg",
+      "url": "https://celestiaproject.space/images/gallery/earth-low.jpg",
+      "sha256": "51397fdc39823c3013d7b208fa775f2d5b965e889a69ca096dc0eac5ea3299d6"
+    },
+    {
+      "file": "iss-sunglint.jpg",
+      "url": "https://eol.jsc.nasa.gov/DatabaseImages/ESC/small/ISS062/ISS062-E-44814.JPG",
+      "sha256": "beca61a29eb3d4bac16a4ec85870367d77a09a4ddc7220c18d495e522a6bb067"
+    }
+  ]
+}

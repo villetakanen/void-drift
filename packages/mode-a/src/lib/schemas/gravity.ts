@@ -12,6 +12,10 @@ export const GravityTuningSchema = z
     cutoff: z.number().finite().positive(),
     sunMass: z.number().finite().positive(),
     planetMass: z.record(z.string(), z.number().finite().positive()),
+    /** Practice-only overrides preserve the ranked stock planet masses. */
+    practicePlanetMass: z
+      .record(z.string(), z.number().finite().positive())
+      .optional(),
   })
   .strict();
 export type GravityTuning = z.infer<typeof GravityTuningSchema>;

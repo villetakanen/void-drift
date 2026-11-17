@@ -6,7 +6,38 @@ const both = { leftThruster: true, rightThruster: true, fire: false };
 const idle = { leftThruster: false, rightThruster: false, fire: false };
 
 describe("flight contract", () => {
-  it("uses the seeded yellow family in Derelicts and Gauntlet, not Survival", () => {
+  it("sizes Practice Mercury within the charging field without changing other modes", () => {
+    const practice = new Simulation({ ...stockSettings(), mode: "practice" });
+    const mercury = practice.planets.find((planet) => planet.id === "moon");
+    if (!mercury) throw new Error("Practice Mercury missing");
+    expect(mercury.radius).toBe(27);
+    expect(mercury.orbitRadius).toBe(258);
+    expect(mercury.orbitRadius - mercury.radius).toBeGreaterThan(
+      practice.star.damageField?.reach ?? Infinity,
+    );
+    expect(mercury.orbitRadius - mercury.radius).toBeLessThan(
+      practice.star.collectionField?.reach ?? 0,
+    );
+    const ranked = new Simulation({ ...stockSettings(), mode: "survival" });
+    expect(ranked.planets.find((planet) => planet.id === "moon")?.radius).toBe(
+      SURVIVAL_CONFIG.PLANETS.find((planet) => planet.id === "moon")?.radius,
+    );
+  });
+  it("assigns stable outward HUD identities before a scene filters planets", () => {
+    const practice = new Simulation({ ...stockSettings(), mode: "practice" });
+    const mercury = practice.planets.find((planet) => planet.id === "moon");
+    const venus = practice.planets.find((planet) => planet.id === "venus");
+    expect(mercury?.displayName).toBe("Mercury");
+    expect(venus?.displayName).toBe("Venus");
+    const outward = [...practice.planets].sort(
+      (a, b) => a.orbitRadius - b.orbitRadius,
+    );
+    expect(outward.map((planet) => planet.systemPosition)).toEqual(
+      outward.map((_, index) => index + 1),
+    );
+    expect(venus?.systemPosition).toBeGreaterThan(mercury?.systemPosition ?? 0);
+  });
+  it("keeps ranked Survival on the legacy Sun while Playground uses the seeded family", () => {
     const settings = {
       ...gameSettings("wasp"),
       mode: "derelicts" as const,
@@ -30,8 +61,23 @@ describe("flight contract", () => {
 
     const practice = new Simulation({ ...settings, mode: "practice" }).star;
     expect(practice.radius).toBe(70);
-    expect(practice.designation).toBe("G7, Sun");
+    expect(practice.name).toBe("Sun");
+    expect(practice.denomination).toBe("G7");
+    expect(practice.designation).toBe("G7 Sun");
     expect(practice.appearance).toBe("yellow-family");
+
+    const playground = new Simulation({
+      ...settings,
+      mode: "survival",
+      experimental: "On",
+    });
+    expect(playground.star).toEqual(new Simulation(settings).star);
+    const replayed = new Simulation(playground.settings);
+    playground.start();
+    replayed.start();
+    playground.replay([{ ...both, ticks: 180 }]);
+    replayed.replay([{ ...both, ticks: 180 }]);
+    expect(playground.ship).toEqual(replayed.ship);
 
     const survival = new Simulation({ ...settings, mode: "survival" }).star;
     expect(survival.radius).toBe(35);

@@ -283,7 +283,6 @@ function handleStagePointerUp(event: PointerEvent) {
           tab
         </span>
         <Toggle
-          compact
           label="Visual nesting style"
           options={[...NESTING_OPTIONS]}
           bind:value={nestingMode}
@@ -295,7 +294,6 @@ function handleStagePointerUp(event: PointerEvent) {
           02.4B Visual nested shapes vs. end-to-end touch areas
         </span>
         <Toggle
-          compact
           label="Overlay mode"
           options={[...OVERLAY_OPTIONS]}
           bind:value={overlayMode}
@@ -305,7 +303,6 @@ function handleStagePointerUp(event: PointerEvent) {
       <div class="control-block">
         <span class="control-caption">Viewport height context</span>
         <Toggle
-          compact
           label="Viewport preset"
           options={[...VIEWPORT_OPTIONS]}
           bind:value={viewportPreset}

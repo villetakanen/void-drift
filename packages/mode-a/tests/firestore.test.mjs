@@ -137,7 +137,7 @@ test("any ship id is accepted when the document id matches", async () => {
       setDoc(ref("pilot", `ion-storm_pilot_${shipId}`), { ...score, shipId }),
     );
 });
-test("only the current challenge is written", async () => {
+test("a ruleset the rules do not name is not written", async () => {
   for (const challenge of [
     "alpha-1",
     "gravity-1",
@@ -156,7 +156,7 @@ test("only the current challenge is written", async () => {
     await assertFails(setDoc(ref(), { ...score, challenge }));
   }
 });
-test("earlier boards stay stored and readable but cannot be raised or deleted", async () => {
+test("rows of an unnamed ruleset stay stored and readable but cannot be raised or deleted", async () => {
   const legacy = {
     initials: "OLD",
     seconds: 42,

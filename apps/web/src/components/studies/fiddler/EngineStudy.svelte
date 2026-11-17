@@ -70,7 +70,6 @@ $effect(() => {
   </fieldset>
   <Toggle
     label="Engine placement view"
-    compact
     options={["Engines", "Fitted"]}
     bind:value={view}
   />

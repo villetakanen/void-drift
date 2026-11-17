@@ -89,6 +89,8 @@ export const ChassisSchema = z.object({
   turnResponse: z.number().positive().default(1),
   length: z.number().positive(),
   width: z.number().positive(),
+  /** Schematic crossbar ship-local x, keyed by the secondary mount's stable key. */
+  slotLinkLines: z.record(z.string().min(1), z.number().finite()),
 });
 export const CHASSIS = {
   fiddler: ChassisSchema.parse({
@@ -97,6 +99,7 @@ export const CHASSIS = {
     hull: 5,
     aft: 2,
     baseSpeed: 280,
+    slotLinkLines: { right: -66, "aft-1": -54 },
   }),
   wasp: ChassisSchema.parse({
     releaseClass: "scored",
@@ -110,6 +113,7 @@ export const CHASSIS = {
     turnResponse: WASP.turnResponse,
     length: WASP.length,
     width: WASP.width,
+    slotLinkLines: {},
   }),
   scout: ChassisSchema.parse({
     releaseClass: "scored",
@@ -123,6 +127,7 @@ export const CHASSIS = {
     turnResponse: SCOUT.turnResponse,
     length: SCOUT.length,
     width: SCOUT.width,
+    slotLinkLines: { right: -40 },
   }),
   fighter: ChassisSchema.parse({
     releaseClass: "scored",
@@ -136,6 +141,7 @@ export const CHASSIS = {
     turnResponse: FIGHTER.turnResponse,
     length: FIGHTER.length,
     width: FIGHTER.width,
+    slotLinkLines: { right: -40 },
   }),
   corvette: ChassisSchema.parse({
     releaseClass: "preview",
@@ -148,6 +154,7 @@ export const CHASSIS = {
     sideX: CRUISER.sideX,
     length: CRUISER.length,
     width: 25,
+    slotLinkLines: { right: -56 },
   }),
 };
 export const PARTS = {

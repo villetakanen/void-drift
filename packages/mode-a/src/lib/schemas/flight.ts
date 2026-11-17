@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { AssembledIonSettingsSchema } from "./ion";
 import { defaultLoadout, LoadoutSchema } from "./loadout";
+import { ExperimentalSettingSchema } from "./settings";
 import { ShipProfileSchema } from "./ship-profile";
 
 export const FlightModeSchema = z.enum([
@@ -17,6 +18,7 @@ export const FlightSettingsSchema = z
     ion: AssembledIonSettingsSchema.default(() =>
       AssembledIonSettingsSchema.parse({}),
     ),
+    experimental: ExperimentalSettingSchema.default("Off"),
     arrival: z.boolean().default(false),
     /** Whether the mode's derelict encounter runs; benches and studies turn it off. */
     encounters: z.boolean().default(true),

@@ -90,12 +90,14 @@ let closable = $state(true);
       that follows the cut, and the display's drop shadow outside the shape.
       <code>.panel--flat</code>
       drops the shadow, for a surface on the live game such as a status message.
+      Menus and dialogs share this appearance; the host owns arrangement and
+      whether interaction is modal.
     </p>
     <div class="feed panels">
       <div class="star" aria-hidden="true"></div>
       <div class="panel">
         <p class="eyebrow">.panel</p>
-        <p>Dialogs over the stage.</p>
+        <p>Game menus and dialogs over the stage.</p>
         <p class="muted">Muted text on the shade.</p>
       </div>
       <div class="panel panel--flat">
@@ -138,9 +140,9 @@ let closable = $state(true);
     <p>
       A live dialog using the game's <code>Dialog</code> component. Opening it
       makes the stage inert and shades it as an offline feed (a 27% pull toward
-      the elevation hue, a little dimmed and blurred, with the display's
-      scanlines and darkened edge); the deck hides. Focus moves to the dialog's
-      first control and returns to the opener on close. Try it from the
+      the elevation hue, a little dimmed and blurred, with an elevation-2 screen
+      blend, scanlines and a darkened edge); the deck hides. Focus moves to the
+      dialog's first control and returns to the opener on close. Try it from the
       keyboard: Tab never reaches the stage while the dialog is open.
       <a href="/">Title screen →</a>
     </p>

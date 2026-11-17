@@ -1,0 +1,31 @@
+{
+  "retrieved": "2026-11-14",
+  "treatment": "Original source files; browser scaling only. Legends retained. Existing day.jpg and night.jpg provenance in sources.json.",
+  "assets": [
+    {
+      "file": "january.jpg",
+      "url": "https://assets.science.nasa.gov/content/dam/science/esd/eo/images/bmng/bmng-base/january/world.200401.3x5400x2700.jpg",
+      "sha256": "99f5faad74efe985fbf1714c8be7296ca9999759a1215b65f99b7f1df278dde5"
+    },
+    {
+      "file": "greenland-2300.jpg",
+      "url": "https://svs.gsfc.nasa.gov/vis/a000000/a004800/a004804/Greenland_comparison_1a.1980_print.jpg",
+      "sha256": "2f68f2ba9da0d09429c5a6a59b6ed3ee1bd4482896a5d90b9687850aa2a263b3"
+    },
+    {
+      "file": "land-use-1900.png",
+      "url": "https://mynasadata.larc.nasa.gov/sites/default/files/inline-images/1900.png",
+      "sha256": "e54b07f1558a37d38d168c5c7fbcfe9c47bd044c5468d3f0548d909d1e5486ac"
+    },
+    {
+      "file": "land-use-2100.png",
+      "url": "https://mynasadata.larc.nasa.gov/sites/default/files/inline-images/2100.png",
+      "sha256": "e99344f3b2477c9a550e50e65e3449082da82cdf665526ad7fb3b4ad8cf33ee6"
+    },
+    {
+      "file": "noaa-cloud-free.jpg",
+      "url": "https://sos.noaa.gov/ftp_mirror/land/blue_marble/earth_vegetation/media/thumbnail_big.jpg",
+      "sha256": "77427f2ad39cfa29772e7824fe431358a39fb475ebbd08aa7dcff517c2b25f32"
+    }
+  ]
+}

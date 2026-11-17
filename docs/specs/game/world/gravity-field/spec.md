@@ -32,9 +32,19 @@ here.
   their mass from the tuning file, with its cut-off pull and falloff; the sun's
   `influenceRadius` is set to its reach. A configured planet without a mass in
   the tuning file is an error.
-- Test flights (`settings.testFlight`) remove the planets, shrink the sun to
-  radius 12 with its mass scaled by (12 / 35)², keeping its pull at the surface,
-  and place the ship 85 outside the sun's new reach.
+- Practice uses its fixed G7 Sun and roster: Mercury, Venus replacing the middle
+  gas planet, and the outer stock rock. Venus receives its own identity before
+  mass lookup, using the independently stored `planetMass.venus`. The selected
+  mass is now 2844.850581, recalculated from Mercury's reduced 870 mass using
+  the study's selected one-third surface-gravity difference. Its reach is
+  238.53u at the shared cut-off and contact pull is 0.899× the reference Fighter's
+  thrust, within the existing 0.75–1.5× guardrail. Optional `practicePlanetMass`
+  overrides the stock `planetMass` only in Practice: Mercury uses 870 and reaches
+  131.91u, while the stock moon retains 1450 in other modes. Practice Mercury's
+  deliberately gentler contact pull is outside the stock planet tuning band;
+  that band continues to guard stock planets and Venus.
+  Fields may overlap; their accelerations continue to add as vectors. Practice
+  contact and full resources follow [its contract](../../test-flight/spec.md).
 
 ### The pull
 
@@ -99,12 +109,13 @@ into `TUNING`. This spec owns the `gravity` section, validated by
 `GravityTuningSchema` (`packages/mode-a/src/lib/schemas/gravity.ts`) and exported
 as `GRAVITY_TUNING`. Other areas add their own sections to the same file.
 
-| Value        | Range                       | Meaning                                   |
-| ------------ | --------------------------- | ----------------------------------------- |
-| `falloff`    | `inverse-square`, `inverse` | the mass law's falloff                    |
-| `cutoff`     | > 0, u/s²                   | the pull at which every body's reach ends |
-| `sunMass`    | > 0                         | the play sun's mass                       |
-| `planetMass` | > 0, by planet id           | each configured planet's mass             |
+| Value                | Range                       | Meaning                                   |
+| -------------------- | --------------------------- | ----------------------------------------- |
+| `falloff`            | `inverse-square`, `inverse` | the mass law's falloff                    |
+| `cutoff`             | > 0, u/s²                   | the pull at which every body's reach ends |
+| `sunMass`            | > 0                         | the play sun's mass                       |
+| `planetMass`         | > 0, by planet id           | each configured planet's mass             |
+| `practicePlanetMass` | optional > 0, by planet id  | Practice-only mass overrides              |
 
 Masses are absolute and chosen from a pull at contact distance (body radius +
 the reference ship's radius) relative to the reference ship's thrust: planets
@@ -136,7 +147,9 @@ in play, receive no thrust input in `updateShip` at all; their thrust comes from
 
 Score documents carry the ranked Survival rules version `CHALLENGE`
 (`packages/mode-a/src/schemas/highscore.ts`, currently `ion-storm`), which also
-prefixes score document IDs. A release changes `CHALLENGE` only when changes to
+prefixes score document IDs. Its ranked baseline is the 0.6.0 launch-era
+rules. Playground Survival and other unranked modes may adopt experimental or
+upcoming features without changing that baseline or board. A release changes `CHALLENGE` only when changes to
 rules applied to score-eligible ranked Survival runs make scores from before and
 after the release unfair to compare. This includes changes to ranked Survival
 trajectories, survival conditions, scoring, or score eligibility. A tuning value
@@ -144,8 +157,9 @@ matters only if it changes one of those rules in ranked Survival. Changes limite
 to another mode, the Lab, or presentation do not change `CHALLENGE`.
 
 Decide once at release against the last published release, not against
-intermediate edits. When `CHALLENGE` changes, update its matching Firestore rule
-and document ID prefix. Follow the release procedure in `docs/development.md`.
+intermediate edits. When `CHALLENGE` changes, add a Firestore rule and document
+ID prefix for the new name, as the [scores contract](../../scores/spec.md)
+requires. Follow the release procedure in `docs/development.md`.
 
 ## Contract
 

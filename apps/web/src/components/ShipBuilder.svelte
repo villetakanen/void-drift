@@ -2,6 +2,7 @@
 import { COLOR, loadCanvasFonts } from "@void-drift/core";
 import {
   buildMounts,
+  buildSlotLinks,
   buildStats,
   CHASSIS,
   CRUISER,
@@ -35,6 +36,7 @@ import Switch from "./inputs/Switch.svelte";
 import Tabs from "./inputs/Tabs.svelte";
 import Toggle from "./inputs/Toggle.svelte";
 import Logo from "./Logo.svelte";
+import PlaygroundStatus from "./PlaygroundStatus.svelte";
 
 const shipIds = ["wasp", "scout", "fighter", "corvette", "fiddler"] as const;
 
@@ -90,12 +92,9 @@ const framing = $derived.by(() => {
           m.x + x * Math.cos(m.angle) - y * Math.sin(m.angle),
           m.y + x * Math.sin(m.angle) + y * Math.cos(m.angle),
         ]);
-    if (m.linkedTo)
-      points.push([
-        Math.max(CHASSIS[chosen].length, ...mounts.map((m) => m.x)) + 8,
-        m.y,
-      ]);
   }
+  for (const link of buildSlotLinks(chosen, mounts))
+    points.push(...link.points);
   const xs = points.map((p) => p[1]),
     ys = points.map((p) => -p[0]);
   const minX = Math.min(...xs),
@@ -248,7 +247,6 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
                 {/if}
                 <div class="preview-mode">
                   <Toggle
-                    compact
                     label="Ship preview mode"
                     options={["Plan", "View"]}
                     bind:value={previewMode}
@@ -340,18 +338,9 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
               </p>
             </section>
           </div>
-          <section class="parts" aria-label="Compatible parts">
+          <section class="parts cut-surface" aria-label="Compatible parts">
             <p class="eyebrow">SELECTED MOUNT</p>
             <h2>{mount.label}</h2>
-            <p>
-              {mount.required
-                ? "Required engine pair. One choice fits both sides; each engine adds mass."
-                : mount.group === "side"
-                  ? chosen === "wasp"
-                    ? "Single rear center engine. Required propulsion slot."
-                    : "One choice fits both sides. Two engines, two masses."
-                  : "Swap freely. Empty is a valid choice."}
-            </p>
             <div class="part-list">
               {#if mount.group !== "side" && !mount.required}
                 <button
@@ -374,7 +363,7 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
               {/each}
             </div>
           </section>
-          <aside class="numbers" aria-label="Build statistics">
+          <aside class="numbers cut-surface" aria-label="Build statistics">
             <h2>Flight estimates</h2>
             <dl>
               <div>
@@ -457,9 +446,7 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
     </Tabs>
     <footer>
       <div class="launch-context">
-        {#if experimental === "On"}
-          <p role="status">Playground · Scoring off</p>
-        {/if}
+        <PlaygroundStatus active={experimental === "On"} />
         {#if !$shipSetupStatus.ready}
           <p role="status">Loading saved ships…</p>
         {:else if $shipSetupStatus.message}
@@ -581,9 +568,9 @@ p {
 }
 .parts,
 .numbers {
-  border: 1px solid var(--color-border-subtle);
-  padding: 20px;
-  background: var(--color-elev-1);
+  --_cut: var(--cut-size-lg);
+  --_fill: var(--color-elev-1);
+  padding: calc(var(--spacing-md) + var(--spacing-xs) + 1px);
 }
 .ship-column {
   display: flex;

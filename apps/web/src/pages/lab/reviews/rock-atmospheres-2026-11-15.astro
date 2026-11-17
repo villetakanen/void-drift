@@ -1,0 +1,105 @@
+---
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+---
+
+<StudyLayout>
+  <h1>Air around rock worlds · question test</h1>
+  <p>
+    15 November 2026 · independent clean-context, read-only reviewer. This is a
+    framing test, not a design-quality or gameplay assessment.
+  </p>
+  <p><a href="/lab/studies/rock-atmospheres-2026-11-15">Study</a></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Metric</th>
+        <th>Result</th>
+        <th>Reason</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>One subject</td>
+        <td>Pass</td>
+        <td>
+          The envelope's appearance and entry response can be observed together
+          in one flight example. Mercury's surfaces and Venus's orbit/gravity
+          are fixed reference conditions.
+        </td>
+      </tr>
+      <tr>
+        <td>Grounded</td>
+        <td>Pass with findings</td>
+        <td>
+          The authored materials, spherical mapping, spin, light and Venus
+          dimensions exist. Their status as chosen Lab exemplars needs
+          distinguishing from production adoption.
+        </td>
+      </tr>
+      <tr>
+        <td>Consequence</td>
+        <td>Pass</td>
+        <td>
+          The answer adds a readable envelope to existing rock worlds, making a
+          close pass offer an entry choice.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h2>Findings and response</h2>
+  <p>
+    Mercury 02.19 contains all three materials, but the planet spec adopts the
+    mineral surface for Practice Mercury, not all three as production types. The
+    opening now explicitly identifies the three as Lab exemplars chosen for this
+    cycle. This preserves the current design decision without implying a broader
+    rollout.
+  </p>
+  <p>
+    The borrowed Venus baseline has a visual atmosphere only. Its spec excludes
+    atmospheric collision, drag and damage. The opening now states this, so the
+    new hypothesis remains distinct from preserved mechanics. Corrections were
+    not rerun through the reviewer.
+  </p>
+  <h2>Repository evidence</h2>
+  <ul>
+    <li>
+      Mercury study 02.19 and RockSurface016.svelte: named materials, identical
+      mapping, light and independent 31.3-second spin.
+    </li>
+    <li>
+      docs/specs/game/world/planets/spec.md: adopted Mercury mineral material;
+      Practice Venus dimensions and existing contact/gravity rules.
+    </li>
+    <li>
+      packages/mode-a/src/lib/practice-venus.ts and simulation.ts: radius
+      approximately 40.327526u, orbit, travel and mass wiring.
+    </li>
+    <li>
+      docs/specs/game/controls/spec.md and simulation.ts: shared input and
+      production flight simulation.
+    </li>
+    <li>
+      Venus study 02.2 and 02.7: separate body/edge roles and whole-planet
+      inspection. docs/design.md: pleasurable flight and convincing materials.
+    </li>
+    <li>
+      Study registry: Mercury and Venus remain open but concern fixed reference
+      facets; no other open study owns the atmosphere question.
+    </li>
+  </ul>
+  <h2>Not checked</h2>
+  <p>
+    Rendered page, visual quality, keyboard behavior, viewport layout, actual
+    atmospheric response, exact Wasp fitting, asset loading, automated tests and
+    human gameplay judgment. Prohibited failed studies and their associated
+    artifacts were not opened; only registry metadata was used for overlap.
+  </p>
+</StudyLayout>
+<style>
+th,
+td {
+  text-align: left;
+  vertical-align: top;
+  padding: var(--spacing-sm);
+}
+</style>

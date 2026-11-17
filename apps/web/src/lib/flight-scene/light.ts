@@ -7,6 +7,7 @@ import {
   STEP,
 } from "@void-drift/mode-a";
 import type { ExperimentProperties } from "../instrument/config";
+import { atmosphereSample } from "./planet";
 
 export type EngineId = Loadout["side"];
 
@@ -38,7 +39,24 @@ export interface StudyLightState {
   tick: number;
   /** Seconds of flight. */
   time: number;
-  ship: { x: number; y: number; rotation: number; vx: number; vy: number };
+  ship: {
+    x: number;
+    y: number;
+    rotation: number;
+    vx: number;
+    vy: number;
+    radius: number;
+  };
+  /** Actual staged atmospheric overlap and velocity relative to its body. */
+  atmosphere?: {
+    density: number;
+    clearance: number;
+    vx: number;
+    vy: number;
+    /** Unit direction from ship towards the atmospheric body. */
+    inwardX: number;
+    inwardY: number;
+  };
   /** The loadout's main engines, in mount order. */
   engines: readonly EngineLight[];
 }
@@ -100,8 +118,14 @@ export function studyLightState(
   sim: Simulation,
   loadout: Loadout,
   tick: number,
+  atmosphereDepth?: number,
 ): StudyLightState {
   const { ship } = sim;
+  const body = sim.planets[0];
+  const sample =
+    atmosphereDepth !== undefined && body
+      ? atmosphereSample(ship, body, atmosphereDepth)
+      : undefined;
   const cos = Math.cos(ship.rotation),
     sin = Math.sin(ship.rotation);
   return {
@@ -113,7 +137,25 @@ export function studyLightState(
       rotation: ship.rotation,
       vx: ship.vel.x,
       vy: ship.vel.y,
+      radius: ship.radius,
     },
+    atmosphere:
+      sample && body
+        ? {
+            density: sample.density,
+            clearance: sample.clearance,
+            vx: ship.vel.x - sample.vx,
+            vy: ship.vel.y - sample.vy,
+            inwardX:
+              (body.pos.x - ship.pos.x) /
+              (Math.hypot(body.pos.x - ship.pos.x, body.pos.y - ship.pos.y) ||
+                1),
+            inwardY:
+              (body.pos.y - ship.pos.y) /
+              (Math.hypot(body.pos.x - ship.pos.x, body.pos.y - ship.pos.y) ||
+                1),
+          }
+        : undefined,
     engines: mainEngines(loadout).flatMap(({ index, key, part }) => {
       const emitter = sim.emitters[index];
       if (!emitter) return [];

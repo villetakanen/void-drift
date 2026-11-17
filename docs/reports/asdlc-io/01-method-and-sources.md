@@ -18,6 +18,8 @@ Raw HTML/text captures remain temporary files under `/tmp/asdlc-assessment-corpu
 
 ## Coverage and selection
 
+The later [KonMari postscript](07-postscript-test-retention.md) extends the semantic sample with five already-inventoried sources: both test-pruning skills, the browser-pruning closure and review, and the earlier pruning plan's recorded outcome. Their bytes match the original baseline. Counts below describe the original assessment's selection; the supplement is separately identified as E-K01–05, PS-F01 and PS-P01.
+
 - **86 public URLs** captured from home, patterns, practices, concepts, resources, recipes and getting-started navigation: **47 directly read**, **30 contextual**, **6 navigation**, **3 excluded**. Every URL has a classification and reason in [guidance coverage](evidence/guidance-coverage.md). Contextual pages received navigation-level screening only; no article-level finding is inferred from that. The compendium is redundant aggregation, the site's visual identity is out of scope, and the external-reading feed is not the primary comparison corpus.
 - **69 committed top-level loop records** inventoried by metadata in [loop-inventory.json](evidence/loop-inventory.json): file identity, dates from names, headings and available brief status fields. This is not a semantic assessment of all 69 records and is not a denominator for a success rate.
 - **18 distinct top-level loop records** cited in the three thematic extraction packets, enumerated in [episode-selection.json](evidence/episode-selection.json), plus current contracts, code and selected historical reports/lessons. Packets overlap; their counts must not be added as independent observations.

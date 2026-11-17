@@ -35,15 +35,18 @@ import {
   stockSettings,
   submitHighScore,
 } from "@void-drift/mode-a";
-import { onMount } from "svelte";
+import { onMount, type Snippet } from "svelte";
+import { practicePlanetAppearances } from "../lib/assets/practice-planet-appearances";
+import { createPracticeVenus } from "../lib/assets/practice-venus";
+import { loadPracticeMercury } from "../lib/assets/rock-planets/authored-materials";
 import { NO_SCORE_NOTICE } from "../lib/experimental";
 import { fitGameScreen, GAME_HEIGHT } from "../lib/game-screen";
 import { settings } from "../lib/stores/settings";
 import { initializeShipSetup, shipSetup } from "../lib/stores/ship-setup";
+import ThrustPads from "./controls/ThrustPads.svelte";
+import { PAD_ASSEMBLY_HEIGHT_PX } from "./controls/thrust-pads";
 import Dialog from "./Dialog.svelte";
 import FlightLayers from "./FlightLayers.svelte";
-import ThrustPads from "./inputs/ThrustPads.svelte";
-import { PAD_ASSEMBLY_HEIGHT_PX } from "./inputs/thrust-pads";
 import PreviewMarker from "./PreviewMarker.svelte";
 import TitleScreen from "./TitleScreen.svelte";
 
@@ -52,16 +55,26 @@ let {
   launchSource = "title",
   mode = "survival",
   onReturn,
+  menu,
 }: {
   loadout?: Loadout;
   launchSource?: "title" | "hangar";
   mode?: FlightMode;
   onReturn?: () => void;
+  /** A nonmodal menu foreground over the existing landing scene and scrim. */
+  menu?: Snippet;
 } = $props();
 // Practice skips the arrival countdown and labels itself; its screen is Survival's.
 const testFlight = $derived(mode === "practice");
 let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
 let simulation: Simulation;
+let practiceVenus: ReturnType<typeof createPracticeVenus> | undefined;
+let practiceMercury:
+  | Awaited<ReturnType<typeof loadPracticeMercury>>
+  | undefined;
+let practiceBodyAppearances:
+  | ReturnType<typeof practicePlanetAppearances>
+  | undefined;
 let input: Input;
 let renderer: Renderer;
 let camera: Camera;
@@ -104,6 +117,7 @@ let hostileBearings = $state<
 let gauntletOpponentCount = $state(0);
 let zoom = $state(1);
 let zoomLevel = $state(0);
+let speedZoomMode = $state(1);
 let cameraFitWidth = $state(0);
 let cameraFitHeight = $state(0);
 let activeZoomSteps = $state(5);
@@ -167,10 +181,16 @@ function reset(start = false) {
   input?.reset();
   simulation = new Simulation(
     runLoadout
-      ? { ...stockSettings(runLoadout.chassis), loadout: runLoadout, mode }
+      ? {
+          ...stockSettings(runLoadout.chassis),
+          loadout: runLoadout,
+          experimental: runExperimental,
+          mode,
+        }
       : {
           ...stockSettings(currentLoadout.chassis),
           loadout: currentLoadout,
+          experimental: runExperimental,
           mode,
         },
   );
@@ -183,6 +203,7 @@ function reset(start = false) {
     countTime = 0;
     phase = "starting";
   } else countTime = -1;
+  refreshPracticeAppearances();
   if (start) simulation.start();
   paused = start && narrow;
   scoreSaved = false;
@@ -190,8 +211,29 @@ function reset(start = false) {
   frameCamera(true);
   sync();
 }
-function frameCamera(snap = false) {
+function refreshPracticeAppearances() {
+  practiceBodyAppearances =
+    mode === "practice"
+      ? practicePlanetAppearances(simulation.planets, {
+          mercury: practiceMercury,
+          venus: practiceVenus,
+        })
+      : undefined;
+}
+function frameCamera(snap = false, speedCamera = $settings.speedCamera) {
   if (!camera || !simulation) return;
+  const ship = simulation.ship;
+  if (!landing && speedCamera) {
+    camera.frameSpeed(
+      ship.pos.x,
+      ship.pos.y,
+      ship.vel.x,
+      ship.vel.y,
+      ship.radius,
+      snap,
+    );
+    return;
+  }
   const c = simulation.settings.camera;
   camera.frame(
     simulation.ship.pos.x,
@@ -204,6 +246,7 @@ function frameCamera(snap = false) {
     c.zoomSteps,
     null,
   );
+  camera.keepShipVisible(ship.pos.x, ship.pos.y, ship.radius);
 }
 function sync() {
   const salvage = simulation.salvage;
@@ -276,6 +319,7 @@ function sync() {
   cause = simulation.state.deathCause ?? "";
   zoom = camera?.zoom ?? 1;
   zoomLevel = camera?.zoomLevel ?? 0;
+  speedZoomMode = camera?.speedZoomMode ?? 1;
   cameraFitWidth = camera?.activeWidth ?? 0;
   cameraFitHeight = camera?.activeHeight ?? 0;
   activeZoomSteps = simulation.settings.camera.zoomSteps;
@@ -363,6 +407,22 @@ function padPress(pointerId: number, pad: ThrustPad | null) {
   input?.setPointer(pointerId, pad);
 }
 onMount(() => {
+  if (mode === "practice") {
+    try {
+      practiceVenus = createPracticeVenus(true);
+      refreshPracticeAppearances();
+    } catch {
+      /* Use the stock body if Canvas material preparation fails. */
+    }
+    void loadPracticeMercury(true)
+      .then((asset) => {
+        practiceMercury = asset;
+        refreshPracticeAppearances();
+      })
+      .catch(() => {
+        /* Keep the stock body when the material is unavailable. */
+      });
+  }
   const world = canvases.world?.getContext("2d"),
     fx = canvases.fx?.getContext("2d"),
     lfx = canvases.lfx?.getContext("2d");
@@ -373,6 +433,10 @@ onMount(() => {
   renderer = new Renderer(canvas);
   resizeFlightLayers(layers, renderer, 1920, 1080);
   camera = new Camera();
+  const stopCameraPreference = settings.listen((next, previous) => {
+    if (next.speedCamera !== previous.speedCamera)
+      camera.resetSpeedEligibility();
+  });
   input = new Input();
   initializeShipSetup();
   if (launchSource === "title") enterMenu();
@@ -412,7 +476,7 @@ onMount(() => {
       screen.active.logical.width,
       screen.active.logical.height,
     );
-    frameCamera();
+    frameCamera(false, camera.speedFraming);
     const bounds = stage.getBoundingClientRect();
     landingFrame = {
       width: bounds.width,
@@ -506,6 +570,8 @@ onMount(() => {
         camera,
         sim: simulation,
         fx: flightFx,
+        bodyAppearances:
+          mode === "practice" ? practiceBodyAppearances : undefined,
         stockShip: chosen === "fiddler" ? undefined : chosen,
         lightTime: Math.max(0, countTime) + simulation.ticks * STEP,
         lightOverlay:
@@ -539,6 +605,7 @@ onMount(() => {
   frame = requestAnimationFrame(draw);
   return () => {
     cancelAnimationFrame(frame);
+    stopCameraPreference();
     playSurface?.removeEventListener("contextmenu", preventMenu);
     resize.disconnect();
     motion.removeEventListener("change", updateMotion);
@@ -645,6 +712,11 @@ onMount(() => {
                 value={power}
               ></progress>
             </div>
+            {#if $settings.speedCamera && !landing}
+              <div>
+                <small>ZOOM</small><strong>{speedZoomMode}×</strong>
+              </div>
+            {/if}
           </div>
           <div class="deck-instruments right">
             {#if mode === "survival"}
@@ -758,13 +830,17 @@ onMount(() => {
         </Dialog>
       {:else if landing}
         <div class="dialog-scrim" aria-hidden="true"></div>
-        <TitleScreen
-          onStart={start}
-          loadout={currentLoadout}
-          experimental={$shipSetup.experimental}
-          disabled={phase === "starting" || !currentLaunchAvailable}
-          {blockedReason}
-        />
+        {#if menu}
+          {@render menu()}
+        {:else}
+          <TitleScreen
+            onStart={start}
+            loadout={currentLoadout}
+            experimental={$shipSetup.experimental}
+            disabled={phase === "starting" || !currentLaunchAvailable}
+            {blockedReason}
+          />
+        {/if}
       {:else if status === "GAME_OVER"}
         <Dialog label="Run complete" class="flight-card">
           {#if mode === "gauntlet" && gauntletResult}

@@ -1,0 +1,1420 @@
+---
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const earthSketches = [
+  [
+    { file: "02-6-1.png", title: "P1 / Pale", cx: 640, cy: 625, radius: 525 },
+    { file: "02-6-2.png", title: "P2 / Smoky", cx: 640, cy: 625, radius: 525 },
+    { file: "02-6-3.png", title: "P3 / Dark", cx: 640, cy: 625, radius: 525 },
+  ],
+  [
+    { file: "02-6-4.png", title: "C1 / Slate", cx: 640, cy: 625, radius: 525 },
+    { file: "02-6-5.png", title: "C2 / Teal", cx: 640, cy: 625, radius: 525 },
+    {
+      file: "02-6-6.png",
+      title: "C3 / Graphite",
+      cx: 640,
+      cy: 625,
+      radius: 525,
+    },
+  ],
+  [
+    { file: "02-6-7.png", title: "H1 / Silver", cx: 640, cy: 625, radius: 525 },
+    {
+      file: "02-6-8.png",
+      title: "H2 / Mineral",
+      cx: 640,
+      cy: 625,
+      radius: 525,
+    },
+    { file: "02-6-9.png", title: "H3 / Dusk", cx: 640, cy: 625, radius: 525 },
+  ],
+];
+const study = studies.find((entry) => entry.slug === "earth-2026-11-14");
+if (!study) throw new Error("Missing Earth study metadata");
+---
+
+<StudyLayout study={study}>
+  <p>
+    Follow-up · 16 November 2026: the
+    <a href="/lab/studies/rock-atmospheres-2026-11-15"
+      >accepted rock-atmosphere study</a
+    >
+    selects Impact with Cirrus and atmospheric heat as placeholder Earth for
+    Practice. Earth exploration concludes for now. This study remains stopped;
+    the placeholder does not accept its earlier Earth or habitation designs.
+  </p>
+
+  <section aria-label="Study outcome">
+    <h2>Stopped · 15 November 2026</h2>
+    <p>
+      The designer ended this cycle because the model started over-correcting
+      and looping on irrelevant details, and declared the study failed: “model
+      collapse.” No inhabited planet design was accepted for Void Drift. The
+      earlier appreciation of the research and learning remains part of the
+      record; it does not change that outcome.
+    </p>
+    <p>
+      The retained finding is that improving isolated planet images did not
+      establish how an inhabited world with an atmosphere belongs in the game.
+      The designer identified repeated oversteering from tentative ideas,
+      including the interrupted 02.10 attempt. The study ends in exploration;
+      readiness and implementation scope were not reached.
+    </p>
+    <p>
+      References, sketches and the 02.8–02.9 reasoning remain below. Surface,
+      atmosphere, habitation and Earth’s identity remain unresolved. Temporary
+      rendering components have been retired. The closure evidence is recorded
+      in <code>docs/loop-evidence/2026-11-15-earth-reference-research.md</code>.
+    </p>
+  </section>
+  <section>
+    <h2 id="01">01 / An inhabited world at flight scale</h2>
+    <p>
+      Earth will be the first inhabited Earth-like planet in Practice, beside
+      Mercury and Venus. Its land, water, clouds, air and night-side habitation
+      should make it feel alive. Their treatment should also inform other
+      Earth-like worlds.
+    </p>
+    <p>
+      This prototype must be readily recognizable as Earth at flight scale. Void
+      Drift’s visual language leads: familiar geography supplies identity, with
+      freedom to simplify, exaggerate and compose. The open question is how much
+      detail Earth needs, and how its surface, atmosphere and inhabited night
+      combine into a convincing world.
+    </p>
+    <p>
+      The study settles the visual treatment of one Earth prototype for
+      Practice. Size, simplification and composition remain open. Mercury,
+      Venus, the G7 Sun, controls, gravity and contact rules stay fixed.
+      Placement, motion and mass are later delivery choices; landing and
+      atmospheric damage are outside this visual cycle.
+    </p>
+    <ol>
+      <li>
+        What visual treatment makes an inhabited Earth-like planet feel like a
+        convincing world beside Mercury and Venus at flight scale, using Earth
+        as the first prototype?
+      </li>
+      <li>
+        How do we depict Earth in Void Drift’s visual language so it is readily
+        recognizable at flight scale and belongs beside Mercury and Venus?
+      </li>
+    </ol>
+    <p>
+      <strong>Scope amended · 15 November 2026.</strong>
+      <a href="#02-8">Reasoning and retained findings in 02.8</a>.
+    </p>
+    <p>
+      <strong>Historical question test · 14 November 2026, reframed:</strong>
+      One subject — Pass; Grounded — Pass with findings; Consequence — Pass with
+      findings. Corrections and the 15 November amendment have not been
+      retested.
+      <a href="/lab/reviews/earth-2026-11-14">Full result and earlier rubric</a
+      >.
+    </p>
+  </section>
+  <section>
+    <h2 id="02">02 / Finding a convincing Earth</h2>
+    <details>
+      <summary id="02-1">
+        02.1 / The atmosphere belongs to the whole globe
+      </summary>
+      <p>
+        A retains the mapped surface, observed cloud pattern and inhabited
+        night. B adds blue haze that strengthens towards the limb, a softly
+        fading lit edge and a restrained warm transition into darkness. The
+        proposal is that these connected cues can suggest an atmosphere with
+        depth while keeping the land and ocean recognizable. The apparent
+        thickness and colour are deliberately composed for the game, not a
+        physical scattering simulation.
+      </p>
+      <figure>
+        <img
+          class="comparison"
+          src="/studies/earth-2026-11-14/02-1-atmosphere.png"
+          width="1056"
+          height="930"
+          alt="Retained 02.1 comparison: Earth without and with blue atmosphere, enlarged and beside Mercury and Venus, followed by three longitudes."
+        >
+        <figcaption>
+          02.1 retained capture, 14 November 2026, 1280px viewport. Conditions
+          below. The static image preserves the exact comparison independently
+          of later rendering changes.
+        </figcaption>
+      </figure>
+      <p>
+        Both use identical sources, cloud opacity, night-light treatment, sphere
+        projection and the shared upper-left planetary light. The small rows use
+        production Mercury and Venus materials at their current radii, alongside
+        an Earth fixture of r42u. The paired views are 3.2, 0.7 and 0.4 px/u;
+        the lower three longitudes are 1.8 px/u. Only the atmospheric treatment
+        changes between A and B. Fixed images, no random generation, orbit or
+        elapsed-time animation; the three longitudes are separate views, not a
+        selected rotation speed.
+      </p>
+      <p>
+        Day surface: NASA Blue Marble Next Generation, July 2004 base map.
+        Clouds: NASA’s 2002 Blue Marble cloud composite, retrieved from a
+        <a
+          href="https://phys23p.sl.psu.edu/phys_anim/astro/parallax/cloud_combined_2048.jpg"
+          >Penn State hosted copy</a
+        >
+        because the legacy NASA asset host was unavailable. Night: Black Marble
+        2016. These are separate historical observations, not one simultaneous
+        Earth. All three retain full global map coverage and share the same
+        projection; cloud brightness supplies illustrative opacity, and night
+        lights are extracted from the colour map, suppressed in daylight and
+        attenuated beneath cloud. No future geography or technology has been
+        added.
+      </p>
+      <p>
+        Imagery credits: NASA Earth Observatory / Reto Stöckli (Blue Marble land
+        and clouds); NASA Earth Observatory / Joshua Stevens, using Suomi NPP
+        VIIRS data from Miguel Román, NASA GSFC (Black Marble).
+        <a
+          href="https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-map/"
+          >Day source</a
+        >,
+        <a
+          href="https://science.nasa.gov/earth/earth-observatory/the-blue-marble-true-color-global-imagery-at-1km-resolution/"
+          >cloud source and method</a
+        >,
+        <a
+          href="https://science.nasa.gov/earth/earth-observatory/earth-at-night/maps/"
+          >night source</a
+        >.
+        <a href="/studies/earth-2026-11-14/sources.json"
+          >Asset provenance and treatment</a
+        >.
+      </p>
+      <p>
+        <strong>Retained finding:</strong>
+        the comparison was a useful design step, but the Earth surface did not
+        yet feel convincing enough to judge the fit of its atmosphere. Assessing
+        the atmosphere and its effects against an unsettled surface confounds
+        the judgment. Neither A nor B is an accepted atmosphere or surface.
+        Establish a convincing planetary body before returning to the
+        atmospheric treatment.
+      </p>
+      <p>
+        Two paths emerged: use the established Mercury-like rock material to
+        investigate atmosphere on a familiar body, or establish inhabited
+        Earth’s material through astronomical references. The former could
+        isolate an atmospheric cue, but would not settle its fit to oceans,
+        weather and city lights. 02.2 first seeks an appearance target in intact
+        Earth portraits. The lesson belongs to this comparison; it is not a
+        claim that atmosphere can always be separated from a planet’s
+        appearance.
+      </p>
+      <p>
+        <strong>Adjacent gameplay question:</strong>
+        could a close atmospheric pass cause heat damage, perhaps in a band 1–5u
+        above the body? This is an open proposal, not accepted tuning or part of
+        02.2. Whether danger depends on speed, depth and time in the atmosphere,
+        and how its boundary is made readable, needs a separate encounter
+        investigation. Visible haze does not currently define a damage zone;
+        existing contact rules remain fixed.
+      </p>
+    </details>
+    <details>
+      <summary id="02-2">
+        02.2 / Choose an appearance before reconstructing it
+      </summary>
+      <p>
+        <strong>Retained finding from the withdrawn rendering proposal:</strong>
+        deeper colour felt candy-like and reminiscent of limited-palette pixel
+        art. The surface problem from 02.1 remained. Changing colour, clouds and
+        illumination together did not establish which assumption was wrong;
+        further correction from that example would lack a shared visual target.
+        The proposal and its dedicated renderer are withdrawn. This replacement
+        compares source portraits without rendering adjustments.
+      </p>
+      <p>
+        Three intact Earth images supply different combinations of visible land,
+        cloud structure, colour and phase. Each appears at approximately the
+        same globe diameter, then at the two flight sizes beside production
+        Mercury and Venus. Only uniform scaling and positioning are applied to
+        the source images: no recolouring, contrast change, artificial shading,
+        new haze, masking or projected map. Source black margins are retained.
+      </p>
+      <figure>
+        <img
+          class="comparison"
+          src="/studies/earth-2026-11-14/02-2-closure-1.png"
+          width="1056"
+          height="730"
+          alt="Apollo, EPIC and Rosetta references beside Mercury and Venus"
+        >
+        <figcaption>
+          Closure capture · 15 November 2026, 1280px viewport. Existing static
+          comparison captured before retiring its renderer; not a new design
+          result.
+        </figcaption>
+      </figure>
+      <div class="reference-notes">
+        <div>
+          <h4>A / Apollo 17 · land and weather</h4>
+          <p>
+            NASA, 7 December 1972, AS17-148-22727. A crew photograph taken en
+            route to the Moon, showing Africa, Antarctica and the surrounding
+            oceans. The retained NASA web reproduction is a photograph, not a
+            stitched global texture. Its processing history is not reconstructed
+            here.
+          </p>
+          <a
+            href="https://www.nasa.gov/image-article/apollo-17-astronauts-capture-iconic-blue-marble-50-years-ago/"
+            >Image and source context</a
+          >.
+        </div>
+        <div>
+          <h4>B / EPIC · weather over the whole globe</h4>
+          <p>
+            NASA / NOAA, DSCOVR EPIC, 6 July 2015. Red, green and blue
+            observations combined into a colour image of the sunlit Earth,
+            showing North and Central America. Its clouds and atmospheric
+            effects are already in the image; it is not an unlit surface map.
+          </p>
+          <a
+            href="https://www.nasa.gov/image-article/nasa-captures-epic-earth-image/"
+            >Image and acquisition context</a
+          >.
+        </div>
+        <div>
+          <h4>C / Rosetta · a world mostly in shadow</h4>
+          <p>
+            ESA, MPS for the OSIRIS Team;
+            MPS/UPD/LAM/IAA/RSSD/INTA/UPM/DASP/IDA. Earth’s southern crescent
+            during the November 2009 departure, reproduced by NASA APOD on 23
+            November. The source’s blue limb, bright weather and dark hemisphere
+            are preserved. The cited APOD page does not specify the filter
+            combination or complete processing; this is not labelled a
+            calibrated true-colour view.
+          </p>
+          <a
+            href="https://science.nasa.gov/image-article/apod-2009-november-23-crescent-earth-from-the-departing-rosetta-spacecraft/"
+            >Image, credit and context</a
+          >.
+        </div>
+      </div>
+      <p>
+        Conditions: enlarged Earth diameter approximately 224px; flight
+        diameters 58.8px and 33.6px, using the unchanged r42u comparison fixture
+        at 0.7 and 0.4 px/u. Globe bounds are estimated from each visible limb;
+        Rosetta’s unlit extent is inferred from its arc. Mercury r27u and Venus
+        r40.327526u use their production materials and upper-left light. The
+        Earth portraits keep their own original illumination, orientation and
+        weather: this is a reference board, not a scene under one Sun. A black
+        reference backdrop accommodates the intact source margins.
+      </p>
+      <p>
+        No image or property has been selected. The comparison can identify a
+        convincing appearance and qualities that survive reduction; it cannot
+        establish motion, relighting, exact material colours or habitation cues.
+        These daytime and crescent views do not answer how city lights should
+        look. Once a target is established, a reconstruction can be compared
+        against it before adding atmospheric or future-world changes.
+        <a href="/studies/earth-2026-11-14/references-02-2.json"
+          >Source files and display conditions</a
+        >.
+      </p>
+      <p>
+        <strong>Retained assessment:</strong>
+        these references bring the exploration closer and are useful material to
+        build upon. Cloud cover still hides too much of the surface. More
+        references are needed, especially cloud-free or sparsely clouded views
+        and scientific depictions of future Earth. No appearance is selected.
+        The next step expands the research before trying another rendering
+        correction or narrowing the design question again.
+      </p>
+    </details>
+    <details>
+      <summary id="02-3">
+        02.3 / The surface beneath the weather, and possible futures
+      </summary>
+      <p>
+        Seven source images broaden the reference base. The first group exposes
+        land, ocean, seasonal ice and habitation; the second shows
+        geographically grounded future changes. Open any image for its original
+        resolution. Files are displayed intact with no colour adjustments or new
+        rendering.
+      </p>
+      <h4>Cloud-free Earth · observed composites</h4>
+      <div
+        class="research-grid"
+        style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-lg); margin-block: var(--spacing-lg);"
+      >
+        <figure>
+          <a href="/studies/earth-2026-11-14/january.jpg"
+            ><img
+              class="comparison"
+              src="/studies/earth-2026-11-14/january.jpg"
+              alt="Cloud-free global Earth map, January 2004, with extensive northern snow."
+              loading="lazy"
+            ></a
+          >
+          <figcaption>
+            <strong>January 2004.</strong>
+            Blue Marble Next Generation. Snow, desert, vegetation and ocean
+            remain visible without the weather layer.
+          </figcaption>
+        </figure>
+        <figure>
+          <a href="/studies/earth-2026-11-14/day.jpg"
+            ><img
+              class="comparison"
+              src="/studies/earth-2026-11-14/day.jpg"
+              alt="Cloud-free global Earth map, July 2004, showing seasonal differences in snow and vegetation."
+              loading="lazy"
+            ></a
+          >
+          <figcaption>
+            <strong>July 2004.</strong>
+            The same map series and projection. Compare the seasonal
+            distribution of snow and vegetation, not a warming forecast.
+          </figcaption>
+        </figure>
+      </div>
+      <p>
+        NASA Earth Observatory / Reto Stöckli. These monthly composites assemble
+        cloud-free observations over time; they are not simultaneous
+        photographs. Persistent clouds and distinguishing snow from cloud
+        complicate the reconstruction. Their seasonal differences are useful
+        surface references, not evidence of climate change between January and
+        July.
+        <a
+          href="https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/"
+          >NASA method and monthly series</a
+        >.
+      </p>
+      <div
+        class="research-grid"
+        style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-lg); margin-block: var(--spacing-lg);"
+      >
+        <figure>
+          <a href="/studies/earth-2026-11-14/noaa-cloud-free.jpg"
+            ><img
+              class="comparison"
+              src="/studies/earth-2026-11-14/noaa-cloud-free.jpg"
+              alt="NOAA Science On a Sphere preview of cloud-free Earth."
+              loading="lazy"
+            ></a
+          >
+          <figcaption>
+            <strong>A cloud-free globe.</strong>
+            NOAA Science On a Sphere preview, using NASA / GSFC Blue Marble
+            imagery from 2001. A reference for how visible geography occupies a
+            globe. The underlying mosaic combines observations and terrain
+            shading; this is a rendered preview, not a cloudless instant
+            photographed from space.
+            <a
+              href="https://sos.noaa.gov/catalog/datasets/blue-marble-without-clouds/"
+              >Dataset and method</a
+            >.
+          </figcaption>
+        </figure>
+        <figure>
+          <a href="/studies/earth-2026-11-14/night.jpg"
+            ><img
+              class="comparison"
+              src="/studies/earth-2026-11-14/night.jpg"
+              alt="Black Marble 2016 global night map showing concentrated settlement lights."
+              loading="lazy"
+            ></a
+          >
+          <figcaption>
+            <strong>Inhabitation at night · 2016.</strong>
+            Black Marble, NASA Earth Observatory / Joshua Stevens, Suomi NPP
+            VIIRS data from Miguel Román, NASA GSFC. A processed global
+            composite: settlement patterns rather than a uniformly glowing
+            landmass. Historical lights do not predict settlement in 2300.
+            <a
+              href="https://science.nasa.gov/earth/earth-observatory/earth-at-night/maps/"
+              >Source and processing</a
+            >.
+          </figcaption>
+        </figure>
+      </div>
+      <h4>Future Earth · model visualizations</h4>
+      <figure>
+        <a href="/studies/earth-2026-11-14/greenland-2300.jpg"
+          ><img
+            class="comparison"
+            src="/studies/earth-2026-11-14/greenland-2300.jpg"
+            width="1024"
+            height="576"
+            alt="Northeastern Greenland in 2300 under low, medium and high emissions scenarios, left to right."
+            loading="lazy"
+          ></a
+        >
+        <figcaption>
+          <strong>Northeastern Greenland · 2300.</strong>
+          Low, medium and high emissions scenarios, left to right. Violet
+          identifies bed exposed since 2008; the colours encode scientific
+          information, not predicted ground appearance. NASA Scientific
+          Visualization Studio, Cindy Starr, released 2020; Parallel Ice Sheet
+          Model simulations.
+          <a href="https://svs.gsfc.nasa.gov/4804/"
+            >Three Futures: animation, model context and credits</a
+          >.
+        </figcaption>
+      </figure>
+      <p>
+        This provides a concrete future geography reference within the proposed
+        time range. It can inform where ice retreats and land becomes exposed.
+        It does not supply a true-colour future surface, a global coastline or a
+        preferred scenario for the game.
+      </p>
+      <div
+        class="research-grid"
+        style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-lg); margin-block: var(--spacing-lg);"
+      >
+        <figure>
+          <a href="/studies/earth-2026-11-14/land-use-1900.png"
+            ><img
+              class="comparison"
+              src="/studies/earth-2026-11-14/land-use-1900.png"
+              alt="Historical primary land cover map for 1900 with its original legend."
+              loading="lazy"
+            ></a
+          >
+          <figcaption>
+            <strong>Land use · 1900 historical baseline.</strong>
+            Primary vegetation means vegetation never disturbed by activities
+            such as farming or wood harvesting.
+          </figcaption>
+        </figure>
+        <figure>
+          <a href="/studies/earth-2026-11-14/land-use-2100.png"
+            ><img
+              class="comparison"
+              src="/studies/earth-2026-11-14/land-use-2100.png"
+              alt="Projected primary land cover in 2100 under the AIM medium-high emissions pathway, with original legend."
+              loading="lazy"
+            ></a
+          >
+          <figcaption>
+            <strong>Land use · 2100 projection.</strong>
+            AIM model, medium-high emissions pathway. Colour represents the
+            proportion of primary land cover, not the colour a satellite would
+            photograph.
+          </figcaption>
+        </figure>
+      </div>
+      <p>
+        NASA ORNL DAAC; Chini, Hurtt and Frolking, Harmonized Global Land Use,
+        2014, approximately 50 km resolution. These maps concern human land use,
+        not climate alone. Recovered secondary vegetation is excluded from
+        “primary,” so low values do not mean bare ground. This helps research an
+        inhabited future without inventing cities from a colour map.
+        <a
+          href="https://mynasadata.larc.nasa.gov/mini-lessonactivity/comparing-global-land-use-over-time"
+          >NASA explanation and dataset citation</a
+        >.
+      </p>
+      <p>
+        <strong>What remains missing:</strong>
+        this research found regional and thematic projections, rather than a
+        validated, cloud-free, true-colour portrait of the entire Earth in
+        2100–2400. A future globe would still require authored interpretation of
+        a chosen scenario. No palette, atmosphere, climate scenario or
+        appearance target is selected here.
+        <a href="/studies/earth-2026-11-14/references-02-3.json"
+          >New asset provenance</a
+        >.
+      </p>
+
+      <p>
+        <strong>Retained lesson:</strong>
+        02.3 was a valuable step because it exposed a gap between scientifically
+        grounded imagery and a convincing feeling of Earth. Some ocean
+        treatments read as deep-blue plastic or a children’s toy; less saturated
+        photographic references are preferred. The cause remains unresolved. It
+        may reach back to the initial design question, but that connection is
+        tentative. This is a lesson from the exploration, not an isolated fault
+        or a new procedure. It does not establish that desaturation alone would
+        resolve the appearance.
+      </p>
+    </details>
+    <details>
+      <summary id="02-4">02.4 / Different ways of seeing Earth</summary>
+      <p>
+        Six references extend the research across crew photography, another
+        satellite provider, spacecraft colour imaging and authored 3D views.
+        Scientific sources remain useful for geography; their appearance need
+        not prescribe the game’s surface. These are examples to look at, not
+        candidates ranked by accuracy or a request to choose the final renderer.
+      </p>
+      <p>
+        Original framing, colour, weather and exposure are retained. Open an
+        image to inspect the source file. Different viewpoints and presentation
+        sizes prevent a controlled comparison: a regional photograph can suggest
+        water or depth without showing how a whole globe will read at flight
+        scale.
+      </p>
+      <div
+        class="research-grid"
+        style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-lg); margin-block: var(--spacing-lg);"
+      >
+        <figure style="margin: 0;">
+          <a href="/studies/earth-2026-11-14/earthrise.jpg"
+            ><img
+              class="comparison"
+              style="width: 100%; height: 340px; object-fit: contain;"
+              src="/studies/earth-2026-11-14/earthrise.jpg"
+              alt="A / Earthrise · crew photography"
+              loading="lazy"
+            ></a
+          >
+          <figcaption>
+            <strong>A / Earthrise · crew photography.</strong>
+            Bill Anders / NASA, Apollo 8, 24 December 1968. The pale Earth and
+            surrounding black space offer a different impression from a surface
+            map. The lunar foreground and small globe contribute to that
+            impression; neither is a proposed game composition.
+            <a
+              href="https://science.nasa.gov/resource/apollo-8s-iconic-earthrise/"
+              >NASA photograph and credit</a
+            >.
+          </figcaption>
+        </figure>
+        <figure style="margin: 0;">
+          <a href="/studies/earth-2026-11-14/iss-sunglint.jpg"
+            ><img
+              class="comparison"
+              style="width: 100%; height: 340px; object-fit: contain;"
+              src="/studies/earth-2026-11-14/iss-sunglint.jpg"
+              alt="B / Mediterranean sunglint · crew photography"
+              loading="lazy"
+            ></a
+          >
+          <figcaption>
+            <strong>B / Mediterranean sunglint · crew photography.</strong>
+            NASA / ISS, frame ISS062-E-44814. Corsica and Sardinia sit against
+            bright reflected sunlight. Water can read as silver and haze as
+            depth, rather than relying on deep blue. This is a local,
+            angle-dependent appearance, not a palette for the entire ocean.
+            Original camera orientation retained.
+            <a
+              href="https://eol.jsc.nasa.gov/Collections/EarthFromSpace/caption.pl?PHOTO=ISS062-E-44814"
+              >NASA frame explanation</a
+            >.
+          </figcaption>
+        </figure>
+      </div>
+      <div
+        class="research-grid"
+        style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-lg); margin-block: var(--spacing-lg);"
+      >
+        <figure style="margin: 0;">
+          <a href="/studies/earth-2026-11-14/meteosat-2023.jpg"
+            ><img
+              class="comparison"
+              style="width: 100%; height: 340px; object-fit: contain;"
+              src="/studies/earth-2026-11-14/meteosat-2023.jpg"
+              alt="C / Meteosat · another satellite view"
+              loading="lazy"
+            ></a
+          >
+          <figcaption>
+            <strong>C / Meteosat · another satellite view.</strong>
+            EUMETSAT, MTG-I1 Flexible Combined Imager, 18 March 2023, 11:50 UTC.
+            True-colour processed imagery of Europe, Africa and the Atlantic.
+            Muted land, dark water and a bright reflection supply a different
+            balance from the earlier cloud-free globe. Clouds remain part of
+            this reference.
+            <a
+              href="https://www.eumetsat.int/features/discover-first-images-mtg-i1"
+              >EUMETSAT acquisition and processing context</a
+            >.
+          </figcaption>
+        </figure>
+        <figure style="margin: 0;">
+          <a href="/studies/earth-2026-11-14/rosetta-2007.webp"
+            ><img
+              class="comparison"
+              style="width: 100%; height: 340px; object-fit: contain;"
+              src="/studies/earth-2026-11-14/rosetta-2007.webp"
+              alt="D / Rosetta · spacecraft colour composite"
+              loading="lazy"
+            ></a
+          >
+          <figcaption>
+            <strong>D / Rosetta · spacecraft colour composite.</strong>
+            ESA, MPS for OSIRIS Team; MPS/UPD/LAM/IAA/RSSD/INTA/UPM/DASP/IDA.
+            Acquired 15 November 2007, 03:30 CET, with orange, green and blue
+            filters. Australia and the surrounding ocean recede towards a dark
+            limb. ESA describes it as true colour; this is still a
+            combined-filter image, not an unprocessed camera exposure.
+            <a
+              href="https://www.esa.int/Science_Exploration/Space_Science/Rosetta/Rosetta_Earth_s_true_colours"
+              >ESA image and method</a
+            >.
+          </figcaption>
+        </figure>
+      </div>
+      <div
+        class="research-grid"
+        style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-lg); margin-block: var(--spacing-lg);"
+      >
+        <figure style="margin: 0;">
+          <a href="/studies/earth-2026-11-14/celestia-earth.jpg"
+            ><img
+              class="comparison"
+              style="width: 100%; height: 340px; object-fit: contain;"
+              src="/studies/earth-2026-11-14/celestia-earth.jpg"
+              alt="E / Celestia · authored globe"
+              loading="lazy"
+            ></a
+          >
+          <figcaption>
+            <strong>E / Celestia · authored globe.</strong>
+            Celestia project screenshot gallery. A rendered Earth with subdued
+            land, cloud texture, a lit blue edge and a broad transition into
+            darkness. This offers an authored interpretation to compare with
+            photographs. The gallery does not identify the individual screenshot
+            author, software version or complete asset configuration.
+            <a href="https://celestiaproject.space/gallery.html"
+              >Celestia screenshot gallery</a
+            >.
+          </figcaption>
+        </figure>
+        <figure style="margin: 0;">
+          <a href="/studies/earth-2026-11-14/celestia-earth-low.jpg"
+            ><img
+              class="comparison"
+              style="width: 100%; height: 340px; object-fit: contain;"
+              src="/studies/earth-2026-11-14/celestia-earth-low.jpg"
+              alt="F / Celestia · authored surface and horizon"
+              loading="lazy"
+            ></a
+          >
+          <figcaption>
+            <strong>F / Celestia · authored surface and horizon.</strong>
+            Celestia project screenshot gallery. A close rendered view makes
+            relief, thin cloud and the atmospheric horizon visible together. Its
+            lower viewpoint is useful for material research, but does not
+            establish how those details survive reduction to a game-sized globe.
+            On-screen simulation dates are not photograph dates.
+            <a href="https://celestiaproject.space/gallery.html"
+              >Celestia screenshot gallery</a
+            >.
+          </figcaption>
+        </figure>
+      </div>
+      <p>
+        <strong>Wikipedia as a discovery route.</strong>
+        <a href="https://en.wikipedia.org/wiki/Earthrise">Earthrise</a>
+        and its
+        <a
+          href="https://commons.wikimedia.org/wiki/File:NASA-Apollo8-Dec24-Earthrise.jpg"
+          >Wikimedia Commons file record</a
+        >
+        lead back to the photograph’s authorship and reproductions. The image
+        above comes directly from NASA. A different hosting site is not
+        necessarily an independent image source; tracing the original keeps that
+        distinction visible.
+      </p>
+      <p>
+        These views expand the appearance vocabulary: pale distant Earth,
+        reflective water, muted satellite colour and composed surface–atmosphere
+        relationships. Those are prompts for looking, not findings about which
+        treatment succeeds. No reference, palette or atmospheric treatment is
+        selected, and no game rendering has changed. The preferred degree of
+        saturation remains open.
+      </p>
+      <p>
+        <a href="/studies/earth-2026-11-14/references-02-4.json"
+          >Source files and provenance</a
+        >. Credits accompany each image. These are research references;
+        inclusion does not designate them as distributable game assets.
+      </p>
+      <p>
+        <strong>Retained direction:</strong>
+        all six references were useful; A, B, E and F particularly convey the
+        preferred, less saturated feeling. “Analog photographic” names this
+        restrained appearance, including in the authored renders. It does not
+        prescribe film grain, a vintage filter or a rendering technique. Exact
+        colour and atmospheric treatment remain open.
+      </p>
+    </details>
+    <details>
+      <summary id="02-5">02.5 / Earth laid flat</summary>
+      <p>
+        Maps expose the surface without asking a globe’s lighting or weather to
+        carry the impression. This board adds cartographic land-cover and relief
+        treatments, a satellite mosaic and an authored texture, with the earlier
+        July map retained as a familiar comparison. The direction remains
+        restrained and photographic, but contrasting examples can still supply
+        inspiration.
+      </p>
+      <p>
+        These are flat global maps, not flight-scale proposals. No recolouring,
+        new atmosphere or sphere projection has been applied. Open each image
+        for a larger view. Latitude–longitude layouts stretch the polar regions;
+        their shape and apparent texture density are not those of a globe.
+      </p>
+      <figure>
+        <a href="/studies/earth-2026-11-14/ne1-global.jpg"
+          ><img
+            class="comparison"
+            style="width:100%;height:auto;"
+            src="/studies/earth-2026-11-14/ne1-global.jpg"
+            alt="A / Natural Earth I · cartographic land cover"
+            loading="lazy"
+          ></a
+        >
+        <figcaption>
+          <strong>A / Natural Earth I · cartographic land cover.</strong>
+          Satellite-derived land-cover colouring combined with shaded relief and
+          water. The light palette is designed for reference maps. It provides
+          an alternative way to organize land colours, not a photograph or a
+          future-climate prediction. Natural Earth / Tom Patterson;
+          public-domain map data.
+          <a
+            href="https://www.naturalearthdata.com/downloads/50m-raster-data/50m-natural-earth-1/"
+            >Source and method</a
+          >.
+        </figcaption>
+      </figure>
+      <figure>
+        <a href="/studies/earth-2026-11-14/ne2-global.jpg"
+          ><img
+            class="comparison"
+            style="width:100%;height:auto;"
+            src="/studies/earth-2026-11-14/ne2-global.jpg"
+            alt="B / Natural Earth II · softly blended land"
+            loading="lazy"
+          ></a
+        >
+        <figcaption>
+          <strong>B / Natural Earth II · softly blended land.</strong>
+          An idealized environment with little human influence, derived from
+          Natural Earth I. Its softer regional blends are useful appearance
+          material, but its historical-map intent does not describe our
+          inhabited future Earth. Natural Earth / Tom Patterson; public-domain
+          map data.
+          <a
+            href="https://www.naturalearthdata.com/downloads/50m-raster-data/50m-natural-earth-2/"
+            >Source and method</a
+          >.
+        </figcaption>
+      </figure>
+      <figure>
+        <a href="/studies/earth-2026-11-14/blue-marble-2002.png"
+          ><img
+            class="comparison"
+            style="width:100%;height:auto;"
+            src="/studies/earth-2026-11-14/blue-marble-2002.png"
+            alt="C / Blue Marble · satellite-derived mosaic"
+            loading="lazy"
+          ></a
+        >
+        <figcaption>
+          <strong>C / Blue Marble · satellite-derived mosaic.</strong>
+          NASA / GSFC Scientific Visualization Studio; Reto Stöckli and NASA
+          Earth Observatory. A seamless mosaic with topographic shading, built
+          from observations over time. The source describes land and coastal
+          observations from June–September 2001. This is another processed
+          surface representation, not a simultaneous photograph.
+          <a href="https://svs.gsfc.nasa.gov/2915/">Source and method</a>.
+        </figcaption>
+      </figure>
+      <figure>
+        <a href="/studies/earth-2026-11-14/scope-day.jpg"
+          ><img
+            class="comparison"
+            style="width:100%;height:auto;"
+            src="/studies/earth-2026-11-14/scope-day.jpg"
+            alt="D / Solar System Scope · authored texture"
+            loading="lazy"
+          ></a
+        >
+        <figcaption>
+          <strong>D / Solar System Scope · authored texture.</strong>
+          Solar System Scope / INOVE, CC BY 4.0. An equirectangular texture
+          merging and adjusting geographic data, space photographs and Blue
+          Marble imagery. The publisher deliberately favours sharp, bright
+          colour, more vegetation and less snow. Included as a contrasting
+          interpretation, not as an accepted saturation target.
+          <a href="https://www.solarsystemscope.com/textures/"
+            >Source and method</a
+          >.
+        </figcaption>
+      </figure>
+      <figure>
+        <a href="/studies/earth-2026-11-14/day.jpg"
+          ><img
+            class="comparison"
+            style="width:100%;height:auto;"
+            src="/studies/earth-2026-11-14/day.jpg"
+            alt="E / July 2004 · returning reference"
+            loading="lazy"
+          ></a
+        >
+        <figcaption>
+          <strong>E / July 2004 · returning reference.</strong>
+          NASA Earth Observatory / Reto Stöckli, Blue Marble Next Generation.
+          The cloud-free monthly composite from 02.3 returns beside the new maps
+          so the surface treatments can be compared directly. Seasonal snow and
+          vegetation are part of this particular reference, not future-world
+          changes.
+          <a
+            href="https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-map/"
+            >Source and method</a
+          >.
+        </figcaption>
+      </figure>
+      <p>
+        A and B are display-sized JPEG exports of the full Natural Earth
+        GeoTIFFs, with their colours preserved. Their ocean-floor relief is a
+        cartographic depiction of submerged terrain, not visible ocean texture
+        photographed from space. C–E retain the provider image files. Maps can
+        inspire colour relationships and geography without prescribing the
+        water’s eventual optical appearance.
+      </p>
+      <p>
+        No map is selected. The open question remains which surface qualities
+        help convey a convincing Earth; this round adds material for that
+        judgment.
+        <a href="/studies/earth-2026-11-14/references-02-5.json"
+          >Sources and display preparation</a
+        >.
+      </p>
+      <p>
+        <strong>Retained assessment:</strong>
+        Natural Earth I and II are too bright for the intended appearance, but
+        their detailed seas and graphic treatment provide a useful counterpoint.
+        The next comparison combines that inspiration with the restrained
+        photographic direction retained from 02.4.
+      </p>
+    </details>
+    <details>
+      <summary id="02-6">
+        02.6 / Nine authored Earth sketches at flight scale
+      </summary>
+      <p>
+        Nine imagegen sketches explore photographic, cartographic and combined
+        appearances. Each uses the Celestia globe and Natural Earth II map as
+        visual references, with the earlier photographs informing the written
+        brief. Africa faces the viewer, north is upright, light is requested
+        from the upper left and clouds are sparse. These are generated
+        appearance sketches, not meshes, satellite data, climate projections or
+        production assets.
+      </p>
+      <p>
+        Look across the enlarged globes, then the same images beside production
+        Mercury and Venus at two flight sizes. The group names describe prompt
+        intent: generation also changes geography, cloud placement, reflection
+        and haze. Several results converge on a similar appearance; this is not
+        an isolated-variable test. Ocean relief is an artistic interpretation,
+        not a claim that deep seabeds are visible.
+      </p>
+      <h4>Photographic · pale, smoky, dark</h4>
+      <figure>
+        <img
+          class="comparison"
+          src="/studies/earth-2026-11-14/02-6-closure-1.png"
+          width="1056"
+          height="730"
+          alt="Photographic Earth sketches beside Mercury and Venus"
+        >
+        <figcaption>
+          Closure capture · 15 November 2026, 1280px viewport. Existing static
+          comparison captured before retiring its renderer; not a new design
+          result.
+        </figcaption>
+      </figure>
+      <h4>Cartographic · slate, teal, graphite</h4>
+      <figure>
+        <img
+          class="comparison"
+          src="/studies/earth-2026-11-14/02-6-closure-2.png"
+          width="1056"
+          height="730"
+          alt="Cartographic Earth sketches beside Mercury and Venus"
+        >
+        <figcaption>
+          Closure capture · 15 November 2026, 1280px viewport. Existing static
+          comparison captured before retiring its renderer; not a new design
+          result.
+        </figcaption>
+      </figure>
+      <h4>Combined · silver, mineral, dusk</h4>
+      <figure>
+        <img
+          class="comparison"
+          src="/studies/earth-2026-11-14/02-6-closure-3.png"
+          width="1056"
+          height="730"
+          alt="Combined Earth sketches beside Mercury and Venus"
+        >
+        <figcaption>
+          Closure capture · 15 November 2026, 1280px viewport. Existing static
+          comparison captured before retiring its renderer; not a new design
+          result.
+        </figcaption>
+      </figure>
+      <p>
+        Conditions: approximately 224px enlarged globes, then 58.8px and 33.6px
+        Earth diameters (r42u at 0.7 and 0.4 px/u). Bounds are estimated from
+        the generated limbs; slight diameter and centering differences remain.
+        Whole images are scaled without cropping, recolouring or relighting.
+        Black source backgrounds remain. Mercury r27u and Venus r40.327526u use
+        the existing production painters and upper-left light. Earth lighting is
+        baked into each image and is only approximately matched. This is a
+        static comparison, not a playable encounter.
+      </p>
+      <p>
+        Generated with the built-in imagegen tool on 14 November 2026. Direct
+        reference credits: Celestia project screenshot gallery and Natural Earth
+        / Tom Patterson. No variant is selected. Night lights, future climate
+        changes and atmospheric damage remain outside this comparison.
+      </p>
+      <p>
+        <a href="/studies/earth-2026-11-14/references-02-6.json"
+          >Full prompts, reference inputs and asset provenance</a
+        >.
+      </p>
+      <div class="reference-notes">
+        {earthSketches
+          .flat()
+          .map((sketch) => (
+            <a href={`/studies/earth-2026-11-14/${sketch.file}`}>
+              {sketch.title} · full image
+            </a>
+          ))}
+      </div>
+      <p>
+        <strong>Retained assessment · 15 November 2026:</strong>
+        all nine 02.6 sketches are significantly better than the original
+        attempts. The direction is progressing. No individual variant or
+        rendering method is selected. The next exploration adds game references
+        before another rendering pass.
+      </p>
+    </details>
+    <details>
+      <summary id="02-7">02.7 / Earth in game worlds</summary>
+      <p>
+        Strategy globes, narrative backdrops and cinematic horizons give Earth
+        different jobs. These references broaden the appearance research across
+        X-COM, Star Control II, Mass Effect and Halo. The notes identify
+        possible qualities to inspect; they do not establish which belong in
+        Void Drift.
+      </p>
+      <p>
+        Original frames and colours are retained, including interface context
+        and watermarks. Images open at their available resolution. Screenshots,
+        guide illustrations and promotional material are labelled separately.
+        Sources are reproduced for this study’s visual commentary, not selected
+        as game assets.
+      </p>
+      <figure>
+        <a href="/studies/earth-2026-11-14/xcom-geoscape.jpg"
+          ><img
+            class="comparison"
+            style="display:block;max-width:100%;width:auto;max-height:560px;margin:auto;"
+            src="/studies/earth-2026-11-14/xcom-geoscape.jpg"
+            alt="A / UFO: Enemy Unknown · Geoscape (1994)"
+            loading="lazy"
+          ></a
+        >
+        <figcaption>
+          <strong>A / UFO: Enemy Unknown · Geoscape (1994).</strong>
+          Mythos Games / MicroProse. Strategy-screen capture reproduced by
+          Wikipedia. Broad green and tan regions, a nearly uniform blue ocean
+          and a simple dark hemisphere make geography readable within an
+          information display. This is a useful graphic counterpoint, not an
+          endorsement of its saturation. The hosted image is only 266 × 200;
+          enlargement cannot recover detail.
+          <a href="https://en.wikipedia.org/wiki/UFO:_Enemy_Unknown"
+            >Source and context</a
+          >.
+        </figcaption>
+      </figure>
+      <figure>
+        <a href="/studies/earth-2026-11-14/sc2-starbase-earth.png"
+          ><img
+            class="comparison"
+            style="display:block;max-width:100%;width:auto;max-height:560px;margin:auto;"
+            src="/studies/earth-2026-11-14/sc2-starbase-earth.png"
+            alt="B / Star Control II · Earth behind the shield"
+            loading="lazy"
+          ></a
+        >
+        <figcaption>
+          <strong>B / Star Control II · Earth behind the shield.</strong>
+          Toys for Bob / Accolade; reproduced by Hardcore Gaming 101. Earth
+          appears as a red shielded backdrop behind the Starbase commander. The
+          capture shows the classic low-resolution presentation, but the article
+          covers DOS, 3DO and The Ur-Quan Masters without identifying this
+          capture’s executable. It is not labelled an original DOS capture. The
+          shield communicates a story state; it is not an atmosphere reference.
+          <a href="https://www.hardcoregaming101.net/star-control-ii/amp/"
+            >Source and context</a
+          >.
+        </figcaption>
+      </figure>
+      <h4>C / Star Control II · liberated Earth, 3DO ending</h4>
+      <p>
+        The 3DO edition uses pre-rendered ending cinematics; the DOS edition
+        uses a slideshow. The source trail identifies Earth’s shield removal
+        with the 3DO sequence. This is the relevant version for investigating
+        the liberated Earth reference, not a modern HD remake. Ending spoilers.
+      </p>
+      <iframe
+        title="Star Control II 3DO ending — archived upload by xSeRosiSx"
+        src="https://www.youtube-nocookie.com/embed/XPpYAUmNzY8"
+        loading="lazy"
+        allowfullscreen
+        style="width:100%;aspect-ratio:4/3;border:0;"
+      ></iframe>
+      <p>
+        <a href="https://www.youtube.com/watch?v=XPpYAUmNzY8"
+          >Open the 3DO ending video</a
+        >
+        ·
+        <a href="https://forum.uqm.stack.nl/index.php?topic=4721.msg62710"
+          >Upload provenance</a
+        >
+        ·
+        <a href="https://wiki.starcontrol.com/index.php/Version_Comparison"
+          >Version comparison</a
+        >
+        ·
+        <a href="https://wiki.starcontrol.com/index.php?title=Slave_Shield"
+          >Liberation-scene context</a
+        >. Game: Toys for Bob / Accolade; 3DO movie work credited to PCA
+        Graphics by the version history. The upload is available, but no
+        frame-specific colour finding or timecode is asserted here. Playback
+        depends on YouTube.
+      </p>
+      <figure>
+        <a href="/studies/earth-2026-11-14/mass-effect-guide-earth.png"
+          ><img
+            class="comparison"
+            style="display:block;max-width:100%;width:auto;max-height:560px;margin:auto;"
+            src="/studies/earth-2026-11-14/mass-effect-guide-earth.png"
+            alt="D / Mass Effect · Earth globe in an archived ME3 guide"
+            loading="lazy"
+          ></a
+        >
+        <figcaption>
+          <strong
+            >D / Mass Effect · Earth globe in an archived ME3 guide.</strong
+          >
+          BioWare / Electronic Arts imagery, reproduced in an archived IGN Mass
+          Effect 3 guide, PDF page 744. The guide illustration shows a bright
+          reflection, pale textured land, cloud bands and a dark hemisphere. It
+          offers a compact globe treatment to compare with 02.6. The guide does
+          not establish the source game, build or whether this image was
+          captured from gameplay; it is not presented as a verified ME3 orbital
+          screenshot.
+          <a
+            href="https://www.bazicenter.com/features/ign_guides/mass-effect-3.pdf#page=744"
+            >Source and context</a
+          >.
+        </figcaption>
+      </figure>
+      <figure>
+        <a href="/studies/earth-2026-11-14/halo3-orbital-earth.jpg"
+          ><img
+            class="comparison"
+            style="display:block;max-width:100%;width:auto;max-height:560px;margin:auto;"
+            src="/studies/earth-2026-11-14/halo3-orbital-earth.jpg"
+            alt="E / Halo 3 · Orbital multiplayer location"
+            loading="lazy"
+          ></a
+        >
+        <figcaption>
+          <strong>E / Halo 3 · Orbital multiplayer location.</strong>
+          Bungie / Microsoft. Halopedia identifies this as a gameplay-location
+          screenshot from Orbital, uploaded by Halo-343. Halo 3 released in
+          2007; this is a later multiplayer-map reference, not a Halo 2 image.
+          Examine the relation between the planet’s horizon and the surrounding
+          space rather than treating its camera distance as our game scale.
+          <a href="https://www.halopedia.org/File:Earth_Orbit.jpg"
+            >Source and context</a
+          >.
+        </figcaption>
+      </figure>
+      <figure>
+        <a href="/studies/earth-2026-11-14/halo2a-earth.png"
+          ><img
+            class="comparison"
+            style="display:block;max-width:100%;width:auto;max-height:560px;margin:auto;"
+            src="/studies/earth-2026-11-14/halo2a-earth.png"
+            alt="F / Halo 2: Anniversary · Cairo Station view (2014)"
+            loading="lazy"
+          ></a
+        >
+        <figcaption>
+          <strong>F / Halo 2: Anniversary · Cairo Station view (2014).</strong>
+          343 Industries / Microsoft; reproduced by Halopedia. Earth, the
+          orbital defence grid and Home Fleet. This later Anniversary reference
+          is kept separate from the original game’s appearance. Its blue limb,
+          cloud structure and warm settlement lights provide an inhabited-world
+          counterpoint to 02.6. The archived file does not provide capture
+          settings.
+          <a href="https://www.halopedia.org/Earth">Source and context</a>.
+        </figcaption>
+      </figure>
+      <figure>
+        <a href="/studies/earth-2026-11-14/halo2-earth.jpg"
+          ><img
+            class="comparison"
+            style="display:block;max-width:100%;width:auto;max-height:560px;margin:auto;"
+            src="/studies/earth-2026-11-14/halo2-earth.jpg"
+            alt="Earth and Luna through Cairo Station’s window in the Halo 2 announcement trailer"
+            loading="lazy"
+          ></a
+        >
+        <figcaption>
+          <strong>G / Halo 2 · announcement-trailer press image.</strong>
+          Bungie / Microsoft, archived by Halopedia from an official press kit.
+          Earth and Luna seen from Cairo Station in the announcement trailer.
+          This is prerelease marketing material, not a capture of the released
+          2004 campaign. Its luminous horizon and hot surface accents are useful
+          cinematic inspiration, with that distinction retained.
+          <a href="https://www.halopedia.org/File:H2_X02_Earth.jpg"
+            >Source and context</a
+          >.
+        </figcaption>
+      </figure>
+      <p>
+        The useful comparison is broader than saturation: X-COM exposes
+        geography as an interface, SC2 gives Earth a narrative state, while the
+        later references use reflection, atmosphere and signs of habitation to
+        compose a world. These are study interpretations, not claims about the
+        original artists’ intent. None changes the retained preference for a
+        restrained photographic appearance or selects a new direction.
+      </p>
+      <p>
+        <strong>Evidence limits:</strong>
+        the SC2 starbase capture’s exact port and the Mass Effect guide image’s
+        original build remain unidentified. The 3DO ending is provided as a
+        video reference rather than an inspected still. Promotional Halo imagery
+        is not evidence of released gameplay fidelity.
+        <a href="/studies/earth-2026-11-14/references-02-7.json"
+          >Asset provenance and preparation</a
+        >.
+      </p>
+
+      <p>
+        <strong>Research boundary:</strong>
+        the collected references are sufficient for the next synthesis. The
+        period-game search followed the named examples too literally and did not
+        establish a broad survey. That coverage gap is acknowledged and will not
+        be repaired in this cycle. It does not support a general claim about how
+        games of the era rendered Earth.
+      </p>
+    </details>
+    <details>
+      <summary id="02-8">
+        02.8 / What makes this planet feel like Earth?
+      </summary>
+      <p>
+        The references and sketches have brought us closer to an Earth that
+        could belong in Void Drift. They have also changed how we understand the
+        task. We began with actual Earth imagery as the material, but a faithful
+        image did not necessarily feel convincing in the game. The ocean could
+        look plastic, and adding atmosphere could not resolve a surface that
+        felt off. The question now concerns how these parts make a world
+        together.
+      </p>
+      <h4>What changed through the exploration</h4>
+      <p>
+        In <a href="#02-1">02.1–02.2</a>, the surface made it difficult to judge
+        whether the atmosphere belonged. Increasing colour intensity did not
+        help.
+        <a href="#02-3">02.3</a>
+        made another difficulty visible: even photographic Earth references
+        could have a blue that felt artificial. Scientific provenance alone
+        could not tell us which appearance would work.
+      </p>
+      <p>
+        The less saturated examples in <a href="#02-4">02.4</a> suggested an
+        “analog photographic” character. The brighter Natural Earth maps in
+        <a href="#02-5">02.5</a>
+        offered a different kind of value: graphic shapes and more detailed
+        seas. All nine authored variations in
+        <a href="#02-6">02.6</a>
+        were a substantial improvement over the originals. No single variation
+        was chosen, but together they showed that interpreting the references
+        could bring us closer to the desired feeling.
+      </p>
+      <p>
+        The game examples in <a href="#02-7">02.7</a> opened up the possibility
+        that simpler shapes could carry the planet’s identity. The collection is
+        too narrow to draw conclusions about a whole era of games. For this
+        study, it leaves a useful question: how much familiar geography does our
+        Earth need at flight scale, and what detail can give way to a clearer
+        composition?
+      </p>
+      <h4>Reading the planet as a whole</h4>
+      <p>
+        Earth’s identity may depend on a few familiar land shapes and the
+        relationships between land, water, clouds and air. That would leave room
+        to alter proportions and simplify detail while keeping it recognizable.
+        The evidence gives us a reason to explore this, but has not yet shown
+        how far we can go. The restrained colour preference remains useful; it
+        does not settle the shapes or the degree of simplification.
+      </p>
+      <p>
+        Separating the ground from clouds and atmosphere is a promising way to
+        work on those relationships. It could let the surface retain its
+        identity while weather and air give it depth. The earlier difficulty
+        still matters: the atmosphere’s fit has to be judged against a
+        convincing body. The successful 02.6 images combine these parts in one
+        image, so they do not yet show whether separating them will preserve
+        what worked.
+      </p>
+      <p>
+        Habitation adds another question. The night side needs some sign of
+        life; lights are the clearest possibility raised so far. How can they
+        suggest people living on this world at the scale of play? A separate
+        treatment for lights, alongside surface, weather and atmospheric light,
+        may help. The proposed four-layer arrangement is a way to think about
+        the parts, with its construction and final appearance still unresolved.
+      </p>
+      <h4>What this changes in 01</h4>
+      <p>
+        <strong>Scope amendment · 15 November 2026.</strong>
+        Earth is the first prototype for an Earth-like design language. It needs
+        to read as Earth in the arcade sense, with Void Drift’s visual language
+        shaping the depiction. The earlier emphasis on actual imagery and
+        preserved continental proportions had pulled the question towards
+        accuracy. That may help explain some of the exploration difficulties,
+        although this sequence cannot isolate their cause. The two questions in
+        <a href="#01">01</a>
+        now retain both the broader purpose and the concrete Earth prototype.
+      </p>
+      <p>
+        We have enough references to turn our attention to composition. What
+        remains open is how much simplification preserves Earth’s identity, what
+        makes its atmosphere belong, and how habitation reads after sunset.
+        Climate around 2100–2400 and restrained technology remain possible
+        influences. The intended outcome is still one Earth in Practice; other
+        Earth-like worlds can draw on what we learn here.
+      </p>
+    </details>
+    <h3 id="02-9">02.9 / How much shape does Earth need?</h3>
+    <p>
+      A familiar coastline may carry more identity than a field of terrain
+      detail. These sketches explore that possibility using H1 / Silver from
+      02.6 as a common starting point. It is an anchor for this comparison, not
+      a chosen winner from the earlier nine.
+    </p>
+    <p>
+      A retains the original detail. B softens terrain into broader painted
+      regions while keeping much of the coastline. C redraws the continents more
+      boldly, with larger openings and fewer small shapes. The question is
+      whether that economy helps Earth read in the game, or takes away too much
+      of its character as a world.
+    </p>
+    <h4>Finding · useful inspiration, unresolved design</h4>
+    <p>
+      None of the examples through 02.9 yet conveys an inhabited planet with an
+      atmosphere that belongs in Void Drift. The reference gathering and
+      sketches have been valuable, but improvement between isolated images has
+      not established progress towards that whole-game appearance. This does not
+      invalidate the earlier preferences or the learning from them.
+    </p>
+    <p>
+      02.8 helped expose the gap; 02.9 returned to adjusting a globe’s surface.
+      Putting that globe beside Mercury and Venus did not answer how it belongs
+      in the game as a whole. The comparison therefore remains here as evidence
+      of that limit, with no variant selected. Clouds and atmosphere baked into
+      the portraits also keep their relationship to the surface largely outside
+      the exploration.
+    </p>
+    <p>
+      The unresolved issue is the overall conception of an inhabited world in
+      Void Drift. Rendering choices have occupied the work before that
+      conception is clear enough to give them purpose. Further exploration may
+      take many steps; the number is not the concern. What needs to change is
+      what those steps help us understand. No next rendering treatment follows
+      from this finding.
+    </p>
+    <h4>Retained comparison</h4>
+    <div id="earth-029-comparison">
+      <figure>
+        <img
+          class="comparison"
+          src="/studies/earth-2026-11-14/02-9-comparison.png"
+          width="1056"
+          height="730"
+          alt="Original, painted and simplified Earth sketches beside Mercury and Venus"
+        >
+        <figcaption>
+          Retained 02.9 comparison · 15 November 2026, 1280px viewport.
+        </figcaption>
+      </figure>
+    </div>
+    <p>
+      The smaller rows put each sketch beside the current Practice Mercury and
+      Venus at 0.7 and 0.4 px/u. Earth uses the earlier r42u fixture, about 59px
+      and 34px across; its game size is still open. The enlarged row shows the
+      drawing choices that may disappear at those sizes.
+    </p>
+    <p>
+      B and C are generated interpretations of A. They share the requested
+      orientation, restrained palette and upper-left light, but clouds, tones
+      and geography also changed. This is a comparison of complete appearances,
+      not an isolated test of coastline detail. Clouds and air remain baked into
+      each image; habitation at night is still unexplored here.
+    </p>
+    <p>
+      Full-size sketches:
+      <a href="/studies/earth-2026-11-14/02-6-7.png">A / original</a>,
+      <a href="/studies/earth-2026-11-14/02-9-b.png">B / painted regions</a>,
+      <a href="/studies/earth-2026-11-14/02-9-c.png">C / bold shapes</a>.
+      <a href="/studies/earth-2026-11-14/references-02-9.json"
+        >Prompts and provenance</a
+      >.
+      <a href="/studies/earth-2026-11-14/02-9-comparison.png"
+        >Retained comparison · 15 November, 1280px viewport</a
+      >. The comparison is retained as a static record; its temporary renderer
+      has been retired.
+    </p>
+    <h3 id="02-10">02.10 / Interrupted; no design result</h3>
+    <p>
+      A scene experiment was started after tentative suggestions about using
+      existing planet bodies. It was interrupted before review. The study was
+      then declared failed and stopped. No appearance or implementation from
+      this attempt was accepted; its unfinished component has been removed.
+    </p>
+  </section>
+</StudyLayout>
+
+<style>
+.comparison {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.research-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-lg);
+  margin-block: var(--spacing-lg);
+}
+.research-grid figure {
+  margin: 0;
+}
+.reference-notes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-lg);
+  margin-block: var(--spacing-lg);
+}
+.reference-notes p {
+  font-size: var(--font-size-caption);
+}
+figcaption {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+  margin-top: var(--spacing-sm);
+}
+</style>

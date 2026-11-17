@@ -23,7 +23,7 @@ const accepts = (patch: Record<string, unknown>) =>
   HighScoreSubmissionSchema.safeParse({ ...submission, ...patch }).success;
 
 describe("leaderboard rows", () => {
-  it("excludes scores of earlier challenges", () => {
+  it("excludes scores of other rulesets", () => {
     expect(
       parseHighScores([score, { ...score, challenge: "arrival-1" }]),
     ).toEqual([score]);

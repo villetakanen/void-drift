@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-14",
+  "purpose": "02.2 replacement: select visual qualities from intact portraits before reconstructing an Earth renderer.",
+  "assets": [
+    {
+      "file": "nasa-apollo17.jpg",
+      "download": "https://www.nasa.gov/wp-content/uploads/2023/03/apollo_17_blue_marble_photo_dec_7_1972_as17-148-22727.jpg",
+      "credit": "NASA, Apollo 17, AS17-148-22727; 7 December 1972",
+      "estimatedDiscCenterAndRadiusPixels": [524, 530, 350],
+      "sha256": "54f3c4e02cc818e789ce80054d8fb9e55187bf63a13ee9d77edc10cc27ca6990"
+    },
+    {
+      "file": "nasa-epic-2015.png",
+      "download": "https://www.nasa.gov/wp-content/uploads/2023/03/187_1003705_americas_dxm.png",
+      "credit": "NASA / NOAA, DSCOVR EPIC; 6 July 2015",
+      "estimatedDiscCenterAndRadiusPixels": [525, 529, 417],
+      "sha256": "5b8e7e302085e1fd82332280133f49d821e54cc45117ae882350bd27a5c3dad8"
+    },
+    {
+      "file": "esa-rosetta.png",
+      "download": "https://assets.science.nasa.gov/content/dam/science/cds/apod/apod/2009/november/crescentearth_rosetta_big.png",
+      "credit": "ESA (MPS for OSIRIS Team), MPS/UPD/LAM/IAA/RSSD/INTA/UPM/DASP/IDA; November 2009",
+      "estimatedDiscCenterAndRadiusPixels": [680, 630, 520],
+      "sha256": "e6e15f4ec37ba8cdc3853e92f16ed500a264c44a611e9c10a4dcdb94a3b55e72"
+    }
+  ],
+  "display": "Full original frames drawn with uniform scale and translation only. No image filtering, colour correction, masking, source crop, artificial light or projection. All source files retained unchanged. Globe bounds manually estimated; Rosetta dark extent inferred from arc.",
+  "conditions": {
+    "canvas": "1056x730 logical pixels, black reference backdrop",
+    "enlargedEarthDiameter": 224,
+    "flightEarthDiameters": [58.8, 33.6],
+    "comparisonRadius": 42,
+    "flightScales": [0.7, 0.4],
+    "Mercury": "Production material r27, snapshot without advancing cached surface, shared upper-left hard-light",
+    "Venus": "Production material r40.327526, shared upper-left hard-light and atmosphere",
+    "EarthLighting": "Each source retains its own lighting, phase, weather and orientation. Not a common-Sun simulation.",
+    "limits": "No city-light target, motion, future geography or render implementation established. None selected."
+  }
+}

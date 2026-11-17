@@ -1,7 +1,9 @@
 import {
   type Camera,
   drawSunFields,
+  drawWorldHud,
   type FxPass,
+  type Planet,
   type Renderer,
 } from "@void-drift/core";
 import { BUILD_FLIGHT_SCALE, drawBuild } from "./build-renderer";
@@ -57,6 +59,32 @@ export type FlightLayerContexts = Record<
   CanvasRenderingContext2D
 >;
 
+/** Inclusive axis-aligned bounds in world units. */
+export interface BodyAppearanceBounds {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+}
+
+/** Runtime appearance data for one simulation planet's ordered composition. */
+export interface BodyAppearance {
+  worldBounds(frame: FlightFrame, planet: Planet): BodyAppearanceBounds;
+  drawWorld(
+    frame: FlightFrame,
+    ctx: CanvasRenderingContext2D,
+    planet: Planet,
+  ): void;
+  light?: {
+    bounds(frame: FlightFrame, planet: Planet): BodyAppearanceBounds;
+    draw(
+      frame: FlightFrame,
+      ctx: CanvasRenderingContext2D,
+      planet: Planet,
+    ): void;
+  };
+}
+
 /** What one in-flight frame is drawn from. */
 export interface FlightFrame {
   /** One context per layer; `world` is the renderer's own canvas. */
@@ -71,6 +99,8 @@ export interface FlightFrame {
   lightTime?: number;
   /** Extra emission stamped into the light surface, such as the countdown. */
   lightOverlay?: (ctx: CanvasRenderingContext2D, pass: FxPass) => void;
+  /** Prepared appearances keyed by validated full-system planet ordinal. */
+  bodyAppearances?: ReadonlyMap<number, BodyAppearance>;
 }
 
 export interface FlightPass {
@@ -86,7 +116,7 @@ export interface FlightPass {
   draw(frame: FlightFrame, ctx: CanvasRenderingContext2D): void;
 }
 
-/** The in-flight frame's passes, grouped by layer in stack order. Array order is draw order. */
+/** The in-flight frame's ordered passes. Each pass names its own layer context. */
 export const FLIGHT_PASSES: readonly FlightPass[] = [
   {
     id: "void",
@@ -140,14 +170,52 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
       }),
   },
   {
+    id: "world-hud",
+    name: "World HUD",
+    layer: "world",
+    space: "screen",
+    draws: "Every planet's orbit, gravity boundary and name",
+    source: "packages/core/src/lib/assets/world-hud.ts",
+    draw: ({ sim, camera }, ctx) =>
+      drawWorldHud(ctx, camera, sim.star, sim.planets),
+  },
+  {
     id: "planets",
     name: "Planets",
     layer: "world",
     space: "world",
-    draws: "Each planet with its orbit path and influence ring",
-    source: "packages/core/src/lib/assets/planet.ts",
-    draw: ({ renderer, sim }) => {
-      for (const planet of sim.planets) renderer.drawPlanet(planet);
+    draws: "Each planet's prepared body composition, or its stock body",
+    source: "packages/mode-a/src/lib/flight-frame.ts",
+    draw: (frame, ctx) => {
+      const { renderer, sim, bodyAppearances, camera } = frame;
+      for (const planet of sim.planets) {
+        const appearance = bodyAppearanceFor(bodyAppearances, planet);
+        if (appearance) {
+          const bounds = appearance.worldBounds(frame, planet);
+          if (boundsInView(camera, bounds))
+            appearance.drawWorld(frame, ctx, planet);
+        } else if (
+          planetBodyInView(camera, planet, stockPlanetOutlineHalfWidth(planet))
+        )
+          renderer.drawPlanet(planet);
+      }
+    },
+  },
+  {
+    id: "body-light",
+    name: "Body light",
+    layer: "lfx",
+    space: "world",
+    draws: "Each prepared body's sun-facing light stamp",
+    source: "packages/mode-a/src/lib/flight-frame.ts",
+    draw: (frame, ctx) => {
+      const { camera, sim, bodyAppearances } = frame;
+      for (const planet of sim.planets) {
+        const light = bodyAppearanceFor(bodyAppearances, planet)?.light;
+        if (!light) continue;
+        if (boundsInView(camera, light.bounds(frame, planet)))
+          light.draw(frame, ctx, planet);
+      }
     },
   },
   {
@@ -251,6 +319,14 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
   },
 ];
 
+function bodyAppearanceFor(
+  appearances: ReadonlyMap<number, BodyAppearance> | undefined,
+  planet: Planet,
+) {
+  const position = planet.systemPosition;
+  return position === undefined ? undefined : appearances?.get(position);
+}
+
 function resolutionOf(id: FlightLayerId) {
   return FLIGHT_LAYERS.find((layer) => layer.id === id)?.resolution ?? 1;
 }
@@ -284,6 +360,8 @@ export function clearFlightLayer(ctx: CanvasRenderingContext2D) {
 }
 
 export interface FlightFrameOptions {
+  /** A configured Lab scene may substitute painters while retaining layer/camera handling. */
+  passes?: readonly FlightPass[];
   /** Which passes draw; every pass when omitted. */
   include?: (pass: FlightPass) => boolean;
   /** Receives each drawn pass and its draw time in milliseconds. */
@@ -296,12 +374,12 @@ export interface FlightFrameOptions {
  */
 export function drawFlightFrame(
   frame: FlightFrame,
-  { include, observe }: FlightFrameOptions = {},
+  { include, observe, passes = FLIGHT_PASSES }: FlightFrameOptions = {},
 ) {
   // World clears itself with the Void pass; the layers above start empty.
   clearFlightLayer(frame.layers.fx);
   clearFlightLayer(frame.layers.lfx);
-  for (const pass of FLIGHT_PASSES) {
+  for (const pass of passes) {
     if (include && !include(pass)) continue;
     const ctx = frame.layers[pass.layer];
     const resolution = resolutionOf(pass.layer);
@@ -313,4 +391,41 @@ export function drawFlightFrame(
     ctx.restore();
     observe?.(pass, performance.now() - start);
   }
+}
+
+/** Body bounds only: orbit/HUD drawing retains its independent visibility. */
+function planetBodyInView(camera: Camera, planet: Planet, margin = 0) {
+  const view = camera.getViewRect();
+  const radius = planet.radius + margin;
+  return (
+    planet.pos.x + radius >= view.x &&
+    planet.pos.x - radius <= view.x + view.width &&
+    planet.pos.y + radius >= view.y &&
+    planet.pos.y - radius <= view.y + view.height
+  );
+}
+
+/** Validates inclusive custom world bounds and culls only wholly outside boxes. */
+function boundsInView(camera: Camera, bounds: BodyAppearanceBounds) {
+  if (
+    !Number.isFinite(bounds.left) ||
+    !Number.isFinite(bounds.top) ||
+    !Number.isFinite(bounds.right) ||
+    !Number.isFinite(bounds.bottom) ||
+    bounds.left > bounds.right ||
+    bounds.top > bounds.bottom
+  )
+    throw new RangeError("Body appearance bounds must be finite and ordered");
+  const view = camera.getViewRect();
+  return (
+    bounds.right >= view.x &&
+    bounds.left <= view.x + view.width &&
+    bounds.bottom >= view.y &&
+    bounds.top <= view.y + view.height
+  );
+}
+
+/** Half-width of the stock disc outline, in world units. */
+function stockPlanetOutlineHalfWidth(planet: Planet) {
+  return Math.max(1, planet.radius * 0.06) / 2;
 }

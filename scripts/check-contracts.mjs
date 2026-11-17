@@ -177,7 +177,6 @@ const earlierDesignSystemAddresses = [
   "/lab/tokens",
   "/lab/typography",
   "/lab/surfaces",
-  "/lab/inputs",
   "/lab/logomark",
   "/lab/graphs",
   "/lab/instrument-parts",

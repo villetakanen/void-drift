@@ -284,7 +284,7 @@ test("Experimental On completes a stable ship run without submitting a score", a
   await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   await page.getByRole("button", { name: "Survival", exact: true }).click();
   await waitForFlightPhase(page, "playing");
-  const predicted = competitionFlightResult("wasp", 158);
+  const predicted = competitionFlightResult("wasp", 158, "On");
   await page.clock.runFor((predicted.ticks * 1000) / 60 + 40);
   const result = page.getByRole("dialog", { name: "Run complete" });
   await expect(result).toBeVisible();

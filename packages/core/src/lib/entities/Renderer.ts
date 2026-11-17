@@ -9,7 +9,6 @@ import {
 import { getParticleAlpha, type Particle } from "../effects/particles";
 import type { Camera } from "../physics/Camera";
 import type { GameObject, Planet, Star } from "../physics/Physics";
-import { getPlanetInfluenceRadius } from "../physics/Physics";
 import { COLOR } from "../ui/colors";
 import { forEachStar, type WorldRect } from "./starfield";
 
@@ -156,43 +155,21 @@ export class Renderer {
     );
   }
 
-  drawPlanet(planet: Planet) {
-    // Draw Orbit Path (Faint)
-    this.ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
-    this.ctx.lineWidth = 1;
-    this.ctx.beginPath();
-    this.ctx.arc(
-      planet.orbitCenter.x,
-      planet.orbitCenter.y,
-      planet.orbitRadius,
-      0,
-      Math.PI * 2,
-    );
-    this.ctx.stroke();
-
-    this.renderWrapped(
-      planet.pos.x,
-      planet.pos.y,
-      planet.radius,
-      (offX, offY) => {
-        drawPlanet(this.ctx, {
-          x: planet.pos.x + offX,
-          y: planet.pos.y + offY,
-          radius: planet.radius,
-          color: planet.color,
-          hasRing: planet.hasRing,
-        });
-      },
-    );
-
-    const gravityRadius = getPlanetInfluenceRadius(planet);
-    this.ctx.strokeStyle = "rgba(120, 220, 255, 0.2)";
-    this.ctx.lineWidth = 1;
-    this.ctx.setLineDash([6, 6]);
-    this.ctx.beginPath();
-    this.ctx.arc(planet.pos.x, planet.pos.y, gravityRadius, 0, Math.PI * 2);
-    this.ctx.stroke();
-    this.ctx.setLineDash([]);
+  drawPlanet(planet: Planet, { body = true }: { body?: boolean } = {}) {
+    if (body)
+      this.renderWrapped(
+        planet.pos.x,
+        planet.pos.y,
+        planet.radius,
+        (offX, offY) => {
+          drawPlanet(this.ctx, {
+            x: planet.pos.x + offX,
+            y: planet.pos.y + offY,
+            radius: planet.radius,
+            color: planet.color,
+          });
+        },
+      );
   }
 
   drawDamageFlash(flash: DamageFlash) {

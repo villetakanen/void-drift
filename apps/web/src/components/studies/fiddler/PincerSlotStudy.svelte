@@ -114,7 +114,6 @@ $effect(() => {
 <div class="toolbar">
   <Toggle
     label="Pincer view"
-    compact
     options={["Slot editor", "Fitted view"]}
     bind:value={mode}
   />
@@ -140,7 +139,6 @@ $effect(() => {
   <div class="adjustments">
     <Toggle
       label="Selected pincer slot"
-      compact
       options={PINCER_SLOTS.map((slot) => slot.short)}
       bind:value={
         () => descriptor.short,
@@ -192,7 +190,6 @@ $effect(() => {
       <p>{descriptor.short} mounting</p>
       <Toggle
         label={`${descriptor.short} mounting layer`}
-        compact
         options={["Above", "Below"]}
         bind:value={
           () => draft.slots[selected].layer,

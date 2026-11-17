@@ -18,6 +18,60 @@ for a specific research question, rather than routinely loading earlier studies 
 factory reports. Apply the specification's cycle-zero authority boundary when using it.
 Create a cycle-specific slug; if reusing a URL is necessary, archive the old page first.
 
+## Moving between parts
+
+Read the page and say which part is active before working.
+
+| Move | Needs |
+|---|---|
+| 01 to 02 | The question test heard; the designer agrees the question or says to explore. |
+| 02 to 03 | The designer accepts a conclusion, or an independently usable result. |
+| 02 to 01 | The designer accepts an example built on an amended question. |
+| 03 to 04 | Every blocker to the intended delivery named. |
+| 03 to 02 | A named question that needs more design evidence. |
+| 04 to 03 | A slice that cannot be sized without a readiness answer. |
+| Any to an end state | The designer's decision. |
+
+When an independently usable result has gone through 03 and 04, return to 02 for
+the rest of the scope.
+
+### Amend the question
+
+The question is known to be wrong when:
+
+- a retained observation contradicts something section 01 holds fixed
+- a hypothesis in section 01 has failed
+- the designer restates the purpose
+
+Build the next example on the question as it would become. Say in one line what
+it sets aside from section 01 and what the question becomes. Leave section 01 as
+it is until the designer accepts the example. If the designer rejects it, discard
+it like any rejected proposal and continue on the question as written.
+
+The question may be wrong when:
+
+- two replacements in a row are rejected and no observation is retained
+- an open item cannot be shown in a built example and judged from it
+
+Say so in one line, offer to narrow the question or stop, and keep proposing on
+the current question.
+
+One rejected proposal is neither case.
+
+If the designer restates the subject so that the study would settle a different
+object or decision, or change a different thing in the game or the Lab, it is a
+new study. Build nothing. Propose ending this one as stopped or ruled out; the new
+question starts its own cycle once the designer agrees.
+
+When the designer accepts an example built on an amended question:
+
+1. Rewrite section 01 with the current question, within its length target.
+2. Have the question test run again and stamp the new result.
+3. Mark each retained exploration step as evidence for the new question or as
+   outside it.
+4. Open that example's step with one dated line: what changed in the question and
+   why.
+
 ## 01 / Develop the problem
 
 Synthesize supplied intent and relevant knowledge into a provisional purpose,
@@ -63,7 +117,13 @@ established references and useful current-cycle agreements; carry out supported
 conclusions and remaining uncertainties. The guide owns concrete proposals, feedback,
 retention, focus protection and the recommendation to finish independently usable results.
 
-Use the Motion instrument for interactive motion investigations, with each instance
+For questions that require observing FX or an in-game scenario during flight, use
+[flight-scene-study](../flight-scene-study/SKILL.md): mount the actual Flight scene
+instrument with fixed burns, its timeline and study options in its burger pane.
+Studies never add manual piloting. Verify that the configured scenarios exercise
+the interaction being judged before presenting them.
+
+Use the Motion instrument for path and measurement investigations, with each instance
 configured for its comparison and the variables the designer needs to adjust.
 A study may embed several independent instances. Read `docs/specs/lab/motion-instrument/spec.md`;
 record missing instrument capabilities and proposed extensions in the design study.
@@ -72,8 +132,9 @@ accepts the requirement. Reuse production simulation code for experiments.
 
 For recorded findings, retain written conclusions and suitable static or recorded
 evidence of the observed results. Instruments use current production simulation code;
-later production changes may alter or invalidate old examples. The closing procedure
-below governs replacing temporary interactive examples and retiring their code.
+later production changes may alter or invalidate old examples. The exploration
+guide replaces each earlier step's live example with a capture when the study advances;
+the closing procedure below retires what is still live at the end.
 
 ## 03 / Assess readiness
 

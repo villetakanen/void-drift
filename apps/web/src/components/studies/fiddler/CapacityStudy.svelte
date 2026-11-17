@@ -13,13 +13,11 @@ const cruiserMounts = buildMounts(defaultLoadout("corvette"));
 <div class="controls">
   <Toggle
     {label}
-    compact
     options={["Fitted", "Footprints", "Hull"]}
     bind:value={view}
   />
   <Toggle
     label="Fiddler hull size"
-    compact
     options={["Draft", "Hull +35%"]}
     bind:value={size}
   />

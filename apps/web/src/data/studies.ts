@@ -3,17 +3,81 @@ import { z } from "astro/zod";
 export const studySchema = z.object({
   slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   title: z.string().min(1),
-  status: z.enum(["open", "accepted", "ruled-out", "stopped"]),
+  status: z.enum(["open", "blocked", "accepted", "ruled-out", "stopped"]),
   phase: z.enum(["problem", "exploration", "readiness", "scope"]),
   question: z.string().min(1),
 });
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
   {
+    slug: "plasma-projector-fitting-2026-11-17",
+    title: "Plasma Projector · the fitting",
+    status: "open",
+    phase: "exploration",
+    question:
+      "What physical form gives one heavy plasma weapon a distinctive presence, exposed or partly buried, and believable origins for its central strike and paired exhausts?",
+  },
+  {
+    slug: "maintenance-drive-2026-11-17",
+    title: "Maintenance drive",
+    status: "open",
+    phase: "exploration",
+    question:
+      "What can change within the ion engines’ shared form and plume, and what name, to make a drive at a third of a light ion’s thrust read as the smallest ion engine rather than a stabilizer?",
+  },
+  {
+    slug: "plasma-projector-2026-11-16",
+    title: "Plasma Projector",
+    status: "blocked",
+    phase: "exploration",
+    question:
+      "What visual identity makes the Plasma Projector’s loading, close eruption and continuously thrusting residual vents read as one distinctive heavy weapon in the plasma family?",
+  },
+  {
+    slug: "rock-atmospheres-2026-11-15",
+    title: "Air around rock worlds",
+    status: "accepted",
+    phase: "scope",
+    question:
+      "What atmospheric envelope makes the existing rotating rock worlds feel surrounded by air and gives a pilot a readable choice when skimming their edge?",
+  },
+  {
+    slug: "inhabited-worlds-2026-11-15",
+    title: "Inhabited worlds · Earth prototype",
+    status: "stopped",
+    phase: "exploration",
+    question:
+      "What visual treatment makes an inhabited world with an atmosphere convincing at flight scale, using recognizable Earth to establish a language for fictional worlds?",
+  },
+  {
+    slug: "earth-2026-11-14",
+    title: "Earth-like planets",
+    status: "stopped",
+    phase: "exploration",
+    question:
+      "What visual treatment makes an inhabited Earth-like planet feel like a convincing world beside Mercury and Venus at flight scale, using Earth as the first prototype?",
+  },
+  {
+    slug: "venus-2026-11-13",
+    title: "Venus-like planets",
+    status: "open",
+    phase: "scope",
+    question:
+      "What cloud, light and motion treatment gives a Venus-like planet a dense, enveloped character beside Mercury, while keeping its body readable at flight scale?",
+  },
+  {
+    slug: "mercury-2026-11-12",
+    title: "Rock planets in the charging field · v0.1",
+    status: "open",
+    phase: "scope",
+    question:
+      "What visual language makes airless rock planets of different sizes feel like barren worlds exposed to a nearby star, while keeping their surfaces and boundaries readable inside its charging field?",
+  },
+  {
     slug: "plasma-projector-2026-11-11",
     title: "Plasma Projector",
-    status: "open",
-    phase: "problem",
+    status: "stopped",
+    phase: "exploration",
     question:
       "How should a plasma projector gather and release a close-range burst so that approaching, devastating a target and escaping becomes a distinct flying manoeuvre?",
   },

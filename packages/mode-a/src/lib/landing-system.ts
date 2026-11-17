@@ -46,7 +46,6 @@ export class LandingSystem {
         mass: 0,
         color: type.color,
         type: type.id,
-        hasRing: false,
       };
     });
   }

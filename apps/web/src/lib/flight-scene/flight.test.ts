@@ -1,6 +1,9 @@
+import { buildStats } from "@void-drift/mode-a";
 import { describe, expect, it } from "vitest";
+import { ROCK_ATMOSPHERE_SCENE } from "../../components/studies/rock-atmospheres/fixture";
 import { FlightSceneDocumentSchema } from "./config";
 import { FlightRun } from "./flight";
+import { atmosphereSample } from "./planet";
 import { STARTER_FLIGHT_SCENE } from "./starter";
 
 const doc = FlightSceneDocumentSchema.parse(STARTER_FLIGHT_SCENE);
@@ -33,6 +36,12 @@ describe("flight scene document", () => {
         targets: Array.from({ length: 10000 }, () => ({ x: 0, y: 0 })),
       }),
     ).toBe(false);
+    expect(accepts({ impulses: [{ tick: 0, backwardMomentum: 10 }] })).toBe(
+      false,
+    );
+    expect(accepts({ impulses: [{ tick: 10, backwardMomentum: -1 }] })).toBe(
+      false,
+    );
     expect(accepts({ start: { x: 0, y: 0 } })).toBe(false);
   });
 });
@@ -45,5 +54,111 @@ describe("flight run", () => {
     const fresh = new FlightRun(doc, "weave");
     fresh.seek(300);
     expect(state(jumped)).toEqual(state(fresh));
+  });
+  it("applies a staged backward impulse once and reconstructs it on seek", () => {
+    const base = FlightSceneDocumentSchema.parse({
+      ...STARTER_FLIGHT_SCENE,
+      start: { x: 960, y: -360, rotation: 0 },
+    });
+    const momentum = buildStats(base.loadout).mass * 70;
+    const kickedDoc = FlightSceneDocumentSchema.parse({
+      ...base,
+      impulses: [{ tick: 101, backwardMomentum: momentum }],
+    });
+    const reference = new FlightRun(base, "course");
+    const kicked = new FlightRun(kickedDoc, "course");
+    reference.seek(100);
+    kicked.seek(100);
+    expect(state(kicked)).toEqual(state(reference));
+    reference.seek(101);
+    kicked.seek(101);
+    const angle = reference.sim.ship.rotation;
+    const dx = kicked.sim.ship.vel.x - reference.sim.ship.vel.x;
+    const dy = kicked.sim.ship.vel.y - reference.sim.ship.vel.y;
+    expect(dx * Math.cos(angle) + dy * Math.sin(angle)).toBeCloseTo(-70, 8);
+    expect(-dx * Math.sin(angle) + dy * Math.cos(angle)).toBeCloseTo(0, 8);
+    expect(kicked.sim.ship.rotation).toBe(reference.sim.ship.rotation);
+    const released = state(kicked);
+    kicked.seek(101);
+    expect(state(kicked)).toEqual(released);
+    kicked.seek(180);
+    kicked.seek(101);
+    expect(state(kicked)).toEqual(released);
+  });
+});
+
+describe("staged planet replay", () => {
+  const planetDoc = ROCK_ATMOSPHERE_SCENE;
+  it("reconstructs drag on backward seek without applying it again on inspection", () => {
+    const run = new FlightRun(planetDoc, "course");
+    run.seek(180);
+    const end = state(run);
+    run.seek(180);
+    expect(state(run)).toEqual(end);
+    run.seek(15);
+    run.seek(180);
+    expect(state(run)).toEqual(end);
+    const bareDoc = FlightSceneDocumentSchema.parse({
+      ...planetDoc,
+      planet: { reference: "practice-venus" },
+    });
+    const bare = new FlightRun(bareDoc, "course");
+    bare.seek(180);
+    expect(
+      Math.hypot(
+        run.sim.ship.vel.x - bare.sim.ship.vel.x,
+        run.sim.ship.vel.y - bare.sim.ship.vel.y,
+      ),
+    ).toBeGreaterThan(1);
+    const fresh = new FlightRun(planetDoc, "course");
+    fresh.seek(180);
+    expect(state(run)).toEqual(state(fresh));
+  });
+  it("the study burns enter and leave the air without solid contact", () => {
+    const depth = planetDoc.planet?.atmosphere?.depth;
+    if (depth === undefined) throw new Error("Study atmosphere missing");
+    for (const burn of ["course", "turn", "weave"] as const) {
+      const run = new FlightRun(planetDoc, burn);
+      let entered = false,
+        exited = false;
+      for (let tick = 1; tick <= 840; tick++) {
+        run.advance();
+        const sample = atmosphereSample(
+          run.sim.ship,
+          run.sim.planets[0],
+          depth,
+        );
+        if (sample.density > 0) entered = true;
+        else if (entered) exited = true;
+        expect(sample.clearance).toBeGreaterThan(0);
+        expect(run.sim.state.resources.hull).toBe(100);
+        if (tick === planetDoc.opening.tick)
+          expect(sample.density).toBeGreaterThan(0);
+      }
+      expect(entered).toBe(true);
+      expect(exited).toBe(true);
+    }
+  });
+  it("refuses invalid or conflicting staging instead of silently dropping targets", () => {
+    for (const patch of [
+      {
+        planet: {
+          reference: "practice-venus",
+          atmosphere: { depth: -1, dragRate: 1 },
+        },
+      },
+      {
+        planet: {
+          reference: "practice-venus",
+          atmosphere: { depth: 10, dragRate: -1 },
+        },
+      },
+      { targets: [{ x: 0, y: 0 }] },
+      { held: { distance: 140 } },
+      { start: { x: 0, y: 0, rotation: 0, velocity: { x: Infinity, y: 0 } } },
+    ])
+      expect(
+        FlightSceneDocumentSchema.safeParse({ ...planetDoc, ...patch }).success,
+      ).toBe(false);
   });
 });

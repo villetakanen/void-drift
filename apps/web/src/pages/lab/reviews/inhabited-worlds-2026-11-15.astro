@@ -1,0 +1,94 @@
+---
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+---
+
+<StudyLayout>
+  <section>
+    <h1>Inhabited worlds · question test</h1>
+    <p>
+      15 November 2026. Independent, clean-context, read-only review of the
+      <a href="/lab/studies/inhabited-worlds-2026-11-15">opening</a>, registry,
+      study contract and relevant specifications and code.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>Result</th>
+          <th>Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>One subject</td>
+          <td>Pass</td>
+          <td>
+            One visual language for inhabited atmospheric worlds; Earth and
+            fictional geography are instances. Mercury and Venus own different
+            treatments and serve as current context.
+          </td>
+        </tr>
+        <tr>
+          <td>Grounded</td>
+          <td>Pass with findings</td>
+          <td>
+            Art direction, controls, gravity and contact have standing contracts
+            and implementation. Clarify which contact behaviour and current
+            scene baseline remain fixed.
+          </td>
+        </tr>
+        <tr>
+          <td>Consequence</td>
+          <td>Pass</td>
+          <td>
+            One composed flight-scale Lab demonstration changes; production
+            integration and atmospheric rules are adjacent.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Findings and responses</h2>
+    <p>
+      <strong>Contact:</strong>
+      the gravity contract specifies bounce and hull damage; Practice holds hull
+      full. Section 01 now fixes solid-body contact motion rather than implying
+      one damage rule across modes. Evidence:
+      <code>docs/specs/game/world/gravity-field/spec.md</code>,
+      <code>docs/specs/game/test-flight/spec.md</code>,
+      <code>packages/core/src/lib/physics/Physics.ts</code>.
+    </p>
+    <p>
+      <strong>Baseline:</strong>
+      named Mercury and Venus materials belong to Practice. Section 01 now names
+      Practice G7, Mercury, Venus and starter Wasp. Evidence:
+      <code>docs/specs/game/world/planets/spec.md</code>
+      and
+      <code>apps/web/src/components/FlightDeck.svelte</code>. Both corrections
+      were made after review and were not retested.
+    </p>
+    <h2>Other grounding and limits</h2>
+    <p>
+      <code>docs/design.md</code>
+      supports economical forms and distinct material languages. The controls
+      contract and <code>packages/core/src/lib/entities/Input.ts</code>
+      establish input; the gravity contract and Physics implementation establish
+      summed mass-well pulls and cut-off. The planet contract explicitly gives
+      Venus's atmosphere no collision, drag or damage region.
+    </p>
+    <p>
+      The registry was checked for overlap. No stopped Earth page, review,
+      evidence, reference, sketch or asset was read; only registry metadata was
+      used for the ownership check. Browser rendering, visual quality, gameplay,
+      future feasibility and performance were not checked. This is a question
+      test, not design acceptance.
+    </p>
+  </section>
+</StudyLayout>
+<style>
+th,
+td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.6rem 1rem 0.6rem 0;
+}
+</style>

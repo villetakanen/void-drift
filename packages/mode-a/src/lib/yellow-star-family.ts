@@ -1,4 +1,9 @@
-import { EnergyFieldSchema, massWellReach, type Star } from "@void-drift/core";
+import {
+  EnergyFieldSchema,
+  massWellReach,
+  type Star,
+  StarWorldHudIdentitySchema,
+} from "@void-drift/core";
 import type { GravityTuning } from "./schemas/gravity";
 
 export const YELLOW_FAMILY_RADIUS = {
@@ -43,7 +48,10 @@ export function applyYellowFamilyProfile(
   star.massWell = { mass, cutoff: tuning.cutoff, falloff: tuning.falloff };
   star.influenceRadius = massWellReach(mass, tuning.cutoff, tuning.falloff);
   star.appearance = "yellow-family";
-  star.designation = `G${yellowFamilyNumber(radius)}`;
+  star.denomination = StarWorldHudIdentitySchema.parse({
+    denomination: `G${yellowFamilyNumber(radius)}`,
+  }).denomination;
+  star.designation = star.denomination;
   star.collectionField = EnergyFieldSchema.parse({
     reach: referenceGravityReach * scale,
     shoulder: 55 * scale,

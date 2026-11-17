@@ -1,0 +1,72 @@
+---
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+---
+
+<StudyLayout>
+  <section>
+    <h1>Venus-like planets — question test</h1>
+    <p>
+      13 November 2026. Independent, clean-context, read-only review of the
+      <a href="/lab/studies/venus-2026-11-13">study opening</a>, registry, study
+      contract and relevant implementation.
+    </p>
+    <p>
+      <strong>One subject — Pass.</strong>
+      Cloud, light and motion are facets of one Venus-like body, inspectable
+      together. The open Mercury study concerns airless rock; this cycle uses
+      implemented Mercury as a comparison and does not reopen its design. No
+      other registry question owns this visual decision.
+    </p>
+    <p>
+      <strong>Grounded — Pass.</strong>
+      Fixed art direction and Practice references have specification and code
+      support. Open properties can be exposed in a built visual example;
+      blank-disc and luminous-energy readings are explicitly hypotheses.
+    </p>
+    <p>
+      <strong>Consequence — Pass.</strong>
+      The result is one reusable Venus-like planet drawing demonstrated in the
+      Lab. Placement of a named Venus in Practice remains a later decision.
+    </p>
+    <h2>Evidence and findings</h2>
+    <p>
+      No substantive findings required correction. The opening was retained.
+    </p>
+    <ul>
+      <li>
+        <code>docs/design.md</code>, art direction: economical forms, convincing
+        material and composed light for natural bodies.
+      </li>
+      <li>
+        <code>docs/specs/game/world/planets/spec.md</code>, Mercury contract;
+        <code>packages/mode-a/src/lib/flight-frame.ts</code>, simulation-timed
+        spin and Sun-facing light;
+        <code>apps/web/src/components/FlightDeck.svelte</code>, Practice asset
+        loading and rendering.
+      </li>
+      <li>
+        <code>docs/specs/game/test-flight/spec.md</code>
+        and
+        <code>docs/specs/game/world/star/spec.md</code>, G7 reference;
+        <code>packages/mode-a/src/lib/simulation.ts</code>, Practice Sun and
+        Mercury setup.
+      </li>
+      <li>
+        Planet and gravity-field specifications plus
+        <code>packages/core/src/lib/physics/Physics.ts</code>: orbital motion,
+        planetary gravity and surface response.
+      </li>
+      <li>
+        <code>apps/web/src/data/studies.ts</code>: complete registry checked for
+        ownership.
+      </li>
+    </ul>
+    <h2>Limits</h2>
+    <p>
+      The reviewer did not check browser rendering, runtime asset loading,
+      keyboard operation, viewport behaviour, visual success, gameplay feel,
+      physical accuracy, implementation feasibility or performance. This is a
+      question test, not a whole-study evaluation or design acceptance.
+    </p>
+  </section>
+</StudyLayout>

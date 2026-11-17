@@ -32,6 +32,7 @@ function toDocument(
 ): FlightSceneDocument {
   return {
     loadout: config.loadout,
+    impulses: [],
     start: config.start,
     targets: config.targets,
     held:

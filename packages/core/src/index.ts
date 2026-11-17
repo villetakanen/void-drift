@@ -1,10 +1,21 @@
+export * from "./lib/assets/cloud-body";
 export * from "./lib/assets/death-icons";
 export * from "./lib/assets/planet";
 export * from "./lib/assets/resource-bar";
+export * from "./lib/assets/rock-body";
 // Assets
 export * from "./lib/assets/ship";
+export * from "./lib/assets/spherical-surface";
 export * from "./lib/assets/star";
+export * from "./lib/assets/strip-spherical-surface";
 export * from "./lib/assets/sun-fields";
+export {
+  drawWorldGravity,
+  drawWorldHud,
+  drawWorldLabel,
+  drawWorldOrbit,
+  worldHudUserUnitsPerCssPixel,
+} from "./lib/assets/world-hud";
 export * from "./lib/config";
 export * from "./lib/effects/arcade-fx";
 // Svelte Components
@@ -22,6 +33,7 @@ export * from "./lib/physics/Camera";
 export * from "./lib/physics/Physics";
 export * from "./lib/physics/planets";
 export * from "./lib/schemas/common";
+export * from "./lib/schemas/rock-body-lighting";
 export * from "./lib/schemas/sun";
 export * from "./lib/solar";
 // UI Utilities

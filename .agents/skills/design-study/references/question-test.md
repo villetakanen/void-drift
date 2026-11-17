@@ -35,9 +35,35 @@ proceeds after hearing a fail. An override is recorded as such, never as a pass.
 
 - Tell the designer the result. A fail is heard, not a gate: the designer decides
   whether to repair the question, narrow it, or proceed.
-- Answer each finding in section 01: correct it, or decline it with a reason. Keep
-  the opening within its length target; a correction replaces words, and scope lists
-  that will not fit go on the review page.
-- A corrected section need not be run again. Say on the page whether it was.
-- Stamp the three results at the end of section 01, dated. Put the full result, with
-  findings and what was not checked, at `/lab/reviews/<study-slug>` and link it.
+- Answer each finding in section 01: correct it, or decline it. Keep the opening
+  within its length target; a correction replaces words, and a scope list that will
+  not fit goes in a compact list below the opening. Give the reason for a declined
+  finding to the designer in chat.
+- A corrected section need not be run again, unless the question was amended during
+  exploration.
+- Stamp the result at the end of section 01 in the form below. The rest of the
+  result stays in chat. Create no review page and link nothing.
+
+## The stamp
+
+```markdown
+<details open>
+<summary>Question test · 16 November 2026</summary>
+
+| Metric      | Result             | Reason |
+| ----------- | ------------------ | ------ |
+| One subject | Pass               | ...    |
+| Grounded    | Pass with findings | ...    |
+| Consequence | Pass               | ...    |
+
+Corrected after the test, not rerun.
+
+</details>
+```
+
+- Each reason is the reviewer's, copied unchanged. Add no commentary.
+- The last line is one of: "Not corrected.", "Corrected after the test, not rerun.",
+  "Corrected and rerun.", "Overridden by the designer."
+- Remove `open` when the study moves to part 02.
+- A rerun replaces the block; the page holds one.
+- Where the page is not Markdown, write the same block in the page's markup.

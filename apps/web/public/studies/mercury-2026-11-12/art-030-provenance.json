@@ -1,0 +1,23 @@
+{
+  "created": "2026-11-12",
+  "method": "Built-in image_gen edit",
+  "source": "art-029-highlands.png",
+  "output": "art-030-neutral.png",
+  "prompt": "Edit the provided original rocky planet concept into a neutral diffuse material reference for a game-lighting experiment. Preserve the same circular silhouette, exact large charcoal plain shape lower-left, pale highlands, branching pale central mark, all material placement and muted stone colours. Remove only the broad directional/global illumination: no bright left side, no dark right hemisphere, no cast shadow, no terminator, no edge darkening, no rim light. Give the WHOLE visible circular disc even neutral diffuse illumination while keeping local material value differences and restrained small-scale rock texture. This must still depict the same sphere's projected surface, NOT an equirectangular map. Transparent background, preserve transparency. No new craters, no text, no stars. It is an albedo-like study image, not a finished shaded planet.",
+  "limits": "Approximate neutralization for an illumination-direction experiment; painted local relief remains. Not measured albedo or a recovered normal map.",
+  "comparison": "Same edited material and analytic light field: fixed-left multiplication; Sun-facing multiplication on World; Sun-facing grey field on real LFX hard-light via FlightLayers. FX empty.",
+  "lighting": {
+    "fieldMin": 0.29,
+    "fieldMax": 0.65,
+    "curve": "0.29 + 0.36 * sqrt(max(0, normal dot light))",
+    "multiplication": "material * 2 * field",
+    "lfx": "field * 255 as grey, clipped to body; production CSS hard-light",
+    "lightViewComponent": 0.475
+  },
+  "fixtures": {
+    "radius": 45,
+    "starDistance": 220,
+    "cameraScale": 0.6,
+    "detailDiameter": 81
+  }
+}

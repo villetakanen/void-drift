@@ -7,8 +7,8 @@ drawn through the [render contract](../../game/render/spec.md)'s layers.
 
 ## Context
 
-A study about a ship, its effects or its weapons has to show the thing in
-flight. The Flight scene instrument is the shared way to do that: one ship
+When a study's question requires observing FX or an in-game scenario during
+flight, the Flight scene instrument is the shared way to do that: one ship
 flies one of the Motion instrument's fixed burns through the production
 simulation, and the result is drawn through the game's own layers and frame
 passes, so a study judges what play would show. It shows one ship; a study that
@@ -27,11 +27,27 @@ an agent-supplied document; the starter is `STARTER_FLIGHT_SCENE` in
 | Field     | Meaning                                                                                                          |
 | --------- | ---------------------------------------------------------------------------------------------------------------- |
 | `loadout` | The ship: a game `LoadoutSchema` loadout (`packages/mode-a`).                                                    |
-| `start`   | Optional `{x, y, rotation}`; the ship starts there at rest. Absent: where a run starts.                          |
+| `start`   | Optional `{x, y, rotation, velocity?}`; starts at rest unless velocity is supplied. Absent: where a run starts.  |
 | `targets` | Wrecks placed in the arena, `{x, y}` in world units. Default none.                                               |
 | `held`    | Optional `{distance, shardLife}`, both positive; defaults 140 units and 2 seconds.                               |
 | `follow`  | `{near, far}` zoom of the two follow views, positive with `near < far`; defaults 1.6 and 4.                      |
 | `opening` | `{burn, view, tick}`: what is shown on opening; defaults `course`, `follow`, 180. The tick lies within the burn. |
+
+### Staged impulses
+
+A document may supply `impulses`, default empty: up to sixteen strict objects
+with `tick` (an integer from 1 through the burn's final tick) and finite,
+nonnegative `backwardMomentum`. At the named post-step tick boundary, the
+instrument subtracts momentum divided by the assembled ship's production mass
+along its current forward axis. Rotation and angular velocity are unchanged.
+Events at the same tick add. This is an explicitly staged experiment condition,
+not a production weapon, spending rule or change to gravity/friction.
+
+Drawing never applies impulses. Backward seek or restart reconstructs the flight,
+so each event occurs once in that replay and never accumulates from inspection.
+An absent or empty list retains the original flight. Configured study light may
+place an active eruption on LFX and reduced emission history on FX; the shared
+surface still owns world-space decay. This does not select a projector recipe.
 
 The default zoom and held values are working values, not tuned ones.
 
@@ -50,15 +66,21 @@ The default zoom and held values are working values, not tuned ones.
 ### Component
 
 `apps/web/src/components/lab/flight-scene/FlightSceneInstrument.svelte` takes
-`config: unknown`, `label?`, and five optional inputs from whoever mounts it:
+`config: unknown`, `label?`, and optional inputs from whoever mounts it:
 a `pane` snippet, a `light` (a [study light](#study-light)), `targets` (which
 targets are staged; the document's default when absent), `layers` (which
-layers are shown; all by default) and `tuning` ([part tuning](#part-tuning)). It parses the document once; an invalid
+layers are shown; all by default) and `tuning` ([part tuning](#part-tuning)), plus `planet` and `planetAppearance` ([planet encounters](#planet-encounters--15-november-2026)). It parses the document once; an invalid
 document renders a visible message listing the issues in place of the scene. A
 change to `config` after mount is ignored. The scene fills the 1440 × 900
 logical screen, drawn at render width 1728 (16:10 at the game's 1080 height).
 Burn and time float over the screen's lower edge and the view switch is at the
 top left.
+
+The shared burger pane occupies the smaller golden-ratio share of its positioned
+CSS container: `1 / φ² ≈ 38.1966%` of the container's width, leaving approximately
+61.8034% of the scene exposed. Its border-box width follows that container on resize,
+not the viewport or the instrument's fixed logical drawing width. It remains
+right-aligned, full-height and internally scrollable.
 
 The menu (the Motion instrument's overlay pane, top right) belongs to the study
 or Lab page that mounts the instrument. Its content is the `pane` snippet and
@@ -300,3 +322,122 @@ Scenario: Refuse a bad document
   When the instrument opens
   Then it shows the issue and no scene
 ```
+
+
+## Planet encounters — 15 November 2026
+
+Study flight never adds manual piloting. The shared fixed burns, timeline, views
+and burger pane remain the interaction model. Studies extend shared staging instead
+of introducing their own flight controls.
+
+The strict document accepts optional `planet` staging: `reference: "practice-venus"`,
+a finite `orbitAngle` (default zero), and optional `atmosphere` with positive world-unit
+`depth` and nonnegative `dragRate` in inverse seconds. This selects a Practice
+simulation with its Sun and the current Venus body's radius, orbit, speed and mass;
+other planets are removed. Wreck targets/held staging cannot be combined with this
+mode. Documents without `planet` preserve the existing Derelicts scene.
+
+`start.velocity` optionally supplies finite world-space x/y velocity in u/s;
+omitting it retains the original at-rest start. Fixed burn inputs remain unchanged.
+Atmospheric drag is an explicit experimental rule, not production behavior. Each
+post-step tick damps planet-relative velocity exponentially by dragRate × overlap
+density × dt. Density increases from zero when the ship's collision circle reaches
+the outer edge to one at solid contact. Air translates with orbital velocity; winds
+and co-rotation are omitted. No atmospheric damage is added. Production gravity,
+engine rules, collision and hull damage remain active.
+
+`FlightSceneInstrument` accepts an optional `planet` override, validated through
+the full document schema. An invalid override reports an error and is not applied.
+Changes replay from the start to the selected burn/time, reconstructing drag exactly
+once per tick. Backward seek reconstructs the same state as a fresh flight.
+
+Optional `planetAppearance` supplies a label and World/LFX painters receiving frozen
+copies of the staged planet, ship, Sun and simulation seconds. Its typed runtime
+descriptor is keyed by the staged planet's validated full-system ordinal and enters
+the shared `planets` and `body-light` passes; it does not add planet-specific passes.
+The World callback may draw ordered parts. It supplies inclusive finite world-space
+axis-aligned bounds for the complete composition, including any ship-relative
+decoration; when an LFX callback exists it also supplies bounds for that complete
+light composition. The staged body's production appearance is replaced without
+permitting painters to change flight state. Without an appearance the production
+body drawing remains. The shared body-light pass draws this appearance before other
+LFX marks. Appearance changes redraw the same instant; material rotation derives
+only from simulation time. Options belong in the existing pane; the wrapper does
+not supply another timeline or flight loop.
+
+The shared planet `world-hud` pass remains active with a custom appearance. It
+uses the staged simulation's retained full-system position and identity, so a
+single staged planet keeps its outward ordinal and its production name rule.
+
+The rock-atmospheres study is the first configured use. The canonical Flight scene
+Lab also offers a planet encounter to expose the shared staging capability.
+
+### Star colour inspection — 16 November 2026
+
+Optional reactive `starAppearance` supplies strict six-digit hex `color` and
+`glowColor`, validated by `StarAppearanceSchema`. The scene redraws the same
+burn/time with the production standard star painter. An override uses the
+standard body rather than the yellow-family palette; clearing it restores the
+original painter and palette. This is a display override only: the simulation's
+star, mass, radius, fields, collection, damage and flight state are untouched.
+Planet appearance callbacks receive the displayed star colours in their frozen
+snapshot. They decide whether to respond; this input does not automatically
+relight materials. The canonical Flight scene page offers Stock/Warm/Cool.
+`data-star-color` reports the supplied display body colour when present.
+
+
+### Atmospheric study light and reactive approach — 16 November 2026
+
+The optional `start` prop accepts the existing strict `StagedStartSchema` pose
+and velocity. Like `planet`, it is validated in the complete document and a change
+replays the selected burn to the selected tick without resetting the view. Invalid
+staging is reported instead of silently applied. The canonical Flight scene planet
+example offers Reference/Deeper start positions. The rock-atmospheres study supplies
+Outside/Skim/Deeper approaches through this shared input rather than another loop.
+
+`StudyLightState.ship.radius` supplies the simulation collision radius. For a
+staged atmosphere, optional `atmosphere` contains current overlap `density`, world-unit
+`clearance`, planet-relative `vx`/`vy` in u/s, and the unit direction towards
+the body as `inwardX`/`inwardY`. Without an atmosphere it is absent.
+These are copied numeric presentation values; study light cannot change gameplay.
+Effects can emit through the existing budgeted `StudyLight.fx` callback into the
+shared persistent surface, which owns pause, reset, seek and decay. This capability
+adds no temperature, dose, damage or new simulation rules. The heat study uses it
+for a provisional visual cue, with a filled planet-facing LFX contact highlight; engine output remains the game's own.
+
+## Experiment attachment
+
+`FlightSceneInstrument` accepts an optional trusted-code `FlightExperiment`.
+Its factory receives the production simulation after initial staging and creates
+fresh experiment state for each run. Its `step` runs once after each production
+tick while the ship remains alive. The experiment supplies behaviour; the host
+contains no rules for its weapons or objects. Initial options are validated by
+the supplying study before creating the experiment.
+
+An experiment may supply additional World/LFX production `FlightPass` painters and fresh FX
+emission through the existing persistent surface and its culling/budget interface.
+Painters read state and never advance it. The shared frame, camera, layers and FX
+history remain authoritative. New behaviour and artwork remain study-owned.
+An experiment may name `hiddenMounts`: mount keys of the player's ship that the
+ship pass draws empty, so a study can paint its own fitting there with a World
+pass. The fitted part still flies, weighs and emits as the game's; only its
+drawing is withheld.
+
+An optional `fittingPainter(ctx, mount)` reuses the build renderer's existing
+artwork callback inside the ship pass. It receives occupied mounts in builder
+coordinates at their local origin and returns true when it replaces their artwork.
+The shared renderer retains mount orientation, flight scale and hull occlusion;
+hidden mounts remain empty and take precedence. This is trusted local drawing code,
+not a serializable document field or a gameplay part. The canonical Flight scene
+page offers an example fitting marker. Appearance replacement preserves flight,
+mass, power and weapons. No production fitting is added by this capability.
+
+Reset, backward seek and replacement of an experiment create fresh state and replay
+from the start. Replacement preserves the selected burn and time. Pause never
+steps behaviour or adds light. A run without an experiment retains its existing
+behaviour. Tests verify reset/replay equivalence and isolation between runs.
+
+Experiments can use the shared `SalvageSystem.applyDamage` operation for registered
+bodies: it validates positive finite damage and reuses production breakup and
+impact events. This is a combat operation, not an instrument-specific damage model.
+The experiment determines contact and damage; the instrument does neither.

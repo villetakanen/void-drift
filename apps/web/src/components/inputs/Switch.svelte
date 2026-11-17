@@ -1,17 +1,26 @@
 <script lang="ts">
 let {
   id,
+  "aria-describedby": describedBy,
   checked = $bindable(false),
   disabled = false,
 }: {
   id?: string;
+  "aria-describedby"?: string;
   checked?: boolean;
   disabled?: boolean;
 } = $props();
 </script>
 
 <span class="switch">
-  <input {id} class="switch__input" type="checkbox" bind:checked {disabled}>
+  <input
+    {id}
+    aria-describedby={describedBy}
+    class="switch__input"
+    type="checkbox"
+    bind:checked
+    {disabled}
+  >
   <span class="switch__track" aria-hidden="true">
     <span class="switch__thumb">{checked ? "ON" : "OFF"}</span>
   </span>

@@ -1,0 +1,44 @@
+{
+  "round": "02.11",
+  "date": "2026-11-12",
+  "material": "art-030-neutral.png",
+  "lighting": "Production FlightLayers, neutral material on World; clipped directional light field on LFX, CSS hard-light; empty FX.",
+  "variants": [
+    {
+      "id": "A",
+      "shadowMin": 0.29,
+      "neutralMax": 0.65,
+      "warmth": 0
+    },
+    {
+      "id": "B",
+      "shadowMin": 0.25,
+      "neutralMax": 0.65,
+      "warmth": 0
+    },
+    {
+      "id": "C",
+      "shadowMin": 0.29,
+      "neutralMax": 0.65,
+      "warmth": 0.12
+    },
+    {
+      "id": "D",
+      "shadowMin": 0.25,
+      "neutralMax": 0.65,
+      "warmth": 0.12
+    }
+  ],
+  "colour": "Production yellowStarPalette(star.radius).body, channel mean subtracted; add warmth*(channel-mean)*clamp((field-.5)/.15,0,1) to LFX field. Shadow unchanged by tint.",
+  "fixtures": {
+    "mode": "practice",
+    "radius": 45,
+    "distance": 220,
+    "cameraScale": 0.6,
+    "sceneDiameter": 54,
+    "detailDiameter": 81,
+    "time": 1800,
+    "orientation": "fixed projected surface; no orbital or spin motion"
+  },
+  "status": "Tuning candidates, not accepted; 02.10 C is preferred direction."
+}

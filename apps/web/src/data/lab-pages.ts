@@ -37,6 +37,14 @@ export type LabPage = z.infer<typeof labPageSchema>;
 
 export const labPages = z.array(labPageSchema).parse([
   {
+    href: "/lab/planet-inspector",
+    title: "Planet Inspector",
+    purpose:
+      "Planet surface, spin, Sun-facing light, orbit and world HUD in a live preview.",
+    group: "tools",
+    source: "production",
+  },
+  {
     href: "/lab/entities/derelict",
     title: "Derelict",
     purpose:
@@ -86,18 +94,25 @@ export const labPages = z.array(labPageSchema).parse([
     spec: "docs/specs/factory/design-system/spec.md#surfaces-and-layers",
   },
   {
-    href: "/lab/inputs",
-    title: "Inputs",
-    purpose: "Buttons, toggle and ring slider in every state.",
+    href: "/lab/ds/choices",
+    title: "Choices",
+    purpose: "Toggle and Switch for values and independent settings.",
     group: "design-system",
     source: "production",
     defines: [
       "apps/web/src/components/inputs/Toggle.svelte",
-      "apps/web/src/components/inputs/RingSlider.svelte",
       "apps/web/src/components/inputs/Switch.svelte",
-      "apps/web/src/components/inputs/ThrustPads.svelte",
     ],
-    spec: "docs/specs/factory/design-system/spec.md#elevation-and-inputs",
+    spec: "docs/specs/factory/design-system/spec.md#toggle-and-switch",
+  },
+  {
+    href: "/lab/ds/slider",
+    title: "Slider",
+    purpose: "Ring slider for bounded numeric values.",
+    group: "design-system",
+    source: "production",
+    defines: ["apps/web/src/components/inputs/RingSlider.svelte"],
+    spec: "docs/specs/factory/design-system/spec.md#ring-slider",
   },
   {
     href: "/lab/ds/actions",
@@ -166,13 +181,6 @@ export const labPages = z.array(labPageSchema).parse([
     source: "production",
   },
   {
-    href: "/lab/entities/planet",
-    title: "Planets",
-    purpose: "Planet types and drawing; sliders preview only.",
-    group: "ships-and-world",
-    source: "production",
-  },
-  {
     href: "/lab/resources",
     title: "Resources",
     purpose: "Hull and fuel readouts.",
@@ -187,6 +195,15 @@ export const labPages = z.array(labPageSchema).parse([
     source: "production",
   },
 
+  {
+    href: "/lab/controls",
+    title: "Flight controls",
+    purpose: "Production touch thrust pads and their resolved action feedback.",
+    group: "tools",
+    source: "production",
+    defines: ["apps/web/src/components/controls/ThrustPads.svelte"],
+    spec: "docs/specs/game/controls/spec.md#touch-pads",
+  },
   {
     href: "/lab/instrument",
     title: "Ship tuning",

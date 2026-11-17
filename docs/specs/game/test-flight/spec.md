@@ -34,7 +34,16 @@ Practice is a mode of its own, as the [game contract](../spec.md) lists it.
 - **A fixed system.** Every entry uses the same star-and-planet system and the
   same starting conditions. Its star uses the G7 reference profile at a fixed
   70 u surface radius and the World HUD labels it `G7, Sun`. Play begins at
-  once.
+  once. The innermost stock rock is Mercury: radius 27u, 258u circular orbit,
+  4u/s orbital travel, and an independent 31.3-second mineral-surface turn.
+  Venus replaces the middle stock gas planet, with its own `venus` identity:
+  golden amber clouds, radius 40.327526u, orbit 482.134715u, travel speed
+  2.953586u/s and independent 60-second right-to-left cloud turn. The outer
+  stock rock remains. The selected Venus mass is stored independently in tuning;
+  Mercury has mass 870 and gravity reach 131.91u; Venus has mass 2844.850581 and
+  gravity reach 238.53u. See [planets](../world/planets/spec.md).
+  The stock middle planet's phase is retained under Practice's fixed phase seed;
+  the study's held orbit phase is not a placement rule.
 - **Real flight.** Controls, movement, gravity and contact with the star and
   planets work as in any flight. Contact never repositions the ship.
 - **Nothing runs out.** Energy stays full at the ship's capacity and never

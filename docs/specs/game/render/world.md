@@ -15,3 +15,9 @@ fills are drawn here so the later FX aperture cut can reveal World.
 - Drawing World never reads or changes presentation history.
 - The stage's isolated blend group keeps content behind the stage out of the
   layer composition.
+- Planet orbits, gravity boundaries and names are drawn by the shared
+  screen-space `world-hud` pass before the planets pass draws any body. The
+  star's field rings and designation remain in the world-space `sun-fields`
+  pass. World HUD lines remain 1 CSS px and text remains 14 CSS px as the camera
+  zooms; each pass derives its scale from the displayed canvas and current
+  transform once.

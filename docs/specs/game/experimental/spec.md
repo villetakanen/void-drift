@@ -4,14 +4,17 @@
 
 ### Context
 
-Playground lets the player play around with ships and parts outside the rules
+Playground lets the player play around with ships, parts and world features outside the rules
 for the core scored game. A ship or part is sanctioned for ranked play or it is unsanctioned. That is
 a boundary of the rules, not a stage of development. An unsanctioned
 ship or part can be complete and intentionally available for play, and may
 remain outside those rules indefinitely. No eventual promotion is promised.
 
 In the current game, Playground makes every catalog ship and compatible part
-available. It keeps the selected flight mode and its simulation rules.
+available. It keeps the selected flight mode and can enable experimental or
+upcoming world features. Ranked Survival retains the 0.6.0 launch-era gameplay
+rules under `ion-storm`; Playground Survival and the other, unranked modes can
+evolve independently. Public availability does not imply ranked eligibility.
 
 The player makes one choice: Playground **Off** or **On**.
 
@@ -20,8 +23,8 @@ The player makes one choice: Playground **Off** or **On**.
 - **On:** every ship and part can be flown, and no run is scored. The run shows
   its time, and a scoring-off notice where the score would be.
 
-Playground is not a game mode of its own: it is the same Survival, Practice
-and Derelicts. What is fitted never changes scoring on its own: with
+Playground is not a game mode of its own: it is the same Survival, Practice,
+Derelicts and Gauntlet. What is fitted never changes scoring on its own: with
 Playground On, a ship carrying only sanctioned parts still flies an unscored run.
 
 ### Architecture and boundaries
@@ -70,6 +73,14 @@ Playground On, a ship carrying only sanctioned parts still flies an unscored run
 - **On, catalog.** Every ship and part is selectable and fittable. Ship tabs
   use the ordinary available state without a catalog badge; unsanctioned parts
   retain their marker.
+- **World features.** Survival with Playground On uses the seeded G-class
+  yellow-family stars defined by the [star contract](../world/star/spec.md).
+  With Playground Off it retains the ranked legacy Sun. Practice, Derelicts and
+  Gauntlet may use experimental or upcoming features regardless of Playground;
+  each mode's contract defines its selection. This does not automatically enable
+  every experiment. No world feature may leak into ranked rules through a shared
+  default. The Playground value is captured in validated flight settings at launch
+  and retained for reset and replay.
 - **On, runs.** No run is scored. In a Survival run the flight screen shows the
   time and, where the running score would be, the scoring-off notice. Run
   complete shows the time survived and the same notice in place of the score,
@@ -80,8 +91,10 @@ Playground On, a ship carrying only sanctioned parts still flies an unscored run
   unsanctioned active build, it reads “UNSANCTIONED BUILD” and “PLAYGROUND
   REQUIRED” on separate lines. The blocked warning does not replace the title
   hints; their normal rotation behavior continues. These indications are absent
-  with Off and a sanctioned build. In the Hangar, the status appears beside the launch actions without
-  changing the header. Individual catalog-item markers are a separate concern.
+  with Off and a sanctioned build. The shared `PlaygroundStatus.svelte` owns
+  the copy and red text treatment. In the Hangar, its Playground On status
+  appears beside the launch actions without changing the header.
+  Individual catalog-item markers are a separate concern.
 - **Persistence.** The Playground setting is kept on this device across
   visits; a fresh device starts Off. The [active ship](../active-ship/spec.md)
   owns how the ship and its fitting are kept.
@@ -128,6 +141,10 @@ Playground On, a ship carrying only sanctioned parts still flies an unscored run
 - E11: Item-marker presentation is settled on a live
   prototype. Playground is the setting name, and title run status distinguishes
   Playground play from ranked play.
+- E12: Playground Survival uses the deterministic yellow-family star for its
+  seed; ranked Survival retains the 0.6.0 launch-era Sun and gameplay rules.
+  Reset and replay retain the captured world-feature selection. Changes confined
+  to unranked play leave `ion-storm` and its leaderboard unchanged.
 
 ### Regression guardrails
 

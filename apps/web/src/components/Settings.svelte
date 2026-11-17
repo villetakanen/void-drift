@@ -1,155 +1,150 @@
 <script lang="ts">
 import { settings } from "../lib/stores/settings";
+import FlightDeck from "./FlightDeck.svelte";
+import Switch from "./inputs/Switch.svelte";
 import Logo from "./Logo.svelte";
 
-// Svelte's $ prefix subscribes to nanostores automatically
-const currentSettings = $derived($settings);
-
-function toggleInvertControls() {
-  settings.set({
-    ...$settings,
-    invertControls: !$settings.invertControls,
-  });
-}
-
-function handleKeydown(event: KeyboardEvent) {
-  if (event.key === " " || event.key === "Enter") {
-    event.preventDefault();
-    toggleInvertControls();
-  }
-}
+const id = $props.id();
+const groups = [
+  {
+    title: "Controls",
+    key: "invertControls",
+    name: "Invert controls",
+    hint: "Swap left/right engine controls",
+    experimental: false,
+  },
+  {
+    title: "Camera",
+    key: "speedCamera",
+    name: "Speed camera",
+    hint: "Zooms out with speed and shows more space ahead.",
+    experimental: true,
+  },
+] as const;
 </script>
 
-<div class="settings-page">
-  <header>
-    <a href="/" class="brand"><Logo size="sm" /></a>
-    <h1>Options</h1>
-  </header>
+<FlightDeck>
+  {#snippet menu()}
+    <div class="settings-screen">
+      <main class="panel settings-panel" aria-labelledby={`${id}-title`}>
+        <header>
+          <a href="/" class="brand" aria-label="Void Drift home"
+            ><Logo size="sm" /></a
+          >
+          <h1 id={`${id}-title`}>Options</h1>
+        </header>
 
-  <section class="setting-group">
-    <h2>Controls</h2>
+        <div class="settings-groups">
+          {#each groups as group (group.key)}
+            <section aria-labelledby={`${id}-${group.key}-heading`}>
+              <h2 id={`${id}-${group.key}-heading`}>{group.title}</h2>
+              <div class="setting-row">
+                <div class="setting-copy">
+                  <label for={`${id}-${group.key}`}>{group.name}</label>
+                  <p id={`${id}-${group.key}-hint`}>
+                    {#if group.experimental}
+                      <span class="experimental">Experimental</span>
+                    {/if}
+                    {group.hint}
+                  </p>
+                </div>
+                <Switch
+                  id={`${id}-${group.key}`}
+                  aria-describedby={`${id}-${group.key}-hint`}
+                  bind:checked={
+                    () => $settings[group.key],
+                    (checked) => settings.set({ ...$settings, [group.key]: checked })
+                  }
+                />
+              </div>
+            </section>
+          {/each}
+        </div>
 
-    <label class="toggle-row">
-      <input
-        type="checkbox"
-        class="toggle-input"
-        checked={currentSettings.invertControls}
-        onchange={toggleInvertControls}
-        onkeydown={handleKeydown}
-      >
-      <div class="toggle-text">
-        <span class="toggle-label">Invert Controls</span>
-        <span class="toggle-hint">Swap left/right engine controls</span>
-      </div>
-    </label>
-  </section>
-
-  <footer class="button-group-frame">
-    <div class="button-group button-group--strip">
-      <a href="/" class="btn btn-normal">Return to title screen</a>
+        <footer class="button-group-frame">
+          <div class="button-group button-group--strip">
+            <a href="/" class="btn btn-normal">Return to title screen</a>
+          </div>
+        </footer>
+      </main>
     </div>
-  </footer>
-</div>
+  {/snippet}
+</FlightDeck>
 
 <style>
-.settings-page {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: var(--spacing-lg);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+.settings-screen {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: safe center;
+  padding: var(--spacing-md);
+  overflow: auto;
+  touch-action: pan-y;
+}
+
+.settings-panel {
+  width: min(100%, 32rem);
+  display: grid;
+  gap: var(--spacing-lg);
+  font: var(--font-size-body) / var(--line-height-ui) var(--font-family-ui);
 }
 
 header {
-  margin-bottom: var(--spacing-xl);
+  display: grid;
+  justify-items: center;
+  gap: var(--spacing-sm);
 }
 
-header .brand {
-  margin-bottom: var(--spacing-md);
+.brand {
+  min-height: var(--control-min-height);
 }
 
 h1 {
-  color: var(--color-text);
-  font-size: 2.5rem;
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: var(--font-size-heading);
+  line-height: var(--line-height-heading);
+  font-weight: var(--font-weight-bold);
 }
 
 h2 {
-  color: var(--color-text);
-  font-size: 1.125rem;
-  margin: 0 0 var(--spacing-md) 0;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-regular);
+  letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
-.setting-group {
-  background: var(--color-elev-1);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  padding: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
+section + section {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
-.toggle-row {
+.setting-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: space-between;
   gap: var(--spacing-md);
-  cursor: pointer;
-  padding: var(--spacing-sm);
-  border-radius: var(--radius-sm);
-  transition: background 0.15s ease;
 }
 
-.toggle-row:hover {
-  background: var(--color-surface-hover);
-}
-
-.toggle-input {
-  width: 20px;
-  height: 20px;
-  margin-top: 2px;
-  cursor: pointer;
-  accent-color: var(--color-action);
-  flex-shrink: 0;
-}
-
-.toggle-input:focus-visible {
-  outline: var(--focus-ring-width) solid var(--color-focus-ring);
-  outline-offset: 2px;
-}
-
-.toggle-text {
-  display: flex;
-  flex-direction: column;
+.setting-copy {
+  min-width: 0;
+  display: grid;
   gap: var(--spacing-xs);
 }
 
-.toggle-label {
-  font-size: 1rem;
+label {
   color: var(--color-text);
-  font-weight: 500;
+  font-size: var(--font-size-label);
+  cursor: pointer;
 }
 
-.toggle-hint {
-  font-size: 0.875rem;
+p {
   color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
 }
 
-footer {
-  margin-top: auto;
-  padding-top: var(--spacing-xl);
-}
-
-@media (max-width: 640px) {
-  .settings-page {
-    padding: var(--spacing-md);
-  }
-
-  h1 {
-    font-size: 2rem;
-  }
+.experimental {
+  display: block;
 }
 </style>

@@ -38,13 +38,13 @@ interface Planet {
   mass: number;
   color: string;
   type: PlanetType; // Visual type category
-  hasRing: boolean; // Ring system around planet
 }
 ```
 
 #### Dynamic Spawning
 
-Each new game generates 0-5 planets randomly using the following parameter ranges:
+The optional experimental `initializeRandomPlanets()` factory can generate 0-5
+planets using the following parameter ranges:
 
 | Parameter     | Range                     | Notes                     |
 | ------------- | ------------------------- | ------------------------- |
@@ -53,7 +53,6 @@ Each new game generates 0-5 planets randomly using the following parameter range
 | Planet Radius | 10-100px                  | Physical size             |
 | Orbit Speed   | ±0.02-0.15 rad/s          | Sign determines direction |
 | Type          | rock/gas/ocean/desert/ice | Random selection          |
-| Ring          | 20% probability           | Visual ring system        |
 
 **Non-Overlap Constraint:**
 Planets cannot overlap at any point in their orbits. For two planets with radii `r1` and `r2`:
@@ -81,6 +80,80 @@ Planets cannot overlap at any point in their orbits. For two planets with radii 
 - **Do NOT** make planets overlap the Star or Spawn points.
 
 ## Contract
+
+### Names
+
+A planet may carry an optional display name and a positive `systemPosition`.
+The shared `PlanetWorldHudIdentitySchema` validates this HUD identity. The full
+system assigns positions by increasing orbital radius, with existing source
+order breaking ties, after mode-specific orbit setup and before any consumer
+filters the planet list. Named planets count in that position; filtering an
+inspector view never renumbers the remaining planets.
+
+A planet with a display name shows that name without a number. An unnamed planet
+is named after its star, a full stop, and its system position. The star name is
+used when present; otherwise the star's denomination or type is used. Star
+identity is defined in the [star contract](../star/spec.md).
+
+A G7 star named Sun with four planets, the third unnamed, reads: Mercury, Venus,
+Sun.3, Mars. The first planet of an unnamed G11 star is G11.1. Star names are
+defined in the [star contract](../star/spec.md).
+
+### World HUD
+
+Every planet in every mode has the same World HUD: orbit, gravity boundary and
+upright name. Its shared `world-hud` pass runs once for the full system before
+any planet body is drawn, independent of material readiness. Strokes are 1 CSS
+px and text is 14 CSS px at every zoom. The
+[render contract](../../render/spec.md#world-bodies) defines pass order and
+screen sizing. Planets have no separate decorative ring system. Collision and
+gravity use the planet body radius and mass.
+
+### Mercurial mineral-rock size
+
+The airless mineral-rock type explored in the Mercury study uses a radius of
+16–36 world units. This range belongs to that type, not every rock planet.
+Practice's innermost stock rock (`id: moon`, the Mercury application) has radius
+27u, giving a diameter of 54u. Its centre-to-centre orbital distance is 258u; the size and placement selection
+originally retained its existing mass. Practice now uses mass 870 (3/5 of the
+previous 1450), from `gravity.practicePlanetMass.moon`; other modes retain 1450. Its whole surface stays outside the Sun's danger reach and at least
+part of its surface lies inside the charging reach. In Practice, this body uses
+the accepted mineral surface, independent 31.3-second spin and Sun-facing LFX.
+
+### Practice Venus
+
+Practice replaces the stock middle gas planet with one named `venus`, before
+applying gravity tuning. The outer rock and Mercury remain; other modes retain
+all three stock planets. Planet identities remain strings and gravity masses are keyed by identity;
+optional `practicePlanetMass` overrides apply only in Practice.
+
+- Radius: `27 × (1 + (12104 / 4879 − 1) / 3)` ≈ 40.327526u.
+- Orbit: `258 × 108.2 / 57.9` ≈ 482.134715u, circular, centre to centre.
+- Travel speed: `4 × 35 / 47.4` ≈ 2.953586u/s, positive angular speed
+  equal to travel speed / orbit radius; initial phase inherited from the replaced
+  middle planet and Practice's fixed phase seed.
+- Mass: independently stored `gravity.planetMass.venus = 2844.850580940663`.
+  Recalculated on 13 November at the designer's request using
+  `870 × (accepted radius / 27)² × (1 + (8.87 / 3.70 − 1) / 3)`.
+  Later radius or Mercury tuning changes must not automatically recompute it.
+- Material: deterministic 02.3 B broad cloud regions, 02.6 B amber
+  RGB (246, 195, 113), 60-second right-to-left turn driven by simulation ticks.
+  `cloudAtlas`, `SphericalSurface` and `CloudBodyPainter` in core own the reusable
+  appearance; atlas generation is cached, with no per-frame noise generation.
+- Presentation: cloud body and provisional atmospheric arc on World; shared
+  Sun-facing hard-light mask on LFX. Arc width is 6.5% of body radius, minimum
+  0.65 stage pixels, with the accepted angular extent. Orbit, gravity boundary
+  and upright Venus label use shared World HUD primitives. All follow the
+  same planet; pause freezes cloud and orbital time. A failed material setup
+  uses the amber stock-disc fallback and retains the Venus HUD and physics.
+- Contact, summed gravity and hard cut-off use the existing rules; the visual
+  atmosphere adds no collision, drag or damage region. Whole circular orbits
+  remain separated by more than their bodies' radii, and the fixed spawn is clear.
+
+A planet without a surface map is drawn as a flat disc. The flat-vector
+descriptions elsewhere in this document describe that disc, not Mercury or Venus.
+All planets are drawn under the render contract's
+[world bodies](../../render/spec.md#world-bodies) rules.
 
 ### Definition of Done
 
@@ -163,9 +236,10 @@ Specified in [gravity-field.md](../gravity-field/spec.md#bodies-in-play).
 
 ### Configuration
 
-- **Current Setup:** 0-5 dynamically spawned planets per game (PBI-038)
-- **Spawning:** `initializePlanets()` in `packages/core/src/lib/physics/planets.ts`
-- **Variability:** Random count, type, orbit, size, speed, and ring per game restart
+- **Production:** `initializePlanets()` in `packages/core/src/lib/physics/planets.ts`
+  creates the three configured planets from `SURVIVAL_CONFIG.PLANETS`.
+- **Experiment:** `initializeRandomPlanets()` can create 0-5 planets with random
+  count, type, orbit, size and speed.
 
 ## Performance Characteristics
 
@@ -183,7 +257,6 @@ Specified in [gravity-field.md](../gravity-field/spec.md#bodies-in-play).
 ## Known Limitations
 
 - **Ship Damage:** No health system (collision bounces but doesn't damage)
-- **Rings:** Ring rendering is visual-only (no collision)
 
 ## Future Enhancements
 
@@ -191,11 +264,26 @@ Specified in [gravity-field.md](../gravity-field/spec.md#bodies-in-play).
 - Add surface detail (procedural craters, terrain)
 - Add ship damage on high-velocity impacts
 - Add atmospheric drag near large planets
-- Ring collision detection
 
 ---
 
 **Planet System Status: OPERATIONAL** 🪐  
 **Dynamic Spawning:** 0-5 planets per game  
-**Types:** rock, gas, ocean, desert, ice  
-**Lab:** Parameter exploration at `/lab/entities/planet`
+**Types:** rock, gas, ocean, desert, ice
+
+
+### Rock shadow inspection
+
+The shared rock painter accepts incoming-light and shadow-intensity multipliers
+from 0 to 2. Both default to 1.35; incident-light temperature defaults to the
+neutral-reference 5800 K. These are shared production defaults. Incoming
+intensity scales only the hard-light stamp's bright values above neutral 0.5;
+shadow intensity scales only its darkening below 0.5. The Planet Inspector
+exposes all three parameters for visual inspection; changing them there is local
+to the instrument and does not select other production tuning.
+Bodies using the same prepared light, shadow and temperature tuple share one
+stamp, turned toward the star with the Canvas transform. Preparation happens
+before drawing. Storage holds the production defaults and stamps for actively
+prepared tuples; releasing the last user releases that custom stamp. The
+shadow-intensity capability supports the rock-atmospheres study's 02.2
+comparison.

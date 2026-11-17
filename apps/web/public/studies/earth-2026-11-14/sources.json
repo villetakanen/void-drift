@@ -1,0 +1,36 @@
+{
+  "retrieved": "2026-11-14",
+  "assets": [
+    {
+      "file": "day.jpg",
+      "title": "NASA Blue Marble Next Generation, July 2004 base map",
+      "download": "https://assets.science.nasa.gov/content/dam/science/esd/eo/images/bmng/bmng-base/july/world.200407.3x5400x2700.jpg",
+      "credit": "NASA Earth Observatory / Reto St\u00f6ckli",
+      "sha256": "f55226d46d27e05511f2118dc6aa24f5dbf9b6b2cddc87cc6e0e7dd067c00b11"
+    },
+    {
+      "file": "clouds.jpg",
+      "title": "NASA Blue Marble cloud composite, Penn State hosted copy",
+      "download": "https://phys23p.sl.psu.edu/phys_anim/astro/parallax/cloud_combined_2048.jpg",
+      "credit": "NASA Goddard Space Flight Center / Reto St\u00f6ckli",
+      "sha256": "6480a5c2a404ddd95a9a34c1a3694d6cbdb30ebf1385a71bdf5b39a2798360e4"
+    },
+    {
+      "file": "night.jpg",
+      "title": "NASA Black Marble 2016 colour map",
+      "download": "https://assets.science.nasa.gov/content/dam/science/esd/eo/images/imagerecords/144000/144898/BlackMarble_2016_01deg.jpg",
+      "credit": "NASA Earth Observatory / Joshua Stevens; Suomi NPP VIIRS data from Miguel Rom\u00e1n, NASA GSFC",
+      "sha256": "d87de751a264e4f8ff69c68de5dab9606daee87a6f15ae743c93200743bd7ec1"
+    }
+  ],
+  "cloudMirrorNote": "NASA legacy host timed out. Penn State copy used; byte identity against the unavailable NASA file has not been established. Original source URL: https://eoimages.gsfc.nasa.gov/images/imagerecords/57000/57747/cloud_combined_2048.jpg",
+  "treatment": {
+    "sourceFiles": "Downloaded JPEGs unchanged. Browser downsamples each full map to 1024x512. No geography generation or future edits.",
+    "projection": "Shared SphericalSurface atlas mapping, 192px sphere; fixed central longitudes 20E, 100W and 110E.",
+    "clouds": "Grayscale brightness \u00d7 0.85 as illustrative white cloud opacity; no height or weather simulation.",
+    "lighting": "Shared RockBodyPainter mask, hard-light blend, light direction (-400,-160), matching Practice blend.",
+    "night": "Warm emission derived from max(red,green) - 0.45*blue - 12, divided by 65 and clamped. Suppressed by surface normal dot light and attenuated by cloud cover. Artistic extraction, not measured radiance.",
+    "atmosphere": "B only: blue aerial perspective increases at grazing angles; outer limb fades over 5.5% of body radius on the lit side; small warm twilight contribution. Analytic rendering, not generated texture or a physical scattering calculation.",
+    "fixtures": "Earth radius42u; Mercury27u and Venus40.327526u. Main3.2px/u; neighbours0.7 and0.4px/u; other longitudes1.8px/u. Static no simulation or orbit; no accepted Earth size, mass, motion or placement."
+  }
+}
