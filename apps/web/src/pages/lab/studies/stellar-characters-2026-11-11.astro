@@ -1,0 +1,399 @@
+---
+import StellarCharacterSketch from "../../../components/studies/StellarCharacterSketch.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find(
+  (entry) => entry.slug === "stellar-characters-2026-11-11",
+);
+---
+
+<StudyLayout study={study}>
+  <section>
+    <h2>01 / Recognising what lies ahead</h2>
+    <p>
+      A pilot approaching the established standard Sun can collect energy while
+      contending with gravitational pull, exposure and lethal contact. A
+      different stellar nature should invite a different reading of the
+      encounter: what is tempting, what threatens, and whether to approach, wait
+      or leave. Colour, surface structure and activity around the body must make
+      that character visible together, within the game’s high-contrast
+      procedural art direction.
+    </p>
+    <p>
+      The subject is the stellar encounter’s visible identity and the approach
+      it suggests. Candidates must differ in nature, rather than merely resize
+      or recolour the Sun. A white giant, a blue dwarf and a violently active
+      star are research prompts, not established categories or a selected
+      roster. Each candidate needs a scientific basis connected to a proposed
+      pilot experience and a concrete visual alternative. Observed phenomena,
+      speculative possibilities and deliberate arcade abstractions must be
+      distinguished. The tension is between an unfamiliar stellar character and
+      cues a pilot can understand before committing to danger.
+    </p>
+    <p>
+      The standard Sun and current ship handling remain the reference. Candidate
+      appearances, activity and encounter opportunities remain open; new
+      mechanics are hypotheses until investigated. Visual comparisons must
+      precede roster selection and numerical tuning. Close views establish
+      surface character; flight-scale views and sequences establish what remains
+      legible and how activity warns. These examples can test communication, but
+      cannot establish survival balance. Generation, progression and changes to
+      ship handling are adjacent questions outside this cycle. This cycle
+      supersedes the earlier stellar-encounters inquiry for stellar identity;
+      its open registry status does not make it a dependency or a second owner
+      of this answer. Earlier spatial observations are limited evidence; its
+      roster and delivery scope have no authority here.
+    </p>
+    <p class="question-check">
+      Question test · 11 November 2026: One subject — Pass after correction and
+      recheck; Grounded — Pass; Consequence — Pass.
+      <a href="/lab/reviews/stellar-characters-2026-11-11"
+        >Full review and ownership finding</a
+      >.
+    </p>
+  </section>
+  <section>
+    <h2 id="021">02.1 / Wind, eruption, wreckage, sweep</h2>
+    <p>
+      Four encounter hypotheses beside the unchanged Sun. Each plate has a close
+      view and three smaller encounter frames, read left to right. The Wasp
+      stays in place so the changing surroundings carry the comparison. These
+      are procedural concept storyboards, not simulated approaches or proposed
+      field boundaries. Body sizes are pictorial; the close views are enlarged
+      independently. Neither sizes nor intervals specify game tuning.
+    </p>
+    <p>
+      The Sun and Wasp use their production drawing functions. Candidate artwork
+      is study-local. All sequences are static, deterministic and equally
+      inspectable without animation. Surface detail may suggest a nature at
+      close range; the smaller frames test which surrounding cues could carry it
+      in flight. The interaction-led direction is retained below; no exact
+      artwork, mechanic, numerical profile or complete roster is selected.
+    </p>
+    <h3>Reference / The steady bargain</h3>
+    <StellarCharacterSketch
+      client:load
+      kind="sun"
+      label="Production standard Sun: flat amber body and three decorative expanding rings, with the same Wasp in three fixed compositions"
+      moments={["01 / STEADY", "02 / STEADY", "03 / STEADY"]}
+    />
+    <p class="caption">
+      Unchanged G artwork at illustrative zooms, sampled at 700, 1150 and 1600
+      ms. Its rings are decorative, not warnings of timed damage. Collection,
+      pull, exposure and contact retain the
+      <a href="/lab/entities/star">standard Sun’s rules</a>.
+    </p>
+  </section>
+
+  <section class="candidate" id="white-supergiant">
+    <p class="candidate-id">A / WHITE SUPERGIANT · OBSERVED NATURE</p>
+    <h3>A luminous sea that pours outward</h3>
+    <StellarCharacterSketch
+      client:load
+      kind="giant"
+      label="White supergiant concept: pearl-white mottled photosphere and separated radial wind streaks persist through three flight compositions"
+      moments={["01 / OUTFLOW", "02 / OUTFLOW", "03 / OUTFLOW"]}
+    />
+    <div class="reading">
+      <p>
+        <strong>Basis.</strong>
+        The white-giant prompt becomes a specific A-type supergiant, inspired by
+        Deneb: an evolved luminous star with a stellar wind. Observations
+        support mass outflow and time-dependent ejections, rather than a large
+        copy of the Sun.
+        <a href="https://arxiv.org/abs/1007.2095"
+          >Deneb and Rigel spectroscopy / interferometry</a
+        >.
+      </p>
+      <p>
+        <strong>Pilot hypothesis.</strong>
+        Abundant light tempts a sustained collection pass, but the outflow makes
+        lingering costly. Enter obliquely, take energy and turn away. The
+        distinctive choice is exposure to a persistent hostile environment,
+        rather than waiting for an eruption.
+      </p>
+      <p>
+        <strong>Visible identity.</strong>
+        A pearl-white photosphere, fine luminous mottling and disconnected
+        outward streaks. Their persistence should say “this environment stays
+        hostile”. The cool-looking colour must not imply safety.
+      </p>
+    </div>
+    <p class="caption">
+      <strong>Arcade abstraction:</strong>
+      visible wind strokes, exaggerated surface texture, compressed distances
+      and survivable harvesting. Wind is plasma, not air resistance; no outward
+      push or propulsion benefit follows from this sketch. It does not predict
+      collection yield or damage.
+    </p>
+  </section>
+
+  <section class="candidate" id="flare-dwarf">
+    <p class="candidate-id">B / ACTIVE RED DWARF · OBSERVED NATURE</p>
+    <h3>A dim ember with a violent temper</h3>
+    <StellarCharacterSketch
+      client:load
+      kind="flare"
+      label="Active red dwarf replacement concept: mottled red-orange surface, scattered bright arcs and an encompassing bloom that brightens and spreads, then subsides"
+      moments={["01 / ACTIVE ATMOSPHERE", "02 / BROAD BLOOM", "03 / SUBSIDING"]}
+    />
+    <div class="reading">
+      <p>
+        <strong>Basis.</strong>
+        Proxima Centauri is a red dwarf with observed powerful flares. Low
+        steady luminosity does not make an active small star benign.
+        <a
+          href="https://science.nasa.gov/universe/exoplanets/neighboring-stars-bad-behavior-large-and-frequent-flares/"
+          >NASA’s Proxima flare observations</a
+        >.
+      </p>
+      <p>
+        <strong>Pilot hypothesis.</strong>
+        Surface activity and a broad luminous atmosphere suggest greater
+        exposure reach than the other encounters. Collection may still tempt an
+        approach, but the pilot should expect to keep more distance. Whether
+        activity also creates collection windows remains open.
+      </p>
+      <p>
+        <strong>Visible identity.</strong>
+        Dark patches and orange cells distinguish the surface. Scattered arcs
+        and an encompassing bloom carry that activity beyond the body when
+        surface detail disappears at flight scale. This replacement tests a
+        broad exposure cue; its exact texture and bloom are provisional.
+      </p>
+    </div>
+    <p class="caption">
+      <strong>Arcade abstraction:</strong>
+      visible circumstellar bloom and its relation to a larger gameplay hazard
+      region. The storyboard shows increasing activity, not an accepted warning
+      timer or a measured damage boundary. Bloom does not establish a safe edge.
+    </p>
+  </section>
+
+  <section class="candidate" id="white-dwarf">
+    <p class="candidate-id">C / DEBRIS-BEARING WHITE DWARF · OBSERVED NATURE</p>
+    <h3>A hard light among the remains</h3>
+    <StellarCharacterSketch
+      client:load
+      kind="ember"
+      label="Debris-bearing white dwarf concept: compact white point with a hard cross of glare and a broken copper-coloured elliptical debris belt advancing around it"
+      moments={["01 / FRAGMENTS", "02 / BELT ADVANCES", "03 / BELT ADVANCES"]}
+    />
+    <div class="reading">
+      <p>
+        <strong>Basis.</strong>
+        A white dwarf is a dense stellar remnant, no longer powered by core
+        fusion. Disrupted planetary material is observed around some white
+        dwarfs; the debris belongs to this particular encounter, not the entire
+        family.
+        <a
+          href="https://science.nasa.gov/exoplanets/resources/life-and-death/chapter-7/"
+          >NASA on remnants</a
+        >;
+        <a
+          href="https://astrobiology.nasa.gov/news/asteroid-remains-around-dead-stars-reveal-the-likely-fate-of-our-solar-system/"
+          >observed planetary debris</a
+        >.
+      </p>
+      <p>
+        <strong>Pilot hypothesis.</strong>
+        A small luminous target sits within a moving obstacle belt. Collect on
+        the near side, watch fragments crossing the exit, and resist diving
+        toward the point. Compact appearance must not imply a weak gravitational
+        commitment.
+      </p>
+      <p>
+        <strong>Visible identity.</strong>
+        Almost featureless white glare contrasts with a broken, warm debris
+        belt. The surroundings carry the character when the body is only a dot.
+        A torn belt should read as material crossing a path, distinct from the
+        Sun’s decorative rings.
+      </p>
+    </div>
+    <p class="caption">
+      <strong>Arcade abstraction:</strong>
+      individually visible, widely spaced fragments, traversable gaps and
+      survivable near-remnant flight. The belt’s projection and drift are
+      illustrative. No salvage reward, collision law, mass or collection reach
+      is established.
+    </p>
+  </section>
+
+  <section class="candidate" id="pulsar">
+    <p class="candidate-id">D / PULSAR · OBSERVED REMNANT</p>
+    <h3>A lighthouse with no safe side forever</h3>
+    <StellarCharacterSketch
+      client:load
+      kind="pulsar"
+      label="Pulsar concept: a tiny white-violet point and two opposed pale beams rotate from above the fixed Wasp, across it, then below it"
+      moments={[
+        "01 / SWEEP APPROACHES",
+        "02 / BEAM CROSSES",
+        "03 / SWEEP PASSES",
+      ]}
+    />
+    <div class="reading">
+      <p>
+        <strong>Basis.</strong>
+        A pulsar is a rotating neutron-star remnant whose radiation beams can
+        sweep across an observer like a lighthouse. It is neither a blue Sun nor
+        a periodically exploding star.
+        <a href="https://www.nasa.gov/universe/stars/neutron-stars/pulsars/"
+          >NASA on pulsars</a
+        >.
+      </p>
+      <p>
+        <strong>Pilot hypothesis.</strong>
+        Follow a rotating gap or cross just after the sweep; keeping one
+        distance no longer answers the danger. The first opportunity could be
+        passage through the encounter rather than collection. Ordinary solar
+        collectors’ response to the emission remains an unresolved fiction
+        choice.
+      </p>
+      <p>
+        <strong>Visible identity.</strong>
+        An almost point-like white core, sparse violet structure and two
+        continuous opposing beams. Rotation, rather than an expanding circular
+        pulse, carries the warning. The central surface is deliberately not the
+        main recognition cue.
+      </p>
+    </div>
+    <p class="caption">
+      <strong>Arcade abstraction:</strong>
+      normally invisible emission made visible, a three-dimensional beam mapped
+      into the play plane, a greatly slowed sweep and survivable gaps. The
+      sketch establishes no radius beyond which the beam is safe.
+    </p>
+  </section>
+
+  <section>
+    <h3>The blue-dwarf prompt / a different kind of uncertainty</h3>
+    <p>
+      Stellar-evolution calculations predict that some red dwarfs eventually
+      become hotter blue dwarfs, on timescales longer than the current age of
+      the Universe. This is a predicted future state, not an observed
+      present-day population, and “blue” does not mean cold.
+      <a href="https://onlinelibrary.wiley.com/doi/10.1002/asna.200510440"
+        >Adams, Bodenheimer and Laughlin’s evolution calculations</a
+      >. It could belong in far-future fiction, but that basis alone supplies no
+      distinctive surface activity or pilot decision. A blue-painted small Sun
+      would not answer this study. Its encounter character remains unresolved;
+      it is neither selected nor scientifically ruled out.
+    </p>
+    <h3>What this comparison can settle</h3>
+    <p>
+      These alternatives separate persistent outflow, broad stellar activity,
+      moving material and a rotating sweep. Their colours support temperature
+      and contrast; surface and surroundings carry the stronger distinctions.
+      The saturated palettes, glare and exaggerated structure are graphic
+      proposals, not naked-eye reconstructions of the objects.
+    </p>
+    <p>
+      The plates make the proposed characters inspectable together. They do not
+      establish that warnings are sufficient during a real approach, or that
+      collection is worth the danger. A retained direction would next need its
+      cue tested in a moving production flight composition with the actual HUD,
+      ship, camera and competing effects. Field profiles and timing would follow
+      that design evidence. No finding from the earlier spatial study selects
+      any of these directions.
+    </p>
+  </section>
+  <section>
+    <h3 id="retained-direction">
+      Retained direction / Light, reach and exposure must agree
+    </h3>
+    <p>
+      Stellar variety changes how a star interacts with its surroundings, with
+      visible identity communicating those differences. A colour substitution
+      alone is insufficient. The standard Sun remains the established reference;
+      its simple artwork does not limit the visual vocabulary of other natures.
+      The comparison supports this direction, not acceptance of every depicted
+      object or effect.
+    </p>
+    <p>
+      The white supergiant’s abundant outward light suggests collection from
+      farther away. The debris-bearing remnant suggests a smaller energy
+      opportunity, while surface activity and atmospheric bloom suggest a larger
+      exposure region for the active star. These relationships are intended game
+      characters, not tuned profiles or measurements inferred from picture
+      brightness. In particular, a hot white dwarf still radiates; compact size
+      alone does not determine collector income. Exact yields and reaches remain
+      open, and all cues must eventually agree with the actual fields.
+    </p>
+    <p>
+      Surface differentiation and surrounding light are retained qualities for
+      the active star. The local eruption drawing is replaced by the broad-bloom
+      proposal above; the replacement’s appearance and event timing remain
+      unaccepted. The pulsar remains optional. A vertical, bottom-to-top light
+      axis with pulsing is a possible alternative to the rotating sweep, still
+      requiring a concrete comparison. An intensity pulse on a fixed axis would
+      be a deliberate arcade translation of pulsar emission, not the same
+      phenomenon as a lighthouse beam crossing the observer.
+    </p>
+    <h3>One nature across World, FX and LFX</h3>
+    <p>
+      The encounter can use the three existing rendering layers together. A
+      proposed division gives World the body, surface and physical surroundings;
+      persistent FX the emitted light and fading aftermath; and LFX the current
+      glare, bloom or active pulse. Their contributions should express the same
+      stellar state. This does not require every star to use every layer, and
+      fading history must not masquerade as a current hazard boundary. The
+      plates remain single-canvas sketches; they do not demonstrate that
+      composition in the production stack.
+    </p>
+    <p>
+      The next focused comparison should test an accepted character relationship
+      in the shared flight composition: whether distant collection, low yield or
+      greater exposure is anticipated from the star while the real HUD and ship
+      compete for attention. Exact artwork, field tuning and pulsar inclusion
+      remain exploration choices before readiness and scope can be settled.
+    </p>
+  </section>
+  <section>
+    <h2>03 / To be developed after exploration</h2>
+  </section>
+</StudyLayout>
+
+<style>
+.question-check {
+  max-width: var(--measure-prose);
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+}
+.candidate {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--spacing-xl);
+  margin-block: var(--spacing-xl);
+}
+.candidate-id {
+  font-family: var(--font-family-ui);
+  font-size: var(--font-size-caption);
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--color-text-muted);
+}
+.reading {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-xl);
+  margin-block: var(--spacing-lg) var(--spacing-md);
+}
+.reading p {
+  margin: 0;
+  font-size: var(--font-size-label);
+}
+.reading strong {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-text);
+}
+section > .caption {
+  max-width: 100%;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+  margin-top: var(--spacing-md);
+}
+</style>

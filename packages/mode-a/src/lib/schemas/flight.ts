@@ -3,7 +3,12 @@ import { AssembledIonSettingsSchema } from "./ion";
 import { defaultLoadout, LoadoutSchema } from "./loadout";
 import { ShipProfileSchema } from "./ship-profile";
 
-export const FlightModeSchema = z.enum(["practice", "derelicts", "survival"]);
+export const FlightModeSchema = z.enum([
+  "practice",
+  "derelicts",
+  "gauntlet",
+  "survival",
+]);
 export type FlightMode = z.infer<typeof FlightModeSchema>;
 
 export const FlightSettingsSchema = z
@@ -36,6 +41,10 @@ export const FlightSettingsSchema = z
       !settings.loadout || settings.loadout.chassis === settings.profile.id,
     { message: "Build and profile chassis must match" },
   )
+  .refine((settings) => settings.mode !== "gauntlet" || !!settings.loadout, {
+    message: "Gauntlet requires the selected player build",
+    path: ["loadout"],
+  })
   .transform((settings) => {
     const mode =
       settings.mode ?? (settings.testFlight ? "practice" : "survival");

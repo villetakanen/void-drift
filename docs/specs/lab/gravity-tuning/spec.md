@@ -163,7 +163,7 @@ game through the tuning workflow owned by [Gravity field](../../game/world/gravi
 - `/lab/gravity-tuning` draws four paths and four dotted unaffected paths,
   the well's surface and reach, three graphs with four thrust lines on the
   gravity graph; an edited setting redraws them and reaches the document, an
-  impossible one is refused with its reason; dragging the well moves it (`tests/browser/gravity-tuning.spec.ts`).
+  impossible one is refused with its reason; dragging the well moves it.
 
 ### Regression Guardrails
 

@@ -1,0 +1,205 @@
+---
+import InstrumentBand from "../../../components/lab/instrument/InstrumentBand.astro";
+import FissionLight021 from "../../../components/studies/FissionLight021.svelte";
+import { studies } from "../../../data/studies";
+import StudyLayout from "../../../layouts/StudyLayout.astro";
+
+const study = studies.find(
+  (entry) => entry.slug === "fission-light-2026-11-11",
+);
+---
+
+<StudyLayout study={study}>
+  <section>
+    <h2 id="problem">01 / A push, a wait, and a borrowed beam</h2>
+    <p>
+      A fission engine, an unsanctioned part, does not thrust steadily. While
+      held it pushes, waits and pushes again: today 0.18 seconds of thrust in
+      every 0.45. Releasing cuts a push short and does not shorten the wait. One
+      push is about 1.9 times a Light ion engine’s thrust, but averaged over the
+      cycle the engine delivers less than a Light ion. The sense of a very big
+      push has to come from how each push looks.
+    </p>
+    <p>
+      In flight the light shows none of this. Each push paints an amber beam in
+      the Light ion beam’s shape, the light of an engine with no design of its
+      own, and the wait adds no light, so the beam fades through it. A held
+      fission engine looks like an ion engine that flickers.
+    </p>
+    <p>
+      The hypothesis is that each push is an explosion behind the ship, in a
+      nuclear green near the yellow-green already on the engine’s body. The
+      tension is between size and readability. The explosion has to look like
+      the cause of the push on a Wasp or Scout without burying the ship, and its
+      green has to stay apart from the mint of Light ion and stabilizer light,
+      the cyan of Heavy ion and the amber of plasma.
+    </p>
+
+    <h3>Held fixed</h3>
+    <ul>
+      <li>
+        Fission is pulsed: its thrust arrives as separate pushes with a wait
+        between them.
+      </li>
+      <li>
+        The engine body, the ship drawings, and ion and plasma light as they
+        are.
+      </li>
+      <li>
+        The three canvas layers: World for what is solid, persistent FX light
+        and fresh LFX light. Fission’s light goes on FX, LFX or both.
+      </li>
+    </ul>
+
+    <h3>Left open</h3>
+    <ul>
+      <li>What one push looks like, and its colour.</li>
+      <li>What the wait shows, if anything.</li>
+      <li>Which layer carries each.</li>
+      <li>Whether the look holds at a slow rhythm and at a fast one.</li>
+    </ul>
+
+    <h3>Outside this study</h3>
+    <ul>
+      <li>
+        The rhythm itself. The expectation is about one push every 0.9 seconds
+        while held, with tapping able to force a couple of pushes a second. That
+        is flight behaviour and needs its own decision; the examples make the
+        rhythm adjustable so the look can be judged at both.
+      </li>
+      <li>
+        Fission’s thrust, mass, speed contribution and energy draw, and moving
+        it into scored play.
+      </li>
+    </ul>
+
+    <aside class="stamp" aria-labelledby="stamp">
+      <h3 id="stamp">Question check · 11 November 2026</h3>
+      <p>
+        A reviewer with no part in the framing tested this section as first
+        written. The section was then corrected; the corrected text has not been
+        tested.
+        <a href="/lab/reviews/fission-light-2026-11-11"
+          >Full result and findings</a
+        >
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Metric</th>
+            <th scope="col">Result</th>
+            <th scope="col">Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">One subject</th>
+            <td>Pass with findings</td>
+            <td>
+              One object, the fission engine’s light, in its push and its wait
+              and beside ion and plasma light. No open study owns part of the
+              answer. The title and question stated the explosion as settled.
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Grounded</th>
+            <td>Pass with findings</td>
+            <td>
+              Every number and behaviour checked out, and every open item can be
+              shown and judged by looking. The layer rule as worded was in no
+              specification, and several descriptions were imprecise.
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Consequence</th>
+            <td>Pass</td>
+            <td>
+              A fission engine paints a light of its own in flight, where today
+              it paints the amber beam and adds nothing in the wait.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </aside>
+  </section>
+
+  <section>
+    <h2 id="detonation">02.1 / A detonation left behind</h2>
+    <p>
+      The first example answers the question with the most literal explosion.
+      Each push goes off at a point 12 units behind the nozzle and stays at that
+      point in the world while the ship is thrown away from it. The plasma ball
+      and the ion beam both travel with the ship; this light does not.
+    </p>
+    <p>
+      A blast has three parts, all stamped into the persistent FX light: a
+      white-hot flash about two Wasp lengths across that fades in six ticks, a
+      thin shock ring that steps outward on every second tick so the fading
+      light keeps separate rings, and fourteen hard sparks thrown back in a
+      cone. The green is the engine body’s yellow-green, from a pale hot centre
+      to a deeper green edge. The wait between pushes paints nothing.
+    </p>
+    <p>
+      The scene opens inside the first push, with a push every 0.9 seconds.
+      Press Play to watch three pushes and a coast. In the menu in the top-right
+      corner, the slider sets how often the engine pushes, down to the game’s
+      0.45 seconds and below, and the Detonation switch shows the game’s amber
+      beam on the same flight.
+    </p>
+  </section>
+  <InstrumentBand><FissionLight021 client:visible /></InstrumentBand>
+  <section>
+    <ul>
+      <li>
+        The slider changes this scene’s flight only. A slower rhythm also means
+        less thrust over time, so the ship is slower.
+      </li>
+      <li>
+        The scene cannot show tapping: the instrument’s burns hold an input for
+        a second or longer. A burn of short presses is a missing capability of
+        the Flight scene instrument.
+      </li>
+      <li>
+        The scene plays a fixed burn, so it shows how a push looks. How it feels
+        under the hand needs the game.
+      </li>
+      <li>Sizes, colours, counts and durations are working values.</li>
+      <li>
+        Reference conditions: a Wasp with a Fission main engine and ion
+        stabilizers, at rest at the run start, burn B1, the Follow view, no
+        randomness.
+      </li>
+    </ul>
+  </section>
+  <section><h2>03 / To be developed after 02</h2></section>
+</StudyLayout>
+
+<style>
+/* The prose column's width; the stamp's own type is smaller. */
+.stamp {
+  box-sizing: border-box;
+  max-width: 41rem;
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+}
+.stamp table {
+  border-collapse: collapse;
+}
+.stamp th,
+.stamp td {
+  padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) 0;
+  text-align: left;
+  vertical-align: top;
+}
+.stamp td:not(:last-child) {
+  white-space: nowrap;
+}
+.stamp tbody th {
+  white-space: nowrap;
+  font-weight: normal;
+  color: var(--color-text);
+}
+</style>

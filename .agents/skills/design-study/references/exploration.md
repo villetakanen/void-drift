@@ -78,7 +78,10 @@ ordinary repairs that make the current question answerable should proceed normal
 Honor an explicit override, including one already given, without repeated resistance.
 Record the deliberate question change and any unresolved prior question.
 
-Preserve useful examples and configurations when their question is answered or the
-inquiry changes. Record observations and limits, not invented conclusions. Give a new
-question a separate example or preserved variant instead of tuning away the comparison.
-These retention instructions apply to useful evidence; discard unusable proposals as above.
+During active inquiry, preserve useful evidence and the conditions needed to interpret
+it when a question is answered or changes. Record observations and limits, not invented
+conclusions. Give a new question a separate example or preserved variant instead of
+tuning away the comparison. Preserving evidence does not require keeping its tools
+running: when ending the study, follow the main skill's closing procedure to replace
+temporary examples with durable records and retire unused study code. These retention
+instructions apply to useful evidence; discard unusable proposals as above.

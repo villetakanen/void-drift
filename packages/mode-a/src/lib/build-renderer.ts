@@ -37,6 +37,14 @@ import {
 import { drawUtilityArtwork } from "./utility-art";
 import { WASP } from "./wasp";
 export const BUILD_FLIGHT_SCALE = 0.65;
+export type BuildHullVariant = "charcoal";
+const CHARCOAL_SCOUT_FACETS = [
+  "#303343",
+  "#4b4f65",
+  "#686c80",
+  "#252838",
+  "#575b70",
+] as const;
 export interface BuildMount {
   key: string;
   type: SlotType;
@@ -329,6 +337,7 @@ export function drawBuild(
     ctx: CanvasRenderingContext2D,
     mount: BuildMount,
   ) => boolean,
+  hullVariant?: BuildHullVariant,
 ) {
   ctx.save();
   ctx.translate(x, y);
@@ -398,10 +407,20 @@ export function drawBuild(
     );
     polygon(ctx, FIGHTER.cockpit, "#000000");
   } else {
-    for (const facet of SCOUT.facets) polygon(ctx, facet.points, facet.color);
+    for (const [index, facet] of SCOUT.facets.entries())
+      polygon(
+        ctx,
+        facet.points,
+        hullVariant === "charcoal"
+          ? CHARCOAL_SCOUT_FACETS[index % CHARCOAL_SCOUT_FACETS.length]
+          : facet.color,
+      );
     const cockpit = SCOUT.cockpit;
     for (const [radius, color] of [
-      [cockpit.collarRadius, FIGHTER.facets[2]],
+      [
+        cockpit.collarRadius,
+        hullVariant === "charcoal" ? "#82879b" : FIGHTER.facets[2],
+      ],
       [cockpit.radius, "#000000"],
     ] as const) {
       ctx.beginPath();

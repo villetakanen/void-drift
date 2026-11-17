@@ -207,12 +207,12 @@ and measurements. The time cursor selects a point in the existing results.
 - Multiple instances in one study have independent configurations and results;
   editing an exposed variable preserves fixed conditions and other instances.
 - `/lab/instrument` renders the starting document with three vehicles in the
-  legend and three graphs (browser test).
-- Switching the burn redraws every view and changes the document (browser test).
+  legend and three graphs.
+- Switching the burn redraws every view and changes the document.
 - The pane opens from the menu button, moves focus to its close button, and
-  closes on Escape with focus returned (browser test).
-- An edited value updates the graphs and the document (browser test).
-- Each reference page renders its components (browser test).
+  closes on Escape with focus returned.
+- An edited value updates the graphs and the document.
+- Each reference page renders its components.
 
 ### Regression Guardrails
 

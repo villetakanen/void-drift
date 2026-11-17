@@ -66,7 +66,7 @@ onMount(() => {
     if (showMaterial) {
       const path = new Path2D();
       for (const body of salvage.bodies) {
-        if (body.kind === "cell") continue;
+        if (body.kind === "cell" || body.kind === "ship") continue;
         for (const points of getDerelictWorldPolygons({
           ...body,
           kind: body.kind,

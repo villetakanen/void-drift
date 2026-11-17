@@ -91,8 +91,8 @@ Earning and buying parts is the intended direction for later. During alpha,
   what conditions they hold. The cruise ceiling is shown with its hull and
   engine parts, and each engine shows its contribution.
 - **Flight actions.** The Hangar offers, in this order, Practice, Derelicts,
-  Gauntlet and Survival. Survival is the primary action; Practice and Derelicts
-  are normal actions; Gauntlet is shown disabled and cannot be started. Every
+  Gauntlet and Survival. Survival is the primary action; the other actions are
+  normal actions. Gauntlet starts the first unranked pirate encounter. Every
   launch flies the active ship, and Abort or game over returns to the Hangar
   with the ship unchanged.
 - **Playground.** The Playground control is the only place the setting
@@ -138,8 +138,8 @@ Earning and buying parts is the intended direction for later. During alpha,
 - H10: The figures shown match `buildStats` for the fitted ship and update
   when a fitting changes.
 - H11: The flight actions appear in the order Practice, Derelicts, Gauntlet,
-  Survival; Survival is the primary action, Gauntlet is disabled, and each of
-  the others launches the active ship.
+  Survival; Survival is the primary action, and each action launches its
+  corresponding mode with the active ship.
 - H12: Abort and game over return to the Hangar with the ship and its
   fitting unchanged.
 - H13: The save status reports loading, recovery and unavailable storage
@@ -196,7 +196,7 @@ Feature: Hangar
     When I look at the flight actions
     Then I see Practice, Derelicts, Gauntlet and Survival in that order
     And Survival is the primary action
-    And Gauntlet cannot be started
+    And Gauntlet starts an unranked pirate encounter with the active ship
 
   Scenario: Storage is unavailable
     Given the browser cannot store data

@@ -93,10 +93,15 @@ let paused = $state(false);
 let seconds = $state(0);
 let score = $state(0);
 let derelictsResult = $state<Readonly<DerelictsResult> | null>(null);
+let gauntletResult = $state<Simulation["gauntletResult"]>(null);
 let hull = $state(100);
 let power = $state(100);
 let x = $state(460);
 let y = $state(540);
+let hostileBearings = $state<
+  Array<{ id: string; x: number; y: number; angle: number }>
+>([]);
+let gauntletOpponentCount = $state(0);
 let zoom = $state(1);
 let zoomLevel = $state(0);
 let cameraFitWidth = $state(0);
@@ -122,7 +127,7 @@ let activeLoadout = $state<Loadout>();
 let phase = $state<"menu" | "starting" | "playing">("menu");
 let landing = $state.raw<LandingSystem>();
 let transitionTime = 0;
-let countTime = -1;
+let countTime = $state(-1);
 let lastFrameTime = 0;
 let narrow = $state(false);
 let viewport: HTMLElement;
@@ -149,9 +154,11 @@ let initials = $state("AAA");
 const modeLabel = $derived(
   testFlight
     ? "GOD MODE"
-    : mode === "survival" && rankedRun
-      ? "G CLASS / SHARED CHALLENGE"
-      : "UNRANKED",
+    : mode === "gauntlet"
+      ? "GAUNTLET · UNRANKED"
+      : mode === "survival" && rankedRun
+        ? "G CLASS / SHARED CHALLENGE"
+        : "UNRANKED",
 );
 let saving = $state(false);
 let scoreSaved = $state(false);
@@ -220,10 +227,50 @@ function sync() {
   seconds = simulation.state.elapsedTime;
   score = simulation.survivalScore;
   derelictsResult = simulation.derelictsResult;
+  gauntletResult = simulation.gauntletResult;
+  gauntletOpponentCount = simulation.opponents.length;
   hull = simulation.state.resources.hull;
   power = simulation.state.resources.power;
   x = simulation.ship.pos.x;
   y = simulation.ship.pos.y;
+  hostileBearings =
+    mode === "gauntlet"
+      ? simulation.opponents.flatMap((opponent) => {
+          if (opponent.lifecycle === "destroyed") return [];
+          const point = camera.worldToScreen(
+            opponent.ship.pos.x,
+            opponent.ship.pos.y,
+          );
+          if (
+            point.x < 0 ||
+            point.x > camera.viewportWidth ||
+            point.y < 0 ||
+            point.y > camera.viewportHeight
+          ) {
+            const centerX = screen.width / 2;
+            const centerY = screen.height / 2;
+            const targetX = (point.x / camera.viewportWidth) * screen.width;
+            const targetY = (point.y / camera.viewportHeight) * screen.height;
+            const dx = targetX - centerX;
+            const dy = targetY - centerY;
+            const scale = Math.min(
+              (centerX - 28) / Math.max(1, Math.abs(dx)),
+              (centerY - 28) / Math.max(1, Math.abs(dy)),
+            );
+            return [
+              {
+                id: opponent.id,
+                ...{
+                  x: centerX + dx * scale,
+                  y: centerY + dy * scale,
+                  angle: (Math.atan2(dy, dx) * 180) / Math.PI,
+                },
+              },
+            ];
+          }
+          return [];
+        })
+      : [];
   ticks = simulation.ticks;
   runSeed = simulation.settings.seed;
   cause = simulation.state.deathCause ?? "";
@@ -473,6 +520,7 @@ onMount(() => {
                   countCentre.y,
                   camera.zoom,
                   reducedMotion,
+                  mode === "gauntlet" ? "space-purple" : "standard",
                 ),
       });
     }
@@ -511,9 +559,20 @@ onMount(() => {
   data-narrow={narrow}
   data-launch-source={launchSource}
   data-status={status}
+  data-mode={mode}
+  data-countdown-text={countTime < 0 || countTime + ticks * STEP >= 3.4
+    ? "none"
+    : countTime + ticks * STEP < 3
+      ? String(3 - Math.floor(countTime + ticks * STEP))
+      : mode === "gauntlet"
+        ? "FIGHT"
+        : "GO"}
+  data-countdown-tone={mode === "gauntlet" ? "space-purple" : "standard"}
   data-chassis={chosen}
   data-experimental={runExperimental}
   data-ranked={rankedRun}
+  data-gauntlet-result={gauntletResult?.winner ?? "none"}
+  data-gauntlet-opponents={gauntletOpponentCount}
   data-salvage-passes={salvageStats.passes}
   data-salvage-destroyed={salvageStats.destroyed}
   data-rail-shots={salvageStats.rail}
@@ -635,6 +694,18 @@ onMount(() => {
           {/if}
         </div>
       </div>
+      {#if hostileBearings.length && !landing}
+        {#each hostileBearings as hostileBearing (hostileBearing.id)}
+          <div
+            class="hostile-bearing"
+            style:left={`${hostileBearing.x}px`}
+            style:top={`${hostileBearing.y}px`}
+            style:--bearing-angle={`${hostileBearing.angle}deg`}
+            aria-label="Hostile pirate offscreen"
+            role="img"
+          ></div>
+        {/each}
+      {/if}
       {#if narrow && (phase !== "menu" || !landing)}
         <Dialog
           label="Rotate to continue"
@@ -696,31 +767,53 @@ onMount(() => {
         />
       {:else if status === "GAME_OVER"}
         <Dialog label="Run complete" class="flight-card">
-          <p class="eyebrow">
-            {cause === "STAR"
-              ? "TOO CLOSE TO THE STAR"
-              : cause === "HULL"
-                ? "HULL LOST"
-                : "POWER DEPLETED"}
-          </p>
-          {#if mode === "derelicts" && derelictsResult}
-            <h1>{seconds.toFixed(1)} seconds.</h1>
-            <p>{derelictsResult.playerKills} derelicts destroyed</p>
-            {#if experimentalRun}
-              <PreviewMarker />
-              <p>{NO_SCORE_NOTICE}</p>
-            {/if}
+          {#if mode === "gauntlet" && gauntletResult}
+            <p class="eyebrow">
+              {gauntletResult.winner === "player"
+                ? "PIRATE DESTROYED"
+                : gauntletResult.winner === "mutual"
+                  ? "MUTUAL DESTRUCTION"
+                  : cause === "STAR"
+                    ? "LOST TO THE STAR"
+                    : cause === "HULL"
+                      ? "HULL LOST"
+                      : "POWER DEPLETED"}
+            </p>
+            <h1>
+              {gauntletResult.winner === "player"
+                ? "Victory"
+                : gauntletResult.winner === "mutual"
+                  ? "Draw"
+                  : "Defeat"}
+            </h1>
+            <p>Unranked first pirate encounter · {gauntletResult.cause}</p>
           {:else}
-            <h1>{seconds.toFixed(1)} seconds.</h1>
-            {#if mode === "survival"}
+            <p class="eyebrow">
+              {cause === "STAR"
+                ? "TOO CLOSE TO THE STAR"
+                : cause === "HULL"
+                  ? "HULL LOST"
+                  : "POWER DEPLETED"}
+            </p>
+            {#if mode === "derelicts" && derelictsResult}
+              <h1>{seconds.toFixed(1)} seconds.</h1>
+              <p>{derelictsResult.playerKills} derelicts destroyed</p>
               {#if experimentalRun}
                 <PreviewMarker />
                 <p>{NO_SCORE_NOTICE}</p>
-              {:else}
-                <p>Score {score}</p>
               {/if}
+            {:else}
+              <h1>{seconds.toFixed(1)} seconds.</h1>
+              {#if mode === "survival"}
+                {#if experimentalRun}
+                  <PreviewMarker />
+                  <p>{NO_SCORE_NOTICE}</p>
+                {:else}
+                  <p>Score {score}</p>
+                {/if}
+              {/if}
+              <p>Every orbit teaches you something.</p>
             {/if}
-            <p>Every orbit teaches you something.</p>
           {/if}
           {#if rankedRun}
             <label for="initials">Your initials</label>
@@ -785,6 +878,19 @@ onMount(() => {
 }
 .flight-stage.adaptive {
   flex: none;
+  position: relative;
+}
+.hostile-bearing {
+  position: absolute;
+  z-index: 5;
+  width: 0;
+  height: 0;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  border-left: 12px solid var(--color-space-purple, #b788ff);
+  filter: drop-shadow(0 0 5px #b788ff);
+  transform: translate(-50%, -50%) rotate(var(--bearing-angle));
+  pointer-events: none;
 }
 .flight-stage-layer {
   touch-action: none;

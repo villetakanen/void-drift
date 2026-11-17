@@ -149,20 +149,20 @@ remains full resolution while those limits are explored.
 
 Array order in `FLIGHT_PASSES` is draw order within each layer.
 
-| Layer | Pass               | Space  | What it draws                                      |
-| ----- | ------------------ | ------ | -------------------------------------------------- |
-| World | Void               | screen | The clear to the void colour                       |
-| World | Starfield          | world  | Seeded background stars across the camera's view   |
-| World | Arena boundary     | world  | The arena's ring                                   |
-| World | Star               | world  | The sun's body and glow                            |
-| World | Sun fields         | world  | World HUD: the sun's collection and damage rings   |
-| World | Planets            | world  | Each planet with its orbit path and influence ring |
-| World | Derelicts          | world  | Wrecks, fragments and released energy squares      |
-| World | Ship               | world  | The fitted build, or the stock ship                |
-| World | Derelict apertures | world  | The hollow centre of each wreck and energy cell    |
-| FX    | Accumulated light  | world  | Fresh emission added, history faded                |
-| FX    | Aperture cut       | world  | Light removed over derelict apertures              |
-| LFX   | Ion beams          | world  | Ion cannon and point-defence beams, live           |
+| Layer | Pass               | Space  | What it draws                                                  |
+| ----- | ------------------ | ------ | -------------------------------------------------------------- |
+| World | Void               | screen | The clear to the void colour                                   |
+| World | Starfield          | world  | Seeded background stars across the camera's view               |
+| World | Arena boundary     | world  | The arena's ring                                               |
+| World | Star               | world  | The sun's body and glow                                        |
+| World | Sun fields         | world  | World HUD: the sun's collection and damage rings               |
+| World | Planets            | world  | Each planet with its orbit path and influence ring             |
+| World | Derelicts          | world  | Wrecks, fragments and released energy squares                  |
+| World | Ships              | world  | The fitted player build, hostile Gauntlet ships, or stock ship |
+| World | Derelict apertures | world  | The hollow centre of each wreck and energy cell                |
+| FX    | Accumulated light  | world  | Fresh emission added, history faded                            |
+| FX    | Aperture cut       | world  | Light removed over derelict apertures                          |
+| LFX   | Ion beams          | world  | Ion cannon and point-defence beams, live                       |
 
 Within World, passes draw far to near: the void, the background, the world's
 bodies, then the ship.
@@ -195,12 +195,15 @@ neither: it draws every pass, unobserved.
 - `FLIGHT_LAYERS` holds World, FX and LFX in stack order, each with its
   blend, memory and resolution, and every pass names one of them.
 - The stage hosts one canvas per layer, in stack order, each composited by
-  its declared CSS blend mode inside an isolated stage
-  (`tests/browser/render-model.spec.ts`).
+  its declared CSS blend mode inside an isolated stage.
 - No pass draws another layer's image onto its own, and no game code sets a
   canvas composite operation to blend one layer with another.
 - The FX layer is cut over derelict apertures, and no solid pass draws
   above it.
+- Gauntlet draws each living hostile fitted ship and weapon pose through the shared
+  build renderer, with its charcoal Scout palette defined by that renderer.
+- Each offscreen hostile Gauntlet actor has a screen-fixed bearing cue; the cue
+  does not alter camera or simulation state.
 - A layer's resolution can be changed without changing any pass.
 - A frame with an empty interval leaves the FX layer's image unchanged
   (`tests/browser/fx-surface.spec.ts`).

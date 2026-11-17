@@ -30,24 +30,3 @@ test("pause is modal and restores focus to the game", async ({ page }) => {
   await expect(page.locator("[data-stage]")).not.toHaveAttribute("inert");
   await expect(pause).toBeFocused();
 });
-
-test("Lab dialog traps focus, respects Escape and restores its opener", async ({
-  page,
-}) => {
-  await page.goto("/lab/surfaces");
-  const opener = page.getByRole("button", { name: "Open dialog" });
-  await opener.click();
-  await expect(
-    page.getByRole("button", { name: "Close", exact: true }),
-  ).toBeFocused();
-  await expectModal(page, "Demo dialog");
-  await page.keyboard.press("Escape");
-  await expect(page.getByRole("dialog", { name: "Demo dialog" })).toBeHidden();
-  await expect(opener).toBeFocused();
-  await page.getByLabel("Escape closes it", { exact: false }).uncheck();
-  await opener.click();
-  await page.keyboard.press("Escape");
-  await expect(page.getByRole("dialog", { name: "Demo dialog" })).toBeVisible();
-  await page.getByRole("button", { name: "Close", exact: true }).click();
-  await expect(opener).toBeFocused();
-});

@@ -216,8 +216,7 @@ tests/review/flight-scene-fidelity.spec.ts`), which writes
 - The schema accepts a valid document and refuses an invalid one, including
   unknown fields, out-of-range values, too many targets and a `start` without
   `rotation` (unit test).
-- The component shows an invalid document's issues in place of the scene
-  (browser test).
+- The component shows an invalid document's issues in place of the scene.
 - The simulation half runs without a canvas; flying to the same instant twice,
   or after a backward jump, gives the same ship pose and velocity, tick count and
   salvage bodies as a fresh flight (unit test).
@@ -225,16 +224,15 @@ tests/review/flight-scene-fidelity.spec.ts`), which writes
   held shards expire after their lifetime and placed shards remain.
 - The document determines which target choices exist.
 - The Lab page offers the document's target choices with its default chosen;
-  the component keeps the `data-*` attributes above (browser test).
-- Without a `pane` the component shows no menu (browser test).
+  the component keeps the `data-*` attributes above.
+- Without a `pane` the component shows no menu.
 - A pane receives a read-only copy of the document (unit test).
-- The four dated study examples keep rendering on the shared engine
-  (browser test).
+- The four dated study examples keep rendering on the shared engine.
 - The Lab shows the instrument in its default setting as a reference page:
   three layers with their own blend modes, the bloom filter, jump, play and
-  pause, each view, each layer switch (browser test).
+  pause, each view, each layer switch.
 - A study page embeds the instrument through `FlightSceneEmbed`, hydrated and
-  filling the band (browser test).
+  filling the band.
 - The instrument's fidelity to play, its bloom size against the game's and
   its cost are measured and recorded (measurement script).
 - The study light's state reports a delayed engine's charge rising with no
@@ -245,7 +243,7 @@ tests/review/flight-scene-fidelity.spec.ts`), which writes
   engine state and leaves the game's parts unchanged; an untuned flight runs on
   the game's own parts (unit test).
 - The Lab page's study light switch shows the light's caption and flies the
-  burn again at the same instant (browser test).
+  burn again at the same instant.
 
 ### Regression guardrails
 

@@ -38,6 +38,10 @@ drafted, have the [question test](references/question-test.md) run by a clean-co
 reviewer, answer its findings in the section and stamp the result. Current implementation supplies available means and feasibility, not desired
 intent. Research missing knowledge when useful and distinguish it from game observations.
 
+When drafting or revising study prose, read the annotated
+[writing examples](references/writing.md). Edit the title, question, section heading
+and opening together so each contributes useful information.
+
 Create the early page using StudyLayout and validated metadata in
 `apps/web/src/data/studies.ts`. Follow the specification's presentation contract; inspect
 its rendered reading width, spacing and section progression before presenting it.
@@ -66,10 +70,10 @@ record missing instrument capabilities and proposed extensions in the design stu
 Discuss them with the designer. Update the instrument spec only when the designer
 accepts the requirement. Reuse production simulation code for experiments.
 
-For recorded findings, retain written conclusions and captured images of the observed
-results. Keep an interactive instance only when continued interaction serves the
-study, not solely to preserve historical evidence. Instruments use current production
-simulation code; later production changes may alter or invalidate old examples.
+For recorded findings, retain written conclusions and suitable static or recorded
+evidence of the observed results. Instruments use current production simulation code;
+later production changes may alter or invalidate old examples. The closing procedure
+below governs replacing temporary interactive examples and retiring their code.
 
 ## 03 / Assess readiness
 
@@ -93,6 +97,21 @@ The designer decides the end state under the specification's ending contract. Se
 registry status only then; use close-loop for a stopped study. Retain the designer's
 assessment of the study, including failure, separately from the value of ending it
 for the project.
+
+When ending a study, consolidate its decisions, reasons, useful observations and
+remaining uncertainty into a document understandable without operating its
+experimental tools. Read the [closure example](references/writing.md#close-the-study-by-preserving-its-findings-and-retiring-its-apparatus).
+Capture useful visual evidence as static images with captions; use a recorded clip
+or sequence when a still image would lose the relevant motion. Retain the conditions
+needed to interpret the evidence and store retained media in versioned study assets.
+State evidence gaps explicitly; a new capture is not proof of an earlier observation.
+
+Replace temporary interactive examples with those records before removing their code.
+Check consumers, then remove study-specific components, scripts and fixtures that
+have no continuing use. Preserve shared production systems and reusable Lab
+instruments. Keep an interactive example only for a named continuing purpose, recorded
+on the page. Verify the resulting page and retained media, and check affected consumers
+after cleanup. Useful evidence survives independently of the retired apparatus.
 
 Reuse production systems in interactive examples and scope experiments. Check keyboard,
 the narrowest supported window (1280px; the Lab is never checked below that) and relevant states, along with affected repository gates and rendering.

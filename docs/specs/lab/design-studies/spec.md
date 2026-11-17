@@ -62,6 +62,11 @@ questions needed to continue the work. Synthesize the conversation into statemen
 about the design. Requirements, hypotheses, observations and decisions should be
 recognizable from their substance and evidence. Attribute external sources when they
 support a claim; conversational speakers and approval exchanges belong in chat.
+Requirements retain the concrete condition, its consequence and the reasoning behind
+the proposed change, so a future designer can reconsider the decision.
+Decision summaries retain the accepted properties, their reasons and the choices
+that remain provisional; acceptance of one quality does not settle every property
+of its example.
 Review questions, coordination and process evaluation also belong in chat or their
 separate evidence records. The one exception is the question test: section 01 ends
 with its dated result for each metric and a link to the full result at
@@ -70,7 +75,13 @@ conditions and check results are labeled and linked to their specific evidence.
 
 The opening contains exactly one substantive numbered section 01 and an unfilled
 “02 / To be developed after 01”. It explains a concrete situation and the subject's
-central tension. Normally use two or three short paragraphs or a compact purpose list;
+central tension. The title identifies the subject, the question names the decision being investigated,
+and the opening adds the concrete situation and reasoning. Repeated framing is merged
+while constraints and uncertainty remain explicit.
+Prose explains intended qualities, constraints or unresolved decisions directly;
+generic announcements that the study will investigate its subject are omitted.
+Investigation plans identify the specific uncertainty they address.
+Normally use two or three short paragraphs or a compact purpose list;
 150–250 words is an editing target, not a quota. Implementation inventories, attribution
 headings and lifecycle reports do not belong in the opening. The button opening
 “Situations before styling” supplies the explanatory progression, not specific choices.
@@ -98,6 +109,19 @@ the study's design quality or overwrite the designer's assessment of failure.
 | Accepted  | 04 / Scope    | Slices to implement, fully or partly, as separate work.           |
 | Ruled out | 02 or 03      | Why the concept does not fit the game, recorded on the page.      |
 | Stopped   | Any part      | Evidence of what blocked the study, collected through close-loop. |
+
+A closed study is a durable design record understandable without operating its
+experimental tools. It retains decisions and reasons, useful observations, remaining
+uncertainty and the evidence needed to interpret them. Visual evidence uses static
+images with captions where useful; motion uses recorded clips or sequences when
+stills would lose the relevant behaviour. Retained media belongs in versioned study
+assets, with relevant observation conditions and evidence gaps explicit.
+
+Temporary interactive examples are replaced by those records, and study-specific
+components, scripts and fixtures with no continuing use are removed after checking
+consumers. Shared production systems and reusable Lab instruments are preserved.
+An interactive example remains only for a named continuing purpose recorded on the
+page. The skill owns the capture, cleanup and verification procedure.
 
 ## Optional study-quality evaluation — separate from readiness
 
