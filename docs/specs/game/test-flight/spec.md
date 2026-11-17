@@ -33,19 +33,24 @@ Practice is a mode of its own, as the [game contract](../spec.md) lists it.
   fitting, with its real mass, thrust and handling.
 - **A fixed system.** Every entry uses the same star-and-planet system and the
   same starting conditions. Its star uses the G7 reference profile at a fixed
-  70 u surface radius and the World HUD labels it `G7, Sun`. Play begins at
+  70 u surface radius and the World HUD labels it `G7 Sun`. Play begins at
   once. The innermost stock rock is Mercury: radius 27u, 258u circular orbit,
   4u/s orbital travel, and an independent 31.3-second mineral-surface turn.
   Venus replaces the middle stock gas planet, with its own `venus` identity:
   golden amber clouds, radius 40.327526u, orbit 482.134715u, travel speed
-  2.953586u/s and independent 60-second right-to-left cloud turn. The outer
-  stock rock remains. The selected Venus mass is stored independently in tuning;
-  Mercury has mass 870 and gravity reach 131.91u; Venus has mass 2844.850581 and
-  gravity reach 238.53u. See [planets](../world/planets/spec.md).
+  2.953586u/s and independent 60-second right-to-left cloud turn. The Cradle
+  replaces the outer stock rock, with its own `cradle` identity: rock ground
+  under turning white clouds, radius 41.499590u, orbit 666.611399u, travel
+  speed 2.513080u/s, and an atmosphere. The selected Venus and Cradle masses
+  are stored independently in tuning; Mercury has mass 870 and gravity reach
+  131.91u; Venus has mass 2844.850581 and gravity reach 238.53u; The Cradle has
+  mass 3186.671024 and gravity reach 252.45u. See
+  [planets](../world/planets/spec.md).
   The stock middle planet's phase is retained under Practice's fixed phase seed;
   the study's held orbit phase is not a placement rule.
-- **Real flight.** Controls, movement, gravity and contact with the star and
-  planets work as in any flight. Contact never repositions the ship.
+- **Real flight.** Controls, movement, gravity, contact with the star and
+  planets, and drag in The Cradle's air work as in any flight. Contact never
+  repositions the ship. Entering the air shows the heat cue as in any flight.
 - **Nothing runs out.** Energy stays full at the ship's capacity and never
   limits an engine or a system. Hull stays full; nothing damages it.
 - **Nothing ends it.** There is no failure and no game over.
@@ -68,6 +73,8 @@ Practice is a mode of its own, as the [game contract](../spec.md) lists it.
   causes a shortage.
 - P4: Contact with the star and planets keeps normal motion, leaves hull
   full, ends nothing and does not reposition the ship.
+- P8: Flying through The Cradle's air slows the ship and shows the heat cue,
+  and leaves hull full.
 - P5: No derelicts or encounters appear.
 - P6: Pause freezes the session; Resume continues it; Abort returns to the
   Hangar with the ship unchanged; no reset is offered, and a later entry starts
@@ -106,4 +113,10 @@ Feature: Practice
     Given a Practice session
     When I pause and abort
     Then I am back in the Hangar with my ship unchanged
+
+  Scenario: Skim The Cradle's air
+    Given a Practice session
+    When I fly through the edge of The Cradle's air
+    Then my ship slows and shows the heat cue
+    And my hull stays full
 ```

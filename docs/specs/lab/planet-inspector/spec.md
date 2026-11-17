@@ -4,8 +4,8 @@
 
 Planet Inspector shows planet rendering exactly as the game draws it: surface,
 spin, Sun-facing light, atmosphere, orbit and world HUD. The standalone Lab page
-is `/lab/planet-inspector`, opening paused on named Mercury. Named Venus is also
-available. Studies embed the same instrument to examine a planet in motion or
+is `/lab/planet-inspector`, opening paused on named Mercury. Named Venus and
+The Cradle are also available. Studies embed the same instrument to examine a planet in motion or
 at a reproducible instant. The inspector is the Lab's planet page.
 
 The bench uses production renderers one to one. Its only local appearance
@@ -29,7 +29,7 @@ belong to the [Flight instrument](../flight-scene-instrument/spec.md).
   and the inspection scene. Each instance owns its simulation, clock, material
   projection, measurements and render resources.
 - Named references resolve Practice definitions. `mercury` maps to internal
-  identity `moon`; `venus` maps to `venus`. Radius, mass, orbit, spin period,
+  identity `moon`; `venus` maps to `venus`; `cradle` maps to `cradle`. Radius, mass, orbit, spin period,
   materials and atmosphere remain production-owned. They are read from the
   game's definitions and factories, without a copied Lab preset.
 - The scene calls `drawFlightFrame` from
@@ -54,7 +54,7 @@ field-specific issues in place of the scene; they never silently select Mercury.
 
 | Field                     | Contract                                                                                           |
 | ------------------------- | -------------------------------------------------------------------------------------------------- |
-| `planet`                  | `{ kind: "named", name: "mercury" }` or `{ kind: "named", name: "venus" }`; default Mercury.       |
+| `planet`                  | `{ kind: "named", name }` with `name` `mercury`, `venus` or `cradle`; default Mercury.             |
 | `opening.orbitDegrees`    | Optional finite 0–360; absent uses the selected planet's Practice starting angle.                  |
 | `opening.rotationDegrees` | Finite 0–360, default 0. Selects a tick within the named planet's first spin period of scene time. |
 | `opening.zoom`            | `1`, `2`, `4`, `8` or `16`, default `1`.                                                           |
@@ -64,7 +64,7 @@ field-specific issues in place of the scene; they never silently select Mercury.
 and a validated custom-definition branch are extensions; unsupported custom
 selections are rejected. Configuration replacement opens at the new document's
 initial state and releases the old scene. The named-planet choice in the pane
-selects Mercury or Venus at that document's opening settings. Interaction state
+selects Mercury, Venus or The Cradle at that document's opening settings. Interaction state
 is local; the document, game settings, persistence and Firestore are unchanged.
 Lighting controls are local pane state and are not part of the Inspector
 document.
@@ -76,7 +76,10 @@ document.
 The selected planet stays centered, including during playback. The Sun remains
 its light source even when outside the camera. Body, light, atmosphere, orbit,
 gravity boundary, name and Sun indicators are drawn wherever the production
-passes draw them. Venus includes its production atmosphere line.
+passes draw them. Venus includes its production atmosphere line. The Cradle
+includes its ground, turning clouds, haze and rim. A planet's spin period is
+its ground's; The Cradle's clouds keep turning at their own rate with scene
+time.
 
 The top-left Zoom switch offers **1×, 2×, 4×, 8×, 16×**. These are the
 inspector's own levels: **0.5, 1, 2, 4, 8 CSS pixels per world unit**, respectively.
@@ -204,9 +207,9 @@ tokens. The Lab supports viewports 1280px wide and above.
 ### Definition of Done
 
 - The Lab lists Planet Inspector and opens it paused on Mercury at 1×.
-- Named Mercury and Venus resolve Practice state and unchanged production
-  materials, including Venus's atmosphere line, through the shared production
-  body-appearance adapter.
+- Named Mercury, Venus and The Cradle resolve Practice state and unchanged
+  production materials, including Venus's atmosphere line and The Cradle's
+  clouds, haze and rim, through the shared production body-appearance adapter.
 - `drawFlightFrame` receives no substituted passes or wrapped materials.
 - Surface rotation scrubs one spin period of scene time while preserving the
   staged orbit. Orbit changes orbital angle while preserving scene time. Both
@@ -245,6 +248,13 @@ Scenario: Scrub a Mercury turn at a staged orbit
   And the Sun animation follows that time while Orbit stays at 120 degrees
   When I set Orbit to 240 degrees
   Then scene time and Surface rotation stay unchanged
+
+Scenario: Inspect The Cradle
+  Given I select named The Cradle
+  Then the production ground, clouds, haze, rim, light and HUD are drawn
+  When I play for one ground spin period
+  Then the ground has returned to its opening picture and the clouds have
+  turned half way
 
 Scenario: Inspect Venus
   Given I select named Venus

@@ -123,8 +123,8 @@ the accepted mineral surface, independent 31.3-second spin and Sun-facing LFX.
 ### Practice Venus
 
 Practice replaces the stock middle gas planet with one named `venus`, before
-applying gravity tuning. The outer rock and Mercury remain; other modes retain
-all three stock planets. Planet identities remain strings and gravity masses are keyed by identity;
+applying gravity tuning. Mercury remains, and The Cradle replaces the outer
+rock; other modes retain all three stock planets. Planet identities remain strings and gravity masses are keyed by identity;
 optional `practicePlanetMass` overrides apply only in Practice.
 
 - Radius: `27 × (1 + (12104 / 4879 − 1) / 3)` ≈ 40.327526u.
@@ -150,6 +150,59 @@ optional `practicePlanetMass` overrides apply only in Practice.
   atmosphere adds no collision, drag or damage region. Whole circular orbits
   remain separated by more than their bodies' radii, and the fixed spawn is clear.
 
+### Practice Cradle
+
+Practice replaces the stock outer rock (`id: rock`) with one named `cradle`,
+display name The Cradle, before applying gravity tuning. Its numbers follow
+Venus's derivation from Earth's ratios to Mercury:
+
+- Radius: `27 × (1 + (6371 / 2440 − 1) / 3)` ≈ 41.499590u.
+- Orbit: `258 × 149.6 / 57.9` ≈ 666.611399u, circular, centre to centre.
+- Travel speed: `4 × 29.78 / 47.4` ≈ 2.513080u/s, positive angular speed equal
+  to travel speed / orbit radius; initial phase inherited from the replaced
+  outer planet and Practice's fixed phase seed.
+- Mass: independently stored `gravity.practicePlanetMass.cradle`,
+  `870 × (radius / 27)² × (1 + (9.81 / 3.70 − 1) / 3)` ≈ 3186.671024.
+  Later radius or Mercury changes do not recompute it.
+- Ground: the Impact rock map, turning every 31.3 seconds.
+- Clouds: the Cirrus map, white, its density giving opacity: opaque cores,
+  soft edges and clear openings onto the ground. It turns every 62.6 seconds,
+  half the ground's speed, and its radius is the body radius plus 2/5 of the
+  air depth.
+- Air: an [atmosphere](#atmosphere) with a depth within 4–22u, stored as
+  tuning.
+- Haze: a soft radial gradient on World from the ground out to the air's edge,
+  over the clouds.
+- Rim: a fixed blue rim at the air's edge on the day side, two narrow arcs
+  peaking 20° from each tangent toward the star, drawn on World with native
+  arcs. Its colour does not follow the star's.
+- Light and dark: the shared body-light stamp at production values, covering
+  the cloud surface.
+- Both maps are prepared at load from production assets, with their provenance
+  kept beside them. A failed material setup draws a blue stock disc and keeps
+  the HUD, air and physics.
+
+### Atmosphere
+
+A planet may carry an atmosphere: a shell of air from its surface out to a
+depth in world units, moving with the planet's orbit. The Cradle is the only
+planet with one. Venus's arc is drawing only and is not an atmosphere.
+
+- **Contact.** A ship is in the air when its collision circle overlaps the
+  shell. Density is 0 at the outer edge and rises linearly with the ship's
+  penetration to 1 at the surface.
+- **Drag.** Each simulation step multiplies the ship's velocity relative to
+  the planet by `exp(−k × density × dt)`. Drag slows the ship and never changes
+  the direction of that relative velocity. `k` is stored as tuning.
+- **Heat cue.** While a ship is in the air it shows the
+  [atmospheric heat cue](../../render/fx.md#atmospheric-heat).
+- **No damage.** The air does no hull damage and keeps no temperature.
+- **Every ship, every mode.** Drag applies to every ship near any planet with
+  an atmosphere, in every mode; only Practice has such a planet.
+- The simulation exposes each ship's air sample, validated by Zod: density,
+  the direction to the planet and the ship's velocity relative to the planet.
+  Drawing reads it and never changes it.
+
 A planet without a surface map is drawn as a flat disc. The flat-vector
 descriptions elsewhere in this document describe that disc, not Mercury or Venus.
 All planets are drawn under the render contract's
@@ -167,6 +220,9 @@ All planets are drawn under the render contract's
 
 - **Visibility:** Planets must be clearly distinct from the background and the Star.
 - **Physics:** Gravity wells of multiple bodies (Star + Planet) must sum logically.
+- **Air:** Outside every atmosphere, drag leaves a ship's motion unchanged.
+  Inside, drag never turns the ship's velocity relative to the planet, and
+  deeper air slows it more over equal simulated time.
 
 ### Scenarios
 
@@ -183,6 +239,19 @@ All planets are drawn under the render contract's
 - Then my ship bounces back with elastic collision
 - And velocity is damped by restitution factor (0.8)
 - **Status:** VERIFIED - Collision detection and bounce functional
+
+**Scenario: Skimming The Cradle's air**
+- Given a ship passing The Cradle with its collision circle inside the air
+- When the simulation advances
+- Then its speed relative to the planet falls and its direction relative to
+  the planet holds
+- And the heat cue shows while it is in the air and fades after it leaves
+- And its hull is unchanged
+
+**Scenario: Passing outside the air**
+- Given a ship passing The Cradle with its collision circle outside the air
+- When the simulation advances
+- Then no drag applies and no heat cue shows
 
 ## Current Implementation
 

@@ -1,6 +1,4 @@
 ---
-import GravityEncounter from "../../../components/studies/gravity/GravityEncounter.svelte";
-import PlanetEncounter from "../../../components/studies/gravity/PlanetEncounter.svelte";
 import { studies } from "../../../data/studies";
 import StudyLayout from "../../../layouts/StudyLayout.astro";
 
@@ -63,7 +61,57 @@ const study = studies.find((entry) => entry.slug === "gravity-wells");
       cases: this tests momentum preservation, not the directional engine
       response.
     </p>
-    <GravityEncounter client:load />
+    <p>
+      Fixture: stock G sun (radius 35, reach 315, strength 600), stock core
+      flight tuning, 60 steps/s, up to 12 s. Shared solar gravity calculation
+      and solar hull damage are reused. This preserves the exploration fixture;
+      the game now uses the accepted inverse-square curve at 4× solar strength.
+      Drag and the speed cap are disabled by default; the comparison checkbox
+      restores both original rules. Both engines are off, so directional engine
+      effectiveness is not exercised here. The reference removes the entire sun,
+      including heat. Both exits are measured at the starting radius; elapsed
+      times may differ. No planets, power depletion, steering, camera motion, or
+      arena wrapping occur in this encounter. Paths stop at exit or death;
+      “still inside” does not prove escape is impossible. The dots and trails
+      are measurement graphics, not proposed game visuals.
+    </p>
+    <p>
+      Solid lime: solar well. Dashed white: no sun. Dashed circle: gravity
+      reach, not a safety boundary. Both ships enter from the left, pointing
+      right, with engines off.
+    </p>
+    <figure>
+      <img
+        src="/studies/gravity-wells/021-coasting-no-drag.png"
+        alt="A straight dashed white path and a lime path that bends slightly upward past the sun, inside the dashed reach circle."
+        width="594"
+        height="595"
+      >
+      <figcaption>
+        Updated demo, no drag and no speed cap, entry speed 500 units/s, aim
+        offset 180 units. Solar well: entry → peak 500 → 540, exit 500 units/s,
+        closest 167 units, hull 100%. No sun: exit 500 units/s, closest 180
+        units. Captured 17 November 2026 at 1440px from the study’s interactive
+        example running today’s production code; a reconstruction, not the view
+        the designer reviewed.
+      </figcaption>
+    </figure>
+    <figure>
+      <img
+        src="/studies/gravity-wells/021-original-baseline-aim-80.png"
+        alt="With drag and the speed cap restored, the lime path bends upward past the sun; the dashed white path continues straight."
+        width="594"
+        height="595"
+      >
+      <figcaption>
+        Original baseline, drag and speed cap on, entry speed 500 units/s, aim
+        offset 80 units. Solar well: entry → peak 500 → 539, exit 317 units/s,
+        closest 64 units, hull 100%. No sun: exit 346 units/s, closest 80 units.
+        Captured 17 November 2026 at 1440px from the study’s interactive example
+        running today’s production code; a reconstruction, not the view the
+        designer reviewed.
+      </figcaption>
+    </figure>
     <p>
       Original baseline (checkbox enabled): at entry speed 500 and aim offset
       80: the solar pass peaks at 539, then exits at 317 units/s; the no-sun
@@ -78,7 +126,7 @@ const study = studies.find((entry) => entry.slug === "gravity-wells");
       powered escape and a moving planet need separate comparisons before we
       generalize this result to all wells.
     </p>
-    <p class="invitation">
+    <p>
       <strong
         >Review: interesting loops at low speed, too little influence at useful
         flight speeds.</strong
@@ -134,11 +182,56 @@ const study = studies.find((entry) => entry.slug === "gravity-wells");
       adjustable from 0.25× to 8× without changing the body or well radius. Keep
       entry speed and aim fixed while adjusting it.
     </p>
-    <GravityEncounter
-      label="Gravity curve comparison"
-      curveStudy={true}
-      client:load
-    />
+    <p>
+      Both curves pull at 300 units/s² halfway to the boundary (157.5 units) at
+      1×. The inverse-square variant is weaker outside that distance and
+      stronger inside. Strength scales the whole curve; the radius and zero-pull
+      boundary stay fixed. At 1× the inverse-square surface pull is 8000
+      units/s². All three captures: no drag or speed cap, entry speed 500
+      units/s, aim offset 180 units.
+    </p>
+    <figure>
+      <img
+        src="/studies/gravity-wells/022-linear-1x.png"
+        alt="Original linear pull at 1×: the lime path bends gently upward past the sun."
+        width="594"
+        height="595"
+      >
+      <figcaption>
+        Original linear pull, 1×. Peak 540, exit 500 units/s, closest 167 units.
+        Captured 17 November 2026 at 1440px from the study’s interactive example
+        running today’s production code; a reconstruction, not the view the
+        designer reviewed.
+      </figcaption>
+    </figure>
+    <figure>
+      <img
+        src="/studies/gravity-wells/022-inverse-square-1x.png"
+        alt="Inverse-square, zero at edge, at 1×: the lime path bends slightly less than with linear pull."
+        width="594"
+        height="595"
+      >
+      <figcaption>
+        Inverse-square, zero at edge, 1×. Peak 523, exit 500 units/s, closest
+        172 units. Captured 17 November 2026 at 1440px from the study’s
+        interactive example running today’s production code; a reconstruction,
+        not the view the designer reviewed.
+      </figcaption>
+    </figure>
+    <figure>
+      <img
+        src="/studies/gravity-wells/022-inverse-square-4x.png"
+        alt="Inverse-square at 4×: the lime path turns more sharply around the sun."
+        width="594"
+        height="595"
+      >
+      <figcaption>
+        Inverse-square, zero at edge, 4×. Peak 663, exit 500 units/s, closest
+        136 units. Captured 17 November 2026 at 1440px from the study’s
+        interactive example running today’s production code; a reconstruction,
+        not the view the designer reviewed.
+      </figcaption>
+    </figure>
     <p>
       We chose the bounded inverse-square curve and a solar strength range of
       4×–10× because it produces the close-pass shapes we want. The comparison
@@ -161,8 +254,40 @@ const study = studies.find((entry) => entry.slug === "gravity-wells");
       well. The hypothesis is that planetary motion can make the slingshot
       reward depend on approach side.
     </p>
-    <PlanetEncounter client:load />
-    <p class="invitation">
+    <p>
+      Fixed small rock planet: radius 20; ship radius 16. Contact stops the
+      trial at a center distance of 36; no bounce or damage model is being
+      assessed. Gravity uses the shared bounded inverse-square law, reaching
+      zero at the independent well boundary. Midpoint strength is independent of
+      physical radius. Shared orbit motion follows a prescribed 600-unit orbit;
+      no central sun force is included. These are isolated study fixtures, not
+      the current planetary game rules. Engines off, no drag or speed cap.
+      Speeds are measured in the arena frame; the orbiting planet can exchange
+      energy with the ship. Both trials start with the same ship position and
+      velocity at the well boundary. Integration uses 240 steps/s, up to 12
+      seconds; a non-exit is not proof of permanent capture. Changing reach also
+      changes the initial launch position.
+    </p>
+    <figure>
+      <img
+        src="/studies/gravity-wells/023-planet-default.png"
+        alt="Two views centred on the planet. Left, stationary: the path bends gently. Right, orbiting: the path wraps tightly around the planet and leaves upward."
+        width="1022"
+        height="512"
+      >
+      <figcaption>
+        Default trial: entry speed 325 units/s, aim 45% of reach, gravity at
+        half reach 300 units/s², well reach 240 units, planet orbital speed 60
+        units/s. Left, stationary: 325 → 397 → 325 units/s, speed change −0,
+        closest 88 units. Right, orbiting: 325 → 505 → 277 units/s, speed change
+        −48, closest 41 units. Both views follow the planet; trails show motion
+        relative to it. Positive orbital speed initially moves the planet
+        downward. Captured 17 November 2026 at 1440px from the study’s
+        interactive example running today’s production code; a reconstruction,
+        not the view the designer reviewed.
+      </figcaption>
+    </figure>
+    <p>
       <strong
         >Which approaches produce the useful turn and exit-speed reward you want
         from a planet?</strong
@@ -220,11 +345,3 @@ const study = studies.find((entry) => entry.slug === "gravity-wells");
     </p>
   </section>
 </StudyLayout>
-
-<style>
-.invitation {
-  border-left: var(--flight-border);
-  border-left-color: var(--color-acid-lime);
-  padding-left: var(--spacing-md);
-}
-</style>

@@ -15,7 +15,7 @@ export const studies = z.array(studySchema).parse([
     status: "open",
     phase: "exploration",
     question:
-      "What physical form gives one heavy plasma weapon a distinctive presence, exposed or partly buried, and believable origins for its central strike and paired exhausts?",
+      "What physical construction gives the Plasma Projector a convincing identity within the game’s weapon language?",
   },
   {
     slug: "maintenance-drive-2026-11-17",

@@ -33,7 +33,8 @@ here.
   `influenceRadius` is set to its reach. A configured planet without a mass in
   the tuning file is an error.
 - Practice uses its fixed G7 Sun and roster: Mercury, Venus replacing the middle
-  gas planet, and the outer stock rock. Venus receives its own identity before
+  gas planet, and The Cradle replacing the outer stock rock. The Cradle's mass
+  is stored in `practicePlanetMass.cradle`, 3186.671024, and reaches 252.45u. Venus receives its own identity before
   mass lookup, using the independently stored `planetMass.venus`. The selected
   mass is now 2844.850581, recalculated from Mercury's reduced 870 mass using
   the study's selected one-third surface-gravity difference. Its reach is
@@ -43,7 +44,9 @@ here.
   131.91u, while the stock moon retains 1450 in other modes. Practice Mercury's
   deliberately gentler contact pull is outside the stock planet tuning band;
   that band continues to guard stock planets and Venus.
-  Fields may overlap; their accelerations continue to add as vectors. Practice
+  Fields may overlap; their accelerations continue to add as vectors. A
+  planet's [atmosphere](../planets/spec.md#atmosphere) adds drag in its air,
+  applied after the pull in each step; gravity and contact are unchanged. Practice
   contact and full resources follow [its contract](../../test-flight/spec.md).
 
 ### The pull

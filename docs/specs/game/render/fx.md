@@ -26,7 +26,23 @@ The aperture-cut pass deliberately removes light over derelict openings after
 the FX surface is composited into its canvas. It is a geometric reveal rule, not
 history cleanup.
 
-## Contract
+## Atmospheric heat
+
+A ship inside a planet's [atmosphere](../world/planets/spec.md#atmosphere)
+shows a heat cue in two parts, both driven by the simulation's air sample for
+that ship:
+
+- **Band in FX.** A curved band, prepared once at load, is stamped into FX on
+  the ship's leading, planet-facing side, mirrored around its velocity relative
+  to the planet. Fresh emission grows with density and that relative speed. The
+  band's history and fade belong to the FX surface like any other emission;
+  after the ship leaves the air, the band fades and nothing new is stamped.
+- **Glow on LFX.** A soft glow lights the ship's planet-facing side while it is
+  in the air, redrawn each frame from the current sample.
+
+The cue is a display of air contact. It does no damage and reads nothing back
+into the simulation.
+
 
 - Memory is persistent and owned by the FX presentation surface, never the
   simulation.
@@ -34,6 +50,8 @@ history cleanup.
 - Pause does not add light or fade it; reset clears the full history.
 - Fresh source stamps have priority over secondary decoration under the shared
   scene budget.
+- A ship outside every atmosphere stamps no heat band and shows no heat glow;
+  inside, more density or relative speed gives more fresh band light.
 - The FX CSS blend remains screen by default in play and Lab.
 - Production play, the Render Model workbench and the render performance bench
   use the same reusable Turbulent bloom filter definition and defaults. The

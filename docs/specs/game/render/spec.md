@@ -73,7 +73,7 @@ the same way; what differs between bodies is data.
   atmosphere, drawn far to near on World. Each part is drawn without light or
   shade of its own.
 - **Light and dark on LFX.** Each body's light and dark side is one stamp on LFX,
-  turned to face its star. The shared `body-light` pass draws these stamps before
+  turned to face its star and sized to cover its outermost surface. The shared `body-light` pass draws these stamps before
   every other LFX pass, so beams and
   halos are drawn over it. It may darken whatever lies beneath it; over a ship
   this reads as the body's shadow.
@@ -93,17 +93,24 @@ the same way; what differs between bodies is data.
   stamp and never creates or rebuilds a pixel mask. Prepared storage contains
   the production default and tuples with active users; it releases custom
   tuples when their users stop needing them.
-- **Rotation.** A surface's turn comes from simulation ticks, independently of
-  its orbit and its light. The turning surface is drawn with the browser's image
-  drawing from a map prepared at load. It is sized to the body's diameter on
-  screen and redrawn only when the surface has visibly moved. The same tick gives
-  the same picture, whatever frames were drawn before it.
+- **Surfaces.** A body has one or two turning surfaces. The lower surface is the
+  ground and has the body's radius. An upper surface lies over it, may be partly
+  transparent and may have a larger radius than the body; its map carries its
+  opacity. Anything else in the stack, such as haze or an atmospheric arc, is
+  drawn with native shapes and gradients, not as a turning surface.
+- **Rotation.** Each surface's turn comes from simulation ticks on its own
+  period, independently of the other surface, its orbit and its light. A
+  turning surface is drawn with the browser's image drawing from a map prepared
+  at load. It is sized to its own diameter on screen and redrawn only when that
+  surface has visibly moved. The same tick gives the same picture, whatever
+  frames were drawn before it.
 - **Cost.** No game code loops over pixels per frame; pixel work happens at load.
   Visibility uses each body's complete visual bounds. A stock or fallback disc
   includes half its outline stroke, `max(1, radius × 0.06) / 2` world units;
   Venus's body bounds also include half its atmosphere stroke,
-  `max(0.65 / zoom, radius × 0.065) / 2` world units; a light stamp uses its
-  disc radius. The `planets` pass draws the complete body composition when its combined
+  `max(0.65 / zoom, radius × 0.065) / 2` world units; a body with an atmosphere
+  includes everything drawn out to its air's edge; a light stamp uses its disc
+  radius. The `planets` pass draws the complete body composition when its combined
   visible bounds intersect or touch the view, and skips body, surface and
   atmosphere drawing when they are wholly outside. The light pass draws when its
   stamp bounds intersect or touch the view, and skips it when wholly outside.
@@ -294,6 +301,11 @@ neither: it draws every pass, unobserved.
   surface, atmosphere or light drawing. World HUD marks crossing the view remain
   visible independently.
 - A paused frame redraws no body surface.
+- A body with two surfaces turns each on its own period: advancing the
+  simulation by one period of either surface returns that surface to the same
+  picture while the other has moved.
+- The frame cost of a body with two surfaces is measured with `observe` on
+  screen, off screen and close up, beside Mercury and Venus.
 
 ### Regression guardrails
 
@@ -347,6 +359,12 @@ Scenario: A planet turns
   When frames are drawn
   Then its surface turns with simulation time
   And its light and dark side keeps facing the star
+
+Scenario: Clouds turn over the ground
+  Given a planet with a ground surface and a partly transparent cloud surface
+  When frames are drawn while the simulation advances
+  Then the ground shows through the openings in the clouds
+  And the clouds turn at their own rate over the ground
 
 Scenario: A planet is outside the view
   Given a planet's complete visual bounds are outside the camera's view
