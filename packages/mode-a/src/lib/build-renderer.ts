@@ -246,6 +246,7 @@ export function buildMounts(build: Loadout): BuildMount[] {
         width: build.chassis !== "scout" ? 11 : 10,
         height: build.chassis !== "scout" ? 9 : 8,
         ...(build.chassis === "fighter" ? { underHull: true } : {}),
+        ...(build.chassis === "scout" ? { underHull: false } : {}),
       }),
     ),
     ...build.aft.map(

@@ -67,6 +67,8 @@ in the game's contracts because a new player
   choice. Other slots may be empty.
 - **Fighter equipment mounts.** The two weapon/support mounts sit at ship-local
   `(5, -11)` and `(5, 11)` and their fittings draw beneath the hull.
+- **Scout equipment mount.** The middle equipment slot's fitting draws on top
+  of the hull in the Hangar, Lab and flight.
 - **One derivation.** The figures the Hangar shows and the ship that flies come
   from the same derivation of the same hull and fitting. More fitted mass means
   less acceleration and slower turning.
