@@ -37,6 +37,50 @@ describe("flight contract", () => {
     );
     expect(venus?.systemPosition).toBeGreaterThan(mercury?.systemPosition ?? 0);
   });
+  it("puts The Cradle and the only atmosphere outermost in Practice", () => {
+    const practice = new Simulation({ ...stockSettings(), mode: "practice" });
+    const cradle = practice.planets.find((planet) => planet.id === "cradle");
+    expect(cradle?.displayName).toBe("The Cradle");
+    expect(cradle?.atmosphere).toBeDefined();
+    expect(cradle?.systemPosition).toBe(practice.planets.length);
+    expect(practice.planets.filter((p) => p.atmosphere)).toHaveLength(1);
+    for (const mode of ["survival", "derelicts", "gauntlet"] as const) {
+      const other = new Simulation({ ...gameSettings("wasp"), mode });
+      expect(other.planets.some((p) => p.atmosphere)).toBe(false);
+    }
+    const spawn = practice.ship;
+    const air = cradle?.atmosphere?.depth ?? 0;
+    expect(
+      Math.hypot(
+        spawn.pos.x - (cradle?.pos.x ?? 0),
+        spawn.pos.y - (cradle?.pos.y ?? 0),
+      ),
+    ).toBeGreaterThan((cradle?.radius ?? 0) + air + spawn.radius);
+  });
+  it("slows a Practice ship in The Cradle's air and keeps its hull full", () => {
+    const fly = (withAir: boolean) => {
+      const sim = new Simulation({ ...stockSettings(), mode: "practice" });
+      sim.start();
+      const cradle = sim.planets.find((planet) => planet.id === "cradle");
+      if (!cradle?.atmosphere) throw new Error("The Cradle has no air");
+      if (!withAir) cradle.atmosphere = undefined;
+      const out = cradle.radius + sim.ship.radius + 3;
+      const angle = cradle.orbitAngle;
+      sim.ship.pos.set(
+        cradle.pos.x + Math.cos(angle) * out,
+        cradle.pos.y + Math.sin(angle) * out,
+      );
+      sim.ship.vel.set(-Math.sin(angle) * 300, Math.cos(angle) * 300);
+      sim.step({ leftThruster: false, rightThruster: false, fire: false });
+      return sim;
+    };
+    const inAir = fly(true);
+    const noAir = fly(false);
+    expect(inAir.ship.vel.mag()).toBeLessThan(noAir.ship.vel.mag());
+    expect(inAir.airSample?.density).toBeGreaterThan(0);
+    expect(noAir.airSample).toBeNull();
+    expect(inAir.state.resources.hull).toBe(100);
+  });
   it("keeps ranked Survival on the legacy Sun while Playground uses the seeded family", () => {
     const settings = {
       ...gameSettings("wasp"),

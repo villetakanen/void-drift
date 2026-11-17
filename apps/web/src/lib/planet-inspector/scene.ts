@@ -1,5 +1,6 @@
 import {
   Camera,
+  createCloudedWorld,
   createRockMaterial,
   DEFAULT_ROCK_BODY_LIGHTING,
   PLANET_MAPS,
@@ -15,6 +16,7 @@ import {
   drawFlightFrame,
   FlightFx,
   type FlightLayerContexts,
+  PRACTICE_CRADLE_SPIN_SECONDS,
   PRACTICE_MERCURY_SPIN_SECONDS,
   PRACTICE_VENUS_SPIN_SECONDS,
   resizeFlightLayers,
@@ -36,6 +38,17 @@ const references = {
     id: "venus",
     label: "Venus",
     spinSeconds: PRACTICE_VENUS_SPIN_SECONDS,
+  },
+  cradle: {
+    id: "cradle",
+    label: "The Cradle",
+    spinSeconds: PRACTICE_CRADLE_SPIN_SECONDS,
+  },
+  /** The Cradle's body, air and clouds under its own ground map and name. */
+  earth: {
+    id: "cradle",
+    label: "Earth",
+    spinSeconds: PRACTICE_CRADLE_SPIN_SECONDS,
   },
 };
 const INPUT = { leftThruster: false, rightThruster: false, fire: false };
@@ -59,6 +72,7 @@ export class PlanetInspectorScene {
   private fx = new FlightFx();
   private mercury?: Awaited<ReturnType<typeof createRockMaterial>>;
   private venus?: ReturnType<typeof createPracticeVenus>;
+  private cradle?: Awaited<ReturnType<typeof createCloudedWorld>>;
   private bodyAppearances: ReadonlyMap<number, BodyAppearance> = new Map();
   private samples: { at: number; ms: number; redraws: number }[] = [];
   private measurementStart = performance.now();
@@ -88,13 +102,36 @@ export class PlanetInspectorScene {
         `Named ${this.reference.label} is unavailable in Practice`,
       );
     sim.planets.splice(0, sim.planets.length, planet);
+    planet.displayName = this.reference.label;
     sim.start();
     return sim;
   }
   private async prepareMaterial(changed: () => void) {
     let pendingPainter: { dispose: () => void } | undefined;
     try {
-      if (this.doc.planet.name === "mercury") {
+      if (
+        this.doc.planet.name === "cradle" ||
+        this.doc.planet.name === "earth"
+      ) {
+        const material = await createCloudedWorld(
+          this.doc.planet.name === "earth"
+            ? PLANET_MAPS.earthGround
+            : PLANET_MAPS.cradleGround,
+          PLANET_MAPS.cradleClouds,
+        );
+        pendingPainter = material.painter;
+        if (this.disposed) {
+          material.painter.dispose();
+          pendingPainter = undefined;
+          return;
+        }
+        material.painter.prepareLighting(this.lighting);
+        this.cradle = material;
+        this.bodyAppearances = practicePlanetAppearances(this.sim.planets, {
+          cradle: material,
+        });
+        pendingPainter = undefined;
+      } else if (this.doc.planet.name === "mercury") {
         const material = await createRockMaterial(PLANET_MAPS.mercuryGround);
         pendingPainter = material.painter;
         if (this.disposed) {
@@ -159,7 +196,7 @@ export class PlanetInspectorScene {
   }
   setLighting(input: unknown) {
     const next = RockBodyLightingSchema.parse(input);
-    const painter = (this.mercury ?? this.venus)?.painter;
+    const painter = (this.mercury ?? this.venus ?? this.cradle)?.painter;
     painter?.prepareLighting(next);
     this.lighting = next;
   }
@@ -172,7 +209,7 @@ export class PlanetInspectorScene {
     this.sim.step(INPUT);
   }
   private get surface() {
-    const surface = (this.mercury ?? this.venus)?.surface;
+    const surface = (this.mercury ?? this.venus ?? this.cradle)?.surface;
     return surface instanceof StripSphericalSurface ? surface : undefined;
   }
   get passMilliseconds() {
@@ -223,8 +260,10 @@ export class PlanetInspectorScene {
     this.disposed = true;
     this.mercury?.painter.dispose();
     this.venus?.painter.dispose();
+    this.cradle?.painter.dispose();
     this.mercury = undefined;
     this.venus = undefined;
+    this.cradle = undefined;
     this.bodyAppearances = new Map();
     this.samples = [];
     this.fx.clear();

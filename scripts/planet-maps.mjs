@@ -9,7 +9,7 @@
  * the form StripSphericalSurface turns with image drawing. Pixel work happens
  * here, once; play only loads the PNGs.
  */
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "@playwright/test";
@@ -17,12 +17,17 @@ import { chromium } from "@playwright/test";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const out = resolve(root, "apps/web/public/planets");
 const base = process.argv[2] ?? "http://localhost:4321";
+const earthPlate = `data:image/png;base64,${(
+  await readFile(
+    resolve(root, "output/imagegen/earth-2300-tryouts/earth-plate-b.png"),
+  )
+).toString("base64")}`;
 
 const browser = await chromium.launch();
 try {
   const page = await browser.newPage();
   await page.goto(`${base}/lab/planet-inspector`);
-  const maps = await page.evaluate(async () => {
+  const maps = await page.evaluate(async (earthPlate) => {
     const materials = await import(
       "/src/lib/assets/rock-planets/authored-materials.ts"
     );
@@ -104,12 +109,25 @@ try {
       ctx.putImageData(img, 0, 0);
     }
 
+    // Earth, the Lab's copy of The Cradle: the generated Earth plate, an
+    // unlit equirectangular atlas already, resampled to 768 x 384.
+    const earth = canvas(768, 384);
+    {
+      const image = new Image();
+      image.src = earthPlate;
+      await image.decode();
+      const ctx = earth.getContext("2d");
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(image, 0, 0, earth.width, earth.height);
+    }
+
     return {
+      "earth-ground.png": earth.toDataURL("image/png"),
       "mercury-ground.png": mercury.toDataURL("image/png"),
       "cradle-ground.png": ground.toDataURL("image/png"),
       "cradle-clouds.png": clouds.toDataURL("image/png"),
     };
-  });
+  }, earthPlate);
   await mkdir(out, { recursive: true });
   for (const [name, url] of Object.entries(maps)) {
     await writeFile(

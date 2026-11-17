@@ -10,6 +10,15 @@
       "moon": 1450,
       "venus": 2844.850580940663
     },
-    "practicePlanetMass": { "moon": 870 }
+    "practicePlanetMass": {
+      "moon": 870,
+      "cradle": 3186.6710241427595
+    }
+  },
+  "atmosphere": {
+    "cradle": {
+      "depth": 10,
+      "drag": 0.8
+    }
   }
 }

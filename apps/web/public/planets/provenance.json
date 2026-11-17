@@ -16,6 +16,11 @@
       "use": "Practice Cradle clouds",
       "source": "/studies/rock-atmospheres-2026-11-15/cloud-materials/cirrus.png (built-in image_gen, 2026-11-16; prompts in prompts.json beside it)",
       "preparation": "Resampled to 768 x 384; luminance as density; opacity a smooth step from density 0.1 to 0.5; colour 94-100% white from density; no light"
+    },
+    "earth-ground.png": {
+      "use": "Earth, the Planet Inspector's copy of The Cradle; not in play",
+      "source": "output/imagegen/earth-2300-tryouts/earth-plate-b.png (built-in image_gen, 2026-11-17; prompt in earth-plate-b-prompt.json beside it): a speculative Earth 2300 surface plate, unlit equirectangular",
+      "preparation": "Resampled from 1774 x 887 to 768 x 384; no other change"
     }
   }
 }

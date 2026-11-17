@@ -1,4 +1,5 @@
 import type {
+  AirSample,
   GameObject,
   MassWell,
   Planet,
@@ -6,6 +7,7 @@ import type {
   Star,
 } from "@void-drift/core";
 import {
+  airSample,
   assignPlanetSystemPositions,
   CONFIG,
   ENGINE_CUTOFF,
@@ -42,6 +44,12 @@ import {
   PRACTICE_MERCURY_TRAVEL_SPEED,
 } from "./mercurial-rock";
 import {
+  PRACTICE_CRADLE_COLOR,
+  PRACTICE_CRADLE_ORBIT,
+  PRACTICE_CRADLE_RADIUS,
+  PRACTICE_CRADLE_TRAVEL_SPEED,
+} from "./practice-cradle";
+import {
   PRACTICE_VENUS_ORBIT,
   PRACTICE_VENUS_RADIUS,
   PRACTICE_VENUS_TRAVEL_SPEED,
@@ -74,7 +82,7 @@ import {
   SURVIVAL_ENCOUNTER,
 } from "./schemas/salvage";
 import type { ShipProfileId } from "./schemas/ship-profile";
-import { GRAVITY_TUNING } from "./tuning";
+import { ATMOSPHERE_TUNING, GRAVITY_TUNING } from "./tuning";
 import {
   applyYellowFamilyProfile,
   YELLOW_FAMILY_RADIUS,
@@ -96,6 +104,19 @@ export function tunedMassWell(
   return { mass, cutoff: tuning.cutoff, falloff: tuning.falloff };
 }
 /** A configured planet's mass from the tuning file; every configured planet needs one. */
+/** The densest air the ship is in this tick, or null outside every atmosphere. */
+export function playerAirSample(
+  ship: GameObject,
+  planets: readonly Planet[],
+): AirSample | null {
+  let densest: AirSample | null = null;
+  for (const planet of planets) {
+    const sample = airSample(ship, planet);
+    if (sample && (!densest || sample.density > densest.density))
+      densest = sample;
+  }
+  return densest;
+}
 export function planetMass(
   id: string | undefined,
   tuning: GravityTuning = GRAVITY_TUNING,
@@ -199,6 +220,8 @@ export class Simulation {
     );
   }
   gravityCollectionRate = 0;
+  /** The player's contact with the densest air it touches, for drawing only. */
+  airSample: AirSample | null = null;
   gravityFoldOpacity = 0;
   gravityFoldDirection = 0;
   engineOutput = {
@@ -236,6 +259,18 @@ export class Simulation {
         venus.mass = planetMass("venus", this.gravity);
         venus.color = "#f6c371";
         venus.type = "rock";
+      }
+      // The Cradle replaces the outer stock rock, also before mass lookup.
+      const cradle = this.planets.find((planet) => planet.id === "rock");
+      if (cradle) {
+        cradle.id = "cradle";
+        cradle.displayName = "The Cradle";
+        cradle.radius = PRACTICE_CRADLE_RADIUS;
+        cradle.orbitRadius = PRACTICE_CRADLE_ORBIT;
+        cradle.orbitSpeed =
+          PRACTICE_CRADLE_TRAVEL_SPEED / PRACTICE_CRADLE_ORBIT;
+        cradle.color = PRACTICE_CRADLE_COLOR;
+        cradle.atmosphere = ATMOSPHERE_TUNING.cradle;
       }
     }
     const massTuning =
@@ -883,6 +918,7 @@ export class Simulation {
             : "HULL";
       }
     }
+    this.airSample = playerAirSample(this.ship, this.planets);
     this.solarCollectionRate = this.settings.loadout
       ? solarCollected / STEP
       : solarCharge(distance, this.star, 1);

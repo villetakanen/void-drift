@@ -8,7 +8,7 @@ export const PlanetInspectorDocumentSchema = z
         z
           .object({
             kind: z.literal("named"),
-            name: z.enum(["mercury", "venus"]),
+            name: z.enum(["mercury", "venus", "cradle", "earth"]),
           })
           .strict(),
       ])

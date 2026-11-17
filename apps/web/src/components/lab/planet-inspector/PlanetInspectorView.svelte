@@ -18,6 +18,14 @@ import Toggle from "../../inputs/Toggle.svelte";
 import OverlayPane from "../instrument/OverlayPane.svelte";
 import "@void-drift/core/styles/buttons.css";
 
+type PlanetName = PlanetInspectorDocument["planet"]["name"];
+const PLANET_LABELS: Record<PlanetName, string> = {
+  mercury: "Mercury",
+  venus: "Venus",
+  cradle: "The Cradle",
+  earth: "Earth",
+};
+
 let {
   doc,
   paneDoc,
@@ -29,7 +37,7 @@ let {
   paneDoc: DeepReadonly<PlanetInspectorDocument>;
   label: string;
   pane?: Snippet<[DeepReadonly<PlanetInspectorDocument>]>;
-  onSelect: (name: "mercury" | "venus") => void;
+  onSelect: (name: PlanetName) => void;
 } = $props();
 const opening = untrack(() => doc.opening);
 const id = $props.id();
@@ -226,10 +234,15 @@ onMount(() => {
       <p>Named planet</p>
       <Toggle
         label="Named planet"
-        options={["Mercury", "Venus"]}
+        options={Object.values(PLANET_LABELS)}
         bind:value={
-          () => (doc.planet.name === "venus" ? "Venus" : "Mercury"),
-          (value) => onSelect(value === "Venus" ? "venus" : "mercury")
+          () => PLANET_LABELS[doc.planet.name],
+          (value) =>
+  onSelect(
+    (Object.keys(PLANET_LABELS) as PlanetName[]).find(
+      (name) => PLANET_LABELS[name] === value,
+    ) ?? "mercury",
+  )
         }
       />
       <p class="caption">Practice · Production appearance</p>
@@ -309,8 +322,12 @@ onMount(() => {
       {/if}
     </OverlayPane>
     <div class="identity">
-      <span>{doc.planet.name === "venus" ? "Venus" : "Mercury"}</span>
-      <span class="caption">Production · Practice</span>
+      <span>{PLANET_LABELS[doc.planet.name]}</span>
+      <span class="caption"
+        >{doc.planet.name === "earth"
+          ? "Lab copy of The Cradle · Earth ground"
+          : "Production · Practice"}</span
+      >
     </div>
   </div>
   {#if status}

@@ -24,6 +24,7 @@ export * from "./lib/mount-planner";
 export * from "./lib/part-figures";
 export * from "./lib/point-defence-art";
 export * from "./lib/potential-well-art";
+export * from "./lib/practice-cradle";
 export * from "./lib/practice-venus";
 export * from "./lib/salvage";
 export * from "./lib/salvage-renderer";

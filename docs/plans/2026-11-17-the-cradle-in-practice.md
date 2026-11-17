@@ -15,7 +15,8 @@ Inspector gets The Cradle as a named planet.
 - Practice has no damage and will not get any. The study's hull damage rates
   are out of scope.
 - The Cradle is two 2D surface maps, rock and clouds, turning independently.
-  The clouds turn at half the rock's speed: rock 31.3 s, clouds 62.6 s. This
+  Changed the same day: the clouds turn at twice the rock's speed, both a
+  third slower than first set: rock 93.9 s, clouds 46.95 s. This
   also tests whether the two-surface model is feasible.
 - Shadow and light intensity were adjusted after the study. Its shadow,
   brightness and light values are out of date; The Cradle uses the current
@@ -46,10 +47,10 @@ Inspector gets The Cradle as a named planet.
   - Mass `870 × (radius / 27)² × (1 + (9.81 / 3.70 − 1) / 3)` ≈ 3186.67,
     stored independently in `practicePlanetMass`. Later radius or Mercury
     changes do not recompute it.
-- **Rock surface.** The Impact map, 31.3 s turn, browser image drawing, like
+- **Rock surface.** The Impact map, 93.9 s turn, browser image drawing, like
   Mercury.
 - **Cloud surface.** The Cirrus map, white, density as opacity: opaque cores,
-  soft edges, clear openings onto the rock. 62.6 s turn. Its radius is the
+  soft edges, clear openings onto the rock. 46.95 s turn. Its radius is the
   body radius plus 2/5 of the air depth, so it floats just above the rock.
 - **Light and dark.** The body's one shared light stamp on LFX at the current
   production values, covering the cloud surface's radius. No custom tuple; no

@@ -1,6 +1,7 @@
 <script lang="ts">
 import {
   Camera,
+  createCloudedWorld,
   createRockMaterial,
   Input,
   type InputAction,
@@ -70,6 +71,7 @@ const testFlight = $derived(mode === "practice");
 let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
 let simulation: Simulation;
 let practiceVenus: ReturnType<typeof createPracticeVenus> | undefined;
+let practiceCradle: Awaited<ReturnType<typeof createCloudedWorld>> | undefined;
 let practiceMercury: Awaited<ReturnType<typeof createRockMaterial>> | undefined;
 let practiceBodyAppearances:
   | ReturnType<typeof practicePlanetAppearances>
@@ -216,6 +218,7 @@ function refreshPracticeAppearances() {
       ? practicePlanetAppearances(simulation.planets, {
           mercury: practiceMercury,
           venus: practiceVenus,
+          cradle: practiceCradle,
         })
       : undefined;
 }
@@ -420,6 +423,14 @@ onMount(() => {
       })
       .catch(() => {
         /* Keep the stock body when the material is unavailable. */
+      });
+    void createCloudedWorld(PLANET_MAPS.cradleGround, PLANET_MAPS.cradleClouds)
+      .then((asset) => {
+        practiceCradle = asset;
+        refreshPracticeAppearances();
+      })
+      .catch(() => {
+        /* Keep the stock body when the maps are unavailable. */
       });
   }
   const world = canvases.world?.getContext("2d"),

@@ -1,4 +1,5 @@
 import { solarCollectionRate, solarDamageRate } from "../solar";
+import { type Atmosphere, applyAtmosphericDrag } from "./atmosphere";
 export class Vec2 {
   constructor(
     public x: number,
@@ -121,6 +122,8 @@ export interface Planet {
   mass: number; // Gravity strength
   color: string; // Hex color
   type: string; // Visual type (rock, gas, ocean, etc.)
+  /** The planet's air, when it has one. */
+  atmosphere?: Atmosphere;
 }
 
 /** Optional display name plus required, validated full-system ordinal. */
@@ -576,6 +579,9 @@ export function updateShip(
 
   ship.vel.x += ship.acc.x * dt;
   ship.vel.y += ship.acc.y * dt;
+
+  // 4b. Atmospheric drag, relative to each planet's air.
+  for (const planet of planets) applyAtmosphericDrag(ship, planet, dt);
 
   // 5. Inertia Damping (Drag)
   // Approx nonlinear drag: vel -= vel * DRAG * dt

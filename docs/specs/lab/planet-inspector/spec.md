@@ -5,7 +5,7 @@
 Planet Inspector shows planet rendering exactly as the game draws it: surface,
 spin, Sun-facing light, atmosphere, orbit and world HUD. The standalone Lab page
 is `/lab/planet-inspector`, opening paused on named Mercury. Named Venus and
-The Cradle are also available. Studies embed the same instrument to examine a planet in motion or
+The Cradle are also available, and Earth, the Lab's copy of The Cradle. Studies embed the same instrument to examine a planet in motion or
 at a reproducible instant. The inspector is the Lab's planet page.
 
 The bench uses production renderers one to one. Its only local appearance
@@ -29,7 +29,10 @@ belong to the [Flight instrument](../flight-scene-instrument/spec.md).
   and the inspection scene. Each instance owns its simulation, clock, material
   projection, measurements and render resources.
 - Named references resolve Practice definitions. `mercury` maps to internal
-  identity `moon`; `venus` maps to `venus`; `cradle` maps to `cradle`. Radius, mass, orbit, spin period,
+  identity `moon`; `venus` maps to `venus`; `cradle` maps to `cradle`. `earth`
+  stages Practice's `cradle` body, air, clouds and turns unchanged, named Earth,
+  with the Earth ground map (`PLANET_MAPS.earthGround`) in place of The
+  Cradle's. It exists only in the Inspector. Radius, mass, orbit, spin period,
   materials and atmosphere remain production-owned. They are read from the
   game's definitions and factories, without a copied Lab preset.
 - The scene calls `drawFlightFrame` from
@@ -54,7 +57,7 @@ field-specific issues in place of the scene; they never silently select Mercury.
 
 | Field                     | Contract                                                                                           |
 | ------------------------- | -------------------------------------------------------------------------------------------------- |
-| `planet`                  | `{ kind: "named", name }` with `name` `mercury`, `venus` or `cradle`; default Mercury.             |
+| `planet`                  | `{ kind: "named", name }` with `name` `mercury`, `venus`, `cradle` or `earth`; default Mercury.    |
 | `opening.orbitDegrees`    | Optional finite 0–360; absent uses the selected planet's Practice starting angle.                  |
 | `opening.rotationDegrees` | Finite 0–360, default 0. Selects a tick within the named planet's first spin period of scene time. |
 | `opening.zoom`            | `1`, `2`, `4`, `8` or `16`, default `1`.                                                           |
@@ -64,7 +67,7 @@ field-specific issues in place of the scene; they never silently select Mercury.
 and a validated custom-definition branch are extensions; unsupported custom
 selections are rejected. Configuration replacement opens at the new document's
 initial state and releases the old scene. The named-planet choice in the pane
-selects Mercury, Venus or The Cradle at that document's opening settings. Interaction state
+selects Mercury, Venus, The Cradle or Earth at that document's opening settings. Interaction state
 is local; the document, game settings, persistence and Firestore are unchanged.
 Lighting controls are local pane state and are not part of the Inspector
 document.
@@ -253,8 +256,8 @@ Scenario: Inspect The Cradle
   Given I select named The Cradle
   Then the production ground, clouds, haze, rim, light and HUD are drawn
   When I play for one ground spin period
-  Then the ground has returned to its opening picture and the clouds have
-  turned half way
+  Then the ground and the clouds have both returned to their opening picture,
+  the clouds having turned twice
 
 Scenario: Inspect Venus
   Given I select named Venus

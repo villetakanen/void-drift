@@ -18,7 +18,7 @@ let {
 } = $props();
 const parsed = $derived(PlanetInspectorDocumentSchema.safeParse(config));
 const doc = $derived(parsed.success ? parsed.data : null);
-let selected = $state<"mercury" | "venus">();
+let selected = $state<"mercury" | "venus" | "cradle" | "earth">();
 $effect(() => {
   void config;
   untrack(() => {

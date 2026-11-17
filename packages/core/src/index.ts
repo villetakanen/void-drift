@@ -1,3 +1,4 @@
+export * from "./lib/assets/atmosphere-body";
 export * from "./lib/assets/cloud-body";
 export * from "./lib/assets/death-icons";
 export * from "./lib/assets/planet";
@@ -30,6 +31,7 @@ export * from "./lib/effects/particles";
 export { paintSpeedLine } from "./lib/effects/speed-line";
 export * from "./lib/entities/Input";
 export * from "./lib/entities/Renderer";
+export * from "./lib/physics/atmosphere";
 export * from "./lib/physics/Camera";
 export * from "./lib/physics/Physics";
 export * from "./lib/physics/planets";

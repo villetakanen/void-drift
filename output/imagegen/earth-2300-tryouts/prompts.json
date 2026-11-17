@@ -1,0 +1,12 @@
+{
+  "method": "Built-in image_gen",
+  "status": "Unaccepted visual tryouts. Speculative climate art direction; not a climate simulation.",
+  "reference": "apps/web/public/studies/mercury-2026-11-12/art-029-mineral.png",
+  "transparent_background": true,
+  "base_prompt": "Use case: stylized-concept. Create one original raster concept sprite for an arcade space game: actual Earth imagined in year 2300, completely cloudless. Input image is a STYLE AND LIGHTING reference only: match the Mercury study's high-fidelity low-fi composed painted raster, material clarity and spherical shading; do NOT transfer its cracked rock, craters or mineral slabs to Earth. One circular globe ONLY centered, diameter about 85% of square frame, transparent outside silhouette. Smooth circular contour, light from left, three-quarter illuminated, right hemisphere visibly dimmer but legible, no near-black hemisphere. Broad intentional land/ocean masses and selective mid-scale detail readable at 54 pixels diameter, continuous painted raster edges, no pixel grid, avoid photographic noise. Recognizable geographically coherent real Earth continents, Africa/Europe/Middle East facing viewer, adjacent Atlantic and Indian oceans; same viewpoint for comparison. No clouds whatsoever, no haze, no atmospheric halo or glow. Speculative climate-altered Earth in 2300, not a scientific prediction: reduced polar ice, dry subtropics and Mediterranean regions extending modestly poleward, muted warmer vegetation with remaining rich green regions and forests, subtle coastal inundation that preserves recognizable continents. No total ice melt, no invented continents, no apocalypse. Fujicolor-like colour response: bright natural blues, luminous but restrained greens, warm sand and earth hues, soft highlight rolloff, locally lower saturation in dry terrain, nuanced colour separation; natural rather than neon, no film grain. No text, stars, rings, external shadows, labels, city lights, UI or multiple globes.",
+  "variant_directions": {
+    "A": "Balanced daylight: cobalt oceans, sage and forest greens, pale wheat and muted warm ochre.",
+    "B": "Soft Fujicolor greens and cyan: blue-cyan seas, jade and sage forests, creamy sand, locally desaturated grey-brown dry terrain.",
+    "C": "Warm dry Earth: broader straw, dusty sage and desaturated terracotta across Mediterranean and subtropical regions; preserve equatorial and northern forests."
+  }
+}

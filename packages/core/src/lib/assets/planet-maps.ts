@@ -10,6 +10,8 @@ export const PLANET_MAPS = {
   mercuryGround: "/planets/mercury-ground.png",
   cradleGround: "/planets/cradle-ground.png",
   cradleClouds: "/planets/cradle-clouds.png",
+  /** The Planet Inspector's Earth, a copy of The Cradle; not in play. */
+  earthGround: "/planets/earth-ground.png",
 } as const;
 export type PlanetMap = (typeof PLANET_MAPS)[keyof typeof PLANET_MAPS];
 

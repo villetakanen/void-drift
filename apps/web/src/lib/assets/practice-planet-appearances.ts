@@ -1,10 +1,16 @@
 import {
+  ATMOSPHERE_BOUNDS_MARGIN,
   CloudBodyPainter,
+  drawAtmosphere,
   type Planet,
   type RockBodyPainter,
 } from "@void-drift/core";
 import {
   type BodyAppearance,
+  type FlightFrame,
+  PRACTICE_CRADLE_CLOUD_HEIGHT,
+  PRACTICE_CRADLE_CLOUD_SPIN_SECONDS,
+  PRACTICE_CRADLE_SPIN_SECONDS,
   PRACTICE_MERCURY_SPIN_SECONDS,
   PRACTICE_VENUS_SPIN_SECONDS,
   STEP,
@@ -16,6 +22,9 @@ type Surface = {
 
 type RockMaterial = { painter: RockBodyPainter; surface: Surface };
 type CloudMaterial = { painter: CloudBodyPainter; surface: Surface };
+type CloudedMaterial = RockMaterial & {
+  clouds: Surface & { canvas: CanvasImageSource };
+};
 
 /**
  * Adapts the prepared Practice materials to the shared data-driven body passes.
@@ -23,7 +32,11 @@ type CloudMaterial = { painter: CloudBodyPainter; surface: Surface };
  */
 export function practicePlanetAppearances(
   planets: readonly Planet[],
-  materials: { mercury?: RockMaterial; venus?: CloudMaterial },
+  materials: {
+    mercury?: RockMaterial;
+    venus?: CloudMaterial;
+    cradle?: CloudedMaterial;
+  },
 ): ReadonlyMap<number, BodyAppearance> {
   const positions = new Set<number>();
   for (const planet of planets) {
@@ -39,7 +52,94 @@ export function practicePlanetAppearances(
   const appearances = new Map<number, BodyAppearance>();
   add("moon", materials.mercury, PRACTICE_MERCURY_SPIN_SECONDS, false);
   add("venus", materials.venus, PRACTICE_VENUS_SPIN_SECONDS, true);
+  addCradle(materials.cradle);
   return appearances;
+
+  function find(id: string) {
+    const matches = planets.filter((planet) => planet.id === id);
+    if (matches.length > 1)
+      throw new Error(`Planet appearance identity ${id} is ambiguous`);
+    const planet = matches[0];
+    if (!planet?.systemPosition) return undefined;
+    if (appearances.has(planet.systemPosition))
+      throw new Error(
+        `Planet appearance position ${planet.systemPosition} is duplicated`,
+      );
+    return planet.systemPosition;
+  }
+
+  /** Ground, then clouds above it, then haze and rim out to the air's edge. */
+  function addCradle(material: CloudedMaterial | undefined) {
+    if (!material) return;
+    const position = find("cradle");
+    if (position === undefined) return;
+    const depth = (target: Planet) => target.atmosphere?.depth ?? 0;
+    const cloudRadius = (target: Planet) =>
+      target.radius + depth(target) * PRACTICE_CRADLE_CLOUD_HEIGHT;
+    const square = (target: Planet, extent: number) => ({
+      left: target.pos.x - extent,
+      top: target.pos.y - extent,
+      right: target.pos.x + extent,
+      bottom: target.pos.y + extent,
+    });
+    const turn = (frame: FlightFrame, seconds: number) =>
+      (frame.sim.ticks * STEP * 2 * Math.PI) / seconds;
+    appearances.set(position, {
+      worldBounds(_frame, target) {
+        return square(
+          target,
+          target.radius + depth(target) + ATMOSPHERE_BOUNDS_MARGIN,
+        );
+      },
+      drawWorld(frame, ctx, target) {
+        const zoom = frame.camera.zoom;
+        const { x, y } = target.pos;
+        material.surface.draw(
+          turn(frame, PRACTICE_CRADLE_SPIN_SECONDS),
+          target.radius * 2 * zoom,
+        );
+        material.painter.body(ctx, 0, x, y, target.radius);
+        const clouds = cloudRadius(target);
+        material.clouds.draw(
+          turn(frame, PRACTICE_CRADLE_CLOUD_SPIN_SECONDS),
+          clouds * 2 * zoom,
+        );
+        ctx.drawImage(
+          material.clouds.canvas,
+          x - clouds,
+          y - clouds,
+          clouds * 2,
+          clouds * 2,
+        );
+        if (depth(target) > 0)
+          drawAtmosphere(
+            ctx,
+            x,
+            y,
+            target.radius,
+            depth(target),
+            frame.sim.star.pos.x,
+            frame.sim.star.pos.y,
+            zoom,
+          );
+      },
+      light: {
+        bounds(_frame, target) {
+          return square(target, cloudRadius(target));
+        },
+        draw(frame, ctx, target) {
+          material.painter.light(
+            ctx,
+            target.pos.x,
+            target.pos.y,
+            cloudRadius(target),
+            frame.sim.star.pos.x,
+            frame.sim.star.pos.y,
+          );
+        },
+      },
+    });
+  }
 
   function add(
     id: string,
