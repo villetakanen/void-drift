@@ -112,10 +112,10 @@ Historical evidence inspected during closure:
 - The motion JSON records passing budget/motion isolation, matching pre-contact
   paths, contact termination and invalid-settings checks, with no browser errors.
   These guards establish the fixture's stated boundaries, not design success.
-- [Motion build log](artifacts/2026-11-11-stellar-encounters/motion-build.log):
+- [Motion build log](../../artifacts/2026-11-11-stellar-encounters/motion-build.log):
   `pnpm build` completed, 88 pages, 11 November at 20:17 UTC. The log does not
   itself bind the build to a stable source fingerprint.
-- [Scope contract log](artifacts/2026-11-11-stellar-encounters/scope-contracts.log):
+- [Scope contract log](../../artifacts/2026-11-11-stellar-encounters/scope-contracts.log):
   `pnpm check:contracts` completed, including 15 factory tests. An AGENTS.md length
   warning was advisory. The log lacks an exact tested-tree fingerprint.
 - Prior chat tool outputs report later passing full type checks and focused
@@ -133,7 +133,7 @@ Closure validation is new evidence for the static document and cleanup only:
 - `node scripts/check-contracts.mjs` passed: 207 Markdown files, no missing link
   targets, and shared colour/type/Lab contracts intact. Existing context-length
   warnings remained advisory. Factory and gameplay tests were not rerun.
-- [Static closure-page check](artifacts/2026-11-11-stellar-encounters/closure-page-check.json)
+- [Static closure-page check](../../artifacts/2026-11-11-stellar-encounters/closure-page-check.json)
   passed at 1280 × 1000: HTTP 200, stopped metadata, zero interactive islands,
   four loadable images, two readable JSON records, historical review label and
   no browser errors. This verifies the replacement document, not the old experiments.
