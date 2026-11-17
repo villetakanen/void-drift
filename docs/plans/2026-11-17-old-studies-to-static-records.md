@@ -131,6 +131,15 @@ commit that set the registry status, or the page's last content change. Say in t
 record that the date comes from git history. This is the one value the record may
 hold that the page did not.
 
+Pages under `archive/` are rejected steps kept apart from their parent study. They
+have no registry entry and state no question. Their record holds the outcome line,
+what was ruled out and why, the capture, and the link to the parent study. Do not
+bring a question over from the parent. There is no index listing to check. A page
+this small may come out slightly longer than it was; that is accepted.
+
+When a parent study links to an `archive/` page, the parent's record keeps that
+link in its ruled-out section.
+
 Before rewriting, write the keep list: every decision, value, reason, ruled-out
 item and uncertainty found on the page. After rewriting, check the list against the
 record.
@@ -156,7 +165,7 @@ commit. If the study explains the phrase, replace it with the plain meaning. If 
 does not, leave the phrase as the study wrote it and list it in the hand-off.
 
 Check: the same facts are present before and after: compare numbers, names and the
-keep list. The record has no more characters than before the pass.
+keep list. Put back anything from the keep list that the reviewer removed. The record has no more characters than before the pass.
 
 ### Stage 5. Retire the apparatus and finish
 
@@ -166,7 +175,8 @@ keep list. The record has no more characters than before the pass.
 - Run `pnpm lint`, `pnpm test`, `pnpm check:types` and `pnpm build`. A failure in a
   file this conversion did not touch is reported and not fixed.
 - Record the word count of the rendered record. This is the "after" size.
-- Add the last line to the page: the commit that holds the full version.
+- Add the last line to the page: the commit that holds the full version, the path
+  of the page in that commit, and the paths of the deleted components.
 - Set the ledger row to `done` with the date. Commit the study, its media, the
   removed apparatus and the ledger together. The row carries the date; the commit
   message names the study, so the commit is found from the page name.
@@ -277,6 +287,21 @@ Those three studies, rows 17, 19 and 26, are not converted. They are still `.ast
 pages that import study components and carry styles. Their rows stay `todo`; the
 session that takes one finds part of stage 1 done and should bring the existing
 stills under the size limit.
+
+## The third run
+
+`archive/fighter-canopy-soft` was converted on 2026-11-17 in `b3b2c0d4`: 187
+rendered words before, 201 after, one still of 86 kB, one component of 167 lines
+deleted. It was the first page with no registry entry and no question. The reviewer
+removed two items the brief told it to keep, and the session's check caught both
+and restored them.
+
+Corrections made to this file from that run:
+
+- `archive/` pages get their own short form, and may come out slightly longer.
+- A parent study's record keeps its link to an `archive/` page.
+- The full-version line names the page and the deleted components.
+- Items the reviewer removed from the keep list are put back.
 
 Still open from that run:
 

@@ -164,7 +164,7 @@ Venus's derivation from Earth's ratios to Mercury:
 - Mass: independently stored `gravity.practicePlanetMass.cradle`,
   `870 × (radius / 27)² × (1 + (9.81 / 3.70 − 1) / 3)` ≈ 3186.671024.
   Later radius or Mercury changes do not recompute it.
-- Ground: the Impact rock map, turning every 93.9 seconds.
+- Ground: the post-war Earth map, turning every 93.9 seconds.
 - Clouds: the Cirrus map, white, its density giving opacity: opaque cores,
   soft edges and clear openings onto the ground. It turns every 46.95 seconds,
   twice the ground's speed, and its radius is the body radius plus 2/5 of the

@@ -17,24 +17,25 @@ import { chromium } from "@playwright/test";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const out = resolve(root, "apps/web/public/planets");
 const base = process.argv[2] ?? "http://localhost:4321";
-const earthPlate = `data:image/png;base64,${(
-  await readFile(
-    resolve(root, "output/imagegen/earth-2300-tryouts/earth-plate-b.png"),
-  )
-).toString("base64")}`;
+const plate = async (path) =>
+  `data:image/png;base64,${(await readFile(resolve(root, path))).toString("base64")}`;
+const plates = {
+  earth: await plate("output/imagegen/earth-2300-tryouts/earth-plate-b.png"),
+  cradle: await plate("output/imagegen/earth-postwar/earth-postwar-plate.png"),
+};
 
 const browser = await chromium.launch();
 try {
   const page = await browser.newPage();
   await page.goto(`${base}/lab/planet-inspector`);
-  const maps = await page.evaluate(async (earthPlate) => {
+  const maps = await page.evaluate(async (plates) => {
     const materials = await import(
       "/src/lib/assets/rock-planets/authored-materials.ts"
     );
     const quilt = await import(
       "/src/lib/assets/rock-planets/quilted-material.ts"
     );
-    const [mineral, , impact] = await materials.loadAuthoredRockMaterials();
+    const [mineral] = await materials.loadAuthoredRockMaterials();
 
     const canvas = (width, height) => {
       const c = document.createElement("canvas");
@@ -46,45 +47,20 @@ try {
     // Practice Mercury: the accepted seed-153 quilt of the mineral exemplar.
     const mercury = quilt.quiltMineralMaterial(mineral, 153);
 
-    // The Cradle's ground: the Impact disc in the mirrored-tile mapping that
-    // SphericalSurface "tile" uses, written out as a full cylindrical atlas.
-    const ground = canvas(384, 192);
-    {
-      const size = impact.width;
-      const src = impact.getContext("2d").getImageData(0, 0, size, size).data;
-      const ctx = ground.getContext("2d");
-      const img = ctx.createImageData(ground.width, ground.height);
-      for (let y = 0; y < ground.height; y++)
-        for (let x = 0; x < ground.width; x++) {
-          const longitude = ((x + 0.5) / ground.width - 0.5) * 2 * Math.PI;
-          let tile = ((longitude + Math.PI / 2) / Math.PI + 2) % 2;
-          if (tile > 1) tile = 2 - tile;
-          const latitude = (y + 0.5) / ground.height;
-          const u = Math.max(
-            0,
-            Math.min(size - 1.001, (0.16 + 0.68 * tile) * size - 0.5),
-          );
-          const v = Math.max(
-            0,
-            Math.min(size - 1.001, (0.16 + 0.68 * latitude) * size - 0.5),
-          );
-          const ix = Math.floor(u),
-            iy = Math.floor(v),
-            fx = u - ix,
-            fy = v - iy;
-          const a = (iy * size + ix) * 4,
-            b = a + 4,
-            d = a + size * 4,
-            e = d + 4;
-          const at = (y * ground.width + x) * 4;
-          for (let c = 0; c < 3; c++)
-            img.data[at + c] =
-              (src[a + c] * (1 - fx) + src[b + c] * fx) * (1 - fy) +
-              (src[d + c] * (1 - fx) + src[e + c] * fx) * fy;
-          img.data[at + 3] = 255;
-        }
-      ctx.putImageData(img, 0, 0);
-    }
+    // Unlit equirectangular plates are atlases already; resample to 768 x 384.
+    const resample = async (src) => {
+      const atlas = canvas(768, 384);
+      const image = new Image();
+      image.src = src;
+      await image.decode();
+      const ctx = atlas.getContext("2d");
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(image, 0, 0, atlas.width, atlas.height);
+      return atlas;
+    };
+
+    // The Cradle's ground: the post-war Earth plate.
+    const ground = await resample(plates.cradle);
 
     // The Cradle's clouds: Cirrus luminance as density. Opacity rises over a
     // smooth step from density 0.1 to 0.5, giving opaque cores and clear
@@ -109,17 +85,8 @@ try {
       ctx.putImageData(img, 0, 0);
     }
 
-    // Earth, the Lab's copy of The Cradle: the generated Earth plate, an
-    // unlit equirectangular atlas already, resampled to 768 x 384.
-    const earth = canvas(768, 384);
-    {
-      const image = new Image();
-      image.src = earthPlate;
-      await image.decode();
-      const ctx = earth.getContext("2d");
-      ctx.imageSmoothingQuality = "high";
-      ctx.drawImage(image, 0, 0, earth.width, earth.height);
-    }
+    // Earth, the Lab's copy of The Cradle: the Earth 2300 plate.
+    const earth = await resample(plates.earth);
 
     return {
       "earth-ground.png": earth.toDataURL("image/png"),
@@ -127,7 +94,7 @@ try {
       "cradle-ground.png": ground.toDataURL("image/png"),
       "cradle-clouds.png": clouds.toDataURL("image/png"),
     };
-  }, earthPlate);
+  }, plates);
   await mkdir(out, { recursive: true });
   for (const [name, url] of Object.entries(maps)) {
     await writeFile(

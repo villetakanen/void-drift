@@ -21,8 +21,9 @@ handheld side-profile anatomy does not supply its construction. Its loaded close
 venting supply its role; they do not require an engine-like body. It needs a
 convincing inactive assembly whose working parts, supporting housing and attachment
 have distinct jobs and constructed volume. Existing weapons supply that language,
-not a mandatory parts recipe. Energy should have a physical place within the
-working head; its exact construction remains open.
+not a mandatory parts recipe. The primary channel is exposed from above so hot plasma can be painted into
+it on LFX. That spatial relationship is selected within the study; its
+surrounding machinery, proportions and final effects remain open.
 
 This study supplies one provisional physical reference in the Lab: a form with
 dimensions, attachment, central opening and paired vent origins for the parked
@@ -592,6 +593,9 @@ code and living specifications are untouched by this proposal.
 
 <StudySection>
 
+<details className="retained-round">
+<summary>02.12 / An overhead vehicle-gun assembly</summary>
+
 ## 02.12 / An overhead vehicle-gun assembly
 
 **Retained finding · 17 November 2026:** the overhead construction is no longer
@@ -625,11 +629,31 @@ opening is (0, −13), with paired shoulder openings near (−1.99, −1.68) and
 candidates are unchanged. This example addresses overhead construction and
 weapon identity; it does not establish acceptance or production compatibility.
 
+</details>
+
 </StudySection>
 
 <StudySection>
 
+<details className="retained-round">
+<summary>02.13 / An open head around an energy volume</summary>
+
 ## 02.13 / An open head around an energy volume
+
+**Selected property · 17 November 2026:** this is the first interesting design.
+The exposed primary plasma channel, like the coil in the manual draft, gives
+hot plasma a place that can be painted over the equipment on LFX. Retain that
+open-channel relationship. The assembly is still too bulky and a little too
+large; neither its dimensions nor the whole form is accepted.
+
+**Extent of the result:** the primary-channel problem is solved within this
+study independently of the surrounding artwork's quality. An exposed channel
+provides physical space for hot plasma painted on LFX above the World equipment.
+That is the usable construction decision, not acceptance of a successful weapon
+design. The supporting art still has to establish the game's visual language;
+its silhouette, proportions, planes and part construction remain unresolved.
+The rejected proportion revision was ugly and clunky and missed the visual cues
+of the ship and ship-part art. Reducing dimensions did not resolve that failure.
 
 The next proposal replaces the closed barrel and tank-like breech with two
 long working members around an open central space. A short separate receiver
@@ -657,6 +681,95 @@ selected. The retained action, compact weapon requirement and orange restriction
 remain unchanged; Scout occlusion and production compatibility remain unresolved.
 This drawing proposes another construction for judgment, not a claim that
 plasma identity or family resemblance has been established.
+
+</details>
+
+</StudySection>
+
+<StudySection>
+
+## 02.15 / Burning-orange light in a fixed channel
+
+**Retained finding · 17 November 2026:** this is a useful experiment, but weapon
+sizing needs discussion before the light comparison is redone. No light profile
+is selected. Keep this sheet as the basis for that discussion.
+
+This experiment isolates the appearance of plasma inside the selected open
+channel. It holds a neutral equipment section, channel dimensions and axial
+fade fixed. Three transverse gradient profiles vary how much of the channel
+is occupied by a hot core and its orange falloff. The machinery is a test
+section, not another proposed weapon silhouette.
+
+<figure>
+  <a href="/studies/plasma-projector-fitting-2026-11-17/035-channel-light.svg" aria-label="Open the channel-light SVG experiment">
+    <img src="/studies/plasma-projector-fitting-2026-11-17/035-channel-light.svg" alt="Three burning-orange light profiles on identical channel sections: a hot seam, hot volume and bright bed; native hard-light compositions above, unblended source cross sections and smaller compositions below" width="1056" height="730" />
+  </a>
+  <figcaption>Static SVG · native browser <code>mix-blend-mode: hard-light</code>, matching the current default LFX blend, with no filter or bloom. Identical 1.5 × 8.2 u channel; full view 32 image px/u, smaller views 6 and 1. Source cross sections use normal blending to expose the drawn gradient separately. The native 1056 px sheet width makes the 1 image px/u row exactly 1 CSS px/u.</figcaption>
+</figure>
+
+**A / Hot seam** concentrates the pale core into a narrow central seam with
+weak shoulders. **B / Hot volume** spreads the pale-to-orange transition through
+more of the open space. **C / Bright bed** broadens the hottest area further,
+bringing more light onto the channel's borders. Each uses the same colour
+family and transparent outer endpoints; only its lateral profile differs.
+
+The distinction to judge is hot material occupying an open channel versus an
+illuminated line or a washed-out bed. The source and composite are deliberately
+separate: hard-light can brighten some colour channels and darken others, so
+source orange is not itself evidence of the composed result. The fixed walls
+make that interaction visible.
+
+This is a static appearance experiment authorised within the fitting study.
+It does not select final weapon art, time-varying plasma behaviour, charging
+feedback, accumulated FX, vent shapes or a production painter. It uses the
+current LFX blend through the browser, not the game's full frame pipeline;
+there is no performance or in-flight appearance claim. The parked effects
+inquiry retains the eventual action and integration.
+
+</StudySection>
+
+<StudySection>
+
+## 02.16 / The ion cannon from 1× to 16×
+
+The current Light Ion Cannon provides an established weapon-size reference.
+Here **1× means one CSS pixel per world unit**, so its 16 u length occupies
+16 CSS px. Each doubling below changes only the display scale; the equipment
+remains 16 u long. All five drawings use the exact production SVG paths.
+
+<figure>
+  <a href="/studies/plasma-projector-fitting-2026-11-17/036-ion-cannon-scales.svg" aria-label="Open the ion cannon scale reference at native size">
+    <img src="/studies/plasma-projector-fitting-2026-11-17/036-ion-cannon-scales.svg" alt="Current ion cannon at 1, 2, 4, 8 and 16 CSS pixels per world unit, each labelled with its displayed width, length and narrow blue channel width" width="1056" height="466" />
+  </a>
+  <figcaption>Production ION_CANNON_ART and ION_CANNON_GEOMETRY, measured in the browser and converted once from source coordinates to world units. The sheet is displayed at 1056 CSS px wide at the supported 1280 px viewport. Width × length labels describe the coloured artwork footprint, not the surrounding SVG frame. All forward tips are aligned.</figcaption>
+</figure>
+
+| Display scale | CSS px per world unit | Cannon footprint, CSS px (width × length) | Blue channel width, CSS px |
+| --- | --- | --- | --- |
+| 1× | 1 | 4.33 × 16 | 0.257 |
+| 2× | 2 | 8.66 × 32 | 0.514 |
+| 4× | 4 | 17.32 × 64 | 1.029 |
+| 8× | 8 | 34.64 × 128 | 2.057 |
+| 16× | 16 | 69.29 × 256 | 4.114 |
+
+CSS pixels are browser layout units, not physical display pixels. A high-density
+screen can use several device pixels to display one CSS pixel without changing
+any value above. The artwork is redrawn as vector geometry at each size, rather
+than enlarging a captured bitmap. A subpixel channel can still contribute colour
+through antialiasing, but it is not a full pixel-wide detail at 1×.
+
+The weapon footprint is approximately 4.331 × 16 world units. Its blue channel
+is approximately 0.257 u wide and 8.540 u long. These are measurements of the
+current ion artwork, not a proposed size requirement for plasma equipment.
+
+02.15 used a 1.5 u-wide channel: roughly 5.8 times the ion cannon's blue-channel
+width. Its main drawing was at 32 CSS px/u, giving that opening 48 CSS px of
+width. At 1×, the same opening is only 1.5 CSS px wide. Those dimensions are
+conditions of the experiment, not a selected plasma fitting size.
+
+This step establishes the display-size reference for discussion. 02.15 remains
+unchanged; its light profiles can be revisited in 02.17 once the intended weapon
+and channel scale are clear. No plasma geometry or light profile is selected here.
 
 </StudySection>
 

@@ -9,8 +9,8 @@
     },
     "cradle-ground.png": {
       "use": "Practice Cradle ground",
-      "source": "/studies/mercury-2026-11-12/art-029-impact.png (built-in image_gen, 2026-11-12; prompts in art-029-prompts.json)",
-      "preparation": "Framed 192px disc with broad baked light divided out, written out in SphericalSurface's mirrored-tile mapping as a full atlas, 384 x 192"
+      "source": "output/imagegen/earth-postwar/earth-postwar-plate.png (built-in image_gen, 2026-11-17; prompts in prompts.json beside it): the post-war Earth surface plate, unlit equirectangular",
+      "preparation": "Resampled from 1774 x 887 to 768 x 384; no other change"
     },
     "cradle-clouds.png": {
       "use": "Practice Cradle clouds",
