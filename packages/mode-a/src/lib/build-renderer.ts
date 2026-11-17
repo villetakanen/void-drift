@@ -22,6 +22,7 @@ import {
 import { drawPotentialWell } from "./potential-well-art";
 import {
   CHASSIS,
+  LIGHT_ION_BEAM,
   type Loadout,
   PARTS,
   type PartId,
@@ -292,8 +293,11 @@ export function engineArtId(id: PartId) {
 }
 export function engineOffset(build: Loadout, mount: BuildMount) {
   if (build.chassis !== "scout") return 0;
-  const front =
-    mount.part === "heavy-ion" ? 10.35 : mount.part === "ion" ? 9 : 10;
+  // The Scout aligns each side engine's front, read from its art, with its hull edge.
+  const art = mount.part ? ENGINE_ART[engineArtId(mount.part)]?.[0] : undefined;
+  const front = art
+    ? Math.max(...art.flatMap((face) => face.points.map((p) => p[0])))
+    : 10;
   return 36 / 7 - front;
 }
 function drawEngine(
@@ -563,7 +567,7 @@ export function drawNonEngineFitting(
       ctx.stroke();
     }
   } else if (mount.part) {
-    ctx.strokeStyle = mount.part === "ion" ? "#9af7ff" : "#ffc56e";
+    ctx.strokeStyle = PARTS[mount.part].ion ? "#9af7ff" : "#ffc56e";
     ctx.beginPath();
     ctx.moveTo(-mount.width / 2, -3);
     ctx.lineTo(-nozzleOffset(mount), -4);
@@ -683,14 +687,8 @@ export function buildPlumeEmitters(build: Loadout): PlumeEmitter[] {
   const emitters: PlumeEmitter[] = buildMounts(build)
     .filter((mount) => mount.part && PARTS[mount.part].category === "E")
     .map((mount) => ({
-      style:
-        mount.part === "ion"
-          ? "ion-light"
-          : mount.part === "heavy-ion"
-            ? "ion-heavy"
-            : mount.part === "plasma"
-              ? "plasma"
-              : "default",
+      style: mount.part === "plasma" ? "plasma" : "default",
+      beam: mount.part ? PARTS[mount.part].ion?.beam : undefined,
       x:
         (mount.x +
           (engineOffset(build, mount) - nozzleOffset(mount)) *
@@ -709,7 +707,7 @@ export function buildPlumeEmitters(build: Loadout): PlumeEmitter[] {
     for (const m of [lhi.front, lhi.rear]) {
       for (const side of [-1, 1])
         emitters.push({
-          style: "ion-light",
+          beam: LIGHT_ION_BEAM,
           x: (m.x - m.fx) * BUILD_FLIGHT_SCALE,
           y: (side * m.y + side * m.fy) * BUILD_FLIGHT_SCALE,
           angle: Math.atan2(-side * m.fy, m.fx),
@@ -720,7 +718,7 @@ export function buildPlumeEmitters(build: Loadout): PlumeEmitter[] {
     const m = stabilizerMount(build.chassis);
     for (const side of [-1, 1])
       emitters.push({
-        style: "ion-light",
+        beam: LIGHT_ION_BEAM,
         x: (m.x - m.fx) * BUILD_FLIGHT_SCALE,
         y: (side * m.y + side * m.fy) * BUILD_FLIGHT_SCALE,
         angle: Math.atan2(-side * m.fy, m.fx),

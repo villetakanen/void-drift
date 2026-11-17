@@ -21,9 +21,6 @@ export const ASSEMBLED_ION_DEFAULTS = AssembledIonSettingsSchema.parse({});
 export const ION_REFERENCE_MASS = 115;
 export const STABILIZER_STRENGTH = 0.22;
 export const STABILIZER_ENERGY = 0.25;
-export function ionStrength(id: string) {
-  return id === "ion" ? 1 : id === "heavy-ion" ? 1.75 : 0;
-}
 export function ionCeiling(
   strength: number,
   settings: IonSettings = ION_DEFAULTS,

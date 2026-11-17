@@ -2,7 +2,12 @@ import { z } from "zod";
 import type { GameObject } from "../physics/Physics";
 import type { FxPass } from "./arcade-fx";
 import { FxSurface } from "./fx-surface";
-import { type PlumeStyle, paintBeam } from "./ion-beam";
+import {
+  type Beam,
+  DEFAULT_BEAM,
+  type PlumeStyle,
+  paintBeam,
+} from "./ion-beam";
 import { paintPlasmaCharge } from "./plasma-charge";
 import { paintPlasmaPlume } from "./plasma-plume";
 
@@ -22,6 +27,8 @@ export const ENGINE_CUTOFF = 750;
 const MAX_EMITTERS = 8;
 export interface PlumeEmitter {
   style?: PlumeStyle;
+  /** The beam a "default" emitter draws; DEFAULT_BEAM when absent. */
+  beam?: Beam;
   x: number;
   y: number;
   angle: number;
@@ -31,6 +38,7 @@ export interface PlumeEmitter {
 }
 export interface PlumeOutlet {
   style: PlumeStyle;
+  beam: Beam;
   x: number;
   y: number;
   angle: number;
@@ -45,6 +53,7 @@ export class EnginePlume {
     { length: MAX_EMITTERS },
     () => ({
       style: "default",
+      beam: DEFAULT_BEAM,
       x: 0,
       y: 0,
       angle: 0,
@@ -96,6 +105,7 @@ export class EnginePlume {
       if (!thrusting && !charging) continue;
       const outlet = this.outlets[this.active++];
       outlet.style = emitter.style ?? "default";
+      outlet.beam = emitter.beam ?? DEFAULT_BEAM;
       outlet.x = ship.pos.x + emitter.x * cos - emitter.y * sin;
       outlet.y = ship.pos.y + emitter.x * sin + emitter.y * cos;
       outlet.angle = ship.rotation + emitter.angle;
@@ -152,7 +162,7 @@ export class EnginePlume {
           Math.round(this.time * 60),
           () => pass.budget.take(),
         );
-      else paintBeam(ctx, outlet.size, outlet.style);
+      else paintBeam(ctx, outlet.size, outlet.beam);
       ctx.restore();
     }
   }

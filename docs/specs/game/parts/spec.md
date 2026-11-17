@@ -51,8 +51,8 @@ own only when its behaviour in flight needs one, as the
 - **Ion engines.** The ion engines are one family in the catalog. They share
   one form and one beam and the steady response, and differ by ion strength,
   form proportions, and plume length, width and ink. A part's ion strength is
-  its thrust as a multiple of the light ion's; its draw is the light ion's
-  draw scaled by that strength. Flight thrust, plume style, energy draw and
+  its thrust as a multiple of the light ion's; its draw is its own catalog
+  value. Flight thrust, plume style, energy draw and
   every list of engines read the family and its values from the catalog; no
   code decides by part id whether an engine is an ion engine.
 - **Mount point.** Each part's art is drawn in its own frame. The part's mount
@@ -103,8 +103,7 @@ own only when its behaviour in flight needs one, as the
 - A held charged engine first thrusts once its charge length has elapsed;
   releasing the input or losing power resets the charge.
 - From rest and at equal ship mass, an ion engine accelerates at its ion
-  strength's share of the light ion's acceleration, and draws in the same
-  proportion.
+  strength's share of the light ion's acceleration.
 - Every ion engine in the catalog flies with ion thrust and draws its
   catalog plume style; a catalog entry missing an ion value fails the type
   check rather than falling back.

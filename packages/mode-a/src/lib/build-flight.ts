@@ -4,7 +4,6 @@ import {
   ASSEMBLED_ION_DEFAULTS,
   type AssembledIonSettings,
   ION_REFERENCE_MASS,
-  ionStrength,
   STABILIZER_ENERGY,
   STABILIZER_STRENGTH,
 } from "./schemas/ion";
@@ -171,7 +170,7 @@ export function applyBuildEngines(
     const part = parts[id];
     const duty =
       engineDuty(part, powered && held, dt, timers, key) * commandDuty;
-    const strength = ionStrength(id);
+    const strength = part.ion?.strength ?? 0;
     const thrust = strength
       ? settings.acceleration * ION_REFERENCE_MASS * strength
       : part.thrust;

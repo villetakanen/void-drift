@@ -5,6 +5,7 @@ import {
   buildPlumeEmitters,
   defaultLoadout,
   drawBuild,
+  LIGHT_ION_BEAM,
   LoadoutSchema,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
@@ -39,7 +40,7 @@ const emitters = buildPlumeEmitters(build);
 for (const side of [-1, 1]) {
   const angle = Math.atan2(-side * geometry.fy, geometry.fx);
   emitters.push({
-    style: "ion-light",
+    beam: LIGHT_ION_BEAM,
     x: (geometry.x - Math.cos(angle)) * BUILD_FLIGHT_SCALE,
     y: (side * geometry.y - Math.sin(angle)) * BUILD_FLIGHT_SCALE,
     angle,

@@ -1,9 +1,15 @@
 ---
-import { buildStats, CHASSIS, defaultLoadout, PARTS } from "@void-drift/mode-a";
+import {
+  buildStats,
+  CHASSIS,
+  defaultLoadout,
+  EngineIdSchema,
+  PARTS,
+} from "@void-drift/mode-a";
 import LabLayout from "../../layouts/LabLayout.astro";
 
 const chassisIds = ["scout", "wasp", "fighter", "corvette", "fiddler"] as const;
-const engines = ["ion", "heavy-ion", "fusion", "plasma"] as const;
+const engines = EngineIdSchema.options;
 const hullBases = chassisIds.map((id) => ({
   name: id[0].toUpperCase() + id.slice(1),
   base: CHASSIS[id].baseSpeed,

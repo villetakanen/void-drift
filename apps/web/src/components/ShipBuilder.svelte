@@ -7,6 +7,7 @@ import {
   CHASSIS,
   CRUISER,
   drawBuild,
+  EngineIdSchema,
   FIDDLER,
   FIGHTER,
   isScoredEligible,
@@ -173,13 +174,8 @@ function install(id: PartId | null) {
     return;
   const next = { ...build, hull: [...build.hull], aft: [...build.aft] };
   if (mount.group === "side") {
-    if (
-      id === "ion" ||
-      id === "heavy-ion" ||
-      id === "fusion" ||
-      id === "plasma"
-    )
-      next.side = id;
+    const engine = EngineIdSchema.safeParse(id);
+    if (engine.success) next.side = engine.data;
   } else if (chosen === "fiddler" && mount.group === "aft") {
     next.aft = [id, id];
   } else next[mount.group][mount.index] = id;

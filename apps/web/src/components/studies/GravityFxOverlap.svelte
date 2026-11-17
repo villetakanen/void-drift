@@ -1,5 +1,6 @@
 <script lang="ts">
-import { paintIonBeam } from "@void-drift/core";
+import { paintBeam } from "@void-drift/core";
+import { LIGHT_ION_BEAM } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 
 let { label = "FX overlap comparison" }: { label?: string } = $props();
@@ -49,7 +50,7 @@ onMount(() => {
     e.save();
     e.translate(290, 100);
     e.scale(4, 4);
-    paintIonBeam(e, 1, "ion-light");
+    paintBeam(e, 1, LIGHT_ION_BEAM);
     e.restore();
     c.clearRect(0, 0, 360, 200);
     c.strokeStyle = "#d477ff";

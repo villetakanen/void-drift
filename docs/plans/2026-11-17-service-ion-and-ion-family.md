@@ -87,7 +87,15 @@ Written 17 November 2026 into the parts, design-system and ships specs.
 
 ## Work, in order
 
-1. **Ion family into the catalog.** No visible change: the light and heavy ion
+1. **Ion family into the catalog.** _Done 17 November 2026, uncommitted:_
+   ion strength and beam (length, width, ink) are catalog fields; core
+   `paintBeam` takes a beam and stamps each once; plume emitters, flight
+   thrust, the Hangar side list, the instrument's family mapping and the
+   propulsion page read the catalog; the Scout reads engine fronts from the
+   art. `buildDrain`'s Lab draw scale stays on the light ion: it rescales the
+   reference part, not the family. The parts spec's draw rule was corrected:
+   an ion engine's draw is its own catalog value (the heavy ion draws 2× at
+   strength 1.75). Original intent: No visible change: the light and heavy ion
    fly, draw and look as now. Catalog entries carry ion strength and plume
    proportions and ink; `ionStrength`, the plume stamp, `buildPlumeEmitters`,
    `buildDrain`'s scale, the Hangar side-mount list, the Lab instrument
@@ -124,4 +132,10 @@ Sanctioning the Service ion for ranked play is not part of this plan.
 
 ## Still open
 
-Nothing. The specs are written; the work starts at step 1.
+- **Explain the ion draw curve where engines are shown.** Decided 17 November
+  2026: ion draw is non-linear on purpose. Up to strength 1 it follows
+  strength; above 1 draw grows faster than thrust, so stronger ion engines
+  give diminishing returns (the heavy ion draws 2× for 1.75× thrust; a 3×
+  draw engine would push about 2.5×). Where to say so is open: the Lab ship
+  propulsion page, the design-system engines page, or alongside each engine's
+  properties.

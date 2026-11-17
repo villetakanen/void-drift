@@ -2,6 +2,7 @@ export const LIFE_SUPPORT_DRAIN = 0.8;
 /** Light ion draw; Heavy ion draws 2× and full-duty stabilizers 0.25× this. */
 export const LIGHT_ION_DRAW = 1.75;
 
+import { BeamSchema } from "@void-drift/core";
 import { z } from "zod";
 import { CRUISER } from "../cruiser";
 import { FIDDLER } from "../fiddler";
@@ -34,25 +35,40 @@ export const PartIdSchema = z.enum([
   "plasma",
 ]);
 export type PartId = z.infer<typeof PartIdSchema>;
-export const PartSchema = z.object({
-  id: PartIdSchema,
-  releaseClass: ReleaseClassSchema,
-  description: z.string().max(220).default(""),
-  fluff: z.string().max(80).default(""),
-  solarMultiplier: z.number().nonnegative().default(0),
-  capacity: z.number().nonnegative().default(0),
-  name: z.string(),
-  category: z.enum(["G", "U", "E"]),
-  mass: z.number().positive(),
-  thrust: z.number().nonnegative(),
-  speedContribution: z.number().finite().nonnegative().default(0),
-  limit: z.number().nonnegative(),
-  draw: z.number().nonnegative(),
-  response: z.enum(["steady", "pulse", "delayed"]).default("steady"),
-  chargeSeconds: z.number().nonnegative().default(0),
-  pulsePeriod: z.number().positive().default(0.45),
-  pulseOn: z.number().positive().default(0.18),
-});
+export const PartSchema = z
+  .object({
+    id: PartIdSchema,
+    releaseClass: ReleaseClassSchema,
+    description: z.string().max(220).default(""),
+    fluff: z.string().max(80).default(""),
+    solarMultiplier: z.number().nonnegative().default(0),
+    capacity: z.number().nonnegative().default(0),
+    name: z.string(),
+    category: z.enum(["G", "U", "E"]),
+    mass: z.number().positive(),
+    thrust: z.number().nonnegative(),
+    speedContribution: z.number().finite().nonnegative().default(0),
+    limit: z.number().nonnegative(),
+    draw: z.number().nonnegative(),
+    response: z.enum(["steady", "pulse", "delayed"]).default("steady"),
+    chargeSeconds: z.number().nonnegative().default(0),
+    pulsePeriod: z.number().positive().default(0.45),
+    pulseOn: z.number().positive().default(0.18),
+    /**
+     * Present on the ion engines, one family: strength is thrust as a multiple
+     * of the light ion's; beam is the plume's proportions and ink.
+     */
+    ion: z
+      .object({ strength: z.number().positive(), beam: BeamSchema })
+      .optional(),
+  })
+  .refine(
+    (part) =>
+      !part.ion || (part.category === "E" && part.response === "steady"),
+    {
+      message: "Ion engines are steady engines",
+    },
+  );
 export const SlotTypeSchema = z.enum([
   "engine",
   "weapon",
@@ -273,6 +289,7 @@ export const PARTS = {
     speedContribution: 8,
     limit: ION_DEFAULTS.maxSpeed,
     draw: LIGHT_ION_DRAW,
+    ion: { strength: 1, beam: { length: 1, width: 1, ink: "112,255,226" } },
   }),
 
   "heavy-ion": PartSchema.parse({
@@ -291,6 +308,10 @@ export const PARTS = {
     draw: 2 * LIGHT_ION_DRAW,
     response: "steady",
     chargeSeconds: 0,
+    ion: {
+      strength: 1.75,
+      beam: { length: 1.4, width: 1.45, ink: "112,226,255" },
+    },
   }),
   fusion: PartSchema.parse({
     id: "fusion",
@@ -321,6 +342,20 @@ export const PARTS = {
     chargeSeconds: 0.2,
   }),
 };
+/** A part's ion strength: its thrust as a multiple of the light ion's; 0 for parts outside the ion family. */
+export function ionStrength(id: string) {
+  return (
+    (PARTS as Record<string, z.infer<typeof PartSchema>>)[id]?.ion?.strength ??
+    0
+  );
+}
+function ionEngine(id: PartId) {
+  const ion = PARTS[id].ion;
+  if (!ion) throw new Error(`${id} is not an ion engine`);
+  return ion;
+}
+/** The light ion's beam; stabilizer outlets draw it too. */
+export const LIGHT_ION_BEAM = ionEngine("ion").beam;
 export const LoadoutSchema = z
   .object({
     version: z.literal(2),

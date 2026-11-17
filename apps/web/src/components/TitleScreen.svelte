@@ -98,11 +98,7 @@ function drawArrival() {
       (engine.y * scale) / BUILD_FLIGHT_SCALE,
     );
     ctx.rotate(engine.angle);
-    paintBeam(
-      ctx,
-      2.21,
-      engine.style === "plasma" ? "default" : (engine.style ?? "default"),
-    );
+    paintBeam(ctx, 2.21, engine.style === "plasma" ? undefined : engine.beam);
     ctx.restore();
   }
   drawBuild(ctx, loadout, 0, 0, 0, scale);

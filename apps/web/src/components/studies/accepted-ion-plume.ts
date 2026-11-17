@@ -6,8 +6,10 @@ import {
   type GameObject,
   type PlumeProportions,
   PlumeProportionsSchema,
-  type PlumeStyle,
 } from "@void-drift/core";
+
+/** The plume styles as they were when this study was accepted. */
+type PlumeStyle = "default" | "ion-light" | "ion-heavy" | "plasma";
 
 export { PlumeProportionsSchema };
 
