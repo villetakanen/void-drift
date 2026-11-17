@@ -1,6 +1,8 @@
 import {
   Camera,
+  createRockMaterial,
   DEFAULT_ROCK_BODY_LIGHTING,
+  PLANET_MAPS,
   type Planet,
   Renderer,
   type RockBodyLighting,
@@ -22,7 +24,6 @@ import {
 } from "@void-drift/mode-a";
 import { practicePlanetAppearances } from "../assets/practice-planet-appearances";
 import { createPracticeVenus } from "../assets/practice-venus";
-import { createPracticeMercury } from "../assets/rock-planets/authored-materials";
 import type { PlanetInspectorDocument } from "./config";
 
 const references = {
@@ -56,7 +57,7 @@ export class PlanetInspectorScene {
   readonly reference;
   private renderer: Renderer;
   private fx = new FlightFx();
-  private mercury?: Awaited<ReturnType<typeof createPracticeMercury>>;
+  private mercury?: Awaited<ReturnType<typeof createRockMaterial>>;
   private venus?: ReturnType<typeof createPracticeVenus>;
   private bodyAppearances: ReadonlyMap<number, BodyAppearance> = new Map();
   private samples: { at: number; ms: number; redraws: number }[] = [];
@@ -94,7 +95,7 @@ export class PlanetInspectorScene {
     let pendingPainter: { dispose: () => void } | undefined;
     try {
       if (this.doc.planet.name === "mercury") {
-        const material = await createPracticeMercury(true);
+        const material = await createRockMaterial(PLANET_MAPS.mercuryGround);
         pendingPainter = material.painter;
         if (this.disposed) {
           material.painter.dispose();

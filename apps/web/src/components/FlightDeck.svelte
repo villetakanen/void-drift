@@ -1,9 +1,11 @@
 <script lang="ts">
 import {
   Camera,
+  createRockMaterial,
   Input,
   type InputAction,
   litPads,
+  PLANET_MAPS,
   paintCountdown,
   Renderer,
   type ThrustPad,
@@ -38,7 +40,6 @@ import {
 import { onMount, type Snippet } from "svelte";
 import { practicePlanetAppearances } from "../lib/assets/practice-planet-appearances";
 import { createPracticeVenus } from "../lib/assets/practice-venus";
-import { loadPracticeMercury } from "../lib/assets/rock-planets/authored-materials";
 import { NO_SCORE_NOTICE } from "../lib/experimental";
 import { fitGameScreen, GAME_HEIGHT } from "../lib/game-screen";
 import { settings } from "../lib/stores/settings";
@@ -69,9 +70,7 @@ const testFlight = $derived(mode === "practice");
 let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
 let simulation: Simulation;
 let practiceVenus: ReturnType<typeof createPracticeVenus> | undefined;
-let practiceMercury:
-  | Awaited<ReturnType<typeof loadPracticeMercury>>
-  | undefined;
+let practiceMercury: Awaited<ReturnType<typeof createRockMaterial>> | undefined;
 let practiceBodyAppearances:
   | ReturnType<typeof practicePlanetAppearances>
   | undefined;
@@ -414,7 +413,7 @@ onMount(() => {
     } catch {
       /* Use the stock body if Canvas material preparation fails. */
     }
-    void loadPracticeMercury(true)
+    void createRockMaterial(PLANET_MAPS.mercuryGround)
       .then((asset) => {
         practiceMercury = asset;
         refreshPracticeAppearances();

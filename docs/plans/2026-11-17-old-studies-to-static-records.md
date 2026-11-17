@@ -59,7 +59,10 @@ A converted study:
   is five days ago or less, stop: nothing is eligible today. Otherwise set it to
   `in progress` and save the file before doing anything else, so another session in
   this checkout sees it.
-- Record the current commit hash; it is the "full version" reference.
+- Record the current commit hash; it is the "full version" reference. Other
+  sessions commit the whole checkout, so one of their commits may carry this
+  conversion's unfinished files. That is expected. The reference stays the commit
+  recorded here, where the page is still the original.
 - Open the page in the browser and record the word count of its rendered text.
   This is the "before" size. Lines of the source file do not measure it, because
   the old pages load most of their content from components.
@@ -71,11 +74,13 @@ A converted study:
   a still, or a short clip when the text judges motion. For an example with
   controls, capture the default state and each variant the text names as accepted,
   selected or rejected with a reason. Do not capture every state.
-- Take captures with Playwright from this repository against the running dev
+- Take captures with `@playwright/test` from this repository against the running dev
   server. A sandboxed shell cannot reach `localhost:4321`; run the capture command
   outside the sandbox.
 - Text and tables that a component rendered are not captured as images. Copy them
   into the page as text.
+- Capture the example's own element, not the whole page. A still above about
+  300 kB is too large: crop it closer or capture at a smaller size.
 - Store media in `apps/web/public/studies/<slug>/`, named by step.
 - Replace each example on the page with its capture in a `<figure>` with a caption:
   what it shows, the settings, the capture date, and that it is a reconstruction.
@@ -120,6 +125,11 @@ record refers to.
 Remove inventories and value tables whose values now live in code, tokens or a
 spec: audits, measured values before a change, lists of every setting. Keep the
 decision the table led to and the values that decision names.
+
+When the page records no date for the outcome, take the date from git history: the
+commit that set the registry status, or the page's last content change. Say in the
+record that the date comes from git history. This is the one value the record may
+hold that the page did not.
 
 Before rewriting, write the keep list: every decision, value, reason, ruled-out
 item and uncertainty found on the page. After rewriting, check the list against the
@@ -245,6 +255,28 @@ Corrections made to this file from that run:
 - Failures in files the conversion did not touch are reported and not fixed.
 - Decided 2026-11-17: value tables and inventories are dropped from a record. The
   22-row token table was removed from the buttons record afterwards.
+
+## The second run
+
+`gravity-wells` was converted on 2026-11-17 in `87092768`. The rendered text went
+from about 2,228 words to about 1,060. Five stills are kept, 132 kB together. Four
+files with 735 lines were deleted. The session captured only the variants the text
+names and deleted one capture the record did not use.
+
+Corrections made to this file from that run:
+
+- A missing outcome date is taken from git history and marked as such.
+- The package is `@playwright/test`.
+- Another session's commit may carry a conversion's unfinished files; the
+  full-version reference is unaffected.
+- Captures are of the example's element, with a size limit. The limit comes from
+  commit `830d145f`, where another session replaced some live instruments in three
+  studies with stills of up to 1 MB each.
+
+Those three studies, rows 17, 19 and 26, are not converted. They are still `.astro`
+pages that import study components and carry styles. Their rows stay `todo`; the
+session that takes one finds part of stage 1 done and should bring the existing
+stills under the size limit.
 
 Still open from that run:
 

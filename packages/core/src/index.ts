@@ -1,6 +1,7 @@
 export * from "./lib/assets/cloud-body";
 export * from "./lib/assets/death-icons";
 export * from "./lib/assets/planet";
+export * from "./lib/assets/planet-maps";
 export * from "./lib/assets/resource-bar";
 export * from "./lib/assets/rock-body";
 // Assets

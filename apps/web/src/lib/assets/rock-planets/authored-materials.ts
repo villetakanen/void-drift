@@ -1,7 +1,11 @@
-import { RockBodyPainter, StripSphericalSurface } from "@void-drift/core";
+import {
+  loadPlanetMap,
+  PLANET_MAPS,
+  RockBodyPainter,
+  StripSphericalSurface,
+} from "@void-drift/core";
 import framing from "./art-029-framing.json";
 import neutralFrame from "./art-030-framing.json";
-import { quiltMineralMaterial } from "./quilted-material";
 import { SphericalSurface } from "./spherical-surface";
 
 /** Existing composed study art, normalized into reusable 192px material discs. */
@@ -85,9 +89,8 @@ let practiceAtlas: Promise<HTMLCanvasElement> | undefined;
 
 /** Independent projection and mask caches; only the immutable atlas is shared. */
 export async function createPracticeMercury(browserRotation = true) {
-  practiceAtlas ??= loadAuthoredRockMaterials().then(([mineral]) =>
-    quiltMineralMaterial(mineral, 153),
-  );
+  // The production map holds the accepted seed-153 quilt of the mineral art.
+  practiceAtlas ??= loadPlanetMap(PLANET_MAPS.mercuryGround);
   const atlas = await practiceAtlas;
   const surface = browserRotation
     ? new StripSphericalSurface(atlas)
