@@ -55,6 +55,8 @@ export class Camera {
   private accelerating = false;
   private inwardCandidate: number | null = null;
   private inwardSeconds = 0;
+  // Active seconds held in an entrance view wider than 1x; null otherwise.
+  private entranceSeconds: number | null = null;
   private subject: { x: number; y: number; radius: number } | null = null;
   private target = new Vec2(960, 540);
   private targetZoom = 1;
@@ -142,6 +144,7 @@ export class Camera {
     previewLevel: number | null = null,
   ) {
     this.resetSpeedEligibility();
+    this.entranceSeconds = null;
     this.widenFilterZoom = null;
     this.lastSpeed = null;
     const previous = { x: this.pos.x, y: this.pos.y, zoom: this.zoom };
@@ -197,7 +200,8 @@ export class Camera {
   /**
    * Speed selects zoom; motion matching and residual centring select pan.
    * `entrance` is the star on a new run: the first view then contains both
-   * the star and the ship, and the ordinary inward rule takes over from it.
+   * the star and the ship. If it is wider than 1x, it cuts to 1x after a
+   * fixed hold of active time, whatever the speed does.
    */
   frameSpeed(
     x: number,
@@ -211,6 +215,7 @@ export class Camera {
     const entering = !this.speedFraming;
     if (entering || snap) {
       this.resetSpeedEligibility();
+      this.entranceSeconds = null;
       this.widenFilterZoom = null;
       this.lastSpeed = null;
       this.panVelocity.set(0, 0);
@@ -247,6 +252,8 @@ export class Camera {
         (this.activeHeight / 2 - clearance) / Math.max((bottom - top) / 2, 1),
       );
       this.zoom = Math.min(this.targetZoom, fit);
+      if (this.zoom < this.speedWidestZoom * (1 - 1e-10))
+        this.entranceSeconds = 0;
       this.pos.set(
         (left + right) / 2 - this.offset.x,
         (top + bottom) / 2 - this.offset.y,
@@ -279,6 +286,16 @@ export class Camera {
     return (shortSide / 2 - clearance) / Math.max(this.subject.radius, 1);
   }
   private updateSpeedZoom(dt: number) {
+    if (this.entranceSeconds !== null) {
+      // Speed always permits 1x, so the entrance hold is fixed: neither
+      // acceleration nor speed demand delays or redirects the cut.
+      this.entranceSeconds += dt;
+      if (this.entranceSeconds + 1e-9 < SPEED_CAMERA.inwardHoldSeconds) return;
+      this.entranceSeconds = null;
+      this.zoom = Math.max(this.zoom, this.speedWidestZoom);
+      this.resetSpeedEligibility();
+      return;
+    }
     if (this.targetZoom < this.zoom) {
       this.resetSpeedEligibility();
       // Two equal-rate filters give a critically damped step response: zero

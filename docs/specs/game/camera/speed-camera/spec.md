@@ -202,12 +202,13 @@ the repository and is not an acceptance gate or evidence requirement.
   Its first view shows the whole star and the whole ship within the safe active
   bounds, whatever the system's size and the screen's size. Its scale is the
   wider of the speed demand and the closest scale that contains both bodies.
-- From the entrance view the ordinary inward rule applies. When it is wider
-  than `1×`, `1×` is the first candidate: it must stay eligible for 1.5
-  continuous seconds, accelerating resets the timer, and the cut goes to `1×`.
-  Later levels follow speed demand one cut at a time. When the entrance view is
-  already `1×` or closer, there is no entrance cut, and the normal speed rules
-  apply from the start.
+- When the entrance view is wider than `1×`, the camera holds it for 1.5
+  seconds of active simulation time and then cuts to `1×`. Speed always permits
+  `1×`, so neither speed nor acceleration delays or cancels this cut; Pause
+  freezes it. After the cut the ordinary rules apply: later levels follow speed
+  demand one inward cut at a time, and outward zoom never goes wider than `1×`.
+  When the entrance view is already `1×` or closer, there is no entrance cut,
+  and the normal speed rules apply from the start.
 - Resizing recomputes placement from the new active bounds and restores safe
   containment immediately and clears inward eligibility time. Leaving speed
   framing also clears that timer. The existing aspect gate remains authoritative.
@@ -273,7 +274,7 @@ fixed world orientation or scoring independence changes the feature contract.
   the one before, and do not depend on the stage's size.
 - SC16: The first view of a new run contains the star and the ship on small and
   large stages. When that view is wider than 1×, it cuts to 1× after 1.5 seconds
-  of eligibility; otherwise no entrance cut occurs.
+  of active time, whatever the speed does; otherwise no entrance cut occurs.
 
 ### Regression guardrails
 
@@ -309,7 +310,7 @@ Scenario: Enter a star system on a small screen
   When a new run starts
   Then the first view shows the whole star and the whole ship
   And ZOOM shows 1×
-  When the 1× level stays eligible for 1.5 seconds
+  When 1.5 seconds of active time pass, even while the ship accelerates
   Then the camera cuts to 1×, which is 0.5 CSS pixels per world unit
 
 Scenario: Enter a star system on a large screen

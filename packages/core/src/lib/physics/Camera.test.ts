@@ -729,19 +729,20 @@ it("cuts the entrance view to 1x after the hold only when it is wider than 1x", 
   expect(small.camera.zoom).toBe(entrance);
   hold(small.camera, small.ship, 0.2);
   expect(small.camera.zoom).toBeCloseTo(oneX, 12);
-  // Accelerating during the hold resets it, as for every inward cut.
-  const accelerating = enter(500);
-  for (let t = 0; t < 120; t++) {
-    accelerating.camera.frameSpeed(
-      accelerating.ship.x,
-      accelerating.ship.y,
-      0,
-      600 + t,
-      40,
-    );
-    accelerating.camera.update(1 / 60);
+  // Speed never delays or redirects the entrance cut: accelerating or braking
+  // through the hold, it cuts to 1x when the hold ends.
+  for (const speedAt of [(t: number) => 600 + 10 * t, () => 0]) {
+    const { camera, ship } = enter(500);
+    const start = camera.zoom;
+    const step = (t: number) => {
+      camera.frameSpeed(ship.x, ship.y, 0, speedAt(t), ship.radius);
+      camera.update(1 / 60);
+    };
+    for (let t = 0; t < 89; t++) step(t);
+    expect(camera.zoom).toBe(start);
+    step(89);
+    expect(camera.zoom).toBeCloseTo(oneX, 12);
   }
-  expect(accelerating.camera.zoom).toBeLessThan(oneX);
   // On a large stage 1x already holds both: no entrance cut, speed demand rules.
   const large = enter(2400);
   const largeOneX = large.camera.speedZoomLevels[0];
