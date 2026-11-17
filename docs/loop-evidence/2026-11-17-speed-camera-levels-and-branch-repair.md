@@ -113,10 +113,17 @@ Actions:
 ## Publication
 
 - Local commits: as above.
-- Push: not done. An attempt to push `main` and `feat/0-6-0` was denied by the
-  session's permission check because the designer had not answered the push
-  question directly. `origin/main` remains `ec650820`; `feat/0-6-0` does not
-  exist on `origin`; the save tags exist only locally.
+- Push, first attempt: denied by the session's permission check because the
+  designer had not answered the push question directly.
+- Push, after the designer's "Push both": `main` `ec650820..6cfee0bf`
+  (fast-forward, no force) and `feat/0-6-0` created on `origin` at `b178bae8`.
+  The sandboxed push could not reach the GitHub credential helper; the push ran
+  outside the sandbox. After a fetch, local and `origin` matched for both
+  branches, and `origin/main`'s first-parent history after `v0.6.0` showed only
+  the three release merges.
+- The save tags exist only locally.
+- This publication note is a later commit on `feat/0-6-0`; its own push state is
+  not recorded here.
 - Deployment and live verification: none in this loop.
 
 ## Evidence gaps
