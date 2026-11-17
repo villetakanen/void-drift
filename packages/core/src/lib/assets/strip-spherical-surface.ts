@@ -90,12 +90,10 @@ export class StripSphericalSurface {
     const size = Math.max(8, Math.ceil(diameter / step) * step);
     if (size !== this.canvas.width) this.resize(size);
     // Absolute phase bins make the image independent of which ticks were
-    // actually drawn.
-    // EXPERIMENT (2026-11-17): one bin moves the equator two buffer pixels,
-    // not one, to halve redraws of large or fast surfaces (The Cradle's clouds
-    // close up). If the turn looks steppy, return to `Math.PI * size`.
+    // actually drawn. One bin moves the equator one buffer pixel; coarser
+    // bins make the turn visibly step.
     const tau = 2 * Math.PI;
-    const bins = Math.ceil((Math.PI * size) / 2);
+    const bins = Math.ceil(Math.PI * size);
     const cycle = ((phase % tau) + tau) % tau;
     const bin = Math.floor((cycle / tau) * bins + 1e-9) % bins;
     if (bin === this.phaseBin) return;
