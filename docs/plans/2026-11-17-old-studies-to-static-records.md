@@ -298,7 +298,7 @@ study component or use `client:`.
 | --- | -------------------------------------------- | ---------- | ----- | ---- | --------------- | --------------- |
 | 1   | `buttons.astro`                              | 2026-10-28 | 163   | 3    | accepted        | done 2026-11-17 |
 | 2   | `gravity-wells.astro`                        | 2026-10-29 | 230   | 5    | accepted        | done 2026-11-17 |
-| 3   | `archive/fighter-canopy-soft.astro`          | 2026-10-30 | 21    | 1    | not in registry | in progress     |
+| 3   | `archive/fighter-canopy-soft.astro`          | 2026-10-30 | 21    | 1    | not in registry | done 2026-11-17 |
 | 4   | `engine-effects.astro`                       | 2026-10-30 | 292   | 9    | accepted        | todo            |
 | 5   | `heavy-cruiser-slots.astro`                  | 2026-10-30 | 556   | 6    | accepted        | todo            |
 | 6   | `ship-silhouettes.astro`                     | 2026-10-30 | 566   | 10   | stopped         | todo            |
