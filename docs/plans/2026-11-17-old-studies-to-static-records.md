@@ -356,7 +356,7 @@ study component or use `client:`.
 | 9   | `ion-engines-2026-10-31.astro`               | 2026-10-31 | 273   | 7    | accepted        | done 2026-11-18 |
 | 10  | `scout-firefly.astro`                        | 2026-10-31 | 503   | 7    | accepted        | done 2026-11-18 |
 | 11  | `engine-identities.astro`                    | 2026-10-31 | 541   | 15   | accepted        | done 2026-11-18 |
-| 12  | `archive/ion-ceiling-rules.astro`            | 2026-11-01 | 21    | 2    | not in registry | todo            |
+| 12  | `archive/ion-ceiling-rules.astro`            | 2026-11-01 | 21    | 2    | not in registry | done 2026-11-18 |
 | 13  | `path-instrument-2026-11-01.astro`           | 2026-11-01 | 193   | 5    | stopped         | todo            |
 | 14  | `plasma-behaviour-2026-11-01.astro`          | 2026-11-01 | 301   | 7    | stopped         | todo            |
 | 15  | `base-movement-ion.astro`                    | 2026-11-01 | 539   | 11   | accepted        | todo            |
