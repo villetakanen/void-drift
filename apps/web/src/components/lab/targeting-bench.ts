@@ -42,13 +42,14 @@ export const TARGETING_VIEW = {
   height: 780 * FORMATION_SCALE,
 };
 const COUNT = 16;
+export const FORMATION_PERIOD = (2 * Math.PI) / 0.16;
 export const TARGETING_LOOPS = [
   {
     count: 6,
-    x: 702,
+    x: 831,
     y: 489,
-    rx: 260,
-    ry: 170,
+    rx: 305,
+    ry: 280.6,
     tilt: (Math.PI * 35) / 180,
     speed: 0.16,
     phase: 0,
@@ -56,27 +57,56 @@ export const TARGETING_LOOPS = [
   },
   {
     count: 6,
-    x: 1194,
-    y: 619,
-    rx: 226,
-    ry: 174,
+    x: 1117,
+    y: 489,
+    rx: 278,
+    ry: 255.76,
     tilt: 0,
-    speed: -0.13,
-    phase: 0.35,
+    speed: 0.16,
+    phase: 0.784,
     outwardHeading: 0,
   },
   {
     count: 4,
-    x: 1180,
-    y: 619,
-    rx: 132,
-    ry: 132,
+    x: 944,
+    y: 594,
+    rx: 251,
+    ry: 251,
     tilt: 0,
-    speed: 0.22,
-    phase: 0.7,
+    speed: 0.16,
+    phase: 0.262,
     outwardHeading: Math.PI / 3,
   },
 ] as const;
+export function targetingPose(
+  loop: (typeof TARGETING_LOOPS)[number],
+  index: number,
+  time: number,
+) {
+  const angle =
+    loop.phase + (index * Math.PI * 2) / loop.count + time * loop.speed;
+  const cos = Math.cos(angle),
+    sin = Math.sin(angle);
+  const c = Math.cos(loop.tilt),
+    s = Math.sin(loop.tilt);
+  const px = loop.rx * cos,
+    py = loop.ry * sin;
+  const vx = -loop.rx * loop.speed * sin,
+    vy = loop.ry * loop.speed * cos;
+  const worldVx = (vx * c - vy * s) * FORMATION_SCALE;
+  const worldVy = (vx * s + vy * c) * FORMATION_SCALE;
+  return {
+    x:
+      TARGETING_CENTER.x +
+      (loop.x - TARGETING_CENTER.x + px * c - py * s) * FORMATION_SCALE,
+    y:
+      TARGETING_CENTER.y +
+      (loop.y - TARGETING_CENTER.y + px * s + py * c) * FORMATION_SCALE,
+    vx: worldVx,
+    vy: worldVy,
+    rotation: Math.atan2(worldVy, worldVx) - loop.outwardHeading,
+  };
+}
 const SUBSTEP = STEP / 4;
 const WARMUP = 120;
 const WINDOW = 600;
@@ -224,34 +254,16 @@ export class TargetingBench {
     }
     let index = 0;
     for (const loop of TARGETING_LOOPS) {
-      const cosTilt = Math.cos(loop.tilt),
-        sinTilt = Math.sin(loop.tilt);
       for (let i = 0; i < loop.count; i++, index++) {
         const actor = this.sim.opponents[index];
-        const angle =
-          loop.phase + (i * Math.PI * 2) / loop.count + time * loop.speed;
-        const x = loop.rx * Math.cos(angle),
-          y = loop.ry * Math.sin(angle);
-        const vx = -loop.rx * loop.speed * Math.sin(angle),
-          vy = loop.ry * loop.speed * Math.cos(angle);
-        actor.ship.pos.set(
-          TARGETING_CENTER.x +
-            (loop.x - TARGETING_CENTER.x + x * cosTilt - y * sinTilt) *
-              FORMATION_SCALE,
-          TARGETING_CENTER.y +
-            (loop.y - TARGETING_CENTER.y + x * sinTilt + y * cosTilt) *
-              FORMATION_SCALE,
-        );
-        actor.ship.vel.set(
-          (vx * cosTilt - vy * sinTilt) * FORMATION_SCALE,
-          (vx * sinTilt + vy * cosTilt) * FORMATION_SCALE,
-        );
-        const tangent = Math.atan2(actor.ship.vel.y, actor.ship.vel.x);
-        actor.ship.rotation =
-          tangent - Math.sign(loop.speed) * loop.outwardHeading;
+        const pose = targetingPose(loop, i, time);
+        actor.ship.pos.set(pose.x, pose.y);
+        actor.ship.vel.set(pose.vx, pose.vy);
+        actor.ship.rotation = pose.rotation;
       }
     }
   }
+
   step() {
     const tickStart = performance.now();
     let tickCombatMs = 0;

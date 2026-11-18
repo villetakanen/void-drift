@@ -95,7 +95,7 @@ Counts accumulate from reset. A change of target ID starts a new interval immedi
 
 A second run extended the same deterministic encounter to 600.0 simulated seconds. It recorded 1,213 completed short intervals, zero completed intervals reaching 0.7 s, one initial interval and zero open at cutoff. To verify a later release cycle, use a separate controlled approach that holds a target in the rifle sector. These measurements preserve the bench choreography and the rifle tuning.
 
-## Charge cycle verification
+## Charge cycle verification on the separated loops
 
 Both sustained workloads ran the same production scheduler for 60 simulated seconds with two rifles per Wasp. Power replenishment makes this a comparison of target opportunities; the separate funding tests cover limited ship power.
 
@@ -105,3 +105,9 @@ Both sustained workloads ran the same production scheduler for 60 simulated seco
 | Held approach |     2 |                                  0 / 8 |              24 |                       0 |                       2 |
 
 On the three loops, one additional lock was present at the first observation and ended during the run; one remained open at the cutoff. On the held approach, the trailing Wasp closes on the leader and can recover and release repeatedly while the same opponent stays inside its muzzle sector. Release counts describe funded weapon cycles. Stream contact, damage, recoil and emitted effects belong to the subsequent delivery slices.
+
+## Crossing-loop verification
+
+Each pair of flight paths crosses. Six Wasps fly each of the two large ellipses and four fly the smaller circle with their noses 60° outward. The synchronized formation repeats every 39.27 seconds. Over the full repeat, the clearance test bounds the minimum simultaneous centre separation above 66.40 world units, including possible motion between samples. The largest fitted Wasp diameter is under 48.65 units across the 16 ordered weapon pairs. That leaves more than 17.75 units between hulls.
+
+In 60 simulated seconds of sustained twin-rifle flight, the fleet completed 42 same-target locks lasting at least 0.7 s and 24 shorter locks. Two more locks were already active at the first observation. All 44 funded releases targeted Wasps on a different loop; there were 24 target-loss vents and 16 mean body visits per substep. The preceding separated-loop run had zero funded releases and 123 vents under the same fitting and duration.

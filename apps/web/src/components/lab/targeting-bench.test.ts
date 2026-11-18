@@ -1,11 +1,13 @@
 import { buildCollisionRadius, defaultLoadout } from "@void-drift/mode-a";
 import { describe, expect, it } from "vitest";
 import {
+  FORMATION_PERIOD,
   FORMATION_SCALE,
   TARGETING_CENTER,
   TARGETING_LOOPS,
   TargetingBench,
   type TargetingConfig,
+  targetingPose,
 } from "./targeting-bench";
 
 describe("targeting bench", () => {
@@ -37,7 +39,47 @@ describe("targeting bench", () => {
     }
   });
 
-  it("keeps fitted hull collision circles disjoint over every loop phase", () => {
+  it("crosses every pair of paths in the 6/6/4 elliptical formation", () => {
+    const [left, right, circle] = TARGETING_LOOPS;
+    expect(TARGETING_LOOPS.map((loop) => loop.count)).toEqual([6, 6, 4]);
+    expect(left.rx).toBeGreaterThan(left.ry);
+    expect(left.tilt).toBeGreaterThan(0);
+    expect(right.rx).toBeGreaterThan(right.ry);
+    expect(right.tilt).toBe(0);
+    expect(circle.rx).toBe(circle.ry);
+    for (let first = 0; first < TARGETING_LOOPS.length; first++) {
+      for (const second of TARGETING_LOOPS.slice(first + 1)) {
+        const loop = TARGETING_LOOPS[first];
+        const samples = Array.from({ length: 256 }, (_, i) => {
+          const { x, y } = targetingPose(
+            loop,
+            0,
+            (i * 2 * Math.PI) / (256 * Math.abs(loop.speed)),
+          );
+          const dx =
+            (x - TARGETING_CENTER.x) / FORMATION_SCALE +
+            TARGETING_CENTER.x -
+            second.x;
+          const dy =
+            (y - TARGETING_CENTER.y) / FORMATION_SCALE +
+            TARGETING_CENTER.y -
+            second.y;
+          const u =
+            (dx * Math.cos(second.tilt) + dy * Math.sin(second.tilt)) /
+            second.rx;
+          const v =
+            (-dx * Math.sin(second.tilt) + dy * Math.cos(second.tilt)) /
+            second.ry;
+          return u * u + v * v;
+        });
+        // A continuous closed path with both an interior and exterior point crosses the ellipse.
+        expect(Math.min(...samples)).toBeLessThan(1);
+        expect(Math.max(...samples)).toBeGreaterThan(1);
+      }
+    }
+  });
+
+  it("keeps every fitted hull clear between samples over the repeating schedule", () => {
     const weapons = [
       "light-ion-cannon",
       "ion-point-defence",
@@ -52,28 +94,40 @@ describe("targeting bench", () => {
         maxDiameter = Math.max(maxDiameter, 2 * buildCollisionRadius(build));
       }
     }
-    const [left, outer, inner] = TARGETING_LOOPS;
-    for (const loop of TARGETING_LOOPS) {
-      // An ellipse stretches a unit-circle chord by at least its minor radius.
-      const closestChord = 2 * Math.sin(Math.PI / loop.count);
-      expect(
-        closestChord * Math.min(loop.rx, loop.ry) * FORMATION_SCALE,
-      ).toBeGreaterThan(maxDiameter);
+    const ships = TARGETING_LOOPS.flatMap((loop) => {
+      // The set of occupied positions repeats even if individual ships change places.
+      const spaces =
+        (FORMATION_PERIOD * loop.speed * loop.count) / (2 * Math.PI);
+      expect(spaces).toBeCloseTo(Math.round(spaces), 9);
+      const speedBound =
+        Math.abs(loop.speed) * Math.max(loop.rx, loop.ry) * FORMATION_SCALE;
+      return Array.from({ length: loop.count }, (_, index) => ({
+        loop,
+        index,
+        speedBound,
+      }));
+    });
+    const steps = Math.ceil(FORMATION_PERIOD / 0.02);
+    const interval = FORMATION_PERIOD / steps;
+    let minimumBound = Infinity;
+    for (let sample = 0; sample < steps; sample++) {
+      const positions = ships.map(({ loop, index }) =>
+        targetingPose(loop, index, sample * interval),
+      );
+      for (let i = 0; i < positions.length; i++) {
+        for (let j = i + 1; j < positions.length; j++) {
+          const distance = Math.hypot(
+            positions[i].x - positions[j].x,
+            positions[i].y - positions[j].y,
+          );
+          // Every instant is within half an interval of a sample (including the periodic boundary).
+          const maxApproach =
+            ((ships[i].speedBound + ships[j].speedBound) * interval) / 2;
+          minimumBound = Math.min(minimumBound, distance - maxApproach);
+        }
+      }
     }
-    const horizontalExtent = (loop: (typeof TARGETING_LOOPS)[number]) =>
-      Math.hypot(loop.rx * Math.cos(loop.tilt), loop.ry * Math.sin(loop.tilt));
-    for (const right of [outer, inner]) {
-      const xGap =
-        right.x - horizontalExtent(right) - left.x - horizontalExtent(left);
-      expect(xGap * FORMATION_SCALE).toBeGreaterThan(maxDiameter);
-    }
-    // Every outer point is at least its minor radius from the outer centre.
-    const centreOffset = Math.hypot(inner.x - outer.x, inner.y - outer.y);
-    const radialGap =
-      Math.min(outer.rx, outer.ry) -
-      centreOffset -
-      Math.max(inner.rx, inner.ry);
-    expect(radialGap * FORMATION_SCALE).toBeGreaterThan(maxDiameter);
+    expect(minimumBound).toBeGreaterThan(maxDiameter);
   });
   for (const slots of [
     ["light-ion-cannon", "light-ion-cannon"],
@@ -161,18 +215,17 @@ describe("targeting bench", () => {
     const empty = { short: 0, sustained: 0, initial: 0, ongoing: 0 };
     expect(bench.metrics.plasmaIntervals).toEqual(empty);
     bench.step();
-    expect(bench.metrics.plasmaIntervals.ongoing).toBeGreaterThan(0);
     expect(bench.traces).toHaveLength(bench.metrics.plasmaIntervals.ongoing);
     for (let tick = 1; tick < 3600; tick++) bench.step();
     const metrics = bench.metrics;
     expect(metrics.plasmaIntervals.short).toBeGreaterThan(0);
 
-    expect(metrics.plasmaIntervals.initial).toBeGreaterThan(0);
+    expect(metrics.plasmaIntervals.sustained).toBeGreaterThan(0);
     expect(metrics.plasmaIntervals.ongoing).toBe(bench.traces.length);
     expect(metrics.activeRequestsMean).toBe(32);
     expect(metrics.bodyVisitsMean).toBe(16);
-    expect(metrics.discharges).toBe(0);
-    expect(metrics.plasmaReleases).toBe(0);
+    expect(metrics.plasmaReleases).toBeGreaterThan(0);
+    expect(metrics.discharges).toBe(metrics.plasmaReleases);
     expect(metrics.plasmaVents).toBeGreaterThan(0);
     expect(new TargetingBench(config).metrics.plasmaIntervals).toEqual(empty);
   });

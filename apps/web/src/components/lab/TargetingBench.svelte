@@ -309,7 +309,7 @@ onMount(() => {
             bind:canvases
             label={formation === "held-approach"
               ? "Two moving Wasps on a held firing approach"
-              : "Sixteen fitted Wasps flying on three neighboring loops"}
+              : "Sixteen fitted Wasps taking turns at the crossings of three flight paths"}
           />
         </div>
         <figcaption>
