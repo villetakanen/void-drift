@@ -45,3 +45,14 @@ Loss or replacement of the charging target before release starts venting. Preser
 - A held approach keeps the same opponent inside the rifle sector through a full charge, funded release, recovery and a second charge. The production scheduler reports the release and the ship pays for it once.
 - A short pass in the three-loop workload starts a charge and loses the target before release. The rifle completes a partial vent and recovery. Its neighbour can continue operating independently.
 - Two full rifles compete for one affordable release. The first eligible gun in slot order releases. The second holds its charge while its target remains eligible and releases when power recovers.
+
+### Mounted charge light
+
+A paid charge is visible on the fitted rifle at flight scale. A warm, elongated central bead brightens in place along the barrel channel as the stored fraction increases. The two side channels begin to light halfway through charging. A fully charged rifle waiting for release power keeps its full indication. Losing the target dims the channels with the actual remaining charge during venting. A funded release clears the stored-charge indication immediately. Idle and cooldown show the unlit fitting.
+
+The light follows each mount through ship motion and rotation. The Wasp hull masks its under-mounted fitting; the exposed Fighter mount shows the full channel pattern. Charge remains readable beside ion fire and with targeting traces off. Drawing reads the mount’s paid charge and cycle phase. Pause preserves the visible state, and reset clears it with the encounter.
+
+### Presentation scenarios
+
+- In a crossing pass, the rifle brightens briefly and then drains as the target leaves. A different rifle on the same ship can show a different charge.
+- On a held approach, the centre brightens first, the sides join after half charge, and the loaded bead clears at release. Repeating the same flight produces the same charge and release events with rendering enabled or disabled.
