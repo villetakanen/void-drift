@@ -90,22 +90,25 @@ describe("plasma stream travel and first contact", () => {
     expect(head.mountKey).toBe(f.rifle.mount.key);
     expect(head.launchTime).toBeCloseTo(0.7, 9);
     expect(head.age).toBeCloseTo(0.01, 9);
-    expect(head.vx).toBeCloseTo(770, 9);
+    expect(head.vx).toBeCloseTo(7820, 9);
     expect(head.vy).toBeCloseTo(-10, 9);
-    expect(head.x).toBeCloseTo(f.muzzle.muzzleX + 7.7, 9);
+    expect(head.x).toBeCloseTo(f.muzzle.muzzleX + 78.2, 9);
     expect(head.y).toBeCloseTo(f.muzzle.muzzleY - 0.1, 9);
     f.ship.rotation = Math.PI;
     f.ship.vel.set(-100, 100);
-    f.step(0.01, []);
-    expect(f.system.plasmaStreams[0].x).toBeCloseTo(f.muzzle.muzzleX + 15.4, 9);
-    expect(f.system.plasmaStreams[0].y).toBeCloseTo(f.muzzle.muzzleY - 0.2, 9);
+    f.step(0.005, []);
+    expect(f.system.plasmaStreams[0].x).toBeCloseTo(
+      f.muzzle.muzzleX + 117.3,
+      9,
+    );
+    expect(f.system.plasmaStreams[0].y).toBeCloseTo(f.muzzle.muzzleY - 0.15, 9);
   });
 
   it("records a moving fragment that crosses between samples after a Fighter releases at a held Wasp", () => {
     const f = fixture();
     f.step(0.7);
     expect(f.rifle.target).toBe(f.wasp.id);
-    f.step(0.04);
+    f.step(0.004);
     const [head] = f.system.plasmaStreams;
     const [piece] = getDerelictWorldPolygons({
       kind: "fragment",
@@ -165,8 +168,7 @@ describe("plasma stream travel and first contact", () => {
     expect(contact?.time).toBeCloseTo(expected.time, 8);
     expect(contact?.x).toBeCloseTo(expected.x, 8);
     expect(contact?.y).toBeCloseTo(expected.y, 8);
-    expect(f.wasp.hull).toBe(100);
-    expect(shard.hull).toBe(100);
+    expect(shard.hull).toBe(25);
     f.step();
     expect(f.system.plasmaContacts).toBe(1);
   });
@@ -175,20 +177,21 @@ describe("plasma stream travel and first contact", () => {
     const f = fixture();
     f.step(0.7);
     const openWreck = {
-      ...material(7, "wreck", f.muzzle.muzzleX + 95, f.muzzle.muzzleY + 3),
+      ...material(7, "wreck", f.muzzle.muzzleX + 55, f.muzzle.muzzleY + 3),
       kind: "wreck" as const,
       releasedMask: (1 << 2) | (1 << 5),
+      spin: 0,
     };
     const from = { x: f.muzzle.muzzleX, y: f.muzzle.muzzleY };
-    const ray = { x: 750, y: 0 };
-    expect(castDerelict(openWreck, from, ray, 0, 0.4)).toBeNull();
+    const ray = { x: 7800, y: 0 };
+    expect(castDerelict(openWreck, from, ray, 0, STEP)).toBeNull();
     expect(
-      castDerelict({ ...openWreck, releasedMask: 0 }, from, ray, 0, 0.4),
+      castDerelict({ ...openWreck, releasedMask: 0 }, from, ray, 0, STEP),
     ).not.toBeNull();
-    const clearingShip = f.target(21, 60, 0, 1000);
-    const rearShip = f.target(22, 220);
+    const clearingShip = f.target(21, 60, 0, 20_000);
+    const rearShip = f.target(22, 125);
     f.system.bodies.push(openWreck);
-    f.step(0.4, [clearingShip, rearShip]);
+    f.step(STEP, [clearingShip, rearShip]);
     expect(f.system.plasmaContacts).toBe(1);
     expect(f.system.lastPlasmaContact?.bodyId).toBe(rearShip.id);
   });
@@ -196,15 +199,15 @@ describe("plasma stream travel and first contact", () => {
   it("includes material at the expiry endpoint and breaks equal-time ties by stable ID", () => {
     const f = fixture();
     f.step(0.7);
-    const lower = f.target(21, 300 + waspRadius);
+    const lower = f.target(21, 130 + waspRadius);
     const higher = { ...lower, id: 22 };
-    for (let time = 0; time < 96; time++) f.step(substep, [higher, lower]);
+    for (let time = 0; time < 4; time++) f.step(substep, [higher, lower]);
     expect(f.system.plasmaStreams).toEqual([]);
     expect(f.system.plasmaContacts).toBe(1);
     expect(f.system.lastPlasmaContact?.bodyId).toBe(lower.id);
-    expect(f.system.lastPlasmaContact?.time).toBeCloseTo(1.1, 8);
+    expect(f.system.lastPlasmaContact?.time).toBeCloseTo(0.7 + STEP, 8);
     expect(f.system.lastPlasmaContact?.x).toBeCloseTo(
-      f.muzzle.muzzleX + 300,
+      f.muzzle.muzzleX + 130,
       8,
     );
   });
@@ -230,13 +233,14 @@ describe("plasma stream travel and first contact", () => {
         type: "rock",
       };
       f.step(
-        0.4,
+        STEP,
         [body],
         kind === "star" ? star : distantStar,
         kind === "planet" ? [planet] : [],
       );
       expect(f.system.plasmaStreams).toEqual([]);
       expect(f.system.plasmaContacts).toBe(0);
+      expect(f.system.plasmaAirbursts).toBe(0);
       expect(f.system.lastPlasmaContact).toBeNull();
     },
   );
@@ -258,14 +262,14 @@ describe("plasma stream travel and first contact", () => {
           pos: new Vec2(pose.muzzleX + 77, pose.muzzleY),
           radius: 2,
         },
-        100,
+        300,
         () => {},
       ),
     );
     const resources = { hull: 100, power: 100 };
     system.stepWeapons(0.7, f.ship, distantStar, resources, 100, [], targets);
     expect(system.plasmaReleases).toBe(2);
-    system.stepWeapons(0.11, f.ship, distantStar, resources, 100, [], targets);
+    system.stepWeapons(STEP, f.ship, distantStar, resources, 100, [], targets);
     expect(system.plasmaStreams).toEqual([]);
     expect(system.plasmaContacts).toBe(2);
     expect(system.plasmaContactEvents).toHaveLength(2);
@@ -274,24 +278,26 @@ describe("plasma stream travel and first contact", () => {
         (entry) => entry.mountKey === key,
       );
       expect(hit?.bodyId).toBe(targets[index].id);
-      expect(hit?.time).toBeCloseTo(0.8, 8);
+      expect(hit?.time).toBeCloseTo(0.7 + 75 / 7800, 8);
       expect(hit?.x).toBeCloseTo(pose.muzzleX + 75, 8);
       expect(hit?.y).toBeCloseTo(pose.muzzleY, 8);
     }
   });
 
-  it("expires an empty miss and launches nothing on a partial vent", () => {
+  it("erupts once at full reach and launches nothing on a partial vent", () => {
     const f = fixture();
     f.step(0.35);
     f.step(0.3, []);
     expect(f.system.plasmaVents).toBe(1);
     expect(f.system.plasmaStreams).toEqual([]);
+    expect(f.system.plasmaAirbursts).toBe(0);
     f.step(2.1, []);
     f.step(0.7);
-    f.step(0.4, [f.target(21, 300.001 + waspRadius)]);
+    f.step(STEP, [f.target(21, 130.001 + waspRadius)]);
     expect(f.system.plasmaReleases).toBe(1);
     expect(f.system.plasmaStreams).toEqual([]);
     expect(f.system.plasmaContacts).toBe(0);
+    expect(f.system.plasmaAirbursts).toBe(1);
   });
 
   it("records stream contact through ordinary Derelicts simulation ticks", () => {
@@ -321,7 +327,7 @@ describe("plasma stream travel and first contact", () => {
       mountKey: rifle.mount.key,
       bodyId: wreck.id,
     });
-    expect(wreck.hull).toBe(100);
+    expect(wreck.hull).toBe(25);
   });
 
   it("records a Fighter-to-Wasp stream contact through ordinary Gauntlet ticks", () => {
@@ -367,7 +373,7 @@ describe("plasma stream travel and first contact", () => {
         mountKey: rifle.mount.key,
         bodyId: 900001,
       });
-      expect(wasp.resources.hull).toBe(100);
+      expect(wasp.resources.hull).toBe(25);
     } finally {
       pilot.mockRestore();
     }

@@ -745,10 +745,12 @@ export class Simulation {
             }
           if (this.salvage) {
             this.salvage.plasmaContactEvents.length = 0;
+            this.salvage.plasmaBurstEvents.length = 0;
             this.salvage.targetingMetrics = this.targetingMetrics;
           }
           for (const actor of this.opponents) {
             actor.combat.plasmaContactEvents.length = 0;
+            actor.combat.plasmaBurstEvents.length = 0;
             actor.combat.targetingMetrics = this.targetingMetrics;
           }
           const acquisitions = acquireFleetTargets(

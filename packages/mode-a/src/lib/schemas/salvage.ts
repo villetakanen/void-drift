@@ -123,6 +123,8 @@ export function ionCannonDamage(distance: number) {
   ];
 }
 /** Plasma rifle acquisition envelope and charge-cycle timing. */
+const PLASMA_STREAM_REACH = 130;
+const PLASMA_STREAM_SPEED = 7800;
 export const PlasmaRifleSchema = z.object({
   range: z.literal(130),
   halfAngle: z.literal(Math.PI / 12),
@@ -133,8 +135,14 @@ export const PlasmaRifleSchema = z.object({
   firingSeconds: z.literal(0.7),
   ventSeconds: z.literal(0.3),
   cooldownSeconds: z.literal(2.1),
-  streamSpeed: z.literal(750),
-  streamLifetime: z.literal(0.4),
+  streamSpeed: z.literal(PLASMA_STREAM_SPEED),
+  streamReach: z.literal(PLASMA_STREAM_REACH),
+  streamLifetime: z.literal(PLASMA_STREAM_REACH / PLASMA_STREAM_SPEED),
+  blastBands: z.tuple([
+    z.object({ radius: z.literal(10), damage: z.literal(75) }),
+    z.object({ radius: z.literal(26), damage: z.literal(50) }),
+    z.object({ radius: z.literal(42), damage: z.literal(25) }),
+  ]),
 });
 export const PLASMA_RIFLE = PlasmaRifleSchema.parse({
   range: 130,
@@ -146,8 +154,14 @@ export const PLASMA_RIFLE = PlasmaRifleSchema.parse({
   firingSeconds: 0.7,
   ventSeconds: 0.3,
   cooldownSeconds: 2.1,
-  streamSpeed: 750,
-  streamLifetime: 0.4,
+  streamSpeed: PLASMA_STREAM_SPEED,
+  streamReach: PLASMA_STREAM_REACH,
+  streamLifetime: PLASMA_STREAM_REACH / PLASMA_STREAM_SPEED,
+  blastBands: [
+    { radius: 10, damage: 75 },
+    { radius: 26, damage: 50 },
+    { radius: 42, damage: 25 },
+  ],
 });
 export const PlasmaRifleCycleSchema = z.object({
   phase: z.enum(["idle", "charging", "firing", "venting", "cooldown"]),
@@ -158,6 +172,8 @@ export const PlasmaRifleCycleSchema = z.object({
 export type PlasmaRifleCycle = z.infer<typeof PlasmaRifleCycleSchema>;
 export const PlasmaStreamSchema = z.object({
   mountKey: z.string(),
+  originX: z.number().finite(),
+  originY: z.number().finite(),
   x: z.number().finite(),
   y: z.number().finite(),
   vx: z.number().finite(),
@@ -175,10 +191,21 @@ export const PlasmaContactSchema = z.object({
   time: z.number().finite(),
 });
 export type PlasmaContact = z.infer<typeof PlasmaContactSchema>;
+export const PlasmaBurstSchema = z.object({
+  mountKey: z.string(),
+  outcome: z.enum(["material", "airburst"]),
+  bodyId: z.number().int().nullable(),
+  x: z.number().finite(),
+  y: z.number().finite(),
+  time: z.number().finite(),
+});
+export type PlasmaBurst = z.infer<typeof PlasmaBurstSchema>;
 /** Bounded presentation journal; world geometry and time only, never gameplay. */
 export const PlasmaVisualEventSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("segment"),
+    originX: z.number().finite(),
+    originY: z.number().finite(),
     id: z.number().int().positive(),
     time: z.number().finite(),
     x: z.number().finite(),
@@ -188,8 +215,20 @@ export const PlasmaVisualEventSchema = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("impact"),
+    outcome: z.enum(["material", "airburst"]),
+    originX: z.number().finite(),
+    originY: z.number().finite(),
     id: z.number().int().positive(),
     time: z.number().finite(),
+    x: z.number().finite(),
+    y: z.number().finite(),
+  }),
+  z.object({
+    kind: z.literal("absorb"),
+    id: z.number().int().positive(),
+    time: z.number().finite(),
+    originX: z.number().finite(),
+    originY: z.number().finite(),
     x: z.number().finite(),
     y: z.number().finite(),
   }),

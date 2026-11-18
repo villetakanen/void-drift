@@ -44,6 +44,8 @@ import {
   ION_CANNON,
   ionCannonDamage,
   PLASMA_RIFLE,
+  type PlasmaBurst,
+  PlasmaBurstSchema,
   type PlasmaContact,
   PlasmaContactSchema,
   type PlasmaRifleCycle,
@@ -168,6 +170,50 @@ const WRECK_SPIN = ENCOUNTER.wreckSpin.rate;
 function spinOf(body: Pick<SalvageBody, "kind" | "spin">) {
   return body.kind === "wreck" ? (body.spin ?? WRECK_SPIN) : 0.8;
 }
+/** A body's linear start pose and velocity for one combat substep. */
+function plasmaBodyMotion(body: SalvageBody, dt: number) {
+  let x = body.previousX,
+    y = body.previousY,
+    vx = body.vx,
+    vy = body.vy;
+  if (
+    body.kind === "ship" &&
+    body.sweepEndX !== undefined &&
+    body.sweepEndY !== undefined &&
+    dt > 0
+  ) {
+    const dx = body.sweepEndX - x,
+      dy = body.sweepEndY - y;
+    if (Math.hypot(dx, dy) > 1200) {
+      x = body.sweepEndX - vx * dt;
+      y = body.sweepEndY - vy * dt;
+    } else {
+      vx = dx / dt;
+      vy = dy / dt;
+    }
+  }
+  return { x, y, vx, vy };
+}
+function plasmaBodyPose(
+  body: SalvageBody,
+  dt: number,
+  offset: number,
+  integrated: boolean,
+) {
+  const motion = plasmaBodyMotion(body, dt);
+  return {
+    ...motion,
+    x: motion.x + motion.vx * offset,
+    y: motion.y + motion.vy * offset,
+    rotation:
+      body.kind === "ship"
+        ? body.rotation
+        : (integrated
+            ? (body.previousRotation ?? body.rotation)
+            : body.rotation) +
+          spinOf(body) * offset,
+  };
+}
 function angleDifference(a: number, b: number) {
   return Math.atan2(Math.sin(a - b), Math.cos(a - b));
 }
@@ -226,6 +272,8 @@ export class SalvageSystem {
   plasmaVents = 0;
   plasmaStreams: PlasmaStream[] = [];
   plasmaContacts = 0;
+  plasmaAirbursts = 0;
+  readonly plasmaBurstEvents: PlasmaBurst[] = [];
   lastPlasmaContact: PlasmaContact | null = null;
   readonly plasmaContactEvents: PlasmaContact[] = [];
   /** Translate local combat time to the containing simulation's clock. */
@@ -1026,6 +1074,8 @@ export class SalvageSystem {
             this.plasmaStreams.push(
               PlasmaStreamSchema.parse({
                 mountKey: weapon.mount.key,
+                originX: pose.muzzleX,
+                originY: pose.muzzleY,
                 x: pose.muzzleX,
                 y: pose.muzzleY,
                 vx:
@@ -1341,12 +1391,14 @@ export class SalvageSystem {
   ) {
     this.time += dt;
     this.plasmaContactEvents.length = 0;
+    this.plasmaBurstEvents.length = 0;
     this.sweepPlasmaStreams(dt, star, planets, roster, shooterId);
   }
   private plasmaVisual(
     event:
       | Omit<Extract<PlasmaVisualEvent, { kind: "segment" }>, "id">
-      | Omit<Extract<PlasmaVisualEvent, { kind: "impact" }>, "id">,
+      | Omit<Extract<PlasmaVisualEvent, { kind: "impact" }>, "id">
+      | Omit<Extract<PlasmaVisualEvent, { kind: "absorb" }>, "id">,
   ) {
     if (this.plasmaVisualEvents.length >= 512) this.plasmaVisualEvents.shift();
     this.plasmaVisualEvents.push({ ...event, id: ++this.plasmaVisualSequence });
@@ -1369,7 +1421,8 @@ export class SalvageSystem {
     if (!this.plasmaStreams.length) return;
     const started = this.targetingMetrics ? performance.now() : 0;
     const intervalStart = this.time - dt;
-    this.plasmaStreams = this.plasmaStreams.filter((head) => {
+    const birthOffsets = new Map<SalvageBody, number>();
+    const plan = (head: PlasmaStream) => {
       const offset = Math.max(0, head.launchTime - intervalStart);
       const horizon = Math.min(
         Math.max(0, dt - offset),
@@ -1410,50 +1463,33 @@ export class SalvageSystem {
       for (const body of bodies) {
         if (body.id === shooterId || body.hull <= 0 || body.kind === "cell")
           continue;
-        let startX = body.previousX,
-          startY = body.previousY;
-        let bodyVx = body.vx,
-          bodyVy = body.vy;
-        if (
-          body.kind === "ship" &&
-          body.sweepEndX !== undefined &&
-          body.sweepEndY !== undefined &&
-          dt > 0
-        ) {
-          const dx = body.sweepEndX - startX,
-            dy = body.sweepEndY - startY;
-          if (Math.hypot(dx, dy) > 1200) {
-            // A wrap begins a fresh local sweep at its destination.
-            startX = body.sweepEndX - body.vx * dt;
-            startY = body.sweepEndY - body.vy * dt;
-          } else {
-            bodyVx = dx / dt;
-            bodyVy = dy / dt;
-          }
-        }
-        const bx = startX + bodyVx * offset;
-        const by = startY + bodyVy * offset;
+        const begin = Math.max(offset, birthOffsets.get(body) ?? 0);
+        const delay = begin - offset;
+        if (delay > horizon) continue;
+        const pose = plasmaBodyPose(body, dt, begin, integrated);
+        const headX = head.x + head.vx * delay,
+          headY = head.y + head.vy * delay;
+        const remaining = horizon - delay;
+        const bx = pose.x,
+          by = pose.y,
+          bodyVx = pose.vx,
+          bodyVy = pose.vy;
         let time: number;
         if (body.kind === "ship") {
           time = contactTime(
-            head.x - bx,
-            head.y - by,
+            headX - bx,
+            headY - by,
             head.vx - bodyVx,
             head.vy - bodyVy,
             body.radius,
-            horizon,
+            remaining,
           );
         } else {
-          const startRotation =
-            (integrated
-              ? (body.previousRotation ?? body.rotation)
-              : body.rotation) +
-            spinOf(body) * offset;
           const shape = {
             kind: body.kind,
             x: bx,
             y: by,
-            rotation: startRotation,
+            rotation: pose.rotation,
             shardIndex: body.shardIndex ?? 0,
             releasedMask: body.releasedMask ?? 0,
           };
@@ -1461,30 +1497,54 @@ export class SalvageSystem {
             vy = head.vy - bodyVy;
           time = Number.isFinite(
             contactTime(
-              head.x - bx,
-              head.y - by,
+              headX - bx,
+              headY - by,
               vx,
               vy,
               getDerelictRadius(shape),
-              horizon,
+              remaining,
             ),
           )
             ? (castDerelict(
                 shape,
-                { x: head.x, y: head.y },
+                { x: headX, y: headY },
                 { x: vx, y: vy },
                 0,
-                horizon,
+                remaining,
                 spinOf(body),
               )?.time ?? Infinity)
             : Infinity;
         }
+        time += delay;
         if (time + offset >= (terminal?.(body) ?? Infinity)) continue;
         if (time < first || (hit && time === first && body.id < hit.id)) {
           first = time;
           hit = body;
         }
       }
+      return {
+        head,
+        offset,
+        horizon,
+        first,
+        hit,
+        eventTime: offset + Math.min(horizon, first),
+      };
+    };
+    const pending = [...this.plasmaStreams];
+    const survivors: PlasmaStream[] = [];
+    while (pending.length) {
+      let chosenIndex = 0;
+      let chosen = plan(pending[0]);
+      for (let i = 1; i < pending.length; i++) {
+        const candidate = plan(pending[i]);
+        if (candidate.eventTime < chosen.eventTime) {
+          chosen = candidate;
+          chosenIndex = i;
+        }
+      }
+      pending.splice(chosenIndex, 1);
+      const { head, offset, horizon, first, hit } = chosen;
       const elapsed = Math.min(horizon, first);
       const fromX = head.x,
         fromY = head.y;
@@ -1496,34 +1556,135 @@ export class SalvageSystem {
       if (elapsed > 0)
         this.plasmaVisual({
           kind: "segment",
+          originX: head.originX,
+          originY: head.originY,
           time: visualTime,
           x: fromX,
           y: fromY,
           endX: head.x,
           endY: head.y,
         });
-      if (hit) {
+      const reachedEnd =
+        first === Infinity && head.age >= PLASMA_RIFLE.streamLifetime - 1e-9;
+      if (hit || reachedEnd) {
+        const outcome = hit ? "material" : "airburst";
+        const time = intervalStart + offset + elapsed;
         this.plasmaVisual({
           kind: "impact",
+          outcome,
+          originX: head.originX,
+          originY: head.originY,
           time: visualTime,
           x: head.x,
           y: head.y,
         });
-        const contact = PlasmaContactSchema.parse({
+        const burst = PlasmaBurstSchema.parse({
           mountKey: head.mountKey,
-          bodyId: hit.id,
+          outcome,
+          bodyId: hit?.id ?? null,
           x: head.x,
           y: head.y,
-          time: intervalStart + offset + first,
+          time,
         });
-        this.lastPlasmaContact = contact;
-        this.plasmaContactEvents.push(contact);
-        this.plasmaContacts++;
+        this.plasmaBurstEvents.push(burst);
+        if (hit) {
+          const contact = PlasmaContactSchema.parse({
+            mountKey: head.mountKey,
+            bodyId: hit.id,
+            x: head.x,
+            y: head.y,
+            time,
+          });
+          this.lastPlasmaContact = contact;
+          this.plasmaContactEvents.push(contact);
+          this.plasmaContacts++;
+        } else this.plasmaAirbursts++;
+        // Snapshot recipients and their contact-time poses before any breakup.
+        const recipients: {
+          body: SalvageBody;
+          x: number;
+          y: number;
+          rotation: number;
+          damage: number;
+        }[] = [];
+        const burstOffset = offset + elapsed;
+        for (const body of bodies) {
+          if (
+            body.id === shooterId ||
+            body.hull <= 0 ||
+            body.kind === "cell" ||
+            burstOffset < (birthOffsets.get(body) ?? 0) ||
+            burstOffset >= (terminal?.(body) ?? Infinity)
+          )
+            continue;
+          const { x, y, rotation } = plasmaBodyPose(
+            body,
+            dt,
+            burstOffset,
+            integrated,
+          );
+          const centre = Math.hypot(x - head.x, y - head.y);
+          let distance: number;
+          if (body.kind === "ship")
+            distance = Math.max(0, centre - body.radius);
+          else {
+            const shape = {
+              kind: body.kind,
+              x,
+              y,
+              rotation,
+              shardIndex: body.shardIndex ?? 0,
+              releasedMask: body.releasedMask ?? 0,
+            };
+            const outerRadius = PLASMA_RIFLE.blastBands[2].radius;
+            if (centre - getDerelictRadius(shape) > outerRadius) continue;
+            distance = derelictClosestPoint(shape, head, outerRadius).distance;
+          }
+          const band = PLASMA_RIFLE.blastBands.find(
+            (candidate) => distance <= candidate.radius + 1e-9,
+          );
+          if (band)
+            recipients.push({ body, x, y, rotation, damage: band.damage });
+        }
+        for (const recipient of recipients) {
+          const body = recipient.body;
+          const end = { x: body.x, y: body.y, rotation: body.rotation };
+          body.x = recipient.x;
+          body.y = recipient.y;
+          body.rotation = recipient.rotation;
+          const oldCount = this.bodies.length;
+          this.damage(body, recipient.damage, time);
+          for (let i = oldCount; i < this.bodies.length; i++) {
+            const newborn = this.bodies[i];
+            birthOffsets.set(newborn, burstOffset);
+            newborn.previousX = newborn.x - newborn.vx * burstOffset;
+            newborn.previousY = newborn.y - newborn.vy * burstOffset;
+            newborn.previousRotation =
+              newborn.rotation - spinOf(newborn) * burstOffset;
+            if (integrated) {
+              const remaining = dt - burstOffset;
+              newborn.x += newborn.vx * remaining;
+              newborn.y += newborn.vy * remaining;
+              if (newborn.kind !== "cell")
+                newborn.rotation += spinOf(newborn) * remaining;
+            }
+          }
+          if (body.hull > 0) Object.assign(body, end);
+        }
+      } else if (first !== Infinity) {
+        this.plasmaVisual({
+          kind: "absorb",
+          originX: head.originX,
+          originY: head.originY,
+          time: visualTime,
+          x: head.x,
+          y: head.y,
+        });
       }
-      return (
-        first === Infinity && head.age < PLASMA_RIFLE.streamLifetime - 1e-9
-      );
-    });
+      if (first === Infinity && head.age < PLASMA_RIFLE.streamLifetime - 1e-9)
+        survivors.push(head);
+    }
+    this.plasmaStreams = survivors;
     if (this.targetingMetrics)
       this.targetingMetrics.contactMs += performance.now() - started;
   }
@@ -1558,6 +1719,7 @@ export class SalvageSystem {
     const targetList = Array.isArray(targets) ? targets : [targets];
     this.time += dt;
     this.plasmaContactEvents.length = 0;
+    this.plasmaBurstEvents.length = 0;
     this.events = this.events.filter((event) => this.time - event.time <= 0.2);
     const ownsBodies = this.bodies.length > 0;
     const rosterOffset = this.bodies.length;
@@ -1681,6 +1843,7 @@ export class SalvageSystem {
   ) {
     this.time += dt;
     this.plasmaContactEvents.length = 0;
+    this.plasmaBurstEvents.length = 0;
     this.events = this.events.filter(
       (event) =>
         this.time - event.time <=
