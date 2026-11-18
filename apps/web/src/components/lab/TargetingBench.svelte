@@ -21,6 +21,7 @@ import {
   type TargetingWeapon,
 } from "./targeting-bench";
 
+let _props: { "client:load"?: boolean } = $props();
 const WIDTH = 1024;
 const HEIGHT = 768;
 const weapons: TargetingWeapon[] = [
