@@ -49,7 +49,7 @@ export function plasmaChargeAppearance(
 }
 
 // The charged prototype's side-strip positions and directions, in source units.
-const PURGE_STRIPS = [
+export const PLASMA_RIFLE_PURGE_STRIPS = [
   { across: -4.86453, aft: -8.66873, angle: -0.305233 },
   { across: 4.62775, aft: -8.10396, angle: 0.305233 },
 ] as const;
@@ -125,7 +125,7 @@ export function drawPlasmaRifleCharge(
   };
   const paintChannels = () => {
     if (appearance.sides > 0) {
-      for (const strip of PURGE_STRIPS) {
+      for (const strip of PLASMA_RIFLE_PURGE_STRIPS) {
         ctx.save();
         ctx.translate(
           -strip.aft * PLASMA_RIFLE_SCALE,

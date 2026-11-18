@@ -18,6 +18,7 @@ import {
   drawPlasmaRifle,
   PLASMA_RIFLE_ENVELOPE,
   PLASMA_RIFLE_MOUTHS,
+  PLASMA_RIFLE_PURGE_STRIPS,
   PLASMA_RIFLE_SCALE,
 } from "./plasma-rifle-art";
 import {
@@ -806,6 +807,30 @@ export function weaponPose(
     muzzleX: x + Math.cos(angle) * length - Math.sin(angle) * lateral,
     muzzleY: y + Math.sin(angle) * length + Math.cos(angle) * lateral,
   };
+}
+
+/** The two fixed purge mouths in world space, with their outward axes. */
+export function plasmaVentOutlets(
+  ship: Pick<GameObject, "pos" | "rotation">,
+  mount: BuildMount,
+) {
+  const pose = weaponPose(ship, mount);
+  const c = Math.cos(pose.angle),
+    s = Math.sin(pose.angle);
+  return ([PLASMA_RIFLE_MOUTHS.left, PLASMA_RIFLE_MOUTHS.right] as const).map(
+    ([across, aft], index) => {
+      const forward = -aft * PLASMA_RIFLE_SCALE,
+        side = across * PLASMA_RIFLE_SCALE;
+      return {
+        x: pose.x + forward * c - side * s,
+        y: pose.y + forward * s + side * c,
+        angle: pose.angle + PLASMA_RIFLE_PURGE_STRIPS[index].angle,
+      };
+    },
+  ) as [
+    { x: number; y: number; angle: number },
+    { x: number; y: number; angle: number },
+  ];
 }
 
 /** Conservative circular collision envelope, including the accepted forward tip. */

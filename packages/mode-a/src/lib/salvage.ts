@@ -13,6 +13,7 @@ import {
   BUILD_FLIGHT_SCALE,
   type BuildMount,
   buildMounts,
+  plasmaVentOutlets,
   weaponPose,
 } from "./build-renderer";
 import {
@@ -34,7 +35,12 @@ import {
   type AssembledIonSettings,
   ION_REFERENCE_MASS,
 } from "./schemas/ion";
-import { buildStats, CHASSIS, type Loadout } from "./schemas/loadout";
+import {
+  buildStats,
+  CHASSIS,
+  defaultLoadout,
+  type Loadout,
+} from "./schemas/loadout";
 import type { SalvagePhysicalState } from "./schemas/salvage";
 import {
   DamageAmountSchema,
@@ -52,6 +58,7 @@ import {
   PlasmaRifleCycleSchema,
   type PlasmaStream,
   PlasmaStreamSchema,
+  type PlasmaVentEvent,
   type PlasmaVisualEvent,
   POINT_DEFENCE,
   pointDefenceDamage,
@@ -61,6 +68,13 @@ import {
   WeaponEventSchema,
 } from "./schemas/salvage";
 import { acquireFleetTargets, type WeaponAcquisition } from "./targeting";
+
+/** Study reference: Wasp, Service ion, rifle and Light Ion Cannon. */
+const ventReferenceLoadout = defaultLoadout("wasp");
+ventReferenceLoadout.side = "service-ion";
+ventReferenceLoadout.hull = ["plasma-rifle", "light-ion-cannon"];
+export const PLASMA_RIFLE_VENT_REFERENCE_MASS =
+  buildStats(ventReferenceLoadout).mass;
 
 export type { WeaponEvent } from "./schemas/salvage";
 
@@ -170,6 +184,13 @@ const WRECK_SPIN = ENCOUNTER.wreckSpin.rate;
 function spinOf(body: Pick<SalvageBody, "kind" | "spin">) {
   return body.kind === "wreck" ? (body.spin ?? WRECK_SPIN) : 0.8;
 }
+interface PendingPlasmaVent {
+  mount: BuildMount;
+  sample: Pick<GameObject, "pos" | "rotation">;
+  start: number;
+  duration: number;
+  charge: number;
+}
 /** A body's linear start pose and velocity for one combat substep. */
 function plasmaBodyMotion(body: SalvageBody, dt: number) {
   let x = body.previousX,
@@ -216,6 +237,29 @@ function plasmaBodyPose(
 }
 function angleDifference(a: number, b: number) {
   return Math.atan2(Math.sin(a - b), Math.cos(a - b));
+}
+/** Interpolate a mounted emitter's pose without drawing a chord across wrap. */
+function mountedPoseAt(
+  ship: GameObject,
+  previous: { x: number; y: number; rotation: number } | undefined,
+  dt: number,
+  elapsed: number,
+) {
+  if (!previous) return ship;
+  const fraction = dt > 0 ? elapsed / dt : 1;
+  const wrapped =
+    Math.hypot(ship.pos.x - previous.x, ship.pos.y - previous.y) > 1200;
+  const x = wrapped ? ship.pos.x - ship.vel.x * dt : previous.x;
+  const y = wrapped ? ship.pos.y - ship.vel.y * dt : previous.y;
+  return {
+    pos: new Vec2(
+      x + (ship.pos.x - x) * fraction,
+      y + (ship.pos.y - y) * fraction,
+    ),
+    rotation:
+      previous.rotation +
+      angleDifference(ship.rotation, previous.rotation) * fraction,
+  };
 }
 function outside(x: number, y: number) {
   return (
@@ -280,6 +324,9 @@ export class SalvageSystem {
   presentationTimeOffset = 0;
   readonly plasmaVisualEvents: PlasmaVisualEvent[] = [];
   private plasmaVisualSequence = 0;
+  readonly plasmaVentEvents: PlasmaVentEvent[] = [];
+  private plasmaVentSequence = 0;
+  private readonly plasmaVentAcceleration: number;
   laserPulses = 0;
   hits = 0;
   /** Point-defence and cannon hits on a wreck or a shard; they score in Survival. */
@@ -304,6 +351,10 @@ export class SalvageSystem {
     private readonly encounter: EncounterConfig = ENCOUNTER,
   ) {
     this.loadoutChassis = loadout.chassis;
+    this.plasmaVentAcceleration =
+      (PLASMA_RIFLE.ventReferenceAcceleration *
+        PLASMA_RIFLE_VENT_REFERENCE_MASS) /
+      buildStats(loadout).mass;
     this.ionAcquisitionWidth =
       CHASSIS[loadout.chassis].width * BUILD_FLIGHT_SCALE;
     this.randomState = seed >>> 0;
@@ -1000,7 +1051,8 @@ export class SalvageSystem {
     resources: Resources,
     capacity: number,
     ship: GameObject,
-    previousShip?: { x: number; y: number; rotation: number },
+    previousShip: { x: number; y: number; rotation: number } | undefined,
+    vents: PendingPlasmaVent[],
   ) {
     const state = weapon.plasma;
     if (!state) return;
@@ -1045,31 +1097,7 @@ export class SalvageSystem {
             this.energySpent += PLASMA_RIFLE.releasePower;
             this.plasmaReleases++;
             const elapsed = dt - left;
-            const fraction = dt > 0 ? elapsed / dt : 1;
-            const rotationDelta = previousShip
-              ? angleDifference(ship.rotation, previousShip.rotation)
-              : 0;
-            const wrapped =
-              previousShip &&
-              Math.hypot(
-                ship.pos.x - previousShip.x,
-                ship.pos.y - previousShip.y,
-              ) > 1200;
-            const originX = wrapped
-              ? ship.pos.x - ship.vel.x * dt
-              : (previousShip?.x ?? ship.pos.x);
-            const originY = wrapped
-              ? ship.pos.y - ship.vel.y * dt
-              : (previousShip?.y ?? ship.pos.y);
-            const releaseShip = previousShip
-              ? {
-                  pos: new Vec2(
-                    originX + (ship.pos.x - originX) * fraction,
-                    originY + (ship.pos.y - originY) * fraction,
-                  ),
-                  rotation: previousShip.rotation + rotationDelta * fraction,
-                }
-              : ship;
+            const releaseShip = mountedPoseAt(ship, previousShip, dt, elapsed);
             const pose = weaponPose(releaseShip, weapon.mount);
             this.plasmaStreams.push(
               PlasmaStreamSchema.parse({
@@ -1099,6 +1127,20 @@ export class SalvageSystem {
       ) {
         const phase = state.phase;
         const elapsed = Math.min(left, state.remaining);
+        if (phase === "venting" && elapsed > 0) {
+          const midpoint = dt - left + elapsed / 2;
+          const sample = mountedPoseAt(ship, previousShip, dt, midpoint);
+          vents.push({
+            mount: weapon.mount,
+            sample,
+            start: midpoint - elapsed / 2,
+            duration: elapsed,
+            charge: Math.max(
+              0,
+              state.charge - elapsed / (2 * PLASMA_RIFLE.ventSeconds),
+            ),
+          });
+        }
         state.remaining = Math.max(0, state.remaining - elapsed);
         left -= elapsed;
         if (phase === "venting")
@@ -1116,6 +1158,87 @@ export class SalvageSystem {
         }
         if (left <= 1e-9) break;
       }
+    }
+  }
+  /** All simultaneous vents sample the same time-varying hull velocity. */
+  private emitPlasmaVents(
+    ship: GameObject,
+    dt: number,
+    vents: PendingPlasmaVent[],
+  ) {
+    const initialX = ship.vel.x,
+      initialY = ship.vel.y;
+    vents.sort((a, b) => a.start + a.duration / 2 - (b.start + b.duration / 2));
+    for (const vent of vents) {
+      const midpoint = vent.start + vent.duration / 2;
+      let driftX = initialX,
+        driftY = initialY;
+      for (const other of vents) {
+        const elapsed = Math.max(
+          0,
+          Math.min(other.duration, midpoint - other.start),
+        );
+        driftX -=
+          Math.cos(other.sample.rotation) *
+          this.plasmaVentAcceleration *
+          elapsed;
+        driftY -=
+          Math.sin(other.sample.rotation) *
+          this.plasmaVentAcceleration *
+          elapsed;
+      }
+      const [left, right] = plasmaVentOutlets(vent.sample, vent.mount);
+      const outlet = (port: typeof left) => ({
+        x: port.x,
+        y: port.y,
+        vx: driftX + Math.cos(port.angle) * PLASMA_RIFLE.ventExhaustSpeed,
+        vy: driftY + Math.sin(port.angle) * PLASMA_RIFLE.ventExhaustSpeed,
+      });
+      const time = this.time - dt + midpoint + this.presentationTimeOffset;
+      while (
+        this.plasmaVentEvents.length &&
+        this.plasmaVentEvents[0].time < time - 0.5
+      )
+        this.plasmaVentEvents.shift();
+      if (this.plasmaVentEvents.length >= 512) this.plasmaVentEvents.shift();
+      this.plasmaVentEvents.push({
+        id: ++this.plasmaVentSequence,
+        mountKey: vent.mount.key,
+        time,
+        duration: vent.duration,
+        charge: vent.charge,
+        outlets: [outlet(left), outlet(right)],
+      });
+    }
+    // A different mount may release during the same substep. Its inherited
+    // drift includes only the vent impulse already delivered at that instant.
+    for (const head of this.plasmaStreams) {
+      if (head.age !== 0 || head.launchTime < this.time - dt - 1e-9) continue;
+      const launchOffset = head.launchTime - (this.time - dt);
+      for (const vent of vents) {
+        const elapsed = Math.max(
+          0,
+          Math.min(vent.duration, launchOffset - vent.start),
+        );
+        head.vx -=
+          Math.cos(vent.sample.rotation) *
+          this.plasmaVentAcceleration *
+          elapsed;
+        head.vy -=
+          Math.sin(vent.sample.rotation) *
+          this.plasmaVentAcceleration *
+          elapsed;
+      }
+    }
+    for (const vent of vents) {
+      ship.vel.x -=
+        Math.cos(vent.sample.rotation) *
+        this.plasmaVentAcceleration *
+        vent.duration;
+      ship.vel.y -=
+        Math.sin(vent.sample.rotation) *
+        this.plasmaVentAcceleration *
+        vent.duration;
     }
   }
   /**
@@ -1166,6 +1289,7 @@ export class SalvageSystem {
           acquisition,
         );
     let cannonsFunded = true;
+    const vents: PendingPlasmaVent[] = [];
     for (const weapon of this.weapons)
       if (weapon.kind === "light-ion-cannon") {
         if (
@@ -1182,7 +1306,15 @@ export class SalvageSystem {
             planets,
           );
       } else if (weapon.kind === "plasma-rifle") {
-        this.advancePlasma(weapon, dt, resources, capacity, ship, previousShip);
+        this.advancePlasma(
+          weapon,
+          dt,
+          resources,
+          capacity,
+          ship,
+          previousShip,
+          vents,
+        );
       } else if (weapon.kind === "rail")
         this.fireRailOrLaser(
           weapon,
@@ -1194,6 +1326,7 @@ export class SalvageSystem {
           planets,
           acquisition,
         );
+    if (vents.length) this.emitPlasmaVents(ship, dt, vents);
   }
   /** Laser and rail keep their own acquisition; the shared energy floor gates the shot. */
   private fireRailOrLaser(

@@ -134,6 +134,8 @@ export const PlasmaRifleSchema = z.object({
   releasePower: z.literal(3.5),
   firingSeconds: z.literal(0.7),
   ventSeconds: z.literal(0.3),
+  ventReferenceAcceleration: z.literal(125),
+  ventExhaustSpeed: z.literal(300),
   cooldownSeconds: z.literal(2.1),
   streamSpeed: z.literal(PLASMA_STREAM_SPEED),
   streamReach: z.literal(PLASMA_STREAM_REACH),
@@ -153,6 +155,8 @@ export const PLASMA_RIFLE = PlasmaRifleSchema.parse({
   releasePower: 3.5,
   firingSeconds: 0.7,
   ventSeconds: 0.3,
+  ventReferenceAcceleration: 125,
+  ventExhaustSpeed: 300,
   cooldownSeconds: 2.1,
   streamSpeed: PLASMA_STREAM_SPEED,
   streamReach: PLASMA_STREAM_REACH,
@@ -170,6 +174,21 @@ export const PlasmaRifleCycleSchema = z.object({
   targetId: z.number().int().nullable(),
 });
 export type PlasmaRifleCycle = z.infer<typeof PlasmaRifleCycleSchema>;
+export const PlasmaVentOutletSchema = z.object({
+  x: z.number().finite(),
+  y: z.number().finite(),
+  vx: z.number().finite(),
+  vy: z.number().finite(),
+});
+export const PlasmaVentEventSchema = z.object({
+  id: z.number().int().positive(),
+  mountKey: z.string(),
+  time: z.number().finite(),
+  duration: z.number().positive(),
+  charge: z.number().min(0).max(1),
+  outlets: z.tuple([PlasmaVentOutletSchema, PlasmaVentOutletSchema]),
+});
+export type PlasmaVentEvent = z.infer<typeof PlasmaVentEventSchema>;
 export const PlasmaStreamSchema = z.object({
   mountKey: z.string(),
   originX: z.number().finite(),
