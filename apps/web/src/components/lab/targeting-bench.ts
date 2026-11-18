@@ -128,6 +128,7 @@ export interface TargetingSummary {
     ongoing: number;
   };
   ships: number;
+  fighters: number;
   mounts: number;
   discharges: number;
   samples: number;
@@ -169,7 +170,7 @@ function percentile(samples: Sample[], field: keyof Sample) {
 export class TargetingBench {
   readonly sim: Simulation;
   readonly config: TargetingConfig;
-  private readonly fleetStats: ReturnType<typeof buildStats>;
+  private readonly fleetStats: ReturnType<typeof buildStats>[] = [];
   private readonly samples: Sample[] = [];
   private readonly tickSamples: { adapterMs: number; plumeMs: number }[] = [];
   private readonly plasmaObservers: {
@@ -194,15 +195,15 @@ export class TargetingBench {
   };
   constructor(config: TargetingConfig) {
     this.config = config;
-    const loadout = defaultLoadout("wasp");
-    loadout.hull = [config.slot1, config.slot2];
-    const build = LoadoutSchema.parse(loadout);
-    this.fleetStats = buildStats(build);
+    const wasp = defaultLoadout("wasp");
+    wasp.hull = [config.slot1, config.slot2];
+    const fighter = defaultLoadout("fighter");
+    fighter.aft = [config.slot1, config.slot2];
     this.sim = new Simulation({
       ...stockSettings("wasp"),
       mode: "gauntlet",
       arrival: false,
-      loadout: build,
+      loadout: wasp,
     });
     this.sim.start();
     this.sim.ship.pos.set(-100000, -100000);
@@ -212,12 +213,16 @@ export class TargetingBench {
     const fleetSize = config.formation === "held-approach" ? 2 : COUNT;
     for (let i = 0; i < fleetSize; i++) {
       const actor = createPirate(0, i + 1);
-      actor.loadout = LoadoutSchema.parse(build);
+      const isFighter =
+        config.formation === "held-approach" ? i === 0 : i % 2 === 1;
+      actor.loadout = LoadoutSchema.parse(isFighter ? fighter : wasp);
+      const stats = buildStats(actor.loadout);
+      this.fleetStats.push(stats);
       actor.ship.radius = buildCollisionRadius(actor.loadout);
       actor.emitters = buildPlumeEmitters(actor.loadout);
       actor.resources = {
         hull: 100,
-        power: this.fleetStats.capacity,
+        power: stats.capacity,
       };
       actor.combat = new SalvageSystem(actor.loadout, i + 1);
       actor.combat.targetingMetrics = this.counters;
@@ -232,7 +237,7 @@ export class TargetingBench {
   }
   private place(time: number) {
     if (this.config.formation === "held-approach") {
-      // Both Wasps move on one orbit. The leader opens and closes the gap
+      // Both ships move on one orbit. The leader opens and closes the gap
       // while the trailing hull faces the chord. Acquisition still uses each muzzle.
       const radius = 225;
       const bearing = time * 0.18;
@@ -321,7 +326,7 @@ export class TargetingBench {
       for (let i = 0; i < this.sim.opponents.length; i++) {
         const shooter = this.sim.opponents[i];
         if (shooter.lifecycle === "destroyed") continue;
-        const { capacity, coils } = this.fleetStats;
+        const { capacity, coils } = this.fleetStats[i];
         const input = { leftThruster: true, rightThruster: true, fire: false };
         if (this.config.mode === "sustained")
           shooter.resources.power = capacity;
@@ -423,9 +428,10 @@ export class TargetingBench {
         for (const emitter of actor.emitters) emitter.output = 0;
         continue;
       }
-      // Choreography supplies motion; show the Wasp’s fitted main engine burning.
-      for (const [index, emitter] of actor.emitters.entries())
-        emitter.output = index === 0 ? actor.engineOutput.left : 0;
+      // The Wasp has one main nozzle; the Fighter's two side drives burn together.
+      actor.emitters[0].output = actor.engineOutput.left;
+      if (actor.loadout.chassis === "fighter")
+        actor.emitters[1].output = actor.engineOutput.right;
       actor.plume.stepMounted(STEP, actor.ship, actor.emitters);
     }
     const plumeMs = performance.now() - plumeStart;
@@ -458,11 +464,14 @@ export class TargetingBench {
     }
   }
   get metrics(): TargetingSummary {
-    const ships = this.sim.opponents.filter(
+    const active = this.sim.opponents.filter(
       (actor) => actor.lifecycle !== "destroyed",
-    ).length;
+    );
+    const ships = active.length;
     return {
       ships,
+      fighters: active.filter((actor) => actor.loadout.chassis === "fighter")
+        .length,
       plasmaReleases: this.sim.opponents.reduce(
         (sum, actor) => sum + actor.combat.plasmaReleases,
         0,

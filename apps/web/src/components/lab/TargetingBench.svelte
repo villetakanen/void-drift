@@ -30,8 +30,8 @@ const weapons: TargetingWeapon[] = [
   "laser",
   "plasma-rifle",
 ];
-let slot1 = $state<TargetingWeapon>("light-ion-cannon");
-let slot2 = $state<TargetingWeapon>("ion-point-defence");
+let slot1 = $state<TargetingWeapon>("plasma-rifle");
+let slot2 = $state<TargetingWeapon>("light-ion-cannon");
 let formation =
   $state<NonNullable<TargetingConfig["formation"]>>("three-loops");
 let mode = $state<TargetingConfig["mode"]>("sustained");
@@ -308,8 +308,8 @@ onMount(() => {
           <FlightLayers
             bind:canvases
             label={formation === "held-approach"
-              ? "Two moving Wasps on a held firing approach"
-              : "Sixteen fitted Wasps taking turns at the crossings of three flight paths"}
+              ? "A Fighter following a Wasp on a held firing approach"
+              : "Eight Wasps and eight Fighters taking turns at the crossings of three flight paths"}
           />
         </div>
         <figcaption>
@@ -336,8 +336,11 @@ onMount(() => {
       </figure>
       <dl class="fleet" aria-label="Encounter">
         <div>
-          <dt>Active Wasps</dt>
-          <dd>{metrics?.ships ?? "—"}</dd>
+          <dt>Active Wasps / Fighters</dt>
+          <dd>
+            {metrics ? metrics.ships - metrics.fighters : "—"}
+            / {metrics?.fighters ?? "—"}
+          </dd>
         </div>
         <div>
           <dt>Active mounts</dt>

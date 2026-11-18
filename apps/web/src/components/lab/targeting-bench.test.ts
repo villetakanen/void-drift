@@ -11,7 +11,7 @@ import {
 } from "./targeting-bench";
 
 describe("targeting bench", () => {
-  it("turns only the inner Wasps 60 degrees outward from their flight path", () => {
+  it("turns only the inner ships 60 degrees outward from their flight path", () => {
     const bench = new TargetingBench({
       slot1: "light-ion-cannon",
       slot2: "light-ion-cannon",
@@ -86,12 +86,14 @@ describe("targeting bench", () => {
       "laser",
       "plasma-rifle",
     ] as const;
-    const build = defaultLoadout("wasp");
     let maxDiameter = 0;
-    for (const slot1 of weapons) {
-      for (const slot2 of weapons) {
-        build.hull = [slot1, slot2];
-        maxDiameter = Math.max(maxDiameter, 2 * buildCollisionRadius(build));
+    for (const chassis of ["wasp", "fighter"] as const) {
+      const build = defaultLoadout(chassis);
+      for (const slot1 of weapons) {
+        for (const slot2 of weapons) {
+          build[chassis === "fighter" ? "aft" : "hull"] = [slot1, slot2];
+          maxDiameter = Math.max(maxDiameter, 2 * buildCollisionRadius(build));
+        }
       }
     }
     const ships = TARGETING_LOOPS.flatMap((loop) => {
@@ -238,6 +240,8 @@ describe("targeting bench", () => {
       formation: "held-approach",
     });
     const [trailer, leader] = bench.sim.opponents;
+    expect(trailer.loadout.chassis).toBe("fighter");
+    expect(leader.loadout.chassis).toBe("wasp");
     const firstX = leader.ship.pos.x;
     for (let tick = 0; tick < 3600; tick++) bench.step();
     const metrics = bench.metrics;
@@ -263,6 +267,18 @@ describe("targeting bench", () => {
     bench.step();
     expect(actor.emitters[0].output).toBeGreaterThan(0);
     expect(actor.plume.activeCount).toBe(1);
+    const fighter = bench.sim.opponents[1];
+    expect(fighter.plume.activeCount).toBe(2);
+    expect(bench.metrics.fighters).toBe(8);
+    for (const [i, ship] of bench.sim.opponents.entries()) {
+      expect(ship.loadout.chassis).toBe(i % 2 ? "fighter" : "wasp");
+      expect(ship.weapons.map((w) => [w.mount.group, w.kind])).toEqual(
+        [config.slot1, config.slot2].map((kind) => [
+          i % 2 ? "aft" : "hull",
+          kind,
+        ]),
+      );
+    }
     let outletX = 0;
     actor.plume.inspect((outlet) => {
       outletX = outlet.x;
