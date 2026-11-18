@@ -79,3 +79,18 @@ The three-loop workload is ready for rifle development. Use sustained fire for t
 4. **Resolve release, recoil and fumes.** Deliver the moving stream and first-contact eruption with one damage band per recipient (75/50/25 through 10/26/42 u). Then add paired, velocity-inheriting vents with one 3-point hit on entry into their combined area, the mass-scaled release kick and continuing vent push. Split contact and vents into separate commits. Test intervening fragments, newly exposed material, spray overlap and exit/re-entry. Use free flight for recoil because the bench prescribes ship motion.
 5. **Draw the two outcomes in flight.** Drive the charge bead, halfway purge lights, paired vent spray and impact eruption from the simulation using shared flight passes. Verify the Wasp's under-hull and Fighter's exposed mount at flight scale beside an ion cannon.
 6. **Expose and measure the working fit.** Offer plasma in either bench slot and exercise the saved Playground fitting through ordinary Hangar launch. Compare rifle/cannon and twin-rifle sustained and live runs, then dense debris for contact and fumes. Report acquisition, contact, simulation and render cost separately; check the populations actually charging, venting and releasing in each sample.
+
+## Twin Plasma rifle observation
+
+The sustained three-loop fleet ran 60.0 simulated seconds with two Plasma rifles on each Wasp, for 32 independent muzzle observations per combat substep. The four inner ships held their 60° outward heading. Each of the 3,600 flight ticks used four production combat substeps. The measurement used the fixed muzzle heading of each actual mount and the 130-unit, ±15° acquisition sector.
+
+| Uninterrupted same-ID interval per mount           | Fleet count |
+| -------------------------------------------------- | ----------: |
+| Completed in under 0.7 s                           |         122 |
+| Completed in at least 0.7 s                        |           0 |
+| Already locked at the start and subsequently ended |           1 |
+| Still locked at 60.0 s                             |           1 |
+
+Counts accumulate from reset. A change of target ID starts a new interval immediately. The two observation-boundary cases have unknown full durations and are excluded from both completed-duration counts. Over the final rolling 600 substeps the fleet averaged 32 requests, 16 body visits (also 16 at p95), and 480 request/body comparisons per substep. Total discharges were zero. This workload exercises short target passes and did not demonstrate a complete 0.7-second same-target interval between observed entry and exit.
+
+A second run extended the same deterministic encounter to 600.0 simulated seconds. It recorded 1,213 completed short intervals, zero completed intervals reaching 0.7 s, one initial interval and zero open at cutoff. To verify a later release cycle, use a separate controlled approach that holds a target in the rifle sector. These measurements preserve the bench choreography and the rifle tuning.

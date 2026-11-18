@@ -28,6 +28,7 @@ const weapons: TargetingWeapon[] = [
   "light-ion-cannon",
   "ion-point-defence",
   "laser",
+  "plasma-rifle",
 ];
 let slot1 = $state<TargetingWeapon>("light-ion-cannon");
 let slot2 = $state<TargetingWeapon>("ion-point-defence");
@@ -221,7 +222,9 @@ onMount(() => {
         }
       >
         {#each weapons as id}
-          <option value={id}>{PARTS[id].name}</option>
+          <option value={id}>
+            {PARTS[id].name}{id === "plasma-rifle" ? " · acquisition only" : ""}
+          </option>
         {/each}
       </select>
     </label>
@@ -238,7 +241,9 @@ onMount(() => {
         }
       >
         {#each weapons as id}
-          <option value={id}>{PARTS[id].name}</option>
+          <option value={id}>
+            {PARTS[id].name}{id === "plasma-rifle" ? " · acquisition only" : ""}
+          </option>
         {/each}
       </select>
     </label>
@@ -327,6 +332,32 @@ onMount(() => {
           <dd>{elapsed.toFixed(1)} s</dd>
         </div>
       </dl>
+      {#if slot1 === "plasma-rifle" || slot2 === "plasma-rifle"}
+        <section class="roster" aria-label="Plasma lock intervals">
+          <header>
+            <h2>Plasma lock intervals</h2>
+            <p>Per mount since reset · same target</p>
+          </header>
+          <dl>
+            <div>
+              <dt>Completed &lt; 0.7 s</dt>
+              <dd>{metrics?.plasmaIntervals.short ?? 0}</dd>
+            </div>
+            <div>
+              <dt>Completed ≥ 0.7 s</dt>
+              <dd>{metrics?.plasmaIntervals.sustained ?? 0}</dd>
+            </div>
+            <div>
+              <dt>Already locked at start, since ended</dt>
+              <dd>{metrics?.plasmaIntervals.initial ?? 0}</dd>
+            </div>
+            <div>
+              <dt>Still locked</dt>
+              <dd>{metrics?.plasmaIntervals.ongoing ?? 0}</dd>
+            </div>
+          </dl>
+        </section>
+      {/if}
       <section class="roster" aria-label="Shared roster construction">
         <header>
           <h2>Shared roster</h2>

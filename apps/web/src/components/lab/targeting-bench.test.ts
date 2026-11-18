@@ -38,7 +38,12 @@ describe("targeting bench", () => {
   });
 
   it("keeps fitted hull collision circles disjoint over every loop phase", () => {
-    const weapons = ["light-ion-cannon", "ion-point-defence", "laser"] as const;
+    const weapons = [
+      "light-ion-cannon",
+      "ion-point-defence",
+      "laser",
+      "plasma-rifle",
+    ] as const;
     const build = defaultLoadout("wasp");
     let maxDiameter = 0;
     for (const slot1 of weapons) {
@@ -144,6 +149,30 @@ describe("targeting bench", () => {
     expect(switched).toBe(true);
     expect(gap).toBe(true);
     expect(independentLocks).toBe(true);
+  });
+
+  it("measures rifle observations independently of discharges and the rolling timing window", () => {
+    const config = {
+      slot1: "plasma-rifle",
+      slot2: "plasma-rifle",
+      mode: "sustained",
+    } as const;
+    const bench = new TargetingBench(config);
+    const empty = { short: 0, sustained: 0, initial: 0, ongoing: 0 };
+    expect(bench.metrics.plasmaIntervals).toEqual(empty);
+    bench.step();
+    expect(bench.metrics.plasmaIntervals.ongoing).toBeGreaterThan(0);
+    expect(bench.traces).toHaveLength(bench.metrics.plasmaIntervals.ongoing);
+    for (let tick = 1; tick < 3600; tick++) bench.step();
+    const metrics = bench.metrics;
+    expect(metrics.plasmaIntervals.short).toBeGreaterThan(0);
+
+    expect(metrics.plasmaIntervals.initial).toBeGreaterThan(0);
+    expect(metrics.plasmaIntervals.ongoing).toBe(bench.traces.length);
+    expect(metrics.activeRequestsMean).toBe(32);
+    expect(metrics.bodyVisitsMean).toBe(16);
+    expect(metrics.discharges).toBe(0);
+    expect(new TargetingBench(config).metrics.plasmaIntervals).toEqual(empty);
   });
 
   it("steps the fitted Wasp plume and clears it when destroyed or reset", () => {

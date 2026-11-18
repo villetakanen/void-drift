@@ -10,6 +10,7 @@ import {
   LIFE_SUPPORT_DRAIN,
   LoadoutSchema,
   liveShipBody,
+  PLASMA_RIFLE,
   SalvageSystem,
   Simulation,
   STEP,
@@ -22,7 +23,8 @@ import {
 export type TargetingWeapon =
   | "light-ion-cannon"
   | "ion-point-defence"
-  | "laser";
+  | "laser"
+  | "plasma-rifle";
 export type TargetingMode = "sustained" | "live";
 export interface TargetingConfig {
   slot1: TargetingWeapon;
@@ -86,6 +88,12 @@ type Sample = TargetingMetrics & {
   adapters: number;
 };
 export interface TargetingSummary {
+  plasmaIntervals: {
+    short: number;
+    sustained: number;
+    initial: number;
+    ongoing: number;
+  };
   ships: number;
   mounts: number;
   discharges: number;
@@ -131,6 +139,15 @@ export class TargetingBench {
   private readonly fleetStats: ReturnType<typeof buildStats>;
   private readonly samples: Sample[] = [];
   private readonly tickSamples: { adapterMs: number; plumeMs: number }[] = [];
+  private readonly plasmaObservers: {
+    actor: Simulation["opponents"][number];
+    mount: Simulation["opponents"][number]["weapons"][number];
+    id: number | null;
+    start: number;
+  }[] = [];
+  private shortIntervals = 0;
+  private sustainedIntervals = 0;
+  private initialIntervals = 0;
   private substeps = 0;
   private discharges = 0;
   private readonly counters: TargetingMetrics = {
@@ -172,6 +189,9 @@ export class TargetingBench {
       actor.combat.targetingMetrics = this.counters;
       actor.weapons = actor.combat.weapons;
       actor.lifecycle = "active";
+      for (const mount of actor.weapons)
+        if (mount.kind === "plasma-rifle")
+          this.plasmaObservers.push({ actor, mount, id: null, start: 0 });
       this.sim.opponents.push(actor);
     }
     this.place(0);
@@ -336,6 +356,7 @@ export class TargetingBench {
           shooter.combat.pointDefenceDischarges -
           before;
       }
+      this.observePlasma();
       for (let i = 0; i < COUNT; i++) {
         const target = this.sim.opponents[i];
         target.resources.hull = Math.max(0, target.resources.hull - damage[i]);
@@ -381,12 +402,35 @@ export class TargetingBench {
       if (this.tickSamples.length > WINDOW / 4) this.tickSamples.shift();
     }
   }
+  private observePlasma() {
+    for (const observer of this.plasmaObservers) {
+      const next =
+        observer.actor.lifecycle === "destroyed" ? null : observer.mount.target;
+      if (next === observer.id) continue;
+      if (observer.id !== null) {
+        const duration = (this.substeps - observer.start) * SUBSTEP;
+        if (observer.start === 0) this.initialIntervals++;
+        else if (duration >= PLASMA_RIFLE.observationSeconds)
+          this.sustainedIntervals++;
+        else this.shortIntervals++;
+      }
+      observer.id = next;
+      observer.start = this.substeps;
+    }
+  }
   get metrics(): TargetingSummary {
     const ships = this.sim.opponents.filter(
       (actor) => actor.lifecycle !== "destroyed",
     ).length;
     return {
       ships,
+      plasmaIntervals: {
+        short: this.shortIntervals,
+        sustained: this.sustainedIntervals,
+        initial: this.initialIntervals,
+        ongoing: this.plasmaObservers.filter((observer) => observer.id !== null)
+          .length,
+      },
       mounts: ships * 2,
       discharges: this.discharges,
       samples: this.samples.length,
@@ -431,10 +475,10 @@ export class TargetingBench {
             const pose = weaponPose(actor.ship, weapon.mount, weapon.angle);
             return [
               {
-                x: pose.x,
-                y: pose.y,
-                endX: target.ship.pos.x,
-                endY: target.ship.pos.y,
+                x: weapon.kind === "plasma-rifle" ? pose.muzzleX : pose.x,
+                y: weapon.kind === "plasma-rifle" ? pose.muzzleY : pose.y,
+                endX: weapon.targetPoint?.x ?? target.ship.pos.x,
+                endY: weapon.targetPoint?.y ?? target.ship.pos.y,
               },
             ];
           }),
