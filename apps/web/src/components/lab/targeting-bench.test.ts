@@ -229,6 +229,8 @@ describe("targeting bench", () => {
     expect(metrics.plasmaReleases).toBeGreaterThan(0);
     expect(metrics.discharges).toBe(metrics.plasmaReleases);
     expect(metrics.plasmaVents).toBeGreaterThan(0);
+    expect(metrics.plasmaContacts).toBeGreaterThan(0);
+    expect(metrics.plasmaContacts).toBeLessThanOrEqual(metrics.plasmaReleases);
     expect(new TargetingBench(config).metrics.plasmaIntervals).toEqual(empty);
   });
 
@@ -253,6 +255,31 @@ describe("targeting bench", () => {
     expect(trailer.combat.plasmaReleases).toBeGreaterThan(2);
     expect(leader.combat.plasmaReleases).toBe(0);
     expect(metrics.discharges).toBe(metrics.plasmaReleases);
+  });
+
+  it("lets a released stream reach the moving leader after the trailing ship is destroyed", () => {
+    const bench = new TargetingBench({
+      slot1: "plasma-rifle",
+      slot2: "plasma-rifle",
+      mode: "sustained",
+      formation: "held-approach",
+    });
+    const [trailer] = bench.sim.opponents;
+    for (
+      let tick = 0;
+      tick < 900 && !trailer.combat.plasmaStreams.length;
+      tick++
+    )
+      bench.step();
+    expect(trailer.combat.plasmaStreams.length).toBeGreaterThan(0);
+    trailer.lifecycle = "destroyed";
+    const releases = trailer.combat.plasmaReleases;
+    for (let tick = 0; tick < 30; tick++) bench.step();
+    expect(trailer.combat.plasmaStreams).toHaveLength(0);
+    expect(trailer.combat.plasmaContactEvents).toHaveLength(0);
+    expect(trailer.combat.plasmaReleases).toBe(releases);
+    expect(trailer.combat.plasmaContacts).toBeGreaterThan(0);
+    expect(trailer.combat.lastPlasmaContact?.bodyId).toBe(2);
   });
 
   it("steps the fitted Wasp plume and clears it when destroyed or reset", () => {

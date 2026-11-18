@@ -121,6 +121,7 @@ type Sample = TargetingMetrics & {
 export interface TargetingSummary {
   plasmaReleases: number;
   plasmaVents: number;
+  plasmaContacts: number;
   plasmaIntervals: {
     short: number;
     sustained: number;
@@ -170,6 +171,8 @@ function percentile(samples: Sample[], field: keyof Sample) {
 export class TargetingBench {
   readonly sim: Simulation;
   readonly config: TargetingConfig;
+  private readonly previousPoses: { x: number; y: number; rotation: number }[] =
+    [];
   private readonly fleetStats: ReturnType<typeof buildStats>[] = [];
   private readonly samples: Sample[] = [];
   private readonly tickSamples: { adapterMs: number; plumeMs: number }[] = [];
@@ -232,6 +235,7 @@ export class TargetingBench {
         if (mount.kind === "plasma-rifle")
           this.plasmaObservers.push({ actor, mount, id: null, start: 0 });
       this.sim.opponents.push(actor);
+      this.previousPoses.push({ x: 0, y: 0, rotation: 0 });
     }
     this.place(0);
   }
@@ -273,6 +277,13 @@ export class TargetingBench {
     const tickStart = performance.now();
     let tickCombatMs = 0;
     for (let sub = 0; sub < 4; sub++) {
+      for (let i = 0; i < this.sim.opponents.length; i++) {
+        const ship = this.sim.opponents[i].ship;
+        const prior = this.previousPoses[i];
+        prior.x = ship.pos.x;
+        prior.y = ship.pos.y;
+        prior.rotation = ship.rotation;
+      }
       this.place((this.substeps + 1) * SUBSTEP);
       Object.assign(this.counters, {
         bodyVisits: 0,
@@ -288,23 +299,28 @@ export class TargetingBench {
       const damage = Array<number>(this.sim.opponents.length).fill(0);
       const needsRoster = this.sim.opponents.some(
         (actor) =>
-          actor.lifecycle !== "destroyed" &&
-          actor.combat.needsWeaponRoster(SUBSTEP),
+          actor.combat.plasmaStreams.length > 0 ||
+          (actor.lifecycle !== "destroyed" &&
+            actor.combat.needsWeaponRoster(SUBSTEP)),
       );
       const rosterStart = performance.now();
       const roster = needsRoster
         ? this.sim.opponents.flatMap((target, index) => {
             if (target.lifecycle === "destroyed") return [];
-            return [
-              liveShipBody(
-                index + 1,
-                target.ship,
-                target.resources.hull,
-                (amount) => {
-                  if (this.config.mode === "live") damage[index] += amount;
-                },
-              ),
-            ];
+            const body = liveShipBody(
+              index + 1,
+              target.ship,
+              target.resources.hull,
+              (amount) => {
+                if (this.config.mode === "live") damage[index] += amount;
+              },
+            );
+            // Instantaneous weapons use the end pose. Swept heads also need the start.
+            body.sweepEndX = body.x;
+            body.sweepEndY = body.y;
+            body.previousX = this.previousPoses[index].x;
+            body.previousY = this.previousPoses[index].y;
+            return [body];
           })
         : [];
       const rosterMs = needsRoster ? performance.now() - rosterStart : 0;
@@ -325,7 +341,23 @@ export class TargetingBench {
       combatMs += performance.now() - acquisitionStart;
       for (let i = 0; i < this.sim.opponents.length; i++) {
         const shooter = this.sim.opponents[i];
-        if (shooter.lifecycle === "destroyed") continue;
+        if (shooter.lifecycle === "destroyed") {
+          if (
+            shooter.combat.plasmaStreams.length ||
+            shooter.combat.plasmaContactEvents.length
+          ) {
+            const start = performance.now();
+            shooter.combat.stepPlasmaStreams(
+              SUBSTEP,
+              this.sim.star,
+              this.sim.planets,
+              roster,
+              i + 1,
+            );
+            combatMs += performance.now() - start;
+          }
+          continue;
+        }
         const { capacity, coils } = this.fleetStats[i];
         const input = { leftThruster: true, rightThruster: true, fire: false };
         if (this.config.mode === "sustained")
@@ -390,6 +422,7 @@ export class TargetingBench {
           undefined,
           { shooterId: i + 1 },
           acquisitions.get(shooter.combat),
+          this.previousPoses[i],
         );
         combatMs += performance.now() - start;
         shooter.weaponEvents = shooter.combat.events;
@@ -474,6 +507,10 @@ export class TargetingBench {
         .length,
       plasmaReleases: this.sim.opponents.reduce(
         (sum, actor) => sum + actor.combat.plasmaReleases,
+        0,
+      ),
+      plasmaContacts: this.sim.opponents.reduce(
+        (sum, actor) => sum + actor.combat.plasmaContacts,
         0,
       ),
       plasmaVents: this.sim.opponents.reduce(

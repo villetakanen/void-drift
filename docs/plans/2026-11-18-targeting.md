@@ -117,3 +117,16 @@ In 60 simulated seconds of sustained twin-rifle flight, the fleet completed 42 s
 Eight Wasps now carry the selected guns on their hull sockets, and eight Fighters carry them on the aft sockets. The 6/6/4 loops alternate chassis. The continuous centre-separation bound exceeds 66.40 world units, compared with a maximum fitted diameter of 62.4 across both chassis and all 16 ordered weapon choices. The default plasma/cannon fitting recorded 21 plasma releases (9 Fighter, 12 Wasp) and 13 target-loss vents in 60 simulated seconds of sustained flight. With twin plasma rifles the fleet recorded 46 releases and 21 vents. The held approach puts a Fighter behind a Wasp to expose the aft channels.
 
 The production World fitting painter now reads the stored charge before the Wasp hull or after the Fighter hull, according to mount order. Flight captures compared idle, partly charged, power-limited full charge, vent and empty with an operating ion cannon beside the rifle. The exposed rifle channel brightens in place, and the two side channels appear in the second half of the charge. Production uses a subdued 25% spill outside the fitting silhouette to keep the exposed Wasp cue close to the barrel.
+
+## Stream travel and contact verification
+
+The default rifle/cannon and twin-rifle sustained workloads each ran for 60 simulated seconds. Contacts count stream heads that have reached ship or derelict material. A head in flight at the cutoff contributes only its release. The separate swept-fragment regression exercises a moving interceptor between combat samples.
+
+| Formation     | Fitting          | Funded releases | Material contacts | Heads still in flight |
+| ------------- | ---------------- | --------------: | ----------------: | --------------------: |
+| Three loops   | Rifle and cannon |              21 |                14 |                     1 |
+| Three loops   | Twin rifles      |              46 |                28 |                     2 |
+| Held approach | Rifle and cannon |               8 |                 8 |                     0 |
+| Held approach | Twin rifles      |              16 |                16 |                     0 |
+
+Compared with the pre-stream revision `b9824bc8`, releases, vent starts and total weapon discharges matched for these four runs and for turret/cannon controls in both formations. The selector averaged 16 body visits per substep on the loops and 2 on the held approach. The plasma readout reports material contacts alongside funded releases. A contact supplies the input to the forthcoming eruption slice.

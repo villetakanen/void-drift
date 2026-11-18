@@ -272,9 +272,9 @@ onMount(() => {
         bind:value={
           () => formation,
           (value) => {
-            formation = value;
-            reset();
-          }
+  formation = value;
+  reset();
+}
         }
       >
         <option value="three-loops">Three loops</option>
@@ -365,6 +365,10 @@ onMount(() => {
             <div>
               <dt>Funded releases</dt>
               <dd>{metrics?.plasmaReleases ?? 0}</dd>
+            </div>
+            <div>
+              <dt>Stream contacts</dt>
+              <dd>{metrics?.plasmaContacts ?? 0}</dd>
             </div>
             <div>
               <dt>Target-loss vents</dt>
