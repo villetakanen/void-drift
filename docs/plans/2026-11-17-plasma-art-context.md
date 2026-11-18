@@ -66,7 +66,7 @@ model.
 
 ### Engines: a functional image first, then selective reduction
 
-[Engine identities 02.2–02.9](../../apps/web/src/pages/lab/studies/engine-identities.astro)
+[Engine identities 02.2–02.9](../../apps/web/src/pages/lab/studies/engine-identities.mdx)
 first establishes shared light, charcoal material and actual hull layering.
 Ion’s straight output informs its axial needle. Fusion’s pulse character is
 expressed by separate feed machinery and reaction chamber, with an open gap and
