@@ -56,3 +56,14 @@ The light follows each mount through ship motion and rotation. The Wasp hull mas
 
 - In a crossing pass, the rifle brightens briefly and then drains as the target leaves. A different rifle on the same ship can show a different charge.
 - On a held approach, the centre brightens first, the sides join after half charge, and the loaded bead clears at release. Repeating the same flight produces the same charge and release events with rendering enabled or disabled.
+
+### Stream travel and first contact
+
+A funded release launches one stream head from that mount’s primary muzzle at the release instant. It travels in a straight line at 750 world units/s along the fixed barrel axis plus the ship’s velocity at release. Later steering, target loss and target replacement do not redirect it. A miss expires after 0.4 simulation seconds, equivalent to 300 units of travel relative to the release ship’s initial drift. The 130-unit acquisition range governs the trigger. A partial vent launches nothing.
+
+Sweep the head through elapsed simulation time from release, including the remaining fraction of its launch substep. Contact is the earliest meeting with a live ship’s collision circle or remaining wreck or fragment material, accounting for movement during the interval. Other ships, including allies, may intercept. Exclude the emitter, destroyed bodies and energy pickups. Stars and planets absorb a stream at their surfaces. At equal contact time a celestial blocker takes precedence; between eligible bodies use the lower stable ID. Include contact at the range endpoint.
+
+On material contact capture the body identity, mount identity, world point and simulation time once, then retire the head. On an empty miss retire it without a contact. Gameplay results are independent of the camera and drawing. This slice records contact for subsequent eruption damage and flight presentation.
+
+- A Fighter holds a Wasp through release. A fragment crosses the stream between combat samples. Its first surface supplies the contact, even though the Wasp triggered the charge.
+- An empty opening in a wreck permits the head to continue to material behind it. A moving ship that clears the swept path escapes.
