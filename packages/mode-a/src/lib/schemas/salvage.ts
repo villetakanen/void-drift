@@ -147,6 +147,68 @@ export const POINT_DEFENCE = PointDefenceSchema.parse({
   flashSeconds: 0.08,
   dispersal: 0.65,
 });
+export const PlasmaRifleTuningSchema = z.object({
+  acquisitionReach: z.literal(130),
+  acquisitionHalfAngle: z.literal((15 * Math.PI) / 180),
+  minimumAcquirePower: z.literal(17),
+  chargeSeconds: z.literal(0.7),
+  chargePowerPerSecond: z.literal(5),
+  minimumReleasePower: z.literal(13.5),
+  releasePower: z.literal(3.5),
+  firingSeconds: z.literal(0.7),
+  ventSeconds: z.literal(0.3),
+  recoverySeconds: z.literal(2.1),
+  kickStrength: z.literal(0.7),
+  ventAcceleration: z.literal(125),
+  streamSpeed: z.literal(900),
+  streamReach: z.literal(130),
+  spraySpeed: z.literal(300),
+  spraySpread: z.literal((25 * Math.PI) / 180),
+  sprayRadius: z.literal(6),
+});
+export const PLASMA_RIFLE = PlasmaRifleTuningSchema.parse({
+  acquisitionReach: 130,
+  acquisitionHalfAngle: (15 * Math.PI) / 180,
+  minimumAcquirePower: 17,
+  chargeSeconds: 0.7,
+  chargePowerPerSecond: 5,
+  minimumReleasePower: 13.5,
+  releasePower: 3.5,
+  firingSeconds: 0.7,
+  ventSeconds: 0.3,
+  recoverySeconds: 2.1,
+  kickStrength: 0.7,
+  ventAcceleration: 125,
+  streamSpeed: 900,
+  streamReach: 130,
+  spraySpeed: 300,
+  spraySpread: (25 * Math.PI) / 180,
+  sprayRadius: 6,
+});
+export const PlasmaRiflePhaseSchema = z.enum([
+  "idle",
+  "charging",
+  "venting",
+  "firing",
+  "recovery",
+]);
+export const PlasmaRiflePoseSchema = z.object({
+  x: z.number().finite(),
+  y: z.number().finite(),
+  angle: z.number().finite(),
+});
+export const PlasmaRifleStateSchema = z.object({
+  phase: PlasmaRiflePhaseSchema,
+  target: z.number().int().nullable(),
+  chargeSeconds: z.number().finite().min(0).max(PLASMA_RIFLE.chargeSeconds),
+  phaseRemaining: z.number().finite().min(0).max(PLASMA_RIFLE.recoverySeconds),
+  ventRemaining: z.number().finite().min(0).max(PLASMA_RIFLE.ventSeconds),
+  capturedAngle: z.number().finite(),
+  primaryPose: PlasmaRiflePoseSchema,
+  leftVentPose: PlasmaRiflePoseSchema,
+  rightVentPose: PlasmaRiflePoseSchema,
+});
+export type PlasmaRifleState = z.infer<typeof PlasmaRifleStateSchema>;
 /** Muzzle-to-first-contact damage; internal boundaries take the lower band. */
 export function pointDefenceDamage(distance: number) {
   if (

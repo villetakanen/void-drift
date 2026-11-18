@@ -31,9 +31,11 @@ pilot read the commitment while manoeuvring.
   nearest eligible centre wins, with lower stable body ID breaking ties.
   Debris can take damage. Star and planet surfaces block acquisition. A mount
   holds its chosen target until resolution. It cannot switch during charge.
-- **Charge.** Start with at least 17 power and the shared weapon floor
-  satisfied. Spend 5 power/s for up to 0.7 s in defence-first, stable gun-slot
-  order. Idle and full-charge waiting are free. A mount that loses its target
+- **Charge.** Start with enough power for preparation and the release
+  threshold, at least 17 power. If the shared capacity-relative floor is
+  higher than 13.5, add the 3.5 preparation cost to that floor instead.
+  Spend 5 power/s for up to 0.7 s in defence-first, stable gun-slot order.
+  Idle and full-charge waiting are free. A mount that loses its target
   or cannot fund further charge at the weapon floor before reaching full
   vents its current fill. Reacquisition waits until after recovery.
 - **Release.** At full charge with the locked target still eligible, require

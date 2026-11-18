@@ -28,12 +28,19 @@ import {
   DERELICT_SCALE,
   DERELICT_SHARDS,
 } from "./derelict-geometry";
+import { PLASMA_RIFLE_MOUTHS, PLASMA_RIFLE_SCALE } from "./plasma-rifle-art";
 import {
   ASSEMBLED_ION_DEFAULTS,
   type AssembledIonSettings,
   ION_REFERENCE_MASS,
 } from "./schemas/ion";
-import { buildStats, CHASSIS, type Loadout } from "./schemas/loadout";
+import {
+  buildStats,
+  CHASSIS,
+  defaultLoadout,
+  type Loadout,
+  PARTS,
+} from "./schemas/loadout";
 import type { SalvagePhysicalState } from "./schemas/salvage";
 import {
   DamageAmountSchema,
@@ -42,6 +49,9 @@ import {
   type EncounterConfig,
   ION_CANNON,
   ionCannonDamage,
+  PLASMA_RIFLE,
+  type PlasmaRifleState,
+  PlasmaRifleStateSchema,
   POINT_DEFENCE,
   pointDefenceDamage,
   SALVAGE,
@@ -106,11 +116,17 @@ export interface RailShot {
 }
 export interface WeaponState {
   mount: BuildMount;
-  kind: "rail" | "laser" | "light-ion-cannon" | "ion-point-defence";
+  kind:
+    | "rail"
+    | "laser"
+    | "light-ion-cannon"
+    | "ion-point-defence"
+    | "plasma-rifle";
   angle: number;
   readyAt: number;
   target: number | null;
   recoil: { remaining: number; angle: number } | null;
+  plasmaRifle: PlasmaRifleState | null;
 }
 /** First contact between relative linear motion and a circle, including overlap. */
 export function contactTime(
@@ -145,6 +161,34 @@ function outside(x: number, y: number) {
     ENCOUNTER.radius + 1e-7
   );
 }
+function riflePose(
+  ship: Pick<GameObject, "pos" | "rotation">,
+  mount: BuildMount,
+  source: readonly [number, number],
+) {
+  const pivot = weaponPose(ship, mount);
+  // The authored art rotates source coordinates by 90° before flight scaling.
+  const forward = -source[1] * PLASMA_RIFLE_SCALE;
+  const across = source[0] * PLASMA_RIFLE_SCALE;
+  return {
+    x:
+      pivot.x +
+      Math.cos(pivot.angle) * forward -
+      Math.sin(pivot.angle) * across,
+    y:
+      pivot.y +
+      Math.sin(pivot.angle) * forward +
+      Math.cos(pivot.angle) * across,
+    angle: pivot.angle,
+  };
+}
+function rifleReferenceMass() {
+  const reference = defaultLoadout("wasp");
+  reference.hull[0] = "plasma-rifle";
+  reference.hull[1] = "light-ion-cannon";
+  return buildStats(reference).mass;
+}
+const PLASMA_RIFLE_REFERENCE_MASS = rifleReferenceMass();
 
 /**
  * The one firing gate for every weapon: the ship must hold at least the floor
@@ -189,6 +233,8 @@ export class SalvageSystem {
   private scheduleState: number;
   private trajectoryState: number;
   private readonly recoilAcceleration: number;
+  private readonly plasmaRifleKickAcceleration: number;
+  private readonly plasmaRifleVentAcceleration: number;
   private readonly ionAcquisitionWidth: number;
   constructor(
     loadout: Loadout,
@@ -207,11 +253,18 @@ export class SalvageSystem {
     this.recoilAcceleration =
       (ion.acceleration * ION_REFERENCE_MASS * WEAPONS.rail.recoilStrength) /
       buildStats(loadout).mass;
+    const fittedMass = buildStats(loadout).mass;
+    this.plasmaRifleKickAcceleration =
+      (PARTS.plasma.thrust * PLASMA_RIFLE.kickStrength) / fittedMass;
+    this.plasmaRifleVentAcceleration =
+      (PLASMA_RIFLE.ventAcceleration * PLASMA_RIFLE_REFERENCE_MASS) /
+      fittedMass;
     this.weapons = buildMounts(loadout).flatMap((mount): WeaponState[] =>
       mount.part === "light-ion-cannon" ||
       mount.part === "ion-point-defence" ||
       mount.part === "rail" ||
-      mount.part === "laser"
+      mount.part === "laser" ||
+      mount.part === "plasma-rifle"
         ? [
             {
               mount,
@@ -220,6 +273,20 @@ export class SalvageSystem {
               readyAt: 0,
               target: null,
               recoil: null,
+              plasmaRifle:
+                mount.part === "plasma-rifle"
+                  ? PlasmaRifleStateSchema.parse({
+                      phase: "idle",
+                      target: null,
+                      chargeSeconds: 0,
+                      phaseRemaining: 0,
+                      ventRemaining: 0,
+                      capturedAngle: mount.angle,
+                      primaryPose: { x: 0, y: 0, angle: mount.angle },
+                      leftVentPose: { x: 0, y: 0, angle: mount.angle },
+                      rightVentPose: { x: 0, y: 0, angle: mount.angle },
+                    })
+                  : null,
             },
           ]
         : [],
@@ -914,11 +981,9 @@ export class SalvageSystem {
   }
   /**
    * Power after life support and engines goes to defence weapons (point
-   * defences, lasers), then guns (Light Ion Cannons, rails). `weapons` is in
-   * build-mount order, so each class walks it once in that order, drawing on the
-   * power and world the earlier shots left. The cannon volley is captured after
-   * the defence class and before the first gun; a cannon power shortfall stops
-   * the remaining cannons, while rails check the energy floor themselves.
+   * defences, lasers), then guns in stable build-mount order. The cannon volley
+   * is captured after defence and before the first gun, preserving its snapshot
+   * rule; plasma rifles charge at their slot in the gun order.
    */
   private fireWeapons(
     dt: number,
@@ -953,6 +1018,8 @@ export class SalvageSystem {
         );
     const volley = this.ionVolley(ship, star, planets);
     let cannonsFunded = true;
+    let plasmaDeltaX = 0;
+    let plasmaDeltaY = 0;
     for (const weapon of this.weapons)
       if (weapon.kind === "light-ion-cannon") {
         if (cannonsFunded && volley.has(weapon))
@@ -974,6 +1041,21 @@ export class SalvageSystem {
           capacity,
           planets,
         );
+      else if (weapon.kind === "plasma-rifle") {
+        const impulse = this.advancePlasmaRifle(
+          weapon,
+          dt,
+          ship,
+          star,
+          resources,
+          capacity,
+          planets,
+        );
+        plasmaDeltaX += impulse.x;
+        plasmaDeltaY += impulse.y;
+      }
+    ship.vel.x += plasmaDeltaX;
+    ship.vel.y += plasmaDeltaY;
   }
   /** Laser and rail keep their own acquisition; the shared energy floor gates the shot. */
   private fireRailOrLaser(
@@ -1149,6 +1231,230 @@ export class SalvageSystem {
     weapon.readyAt = this.time + config.cooldown;
     resources.power -= config.energy;
     this.energySpent += config.energy;
+  }
+
+  private rifleTarget(
+    weapon: WeaponState,
+    ship: GameObject,
+    star: Star,
+    planets: readonly Planet[],
+    targetId?: number,
+  ) {
+    const pose = riflePose(ship, weapon.mount, PLASMA_RIFLE_MOUTHS.primary);
+    let best: SalvageBody | undefined;
+    let bestDistance = Infinity;
+    for (const body of this.aimingBodies ?? this.bodies) {
+      if (
+        (body.kind !== "wreck" && body.kind !== "ship") ||
+        body.hull <= 0 ||
+        (targetId !== undefined && body.id !== targetId)
+      )
+        continue;
+      const dx = body.x - pose.x;
+      const dy = body.y - pose.y;
+      const distance = Math.hypot(dx, dy);
+      if (
+        distance > PLASMA_RIFLE.acquisitionReach + 1e-9 ||
+        Math.abs(angleDifference(Math.atan2(dy, dx), pose.angle)) >
+          PLASMA_RIFLE.acquisitionHalfAngle + 1e-12 ||
+        !this.lineClear(pose.x, pose.y, body.x, body.y, star, planets)
+      )
+        continue;
+      if (
+        distance < bestDistance ||
+        (distance === bestDistance && body.id < (best?.id ?? Infinity))
+      ) {
+        best = body;
+        bestDistance = distance;
+      }
+    }
+    return best;
+  }
+
+  private setRiflePoses(weapon: WeaponState, ship: GameObject) {
+    const rifle = weapon.plasmaRifle;
+    if (!rifle) return;
+    rifle.primaryPose = riflePose(
+      ship,
+      weapon.mount,
+      PLASMA_RIFLE_MOUTHS.primary,
+    );
+    rifle.leftVentPose = riflePose(
+      ship,
+      weapon.mount,
+      PLASMA_RIFLE_MOUTHS.left,
+    );
+    rifle.rightVentPose = riflePose(
+      ship,
+      weapon.mount,
+      PLASMA_RIFLE_MOUTHS.right,
+    );
+  }
+
+  private advancePlasmaRifle(
+    weapon: WeaponState,
+    dt: number,
+    ship: GameObject,
+    star: Star,
+    resources: Resources,
+    capacity: number,
+    planets: readonly Planet[],
+  ) {
+    const rifle = weapon.plasmaRifle;
+    if (!rifle || weapon.kind !== "plasma-rifle") return { x: 0, y: 0 };
+    this.setRiflePoses(weapon, ship);
+    let remaining = dt;
+    let deltaX = 0;
+    let deltaY = 0;
+    let transitions = 0;
+    const epsilon = 1e-12;
+    const chargeFloor = Math.max(capacity * WEAPONS.energyFloor, 10);
+    const canAcquire = () => {
+      const required =
+        PLASMA_RIFLE.releasePower +
+        Math.max(
+          PLASMA_RIFLE.minimumReleasePower,
+          capacity * WEAPONS.energyFloor,
+        );
+      return (
+        resources.power > 10 &&
+        resources.power + 1e-9 >=
+          Math.max(PLASMA_RIFLE.minimumAcquirePower, required)
+      );
+    };
+    const canRelease = () =>
+      resources.power + 1e-9 >= PLASMA_RIFLE.minimumReleasePower &&
+      canFire(resources, capacity, PLASMA_RIFLE.releasePower);
+    const beginRecovery = () => {
+      rifle.phase = "recovery";
+      rifle.phaseRemaining = PLASMA_RIFLE.recoverySeconds;
+      rifle.ventRemaining = 0;
+      rifle.target = null;
+      rifle.chargeSeconds = 0;
+    };
+    const beginVent = () => {
+      rifle.target = null;
+      rifle.capturedAngle = rifle.primaryPose.angle;
+      rifle.ventRemaining =
+        (PLASMA_RIFLE.ventSeconds * rifle.chargeSeconds) /
+        PLASMA_RIFLE.chargeSeconds;
+      rifle.phaseRemaining = rifle.ventRemaining;
+      if (rifle.phaseRemaining > epsilon) rifle.phase = "venting";
+      else beginRecovery();
+    };
+    const release = () => {
+      resources.power = Math.max(
+        0,
+        resources.power - PLASMA_RIFLE.releasePower,
+      );
+      this.energySpent += PLASMA_RIFLE.releasePower;
+      rifle.target = null;
+      rifle.chargeSeconds = 0;
+      rifle.capturedAngle = rifle.primaryPose.angle;
+      rifle.phase = "firing";
+      rifle.phaseRemaining = PLASMA_RIFLE.firingSeconds;
+      rifle.ventRemaining = PLASMA_RIFLE.ventSeconds;
+    };
+
+    while (remaining > epsilon && transitions++ < 16) {
+      if (rifle.phase === "idle") {
+        const target = this.rifleTarget(weapon, ship, star, planets);
+        if (!target || !canAcquire()) break;
+        rifle.target = target.id;
+        rifle.chargeSeconds = 0;
+        rifle.phase = "charging";
+        continue;
+      }
+      if (rifle.phase === "charging") {
+        if (
+          !this.rifleTarget(
+            weapon,
+            ship,
+            star,
+            planets,
+            rifle.target ?? undefined,
+          )
+        ) {
+          beginVent();
+          continue;
+        }
+        if (rifle.chargeSeconds >= PLASMA_RIFLE.chargeSeconds - epsilon) {
+          rifle.chargeSeconds = PLASMA_RIFLE.chargeSeconds;
+          if (!canRelease()) break; // Full charge waits freely for release power.
+          release();
+          continue;
+        }
+        if (resources.power <= chargeFloor + epsilon) {
+          beginVent();
+          continue;
+        }
+        const requestedTime = Math.min(
+          remaining,
+          PLASMA_RIFLE.chargeSeconds - rifle.chargeSeconds,
+        );
+        const chargeTime = Math.min(
+          requestedTime,
+          (resources.power - chargeFloor) / PLASMA_RIFLE.chargePowerPerSecond,
+        );
+        if (chargeTime <= epsilon) {
+          beginVent();
+          continue;
+        }
+        resources.power = Math.max(
+          chargeFloor,
+          resources.power - chargeTime * PLASMA_RIFLE.chargePowerPerSecond,
+        );
+        this.energySpent += chargeTime * PLASMA_RIFLE.chargePowerPerSecond;
+        rifle.chargeSeconds = Math.min(
+          PLASMA_RIFLE.chargeSeconds,
+          rifle.chargeSeconds + chargeTime,
+        );
+        remaining = Math.max(0, remaining - chargeTime);
+        if (chargeTime + epsilon < requestedTime) {
+          beginVent();
+          continue;
+        }
+        if (rifle.chargeSeconds >= PLASMA_RIFLE.chargeSeconds - epsilon) {
+          rifle.chargeSeconds = PLASMA_RIFLE.chargeSeconds;
+          if (canRelease()) release();
+        }
+        continue;
+      }
+      if (rifle.phase === "firing") {
+        const duration = Math.min(remaining, rifle.phaseRemaining);
+        const ventDuration = Math.min(duration, rifle.ventRemaining);
+        const acceleration =
+          this.plasmaRifleKickAcceleration * duration +
+          this.plasmaRifleVentAcceleration * ventDuration;
+        deltaX -= Math.cos(rifle.capturedAngle) * acceleration;
+        deltaY -= Math.sin(rifle.capturedAngle) * acceleration;
+        rifle.phaseRemaining = Math.max(0, rifle.phaseRemaining - duration);
+        rifle.ventRemaining = Math.max(0, rifle.ventRemaining - ventDuration);
+        remaining = Math.max(0, remaining - duration);
+        if (rifle.phaseRemaining <= epsilon) beginRecovery();
+        continue;
+      }
+      if (rifle.phase === "venting") {
+        const duration = Math.min(remaining, rifle.phaseRemaining);
+        const acceleration = this.plasmaRifleVentAcceleration * duration;
+        deltaX -= Math.cos(rifle.capturedAngle) * acceleration;
+        deltaY -= Math.sin(rifle.capturedAngle) * acceleration;
+        rifle.phaseRemaining = Math.max(0, rifle.phaseRemaining - duration);
+        rifle.ventRemaining = Math.max(0, rifle.ventRemaining - duration);
+        remaining = Math.max(0, remaining - duration);
+        if (rifle.phaseRemaining <= epsilon) beginRecovery();
+        continue;
+      }
+      const duration = Math.min(remaining, rifle.phaseRemaining);
+      rifle.phaseRemaining = Math.max(0, rifle.phaseRemaining - duration);
+      remaining = Math.max(0, remaining - duration);
+      if (rifle.phaseRemaining <= epsilon) {
+        rifle.phase = "idle";
+        rifle.target = null;
+      }
+    }
+    this.setRiflePoses(weapon, ship);
+    return { x: deltaX, y: deltaY };
   }
 
   /** Runs this ship's normal weapon pipeline against one temporary live ship. */
