@@ -46,6 +46,16 @@ Loss or replacement of the charging target before release starts venting. Preser
 - A short pass in the three-loop workload starts a charge and loses the target before release. The rifle completes a partial vent and recovery. Its neighbour can continue operating independently.
 - Two full rifles compete for one affordable release. The first eligible gun in slot order releases. The second holds its charge while its target remains eligible and releases when power recovers.
 
+### Target-loss venting
+
+Losing or replacing the target while carrying paid charge opens the fitted rifle’s two purge outlets. Both sprays leave their actual ports together, following the fixed outlet axes. Emitted fumes inherit the ship’s velocity at emission plus 300 u/s along each outlet. They travel and cool in world space after the ship turns or the ports close. The two sprays and their travel are visible at flight scale. Pause freezes emission and drift. Reset clears them.
+
+For exactly the time spent draining, each venting rifle applies a common force opposite the hull’s current forward direction, through its centre of mass. Calibrate the force to 125 u/s² on a stock Wasp fitted with service ion side engines, a plasma rifle in the first hull socket and a light ion cannon in the second and divide by the actual fitted ship mass. Venting adds translation without torque. Full loss vents for 0.3 s and changes that reference Wasp’s backward velocity by 37.5 u/s. Half charge produces half that duration and impulse. Overlapping mounts contribute independently. Charge depletion, emission and thrust stop together even when a substep crosses into cooldown.
+
+- A crossing target leaves at half charge. Both outlets spray while the bead drains, the ship acquires backward velocity over 0.15 s, and the existing fumes keep drifting into cooldown.
+- A target returns during venting. The paid discharge finishes once, and the rifle proceeds into its normal recovery.
+- A funded shot follows the release and eruption contract. The target-loss vent requires stored charge lost before release.
+
 ### Mounted charge light
 
 A paid charge is visible on the fitted rifle at flight scale. A warm, elongated central bead brightens in place along the barrel channel as the stored fraction increases. The two side channels begin to light halfway through charging. A fully charged rifle waiting for release power keeps its full indication. Losing the target dims the channels with the actual remaining charge during venting. A funded release clears the stored-charge indication immediately. Idle and cooldown show the unlit fitting.
