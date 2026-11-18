@@ -118,10 +118,16 @@ export interface TargetingMetrics {
 
 export interface WeaponState {
   mount: BuildMount;
-  kind: "rail" | "laser" | "light-ion-cannon" | "ion-point-defence";
+  kind:
+    | "rail"
+    | "laser"
+    | "light-ion-cannon"
+    | "ion-point-defence"
+    | "plasma-rifle";
   angle: number;
   readyAt: number;
   target: number | null;
+  targetPoint?: { x: number; y: number } | null;
   recoil: { remaining: number; angle: number } | null;
 }
 /** First contact between relative linear motion and a circle, including overlap. */
@@ -240,7 +246,8 @@ export class SalvageSystem {
     this.weapons = buildMounts(loadout).flatMap((mount): WeaponState[] =>
       mount.part === "light-ion-cannon" ||
       mount.part === "ion-point-defence" ||
-      mount.part === "laser"
+      mount.part === "laser" ||
+      mount.part === "plasma-rifle"
         ? [
             {
               mount,
@@ -248,6 +255,7 @@ export class SalvageSystem {
               angle: mount.angle,
               readyAt: 0,
               target: null,
+              ...(mount.part === "plasma-rifle" ? { targetPoint: null } : {}),
               recoil: null,
             },
           ]
@@ -922,7 +930,11 @@ export class SalvageSystem {
   ) {
     let turretsFunded = true;
     for (const weapon of this.weapons)
-      if (weapon.kind === "ion-point-defence")
+      if (weapon.kind === "plasma-rifle") {
+        const target = acquisition.targets.get(weapon);
+        weapon.target = target?.id ?? null;
+        weapon.targetPoint = target ? { x: target.x, y: target.y } : null;
+      } else if (weapon.kind === "ion-point-defence")
         turretsFunded = this.firePointDefence(
           weapon,
           turretsFunded,
@@ -1167,6 +1179,7 @@ export class SalvageSystem {
         (weapon) =>
           weapon.kind === "ion-point-defence" ||
           weapon.kind === "laser" ||
+          weapon.kind === "plasma-rifle" ||
           this.time + dt + 1e-9 >= weapon.readyAt,
       )
     );

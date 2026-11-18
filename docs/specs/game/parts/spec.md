@@ -71,12 +71,12 @@ own only when its behaviour in flight needs one, as the
   one, showing the master beside renderings of those artefacts. A new part
   has all three when it is added. An existing part gets them when its art
   changes; until then it keeps its current art without a master.
-- **Plasma rifle.** This rifle is an unsanctioned decorative weapon-category
+- **Plasma rifle.** This rifle is an unsanctioned weapon-category
   fitting named “Plasma rifle”, with fluff “Floor is lava, jump!”. Its mass is
   2.7 times the Light Ion Cannon (24.3). The white-blue receiver is centred
   on the slot, using the supplied unlit SVG at its accepted scale. Its full
-  silhouette contributes to the ship collision envelope. It has no targeting,
-  firing state, charge, damage, recoil, thrust, energy draw or LFX. Its card
+  silhouette contributes to the ship collision envelope. Each fitted muzzle observes targets under the
+  [rifle acquisition contract](../plasma-rifle/spec.md). Observation costs zero power. Its card
   shows mass alone. The master lives at `packages/mode-a/src/lib/art/weapons/plasma-rifle.svg`;
   derived paths serve both the card and fitted World drawing.
 - **Weapons.** Functional weapons fire on their own; there is no fire control on keyboard

@@ -21,7 +21,7 @@ import {
 } from "./schemas/loadout";
 import { ShipProfileIdSchema } from "./schemas/ship-profile";
 
-describe("decorative Plasma rifle", () => {
+describe("observation-only Plasma rifle", () => {
   it("adds weight through ordinary statistics and round-trips saved fittings", () => {
     const build = defaultLoadout("wasp");
     const mass = buildStats(build).mass;
@@ -48,11 +48,14 @@ describe("decorative Plasma rifle", () => {
     ).toBe(false);
   });
 
-  it("creates no targeting or firing state on any hull", () => {
+  it("registers one observation-only mount on every hull", () => {
     for (const chassis of ShipProfileIdSchema.options) {
       const build = defaultLoadout(chassis);
       build.hull[0] = "plasma-rifle";
-      expect(new SalvageSystem(build, 2026).weapons).toEqual([]);
+      const weapons = new SalvageSystem(build, 2026).weapons;
+      expect(weapons).toHaveLength(1);
+      expect(weapons[0].kind).toBe("plasma-rifle");
+      expect(weapons[0].target).toBeNull();
     }
   });
 
@@ -88,6 +91,7 @@ describe("decorative Plasma rifle", () => {
     const star = createStar("G", 960, 540);
     for (let i = 0; i < 240; i++)
       system.step(1 / 120, ship, star, resources, 100, 400, 400, false);
+    expect(system.weapons[0].target).toBe(target.id);
     expect(target.hull).toBe(100);
     expect(resources).toEqual({ hull: 100, power: 100 });
     expect(ship.vel).toEqual(new Vec2(0, 0));

@@ -34,6 +34,7 @@ The rules below supply the reference for judging acquisition quality. Production
 | Light Ion Cannon  | Find visible damageable material touching the ship's forward rectangle, including its boundary. Test live ship circles against the actual rectangle and wrecks and fragments against their remaining material. An offset muzzle can legitimately miss after acquisition. |
 | Ion Point Defence | Choose the nearest eligible visible material from each turret pivot. Resolve equal distances by lower body ID. Retain the current eligible target unless a challenger is at least 10 units closer.                                                                       |
 | Laser             | Preserve the defensive priority of an incoming fragment on a collision course, then a wreck, then another eligible contact. Retain an eligible target in the winning priority class. Resolve a fresh choice by threat time or distance as applicable, then by stable ID. |
+| Plasma rifle      | Retain a visible eligible ship or wreck centre inside the fixed muzzle sector. A fresh selection uses distance, then stable ID. See the [rifle acquisition contract](../plasma-rifle/spec.md).                                                                           |
 
 Encounter policy applies independently for each shooter. A pirate can intend to fire at the player while an allied pirate intersects the barrel. Collectible energy cannot trigger a shot. Apply each weapon's visibility rule from its specified origin. A blocked body cannot conceal an eligible runner-up simply by ranking closer.
 

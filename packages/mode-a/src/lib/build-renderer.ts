@@ -14,7 +14,12 @@ import {
   ION_CANNON_MUZZLE,
   ION_CANNON_MUZZLE_SIDE,
 } from "./ion-cannon-art";
-import { drawPlasmaRifle, PLASMA_RIFLE_ENVELOPE } from "./plasma-rifle-art";
+import {
+  drawPlasmaRifle,
+  PLASMA_RIFLE_ENVELOPE,
+  PLASMA_RIFLE_MOUTHS,
+  PLASMA_RIFLE_SCALE,
+} from "./plasma-rifle-art";
 import {
   drawPointDefence,
   POINT_DEFENCE_MUZZLE,
@@ -764,6 +769,11 @@ function polygon(
   ctx.fill();
 }
 export function barrelLength(mount: BuildMount) {
+  if (mount.part === "plasma-rifle")
+    return (
+      (-PLASMA_RIFLE_MOUTHS.primary[1] * PLASMA_RIFLE_SCALE) /
+      BUILD_FLIGHT_SCALE
+    );
   if (mount.part === "light-ion-cannon")
     return ION_CANNON_MUZZLE / BUILD_FLIGHT_SCALE;
   if (mount.part === "ion-point-defence")

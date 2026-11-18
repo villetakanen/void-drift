@@ -196,7 +196,7 @@ export const PARTS = {
     name: "Plasma rifle",
     fluff: "Floor is lava, jump!",
     description:
-      "Decorative plasma rifle. Adds mass and collision extent; does not charge or shoot.",
+      "Acquisition-only plasma rifle. Tracks ships and wrecks ahead of its muzzle.",
     releaseClass: "preview",
     category: "G",
     mass: 24.3,

@@ -120,6 +120,17 @@ export function ionCannonDamage(distance: number) {
     Math.min(3, Math.floor(distance / (ION_CANNON.range / 4)))
   ];
 }
+/** Observation-only plasma rifle acquisition envelope and study threshold. */
+export const PlasmaRifleSchema = z.object({
+  range: z.literal(130),
+  halfAngle: z.literal(Math.PI / 12),
+  observationSeconds: z.literal(0.7),
+});
+export const PLASMA_RIFLE = PlasmaRifleSchema.parse({
+  range: 130,
+  halfAngle: Math.PI / 12,
+  observationSeconds: 0.7,
+});
 /** Ion Point Defence: closest-target turret with the cannon's instant ray family. */
 export const PointDefenceSchema = z.object({
   reach: z.literal(200),

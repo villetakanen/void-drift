@@ -12,7 +12,12 @@ import type {
   WeaponState,
 } from "./salvage";
 import { CHASSIS } from "./schemas/loadout";
-import { ION_CANNON, POINT_DEFENCE, WEAPONS } from "./schemas/salvage";
+import {
+  ION_CANNON,
+  PLASMA_RIFLE,
+  POINT_DEFENCE,
+  WEAPONS,
+} from "./schemas/salvage";
 
 /** Immutable selections captured before any weapon in a combat substep fires. */
 export interface WeaponAcquisition {
@@ -41,7 +46,9 @@ type AcquisitionChoice = {
 type AcquisitionRequest = {
   shooter: AcquisitionShooter;
   weapon?: WeaponState;
-  kind: "cannon" | "laser" | "ion-point-defence";
+  kind: "cannon" | "laser" | "ion-point-defence" | "plasma-rifle";
+  forwardX?: number;
+  forwardY?: number;
   x: number;
   y: number;
   best?: AcquisitionChoice;
@@ -49,6 +56,7 @@ type AcquisitionRequest = {
   result: WeaponAcquisition;
   blocked: boolean;
 };
+const RIFLE_COS_HALF_ANGLE = Math.cos(PLASMA_RIFLE.halfAngle);
 const requestSlots = new WeakMap<
   SalvageSystem,
   { cannon?: AcquisitionRequest; weapons: Map<WeaponState, AcquisitionRequest> }
@@ -121,31 +129,43 @@ export function acquireFleetTargets(
       requests.push(request);
     }
     for (const weapon of shooter.system.weapons) {
-      if (weapon.kind !== "laser" && weapon.kind !== "ion-point-defence")
+      if (
+        weapon.kind !== "laser" &&
+        weapon.kind !== "ion-point-defence" &&
+        weapon.kind !== "plasma-rifle"
+      )
         continue;
       const pose = weaponPose(shooter.ship, weapon.mount, weapon.angle);
+      const x = weapon.kind === "plasma-rifle" ? pose.muzzleX : pose.x;
+      const y = weapon.kind === "plasma-rifle" ? pose.muzzleY : pose.y;
       const request = slots.weapons.get(weapon) ?? {
         shooter,
         weapon,
         kind: weapon.kind,
-        x: pose.x,
-        y: pose.y,
+        x,
+        y,
         result,
         blocked: false,
       };
       Object.assign(request, {
         shooter,
-        x: pose.x,
-        y: pose.y,
+        x,
+        y,
+        forwardX:
+          weapon.kind === "plasma-rifle" ? Math.cos(pose.angle) : undefined,
+        forwardY:
+          weapon.kind === "plasma-rifle" ? Math.sin(pose.angle) : undefined,
         result,
         best: undefined,
         retained: undefined,
         blocked: blockedNear(
-          pose.x,
-          pose.y,
+          x,
+          y,
           weapon.kind === "laser"
             ? WEAPONS.laser.range
-            : POINT_DEFENCE.trackingRange,
+            : weapon.kind === "plasma-rifle"
+              ? PLASMA_RIFLE.range
+              : POINT_DEFENCE.trackingRange,
         ),
       });
       slots.weapons.set(weapon, request);
@@ -241,6 +261,33 @@ export function acquireFleetTargets(
         continue;
       }
       if (!weapon) continue;
+      if (request.kind === "plasma-rifle") {
+        if (body.kind !== "ship" && body.kind !== "wreck") continue;
+        if (centreSquared > PLASMA_RIFLE.range ** 2 + 1e-9) continue;
+        const distance = Math.sqrt(centreSquared);
+        if (
+          dx * (request.forwardX ?? 1) + dy * (request.forwardY ?? 0) + 1e-9 <
+          distance * RIFLE_COS_HALF_ANGLE
+        )
+          continue;
+        if (!visible(request, body.x, body.y)) continue;
+        const candidate: AcquisitionChoice = {
+          id: body.id,
+          x: body.x,
+          y: body.y,
+          distance,
+          priority: 0,
+          order: distance,
+        };
+        if (body.id === weapon.target) request.retained = candidate;
+        if (
+          !request.best ||
+          distance < request.best.distance ||
+          (distance === request.best.distance && body.id < request.best.id)
+        )
+          request.best = candidate;
+        continue;
+      }
       const reach =
         request.kind === "laser"
           ? WEAPONS.laser.range
@@ -355,10 +402,12 @@ export function acquireFleetTargets(
     if (!request.weapon || !request.best) continue;
     const keep =
       request.retained &&
-      (request.kind === "laser"
-        ? request.retained.priority === request.best.priority
-        : request.best.distance >
-          request.retained.distance - POINT_DEFENCE.retention);
+      (request.kind === "plasma-rifle"
+        ? true
+        : request.kind === "laser"
+          ? request.retained.priority === request.best.priority
+          : request.best.distance >
+            request.retained.distance - POINT_DEFENCE.retention);
     results
       .get(request.shooter.system)
       ?.targets.set(
