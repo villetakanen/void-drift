@@ -349,7 +349,7 @@ study component or use `client:`.
 | 2   | `gravity-wells.astro`                        | 2026-10-29 | 230   | 5    | accepted        | done 2026-11-17 |
 | 3   | `archive/fighter-canopy-soft.astro`          | 2026-10-30 | 21    | 1    | not in registry | done 2026-11-17 |
 | 4   | `engine-effects.astro`                       | 2026-10-30 | 292   | 9    | accepted        | done 2026-11-18 |
-| 5   | `heavy-cruiser-slots.astro`                  | 2026-10-30 | 556   | 6    | accepted        | todo            |
+| 5   | `heavy-cruiser-slots.astro`                  | 2026-10-30 | 556   | 6    | accepted        | done 2026-11-18 |
 | 6   | `ship-silhouettes.astro`                     | 2026-10-30 | 566   | 10   | stopped         | todo            |
 | 7   | `archive/scout-firefly-rounded-bodies.astro` | 2026-10-31 | 22    | 1    | not in registry | todo            |
 | 8   | `ship-slot-language.astro`                   | 2026-10-31 | 128   | 2    | accepted        | todo            |
