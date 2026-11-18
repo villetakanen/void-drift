@@ -104,6 +104,14 @@ export interface RailShot {
   vy: number;
   angle: number;
 }
+/** Optional Lab counters, accumulated across every shooter in a combat substep. */
+export interface TargetingMetrics {
+  bodyVisits: number;
+  comparisons: number;
+  acquisitionMs: number;
+  contactMs: number;
+}
+
 export interface WeaponState {
   mount: BuildMount;
   kind: "rail" | "laser" | "light-ion-cannon" | "ion-point-defence";
@@ -160,6 +168,7 @@ function canFire(resources: Resources, capacity: number, cost: number) {
 }
 /** Bounded, deterministic gameplay. No Canvas, wall clock, or cosmetic randomness. */
 export class SalvageSystem {
+  targetingMetrics?: TargetingMetrics;
   private aimingBodies: readonly SalvageBody[] | null = null;
   readonly weapons: WeaponState[];
   readonly angles: Record<string, number> = {};
@@ -560,8 +569,13 @@ export class SalvageSystem {
     planets: readonly Planet[],
   ) {
     const pose = weaponPose(ship, weapon.mount, weapon.angle);
+    const started = this.targetingMetrics ? performance.now() : 0;
     const candidates = (this.aimingBodies ?? this.bodies)
       .flatMap((body) => {
+        if (this.targetingMetrics) {
+          this.targetingMetrics.bodyVisits++;
+          this.targetingMetrics.comparisons++;
+        }
         const distance = Math.hypot(body.x - pose.x, body.y - pose.y);
         if (
           body.kind === "cell" ||
@@ -597,6 +611,8 @@ export class SalvageSystem {
     const retained = candidates.find(
       (candidate) => candidate.body.id === weapon.target,
     );
+    if (this.targetingMetrics)
+      this.targetingMetrics.acquisitionMs += performance.now() - started;
     return retained && retained.priority === first?.priority
       ? retained.body
       : first?.body;
@@ -641,7 +657,12 @@ export class SalvageSystem {
   }
   /** Forward ship-width by 300 rectangle; acquisition does not steer muzzle rays. */
   ionTrigger(ship: GameObject, star: Star, planets: readonly Planet[]) {
-    return (this.aimingBodies ?? this.bodies).some((body) => {
+    const started = this.targetingMetrics ? performance.now() : 0;
+    const triggered = (this.aimingBodies ?? this.bodies).some((body) => {
+      if (this.targetingMetrics) {
+        this.targetingMetrics.bodyVisits++;
+        this.targetingMetrics.comparisons++;
+      }
       if (body.kind === "cell" || body.hull <= 0) return false;
       if (body.kind === "ship") {
         const dx = body.x - ship.pos.x;
@@ -669,6 +690,9 @@ export class SalvageSystem {
         this.lineClear(ship.pos.x, ship.pos.y, p.x, p.y, star, planets),
       );
     });
+    if (this.targetingMetrics)
+      this.targetingMetrics.acquisitionMs += performance.now() - started;
+    return triggered;
   }
   /** Ready cannons and the trigger are captured once per update; hits cannot cancel this volley. */
   private ionVolley(ship: GameObject, star: Star, planets: readonly Planet[]) {
@@ -692,6 +716,7 @@ export class SalvageSystem {
   ) {
     if (!canFire(resources, capacity, ION_CANNON.energy)) return false;
     const pose = weaponPose(ship, weapon.mount);
+    const contactStarted = this.targetingMetrics ? performance.now() : 0;
     const { distance, hit } = this.ionContact(
       pose.muzzleX,
       pose.muzzleY,
@@ -699,6 +724,8 @@ export class SalvageSystem {
       star,
       planets,
     );
+    if (this.targetingMetrics)
+      this.targetingMetrics.contactMs += performance.now() - contactStarted;
     resources.power = Math.max(0, resources.power - ION_CANNON.energy);
     this.energySpent += ION_CANNON.energy;
     weapon.readyAt = this.time + ION_CANNON.cooldown;
@@ -757,9 +784,14 @@ export class SalvageSystem {
       bound: number;
       closest: { distance: number; x: number; y: number } | null;
     };
+    const started = this.targetingMetrics ? performance.now() : 0;
     // Visit bodies nearest-bound first so distant material is skipped cheaply.
     const nearby = (this.aimingBodies ?? this.bodies)
       .flatMap<CandidateOption>((body) => {
+        if (this.targetingMetrics) {
+          this.targetingMetrics.bodyVisits++;
+          this.targetingMetrics.comparisons++;
+        }
         if (body.kind === "cell" || body.hull <= 0) return [];
         if (body.kind === "ship") {
           const dx = body.x - pivot.x;
@@ -830,6 +862,8 @@ export class SalvageSystem {
       )
         best = candidate;
     }
+    if (this.targetingMetrics)
+      this.targetingMetrics.acquisitionMs += performance.now() - started;
     return retained &&
       best &&
       best.distance > retained.distance - POINT_DEFENCE.retention
@@ -876,6 +910,7 @@ export class SalvageSystem {
     )
       return funded;
     const pose = weaponPose(ship, weapon.mount, weapon.angle);
+    const contactStarted = this.targetingMetrics ? performance.now() : 0;
     const { distance, hit } = this.ionContact(
       pose.muzzleX,
       pose.muzzleY,
@@ -884,6 +919,8 @@ export class SalvageSystem {
       planets,
       POINT_DEFENCE.reach,
     );
+    if (this.targetingMetrics)
+      this.targetingMetrics.contactMs += performance.now() - contactStarted;
     // World geometry first, or nothing within reach: no discharge, cost or cooldown.
     if (!hit || distance > POINT_DEFENCE.reach) return funded;
     if (!canFire(resources, capacity, POINT_DEFENCE.energy)) return false;
@@ -1094,6 +1131,7 @@ export class SalvageSystem {
       this.emit("rail", pose.muzzleX, pose.muzzleY);
     } else {
       if (!target) return;
+      const contactStarted = this.targetingMetrics ? performance.now() : 0;
       // The visible pulse follows the barrel; its first physical hit owns damage.
       const dx = Math.cos(pose.angle),
         dy = Math.sin(pose.angle);
@@ -1134,6 +1172,8 @@ export class SalvageSystem {
           hit = body;
         }
       }
+      if (this.targetingMetrics)
+        this.targetingMetrics.contactMs += performance.now() - contactStarted;
       if (!hit) return;
       this.emit(
         "laser",
