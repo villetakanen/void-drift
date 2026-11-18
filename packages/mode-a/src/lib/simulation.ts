@@ -448,6 +448,13 @@ export class Simulation {
     for (let substep = 0; substep < 4; substep++) {
       if (this.settings.mode === "gauntlet")
         for (const planet of this.planets) updatePlanetOrbit(planet, STEP / 4);
+      const visualEnd = this.ticks * STEP + ((substep + 1) * STEP) / 4;
+      if (this.salvage)
+        this.salvage.presentationTimeOffset =
+          visualEnd - (this.salvage.time + STEP / 4);
+      for (const actor of this.opponents)
+        actor.combat.presentationTimeOffset =
+          visualEnd - (actor.combat.time + STEP / 4);
       const previousX = this.ship.pos.x,
         previousY = this.ship.pos.y,
         previousRotation = this.ship.rotation;

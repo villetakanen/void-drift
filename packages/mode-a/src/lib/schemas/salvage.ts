@@ -175,6 +175,26 @@ export const PlasmaContactSchema = z.object({
   time: z.number().finite(),
 });
 export type PlasmaContact = z.infer<typeof PlasmaContactSchema>;
+/** Bounded presentation journal; world geometry and time only, never gameplay. */
+export const PlasmaVisualEventSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("segment"),
+    id: z.number().int().positive(),
+    time: z.number().finite(),
+    x: z.number().finite(),
+    y: z.number().finite(),
+    endX: z.number().finite(),
+    endY: z.number().finite(),
+  }),
+  z.object({
+    kind: z.literal("impact"),
+    id: z.number().int().positive(),
+    time: z.number().finite(),
+    x: z.number().finite(),
+    y: z.number().finite(),
+  }),
+]);
+export type PlasmaVisualEvent = z.infer<typeof PlasmaVisualEventSchema>;
 /** Ion Point Defence: closest-target turret with the cannon's instant ray family. */
 export const PointDefenceSchema = z.object({
   reach: z.literal(200),

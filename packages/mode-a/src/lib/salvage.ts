@@ -50,6 +50,7 @@ import {
   PlasmaRifleCycleSchema,
   type PlasmaStream,
   PlasmaStreamSchema,
+  type PlasmaVisualEvent,
   POINT_DEFENCE,
   pointDefenceDamage,
   SALVAGE,
@@ -227,6 +228,10 @@ export class SalvageSystem {
   plasmaContacts = 0;
   lastPlasmaContact: PlasmaContact | null = null;
   readonly plasmaContactEvents: PlasmaContact[] = [];
+  /** Translate local combat time to the containing simulation's clock. */
+  presentationTimeOffset = 0;
+  readonly plasmaVisualEvents: PlasmaVisualEvent[] = [];
+  private plasmaVisualSequence = 0;
   laserPulses = 0;
   hits = 0;
   /** Point-defence and cannon hits on a wreck or a shard; they score in Survival. */
@@ -1338,6 +1343,14 @@ export class SalvageSystem {
     this.plasmaContactEvents.length = 0;
     this.sweepPlasmaStreams(dt, star, planets, roster, shooterId);
   }
+  private plasmaVisual(
+    event:
+      | Omit<Extract<PlasmaVisualEvent, { kind: "segment" }>, "id">
+      | Omit<Extract<PlasmaVisualEvent, { kind: "impact" }>, "id">,
+  ) {
+    if (this.plasmaVisualEvents.length >= 512) this.plasmaVisualEvents.shift();
+    this.plasmaVisualEvents.push({ ...event, id: ++this.plasmaVisualSequence });
+  }
   private sweepPlasmaStreams(
     dt: number,
     star: Star,
@@ -1347,6 +1360,12 @@ export class SalvageSystem {
     integrated = false,
     terminal?: (body: SalvageBody) => number,
   ) {
+    const cutoff = this.time + this.presentationTimeOffset - 0.5;
+    while (
+      this.plasmaVisualEvents.length &&
+      this.plasmaVisualEvents[0].time < cutoff
+    )
+      this.plasmaVisualEvents.shift();
     if (!this.plasmaStreams.length) return;
     const started = this.targetingMetrics ? performance.now() : 0;
     const intervalStart = this.time - dt;
@@ -1467,10 +1486,29 @@ export class SalvageSystem {
         }
       }
       const elapsed = Math.min(horizon, first);
+      const fromX = head.x,
+        fromY = head.y;
       head.x += head.vx * elapsed;
       head.y += head.vy * elapsed;
       head.age += elapsed;
+      const visualTime =
+        intervalStart + offset + elapsed + this.presentationTimeOffset;
+      if (elapsed > 0)
+        this.plasmaVisual({
+          kind: "segment",
+          time: visualTime,
+          x: fromX,
+          y: fromY,
+          endX: head.x,
+          endY: head.y,
+        });
       if (hit) {
+        this.plasmaVisual({
+          kind: "impact",
+          time: visualTime,
+          x: head.x,
+          y: head.y,
+        });
         const contact = PlasmaContactSchema.parse({
           mountKey: head.mountKey,
           bodyId: hit.id,

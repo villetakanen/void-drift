@@ -341,6 +341,8 @@ export class TargetingBench {
       combatMs += performance.now() - acquisitionStart;
       for (let i = 0; i < this.sim.opponents.length; i++) {
         const shooter = this.sim.opponents[i];
+        shooter.combat.presentationTimeOffset =
+          (this.substeps + 1) * SUBSTEP - (shooter.combat.time + SUBSTEP);
         if (shooter.lifecycle === "destroyed") {
           if (
             shooter.combat.plasmaStreams.length ||
