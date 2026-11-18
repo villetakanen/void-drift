@@ -6,8 +6,18 @@ import {
   type Planet,
   type Renderer,
 } from "@void-drift/core";
-import { BUILD_FLIGHT_SCALE, drawBuild } from "./build-renderer";
+import {
+  BUILD_FLIGHT_SCALE,
+  type BuildMount,
+  drawBuild,
+  drawNonEngineFitting,
+} from "./build-renderer";
 import type { FlightFx } from "./gravity-fold-fx";
+import {
+  drawPlasmaRifleCharge,
+  plasmaChargeAppearance,
+} from "./plasma-rifle-art";
+import type { SalvageSystem } from "./salvage";
 import { drawSalvage, drawSalvageApertures } from "./salvage-renderer";
 import type { ShipProfileId } from "./schemas/ship-profile";
 import { type Simulation, STEP } from "./simulation";
@@ -236,7 +246,44 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
     space: "world",
     draws: "The fitted build, or the stock ship",
     source: "packages/mode-a/src/lib/build-renderer.ts",
-    draw: ({ renderer, sim, stockShip }, ctx) => {
+    draw: ({ renderer, sim, stockShip, camera }, ctx) => {
+      const view = camera.getViewRect();
+      const fittingPainter = (
+        combat: SalvageSystem | undefined,
+        x: number,
+        y: number,
+        radius: number,
+      ) => {
+        if (
+          x + radius + 30 < view.x ||
+          x - radius - 30 > view.x + view.width ||
+          y + radius + 30 < view.y ||
+          y - radius - 30 > view.y + view.height ||
+          !combat?.weapons.some(
+            (weapon) =>
+              weapon.kind === "plasma-rifle" &&
+              weapon.plasma &&
+              (weapon.plasma.phase === "charging" ||
+                weapon.plasma.phase === "venting") &&
+              weapon.plasma.charge > 0,
+          )
+        )
+          return undefined;
+        return (context: CanvasRenderingContext2D, mount: BuildMount) => {
+          if (mount.part !== "plasma-rifle") return false;
+          const weapon = combat.weapons.find(
+            (item) =>
+              item.mount.key === mount.key && item.kind === "plasma-rifle",
+          );
+          if (!weapon) return false;
+          drawNonEngineFitting(context, mount);
+          context.save();
+          context.scale(1 / BUILD_FLIGHT_SCALE, 1 / BUILD_FLIGHT_SCALE);
+          drawPlasmaRifleCharge(context, plasmaChargeAppearance(weapon.plasma));
+          context.restore();
+          return true;
+        };
+      };
       if (sim.settings.loadout) {
         const weaponAngles = sim.salvage?.angles;
         drawBuild(
@@ -250,6 +297,13 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
           undefined,
           undefined,
           weaponAngles,
+          true,
+          fittingPainter(
+            sim.salvage,
+            sim.ship.pos.x,
+            sim.ship.pos.y,
+            sim.ship.radius,
+          ),
         );
       } else if (stockShip)
         renderer.drawShip(sim.ship, sim.settings.profile.tint, stockShip);
@@ -267,7 +321,12 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
             undefined,
             opponent.combat.angles,
             true,
-            undefined,
+            fittingPainter(
+              opponent.combat,
+              opponent.ship.pos.x,
+              opponent.ship.pos.y,
+              opponent.ship.radius,
+            ),
             "charcoal",
           );
         }
