@@ -34,12 +34,12 @@ const score = {
   fitting: ["ion", "ion", "battery", "light-ion-cannon"],
   stabilizers: true,
   linkedEngines: false,
-  challenge: "ion-storm",
+  challenge: "fires-in-the-sky",
   userId: "pilot",
 };
 function ref(
   user = "pilot",
-  id = "ion-storm_pilot_fighter",
+  id = "fires-in-the-sky_pilot_fighter",
   app = "void-drift",
 ) {
   const context = user
@@ -51,10 +51,18 @@ test("owner can create and improve a score", async () => {
   await assertSucceeds(setDoc(ref(), score));
   await assertSucceeds(setDoc(ref(), { ...score, seconds: 50, score: 80 }));
 });
+test("released Ion Storm clients can still create and improve their scores", async () => {
+  const target = ref("pilot", "ion-storm_pilot_fighter");
+  const oldScore = { ...score, challenge: "ion-storm" };
+  await assertSucceeds(setDoc(target, oldScore));
+  await assertSucceeds(setDoc(target, { ...oldScore, score: 80 }));
+  await assertFails(setDoc(target, { ...score, score: 90 }));
+  await assertFails(setDoc(ref(), { ...oldScore, score: 90 }));
+});
 test("different players can contribute and read the shared board", async () => {
   await assertSucceeds(setDoc(ref(), score));
   await assertSucceeds(
-    setDoc(ref("rival", "ion-storm_rival_scout"), {
+    setDoc(ref("rival", "fires-in-the-sky_rival_scout"), {
       ...score,
       userId: "rival",
       shipId: "scout",
@@ -74,13 +82,15 @@ test("anonymous, cross-owner and wrong namespace writes fail", async () => {
   await assertFails(setDoc(ref(""), score));
   await assertFails(setDoc(ref("rival"), score));
   await assertFails(
-    setDoc(ref("pilot", "ion-storm_pilot_fighter", "other"), score),
+    setDoc(ref("pilot", "fires-in-the-sky_pilot_fighter", "other"), score),
   );
 });
 test("identity and document shape cannot be forged", async () => {
   await assertFails(setDoc(ref("pilot", "wrong"), score));
   await assertFails(setDoc(ref("pilot", "pilot_fighter"), score));
-  await assertFails(setDoc(ref("pilot", "ion-storm_pilot_scout"), score));
+  await assertFails(
+    setDoc(ref("pilot", "fires-in-the-sky_pilot_scout"), score),
+  );
   await assertFails(setDoc(ref(), { ...score, userId: "rival" }));
 });
 test("every field is required and no extra field is accepted", async () => {
@@ -116,7 +126,7 @@ test("seconds hold milliseconds and score has no ceiling", async () => {
     setDoc(ref(), { ...score, seconds: 0.5, score: 100, fitting: [] }),
   );
   await assertSucceeds(
-    setDoc(ref("rival", "ion-storm_rival_fighter"), {
+    setDoc(ref("rival", "fires-in-the-sky_rival_fighter"), {
       ...score,
       userId: "rival",
       seconds: 7200.001,
@@ -134,7 +144,10 @@ test("any ship id is accepted when the document id matches", async () => {
     "future-ship",
   ])
     await assertSucceeds(
-      setDoc(ref("pilot", `ion-storm_pilot_${shipId}`), { ...score, shipId }),
+      setDoc(ref("pilot", `fires-in-the-sky_pilot_${shipId}`), {
+        ...score,
+        shipId,
+      }),
     );
 });
 test("a ruleset the rules do not name is not written", async () => {
@@ -195,7 +208,9 @@ test("scores cannot decrease, be overwritten by another owner, or be deleted", a
 });
 test("reads require authentication and a bounded list query", async () => {
   await assertFails(getDoc(ref("")));
-  await assertFails(getDoc(ref("pilot", "ion-storm_pilot_fighter", "other")));
+  await assertFails(
+    getDoc(ref("pilot", "fires-in-the-sky_pilot_fighter", "other")),
+  );
   await assertFails(
     getDocs(
       query(
@@ -237,7 +252,7 @@ test("reads require authentication and a bounded list query", async () => {
 test("each anonymous identity can keep a best on every ship", async () => {
   for (const userId of ["pilot", "rival"]) {
     for (const shipId of ["wasp", "scout", "fighter", "corvette", "fiddler"]) {
-      const target = ref(userId, `ion-storm_${userId}_${shipId}`);
+      const target = ref(userId, `fires-in-the-sky_${userId}_${shipId}`);
       const current = { ...score, userId, shipId };
       await assertSucceeds(setDoc(target, current));
       await assertSucceeds(

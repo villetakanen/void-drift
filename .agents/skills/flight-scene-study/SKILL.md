@@ -27,6 +27,7 @@ When an in-flight scene is needed, mount `FlightSceneInstrument` with its standa
 
 - Without study controls, use `FlightSceneEmbed.astro`.
 - With controls or painters, use a small Svelte wrapper around `FlightSceneInstrument.svelte`, supplying its `pane` snippet and supported inputs. Mount in `InstrumentBand.astro` with a client directive and a prop.
+- Derive a concise plain-text `summary` from the choices and their units. Pass it to the instrument for selection and copying in the translucent scene readout. Put changing measurements on a separate line.
 - Put shared controls in the pane. Supply conditions and appearance, not another loop or timeline.
 
 Read `apps/web/src/lib/flight-scene/index.ts` and the Zod document schema. Follow supported reactive inputs and replay semantics; mounted `config` edits may not reconfigure it.
@@ -45,4 +46,4 @@ Expose relevant variables with units, bounds, defaults and baselines. Preserve b
 
 Compare relevant states. Keep proposed parameters distinct from accepted qualities. A usable range or an earlier study does not automatically select a default.
 
-Inspect the instrument and pane at widths ≥1280px. Exercise burns, options, keyboard-operated controls, pause and backward seek; check shared consumers after extensions. Distinguish event checks, rendering and designer judgment. Report limits and a review URL. Preserve earlier rounds under design-study's retention rules.
+Inspect the instrument and pane at widths ≥1280px. Change an option and close the pane. Check that the summary reflects the change, can be selected, and wraps clear of the view buttons. Exercise burns, options, keyboard-operated controls, pause and backward seek; check shared consumers after extensions. Distinguish event checks, rendering and designer judgment. Report limits and a review URL. Preserve earlier rounds under design-study's retention rules.

@@ -1,190 +1,37 @@
-# Design studies
+# Study pages in the Lab
 
-Status: reusable workflow. Individual study history is outside the entry contract.
+The Lab publishes design studies at stable URLs. A reader can return to the same
+page during exploration and after closure to see the findings and their evidence.
 
-## Context and ownership
+## Routes and metadata
 
-Conversation produces inspectable design proposals before shared implementation changes.
-This specification owns observable outputs, presentation and decision authority.
-The [design-study skill](../../../../.agents/skills/design-study/SKILL.md) owns how to conduct
-the work; its [exploration guide](../../../../.agents/skills/design-study/references/exploration.md)
-owns creative rounds, feedback, retention and focus. Keep those procedures in their
-owner rather than repeating them here.
+The [study index](../../../../apps/web/src/pages/lab/studies/index.astro) links
+each registered study to `/lab/studies/<slug>` and shows its title, question,
+phase and status. The [registry](../../../../apps/web/src/data/studies.ts)
+validates those fields with Zod. The page filename matches the registered slug.
+Changing phase, status or source format preserves the URL.
 
-## Contract
+## Page source and presentation
 
-- `/lab/studies` lists studies; `/lab/studies/<slug>` provides a stable review URL.
-- `apps/web/src/data/studies.ts` validates metadata with Zod before rendering.
-- Study flight uses the shared Flight scene instrument, fixed burn sequences and
-  its timeline; study options belong in its burger pane. Studies never add manual
-  piloting. Extend shared staging when the experiment needs an unsupported scene.
-- Planet appearance studies use the shared [Planet Inspector](../planet-inspector/spec.md)
-  to inspect surface, spin, Sun-facing light, orbit and world HUD in motion or at a
-  held pose. Ship approaches and contact experiments remain Flight scene work.
-- Experimental styles remain scoped to study components; fixture behavior is labeled.
-- A cycle keeps a stable URL and records significant feedback, decisions and reasons.
-- At the designer's request, a study may be parked as `blocked` on a named
-  dependency. This is a nonterminal status: the page records the useful findings,
-  what is missing and the condition for resuming; the existing end states remain
-  accepted, ruled out and stopped.
-- Decisions recorded in a study hold inside that study. To the project and its specs
-  they are proposals, including scope, slices, values and anything the study calls
-  accepted or decided.
-- Accepted slices are proposals for separate work. The project examines each claim,
-  decides, and writes the decision into a living spec before implementation; the study
-  links to the delivery.
-- For each proposal the project settles two things before any spec or code changes:
-  whether it wants the change, and what the change applies to. A study examines one
-  subject; the project decides whether the change is for that subject or for everything
-  of its kind.
-- Keyboard operation and the narrowest supported window (1280px) are reviewed
-  separately from gameplay feel. The Lab targets 1280px and up; study pages are not
-  checked below that.
+Study pages live in `apps/web/src/pages/lab/studies/`. Open and blocked pages
+can use MDX or Astro and can embed interactive examples. Experimental styles
+are scoped to the example, and simulated or substituted conditions are labeled.
 
-### Cycle zero — current established reality
+[StudyLayout](../../../../apps/web/src/layouts/StudyLayout.astro) supplies the
+study header and navigation back to the index and Lab. Prose has a bounded
+reading width. Figures and examples can use the wider page. The page supports
+keyboard navigation and the Lab’s minimum viewport width of 1280 pixels.
 
-A fresh cycle starts from current implementation, standing principles and explicitly
-adopted decisions. Earlier studies are informative evidence, not contracts: their title,
-recency or recorded acceptance does not automatically carry proposals or questions into
-the new cycle. Prior decisions have authority through adoption into current reality.
-Current-cycle agreements accumulate; revisiting one needs an explicit reason. Earlier
-artifacts remain separately available, and rejected drafts stay out of the new page.
-Cycle zero is context gathering, not a mandatory page section.
+## Closed pages
 
-### Four-part outputs
+A study with status `accepted`, `ruled-out` or `stopped` is published as
+static MDX with versioned media. The MDX renders the findings, their reasons
+and any remaining uncertainty as HTML at build time. Images, recorded clips
+and image sequences can illustrate the evidence. Captions give the conditions
+needed to interpret it.
 
-| Part             | Result                                                                                                                                                                                                    |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 01 / Problem     | Shared purpose, principles, design tension and an answerable question: one object or decision whose answer changes the game concretely, what it holds fixed and leaves open, and adjacent scope explicit. |
-| 02 / Exploration | Concrete examples, useful discoveries, exact accepted variants and settled properties; remaining hypotheses and reference/replay conditions remain explicit.                                              |
-| 03 / Readiness   | Feasibility in the current setting: reusable systems, adaptations, dependencies, risks and unresolved choices, judged against the intended delivery.                                                      |
-| 04 / Scope       | Ordered, independently deliverable slices, affected systems/specs, rough size, dependencies and checks for correctness and fidelity.                                                                      |
-
-Uncertainty is a normal input. Desired intent comes from the design inquiry; current
-code informs feasibility. Evidence must support the claim: visual examples do not by
-themselves establish gameplay consequences. Useful reasoning and agreements survive
-iteration; unsupported future parts are left unfilled.
-
-Scope sizes the work; completing or accepting a study does not implicitly authorize
-implementation. Existing explicit implementation authorization still counts. Publication
-requires separate authorization. Part 03 names the living specs that would need to
-change if the study goes forward, and how. Those are proposed changes; a living spec
-changes when the project decides it does.
-
-**Flag `docs/design.md` changes prominently in part 04, before the slices, and in the
-chat handoff.** Changes to experience principles, non-goals, art direction or brand
-require explicit agreement in the design conversation. Other conclusions belong in their feature spec or code.
-
-### Current study presentation
-
-The deliverable is a design document for designers and agents. Explain what was
-studied, explored, learned and decided, with the reasons, evidence and remaining
-questions needed to continue the work. Synthesize the conversation into statements
-about the design. Requirements, hypotheses, observations and decisions should be
-recognizable from their substance and evidence. Attribute external sources when they
-support a claim; conversational speakers and approval exchanges belong in chat.
-Requirements retain the concrete condition, its consequence and the reasoning behind
-the proposed change, so a future designer can reconsider the decision.
-Decision summaries retain the accepted properties, their reasons and the choices
-that remain provisional; acceptance of one quality does not settle every property
-of its example.
-Review questions, coordination and process evaluation also belong in chat or their
-separate evidence records. The one exception is the question test: section 01 ends
-with its dated result and reason for each metric. Necessary control labels remain on the page. Historical
-conditions and check results are labeled and linked to their specific evidence.
-
-The opening contains exactly one substantive numbered section 01 and an unfilled
-“02 / To be developed after 01”. It explains a concrete situation and the subject's
-central tension. The title identifies the subject, the question names the decision being investigated,
-and the opening adds the concrete situation and reasoning. Repeated framing is merged
-while constraints and uncertainty remain explicit.
-Prose explains intended qualities, constraints or unresolved decisions directly;
-generic announcements that the study will investigate its subject are omitted.
-Investigation plans identify the specific uncertainty they address.
-Normally use two or three short paragraphs or a compact purpose list;
-150–250 words is an editing target, not a quota. Implementation inventories, attribution
-headings and lifecycle reports do not belong in the opening. The button opening
-“Situations before styling” supplies the explanatory progression, not specific choices.
-
-StudyLayout supplies paragraph spacing and bounded prose width; examples can use the
-wider canvas. Parts develop progressively with subject-specific headings and one next
-placeholder, up to 04. Exploration iterations use 02.1, 02.2 and so on. Phase/status
-metadata supports navigation without replacing subject-specific content.
-
-Each exploration round supplies an inspectable example addressing the shared question.
-Explicit requests for conceptual discussion, stopping, preservation or reframing govern;
-actual delivery blockers remain visible. The exploration guide owns replacement and
-retention procedure. Rendered correctness and human usefulness are separate evidence.
-
-### Ending a study
-
-Status stays `open` until the designer settles an end state; the agent may propose one.
-All three end states are successes for the project: they produce implementation scope,
-rule out a direction, or stop an unsuccessful effort while retaining useful evidence.
-A failed study can therefore end successfully for the project. This does not relabel
-the study's design quality or overwrite the designer's assessment of failure.
-
-| End state | Reached after | Leaves behind                                                     |
-| --------- | ------------- | ----------------------------------------------------------------- |
-| Accepted  | 04 / Scope    | Proposed slices for the project to examine and decide on.         |
-| Ruled out | 02 or 03      | Why the concept does not fit the game, recorded on the page.      |
-| Stopped   | Any part      | Evidence of what blocked the study, collected through close-loop. |
-
-A closed study is a durable design record understandable without operating its
-experimental tools. It retains decisions and reasons, useful observations, remaining
-uncertainty and the evidence needed to interpret them. Visual evidence uses static
-images with captions where useful; motion uses recorded clips or sequences when
-stills would lose the relevant behaviour. Retained media belongs in versioned study
-assets, with relevant observation conditions and evidence gaps explicit.
-
-Temporary interactive examples are replaced by those records, and study-specific
-components, scripts and fixtures with no continuing use are removed after checking
-consumers. Shared production systems and reusable Lab instruments are preserved.
-An interactive example remains only for a named continuing purpose recorded on the
-page. The skill owns the capture, cleanup and verification procedure.
-
-## Optional study-quality evaluation — separate from readiness
-
-Use this rubric for a requested factory evaluation or targeted investigation.
-Ordinary studies do not require a separate ratings report; their reasoning, readiness,
-scope and human judgment remain part of the work. When an evaluation is requested,
-store ratings and supporting evidence in a separate linked record, for example
-`/lab/reviews/<study-slug>`. The [evaluation protocol](../../../factory-building-lessons/design-study-evaluation.md)
-is available for deliberate workflow trials. Neither the rubric nor a feasibility
-conclusion authorizes implementation.
-
-| Criterion                  | Success evidence                                                                       | Warning signs                                                                                   |
-| -------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Purpose                    | We share why the design matters, intended experience, and guiding principles.          | The rationale only describes the alpha or repeats the request.                                  |
-| Investigation              | Relevant research, comparisons, or experiments have advanced important unknowns.       | Unknowns become assumptions or questions repeatedly handed back to the designer.                |
-| Alternatives and reasoning | The chosen approach fits the purpose and its accepted tradeoffs are explained.         | Appearance, arbitrary parameters, or the first idea determine the recommendation.               |
-| Evidence fit               | Evidence supports the actual claims and its limitations are explicit.                  | A viewer supposedly proves gameplay quality, or code checks supposedly prove good design.       |
-| Cumulative agreement       | The design preserves reviewed decisions, with reasons for changes of direction.        | Settled points disappear, rejected ideas return without reason, or silence counts as agreement. |
-| Design coherence           | Elements work together in relevant situations and meaningful edge cases.               | Isolated examples look convincing but conflict when composed into an experience.                |
-| Remaining uncertainty      | Unresolved questions, their consequences, and how to investigate them are explicit.    | Important unknowns are hidden or everything is claimed to be solved.                            |
-| Integration implications   | We can identify required changes, what to preserve, and how to assess design fidelity. | Integration requires inventing substantial design decisions that exploration has not addressed. |
-
-For every criterion record **Supported**, **Partial**, or **Unsupported**, with
-links to evidence and explicit gaps. Do not average ratings or infer human acceptance.
-Assess the study's reasoning and usefulness, not whether a future implementation has
-already passed its tests. Record participant feedback separately from the evaluation’s evidence-based
-assessment. Planned checks are not completed evidence.
-
-
-## Scenarios
-
-Given a design question, the study develops a bounded problem and inspectable examples
-at a stable URL, preserving decisions and explicit unknowns as the work progresses.
-
-Given feedback challenges an example, the exploration procedure governs its replacement;
-shared production behavior remains unchanged until implementation is authorized.
-
-Given the designer ends a failed study, its stopped state retains both the failure
-assessment and the project's value in stopping and collecting evidence.
-
-Given section 01 is drafted, a reviewer with no part in the framing tests whether a
-study can answer the question; the result is heard before part 02, and the designer
-may proceed after a fail, which is recorded as overridden.
-
-Given an ordinary study completes, no separate rubric report is required. Given a
-requested factory evaluation, the linked assessment includes evidence and human judgment.
+A reader can follow the record with JavaScript disabled. Its evidence remains
+available without mounting a client component, running a simulation or regenerating
+the example from current game code. Static layout components and native browser
+controls for recordings are compatible with this format. When a blocked study
+appears in the index, its existing page remains available at the same URL.

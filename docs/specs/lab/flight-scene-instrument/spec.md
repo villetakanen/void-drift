@@ -76,6 +76,14 @@ logical screen, drawn at render width 1728 (16:10 at the game's 1080 height).
 Burn and time float over the screen's lower edge and the view switch is at the
 top left.
 
+The scene has a readout at the upper right with a translucent backing. A study
+supplies its current choices as a concise, reactive plain-text `summary`,
+including units. With the menu closed, the reader can select and copy that text
+directly. It wraps within the space beside the view switch and stays clear of
+the scale buttons and menu trigger at every supported Lab size. Changing a
+choice updates the summary. A scene with only appearance labels displays those
+labels. Live measurements may appear beneath the choices.
+
 The shared burger pane occupies the smaller golden-ratio share of its positioned
 CSS container: `1 / φ² ≈ 38.1966%` of the container's width, leaving approximately
 61.8034% of the scene exposed. Its border-box width follows that container on resize,
@@ -247,6 +255,7 @@ tests/review/flight-scene-fidelity.spec.ts`), which writes
 - The document determines which target choices exist.
 - The Lab page offers the document's target choices with its default chosen;
   the component keeps the `data-*` attributes above.
+- After changing a study option and closing the menu, its current value is selectable in the scene readout. Wrapped text leaves every view button exposed and operable. The menu contains the study controls.
 - Without a `pane` the component shows no menu.
 - A pane receives a read-only copy of the document (unit test).
 - The four dated study examples keep rendering on the shared engine.
@@ -385,6 +394,8 @@ snapshot. They decide whether to respond; this input does not automatically
 relight materials. The canonical Flight scene page offers Stock/Warm/Cool.
 `data-star-color` reports the supplied display body colour when present.
 
+
+A study may supply a reactive `loadout` override validated by the document’s existing loadout schema. Changing it rebuilds the simulated ship and replays the selected burn to the current tick in the current view.
 
 ### Atmospheric study light and reactive approach — 16 November 2026
 

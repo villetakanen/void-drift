@@ -79,7 +79,7 @@ The new `void-drift-alpha` project uses Spark, with no billing upgrade. Old SQL 
 migration documents remain historical; scores are not migrated.
 
 - Documents live at `artifacts/void-drift/scores/{CHALLENGE}_{uid}_{shipId}`; `CHALLENGE`
-  (`packages/mode-a/src/schemas/highscore.ts`) is currently `ion-storm`.
+  (`packages/mode-a/src/schemas/highscore.ts`) is `fires-in-the-sky` in the 0.7 release candidate.
 - `CHALLENGE` names the client's ruleset: the simulation, its parameters, and the
   sanctioned ships and parts. A ruleset has one board and never changes once it has one.
   Clients that carry the same ruleset share its board; controls are the client's own.

@@ -12,9 +12,9 @@ remain outside those rules indefinitely. No eventual promotion is promised.
 
 In the current game, Playground makes every catalog ship and compatible part
 available. It keeps the selected flight mode and can enable experimental or
-upcoming world features. Ranked Survival retains the 0.6.0 launch-era gameplay
-rules under `ion-storm`; Playground Survival and the other, unranked modes can
-evolve independently. Public availability does not imply ranked eligibility.
+upcoming world features. The 0.7 release candidate uses the `fires-in-the-sky`
+ranked challenge; Playground Survival and the other, unranked modes can evolve
+independently. Public availability does not imply ranked eligibility.
 
 The player makes one choice: Playground **Off** or **On**.
 
@@ -146,9 +146,9 @@ it does not shoot.
   prototype. Playground is the setting name, and title run status distinguishes
   Playground play from ranked play.
 - E12: Playground Survival uses the deterministic yellow-family star for its
-  seed; ranked Survival retains the 0.6.0 launch-era Sun and gameplay rules.
+  seed; ranked Survival retains the 0.6.0 launch-era Sun.
   Reset and replay retain the captured world-feature selection. Changes confined
-  to unranked play leave `ion-storm` and its leaderboard unchanged.
+  to unranked play leave the ranked challenge and its leaderboard unchanged.
 
 ### Regression guardrails
 

@@ -1,8 +1,7 @@
 # Question test
 
 Run this once section 01 is drafted, before part 02. It asks whether a study can
-answer the question as written. It is not the whole-study evaluation in the study
-contract, and it does not judge the design.
+answer the question as written. It is not the whole-study quality evaluation, and it does not judge the design.
 
 ## The metrics
 
@@ -20,7 +19,7 @@ a finding for the designer to confirm instead of counting it as checked.
 
 - The reviewer has a clean context: no part in the framing conversation and no word
   on the expected result. Read-only. The authoring agent's own check does not count.
-- Input: the study page, its registry entry, the study contract, the study registry
+- Input: the study page, its registry entry, the study registry
   for One subject, and the code. For Grounded the reviewer verifies each fixed item
   and each factual claim in the repository and cites where.
 - Output: one row per metric with a stamp and a reason of one or two sentences, the

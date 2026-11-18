@@ -11,9 +11,9 @@ service cloud.firestore {
      && d.userId == request.auth.uid
      // One rule per ruleset. A new ruleset adds its own rule; this one stays
      // for as long as a released client carries it.
-     && d.challenge == 'ion-storm'
+     && d.challenge in ['ion-storm', 'fires-in-the-sky']
      && d.shipId is string && d.shipId.size() >= 1 && d.shipId.size() <= 32
-     && scoreId == 'ion-storm_' + request.auth.uid + '_' + d.shipId
+     && scoreId == d.challenge + '_' + request.auth.uid + '_' + d.shipId
      && d.initials is string && d.initials.matches('^[A-Z]{3}$')
      // Seconds hold at most three decimals and have no ceiling.
      && d.seconds is number && d.seconds > 0

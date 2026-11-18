@@ -148,11 +148,12 @@ function outside(x: number, y: number) {
 
 /**
  * The one firing gate for every weapon: the ship must hold at least the floor
- * fraction of its capacity (so exactly 10% may fire) and afford the shot.
+ * fraction of its capacity and afford the shot, with more than 10 power available.
  * A refused shot takes no power and starts no cooldown.
  */
 function canFire(resources: Resources, capacity: number, cost: number) {
   return (
+    resources.power > 10 &&
     resources.power + 1e-9 >= capacity * WEAPONS.energyFloor &&
     resources.power + 1e-9 >= cost
   );

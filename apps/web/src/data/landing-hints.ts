@@ -9,7 +9,7 @@ export interface LandingHint {
 export const LANDING_HINTS = [
   {
     kind: "news",
-    text: "0.6.0 — ION STORM brings ion engines and weapons to the fleet.",
+    text: "0.7.0 RC1 — FIRES IN THE SKY introduces a new ranked challenge.",
   },
   {
     kind: "hint",
@@ -17,7 +17,7 @@ export const LANDING_HINTS = [
   },
   {
     kind: "news",
-    text: "The global leaderboard resets with 0.6.0.",
+    text: "Fires in the Sky has its own leaderboard.",
   },
   {
     kind: "lore",

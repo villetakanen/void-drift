@@ -25,7 +25,7 @@ const accepts = (patch: Record<string, unknown>) =>
 describe("leaderboard rows", () => {
   it("excludes scores of other rulesets", () => {
     expect(
-      parseHighScores([score, { ...score, challenge: "arrival-1" }]),
+      parseHighScores([score, { ...score, challenge: "ion-storm" }]),
     ).toEqual([score]);
   });
   it("skips rows that fail the schema instead of failing the board", () => {

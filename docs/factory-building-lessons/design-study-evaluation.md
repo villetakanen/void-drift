@@ -118,6 +118,6 @@ its evidence and human assessment exist. Promote further lessons separately.
 
 The 30 October 2026 clarification separated study-quality evaluation from readiness
 and the fourth part, then called integration. The current
-[four-part contract](../specs/lab/design-studies/spec.md#four-part-outputs) names that part scope
-and owns its outputs. Use that contract when evaluating phase progression; do not
+[design-study skill](../../.agents/skills/design-study/SKILL.md) names that part scope
+and describes its outputs. Use the skill when evaluating phase progression; do not
 maintain a second copy here. Writing scope does not authorize implementation.

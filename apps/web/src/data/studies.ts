@@ -10,6 +10,22 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
   {
+    slug: "background-stars-2026-11-18",
+    title: "Flight starfield",
+    status: "open",
+    phase: "exploration",
+    question:
+      "How should Void Drift render its distant stars so the sky feels like part of the world, with a Sun-like minority you discover as you fly?",
+  },
+  {
+    slug: "plasma-rifle-operation-2026-11-18",
+    title: "Plasma rifle operation",
+    status: "accepted",
+    phase: "scope",
+    question:
+      "How should a fitted plasma rifle commit to a charge and resolve it when a target slips away or stays within reach?",
+  },
+  {
     slug: "plasma-projector-fitting-2026-11-17",
     title: "Plasma Projector · the fitting",
     status: "accepted",

@@ -1,0 +1,133 @@
+---
+layout: ../../../layouts/StudyLayout.astro
+---
+
+<section>
+
+## 01 / Fires in the Sky
+
+The flight background still uses an early field of white discs varied in size and opacity. For the planned 0.7.0 release, *Fires in the Sky*, the distant stars can help the game suggest a world beyond the arena. The field should have enough variety to reward looking at it as you fly, while leaving the ship, nearby bodies and flight cues easy to read.
+
+The release brings plasma engines and weapons into play, and Sun-like stars carry its theme into the background. Hold the study’s G-class share at **6% of the generated field**, drawing on the Milky Way estimate. Their presence should come through over a stretch of flight, as a family of stars you notice here and there. Individual views can contain few or none. What gives them their character depends on how they look in the company of the rest of the field. [NASA, ESA and STScI’s stellar population comparison](https://science.nasa.gov/asset/hubble/comparison-of-g-k-and-m-stars-for-habitability/).
+
+### Hi-fi low-fi starlight
+
+Treat the browser as the machine we write the demo for. Draw simple Canvas marks or cached stamps and use the browser's scaling and blending to shape their light. Period games such as *R-Type* and *Gradius III* inspire us to ask how much character a small mark can carry. Pinpricks, soft edges and optical crosses are starting points for a contemporary treatment. Explore colour, brightness, footprint and falloff across the field, then see which differences make the Sun-like stars discoverable in flight. [Rendering method](/lab/render-model).
+
+### Conditions for comparison
+
+Use the flight renderer's world-anchored field as the reference. Keep its stable placement and full-stage coverage. Compare open dark space and views near bright flight effects at **1×, 2×, 4×, 8× and 16×**. The Planet Inspector maps these to **0.5, 1, 2, 4 and 8 CSS pixels per world unit**. The first four scales also match the current Speed camera, and 16× gives the study a closer inspection stop. [Planet Inspector](/lab/planet-inspector).
+
+Compare the current white-disc field and complete proposed fields along the same camera path. Within each matched view, use the same point positions and G-class assignments across proposals. At extreme wide views the production renderer can switch to a separately seeded coarser grid, so match that grid too if it appears. Use a sequence with enough G-class stars to judge how they emerge in flight, including stretches where none are in view. Nearby stellar bodies belong to the separate [Stellar characters study](/lab/studies/stellar-characters-2026-11-11).
+
+<details id="background-stars-question-test">
+<summary>Question test · 18 November 2026</summary>
+
+| Metric | Result | Reason |
+| --- | --- | --- |
+| One subject | Pass | The distant flight starfield is one subject, and a whole-field comparison can show the Sun-like minority alongside the other stars. The registry assigns nearby stellar bodies to a separate accepted study. |
+| Grounded | Pass with findings | The current white discs, world anchoring, stage coverage, rendering method and zoom scales are supported, and matched flight views can expose the visual choices. The draft leaves the intended status of the release name and 6% share implicit and omits the renderer’s coarse-field fallback. |
+| Consequence | Pass | The answer would change the appearance of the distant flight starfield so pilots can discover a sparse family of Sun-like stars while foreground flight cues stay readable. |
+
+Corrected after the test, not rerun.
+
+</details>
+
+</section>
+
+<section id="starfield-comparison">
+
+## 02.1 / Three ways to draw starlight
+
+Each sketch draws a new sky in Canvas. Sun-like stars are a small minority in each. These stills show the visual ideas at one scale.
+
+### Star cloud
+
+<figure>
+  <img src="/studies/background-stars-2026-11-18/02-1-star-cloud.png" alt="Thousands of faint stars form a broken diagonal band across a mostly dark sky." width="2120" height="800" />
+  <figcaption>A band of fine points gives the sky a large-scale shape. Dark seams divide the light into banks.</figcaption>
+</figure>
+
+### Optical points
+
+<figure>
+  <img src="/studies/background-stars-2026-11-18/02-1-optical-points.png" alt="Widely spaced pinlights with an occasional short, tapered optical cross." width="2120" height="800" />
+  <figcaption>Most stars are pinpoints. A few bright cores throw short, tapered rays that give a sparse sky an optical character.</figcaption>
+</figure>
+
+### Layers of light
+
+<figure>
+  <img src="/studies/background-stars-2026-11-18/02-1-layers-of-light.png" alt="Many dim pinpricks recede behind sharper white and pale gold lights with small halos." width="2120" height="800" />
+  <figcaption>Dim grain, crisp points and a few brighter cores with soft falloff suggest depth across the field.</figcaption>
+</figure>
+
+</section>
+
+<section id="starfield-in-flight">
+
+## 02.2 / Layers of light in motion
+
+A Wasp fires and coasts past the wreckage. Watch the ordinary stars slide behind it, and see whether the gold-edged points register as Sun-like during the pass.
+
+<figure>
+  <video controls playsinline preload="metadata" width="1186" height="740" aria-label="Layers of light during the Wasp flight" poster="/studies/background-stars-2026-11-18/02-2-layers-poster.png" src="/studies/background-stars-2026-11-18/02-2-layers-in-flight.webm"></video>
+  <figcaption>Layers of light, B1 from 0.2 to 6.2 seconds in ship-follow view at 1× (0.5 CSS px/u).</figcaption>
+</figure>
+
+<details>
+<summary>Current sky on the same flight</summary>
+
+<figure>
+  <video controls playsinline preload="metadata" width="1186" height="740" aria-label="Current sky during the same Wasp flight" poster="/studies/background-stars-2026-11-18/02-2-current-poster.png" src="/studies/background-stars-2026-11-18/02-2-current-in-flight.webm"></video>
+</figure>
+
+</details>
+
+### Draw cost at wide zoom
+
+The prototype draws three world-anchored populations in the existing World starfield pass. Faint points are simple discs and brighter stars share three cached glow stamps. A seeded 6% assignment gives G-class stars a near-white core and a gold edge. The clip reached about 520 drawn points. A wider test reached 1,170.
+
+In headless Chrome, the 95th-percentile starfield draw time was **0.10 ms current, 0.40 ms prototype**. For the full frame's JavaScript work it was **1.1 ms current, 1.3 ms prototype**. Each treatment had 480 measured frames at 1728 × 1080 backing pixels and a fixed wide scale of 0.48 backing px/u. The timings cover simulation and issuing Canvas commands. Browser compositing and tablet performance still need measurement.
+
+</section>
+
+<style>{`
+  :is(#starfield-comparison, #starfield-in-flight) figure {
+    margin: var(--spacing-md) 0;
+  }
+  #starfield-comparison img,
+  #starfield-in-flight video {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--color-border);
+  }
+  :is(#starfield-comparison, #starfield-in-flight) figcaption {
+    margin-block: var(--spacing-sm);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-caption);
+  }
+  #starfield-in-flight summary {
+    cursor: pointer;
+  }
+  #background-stars-question-test {
+    max-width: 850px;
+    margin-block: var(--spacing-lg);
+    padding: var(--spacing-md);
+    border: 1px solid var(--color-border);
+  }
+  #background-stars-question-test summary {
+    cursor: pointer;
+  }
+  #background-stars-question-test table {
+    border-collapse: collapse;
+    margin-block: var(--spacing-sm);
+  }
+  #background-stars-question-test :is(th, td) {
+    padding: var(--spacing-sm);
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+    vertical-align: top;
+  }
+`}</style>

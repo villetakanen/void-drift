@@ -274,7 +274,7 @@ promotion remain to be exercised with the designer.
 Design studies develop purpose, explore solutions, then integrate accepted choices.
 Human judgment participates in framing and each substantive iteration as well as
 acceptance. Unknowns are investigation inputs, not necessarily missing requirements.
-The [study contract](../lab/design-studies/spec.md) owns this workflow;
+The [design-study skill](../../../.agents/skills/design-study/SKILL.md) owns this workflow;
 [factory building lessons](../../factory-building-lessons/README.md) record its rationale
 and pending evaluation. The button pilot is integrated; the planetary attempts failed
 and do not establish a validated replacement workflow.

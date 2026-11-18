@@ -106,7 +106,8 @@ onMount(() => {
       {/if}
     </div>
     <p class="score-note">
-      Casual, client-reported scores. Lab trials are unranked.
+      Fires in the Sky · Casual, client-reported scores. Lab trials are
+      unranked.
     </p>
     <div class="button-group-frame">
       <div class="button-group button-group--strip">

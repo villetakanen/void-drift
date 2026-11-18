@@ -39,6 +39,8 @@ let {
   experiment,
   label = "Flight scene: a burn in the game’s layers",
   pane,
+  summary,
+  measurements,
   light,
   targets,
   layers = { world: true, fx: true, lfx: true },
@@ -47,11 +49,14 @@ let {
   planetAppearance,
   starAppearance,
   start,
+  loadout,
 }: {
   /** The configuration document; parsed here, so it may come from anywhere. */
   config: unknown;
   experiment?: FlightExperiment;
   label?: string;
+  summary?: string;
+  measurements?: string;
   /**
    * The menu's content: the controls of the study or Lab page that mounts the
    * instrument. The instrument has none of its own; without a pane there is no
@@ -78,6 +83,7 @@ let {
   starAppearance?: StarAppearance;
   /** Validated initial pose/velocity override; replays the selected burn/time. */
   start?: unknown;
+  loadout?: unknown;
 } = $props();
 
 // The document is read once; the designer's changes are view state. The engine
@@ -91,14 +97,30 @@ const activeParsed = $derived(
   doc
     ? FlightSceneDocumentSchema.safeParse({
         ...doc,
+        loadout: loadout ?? doc.loadout,
         planet: planet ?? doc.planet,
         start: start ?? doc.start,
       })
     : null,
 );
 const activeDoc = $derived(activeParsed?.success ? activeParsed.data : null);
-const planetKey = $derived(
-  JSON.stringify({ planet: activeDoc?.planet, start: activeDoc?.start }),
+const stagingKey = $derived(
+  JSON.stringify({
+    planet: activeDoc?.planet,
+    start: activeDoc?.start,
+    loadout: activeDoc?.loadout,
+  }),
+);
+
+const sceneSummary = $derived(
+  summary?.trim() ||
+    [
+      activeDoc?.planet && planetAppearance?.label,
+      light?.label,
+      experiment?.label,
+    ]
+      .filter(Boolean)
+      .join(" · "),
 );
 
 const SCREEN = { w: 1440, h: 900 };
@@ -155,7 +177,7 @@ onMount(() => {
     targets: untrack(() => staged) as string,
     light: untrack(() => light),
     tuning: untrack(() => JSON.stringify(tuning ?? {})),
-    planet: untrack(() => planetKey),
+    planet: untrack(() => stagingKey),
     appearance: untrack(() => planetAppearance),
     star: "",
     experiment: untrack(() => experiment),
@@ -184,14 +206,14 @@ onMount(() => {
         drawn.targets !== targets ||
         drawn.light !== shownLight ||
         drawn.tuning !== tuned ||
-        drawn.planet !== planetKey ||
+        drawn.planet !== stagingKey ||
         drawn.appearance !== planetAppearance ||
         drawn.star !== JSON.stringify(starAppearance))
     ) {
       if (drawn.experiment !== experiment) scene.setExperiment(experiment);
       if (drawn.tuning !== tuned) scene.setTuning(tuning);
       if (drawn.light !== shownLight) scene.setLight(shownLight);
-      if (drawn.targets !== targets || drawn.planet !== planetKey)
+      if (drawn.targets !== targets || drawn.planet !== stagingKey)
         scene.configure(activeDoc, targets);
       if (drawn.star !== JSON.stringify(starAppearance))
         scene.setStarAppearance(starAppearance);
@@ -210,7 +232,7 @@ onMount(() => {
         targets,
         light: shownLight,
         tuning: tuned,
-        planet: planetKey,
+        planet: stagingKey,
         appearance: planetAppearance,
         star: JSON.stringify(starAppearance),
         experiment,
@@ -252,34 +274,37 @@ onMount(() => {
           label="The game’s layers at the current time"
           visibility={layers}
         />
-        <div class="view">
-          <Toggle
-            label="View"
-            options={viewOptions}
-            bind:value={
-              () => VIEW_LABELS[view],
-              (v) => {
+        <div class="scene-header">
+          <div class="view">
+            <Toggle
+              label="View"
+              options={viewOptions}
+              bind:value={
+                () => VIEW_LABELS[view],
+                (v) => {
   view =
     (Object.keys(VIEW_LABELS) as FlightView[]).find(
       (id) => VIEW_LABELS[id] === v,
     ) ?? view;
 }
-            }
-          />
+              }
+            />
+          </div>
+          {#if sceneSummary || measurements}
+            <div class="study-light">
+              {#if sceneSummary}
+                <p>{sceneSummary}</p>
+              {/if}
+              {#if measurements}
+                <p>{measurements}</p>
+              {/if}
+            </div>
+          {/if}
         </div>
         {#if activeParsed && !activeParsed.success}
           <p class="lost" role="alert">
             Invalid scene staging:
             {activeParsed.error.issues.map((issue) => issue.message).join("; ")}
-          </p>
-        {/if}
-        {#if (planetAppearance && activeDoc?.planet) || light || experiment}
-          <p class="study-light">
-            {planetAppearance && activeDoc?.planet
-              ? planetAppearance.label
-              : ""}{light ? ` · ${light.label}` : ""}{experiment
-              ? ` · ${experiment.label}`
-              : ""}
           </p>
         {/if}
         {#if lost}
@@ -393,15 +418,29 @@ onMount(() => {
   width: 100%;
   height: 100%;
 }
-.view {
+.scene-header {
   position: absolute;
-  left: 16px;
-  top: 16px;
+  inset: 16px 80px auto 16px;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  pointer-events: none;
+}
+.view,
+.study-light {
+  pointer-events: auto;
+}
+.study-light p {
+  margin: 0;
 }
 .study-light {
-  position: absolute;
-  right: 80px;
-  top: 16px;
+  justify-self: end;
+  max-width: min(100%, 62ch);
+  box-sizing: border-box;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  user-select: text;
   margin: 0;
   padding: 8px 12px;
   background: rgb(0 0 0 / 65%);

@@ -82,7 +82,7 @@ own only when its behaviour in flight needs one, as the
 - **Weapons.** Functional weapons fire on their own; there is no fire control on keyboard
   or touch. A weapon draws energy per shot and none while idle.
 - **Weapon energy floor.** No weapon fires while the ship holds less than a
-  tenth of its energy capacity; at exactly a tenth it may fire. Below the floor
+  tenth of its energy capacity; it also requires more than 10 power. Below the floor
   a weapon takes no energy and starts no cooldown, and a shot the remaining
   energy cannot pay for is not fired. Engines and life support still draw below
   the floor.
@@ -107,7 +107,7 @@ own only when its behaviour in flight needs one, as the
 - A storage part raises the ship's energy capacity, and a run starts with
   the whole capacity full.
 - Below a tenth of capacity no weapon fires, draws or starts a cooldown; at
-  exactly a tenth it fires; this holds for every weapon and every capacity.
+  exactly a tenth it may fire only with more than 10 power; this holds for every weapon and every capacity.
 - A held charged engine first thrusts once its charge length has elapsed;
   releasing the input or losing power resets the charge.
 - From rest and at equal ship mass, an ion engine accelerates at its ion

@@ -31,8 +31,8 @@ and labels it `G7 Sun`: a star is named by its type, followed by its name
 if it has one. Ranked Survival retains the existing Sun.
 The study recommends retaining the existing decorative landing Sun; this trial
 supersedes that recommendation for the title scene only. Playground also enables this world-feature trial in Survival; with it Off,
-Survival retains the 0.6.0 launch-era ranked rules under `ion-storm`. The size distribution and field profiles are initial trial
-choices. Field boundaries and visual identity are accepted.
+Survival retains the 0.6.0 launch-era Sun in the `fires-in-the-sky` release
+candidate. The size distribution and field profiles are initial trial choices. Field boundaries and visual identity are accepted.
 See the study's parts 03 and 04 for gaps, ordered slices, verification and the
 version/challenge boundary. Low-yields and other stellar natures are outside
 this delivery.

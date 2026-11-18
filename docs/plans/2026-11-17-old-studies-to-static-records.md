@@ -25,11 +25,11 @@ A converted study:
 
 ## Decisions, 2026-11-17 in conversation
 
-- Closed studies older than five days are converted, oldest first, and the ledger
-  below marks each one. Open studies are not converted; a study gets an end state
-  from the designer first.
-- Age is counted from the ledger's "Added" date to the day the session runs, so
-  later rows become eligible as days pass.
+- The five-day rule schedules conversions in this historic backlog. Take closed
+  ledger entries oldest first once their "Added" date is more than five days
+  before the session date. Open and blocked studies remain outside the queue.
+- Newly closed studies publish as static MDX with versioned media at closure,
+  as specified in [Study pages in the Lab](../specs/lab/design-studies/spec.md#closed-pages).
 - The four stages run in this order: make static, change to MDX, compact, deslop.
 - The deslop pass is done by a reviewer with a clean context.
 
@@ -174,6 +174,9 @@ keep list. Put back anything from the keep list that the reviewer removed. The r
   components and anything another page imports.
 - Run `pnpm lint`, `pnpm test`, `pnpm check:types` and `pnpm build`. A failure in a
   file this conversion did not touch is reported and not fixed.
+- Open the built study URL in a fresh browser context with JavaScript disabled
+  before navigation. Read the findings and captions, check that retained images
+  load, and play any recording the findings rely on using native controls.
 - Record the word count of the rendered record. This is the "after" size.
 - Add the last line to the page: the commit that holds the full version, the path
   of the page in that commit, and the paths of the deleted components.
@@ -182,7 +185,7 @@ keep list. Put back anything from the keep list that the reviewer removed. The r
   message names the study, so the commit is found from the page name.
 
 Check: all four commands pass, or fail only in files this conversion did not touch;
-the page renders; the ledger row is `done`.
+the built record and its evidence are readable with JavaScript disabled; the ledger row is `done`.
 
 ## The prompt
 
@@ -313,29 +316,24 @@ Still open from that run:
   wrote them: "the shared baseline", "feedback framing", and revert and reset
   "placed apart by consequence".
 
-## Parked: `engine-effects`, 2026-11-17
+## Parked conversion of `engine-effects`
 
-Work stopped mid-conversion because git history needs fixing first. Nothing is
-committed. Row 4 stays `in progress` until this is resumed or reverted.
+Row 4 remains `in progress`. Commit `a0e10419` saved the MDX page, all six
+referenced stills and the deletion of the four study-only engine components.
+Resume from the committed page. The original Astro page is at
+`6c2949f8:apps/web/src/pages/lab/studies/engine-effects.astro`. Its rendered
+word count was 1,824.
 
-- Full-version reference: `6c2949f8`, page `apps/web/src/pages/lab/studies/engine-effects.astro`.
-- Rendered words before: 1,824.
-- In the working tree: `engine-effects.astro` deleted (staged) and
-  `engine-effects.mdx` written; stills in `apps/web/public/studies/engine-effects/`
-  (six, untracked); components in `apps/web/src/components/studies/engines/`
-  deleted with `git rm` (staged). Nothing else imported them.
-- Stages 0 to 4 are done. The deslop reviewer rewrote the Question line, which is
-  the registry question quoted verbatim; restore it from the registry. It could
-  not interpret "fluid transformation" and "balanced ship"; resolve them from the
-  full version.
-- Not done: stage 5 checks (lint, test, types, build; a test and type run was
-  interrupted), the "after" word count, the full-version last line, the ledger
-  row, the commit.
-- Not copied from the components: their control instructions, which no longer
-  apply to stills. The one design sentence (a plume can grow again in a turn) is
-  kept.
-- To resume, check that the staged deletions and untracked files above survived
-  the history repair before continuing from stage 5.
+The first four stages ran. Two editorial items remain from review. Restore the
+Question line verbatim from the registry. Check “fluid transformation” and
+“balanced ship” against the original page and apply the stage 4 instructions for
+phrases the source leaves unexplained. The record already retains the observation
+that a plume can grow again in a turn.
+
+Finish stage 5 on the resulting page, including the full-version reference,
+rendered word count, lint, tests, types, build and the JavaScript-disabled check
+of the six stills. Mark row 4 done and commit the remaining conversion changes
+once the checks are complete.
 
 ## Ledger
 

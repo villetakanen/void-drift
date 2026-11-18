@@ -210,7 +210,7 @@ export const PARTS = {
     releaseClass: "scored",
     name: "Light Ion Cannon",
     description:
-      "12–48 damage/s · 3 shots/s · 300-unit reach · 0.2p/shot (0.6p/s sustained). Ship-width forward acquisition; offset cannons may miss.",
+      "12–48 damage/s · 3 shots/s · 300-unit reach · 0.2p/shot (0.6p/s sustained). Ship-width forward acquisition; offset cannons may miss. Fires above 10 power and at least 10% capacity.",
     category: "G",
     mass: 9,
     thrust: 0,
@@ -223,7 +223,7 @@ export const PARTS = {
     releaseClass: "scored",
     name: "Ion Point Defence",
     description:
-      "8–24 damage/s · 3 shots/s · 200-unit reach · 0.1p/shot (0.3p/s sustained). Turns at 180°/s towards the closest target within 300 units.",
+      "8–24 damage/s · 3 shots/s · 200-unit reach · 0.1p/shot (0.3p/s sustained). Turns at 180°/s towards the closest target within 300 units. Fires above 10 power and at least 10% capacity.",
     category: "G",
     mass: 10,
     thrust: 0,
@@ -235,7 +235,7 @@ export const PARTS = {
     releaseClass: "preview",
     name: "Rail gun",
     description:
-      "Automatically fires along the slot when a target approaches its firing line. Heavy hits and recoil; shots can miss. Active in Test flight; fires only while energy is at least 10% of capacity.",
+      "Automatically fires along the slot when a target approaches its firing line. Heavy hits and recoil; shots can miss. Active in Test flight; fires above 10 power and at least 10% capacity.",
     category: "G",
     mass: 15,
     thrust: 0,
@@ -247,7 +247,7 @@ export const PARTS = {
     releaseClass: "preview",
     name: "Laser",
     description:
-      "Short-range rotating pulse laser. Prioritizes incoming debris, then derelicts. Active in Test flight; fires only while energy is at least 10% of capacity.",
+      "Short-range rotating pulse laser. Prioritizes incoming debris, then derelicts. Active in Test flight; fires above 10 power and at least 10% capacity.",
     category: "G",
     mass: 9,
     thrust: 0,
