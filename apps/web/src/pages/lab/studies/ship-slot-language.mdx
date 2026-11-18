@@ -1,0 +1,36 @@
+---
+layout: ../../../layouts/StudyLayout.astro
+---
+
+**Accepted · 31 October 2026.** The study accepted builder-scale language for slot contents, selection and compatibility. It did not accept the placeholder equipment artwork or establish flight readability or fitting behavior.
+
+## Question
+
+How should a slot show what fits, what is installed and what the player can do while keeping the ship readable?
+
+## Accepted direction
+
+A slot is a fixed mounting place; its overlay explains compatibility and which mount is being edited, while the installed item supplies its appearance. Translucent fills keep the hull visible. Four primary states distinguish empty and filled slots, selected or unselected. Selection means editing, not an engine firing. A linked secondary follows its primary and cannot be selected independently; linking is separate from equipment type. Hover and keyboard focus do not change these states.
+
+![Fighter with four slot states and a linked pair](/studies/ship-slot-language/02-1-slot-states.png)
+
+*The default playground showing the four states and linked pair, captured 18 November 2026 using current study and production code; a reconstruction. This later playground uses Q/Equipment and +/Universal; the accepted 02.1 reference used E/W/+ markings. Its frozen component was removed on 5 November 2026 and remains in Git history.*
+
+The accepted 02.1 baseline used a **54 × 64 preview-unit fill**, a **4-unit fill-to-border gap**, a **1.5-unit border** and side mounts at **±26°**. Empty slots used 35% acid-lime fill with void-dark borders; filled slots reversed those colors. Linked dashed borders and connectors followed the same border-color rule. Empty-slot symbols used the border color at 70% opacity; filled slots kept labels but omitted the central symbol. Numbers were ivory on 35% void-dark backing. Vertical type text ran upward from the lower-left corner in the border color without backing. Selected slots used acid-lime corners with a 5-unit gap and zero positional offsets.
+
+The approved compatibility mapping was:
+
+- **E / Engine:** engines, used by side mounts.
+- **W / Weapon:** weapons, available without changing chassis layouts.
+- **Q / Equipment:** weapons and utilities, used by hull mounts.
+- **+ / Universal:** all part categories, used by aft mounts.
+
+The left side was the primary and the right side its linked secondary; a shared side-engine value controlled paired fitting. Internal **G** remained the saved part category for guns, separate from slot taxonomy.
+
+## Where the work went
+
+Slots belong in the builder; flight shows the hull and equipped items without slot overlays. Separate overlay geometry preserves mount positions, nozzle origins and flight forces. The builder uses Canvas and accessible HTML hit targets; one primary is active, with keyboard focus distinct from selection.
+
+The slot contract owns compatibility and `buildMounts` supplies type and link identity. The slot integration preserved existing saves; a later engine-catalog release replaced version-1 storage with version 2. The [closure record](https://github.com/villetakanen/void-drift/blob/2b24c35d/docs/loop-evidence/2026-10-31-ship-slot-language.md) distinguishes the original checks from later verification. Human fidelity review remained separate.
+
+The full study before conversion is in commit `2b24c35d`, at `apps/web/src/pages/lab/studies/ship-slot-language.astro`, with its deleted component `apps/web/src/components/studies/SlotStates.svelte`.

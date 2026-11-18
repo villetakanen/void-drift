@@ -23,7 +23,7 @@ repository observations below. Closure collects evidence; it does not promote le
   settled properties were removed. Number labels were retained after an explicit
   correction to the proposed replacement with vertical text.
 
-Delivered sources: [study](../../apps/web/src/pages/lab/studies/ship-slot-language.astro),
+Delivered sources: [study](../../apps/web/src/pages/lab/studies/ship-slot-language.mdx),
 preserved appearance,
 [builder](../../apps/web/src/components/ShipBuilder.svelte),
 [renderer](../../packages/mode-a/src/lib/build-renderer.ts),

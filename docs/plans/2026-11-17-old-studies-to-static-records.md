@@ -352,7 +352,7 @@ study component or use `client:`.
 | 5   | `heavy-cruiser-slots.astro`                  | 2026-10-30 | 556   | 6    | accepted        | done 2026-11-18 |
 | 6   | `ship-silhouettes.astro`                     | 2026-10-30 | 566   | 10   | stopped         | done 2026-11-18 |
 | 7   | `archive/scout-firefly-rounded-bodies.astro` | 2026-10-31 | 22    | 1    | not in registry | done 2026-11-18 |
-| 8   | `ship-slot-language.astro`                   | 2026-10-31 | 128   | 2    | accepted        | todo            |
+| 8   | `ship-slot-language.astro`                   | 2026-10-31 | 128   | 2    | accepted        | done 2026-11-18 |
 | 9   | `ion-engines-2026-10-31.astro`               | 2026-10-31 | 273   | 7    | accepted        | todo            |
 | 10  | `scout-firefly.astro`                        | 2026-10-31 | 503   | 7    | accepted        | todo            |
 | 11  | `engine-identities.astro`                    | 2026-10-31 | 541   | 15   | accepted        | todo            |
