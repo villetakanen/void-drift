@@ -23,6 +23,7 @@ import {
 import { smokeArtifact } from "./release-smoke.mjs";
 
 const sha = (value) => createHash("sha256").update(value).digest("hex");
+const stableVersion = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
 const json = (path, value) =>
   writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`);
 function git(cwd, ...args) {
@@ -124,6 +125,16 @@ export async function prepareRelease({
     platform: `${process.platform}/${process.arch}`,
   };
   try {
+    for (const file of [
+      "apps/web/package.json",
+      "packages/core/package.json",
+      "packages/mode-a/package.json",
+    ])
+      assert.equal(
+        JSON.parse(readFileSync(resolve(cwd, file), "utf8")).version,
+        report.version,
+        `Workspace version mismatch in ${file}`,
+      );
     const config = releaseFirebaseSchema.parse(
       JSON.parse(readFileSync(resolve(cwd, "firebase.json"), "utf8")),
     );
@@ -157,6 +168,7 @@ export async function prepareRelease({
       { ...env, ...parsed.data },
       resolve(directory, "build.log"),
     );
+    json(resolve(bundle, "public/release.json"), { version: report.version });
     const manifest = artifactManifest(bundle);
     const javascript = Object.keys(manifest.files)
       .filter((file) => file.startsWith("public/") && file.endsWith(".js"))
@@ -210,6 +222,25 @@ export function checkRelease(directory) {
     report.artifactFingerprint,
     "Prepared artifact fingerprint changed",
   );
+  const versionPath = resolve(directory, "bundle/public/release.json");
+  if (existsSync(versionPath)) {
+    const artifactVersion = JSON.parse(
+      readFileSync(versionPath, "utf8"),
+    ).version;
+    assert.equal(
+      artifactVersion,
+      report.version,
+      "Prepared artifact version does not match its report",
+    );
+  } else {
+    // Reports created before release metadata was embedded used 0.6.3.
+    // Continue to verify those saved bundles by their existing file manifest.
+    assert.equal(
+      report.version,
+      "0.6.3",
+      "Prepared artifact has no integrity-bound version metadata",
+    );
+  }
   return report;
 }
 export function publishRelease(
@@ -217,6 +248,10 @@ export function publishRelease(
   { cwd = process.cwd(), deploy = run } = {},
 ) {
   const report = checkRelease(directory);
+  assert(
+    stableVersion.test(report.version),
+    "Production publishing accepts stable SemVer artifacts only",
+  );
   // This command is invoked only after explicit publication authorization.
   const attempt = mkdtempSync(`${resolve(directory)}/publication-`);
   let status = "failed";

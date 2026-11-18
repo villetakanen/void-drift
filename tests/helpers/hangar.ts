@@ -11,3 +11,10 @@ export async function chooseShip(page: Page, name: string) {
 export async function enablePreviewContent(page: Page) {
   await page.getByRole("checkbox", { name: "Playground", exact: true }).check();
 }
+
+/** Prepare unranked Survival so gameplay guards do not depend on a live challenge. */
+export async function usePlaygroundForSurvival(page: Page) {
+  await page.addInitScript(() => {
+    localStorage.setItem("void-drift:experimental", "On");
+  });
+}

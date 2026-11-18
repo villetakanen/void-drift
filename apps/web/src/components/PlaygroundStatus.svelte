@@ -1,12 +1,21 @@
 <script lang="ts">
-let { active, blocked = false }: { active: boolean; blocked?: boolean } =
-  $props();
+let {
+  active,
+  blocked = false,
+  challengePending = false,
+}: {
+  active: boolean;
+  blocked?: boolean;
+  challengePending?: boolean;
+} = $props();
 </script>
 
-{#if blocked || active}
+{#if blocked || active || challengePending}
   <p role="status">
     {#if blocked}
       UNSANCTIONED BUILD<br>PLAYGROUND REQUIRED
+    {:else if challengePending}
+      NEXT CHALLENGE PENDING<br>RANKED PLAY UNAVAILABLE
     {:else}
       PLAYGROUND ACTIVE<br>UNRANKED PLAY
     {/if}

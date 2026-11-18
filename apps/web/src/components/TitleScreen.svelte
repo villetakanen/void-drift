@@ -29,12 +29,14 @@ let {
   experimental,
   disabled = false,
   blockedReason = "",
+  challengePending = false,
 }: {
   onStart: () => void;
   loadout: Loadout;
   experimental: ExperimentalSetting;
   disabled?: boolean;
   blockedReason?: string;
+  challengePending?: boolean;
 } = $props();
 let startButton: HTMLButtonElement;
 let hangarLink: HTMLAnchorElement;
@@ -170,11 +172,12 @@ onMount(() => {
           aria-hidden="true"
         ></canvas>
       </section>
-      {#if blockedReason || experimental === "On"}
+      {#if blockedReason || experimental === "On" || challengePending}
         <div class="playground-status">
           <PlaygroundStatus
             active={experimental === "On"}
-            blocked={Boolean(blockedReason)}
+            blocked={Boolean(blockedReason) && !challengePending}
+            {challengePending}
           />
         </div>
       {/if}

@@ -183,6 +183,10 @@ Publication validates the saved report and every bundle file before invoking Fir
 It deploys a hash-checked copy per attempt so Firebase cache writes leave the saved
 bundle intact. It does not rebuild, take current checkout rules, commit, push or tag.
 Each attempt retains its own deployment log and report. Preparation and `release:check` never publish.
+The production publisher accepts stable versions. A release candidate can be
+prepared and checked locally while its prerelease version blocks deployment.
+A pending challenge is unavailable for ranked play and score access. Its
+Firestore write rule is added when the challenge opens.
 The current deployment configuration supports this project's single Hosting site and
 Firestore rules/indexes; unsupported Hosting options/hooks fail preparation for review.
 

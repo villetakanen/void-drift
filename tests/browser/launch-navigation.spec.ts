@@ -1,9 +1,11 @@
+import { usePlaygroundForSurvival } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 
 test("a completed run returns to title and starts a fresh run", async ({
   page,
 }) => {
   await page.clock.install();
+  await usePlaygroundForSurvival(page);
   await page.addInitScript(() => {
     const random = crypto.getRandomValues.bind(crypto);
     crypto.getRandomValues = ((array: ArrayBufferView) => {

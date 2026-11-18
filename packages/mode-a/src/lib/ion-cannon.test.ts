@@ -86,11 +86,11 @@ describe("Light Ion Cannon", () => {
   });
   it("allocates scarce power in stable mount order", () => {
     const f = fixture();
-    // A two-shot capacity keeps the energy floor below the power left for a shot.
-    f.energy.capacity = 2 * ION_CANNON.energy;
+    // The floor sits just above 10, leaving only one funded shot.
+    f.energy.capacity = 100;
     f.target();
     // Funds one shot, not two.
-    f.resources.power = 1.5 * ION_CANNON.energy;
+    f.resources.power = 10 + ION_CANNON.energy - 0.01;
     f.step();
     expect(f.system.ionDischarges).toBe(1);
     expect(f.system.weapons[0].readyAt).toBeGreaterThan(0);

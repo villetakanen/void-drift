@@ -54,7 +54,9 @@ test("corrupt browser storage recovers to flyable defaults", async ({
     localStorage.setItem("void-drift-builds-v3", '{"broken":true}'),
   );
   await page.goto("/hangar");
-  await expect(page.getByRole("status")).toContainText(/restored/i);
+  await expect(
+    page.getByRole("status").filter({ hasText: /restored/i }),
+  ).toContainText(/restored/i);
   await expect(
     page.getByRole("tab", { name: "Wasp", exact: true }),
   ).toHaveAttribute("aria-selected", "true");

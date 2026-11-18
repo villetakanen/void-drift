@@ -1,3 +1,4 @@
+import { usePlaygroundForSurvival } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 import { expectLit } from "../helpers/thrust-pads";
 
@@ -10,6 +11,7 @@ test("inversion defaults on and an explicit opt-out persists", async ({
   await toggle.uncheck();
   await page.reload();
   await expect(toggle).not.toBeChecked();
+  await usePlaygroundForSurvival(page);
   await page.goto("/");
   await page.getByRole("button", { name: "PRESS START" }).click();
   await page.keyboard.down("ArrowLeft");
@@ -21,6 +23,7 @@ test("inversion defaults on and an explicit opt-out persists", async ({
 test("Options migrates and persists camera preference without changing ranked eligibility", async ({
   page,
 }) => {
+  await usePlaygroundForSurvival(page);
   await page.goto("/settings");
   await page.evaluate(() =>
     localStorage.setItem(
@@ -46,7 +49,7 @@ test("Options migrates and persists camera preference without changing ranked el
   await page.getByRole("button", { name: "PRESS START" }).click();
   await expect(page.locator(".flight-page")).toHaveAttribute(
     "data-ranked",
-    "true",
+    "false",
   );
 });
 
@@ -68,8 +71,8 @@ test("unavailable preference storage leaves options and flight usable", async ({
   });
   await toggle.check();
   await expect(toggle).toBeChecked();
-  await page.goto("/");
-  await page.getByRole("button", { name: "PRESS START" }).click();
+  await page.goto("/hangar");
+  await page.getByRole("button", { name: "Practice", exact: true }).click();
   await expect(page.locator(".flight-page")).toHaveAttribute(
     "data-status",
     "PLAYING",

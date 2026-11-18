@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { ShipProfileIdSchema } from "../lib/schemas/ship-profile";
 import {
   CHALLENGE,
+  CHALLENGE_STATUS,
+  flightLaunchBlock,
   HighScoreSubmissionSchema,
   parseHighScores,
 } from "./highscore";
@@ -76,5 +78,21 @@ describe("score submission", () => {
       expect(HighScoreSubmissionSchema.safeParse(missing).success).toBe(false);
     }
     expect(accepts({ fitting: ["not-a-part"] })).toBe(false);
+  });
+});
+
+describe("pending challenge launch policy", () => {
+  it("blocks ranked Survival while preserving Playground and eligible unranked flights", () => {
+    expect(CHALLENGE_STATUS).toBe("pending");
+    expect(flightLaunchBlock("survival", "Off", true)).toBe(
+      "challenge-pending",
+    );
+    expect(flightLaunchBlock("survival", "On", true)).toBeNull();
+    for (const mode of ["practice", "derelicts", "gauntlet"])
+      expect(flightLaunchBlock(mode, "Off", true)).toBeNull();
+    expect(flightLaunchBlock("practice", "Off", false)).toBe(
+      "playground-required",
+    );
+    expect(flightLaunchBlock("survival", "Off", true, "active")).toBeNull();
   });
 });

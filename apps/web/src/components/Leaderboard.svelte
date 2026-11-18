@@ -4,7 +4,9 @@ let _props: { slot?: string; "client:only"?: string; "client:load"?: boolean } =
   $props();
 
 import {
+  CHALLENGE_UNAVAILABLE,
   type HighScore,
+  isChallengeActive,
   loadHighScores,
   SHIP_IDENTITY,
 } from "@void-drift/mode-a";
@@ -28,6 +30,7 @@ async function load() {
   loading = true;
   error = "";
   try {
+    if (!isChallengeActive()) throw new Error(CHALLENGE_UNAVAILABLE);
     rows = await loadHighScores();
   } catch (e) {
     error = e instanceof Error ? e.message : "Unable to load scores.";

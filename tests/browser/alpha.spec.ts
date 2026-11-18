@@ -2,6 +2,7 @@ import {
   buildStats,
   starterLoadout,
 } from "../../packages/mode-a/src/lib/schemas/loadout";
+import { usePlaygroundForSurvival } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 import { expectLit, padPoint } from "../helpers/thrust-pads";
 
@@ -9,6 +10,7 @@ test("title starts a stock Wasp and keyboard controls reach flight", async ({
   page,
 }) => {
   await page.clock.install();
+  await usePlaygroundForSurvival(page);
   await page.goto("/");
   const deck = page.locator(".flight-page");
   await page.getByRole("button", { name: "PRESS START" }).click();
@@ -39,6 +41,7 @@ test("landscape thrust pads support simultaneous activation, cancellation and fo
   });
   const page = await context.newPage();
   await page.clock.install();
+  await usePlaygroundForSurvival(page);
   await page.goto("/");
   await page.getByRole("button", { name: "PRESS START" }).tap();
   await expect(page.locator(".flight-page")).toHaveAttribute(

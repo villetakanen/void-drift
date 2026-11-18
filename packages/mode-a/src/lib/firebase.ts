@@ -15,10 +15,12 @@ import {
 import { z } from "zod";
 import {
   CHALLENGE,
+  CHALLENGE_UNAVAILABLE,
   type HighScore,
   HighScoreSchema,
   type HighScoreSubmission,
   HighScoreSubmissionSchema,
+  isChallengeActive,
   parseHighScores,
 } from "../schemas/highscore";
 
@@ -54,7 +56,7 @@ function getServices() {
   return services;
 }
 export function scoresAvailable() {
-  return config.success;
+  return isChallengeActive() && config.success;
 }
 export async function ensureAnonymousSession() {
   const { auth } = getServices();
@@ -74,6 +76,7 @@ function withTimeout<T>(promise: Promise<T>): Promise<T> {
   ]).finally(() => clearTimeout(timer));
 }
 export async function loadHighScores(): Promise<HighScore[]> {
+  if (!isChallengeActive()) throw new Error(CHALLENGE_UNAVAILABLE);
   return withTimeout(
     (async () => {
       await ensureAnonymousSession();
@@ -95,6 +98,8 @@ export async function submitHighScore(
 ): Promise<
   { success: true; scoreId: string } | { success: false; error: string }
 > {
+  if (!isChallengeActive())
+    return { success: false, error: CHALLENGE_UNAVAILABLE };
   try {
     const valid = HighScoreSubmissionSchema.parse(submission);
     const scoreId = await withTimeout(
