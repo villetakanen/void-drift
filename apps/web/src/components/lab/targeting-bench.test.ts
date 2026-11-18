@@ -2,12 +2,41 @@ import { buildCollisionRadius, defaultLoadout } from "@void-drift/mode-a";
 import { describe, expect, it } from "vitest";
 import {
   FORMATION_SCALE,
+  TARGETING_CENTER,
   TARGETING_LOOPS,
   TargetingBench,
   type TargetingConfig,
 } from "./targeting-bench";
 
 describe("targeting bench", () => {
+  it("turns only the inner Wasps 60 degrees outward from their flight path", () => {
+    const bench = new TargetingBench({
+      slot1: "light-ion-cannon",
+      slot2: "light-ion-cannon",
+      mode: "sustained",
+    });
+    const [left, outer, inner] = TARGETING_LOOPS;
+    const innerStart = left.count + outer.count;
+    const centerX =
+      TARGETING_CENTER.x + (inner.x - TARGETING_CENTER.x) * FORMATION_SCALE;
+    const centerY =
+      TARGETING_CENTER.y + (inner.y - TARGETING_CENTER.y) * FORMATION_SCALE;
+    for (const advance of [0, 120]) {
+      for (let tick = 0; tick < advance; tick++) bench.step();
+      for (const [index, { ship }] of bench.sim.opponents.entries()) {
+        const tangent = Math.atan2(ship.vel.y, ship.vel.x);
+        const offset = ship.rotation - tangent;
+        if (index < innerStart) {
+          expect(Math.cos(offset)).toBeCloseTo(1);
+          continue;
+        }
+        const radial = Math.atan2(ship.pos.y - centerY, ship.pos.x - centerX);
+        expect(Math.cos(offset)).toBeCloseTo(0.5);
+        expect(Math.cos(ship.rotation - radial)).toBeCloseTo(Math.sqrt(3) / 2);
+      }
+    }
+  });
+
   it("keeps fitted hull collision circles disjoint over every loop phase", () => {
     const weapons = ["light-ion-cannon", "ion-point-defence", "laser"] as const;
     const build = defaultLoadout("wasp");

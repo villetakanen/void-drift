@@ -49,6 +49,7 @@ export const TARGETING_LOOPS = [
     tilt: (Math.PI * 35) / 180,
     speed: 0.16,
     phase: 0,
+    outwardHeading: 0,
   },
   {
     count: 6,
@@ -59,6 +60,7 @@ export const TARGETING_LOOPS = [
     tilt: 0,
     speed: -0.13,
     phase: 0.35,
+    outwardHeading: 0,
   },
   {
     count: 4,
@@ -69,6 +71,7 @@ export const TARGETING_LOOPS = [
     tilt: 0,
     speed: 0.22,
     phase: 0.7,
+    outwardHeading: Math.PI / 3,
   },
 ] as const;
 const SUBSTEP = STEP / 4;
@@ -198,7 +201,9 @@ export class TargetingBench {
           (vx * cosTilt - vy * sinTilt) * FORMATION_SCALE,
           (vx * sinTilt + vy * cosTilt) * FORMATION_SCALE,
         );
-        actor.ship.rotation = Math.atan2(actor.ship.vel.y, actor.ship.vel.x);
+        const tangent = Math.atan2(actor.ship.vel.y, actor.ship.vel.x);
+        actor.ship.rotation =
+          tangent - Math.sign(loop.speed) * loop.outwardHeading;
       }
     }
   }
