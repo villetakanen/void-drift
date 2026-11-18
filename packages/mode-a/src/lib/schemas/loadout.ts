@@ -196,7 +196,7 @@ export const PARTS = {
     name: "Plasma rifle",
     fluff: "Floor is lava, jump!",
     description:
-      "Acquisition-only plasma rifle. Tracks ships and wrecks ahead of its muzzle.",
+      "Charges on ships and wrecks ahead of its muzzle. Releases on a held target and vents if the target escapes.",
     releaseClass: "preview",
     category: "G",
     mass: 24.3,

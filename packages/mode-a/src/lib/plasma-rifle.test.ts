@@ -21,7 +21,7 @@ import {
 } from "./schemas/loadout";
 import { ShipProfileIdSchema } from "./schemas/ship-profile";
 
-describe("observation-only Plasma rifle", () => {
+describe("Plasma rifle fitting", () => {
   it("adds weight through ordinary statistics and round-trips saved fittings", () => {
     const build = defaultLoadout("wasp");
     const mass = buildStats(build).mass;
@@ -48,7 +48,7 @@ describe("observation-only Plasma rifle", () => {
     ).toBe(false);
   });
 
-  it("registers one observation-only mount on every hull", () => {
+  it("registers one rifle mount on every hull", () => {
     for (const chassis of ShipProfileIdSchema.options) {
       const build = defaultLoadout(chassis);
       build.hull[0] = "plasma-rifle";
@@ -59,7 +59,7 @@ describe("observation-only Plasma rifle", () => {
     }
   });
 
-  it("leaves a nearby target, ship forces and energy untouched", () => {
+  it("charges and releases without applying target damage or ship forces", () => {
     const build = defaultLoadout("wasp");
     build.hull = ["plasma-rifle", null];
     const system = new SalvageSystem(build, 2026);
@@ -93,11 +93,12 @@ describe("observation-only Plasma rifle", () => {
       system.step(1 / 120, ship, star, resources, 100, 400, 400, false);
     expect(system.weapons[0].target).toBe(target.id);
     expect(target.hull).toBe(100);
-    expect(resources).toEqual({ hull: 100, power: 100 });
+    expect(resources.power).toBeCloseTo(93);
+    expect(system.plasmaReleases).toBe(1);
     expect(ship.vel).toEqual(new Vec2(0, 0));
     expect(system.events).toEqual([]);
     expect(system.shotsFired).toBe(0);
-    expect(system.energySpent).toBe(0);
+    expect(system.energySpent).toBeCloseTo(7);
   });
 
   it("includes the full fitted silhouette in collision bounds on every hull", () => {

@@ -42,6 +42,9 @@ import {
   type EncounterConfig,
   ION_CANNON,
   ionCannonDamage,
+  PLASMA_RIFLE,
+  type PlasmaRifleCycle,
+  PlasmaRifleCycleSchema,
   POINT_DEFENCE,
   pointDefenceDamage,
   SALVAGE,
@@ -128,6 +131,7 @@ export interface WeaponState {
   readyAt: number;
   target: number | null;
   targetPoint?: { x: number; y: number } | null;
+  plasma?: PlasmaRifleCycle;
   recoil: { remaining: number; angle: number } | null;
 }
 /** First contact between relative linear motion and a circle, including overlap. */
@@ -208,6 +212,8 @@ export class SalvageSystem {
   shotsFired = 0;
   ionDischarges = 0;
   pointDefenceDischarges = 0;
+  plasmaReleases = 0;
+  plasmaVents = 0;
   laserPulses = 0;
   hits = 0;
   /** Point-defence and cannon hits on a wreck or a shard; they score in Survival. */
@@ -255,7 +261,17 @@ export class SalvageSystem {
               angle: mount.angle,
               readyAt: 0,
               target: null,
-              ...(mount.part === "plasma-rifle" ? { targetPoint: null } : {}),
+              ...(mount.part === "plasma-rifle"
+                ? {
+                    targetPoint: null,
+                    plasma: PlasmaRifleCycleSchema.parse({
+                      phase: "idle",
+                      charge: 0,
+                      remaining: 0,
+                      targetId: null,
+                    }),
+                  }
+                : {}),
               recoil: null,
             },
           ]
@@ -911,6 +927,86 @@ export class SalvageSystem {
     this.emit("collision", endX, endY);
     return true;
   }
+  /** Advance one mounted rifle with a single captured acquisition for this substep. */
+  private advancePlasma(
+    weapon: WeaponState,
+    dt: number,
+    resources: Resources,
+    capacity: number,
+  ) {
+    const state = weapon.plasma;
+    if (!state) return;
+    let left = dt;
+    const reserve = Math.max(10, capacity * WEAPONS.energyFloor);
+    while (true) {
+      if (state.phase === "charging" && state.targetId !== weapon.target) {
+        state.phase = "venting";
+        state.remaining = PLASMA_RIFLE.ventSeconds * state.charge;
+        state.targetId = null;
+        this.plasmaVents++;
+      }
+      if (state.phase === "idle") {
+        if (weapon.target === null || left <= 0 || resources.power <= reserve)
+          break;
+        state.phase = "charging";
+        state.targetId = weapon.target;
+      }
+      if (state.phase === "charging") {
+        const chargeTime = (1 - state.charge) * PLASMA_RIFLE.chargeSeconds;
+        const affordableTime =
+          Math.max(0, resources.power - reserve) /
+          PLASMA_RIFLE.chargePowerPerSecond;
+        const consumed = Math.min(left, chargeTime, affordableTime);
+        if (consumed > 0) {
+          const energy = consumed * PLASMA_RIFLE.chargePowerPerSecond;
+          resources.power = Math.max(reserve, resources.power - energy);
+          this.energySpent += energy;
+          state.charge = Math.min(
+            1,
+            state.charge + consumed / PLASMA_RIFLE.chargeSeconds,
+          );
+          left -= consumed;
+        }
+        if (state.charge >= 1 - 1e-9) {
+          state.charge = 1;
+          if (resources.power + 1e-9 >= reserve + PLASMA_RIFLE.releasePower) {
+            resources.power = Math.max(
+              reserve,
+              resources.power - PLASMA_RIFLE.releasePower,
+            );
+            this.energySpent += PLASMA_RIFLE.releasePower;
+            this.plasmaReleases++;
+            state.phase = "firing";
+            state.remaining = PLASMA_RIFLE.firingSeconds;
+          } else break;
+        } else break;
+      }
+      if (
+        state.phase === "firing" ||
+        state.phase === "venting" ||
+        state.phase === "cooldown"
+      ) {
+        const phase = state.phase;
+        const elapsed = Math.min(left, state.remaining);
+        state.remaining = Math.max(0, state.remaining - elapsed);
+        left -= elapsed;
+        if (phase === "venting")
+          state.charge = state.remaining / PLASMA_RIFLE.ventSeconds;
+        if (state.remaining > 1e-9) break;
+        if (phase === "cooldown") {
+          state.phase = "idle";
+          state.targetId = null;
+          state.charge = 0;
+        } else {
+          state.phase = "cooldown";
+          state.remaining = PLASMA_RIFLE.cooldownSeconds;
+          state.charge = 0;
+          state.targetId = null;
+        }
+        if (left <= 1e-9) break;
+      }
+    }
+  }
   /**
    * Power after life support and engines goes to defence weapons (point
    * defences, lasers), then guns (Light Ion Cannons). `weapons` is in
@@ -973,6 +1069,8 @@ export class SalvageSystem {
             capacity,
             planets,
           );
+      } else if (weapon.kind === "plasma-rifle") {
+        this.advancePlasma(weapon, dt, resources, capacity);
       } else if (weapon.kind === "rail")
         this.fireRailOrLaser(
           weapon,

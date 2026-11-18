@@ -15,7 +15,7 @@ An approach that keeps an opponent in front of the rifle should give the pilot t
 
 ### Architecture
 
-The existing Playground fitting supplies the mount and barrel orientation. Mode A registers rifle observations with the [fleet selector](../targeting/spec.md) before ordered weapon execution. Each observation yields a stable body ID and captured centre coordinates, or an empty result for that substep. The selector visits each encounter body once across all requesting mounts. Observing a target spends zero power and produces zero discharges.
+The existing Playground fitting supplies the mount and barrel orientation. Mode A registers rifle observations with the [fleet selector](../targeting/spec.md) before ordered weapon execution. Each observation yields a stable body ID and captured centre coordinates, or an empty result for that substep. The selector visits each encounter body once across all requesting mounts. Acquisition is free. The ordered weapon scheduler uses the observation to advance the mount’s cycle and debit ship power.
 
 ## Contract
 

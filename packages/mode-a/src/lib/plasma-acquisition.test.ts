@@ -202,9 +202,9 @@ describe("Plasma rifle acquisition", () => {
     );
     expect(f.rifle.target).toBe(lower.id);
     expect(f.rifle.targetPoint).toEqual(aim);
-    expect(resources).toEqual({ hull: 100, power: 100 });
+    expect(resources.power).toBeCloseTo(100 - 5 * dt);
     expect(f.ship.vel).toMatchObject(initialVelocity);
-    expect(f.system.energySpent).toBe(0);
+    expect(f.system.energySpent).toBeCloseTo(5 * dt);
     expect(f.system.shots).toEqual([]);
     expect(f.system.events).toEqual([]);
     expect(damage).not.toHaveBeenCalled();
