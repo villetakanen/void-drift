@@ -185,7 +185,7 @@ export const PlasmaVentEventSchema = z.object({
   mountKey: z.string(),
   time: z.number().finite(),
   duration: z.number().positive(),
-  charge: z.number().min(0).max(1),
+  intensity: z.number().min(0).max(1),
   outlets: z.tuple([PlasmaVentOutletSchema, PlasmaVentOutletSchema]),
 });
 export type PlasmaVentEvent = z.infer<typeof PlasmaVentEventSchema>;

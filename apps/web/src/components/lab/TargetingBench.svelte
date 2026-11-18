@@ -392,7 +392,7 @@ onMount(() => {
               <dd>{metrics?.plasmaAirbursts ?? 0}</dd>
             </div>
             <div>
-              <dt>Target-loss vents</dt>
+              <dt>Vent cycles</dt>
               <dd>{metrics?.plasmaVents ?? 0}</dd>
             </div>
             <div>

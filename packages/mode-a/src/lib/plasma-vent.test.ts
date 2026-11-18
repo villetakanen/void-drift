@@ -87,7 +87,34 @@ function mountedFixture(loadout: Loadout, rotation = 0) {
   return { system, ship, resources, targets, step };
 }
 
-describe("plasma target-loss venting", () => {
+describe("paired plasma vents", () => {
+  it("emits identical samples and recoil after a shot and after losing a quarter charge", () => {
+    const shot = mountedFixture(studyWasp());
+    const loss = mountedFixture(studyWasp());
+    shot.step(0.7, [shot.targets[0]]);
+    shot.step(0.7, []);
+    loss.step(1.225, []);
+    loss.step(0.175, [loss.targets[0]]);
+    expect(shot.system.plasmaReleases).toBe(1);
+    expect(loss.system.weapons[0].plasma?.charge).toBeCloseTo(0.25);
+    for (let tick = 0; tick < 72; tick++) {
+      for (const flight of [shot, loss]) {
+        flight.ship.rotation = tick / 100;
+        flight.step(1 / 240, []);
+      }
+      const a = shot.system.plasmaVentEvents[tick];
+      const b = loss.system.plasmaVentEvents[tick];
+      expect(a.intensity).toBeCloseTo(b.intensity, 10);
+      expect(a.time).toBeCloseTo(b.time, 10);
+      expect(a.outlets).toEqual(b.outlets);
+      expect(shot.ship.vel).toEqual(loss.ship.vel);
+    }
+    for (const flight of [shot, loss]) {
+      expect(flight.system.plasmaVentEvents).toHaveLength(72);
+      expect(flight.system.plasmaVents).toBe(1);
+      expect(flight.system.weapons[0].plasma?.phase).toBe("cooldown");
+    }
+  });
   it("moves the fitted Wasp backward by its calibrated 37.5 u/s without turning in ordinary flight", () => {
     const f = freeFlight(14.5);
     f.ticks(Math.round(0.7 / STEP));
@@ -109,7 +136,7 @@ describe("plasma target-loss venting", () => {
     ).toBeCloseTo(0.3, 8);
   });
 
-  it("scales a partial Fighter vent by actual mass and drains only its paid interval", () => {
+  it("scales a partial Fighter vent by actual mass and delivers the full vent interval", () => {
     const build = defaultLoadout("fighter");
     build.aft[0] = "plasma-rifle";
     const heading = Math.PI / 3;
@@ -149,20 +176,20 @@ describe("plasma target-loss venting", () => {
       expect(outlet.vy).toBeCloseTo(midpointVy + 300 * Math.sin(angle), 8);
     }
     // Reintroducing the target leaves venting committed. This step ends in cooldown.
-    f.step(0.2);
+    f.step(0.25);
     expect(rifle.plasma?.phase).toBe("cooldown");
     expect(f.ship.vel.x).toBeCloseTo(
-      vx - acceleration * 0.15 * Math.cos(heading),
+      vx - acceleration * 0.3 * Math.cos(heading),
       8,
     );
     expect(f.ship.vel.y).toBeCloseTo(
-      vy - acceleration * 0.15 * Math.sin(heading),
+      vy - acceleration * 0.3 * Math.sin(heading),
       8,
     );
     expect(f.ship.rotation).toBe(heading);
     expect(
       f.system.plasmaVentEvents.reduce((sum, event) => sum + event.duration, 0),
-    ).toBeCloseTo(0.15, 8);
+    ).toBeCloseTo(0.3, 8);
     expect(f.resources.power).toBeCloseTo(100 - 1.75, 8);
   });
 
@@ -176,7 +203,7 @@ describe("plasma target-loss venting", () => {
     f.step(0.175);
     expect(left.plasma?.charge).toBeCloseTo(0.5);
     expect(right.plasma?.charge).toBeCloseTo(0.25);
-    f.step(0.2, []);
+    f.step(0.3, []);
     expect(f.system.plasmaVents).toBe(2);
     expect(left.plasma?.phase).toBe("cooldown");
     expect(right.plasma?.phase).toBe("cooldown");
@@ -184,15 +211,16 @@ describe("plasma target-loss venting", () => {
     const durations = f.system.plasmaVentEvents
       .map((event) => event.duration)
       .sort((a, b) => a - b);
-    expect(durations[0]).toBeCloseTo(0.075, 8);
-    expect(durations[1]).toBeCloseTo(0.15, 8);
+    expect(durations[0]).toBeCloseTo(0.3, 8);
+    expect(durations[1]).toBeCloseTo(0.3, 8);
     const acceleration =
       (125 * buildStats(studyWasp()).mass) / buildStats(build).mass;
     for (const event of f.system.plasmaVentEvents) {
       const elapsed = event.time - 0.35;
       expect(elapsed).toBeCloseTo(event.duration / 2, 8);
-      const sharedImpulse = acceleration * (elapsed + Math.min(elapsed, 0.075));
-      const mount = event.duration > 0.1 ? left.mount : right.mount;
+      const sharedImpulse = acceleration * elapsed * 2;
+      const mount =
+        event.mountKey === left.mount.key ? left.mount : right.mount;
       const angle = weaponPose(f.ship, mount).angle;
       expect(
         event.outlets[0].vx - 300 * Math.cos(angle - 0.305233),
@@ -201,7 +229,7 @@ describe("plasma target-loss venting", () => {
         event.outlets[0].vy - 300 * Math.sin(angle - 0.305233),
       ).toBeCloseTo(vy, 8);
     }
-    expect(f.ship.vel.x).toBeCloseTo(vx - acceleration * (0.075 + 0.15), 8);
+    expect(f.ship.vel.x).toBeCloseTo(vx - acceleration * 0.6, 8);
     expect(f.ship.vel.y).toBe(vy);
     expect(f.ship.rotation).toBe(0);
   });
@@ -311,14 +339,13 @@ describe("plasma target-loss venting", () => {
     expect(initial.map(({ x, y }) => ({ x, y }))).toEqual(
       sample.outlets.map(({ x, y }) => ({ x, y })),
     );
-    const alpha = Math.min(1, sample.charge + 0.2) * 0.12;
+    const alpha = Math.min(1, sample.intensity + 0.2) * 0.12;
     expect(initial[0]).toMatchObject({ color: "#ff8c32", radius: 1.4 });
     expect(initial[0].alpha).toBeCloseTo(alpha, 8);
     f.ship.pos.set(1500, 780);
     f.ship.rotation += Math.PI / 2;
     f.ship.vel.set(-50, 35);
-    f.step(0.15, []);
-    expect(f.system.plasmaVentEvents).toEqual([sample]);
+    // Inspect the already emitted sample independently of later emissions.
 
     const age = 0.15;
     const cooled = draw(sample.time + age);

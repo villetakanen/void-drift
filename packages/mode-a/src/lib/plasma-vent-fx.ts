@@ -61,7 +61,7 @@ export function drawPlasmaVent(
     const age = now - sample.time;
     if (!style.emit || age < 0 || age >= FUME_LIFETIME) continue;
     const radius = 1.4 + age * 13;
-    const heat = Math.min(1, sample.charge + 0.2);
+    const heat = Math.min(1, sample.intensity + 0.2);
     for (const [side, port] of sample.outlets.entries()) {
       const velocity = style.velocities[side];
       const x = port.x + velocity.vx * age,

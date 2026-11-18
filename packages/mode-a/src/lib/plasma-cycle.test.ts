@@ -66,6 +66,9 @@ describe("Plasma rifle charge cycle", () => {
     expect(rifle.plasma?.phase).toBe("firing");
     expect(f.resources.power).toBeCloseTo(93);
     f.step(substep, []);
+    expect(rifle.plasma?.phase).toBe("venting");
+    expect(f.system.plasmaVents).toBe(1);
+    f.advance(0.3, []);
     expect(rifle.plasma?.phase).toBe("cooldown");
     expect(rifle.plasma?.remaining).toBeCloseTo(2.1);
     f.advance(2.1 - substep);
@@ -134,7 +137,7 @@ describe("Plasma rifle charge cycle", () => {
       f.step(substep, changed);
       expect(rifle.plasma?.phase).toBe("venting");
       expect(f.system.plasmaVents).toBe(1);
-      f.advance(0.15 - 2 * substep);
+      f.advance(0.3 - 2 * substep);
       expect(rifle.plasma?.phase).toBe("venting");
       f.step();
       expect(rifle.plasma?.phase).toBe("cooldown");

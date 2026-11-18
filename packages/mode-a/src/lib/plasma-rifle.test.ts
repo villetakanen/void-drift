@@ -89,7 +89,8 @@ describe("Plasma rifle fitting", () => {
     system.bodies.push(target);
     const resources = { hull: 100, power: 100 };
     const star = createStar("G", 960, 540);
-    for (let i = 0; i < 240; i++)
+    // Observe the eruption before the post-shot vent begins.
+    for (let i = 0; i < 120; i++)
       system.step(1 / 120, ship, star, resources, 100, 400, 400, false);
     expect(system.weapons[0].target).toBe(target.id);
     expect(target.hull).toBe(25);

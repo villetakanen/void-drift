@@ -189,7 +189,7 @@ interface PendingPlasmaVent {
   sample: Pick<GameObject, "pos" | "rotation">;
   start: number;
   duration: number;
-  charge: number;
+  intensity: number;
 }
 /** A body's linear start pose and velocity for one combat substep. */
 function plasmaBodyMotion(body: SalvageBody, dt: number) {
@@ -1044,6 +1044,12 @@ export class SalvageSystem {
     this.emit("collision", endX, endY);
     return true;
   }
+  private startPlasmaVent(state: NonNullable<WeaponState["plasma"]>) {
+    state.phase = "venting";
+    state.remaining = PLASMA_RIFLE.ventSeconds;
+    state.targetId = null;
+    this.plasmaVents++;
+  }
   /** Advance one mounted rifle with a single captured acquisition for this substep. */
   private advancePlasma(
     weapon: WeaponState,
@@ -1060,10 +1066,7 @@ export class SalvageSystem {
     const reserve = Math.max(10, capacity * WEAPONS.energyFloor);
     while (true) {
       if (state.phase === "charging" && state.targetId !== weapon.target) {
-        state.phase = "venting";
-        state.remaining = PLASMA_RIFLE.ventSeconds * state.charge;
-        state.targetId = null;
-        this.plasmaVents++;
+        this.startPlasmaVent(state);
       }
       if (state.phase === "idle") {
         if (weapon.target === null || left <= 0 || resources.power <= reserve)
@@ -1135,18 +1138,18 @@ export class SalvageSystem {
             sample,
             start: midpoint - elapsed / 2,
             duration: elapsed,
-            charge: Math.max(
-              0,
-              state.charge - elapsed / (2 * PLASMA_RIFLE.ventSeconds),
-            ),
+            intensity:
+              (state.remaining - elapsed / 2) / PLASMA_RIFLE.ventSeconds,
           });
+          state.charge *= 1 - elapsed / state.remaining;
         }
         state.remaining = Math.max(0, state.remaining - elapsed);
         left -= elapsed;
-        if (phase === "venting")
-          state.charge = state.remaining / PLASMA_RIFLE.ventSeconds;
         if (state.remaining > 1e-9) break;
-        if (phase === "cooldown") {
+        if (phase === "firing") {
+          state.charge = 0;
+          this.startPlasmaVent(state);
+        } else if (phase === "cooldown") {
           state.phase = "idle";
           state.targetId = null;
           state.charge = 0;
@@ -1206,7 +1209,7 @@ export class SalvageSystem {
         mountKey: vent.mount.key,
         time,
         duration: vent.duration,
-        charge: vent.charge,
+        intensity: vent.intensity,
         outlets: [outlet(left), outlet(right)],
       });
     }
