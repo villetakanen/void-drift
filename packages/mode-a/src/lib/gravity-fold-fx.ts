@@ -24,6 +24,7 @@ import {
   drawPlasmaSpew,
   stampPlasmaSegment,
 } from "./plasma-stream-fx";
+import { drawPlasmaVent } from "./plasma-vent-fx";
 import type { SalvageSystem } from "./salvage";
 import {
   drawIonBeamMark,
@@ -183,6 +184,7 @@ export class FlightFx {
     combat: SalvageSystem,
     time: number,
   ) {
+    drawPlasmaVent(ctx, this.pass, combat, time, false);
     let seen = this.plasmaSeen.get(combat) ?? 0;
     const last = combat.plasmaVisualEvents.at(-1);
     if (!last || (last.id <= seen && time - last.time >= 0.5)) return;
@@ -204,6 +206,7 @@ export class FlightFx {
     combat: SalvageSystem,
     time: number,
   ) {
+    drawPlasmaVent(ctx, this.plasmaLivePass, combat, time, true);
     for (const head of combat.plasmaStreams)
       drawPlasmaSpew(ctx, this.plasmaLivePass, head, 0);
     const last = combat.plasmaVisualEvents.at(-1);
