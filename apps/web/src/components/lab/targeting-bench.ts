@@ -1,13 +1,18 @@
 import {
+  applyBuildEngines,
   buildCollisionRadius,
+  buildDrain,
+  buildPlumeEmitters,
   buildStats,
   createPirate,
   defaultLoadout,
+  LIFE_SUPPORT_DRAIN,
   LoadoutSchema,
   liveShipBody,
   SalvageSystem,
   Simulation,
   STEP,
+  solarCharge,
   stockSettings,
   type TargetingMetrics,
   weaponPose,
@@ -45,7 +50,11 @@ export interface TargetingSummary {
   comparisonsMean: number;
   acquisitionMs: number;
   contactMs: number;
+  acquisitionMsMean: number;
+  contactMsMean: number;
   combatMs: number;
+  adapterMs: number;
+  plumeMs: number;
 }
 function percentile(samples: Sample[], field: keyof Sample) {
   if (!samples.length) return 0;
@@ -57,7 +66,9 @@ function percentile(samples: Sample[], field: keyof Sample) {
 export class TargetingBench {
   readonly sim: Simulation;
   readonly config: TargetingConfig;
+  private readonly fleetStats: ReturnType<typeof buildStats>;
   private readonly samples: Sample[] = [];
+  private readonly tickSamples: { adapterMs: number; plumeMs: number }[] = [];
   private substeps = 0;
   private discharges = 0;
   private readonly counters: TargetingMetrics = {
@@ -71,6 +82,7 @@ export class TargetingBench {
     const loadout = defaultLoadout("wasp");
     loadout.hull = [config.slot1, config.slot2];
     const build = LoadoutSchema.parse(loadout);
+    this.fleetStats = buildStats(build);
     this.sim = new Simulation({
       ...stockSettings("wasp"),
       mode: "gauntlet",
@@ -86,9 +98,10 @@ export class TargetingBench {
       const actor = createPirate(0, i + 1);
       actor.loadout = LoadoutSchema.parse(build);
       actor.ship.radius = buildCollisionRadius(actor.loadout);
+      actor.emitters = buildPlumeEmitters(actor.loadout);
       actor.resources = {
         hull: 100,
-        power: buildStats(actor.loadout).capacity,
+        power: this.fleetStats.capacity,
       };
       actor.combat = new SalvageSystem(actor.loadout, i + 1);
       actor.combat.targetingMetrics = this.counters;
@@ -118,6 +131,8 @@ export class TargetingBench {
     }
   }
   step() {
+    const tickStart = performance.now();
+    let tickCombatMs = 0;
     for (let sub = 0; sub < 4; sub++) {
       this.place((this.substeps + 1) * SUBSTEP);
       Object.assign(this.counters, {
@@ -132,9 +147,53 @@ export class TargetingBench {
       for (let i = 0; i < COUNT; i++) {
         const shooter = this.sim.opponents[i];
         if (shooter.lifecycle === "destroyed") continue;
-        const capacity = buildStats(shooter.loadout).capacity;
+        const { capacity, coils } = this.fleetStats;
+        const input = { leftThruster: true, rightThruster: true, fire: false };
         if (this.config.mode === "sustained")
           shooter.resources.power = capacity;
+        const distance = Math.hypot(
+          shooter.ship.pos.x - this.sim.star.pos.x,
+          shooter.ship.pos.y - this.sim.star.pos.y,
+        );
+        const supplied = Math.max(
+          0,
+          Math.min(
+            capacity,
+            shooter.resources.power +
+              (solarCharge(distance, this.sim.star, coils) -
+                LIFE_SUPPORT_DRAIN) *
+                SUBSTEP,
+          ),
+        );
+        const requested =
+          Math.max(
+            0,
+            buildDrain(
+              shooter.loadout,
+              input,
+              shooter.angularMotion.velocity,
+              SUBSTEP,
+            ) - LIFE_SUPPORT_DRAIN,
+          ) * SUBSTEP;
+        const spent = Math.min(supplied, requested);
+        shooter.resources.power = supplied - spent;
+        const fraction = requested > 0 ? spent / requested : 0;
+        const rotation = shooter.ship.rotation;
+        const vx = shooter.ship.vel.x;
+        const vy = shooter.ship.vel.y;
+        shooter.engineOutput = applyBuildEngines(
+          shooter.ship,
+          shooter.loadout,
+          input,
+          SUBSTEP,
+          fraction > 0,
+          shooter.engineTimers,
+          fraction,
+          shooter.angularMotion,
+        );
+        shooter.ship.vel.set(vx, vy);
+        shooter.ship.rotation = rotation;
+
         const targets = this.sim.opponents.flatMap((target, index) => {
           if (index === i || target.lifecycle === "destroyed") return [];
           return [
@@ -175,6 +234,7 @@ export class TargetingBench {
         target.resources.hull = Math.max(0, target.resources.hull - damage[i]);
         if (target.resources.hull <= 0) target.lifecycle = "destroyed";
       }
+      tickCombatMs += combatMs;
       this.discharges += discharges;
       this.substeps++;
       if (this.substeps > WARMUP) {
@@ -182,7 +242,30 @@ export class TargetingBench {
         if (this.samples.length > WINDOW) this.samples.shift();
       }
     }
+    const plumeStart = performance.now();
+    for (const actor of this.sim.opponents) {
+      if (actor.lifecycle === "destroyed") {
+        actor.plume.clear();
+        for (const emitter of actor.emitters) emitter.output = 0;
+        continue;
+      }
+      // Choreography supplies motion; show the Wasp’s fitted main engine burning.
+      for (const [index, emitter] of actor.emitters.entries())
+        emitter.output = index === 0 ? actor.engineOutput.left : 0;
+      actor.plume.stepMounted(STEP, actor.ship, actor.emitters);
+    }
+    const plumeMs = performance.now() - plumeStart;
     this.sim.ticks++;
+    if (this.substeps > WARMUP) {
+      this.tickSamples.push({
+        adapterMs: Math.max(
+          0,
+          performance.now() - tickStart - tickCombatMs - plumeMs,
+        ),
+        plumeMs,
+      });
+      if (this.tickSamples.length > WINDOW / 4) this.tickSamples.shift();
+    }
   }
   get metrics(): TargetingSummary {
     const ships = this.sim.opponents.filter(
@@ -205,8 +288,23 @@ export class TargetingBench {
         (this.samples.length || 1),
       acquisitionMs: percentile(this.samples, "acquisitionMs"),
       contactMs: percentile(this.samples, "contactMs"),
+      acquisitionMsMean:
+        this.samples.reduce((sum, sample) => sum + sample.acquisitionMs, 0) /
+        (this.samples.length || 1),
+      contactMsMean:
+        this.samples.reduce((sum, sample) => sum + sample.contactMs, 0) /
+        (this.samples.length || 1),
+      adapterMs: this.tickPercentile("adapterMs"),
+      plumeMs: this.tickPercentile("plumeMs"),
       combatMs: percentile(this.samples, "combatMs"),
     };
+  }
+  private tickPercentile(field: "adapterMs" | "plumeMs") {
+    if (!this.tickSamples.length) return 0;
+    const values = this.tickSamples
+      .map((sample) => sample[field])
+      .sort((a, b) => a - b);
+    return values[Math.ceil(values.length * 0.95) - 1];
   }
   get traces() {
     return this.sim.opponents.flatMap((actor) =>

@@ -4,6 +4,7 @@ import {
   drawFlightFrame,
   FlightFx,
   type FlightLayerId,
+  type FlightPass,
   PARTS,
   resizeFlightLayers,
   STEP,
@@ -38,7 +39,20 @@ let running = $state(true);
 let trace = $state(false);
 let metrics = $state<TargetingSummary>();
 let elapsed = $state(0);
+type BrowserSample = {
+  tick: number;
+  interval: number;
+  simulation: number;
+  render: number;
+  fx: number;
+  steps: number;
+};
+let frameP50 = $state(0);
 let frameP95 = $state(0);
+let simulationP95 = $state(0);
+let renderP95 = $state(0);
+let fxP95 = $state(0);
+let stepsMean = $state(0);
 let frameCount = $state(0);
 let reset = $state<() => void>(() => {});
 let changePlayback = $state<() => void>(() => {});
@@ -66,19 +80,41 @@ onMount(() => {
   let last: number | undefined;
   let carry = 0;
   let lastPublished = 0;
-  let frameSamples: { tick: number; interval: number }[] = [];
+  let frameSamples: BrowserSample[] = [];
+  let fxSubmission = 0;
+  const observePass = (pass: FlightPass, duration: number) => {
+    if (pass.layer === "fx") fxSubmission += duration;
+  };
 
   function publish() {
     metrics = encounter.metrics;
     elapsed = encounter.sim.ticks * STEP;
     frameCount = frameSamples.length;
-    frameP95 = percentile(
-      frameSamples.map((sample) => sample.interval),
+    const intervals = frameSamples.map((sample) => sample.interval);
+    frameP50 = percentile(intervals, 0.5);
+    frameP95 = percentile(intervals, 0.95);
+    simulationP95 = percentile(
+      frameSamples.map((sample) => sample.simulation),
       0.95,
     );
+    renderP95 = percentile(
+      frameSamples.map((sample) => sample.render),
+      0.95,
+    );
+    fxP95 = percentile(
+      frameSamples.map((sample) => sample.fx),
+      0.95,
+    );
+    stepsMean = frameCount
+      ? frameSamples.reduce((sum, sample) => sum + sample.steps, 0) / frameCount
+      : 0;
   }
   function paint() {
-    drawFlightFrame({ layers, renderer, camera, sim: encounter.sim, fx });
+    fxSubmission = 0;
+    drawFlightFrame(
+      { layers, renderer, camera, sim: encounter.sim, fx },
+      { observe: observePass },
+    );
     if (trace) {
       const world = layers.world;
       world.save();
@@ -123,14 +159,25 @@ onMount(() => {
       const interval = last === undefined ? 0 : now - last;
       last = now;
       carry += Math.min(interval / 1000, 0.1);
+      const tickBefore = encounter.sim.ticks;
+      const simStart = performance.now();
       while (carry >= STEP) {
         encounter.step();
         carry -= STEP;
       }
+      const renderStart = performance.now();
       paint();
+      const renderEnd = performance.now();
       if (interval > 0 && metrics && encounter.sim.ticks * 4 > metrics.warmup) {
         const tick = encounter.sim.ticks;
-        frameSamples.push({ tick, interval });
+        frameSamples.push({
+          tick,
+          interval,
+          steps: tick - tickBefore,
+          simulation: renderStart - simStart,
+          render: renderEnd - renderStart,
+          fx: fxSubmission,
+        });
         while (
           frameSamples.length &&
           (tick - frameSamples[0].tick) * 4 >= metrics.window
@@ -229,39 +276,38 @@ onMount(() => {
     </div>
   </div>
 
-  <div class="body">
-    <figure>
-      <div class="stage">
-        <FlightLayers
-          bind:canvases
-          label="Sixteen fitted Wasps flying in a circle"
-        />
-      </div>
-      <figcaption>
-        <span
-          >{mode === "sustained"
-            ? "Hulls protected · power replenished"
-            : "Live hull damage · finite power"}</span
-        >
-        <label for="target-traces"
-          >Target traces
-          <Switch
-            id="target-traces"
-            disabled={!ready}
-            bind:checked={
-              () => trace,
-              (value) => {
+  <section class="body" aria-label="Targeting measurements">
+    <div>
+      <figure>
+        <div class="stage">
+          <FlightLayers
+            bind:canvases
+            label="Sixteen fitted Wasps flying in a circle"
+          />
+        </div>
+        <figcaption>
+          <span
+            >{mode === "sustained"
+              ? "Hulls protected · power replenished"
+              : "Live hull damage · finite power"}</span
+          >
+          <label for="target-traces"
+            >Target traces
+            <Switch
+              id="target-traces"
+              disabled={!ready}
+              bind:checked={
+                () => trace,
+                (value) => {
   trace = value;
   resetFrameTiming();
 }
-            }
-          />
-        </label>
-      </figcaption>
-    </figure>
-    <aside aria-label="Targeting measurements">
-      <h2>Encounter</h2>
-      <dl>
+              }
+            />
+          </label>
+        </figcaption>
+      </figure>
+      <dl class="fleet" aria-label="Encounter">
         <div>
           <dt>Active Wasps</dt>
           <dd>{metrics?.ships ?? "—"}</dd>
@@ -279,8 +325,10 @@ onMount(() => {
           <dd>{elapsed.toFixed(1)} s</dd>
         </div>
       </dl>
+    </div>
+    <aside aria-label="Performance timings">
       <h2>Acquisition work</h2>
-      <p>Fleet mean per combat substep</p>
+      <p>Mean per fleet substep</p>
       <dl>
         <div>
           <dt>Body visits</dt>
@@ -291,24 +339,68 @@ onMount(() => {
           <dd>{metrics?.samples ? metrics.comparisonsMean.toFixed(2) : "—"}</dd>
         </div>
       </dl>
-      <h2>Timing</h2>
-      <p>p95 · milliseconds</p>
+      <h2>Combat substep</h2>
+      <p>Fleet time · milliseconds</p>
       <dl>
         <div>
-          <dt>Acquisition / substep</dt>
+          <dt>Acquisition p95</dt>
           <dd>{metrics?.samples ? ms(metrics.acquisitionMs) : "—"}</dd>
         </div>
         <div>
-          <dt>Contact / substep</dt>
+          <dt>Acquisition mean</dt>
+          <dd>{metrics?.samples ? ms(metrics.acquisitionMsMean) : "—"}</dd>
+        </div>
+        <div>
+          <dt>Contact p95</dt>
           <dd>{metrics?.samples ? ms(metrics.contactMs) : "—"}</dd>
         </div>
         <div>
-          <dt>Combat / substep</dt>
-          <dd>{metrics?.samples ? ms(metrics.combatMs) : "—"}</dd>
+          <dt>Contact mean</dt>
+          <dd>{metrics?.samples ? ms(metrics.contactMsMean) : "—"}</dd>
         </div>
         <div>
-          <dt>Frame interval</dt>
+          <dt>Combat p95</dt>
+          <dd>{metrics?.samples ? ms(metrics.combatMs) : "—"}</dd>
+        </div>
+      </dl>
+      <h2>Simulation tick</h2>
+      <p>p95 · milliseconds per tick</p>
+      <dl>
+        <div>
+          <dt>Encounter preparation</dt>
+          <dd>{metrics?.samples ? ms(metrics.adapterMs) : "—"}</dd>
+        </div>
+        <div>
+          <dt>Engine plumes</dt>
+          <dd>{metrics?.samples ? ms(metrics.plumeMs) : "—"}</dd>
+        </div>
+      </dl>
+      <h2>Browser frame</h2>
+      <p>p95 · milliseconds per callback</p>
+      <dl>
+        <div>
+          <dt>Full simulation</dt>
+          <dd>{frameCount ? ms(simulationP95) : "—"}</dd>
+        </div>
+        <div>
+          <dt>Canvas submission</dt>
+          <dd>{frameCount ? ms(renderP95) : "—"}</dd>
+        </div>
+        <div>
+          <dt>↳ Persistent FX passes</dt>
+          <dd>{frameCount ? ms(fxP95) : "—"}</dd>
+        </div>
+        <div>
+          <dt>Frame interval p50</dt>
+          <dd>{frameCount ? ms(frameP50) : "—"}</dd>
+        </div>
+        <div>
+          <dt>Frame interval p95</dt>
           <dd>{frameCount ? ms(frameP95) : "—"}</dd>
+        </div>
+        <div>
+          <dt>Ticks / frame (mean)</dt>
+          <dd>{frameCount ? stepsMean.toFixed(2) : "—"}</dd>
         </div>
       </dl>
       {#if metrics}
@@ -319,9 +411,21 @@ onMount(() => {
           warm-up substeps. Zero can indicate idle work or browser timer
           precision.
         </p>
+        <details>
+          <summary>Timing scopes</summary>
+          <p>
+            Each tick advances four combat substeps. Full simulation includes
+            all ticks processed in the callback and the encounter setup for
+            each. Preparation includes scripted motion, power, body adapters and
+            sampling overhead. Persistent FX passes are part of Canvas
+            submission. Frame intervals include browser scheduling; Canvas
+            submission times end before asynchronous raster and compositing
+            finish. FX passes include plume and weapon light.
+          </p>
+        </details>
       {/if}
     </aside>
-  </div>
+  </section>
 </section>
 
 <style>
@@ -385,6 +489,9 @@ figcaption {
   color: var(--color-text-muted);
   font-size: var(--font-size-caption);
 }
+summary {
+  cursor: pointer;
+}
 aside {
   padding: var(--spacing-md);
   border: 1px solid var(--color-border);
@@ -405,18 +512,36 @@ dl {
 }
 dl + h2,
 .sample {
-  padding-top: var(--spacing-md);
-  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
   border-top: 1px solid var(--color-border-subtle);
 }
 dl div {
   display: flex;
   justify-content: space-between;
   gap: var(--spacing-xs);
-  padding: 0.14rem 0;
+  padding: 0.07rem 0;
 }
 dd {
   margin: 0;
   font-variant-numeric: tabular-nums;
+}
+.fleet {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--color-border-subtle);
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+}
+.fleet div {
+  display: grid;
+  gap: 0;
+}
+.fleet dt {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+}
+.fleet dd {
+  font-size: var(--font-size-label);
 }
 </style>

@@ -21,7 +21,7 @@ Sixteen fitted Wasps fly at even intervals around one ring in clear space. Their
 
 Two fitting controls choose the weapon in each of the Wasp's two combat mounts for the entire fleet. Available choices use working, slot-compatible production weapons. Two Light Ion Cannons give 32 forward guns, a cannon and Ion Point Defence give 16 of each, and two Ion Point Defences give 32 turrets. A fitting change or reset starts the chosen workload from the same initial state, clears expired effects and discards earlier timing samples.
 
-The bench owns the choreography, camera framing and test conditions. It passes current body geometry, velocity, identities, shooter exclusions and fitted mount poses to the production weapon scheduler at production combat step duration. Turrets turn, guns acquire and fire, power is debited, weapons cool down, and the first physical contact determines damage under flight rules. The production flight frame and layer passes draw the actual Wasp builds, mounted weapons, barrel headings, beams and contact effects. A bench overlay can show observed targeting decisions; it cannot supply decisions to the simulation.
+The bench owns the choreography, camera framing and test conditions. It passes current body geometry, velocity, identities, shooter exclusions and fitted mount poses to the production weapon scheduler at production combat step duration. Turrets turn, guns acquire and fire, power is debited, weapons cool down, and the first physical contact determines damage under flight rules. The production flight frame and layer passes draw the actual Wasp builds, mounted weapons, barrel headings, engine plumes, beams and contact effects. Each live Wasp runs a reproducible burn through its fitted engine emitter and production plume update and drawing passes. Scripted kinematics preserve the ring while those effects run. A destroyed Wasp ceases engine emission. A bench overlay can show observed targeting decisions; it cannot supply decisions to the simulation.
 
 ### Constraints
 
@@ -32,15 +32,20 @@ The bench owns the choreography, camera framing and test conditions. It passes c
 
 ### Definition of Done
 
-Report active ships and mounts, firing activity, acquisition body visits, candidate/request comparisons, acquisition time, physical-contact time, whole combat or simulation time, and presented frame interval. Label timing scopes and units, sample count or window, and whether counts are per substep or totals. Compare p95 values over an identified sampling window after warm-up. Sum visits and comparisons across the fleet for a complete combat substep. The current selector may make many visits per body; report its actual work. An eventual one-pass selector visits at most 16 candidate bodies per populated substep in this ring. Different pivot comparisons can still exceed 16.
+Report active ships and mounts, firing activity, acquisition body visits, candidate/request comparisons, acquisition time, physical-contact time, whole combat or simulation time, and animation callback interval. Label timing scopes and units, sample count or window, and whether counts are per substep or totals. Compare p95 values over an identified sampling window after warm-up. Sum visits and comparisons across the fleet for a complete combat substep. The current selector may make many visits per body; report its actual work. An eventual one-pass selector visits at most 16 candidate bodies per populated substep in this ring. Different pivot comparisons can still exceed 16.
+
+Time encounter preparation, including creation of shooter-specific body adapters, separately from the production weapon scheduler. Acquisition and physical-contact timings are included in total combat CPU time. Report plume update time and whole flight-frame drawing CPU time, including its FX pass contribution. Label the timed pass coverage where a pass draws multiple effects. Frame interval measures the time between animation callbacks. The browser may rasterize and present later. The FX submission measurement covers the persistent FX layer passes. Live light (LFX) and layer clearing contribute to the whole Canvas submission measurement. Samples must identify whether they cover one fleet substep, a simulation tick or a rendered frame. Nested measurements and separately calculated percentiles do not add up to an elapsed frame.
 
 Read counters where production code actually examines candidates and resolves contacts. Measurements of weapon work exclude ring choreography, instrumentation UI and rendering, with frame interval reported separately. Target trace overlays start off and can be switched on for diagnosis. Reset the samples when workload conditions change. Record compared fitting, workload, revision, build configuration, device and browser with any retained baseline so later runs are comparable.
+
+A comparison attributing a frame difference to selection alone keeps contact, firing, camera, visible ship counts and plume/weapon effects matched. One possible control replays target selections and aim points previously captured from the same deterministic substeps while normal firing, contact and rendering continue. Verify matching discharge, contact, live-ship and active-emitter counts before interpreting a difference. A run with weapons disabled measures the combined cost of removing shots and their effects. When a matched control is unavailable, report the observed scopes and leave any whole-frame attribution open.
 
 ### Regression Guardrails
 
 - The normal Lab entry opens a moving ring with 16 Wasps and 32 fitted combat mounts. Both fitting choices alter actual mounted execution and visible weapon drawings.
 - In sustained fire each of the three comparison fits produces live discharges across the fleet and measurable selection work while 16 ships remain available. In live damage a destroyed ship drops from subsequent acquisition and the population readout changes.
 - A turret can lock an eligible neighbor other than its predecessor. A target absent from the current roster cannot be offered on the next substep. Overlays and camera position have no effect on the simulated choices.
+- A live-ring frame renders fitted engine light and exhaust with the weapon effects. Trace visibility and the choice of weapon mix preserve the prescribed engine workload for each surviving ship.
 - A reset with the same settings reproduces geometry, initial resources and combat outcomes at equal simulated time. Timing samples belong only to the selected run.
 - The timing view distinguishes repeated candidate visits from per-request comparisons. Adding turrets cannot be reported as evidence of a single pass unless the visit counts come from the selector itself.
 
@@ -51,6 +56,7 @@ Scenario: Benchmark 16 turrets and 16 fixed guns
   Given the two fleet fittings are Ion Point Defence and Light Ion Cannon
   When sustained fire advances through warm-up and measurement
   Then 16 live Wasps operate 32 production mounts
+  And fitted main engines visibly emit their production plumes
   And the readout reports measured visits, comparisons, discharge activity and timings
 
 Scenario: A ship is destroyed during a live run
