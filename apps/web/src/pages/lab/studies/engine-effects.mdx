@@ -9,8 +9,7 @@ plumes, output-based size, and the provisional 750 directional cutoff.
 
 ## Question
 
-How can engine effects make flight look flashy and graphic through shaped
-surfaces, glow and fluid transformation?
+How can engine effects turn flying into a flashy graphic performance through shaped surfaces, glow, and fluid transformation?
 
 The visual reference was the late-nineties and early-two-thousands vector art and
 effects era: flashy, graphic and sharply composed. Here “vector” means surfaces,
@@ -122,3 +121,5 @@ Commit `97190680` shipped the fading plumes and the thrust cutoff in release
 `packages/core/src/lib/effects/engine-plume.ts`. The effects spec,
 `docs/specs/factory/effects/spec.md`, and the engine taper section of
 `docs/specs/game/world/gravity-field/spec.md` state the intent.
+
+The full study before conversion is in commit `6c2949f8`, at `apps/web/src/pages/lab/studies/engine-effects.astro`, with its components `apps/web/src/components/studies/engines/EngineEffects.svelte`, `PlumeLifecycle.svelte`, `TailComparison.svelte`, and `ThrustPlume.svelte`.
