@@ -449,10 +449,12 @@ export class Simulation {
       if (this.settings.mode === "gauntlet")
         for (const planet of this.planets) updatePlanetOrbit(planet, STEP / 4);
       const previousX = this.ship.pos.x,
-        previousY = this.ship.pos.y;
+        previousY = this.ship.pos.y,
+        previousRotation = this.ship.rotation;
       const opponentPrevious = this.opponents.map((pirate) => ({
         x: pirate.ship.pos.x,
         y: pirate.ship.pos.y,
+        rotation: pirate.ship.rotation,
       }));
       if (this.settings.mode === "practice" && !this.settings.loadout)
         this.state.resources.power = 100;
@@ -674,13 +676,17 @@ export class Simulation {
             (actor) => actor.lifecycle !== "arriving",
           );
           const needsRoster =
-            arrivalsComplete &&
-            ((playerCanFire && !!this.salvage?.needsWeaponRoster(STEP / 4)) ||
-              this.opponents.some(
-                (actor, index) =>
-                  piratesCanFire[index] &&
-                  actor.combat.needsWeaponRoster(STEP / 4),
-              ));
+            !!this.salvage?.plasmaStreams.length ||
+            this.opponents.some(
+              (actor) => actor.combat.plasmaStreams.length > 0,
+            ) ||
+            (arrivalsComplete &&
+              ((playerCanFire && !!this.salvage?.needsWeaponRoster(STEP / 4)) ||
+                this.opponents.some(
+                  (actor, index) =>
+                    piratesCanFire[index] &&
+                    actor.combat.needsWeaponRoster(STEP / 4),
+                )));
           // One set of physical adapters is shared for this combat substep.
           const roster = needsRoster
             ? [
@@ -730,10 +736,14 @@ export class Simulation {
                   aimId: 900000,
                 });
             }
-          if (this.salvage)
+          if (this.salvage) {
+            this.salvage.plasmaContactEvents.length = 0;
             this.salvage.targetingMetrics = this.targetingMetrics;
-          for (const actor of this.opponents)
+          }
+          for (const actor of this.opponents) {
+            actor.combat.plasmaContactEvents.length = 0;
             actor.combat.targetingMetrics = this.targetingMetrics;
+          }
           const acquisitions = acquireFleetTargets(
             roster,
             requests,
@@ -754,11 +764,30 @@ export class Simulation {
               undefined,
               { shooterId: 900000 },
               acquisitions.get(this.salvage),
+              { x: previousX, y: previousY, rotation: previousRotation },
+            );
+          } else if (this.salvage?.plasmaStreams.length) {
+            this.salvage.stepPlasmaStreams(
+              STEP / 4,
+              this.star,
+              this.planets,
+              roster,
+              900000,
             );
           }
           for (let index = 0; index < this.opponents.length; index++) {
             const pirate = this.opponents[index];
-            if (!arrivalsComplete || !piratesCanFire[index]) continue;
+            if (!arrivalsComplete || !piratesCanFire[index]) {
+              if (pirate.combat.plasmaStreams.length)
+                pirate.combat.stepPlasmaStreams(
+                  STEP / 4,
+                  this.star,
+                  this.planets,
+                  roster,
+                  900001 + index,
+                );
+              continue;
+            }
             pirate.combat.stepWeapons(
               STEP / 4,
               pirate.ship,
@@ -770,6 +799,7 @@ export class Simulation {
               undefined,
               { shooterId: 900001 + index, aimId: 900000 },
               acquisitions.get(pirate.combat),
+              opponentPrevious[index],
             );
             pirate.weaponEvents = pirate.combat.events;
             pirate.weapons = pirate.combat.weapons;
@@ -793,6 +823,7 @@ export class Simulation {
           Math.hypot(this.ship.pos.x - previousX, this.ship.pos.y - previousY) >
             1200,
           this.planets,
+          previousRotation,
         );
       }
       if (

@@ -49,6 +49,8 @@ export const SalvageBodySchema = SalvagePhysicalStateSchema.extend({
   y: z.number(),
   previousX: z.number(),
   previousY: z.number(),
+  sweepEndX: z.number().optional(),
+  sweepEndY: z.number().optional(),
   vx: z.number(),
   vy: z.number(),
   radius: z.number().positive(),
@@ -131,6 +133,8 @@ export const PlasmaRifleSchema = z.object({
   firingSeconds: z.literal(0.7),
   ventSeconds: z.literal(0.3),
   cooldownSeconds: z.literal(2.1),
+  streamSpeed: z.literal(750),
+  streamLifetime: z.literal(0.4),
 });
 export const PLASMA_RIFLE = PlasmaRifleSchema.parse({
   range: 130,
@@ -142,6 +146,8 @@ export const PLASMA_RIFLE = PlasmaRifleSchema.parse({
   firingSeconds: 0.7,
   ventSeconds: 0.3,
   cooldownSeconds: 2.1,
+  streamSpeed: 750,
+  streamLifetime: 0.4,
 });
 export const PlasmaRifleCycleSchema = z.object({
   phase: z.enum(["idle", "charging", "firing", "venting", "cooldown"]),
@@ -150,6 +156,25 @@ export const PlasmaRifleCycleSchema = z.object({
   targetId: z.number().int().nullable(),
 });
 export type PlasmaRifleCycle = z.infer<typeof PlasmaRifleCycleSchema>;
+export const PlasmaStreamSchema = z.object({
+  mountKey: z.string(),
+  x: z.number().finite(),
+  y: z.number().finite(),
+  vx: z.number().finite(),
+  vy: z.number().finite(),
+  heading: z.number().finite(),
+  age: z.number().nonnegative(),
+  launchTime: z.number().finite(),
+});
+export type PlasmaStream = z.infer<typeof PlasmaStreamSchema>;
+export const PlasmaContactSchema = z.object({
+  mountKey: z.string(),
+  bodyId: z.number().int(),
+  x: z.number().finite(),
+  y: z.number().finite(),
+  time: z.number().finite(),
+});
+export type PlasmaContact = z.infer<typeof PlasmaContactSchema>;
 /** Ion Point Defence: closest-target turret with the cannon's instant ray family. */
 export const PointDefenceSchema = z.object({
   reach: z.literal(200),
