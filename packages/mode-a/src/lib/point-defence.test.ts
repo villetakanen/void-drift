@@ -273,7 +273,7 @@ describe("Ion Point Defence", () => {
     expect(cannon.readyAt).toBe(0);
   });
 
-  it("lets a gun see the world its defence shot left", () => {
+  it("fires a captured cannon volley after point defence destroys its trigger", () => {
     const f = fixture((b) => {
       b.hull[0] = "light-ion-cannon";
       b.hull[1] = PART;
@@ -285,6 +285,7 @@ describe("Ion Point Defence", () => {
     expect(f.system.ionTrigger(f.ship, f.star, f.planets)).toBe(true);
     f.step();
     expect(f.system.pointDefenceDischarges).toBe(1);
-    expect(f.system.ionDischarges).toBe(0);
+    expect(fragment.hull).toBe(0);
+    expect(f.system.ionDischarges).toBe(1);
   });
 });

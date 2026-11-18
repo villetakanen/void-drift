@@ -361,6 +361,29 @@ onMount(() => {
           <dd>{metrics?.samples ? metrics.comparisonsMean.toFixed(2) : "—"}</dd>
         </div>
       </dl>
+      <details>
+        <summary>Selection detail</summary>
+        <dl>
+          <div>
+            <dt>Active requests</dt>
+            <dd>
+              {metrics?.samples ? metrics.activeRequestsMean.toFixed(2) : "—"}
+            </dd>
+          </div>
+          <div>
+            <dt>Material tests</dt>
+            <dd>
+              {metrics?.samples ? metrics.materialTestsMean.toFixed(2) : "—"}
+            </dd>
+          </div>
+          <div>
+            <dt>Visibility tests</dt>
+            <dd>
+              {metrics?.samples ? metrics.visibilityTestsMean.toFixed(2) : "—"}
+            </dd>
+          </div>
+        </dl>
+      </details>
       <h2>Combat substep</h2>
       <p>Fleet time · milliseconds</p>
       <dl>

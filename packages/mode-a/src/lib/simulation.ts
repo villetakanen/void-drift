@@ -54,7 +54,7 @@ import {
   PRACTICE_VENUS_RADIUS,
   PRACTICE_VENUS_TRAVEL_SPEED,
 } from "./practice-venus";
-import type { WeaponEvent, WeaponState } from "./salvage";
+import type { TargetingMetrics, WeaponEvent, WeaponState } from "./salvage";
 import {
   contactTime,
   type FlightTickInput,
@@ -82,6 +82,7 @@ import {
   SURVIVAL_ENCOUNTER,
 } from "./schemas/salvage";
 import type { ShipProfileId } from "./schemas/ship-profile";
+import { acquireFleetTargets } from "./targeting";
 import { ATMOSPHERE_TUNING, GRAVITY_TUNING } from "./tuning";
 import {
   applyYellowFamilyProfile,
@@ -159,6 +160,8 @@ export function labSettings(id: ShipProfileId = "fighter"): FlightSettings {
   });
 }
 export class Simulation {
+  /** Optional cumulative acquisition/contact measurements for this simulation. */
+  targetingMetrics?: TargetingMetrics;
   solarCollectionRate = 0;
   solarDamageRate = 0;
   readonly settings: FlightSettings;
@@ -709,6 +712,36 @@ export class Simulation {
                 ),
               ]
             : [];
+          const requests = [];
+          if (this.salvage && arrivalsComplete && playerCanFire)
+            requests.push({
+              system: this.salvage,
+              ship: this.ship,
+              shooterId: 900000,
+            });
+          if (arrivalsComplete)
+            for (let index = 0; index < this.opponents.length; index++) {
+              const actor = this.opponents[index];
+              if (piratesCanFire[index])
+                requests.push({
+                  system: actor.combat,
+                  ship: actor.ship,
+                  shooterId: 900001 + index,
+                  aimId: 900000,
+                });
+            }
+          if (this.salvage)
+            this.salvage.targetingMetrics = this.targetingMetrics;
+          for (const actor of this.opponents)
+            actor.combat.targetingMetrics = this.targetingMetrics;
+          const acquisitions = acquireFleetTargets(
+            roster,
+            requests,
+            this.star,
+            this.planets,
+            STEP / 4,
+            this.targetingMetrics,
+          );
           if (this.salvage && arrivalsComplete && playerCanFire) {
             this.salvage.stepWeapons(
               STEP / 4,
@@ -720,6 +753,7 @@ export class Simulation {
               roster,
               undefined,
               { shooterId: 900000 },
+              acquisitions.get(this.salvage),
             );
           }
           for (let index = 0; index < this.opponents.length; index++) {
@@ -735,6 +769,7 @@ export class Simulation {
               roster,
               undefined,
               { shooterId: 900001 + index, aimId: 900000 },
+              acquisitions.get(pirate.combat),
             );
             pirate.weaponEvents = pirate.combat.events;
             pirate.weapons = pirate.combat.weapons;
@@ -745,7 +780,8 @@ export class Simulation {
         this.salvage &&
         this.settings.loadout &&
         this.settings.mode !== "gauntlet"
-      )
+      ) {
+        this.salvage.targetingMetrics = this.targetingMetrics;
         this.salvage.step(
           STEP / 4,
           this.ship,
@@ -758,6 +794,7 @@ export class Simulation {
             1200,
           this.planets,
         );
+      }
       if (
         this.settings.mode !== "practice" &&
         Math.hypot(this.ship.pos.x - 960, this.ship.pos.y - 540) <

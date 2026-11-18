@@ -49,6 +49,7 @@ import {
   type WeaponEvent,
   WeaponEventSchema,
 } from "./schemas/salvage";
+import { acquireFleetTargets, type WeaponAcquisition } from "./targeting";
 
 export type { WeaponEvent } from "./schemas/salvage";
 
@@ -110,6 +111,9 @@ export interface TargetingMetrics {
   comparisons: number;
   acquisitionMs: number;
   contactMs: number;
+  activeRequests?: number;
+  materialTests?: number;
+  visibilityTests?: number;
 }
 
 export interface WeaponState {
@@ -214,12 +218,14 @@ export class SalvageSystem {
   private trajectoryState: number;
   private readonly recoilAcceleration: number;
   private readonly ionAcquisitionWidth: number;
+  readonly loadoutChassis: Loadout["chassis"];
   constructor(
     loadout: Loadout,
     seed: number,
     ion: AssembledIonSettings = ASSEMBLED_ION_DEFAULTS,
     private readonly encounter: EncounterConfig = ENCOUNTER,
   ) {
+    this.loadoutChassis = loadout.chassis;
     this.ionAcquisitionWidth =
       CHASSIS[loadout.chassis].width * BUILD_FLIGHT_SCALE;
     this.randomState = seed >>> 0;
@@ -369,7 +375,7 @@ export class SalvageSystem {
       wreck.rotation = heading + Math.PI / 2;
     this.bodies.push(wreck);
   }
-  private cast(
+  cast(
     body: SalvageBody,
     x: number,
     y: number,
@@ -546,7 +552,7 @@ export class SalvageSystem {
       this.emit("impact", body.x, body.y);
     }
   }
-  private lineClear(
+  lineClear(
     x: number,
     y: number,
     endX: number,
@@ -576,60 +582,6 @@ export class SalvageSystem {
           1,
         ) === Infinity,
     );
-  }
-  private targetLaser(
-    weapon: WeaponState,
-    ship: GameObject,
-    star: Star,
-    planets: readonly Planet[],
-  ) {
-    const pose = weaponPose(ship, weapon.mount, weapon.angle);
-    const started = this.targetingMetrics ? performance.now() : 0;
-    const candidates = (this.aimingBodies ?? this.weaponBodies)
-      .flatMap((body) => {
-        if (this.targetingMetrics) this.targetingMetrics.bodyVisits++;
-        if (!this.acquisitionEligible(body)) return [];
-        if (this.targetingMetrics) this.targetingMetrics.comparisons++;
-        const distance = Math.hypot(body.x - pose.x, body.y - pose.y);
-        if (
-          body.kind === "cell" ||
-          body.hull <= 0 ||
-          distance > WEAPONS.laser.range ||
-          !this.lineClear(pose.x, pose.y, body.x, body.y, star, planets)
-        )
-          return [];
-        const threat =
-          body.kind === "fragment"
-            ? this.cast(
-                body,
-                ship.pos.x,
-                ship.pos.y,
-                ship.vel.x - body.vx,
-                ship.vel.y - body.vy,
-                ship.radius,
-                WEAPONS.laser.threatHorizon,
-              )
-            : Infinity;
-        const priority = Number.isFinite(threat)
-          ? 0
-          : body.kind === "wreck"
-            ? 1
-            : 2;
-        return [{ body, priority, order: priority === 0 ? threat : distance }];
-      })
-      .sort(
-        (a, b) =>
-          a.priority - b.priority || a.order - b.order || a.body.id - b.body.id,
-      );
-    const first = candidates[0];
-    const retained = candidates.find(
-      (candidate) => candidate.body.id === weapon.target,
-    );
-    if (this.targetingMetrics)
-      this.targetingMetrics.acquisitionMs += performance.now() - started;
-    return retained && retained.priority === first?.priority
-      ? retained.body
-      : first?.body;
   }
   /** Instant physical contact. Presentation may query this without applying damage. */
   ionContact(
@@ -707,17 +659,6 @@ export class SalvageSystem {
     if (this.targetingMetrics)
       this.targetingMetrics.acquisitionMs += performance.now() - started;
     return triggered;
-  }
-  /** Ready cannons and the trigger are captured once per update; hits cannot cancel this volley. */
-  private ionVolley(ship: GameObject, star: Star, planets: readonly Planet[]) {
-    const ready = new Set(
-      this.weapons.filter(
-        (w) => w.kind === "light-ion-cannon" && this.time + 1e-9 >= w.readyAt,
-      ),
-    );
-    return ready.size && this.ionTrigger(ship, star, planets)
-      ? ready
-      : new Set<WeaponState>();
   }
   /** One volley cannon; returns false once power cannot fund it, stopping the rest of the volley. */
   private fireIonCannon(
@@ -897,9 +838,10 @@ export class SalvageSystem {
     resources: Resources,
     capacity: number,
     planets: readonly Planet[],
+    acquisition: WeaponAcquisition,
   ) {
-    const target = this.pointDefenceTarget(weapon, ship, star, planets);
-    weapon.target = target?.body.id ?? null;
+    const target = acquisition.targets.get(weapon);
+    weapon.target = target?.id ?? null;
     if (!target) return funded;
     const pivot = weaponPose(ship, weapon.mount, weapon.angle);
     // Relative to the ship: a turning ship is cancelled within the turn-rate limit.
@@ -976,6 +918,7 @@ export class SalvageSystem {
     resources: Resources,
     capacity: number,
     planets: readonly Planet[],
+    acquisition: WeaponAcquisition,
   ) {
     let turretsFunded = true;
     for (const weapon of this.weapons)
@@ -989,6 +932,7 @@ export class SalvageSystem {
           resources,
           capacity,
           planets,
+          acquisition,
         );
       else if (weapon.kind === "laser")
         this.fireRailOrLaser(
@@ -999,12 +943,16 @@ export class SalvageSystem {
           resources,
           capacity,
           planets,
+          acquisition,
         );
-    const volley = this.ionVolley(ship, star, planets);
     let cannonsFunded = true;
     for (const weapon of this.weapons)
       if (weapon.kind === "light-ion-cannon") {
-        if (cannonsFunded && volley.has(weapon))
+        if (
+          cannonsFunded &&
+          acquisition.cannon &&
+          this.time + 1e-9 >= weapon.readyAt
+        )
           cannonsFunded = this.fireIonCannon(
             weapon,
             ship,
@@ -1022,6 +970,7 @@ export class SalvageSystem {
           resources,
           capacity,
           planets,
+          acquisition,
         );
   }
   /** Laser and rail keep their own acquisition; the shared energy floor gates the shot. */
@@ -1033,12 +982,13 @@ export class SalvageSystem {
     resources: Resources,
     capacity: number,
     planets: readonly Planet[],
+    acquisition: WeaponAcquisition,
   ) {
     if (weapon.kind !== "rail" && weapon.kind !== "laser") return;
     const config = WEAPONS[weapon.kind];
-    let target: SalvageBody | undefined;
+    let target: Pick<SalvageBody, "id" | "x" | "y"> | undefined;
     if (weapon.kind === "laser") {
-      target = this.targetLaser(weapon, ship, star, planets);
+      target = acquisition.targets.get(weapon);
       weapon.target = target?.id ?? null;
       if (target) {
         const base = weaponPose(ship, weapon.mount, weapon.angle);
@@ -1232,6 +1182,7 @@ export class SalvageSystem {
     targets: SalvageBody | readonly SalvageBody[],
     aimTargets?: readonly SalvageBody[],
     policy?: { shooterId: number; aimId?: number },
+    acquisition?: WeaponAcquisition,
   ) {
     const targetList = Array.isArray(targets) ? targets : [targets];
     this.time += dt;
@@ -1244,7 +1195,26 @@ export class SalvageSystem {
     this.shooterId = policy?.shooterId ?? null;
     this.aimId = policy?.aimId ?? null;
     try {
-      this.fireWeapons(dt, ship, star, resources, capacity, planets);
+      const selected =
+        acquisition ??
+        acquireFleetTargets(
+          this.weaponBodies,
+          [
+            {
+              system: this,
+              ship,
+              shooterId: policy?.shooterId,
+              aimId: policy?.aimId,
+              aimTargets,
+            },
+          ],
+          star,
+          planets,
+          0,
+          this.targetingMetrics,
+        ).get(this);
+      if (!selected) throw new Error("Missing weapon acquisition");
+      this.fireWeapons(dt, ship, star, resources, capacity, planets, selected);
       this.activeBodies = null;
 
       this.shots = this.shots.filter((shot) => {
@@ -1363,7 +1333,16 @@ export class SalvageSystem {
       )
         this.destroy(body, "environment");
     }
-    this.fireWeapons(dt, ship, star, resources, capacity, planets);
+    const acquisition = acquireFleetTargets(
+      this.bodies,
+      [{ system: this, ship }],
+      star,
+      planets,
+      0,
+      this.targetingMetrics,
+    ).get(this);
+    if (!acquisition) throw new Error("Missing weapon acquisition");
+    this.fireWeapons(dt, ship, star, resources, capacity, planets, acquisition);
     for (const weapon of this.weapons) {
       if (!weapon.recoil) continue;
       const duration = Math.min(dt, weapon.recoil.remaining);

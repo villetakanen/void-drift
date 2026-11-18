@@ -49,4 +49,16 @@ The Gauntlet and ring pass the same live ship adapters to every participating sh
 
 A deterministic comparison on the local Lab covered twin cannons, twin turrets, mixed cannon/turret and twin lasers under both workloads. Ten checkpoints per configuration at 30-tick intervals matched the pre-roster revision `9a5be059` for per-ship hull, power, lifecycle, discharges, target IDs, angles, cooldowns and active plume counts. The mixed-material compatibility path temporarily attaches shared ship references to a shooter's owned body list so successive shots see newly released fragments.
 
-Next, capture each mount's trigger or aim point before ordered discharge, then evaluate all registered requests during one fleet traversal. Include the dense wreck workload when setting the CPU budget. Gauntlet's live ship adapter uses the supplied start-of-substep position for instantaneous queries; settle the sampling instant explicitly in a moving-target case before changing that behavior.
+### Fleet selection verification
+
+The ring, Gauntlet and salvage encounters now capture mount decisions before ordered discharge. A headed Chromium comparison interleaved five runs of each revision in one browser. Each run warmed up for 120 ticks and measured 240. The table reports the median run mean for CPU simulation without rendering. The baseline is `2916d3f8`.
+
+| Workload                               | Acquisition body visits, before → after |         Simulation CPU, before → after | Discharges, both builds |
+| -------------------------------------- | --------------------------------------: | -------------------------------------: | ----------------------: |
+| 16 Wasps, 32 turrets                   |                    512 → 16 per substep | 0.263 → 0.180 ms per four-substep tick |                     544 |
+| Two turrets, 8 wrecks and 56 fragments |                    128 → 64 per substep |           0.084 → 0.057 ms per substep |                       7 |
+| Two turrets, empty encounter           |                                   0 → 0 |          ~0.001 ms per substep in both |                       0 |
+
+In a separate 1440 × 960 rendered ring run, the bench reported 16 visits, 480 eligible comparisons, 0.020 ms mean acquisition per substep and a 9.2 ms p95 frame interval. All 32 mounts were active with production plumes and traces off. Dense material timing covers turret selection. The empty scene is at browser timer resolution.
+
+Across four weapon fits in sustained and live workloads, both revisions produced the same discharge totals and survivor counts after 300 ticks. Some intermediate turret state hashes differed. Exact replay equivalence and a Gauntlet CPU budget remain unverified. The next measurement should use an active Gauntlet encounter and compare target IDs and aim angles at the first divergent tick before setting a production budget or starting plasma work.

@@ -195,8 +195,9 @@ function distanceToPolygon(
   poly: readonly Point[],
 ): { distance: number; point: Point } {
   let inside = true,
-    best = Infinity,
-    point = poly[0];
+    bestSquared = Infinity,
+    closestX = poly[0].x,
+    closestY = poly[0].y;
   for (let i = 0; i < poly.length; i++) {
     const a = poly[i],
       b = poly[(i + 1) % poly.length];
@@ -207,14 +208,21 @@ function distanceToPolygon(
       t = len
         ? Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / len))
         : 0;
-    const q = { x: a.x + t * dx, y: a.y + t * dy },
-      d = Math.hypot(p.x - q.x, p.y - q.y);
-    if (d < best) {
-      best = d;
-      point = q;
+    const x = a.x + t * dx;
+    const y = a.y + t * dy;
+    const offsetX = p.x - x;
+    const offsetY = p.y - y;
+    const squared = offsetX * offsetX + offsetY * offsetY;
+    if (squared < bestSquared) {
+      bestSquared = squared;
+      closestX = x;
+      closestY = y;
     }
   }
-  return { distance: inside ? 0 : best, point };
+  return {
+    distance: inside ? 0 : Math.sqrt(bestSquared),
+    point: { x: closestX, y: closestY },
+  };
 }
 type Bounds = { x: number; y: number; radius: number };
 const bounds = new WeakMap<object, Bounds>();

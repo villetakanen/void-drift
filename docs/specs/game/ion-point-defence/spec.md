@@ -56,7 +56,7 @@ without a storage migration. The [Hangar](../hangar/spec.md) and
   energy is never a candidate. A candidate needs an unobstructed segment from the
   pivot to that closest point; star and planet circles block it.
 - The aim point is that closest point. The closest candidate is selected; equal
-  distances resolve to the lower object id.
+  distances resolve to the lower object id. The fleet acquisition pass captures the target identity and aim point for each pivot before any ship fires.
 - A turret retains its current target while it remains a candidate, unless another
   candidate is at least 10 units closer. Each turret chooses independently.
 - Candidates are tracked without firing until the barrel's first contact from the

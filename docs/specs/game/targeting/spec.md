@@ -15,7 +15,7 @@ All active ships obtain their mounted weapon targets from one acquisition pass o
 
 ### Architecture
 
-`packages/mode-a/src/lib/simulation.ts` owns encounter membership and the combat clock. `packages/mode-a/src/lib/salvage.ts` owns mounted weapon acquisition, aiming, funding and contact resolution. The acquisition pass consumes a common encounter view before individual weapons execute. `packages/mode-a/src/lib/derelict-collision.ts` supplies the reference geometry for wrecks and fragments. Weapon-specific thresholds belong to the owning weapon contracts.
+`packages/mode-a/src/lib/simulation.ts` owns encounter membership and the combat clock. `packages/mode-a/src/lib/salvage.ts` owns mounted weapon acquisition, aiming, funding and contact resolution. The fleet selector in `packages/mode-a/src/lib/targeting.ts` consumes a common encounter view before individual weapons execute. `packages/mode-a/src/lib/derelict-collision.ts` supplies the reference geometry for wrecks and fragments. Weapon-specific thresholds belong to the owning weapon contracts.
 
 The encounter supplies live body identities, geometry, motion, occluders and the intended opponents for each shooter. Each active firing or tracking rule supplies its origin, orientation, reach and previous target where applicable. Idle point defence can track while it cools. An empty Practice encounter and a ship carrying only disabled fittings require no acquisition work.
 

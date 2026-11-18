@@ -11,7 +11,7 @@ review_done: true
 
 ### Context
 
-The Targeting bench at `/lab/targeting` measures the cost of real mounted weapons choosing and firing on moving ships. It opens from the Lab Tools group on viewports at least 1280 CSS pixels wide. Its controlled encounter makes the same work repeatable across fittings and targeting revisions. The [targeting contract](../../game/targeting/spec.md) defines the intended single-pass algorithm. The bench also runs the current production selector so its cost can be measured before that algorithm changes.
+The Targeting bench at `/lab/targeting` measures the cost of real mounted weapons choosing and firing on moving ships. It opens from the Lab Tools group on viewports at least 1280 CSS pixels wide. Its controlled encounter makes the same work repeatable across fittings and targeting revisions. The [targeting contract](../../game/targeting/spec.md) defines the intended single-pass algorithm. The bench measures the production selector across all shooters under a reproducible load.
 
 ### Architecture
 
@@ -32,7 +32,7 @@ The bench owns the choreography, camera framing and test conditions. It passes c
 
 ### Definition of Done
 
-Report active ships and mounts, firing activity, acquisition body visits, candidate/request comparisons, acquisition time, physical-contact time, whole combat or simulation time, and animation callback interval. Label timing scopes and units, sample count or window, and whether counts are per substep or totals. Compare p95 values over an identified sampling window after warm-up. Sum visits and comparisons across the fleet for a complete combat substep. The current selector may make many visits per body; report its actual work. An eventual one-pass selector visits at most 16 candidate bodies per populated substep in this ring. Different pivot comparisons can still exceed 16.
+Report active ships and mounts, firing activity, acquisition body visits, candidate/request comparisons, acquisition time, physical-contact time, whole combat or simulation time, and animation callback interval. Label timing scopes and units, sample count or window, and whether counts are per substep or totals. Compare p95 values over an identified sampling window after warm-up. Sum visits and comparisons across the fleet for a complete combat substep. The fleet selector visits at most 16 candidate bodies per populated substep in this ring. The selection detail readout reports mean active requests, exact material tests and visibility tests over the same window. Different pivot comparisons can still exceed 16.
 
 Time encounter preparation, including creation of the shared ship adapters, separately from the production weapon scheduler. Acquisition and physical-contact timings are included in total combat CPU time. Report plume update time and whole flight-frame drawing CPU time, including its FX pass contribution. Label the timed pass coverage where a pass draws multiple effects. Frame interval measures the time between animation callbacks. The browser may rasterize and present later. The FX submission measurement covers the persistent FX layer passes. Live light (LFX) and layer clearing contribute to the whole Canvas submission measurement. Samples must identify whether they cover one fleet substep, a simulation tick or a rendered frame. Nested measurements and separately calculated percentiles do not add up to an elapsed frame.
 

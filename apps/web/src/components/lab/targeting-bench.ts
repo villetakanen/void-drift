@@ -1,4 +1,5 @@
 import {
+  acquireFleetTargets,
   applyBuildEngines,
   buildCollisionRadius,
   buildDrain,
@@ -54,6 +55,9 @@ export interface TargetingSummary {
   comparisons: number;
   bodyVisitsMean: number;
   comparisonsMean: number;
+  activeRequestsMean: number;
+  materialTestsMean: number;
+  visibilityTestsMean: number;
   acquisitionMs: number;
   contactMs: number;
   acquisitionMsMean: number;
@@ -65,9 +69,17 @@ export interface TargetingSummary {
   rosterBuildsMean: number;
   adaptersMean: number;
 }
+function mean(samples: Sample[], field: keyof Sample) {
+  return samples.length
+    ? samples.reduce((sum, sample) => sum + (sample[field] ?? 0), 0) /
+        samples.length
+    : 0;
+}
 function percentile(samples: Sample[], field: keyof Sample) {
   if (!samples.length) return 0;
-  const values = samples.map((sample) => sample[field]).sort((a, b) => a - b);
+  const values = samples
+    .map((sample) => sample[field] ?? 0)
+    .sort((a, b) => a - b);
   return values[Math.ceil(values.length * 0.95) - 1];
 }
 
@@ -83,6 +95,9 @@ export class TargetingBench {
   private readonly counters: TargetingMetrics = {
     bodyVisits: 0,
     comparisons: 0,
+    activeRequests: 0,
+    materialTests: 0,
+    visibilityTests: 0,
     acquisitionMs: 0,
     contactMs: 0,
   };
@@ -147,6 +162,9 @@ export class TargetingBench {
       Object.assign(this.counters, {
         bodyVisits: 0,
         comparisons: 0,
+        activeRequests: 0,
+        materialTests: 0,
+        visibilityTests: 0,
         acquisitionMs: 0,
         contactMs: 0,
       });
@@ -175,6 +193,21 @@ export class TargetingBench {
           })
         : [];
       const rosterMs = needsRoster ? performance.now() - rosterStart : 0;
+      const requests = this.sim.opponents.flatMap((actor, index) =>
+        actor.lifecycle === "destroyed"
+          ? []
+          : [{ system: actor.combat, ship: actor.ship, shooterId: index + 1 }],
+      );
+      const acquisitionStart = performance.now();
+      const acquisitions = acquireFleetTargets(
+        roster,
+        requests,
+        this.sim.star,
+        this.sim.planets,
+        SUBSTEP,
+        this.counters,
+      );
+      combatMs += performance.now() - acquisitionStart;
       for (let i = 0; i < COUNT; i++) {
         const shooter = this.sim.opponents[i];
         if (shooter.lifecycle === "destroyed") continue;
@@ -240,6 +273,7 @@ export class TargetingBench {
           roster,
           undefined,
           { shooterId: i + 1 },
+          acquisitions.get(shooter.combat),
         );
         combatMs += performance.now() - start;
         shooter.weaponEvents = shooter.combat.events;
@@ -307,29 +341,20 @@ export class TargetingBench {
       window: WINDOW,
       bodyVisits: percentile(this.samples, "bodyVisits"),
       comparisons: percentile(this.samples, "comparisons"),
-      bodyVisitsMean:
-        this.samples.reduce((sum, sample) => sum + sample.bodyVisits, 0) /
-        (this.samples.length || 1),
-      comparisonsMean:
-        this.samples.reduce((sum, sample) => sum + sample.comparisons, 0) /
-        (this.samples.length || 1),
+      bodyVisitsMean: mean(this.samples, "bodyVisits"),
+      comparisonsMean: mean(this.samples, "comparisons"),
+      activeRequestsMean: mean(this.samples, "activeRequests"),
+      materialTestsMean: mean(this.samples, "materialTests"),
+      visibilityTestsMean: mean(this.samples, "visibilityTests"),
       acquisitionMs: percentile(this.samples, "acquisitionMs"),
       contactMs: percentile(this.samples, "contactMs"),
-      acquisitionMsMean:
-        this.samples.reduce((sum, sample) => sum + sample.acquisitionMs, 0) /
-        (this.samples.length || 1),
-      contactMsMean:
-        this.samples.reduce((sum, sample) => sum + sample.contactMs, 0) /
-        (this.samples.length || 1),
+      acquisitionMsMean: mean(this.samples, "acquisitionMs"),
+      contactMsMean: mean(this.samples, "contactMs"),
       adapterMs: this.tickPercentile("adapterMs"),
       plumeMs: this.tickPercentile("plumeMs"),
       rosterMs: percentile(this.samples, "rosterMs"),
-      rosterBuildsMean:
-        this.samples.reduce((sum, sample) => sum + sample.rosterBuilds, 0) /
-        (this.samples.length || 1),
-      adaptersMean:
-        this.samples.reduce((sum, sample) => sum + sample.adapters, 0) /
-        (this.samples.length || 1),
+      rosterBuildsMean: mean(this.samples, "rosterBuilds"),
+      adaptersMean: mean(this.samples, "adapters"),
       combatMs: percentile(this.samples, "combatMs"),
     };
   }
