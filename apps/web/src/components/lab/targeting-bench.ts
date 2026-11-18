@@ -255,9 +255,7 @@ export class TargetingBench {
       for (const [index, actor] of this.sim.opponents.entries()) {
         const angle = index === 0 ? bearing : bearing + gap;
         const speed =
-          index === 0 || grazing
-            ? grazeAngle
-            : 0.18 - 0.08 * Math.sin(time * 0.4);
+          index === 0 || grazing ? 0.18 : 0.18 - 0.08 * Math.sin(time * 0.4);
         actor.ship.pos.set(
           TARGETING_CENTER.x + radius * Math.cos(angle),
           TARGETING_CENTER.y + radius * Math.sin(angle),

@@ -39,6 +39,36 @@ describe("targeting bench", () => {
     }
   });
 
+  it.each(["held-approach", "grazing-approach"] as const)(
+    "supplies the actual ship velocity to drifting effects on %s",
+    (formation) => {
+      const bench = new TargetingBench({
+        slot1: "light-ion-cannon",
+        slot2: "plasma-rifle",
+        mode: "sustained",
+        formation,
+      });
+      const start = bench.sim.opponents.map(({ ship }) => ({
+        x: ship.pos.x,
+        y: ship.pos.y,
+        vx: ship.vel.x,
+        vy: ship.vel.y,
+      }));
+      bench.step();
+      for (const [index, { ship }] of bench.sim.opponents.entries()) {
+        const before = start[index];
+        expect(60 * (ship.pos.x - before.x)).toBeCloseTo(
+          (ship.vel.x + before.vx) / 2,
+          3,
+        );
+        expect(60 * (ship.pos.y - before.y)).toBeCloseTo(
+          (ship.vel.y + before.vy) / 2,
+          3,
+        );
+      }
+    },
+  );
+
   it("crosses every pair of paths in the 6/6/4 elliptical formation", () => {
     const [left, right, circle] = TARGETING_LOOPS;
     expect(TARGETING_LOOPS.map((loop) => loop.count)).toEqual([6, 6, 4]);
