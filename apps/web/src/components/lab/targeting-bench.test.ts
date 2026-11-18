@@ -172,7 +172,30 @@ describe("targeting bench", () => {
     expect(metrics.activeRequestsMean).toBe(32);
     expect(metrics.bodyVisitsMean).toBe(16);
     expect(metrics.discharges).toBe(0);
+    expect(metrics.plasmaReleases).toBe(0);
+    expect(metrics.plasmaVents).toBeGreaterThan(0);
     expect(new TargetingBench(config).metrics.plasmaIntervals).toEqual(empty);
+  });
+
+  it("funds repeated releases in a moving held approach", () => {
+    const bench = new TargetingBench({
+      slot1: "plasma-rifle",
+      slot2: "plasma-rifle",
+      mode: "sustained",
+      formation: "held-approach",
+    });
+    const [trailer, leader] = bench.sim.opponents;
+    const firstX = leader.ship.pos.x;
+    for (let tick = 0; tick < 3600; tick++) bench.step();
+    const metrics = bench.metrics;
+    expect(leader.ship.pos.x).not.toBe(firstX);
+    expect(metrics.ships).toBe(2);
+    expect(metrics.mounts).toBe(4);
+    expect(metrics.bodyVisitsMean).toBe(2);
+    expect(metrics.plasmaIntervals.sustained).toBeGreaterThan(0);
+    expect(trailer.combat.plasmaReleases).toBeGreaterThan(2);
+    expect(leader.combat.plasmaReleases).toBe(0);
+    expect(metrics.discharges).toBe(metrics.plasmaReleases);
   });
 
   it("steps the fitted Wasp plume and clears it when destroyed or reset", () => {

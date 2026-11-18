@@ -30,6 +30,7 @@ export interface TargetingConfig {
   slot1: TargetingWeapon;
   slot2: TargetingWeapon;
   mode: TargetingMode;
+  formation?: "three-loops" | "held-approach";
 }
 export const TARGETING_CENTER = { x: 960, y: 540 };
 // Camera center and full world extent include margin around all three paths.
@@ -88,6 +89,8 @@ type Sample = TargetingMetrics & {
   adapters: number;
 };
 export interface TargetingSummary {
+  plasmaReleases: number;
+  plasmaVents: number;
   plasmaIntervals: {
     short: number;
     sustained: number;
@@ -176,7 +179,8 @@ export class TargetingBench {
     this.sim.star.pos.set(-100000, -100000);
     this.sim.planets.length = 0;
     this.sim.opponents.length = 0;
-    for (let i = 0; i < COUNT; i++) {
+    const fleetSize = config.formation === "held-approach" ? 2 : COUNT;
+    for (let i = 0; i < fleetSize; i++) {
       const actor = createPirate(0, i + 1);
       actor.loadout = LoadoutSchema.parse(build);
       actor.ship.radius = buildCollisionRadius(actor.loadout);
@@ -197,6 +201,27 @@ export class TargetingBench {
     this.place(0);
   }
   private place(time: number) {
+    if (this.config.formation === "held-approach") {
+      // Both Wasps move on one orbit. The leader opens and closes the gap
+      // while the trailing hull faces the chord. Acquisition still uses each muzzle.
+      const radius = 225;
+      const bearing = time * 0.18;
+      const gap = 0.64 + 0.2 * Math.cos(time * 0.4);
+      for (const [index, actor] of this.sim.opponents.entries()) {
+        const angle = index === 0 ? bearing : bearing + gap;
+        const speed = index === 0 ? 0.18 : 0.18 - 0.08 * Math.sin(time * 0.4);
+        actor.ship.pos.set(
+          TARGETING_CENTER.x + radius * Math.cos(angle),
+          TARGETING_CENTER.y + radius * Math.sin(angle),
+        );
+        actor.ship.vel.set(
+          -radius * speed * Math.sin(angle),
+          radius * speed * Math.cos(angle),
+        );
+        actor.ship.rotation = angle + Math.PI / 2 + (index === 0 ? gap / 2 : 0);
+      }
+      return;
+    }
     let index = 0;
     for (const loop of TARGETING_LOOPS) {
       const cosTilt = Math.cos(loop.tilt),
@@ -243,7 +268,7 @@ export class TargetingBench {
       });
       let discharges = 0;
       let combatMs = 0;
-      const damage = Array<number>(COUNT).fill(0);
+      const damage = Array<number>(this.sim.opponents.length).fill(0);
       const needsRoster = this.sim.opponents.some(
         (actor) =>
           actor.lifecycle !== "destroyed" &&
@@ -281,7 +306,7 @@ export class TargetingBench {
         this.counters,
       );
       combatMs += performance.now() - acquisitionStart;
-      for (let i = 0; i < COUNT; i++) {
+      for (let i = 0; i < this.sim.opponents.length; i++) {
         const shooter = this.sim.opponents[i];
         if (shooter.lifecycle === "destroyed") continue;
         const { capacity, coils } = this.fleetStats;
@@ -334,7 +359,8 @@ export class TargetingBench {
         const before =
           shooter.combat.ionDischarges +
           shooter.combat.laserPulses +
-          shooter.combat.pointDefenceDischarges;
+          shooter.combat.pointDefenceDischarges +
+          shooter.combat.plasmaReleases;
         const start = performance.now();
         shooter.combat.stepWeapons(
           SUBSTEP,
@@ -353,11 +379,12 @@ export class TargetingBench {
         discharges +=
           shooter.combat.ionDischarges +
           shooter.combat.laserPulses +
-          shooter.combat.pointDefenceDischarges -
+          shooter.combat.pointDefenceDischarges +
+          shooter.combat.plasmaReleases -
           before;
       }
       this.observePlasma();
-      for (let i = 0; i < COUNT; i++) {
+      for (let i = 0; i < this.sim.opponents.length; i++) {
         const target = this.sim.opponents[i];
         target.resources.hull = Math.max(0, target.resources.hull - damage[i]);
         if (target.resources.hull <= 0) target.lifecycle = "destroyed";
@@ -424,6 +451,14 @@ export class TargetingBench {
     ).length;
     return {
       ships,
+      plasmaReleases: this.sim.opponents.reduce(
+        (sum, actor) => sum + actor.combat.plasmaReleases,
+        0,
+      ),
+      plasmaVents: this.sim.opponents.reduce(
+        (sum, actor) => sum + actor.combat.plasmaVents,
+        0,
+      ),
       plasmaIntervals: {
         short: this.shortIntervals,
         sustained: this.sustainedIntervals,

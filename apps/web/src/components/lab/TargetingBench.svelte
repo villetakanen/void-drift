@@ -32,6 +32,8 @@ const weapons: TargetingWeapon[] = [
 ];
 let slot1 = $state<TargetingWeapon>("light-ion-cannon");
 let slot2 = $state<TargetingWeapon>("ion-point-defence");
+let formation =
+  $state<NonNullable<TargetingConfig["formation"]>>("three-loops");
 let mode = $state<TargetingConfig["mode"]>("sustained");
 let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
 let ready = $state(false);
@@ -136,7 +138,7 @@ onMount(() => {
     }
   }
   reset = () => {
-    encounter = new TargetingBench({ slot1, slot2, mode });
+    encounter = new TargetingBench({ slot1, slot2, mode, formation });
     fx.clear();
     carry = 0;
     last = undefined;
@@ -223,7 +225,7 @@ onMount(() => {
       >
         {#each weapons as id}
           <option value={id}>
-            {PARTS[id].name}{id === "plasma-rifle" ? " · acquisition only" : ""}
+            {PARTS[id].name}
           </option>
         {/each}
       </select>
@@ -242,7 +244,7 @@ onMount(() => {
       >
         {#each weapons as id}
           <option value={id}>
-            {PARTS[id].name}{id === "plasma-rifle" ? " · acquisition only" : ""}
+            {PARTS[id].name}
           </option>
         {/each}
       </select>
@@ -261,6 +263,22 @@ onMount(() => {
       >
         <option value="sustained">Sustained fire</option>
         <option value="live">Live damage</option>
+      </select>
+    </label>
+    <label>
+      Formation
+      <select
+        disabled={!ready}
+        bind:value={
+          () => formation,
+          (value) => {
+            formation = value;
+            reset();
+          }
+        }
+      >
+        <option value="three-loops">Three loops</option>
+        <option value="held-approach">Held approach</option>
       </select>
     </label>
     <div class="playback">
@@ -289,7 +307,9 @@ onMount(() => {
         <div class="stage">
           <FlightLayers
             bind:canvases
-            label="Sixteen fitted Wasps flying on three neighboring loops"
+            label={formation === "held-approach"
+              ? "Two moving Wasps on a held firing approach"
+              : "Sixteen fitted Wasps flying on three neighboring loops"}
           />
         </div>
         <figcaption>
@@ -335,10 +355,18 @@ onMount(() => {
       {#if slot1 === "plasma-rifle" || slot2 === "plasma-rifle"}
         <section class="roster" aria-label="Plasma lock intervals">
           <header>
-            <h2>Plasma lock intervals</h2>
+            <h2>Plasma rifle</h2>
             <p>Per mount since reset · same target</p>
           </header>
           <dl>
+            <div>
+              <dt>Funded releases</dt>
+              <dd>{metrics?.plasmaReleases ?? 0}</dd>
+            </div>
+            <div>
+              <dt>Target-loss vents</dt>
+              <dd>{metrics?.plasmaVents ?? 0}</dd>
+            </div>
             <div>
               <dt>Completed &lt; 0.7 s</dt>
               <dd>{metrics?.plasmaIntervals.short ?? 0}</dd>

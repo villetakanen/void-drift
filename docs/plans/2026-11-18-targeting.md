@@ -94,3 +94,14 @@ The sustained three-loop fleet ran 60.0 simulated seconds with two Plasma rifles
 Counts accumulate from reset. A change of target ID starts a new interval immediately. The two observation-boundary cases have unknown full durations and are excluded from both completed-duration counts. Over the final rolling 600 substeps the fleet averaged 32 requests, 16 body visits (also 16 at p95), and 480 request/body comparisons per substep. Total discharges were zero. This workload exercises short target passes and did not demonstrate a complete 0.7-second same-target interval between observed entry and exit.
 
 A second run extended the same deterministic encounter to 600.0 simulated seconds. It recorded 1,213 completed short intervals, zero completed intervals reaching 0.7 s, one initial interval and zero open at cutoff. To verify a later release cycle, use a separate controlled approach that holds a target in the rifle sector. These measurements preserve the bench choreography and the rifle tuning.
+
+## Charge cycle verification
+
+Both sustained workloads ran the same production scheduler for 60 simulated seconds with two rifles per Wasp. Power replenishment makes this a comparison of target opportunities; the separate funding tests cover limited ship power.
+
+| Formation     | Wasps | Completed locks under / at least 0.7 s | Funded releases | Target-loss vent starts | Mean visits per substep |
+| ------------- | ----: | -------------------------------------: | --------------: | ----------------------: | ----------------------: |
+| Three loops   |    16 |                                122 / 0 |               0 |                     123 |                      16 |
+| Held approach |     2 |                                  0 / 8 |              24 |                       0 |                       2 |
+
+On the three loops, one additional lock was present at the first observation and ended during the run; one remained open at the cutoff. On the held approach, the trailing Wasp closes on the leader and can recover and release repeatedly while the same opponent stays inside its muzzle sector. Release counts describe funded weapon cycles. Stream contact, damage, recoil and emitted effects belong to the subsequent delivery slices.
