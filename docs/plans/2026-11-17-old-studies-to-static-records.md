@@ -353,7 +353,7 @@ study component or use `client:`.
 | 6   | `ship-silhouettes.astro`                     | 2026-10-30 | 566   | 10   | stopped         | done 2026-11-18 |
 | 7   | `archive/scout-firefly-rounded-bodies.astro` | 2026-10-31 | 22    | 1    | not in registry | done 2026-11-18 |
 | 8   | `ship-slot-language.astro`                   | 2026-10-31 | 128   | 2    | accepted        | done 2026-11-18 |
-| 9   | `ion-engines-2026-10-31.astro`               | 2026-10-31 | 273   | 7    | accepted        | todo            |
+| 9   | `ion-engines-2026-10-31.astro`               | 2026-10-31 | 273   | 7    | accepted        | done 2026-11-18 |
 | 10  | `scout-firefly.astro`                        | 2026-10-31 | 503   | 7    | accepted        | todo            |
 | 11  | `engine-identities.astro`                    | 2026-10-31 | 541   | 15   | accepted        | todo            |
 | 12  | `archive/ion-ceiling-rules.astro`            | 2026-11-01 | 21    | 2    | not in registry | todo            |

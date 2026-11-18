@@ -1,0 +1,35 @@
+---
+layout: ../../../layouts/StudyLayout.astro
+---
+
+**Accepted · 31 October 2026.** Light and Heavy ion engines share a straight, precise beam made from complete luminous marks. The study accepted their visual treatment; propulsion and handling remained outside its final scope.
+
+## Question
+
+How should Light and Heavy ion engines share a precise visual language?
+
+## Accepted direction
+
+The approved 02.3 reference emits a complete beam mark from each nozzle on each simulation step. The marks overlap into the active stream, drift in world space and fade after release. Each has straight sides, a bright near-white core, a colored halo and a transparent end. Rotation leaves earlier emissions behind. The reference uses a **0.65-second lifetime**, **80% inherited velocity**, **45 units/s backward drift** and a **quadratic fade**.
+
+<video controls preload="metadata" src="/studies/ion-engines-2026-10-31/02-3.webm"></video>
+
+*02.3 lifecycle comparison: the rejected attached beam is on the left; the accepted shared-FX beam marks are on the right. Each Fighter has a side pair and one aft ion engine. The sequence includes firing, a turn and release at 5.25 seconds. Captured 18 November 2026 from the built study using then-current code; a reconstruction.*
+
+Light retains a slender mint-cyan beam. Heavy has a deeper casing and a cooler blue-cyan halo, with fading beam marks **1.4× as long and 1.45× as wide**. Opacity, core color and fade lifetime stay the same. The accepted comparison replays Light’s 02.3 motion and output for both, so it does not establish Heavy’s performance.
+
+<video controls preload="metadata" src="/studies/ion-engines-2026-10-31/02-4.webm"></video>
+
+*02.4 Light (left) and Heavy (right), each with a side pair and one aft engine, using the same motion and output sequence. Captured 18 November 2026 from the built study using then-current code; a reconstruction.*
+
+## Ruled out and deferred
+
+The 02.2 attached beam disappeared immediately on release while a separate faint wake faded. That split contradicted the intended shared effects lifecycle, so the study chose complete fading marks instead. The earlier compressed-plume sketch used 24% width as an exploratory proportion.
+
+The study withdrew its propulsion and movement investigations because their growing complexity was not advancing the work. Thrust, speed ceilings, mass, power and handling were deferred. Gameplay-scale clarity and fidelity with mixed loadouts still needed inspection.
+
+## Where the work went
+
+The page records local integration of the shared painter in fitted flight and the [ion FX Lab](/lab/fx). The integration assigns visual identity to each emitted mark for Small ion (`ion`) and Heavy ion (`heavy-ion`); fusion, plasma and untyped legacy exhaust retain the generic painter. Physics and power delivery were outside the visual integration. Release verification and publication were tracked separately.
+
+The full study before conversion is in commit `30d80629`, at `apps/web/src/pages/lab/studies/ion-engines-2026-10-31.astro`, with its deleted study files `apps/web/src/components/studies/IonFxAccepted023.svelte`, `IonSizeComparison.svelte`, `IonStreamStudy.svelte` and `accepted-ion-plume.ts` in the same directory.
