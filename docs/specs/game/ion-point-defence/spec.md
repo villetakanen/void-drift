@@ -77,7 +77,7 @@ without a storage migration. The [Hangar](../hangar/spec.md) and
 - Each discharge debits 0.1p and starts its own 1/3-second cooldown: three shots/s,
   0.3p/s continuous per turret, none while idle. The shared weapon energy floor
   gates every discharge: below 10% of the ship's energy capacity no turret fires,
-  takes power or starts a cooldown (tracking stays free); it also requires more than 10 power.
+  takes power or starts a cooldown (tracking stays free); at exactly 10% it may fire.
 - Power is drawn in this order: life support, engines, defence weapons, guns.
   Defence weapons are point defences and lasers; guns are Light Ion Cannons and rails.
   Within an update, defence weapons resolve before any gun, each class in stable

@@ -217,6 +217,6 @@ Feature: Hangar
 ```
 
 The Plasma rifle uses the shared unlit weapon artwork on its card and ship, with
-the white-blue housing centred on its slot. It shows its approved fluff and mass, followed by the strike, full-cycle
-power and acquisition reach figures from [Plasma rifle tuning](../plasma-rifle/spec.md). Existing slot compatibility,
+the white-blue housing centred on its slot. It shows its approved fluff and mass;
+its unsanctioned description identifies it as inert. Existing slot compatibility,
 save/load and Playground launch gating apply.

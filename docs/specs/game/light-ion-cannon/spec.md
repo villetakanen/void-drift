@@ -47,7 +47,7 @@ without a storage migration.
 - Allocation follows stable build-mount order. Each actual discharge debits 0.2p,
   including misses, and starts its own 1/3-second cooldown. The shared weapon energy
   floor gates every discharge: below 10% of the ship's energy capacity no cannon
-  fires, takes power or starts a cooldown; it also requires more than 10 power. A shot the
+  fires, takes power or starts a cooldown; at exactly 10% it may fire. A shot the
   remaining power cannot fund is refused the same way, and stops funding the
   remaining ready cannons.
   Guns draw power after defence weapons, as the

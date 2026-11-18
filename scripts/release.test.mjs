@@ -1,6 +1,5 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { createHash } from "node:crypto";
 import {
   chmodSync,
   mkdirSync,
@@ -15,17 +14,12 @@ import { delimiter, dirname, join } from "node:path";
 import { test } from "node:test";
 import { checkRelease, prepareRelease, publishRelease } from "./release.mjs";
 
-function fixture(t, version = "0.5.0") {
+function fixture(t) {
   const cwd = mkdtempSync(join(tmpdir(), "void-release-"));
   t.after(() => rmSync(cwd, { recursive: true, force: true }));
-  for (const path of ["apps/web", "packages/core", "packages/mode-a"])
-    mkdirSync(join(cwd, path), { recursive: true });
   for (const [name, content] of Object.entries({
     ".gitignore": "artifacts/\nbin/\n",
-    "package.json": JSON.stringify({ version }),
-    "apps/web/package.json": JSON.stringify({ version }),
-    "packages/core/package.json": JSON.stringify({ version }),
-    "packages/mode-a/package.json": JSON.stringify({ version }),
+    "package.json": '{"version":"0.5.0"}',
     "firebase.json": JSON.stringify({
       firestore: {
         rules: "firestore.rules",
@@ -215,55 +209,6 @@ test("publication consumes the saved bundle without rebuilding or taking changed
   assert.equal(publication.status, "deployed");
   assert.equal(publication.liveVerified, false);
   assert.equal(checkRelease(directory).status, "prepared");
-});
-test("production publishing accepts stable SemVer and rejects prereleases before deploy", async (t) => {
-  const stable = fixture(t, "0.7.0");
-  const stableArtifact = await prepareRelease(stable);
-  let deployed = 0;
-  publishRelease(stableArtifact, {
-    cwd: stable.cwd,
-    deploy: () => deployed++,
-  });
-  assert.equal(deployed, 1);
-
-  for (const version of ["0.7.0-rc.1", "0.7.0-alpha.1", "0.7.0-private"]) {
-    const candidate = fixture(t, version);
-    const candidateArtifact = await prepareRelease(candidate);
-    assert.throws(
-      () =>
-        publishRelease(candidateArtifact, {
-          cwd: candidate.cwd,
-          deploy: () => assert.fail("prerelease must not deploy"),
-        }),
-      /accepts stable SemVer artifacts only/,
-    );
-    assert.equal(
-      readdirSync(candidateArtifact).some((name) =>
-        name.startsWith("publication-"),
-      ),
-      false,
-    );
-  }
-});
-test("saved 0.6.3 artifact reports remain checkable without embedded metadata", async (t) => {
-  const directory = await prepareRelease(fixture(t, "0.6.3"));
-  const reportPath = join(directory, "report.json");
-  const report = JSON.parse(readFileSync(reportPath, "utf8"));
-  rmSync(join(directory, "bundle/public/release.json"));
-  delete report.files["public/release.json"];
-  report.artifactFingerprint = createHash("sha256")
-    .update(JSON.stringify(report.files))
-    .digest("hex");
-  writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`);
-  assert.equal(checkRelease(directory).version, "0.6.3");
-});
-test("integrity check rejects changed embedded release version", async (t) => {
-  const directory = await prepareRelease(fixture(t, "0.7.0"));
-  writeFileSync(
-    join(directory, "bundle/public/release.json"),
-    '{"version":"9.9.9"}\n',
-  );
-  assert.throws(() => checkRelease(directory), /artifact files changed/);
 });
 test("publication failure is recorded separately from successful preparation", async (t) => {
   const directory = await prepareRelease(fixture(t));

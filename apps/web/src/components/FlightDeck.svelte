@@ -14,7 +14,6 @@ import {
 import {
   buildStats,
   CHALLENGE,
-  CHALLENGE_UNAVAILABLE,
   clearFlightLayer,
   type DerelictsResult,
   drawFlightFrame,
@@ -26,9 +25,7 @@ import {
   type FlightMode,
   type FlightTickInput,
   fittedParts,
-  flightLaunchBlock,
   HighScoreSubmissionSchema,
-  isChallengeActive,
   isScoredEligible,
   LandingSystem,
   type Loadout,
@@ -90,27 +87,19 @@ let runLoadout = $state<Loadout>();
 let runExperimental = $state<ExperimentalSetting>("Off");
 let launchBlocked = $state(false);
 let chosen = $derived<ShipProfileId>((runLoadout ?? currentLoadout).chassis);
-const currentLaunchBlock = $derived(
-  flightLaunchBlock(
-    mode,
-    $shipSetup.experimental,
-    isScoredEligible(currentLoadout),
-  ),
+const currentLaunchAvailable = $derived(
+  $shipSetup.experimental === "On" || isScoredEligible(currentLoadout),
 );
-const currentLaunchAvailable = $derived(currentLaunchBlock === null);
 const blockedReason = $derived(
   currentLaunchAvailable
     ? ""
-    : currentLaunchBlock === "challenge-pending"
-      ? CHALLENGE_UNAVAILABLE
-      : "Playground is Off; this setup requires Playground. Change it in Hangar or turn Playground on.",
+    : "Playground is Off; this setup requires Playground. Change it in Hangar or turn Playground on.",
 );
 const experimentalRun = $derived(runExperimental === "On");
 const rankedRun = $derived(
   mode === "survival" &&
     runLoadout !== undefined &&
     runExperimental === "Off" &&
-    isChallengeActive() &&
     isScoredEligible(runLoadout),
 );
 let status = $state("MENU");
@@ -350,14 +339,7 @@ function start() {
   const selectedExperimental = ExperimentalSettingSchema.parse(
     shipSetup.get().experimental,
   );
-  if (
-    selectedExperimental === "Off" &&
-    flightLaunchBlock(
-      mode,
-      selectedExperimental,
-      isScoredEligible(selectedLoadout),
-    ) !== null
-  )
+  if (selectedExperimental === "Off" && !isScoredEligible(selectedLoadout))
     return;
   runLoadout = selectedLoadout;
   runExperimental = selectedExperimental;
@@ -498,14 +480,7 @@ onMount(() => {
   else {
     const selectedLoadout = LoadoutSchema.parse(currentLoadout);
     const selectedExperimental = shipSetup.get().experimental;
-    if (
-      selectedExperimental === "Off" &&
-      flightLaunchBlock(
-        mode,
-        selectedExperimental,
-        isScoredEligible(selectedLoadout),
-      ) !== null
-    ) {
+    if (selectedExperimental === "Off" && !isScoredEligible(selectedLoadout)) {
       launchBlocked = true;
       reset(false);
     } else {
@@ -887,9 +862,6 @@ onMount(() => {
             experimental={$shipSetup.experimental}
             disabled={phase === "starting" || !currentLaunchAvailable}
             {blockedReason}
-            challengePending={mode === "survival" &&
-              $shipSetup.experimental === "Off" &&
-              currentLaunchBlock === "challenge-pending"}
           />
         {/if}
       {:else if status === "GAME_OVER"}

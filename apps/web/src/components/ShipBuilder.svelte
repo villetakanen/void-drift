@@ -4,14 +4,12 @@ import {
   buildMounts,
   buildSlotLinks,
   buildStats,
-  CHALLENGE_UNAVAILABLE,
   CHASSIS,
   CRUISER,
   drawBuild,
   EngineIdSchema,
   FIDDLER,
   FIGHTER,
-  flightLaunchBlock,
   isScoredEligible,
   LIFE_SUPPORT_DRAIN,
   LoadoutSchema,
@@ -67,13 +65,7 @@ const shipTabs = $derived(
       experimental === "Off" && CHASSIS[id].releaseClass === "preview",
   })),
 );
-const launchBlock = $derived(
-  flightLaunchBlock("practice", experimental, isScoredEligible(build)),
-);
-const canLaunch = $derived(launchBlock === null);
-const canLaunchSurvival = $derived(
-  flightLaunchBlock("survival", experimental, isScoredEligible(build)) === null,
-);
+const canLaunch = $derived(experimental === "On" || isScoredEligible(build));
 const stats = $derived(buildStats(build));
 const mounts = $derived(buildMounts(build));
 let previewWidth = $state(600);
@@ -194,12 +186,7 @@ function choose(id: ShipProfileId) {
   selected = "left";
 }
 function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
-  const flightMode = mode === "test" ? "practice" : mode;
-  if (
-    flightLaunchBlock(flightMode, experimental, isScoredEligible(build)) !==
-    null
-  )
-    return;
+  if (!canLaunch) return;
   flying = mode;
 }
 </script>
@@ -456,13 +443,6 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
     <footer>
       <div class="launch-context">
         <PlaygroundStatus active={experimental === "On"} />
-        {#if flightLaunchBlock(
-          "survival",
-          experimental,
-          isScoredEligible(build),
-        ) === "challenge-pending"}
-          <p role="status">{CHALLENGE_UNAVAILABLE}</p>
-        {/if}
         {#if !$shipSetupStatus.ready}
           <p role="status">Loading saved ships…</p>
         {:else if $shipSetupStatus.message}
@@ -497,7 +477,7 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
         <button
           type="button"
           class="btn btn-filled"
-          disabled={!canLaunchSurvival}
+          disabled={!canLaunch}
           onclick={() => launch("survival")}
         >
           Survival

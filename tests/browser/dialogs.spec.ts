@@ -1,5 +1,4 @@
 import type { Page } from "@playwright/test";
-import { usePlaygroundForSurvival } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 
 async function expectModal(page: Page, name: string) {
@@ -19,7 +18,6 @@ async function expectModal(page: Page, name: string) {
 }
 
 test("pause is modal and restores focus to the game", async ({ page }) => {
-  await usePlaygroundForSurvival(page);
   await page.goto("/");
   await page.getByRole("button", { name: "PRESS START" }).click();
   const pause = page.getByRole("button", { name: "Pause", exact: true });

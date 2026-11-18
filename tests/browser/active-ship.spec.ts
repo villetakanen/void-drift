@@ -1,9 +1,5 @@
 import type { Page } from "@playwright/test";
-import {
-  chooseShip,
-  enablePreviewContent,
-  usePlaygroundForSurvival,
-} from "../helpers/hangar";
+import { chooseShip, enablePreviewContent } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 
 async function chooseExperimental(page: Page, value: "Off" | "On") {
@@ -16,7 +12,6 @@ test("a fresh device flies its fitted Wasp, and Hangar changes survive a reload"
   page,
 }) => {
   await page.clock.install();
-  await usePlaygroundForSurvival(page);
   await page.goto("/hangar?chassis=scout");
   await expect(
     page.getByRole("tab", { name: "Wasp", exact: true }),
@@ -48,7 +43,7 @@ test("a fresh device flies its fitted Wasp, and Hangar changes survive a reload"
   const flight = page.locator(".flight-page");
   await expect(flight).toHaveAttribute("data-phase", "starting");
   await expect(flight).toHaveAttribute("data-chassis", "scout");
-  await expect(flight).toHaveAttribute("data-ranked", "false");
+  await expect(flight).toHaveAttribute("data-ranked", "true");
   await expect(flight).toHaveAttribute("data-launch-source", "title");
 });
 
@@ -84,11 +79,10 @@ test("turning Experimental Off preserves a preview ship and blocks both launch s
 
   await page.getByRole("link", { name: "HANGAR", exact: true }).click();
   await chooseShip(page, "Wasp");
-  await expect(page.getByRole("button", { name: "Practice" })).toBeEnabled();
-  await expect(page.getByRole("button", { name: "Survival" })).toBeDisabled();
-  await page.getByRole("button", { name: "Practice" }).click();
+  await expect(page.getByRole("button", { name: "Survival" })).toBeEnabled();
+  await page.getByRole("button", { name: "Survival" }).click();
   await expect(page.locator(".flight-page")).toHaveAttribute(
     "data-ranked",
-    "false",
+    "true",
   );
 });

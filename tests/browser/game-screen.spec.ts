@@ -1,4 +1,3 @@
-import { usePlaygroundForSurvival } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 import { expectLit } from "../helpers/thrust-pads";
 
@@ -6,7 +5,6 @@ test("a viewport narrower than 4:3 freezes the countdown and requires fresh inpu
   page,
 }) => {
   await page.clock.install();
-  await usePlaygroundForSurvival(page);
   await page.goto("/");
   await page.getByRole("button", { name: "PRESS START" }).click();
   await page.clock.runFor(400);
@@ -45,7 +43,6 @@ test("launch narrower than 4:3 is blocked and backgrounding requires deliberate 
 }) => {
   await page.clock.install();
   await page.setViewportSize({ width: 768, height: 1024 });
-  await usePlaygroundForSurvival(page);
   await page.goto("/");
   await page.getByRole("button", { name: "PRESS START" }).click();
   await expect(

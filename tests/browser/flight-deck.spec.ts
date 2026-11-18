@@ -1,11 +1,9 @@
-import { usePlaygroundForSurvival } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 import { expectLit, padPoint } from "../helpers/thrust-pads";
 
 // A captured pointer can disappear without an up event. Propulsion must not stick.
 test("losing pointer capture clears a held flight action", async ({ page }) => {
   await page.clock.install();
-  await usePlaygroundForSurvival(page);
   await page.goto("/");
   await page.getByRole("button", { name: "PRESS START" }).click();
   await page.clock.runFor(3500);

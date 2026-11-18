@@ -139,7 +139,6 @@ test("any ship id is accepted when the document id matches", async () => {
 });
 test("a ruleset the rules do not name is not written", async () => {
   for (const challenge of [
-    "fires-in-the-sky",
     "alpha-1",
     "gravity-1",
     "ion-1",

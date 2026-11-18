@@ -1,4 +1,3 @@
-import { usePlaygroundForSurvival } from "../helpers/hangar";
 import { expect, test } from "../helpers/local-browser";
 import { expectLit } from "../helpers/thrust-pads";
 
@@ -12,7 +11,6 @@ test("a touch on the central fly area fires no thruster", async ({
   });
   const page = await context.newPage();
   await page.clock.install();
-  await usePlaygroundForSurvival(page);
   await page.goto("/");
   await page.getByRole("button", { name: "PRESS START" }).tap();
   const deck = page.locator(".flight-page");

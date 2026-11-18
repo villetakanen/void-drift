@@ -1,26 +1,7 @@
 import { z } from "zod";
 import { PartIdSchema } from "../lib/schemas/loadout";
 import { ShipProfileIdSchema } from "../lib/schemas/ship-profile";
-export const CHALLENGE = "fires-in-the-sky";
-export const CHALLENGE_STATUS: "active" | "pending" = "pending";
-export const CHALLENGE_UNAVAILABLE =
-  "Ranked Survival and Top Scores are unavailable while the next challenge is pending.";
-export type ChallengeStatus = "active" | "pending";
-export type FlightLaunchBlock = "playground-required" | "challenge-pending";
-export const getChallengeStatus = (): ChallengeStatus => CHALLENGE_STATUS;
-export const isChallengeActive = () => getChallengeStatus() === "active";
-export function flightLaunchBlock(
-  mode: string,
-  playground: string,
-  eligible: boolean,
-  status: ChallengeStatus = getChallengeStatus(),
-): FlightLaunchBlock | null {
-  if (playground === "On") return null;
-  if (!eligible) return "playground-required";
-  return mode === "survival" && status === "pending"
-    ? "challenge-pending"
-    : null;
-}
+export const CHALLENGE = "ion-storm";
 /** A ship carries at most ten fitted parts; the bound is a sanity limit, `firestore.rules` repeats it. */
 export const MAX_FITTING_PARTS = 16;
 /** Milliseconds are the finest time the record keeps. */

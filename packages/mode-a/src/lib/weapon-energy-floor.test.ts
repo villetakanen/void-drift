@@ -68,7 +68,7 @@ const WINDOW = 40;
 
 describe("Weapon energy floor", () => {
   it.each(KINDS)(
-    "%s stays silent just under the floor and at exactly 10 power",
+    "%s stays silent just under the floor and fires at exactly the floor",
     (kind) => {
       const capacity = 100;
       const floor = capacity * WEAPONS.energyFloor;
@@ -81,14 +81,14 @@ describe("Weapon energy floor", () => {
       const at = fixture(kind, capacity);
       at.resources.power = floor;
       at.step(WINDOW);
-      expect(at.system.energySpent).toBe(0);
+      expect(at.system.energySpent).toBeGreaterThan(0);
     },
   );
   it("is a fraction of capacity, so a larger ship has a proportionally larger floor", () => {
     const small = fixture("light-ion-cannon", 50);
     const large = fixture("light-ion-cannon", 400);
     // Enough for the small ship, under the large ship's floor.
-    const power = 11;
+    const power = 50 * WEAPONS.energyFloor;
     small.resources.power = power;
     large.resources.power = power;
     small.step(WINDOW);

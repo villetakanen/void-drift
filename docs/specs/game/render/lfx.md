@@ -23,12 +23,6 @@ an approximation, not colorimetry or a stellar spectrum. Parameter tuples are
 prepared before drawing and retained only while they have active users,
 alongside the shared production default.
 
-## Plasma rifle charge
-
-The mounted charge brightens in place from the rifle’s simulation fill. The
-side channels join halfway. Visible channel marks follow the shared fitting
-pose and respect the hull’s occlusion of under-mounted hardware.
-
 ## Contract
 
 - Memory is immediate: clear and redraw from current game state each frame.
