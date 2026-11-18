@@ -58,4 +58,4 @@ into the simulation.
   use the same reusable Turbulent bloom filter definition and defaults. The
   workbench may tune its values or select another filter for comparison.
 
-A funded plasma rifle release deposits a short amber trail along its travelled path. Material contact emits an expanding fireball at the captured world position; the persistent surface carries its fading light after the live core clears. Repainting a paused frame deposits no additional light. [Plasma rifle](../plasma-rifle/spec.md)
+A funded plasma rifle release deposits a narrow amber discharge along its travelled path. An eruption at full reach or earlier material contact emits a connected expanding fireball at the recorded world position. Persistent FX carries its fading light after the live core clears. Repainting a paused frame deposits no additional light. [Plasma rifle](../plasma-rifle/spec.md)

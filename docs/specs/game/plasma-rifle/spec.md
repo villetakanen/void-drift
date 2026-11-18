@@ -57,23 +57,27 @@ The light follows each mount through ship motion and rotation. The Wasp hull mas
 - In a crossing pass, the rifle brightens briefly and then drains as the target leaves. A different rifle on the same ship can show a different charge.
 - On a held approach, the centre brightens first, the sides join after half charge, and the loaded bead clears at release. Repeating the same flight produces the same charge and release events with rendering enabled or disabled.
 
-### Stream travel and first contact
+### Release and eruption
 
-A funded release launches one stream head from that mount’s primary muzzle at the release instant. It travels in a straight line at 750 world units/s along the fixed barrel axis plus the ship’s velocity at release. Later steering, target loss and target replacement do not redirect it. A miss expires after 0.4 simulation seconds, equivalent to 300 units of travel relative to the release ship’s initial drift. The 130-unit acquisition range governs the trigger. A partial vent launches nothing.
+A funded release sends a narrow spew along the barrel axis from the fitted muzzle. Measure its 130 u reach in the firing ship’s inertial frame at release. Its motion inherits ship velocity. Later steering and target identity have no effect. Provisional presentation and travel tuning puts the full reach within one 60 Hz simulation tick (7,800 u/s). Acquisition reach and eruption reach are independently tunable.
 
-Sweep the head through elapsed simulation time from release, including the remaining fraction of its launch substep. Contact is the earliest meeting with a live ship’s collision circle or remaining wreck or fragment material, accounting for movement during the interval. Other ships, including allies, may intercept. Exclude the emitter, destroyed bodies and energy pickups. Stars and planets absorb a stream at their surfaces. At equal contact time a celestial blocker takes precedence; between eligible bodies use the lower stable ID. Include contact at the range endpoint.
+Clear space produces one eruption at full reach, even if the acquired ship has moved. A nearer ship, wreck or fragment intercepts the spew at its first remaining material and moves the single eruption to that surface. This makes a ship crossing the muzzle matter and permits a shot through an opening in a wreck. The emitter is excluded. A celestial surface absorbs the discharge. Resolve the earliest intersection through the swept motion, including contact at the endpoint. A celestial blocker wins an exact tie, then stable body ID orders coincident material contacts.
 
-On material contact capture the body identity, mount identity, world point and simulation time once, then retire the head. On an empty miss retire it without a contact. Gameplay results are independent of the camera and drawing. This slice records contact for subsequent eruption damage and flight presentation.
+At eruption sample each eligible body’s nearest remaining material at the eruption instant. Apply the innermost applicable band once per body, including the interceptor. Exclude the shooter. Resolve recipients before damage or breakup creates new fragments. Each distinct funded release owns its eruption. Hull protection in the sustained bench remains available.
 
-- A Fighter holds a Wasp through release. A fragment crosses the stream between combat samples. Its first surface supplies the contact, even though the Wasp triggered the charge.
-- An empty opening in a wreck permits the head to continue to material behind it. A moving ship that clears the swept path escapes.
+| Distance to nearest material | Hull damage |
+| ---------------------------- | ----------: |
+| Through 10 u                 |          75 |
+| Over 10 through 26 u         |          50 |
+| Over 26 through 42 u         |          25 |
+| Beyond 42 u                  |           0 |
 
-### Visible stream and contact eruption
+### Visible discharge
 
-A funded release sends a narrow white-hot head along the simulated stream path on LFX. A short amber trail on FX follows the distance actually travelled, including inherited drift. The trail begins at the fitted muzzle and ends at the first surface touched. Its initial length cannot exceed the distance the head has travelled. Losing a charge before release leaves the existing vent indication on the fitting.
+At normal flight scale the hot narrow discharge on LFX and the amber emission on FX connect the muzzle and opening point in one rapid gesture. Retain the visible path across substeps so the discharge reads even when an entire shot resolves between draws. A connected orange fireball with a hot core opens at the actual eruption position. The provisional visual reach is 58 u and the eruption lasts 0.26 s. Use simulation time, existing visibility and effect budgets. Pausing preserves the instant and reset clears its history.
 
-At material contact a compact hot core appears at the recorded world point on LFX. Around it, a connected orange fireball expands and cools on FX. Use the study’s 58-world-unit outer radius and 0.26 s eruption as visual tuning. The core cools before the remaining glow. These sizes describe the picture. A miss or absorption by a star or planet leaves only the fading trail.
+### Release scenarios
 
-- An intervening fragment places the eruption on its surface even if the rifle acquired a different ship.
-- All material contacts produced between two rendered frames can be presented, including twin mounts in the same combat substep. Presentation consumes no combat energy and deals no damage.
-- Repainting the same simulation instant preserves the core and leaves accumulated FX unchanged. Reset clears the effect, and camera motion keeps the eruption anchored to the contact point. Apply the shared visibility and effect budgets.
+- A ship triggers a funded release while the barrel line is clear. The discharge opens at 130 u. A hull with material 20 u from that point takes 50 damage, including when another ship triggered the shot.
+- An intervening fragment intercepts at 45 u. The discharge terminates there and the fragment takes a single 75-point hit. Nearby material is evaluated around that point. The shot is spent.
+- Two rifles erupt between rendered frames. Both paths and eruptions are eligible for presentation, and each resolves its own damage whether visible or offscreen.
