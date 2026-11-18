@@ -21,7 +21,7 @@ import {
 } from "./build-renderer";
 import {
   drawPlasmaEruption,
-  drawPlasmaStreamHead,
+  drawPlasmaSpew,
   stampPlasmaSegment,
 } from "./plasma-stream-fx";
 import type { SalvageSystem } from "./salvage";
@@ -205,12 +205,15 @@ export class FlightFx {
     time: number,
   ) {
     for (const head of combat.plasmaStreams)
-      drawPlasmaStreamHead(ctx, this.plasmaLivePass, head);
+      drawPlasmaSpew(ctx, this.plasmaLivePass, head, 0);
     const last = combat.plasmaVisualEvents.at(-1);
     if (!last || time - last.time >= 0.5) return;
     for (const event of combat.plasmaVisualEvents)
-      if (event.kind === "impact")
-        drawPlasmaEruption(ctx, this.plasmaLivePass, event, time, true);
+      if (event.kind !== "segment") {
+        drawPlasmaSpew(ctx, this.plasmaLivePass, event, time - event.time);
+        if (event.kind === "impact")
+          drawPlasmaEruption(ctx, this.plasmaLivePass, event, time, true);
+      }
   }
   private drawActorIonCannonLight(
     ctx: CanvasRenderingContext2D,

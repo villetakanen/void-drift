@@ -9,6 +9,7 @@ import { defaultLoadout } from "./schemas/loadout";
 import { gameSettings, Simulation, STEP } from "./simulation";
 
 const substep = STEP / 4;
+const twinContactTime = 0.7 + 75 / 7800;
 const pose = {
   pos: new Vec2(400, 400),
   vel: new Vec2(0, 0),
@@ -67,7 +68,7 @@ function fixture(owner: "player" | "opponent" = "player") {
     liveShipBody(
       20 + index,
       { ...pose, pos: new Vec2(muzzleX + 77, muzzleY), radius: 2 },
-      100,
+      300,
       () => {},
     ),
   );
@@ -123,7 +124,7 @@ function recorder(sim: Simulation) {
 
 function hitAcrossRenderedInterval(f: ReturnType<typeof fixture>) {
   f.step(0.7);
-  f.step(0.099);
+  f.step(0.009);
   expect(f.combat.plasmaContacts).toBe(0);
   for (let n = 0; n < 4; n++) f.step(substep);
   expect(f.combat.plasmaContacts).toBe(2);
@@ -141,9 +142,9 @@ describe("mounted plasma stream presentation", () => {
     for (const [index, hit] of hits.entries()) {
       expect(hit.x).toBeCloseTo(f.mounts[index].muzzleX + 75, 8);
       expect(hit.y).toBeCloseTo(f.mounts[index].muzzleY, 8);
-      expect(hit.time).toBeCloseTo(0.8, 8);
+      expect(hit.time).toBeCloseTo(twinContactTime, 8);
     }
-    f.sim.ticks = 49;
+    f.sim.ticks = 44;
     const graphics = recorder(f.sim);
     graphics.draw();
     const stamps = graphics.trailStamps();
@@ -167,16 +168,17 @@ describe("mounted plasma stream presentation", () => {
     const f = fixture("opponent");
     f.combat.presentationTimeOffset = 2;
     const hits = hitAcrossRenderedInterval(f);
-    expect(hits[0]?.time).toBeCloseTo(2.8, 8);
+    expect(hits[0]?.time).toBeCloseTo(2 + twinContactTime, 8);
     f.actor.lifecycle = "destroyed";
-    f.sim.ticks = 169;
+    f.sim.ticks = 164;
     const graphics = recorder(f.sim);
     for (let frame = 0; frame < 140; frame++) graphics.draw(false);
     expect(graphics.live.drawImage).toHaveBeenCalledTimes(280);
     const first = graphics.live.drawImage.mock.calls[0].slice(1);
     const last = graphics.live.drawImage.mock.calls[278].slice(1);
     expect(last).toEqual(first);
-    f.sim.ticks = Math.ceil((2.8 + PLASMA_ERUPTION_SECONDS) / STEP) + 1;
+    f.sim.ticks =
+      Math.ceil((2 + twinContactTime + PLASMA_ERUPTION_SECONDS) / STEP) + 1;
     graphics.live.drawImage.mockClear();
     graphics.draw(false);
     expect(graphics.live.drawImage).not.toHaveBeenCalled();
@@ -188,23 +190,28 @@ describe("mounted plasma stream presentation", () => {
     expect(graphics.trailStamps()).toBe(0);
   });
 
-  it("draws a travelling head and trail but no fireball for an empty miss", () => {
+  it("shows the full open-space paths and endpoint eruptions after the heads retire", () => {
     const f = fixture();
     f.step(0.7);
-    f.step(0.04, []);
-    f.sim.ticks = 45;
+    f.step(0.008, []);
+    f.sim.ticks = 42;
     const graphics = recorder(f.sim);
     graphics.draw();
-    expect(graphics.live.lineTo).toHaveBeenCalledTimes(2);
+    expect(graphics.live.lineTo).toHaveBeenCalled();
     expect(graphics.live.drawImage).not.toHaveBeenCalled();
-    f.step(0.36, []);
-    f.sim.ticks = 66;
-    expect(
-      f.combat.plasmaVisualEvents.every((event) => event.kind === "segment"),
-    ).toBe(true);
+    f.step(STEP, []);
+    f.sim.ticks = 44;
+    expect(f.combat.plasmaStreams).toEqual([]);
+    expect(f.combat.plasmaAirbursts).toBe(2);
     graphics.live.lineTo.mockClear();
     graphics.draw();
-    expect(graphics.live.lineTo).not.toHaveBeenCalled();
-    expect(graphics.live.drawImage).not.toHaveBeenCalled();
+    expect(graphics.live.drawImage).toHaveBeenCalledTimes(2);
+    for (const { muzzleX, muzzleY } of f.mounts)
+      expect(
+        graphics.live.lineTo.mock.calls.some(
+          ([x, y]) =>
+            Math.abs(x - muzzleX - 130) < 1e-8 && Math.abs(y - muzzleY) < 1e-8,
+        ),
+      ).toBe(true);
   });
 });

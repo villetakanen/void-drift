@@ -1,9 +1,9 @@
 import type { FxPass } from "@void-drift/core";
-import type { PlasmaStream, PlasmaVisualEvent } from "./schemas/salvage";
+import type { PlasmaVisualEvent } from "./schemas/salvage";
 
 export const PLASMA_ERUPTION_SECONDS = 0.26;
 export const PLASMA_ERUPTION_RADIUS = 58;
-const TRAIL_LENGTH = 28;
+export const PLASMA_SPEW_SECONDS = 0.085;
 const stamps = new Map<number, HTMLCanvasElement>();
 
 /** Bounded prepainted lobe stamps, shared by every rifle. */
@@ -39,34 +39,62 @@ function fireball(live: boolean, frame: number) {
   return canvas;
 }
 
-/** Instantaneous head, bounded by actual distance travelled since release. */
-export function drawPlasmaStreamHead(
+/** A short-lived silhouette of the actual swept path. It stays attached to the
+ * release muzzle and terminates at the physical endpoint, even between frames. */
+export function drawPlasmaSpew(
   ctx: CanvasRenderingContext2D,
   pass: FxPass,
-  head: PlasmaStream,
+  path: { originX: number; originY: number; x: number; y: number },
+  age: number,
 ) {
-  const speed = Math.hypot(head.vx, head.vy);
-  const length = Math.min(TRAIL_LENGTH, head.age * speed);
-  if (!pass.visible(head.x, head.y, TRAIL_LENGTH) || !pass.budget.take(true))
+  if (age < 0 || age >= PLASMA_SPEW_SECONDS) return;
+  const dx = path.x - path.originX;
+  const dy = path.y - path.originY;
+  const length = Math.hypot(dx, dy);
+  if (
+    !length ||
+    !pass.visible(
+      path.originX + dx / 2,
+      path.originY + dy / 2,
+      length / 2 + 5,
+    ) ||
+    !pass.budget.take(true)
+  )
     return;
+  const nx = -dy / length,
+    ny = dx / length;
   ctx.save();
-  ctx.strokeStyle = "#fff2b2";
-  ctx.lineWidth = 1.4;
-  if (length > 0 && speed > 0) {
+  ctx.globalAlpha *= (1 - age / PLASMA_SPEW_SECONDS) ** 0.8;
+  // The hot throat opens just beyond the muzzle and tapers into the contact.
+  for (const [width, color] of SPEW_LAYERS) {
+    ctx.fillStyle = color;
     ctx.beginPath();
     ctx.moveTo(
-      head.x - (head.vx / speed) * length,
-      head.y - (head.vy / speed) * length,
+      path.originX + nx * width * 0.3,
+      path.originY + ny * width * 0.3,
     );
-    ctx.lineTo(head.x, head.y);
-    ctx.stroke();
+    ctx.lineTo(
+      path.originX + dx * 0.19 + nx * width,
+      path.originY + dy * 0.19 + ny * width,
+    );
+    ctx.lineTo(path.x, path.y);
+    ctx.lineTo(
+      path.originX + dx * 0.19 - nx * width,
+      path.originY + dy * 0.19 - ny * width,
+    );
+    ctx.lineTo(
+      path.originX - nx * width * 0.3,
+      path.originY - ny * width * 0.3,
+    );
+    ctx.fill();
   }
-  ctx.fillStyle = "#fffdf1";
-  ctx.beginPath();
-  ctx.arc(head.x, head.y, 1.6, 0, Math.PI * 2);
-  ctx.fill();
   ctx.restore();
 }
+
+const SPEW_LAYERS = [
+  [3.6, "#ff9c39"],
+  [1.65, "#fff6c7"],
+] as const;
 
 /** A travelled segment is stamped once into persistent FX. */
 export function stampPlasmaSegment(

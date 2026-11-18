@@ -6,6 +6,7 @@ import {
   type FlightLayerId,
   type FlightPass,
   PARTS,
+  PLASMA_RIFLE,
   resizeFlightLayers,
   STEP,
 } from "@void-drift/mode-a";
@@ -134,6 +135,19 @@ onMount(() => {
         world.lineTo(link.endX, link.endY);
       }
       world.stroke();
+      world.strokeStyle = COLOR.resourceWarning;
+      world.setLineDash([]);
+      const now = encounter.sim.ticks * STEP;
+      for (const actor of encounter.sim.opponents) {
+        for (const event of actor.combat.plasmaVisualEvents) {
+          if (event.kind !== "impact" || now - event.time > 0.45) continue;
+          for (const band of PLASMA_RIFLE.blastBands) {
+            world.beginPath();
+            world.arc(event.x, event.y, band.radius, 0, Math.PI * 2);
+            world.stroke();
+          }
+        }
+      }
       world.restore();
     }
   }
@@ -279,6 +293,7 @@ onMount(() => {
       >
         <option value="three-loops">Three loops</option>
         <option value="held-approach">Held approach</option>
+        <option value="grazing-approach">Grazing approach · airburst</option>
       </select>
     </label>
     <div class="playback">
@@ -307,9 +322,11 @@ onMount(() => {
         <div class="stage">
           <FlightLayers
             bind:canvases
-            label={formation === "held-approach"
-              ? "A Fighter following a Wasp on a held firing approach"
-              : "Eight Wasps and eight Fighters taking turns at the crossings of three flight paths"}
+            label={formation === "grazing-approach"
+              ? "A Fighter holding a Wasp at the edge of its rifle cone"
+              : formation === "held-approach"
+                ? "A Fighter following a Wasp on a held firing approach"
+                : "Eight Wasps and eight Fighters taking turns at the crossings of three flight paths"}
           />
         </div>
         <figcaption>
@@ -319,7 +336,7 @@ onMount(() => {
               : "Live hull damage · finite power"}</span
           >
           <label for="target-traces"
-            >Target traces
+            >Target and blast traces
             <Switch
               id="target-traces"
               disabled={!ready}
@@ -369,6 +386,10 @@ onMount(() => {
             <div>
               <dt>Stream contacts</dt>
               <dd>{metrics?.plasmaContacts ?? 0}</dd>
+            </div>
+            <div>
+              <dt>Airbursts</dt>
+              <dd>{metrics?.plasmaAirbursts ?? 0}</dd>
             </div>
             <div>
               <dt>Target-loss vents</dt>

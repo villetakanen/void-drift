@@ -30,7 +30,7 @@ export interface TargetingConfig {
   slot1: TargetingWeapon;
   slot2: TargetingWeapon;
   mode: TargetingMode;
-  formation?: "three-loops" | "held-approach";
+  formation?: "three-loops" | "held-approach" | "grazing-approach";
 }
 export const TARGETING_CENTER = { x: 960, y: 540 };
 // Camera center and full world extent include margin around all three paths.
@@ -122,6 +122,7 @@ export interface TargetingSummary {
   plasmaReleases: number;
   plasmaVents: number;
   plasmaContacts: number;
+  plasmaAirbursts: number;
   plasmaIntervals: {
     short: number;
     sustained: number;
@@ -213,11 +214,13 @@ export class TargetingBench {
     this.sim.star.pos.set(-100000, -100000);
     this.sim.planets.length = 0;
     this.sim.opponents.length = 0;
-    const fleetSize = config.formation === "held-approach" ? 2 : COUNT;
+    const paired =
+      config.formation === "held-approach" ||
+      config.formation === "grazing-approach";
+    const fleetSize = paired ? 2 : COUNT;
     for (let i = 0; i < fleetSize; i++) {
       const actor = createPirate(0, i + 1);
-      const isFighter =
-        config.formation === "held-approach" ? i === 0 : i % 2 === 1;
+      const isFighter = paired ? i === 0 : i % 2 === 1;
       actor.loadout = LoadoutSchema.parse(isFighter ? fighter : wasp);
       const stats = buildStats(actor.loadout);
       this.fleetStats.push(stats);
@@ -240,15 +243,21 @@ export class TargetingBench {
     this.place(0);
   }
   private place(time: number) {
-    if (this.config.formation === "held-approach") {
+    const grazing = this.config.formation === "grazing-approach";
+    if (grazing || this.config.formation === "held-approach") {
       // Both ships move on one orbit. The leader opens and closes the gap
       // while the trailing hull faces the chord. Acquisition still uses each muzzle.
       const radius = 225;
       const bearing = time * 0.18;
-      const gap = 0.64 + 0.2 * Math.cos(time * 0.4);
+      // Aim the fitted rifle along the outer edge of its real acquisition cone.
+      const grazeAngle = this.config.slot1 === "plasma-rifle" ? 0.26 : -0.26;
+      const gap = grazing ? 0.52 : 0.64 + 0.2 * Math.cos(time * 0.4);
       for (const [index, actor] of this.sim.opponents.entries()) {
         const angle = index === 0 ? bearing : bearing + gap;
-        const speed = index === 0 ? 0.18 : 0.18 - 0.08 * Math.sin(time * 0.4);
+        const speed =
+          index === 0 || grazing
+            ? grazeAngle
+            : 0.18 - 0.08 * Math.sin(time * 0.4);
         actor.ship.pos.set(
           TARGETING_CENTER.x + radius * Math.cos(angle),
           TARGETING_CENTER.y + radius * Math.sin(angle),
@@ -257,7 +266,10 @@ export class TargetingBench {
           -radius * speed * Math.sin(angle),
           radius * speed * Math.cos(angle),
         );
-        actor.ship.rotation = angle + Math.PI / 2 + (index === 0 ? gap / 2 : 0);
+        actor.ship.rotation =
+          angle +
+          Math.PI / 2 +
+          (index === 0 ? gap / 2 + (grazing ? grazeAngle : 0) : 0);
       }
       return;
     }
@@ -346,7 +358,8 @@ export class TargetingBench {
         if (shooter.lifecycle === "destroyed") {
           if (
             shooter.combat.plasmaStreams.length ||
-            shooter.combat.plasmaContactEvents.length
+            shooter.combat.plasmaContactEvents.length ||
+            shooter.combat.plasmaBurstEvents.length
           ) {
             const start = performance.now();
             shooter.combat.stepPlasmaStreams(
@@ -509,6 +522,10 @@ export class TargetingBench {
         .length,
       plasmaReleases: this.sim.opponents.reduce(
         (sum, actor) => sum + actor.combat.plasmaReleases,
+        0,
+      ),
+      plasmaAirbursts: this.sim.opponents.reduce(
+        (sum, actor) => sum + actor.combat.plasmaAirbursts,
         0,
       ),
       plasmaContacts: this.sim.opponents.reduce(

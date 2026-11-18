@@ -282,6 +282,25 @@ describe("targeting bench", () => {
     expect(trailer.combat.lastPlasmaContact?.bodyId).toBe(2);
   });
 
+  it.each([
+    ["plasma-rifle", "light-ion-cannon"],
+    ["light-ion-cannon", "plasma-rifle"],
+  ] as const)(
+    "acquires a grazing lock and airbursts with %s / %s",
+    (slot1, slot2) => {
+      const bench = new TargetingBench({
+        slot1,
+        slot2,
+        formation: "grazing-approach",
+        mode: "sustained",
+      });
+      for (let i = 0; i < 300; i++) bench.step();
+      expect(bench.metrics.plasmaReleases).toBeGreaterThan(0);
+      expect(bench.metrics.plasmaContacts).toBe(0);
+      expect(bench.metrics.plasmaAirbursts).toBe(bench.metrics.plasmaReleases);
+    },
+  );
+
   it("steps the fitted Wasp plume and clears it when destroyed or reset", () => {
     const config: TargetingConfig = {
       slot1: "light-ion-cannon",
