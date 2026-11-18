@@ -31,3 +31,17 @@ The existing Playground fitting supplies the mount and barrel orientation. Mode 
 - A ship enters one rifle’s sector while a second rifle on the same hull sees empty space. Only the first mount reports a target.
 - An eligible wreck remains inside the sector as a closer ship crosses it. The rifle retains the wreck until it leaves or becomes ineligible. A surviving candidate can be selected on that substep.
 - A fragment passes the muzzle in an otherwise empty sector. The rifle reports empty.
+
+### Automatic charge cycle
+
+Each mount starts idle. With an acquired ship or wreck it charges against that ID for 0.7 simulation seconds at 5 power/s. Defence weapons execute first; guns draw from the remaining power in fitted slot order. An idle or partly charged rifle can fund charging only from power above the greater of 10 power and 10% of fitted capacity. Pay only for charge actually accumulated. When available power runs out, hold the accumulated charge while the same target remains eligible. Idle, holding, venting and cooldown consume zero rifle power.
+
+On reaching full charge with the same target, release as soon as 3.5 power can be debited while preserving that reserve (13.5 available for a 10-power reserve). Record exactly one release per funded cycle and spend the 3.5 immediately. The firing phase lasts 0.7 s even if the target leaves. A completed firing phase enters 2.1 s of cooldown. The complete charge and release cost 7 power.
+
+Loss or replacement of the charging target before release starts venting. Preserve the charge already paid for and empty it in proportion to the stored fraction, taking 0.3 s from full. A returning target cannot interrupt venting or the subsequent 2.1 s cooldown. At the end of recovery any currently eligible target can start a fresh charge. Each fitted rifle owns its timers and charge. Pausing freezes them; a fresh encounter starts idle.
+
+### Cycle scenarios
+
+- A held approach keeps the same opponent inside the rifle sector through a full charge, funded release, recovery and a second charge. The production scheduler reports the release and the ship pays for it once.
+- A short pass in the three-loop workload starts a charge and loses the target before release. The rifle completes a partial vent and recovery. Its neighbour can continue operating independently.
+- Two full rifles compete for one affordable release. The first eligible gun in slot order releases. The second holds its charge while its target remains eligible and releases when power recovers.
