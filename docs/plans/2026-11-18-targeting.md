@@ -2,8 +2,9 @@
 
 1. **Deliver the Lab Targeting bench and baseline the existing selector.** Run the [16-Wasp ring](../specs/lab/targeting-bench/spec.md) with twin cannons, mixed mounts and twin turrets. Keep production plumes and weapon effects active. Retain candidate preparation, acquisition, physical-contact, combat, plume-update, render/FX and presented frame costs with the acquisition revision, device, browser and workload. Compare whole-frame differences attributed to the selector only with matched firing, contacts, active emitters and visuals.
 2. **Locate the expensive work and set a budget.** Examine visits, mount comparisons and precise geometry. Compare the ring with a dense wreck/fragment encounter before drawing conclusions about all modes.
-3. **Implement the [single-pass targeting contract](../specs/game/targeting/spec.md).** Establish reference results offline, then measure cheaper geometric approximations against both target quality and the agreed cost. Keep firing, damage and ordered energy spending in production execution.
-4. **Repeat the baseline and verify encounter behavior.** Compare matched ring workloads, live-target loss, Gauntlet and the dense derelict case. Use these results to decide readiness for plasma integration.
+3. **Share the combat roster across shooters.** Prepare each live ship once per fleet substep for Gauntlet and the bench. Verify stable IDs, membership lifetime, shooter exclusion, ally interception, idle acquisition work and construction counts. Compare this slice with the existing selector.
+4. **Implement the [single-pass targeting contract](../specs/game/targeting/spec.md).** Establish reference results offline, then measure cheaper geometric approximations against both target quality and the agreed cost. Keep firing, damage and ordered energy spending in production execution.
+5. **Repeat the baseline and verify encounter behavior.** Compare matched ring workloads, live-target loss, Gauntlet and the dense derelict case. Use these results to decide readiness for plasma integration.
 
 ## Initial ring measurement
 
@@ -36,6 +37,16 @@ The control recorded each turret's selected body and aim point by mount and subs
 
 A separate headless CPU comparison advanced the same twin-turret simulation without rendering, with the optional selector counters disabled. Four runs per variant, 60 warm-up ticks and 240 measured ticks per run, averaged 0.283–0.290 ms per complete tick live and 0.162–0.171 ms with replay. Target, funding and shot state agreed at 21 checkpoints per run. The difference includes the cost of the replay lookup in the control. Dense wreck geometry remains unmeasured.
 
-### First algorithm change
+### Shared roster and subsequent selector
 
-Give the combat substep one roster of candidate bodies and register each shooter's eligible opponents and active weapon requests against it before firing. Currently the ring builds 16 lists of 15 body adapters, then each turret visits its list and sorts candidates. Capture stable identities and aim coordinates against the common roster. Keep contact resolution live and retain Gauntlet's ally-interception policy. First verify snapshot lifetime, shooter exclusion, and zero work on an empty request set. Then replace mount-local acquisition scans with the encounter-wide pass and compare both body visits and candidate/request comparisons. The target is at most 16 acquisition body visits on the populated ring. A different loop order alone can still perform 480 comparisons.
+The plume-equipped baseline builds 16 lists of 15 body adapters before turret acquisition. The first change gives Gauntlet and the ring one substep roster and applies each shooter's eligibility policy as it reads that roster. Record fleet roster builds, adapters prepared and preparation time alongside the existing acquisition and contact measurements. On a full 16-Wasp substep that needs the roster, expect at most 16 ship adapters. Verify identity, refreshed poses and membership at the substep boundary. In an idle acquisition substep there are no selection visits, comparisons or acquisition-only preparation. Existing contact work, where needed, keeps its own accounting. Validate unchanged firing and contact outcomes in both production paths.
+
+The following change registers active mount requests and evaluates them in one acquisition traversal. Only that change can establish the target of at most 16 acquisition body visits on the populated ring. A shared roster can still be scanned repeatedly. Report candidate/request comparisons independently since even a single outer traversal can perform 480 such comparisons.
+
+### Shared roster verification
+
+The Gauntlet and ring pass the same live ship adapters to every participating shooter in a combat substep. The sustained 32-turret ring now prepares 16 adapters once per substep. Previously each of 16 shooters prepared 15 adapters (240 total). A cooling cannon fleet builds no roster until another shot or tracking request needs it. Selector comparisons still happen at each mount. The turret baseline now records 512 visited entries and 480 eligible comparisons because it counts the 32 self entries rejected by policy.
+
+A deterministic comparison on the local Lab covered twin cannons, twin turrets, mixed cannon/turret and twin lasers under both workloads. Ten checkpoints per configuration at 30-tick intervals matched the pre-roster revision `9a5be059` for per-ship hull, power, lifecycle, discharges, target IDs, angles, cooldowns and active plume counts. The mixed-material compatibility path temporarily attaches shared ship references to a shooter's owned body list so successive shots see newly released fragments.
+
+Next, capture each mount's trigger or aim point before ordered discharge, then evaluate all registered requests during one fleet traversal. Include the dense wreck workload when setting the CPU budget. Gauntlet's live ship adapter uses the supplied start-of-substep position for instantaneous queries; settle the sampling instant explicitly in a moving-target case before changing that behavior.

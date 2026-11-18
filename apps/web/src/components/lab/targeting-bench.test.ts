@@ -20,6 +20,12 @@ describe("targeting bench", () => {
       expect(bench.metrics.mounts).toBe(32);
       expect(bench.metrics.discharges).toBeGreaterThan(0);
       expect(bench.metrics.bodyVisitsMean).toBeGreaterThan(0);
+      expect(bench.metrics.rosterBuildsMean).toBeLessThanOrEqual(1);
+      expect(bench.metrics.adaptersMean).toBeLessThanOrEqual(16);
+      if (slots[0] === "light-ion-cannon" && slots[1] === "light-ion-cannon")
+        expect(bench.metrics.rosterBuildsMean).toBeLessThan(1);
+      if (slots[0] === "ion-point-defence" && slots[1] === "ion-point-defence")
+        expect(bench.metrics.rosterBuildsMean).toBe(1);
     });
   }
   it("steps the fitted Wasp plume and clears it when destroyed or reset", () => {

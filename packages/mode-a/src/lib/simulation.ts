@@ -667,26 +667,48 @@ export class Simulation {
               pirateCombatDamage[second] += GAUNTLET_SHIP_CONTACT.damage;
             }
           }
-          const piratesAsTargets = this.opponents.flatMap(
-            (target, targetIndex) =>
-              target.lifecycle === "destroyed" ||
-              target.resources.hull - pirateCombatDamage[targetIndex] <= 0
-                ? []
-                : [
-                    liveShipBody(
-                      900001 + targetIndex,
-                      target.ship,
-                      target.resources.hull - pirateCombatDamage[targetIndex],
-                      (amount) => {
-                        pirateCombatDamage[targetIndex] += amount;
-                      },
-                      opponentPrevious[targetIndex],
-                    ),
-                  ],
-          );
           const arrivalsComplete = this.opponents.every(
             (actor) => actor.lifecycle !== "arriving",
           );
+          const needsRoster =
+            arrivalsComplete &&
+            ((playerCanFire && !!this.salvage?.needsWeaponRoster(STEP / 4)) ||
+              this.opponents.some(
+                (actor, index) =>
+                  piratesCanFire[index] &&
+                  actor.combat.needsWeaponRoster(STEP / 4),
+              ));
+          // One set of physical adapters is shared for this combat substep.
+          const roster = needsRoster
+            ? [
+                liveShipBody(
+                  900000,
+                  this.ship,
+                  playerCanFire ? playerHullAtSubstep : 0,
+                  (amount) => {
+                    playerCombatDamage += amount;
+                  },
+                  { x: previousX, y: previousY },
+                ),
+                ...this.opponents.flatMap((target, targetIndex) =>
+                  target.lifecycle === "destroyed" ||
+                  target.resources.hull - pirateCombatDamage[targetIndex] <= 0
+                    ? []
+                    : [
+                        liveShipBody(
+                          900001 + targetIndex,
+                          target.ship,
+                          target.resources.hull -
+                            pirateCombatDamage[targetIndex],
+                          (amount) => {
+                            pirateCombatDamage[targetIndex] += amount;
+                          },
+                          opponentPrevious[targetIndex],
+                        ),
+                      ],
+                ),
+              ]
+            : [];
           if (this.salvage && arrivalsComplete && playerCanFire) {
             this.salvage.stepWeapons(
               STEP / 4,
@@ -695,25 +717,14 @@ export class Simulation {
               this.state.resources,
               buildStats(this.settings.loadout).capacity,
               this.planets,
-              piratesAsTargets,
+              roster,
+              undefined,
+              { shooterId: 900000 },
             );
           }
           for (let index = 0; index < this.opponents.length; index++) {
             const pirate = this.opponents[index];
             if (!arrivalsComplete || !piratesCanFire[index]) continue;
-            const playerTarget = liveShipBody(
-              900000,
-              this.ship,
-              playerCanFire ? playerHullAtSubstep : 0,
-              (amount) => {
-                playerCombatDamage += amount;
-              },
-              { x: previousX, y: previousY },
-            );
-            const targets = [
-              playerTarget,
-              ...piratesAsTargets.filter((body) => body.id !== 900001 + index),
-            ];
             pirate.combat.stepWeapons(
               STEP / 4,
               pirate.ship,
@@ -721,8 +732,9 @@ export class Simulation {
               pirate.resources,
               buildStats(pirate.loadout).capacity,
               this.planets,
-              targets,
-              [playerTarget],
+              roster,
+              undefined,
+              { shooterId: 900001 + index, aimId: 900000 },
             );
             pirate.weaponEvents = pirate.combat.events;
             pirate.weapons = pirate.combat.weapons;

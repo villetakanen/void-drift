@@ -277,6 +277,9 @@ describe("Gauntlet flight and combat", () => {
     const star = { ...new Simulation().star, pos: new Vec2(10000, 10000) };
     let playerDamage = 0,
       allyDamage = 0;
+    const selfTarget = liveShipBody(900002, ship, 100, () => {
+      throw new Error("shooter hit itself");
+    });
     const playerTarget = liveShipBody(900000, player, 100, (amount) => {
       playerDamage += amount;
     });
@@ -291,8 +294,9 @@ describe("Gauntlet flight and combat", () => {
         { hull: 100, power: 100 },
         100,
         [],
-        [playerTarget, allyTarget],
-        [playerTarget],
+        [selfTarget, playerTarget, allyTarget],
+        undefined,
+        { shooterId: 900002, aimId: 900000 },
       );
     expect(allyDamage).toBeGreaterThan(0);
     expect(playerDamage).toBe(0);
@@ -309,6 +313,9 @@ describe("Gauntlet flight and combat", () => {
     };
     const player = { ...ship, pos: new Vec2(150, 0), radius: 12 };
     const ally = { ...ship, pos: new Vec2(75, 0), radius: 12 };
+    const selfTarget = liveShipBody(900002, ship, 100, () => {
+      throw new Error("shooter hit itself");
+    });
     const playerTarget = liveShipBody(900000, player, 100, () => {});
     const allyTarget = liveShipBody(900001, ally, 100, () => {});
     system.stepWeapons(
@@ -318,13 +325,27 @@ describe("Gauntlet flight and combat", () => {
       { hull: 100, power: 100 },
       100,
       [],
-      [playerTarget, allyTarget],
-      [playerTarget],
+      [selfTarget, playerTarget, allyTarget],
+      undefined,
+      { shooterId: 900002, aimId: 900000 },
     );
     expect(
       system.weapons.find((weapon) => weapon.kind === "ion-point-defence")
         ?.target,
     ).toBe(900000);
+    system.stepWeapons(
+      1 / 240,
+      ship,
+      { ...new Simulation().star, pos: new Vec2(10000, 10000) },
+      { hull: 100, power: 100 },
+      100,
+      [],
+      [allyTarget],
+    );
+    expect(
+      system.weapons.find((weapon) => weapon.kind === "ion-point-defence")
+        ?.target,
+    ).toBe(900001);
   });
 
   it("keeps saved rail fittings inert against a live ship", () => {

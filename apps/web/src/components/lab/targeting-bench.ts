@@ -36,7 +36,13 @@ const SUBSTEP = STEP / 4;
 const WARMUP = 120;
 const WINDOW = 600;
 
-type Sample = TargetingMetrics & { combatMs: number; discharges: number };
+type Sample = TargetingMetrics & {
+  combatMs: number;
+  discharges: number;
+  rosterMs: number;
+  rosterBuilds: number;
+  adapters: number;
+};
 export interface TargetingSummary {
   ships: number;
   mounts: number;
@@ -55,6 +61,9 @@ export interface TargetingSummary {
   combatMs: number;
   adapterMs: number;
   plumeMs: number;
+  rosterMs: number;
+  rosterBuildsMean: number;
+  adaptersMean: number;
 }
 function percentile(samples: Sample[], field: keyof Sample) {
   if (!samples.length) return 0;
@@ -144,6 +153,28 @@ export class TargetingBench {
       let discharges = 0;
       let combatMs = 0;
       const damage = Array<number>(COUNT).fill(0);
+      const needsRoster = this.sim.opponents.some(
+        (actor) =>
+          actor.lifecycle !== "destroyed" &&
+          actor.combat.needsWeaponRoster(SUBSTEP),
+      );
+      const rosterStart = performance.now();
+      const roster = needsRoster
+        ? this.sim.opponents.flatMap((target, index) => {
+            if (target.lifecycle === "destroyed") return [];
+            return [
+              liveShipBody(
+                index + 1,
+                target.ship,
+                target.resources.hull,
+                (amount) => {
+                  if (this.config.mode === "live") damage[index] += amount;
+                },
+              ),
+            ];
+          })
+        : [];
+      const rosterMs = needsRoster ? performance.now() - rosterStart : 0;
       for (let i = 0; i < COUNT; i++) {
         const shooter = this.sim.opponents[i];
         if (shooter.lifecycle === "destroyed") continue;
@@ -194,19 +225,6 @@ export class TargetingBench {
         shooter.ship.vel.set(vx, vy);
         shooter.ship.rotation = rotation;
 
-        const targets = this.sim.opponents.flatMap((target, index) => {
-          if (index === i || target.lifecycle === "destroyed") return [];
-          return [
-            liveShipBody(
-              index + 1,
-              target.ship,
-              Math.max(0, target.resources.hull - damage[index]),
-              (amount) => {
-                if (this.config.mode === "live") damage[index] += amount;
-              },
-            ),
-          ];
-        });
         const before =
           shooter.combat.ionDischarges +
           shooter.combat.laserPulses +
@@ -219,7 +237,9 @@ export class TargetingBench {
           shooter.resources,
           capacity,
           this.sim.planets,
-          targets,
+          roster,
+          undefined,
+          { shooterId: i + 1 },
         );
         combatMs += performance.now() - start;
         shooter.weaponEvents = shooter.combat.events;
@@ -238,7 +258,14 @@ export class TargetingBench {
       this.discharges += discharges;
       this.substeps++;
       if (this.substeps > WARMUP) {
-        this.samples.push({ ...this.counters, combatMs, discharges });
+        this.samples.push({
+          ...this.counters,
+          combatMs,
+          discharges,
+          rosterMs,
+          rosterBuilds: Number(needsRoster),
+          adapters: roster.length,
+        });
         if (this.samples.length > WINDOW) this.samples.shift();
       }
     }
@@ -296,6 +323,13 @@ export class TargetingBench {
         (this.samples.length || 1),
       adapterMs: this.tickPercentile("adapterMs"),
       plumeMs: this.tickPercentile("plumeMs"),
+      rosterMs: percentile(this.samples, "rosterMs"),
+      rosterBuildsMean:
+        this.samples.reduce((sum, sample) => sum + sample.rosterBuilds, 0) /
+        (this.samples.length || 1),
+      adaptersMean:
+        this.samples.reduce((sum, sample) => sum + sample.adapters, 0) /
+        (this.samples.length || 1),
       combatMs: percentile(this.samples, "combatMs"),
     };
   }

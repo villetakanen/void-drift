@@ -19,6 +19,10 @@ All active ships obtain their mounted weapon targets from one acquisition pass o
 
 The encounter supplies live body identities, geometry, motion, occluders and the intended opponents for each shooter. Each active firing or tracking rule supplies its origin, orientation, reach and previous target where applicable. Idle point defence can track while it cools. An empty Practice encounter and a ship carrying only disabled fittings require no acquisition work.
 
+The combat substep owns one roster shared by all shooters. Each participating live ship has one physical body adapter and a stable encounter ID. Each shooter supplies its identity and encounter eligibility policy against that roster. Exclude the shooter from its own contacts and acquisitions. Other ships can physically intercept regardless of whether that shooter may acquire them. Preserve existing encounter-owned derelict material and celestial blocking.
+
+A roster's membership and pose references are valid for its substep. Refresh them before the next substep, including spawns, deaths and pose changes. A retained weapon target uses a stable ID, and a substep aim point is a captured coordinate. Neither retains a roster index or mutable adapter across substeps. Physical contact observes current damageability at discharge. Roster preparation and selection are separate operations with independently observable costs.
+
 Register the current requests before visiting bodies. Evaluate each body against the relevant requests during its visit, sharing eligibility and geometric work where the inputs match. All ready Light Ion Cannons on one chassis share a trigger. Two turrets at different pivots can have different winners. Return a trigger or a stable target identity and aim point as the weapon requires. Selection does not spend power, rotate barrels, deal damage or run the enemy pilot.
 
 ### Constraints
@@ -41,6 +45,8 @@ Take acquisition inputs at one defined instant per combat substep. Fire in the e
 
 Keep the trigger or aim point from acquisition for the rest of the substep. If an earlier weapon destroys the selected body, the later weapon can still fire toward the recorded position under its normal alignment, contact, funding and cooldown rules. A cannon that discharges into empty space spends its normal shot cost. A turret whose firing rule requires physical contact still checks the barrel line. Destruction requires no target revalidation or replacement search. Newly born fragments can intercept immediately and first participate in selection on the next substep.
 
+- Count roster builds and live body adapters prepared per fleet substep, together with preparation time. An active 16-Wasp ring prepares one roster with at most 16 live-ship adapters for the whole fleet. Reusing the roster for 32 weapons leaves construction independent of weapon count.
+- A substep with no acquisition requests performs zero acquisition visits, comparisons and acquisition-only candidate preparation. A physical query that still needs encounter bodies accounts for that preparation under physical work. A substep with neither kind of request need not build a roster.
 - Instrument the production simulation boundary. With acquisition requests and B encounter bodies, the outer candidate traversal visits at most B bodies across all shooters combined. Count visits inside any helper that enumerates candidates. A second traversal hidden behind a per-weapon list, sort, or mode adapter fails this criterion. Verify zero visits with no requests.
 - Record active requests, candidate/request comparisons, exact material tests, visibility tests, temporary allocations, acquisition time and physical-contact time. A single traversal can still cost B times the number of requests. Reject impossible candidates cheaply before exact geometry, share identical requests and avoid rebuilding candidate arrays per mount.
 - Compare equal seeded workloads against the recorded baseline on the same device and build settings, with the same active ships, fittings and body populations. Include an empty encounter, a dense fragment field with multiple mounts, and Gauntlet with two opponents and quarter-step combat. Report median and p95 acquisition and total simulation time, plus p95 frame interval in real flight. Report body and mount counts and the device with the timings.
@@ -57,6 +63,12 @@ Keep the trigger or aim point from acquisition for the rest of the substep. If a
 ### Scenarios
 
 ```gherkin
+Scenario: The next substep refreshes the roster
+  Given one shared roster includes a ship that is destroyed before the next substep
+  When surviving shooters request targets in the next substep
+  Then they read the refreshed membership and poses
+  And no retained target can resolve to a different ship through a reused roster position
+
 Scenario: Several mounts share one view of the encounter
   Given 16 ships each carry two tracking turrets
   When the fleet acquires targets during a combat substep

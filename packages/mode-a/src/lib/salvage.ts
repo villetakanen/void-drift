@@ -170,6 +170,21 @@ function canFire(resources: Resources, capacity: number, cost: number) {
 export class SalvageSystem {
   targetingMetrics?: TargetingMetrics;
   private aimingBodies: readonly SalvageBody[] | null = null;
+  private activeBodies: readonly SalvageBody[] | null = null;
+  private get weaponBodies(): readonly SalvageBody[] {
+    return this.activeBodies ?? this.bodies;
+  }
+  private shooterId: number | null = null;
+  private aimId: number | null = null;
+  private acquisitionEligible(body: SalvageBody) {
+    return (
+      body.id !== this.shooterId &&
+      (this.aimId === null || body.id === this.aimId)
+    );
+  }
+  private contactEligible(body: SalvageBody) {
+    return body.id !== this.shooterId;
+  }
   readonly weapons: WeaponState[];
   readonly angles: Record<string, number> = {};
   bodies: SalvageBody[] = [];
@@ -570,12 +585,11 @@ export class SalvageSystem {
   ) {
     const pose = weaponPose(ship, weapon.mount, weapon.angle);
     const started = this.targetingMetrics ? performance.now() : 0;
-    const candidates = (this.aimingBodies ?? this.bodies)
+    const candidates = (this.aimingBodies ?? this.weaponBodies)
       .flatMap((body) => {
-        if (this.targetingMetrics) {
-          this.targetingMetrics.bodyVisits++;
-          this.targetingMetrics.comparisons++;
-        }
+        if (this.targetingMetrics) this.targetingMetrics.bodyVisits++;
+        if (!this.acquisitionEligible(body)) return [];
+        if (this.targetingMetrics) this.targetingMetrics.comparisons++;
         const distance = Math.hypot(body.x - pose.x, body.y - pose.y);
         if (
           body.kind === "cell" ||
@@ -645,8 +659,9 @@ export class SalvageSystem {
         blocked = true;
       }
     }
-    for (const body of this.bodies) {
-      if (body.kind === "cell" || body.hull <= 0) continue;
+    for (const body of this.weaponBodies) {
+      if (!this.contactEligible(body) || body.kind === "cell" || body.hull <= 0)
+        continue;
       const d = this.cast(body, x, y, dx, dy, 0, reach);
       if (d < distance || (d === distance && !blocked && !hit)) {
         distance = d;
@@ -658,11 +673,10 @@ export class SalvageSystem {
   /** Forward ship-width by 300 rectangle; acquisition does not steer muzzle rays. */
   ionTrigger(ship: GameObject, star: Star, planets: readonly Planet[]) {
     const started = this.targetingMetrics ? performance.now() : 0;
-    const triggered = (this.aimingBodies ?? this.bodies).some((body) => {
-      if (this.targetingMetrics) {
-        this.targetingMetrics.bodyVisits++;
-        this.targetingMetrics.comparisons++;
-      }
+    const triggered = (this.aimingBodies ?? this.weaponBodies).some((body) => {
+      if (this.targetingMetrics) this.targetingMetrics.bodyVisits++;
+      if (!this.acquisitionEligible(body)) return false;
+      if (this.targetingMetrics) this.targetingMetrics.comparisons++;
       if (body.kind === "cell" || body.hull <= 0) return false;
       if (body.kind === "ship") {
         const dx = body.x - ship.pos.x;
@@ -786,12 +800,11 @@ export class SalvageSystem {
     };
     const started = this.targetingMetrics ? performance.now() : 0;
     // Visit bodies nearest-bound first so distant material is skipped cheaply.
-    const nearby = (this.aimingBodies ?? this.bodies)
+    const nearby = (this.aimingBodies ?? this.weaponBodies)
       .flatMap<CandidateOption>((body) => {
-        if (this.targetingMetrics) {
-          this.targetingMetrics.bodyVisits++;
-          this.targetingMetrics.comparisons++;
-        }
+        if (this.targetingMetrics) this.targetingMetrics.bodyVisits++;
+        if (!this.acquisitionEligible(body)) return [];
+        if (this.targetingMetrics) this.targetingMetrics.comparisons++;
         if (body.kind === "cell" || body.hull <= 0) return [];
         if (body.kind === "ship") {
           const dx = body.x - pivot.x;
@@ -1065,8 +1078,9 @@ export class SalvageSystem {
         star.radius,
         Infinity,
       );
-      for (const body of this.bodies) {
+      for (const body of this.weaponBodies) {
         if (
+          !this.contactEligible(body) ||
           body.kind === "cell" ||
           body.hull <= 0 ||
           Math.hypot(body.x - pose.x, body.y - pose.y) > config.range ||
@@ -1156,8 +1170,13 @@ export class SalvageSystem {
           ),
         );
       let hit: SalvageBody | undefined;
-      for (const body of this.bodies) {
-        if (body.kind === "cell" || body.hull <= 0) continue;
+      for (const body of this.weaponBodies) {
+        if (
+          !this.contactEligible(body) ||
+          body.kind === "cell" ||
+          body.hull <= 0
+        )
+          continue;
         const distance = this.cast(
           body,
           pose.muzzleX,
@@ -1190,7 +1209,19 @@ export class SalvageSystem {
     this.energySpent += config.energy;
   }
 
-  /** Runs this ship's normal weapon pipeline against one temporary live ship. */
+  /** Whether this substep needs encounter bodies for acquisition or a shot. */
+  needsWeaponRoster(dt: number) {
+    return (
+      this.shots.length > 0 ||
+      this.weapons.some(
+        (weapon) =>
+          weapon.kind === "ion-point-defence" ||
+          weapon.kind === "laser" ||
+          this.time + dt + 1e-9 >= weapon.readyAt,
+      )
+    );
+  }
+  /** Runs this ship's normal weapon pipeline against shared live contacts. */
   stepWeapons(
     dt: number,
     ship: GameObject,
@@ -1200,71 +1231,81 @@ export class SalvageSystem {
     planets: readonly Planet[],
     targets: SalvageBody | readonly SalvageBody[],
     aimTargets?: readonly SalvageBody[],
+    policy?: { shooterId: number; aimId?: number },
   ) {
     const targetList = Array.isArray(targets) ? targets : [targets];
     this.time += dt;
     this.events = this.events.filter((event) => this.time - event.time <= 0.2);
-    this.bodies.push(...targetList);
+    const ownsBodies = this.bodies.length > 0;
+    const rosterOffset = this.bodies.length;
+    if (ownsBodies) this.bodies.push(...targetList);
+    this.activeBodies = ownsBodies ? this.bodies : targetList;
     this.aimingBodies = aimTargets ?? null;
+    this.shooterId = policy?.shooterId ?? null;
+    this.aimId = policy?.aimId ?? null;
     try {
-      this.fireWeapons(dt, ship, star, resources, capacity, [...planets]);
-    } finally {
-      this.aimingBodies = null;
-    }
-    this.bodies = this.bodies.filter((body) => !targetList.includes(body));
+      this.fireWeapons(dt, ship, star, resources, capacity, planets);
+      this.activeBodies = null;
 
-    this.shots = this.shots.filter((shot) => {
-      let first = contactTime(
-        shot.x - star.pos.x,
-        shot.y - star.pos.y,
-        shot.vx,
-        shot.vy,
-        star.radius,
-        dt,
-      );
-      for (const planet of planets)
-        first = Math.min(
-          first,
-          contactTime(
-            shot.x - planet.pos.x,
-            shot.y - planet.pos.y,
-            shot.vx,
-            shot.vy,
-            planet.radius,
-            dt,
-          ),
-        );
-      let hitTarget: SalvageBody | undefined;
-      for (const target of targetList) {
-        if (target.hull <= 0) continue;
-        const targetTime = contactTime(
-          shot.x - target.previousX,
-          shot.y - target.previousY,
-          shot.vx - target.vx,
-          shot.vy - target.vy,
-          target.radius,
+      this.shots = this.shots.filter((shot) => {
+        let first = contactTime(
+          shot.x - star.pos.x,
+          shot.y - star.pos.y,
+          shot.vx,
+          shot.vy,
+          star.radius,
           dt,
         );
-        if (targetTime < first) {
-          first = targetTime;
-          hitTarget = target;
+        for (const planet of planets)
+          first = Math.min(
+            first,
+            contactTime(
+              shot.x - planet.pos.x,
+              shot.y - planet.pos.y,
+              shot.vx,
+              shot.vy,
+              planet.radius,
+              dt,
+            ),
+          );
+        let hitTarget: SalvageBody | undefined;
+        for (const target of targetList) {
+          if (!this.contactEligible(target) || target.hull <= 0) continue;
+          const targetTime = contactTime(
+            shot.x - target.previousX,
+            shot.y - target.previousY,
+            shot.vx - target.vx,
+            shot.vy - target.vy,
+            target.radius,
+            dt,
+          );
+          if (targetTime < first) {
+            first = targetTime;
+            hitTarget = target;
+          }
         }
+        shot.x += shot.vx * Math.min(dt, first);
+        shot.y += shot.vy * Math.min(dt, first);
+        if (hitTarget)
+          this.damage(hitTarget, WEAPONS.rail.damage, this.time - dt + first);
+        if (first !== Infinity) this.emit("collision", shot.x, shot.y);
+        return first === Infinity && !outside(shot.x, shot.y);
+      });
+      for (const weapon of this.weapons) {
+        if (!weapon.recoil) continue;
+        const duration = Math.min(dt, weapon.recoil.remaining);
+        const impulse = this.recoilAcceleration * duration;
+        ship.vel.x -= Math.cos(weapon.recoil.angle) * impulse;
+        ship.vel.y -= Math.sin(weapon.recoil.angle) * impulse;
+        weapon.recoil.remaining -= duration;
+        if (weapon.recoil.remaining <= 1e-9) weapon.recoil = null;
       }
-      shot.x += shot.vx * Math.min(dt, first);
-      shot.y += shot.vy * Math.min(dt, first);
-      if (hitTarget)
-        this.damage(hitTarget, WEAPONS.rail.damage, this.time - dt + first);
-      if (first !== Infinity) this.emit("collision", shot.x, shot.y);
-      return first === Infinity && !outside(shot.x, shot.y);
-    });
-    for (const weapon of this.weapons) {
-      if (!weapon.recoil) continue;
-      const duration = Math.min(dt, weapon.recoil.remaining);
-      const impulse = this.recoilAcceleration * duration;
-      ship.vel.x -= Math.cos(weapon.recoil.angle) * impulse;
-      ship.vel.y -= Math.sin(weapon.recoil.angle) * impulse;
-      weapon.recoil.remaining -= duration;
-      if (weapon.recoil.remaining <= 1e-9) weapon.recoil = null;
+    } finally {
+      this.aimingBodies = null;
+      this.activeBodies = null;
+      if (ownsBodies) this.bodies.splice(rosterOffset, targetList.length);
+      this.shooterId = null;
+      this.aimId = null;
     }
   }
 
@@ -1467,7 +1508,12 @@ export class SalvageSystem {
         );
       let hit: SalvageBody | undefined;
       for (const body of existingBodies) {
-        if (body.kind === "cell" || body.hull <= 0) continue;
+        if (
+          !this.contactEligible(body) ||
+          body.kind === "cell" ||
+          body.hull <= 0
+        )
+          continue;
         const time = this.cast(
           body,
           shot.x,

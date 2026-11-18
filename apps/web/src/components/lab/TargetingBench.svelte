@@ -325,6 +325,28 @@ onMount(() => {
           <dd>{elapsed.toFixed(1)} s</dd>
         </div>
       </dl>
+      <section class="roster" aria-label="Shared roster construction">
+        <header>
+          <h2>Shared roster</h2>
+          <p>Per fleet substep</p>
+        </header>
+        <dl>
+          <div>
+            <dt>Mean builds</dt>
+            <dd>
+              {metrics?.samples ? metrics.rosterBuildsMean.toFixed(2) : "—"}
+            </dd>
+          </div>
+          <div>
+            <dt>Mean ship adapters</dt>
+            <dd>{metrics?.samples ? metrics.adaptersMean.toFixed(2) : "—"}</dd>
+          </div>
+          <div>
+            <dt>Build p95 (ms)</dt>
+            <dd>{metrics?.samples ? ms(metrics.rosterMs) : "—"}</dd>
+          </div>
+        </dl>
+      </section>
     </div>
     <aside aria-label="Performance timings">
       <h2>Acquisition work</h2>
@@ -416,11 +438,13 @@ onMount(() => {
           <p>
             Each tick advances four combat substeps. Full simulation includes
             all ticks processed in the callback and the encounter setup for
-            each. Preparation includes scripted motion, power, body adapters and
-            sampling overhead. Persistent FX passes are part of Canvas
-            submission. Frame intervals include browser scheduling; Canvas
-            submission times end before asynchronous raster and compositing
-            finish. FX passes include plume and weapon light.
+            each. Encounter preparation includes scripted motion, power, the
+            shared roster build and sampling overhead. Body visits count how
+            often selectors examine candidates after roster construction.
+            Persistent FX passes are part of Canvas submission. Frame intervals
+            include browser scheduling; Canvas submission times end before
+            asynchronous raster and compositing finish. FX passes include plume
+            and weapon light.
           </p>
         </details>
       {/if}
@@ -534,14 +558,42 @@ dd {
   padding-top: var(--spacing-sm);
 }
 .fleet div {
-  display: grid;
-  gap: 0;
+  justify-content: start;
+  align-items: baseline;
+  gap: var(--spacing-xs);
 }
 .fleet dt {
   color: var(--color-text-muted);
   font-size: var(--font-size-caption);
 }
 .fleet dd {
+  font-size: var(--font-size-label);
+}
+.roster {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  align-items: start;
+  padding-top: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+  border-top: 1px solid var(--color-border-subtle);
+}
+.roster dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+}
+.roster dl div {
+  justify-content: start;
+  align-items: baseline;
+  gap: var(--spacing-xs);
+}
+.roster p,
+.roster dt {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+  margin: 0;
+}
+.roster dd {
   font-size: var(--font-size-label);
 }
 </style>
