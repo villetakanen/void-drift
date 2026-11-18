@@ -148,6 +148,22 @@ describe("Plasma rifle charge cycle", () => {
     },
   );
 
+  it("vents a full lock that is replaced on the step release power recovers", () => {
+    const f = fixture(["plasma-rifle", null], 13.5);
+    const [rifle] = f.rifles;
+    f.advance(0.7);
+    expect(rifle.plasma?.charge).toBeCloseTo(1);
+    expect(f.system.plasmaReleases).toBe(0);
+
+    f.resources.power = 13.5;
+    f.step(substep, [f.target(21)]);
+    expect(rifle.plasma?.phase).toBe("venting");
+    expect(rifle.plasma?.remaining).toBeCloseTo(0.3 - substep);
+    expect(f.system.plasmaReleases).toBe(0);
+    expect(f.system.plasmaVents).toBe(1);
+    expect(f.resources.power).toBeCloseTo(13.5);
+  });
+
   it.each([true, false])(
     "shares scarce release funding with a ready cannon in slot order (rifle first: %s)",
     (rifleFirst) => {
