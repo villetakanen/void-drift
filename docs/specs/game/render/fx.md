@@ -26,6 +26,10 @@ The aperture-cut pass deliberately removes light over derelict openings after
 the FX surface is composited into its canvas. It is a geometric reveal rule, not
 history cleanup.
 
+## Plasma rifle fumes
+
+A target-loss vent emits paired, soft orange particles into FX from the rifle's actual purge mouths. They inherit the release drift, vary slightly about each outlet axis, expand and fade over 0.36 seconds, and continue through cooldown in world space. The source uses the paid vent samples at roughly 120 particles per second per outlet. Fumes have no separate LFX mark. Emission and drift follow simulation time, so pause preserves the picture and reset clears it. [Plasma rifle](../plasma-rifle/spec.md)
+
 ## Atmospheric heat
 
 A ship inside a planet's [atmosphere](../world/planets/spec.md#atmosphere)
