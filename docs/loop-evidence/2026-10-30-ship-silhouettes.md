@@ -9,7 +9,7 @@ Earlier conversation claims are preserved as prior-session evidence.
 The study sought three recognizable ship silhouettes through hull form, component
 placement, and engine angles, first in the designer and then in flight. Detailed
 part styling was outside the original scope. Source: this chat and the
-[study page](../../apps/web/src/pages/lab/studies/ship-silhouettes.astro).
+[study page](../../apps/web/src/pages/lab/studies/ship-silhouettes.mdx).
 
 - 01 framing was approved. 02.1 was retained as a useful illustration of the problem;
   the user explicitly said no design decision should be based on it.
@@ -20,7 +20,7 @@ part styling was outside the original scope. Source: this chat and the
   The accepted composition is the clipped-tip Lance, black forward cockpit, enlarged
   stacked hull slots, central aft pair, and rotated side engines partly outside
   the chassis. Source: conversation; preserved in
-  [FighterSlots](../../apps/web/src/components/studies/FighterSlots.astro), compact variant.
+  [FighterSlots at the full-study revision](https://github.com/villetakanen/void-drift/blob/966cce5b/apps/web/src/components/studies/FighterSlots.astro), compact variant.
 - Scout explorations used roadster, cockpit-first boat, Wasp, and classic spacecraft
   references. The user found the first Wasp arrangement better than preceding
   attempts, but rejected its coffin-like body and window. No Scout design was accepted.
