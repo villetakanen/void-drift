@@ -1,7 +1,46 @@
+import { buildCollisionRadius, defaultLoadout } from "@void-drift/mode-a";
 import { describe, expect, it } from "vitest";
-import { TargetingBench, type TargetingConfig } from "./targeting-bench";
+import {
+  FORMATION_SCALE,
+  TARGETING_LOOPS,
+  TargetingBench,
+  type TargetingConfig,
+} from "./targeting-bench";
 
 describe("targeting bench", () => {
+  it("keeps fitted hull collision circles disjoint over every loop phase", () => {
+    const weapons = ["light-ion-cannon", "ion-point-defence", "laser"] as const;
+    const build = defaultLoadout("wasp");
+    let maxDiameter = 0;
+    for (const slot1 of weapons) {
+      for (const slot2 of weapons) {
+        build.hull = [slot1, slot2];
+        maxDiameter = Math.max(maxDiameter, 2 * buildCollisionRadius(build));
+      }
+    }
+    const [left, outer, inner] = TARGETING_LOOPS;
+    for (const loop of TARGETING_LOOPS) {
+      // An ellipse stretches a unit-circle chord by at least its minor radius.
+      const closestChord = 2 * Math.sin(Math.PI / loop.count);
+      expect(
+        closestChord * Math.min(loop.rx, loop.ry) * FORMATION_SCALE,
+      ).toBeGreaterThan(maxDiameter);
+    }
+    const horizontalExtent = (loop: (typeof TARGETING_LOOPS)[number]) =>
+      Math.hypot(loop.rx * Math.cos(loop.tilt), loop.ry * Math.sin(loop.tilt));
+    for (const right of [outer, inner]) {
+      const xGap =
+        right.x - horizontalExtent(right) - left.x - horizontalExtent(left);
+      expect(xGap * FORMATION_SCALE).toBeGreaterThan(maxDiameter);
+    }
+    // Every outer point is at least its minor radius from the outer centre.
+    const centreOffset = Math.hypot(inner.x - outer.x, inner.y - outer.y);
+    const radialGap =
+      Math.min(outer.rx, outer.ry) -
+      centreOffset -
+      Math.max(inner.rx, inner.ry);
+    expect(radialGap * FORMATION_SCALE).toBeGreaterThan(maxDiameter);
+  });
   for (const slots of [
     ["light-ion-cannon", "light-ion-cannon"],
     ["laser", "laser"],
@@ -24,8 +63,6 @@ describe("targeting bench", () => {
       expect(bench.metrics.bodyVisitsMean).toBeLessThanOrEqual(16);
       expect(bench.metrics.rosterBuildsMean).toBeLessThanOrEqual(1);
       expect(bench.metrics.adaptersMean).toBeLessThanOrEqual(16);
-      if (slots[0] === "light-ion-cannon" && slots[1] === "light-ion-cannon")
-        expect(bench.metrics.rosterBuildsMean).toBeLessThan(1);
       if (
         slots[0] === "ion-point-defence" &&
         slots[1] === "ion-point-defence"
@@ -36,6 +73,50 @@ describe("targeting bench", () => {
       }
     });
   }
+  it("produces target changes and intervals without a lock in sustained flight", () => {
+    const bench = new TargetingBench({
+      slot1: "laser",
+      slot2: "ion-point-defence",
+      mode: "sustained",
+    });
+    const previous = new Map<object, number>();
+    const unlockedTicks = new Map<object, number>();
+    let switched = false;
+    let gap = false;
+    let independentLocks = false;
+    for (
+      let tick = 0;
+      tick < 1800 && !(switched && gap && independentLocks);
+      tick++
+    ) {
+      bench.step();
+      for (const actor of bench.sim.opponents) {
+        const [laser, turret] = actor.weapons;
+        if (
+          laser.target !== null &&
+          turret.target !== null &&
+          laser.target !== turret.target
+        )
+          independentLocks = true;
+        for (const mount of actor.weapons) {
+          if (mount.target === null) continue;
+          const last = previous.get(mount);
+          if (last !== undefined && last !== mount.target) switched = true;
+          previous.set(mount, mount.target);
+        }
+        const duration =
+          laser.target === null && turret.target !== null
+            ? (unlockedTicks.get(laser) ?? 0) + 1
+            : 0;
+        unlockedTicks.set(laser, duration);
+        if (duration >= 12) gap = true;
+      }
+    }
+    expect(switched).toBe(true);
+    expect(gap).toBe(true);
+    expect(independentLocks).toBe(true);
+  });
+
   it("steps the fitted Wasp plume and clears it when destroyed or reset", () => {
     const config: TargetingConfig = {
       slot1: "light-ion-cannon",

@@ -247,7 +247,7 @@ export const labPages = z.array(labPageSchema).parse([
     href: "/lab/targeting",
     title: "Targeting bench",
     purpose:
-      "Measure mounted weapon acquisition and contact in a ring of sixteen flying Wasps.",
+      "Measure mounted weapon acquisition and contact across three flight paths shared by sixteen Wasps.",
     group: "tools",
     source: "production",
     spec: "docs/specs/lab/targeting-bench/spec.md#measurement",

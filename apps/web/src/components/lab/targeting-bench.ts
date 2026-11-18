@@ -30,9 +30,47 @@ export interface TargetingConfig {
   mode: TargetingMode;
 }
 export const TARGETING_CENTER = { x: 960, y: 540 };
-export const TARGETING_RADIUS = 280;
+// Camera center and full world extent include margin around all three paths.
+export const FORMATION_SCALE = 1.8;
+export const TARGETING_VIEW = {
+  x: 960,
+  y: 540,
+  width: 1200 * FORMATION_SCALE,
+  height: 780 * FORMATION_SCALE,
+};
 const COUNT = 16;
-const ANGULAR_SPEED = 0.16;
+export const TARGETING_LOOPS = [
+  {
+    count: 6,
+    x: 702,
+    y: 489,
+    rx: 260,
+    ry: 170,
+    tilt: (Math.PI * 35) / 180,
+    speed: 0.16,
+    phase: 0,
+  },
+  {
+    count: 6,
+    x: 1194,
+    y: 619,
+    rx: 226,
+    ry: 174,
+    tilt: 0,
+    speed: -0.13,
+    phase: 0.35,
+  },
+  {
+    count: 4,
+    x: 1180,
+    y: 619,
+    rx: 132,
+    ry: 132,
+    tilt: 0,
+    speed: 0.22,
+    phase: 0.7,
+  },
+] as const;
 const SUBSTEP = STEP / 4;
 const WARMUP = 120;
 const WINDOW = 600;
@@ -136,22 +174,32 @@ export class TargetingBench {
     this.place(0);
   }
   private place(time: number) {
-    for (let i = 0; i < COUNT; i++) {
-      const actor = this.sim.opponents[i];
-      const angle = (i * Math.PI * 2) / COUNT + time * ANGULAR_SPEED;
-      const next = angle + (Math.PI * 2) / COUNT;
-      actor.ship.pos.set(
-        TARGETING_CENTER.x + TARGETING_RADIUS * Math.cos(angle),
-        TARGETING_CENTER.y + TARGETING_RADIUS * Math.sin(angle),
-      );
-      actor.ship.vel.set(
-        -TARGETING_RADIUS * ANGULAR_SPEED * Math.sin(angle),
-        TARGETING_RADIUS * ANGULAR_SPEED * Math.cos(angle),
-      );
-      actor.ship.rotation = Math.atan2(
-        Math.sin(next) - Math.sin(angle),
-        Math.cos(next) - Math.cos(angle),
-      );
+    let index = 0;
+    for (const loop of TARGETING_LOOPS) {
+      const cosTilt = Math.cos(loop.tilt),
+        sinTilt = Math.sin(loop.tilt);
+      for (let i = 0; i < loop.count; i++, index++) {
+        const actor = this.sim.opponents[index];
+        const angle =
+          loop.phase + (i * Math.PI * 2) / loop.count + time * loop.speed;
+        const x = loop.rx * Math.cos(angle),
+          y = loop.ry * Math.sin(angle);
+        const vx = -loop.rx * loop.speed * Math.sin(angle),
+          vy = loop.ry * loop.speed * Math.cos(angle);
+        actor.ship.pos.set(
+          TARGETING_CENTER.x +
+            (loop.x - TARGETING_CENTER.x + x * cosTilt - y * sinTilt) *
+              FORMATION_SCALE,
+          TARGETING_CENTER.y +
+            (loop.y - TARGETING_CENTER.y + x * sinTilt + y * cosTilt) *
+              FORMATION_SCALE,
+        );
+        actor.ship.vel.set(
+          (vx * cosTilt - vy * sinTilt) * FORMATION_SCALE,
+          (vx * sinTilt + vy * cosTilt) * FORMATION_SCALE,
+        );
+        actor.ship.rotation = Math.atan2(actor.ship.vel.y, actor.ship.vel.x);
+      }
     }
   }
   step() {

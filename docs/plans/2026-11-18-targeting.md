@@ -1,10 +1,10 @@
 # Targeting delivery
 
-1. **Deliver the Lab Targeting bench and baseline the existing selector.** Run the [16-Wasp ring](../specs/lab/targeting-bench/spec.md) with twin cannons, mixed mounts and twin turrets. Keep production plumes and weapon effects active. Retain candidate preparation, acquisition, physical-contact, combat, plume-update, render/FX and presented frame costs with the acquisition revision, device, browser and workload. Compare whole-frame differences attributed to the selector only with matched firing, contacts, active emitters and visuals.
-2. **Locate the expensive work and set a budget.** Examine visits, mount comparisons and precise geometry. Compare the ring with a dense wreck/fragment encounter before drawing conclusions about all modes.
+1. **Deliver the Lab Targeting bench and baseline the existing selector.** Run the [16-Wasp bench](../specs/lab/targeting-bench/spec.md) with twin cannons, mixed mounts and twin turrets. Keep production plumes and weapon effects active. Retain candidate preparation, acquisition, physical-contact, combat, plume-update, render/FX and presented frame costs with the acquisition revision, device, browser and workload. Compare whole-frame differences attributed to the selector only with matched firing, contacts, active emitters and visuals.
+2. **Locate the expensive work and set a budget.** Examine visits, mount comparisons and precise geometry. Compare the fleet workload with a dense wreck/fragment encounter before drawing conclusions about all modes.
 3. **Share the combat roster across shooters.** Prepare each live ship once per fleet substep for Gauntlet and the bench. Verify stable IDs, membership lifetime, shooter exclusion, ally interception, idle acquisition work and construction counts. Compare this slice with the existing selector.
 4. **Implement the [single-pass targeting contract](../specs/game/targeting/spec.md).** Establish reference results offline, then measure cheaper geometric approximations against both target quality and the agreed cost. Keep firing, damage and ordered energy spending in production execution.
-5. **Repeat the baseline and verify encounter behavior.** Compare matched ring workloads, live-target loss, Gauntlet and the dense derelict case. Use these results to decide readiness for plasma integration.
+5. **Repeat the baseline and verify encounter behavior.** Compare matched fleet workloads, live-target loss, Gauntlet and the dense derelict case. Use these results to decide readiness for plasma integration.
 
 ## Initial ring measurement
 
@@ -49,7 +49,7 @@ The Gauntlet and ring pass the same live ship adapters to every participating sh
 
 A deterministic comparison on the local Lab covered twin cannons, twin turrets, mixed cannon/turret and twin lasers under both workloads. Ten checkpoints per configuration at 30-tick intervals matched the pre-roster revision `9a5be059` for per-ship hull, power, lifecycle, discharges, target IDs, angles, cooldowns and active plume counts. The mixed-material compatibility path temporarily attaches shared ship references to a shooter's owned body list so successive shots see newly released fragments.
 
-### Fleet selection verification
+### Fleet selection verification (original single ring)
 
 The ring, Gauntlet and salvage encounters now capture mount decisions before ordered discharge. A headed Chromium comparison interleaved five runs of each revision in one browser. Each run warmed up for 120 ticks and measured 240. The table reports the median run mean for CPU simulation without rendering. The baseline is `2916d3f8`.
 
@@ -62,3 +62,7 @@ The ring, Gauntlet and salvage encounters now capture mount decisions before ord
 In a separate 1440 × 960 rendered ring run, the bench reported 16 visits, 480 eligible comparisons, 0.020 ms mean acquisition per substep and a 9.2 ms p95 frame interval. All 32 mounts were active with production plumes and traces off. Dense material timing covers turret selection. The empty scene is at browser timer resolution.
 
 Across four weapon fits in sustained and live workloads, both revisions produced the same discharge totals and survivor counts after 300 ticks. Some intermediate turret state hashes differed. Exact replay equivalence and a Gauntlet CPU budget remain unverified. The next measurement should use an active Gauntlet encounter and compare target IDs and aim angles at the first divergent tick before setting a production budget or starting plasma work.
+
+### Three-loop workload
+
+The bench now places six Wasps on each large ellipse and four on the inner circle. Earlier single-ring timings above describe the workload at those revisions. In 60 seconds of sustained twin-turret flight on the three loops, all 16 Wasps selected different opponents with their two mounts at least once. Six Wasps both held and lost a lock on their second turret. A separate rendered run at 1440 × 960 recorded 16 visits and 480 comparisons per substep with all 32 tracking mounts active.

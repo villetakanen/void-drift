@@ -14,8 +14,7 @@ import FlightLayers from "../FlightLayers.svelte";
 import Switch from "../inputs/Switch.svelte";
 import { percentile } from "./render-performance-metrics";
 import {
-  TARGETING_CENTER,
-  TARGETING_RADIUS,
+  TARGETING_VIEW,
   TargetingBench,
   type TargetingConfig,
   type TargetingSummary,
@@ -71,8 +70,11 @@ onMount(() => {
   const layers = { world, fx: fxLayer, lfx };
   const renderer = new Renderer(world.canvas);
   const camera = new Camera({ viewportWidth: WIDTH, viewportHeight: HEIGHT });
-  camera.pos.set(TARGETING_CENTER.x, TARGETING_CENTER.y);
-  camera.zoom = HEIGHT / (2 * (TARGETING_RADIUS + 54));
+  camera.pos.set(TARGETING_VIEW.x, TARGETING_VIEW.y);
+  camera.zoom = Math.min(
+    WIDTH / TARGETING_VIEW.width,
+    HEIGHT / TARGETING_VIEW.height,
+  );
   const fx = new FlightFx();
   resizeFlightLayers(layers, renderer, WIDTH, HEIGHT);
   let encounter: TargetingBench;
@@ -282,7 +284,7 @@ onMount(() => {
         <div class="stage">
           <FlightLayers
             bind:canvases
-            label="Sixteen fitted Wasps flying in a circle"
+            label="Sixteen fitted Wasps flying on three neighboring loops"
           />
         </div>
         <figcaption>
