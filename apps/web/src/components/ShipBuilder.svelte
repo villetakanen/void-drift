@@ -124,7 +124,11 @@ const mount = $derived(
 );
 const compatible = $derived(
   Object.values(PARTS)
-    .filter((part) => slotAccepts(mount.type, part.category))
+    .filter(
+      (part) =>
+        slotAccepts(mount.type, part.category) &&
+        (part.id !== "rail" || mount.part === "rail"),
+    )
     .sort(
       (a, b) =>
         Number(a.releaseClass === "preview") -
@@ -166,6 +170,7 @@ $effect(() => {
 });
 function install(id: PartId | null) {
   if (
+    id === "rail" ||
     mount.linkedTo ||
     (!id && mount.required) ||
     (id && !slotAccepts(mount.type, PARTS[id].category)) ||
@@ -275,7 +280,7 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
                     style:width={`${(((SLOT_STYLE.width + 2 * SLOT_STYLE.gap) / SLOT_STYLE.referenceScale) * previewScale * 100) / previewWidth}%`}
                     style:height={`${(((SLOT_STYLE.height + 2 * SLOT_STYLE.gap) / SLOT_STYLE.referenceScale) * previewScale * 100) / previewHeight}%`}
                     style:transform={`translate(-50%, -50%) rotate(${slot.angle}rad)`}
-                    aria-label={`${slot.label}: ${slot.part ? PARTS[slot.part].name : "Empty"}`}
+                    aria-label={`${slot.label}: ${slot.part ? `${PARTS[slot.part].name}${slot.part === "rail" ? " (disabled)" : ""}` : "Empty"}`}
                     aria-pressed={mount.key === slot.key}
                     onclick={() => (selected = slot.key)}
                   ></button>
@@ -351,6 +356,7 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
               {/if}
               {#each compatible as part (part.id)}
                 <PartCard
+                  retired={part.id === "rail"}
                   id={part.id}
                   fitted={mount.part === part.id}
                   playground={experimental === "On"}

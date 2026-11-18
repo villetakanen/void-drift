@@ -79,7 +79,7 @@ without a storage migration. The [Hangar](../hangar/spec.md) and
   gates every discharge: below 10% of the ship's energy capacity no turret fires,
   takes power or starts a cooldown (tracking stays free); it also requires more than 10 power.
 - Power is drawn in this order: life support, engines, defence weapons, guns.
-  Defence weapons are point defences and lasers; guns are Light Ion Cannons and rails.
+  Defence weapons are point defences and lasers; guns are Light Ion Cannons. Saved rail guns are disabled and draw no weapon power.
   Within an update, defence weapons resolve before any gun, each class in stable
   build-mount order, each shot querying contact in the world left by earlier shots.
   Each class draws on the power the earlier classes leave. Insufficient power stops
@@ -115,7 +115,7 @@ without a storage migration. The [Hangar](../hangar/spec.md) and
 ### Regression guardrails
 
 Existing saves parse; a new device's Wasp is fitted with one point defence and no other chassis is by default; the laser's threat priority,
-the rail and the Light Ion Cannon keep their contracts. Keyboard and landscape touch
+the Light Ion Cannon keeps its contract and saved rail guns remain inert. Keyboard and landscape touch
 continue through the normal flight loop. Gravity and friction constants stay fixed.
 
 ### Scenarios

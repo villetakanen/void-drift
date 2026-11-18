@@ -153,7 +153,7 @@ function load() {
   }
 }
 function fitPart(value: string) {
-  if (!current) return;
+  if (!current || value === "rail") return;
   const next = $state.snapshot(plan),
     id = value || null;
   const result = PARTS[id as keyof typeof PARTS];
@@ -631,8 +631,15 @@ onMount(() => {
               !(plan.chassis === "fiddler" && current.group === "aft")}
               <option value="">Empty</option>
             {/if}
+            {#if previewMounts(plan).find((m) => m.key === selected)?.part ===
+              "rail"}
+              <option value="rail" disabled>Rail gun · Disabled</option>
+            {/if}
             {#each Object.entries(PARTS).filter(
-              ([, p]) => current && slotAccepts(current.type, p.category),
+              ([id, p]) =>
+                id !== "rail" &&
+                current &&
+                slotAccepts(current.type, p.category),
             ) as [id, p]}
               <option value={id}>{p.name}</option>
             {/each}

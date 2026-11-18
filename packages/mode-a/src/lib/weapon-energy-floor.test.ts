@@ -6,13 +6,8 @@ import { buildStats, defaultLoadout, LoadoutSchema } from "./schemas/loadout";
 import { WEAPONS } from "./schemas/salvage";
 import { Simulation, STEP, stockSettings } from "./simulation";
 
-type Kind = "light-ion-cannon" | "ion-point-defence" | "rail" | "laser";
-const KINDS: Kind[] = [
-  "light-ion-cannon",
-  "ion-point-defence",
-  "rail",
-  "laser",
-];
+type Kind = "light-ion-cannon" | "ion-point-defence" | "laser";
+const KINDS: Kind[] = ["light-ion-cannon", "ion-point-defence", "laser"];
 
 function fixture(kind: Kind, capacity: number) {
   const loadout = defaultLoadout("fighter");

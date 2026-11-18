@@ -7,15 +7,21 @@ import PartDrawing from "./PartDrawing.svelte";
 let {
   id,
   fitted,
+  retired = false,
   playground,
   onchoose,
-}: { id: PartId; fitted: boolean; playground: boolean; onchoose: () => void } =
-  $props();
+}: {
+  id: PartId;
+  fitted: boolean;
+  retired?: boolean;
+  playground: boolean;
+  onchoose: () => void;
+} = $props();
 const descriptionId = $props.id();
 const part = $derived(PARTS[id]);
 const unsanctioned = $derived(part.releaseClass === "preview");
 const blocked = $derived(fitted && unsanctioned && !playground);
-const locked = $derived(unsanctioned && !playground);
+const locked = $derived(retired || (unsanctioned && !playground));
 </script>
 <button
   type="button"
@@ -24,12 +30,19 @@ const locked = $derived(unsanctioned && !playground);
   class:blocked
   aria-pressed={fitted}
   aria-disabled={locked ? "true" : undefined}
-  aria-describedby={unsanctioned ? descriptionId : undefined}
+  aria-describedby={unsanctioned || retired ? descriptionId : undefined}
   onclick={() => {
     if (!locked && !blocked) onchoose();
   }}
 >
-  {#if unsanctioned}
+  {#if retired}
+    <span hidden id={descriptionId}
+      >{blocked
+        ? "Disabled and unsanctioned. Remove or replace this fitting, or turn Playground on to launch."
+        : "Disabled. Remove or replace this fitting."}</span
+    >
+  {/if}
+  {#if unsanctioned && !retired}
     <span hidden id={descriptionId}
       >{blocked
         ? "Unsanctioned. Remove or replace this part, or turn Playground on to launch."
@@ -40,11 +53,13 @@ const locked = $derived(unsanctioned && !playground);
   {/if}
   <span class="drawing"><PartDrawing {id} /></span>
   <span class="text">
-    <span class="name">{part.name}</span>
-    <span class="prose">{part.fluff || part.description}</span>
+    <span class="name">{part.name}{retired ? " · Disabled" : ""}</span>
+    <span class="prose"
+      >{retired ? part.description : part.fluff || part.description}</span
+    >
   </span>
   <span class="line">
-    {#each partFigures(id) as figure}
+    {#each retired ? partFigures(id).slice(0, 1) : partFigures(id) as figure}
       <span class="stat" title={figure.label}>
         <svg class="glyph" viewBox="0 0 12 12" aria-hidden="true">
           <path d={FIGURE_GLYPH[figure.icon]} />

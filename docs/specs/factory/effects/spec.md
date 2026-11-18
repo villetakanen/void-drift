@@ -343,7 +343,7 @@ production; visual equality gates remain retired.
 ### Weapon trial — 2026-11-03
 
 The [weapons and salvage trial](../../game/test-flight/spec.md) adds simulation-owned
-rail rounds, rotating laser pulses, impact/destruction events and energy collection.
+rotating laser pulses, impact/destruction events and energy collection. Retained rail-round rendering supports existing visual fixtures; saved rail fittings do not fire.
 `FlightFx` stamps their fresh light into the existing surface and consumes events
 into one shared weapon spark pool (capacity 256). Physical wrecks, fragments and
 cells are world objects, visible independently of cosmetic effects. Existing
@@ -355,7 +355,7 @@ for 0.2 seconds and feed the same bounded spark pool. Expired slugs and near
 misses cannot trigger that plume. Pause/reset semantics apply to both effects.
 
 The mixed Lab's Weapons toggle, also `/lab/fx?weapons=1`, fits alternating lasers
-and rails beside the six ships' gravity collectors and shows real encounters.
+beside the six ships' gravity collectors and shows real encounters.
 The default reference workload suppresses encounter spawning. Weapon-mode traces
 must be identified separately from earlier reference-workload measurements.
 

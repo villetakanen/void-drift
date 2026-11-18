@@ -25,10 +25,6 @@ for (const width of [1280, 844]) {
       .getByRole("button", { name: "Hull 1 · Equipment: Empty" })
       .click();
     await page.getByRole("button", { name: /^Laser\b/ }).click();
-    await page
-      .getByRole("button", { name: "Hull 2 · Equipment: Empty" })
-      .click();
-    await page.getByRole("button", { name: /^Rail gun\b/ }).click();
     await page.getByRole("button", { name: "Practice", exact: true }).click();
     const capture = async (name: string) => {
       const path = info.outputPath(`${name}.png`);

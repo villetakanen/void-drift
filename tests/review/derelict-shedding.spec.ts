@@ -27,7 +27,8 @@ test("physical shedding matches fitted material in the production damage specime
   await bench.getByRole("checkbox", { name: "Show fitted material" }).check();
   await capture("fitted-material");
   await bench.getByRole("checkbox", { name: "Show fitted material" }).uncheck();
-  await bench.getByRole("button", { name: "Rail shot", exact: true }).click();
+  const laser = bench.getByRole("button", { name: "Laser pulse", exact: true });
+  for (let i = 0; i < 30 && (await laser.isEnabled()); i++) await laser.click();
   await capture("player-energy-release-pulse");
   await bench.getByRole("button", { name: "Coast 0.5 s" }).click();
   await expect(bench.getByRole("status")).toContainText(

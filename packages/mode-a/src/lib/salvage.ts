@@ -210,7 +210,6 @@ export class SalvageSystem {
     this.weapons = buildMounts(loadout).flatMap((mount): WeaponState[] =>
       mount.part === "light-ion-cannon" ||
       mount.part === "ion-point-defence" ||
-      mount.part === "rail" ||
       mount.part === "laser"
         ? [
             {
@@ -914,7 +913,7 @@ export class SalvageSystem {
   }
   /**
    * Power after life support and engines goes to defence weapons (point
-   * defences, lasers), then guns (Light Ion Cannons, rails). `weapons` is in
+   * defences, lasers), then guns (Light Ion Cannons). `weapons` is in
    * build-mount order, so each class walks it once in that order, drawing on the
    * power and world the earlier shots left. The cannon volley is captured after
    * the defence class and before the first gun; a cannon power shortfall stops

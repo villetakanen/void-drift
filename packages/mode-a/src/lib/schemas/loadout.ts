@@ -235,7 +235,7 @@ export const PARTS = {
     releaseClass: "preview",
     name: "Rail gun",
     description:
-      "Automatically fires along the slot when a target approaches its firing line. Heavy hits and recoil; shots can miss. Active in Test flight; fires above 10 power and at least 10% capacity.",
+      "Disabled. This saved fitting has no weapon effect and can be removed or replaced.",
     category: "G",
     mass: 15,
     thrust: 0,

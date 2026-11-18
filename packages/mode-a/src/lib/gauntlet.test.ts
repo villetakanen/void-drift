@@ -327,7 +327,7 @@ describe("Gauntlet flight and combat", () => {
     ).toBe(900000);
   });
 
-  it("keeps rail shots moving until their relative-motion contact", () => {
+  it("keeps saved rail fittings inert against a live ship", () => {
     const loadout = defaultLoadout("fighter");
     loadout.hull[0] = "rail";
     const system = new SalvageSystem(loadout, 22);
@@ -365,8 +365,10 @@ describe("Gauntlet flight and combat", () => {
         ),
       );
     }
-    expect(system.shotsFired).toBeGreaterThan(0);
-    expect(damage).toBe(100);
+    expect(system.weapons).toHaveLength(0);
+    expect(system.shotsFired).toBe(0);
+    expect(damage).toBe(0);
+    expect(ship.vel.x).toBe(0);
   });
 
   it("collects both existing weapon passes before applying same-substep damage", () => {

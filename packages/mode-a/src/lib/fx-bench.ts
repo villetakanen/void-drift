@@ -40,7 +40,7 @@ export class FxBench {
       if (this.weapons) {
         // Preserve collector and engines while twin cannons occupy existing universal slots.
         if (i < 4) loadout.aft.fill("light-ion-cannon");
-        else loadout.hull[1] = i === 4 ? "laser" : "rail";
+        else loadout.hull[1] = "laser";
         // Point-defence turrets work beside the cannons on two of those ships.
         if (i === 1 || i === 3) loadout.hull[1] = "ion-point-defence";
       }

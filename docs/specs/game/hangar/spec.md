@@ -71,6 +71,7 @@ Earning and buying parts is the intended direction for later. During alpha,
   retaining catalog order within each class. Optional slots start with Keep
   empty; required or linked slots have no empty choice. Keep empty replaces
   Remove fitting and shows the fitted state when the slot is empty.
+- **Retired rail gun.** The rail gun is unavailable as a new fitting. A saved rail fitting remains visible on its selected mount as disabled, can be removed or replaced, and has no weapon behavior in flight. Its saved identifier remains readable.
 - **Card states.** Cards use the shared action frame with no raised fill or
   pressed underline. Fitted means black ground and lit brackets. Unsanctioned
   means a hatched closing band following the bracket colour, with an accessible

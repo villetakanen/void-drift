@@ -10,7 +10,7 @@ a boundary of the rules, not a stage of development. An unsanctioned
 ship or part can be complete and intentionally available for play, and may
 remain outside those rules indefinitely. No eventual promotion is promised.
 
-In the current game, Playground makes every catalog ship and compatible part
+In the current game, Playground makes every catalog ship and compatible part except the retired rail gun
 available. It keeps the selected flight mode and can enable experimental or
 upcoming world features. The 0.7 release candidate uses the `fires-in-the-sky`
 ranked challenge; Playground Survival and the other, unranked modes can evolve
@@ -74,7 +74,7 @@ it does not shoot.
   Hangar. The title screen says why and leads to the Hangar. Launch becomes
   available as soon as the player picks a sanctioned ship whose fitted parts
   are all sanctioned, or removes the unsanctioned parts.
-- **On, catalog.** Every ship and part is selectable and fittable. Ship tabs
+- **On, catalog.** Every ship and part except the retired rail gun is selectable and fittable. A saved rail fitting remains visible, disabled and removable; it is still unsanctioned for launch eligibility. Ship tabs
   use the ordinary available state without a catalog badge; unsanctioned parts
   retain their marker.
 - **World features.** Survival with Playground On uses the seeded G-class
@@ -116,7 +116,7 @@ it does not shoot.
   list of sanctioned or unsanctioned items.
 - E2: The Playground setting is defined by a Zod schema, survives a page
   reload, and reads as Off when the stored value is missing or invalid.
-- E3: With Playground Off, unsanctioned ships and parts appear in the
+- E3: With Playground Off, unsanctioned ships and active parts appear in the
   Hangar with unavailable ship tabs and marked parts, and cannot be selected or fitted by
   pointer or keyboard.
 - E4: Turning Playground Off with unsanctioned content in the active
@@ -125,7 +125,7 @@ it does not shoot.
 - E5: In that state the title screen explains why launch is unavailable and
   offers the Hangar; choosing a sanctioned ship with only sanctioned parts, or
   removing the unsanctioned parts, makes launch available again.
-- E6: With Playground On, every ship and part is selectable and fittable,
+- E6: With Playground On, every ship and active part is selectable and fittable,
   with ordinary ship tabs and marked unsanctioned parts.
 - E7: With Playground On, a Survival run shows the time and the
   scoring-off notice in place of the score, in flight and on run complete,
