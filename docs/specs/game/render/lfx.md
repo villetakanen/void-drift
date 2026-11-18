@@ -35,3 +35,5 @@ alongside the shared production default.
   bounds for the complete light composition.
 - Drawing a body stamp never prepares or rebuilds pixel data.
 - Changing a prepared body-light parameter does not advance simulation or orbit.
+
+A released plasma rifle stream draws its current narrow head on LFX. Material contact replaces the head with a brief hot core at the recorded contact point. The core follows simulation time. [Plasma rifle](../plasma-rifle/spec.md)

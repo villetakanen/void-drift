@@ -67,3 +67,13 @@ On material contact capture the body identity, mount identity, world point and s
 
 - A Fighter holds a Wasp through release. A fragment crosses the stream between combat samples. Its first surface supplies the contact, even though the Wasp triggered the charge.
 - An empty opening in a wreck permits the head to continue to material behind it. A moving ship that clears the swept path escapes.
+
+### Visible stream and contact eruption
+
+A funded release sends a narrow white-hot head along the simulated stream path on LFX. A short amber trail on FX follows the distance actually travelled, including inherited drift. The trail begins at the fitted muzzle and ends at the first surface touched. Its initial length cannot exceed the distance the head has travelled. Losing a charge before release leaves the existing vent indication on the fitting.
+
+At material contact a compact hot core appears at the recorded world point on LFX. Around it, a connected orange fireball expands and cools on FX. Use the study’s 58-world-unit outer radius and 0.26 s eruption as visual tuning. The core cools before the remaining glow. These sizes describe the picture. A miss or absorption by a star or planet leaves only the fading trail.
+
+- An intervening fragment places the eruption on its surface even if the rifle acquired a different ship.
+- All material contacts produced between two rendered frames can be presented, including twin mounts in the same combat substep. Presentation consumes no combat energy and deals no damage.
+- Repainting the same simulation instant preserves the core and leaves accumulated FX unchanged. Reset clears the effect, and camera motion keeps the eruption anchored to the contact point. Apply the shared visibility and effect budgets.

@@ -57,3 +57,5 @@ into the simulation.
 - Production play, the Render Model workbench and the render performance bench
   use the same reusable Turbulent bloom filter definition and defaults. The
   workbench may tune its values or select another filter for comparison.
+
+A funded plasma rifle release deposits a short amber trail along its travelled path. Material contact emits an expanding fireball at the captured world position; the persistent surface carries its fading light after the live core clears. Repainting a paused frame deposits no additional light. [Plasma rifle](../plasma-rifle/spec.md)
