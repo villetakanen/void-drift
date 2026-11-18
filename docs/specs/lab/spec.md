@@ -23,7 +23,8 @@ after they reach the game.
   [planet inspector](planet-inspector/spec.md),
   [gravity tuning](gravity-tuning/spec.md),
   [render model](render-model/spec.md),
-  [render performance](render-performance/spec.md).
+  [render performance](render-performance/spec.md), and
+  [targeting bench](targeting-bench/spec.md).
 
 ### Constraints
 
