@@ -149,12 +149,11 @@ in play, receive no thrust input in `updateShip` at all; their thrust comes from
 ### Rules version
 
 Score documents carry the ranked Survival rules version `CHALLENGE`
-(`packages/mode-a/src/schemas/highscore.ts`, currently `ion-storm`), which also
-prefixes score document IDs. Its ranked baseline is the 0.6.0 launch-era
-rules. Playground Survival and other unranked modes may adopt experimental or
-upcoming features without changing that baseline or board. A release changes `CHALLENGE` only when changes to
-rules applied to score-eligible ranked Survival runs make scores from before and
-after the release unfair to compare. This includes changes to ranked Survival
+(`packages/mode-a/src/schemas/highscore.ts`), which also prefixes score
+document IDs. `ion-storm` uses the 0.6.0 launch-era rules. Playground Survival
+and other unranked modes may evolve independently. When compared with the
+published rules, a change that affects score-eligible Survival requires a new
+challenge before ranked play can resume. This includes changes to ranked Survival
 trajectories, survival conditions, scoring, or score eligibility. A tuning value
 matters only if it changes one of those rules in ranked Survival. Changes limited
 to another mode, the Lab, or presentation do not change `CHALLENGE`.

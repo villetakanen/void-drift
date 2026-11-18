@@ -64,7 +64,8 @@ for game design and is not shown to players.
   time. The fitting and the two ship choices are not shown.
 - **A ruleset is a board.** Scores of different rulesets never share a board.
   A client saves to, raises and lists the board of its own ruleset only, and
-  shows no other board. Every client that carries a ruleset shares its board.
+  shows no other board. Every client with an active challenge shares its board. A pending challenge
+  displays its unavailable status without querying a board or attempting to save.
 - **Boards stay open.** `firestore.rules` holds one rule for each ruleset a
   released client carries, and a ruleset's rule is not removed when another
   ruleset is added. Rows of a ruleset the rules do not name stay stored and
@@ -108,8 +109,8 @@ for game design and is not shown to players.
   in one and not the other.
 - Rules bound the data and its owner; they are never treated as proof of an
   honest run.
-- A new `CHALLENGE` value adds a matching rule to `firestore.rules` and
-  starts a separate board. The rules of rulesets that released clients carry
+- Activating a new `CHALLENGE` adds a matching rule to `firestore.rules`
+  and opens a separate board. The rules of rulesets that released clients carry
   stay in place.
 - A client never reads or writes a board other than its own ruleset's.
 - A stored row that fails the client's schema is skipped when the board loads,

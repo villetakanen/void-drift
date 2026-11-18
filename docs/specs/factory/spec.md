@@ -147,7 +147,9 @@ human review remain separate prerequisites/evidence; preparation is not a full-s
 
 Following explicit publication authorization, `release:publish <run>` validates the
 same bundle and deploys its Hosting files and Firestore snapshots without rebuilding
-or taking inputs from the current checkout. Each attempt records its outcome separately;
+or taking inputs from the current checkout. The publisher rejects prerelease
+versions using the prepared artifact report before invoking deployment.
+Each deployment attempt records its outcome separately;
 actual live verification remains required. Missing/changed/added files block publication.
 No command in this workflow commits, pushes or tags source automatically.
 

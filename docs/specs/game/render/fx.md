@@ -26,6 +26,13 @@ The aperture-cut pass deliberately removes light over derelict openings after
 the FX surface is composited into its canvas. It is a geometric reveal rule, not
 history cleanup.
 
+## Plasma rifle emission
+
+The stream, paired sprays and contact fireball use the shared accumulated-light
+pass and respect its aperture cut. Cull by the visible extent of each effect
+before stamping. Drawing and its particle budget leave the simulated contact
+envelopes and damage unchanged.
+
 ## Atmospheric heat
 
 A ship inside a planet's [atmosphere](../world/planets/spec.md#atmosphere)

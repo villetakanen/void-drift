@@ -12,14 +12,14 @@ remain outside those rules indefinitely. No eventual promotion is promised.
 
 In the current game, Playground makes every catalog ship and compatible part
 available. It keeps the selected flight mode and can enable experimental or
-upcoming world features. Ranked Survival retains the 0.6.0 launch-era gameplay
-rules under `ion-storm`; Playground Survival and the other, unranked modes can
-evolve independently. Public availability does not imply ranked eligibility.
+upcoming world features. Ranked Survival requires the client’s active challenge. Playground Survival
+and the other unranked modes can evolve independently. Public availability does not imply ranked eligibility.
 
 The player makes one choice: Playground **Off** or **On**.
 
-- **Off:** only sanctioned ships and parts can be flown, and every Survival run
-  that starts is scored and ranked.
+- **Off:** only sanctioned ships and parts can be flown. Survival is
+  available for ranked play when the client’s challenge is active.
+  A pending challenge blocks this launch from both the title and the Hangar.
 - **On:** every ship and part can be flown, and no run is scored. The run shows
   its time, and a scoring-off notice where the score would be.
 
@@ -56,9 +56,8 @@ Playground On, a ship carrying only sanctioned parts still flies an unscored run
   ([terms](../spec.md#terms)), and an unsanctioned part's marker reads
   “UNSANCTIONED”. How the marker looks is open.
 
-The Plasma rifle is a decorative, weighted unsanctioned fitting available through
-this same Playground boundary. Its mass and collision envelope apply in flight;
-it does not shoot.
+The [Plasma rifle](../plasma-rifle/spec.md) is a functional unsanctioned
+fitting available through this same Playground boundary.
 
 ### Rules
 
@@ -79,7 +78,7 @@ it does not shoot.
   retain their marker.
 - **World features.** Survival with Playground On uses the seeded G-class
   yellow-family stars defined by the [star contract](../world/star/spec.md).
-  With Playground Off it retains the ranked legacy Sun. Practice, Derelicts and
+  With Playground Off the active ranked challenge defines the Sun. Practice, Derelicts and
   Gauntlet may use experimental or upcoming features regardless of Playground;
   each mode's contract defines its selection. This does not automatically enable
   every experiment. No world feature may leak into ranked rules through a shared
@@ -146,9 +145,9 @@ it does not shoot.
   prototype. Playground is the setting name, and title run status distinguishes
   Playground play from ranked play.
 - E12: Playground Survival uses the deterministic yellow-family star for its
-  seed; ranked Survival retains the 0.6.0 launch-era Sun and gameplay rules.
-  Reset and replay retain the captured world-feature selection. Changes confined
-  to unranked play leave `ion-storm` and its leaderboard unchanged.
+  seed. Reset and replay retain the captured world-feature selection.
+- E13: A pending challenge blocks Playground Off Survival while leaving
+  Playground On Survival and eligible unranked modes available.
 
 ### Regression guardrails
 
@@ -170,7 +169,7 @@ it does not shoot.
 Feature: Playground
 
   Scenario: Sanctioned play is ranked
-    Given Playground is Off
+    Given Playground is Off and the challenge is active
     And the active ship and all its fitted parts are sanctioned
     When I start a Survival run and complete it
     Then I can see my score

@@ -71,18 +71,19 @@ own only when its behaviour in flight needs one, as the
   one, showing the master beside renderings of those artefacts. A new part
   has all three when it is added. An existing part gets them when its art
   changes; until then it keeps its current art without a master.
-- **Plasma rifle.** This rifle is an unsanctioned decorative weapon-category
+- **Plasma rifle.** This rifle is an unsanctioned weapon-category
   fitting named “Plasma rifle”, with fluff “Floor is lava, jump!”. Its mass is
   2.7 times the Light Ion Cannon (24.3). The white-blue receiver is centred
   on the slot, using the supplied unlit SVG at its accepted scale. Its full
-  silhouette contributes to the ship collision envelope. It has no targeting,
-  firing state, charge, damage, recoil, thrust, energy draw or LFX. Its card
-  shows mass alone. The master lives at `packages/mode-a/src/lib/art/weapons/plasma-rifle.svg`;
+  silhouette contributes to the ship collision envelope. The [Plasma rifle
+  contract](../plasma-rifle/spec.md) defines its automatic charge, release,
+  vent and recoil. The master lives at `packages/mode-a/src/lib/art/weapons/plasma-rifle.svg`;
   derived paths serve both the card and fitted World drawing.
 - **Weapons.** Functional weapons fire on their own; there is no fire control on keyboard
-  or touch. A weapon draws energy per shot and none while idle.
+  or touch. A weapon draws no energy while idle. The Plasma rifle spends power during
+  preparation as well as on release.
 - **Weapon energy floor.** No weapon fires while the ship holds less than a
-  tenth of its energy capacity; at exactly a tenth it may fire. Below the floor
+  tenth of its energy capacity; it also requires more than 10 power. Below the floor
   a weapon takes no energy and starts no cooldown, and a shot the remaining
   energy cannot pay for is not fired. Engines and life support still draw below
   the floor.
@@ -107,7 +108,7 @@ own only when its behaviour in flight needs one, as the
 - A storage part raises the ship's energy capacity, and a run starts with
   the whole capacity full.
 - Below a tenth of capacity no weapon fires, draws or starts a cooldown; at
-  exactly a tenth it fires; this holds for every weapon and every capacity.
+  exactly a tenth it may fire only with more than 10 power; this holds for every weapon and every capacity.
 - A held charged engine first thrusts once its charge length has elapsed;
   releasing the input or losing power resets the charge.
 - From rest and at equal ship mass, an ion engine accelerates at its ion
@@ -134,7 +135,8 @@ own only when its behaviour in flight needs one, as the
   as part of this work.
 - Each part shows mass first and up to three further figures computed by
   `partFigures`: engine thrust, draw and cruise contribution; weapon damage
-  range per second, sustained energy draw and reach; storage capacity; or
+  range per second, sustained energy draw and reach, or the cycle figures
+  defined by the individual weapon contract; storage capacity; or
   collection rate with its condition. Solar multipliers come from the catalog
   and gravity collection from the shared collection rule. Glyphs are provisional.
 
