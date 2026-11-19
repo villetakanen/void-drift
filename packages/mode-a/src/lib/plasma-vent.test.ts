@@ -6,6 +6,7 @@ import { PLASMA_RIFLE_MOUTHS, PLASMA_RIFLE_SCALE } from "./plasma-rifle-art";
 import { drawPlasmaVent } from "./plasma-vent-fx";
 import { liveShipBody, type SalvageBody, SalvageSystem } from "./salvage";
 import { buildStats, defaultLoadout, type Loadout } from "./schemas/loadout";
+import { SALVAGE } from "./schemas/salvage";
 import { gameSettings, Simulation, STEP } from "./simulation";
 
 const still = { leftThruster: false, rightThruster: false, fire: false };
@@ -403,5 +404,155 @@ describe("paired plasma vents", () => {
     f.step(0.7);
     expect(f.system.plasmaReleases).toBe(1);
     expect(f.system.plasmaVentEvents).toEqual([]);
+  });
+  it("damages a ship on vent entry for both triggers and preserves contact during cooldown", () => {
+    const damageFor = (trigger: "shot" | "loss") => {
+      const f = mountedFixture(studyWasp());
+      if (trigger === "shot") {
+        f.step(0.7, [f.targets[0]]);
+        f.step(0.7, []);
+      } else {
+        f.step(1.05, []);
+        f.step(0.35, [f.targets[0]]);
+      }
+      f.step(0.05, []);
+      const sample = f.system.plasmaVentEvents.at(-1);
+      if (!sample) throw new Error("Expected vent emission");
+      const outlet = sample.outlets[0];
+      let damage = 0;
+      const victim = liveShipBody(
+        900,
+        {
+          ...f.ship,
+          pos: new Vec2(
+            outlet.x + outlet.vx * 0.025,
+            outlet.y + outlet.vy * 0.025,
+          ),
+          vel: new Vec2(outlet.vx, outlet.vy),
+          radius: 1,
+        },
+        100,
+        (amount) => {
+          damage += amount;
+        },
+      );
+      f.step(1 / 240, [victim]);
+      expect(damage).toBe(3);
+      for (let i = 0; i < 10; i++) {
+        victim.previousX += outlet.vx / 240;
+        victim.previousY += outlet.vy / 240;
+        victim.x = victim.previousX;
+        victim.y = victim.previousY;
+        f.step(1 / 240, [victim]);
+      }
+      expect(damage).toBe(3);
+      return damage;
+    };
+    expect(damageFor("shot")).toBe(damageFor("loss"));
+  });
+  it("keeps damaging after the emitter stops running its weapon cycle", () => {
+    const f = mountedFixture(studyWasp());
+    f.step(0.35, [f.targets[0]]);
+    f.step(0.05, []);
+    const sample = f.system.plasmaVentEvents.at(-1);
+    if (!sample) throw new Error("Expected vent emission");
+    const outlet = sample.outlets[0];
+    let damage = 0;
+    const victim = liveShipBody(
+      900,
+      {
+        ...f.ship,
+        pos: new Vec2(
+          outlet.x + outlet.vx * 0.025,
+          outlet.y + outlet.vy * 0.025,
+        ),
+        vel: new Vec2(outlet.vx, outlet.vy),
+        radius: 1,
+      },
+      100,
+      (amount) => {
+        damage += amount;
+      },
+    );
+    expect(f.system.hasActivePlasma).toBe(true);
+    f.system.stepPlasmaStreams(1 / 240, star, [], [victim], 901);
+    expect(damage).toBe(3);
+    f.system.stepPlasmaStreams(0.5, star, [], [], 901);
+    expect(f.system.hasActivePlasma).toBe(false);
+  });
+  it("checks fragments born during vent damage at their birth time", () => {
+    const f = mountedFixture(studyWasp());
+    const wreck: SalvageBody = {
+      kind: "wreck",
+      id: 500,
+      group: 500,
+      x: 500,
+      y: 500,
+      previousX: 500,
+      previousY: 500,
+      vx: 0,
+      vy: 0,
+      radius: 18,
+      hull: 3,
+      life: 10,
+      rotation: 0,
+      spin: 0,
+    };
+    f.system.bodies.push(wreck);
+    f.system.nextPass = Infinity;
+    const port = { x: 450, y: 500, vx: 500, vy: 0 };
+    const far = { x: 450, y: 800, vx: 500, vy: 0 };
+    f.system.plasmaVentArea.emit("test", 0, 0.1, [port, far], [port, far]);
+    f.system.step(0.1, f.ship, star, f.resources, 100, 400, 400, false);
+    expect(wreck.hull).toBe(0);
+    const fragments = f.system.bodies.filter(
+      (body) => body.kind === "fragment",
+    );
+    expect(fragments).toHaveLength(SALVAGE.fragment.count);
+    expect(fragments.some((body) => body.hull < SALVAGE.fragment.hull)).toBe(
+      true,
+    );
+  });
+
+  it("rechecks remaining wreck material when a vent hit releases a shard", () => {
+    const f = mountedFixture(studyWasp());
+    const wreck: SalvageBody = {
+      kind: "wreck",
+      id: 500,
+      group: 500,
+      x: 500,
+      y: 500,
+      previousX: 500,
+      previousY: 500,
+      vx: 0,
+      vy: 0,
+      radius: 18,
+      hull: 69,
+      initialHull: SALVAGE.wreck.hull,
+      life: 10,
+      rotation: 0,
+      spin: 0,
+    };
+    f.system.bodies.push(wreck);
+    f.system.nextPass = Infinity;
+
+    // This point is on shard zero and over 14 units from the remaining wreck.
+    const port = { x: 491.16, y: 449.82, vx: 0, vy: 0 };
+    const far = { x: 450, y: 800, vx: 0, vy: 0 };
+    f.system.plasmaVentArea.emit("first", 0.01, 0.01, [port, far], [port, far]);
+    f.system.plasmaVentArea.emit(
+      "second",
+      0.03,
+      0.01,
+      [port, far],
+      [port, far],
+    );
+    f.system.step(0.05, f.ship, star, f.resources, 100, 400, 400, false);
+
+    const shard = f.system.bodies.find(
+      (body) => body.kind === "fragment" && body.shardIndex === 0,
+    );
+    expect(wreck.hull).toBe(66);
+    expect(shard?.hull).toBe(SALVAGE.fragment.hull - 6);
   });
 });

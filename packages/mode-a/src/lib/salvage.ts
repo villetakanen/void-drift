@@ -30,6 +30,7 @@ import {
   DERELICT_SCALE,
   DERELICT_SHARDS,
 } from "./derelict-geometry";
+import { PlasmaVentArea } from "./plasma-vent-area";
 import {
   ASSEMBLED_ION_DEFAULTS,
   type AssembledIonSettings,
@@ -187,6 +188,8 @@ function spinOf(body: Pick<SalvageBody, "kind" | "spin">) {
 interface PendingPlasmaVent {
   mount: BuildMount;
   sample: Pick<GameObject, "pos" | "rotation">;
+  startSample: Pick<GameObject, "pos" | "rotation">;
+  endSample: Pick<GameObject, "pos" | "rotation">;
   start: number;
   duration: number;
   intensity: number;
@@ -326,6 +329,10 @@ export class SalvageSystem {
   private plasmaVisualSequence = 0;
   readonly plasmaVentEvents: PlasmaVentEvent[] = [];
   private plasmaVentSequence = 0;
+  readonly plasmaVentArea = new PlasmaVentArea();
+  get hasActivePlasma() {
+    return this.plasmaStreams.length > 0 || this.plasmaVentArea.active;
+  }
   private readonly plasmaVentAcceleration: number;
   laserPulses = 0;
   hits = 0;
@@ -1136,6 +1143,13 @@ export class SalvageSystem {
           vents.push({
             mount: weapon.mount,
             sample,
+            startSample: mountedPoseAt(ship, previousShip, dt, dt - left),
+            endSample: mountedPoseAt(
+              ship,
+              previousShip,
+              dt,
+              dt - left + elapsed,
+            ),
             start: midpoint - elapsed / 2,
             duration: elapsed,
             intensity:
@@ -1174,29 +1188,40 @@ export class SalvageSystem {
     vents.sort((a, b) => a.start + a.duration / 2 - (b.start + b.duration / 2));
     for (const vent of vents) {
       const midpoint = vent.start + vent.duration / 2;
-      let driftX = initialX,
-        driftY = initialY;
-      for (const other of vents) {
-        const elapsed = Math.max(
-          0,
-          Math.min(other.duration, midpoint - other.start),
-        );
-        driftX -=
-          Math.cos(other.sample.rotation) *
-          this.plasmaVentAcceleration *
-          elapsed;
-        driftY -=
-          Math.sin(other.sample.rotation) *
-          this.plasmaVentAcceleration *
-          elapsed;
-      }
-      const [left, right] = plasmaVentOutlets(vent.sample, vent.mount);
-      const outlet = (port: typeof left) => ({
-        x: port.x,
-        y: port.y,
-        vx: driftX + Math.cos(port.angle) * PLASMA_RIFLE.ventExhaustSpeed,
-        vy: driftY + Math.sin(port.angle) * PLASMA_RIFLE.ventExhaustSpeed,
-      });
+      const sampleOutlets = (
+        sample: PendingPlasmaVent["sample"],
+        at: number,
+      ): PlasmaVentEvent["outlets"] => {
+        let vx = initialX,
+          vy = initialY;
+        for (const other of vents) {
+          const elapsed = Math.max(
+            0,
+            Math.min(other.duration, at - other.start),
+          );
+          vx -=
+            Math.cos(other.sample.rotation) *
+            this.plasmaVentAcceleration *
+            elapsed;
+          vy -=
+            Math.sin(other.sample.rotation) *
+            this.plasmaVentAcceleration *
+            elapsed;
+        }
+        return plasmaVentOutlets(sample, vent.mount).map((port) => ({
+          x: port.x,
+          y: port.y,
+          vx: vx + Math.cos(port.angle) * PLASMA_RIFLE.ventExhaustSpeed,
+          vy: vy + Math.sin(port.angle) * PLASMA_RIFLE.ventExhaustSpeed,
+        })) as PlasmaVentEvent["outlets"];
+      };
+      this.plasmaVentArea.emit(
+        vent.mount.key,
+        this.time - dt + vent.start,
+        vent.duration,
+        sampleOutlets(vent.startSample, vent.start),
+        sampleOutlets(vent.endSample, vent.start + vent.duration),
+      );
       const time = this.time - dt + midpoint + this.presentationTimeOffset;
       while (
         this.plasmaVentEvents.length &&
@@ -1210,7 +1235,7 @@ export class SalvageSystem {
         time,
         duration: vent.duration,
         intensity: vent.intensity,
-        outlets: [outlet(left), outlet(right)],
+        outlets: sampleOutlets(vent.sample, midpoint),
       });
     }
     // A different mount may release during the same substep. Its inherited
@@ -1528,7 +1553,18 @@ export class SalvageSystem {
     this.time += dt;
     this.plasmaContactEvents.length = 0;
     this.plasmaBurstEvents.length = 0;
-    this.sweepPlasmaStreams(dt, star, planets, roster, shooterId);
+    const births = new Map<SalvageBody, number>();
+    this.sweepPlasmaStreams(
+      dt,
+      star,
+      planets,
+      roster,
+      shooterId,
+      false,
+      undefined,
+      births,
+    );
+    this.sweepVentAreas(dt, roster, shooterId, false, undefined, births);
   }
   private plasmaVisual(
     event:
@@ -1539,6 +1575,48 @@ export class SalvageSystem {
     if (this.plasmaVisualEvents.length >= 512) this.plasmaVisualEvents.shift();
     this.plasmaVisualEvents.push({ ...event, id: ++this.plasmaVisualSequence });
   }
+  private sweepVentAreas(
+    dt: number,
+    bodies: readonly SalvageBody[],
+    shooterId: number | undefined,
+    integrated: boolean,
+    terminal: ((body: SalvageBody) => number) | undefined,
+    births: Map<SalvageBody, number>,
+  ) {
+    const start = this.time - dt;
+    this.plasmaVentArea.sweep(
+      start,
+      dt,
+      bodies,
+      shooterId,
+      (body, offset, registerNewborn) => {
+        const pose = plasmaBodyPose(body, dt, offset, integrated);
+        const end = { x: body.x, y: body.y, rotation: body.rotation };
+        Object.assign(body, { x: pose.x, y: pose.y, rotation: pose.rotation });
+        const oldCount = this.bodies.length;
+        this.damage(body, PLASMA_RIFLE.ventDamage, start + offset);
+        for (let i = oldCount; i < this.bodies.length; i++) {
+          const newborn = this.bodies[i];
+          births.set(newborn, offset);
+          newborn.previousX = newborn.x - newborn.vx * offset;
+          newborn.previousY = newborn.y - newborn.vy * offset;
+          newborn.previousRotation =
+            newborn.rotation - spinOf(newborn) * offset;
+          if (integrated) {
+            newborn.x += newborn.vx * (dt - offset);
+            newborn.y += newborn.vy * (dt - offset);
+            if (newborn.kind !== "cell")
+              newborn.rotation += spinOf(newborn) * (dt - offset);
+          }
+          if (newborn.kind !== "cell" && newborn.hull > 0)
+            registerNewborn(newborn);
+        }
+        if (body.hull > 0) Object.assign(body, end);
+      },
+      (body, offset) => plasmaBodyPose(body, dt, offset, integrated),
+      (body) => ({ birth: births.get(body) ?? 0, end: terminal?.(body) ?? dt }),
+    );
+  }
   private sweepPlasmaStreams(
     dt: number,
     star: Star,
@@ -1547,6 +1625,7 @@ export class SalvageSystem {
     shooterId?: number,
     integrated = false,
     terminal?: (body: SalvageBody) => number,
+    birthOffsets = new Map<SalvageBody, number>(),
   ) {
     const cutoff = this.time + this.presentationTimeOffset - 0.5;
     while (
@@ -1557,7 +1636,6 @@ export class SalvageSystem {
     if (!this.plasmaStreams.length) return;
     const started = this.targetingMetrics ? performance.now() : 0;
     const intervalStart = this.time - dt;
-    const birthOffsets = new Map<SalvageBody, number>();
     const plan = (head: PlasmaStream) => {
       const offset = Math.max(0, head.launchTime - intervalStart);
       const horizon = Math.min(
@@ -1894,12 +1972,24 @@ export class SalvageSystem {
         selected,
         previousShip,
       );
+      const births = new Map<SalvageBody, number>();
       this.sweepPlasmaStreams(
         dt,
         star,
         planets,
         this.weaponBodies,
         policy?.shooterId,
+        false,
+        undefined,
+        births,
+      );
+      this.sweepVentAreas(
+        dt,
+        this.weaponBodies,
+        policy?.shooterId,
+        false,
+        undefined,
+        births,
       );
       this.activeBodies = null;
 
@@ -2166,6 +2256,11 @@ export class SalvageSystem {
       return time;
     };
 
+    const births = new Map<SalvageBody, number>();
+    const bodyEnd = (body: SalvageBody) =>
+      existingBodies.has(body)
+        ? Math.min(terminal(body).time, shipTime(body))
+        : Infinity;
     this.sweepPlasmaStreams(
       dt,
       star,
@@ -2173,11 +2268,10 @@ export class SalvageSystem {
       this.bodies,
       undefined,
       true,
-      (body) =>
-        existingBodies.has(body)
-          ? Math.min(terminal(body).time, shipTime(body))
-          : Infinity,
+      bodyEnd,
+      births,
     );
+    this.sweepVentAreas(dt, this.bodies, undefined, true, bodyEnd, births);
 
     this.shots = this.shots.filter((shot) => {
       let first = contactTime(

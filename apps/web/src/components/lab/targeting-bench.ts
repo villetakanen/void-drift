@@ -309,7 +309,7 @@ export class TargetingBench {
       const damage = Array<number>(this.sim.opponents.length).fill(0);
       const needsRoster = this.sim.opponents.some(
         (actor) =>
-          actor.combat.plasmaStreams.length > 0 ||
+          actor.combat.hasActivePlasma ||
           (actor.lifecycle !== "destroyed" &&
             actor.combat.needsWeaponRoster(SUBSTEP)),
       );
@@ -355,7 +355,7 @@ export class TargetingBench {
           (this.substeps + 1) * SUBSTEP - (shooter.combat.time + SUBSTEP);
         if (shooter.lifecycle === "destroyed") {
           if (
-            shooter.combat.plasmaStreams.length ||
+            shooter.combat.hasActivePlasma ||
             shooter.combat.plasmaContactEvents.length ||
             shooter.combat.plasmaBurstEvents.length
           ) {

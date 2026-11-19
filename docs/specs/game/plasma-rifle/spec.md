@@ -56,6 +56,17 @@ For exactly the time spent draining, each venting rifle applies a common force o
 - A target returns during venting. The paid discharge finishes once, and the rifle proceeds into its normal recovery.
 - A funded shot follows the release and eruption contract. After firing, both outlets run the same vent cycle with the charge light already empty.
 
+### Vent-area damage
+
+Each rifle’s two drifting sprays form one damaging area. The starting contact radius is 6 u about each spray’s moving centreline. Contact with a ship, wreck or fragment deals 3 hull damage on entry. The emitting ship is immune. Staying inside either spray, touching both at once, or crossing their overlap deals one hit for that uninterrupted contact. Leaving the combined area and entering again deals a new hit. Each rifle owns its own area.
+
+Both vent triggers use identical geometry, lifetime and entry rules at equal elapsed times and ship motion. Previously emitted fumes continue to travel during cooldown. Their gameplay lifetime is 0.36 s from emission. An encounter reset clears the areas and their contact history. A newly created body has its own contact history.
+
+Gameplay uses bounded moving spray envelopes and the combat clock. Collision work and storage are independent of visual stamp count, camera visibility and render rate. A body crossing a spray between combat samples can take an entry hit. Existing flight-scale fume visuals remain the appearance reference.
+
+- A ship entering the left spray, crossing through the overlap into the right spray, and then clearing both loses 3 hull. Re-entering the drifting fumes after the ports close brings its total loss to 6 hull.
+- Replaying the same encounter with vent drawing disabled produces the same damage. A quarter-charge interruption and a completed shot expose the same bodies to the same vent damage for matching motion.
+
 ### Mounted charge light
 
 A paid charge is visible on the fitted rifle at flight scale. A warm, elongated central bead brightens in place along the barrel channel as the stored fraction increases. The two side channels begin to light halfway through charging. A fully charged rifle waiting for release power keeps its full indication. Losing the target dims the channels with the actual remaining charge during venting. A funded release clears the stored-charge indication immediately. Idle and cooldown show the unlit fitting.

@@ -683,10 +683,8 @@ export class Simulation {
             (actor) => actor.lifecycle !== "arriving",
           );
           const needsRoster =
-            !!this.salvage?.plasmaStreams.length ||
-            this.opponents.some(
-              (actor) => actor.combat.plasmaStreams.length > 0,
-            ) ||
+            !!this.salvage?.hasActivePlasma ||
+            this.opponents.some((actor) => actor.combat.hasActivePlasma) ||
             (arrivalsComplete &&
               ((playerCanFire && !!this.salvage?.needsWeaponRoster(STEP / 4)) ||
                 this.opponents.some(
@@ -775,7 +773,7 @@ export class Simulation {
               acquisitions.get(this.salvage),
               { x: previousX, y: previousY, rotation: previousRotation },
             );
-          } else if (this.salvage?.plasmaStreams.length) {
+          } else if (this.salvage?.hasActivePlasma) {
             this.salvage.stepPlasmaStreams(
               STEP / 4,
               this.star,
@@ -787,7 +785,7 @@ export class Simulation {
           for (let index = 0; index < this.opponents.length; index++) {
             const pirate = this.opponents[index];
             if (!arrivalsComplete || !piratesCanFire[index]) {
-              if (pirate.combat.plasmaStreams.length)
+              if (pirate.combat.hasActivePlasma)
                 pirate.combat.stepPlasmaStreams(
                   STEP / 4,
                   this.star,
