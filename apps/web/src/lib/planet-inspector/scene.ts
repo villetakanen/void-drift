@@ -18,6 +18,7 @@ import {
   FlightFx,
   type FlightLayerContexts,
   GRAVITY_TUNING,
+  generateSolarSystem,
   MERCURIAL_ROCK_SPIN_SECONDS,
   mercurialOrbit,
   PRACTICE_CRADLE_SPIN_SECONDS,
@@ -113,14 +114,20 @@ export class PlanetInspectorScene {
     const family = this.doc.planet.kind === "family";
     const sim = new Simulation({
       ...stockSettings("wasp"),
-      mode: family ? "derelicts" : "practice",
+      mode: "practice",
       seed: 2026,
     });
-    if (family) applyYellowFamilyProfile(sim.star, 70, GRAVITY_TUNING);
+    if (family) {
+      const system = generateSolarSystem({ seed: 2026 });
+      Object.assign(sim.star, system.star);
+      sim.star.name = system.star.name;
+      sim.planets.splice(0, sim.planets.length, ...system.planets);
+      applyYellowFamilyProfile(sim.star, 70, GRAVITY_TUNING);
+    }
     const planet = sim.planets.find((p) => p.id === this.reference.id);
     if (!planet)
       throw new Error(
-        `Named ${this.reference.label} is unavailable in Practice`,
+        `Planet ${this.reference.label} is unavailable in the selected system`,
       );
     sim.planets.splice(0, sim.planets.length, planet);
     if (family) {
