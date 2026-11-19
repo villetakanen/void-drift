@@ -9,10 +9,11 @@ progression.
 ## Contract
 
 - Hangar launch starts a fresh run with the selected player build and exactly
-  two identical hostile charcoal Scout ships, each fitted with one Ion Point
-  Defence, one Light Ion Cannon and two Light Ion engines. Each pirate owns its
-  identity, loadout, hull, energy, pilot, weapons and effects. All three actors
-  use the shared arena, gravity and flight physics.
+  two identical hostile charcoal Scout ships, each fitted with Service Ion
+  engines on the sides, a Plasma Rifle in the top slot and a Plasma engine in
+  the aft slot. Each pirate owns its identity, loadout, hull, energy, pilot,
+  weapons and effects. All three actors use the shared arena, gravity and flight
+  physics.
 - The run seed selects a yellow-family star size from 36–140 u using the same
   profile as Derelicts. Its appearance, gravity, collection and danger fields
   follow that size; the World HUD shows its `G4`–`G14` denomination.

@@ -8,6 +8,13 @@ import { gameSettings, Simulation, STEP } from "./simulation";
 
 const still = { leftThruster: false, rightThruster: false, fire: false };
 
+function ionCombatLoadout() {
+  const loadout = defaultLoadout("scout");
+  loadout.hull[0] = "ion-point-defence";
+  loadout.aft[0] = "light-ion-cannon";
+  return loadout;
+}
+
 describe("Gauntlet flight and combat", () => {
   it("owns two independent identical pirates and keeps going after only one dies", () => {
     const sim = new Simulation({
@@ -77,7 +84,7 @@ describe("Gauntlet flight and combat", () => {
   it("allows a lethal facing exchange to resolve as same-substep mutual destruction", () => {
     const sim = new Simulation({
       ...gameSettings("scout"),
-      loadout: pirateLoadout(),
+      loadout: ionCombatLoadout(),
       mode: "gauntlet",
       arrival: false,
       seed: 75,
@@ -97,6 +104,9 @@ describe("Gauntlet flight and combat", () => {
     pirate.ship.vel.set(0, 0);
     pirate.ship.rotation = Math.PI;
     pirate.resources.hull = 1;
+    pirate.loadout = ionCombatLoadout();
+    pirate.combat = new SalvageSystem(pirate.loadout, 75);
+    pirate.weapons = pirate.combat.weapons;
     for (const weapon of [
       ...(sim.salvage?.weapons ?? []),
       ...pirate.combat.weapons,
@@ -116,9 +126,9 @@ describe("Gauntlet flight and combat", () => {
   it("uses a valid Scout fit and advances shared planet time once per world substep", () => {
     const loadout = pirateLoadout();
     expect(loadout.chassis).toBe("scout");
-    expect(loadout.side).toBe("ion");
-    expect(loadout.hull).toEqual(["ion-point-defence"]);
-    expect(loadout.aft).toEqual(["light-ion-cannon"]);
+    expect(loadout.side).toBe("service-ion");
+    expect(loadout.hull).toEqual(["plasma-rifle"]);
+    expect(loadout.aft).toEqual(["plasma"]);
 
     const sim = new Simulation({
       ...gameSettings("fighter"),
@@ -210,7 +220,7 @@ describe("Gauntlet flight and combat", () => {
   });
 
   it("uses the existing ion turret and cannon rules, and respects a world blocker", () => {
-    const loadout = pirateLoadout();
+    const loadout = ionCombatLoadout();
     const system = new SalvageSystem(loadout, 19);
     const ship = {
       pos: new Vec2(0, 0),
@@ -264,7 +274,7 @@ describe("Gauntlet flight and combat", () => {
   });
 
   it("lets a pirate hit an allied blocker while aiming at the player", () => {
-    const system = new SalvageSystem(pirateLoadout(), 191);
+    const system = new SalvageSystem(ionCombatLoadout(), 191);
     const ship = {
       pos: new Vec2(0, 0),
       vel: new Vec2(0, 0),
@@ -303,7 +313,7 @@ describe("Gauntlet flight and combat", () => {
   });
 
   it("keeps the pirate turret's target on the player while the ally is closer", () => {
-    const system = new SalvageSystem(pirateLoadout(), 192);
+    const system = new SalvageSystem(ionCombatLoadout(), 192);
     const ship = {
       pos: new Vec2(0, 0),
       vel: new Vec2(0, 0),
@@ -393,7 +403,7 @@ describe("Gauntlet flight and combat", () => {
   });
 
   it("collects both existing weapon passes before applying same-substep damage", () => {
-    const loadout = pirateLoadout();
+    const loadout = ionCombatLoadout();
     const playerWeapons = new SalvageSystem(loadout, 31);
     const pirateWeapons = new SalvageSystem(loadout, 32);
     const player = {
