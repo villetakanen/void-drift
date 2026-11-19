@@ -1,6 +1,18 @@
+---
+
+title: "Spec: Render model"
+status: draft
+generated:
+by: "codex/gpt-6"
+at: "2026-11-19T16:41:35+02:00"
+verified: [{ by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }]
+---
+
 # Render model
 
-## Context
+## Blueprint
+
+### Context
 
 The Render model Lab is a small workbench for understanding the actual rendering
 layers: what each holds, how painted light fades, and how the browser combines
@@ -23,7 +35,7 @@ collateral: the documents a person at the bench reaches for. It lists what the
 game's own frame draws on the same three layers, read from the production pass
 list, so the bench's sample marks can be related to the real frame.
 
-## Architecture
+### Architecture
 
 The [render contract](../../game/render/spec.md) owns the layer model.
 `FLIGHT_LAYERS` in `packages/mode-a/src/lib/flight-frame.ts` supplies the production
@@ -42,7 +54,7 @@ The page owns temporary experiment settings. They do not change production
 defaults or persist across reloads. Inputs use a finite set of supported choices;
 there is no external configuration or storage contract.
 
-## The workbench
+#### The workbench
 
 `/lab/render-model` remains in the Lab's Tools group, for viewports 1280px wide
 and up. `apps/web/src/components/lab/RenderModel.svelte` composes the workbench.
@@ -98,20 +110,29 @@ resolution and Deck overlays remain outside this experiment. All layers remain
 at production resolution. Timing tables and scripted flight are not part of the
 workbench.
 
-## The frame reference
+#### The frame reference
 
 `apps/web/src/components/lab/FrameReference.svelte` renders the reference from
-`FLIGHT_LAYERS` and `FLIGHT_PASSES` in `packages/mode-a/src/lib/flight-frame.ts`.
+shared composition metadata plus `FLIGHT_LAYERS` and `FLIGHT_PASSES` in
+`packages/mode-a/src/lib/flight-frame.ts`. The [game field](../../game/render/game-field/spec.md)
+places the browser sky beneath the canvas stack; the reference identifies it
+as prepared presentation rather than a per-frame Canvas pass. Legacy void and
+starfield passes are labelled with the compositions in which they run.
 `apps/web/src/pages/lab/render-model.astro` places it directly after the workbench.
 
 - Layers appear in stack order, bottom to top, each with its blend and memory.
 - Under each layer its passes appear in draw order, each with its name, its space,
   what it draws and the file that owns its drawing.
-- Every row comes from the pass list. The reference holds no pass or layer text of
+- Every row comes from shared composition, layer or pass metadata. The reference holds no pass or layer text of
   its own, so a pass added to the frame appears here without editing the page.
 - The reference is static: it has no controls and runs no frame.
 - Collateral for the bench stays on this page with the bench. Replacing or
   reworking the workbench keeps the reference.
+
+### Constraints
+
+- The workbench owns its synthetic stimulus; the frame reference describes the
+  complete production composition from shared metadata.
 
 ## Contract
 

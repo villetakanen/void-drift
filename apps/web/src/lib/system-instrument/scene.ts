@@ -15,6 +15,7 @@ import {
   stockSettings,
 } from "@void-drift/mode-a";
 import { planetAppearances } from "../assets/planet-appearances";
+import { createOuterMercurialMaterial } from "../assets/rock-planets/authored-materials";
 import { SystemInstrumentDocumentSchema } from "./config";
 
 const PASSES = new Set([
@@ -37,11 +38,15 @@ export class SystemInstrumentScene {
   private renderer: Renderer;
   private fx = new FlightFx();
   private material?: Awaited<ReturnType<typeof createRockMaterial>>;
+  private outerMaterial?: Awaited<
+    ReturnType<typeof createOuterMercurialMaterial>
+  >;
   private disposed = false;
   private appearances: ReturnType<typeof planetAppearances> = new Map();
   private bindMaterials() {
     this.appearances = planetAppearances(this.sim.planets, {
       mercury: this.material,
+      outerMercurial: this.outerMaterial,
     });
   }
 
@@ -72,20 +77,22 @@ export class SystemInstrumentScene {
     this.draw();
   }
   private async prepare(changed: () => void) {
-    try {
-      const material = await createRockMaterial(PLANET_MAPS.mercuryGround);
-      if (this.disposed) {
-        material.painter.dispose();
-        return;
-      }
-      this.material = material;
-      this.bindMaterials();
-      this.status = "";
-    } catch {
-      if (this.disposed) return;
-      this.status =
-        "Mercurial material unavailable; using the production fallback.";
+    const [mercury, outer] = await Promise.allSettled([
+      createRockMaterial(PLANET_MAPS.mercuryGround),
+      createOuterMercurialMaterial(),
+    ]);
+    if (this.disposed) {
+      if (mercury.status === "fulfilled") mercury.value.painter.dispose();
+      if (outer.status === "fulfilled") outer.value.painter.dispose();
+      return;
     }
+    if (mercury.status === "fulfilled") this.material = mercury.value;
+    if (outer.status === "fulfilled") this.outerMaterial = outer.value;
+    this.bindMaterials();
+    this.status =
+      mercury.status === "rejected" || outer.status === "rejected"
+        ? "A Mercurial material is unavailable; using the production fallback."
+        : "";
     this.draw();
     changed();
   }
@@ -134,6 +141,7 @@ export class SystemInstrumentScene {
   dispose() {
     this.disposed = true;
     this.material?.painter.dispose();
+    this.outerMaterial?.painter.dispose();
     this.fx.clear();
   }
 }

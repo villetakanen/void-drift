@@ -60,6 +60,8 @@ coordinate-transform and simulation-independence invariants apply to both.
 
 ### Background starfield
 
+The following rules describe the stock field. The [0.7 distant flight sky](../render/flight-sky/spec.md) defines the camera-relative travel and fixed apparent scale of a prepared sightline. Camera framing of local objects is shared by both presentations.
+
 - Background stars are world-anchored, as today: they pan and zoom with the
   world.
 - Stars cover the whole stage at every zoom level and every stage width, with no
@@ -79,8 +81,8 @@ coordinate-transform and simulation-independence invariants apply to both.
   active area.
 - Zoom uses only the configured levels, snaps in both directions, holds the
   wider level within the 8% threshold band and resets framing on a wrap.
-- Background stars cover the whole stage at every zoom level and stage
-  width, world-anchored and identical across runs and frames.
+- Both sky presentations cover the whole stage at every zoom level and stage
+  width. Stock stars retain their world positions across runs and frames.
 - Coordinates round-trip between world and screen at every level.
 
 ### Regression guardrails

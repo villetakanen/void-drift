@@ -33,9 +33,9 @@ import {
 } from "../lib/stores/ship-setup";
 import FlightDeck from "./FlightDeck.svelte";
 import PartCard from "./hangar/PartCard.svelte";
+import SegmentedControl from "./inputs/SegmentedControl.svelte";
 import Switch from "./inputs/Switch.svelte";
 import Tabs from "./inputs/Tabs.svelte";
-import Toggle from "./inputs/Toggle.svelte";
 import Logo from "./Logo.svelte";
 import PlaygroundStatus from "./PlaygroundStatus.svelte";
 
@@ -247,7 +247,7 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
                   <div class="view-axes" aria-hidden="true"></div>
                 {/if}
                 <div class="preview-mode">
-                  <Toggle
+                  <SegmentedControl
                     label="Ship preview mode"
                     options={["Plan", "View"]}
                     bind:value={previewMode}

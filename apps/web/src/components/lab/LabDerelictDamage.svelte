@@ -15,6 +15,7 @@ import {
   stockSettings,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
+import Switch from "../inputs/Switch.svelte";
 
 let {
   label = "Live derelict damage and physical shedding specimen",
@@ -169,6 +170,7 @@ $effect(() => {
   void showMaterial;
   repaint();
 });
+const controlId = $props.id();
 </script>
 <section
   class="damage-bench"
@@ -182,8 +184,8 @@ $effect(() => {
   <h2>Damage and physical pieces</h2>
   <p>Production simulation · fixed specimen · 2× view</p>
   <canvas bind:this={canvas} aria-label={label}></canvas>
-  <label
-    ><input type="checkbox" bind:checked={showMaterial}>
+  <label for={`${controlId}-0`} class="setting"
+    ><Switch id={`${controlId}-0`} bind:checked={showMaterial} />
     Show fitted material</label
   >
   <p role="status">
@@ -239,6 +241,11 @@ $effect(() => {
   </p>
 </section>
 <style>
+.setting {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
 .button-group {
   flex-wrap: wrap;
 }

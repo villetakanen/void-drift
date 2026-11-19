@@ -6,7 +6,7 @@ A designer can arrive with a topic and still be working out the question. The ag
 
 | When changing… | Edit here |
 | --- | --- |
-| How the Lab builds and publishes study pages, including closed MDX records | [Study pages in the Lab](../../../docs/specs/lab/design-studies/spec.md) |
+| How Studies builds and publishes its pages, including closed MDX records | [Studies](../../../docs/specs/studies/spec.md) |
 | How the agent starts, moves between parts, or closes the study | [SKILL.md](SKILL.md) |
 | What to build after the designer picks, rejects, or leaves a proposal open | [Exploration](references/exploration.md) |
 | How an independent reviewer tests the opening question and reports findings | [Question test](references/question-test.md) |

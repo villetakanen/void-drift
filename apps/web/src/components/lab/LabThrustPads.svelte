@@ -10,7 +10,7 @@ import {
 } from "@void-drift/core";
 import { GAME_GUTTER_PX, GAME_HEIGHT } from "../../lib/game-screen";
 import ThrustPads from "../controls/ThrustPads.svelte";
-import Toggle from "../inputs/Toggle.svelte";
+import SegmentedControl from "../inputs/SegmentedControl.svelte";
 
 // Both gutters' pads over the seeded starfield: a selector shows each lit
 // state, and live presses resolve through the real input rules.
@@ -74,7 +74,11 @@ $effect(() => {
   </p>
   <div class="example">
     <span class="caption">Lit state</span>
-    <Toggle label="Thrust pad state" options={[...STATES]} bind:value={shown} />
+    <SegmentedControl
+      label="Thrust pad state"
+      options={[...STATES]}
+      bind:value={shown}
+    />
     <div
       class="stage"
       data-action={action ?? "none"}

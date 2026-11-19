@@ -43,7 +43,7 @@
   /* Text fields only; surfaces and controls cut their corners. */
   --radius-sm: 2px;
 
-  /* Corner cuts (design-system-core.md, Surfaces): buttons and the toggle
+  /* Corner cuts (design-system-core.md, Surfaces): buttons and segmented controls
 	   cut md; panels cut lg. Always the top-left and bottom-right. */
   --cut-size-sm: 6px;
   --cut-size-md: 10px;

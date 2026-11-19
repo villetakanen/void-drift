@@ -1,5 +1,10 @@
 <script lang="ts">
-import { FLIGHT_LAYERS, type FlightLayerId } from "@void-drift/mode-a";
+import {
+  FLIGHT_LAYERS,
+  type FlightLayerId,
+  type SkySightline,
+} from "@void-drift/mode-a";
+import FlightSky from "./FlightSky.svelte";
 import TurbulentBloomFilter from "./TurbulentBloomFilter.svelte";
 import {
   TURBULENT_BLOOM_DEFAULTS,
@@ -18,6 +23,7 @@ let {
   filters = {},
   bloom = TURBULENT_BLOOM_DEFAULTS,
   visibility = {},
+  sky,
 }: {
   canvases?: Partial<Record<FlightLayerId, HTMLCanvasElement>>;
   /** Names the World canvas; the layers above it are decorative. */
@@ -27,10 +33,20 @@ let {
   filters?: Partial<Record<FlightLayerId, string>>;
   bloom?: TurbulentBloomSettings;
   visibility?: Partial<Record<FlightLayerId, boolean>>;
+  sky?: {
+    url: string;
+    cameraX: number;
+    cameraY: number;
+    width: number;
+    sightline?: Readonly<SkySightline>;
+  };
 } = $props();
 </script>
 
 <div class="flight-layers">
+  {#if sky}
+    <FlightSky {...sky} />
+  {/if}
   {#each FLIGHT_LAYERS as layer (layer.id)}
     <canvas
       bind:this={canvases[layer.id]}
@@ -64,11 +80,13 @@ let {
   isolation: isolate;
 }
 canvas {
+  position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
   height: 100%;
 }
-canvas + canvas {
+canvas:not([data-layer="world"]) {
   position: absolute;
   inset: 0;
   pointer-events: none;

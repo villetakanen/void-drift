@@ -2,9 +2,16 @@ import type { Planet, Star } from "@void-drift/core";
 import {
   assignPlanetSystemPositions,
   initializePlanets,
+  massWellReach,
+  PLANET_TYPES,
+  Vec2,
 } from "@void-drift/core";
 import { createStar } from "./game-loop";
-import { applyMercurialGravity, MERCURIAL_ROCK_RADIUS } from "./mercurial-rock";
+import {
+  applyMercurialGravity,
+  MERCURIAL_ROCK_RADIUS,
+  mercurialMass,
+} from "./mercurial-rock";
 import { SolarSystemGenerationSchema } from "./schemas/solar-system";
 import { GRAVITY_TUNING } from "./tuning";
 import {
@@ -20,6 +27,7 @@ export interface SolarSystem {
 // Generated-world tuning is independent of the fixed Practice orbit.
 const GENERATED_MERCURIAL_REFERENCE_ORBIT = 258;
 const GENERATED_MERCURIAL_TRAVEL_SPEED = 4;
+const OUTER_MERCURIAL_ID = "outer-mercurial";
 
 /** Independent seeded stream for the generated mineral-rock radius. */
 export function mercurialRadius(seed: number): number {
@@ -67,6 +75,10 @@ export function orbitsConflict(
   return Math.abs(a.orbitRadius - b.orbitRadius) <= a.radius + b.radius + 1;
 }
 
+function outerMercurialRadius(seed: number): number {
+  return mercurialRadius(seed ^ 0x4f1bbcdc);
+}
+
 /** Builds the shared seeded system for Survival, Derelicts and Gauntlet. */
 export function generateSolarSystem(input: unknown): SolarSystem {
   const { seed, centerX, centerY } = SolarSystemGenerationSchema.parse(input);
@@ -84,9 +96,64 @@ export function generateSolarSystem(input: unknown): SolarSystem {
   );
   moon.orbitSpeed = GENERATED_MERCURIAL_TRAVEL_SPEED / moon.orbitRadius;
   delete moon.displayName;
-  const planets = stock.filter(
-    (planet) => planet === moon || !orbitsConflict(planet, moon),
+  const planets = [moon];
+  const outerRadius = outerMercurialRadius(seed);
+  const outerMass = mercurialMass(outerRadius);
+  const outerReach = massWellReach(
+    outerMass,
+    GRAVITY_TUNING.cutoff,
+    GRAVITY_TUNING.falloff,
   );
+  const innerMass = mercurialMass(moon.radius);
+  const innerReach = massWellReach(
+    innerMass,
+    GRAVITY_TUNING.cutoff,
+    GRAVITY_TUNING.falloff,
+  );
+  const separation =
+    Math.max(moon.radius + outerReach, outerRadius + innerReach) + 1;
+  // When the Sun contains both complete wells, place the pair at their nearest
+  // safe radial spacing. Their fields overlap, while neither body enters the
+  // other planet's well. The ordinary Sun danger/collection margins still hold.
+  const pairInnerOrbit = (star.damageField?.reach ?? NaN) + moon.radius + 1;
+  const outerOrbit = pairInnerOrbit + separation;
+  const contained =
+    Number.isFinite(star.influenceRadius) &&
+    pairInnerOrbit + innerReach <= star.influenceRadius &&
+    outerOrbit + outerReach <= star.influenceRadius &&
+    separation < innerReach + outerReach &&
+    outerOrbit + outerRadius + 1 <= (star.collectionField?.reach ?? NaN);
+  let outer: Planet | undefined;
+  if (contained) {
+    moon.orbitRadius = pairInnerOrbit;
+    moon.orbitSpeed = GENERATED_MERCURIAL_TRAVEL_SPEED / pairInnerOrbit;
+    outer = {
+      ...moon,
+      id: OUTER_MERCURIAL_ID,
+      pos: new Vec2(centerX, centerY),
+      orbitCenter: new Vec2(centerX, centerY),
+      radius: outerRadius,
+      mass: outerMass,
+      massWell: {
+        mass: outerMass,
+        cutoff: GRAVITY_TUNING.cutoff,
+        falloff: GRAVITY_TUNING.falloff,
+      },
+      orbitRadius: outerOrbit,
+      orbitSpeed: GENERATED_MERCURIAL_TRAVEL_SPEED / outerOrbit,
+      color: PLANET_TYPES.outerMercurial.color,
+      type: "outer-mercurial",
+    };
+    planets.push(outer);
+  }
+  for (const candidate of stock) {
+    if (candidate === moon) continue;
+    if (
+      !orbitsConflict(candidate, moon) &&
+      (!outer || !orbitsConflict(candidate, outer))
+    )
+      planets.push(candidate);
+  }
   const phase = ((seed % 360) / 180) * Math.PI;
 
   for (const planet of planets) {
@@ -95,7 +162,7 @@ export function generateSolarSystem(input: unknown): SolarSystem {
       centerX + Math.cos(planet.orbitAngle) * planet.orbitRadius,
       centerY + Math.sin(planet.orbitAngle) * planet.orbitRadius,
     );
-    if (planet === moon) {
+    if (planet === moon || planet === outer) {
       applyMercurialGravity(planet);
       continue;
     }

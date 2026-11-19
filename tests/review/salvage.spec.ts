@@ -48,8 +48,8 @@ test("shared weapon effects in the mixed Lab", async ({ page }, info) => {
   await page.clock.pauseAt(time);
   await page.goto("/lab/fx?weapons=1");
   await expect(
-    page.getByRole("button", { name: "Weapons on" }),
-  ).toHaveAttribute("aria-pressed", "true");
+    page.getByRole("checkbox", { name: "Weapons", exact: true }),
+  ).toBeChecked();
   await page.clock.runFor(7200);
   const path = info.outputPath("weapon-fx-lab.png");
   await page.screenshot({ path });

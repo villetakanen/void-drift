@@ -9,7 +9,7 @@ import {
 } from "../../lib/instrument";
 import FlightLayers from "../FlightLayers.svelte";
 import RingSlider from "../inputs/RingSlider.svelte";
-import Toggle from "../inputs/Toggle.svelte";
+import SegmentedControl from "../inputs/SegmentedControl.svelte";
 import BurnRow from "../lab/instrument/BurnRow.svelte";
 import OverlayPane from "../lab/instrument/OverlayPane.svelte";
 import { FlightScene } from "./flight-scene";
@@ -176,7 +176,7 @@ onMount(() => {
   <OverlayPane>
     <div class="value">
       <p>Light shown after a jump in time</p>
-      <Toggle
+      <SegmentedControl
         stretch
         label="Light shown after a jump in time"
         options={Object.keys(HISTORY)}

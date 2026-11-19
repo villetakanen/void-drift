@@ -2,12 +2,13 @@ import { RockBodyPainter } from "./rock-body";
 import { StripSphericalSurface } from "./strip-spherical-surface";
 
 /**
- * Production planet surface maps: unlit cylindrical atlases prepared by
- * `scripts/planet-maps.mjs`, with provenance in `public/planets/provenance.json`.
- * Play loads planet surfaces only from here, never from a study folder.
+ * Production planet surface maps: unlit cylindrical atlases in `public/planets`,
+ * with provenance alongside the authored assets. Play loads surfaces only
+ * from here, never directly from a study folder.
  */
 export const PLANET_MAPS = {
   mercuryGround: "/planets/mercury-ground.png",
+  outerMercurialGround: "/planets/outer-mercurial-highlands.png",
   cradleGround: "/planets/cradle-ground.png",
   cradleClouds: "/planets/cradle-clouds.png",
   /** The Planet Inspector's Earth, a copy of The Cradle; not in play. */

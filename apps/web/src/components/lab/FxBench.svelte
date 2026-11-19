@@ -1,6 +1,7 @@
 <script lang="ts">
 import { FxBench, STEP } from "@void-drift/mode-a";
 import { onMount } from "svelte";
+import Switch from "../inputs/Switch.svelte";
 
 let { label = "Arcade FX instrument" }: { label?: string } = $props();
 let canvas: HTMLCanvasElement;
@@ -23,7 +24,9 @@ let p50 = $state(0),
   samples = $state(0);
 let reset = () => {},
   burst = () => {};
-let toggleWeapons = () => {};
+let setWeapons = (checked: boolean) => {
+  weapons = checked;
+};
 onMount(() => {
   movingCamera = new URL(location.href).searchParams.get("camera") === "moving";
   const ctx = canvas.getContext("2d");
@@ -44,8 +47,8 @@ onMount(() => {
     samples = 0;
   };
   burst = () => bench.burst();
-  toggleWeapons = () => {
-    weapons = !weapons;
+  setWeapons = (checked: boolean) => {
+    weapons = checked;
     bench.weapons = weapons;
     reset();
   };
@@ -108,6 +111,7 @@ onMount(() => {
   frame = requestAnimationFrame(draw);
   return () => cancelAnimationFrame(frame);
 });
+const controlId = $props.id();
 </script>
 <section
   class="fx-bench"
@@ -128,14 +132,13 @@ onMount(() => {
   data-frame-p95={frame95}
 >
   <div class="controls">
-    <button
-      type="button"
-      class="btn btn-ghost"
-      aria-pressed={weapons}
-      onclick={() => toggleWeapons()}
-    >
-      Weapons {weapons ? "on" : "off"}
-    </button>
+    <label for={`${controlId}-0`} class="setting">
+      Weapons
+      <Switch
+        id={`${controlId}-0`}
+        bind:checked={() => weapons, (checked) => setWeapons(checked)}
+      />
+    </label>
     <button
       type="button"
       class="btn btn-primary"
@@ -149,30 +152,16 @@ onMount(() => {
     <button type="button" class="btn btn-ghost" onclick={() => burst()}>
       Burst
     </button>
-    <button
-      type="button"
-      class="btn btn-ghost"
-      aria-pressed={enabled}
-      onclick={() => (enabled = !enabled)}
+    <label for={`${controlId}-1`} class="setting"
+      >FX <Switch id={`${controlId}-1`} bind:checked={enabled} /></label
     >
-      FX {enabled ? "on" : "off"}
-    </button>
-    <button
-      type="button"
-      class="btn btn-ghost"
-      aria-pressed={movingCamera}
-      onclick={() => (movingCamera = !movingCamera)}
+    <label for={`${controlId}-2`} class="setting"
+      >Moving camera
+      <Switch id={`${controlId}-2`} bind:checked={movingCamera} /></label
     >
-      Camera {movingCamera ? "moving" : "fixed"}
-    </button>
-    <button
-      type="button"
-      class="btn btn-ghost"
-      aria-pressed={overload}
-      onclick={() => (overload = !overload)}
+    <label for={`${controlId}-3`} class="setting"
+      >Overload <Switch id={`${controlId}-3`} bind:checked={overload} /></label
     >
-      Overload {overload ? "on" : "off"}
-    </button>
   </div>
   <canvas
     bind:this={canvas}
@@ -209,8 +198,14 @@ onMount(() => {
   padding: var(--spacing-lg);
   box-sizing: border-box;
 }
+.setting {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
 .controls {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   gap: var(--spacing-sm);
   margin-bottom: var(--spacing-md);

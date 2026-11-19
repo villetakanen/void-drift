@@ -28,11 +28,11 @@ let {
   optionSuffix?: Snippet<[string]>;
 } = $props();
 
-const name = `toggle-${Math.random().toString(36).slice(2, 8)}`;
+const name = `segmented-control-${Math.random().toString(36).slice(2, 8)}`;
 </script>
 
 <div
-  class="toggle"
+  class="segmented-control"
   class:stretch
   class:detailed={!!details}
   role="radiogroup"
@@ -71,7 +71,7 @@ const name = `toggle-${Math.random().toString(36).slice(2, 8)}`;
 
 <style>
 /* The outer edge is the shared button shape; the split inside is straight. */
-.toggle {
+.segmented-control {
   --_cut: var(--button-cut-size);
   display: inline-grid;
   grid-template-columns: repeat(var(--_n), minmax(0, 1fr));
@@ -124,7 +124,7 @@ const name = `toggle-${Math.random().toString(36).slice(2, 8)}`;
 .selected .detail {
   color: var(--color-on-brand);
 }
-.detailed .part:not(.selected):hover .detail {
+.detailed .part:not(.selected):not(.unavailable):hover .detail {
   color: var(--color-text);
 }
 /* Each end keeps its own outer cut. */
@@ -146,7 +146,7 @@ const name = `toggle-${Math.random().toString(36).slice(2, 8)}`;
     0% 100%
   );
 }
-.part:not(.selected):hover {
+.part:not(.selected):not(.unavailable):hover {
   background: color-mix(in srgb, var(--color-action) 28%, transparent);
 }
 .part.selected {

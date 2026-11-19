@@ -16,6 +16,7 @@ import {
   weaponPose,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
+import Switch from "../inputs/Switch.svelte";
 import "@void-drift/core/styles/buttons.css";
 
 let { label = "Production Light Ion Cannon encounter" }: { label?: string } =
@@ -200,6 +201,7 @@ onMount(() => {
   raf = requestAnimationFrame(frame);
   return () => cancelAnimationFrame(raf);
 });
+const controlId = $props.id();
 </script>
 <section
   aria-label={label}
@@ -254,8 +256,13 @@ onMount(() => {
     >
       Reset encounter
     </button>
-    <label><input type="checkbox" bind:checked={moving}>Turn and burn</label>
-    <label><input type="checkbox" bind:checked={effects}>Effects</label>
+    <label for={`${controlId}-0`}
+      ><Switch id={`${controlId}-0`} bind:checked={moving} />Turn and
+      burn</label
+    >
+    <label for={`${controlId}-1`}
+      ><Switch id={`${controlId}-1`} bind:checked={effects} />Effects</label
+    >
     <label
       >Zoom
       <select aria-label="Zoom" bind:value={zoom}>

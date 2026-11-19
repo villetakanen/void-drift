@@ -24,7 +24,7 @@ import {
 } from "../../../lib/instrument";
 import FlightLayers from "../../FlightLayers.svelte";
 import RingSlider from "../../inputs/RingSlider.svelte";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import BurnRow from "../instrument/BurnRow.svelte";
 import OverlayPane from "../instrument/OverlayPane.svelte";
 import "@void-drift/core/styles/buttons.css";
@@ -32,7 +32,7 @@ import "@void-drift/core/styles/buttons.css";
 // Flight scene instrument (study flight-scene-instrument-2026-11-10): one ship
 // flying the Motion instrument's burns through the production simulation and
 // the game's own layers. The scene is the whole 1440 × 900 screen; burn and
-// time float over its lower edge, the view switch is top-left, the values menu
+// time float over its lower edge, the view selector is top-left, the values menu
 // top-right.
 let {
   config,
@@ -285,7 +285,7 @@ onMount(() => {
         />
         <div class="scene-header">
           <div class="view">
-            <Toggle
+            <SegmentedControl
               label="View"
               options={viewOptions}
               bind:value={

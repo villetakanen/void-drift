@@ -287,9 +287,6 @@
   text-transform: uppercase;
   color: var(--color-text);
 }
-.flight-card .ship-select .toggle {
-  margin-bottom: var(--spacing-md);
-}
 .flight-card .ship-art {
   width: 240px;
   height: 170px;

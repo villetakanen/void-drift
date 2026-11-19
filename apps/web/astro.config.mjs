@@ -23,7 +23,10 @@ export default defineConfig({
           verificationPort,
         )
       : undefined,
-    server: verificationPort ? { hmr: false } : undefined,
+    server: {
+      strictPort: process.env.VOID_DRIFT_SHARED_PREVIEW === "1",
+      ...(verificationPort && { hmr: false }),
+    },
     resolve: {
       alias: {
         "@void-drift/core/styles": path.resolve(

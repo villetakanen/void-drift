@@ -1,0 +1,9 @@
+{
+  "created": "2026-11-19",
+  "method": "Built-in image_gen generation",
+  "source": "Mercury study art-029-prompts.json, highlands variant",
+  "output": "outer-mercurial-highlands.png",
+  "dimensions": "1774 × 887; 2:1 longitude-latitude map",
+  "prompt": "Create a new, complete 360-degree surface texture using the Mercury study's Ancient Highlands art direction. The original study prompt describes an airless rocky world with a broad charcoal basalt plain with an uneven irregular boundary, warm grey worn highlands, and one pale irregular branching ejecta scar interrupted by the plain. Extend the geology across the entire map so the back hemisphere is fully invented and coherent, rather than leaving missing or transparent regions. Use a restrained painted raster game material, dry dense stone, muted grey-beige highlands, charcoal basalt, subtle cool grey variation. Preserve the study's broad geological masses and selective mid-scale broken detail. Create a flat equirectangular longitude-latitude map, 2:1 landscape layout, intended to wrap horizontally around a sphere. Horizontal edges should connect cleanly; top and bottom pole regions should remain coherent when wrapped. Distribute the broad plain, worn highlands, and branching pale scar across the full map without a central seam. Use neutral diffuse albedo only and uniform illumination. Texture only: no rendered globe, circular disc, sphere silhouette, terminator, directional light, cast shadow, rim, atmosphere, stars, text, border, transparent areas, or repeated obvious tile. Keep surface marks continuous at the left and right edges.",
+  "limits": "The image generator was prompted for continuous wrap edges and coherent poles; visual wrap continuity should be reviewed in the rendered planet. This is an art-directed material, not measured albedo or geological simulation."
+}

@@ -45,6 +45,23 @@ comparison and mode behavior consistent. Practice retains its fixed reference sy
 - The mercurial body's mass and gravity-well mass both use the shared core-led
   family profile at its seeded radius. At 27u it matches Practice Mercury's 870
   mass and gravity reach; no separate generated moon mass applies.
+- Generation adds a distinct `outer-mercurial` body when the Sun can contain the
+  two complete gravity wells and both bodies remain in its safe fields. Its
+  radius is selected from an independent deterministic stream,
+  `mercurialRadius(seed XOR 0x4f1bbcdc)`, and its body type is
+  `outer-mercurial`. Let `G1` and `G2` be the inner and outer planet gravity
+  reaches, `R1` and `R2` their radii, `H` the Sun's damage reach, `C` its
+  collection reach, and `I` its gravity reach. The safe radial separation is
+  `d = max(R1 + G2, R2 + G1) + 1`. The pair is eligible when
+  `d < G1 + G2`, `D1 = H + R1 + 1`, `D2 = D1 + d`,
+  `D1 + G1 <= I`, `D2 + G2 <= I`, and `D2 + R2 + 1 <= C`. This keeps each
+  body outside the other's gravity field, lets the fields intersect, and keeps
+  both complete wells inside the Sun's gravity sphere. When any condition
+  fails, generation preserves the existing single-body placement.
+- When the pair is eligible, the inner body moves to `D1` and the outer body
+  uses `D2`. Both travel at 4u/s and receive the same seeded starting phase.
+  Both mandatory bodies take priority during swept-orbit conflict removal; a
+  stock planet is removed if it conflicts with either Mercurial body.
 - The mercurial planet travels at 4u/s with positive angular speed `4 / D`.
   Its retained identity, gravity and appearance follow the
   [planet contract](../planets/spec.md#mercurial-mineral-rock).
@@ -55,15 +72,16 @@ comparison and mode behavior consistent. Practice retains its fixed reference sy
   retain their configured properties and gravity tuning. Removed planets have
   no simulation, collision, gravity, appearance or HUD entries.
 - The remaining count follows conflict removal, without replacement spawning.
-  Exactly one body has the mercurial appearance; another retained planet may
-  also lie inside charging. A retained orbit may lie inside the mercurial orbit.
+  A system contains one or two Mercurial bodies according to the gravity-fit
+  rule. Other retained planets may also lie inside charging. A retained orbit
+  may lie inside either Mercurial orbit.
 - The seed shifts all retained planets' configured starting phases by
   `(seed mod 360) / 180 × π`. Orbits remain circular. Initial positions use the
   final orbit radii. Full-system outward HUD ordinals are assigned after removal
   and are contiguous from 1; source order breaks equal-radius ties.
 - Survival, Derelicts and Gauntlet use this contract without an experimental
   setting. Equal seeds produce equal star profiles, mercurial radii, retained
-  rosters, masses, motion and starting positions across all three modes.
+  rosters, masses, motion and starting positions across all three modes. The same seed independently selects a repeatable [distant sky](../../render/flight-sky/spec.md).
 - Practice keeps its fixed G7 star and named reference planets, including
   Mercury's 27u radius and 258u orbit, independent of the supplied run seed.
 - Inputs are parsed with `SolarSystemGenerationSchema` before use: integer seed
@@ -82,6 +100,7 @@ Scenario: Sharing system generation across modes
   Given Survival, Derelicts and Gauntlet runs with the same seed
   When their systems are created
   Then their star profiles, mercurial radii, retained planets and positions match
+  And their distant sky has the same dust contours and placement at the same camera pose
 
 Scenario: Largest body around the smallest Sun
   Given a generated Sun with radius 36u and a mercurial body with radius 36u
@@ -94,6 +113,19 @@ Scenario: A stock orbit conflicts with the mandatory planet
   When the system is generated
   Then that stock planet is removed and the mercurial planet remains
   And outward HUD ordinals are assigned from the retained system
+
+Scenario: The Sun fits two Mercurial gravity wells
+  Given both complete Mercurial wells fit inside the Sun's gravity sphere
+  And both bodies remain in the Sun's safe fields
+  When the system is generated
+  Then it contains an inner Mercurial and a distinct outer-mercurial body
+  And the planet bodies remain outside each other's gravity fields
+  And the gravity fields intersect
+
+Scenario: The Sun cannot fit the pair
+  Given the Sun cannot contain both complete wells and bodies in its safe fields
+  When the system is generated
+  Then the existing single Mercurial body and placement are preserved
 
 Scenario: A profile cannot contain the planet
   Given the charging reach minus the danger reach is less than twice the body radius plus 2u

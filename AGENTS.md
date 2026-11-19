@@ -34,7 +34,12 @@ Voice-led game design, and development development of a space shooter inspired b
 
 ## ASDLC.io
 
-- We use ASDLC.io living specs methodology, and align with the principles presented in the site
+- Use the [write-spec skill](.agents/skills/write-spec/SKILL.md) for ASDLC living contracts in `docs/specs/`. Folder nesting expresses parentage. Run `pnpm check:specs` on a spec directory to check its format.
+
+## Shared preview
+
+- In the shared Mac checkout, run `pnpm dev:ensure` and use port 4321. Inspect ownership, readiness and the log path with `pnpm dev:status`.
+- Reload the surface you changed. If saved edits still appear stale, run `pnpm dev:restart` once and inspect that surface again. Use the reported log for compilation errors. Browser verification owns its own servers.
 
 ## Local Java
 

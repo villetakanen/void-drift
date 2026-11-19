@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { BurnId } from "../../../lib/instrument";
 import RingSlider from "../../inputs/RingSlider.svelte";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import MotionInstrumentScreen from "../../lab/instrument/MotionInstrumentScreen.svelte";
 import type { FieldProfile } from "./charging";
 import { breakEven, chargingRuns, radius, reach } from "./charging";
@@ -54,7 +54,7 @@ const powered = $derived(breakEven(poweredDrain, peak, profile));
   >
     {#if compareShapes}
       <h3>Collection profile</h3>
-      <Toggle
+      <SegmentedControl
         label="Collection profile"
         options={["Reference", "10% edge", "20 u shoulder"]}
         bind:value={shape}

@@ -1,6 +1,6 @@
 <script lang="ts">
 import { buildMounts, defaultLoadout } from "@void-drift/mode-a";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import CapacityDrawing from "./CapacityDrawing.svelte";
 
 let { label = "Capacity comparison view" }: { label?: string } = $props();
@@ -11,12 +11,12 @@ const cruiserMounts = buildMounts(defaultLoadout("corvette"));
 </script>
 
 <div class="controls">
-  <Toggle
+  <SegmentedControl
     {label}
     options={["Fitted", "Footprints", "Hull"]}
     bind:value={view}
   />
-  <Toggle
+  <SegmentedControl
     label="Fiddler hull size"
     options={["Draft", "Hull +35%"]}
     bind:value={size}

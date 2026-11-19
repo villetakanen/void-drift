@@ -1,6 +1,7 @@
 export * from "./lib/assets/atmosphere-body";
 export * from "./lib/assets/cloud-body";
 export * from "./lib/assets/death-icons";
+export * from "./lib/assets/flight-sky";
 export * from "./lib/assets/planet";
 export * from "./lib/assets/planet-maps";
 export * from "./lib/assets/resource-bar";
@@ -36,6 +37,7 @@ export * from "./lib/physics/Camera";
 export * from "./lib/physics/Physics";
 export * from "./lib/physics/planets";
 export * from "./lib/schemas/common";
+export * from "./lib/schemas/flight-sky";
 export * from "./lib/schemas/rock-body-lighting";
 export * from "./lib/schemas/sun";
 export * from "./lib/solar";

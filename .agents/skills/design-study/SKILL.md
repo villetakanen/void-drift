@@ -107,7 +107,7 @@ and opening together so each contributes useful information. Aim for 150–250 w
 in the opening, with the concrete situation and design tension up front.
 
 Create the early page using StudyLayout and validated metadata in
-`apps/web/src/data/studies.ts`. Use [Study pages in the Lab](../../../docs/specs/lab/design-studies/spec.md)
+`apps/web/src/data/studies.ts`. Use [Studies](../../../docs/specs/studies/spec.md)
 for page construction and publication. Inspect the rendered reading width, spacing
 and section progression before presenting it.
 

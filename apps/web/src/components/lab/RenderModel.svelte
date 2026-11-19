@@ -3,6 +3,7 @@ import { type FxPass, FxSurface } from "@void-drift/core";
 import { FLIGHT_LAYERS, type FlightLayerId } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import FlightLayers from "../FlightLayers.svelte";
+import Switch from "../inputs/Switch.svelte";
 import { TURBULENT_BLOOM_DEFAULTS } from "../turbulent-bloom";
 import {
   advanceRenderModelHeading,
@@ -328,6 +329,7 @@ onMount(() => {
     surface?.clear();
   };
 });
+const controlId = instanceId;
 </script>
 
 <section
@@ -399,8 +401,11 @@ onMount(() => {
         <section class="layer" data-layer-controls={layer.id}>
           <div class="layer-heading">
             <h2>{layer.name}</h2>
-            <label class="visibility"
-              ><input type="checkbox" bind:checked={visible[layer.id]}>
+            <label for={`${controlId}-${layer.id}`} class="visibility"
+              ><Switch
+                id={`${controlId}-${layer.id}`}
+                bind:checked={visible[layer.id]}
+              />
               Visible</label
             >
           </div>

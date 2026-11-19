@@ -3,7 +3,7 @@ import { onMount } from "svelte";
 import { loadAuthoredRockMaterials } from "../../../lib/assets/rock-planets/authored-materials";
 import type { PlanetAppearance } from "../../../lib/flight-scene";
 import RingSlider from "../../inputs/RingSlider.svelte";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import FlightSceneInstrument from "../../lab/flight-scene/FlightSceneInstrument.svelte";
 import { makeRockAppearances } from "./appearance";
 import {
@@ -193,14 +193,14 @@ $effect(() => {
   >
     {#snippet pane()}
       <p>02.16 · Atmospheric heat envelope</p>
-      <Toggle
+      <SegmentedControl
         label="Heat cue"
         options={["None", "Airflow", "Heat envelope"]}
         bind:value={heatMode}
         details={{}}
       />
       <p>FX source · what gets stamped</p>
-      <Toggle
+      <SegmentedControl
         label="Heat stamp"
         details={{}}
         options={HEAT_STAMPS}
@@ -258,7 +258,7 @@ $effect(() => {
       </p>
       <details>
         <summary>Earlier LFX comparison</summary>
-        <Toggle
+        <SegmentedControl
           label="Contact light"
           options={["Soft glow", "Tapered crescent"]}
           bind:value={contactShape}
@@ -268,7 +268,7 @@ $effect(() => {
         </p>
       </details>
       <p>Approach · same ship, speed, atmosphere and fixed burns</p>
-      <Toggle
+      <SegmentedControl
         label="Atmospheric approach"
         options={HEAT_APPROACHES}
         bind:value={approach}
@@ -321,7 +321,7 @@ $effect(() => {
         comparison. 91% is selected; 100% retains the full-bright comparison.
       </p>
       <p>Cloud face · retained comparison</p>
-      <Toggle
+      <SegmentedControl
         label="Cloud face"
         options={["02.13 shading", "Bright face"]}
         bind:value={cloudFace}
@@ -334,7 +334,7 @@ $effect(() => {
         out of scope.
       </p>
       <p>02.13 · Cloud coverage maps</p>
-      <Toggle
+      <SegmentedControl
         label="Coverage map"
         options={COVERAGE_MATERIALS}
         bind:value={cloudMaterial}
@@ -347,13 +347,13 @@ $effect(() => {
         and night-side brightness are separate controls.
       </p>
       <p>Cloud structure alternatives · retained first set</p>
-      <Toggle
+      <SegmentedControl
         label="Cloud material"
         options={CLOUD_MATERIALS.slice(0, 3)}
         bind:value={cloudMaterial}
         details={{}}
       />
-      <Toggle
+      <SegmentedControl
         label="More cloud materials"
         options={CLOUD_MATERIALS.slice(3)}
         bind:value={cloudMaterial}
@@ -367,7 +367,7 @@ $effect(() => {
         fixed.
       </p>
       <p>Night-side brightness · 42% restored for white clouds</p>
-      <Toggle
+      <SegmentedControl
         label="Cloud shadow"
         options={[...CLOUD_SHADOWS]}
         bind:value={() => cloudShadow, selectCloudShadow}
@@ -396,7 +396,7 @@ $effect(() => {
         day-side light and the blue rim stay unchanged.
       </p>
       <p>Accepted material lighting · retained comparison</p>
-      <Toggle
+      <SegmentedControl
         label="Material lighting"
         options={["02.10 light", "Shared sunlight"]}
         bind:value={sunlight}
@@ -413,7 +413,11 @@ $effect(() => {
         1.45×. Retained tools below remain available for secondary checks.
       </p>
       <p>Rock material · {fullNames[names.indexOf(material)]}</p>
-      <Toggle label="Rock material" options={names} bind:value={material} />
+      <SegmentedControl
+        label="Rock material"
+        options={names}
+        bind:value={material}
+      />
       <RingSlider
         label="Planet shadow intensity"
         min={0}
@@ -429,7 +433,7 @@ $effect(() => {
         stay fixed.
       </p>
       <p>Atmosphere</p>
-      <Toggle
+      <SegmentedControl
         label="Atmosphere"
         options={["Bare rock", "Air + drag"]}
         bind:value={treatment}
@@ -437,26 +441,26 @@ $effect(() => {
       <details open>
         <summary>Atmosphere and cloud tools</summary>
         <p>Atmosphere material</p>
-        <Toggle
+        <SegmentedControl
           label="Atmosphere material"
           options={[...ATMOSPHERE_TREATMENTS]}
           bind:value={atmosphereTreatment}
           details={{}}
         />
         <p>Cloud footprint · used by Cloud banks and Cloud bands</p>
-        <Toggle
+        <SegmentedControl
           label="Cloud footprint"
           options={[...CLOUD_COVERAGE]}
           bind:value={coverage}
         />
         <p>Cloud opacity · density within the covered areas</p>
-        <Toggle
+        <SegmentedControl
           label="Cloud opacity"
           options={[...CLOUD_OPACITY]}
           bind:value={opacity}
         />
         <p>Underlying lighting comparison</p>
-        <Toggle
+        <SegmentedControl
           label="Air lighting"
           options={[...AIR_LIGHTING]}
           bind:value={airLighting}

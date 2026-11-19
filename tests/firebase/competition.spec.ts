@@ -243,15 +243,16 @@ test("title and Hangar pilots complete ranked runs, retry a rejected write and s
     [...expected]
       .sort((a, b) => b[1][key] - a[1][key])
       .map(([initials]) => initials);
-  const byScore = page.getByRole("button", { name: "By score" });
-  const byTime = page.getByRole("button", { name: "By time" });
-  await expect(byScore).toHaveAttribute("aria-pressed", "true");
+  const orderControl = page.getByRole("radiogroup", { name: "Score order" });
+  const byScore = orderControl.getByRole("radio", { name: "By score" });
+  const byTime = orderControl.getByRole("radio", { name: "By time" });
+  await expect(byScore).toBeChecked();
   // The seeded row leads by score and trails by time, so the orders differ.
   expect(await rankedPilots()).toEqual(byKey("score"));
-  await byTime.click();
-  await expect(byTime).toHaveAttribute("aria-pressed", "true");
+  await orderControl.getByText("By time", { exact: true }).click();
+  await expect(byTime).toBeChecked();
   expect(await rankedPilots()).toEqual(byKey("seconds"));
-  await byScore.click();
+  await orderControl.getByText("By score", { exact: true }).click();
   expect(await rankedPilots()).toEqual(byKey("score"));
   await context.close();
 });

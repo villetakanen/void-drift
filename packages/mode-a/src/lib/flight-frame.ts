@@ -420,6 +420,8 @@ export function clearFlightLayer(ctx: CanvasRenderingContext2D) {
 }
 
 export interface FlightFrameOptions {
+  /** Replace the opaque void and stock starfield with a prepared sky surface. */
+  preparedSky?: boolean;
   /** A configured Lab scene may substitute painters while retaining layer/camera handling. */
   passes?: readonly FlightPass[];
   /** Which passes draw; every pass when omitted. */
@@ -434,12 +436,20 @@ export interface FlightFrameOptions {
  */
 export function drawFlightFrame(
   frame: FlightFrame,
-  { include, observe, passes = FLIGHT_PASSES }: FlightFrameOptions = {},
+  {
+    include,
+    observe,
+    passes = FLIGHT_PASSES,
+    preparedSky = false,
+  }: FlightFrameOptions = {},
 ) {
   // World clears itself with the Void pass; the layers above start empty.
+  if (preparedSky) clearFlightLayer(frame.layers.world);
   clearFlightLayer(frame.layers.fx);
   clearFlightLayer(frame.layers.lfx);
   for (const pass of passes) {
+    if (preparedSky && (pass.id === "void" || pass.id === "starfield"))
+      continue;
     if (include && !include(pass)) continue;
     const ctx = frame.layers[pass.layer];
     const resolution = resolutionOf(pass.layer);

@@ -12,7 +12,7 @@ export type TabItem = {
 </script>
 
 <script lang="ts">
-// Design-system tabs: the Toggle's cut button split into parts, where each
+// Design-system tabs: the segmented control's cut button split into parts, where each
 // part owns one panel shown below. The selected part is filled lime. A part
 // holds its name and up to two small facts, and the row never grows taller
 // than a button. Semantics and keys

@@ -8,7 +8,7 @@ let _props: { "client:load"?: boolean } = $props();
 // above it. The drawing keeps its 4 pixels. Still a plain card: no fitted
 // state, nothing decided about colours or edges.
 import { PARTS, type PartId } from "@void-drift/mode-a";
-import Toggle from "../inputs/Toggle.svelte";
+import SegmentedControl from "../inputs/SegmentedControl.svelte";
 import PartDrawing from "./PartDrawing.svelte";
 import { FIGURE_GLYPH, partFigures } from "./part-figures";
 import { PART_PROSE } from "./part-prose";
@@ -44,7 +44,7 @@ const width = $derived(widths[widthName as keyof typeof widths]);
 </script>
 
 <div class="bench">
-  <Toggle
+  <SegmentedControl
     options={Object.keys(widths)}
     bind:value={widthName}
     label="Width of the parts column"

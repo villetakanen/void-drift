@@ -9,8 +9,8 @@ import {
 } from "../../lib/instrument";
 import FlightLayers from "../FlightLayers.svelte";
 import RingSlider from "../inputs/RingSlider.svelte";
+import SegmentedControl from "../inputs/SegmentedControl.svelte";
 import Switch from "../inputs/Switch.svelte";
-import Toggle from "../inputs/Toggle.svelte";
 import BurnRow from "../lab/instrument/BurnRow.svelte";
 import OverlayPane from "../lab/instrument/OverlayPane.svelte";
 import {
@@ -166,7 +166,11 @@ onMount(() => {
         visibility={shown}
       />
       <div class="view">
-        <Toggle label="View" options={Object.keys(VIEWS)} bind:value={view} />
+        <SegmentedControl
+          label="View"
+          options={Object.keys(VIEWS)}
+          bind:value={view}
+        />
       </div>
       {#if lost}
         <p class="lost" role="status">
@@ -221,14 +225,19 @@ onMount(() => {
   <OverlayPane>
     <div class="value">
       <p>Where the ship starts</p>
-      <Toggle
+      <SegmentedControl
         stretch
         label="Where the ship starts"
         options={Object.keys(STARTS)}
         bind:value={start}
       />
       <p>Targets</p>
-      <Toggle stretch label="Targets" options={TARGETS} bind:value={targets} />
+      <SegmentedControl
+        stretch
+        label="Targets"
+        options={TARGETS}
+        bind:value={targets}
+      />
       <p>Layers</p>
       <div class="layers">
         <label for={`${layerId}-world`}>World</label>

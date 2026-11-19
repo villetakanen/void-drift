@@ -23,6 +23,7 @@ import {
 } from "@void-drift/mode-a";
 import { planetAppearances } from "../assets/planet-appearances";
 import { createPracticeVenus } from "../assets/practice-venus";
+import { createOuterMercurialMaterial } from "../assets/rock-planets/authored-materials";
 import type { BurnId } from "../instrument/burns";
 import {
   type FlightSceneDocument,
@@ -102,6 +103,7 @@ export class FlightScene {
     };
     void load("venus", async () => createPracticeVenus(true));
     void load("mercury", () => createRockMaterial(PLANET_MAPS.mercuryGround));
+    void load("outerMercurial", () => createOuterMercurialMaterial());
     void load("cradle", () =>
       createCloudedWorld(PLANET_MAPS.cradleGround, PLANET_MAPS.cradleClouds),
     );

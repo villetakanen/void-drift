@@ -1,4 +1,17 @@
-# Scores
+---
+
+title: "Spec: Scores"
+status: draft
+generated:
+by: "openai-codex/gpt-6.1-sol"
+at: "2026-11-19T12:32:56+02:00"
+verified:
+- by: "openai-codex/gpt-6.1-sol"
+  at: "2026-11-19T12:33:38+02:00"
+
+---
+
+# Spec: Scores
 
 ## Blueprint
 
@@ -14,7 +27,7 @@ stabilizer and linked-engines choices, so the
 game's designers can see which ships and parts the scores come from. That is
 for game design and is not shown to players.
 
-### Architecture and boundaries
+### Architecture
 
 - **Contract.** `HighScoreSubmissionSchema` and `HighScoreSchema` in
   `packages/mode-a/src/schemas/highscore.ts` define the saved score, and
@@ -32,7 +45,7 @@ for game design and is not shown to players.
   [active ship](../active-ship/spec.md) owns the ship and fitting that a run
   flew.
 
-### Rules
+### Constraints
 
 - **What a saved score holds.** Exactly these, and nothing else:
 
@@ -61,7 +74,8 @@ for game design and is not shown to players.
 - **The board.** Top Scores lists the 30 highest scores of the client's
   ruleset, highest first, with score and time, and says that scores are
   casual and reported by players. The player can re-sort the listed rows by
-  time. The fitting and the two ship choices are not shown.
+  time through the shared SegmentedControl. By score and By time are mutually
+  exclusive values, not independent pressed buttons. The fitting and the two ship choices are not shown.
 - **A ruleset is a board.** Scores of different rulesets never share a board.
   A client saves to, raises and lists the board of its own ruleset only, and
   shows no other board. Every client that carries a ruleset shares its board.
@@ -69,7 +83,7 @@ for game design and is not shown to players.
   released client carries, and a ruleset's rule is not removed when another
   ruleset is added. Rows of a ruleset the rules do not name stay stored and
   are not written.
-- **Never in the way.** Without Firebase, or when saving fails, the game plays
+- **Continuous play.** Without Firebase, or when saving fails, the game plays
   on and says why scores are unavailable.
 
 ## Contract
@@ -92,8 +106,8 @@ for game design and is not shown to players.
   required by the schema and the rules.
 - C7: Top Scores lists the 30 highest scores of the client's ruleset with score
   and time, labelled as casual and reported by players.
-- C8: The player can re-sort the listed rows by score or by time, score
-  first.
+- C8: The shared SegmentedControl selects By score or By time with native radio
+  semantics, defaults to score, and reorders only the already loaded rows.
 - C9: The board shows no fitting and neither ship choice.
 - C10: Two anonymous players can each save a run and see both on the board.
 - C11: With Firebase unconfigured, the board explains that shared scores are
@@ -158,6 +172,14 @@ Feature: Scores
     When two anonymous players each save a ranked run
     Then Top Scores shows both scores and times
     And shows neither fitting
+
+  Scenario: Re-sort the loaded board without changing its membership
+    Given Top Scores has loaded its top 30 rows in score order
+    When I select By time in the Score order segmented control
+    Then those same rows are shown in descending survival time with score as tie breaker
+    And By time is the selected radio value
+    When I select By score
+    Then the original score order returns
 
   Scenario: Firebase is absent
     Given Firebase is not configured

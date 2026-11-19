@@ -1,9 +1,21 @@
-# Ship mount planner
+---
 
-Status: live local prototype, 2026-11-03. Human experience review and full
-production handoff verification remain pending.
+title: "Spec: Ship mount planner"
+status: draft
+generated:
+by: "openai-codex/gpt-6.1-sol"
+at: "2026-11-19T12:32:56+02:00"
+verified:
+- by: "openai-codex/gpt-6.1-sol"
+  at: "2026-11-19T12:33:38+02:00"
 
-## Context
+---
+
+# Spec: Ship mount planner
+
+## Blueprint
+
+### Context
 
 The designer needs to arrange ship mounts visually and hand the exact decided
 values to an agent for implementation. The copied document must identify the ship,
@@ -19,9 +31,9 @@ Related contracts: [Hangar](../spec.md),
 Structure follows ASDLC's [Spec](https://asdlc.io/patterns/the-spec/) and
 [Living Specs](https://asdlc.io/practices/living-specs/) guidance.
 
-## Architecture
+### Architecture
 
-### Production boundaries
+#### Production boundaries
 
 - Route: `/lab/mount-planner`.
 - Production starting layouts come from `buildMounts` in
@@ -32,13 +44,12 @@ Structure follows ASDLC's [Spec](https://asdlc.io/patterns/the-spec/) and
 - Hulls, fittings, layering and mount transforms use the production renderer.
   Implementation must expose a shared geometry override where needed rather than
   copy a renderer into the Lab. The default production path stays unchanged.
-- Define and test a strict Zod document schema before implementing the editor;
-  implemented location: `packages/mode-a/src/lib/mount-planner.ts`.
+- The strict Zod document schema lives at: `packages/mode-a/src/lib/mount-planner.ts`.
 - Editing changes a local draft only. Copying a document does not change game
   definitions, player saves or deployed behavior. Persistence across sessions is
   provided by copying and loading documents; server storage is outside v1.
 
-### Editing and preview
+#### Editing and preview
 
 Select any production chassis and begin with its current layout. Select mounts
 on the ship or by their labels. Drag to move, use a rotation control to rotate,
@@ -62,7 +73,7 @@ restores the captured original layout and links and is itself undoable. Switchin
 ships or loading another document must preserve or explicitly resolve unsaved
 work before replacing it.
 
-### Required linked editing
+#### Required linked editing
 
 Linking is a first-class v1 feature, including visible link state and selecting
 either member to edit the pair. Mirror reflection is across the ship's longitudinal
@@ -81,7 +92,7 @@ for both members as well as their relationship. Production `linkedTo` also
 expresses fitting coupling; planner-created geometry links do not silently change
 which parts a player may equip independently.
 
-### Copy and load contract
+#### Copy and load contract
 
 Copy layout produces one complete, versioned JSON document containing:
 
@@ -115,7 +126,7 @@ Invalid input lists actionable field errors and leaves the current draft intact.
 Clipboard failure presents the same complete document as selectable text and does
 not report a successful copy.
 
-### Agent handoff
+#### Agent handoff
 
 The copied document is the implementation artifact. An agent checks the baseline,
 maps mount keys to current production definitions, applies the resolved geometry,
@@ -123,6 +134,54 @@ and verifies that production rendering and geometry match the document. Changes
 to geometry shared with engine forces, nozzle positions or hit targets must reach
 those consumers consistently. The tool itself does not promise flight simulation
 or assess handling; human layout review and automated fidelity checks are separate.
+
+
+
+#### Design-system alignment
+
+The planner consumes shared `.btn` variants for commands and choices, `SegmentedControl`
+for ship/view selection, and `RingSlider` for zoom and mount rotation. Inspector
+fields follow the Lab numeric-field treatment. Canvas mounts use the production
+builder slot palette and renderer, including empty/occupied states, linked marks
+and selection brackets; no additional rectangular slot outlines are drawn.
+Displays use the shared display surface and shadow tokens.
+
+#### Preview modes and automatic framing
+
+The contents chooser has three modes: Fitted shows installed parts with builder
+slot markings; In-game uses production flight drawing without slot markings;
+Empty shows empty builder slots. These are view choices and preserve the exported
+layout and preview loadout. Flight-scale inspection remains available separately.
+
+The main view initially fits the hull, fittings, slot labels, selection brackets
+and link guides to the available canvas, with padding. It refits after resize,
+ship or preview changes and completed mount edits. During dragging the transform
+stays fixed. Manual pan or zoom leaves automatic framing; Fit ship restores it.
+Framing uses conservative fitting/label bounds, so decorative art has breathing
+room. Camera changes never alter ship-local mount values.
+
+Preview part uses one labelled native dropdown containing only compatible parts
+and Empty where permitted. It retains the current fitting and uses the inspector
+field tokens, keeping the controls compact.
+
+Range controls preserve the document’s exact values on initialization. Browser
+step normalization is applied only after explicit user input; opening the planner
+or selecting a mount must not quantize its angle.
+
+#### Exhaust-direction guides
+
+In Fitted and Empty views, every engine-compatible mount (engine and universal)
+shows a dotted lime line from its rear edge toward exhaust, ending in a small
+dotted arrowhead, using the same stroke pattern as the line. Direction is mount-local negative x rotated by the mount angle,
+regardless of the installed part. Guides follow edits and view rotation and are
+included in automatic framing. In-game and flight-scale previews omit them.
+
+### Constraints
+
+- Shared controls and visual tokens follow the [choice-control contract](../../../factory/design-system/choices/spec.md).
+- Edits remain local drafts and exports preserve finite numeric precision.
+- Production rendering and mount identities are shared with the game.
+- The Lab supports viewports at least 1280px wide.
 
 ## Contract
 
@@ -141,9 +200,7 @@ or assess handling; human layout review and automated fidelity checks are separa
 - Clipboard failure exposes a complete manual-copy fallback.
 - A representative exported layout applied to production reproduces the
   planner's geometry, fitting placement, nozzle origins and hit targets.
-- The designer reviews manipulation, linked editing, readability and visual fidelity
-  on a screen 1280px wide or more. Record this separately from automated results.
-  The Lab targets 1280px and up.
+- Manipulation, linked editing, readability and visual fidelity support screens at least 1280px wide; designer acceptance remains separate from automated checks.
 
 ### Regression guardrails
 
@@ -194,59 +251,3 @@ Scenario: Production has moved on
   And the supplied values remain available to inspect and copy
   And editing requires a fresh current layout
 ```
-
-## Prototype evidence — 2026-11-03
-
-The Lab route implements geometry editing, required production mirror links,
-additional designer pairs, production-renderer previews, undo/redo/reset and JSON
-copy/load. Ship switches and document loads retain the previous draft in Undo.
-Angles are shown directly in radians. Empty-background dragging pans the view;
-rotation and zoom are view controls. Mount types and dimensions remain fixed.
-
-The document schema and geometry helpers live in
-`packages/mode-a/src/lib/mount-planner.ts`.
-Browser coverage lives in `tests/browser/mount-planner.spec.ts`. The renderer
-accepts optional mount geometry; its default production behavior is unchanged.
-Mirrored comparisons use an absolute tolerance of 1e-10.
-
-This prototype has not applied an exported design to production flight geometry;
-nozzle/force integration handoff and designer experience review remain unchecked.
-
-### Design-system alignment — 2026-11-03
-
-The planner consumes shared `.btn` variants for commands and choices, `Toggle`
-for ship/view selection, and `RingSlider` for zoom and mount rotation. Inspector
-fields follow the Lab numeric-field treatment. Canvas mounts use the production
-builder slot palette and renderer, including empty/occupied states, linked marks
-and selection brackets; no additional rectangular slot outlines are drawn.
-Displays use the shared display surface and shadow tokens.
-
-### Preview modes and automatic framing — 2026-11-03
-
-The contents chooser has three modes: Fitted shows installed parts with builder
-slot markings; In-game uses production flight drawing without slot markings;
-Empty shows empty builder slots. These are view choices and preserve the exported
-layout and preview loadout. Flight-scale inspection remains available separately.
-
-The main view initially fits the hull, fittings, slot labels, selection brackets
-and link guides to the available canvas, with padding. It refits after resize,
-ship or preview changes and completed mount edits. During dragging the transform
-stays fixed. Manual pan or zoom leaves automatic framing; Fit ship restores it.
-Framing uses conservative fitting/label bounds, so decorative art has breathing
-room. Camera changes never alter ship-local mount values.
-
-Preview part uses one labelled native dropdown containing only compatible parts
-and Empty where permitted. It retains the current fitting and uses the inspector
-field tokens, keeping the controls compact.
-
-Range controls preserve the document’s exact values on initialization. Browser
-step normalization is applied only after explicit user input; opening the planner
-or selecting a mount must not quantize its angle.
-
-### Exhaust-direction guides — 2026-11-03
-
-In Fitted and Empty views, every engine-compatible mount (engine and universal)
-shows a dotted lime line from its rear edge toward exhaust, ending in a small
-dotted arrowhead, using the same stroke pattern as the line. Direction is mount-local negative x rotated by the mount angle,
-regardless of the installed part. Guides follow edits and view rotation and are
-included in automatic framing. In-game and flight-scale previews omit them.

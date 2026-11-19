@@ -16,7 +16,7 @@ talk, or discussion, which does not relate to the question in hand.”
 - The [maintainer README](../../.agents/skills/design-study/README.md) identifies
   which file owns each kind of edit and gives an example of reviewing a proposed
   rule against two different designer responses.
-- [Study pages in the Lab](../specs/lab/design-studies/spec.md) specifies routes,
+- [Study pages in the Lab](../specs/studies/spec.md) specifies routes,
   metadata, layout, formats and publication. Closed pages retain their URL and
   publish as static MDX with versioned media. Existing skill guidance was checked
   before relocating procedure. The skill and its writing reference now agree on

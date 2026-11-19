@@ -20,14 +20,14 @@ human effectiveness remains separate and is not inferred from document validatio
   [alpha-scope correction](../loop-evidence/2026-10-30-engine-effects.md).
   Implementation: [readiness procedure](../../.agents/skills/design-study/SKILL.md#03--assess-readiness).
 - [x] Consolidate duplicated instructions (owner-approved 3 November).
-  Implementation: [ownership map](../specs/lab/design-studies/spec.md#context-and-ownership).
+  Implementation: [ownership map](../specs/studies/spec.md#context-and-ownership).
   Evidence: [scope, changed files and validation](../loop-evidence/2026-11-03-factory-harness-amendments.md).
 - [x] Make the quality rubric optional for ordinary studies (owner-approved amendment,
   3 November).
   Evidence: [implementation and checks](../loop-evidence/2026-11-03-factory-harness-amendments.md#implementation-evidence).
 - [x] Clarify that a failed study can end successfully for the project (owner clarification,
   3 November), preserving its recorded failure. Implementation:
-  [ending contract](../specs/lab/design-studies/spec.md#ending-a-study).
+  [ending contract](../specs/studies/spec.md#ending-a-study).
   Evidence: [owner decision and verification limits](../loop-evidence/2026-11-03-factory-harness-amendments.md#authorized-scope).
 
 ## Why we changed the factory
@@ -273,7 +273,7 @@ closure evidence and requested that they be implemented and marked done.
   the explicit alpha-scope correction in the engine-effects evidence.
 
 Implemented in the [design-study skill](../../.agents/skills/design-study/SKILL.md)
-and [study specification](../specs/lab/design-studies/spec.md). Done means the harness edits
+and [study specification](../specs/studies/spec.md). Done means the harness edits
 are adopted and implemented, not that their effectiveness has been validated.
 The partial-result recommendation remains a workflow hypothesis; the records do
 not establish why the Scout iterations failed. No fresh study or behavioral trial

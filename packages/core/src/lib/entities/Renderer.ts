@@ -70,7 +70,7 @@ export class Renderer {
    * Draws background stars inside the current world transform. With a `view`
    * (the camera's visible world rectangle) the seeded starfield covers the
    * whole view at any zoom; without one, the fixed 3000-unit star square is
-   * drawn, as Lab studies and the title backdrop use it.
+   * drawn for Lab fixtures that use the finite star list.
    */
   drawBackground(view?: WorldRect) {
     this.ctx.fillStyle = "#ffffff";

@@ -5,7 +5,7 @@ redrawn each frame from current simulation state. World uses normal CSS blending
 and no filter in production. It is the bottom canvas in the isolated flight
 stage; solid objects never sit above FX or LFX.
 
-The void clear covers the full stage. World passes use world coordinates under
+In the stock composition the void clear covers the full stage. The [prepared flight sky](flight-sky/spec.md) supplies the opaque background in the 0.7 composition, where World clears to transparency. World passes use world coordinates under
 the camera except the clear, which uses stage coordinates. Derelict aperture
 fills are drawn here so the later FX aperture cut can reveal World.
 

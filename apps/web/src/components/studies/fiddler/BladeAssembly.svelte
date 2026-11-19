@@ -1,5 +1,5 @@
 <script lang="ts">
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import BladeDrawing from "./BladeDrawing.svelte";
 import { type BladeStage, bladeAssembly, hullJoint } from "./blade-assembly";
 
@@ -27,11 +27,15 @@ const models = $derived([
 <div class="controls">
   <div>
     <span>Construction</span>
-    <Toggle {label} options={["Faces", "Wall", "Root"]} bind:value={stage} />
+    <SegmentedControl
+      {label}
+      options={["Faces", "Wall", "Root"]}
+      bind:value={stage}
+    />
   </div>
   <div>
     <span>View</span>
-    <Toggle
+    <SegmentedControl
       label="Blade assembly view"
       options={["Top", "Angled"]}
       bind:value={view}

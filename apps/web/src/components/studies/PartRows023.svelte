@@ -25,8 +25,8 @@ import {
   starterLoadout,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
+import SegmentedControl from "../inputs/SegmentedControl.svelte";
 import Switch from "../inputs/Switch.svelte";
-import Toggle from "../inputs/Toggle.svelte";
 import PartDrawing from "./PartDrawing.svelte";
 
 type Part = (typeof PARTS)[PartId];
@@ -221,7 +221,7 @@ const specimens: { label: string; id: PartId; shown: Shown }[] = [
         style:height="{HEIGHT}px"
         aria-label="The Wasp in Plan view with its fitted parts"
       ></canvas>
-      <Toggle
+      <SegmentedControl
         options={mounts.map(short)}
         bind:value={mountName}
         label="Selected mount"

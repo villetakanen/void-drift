@@ -17,8 +17,8 @@ import {
 } from "../../../lib/planet-inspector";
 import FlightLayers from "../../FlightLayers.svelte";
 import RingSlider from "../../inputs/RingSlider.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import Switch from "../../inputs/Switch.svelte";
-import Toggle from "../../inputs/Toggle.svelte";
 import OverlayPane from "../instrument/OverlayPane.svelte";
 import "@void-drift/core/styles/buttons.css";
 
@@ -26,6 +26,7 @@ type PlanetName = PlanetInspectorDocument["planet"]["name"];
 const PLANET_LABELS: Record<PlanetName, string> = {
   mercury: "Mercury",
   mercurial: "Mercurial",
+  "outer-mercurial": "Outer Mercurial",
   venus: "Venus",
   cradle: "The Cradle",
   earth: "Earth",
@@ -247,7 +248,7 @@ onMount(() => {
   >
     <FlightLayers bind:canvases {label} {visibility} />
     <div class="views">
-      <Toggle
+      <SegmentedControl
         label="Zoom"
         options={["1×", "2×", "4×", "8×", "16×"]}
         bind:value={zoom}
@@ -255,7 +256,7 @@ onMount(() => {
     </div>
     <OverlayPane title="Inspector" label="Planet inspection options">
       <p>Named planet</p>
-      <Toggle
+      <SegmentedControl
         label="Named planet"
         options={namedOptions}
         details={{
@@ -277,15 +278,15 @@ onMount(() => {
         }
       />
       <p>Planet family</p>
-      <Toggle
+      <SegmentedControl
         label="Planet family"
-        options={["Mercurial"]}
+        options={["Mercurial", "Outer Mercurial"]}
         bind:value={
-          () => (family ? "Mercurial" : ""),
-          () =>
+          () => (family ? PLANET_LABELS[doc.planet.name] : ""),
+          (value) =>
   onSelect({
     kind: "family",
-    name: "mercurial",
+    name: value === "Outer Mercurial" ? "outer-mercurial" : "mercurial",
     radius:
       doc.planet.kind === "family"
         ? doc.planet.radius

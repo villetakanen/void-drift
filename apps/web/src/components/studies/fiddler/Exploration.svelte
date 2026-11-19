@@ -1,6 +1,6 @@
 <script lang="ts">
 import { BUILD_FLIGHT_SCALE, CHASSIS } from "@void-drift/mode-a";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import Drawing from "./Drawing.svelte";
 import { variants } from "./geometry";
 
@@ -9,7 +9,11 @@ let view = $state("Hull");
 </script>
 
 <div class="controls">
-  <Toggle {label} options={["Hull", "Mounts", "Fitted"]} bind:value={view} />
+  <SegmentedControl
+    {label}
+    options={["Hull", "Mounts", "Fitted"]}
+    bind:value={view}
+  />
   <p class="caption">All three at 2.35× · nose up · light from upper left</p>
 </div>
 <div class="concepts">

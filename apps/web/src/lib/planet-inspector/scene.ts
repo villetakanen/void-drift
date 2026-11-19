@@ -32,6 +32,7 @@ import {
 } from "@void-drift/mode-a";
 import { planetAppearances } from "../assets/planet-appearances";
 import { createPracticeVenus } from "../assets/practice-venus";
+import { createOuterMercurialMaterial } from "../assets/rock-planets/authored-materials";
 import {
   MercurialInspectorPlanetSchema,
   type PlanetInspectorDocument,
@@ -41,6 +42,11 @@ const references = {
   mercurial: {
     id: "moon",
     label: "Mercurial",
+    spinSeconds: MERCURIAL_ROCK_SPIN_SECONDS,
+  },
+  "outer-mercurial": {
+    id: "outer-mercurial",
+    label: "Outer Mercurial",
     spinSeconds: MERCURIAL_ROCK_SPIN_SECONDS,
   },
   mercury: {
@@ -85,6 +91,9 @@ export class PlanetInspectorScene {
   private renderer: Renderer;
   private fx = new FlightFx();
   private mercury?: Awaited<ReturnType<typeof createRockMaterial>>;
+  private outerMercurial?: Awaited<
+    ReturnType<typeof createOuterMercurialMaterial>
+  >;
   private venus?: ReturnType<typeof createPracticeVenus>;
   private cradle?: Awaited<ReturnType<typeof createCloudedWorld>>;
   private bodyAppearances: ReadonlyMap<number, BodyAppearance> = new Map();
@@ -204,6 +213,20 @@ export class PlanetInspectorScene {
           mercury: material,
         });
         pendingPainter = undefined;
+      } else if (this.doc.planet.name === "outer-mercurial") {
+        const material = await createOuterMercurialMaterial();
+        pendingPainter = material.painter;
+        if (this.disposed) {
+          material.painter.dispose();
+          pendingPainter = undefined;
+          return;
+        }
+        material.painter.prepareLighting(this.lighting);
+        this.outerMercurial = material;
+        this.bodyAppearances = planetAppearances(this.sim.planets, {
+          outerMercurial: material,
+        });
+        pendingPainter = undefined;
       } else {
         const material = createPracticeVenus(true);
         pendingPainter = material.painter;
@@ -255,7 +278,12 @@ export class PlanetInspectorScene {
   }
   setLighting(input: unknown) {
     const next = RockBodyLightingSchema.parse(input);
-    const painter = (this.mercury ?? this.venus ?? this.cradle)?.painter;
+    const painter = (
+      this.mercury ??
+      this.outerMercurial ??
+      this.venus ??
+      this.cradle
+    )?.painter;
     painter?.prepareLighting(next);
     this.lighting = next;
   }
@@ -268,7 +296,12 @@ export class PlanetInspectorScene {
     this.sim.step(INPUT);
   }
   private get surface() {
-    const surface = (this.mercury ?? this.venus ?? this.cradle)?.surface;
+    const surface = (
+      this.mercury ??
+      this.outerMercurial ??
+      this.venus ??
+      this.cradle
+    )?.surface;
     return surface instanceof StripSphericalSurface ? surface : undefined;
   }
   get passMilliseconds() {
@@ -318,6 +351,7 @@ export class PlanetInspectorScene {
   dispose() {
     this.disposed = true;
     this.mercury?.painter.dispose();
+    this.outerMercurial?.painter.dispose();
     this.venus?.painter.dispose();
     this.cradle?.painter.dispose();
     this.mercury = undefined;

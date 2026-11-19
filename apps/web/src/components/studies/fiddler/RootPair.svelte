@@ -1,5 +1,5 @@
 <script lang="ts">
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import BladeDrawing from "./BladeDrawing.svelte";
 import { bladeAssembly } from "./blade-assembly";
 
@@ -16,7 +16,7 @@ const models = (["Faces", "Root"] as const).map((stage) => ({
 </script>
 
 <div class="controls">
-  <Toggle {label} options={["Top", "Angled"]} bind:value={view} />
+  <SegmentedControl {label} options={["Top", "Angled"]} bind:value={view} />
   <span>Same scale · same spacing · light from ship-left</span>
 </div>
 <div class="comparison">

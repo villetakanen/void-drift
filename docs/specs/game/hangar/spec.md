@@ -1,4 +1,17 @@
-# Hangar
+---
+
+title: "Spec: Hangar"
+status: draft
+generated:
+by: "openai-codex/gpt-6.1-sol"
+at: "2026-11-19T12:32:56+02:00"
+verified:
+- by: "openai-codex/gpt-6.1-sol"
+  at: "2026-11-19T12:33:38+02:00"
+
+---
+
+# Spec: Hangar
 
 ## Blueprint
 
@@ -16,7 +29,7 @@ screen shows it and every launch flies it.
 Earning and buying parts is the intended direction for later. During alpha,
 [Playground](../experimental/spec.md) decides what the Hangar offers.
 
-### Architecture and boundaries
+### Architecture
 
 - **Route.** `apps/web/src/pages/hangar.astro` mounts
   `apps/web/src/components/ShipBuilder.svelte` at `/hangar`. `/builder`
@@ -31,13 +44,22 @@ Earning and buying parts is the intended direction for later. During alpha,
 - **Flight.** `apps/web/src/components/FlightDeck.svelte` receives the active
   ship, the mode and the return to the Hangar.
 - **Interface.** The opening uses the shared `Logo`, `Switch` for the binary Playground setting, and `Tabs`
-  for ship workspaces. Plan/View uses `Toggle`; controls and
+  for ship workspaces. Plan/View uses `SegmentedControl`; controls and
   visual tokens follow the [design system](../../factory/design-system/spec.md).
   Parts and flight-estimate panes use the shared `cut-surface` with large
   corner cuts and elevation-1 fill; the shared surface owns their edges.
 
-### Rules
 
+#### Plasma rifle
+
+The Plasma rifle uses the shared unlit weapon artwork on its card and ship, with
+the white-blue housing centred on its slot. It shows its approved fluff and mass;
+its unsanctioned description identifies it as inert. Existing slot compatibility,
+save/load and Playground launch gating apply.
+
+### Constraints
+
+- Shared controls and visual tokens follow the [choice-control contract](../../factory/design-system/choices/spec.md).
 - **Opening.** One compact row sits above the ship chooser: the linked logo
   and one Hangar heading on the left, the labeled Playground Switch on the
   right. The logo returns to `/`. The header does not wrap within supported
@@ -216,8 +238,3 @@ Feature: Hangar
     Then I can still fly it
     And the save status says the choices will not be kept
 ```
-
-The Plasma rifle uses the shared unlit weapon artwork on its card and ship, with
-the white-blue housing centred on its slot. It shows its approved fluff and mass;
-its unsanctioned description identifies it as inert. Existing slot compatibility,
-save/load and Playground launch gating apply.

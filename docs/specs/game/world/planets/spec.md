@@ -15,18 +15,25 @@ Planets supply the "Terrain" of the void. Unlike Stars, they are persistent obst
 
 #### Planet Type System
 
-| Type   | ID       | Color     | Description                           |
-| ------ | -------- | --------- | ------------------------------------- |
-| Rock   | `rock`   | `#8B7355` | Brown rocky surface, cratered terrain |
-| Gas    | `gas`    | `#6B4C9A` | Purple gas giant, swirling atmosphere |
-| Ocean  | `ocean`  | `#4A90C2` | Blue water world                      |
-| Desert | `desert` | `#C4A35A` | Sandy tan, arid surface               |
-| Ice    | `ice`    | `#A8D8E8` | Light blue frozen world               |
+| Type            | ID                | Color     | Description                           |
+| --------------- | ----------------- | --------- | ------------------------------------- |
+| Rock            | `rock`            | `#8B7355` | Brown rocky surface, cratered terrain |
+| Gas             | `gas`             | `#6B4C9A` | Purple gas giant, swirling atmosphere |
+| Ocean           | `ocean`           | `#4A90C2` | Blue water world                      |
+| Desert          | `desert`          | `#C4A35A` | Sandy tan, arid surface               |
+| Ice             | `ice`             | `#A8D8E8` | Light blue frozen world               |
+| Outer Mercurial | `outer-mercurial` | `#77736C` | Seeded outer mineral-rock family      |
 
 #### Data Model
 
 ```typescript
-type PlanetType = "rock" | "gas" | "ocean" | "desert" | "ice";
+type PlanetType =
+  | "rock"
+  | "gas"
+  | "ocean"
+  | "desert"
+  | "ice"
+  | "outer-mercurial";
 
 interface Planet {
   pos: Vec2;
@@ -41,30 +48,7 @@ interface Planet {
 }
 ```
 
-#### Dynamic Spawning
-
-The optional experimental `initializeRandomPlanets()` factory can generate 0-5
-planets using the following parameter ranges:
-
-| Parameter     | Range                     | Notes                     |
-| ------------- | ------------------------- | ------------------------- |
-| Count         | 0-5                       | Random per game session   |
-| Orbit Radius  | 200-1000px                | Distance from star center |
-| Planet Radius | 10-100px                  | Physical size             |
-| Orbit Speed   | ±0.02-0.15 rad/s          | Sign determines direction |
-| Type          | rock/gas/ocean/desert/ice | Random selection          |
-
-**Non-Overlap Constraint:**
-Planets cannot overlap at any point in their orbits. For two planets with radii `r1` and `r2`:
-- Minimum orbit separation: `(r1 * 4) + (r2 * 4)`
-- Star exclusion zone: orbit radius ≥ 200px
-
-**Spawn Algorithm:**
-1. Generate random planet count (0-5)
-2. For each planet, generate random parameters
-3. Validate orbit doesn't conflict with existing planets
-4. Retry with different orbit if conflict detected (max 10 attempts)
-5. Skip planet if no valid placement found
+#### Physics and rendering
 
 - **Physics:**
   - Gravity: [gravity-field.md](../gravity-field/spec.md#bodies-in-play).
@@ -114,13 +98,17 @@ gravity use the planet body radius and mass.
 This airless mineral-rock family uses radii 16–36u. The range belongs to this
 family, not every rock planet. It has no atmosphere or decorative ring.
 
-Survival, Derelicts and Gauntlet each contain exactly one generated application,
-replacing the innermost stock entry while retaining internal identity `moon`.
-Its seed-selected radius, Sun-relative orbit, 4u/s travel and conflict-removal
-priority follow the [system contract](../systems/spec.md). Its whole body stays
-outside danger and inside charging with at least 1u clearance. It has no display
-name inherited from “The Moon”; it uses the normal star/ordinal HUD name.
-Its gravity follows the shared mercurial profile in the
+Survival, Derelicts and Gauntlet replace the innermost stock entry with a
+generated inner Mercurial, retaining internal identity `moon`. When the Sun can
+contain a second complete gravity well in its safe fields, generation also adds
+one distinct `outer-mercurial` body. Its seeded radius, placement, gravity-field
+overlap and conflict-removal priority follow the
+[system contract](../systems/spec.md). Both bodies use the shared Mercurial
+mass profile and normal star/ordinal HUD names. The outer body uses the
+`outer-mercurial` body type and a complete highlands texture generated from the
+Mercury study prompt; the inner
+body retains its accepted mineral material. The inner body's gravity follows
+the shared mercurial profile in the
 [gravity contract](../gravity-field/spec.md#mercurial-family-mass):
 `mass(R) = 870 × [0.75 + 0.25 × (R / 27)²]`. The fixed core supplies 75% of
 reference mass; only the remaining quarter scales with squared radius. At
@@ -135,7 +123,7 @@ mercurial specimen; it has no separate moon-mass override. Its whole body remain
 outside the fixed G7 Sun's danger field and inside charging. The generated
 radius range and placement algorithm do not change this reference system.
 
-Both applications use the accepted mineral surface in
+Practice Mercury and the generated inner Mercurial use the accepted mineral surface in
 `apps/web/public/planets/mercury-ground.png`, independent 31.3-second surface
 rotation driven by simulation ticks, and current shared Sun-facing LFX light.
 Rendering uses the shared production World/LFX body passes, prepared cached
@@ -144,6 +132,14 @@ Pause holds rotation; the same tick gives the same picture. Material failure
 uses a stock-disc fallback while retaining the body's physics and World HUD.
 Other rock planets retain their own appearance. The normal orbit, moving gravity
 boundary and upright name are present independently of material readiness.
+
+The generated outer Mercurial uses the complete 2:1 longitude-latitude map in
+`apps/web/public/planets/outer-mercurial-highlands.png`, generated with ImageGen
+from the Mercury study's Ancient Highlands prompt. Its map fills the full
+surface rather than reprojecting the study's single visible globe. It uses the
+shared spherical surface, body painter, light pass, 31.3-second turn and
+fallback behavior. This map does not replace the accepted inner Mercury
+surface.
 
 ### Practice Venus
 
@@ -340,8 +336,6 @@ Specified in [gravity-field.md](../gravity-field/spec.md#bodies-in-play).
   `generateSolarSystem()` in `packages/mode-a/src/lib/solar-system.ts` applies
   the mercurial replacement and conflict removal for generated play; Practice
   applies its fixed named roster.
-- **Experiment:** `initializeRandomPlanets()` can create 0-5 planets with random
-  count, type, orbit, size and speed.
 
 ## Performance Characteristics
 
@@ -370,7 +364,6 @@ Specified in [gravity-field.md](../gravity-field/spec.md#bodies-in-play).
 ---
 
 **Planet System Status: OPERATIONAL** 🪐  
-**Dynamic Spawning:** 0-5 planets per game  
 **Types:** rock, gas, ocean, desert, ice
 
 

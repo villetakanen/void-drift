@@ -34,6 +34,7 @@ export function planetAppearances(
   planets: readonly Planet[],
   materials: {
     mercury?: RockMaterial;
+    outerMercurial?: RockMaterial;
     venus?: CloudMaterial;
     cradle?: CloudedMaterial;
   },
@@ -51,6 +52,12 @@ export function planetAppearances(
 
   const appearances = new Map<number, BodyAppearance>();
   add("moon", materials.mercury, MERCURIAL_ROCK_SPIN_SECONDS, false);
+  add(
+    "outer-mercurial",
+    materials.outerMercurial,
+    MERCURIAL_ROCK_SPIN_SECONDS,
+    false,
+  );
   add("venus", materials.venus, PRACTICE_VENUS_SPIN_SECONDS, true);
   addCradle(materials.cradle);
   return appearances;

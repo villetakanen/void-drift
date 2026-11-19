@@ -23,10 +23,10 @@ This project is a Monorepo managed by `pnpm`:
 2. **Run Development Server**
 
    ```bash
-   pnpm dev
+   pnpm dev:ensure
    ```
 
-   This starts the Astro dev server for `apps/web` at `http://localhost:4321`.
+   On the shared Mac checkout this starts or reuses the development service at `http://localhost:4321`.
 
 3. **Build**
 
@@ -52,3 +52,7 @@ This project is a Monorepo managed by `pnpm`:
 
 Run `pnpm verify` for the combined checks and a local evidence report. The rebuild
 starts with known legacy lint/type debt; see the development guide for current coverage.
+
+## Providence
+
+This project is a testbed for [ASDLC.io] pattern libary and for a select [Futurice.com] FAB harness tools. YMMV.

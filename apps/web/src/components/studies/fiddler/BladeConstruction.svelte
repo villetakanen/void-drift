@@ -1,6 +1,6 @@
 <script lang="ts">
 import { FIGHTER, WASP } from "@void-drift/mode-a";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 
 type Point = readonly [number, number, number];
 let { label = "Blade construction view" }: { label?: string } = $props();
@@ -101,7 +101,7 @@ const sectionRise = ridgeHeight(noseLength) * 16;
 </div>
 
 <div class="controls">
-  <Toggle {label} options={["Top", "Angled"]} bind:value={view} />
+  <SegmentedControl {label} options={["Top", "Angled"]} bind:value={view} />
   <p class="caption" aria-live="polite">
     {view === "Top"
       ? "Top view · original nose outline and colours · same drawing scale"

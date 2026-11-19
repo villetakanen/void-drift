@@ -1,4 +1,6 @@
 <script lang="ts">
+import Switch from "../inputs/Switch.svelte";
+
 // Explicit Astro hydration attributes avoid the empty-props integration mismatch.
 let _props: { slot?: string; "client:only"?: string; "client:load"?: boolean } =
   $props();
@@ -74,6 +76,7 @@ const shipStatsGroups = $derived([
     ],
   },
 ]);
+const controlId = $props.id();
 </script>
 
 <Controls title="Parameters">
@@ -101,8 +104,8 @@ const shipStatsGroups = $derived([
 </Controls>
 
 <Controls title="Weapon fittings">
-  <label
-    ><input type="checkbox" bind:checked={shipParams.weapons}>
+  <label for={`${controlId}-0`} class="setting"
+    ><Switch id={`${controlId}-0`} bind:checked={shipParams.weapons} />
     Show railgun and laser</label
   >
   <div class="control-group">
@@ -127,6 +130,11 @@ const shipStatsGroups = $derived([
 </Controls>
 
 <style>
+.setting {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
 .control-group {
   display: flex;
   flex-direction: column;

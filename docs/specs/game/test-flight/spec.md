@@ -48,6 +48,7 @@ Practice is a mode of its own, as the [game contract](../spec.md) lists it.
   [planets](../world/planets/spec.md).
   The stock middle planet's phase is retained under Practice's fixed phase seed;
   the study's held orbit phase is not a placement rule.
+- **Fixed Sol sky.** The [distant flight sky](../render/flight-sky/spec.md) gives every fitting the same Milky Way. The stage shows the void while Sol loads, and flight begins immediately. Camera travel moves the image across the entire stage. World zoom preserves the bank’s apparent size.
 - **Real flight.** Controls, movement, gravity, contact with the star and
   planets, and drag in The Cradle's air work as in any flight. Contact never
   repositions the ship. Entering the air shows the heat cue as in any flight.
@@ -108,6 +109,7 @@ Feature: Practice
     Given I aborted a Practice session
     When I start Practice again
     Then I start in the same system with the same conditions
+    And the same camera pose reveals the same Sol bank and dust lanes
 
   Scenario: Abort returns to the Hangar
     Given a Practice session

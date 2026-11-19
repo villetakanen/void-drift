@@ -1,7 +1,7 @@
 <script lang="ts">
 import { COLOR, canvasFont } from "@void-drift/core";
 import { drawStabilizerSlits, SLOT_STYLE } from "@void-drift/mode-a";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import Drawing from "./Drawing.svelte";
 import { FORWARD_MOUNTS, LHI_FORM } from "./lhi-form";
 
@@ -61,7 +61,11 @@ $effect(() => {
 </script>
 
 <div class="controls">
-  <Toggle {label} options={["Form", "Forward mounts"]} bind:value={layer} />
+  <SegmentedControl
+    {label}
+    options={["Form", "Forward mounts"]}
+    bind:value={layer}
+  />
   <p class="caption" aria-live="polite">
     {layer === "Forward mounts"
       ? "Four Q footprints only: two per pincer. Remaining fittings are unresolved."

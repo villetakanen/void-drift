@@ -9,7 +9,7 @@ import {
   starterLoadout,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import { drawForm, drawInspection, fittingPainter, REFERENCE } from "./form";
 
 let { label = "Rail-shrouded plasma fitting" }: { label?: string } = $props();
@@ -183,20 +183,24 @@ $effect(() => {
 
 <section class="bench" aria-label={label}>
   <div class="controls">
-    <Toggle
+    <SegmentedControl
       label="Fitting view"
       options={["Preview", "Plan"]}
       bind:value={view}
     />
-    <Toggle label="Mount side" options={["Left", "Right"]} bind:value={side} />
-    <Toggle
+    <SegmentedControl
+      label="Mount side"
+      options={["Left", "Right"]}
+      bind:value={side}
+    />
+    <SegmentedControl
       label="Fitting exposure"
       options={["Under hull", "Exposed"]}
       bind:value={layer}
     />
     <span
       >Anchors
-      <Toggle
+      <SegmentedControl
         label="Construction anchors"
         options={["Off", "On"]}
         bind:value={anchors}

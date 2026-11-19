@@ -40,7 +40,7 @@ existing studies have been migrated or that the procedure has been trialled.
   and illustrative edits are identified as such.
 - [Exploration guide](../../.agents/skills/design-study/references/exploration.md):
   distinguishes preserving useful evidence from keeping its tools running.
-- [Study specification](../specs/lab/design-studies/spec.md): records the agreed
+- [Study specification](../specs/studies/spec.md): records the agreed
   prose requirements and durable-record ending contract. Shared production
   systems and reusable Lab instruments are preserved; retained interactive
   examples need a named continuing purpose.

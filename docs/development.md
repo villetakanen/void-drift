@@ -10,13 +10,19 @@ Use Node 22+, pnpm 10.33.0 and Java 21 (Firebase emulators).
 ```sh
 pnpm install --frozen-lockfile
 pnpm exec playwright install chromium
-pnpm dev
+pnpm dev:ensure
 ```
 
 Open `http://localhost:4321` for play, `/hangar` for Hangar test flight and `/lab`
 for developer instruments and asset examples. Backend configuration is optional for local flight. Copy the public
 Firebase keys from `.env.example` into ignored `.env.local` to enable shared scores.
 Set `JAVA_HOME` and put its `bin` on `PATH` if Java is not installed system-wide.
+
+## Shared preview
+
+On macOS, Python 3 and a logged-in graphical session are required for the shared commands. `pnpm dev:ensure` registers the checkout with launchd on demand and waits for `/lab`. The server survives editor and terminal exits. Run ensure again after login. For foreground development elsewhere, use `pnpm dev`.
+
+Use `pnpm dev:status` to see ownership, start time, readiness and the log path. If another server already owns 4321, stop it in its owning session before starting the shared service. Reload the affected route to check a saved edit. If it still looks stale, run `pnpm dev:restart` once and recheck. Inspect `artifacts/shared-preview/astro.log` for errors and run `pnpm --filter web check` for Astro diagnostics.
 
 ## Required gates
 

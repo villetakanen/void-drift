@@ -16,7 +16,9 @@ Read for changes to structure, simulation, or data flow. Product intent belongs 
   outlets, not trail history. `/lab/fx` exercises six production simulations together.
   The [FX contract](specs/factory/effects/spec.md) owns lifecycle and performance acceptance.
 - The in-flight picture follows the [render model](specs/game/render/spec.md). It is a
-  stack of canvas layers the browser composites: World for everything solid and the
+  browser-composited stack. A prepared Milky Way image sits beneath World. Practice decodes the fixed Sol tile.
+  Survival, Derelicts and Gauntlet prepare one image from the run seed during arrival.
+  The canvases hold World for everything solid and the
   World HUD, FX for accumulated light, LFX for live light, with the Deck above them
   as page elements. `packages/mode-a/src/lib/flight-frame.ts` lists the layers and the
   ordered passes that draw on them. The method treats the browser as the machine a
@@ -183,3 +185,7 @@ validation retains the existing ranked fleet. Existing v3 Hangar stores gain a
 Fiddler starting build without replacing their other ships. See the
 [Hangar contract](specs/game/hangar/spec.md#fiddler-flight-trial--2026-11-03) for the
 accepted starting fit and remaining human flight review.
+
+## Shared development preview
+
+The shared checkout serves saved work from all active tasks through one Astro development process on port 4321. A per-checkout macOS launchd job owns that process. The controller serializes lifecycle requests with a file lock, checks listener ownership and probes the Lab route. Vite resolves the workspace sources directly and hot reloads edits. Browser verification owns separate processes, ports and caches. See the [development workflow](development.md#shared-preview).

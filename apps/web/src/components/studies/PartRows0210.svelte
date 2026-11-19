@@ -9,7 +9,7 @@ let _props: { "client:load"?: boolean } = $props();
 // today's layout and one wider example; none is a limit. Still a plain card:
 // no states, and no claim about its colours or edges.
 import { PARTS, type PartId } from "@void-drift/mode-a";
-import Toggle from "../inputs/Toggle.svelte";
+import SegmentedControl from "../inputs/SegmentedControl.svelte";
 import PartDrawing from "./PartDrawing.svelte";
 import { FIGURE_GLYPH, partFigures } from "./part-figures";
 
@@ -59,7 +59,7 @@ $effect(() => {
 </script>
 
 <div class="bench">
-  <Toggle
+  <SegmentedControl
     options={Object.keys(frames)}
     bind:value={frameName}
     label="Width of the parts column"

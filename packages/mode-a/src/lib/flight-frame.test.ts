@@ -327,6 +327,18 @@ describe("flight frame", () => {
     expect(second).toHaveBeenCalledWith(frame, expect.anything(), outer);
     expect(frame.renderer.drawPlanet).not.toHaveBeenCalled();
   });
+  it("clears World and omits its stock background only for a prepared sky", () => {
+    const { calls, frame } = record();
+    drawFlightFrame(frame, { preparedSky: true });
+    expect(calls.filter((call) => call === "clear:world")).toHaveLength(1);
+    expect(drawn(calls)).toEqual(
+      ids.filter((id) => id !== "void" && id !== "starfield"),
+    );
+    calls.length = 0;
+    drawFlightFrame(frame);
+    expect(calls).not.toContain("clear:world");
+    expect(drawn(calls)).toEqual(ids);
+  });
   it("draws and reports exactly the included passes, in order", () => {
     const { calls, frame } = record();
     const some = ids.filter((_, index) => index % 2 === 1);

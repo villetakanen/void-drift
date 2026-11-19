@@ -1,30 +1,17 @@
-# Arcade effects layer
+---
 
-Updated 2026-11-03. **Status: persistent-surface correction implemented and locally verified;
-the designer's builder playtest visually positive; performance acceptance pending.** The designer
-rejected the 0.5.0 engine appearance and clarified that the accumulated image must
-hold the history. The direct pass and per-engine trail histories shipped in 0.5.0
-are superseded. [Correction plan](../../../plans/2026-11-03-fx-surface-correction.md).
+title: "Spec: Arcade effects layer"
+status: draft
+generated:
+by: "openai-codex/gpt-6.1-sol"
+at: "2026-11-19T12:32:56+02:00"
+verified:
+- by: "openai-codex/gpt-6.1-sol"
+  at: "2026-11-19T12:33:38+02:00"
 
-## Derelict contained energy
+---
 
-Intact derelicts and released energy squares stamp the same cached rotating-square
-halo into the persistent surface through `stampWeaponLight`, using visibility and
-source budgets. Hull fills remain flat; energy light is independent decoration.
-FlightDeck and the mixed FX Lab restore square apertures after compositing.
-
-A player-caused containment loss emits one validated `energy-release` event at the
-fixed rupture centre and actual contact time. Its shared world-unit pulse expands
-for 0.28 gameplay seconds, then the surface owns remaining light decay. It replaces
-the generic player-break flash and does not follow the ejected square. Active
-release cues retain priority over ordinary impact events in the bounded ring. Environmental
-removal, expiry, exit and fragments produce no energy-release cue. Pause adds no
-emission or decay; reset discards the old history. The canonical Derelict Lab uses
-these same production causes and painters.
-
-The canonical ion comparison uses the shared life-support drain when calculating
-delivered engine power, keeping its firing and release inspection sequence aligned
-with production energy rules.
+# Spec: Arcade effects layer
 
 ## Blueprint
 
@@ -70,6 +57,149 @@ workload here; their gameplay implementation belongs to their own features.
   current Canvas convention is recorded in [Architecture](../../../architecture.md).
   Implementation alternatives and their tradeoffs live in the investigation.
 
+
+#### Derelict contained energy
+
+Intact derelicts and released energy squares stamp the same cached rotating-square
+halo into the persistent surface through `stampWeaponLight`, using visibility and
+source budgets. Hull fills remain flat; energy light is independent decoration.
+FlightDeck and the mixed FX Lab restore square apertures after compositing.
+
+A player-caused containment loss emits one validated `energy-release` event at the
+fixed rupture centre and actual contact time. Its shared world-unit pulse expands
+for 0.28 gameplay seconds, then the surface owns remaining light decay. It replaces
+the generic player-break flash and does not follow the ejected square. Active
+release cues retain priority over ordinary impact events in the bounded ring. Environmental
+removal, expiry, exit and fragments produce no energy-release cue. Pause adds no
+emission or decay; reset discards the old history. The canonical Derelict Lab uses
+these same production causes and painters.
+
+The canonical ion comparison uses the shared life-support drain when calculating
+delivered engine power, keeping its firing and release inspection sequence aligned
+with production energy rules.
+
+
+#### Persistent surface
+
+One scene owns a persistent black light image and a bounded reusable spare for
+camera reprojection. Fresh stamps are added after every elapsed-time fade. The
+whole image decays by filling it with translucent black using source-over; the
+shared half-life is 0.1 seconds. No rolling history windows, quiet-time clear,
+alpha threshold, or periodic cleanup is permitted. Near-black 8-bit residue may
+remain or settle at the darkest representable value; it never vanishes through
+a cleanup pop. Camera
+movement reprojects the full image domain, including exposed edges, while keeping
+marks fixed in world space. FX is composited over World with CSS screen. These
+rules are specified in the [FX layer contract](../../game/render/fx.md).
+
+Limits remain 1,024 decorative and 128 source requests per advancing scene frame.
+Each ship holds at most eight current engine outlets, with no historical marks.
+The moving spark pool holds at most 256 particles; their trail is image persistence.
+Ion stamps are cached by style. These capacities do not set game population limits.
+
+#### Weapon encounters
+
+The [weapons and salvage trial](../../game/test-flight/spec.md) adds simulation-owned
+rotating laser pulses, impact/destruction events and energy collection. Retained rail-round rendering supports existing visual fixtures; saved rail fittings do not fire.
+`FlightFx` stamps their fresh light into the existing surface and consumes events
+into one shared weapon spark pool (capacity 256). Physical wrecks, fragments and
+cells are world objects, visible independently of cosmetic effects. Existing
+source/decorative budgets and pause/reset/camera semantics apply. Current pulse
+events expire after 0.2 seconds and are bounded to 128; they are not trail histories.
+Laser pulses use a saturated red outer stroke and a brighter narrow core. Rail
+collisions and ship–derelict contacts stamp the same circular plume expanding from the actual swept contact point
+for 0.2 seconds and feed the same bounded spark pool. Expired slugs and near
+misses cannot trigger that plume. Pause/reset semantics apply to both effects.
+
+The mixed Lab's Weapons Switch, also `/lab/fx?weapons=1`, fits alternating lasers
+beside the six ships' gravity collectors and shows real encounters.
+The default reference workload suppresses encounter spawning. Weapon-mode traces
+must be identified separately from earlier reference-workload measurements.
+
+#### Arrival countdown
+
+Saira Stencil 700 outlines paint Android-green ignition numerals through the shared
+essential FX allowance. A presentation clock advances during the frozen count, then
+continues with simulation time. The countdown and GO are stamped at the centre of the gameplay viewport,
+independent of ship position. Residual light follows the shared surface decay.
+
+An Android-green speed line extends backward from the arriving ship's rear,
+opposite its velocity. It is visible throughout the countdown and fades over the
+first 1.5 seconds of flight. Its length scales with speed, capped at 420 world
+units. It uses the shared essential allowance and persistent light decay; pause
+and reset follow the existing surface lifecycle. It does not affect physics.
+
+#### Light Ion Cannon LFX
+
+The [cannon](../../game/light-ion-cannon/spec.md) has two presentation passes.
+Its 80 ms active ray is fresh topmost LFX after world, ship, persistent FX and
+salvage apertures, below screen controls. `FlightFx.drawLfx` runs on the freshly
+redrawn scene; active-ray pixels never enter the history surface. A separate
+history canvas is unnecessary for this fresh pass. Play, the mixed-effects bench
+and equipment encounter share this production owner.
+
+LFX follows the current shared muzzle and fixed mount heading, clipping to the
+shorter of original discharge length and current nearest physical obstruction.
+This query never applies damage. Only the blue 65% dispersal treatment enters
+persistent FX, through its source allowance. Full profiles are cached; contact
+clips rather than rescales the transparent tip. Cannon hits activate the shared
+expanding impact plume at their actual contact.
+
+Work is bounded by installed mounts and the existing 128-event ring, with one
+current flash per cannon. No flash histories or emission backlogs are retained.
+Fresh LFX is empty between flashes. Pause redraws the same active flash without
+adding persistent brightness; reset/new simulation clears events and the surface.
+Camera pan/zoom transforms both current geometry and world-fixed history; wrap
+repositions fresh geometry without joining old and new muzzle positions. The
+mixed Lab Weapons workload includes simultaneous twin cannons beside collectors,
+engines, station, missile and fire effects. Performance acceptance remains governed
+by the whole-scene budget above and requires separate sustained measurements.
+
+#### Plasma thrust light
+
+A thrusting plasma engine stamps its cached luminous ball and sparks behind its
+outlet into persistent FX. The ball scales with the square root of delivered
+output and flares as charge releases, settling into steady thrust. Its animated
+lobes hold their frame and angle across several ticks. Source and decorative
+work use the shared scene budget; release stops new thrust stamps. Play and the
+Flight scene instrument share the production effect. The
+[plasma comparison](/lab/plasma-thrust-comparison) shows production alongside
+the accepted study reference.
+
+#### Plasma charge light
+
+A charging plasma engine shows a cached, tightening and brightening bead at its
+outlet on live LFX and stamps a faint trace into persistent FX. It follows the
+engine's delivered charge state and stops when charging ends or power is lost.
+Pause redraws the live bead without adding persistent light; reset clears it.
+
+#### Paired stabilizer exhaust
+
+Wasp and Fiddler use their shared production mount geometry for stabilizer
+plumes. The active visual outlet pair emits exhaust with angular moment opposite
+the commanded or braking torque. The output mapping is presentation data; it
+does not change flight impulses or angular integration.
+
+#### Ion Point Defence LFX
+
+The [turret](../../game/ion-point-defence/spec.md) shares the cannon's presentation
+owner and passes. Its 80 ms active ray is fresh topmost LFX drawn by
+`FlightFx.drawLfx`; it follows the current shared muzzle and the turret's current
+simulated heading, including a muzzle beneath the hull. Length is the shorter of
+the discharge distance and the current nearest physical obstruction within 200
+units; this query never applies damage.
+
+The cached ion profiles are keyed by reach. The turret uses a second, 200-unit
+blue profile with the cannon's light treatment and its own transparent tip; the
+cannon uses a 300-unit profile. Contact clips rather than rescales either
+profile. Only the 65% dispersal treatment enters persistent FX, through its source
+allowance, under the shared decay, pause, camera, wrap and reset semantics. Turret
+hits activate the shared expanding impact plume at their actual contact.
+
+Work is bounded by installed mounts and the existing 128-event ring, with one
+current flash per turret. Fresh LFX is empty between flashes. The mixed Lab
+Weapons workload includes point-defence turrets firing beside twin cannons.
+
 ### Constraints
 
 - **Hi-Fi Lo-Fi:** the picture uses inexpensive methods and their artefacts to
@@ -104,13 +234,11 @@ workload here; their gameplay implementation belongs to their own features.
   supplies its parallel luminous core, coloured halo and transparent end, with
   Light mint-cyan and Heavy cooler, longer and wider. A separate attached rod and
   faint residue does not represent that accepted identity.
+- Independent Lab effects settings use the shared [Switch](../design-system/choices/spec.md); Run/Pause, Reset and Burst remain command buttons.
 
 ## Contract
 
 ### Definition of Done
-
-These criteria persist across implementations. Tags in the scenarios trace back to
-these identifiers; unchecked items represent outstanding acceptance work.
 
 - **FX-01 — Composition:** shared play/Lab effects appear above the world while
   HUD and controls remain readable and operable. Human inspection verifies layering.
@@ -126,12 +254,9 @@ these identifiers; unchecked items represent outstanding acceptance work.
   while retaining essential cues and accepting keyboard/touch input normally.
 - **FX-07 — Performance:** the mixed-scene workload meets the budget below on
   named reference environments, with sustained frame pacing and profiling evidence.
-- **FX-08 — Experience:** the designer reviews a playable mixed scene and records
-  whether its effects feel sharp, sparkly, electric and readable at gameplay zoom.
-  The designer's builder playtest on 2026-11-03 approved the ion/gravity appearance as matching
-  the intended effect; the entire diagnostic workload has not had designer review.
+- **FX-08 — Experience:** effects remain sharp, sparkly, electric and readable at gameplay zoom; designer acceptance is separate from automated verification.
 
-### Performance acceptance
+#### Performance acceptance
 
 **Under 3 ms for the entire active scene's FX work** is the target. The measurement
 criterion is p95 below 3 ms, with p50, maximum and repeated spikes reported. Include
@@ -149,13 +274,9 @@ Counts and resolution define a reproducible acceptance fixture, not gameplay cap
 Each report identifies hardware, browser, displayed/backing resolution, workload,
 warm-up/sample duration and p50/p95/max frame/effects timings. Exercise sustained
 movement, turning, overlap and bursts. Name a desktop and representative physical
-mobile profile before claiming performance acceptance. The mixed scene and reproducible
-`node scripts/profile-fx.mjs` procedure are implemented. Desktop Chromium and
-mobile viewport emulation on Apple silicon provide partial evidence; a representative
-physical phone and isolated attributable GPU cost remain unverified. The earlier
-frozen synthetic benchmark is evidence of feasibility only.
+mobile profile before claiming performance acceptance. Use the mixed scene and reproducible `node scripts/profile-fx.mjs` procedure; environment-specific measurements belong in delivery records.
 
-### Regression Guardrails
+### Regression guardrails
 
 - Gameplay forces, resources, damage, controls and replay remain governed by their
   existing contracts while effects change.
@@ -298,156 +419,15 @@ Feature: Fast, expressive arcade effects
   Scenario: Review the character of the combined effects in play
     Given the mixed scene is playable at normal gameplay zoom
     When the designer observes firing, coasting, turning and overlapping effects
-    Then the review records judgments on sharpness, sparkle, electric character and readability
-    And those judgments determine experience acceptance
+    Then the effects remain sharp, sparkly, electric and readable
+    And designer acceptance remains separate from automated verification
 ```
 
-## Implementation and evidence — surface correction
-
-One scene owns a persistent black light image and a bounded reusable spare for
-camera reprojection. Fresh stamps are added after every elapsed-time fade. The
-whole image decays by filling it with translucent black using source-over; the
-shared half-life is 0.1 seconds. No rolling history windows, quiet-time clear,
-alpha threshold, or periodic cleanup is permitted. Near-black 8-bit residue may
-remain or settle at the darkest representable value; it never vanishes through
-a cleanup pop. Camera
-movement reprojects the full image domain, including exposed edges, while keeping
-marks fixed in world space. FX is composited over World with CSS screen. These
-rules are specified in the [FX layer contract](../../game/render/fx.md).
-
-Limits remain 1,024 decorative and 128 source requests per advancing scene frame.
-Each ship holds at most eight current engine outlets, with no historical marks.
-The moving spark pool holds at most 256 particles; their trail is image persistence.
-Ion stamps are cached by style. These capacities do not set game population limits.
-
-- Core outlet tests cover delivered output, mount transforms, pause/reset and bounds.
-- Browser `fx-surface.spec.ts` checks additive accumulation, shared decay, pause,
-  camera movement, reset and discontinuous placement with synthetic stamps. These
-  are compositing semantics, not screenshot or art-recipe equality assertions.
-- Existing mode/browser checks cover gameplay isolation, collection, replay, overload,
-  keyboard/touch and production Lab consumers. Appearance remains human-reviewed.
-- Sustained traces, final verification and designer feedback are recorded in the
-  [repair evidence](../../../loop-evidence/2026-11-03-fx-surface-repair.md).
-  The 0.5.0 timing results do not certify the changed rendering path.
-
-[DEPRECATED 2026-11-03] The direct-pass implementation shipped in 0.5.0 retained
-320 individually aged trail marks per ship and separate attached beams. It did not
-implement the designer's intended persistent surface. Its checks and measurements
-remain historical evidence in the [0.5.0 release record](../../../releases/0.5.0.md).
-The [FX development skill](../../../../.agents/skills/fx-development/SKILL.md) guides agents
-through the agreed model. Preserved study painters are comparison evidence outside
-production; visual equality gates remain retired.
-
-## Supporting records
-
-### Weapon trial — 2026-11-03
-
-The [weapons and salvage trial](../../game/test-flight/spec.md) adds simulation-owned
-rotating laser pulses, impact/destruction events and energy collection. Retained rail-round rendering supports existing visual fixtures; saved rail fittings do not fire.
-`FlightFx` stamps their fresh light into the existing surface and consumes events
-into one shared weapon spark pool (capacity 256). Physical wrecks, fragments and
-cells are world objects, visible independently of cosmetic effects. Existing
-source/decorative budgets and pause/reset/camera semantics apply. Current pulse
-events expire after 0.2 seconds and are bounded to 128; they are not trail histories.
-Laser pulses use a saturated red outer stroke and a brighter narrow core. Rail
-collisions and ship–derelict contacts stamp the same circular plume expanding from the actual swept contact point
-for 0.2 seconds and feed the same bounded spark pool. Expired slugs and near
-misses cannot trigger that plume. Pause/reset semantics apply to both effects.
-
-The mixed Lab's Weapons toggle, also `/lab/fx?weapons=1`, fits alternating lasers
-beside the six ships' gravity collectors and shows real encounters.
-The default reference workload suppresses encounter spawning. Weapon-mode traces
-must be identified separately from earlier reference-workload measurements.
-
-- [Investigation, alternatives, verification and migration](../../../plans/2026-11-03-fx-framework-triage.md)
-  holds code-level diagnosis, measurements, candidate designs and proposed test changes.
-- [DEPRECATED 2026-11-03: historical rendering proposal](../../../archive/sfx-canvas-legacy.md)
-  preserves the superseded dual-canvas recipe outside the active contract.
-- Reviewed against ASDLC's [The Spec](https://asdlc.io/patterns/the-spec/),
-  [Living Specs](https://asdlc.io/practices/living-specs/) (both updated 2026-10-05),
-  and [Gherkin](https://asdlc.io/concepts/gherkin/), checked 2026-11-03.
-  The repository's established `docs/specs/` layout is retained.
-
-## Arrival countdown
-
-Saira Stencil 700 outlines paint Android-green ignition numerals through the shared
-essential FX allowance. A presentation clock advances during the frozen count, then
-continues with simulation time. The countdown and GO are stamped at the centre of the gameplay viewport,
-independent of ship position. Residual light follows the shared surface decay.
-
-An Android-green speed line extends backward from the arriving ship's rear,
-opposite its velocity. It is visible throughout the countdown and fades over the
-first 1.5 seconds of flight. Its length scales with speed, capped at 420 world
-units. It uses the shared essential allowance and persistent light decay; pause
-and reset follow the existing surface lifecycle. It does not affect physics.
-
-## Light Ion Cannon LFX
-
-The [cannon](../../game/light-ion-cannon/spec.md) has two presentation passes.
-Its 80 ms active ray is fresh topmost LFX after world, ship, persistent FX and
-salvage apertures, below screen controls. `FlightFx.drawLfx` runs on the freshly
-redrawn scene; active-ray pixels never enter the history surface. A separate
-history canvas is unnecessary for this fresh pass. Play, the mixed-effects bench
-and equipment encounter share this production owner.
-
-LFX follows the current shared muzzle and fixed mount heading, clipping to the
-shorter of original discharge length and current nearest physical obstruction.
-This query never applies damage. Only the blue 65% dispersal treatment enters
-persistent FX, through its source allowance. Full profiles are cached; contact
-clips rather than rescales the transparent tip. Cannon hits activate the shared
-expanding impact plume at their actual contact.
-
-Work is bounded by installed mounts and the existing 128-event ring, with one
-current flash per cannon. No flash histories or emission backlogs are retained.
-Fresh LFX is empty between flashes. Pause redraws the same active flash without
-adding persistent brightness; reset/new simulation clears events and the surface.
-Camera pan/zoom transforms both current geometry and world-fixed history; wrap
-repositions fresh geometry without joining old and new muzzle positions. The
-mixed Lab Weapons workload includes simultaneous twin cannons beside collectors,
-engines, station, missile and fire effects. Performance acceptance remains governed
-by the whole-scene budget above and requires separate sustained measurements.
-
-## Plasma thrust light
-
-A thrusting plasma engine stamps its cached luminous ball and sparks behind its
-outlet into persistent FX. The ball scales with the square root of delivered
-output and flares as charge releases, settling into steady thrust. Its animated
-lobes hold their frame and angle across several ticks. Source and decorative
-work use the shared scene budget; release stops new thrust stamps. Play and the
-Flight scene instrument share the production effect. The
-[plasma comparison](/lab/plasma-thrust-comparison) shows production alongside
-the accepted study reference.
-
-## Plasma charge light
-
-A charging plasma engine shows a cached, tightening and brightening bead at its
-outlet on live LFX and stamps a faint trace into persistent FX. It follows the
-engine's delivered charge state and stops when charging ends or power is lost.
-Pause redraws the live bead without adding persistent light; reset clears it.
-
-## Paired stabilizer exhaust
-
-Wasp and Fiddler use their shared production mount geometry for stabilizer
-plumes. The active visual outlet pair emits exhaust with angular moment opposite
-the commanded or braking torque. The output mapping is presentation data; it
-does not change flight impulses or angular integration.
-
-## Ion Point Defence LFX
-
-The [turret](../../game/ion-point-defence/spec.md) shares the cannon's presentation
-owner and passes. Its 80 ms active ray is fresh topmost LFX drawn by
-`FlightFx.drawLfx`; it follows the current shared muzzle and the turret's current
-simulated heading, including a muzzle beneath the hull. Length is the shorter of
-the discharge distance and the current nearest physical obstruction within 200
-units; this query never applies damage.
-
-The cached ion profiles are keyed by reach. The turret uses a second, 200-unit
-blue profile with the cannon's light treatment and its own transparent tip; the
-cannon uses a 300-unit profile. Contact clips rather than rescales either
-profile. Only the 65% dispersal treatment enters persistent FX, through its source
-allowance, under the shared decay, pause, camera, wrap and reset semantics. Turret
-hits activate the shared expanding impact plume at their actual contact.
-
-Work is bounded by installed mounts and the existing 128-event ring, with one
-current flash per turret. Fresh LFX is empty between flashes. The mixed Lab
-Weapons workload includes point-defence turrets firing beside twin cannons.
+```gherkin
+Scenario: Change effects settings without losing their side effects
+  Given the mixed Lab scene with Weapons disabled
+  When I enable the Weapons Switch
+  Then the alternating weapon fittings are applied to its ships
+  And FX, Moving camera and Overload remain independent Switch settings
+  And Run/Pause, Reset and Burst remain commands
+```

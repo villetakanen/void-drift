@@ -448,6 +448,10 @@ export class Camera {
       }
     }
   }
+  /** Effective world-space centre, independent of zoom. */
+  getViewCentre() {
+    return { x: this.pos.x + this.offset.x, y: this.pos.y + this.offset.y };
+  }
   getViewOffset() {
     this.view.x =
       this.pos.x - this.viewportWidth / (2 * this.zoom) + this.offset.x;

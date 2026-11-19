@@ -6,7 +6,7 @@ import {
   PARTS,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import CapacityDrawing from "./CapacityDrawing.svelte";
 import { CAPACITY_VIEW } from "./connected-form";
 import {
@@ -75,7 +75,7 @@ const mounts = [
 </script>
 
 <div class="toolbar">
-  <Toggle
+  <SegmentedControl
     {label}
     options={["Hull", "Slots", "Engines", "Fitted"]}
     bind:value={view}
@@ -127,13 +127,13 @@ const mounts = [
 </div>
 <div class="pair-choices">
   <p><strong>E1 + E2 · linked blade-root engines</strong></p>
-  <Toggle
+  <SegmentedControl
     label="E1 and E2 engine type"
     options={engineChoices.map((option) => option.name)}
     bind:value={() => PARTS[fit.roots].name, (name) => choose("roots", name)}
   />
   <p><strong>E3 + E4 · linked rear engines</strong></p>
-  <Toggle
+  <SegmentedControl
     label="E3 and E4 engine type"
     options={engineChoices.map((option) => option.name)}
     bind:value={() => PARTS[fit.rear].name, (name) => choose("rear", name)}

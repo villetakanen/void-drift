@@ -9,7 +9,7 @@ import {
 } from "../../lib/instrument";
 import FlightLayers from "../FlightLayers.svelte";
 import RingSlider from "../inputs/RingSlider.svelte";
-import Toggle from "../inputs/Toggle.svelte";
+import SegmentedControl from "../inputs/SegmentedControl.svelte";
 import BurnRow from "../lab/instrument/BurnRow.svelte";
 import { FlightScene, type FlightSceneView } from "./flight-scene";
 import { studyStarterWasp } from "./starter-wasp-fixture";
@@ -130,7 +130,11 @@ onMount(() => {
         label="The game’s layers at the current time"
       />
       <div class="view">
-        <Toggle label="View" options={Object.keys(VIEWS)} bind:value={view} />
+        <SegmentedControl
+          label="View"
+          options={Object.keys(VIEWS)}
+          bind:value={view}
+        />
       </div>
       {#if lost}
         <p class="lost" role="status">

@@ -4,7 +4,7 @@ import { z } from "astro/zod";
 export const MercurialInspectorPlanetSchema = z
   .object({
     kind: z.literal("family"),
-    name: z.literal("mercurial"),
+    name: z.enum(["mercurial", "outer-mercurial"]),
     radius: z
       .number()
       .finite()

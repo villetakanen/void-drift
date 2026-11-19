@@ -98,6 +98,13 @@ export async function createPracticeMercury(browserRotation = true) {
   return { painter: new RockBodyPainter([surface.canvas]), surface };
 }
 
+/** Full generated highlands atlas for the distinct outer body type. */
+export async function createOuterMercurialMaterial() {
+  const atlas = await loadPlanetMap(PLANET_MAPS.outerMercurialGround);
+  const surface = new StripSphericalSurface(atlas);
+  return { painter: new RockBodyPainter([surface.canvas]), surface };
+}
+
 export function loadPracticeMercury(browserRotation = false) {
   let asset = practiceMercury.get(browserRotation);
   if (!asset) {

@@ -21,7 +21,7 @@ import {
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import RingSlider from "../../inputs/RingSlider.svelte";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 
 let { label = "Ship mount planner" }: { label?: string } = $props();
 let ready = $state(false);
@@ -423,7 +423,7 @@ onMount(() => {
 <section class="planner" data-ready={ready} aria-label={label}>
   <section class="workspace">
     <div class="toolbar">
-      <Toggle
+      <SegmentedControl
         label="Ship"
         options={Object.keys(CHASSIS)}
         bind:value={
@@ -470,7 +470,7 @@ onMount(() => {
       >
     </div>
     <div class="toolbar">
-      <Toggle
+      <SegmentedControl
         label="Layout view"
         options={["Draft", "Original"]}
         bind:value={
@@ -478,7 +478,7 @@ onMount(() => {
           (v) => (original = v === "Original")
         }
       />
-      <Toggle
+      <SegmentedControl
         label="Mount contents"
         options={["Fitted", "In-game", "Empty"]}
         bind:value={contents}

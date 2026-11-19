@@ -2,7 +2,7 @@
 import { COLOR, loadCanvasFonts } from "@void-drift/core";
 import { drawBuild, starterLoadout } from "@void-drift/mode-a";
 import { onMount } from "svelte";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 
 let { label = "Accepted Fiddler" }: { label?: string } = $props();
 let view = $state("Plan");
@@ -39,7 +39,7 @@ $effect(() => {
 </script>
 
 <div class="flight-ready">
-  <Toggle
+  <SegmentedControl
     label={`${label} view`}
     options={["Plan", "Fitted"]}
     bind:value={view}

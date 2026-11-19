@@ -1,3 +1,11 @@
+---
+
+title: "Spec: Title screen"
+status: draft
+generated: { by: codex/gpt-6, at: "2026-11-19T13:52:45+00:00" }
+verified: [{ by: codex/gpt-6, at: "2026-11-19T13:55:56+00:00" }]
+---
+
 # Title screen
 
 ## Blueprint
@@ -31,6 +39,7 @@ game's home and Hangar is an alternative launch point.
   accepted yellow-family G appearance through the shared star painter; this
   visual trial does not supply a star to any game mode. Its composition follows
   the constraints below.
+- The title and Settings mount the same landing scene. Its cosmetic sky seed selects a [standard field sky](../render/flight-sky/spec.md) at a stationary camera pose. Menu controls are available while the sky prepares.
 - The [Title-screen hints spec](hints.md) defines the hint area's content and
   behavior; this spec owns its placement in the title-screen composition.
 
@@ -144,7 +153,7 @@ game's home and Hangar is an alternative launch point.
 - Reduced motion keeps the menu scene static and retains the three-second
   count.
 
-### Regression Guardrails
+### Regression guardrails
 
 - Launch source survives pause/resume and completion of the run.
 - PRESS START flies the active ship shown on the title screen.

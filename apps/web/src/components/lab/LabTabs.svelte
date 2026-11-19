@@ -1,9 +1,9 @@
 <script lang="ts">
 import "./catalog.css";
 import { CHASSIS, SHIP_IDENTITY } from "@void-drift/mode-a";
+import SegmentedControl from "../inputs/SegmentedControl.svelte";
 import Switch from "../inputs/Switch.svelte";
 import Tabs, { type TabItem } from "../inputs/Tabs.svelte";
-import Toggle from "../inputs/Toggle.svelte";
 
 let { label = "Tabs design system" }: { label?: string } = $props();
 
@@ -38,7 +38,7 @@ let stretched = $state<string>("fighter");
 let lastAvailable = $state(false);
 
 let compareTab = $state<string>("scout");
-let compareToggle = $state("Plan");
+let compareSegmentedValue = $state("Plan");
 let compareSwitch = $state(true);
 
 const detailedTabs = $derived<TabItem[]>(
@@ -84,11 +84,11 @@ const detailedTabs = $derived<TabItem[]>(
   <section>
     <h2>Tabs</h2>
     <p>
-      The toggle's cut button, split into parts, where each part owns one panel
-      shown below it. The selected part is filled lime; the others are a faint
-      fill that takes a faint lime tint under a pointer. It looks like the
-      toggle on purpose: the difference is what it does. Choosing a tab changes
-      what is shown beneath it, not a value the host reads.
+      The segmented control's cut button, split into parts, where each part owns
+      one panel shown below it. The selected part is filled lime; the others are
+      a faint fill that takes a faint lime tint under a pointer. It looks like
+      the segmented control on purpose: the difference is what it does. Choosing
+      a tab changes what is shown beneath it, not a value the host reads.
     </p>
     <div class="example" data-testid="tabs-default">
       <span class="caption"
@@ -104,7 +104,7 @@ const detailedTabs = $derived<TabItem[]>(
   </section>
 
   <section>
-    <h2>Tabs, Toggle or Switch</h2>
+    <h2>Tabs, SegmentedControl or Switch</h2>
     <p>
       The three look related and answer different questions. Pick by what the
       control does, not by how many options it has or how it should look.
@@ -126,12 +126,12 @@ const detailedTabs = $derived<TabItem[]>(
       </div>
       <div class="example">
         <span class="caption"
-          >Toggle · which value does this setting have?</span
+          >SegmentedControl · which value does this setting have?</span
         >
-        <Toggle
+        <SegmentedControl
           label="Preview mode, comparison"
           options={["Plan", "View"]}
-          bind:value={compareToggle}
+          bind:value={compareSegmentedValue}
         />
         <p class="note">
           One value from a set. Nothing is owned by an option; the host decides
@@ -152,7 +152,7 @@ const detailedTabs = $derived<TabItem[]>(
         <tr>
           <th scope="col"></th>
           <th scope="col">Tabs</th>
-          <th scope="col">Toggle</th>
+          <th scope="col">SegmentedControl</th>
           <th scope="col">Switch</th>
         </tr>
       </thead>
@@ -177,7 +177,7 @@ const detailedTabs = $derived<TabItem[]>(
         </tr>
         <tr>
           <th scope="row">Look</th>
-          <td>The toggle's cut button; may carry two small facts</td>
+          <td>The segmented control's cut button; may carry two small facts</td>
           <td>One cut button split into filled parts</td>
           <td>Marker sliding between OFF and ON</td>
         </tr>

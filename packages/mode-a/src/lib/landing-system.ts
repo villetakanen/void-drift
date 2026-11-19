@@ -13,12 +13,14 @@ import { createStar } from "./game-loop";
 
 /** Cosmetic state only: never supplied to the survival simulation. */
 export class LandingSystem {
+  readonly skySeed: number;
   readonly star;
   readonly starPalette: YellowStarPalette;
   readonly planets: Planet[];
   time = 0;
 
   constructor(random: () => number = Math.random) {
+    this.skySeed = 1 + Math.floor(random() * 2147483647);
     this.star = createStar("G", 0, 0);
     // The title-only star samples the study's accepted size and palette range.
     this.star.radius = 36 + random() * (140 - 36);

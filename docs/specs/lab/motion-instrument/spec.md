@@ -1,10 +1,21 @@
-# Motion instrument
+---
 
-Design record: study `lab-instrument-2026-11-01` (`/lab/studies/lab-instrument-2026-11-01`).
-The shared instrument is used in Lab simulation pages and design studies.
-Ship tuning and [Gravity tuning](../gravity-tuning/spec.md) are configured uses of it.
+title: "Spec: Motion instrument"
+status: draft
+generated:
+by: "openai-codex/gpt-6.1-sol"
+at: "2026-11-19T12:32:56+02:00"
+verified:
+- by: "openai-codex/gpt-6.1-sol"
+  at: "2026-11-19T12:33:38+02:00"
 
-## Context
+---
+
+# Spec: Motion instrument
+
+## Blueprint
+
+### Context
 
 The Motion instrument makes the consequences of motion rules and settings visible
 through simulated paths and measurements. It supports investigations of the rules
@@ -19,9 +30,9 @@ Interactive instances support investigation. Written findings and captured image
 record observed results; an instance is retained when continued interaction serves
 the study. Study evidence practices belong to the design-study skill.
 
-## Architecture
+### Architecture
 
-### Shared instrument and configured uses
+#### Shared instrument and configured uses
 
 The shared instrument owns experiment configuration, the distinction between fixed
 and adjustable variables, simulation, and the presentation of paths and measurements.
@@ -35,7 +46,7 @@ historical examples may change or become incompatible. Written findings and capt
 images preserve historical results. The instrument does not maintain old simulation
 versions to keep previous examples working.
 
-### Shared properties and comparison conditions
+#### Shared properties and comparison conditions
 
 Hull and equipment properties and motion-rule settings belong to the experiment,
 not individual ships. Every ship uses the same definitions for the same hull and
@@ -48,7 +59,7 @@ shadow uses the same hull, mounted equipment, properties, motion settings, burn 
 starting state as its source ship, with gravity omitted. This difference in conditions
 does not give the shadow different hull or equipment properties.
 
-### Export and acceptance
+#### Export and acceptance
 
 An exported configuration captures the experiment's exact current values for
 sharing in the conversation with the agent. Exporting does not approve those
@@ -59,7 +70,7 @@ The agent supplies the starting configuration through the Lab page or study.
 The designer adjusts the exposed controls and exports values for discussion;
 there is no designer-facing configuration import workflow.
 
-### Ship tuning configuration
+#### Ship tuning configuration
 
 The following document, burns and calculation describe Ship tuning. Gravity tuning's
 configuration and measurements are defined in [its spec](../gravity-tuning/spec.md).
@@ -129,7 +140,7 @@ values. A difference shown by the instrument may therefore not appear in flight.
 Every assembled impulse uses `buildStats`' ship-wide powered cruise ceiling.
 Gravity tuning uses this same production model with its own gravity configuration.
 
-### Shared screen and Ship tuning views
+#### Shared screen and Ship tuning views
 
 The layout is shared; the measurements and default controls below are Ship tuning’s.
 Gravity tuning supplies its own measurements and controls.
@@ -161,7 +172,7 @@ Reading controls—such as the time cursor, path scale and panning—change the
 presentation only. They preserve the experiment's settings and calculated paths
 and measurements. The time cursor selects a point in the existing results.
 
-### Components
+#### Components
 
 | Component                                | Path                                      | Reference page            |
 | ---------------------------------------- | ----------------------------------------- | ------------------------- |
@@ -170,11 +181,11 @@ and measurements. The time cursor selects a point in the existing results.
 | `MotionInstrumentScreen` (shared screen) | same folder                               | `/lab/instrument`         |
 | `PathPane`, `TimeGraph`                  | same folder                               | `/lab/graphs`             |
 | `BurnRow`, `Legend`, `OverlayPane`       | same folder                               | `/lab/instrument-parts`   |
-| `Toggle`                                 | `apps/web/src/components/inputs/`         | `/lab/ds/choices`         |
+| `SegmentedControl`                       | `apps/web/src/components/inputs/`         | `/lab/ds/choices`         |
 | `RingSlider`                             | `apps/web/src/components/inputs/`         | `/lab/ds/slider`          |
 | Elevation and display tokens             | `packages/core/src/lib/styles/tokens.css` | `/lab/surfaces`           |
 
-### Using it
+#### Using it
 
 - In a study page: `<InstrumentEmbed config={document} />` from
   `components/lab/instrument/InstrumentEmbed.astro`. It takes the full window and
@@ -186,6 +197,70 @@ and measurements. The time cursor selects a point in the existing results.
   (`apps/web/src/lib/instrument/starter.ts`), supplied by the page.
 - Custom pane content: pass a `pane` snippet to `ShipTuning`; it receives the
   parsed document.
+
+
+#### Solar charging measurements
+
+The Suns study’s linear charging comparison uses the shared Motion instrument
+path pane, burn programs, time cursor and graphs. Graph measures include gross
+`collection`, `consumption` and signed `netPower`, in energy units per second.
+They retain the shared automatic scales and per-track colours. The configured
+study supplies traces; adding these measures does not change production charging.
+The study labels its candidate law, reference loadout, starting states, sampling,
+contact termination and omitted resource/damage feedback. The break-even readout accompanies the shared time graphs.
+
+The Suns energy-budget comparison additionally supplies signed `batteryChange`
+(E), starting at zero and integrating net power at 60 Hz. This is an unclamped
+energy delta, not state of charge. The shared screen supports a fourth graph
+with the same cursor and track colours; existing three-graph uses retain their
+layout. Energy values display two decimal places.
+
+The study exposes life-support draw, ion power draw and peak solar collection,
+with a reset to the study’s explicitly selected budget (7.5 E/s peak,
+0.8 E/s life support, 1.0 E/s ion draw). Ion draw scales main-engine
+and ion-stabilizer costs together without changing propulsion. Budget edits
+preserve paths, burn, field geometry and motion rules. Changing the burn remains
+an explicit change of flight scenario. Capacity and starvation are excluded.
+
+The Suns study places all three energy sliders, reset and break-even readouts
+in the existing hamburger overlay pane. Closing the pane leaves the full path
+and graph display unobstructed and preserves all settings. There is no separate
+distance-curve panel or persistent controls strip.
+
+#### Shared collection-field configuration
+
+Both Ship tuning and Gravity tuning accept optional `energy` configuration. It
+contains up to twelve collection `fields`, each with a finite x/y centre,
+independent positive `reach`, nonnegative `shoulder` and `peak`, and
+`outerFraction` in [0, 1]. Shoulder must be strictly inside reach. These values
+reuse the production `EnergyFieldShape` and reach validation; `fieldRate` is the
+same plateau/linear law used by production solar collection. Exact edge values
+are included; supply is zero outside reach. Each field scales by the vehicle's
+inherent plus fitted collectors; overlapping fields add.
+
+The energy pane enables analysis and edits field geometry, budget, add/remove
+and export through each instrument's existing document. Invalid edits preserve
+the previous document and report validation errors. Life support and Light ion
+draw are experiment-wide; other engine families keep their costs. Energy feedback
+is explicitly `excluded`: edits cannot change motion, gravity, contact, capacity
+or starvation. These are analytical paths, not a resource-limited playthrough.
+
+Enabled energy analysis shows collection, consumption, signed net power and
+cumulative battery change on the same time cursor and per-track colours. Battery
+change integrates the sampled net rate at 60 Hz from zero without clamping.
+Collection boundaries draw alongside independently configured gravity boundaries.
+Disabling energy restores the original three motion graphs. Inspection and export
+do not mutate production values. The historical Suns fixture retains its earlier
+candidate profiles and omitted feedback as labelled experiment evidence.
+
+Energy analysis uses the shared Switch to create or remove its validated configuration; burn and scale choices use SegmentedControl.
+
+### Constraints
+
+- Shared controls and visual tokens follow the [choice-control contract](../../factory/design-system/choices/spec.md).
+- Configured properties apply experiment-wide through production simulation.
+- Inspection and export preserve production settings and fixed experiment conditions.
+- The Lab supports viewports at least 1280px wide.
 
 ## Contract
 
@@ -218,7 +293,7 @@ and measurements. The time cursor selects a point in the existing results.
 - An edited value updates the graphs and the document.
 - Each reference page renders its components.
 
-### Regression Guardrails
+### Regression guardrails
 
 - Configured uses supply experiment conditions and exposed controls through the
   shared instrument’s supported capabilities; simulation uses production code.
@@ -286,76 +361,13 @@ Scenario: An invalid agent-supplied configuration
   Then it lists the schema's issues instead of drawing
 ```
 
-### Investigation note: directional propulsion
 
-Ship motion exploration 02.3 uses real Corvette and Scout geometry and compares
-each stabilizer fit with its stabilizers-off reference on B1. Current paths,
-speed and turn-acceleration views expose the resulting translation and rotation,
-but the instrument does not record which mount delivered thrust on each tick or
-show a per-direction build-speed projection. For a later decision about sideways
-thrust and overspeed, consider a configured directional projection rule and
-per-mount delivered-force trace. This note records an evidence need, not an
-approved instrument feature.
-
-Exploration 02.4 can be compared with existing per-vehicle ion acceleration
-and speed-ceiling changes. The acceleration setting simultaneously scales
-main-engine linear thrust, their torque, and stabilizer acceleration/torque, so
-it cannot isolate steering authority from acceleration. A later controlled trial
-may need separate candidate controls for main linear force, main-engine torque,
-and stabilizer force/braking response, while retaining production values as the
-baseline. Add only the controls needed for that experiment; this is an identified
-capability gap, not an approved instrument feature.
-
-### Solar charging measurements
-
-The Suns study’s linear charging comparison uses the shared Motion instrument
-path pane, burn programs, time cursor and graphs. Graph measures include gross
-`collection`, `consumption` and signed `netPower`, in energy units per second.
-They retain the shared automatic scales and per-track colours. The configured
-study supplies traces; adding these measures does not change production charging.
-The study labels its candidate law, reference loadout, starting states, sampling,
-contact termination and omitted resource/damage feedback. The break-even readout accompanies the shared time graphs.
-
-The Suns energy-budget comparison additionally supplies signed `batteryChange`
-(E), starting at zero and integrating net power at 60 Hz. This is an unclamped
-energy delta, not state of charge. The shared screen supports a fourth graph
-with the same cursor and track colours; existing three-graph uses retain their
-layout. Energy values display two decimal places.
-
-The study exposes life-support draw, ion power draw and peak solar collection,
-with a reset to the study’s explicitly selected budget (7.5 E/s peak,
-0.8 E/s life support, 1.0 E/s ion draw). Ion draw scales main-engine
-and ion-stabilizer costs together without changing propulsion. Budget edits
-preserve paths, burn, field geometry and motion rules. Changing the burn remains
-an explicit change of flight scenario. Capacity and starvation are excluded.
-
-The Suns study places all three energy sliders, reset and break-even readouts
-in the existing hamburger overlay pane. Closing the pane leaves the full path
-and graph display unobstructed and preserves all settings. There is no separate
-distance-curve panel or persistent controls strip.
-
-### Shared collection-field configuration
-
-Both Ship tuning and Gravity tuning accept optional `energy` configuration. It
-contains up to twelve collection `fields`, each with a finite x/y centre,
-independent positive `reach`, nonnegative `shoulder` and `peak`, and
-`outerFraction` in [0, 1]. Shoulder must be strictly inside reach. These values
-reuse the production `EnergyFieldShape` and reach validation; `fieldRate` is the
-same plateau/linear law used by production solar collection. Exact edge values
-are included; supply is zero outside reach. Each field scales by the vehicle's
-inherent plus fitted collectors; overlapping fields add.
-
-The energy pane enables analysis and edits field geometry, budget, add/remove
-and export through each instrument's existing document. Invalid edits preserve
-the previous document and report validation errors. Life support and Light ion
-draw are experiment-wide; other engine families keep their costs. Energy feedback
-is explicitly `excluded`: edits cannot change motion, gravity, contact, capacity
-or starvation. These are analytical paths, not a resource-limited playthrough.
-
-Enabled energy analysis shows collection, consumption, signed net power and
-cumulative battery change on the same time cursor and per-track colours. Battery
-change integrates the sampled net rate at 60 Hz from zero without clamping.
-Collection boundaries draw alongside independently configured gravity boundaries.
-Disabling energy restores the original three motion graphs. Inspection and export
-do not mutate production values. The historical Suns fixture retains its earlier
-candidate profiles and omitted feedback as labelled experiment evidence.
+```gherkin
+Scenario: Enable energy analysis through the shared setting control
+  Given a Motion instrument with energy analysis disabled
+  When I turn on Energy analysis
+  Then its validated default configuration is created and the energy graphs appear
+  When I turn it off
+  Then the configuration is removed and the three motion graphs return
+  And motion settings remain unchanged
+```

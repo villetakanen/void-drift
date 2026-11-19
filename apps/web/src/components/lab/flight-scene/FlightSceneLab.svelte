@@ -15,8 +15,8 @@ import {
   type TargetMode,
   targetModes,
 } from "../../../lib/flight-scene";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import Switch from "../../inputs/Switch.svelte";
-import Toggle from "../../inputs/Toggle.svelte";
 import FlightSceneInstrument from "./FlightSceneInstrument.svelte";
 
 // The Lab's reference use of the Flight scene instrument. The instrument has
@@ -122,14 +122,14 @@ const id = $props.id();
   >
     {#snippet pane()}
       <p>Scene</p>
-      <Toggle
+      <SegmentedControl
         label="Scene"
         options={["Practice", "Wrecks", "Planet"]}
         bind:value={sceneKind}
       />
       {#if sceneKind === "Planet"}
         <p>Approach · changing start preserves the selected burn and time</p>
-        <Toggle
+        <SegmentedControl
           label="Planet approach"
           options={["Reference", "Deeper"]}
           bind:value={planetApproach}
@@ -140,7 +140,7 @@ const id = $props.id();
         </p>
       {/if}
       <p>Star colour · presentation only</p>
-      <Toggle
+      <SegmentedControl
         label="Star colour"
         options={["Stock", "Warm", "Cool"]}
         bind:value={starColour}
@@ -151,7 +151,7 @@ const id = $props.id();
       </p>
       {#if sceneKind === "Wrecks"}
         <p>Targets</p>
-        <Toggle
+        <SegmentedControl
           stretch
           label="Targets"
           options={modes.map((mode) => LABELS[mode])}

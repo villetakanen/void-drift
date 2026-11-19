@@ -1,0 +1,432 @@
+---
+layout: ../../../layouts/StudyLayout.astro
+---
+
+import MarkerTreatments from "../../../components/studies/combat-hud-2026-11-19/MarkerTreatments.svelte";
+
+<div className="combat-hud-prose">
+
+## 01 / Finding what lies outside the view
+
+At close zoom, a pilot can know what they want to reach without knowing which
+way to fly. The sun offers charging, but the speed-camera view can leave it
+out of sight. A known derelict can be outside the view; energy released from
+one can travel out of sight before the pilot collects it. A pirate can be
+somewhere nearby without the pilot knowing its direction or whether it is
+approaching. These designer-supplied gameplay problems motivate the study.
+
+The immediate information need is orientation toward relevant offscreen
+objects while keeping the current camera view. Direction is common to all
+four situations; whether a pirate is approaching is an additional need.
+The study asks what information would help, what existing feedback already
+provides, and whether a distinct HUD layer is a useful response. Its contents
+and form are not selected. Other useful information may emerge during the
+study, but it must earn its place separately; it is not the reason this study
+began.
+
+Every proposed cue must remain inside the active flight area, over the camera
+view and likely above the world HUD. This layer is separate from the flight
+deck and world HUD: neither is being redesigned, and their information is not
+being moved into it. Combat HUD remains the working title. Drawing into an
+existing pane versus adding a separate pane remains open, as does whether
+additional information is needed at all.
+
+### Requirements and boundaries
+
+- **Charging:** help the pilot find the direction of the sun when it is outside
+  the close speed-camera view, so they can navigate toward charging.
+- **Salvage:** help the pilot locate a known derelict outside the view, and
+  pursue energy released from it after that energy leaves the view.
+- **Opponents:** help the pilot locate a pirate outside the view and understand
+  whether it is approaching. Gauntlet supplies the current pirate context;
+  pirates in Survival remain hypothetical.
+- **Grounding:** these are designer-supplied problems. Mode-specific object
+  availability and existing feedback must be checked when staging examples.
+  Available implementation is not evidence that the information need is met.
+  Each example must state which objects the pilot knows about and why they
+  matter to the intended action; no discovery or detection rule is presumed.
+  Existing pirate bearings are implementation evidence, not an accepted
+  requirement to retain their exact placement.
+- **Containment:** all cues, labels and effects stay inside the active-area
+  rectangle bounded by the gutters. The world renders beyond that rectangle;
+  its boundary and the edge of the visible world are different. Neither a new
+  camera clip nor a square viewport is prescribed.
+- **Fixed systems:** flight, camera, charging, collection and weapon mechanics,
+  and keyboard and landscape iPad capabilities remain unchanged. No flight-deck
+  or world-HUD information is relocated; duplication is not presumed.
+- **Open decisions:** which information is useful, which existing cues suffice,
+  and whether and how a new layer should communicate the remainder. Distance,
+  exact velocity, route guidance and target selection are not requirements yet.
+- **Emergent candidates:** weapon acquisition, reasons for weapon silence,
+  incoming fire and other ideas may be examined if they prove useful. They are
+  neither excluded permanently nor requirements of the originating problem.
+  Their inclusion needs its own design reasoning and decision.
+- **Rendering and adoption:** pane choice, pass order and clipping remain open.
+  The game-screen contract currently says no chrome covers the active area;
+  an accepted proposal must resolve its relationship to that rule and name
+  changes needed in the screen and render contracts before production work.
+
+<details>
+<summary>Question test · 19 November 2026</summary>
+
+| Metric | Result | Reason |
+| --- | --- | --- |
+| One subject | Pass | The subject is information for orienting toward relevant objects outside the current view; the sun, salvage and pirates are cases of that decision. No unfinished registry study owns the answer. |
+| Grounded | Pass with findings | The existing mechanics, camera behaviour and screen boundaries support the stated situations and constraints. What makes an object “known” or “relevant” remains unspecified for staging examples. |
+| Consequence | Pass | Answering the question helps decide whether flight needs additional offscreen information and, if so, what a contained information layer should communicate. |
+
+Corrected after the test, not rerun.
+
+</details>
+
+</div>
+
+<details>
+<summary>02.1 / Three places for the same cues</summary>
+
+<div className="combat-hud-prose">
+
+## 02.1 / Three places for the same cues
+
+The first comparison varies placement while holding the staged information
+constant: one visible contact acquired by one rifle, and two unseen contacts
+at different bearings. Contact letters identify the diagram’s subjects; they
+are not a proposed naming system. The rifle label is weapon-specific and does
+not promise a ship-wide lock.
+
+A puts unseen contacts at the active boundary. B keeps their bearings near the
+player. C gathers them into a strip inside the active area. The same brackets
+mark visible contact A in each version. None is selected.
+
+</div>
+
+<figure>
+  <img src="/studies/combat-hud-2026-11-19/021-placement-spread.jpg" alt="02.1 retained placement sketches: boundary, player-centred bearings and contact strip." style={{width: "100%", height: "auto"}} />
+  <figcaption>02.1 capture: identical staged contacts and rifle acquisition in three placements. Retained because the comparison exposed the unresolved choice of information; no layout was accepted.</figcaption>
+</figure>
+
+<div className="combat-hud-prose">
+
+**Original hypothesis:** comparing the same cues at the boundary, around the
+player and in a strip would reveal a spatial relationship worth testing in
+flight. That comparison assumed its information deserved presentation before
+the study had established that premise.
+
+### Finding / Establish the information before placing it
+
+**Designer assessment · 19 November 2026:** retain 02.1 as a useful exploration.
+The drawings initially appeared unrelated to the intended problem. Explaining
+their placement hypothesis made their purpose understandable and exposed the
+missing decision: the study does not yet know which information would help a
+player, or whether any belongs in a distinct combat HUD.
+
+The examples supplied offscreen contacts and rifle acquisition as contents,
+then varied their placement. Those contents were unselected candidates, not
+established needs. No placement or appearance is accepted. The value of this
+step is identifying that dependency, not demonstrating that any of its layouts
+works in play.
+
+**Implication for this study:** establish the useful information before
+exploring where or how to draw it. The next inquiry is what a pilot would
+benefit from knowing during play, why that knowledge matters, and whether a
+distinct information layer is an appropriate way to provide it. Offscreen
+enemies and targeting remain possibilities, not a required contents list.
+An outcome with no new HUD remains valid. The agreed active-area boundary and
+separation from the flight deck and world HUD still hold.
+
+Section 01's framing needs to make that unresolved information question
+explicit before further placement work. The retained example supports that
+clarification; it does not settle the contents. This is a finding of this
+study, not a new project-wide design-process rule.
+
+**Limits:** the dots and background are diagrammatic. Contact positions and
+acquisition are supplied conditions, not simulated results. No distances,
+visibility rules, enemy knowledge model or target-lock mechanics are proposed.
+This does not test motion, clutter against actual world artwork, multiple weapons,
+readability in play, or browser performance. Pane choice remains open.
+
+</div>
+
+</details>
+
+<details>
+<summary>02.2 / What knowledge changes a pilot’s decision?</summary>
+
+<div className="combat-hud-prose">
+
+## 02.2 / What knowledge changes a pilot’s decision?
+
+This round sets aside 02.1’s assumed contents. The working question becomes:
+what combat information would help the pilot make a meaningful decision, and
+is anything missing from what the game already communicates? Section 01’s
+active-area and separation constraints still hold. This clarifies the inquiry
+without selecting a new HUD or its contents.
+
+**Hypothesis:** information earns consideration when two otherwise ambiguous
+situations call for different actions, and knowing the difference helps the
+pilot choose. Availability in simulation is not sufficient reason to display it.
+
+Read each case as a short thought experiment: first the situation, then the
+candidate fact. Consider whether that fact changes what you would try to do.
+The blocks below are a reading aid, not a proposal to put cards or sentences
+on the flight screen. All situations are authored; no gameplay observation or
+human playtest result is claimed.
+
+</div>
+
+<figure>
+  <img src="/studies/combat-hud-2026-11-19/022-information-cases.jpg" alt="02.2 retained information cases: locating an opponent, a silent weapon and an opponent charging." style={{width: "100%", maxWidth: "850px", height: "auto"}} />
+  <figcaption>02.2 authored cases, captured before the originating navigation requirements were supplied. Retained with the findings below; none of these cases selected a HUD feature.</figcaption>
+</figure>
+
+<div className="combat-hud-prose">
+
+### Grounding and unresolved choices
+
+- **Finding opponents:** `FlightDeck.svelte` already computes Gauntlet hostile
+  bearings outside the full camera viewport. That is distinct from the smaller
+  active-area boundary. This is existing feedback to account for, not permission
+  to relocate it. Approach or separation information remains an unselected
+  candidate; this example does not prescribe its measurement or disclosure.
+- **Understanding your weapon:** the plasma-rifle contract specifies venting
+  and cooldown after interrupted charging, and per-mount acquisition. Its charge
+  light distinguishes stored charge but leaves idle and cooldown unlit. Current
+  charge, phase and target identity exist in the rifle state. A player-facing
+  explanation of every reason for silence is not an established shared contract.
+- **Reading an opponent:** Gauntlet pirates use plasma rifles with independent
+  weapon state and shared effects. Their current acquisition is mechanically
+  knowable; whether the pilot should receive that knowledge explicitly is a
+  design choice. Acquisition does not guarantee release or a hit.
+
+Sources: `docs/specs/game/gauntlet/spec.md`,
+`docs/specs/game/plasma-rifle/spec.md`,
+`apps/web/src/components/FlightDeck.svelte`,
+`packages/mode-a/src/lib/schemas/salvage.ts` and
+`packages/mode-a/src/lib/salvage.ts`.
+
+### Finding / Find what matters beyond the view
+
+**Designer assessment · 19 November 2026:** 02.2 usefully exposed missing
+gameplay requirements. The concrete needs concern navigation to things outside
+the view, rather than explanations of weapon operation. The following are
+designer-supplied gameplay problems, not findings from an agent-run playtest:
+
+| Situation | Missing knowledge | Intended action |
+| --- | --- | --- |
+| The pilot knows charging is possible near the sun, but a close speed-camera view hides it. | Which direction leads toward the sun? | Return toward a charging opportunity. |
+| The pilot knows a derelict is somewhere in the encounter but cannot locate it at the current zoom. | Which direction leads toward the derelict? | Find and approach it. |
+| Energy released from a derelict travels out of view. | Which direction did the collectible go? | Pursue and collect it. |
+| A pirate is in the area but outside the view. | Where is it, and is it approaching or moving away? | Orient toward the encounter or respond to an approaching threat. |
+
+The supplied contexts include Survival and Derelicts for finding salvage,
+and Gauntlet for pirates, with pirates in Survival a future possibility.
+Exact object availability by mode must be checked when staging examples;
+these contexts do not authorize adding objects or encounters to a mode.
+
+**Design requirement:** help the pilot orient toward relevant offscreen
+objects while retaining the current camera view. Direction is the common
+missing information. Relative motion is an additional stated need for pirates;
+distance, exact velocity, target selection and route guidance are not yet
+requirements. Existing bearing code establishes available means, not that the
+player's navigation problem is solved.
+
+**Change in the inquiry:** the proposed question is now, “What information
+helps a pilot find and navigate toward relevant things outside the current
+view?” This sets aside section 01's combat-only subject. The sun and salvage
+are present gameplay needs, not hypothetical future quest markers. The working
+title remains Combat HUD pending a naming decision.
+
+The active-area containment and separation from the flight deck and world HUD
+still hold. “Offscreen” describes the reported problem; the next example must
+distinguish the visible world beyond the active-area boundary from objects
+outside the entire rendered view, without assuming these boundaries coincide.
+
+**Retained evidence:** 02.1 exposed premature placement; 02.2 exposed the
+missing gameplay requirements. Neither selects indicators or a layout. The
+silent-weapon recommendation is superseded, and the weapon-operation and
+incoming-charge cases are outside the proposed navigation question. Section
+01 now records these originating requirements by explicit designer agreement.
+Other information may emerge and earn inclusion during the study; the weapon
+cases remain candidates, not the problems that prompted it. No rendering
+surface or production change is selected.
+
+</div>
+
+</details>
+
+<details>
+<summary>02.3 / Identity, direction and changing separation</summary>
+
+<div className="combat-hud-prose">
+
+## 02.3 / Identity, direction and changing separation
+
+**Proposal:** offscreen information begins with what the object is and its
+current direction from the player. A pirate additionally communicates whether
+the gap is shrinking or growing. These are candidate meanings, not selected
+icons, labels or positions. This example tests their sufficiency for the four
+originating problems before exploring presentation.
+
+The pilot already knows the sun and derelict, has seen the collectible released,
+and knows a pirate is present. The diagram reveals their authored positions to
+the designer; the player cannot see them. It combines the four needs for
+comparison without claiming they coexist in a particular production encounter.
+The objects are outside the entire rendered view, not merely in its gutters.
+
+</div>
+
+<figure>
+  <img src="/studies/combat-hud-2026-11-19/023-navigation-information.jpg" alt="02.3 candidate information: object type and bearing, plus changing pirate separation." style={{width: "100%", height: "auto"}} />
+  <figcaption>02.3 authored information diagram. Retained before the designer selected type, distance and direction as the next working set.</figcaption>
+</figure>
+
+<div className="combat-hud-prose">
+
+**Hypothesis:** identity plus a current bearing lets the pilot distinguish a
+charging opportunity from salvage or an opponent and orient toward the chosen
+one. Updating that bearing could help follow moving energy without promising
+an interception path. The pirate comparison exposes a limit of direction
+alone: the same bearing can describe a closing or separating encounter.
+
+**Meaning to judge:** “getting closer” means separation from the player is
+currently decreasing, regardless of which ship's motion causes it. It does not
+mean “attacking.” Stable separation and noisy transitions remain unresolved;
+no speed thresholds or prediction rules are selected in this round.
+
+**Limits:** this diagram establishes only what the candidate information means.
+It does not demonstrate readable cues during flight or prove the set is
+sufficient. Multiple objects of one kind, overlapping bearings, moving energy,
+and decisions about distance remain open. Existing feedback must still be
+accounted for before proposing additional cues. No layout, detection mechanic,
+world-HUD change or production implementation is accepted.
+
+**Designer decision · 19 November 2026:** proceed on the working assumption
+that the layer presents three types of information: target type, distance and
+direction. Arrange these on a circle inside the active camera area, for objects
+outside the viewport. This selects the basis for the next example, not a final
+visual design. Changing separation is not included in this three-part example;
+the original interest in whether pirates are approaching remains unresolved.
+
+</div>
+
+</details>
+
+<div className="combat-hud-prose">
+
+## 02.4 / Separate the player from the view centre
+
+**Question:** does the circle make bearings easier to interpret when it is
+centred in the active area or centred on the player? The player is deliberately
+off-centre, so these are visibly different choices. The earlier centred-player
+sketch did not expose that choice and has been replaced.
+
+Both versions hold target types, player-to-target distances, bearings, ring
+radius, styling and the player’s position constant. Only the circle’s centre
+changes. A treats the circle as a view-centred bearing dial; B puts the circle
+around the physical origin of those bearings. Neither rotates with ship heading.
+The four objects are already known and outside the full viewport; none is
+shown at its world position.
+
+</div>
+
+<figure>
+<img src="/studies/combat-hud-2026-11-19/024-navigation-ring.jpg" alt="02.4 anchor comparison, retained with the correction below; neither alternative was selected." style={{width: "100%", height: "auto"}} />
+<figcaption>02.4 anchor comparison. The designer found no useful advance in this step; the correction below establishes what the next example must hold fixed.</figcaption>
+</figure>
+
+<div className="combat-hud-prose">
+
+**Hypothesis:** centring on the player may make the direction's origin easier
+to understand. Centring in the view could give the information a stable place
+as the ship moves within the frame. The second possibility needs motion to
+judge; this still establishes only the difference in geometry.
+
+**Provisional interpretation:** in A, a marker's angle around the circle's
+centre encodes the bearing from the player, like a compass. The marker itself
+need not lie on the player-to-target line. In B, that angle and the line from
+the player agree. This distinction is part of the choice, not a different
+underlying target position. Distances remain centre-to-centre world units.
+
+**Limits:** this is a schematic anchoring comparison, not evidence of usefulness
+in flight. Neither anchor is selected. Continuous motion, busy artwork,
+overlapping labels and containment when the player approaches an edge remain
+untested. The circle itself is a working assumption, not an established answer.
+The purpose is to judge this one geometric choice before adding those conditions.
+
+### Correction / Develop the markers within the agreed circle
+
+**Designer assessment · 19 November 2026:** the step added no useful design
+information. It reopened the circle’s placement and used abstract diagrams
+that did not express the game’s design language. The circle at the very edge
+of the active game area is an established direction, not an anchor choice to
+retest. The marker treatment is the open design question: how target type,
+distance and direction become readable parts of that circle using the game’s
+typography, colour roles, surfaces and visual vocabulary.
+
+The comparison above is retained with this correction as requested. It does
+not establish either anchor as a selected alternative. Subsequent examples
+hold the edge circle fixed and develop the markers in the game's visual context.
+
+## 02.5 / Marker treatments at the active-area edge
+
+All three compositions share the same edge circle, target bearings, type names,
+distances and background. The circle is centred in the active rectangle and
+inscribed just inside its shorter dimension; marker points and content face
+inward. The player is deliberately away from its centre. This is the agreed
+edge placement applied to the example, not another anchor comparison.
+
+A uses open text readings and bearing ticks. B places those readings on the
+shared cut-glass surface. C gives type a proposed symbol beside the distance,
+with a small type caption. These are three treatments of the same information,
+not different content sets. The new symbols have no canonical design-system
+owner yet; they remain experimental artwork inside this study.
+
+</div>
+
+<MarkerTreatments client:load />
+
+<div className="combat-hud-prose">
+
+**Shared foundations:** the production `drawBuild` renderer draws the fitted
+Wasp; the existing Sol sky asset supplies the background. Typography uses the
+UI font role, B612 Mono. Readings use text roles, not actionable or selected
+lime. B composes the existing `.cut-surface` primitive, its translucent glass,
+edge and cut-corner tokens. These are reused definitions, not proposed changes
+to the design system. The study owns only the marker compositions and symbols.
+
+**Hypotheses:** A may preserve more of the world but relies on text separation
+from the sky. B may keep readings together over bright texture, at the cost of
+covering more of the world. C may make type recognizable with less reading,
+but requires the new symbols to be understandable. The shared circle does not
+encode range; only the distance reading does.
+
+**Conditions and limits:** a static artwork composition, with the same authored
+four offscreen contacts in each version. It is not a production flight capture
+or simulation, and the sky's sampled crop is illustrative. World-unit values
+and centre-to-centre distance are provisional. The full reference frame is
+1280 × 900, with 180 px side gutters and 48 px top/bottom gutters; the sheet
+scales the complete frame for comparison. Marker points lie on the inscribed
+edge circle, with readings inside it. No live camera, clutter handling,
+visibility transition or gameplay usefulness is established. No treatment is
+selected, and no production system is changed.
+
+## 03 / Readiness
+
+No accepted conclusion to assess yet.
+
+## 04 / Scope
+
+No production changes proposed yet.
+
+</div>
+
+<style>{`
+  .combat-hud-prose { max-width: 72ch; }
+  .combat-hud-prose p { margin-block: 0 1.25rem; }
+  .combat-hud-prose h2 { margin-block: 2.5rem 1rem; }
+  .combat-hud-prose h3 { margin-block: 2rem 0.75rem; }
+  .combat-hud-prose li { margin-block: 0.75rem; }
+  .combat-hud-prose details { margin-block: 2rem; }
+  .combat-hud-prose table { width: 100%; border-collapse: collapse; margin-block: 1rem; }
+  .combat-hud-prose th, .combat-hud-prose td { padding: 0.65rem; text-align: left; vertical-align: top; border-bottom: 1px solid var(--color-border); }
+`}</style>

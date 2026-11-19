@@ -1,3 +1,13 @@
+---
+
+title: "Spec: Render"
+status: draft
+generated:
+by: "codex/gpt-6"
+at: "2026-11-19T16:41:35+02:00"
+verified: [{ by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }]
+---
+
 # Render
 
 ## Blueprint
@@ -19,11 +29,13 @@ and the one people point at when they discuss how the game renders.
 - `packages/mode-a/src/lib/flight-frame.ts` defines the in-flight frame:
   `FLIGHT_LAYERS`, the ordered layers, `FLIGHT_PASSES`, the ordered passes with
   the layer each draws on, and `drawFlightFrame`, which draws them.
-- `apps/web/src/components/FlightLayers.svelte` is the stage's canvas stack:
-  one canvas per layer, composited by CSS.
+- The [shared game field](game-field/spec.md) couples the prepared browser sky
+  and transparent World policy for play and Lab field consumers. Its web host
+  composes `FlightLayers.svelte`, the lower-level World, FX and LFX canvas host,
+  with the sky inside the same isolated group.
 - `apps/web/src/components/FlightDeck.svelte` runs the frame loop, hosts the
   layers and draws the in-flight frame only through `drawFlightFrame`.
-- `apps/web/src/components/studies/flight-scene.ts` uses the same layer stack
+- `apps/web/src/lib/flight-scene/scene.ts` uses the same layer stack
   and ordered frame passes for the Flight scene instrument; its replay paints
   historical light through the shared FX pass.
 - This contract owns frame time, the spaces, the layer model and the order of
@@ -34,8 +46,7 @@ and the one people point at when they discuss how the game renders.
   what emits it, how it accumulates and decays, its budget, and the look each
   light layer's blend, resolution and filter are tuned to. Each pass's
   appearance belongs to the feature that draws it.
-- The title backdrop is a separate frame owned by the
-  [title screen](../landing-page/spec.md).
+- The [title screen](../landing-page/spec.md) draws its cosmetic bodies over the same prepared field sky, using a stationary camera.
 - The [render model page](../../lab/render-model/spec.md) shows this model in
   the Lab.
 
@@ -219,12 +230,15 @@ it. Every canvas layer covers the whole stage and declares:
 
 The in-flight stack, bottom to top:
 
-| Layer | Holds                                  | Blend      | Memory     |
-| ----- | -------------------------------------- | ---------- | ---------- |
-| World | Everything solid, and the World HUD    | normal     | immediate  |
-| FX    | Accumulated light that fades           | screen     | persistent |
-| LFX   | Live light, fresh every frame          | hard-light | immediate  |
-| Deck  | Page elements: instruments, pads, rows | normal     | none       |
+| Layer       | Holds                                  | Blend      | Memory              |
+| ----------- | -------------------------------------- | ---------- | ------------------- |
+| Distant sky | Repeating prepared sky image           | normal     | fixed per sightline |
+| World       | Everything solid, and the World HUD    | normal     | immediate           |
+| FX          | Accumulated light that fades           | screen     | persistent          |
+| LFX         | Live light, fresh every frame          | hard-light | immediate           |
+| Deck        | Page elements: instruments, pads, rows | normal     | none                |
+
+The [0.7 distant flight sky](flight-sky/spec.md) defines the prepared-image composition and its camera behaviour.
 
 Layer-specific contracts live in [World](world.md), [FX](fx.md), and
 [LFX](lfx.md). Blend and resolution defaults are declared in `FLIGHT_LAYERS`;
@@ -269,8 +283,7 @@ Each entry names its layer, its space and what it draws. The
 [render model page](../../lab/render-model/spec.md) lists them beside its workbench.
 
 - Array order is draw order within each layer.
-- Within World, passes draw far to near: the void, the background, the world's
-  bodies, then the ship.
+- The standard game field clears World to transparency over its prepared sky before drawing local bodies and ships. Lab views that present this field follow the same rule. Dedicated test fixtures can supply a background specified by their experiment.
 - A new pass takes the position its depth gives it in that order.
 
 ### Authority
@@ -281,9 +294,10 @@ image never feeds back into the simulation.
 
 ### Inspection
 
-`drawFlightFrame` accepts `include`, which selects the passes that draw, and
+The shared field selects the composition background policy before caller pass
+filters. `drawFlightFrame` accepts `include`, which selects the eligible passes that draw, and
 `observe`, which receives each drawn pass and its draw time. The game uses
-neither: it draws every pass, unobserved.
+neither: it draws every eligible production pass, unobserved.
 
 ## Contract
 
@@ -300,8 +314,7 @@ neither: it draws every pass, unobserved.
   `drawFlightFrame`.
 - `FLIGHT_LAYERS` holds World, FX and LFX in stack order, each with its
   blend, memory and resolution, and every pass names one of them.
-- The stage hosts one canvas per layer, in stack order, each composited by
-  its declared CSS blend mode inside an isolated stage.
+- The stage hosts one canvas for each of World, FX and LFX, in stack order, with its declared CSS blend mode. The prepared sky image shares their isolated blending group.
 - No pass draws another layer's image onto its own, and no game code sets a
   canvas composite operation to blend one layer with another.
 - The FX layer is cut over derelict apertures, and no solid pass draws

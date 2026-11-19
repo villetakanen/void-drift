@@ -1,6 +1,6 @@
 <script lang="ts">
 import { WASP } from "@void-drift/mode-a";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import {
   WASP_SIDE as faces,
   type Point3 as Point,
@@ -26,7 +26,7 @@ const points = (list: readonly Point[]) =>
 </script>
 
 <div class="controls">
-  <Toggle {label} options={["Top", "Angled"]} bind:value={view} />
+  <SegmentedControl {label} options={["Top", "Angled"]} bind:value={view} />
   <p class="caption" aria-live="polite">
     One side only · extracted faces enlarged 1.5×
   </p>

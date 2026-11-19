@@ -44,7 +44,7 @@ This diagram synthesises the documented routes. It is not an executable orchestr
 | Verification and release scripts          | Mechanical checks, source/artifact identity and deployment operations   | Quality, permission and live readiness remain separate claims            |
 | Loop records and lessons                  | Attributable observations and separately reviewed interpretations       | Recording, adopting and validating a lesson are distinct                 |
 
-Sources: [architecture](../../architecture.md), [design-study contract](../../specs/lab/design-studies/spec.md), [development](../../development.md), [plans instructions](../../plans/AGENTS.md), E-D01, E-G01–04, E-R02–05.
+Sources: [architecture](../../architecture.md), [design-study contract](../../specs/studies/spec.md), [development](../../development.md), [plans instructions](../../plans/AGENTS.md), E-D01, E-G01–04, E-R02–05.
 
 The shared-system claim has a concrete implementation counterpart: `FlightDeck` imports Core and Mode A simulation/rendering systems, while `IonCannonFlight` consumes shared drawing and engine functions in a controlled local fixture. This is evidence of reuse, with a clear limit: that fixture does not exercise the entire production loop. E-R05.
 
