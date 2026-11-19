@@ -1,17 +1,37 @@
+---
+title: "Spec: Gauntlet"
+status: draft
+generated:
+  by: "openai-codex/gpt-6"
+  at: "2026-11-19T17:43:55+02:00"
+verified:
+- by: "openai-codex/gpt-6"
+  at: "2026-11-19T17:43:55+02:00"
+---
+
 # Gauntlet
 
-## Context
+## Blueprint
+
+### Context
 
 Gauntlet is an experimental Hangar combat entry for trying two physically
 constrained opponents. This first encounter does not define a future mode or
 progression.
 
-## Contract
+### Architecture
+
+- `pirateLoadout()` in `packages/mode-a/src/lib/gauntlet.ts` defines the shared
+  Scout fit used by both hostile actors.
+- `Simulation` creates two independent pirates from that fit. Combat, flight,
+  and world behaviour use the shared simulation systems.
+
+### Constraints
 
 - Hangar launch starts a fresh run with the selected player build and exactly
-  two identical hostile charcoal Scout ships, each fitted with Service Ion
-  engines on the sides, a Plasma Rifle in the top slot and a Plasma engine in
-  the aft slot. Each pirate owns its identity, loadout, hull, energy, pilot,
+  two identical hostile charcoal Scout ships, each fitted with Light Ion
+  engines on the sides, a Plasma Rifle in the top slot and an empty aft slot.
+  Each pirate owns its identity, loadout, hull, energy, pilot,
   weapons and effects. All three actors use the shared arena, gravity and flight
   physics.
 - The run seed selects a yellow-family star size from 36–140 u using the same
@@ -38,26 +58,48 @@ progression.
   countdown in the space-purple treatment with `3`, `2`, `1`, then `FIGHT`.
 - The Lab exposes the same production encounter at 1280px and wider.
 
-## Scenarios
+## Contract
+
+### Definition of Done
+
+- G1: Every Gauntlet launch starts two identical hostile charcoal Scouts with
+  Light Ion side engines, a Plasma Rifle in the top slot, and an empty aft slot.
+- G2: Each pirate owns independent identity, loadout, hull, energy, pilot,
+  weapons and effects.
+- G3: The seeded system, arrivals, combat, result, pause, and return flow follow
+  the rules below.
+
+### Regression guardrails
+
+- Both pirates use the same validated loadout preset and begin with full normal
+  hull and energy.
+- Each pirate pilots independently and targets the player; normal obstruction,
+  contact, friendly fire, and same-tick damage resolution apply.
+- Gauntlet remains unscored and uses the shared countdown and Lab encounter.
+
+### Scenarios
 
 ```gherkin
-Scenario: Fresh Hangar encounter
-  Given a selected player build in the Hangar
-  When the player launches Gauntlet
-  Then two fully fitted hostile Scouts arrive in the same system
-  And all three ships remain unable to fire until both pirate arrivals complete
+Feature: Gauntlet
 
-Scenario: Star size follows the run seed
-  Given two Gauntlet runs with the same seed
-  Then their star size, gravity, collection and danger fields match
-  And their yellow-family profile matches Derelicts with that seed
+  Scenario: Fresh Hangar encounter
+    Given a selected player build in the Hangar
+    When the player launches Gauntlet
+    Then two hostile Scouts arrive in the same system
+    And each has Light Ion engines on the sides, a Plasma Rifle in the top slot and an empty aft slot
+    And all three ships remain unable to fire until both pirate arrivals complete
 
-Scenario: Combat result
-  Given two pirates and the player are active in a Gauntlet encounter
-  When one pirate is destroyed
-  Then the other pirate continues fighting the player
-  When both pirates are destroyed
-  Then all same-tick damage resolves before the result is chosen
-  And the player wins unless the player dies in the same tick
-  And the run offers return to the Hangar without a score action
+  Scenario: Star size follows the run seed
+    Given two Gauntlet runs with the same seed
+    Then their star size, gravity, collection and danger fields match
+    And their yellow-family profile matches Derelicts with that seed
+
+  Scenario: Combat result
+    Given two pirates and the player are active in a Gauntlet encounter
+    When one pirate is destroyed
+    Then the other pirate continues fighting the player
+    When both pirates are destroyed
+    Then all same-tick damage resolves before the result is chosen
+    And the player wins unless the player dies in the same tick
+    And the run offers return to the Hangar without a score action
 ```

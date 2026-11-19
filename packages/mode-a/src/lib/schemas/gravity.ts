@@ -18,6 +18,13 @@ export const GravityTuningSchema = z
         coreFraction: z.number().finite().min(0).max(1),
       })
       .strict(),
+    habitable: z
+      .object({
+        referenceRadius: z.number().finite().positive(),
+        referenceMass: z.number().finite().positive(),
+        coreFraction: z.number().finite().min(0).max(1),
+      })
+      .strict(),
     planetMass: z
       .record(z.string(), z.number().finite().positive())
       .refine(

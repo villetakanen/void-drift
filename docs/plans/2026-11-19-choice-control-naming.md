@@ -1,8 +1,8 @@
 ---
 
 generated:
-by: "openai-codex/gpt-6.1-sol"
-at: "2026-11-19T12:32:56+02:00"
+  by: "openai-codex/gpt-6.1-sol"
+  at: "2026-11-19T12:32:56+02:00"
 verified:
 - by: "openai-codex/gpt-6.1-sol"
   at: "2026-11-19T12:33:38+02:00"

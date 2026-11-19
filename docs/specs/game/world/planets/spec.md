@@ -1,15 +1,19 @@
-# Feature: Planet Entity
+---
+title: "Spec: Feature: Planet Entity"
+status: draft
+generated:
+  by: "codex/gpt-6"
+  at: "2026-11-19T21:13:02+02:00"
+verified: [{ by: "codex/gpt-6", at: "2026-11-19T21:04:09+02:00" }, { by: "codex/gpt-6", at: "2026-11-19T21:14:06+02:00" }]
+---
 
-**Status:** ✅ COMPLETED (2024)  
-**Current Version:** 0.0.4
+# Feature: Planet Entity
 
 ## Blueprint
 
 ### Context
 
 Planets supply the "Terrain" of the void. Unlike Stars, they are persistent obstacles that provide cover and smaller gravity wells for slingshot maneuvers. They introduce variety to the arena layout.
-
-**Achievement:** Orbiting rock planet with gravity well and elastic collision mechanics operational.
 
 ### Architecture
 
@@ -33,7 +37,8 @@ type PlanetType =
   | "ocean"
   | "desert"
   | "ice"
-  | "outer-mercurial";
+  | "outer-mercurial"
+  | "habitable";
 
 interface Planet {
   pos: Vec2;
@@ -54,18 +59,22 @@ interface Planet {
   - Gravity: [gravity-field.md](../gravity-field/spec.md#bodies-in-play).
   - Collision: Elastic bounce (restitution 0.8).
   - Motion: Planets orbit the central star.
-- **Rendering:** Flat Vector Style (Solid Color) in `packages/core/src/lib/assets/planet.ts`.
-  - Visualize orbit path with faint line.
-  - Draw planet as simple circle (no gradients/textures to match aesthetic).
+- **Rendering:** Prepared cylindrical maps, sphere projection and shared light follow
+  the render contract; unprepared materials use the flat-disc fallback.
 
-### Anti-Patterns
+#### Anti-Patterns
 
 - **Do NOT** use expensive noise algorithms (Perlin) every frame. Pre-render to an offscreen canvas or use simple geometric rendering (craters = circles).
 - **Do NOT** make planets overlap the Star or Spawn points.
 
+### Constraints
+
+- Planet drawing follows the shared render model and uses prepared surface maps.
+- Atmosphere and gravity use the production physics for the selected family.
+
 ## Contract
 
-### Names
+#### Names
 
 A planet may carry an optional display name and a positive `systemPosition`.
 The shared `PlanetWorldHudIdentitySchema` validates this HUD identity. The full
@@ -83,7 +92,7 @@ A G7 star named Sun with four planets, the third unnamed, reads: Mercury, Venus,
 Sun.3, Mars. The first planet of an unnamed G11 star is G11.1. Star names are
 defined in the [star contract](../star/spec.md).
 
-### World HUD
+#### World HUD
 
 Every planet in every mode has the same World HUD: orbit, gravity boundary and
 upright name. Its shared `world-hud` pass runs once for the full system before
@@ -93,15 +102,16 @@ px and text is 14 CSS px at every zoom. The
 screen sizing. Planets have no separate decorative ring system. Collision and
 gravity use the planet body radius and mass.
 
-### Mercurial mineral-rock
+#### Mercurial mineral-rock
 
 This airless mineral-rock family uses radii 16–36u. The range belongs to this
 family, not every rock planet. It has no atmosphere or decorative ring.
 
 Survival, Derelicts and Gauntlet replace the innermost stock entry with a
 generated inner Mercurial, retaining internal identity `moon`. When the Sun can
-contain a second complete gravity well in its safe fields, generation also adds
-one distinct `outer-mercurial` body. Its seeded radius, placement, gravity-field
+contain a second complete gravity well in its safe fields, generation places
+one distinct `outer-mercurial` body there. Otherwise that body follows Habitable
+as the outermost planet at ordinal 3, outside charging. Its seeded radius, placement, gravity-field
 overlap and conflict-removal priority follow the
 [system contract](../systems/spec.md). Both bodies use the shared Mercurial
 mass profile and normal star/ordinal HUD names. The outer body uses the
@@ -141,7 +151,7 @@ shared spherical surface, body painter, light pass, 31.3-second turn and
 fallback behavior. This map does not replace the accepted inner Mercury
 surface.
 
-### Practice Venus
+#### Practice Venus
 
 Practice replaces the stock middle gas planet with one named `venus`, before
 applying gravity tuning. Mercury remains, and The Cradle replaces the outer
@@ -173,7 +183,7 @@ optional `practicePlanetMass` overrides apply only in Practice.
   atmosphere adds no collision, drag or damage region. Whole circular orbits
   remain separated by more than their bodies' radii, and the fixed spawn is clear.
 
-### Practice Cradle
+#### Practice Cradle
 
 Practice replaces the stock outer rock (`id: rock`) with one named `cradle`,
 display name The Cradle, before applying gravity tuning. Its numbers follow
@@ -205,11 +215,10 @@ Venus's derivation from Earth's ratios to Mercury:
   kept beside them. A failed material setup draws a blue stock disc and keeps
   the HUD, air and physics.
 
-### Atmosphere
+#### Atmosphere
 
 A planet may carry an atmosphere: a shell of air from its surface out to a
-depth in world units, moving with the planet's orbit. The Cradle is the only
-planet with one. Venus's arc is drawing only and is not an atmosphere.
+depth in world units, moving with the planet's orbit. The Cradle and generated Habitable worlds carry air. Venus's arc is drawing only and is not an atmosphere.
 
 - **Contact.** A ship is in the air when its collision circle overlaps the
   shell. Density is 0 at the outer edge and rises linearly with the ship's
@@ -221,7 +230,7 @@ planet with one. Venus's arc is drawing only and is not an atmosphere.
   [atmospheric heat cue](../../render/fx.md#atmospheric-heat).
 - **No damage.** The air does no hull damage and keeps no temperature.
 - **Every ship, every mode.** Drag applies to every ship near any planet with
-  an atmosphere, in every mode; only Practice has such a planet.
+  an atmosphere, in every mode; Practice and generated systems contain such planets.
 - A ship's air sample holds density, the direction to the planet and the
   ship's velocity relative to the planet's air, in the shape `AirSampleSchema`
   defines in `packages/core/src/lib/physics/atmosphere.ts`. It is computed
@@ -236,13 +245,13 @@ All planets are drawn under the render contract's
 
 ### Definition of Done
 
-- Planet renders with a distinct visual style (flat vector, solid color) distinguishable from the Star.
+- Planets render distinguishable surfaces, shared light and atmosphere where applicable.
 - Physics engine applies local gravity near the planet (inverse square law).
 - Ships collide/bounce off the planet surface (elastic collision with restitution 0.8).
 - Planet orbits around a center point with configurable speed.
 - Orbit path visualized with faint line.
 
-### Regression Guardrails
+### Regression guardrails
 
 - **Visibility:** Planets must be clearly distinct from the background and the Star.
 - **Physics:** Gravity wells of multiple bodies (Star + Planet) must sum logically.
@@ -252,122 +261,26 @@ All planets are drawn under the render contract's
 
 ### Scenarios
 
-**Scenario: Slingshot** ✅
-- Given a Planet exists in the arena
-- When I fly past it tangentially
-- Then my trajectory curves slightly due to its gravity
-- But I do not get sucked in immediately (unless very close)
-- **Status:** VERIFIED - Gravity well affects ship trajectory
+```gherkin
+Scenario: Planet encounter
+  Given a ship passing a planet tangentially inside its gravity field
+  When the simulation advances
+  Then planetary gravity curves its trajectory
 
-**Scenario: Collision** ✅
-- Given I fly directly into the Planet
-- When impact happens
-- Then my ship bounces back with elastic collision
-- And velocity is damped by restitution factor (0.8)
-- **Status:** VERIFIED - Collision detection and bounce functional
+Scenario: Planet collision
+  Given a ship contacting a planet surface
+  When collision resolves
+  Then it bounces with restitution 0.8 and takes the configured contact damage
 
-**Scenario: Skimming The Cradle's air**
-- Given a ship passing The Cradle with its collision circle inside the air
-- When the simulation advances
-- Then its speed relative to the planet falls and its direction relative to
-  the planet holds
-- And the heat cue shows while it is in the air and fades after it leaves
-- And its hull is unchanged
-
-**Scenario: Passing outside the air**
-- Given a ship passing The Cradle with its collision circle outside the air
-- When the simulation advances
-- Then no drag applies and no heat cue shows
-
-## Current Implementation
-
-### Planet Data Structure
-
-```typescript
-interface Planet {
-  pos: Vec2; // Current position (updated each frame)
-  orbitCenter: Vec2; // Center of orbit (usually star position)
-  orbitRadius: number; // Distance from center (700px)
-  orbitSpeed: number; // Angular velocity (0.05 rad/s - very slow)
-  orbitAngle: number; // Current angle in radians
-  radius: number; // Physical/collision radius (30px)
-  mass: number; // Gravitational mass (400)
-  color: string; // Visual color (Slate Blue)
-}
+Scenario: Atmospheric pass
+  Given a ship passing inside a planet's air without surface contact
+  When simulation advances
+  Then drag slows its velocity relative to the planet without turning it
+  And entry heat shows without atmospheric hull damage
+  And outside air neither atmospheric drag nor entry heat applies
 ```
 
-### Rendering
-
-- **Style:** Flat vector aesthetic (no gradients or textures)
-- **Color:** Slate Blue to match arcade vector art style
-- **Orbit Path:** Faint white line (`rgba(255,255,255,0.05)`) shows orbital trajectory
-- **Size:** Relatively small (20px radius) but large gravity influence
-- **Location:** `packages/core/src/lib/assets/planet.ts` (rendering), `packages/core/src/lib/physics/Physics.ts` (physics)
-
-### Physics
-
-#### Orbital Mechanics
-
-- **Update Formula:**
-
-  ```typescript
-  orbitAngle += orbitSpeed * dt
-  pos.x = orbitCenter.x + Math.cos(orbitAngle) * orbitRadius
-  pos.y = orbitCenter.y + Math.sin(orbitAngle) * orbitRadius
-  ```
-- **Speed:** Very slow (0.05 rad/s) acts as semi-static hazard
-- **Radius:** Orbits at 700px from star center
-
-#### Gravity
-
-Specified in [gravity-field.md](../gravity-field/spec.md#bodies-in-play).
-
-#### Collision
-
-- **Detection:** Distance check `|ship.pos - planet.pos| < (ship.radius + planet.radius)`
-- **Response:** Elastic bounce with restitution 0.8
-- **Formula:** `velocity_new = velocity_old.reflect(normal) * restitution`
-- **Normal:** Calculated as `(ship.pos - planet.pos).normalize()`
-
-### Configuration
-
-- **Production:** `initializePlanets()` in `packages/core/src/lib/physics/planets.ts`
-  creates the three configured source planets from `SURVIVAL_CONFIG.PLANETS`.
-  `generateSolarSystem()` in `packages/mode-a/src/lib/solar-system.ts` applies
-  the mercurial replacement and conflict removal for generated play; Practice
-  applies its fixed named roster.
-
-## Performance Characteristics
-
-- **Render Time:** ~0.15ms per planet (circle + orbit line)
-- **Physics Time:** ~0.2ms per planet (gravity + collision check)
-- **Memory:** Zero allocations per frame (reuses Vec2 instances)
-
-## Visual Properties
-
-- **Color:** Slate Blue (#6A7B8C) for rock planet aesthetic
-- **Orbit Visualization:** Subtle white line at 5% opacity
-- **Scale:** Small relative to arena (1.67% of arena radius)
-- **Contrast:** Easily distinguishable from star (no glow/pulse)
-
-## Known Limitations
-
-- **Ship Damage:** No health system (collision bounces but doesn't damage)
-
-## Future Enhancements
-
-- Add planet rotation animation
-- Add surface detail (procedural craters, terrain)
-- Add ship damage on high-velocity impacts
-- Add atmospheric drag near large planets
-
----
-
-**Planet System Status: OPERATIONAL** 🪐  
-**Types:** rock, gas, ocean, desert, ice
-
-
-### Rock shadow inspection
+#### Rock shadow inspection
 
 The shared rock painter accepts incoming-light and shadow-intensity multipliers
 from 0 to 2. Both default to 1.35; incident-light temperature defaults to the
@@ -382,3 +295,8 @@ before drawing. Storage holds the production defaults and stamps for actively
 prepared tuples; releasing the last user releases that custom stamp. The
 shadow-intensity capability supports the rock-atmospheres study's 02.2
 comparison.
+
+#### Habitable archetype
+
+The [Habitable contract](habitable/spec.md) owns generated Earth-size worlds,
+their material choices, atmosphere and Inspector family specimen.

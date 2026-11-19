@@ -3,11 +3,14 @@
 title: "Spec: Planet Inspector"
 status: draft
 generated:
-by: "openai-codex/gpt-6.1-sol"
-at: "2026-11-19T12:32:56+02:00"
+  by: "codex/gpt-6"
+  at: "2026-11-19T21:04:09+02:00"
 verified:
 - by: "openai-codex/gpt-6.1-sol"
   at: "2026-11-19T12:33:38+02:00"
+
+- by: "codex/gpt-6"
+  at: "2026-11-19T21:04:09+02:00"
 
 ---
 
@@ -369,3 +372,13 @@ Scenario: Reject an unsupported selection
   Then field-specific issues replace the scene
   And Mercury is not silently substituted
 ```
+
+#### Habitable family
+
+Habitable is an adjustable generated family alongside Mercurials, following its
+[production contract](../../game/world/planets/habitable/spec.md). Its validated
+family document has `name: habitable`, radius 33.199672–49.799508u (default
+41.499590u), ground `archipelago | violet` and clouds `fronts | cover-20 | cover-40`.
+Controls expose radius and both material choices. Edits pause; radius recomputes
+mass and safe orbit, material edits retain time/pose. Backward seek preserves
+staged values; Reset restores the opening document.

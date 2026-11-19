@@ -1,0 +1,58 @@
+{
+  "created": "2026-11-19",
+  "method": "built-in image_gen",
+  "purpose": "Five exploratory planet portraits and matching game-compatible surface atlases",
+  "portraits": [
+    "01-drowned-archipelago.png",
+    "02-fractured-ice.png",
+    "03-oxidised-seas.png",
+    "04-violet-biosphere.png",
+    "05-the-meridian.png"
+  ],
+  "maps": [
+    {
+      "file": "01-drowned-archipelago-map.png",
+      "dimensions": [1774, 887],
+      "format": "2:1 longitude-latitude cylindrical atlas",
+      "portraitReference": "01-drowned-archipelago.png"
+    },
+    {
+      "file": "02-fractured-ice-map.png",
+      "dimensions": [1774, 887],
+      "format": "2:1 longitude-latitude cylindrical atlas",
+      "portraitReference": "02-fractured-ice.png"
+    },
+    {
+      "file": "03-oxidised-seas-map.png",
+      "dimensions": [1774, 887],
+      "format": "2:1 longitude-latitude cylindrical atlas",
+      "portraitReference": "03-oxidised-seas.png"
+    },
+    {
+      "file": "04-violet-biosphere-map.png",
+      "dimensions": [1774, 887],
+      "format": "2:1 longitude-latitude cylindrical atlas",
+      "portraitReference": "04-violet-biosphere.png"
+    },
+    {
+      "file": "05-the-meridian-map.png",
+      "dimensions": [1774, 887],
+      "format": "2:1 longitude-latitude cylindrical atlas",
+      "portraitReference": "05-the-meridian.png"
+    }
+  ],
+  "promptFiles": ["prompts.json", "map-prompts.json"],
+  "verification": {
+    "renderer": "packages/core/src/lib/assets/strip-spherical-surface.ts",
+    "longitudes": 4,
+    "capture": "atlas-wrap-check.png",
+    "report": "validation.json"
+  },
+  "limits": [
+    "Art-directed map generation, not exact inverse projection of the portraits; hidden hemispheres invented.",
+    "Compatible with existing sphere renderer and suitable for in-engine trials; not integrated into production.",
+    "Some visible wrap joins remain, particularly on the ice and violet worlds; clean up before shipping.",
+    "Fine relief shading remains in the generated material. No baked globe terminator, cloud layer or atmospheric glow.",
+    "Meridian scar is an art-directed curved trench, not a mathematically exact great circle."
+  ]
+}

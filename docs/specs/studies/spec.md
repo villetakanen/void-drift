@@ -3,8 +3,8 @@
 title: "Spec: Studies"
 status: draft
 generated:
-by: "codex/gpt-6"
-at: "2026-11-19T16:52:59+02:00"
+  by: "codex/gpt-6"
+  at: "2026-11-19T16:52:59+02:00"
 verified: []
 ---
 

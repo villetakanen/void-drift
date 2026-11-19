@@ -102,6 +102,15 @@ export const MassWellSchema = z.object({
 });
 export type MassWell = z.infer<typeof MassWellSchema>;
 
+/** Stable material identity for a generated Habitable world. */
+export const HabitableAppearanceSchema = z
+  .object({
+    ground: z.enum(["archipelago", "violet"]),
+    clouds: z.enum(["fronts", "cover-20", "cover-40"]),
+  })
+  .strict();
+export type HabitableAppearance = z.infer<typeof HabitableAppearanceSchema>;
+
 export interface Planet {
   /** The configured planet's id, when it has one. */
   id?: string;
@@ -124,6 +133,7 @@ export interface Planet {
   type: string; // Visual type (rock, gas, ocean, etc.)
   /** The planet's air, when it has one. */
   atmosphere?: Atmosphere;
+  habitable?: HabitableAppearance;
 }
 
 /** Optional display name plus required, validated full-system ordinal. */

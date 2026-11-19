@@ -120,16 +120,27 @@ export interface FlightPass {
   /** `screen` draws untransformed; `world` draws under the camera transform. */
   space: "screen" | "world";
   draws: string;
+  /** Composition in which this pass is used, when not universal. */
+  composition?: string;
   /** The file that owns this pass's drawing. */
   source: string;
   /** `ctx` is the pass's layer, already in the pass's space. */
   draw(frame: FlightFrame, ctx: CanvasRenderingContext2D): void;
 }
 
+/** Browser-composited layer beneath the Canvas stack. */
+export const FLIGHT_SKY_LAYER = {
+  name: "Distant sky",
+  holds: "Prepared image composited by the browser below World",
+  blend: "normal",
+  memory: "fixed per sightline",
+};
+
 /** The in-flight frame's ordered passes. Each pass names its own layer context. */
 export const FLIGHT_PASSES: readonly FlightPass[] = [
   {
     id: "void",
+    composition: "Legacy frames without a prepared sky",
     name: "Void",
     layer: "world",
     space: "screen",
@@ -139,6 +150,8 @@ export const FLIGHT_PASSES: readonly FlightPass[] = [
   },
   {
     id: "starfield",
+    composition:
+      "Legacy frames without a prepared sky or an experimental sky painter",
     name: "Starfield",
     layer: "world",
     space: "world",

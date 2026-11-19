@@ -1,4 +1,8 @@
-import type { FlightLayerContexts } from "@void-drift/mode-a";
+import {
+  type FlightLayerContexts,
+  HABITABLE_RADIUS,
+  habitableMass,
+} from "@void-drift/mode-a";
 import { describe, expect, it } from "vitest";
 import { PlanetInspectorDocumentSchema } from "./config";
 import { PlanetInspectorScene } from "./scene";
@@ -111,4 +115,50 @@ it("matches named Mercury gravity at the family reference radius", () => {
     family.dispose();
     mercury.dispose();
   }
+});
+
+it("keeps Habitable radius and material edits through backward replay and restores opening on reopen", async () => {
+  const opening = {
+    kind: "family",
+    name: "habitable",
+    radius: HABITABLE_RADIUS.reference,
+    ground: "archipelago",
+    clouds: "fronts",
+  };
+  const subject = scene(opening);
+  try {
+    subject.setOrbit(120);
+    subject.seekRotation(90);
+    const tick = subject.sim.ticks;
+    subject.setRadius(HABITABLE_RADIUS.max);
+    await subject.setHabitableAppearance({
+      ground: "violet",
+      clouds: "cover-40",
+    });
+    expect(subject.sim.ticks).toBe(tick);
+    expect(subject.orbit).toBeCloseTo(120);
+    expect(subject.planet.mass).toBeCloseTo(
+      habitableMass(HABITABLE_RADIUS.max),
+    );
+    expect(
+      subject.planet.orbitRadius - subject.planet.radius - 10,
+    ).toBeGreaterThan(subject.sim.star.collectionField?.reach ?? Infinity);
+    subject.seekRotation(45);
+    expect(subject.planet.radius).toBe(HABITABLE_RADIUS.max);
+    expect(subject.planet.habitable).toEqual({
+      ground: "violet",
+      clouds: "cover-40",
+    });
+    expect(subject.orbit).toBeCloseTo(120);
+    expect(() => subject.setRadius(27)).toThrow();
+  } finally {
+    subject.dispose();
+  }
+  const reset = scene(opening);
+  expect(reset.planet.radius).toBe(HABITABLE_RADIUS.reference);
+  expect(reset.planet.habitable).toEqual({
+    ground: "archipelago",
+    clouds: "fronts",
+  });
+  reset.dispose();
 });

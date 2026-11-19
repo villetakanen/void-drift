@@ -16,10 +16,19 @@
     },
     "practicePlanetMass": {
       "cradle": 3186.6710241427595
+    },
+    "habitable": {
+      "referenceRadius": 41.49959016393443,
+      "referenceMass": 3186.6710241427595,
+      "coreFraction": 0.7
     }
   },
   "atmosphere": {
     "cradle": {
+      "depth": 10,
+      "drag": 0.8
+    },
+    "habitable": {
       "depth": 10,
       "drag": 0.8
     }

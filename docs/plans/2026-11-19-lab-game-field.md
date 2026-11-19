@@ -1,6 +1,6 @@
 ---
-
-## generated: { by: codex/gpt-6, at: "2026-11-19T13:55:56+00:00" }
+generated: { by: codex/gpt-6, at: "2026-11-19T13:55:56+00:00" }
+---
 
 # Handoff for the Lab game field
 

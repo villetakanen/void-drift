@@ -1,0 +1,35 @@
+{
+  "renderer": "StripSphericalSurface",
+  "maps": [
+    {
+      "name": "01-drowned-archipelago",
+      "width": 1774,
+      "height": 887,
+      "projections": 4
+    },
+    {
+      "name": "02-fractured-ice",
+      "width": 1774,
+      "height": 887,
+      "projections": 4
+    },
+    {
+      "name": "03-oxidised-seas",
+      "width": 1774,
+      "height": 887,
+      "projections": 4
+    },
+    {
+      "name": "04-violet-biosphere",
+      "width": 1774,
+      "height": 887,
+      "projections": 4
+    },
+    {
+      "name": "05-the-meridian",
+      "width": 1774,
+      "height": 887,
+      "projections": 4
+    }
+  ]
+}

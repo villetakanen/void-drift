@@ -40,7 +40,9 @@ const key = $derived(JSON.stringify(activeDoc));
       {pane}
       onSelect={(planet) => {
         selected =
-          planet.kind === "family" && doc?.planet.kind === "family"
+          planet.kind === "family" &&
+          doc?.planet.kind === "family" &&
+          planet.name === doc.planet.name
             ? doc.planet
             : planet;
       }}

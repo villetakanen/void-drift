@@ -3,9 +3,9 @@
 title: "Spec: Distant flight sky"
 status: draft
 generated:
-by: "codex/gpt-6"
-at: "2026-11-19T16:41:35+02:00"
-verified: [{ by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }, { by: codex/gpt-6, at: "2026-11-19T11:17:49+00:00" }, { by: codex/gpt-6, at: "2026-11-19T13:23:32+00:00" }, { by: codex/gpt-6, at: "2026-11-19T13:37:03+00:00" }, { by: codex/gpt-6, at: "2026-11-19T13:55:56+00:00" }]
+  by: "codex/gpt-6"
+  at: "2026-11-19T19:21:23+02:00"
+verified: [{ by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }, { by: codex/gpt-6, at: "2026-11-19T11:17:49+00:00" }, { by: codex/gpt-6, at: "2026-11-19T13:23:32+00:00" }, { by: codex/gpt-6, at: "2026-11-19T13:37:03+00:00" }, { by: codex/gpt-6, at: "2026-11-19T13:55:56+00:00" }, { by: "codex/gpt-6", at: "2026-11-19T19:21:23+02:00" }]
 ---
 
 # Spec: Distant flight sky
@@ -26,7 +26,13 @@ The shape coordinate runs continuously from 0 (Narrows) through 0.5 (Practice) t
 
 Practice ships a 1536² tile at a 3072-logical-pixel period. The browser decodes it at entry. To regenerate the asset from the canonical material and Sol descriptor, run `pnpm dev:ensure` and `node scripts/prepare-sol-sky.mjs`. The image carries the stars and dust together. [Sol tile](../../../../../apps/web/public/skies/sol.png) · [Preparation script](../../../../../scripts/prepare-sol-sky.mjs)
 
-The landing scene uses its own cosmetic sky seed and a stationary camera. The title and Settings share this scene. Survival, Derelicts and Gauntlet take the final arrival seed and prepare one tile off the main thread. Flight can start over the void. A completed decode supplies only its own active run. Leaving or replacing that run releases its pending work and temporary image URL. [Shared preparation worker](../../../../../apps/web/src/lib/assets/flight-sky/prepare.worker.ts)
+The shared [game field backdrop](../../../factory/design-system/game-field-backdrop/spec.md)
+uses the sky selected for its separate generated system and a stationary camera
+pose on the Title Screen, Settings, Top Scores and Credits. Survival, Derelicts
+and Gauntlet take the final arrival seed and prepare one tile off the main
+thread. Flight can start over the void. A completed decode supplies only its
+own active run. Leaving or replacing that run releases its pending work and
+temporary image URL. [Shared preparation worker](../../../../../apps/web/src/lib/assets/flight-sky/prepare.worker.ts)
 
 [Sightline selection](../../../../../packages/mode-a/src/lib/flight-sky.ts) · [Material schema](../../../../../packages/core/src/lib/schemas/flight-sky.ts) · [Tile preparation](../../../../../packages/core/src/lib/assets/flight-sky.ts)
 
@@ -56,10 +62,10 @@ The landing scene uses its own cosmetic sky seed and a stationary camera. The ti
 
 ```gherkin
 Scenario: Landing menu field
-  Given a title or Settings scene with a cosmetic sky seed
-  When the view resizes or a planet advances along its orbit
+  Given any consumer of the shared game field backdrop
+  When a planet advances along its orbit
   Then the same prepared sky remains at the stationary camera pose
-  And entering flight selects its own system sky
+  And active flight selects sky from its own generated system
 
 Scenario: Fixed view from Sol
   Given two Practice departures with different run seeds

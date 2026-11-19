@@ -1,13 +1,24 @@
+---
+title: "Spec: Seeded Solar System"
+status: draft
+generated:
+  by: "codex/gpt-6"
+  at: "2026-11-19T21:13:02+02:00"
+verified: [{ by: "codex/gpt-6", at: "2026-11-19T21:04:09+02:00" }, { by: "codex/gpt-6", at: "2026-11-19T21:14:06+02:00" }]
+---
+
 # Seeded Solar System
 
-## Context
+## Blueprint
+
+### Context
 
 Survival, Derelicts and Gauntlet start in the same kind of seeded G-class solar
 system. The run seed selects the yellow-family Sun size, mercurial planet radius
 and planets' starting orbital phase. Keeping one system contract makes replay,
 comparison and mode behavior consistent. Practice retains its fixed reference system.
 
-## Architecture
+### Architecture
 
 - `packages/mode-a/src/lib/solar-system.ts` creates the default gameplay system.
 - `packages/mode-a/src/lib/schemas/solar-system.ts` validates generator inputs.
@@ -18,7 +29,20 @@ comparison and mode behavior consistent. Practice retains its fixed reference sy
 - The [star spec](../star/spec.md) owns the yellow-family size and field profile;
   the [planet spec](../planets/spec.md) owns planet physics and presentation.
 
+### Constraints
+
+- Generation parses finite inputs and keeps mandatory worlds in their safe regions.
+
 ## Contract
+
+### Definition of Done
+
+- Equal seeds reproduce the full generated roster across generated modes.
+
+### Regression guardrails
+
+- Practice keeps its fixed reference roster.
+
 
 - Gameplay generation defaults to center `(960, 540)`; validated finite center
   overrides translate the star, orbit centers and planet positions together.
@@ -57,7 +81,8 @@ comparison and mode behavior consistent. Practice retains its fixed reference sy
   `D1 + G1 <= I`, `D2 + G2 <= I`, and `D2 + R2 + 1 <= C`. This keeps each
   body outside the other's gravity field, lets the fields intersect, and keeps
   both complete wells inside the Sun's gravity sphere. When any condition
-  fails, generation preserves the existing single-body placement.
+  fails, generation preserves the existing inner-body placement and adds the
+  second Mercurial outside Habitable as described below.
 - When the pair is eligible, the inner body moves to `D1` and the outer body
   uses `D2`. Both travel at 4u/s and receive the same seeded starting phase.
   Both mandatory bodies take priority during swept-orbit conflict removal; a
@@ -65,16 +90,24 @@ comparison and mode behavior consistent. Practice retains its fixed reference sy
 - The mercurial planet travels at 4u/s with positive angular speed `4 / D`.
   Its retained identity, gravity and appearance follow the
   [planet contract](../planets/spec.md#mercurial-mineral-rock).
-- A remaining stock planet is removed when
-  `abs(other.orbitRadius − D) <= other.radius + R + 1u`.
-  This compares swept circular body annuli for the full orbit, independent of
-  starting phase. The mandatory mercurial body takes priority. Clear planets
-  retain their configured properties and gravity tuning. Removed planets have
-  no simulation, collision, gravity, appearance or HUD entries.
-- The remaining count follows conflict removal, without replacement spawning.
-  A system contains one or two Mercurial bodies according to the gravity-fit
-  rule. Other retained planets may also lie inside charging. A retained orbit
-  may lie inside either Mercurial orbit.
+- After the Mercurial roster, generation replaces stock `gas` with exactly one
+  [Habitable world](../planets/habitable/spec.md). Its complete atmosphere stays
+  outside charging and its full-system ordinal is 2 with one Mercurial or 3 with
+  two. Its dedicated seed streams leave existing Mercurial/star choices intact.
+- When only one Mercurial fits inside charging, generation adds the distinct
+  `outer-mercurial` beyond Habitable as the outermost planet, at ordinal 3.
+  It keeps the same independently seeded radius, shared mass profile and 4u/s
+  travel speed used for the inner-pair candidate. With Habitable gravity reach
+  `GH` and outer Mercurial reach `G2`, its orbit is
+  `D3 = DH + GH + G2 − 0.10 × min(GH, G2)`. At closest approach, overlap along
+  the line of centers is 10% of the smaller field radius. Circular orbits and
+  independent angular speeds make this a closest-approach overlap, not a
+  permanent intersection. Its starting angle equals Habitable's before the
+  shared seed phase is applied. Its full body stays outside charging, clear of
+  Habitable's atmosphere and inside the 1200u warp boundary. Impossible placement
+  fails explicitly. Stock conflict removal includes this mandatory body.
+- Other stock planets survive only outward of Habitable with swept paths clear
+  of every mandatory body and Habitable's atmosphere, with 1u clearance.
 - The seed shifts all retained planets' configured starting phases by
   `(seed mod 360) / 180 × π`. Orbits remain circular. Initial positions use the
   final orbit radii. Full-system outward HUD ordinals are assigned after removal
@@ -122,10 +155,15 @@ Scenario: The Sun fits two Mercurial gravity wells
   And the planet bodies remain outside each other's gravity fields
   And the gravity fields intersect
 
-Scenario: The Sun cannot fit the pair
+Scenario: The Sun cannot fit the inner pair
   Given the Sun cannot contain both complete wells and bodies in its safe fields
   When the system is generated
-  Then the existing single Mercurial body and placement are preserved
+  Then the original inner Mercurial placement is preserved
+  And Habitable remains the second planet
+  And a second Mercurial becomes the outermost planet at ordinal 3 outside charging
+  And its field overlaps Habitable's by 10% of the smaller reach at closest approach
+  And it begins at the same orbital angle as Habitable
+  And its body clears Habitable's atmosphere and remains inside the warp boundary
 
 Scenario: A profile cannot contain the planet
   Given the charging reach minus the danger reach is less than twice the body radius plus 2u

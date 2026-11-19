@@ -1,8 +1,10 @@
 ---
+import GameFieldBackdrop from "../components/GameFieldBackdrop.svelte";
 import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Credits | Void Drift">
+  <GameFieldBackdrop standalone client:load />
   <main class="credits">
     <h1>Credits</h1>
     <p>
@@ -19,6 +21,8 @@ import Layout from "../layouts/Layout.astro";
 </Layout>
 <style>
 .credits {
+  position: relative;
+  z-index: 1;
   max-width: 700px;
   margin: 0 auto;
   padding: var(--spacing-xl);

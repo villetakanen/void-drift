@@ -3,8 +3,8 @@
 title: "Spec: Targeting bench"
 status: draft
 generated:
-by: codex-cli/0.162.1
-at: "2026-11-19T12:25:16+02:00"
+  by: codex-cli/0.162.1
+  at: "2026-11-19T12:25:16+02:00"
 verified: []
 legacy:
 generator_model: GPT-6 (Codex)

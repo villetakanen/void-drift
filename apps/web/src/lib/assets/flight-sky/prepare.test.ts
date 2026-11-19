@@ -58,6 +58,57 @@ describe("sky preparation lifetime", () => {
     expect(worker.terminate).toHaveBeenCalled();
   });
 
+  it("keeps the newer request when an older decode finishes late", async () => {
+    const workers: Array<{ onmessage: (event: unknown) => void }> = [];
+    const decodes: Array<() => void> = [];
+    vi.spyOn(URL, "createObjectURL")
+      .mockReturnValueOnce("blob:old")
+      .mockReturnValueOnce("blob:new");
+    vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
+    vi.stubGlobal(
+      "Image",
+      class {
+        src = "";
+        decode() {
+          return new Promise<void>((resolve) => decodes.push(resolve));
+        }
+      },
+    );
+    vi.stubGlobal(
+      "Worker",
+      class {
+        onmessage = (_event: unknown) => {};
+        terminate() {}
+        postMessage() {}
+        constructor() {
+          workers.push(this);
+        }
+      },
+    );
+    const shown = vi.fn();
+    const old = prepare(
+      { dustSeed: 1, reaches: [0.5], size: 1536 },
+      shown,
+      vi.fn(),
+    );
+    workers[0].onmessage({ data: { tiles: [new Blob()] } });
+    old();
+    const current = prepare(
+      { dustSeed: 2, reaches: [0.5], size: 1536 },
+      shown,
+      vi.fn(),
+    );
+    workers[1].onmessage({ data: { tiles: [new Blob()] } });
+    decodes[1]();
+    await Promise.resolve();
+    await Promise.resolve();
+    decodes[0]();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(shown).toHaveBeenCalledExactlyOnceWith(["blob:new"]);
+    current();
+  });
+
   it("releases partially created URLs when preparation fails", () => {
     let worker!: {
       onmessage: (event: unknown) => void;

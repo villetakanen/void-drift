@@ -14,9 +14,7 @@ import {
 import {
   buildStats,
   CHALLENGE,
-  clearFlightLayer,
   type DerelictsResult,
-  drawFlightFrame,
   type ExperimentalSetting,
   ExperimentalSettingSchema,
   FlightFx,
@@ -27,33 +25,34 @@ import {
   fittedParts,
   HighScoreSubmissionSchema,
   isScoredEligible,
-  LandingSystem,
   type Loadout,
   LoadoutSchema,
   resizeFlightLayers,
   type ShipProfileId,
   Simulation,
-  type SkySightline,
-  SOL_SKY,
   STEP,
   scoresAvailable,
   stockSettings,
   submitHighScore,
-  systemSky,
 } from "@void-drift/mode-a";
 import { onMount, type Snippet } from "svelte";
-import { prepare as prepareSky } from "../lib/assets/flight-sky/prepare";
+import { HabitableMaterials } from "../lib/assets/habitable-materials";
 import { planetAppearances } from "../lib/assets/planet-appearances";
 import { createPracticeVenus } from "../lib/assets/practice-venus";
 import { createOuterMercurialMaterial } from "../lib/assets/rock-planets/authored-materials";
 import { NO_SCORE_NOTICE } from "../lib/experimental";
+import {
+  drawGameField,
+  PRACTICE_BACKGROUND,
+  systemBackground,
+} from "../lib/game-field";
 import { fitGameScreen, GAME_HEIGHT } from "../lib/game-screen";
 import { settings } from "../lib/stores/settings";
 import { initializeShipSetup, shipSetup } from "../lib/stores/ship-setup";
 import ThrustPads from "./controls/ThrustPads.svelte";
 import { PAD_ASSEMBLY_HEIGHT_PX } from "./controls/thrust-pads";
 import Dialog from "./Dialog.svelte";
-import FlightLayers from "./FlightLayers.svelte";
+import GameFieldBackdrop from "./GameFieldBackdrop.svelte";
 import PreviewMarker from "./PreviewMarker.svelte";
 import TitleScreen from "./TitleScreen.svelte";
 
@@ -83,15 +82,17 @@ let mercurialMaterial:
 let outerMercurialMaterial:
   | Awaited<ReturnType<typeof createOuterMercurialMaterial>>
   | undefined;
+const habitableMaterials = new HabitableMaterials();
 let bodyAppearances: ReturnType<typeof planetAppearances> | undefined;
 let input: Input;
 let renderer: Renderer;
 let camera: Camera;
-let skyUrl = $state("");
-let skySightline = $state<Readonly<SkySightline>>(SOL_SKY);
-let cancelSky: (() => void) | undefined;
+let skySeed = $state<number | undefined>();
 let skyCameraX = $state(960);
 let skyCameraY = $state(540);
+const background = $derived(
+  skySeed === undefined ? PRACTICE_BACKGROUND : systemBackground(skySeed),
+);
 const flightFx = new FlightFx();
 const currentLoadout = $derived(
   loadout ?? $shipSetup.builds[$shipSetup.builds.activeChassis],
@@ -153,7 +154,7 @@ let salvageStats = $state({
 let engineFeedback = $state("");
 let activeLoadout = $state<Loadout>();
 let phase = $state<"menu" | "starting" | "playing">("menu");
-let landing = $state.raw<LandingSystem>();
+let landing = $state(false);
 let transitionTime = 0;
 let countTime = $state(-1);
 let lastFrameTime = 0;
@@ -165,34 +166,17 @@ const adaptive = $derived(!landing);
 let sceneOpacity = $state(1);
 let reducedMotion = false;
 let stage: HTMLElement;
-let landingFrame = { width: 1920, height: 1080, cardRight: 1200 };
-function prepareGeneratedSky(seed: number) {
-  skySightline = systemSky(seed);
-  cancelSky = prepareSky(
-    {
-      dustSeed: skySightline.dustSeed,
-      reaches: [skySightline.reach],
-      size: 1536,
-    },
-    (urls) => {
-      skyUrl = urls[0];
-    },
-    () => {
-      /* The void remains visible if preparation fails. */
-    },
-  );
-}
 function enterMenu() {
   runLoadout = undefined;
   runExperimental = $shipSetup.experimental;
   launchBlocked = false;
-  landing = new LandingSystem();
+  landing = true;
   sceneOpacity = 1;
   phase = "menu";
   reset(false);
-  skyCameraX = 960;
-  skyCameraY = 540;
-  prepareGeneratedSky(landing.skySeed);
+  skyCameraX = 480;
+  skyCameraY = 270;
+  skySeed = (crypto.getRandomValues(new Uint32Array(1))[0] % 2147483646) + 1;
 }
 let spin = $state(0);
 let message = $state("");
@@ -210,9 +194,7 @@ const modeLabel = $derived(
 let saving = $state(false);
 let scoreSaved = $state(false);
 function reset(start = false) {
-  cancelSky?.();
-  cancelSky = undefined;
-  if (!testFlight) skyUrl = "";
+  skySeed = undefined;
   if (phase !== "starting") phase = start ? "playing" : "menu";
   input?.reset();
   simulation = new Simulation(
@@ -238,9 +220,13 @@ function reset(start = false) {
     });
     countTime = 0;
     phase = "starting";
-    prepareGeneratedSky(simulation.settings.seed);
+    skySeed = simulation.settings.seed;
   } else countTime = -1;
   refreshPlanetAppearances();
+  void habitableMaterials
+    .prepare(simulation.planets)
+    .then(refreshPlanetAppearances)
+    .catch(() => {});
   if (start) simulation.start();
   paused = start && narrow;
   scoreSaved = false;
@@ -251,6 +237,7 @@ function reset(start = false) {
 }
 function refreshPlanetAppearances() {
   bodyAppearances = planetAppearances(simulation.planets, {
+    habitable: habitableMaterials.materials,
     mercury: mercurialMaterial,
     outerMercurial: outerMercurialMaterial,
     venus: mode === "practice" ? practiceVenus : undefined,
@@ -384,7 +371,7 @@ function start() {
     paused = narrow;
     input?.reset();
   } else {
-    landing = undefined;
+    landing = false;
     phase = "playing";
     transitionTime = 0.3;
     reset(true);
@@ -496,25 +483,12 @@ onMount(() => {
         /* Keep the stock body when the maps are unavailable. */
       });
   }
-  if (testFlight) {
-    const image = new Image();
-    image.src = "/skies/sol.png";
-    void image
-      .decode()
-      .then(() => {
-        if (!disposed) skyUrl = image.src;
-      })
-      .catch(() => {
-        /* The void remains visible if the image is unavailable. */
-      });
-  }
   const world = canvases.world?.getContext("2d"),
     fx = canvases.fx?.getContext("2d"),
     lfx = canvases.lfx?.getContext("2d");
   if (!world || !fx || !lfx) throw new Error("Flight layers require Canvas 2D");
   const layers: FlightLayerContexts = { world, fx, lfx };
-  const context = layers.world,
-    canvas = context.canvas;
+  const canvas = layers.world.canvas;
   renderer = new Renderer(canvas);
   resizeFlightLayers(layers, renderer, 1920, 1080);
   camera = new Camera();
@@ -568,12 +542,6 @@ onMount(() => {
     narrow = screen.narrow;
     if (narrow) suspend();
     frameCamera(false, camera.speedFraming);
-    const bounds = stage.getBoundingClientRect();
-    landingFrame = {
-      width: bounds.width,
-      height: bounds.height,
-      cardRight: bounds.width / 2,
-    };
   };
   const resize = new ResizeObserver(measure);
   resize.observe(stage);
@@ -602,7 +570,7 @@ onMount(() => {
     if (phase === "starting" && !blocked) {
       transitionTime += reducedMotion ? 0.3 : dt;
       if (transitionTime >= 0.15 && landing) {
-        landing = undefined;
+        landing = false;
         reset(true);
         accumulator = 0;
       }
@@ -634,25 +602,11 @@ onMount(() => {
       }
     } else accumulator = 0;
     sync();
-    if (landing) {
-      clearFlightLayer(layers.world);
-      clearFlightLayer(layers.fx);
-      clearFlightLayer(layers.lfx);
-      if (!document.hidden && !reducedMotion) landing.step(dt);
-      context.save();
-      context.scale(1920 / landingFrame.width, 1080 / landingFrame.height);
-      landing.draw(
-        context,
-        landingFrame.width,
-        landingFrame.height,
-        landingFrame.cardRight,
-      );
-      context.restore();
-    } else {
+    if (!landing) {
       const countCentre = camera.getViewCentre();
       skyCameraX = countCentre.x;
       skyCameraY = countCentre.y;
-      drawFlightFrame(
+      drawGameField(
         {
           layers,
           renderer,
@@ -677,7 +631,7 @@ onMount(() => {
                     mode === "gauntlet" ? "space-purple" : "standard",
                   ),
         },
-        { preparedSky: true },
+        background,
       );
     }
     frame = requestAnimationFrame(draw);
@@ -695,9 +649,8 @@ onMount(() => {
   frame = requestAnimationFrame(draw);
   return () => {
     disposed = true;
-    cancelSky?.();
-    cancelSky = undefined;
     cancelAnimationFrame(frame);
+    habitableMaterials.dispose();
     mercurialMaterial?.painter.dispose();
     outerMercurialMaterial?.painter.dispose();
     practiceVenus?.painter.dispose();
@@ -745,7 +698,7 @@ onMount(() => {
   data-salvage-bodies={salvageStats.bodies}
   data-weapon-energy={salvageStats.spent}
   data-phase={phase}
-  data-landing-sun={landing?.star.type}
+  data-landing-sun={landing ? "G" : "none"}
   data-x={x.toFixed(4)}
   data-y={y.toFixed(4)}
   data-ticks={ticks}
@@ -780,15 +733,14 @@ onMount(() => {
         class:scrim-stage={Boolean(landing)}
         data-stage
       >
-        <FlightLayers
+        <GameFieldBackdrop
           bind:canvases
-          sky={{
-            url: skyUrl,
-            cameraX: skyCameraX,
-            cameraY: skyCameraY,
-            width: screen.logicalWidth,
-            sightline: skySightline,
-          }}
+          decorative={Boolean(landing)}
+          seed={skySeed}
+          {background}
+          cameraX={skyCameraX}
+          cameraY={skyCameraY}
+          width={screen.logicalWidth}
           label={landing
             ? "Decorative star and orbiting planets"
             : testFlight
@@ -933,7 +885,6 @@ onMount(() => {
           </button>
         </Dialog>
       {:else if landing}
-        <div class="dialog-scrim" aria-hidden="true"></div>
         {#if menu}
           {@render menu()}
         {:else}

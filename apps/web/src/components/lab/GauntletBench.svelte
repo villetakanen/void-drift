@@ -2,7 +2,6 @@
 import { Camera, Renderer } from "@void-drift/core";
 import {
   defaultLoadout,
-  drawFlightFrame,
   FlightFx,
   type FlightLayerContexts,
   type FlightLayerId,
@@ -12,12 +11,21 @@ import {
   stockSettings,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
-import FlightLayers from "../FlightLayers.svelte";
+import {
+  drawGameField,
+  type FieldBackground,
+  PENDING_BACKGROUND,
+  systemBackground,
+} from "../../lib/game-field";
+import GameField from "../GameField.svelte";
 import "@void-drift/core/styles/buttons.css";
 
 const WIDTH = 1728;
 const HEIGHT = 1080;
 let _props: { "client:load"?: boolean } = $props();
+let skyX = $state(960),
+  skyY = $state(540),
+  background = $state<FieldBackground>(PENDING_BACKGROUND);
 let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
 let hull = $state(100);
 let pirateHull = $state(100);
@@ -59,6 +67,7 @@ onMount(() => {
       seed: 248901,
       loadout: defaultLoadout("scout"),
     });
+    background = systemBackground(sim.settings.seed);
     sim.start();
     simStatus = sim.state.status;
     fx.clear();
@@ -132,7 +141,10 @@ onMount(() => {
     );
     camera.frame(centerX, centerY, centerX, centerY, padding, 5, false);
     camera.update(dt);
-    drawFlightFrame({ layers, renderer, camera, sim, fx });
+    const centre = camera.getViewCentre();
+    skyX = centre.x;
+    skyY = centre.y;
+    drawGameField({ layers, renderer, camera, sim, fx }, background);
     hull = sim.state.resources.hull;
     pirateHull = sim.opponent?.resources.hull ?? 0;
     pirateTwoHull = sim.opponents[1]?.resources.hull ?? 0;
@@ -196,7 +208,11 @@ onMount(() => {
   </header>
   <div class="instrument">
     <section class="scene" aria-label="Gauntlet encounter">
-      <FlightLayers
+      <GameField
+        {background}
+        cameraX={skyX}
+        cameraY={skyY}
+        width={(WIDTH / HEIGHT) * 1080}
         bind:canvases
         label="Player Scout and hostile pirate Scout"
       />

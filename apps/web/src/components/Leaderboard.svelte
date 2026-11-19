@@ -10,6 +10,7 @@ import {
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import { version } from "../../package.json";
+import GameFieldBackdrop from "./GameFieldBackdrop.svelte";
 import SegmentedControl from "./inputs/SegmentedControl.svelte";
 import Logo from "./Logo.svelte";
 
@@ -41,6 +42,7 @@ onMount(() => {
 });
 </script>
 <main class="score-page">
+  <GameFieldBackdrop standalone />
   <section class="panel score-panel" aria-labelledby="scores-title">
     <header class="score-heading">
       <a href="/" class="brand" aria-label="Void Drift home"
@@ -121,14 +123,18 @@ onMount(() => {
 
 <style>
 .score-page {
+  position: relative;
+  isolation: isolate;
   box-sizing: border-box;
   height: 100dvh;
   overflow: auto;
   padding: var(--spacing-lg) var(--spacing-md);
-  background: var(--color-elev-1);
+  background: transparent;
   font: var(--font-size-body) / var(--line-height-ui) var(--font-family-ui);
 }
 .score-panel {
+  position: relative;
+  z-index: 1;
   width: min(100%, 48rem);
   box-sizing: border-box;
   margin-inline: auto;

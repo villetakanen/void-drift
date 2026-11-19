@@ -1,4 +1,8 @@
-import { initializePlanets } from "@void-drift/core";
+import {
+  CAMERA_ARENA_RADIUS,
+  initializePlanets,
+  massWellReach,
+} from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { createStar } from "./game-loop";
 import { mercurialMass } from "./mercurial-rock";
@@ -86,14 +90,28 @@ describe("generated mercurial planet", () => {
       );
       expect(system.star.radius).toBe(yellowFamilyRadius(seed));
       radii.add(moon.radius);
+      const habitable = system.planets.find((p) => p.id === "habitable");
+      if (!habitable) throw new Error("Missing Habitable world");
       const source = initializePlanets(-50, 73);
       for (const other of source.filter((planet) => planet.id !== "moon")) {
         const retained = system.planets.find(
           (planet) => planet.id === other.id,
         );
         const clear =
-          Math.abs(other.orbitRadius - moon.orbitRadius) >
-          other.radius + moon.radius + 1;
+          other.id !== "gas" &&
+          other.orbitRadius > habitable.orbitRadius &&
+          system.planets
+            .filter(
+              (p) =>
+                p.id === "moon" ||
+                p.id === "outer-mercurial" ||
+                p.id === "habitable",
+            )
+            .every(
+              (p) =>
+                Math.abs(other.orbitRadius - p.orbitRadius) >
+                other.radius + p.radius + (p.atmosphere?.depth ?? 0) + 1,
+            );
         expect(Boolean(retained)).toBe(clear);
         if (retained) {
           expect(retained.radius).toBe(other.radius);
@@ -113,6 +131,84 @@ describe("generated mercurial planet", () => {
     }
     expect(radii.size).toBe(300);
     expect(removed).toBe(true);
+  });
+
+  it("adds an outermost third planet beside Habitable when the inner pair cannot fit", () => {
+    let fallbackCount = 0;
+    let innerPairCount = 0;
+    const reach = (
+      planet: ReturnType<typeof generateSolarSystem>["planets"][number],
+    ) => {
+      const well = planet.massWell;
+      if (!well) throw new Error("Missing gravity well");
+      return massWellReach(well.mass, well.cutoff, well.falloff);
+    };
+    for (let seed = 1; seed <= 1000; seed++) {
+      const { star, planets } = generateSolarSystem({
+        seed,
+        centerX: -50,
+        centerY: 73,
+      });
+      const inner = planets.find((p) => p.id === "moon");
+      const outer = planets.find((p) => p.id === "outer-mercurial");
+      const habitable = planets.find((p) => p.id === "habitable");
+      expect(
+        planets.filter((p) => p.id === "moon" || p.id === "outer-mercurial"),
+      ).toHaveLength(2);
+      if (!inner || !outer || !habitable || !star.collectionField)
+        throw new Error("Missing generated body or charging field");
+      const collection = star.collectionField.reach;
+      expect(inner.orbitRadius + inner.radius + 1).toBeLessThanOrEqual(
+        collection + 1e-9,
+      );
+      expect(outer.massWell?.mass).toBe(mercurialMass(outer.radius));
+      expect(outer.orbitSpeed * outer.orbitRadius).toBeCloseTo(4);
+      if (outer.orbitRadius < habitable.orbitRadius) {
+        innerPairCount++;
+        expect(outer.orbitRadius + outer.radius + 1).toBeLessThanOrEqual(
+          collection + 1e-9,
+        );
+        expect(outer.orbitRadius + reach(outer)).toBeLessThanOrEqual(
+          star.influenceRadius + 1e-9,
+        );
+        continue;
+      }
+      fallbackCount++;
+      expect(outer.systemPosition).toBe(3);
+      expect(outer.orbitRadius).toBe(
+        Math.max(...planets.map((p) => p.orbitRadius)),
+      );
+      expect(outer.orbitRadius - outer.radius).toBeGreaterThan(collection);
+      expect(outer.orbitRadius + outer.radius).toBeLessThan(
+        CAMERA_ARENA_RADIUS,
+      );
+      const separation = outer.orbitRadius - habitable.orbitRadius;
+      expect(reach(habitable) + reach(outer) - separation).toBeCloseTo(
+        0.1 * Math.min(reach(habitable), reach(outer)),
+        9,
+      );
+      expect(separation).toBeGreaterThan(
+        habitable.radius +
+          (habitable.atmosphere?.depth ?? 0) +
+          outer.radius +
+          1,
+      );
+      expect(outer.orbitAngle).toBe(habitable.orbitAngle);
+      expect(
+        Math.hypot(
+          outer.pos.x - habitable.pos.x,
+          outer.pos.y - habitable.pos.y,
+        ),
+      ).toBeCloseTo(separation);
+      expect(outer.pos.x).toBeCloseTo(
+        -50 + Math.cos(outer.orbitAngle) * outer.orbitRadius,
+      );
+      expect(outer.pos.y).toBeCloseTo(
+        73 + Math.sin(outer.orbitAngle) * outer.orbitRadius,
+      );
+    }
+    expect(fallbackCount).toBeGreaterThan(0);
+    expect(innerPairCount).toBeGreaterThan(0);
   });
 
   it("uses the same system in all generated modes", () => {

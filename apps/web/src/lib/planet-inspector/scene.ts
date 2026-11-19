@@ -3,6 +3,8 @@ import {
   createCloudedWorld,
   createRockMaterial,
   DEFAULT_ROCK_BODY_LIGHTING,
+  type HabitableAppearance,
+  HabitableAppearanceSchema,
   PLANET_MAPS,
   type Planet,
   Renderer,
@@ -12,14 +14,17 @@ import {
   updatePlanetOrbit,
 } from "@void-drift/core";
 import {
+  applyHabitableGravity,
   applyMercurialGravity,
   applyYellowFamilyProfile,
   type BodyAppearance,
-  drawFlightFrame,
   FlightFx,
   type FlightLayerContexts,
   GRAVITY_TUNING,
   generateSolarSystem,
+  HABITABLE_SPIN_SECONDS,
+  HABITABLE_TRAVEL_SPEED,
+  habitableOrbit,
   MERCURIAL_ROCK_SPIN_SECONDS,
   mercurialOrbit,
   PRACTICE_CRADLE_SPIN_SECONDS,
@@ -30,15 +35,27 @@ import {
   STEP,
   stockSettings,
 } from "@void-drift/mode-a";
+import { HabitableMaterials } from "../assets/habitable-materials";
 import { planetAppearances } from "../assets/planet-appearances";
 import { createPracticeVenus } from "../assets/practice-venus";
 import { createOuterMercurialMaterial } from "../assets/rock-planets/authored-materials";
 import {
+  drawGameField,
+  PRACTICE_BACKGROUND,
+  systemBackground,
+} from "../game-field";
+import {
+  HabitableInspectorPlanetSchema,
   MercurialInspectorPlanetSchema,
   type PlanetInspectorDocument,
 } from "./config";
 
 const references = {
+  habitable: {
+    id: "habitable",
+    label: "Habitable",
+    spinSeconds: HABITABLE_SPIN_SECONDS,
+  },
   mercurial: {
     id: "moon",
     label: "Mercurial",
@@ -85,6 +102,11 @@ const HUD = new Set(["sun-fields", "world-hud"]);
 
 /** The bench stages time; production owns simulation, passes and materials. */
 export class PlanetInspectorScene {
+  get background() {
+    return this.doc.planet.kind === "family"
+      ? systemBackground(this.sim.settings.seed)
+      : PRACTICE_BACKGROUND;
+  }
   sim: Simulation;
   readonly camera = new Camera();
   readonly reference;
@@ -101,17 +123,27 @@ export class PlanetInspectorScene {
   private measurementStart = performance.now();
   status: string;
   private disposed = false;
+  private habitable = new HabitableMaterials();
+  private stagedAppearance?: HabitableAppearance;
+  private placementBodies: Planet[] = [];
   private stagedRadius?: number;
   private lighting: RockBodyLighting = DEFAULT_ROCK_BODY_LIGHTING;
 
   constructor(
     private layers: FlightLayerContexts,
     readonly doc: PlanetInspectorDocument,
-    changed: () => void,
+    private changed: () => void,
   ) {
     this.reference = references[doc.planet.name];
     this.stagedRadius =
       doc.planet.kind === "family" ? doc.planet.radius : undefined;
+    this.stagedAppearance =
+      doc.planet.name === "habitable"
+        ? HabitableAppearanceSchema.parse({
+            ground: doc.planet.ground,
+            clouds: doc.planet.clouds,
+          })
+        : undefined;
     this.sim = this.createSimulation();
     this.renderer = new Renderer(layers.world.canvas);
     this.seekRotation(doc.opening.rotationDegrees);
@@ -128,7 +160,7 @@ export class PlanetInspectorScene {
       seed: 2026,
     });
     if (family) {
-      const system = generateSolarSystem({ seed: 2026 });
+      const system = generateSolarSystem({ seed: sim.settings.seed });
       Object.assign(sim.star, system.star);
       sim.star.name = system.star.name;
       sim.planets.splice(0, sim.planets.length, ...system.planets);
@@ -139,6 +171,10 @@ export class PlanetInspectorScene {
       throw new Error(
         `Planet ${this.reference.label} is unavailable in the selected system`,
       );
+    this.placementBodies = sim.planets.filter(
+      (p) => p.id === "moon" || p.id === "outer-mercurial",
+    );
+    if (this.stagedAppearance) planet.habitable = { ...this.stagedAppearance };
     sim.planets.splice(0, sim.planets.length, planet);
     if (family) {
       this.stageRadius(sim, planet, this.stagedRadius ?? 27);
@@ -147,6 +183,24 @@ export class PlanetInspectorScene {
     return sim;
   }
   private stageRadius(sim: Simulation, planet: Planet, radius: number) {
+    if (this.doc.planet.name === "habitable") {
+      const parsed = HabitableInspectorPlanetSchema.parse({
+        ...this.doc.planet,
+        radius,
+      });
+      const distance = habitableOrbit(
+        sim.star,
+        parsed.radius,
+        planet.atmosphere?.depth ?? 0,
+        this.placementBodies,
+      );
+      planet.radius = parsed.radius;
+      applyHabitableGravity(planet);
+      planet.orbitRadius = distance;
+      planet.orbitSpeed = HABITABLE_TRAVEL_SPEED / distance;
+      updatePlanetOrbit(planet, 0);
+      return;
+    }
     const parsed = MercurialInspectorPlanetSchema.parse({
       kind: "family",
       name: "mercurial",
@@ -171,10 +225,29 @@ export class PlanetInspectorScene {
     this.stageRadius(this.sim, this.planet, radius);
     this.stagedRadius = radius;
   }
+  async setHabitableAppearance(input: unknown) {
+    if (this.doc.planet.name !== "habitable")
+      throw new Error("Habitable materials belong to Habitable inspection");
+    this.stagedAppearance = HabitableAppearanceSchema.parse(input);
+    this.planet.habitable = { ...this.stagedAppearance };
+    this.bodyAppearances = planetAppearances(this.sim.planets, {
+      habitable: this.habitable.materials,
+    });
+    this.status = "Loading Habitable material…";
+    await this.prepareMaterial(this.changed);
+  }
   private async prepareMaterial(changed: () => void) {
     let pendingPainter: { dispose: () => void } | undefined;
     try {
-      if (
+      if (this.doc.planet.name === "habitable") {
+        await this.habitable.prepare(this.sim.planets);
+        if (this.disposed) return;
+        for (const material of this.habitable.materials.values())
+          material.painter.prepareLighting(this.lighting);
+        this.bodyAppearances = planetAppearances(this.sim.planets, {
+          habitable: this.habitable.materials,
+        });
+      } else if (
         this.doc.planet.name === "cradle" ||
         this.doc.planet.name === "earth"
       ) {
@@ -285,6 +358,8 @@ export class PlanetInspectorScene {
       this.cradle
     )?.painter;
     painter?.prepareLighting(next);
+    for (const material of this.habitable.materials.values())
+      material.painter.prepareLighting(next);
     this.lighting = next;
   }
   resize(width: number, height: number) {
@@ -302,6 +377,10 @@ export class PlanetInspectorScene {
       this.venus ??
       this.cradle
     )?.surface;
+    if (this.doc.planet.name === "habitable" && this.planet.habitable)
+      return this.habitable.materials.get(
+        `${this.planet.habitable.ground}/${this.planet.habitable.clouds}`,
+      )?.surface as StripSphericalSurface | undefined;
     return surface instanceof StripSphericalSurface ? surface : undefined;
   }
   get passMilliseconds() {
@@ -323,7 +402,7 @@ export class PlanetInspectorScene {
     this.camera.pos.set(this.planet.pos.x, this.planet.pos.y);
     const before = this.surface?.redrawCount ?? 0;
     let milliseconds = 0;
-    drawFlightFrame(
+    drawGameField(
       {
         layers: this.layers,
         renderer: this.renderer,
@@ -332,6 +411,7 @@ export class PlanetInspectorScene {
         fx: this.fx,
         bodyAppearances: this.bodyAppearances,
       },
+      this.background,
       {
         include: (pass) => PASSES.has(pass.id) && (hud || !HUD.has(pass.id)),
         observe: (pass, ms) => {
@@ -350,6 +430,7 @@ export class PlanetInspectorScene {
   }
   dispose() {
     this.disposed = true;
+    this.habitable.dispose();
     this.mercury?.painter.dispose();
     this.outerMercurial?.painter.dispose();
     this.venus?.painter.dispose();

@@ -2,12 +2,16 @@ import {
   ATMOSPHERE_BOUNDS_MARGIN,
   CloudBodyPainter,
   drawAtmosphere,
+  type HabitableAppearance,
   type Planet,
   type RockBodyPainter,
 } from "@void-drift/core";
 import {
   type BodyAppearance,
   type FlightFrame,
+  HABITABLE_CLOUD_HEIGHT,
+  HABITABLE_CLOUD_SPIN_SECONDS,
+  HABITABLE_SPIN_SECONDS,
   MERCURIAL_ROCK_SPIN_SECONDS,
   PRACTICE_CRADLE_CLOUD_HEIGHT,
   PRACTICE_CRADLE_CLOUD_SPIN_SECONDS,
@@ -22,7 +26,7 @@ type Surface = {
 
 type RockMaterial = { painter: RockBodyPainter; surface: Surface };
 type CloudMaterial = { painter: CloudBodyPainter; surface: Surface };
-type CloudedMaterial = RockMaterial & {
+export type CloudedMaterial = RockMaterial & {
   clouds: Surface & { canvas: CanvasImageSource };
 };
 
@@ -37,6 +41,7 @@ export function planetAppearances(
     outerMercurial?: RockMaterial;
     venus?: CloudMaterial;
     cradle?: CloudedMaterial;
+    habitable?: ReadonlyMap<string, CloudedMaterial>;
   },
 ): ReadonlyMap<number, BodyAppearance> {
   const positions = new Set<number>();
@@ -59,7 +64,22 @@ export function planetAppearances(
     false,
   );
   add("venus", materials.venus, PRACTICE_VENUS_SPIN_SECONDS, true);
-  addCradle(materials.cradle);
+  addClouded(
+    "cradle",
+    materials.cradle,
+    PRACTICE_CRADLE_SPIN_SECONDS,
+    PRACTICE_CRADLE_CLOUD_SPIN_SECONDS,
+    PRACTICE_CRADLE_CLOUD_HEIGHT,
+  );
+  const world = planets.find((p) => p.id === "habitable");
+  if (world?.habitable)
+    addClouded(
+      "habitable",
+      materials.habitable?.get(habitableMaterialKey(world.habitable)),
+      HABITABLE_SPIN_SECONDS,
+      HABITABLE_CLOUD_SPIN_SECONDS,
+      HABITABLE_CLOUD_HEIGHT,
+    );
   return appearances;
 
   function find(id: string) {
@@ -76,13 +96,19 @@ export function planetAppearances(
   }
 
   /** Ground, then clouds above it, then haze and rim out to the air's edge. */
-  function addCradle(material: CloudedMaterial | undefined) {
+  function addClouded(
+    id: string,
+    material: CloudedMaterial | undefined,
+    groundSpin: number,
+    cloudSpin: number,
+    cloudHeight: number,
+  ) {
     if (!material) return;
-    const position = find("cradle");
+    const position = find(id);
     if (position === undefined) return;
     const depth = (target: Planet) => target.atmosphere?.depth ?? 0;
     const cloudRadius = (target: Planet) =>
-      target.radius + depth(target) * PRACTICE_CRADLE_CLOUD_HEIGHT;
+      target.radius + depth(target) * cloudHeight;
     const square = (target: Planet, extent: number) => ({
       left: target.pos.x - extent,
       top: target.pos.y - extent,
@@ -108,15 +134,12 @@ export function planetAppearances(
         const zoom = frame.camera.zoom;
         const { x, y } = target.pos;
         material.surface.draw(
-          turn(frame, PRACTICE_CRADLE_SPIN_SECONDS, 0),
+          turn(frame, groundSpin, 0),
           target.radius * 2 * zoom,
         );
         material.painter.body(ctx, 0, x, y, target.radius);
         const clouds = cloudRadius(target);
-        material.clouds.draw(
-          turn(frame, PRACTICE_CRADLE_CLOUD_SPIN_SECONDS, 1),
-          clouds * 2 * zoom,
-        );
+        material.clouds.draw(turn(frame, cloudSpin, 1), clouds * 2 * zoom);
         ctx.drawImage(
           material.clouds.canvas,
           x - clouds,
@@ -224,4 +247,8 @@ export function planetAppearances(
     };
     appearances.set(position, appearance);
   }
+}
+
+export function habitableMaterialKey(appearance: HabitableAppearance) {
+  return `${appearance.ground}/${appearance.clouds}`;
 }

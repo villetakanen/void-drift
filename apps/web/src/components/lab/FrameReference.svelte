@@ -1,5 +1,9 @@
 <script lang="ts">
-import { FLIGHT_LAYERS, FLIGHT_PASSES } from "@void-drift/mode-a";
+import {
+  FLIGHT_LAYERS,
+  FLIGHT_PASSES,
+  FLIGHT_SKY_LAYER,
+} from "@void-drift/mode-a";
 
 // Every row is read from the production frame; this page holds no copy of it.
 const layers = FLIGHT_LAYERS.map((layer) => ({
@@ -16,6 +20,13 @@ const layers = FLIGHT_LAYERS.map((layer) => ({
     layers. Layers are listed bottom to top and passes in draw order, read from
     the production pass list.
   </p>
+  <section class="layer">
+    <h3>{FLIGHT_SKY_LAYER.name}</h3>
+    <p class="holds">
+      {FLIGHT_SKY_LAYER.holds}
+      · blend {FLIGHT_SKY_LAYER.blend} · {FLIGHT_SKY_LAYER.memory}
+    </p>
+  </section>
   {#each layers as layer}
     <section class="layer" data-layer={layer.id}>
       <h3>{layer.name}</h3>
@@ -34,7 +45,12 @@ const layers = FLIGHT_LAYERS.map((layer) => ({
             <tr data-pass={pass.id}>
               <th scope="row">{pass.name}</th>
               <td>{pass.space}</td>
-              <td>{pass.draws}</td>
+              <td>
+                {pass.draws}
+                {#if pass.composition}
+                  ({pass.composition})
+                {/if}
+              </td>
               <td><code>{pass.source}</code></td>
             </tr>
           {/each}

@@ -3,11 +3,13 @@
 title: "Spec: Scores"
 status: draft
 generated:
-by: "openai-codex/gpt-6.1-sol"
-at: "2026-11-19T12:32:56+02:00"
+  by: "codex/gpt-6"
+  at: "2026-11-19T19:21:23+02:00"
 verified:
 - by: "openai-codex/gpt-6.1-sol"
   at: "2026-11-19T12:33:38+02:00"
+- by: "codex/gpt-6"
+  at: "2026-11-19T19:21:23+02:00"
 
 ---
 
@@ -44,6 +46,10 @@ for game design and is not shown to players.
   [Survival](../survival/spec.md) owns the score and the time. The
   [active ship](../active-ship/spec.md) owns the ship and fitting that a run
   flew.
+- **Presentation.** Top Scores uses the shared
+  [game field backdrop](../../factory/design-system/game-field-backdrop/spec.md)
+  unchanged from the Title Screen, Settings and Credits. The backdrop owns its
+  decorative system and scrim; this page owns the score board.
 
 ### Constraints
 
@@ -115,6 +121,8 @@ for game design and is not shown to players.
 - C12: Firestore rules accept a write only for a ruleset they name, and a
   raised score keeps its ruleset; rows of a ruleset the rules do not name
   remain stored and readable.
+- C13: Top Scores renders the same shared game field backdrop as the Title
+  Screen, Settings and Credits.
 
 ### Regression guardrails
 

@@ -3,11 +3,13 @@
 title: "Spec: Design system"
 status: draft
 generated:
-by: "codex/gpt-6"
-at: "2026-11-19T16:52:59+02:00"
+  by: "codex/gpt-6"
+  at: "2026-11-19T19:21:23+02:00"
 verified:
 - by: "openai-codex/gpt-6.1-sol"
   at: "2026-11-19T12:33:38+02:00"
+- by: "codex/gpt-6"
+  at: "2026-11-19T19:21:23+02:00"
 
 ---
 
@@ -61,6 +63,9 @@ canonical examples; Lab and Studies consume them without acquiring ownership.
 - [Actions](actions/spec.md) owns that domain's definitions and acceptance behavior.
 - [Input presentation](inputs/spec.md) owns Tabs, RingSlider and thrust-pad presentation.
 - [Choice controls](choices/spec.md) owns SegmentedControl, Switch and their usage boundaries.
+- [Game field backdrop](game-field-backdrop/spec.md) owns the shared generated
+  decorative field and scrim used by the Title Screen, Settings, Top Scores and
+  Credits.
 
 #### Surfaces and layers
 

@@ -21,7 +21,15 @@ A study can also end with a clearer understanding of the design and no proposed 
 
 ## Start from established reality
 
-Read current product guidance and relevant implementation on demand. Use history only
+Before proposing an example, inspect the relevant current product behaviour,
+visual language and guidance. Explain in the study's existing reasoning how they
+inform the question and proposal, and distinguish an observed gap from a
+hypothesised need. When the need is unestablished, an example may investigate
+whether it exists; delivering a concrete step need not mean proposing a solution.
+Grounding informs design without requiring reuse: shared tokens or production
+drawing functions alone do not establish it.
+
+Use history only
 for a specific research question, rather than routinely loading earlier studies or
 factory reports. Earlier studies supply evidence. Carry a prior decision forward as settled only when
 the project has adopted it.

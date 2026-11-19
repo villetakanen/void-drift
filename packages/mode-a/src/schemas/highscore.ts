@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { PartIdSchema } from "../lib/schemas/loadout";
 import { ShipProfileIdSchema } from "../lib/schemas/ship-profile";
-export const CHALLENGE = "fires-in-the-sky";
+export const CHALLENGE = "habitable-skies";
 /** A ship carries at most ten fitted parts; the bound is a sanity limit, `firestore.rules` repeats it. */
 export const MAX_FITTING_PARTS = 16;
 /** Milliseconds are the finest time the record keeps. */

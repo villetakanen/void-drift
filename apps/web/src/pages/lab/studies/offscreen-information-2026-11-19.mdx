@@ -1,0 +1,878 @@
+---
+layout: ../../../layouts/StudyLayout.astro
+---
+
+<section className="reading" id="accepted">
+<h2>Accepted / 19 November 2026</h2>
+<p>The designer accepted the study after readiness and scope: “accepted, record. close loop.” The accepted subject is the flight-box information layer and its 02.6 configuration. Production adoption and implementation are separate decisions; no production behaviour or owning feature spec changed.</p>
+<p>Use the active flight rectangle for both visibility eligibility and the invisible edge circle. Keep the filled triangle and distance arc fully opaque; category marks are 50% opaque. Double the 02.5 skull, retain −30° skull tilt and +30° squares, use green for Sun and energy, red for pirates and status yellow for derelicts. No glow. Exact settings are retained in the <a href="/studies/offscreen-information-2026-11-19/026-selected-configuration.json">selected configuration</a>; <a href="/studies/offscreen-information-2026-11-19/026-motion-evidence.json">motion conditions and check summary</a> identify the capture and observed transitions.</p>
+<p><strong>Designer assessment:</strong> “good work,” given at acceptance. This is positive assessment of the study, not proof of combat usefulness. Proportions and distance endpoints remain working tuning; production layer ownership and spec adoption remain named delivery decisions.</p>
+<p>This closed record is static. Earlier steps retain useful findings and captures; the interactive tuner, probes and playback wrapper have been removed. The recording remains usable without JavaScript. The <a href="/lab/studies/offscreen-information-2026-11-19#readiness">readiness assessment</a> and <a href="/lab/studies/offscreen-information-2026-11-19#scope">delivery scope</a> are retained below.</p>
+</section>
+
+  <section className="reading" id="problem">
+    <h2>01 / Extend the pirate bearing into a contact reading</h2>
+    <p>
+      Gauntlet already leaves a purple triangle at the viewport edge for each
+      living offscreen pirate. It provides direction without separation. The
+      selected design extends that capability into one camera-relative
+      information layer, so a pilot can distinguish a pirate, the Sun, an intact
+      derelict and released energy while reading their bearing and distance
+      graphically.
+    </p>
+    <p>
+      The flight box is the active rectangle between the deck’s gutters.
+      Following the 19 November boundary decision, both marker eligibility and
+      circular placement use this box: an object whose projected centre is
+      outside it receives a cue, even when the world continues behind a gutter.
+      This deliberately replaces the initial brief’s full-viewport visibility
+      rule and the production pirate marker’s current behaviour.
+    </p>
+    <p>
+      Filled triangles preserve bearing presence. A concentric arc grows with
+      centre-to-centre world separation; a small inward category mark supplies
+      type. Colour supports that reading without relocating deck resources,
+      controls, feedback, world-HUD fields or names. The invisible edge circle
+      and all its ink stay inside the active box, without a visible ring,
+      labels, numerical readouts, leader lines, font icons or miniature target
+      artwork. The explicitly requested skull, square and circle are category
+      symbols.
+    </p>
+    <p>
+      The study selects a grammar and working configuration, not a new gameplay
+      mechanic. Motion examples can reveal transitions and graphic interference;
+      combat usefulness remains a hypothesis. Production ownership, contact
+      enumeration and specification adoption belong to readiness and scope. No
+      study result changes production intent on its own.
+    </p>
+    <h3>Evidence after the boundary decision</h3>
+    <p>
+      02.1–02.5 retain evidence for graphic form, colour and proportions. Their
+      viewport-based eligibility is outside the amended question. 02.6 is the
+      selected example for flight-box eligibility. Camera, simulation and
+      gameplay rules remain current product fundamentals; changed presentation
+      rules are selected study proposals.
+    </p>
+    <h3>Current capability and feedback</h3>
+    <p>
+      <a href="/lab/ds">Design system</a>
+      and <code>docs/design.md</code> call for economical forms with precise
+      execution. The world HUD supplies screen-legible green strokes and dashes.
+      The deck supplies resource bars and values. Those are references for
+      graphical syntax, not permission to move their information. Lime already
+      means brand, action/selection and power in specific roles; an
+      informational contact palette needs an explicit study hypothesis rather
+      than a new global token.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Candidate</th>
+          <th>Current play context</th>
+          <th>Existing feedback and what an offscreen cue adds</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Pirate</td>
+          <td>
+            Two independently piloted, fitted hostile Scouts in experimental
+            Gauntlet. Destroyed actors are excluded.
+          </td>
+          <td>
+            Visible ships, weapons and effects; one purple bearing per living
+            offscreen actor. Type is implicit because only pirates get the cue;
+            separation is absent.
+          </td>
+        </tr>
+        <tr>
+          <td>Sun</td>
+          <td>
+            Inherent solar collection supplies power; approaching trades
+            collection against gravity, exposure and lethal contact. Standard
+            framing fits ship and Sun; Speed camera follows the ship.
+          </td>
+          <td>
+            World-HUD denomination, gravity, collection and hazard boundaries;
+            actual collection brightens its field. Deck power reports reserves.
+            An offscreen bearing could locate the source under Speed camera, but
+            must not imply safe approach or charging now.
+          </td>
+        </tr>
+        <tr>
+          <td>Derelict</td>
+          <td>
+            Moving wrecks in Survival and Derelicts; Gauntlet also instantiates
+            the encounter system. Wrecks and fragments are contact hazards.
+          </td>
+          <td>
+            World artwork, visible breakup and weapons feedback. No equivalent
+            offscreen location cue found. The candidate is an intact wreck, not
+            each fragment.
+          </td>
+        </tr>
+        <tr>
+          <td>Released energy</td>
+          <td>
+            Player weapon or ram destruction releases one collectable cell.
+            Environmental destruction releases none. Collection consumes a cell
+            even at full capacity; a free cell leaving the system is lost.
+          </td>
+          <td>
+            Luminous rotating hollow square and release pulse; deck power and,
+            in Derelicts, a brief collection message. An offscreen cue would
+            locate a remaining cell, not promise its yield or recovery.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p className="sources">
+      Inspected: <code>FlightDeck.svelte</code> (sync and
+      <code>.hostile-bearing</code>), <code>simulation.ts</code> (encounter
+      construction), <code>derelict-renderer.ts</code>,
+      <code>flight-frame.ts</code>, shared tokens and Canvas colour mirror.
+      Contracts: game screen, camera and Speed camera; Gauntlet; Derelicts and
+      world/derelict; world/star; render and render/game-field; design-system
+      colour and surfaces. The render contract specifies a screen-fixed hostile
+      bearing; its present rectangle, purple, glow and dimensions are
+      implementation details available to reconsider.
+    </p>
+    <p>
+      The earlier
+      <a href="/lab/studies/combat-hud-2026-11-19">Combat HUD</a>
+      study ended inconclusively. Its last comparison asks whether colour can
+      distinguish a shared mark. That is useful prior exploration, not evidence
+      that the mapping works or that more contacts help play. This cycle’s
+      constraints come from its own brief.
+    </p>
+    <details>
+      <summary>Question test · 19 November 2026</summary>
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Result</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>One subject</td>
+            <td>Pass</td>
+            <td>
+              One camera-relative contact layer can show type, bearing and
+              distance together, including its transitions across the active
+              flight-box boundary. No other open study in the complete registry
+              owns part of that answer; Combat HUD is stopped.
+            </td>
+          </tr>
+          <tr>
+            <td>Grounded</td>
+            <td>Pass</td>
+            <td>
+              The stated gameplay and presentation baseline agrees with
+              repository contracts and code. Flight-box eligibility and
+              placement, the selected symbols, palette, opacity and absence of
+              glow are explicitly supplied study proposals; their appearance and
+              transitions can be shown in a built example and judged by looking.
+            </td>
+          </tr>
+          <tr>
+            <td>Consequence</td>
+            <td>Pass</td>
+            <td>
+              The question concerns the flight HUD and helps decide how one
+              contact layer communicates the location and separation of pirates,
+              the Sun, intact wrecks and released energy. Section 01 identifies
+              the existing feedback it supplements and keeps gameplay changes
+              outside the decision.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p>Corrected and rerun.</p>
+    </details>
+  </section>
+  <section id="baseline">
+    <div className="reading">
+      <h2>Baseline / What the game actually draws</h2>
+      <p>
+        Unmodified production Gauntlet at 1440 × 900, default Wasp, Speed camera
+        on. Seed 1398170113, approximately tick 47, camera scale 0.6. The purple
+        mark near the upper-left edge identifies an offscreen pirate. The other
+        pirate is not represented unless it too leaves the viewport.
+      </p>
+    </div>
+    <figure>
+      <img
+        src="/studies/offscreen-information-2026-11-19/production-baseline.png"
+        alt="Actual Gauntlet flight: a small purple pirate triangle sits near the upper screen edge, outside the active flight area." />
+      <figcaption>
+        Actual browser capture, 19 November 2026. This baseline precedes the
+        proposal; it is not a prior study capture.
+      </figcaption>
+    </figure>
+    <div className="reading">
+      <p>
+        The implementation tests each living pirate’s projected centre against
+        the full camera viewport. It takes the ray from viewport centre to that
+        point, intersects a rectangle inset 28 CSS px from the stage edge, then
+        rotates a 12 × 14 CSS px filled triangle along the ray. The resolved ink
+        is <code>#b788ff</code>, with a 5 px drop shadow. There is no range
+        mapping, collision management or type vocabulary beyond “pirate.” Exact
+        viewport-edge centres are treated as visible; partial-body visibility is
+        not tested.
+      </p>
+      <p>
+<strong>Accepted departures from the baseline:</strong> circular placement and eligibility now use the active flight box. The filled triangle remains, tuned to 16 × 12 px. The final role palette replaces the pirate-only purple; distance arcs and category symbols extend its information. The final selection has no glow. These are accepted study decisions, with production adoption separate.
+      </p>
+    </div>
+  </section>
+  <section id="exploration">
+    <details>
+      <summary>02.1 / Retained findings</summary>
+      <div className="reading" id="step-021">
+        <h2>02.1 / Retained findings</h2>
+        <p>
+          Retained for visual grammar; this step’s viewport eligibility is
+          outside the amended flight-box question.
+        </p>
+        <p>
+          <strong>Designer assessment · 19 November 2026:</strong>
+          the open chevrons lost the filled pirate triangle’s presence. The
+          distance meter introduced useful graphical information, but its
+          signal-strength form did not work here. Four colours were too many.
+          Retain these findings; the chevron/bar proposal is replaced.
+        </p>
+        <p>
+          <strong>Palette correction:</strong>
+          purple was the production marker’s literal fallback, not a
+          design-system contact role. Amber, neutral and power-lime were
+          existing colours with proposed target meanings; the design system does
+          not establish that mapping. No target palette was accepted.
+        </p>
+      </div>
+    </details>
+    <details>
+      <summary>02.2 / Inner and outer distance arcs</summary>
+      <div className="reading" id="step-022">
+        <h2>02.2 / Let distance run along the edge</h2>
+        <p>
+          Retained for visual grammar; this step’s viewport eligibility is
+          outside the amended flight-box question.
+        </p>
+        <p>
+          <strong>Hypothesis:</strong>
+          a filled triangle keeps the bearing present, while a short concentric
+          arc reads as extent rather than signal strength. A longer arc means
+          greater separation. Compare the same four authored contacts with the
+          line just inside the triangle (A) and just outside it (B). Only the
+          arc radius changes between them.
+        </p>
+        <p>
+          One existing world-HUD green replaces the four-colour mapping. This
+          isolates distance and preserves the game’s graphical language, but
+          leaves target identity unresolved. All four candidate types are still
+          represented in the fixture; they deliberately look identical. This is
+          not a complete answer to section 01 yet.
+        </p>
+      </div>
+      <figure>
+        <img
+          src="/studies/offscreen-information-2026-11-19/022-distance-arcs.png"
+          alt="Retained 02.2 comparison of the inner and outer arc, with solid green triangles and longer arcs for farther contacts." />
+        <figcaption>
+          02.2 retained rendering: A radius 365 px, B radius 394 px; 14–66 px
+          line length; 12 × 14 px filled triangles in world-HUD green. Same four
+          authored contacts. Neither variant selected.
+        </figcaption>
+      </figure>
+      <div className="reading">
+        <h3>Conditions and limits</h3>
+        <p>
+          The production backdrop and authored contact centres are unchanged
+          from 02.1. Background: Gauntlet, default Wasp, Speed camera, seed
+          505541673, approximately tick 503, zoom about 1.02. Only the original
+          pirate cues were hidden for that capture. The proposed contacts are
+          authored, not sampled actor locations. Static composition cannot
+          establish usefulness, motion readability or an accepted gameplay need.
+        </p>
+        <p>
+          The 1440 × 900 viewport contains a 1080 × 804 active area. Triangle
+          anchors remain at radius 380 px about (720, 450). A uses an arc radius
+          of 365 px; B uses 394 px. Even B’s outer stroke stays within the
+          active area’s 402 px half-height. No circle, gutter marks, labels or
+          leader lines are drawn in flight. Eligibility still uses the full
+          viewport, independently of placement.
+        </p>
+        <p>
+          Distance remains direct player-to-target centre separation, assuming
+          the pilot at camera centre and a projection of 0.85 CSS px/u. The
+          provisional linear mapping runs from a 14 px arc at 600 u to a 66 px
+          arc at 3400 u, clamped beyond those limits. Arc length, not angle, is
+          the encoding; using the same pixel length in A and B avoids changing
+          the distance cue with the radius. These are test values, not weapon
+          ranges or danger thresholds.
+        </p>
+        <p>
+          <strong>What to judge:</strong>
+          A gives the triangle a backstop toward the centre; B puts the distance
+          reading beyond its tip. Does either keep the filled triangle readable
+          while making separation feel like a distinct quantity? The larger
+          far-distance arcs may imply a target’s size, or merge into a partial
+          ring when contacts crowd. Those are open risks, not observed play
+          failures.
+        </p>
+        <p>
+          <strong>Still open:</strong>
+          type without a four-colour palette; arc scale and thickness; crowded
+          bearings; partial-body visibility; entry/exit transitions and motion;
+          pane ownership. No flight-deck or world-HUD content has moved.
+        </p>
+      </div>
+    </details>
+    <details>
+      <summary>02.3 / Tuning and working geometry</summary>
+      <div className="reading" id="step-023">
+        <h2>02.3 / Tune the arc and the triangle</h2>
+        <p>
+          Retained for visual grammar; this step’s viewport eligibility is
+          outside the amended flight-box question.
+        </p>
+        <p>
+          <strong>Designer assessment · 19 November 2026:</strong>
+          the arc and filled triangle might work. Neither inner nor outer
+          placement was selected. A tuning tool is requested to investigate line
+          position, minimum and maximum lengths, independent line and triangle
+          colours for each type, and triangle proportions.
+        </p>
+        <p>
+          <strong>Hypothesis:</strong>
+          adjusting those properties in the same composition will reveal a
+          coherent balance between a strong bearing mark and a separate distance
+          reading. During exploration the menu exposed the controls; its defaults used
+          the provisional geometry below; the A/B buttons retain the earlier
+          comparison offsets and change only the line’s radial offset. Type
+          selection changes which colours are edited, not the settings
+          themselves.
+        </p>
+      </div>
+      <div className="reading">
+        <p>
+          <strong>Provisional working assumptions · 19 November 2026:</strong>
+          radial offset −16 px, minimum/maximum arc length 2–96 px, triangle
+          length × base width 16 × 12 px. Proceed with this geometry for now; no
+          target-colour mapping is selected. The initial custom-only colour
+          controls could not support a DS-based colour investigation, so named
+          DS token selectors now precede the optional custom picker.
+        </p>
+      </div>
+      <figure>
+        <img
+          src="/studies/offscreen-information-2026-11-19/023-marker-tuning.png"
+          alt="Retained 02.3 working geometry: offset minus 16, line length 2 to 96, triangle 16 by 12, all in HUD green." />
+        <figcaption>
+          02.3 captured before the contact-symbol experiment. Geometry is a
+          provisional working assumption; this capture selects no type-colour
+          mapping. The tool moved to 02.4 during exploration and was retired at closure.
+        </figcaption>
+      </figure>
+      <div className="reading">
+        <p>
+          The backdrop, contact bearings, distances, 380 px anchor radius,
+          viewport eligibility and active-area boundary remain fixed. Bounds on
+          triangle dimensions and line radius keep marks inside the active area,
+          including the triangle halo. Larger or smaller line lengths change
+          only the graphical mapping; the endpoints remain 600 and 3400 u.
+          Custom colours are study values, not design-system decisions.
+        </p>
+        <p>
+          Edits persist in this browser. Existing saved edits are preserved when
+          the tool is updated. Copy or download the settings to retain exact
+          values for discussion; the study records a chosen configuration only
+          after it is identified and assessed. Reset returns the geometry to
+          these working assumptions and every colour to world-HUD green. The
+          enlarged readings use the same geometry as the flight composition.
+          This static fixture still cannot establish motion readability,
+          crowded-bearing behaviour or combat usefulness. No production change
+          is made.
+        </p>
+      </div>
+    </details>
+    <details>
+      <summary>02.4 / Two inks and category marks</summary>
+      <div className="reading" id="step-024">
+        <h2>02.4 / Two inks, three category marks</h2>
+        <p>
+          Retained for visual grammar; this step’s viewport eligibility is
+          outside the amended flight-box question.
+        </p>
+        <p>
+          <strong>Proposal · 19 November 2026:</strong>
+          pirate and derelict use alert ink, energy and Sun use HUD ink. A small
+          angled skull identifies the pirate; hollow squares identify derelict
+          and energy; a hollow circle identifies the Sun. These are requested
+          category marks, not miniature target artwork. The skull is an explicit
+          addition to the earlier abstract-only vocabulary. No ship or wreck
+          silhouette, label or font icon is introduced.
+        </p>
+        <p>
+          <strong>Hypothesis:</strong>
+          two colour roles plus a small mark can distinguish four contact types
+          without four target colours. The square deliberately pairs a dangerous
+          intact wreck with recoverable energy; colour separates them. Skull and
+          circle supply recognition beyond colour for pirate and Sun. Whether
+          the square pairing causes confusion remains open.
+        </p>
+        <p>
+          “Alert” has no token of its own. This example uses
+          <code>--color-resource-danger</code>
+          (the existing red alias); HUD uses
+          <code>--color-android-green</code>. Those are provisional target
+          mappings, not changes to DS roles. The tool offers named DS choices
+          independently for each type’s line and triangle, including warning,
+          danger, power, hull, information, muted information, HUD and bracket;
+          custom colour remains optional.
+        </p>
+      </div>
+      <div className="reading">
+        <p>
+          <strong>Proposed DS token · 19 November 2026:</strong>
+          <code>--color-space-purple: lch(72% 38.35 301.48)</code>. Lightness
+          drops from 78.31% to 72%; chroma and hue stay unchanged. This is a
+          study-local proposal available in both colour selectors, not an
+          adopted DS token or a selected pirate mapping. It is distinct from the
+          existing dim bracket ink.
+        </p>
+      </div>
+      <figure>
+        <img
+          src="/studies/offscreen-information-2026-11-19/024-contact-symbols.png"
+          alt="02.4 retained two-ink comparison, with red pirates and wrecks, green Sun and energy, and original small symbols." />
+        <figcaption>
+          02.4 captured before advancing: danger red for pirate and derelict,
+          HUD green for Sun and energy; 1× symbols, skull −18°, unrotated
+          squares. The tool moved to 02.5 during exploration and was retired at closure.
+        </figcaption>
+      </figure>
+      <div className="reading">
+        <p>
+          Geometry carries forward unchanged: offset −16 px, line length 2–96
+          px, triangle 16 × 12 px. “Inside the line” means toward the circle
+          centre: each symbol is centred 13 px inward from its arc, and takes
+          the line’s colour. The 10 px skull stays upright with an 18° tilt;
+          square and circle remain upright. The same painters supply the
+          composition and enlarged key. The invisible circle, viewport
+          eligibility, fixture contacts and active-area containment are
+          preserved.
+        </p>
+        <p>
+          At this step the live tool saved separately from 02.3; resetting restores this step’s proposed mapping and working
+          geometry. Token selections retain their names in export. No colour
+          mapping or symbol is accepted yet. At very short arc lengths, a symbol
+          can be wider than its line; at flight scale, skull detail may
+          disappear. This static test does not settle crowded contacts, motion,
+          colour-vision readability or combat usefulness.
+        </p>
+      </div>
+    </details>
+    <div className="reading" id="step-025">
+      <h2>02.5 / Four roles and a stronger category mark</h2>
+      <p>
+        Retained for visual grammar; this step’s viewport eligibility is outside
+        the amended flight-box question.
+      </p>
+      <p>
+        <strong>Working configuration · 19 November 2026:</strong>
+        carry forward the supplied settings: pirate line and triangle use
+        danger, derelict uses warning, released energy uses power, and Sun uses
+        HUD. Offset stays −16 px, length 2–96 px, triangle 16 × 12 px. This is a
+        configuration to try, not acceptance of a final palette.
+      </p>
+      <p>
+        <strong>Hypothesis:</strong>
+        20% larger symbols will retain more character at flight scale; a 30°
+        square rotation will give the square a deliberate stance, while
+        increasing skull tilt from −18° to −30° will strengthen its angled
+        reading. All three category marks, including the Sun’s circle, use 1.2×
+        scale. The square rotation is +30° clockwise for both derelict and
+        energy. Skull direction stays counterclockwise. These concrete angles were tunable during exploration; the selected configuration is retained in 02.6.
+      </p>
+    </div>
+    <figure>
+      <img
+        src="/studies/offscreen-information-2026-11-19/025-type-symbol-tuning.png"
+        alt="Retained 02.5 palette and larger symbols, with the skull at minus 30 degrees and squares at 30 degrees." />
+      <figcaption>
+        02.5 captured before motion staging: supplied palette, 1.2× symbols,
+        −30° skull, +30° squares. This is static evidence; it establishes no
+        transition behaviour.
+      </figcaption>
+    </figure>
+    <div className="reading">
+      <p>
+        Symbols remain 13 px inward from their arcs and follow the line’s ink.
+        Both scene and enlarged key use the same symbol painter. Contacts,
+        distances, background, active-area containment and full-viewport
+        eligibility are unchanged. The symbol sliders expose scale and both
+        rotations without changing geometry or colour choices. This step saves
+        separately from 02.4; reset restores the supplied palette and the new
+        symbol settings. Named DS tokens, including proposed space-purple,
+        remain available.
+      </p>
+      <p>
+        <strong>Limits:</strong>
+        four roles are now deliberately under comparison despite the earlier
+        concern about too many colours. Their existing meanings may help the
+        mapping, but that is not yet established. Rotated squares and larger
+        skulls may need more separation from very short arcs. This static
+        composition does not establish motion readability, crowded-bearing
+        behaviour or combat usefulness.
+      </p>
+    </div>
+    <div className="reading" id="step-026">
+      <h2>02.6 / Selected: react to the flight box</h2>
+      <p>
+        <strong>Question amendment · 19 November 2026:</strong>
+        the designer replaces the full-viewport eligibility requirement with the
+        active flight box. The question now asks how the selected grammar reads
+        outside that box; the prior eligibility rule is set aside. This changes
+        presentation only, not camera framing or gameplay.
+      </p>
+      <p>
+        <strong>Selected direction:</strong>
+        eligibility and the invisible placement circle both follow the active
+        rectangle between gutters. Sun and energy use HUD green, pirate uses
+        red, derelict uses status yellow. Symbols are 50% opaque. The skull
+        doubles from 02.5 (2.4× base; about 24 px before tilt), while circle and
+        squares remain 1.2×. Skull rotation stays −30°; squares stay +30°.
+        Triangle and line remain fully opaque. No glow.
+      </p>
+      <p>
+        <strong>Retained working values:</strong>
+        triangle 16 × 12 CSS px, arc offset −16 px, arc length 2–96 CSS px
+        mapped linearly across 600–3400 world units, clamped beyond those
+        limits. Symbols sit 13 px inward from the arc. HUD is
+        <code>--color-android-green</code>, red is <code>--color-red</code> via
+        its danger alias, yellow is <code>--color-caution-tape</code> rather
+        than the earlier amber warning role. Proposed space-purple is not
+        selected for this configuration.
+      </p>
+      <p>
+        <strong>Motion fixture:</strong>
+        the shared Flight scene runs each 14 s production burn with a Wasp
+        starting at (100, 540), heading −π/2, velocity (0, −200) u/s. Pirate,
+        wreck and energy are production artwork on staged paths relative to the
+        player: range 100–3300 u, 10 s period, staggered phases. They do not
+        attack, collide or collect. The Sun is the actual simulation star. The
+        earlier staging let B2 hit the Sun; this revised start supplies an
+        uninterrupted comparison without changing physics. No randomness or
+        separate animation clock drives contact motion.
+      </p>
+    </div>
+    <figure><img src="/studies/offscreen-information-2026-11-19/026-selected-flight-box.png" alt="Accepted flight-box information layer: red pirate and doubled skull, yellow derelict, green Sun and energy; symbols at half opacity and no glow."  /><figcaption>Selected 02.6 capture at 1280 × 900, B1 tick 0. The live instrument is retired; the B3 recording below retains the motion evidence.</figcaption></figure>
+    <figure>
+      <video
+        controls
+        preload="metadata"
+        poster="/studies/offscreen-information-2026-11-19/026-selected-flight-box.png"
+        style={{width: "100%"}}
+      >
+        <source
+          src="/studies/offscreen-information-2026-11-19/026-selected-motion.webm"
+          type="video/webm" />
+        <track
+          kind="captions"
+          src="/studies/offscreen-information-2026-11-19/026-selected-motion.vtt"
+          srclang="en"
+          label="Study conditions" />
+      </video>
+      <figcaption>
+        Selected 02.6 motion capture, 1280 × 900: B3 playback includes the
+        actual Sun entering and leaving the active box. Other targets follow the
+        documented staged paths. No glow.
+      </figcaption>
+    </figure>
+    <div className="reading">
+      <p>
+        Compare the marker’s entry/exit with the active box, not the outer
+        screen edge. The active box uses the displayed stage’s current 180 px
+        side and 48 px end gutters; all marker dimensions are CSS pixels. A
+        centre exactly on a boundary is inside. No fade, hysteresis, clustering
+        or overlap handling is selected. Large partly visible bodies remain
+        centre-based for this first delivery. These limits are explicit; the
+        selected direction does not establish every combat situation.
+      </p>
+      <p>
+        <strong>Automated evidence:</strong>
+        all three shared burns completed their full 14 seconds without losing
+        the ship. Sampling every 24 ticks found pirate/derelict/energy
+        flight-box transitions in every burn; the actual Sun entered and left in
+        B3, while remaining outside in B1 and B2. Seventeen sampled cases placed
+        a contact inside the overall viewport but outside the flight box, with
+        its marker correctly present. Play/pause and backward seek were checked;
+        repeated ticks reproduced contact projections and arc geometry. These
+        checks establish presentation behaviour, not combat usefulness.
+      </p>
+      <h2 id="readiness">03 / Readiness</h2>
+      <p>
+        <strong>Assessment:</strong>
+        feasible as a contained presentation feature. Shared systems already
+        supply camera projection, active-box geometry, actor lifecycle, solar
+        state and salvage bodies. The study establishes the selected grammar;
+        production adoption and its render ownership must be settled before
+        implementation. No simulation, AI, energy, collection, collision or
+        camera-policy change is needed.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Reusable owner</th>
+            <th>Adaptation needed</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <code>game-screen.ts / fitGameScreen</code>;
+              <code>Camera.worldToScreen</code>
+            </td>
+            <td>
+              Feed the active CSS box and stage projection into a pure contact
+              presentation calculation. Keep world distance independent of zoom.
+              Recompute on camera, safe-area and stage-size changes.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>FlightDeck.svelte</code>
+              hostile-bearing calculation; simulation opponents
+            </td>
+            <td>
+              Replace pirate-only viewport rectangle logic with the selected
+              active-box eligibility and circle. Keep one cue per living pirate;
+              never revive destroyed actors.
+            </td>
+          </tr>
+          <tr>
+            <td>Simulation star and <code>salvage.bodies</code></td>
+            <td>
+              Enumerate Sun, intact wrecks and live free energy cells in modes
+              where they exist; exclude fragments, contained cores and removed
+              cells. Existing SalvageBodySchema kinds are wreck, fragment, cell
+              and ship. Read live hull-positive wreck/cell entries; contained
+              energy is not a separate cell body.
+            </td>
+          </tr>
+          <tr>
+            <td>Existing render layers/passes and game field host</td>
+            <td>
+              Give the information layer one screen-space owner above the
+              composed camera view. Share geometry and painters with the Lab.
+              Rendering reads camera state and must not change camera or
+              simulation state.
+            </td>
+          </tr>
+          <tr>
+            <td>Current status tokens and Canvas mirror</td>
+            <td>
+              Use HUD green, red and caution yellow by role; add a checked
+              Canvas mirror for caution yellow if Canvas is selected.
+              Space-purple remains an unrelated proposal, not a dependency.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Blockers to production delivery</h3>
+      <ol>
+        <li>
+          <strong>Adopt intent and extent.</strong>
+          The project must adopt active-box eligibility, the four contact kinds,
+          per-mode availability and the selected readings in owning specs. The
+          study settles its proposal, not all features’ contracts.
+        </li>
+        <li>
+          <strong>Settle layer ownership.</strong>
+          Recommend a dedicated screen-fixed information overlay above the game
+          field and below dialogs. The study’s SVG overlay demonstrates that
+          separation. An existing pane is still architecturally possible; the
+          project must select the owner and its order rather than quietly
+          overloading World HUD or Deck.
+        </li>
+        <li>
+          <strong>Define the contact boundary.</strong>
+          Give the production view validated type/id/position/lifecycle inputs
+          and a shared projection calculation. The inspected salvage
+          representation already distinguishes free cells by kind=cell; the new
+          contract must state the selected inclusion and removal rules.
+        </li>
+      </ol>
+      <p>
+        Distance endpoints, glyph size and spacing are provisional tuning, not
+        first-delivery blockers. Centre-based eligibility is the selected
+        first-delivery rule. Crowded contacts and partially visible large bodies
+        remain known limits; there is no claim of collision avoidance. Human
+        play assessment remains outside the repository and is not a gate or
+        required evidence record.
+      </p>
+      <h3>Owning spec changes proposed</h3>
+      <p>
+        Add a focused flight-information child contract under
+        <code>docs/specs/game/render/</code>
+        for contact eligibility, marker grammar, type mapping and invariants.
+        Amend render and game-field composition/order, game-screen
+        placement/active-box ownership, and the Gauntlet bearing clause to
+        reference it. Camera consumes and supplies geometry without changing
+        framing. World/star and world/derelict retain mechanics and existing
+        world feedback; cross-reference their contact availability. Architecture
+        names the information layer alongside World HUD and Deck. No change to
+        <code>docs/design.md</code>
+        principles is proposed.
+      </p>
+      <h2 id="scope">04 / Delivery scope</h2>
+      <p>
+        <strong>Intended delivery:</strong>
+        the selected 02.6 presentation in existing playable modes where its
+        contacts occur, without adding a mode or changing scoring eligibility.
+        Rough size: 3–5 engineering days, including specification/ownership
+        decisions, integration and verification; not a commitment or
+        implementation authorisation.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Slice</th>
+            <th>Extent, dependency and rough size</th>
+            <th>Checks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1. Adopt the contract</td>
+            <td>
+              Settle the three readiness blockers; author the focused contract
+              and amendments above. First, no code dependency. About ½–1 day.
+            </td>
+            <td>
+              Review the selected configuration and explicit limits; validate
+              changed spec directories with <code>pnpm check:specs</code>.
+            </td>
+          </tr>
+          <tr>
+            <td>2. Shared presentation and pirate replacement</td>
+            <td>
+              Schema first, then typed/read-only projection, circle, arc and
+              glyph painters. Integrate chosen overlay and replace the existing
+              pirate cue. Depends on 1. About 1–1½ days. Independently useful as
+              the existing pirate experience with type/distance.
+            </td>
+            <td>
+              Active-box edges/corners versus stage edges; centre-on-edge;
+              camera zoom/resize; fixed CSS sizes; lifecycle removal;
+              tick-for-tick simulation independence; keyboard and iPad landscape
+              controls clear.
+            </td>
+          </tr>
+          <tr>
+            <td>3. Sun, wreck and energy contacts</td>
+            <td>
+              Add only the selected live contact kinds through the same owner;
+              no fragments or contained cores. Depends on 2. About ½–1 day.
+            </td>
+            <td>
+              Mode availability; star entry/exit; intact-to-destroyed wreck;
+              released/collected/expired/exited cell; no ghost cues, duplicate
+              cues or altered collection. Standard and Speed camera.
+            </td>
+          </tr>
+          <tr>
+            <td>4. Lab reference and fidelity</td>
+            <td>
+              Replace the study’s prototype painters/probes with the adopted
+              shared presentation in the canonical render/flight inspection
+              surface. Retain this study’s historical captures. Depends on 2;
+              expands for 3. About ½–1½ days.
+            </td>
+            <td>
+              Crossings, arc change and repeatable backward seek; selected
+              colours/opacity/angles; no glow; desktop and landscape iPad
+              supported sizes; affected correctness, contracts and browser
+              checks. No inferred gameplay acceptance.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        <strong>Selected reference:</strong>
+        02.6 after the flight-box amendment, with the exact palette, geometry
+        and symbol settings above. The original viewport rule, four-role
+        palette, two-ink palette, glow and proposed purple are not competing
+        implementation defaults. Accepted and closed on 19 November 2026. Project adoption into owning specs and production implementation remain separate work; neither is performed by this closure.
+      </p>
+    </div>
+  </section>
+
+<style>{`
+
+.reading {
+  max-width: 72ch;
+}
+p,
+li {
+  line-height: 1.65;
+}
+p {
+  margin-block: 0 1.2rem;
+}
+h2 {
+  margin-block: 2.8rem 1.2rem;
+}
+h3 {
+  margin-block: 2rem 1rem;
+}
+ul {
+  padding-left: 1.3rem;
+}
+li {
+  margin-block: 0.6rem;
+}
+figure {
+  margin: 1.6rem 0;
+}
+img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+figcaption,
+.sources {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin-block: 0.75rem;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-block: 1.5rem;
+  font-size: 0.9rem;
+}
+th,
+td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+  line-height: 1.55;
+}
+a {
+  color: var(--color-action);
+}
+code {
+  font-size: 0.85em;
+}
+details {
+  margin-block: 2rem;
+}
+
+`}</style>

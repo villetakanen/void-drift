@@ -38,6 +38,7 @@ import {
   stepMountedActor,
 } from "./gauntlet";
 import { GRAVITY_COLLECTION } from "./gravity-collection";
+import { habitableMass } from "./habitable-world";
 import {
   applyMercurialGravity,
   MERCURIAL_ROCK_RADIUS,
@@ -119,7 +120,9 @@ export function planetMass(
   tuning: GravityTuning = GRAVITY_TUNING,
   radius: number = tuning.mercurial.referenceRadius,
 ): number {
-  if (id === "moon") return mercurialMass(radius, tuning.mercurial);
+  if (id === "moon" || id === "outer-mercurial")
+    return mercurialMass(radius, tuning.mercurial);
+  if (id === "habitable") return habitableMass(radius, tuning.habitable);
   const mass = id === undefined ? undefined : tuning.planetMass[id];
   if (mass === undefined)
     throw new Error(`No mass for planet ${id ?? "(no id)"} in the tuning file`);
@@ -133,8 +136,13 @@ export function applyGravityTuning(
 ) {
   setStarMassWell(star, tunedMassWell(tuning.sunMass, tuning));
   for (const planet of planets) {
-    if (planet.id === "moon") applyMercurialGravity(planet, tuning);
-    else planet.massWell = tunedMassWell(planetMass(planet.id, tuning), tuning);
+    if (planet.id === "moon" || planet.id === "outer-mercurial")
+      applyMercurialGravity(planet, tuning);
+    else if (planet.id === "habitable") {
+      planet.mass = habitableMass(planet.radius, tuning.habitable);
+      planet.massWell = tunedMassWell(planet.mass, tuning);
+    } else
+      planet.massWell = tunedMassWell(planetMass(planet.id, tuning), tuning);
   }
 }
 /** Gives the star a mass well and makes its reach follow it. */

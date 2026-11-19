@@ -126,9 +126,9 @@ describe("Gauntlet flight and combat", () => {
   it("uses a valid Scout fit and advances shared planet time once per world substep", () => {
     const loadout = pirateLoadout();
     expect(loadout.chassis).toBe("scout");
-    expect(loadout.side).toBe("service-ion");
+    expect(loadout.side).toBe("ion");
     expect(loadout.hull).toEqual(["plasma-rifle"]);
-    expect(loadout.aft).toEqual(["plasma"]);
+    expect(loadout.aft).toEqual([null]);
 
     const sim = new Simulation({
       ...gameSettings("fighter"),

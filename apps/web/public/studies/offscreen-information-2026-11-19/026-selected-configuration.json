@@ -1,0 +1,68 @@
+{
+  "status": "accepted study direction; production adoption separate",
+  "accepted": "2026-11-19",
+  "boundary": "active flight box between gutters, for both eligibility and placement",
+  "centreOnBoundary": "inside",
+  "guttersCSS": {
+    "side": 180,
+    "end": 48
+  },
+  "anchorCircle": "centred in active box; radius=min(active width, active height)/2 - 22 CSS px",
+  "arcOffset": -16,
+  "minLength": 2,
+  "maxLength": 96,
+  "distanceWorldUnits": {
+    "minimum": 600,
+    "maximum": 3400,
+    "mapping": "linear, clamped; player-to-target centre separation"
+  },
+  "triangle": {
+    "length": 16,
+    "baseWidth": 12,
+    "opacity": 1
+  },
+  "symbols": {
+    "opacity": 0.5,
+    "inwardFromArc": 13,
+    "Pirate": {
+      "shape": "geometric skull",
+      "scaleFromOriginal": 2.4,
+      "rotationDegrees": -30
+    },
+    "Derelict": {
+      "shape": "hollow square",
+      "scaleFromOriginal": 1.2,
+      "rotationDegrees": 30
+    },
+    "Released energy": {
+      "shape": "hollow square",
+      "scaleFromOriginal": 1.2,
+      "rotationDegrees": 30
+    },
+    "Sun": {
+      "shape": "hollow circle",
+      "scaleFromOriginal": 1.2
+    }
+  },
+  "colours": {
+    "Pirate": {
+      "token": "--color-red",
+      "lch": "lch(56.91% 91.12 35.03)"
+    },
+    "Derelict": {
+      "token": "--color-caution-tape",
+      "lch": "lch(91.22% 89.15 92.72)"
+    },
+    "Released energy": {
+      "token": "--color-android-green",
+      "lch": "lch(78.31% 65.02 151.48)"
+    },
+    "Sun": {
+      "token": "--color-android-green",
+      "lch": "lch(78.31% 65.02 151.48)"
+    }
+  },
+  "symbolInk": "line ink",
+  "glow": false,
+  "spacePurple": "proposal retained in prose, not selected or adopted"
+}

@@ -1,24 +1,34 @@
 <script lang="ts">
 import type { FlightLayerId } from "@void-drift/mode-a";
 import { onMount } from "svelte";
+import { systemBackground } from "../../../lib/game-field";
 import {
   DEFAULT_SYSTEM_SEED,
   randomSystemSeed,
   SystemInstrumentDocumentSchema,
 } from "../../../lib/system-instrument/config";
 import { SystemInstrumentScene } from "../../../lib/system-instrument/scene";
-import FlightLayers from "../../FlightLayers.svelte";
+import GameField from "../../GameField.svelte";
 
 let _props: { "client:load"?: boolean } = $props();
 const id = $props.id();
 let draft = $state<number | undefined>(DEFAULT_SYSTEM_SEED);
 let activeSeed = $state(DEFAULT_SYSTEM_SEED);
 let error = $state("");
-let status = $state("Loading mercurial material…");
+let status = $state("Loading planet materials…");
 let ready = $state(false);
 let stage: HTMLDivElement;
 let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
 let scene: SystemInstrumentScene | undefined;
+let skyX = $state(960),
+  skyY = $state(540),
+  skyWidth = $state(1920);
+function syncSky() {
+  if (!scene) return;
+  const centre = scene.camera.getViewCentre();
+  skyX = centre.x;
+  skyY = centre.y;
+}
 
 function generate() {
   const parsed = SystemInstrumentDocumentSchema.safeParse({ seed: draft });
@@ -29,6 +39,7 @@ function generate() {
   try {
     scene?.generate(parsed.data);
     activeSeed = parsed.data.seed;
+    syncSky();
     error = "";
   } catch {
     error = "Could not generate this system. The previous system is retained.";
@@ -57,6 +68,8 @@ onMount(() => {
   const resize = () => {
     const bounds = stage.getBoundingClientRect();
     scene?.resize(bounds.width, bounds.height);
+    skyWidth = (bounds.width / bounds.height) * 1080;
+    syncSky();
   };
   const observer = new ResizeObserver(resize);
   observer.observe(stage);
@@ -112,8 +125,12 @@ onMount(() => {
     {#if error}
       <p id={`${id}-error`} class="message" role="alert">{error}</p>
     {/if}
-    <FlightLayers
+    <GameField
       bind:canvases
+      background={systemBackground(activeSeed)}
+      cameraX={skyX}
+      cameraY={skyY}
+      width={skyWidth}
       label={`Generated solar system, seed ${activeSeed}`}
     />
     {#if status}

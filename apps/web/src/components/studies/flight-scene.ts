@@ -66,6 +66,7 @@ export class FlightScene {
       width,
       mode(config),
     );
+    this.scene.backgroundMode = "historical";
   }
   get tick() {
     return this.scene.tick;

@@ -109,6 +109,22 @@ export const labPages = z.array(labPageSchema).parse([
     spec: "docs/specs/factory/design-system/surfaces/spec.md#architecture",
   },
   {
+    href: "/lab/ds/game-field-backdrop",
+    title: "Game field backdrop",
+    purpose:
+      "Generated decorative system, outer orbit composition and shared scrim.",
+    group: "design-system",
+    source: "production",
+    defines: [
+      "apps/web/src/components/GameFieldBackdrop.svelte",
+      "apps/web/src/lib/game-field.ts",
+      "packages/mode-a/src/lib/solar-system.ts",
+      "packages/mode-a/src/lib/flight-frame.ts",
+      "packages/core/src/lib/styles/surfaces.css",
+    ],
+    spec: "docs/specs/factory/design-system/game-field-backdrop/spec.md#architecture",
+  },
+  {
     href: "/lab/ds/choices",
     title: "Choices",
     purpose:

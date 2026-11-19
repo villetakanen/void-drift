@@ -153,9 +153,8 @@ export function stepMountedActor(
 
 export function pirateLoadout(): Loadout {
   const loadout = defaultLoadout("scout");
-  loadout.side = "service-ion";
+  loadout.side = "ion";
   loadout.hull[0] = "plasma-rifle";
-  loadout.aft[0] = "plasma";
   return LoadoutSchema.parse(loadout);
 }
 

@@ -18,6 +18,7 @@ const id = $props.id();
 </script>
 
 <FlightSceneInstrument
+  backgroundMode="historical"
   config={PLASMA_SCENE_026}
   label="Plasma light 02.6: a smooth luminous ball"
   light={lit ? PLASMA_LIGHT_026 : undefined}

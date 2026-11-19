@@ -4,15 +4,16 @@ import {
   holdPad,
   type InputAction,
   litPads,
-  Renderer,
   resolveAction,
   type ThrustPad,
 } from "@void-drift/core";
-import { GAME_GUTTER_PX, GAME_HEIGHT } from "../../lib/game-screen";
+import { PRACTICE_BACKGROUND } from "../../lib/game-field";
+import { GAME_GUTTER_PX } from "../../lib/game-screen";
 import ThrustPads from "../controls/ThrustPads.svelte";
+import GameField from "../GameField.svelte";
 import SegmentedControl from "../inputs/SegmentedControl.svelte";
 
-// Both gutters' pads over the seeded starfield: a selector shows each lit
+// Both gutters' pads over the Practice sky: a selector shows each lit
 // state, and live presses resolve through the real input rules.
 let { label = "Flight controls" }: { label?: string } = $props();
 const STATES = ["none", "L", "R", "LR", "LF", "RF"] as const;
@@ -37,29 +38,8 @@ function press(pointerId: number, pad: ThrustPad | null) {
   pointers = next;
 }
 
-let canvas: HTMLCanvasElement;
 let stageWidth = $state(0);
 let stageHeight = $state(0);
-
-$effect(() => {
-  const width = Math.round(stageWidth);
-  const height = Math.round(stageHeight);
-  if (!canvas || width === 0 || height === 0) return;
-  const renderer = new Renderer(canvas);
-  renderer.resize(width, height);
-  renderer.clear();
-  // The game's framing scale: the stage height shows the logical height.
-  const scale = height / GAME_HEIGHT;
-  const context = canvas.getContext("2d");
-  context?.setTransform(scale, 0, 0, scale, 0, 0);
-  renderer.drawBackground({
-    x: 0,
-    y: 0,
-    width: width / scale,
-    height: height / scale,
-  });
-  context?.setTransform(1, 0, 0, 1, 0, 0);
-});
 </script>
 
 <section aria-labelledby="thrust-pads-heading" aria-label={label}>
@@ -86,7 +66,12 @@ $effect(() => {
       bind:clientWidth={stageWidth}
       bind:clientHeight={stageHeight}
     >
-      <canvas bind:this={canvas} aria-hidden="true"></canvas>
+      <GameField
+        skyOnly
+        background={PRACTICE_BACKGROUND}
+        label="Stationary Practice sky"
+        width={stageHeight ? (stageWidth / stageHeight) * 1080 : 1920}
+      />
       <div class="gutter left">
         <ThrustPads side="left" {lit} onpress={press} />
       </div>
@@ -119,13 +104,6 @@ $effect(() => {
   height: 680px;
   overflow: hidden;
   background: var(--color-void);
-}
-
-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
 }
 
 .gutter {

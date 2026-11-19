@@ -22,6 +22,7 @@ const tuning = $derived({ plasma: { chargeSeconds: delay } });
 </script>
 
 <FlightSceneInstrument
+  backgroundMode="historical"
   config={PLASMA_SCENE_027}
   label="Plasma light 02.7: an adjustable charge"
   {light}

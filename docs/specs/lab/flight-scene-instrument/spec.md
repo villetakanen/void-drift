@@ -3,8 +3,8 @@
 title: "Spec: Flight scene instrument"
 status: draft
 generated:
-by: "codex/gpt-6"
-at: "2026-11-19T16:41:35+02:00"
+  by: "codex/gpt-6"
+  at: "2026-11-19T16:41:35+02:00"
 verified:
 - { by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }
 - by: "openai-codex/gpt-6.1-sol"

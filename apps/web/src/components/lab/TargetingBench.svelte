@@ -1,7 +1,6 @@
 <script lang="ts">
 import { Camera, COLOR, Renderer } from "@void-drift/core";
 import {
-  drawFlightFrame,
   FlightFx,
   type FlightLayerId,
   type FlightPass,
@@ -11,7 +10,13 @@ import {
   STEP,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
-import FlightLayers from "../FlightLayers.svelte";
+import {
+  drawGameField,
+  type FieldBackground,
+  PENDING_BACKGROUND,
+  systemBackground,
+} from "../../lib/game-field";
+import GameField from "../GameField.svelte";
 import Switch from "../inputs/Switch.svelte";
 import { percentile } from "./render-performance-metrics";
 import {
@@ -36,6 +41,9 @@ let slot2 = $state<TargetingWeapon>("light-ion-cannon");
 let formation =
   $state<NonNullable<TargetingConfig["formation"]>>("three-loops");
 let mode = $state<TargetingConfig["mode"]>("sustained");
+let skyX = $state(960),
+  skyY = $state(540),
+  background = $state<FieldBackground>(PENDING_BACKGROUND);
 let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
 let ready = $state(false);
 let running = $state(true);
@@ -116,9 +124,13 @@ onMount(() => {
       : 0;
   }
   function paint() {
+    const centre = camera.getViewCentre();
+    skyX = centre.x;
+    skyY = centre.y;
     fxSubmission = 0;
-    drawFlightFrame(
+    drawGameField(
       { layers, renderer, camera, sim: encounter.sim, fx },
+      background,
       { observe: observePass },
     );
     if (trace) {
@@ -153,6 +165,7 @@ onMount(() => {
   }
   reset = () => {
     encounter = new TargetingBench({ slot1, slot2, mode, formation });
+    background = systemBackground(encounter.sim.settings.seed);
     fx.clear();
     carry = 0;
     last = undefined;
@@ -320,7 +333,11 @@ onMount(() => {
     <div>
       <figure>
         <div class="stage">
-          <FlightLayers
+          <GameField
+            {background}
+            cameraX={skyX}
+            cameraY={skyY}
+            width={(WIDTH / HEIGHT) * 1080}
             bind:canvases
             label={formation === "grazing-approach"
               ? "A Fighter holding a Wasp at the edge of its rifle cone"

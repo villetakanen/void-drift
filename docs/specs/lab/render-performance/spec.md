@@ -3,8 +3,8 @@
 title: "Spec: Render performance bench"
 status: draft
 generated:
-by: "openai-codex/gpt-6"
-at: "2026-11-19T14:20:12+02:00"
+  by: "openai-codex/gpt-6"
+  at: "2026-11-19T14:20:12+02:00"
 verified:
 - by: "openai-codex/gpt-6"
   at: "2026-11-19T14:21:41+02:00"

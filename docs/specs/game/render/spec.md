@@ -3,9 +3,9 @@
 title: "Spec: Render"
 status: draft
 generated:
-by: "codex/gpt-6"
-at: "2026-11-19T16:41:35+02:00"
-verified: [{ by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }]
+  by: "codex/gpt-6"
+  at: "2026-11-19T21:04:09+02:00"
+verified: [{ by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }, { by: "codex/gpt-6", at: "2026-11-19T19:21:23+02:00" }, { by: "codex/gpt-6", at: "2026-11-19T21:04:09+02:00" }]
 ---
 
 # Render
@@ -24,7 +24,7 @@ a drawn frame relates to simulation time, and what a layer may remember. It is
 the shared model the screen, the camera and the effects are specified against,
 and the one people point at when they discuss how the game renders.
 
-### Architecture and boundaries
+### Architecture
 
 - `packages/mode-a/src/lib/flight-frame.ts` defines the in-flight frame:
   `FLIGHT_LAYERS`, the ordered layers, `FLIGHT_PASSES`, the ordered passes with
@@ -46,17 +46,19 @@ and the one people point at when they discuss how the game renders.
   what emits it, how it accumulates and decays, its budget, and the look each
   light layer's blend, resolution and filter are tuned to. Each pass's
   appearance belongs to the feature that draws it.
-- The [title screen](../landing-page/spec.md) draws its cosmetic bodies over the same prepared field sky, using a stationary camera.
+- The shared [game field backdrop](../../factory/design-system/game-field-backdrop/spec.md)
+  draws its independently generated system over the prepared field sky at a
+  stationary camera pose. It does not use or change an active game's state.
 - The [render model page](../../lab/render-model/spec.md) shows this model in
   the Lab.
 
-### The demo-scene method
+#### The demo-scene method
 
 The renderer treats the browser as the machine a demo is written for. Demo
 coders made hardware do what it was not built for, such as drawing with sound
 circuits. Here the browser's page machinery is that hardware: blend modes,
 filters, image scaling, transforms and opacity, all built for laying out
-documents, are used to make cool, expressive graphics with inexpensive methods.
+documents, make cool, expressive graphics with inexpensive methods.
 This is the Hi-Fi Lo-Fi intent: use the artefacts of cheap rendering as part of
 the picture's character.
 
@@ -75,7 +77,7 @@ the picture's character.
   the browser has no native that accumulates.
 - **A native changes how a layer is shown, never what the layer holds.**
 
-### World bodies
+#### World bodies
 
 A world body is a planet or another natural body in flight. Every body is drawn
 the same way; what differs between bodies is data.
@@ -161,7 +163,7 @@ the same way; what differs between bodies is data.
 - **Failure.** When a body's material cannot be prepared, the stock body is drawn
   with the same World HUD, and the simulation is unaffected.
 
-### Planet appearance adapter
+#### Planet appearance adapter
 
 `apps/web/src/lib/assets/planet-appearances.ts` owns `planetAppearances`:
 prepared surface/painter materials and the full simulation planet list enter;
@@ -191,7 +193,7 @@ belong to the [planet contract](../world/planets/spec.md).
   teardown. Late asynchronous results after teardown are disposed without
   attaching to a departed scene. Immutable decoded maps may be shared.
 
-### Time
+#### Time
 
 - **Tick:** one fixed simulation step of 1/60 s. Game time is the tick count
   times the step. Only ticks change the simulation.
@@ -205,7 +207,7 @@ belong to the [planet contract](../world/planets/spec.md).
 - **Empty interval:** a frame with no tick, as when paused, shows the same
   picture. Nothing moves, emits or fades.
 
-### Spaces
+#### Spaces
 
 | Space  | Unit                                               | Used for                        | Conversion owned by        |
 | ------ | -------------------------------------------------- | ------------------------------- | -------------------------- |
@@ -216,7 +218,7 @@ belong to the [planet contract](../world/planets/spec.md).
 A pass draws in exactly one space: `screen` passes draw in stage pixels with no
 transform, `world` passes draw under the camera transform.
 
-### Layers
+#### Layers
 
 A layer is one element in the stage. The stage is its own blending group:
 layers blend with the layers beneath them in the stage and with nothing behind
@@ -276,7 +278,7 @@ remain exploratory: Follow 4× is a Lab hypothesis and reproduction view, not a
 guaranteed maximum, and the whole-system view is not a guaranteed minimum. FX
 remains full resolution while those limits are explored.
 
-### The in-flight frame
+#### The in-flight frame
 
 `FLIGHT_PASSES` in `packages/mode-a/src/lib/flight-frame.ts` is the list of passes.
 Each entry names its layer, its space and what it draws. The
@@ -286,18 +288,23 @@ Each entry names its layer, its space and what it draws. The
 - The standard game field clears World to transparency over its prepared sky before drawing local bodies and ships. Lab views that present this field follow the same rule. Dedicated test fixtures can supply a background specified by their experiment.
 - A new pass takes the position its depth gives it in that order.
 
-### Authority
+#### Authority
 
 Rendering reads the simulation and writes none of it. Drawing every layer, some
 layers or none leaves the run identical, tick for tick. A persistent layer's
 image never feeds back into the simulation.
 
-### Inspection
+#### Inspection
 
 The shared field selects the composition background policy before caller pass
 filters. `drawFlightFrame` accepts `include`, which selects the eligible passes that draw, and
 `observe`, which receives each drawn pass and its draw time. The game uses
 neither: it draws every eligible production pass, unobserved.
+
+### Constraints
+
+- The browser composites the shared layers; prepared images and native drawing
+  supply every visible body and effect.
 
 ## Contract
 
@@ -429,9 +436,17 @@ Scenario: A layer's look is changed
   And the image the FX layer holds follows the same rules as before
 ```
 
-### Configured Lab painters
+#### Configured Lab painters
 
 A configured Lab flight can supply its own ordered pass list to `drawFlightFrame`.
 The frame retains layer clearing, camera transforms, resolution and observation for
 those passes. Omitting a custom list uses the production passes. A study can replace
 a solid-body painter and add its matching LFX painter without changing play’s defaults.
+
+#### Habitable world appearance
+
+The shared planet appearance adapter composes a generated Habitable world through
+the same ground, independent cloud surface, World haze/rim and LFX light ownership
+as The Cradle. Its validated ground/cloud choices select production maps before
+drawing. All generated flight and preview consumers bind this shared composition;
+material failure retains a blue fallback body, atmosphere physics and HUD identity.

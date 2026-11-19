@@ -17,12 +17,17 @@ import {
   type TargetMode,
 } from "../../../lib/flight-scene";
 import {
+  type FieldBackground,
+  HISTORICAL_BACKGROUND,
+  PENDING_BACKGROUND,
+} from "../../../lib/game-field";
+import {
   type BurnId,
   SECONDS,
   TICK_RATE,
   TOTAL_TICKS,
 } from "../../../lib/instrument";
-import FlightLayers from "../../FlightLayers.svelte";
+import GameField from "../../GameField.svelte";
 import RingSlider from "../../inputs/RingSlider.svelte";
 import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import BurnRow from "../instrument/BurnRow.svelte";
@@ -50,6 +55,7 @@ let {
   starAppearance,
   start,
   loadout,
+  backgroundMode = "production",
 }: {
   /** The configuration document; parsed here, so it may come from anywhere. */
   config: unknown;
@@ -84,6 +90,7 @@ let {
   /** Validated initial pose/velocity override; replays the selected burn/time. */
   start?: unknown;
   loadout?: unknown;
+  backgroundMode?: "production" | "historical";
 } = $props();
 
 // The document is read once; the designer's changes are view state. The engine
@@ -149,6 +156,15 @@ let lost = $state<{ seconds: number; cause?: string | null } | null>(null);
 let hostW = $state(SCREEN.w);
 let hostH = $state(SCREEN.h);
 const scale = $derived(Math.min(hostW / SCREEN.w, hostH / SCREEN.h));
+let skyX = $state(960),
+  skyY = $state(540),
+  background = $state<FieldBackground>(
+    untrack(() =>
+      backgroundMode === "historical"
+        ? HISTORICAL_BACKGROUND
+        : PENDING_BACKGROUND,
+    ),
+  );
 let canvases = $state<
   Partial<Record<"world" | "fx" | "lfx", HTMLCanvasElement>>
 >({});
@@ -168,6 +184,8 @@ onMount(() => {
     untrack(() => planetAppearance),
     untrack(() => experiment),
   );
+  scene.backgroundMode = backgroundMode;
+  background = scene.background;
   // The constructor already flew the opening burn in the opening view and the
   // chosen targets, so the first frame only seeks.
   let drawn = {
@@ -182,12 +200,11 @@ onMount(() => {
     star: "",
     experiment: untrack(() => experiment),
   };
-  const releaseMaterials =
-    doc.system === "practice"
-      ? scene.loadPracticeMaterials(() => {
-          drawn.tick = -1;
-        })
-      : undefined;
+  const releaseMaterials = !doc.planet
+    ? scene.loadPracticeMaterials(() => {
+        drawn.tick = -1;
+      })
+    : undefined;
   let previous = performance.now(),
     accumulator = 0,
     raf = 0;
@@ -227,6 +244,10 @@ onMount(() => {
         scene.setPlanetAppearance(planetAppearance);
       if (drawn.view !== view) scene.restart(burn, view);
       scene.seek(burn, tick, Infinity);
+      const centre = scene.skyCamera;
+      skyX = centre.x;
+      skyY = centre.y;
+      background = scene.background;
       rendered = true;
       drawnTick = tick;
       drawnView = view;
@@ -278,7 +299,11 @@ onMount(() => {
       style={`width:${SCREEN.w}px;height:${SCREEN.h}px;transform:translate(-50%,-50%) scale(${scale})`}
     >
       <div class="slot scene">
-        <FlightLayers
+        <GameField
+          {background}
+          cameraX={skyX}
+          cameraY={skyY}
+          width={RENDER_WIDTH}
           bind:canvases
           label="The game’s layers at the current time"
           visibility={layers}

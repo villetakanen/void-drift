@@ -3,8 +3,8 @@
 title: "Spec: Gauntlet bench"
 status: draft
 generated:
-by: "openai-codex/gpt-6"
-at: "2026-11-19T13:13:50+02:00"
+  by: "openai-codex/gpt-6"
+  at: "2026-11-19T13:13:50+02:00"
 verified:
 - by: "openai-codex/gpt-6"
   at: "2026-11-19T13:15:02+02:00"

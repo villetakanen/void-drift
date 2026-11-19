@@ -10,9 +10,17 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
   {
+    slug: "offscreen-information-2026-11-19",
+    title: "Offscreen contacts · beyond pirate bearings",
+    status: "accepted",
+    phase: "scope",
+    question:
+      "How should the existing pirate-location HUD extend into one offscreen layer that communicates target type, direction and distance?",
+  },
+  {
     slug: "combat-hud-2026-11-19",
     title: "Combat HUD",
-    status: "open",
+    status: "stopped",
     phase: "exploration",
     question:
       "What information helps a pilot find and navigate toward relevant things outside the current view?",

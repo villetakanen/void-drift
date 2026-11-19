@@ -3,12 +3,12 @@
 title: "Spec: Mounted weapon targeting"
 status: draft
 generated:
-by: "openai-codex/gpt-6"
-at: "2026-11-19T14:30:18+02:00"
+  by: "openai-codex/gpt-6"
+  at: "2026-11-19T14:30:18+02:00"
 verified:
 - by: "openai-codex/gpt-6"
   at: "2026-11-19T14:31:53+02:00"
-  legacy:
+legacy:
   generator_model: "GPT-6 (Codex)"
   reviewer: "Ville Takanen"
   review_done: true

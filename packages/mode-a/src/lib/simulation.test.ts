@@ -44,7 +44,9 @@ describe("flight contract", () => {
     expect(practice.planets.filter((p) => p.atmosphere)).toHaveLength(1);
     for (const mode of ["survival", "derelicts", "gauntlet"] as const) {
       const other = new Simulation({ ...gameSettings("wasp"), mode });
-      expect(other.planets.some((p) => p.atmosphere)).toBe(false);
+      expect(
+        other.planets.filter((p) => p.atmosphere).map((p) => p.id),
+      ).toEqual(["habitable"]);
     }
     const spawn = practice.ship;
     const air = cradle?.atmosphere?.depth ?? 0;

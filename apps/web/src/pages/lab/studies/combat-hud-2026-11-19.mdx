@@ -2,9 +2,33 @@
 layout: ../../../layouts/StudyLayout.astro
 ---
 
-import MarkerTreatments from "../../../components/studies/combat-hud-2026-11-19/MarkerTreatments.svelte";
-
 <div className="combat-hud-prose">
+
+## Closed / Inconclusive
+
+**19 November 2026 — stopped during exploration by the designer.** The study
+has not established that the proposed design problem exists, nor adequately
+grounded its investigation in the product. It has not established a need for
+a new combat HUD or selected a design to deliver. Inconclusive does not mean
+the need has been disproved.
+
+**Strongest result, in the designer's assessment:** the finding about grounding
+the study in the product. Relevant existing behaviour, HUD language and design
+system need to inform the investigation. Existing pirate bearings were brought
+into the discussion late. Inspecting that reference does not make its reuse an
+imperative design direction.
+
+The designer-supplied navigation situations remain the study's motivating
+reports, not a demonstrated gap in current product feedback. Promising
+positioning and illustration, and preferences discovered in the examples,
+remain bounded study observations. Miniatures were ruled out; no marker form,
+colour vocabulary or distance encoding was accepted. The designer found 02.8
+relevant to section 01, but that positive assessment did not establish the
+problem or accept a solution. No assessment of 02.9 was obtained before closure.
+
+The sections below retain the investigation as it developed. Their hypotheses
+and working assumptions are historical, not current requirements. All examples
+are static captures; no production or harness change is proposed by this closure.
 
 ## 01 / Finding what lies outside the view
 
@@ -311,6 +335,9 @@ the original interest in whether pirates are approaching remains unresolved.
 
 </details>
 
+<details>
+<summary>02.4 / Separate the player from the view centre</summary>
+
 <div className="combat-hud-prose">
 
 ## 02.4 / Separate the player from the view centre
@@ -367,6 +394,15 @@ The comparison above is retained with this correction as requested. It does
 not establish either anchor as a selected alternative. Subsequent examples
 hold the edge circle fixed and develop the markers in the game's visual context.
 
+</div>
+
+</details>
+
+<details>
+<summary>02.5 / Marker treatments at the active-area edge</summary>
+
+<div className="combat-hud-prose">
+
 ## 02.5 / Marker treatments at the active-area edge
 
 All three compositions share the same edge circle, target bearings, type names,
@@ -383,7 +419,10 @@ owner yet; they remain experimental artwork inside this study.
 
 </div>
 
-<MarkerTreatments client:load />
+<figure>
+<img src="/studies/combat-hud-2026-11-19/025-marker-treatments.jpg" alt="02.5 three marker treatments on the edge circle, retained for the accepted positioning and illustration." style={{width:"100%",height:"auto"}} />
+<figcaption>02.5 capture. Positioning and illustration show promise; none of the marker treatments was selected.</figcaption>
+</figure>
 
 <div className="combat-hud-prose">
 
@@ -410,13 +449,231 @@ edge circle, with readings inside it. No live camera, clutter handling,
 visibility transition or gameplay usefulness is established. No treatment is
 selected, and no production system is changed.
 
+### Finding / Positioning holds; marker character remains open
+
+**Designer assessment · 19 November 2026:** the positioning and illustration
+are good and show that the model has promise. None of the three marker
+options feels like the game or like HUD elements. Shared assets and token
+values alone do not establish that character; `docs/design.md` and the design
+system need to inform the actual composition. Retain the positioning and
+illustration as the foundation for subsequent steps. Marker appearance remains
+open. A visible circle is not required by the circular arrangement.
+
+</div>
+
+</details>
+
+<details>
+<summary>02.6 / Connected contact readings</summary>
+
+<div className="combat-hud-prose">
+
+## 02.6 / Connected contact readings
+
+The same artwork, positions, bearings and distances now carry one compact
+marker language. Direction, type and distance form a connected reading:
+a directional tip, a short angled leader, a small bold type label and a quieter
+distance. The circle governs placement but is not drawn.
+
+`docs/design.md` asks for a precise starship interface, economical shapes,
+composed light and readable flight. The existing world-HUD label provides a
+concrete reference: a short angled leader, small bold B612 type and a void edge
+that keeps lettering readable over the world. This example borrows those
+construction qualities while preserving the world HUD's content and ownership.
+
+</div>
+
+<figure>
+<img src="/studies/combat-hud-2026-11-19/026-contact-readouts.jpg" alt="02.6 contact readings, retained with the designer assessment below." style={{width:"100%",height:"auto"}} />
+<figcaption>02.6 capture. The designer judged this further evidence that departing from the existing game HUD language produces examples that do not relate to the game.</figcaption>
+</figure>
+
+<div className="combat-hud-prose">
+
+**Composition:** the 14 px bold type, 12 px distance and one-pixel leader make
+one contact reading. A narrow lit tip and subdued echo express direction. Its
+small blue-violet backing uses the shared elevation palette; information stays
+in the text roles. These marker shapes are experimental, not new shared
+primitives. The enlargement below the frame lets the linework be judged
+separately from its flight-scale presence.
+
+**Held fixed:** the 02.5 scene and off-centre production Wasp artwork, Sol sky,
+1280 × 900 reference frame, gutter geometry, authored contact data and circular
+edge arrangement. The authored distances remain centre-to-centre world units.
+Only the marker treatment and drawn guide change.
+
+**Hypothesis:** connecting the bearing to a restrained reading may make the
+markers feel like projected instruments rather than interface cards or a list
+of labels. The detail uses the game's current world-label construction as a
+reference; whether it belongs in this distinct layer is a design judgment.
+
+**Limits:** static composition; no simulation, camera motion, overlap handling
+or visibility transitions. The retained positioning is promising, not evidence
+of gameplay usefulness. No marker appearance is selected yet.
+
+### Finding / Use the existing HUD language itself
+
+**Designer assessment · 19 November 2026:** 02.6 is further, strong evidence
+that going outside the existing game HUD language produces examples that do
+not relate to the game. The new directional tip, backing and type hierarchy
+were not selected. Retain this finding alongside the earlier acceptance of
+positioning and illustration. That assessment concerns visual belonging;
+it does not establish gameplay usefulness or implementation readiness.
+
+</div>
+
+</details>
+
+<div className="combat-hud-prose">
+
+</div>
+
+<details>
+<summary>02.7 / Production HUD labels on the established arrangement</summary>
+
+<div className="combat-hud-prose">
+
+## 02.7 / Production HUD labels on the established arrangement
+
+This example calls the existing `drawWorldLabel` function directly. Its green
+HUD ink, 14 px bold B612 lettering, one-pixel void edge and angled leader are
+unchanged. Each call supplies a target type and distance as its text and an
+anchor on the established invisible edge circle. The leader runs inward from
+the anchor; its endpoint gives direction. All other scene conditions remain
+as in 02.5.
+
+</div>
+
+<figure>
+<img src="/studies/combat-hud-2026-11-19/027-existing-hud-labels.jpg" alt="02.7 production world labels at the accepted edge positions." style={{width:"100%",height:"auto"}} />
+<figcaption>Retained 02.7 capture: production labels applied to the static scene.</figcaption>
+</figure>
+
+<div className="combat-hud-prose">
+
+**What to judge:** whether the existing game's label construction gives these
+offscreen readings the right visual belonging. This tests one concrete use of
+the current drawing language, rather than a new marker vocabulary. Type and
+distance share one line; their hierarchy is not redesigned here.
+
+**Source:** `packages/core/src/lib/assets/world-hud.ts` owns the reused label
+renderer, including its colour and typography. The study does not modify it.
+Using that renderer proposes borrowing its visual language for this separate
+layer; no world-HUD object, label or other content is relocated.
+
+**Conditions:** same static production Wasp drawing, Sol sky asset, target
+bearings and distances, active rectangle and off-centre ship. The distance
+values are authored world-unit centre distances. The four objects are assumed
+known and offscreen. Only marker appearance changes. A three-times enlargement
+uses the same draw call as the scene.
+
+**Still open:** whether this treatment belongs, its readability against varied
+backgrounds, multiple close bearings, motion and visibility transitions. No
+appearance or production change is accepted by this example alone.
+
+### Finding / Graphical information
+
+The designer found text, lines and numbers read as helper text rather than HUD,
+and preferred avoiding icons and font-based approaches as much as possible unless
+decorative. Positioning and illustration remain promising; no marker is selected.
+
+</div>
+
+</details>
+
+<div className="combat-hud-prose">
+
+## 02.8 / Target identity and relative distance
+
+The current game already marks offscreen pirates with a small glowing purple
+triangle. That is relevant evidence, not a requirement to use triangles for
+other targets. The sun, derelict and released energy have existing procedural
+artwork with distinct material and shape. This comparison asks whether those
+identities survive miniaturisation and a graphical distance cue.
+
+</div>
+
+<figure>
+<img src="/studies/combat-hud-2026-11-19/028-graphical-contacts.jpg" alt="02.8 miniature target artwork with size and opacity distance cues." style={{width:"100%",height:"auto"}} />
+<figcaption>02.8 retained comparison. Miniatures were ruled out; neither distance encoding was selected.</figcaption>
+</figure>
+
+<div className="combat-hud-prose">
+
+**Proposal:** miniature world artwork for the sun, derelict and energy; the
+current triangle for pirates. A changes size, B changes opacity. These are
+alternatives for judgment, not an accepted family. The miniature objects may
+still read as icons; the example makes that tradeoff visible rather than
+assuming it satisfies the preference for graphical information.
+
+**Grounding:** `docs/design.md` calls for economical shapes, composed light and
+recognisable material. The design system supplies the surrounding page roles;
+no shared combat-marker family is defined there. `drawStar` in core and
+`drawDerelict` / `drawDerelictEnergy` in mode-a draw the first three references.
+The private `FlightDeck.svelte` triangle is reproduced for this study, preserving
+its shape and purple glow; no production component is changed or extracted.
+
+**Held fixed:** the 02.5 Wasp, sky, off-centre ship, authored bearings and distances,
+active area and invisible circular edge arrangement. All targets are assumed
+outside the viewport. Marker positions express direction. Relative distance is
+provisional: 640–180 world units maps to 0.8–1.6× size in A and 35–100% opacity
+in B. Exact numerical distance is not communicated by either proposal.
+
+**Unresolved:** can the pilot distinguish a derelict from its energy at flight
+scale? Does size suggest distance or physical size; does brightness suggest
+distance or urgency? Static sketches cannot establish motion, tracking or
+usefulness during play. There is no selected treatment yet.
+
+### Finding / Information ink, not miniature objects
+
+**Designer assessment · 19 November 2026:** 02.8 was the first step that felt
+like it explored section 01. Miniatures are not an option. The world HUD is
+unicolour; the combat HUD may explore one or more colours, but target identity
+should not become distinct object shapes. This settles the rejection of
+miniatures, not a marker form, colour vocabulary or distance encoding.
+
+## 02.9 / One form, a possible colour vocabulary
+
+Both examples use the same abstract directional mark, anchored to the accepted
+invisible circle. A borrows the world HUD's single green ink. B tests whether
+colour alone can carry target type without introducing miniature objects or
+separate silhouettes. Size, opacity and glow settings remain constant so that
+this step isolates colour. Distance stays part of the intended information set;
+its encoding is still unresolved and is deliberately absent from this comparison.
+
+</div>
+
+<figure id="combat-hud-029">
+<img src="/studies/combat-hud-2026-11-19/029-contact-ink.jpg" alt="02.9 static comparison: one green HUD ink versus colour by target, with identical directional marks." style={{width:"100%",height:"auto"}} />
+<figcaption>02.9 retained capture of the final example: identical authored bearings and marker geometry, one ink versus target colours. Distance was not encoded. No designer selection or gameplay conclusion was obtained before the study closed.</figcaption>
+</figure>
+
+<div className="combat-hud-prose">
+
+**Grounding and departures:** A uses `COLOR.countdown`, the current world-HUD
+ink. B proposes sun amber from `yellowStarPalette(70)`, neutral `COLOR.text`
+for derelicts, `COLOR.resourcePower` for released energy and the existing
+pirate-bearing purple. These proposed target meanings are study choices, not
+established design-system roles. Both use the existing pirate marker geometry
+as a constant reference; its use here does not select it as the final form.
+
+**What this can reveal:** A makes the information layer visually coherent but
+cannot distinguish target types. B can distinguish types after learning its
+colour mapping; whether that tradeoff belongs in this HUD remains open. Similar
+colours, varied backgrounds and colour-vision differences remain limitations
+of colour-only information. No claim of play readability follows from this still.
+
+**Held fixed:** the 02.5 sky and production Wasp, 1280 × 900 authored frame,
+active-area containment, four offscreen targets and their circular bearings.
+No world-HUD or flight-deck content moves. No production code changes.
+
 ## 03 / Readiness
 
-No accepted conclusion to assess yet.
+Not reached. The study closed inconclusively without an accepted design conclusion.
 
 ## 04 / Scope
 
-No production changes proposed yet.
+Not reached. No implementation scope or production change is authorised by this study.
 
 </div>
 

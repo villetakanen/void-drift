@@ -18,6 +18,7 @@ export * from "./lib/game-loop";
 export * from "./lib/gauntlet";
 export * from "./lib/gravity-collection";
 export * from "./lib/gravity-fold-fx";
+export * from "./lib/habitable-world";
 export * from "./lib/ion-cannon-art";
 export * from "./lib/landing-system";
 export * from "./lib/mercurial-rock";

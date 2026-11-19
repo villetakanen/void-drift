@@ -17,6 +17,7 @@ export const PLANET_TYPES = {
   ocean: { id: "ocean", name: "Ocean", color: "#4A90C2" },
   desert: { id: "desert", name: "Desert", color: "#C4A35A" },
   ice: { id: "ice", name: "Ice", color: "#A8D8E8" },
+  habitable: { id: "habitable", name: "Habitable", color: "#4A90C2" },
   outerMercurial: {
     id: "outer-mercurial",
     name: "Outer Mercurial",

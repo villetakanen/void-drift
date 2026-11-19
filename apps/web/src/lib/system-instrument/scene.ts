@@ -7,15 +7,16 @@ import {
   Renderer,
 } from "@void-drift/core";
 import {
-  drawFlightFrame,
   FlightFx,
   type FlightLayerContexts,
   resizeFlightLayers,
   Simulation,
   stockSettings,
 } from "@void-drift/mode-a";
+import { HabitableMaterials } from "../assets/habitable-materials";
 import { planetAppearances } from "../assets/planet-appearances";
 import { createOuterMercurialMaterial } from "../assets/rock-planets/authored-materials";
+import { drawGameField, systemBackground } from "../game-field";
 import { SystemInstrumentDocumentSchema } from "./config";
 
 const PASSES = new Set([
@@ -33,7 +34,7 @@ const PASSES = new Set([
 export class SystemInstrumentScene {
   sim: Simulation;
   seed: number;
-  status = "Loading mercurial material…";
+  status = "Loading planet materials…";
   readonly camera = new Camera();
   private renderer: Renderer;
   private fx = new FlightFx();
@@ -42,9 +43,11 @@ export class SystemInstrumentScene {
     ReturnType<typeof createOuterMercurialMaterial>
   >;
   private disposed = false;
+  private habitable = new HabitableMaterials();
   private appearances: ReturnType<typeof planetAppearances> = new Map();
   private bindMaterials() {
     this.appearances = planetAppearances(this.sim.planets, {
+      habitable: this.habitable.materials,
       mercury: this.material,
       outerMercurial: this.outerMaterial,
     });
@@ -53,7 +56,7 @@ export class SystemInstrumentScene {
   constructor(
     private layers: FlightLayerContexts,
     seed: number,
-    changed: () => void,
+    private changed: () => void,
   ) {
     const doc = SystemInstrumentDocumentSchema.parse({ seed });
     this.seed = doc.seed;
@@ -75,11 +78,25 @@ export class SystemInstrumentScene {
     this.seed = seed;
     this.bindMaterials();
     this.draw();
+    void this.habitable
+      .prepare(this.sim.planets)
+      .then(() => {
+        if (this.disposed) return;
+        this.bindMaterials();
+        this.draw();
+        this.changed();
+      })
+      .catch(() => {
+        this.status =
+          "Habitable material unavailable; using the production fallback.";
+        this.changed();
+      });
   }
   private async prepare(changed: () => void) {
-    const [mercury, outer] = await Promise.allSettled([
+    const [mercury, outer, habitable] = await Promise.allSettled([
       createRockMaterial(PLANET_MAPS.mercuryGround),
       createOuterMercurialMaterial(),
+      this.habitable.prepare(this.sim.planets),
     ]);
     if (this.disposed) {
       if (mercury.status === "fulfilled") mercury.value.painter.dispose();
@@ -90,8 +107,10 @@ export class SystemInstrumentScene {
     if (outer.status === "fulfilled") this.outerMaterial = outer.value;
     this.bindMaterials();
     this.status =
-      mercury.status === "rejected" || outer.status === "rejected"
-        ? "A Mercurial material is unavailable; using the production fallback."
+      mercury.status === "rejected" ||
+      outer.status === "rejected" ||
+      habitable.status === "rejected"
+        ? "A planet material is unavailable; using the production fallback."
         : "";
     this.draw();
     changed();
@@ -126,7 +145,7 @@ export class SystemInstrumentScene {
         (this.camera.viewportHeight - 128) / (2 * extent),
       ),
     );
-    drawFlightFrame(
+    drawGameField(
       {
         layers: this.layers,
         renderer: this.renderer,
@@ -135,11 +154,13 @@ export class SystemInstrumentScene {
         fx: this.fx,
         bodyAppearances: this.appearances,
       },
+      systemBackground(this.seed),
       { include: (pass) => PASSES.has(pass.id) },
     );
   }
   dispose() {
     this.disposed = true;
+    this.habitable.dispose();
     this.material?.painter.dispose();
     this.outerMaterial?.painter.dispose();
     this.fx.clear();

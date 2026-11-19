@@ -7,6 +7,11 @@ import { StripSphericalSurface } from "./strip-spherical-surface";
  * from here, never directly from a study folder.
  */
 export const PLANET_MAPS = {
+  habitableArchipelago: "/planets/habitable-archipelago.png",
+  habitableViolet: "/planets/habitable-violet.png",
+  habitableFronts: "/planets/habitable-clouds-fronts.png",
+  habitableCover20: "/planets/habitable-clouds-cover-20.png",
+  habitableCover40: "/planets/habitable-clouds-cover-40.png",
   mercuryGround: "/planets/mercury-ground.png",
   outerMercurialGround: "/planets/outer-mercurial-highlands.png",
   cradleGround: "/planets/cradle-ground.png",

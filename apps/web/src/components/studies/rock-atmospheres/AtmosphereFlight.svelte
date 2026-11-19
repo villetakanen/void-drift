@@ -183,6 +183,7 @@ $effect(() => {
 
 {#if appearances.length}
   <FlightSceneInstrument
+    backgroundMode="historical"
     {config}
     {label}
     {planet}

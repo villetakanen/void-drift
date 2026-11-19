@@ -1,6 +1,7 @@
 import type { Planet, Star } from "@void-drift/core";
 import {
   assignPlanetSystemPositions,
+  CAMERA_ARENA_RADIUS,
   initializePlanets,
   massWellReach,
   PLANET_TYPES,
@@ -8,12 +9,19 @@ import {
 } from "@void-drift/core";
 import { createStar } from "./game-loop";
 import {
+  applyHabitableGravity,
+  HABITABLE_TRAVEL_SPEED,
+  habitableAppearance,
+  habitableOrbit,
+  habitableRadius,
+} from "./habitable-world";
+import {
   applyMercurialGravity,
   MERCURIAL_ROCK_RADIUS,
   mercurialMass,
 } from "./mercurial-rock";
 import { SolarSystemGenerationSchema } from "./schemas/solar-system";
-import { GRAVITY_TUNING } from "./tuning";
+import { ATMOSPHERE_TUNING, GRAVITY_TUNING } from "./tuning";
 import {
   applyYellowFamilyProfile,
   yellowFamilyRadius,
@@ -123,34 +131,77 @@ export function generateSolarSystem(input: unknown): SolarSystem {
     outerOrbit + outerReach <= star.influenceRadius &&
     separation < innerReach + outerReach &&
     outerOrbit + outerRadius + 1 <= (star.collectionField?.reach ?? NaN);
-  let outer: Planet | undefined;
+  const outer: Planet = {
+    ...moon,
+    id: OUTER_MERCURIAL_ID,
+    pos: new Vec2(centerX, centerY),
+    orbitCenter: new Vec2(centerX, centerY),
+    radius: outerRadius,
+    mass: outerMass,
+    massWell: {
+      mass: outerMass,
+      cutoff: GRAVITY_TUNING.cutoff,
+      falloff: GRAVITY_TUNING.falloff,
+    },
+    orbitRadius: outerOrbit,
+    orbitSpeed: GENERATED_MERCURIAL_TRAVEL_SPEED / outerOrbit,
+    color: PLANET_TYPES.outerMercurial.color,
+    type: "outer-mercurial",
+  };
   if (contained) {
     moon.orbitRadius = pairInnerOrbit;
     moon.orbitSpeed = GENERATED_MERCURIAL_TRAVEL_SPEED / pairInnerOrbit;
-    outer = {
-      ...moon,
-      id: OUTER_MERCURIAL_ID,
-      pos: new Vec2(centerX, centerY),
-      orbitCenter: new Vec2(centerX, centerY),
-      radius: outerRadius,
-      mass: outerMass,
-      massWell: {
-        mass: outerMass,
-        cutoff: GRAVITY_TUNING.cutoff,
-        falloff: GRAVITY_TUNING.falloff,
-      },
-      orbitRadius: outerOrbit,
-      orbitSpeed: GENERATED_MERCURIAL_TRAVEL_SPEED / outerOrbit,
-      color: PLANET_TYPES.outerMercurial.color,
-      type: "outer-mercurial",
-    };
+    planets.push(outer);
+  }
+  const source = stock.find((p) => p.id === "gas");
+  if (!source) throw new Error("No source for Habitable world");
+  const habitable: Planet = {
+    ...source,
+    id: "habitable",
+    displayName: undefined,
+    type: "habitable",
+    color: PLANET_TYPES.habitable.color,
+    radius: habitableRadius(seed),
+    atmosphere: { ...ATMOSPHERE_TUNING.habitable },
+    habitable: habitableAppearance(seed),
+  };
+  habitable.orbitRadius = habitableOrbit(
+    star,
+    habitable.radius,
+    ATMOSPHERE_TUNING.habitable.depth,
+    planets,
+  );
+  habitable.orbitSpeed = HABITABLE_TRAVEL_SPEED / habitable.orbitRadius;
+  applyHabitableGravity(habitable);
+  planets.push(habitable);
+  if (!contained) {
+    const well = habitable.massWell;
+    if (!well) throw new Error("Missing Habitable gravity well");
+    const habitableReach = massWellReach(well.mass, well.cutoff, well.falloff);
+    // At conjunction the fields overlap by 10% of the smaller reach.
+    // Separate circular orbits keep both bodies clear throughout the run.
+    outer.orbitRadius =
+      habitable.orbitRadius +
+      habitableReach +
+      outerReach -
+      0.1 * Math.min(habitableReach, outerReach);
+    if (outer.orbitRadius + outer.radius >= CAMERA_ARENA_RADIUS)
+      throw new Error("No room for outer Mercurial inside the warp boundary");
+    outer.orbitSpeed = GENERATED_MERCURIAL_TRAVEL_SPEED / outer.orbitRadius;
+    outer.orbitAngle = habitable.orbitAngle;
     planets.push(outer);
   }
   for (const candidate of stock) {
-    if (candidate === moon) continue;
+    if (candidate === moon || candidate === source) continue;
     if (
-      !orbitsConflict(candidate, moon) &&
-      (!outer || !orbitsConflict(candidate, outer))
+      candidate.orbitRadius > habitable.orbitRadius &&
+      planets.every(
+        (p) =>
+          !orbitsConflict(candidate, {
+            orbitRadius: p.orbitRadius,
+            radius: p.radius + (p.atmosphere?.depth ?? 0),
+          }),
+      )
     )
       planets.push(candidate);
   }
@@ -166,6 +217,7 @@ export function generateSolarSystem(input: unknown): SolarSystem {
       applyMercurialGravity(planet);
       continue;
     }
+    if (planet === habitable) continue;
     const mass = GRAVITY_TUNING.planetMass[planet.id ?? ""];
     if (mass === undefined)
       throw new Error(`No mass for planet ${planet.id ?? "(no id)"}`);
