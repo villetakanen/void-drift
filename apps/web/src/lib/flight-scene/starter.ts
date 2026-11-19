@@ -20,3 +20,10 @@ export const STARTER_FLIGHT_SCENE = {
   follow: { near: 1.6, far: 4 },
   opening: { burn: "course", view: "follow", tick: 180 },
 } satisfies z.input<typeof FlightSceneDocumentSchema>;
+
+export const PRACTICE_FLIGHT_SCENE = {
+  system: "practice",
+  loadout,
+  follow: STARTER_FLIGHT_SCENE.follow,
+  opening: { burn: "course", view: "game", tick: 0 },
+} satisfies z.input<typeof FlightSceneDocumentSchema>;

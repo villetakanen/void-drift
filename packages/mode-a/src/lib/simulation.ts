@@ -82,12 +82,12 @@ import {
   SURVIVAL_ENCOUNTER,
 } from "./schemas/salvage";
 import type { ShipProfileId } from "./schemas/ship-profile";
+import { generateSolarSystem } from "./solar-system";
 import { acquireFleetTargets } from "./targeting";
 import { ATMOSPHERE_TUNING, GRAVITY_TUNING } from "./tuning";
 import {
   applyYellowFamilyProfile,
   YELLOW_FAMILY_RADIUS,
-  yellowFamilyRadius,
 } from "./yellow-star-family";
 
 export const STEP = 1 / 60;
@@ -172,8 +172,8 @@ export class Simulation {
     rotation: -Math.PI / 2,
     radius: CONFIG.SHIP_RADIUS,
   };
-  readonly star = createStar("G", 960, 540);
-  readonly planets = initializePlanets(960, 540);
+  readonly star: Star;
+  readonly planets: Planet[];
   readonly state = createInitialGameState();
   readonly plume = new EnginePlume();
   readonly gravity: GravityTuning = GRAVITY_TUNING;
@@ -240,6 +240,18 @@ export class Simulation {
   private thrust = { left: false, right: false };
   constructor(settings: unknown = stockSettings()) {
     this.settings = FlightSettingsSchema.parse(settings);
+    if (this.settings.mode === "practice") {
+      this.star = createStar("G", 960, 540);
+      this.planets = initializePlanets(960, 540);
+    } else {
+      const system = generateSolarSystem({
+        seed: this.settings.seed,
+        centerX: 960,
+        centerY: 540,
+      });
+      this.star = system.star;
+      this.planets = system.planets;
+    }
     this.buildEmitters = this.settings.loadout
       ? buildPlumeEmitters(this.settings.loadout)
       : [];
@@ -280,17 +292,8 @@ export class Simulation {
             },
           }
         : this.gravity;
-    applyGravityTuning(this.star, this.planets, massTuning);
-    if (
-      this.settings.mode === "derelicts" ||
-      this.settings.mode === "gauntlet" ||
-      (this.settings.mode === "survival" && this.settings.experimental === "On")
-    )
-      applyYellowFamilyProfile(
-        this.star,
-        yellowFamilyRadius(this.settings.seed),
-        this.gravity,
-      );
+    if (this.settings.mode === "practice")
+      applyGravityTuning(this.star, this.planets, massTuning);
     if (this.settings.mode === "practice") {
       applyYellowFamilyProfile(
         this.star,
@@ -316,20 +319,17 @@ export class Simulation {
       if (venus) venus.displayName = "Venus";
     }
     assignPlanetSystemPositions(this.planets);
-    // Seed changes orbit phase, not flight tuning.
-    const phase =
-      (((this.settings.mode === "practice"
-        ? CHALLENGE_SEED
-        : this.settings.seed) %
-        360) /
-        180) *
-      Math.PI;
-    for (const planet of this.planets) {
-      planet.orbitAngle += phase;
-      planet.pos.set(
-        960 + Math.cos(planet.orbitAngle) * planet.orbitRadius,
-        540 + Math.sin(planet.orbitAngle) * planet.orbitRadius,
-      );
+    // Practice remains fixed; generated flight modes receive their seed phase
+    // from generateSolarSystem above.
+    if (this.settings.mode === "practice") {
+      const phase = ((CHALLENGE_SEED % 360) / 180) * Math.PI;
+      for (const planet of this.planets) {
+        planet.orbitAngle += phase;
+        planet.pos.set(
+          960 + Math.cos(planet.orbitAngle) * planet.orbitRadius,
+          540 + Math.sin(planet.orbitAngle) * planet.orbitRadius,
+        );
+      }
     }
     if (this.settings.arrival && this.settings.mode !== "practice") {
       const angle = arrivalBearing(this.settings.seed);

@@ -182,6 +182,12 @@ onMount(() => {
     star: "",
     experiment: untrack(() => experiment),
   };
+  const releaseMaterials =
+    doc.system === "practice"
+      ? scene.loadPracticeMaterials(() => {
+          drawn.tick = -1;
+        })
+      : undefined;
   let previous = performance.now(),
     accumulator = 0,
     raf = 0;
@@ -242,7 +248,10 @@ onMount(() => {
     raf = requestAnimationFrame(frame);
   }
   raf = requestAnimationFrame(frame);
-  return () => cancelAnimationFrame(raf);
+  return () => {
+    cancelAnimationFrame(raf);
+    releaseMaterials?.();
+  };
 });
 </script>
 

@@ -2,10 +2,6 @@ import { drawPlanet } from "../assets/planet";
 import { drawShip } from "../assets/ship";
 import { drawStar } from "../assets/star";
 
-import {
-  type DamageFlash,
-  renderDamageFlash,
-} from "../effects/damage-feedback";
 import { getParticleAlpha, type Particle } from "../effects/particles";
 import type { Camera } from "../physics/Camera";
 import type { GameObject, Planet, Star } from "../physics/Physics";
@@ -170,10 +166,6 @@ export class Renderer {
           });
         },
       );
-  }
-
-  drawDamageFlash(flash: DamageFlash) {
-    renderDamageFlash(this.ctx, flash, this.width, this.height);
   }
 
   drawParticles(particles: Particle[]) {

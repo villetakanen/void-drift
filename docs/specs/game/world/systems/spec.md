@@ -1,109 +1,109 @@
-# Feature: Multi-Planet System (PBI-032)
+# Seeded Solar System
 
-**Status:** DRAFT
-**Phase:** 7 (Content & Polish)
-**Target Version:** v0.3.0
+## Context
 
----
+Survival, Derelicts and Gauntlet start in the same kind of seeded G-class solar
+system. The run seed selects the yellow-family Sun size, mercurial planet radius
+and planets' starting orbital phase. Keeping one system contract makes replay,
+comparison and mode behavior consistent. Practice retains its fixed reference system.
 
-## Blueprint
+## Architecture
 
-### Context
-
-Mode A currently supports planet interaction in runtime physics, but the Phase 7 goal is to make planet variety a deliberate gameplay contract instead of an implicit engine capability. PBI-032 defines a predictable multi-planet experience where players navigate multiple gravity wells with distinct orbital behavior.
-
-This spec establishes the contract for planet count, orbital identity, physics behavior, and performance so implementation and tuning stay aligned with the v0.3.0 roadmap.
-
-### Architecture
-
-- **Gameplay Surface:**
-  - `apps/web/src/components/GameWrapper.svelte`
-  - Uses planet initialization and feeds planets into simulation + rendering pipeline.
-- **Physics Runtime:**
-  - `packages/core/src/lib/physics/Physics.ts`
-  - `updateShip(..., planets)` applies per-planet orbit updates, gravity pull, and collision response.
-- **Planet Initialization:**
-  - `packages/core/src/lib/physics/planets.ts`
-  - Current runtime uses procedural spawn via `SURVIVAL_CONFIG.PLANET_SPAWN_CONFIG`.
-- **Configuration Authority:**
-  - `packages/core/src/lib/config.ts`
-  - Hosts `SURVIVAL_CONFIG`, including collision damage and planet spawn parameters.
-
-### Data Contracts
-
-- **Runtime Planet Shape (existing):**
-  - `packages/core/src/lib/physics/Physics.ts`
-  - `Planet` includes position, orbit, physical radius, mass and visual type data.
-    Planets have no separate decorative ring system; collision and gravity use
-    the planet body radius and mass.
-- **Spawn Contract (existing):**
-  - `packages/core/src/lib/config.ts`
-  - `SURVIVAL_CONFIG.PLANET_SPAWN_CONFIG` defines count range and orbital ranges.
-- **PBI-032 Target Contract (roadmap intent):**
-  - `SURVIVAL_CONFIG` exposes a deterministic `PLANETS` list for Mode A default run:
-    - `rock` (large, slower orbit)
-    - `gas` (medium, faster orbit, stronger pull)
-    - `moon` (small, fast retrograde orbit)
-
-### Constraints
-
-- Game loop applies gravity and collision for all active planets every frame.
-- Planet collision damage uses `SURVIVAL_CONFIG.PLANET_COLLISION_DAMAGE` consistently regardless of planet type.
-- Planet orbit updates remain allocation-free per frame in hot paths.
-- Planet behavior changes preserve existing star death and resource systems in `packages/mode-a/src/lib/game-loop.ts` and `packages/core/src/lib/physics/Physics.ts`.
-- Visual differentiation of planets is achieved through procedural rendering paths only (no external assets).
-
----
+- `packages/mode-a/src/lib/solar-system.ts` creates the default gameplay system.
+- `packages/mode-a/src/lib/schemas/solar-system.ts` validates generator inputs.
+- `packages/mode-a/src/lib/simulation.ts` chooses the generated system for
+  Survival, Derelicts and Gauntlet, and the fixed reference system for Practice.
+- `packages/core/src/lib/physics/planets.ts` supplies the fixed planet definitions
+  used by the default gameplay system and Practice.
+- The [star spec](../star/spec.md) owns the yellow-family size and field profile;
+  the [planet spec](../planets/spec.md) owns planet physics and presentation.
 
 ## Contract
 
-### Definition of Done
-
-- Mode A initializes exactly 3 planets from deterministic config for default gameplay.
-- All 3 planets maintain stable orbital motion around star center with distinct speed/phase values.
-- Ship receives cumulative gravity influence from star plus all active planets.
-- Planet collisions trigger elastic bounce and apply one collision damage event per impact.
-- Average desktop runtime remains 60 FPS with 3 planets active in normal play.
-- Mobile play on mid-range devices remains stable enough for progression to PBI-035 audit.
-
-### Regression Guardrails
-
-- Planet update, gravity, and collision logic remain deterministic for a given seeded setup/config.
-- Planet-related changes do not alter death-cause precedence (`STAR` > `HULL` > `POWER`).
-- Planet rendering keeps order consistency: background -> star -> planets -> ship -> HUD.
+- Gameplay generation defaults to center `(960, 540)`; validated finite center
+  overrides translate the star, orbit centers and planet positions together.
+- The generator starts from `SURVIVAL_CONFIG.PLANETS` and replaces its innermost
+  entry (`moon`) with exactly one mercurial mineral-rock planet. Its radius `R`
+  is selected uniformly over 16–36u by a dedicated deterministic seed-derived
+  stream. Both radius endpoints are valid placement inputs; an exclusive PRNG
+  upper endpoint is allowed. Radius selection consumes no shared random state
+  and changes no existing star, phase, encounter or arrival seed stream.
+- The seed selects the yellow-family G star's surface radius `S` from 36–140u.
+  Its appearance, gravity, collection and damage fields follow the
+  [star contract](../star/spec.md).
+- Placement uses the generated star's actual damage reach `H` and collection
+  reach `C`, measured from its center. With clearance `m = 1u`, the permitted
+  circular orbit interval is `[H + R + m, C − R − m]`. The chosen orbit radius is
+  `D = clamp(258 × S / 70, H + R + m, C − R − m)`.
+  The whole body remains at least 1u outside danger and at least 1u inside
+  charging throughout its orbit: `D − R >= H + m` and `D + R <= C − m`.
+  Gravity reach is not a substitute for collection reach.
+- The permitted interval accommodates every radius 16–36u for every supported
+  Sun radius 36–140u. If a profile has nonfinite fields or an empty permitted
+  interval, generation fails explicitly and returns no system; it does not
+  shrink, omit or unsafely place the mandatory planet.
+- The mercurial planet travels at 4u/s with positive angular speed `4 / D`.
+  Its retained identity, gravity and appearance follow the
+  [planet contract](../planets/spec.md#mercurial-mineral-rock).
+- A remaining stock planet is removed when
+  `abs(other.orbitRadius − D) <= other.radius + R + 1u`.
+  This compares swept circular body annuli for the full orbit, independent of
+  starting phase. The mandatory mercurial body takes priority. Clear planets
+  retain their configured properties and gravity tuning. Removed planets have
+  no simulation, collision, gravity, appearance or HUD entries.
+- The remaining count follows conflict removal, without replacement spawning.
+  Exactly one body has the mercurial appearance; another retained planet may
+  also lie inside charging. A retained orbit may lie inside the mercurial orbit.
+- The seed shifts all retained planets' configured starting phases by
+  `(seed mod 360) / 180 × π`. Orbits remain circular. Initial positions use the
+  final orbit radii. Full-system outward HUD ordinals are assigned after removal
+  and are contiguous from 1; source order breaks equal-radius ties.
+- Survival, Derelicts and Gauntlet use this contract without an experimental
+  setting. Equal seeds produce equal star profiles, mercurial radii, retained
+  rosters, masses, motion and starting positions across all three modes.
+- Practice keeps its fixed G7 star and named reference planets, including
+  Mercury's 27u radius and 258u orbit, independent of the supplied run seed.
+- Inputs are parsed with `SolarSystemGenerationSchema` before use: integer seed
+  1–2147483647 and finite centers. Invalid inputs fail explicitly. Any new
+  external data contract is defined in Zod before consumers change.
 
 ### Scenarios
 
 ```gherkin
-Scenario: Multi-planet gravity composition
-  Given a run with star and three configured planets
-  When the ship enters overlapping gravity influence zones
-  Then acceleration reflects the combined pull of all influencing bodies
-  And ship movement changes smoothly without teleporting
+Scenario: Reproducing a generated system
+  Given two Survival, Derelicts or Gauntlet runs with the same seed
+  When their systems are created
+  Then their star profiles, mercurial radii, retained planets and positions match
 
-Scenario: Retrograde planet orbit
-  Given the moon planet is configured with negative orbit speed
-  When simulation advances for multiple seconds
-  Then the moon position progresses clockwise around the star
-  And orbit radius remains constant within floating point tolerance
+Scenario: Sharing system generation across modes
+  Given Survival, Derelicts and Gauntlet runs with the same seed
+  When their systems are created
+  Then their star profiles, mercurial radii, retained planets and positions match
 
-Scenario: Planet collision damage contract
-  Given the ship collides with any active planet
-  When the collision resolves
-  Then ship velocity reflects with restitution
-  And hull decreases by SURVIVAL_CONFIG.PLANET_COLLISION_DAMAGE once per impact event
+Scenario: Largest body around the smallest Sun
+  Given a generated Sun with radius 36u and a mercurial body with radius 36u
+  When the orbit is selected from the actual damage and collection reaches
+  Then the scaled 258u reference orbit is clamped into the permitted interval
+  And the whole body has at least 1u clearance from both field boundaries
 
-Scenario: Performance guardrail under normal gameplay
-  Given three active planets and standard visual effects enabled
-  When a 60-second run is simulated on target desktop profile
-  Then frame pacing stays within 60 FPS target window
-  And no persistent degradation appears after repeated planet interactions
+Scenario: A stock orbit conflicts with the mandatory planet
+  Given a remaining stock planet whose swept body annulus is within 1u of the mercurial annulus
+  When the system is generated
+  Then that stock planet is removed and the mercurial planet remains
+  And outward HUD ordinals are assigned from the retained system
+
+Scenario: A profile cannot contain the planet
+  Given the charging reach minus the danger reach is less than twice the body radius plus 2u
+  When generation attempts placement
+  Then generation fails explicitly without returning a system
+
+Scenario: Invalid seed
+  Given a seed outside the integer range 1–2147483647
+  When generation is requested
+  Then input validation rejects the request
+
+Scenario: Practice keeps its reference system
+  Given two Practice flights with different seeds
+  When their systems are created
+  Then both use the fixed G7 star and named reference planets
 ```
-
----
-
-## Notes for Implementation Alignment
-
-- Current runtime already supports multiple planets through `planets: Planet[]` in `updateShip`.
-- Current spawn behavior in `packages/core/src/lib/physics/planets.ts` is procedural (`minCount` to `maxCount`) and should be aligned with this spec if PBI-032 requires deterministic 3-planet defaults.
-- If procedural spawning is retained, this spec should be updated in the same change with revised DoD and scenarios.

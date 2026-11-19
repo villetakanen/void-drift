@@ -18,6 +18,9 @@ Survival is the only mode whose runs can be ranked.
 - **Simulation.** `packages/mode-a/src/lib/simulation.ts` owns the run: its
   fixed step, resources, endings, time and score. Rendering and effects read
   it and change nothing.
+- **System.** `packages/mode-a/src/lib/solar-system.ts` creates the seeded
+  default solar system shared by Survival, Derelicts and Gauntlet. The
+  [system contract](../world/systems/spec.md) owns its star and planets.
 - **Run state.** `packages/mode-a/src/lib/schemas/game-state.ts` validates the
   run's status, resources and the cause of its ending.
 - **Encounters.** `SURVIVAL_ENCOUNTER` in
@@ -42,7 +45,8 @@ Survival is the only mode whose runs can be ranked.
 ### Rules
 
 - **A fresh system.** Every Survival launch gets a fresh seed. The seed decides
-  the system and where the ship enters it.
+  the yellow-family star profile, mercurial radius, retained planets' starting
+  orbital phase and where the ship enters the shared default system.
 - **Arrival.** The ship arrives at the edge of the system, already moving
   inward at speed. The world is shown and held still for a 3, 2, 1 count, and
   GO releases play. Time, resources and score do not advance during the count;
@@ -77,7 +81,7 @@ Survival is the only mode whose runs can be ranked.
 ### Definition of Done
 
 - S1: Every Survival launch uses a fresh seed; the same seed gives the same
-  system, entry and derelict arrivals.
+  shared solar system, entry and derelict arrivals.
 - S2: The ship enters at the system edge moving inward at speed.
 - S3: The world holds still through a 3, 2, 1 count with time, resources and
   score not advancing; pause and a hidden page hold the count; GO releases

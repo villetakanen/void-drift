@@ -1,4 +1,12 @@
-import { Camera, type FxPass, type Planet, Renderer } from "@void-drift/core";
+import {
+  Camera,
+  createCloudedWorld,
+  createRockMaterial,
+  type FxPass,
+  PLANET_MAPS,
+  type Planet,
+  Renderer,
+} from "@void-drift/core";
 import {
   type BodyAppearance,
   BUILD_FLIGHT_SCALE,
@@ -13,6 +21,8 @@ import {
   resizeFlightLayers,
   STEP,
 } from "@void-drift/mode-a";
+import { planetAppearances } from "../assets/planet-appearances";
+import { createPracticeVenus } from "../assets/practice-venus";
 import type { BurnId } from "../instrument/burns";
 import {
   type FlightSceneDocument,
@@ -65,6 +75,41 @@ export class FlightScene {
     this.restart(doc.opening.burn);
     this.setPlanetAppearance(this.planetAppearance);
   }
+  loadPracticeMaterials(redraw: () => void) {
+    let disposed = false;
+    const materials: Parameters<typeof planetAppearances>[1] = {};
+    const painters: Array<{ dispose(): void }> = [];
+    const load = async <K extends keyof typeof materials>(
+      key: K,
+      create: () => Promise<NonNullable<(typeof materials)[K]>>,
+    ) => {
+      try {
+        const material = await create();
+        if (disposed) {
+          material.painter.dispose();
+          return;
+        }
+        painters.push(material.painter);
+        materials[key] = material;
+        this.bodyAppearances = planetAppearances(
+          this.run.sim.planets,
+          materials,
+        );
+        redraw();
+      } catch {
+        // The production body pass supplies a fallback for unavailable material.
+      }
+    };
+    void load("venus", async () => createPracticeVenus(true));
+    void load("mercury", () => createRockMaterial(PLANET_MAPS.mercuryGround));
+    void load("cradle", () =>
+      createCloudedWorld(PLANET_MAPS.cradleGround, PLANET_MAPS.cradleClouds),
+    );
+    return () => {
+      disposed = true;
+      for (const painter of painters) painter.dispose();
+    };
+  }
   private fly(burn: BurnId) {
     return new FlightRun(
       this.doc,
@@ -91,6 +136,7 @@ export class FlightScene {
     this.restart(this.run.burn);
   }
   setPlanetAppearance(appearance?: PlanetAppearance) {
+    if (this.doc.system === "practice") return;
     this.planetAppearance = appearance;
     const planet = this.doc.planet ? this.run.sim.planets[0] : undefined;
     if (!appearance || !planet) {
@@ -224,6 +270,14 @@ export class FlightScene {
       });
     }
     let passes: readonly FlightPass[] | undefined;
+    const drawSky = this.run.experimentRun?.drawSky;
+    if (drawSky) {
+      passes = FLIGHT_PASSES.map((pass) =>
+        pass.id === "starfield"
+          ? { ...pass, space: "screen", draw: drawSky }
+          : pass,
+      );
+    }
     if (this.starAppearance) {
       const star = {
         ...this.run.sim.star,

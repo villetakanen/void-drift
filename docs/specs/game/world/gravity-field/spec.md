@@ -18,20 +18,20 @@ here.
 
 ### Bodies in play
 
-- One G sun at (960, 540), created by `createStar` in
-  `packages/mode-a/src/lib/game-loop.ts` from `SUN_CONFIG.G`
-  (`packages/core/src/lib/config.ts`), radius 35.
-- Three planets from `SURVIVAL_CONFIG.PLANETS` (same file), each with its `id`,
-  built by `initializePlanets` (`packages/core/src/lib/physics/planets.ts`) on
-  circular orbits round the sun. In play the flight seed rotates every orbit's
-  starting phase by `(seed mod 360) / 180 · π` and changes nothing else (test
-  flights also seed their salvage).
-- `Simulation` (`packages/mode-a/src/lib/simulation.ts`) puts every body on the
-  mass law in its constructor (`applyGravityTuning`): the sun and each planet get
-  a `massWell` (`MassWellSchema`, `packages/core/src/lib/physics/Physics.ts`) of
-  their mass from the tuning file, with its cut-off pull and falloff; the sun's
-  `influenceRadius` is set to its reach. A configured planet without a mass in
-  the tuning file is an error.
+- Survival, Derelicts and Gauntlet receive their star and retained planets from
+  `generateSolarSystem` in `packages/mode-a/src/lib/solar-system.ts`, following
+  the [system contract](../systems/spec.md). The yellow-family Sun has radius
+  36–140u and size-linked fields; gameplay centers it at (960, 540).
+- The configured planet roster supplies source bodies. Generation replaces
+  `moon` with one seeded 16–36u mercurial planet and removes stock bodies whose
+  swept orbits conflict with it. Only retained bodies contribute gravity.
+  Circular orbits and starting phases follow the system contract.
+- Every retained body has a `massWell` (`MassWellSchema`,
+  `packages/core/src/lib/physics/Physics.ts`) using the tuning cut-off and
+  falloff. The Sun's mass and reach follow its yellow-family profile; planets
+  use identity-keyed tuning masses. A retained planet without a tuning mass
+  is an error. Generated `moon` retains mass 1450 independently of seeded
+  radius; its radius changes contact distance, not mass or gravity reach.
 - Practice uses its fixed G7 Sun and roster: Mercury, Venus replacing the middle
   gas planet, and The Cradle replacing the outer stock rock. The Cradle's mass
   is stored in `practicePlanetMass.cradle`, 3186.671024, and reaches 252.45u. Venus receives its own identity before
@@ -41,9 +41,12 @@ here.
   238.53u at the shared cut-off and contact pull is 0.899× the reference Fighter's
   thrust, within the existing 0.75–1.5× guardrail. Optional `practicePlanetMass`
   overrides the stock `planetMass` only in Practice: Mercury uses 870 and reaches
-  131.91u, while the stock moon retains 1450 in other modes. Practice Mercury's
+  131.91u, while the generated mercurial planet retains 1450 in other modes.
+  Practice Mercury's
   deliberately gentler contact pull is outside the stock planet tuning band;
-  that band continues to guard stock planets and Venus.
+  that band guards fixed stock reference fixtures and Venus. Generated
+  mercurial radii are not retuned to satisfy it: their contact pull varies with
+  radius at the independently fixed mass.
   Fields may overlap; their accelerations continue to add as vectors. A
   planet's [atmosphere](../planets/spec.md#atmosphere) adds drag in its air,
   applied after the pull in each step; gravity and contact are unchanged. Practice
@@ -187,8 +190,10 @@ requires. Follow the release procedure in `docs/development.md`.
   bodies equal those built from `GRAVITY_TUNING`, every configured planet has a
   mass, the sun's reach is where its pull meets the cut-off, and changing each
   value changes the bodies (`tuning.test.ts`).
-- Each planet pulls 0.75–1.5× and the sun 1.5–3× the reference ship's thrust
-  at contact; the cut-off is 5–20 % of it (`game-gravity.test.ts`).
+- Fixed stock planet reference fixtures and Venus pull 0.75–1.5× and the
+  reference sun 1.5–3× the reference ship's thrust at contact; generated
+  mercurial radii retain their independent mass rather than this contact band.
+  The cut-off is 5–20 % of reference thrust (`game-gravity.test.ts`).
 - Planet contact bounces the ship with the shared `bounceOffSurface`
   (`MassWell.test.ts`; game planet contact unchanged by the extraction).
 

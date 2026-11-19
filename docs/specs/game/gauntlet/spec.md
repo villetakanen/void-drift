@@ -16,7 +16,10 @@ progression.
   physics.
 - The run seed selects a yellow-family star size from 36–140 u using the same
   profile as Derelicts. Its appearance, gravity, collection and danger fields
-  follow that size; the World HUD shows its `G4`–`G14` denomination.
+  follow that size; the World HUD shows its `G4`–`G14` denomination. The same
+  seed selects the mercurial radius and retained planets' starting orbital
+  phase. Placement and removal of conflicting stock planets follow the shared
+  [system contract](../world/systems/spec.md), as in Survival and Derelicts.
 - All ships start with full normal hull and energy. Seeded, separated arrivals
   complete before any ship can fire. Each pirate independently pilots with the
   same bounded sampled commands and deterministic tie breaking, targeting the

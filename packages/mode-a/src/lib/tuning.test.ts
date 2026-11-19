@@ -4,6 +4,7 @@ import { createStar } from "./game-loop";
 import { type GravityTuning, GravityTuningSchema } from "./schemas/gravity";
 import { applyGravityTuning, Simulation } from "./simulation";
 import { GRAVITY_TUNING } from "./tuning";
+import { applyYellowFamilyProfile } from "./yellow-star-family";
 
 // Contract: docs/specs/game/world/gravity-field, "Tuning values".
 function bodies(tuning: GravityTuning) {
@@ -17,10 +18,13 @@ describe("gravity tuning", () => {
   it("is what the simulation flies", () => {
     const sim = new Simulation();
     const tuned = bodies(GRAVITY_TUNING);
+    applyYellowFamilyProfile(tuned.star, sim.star.radius, GRAVITY_TUNING);
     expect(sim.star.massWell).toEqual(tuned.star.massWell);
     expect(sim.star.influenceRadius).toBe(tuned.star.influenceRadius);
     expect(sim.planets.map((p) => p.massWell)).toEqual(
-      tuned.planets.map((p) => p.massWell),
+      sim.planets.map(
+        (p) => tuned.planets.find((stock) => stock.id === p.id)?.massWell,
+      ),
     );
   });
 

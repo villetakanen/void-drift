@@ -150,6 +150,36 @@ the same way; what differs between bodies is data.
 - **Failure.** When a body's material cannot be prepared, the stock body is drawn
   with the same World HUD, and the simulation is unaffected.
 
+### Planet appearance adapter
+
+`apps/web/src/lib/assets/planet-appearances.ts` owns `planetAppearances`:
+prepared surface/painter materials and the full simulation planet list enter;
+a read-only map of `BodyAppearance` callbacks keyed by full-system
+`systemPosition` leaves. FlightDeck, the Planet Inspector and the Flight scene
+instrument share this adapter. Planet properties and accepted appearances
+belong to the [planet contract](../world/planets/spec.md).
+
+- Match material applications by internal identity, never draw order, filtered
+  array index, display name or generic rock type. `moon` selects the fixed
+  mercurial material in generated flight and Practice. Venus and The Cradle
+  keep their own identities and compositions.
+- Validate supplied ordinals as unique positive integers before binding. An
+  ambiguous material identity is an error. Never renumber a filtered view.
+- Build the map when the system or prepared materials change, outside the frame
+  loop. Run replacement binds the current retained roster even when its count
+  or ordinals differ. Asynchronous material completion binds the current run.
+- Missing or failed material preparation leaves the body without an adapter
+  entry; the normal body pass draws its stock fallback. Physics and World HUD
+  remain available independently of material readiness.
+- The adapter supplies World bounds/drawing and LFX bounds/drawing to the
+  existing ordered passes. Bounds cover every visible part. The passes cull
+  before surface or light work. Drawing reads simulation ticks, actual body
+  radius, camera zoom and the current star position, and does not mutate the
+  simulation. Surface caching holds repeated or paused ticks.
+- Callers own prepared projection/painter instances and release them on
+  teardown. Late asynchronous results after teardown are disposed without
+  attaching to a departed scene. Immutable decoded maps may be shared.
+
 ### Time
 
 - **Tick:** one fixed simulation step of 1/60 s. Game time is the tick count

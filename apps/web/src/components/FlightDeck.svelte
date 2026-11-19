@@ -39,7 +39,7 @@ import {
   submitHighScore,
 } from "@void-drift/mode-a";
 import { onMount, type Snippet } from "svelte";
-import { practicePlanetAppearances } from "../lib/assets/practice-planet-appearances";
+import { planetAppearances } from "../lib/assets/planet-appearances";
 import { createPracticeVenus } from "../lib/assets/practice-venus";
 import { NO_SCORE_NOTICE } from "../lib/experimental";
 import { fitGameScreen, GAME_HEIGHT } from "../lib/game-screen";
@@ -72,10 +72,10 @@ let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
 let simulation: Simulation;
 let practiceVenus: ReturnType<typeof createPracticeVenus> | undefined;
 let practiceCradle: Awaited<ReturnType<typeof createCloudedWorld>> | undefined;
-let practiceMercury: Awaited<ReturnType<typeof createRockMaterial>> | undefined;
-let practiceBodyAppearances:
-  | ReturnType<typeof practicePlanetAppearances>
+let mercurialMaterial:
+  | Awaited<ReturnType<typeof createRockMaterial>>
   | undefined;
+let bodyAppearances: ReturnType<typeof planetAppearances> | undefined;
 let input: Input;
 let renderer: Renderer;
 let camera: Camera;
@@ -204,7 +204,7 @@ function reset(start = false) {
     countTime = 0;
     phase = "starting";
   } else countTime = -1;
-  refreshPracticeAppearances();
+  refreshPlanetAppearances();
   if (start) simulation.start();
   paused = start && narrow;
   scoreSaved = false;
@@ -213,15 +213,12 @@ function reset(start = false) {
   frameCamera(true, $settings.speedCamera, true);
   sync();
 }
-function refreshPracticeAppearances() {
-  practiceBodyAppearances =
-    mode === "practice"
-      ? practicePlanetAppearances(simulation.planets, {
-          mercury: practiceMercury,
-          venus: practiceVenus,
-          cradle: practiceCradle,
-        })
-      : undefined;
+function refreshPlanetAppearances() {
+  bodyAppearances = planetAppearances(simulation.planets, {
+    mercury: mercurialMaterial,
+    venus: mode === "practice" ? practiceVenus : undefined,
+    cradle: mode === "practice" ? practiceCradle : undefined,
+  });
 }
 function frameCamera(
   snap = false,
@@ -416,25 +413,35 @@ function padPress(pointerId: number, pad: ThrustPad | null) {
   input?.setPointer(pointerId, pad);
 }
 onMount(() => {
+  let disposed = false;
+  void createRockMaterial(PLANET_MAPS.mercuryGround)
+    .then((asset) => {
+      if (disposed) {
+        asset.painter.dispose();
+        return;
+      }
+      mercurialMaterial = asset;
+      refreshPlanetAppearances();
+    })
+    .catch(() => {
+      /* Keep the stock body when the material is unavailable. */
+    });
+
   if (mode === "practice") {
     try {
       practiceVenus = createPracticeVenus(true);
-      refreshPracticeAppearances();
+      refreshPlanetAppearances();
     } catch {
       /* Use the stock body if Canvas material preparation fails. */
     }
-    void createRockMaterial(PLANET_MAPS.mercuryGround)
-      .then((asset) => {
-        practiceMercury = asset;
-        refreshPracticeAppearances();
-      })
-      .catch(() => {
-        /* Keep the stock body when the material is unavailable. */
-      });
     void createCloudedWorld(PLANET_MAPS.cradleGround, PLANET_MAPS.cradleClouds)
       .then((asset) => {
+        if (disposed) {
+          asset.painter.dispose();
+          return;
+        }
         practiceCradle = asset;
-        refreshPracticeAppearances();
+        refreshPlanetAppearances();
       })
       .catch(() => {
         /* Keep the stock body when the maps are unavailable. */
@@ -593,8 +600,7 @@ onMount(() => {
         camera,
         sim: simulation,
         fx: flightFx,
-        bodyAppearances:
-          mode === "practice" ? practiceBodyAppearances : undefined,
+        bodyAppearances: bodyAppearances,
         stockShip: chosen === "fiddler" ? undefined : chosen,
         lightTime: Math.max(0, countTime) + simulation.ticks * STEP,
         lightOverlay:
@@ -627,7 +633,11 @@ onMount(() => {
   document.addEventListener("visibilitychange", visibility);
   frame = requestAnimationFrame(draw);
   return () => {
+    disposed = true;
     cancelAnimationFrame(frame);
+    mercurialMaterial?.painter.dispose();
+    practiceVenus?.painter.dispose();
+    practiceCradle?.painter.dispose();
     stopCameraPreference();
     playSurface?.removeEventListener("contextmenu", preventMenu);
     resize.disconnect();

@@ -12,9 +12,10 @@ remain outside those rules indefinitely. No eventual promotion is promised.
 
 In the current game, Playground makes every catalog ship and compatible part except the retired rail gun
 available. It keeps the selected flight mode and can enable experimental or
-upcoming world features. The 0.7 release candidate uses the `fires-in-the-sky`
-ranked challenge; Playground Survival and the other, unranked modes can evolve
-independently. Public availability does not imply ranked eligibility.
+upcoming world features. The default seeded solar system, including its
+yellow-family G star, is shared by ranked Survival and the other gameplay
+modes. Playground controls catalog access and score eligibility, not this
+system profile. Public availability does not imply ranked eligibility.
 
 The player makes one choice: Playground **Off** or **On**.
 
@@ -76,14 +77,12 @@ this same Playground boundary. Its mass and collision envelope apply in flight. 
 - **On, catalog.** Every ship and part except the retired rail gun is selectable and fittable. A saved rail fitting remains visible, disabled and removable; it is still unsanctioned for launch eligibility. Ship tabs
   use the ordinary available state without a catalog badge; unsanctioned parts
   retain their marker.
-- **World features.** Survival with Playground On uses the seeded G-class
-  yellow-family stars defined by the [star contract](../world/star/spec.md).
-  With Playground Off it retains the ranked legacy Sun. Practice, Derelicts and
-  Gauntlet may use experimental or upcoming features regardless of Playground;
-  each mode's contract defines its selection. This does not automatically enable
-  every experiment. No world feature may leak into ranked rules through a shared
-  default. The Playground value is captured in validated flight settings at launch
-  and retained for reset and replay.
+- **World features.** Survival, Derelicts and Gauntlet use the shared seeded
+  yellow-family solar system defined by the [system contract](../world/systems/spec.md)
+  whether Playground is On or Off. Practice retains its fixed reference system.
+  Playground does not enable other world experiments automatically; each mode's
+  contract defines its selection. The Playground value is captured in validated
+  flight settings at launch and retained for reset and replay.
 - **On, runs.** No run is scored. In a Survival run the flight screen shows the
   time and, where the running score would be, the scoring-off notice. Run
   complete shows the time survived and the same notice in place of the score,
@@ -144,10 +143,10 @@ this same Playground boundary. Its mass and collision envelope apply in flight. 
 - E11: Item-marker presentation is settled on a live
   prototype. Playground is the setting name, and title run status distinguishes
   Playground play from ranked play.
-- E12: Playground Survival uses the deterministic yellow-family star for its
-  seed; ranked Survival retains the 0.6.0 launch-era Sun.
-  Reset and replay retain the captured world-feature selection. Changes confined
-  to unranked play leave the ranked challenge and its leaderboard unchanged.
+- E12: Survival uses the deterministic yellow-family star for its seed whether
+  Playground is On or Off. Playground changes ranking eligibility, not solar
+  system generation. Reset and replay retain the captured world-feature
+  selection.
 
 ### Regression guardrails
 

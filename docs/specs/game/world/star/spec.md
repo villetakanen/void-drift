@@ -9,7 +9,7 @@ stellar families and further Sun effect design are deferred. The accepted
 retains experiments; the [closure](../../../../loop-evidence/2026-11-07-suns-closure.md)
 records acceptance, not production validation.
 
-### Yellow-family gameplay trial — unranked play
+### Yellow-family gameplay profile
 
 The [stellar-characters study](../../../../../apps/web/src/pages/lab/studies/stellar-characters-2026-11-11.astro#03)
 closed accepted on 11 November 2026. Its final yellow-family reference has
@@ -20,29 +20,23 @@ hazard reach is `100s`, collection reach is `R₀s` and gravity reach is
 These are centre-distance boundaries; enlarged surfaces do not move them
 outward. The current inverse-square law gives mass `5250s^2.9`.
 
-Derelicts, Gauntlet and Survival with Playground On select the same
-continuous deterministic surface radius in 36–140 u from each run seed and
-apply the family appearance, gravity, collection and damage fields described
-above. This is an initial playable trial; the selected field profiles are
-hypotheses for play, not claims of balance. The title screen separately uses a
-cosmetic sample across the same surface range through its independent landing
-scene. Practice uses the G7 reference profile at a fixed 70 u surface radius
-and labels it `G7 Sun`: a star is named by its type, followed by its name
-if it has one. Ranked Survival retains the existing Sun.
-The study recommends retaining the existing decorative landing Sun; this trial
-supersedes that recommendation for the title scene only. Playground also enables this world-feature trial in Survival; with it Off,
-Survival retains the 0.6.0 launch-era Sun in the `fires-in-the-sky` release
-candidate. The size distribution and field profiles are initial trial choices. Field boundaries and visual identity are accepted.
-See the study's parts 03 and 04 for gaps, ordered slices, verification and the
-version/challenge boundary. Low-yields and other stellar natures are outside
-this delivery.
+Survival, Derelicts and Gauntlet select the same continuous deterministic
+surface radius in 36–140 u from each run seed and apply the family appearance,
+gravity, collection and damage fields described above. The selected field
+profiles remain gameplay tuning, not claims of balance. The title screen
+separately uses a cosmetic sample across the same surface range through its
+independent landing scene. Practice uses the G7 reference profile at a fixed
+70 u surface radius and labels it `G7 Sun`: a star is named by its type,
+followed by its name if it has one. The title screen keeps its independent
+cosmetic Sun. Low-yield stars and other stellar natures are outside this
+contract.
 
-The production contract below describes the legacy Sun profile used in ranked
-Survival. Practice uses the same reference fields and radius as G7, with
-resource protection. Study acceptance and this trial do not claim gameplay
-balance or authorize a release.
+The production contract below records the legacy Sun profile for consumers that
+retain it. Practice uses the same reference fields and radius as G7, with
+resource protection. The seeded yellow-family profile used by Survival,
+Derelicts and Gauntlet is the default gameplay profile.
 
-Derelicts, Gauntlet and Playground Survival place the selected `G4`–`G14` denomination just above
+Survival, Derelicts and Gauntlet place the selected `G4`–`G14` denomination just above
 and to the right of the star surface in the World HUD. The integer is the
 surface radius in tens of world units, rounded to the nearest class; radius 70
 is G7 and radius 140 is G14. The label uses the World HUD's Android green and
@@ -59,9 +53,9 @@ display label.
 
 ## Architecture
 
-- `SUN_CONFIG.G` supplies the legacy radius-35 body and artwork. Ranked Survival uses
-  it directly; Practice applies the fixed G7 profile; Derelicts, Gauntlet and Playground Survival
-  apply the seed-selected yellow-family profile. The landing system starts from
+- `SUN_CONFIG.G` supplies the legacy radius-35 body and artwork. Practice applies
+  the fixed G7 profile; Survival, Derelicts and Gauntlet apply the seed-selected
+  yellow-family profile. The landing system starts from
   it before applying its independent cosmetic yellow-family sample.
 - `packages/core/src/lib/solar.ts` owns centre-distance field profiles.
   `EnergyFieldSchema` validates independent reach, shoulder, peak and outer

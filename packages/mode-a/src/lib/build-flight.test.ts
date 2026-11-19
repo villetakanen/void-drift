@@ -8,6 +8,8 @@ import {
   PARTS,
 } from "./schemas/loadout";
 import { Simulation, stockSettings } from "./simulation";
+import { GRAVITY_TUNING } from "./tuning";
+import { applyYellowFamilyProfile } from "./yellow-star-family";
 
 const idle = { leftThruster: false, rightThruster: false, fire: false };
 const both = { ...idle, leftThruster: true, rightThruster: true };
@@ -121,6 +123,8 @@ describe("ship builder contract", () => {
   });
   it("uses incoming charge with held controls and cannot thrust on unavailable energy", () => {
     const sim = simulation();
+    applyYellowFamilyProfile(sim.star, 70, GRAVITY_TUNING);
+    sim.planets.length = 0;
     sim.ship.pos.set(sim.star.pos.x + 280, sim.star.pos.y);
     sim.state.resources.power = 0;
     sim.step(both);

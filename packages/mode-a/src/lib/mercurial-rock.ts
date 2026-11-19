@@ -8,4 +8,6 @@ export const MERCURIAL_ROCK_RADIUS = {
 /** Centre-to-centre orbit distance chosen for Practice Mercury. */
 export const PRACTICE_MERCURY_ORBIT = 258;
 export const PRACTICE_MERCURY_TRAVEL_SPEED = 4;
-export const PRACTICE_MERCURY_SPIN_SECONDS = 31.3;
+/** Shared surface turn for the mercurial family, independent of orbit. */
+export const MERCURIAL_ROCK_SPIN_SECONDS = 31.3;
+export const PRACTICE_MERCURY_SPIN_SECONDS = MERCURIAL_ROCK_SPIN_SECONDS;

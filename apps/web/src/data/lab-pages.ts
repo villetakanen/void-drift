@@ -37,6 +37,13 @@ export type LabPage = z.infer<typeof labPageSchema>;
 
 export const labPages = z.array(labPageSchema).parse([
   {
+    href: "/lab/system-instrument",
+    title: "System instrument",
+    purpose: "Generate and inspect the production solar system by seed.",
+    group: "tools",
+    source: "production",
+  },
+  {
     href: "/lab/planet-inspector",
     title: "Planet Inspector",
     purpose:

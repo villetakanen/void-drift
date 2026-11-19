@@ -33,6 +33,10 @@ an agent-supplied document; the starter is `STARTER_FLIGHT_SCENE` in
 | `follow`  | `{near, far}` zoom of the two follow views, positive with `near < far`; defaults 1.6 and 4.                      |
 | `opening` | `{burn, view, tick}`: what is shown on opening; defaults `course`, `follow`, 180. The tick lies within the burn. |
 
+### Full Practice system
+
+The canonical inspector opens in Practice. A study selects the same environment with `system: "practice"`. The simulation supplies the G7 Sun, Mercury, Venus and The Cradle with their Practice orbits, gravity, body sizes and surface appearances. Replay and backward seek restore the same system. Wreck staging and the isolated Venus encounter remain available as separate scenes. The document rejects combining either with the full system.
+
 ### Staged impulses
 
 A document may supply `impulses`, default empty: up to sixteen strict objects
@@ -53,8 +57,10 @@ The default zoom and held values are working values, not tuned ones.
 
 ### Engine
 
+A local experiment can supply a screen-space `drawSky` painter at the starfield pass. The default uses the production field. Both run behind all arena objects on the World layer and use the same flight and camera.
+
 - `flight.ts`: `FlightRun` is the simulation half and needs no canvas. It builds
-  a production `Simulation` with Derelicts rules, the encounter held off, and
+  a production `Simulation` for the selected system with
   the document's loadout and start; it advances one tick at a time from the
   burn's input program and seeks to an instant.
 - `scene.ts`: `FlightScene` adds the camera, the persistent FX history and the
@@ -344,7 +350,7 @@ a finite `orbitAngle` (default zero), and optional `atmosphere` with positive wo
 `depth` and nonnegative `dragRate` in inverse seconds. This selects a Practice
 simulation with its Sun and the current Venus body's radius, orbit, speed and mass;
 other planets are removed. Wreck targets/held staging cannot be combined with this
-mode. Documents without `planet` preserve the existing Derelicts scene.
+mode. Documents without `planet` or `system` preserve the existing Derelicts scene.
 
 `start.velocity` optionally supplies finite world-space x/y velocity in u/s;
 omitting it retains the original at-rest start. Fixed burn inputs remain unchanged.

@@ -28,6 +28,9 @@ Derelicts is a mode of its own, as the [game contract](../spec.md) lists it.
   size from the run seed and derives the star's gravity, collection and damage
   fields. Core consumes those independent fields for flight physics and the
   shared star renderer supplies its appearance.
+- **System.** `packages/mode-a/src/lib/solar-system.ts` creates the same seeded
+  star and planet setup used by Survival and Gauntlet. The
+  [system contract](../world/systems/spec.md) owns its details.
 - **Screen.** `apps/web/src/components/FlightDeck.svelte` provides flight,
   pause, game over and the return.
 - **Neighbours.**
@@ -46,8 +49,10 @@ Derelicts is a mode of its own, as the [game contract](../spec.md) lists it.
   run does. The seed selects one yellow-family star size from 36–140 u for the
   whole run; its colour, gravity reach, collection reach and danger reach follow
   that size. The World HUD labels the star `G4`–`G14`, with the 70 u reference
-  star labeled `G7`. This is a playable trial of the accepted family, not a
-  balance claim.
+  star labeled `G7`. The same seed selects the mercurial radius and sets the
+  retained planets' starting orbital phase. The [system contract](../world/systems/spec.md)
+  owns placement and removal of conflicting stock planets. Survival and Gauntlet
+  use the same system for that seed.
 - **Nothing shoots back.** Nothing in the mode attacks the player. The ship is
   lost only through its own contact with something, or by running out of
   energy.
@@ -90,9 +95,9 @@ Derelicts is a mode of its own, as the [game contract](../spec.md) lists it.
   unchanged, and the reverse.
 - M8: The same seed selects the same star size and fields; different seeds can
   select different sizes. The star remains constant for the run.
-- M9: Yellow-family appearance and size-linked gravity, collection and danger
-  fields apply in Derelicts. Survival retains its existing star; Practice
-  retains its fixed G7 reference profile; landing remains cosmetic.
+- M9: The shared yellow-family appearance and size-linked gravity, collection
+  and danger fields apply in Survival, Derelicts and Gauntlet. Practice retains
+  its fixed G7 reference profile; landing remains cosmetic.
 - M10: Gauntlet uses the same seed-selected yellow-family profile as Derelicts.
 
 ### Regression guardrails

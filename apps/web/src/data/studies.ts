@@ -10,9 +10,25 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
   {
+    slug: "close-g-stars-2026-11-18",
+    title: "Eleven close stars",
+    status: "stopped",
+    phase: "exploration",
+    question:
+      "Which drawing techniques from 1990s game skies give a bright G-class background star a distinctive appearance in Void Drift?",
+  },
+  {
+    slug: "distant-flight-sky-2026-11-18",
+    title: "The distant flight sky",
+    status: "stopped",
+    phase: "exploration",
+    question:
+      "How do we create the first design-wise sound sky for Void Drift 0.7.0, Fires in the Sky?",
+  },
+  {
     slug: "background-stars-2026-11-18",
     title: "Flight starfield",
-    status: "open",
+    status: "stopped",
     phase: "exploration",
     question:
       "How should Void Drift render its distant stars so the sky feels like part of the world, with a Sun-like minority you discover as you fly?",

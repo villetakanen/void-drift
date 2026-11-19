@@ -9,6 +9,7 @@ import {
   defaultTargets,
   type FlightExperiment,
   FlightSceneDocumentSchema,
+  PRACTICE_FLIGHT_SCENE,
   STARTER_FLIGHT_SCENE,
   type StudyLight,
   type TargetMode,
@@ -29,7 +30,7 @@ const LABELS: Record<TargetMode, string> = {
   placed: "Placed",
   held: "Held ahead",
 };
-let sceneKind = $state("Wrecks");
+let sceneKind = $state("Practice");
 let starColour = $state("Stock");
 const starAppearance = $derived(
   starColour === "Stock"
@@ -39,6 +40,7 @@ const starAppearance = $derived(
         glowColor: starColour === "Warm" ? "#ff7d24" : "#718fff",
       },
 );
+const practiceDoc = FlightSceneDocumentSchema.parse(PRACTICE_FLIGHT_SCENE);
 const planetDoc = FlightSceneDocumentSchema.parse({
   loadout: starterLoadout("wasp"),
   planet: { reference: "practice-venus", orbitAngle: 0 },
@@ -60,7 +62,13 @@ const stagedStart = $derived(
       }
     : undefined,
 );
-const activeDoc = $derived(sceneKind === "Planet" ? planetDoc : doc);
+const activeDoc = $derived(
+  sceneKind === "Practice"
+    ? practiceDoc
+    : sceneKind === "Planet"
+      ? planetDoc
+      : doc,
+);
 const modes = $derived(targetModes(activeDoc));
 
 /** A plain marker at each firing main engine, to show where a study paints. */
@@ -105,7 +113,7 @@ const id = $props.id();
 {#key sceneKind}
   <FlightSceneInstrument
     config={activeDoc}
-    targets={sceneKind === "Planet" ? "none" : targets}
+    targets={sceneKind === "Wrecks" ? targets : "none"}
     {layers}
     {starAppearance}
     start={stagedStart}
@@ -116,7 +124,7 @@ const id = $props.id();
       <p>Scene</p>
       <Toggle
         label="Scene"
-        options={["Wrecks", "Planet"]}
+        options={["Practice", "Wrecks", "Planet"]}
         bind:value={sceneKind}
       />
       {#if sceneKind === "Planet"}
@@ -141,18 +149,20 @@ const id = $props.id();
         Warm/Cool use the standard star body and glow; gravity, collection,
         damage, radius and replay are unchanged.
       </p>
-      <p>Targets</p>
-      <Toggle
-        stretch
-        label="Targets"
-        options={modes.map((mode) => LABELS[mode])}
-        bind:value={
-          () => LABELS[targets],
-          (v) => {
+      {#if sceneKind === "Wrecks"}
+        <p>Targets</p>
+        <Toggle
+          stretch
+          label="Targets"
+          options={modes.map((mode) => LABELS[mode])}
+          bind:value={
+            () => LABELS[targets],
+            (v) => {
   targets = modes.find((mode) => LABELS[mode] === v) ?? targets;
 }
-        }
-      />
+          }
+        />
+      {/if}
       <p>Layers</p>
       <div class="rows">
         <label for={`${id}-world`}>World</label>

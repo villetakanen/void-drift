@@ -109,22 +109,43 @@ px and text is 14 CSS px at every zoom. The
 screen sizing. Planets have no separate decorative ring system. Collision and
 gravity use the planet body radius and mass.
 
-### Mercurial mineral-rock size
+### Mercurial mineral-rock
 
-The airless mineral-rock type explored in the Mercury study uses a radius of
-16–36 world units. This range belongs to that type, not every rock planet.
-Practice's innermost stock rock (`id: moon`, the Mercury application) has radius
-27u, giving a diameter of 54u. Its centre-to-centre orbital distance is 258u; the size and placement selection
-originally retained its existing mass. Practice now uses mass 870 (3/5 of the
-previous 1450), from `gravity.practicePlanetMass.moon`; other modes retain 1450. Its whole surface stays outside the Sun's danger reach and at least
-part of its surface lies inside the charging reach. In Practice, this body uses
-the accepted mineral surface, independent 31.3-second spin and Sun-facing LFX.
+This airless mineral-rock family uses radii 16–36u. The range belongs to this
+family, not every rock planet. It has no atmosphere or decorative ring.
+
+Survival, Derelicts and Gauntlet each contain exactly one generated application,
+replacing the innermost stock entry while retaining internal identity `moon`.
+Its seed-selected radius, Sun-relative orbit, 4u/s travel and conflict-removal
+priority follow the [system contract](../systems/spec.md). Its whole body stays
+outside danger and inside charging with at least 1u clearance. It has no display
+name inherited from “The Moon”; it uses the normal star/ordinal HUD name.
+Its gravity-well mass is independently stored as `gravity.planetMass.moon = 1450`.
+Changing the seeded radius does not scale that mass or its gravity reach.
+
+Practice's Mercury also uses `moon`, with display name Mercury, fixed radius
+27u (54u diameter), fixed orbit 258u and travel speed 4u/s. Its independently
+stored mass is `gravity.practicePlanetMass.moon = 870`. Its whole body remains
+outside the fixed G7 Sun's danger field and inside charging. The generated
+radius range and placement algorithm do not change this reference system.
+
+Both applications use the accepted mineral surface in
+`apps/web/public/planets/mercury-ground.png`, independent 31.3-second surface
+rotation driven by simulation ticks, and current shared Sun-facing LFX light.
+Rendering uses the shared production World/LFX body passes, prepared cached
+material and camera culling, following the [render contract](../../render/spec.md).
+Pause holds rotation; the same tick gives the same picture. Material failure
+uses a stock-disc fallback while retaining the body's physics and World HUD.
+Other rock planets retain their own appearance. The normal orbit, moving gravity
+boundary and upright name are present independently of material readiness.
 
 ### Practice Venus
 
 Practice replaces the stock middle gas planet with one named `venus`, before
 applying gravity tuning. Mercury remains, and The Cradle replaces the outer
-rock; other modes retain all three stock planets. Planet identities remain strings and gravity masses are keyed by identity;
+rock. Other modes use the generated mercurial replacement and conflict-filtered
+roster from the [system contract](../systems/spec.md). Planet identities remain
+strings and gravity masses are keyed by identity;
 optional `practicePlanetMass` overrides apply only in Practice.
 
 - Radius: `27 × (1 + (12104 / 4879 − 1) / 3)` ≈ 40.327526u.
@@ -309,7 +330,10 @@ Specified in [gravity-field.md](../gravity-field/spec.md#bodies-in-play).
 ### Configuration
 
 - **Production:** `initializePlanets()` in `packages/core/src/lib/physics/planets.ts`
-  creates the three configured planets from `SURVIVAL_CONFIG.PLANETS`.
+  creates the three configured source planets from `SURVIVAL_CONFIG.PLANETS`.
+  `generateSolarSystem()` in `packages/mode-a/src/lib/solar-system.ts` applies
+  the mercurial replacement and conflict removal for generated play; Practice
+  applies its fixed named roster.
 - **Experiment:** `initializeRandomPlanets()` can create 0-5 planets with random
   count, type, orbit, size and speed.
 

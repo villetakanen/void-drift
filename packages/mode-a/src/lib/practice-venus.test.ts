@@ -15,7 +15,6 @@ it("keeps the Practice roster isolated, repeatable and clear over entire orbits"
   for (const mode of ["survival", "derelicts", "gauntlet"] as const) {
     const other = new Simulation({ ...gameSettings("wasp"), mode });
     expect(other.planets.some((p) => p.id === "venus")).toBe(false);
-    expect(other.planets.some((p) => p.id === "gas")).toBe(true);
     const moon = other.planets.find((p) => p.id === "moon");
     if (!moon?.massWell) throw new Error("Stock moon well missing");
     // The deliberately lighter Practice Mercury must not retune stock modes.

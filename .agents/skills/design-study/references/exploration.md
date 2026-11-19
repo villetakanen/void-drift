@@ -13,7 +13,8 @@ discoveries. Remove dedicated unused code after checking consumers; preserve sha
 systems and unrelated work. Do not archive the rejected attempt in collapsed content
 or create a retrospective unless requested.
 
-Briefly acknowledge feedback, then make the next proposal. Do not default to apologies,
+When the designer rejects a proposal as unusable, briefly acknowledge the rejection
+and present its replacement. Do not default to apologies,
 self-assessment, speculative explanations of failure, method repair in chat, or asking
 permission to try again. Rejection alone does not reopen the problem statement. When a
 reason in the skill's "Amend the question" holds, follow that section. Explicit
@@ -66,10 +67,17 @@ Define consumed objects and conditions. Keep prose brief: what to notice, limita
 and the uncertainty the example addresses. Put the review question in chat. Inspect the rendered example before presenting it. Report actual blockers as incomplete work; explicit requests for conceptual
 discussion override this default. Do not overbuild a final solution to provide evidence.
 
+When the designer asks what the study has gained, answer in chat using the evidence
+so far, including what remains unresolved.
+
 ## Choose the move
 
-Each round makes one move. Choose it from the state of the question, and name the
-move to yourself before building. The designer sees the example, never the move name.
+Each round makes one move. Before building, identify what the next example would
+let the designer judge about section 01’s question. The designer sees the example,
+never the move name.
+
+When the designer voices a reservation, let it remain open unless investigating it
+would advance section 01’s question or the designer asks you to act on it.
 
 The question is open and no answer has been picked:
 
@@ -120,9 +128,8 @@ explicit reason. If the designer challenges the frame, return to purpose and ide
 what changed rather than polishing the same artifact. Recommend only with supporting
 reasoning; never manufacture evidence or acceptance.
 
-When an independently usable result is accepted within a broader study, recommend
-taking that result through parts 03 and 04 before exploring the next subject.
-Keep the remaining scope explicit and honor a direction to continue exploration.
+Accepting one quality of an example settles that quality. Continue exploring the
+study question unless the designer selects a result for independent delivery.
 
 When a visual example is accepted, identify its exact variant and the properties
 the designer settled. Carry that reference into the scope alongside anything still

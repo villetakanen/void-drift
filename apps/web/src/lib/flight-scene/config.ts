@@ -49,6 +49,7 @@ export const StagedStartSchema = z
 
 export const FlightSceneDocumentSchema = z
   .object({
+    system: z.literal("practice").optional(),
     planet: StagedPlanetSchema.optional(),
     /** One game loadout; it should carry a forward weapon to have something to show. */
     loadout: gameSchema<Loadout>(LoadoutSchema),
@@ -98,6 +99,13 @@ export const FlightSceneDocumentSchema = z
       .default({}),
   })
   .strict()
+  .refine(
+    (doc) => !doc.system || (!doc.planet && !doc.targets.length && !doc.held),
+    {
+      message: "The full Practice system uses its own bodies and encounters",
+      path: ["system"],
+    },
+  )
   .refine((doc) => !doc.planet || (!doc.targets.length && !doc.held), {
     message: "Planet encounters and wreck staging are separate scene modes",
     path: ["planet"],

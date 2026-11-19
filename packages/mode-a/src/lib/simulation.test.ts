@@ -1,12 +1,14 @@
 import { STANDARD_SUN, SURVIVAL_CONFIG } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { gameSettings, Simulation, stockSettings } from "./simulation";
+import { GRAVITY_TUNING } from "./tuning";
+import { applyYellowFamilyProfile } from "./yellow-star-family";
 
 const both = { leftThruster: true, rightThruster: true, fire: false };
 const idle = { leftThruster: false, rightThruster: false, fire: false };
 
 describe("flight contract", () => {
-  it("sizes Practice Mercury within the charging field without changing other modes", () => {
+  it("keeps Practice Mercury's fixed size and orbit", () => {
     const practice = new Simulation({ ...stockSettings(), mode: "practice" });
     const mercury = practice.planets.find((planet) => planet.id === "moon");
     if (!mercury) throw new Error("Practice Mercury missing");
@@ -17,10 +19,6 @@ describe("flight contract", () => {
     );
     expect(mercury.orbitRadius - mercury.radius).toBeLessThan(
       practice.star.collectionField?.reach ?? 0,
-    );
-    const ranked = new Simulation({ ...stockSettings(), mode: "survival" });
-    expect(ranked.planets.find((planet) => planet.id === "moon")?.radius).toBe(
-      SURVIVAL_CONFIG.PLANETS.find((planet) => planet.id === "moon")?.radius,
     );
   });
   it("assigns stable outward HUD identities before a scene filters planets", () => {
@@ -81,7 +79,7 @@ describe("flight contract", () => {
     expect(noAir.airSample).toBeNull();
     expect(inAir.state.resources.hull).toBe(100);
   });
-  it("keeps ranked Survival on the legacy Sun while Playground uses the seeded family", () => {
+  it("uses the same seeded solar system in Survival, Derelicts and Gauntlet", () => {
     const settings = {
       ...gameSettings("wasp"),
       mode: "derelicts" as const,
@@ -91,6 +89,8 @@ describe("flight contract", () => {
     const repeated = new Simulation(settings).star;
     const other = new Simulation({ ...settings, seed: 8173 }).star;
     const gauntlet = new Simulation({ ...settings, mode: "gauntlet" }).star;
+    const derelictsPlanets = new Simulation(settings).planets;
+    const survivalRun = new Simulation({ ...settings, mode: "survival" });
 
     expect(first.radius).toBe(repeated.radius);
     expect(first.influenceRadius).toBe(repeated.influenceRadius);
@@ -102,6 +102,8 @@ describe("flight contract", () => {
     expect(gauntlet.influenceRadius).toBe(first.influenceRadius);
     expect(gauntlet.collectionField).toEqual(first.collectionField);
     expect(gauntlet.damageField).toEqual(first.damageField);
+    expect(survivalRun.star).toEqual(first);
+    expect(survivalRun.planets).toEqual(derelictsPlanets);
 
     const practice = new Simulation({ ...settings, mode: "practice" }).star;
     expect(practice.radius).toBe(70);
@@ -115,7 +117,7 @@ describe("flight contract", () => {
       mode: "survival",
       experimental: "On",
     });
-    expect(playground.star).toEqual(new Simulation(settings).star);
+    expect(playground.star).toEqual(survivalRun.star);
     const replayed = new Simulation(playground.settings);
     playground.start();
     replayed.start();
@@ -123,11 +125,7 @@ describe("flight contract", () => {
     replayed.replay([{ ...both, ticks: 180 }]);
     expect(playground.ship).toEqual(replayed.ship);
 
-    const survival = new Simulation({ ...settings, mode: "survival" }).star;
-    expect(survival.radius).toBe(35);
-    expect(survival.collectionField).toBeUndefined();
-    expect(survival.damageField).toBeUndefined();
-    expect(survival.appearance).toBeUndefined();
+    expect(survivalRun.star.appearance).toBe("yellow-family");
   });
 
   it("reproduces validated replay exactly", () => {
@@ -208,6 +206,7 @@ describe("flight contract", () => {
 describe("integrated gravity flight", () => {
   it("coasts without drag or a speed cap", () => {
     const s = new Simulation(stockSettings("scout"));
+    applyYellowFamilyProfile(s.star, 70, GRAVITY_TUNING);
     s.planets.length = 0;
     s.ship.pos.set(1500, 540);
     s.ship.vel.set(1500, 0);

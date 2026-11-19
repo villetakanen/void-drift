@@ -34,7 +34,7 @@ Read the page and say which part is active before working.
 | Move | Needs |
 |---|---|
 | 01 to 02 | The question test heard; the designer agrees the question or says to explore. |
-| 02 to 03 | The designer accepts a conclusion, or an independently usable result. |
+| 02 to 03 | The designer accepts a conclusion that answers section 01’s question, or selects a result for independent delivery. |
 | 02 to 01 | The designer accepts an example built on an amended question. |
 | 03 to 04 | Every blocker to the intended delivery named. |
 | 03 to 02 | A named question that needs more design evidence. |
@@ -49,8 +49,7 @@ the rest of the scope.
 The question is known to be wrong when:
 
 - a retained observation contradicts something section 01 holds fixed
-- a hypothesis in section 01 has failed
-- the designer restates the purpose
+- the designer changes what they want the study to settle.
 
 Build the next example on the question as it would become. Say in one line what
 it sets aside from section 01 and what the question becomes. Leave section 01 as
@@ -62,15 +61,15 @@ The question may be wrong when:
 - two replacements in a row are rejected and no observation is retained
 - an open item cannot be shown in a built example and judged from it
 
-Say so in one line, offer to narrow the question or stop, and keep proposing on
+Say so in one line, offer to narrow the question, and keep proposing on
 the current question.
 
 One rejected proposal is neither case.
 
 If the designer restates the subject so that the study would settle a different
 object or decision, or change a different thing in the game or the Lab, it is a
-new study. Build nothing. Propose ending this one as stopped or ruled out; the new
-question starts its own cycle once the designer agrees.
+new study. Build nothing. Ask whether the designer wants to open a separate study
+for the new question.
 
 When the designer accepts an example built on an amended question:
 
@@ -93,8 +92,9 @@ State what the question holds fixed (accepted mechanics, established intent) and
 leaves open; exploration varies only the open part. A mechanic already settled in the
 game is fixed, not an unknown.
 
-A study answers a question that concerns one object or decision and changes one named
-thing in the game or the Lab. With more than one, propose the one this cycle settles and
+A study answers a question that concerns one object or decision.
+A reader can name what part of the game or Lab the question concerns and explain what answering it would help the designer decide.
+With more than one object or decision, propose the one this cycle settles and
 name the rest as adjacent questions outside it. A change that needs several together is
 a version of the game, not a study; say so instead of exploring it. When section 01 is
 drafted, have the [question test](references/question-test.md) run by a clean-context
@@ -124,7 +124,7 @@ Read [references/exploration.md](references/exploration.md) when entering or res
 part 02. Continue with the same agent and conversation. Carry in the shared question,
 established references and useful current-cycle agreements; carry out supported
 conclusions and remaining uncertainties. The guide owns concrete proposals, feedback,
-retention, focus protection and the recommendation to finish independently usable results.
+retention and focus protection.
 
 Choose an example that lets the designer judge the question at hand. Preserve the
 conditions that matter to that judgment. Record what the example revealed and what
@@ -184,8 +184,5 @@ Report automated correctness, visual inspection and human judgment separately; p
 the review URL. One lead owns synthesis; delegate only when authorized and useful.
 
 Ordinary studies retain their design reasoning, readiness, scope and human judgment.
-The whole-study quality evaluation is separate from the question test: use it only for
-a requested factory evaluation or targeted investigation, using the
-[evaluation protocol](../../../docs/factory-building-lessons/design-study-evaluation.md). Do not generate a
-separate ratings report by default. New interpretations of factory evidence still need
+Do not generate a separate ratings report by default. New interpretations of factory evidence still need
 review before becoming standing guidance.

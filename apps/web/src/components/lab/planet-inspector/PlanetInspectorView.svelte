@@ -4,7 +4,11 @@ import {
   type RockBodyLighting,
   RockBodyLightingSchema,
 } from "@void-drift/core";
-import { type FlightLayerId, STEP } from "@void-drift/mode-a";
+import {
+  type FlightLayerId,
+  MERCURIAL_ROCK_RADIUS,
+  STEP,
+} from "@void-drift/mode-a";
 import { onMount, type Snippet, untrack } from "svelte";
 import type { DeepReadonly } from "../../../lib/flight-scene";
 import {
@@ -21,6 +25,7 @@ import "@void-drift/core/styles/buttons.css";
 type PlanetName = PlanetInspectorDocument["planet"]["name"];
 const PLANET_LABELS: Record<PlanetName, string> = {
   mercury: "Mercury",
+  mercurial: "Mercurial",
   venus: "Venus",
   cradle: "The Cradle",
   earth: "Earth",
@@ -37,9 +42,14 @@ let {
   paneDoc: DeepReadonly<PlanetInspectorDocument>;
   label: string;
   pane?: Snippet<[DeepReadonly<PlanetInspectorDocument>]>;
-  onSelect: (name: PlanetName) => void;
+  onSelect: (planet: PlanetInspectorDocument["planet"]) => void;
 } = $props();
 const opening = untrack(() => doc.opening);
+const family = untrack(() => doc.planet.kind === "family");
+let radius = $state(
+  untrack(() => (doc.planet.kind === "family" ? doc.planet.radius : 27)),
+);
+const namedOptions = ["Mercury", "Venus", "The Cradle", "Earth"];
 const id = $props.id();
 let playing = $state(opening.playing);
 let orbit = $state(0);
@@ -75,6 +85,17 @@ function scrubRotation(value: number) {
   scene?.seekRotation(value);
   rotation = value;
   invalidate();
+}
+
+function scrubRadius(value: number) {
+  try {
+    scene?.setRadius(value);
+    radius = value;
+    playing = false;
+    invalidate();
+  } catch {
+    /* Invalid edits retain the previous validated specimen. */
+  }
 }
 
 function applyLighting(input: unknown) {
@@ -176,6 +197,7 @@ onMount(() => {
     create();
     lighting = { ...DEFAULT_ROCK_BODY_LIGHTING };
     lightingError = "";
+    radius = doc.planet.kind === "family" ? doc.planet.radius : 27;
   };
   create();
   const suspend = () => {
@@ -215,6 +237,7 @@ onMount(() => {
   data-zoom={Number.parseInt(zoom, 10)}
   data-pixels-per-unit={pixelsPerUnit}
   data-planet={doc.planet.name}
+  data-radius={radius}
 >
   <div
     class="scene"
@@ -234,18 +257,51 @@ onMount(() => {
       <p>Named planet</p>
       <Toggle
         label="Named planet"
-        options={Object.values(PLANET_LABELS)}
+        options={namedOptions}
         bind:value={
-          () => PLANET_LABELS[doc.planet.name],
+          () => (family ? "" : PLANET_LABELS[doc.planet.name]),
           (value) =>
-  onSelect(
-    (Object.keys(PLANET_LABELS) as PlanetName[]).find(
-      (name) => PLANET_LABELS[name] === value,
-    ) ?? "mercury",
-  )
+  onSelect({
+    kind: "named",
+    name:
+      (["mercury", "venus", "cradle", "earth"] as const).find(
+        (name) => PLANET_LABELS[name] === value,
+      ) ?? "mercury",
+  })
         }
       />
-      <p class="caption">Practice · Production appearance</p>
+      <p>Planet family</p>
+      <Toggle
+        label="Planet family"
+        options={["Mercurial"]}
+        bind:value={
+          () => (family ? "Mercurial" : ""),
+          () =>
+  onSelect({
+    kind: "family",
+    name: "mercurial",
+    radius:
+      doc.planet.kind === "family"
+        ? doc.planet.radius
+        : MERCURIAL_ROCK_RADIUS.practice,
+  })
+        }
+      />
+      {#if family}
+        <RingSlider
+          label="Radius"
+          min={MERCURIAL_ROCK_RADIUS.min}
+          max={MERCURIAL_ROCK_RADIUS.max}
+          step={0.1}
+          bind:value={() => radius, scrubRadius}
+          unit="u"
+          digits={1}
+        />
+      {/if}
+      <p class="caption">
+        {family ? "Generated family · G7 reference" : "Practice"}
+        · Production appearance
+      </p>
       <RingSlider
         label="Incoming light intensity"
         min={0}
@@ -326,7 +382,9 @@ onMount(() => {
       <span class="caption"
         >{doc.planet.name === "earth"
           ? "Lab copy of The Cradle · Earth ground"
-          : "Production · Practice"}</span
+          : family
+            ? "Production · Mercurial family"
+            : "Production · Practice"}</span
       >
     </div>
   </div>

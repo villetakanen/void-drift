@@ -1,7 +1,7 @@
 # Question test
 
 Run this once section 01 is drafted, before part 02. It asks whether a study can
-answer the question as written. It is not the whole-study quality evaluation, and it does not judge the design.
+answer the question as written. It does not judge the design.
 
 ## The metrics
 
@@ -9,7 +9,7 @@ answer the question as written. It is not the whole-study quality evaluation, an
 | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
 | **One subject** | The question settles one object or decision. Count objects, not facets: an object in each of its states and among others of its kind is one subject when one built example shows them together. No open or unfinished study owns part of the answer.               | The winding or premature question     |
 | **Grounded**    | Every held-fixed item exists today in code or a spec as the section describes it, and no factual claim is false. Every open item can be shown in a built example and judged by looking. Omissions and imprecisions are findings; they do not fail the metric.     | Missing or misremembered fundamentals |
-| **Consequence** | The answer changes one named thing in the game or the Lab, and a reader can say in one sentence, from the section alone, what is different afterwards.                                                                                                            | A study whose answer changes nothing  |
+| **Consequence** | A reader can name what part of the game or Lab the question concerns and explain what answering it would help the designer decide.                                                                                                                                | A question with no clear decision     |
 
 Code shows what is built, not what is intended. When a fixed item rests only on
 current behaviour, with no spec or accepted study behind it, the reviewer lists it as

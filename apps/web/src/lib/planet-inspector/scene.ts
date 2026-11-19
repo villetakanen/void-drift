@@ -12,10 +12,14 @@ import {
   updatePlanetOrbit,
 } from "@void-drift/core";
 import {
+  applyYellowFamilyProfile,
   type BodyAppearance,
   drawFlightFrame,
   FlightFx,
   type FlightLayerContexts,
+  GRAVITY_TUNING,
+  MERCURIAL_ROCK_SPIN_SECONDS,
+  mercurialOrbit,
   PRACTICE_CRADLE_SPIN_SECONDS,
   PRACTICE_MERCURY_SPIN_SECONDS,
   PRACTICE_VENUS_SPIN_SECONDS,
@@ -24,11 +28,19 @@ import {
   STEP,
   stockSettings,
 } from "@void-drift/mode-a";
-import { practicePlanetAppearances } from "../assets/practice-planet-appearances";
+import { planetAppearances } from "../assets/planet-appearances";
 import { createPracticeVenus } from "../assets/practice-venus";
-import type { PlanetInspectorDocument } from "./config";
+import {
+  MercurialInspectorPlanetSchema,
+  type PlanetInspectorDocument,
+} from "./config";
 
 const references = {
+  mercurial: {
+    id: "moon",
+    label: "Mercurial",
+    spinSeconds: MERCURIAL_ROCK_SPIN_SECONDS,
+  },
   mercury: {
     id: "moon",
     label: "Mercury",
@@ -78,6 +90,7 @@ export class PlanetInspectorScene {
   private measurementStart = performance.now();
   status: string;
   private disposed = false;
+  private stagedRadius?: number;
   private lighting: RockBodyLighting = DEFAULT_ROCK_BODY_LIGHTING;
 
   constructor(
@@ -86,6 +99,8 @@ export class PlanetInspectorScene {
     changed: () => void,
   ) {
     this.reference = references[doc.planet.name];
+    this.stagedRadius =
+      doc.planet.kind === "family" ? doc.planet.radius : undefined;
     this.sim = this.createSimulation();
     this.renderer = new Renderer(layers.world.canvas);
     this.seekRotation(doc.opening.rotationDegrees);
@@ -95,16 +110,48 @@ export class PlanetInspectorScene {
     void this.prepareMaterial(changed);
   }
   private createSimulation() {
-    const sim = new Simulation({ ...stockSettings("wasp"), mode: "practice" });
+    const family = this.doc.planet.kind === "family";
+    const sim = new Simulation({
+      ...stockSettings("wasp"),
+      mode: family ? "derelicts" : "practice",
+      seed: 2026,
+    });
+    if (family) applyYellowFamilyProfile(sim.star, 70, GRAVITY_TUNING);
     const planet = sim.planets.find((p) => p.id === this.reference.id);
     if (!planet)
       throw new Error(
         `Named ${this.reference.label} is unavailable in Practice`,
       );
     sim.planets.splice(0, sim.planets.length, planet);
-    planet.displayName = this.reference.label;
+    if (family) {
+      this.stageRadius(sim, planet, this.stagedRadius ?? 27);
+    } else planet.displayName = this.reference.label;
     sim.start();
     return sim;
+  }
+  private stageRadius(sim: Simulation, planet: Planet, radius: number) {
+    const parsed = MercurialInspectorPlanetSchema.parse({
+      kind: "family",
+      name: "mercurial",
+      radius,
+    });
+    const travel = planet.orbitSpeed * planet.orbitRadius;
+    const distance = mercurialOrbit(
+      sim.star.radius,
+      sim.star.damageField?.reach ?? NaN,
+      sim.star.collectionField?.reach ?? NaN,
+      parsed.radius,
+    );
+    planet.radius = parsed.radius;
+    planet.orbitRadius = distance;
+    planet.orbitSpeed = travel / distance;
+    updatePlanetOrbit(planet, 0);
+  }
+  setRadius(radius: number) {
+    if (this.doc.planet.kind !== "family")
+      throw new Error("Radius belongs to family inspection only");
+    this.stageRadius(this.sim, this.planet, radius);
+    this.stagedRadius = radius;
   }
   private async prepareMaterial(changed: () => void) {
     let pendingPainter: { dispose: () => void } | undefined;
@@ -127,11 +174,14 @@ export class PlanetInspectorScene {
         }
         material.painter.prepareLighting(this.lighting);
         this.cradle = material;
-        this.bodyAppearances = practicePlanetAppearances(this.sim.planets, {
+        this.bodyAppearances = planetAppearances(this.sim.planets, {
           cradle: material,
         });
         pendingPainter = undefined;
-      } else if (this.doc.planet.name === "mercury") {
+      } else if (
+        this.doc.planet.name === "mercury" ||
+        this.doc.planet.name === "mercurial"
+      ) {
         const material = await createRockMaterial(PLANET_MAPS.mercuryGround);
         pendingPainter = material.painter;
         if (this.disposed) {
@@ -141,7 +191,7 @@ export class PlanetInspectorScene {
         }
         material.painter.prepareLighting(this.lighting);
         this.mercury = material;
-        this.bodyAppearances = practicePlanetAppearances(this.sim.planets, {
+        this.bodyAppearances = planetAppearances(this.sim.planets, {
           mercury: material,
         });
         pendingPainter = undefined;
@@ -155,7 +205,7 @@ export class PlanetInspectorScene {
         }
         material.painter.prepareLighting(this.lighting);
         this.venus = material;
-        this.bodyAppearances = practicePlanetAppearances(this.sim.planets, {
+        this.bodyAppearances = planetAppearances(this.sim.planets, {
           venus: material,
         });
         pendingPainter = undefined;

@@ -23,7 +23,6 @@ export * from "./lib/effects/arcade-fx";
 export * from "./lib/effects/atmospheric-heat";
 // Svelte Components
 export { paintCountdown } from "./lib/effects/countdown";
-export * from "./lib/effects/damage-feedback";
 export * from "./lib/effects/engine-plume";
 export * from "./lib/effects/fx-surface";
 export * from "./lib/effects/ion-beam";

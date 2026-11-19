@@ -21,7 +21,7 @@ talk, or discussion, which does not relate to the question in hand.”
   publish as static MDX with versioned media. Existing skill guidance was checked
   before relocating procedure. The skill and its writing reference now agree on
   retiring live examples at closure.
-- The [historic conversion plan](../plans/2026-11-17-old-studies-to-static-records.md)
+- The [historic conversion plan](https://github.com/villetakanen/void-drift/blob/66391118f56ac69aef8d8aa08e9d5af382e1fc40/docs/plans/2026-11-17-old-studies-to-static-records.md)
   confines its five-day rule to the backlog and adds a check of the built page
   with JavaScript disabled. Its engine-effects handoff identifies the work saved
   in commit `a0e10419` and the editorial and verification work still open.

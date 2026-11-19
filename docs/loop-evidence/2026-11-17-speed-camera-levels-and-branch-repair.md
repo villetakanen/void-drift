@@ -133,7 +133,7 @@ Actions:
 - `pnpm check:contracts` and a build were not run on the tree of `a0e10419`.
 - The engine-effects conversion inside `a0e10419` records its own stage-5
   checks as not done, in
-  [2026-11-17-old-studies-to-static-records.md](../plans/2026-11-17-old-studies-to-static-records.md).
+  [2026-11-17-old-studies-to-static-records.md](https://github.com/villetakanen/void-drift/blob/a0e10419/docs/plans/2026-11-17-old-studies-to-static-records.md).
 - Commands' full output was read in the session only; no logs are retained.
 - When and how the sessions came to work on `main` beyond the reflog entries is
   not established.

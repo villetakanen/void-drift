@@ -12,9 +12,6 @@ human effectiveness remains separate and is not inferred from document validatio
 - [x] Bound broad studies to one decision. Basis:
   [planet-purpose scope diagnosis](../factory-experiment-planet-purpose-scope.md#outcome-and-the-designers-diagnosis).
   Implementation: [problem procedure](../../.agents/skills/design-study/SKILL.md#01--develop-the-problem).
-- [x] Recommend completing independently usable accepted results. Basis:
-  [Fighter/Scout sequence](../loop-evidence/2026-10-30-ship-silhouettes.md).
-  Implementation: [exploration procedure](../../.agents/skills/design-study/references/exploration.md#make-the-question-inspectable).
 - [x] Carry exact accepted variants and replay conditions into scope. Basis:
   [engine-effects decisions](../loop-evidence/2026-10-30-engine-effects.md) and
   [ion replay findings](../loop-evidence/2026-10-31-ion-engines.md).
@@ -26,8 +23,7 @@ human effectiveness remains separate and is not inferred from document validatio
   Implementation: [ownership map](../specs/lab/design-studies/spec.md#context-and-ownership).
   Evidence: [scope, changed files and validation](../loop-evidence/2026-11-03-factory-harness-amendments.md).
 - [x] Make the quality rubric optional for ordinary studies (owner-approved amendment,
-  3 November). Implementation: [evaluation contract](../specs/lab/design-studies/spec.md#optional-study-quality-evaluation--separate-from-readiness)
-  and [optional protocol](design-study-evaluation.md).
+  3 November).
   Evidence: [implementation and checks](../loop-evidence/2026-11-03-factory-harness-amendments.md#implementation-evidence).
 - [x] Clarify that a failed study can end successfully for the project (owner clarification,
   3 November), preserving its recorded failure. Implementation:
@@ -95,16 +91,14 @@ an early-page outline; the shared study layout/index display phase separately fr
 acceptance status. Existing failed planetary artifacts remain evidence, not a new
 validated study or accepted solution. No planetary mechanics were selected here.
 
-## How we will evaluate it
+## Evaluation proposed on 29 October
 
-Use the [bounded replay protocol](design-study-evaluation.md) with the original
-planetary brief and an explicit unknown response. Retain the button case as a
-regression comparison. Judge progression, grounding, cumulative agreements, and
-method fit independently of page correctness. Compare Luna, Terra, and Sol under
-recorded equivalent conditions before attributing failures to capability limits.
-A Frontier comparison is a possible later control, not an established requirement.
+The proposed replay used the original planetary brief, an explicit unknown response
+and the button study as a comparison. It would have assessed progression, grounding,
+cumulative agreements and method fit separately from page correctness, with Luna,
+Terra and Sol under equivalent conditions. A Frontier comparison was also considered.
 
-No replay or model comparison has been performed by this change. Repository checks
+This change included no replay or model comparison. Repository checks
 can validate the implementation of the workflow surface; only a fresh study and
 human assessment can establish whether the new practice works better.
 
@@ -126,23 +120,12 @@ Java was unavailable. Overall verification is therefore not a pass.
 No model replay, new planetary investigation, commit, push, or publication was
 performed as part of this improvement.
 
-## Addition — design readiness before integration
+## Earlier readiness rubric (superseded)
 
-The designer approved an evidence-backed readiness review before the next trial.
-The [canonical rubric](../specs/lab/design-studies/spec.md#design-readiness-review--before-integration)
-covers purpose, investigation, alternatives and reasoning, evidence fit, cumulative
-agreement, coherence, remaining uncertainty, and integration implications. Each is
-rated Ready, Conditional, or Not ready with supporting evidence; ratings are not
-averaged. The agent prepares the assessment and the designer makes the judgment.
-
-Outcomes are ready for integration, ready for explicitly bounded integration, or
-return to exploration/purpose with a concrete next investigation. Conditions and
-scope remain visible. This adds a human decision at the exploration-to-integration
-boundary without replacing recurring participation within phases. The trial protocol
-now exercises the assessment separately from its workflow evaluation rubric; a
-correct finding of insufficient readiness is not a failed factory trial.
-
-The rubric is adopted, not empirically validated. No new trial was run for this addition.
+The designer approved a trial rubric for judging readiness for integration.
+It used three ratings: Ready, Conditional, and Not ready. No trial was run at the
+time. The current readiness procedure lives in
+[section 03 of the design-study skill](../../.agents/skills/design-study/SKILL.md#03--assess-readiness).
 
 ## Repair — progressive form and cycle zero
 
@@ -264,8 +247,9 @@ section 03. This followed our explicit instruction to put the assessment on the
 study page; that placement was a harness choice, not a designer requirement.
 The designer approved separating it. The assessment now lives at
 /lab/reviews/engine-effects, with its ratings, conditions, and pending decision
-preserved. The study retains a concise next step and review link. Future reviews
-use separate records; chat presents the conclusion and required human judgment.
+preserved. The study retains a concise next step and review link. The October
+procedure called for a separate review record, with the conclusion and any decision
+needed from the designer presented in chat.
 This relocation does not accept the proposal or authorize integration.
 
 ## Adopted — four bounded harness changes
