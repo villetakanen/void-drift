@@ -46,6 +46,12 @@ Loss or replacement of the charging target before release starts venting. Drain 
 - A short pass in the three-loop workload starts a charge and loses the target before release. The rifle completes a full vent and recovery. Its neighbour can continue operating independently.
 - Two full rifles compete for one affordable release. The first eligible gun in slot order releases. The second holds its charge while its target remains eligible and releases when power recovers.
 
+### Kick at release
+
+Each funded shot gives the firing ship one instantaneous backward impulse at launch. Its magnitude is one plasma engine’s full thrust multiplied by 0.49 seconds, divided by the actual fitted mass to obtain the velocity change. The impulse acts opposite the barrel heading at release and translates the hull without torque. The stream inherits the ship’s drift immediately before that impulse. Rifles releasing simultaneously share the same pre-release drift and each contributes its own kick.
+
+A shot that erupts in empty space still kicks once. Holding charge without release power, losing a target and opening the vents produce no firing kick. After either trigger, the paired vents retain their common duration, force, emission and area damage for matching motion.
+
 ### Paired vents
 
 Completing the firing phase or losing the charging target opens the fitted rifle’s two purge outlets. Both sprays leave their actual ports together, following the fixed outlet axes. Emitted fumes inherit the ship’s velocity at emission plus 300 u/s along each outlet. Each puff keeps its own world velocity from its instant of ejection. Its orange glow travels with it and fades in flight for 0.36 s. Later thrust, recoil and turning affect subsequent emissions. After the ports close, the last glowing puffs continue away from the ship. The two sprays and their travel are visible at flight scale. Pause freezes emission and drift. Reset clears them.

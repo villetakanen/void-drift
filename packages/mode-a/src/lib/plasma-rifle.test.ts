@@ -59,7 +59,7 @@ describe("Plasma rifle fitting", () => {
     }
   });
 
-  it("charges and applies one eruption without adding ship forces", () => {
+  it("charges, releases one eruption and applies the firing kick", () => {
     const build = defaultLoadout("wasp");
     build.hull = ["plasma-rifle", null];
     const system = new SalvageSystem(build, 2026);
@@ -97,7 +97,11 @@ describe("Plasma rifle fitting", () => {
     expect(resources.power).toBeCloseTo(93);
     expect(system.plasmaReleases).toBe(1);
     expect(system.plasmaContacts).toBe(1);
-    expect(ship.vel).toEqual(new Vec2(0, 0));
+    expect(ship.vel.x).toBeCloseTo(
+      (-PARTS.plasma.thrust * 0.49) / buildStats(build).mass,
+    );
+    expect(ship.vel.y).toBeCloseTo(0);
+    expect(ship.rotation).toBe(0);
     expect(system.events).toEqual([]);
     expect(system.shotsFired).toBe(0);
     expect(system.energySpent).toBeCloseTo(7);

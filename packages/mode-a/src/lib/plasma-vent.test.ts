@@ -1,11 +1,16 @@
 import { ARENA_RADIUS, FxPass, fxRetention, Vec2 } from "@void-drift/core";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { weaponPose } from "./build-renderer";
 import { createStar } from "./game-loop";
 import { PLASMA_RIFLE_MOUTHS, PLASMA_RIFLE_SCALE } from "./plasma-rifle-art";
 import { drawPlasmaVent } from "./plasma-vent-fx";
 import { liveShipBody, type SalvageBody, SalvageSystem } from "./salvage";
-import { buildStats, defaultLoadout, type Loadout } from "./schemas/loadout";
+import {
+  buildStats,
+  defaultLoadout,
+  type Loadout,
+  PARTS,
+} from "./schemas/loadout";
 import { SALVAGE } from "./schemas/salvage";
 import { gameSettings, Simulation, STEP } from "./simulation";
 
@@ -98,6 +103,7 @@ describe("paired plasma vents", () => {
     loss.step(0.175, [loss.targets[0]]);
     expect(shot.system.plasmaReleases).toBe(1);
     expect(loss.system.weapons[0].plasma?.charge).toBeCloseTo(0.25);
+    loss.ship.vel.set(shot.ship.vel.x, shot.ship.vel.y);
     for (let tick = 0; tick < 72; tick++) {
       for (const flight of [shot, loss]) {
         flight.ship.rotation = tick / 100;
@@ -284,7 +290,13 @@ describe("paired plasma vents", () => {
       8,
     );
     expect(head.vy - 7800 * Math.sin(pose.angle)).toBeCloseTo(vy, 8);
-    expect(f.ship.vel.x).toBeCloseTo(vx - acceleration * 0.02, 8);
+    expect(f.ship.vel.x).toBeCloseTo(
+      vx -
+        acceleration * 0.02 -
+        ((PARTS.plasma.thrust * 0.49) / buildStats(build).mass) *
+          Math.cos(pose.angle),
+      8,
+    );
   });
 
   it("draws a brief vent at ejection and lets the fume marks drift and fade after the hull turns", () => {
@@ -554,5 +566,100 @@ describe("paired plasma vents", () => {
     );
     expect(wreck.hull).toBe(66);
     expect(shard?.hull).toBe(SALVAGE.fragment.hull - 6);
+  });
+  it("splits vent emissions at a neighbouring rifle release", () => {
+    const build = defaultLoadout("wasp");
+    build.hull = ["plasma-rifle", "plasma-rifle"];
+    const f = mountedFixture(build);
+    f.step(0.34, [f.targets[1]]);
+    f.step(0.35);
+    const right = f.system.weapons[1];
+    const pose = weaponPose(f.ship, right.mount);
+    const target = {
+      ...f.targets[1],
+      x: pose.muzzleX + 120 * Math.cos(pose.angle),
+      y: pose.muzzleY + 120 * Math.sin(pose.angle),
+    };
+    target.previousX = target.x;
+    target.previousY = target.y;
+    const vx = f.ship.vel.x;
+    const emit = vi.spyOn(f.system.plasmaVentArea, "emit");
+    f.step(0.02, [target]);
+    expect(emit).toHaveBeenCalledTimes(2);
+    const kick = (PARTS.plasma.thrust * 0.49) / buildStats(build).mass;
+    const [before, after] = emit.mock.calls;
+    expect(before[2]).toBeCloseTo(0.01);
+    expect(after[2]).toBeCloseTo(0.01);
+    expect(after[3][0].vx - before[4][0].vx).toBeCloseTo(
+      -kick * Math.cos(pose.angle),
+      7,
+    );
+    expect(f.system.plasmaVentEvents).toHaveLength(1);
+    expect(
+      f.system.plasmaVentEvents[0].outlets[0].vx - before[4][0].vx,
+    ).toBeCloseTo(-kick * Math.cos(pose.angle), 7);
+    expect(vx).toBeCloseTo(24);
+  });
+  it("gives simultaneous releases the same pre-kick drift and sums their impulses", () => {
+    const build = defaultLoadout("wasp");
+    build.hull = ["plasma-rifle", "plasma-rifle"];
+    const f = mountedFixture(build);
+    const poses = f.system.weapons.map((weapon) =>
+      weaponPose(f.ship, weapon.mount),
+    );
+    f.step(0.7);
+    expect(f.system.plasmaReleases).toBe(2);
+    const kick = (PARTS.plasma.thrust * 0.49) / buildStats(build).mass;
+    expect(f.ship.vel.x).toBeCloseTo(
+      24 - kick * poses.reduce((sum, pose) => sum + Math.cos(pose.angle), 0),
+      8,
+    );
+    expect(f.ship.vel.y).toBeCloseTo(
+      -12 - kick * poses.reduce((sum, pose) => sum + Math.sin(pose.angle), 0),
+      8,
+    );
+    for (const [index, head] of f.system.plasmaStreams.entries()) {
+      expect(head.vx - 7800 * Math.cos(poses[index].angle)).toBeCloseTo(24, 8);
+      expect(head.vy - 7800 * Math.sin(poses[index].angle)).toBeCloseTo(-12, 8);
+    }
+  });
+  it("applies an earlier rifle kick to a later launch within the same substep", () => {
+    const build = defaultLoadout("wasp");
+    build.hull = ["plasma-rifle", "plasma-rifle"];
+    const f = mountedFixture(build);
+    const [first, second] = f.system.weapons;
+    if (!first.plasma || !second.plasma) throw new Error("Expected rifles");
+    Object.assign(first.plasma, {
+      phase: "charging",
+      targetId: f.targets[0].id,
+      charge: 1 - 0.002 / 0.7,
+    });
+    Object.assign(second.plasma, {
+      phase: "charging",
+      targetId: f.targets[1].id,
+      charge: 1 - 0.007 / 0.7,
+    });
+    const poses = [
+      weaponPose(f.ship, first.mount),
+      weaponPose(f.ship, second.mount),
+    ];
+    for (const [index, target] of f.targets.entries()) {
+      target.x = target.previousX =
+        poses[index].muzzleX + 120 * Math.cos(poses[index].angle);
+      target.y = target.previousY =
+        poses[index].muzzleY + 120 * Math.sin(poses[index].angle);
+    }
+    f.step(0.01);
+    const [a, b] = f.system.plasmaStreams;
+    const kick = (PARTS.plasma.thrust * 0.49) / buildStats(build).mass;
+    expect(a.vx - 7800 * Math.cos(poses[0].angle)).toBeCloseTo(24, 8);
+    expect(b.vx - 7800 * Math.cos(poses[1].angle)).toBeCloseTo(
+      24 - kick * Math.cos(poses[0].angle),
+      8,
+    );
+    expect(b.vy - 7800 * Math.sin(poses[1].angle)).toBeCloseTo(
+      -12 - kick * Math.sin(poses[0].angle),
+      8,
+    );
   });
 });

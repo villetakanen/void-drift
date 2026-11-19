@@ -10,13 +10,6 @@ import { gameSettings, Simulation, STEP } from "./simulation";
 
 const substep = STEP / 4;
 const twinContactTime = 0.7 + 75 / 7800;
-const pose = {
-  pos: new Vec2(400, 400),
-  vel: new Vec2(0, 0),
-  acc: new Vec2(0, 0),
-  rotation: 0,
-  radius: 20,
-};
 const canvasWidth = 1024;
 const canvasHeight = 768;
 const identity = { a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 };
@@ -49,6 +42,13 @@ function canvasRecorder() {
 }
 
 function fixture(owner: "player" | "opponent" = "player") {
+  const pose = {
+    pos: new Vec2(400, 400),
+    vel: new Vec2(0, 0),
+    acc: new Vec2(0, 0),
+    rotation: 0,
+    radius: 20,
+  };
   const loadout = defaultLoadout("wasp");
   loadout.hull = ["plasma-rifle", "plasma-rifle"];
   const sim = new Simulation({

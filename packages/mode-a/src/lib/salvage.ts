@@ -41,6 +41,7 @@ import {
   CHASSIS,
   defaultLoadout,
   type Loadout,
+  PARTS,
 } from "./schemas/loadout";
 import type { SalvagePhysicalState } from "./schemas/salvage";
 import {
@@ -184,6 +185,11 @@ const WRECK_SPIN = ENCOUNTER.wreckSpin.rate;
 /** Signed radians per second: a wreck's own spin, a shard's fixed one. */
 function spinOf(body: Pick<SalvageBody, "kind" | "spin">) {
   return body.kind === "wreck" ? (body.spin ?? WRECK_SPIN) : 0.8;
+}
+interface PendingPlasmaKick {
+  offset: number;
+  angle: number;
+  head: PlasmaStream;
 }
 interface PendingPlasmaVent {
   mount: BuildMount;
@@ -334,6 +340,7 @@ export class SalvageSystem {
     return this.plasmaStreams.length > 0 || this.plasmaVentArea.active;
   }
   private readonly plasmaVentAcceleration: number;
+  private readonly plasmaKickVelocity: number;
   laserPulses = 0;
   hits = 0;
   /** Point-defence and cannon hits on a wreck or a shard; they score in Survival. */
@@ -358,6 +365,9 @@ export class SalvageSystem {
     private readonly encounter: EncounterConfig = ENCOUNTER,
   ) {
     this.loadoutChassis = loadout.chassis;
+    this.plasmaKickVelocity =
+      (PARTS.plasma.thrust * PLASMA_RIFLE.kickSeconds) /
+      buildStats(loadout).mass;
     this.plasmaVentAcceleration =
       (PLASMA_RIFLE.ventReferenceAcceleration *
         PLASMA_RIFLE_VENT_REFERENCE_MASS) /
@@ -1066,6 +1076,7 @@ export class SalvageSystem {
     ship: GameObject,
     previousShip: { x: number; y: number; rotation: number } | undefined,
     vents: PendingPlasmaVent[],
+    kicks: PendingPlasmaKick[],
   ) {
     const state = weapon.plasma;
     if (!state) return;
@@ -1109,22 +1120,20 @@ export class SalvageSystem {
             const elapsed = dt - left;
             const releaseShip = mountedPoseAt(ship, previousShip, dt, elapsed);
             const pose = weaponPose(releaseShip, weapon.mount);
-            this.plasmaStreams.push(
-              PlasmaStreamSchema.parse({
-                mountKey: weapon.mount.key,
-                originX: pose.muzzleX,
-                originY: pose.muzzleY,
-                x: pose.muzzleX,
-                y: pose.muzzleY,
-                vx:
-                  ship.vel.x + Math.cos(pose.angle) * PLASMA_RIFLE.streamSpeed,
-                vy:
-                  ship.vel.y + Math.sin(pose.angle) * PLASMA_RIFLE.streamSpeed,
-                heading: pose.angle,
-                age: 0,
-                launchTime: this.time - dt + elapsed,
-              }),
-            );
+            const head = PlasmaStreamSchema.parse({
+              mountKey: weapon.mount.key,
+              originX: pose.muzzleX,
+              originY: pose.muzzleY,
+              x: pose.muzzleX,
+              y: pose.muzzleY,
+              vx: ship.vel.x + Math.cos(pose.angle) * PLASMA_RIFLE.streamSpeed,
+              vy: ship.vel.y + Math.sin(pose.angle) * PLASMA_RIFLE.streamSpeed,
+              heading: pose.angle,
+              age: 0,
+              launchTime: this.time - dt + elapsed,
+            });
+            this.plasmaStreams.push(head);
+            kicks.push({ offset: elapsed, angle: pose.angle, head });
             state.phase = "firing";
             state.remaining = PLASMA_RIFLE.firingSeconds;
           } else break;
@@ -1178,19 +1187,20 @@ export class SalvageSystem {
     }
   }
   /** All simultaneous vents sample the same time-varying hull velocity. */
-  private emitPlasmaVents(
+  private resolvePlasmaForces(
     ship: GameObject,
     dt: number,
     vents: PendingPlasmaVent[],
+    kicks: PendingPlasmaKick[],
   ) {
     const initialX = ship.vel.x,
       initialY = ship.vel.y;
     vents.sort((a, b) => a.start + a.duration / 2 - (b.start + b.duration / 2));
     for (const vent of vents) {
-      const midpoint = vent.start + vent.duration / 2;
       const sampleOutlets = (
         sample: PendingPlasmaVent["sample"],
         at: number,
+        beforeKick = false,
       ): PlasmaVentEvent["outlets"] => {
         let vx = initialX,
           vy = initialY;
@@ -1208,6 +1218,12 @@ export class SalvageSystem {
             this.plasmaVentAcceleration *
             elapsed;
         }
+        for (const kick of kicks) {
+          if (beforeKick ? kick.offset < at - 1e-9 : kick.offset <= at + 1e-9) {
+            vx -= Math.cos(kick.angle) * this.plasmaKickVelocity;
+            vy -= Math.sin(kick.angle) * this.plasmaKickVelocity;
+          }
+        }
         return plasmaVentOutlets(sample, vent.mount).map((port) => ({
           x: port.x,
           y: port.y,
@@ -1215,13 +1231,53 @@ export class SalvageSystem {
           vy: vy + Math.sin(port.angle) * PLASMA_RIFLE.ventExhaustSpeed,
         })) as PlasmaVentEvent["outlets"];
       };
-      this.plasmaVentArea.emit(
-        vent.mount.key,
-        this.time - dt + vent.start,
-        vent.duration,
-        sampleOutlets(vent.startSample, vent.start),
-        sampleOutlets(vent.endSample, vent.start + vent.duration),
-      );
+      const end = vent.start + vent.duration;
+      const cuts: number[] = [];
+      for (const kick of kicks)
+        if (kick.offset > vent.start + 1e-9 && kick.offset < end - 1e-9)
+          cuts.push(kick.offset);
+      if (!cuts.length) {
+        this.plasmaVentArea.emit(
+          vent.mount.key,
+          this.time - dt + vent.start,
+          vent.duration,
+          sampleOutlets(vent.startSample, vent.start),
+          sampleOutlets(vent.endSample, end, true),
+        );
+      } else {
+        cuts.sort((a, b) => a - b);
+        const poseAt = (at: number) => {
+          const f = (at - vent.start) / vent.duration;
+          return {
+            pos: new Vec2(
+              vent.startSample.pos.x +
+                (vent.endSample.pos.x - vent.startSample.pos.x) * f,
+              vent.startSample.pos.y +
+                (vent.endSample.pos.y - vent.startSample.pos.y) * f,
+            ),
+            rotation:
+              vent.startSample.rotation +
+              angleDifference(
+                vent.endSample.rotation,
+                vent.startSample.rotation,
+              ) *
+                f,
+          };
+        };
+        let begin = vent.start;
+        for (const next of [...cuts, end]) {
+          if (next - begin <= 1e-9) continue;
+          this.plasmaVentArea.emit(
+            vent.mount.key,
+            this.time - dt + begin,
+            next - begin,
+            sampleOutlets(poseAt(begin), begin),
+            sampleOutlets(poseAt(next), next, true),
+          );
+          begin = next;
+        }
+      }
+      const midpoint = vent.start + vent.duration / 2;
       const time = this.time - dt + midpoint + this.presentationTimeOffset;
       while (
         this.plasmaVentEvents.length &&
@@ -1237,6 +1293,14 @@ export class SalvageSystem {
         intensity: vent.intensity,
         outlets: sampleOutlets(vent.sample, midpoint),
       });
+    }
+    for (const release of kicks) {
+      for (const earlier of kicks) {
+        if (earlier.offset < release.offset - 1e-9) {
+          release.head.vx -= Math.cos(earlier.angle) * this.plasmaKickVelocity;
+          release.head.vy -= Math.sin(earlier.angle) * this.plasmaKickVelocity;
+        }
+      }
     }
     // A different mount may release during the same substep. Its inherited
     // drift includes only the vent impulse already delivered at that instant.
@@ -1257,6 +1321,10 @@ export class SalvageSystem {
           this.plasmaVentAcceleration *
           elapsed;
       }
+    }
+    for (const kick of kicks) {
+      ship.vel.x -= Math.cos(kick.angle) * this.plasmaKickVelocity;
+      ship.vel.y -= Math.sin(kick.angle) * this.plasmaKickVelocity;
     }
     for (const vent of vents) {
       ship.vel.x -=
@@ -1318,6 +1386,7 @@ export class SalvageSystem {
         );
     let cannonsFunded = true;
     const vents: PendingPlasmaVent[] = [];
+    const kicks: PendingPlasmaKick[] = [];
     for (const weapon of this.weapons)
       if (weapon.kind === "light-ion-cannon") {
         if (
@@ -1342,6 +1411,7 @@ export class SalvageSystem {
           ship,
           previousShip,
           vents,
+          kicks,
         );
       } else if (weapon.kind === "rail")
         this.fireRailOrLaser(
@@ -1354,7 +1424,8 @@ export class SalvageSystem {
           planets,
           acquisition,
         );
-    if (vents.length) this.emitPlasmaVents(ship, dt, vents);
+    if (vents.length || kicks.length)
+      this.resolvePlasmaForces(ship, dt, vents, kicks);
   }
   /** Laser and rail keep their own acquisition; the shared energy floor gates the shot. */
   private fireRailOrLaser(
