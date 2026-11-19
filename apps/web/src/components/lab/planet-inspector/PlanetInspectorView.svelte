@@ -237,7 +237,7 @@ onMount(() => {
   data-zoom={Number.parseInt(zoom, 10)}
   data-pixels-per-unit={pixelsPerUnit}
   data-planet={doc.planet.name}
-  data-radius={radius}
+  data-radius={family ? radius : undefined}
 >
   <div
     class="scene"
@@ -258,6 +258,12 @@ onMount(() => {
       <Toggle
         label="Named planet"
         options={namedOptions}
+        details={{
+          Mercury: "Practice",
+          Venus: "Practice",
+          "The Cradle": "Practice",
+          Earth: "Lab copy",
+        }}
         bind:value={
           () => (family ? "" : PLANET_LABELS[doc.planet.name]),
           (value) =>

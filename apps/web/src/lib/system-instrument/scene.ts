@@ -1,4 +1,5 @@
 import {
+  CAMERA_ARENA_RADIUS,
   Camera,
   createRockMaterial,
   massWellReach,
@@ -19,6 +20,7 @@ import { SystemInstrumentDocumentSchema } from "./config";
 const PASSES = new Set([
   "void",
   "starfield",
+  "arena-boundary",
   "star",
   "sun-fields",
   "world-hud",
@@ -100,6 +102,7 @@ export class SystemInstrumentScene {
     const reach = (well: typeof star.massWell) =>
       well ? massWellReach(well.mass, well.cutoff, well.falloff) : 0;
     const extent = Math.max(
+      CAMERA_ARENA_RADIUS,
       star.radius,
       star.collectionField?.reach ?? 0,
       star.damageField?.reach ?? 0,

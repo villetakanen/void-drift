@@ -1,0 +1,121 @@
+---
+layout: ../../../layouts/StudyLayout.astro
+---
+
+import InstrumentBand from '../../../components/lab/instrument/InstrumentBand.astro';
+import MilkyWaySky from '../../../components/studies/milky-way-sky-2026-11-19/MilkyWaySky.svelte';
+
+<section id="milky-way-framing">
+
+## 01 / A system with a place in the galaxy
+
+A pilot coasting past a planet should feel that this small system belongs to a much larger galaxy. The flight sky currently draws white discs on a dark ground. Earlier studies found promising moments in a moving photograph of the Milky Way, but ended without choosing a whole sky. This cycle concerns the art direction of that sky: the relationship between its broad composition, fine texture and travel behind the local system.
+
+The desired impression is a view from within the Milky Way. A proposed starting direction is a reach of distant starlight continuing beyond the frame, interrupted by uneven dark lanes and quieter open sky. Fine texture should give the light substance; darkness should give the local bodies and ship room. This is an artistic hypothesis to judge in a composed flight view. Its palette, orientation, scale, intensity and degree of abstraction remain open.
+
+Panning belongs to the composition: a feature passing behind a planet can suggest a larger place and make a coast satisfying. Judge that movement with the artwork it carries. A convincing, distinctive picture takes priority over astronomical precision and polished rendering details. Keep the existing flight mechanics and readable flight cues; leave the base sky drawing open to change within the shared rendering method. The result would guide a proposed replacement for the flight background.
+
+### What the earlier studies actually leave us
+
+- [Flight starfield](/lab/studies/background-stars-2026-11-18#sky-in-the-scene) found that whole-field structure mattered. Its separately moving sky plane suggested depth, especially during widening. Neither the artwork nor its camera relationship was settled for play.
+- [The distant flight sky](/lab/studies/distant-flight-sky-2026-11-18#photographic-sky) found the photographic Milky Way more convincing despite blur, pixelation and a rigid horizontal composition. A dark pocket or bright patch gave the eye something to follow. A preceding smooth edge read as “grey goo.” These are observations about those examples, not proof of a chosen drawing technique.
+- [Eleven close stars](/lab/studies/close-g-stars-2026-11-18) ended with the individual lights unresolved. Its density decision belongs to that study. Eleven lights, a 6% stellar population, particular cores and gleams are not requirements here.
+
+### The first artistic claim to test
+
+**The local system sits in front of an immense, uneven field of starlight.** Let a broken luminous reach enter and leave the picture, with enough darkness around it for the system to feel suspended in space. The eye should have a feature to follow through a coast and be able to return to the ship at the next burn.
+
+Begin with one deliberately composed whole sky behind the existing Practice system. A still establishes its composition and texture; the same scene in motion establishes how its features travel. Keep a production-sky comparison available. Use the retained photographic departure as an aesthetic reference, without inheriting its horizontal crop or pan setting. Texture construction and base stars serve this composition; their individual marks can remain rough while the whole picture is being judged.
+
+This first claim leaves room to reject the band, the texture or their relationship to the system. A new example needs an explicit visual intention and a reason grounded in what the previous picture revealed. Tuning an isolated light cannot settle this study’s question.
+
+### Boundaries
+
+The subject is the complete distant flight sky. Panning, zoom response, texture and base stars are facets of that one view. Existing simulation, controls, local bodies and their effects stay in place. Star travel is an expressive camera relationship; it need not model physical parallax at galactic distances.
+
+Use the shared layer and pass method, native Canvas drawing and prepared assets; no per-frame pixel processing. The game’s procedural artwork direction still applies. Whether this sky needs a different asset policy is a later project decision, not an assumption of this study. A photograph remains reference material. This cycle proposes no new galaxy navigation, system generation or change to the local star’s appearance.
+
+Any adopted result would need project decisions about its scope and changes to the owning render specs before production implementation. The first example tests this direction; no art direction has yet been selected.
+
+<details>
+<summary>Question test · 19 November 2026</summary>
+
+| Metric | Result | Reason |
+| --- | --- | --- |
+| One subject | Pass | The study asks for the complete distant flight sky; composition, texture and camera response can be judged together in one built flight scene. The three earlier sky studies are stopped, and no open study owns a required part of this answer. |
+| Grounded | Pass | The existing Practice system, production sky, rendering method and procedural artwork policy support the stated boundaries. The earlier findings are accurately qualified as observations of their examples, and the open visual choices can be judged in a still and moving flight view. |
+| Consequence | Pass | The answer would guide a proposed replacement for the flight background, with composition and travel judged against the local system and readable flight cues. |
+
+Not corrected.
+
+</details>
+
+</section>
+
+<style>{`
+  :is(#a-reach-of-starlight, #one-quieter-stream, #dust-and-starlight) img { display: block; width: 100%; height: auto; }
+  :is(#a-reach-of-starlight, #one-quieter-stream, #dust-and-starlight) figure { margin-inline: 0; }
+  :is(#a-reach-of-starlight, #one-quieter-stream, #dust-and-starlight) figcaption { color: var(--color-text-muted); font-size: var(--font-size-caption); }
+  #milky-way-framing > ul {
+    max-width: var(--measure-prose);
+    box-sizing: border-box;
+  }
+`}</style>
+
+<details id="a-reach-of-starlight">
+<summary>02.1 / A reach of starlight</summary>
+
+A broken diagonal sweep carries dense fine grain, a dark seam and quieter blue-black space. The local system passes in front of it. The base stars and the broader texture are prepared as one composition; the sky holds its apparent scale as the camera zooms.
+
+**Retained finding · 19 November 2026.** The complex background form made the system feel situated in space and was a substantial improvement over the earlier skies. Its separate luminous banks did not yet give the desired single-stream impression. The overall brightness overpowered the scene, as dense grainy stars had in an earlier study. The absence of identifiable stars also felt wrong. These findings support continuing this direction; they do not settle the final stream, brightness or star drawing.
+
+<figure>
+  <img src="/studies/milky-way-sky-2026-11-19/021-coast.jpg" width="1280" height="900" alt="First sky proposal at 2.5 seconds: uneven banks of starlight beside the Wasp and The Cradle." />
+  <figcaption>02.1 before retuning · B1 / Follow at 2.50 s, pan 65 stage px per 100 world u, fixed sky scale, seed 191126, full original intensity. The Practice system and standard Wasp use production simulation. The form gave a sense of space; its brightness competed with play.</figcaption>
+</figure>
+
+[Departure at 0.00 s](/studies/milky-way-sky-2026-11-19/021-start.jpg) · [Same flight at 5.00 s](/studies/milky-way-sky-2026-11-19/021-later.jpg). Captured from the live example before changing it for 02.2. This sequence preserves feature positions through the departure, not continuous motion timing. The shared 14-second B1 burn has no randomness; the sky repeats every 3072 stage pixels.
+
+</details>
+
+<section id="one-quieter-stream">
+
+## 02.2 / One quieter stream
+
+Keep the textured complexity, but gather it along one continuous diagonal reach. A narrower dark lane runs within it, with gentle bends and variations of density rather than separate islands. The stream opens at 45% intensity. Sparse cool and warm points give the eye individual stars without turning the whole field into prominent grain.
+
+The same B1 / Follow coast at 2.50 s opens the comparison. Keep the production switch, pan control and reset. The menu adds stream brightness from 0–100% and an identifiable-stars switch. Brightness affects the stream and its fine grain together; the sparse accents keep their own light. Watch the coast, then the next burn: does the stream still give a sense of space when the ship needs the eye?
+
+**Retained decision · 19 November 2026.** Keep pan 65 stage px per 100 world u, stream brightness 45%, identifiable stars on, fixed apparent sky scale and seed 191126 as working defaults. The brightness balance is right for this example. The stream’s form, complexity and colours remain unresolved; the photographic Milky Way references should guide the next appearance comparison. This accepts the settings for continued exploration, not the stream artwork or a production change.
+
+<figure>
+  <img src="/studies/milky-way-sky-2026-11-19/022-coast.jpg" width="1280" height="900" alt="02.2 at the coast, with a narrow blue-grey stream and sparse distinct stars behind the Practice system." />
+  <figcaption>02.2 before retuning · B1 / Follow, 2.50 s, pan 65, stream 45%, stars on, fixed scale, seed 191126. The brightness balance and these working settings were accepted; form, complexity and colour were left open.</figcaption>
+</figure>
+
+[Departure at 0.00 s](/studies/milky-way-sky-2026-11-19/022-start.jpg) · [Same flight at 5.00 s](/studies/milky-way-sky-2026-11-19/022-later.jpg). Captured from the live example before changing it for 02.3. These stills preserve feature positions, not continuous motion timing.
+
+The flight, seed, fixed apparent sky scale and prepared-tile coverage method remain the same. This is a study-only revision, with no production artwork or simulation changes. Long-travel repetition and final camera response remain open.
+
+</section>
+
+<section id="dust-and-starlight">
+
+## 02.3 / Dust shapes the starlight
+
+The [ESO/S. Brunier panorama](https://www.eso.org/public/images/eso0932a/) supplies the reference for this revision: unequal reaches of light, irregular dark cuts and restrained changes of colour within one galactic sweep. The proposed sky varies its width and gives the two edges different shapes. A dark path forks into the light, with smaller cuts and ragged shoulders. Muted ivory and ochre gather near the dust; the outer light remains cooler.
+
+<figure>
+  <img src="/studies/distant-flight-sky-2026-11-18/milky-way.jpg" width="1280" height="640" alt="ESO panorama: the Milky Way widens near its centre, with irregular dark dust shapes and subtly warm and cool starlight." />
+  <figcaption>Reference photograph · ESO/S. Brunier. The panorama is shown here for its relationships of light and darkness; the flight sky remains procedural study artwork.</figcaption>
+</figure>
+
+Keep pan 65, stream 45%, stars on, fixed apparent scale and seed 191126. The sparse star accents, flight and all pane options stay the same. The prepared light field is normalized toward 02.2’s mean signal before applying the accepted opacity. This keeps the exposure comparison close; it does not establish that every crop has the same perceived brightness.
+
+Start with the same B1 / Follow coast at 2.50 s, then play through the next burn. Does the eye find a particular shape within one continuous stream? Does that shape suggest distant starlight while leaving the local system in charge? Width, dust structure and palette are proposed together as one whole-sky treatment; no part of this revision has yet been accepted.
+
+</section>
+
+<InstrumentBand>
+  <MilkyWaySky client:visible label="Milky Way · 02.3 dust and starlight" />
+</InstrumentBand>

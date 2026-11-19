@@ -12,6 +12,7 @@ import {
   updatePlanetOrbit,
 } from "@void-drift/core";
 import {
+  applyMercurialGravity,
   applyYellowFamilyProfile,
   type BodyAppearance,
   drawFlightFrame,
@@ -150,6 +151,7 @@ export class PlanetInspectorScene {
       parsed.radius,
     );
     planet.radius = parsed.radius;
+    applyMercurialGravity(planet);
     planet.orbitRadius = distance;
     planet.orbitSpeed = travel / distance;
     updatePlanetOrbit(planet, 0);

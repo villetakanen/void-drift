@@ -29,6 +29,11 @@ this instrument supplies its seed and displays its result.
 - The page is titled System instrument. Its only authoring controls are one
   labeled Seed number field and two buttons, Generate and Randomize. It has no
   burger button, overlay pane, document editor, timeline, piloting or zoom input.
+- The seed field and both actions float over the top of the full instrument
+  viewport, with the displayed seed at the top right. They reserve no layout
+  row and have no toolbar strip, raised container fill or divider behind them.
+  Generate and Randomize use the design system's normal action variant
+  (`.btn.btn-normal`), including its brackets, focus and unavailable states.
 - Opening displays the system for seed 2026. Editing the field only changes the
   draft. Generate validates the draft integer in 1–2147483647 and replaces the
   preview with that seed's system. Enter submits Generate.
@@ -45,12 +50,14 @@ this instrument supplies its seed and displays its result.
 ### Preview and lifecycle
 
 - The static overview shows the Sun, every retained planet, normal materials,
-  body light, orbit/name/gravity HUD, and Sun danger and charging boundaries.
+  body light, orbit/name/gravity HUD, Sun danger and charging boundaries, and
+  the shared 1200u arena warp boundary.
   Removed planets have no preview entries. It draws no ship or gameplay effects
   and advances no simulation time or score.
 - Generation and viewport resize automatically fit the complete system, including
-  circular paths and field boundaries, with space for HUD labels. Resize changes
-  presentation only and preserves the draft, displayed seed and generated world.
+  circular paths, field boundaries and the complete warp boundary, with space
+  for HUD labels. Resize changes presentation only and preserves the draft,
+  displayed seed and generated world.
 - Material preparation happens outside drawing. Completion redraws the current
   system, including when the seed changed during loading. Failed material loading
   retains normal stock-disc fallback and HUD with a visible status message.

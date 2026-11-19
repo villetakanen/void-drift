@@ -46,7 +46,7 @@ the rest of the scope.
 
 ### Amend the question
 
-The question is known to be wrong when:
+Explore an amendment to section 01 when either of these occurs:
 
 - a retained observation contradicts something section 01 holds fixed
 - the designer changes what they want the study to settle.
@@ -56,20 +56,20 @@ it sets aside from section 01 and what the question becomes. Leave section 01 as
 it is until the designer accepts the example. If the designer rejects it, discard
 it like any rejected proposal and continue on the question as written.
 
-The question may be wrong when:
+Consider whether a narrower question would help when either of these occurs:
 
 - two replacements in a row are rejected and no observation is retained
 - an open item cannot be shown in a built example and judged from it
 
-Say so in one line, offer to narrow the question, and keep proposing on
-the current question.
+If narrowing would help, suggest the narrower question and explain what it would
+let the designer judge. Otherwise, continue exploring the current question.
 
 One rejected proposal is neither case.
 
-If the designer restates the subject so that the study would settle a different
-object or decision, or change a different thing in the game or the Lab, it is a
-new study. Build nothing. Ask whether the designer wants to open a separate study
-for the new question.
+A question belongs in a separate study when it would settle a design decision
+outside section 01. Wait for the designer’s decision before building an example for the
+new question. Ask whether the designer wants to open a separate study for the new
+question.
 
 When the designer accepts an example built on an amended question:
 

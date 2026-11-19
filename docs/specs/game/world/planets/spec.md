@@ -120,12 +120,18 @@ Its seed-selected radius, Sun-relative orbit, 4u/s travel and conflict-removal
 priority follow the [system contract](../systems/spec.md). Its whole body stays
 outside danger and inside charging with at least 1u clearance. It has no display
 name inherited from “The Moon”; it uses the normal star/ordinal HUD name.
-Its gravity-well mass is independently stored as `gravity.planetMass.moon = 1450`.
-Changing the seeded radius does not scale that mass or its gravity reach.
+Its gravity follows the shared mercurial profile in the
+[gravity contract](../gravity-field/spec.md#mercurial-family-mass):
+`mass(R) = 870 × [0.75 + 0.25 × (R / 27)²]`. The fixed core supplies 75% of
+reference mass; only the remaining quarter scales with squared radius. At
+16u, 27u and 36u the masses are approximately 728.88, 870 and 1039.17.
+The body mass and gravity-well mass agree, and gravity reach follows that mass
+through the shared cutoff law.
 
 Practice's Mercury also uses `moon`, with display name Mercury, fixed radius
-27u (54u diameter), fixed orbit 258u and travel speed 4u/s. Its independently
-stored mass is `gravity.practicePlanetMass.moon = 870`. Its whole body remains
+27u (54u diameter), fixed orbit 258u and travel speed 4u/s. The same family
+profile gives it mass 870, with identical planet pull and reach to any 27u
+mercurial specimen; it has no separate moon-mass override. Its whole body remains
 outside the fixed G7 Sun's danger field and inside charging. The generated
 radius range and placement algorithm do not change this reference system.
 

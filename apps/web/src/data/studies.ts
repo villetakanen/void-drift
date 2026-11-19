@@ -10,6 +10,14 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
   {
+    slug: "milky-way-sky-2026-11-19",
+    title: "Inside the Milky Way",
+    status: "open",
+    phase: "exploration",
+    question:
+      "What composition, texture and camera response make the flight sky feel like a view from inside the Milky Way?",
+  },
+  {
     slug: "close-g-stars-2026-11-18",
     title: "Eleven close stars",
     status: "stopped",

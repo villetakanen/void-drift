@@ -4,7 +4,7 @@ import {
   initializePlanets,
 } from "@void-drift/core";
 import { createStar } from "./game-loop";
-import { MERCURIAL_ROCK_RADIUS } from "./mercurial-rock";
+import { applyMercurialGravity, MERCURIAL_ROCK_RADIUS } from "./mercurial-rock";
 import { SolarSystemGenerationSchema } from "./schemas/solar-system";
 import { GRAVITY_TUNING } from "./tuning";
 import {
@@ -95,6 +95,10 @@ export function generateSolarSystem(input: unknown): SolarSystem {
       centerX + Math.cos(planet.orbitAngle) * planet.orbitRadius,
       centerY + Math.sin(planet.orbitAngle) * planet.orbitRadius,
     );
+    if (planet === moon) {
+      applyMercurialGravity(planet);
+      continue;
+    }
     const mass = GRAVITY_TUNING.planetMass[planet.id ?? ""];
     if (mass === undefined)
       throw new Error(`No mass for planet ${planet.id ?? "(no id)"}`);

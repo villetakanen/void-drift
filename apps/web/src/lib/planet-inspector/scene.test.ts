@@ -52,7 +52,8 @@ describe("mercurial family inspection", () => {
       expect(subject.sim.ticks).toBe(ticks);
       expect(subject.orbit).toBeCloseTo(120);
       expect(subject.planet.radius).toBe(36);
-      expect(subject.planet.massWell?.mass).toBe(1450);
+      expect(subject.planet.massWell?.mass).toBeCloseTo(1039.1666666667);
+      expect(subject.planet.mass).toBe(subject.planet.massWell?.mass);
       expect(
         subject.planet.orbitRadius * subject.planet.orbitSpeed,
       ).toBeCloseTo(4);
@@ -65,6 +66,7 @@ describe("mercurial family inspection", () => {
       subject.seekRotation(90);
       expect(subject.sim.ticks).toBeLessThan(ticks);
       expect(subject.planet.radius).toBe(36);
+      expect(subject.planet.massWell?.mass).toBeCloseTo(1039.1666666667);
       expect(subject.orbit).toBeCloseTo(120);
       expect(subject.planet.displayName).toBeUndefined();
       expect(subject.sim.star.name).toBeUndefined();
@@ -93,4 +95,20 @@ describe("mercurial family inspection", () => {
       mercury.dispose();
     }
   });
+});
+
+it("matches named Mercury gravity at the family reference radius", () => {
+  const family = scene({ kind: "family", name: "mercurial", radius: 16 });
+  const mercury = scene({ kind: "named", name: "mercury" });
+  try {
+    family.setRadius(27);
+    expect(family.planet.mass).toBe(870);
+    expect(family.planet.massWell).toEqual(mercury.planet.massWell);
+    family.seekRotation(180);
+    family.seekRotation(0);
+    expect(family.planet.massWell).toEqual(mercury.planet.massWell);
+  } finally {
+    family.dispose();
+    mercury.dispose();
+  }
 });

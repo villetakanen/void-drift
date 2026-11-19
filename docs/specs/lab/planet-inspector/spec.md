@@ -38,8 +38,8 @@ belong to the [Flight instrument](../flight-scene-instrument/spec.md).
   game's definitions and factories, without a copied Lab preset.
 - The `mercurial` family selection stages the generated `moon` body beside a
   reference G7 Sun, using production system generation, the yellow-family
-  profile and `mercurialOrbit` placement. It retains generated gravity-well mass
-  1450, normal star/ordinal HUD identity and the fixed mineral material. It has
+  profile and `mercurialOrbit` placement. It uses the shared core-led family mass at its staged radius,
+  normal star/ordinal HUD identity and the fixed mineral material. It has
   no atmosphere or ring; it turns every 31.3 seconds. Family inspection does
   not modify named Practice Mercury or production world generation. The scene
   uses Practice's nonlethal inspection clock with the generated bodies, so an
@@ -75,11 +75,12 @@ field-specific issues in place of the scene; they never silently select Mercury.
 `opening` is optional and defaults each field as above. Additional named planets
 and a validated custom-definition branch are extensions; unsupported custom
 selections are rejected. Configuration replacement opens at the new document's
-initial state and releases the old scene. The named-planet and planet-family choices in the pane
-select Mercury, Venus, The Cradle, Earth or Mercurial at that document's opening
+initial state and releases the old scene. The named-planet and planet-family
+choices in the pane select Mercury, Venus, The Cradle, Earth or Mercurial at that document's opening
 settings. Selecting Mercurial opens radius 27u unless the host document supplies
 its family radius; selecting a named planet does not carry family radius into
-it. Interaction state is local; the document, game settings, persistence and Firestore are unchanged.
+it. Interaction state is local; the document, game settings, persistence and
+Firestore are unchanged.
 Lighting controls are local pane state and are not part of the Inspector
 document.
 
@@ -116,9 +117,12 @@ with range 16–36u and step 0.1u. Its initial value is the validated family rad
 An edit pauses playback and changes the staged body's radius while preserving
 scene tick, surface phase, lighting and orbital angle. Placement uses the actual
 G7 damage and collection fields through the production `mercurialOrbit` helper,
-with 1u full-body clearance; orbital travel remains 4u/s. Neither mass nor
-material changes with radius. The body, light, collision and gravity HUD read
-that same body. Backward seek retains the staged radius. Reset restores the
+with 1u full-body clearance; orbital travel remains 4u/s. Radius changes
+recompute both body mass and gravity-well mass through the shared production
+mercurial profile; the gravity boundary follows that well.
+The fixed mineral material remains unchanged. At 27u the mass is 870 and the
+planet gravity matches named Mercury. The body, light, collision and gravity
+HUD read that same body. Backward seek retains the staged radius. Reset restores the
 document's radius with its opening state. Invalid radius updates leave the
 previous specimen intact. Radius is local inspection state, not a persisted
 change or a randomized surface. Named Mercury remains radius 27u, orbit 258u,
@@ -162,8 +166,9 @@ Controls work by keyboard and pointer.
 
 ### Options and costs
 
-The top-right shared `OverlayPane` contains the Planet choice, family-only Radius slider, visibility
-controls, current scale, optional host pane snippet, and two live readouts:
+The top-right shared `OverlayPane` contains named-planet and planet-family
+choices, the family-only Radius slider, visibility controls, current scale,
+optional host pane snippet, and two live readouts:
 
 - **Planets pass time:** milliseconds reported for the production `planets` pass
   by `drawFlightFrame.observe`, averaged over the last second of drawn frames.
@@ -240,7 +245,7 @@ tokens. The Lab supports viewports 1280px wide and above.
   production materials, including Venus's atmosphere line and The Cradle's
   clouds, haze and rim, through the shared production body-appearance adapter.
 - Mercurial resolves the generated family's production material and mass,
-  with validated radius 16–36u. Radius changes preserve tick, angle and lighting;
+  with validated radius 16–36u and the core-led family mass. Radius changes preserve tick, angle and lighting;
   backward seek preserves the staged radius and Reset restores its configured
   value. Named Mercury remains the fixed Practice reference.
 - `drawFlightFrame` receives no substituted passes or wrapped materials.
@@ -285,7 +290,7 @@ Scenario: Scrub a Mercury turn at a staged orbit
 Scenario: Inspect the mercurial family without changing Mercury
   Given I select Mercurial and stage a tick and orbital angle
   When I set Radius to 36u and then seek backward
-  Then the radius remains 36u with mass 1450 and the accepted fixed mineral surface
+  Then the radius remains 36u with mass approximately 1039.17 and the accepted fixed mineral surface
   And the whole body remains between the G7 danger and charging fields
   When I reset
   Then the configured family radius and opening state return

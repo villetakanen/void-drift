@@ -95,8 +95,15 @@ onMount(() => {
       aria-invalid={Boolean(error)}
       aria-describedby={error ? `${id}-error` : undefined}
     >
-    <button class="btn" type="submit" disabled={!ready}>Generate</button>
-    <button class="btn" type="button" onclick={randomize} disabled={!ready}>
+    <button class="btn btn-normal" type="submit" disabled={!ready}>
+      Generate
+    </button>
+    <button
+      class="btn btn-normal"
+      type="button"
+      onclick={randomize}
+      disabled={!ready}
+    >
       Randomize
     </button>
     <output aria-live="polite">Seed {activeSeed} · tick 0</output>
@@ -120,16 +127,17 @@ onMount(() => {
   width: 100%;
   height: 100%;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
+  position: relative;
 }
 .controls {
+  position: absolute;
+  top: var(--spacing-md);
+  left: var(--spacing-md);
+  right: var(--spacing-md);
+  z-index: var(--layer-hud);
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  padding: var(--spacing-md);
-  background: var(--color-elev-1);
-  border-bottom: 1px solid var(--color-border);
 }
 label,
 output {
@@ -138,7 +146,7 @@ output {
 }
 input {
   width: 15ch;
-  min-height: 44px;
+  min-height: var(--button-min-height);
   padding: var(--spacing-sm);
   font: inherit;
   color: var(--color-text);
@@ -154,9 +162,8 @@ output {
   color: var(--color-text-muted);
 }
 .stage {
-  position: relative;
-  flex: 1;
-  min-height: 0;
+  position: absolute;
+  inset: 0;
   overflow: hidden;
 }
 .stage :global(.flight-layers) {
@@ -172,7 +179,7 @@ output {
 }
 .message {
   position: absolute;
-  top: var(--spacing-md);
+  top: calc(2 * var(--spacing-md) + var(--button-min-height));
   left: var(--spacing-md);
   z-index: var(--layer-hud);
 }

@@ -1,6 +1,7 @@
 import { initializePlanets } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { createStar } from "./game-loop";
+import { mercurialMass } from "./mercurial-rock";
 import { gameSettings, Simulation } from "./simulation";
 import {
   generateSolarSystem,
@@ -73,7 +74,8 @@ describe("generated mercurial planet", () => {
       expect(moon.radius).toBeGreaterThanOrEqual(16);
       expect(moon.radius).toBeLessThan(36);
       expect(moon.displayName).toBeUndefined();
-      expect(moon.massWell?.mass).toBe(1450);
+      expect(moon.massWell?.mass).toBe(mercurialMass(moon.radius));
+      expect(moon.mass).toBe(moon.massWell?.mass);
       expect(moon.orbitSpeed * moon.orbitRadius).toBeCloseTo(4);
       expect(moon.orbitCenter).toMatchObject({ x: -50, y: 73 });
       expect(moon.pos.x).toBeCloseTo(

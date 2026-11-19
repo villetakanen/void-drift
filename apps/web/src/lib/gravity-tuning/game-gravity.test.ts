@@ -23,13 +23,17 @@ const contactPull = (radius: number, mass: number) =>
   massWellPull(radius + shipRadius, mass, GRAVITY_TUNING.falloff) / thrust;
 
 describe("game gravity against the reference ship's thrust", () => {
-  it("each planet pulls 0.75–1.5× thrust at contact", () => {
+  it("non-family planets pull 0.75–1.5× thrust at contact", () => {
     const venus = new Simulation({
       ...stockSettings(),
       mode: "practice",
     }).planets.find((p) => p.id === "venus");
     if (!venus) throw new Error("Practice Venus missing");
-    for (const planet of [...SURVIVAL_CONFIG.PLANETS, venus]) {
+    // Mercurials use their Practice-calibrated core profile, covered separately.
+    for (const planet of [
+      ...SURVIVAL_CONFIG.PLANETS.filter((p) => p.id !== "moon"),
+      venus,
+    ]) {
       if (!planet.id) throw new Error("Configured planet needs an identity");
       const ratio = contactPull(
         planet.radius,

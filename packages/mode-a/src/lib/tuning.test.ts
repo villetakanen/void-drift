@@ -2,7 +2,12 @@ import { initializePlanets, SURVIVAL_CONFIG } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { createStar } from "./game-loop";
 import { type GravityTuning, GravityTuningSchema } from "./schemas/gravity";
-import { applyGravityTuning, Simulation } from "./simulation";
+import {
+  applyGravityTuning,
+  planetMass,
+  Simulation,
+  tunedMassWell,
+} from "./simulation";
 import { GRAVITY_TUNING } from "./tuning";
 import { applyYellowFamilyProfile } from "./yellow-star-family";
 
@@ -22,8 +27,8 @@ describe("gravity tuning", () => {
     expect(sim.star.massWell).toEqual(tuned.star.massWell);
     expect(sim.star.influenceRadius).toBe(tuned.star.influenceRadius);
     expect(sim.planets.map((p) => p.massWell)).toEqual(
-      sim.planets.map(
-        (p) => tuned.planets.find((stock) => stock.id === p.id)?.massWell,
+      sim.planets.map((p) =>
+        tunedMassWell(planetMass(p.id, GRAVITY_TUNING, p.radius)),
       ),
     );
   });
@@ -42,6 +47,19 @@ describe("gravity tuning", () => {
     ["falloff", { falloff: "inverse" as const }],
     ["cutoff", { cutoff: GRAVITY_TUNING.cutoff * 2 }],
     ["sunMass", { sunMass: GRAVITY_TUNING.sunMass * 2 }],
+    [
+      "mercurial.referenceMass",
+      {
+        mercurial: {
+          ...GRAVITY_TUNING.mercurial,
+          referenceMass: GRAVITY_TUNING.mercurial.referenceMass * 2,
+        },
+      },
+    ],
+    [
+      "mercurial.coreFraction",
+      { mercurial: { ...GRAVITY_TUNING.mercurial, coreFraction: 0.5 } },
+    ],
     [
       "planetMass",
       {

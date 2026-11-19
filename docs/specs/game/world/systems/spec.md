@@ -42,6 +42,9 @@ comparison and mode behavior consistent. Practice retains its fixed reference sy
   Sun radius 36–140u. If a profile has nonfinite fields or an empty permitted
   interval, generation fails explicitly and returns no system; it does not
   shrink, omit or unsafely place the mandatory planet.
+- The mercurial body's mass and gravity-well mass both use the shared core-led
+  family profile at its seeded radius. At 27u it matches Practice Mercury's 870
+  mass and gravity reach; no separate generated moon mass applies.
 - The mercurial planet travels at 4u/s with positive angular speed `4 / D`.
   Its retained identity, gravity and appearance follow the
   [planet contract](../planets/spec.md#mercurial-mineral-rock).

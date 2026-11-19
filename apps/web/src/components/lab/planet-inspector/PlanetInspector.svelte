@@ -38,7 +38,12 @@ const key = $derived(JSON.stringify(activeDoc));
       paneDoc={readOnlyCopy(activeDoc)}
       {label}
       {pane}
-      onSelect={(planet) => (selected = planet)}
+      onSelect={(planet) => {
+        selected =
+          planet.kind === "family" && doc?.planet.kind === "family"
+            ? doc.planet
+            : planet;
+      }}
     />
   {/key}
 {:else if !parsed.success}

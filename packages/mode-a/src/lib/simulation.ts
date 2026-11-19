@@ -39,7 +39,9 @@ import {
 } from "./gauntlet";
 import { GRAVITY_COLLECTION } from "./gravity-collection";
 import {
+  applyMercurialGravity,
   MERCURIAL_ROCK_RADIUS,
+  mercurialMass,
   PRACTICE_MERCURY_ORBIT,
   PRACTICE_MERCURY_TRAVEL_SPEED,
 } from "./mercurial-rock";
@@ -115,7 +117,9 @@ export function playerAirSample(
 export function planetMass(
   id: string | undefined,
   tuning: GravityTuning = GRAVITY_TUNING,
+  radius: number = tuning.mercurial.referenceRadius,
 ): number {
+  if (id === "moon") return mercurialMass(radius, tuning.mercurial);
   const mass = id === undefined ? undefined : tuning.planetMass[id];
   if (mass === undefined)
     throw new Error(`No mass for planet ${id ?? "(no id)"} in the tuning file`);
@@ -128,8 +132,10 @@ export function applyGravityTuning(
   tuning: GravityTuning = GRAVITY_TUNING,
 ) {
   setStarMassWell(star, tunedMassWell(tuning.sunMass, tuning));
-  for (const planet of planets)
-    planet.massWell = tunedMassWell(planetMass(planet.id, tuning), tuning);
+  for (const planet of planets) {
+    if (planet.id === "moon") applyMercurialGravity(planet, tuning);
+    else planet.massWell = tunedMassWell(planetMass(planet.id, tuning), tuning);
+  }
 }
 /** Gives the star a mass well and makes its reach follow it. */
 export function setStarMassWell(star: Star, well: MassWell) {
@@ -309,8 +315,8 @@ export class Simulation {
       const mercury = this.planets.find((planet) => planet.id === "moon");
       if (mercury) {
         mercury.displayName = "Mercury";
-        mercury.mass = planetMass(mercury.id, massTuning);
         mercury.radius = MERCURIAL_ROCK_RADIUS.practice;
+        applyMercurialGravity(mercury, this.gravity);
         mercury.orbitRadius = PRACTICE_MERCURY_ORBIT;
         mercury.orbitSpeed =
           PRACTICE_MERCURY_TRAVEL_SPEED / PRACTICE_MERCURY_ORBIT;
