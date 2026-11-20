@@ -1,17 +1,18 @@
 import type { Planet } from "@void-drift/core";
 import type { GravityTuning } from "./schemas/gravity";
-import { GRAVITY_TUNING } from "./tuning";
+import { GRAVITY_TUNING, PRACTICE_SYSTEM } from "./tuning";
 
 /** Accepted airless mineral-rock family; radii in world units, not diameters. */
 export const MERCURIAL_ROCK_RADIUS = {
   min: 16,
-  practice: 27,
+  practice: PRACTICE_SYSTEM.mercury.radius,
   max: 36,
 } as const;
 
 /** Centre-to-centre orbit distance chosen for Practice Mercury. */
-export const PRACTICE_MERCURY_ORBIT = 258;
-export const PRACTICE_MERCURY_TRAVEL_SPEED = 4;
+export const PRACTICE_MERCURY_ORBIT = PRACTICE_SYSTEM.mercury.orbitRadius;
+export const PRACTICE_MERCURY_TRAVEL_SPEED =
+  PRACTICE_SYSTEM.mercury.travelSpeed;
 /** Shared surface turn for the mercurial family, independent of orbit. */
 export const MERCURIAL_ROCK_SPIN_SECONDS = 31.3;
 export const PRACTICE_MERCURY_SPIN_SECONDS = MERCURIAL_ROCK_SPIN_SECONDS;

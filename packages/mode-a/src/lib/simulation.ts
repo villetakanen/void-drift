@@ -91,11 +91,8 @@ import {
 import type { ShipProfileId } from "./schemas/ship-profile";
 import { generateSolarSystem } from "./solar-system";
 import { acquireFleetTargets } from "./targeting";
-import { ATMOSPHERE_TUNING, GRAVITY_TUNING } from "./tuning";
-import {
-  applyYellowFamilyProfile,
-  YELLOW_FAMILY_RADIUS,
-} from "./yellow-star-family";
+import { ATMOSPHERE_TUNING, GRAVITY_TUNING, PRACTICE_SYSTEM } from "./tuning";
+import { applyYellowFamilyProfile } from "./yellow-star-family";
 
 export const STEP = 1 / 60;
 /** Survival score points for each collected derelict energy cell. */
@@ -289,7 +286,7 @@ export class Simulation {
         venus.orbitRadius = PRACTICE_VENUS_ORBIT;
         venus.orbitSpeed = PRACTICE_VENUS_TRAVEL_SPEED / PRACTICE_VENUS_ORBIT;
         venus.mass = planetMass("venus", this.gravity);
-        venus.color = "#f6c371";
+        venus.color = PRACTICE_SYSTEM.venus.color;
         venus.type = "rock";
       }
       // The Cradle replaces the outer stock rock, also before mass lookup.
@@ -320,7 +317,7 @@ export class Simulation {
     if (this.settings.mode === "practice") {
       applyYellowFamilyProfile(
         this.star,
-        YELLOW_FAMILY_RADIUS.reference,
+        PRACTICE_SYSTEM.star.radius,
         this.gravity,
       );
       Object.assign(
@@ -345,7 +342,7 @@ export class Simulation {
     // Practice remains fixed; generated flight modes receive their seed phase
     // from generateSolarSystem above.
     if (this.settings.mode === "practice") {
-      const phase = ((CHALLENGE_SEED % 360) / 180) * Math.PI;
+      const phase = ((PRACTICE_SYSTEM.phaseSeed % 360) / 180) * Math.PI;
       for (const planet of this.planets) {
         planet.orbitAngle += phase;
         planet.pos.set(
