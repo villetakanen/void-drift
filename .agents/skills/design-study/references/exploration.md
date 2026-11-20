@@ -58,17 +58,13 @@ compares them. The step before the active one stays visible with its capture.
 
 ## Make the question inspectable
 
-Once purpose is shared, deliver the smallest concrete example that makes the current
-question inspectable in the active page section, in this exploration round. Described
-alternatives, research summaries, and plans to build later are insufficient. Use a
-sketch, sequence, interactive composition, or repeatable simulation suited to the claim;
-do not ask the designer to choose between experiences they must merely imagine.
-Define consumed objects and conditions. Keep prose brief: what to notice, limitations,
-and the uncertainty the example addresses. Put the review question in chat. Inspect the rendered example before presenting it. Report actual blockers as incomplete work; explicit requests for conceptual
-discussion override this default. Do not overbuild a final solution to provide evidence.
+State the design question and, after review, what the example revealed. Keep only
+conditions that explain the finding. Put operating instructions in captions; omit
+process commentary and next-step announcements.
 
-When the designer asks what the study has gained, answer in chat using the evidence
-so far, including what remains unresolved.
+Build the smallest example that lets the designer judge the question. Inspect it
+before presenting it; put the review question in chat. Report blockers honestly.
+Stop at discussion when requested.
 
 ## Choose the move
 
@@ -115,18 +111,9 @@ The question is about how the product behaves:
 
 ## Compare and carry forward
 
-Connect each alternative to agreed purpose, a hypothesis, a suitable investigation,
-and a decision the result could inform. Choose research, scenarios, sketches,
-interactive examples, or flight trials according to the uncertainty. Do not default
-to presets or a viewer. Explain what the chosen method cannot establish.
-
-Present a focused comparison for human judgment. Carry current-cycle agreed points and reasons
-forward each round; advance the next unknown. While the question is open, each new
-proposal gives a different answer to it, not a refinement of the last one; refine
-details only after the designer accepts a direction. Reopen an agreement only with an
-explicit reason. If the designer challenges the frame, return to purpose and identify
-what changed rather than polishing the same artifact. Recommend only with supporting
-reasoning; never manufacture evidence or acceptance.
+While the question is open, try distinct answers; refine a direction only after
+the designer accepts it. Carry accepted qualities and their reasons forward.
+If the frame changes, revisit the question rather than polishing the example.
 
 Accepting one quality of an example settles that quality. Continue exploring the
 study question unless the designer selects a result for independent delivery.
@@ -143,11 +130,3 @@ first. Keep the diverting edit pending unless the designer explicitly overrides;
 ordinary repairs that make the current question answerable should proceed normally.
 Honor an explicit override, including one already given, without repeated resistance.
 Record the deliberate question change and any unresolved prior question.
-
-During active inquiry, preserve useful evidence and the conditions needed to interpret
-it when a question is answered or changes. Record observations and limits, not invented
-conclusions. Before a new question retunes the instrument, capture the earlier comparison with its
-conditions so it is not tuned away. Preserving evidence never requires keeping its
-tools running: earlier steps hold captures as above, and when ending the study the
-main skill's closing procedure retires what is still live. These retention
-instructions apply to useful evidence; discard unusable proposals as above.

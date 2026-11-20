@@ -10,6 +10,14 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
   {
+    slug: "ranked-initials-2026-11-20",
+    title: "Signing a ranked score",
+    phase: "exploration",
+    status: "open",
+    question:
+      "How should entering three initials after a ranked run feel like signing an arcade or pinball high-score table, while remaining an accessible web form control that works with keyboard, mouse or touch and looks at home in Void Drift?",
+  },
+  {
     slug: "offscreen-information-2026-11-19",
     title: "Offscreen contacts · beyond pirate bearings",
     status: "accepted",
