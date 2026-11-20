@@ -4,7 +4,7 @@ title: "Spec: Title screen"
 status: draft
 generated:
   by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-20T11:49:20+02:00"
+  at: "2026-11-20T10:31:54Z"
 verified: [{ by: codex/gpt-6, at: "2026-11-19T13:55:56+00:00" }, { by: "codex/gpt-6", at: "2026-11-19T19:21:23+02:00" }, { by: "openai-codex/gpt-6.1-sol", at: "2026-11-20T11:13:45+02:00" }]
 ---
 
@@ -107,7 +107,9 @@ game's home and Hangar is an alternative launch point.
   blocked, Hangar receives focus instead. The menu focus order is PRESS START,
   Hangar, Top Scores, Settings, Credits, skipping unavailable actions.
 - Hangar provides training/test flight, start game and return to title screen.
-- Top Scores, Settings and Credits each provide return to title screen.
+- Top Scores and Credits provide return to title screen. Settings opened from
+  the title screen or Pause also returns to title screen; its explicit Hangar
+  context returns to Hangar as defined by [Options](../options/spec.md).
 - Pause provides Abort, returning to the run's launch source.
 - Every game over provides return to the run's launch source; a Survival game
   over also provides Top Scores.
@@ -195,6 +197,12 @@ Scenario: Title-screen launch after a Hangar choice
   When the player activates PRESS START
   Then a survival run starts with that ship in its fitting
   And its launch source is the title screen
+
+Scenario: Title-screen Settings returns home
+  Given the player opens Settings from the title screen
+  When the player activates Return to title screen
+  Then the title screen opens
+  And no prior Hangar visit changes this destination
 
 Scenario: Scores after a Hangar run
   Given a run launched from Hangar has ended

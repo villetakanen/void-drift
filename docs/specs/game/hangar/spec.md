@@ -4,7 +4,7 @@ title: "Spec: Hangar"
 status: draft
 generated:
   by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-20T11:49:20+02:00"
+  at: "2026-11-20T10:31:54Z"
 verified:
 - by: "openai-codex/gpt-6.1-sol"
   at: "2026-11-19T12:33:38+02:00"
@@ -61,8 +61,9 @@ save/load and Playground launch gating apply.
 
 - Shared controls and visual tokens follow the [choice-control contract](../../factory/design-system/choices/spec.md).
 - **Opening.** One compact row sits above the ship chooser: the linked logo
-  and one Hangar heading on the left, the labeled Playground Switch on the
-  right. The logo returns to `/`. The header does not wrap within supported
+  and one Hangar heading on the left, the labeled Playground Switch followed
+  by Settings as the last item on the right. Settings opens `/settings?from=hangar`
+  with a Return to Hangar action, as defined by [Options](../options/spec.md). The logo returns to `/`. The header does not wrap within supported
   landscape iPad widths, and switching Playground leaves its height unchanged.
   There is no duplicate return link, version label, routine save-status line,
   or scoring explanation in the header.
@@ -152,7 +153,9 @@ save/load and Playground launch gating apply.
 - H1: `/hangar` shows the Hangar, and player-facing Hangar links target it.
 - H2: The logo reaches `/` by pointer and keyboard; its accessible name
   identifies Void Drift. One Hangar heading and the Playground Switch share a
-  compact header row whose height is unchanged by Playground.
+  compact header row whose height is unchanged by Playground, with Settings
+  last after Playground. Settings and Return to Hangar preserve the active ship,
+  its fitting and preferences; selected slot and Plan/View restoration are not promised.
 - H3: The setting uses the shared binary `Switch`, labeled Playground,
   with a visible Off/On state and checkbox semantics; pointer and Space change it.
 - H4: Switching Playground changes the Hangar and launch as
@@ -202,6 +205,15 @@ Feature: Hangar
     Given a ship other than the Wasp is the active ship
     When I open the Hangar
     Then it shows that ship in its fitting
+
+  Scenario: Change preferences and return to the Hangar
+    Given I chose a ship and changed its fitting in the Hangar
+    When I activate Settings after Playground in the compact header
+    Then Options opens at /settings?from=hangar
+    When I change a preference and activate Return to Hangar
+    Then /hangar opens with the same active ship and fitting
+    And my preference is kept
+    And the header remains one row at supported landscape iPad widths
 
   Scenario: Fit an optional slot
     Given an optional slot selected in Plan

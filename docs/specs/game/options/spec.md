@@ -3,8 +3,8 @@
 title: "Spec: Options"
 status: draft
 generated:
-  by: "codex/gpt-6"
-  at: "2026-11-19T20:46:07+00:00"
+  by: "openai-codex/gpt-6.1-sol"
+  at: "2026-11-20T10:31:54Z"
 verified: [{ by: "codex/gpt-6", at: "2026-11-19T19:21:23+02:00" }]
 
 ---
@@ -43,7 +43,14 @@ the [Speed camera](../camera/speed-camera/spec.md) preference. Combat HUD contro
 - Missing or invalid stored values use the default. Without browser storage the
   game starts with defaults and remains playable; changes remain usable in
   memory even when they cannot persist for another visit.
-- The title screen leads to Options, and Options leads back to the title screen.
+- The title screen and Pause open ordinary `/settings`, whose footer reads
+  Return to title screen and targets `/`. Hangar opens `/settings?from=hangar`,
+  whose footer reads Return to Hangar and targets `/hangar`. Only the explicit
+  `from=hangar` context selects this return; missing or unknown context returns
+  to title. Return destinations are fixed, not arbitrary URLs or browser history.
+  The linked logo always targets `/`, including in Hangar context.
+- This roundtrip preserves the active ship, fitting and saved preferences.
+  Selected slot and Plan/View restoration are outside this navigation contract.
 - Every setting can be changed by pointer, keyboard and touch. Each control has
   its setting name as its accessible name and its supporting copy as its
   accessible description.
@@ -59,7 +66,9 @@ the [Speed camera](../camera/speed-camera/spec.md) preference. Combat HUD contro
 
 ### Definition of Done
 
-- O1: `/settings` shows Options with Invert controls, Speed camera and Combat HUD, and returns to the title screen.
+- O1: `/settings` shows Options with Invert controls, Speed camera and Combat HUD.
+  Its footer returns to `/hangar` only for `from=hangar`; ordinary and unknown
+  contexts return to `/`. The logo always returns home.
 - O2: Changing Invert controls swaps the engine inputs in the next flight input, with no save action or restart.
 - O3: A changed setting persists across a page reload.
 - O4: A missing or invalid stored value reads as the default, and unavailable storage leaves the game playable.
@@ -77,6 +86,23 @@ the [Speed camera](../camera/speed-camera/spec.md) preference. Combat HUD contro
 
 ```gherkin
 Feature: Options
+
+  Scenario: Return to the explicit Hangar destination
+    Given I open /settings?from=hangar from the Hangar
+    When I change a preference and reload Options
+    Then the preference is kept and Return to Hangar still targets /hangar
+    When I activate Return to Hangar
+    Then the Hangar shows the active ship and fitting I left
+
+  Scenario: Ordinary and unknown contexts return home
+    Given I open /settings from the title screen or Pause, or with an unknown from context
+    Then the footer reads Return to title screen and targets /
+    And a supplied return URL or browser history cannot change that destination
+
+  Scenario: The logo always returns home
+    Given I open /settings?from=hangar
+    When I activate the Void Drift logo
+    Then the title screen opens
 
   Scenario: Invert controls applies at once
     Given I open Options

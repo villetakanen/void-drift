@@ -210,16 +210,19 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
         <a class="brand" href="/" aria-label="Void Drift"><Logo size="sm" /></a>
         <h1>Hangar</h1>
       </div>
-      <label class="experimental-control" for="hangar-experimental">
-        <span>Playground</span>
-        <Switch
-          id="hangar-experimental"
-          bind:checked={
-            () => experimental === "On",
-            (value) => setExperimentalSetting(value ? "On" : "Off")
-          }
-        />
-      </label>
+      <div class="header-actions">
+        <label class="experimental-control" for="hangar-experimental">
+          <span>Playground</span>
+          <Switch
+            id="hangar-experimental"
+            bind:checked={
+              () => experimental === "On",
+              (value) => setExperimentalSetting(value ? "On" : "Off")
+            }
+          />
+        </label>
+        <a class="btn btn-normal" href="/settings?from=hangar">Settings</a>
+      </div>
     </header>
     <Tabs
       label="Choose chassis"
@@ -538,6 +541,7 @@ header .brand {
   flex-wrap: nowrap;
 }
 .brand-context,
+.header-actions,
 .experimental-control {
   display: flex;
   align-items: center;

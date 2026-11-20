@@ -1,10 +1,19 @@
 <script lang="ts">
+import { onMount } from "svelte";
 import { settings } from "../lib/stores/settings";
 import FlightDeck from "./FlightDeck.svelte";
 import Switch from "./inputs/Switch.svelte";
 import Logo from "./Logo.svelte";
 
+// Accept Astro's hydration attribute without an empty-props integration mismatch.
+let _props: { "client:only"?: string } = $props();
 const id = $props.id();
+let fromHangar = $state(false);
+onMount(() => {
+  // Only this explicit context is allowed; never use a return URL or history.
+  fromHangar =
+    new URLSearchParams(window.location.search).get("from") === "hangar";
+});
 const groups = [
   {
     title: "Controls",
@@ -64,7 +73,9 @@ const groups = [
 
         <footer class="button-group-frame">
           <div class="button-group button-group--strip">
-            <a href="/" class="btn btn-normal">Return to title screen</a>
+            <a href={fromHangar ? "/hangar" : "/"} class="btn btn-normal"
+              >{fromHangar ? "Return to Hangar" : "Return to title screen"}</a
+            >
           </div>
         </footer>
       </main>
