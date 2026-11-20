@@ -22,7 +22,7 @@ When reconstructing intent from an existing feature, trace its entry points, Zod
 
 ## Write the current state
 
-Use the template headings in order. Cover each rule from the owner’s brief with an independently checkable scenario in a fenced `gherkin` block. Use plain statements for Definition of Done. Keep implementation progress in delivery records. Write constraints as positive facts. Keep one canonical home for each rule, and link code-owned schemas where they live. Remove template comments and placeholders. Git carries history.
+Use the template headings in order. The title lives in the H1 (`# Feature name`); duplicate frontmatter `title` metadata is not required. Existing metadata titles remain supported. Cover each rule from the owner’s brief with an independently checkable scenario in a fenced `gherkin` block. Use plain statements for Definition of Done. Keep implementation progress in delivery records. Write constraints as positive facts. Keep one canonical home for each rule, and link code-owned schemas where they live. Remove template comments and placeholders. Git carries history.
 
 A complete short spec stands alone. Around 120 lines, review duplication and ownership. Split independently changing behaviour into a child folder with its own Contract. Folder nesting expresses parentage. Add a cross-reference when a specific rule or dependency needs one. Put bulky reference data in a linked attachment. Explain a necessary long spec at handover. Follow [the splitting guide](references/splitting.md).
 

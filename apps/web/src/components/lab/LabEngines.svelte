@@ -112,7 +112,7 @@ onMount(() => {
           <th>Engine</th>
           <th>Id</th>
           <th>SVG master</th>
-          <th>Testing only</th>
+          <th>Testing-only art</th>
         </tr>
       </thead>
       <tbody>
@@ -135,7 +135,8 @@ onMount(() => {
         Master: <code>packages/mode-a/src/lib/art/engines/{id}.svg</code>. Mount
         point {PARTS[id].mount} u along its slot.
         {#if PARTS[id].testingOnly}
-          It carries the testing-only marking.
+          It carries the optional decorative
+          <a href="/lab/ds/parts">testing-only marking</a>.
         {/if}
       </p>
       <div class="engine-row">

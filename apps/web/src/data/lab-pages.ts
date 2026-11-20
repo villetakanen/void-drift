@@ -170,6 +170,15 @@ export const labPages = z.array(labPageSchema).parse([
     spec: "docs/specs/factory/design-system/inputs/spec.md#tabs",
   },
   {
+    href: "/lab/ds/parts",
+    title: "Parts",
+    purpose: "Part-design principles and optional fictional artwork markings.",
+    group: "design-system",
+    source: "production",
+    defines: ["packages/mode-a/src/lib/testing-marking.ts"],
+    spec: "docs/specs/factory/design-system/artwork/spec.md#testing-only-marking",
+  },
+  {
     href: "/lab/ds/weapons",
     title: "Weapons",
     purpose:
@@ -183,7 +192,7 @@ export const labPages = z.array(labPageSchema).parse([
     href: "/lab/ds/engines",
     title: "Engines",
     purpose:
-      "Engine artwork: SVG masters, poses, plume and the testing-only marking.",
+      "Engine artwork: SVG masters, poses, plume and decorative markings.",
     group: "design-system",
     source: "production",
     defines: [

@@ -8,7 +8,6 @@ import { fileURLToPath } from "node:url";
 
 const checker = fileURLToPath(new URL("./check.mjs", import.meta.url));
 const spec = `---
-title: Reset
 status: draft
 generated: { by: codex/gpt-6, at: 2026-11-19T09:00:00Z }
 verified: []
@@ -34,6 +33,40 @@ Scenario: Reset after pausing
   Then the counter reads zero
 \`\`\`
 `;
+
+test("spec titles live in H1; legacy metadata titles remain accepted", (t) => {
+  const root = mkdtempSync(join(tmpdir(), "void-drift-spec-lint-"));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const file = join(root, "spec.md");
+  for (const text of [spec, spec.replace("---\n", "---\ntitle: Reset\n")]) {
+    writeFileSync(file, text);
+    const result = spawnSync(process.execPath, [checker, root], {
+      encoding: "utf8",
+    });
+    assert.equal(result.status, 0, result.stderr + result.stdout);
+  }
+});
+
+test("title-optional specs still require status and provenance", (t) => {
+  const root = mkdtempSync(join(tmpdir(), "void-drift-spec-lint-"));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const file = join(root, "spec.md");
+  for (const [field, message] of [
+    ["status: draft\n", /expected draft or approved status/],
+    [
+      "generated: { by: codex/gpt-6, at: 2026-11-19T09:00:00Z }\n",
+      /expected actor and timestamp/,
+    ],
+    ["verified: []\n", /expected verified events or \[\]/],
+  ]) {
+    writeFileSync(file, spec.replace(field, ""));
+    const result = spawnSync(process.execPath, [checker, root], {
+      encoding: "utf8",
+    });
+    assert.equal(result.status, 1, result.stderr + result.stdout);
+    assert.match(result.stdout, message);
+  }
+});
 
 test("nested contracts use folders, while approval, criteria and attachments remain checked", (t) => {
   const root = mkdtempSync(join(tmpdir(), "void-drift-spec-lint-"));

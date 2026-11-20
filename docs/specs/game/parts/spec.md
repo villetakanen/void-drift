@@ -1,18 +1,19 @@
+---
+status: draft
+generated:
+  by: "openai/gpt-6.1-sol"
+  at: "2026-11-20T19:09:25Z"
+verified: []
+---
+
 # Parts
 
 ## Blueprint
 
 ### Context
 
-Parts are what the player fits to a [ship](../ships/spec.md): engines, weapons
-and support parts. Each part trades mass and energy for something the ship
-can do, and those trades are what make fitting a decision.
-
-This contract says what kinds of part exist and the rules they share. It keeps
-no list of parts: the catalog in code is the list. A part gets a contract of its
-own only when its behaviour in flight needs one, as the
-[light ion cannon](../light-ion-cannon/spec.md) and the
-[ion point defence](../ion-point-defence/spec.md) do.
+Parts give ships their capabilities. Engines, weapons and support equipment
+contribute mass, use or supply energy, and determine what a ship can do.
 
 ### Architecture and boundaries
 
@@ -60,11 +61,6 @@ own only when its behaviour in flight needs one, as the
   forward or aft in the slot. The mount point belongs to the part and applies
   on every hull; hull-specific adjustments add to it. The Hangar card draws the
   part in its own frame, without the mount point.
-- **Testing only.** A part may be made for testing. A testing-only part
-  carries the design system's testing-only marking in its art, in every pose
-  and on its card. The property is separate from sanctioning: it stays when a
-  part is sanctioned, because fitting a testing-only part is a deliberate
-  downside.
 - **Part art.** A part's art has three things: an SVG master, the technical
   artefacts the game draws from (faces per pose, stamps, nozzle and mount
   geometry), converted from the master, and a design-system page, or part of
@@ -121,9 +117,6 @@ own only when its behaviour in flight needs one, as the
 - On every hull, an engine's plume starts at its drawn nozzle, including the
   part's mount point.
 - The Hangar card and the ship draw the same faces for a part.
-- A testing-only part shows the testing-only marking on the ship and on its
-  card, whether it is sanctioned or not; the marking stays inside the part's
-  body.
 - A part added to the catalog has an SVG master, technical artefacts
   converted from it, and a design-system page showing both. Engine masters
   live in `packages/mode-a/src/lib/art/engines/<id>.svg`;
@@ -186,9 +179,4 @@ Feature: Parts
     Then it is drawn aft of the slot's middle by that distance
     And its plume starts at its drawn nozzle
     And its Hangar card draws it centred in its own frame
-
-  Scenario: The testing-only marking survives sanctioning
-    Given a testing-only part that is sanctioned
-    When it is shown on its card and on a ship
-    Then it carries the testing-only marking
 ```

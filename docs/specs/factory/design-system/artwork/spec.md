@@ -3,8 +3,8 @@
 title: "Spec: Ship part artwork"
 status: draft
 generated:
-  by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-19T12:32:56+02:00"
+  by: "openai/gpt-6.1-sol"
+  at: "2026-11-20T19:09:25Z"
 verified:
 - by: "openai-codex/gpt-6.1-sol"
   at: "2026-11-19T12:33:38+02:00"
@@ -17,7 +17,8 @@ verified:
 
 ### Context
 
-Canonical family pages expose procedural part artwork and its source masters to designers.
+The Parts page at `/lab/ds/parts` owns the shared part-design guidance;
+family pages expose procedural artwork and its source masters to designers.
 
 ### Architecture
 
@@ -31,7 +32,9 @@ Ship parts, the engines, weapons and support parts a player fits, are game art
 drawn procedurally on canvas. [Parts](../../../game/parts/spec.md) requires each
 new part's art to have an SVG master, technical artefacts converted from it and
 a design-system page. This section says where those pages live and defines the
-marks that ship part art shares.
+marks that ship part art shares. `/lab/ds/parts` presents these shared aesthetic
+principles and links to the family examples; it is not a study or a gameplay
+status inspector.
 
 #### Pages
 
@@ -47,14 +50,15 @@ marks that ship part art shares.
 
 #### Testing-only marking
 
-The testing-only marking says that a part is made for testing. It is static art
-in the part's master and appears in every pose and on the Hangar card. It is
-not a sanction mark: it stays when a part is sanctioned.
+“Testing only” is fictional prose expressed through optional decorative art.
+It suggests a machine's character, not an actual testing state. A designer may
+include the marking in a part's master; the shared artwork then carries it
+through its poses and Hangar card. It has no gameplay, ranked, ruleset or
+sanctioning semantics and imposes no requirement that a part be used for testing.
 
 - Parallel lines at 45° to the part's axis, rising to the right when the part
   is drawn nose up, in `COLOR.brand`.
-- The gap between lines is twice the line width, the ratio of the Playground
-  band's hatching.
+- The gap between lines is twice the line width.
 - The lines cover the outer half of one side of the part's body, from half its
   width to its edge, clipped to the body. Additions such as rails or mounts,
   and the nozzle, stay bare.
@@ -66,7 +70,7 @@ not a sanction mark: it stays when a part is sanctioned.
 
 - Each family page lists parts from the shared catalog.
 - Master-derived artifacts stay consistent with their SVG source.
-- Testing-only markings remain distinct from sanction status.
+- Testing-only markings are optional aesthetic extras, not part status or gameplay rules.
 
 ## Contract
 
@@ -75,11 +79,12 @@ not a sanction mark: it stays when a part is sanctioned.
 - Family pages show each available SVG master beside its rendered poses and fittings.
 - Engines include a full-output plume example.
 - Missing masters are identified explicitly.
-- The testing-only marking follows the shared geometry and uses a cached flight stamp.
+- `/lab/ds/parts` explains the optional, purely aesthetic marking and links to family examples.
+- When included in artwork, the marking follows the shared geometry and uses a cached flight stamp.
 
 ### Regression guardrails
 
-- Sanctioning a testing-only part preserves its static artwork marking.
+- A marking conveys fictional character only; it creates no testing requirement or gameplay consequence.
 - Production drawings consume shared artifacts rather than study-local artwork.
 
 ### Scenarios
@@ -90,8 +95,14 @@ Scenario: Inspect a mastered part
   When I open its canonical family page
   Then I can compare the master, rendered poses and production fitting
 
-Scenario: Sanction a testing-only part
+Scenario: Read the part-design guidance
+  Given I open the Parts design-system page
+  When I read about the testing-only marking
+  Then it is described as optional fictional decoration
+  And it implies no required testing state or gameplay, ranked, ruleset or sanctioning meaning
+
+Scenario: Inspect optional decorative artwork
   Given a part's master includes the testing-only marking
-  When the part becomes sanctioned
-  Then its testing-only artwork remains visible
+  When I compare its master and rendered poses on the family page
+  Then the marking follows the shared geometry within the part's body
 ```

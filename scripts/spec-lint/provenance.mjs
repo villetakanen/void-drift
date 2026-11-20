@@ -99,7 +99,6 @@ export function provenance(text, spec = false) {
   }
   const status = scalar(fm.get("status") || "");
   if (spec) {
-    if (!fm.get("title")?.trim()) throw Error("expected title");
     if (!["draft", "approved"].includes(status))
       throw Error("expected draft or approved status");
     if (

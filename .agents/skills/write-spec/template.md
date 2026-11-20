@@ -1,5 +1,4 @@
 ---
-title: "Spec: [Feature name]"
 status: draft
 generated:
   by: "<producer>/<version>"
@@ -7,7 +6,7 @@ generated:
 verified: []
 ---
 
-# Spec: [Feature name]
+# [Feature name]
 
 <!--
 status: draft | approved. A person approves a spec.
