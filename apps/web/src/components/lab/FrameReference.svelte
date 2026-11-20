@@ -5,6 +5,50 @@ import {
   FLIGHT_SKY_LAYER,
 } from "@void-drift/mode-a";
 
+import { projectFlightContact } from "../../lib/flight-contact-projection";
+import type { FlightContactCue } from "../../lib/flight-contacts";
+import FlightContacts from "../FlightContacts.svelte";
+
+// Fixed bearings exercise the same projection and SVG as flight, including
+// a target that lies inside the example box but beyond the arrow circle.
+const contactBox = { x: 0, y: 0, width: 480, height: 240 };
+const contactSamples = [
+  {
+    kind: "pirate",
+    name: "Pirate",
+    projectedX: 60,
+    projectedY: 25,
+    worldDistance: 3200,
+  },
+  {
+    kind: "sun",
+    name: "Sun",
+    projectedX: 500,
+    projectedY: 120,
+    worldDistance: 600,
+  },
+  {
+    kind: "wreck",
+    name: "Wreck",
+    projectedX: 460,
+    projectedY: 280,
+    worldDistance: 2000,
+  },
+  {
+    kind: "cell",
+    name: "Free energy cell",
+    projectedX: 350,
+    projectedY: -120,
+    worldDistance: 1000,
+  },
+] as const;
+const contacts: FlightContactCue[] = contactSamples.flatMap((sample) => {
+  const placement = projectFlightContact({ ...sample, active: contactBox });
+  return placement
+    ? [{ ...placement, kind: sample.kind, id: sample.kind, name: sample.name }]
+    : [];
+});
+
 // Every row is read from the production frame; this page holds no copy of it.
 const layers = FLIGHT_LAYERS.map((layer) => ({
   ...layer,
@@ -58,9 +102,31 @@ const layers = FLIGHT_LAYERS.map((layer) => ({
       </table>
     </section>
   {/each}
+  <section class="layer">
+    <h3>Flight contacts</h3>
+    <p class="holds">
+      Above live light, the stage SVG shows bearings for pirates, the Sun,
+      wrecks and free energy cells.
+    </p>
+    <div
+      class="contact-sample"
+      style:width={`${contactBox.width}px`}
+      style:height={`${contactBox.height}px`}
+    >
+      <FlightContacts
+        {contacts}
+        width={contactBox.width}
+        height={contactBox.height}
+      />
+    </div>
+  </section>
 </section>
 
 <style>
+.contact-sample {
+  position: relative;
+  background: var(--color-void);
+}
 .frame-reference {
   box-sizing: border-box;
   width: 100%;

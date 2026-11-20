@@ -343,8 +343,7 @@ export class SalvageSystem {
   private readonly plasmaKickVelocity: number;
   laserPulses = 0;
   hits = 0;
-  /** Point-defence and cannon hits on a wreck or a shard; they score in Survival. */
-  derelictIonHits = 0;
+  playerShardKills = 0;
   /** Derelict energy cells the ship has collected; each scores in Survival. */
   cellsCollected = 0;
   energySpent = 0;
@@ -517,7 +516,11 @@ export class SalvageSystem {
       this.trajectoryRandom() < 0.5
         ? -encounter.wreckSpin.rate
         : encounter.wreckSpin.rate;
-    if (this.groups >= encounter.groups) return;
+    const occupied =
+      encounter.occupancy === "intact-wrecks"
+        ? this.bodies.some((body) => body.kind === "wreck" && body.hull > 0)
+        : this.groups >= encounter.groups;
+    if (occupied) return;
     this.passes++;
     const wreck = this.body(
       "wreck",
@@ -632,16 +635,16 @@ export class SalvageSystem {
     if (body.hull <= 0) return;
     body.hull = 0;
     if (cause === "expiry" || cause === "exit") return;
+    const playerRelease = cause === "player-weapon" || cause === "player-ram";
     if (body.kind !== "wreck") {
-      if (cause === "player-weapon" || cause === "player-ram")
-        this.emit("impact", body.x, body.y);
+      if (playerRelease && body.kind === "fragment") this.playerShardKills++;
+      if (playerRelease) this.emit("impact", body.x, body.y);
       return;
     }
-    if (cause === "player-weapon" || cause === "player-ram") {
+    if (playerRelease) {
       this.destroyed++;
       this.playerKills++;
     }
-    const playerRelease = cause === "player-weapon" || cause === "player-ram";
     if (!playerRelease) this.emit("break", body.x, body.y);
     for (let i = 0; i < DERELICT_SHARDS.length; i++)
       this.release(body, i, cause === "player-ram");
@@ -678,12 +681,7 @@ export class SalvageSystem {
       throw new Error("Damage target is not in this simulation");
     this.damage(body, damage);
   }
-  private damage(
-    body: SalvageBody,
-    amount: number,
-    time = this.time,
-    ionHit = false,
-  ) {
+  private damage(body: SalvageBody, amount: number, time = this.time) {
     if (body.hull <= 0) return;
     if (body.kind === "ship") {
       body.onDamage?.(amount);
@@ -692,7 +690,6 @@ export class SalvageSystem {
       return;
     }
     this.hits++;
-    if (ionHit && body.kind !== "cell") this.derelictIonHits++;
     if (body.kind === "wreck" && body.initialHull === undefined)
       body.initialHull = body.hull;
     if (body.hull <= amount) this.destroy(body, "player-weapon", time);
@@ -861,7 +858,7 @@ export class SalvageSystem {
       }),
     );
     if (hit) {
-      this.damage(hit, ionCannonDamage(distance), this.time, true);
+      this.damage(hit, ionCannonDamage(distance));
       this.emit("collision", endX, endY);
     }
     return true;
@@ -1057,7 +1054,7 @@ export class SalvageSystem {
         distance,
       }),
     );
-    this.damage(hit, pointDefenceDamage(distance), this.time, true);
+    this.damage(hit, pointDefenceDamage(distance));
     this.emit("collision", endX, endY);
     return true;
   }
@@ -2137,6 +2134,7 @@ export class SalvageSystem {
     wrapped: boolean,
     planets: readonly Planet[] = [],
     previousRotation = ship.rotation,
+    hostile?: SalvageBody,
   ) {
     this.time += dt;
     this.plasmaContactEvents.length = 0;
@@ -2183,6 +2181,10 @@ export class SalvageSystem {
       )
         this.destroy(body, "environment");
     }
+    // Live ships participate in weapons queries only. Their flight and ram
+    // contacts are advanced by the opponent simulation.
+    const hostileIndex = this.bodies.length;
+    if (hostile) this.bodies.push(hostile);
     const acquisition = acquireFleetTargets(
       this.bodies,
       [{ system: this, ship }],
@@ -2344,6 +2346,11 @@ export class SalvageSystem {
     );
     this.sweepVentAreas(dt, this.bodies, undefined, true, bodyEnd, births);
 
+    if (hostile) this.bodies.splice(hostileIndex, 1);
+    const shotTargets =
+      hostile && this.shots.length
+        ? [...existingBodies, hostile]
+        : existingBodies;
     this.shots = this.shots.filter((shot) => {
       let first = contactTime(
         shot.x - star.pos.x,
@@ -2366,7 +2373,7 @@ export class SalvageSystem {
           ),
         );
       let hit: SalvageBody | undefined;
-      for (const body of existingBodies) {
+      for (const body of shotTargets) {
         if (
           !this.contactEligible(body) ||
           body.kind === "cell" ||
@@ -2385,8 +2392,8 @@ export class SalvageSystem {
         );
         if (
           time < first &&
-          time < terminal(body).time &&
-          time < shipTime(body)
+          (body === hostile ||
+            (time < terminal(body).time && time < shipTime(body)))
         ) {
           first = time;
           hit = body;

@@ -357,6 +357,7 @@ export const EncounterConfigSchema = z
     intervalMin: z.number().positive(),
     intervalMax: z.number().positive(),
     groups: z.number().int().positive(),
+    occupancy: z.enum(["salvage-groups", "intact-wrecks"]).optional(),
     centerX: z.number(),
     centerY: z.number(),
     radius: z.number().positive(),
@@ -419,6 +420,13 @@ export const SURVIVAL_ENCOUNTER = EncounterConfigSchema.parse({
   entryAngle: { min: (40 * Math.PI) / 180, max: (50 * Math.PI) / 180 },
   orientation: "tip-first",
   wreckSpin: { rate: (1 * Math.PI) / 180, direction: "random" },
+});
+export const RANKED_SURVIVAL_ENCOUNTER = EncounterConfigSchema.parse({
+  ...SURVIVAL_ENCOUNTER,
+  firstPass: { min: 5, max: 40 },
+  intervalMin: 5,
+  intervalMax: 40,
+  occupancy: "intact-wrecks",
 });
 export const SalvageConfigSchema = z.object({
   wreck: z.object({

@@ -6,13 +6,17 @@ import {
   type PlumeEmitter,
   type Resources,
   type Star,
-  updatePlanetOrbit,
   updateShip,
   Vec2,
 } from "@void-drift/core";
 import type { z } from "zod";
 import { applyBuildEngines, buildDrain, solarCharge } from "./build-flight";
 import { buildCollisionRadius, buildPlumeEmitters } from "./build-renderer";
+import {
+  EnemyCapabilitiesSchema,
+  type EnemyObjective,
+  updateEnemyObjectiveForCapacity,
+} from "./enemy-ai";
 import { gravityCollectionRate, gravitySource } from "./gravity-collection";
 import { SalvageSystem, type WeaponEvent, type WeaponState } from "./salvage";
 import {
@@ -32,11 +36,15 @@ import {
   LoadoutSchema,
   PARTS,
 } from "./schemas/loadout";
+import { planScout } from "./scout-pilot";
+import { scoutFlightProfile } from "./scout-predictor";
 
 export type GauntletLifecycle = z.infer<typeof GauntletLifecycleSchema>;
 export const GAUNTLET_SHIP_CONTACT = { restitution: 0.25, damage: 5 } as const;
 export interface GauntletActor {
-  id: "pirate-1" | "pirate-2";
+  id: z.infer<typeof GauntletActorIdSchema>;
+  objective: EnemyObjective;
+  readonly stats: ReturnType<typeof buildStats>;
   allegiance: "hostile";
   lifecycle: GauntletLifecycle;
   ship: GameObject;
@@ -67,7 +75,7 @@ export interface MountedStepResult {
   gravityDirection?: number;
 }
 
-/** Shared mounted-actor substep for the player, pirate and scratch prediction. */
+/** Shared mounted-actor substep for the player and enemy ships. */
 export function stepMountedActor(
   actor: MountedActorState,
   input: { leftThruster: boolean; rightThruster: boolean; fire: boolean },
@@ -79,8 +87,8 @@ export function stepMountedActor(
   practice = false,
   parts: typeof PARTS = PARTS,
   advancePlanets = true,
+  stats = buildStats(actor.loadout),
 ): MountedStepResult {
-  const stats = buildStats(actor.loadout);
   const distance = Math.hypot(
     actor.ship.pos.x - star.pos.x,
     actor.ship.pos.y - star.pos.y,
@@ -108,7 +116,15 @@ export function stepMountedActor(
     : Math.max(0, Math.min(stats.capacity, supplied + collected));
   const requested = Math.max(
     0,
-    (buildDrain(actor.loadout, input, actor.angularMotion.velocity, dt, ion) -
+    (buildDrain(
+      actor.loadout,
+      input,
+      actor.angularMotion.velocity,
+      dt,
+      ion,
+      1,
+      stats.mass,
+    ) -
       LIFE_SUPPORT_DRAIN) *
       dt,
   );
@@ -126,6 +142,7 @@ export function stepMountedActor(
     actor.angularMotion,
     ion,
     parts,
+    parts === PARTS ? stats : undefined,
   );
   updateShip(
     actor.ship,
@@ -155,6 +172,7 @@ export function pirateLoadout(): Loadout {
   const loadout = defaultLoadout("scout");
   loadout.side = "ion";
   loadout.hull[0] = "plasma-rifle";
+  loadout.aft[0] = "light-ion-cannon";
   return LoadoutSchema.parse(loadout);
 }
 
@@ -168,6 +186,7 @@ export function createPirate(
   if (allegiance !== "hostile")
     throw new Error("Pirate allegiance schema mismatch");
   const loadout = pirateLoadout();
+  const { stats } = scoutFlightProfile(loadout, ion);
   const radius = buildCollisionRadius(loadout);
   const emitters = buildPlumeEmitters(loadout);
   const combat = new SalvageSystem(loadout, seed, ion);
@@ -181,11 +200,15 @@ export function createPirate(
   ship.vel.set(600 * Math.cos(ship.rotation), 600 * Math.sin(ship.rotation));
   return {
     id: GauntletActorIdSchema.parse(id),
+    objective: "pursue",
+    get stats() {
+      return scoutFlightProfile(this.loadout, ion).stats;
+    },
     allegiance,
     lifecycle: GauntletLifecycleSchema.parse("arriving"),
     ship,
     loadout,
-    resources: { hull: 100, power: buildStats(loadout).capacity },
+    resources: { hull: 100, power: stats.capacity },
     engineTimers: {},
     angularMotion: { velocity: 0 },
     engineOutput: { left: 0, right: 0, aft: [0], stabilizers: [0, 0] },
@@ -208,7 +231,7 @@ export const NO_PILOT_COMMAND: PilotCommand = {
   fire: false,
 };
 
-/** One mounted-build flight substep, shared by the pirate and its scratch rollouts. */
+/** One live enemy flight substep; the simulation owns the planetary clock. */
 export function stepGauntletActor(
   actor: GauntletActor,
   input: PilotCommand,
@@ -228,26 +251,21 @@ export function stepGauntletActor(
     false,
     PARTS,
     false,
+    scoutFlightProfile(actor.loadout, ion).stats,
   );
 }
 
-function angleDifference(a: number, b: number) {
-  return Math.atan2(Math.sin(a - b), Math.cos(a - b));
-}
+const scoutCapabilities = EnemyCapabilitiesSchema.parse({
+  solarRecovery: true,
+});
 
-const COMMANDS: readonly PilotCommand[] = [
-  { leftThruster: false, rightThruster: false, fire: false },
-  { leftThruster: true, rightThruster: false, fire: false },
-  { leftThruster: false, rightThruster: true, fire: false },
-  { leftThruster: true, rightThruster: true, fire: false },
-];
-const CANDIDATE_SEQUENCES: readonly (readonly [PilotCommand, PilotCommand])[] =
-  [
-    [COMMANDS[0], COMMANDS[3]],
-    [COMMANDS[1], COMMANDS[3]],
-    [COMMANDS[2], COMMANDS[3]],
-    [COMMANDS[3], COMMANDS[3]],
-  ];
+export function updateEnemyObjective(actor: GauntletActor) {
+  return updateEnemyObjectiveForCapacity(
+    actor,
+    actor.stats.capacity,
+    scoutCapabilities.solarRecovery,
+  );
+}
 
 export interface PiratePilotPlan {
   command: PilotCommand;
@@ -257,120 +275,15 @@ export interface PiratePilotPlan {
   path: Array<{ x: number; y: number }>;
 }
 
-/** Twelve deterministic 1.2s command-sequence rollouts; only each first command is executed. */
+/** Gauntlet supplies the Scout pilot with its actor and current target. */
 export function planPirate(
   actor: GauntletActor,
   target: GameObject,
   star: Star,
   planets: Planet[],
   ion: AssembledIonSettings = ASSEMBLED_ION_DEFAULTS,
-) {
-  const predictionHorizon = 1.2;
-  const predictedTarget = {
-    pos: {
-      x: target.pos.x + target.vel.x * predictionHorizon,
-      y: target.pos.y + target.vel.y * predictionHorizon,
-    },
-  };
-  let best: PiratePilotPlan = {
-    command: COMMANDS[0],
-    horizonSeconds: predictionHorizon,
-    candidateCount: CANDIDATE_SEQUENCES.length,
-    score: Infinity,
-    path: [],
-  };
-  let bestScore = Infinity;
-  for (let index = 0; index < CANDIDATE_SEQUENCES.length; index++) {
-    const [firstCommand, secondCommand] = CANDIDATE_SEQUENCES[index];
-    const candidate: GauntletActor = {
-      ...actor,
-      ship: {
-        ...actor.ship,
-        pos: new Vec2(actor.ship.pos.x, actor.ship.pos.y),
-        vel: new Vec2(actor.ship.vel.x, actor.ship.vel.y),
-        acc: new Vec2(actor.ship.acc.x, actor.ship.acc.y),
-      },
-      resources: { ...actor.resources },
-      engineTimers: { ...actor.engineTimers },
-      angularMotion: { ...actor.angularMotion },
-    };
-    const scratchPlanets = planets.map((planet) => ({
-      ...planet,
-      pos: new Vec2(planet.pos.x, planet.pos.y),
-      orbitCenter: new Vec2(planet.orbitCenter.x, planet.orbitCenter.y),
-      massWell: planet.massWell ? { ...planet.massWell } : undefined,
-      well: planet.well ? { ...planet.well } : undefined,
-    }));
-    const path = [{ x: candidate.ship.pos.x, y: candidate.ship.pos.y }];
-    let minHazardClearance = Infinity;
-    let rolloutStep = 0;
-    for (let tick = 0; tick < 72; tick++) {
-      for (let substep = 0; substep < 4; substep++) {
-        if (rolloutStep++ > 0)
-          for (const planet of scratchPlanets)
-            updatePlanetOrbit(planet, 1 / 240);
-        stepGauntletActor(
-          candidate,
-          tick < 18 ? firstCommand : secondCommand,
-          1 / 240,
-          star,
-          scratchPlanets,
-          ion,
-        );
-      }
-      if (tick % 12 === 11)
-        path.push({ x: candidate.ship.pos.x, y: candidate.ship.pos.y });
-      minHazardClearance = Math.min(
-        minHazardClearance,
-        Math.hypot(
-          candidate.ship.pos.x - star.pos.x,
-          candidate.ship.pos.y - star.pos.y,
-        ) -
-          star.radius -
-          candidate.ship.radius,
-      );
-      for (const planet of scratchPlanets)
-        minHazardClearance = Math.min(
-          minHazardClearance,
-          Math.hypot(
-            candidate.ship.pos.x - planet.pos.x,
-            candidate.ship.pos.y - planet.pos.y,
-          ) -
-            planet.radius -
-            candidate.ship.radius,
-        );
-    }
-    const dx = predictedTarget.pos.x - candidate.ship.pos.x;
-    const dy = predictedTarget.pos.y - candidate.ship.pos.y;
-    const distance = Math.hypot(dx, dy);
-    const bearing = Math.atan2(dy, dx);
-    const alignment = Math.abs(
-      angleDifference(bearing, candidate.ship.rotation),
-    );
-    const relativeSpeed = Math.hypot(
-      candidate.ship.vel.x - target.vel.x,
-      candidate.ship.vel.y - target.vel.y,
-    );
-    const score =
-      distance +
-      Math.max(0, 145 - distance) * 3 +
-      alignment * 60 +
-      Math.max(0, 55 - minHazardClearance) * 12 +
-      relativeSpeed * 0.15 +
-      (actor.resources.power - candidate.resources.power) * 0.4 +
-      Number(firstCommand !== secondCommand) * 2;
-    if (score < bestScore) {
-      bestScore = score;
-      best = {
-        command: firstCommand,
-        horizonSeconds: predictionHorizon,
-        candidateCount: CANDIDATE_SEQUENCES.length,
-        score,
-        path,
-      };
-    }
-  }
-  return best;
+): PiratePilotPlan {
+  return planScout(actor, target, star, planets, ion);
 }
 
 export function planPirateCommand(

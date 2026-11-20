@@ -354,7 +354,7 @@ describe("plasma stream travel and first contact", () => {
       if (!system) throw new Error("Expected the Gauntlet combat system");
       const [rifle] = system.weapons;
       const muzzle = weaponPose(sim.ship, rifle.mount);
-      const [wasp, inactive] = sim.opponents;
+      const [wasp] = sim.opponents;
       wasp.loadout = defaultLoadout("wasp");
       wasp.combat = new SalvageSystem(wasp.loadout, 2026);
       wasp.weapons = wasp.combat.weapons;
@@ -363,8 +363,6 @@ describe("plasma stream travel and first contact", () => {
       wasp.ship.vel.set(0, 0);
       wasp.ship.radius = waspRadius;
       wasp.lifecycle = "active";
-      inactive.resources.hull = 0;
-      inactive.lifecycle = "destroyed";
       sim.start();
       for (let tick = 0; tick < 60; tick++) sim.step(still);
       expect(system.plasmaReleases).toBe(1);

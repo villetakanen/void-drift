@@ -289,7 +289,7 @@ export const labPages = z.array(labPageSchema).parse([
     href: "/lab/gauntlet",
     title: "Gauntlet",
     purpose:
-      "Play the first pirate encounter through the production simulation and render stack.",
+      "Play the seven-enemy Gauntlet through the production simulation and render stack.",
     group: "tools",
     source: "production",
     defines: [

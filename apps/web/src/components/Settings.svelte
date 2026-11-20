@@ -11,14 +11,18 @@ const groups = [
     key: "invertControls",
     name: "Invert controls",
     hint: "Swap left/right engine controls",
-    experimental: false,
   },
   {
     title: "Camera",
     key: "speedCamera",
     name: "Speed camera",
     hint: "Zooms out with speed and shows more space ahead.",
-    experimental: true,
+  },
+  {
+    title: "Display",
+    key: "combatHud",
+    name: "Combat HUD",
+    hint: "Show direction and distance cues for pirates, the sun, derelicts and energy cells.",
   },
 ] as const;
 </script>
@@ -42,9 +46,6 @@ const groups = [
                 <div class="setting-copy">
                   <label for={`${id}-${group.key}`}>{group.name}</label>
                   <p id={`${id}-${group.key}-hint`}>
-                    {#if group.experimental}
-                      <span class="experimental">Experimental</span>
-                    {/if}
                     {group.hint}
                   </p>
                 </div>
@@ -142,9 +143,5 @@ label {
 p {
   color: var(--color-text-muted);
   font-size: var(--font-size-caption);
-}
-
-.experimental {
-  display: block;
 }
 </style>

@@ -4,7 +4,7 @@ title: "Spec: Options"
 status: draft
 generated:
   by: "codex/gpt-6"
-  at: "2026-11-19T19:21:23+02:00"
+  at: "2026-11-19T20:46:07+00:00"
 verified: [{ by: "codex/gpt-6", at: "2026-11-19T19:21:23+02:00" }]
 
 ---
@@ -18,7 +18,7 @@ verified: [{ by: "codex/gpt-6", at: "2026-11-19T19:21:23+02:00" }]
 Options is where the player sets how the game behaves for them on this device.
 A choice applies without saving and is still there on the next visit. Options
 holds Invert controls, which swaps which side's input fires which engine, and
-the experimental [Speed camera](../camera/speed-camera/spec.md) preference.
+the [Speed camera](../camera/speed-camera/spec.md) preference. Combat HUD controls the [flight contact cues](../render/flight-contacts/spec.md).
 
 ### Architecture
 
@@ -47,11 +47,11 @@ the experimental [Speed camera](../camera/speed-camera/spec.md) preference.
 - Every setting can be changed by pointer, keyboard and touch. Each control has
   its setting name as its accessible name and its supporting copy as its
   accessible description.
-- The shared binary Switch selects Speed camera framing, Off by default, with
-  an Experimental label in the Camera section. Options is its only control
+- The shared binary Switch selects Speed camera framing, Off by default, in the Camera section. Options is its only control
   location. The in-flight ZOOM readout is passive. The Pause dialog contains
   no settings controls; its Settings action navigates to Options. Speed camera
   is independent of Playground and scoring.
+- The Display section has a shared Combat HUD switch, On by default. It controls contact cues across all playable flight modes. Hull, power, score, flight controls and camera framing stay available independently. Older settings retain their existing choices.
 - Options uses the same game field backdrop as the Title Screen, Top Scores and
   Credits.
 
@@ -59,7 +59,7 @@ the experimental [Speed camera](../camera/speed-camera/spec.md) preference.
 
 ### Definition of Done
 
-- O1: `/settings` shows Options with Invert controls and Speed camera, and returns to the title screen.
+- O1: `/settings` shows Options with Invert controls, Speed camera and Combat HUD, and returns to the title screen.
 - O2: Changing Invert controls swaps the engine inputs in the next flight input, with no save action or restart.
 - O3: A changed setting persists across a page reload.
 - O4: A missing or invalid stored value reads as the default, and unavailable storage leaves the game playable.
@@ -83,6 +83,13 @@ Feature: Options
     When I change Invert controls
     And start a flight
     Then my left and right inputs fire the swapped engines
+
+  Scenario: Combat HUD persists
+    Given I open Options with settings saved before Combat HUD was added
+    Then Combat HUD is On and my other choices are preserved
+    When I turn Combat HUD Off and reload Options
+    Then the switch is Off
+    And my next flight shows the ordinary deck without contact cues
 
   Scenario: The choice is kept
     Given I changed Invert controls

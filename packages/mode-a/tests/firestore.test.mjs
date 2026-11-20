@@ -34,12 +34,12 @@ const score = {
   fitting: ["ion", "ion", "battery", "light-ion-cannon"],
   stabilizers: true,
   linkedEngines: false,
-  challenge: "habitable-skies",
+  challenge: "fires-in-the-sky",
   userId: "pilot",
 };
 function ref(
   user = "pilot",
-  id = "habitable-skies_pilot_fighter",
+  id = "fires-in-the-sky_pilot_fighter",
   app = "void-drift",
 ) {
   const context = user
@@ -51,8 +51,8 @@ test("owner can create and improve a score", async () => {
   await assertSucceeds(setDoc(ref(), score));
   await assertSucceeds(setDoc(ref(), { ...score, seconds: 50, score: 80 }));
 });
-for (const challenge of ["ion-storm", "fires-in-the-sky"]) {
-  test(`released ${challenge} clients can still improve their own board`, async () => {
+for (const challenge of ["ion-storm", "habitable-skies"]) {
+  test(`earlier ${challenge} clients can still improve their own board`, async () => {
     const target = ref("pilot", `${challenge}_pilot_fighter`);
     const oldScore = { ...score, challenge };
     await assertSucceeds(setDoc(target, oldScore));
@@ -64,7 +64,7 @@ for (const challenge of ["ion-storm", "fires-in-the-sky"]) {
 test("different players can contribute and read the shared board", async () => {
   await assertSucceeds(setDoc(ref(), score));
   await assertSucceeds(
-    setDoc(ref("rival", "habitable-skies_rival_scout"), {
+    setDoc(ref("rival", "fires-in-the-sky_rival_scout"), {
       ...score,
       userId: "rival",
       shipId: "scout",
@@ -84,13 +84,15 @@ test("anonymous, cross-owner and wrong namespace writes fail", async () => {
   await assertFails(setDoc(ref(""), score));
   await assertFails(setDoc(ref("rival"), score));
   await assertFails(
-    setDoc(ref("pilot", "habitable-skies_pilot_fighter", "other"), score),
+    setDoc(ref("pilot", "fires-in-the-sky_pilot_fighter", "other"), score),
   );
 });
 test("identity and document shape cannot be forged", async () => {
   await assertFails(setDoc(ref("pilot", "wrong"), score));
   await assertFails(setDoc(ref("pilot", "pilot_fighter"), score));
-  await assertFails(setDoc(ref("pilot", "habitable-skies_pilot_scout"), score));
+  await assertFails(
+    setDoc(ref("pilot", "fires-in-the-sky_pilot_scout"), score),
+  );
   await assertFails(setDoc(ref(), { ...score, userId: "rival" }));
 });
 test("every field is required and no extra field is accepted", async () => {
@@ -117,6 +119,7 @@ test("fields of the wrong type fail", async () => {
     await assertFails(setDoc(ref(), { ...score, ...patch }));
 });
 test("seconds hold milliseconds and score has no ceiling", async () => {
+  await assertSucceeds(setDoc(ref(), { ...score, seconds: 0.5, score: 0 }));
   for (const seconds of [-1, 0, 4.0005, "42"])
     await assertFails(setDoc(ref(), { ...score, seconds }));
   for (const value of [-1, 0, 41, 1.5, "60", null])
@@ -126,7 +129,7 @@ test("seconds hold milliseconds and score has no ceiling", async () => {
     setDoc(ref(), { ...score, seconds: 0.5, score: 100, fitting: [] }),
   );
   await assertSucceeds(
-    setDoc(ref("rival", "habitable-skies_rival_fighter"), {
+    setDoc(ref("rival", "fires-in-the-sky_rival_fighter"), {
       ...score,
       userId: "rival",
       seconds: 7200.001,
@@ -144,7 +147,7 @@ test("any ship id is accepted when the document id matches", async () => {
     "future-ship",
   ])
     await assertSucceeds(
-      setDoc(ref("pilot", `habitable-skies_pilot_${shipId}`), {
+      setDoc(ref("pilot", `fires-in-the-sky_pilot_${shipId}`), {
         ...score,
         shipId,
       }),
@@ -209,7 +212,7 @@ test("scores cannot decrease, be overwritten by another owner, or be deleted", a
 test("reads require authentication and a bounded list query", async () => {
   await assertFails(getDoc(ref("")));
   await assertFails(
-    getDoc(ref("pilot", "habitable-skies_pilot_fighter", "other")),
+    getDoc(ref("pilot", "fires-in-the-sky_pilot_fighter", "other")),
   );
   await assertFails(
     getDocs(
@@ -252,7 +255,7 @@ test("reads require authentication and a bounded list query", async () => {
 test("each anonymous identity can keep a best on every ship", async () => {
   for (const userId of ["pilot", "rival"]) {
     for (const shipId of ["wasp", "scout", "fighter", "corvette", "fiddler"]) {
-      const target = ref(userId, `habitable-skies_${userId}_${shipId}`);
+      const target = ref(userId, `fires-in-the-sky_${userId}_${shipId}`);
       const current = { ...score, userId, shipId };
       await assertSucceeds(setDoc(target, current));
       await assertSucceeds(

@@ -46,10 +46,7 @@ to 768×384, conditions horizontal/polar joins and turns cloud density into alph
 using the Cradle preparation rule. Source concepts and study maps remain intact.
 Preparation is offline; runtime uses native image drawing and shared light.
 
-The new gravity/atmosphere layout changes ranked Survival trajectories, so the
-client uses challenge `habitable-skies`. Firestore rules accept that board and
-preserve writes by released Ion Storm and Fires in the Sky clients to their own
-boards. No rules or client deployment was performed.
+This work used `habitable-skies` locally while developing the new gravity and atmosphere layout. The unpublished 0.7.0 release uses `fires-in-the-sky` for the combined ranked rules. No rules or client deployment was performed during this work.
 
 ## Verification
 

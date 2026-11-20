@@ -4,7 +4,7 @@ title: "Spec: Render model"
 status: draft
 generated:
   by: "codex/gpt-6"
-  at: "2026-11-19T16:41:35+02:00"
+  at: "2026-11-19T21:36:42+02:00"
 verified: [{ by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }]
 ---
 
@@ -125,6 +125,7 @@ starfield passes are labelled with the compositions in which they run.
   what it draws and the file that owns its drawing.
 - Every row comes from shared composition, layer or pass metadata. The reference holds no pass or layer text of
   its own, so a pass added to the frame appears here without editing the page.
+- Above the listed canvas layers, a fixed four-contact example uses the production [contact projection and SVG](../../game/render/flight-contacts/spec.md).
 - The reference is static: it has no controls and runs no frame.
 - Collateral for the bench stays on this page with the bench. Replacing or
   reworking the workbench keeps the reference.

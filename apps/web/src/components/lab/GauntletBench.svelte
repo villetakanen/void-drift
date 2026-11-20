@@ -28,8 +28,15 @@ let skyX = $state(960),
   background = $state<FieldBackground>(PENDING_BACKGROUND);
 let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
 let hull = $state(100);
-let pirateHull = $state(100);
-let pirateTwoHull = $state(100);
+type EnemyReadout = Pick<
+  Simulation["opponents"][number],
+  "id" | "objective" | "lifecycle"
+> & {
+  hull: number;
+  energy: number;
+  capacity: number;
+};
+let enemyRoster = $state<EnemyReadout[]>([]);
 let opponentCount = $state(0);
 let elapsed = $state(0);
 let result = $state("FIGHTING");
@@ -73,8 +80,7 @@ onMount(() => {
     fx.clear();
     camera.frame(sim.ship.pos.x, sim.ship.pos.y, 960, 540, 220, 5, true);
     hull = sim.state.resources.hull;
-    pirateHull = sim.opponent?.resources.hull ?? 100;
-    pirateTwoHull = sim.opponents[1]?.resources.hull ?? 100;
+    enemyRoster = [];
     opponentCount = sim.opponents.length;
     elapsed = 0;
     result = "FIGHTING";
@@ -82,9 +88,12 @@ onMount(() => {
     ticks = 0;
     x = sim.ship.pos.x;
     y = sim.ship.pos.y;
-    range = sim.opponents.length
+    const living = sim.opponents.filter(
+      (actor) => actor.lifecycle !== "destroyed",
+    );
+    range = living.length
       ? Math.min(
-          ...sim.opponents.map((actor) =>
+          ...living.map((actor) =>
             Math.hypot(
               sim.ship.pos.x - actor.ship.pos.x,
               sim.ship.pos.y - actor.ship.pos.y,
@@ -128,7 +137,10 @@ onMount(() => {
         accumulated -= STEP;
       }
     } else accumulated = 0;
-    const ships = [sim.ship, ...sim.opponents.map((actor) => actor.ship)];
+    const living = sim.opponents.filter(
+      (actor) => actor.lifecycle !== "destroyed",
+    );
+    const ships = [sim.ship, ...living.map((actor) => actor.ship)];
     const centerX =
       ships.reduce((sum, ship) => sum + ship.pos.x, 0) / ships.length;
     const centerY =
@@ -146,21 +158,30 @@ onMount(() => {
     skyY = centre.y;
     drawGameField({ layers, renderer, camera, sim, fx }, background);
     hull = sim.state.resources.hull;
-    pirateHull = sim.opponent?.resources.hull ?? 0;
-    pirateTwoHull = sim.opponents[1]?.resources.hull ?? 0;
+    enemyRoster = sim.opponents.map((actor) => ({
+      id: actor.id,
+      hull: actor.resources.hull,
+      energy: actor.resources.power,
+      capacity: actor.stats.capacity,
+      objective: actor.objective,
+      lifecycle: actor.lifecycle,
+    }));
     opponentCount = sim.opponents.length;
     elapsed = sim.ticks * STEP;
     result = sim.gauntletResult
       ? `${sim.gauntletResult.winner.toUpperCase()} · ${sim.gauntletResult.cause.toUpperCase()}`
       : "FIGHTING";
     simStatus = sim.state.status;
-    pilotPlan = sim.opponentPlan;
+    const displayedPilot = sim.opponents.findIndex(
+      (actor) => actor.lifecycle === "active",
+    );
+    pilotPlan = sim.opponentPlans[displayedPilot] ?? null;
     ticks = sim.ticks;
     x = sim.ship.pos.x;
     y = sim.ship.pos.y;
-    range = sim.opponents.length
+    range = living.length
       ? Math.min(
-          ...sim.opponents.map((actor) =>
+          ...living.map((actor) =>
             Math.hypot(
               sim.ship.pos.x - actor.ship.pos.x,
               sim.ship.pos.y - actor.ship.pos.y,
@@ -199,8 +220,8 @@ onMount(() => {
   <header>
     <div>
       <p class="eyebrow">PRODUCTION SIMULATION · UNRANKED</p>
-      <h1>Gauntlet · pirate Scout</h1>
-      <p>Move with A/D or ←/→. Both pirates pilot and fire automatically.</p>
+      <h1>Gauntlet · Scout roster</h1>
+      <p>Move with A/D or ←/→. Arrived enemies pilot and fire automatically.</p>
     </div>
     <button type="button" class="btn btn-normal" onclick={resetEncounter}>
       Reset encounter
@@ -214,17 +235,26 @@ onMount(() => {
         cameraY={skyY}
         width={(WIDTH / HEIGHT) * 1080}
         bind:canvases
-        label="Player Scout and hostile pirate Scout"
+        label="Player Scout and hostile Scout roster"
       />
     </section>
     <aside aria-label="Encounter status">
       <p><span>STATE</span><strong>{result}</strong></p>
       <p><span>TIME</span><strong>{elapsed.toFixed(1)} s</strong></p>
       <p><span>PLAYER HULL</span><strong>{hull.toFixed(0)}%</strong></p>
-      <p><span>PIRATE HULL</span><strong>{pirateHull.toFixed(0)}%</strong></p>
-      <p>
-        <span>PIRATE 2 HULL</span><strong>{pirateTwoHull.toFixed(0)}%</strong>
-      </p>
+      <section class="enemy-roster" aria-label="Enemy roster">
+        <h2>ARRIVED ENEMIES</h2>
+        {#each enemyRoster as enemy (enemy.id)}
+          <p data-enemy-id={enemy.id} data-lifecycle={enemy.lifecycle}>
+            <span>{enemy.id} · {enemy.lifecycle.toUpperCase()}</span>
+            <strong
+              >{enemy.hull.toFixed(0)}% hull ·
+              {enemy.energy.toFixed(0)}/{enemy.capacity.toFixed(0)}
+              energy · {enemy.objective}</strong
+            >
+          </p>
+        {/each}
+      </section>
       {#if pilotPlan}
         <section class="pilot-plan" aria-label="Pirate pilot plan">
           <h2>PILOT COMMAND</h2>
@@ -317,6 +347,7 @@ header p {
   grid-template-columns: minmax(0, 1fr) 250px;
   gap: 18px;
   min-height: 600px;
+  height: min(70vh, 760px);
 }
 .scene {
   min-width: 0;
@@ -331,6 +362,8 @@ header p {
 }
 aside {
   display: flex;
+  max-height: min(70vh, 760px);
+  overflow-y: auto;
   flex-direction: column;
   gap: 12px;
   padding: 16px;
@@ -366,6 +399,22 @@ aside small {
 .pilot-plan p,
 .pilot-plan small {
   color: var(--color-muted);
+}
+.enemy-roster {
+  display: grid;
+  gap: 6px;
+}
+.enemy-roster h2 {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+}
+.enemy-roster p {
+  display: grid;
+  gap: 2px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--color-line);
+  font-size: 11px;
 }
 .path-points {
   display: grid;

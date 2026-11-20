@@ -197,7 +197,7 @@ export const PARTS = {
     fluff: "Floor is lava, jump!",
     description:
       "Charges on ships and wrecks ahead of its muzzle. Releases on a held target and vents if the target escapes.",
-    releaseClass: "preview",
+    releaseClass: "scored",
     category: "G",
     mass: 24.3,
     thrust: 0,
@@ -381,7 +381,7 @@ export const PARTS = {
   }),
   plasma: PartSchema.parse({
     id: "plasma",
-    releaseClass: "preview",
+    releaseClass: "scored",
     name: "Plasma",
     description: "+9 u/s to ship cruise ceiling.",
     category: "E",

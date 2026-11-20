@@ -493,9 +493,9 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
     <p class="footnote">
       Practice: fly a repeatable star system with full health and energy.
       Derelicts: survive, destroy wrecks and collect energy. Gauntlet: an
-      unranked first pirate encounter. Survival is ranked while Playground is
-      Off and your active setup is eligible. Pause to resume or abort back to
-      the Hangar.
+      unranked seven-enemy encounter. Survival is ranked while Playground is Off
+      and your active setup is eligible. Pause to resume or abort back to the
+      Hangar.
     </p>
   </main>
 {/if}

@@ -1,3 +1,14 @@
+---
+title: "Spec: Playground"
+status: draft
+generated:
+  by: "codex/gpt-6"
+  at: "2026-11-19T20:39:26+00:00"
+verified:
+  - by: "codex/gpt-6"
+    at: "2026-11-19T20:39:26+00:00"
+---
+
 # Playground
 
 ## Blueprint
@@ -28,7 +39,7 @@ Playground is not a game mode of its own: it is the same Survival, Practice,
 Derelicts and Gauntlet. What is fitted never changes scoring on its own: with
 Playground On, a ship carrying only sanctioned parts still flies an unscored run.
 
-### Architecture and boundaries
+### Architecture
 
 - **Sanctioned and unsanctioned.** Every chassis in `CHASSIS` and every part in
   `PARTS` (`packages/mode-a/src/lib/schemas/loadout.ts`) is either sanctioned
@@ -57,10 +68,9 @@ Playground On, a ship carrying only sanctioned parts still flies an unscored run
   ([terms](../spec.md#terms)), and an unsanctioned part's marker reads
   “UNSANCTIONED”. How the marker looks is open.
 
-The Plasma rifle is a weighted unsanctioned fitting available through
-this same Playground boundary. Its mass and collision envelope apply in flight. Each fitted muzzle can acquire a target under the [rifle acquisition contract](../plasma-rifle/spec.md).
+The Plasma engine and [Plasma rifle](../plasma-rifle/spec.md) are sanctioned fittings. With Playground Off, either or both can be fitted to compatible mounts and flown in ranked Survival on an otherwise sanctioned build.
 
-### Rules
+### Constraints
 
 - **Off, catalog.** Unsanctioned ships and parts remain visible in the Hangar
   and cannot be selected or fitted. Ship tabs use the shared unavailable state
@@ -174,6 +184,12 @@ Feature: Playground
     Then I can see my score
     And I can save it to the leaderboard
 
+  Scenario: Ranked plasma fitting
+    Given Playground is Off and my active Wasp has a sanctioned fitting
+    When I fit a Plasma rear engine and a Plasma rifle in a wing equipment slot
+    And launch Survival
+    Then the run is ranked and the saved fitting includes both plasma parts
+
   Scenario: Unsanctioned content is locked while Off
     Given Playground is Off
     When I open the Hangar
@@ -229,7 +245,7 @@ Feature: Playground
     And the title screen shows that ship with that fitting
 ```
 
-### Open decisions
+**Open decisions**
 
 - **Marker:** how an unsanctioned part is marked in the Hangar, explored in
   the [part-rows study](../../../../apps/web/src/pages/lab/studies/part-rows-2026-11-11.astro).

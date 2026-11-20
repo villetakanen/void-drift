@@ -1,10 +1,19 @@
+---
+title: "Spec: Speed Camera"
+status: draft
+generated:
+  by: "codex/gpt-6"
+  at: "2026-11-19T20:46:07+00:00"
+verified: [{ by: "codex/gpt-6", at: "2026-11-19T20:46:07+00:00" }]
+---
+
 # Speed Camera
 
 ## Blueprint
 
 ### Context
 
-Speed camera is an experimental personal preference for live flight. It frames
+Speed camera is a personal preference for live flight. It frames
 the ship within a view whose scale responds to speed: slow flight brings the
 view closer; fast flight opens it. Velocity changes allow transient off-centre
 travel; following gradually matches actual motion and returns the ship to exact
@@ -18,7 +27,7 @@ for a speed-responsive view around the ship. This feature is experienced in the 
 it requires no Lab study or study registry entry. Human playtesting stays outside
 the repository and is not an acceptance gate or evidence requirement.
 
-### Architecture and boundaries
+### Architecture
 
 - `packages/mode-a/src/lib/schemas/settings.ts` defines `speedCamera` as a
   boolean personal setting with default `false`. Changes to this data contract
@@ -48,9 +57,11 @@ the repository and is not an acceptance gate or evidence requirement.
 - The preference is not a simulation setting, replay input, scoring field or
   Firestore field. It changes neither ranked eligibility nor submission.
 
-### Preference and access
+### Constraints
 
-- Options shows **Speed camera**, marked **Experimental**, with an On/Off
+#### Preference and access
+
+- Options shows **Speed camera** with an On/Off
   Switch and the explanation: “Zooms out with speed and shows more space ahead.”
 - A fresh device starts Off. Off selects standard ship-and-star framing;
   On selects speed framing. The choice survives reloads and subsequent runs.
@@ -65,7 +76,7 @@ the repository and is not an acceptance gate or evidence requirement.
 - The feature exposes one binary choice. Curve, zoom and smoothing parameters
   belong to implementation tuning, rather than player-facing sliders.
 
-### Zoom readout
+#### Zoom readout
 
 - While Speed camera is On in flight, the left gutter shows ZOOM below its
   hull and power readouts, using the existing deck instrument treatment.
@@ -79,7 +90,7 @@ the repository and is not an acceptance gate or evidence requirement.
   its timing, follows the deck's pause visibility, and is absent when Speed
   camera is Off.
 
-### Speed and zoom
+#### Speed and zoom
 
 - Speed is the magnitude of the ship's world velocity. Heading, thrust input,
   angular velocity and distance from the star do not directly select zoom.
@@ -137,7 +148,7 @@ the repository and is not an acceptance gate or evidence requirement.
   loadout does not independently change framing at the same position and velocity,
   except where hull containment requires it.
 
-### Ship placement and motion
+#### Ship placement and motion
 
 - Speed selects zoom. Pan gradually matches the ship's actual motion while
   closing the remaining distance to screen centre. Heading does not select a
@@ -181,7 +192,7 @@ the repository and is not an acceptance gate or evidence requirement.
   framing widens enough to fit before applying follow pan. Safety
   can override the ordinary close limit and pan placement.
 
-### Transitions and lifecycle
+#### Transitions and lifecycle
 
 - Changing the preference during a run preserves the current camera transform
   as the start of the transition. On the next active simulation steps, framing
@@ -216,7 +227,7 @@ the repository and is not an acceptance gate or evidence requirement.
   their positions and ages; the deck remains outside the transform. Background
   stars cover the full stage throughout outward zoom, inward cuts and transitions.
 
-### Tuning boundaries
+#### Tuning boundaries
 
 Safe clearance, outward easing, velocity-matching and residual-centring rates
 are implementation tuning choices within this contract.
@@ -235,8 +246,7 @@ fixed world orientation or scoring independence changes the feature contract.
 
 ### Definition of Done
 
-- SC1: Options shows the shared, accessible Speed camera Switch, marked
-  Experimental, and reads and writes the persisted preference. The Pause dialog
+- SC1: Options shows the shared, accessible Speed camera Switch and reads and writes the persisted preference. The Pause dialog
   contains no settings controls.
 - SC2: Fresh and legacy settings select Off; a legacy valid Invert controls
   choice survives adding the missing field. Invalid storage cannot block flight.

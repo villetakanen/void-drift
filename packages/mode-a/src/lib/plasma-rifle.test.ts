@@ -35,7 +35,13 @@ describe("Plasma rifle fitting", () => {
     expect(partFigures("plasma-rifle")).toEqual([
       { icon: "mass", value: "24.3", label: "mass" },
     ]);
-    expect(isScoredEligible(build)).toBe(false);
+    expect(isScoredEligible(build)).toBe(true);
+    build.side = "plasma";
+    expect(isScoredEligible(build)).toBe(true);
+    expect(isScoredEligible({ ...build, hull: [null, null] })).toBe(true);
+    expect(
+      isScoredEligible({ ...build, hull: ["plasma-rifle", "laser"] }),
+    ).toBe(false);
     const saved = defaultBuilds();
     saved.wasp = build;
     expect(

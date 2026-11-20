@@ -1,3 +1,12 @@
+---
+title: "Spec: Camera"
+status: draft
+generated:
+  by: "codex/gpt-6"
+  at: "2026-11-19T20:46:07+00:00"
+verified: [{ by: "codex/gpt-6", at: "2026-11-19T20:46:07+00:00" }]
+---
+
 # Camera
 
 ## Blueprint
@@ -11,12 +20,12 @@ deliberate steps so the view stays calm. What the camera shows never changes the
 run.
 
 This is the standard camera policy, selected when the personal Speed camera
-preference is Off. [Speed camera](speed-camera/spec.md) defines the experimental
+preference is Off. [Speed camera](speed-camera/spec.md) defines the
 ship-only policy and transitions between policies. The framing and discrete-zoom
 requirements below apply to the settled standard policy; shared rendering,
 coordinate-transform and simulation-independence invariants apply to both.
 
-### Architecture and boundaries
+### Architecture
 
 - `packages/core/src/lib/physics/Camera.ts` owns framing, zoom levels, smoothing
   and the world-to-screen transform.
@@ -32,7 +41,9 @@ coordinate-transform and simulation-independence invariants apply to both.
 - Framing reads simulation state and writes none. Replays, scoring and physics
   are independent of the camera.
 
-### Framing
+### Constraints
+
+#### Framing
 
 - The camera fits the ship and the star, with padding on every side, inside the
   active area. Rendering still covers the whole stage; world objects continue
@@ -45,7 +56,7 @@ coordinate-transform and simulation-independence invariants apply to both.
 - A wider active area, as on ultra-wide screens, shows more of the arena across
   at the same zoom; this is accepted for every mode, scored runs included.
 
-### Zoom levels
+#### Zoom levels
 
 - Zoom uses a fixed set of levels, geometrically spaced from the whole-system
   view to a 1.6× close view. The whole-system view fits the 1200-unit-radius
@@ -58,7 +69,7 @@ coordinate-transform and simulation-independence invariants apply to both.
 - Changing zoom keeps world-space trails and effects in place and does not
   restart or age them.
 
-### Background starfield
+#### Background starfield
 
 The following rules describe the stock field. The [0.7 distant flight sky](../render/flight-sky/spec.md) defines the camera-relative travel and fixed apparent scale of a prepared sightline. Camera framing of local objects is shared by both presentations.
 

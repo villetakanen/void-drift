@@ -4,7 +4,7 @@ title: "Spec: Render"
 status: draft
 generated:
   by: "codex/gpt-6"
-  at: "2026-11-19T21:04:09+02:00"
+  at: "2026-11-19T21:31:48+02:00"
 verified: [{ by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }, { by: "codex/gpt-6", at: "2026-11-19T19:21:23+02:00" }, { by: "codex/gpt-6", at: "2026-11-19T21:04:09+02:00" }]
 ---
 
@@ -213,7 +213,7 @@ belong to the [planet contract](../world/planets/spec.md).
 | ------ | -------------------------------------------------- | ------------------------------- | -------------------------- |
 | World  | World units                                        | The simulation and world passes | Camera, to stage           |
 | Stage  | Logical pixels, 1080 high, width by viewport ratio | The layers and screen passes    | Game screen, to CSS pixels |
-| Screen | CSS pixels                                         | The deck                        | The browser                |
+| Screen | CSS pixels                                         | Flight contacts and the deck                        | The browser                |
 
 A pass draws in exactly one space: `screen` passes draw in stage pixels with no
 transform, `world` passes draw under the camera transform.
@@ -238,6 +238,7 @@ The in-flight stack, bottom to top:
 | World       | Everything solid, and the World HUD    | normal     | immediate           |
 | FX          | Accumulated light that fades           | screen     | persistent          |
 | LFX         | Live light, fresh every frame          | hard-light | immediate           |
+| Contacts    | Screen-fixed SVG contact cues          | normal     | none                |
 | Deck        | Page elements: instruments, pads, rows | normal     | none                |
 
 The [0.7 distant flight sky](flight-sky/spec.md) defines the prepared-image composition and its camera behaviour.
@@ -255,7 +256,7 @@ Three rules follow from the stack:
 - Solid things are drawn on World only. Nothing solid sits above light.
 - Where something solid must stay readable through accumulated light, the FX
   layer is cut there so World shows through.
-- The deck is above every canvas layer and outside the camera transform.
+- Flight contacts and the deck are outside the camera transform. The browser composites their SVG and page elements, in that order, above every canvas layer.
 
 An **immediate** layer is cleared and redrawn every frame from the simulation's
 state, the camera and game time. The same state gives the same layer.
@@ -328,8 +329,7 @@ neither: it draws every eligible production pass, unobserved.
   above it.
 - Gauntlet draws each living hostile fitted ship and weapon pose through the shared
   build renderer, with its charcoal Scout palette defined by that renderer.
-- Each offscreen hostile Gauntlet actor has a screen-fixed bearing cue; the cue
-  does not alter camera or simulation state.
+- [Flight contacts](flight-contacts/spec.md) uses a pointer-transparent SVG above LFX and beneath the deck.
 - A layer's resolution can be changed without changing any pass.
 - A frame with an empty interval leaves the FX layer's image unchanged
   (`tests/browser/fx-surface.spec.ts`).

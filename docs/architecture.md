@@ -19,8 +19,8 @@ Read for changes to structure, simulation, or data flow. Product intent belongs 
   browser-composited stack. A prepared Milky Way image sits beneath World. Practice decodes the fixed Sol tile.
   Survival, Derelicts and Gauntlet prepare one image from the run seed during arrival.
   The canvases hold World for everything solid and the
-  World HUD, FX for accumulated light, LFX for live light, with the Deck above them
-  as page elements. `packages/mode-a/src/lib/flight-frame.ts` lists the layers and the
+  World HUD, FX for accumulated light, LFX for live light, with the SVG flight contacts above LFX
+  and the Deck above the contacts as page elements. `packages/mode-a/src/lib/flight-frame.ts` lists the layers and the
   ordered passes that draw on them. The method treats the browser as the machine a
   demo is written for: game code draws shapes, images and cached stamps, and the
   browser's own blending, scaling and filters do the rest. No game code loops over
@@ -58,14 +58,15 @@ Read for changes to structure, simulation, or data flow. Product intent belongs 
 
 ## Canonical feature names
 
-Decision of 2026-11-09: the flight screen has two overlay layers, named by what
-they are attached to. Specs, code and Lab pages use these names.
+The flight screen has three kinds of overlay.
 
 - **World HUD:** markings drawn on the World layer and anchored to things in the
   world, such as the sun's field rings and a planet's orbit, gravity boundary and
   name. They move with the world; their strokes, dashes and text keep their size
   on screen as the world zooms. Decision of 2026-11-16: every planet has the same
   World HUD.
+- **Flight contacts** use one stage-fixed SVG for bearing, type and separation on the
+  invisible [arrow circle](specs/game/render/flight-contacts/spec.md).
 - **Deck:** the screen-fixed frame around the active area, outside the camera
   transform, drawn as page elements in the gutters. It holds:
   - **Instruments:** hull and power in the left gutter; time and score in the

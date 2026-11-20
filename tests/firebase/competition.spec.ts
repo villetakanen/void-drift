@@ -38,9 +38,9 @@ test("title and Hangar pilots complete ranked runs, retry a rejected write and s
     seed: number;
     source?: "hangar";
   }[] = [
-    { chassis: "wasp", initials: "ONE", seed: 158 },
-    { chassis: "wasp", initials: "TWO", seed: 2 },
-    { chassis: "scout", initials: "HGR", seed: 158, source: "hangar" },
+    { chassis: "wasp", initials: "ONE", seed: 21 },
+    { chassis: "wasp", initials: "TWO", seed: 26 },
+    { chassis: "scout", initials: "HGR", seed: 13, source: "hangar" },
   ];
   const expected = new Map<string, { seconds: number; score: number }>();
   const flown = new Map<
@@ -274,7 +274,7 @@ test("Experimental On completes a stable ship run without submitting a score", a
       value(array: ArrayBufferView) {
         const result = random(array);
         if (result instanceof Uint32Array && result.length === 1)
-          result[0] = 157;
+          result[0] = 20;
         return result;
       },
     });
@@ -285,7 +285,7 @@ test("Experimental On completes a stable ship run without submitting a score", a
   await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   await page.getByRole("button", { name: "Survival", exact: true }).click();
   await waitForFlightPhase(page, "playing");
-  const predicted = competitionFlightResult("wasp", 158, "On");
+  const predicted = competitionFlightResult("wasp", 21, "On");
   await page.clock.runFor((predicted.ticks * 1000) / 60 + 40);
   const result = page.getByRole("dialog", { name: "Run complete" });
   await expect(result).toBeVisible();

@@ -1,10 +1,10 @@
 ---
 
 title: "Spec: Game field"
-status: approved
+status: draft
 generated:
   by: "codex/gpt-6"
-  at: "2026-11-19T17:23:00+02:00"
+  at: "2026-11-19T21:42:03+02:00"
 verified:
 - { by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }
 - { by: "human:ville.takanen", at: "2026-11-19T17:24:03+02:00" }
@@ -25,7 +25,7 @@ can be understood together.
 ### Architecture
 
 The field composes the scene using the rendering machinery defined in the
-[Render spec](../spec.md).
+[Render spec](../spec.md). In play, the [flight contact SVG](../flight-contacts/spec.md) sits above the composed field.
 It takes scene state, a [camera viewpoint](../../camera/spec.md), dimensions
 and prepared materials, and composes these parts from back to front:
 

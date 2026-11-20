@@ -41,6 +41,11 @@ import { planetAppearances } from "../lib/assets/planet-appearances";
 import { createPracticeVenus } from "../lib/assets/practice-venus";
 import { createOuterMercurialMaterial } from "../lib/assets/rock-planets/authored-materials";
 import { NO_SCORE_NOTICE } from "../lib/experimental";
+import { projectFlightContact } from "../lib/flight-contact-projection";
+import {
+  type FlightContactCue,
+  projectFlightContacts,
+} from "../lib/flight-contacts";
 import {
   drawGameField,
   PRACTICE_BACKGROUND,
@@ -52,6 +57,7 @@ import { initializeShipSetup, shipSetup } from "../lib/stores/ship-setup";
 import ThrustPads from "./controls/ThrustPads.svelte";
 import { PAD_ASSEMBLY_HEIGHT_PX } from "./controls/thrust-pads";
 import Dialog from "./Dialog.svelte";
+import FlightContacts from "./FlightContacts.svelte";
 import GameFieldBackdrop from "./GameFieldBackdrop.svelte";
 import PreviewMarker from "./PreviewMarker.svelte";
 import TitleScreen from "./TitleScreen.svelte";
@@ -126,9 +132,8 @@ let hull = $state(100);
 let power = $state(100);
 let x = $state(460);
 let y = $state(540);
-let hostileBearings = $state<
-  Array<{ id: string; x: number; y: number; angle: number }>
->([]);
+const noContacts: readonly FlightContactCue[] = [];
+let flightContacts = $state.raw(noContacts);
 let gauntletOpponentCount = $state(0);
 let zoom = $state(1);
 let zoomLevel = $state(0);
@@ -306,44 +311,18 @@ function sync() {
   power = simulation.state.resources.power;
   x = simulation.ship.pos.x;
   y = simulation.ship.pos.y;
-  hostileBearings =
-    mode === "gauntlet"
-      ? simulation.opponents.flatMap((opponent) => {
-          if (opponent.lifecycle === "destroyed") return [];
-          const point = camera.worldToScreen(
-            opponent.ship.pos.x,
-            opponent.ship.pos.y,
-          );
-          if (
-            point.x < 0 ||
-            point.x > camera.viewportWidth ||
-            point.y < 0 ||
-            point.y > camera.viewportHeight
-          ) {
-            const centerX = screen.width / 2;
-            const centerY = screen.height / 2;
-            const targetX = (point.x / camera.viewportWidth) * screen.width;
-            const targetY = (point.y / camera.viewportHeight) * screen.height;
-            const dx = targetX - centerX;
-            const dy = targetY - centerY;
-            const scale = Math.min(
-              (centerX - 28) / Math.max(1, Math.abs(dx)),
-              (centerY - 28) / Math.max(1, Math.abs(dy)),
-            );
-            return [
-              {
-                id: opponent.id,
-                ...{
-                  x: centerX + dx * scale,
-                  y: centerY + dy * scale,
-                  angle: (Math.atan2(dy, dx) * 180) / Math.PI,
-                },
-              },
-            ];
-          }
-          return [];
-        })
-      : [];
+  flightContacts =
+    landing || !$settings.combatHud
+      ? noContacts
+      : projectFlightContacts(simulation, (worldX, worldY, worldDistance) => {
+          const point = camera.worldToScreen(worldX, worldY);
+          return projectFlightContact({
+            projectedX: point.x * screen.scale,
+            projectedY: point.y * screen.scale,
+            worldDistance,
+            active: screen.active.css,
+          });
+        });
   ticks = simulation.ticks;
   runSeed = simulation.settings.seed;
   cause = simulation.state.deathCause ?? "";
@@ -409,7 +388,7 @@ async function save() {
   const submission = HighScoreSubmissionSchema.safeParse({
     initials,
     seconds: Math.max(0.001, simulation.elapsedSeconds),
-    score: Math.max(1, simulation.survivalScore),
+    score: simulation.survivalScore,
     shipId: chosen,
     fitting: fittedParts(runLoadout),
     stabilizers: runLoadout.stabilizers,
@@ -747,6 +726,13 @@ onMount(() => {
               ? "Fitted ship, star and orbiting planets"
               : "Ship, star and orbiting planets"}
         />
+        {#if !landing && $settings.combatHud}
+          <FlightContacts
+            contacts={flightContacts}
+            width={screen.width}
+            height={screen.height}
+          />
+        {/if}
         <!-- The deck: screen-fixed parts in the gutters, clear of the active
              area. One grid holds both side gutters, so their rows and pads
              share a height. -->
@@ -822,18 +808,6 @@ onMount(() => {
           {/if}
         </div>
       </div>
-      {#if hostileBearings.length && !landing}
-        {#each hostileBearings as hostileBearing (hostileBearing.id)}
-          <div
-            class="hostile-bearing"
-            style:left={`${hostileBearing.x}px`}
-            style:top={`${hostileBearing.y}px`}
-            style:--bearing-angle={`${hostileBearing.angle}deg`}
-            aria-label="Hostile pirate offscreen"
-            role="img"
-          ></div>
-        {/each}
-      {/if}
       {#if narrow && (phase !== "menu" || !landing)}
         <Dialog
           label="Rotate to continue"
@@ -917,7 +891,7 @@ onMount(() => {
                   ? "Draw"
                   : "Defeat"}
             </h1>
-            <p>Unranked first pirate encounter · {gauntletResult.cause}</p>
+            <p>Unranked Gauntlet encounter · {gauntletResult.cause}</p>
           {:else}
             <p class="eyebrow">
               {cause === "STAR"
@@ -1010,18 +984,6 @@ onMount(() => {
 .flight-stage.adaptive {
   flex: none;
   position: relative;
-}
-.hostile-bearing {
-  position: absolute;
-  z-index: 5;
-  width: 0;
-  height: 0;
-  border-top: 7px solid transparent;
-  border-bottom: 7px solid transparent;
-  border-left: 12px solid var(--color-space-purple, #b788ff);
-  filter: drop-shadow(0 0 5px #b788ff);
-  transform: translate(-50%, -50%) rotate(var(--bearing-angle));
-  pointer-events: none;
 }
 .flight-stage-layer {
   touch-action: none;

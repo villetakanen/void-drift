@@ -16,47 +16,161 @@ function ionCombatLoadout() {
 }
 
 describe("Gauntlet flight and combat", () => {
-  it("owns two independent identical pirates and keeps going after only one dies", () => {
+  it("issues seven independent enemies on the seeded ten-second schedule", () => {
     const sim = new Simulation({
       ...gameSettings("fighter"),
       mode: "gauntlet",
       arrival: true,
       seed: 73,
     });
-    expect(sim.opponents).toHaveLength(2);
-    expect(sim.opponents.map((actor) => actor.id)).toEqual([
-      "pirate-1",
-      "pirate-2",
-    ]);
-    expect(sim.opponents[0].loadout).toEqual(sim.opponents[1].loadout);
-    expect(sim.opponents[0].ship).not.toBe(sim.opponents[1].ship);
-    expect(sim.opponents[0].resources).not.toBe(sim.opponents[1].resources);
-    expect(sim.opponents[0].combat).not.toBe(sim.opponents[1].combat);
-    for (const pirate of sim.opponents)
-      expect(
-        Math.hypot(
-          pirate.ship.pos.x - sim.ship.pos.x,
-          pirate.ship.pos.y - sim.ship.pos.y,
-        ),
-      ).toBeGreaterThan(100);
-    expect(
-      Math.hypot(
-        sim.opponents[0].ship.pos.x - sim.opponents[1].ship.pos.x,
-        sim.opponents[0].ship.pos.y - sim.opponents[1].ship.pos.y,
-      ),
-    ).toBeGreaterThan(100);
+    expect(sim.opponents).toHaveLength(1);
+    expect(sim.opponents.map((actor) => actor.id)).toEqual(["pirate-1"]);
     sim.start();
     sim.opponents[0].resources.hull = 0;
     sim.step(still);
     expect(sim.opponents[0].lifecycle).toBe("destroyed");
-    expect(sim.opponents[1].lifecycle).not.toBe("destroyed");
     expect(sim.gauntletResult).toBeNull();
-    sim.opponents[1].resources.hull = 0;
+    for (let wave = 2; wave <= 7; wave++) {
+      sim.ticks = (wave - 1) * 600 - 2;
+      sim.step(still);
+      expect(sim.opponents).toHaveLength(wave - 1);
+      sim.step(still);
+      expect(sim.opponents).toHaveLength(wave);
+      expect(sim.opponents[wave - 1].id).toBe(`pirate-${wave}`);
+      sim.opponents[wave - 1].resources.hull = 0;
+    }
+    expect(new Set(sim.opponents.map((actor) => actor.combat)).size).toBe(7);
+    sim.opponents.slice(1).forEach((actor) => {
+      actor.resources.hull = 0;
+    });
     sim.step(still);
     expect(sim.gauntletResult?.winner).toBe("player");
   });
 
-  it("has both independent pilots choose plans against the same player", () => {
+  it("freezes the schedule while stopped and reproduces cleared arrivals", () => {
+    const make = () =>
+      new Simulation({
+        ...gameSettings("fighter"),
+        mode: "gauntlet",
+        arrival: false,
+        seed: 231,
+      });
+    const a = make(),
+      b = make();
+    for (const sim of [a, b]) {
+      sim.ticks = 599;
+      sim.step(still);
+      expect(sim.opponents).toHaveLength(1);
+      sim.start();
+      sim.step(still);
+      expect(sim.opponents).toHaveLength(2);
+      const spawn = sim.opponents[1].ship;
+      expect(
+        Math.hypot(spawn.pos.x - sim.ship.pos.x, spawn.pos.y - sim.ship.pos.y),
+      ).toBeGreaterThan(spawn.radius + sim.ship.radius);
+    }
+    expect(a.opponents[1].ship.pos).toEqual(b.opponents[1].ship.pos);
+  });
+
+  it("lets an approaching pirate fire during the player opening lock", () => {
+    const sim = new Simulation({
+      ...gameSettings("scout"),
+      loadout: ionCombatLoadout(),
+      mode: "gauntlet",
+      arrival: true,
+      seed: 75,
+    });
+    sim.star.pos.set(10000, 10000);
+    sim.planets.splice(0);
+    sim.ship.pos.set(2140, 540);
+    sim.ship.vel.set(0, 0);
+    sim.ship.rotation = Math.PI;
+    const pirate = sim.opponents[0];
+    pirate.ship.pos.set(2020, 540);
+    pirate.ship.vel.set(0, 0);
+    pirate.ship.rotation = 0;
+    pirate.lifecycle = "arriving";
+    pirate.loadout = ionCombatLoadout();
+    pirate.combat = new SalvageSystem(pirate.loadout, 75);
+    pirate.weapons = pirate.combat.weapons;
+    const playerWeapons = sim.salvage;
+    if (!playerWeapons) throw new Error("Expected a fitted player");
+    for (const weapon of [...playerWeapons.weapons, ...pirate.weapons]) {
+      weapon.readyAt = weapon.kind === "light-ion-cannon" ? 0 : Infinity;
+      weapon.angle = 0;
+    }
+    sim.start();
+    sim.step(still);
+    expect(playerWeapons.ionDischarges).toBe(0);
+    expect(pirate.combat.ionDischarges).toBeGreaterThan(0);
+    expect(sim.state.resources.hull).toBeLessThan(100);
+    sim.ship.pos.set(2000, 540);
+    pirate.ship.pos.set(1880, 540);
+    sim.step(still);
+    expect(playerWeapons.ionDischarges).toBeGreaterThan(0);
+  });
+
+  it("suppresses recovery fire while advancing emitted plasma", () => {
+    const sim = new Simulation({
+      ...gameSettings("fighter"),
+      mode: "gauntlet",
+      arrival: false,
+    });
+    sim.star.pos.set(10000, 10000);
+    sim.planets.length = 0;
+    const pirate = sim.opponents[0];
+    pirate.resources.power = 1;
+    const fire = vi.spyOn(pirate.combat, "stepWeapons");
+    const streams = vi.spyOn(pirate.combat, "stepPlasmaStreams");
+    sim.start();
+    sim.step(still);
+    expect(pirate.objective).toBe("recover");
+    expect(fire).not.toHaveBeenCalled();
+    expect(streams).toHaveBeenCalledTimes(4);
+    expect(pirate.combat.time).toBeCloseTo(STEP);
+  });
+
+  it("assigns every active pilot a distinct planning tick", () => {
+    const pilot = vi.spyOn(gauntlet, "planPirate").mockReturnValue({
+      command: gauntlet.NO_PILOT_COMMAND,
+      horizonSeconds: 0,
+      candidateCount: 0,
+      score: 0,
+      path: [],
+    });
+    try {
+      const sim = new Simulation({
+        ...gameSettings("fighter"),
+        mode: "gauntlet",
+        arrival: false,
+      });
+      sim.star.pos.set(10000, 10000);
+      sim.planets.length = 0;
+      sim.start();
+      for (let wave = 2; wave <= 7; wave++) {
+        sim.ticks = (wave - 1) * 600 - 1;
+        sim.step(still);
+      }
+      sim.opponents.forEach((actor, index) => {
+        actor.lifecycle = "active";
+        actor.ship.pos.set(300 + index * 150, 400);
+        actor.ship.vel.set(0, 0);
+      });
+      sim.ship.pos.set(1500, 800);
+      pilot.mockClear();
+      sim.ticks = 0;
+      for (let tick = 0; tick < 8; tick++) {
+        const before = pilot.mock.calls.length;
+        sim.step(still);
+        expect(pilot.mock.calls.length - before).toBeLessThanOrEqual(1);
+      }
+      expect(new Set(pilot.mock.calls.map(([actor]) => actor.id)).size).toBe(7);
+    } finally {
+      pilot.mockRestore();
+    }
+  });
+
+  it("has the opening pilot choose a plan against the player", () => {
     const pilot = vi.spyOn(gauntlet, "planPirate");
     const sim = new Simulation({
       ...gameSettings("fighter"),
@@ -67,17 +181,14 @@ describe("Gauntlet flight and combat", () => {
     sim.start();
     for (let tick = 0; tick < 12; tick++) sim.step(still);
     const calls = pilot.mock.calls.filter(
-      (args) => args[0] === sim.opponents[0] || args[0] === sim.opponents[1],
+      (args) => args[0] === sim.opponents[0],
     );
-    expect(calls).toHaveLength(2);
+    expect(calls).toHaveLength(1);
     expect(
       calls
         .map(([actor, target]) => [actor.id, target])
         .sort(([a], [b]) => String(a).localeCompare(String(b))),
-    ).toEqual([
-      ["pirate-1", sim.ship],
-      ["pirate-2", sim.ship],
-    ]);
+    ).toEqual([["pirate-1", sim.ship]]);
     pilot.mockRestore();
   });
 
@@ -92,9 +203,13 @@ describe("Gauntlet flight and combat", () => {
     sim.start();
     sim.star.pos.set(10000, 10000);
     sim.planets.splice(0);
-    const [alreadyDestroyed, pirate] = sim.opponents;
-    alreadyDestroyed.resources.hull = 0;
-    alreadyDestroyed.lifecycle = "destroyed";
+    for (let wave = 2; wave <= 7; wave++) {
+      sim.opponents[wave - 2].resources.hull = 0;
+      sim.opponents[wave - 2].lifecycle = "destroyed";
+      sim.ticks = (wave - 1) * 600 - 1;
+      sim.step(still);
+    }
+    const pirate = sim.opponents[6];
     pirate.lifecycle = "active";
     sim.ship.pos.set(780, 700);
     sim.ship.vel.set(0, 0);
@@ -128,7 +243,7 @@ describe("Gauntlet flight and combat", () => {
     expect(loadout.chassis).toBe("scout");
     expect(loadout.side).toBe("ion");
     expect(loadout.hull).toEqual(["plasma-rifle"]);
-    expect(loadout.aft).toEqual([null]);
+    expect(loadout.aft).toEqual(["light-ion-cannon"]);
 
     const sim = new Simulation({
       ...gameSettings("fighter"),
@@ -144,6 +259,37 @@ describe("Gauntlet flight and combat", () => {
         planet.orbitSpeed * STEP,
         8,
       );
+  });
+
+  it("predicts the remaining sideways flight after an arena wrap", () => {
+    const sim = new Simulation({
+      ...gameSettings("fighter"),
+      mode: "gauntlet",
+      seed: 812,
+    });
+    const actor = sim.opponents[0];
+    actor.ship.pos.set(960 + 1180, 540);
+    actor.ship.vel.set(475, 365);
+    actor.ship.rotation = Math.atan2(365, 475) + Math.PI / 2;
+    const plan = planPirate(actor, sim.ship, sim.star, [], sim.settings.ion);
+    for (let step = 0; step < 48; step++) {
+      gauntlet.stepGauntletActor(
+        actor,
+        plan.command,
+        1 / 240,
+        sim.star,
+        [],
+        sim.settings.ion,
+      );
+    }
+    const predicted = plan.path[1]; // First 0.2-second waypoint
+    expect(actor.ship.pos.x).toBeLessThan(960);
+    expect(
+      Math.hypot(
+        actor.ship.pos.x - predicted.x,
+        actor.ship.pos.y - predicted.y,
+      ),
+    ).toBeLessThan(actor.ship.radius);
   });
 
   it("keeps prediction deterministic and isolated from the live actor and world", () => {
