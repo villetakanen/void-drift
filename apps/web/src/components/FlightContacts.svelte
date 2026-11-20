@@ -17,6 +17,21 @@ const colors: Record<FlightContactKind, string> = {
   cell: "var(--color-android-green)",
 };
 const skullId = $props.id();
+
+// Keep the SVG bounds local to the visible arc.
+function contactArcPath(contact: FlightContactCue): string {
+  const radius = contact.radius - 16;
+  const angle = (contact.angle * Math.PI) / 180;
+  const halfSweep = contact.arcLength / (2 * radius);
+  const startAngle = angle - halfSweep;
+  const endAngle = angle + halfSweep;
+  const startX = contact.centerX + radius * Math.cos(startAngle);
+  const startY = contact.centerY + radius * Math.sin(startAngle);
+  const endX = contact.centerX + radius * Math.cos(endAngle);
+  const endY = contact.centerY + radius * Math.sin(endAngle);
+  const largeArc = halfSweep > Math.PI / 2 ? 1 : 0;
+  return `M ${startX} ${startY} A ${radius} ${radius} 0 ${largeArc} 1 ${endX} ${endY}`;
+}
 </script>
 
 {#if contacts.length}
@@ -46,7 +61,6 @@ const skullId = $props.id();
     </defs>
     {#each contacts as contact (`${contact.kind}:${contact.id}`)}
       {@const color = colors[contact.kind]}
-      {@const circumference = 2 * Math.PI * (contact.radius - 16)}
       <g data-contact-kind={contact.kind}>
         <title>{contact.name}</title>
         <g
@@ -85,16 +99,11 @@ const skullId = $props.id();
             </g>
           {/if}
         </g>
-        <circle
-          cx={contact.centerX}
-          cy={contact.centerY}
-          r={contact.radius - 16}
+        <path
+          d={contactArcPath(contact)}
           fill="none"
           stroke={color}
           stroke-width="2"
-          stroke-dasharray={`${contact.arcLength} ${circumference - contact.arcLength}`}
-          stroke-dashoffset={`${contact.arcLength / 2}`}
-          transform={`rotate(${contact.angle} ${contact.centerX} ${contact.centerY})`}
         />
       </g>
     {/each}
@@ -108,5 +117,7 @@ const skullId = $props.id();
   z-index: 4;
   overflow: visible;
   pointer-events: none;
+  /* Paint moving contact cues in a separate layer above the filtered field. */
+  will-change: transform;
 }
 </style>

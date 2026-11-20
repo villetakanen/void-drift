@@ -31,4 +31,20 @@ export const LANDING_HINTS = [
     kind: "hint",
     text: "Turn with A / D or ← / →; thrust with W / ↑, A + D, or the touch pads.",
   },
+  {
+    kind: "lore",
+    text: "The Samurai of Sirius are notorious for their Daeshan scout ships, oversized plasma rifles, and a reckless disregard for orbital mechanics.",
+  },
+  {
+    kind: "news",
+    text: "Fires in the Sky brings plasma engines and rifles to the Hangar.",
+  },
+  {
+    kind: "news",
+    text: "Sometimes small is big, try out the new Service drive!",
+  },
+  {
+    kind: "hint",
+    text: "You can change how the camera operates, and disable the combat hud in settings.",
+  },
 ] as const satisfies readonly LandingHint[];
