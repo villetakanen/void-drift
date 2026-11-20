@@ -70,7 +70,7 @@ test("turning Experimental Off preserves a preview ship and blocks both launch s
   await expect(start).toBeDisabled();
   await expect(
     page.getByRole("status").filter({
-      hasText: "PLAYGROUND REQUIRED",
+      hasText: "UNSANCTIONED BUILD",
     }),
   ).toBeVisible();
   await expect(

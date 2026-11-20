@@ -2,8 +2,10 @@
 
 title: "Spec: Title screen"
 status: draft
-generated: { by: codex/gpt-6, at: "2026-11-19T19:21:23+02:00" }
-verified: [{ by: codex/gpt-6, at: "2026-11-19T13:55:56+00:00" }, { by: "codex/gpt-6", at: "2026-11-19T19:21:23+02:00" }]
+generated:
+  by: "openai-codex/gpt-6.1-sol"
+  at: "2026-11-20T11:49:20+02:00"
+verified: [{ by: codex/gpt-6, at: "2026-11-19T13:55:56+00:00" }, { by: "codex/gpt-6", at: "2026-11-19T19:21:23+02:00" }, { by: "openai-codex/gpt-6.1-sol", at: "2026-11-20T11:13:45+02:00" }]
 ---
 
 # Title screen
@@ -90,7 +92,17 @@ game's home and Hangar is an alternative launch point.
   ship, separate from the menu's control group. A blocked-build warning does not
   replace the title hints or interrupt their normal rotation behavior.
 - The Hangar link reads “HANGAR”; ship selection belongs in the Hangar.
-- Hangar, Top Scores, Settings and Credits are secondary game-menu destinations.
+- Hangar, Top Scores, Settings and Credits are secondary game-menu destinations
+  while launch is available. When the active build blocks launch, PRESS START
+  stays disabled with the shared error-blocked tint and HANGAR becomes the filled
+  call to action. The menu order stays unchanged. The blocked explanation is
+  associated with PRESS START and HANGAR. Ordinary transition-time disabling
+  has no alert tint and does not promote HANGAR. Restoring eligibility restores
+  PRESS START as the filled call to action and HANGAR as a normal action.
+- The menu uses the directional vertical ButtonGroup defined by the shared
+  [Actions contract](../../factory/design-system/actions/spec.md#button-group-navigation),
+  with wrapping enabled. Up/Down and Home/End move focus; native Tab navigation
+  and button/link activation remain available.
 - PRESS START receives initial keyboard focus when available; when launch is
   blocked, Hangar receives focus instead. The menu focus order is PRESS START,
   Hangar, Top Scores, Settings, Credits, skipping unavailable actions.
@@ -138,6 +150,30 @@ game's home and Hangar is an alternative launch point.
 ### Scenarios
 
 ```gherkin
+Scenario: Recover from a blocked build through Hangar
+  Given Playground is Off and the active build is unsanctioned
+  When the title screen opens
+  Then PRESS START is disabled with the shared error-blocked tint
+  And HANGAR is the filled call to action with initial keyboard focus
+  And the status below the menu reads “PLAYGROUND OFF” then “UNSANCTIONED BUILD”
+  And arrows skip PRESS START without changing the menu order
+  When I use Hangar to restore an eligible build and return
+  Then PRESS START is enabled, filled and initially focused
+  And HANGAR is a normal action and the blocked status is absent
+
+Scenario: Disable launch during its transition
+  Given an eligible active build
+  When PRESS START begins the launch transition
+  Then repeated activation is suppressed without an error tint or promoting HANGAR
+
+Scenario: Navigate the title menu with arrows
+  Given the title screen with PRESS START focused
+  When I press Down
+  Then Hangar receives visible keyboard focus without navigation
+  When I press Up twice
+  Then Credits receives focus by wrapping past PRESS START
+  And Tab can leave the menu without a focus trap
+
 Scenario: Immediate flight
   Given a fresh device
   And the player enters the title screen

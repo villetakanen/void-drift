@@ -4,7 +4,7 @@ title: "Spec: Colour roles"
 status: draft
 generated:
   by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-19T12:32:56+02:00"
+  at: "2026-11-20T11:49:20+02:00"
 verified:
 - by: "openai-codex/gpt-6.1-sol"
   at: "2026-11-19T12:33:38+02:00"
@@ -98,6 +98,11 @@ own values in the renderers; they are game data, not roles. Engine identity colo
 `-power`, `-warning`, `-danger` and the status colours `--color-android-green`,
 `--color-caution-tape` and `--color-red`. `--color-resource-power` aliases brand for its current power role.
 
+The semantic `--color-alert` role aliases `--color-red` for error-blocked
+controls and their status feedback. Background tints mix this role with
+transparent; the Actions contract owns their strength. Canvas mirrors this role
+as `COLOR.alert`.
+
 #### Deprecated names
 
 These alias a role and remain only while preserved studies use them (preserved studies follow the
@@ -129,6 +134,11 @@ text-muted, `--color-void-light` → elev-1, `--color-overlay` → glass,
 ### Scenarios
 
 ```gherkin
+Scenario: Identify a correctable blocking condition
+  Given an action is error-blocked by a prerequisite
+  When its alert tint and status feedback render
+  Then both use the shared alert role rather than a screen-local palette colour
+
 Scenario: Preserve role parity
   Given a shared color role changes in tokens
   When repository contracts are checked

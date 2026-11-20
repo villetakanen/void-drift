@@ -1,16 +1,18 @@
 <script lang="ts">
 import "./catalog.css";
+import ButtonGroup from "../inputs/ButtonGroup.svelte";
 
 let { label = "Actions design system" }: { label?: string } = $props();
 
 // The actions reference: the normal button, the call to action and the link
 // from the shared button styles, every state on the void and on a panel.
 // Pointer, held and focus are forced with `data-lab-state`, which the shared
-// rules read; unavailable is the real attribute. Nothing here does anything.
+// rules read; unavailable is the real attribute. Live examples only update copy.
 type State = {
   name: string;
   force?: "pointer" | "held" | "focus";
   unavailable?: boolean;
+  blocked?: boolean;
 };
 const buttonStates: State[] = [
   { name: "rest" },
@@ -18,6 +20,7 @@ const buttonStates: State[] = [
   { name: "held", force: "held" },
   { name: "focus", force: "focus" },
   { name: "unavailable", unavailable: true },
+  { name: "error-blocked", unavailable: true, blocked: true },
 ];
 const linkStates: State[] = [
   { name: "rest" },
@@ -62,6 +65,7 @@ let message = $state("Interactive examples only; nothing is changed.");
             <div class="state">
               <span
                 class="btn btn-normal specimen"
+                class:btn-blocked={state.blocked}
                 data-lab-state={state.force}
                 aria-disabled={state.unavailable ? "true" : undefined}
                 >Settings</span
@@ -76,6 +80,7 @@ let message = $state("Interactive examples only; nothing is changed.");
             <div class="state">
               <span
                 class="btn btn-filled specimen"
+                class:btn-blocked={state.blocked}
                 data-lab-state={state.force}
                 aria-disabled={state.unavailable ? "true" : undefined}
                 >Survival</span
@@ -107,7 +112,9 @@ let message = $state("Interactive examples only; nothing is changed.");
     <p>
       Point at, press and tab through these. Focus on a normal button looks as a
       pointer does; on the call to action it is dark brackets inside the fill.
-      An unavailable button does not answer a pointer.
+      An unavailable button does not answer a pointer. Error-blocked actions add
+      a subtle alert ground for a correctable prerequisite, not a destructive
+      command. Ordinary unavailable actions stay untinted.
     </p>
     <div class="live">
       <div class="ground on-void" data-testid="actions-live-void">
@@ -131,7 +138,16 @@ let message = $state("Interactive examples only; nothing is changed.");
             Survival
           </button>
           <button type="button" class="btn btn-filled" disabled>Launch</button>
+          <button
+            type="button"
+            class="btn btn-filled btn-blocked"
+            disabled
+            aria-describedby="blocked-action-example"
+          >
+            Blocked launch
+          </button>
         </div>
+        <p id="blocked-action-example">PLAYGROUND OFF / UNSANCTIONED BUILD</p>
         <p class="sentence">
           Casual, client-reported scores.
           <a class="text-link" href="#scoring">How scoring works</a>.
@@ -141,7 +157,7 @@ let message = $state("Interactive examples only; nothing is changed.");
       </div>
       <div class="ground panel" data-testid="actions-live-panel">
         <span class="caption">On a panel</span>
-        <div class="button-group button-group--vertical">
+        <ButtonGroup navigation="directional" label="Vertical game navigation">
           <button
             type="button"
             class="btn btn-filled"
@@ -164,10 +180,127 @@ let message = $state("Interactive examples only; nothing is changed.");
             SETTINGS
           </button>
           <button type="button" class="btn btn-normal" disabled>CREDITS</button>
-        </div>
+        </ButtonGroup>
       </div>
     </div>
     <p role="status" id="scoring">{message}</p>
+  </section>
+
+  <section aria-labelledby="group-navigation">
+    <h2 id="group-navigation">Button groups and keyboard navigation</h2>
+    <p>
+      ButtonGroup owns arrangement and optional focus movement, not selection.
+      Its children remain native buttons and links styled with
+      <code>.btn</code>. Tab and Shift+Tab always follow DOM order and can leave
+      the group. Enter activates a focused button or link; Space retains native
+      button behavior. Clicking or touching activates directly. There is no
+      separate game cursor and no menu or application ARIA role.
+    </p>
+    <ul>
+      <li><code>navigation="native"</code> (default): arrangement only.</li>
+      <li>
+        <code>navigation="directional"</code>: Up/Down in a vertical group,
+        Left/Right in a horizontal group; Home/End focus the first/last action.
+        The live vertical example above uses this mode.
+      </li>
+      <li>
+        <code>layout="vertical"</code>
+        (default), <code>"horizontal"</code> or
+        <code>"strip"</code>. Strips stack below 580px of host width and then
+        use Up/Down instead of Left/Right. Horizontal layouts stay in one row.
+      </li>
+      <li>
+        <code>wrap=true</code>
+        (default) cycles at the ends;
+        <code>wrap=false</code>
+        stops there. Arrow movement skips disabled, aria-disabled, hidden and
+        inert actions. An aria-disabled action can remain in the native Tab
+        order for discovery; its owner suppresses activation.
+      </li>
+      <li>
+        <code>label</code>
+        optionally names the group. Screens own initial focus and restoration.
+        Nested controls keep their keys; modified keys are untouched. Screen
+        readers may use arrows for reading: Tab remains sufficient.
+      </li>
+    </ul>
+    <h3>Native group</h3>
+    <ButtonGroup layout="horizontal" label="Native navigation">
+      <button
+        type="button"
+        class="btn btn-normal"
+        onclick={() => (message = "Saved.")}
+      >
+        Save
+      </button>
+      <button
+        type="button"
+        class="btn btn-normal"
+        onclick={() => (message = "Cancelled.")}
+      >
+        Cancel
+      </button>
+    </ButtonGroup>
+    <h3>Horizontal directional group, no wrapping</h3>
+    <ButtonGroup
+      layout="horizontal"
+      navigation="directional"
+      wrap={false}
+      label="Horizontal game navigation"
+    >
+      <button
+        type="button"
+        class="btn btn-normal"
+        onclick={() => (message = "Previous activated.")}
+      >
+        Previous
+      </button>
+      <button type="button" class="btn btn-normal" disabled>Unavailable</button>
+      <a class="btn btn-normal" href="#group-navigation"
+        >Navigation documentation</a
+      >
+      <button
+        type="button"
+        class="btn btn-normal"
+        onclick={() => (message = "Next activated.")}
+      >
+        Next
+      </button>
+    </ButtonGroup>
+    <h3>Responsive strip</h3>
+    <p>
+      Resize this host to observe orientation changing without changing DOM
+      order.
+    </p>
+    <div class="resizable-group">
+      <ButtonGroup
+        layout="strip"
+        navigation="directional"
+        label="Responsive game navigation"
+      >
+        <button
+          type="button"
+          class="btn btn-normal"
+          onclick={() => (message = "Back activated.")}
+        >
+          Back
+        </button>
+        <button
+          type="button"
+          class="btn btn-filled"
+          onclick={() => (message = "Launch activated.")}
+        >
+          Launch
+        </button>
+      </ButtonGroup>
+    </div>
+    <button
+      type="button"
+      class="btn btn-normal"
+      onclick={() => (message = "Outside the groups.")}
+    >
+      After the groups
+    </button>
   </section>
 
   <section>
@@ -229,6 +362,13 @@ let message = $state("Interactive examples only; nothing is changed.");
   </button>
 </section>
 <style>
+.resizable-group {
+  width: 100%;
+  max-width: 100%;
+  min-width: 240px;
+  resize: horizontal;
+  overflow: auto;
+}
 .ground {
   display: grid;
   gap: var(--spacing-md);

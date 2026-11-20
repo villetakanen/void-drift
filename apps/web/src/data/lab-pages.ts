@@ -149,10 +149,14 @@ export const labPages = z.array(labPageSchema).parse([
   {
     href: "/lab/ds/actions",
     title: "Actions",
-    purpose: "Normal button, call to action and link in every state.",
+    purpose:
+      "Action states and button groups with native or directional navigation.",
     group: "design-system",
     source: "production",
-    defines: ["packages/core/src/lib/styles/buttons.css"],
+    defines: [
+      "packages/core/src/lib/styles/buttons.css",
+      "apps/web/src/components/inputs/ButtonGroup.svelte",
+    ],
     spec: "docs/specs/factory/design-system/actions/spec.md#architecture",
   },
   {

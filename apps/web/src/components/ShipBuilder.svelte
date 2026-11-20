@@ -448,7 +448,11 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
     </Tabs>
     <footer>
       <div class="launch-context">
-        <PlaygroundStatus active={experimental === "On"} />
+        <PlaygroundStatus
+          id="hangar-playground-status"
+          active={experimental === "On"}
+          blocked={!canLaunch}
+        />
         {#if !$shipSetupStatus.ready}
           <p role="status">Loading saved ships…</p>
         {:else if $shipSetupStatus.message}
@@ -460,6 +464,7 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
           type="button"
           class="btn btn-normal"
           disabled={!canLaunch}
+          aria-describedby={!canLaunch ? "hangar-playground-status" : undefined}
           onclick={() => launch("test")}
         >
           Practice
@@ -468,6 +473,7 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
           type="button"
           class="btn btn-normal"
           disabled={!canLaunch}
+          aria-describedby={!canLaunch ? "hangar-playground-status" : undefined}
           onclick={() => launch("derelicts")}
         >
           Derelicts
@@ -476,6 +482,7 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
           type="button"
           class="btn btn-normal"
           disabled={!canLaunch}
+          aria-describedby={!canLaunch ? "hangar-playground-status" : undefined}
           onclick={() => launch("gauntlet")}
         >
           Gauntlet
@@ -484,6 +491,7 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
           type="button"
           class="btn btn-filled"
           disabled={!canLaunch}
+          aria-describedby={!canLaunch ? "hangar-playground-status" : undefined}
           onclick={() => launch("survival")}
         >
           Survival
@@ -717,7 +725,7 @@ footer p {
   font-size: 12px;
 }
 .actions button {
-  min-width: 180px;
+  min-width: clamp(144px, 14vw, 180px);
 }
 
 @media (max-width: 1000px) {

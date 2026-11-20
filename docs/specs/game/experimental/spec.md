@@ -2,8 +2,8 @@
 title: "Spec: Playground"
 status: draft
 generated:
-  by: "codex/gpt-6"
-  at: "2026-11-19T20:39:26+00:00"
+  by: "openai-codex/gpt-6.1-sol"
+  at: "2026-11-20T11:49:20+02:00"
 verified:
   - by: "codex/gpt-6"
     at: "2026-11-19T20:39:26+00:00"
@@ -100,12 +100,14 @@ The Plasma engine and [Plasma rifle](../plasma-rifle/spec.md) are sanctioned fit
 - **Run status.** The title screen uses the red status slot below the menu
   panel, above the decorative ship. With Playground On it reads “PLAYGROUND
   ACTIVE” and “UNRANKED PLAY” on separate lines. With Playground Off and an
-  unsanctioned active build, it reads “UNSANCTIONED BUILD” and “PLAYGROUND
-  REQUIRED” on separate lines. The blocked warning does not replace the title
+  unsanctioned active build, it reads “PLAYGROUND OFF” and “UNSANCTIONED
+  BUILD” on separate lines. The blocked warning does not replace the title
   hints; their normal rotation behavior continues. These indications are absent
   with Off and a sanctioned build. The shared `PlaygroundStatus.svelte` owns
   the copy and red text treatment. In the Hangar, its Playground On status
-  appears beside the launch actions without changing the header.
+  appears to the left of the launch actions without changing the header.
+  The same shared status shows the blocked copy there with Off and an
+  unsanctioned build; Off with an eligible build shows no notice.
   Individual catalog-item markers are a separate concern.
 - **Persistence.** The Playground setting is kept on this device across
   visits; a fresh device starts Off. The [active ship](../active-ship/spec.md)
@@ -140,11 +142,11 @@ The Plasma engine and [Plasma rifle](../plasma-rifle/spec.md) are sanctioned fit
   shows no Save Score, and never calls score submission, even when every fitted
   item is sanctioned.
 - E8: Before starting a new game, the title status slot shows “PLAYGROUND
-  ACTIVE” and “UNRANKED PLAY” when Playground is On, or “UNSANCTIONED BUILD”
-  and “PLAYGROUND REQUIRED” when Playground is Off and the active build is
+  ACTIVE” and “UNRANKED PLAY” when Playground is On, or “PLAYGROUND OFF”
+  and “UNSANCTIONED BUILD” when Playground is Off and the active build is
   unsanctioned. It is separate from the PRESS START control group. The blocked
   warning does not replace or interrupt the title hints' normal rotation. In
-  the Hangar, the status appears beside the launch actions without changing
+  the Hangar, the On or blocked status appears left of the launch actions without changing
   the header.
 - E9: Only the Hangar's Playground control changes the setting; choosing
   ships, fitting parts and flying runs leave it unchanged.
@@ -229,7 +231,7 @@ Feature: Playground
     And reduced motion is not requested
     And the viewport supports rotating title hints
     When I view the title screen
-    Then the red status reads “UNSANCTIONED BUILD” and “PLAYGROUND REQUIRED”
+    Then the red status reads “PLAYGROUND OFF” and “UNSANCTIONED BUILD”
     And PRESS START is unavailable
     And the rotating title hints continue to change
 

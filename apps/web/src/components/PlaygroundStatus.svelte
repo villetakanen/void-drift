@@ -1,12 +1,15 @@
 <script lang="ts">
-let { active, blocked = false }: { active: boolean; blocked?: boolean } =
-  $props();
+let {
+  active,
+  blocked = false,
+  id,
+}: { active: boolean; blocked?: boolean; id?: string } = $props();
 </script>
 
 {#if blocked || active}
-  <p role="status">
+  <p {id} role="status">
     {#if blocked}
-      UNSANCTIONED BUILD<br>PLAYGROUND REQUIRED
+      PLAYGROUND OFF<br>UNSANCTIONED BUILD
     {:else}
       PLAYGROUND ACTIVE<br>UNRANKED PLAY
     {/if}
@@ -16,7 +19,8 @@ let { active, blocked = false }: { active: boolean; blocked?: boolean } =
 <style>
 p {
   margin: 0;
-  color: var(--color-red);
+  white-space: nowrap;
+  color: var(--color-alert);
   font: var(--font-size-caption) var(--font-family-ui);
   letter-spacing: var(--tracking-eyebrow);
   line-height: var(--line-height-ui);

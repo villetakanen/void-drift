@@ -4,7 +4,7 @@ title: "Spec: Hangar"
 status: draft
 generated:
   by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-19T12:32:56+02:00"
+  at: "2026-11-20T11:49:20+02:00"
 verified:
 - by: "openai-codex/gpt-6.1-sol"
   at: "2026-11-19T12:33:38+02:00"
@@ -133,7 +133,10 @@ save/load and Playground launch gating apply.
   [Playground](../experimental/spec.md).
 - **Launch context.** With Playground On, the launch row uses the title screen's
   shared red `PlaygroundStatus`: “PLAYGROUND ACTIVE” and “UNRANKED PLAY” on
-  separate lines; with Off this notice is absent. This replaces the engine-key
+  separate lines. With Playground Off and an unsanctioned build, it instead
+  reads “PLAYGROUND OFF” and “UNSANCTIONED BUILD”, to the left of the flight
+  buttons and associated with each unavailable launch. With Off and an eligible
+  build this notice is absent. This replaces the engine-key
   explanation beside the flight actions. The current sticky launch-row behavior,
   including its overlap with scrolling content, is retained.
 - **Save status.** Loading, recovery and unavailable-storage messages appear in
@@ -231,6 +234,15 @@ Feature: Hangar
     Then I see Practice, Derelicts, Gauntlet and Survival in that order
     And Survival is the primary action
     And Gauntlet starts an unranked pirate encounter with the active ship
+
+  Scenario: Explain a blocked build beside the launch actions
+    Given Playground is Off and the active build is unsanctioned
+    When I view the Hangar launch row
+    Then “PLAYGROUND OFF” and “UNSANCTIONED BUILD” appear to the left of the buttons
+    And every flight launch is unavailable with the status as its description
+    When I restore eligibility by changing the build or enabling Playground
+    Then every flight launch becomes available without an automatic fitting change
+    And the blocked status is replaced by the appropriate Playground status
 
   Scenario: Storage is unavailable
     Given the browser cannot store data

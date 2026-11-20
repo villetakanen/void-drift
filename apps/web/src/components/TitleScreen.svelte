@@ -20,6 +20,7 @@ import { onMount } from "svelte";
 import { version } from "../../package.json";
 import { LANDING_HINTS } from "../data/landing-hints";
 import { isNarrowerThanMinRatio } from "../lib/game-screen";
+import ButtonGroup from "./inputs/ButtonGroup.svelte";
 import Logo from "./Logo.svelte";
 import PlaygroundStatus from "./PlaygroundStatus.svelte";
 
@@ -136,25 +137,35 @@ onMount(() => {
           <h1>VOID DRIFT</h1>
         </div>
         <nav aria-label="Title screen">
-          <div class="button-group button-group--vertical">
+          <ButtonGroup navigation="directional">
             <div class="start-action">
               <button
                 bind:this={startButton}
                 type="button"
                 class="btn btn-filled"
+                class:btn-blocked={Boolean(blockedReason)}
+                aria-describedby={blockedReason
+                  ? "title-playground-status"
+                  : undefined}
                 {disabled}
                 onclick={onStart}
               >
                 PRESS START
               </button>
             </div>
-            <a bind:this={hangarLink} href="/hangar" class="btn btn-normal"
+            <a
+              bind:this={hangarLink}
+              href="/hangar"
+              class={blockedReason ? "btn btn-filled" : "btn btn-normal"}
+              aria-describedby={blockedReason
+                ? "title-playground-status"
+                : undefined}
               >HANGAR</a
             >
             <a href="/leaderboard" class="btn btn-normal">TOP SCORES</a>
             <a href="/settings" class="btn btn-normal">SETTINGS</a>
             <a href="/credits" class="btn btn-normal">CREDITS</a>
-          </div>
+          </ButtonGroup>
         </nav>
         <p class="version">
           <span class="active-ship">
@@ -173,6 +184,7 @@ onMount(() => {
       {#if blockedReason || experimental === "On"}
         <div class="playground-status">
           <PlaygroundStatus
+            id="title-playground-status"
             active={experimental === "On"}
             blocked={Boolean(blockedReason)}
           />
