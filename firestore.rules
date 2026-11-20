@@ -11,7 +11,7 @@ service cloud.firestore {
      && d.userId == request.auth.uid
      // One rule per ruleset. A new ruleset adds its own rule; this one stays
      // for as long as a released client carries it.
-     && d.challenge in ['ion-storm', 'fires-in-the-sky', 'habitable-skies']
+     && d.challenge in ['ion-storm', 'fires-in-the-sky']
      && d.shipId is string && d.shipId.size() >= 1 && d.shipId.size() <= 32
      && scoreId == d.challenge + '_' + request.auth.uid + '_' + d.shipId
      && d.initials is string && d.initials.matches('^[A-Z]{3}$')

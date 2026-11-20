@@ -51,16 +51,15 @@ test("owner can create and improve a score", async () => {
   await assertSucceeds(setDoc(ref(), score));
   await assertSucceeds(setDoc(ref(), { ...score, seconds: 50, score: 80 }));
 });
-for (const challenge of ["ion-storm", "habitable-skies"]) {
-  test(`earlier ${challenge} clients can still improve their own board`, async () => {
-    const target = ref("pilot", `${challenge}_pilot_fighter`);
-    const oldScore = { ...score, challenge };
-    await assertSucceeds(setDoc(target, oldScore));
-    await assertSucceeds(setDoc(target, { ...oldScore, score: 80 }));
-    await assertFails(setDoc(target, { ...score, score: 90 }));
-    await assertFails(setDoc(ref(), { ...oldScore, score: 90 }));
-  });
-}
+test("earlier ion-storm clients can still improve their own board", async () => {
+  const challenge = "ion-storm";
+  const target = ref("pilot", `${challenge}_pilot_fighter`);
+  const oldScore = { ...score, challenge };
+  await assertSucceeds(setDoc(target, oldScore));
+  await assertSucceeds(setDoc(target, { ...oldScore, score: 80 }));
+  await assertFails(setDoc(target, { ...score, score: 90 }));
+  await assertFails(setDoc(ref(), { ...oldScore, score: 90 }));
+});
 test("different players can contribute and read the shared board", async () => {
   await assertSucceeds(setDoc(ref(), score));
   await assertSucceeds(

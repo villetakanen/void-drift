@@ -42,6 +42,16 @@ This project is a Monorepo managed by `pnpm`:
 - **Styling**: Native CSS (No Tailwind)
 - **Linting**: Biome
 
+## Ranked Challenge Names
+
+| Release line | Challenge name     |
+| ------------ | ------------------ |
+| 0.5.x        | `alpha-1`          |
+| 0.6.x        | `ion-storm`        |
+| 0.7.x        | `fires-in-the-sky` |
+
+A challenge name is changed only by a release to production; there are no development, temporary or per-feature challenge names. See [Release](./docs/development.md#release) for the process.
+
 ## Documentation
 
 - [Vision](./docs/vision.md)

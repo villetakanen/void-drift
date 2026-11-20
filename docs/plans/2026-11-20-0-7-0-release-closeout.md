@@ -1,0 +1,65 @@
+# 0.7.0 · Fires in the Sky · release closeout
+
+Written 20 November 2026. This plan lists the work still open before 0.7.0 can be released, taken from the [release-readiness review](../reports/2026-11-20-0-7-0-release-readiness.md) of `feat/0-7-0` at `26295ddb`. The report holds the evidence; each item below was re-read at the cited location in the working tree the same day.
+
+Closed since the report: the `habitable-skies` board name is out of the Firestore rules and the rules test, and AGENTS.md and the README record the ranked challenge names.
+
+## Required for the release
+
+In working order.
+
+| # | Now | Files | Done when |
+| --- | --- | --- | --- |
+| 1 | The parts spec calls the Plasma rifle unsanctioned; the catalog marks it sanctioned. | [parts spec](../specs/game/parts/spec.md) | The spec describes the rifle as sanctioned. |
+| 2 | The Hangar spec says Gauntlet starts one pirate encounter; the game sends seven Scouts. | [Hangar spec](../specs/game/hangar/spec.md) | The spec describes the seven-Scout Gauntlet. |
+| 3 | The first title-screen news entry announces "0.7.0 RC1". | [landing-hints.ts](../../apps/web/src/data/landing-hints.ts) | The lead announces 0.7.0. |
+| 4 | The newscaster has two lore lines and none about this release's world. Uncovered topics: pirates and who they are; derelicts and the cells in them; plasma as engine and weapon; the yellow suns, Mercurial and Habitable worlds and The Cradle; the Gauntlet. Two hints are also missing: how ranked points are awarded, and that Combat HUD and Speed camera are switched in Settings. The second news line repeats the lead and could make room. | [landing-hints.ts](../../apps/web/src/data/landing-hints.ts) | A few world entries are added, each one sentence near the current 49 to 71 characters, and checked in the 32rem area. |
+| 5 | All four `package.json` files read `0.7.0-rc.1`; the title screen and Top Scores print it, and the release script does not check it. | root, `apps/web`, `packages/core`, `packages/mode-a` | All four read `0.7.0`. |
+| 6 | Only the rc.1 note exists. It says plasma is future scope and has no ranked-compatibility section. | `docs/releases/0.7.0.md` (new) | The note covers ranked plasma engine and rifle, outcome scoring, the ranked pirate and derelicts, the seven-Scout Gauntlet, Habitable worlds and The Cradle, the Combat HUD option, Settings from the Hangar with blocked-launch guidance, and zero scores reaching the board. A ranked-compatibility section records the move from `ion-storm` to `fires-in-the-sky` and its reason. |
+
+Then the release steps, per [development.md](../development.md#release):
+
+1. Commit the above and any polish taken, so the tree is clean.
+2. Run full `pnpm verify` on that commit, including the Java 21 backend checks.
+3. `pnpm release:prepare`, then `pnpm release:check` on the prepared run.
+4. After publication is authorised, `pnpm release:publish` on the same run.
+5. Verify game, Lab, authentication and score reads on the live site, without submitting a score.
+6. Tag the release commit.
+
+## Polish in this release
+
+Copy and small code changes. Any taken go in before step 1 above.
+
+**Result and pause** ([FlightDeck.svelte](../../apps/web/src/components/FlightDeck.svelte))
+- A Gauntlet win reads "PIRATE DESTROYED" for seven Scouts, and the line below prints the raw cause value. Done when the heading fits the horde and the cause is worded for a player.
+- Pause links to Top Scores and Settings only in Survival. Done when Settings is reachable from pause in every mode.
+
+**Hangar** ([ShipBuilder.svelte](../../apps/web/src/components/ShipBuilder.svelte), [loadout.ts](../../packages/mode-a/src/lib/schemas/loadout.ts))
+- "Weapons are static fittings in this alpha" is untrue for Ion Point Defence, and "fires on A+D" omits W and touch. Done when both lines match the controls.
+- The Plasma engine has no world text, only its cruise figure. Done when it has a line like the other sanctioned parts.
+- Part names mix capitalisation ("Light Ion Cannon", "Plasma rifle"). Done when one convention holds.
+
+**Top Scores and Settings** ([Leaderboard.svelte](../../apps/web/src/components/Leaderboard.svelte), [settings.astro](../../apps/web/src/pages/settings.astro), [leaderboard.astro](../../apps/web/src/pages/leaderboard.astro))
+- The score note says "Lab trials are unranked"; players know the mode as Playground.
+- Menus say Settings while the heading and tab say Options; the Top Scores tab says Leaderboard. Done when each screen has one name.
+
+**Ranked rules in code** ([simulation.ts](../../packages/mode-a/src/lib/simulation.ts))
+- The 50, 10 and 2 awards are inline numbers beside a named cell constant. Done when they are named with the other tuning.
+- Ranked eligibility is computed in the simulation and again in the deck. Done when one reads the other.
+
+## Needs a decision
+
+- **Should the published Lab be indexable?** It ships with the game: 115 of 121 pages. There is no `robots.txt` and no `noindex`. The build is 237 MB, of which 188 MB is study images and 28 MB is planet concept art under `public/planets/concepts-2026-11-19`. Whether the concept art belongs in the published build is part of the same question.
+- **Does view culling for enemy ships and wrecks go into 0.7.0 or after?** Opponent ships, wrecks, shards and cells are drawn without a view check ([flight-frame.ts](../../packages/mode-a/src/lib/flight-frame.ts), [salvage-renderer.ts](../../packages/mode-a/src/lib/salvage-renderer.ts)), which the render model forbids and which costs most with seven Scouts. The change is small but alters the frame, so it would need a browser check before the release commit.
+
+## Not checked by the review
+
+- Full `pnpm verify` on this commit. The newest full report is from 18 November, 52 commits earlier, on a dirty tree.
+- Any browser pass on the built game: layout, touch and the new result screens.
+- Frame time and memory. The performance findings are read from code.
+- The rules live in production.
+- Release smoke does not reach Gauntlet's result or the Combat HUD switch.
+
+## After the release
+
+See the report's [debt section](../reports/2026-11-20-0-7-0-release-readiness.md#debt-to-take-after-the-release): the size of `Simulation.step` and `salvage.ts`, per-step allocation in the flight loop, the title backdrop kept alive during flight, dead code in `game-loop.ts`, test attributes written in production, document drift, tracked files that look local, and the missing script enforcement of the release gates.
