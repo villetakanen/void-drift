@@ -9,7 +9,7 @@ export interface LandingHint {
 export const LANDING_HINTS = [
   {
     kind: "news",
-    text: "0.7.0 RC1 — FIRES IN THE SKY introduces a new ranked challenge.",
+    text: "0.7.0 — FIRES IN THE SKY introduces a new ranked challenge.",
   },
   {
     kind: "hint",
