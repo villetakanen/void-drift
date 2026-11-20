@@ -10,7 +10,7 @@ In working order.
 
 | # | Now | Files | Done when |
 | --- | --- | --- | --- |
-| 1 | The parts spec calls the Plasma rifle unsanctioned; the catalog marks it sanctioned. | [parts spec](../specs/game/parts/spec.md) | The spec describes the rifle as sanctioned. |
+| 1 | Resolved narrowly: the catalog owns sanctioning; the Parts spec's duplicated rifle status and other copied catalog values are removed. The amendment remains an unapproved draft, not a full spec review. | [parts spec](../specs/game/parts/spec.md), [catalog](../../packages/mode-a/src/lib/schemas/loadout.ts) | Duplicate catalog values removed and ownership clarified; no catalog or gameplay change. |
 | 2 | The Hangar spec says Gauntlet starts one pirate encounter; the game sends seven Scouts. | [Hangar spec](../specs/game/hangar/spec.md) | The spec describes the seven-Scout Gauntlet. |
 | 3 | The first title-screen news entry announces "0.7.0 RC1". | [landing-hints.ts](../../apps/web/src/data/landing-hints.ts) | The lead announces 0.7.0. |
 | 4 | The newscaster has two lore lines and none about this release's world. Uncovered topics: pirates and who they are; derelicts and the cells in them; plasma as engine and weapon; the yellow suns, Mercurial and Habitable worlds and The Cradle; the Gauntlet. Two hints are also missing: how ranked points are awarded, and that Combat HUD and Speed camera are switched in Settings. The second news line repeats the lead and could make room. | [landing-hints.ts](../../apps/web/src/data/landing-hints.ts) | A few world entries are added, each one sentence near the current 49 to 71 characters, and checked in the 32rem area. |

@@ -1,8 +1,8 @@
 ---
 status: draft
 generated:
-  by: "openai/gpt-6.1-sol"
-  at: "2026-11-20T19:09:25Z"
+  by: "openai-codex/gpt-6.1-sol"
+  at: "2026-11-20T19:44:42Z"
 verified: []
 ---
 
@@ -17,9 +17,10 @@ contribute mass, use or supply energy, and determine what a ship can do.
 
 ### Architecture and boundaries
 
-- **Catalog.** `PARTS` in `packages/mode-a/src/lib/schemas/loadout.ts` holds
-  every part, validated by `PartSchema`: its name, description, short fluff, category, mass
-  and the values of its kind. The Hangar shows the catalog's name and approved fluff, falling back to
+- **Catalog.** `PARTS` in [`loadout.ts`](../../../../packages/mode-a/src/lib/schemas/loadout.ts) holds
+  every part, validated by `PartSchema`: its name, description, short fluff, category, mass,
+  sanctioning (`releaseClass`) and the values of its kind. The catalog owns these
+  values; this contract does not repeat individual entries. The Hangar shows the catalog's name and approved fluff, falling back to
   the technical description for unsanctioned parts. `partFigures` computes its
   figures from the same catalog and firing/collection rules used in flight.
 - **Compatibility.** `slotAccepts` in `loadout.ts` is the one rule for which
@@ -35,8 +36,9 @@ contribute mass, use or supply energy, and determine what a ship can do.
   engines' plume from a cached stamp per plume style; the style's length,
   width and ink come from the catalog.
 - **Neighbours.** [Ships](../ships/spec.md) own slots, the energy model and
-  the derived figures. [Playground](../experimental/spec.md) owns which
-  parts are sanctioned. The [Hangar](../hangar/spec.md) owns fitting on screen.
+  the derived figures. [Playground](../experimental/spec.md) defines what
+  sanctioning means and how it gates play; the catalog owns each part's status.
+  The [Hangar](../hangar/spec.md) owns fitting on screen.
 
 ### Rules
 
@@ -67,9 +69,7 @@ contribute mass, use or supply energy, and determine what a ship can do.
   one, showing the master beside renderings of those artefacts. A new part
   has all three when it is added. An existing part gets them when its art
   changes; until then it keeps its current art without a master.
-- **Plasma rifle.** This rifle is an unsanctioned weapon-category
-  fitting named “Plasma rifle”, with fluff “Floor is lava, jump!”. Its mass is
-  2.7 times the Light Ion Cannon (24.3). The white-blue receiver is centred
+- **Plasma rifle.** The white-blue receiver is centred
   on the slot, using the supplied unlit SVG at its accepted scale. Its full
   silhouette contributes to the ship collision envelope. Each fitted muzzle observes its own target. The
   [rifle cycle](../plasma-rifle/spec.md) charges from ship power and either releases
