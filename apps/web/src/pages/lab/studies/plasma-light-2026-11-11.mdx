@@ -1,14 +1,21 @@
 ---
-import InstrumentBand from "../../../components/lab/instrument/InstrumentBand.astro";
-import PlasmaLight026 from "../../../components/studies/PlasmaLight026.svelte";
-import PlasmaLight027 from "../../../components/studies/PlasmaLight027.svelte";
-import { studies } from "../../../data/studies";
-import StudyLayout from "../../../layouts/StudyLayout.astro";
-
-const study = studies.find((entry) => entry.slug === "plasma-light-2026-11-11");
+layout: ../../../layouts/StudyLayout.astro
 ---
 
-<StudyLayout study={study}>
+<div className="plasma-record">
+  <section>
+  <p>
+    Historical record: the findings, readiness assessment and delivery notes below
+    retain their 11 November 2026 scope. The accepted status is unchanged.
+    The remaining live examples were retired on 20 November 2026, after capturing
+    their rendered states. These new captures show the apparatus with the code
+    available at retirement, not proof of its earlier appearance or new design
+    decisions. No study proposal is adopted by this retirement. Operating
+    instructions below describe the retired examples; their controls are now
+    shown only in captures. The scenes already removed in 02.1–02.4 have no
+    remaining apparatus to capture: their written findings remain the record.
+  </p>
+  </section>
   <section>
     <h2 id="problem">01 / A dark charge, then a borrowed flame</h2>
     <p>
@@ -336,14 +343,14 @@ const study = studies.find((entry) => entry.slug === "plasma-light-2026-11-11");
       <h3>The stamps</h3>
       <figure class="plates stamps">
         <div>
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((frame) => (
-            <img
-              src={`/studies/plasma-light-2026-11-11/fireball-stamp-${frame}.png`}
-              alt={`Fireball stamp, frame ${frame} of 8`}
-              width="16"
-              height="16"
-            />
-          ))}
+          <img src="/studies/plasma-light-2026-11-11/fireball-stamp-1.png" alt="Fireball stamp, frame 1 of 8" width="16" height="16" />
+          <img src="/studies/plasma-light-2026-11-11/fireball-stamp-2.png" alt="Fireball stamp, frame 2 of 8" width="16" height="16" />
+          <img src="/studies/plasma-light-2026-11-11/fireball-stamp-3.png" alt="Fireball stamp, frame 3 of 8" width="16" height="16" />
+          <img src="/studies/plasma-light-2026-11-11/fireball-stamp-4.png" alt="Fireball stamp, frame 4 of 8" width="16" height="16" />
+          <img src="/studies/plasma-light-2026-11-11/fireball-stamp-5.png" alt="Fireball stamp, frame 5 of 8" width="16" height="16" />
+          <img src="/studies/plasma-light-2026-11-11/fireball-stamp-6.png" alt="Fireball stamp, frame 6 of 8" width="16" height="16" />
+          <img src="/studies/plasma-light-2026-11-11/fireball-stamp-7.png" alt="Fireball stamp, frame 7 of 8" width="16" height="16" />
+          <img src="/studies/plasma-light-2026-11-11/fireball-stamp-8.png" alt="Fireball stamp, frame 8 of 8" width="16" height="16" />
         </div>
         <figcaption>
           The eight cached frames exactly as stamped, each 16 by 16 pixels,
@@ -359,25 +366,25 @@ const study = studies.find((entry) => entry.slug === "plasma-light-2026-11-11");
             alt="A Wasp with a small red crackling ball at its engine nozzle"
             width="300"
             height="300"
-          >
+          />
           <img
             src="/studies/plasma-light-2026-11-11/fireball-release.png"
             alt="A Wasp with a large ball of blocky amber and white fire behind its engine"
             width="300"
             height="300"
-          >
+          />
           <img
             src="/studies/plasma-light-2026-11-11/fireball-thrust.png"
             alt="A Wasp trailing a soft amber smear in steady thrust"
             width="300"
             height="300"
-          >
+          />
           <img
             src="/studies/plasma-light-2026-11-11/fireball-restart.png"
             alt="A Wasp at speed with a ball of fire and a long fading tail"
             width="300"
             height="300"
-          >
+          />
         </div>
         <figcaption>
           A Wasp with a Plasma engine on burn B1 at four times the follow zoom,
@@ -418,7 +425,34 @@ const study = studies.find((entry) => entry.slug === "plasma-light-2026-11-11");
     Comparisons 02.6 and 02.7 retain the historical Canvas starfield behind the
     light.
   </p>
-  <InstrumentBand><PlasmaLight026 client:visible /></InstrumentBand>
+  <figure className="retirement-sequence">
+    <img src="/studies/plasma-light-2026-11-11/retired-026-charge.png" alt="02.6 luminous stamp: charge at 0.3 seconds" />
+    <img src="/studies/plasma-light-2026-11-11/retired-026-release.png" alt="02.6 luminous stamp: release at 0.68 seconds, rounded to tick 41" />
+    <img src="/studies/plasma-light-2026-11-11/retired-026-thrust.png" alt="02.6 luminous stamp: sustained thrust at 1 second" />
+    <img src="/studies/plasma-light-2026-11-11/retired-026-coast.png" alt="02.6 luminous stamp: coasting at 4 seconds" />
+    <img src="/studies/plasma-light-2026-11-11/retired-026-restart.png" alt="02.6 luminous stamp: later press at 5 seconds" />
+    <img src="/studies/plasma-light-2026-11-11/retired-026-restart-late.png" alt="02.6 luminous stamp: later press at 11 seconds" />
+    <figcaption>Retirement sequence, 20 November 2026: Wasp, Plasma main engine, ion stabilizers, B1, Follow 1.6×, 0.6 s charge, historical Canvas background. The 5 s and 11 s frames retain the instants named in the original instructions; they show renewed charging rather than the completed release. Frames record the light and its history, not the feel under the hand.</figcaption>
+  </figure>
+  <details>
+    <summary>02.6 / Retained production toggle, magnified and layer comparisons</summary>
+    <figure className="retirement-sequence">
+      <img src="/studies/plasma-light-2026-11-11/retired-026-production-charge.png" alt="Production toggle: charge at 0.3 seconds" />
+      <img src="/studies/plasma-light-2026-11-11/retired-026-production-release.png" alt="Production toggle: release at tick 41" />
+      <img src="/studies/plasma-light-2026-11-11/retired-026-production-thrust.png" alt="Production toggle: thrust at 1 second" />
+      <img src="/studies/plasma-light-2026-11-11/retired-026-production-restart.png" alt="Production toggle: later press at 5 seconds" />
+      <img src="/studies/plasma-light-2026-11-11/retired-026-production-restart-late.png" alt="Production toggle: later press at 11 seconds" />
+      <figcaption>The same flight and 0.6 s tuning, with Luminous ball switched off: production light as available at retirement, not the amber-beam baseline described in 01.</figcaption>
+    </figure>
+    <figure className="retirement-sequence">
+      <img src="/studies/plasma-light-2026-11-11/retired-026-zoom4-charge.png" alt="Luminous charge magnified in Follow 4×" />
+      <img src="/studies/plasma-light-2026-11-11/retired-026-zoom4-release.png" alt="Luminous release magnified in Follow 4×" />
+      <img src="/studies/plasma-light-2026-11-11/retired-026-controls.png" alt="Historical 02.6 menu with luminous ball and World, FX and LFX toggles enabled" />
+      <img src="/studies/plasma-light-2026-11-11/retired-026-lfx-charge.png" alt="Charge at 0.3 seconds with only LFX visible" />
+      <img src="/studies/plasma-light-2026-11-11/retired-026-fx-release.png" alt="Release at tick 41 with only persistent FX visible" />
+      <figcaption>Retirement captures in Follow 4×: charge and release, the controls, then isolated live charge and persistent release. Hidden layers retain their history. These are observation aids, not additional accepted variants.</figcaption>
+    </figure>
+  </details>
   <section>
     <ul>
       <li>
@@ -487,7 +521,27 @@ const study = studies.find((entry) => entry.slug === "plasma-light-2026-11-11");
       burn presses again at 5 s and 11 s.
     </p>
   </section>
-  <InstrumentBand><PlasmaLight027 client:visible /></InstrumentBand>
+  <figure className="retirement-sequence">
+    <img src="/studies/plasma-light-2026-11-11/retired-027-charge.png" alt="Accepted tuning: charge at 0.1 seconds" />
+    <img src="/studies/plasma-light-2026-11-11/retired-027-release.png" alt="Accepted tuning: release at 0.25 seconds" />
+    <img src="/studies/plasma-light-2026-11-11/retired-027-thrust.png" alt="Accepted tuning: thrust at 0.8 seconds" />
+    <img src="/studies/plasma-light-2026-11-11/retired-027-coast.png" alt="Accepted tuning: coasting at 4 seconds" />
+    <img src="/studies/plasma-light-2026-11-11/retired-027-restart.png" alt="Accepted tuning: later release at 5.4 seconds" />
+    <img src="/studies/plasma-light-2026-11-11/retired-027-restart-late.png" alt="Accepted tuning: later release at 11.4 seconds" />
+    <figcaption>Retirement sequence, 20 November 2026: Wasp, B1, Follow 1.6×, historical Canvas background, accepted 0.2 s delay, 4× indicator size, 2× intensity. The original 11 November accepted captures remain below. This sequence records transitions and residue; it does not establish the untested feel under manual control.</figcaption>
+  </figure>
+  <details>
+    <summary>02.7 / Retained controls and charge comparisons</summary>
+    <figure className="retirement-sequence">
+      <img src="/studies/plasma-light-2026-11-11/retired-027-zoom4-charge.png" alt="Accepted charge at 0.1 seconds in Follow 4×" />
+      <img src="/studies/plasma-light-2026-11-11/retired-027-zoom4-release.png" alt="Accepted release at 0.25 seconds in Follow 4×" />
+      <img src="/studies/plasma-light-2026-11-11/retired-027-controls.png" alt="Retired sliders at accepted values: 0.2 second delay, 4× size and 2× intensity" />
+      <img src="/studies/plasma-light-2026-11-11/retired-027-earlier-charge.png" alt="Earlier tuning: 0.6 second delay, 1× size and 1× intensity at 0.3 seconds" />
+      <img src="/studies/plasma-light-2026-11-11/retired-027-earlier-release.png" alt="Earlier tuning: release at tick 41" />
+      <img src="/studies/plasma-light-2026-11-11/retired-027-dark-charge.png" alt="Dark charge: earlier tuning with indicator intensity zero at 0.3 seconds" />
+      <figcaption>Retirement captures: accepted charge and release in Follow 4×; controls at the accepted values; then Follow 1.6× with the earlier 0.6 s delay and 1× size/intensity, and the same charge with intensity zero. The sliders' ranges and limitations remain in the historical prose. This is a bounded static comparison, not a record of every possible slider combination.</figcaption>
+    </figure>
+  </details>
   <section>
     <ul>
       <li>
@@ -514,25 +568,25 @@ const study = studies.find((entry) => entry.slug === "plasma-light-2026-11-11");
           alt="A Wasp with a wide soft amber glow around its engine and a white point at the nozzle"
           width="300"
           height="300"
-        >
+        />
         <img
           src="/studies/plasma-light-2026-11-11/accepted-release.png"
           alt="A Wasp with lumpy amber fire bursting behind its engine"
           width="300"
           height="300"
-        >
+        />
         <img
           src="/studies/plasma-light-2026-11-11/accepted-thrust.png"
           alt="A Wasp in steady thrust trailing a lumpy amber flame"
           width="300"
           height="300"
-        >
+        />
         <img
           src="/studies/plasma-light-2026-11-11/accepted-restart.png"
           alt="A Wasp at speed just after a release, with a ball of flame and a fading tail"
           width="300"
           height="300"
-        >
+        />
       </div>
       <figcaption>
         The accepted variant at four times the follow zoom: the charge at 0.1 s,
@@ -676,10 +730,8 @@ const study = studies.find((entry) => entry.slug === "plasma-light-2026-11-11");
   <section>
     <h2 id="scope">04 / Four slices, from a number to the light in play</h2>
     <p>
-      <strong
-        >No change to the experience principles in <code>docs/design.md</code>
-        is proposed.</strong
-      >
+      <strong>No change to the experience principles in <code>docs/design.md</code>
+        is proposed.</strong>
       Answering a press at once is the existing principle that every control
       answers. The effects specification changes instead, in slice 2.
     </p>
@@ -770,9 +822,26 @@ const study = studies.find((entry) => entry.slug === "plasma-light-2026-11-11");
       <li>This scope sizes the work. It does not start it.</li>
     </ul>
   </section>
-</StudyLayout>
+</div>
 
-<style>
+<style>{`
+.retirement-sequence {
+  margin: var(--spacing-lg) 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-md);
+}
+.retirement-sequence img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.retirement-sequence figcaption {
+  grid-column: 1 / -1;
+  max-width: 72ch;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+}
 .plates {
   margin: var(--spacing-lg) 0;
 }
@@ -834,4 +903,4 @@ summary {
   font-weight: normal;
   color: var(--color-text);
 }
-</style>
+`}</style>

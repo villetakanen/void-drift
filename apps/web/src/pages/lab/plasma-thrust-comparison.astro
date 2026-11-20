@@ -1,8 +1,105 @@
 ---
-import ThrustComparison from "../../components/lab/flight-scene/PlasmaThrustComparison.svelte";
 import LabLayout from "../../layouts/LabLayout.astro";
+
+const comparisons = [
+  {
+    id: "production-wasp",
+    title: "Production plasma thrust",
+    view: "Follow 1.6×",
+  },
+  {
+    id: "reference-wasp",
+    title: "Accepted study thrust reference",
+    view: "Follow 1.6×",
+  },
+  { id: "scout", title: "Scout: paired plasma engines", view: "Follow 4×" },
+  { id: "corvette", title: "Corvette: five plasma engines", view: "Follow 4×" },
+];
+const phases = [
+  { id: "charge", title: "Charge", seconds: "0.1" },
+  { id: "release", title: "Release", seconds: "0.25" },
+  { id: "thrust", title: "Sustained thrust", seconds: "0.8" },
+  { id: "restart", title: "Later release at speed", seconds: "5.4" },
+];
 ---
 
 <LabLayout title="Plasma thrust comparison" wide>
-  <ThrustComparison client:load />
+  <p class="context">
+    Static comparison captured 20 November 2026 before retiring the
+    <a href="/lab/studies/plasma-light-2026-11-11#charge-feel"
+      >plasma light study’s</a
+    >
+    live apparatus. These images show the code available at retirement, not the
+    original 11 November evidence or a new acceptance of the study’s proposals.
+  </p>
+  <p class="context">
+    All four scenes use burn B1 from rest, no randomness, and a 0.2 s plasma
+    charge. The Wasp has one Plasma main engine and ion stabilizers; its
+    production light and accepted study painter are captured at matching times
+    in Follow 1.6×. The Scout has two side Plasma engines; the Corvette has two
+    side and three aft Plasma engines. Both use production light in Follow 4×.
+    These scenes retained the production background available at retirement,
+    unlike the study’s historical Canvas background. No controls or simulation
+    run on this page.
+  </p>
+  <div class="comparisons">
+    {comparisons.map((comparison) => (
+      <section>
+        <h2>{comparison.title}</h2>
+        <p>{comparison.view}</p>
+        {phases.map((phase) => (
+          <figure>
+            <img
+              src={`/studies/plasma-light-2026-11-11/comparison-${comparison.id}-${phase.id}.png`}
+              alt={`${comparison.title}: ${phase.title.toLowerCase()} at ${phase.seconds} seconds`}
+              width="1190"
+              height="669"
+              loading="lazy"
+            />
+            <figcaption>
+              {phase.title} · {phase.seconds} s
+            </figcaption>
+          </figure>
+        ))}
+      </section>
+    ))}
+  </div>
+  <p class="context">
+    The fixed-flight sequence preserves charge, release, sustained light and a
+    later release with accumulated residue. It does not test feel under manual
+    control or certify the look on other fittings. The Scout and Corvette images
+    are retained comparison conditions, not additional study decisions.
+  </p>
 </LabLayout>
+
+<style>
+.context {
+  max-width: 72ch;
+  margin-block: var(--spacing-lg);
+}
+.comparisons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-xl);
+}
+.context a {
+  color: var(--color-action);
+}
+h2 {
+  line-height: 1.2;
+  min-height: 2.4em;
+}
+figure {
+  margin: var(--spacing-lg) 0;
+}
+img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+figcaption {
+  margin-top: var(--spacing-sm);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+}
+</style>

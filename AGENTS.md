@@ -2,6 +2,10 @@
 
 Voice-led game design, and development development of a space shooter inspired by Star Control 2: Super melee, and 1990s indie games.
 
+## Default working practice
+
+In the main conversation, load and follow [first-mate](.agents/skills/first-mate/SKILL.md) before deciding how to act. An assigned worker follows its task and reports the result to the assigning agent.
+
 ## Repository map
 
 ```yaml
