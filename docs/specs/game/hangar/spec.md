@@ -4,7 +4,7 @@ title: "Spec: Hangar"
 status: draft
 generated:
   by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-20T10:31:54Z"
+  at: "2026-11-20T19:48:58Z"
 verified:
 - by: "openai-codex/gpt-6.1-sol"
   at: "2026-11-19T12:33:38+02:00"
@@ -126,9 +126,9 @@ save/load and Playground launch gating apply.
   engine parts, and each engine shows its contribution.
 - **Flight actions.** The Hangar offers, in this order, Practice, Derelicts,
   Gauntlet and Survival. Survival is the primary action; the other actions are
-  normal actions. Gauntlet starts the first unranked pirate encounter. Every
-  launch flies the active ship, and Abort or game over returns to the Hangar
-  with the ship unchanged.
+  normal actions. Gauntlet launches its mode; the [Gauntlet contract](../gauntlet/spec.md)
+  owns its behaviour. Every launch flies the active ship, and Abort or game over
+  returns to the Hangar with the ship unchanged.
 - **Playground.** The Playground control is the only place the setting
   changes. What it locks, marks and blocks is owned by
   [Playground](../experimental/spec.md).
@@ -245,7 +245,8 @@ Feature: Hangar
     When I look at the flight actions
     Then I see Practice, Derelicts, Gauntlet and Survival in that order
     And Survival is the primary action
-    And Gauntlet starts an unranked pirate encounter with the active ship
+    When I launch Gauntlet
+    Then Gauntlet starts with the active ship
 
   Scenario: Explain a blocked build beside the launch actions
     Given Playground is Off and the active build is unsanctioned
