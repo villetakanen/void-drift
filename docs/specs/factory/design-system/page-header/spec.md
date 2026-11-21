@@ -2,7 +2,7 @@
 status: draft
 generated:
   by: "codex/gpt-6"
-  at: "2026-11-21T20:12:13+02:00"
+  at: "2026-11-21T20:23:15+02:00"
 verified: []
 ---
 
@@ -13,9 +13,9 @@ verified: []
 ### Context
 
 The shared page header combines the brand mark, sub-site name, optional page name, controls
-and navigation. Its current consumer is the Design system at `/lab/ds`, including
-its component pages at earlier URLs. Lab, Design Studies and game screens retain
-their existing headers. Design system, Lab and Studies are peer sites; URL
+and navigation. Its current consumers are the Design system at `/lab/ds`, including
+its component pages at earlier URLs, and Hangar at `/hangar`. Lab, Design Studies
+and other game screens retain their existing headers. Design system, Lab and Studies are peer sites; URL
 nesting does not define ownership. Broader adoption requires a separate decision.
 
 ### Architecture
@@ -33,6 +33,11 @@ content, with `spacing-sm` (8px) vertical and `spacing-md` (16px) horizontal
 padding, matching its live examples, and no divider below it.
 Existing URLs and package boundaries remain unchanged.
 
+Hangar supplies the plain Hangar identity, its persisted Playground Switch as
+an actions snippet, and Settings linking to `/settings?from=hangar`. Its page
+wrapper owns the spacing shared by its header and workbench, as defined by the
+[Hangar contract](../../../game/hangar/spec.md).
+
 The MDX overview at `/lab/ds` lists the components. The canonical MDX page
 `/lab/ds/page-header` owns the concise explanation and input reference. Labelled
 live examples show site identity, site and page identity, and optional controls.
@@ -42,9 +47,9 @@ The controls example keeps its state local without changing game settings.
 
 - Shared tokens and Logo, Switch and button definitions govern presentation.
 - The existing Hangar is the visual reference: a 44px minimum header height,
-  no internal vertical padding and no external margin. The Design system layout
-  and live examples own `spacing-sm` (8px) vertical and `spacing-md` (16px)
-  horizontal padding.
+  no internal vertical padding and no external margin. Host pages own outer
+  spacing. The Design system layout and live examples use `spacing-sm` (8px)
+  vertical and `spacing-md` (16px) horizontal padding.
 - Sub-site names use `font-size-lead`; the optional page name and its `// `
   prefix use `font-size-body`. Both retain bold weight and inherited UI family
   and line height. Optional control labels use body size; navigation uses buttons.
@@ -65,14 +70,14 @@ The controls example keeps its state local without changing game settings.
 
 ### Definition of Done
 
-- The Design system's own layout composes the shared header.
+- The Design system's own layout and Hangar compose the shared header.
 - Its MDX overview lists the MDX header page, shared source and this contract.
 - The MDX component page introduces Page header and presents labelled live examples before its input reference.
 - Live examples show the single-row header at supported desktop widths.
 
 ### Regression guardrails
 
-- Hangar, Credits, Lab and Design Studies retain their preceding headers.
+- Credits, Lab and Design Studies retain their preceding headers.
 - Title and flight retain their existing composition.
 - Example controls preserve saved game settings.
 - Design-system pages retain their existing addresses and dedicated navigation.
@@ -109,8 +114,16 @@ Scenario: Read and navigate page identity
 
 Scenario: Keep peer sites independent
   Given Lab at /lab and Design Studies at /lab/studies
-  When I open either site or the Hangar or Credits
+  When I open either site or Credits
   Then its preceding header remains in place
+
+Scenario: Open Hangar with the shared header
+  Given Hangar at /hangar
+  When I inspect its opening row
+  Then the shared header shows the plain Hangar identity without a page suffix
+  And the Hangar page owns the shared header and workbench gutter
+  And Playground retains its persisted game setting
+  And Settings follows it and links to /settings?from=hangar
 
 Scenario: Visit a component at an earlier address
   Given a design-system component at /lab/tokens or another listed earlier address

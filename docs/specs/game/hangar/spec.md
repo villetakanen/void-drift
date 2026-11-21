@@ -3,8 +3,8 @@
 title: "Spec: Hangar"
 status: draft
 generated:
-  by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-20T19:48:58Z"
+  by: "codex/gpt-6"
+  at: "2026-11-21T20:23:15+02:00"
 verified:
 - by: "openai-codex/gpt-6.1-sol"
   at: "2026-11-19T12:33:38+02:00"
@@ -43,8 +43,9 @@ Earning and buying parts is the intended direction for later. During alpha,
   names, and the Playground setting through its own.
 - **Flight.** `apps/web/src/components/FlightDeck.svelte` receives the active
   ship, the mode and the return to the Hangar.
-- **Interface.** The opening uses the shared `Logo`, `Switch` for the binary Playground setting, and `Tabs`
-  for ship workspaces. Plan/View uses `SegmentedControl`; controls and
+- **Interface.** The opening composes the shared [Page header](../../factory/design-system/page-header/spec.md)
+  with plain Hangar identity, `Switch` for the binary Playground setting, and
+  Settings navigation. Shared `Tabs` provides ship workspaces. Plan/View uses `SegmentedControl`; controls and
   visual tokens follow the [design system](../../factory/design-system/spec.md).
   Parts and flight-estimate panes use the shared `cut-surface` with large
   corner cuts and elevation-1 fill; the shared surface owns their edges.
@@ -61,12 +62,17 @@ save/load and Playground launch gating apply.
 
 - Shared controls and visual tokens follow the [choice-control contract](../../factory/design-system/choices/spec.md).
 - **Opening.** One compact row sits above the ship chooser: the linked logo
-  and one Hangar heading on the left, the labeled Playground Switch followed
+  and plain Hangar identity on the left, the labeled Playground Switch followed
   by Settings as the last item on the right. Settings opens `/settings?from=hangar`
   with a Return to Hangar action, as defined by [Options](../options/spec.md). The logo returns to `/`. The header does not wrap within supported
   landscape iPad widths, and switching Playground leaves its height unchanged.
   There is no duplicate return link, version label, routine save-status line,
   or scoring explanation in the header.
+- **Page spacing.** The page owns 24px vertical and 36px horizontal padding,
+  aligning the header and workbench to the same gutter. The workbench starts
+  16px below the 44px header, placing the chooser at 84px from the page top.
+  At viewport widths of 1000px or less, page padding is 16px on all sides.
+  The page remains the scroll owner and flight actions retain their sticky footer.
 - **Regions.** Below the opening the Hangar has distinct regions for the ship
   chooser, the ship display, the parts, the ship's systems, the flight
   estimates and the flight actions.
@@ -152,7 +158,7 @@ save/load and Playground launch gating apply.
 
 - H1: `/hangar` shows the Hangar, and player-facing Hangar links target it.
 - H2: The logo reaches `/` by pointer and keyboard; its accessible name
-  identifies Void Drift. One Hangar heading and the Playground Switch share a
+  identifies Void Drift. One Hangar identity label and the Playground Switch share a
   compact header row whose height is unchanged by Playground, with Settings
   last after Playground. Settings and Return to Hangar preserve the active ship,
   its fitting and preferences; selected slot and Plan/View restoration are not promised.
@@ -214,6 +220,16 @@ Feature: Hangar
     Then /hangar opens with the same active ship and fitting
     And my preference is kept
     And the header remains one row at supported landscape iPad widths
+
+  Scenario: Align the header and workbench
+    Given Hangar at a viewport wider than 1000px
+    When I inspect the page
+    Then the header and workbench share a 36px horizontal gutter
+    And the header starts 24px from the top and the chooser starts at 84px
+    When the viewport is 1000px wide or less
+    Then the page padding becomes 16px on all sides
+    And the workbench remains 16px below the header
+    And the page remains scrollable with sticky flight actions
 
   Scenario: Fit an optional slot
     Given an optional slot selected in Plan
