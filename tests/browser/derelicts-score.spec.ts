@@ -8,7 +8,8 @@ test("Derelicts shows frozen time and destruction facts without a score", async 
     const random = crypto.getRandomValues.bind(crypto);
     crypto.getRandomValues = ((array: ArrayBufferView) => {
       if (array instanceof Uint32Array && array.length === 1) {
-        array[0] = 157;
+        // Seed 26 crosses the star during an idle arrival in the generated system.
+        array[0] = 25;
         return array;
       }
       return random(array);
