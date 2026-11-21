@@ -1,6 +1,6 @@
 <script lang="ts">
-import { paintIonBeam } from "@void-drift/core";
-import { drawUtilityArtwork } from "@void-drift/mode-a";
+import { paintBeam } from "@void-drift/core";
+import { drawUtilityArtwork, LIGHT_ION_BEAM } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 
 let { label = "Conversion motion sketches" }: { label?: string } = $props();
@@ -59,7 +59,7 @@ onMount(() => {
         light.translate(320, 155);
         light.scale(3.5, 3.5);
         light.globalAlpha = 0.65;
-        paintIonBeam(light, 1, "ion-light");
+        paintBeam(light, 1, LIGHT_ION_BEAM);
         light.restore();
       }
       light.strokeStyle = "#c783ff";

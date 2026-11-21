@@ -160,6 +160,6 @@ curiosity; instructions help the player act. Both use concise, concrete language
 - Lab practice, verification and performance: [development](development.md).
 
 Changes to these principles require explicit agreement in the design
-conversation. The [design-study process](specs/lab/design-studies/spec.md)
+conversation. The [design-study process](../.agents/skills/design-study/SKILL.md)
 explains how a study proposes a change. Study outcomes and implementation
 details belong in their own documents.

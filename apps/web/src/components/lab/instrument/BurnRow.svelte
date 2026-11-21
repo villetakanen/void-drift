@@ -7,7 +7,7 @@ import {
   TICK_RATE,
   TOTAL_TICKS,
 } from "../../../lib/instrument";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 
 // The burn row (lab-instrument study, 02.6 and 02.11): the compact B1–B3
 // switcher, then the chosen burn's lanes (left engine above, right below), lit
@@ -39,7 +39,7 @@ const seconds = Array.from({ length: SECONDS + 1 }, (_, i) => i);
 </script>
 
 <div class="row">
-  <Toggle
+  <SegmentedControl
     label="Burn"
     options={BURN_IDS.map((id) => BURNS[id].label)}
     bind:value={

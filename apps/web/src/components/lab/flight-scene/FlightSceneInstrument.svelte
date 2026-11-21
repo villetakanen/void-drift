@@ -1,5 +1,8 @@
 <script lang="ts">
-import type { FlightLayerContexts } from "@void-drift/mode-a";
+import type {
+  FlightLayerCanvases,
+  FlightLayerContexts,
+} from "@void-drift/mode-a";
 import { onMount, type Snippet, untrack } from "svelte";
 import {
   type DeepReadonly,
@@ -17,14 +20,19 @@ import {
   type TargetMode,
 } from "../../../lib/flight-scene";
 import {
+  type FieldBackground,
+  HISTORICAL_BACKGROUND,
+  PENDING_BACKGROUND,
+} from "../../../lib/game-field";
+import {
   type BurnId,
   SECONDS,
   TICK_RATE,
   TOTAL_TICKS,
 } from "../../../lib/instrument";
-import FlightLayers from "../../FlightLayers.svelte";
+import GameField from "../../GameField.svelte";
 import RingSlider from "../../inputs/RingSlider.svelte";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import BurnRow from "../instrument/BurnRow.svelte";
 import OverlayPane from "../instrument/OverlayPane.svelte";
 import "@void-drift/core/styles/buttons.css";
@@ -32,13 +40,15 @@ import "@void-drift/core/styles/buttons.css";
 // Flight scene instrument (study flight-scene-instrument-2026-11-10): one ship
 // flying the Motion instrument's burns through the production simulation and
 // the game's own layers. The scene is the whole 1440 × 900 screen; burn and
-// time float over its lower edge, the view switch is top-left, the values menu
+// time float over its lower edge, the view selector is top-left, the values menu
 // top-right.
 let {
   config,
   experiment,
   label = "Flight scene: a burn in the game’s layers",
   pane,
+  summary,
+  measurements,
   light,
   targets,
   layers = { world: true, fx: true, lfx: true },
@@ -47,11 +57,15 @@ let {
   planetAppearance,
   starAppearance,
   start,
+  loadout,
+  backgroundMode = "production",
 }: {
   /** The configuration document; parsed here, so it may come from anywhere. */
   config: unknown;
   experiment?: FlightExperiment;
   label?: string;
+  summary?: string;
+  measurements?: string;
   /**
    * The menu's content: the controls of the study or Lab page that mounts the
    * instrument. The instrument has none of its own; without a pane there is no
@@ -78,6 +92,8 @@ let {
   starAppearance?: StarAppearance;
   /** Validated initial pose/velocity override; replays the selected burn/time. */
   start?: unknown;
+  loadout?: unknown;
+  backgroundMode?: "production" | "historical";
 } = $props();
 
 // The document is read once; the designer's changes are view state. The engine
@@ -91,14 +107,30 @@ const activeParsed = $derived(
   doc
     ? FlightSceneDocumentSchema.safeParse({
         ...doc,
+        loadout: loadout ?? doc.loadout,
         planet: planet ?? doc.planet,
         start: start ?? doc.start,
       })
     : null,
 );
 const activeDoc = $derived(activeParsed?.success ? activeParsed.data : null);
-const planetKey = $derived(
-  JSON.stringify({ planet: activeDoc?.planet, start: activeDoc?.start }),
+const stagingKey = $derived(
+  JSON.stringify({
+    planet: activeDoc?.planet,
+    start: activeDoc?.start,
+    loadout: activeDoc?.loadout,
+  }),
+);
+
+const sceneSummary = $derived(
+  summary?.trim() ||
+    [
+      activeDoc?.planet && planetAppearance?.label,
+      light?.label,
+      experiment?.label,
+    ]
+      .filter(Boolean)
+      .join(" · "),
 );
 
 const SCREEN = { w: 1440, h: 900 };
@@ -127,9 +159,16 @@ let lost = $state<{ seconds: number; cause?: string | null } | null>(null);
 let hostW = $state(SCREEN.w);
 let hostH = $state(SCREEN.h);
 const scale = $derived(Math.min(hostW / SCREEN.w, hostH / SCREEN.h));
-let canvases = $state<
-  Partial<Record<"world" | "fx" | "lfx", HTMLCanvasElement>>
->({});
+let skyX = $state(960),
+  skyY = $state(540),
+  background = $state<FieldBackground>(
+    untrack(() =>
+      backgroundMode === "historical"
+        ? HISTORICAL_BACKGROUND
+        : PENDING_BACKGROUND,
+    ),
+  );
+let canvases = $state<FlightLayerCanvases>({});
 
 onMount(() => {
   const world = canvases.world?.getContext("2d");
@@ -137,7 +176,7 @@ onMount(() => {
   const lfx = canvases.lfx?.getContext("2d");
   if (!doc || !world || !fx || !lfx) return;
   const scene = new FlightScene(
-    { world, fx, lfx } satisfies FlightLayerContexts,
+    { world, fx, lfx, fxGlow: canvases.fxGlow } satisfies FlightLayerContexts,
     untrack(() => activeDoc) ?? doc,
     RENDER_WIDTH,
     untrack(() => staged),
@@ -146,6 +185,8 @@ onMount(() => {
     untrack(() => planetAppearance),
     untrack(() => experiment),
   );
+  scene.backgroundMode = backgroundMode;
+  background = scene.background;
   // The constructor already flew the opening burn in the opening view and the
   // chosen targets, so the first frame only seeks.
   let drawn = {
@@ -155,11 +196,16 @@ onMount(() => {
     targets: untrack(() => staged) as string,
     light: untrack(() => light),
     tuning: untrack(() => JSON.stringify(tuning ?? {})),
-    planet: untrack(() => planetKey),
+    planet: untrack(() => stagingKey),
     appearance: untrack(() => planetAppearance),
     star: "",
     experiment: untrack(() => experiment),
   };
+  const releaseMaterials = !doc.planet
+    ? scene.loadPracticeMaterials(() => {
+        drawn.tick = -1;
+      })
+    : undefined;
   let previous = performance.now(),
     accumulator = 0,
     raf = 0;
@@ -184,14 +230,14 @@ onMount(() => {
         drawn.targets !== targets ||
         drawn.light !== shownLight ||
         drawn.tuning !== tuned ||
-        drawn.planet !== planetKey ||
+        drawn.planet !== stagingKey ||
         drawn.appearance !== planetAppearance ||
         drawn.star !== JSON.stringify(starAppearance))
     ) {
       if (drawn.experiment !== experiment) scene.setExperiment(experiment);
       if (drawn.tuning !== tuned) scene.setTuning(tuning);
       if (drawn.light !== shownLight) scene.setLight(shownLight);
-      if (drawn.targets !== targets || drawn.planet !== planetKey)
+      if (drawn.targets !== targets || drawn.planet !== stagingKey)
         scene.configure(activeDoc, targets);
       if (drawn.star !== JSON.stringify(starAppearance))
         scene.setStarAppearance(starAppearance);
@@ -199,6 +245,10 @@ onMount(() => {
         scene.setPlanetAppearance(planetAppearance);
       if (drawn.view !== view) scene.restart(burn, view);
       scene.seek(burn, tick, Infinity);
+      const centre = scene.skyCamera;
+      skyX = centre.x;
+      skyY = centre.y;
+      background = scene.background;
       rendered = true;
       drawnTick = tick;
       drawnView = view;
@@ -210,7 +260,7 @@ onMount(() => {
         targets,
         light: shownLight,
         tuning: tuned,
-        planet: planetKey,
+        planet: stagingKey,
         appearance: planetAppearance,
         star: JSON.stringify(starAppearance),
         experiment,
@@ -220,7 +270,10 @@ onMount(() => {
     raf = requestAnimationFrame(frame);
   }
   raf = requestAnimationFrame(frame);
-  return () => cancelAnimationFrame(raf);
+  return () => {
+    cancelAnimationFrame(raf);
+    releaseMaterials?.();
+  };
 });
 </script>
 
@@ -247,39 +300,46 @@ onMount(() => {
       style={`width:${SCREEN.w}px;height:${SCREEN.h}px;transform:translate(-50%,-50%) scale(${scale})`}
     >
       <div class="slot scene">
-        <FlightLayers
+        <GameField
+          {background}
+          cameraX={skyX}
+          cameraY={skyY}
+          width={RENDER_WIDTH}
           bind:canvases
           label="The game’s layers at the current time"
           visibility={layers}
         />
-        <div class="view">
-          <Toggle
-            label="View"
-            options={viewOptions}
-            bind:value={
-              () => VIEW_LABELS[view],
-              (v) => {
+        <div class="scene-header">
+          <div class="view">
+            <SegmentedControl
+              label="View"
+              options={viewOptions}
+              bind:value={
+                () => VIEW_LABELS[view],
+                (v) => {
   view =
     (Object.keys(VIEW_LABELS) as FlightView[]).find(
       (id) => VIEW_LABELS[id] === v,
     ) ?? view;
 }
-            }
-          />
+              }
+            />
+          </div>
+          {#if sceneSummary || measurements}
+            <div class="study-light">
+              {#if sceneSummary}
+                <p>{sceneSummary}</p>
+              {/if}
+              {#if measurements}
+                <p>{measurements}</p>
+              {/if}
+            </div>
+          {/if}
         </div>
         {#if activeParsed && !activeParsed.success}
           <p class="lost" role="alert">
             Invalid scene staging:
             {activeParsed.error.issues.map((issue) => issue.message).join("; ")}
-          </p>
-        {/if}
-        {#if (planetAppearance && activeDoc?.planet) || light || experiment}
-          <p class="study-light">
-            {planetAppearance && activeDoc?.planet
-              ? planetAppearance.label
-              : ""}{light ? ` · ${light.label}` : ""}{experiment
-              ? ` · ${experiment.label}`
-              : ""}
           </p>
         {/if}
         {#if lost}
@@ -393,15 +453,29 @@ onMount(() => {
   width: 100%;
   height: 100%;
 }
-.view {
+.scene-header {
   position: absolute;
-  left: 16px;
-  top: 16px;
+  inset: 16px 80px auto 16px;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  pointer-events: none;
+}
+.view,
+.study-light {
+  pointer-events: auto;
+}
+.study-light p {
+  margin: 0;
 }
 .study-light {
-  position: absolute;
-  right: 80px;
-  top: 16px;
+  justify-self: end;
+  max-width: min(100%, 62ch);
+  box-sizing: border-box;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  user-select: text;
   margin: 0;
   padding: 8px 12px;
   background: rgb(0 0 0 / 65%);

@@ -1,22 +1,43 @@
 <script lang="ts">
 import {
   DEFAULT_ROCK_BODY_LIGHTING,
+  type HabitableAppearance,
   type RockBodyLighting,
   RockBodyLightingSchema,
 } from "@void-drift/core";
-import { type FlightLayerId, STEP } from "@void-drift/mode-a";
+import {
+  type FlightLayerId,
+  HABITABLE_RADIUS,
+  MERCURIAL_ROCK_RADIUS,
+  STEP,
+} from "@void-drift/mode-a";
 import { onMount, type Snippet, untrack } from "svelte";
 import type { DeepReadonly } from "../../../lib/flight-scene";
+import {
+  type FieldBackground,
+  PENDING_BACKGROUND,
+} from "../../../lib/game-field";
 import {
   type PlanetInspectorDocument,
   PlanetInspectorScene,
 } from "../../../lib/planet-inspector";
-import FlightLayers from "../../FlightLayers.svelte";
+import GameField from "../../GameField.svelte";
 import RingSlider from "../../inputs/RingSlider.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import Switch from "../../inputs/Switch.svelte";
-import Toggle from "../../inputs/Toggle.svelte";
 import OverlayPane from "../instrument/OverlayPane.svelte";
 import "@void-drift/core/styles/buttons.css";
+
+type PlanetName = PlanetInspectorDocument["planet"]["name"];
+const PLANET_LABELS: Record<PlanetName, string> = {
+  habitable: "Habitable",
+  mercury: "Mercury",
+  mercurial: "Mercurial",
+  "outer-mercurial": "Outer Mercurial",
+  venus: "Venus",
+  cradle: "The Cradle",
+  earth: "Earth",
+};
 
 let {
   doc,
@@ -29,9 +50,54 @@ let {
   paneDoc: DeepReadonly<PlanetInspectorDocument>;
   label: string;
   pane?: Snippet<[DeepReadonly<PlanetInspectorDocument>]>;
-  onSelect: (name: "mercury" | "venus") => void;
+  onSelect: (planet: PlanetInspectorDocument["planet"]) => void;
 } = $props();
 const opening = untrack(() => doc.opening);
+const family = untrack(() => doc.planet.kind === "family");
+let radius = $state(
+  untrack(() => (doc.planet.kind === "family" ? doc.planet.radius : 27)),
+);
+const habitable = untrack(() => doc.planet.name === "habitable");
+const radiusRange = habitable ? HABITABLE_RADIUS : MERCURIAL_ROCK_RADIUS;
+let ground = $state<HabitableAppearance["ground"]>(
+  untrack(() =>
+    doc.planet.name === "habitable" ? doc.planet.ground : "archipelago",
+  ),
+);
+let clouds = $state<HabitableAppearance["clouds"]>(
+  untrack(() =>
+    doc.planet.name === "habitable" ? doc.planet.clouds : "fronts",
+  ),
+);
+const cloudLabels = {
+  fronts: "Fronts",
+  "cover-20": "20%",
+  "cover-40": "40%",
+} as const;
+function selectMaterial(next: HabitableAppearance) {
+  ground = next.ground;
+  clouds = next.clouds;
+  playing = false;
+  void scene?.setHabitableAppearance(next).then(() => invalidate());
+  invalidate();
+}
+function selectFamily(value: string) {
+  if (value === "Habitable")
+    onSelect({
+      kind: "family",
+      name: "habitable",
+      radius: HABITABLE_RADIUS.reference,
+      ground: "archipelago",
+      clouds: "fronts",
+    });
+  else
+    onSelect({
+      kind: "family",
+      name: value === "Outer Mercurial" ? "outer-mercurial" : "mercurial",
+      radius: MERCURIAL_ROCK_RADIUS.practice,
+    });
+}
+const namedOptions = ["Mercury", "Venus", "The Cradle", "Earth"];
 const id = $props.id();
 let playing = $state(opening.playing);
 let orbit = $state(0);
@@ -52,6 +118,9 @@ let sceneHeight = $state(900);
 let host: HTMLElement;
 let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
 let scene: PlanetInspectorScene | undefined;
+let background = $state<FieldBackground>(PENDING_BACKGROUND);
+let skyX = $state(960),
+  skyY = $state(540);
 let invalidate = () => {};
 let reset = () => {};
 
@@ -67,6 +136,17 @@ function scrubRotation(value: number) {
   scene?.seekRotation(value);
   rotation = value;
   invalidate();
+}
+
+function scrubRadius(value: number) {
+  try {
+    scene?.setRadius(value);
+    radius = value;
+    playing = false;
+    invalidate();
+  } catch {
+    /* Invalid edits retain the previous validated specimen. */
+  }
 }
 
 function applyLighting(input: unknown) {
@@ -137,6 +217,9 @@ onMount(() => {
     try {
       scene.resize(sceneWidth, sceneHeight);
       scene.draw(pixelsPerUnit, hud);
+      const centre = scene.camera.getViewCentre();
+      skyX = centre.x;
+      skyY = centre.y;
       if (now - lastMeasurement >= 200) {
         passTime = scene.passMilliseconds;
         redrawRate = scene.redrawsPerSecond;
@@ -157,6 +240,7 @@ onMount(() => {
     scene?.dispose();
     scene = new PlanetInspectorScene({ world, fx, lfx }, doc, request);
     status = scene.status;
+    background = scene.background;
     previous = undefined;
     accumulator = 0;
     request();
@@ -168,6 +252,10 @@ onMount(() => {
     create();
     lighting = { ...DEFAULT_ROCK_BODY_LIGHTING };
     lightingError = "";
+    radius = doc.planet.kind === "family" ? doc.planet.radius : 27;
+    ground =
+      doc.planet.name === "habitable" ? doc.planet.ground : "archipelago";
+    clouds = doc.planet.name === "habitable" ? doc.planet.clouds : "fronts";
   };
   create();
   const suspend = () => {
@@ -207,6 +295,9 @@ onMount(() => {
   data-zoom={Number.parseInt(zoom, 10)}
   data-pixels-per-unit={pixelsPerUnit}
   data-planet={doc.planet.name}
+  data-radius={family ? radius : undefined}
+  data-ground={habitable ? ground : undefined}
+  data-clouds={habitable ? clouds : undefined}
 >
   <div
     class="scene"
@@ -214,9 +305,18 @@ onMount(() => {
     bind:clientWidth={sceneWidth}
     bind:clientHeight={sceneHeight}
   >
-    <FlightLayers bind:canvases {label} {visibility} />
+    <GameField
+      showFxGlow={false}
+      bind:canvases
+      {label}
+      {visibility}
+      {background}
+      cameraX={skyX}
+      cameraY={skyY}
+      width={sceneHeight ? (sceneWidth / sceneHeight) * 1080 : 1920}
+    />
     <div class="views">
-      <Toggle
+      <SegmentedControl
         label="Zoom"
         options={["1×", "2×", "4×", "8×", "16×"]}
         bind:value={zoom}
@@ -224,15 +324,85 @@ onMount(() => {
     </div>
     <OverlayPane title="Inspector" label="Planet inspection options">
       <p>Named planet</p>
-      <Toggle
+      <SegmentedControl
         label="Named planet"
-        options={["Mercury", "Venus"]}
+        options={namedOptions}
+        details={{
+          Mercury: "Practice",
+          Venus: "Practice",
+          "The Cradle": "Practice",
+          Earth: "Lab copy",
+        }}
         bind:value={
-          () => (doc.planet.name === "venus" ? "Venus" : "Mercury"),
-          (value) => onSelect(value === "Venus" ? "venus" : "mercury")
+          () => (family ? "" : PLANET_LABELS[doc.planet.name]),
+          (value) =>
+  onSelect({
+    kind: "named",
+    name:
+      (["mercury", "venus", "cradle", "earth"] as const).find(
+        (name) => PLANET_LABELS[name] === value,
+      ) ?? "mercury",
+  })
         }
       />
-      <p class="caption">Practice · Production appearance</p>
+      <p>Planet family</p>
+      <SegmentedControl
+        label="Planet family"
+        options={["Mercurial", "Outer Mercurial", "Habitable"]}
+        details={{
+          Mercurial: "Inner rock",
+          "Outer Mercurial": "Outer rock",
+          Habitable: "Air and oceans",
+        }}
+        bind:value={
+          () => (family ? PLANET_LABELS[doc.planet.name] : ""),
+          selectFamily
+        }
+      />
+      {#if family}
+        <RingSlider
+          label="Radius"
+          min={radiusRange.min}
+          max={radiusRange.max}
+          step={0.1}
+          bind:value={() => radius, scrubRadius}
+          unit="u"
+          digits={1}
+        />
+      {/if}
+      {#if habitable}
+        <p>Ground</p>
+        <SegmentedControl
+          label="Habitable ground"
+          options={["Archipelago", "Violet"]}
+          bind:value={
+            () => (ground === "violet" ? "Violet" : "Archipelago"),
+            (value) =>
+  selectMaterial({
+    ground: value === "Violet" ? "violet" : "archipelago",
+    clouds,
+  })
+          }
+        />
+        <p>Clouds</p>
+        <SegmentedControl
+          label="Habitable clouds"
+          options={["Fronts", "20%", "40%"]}
+          bind:value={
+            () => cloudLabels[clouds],
+            (value) =>
+  selectMaterial({
+    ground,
+    clouds:
+      value === "20%" ? "cover-20" : value === "40%" ? "cover-40" : "fronts",
+  })
+          }
+        />
+      {/if}
+      <p class="caption">
+        {family ? "Generated family · G7 reference" : "Practice"}
+        · Production appearance
+      </p>
       <RingSlider
         label="Incoming light intensity"
         min={0}
@@ -309,8 +479,16 @@ onMount(() => {
       {/if}
     </OverlayPane>
     <div class="identity">
-      <span>{doc.planet.name === "venus" ? "Venus" : "Mercury"}</span>
-      <span class="caption">Production · Practice</span>
+      <span>{PLANET_LABELS[doc.planet.name]}</span>
+      <span class="caption"
+        >{doc.planet.name === "earth"
+          ? "Lab copy of The Cradle · Earth ground"
+          : family
+            ? habitable
+              ? "Production · Habitable family"
+              : "Production · Mercurial family"
+            : "Production · Practice"}</span
+      >
     </div>
   </div>
   {#if status}

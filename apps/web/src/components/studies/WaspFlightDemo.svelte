@@ -1,6 +1,12 @@
 <script lang="ts">
 import { EnginePlume, type PlumeEmitter, Vec2 } from "@void-drift/core";
-import { BUILD_FLIGHT_SCALE, ENGINE_ART, FIGHTER } from "@void-drift/mode-a";
+import {
+  BUILD_FLIGHT_SCALE,
+  ENGINE_ART,
+  FIGHTER,
+  LIGHT_ION_BEAM,
+  PARTS,
+} from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import { DT, INPUT_SEQUENCE, TOTAL_TICKS } from "./movement-bench";
 import "@void-drift/core/styles/buttons.css";
@@ -341,8 +347,7 @@ function createWaspEmitters(
 ): PlumeEmitter[] {
   const nozzleY =
     ENGINE_MOUNT_Y + (eng === "heavy-ion" ? 12.65 : eng === "fusion" ? 12 : 11);
-  const mainStyle =
-    eng === "ion" ? "ion-light" : eng === "heavy-ion" ? "ion-heavy" : "default";
+  const mainBeam = PARTS[eng].ion?.beam;
 
   const frontRad = (STAB_CONFIG.frontAngleDeg * Math.PI) / 180;
   const rearRad = (STAB_CONFIG.rearAngleDeg * Math.PI) / 180;
@@ -360,7 +365,7 @@ function createWaspEmitters(
 
   return [
     {
-      style: mainStyle,
+      beam: mainBeam,
       x: -nozzleY * BUILD_FLIGHT_SCALE,
       y: 0,
       angle: 0,
@@ -368,7 +373,7 @@ function createWaspEmitters(
     },
     // Front-Left: exhaust shoots port (-y_ship), so force (+x_local) points starboard (+y_ship)
     {
-      style: "ion-light",
+      beam: LIGHT_ION_BEAM,
       x: flX * BUILD_FLIGHT_SCALE,
       y: flY * BUILD_FLIGHT_SCALE,
       angle: Math.PI / 2 + frontRad,
@@ -376,7 +381,7 @@ function createWaspEmitters(
     },
     // Front-Right: exhaust shoots starboard (+y_ship), so force points port (-y_ship)
     {
-      style: "ion-light",
+      beam: LIGHT_ION_BEAM,
       x: frX * BUILD_FLIGHT_SCALE,
       y: frY * BUILD_FLIGHT_SCALE,
       angle: -Math.PI / 2 - frontRad,
@@ -384,7 +389,7 @@ function createWaspEmitters(
     },
     // Rear-Left: exhaust shoots port (-y_ship), so force points starboard (+y_ship)
     {
-      style: "ion-light",
+      beam: LIGHT_ION_BEAM,
       x: rlX * BUILD_FLIGHT_SCALE,
       y: rlY * BUILD_FLIGHT_SCALE,
       angle: Math.PI / 2 + rearRad,
@@ -392,7 +397,7 @@ function createWaspEmitters(
     },
     // Rear-Right: exhaust shoots starboard (+y_ship), so force points port (-y_ship)
     {
-      style: "ion-light",
+      beam: LIGHT_ION_BEAM,
       x: rrX * BUILD_FLIGHT_SCALE,
       y: rrY * BUILD_FLIGHT_SCALE,
       angle: -Math.PI / 2 - rearRad,

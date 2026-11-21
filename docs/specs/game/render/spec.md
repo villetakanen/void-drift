@@ -1,3 +1,13 @@
+---
+
+title: "Spec: Render"
+status: draft
+generated:
+  by: "codex/gpt-6"
+  at: "2026-11-21T18:41:41+02:00"
+verified: [{ by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }, { by: "codex/gpt-6", at: "2026-11-19T19:21:23+02:00" }, { by: "codex/gpt-6", at: "2026-11-19T21:04:09+02:00" }, { by: "codex/gpt-6", at: "2026-11-21T18:48:44+02:00" }]
+---
+
 # Render
 
 ## Blueprint
@@ -14,16 +24,18 @@ a drawn frame relates to simulation time, and what a layer may remember. It is
 the shared model the screen, the camera and the effects are specified against,
 and the one people point at when they discuss how the game renders.
 
-### Architecture and boundaries
+### Architecture
 
 - `packages/mode-a/src/lib/flight-frame.ts` defines the in-flight frame:
   `FLIGHT_LAYERS`, the ordered layers, `FLIGHT_PASSES`, the ordered passes with
   the layer each draws on, and `drawFlightFrame`, which draws them.
-- `apps/web/src/components/FlightLayers.svelte` is the stage's canvas stack:
-  one canvas per layer, composited by CSS.
+- The [shared game field](game-field/spec.md) couples the prepared browser sky
+  and transparent World policy for play and Lab field consumers. Its web host
+  composes `FlightLayers.svelte`, the lower-level World, FX and LFX canvas host,
+  with the sky inside the same isolated group.
 - `apps/web/src/components/FlightDeck.svelte` runs the frame loop, hosts the
   layers and draws the in-flight frame only through `drawFlightFrame`.
-- `apps/web/src/components/studies/flight-scene.ts` uses the same layer stack
+- `apps/web/src/lib/flight-scene/scene.ts` uses the same layer stack
   and ordered frame passes for the Flight scene instrument; its replay paints
   historical light through the shared FX pass.
 - This contract owns frame time, the spaces, the layer model and the order of
@@ -34,18 +46,19 @@ and the one people point at when they discuss how the game renders.
   what emits it, how it accumulates and decays, its budget, and the look each
   light layer's blend, resolution and filter are tuned to. Each pass's
   appearance belongs to the feature that draws it.
-- The title backdrop is a separate frame owned by the
-  [title screen](../landing-page/spec.md).
+- The shared [game field backdrop](../../factory/design-system/game-field-backdrop/spec.md)
+  draws its independently generated system over the prepared field sky at a
+  stationary camera pose. It does not use or change an active game's state.
 - The [render model page](../../lab/render-model/spec.md) shows this model in
   the Lab.
 
-### The demo-scene method
+#### The demo-scene method
 
 The renderer treats the browser as the machine a demo is written for. Demo
 coders made hardware do what it was not built for, such as drawing with sound
 circuits. Here the browser's page machinery is that hardware: blend modes,
 filters, image scaling, transforms and opacity, all built for laying out
-documents, are used to make cool, expressive graphics with inexpensive methods.
+documents, make cool, expressive graphics with inexpensive methods.
 This is the Hi-Fi Lo-Fi intent: use the artefacts of cheap rendering as part of
 the picture's character.
 
@@ -59,12 +72,12 @@ the picture's character.
 - **The browser composites:** a layer's blend mode, its scaling from its own
   resolution to the stage, its filter and its opacity are CSS on the layer's
   element.
-- **No game code blends, blurs, scales or distorts pixels.** The one thing
-  drawn code does to an existing image is fade the FX layer's history, because
-  the browser has no native that accumulates.
-- **A native changes how a layer is shown, never what the layer holds.**
+- **Use native operations on images.** The renderer fades FX history and
+  makes one [FX glow](fx.md#low-res-css-glow) downsample with Canvas operations.
+  CSS handles presentation blend, blur and scaling without changing backing
+  pixels. No game code loops over individual pixels.
 
-### World bodies
+#### World bodies
 
 A world body is a planet or another natural body in flight. Every body is drawn
 the same way; what differs between bodies is data.
@@ -73,7 +86,7 @@ the same way; what differs between bodies is data.
   atmosphere, drawn far to near on World. Each part is drawn without light or
   shade of its own.
 - **Light and dark on LFX.** Each body's light and dark side is one stamp on LFX,
-  turned to face its star. The shared `body-light` pass draws these stamps before
+  turned to face its star and sized to cover its outermost surface. The shared `body-light` pass draws these stamps before
   every other LFX pass, so beams and
   halos are drawn over it. It may darken whatever lies beneath it; over a ship
   this reads as the body's shadow.
@@ -93,17 +106,26 @@ the same way; what differs between bodies is data.
   stamp and never creates or rebuilds a pixel mask. Prepared storage contains
   the production default and tuples with active users; it releases custom
   tuples when their users stop needing them.
-- **Rotation.** A surface's turn comes from simulation ticks, independently of
-  its orbit and its light. The turning surface is drawn with the browser's image
-  drawing from a map prepared at load. It is sized to the body's diameter on
-  screen and redrawn only when the surface has visibly moved. The same tick gives
-  the same picture, whatever frames were drawn before it.
+- **Surfaces.** A body has one or two turning surfaces. The lower surface is the
+  ground and has the body's radius. An upper surface lies over it, may be partly
+  transparent and may have a larger radius than the body; its map carries its
+  opacity. Anything else in the stack, such as haze or an atmospheric arc, is
+  drawn with native shapes and gradients, not as a turning surface.
+- **Rotation.** Each surface's turn comes from simulation ticks on its own
+  period, independently of the other surface, its orbit and its light. A
+  turning surface is drawn with the browser's image drawing from a map prepared
+  at load. It is sized to its own diameter on screen and redrawn only when that
+  surface has visibly moved. The same tick gives the same picture, whatever
+  frames were drawn before it. A body's two surfaces take turns: the ground's
+  turn advances only on even ticks and the upper surface's only on odd ticks,
+  so they never redraw in the same tick.
 - **Cost.** No game code loops over pixels per frame; pixel work happens at load.
   Visibility uses each body's complete visual bounds. A stock or fallback disc
   includes half its outline stroke, `max(1, radius × 0.06) / 2` world units;
   Venus's body bounds also include half its atmosphere stroke,
-  `max(0.65 / zoom, radius × 0.065) / 2` world units; a light stamp uses its
-  disc radius. The `planets` pass draws the complete body composition when its combined
+  `max(0.65 / zoom, radius × 0.065) / 2` world units; a body with an atmosphere
+  includes everything drawn out to its air's edge; a light stamp uses its disc
+  radius. The `planets` pass draws the complete body composition when its combined
   visible bounds intersect or touch the view, and skips body, surface and
   atmosphere drawing when they are wholly outside. The light pass draws when its
   stamp bounds intersect or touch the view, and skips it when wholly outside.
@@ -141,7 +163,37 @@ the same way; what differs between bodies is data.
 - **Failure.** When a body's material cannot be prepared, the stock body is drawn
   with the same World HUD, and the simulation is unaffected.
 
-### Time
+#### Planet appearance adapter
+
+`apps/web/src/lib/assets/planet-appearances.ts` owns `planetAppearances`:
+prepared surface/painter materials and the full simulation planet list enter;
+a read-only map of `BodyAppearance` callbacks keyed by full-system
+`systemPosition` leaves. FlightDeck, the Planet Inspector and the Flight scene
+instrument share this adapter. Planet properties and accepted appearances
+belong to the [planet contract](../world/planets/spec.md).
+
+- Match material applications by internal identity, never draw order, filtered
+  array index, display name or generic rock type. `moon` selects the fixed
+  mercurial material in generated flight and Practice. Venus and The Cradle
+  keep their own identities and compositions.
+- Validate supplied ordinals as unique positive integers before binding. An
+  ambiguous material identity is an error. Never renumber a filtered view.
+- Build the map when the system or prepared materials change, outside the frame
+  loop. Run replacement binds the current retained roster even when its count
+  or ordinals differ. Asynchronous material completion binds the current run.
+- Missing or failed material preparation leaves the body without an adapter
+  entry; the normal body pass draws its stock fallback. Physics and World HUD
+  remain available independently of material readiness.
+- The adapter supplies World bounds/drawing and LFX bounds/drawing to the
+  existing ordered passes. Bounds cover every visible part. The passes cull
+  before surface or light work. Drawing reads simulation ticks, actual body
+  radius, camera zoom and the current star position, and does not mutate the
+  simulation. Surface caching holds repeated or paused ticks.
+- Callers own prepared projection/painter instances and release them on
+  teardown. Late asynchronous results after teardown are disposed without
+  attaching to a departed scene. Immutable decoded maps may be shared.
+
+#### Time
 
 - **Tick:** one fixed simulation step of 1/60 s. Game time is the tick count
   times the step. Only ticks change the simulation.
@@ -155,52 +207,58 @@ the same way; what differs between bodies is data.
 - **Empty interval:** a frame with no tick, as when paused, shows the same
   picture. Nothing moves, emits or fades.
 
-### Spaces
+#### Spaces
 
 | Space  | Unit                                               | Used for                        | Conversion owned by        |
 | ------ | -------------------------------------------------- | ------------------------------- | -------------------------- |
 | World  | World units                                        | The simulation and world passes | Camera, to stage           |
 | Stage  | Logical pixels, 1080 high, width by viewport ratio | The layers and screen passes    | Game screen, to CSS pixels |
-| Screen | CSS pixels                                         | The deck                        | The browser                |
+| Screen | CSS pixels                                         | Flight contacts and the deck                        | The browser                |
 
 A pass draws in exactly one space: `screen` passes draw in stage pixels with no
 transform, `world` passes draw under the camera transform.
 
-### Layers
+#### Layers
 
 A layer is one element in the stage. The stage is its own blending group:
 layers blend with the layers beneath them in the stage and with nothing behind
 it. Every canvas layer covers the whole stage and declares:
 
 - **Blend:** the CSS blend mode it is composited with.
-- **Memory:** `immediate` or `persistent`.
+- **Memory:** immediate, persistent or derived presentation. A derived layer
+  takes its image from one completed frame.
 - **Resolution:** its canvas size as a fraction of the stage. The browser
   scales it to the stage.
 - **Filter:** an optional CSS filter.
 
 The in-flight stack, bottom to top:
 
-| Layer | Holds                                  | Blend      | Memory     |
-| ----- | -------------------------------------- | ---------- | ---------- |
-| World | Everything solid, and the World HUD    | normal     | immediate  |
-| FX    | Accumulated light that fades           | screen     | persistent |
-| LFX   | Live light, fresh every frame          | hard-light | immediate  |
-| Deck  | Page elements: instruments, pads, rows | normal     | none       |
+| Layer       | Holds                                  | Blend      | Memory              |
+| ----------- | -------------------------------------- | ---------- | ------------------- |
+| Distant sky | Repeating prepared sky image           | normal     | fixed per sightline |
+| World       | Everything solid, and the World HUD    | normal     | immediate           |
+| FX          | Accumulated light that fades           | screen     | persistent          |
+| FX glow     | Downsampled copy of the final FX image  | screen     | derived             |
+| LFX         | Live light, fresh every frame          | hard-light | immediate           |
+| Contacts    | Screen-fixed SVG contact cues          | normal     | none                |
+| Deck        | Page elements: instruments, pads, rows | normal     | none                |
+
+The [0.7 distant flight sky](flight-sky/spec.md) defines the prepared-image composition and its camera behaviour.
 
 Layer-specific contracts live in [World](world.md), [FX](fx.md), and
 [LFX](lfx.md). Blend and resolution defaults are declared in `FLIGHT_LAYERS`;
 presentation filters are owned by `apps/web/src/components/FlightLayers.svelte`
 and judged by looking. Changing them changes no pass behavior. World defaults
-to normal with no filter. FX defaults to CSS `screen` with the shared Turbulent
-bloom filter (12 CSS px glow, 16 CSS px distortion, 90% strength). LFX defaults
-to CSS `hard-light` with no filter. FX remains at full stage resolution.
+to normal with no filter. Full-resolution FX uses CSS `screen` with no filter.
+[FX glow](fx.md#low-res-css-glow) is derived presentation, outside the pass
+list. LFX defaults to CSS `hard-light` with no filter.
 
 Three rules follow from the stack:
 
 - Solid things are drawn on World only. Nothing solid sits above light.
 - Where something solid must stay readable through accumulated light, the FX
   layer is cut there so World shows through.
-- The deck is above every canvas layer and outside the camera transform.
+- Flight contacts and the deck are outside the camera transform. The browser composites their SVG and page elements, in that order, above every canvas layer.
 
 An **immediate** layer is cleared and redrawn every frame from the simulation's
 state, the camera and game time. The same state gives the same layer.
@@ -223,28 +281,33 @@ remain exploratory: Follow 4× is a Lab hypothesis and reproduction view, not a
 guaranteed maximum, and the whole-system view is not a guaranteed minimum. FX
 remains full resolution while those limits are explored.
 
-### The in-flight frame
+#### The in-flight frame
 
 `FLIGHT_PASSES` in `packages/mode-a/src/lib/flight-frame.ts` is the list of passes.
 Each entry names its layer, its space and what it draws. The
 [render model page](../../lab/render-model/spec.md) lists them beside its workbench.
 
 - Array order is draw order within each layer.
-- Within World, passes draw far to near: the void, the background, the world's
-  bodies, then the ship.
+- The standard game field clears World to transparency over its prepared sky before drawing local bodies and ships. Lab views that present this field follow the same rule. Dedicated test fixtures can supply a background specified by their experiment.
 - A new pass takes the position its depth gives it in that order.
 
-### Authority
+#### Authority
 
 Rendering reads the simulation and writes none of it. Drawing every layer, some
 layers or none leaves the run identical, tick for tick. A persistent layer's
 image never feeds back into the simulation.
 
-### Inspection
+#### Inspection
 
-`drawFlightFrame` accepts `include`, which selects the passes that draw, and
+The shared field selects the composition background policy before caller pass
+filters. `drawFlightFrame` accepts `include`, which selects the eligible passes that draw, and
 `observe`, which receives each drawn pass and its draw time. The game uses
-neither: it draws every pass, unobserved.
+neither: it draws every eligible production pass, unobserved.
+
+### Constraints
+
+- The browser composites the shared layers; prepared images and native drawing
+  supply every visible body and effect.
 
 ## Contract
 
@@ -261,16 +324,14 @@ neither: it draws every pass, unobserved.
   `drawFlightFrame`.
 - `FLIGHT_LAYERS` holds World, FX and LFX in stack order, each with its
   blend, memory and resolution, and every pass names one of them.
-- The stage hosts one canvas per layer, in stack order, each composited by
-  its declared CSS blend mode inside an isolated stage.
+- The stage hosts one canvas for each of World, FX and LFX, in stack order, with its declared CSS blend mode. The prepared sky image and the single derived FX glow canvas share their isolated blending group.
 - No pass draws another layer's image onto its own, and no game code sets a
   canvas composite operation to blend one layer with another.
 - The FX layer is cut over derelict apertures, and no solid pass draws
   above it.
 - Gauntlet draws each living hostile fitted ship and weapon pose through the shared
   build renderer, with its charcoal Scout palette defined by that renderer.
-- Each offscreen hostile Gauntlet actor has a screen-fixed bearing cue; the cue
-  does not alter camera or simulation state.
+- [Flight contacts](flight-contacts/spec.md) uses a pointer-transparent SVG above LFX and beneath the deck.
 - A layer's resolution can be changed without changing any pass.
 - A frame with an empty interval leaves the FX layer's image unchanged
   (`tests/browser/fx-surface.spec.ts`).
@@ -294,11 +355,18 @@ neither: it draws every pass, unobserved.
   surface, atmosphere or light drawing. World HUD marks crossing the view remain
   visible independently.
 - A paused frame redraws no body surface.
+- A body with two surfaces turns each on its own period: advancing the
+  simulation by one period of either surface returns that surface to the same
+  picture while the other has moved.
+- The frame cost of a body with two surfaces is measured with `observe` on
+  screen, off screen and close up, beside Mercury and Venus.
 
 ### Regression guardrails
 
-- A layer and a pass exist in one place, `flight-frame.ts`. Nothing else in the
-  game draws onto the flight layers.
+- Every painted layer and pass is declared in `flight-frame.ts`. Flight
+  artwork reaches those layers through the ordered passes. After the passes,
+  the shared presenter copies FX into its derived glow.
+- The only cross-layer image copy is from finalized FX to the derived glow.
 - An immediate layer keeps no image, buffer or history between frames.
 - Persistent state is never read by the simulation.
 - Blend, scale and filter are CSS on a layer's element, never drawn code.
@@ -348,6 +416,12 @@ Scenario: A planet turns
   Then its surface turns with simulation time
   And its light and dark side keeps facing the star
 
+Scenario: Clouds turn over the ground
+  Given a planet with a ground surface and a partly transparent cloud surface
+  When frames are drawn while the simulation advances
+  Then the ground shows through the openings in the clouds
+  And the clouds turn at their own rate over the ground
+
 Scenario: A planet is outside the view
   Given a planet's complete visual bounds are outside the camera's view
   When a frame is drawn
@@ -359,16 +433,31 @@ Scenario: A planet's visual edge touches the view
   When a frame is drawn
   Then the planet is drawn without clipping its visible edge
 
-Scenario: A layer's look is changed
-  Given the FX layer at full resolution with no filter
-  When its resolution is halved and a filter is set
-  Then the picture changes
-  And the image the FX layer holds follows the same rules as before
+Scenario: Present accumulated light
+  Given a flight frame with accumulated FX light and an aperture to cut
+  When the frame is presented
+  Then full-resolution FX remains sharp and shows the cut
+  And a single glow canvas between FX and LFX shows the downsample of the cut image
+  And the browser applies the shared glow blend, opacity and blur
+
+Scenario: Rebuild accumulated light on a seek
+  Given the Flight scene with a painted FX frame
+  When the viewer seeks to an earlier tick
+  Then replay rebuilds the FX history for that tick
+  And only the final FX image is copied to the glow canvas
 ```
 
-### Configured Lab painters
+#### Configured Lab painters
 
 A configured Lab flight can supply its own ordered pass list to `drawFlightFrame`.
 The frame retains layer clearing, camera transforms, resolution and observation for
 those passes. Omitting a custom list uses the production passes. A study can replace
 a solid-body painter and add its matching LFX painter without changing play’s defaults.
+
+#### Habitable world appearance
+
+The shared planet appearance adapter composes a generated Habitable world through
+the same ground, independent cloud surface, World haze/rim and LFX light ownership
+as The Cradle. Its validated ground/cloud choices select production maps before
+drawing. All generated flight and preview consumers bind this shared composition;
+material failure retains a blue fallback body, atmosphere physics and HUD identity.

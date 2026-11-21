@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { PartIdSchema } from "../lib/schemas/loadout";
 import { ShipProfileIdSchema } from "../lib/schemas/ship-profile";
-export const CHALLENGE = "ion-storm";
+export const CHALLENGE = "fires-in-the-sky";
 /** A ship carries at most ten fitted parts; the bound is a sanity limit, `firestore.rules` repeats it. */
 export const MAX_FITTING_PARTS = 16;
 /** Milliseconds are the finest time the record keeps. */
@@ -19,7 +19,7 @@ export const HighScoreSubmissionSchema = z.object({
         MILLISECOND_TOLERANCE,
       "Seconds hold at most three decimals",
     ),
-  score: z.number().int().min(1),
+  score: z.number().int().nonnegative(),
   deathCause: z.enum(["STAR", "HULL", "POWER"]),
   // Which runs may be saved is the Playground gate's decision, not the record's.
   shipId: ShipProfileIdSchema,

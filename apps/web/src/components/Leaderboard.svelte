@@ -10,6 +10,8 @@ import {
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import { version } from "../../package.json";
+import GameFieldBackdrop from "./GameFieldBackdrop.svelte";
+import SegmentedControl from "./inputs/SegmentedControl.svelte";
 import Logo from "./Logo.svelte";
 
 let rows = $state<HighScore[]>([]);
@@ -40,6 +42,7 @@ onMount(() => {
 });
 </script>
 <main class="score-page">
+  <GameFieldBackdrop standalone />
   <section class="panel score-panel" aria-labelledby="scores-title">
     <header class="score-heading">
       <a href="/" class="brand" aria-label="Void Drift home"
@@ -57,24 +60,17 @@ onMount(() => {
       {:else if rows.length === 0}
         <p>No scores yet. Set the first mark.</p>
       {:else}
-        <div class="button-group-frame">
-          <div class="button-group button-group--strip">
-            <button
-              type="button"
-              class={order === "score" ? "btn btn-filled" : "btn btn-normal"}
-              aria-pressed={order === "score"}
-              onclick={() => (order = "score")}
-            >
-              By score
-            </button><button
-              type="button"
-              class={order === "time" ? "btn btn-filled" : "btn btn-normal"}
-              aria-pressed={order === "time"}
-              onclick={() => (order = "time")}
-            >
-              By time
-            </button>
-          </div>
+        <div class="score-order">
+          <SegmentedControl
+            label="Score order"
+            options={["By score", "By time"]}
+            bind:value={
+              () => (order === "score" ? "By score" : "By time"),
+              (value) => {
+  order = value === "By score" ? "score" : "time";
+}
+            }
+          />
         </div>
         <table aria-label="Top 30 survival scores, sorted by {order}">
           <thead>
@@ -106,7 +102,8 @@ onMount(() => {
       {/if}
     </div>
     <p class="score-note">
-      Casual, client-reported scores. Lab trials are unranked.
+      Fires in the Sky · Casual, client-reported scores. Lab trials are
+      unranked.
     </p>
     <div class="button-group-frame">
       <div class="button-group button-group--strip">
@@ -126,14 +123,18 @@ onMount(() => {
 
 <style>
 .score-page {
+  position: relative;
+  isolation: isolate;
   box-sizing: border-box;
   height: 100dvh;
   overflow: auto;
   padding: var(--spacing-lg) var(--spacing-md);
-  background: var(--color-elev-1);
+  background: transparent;
   font: var(--font-size-body) / var(--line-height-ui) var(--font-family-ui);
 }
 .score-panel {
+  position: relative;
+  z-index: 1;
   width: min(100%, 48rem);
   box-sizing: border-box;
   margin-inline: auto;
@@ -165,7 +166,7 @@ p {
   padding-block: var(--spacing-lg);
   text-align: center;
 }
-.score-results .button-group-frame {
+.score-order {
   margin-bottom: var(--spacing-md);
 }
 table {

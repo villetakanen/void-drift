@@ -1,6 +1,6 @@
 <script lang="ts">
-import { paintIonBeam } from "@void-drift/core";
-import { drawUtilityArtwork } from "@void-drift/mode-a";
+import { paintBeam } from "@void-drift/core";
+import { drawUtilityArtwork, LIGHT_ION_BEAM } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 
 let { label = "Offset fold visibility" }: { label?: string } = $props();
@@ -80,7 +80,7 @@ onMount(() => {
           light.translate(170, 110);
           light.scale(3.5, 3.5);
           light.globalAlpha = 0.65;
-          paintIonBeam(light, 1, "ion-light");
+          paintBeam(light, 1, LIGHT_ION_BEAM);
           light.restore();
         }
         if (enabled) {

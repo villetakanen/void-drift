@@ -1,3 +1,13 @@
+---
+
+title: "Spec: Title screen"
+status: draft
+generated:
+  by: "openai-codex/gpt-6.1-sol"
+  at: "2026-11-20T10:31:54Z"
+verified: [{ by: codex/gpt-6, at: "2026-11-19T13:55:56+00:00" }, { by: "codex/gpt-6", at: "2026-11-19T19:21:23+02:00" }, { by: "openai-codex/gpt-6.1-sol", at: "2026-11-20T11:13:45+02:00" }]
+---
+
 # Title screen
 
 ## Blueprint
@@ -25,38 +35,22 @@ game's home and Hangar is an alternative launch point.
   and [Dialogs](../dialogs/spec.md) own their respective behavior.
 - Each run retains its launch source: title screen or Hangar. Abort and game-over
   return actions use that source, independently of the selected ship.
-- `packages/mode-a/src/lib/landing-system.ts` owns the cosmetic star system. It
-  reuses the shared procedural star and planet artwork and the circular orbit
-  update, and never advances survival physics. The title scene opts into the
-  accepted yellow-family G appearance through the shared star painter; this
-  visual trial does not supply a star to any game mode. Its composition follows
-  the constraints below.
+- The title screen consumes the shared
+  [game field backdrop](../../factory/design-system/game-field-backdrop/spec.md).
+  That design-system component owns the generated decorative system, its
+  composition and its scrim; this spec owns the title content and its
+  placement above the backdrop.
+- Settings, Top Scores and Credits use the same backdrop composition. The Title
+  Screen remains the target for the component's fixed outermost-orbit framing.
 - The [Title-screen hints spec](hints.md) defines the hint area's content and
   behavior; this spec owns its placement in the title-screen composition.
 
 ### Constraints
 
 - The whole screen is composed as a game screen, without website headers or footers.
-- The background is a random star system: its star and planets provide the scene,
-  without ships, derelicts or other gameplay clutter.
-- Place the sun approximately at the centre of the bottom-right quadrant, below
-  the hints. Let the star system extend diagonally toward the upper-left corner,
-  with its outer edge approximately reaching that corner. This is a best-effort
-  visual composition guide, not an exact geometric calculation or fit constraint.
-- The system has a yellow-family G star with a new surface radius sampled from
-  36–140 u whenever the title screen is entered. Its body, ring tint and corona
-  use the study's matching warm palette interpolation; the title gives no size
-  readout. The system also has three planets on circular orbits
-  with 120–240 second periods. Landing planets never have rings. Planet
-  appearance, orbital phases and bounded orbit sizes vary each time the title
-  screen is entered; menu navigation and resize keep the same system, and returning
-  to the title screen creates a new one. Planet sizes stay substantial and
-  independent of orbit framing, and outer orbits may crop at the viewport edge.
-- The scene draws no flight effects, arena boundary or gameplay influence guides.
-- The background and shared dialog scrim fill the entire viewport, with title-screen content above
-  it. Reuse the dialog scrim's visual definition independently of modal behavior;
-  the title screen is a normal game menu, not a modal dialog. Focus is not trapped
-  inside the panel, and the hints outside it remain accessible.
+- The shared backdrop fills the viewport beneath the title content. The menu
+  remains a normal game screen, not a modal dialog; focus is not trapped inside
+  the panel, and the hints outside it remain accessible.
 - The identity and game menu sit inside a visible panel above the scrim, following
   the current start-and-ship panel treatment. The panel contains PRESS START and
   the secondary destinations; ship selection remains in Hangar.
@@ -89,8 +83,7 @@ game's home and Hangar is an alternative launch point.
   focus leaves the new run paused.
 - The run arrives at radius 1180 from the star, at speed 600, heading 37 degrees
   off inward, with a green speed line behind the ship.
-- Reduced motion keeps the menu scene static, skips the fade and retains the
-  count without ignition flicker.
+- Reduced motion skips the fade and retains the count without ignition flicker.
 - From Hangar, Survival uses the same arrival and countdown and returns to
   Hangar; Hangar test flight starts directly.
 - Ship selection belongs in Hangar; the title screen has no ship selector.
@@ -99,12 +92,24 @@ game's home and Hangar is an alternative launch point.
   ship, separate from the menu's control group. A blocked-build warning does not
   replace the title hints or interrupt their normal rotation behavior.
 - The Hangar link reads “HANGAR”; ship selection belongs in the Hangar.
-- Hangar, Top Scores, Settings and Credits are secondary game-menu destinations.
+- Hangar, Top Scores, Settings and Credits are secondary game-menu destinations
+  while launch is available. When the active build blocks launch, PRESS START
+  stays disabled with the shared error-blocked tint and HANGAR becomes the filled
+  call to action. The menu order stays unchanged. The blocked explanation is
+  associated with PRESS START and HANGAR. Ordinary transition-time disabling
+  has no alert tint and does not promote HANGAR. Restoring eligibility restores
+  PRESS START as the filled call to action and HANGAR as a normal action.
+- The menu uses the directional vertical ButtonGroup defined by the shared
+  [Actions contract](../../factory/design-system/actions/spec.md#button-group-navigation),
+  with wrapping enabled. Up/Down and Home/End move focus; native Tab navigation
+  and button/link activation remain available.
 - PRESS START receives initial keyboard focus when available; when launch is
   blocked, Hangar receives focus instead. The menu focus order is PRESS START,
   Hangar, Top Scores, Settings, Credits, skipping unavailable actions.
 - Hangar provides training/test flight, start game and return to title screen.
-- Top Scores, Settings and Credits each provide return to title screen.
+- Top Scores and Credits provide return to title screen. Settings opened from
+  the title screen or Pause also returns to title screen; its explicit Hangar
+  context returns to Hangar as defined by [Options](../options/spec.md).
 - Pause provides Abort, returning to the run's launch source.
 - Every game over provides return to the run's launch source; a Survival game
   over also provides Top Scores.
@@ -121,8 +126,7 @@ game's home and Hangar is an alternative launch point.
 - All destinations and return actions in the navigation contract are reachable.
 - Abort and game-over return resolve correctly for both launch sources.
 - The title screen presents a unified game composition without a website shell.
-- A random star-system background contains no ships, derelicts or gameplay clutter.
-- The background uses the shared dialog scrim beneath title-screen content.
+- The shared DS game field backdrop appears beneath the title-screen content.
 - The identity and menu are grouped inside a visible panel above the scrim.
 - The panel sits on the left within the centred 16:9 composition and remains usable
   when the slot scales to iPad-sized and larger views.
@@ -133,18 +137,12 @@ game's home and Hangar is an alternative launch point.
 - The Playground status slot appears below the menu panel, above the decorative
   ship, and outside the menu control group. A blocked-build warning leaves the
   title hints' normal behavior unchanged.
-- The cosmetic system has three unringed planets with 120–240 second
-  periods, separated orbits and the G-class sun, placed in the lower right and
-  extending toward the upper left.
-- The menu scene keeps its sun through resize and moves its orbits without
-  advancing survival ticks.
 - PRESS START hands off a fresh active-ship run whose countdown holds position,
   power and ticks until GO, with controls held through the count applying at
   release.
-- Reduced motion keeps the menu scene static and retains the three-second
-  count.
+- Reduced motion skips the launch fade and retains the three-second count.
 
-### Regression Guardrails
+### Regression guardrails
 
 - Launch source survives pause/resume and completion of the run.
 - PRESS START flies the active ship shown on the title screen.
@@ -154,6 +152,30 @@ game's home and Hangar is an alternative launch point.
 ### Scenarios
 
 ```gherkin
+Scenario: Recover from a blocked build through Hangar
+  Given Playground is Off and the active build is unsanctioned
+  When the title screen opens
+  Then PRESS START is disabled with the shared error-blocked tint
+  And HANGAR is the filled call to action with initial keyboard focus
+  And the status below the menu reads “PLAYGROUND OFF” then “UNSANCTIONED BUILD”
+  And arrows skip PRESS START without changing the menu order
+  When I use Hangar to restore an eligible build and return
+  Then PRESS START is enabled, filled and initially focused
+  And HANGAR is a normal action and the blocked status is absent
+
+Scenario: Disable launch during its transition
+  Given an eligible active build
+  When PRESS START begins the launch transition
+  Then repeated activation is suppressed without an error tint or promoting HANGAR
+
+Scenario: Navigate the title menu with arrows
+  Given the title screen with PRESS START focused
+  When I press Down
+  Then Hangar receives visible keyboard focus without navigation
+  When I press Up twice
+  Then Credits receives focus by wrapping past PRESS START
+  And Tab can leave the menu without a focus trap
+
 Scenario: Immediate flight
   Given a fresh device
   And the player enters the title screen
@@ -175,6 +197,12 @@ Scenario: Title-screen launch after a Hangar choice
   When the player activates PRESS START
   Then a survival run starts with that ship in its fitting
   And its launch source is the title screen
+
+Scenario: Title-screen Settings returns home
+  Given the player opens Settings from the title screen
+  When the player activates Return to title screen
+  Then the title screen opens
+  And no prior Hangar visit changes this destination
 
 Scenario: Scores after a Hangar run
   Given a run launched from Hangar has ended

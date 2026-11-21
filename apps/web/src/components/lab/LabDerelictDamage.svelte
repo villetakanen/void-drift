@@ -15,6 +15,7 @@ import {
   stockSettings,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
+import Switch from "../inputs/Switch.svelte";
 
 let {
   label = "Live derelict damage and physical shedding specimen",
@@ -32,15 +33,14 @@ let hull = $state(SALVAGE.wreck.hull),
   fragments = $state(0),
   cells = $state(0),
   shipHull = $state(100);
-let act: (
-  kind: "laser" | "rail" | "ram" | "coast" | "coast-short" | "reset",
-) => void = () => {};
+let act: (kind: "laser" | "ram" | "coast" | "coast-short" | "reset") => void =
+  () => {};
 onMount(() => {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
   const fx = new FxSurface();
   const loadout = defaultLoadout("fighter");
-  loadout.hull = ["laser", "rail"];
+  loadout.hull = ["laser", null];
   let sim: Simulation, wreck: SalvageBody;
   const paint = () => {
     canvas.width = 960;
@@ -148,7 +148,7 @@ onMount(() => {
     }
     if (!sim.salvage) return;
     for (const weapon of sim.salvage.weapons) weapon.readyAt = Infinity;
-    if (kind === "laser" || kind === "rail") {
+    if (kind === "laser") {
       const weapon = sim.salvage.weapons.find((weapon) => weapon.kind === kind);
       if (weapon) weapon.readyAt = 0;
     }
@@ -156,14 +156,7 @@ onMount(() => {
       sim.ship.pos.set(wreck.x - 25, wreck.y);
       sim.ship.vel.set(100, 0);
     }
-    const ticks =
-      kind === "coast"
-        ? 30
-        : kind === "coast-short"
-          ? 6
-          : kind === "rail"
-            ? 15
-            : 1;
+    const ticks = kind === "coast" ? 30 : kind === "coast-short" ? 6 : 1;
     for (let tick = 0; tick < ticks; tick++) {
       sim.step({ leftThruster: false, rightThruster: false, fire: false });
       paint();
@@ -177,6 +170,7 @@ $effect(() => {
   void showMaterial;
   repaint();
 });
+const controlId = $props.id();
 </script>
 <section
   class="damage-bench"
@@ -190,8 +184,8 @@ $effect(() => {
   <h2>Damage and physical pieces</h2>
   <p>Production simulation · fixed specimen · 2× view</p>
   <canvas bind:this={canvas} aria-label={label}></canvas>
-  <label
-    ><input type="checkbox" bind:checked={showMaterial}>
+  <label for={`${controlId}-0`} class="setting"
+    ><Switch id={`${controlId}-0`} bind:checked={showMaterial} />
     Show fitted material</label
   >
   <p role="status">
@@ -206,14 +200,6 @@ $effect(() => {
       onclick={() => act("laser")}
     >
       Laser pulse
-    </button>
-    <button
-      type="button"
-      class="btn btn-ghost"
-      disabled={!ready || hull <= 0}
-      onclick={() => act("rail")}
-    >
-      Rail shot
     </button>
     <button
       type="button"
@@ -255,6 +241,11 @@ $effect(() => {
   </p>
 </section>
 <style>
+.setting {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
 .button-group {
   flex-wrap: wrap;
 }

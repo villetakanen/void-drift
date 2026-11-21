@@ -1,6 +1,7 @@
 import {
   ASSEMBLED_ION_DEFAULTS,
   AssembledIonSettingsSchema,
+  ionStrength,
   type Loadout,
   LoadoutSchema,
   PARTS,
@@ -87,7 +88,7 @@ export function familiesOf(loadout: Loadout): Family[] {
   for (const id of loadout.aft) if (id) ids.add(id);
   if (loadout.stabilizers) ids.add("ion");
   const out: Family[] = [];
-  if (ids.has("ion") || ids.has("heavy-ion")) out.push("ion");
+  if ([...ids].some((id) => ionStrength(id) > 0)) out.push("ion");
   if (ids.has("fusion")) out.push("fusion");
   if (ids.has("plasma")) out.push("plasma");
   return out;

@@ -378,6 +378,7 @@ onMount(() => {
       <h4>{mode.label}</h4>
       <div class="stage">
         <FlightLayers
+          fxGlow={false}
           bind:canvases={layerSets[index]}
           label={round === "family"
             ? `${mode.label}: seeds 71, 97 and 153 at three positions around the Sun, repeated enlarged below`

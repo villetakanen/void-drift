@@ -1,3 +1,14 @@
+---
+title: "Spec: Game"
+status: draft
+generated:
+  by: "openai-codex/gpt-6-luna"
+  at: "2026-11-19T21:31:01+02:00"
+verified:
+  - by: "openai-codex/gpt-6.1-terra"
+    at: "2026-11-19T21:31:01+02:00"
+---
+
 # Game
 
 ## Blueprint
@@ -6,7 +17,7 @@
 
 Void Drift is a procedural space survival game played in the browser. A pilot flies a two-engine ship around a star, managing hull and power, and tries to survive as long as possible. Keyboard play on a laptop or desktop is the primary experience; iPad landscape touch plays the same game. Everything works without credentials, and shared scores are an optional, casual competition.
 
-### Terms
+#### Terms
 
 These are the game's words for its own things. Screens and contracts use them
 with one meaning each.
@@ -39,7 +50,7 @@ with one meaning each.
 - **Client:** a build of the game that players run, such as the web game or
   an installed app. A client carries at most one ruleset.
 
-### Architecture and boundaries
+### Architecture
 
 - `packages/mode-a/src/lib/simulation.ts` owns a fixed 60 Hz simulation. `schemas/flight.ts` validates flight settings and replay inputs. Rendering reads simulation state and writes none.
 - The game and the Lab share the simulation, camera, configuration and drawing code.
@@ -52,9 +63,9 @@ with one meaning each.
   - **Scores and options:** [scores](scores/spec.md), [options](options/spec.md)
   - **Effects:** [FX](../factory/effects/spec.md)
 
-### Rules
+### Constraints
 
-- **Modes:** the game has four modes: Survival, Practice, Derelicts and Gauntlet. Survival is the full game and the only scored mode. Each other mode has its own purpose, stated in its own contract; none is a variant or a setting of another, and they are not merged. Gauntlet is an experimental two-opponent combat entry described in [its contract](gauntlet/spec.md); it does not establish a future mode design. Flight settings name a mode: Survival, Practice, Derelicts or Gauntlet. A missing mode means Survival, and a legacy `testFlight: true` with no mode means Practice.
+- **Modes:** the game has four modes: Survival, Practice, Derelicts and Gauntlet. Survival is the full game and the only scored mode. Each other mode has its own purpose, stated in its own contract; none is a variant or a setting of another, and they are not merged. Gauntlet is an experimental seven-enemy combat entry described in [its contract](gauntlet/spec.md); it does not establish a future mode design. Flight settings name a mode: Survival, Practice, Derelicts or Gauntlet. A missing mode means Survival, and a legacy `testFlight: true` with no mode means Practice.
 - **Launch and return:** a run starts from the title screen or the Hangar, independently of its mode. Abort and game over return to the place it started from.
 - **PRESS START:** it launches a Survival run with the [active ship](active-ship/spec.md) in a fresh seeded G-class system. Every other launch flies the active ship too. The Hangar owns ship choice.
 - **Rulesets:** a ruleset never changes once it has a board. A change to the simulation, its parameters, or the sanctioned ships and parts that affects ranked Survival is a new ruleset with a new name and a new board. A client is ranked only when its Survival runs a named ruleset exactly; `CHALLENGE` in `packages/mode-a/src/schemas/highscore.ts` holds that name. Clients that carry the same ruleset share its board, whatever their controls. A client reads and writes the board of its own ruleset and no other. Boards do not close.
@@ -70,8 +81,8 @@ with one meaning each.
 ### Definition of Done
 
 - `FlightSettingsSchema` resolves a missing mode to Survival and a
-  `testFlight: true` with no mode to Practice, accepts only Survival, Practice
-  and Derelicts, and lets an explicit mode take precedence over `testFlight`.
+  `testFlight: true` with no mode to Practice, accepts only Survival, Practice,
+  Derelicts and Gauntlet, and lets an explicit mode take precedence over `testFlight`.
 - A run launched from the title screen or the Hangar returns there on Abort
   and on game over, without a page reload.
 - PRESS START launches Survival with the active ship, a fresh random seed,

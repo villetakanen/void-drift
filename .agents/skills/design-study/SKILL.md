@@ -5,17 +5,34 @@ description: Develop a four-part design study (problem, exploration, readiness, 
 
 # Design study
 
-Read [the study contract](../../../docs/specs/lab/design-studies/spec.md) and
-[design principles](../../../docs/design.md). The specification owns the four-part
-outputs, presentation, decision authority and end states. This skill owns the working
-procedure; [exploration](references/exploration.md) owns part 02's detailed rounds.
+Read the [design principles](../../../docs/design.md).
 A topic or uncertainty is enough to begin; developing the problem is part of the work.
+
+Write the study so another designer or agent can pick up the question later, and a
+product engineer can understand what the exploration suggests for the game. What
+seemed promising, and why? What did the example reveal? What changed your thinking,
+and what’s still open? When a conversation changes the design, preserve the reason.
+Leave the coordination in the conversation.
+
+If the study suggests a change, describe what it would mean in play. A designer can
+propose where it might fit and explain why that fit matters. The project decides
+whether and where to adopt it. The product engineer works out how to incorporate it.
+A study can also end with a clearer understanding of the design and no proposed change.
 
 ## Start from established reality
 
-Read current product guidance and relevant implementation on demand. Use history only
+Before proposing an example, inspect the relevant current product behaviour,
+visual language and guidance. Explain in the study's existing reasoning how they
+inform the question and proposal, and distinguish an observed gap from a
+hypothesised need. When the need is unestablished, an example may investigate
+whether it exists; delivering a concrete step need not mean proposing a solution.
+Grounding informs design without requiring reuse: shared tokens or production
+drawing functions alone do not establish it.
+
+Use history only
 for a specific research question, rather than routinely loading earlier studies or
-factory reports. Apply the specification's cycle-zero authority boundary when using it.
+factory reports. Earlier studies supply evidence. Carry a prior decision forward as settled only when
+the project has adopted it.
 Create a cycle-specific slug; if reusing a URL is necessary, archive the old page first.
 
 ## Moving between parts
@@ -25,7 +42,7 @@ Read the page and say which part is active before working.
 | Move | Needs |
 |---|---|
 | 01 to 02 | The question test heard; the designer agrees the question or says to explore. |
-| 02 to 03 | The designer accepts a conclusion, or an independently usable result. |
+| 02 to 03 | The designer accepts a conclusion that answers section 01’s question, or selects a result for independent delivery. |
 | 02 to 01 | The designer accepts an example built on an amended question. |
 | 03 to 04 | Every blocker to the intended delivery named. |
 | 03 to 02 | A named question that needs more design evidence. |
@@ -37,31 +54,30 @@ the rest of the scope.
 
 ### Amend the question
 
-The question is known to be wrong when:
+Explore an amendment to section 01 when either of these occurs:
 
 - a retained observation contradicts something section 01 holds fixed
-- a hypothesis in section 01 has failed
-- the designer restates the purpose
+- the designer changes what they want the study to settle.
 
 Build the next example on the question as it would become. Say in one line what
 it sets aside from section 01 and what the question becomes. Leave section 01 as
 it is until the designer accepts the example. If the designer rejects it, discard
 it like any rejected proposal and continue on the question as written.
 
-The question may be wrong when:
+Consider whether a narrower question would help when either of these occurs:
 
 - two replacements in a row are rejected and no observation is retained
 - an open item cannot be shown in a built example and judged from it
 
-Say so in one line, offer to narrow the question or stop, and keep proposing on
-the current question.
+If narrowing would help, suggest the narrower question and explain what it would
+let the designer judge. Otherwise, continue exploring the current question.
 
 One rejected proposal is neither case.
 
-If the designer restates the subject so that the study would settle a different
-object or decision, or change a different thing in the game or the Lab, it is a
-new study. Build nothing. Propose ending this one as stopped or ruled out; the new
-question starts its own cycle once the designer agrees.
+A question belongs in a separate study when it would settle a design decision
+outside section 01. Wait for the designer’s decision before building an example for the
+new question. Ask whether the designer wants to open a separate study for the new
+question.
 
 When the designer accepts an example built on an amended question:
 
@@ -84,8 +100,9 @@ State what the question holds fixed (accepted mechanics, established intent) and
 leaves open; exploration varies only the open part. A mechanic already settled in the
 game is fixed, not an unknown.
 
-A study answers a question that concerns one object or decision and changes one named
-thing in the game or the Lab. With more than one, propose the one this cycle settles and
+A study answers a question that concerns one object or decision.
+A reader can name what part of the game or Lab the question concerns and explain what answering it would help the designer decide.
+With more than one object or decision, propose the one this cycle settles and
 name the rest as adjacent questions outside it. A change that needs several together is
 a version of the game, not a study; say so instead of exploring it. When section 01 is
 drafted, have the [question test](references/question-test.md) run by a clean-context
@@ -94,13 +111,13 @@ intent. Research missing knowledge when useful and distinguish it from game obse
 
 When drafting or revising study prose, read the annotated
 [writing examples](references/writing.md). Edit the title, question, section heading
-and opening together so each contributes useful information.
+and opening together so each contributes useful information. Aim for 150–250 words
+in the opening, with the concrete situation and design tension up front.
 
 Create the early page using StudyLayout and validated metadata in
-`apps/web/src/data/studies.ts`. Follow the specification's presentation contract; inspect
-its rendered reading width, spacing and section progression before presenting it.
-The button opening's explanatory progression is the form reference, not its decisions;
-the specification describes enough to use it without reading the historical study.
+`apps/web/src/data/studies.ts`. Use [Studies](../../../docs/specs/studies/spec.md)
+for page construction and publication. Inspect the rendered reading width, spacing
+and section progression before presenting it.
 
 Update the page with useful reasoning and feedback in the same round. Advance when
 the question test has run and been heard, and conversation establishes shared
@@ -115,20 +132,11 @@ Read [references/exploration.md](references/exploration.md) when entering or res
 part 02. Continue with the same agent and conversation. Carry in the shared question,
 established references and useful current-cycle agreements; carry out supported
 conclusions and remaining uncertainties. The guide owns concrete proposals, feedback,
-retention, focus protection and the recommendation to finish independently usable results.
+retention and focus protection.
 
-For questions that require observing FX or an in-game scenario during flight, use
-[flight-scene-study](../flight-scene-study/SKILL.md): mount the actual Flight scene
-instrument with fixed burns, its timeline and study options in its burger pane.
-Studies never add manual piloting. Verify that the configured scenarios exercise
-the interaction being judged before presenting them.
-
-Use the Motion instrument for path and measurement investigations, with each instance
-configured for its comparison and the variables the designer needs to adjust.
-A study may embed several independent instances. Read `docs/specs/lab/motion-instrument/spec.md`;
-record missing instrument capabilities and proposed extensions in the design study.
-Discuss them with the designer. Update the instrument spec only when the designer
-accepts the requirement. Reuse production simulation code for experiments.
+Choose an example that lets the designer judge the question at hand. Preserve the
+conditions that matter to that judgment. Record what the example revealed and what
+remains uncertain.
 
 For recorded findings, retain written conclusions and suitable static or recorded
 evidence of the observed results. Instruments use current production simulation code;
@@ -139,7 +147,8 @@ the closing procedure below retires what is still live at the end.
 ## 03 / Assess readiness
 
 Inspect current implementation against the accepted conclusion. Identify reusable
-systems, required adaptations, dependencies and unresolved choices. Assess the intended
+systems, required adaptations, dependencies, unresolved choices and the changes
+the proposal would require in the owning specs. Assess the intended
 delivery: for an alpha trial, explain concrete blockers while allowing tuning and
 configurability to remain provisional. Return a named question to exploration when
 more design evidence is needed. Readiness assesses feasibility, not study quality.
@@ -149,12 +158,15 @@ more design evidence is needed. Readiness assesses feasibility, not study qualit
 Trace the accepted conclusion through its shared definitions, game systems, Lab pages
 and owning specs. Cut the work into independently deliverable slices with dependencies,
 rough size and checks for correctness and fidelity. Keep provisional choices explicit.
-Apply the specification's prominent design-principle change disclosure when relevant.
+If a proposal would change a principle in `docs/design.md`, flag it before the
+slices and in the handoff for explicit design discussion.
 Writing scope does not start implementation; use the existing authorization boundary.
 
 ## Finish and verify
 
-The designer decides the end state under the specification's ending contract. Set the
+The designer may park a study as blocked on a named dependency and state what
+would allow it to resume. The designer may accept after scope, rule a direction
+out during exploration or readiness, or stop at any part. Set the
 registry status only then; use close-loop for a stopped study. Retain the designer's
 assessment of the study, including failure, separately from the value of ending it
 for the project.
@@ -170,8 +182,8 @@ State evidence gaps explicitly; a new capture is not proof of an earlier observa
 Replace temporary interactive examples with those records before removing their code.
 Check consumers, then remove study-specific components, scripts and fixtures that
 have no continuing use. Preserve shared production systems and reusable Lab
-instruments. Keep an interactive example only for a named continuing purpose, recorded
-on the page. Verify the resulting page and retained media, and check affected consumers
+instruments. Publish the closed page as static MDX with its retained media.
+Verify the resulting page and retained media, and check affected consumers
 after cleanup. Useful evidence survives independently of the retired apparatus.
 
 Reuse production systems in interactive examples and scope experiments. Check keyboard,
@@ -180,8 +192,5 @@ Report automated correctness, visual inspection and human judgment separately; p
 the review URL. One lead owns synthesis; delegate only when authorized and useful.
 
 Ordinary studies retain their design reasoning, readiness, scope and human judgment.
-The whole-study quality evaluation is separate from the question test: use it only for
-a requested factory evaluation or targeted investigation, under the specification's
-evaluation contract. Do not generate a
-separate ratings report by default. New interpretations of factory evidence still need
+Do not generate a separate ratings report by default. New interpretations of factory evidence still need
 review before becoming standing guidance.

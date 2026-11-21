@@ -1,0 +1,85 @@
+{
+  "recorded": "2026-11-19",
+  "kind": "retained conditions and previously observed results; not a replay engine",
+  "conditions": {
+    "viewportCSS": [1280, 900],
+    "logicalStage": [1440, 900],
+    "renderWidth": 1728,
+    "ticksPerSecond": 60,
+    "durationSeconds": 14,
+    "player": "defaultLoadout(wasp), hull slots nulled; production simulation and shared burns",
+    "start": {
+      "x": 100,
+      "y": 540,
+      "rotation": -1.5707963267948966,
+      "velocity": {
+        "x": 0,
+        "y": -200
+      }
+    },
+    "camera": {
+      "opening": "follow",
+      "near": 1.6,
+      "far": 4
+    },
+    "staging": {
+      "range": "1700 + 1600*cos(time*2*pi/10 + phase)",
+      "bearing": "base + 0.18*sin(time*0.7 + phase)",
+      "Pirate": {
+        "phase": 0,
+        "base": -2.4
+      },
+      "Derelict": {
+        "phase": 2.1,
+        "base": 0.5
+      },
+      "Released energy": {
+        "phase": 4.2,
+        "base": -1
+      },
+      "Sun": "actual simulation star; not staged",
+      "interactions": "none for staged contacts"
+    }
+  },
+  "observed": {
+    "samplingStepTicks": 24,
+    "allBurnsCompleted": true,
+    "transitions": {
+      "B1": {
+        "Pirate": 3,
+        "Derelict": 4,
+        "Released energy": 2,
+        "Sun": 0
+      },
+      "B2": {
+        "Pirate": 3,
+        "Derelict": 4,
+        "Released energy": 2,
+        "Sun": 0
+      },
+      "B3": {
+        "Pirate": 3,
+        "Derelict": 4,
+        "Released energy": 2,
+        "Sun": 2
+      }
+    },
+    "samplesInsideViewportOutsideActiveBoxWithCue": 17,
+    "pauseAndBackwardSeek": "passed; repeated contact projections and arc paths matched",
+    "glow": "absent",
+    "glyphOpacity": 0.5,
+    "skullScale": 2.4
+  },
+  "retiredSourceSHA256": {
+    "ContactMotion.svelte": "6e60bb1ac7d22c2b6620dc6b23c37451fa9f6faecba85d408ec709ab0cb40c27",
+    "marker-tuning.ts": "057830aa13e7c507b2d5e4a5a39e249382e7d54e0bb907f23ff33b0b8b18f588",
+    "contact-motion.ts": "08a3ccbad12a8118b9ce30cde3111d0c70fcb28b4aedd1b04aa2a4861c5ba146",
+    "ContactSymbol.svelte": "6335fe06294894add3a1332c838c3e1572eccf379be39e3826e05e91aea8c722"
+  },
+  "limits": [
+    "No human combat-benefit claim",
+    "Probe motion is staged, not AI or drift physics",
+    "Exact historic full-check tree and complete raw logs not retained",
+    "Recorded B3 video includes initial setup; duration about 15.84 seconds"
+  ]
+}

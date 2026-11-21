@@ -96,7 +96,7 @@ export class FlightRun {
     const sim = new Simulation({
       ...stockSettings(loadout.chassis),
       loadout,
-      mode: doc.planet ? "practice" : "derelicts",
+      mode: doc.system || doc.planet ? "practice" : "derelicts",
     });
     if (doc.planet) {
       const planet = sim.planets.find((item) => item.id === "venus");

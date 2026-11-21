@@ -1,0 +1,151 @@
+---
+const references = [
+  {
+    title: "The Milky Way panorama",
+    image: "https://cdn.eso.org/images/screen/eso0932a.jpg",
+    source: "https://www.eso.org/public/images/eso0932a/",
+    credit: "ESO/S. Brunier",
+    alt: "An all-sky photograph with the Milky Way as a luminous horizontal band across dark sky",
+    note: "The bright band is broken by dust and thins into much darker sky. Its uneven edge matters as much as its bright centre.",
+  },
+  {
+    title: "Stargunner · 1996",
+    image:
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/358390/ss_55896de35b9564a4ec45ac44e4682c5e5e28c4d3.600x338.jpg",
+    source: "https://store.steampowered.com/app/358390/Stargunner/",
+    credit: "Apogee Software · publisher screenshot",
+    alt: "A side-scrolling battle in Stargunner with a faint red patch behind ships, shots, and explosions",
+    note: "A low-contrast patch of colour gives the background a local shape beneath much brighter sprites and explosions.",
+  },
+  {
+    title: "The Coalsack and the Southern Cross",
+    image: "https://cdn.eso.org/images/screen/b06.jpg",
+    source: "https://www.eso.org/public/images/b06/",
+    credit: "ESO/S. Brunier",
+    alt: "A dark, irregular Coalsack silhouette set into a densely populated Milky Way star field",
+    note: "The dark shape is readable because so many points surround it. A gap can give the field a shape of its own.",
+  },
+  {
+    title: "Tyrian 2000 · 1999",
+    image:
+      "https://images.gog-statics.com/0854b22eed86d554a9c96f91e1d8261654a67b8cc0e500251fecb613eef0322d.jpg",
+    source: "https://www.gog.com/en/game/tyrian_2000",
+    credit: "Eclipse Productions · GOG screenshot",
+    alt: "A vertical Tyrian 2000 level with bright rocky formations around dark pockets of space",
+    note: "Deep, nearly black pockets sit between busy rock formations. Small lights in the openings keep the dark space legible as depth.",
+  },
+  {
+    title: "Gaia’s all-sky colour map",
+    image:
+      "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/The_colour_of_the_sky_from_Gaia%E2%80%99s_Early_Data_Release_3_ESA22358060.png/1280px-The_colour_of_the_sky_from_Gaia%E2%80%99s_Early_Data_Release_3_ESA22358060.png",
+    source:
+      "https://commons.wikimedia.org/wiki/File:The_colour_of_the_sky_from_Gaia%E2%80%99s_Early_Data_Release_3_ESA22358060.png",
+    credit: "ESA/Gaia/DPAC · CC BY-SA 3.0 IGO",
+    alt: "An oval map derived from Gaia observations with an uneven bright plane and much dimmer regions above and below it",
+    note: "This brightness and colour map makes the large differences across the sky easy to see, even without reading individual stars.",
+  },
+  {
+    title: "Master of Orion II · 1996",
+    image:
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/410980/ss_f80bfe3e16decd99a9cc922c1780d6733a10ee9f.600x338.jpg",
+    source: "https://store.steampowered.com/app/410980/Master_of_Orion_2/",
+    credit: "Simtex / MicroProse · publisher screenshot",
+    alt: "Master of Orion II tactical combat with a planet and bright ships over faint blue-gray swirls",
+    note: "Faint, uneven blue-gray bands give the combat view a broad texture under the more solid colours of the planet and ships.",
+  },
+  {
+    title: "Hubble’s Sagittarius field",
+    image:
+      "https://science.nasa.gov/wp-content/uploads/2023/04/hubble_friday_06172016-jpg.webp",
+    source:
+      "https://science.nasa.gov/centers-and-facilities/goddard/hubble-sweeps-scattered-stars-in-sagittarius/",
+    credit: "ESA/NASA",
+    alt: "A dense reddish field of small stars with brighter blue-white stars scattered through it",
+    note: "A handful of bright, sharp lights remain easy to pick out against a much denser population of fainter points.",
+  },
+  {
+    title: "Star Wars: TIE Fighter · Special Edition",
+    image:
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/355250/ss_fc6a4408f72137fb16a962fb8cd7237e7533df1c.600x338.jpg",
+    source:
+      "https://store.steampowered.com/app/355250/STAR_WARS_TIE_Fighter_Special_Edition/",
+    credit: "Totally Games / LucasArts · publisher screenshot",
+    alt: "A TIE Fighter cockpit with small distant lights behind the reticle and one bright target ship",
+    note: "Sparse pinpricks leave most of the contrast to the cockpit edges, targeting marks and ship. The catalogue includes the 1994 and 1998 editions.",
+  },
+  {
+    title: "VISTA’s million-star mosaic",
+    image: "https://cdn.eso.org/images/screen/eso0949b.jpg",
+    source: "https://www.eso.org/public/images/eso0949b/",
+    credit: "ESO/VISTA. Acknowledgment: Cambridge Astronomical Survey Unit",
+    alt: "A near-infrared view of the Milky Way's centre with dense star grain and irregular dark dust lanes",
+    note: "At this scale the near-infrared mosaic reads both as a field of points and as a fine-grained surface crossed by darker lanes.",
+  },
+  {
+    title: "Spitzer’s view of the Galactic Centre",
+    image:
+      "https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia13/pia13932/PIA13932.jpg/jcr:content/renditions/cq5dam.web.1280.1280.jpeg",
+    source:
+      "https://science.nasa.gov/photojournal/stars-gather-in-downtown-milky-way/",
+    credit: "NASA/JPL-Caltech",
+    alt: "The Galactic Centre in mapped infrared colours, with a broad blue haze and resolved points around brighter clouds",
+    note: "Unresolved stars contribute a broad glow toward the centre. Spitzer maps the infrared bands to visible colours in this composite.",
+  },
+];
+---
+
+<div class="reference-board">
+  {references.map(({ title, image, source, credit, alt, note }) => (
+    <figure>
+      <a class="preview" href={image} aria-label={`Open image of ${title}`}>
+        <img
+          src={image}
+          alt={alt}
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+        />
+      </a>
+      <figcaption>
+        <strong>{title}</strong>
+        <p>{note}</p>
+        <a href={source}>{credit}</a>
+      </figcaption>
+    </figure>
+  ))}
+</div>
+
+<style>
+.reference-board {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-lg);
+  margin-block: var(--spacing-md);
+}
+figure {
+  margin: 0;
+  min-width: 0;
+}
+.preview {
+  display: grid;
+  aspect-ratio: 16 / 10;
+  place-items: center;
+  border: 1px solid var(--color-border);
+  background: var(--color-void);
+}
+.preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: contain;
+}
+figcaption {
+  font-size: var(--font-size-caption);
+  margin-top: var(--spacing-sm);
+}
+figcaption p {
+  margin: var(--spacing-xs) 0;
+  color: var(--color-text-muted);
+}
+</style>

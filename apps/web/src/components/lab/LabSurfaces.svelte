@@ -1,6 +1,7 @@
 <script lang="ts">
 import { onMount } from "svelte";
 import Dialog from "../Dialog.svelte";
+import Switch from "../inputs/Switch.svelte";
 import "./catalog.css";
 
 // Reference for the surface foundations (core tokens.css and surfaces.css):
@@ -14,7 +15,7 @@ const steps = [
 ];
 const cuts = [
   { token: "--cut-size-sm", use: "Small controls" },
-  { token: "--cut-size-md", use: "Buttons and toggle" },
+  { token: "--cut-size-md", use: "Buttons and segmented controls" },
   { token: "--cut-size-lg", use: "Panels" },
 ];
 const layers = [
@@ -36,6 +37,7 @@ onMount(() => {
 
 let open = $state(false);
 let closable = $state(true);
+const controlId = $props.id();
 </script>
 
 <section class="catalog" aria-label={label}>
@@ -146,8 +148,8 @@ let closable = $state(true);
       keyboard: Tab never reaches the stage while the dialog is open.
       <a href="/">Title screen →</a>
     </p>
-    <label class="caption closable">
-      <input type="checkbox" bind:checked={closable}>
+    <label for={`${controlId}-0`} class="caption closable">
+      <Switch id={`${controlId}-0`} bind:checked={closable} />
       Escape closes it (as pause does; run complete does not)
     </label>
     <div class="feed demo-host">

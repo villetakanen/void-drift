@@ -12,6 +12,7 @@ import {
   starterLoadout,
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
+import Switch from "../inputs/Switch.svelte";
 
 let {
   label = "Wasp and Fiddler beside an intact derelict and its eight-piece B breakup reference",
@@ -136,6 +137,7 @@ $effect(() => {
   void glow;
   paint();
 });
+const controlId = $props.id();
 </script>
 <div class="bench">
   <p>Shared production artwork · 110 world units · comparison scale 1.60</p>
@@ -149,7 +151,10 @@ $effect(() => {
     <input type="range" min="0" max="2" step="0.01" bind:value={time}>
     <output>{time.toFixed(2)} s</output></label
   >
-  <label><input type="checkbox" bind:checked={glow}> Energy light</label>
+  <label for={`${controlId}-0`}
+    ><Switch id={`${controlId}-0`} bind:checked={glow} />
+    Energy light</label
+  >
   <p>
     The scrubber demonstrates the accepted release order and motion. Use the
     damage specimen above to exercise physical release and fitted collisions.

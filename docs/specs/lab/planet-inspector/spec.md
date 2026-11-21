@@ -1,11 +1,30 @@
-# Planet Inspector
+---
 
-## Context
+title: "Spec: Planet Inspector"
+status: draft
+generated:
+  by: "codex/gpt-6"
+  at: "2026-11-19T21:04:09+02:00"
+verified:
+- by: "openai-codex/gpt-6.1-sol"
+  at: "2026-11-19T12:33:38+02:00"
+
+- by: "codex/gpt-6"
+  at: "2026-11-19T21:04:09+02:00"
+
+---
+
+# Spec: Planet Inspector
+
+## Blueprint
+
+### Context
 
 Planet Inspector shows planet rendering exactly as the game draws it: surface,
 spin, Sun-facing light, atmosphere, orbit and world HUD. The standalone Lab page
-is `/lab/planet-inspector`, opening paused on named Mercury. Named Venus is also
-available. Studies embed the same instrument to examine a planet in motion or
+is `/lab/planet-inspector`, opening paused on named Mercury. Named Venus and
+The Cradle are also available, Earth is the Lab's copy of The Cradle, and
+Mercurial is an adjustable specimen of the generated mineral-rock family. Studies embed the same instrument to examine a planet in motion or
 at a reproducible instant. The inspector is the Lab's planet page.
 
 The bench uses production renderers one to one. Its only local appearance
@@ -17,7 +36,7 @@ The [Lab contract](../spec.md) applies: this is a visual instrument with no
 manual piloting or score submission. Ship approaches and contact experiments
 belong to the [Flight instrument](../flight-scene-instrument/spec.md).
 
-## Architecture
+### Architecture
 
 - `apps/web/src/pages/lab/planet-inspector.astro` hosts the page, listed in
   `apps/web/src/data/lab-pages.ts`.
@@ -29,9 +48,25 @@ belong to the [Flight instrument](../flight-scene-instrument/spec.md).
   and the inspection scene. Each instance owns its simulation, clock, material
   projection, measurements and render resources.
 - Named references resolve Practice definitions. `mercury` maps to internal
-  identity `moon`; `venus` maps to `venus`. Radius, mass, orbit, spin period,
+  identity `moon`; `venus` maps to `venus`; `cradle` maps to `cradle`. `earth`
+  stages Practice's `cradle` body, air, clouds and turns unchanged, named Earth,
+  with the Earth ground map (`PLANET_MAPS.earthGround`) in place of The
+  Cradle's. It exists only in the Inspector. Radius, mass, orbit, spin period,
   materials and atmosphere remain production-owned. They are read from the
   game's definitions and factories, without a copied Lab preset.
+- The `mercurial` family selection stages the generated `moon` body beside a
+  reference G7 Sun, using production system generation, the yellow-family
+  profile and `mercurialOrbit` placement. It uses the shared core-led family mass at its staged radius,
+  normal star/ordinal HUD identity and the fixed mineral material. It has
+  no atmosphere or ring; it turns every 31.3 seconds. Family inspection does
+  not modify named Practice Mercury or production world generation. The scene
+  uses Practice's nonlethal inspection clock with the generated bodies, so an
+  unshown ship's death cannot halt playback or seeking.
+- The `outer-mercurial` family selection stages the distinct generated
+  `outer-mercurial` body from production system generation. It exposes the same
+  16–36u radius control and shared Mercurial gravity profile. Its production
+  material is the complete highlands atlas generated from the Mercury study
+  prompt and rendered by shared body and light passes.
 - The scene calls `drawFlightFrame` from
   `packages/mode-a/src/lib/flight-frame.ts` with production passes unchanged,
   selecting them only with `include`. Ready materials are projected through the
@@ -45,40 +80,46 @@ belong to the [Flight instrument](../flight-scene-instrument/spec.md).
   `FlightLayers.svelte` supplies production layer compositing. Shared HUD,
   material and light-mask ownership stays with production.
 
-### Configuration
+#### Configuration
 
 `PlanetInspectorDocumentSchema` in
 `apps/web/src/lib/planet-inspector/config.ts` parses strict Zod objects before
 consumption. Unknown fields, unsupported references and invalid numbers render
 field-specific issues in place of the scene; they never silently select Mercury.
 
-| Field                     | Contract                                                                                           |
-| ------------------------- | -------------------------------------------------------------------------------------------------- |
-| `planet`                  | `{ kind: "named", name: "mercury" }` or `{ kind: "named", name: "venus" }`; default Mercury.       |
-| `opening.orbitDegrees`    | Optional finite 0–360; absent uses the selected planet's Practice starting angle.                  |
-| `opening.rotationDegrees` | Finite 0–360, default 0. Selects a tick within the named planet's first spin period of scene time. |
-| `opening.zoom`            | `1`, `2`, `4`, `8` or `16`, default `1`.                                                           |
-| `opening.playing`         | Boolean, default false.                                                                            |
+| Field                     | Contract                                                                                                                                                                                                                     |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `planet`                  | `{ kind: "named", name }` with `name` `mercury`, `venus`, `cradle` or `earth`; default Mercury. Alternatively `{ kind: "family", name }` with `name` `mercurial` or `outer-mercurial` and finite radius 16–36u, default 27u. |
+| `opening.orbitDegrees`    | Optional finite 0–360; absent uses the selected planet's production starting angle (seed 2026 for the family specimen).                                                                                                      |
+| `opening.rotationDegrees` | Finite 0–360, default 0. Selects a tick within the selected planet's first spin period of scene time.                                                                                                                        |
+| `opening.zoom`            | `1`, `2`, `4`, `8` or `16`, default `1`.                                                                                                                                                                                     |
+| `opening.playing`         | Boolean, default false.                                                                                                                                                                                                      |
 
 `opening` is optional and defaults each field as above. Additional named planets
 and a validated custom-definition branch are extensions; unsupported custom
 selections are rejected. Configuration replacement opens at the new document's
-initial state and releases the old scene. The named-planet choice in the pane
-selects Mercury or Venus at that document's opening settings. Interaction state
-is local; the document, game settings, persistence and Firestore are unchanged.
+initial state and releases the old scene. The named-planet and planet-family
+choices in the pane select Mercury, Venus, The Cradle, Earth or Mercurial at that document's opening
+settings. Selecting either Mercurial family opens radius 27u unless the host
+document supplies its family radius; selecting a named planet does not carry
+family radius into it. Interaction state is local; the document, game settings, persistence and
+Firestore are unchanged.
 Lighting controls are local pane state and are not part of the Inspector
 document.
 
-## Inspection contract
+#### Inspection behavior
 
-### Picture and zoom
+#### Picture and zoom
 
 The selected planet stays centered, including during playback. The Sun remains
 its light source even when outside the camera. Body, light, atmosphere, orbit,
 gravity boundary, name and Sun indicators are drawn wherever the production
-passes draw them. Venus includes its production atmosphere line.
+passes draw them. Venus includes its production atmosphere line. The Cradle
+includes its ground, turning clouds, haze and rim. A planet's spin period is
+its ground's; The Cradle's clouds keep turning at their own rate with scene
+time.
 
-The top-left Zoom switch offers **1×, 2×, 4×, 8×, 16×**. These are the
+The top-left Zoom selector offers **1×, 2×, 4×, 8×, 16×**. These are the
 inspector's own levels: **0.5, 1, 2, 4, 8 CSS pixels per world unit**, respectively.
 At every viewport size, the planet's on-screen diameter is
 `2 × radius × CSS pixels per world unit`. Layers and the camera viewport follow
@@ -92,7 +133,30 @@ of bodies. Planet HUD remains the shared stage-coordinate display even when a
 material is still loading or unavailable. These controls change inspection
 visibility.
 
-### Scene time and staged orbit
+#### Mercurial family radius
+
+The options pane exposes **Radius** only for Mercurial, using the shared slider
+with range 16–36u and step 0.1u. Its initial value is the validated family radius.
+An edit pauses playback and changes the staged body's radius while preserving
+scene tick, surface phase, lighting and orbital angle. Placement uses the actual
+G7 damage and collection fields through the production `mercurialOrbit` helper,
+with 1u full-body clearance; orbital travel remains 4u/s. Radius changes
+recompute both body mass and gravity-well mass through the shared production
+mercurial profile; the gravity boundary follows that well.
+The fixed mineral material remains unchanged. At 27u the mass is 870 and the
+planet gravity matches named Mercury. The body, light, collision and gravity
+HUD read that same body. Backward seek retains the staged radius. Reset restores the
+document's radius with its opening state. Invalid radius updates leave the
+previous specimen intact. Radius is local inspection state, not a persisted
+change or a randomized surface. Named Mercury remains radius 27u, orbit 258u,
+mass 870 and has no family-radius control.
+
+Outer Mercurial has the same radius, mass, placement and replay controls as the
+Mercurial family. Its identity remains distinct and its material stays the
+generated highlands atlas at every radius and seed. A material
+load failure uses the production fallback without changing physics or HUD.
+
+#### Scene time and staged orbit
 
 The **Surface rotation** slider spans **0–360°**. It scrubs one spin period of
 scene time, rather than overriding the surface. Its position maps to the nearest
@@ -120,7 +184,7 @@ read-only value beside the controls; Orbit has its own slider value.
 orbit from their current values with production steps at 1/60 second; both
 sliders follow, wrapping across complete turns. Reset restores the document's
 opening spin time, orbital angle, zoom and playback state. An omitted opening
-orbit uses the planet's Practice starting angle, independently of opening spin
+orbit uses the planet's production starting angle, independently of opening spin
 time. Repeated paused drawing advances no state. Equal named reference, tick
 and staged orbit produce the same picture regardless of earlier drawn frames.
 
@@ -128,10 +192,11 @@ Play, Reset, the two sliders and scene-time readout float over the bottom of the
 scene. They occupy no separate bar and have no raised background behind them.
 Controls work by keyboard and pointer.
 
-### Options and costs
+#### Options and costs
 
-The top-right shared `OverlayPane` contains the named-planet choice, visibility
-controls, current scale, optional host pane snippet, and two live readouts:
+The top-right shared `OverlayPane` contains named-planet and planet-family
+choices, the family-only Radius slider, visibility controls, current scale,
+optional host pane snippet, and two live readouts:
 
 - **Planets pass time:** milliseconds reported for the production `planets` pass
   by `drawFlightFrame.observe`, averaged over the last second of drawn frames.
@@ -148,7 +213,7 @@ cause one production surface resize/redraw. During the initial partial second,
 the redraw rate is normalized to the measurement duration. Numbers measure
 script cost, not browser raster/compositing cost or device-wide performance.
 
-### Incident-light controls
+#### Incident-light controls
 
 The pane controls incoming-light intensity, shadow intensity and star-light
 temperature on the selected production body painter. The shared strict
@@ -175,18 +240,18 @@ stamp before the new setting is adopted. Drawing an unchanged paused scene then
 shows the new light without advancing time or orbital angle and without
 redrawing the surface. A failed update leaves the previous settings active.
 Seek, zoom, play and pause preserve the lighting controls. Reset and changing
-the named planet restore incoming 1.35, shadow 1.35 and 5800 K. Multiple Inspector
+the planet selection restore incoming 1.35, shadow 1.35 and 5800 K. Multiple Inspector
 instances keep independent selected settings while sharing identical prepared
 stamps. Prepared tuples are retained only while active painter instances use
 them; disposed or late material results release their leases.
 
-### Studies, failure and lifetime
+#### Studies, failure and lifetime
 
 Study embeds use the same production drawing and controls. A study needing a
 pane mounts a Svelte wrapper; functions and snippets are not serialized through
 Astro props. Two embeds own independent simulations, clocks and surfaces.
 The Inspector provides only the three production lighting parameters above; it
-does not offer a presentation replacement or drawing-selection switch.
+does not offer a presentation replacement or drawing selector.
 
 Material preparation exposes loading and failure messages. On failure, the
 production passes provide their existing stock-body fallback; the inspector
@@ -199,14 +264,28 @@ they do not catch up hidden wall time on return. The production render model
 owns caching and culling. Use Svelte 5 runes, native CSS, shared controls and
 tokens. The Lab supports viewports 1280px wide and above.
 
+### Constraints
+
+- Shared controls and visual tokens follow the [choice-control contract](../../factory/design-system/choices/spec.md).
+- Inspection uses production rendering, simulation and shared controls.
+- Zoom and planet alternatives use SegmentedControl; layer and HUD settings use Switch.
+- Inspection state remains local and the Lab supports viewports at least 1280px wide.
+
 ## Contract
 
 ### Definition of Done
 
 - The Lab lists Planet Inspector and opens it paused on Mercury at 1×.
-- Named Mercury and Venus resolve Practice state and unchanged production
-  materials, including Venus's atmosphere line, through the shared production
-  body-appearance adapter.
+- Named Mercury, Venus and The Cradle resolve Practice state and unchanged
+  production materials, including Venus's atmosphere line and The Cradle's
+  clouds, haze and rim, through the shared production body-appearance adapter.
+- Mercurial resolves the generated family's production material and mass,
+  with validated radius 16–36u and the core-led family mass. Radius changes preserve tick, angle and lighting;
+  backward seek preserves the staged radius and Reset restores its configured
+  value. Named Mercury remains the fixed Practice reference.
+- Outer Mercurial resolves its distinct generated identity, body type and
+  generated production material through the same adapter, with the shared
+  family radius and mass rules.
 - `drawFlightFrame` receives no substituted passes or wrapped materials.
 - Surface rotation scrubs one spin period of scene time while preserving the
   staged orbit. Orbit changes orbital angle while preserving scene time. Both
@@ -246,6 +325,28 @@ Scenario: Scrub a Mercury turn at a staged orbit
   When I set Orbit to 240 degrees
   Then scene time and Surface rotation stay unchanged
 
+Scenario: Inspect the mercurial family without changing Mercury
+  Given I select Mercurial and stage a tick and orbital angle
+  When I set Radius to 36u and then seek backward
+  Then the radius remains 36u with mass approximately 1039.17 and the accepted fixed mineral surface
+  And the whole body remains between the G7 danger and charging fields
+  When I reset
+  Then the configured family radius and opening state return
+  When I select named Mercury
+  Then it has its fixed 27u radius, 258u orbit and mass 870
+
+Scenario: Reject an invalid family radius
+  Given a family document with radius below 16u or above 36u
+  When the document is parsed
+  Then a radius-specific issue replaces the scene
+
+Scenario: Inspect The Cradle
+  Given I select named The Cradle
+  Then the production ground, clouds, haze, rim, light and HUD are drawn
+  When I play for one ground spin period
+  Then the ground and the clouds have both returned to their opening picture,
+  the clouds having turned twice
+
 Scenario: Inspect Venus
   Given I select named Venus
   Then the production Venus body, atmosphere line, light and HUD are drawn
@@ -271,3 +372,13 @@ Scenario: Reject an unsupported selection
   Then field-specific issues replace the scene
   And Mercury is not silently substituted
 ```
+
+#### Habitable family
+
+Habitable is an adjustable generated family alongside Mercurials, following its
+[production contract](../../game/world/planets/habitable/spec.md). Its validated
+family document has `name: habitable`, radius 33.199672–49.799508u (default
+41.499590u), ground `archipelago | violet` and clouds `fronts | cover-20 | cover-40`.
+Controls expose radius and both material choices. Edits pause; radius recomputes
+mass and safe orbit, material edits retain time/pose. Backward seek preserves
+staged values; Reset restores the opening document.

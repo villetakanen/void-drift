@@ -1,0 +1,129 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="1056"
+  height="360"
+  viewBox="0 0 1056 360"
+  role="img"
+  aria-labelledby="title desc"
+>
+  <title id="title">
+    Ion cannon at the expected camera zooms used by Planet Inspector
+  </title>
+  <desc id="desc">
+    The production ion cannon at expected zoom levels 1, 2, 4, 8 and 16 times,
+    mapped to 0.5, 1, 2, 4 and 8 CSS pixels per world unit. The cannon is
+    respectively 8, 16, 32, 64 and 128 CSS pixels long. Each drawing labels its
+    footprint and channel width. These are the intended camera scales, not the
+    current speed-camera calculation.
+  </desc>
+  <rect width="1056" height="360" fill="#070711" />
+  <style>
+  text {
+    font: 12px monospace;
+    fill: #a4a7b2;
+    text-anchor: middle;
+  }
+  .title {
+    font: 600 20px sans-serif;
+    fill: #e0e4e9;
+  }
+  .small {
+    font-size: 10px;
+  }
+  </style>
+  <defs>
+    <g id="source">
+      <path
+        fill="#1b1d1f"
+        d="M246.21315 41.378277h2.0370066v19.501797h-2.0370066z"
+      />
+      <path
+        fill="#3d4147"
+        d="m247.72051 41.684128h-1.37854l-.58036 -.305851h2.48854z"
+      />
+      <path
+        fill="#52575f"
+        d="m245.76162 41.378276v19.501797h.58035l.00001 -19.195946z"
+      />
+      <path
+        fill="#12171e"
+        d="m248.25015 41.378276l-1.90818 19.501797h1.90818z"
+      />
+      <path
+        fill="#29baff"
+        d="M246.91822 51.787451V41.378277h.31343v10.409174z"
+      />
+      <path
+        fill="#c8f4f0"
+        d="m245.76162 49.860366l-1.39489 .805336v7.383504l1.39489 .805336z"
+      />
+      <path
+        fill="#437e99"
+        d="m248.25016 49.860366l1.39489 .805336v7.383504l-1.39489 .805336z"
+      />
+      <path
+        fill="#83c7d0"
+        d="M245.76161 52.732132h3.8834298v1.995883h-3.8834298z"
+      />
+    </g>
+  </defs>
+  <text x="105.6" y="30" class="title">1×</text>
+  <text x="105.6" y="57">0.5 CSS px / world u</text>
+  <g
+    id="cannon-1"
+    transform="translate(105.6 90) scale(0.4102186070340082) translate(-247.00589 -41.378276)"
+  >
+    <use href="#source" />
+  </g>
+  <text x="105.6" y="254">2.17 × 8 CSS px</text>
+  <text x="105.6" y="281" class="small">Blue channel: 0.129 CSS px wide</text>
+  <text x="316.8" y="30" class="title">2×</text>
+  <text x="316.8" y="57">1 CSS px / world u</text>
+  <g
+    id="cannon-2"
+    transform="translate(316.8 90) scale(0.8204372140680164) translate(-247.00589 -41.378276)"
+  >
+    <use href="#source" />
+  </g>
+  <text x="316.8" y="254">4.33 × 16 CSS px</text>
+  <text x="316.8" y="281" class="small">Blue channel: 0.257 CSS px wide</text>
+  <text x="528.0" y="30" class="title">4×</text>
+  <text x="528.0" y="57">2 CSS px / world u</text>
+  <g
+    id="cannon-4"
+    transform="translate(528.0 90) scale(1.6408744281360328) translate(-247.00589 -41.378276)"
+  >
+    <use href="#source" />
+  </g>
+  <text x="528.0" y="254">8.66 × 32 CSS px</text>
+  <text x="528.0" y="281" class="small">Blue channel: 0.514 CSS px wide</text>
+  <text x="739.2" y="30" class="title">8×</text>
+  <text x="739.2" y="57">4 CSS px / world u</text>
+  <g
+    id="cannon-8"
+    transform="translate(739.2 90) scale(3.2817488562720656) translate(-247.00589 -41.378276)"
+  >
+    <use href="#source" />
+  </g>
+  <text x="739.2" y="254">17.32 × 64 CSS px</text>
+  <text x="739.2" y="281" class="small">Blue channel: 1.029 CSS px wide</text>
+  <text x="950.4" y="30" class="title">16×</text>
+  <text x="950.4" y="57">8 CSS px / world u</text>
+  <g
+    id="cannon-16"
+    transform="translate(950.4 90) scale(6.563497712544131) translate(-247.00589 -41.378276)"
+  >
+    <use href="#source" />
+  </g>
+  <text x="950.4" y="254">34.64 × 128 CSS px</text>
+  <text x="950.4" y="281" class="small">Blue channel: 2.057 CSS px wide</text>
+  <path stroke="#2c303b" d="M0 306H1056" />
+  <text x="528" y="329">
+    Expected camera zooms · same mapping as Planet Inspector · unchanged 16 u
+    weapon
+  </text>
+  <text x="528" y="353" class="small">
+    Exact CSS sizes at native 1056 px sheet width · current camera
+    implementation is not the calibration source
+  </text>
+</svg>

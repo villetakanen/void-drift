@@ -1,7 +1,7 @@
 <script lang="ts">
 import { onMount } from "svelte";
 import RingSlider from "../../inputs/RingSlider.svelte";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 
 interface Props {
   label?: string;
@@ -291,7 +291,7 @@ function handlePointerUp(event: PointerEvent) {
         <span class="control-caption">
           02.6A Technical marking ink (arrow + text)
         </span>
-        <Toggle
+        <SegmentedControl
           label="Technical marking ink"
           options={[...TEXT_INK_OPTIONS]}
           bind:value={textInkMode}
@@ -303,7 +303,7 @@ function handlePointerUp(event: PointerEvent) {
           02.6B Inspect independent active pad states (or press pads / keys
           <code>A</code>, <code>D</code>, <code>W</code>)
         </span>
-        <Toggle
+        <SegmentedControl
           label="Active state simulation"
           options={[...SIM_OPTIONS]}
           bind:value={simState}
@@ -312,7 +312,7 @@ function handlePointerUp(event: PointerEvent) {
 
       <div class="control-block">
         <span class="control-caption">02.6C Pane layering model</span>
-        <Toggle
+        <SegmentedControl
           label="Pane layering model"
           options={[...OVERLAP_MODEL_OPTIONS]}
           bind:value={overlapModel}
@@ -809,7 +809,7 @@ function handlePointerUp(event: PointerEvent) {
   border: 1px solid var(--color-border);
 }
 
-/* Stacked full-width rows so Toggle options never cramp or truncate */
+/* Stacked full-width rows so SegmentedControl options never cramp or truncate */
 .control-stack {
   display: grid;
   gap: var(--spacing-md);

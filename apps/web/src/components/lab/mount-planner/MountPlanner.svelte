@@ -21,7 +21,7 @@ import {
 } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import RingSlider from "../../inputs/RingSlider.svelte";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 
 let { label = "Ship mount planner" }: { label?: string } = $props();
 let ready = $state(false);
@@ -153,7 +153,7 @@ function load() {
   }
 }
 function fitPart(value: string) {
-  if (!current) return;
+  if (!current || value === "rail") return;
   const next = $state.snapshot(plan),
     id = value || null;
   const result = PARTS[id as keyof typeof PARTS];
@@ -423,7 +423,7 @@ onMount(() => {
 <section class="planner" data-ready={ready} aria-label={label}>
   <section class="workspace">
     <div class="toolbar">
-      <Toggle
+      <SegmentedControl
         label="Ship"
         options={Object.keys(CHASSIS)}
         bind:value={
@@ -470,7 +470,7 @@ onMount(() => {
       >
     </div>
     <div class="toolbar">
-      <Toggle
+      <SegmentedControl
         label="Layout view"
         options={["Draft", "Original"]}
         bind:value={
@@ -478,7 +478,7 @@ onMount(() => {
           (v) => (original = v === "Original")
         }
       />
-      <Toggle
+      <SegmentedControl
         label="Mount contents"
         options={["Fitted", "In-game", "Empty"]}
         bind:value={contents}
@@ -631,8 +631,15 @@ onMount(() => {
               !(plan.chassis === "fiddler" && current.group === "aft")}
               <option value="">Empty</option>
             {/if}
+            {#if previewMounts(plan).find((m) => m.key === selected)?.part ===
+              "rail"}
+              <option value="rail" disabled>Rail gun · Disabled</option>
+            {/if}
             {#each Object.entries(PARTS).filter(
-              ([, p]) => current && slotAccepts(current.type, p.category),
+              ([id, p]) =>
+                id !== "rail" &&
+                current &&
+                slotAccepts(current.type, p.category),
             ) as [id, p]}
               <option value={id}>{p.name}</option>
             {/each}

@@ -1,6 +1,6 @@
 import { expect, test } from "../helpers/local-browser";
 
-test("production Gauntlet launches both opponents and keeps pause usable", async ({
+test("production Gauntlet launches its scheduled roster and keeps pause usable", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -9,7 +9,7 @@ test("production Gauntlet launches both opponents and keeps pause usable", async
 
   const flight = page.locator(".flight-page");
   await expect(flight).toHaveAttribute("data-mode", "gauntlet");
-  await expect(flight).toHaveAttribute("data-gauntlet-opponents", "2");
+  await expect(flight).toHaveAttribute("data-gauntlet-opponents", "1");
   await expect(flight).toHaveAttribute("data-countdown-tone", "space-purple");
   await expect
     .poll(async () => Number(await flight.getAttribute("data-ticks")))
@@ -38,21 +38,6 @@ test("production Gauntlet launches both opponents and keeps pause usable", async
   await relaunch.click();
   await expect(page.locator(".flight-page")).toHaveAttribute(
     "data-gauntlet-opponents",
-    "2",
+    "1",
   );
-});
-
-test("Gauntlet Lab renders both independently readable pirate hulls", async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/lab/gauntlet");
-  const bench = page.locator(".gauntlet-bench");
-  await expect(bench).toHaveAttribute("data-opponents", "2");
-  await expect(page.getByText("PIRATE HULL")).toBeVisible();
-  await expect(page.getByText("PIRATE 2 HULL")).toBeVisible();
-  await expect(bench).toHaveAttribute("data-rendered", "true");
-  const resets = Number(await bench.getAttribute("data-resets"));
-  await page.getByRole("button", { name: "Reset encounter" }).click();
-  await expect(bench).toHaveAttribute("data-resets", String(resets + 1));
 });

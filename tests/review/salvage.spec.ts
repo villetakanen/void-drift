@@ -25,10 +25,6 @@ for (const width of [1280, 844]) {
       .getByRole("button", { name: "Hull 1 · Equipment: Empty" })
       .click();
     await page.getByRole("button", { name: /^Laser\b/ }).click();
-    await page
-      .getByRole("button", { name: "Hull 2 · Equipment: Empty" })
-      .click();
-    await page.getByRole("button", { name: /^Rail gun\b/ }).click();
     await page.getByRole("button", { name: "Practice", exact: true }).click();
     const capture = async (name: string) => {
       const path = info.outputPath(`${name}.png`);
@@ -52,8 +48,8 @@ test("shared weapon effects in the mixed Lab", async ({ page }, info) => {
   await page.clock.pauseAt(time);
   await page.goto("/lab/fx?weapons=1");
   await expect(
-    page.getByRole("button", { name: "Weapons on" }),
-  ).toHaveAttribute("aria-pressed", "true");
+    page.getByRole("checkbox", { name: "Weapons", exact: true }),
+  ).toBeChecked();
   await page.clock.runFor(7200);
   const path = info.outputPath("weapon-fx-lab.png");
   await page.screenshot({ path });

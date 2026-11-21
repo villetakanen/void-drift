@@ -1,3 +1,14 @@
+---
+title: "Spec: Playground"
+status: draft
+generated:
+  by: "openai-codex/gpt-6.1-sol"
+  at: "2026-11-20T11:49:20+02:00"
+verified:
+  - by: "codex/gpt-6"
+    at: "2026-11-19T20:39:26+00:00"
+---
+
 # Playground
 
 ## Blueprint
@@ -10,11 +21,12 @@ a boundary of the rules, not a stage of development. An unsanctioned
 ship or part can be complete and intentionally available for play, and may
 remain outside those rules indefinitely. No eventual promotion is promised.
 
-In the current game, Playground makes every catalog ship and compatible part
+In the current game, Playground makes every catalog ship and compatible part except the retired rail gun
 available. It keeps the selected flight mode and can enable experimental or
-upcoming world features. Ranked Survival retains the 0.6.0 launch-era gameplay
-rules under `ion-storm`; Playground Survival and the other, unranked modes can
-evolve independently. Public availability does not imply ranked eligibility.
+upcoming world features. The default seeded solar system, including its
+yellow-family G star, is shared by ranked Survival and the other gameplay
+modes. Playground controls catalog access and score eligibility, not this
+system profile. Public availability does not imply ranked eligibility.
 
 The player makes one choice: Playground **Off** or **On**.
 
@@ -27,7 +39,7 @@ Playground is not a game mode of its own: it is the same Survival, Practice,
 Derelicts and Gauntlet. What is fitted never changes scoring on its own: with
 Playground On, a ship carrying only sanctioned parts still flies an unscored run.
 
-### Architecture and boundaries
+### Architecture
 
 - **Sanctioned and unsanctioned.** Every chassis in `CHASSIS` and every part in
   `PARTS` (`packages/mode-a/src/lib/schemas/loadout.ts`) is either sanctioned
@@ -56,7 +68,9 @@ Playground On, a ship carrying only sanctioned parts still flies an unscored run
   ([terms](../spec.md#terms)), and an unsanctioned part's marker reads
   “UNSANCTIONED”. How the marker looks is open.
 
-### Rules
+The Plasma engine and [Plasma rifle](../plasma-rifle/spec.md) are sanctioned fittings. With Playground Off, either or both can be fitted to compatible mounts and flown in ranked Survival on an otherwise sanctioned build.
+
+### Constraints
 
 - **Off, catalog.** Unsanctioned ships and parts remain visible in the Hangar
   and cannot be selected or fitted. Ship tabs use the shared unavailable state
@@ -70,17 +84,15 @@ Playground On, a ship carrying only sanctioned parts still flies an unscored run
   Hangar. The title screen says why and leads to the Hangar. Launch becomes
   available as soon as the player picks a sanctioned ship whose fitted parts
   are all sanctioned, or removes the unsanctioned parts.
-- **On, catalog.** Every ship and part is selectable and fittable. Ship tabs
+- **On, catalog.** Every ship and part except the retired rail gun is selectable and fittable. A saved rail fitting remains visible, disabled and removable; it is still unsanctioned for launch eligibility. Ship tabs
   use the ordinary available state without a catalog badge; unsanctioned parts
   retain their marker.
-- **World features.** Survival with Playground On uses the seeded G-class
-  yellow-family stars defined by the [star contract](../world/star/spec.md).
-  With Playground Off it retains the ranked legacy Sun. Practice, Derelicts and
-  Gauntlet may use experimental or upcoming features regardless of Playground;
-  each mode's contract defines its selection. This does not automatically enable
-  every experiment. No world feature may leak into ranked rules through a shared
-  default. The Playground value is captured in validated flight settings at launch
-  and retained for reset and replay.
+- **World features.** Survival, Derelicts and Gauntlet use the shared seeded
+  yellow-family solar system defined by the [system contract](../world/systems/spec.md)
+  whether Playground is On or Off. Practice retains its fixed reference system.
+  Playground does not enable other world experiments automatically; each mode's
+  contract defines its selection. The Playground value is captured in validated
+  flight settings at launch and retained for reset and replay.
 - **On, runs.** No run is scored. In a Survival run the flight screen shows the
   time and, where the running score would be, the scoring-off notice. Run
   complete shows the time survived and the same notice in place of the score,
@@ -88,12 +100,14 @@ Playground On, a ship carrying only sanctioned parts still flies an unscored run
 - **Run status.** The title screen uses the red status slot below the menu
   panel, above the decorative ship. With Playground On it reads “PLAYGROUND
   ACTIVE” and “UNRANKED PLAY” on separate lines. With Playground Off and an
-  unsanctioned active build, it reads “UNSANCTIONED BUILD” and “PLAYGROUND
-  REQUIRED” on separate lines. The blocked warning does not replace the title
+  unsanctioned active build, it reads “PLAYGROUND OFF” and “UNSANCTIONED
+  BUILD” on separate lines. The blocked warning does not replace the title
   hints; their normal rotation behavior continues. These indications are absent
   with Off and a sanctioned build. The shared `PlaygroundStatus.svelte` owns
   the copy and red text treatment. In the Hangar, its Playground On status
-  appears beside the launch actions without changing the header.
+  appears to the left of the launch actions without changing the header.
+  The same shared status shows the blocked copy there with Off and an
+  unsanctioned build; Off with an eligible build shows no notice.
   Individual catalog-item markers are a separate concern.
 - **Persistence.** The Playground setting is kept on this device across
   visits; a fresh device starts Off. The [active ship](../active-ship/spec.md)
@@ -112,7 +126,7 @@ Playground On, a ship carrying only sanctioned parts still flies an unscored run
   list of sanctioned or unsanctioned items.
 - E2: The Playground setting is defined by a Zod schema, survives a page
   reload, and reads as Off when the stored value is missing or invalid.
-- E3: With Playground Off, unsanctioned ships and parts appear in the
+- E3: With Playground Off, unsanctioned ships and active parts appear in the
   Hangar with unavailable ship tabs and marked parts, and cannot be selected or fitted by
   pointer or keyboard.
 - E4: Turning Playground Off with unsanctioned content in the active
@@ -121,18 +135,18 @@ Playground On, a ship carrying only sanctioned parts still flies an unscored run
 - E5: In that state the title screen explains why launch is unavailable and
   offers the Hangar; choosing a sanctioned ship with only sanctioned parts, or
   removing the unsanctioned parts, makes launch available again.
-- E6: With Playground On, every ship and part is selectable and fittable,
+- E6: With Playground On, every ship and active part is selectable and fittable,
   with ordinary ship tabs and marked unsanctioned parts.
 - E7: With Playground On, a Survival run shows the time and the
   scoring-off notice in place of the score, in flight and on run complete,
   shows no Save Score, and never calls score submission, even when every fitted
   item is sanctioned.
 - E8: Before starting a new game, the title status slot shows “PLAYGROUND
-  ACTIVE” and “UNRANKED PLAY” when Playground is On, or “UNSANCTIONED BUILD”
-  and “PLAYGROUND REQUIRED” when Playground is Off and the active build is
+  ACTIVE” and “UNRANKED PLAY” when Playground is On, or “PLAYGROUND OFF”
+  and “UNSANCTIONED BUILD” when Playground is Off and the active build is
   unsanctioned. It is separate from the PRESS START control group. The blocked
   warning does not replace or interrupt the title hints' normal rotation. In
-  the Hangar, the status appears beside the launch actions without changing
+  the Hangar, the On or blocked status appears left of the launch actions without changing
   the header.
 - E9: Only the Hangar's Playground control changes the setting; choosing
   ships, fitting parts and flying runs leave it unchanged.
@@ -141,10 +155,10 @@ Playground On, a ship carrying only sanctioned parts still flies an unscored run
 - E11: Item-marker presentation is settled on a live
   prototype. Playground is the setting name, and title run status distinguishes
   Playground play from ranked play.
-- E12: Playground Survival uses the deterministic yellow-family star for its
-  seed; ranked Survival retains the 0.6.0 launch-era Sun and gameplay rules.
-  Reset and replay retain the captured world-feature selection. Changes confined
-  to unranked play leave `ion-storm` and its leaderboard unchanged.
+- E12: Survival uses the deterministic yellow-family star for its seed whether
+  Playground is On or Off. Playground changes ranking eligibility, not solar
+  system generation. Reset and replay retain the captured world-feature
+  selection.
 
 ### Regression guardrails
 
@@ -171,6 +185,12 @@ Feature: Playground
     When I start a Survival run and complete it
     Then I can see my score
     And I can save it to the leaderboard
+
+  Scenario: Ranked plasma fitting
+    Given Playground is Off and my active Wasp has a sanctioned fitting
+    When I fit a Plasma rear engine and a Plasma rifle in a wing equipment slot
+    And launch Survival
+    Then the run is ranked and the saved fitting includes both plasma parts
 
   Scenario: Unsanctioned content is locked while Off
     Given Playground is Off
@@ -211,7 +231,7 @@ Feature: Playground
     And reduced motion is not requested
     And the viewport supports rotating title hints
     When I view the title screen
-    Then the red status reads “UNSANCTIONED BUILD” and “PLAYGROUND REQUIRED”
+    Then the red status reads “PLAYGROUND OFF” and “UNSANCTIONED BUILD”
     And PRESS START is unavailable
     And the rotating title hints continue to change
 
@@ -227,7 +247,7 @@ Feature: Playground
     And the title screen shows that ship with that fitting
 ```
 
-### Open decisions
+**Open decisions**
 
 - **Marker:** how an unsanctioned part is marked in the Hangar, explored in
   the [part-rows study](../../../../apps/web/src/pages/lab/studies/part-rows-2026-11-11.astro).

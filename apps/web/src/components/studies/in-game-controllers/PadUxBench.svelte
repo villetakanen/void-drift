@@ -1,7 +1,7 @@
 <script lang="ts">
 import { onMount } from "svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import Switch from "../../inputs/Switch.svelte";
-import Toggle from "../../inputs/Toggle.svelte";
 
 interface Props {
   label?: string;
@@ -368,7 +368,7 @@ function applyPreset(p: (typeof PRESETS)[number]) {
     <div class="control-grid">
       <div class="control-block">
         <span class="control-caption">A · Resting background fill</span>
-        <Toggle
+        <SegmentedControl
           label="Resting background fill"
           options={[...FILL_OPTIONS]}
           bind:value={fillStyle}
@@ -377,7 +377,7 @@ function applyPreset(p: (typeof PRESETS)[number]) {
 
       <div class="control-block">
         <span class="control-caption">B · Border / outline treatment</span>
-        <Toggle
+        <SegmentedControl
           label="Border outline treatment"
           options={[...BORDER_OPTIONS]}
           bind:value={borderStyle}
@@ -386,7 +386,7 @@ function applyPreset(p: (typeof PRESETS)[number]) {
 
       <div class="control-block">
         <span class="control-caption">C · Pad markings / iconography</span>
-        <Toggle
+        <SegmentedControl
           label="Pad markings"
           options={[...MARKING_OPTIONS]}
           bind:value={markingStyle}
@@ -395,7 +395,7 @@ function applyPreset(p: (typeof PRESETS)[number]) {
 
       <div class="control-block">
         <span class="control-caption">D · Pressed / active state response</span>
-        <Toggle
+        <SegmentedControl
           label="Pressed state response"
           options={[...ACTIVE_OPTIONS]}
           bind:value={activeStyle}

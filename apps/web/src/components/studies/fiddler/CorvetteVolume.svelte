@@ -1,5 +1,5 @@
 <script lang="ts">
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import VolumeDrawing from "./VolumeDrawing.svelte";
 
 let { label = "Corvette volume comparison" }: { label?: string } = $props();
@@ -22,7 +22,7 @@ const proposals = [
 ];
 </script>
 <div class="controls">
-  <Toggle
+  <SegmentedControl
     {label}
     options={["Hull", "Lineage", "Mounts", "Fitted"]}
     bind:value={view}

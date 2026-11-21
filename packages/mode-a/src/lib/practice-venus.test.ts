@@ -4,6 +4,7 @@ import {
   SURVIVAL_CONFIG,
 } from "@void-drift/core";
 import { expect, it } from "vitest";
+import { mercurialMass } from "./mercurial-rock";
 import { gameSettings, Simulation, stockSettings } from "./simulation";
 
 const idle = { leftThruster: false, rightThruster: false, fire: false };
@@ -15,11 +16,11 @@ it("keeps the Practice roster isolated, repeatable and clear over entire orbits"
   for (const mode of ["survival", "derelicts", "gauntlet"] as const) {
     const other = new Simulation({ ...gameSettings("wasp"), mode });
     expect(other.planets.some((p) => p.id === "venus")).toBe(false);
-    expect(other.planets.some((p) => p.id === "gas")).toBe(true);
     const moon = other.planets.find((p) => p.id === "moon");
     if (!moon?.massWell) throw new Error("Stock moon well missing");
-    // The deliberately lighter Practice Mercury must not retune stock modes.
-    expect(moon.massWell.mass).toBeGreaterThan(mercury.massWell.mass);
+    // Named references and generated bodies use the same family calibration.
+    expect(moon.massWell.mass).toBe(mercurialMass(moon.radius));
+    expect(mercury.massWell.mass).toBe(mercurialMass(27));
   }
   for (const p of a.planets) {
     expect(p.orbitRadius - p.radius).toBeGreaterThan(a.star.radius);

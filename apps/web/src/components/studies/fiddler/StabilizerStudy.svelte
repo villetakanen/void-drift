@@ -2,7 +2,7 @@
 import "@void-drift/core/styles/buttons.css";
 import { onMount } from "svelte";
 import RingSlider from "../../inputs/RingSlider.svelte";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import {
   FOUR_ENGINE_FIT,
   type FourEngineFit,
@@ -74,7 +74,7 @@ $effect(() => {
   pair below to adjust its position and tilt precisely.
 </p>
 <div class="toolbar">
-  <Toggle
+  <SegmentedControl
     label="Stabilizer placement view"
     options={["Hull", "Engines", "Fitted"]}
     bind:value={view}
@@ -100,7 +100,7 @@ $effect(() => {
   </div>
   <div class="adjustments">
     <div class="pair-selector">
-      <Toggle
+      <SegmentedControl
         label="Turning-thruster pair"
         options={["Front", "Rear"]}
         bind:value={selected}

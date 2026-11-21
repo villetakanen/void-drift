@@ -1,22 +1,29 @@
 <script lang="ts">
 // Shared catalog drawing. Parts without artwork render nothing.
+import { COLOR } from "@void-drift/core";
 import {
   ENGINE_ACCENT,
   ENGINE_ART,
+  ENGINE_MARKINGS,
   engineArtId,
   ION_CANNON_ART,
   PARTS,
   type PartId,
+  PLASMA_RIFLE_PATHS,
   POINT_DEFENCE_BASE,
   POINT_DEFENCE_GEOMETRY,
   POINT_DEFENCE_TURRET,
   POTENTIAL_WELL_ART,
+  testingMarkingLines,
   UTILITY_ART,
 } from "@void-drift/mode-a";
 
 let { id }: { id: PartId } = $props();
 const uid = $props.id();
 const part = $derived(PARTS[id]);
+const marking = $derived(
+  part.testingOnly ? ENGINE_MARKINGS[engineArtId(part.id)] : undefined,
+);
 </script>
 
 {#if part.category === "E"}
@@ -36,7 +43,38 @@ const part = $derived(PARTS[id]);
           fill={face.color}
         />
       {/each}
+      {#if marking}
+        <clipPath id="{uid}-marking-body">
+          {#each marking.body as face}
+            <polygon points={face.map((p) => p.join(",")).join(" ")} />
+          {/each}
+        </clipPath>
+        <clipPath id="{uid}-marking-band">
+          <rect x={marking.band.x} y={marking.band.y} width="40" height="10" />
+        </clipPath>
+        <g clip-path="url(#{uid}-marking-body)">
+          <g
+            clip-path="url(#{uid}-marking-band)"
+            stroke={COLOR.brand}
+            stroke-width={marking.width}
+          >
+            {#each testingMarkingLines(marking) as [x1, y1, x2, y2]}
+              <line {x1} {y1} {x2} {y2} />
+            {/each}
+          </g>
+        </g>
+      {/if}
     </g>
+  </svg>
+{:else if part.id === "plasma-rifle"}
+  <svg aria-hidden="true" viewBox="-8 -26 16 40">
+    {#each PLASMA_RIFLE_PATHS as face}
+      <path
+        d={face.path}
+        fill={face.fill}
+        transform="matrix({face.matrix.join(" ")})"
+      />
+    {/each}
   </svg>
 {:else if part.id === "light-ion-cannon"}
   <svg aria-hidden="true" viewBox="240 40 14 22">

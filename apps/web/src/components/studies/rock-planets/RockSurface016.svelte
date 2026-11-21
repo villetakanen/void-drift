@@ -447,7 +447,11 @@ onMount(() => {
       <figure>
         <h4>{name}</h4>
         <div class="stage">
-          <FlightLayers bind:canvases={layerSets[index]} label={name} />
+          <FlightLayers
+            fxGlow={false}
+            bind:canvases={layerSets[index]}
+            label={name}
+          />
         </div>
       </figure>
     {/each}

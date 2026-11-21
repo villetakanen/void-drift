@@ -18,7 +18,7 @@ let {
 } = $props();
 const parsed = $derived(PlanetInspectorDocumentSchema.safeParse(config));
 const doc = $derived(parsed.success ? parsed.data : null);
-let selected = $state<"mercury" | "venus">();
+let selected = $state<PlanetInspectorDocument["planet"]>();
 $effect(() => {
   void config;
   untrack(() => {
@@ -26,9 +26,7 @@ $effect(() => {
   });
 });
 const activeDoc = $derived(
-  doc && selected
-    ? { ...doc, planet: { kind: "named" as const, name: selected } }
-    : doc,
+  doc && selected ? { ...doc, planet: selected } : doc,
 );
 const key = $derived(JSON.stringify(activeDoc));
 </script>
@@ -40,7 +38,14 @@ const key = $derived(JSON.stringify(activeDoc));
       paneDoc={readOnlyCopy(activeDoc)}
       {label}
       {pane}
-      onSelect={(name) => (selected = name)}
+      onSelect={(planet) => {
+        selected =
+          planet.kind === "family" &&
+          doc?.planet.kind === "family" &&
+          planet.name === doc.planet.name
+            ? doc.planet
+            : planet;
+      }}
     />
   {/key}
 {:else if !parsed.success}

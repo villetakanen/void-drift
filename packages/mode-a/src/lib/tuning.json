@@ -1,15 +1,63 @@
 {
   "version": 1,
+  "practice": {
+    "phaseSeed": 2026,
+    "star": {
+      "radius": 70
+    },
+    "mercury": {
+      "radius": 27,
+      "orbitRadius": 258,
+      "travelSpeed": 4
+    },
+    "venus": {
+      "radius": 40.32752613240418,
+      "orbitRadius": 482.13471502590676,
+      "travelSpeed": 2.9535864978902953,
+      "spinSeconds": 60,
+      "color": "#f6c371"
+    },
+    "cradle": {
+      "radius": 41.49959016393443,
+      "orbitRadius": 666.6113989637305,
+      "travelSpeed": 2.5130801687763715,
+      "cloudSpinSeconds": 46.95,
+      "spinSeconds": 93.9,
+      "cloudHeight": 0.4,
+      "color": "#4A90C2"
+    }
+  },
   "gravity": {
     "falloff": "inverse-square",
     "cutoff": 50,
     "sunMass": 5250,
+    "mercurial": {
+      "referenceRadius": 27,
+      "referenceMass": 870,
+      "coreFraction": 0.75
+    },
     "planetMass": {
       "rock": 2250,
       "gas": 3500,
-      "moon": 1450,
       "venus": 2844.850580940663
     },
-    "practicePlanetMass": { "moon": 870 }
+    "practicePlanetMass": {
+      "cradle": 3186.6710241427595
+    },
+    "habitable": {
+      "referenceRadius": 41.49959016393443,
+      "referenceMass": 3186.6710241427595,
+      "coreFraction": 0.7
+    }
+  },
+  "atmosphere": {
+    "cradle": {
+      "depth": 10,
+      "drag": 0.8
+    },
+    "habitable": {
+      "depth": 10,
+      "drag": 0.8
+    }
   }
 }

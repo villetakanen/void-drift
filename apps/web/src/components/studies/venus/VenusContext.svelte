@@ -226,6 +226,7 @@ onMount(() => {
 </script>
 <div class="scene">
   <FlightLayers
+    fxGlow={false}
     bind:canvases
     label={`Venus, Mercury, G7 Sun and fitted Wasp at ${zoom} pixels per world unit`}
   />

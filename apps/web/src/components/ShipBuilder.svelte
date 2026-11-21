@@ -7,6 +7,7 @@ import {
   CHASSIS,
   CRUISER,
   drawBuild,
+  EngineIdSchema,
   FIDDLER,
   FIGHTER,
   isScoredEligible,
@@ -32,10 +33,10 @@ import {
 } from "../lib/stores/ship-setup";
 import FlightDeck from "./FlightDeck.svelte";
 import PartCard from "./hangar/PartCard.svelte";
+import SegmentedControl from "./inputs/SegmentedControl.svelte";
 import Switch from "./inputs/Switch.svelte";
 import Tabs from "./inputs/Tabs.svelte";
-import Toggle from "./inputs/Toggle.svelte";
-import Logo from "./Logo.svelte";
+import PageHeader from "./PageHeader.svelte";
 import PlaygroundStatus from "./PlaygroundStatus.svelte";
 
 const shipIds = ["wasp", "scout", "fighter", "corvette", "fiddler"] as const;
@@ -123,7 +124,11 @@ const mount = $derived(
 );
 const compatible = $derived(
   Object.values(PARTS)
-    .filter((part) => slotAccepts(mount.type, part.category))
+    .filter(
+      (part) =>
+        slotAccepts(mount.type, part.category) &&
+        (part.id !== "rail" || mount.part === "rail"),
+    )
     .sort(
       (a, b) =>
         Number(a.releaseClass === "preview") -
@@ -165,6 +170,7 @@ $effect(() => {
 });
 function install(id: PartId | null) {
   if (
+    id === "rail" ||
     mount.linkedTo ||
     (!id && mount.required) ||
     (id && !slotAccepts(mount.type, PARTS[id].category)) ||
@@ -173,13 +179,8 @@ function install(id: PartId | null) {
     return;
   const next = { ...build, hull: [...build.hull], aft: [...build.aft] };
   if (mount.group === "side") {
-    if (
-      id === "ion" ||
-      id === "heavy-ion" ||
-      id === "fusion" ||
-      id === "plasma"
-    )
-      next.side = id;
+    const engine = EngineIdSchema.safeParse(id);
+    if (engine.success) next.side = engine.data;
   } else if (chosen === "fiddler" && mount.group === "aft") {
     next.aft = [id, id];
   } else next[mount.group][mount.index] = id;
@@ -204,22 +205,23 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
   />
 {:else}
   <main class="builder">
-    <header class="hangar-header">
-      <div class="brand-context">
-        <a class="brand" href="/" aria-label="Void Drift"><Logo size="sm" /></a>
-        <h1>Hangar</h1>
-      </div>
-      <label class="experimental-control" for="hangar-experimental">
-        <span>Playground</span>
-        <Switch
-          id="hangar-experimental"
-          bind:checked={
-            () => experimental === "On",
-            (value) => setExperimentalSetting(value ? "On" : "Off")
-          }
-        />
-      </label>
-    </header>
+    <PageHeader
+      title="Hangar"
+      links={[{ href: "/settings?from=hangar", label: "Settings" }]}
+    >
+      {#snippet actions()}
+        <label class="experimental-control" for="hangar-experimental">
+          <span>Playground</span>
+          <Switch
+            id="hangar-experimental"
+            bind:checked={
+              () => experimental === "On",
+              (value) => setExperimentalSetting(value ? "On" : "Off")
+            }
+          />
+        </label>
+      {/snippet}
+    </PageHeader>
     <Tabs
       label="Choose chassis"
       tabs={shipTabs}
@@ -246,7 +248,7 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
                   <div class="view-axes" aria-hidden="true"></div>
                 {/if}
                 <div class="preview-mode">
-                  <Toggle
+                  <SegmentedControl
                     label="Ship preview mode"
                     options={["Plan", "View"]}
                     bind:value={previewMode}
@@ -279,7 +281,7 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
                     style:width={`${(((SLOT_STYLE.width + 2 * SLOT_STYLE.gap) / SLOT_STYLE.referenceScale) * previewScale * 100) / previewWidth}%`}
                     style:height={`${(((SLOT_STYLE.height + 2 * SLOT_STYLE.gap) / SLOT_STYLE.referenceScale) * previewScale * 100) / previewHeight}%`}
                     style:transform={`translate(-50%, -50%) rotate(${slot.angle}rad)`}
-                    aria-label={`${slot.label}: ${slot.part ? PARTS[slot.part].name : "Empty"}`}
+                    aria-label={`${slot.label}: ${slot.part ? `${PARTS[slot.part].name}${slot.part === "rail" ? " (disabled)" : ""}` : "Empty"}`}
                     aria-pressed={mount.key === slot.key}
                     onclick={() => (selected = slot.key)}
                   ></button>
@@ -355,6 +357,7 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
               {/if}
               {#each compatible as part (part.id)}
                 <PartCard
+                  retired={part.id === "rail"}
                   id={part.id}
                   fitted={mount.part === part.id}
                   playground={experimental === "On"}
@@ -446,7 +449,11 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
     </Tabs>
     <footer>
       <div class="launch-context">
-        <PlaygroundStatus active={experimental === "On"} />
+        <PlaygroundStatus
+          id="hangar-playground-status"
+          active={experimental === "On"}
+          blocked={!canLaunch}
+        />
         {#if !$shipSetupStatus.ready}
           <p role="status">Loading saved ships…</p>
         {:else if $shipSetupStatus.message}
@@ -458,6 +465,7 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
           type="button"
           class="btn btn-normal"
           disabled={!canLaunch}
+          aria-describedby={!canLaunch ? "hangar-playground-status" : undefined}
           onclick={() => launch("test")}
         >
           Practice
@@ -466,6 +474,7 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
           type="button"
           class="btn btn-normal"
           disabled={!canLaunch}
+          aria-describedby={!canLaunch ? "hangar-playground-status" : undefined}
           onclick={() => launch("derelicts")}
         >
           Derelicts
@@ -474,6 +483,7 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
           type="button"
           class="btn btn-normal"
           disabled={!canLaunch}
+          aria-describedby={!canLaunch ? "hangar-playground-status" : undefined}
           onclick={() => launch("gauntlet")}
         >
           Gauntlet
@@ -482,6 +492,7 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
           type="button"
           class="btn btn-filled"
           disabled={!canLaunch}
+          aria-describedby={!canLaunch ? "hangar-playground-status" : undefined}
           onclick={() => launch("survival")}
         >
           Survival
@@ -491,9 +502,9 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
     <p class="footnote">
       Practice: fly a repeatable star system with full health and energy.
       Derelicts: survive, destroy wrecks and collect energy. Gauntlet: an
-      unranked first pirate encounter. Survival is ranked while Playground is
-      Off and your active setup is eligible. Pause to resume or abort back to
-      the Hangar.
+      unranked seven-enemy encounter. Survival is ranked while Playground is Off
+      and your active setup is eligible. Pause to resume or abort back to the
+      Hangar.
     </p>
   </main>
 {/if}
@@ -505,7 +516,6 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
   color: var(--color-text);
   background: var(--color-void);
 }
-header,
 footer,
 .actions {
   display: flex;
@@ -513,34 +523,12 @@ footer,
   align-items: center;
   gap: 20px;
 }
-header .brand {
-  color: var(--color-brand);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: var(--control-min-height);
-  min-height: var(--control-min-height);
-}
-.hangar-header {
-  min-height: var(--control-min-height);
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
-  flex-wrap: nowrap;
-}
-.brand-context,
 .experimental-control {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  flex-shrink: 0;
-}
-.experimental-control {
   font-size: var(--font-size-body);
   cursor: pointer;
-}
-h1 {
-  font-size: var(--font-size-heading);
-  margin: 0;
 }
 h2 {
   font-size: 20px;
@@ -715,7 +703,7 @@ footer p {
   font-size: 12px;
 }
 .actions button {
-  min-width: 180px;
+  min-width: clamp(144px, 14vw, 180px);
 }
 
 @media (max-width: 1000px) {

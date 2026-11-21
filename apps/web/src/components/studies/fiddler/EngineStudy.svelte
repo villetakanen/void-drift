@@ -2,7 +2,7 @@
 import "@void-drift/core/styles/buttons.css";
 import { onMount } from "svelte";
 import RingSlider from "../../inputs/RingSlider.svelte";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import CapacityDrawing from "./CapacityDrawing.svelte";
 import { CAPACITY_VIEW } from "./connected-form";
 import {
@@ -68,7 +68,7 @@ $effect(() => {
       Blade roots
     </button>
   </fieldset>
-  <Toggle
+  <SegmentedControl
     label="Engine placement view"
     options={["Engines", "Fitted"]}
     bind:value={view}

@@ -1,12 +1,9 @@
-import { paintIonBeam } from "@void-drift/core";
 import { ENGINE_ART, type EngineFace } from "@void-drift/mode-a";
 
-// Study 02.4 (maintenance-drive-2026-11-17). The drive keeps form A from 02.2
-// and the plume from 02.1; 02.3 settled adding a part, and 02.4 sizes and
-// places the side rails.
-// Study drawing only; the game's parts and artwork are unchanged.
-
-export { paintIonBeam };
+// Study maintenance-drive-2026-11-17, accepted 17 November 2026: the Service
+// ion's accepted geometry, plume and marking, kept as the reference for
+// implementation. Study drawing only; the game's parts and artwork are
+// unchanged, and nothing in the game imports this file.
 
 /** 02.1's accepted plume: the light ion beam at 0.7 × 0.7, in its mint. */
 export const ACCEPTED_PLUME = {
@@ -62,14 +59,6 @@ export interface Rails {
   thickness: number;
 }
 
-/** 02.3's side rails, the starting point for 02.4. */
-export const RAILS_023: Rails = {
-  length: 13,
-  centre: 0.9,
-  offset: 3,
-  thickness: 0.9,
-};
-
 /** 02.4's accepted rails, set by the designer on 17 November 2026. */
 export const RAILS_024: Rails = {
   length: 8.4,
@@ -80,13 +69,6 @@ export const RAILS_024: Rails = {
 
 /** 02.4: the whole drive sits 1 u aft of the engine slot's middle on the Wasp. */
 export const DRIVE_AFT_OFFSET = -1;
-
-export const RAIL_BOUNDS = {
-  length: { min: 3, max: 18, step: 0.1 },
-  centre: { min: -8, max: 8, step: 0.1 },
-  offset: { min: 1.5, max: 7, step: 0.1 },
-  thickness: { min: 0.3, max: 2, step: 0.05 },
-} as const;
 
 /** Form A's half width, where the struts meet the body. */
 const BODY_EDGE = 1.4;
@@ -204,4 +186,60 @@ export function paintAcceptedPlume(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = fade;
     ctx.fillRect(-length, (-band * width) / 2, length, band * width);
   }
+}
+
+/** 02.6's accepted marking, set by the designer on 17 November 2026. */
+export const SERVICE_MARKING = { width: 0.3, gap: 2, outer: 0.5 } as const;
+
+/**
+ * Extra 02.6: the Playground band's diagonal marking on the right half of form
+ * A's body (not the rails, not the nozzle), in the brand colour. Lines run at
+ * 45° on a nose-up ship, as the band's do. Width in engine units; the gap is a
+ * multiple of the width (the band's is 2×).
+ */
+export function paintServiceMarking(
+  ctx: CanvasRenderingContext2D,
+  pose: 0 | 3,
+  width: number,
+  gap: number,
+  color: string,
+  /** Where the marking starts across the right side: 0 at the axis, 1 at the edge. */
+  outer = 0,
+) {
+  if (!(width > 0)) return;
+  const faces = formFaces(pose);
+  // The body ends where the nozzle's recess begins.
+  const recess = faces.filter((face) => face.color === "#12171e");
+  const bodyEnd = Math.max(
+    ...recess.flatMap((face) => face.points.map((p) => p[0])),
+  );
+  ctx.save();
+  ctx.beginPath();
+  for (const face of faces)
+    face.points.forEach(([x, y], i) => {
+      if (i) ctx.lineTo(x, y);
+      else ctx.moveTo(x, y);
+    });
+  ctx.clip();
+  // The right side on a nose-up ship is the engine's +y side; the marking
+  // covers its outer half, from half the body's width to its edge.
+  const edge = Math.max(
+    ...faces.flatMap((face) => face.points.map((p) => p[1])),
+  );
+  ctx.beginPath();
+  ctx.rect(bodyEnd, edge * outer, 40, 10);
+  ctx.clip();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  const repeat = width * (1 + gap);
+  ctx.beginPath();
+  for (let d = -20; d <= 20; d += repeat) {
+    // Lines along (1, 1), offset along the normal (1, −1)/√2.
+    const ox = d / Math.SQRT2,
+      oy = -d / Math.SQRT2;
+    ctx.moveTo(ox - 20, oy - 20);
+    ctx.lineTo(ox + 20, oy + 20);
+  }
+  ctx.stroke();
+  ctx.restore();
 }

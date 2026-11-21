@@ -1,9 +1,20 @@
 <script lang="ts">
-import { FxBench, STEP } from "@void-drift/mode-a";
+import {
+  clearFlightLayer,
+  FLIGHT_LAYERS,
+  type FlightLayerCanvases,
+  FxBench,
+  presentFlightFx,
+  STEP,
+} from "@void-drift/mode-a";
 import { onMount } from "svelte";
+import FlightLayers from "../FlightLayers.svelte";
+import Switch from "../inputs/Switch.svelte";
 
 let { label = "Arcade FX instrument" }: { label?: string } = $props();
-let canvas: HTMLCanvasElement;
+const WIDTH = 1920;
+const HEIGHT = 1080;
+let canvases = $state<FlightLayerCanvases>({});
 let weapons = $state(false);
 let running = $state(true),
   enabled = $state(true),
@@ -23,11 +34,21 @@ let p50 = $state(0),
   samples = $state(0);
 let reset = () => {},
   burst = () => {};
-let toggleWeapons = () => {};
+let setWeapons = (checked: boolean) => {
+  weapons = checked;
+};
 onMount(() => {
   movingCamera = new URL(location.href).searchParams.get("camera") === "moving";
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return;
+  const world = canvases.world?.getContext("2d");
+  const fx = canvases.fx?.getContext("2d");
+  const lfx = canvases.lfx?.getContext("2d");
+  if (!world || !fx || !lfx) return;
+  for (const layer of FLIGHT_LAYERS) {
+    const canvas = canvases[layer.id];
+    if (!canvas) return;
+    canvas.width = WIDTH * layer.resolution;
+    canvas.height = HEIGHT * layer.resolution;
+  }
   const bench = new FxBench();
   weapons = new URL(location.href).searchParams.get("weapons") === "1";
   bench.weapons = weapons;
@@ -44,8 +65,8 @@ onMount(() => {
     samples = 0;
   };
   burst = () => bench.burst();
-  toggleWeapons = () => {
-    weapons = !weapons;
+  setWeapons = (checked: boolean) => {
+    weapons = checked;
     bench.weapons = weapons;
     reset();
   };
@@ -63,22 +84,29 @@ onMount(() => {
       }
     } else carry = 0;
     const update = performance.now() - start;
-    ctx.save();
-    if (movingCamera) {
-      const time = bench.ticks * STEP;
-      const zoom = 1.03 + 0.03 * Math.sin(time * 0.7);
-      ctx.translate(960, 540);
-      ctx.scale(zoom, zoom);
-      ctx.translate(
-        -960 + 40 * Math.sin(time * 0.9),
-        -540 + 25 * Math.sin(time * 0.7),
-      );
+    const time = bench.ticks * STEP;
+    const zoom = 1.03 + 0.03 * Math.sin(time * 0.7);
+    for (const ctx of [world, fx, lfx]) {
+      clearFlightLayer(ctx);
+      ctx.save();
+      if (movingCamera) {
+        ctx.translate(WIDTH / 2, HEIGHT / 2);
+        ctx.scale(zoom, zoom);
+        ctx.translate(
+          -WIDTH / 2 + 40 * Math.sin(time * 0.9),
+          -HEIGHT / 2 + 25 * Math.sin(time * 0.7),
+        );
+      }
     }
-    bench.drawWorld(ctx);
+    bench.drawWorld(world);
     const before = performance.now();
-    bench.drawFx(ctx);
+    bench.drawFx(fx);
+    presentFlightFx(fx.canvas, canvases.fxGlow);
+    bench.drawLfx(lfx);
     const after = performance.now();
-    ctx.restore();
+    world.restore();
+    fx.restore();
+    lfx.restore();
     if (running) {
       costs.push(update + after - before);
       intervals.push(elapsed);
@@ -108,6 +136,7 @@ onMount(() => {
   frame = requestAnimationFrame(draw);
   return () => cancelAnimationFrame(frame);
 });
+const controlId = $props.id();
 </script>
 <section
   class="fx-bench"
@@ -128,14 +157,13 @@ onMount(() => {
   data-frame-p95={frame95}
 >
   <div class="controls">
-    <button
-      type="button"
-      class="btn btn-ghost"
-      aria-pressed={weapons}
-      onclick={() => toggleWeapons()}
-    >
-      Weapons {weapons ? "on" : "off"}
-    </button>
+    <label for={`${controlId}-0`} class="setting">
+      Weapons
+      <Switch
+        id={`${controlId}-0`}
+        bind:checked={() => weapons, (checked) => setWeapons(checked)}
+      />
+    </label>
     <button
       type="button"
       class="btn btn-primary"
@@ -149,37 +177,23 @@ onMount(() => {
     <button type="button" class="btn btn-ghost" onclick={() => burst()}>
       Burst
     </button>
-    <button
-      type="button"
-      class="btn btn-ghost"
-      aria-pressed={enabled}
-      onclick={() => (enabled = !enabled)}
+    <label for={`${controlId}-1`} class="setting"
+      >FX <Switch id={`${controlId}-1`} bind:checked={enabled} /></label
     >
-      FX {enabled ? "on" : "off"}
-    </button>
-    <button
-      type="button"
-      class="btn btn-ghost"
-      aria-pressed={movingCamera}
-      onclick={() => (movingCamera = !movingCamera)}
+    <label for={`${controlId}-2`} class="setting"
+      >Moving camera
+      <Switch id={`${controlId}-2`} bind:checked={movingCamera} /></label
     >
-      Camera {movingCamera ? "moving" : "fixed"}
-    </button>
-    <button
-      type="button"
-      class="btn btn-ghost"
-      aria-pressed={overload}
-      onclick={() => (overload = !overload)}
+    <label for={`${controlId}-3`} class="setting"
+      >Overload <Switch id={`${controlId}-3`} bind:checked={overload} /></label
     >
-      Overload {overload ? "on" : "off"}
-    </button>
   </div>
-  <canvas
-    bind:this={canvas}
-    width="1920"
-    height="1080"
-    aria-label="Six ships with engine and gravity effects, station arcs, missile trails and fire sparks"
-  ></canvas>
+  <div class="stage">
+    <FlightLayers
+      bind:canvases
+      label="Six ships with engine and gravity effects, station arcs, missile trails and fire sparks"
+    />
+  </div>
   <p>
     6 ships · 24 main engines · 12 collectors · 2 stations · 16 missiles · 12
     fires
@@ -209,17 +223,25 @@ onMount(() => {
   padding: var(--spacing-lg);
   box-sizing: border-box;
 }
+.setting {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
 .controls {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   gap: var(--spacing-sm);
   margin-bottom: var(--spacing-md);
 }
-canvas {
-  display: block;
-  width: 100%;
-  height: auto;
+.stage {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
   border: 1px solid var(--color-border);
+}
+.stage :global(.flight-layers) {
+  height: 100%;
 }
 p {
   font: var(--font-small) var(--font-flight);

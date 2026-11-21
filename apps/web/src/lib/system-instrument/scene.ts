@@ -1,0 +1,168 @@
+import {
+  CAMERA_ARENA_RADIUS,
+  Camera,
+  createRockMaterial,
+  massWellReach,
+  PLANET_MAPS,
+  Renderer,
+} from "@void-drift/core";
+import {
+  FlightFx,
+  type FlightLayerContexts,
+  resizeFlightLayers,
+  Simulation,
+  stockSettings,
+} from "@void-drift/mode-a";
+import { HabitableMaterials } from "../assets/habitable-materials";
+import { planetAppearances } from "../assets/planet-appearances";
+import { createOuterMercurialMaterial } from "../assets/rock-planets/authored-materials";
+import { drawGameField, systemBackground } from "../game-field";
+import { SystemInstrumentDocumentSchema } from "./config";
+
+const PASSES = new Set([
+  "void",
+  "starfield",
+  "arena-boundary",
+  "star",
+  "sun-fields",
+  "world-hud",
+  "planets",
+  "body-light",
+]);
+
+/** Static production world; only the camera and prepared material belong to the Lab. */
+export class SystemInstrumentScene {
+  sim: Simulation;
+  seed: number;
+  status = "Loading planet materials…";
+  readonly camera = new Camera();
+  private renderer: Renderer;
+  private fx = new FlightFx();
+  private material?: Awaited<ReturnType<typeof createRockMaterial>>;
+  private outerMaterial?: Awaited<
+    ReturnType<typeof createOuterMercurialMaterial>
+  >;
+  private disposed = false;
+  private habitable = new HabitableMaterials();
+  private appearances: ReturnType<typeof planetAppearances> = new Map();
+  private bindMaterials() {
+    this.appearances = planetAppearances(this.sim.planets, {
+      habitable: this.habitable.materials,
+      mercury: this.material,
+      outerMercurial: this.outerMaterial,
+    });
+  }
+
+  constructor(
+    private layers: FlightLayerContexts,
+    seed: number,
+    private changed: () => void,
+  ) {
+    const doc = SystemInstrumentDocumentSchema.parse({ seed });
+    this.seed = doc.seed;
+    this.sim = this.create(doc.seed);
+    this.renderer = new Renderer(layers.world.canvas);
+    void this.prepare(changed);
+  }
+  private create(seed: number) {
+    return new Simulation({
+      ...stockSettings("wasp"),
+      mode: "derelicts",
+      seed,
+    });
+  }
+  generate(input: unknown) {
+    const { seed } = SystemInstrumentDocumentSchema.parse(input);
+    const next = this.create(seed);
+    this.sim = next;
+    this.seed = seed;
+    this.bindMaterials();
+    this.draw();
+    void this.habitable
+      .prepare(this.sim.planets)
+      .then(() => {
+        if (this.disposed) return;
+        this.bindMaterials();
+        this.draw();
+        this.changed();
+      })
+      .catch(() => {
+        this.status =
+          "Habitable material unavailable; using the production fallback.";
+        this.changed();
+      });
+  }
+  private async prepare(changed: () => void) {
+    const [mercury, outer, habitable] = await Promise.allSettled([
+      createRockMaterial(PLANET_MAPS.mercuryGround),
+      createOuterMercurialMaterial(),
+      this.habitable.prepare(this.sim.planets),
+    ]);
+    if (this.disposed) {
+      if (mercury.status === "fulfilled") mercury.value.painter.dispose();
+      if (outer.status === "fulfilled") outer.value.painter.dispose();
+      return;
+    }
+    if (mercury.status === "fulfilled") this.material = mercury.value;
+    if (outer.status === "fulfilled") this.outerMaterial = outer.value;
+    this.bindMaterials();
+    this.status =
+      mercury.status === "rejected" ||
+      outer.status === "rejected" ||
+      habitable.status === "rejected"
+        ? "A planet material is unavailable; using the production fallback."
+        : "";
+    this.draw();
+    changed();
+  }
+  resize(width: number, height: number) {
+    if (width <= 0 || height <= 0) return;
+    resizeFlightLayers(this.layers, this.renderer, width, height);
+    this.camera.viewportWidth = width;
+    this.camera.viewportHeight = height;
+    this.draw();
+  }
+  draw() {
+    if (this.disposed) return;
+    const star = this.sim.star;
+    const reach = (well: typeof star.massWell) =>
+      well ? massWellReach(well.mass, well.cutoff, well.falloff) : 0;
+    const extent = Math.max(
+      CAMERA_ARENA_RADIUS,
+      star.radius,
+      star.collectionField?.reach ?? 0,
+      star.damageField?.reach ?? 0,
+      reach(star.massWell),
+      ...this.sim.planets.map(
+        (p) => p.orbitRadius + Math.max(p.radius, reach(p.massWell)),
+      ),
+    );
+    this.camera.pos.set(star.pos.x, star.pos.y);
+    this.camera.zoom = Math.max(
+      0.001,
+      Math.min(
+        (this.camera.viewportWidth - 128) / (2 * extent),
+        (this.camera.viewportHeight - 128) / (2 * extent),
+      ),
+    );
+    drawGameField(
+      {
+        layers: this.layers,
+        renderer: this.renderer,
+        camera: this.camera,
+        sim: this.sim,
+        fx: this.fx,
+        bodyAppearances: this.appearances,
+      },
+      systemBackground(this.seed),
+      { include: (pass) => PASSES.has(pass.id) },
+    );
+  }
+  dispose() {
+    this.disposed = true;
+    this.habitable.dispose();
+    this.material?.painter.dispose();
+    this.outerMaterial?.painter.dispose();
+    this.fx.clear();
+  }
+}

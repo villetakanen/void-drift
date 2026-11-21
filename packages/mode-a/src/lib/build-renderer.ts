@@ -6,7 +6,7 @@ import {
 } from "@void-drift/core";
 import { drawCockpitMaterial } from "./cockpit-material";
 import { CRUISER } from "./cruiser";
-import { ENGINE_ART } from "./engine-art";
+import { ENGINE_ART, ENGINE_MARKINGS } from "./engine-art";
 import { FIDDLER } from "./fiddler";
 import { FIGHTER } from "./fighter";
 import {
@@ -15,6 +15,13 @@ import {
   ION_CANNON_MUZZLE_SIDE,
 } from "./ion-cannon-art";
 import {
+  drawPlasmaRifle,
+  PLASMA_RIFLE_ENVELOPE,
+  PLASMA_RIFLE_MOUTHS,
+  PLASMA_RIFLE_PURGE_STRIPS,
+  PLASMA_RIFLE_SCALE,
+} from "./plasma-rifle-art";
+import {
   drawPointDefence,
   POINT_DEFENCE_MUZZLE,
   POINT_DEFENCE_MUZZLE_SIDE,
@@ -22,6 +29,7 @@ import {
 import { drawPotentialWell } from "./potential-well-art";
 import {
   CHASSIS,
+  LIGHT_ION_BEAM,
   type Loadout,
   PARTS,
   type PartId,
@@ -34,6 +42,7 @@ import {
   lhiStabilizers,
   stabilizerMount,
 } from "./stabilizers";
+import { drawTestingMarking } from "./testing-marking";
 import { drawUtilityArtwork } from "./utility-art";
 import { WASP } from "./wasp";
 export const BUILD_FLIGHT_SCALE = 0.65;
@@ -243,6 +252,7 @@ export function buildMounts(build: Loadout): BuildMount[] {
         width: build.chassis !== "scout" ? 11 : 10,
         height: build.chassis !== "scout" ? 9 : 8,
         ...(build.chassis === "fighter" ? { underHull: true } : {}),
+        ...(build.chassis === "scout" ? { underHull: false } : {}),
       }),
     ),
     ...build.aft.map(
@@ -291,10 +301,15 @@ export function engineArtId(id: PartId) {
   return id;
 }
 export function engineOffset(build: Loadout, mount: BuildMount) {
-  if (build.chassis !== "scout") return 0;
-  const front =
-    mount.part === "heavy-ion" ? 10.35 : mount.part === "ion" ? 9 : 10;
-  return 36 / 7 - front;
+  // The part's own mount point applies on every hull.
+  const own = mount.part ? PARTS[mount.part].mount : 0;
+  if (build.chassis !== "scout") return own;
+  // The Scout aligns each side engine's front, read from its art, with its hull edge.
+  const art = mount.part ? ENGINE_ART[engineArtId(mount.part)]?.[0] : undefined;
+  const front = art
+    ? Math.max(...art.flatMap((face) => face.points.map((p) => p[0])))
+    : 10;
+  return 36 / 7 - front + own;
 }
 function drawEngine(
   ctx: CanvasRenderingContext2D,
@@ -340,6 +355,9 @@ function drawEngine(
           : ENGINE_ACCENT.plasma
         : face.color,
     );
+  const marking = ENGINE_MARKINGS[id];
+  if (PARTS[mount.part].testingOnly && marking)
+    drawTestingMarking(ctx, marking);
   ctx.restore();
 }
 export function drawBuild(
@@ -511,6 +529,10 @@ export function drawNonEngineFitting(
   weaponAngle = mount.angle,
 ) {
   if (!mount.part) return;
+  if (mount.part === "plasma-rifle") {
+    drawPlasmaRifle(ctx, BUILD_FLIGHT_SCALE);
+    return;
+  }
   if (mount.part === "light-ion-cannon") {
     drawIonCannon(ctx, BUILD_FLIGHT_SCALE);
     return;
@@ -563,7 +585,7 @@ export function drawNonEngineFitting(
       ctx.stroke();
     }
   } else if (mount.part) {
-    ctx.strokeStyle = mount.part === "ion" ? "#9af7ff" : "#ffc56e";
+    ctx.strokeStyle = PARTS[mount.part].ion ? "#9af7ff" : "#ffc56e";
     ctx.beginPath();
     ctx.moveTo(-mount.width / 2, -3);
     ctx.lineTo(-nozzleOffset(mount), -4);
@@ -683,14 +705,8 @@ export function buildPlumeEmitters(build: Loadout): PlumeEmitter[] {
   const emitters: PlumeEmitter[] = buildMounts(build)
     .filter((mount) => mount.part && PARTS[mount.part].category === "E")
     .map((mount) => ({
-      style:
-        mount.part === "ion"
-          ? "ion-light"
-          : mount.part === "heavy-ion"
-            ? "ion-heavy"
-            : mount.part === "plasma"
-              ? "plasma"
-              : "default",
+      style: mount.part === "plasma" ? "plasma" : "default",
+      beam: mount.part ? PARTS[mount.part].ion?.beam : undefined,
       x:
         (mount.x +
           (engineOffset(build, mount) - nozzleOffset(mount)) *
@@ -709,7 +725,7 @@ export function buildPlumeEmitters(build: Loadout): PlumeEmitter[] {
     for (const m of [lhi.front, lhi.rear]) {
       for (const side of [-1, 1])
         emitters.push({
-          style: "ion-light",
+          beam: LIGHT_ION_BEAM,
           x: (m.x - m.fx) * BUILD_FLIGHT_SCALE,
           y: (side * m.y + side * m.fy) * BUILD_FLIGHT_SCALE,
           angle: Math.atan2(-side * m.fy, m.fx),
@@ -720,7 +736,7 @@ export function buildPlumeEmitters(build: Loadout): PlumeEmitter[] {
     const m = stabilizerMount(build.chassis);
     for (const side of [-1, 1])
       emitters.push({
-        style: "ion-light",
+        beam: LIGHT_ION_BEAM,
         x: (m.x - m.fx) * BUILD_FLIGHT_SCALE,
         y: (side * m.y + side * m.fy) * BUILD_FLIGHT_SCALE,
         angle: Math.atan2(-side * m.fy, m.fx),
@@ -754,6 +770,11 @@ function polygon(
   ctx.fill();
 }
 export function barrelLength(mount: BuildMount) {
+  if (mount.part === "plasma-rifle")
+    return (
+      (-PLASMA_RIFLE_MOUTHS.primary[1] * PLASMA_RIFLE_SCALE) /
+      BUILD_FLIGHT_SCALE
+    );
   if (mount.part === "light-ion-cannon")
     return ION_CANNON_MUZZLE / BUILD_FLIGHT_SCALE;
   if (mount.part === "ion-point-defence")
@@ -786,6 +807,30 @@ export function weaponPose(
     muzzleX: x + Math.cos(angle) * length - Math.sin(angle) * lateral,
     muzzleY: y + Math.sin(angle) * length + Math.cos(angle) * lateral,
   };
+}
+
+/** The two fixed purge mouths in world space, with their outward axes. */
+export function plasmaVentOutlets(
+  ship: Pick<GameObject, "pos" | "rotation">,
+  mount: BuildMount,
+) {
+  const pose = weaponPose(ship, mount);
+  const c = Math.cos(pose.angle),
+    s = Math.sin(pose.angle);
+  return ([PLASMA_RIFLE_MOUTHS.left, PLASMA_RIFLE_MOUTHS.right] as const).map(
+    ([across, aft], index) => {
+      const forward = -aft * PLASMA_RIFLE_SCALE,
+        side = across * PLASMA_RIFLE_SCALE;
+      return {
+        x: pose.x + forward * c - side * s,
+        y: pose.y + forward * s + side * c,
+        angle: pose.angle + PLASMA_RIFLE_PURGE_STRIPS[index].angle,
+      };
+    },
+  ) as [
+    { x: number; y: number; angle: number },
+    { x: number; y: number; angle: number },
+  ];
 }
 
 /** Conservative circular collision envelope, including the accepted forward tip. */
@@ -858,6 +903,20 @@ function baseBuildCollisionRadius(build: Loadout) {
 /** Include every actual accepted engine vertex, including the Scout mounting offset. */
 export function buildCollisionRadius(build: Loadout) {
   let radius = baseBuildCollisionRadius(build);
+  for (const mount of buildMounts(build)) {
+    if (mount.part !== "plasma-rifle") continue;
+    const cos = Math.cos(mount.angle),
+      sin = Math.sin(mount.angle);
+    for (const [forward, across] of PLASMA_RIFLE_ENVELOPE) {
+      radius = Math.max(
+        radius,
+        Math.hypot(
+          mount.x * BUILD_FLIGHT_SCALE + forward * cos - across * sin,
+          mount.y * BUILD_FLIGHT_SCALE + forward * sin + across * cos,
+        ),
+      );
+    }
+  }
   for (const mount of buildMounts(build)) {
     if (mount.part === "ion-point-defence") {
       // The turret turns, so its muzzle may point anywhere about the pivot.

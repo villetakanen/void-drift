@@ -40,7 +40,7 @@ export class FxBench {
       if (this.weapons) {
         // Preserve collector and engines while twin cannons occupy existing universal slots.
         if (i < 4) loadout.aft.fill("light-ion-cannon");
-        else loadout.hull[1] = i === 4 ? "laser" : "rail";
+        else loadout.hull[1] = "laser";
         // Point-defence turrets work beside the cannons on two of those ships.
         if (i === 1 || i === 3) loadout.hull[1] = "ion-point-defence";
       }
@@ -168,6 +168,10 @@ export class FxBench {
           sim.salvage?.angles,
         );
     }
+    if (this.weapons) {
+      for (const sim of this.ships)
+        if (sim.salvage) drawSalvageApertures(ctx, sim.salvage);
+    }
   }
   drawFx(target: CanvasRenderingContext2D) {
     if (!this.enabled) {
@@ -211,9 +215,16 @@ export class FxBench {
         }
       }
     });
-    for (const sim of this.ships)
-      if (sim.salvage && this.weapons)
-        drawSalvageApertures(target, sim.salvage);
+    if (this.weapons) {
+      target.save();
+      target.globalCompositeOperation = "destination-out";
+      for (const sim of this.ships)
+        if (sim.salvage) drawSalvageApertures(target, sim.salvage);
+      target.restore();
+    }
+  }
+  drawLfx(target: CanvasRenderingContext2D) {
+    if (!this.enabled) return;
     for (const sim of this.ships) this.fx.drawLfx(target, sim);
   }
 }

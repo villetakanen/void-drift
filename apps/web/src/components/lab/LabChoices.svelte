@@ -1,8 +1,8 @@
 <script lang="ts">
 import "./catalog.css";
 import { CHASSIS, SHIP_IDENTITY } from "@void-drift/mode-a";
+import SegmentedControl from "../inputs/SegmentedControl.svelte";
 import Switch from "../inputs/Switch.svelte";
-import Toggle from "../inputs/Toggle.svelte";
 
 const ships = ["wasp", "scout", "fighter", "corvette"] as const;
 let detailed = $state("Fighter");
@@ -20,27 +20,30 @@ let { label = "Choices design system" }: { label?: string } = $props();
 
 <section class="catalog" aria-label={label}>
   <section>
-    <h2>Toggle</h2>
+    <h2>Segmented control</h2>
     <p>
       One button-shaped control split into equal parts, one per option. The
       outer edge has the buttons' cut corners; the split inside is straight. The
       selected part is filled lime; the others sit on the elevation 2 surface,
       as the switch track and tabs do, and take a faint lime tint under a
-      pointer. Arrow keys move the selection.
+      pointer. Native radios select one named value; arrow keys move the
+      selection. Use Switch for an independent on/off setting and Tabs for
+      sibling panels. Two named values, such as Plan/View, are still a segmented
+      choice.
       <a href="/lab/studies/lab-instrument-2026-11-01#toggle">Study →</a>
     </p>
     <div class="example">
       <span class="caption"
         >Five zoom levels · 8px inline padding per option</span
       >
-      <Toggle
+      <SegmentedControl
         label="Zoom example"
         options={["1×", "2×", "4×", "8×", "16×"]}
         bind:value={zoom}
       />
       <span class="caption">Detailed selector · full width</span>
       <div style="width:100%">
-        <Toggle
+        <SegmentedControl
           stretch
           label="Ship, detailed"
           options={ships.map((id) => SHIP_IDENTITY[id].shortName)}
@@ -56,7 +59,7 @@ let { label = "Choices design system" }: { label?: string } = $props();
       <span class="caption"
         >Unavailable choice · arrows skip the disabled option</span
       >
-      <Toggle
+      <SegmentedControl
         label="Ship availability example"
         options={["Wasp", "Scout", "Corvette"]}
         disabledOptions={["Corvette"]}
@@ -67,18 +70,22 @@ let { label = "Choices design system" }: { label?: string } = $props();
             <span class="caption">Unavailable</span>
           {/if}
         {/snippet}
-      </Toggle>
+      </SegmentedControl>
       <span class="caption">Two options</span>
-      <Toggle
+      <SegmentedControl
         label="Path scale"
         options={["Fit all", "Default scale"]}
         bind:value={two}
       />
       <span class="caption">Three options beside a diagram</span>
-      <Toggle label="Burn" options={["B1", "B2", "B3"]} bind:value={three} />
+      <SegmentedControl
+        label="Burn"
+        options={["B1", "B2", "B3"]}
+        bind:value={three}
+      />
       <span class="caption">Stretched to its container</span>
       <div style="width: 100%; max-width: 480px">
-        <Toggle
+        <SegmentedControl
           stretch
           label="Burn, stretched"
           options={["B1", "B2", "B3"]}
@@ -87,7 +94,8 @@ let { label = "Choices design system" }: { label?: string } = $props();
       </div>
     </div>
     <p>
-      <code>Toggle</code>: <code>options</code>, bindable <code>value</code>,
+      <code>SegmentedControl</code>: <code>options</code>, bindable
+      <code>value</code>,
       <code>label</code>
       for the group. Every option has 8px inline padding;
       <code>stretch</code>

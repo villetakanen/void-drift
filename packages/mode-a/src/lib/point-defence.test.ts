@@ -239,12 +239,12 @@ describe("Ion Point Defence", () => {
 
   it("funds turrets in mount order when power is scarce", () => {
     const f = fixture((b) => b.hull.fill(PART));
-    f.energy.capacity = 1;
+    f.energy.capacity = 50;
     const [a, b] = f.turrets();
     f.place(a, f.body(0, 0, "wreck"), 30, 0);
     f.align(a);
     f.align(b);
-    f.resources.power = 1.5 * POINT_DEFENCE.energy;
+    f.resources.power = 10 + POINT_DEFENCE.energy / 2;
     f.step();
     expect(f.system.pointDefenceDischarges).toBe(1);
     expect(a.readyAt).toBeGreaterThan(0);
@@ -256,7 +256,7 @@ describe("Ion Point Defence", () => {
       b.hull[0] = "light-ion-cannon";
       b.hull[1] = PART;
     });
-    f.energy.capacity = 1;
+    f.energy.capacity = 50;
     const [w] = f.turrets();
     const cannon = f.system.weapons.find((x) => x.kind === "light-ion-cannon");
     if (!cannon) throw new Error("Cannon missing");
@@ -266,14 +266,14 @@ describe("Ion Point Defence", () => {
     f.place(w, f.body(0, 0, "wreck"), 30, f.ship.rotation);
     f.align(w);
     expect(f.system.ionTrigger(f.ship, f.star, f.planets)).toBe(true);
-    f.resources.power = 1.5 * POINT_DEFENCE.energy;
+    f.resources.power = 10 + POINT_DEFENCE.energy / 2;
     f.step();
     expect(f.system.pointDefenceDischarges).toBe(1);
     expect(f.system.ionDischarges).toBe(0);
     expect(cannon.readyAt).toBe(0);
   });
 
-  it("lets a gun see the world its defence shot left", () => {
+  it("fires a captured cannon volley after point defence destroys its trigger", () => {
     const f = fixture((b) => {
       b.hull[0] = "light-ion-cannon";
       b.hull[1] = PART;
@@ -285,6 +285,7 @@ describe("Ion Point Defence", () => {
     expect(f.system.ionTrigger(f.ship, f.star, f.planets)).toBe(true);
     f.step();
     expect(f.system.pointDefenceDischarges).toBe(1);
-    expect(f.system.ionDischarges).toBe(0);
+    expect(fragment.hull).toBe(0);
+    expect(f.system.ionDischarges).toBe(1);
   });
 });

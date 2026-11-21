@@ -1,0 +1,89 @@
+---
+layout: ../../../layouts/StudyLayout.astro
+---
+
+import SignatureStills from "../../../components/studies/SignatureStills.astro";
+
+<section className="reading" id="problem">
+<h2>01 / Three letters beside the score</h2>
+
+A ranked run has ended. The score is known; what is still missing is the mark the pilot wants beside it. Today the dialog focuses a labelled text box, currently prefilled with `AAA` (not a required default), and offers Save Score as a separate action. The value to save is three letters, A–Z. The question is not whether the box works. It is whether entering those letters could feel more like putting your name on the machine.
+
+Look to the high-score line on an arcade cabinet and the letter selected on a pinball display: what makes the initials feel significant before the player confirms them? Borrow that emphasis, not necessarily the joystick or flipper sequence. Judge the treatment inside the existing dialog, in the game's own type, colour and focus styles. Can someone type all three letters directly and correct just the middle one? Compare what a click or tap buys: placing the caret for typing, or choosing the replacement letter without typing. Can a screen-reader user identify the field, hear its value and edit it without having to interpret three visual slots?
+
+Letter spacing, the cue for the current letter and the way a pointer selects a letter are open. A single HTML input is a valid answer. Ranking, validation, saving and the leaderboard stay as they are.
+
+<details>
+<summary>Question test · 20 November 2026</summary>
+
+| Metric | Result | Reason |
+| --- | --- | --- |
+| One subject | Pass | The study asks how one initials field should look and work. Typing, pointer selection and correcting the middle letter can all be judged in the same dialog; no other open study in `apps/web/src/data/studies.ts` owns that decision. |
+| Grounded | Pass with findings | The ranked Survival dialog, initial focus, three-letter constraint and separate Save Score action are supported by code and specs. The `AAA` default is observed behaviour, not a documented requirement, and “choose them with a mouse or by touch” leaves the success condition ambiguous. |
+| Consequence | Pass | Answering the question would help the designer decide whether to keep the ordinary text field or change its treatment so entering initials feels like signing the score, without changing which scores can be saved or how they rank. |
+
+Corrected after the test, not rerun.
+
+</details>
+</section>
+
+<details className="reading" id="signature">
+<summary>02.1 / High-score signature</summary>
+
+Could typography alone make entering initials feel like signing a score? Placing the letters beside the score made them more prominent, but the field still looked like a web form.
+
+<figure>
+<img src="/studies/ranked-initials-2026-11-20/021-signature.png" alt="ACE in a single spaced text field beside the score of 1840." />
+<figcaption>02.1 · The initials and score share a line and a type weight.</figcaption>
+</figure>
+</details>
+
+<details className="reading" id="flippers">
+<summary>02.2 / Turn one letter</summary>
+
+Could two flippers make correcting a letter feel like part of the game? Without a clear picture of what the initials should look like, it was hard to tell whether cycling a letter felt right.
+
+<figure>
+<img src="/studies/ranked-initials-2026-11-20/022-flippers.png" alt="The ranked dialog with ACE between two flipper buttons and C selected." />
+<figcaption>02.2 · One selected letter, two directions through the alphabet.</figcaption>
+</figure>
+</details>
+
+<section className="reading" id="visual-direction">
+<h2>02.3 / One readout or three keys?</h2>
+
+An instrument display gives several characters one surface; a bracketed button gives each action its own edges. Which looks more like a pilot’s signature beside a score?
+
+<figure style={{display:"flex",flexWrap:"wrap",gap:"1rem",marginInline:0}}>
+<div><img width="480" src="/studies/ranked-initials-2026-11-20/023-readout.png" alt="ACE grouped on one dark instrument display." /><p>A · One inset display, borrowed from the flight instruments.</p></div>
+<div><img width="480" src="/studies/ranked-initials-2026-11-20/023-brackets.png" alt="A, C and E each framed by the ends of a normal game button." /><p>B · Three bracketed faces, borrowed from the normal button.</p></div>
+</figure>
+
+B makes a stronger signature than the continuous readout, though the letters themselves look too small.
+
+An early Void Drift prototype also gave each initial its own face, with an up button above the letter and a down button below. Three letters meant six buttons for entering a single name. That was awkward to use, but the three bespoke faces are what made the design memorable. Seen here without the arrows, they still work as a signature: the letters can look like three separate pieces without asking the player to operate three separate mechanisms.
+</section>
+
+<section className="reading" id="letter-scale">
+<h2>02.4 / What gives three letters presence?</h2>
+
+**Asteroids · Atari, 1979.** A thin-stroked A and two empty positions stand apart from the block of instructions. Space does much of the framing; there are no keycaps.
+
+<img src="/studies/ranked-initials-2026-11-20/024-asteroids.jpg" alt="Asteroids initials entry: small instructions above an isolated A and two blank positions." />
+
+[Gameplay recording, 1:35](https://archive.org/details/asteroid-atari-arcade-pal-gameplay-full-demostration) · [Entry routine](https://computerarcheology.com/Arcade/Asteroids/Code.html#6DE9)
+
+**The Addams Family · Bally, 1992.** DOUBLE JACKPOT nearly fills the display. The reference is the size of the lettering against its surround, not a dot pattern to imitate. This award frame does not establish the size of the machine’s initials.
+
+<img width="320" src="/studies/ranked-initials-2026-11-20/024-addams.jpg" alt="The pinball display showing DOUBLE JACKPOT in two rows of capital letters." />
+
+[Promotional film, 7:00](https://archive.org/details/addams-family-pinball-promo-video-vhs-rf-capture)
+
+**Void Drift · early initials entry.** The [original component](https://github.com/villetakanen/void-drift/blob/9027605d42805486c6bd766a37376ed1406d65a7/apps/web/src/components/InitialsEntry.svelte) used bold 3rem letters, each inside its own bordered face. The frames distinguished the three positions independently of the arrows.
+
+Both sketches enlarge **ACE** to the same height. On the left the strokes and gaps distinguish the letters; on the right heavier strokes sit on three cut faces. The score, label and actions stay in place.
+
+<SignatureStills />
+
+Scale gives the initials presence; their type and faces should still belong to Void Drift’s design system. The Save Score button gives a useful local measure: the three faces together, including their gaps, could span 70–100% of its width. That range is a candidate, not a settled size.
+</section>

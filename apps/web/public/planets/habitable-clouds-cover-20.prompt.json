@@ -1,0 +1,10 @@
+{
+  "image": "habitable-clouds-cover-20.png",
+  "method": "built-in image_gen; deterministic offline atlas preparation",
+  "source": "apps/web/public/studies/rock-atmospheres-2026-11-15/cloud-materials/cover-20.png",
+  "originalPromptSource": "apps/web/public/studies/rock-atmospheres-2026-11-15/cloud-materials/coverage-prompts.json",
+  "prompt": "Use case: photorealistic-natural. Asset: flat full-frame rectangular 2:1 cloud-only density map for a game planet. Highest available detail, at least 1774x887. Top-down satellite-style realistic EARTH clouds, monochrome white cloud masses on pure solid black clear-sky gaps. Critical primary requirement: approximately 20% of the TOTAL image area must contain clouds, and 80% must be pure black clear empty space. Coverage is area, not opacity: keep cloud cores white and opaque at all coverage levels. VERY SPARSE: only two or three separate compact broken cloud banks. Most of the entire image is completely empty black. Do not distribute fine noise or thin wisps everywhere. Combine realistically textured cumulus banks and broad fronts with delicate edges and internal fine detail, not generic blurry noise. No terrain, ocean, stars, sphere, horizon, text, borders, atmosphere rim, baked global directional light, terminator or shadows. Neutral white material; grayscale details represent density. This is a flat longitude-latitude texture, NOT a planet illustration. Left and right edges should wrap naturally. Respect the percentage area requirement over decorative complexity.",
+  "dimensions": [768, 384],
+  "preparation": "Native image resampling; 24px symmetric longitude edge blend; 6px polar cap blend; clouds use the Cradle density-to-alpha smoothstep (0.1–0.5).",
+  "script": "scripts/prepare-habitable-maps.mjs"
+}

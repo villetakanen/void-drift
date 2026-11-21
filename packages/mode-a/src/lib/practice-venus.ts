@@ -1,5 +1,7 @@
-/** Accepted Venus stamp from the 13 November 2026 study, section 03. */
-export const PRACTICE_VENUS_RADIUS = 27 * (1 + (12104 / 4879 - 1) / 3);
-export const PRACTICE_VENUS_ORBIT = (258 * 108.2) / 57.9;
-export const PRACTICE_VENUS_TRAVEL_SPEED = (4 * 35) / 47.4;
-export const PRACTICE_VENUS_SPIN_SECONDS = 60;
+import { PRACTICE_SYSTEM } from "./tuning";
+
+/** Compatibility exports backed by the validated fixed-system configuration. */
+export const PRACTICE_VENUS_RADIUS = PRACTICE_SYSTEM.venus.radius;
+export const PRACTICE_VENUS_ORBIT = PRACTICE_SYSTEM.venus.orbitRadius;
+export const PRACTICE_VENUS_TRAVEL_SPEED = PRACTICE_SYSTEM.venus.travelSpeed;
+export const PRACTICE_VENUS_SPIN_SECONDS = PRACTICE_SYSTEM.venus.spinSeconds;

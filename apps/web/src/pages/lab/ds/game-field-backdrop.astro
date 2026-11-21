@@ -1,0 +1,43 @@
+---
+import FieldBackdrop from "../../../components/GameFieldBackdrop.svelte";
+import LabLayout from "../../../layouts/LabLayout.astro";
+---
+
+<LabLayout title="Game field backdrop" wide>
+  <section class="preview" aria-label="Game field backdrop example">
+    <FieldBackdrop client:load />
+    <div class="sample-panel panel">
+      <p class="eyebrow">G CLASS / GENERATED SYSTEM</p>
+      <h2>Title Screen panel</h2>
+      <p>The outermost orbit crosses this panel's upper corner.</p>
+      <button type="button" class="btn btn-filled">PRESS START</button>
+    </div>
+  </section>
+</LabLayout>
+
+<style>
+.preview {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-height: 720px;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--color-void);
+}
+.sample-panel {
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  left: 25%;
+  width: min(26rem, 21.7%);
+  transform: translate(-50%, -50%);
+  display: grid;
+  gap: var(--spacing-md);
+  text-align: center;
+}
+.sample-panel h2,
+.sample-panel p {
+  margin: 0;
+}
+</style>

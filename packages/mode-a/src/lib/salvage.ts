@@ -7,11 +7,13 @@ import {
   type Resources,
   type Star,
   starPull,
+  Vec2,
 } from "@void-drift/core";
 import {
   BUILD_FLIGHT_SCALE,
   type BuildMount,
   buildMounts,
+  plasmaVentOutlets,
   weaponPose,
 } from "./build-renderer";
 import {
@@ -28,12 +30,19 @@ import {
   DERELICT_SCALE,
   DERELICT_SHARDS,
 } from "./derelict-geometry";
+import { PlasmaVentArea } from "./plasma-vent-area";
 import {
   ASSEMBLED_ION_DEFAULTS,
   type AssembledIonSettings,
   ION_REFERENCE_MASS,
 } from "./schemas/ion";
-import { buildStats, CHASSIS, type Loadout } from "./schemas/loadout";
+import {
+  buildStats,
+  CHASSIS,
+  defaultLoadout,
+  type Loadout,
+  PARTS,
+} from "./schemas/loadout";
 import type { SalvagePhysicalState } from "./schemas/salvage";
 import {
   DamageAmountSchema,
@@ -42,6 +51,17 @@ import {
   type EncounterConfig,
   ION_CANNON,
   ionCannonDamage,
+  PLASMA_RIFLE,
+  type PlasmaBurst,
+  PlasmaBurstSchema,
+  type PlasmaContact,
+  PlasmaContactSchema,
+  type PlasmaRifleCycle,
+  PlasmaRifleCycleSchema,
+  type PlasmaStream,
+  PlasmaStreamSchema,
+  type PlasmaVentEvent,
+  type PlasmaVisualEvent,
   POINT_DEFENCE,
   pointDefenceDamage,
   SALVAGE,
@@ -49,6 +69,14 @@ import {
   type WeaponEvent,
   WeaponEventSchema,
 } from "./schemas/salvage";
+import { acquireFleetTargets, type WeaponAcquisition } from "./targeting";
+
+/** Study reference: Wasp, Service ion, rifle and Light Ion Cannon. */
+const ventReferenceLoadout = defaultLoadout("wasp");
+ventReferenceLoadout.side = "service-ion";
+ventReferenceLoadout.hull = ["plasma-rifle", "light-ion-cannon"];
+export const PLASMA_RIFLE_VENT_REFERENCE_MASS =
+  buildStats(ventReferenceLoadout).mass;
 
 export type { WeaponEvent } from "./schemas/salvage";
 
@@ -61,6 +89,9 @@ export interface SalvageBody extends SalvagePhysicalState {
   y: number;
   previousX: number;
   previousY: number;
+  /** End pose for swept live-ship contact; acquisition retains its existing coordinates. */
+  sweepEndX?: number;
+  sweepEndY?: number;
   vx: number;
   vy: number;
   radius: number;
@@ -89,6 +120,7 @@ export function liveShipBody(
     y,
     previousX: x,
     previousY: y,
+    ...(previous ? { sweepEndX: ship.pos.x, sweepEndY: ship.pos.y } : {}),
     vx: ship.vel.x,
     vy: ship.vel.y,
     radius: ship.radius,
@@ -104,12 +136,30 @@ export interface RailShot {
   vy: number;
   angle: number;
 }
+/** Optional Lab counters, accumulated across every shooter in a combat substep. */
+export interface TargetingMetrics {
+  bodyVisits: number;
+  comparisons: number;
+  acquisitionMs: number;
+  contactMs: number;
+  activeRequests?: number;
+  materialTests?: number;
+  visibilityTests?: number;
+}
+
 export interface WeaponState {
   mount: BuildMount;
-  kind: "rail" | "laser" | "light-ion-cannon" | "ion-point-defence";
+  kind:
+    | "rail"
+    | "laser"
+    | "light-ion-cannon"
+    | "ion-point-defence"
+    | "plasma-rifle";
   angle: number;
   readyAt: number;
   target: number | null;
+  targetPoint?: { x: number; y: number } | null;
+  plasma?: PlasmaRifleCycle;
   recoil: { remaining: number; angle: number } | null;
 }
 /** First contact between relative linear motion and a circle, including overlap. */
@@ -136,8 +186,89 @@ const WRECK_SPIN = ENCOUNTER.wreckSpin.rate;
 function spinOf(body: Pick<SalvageBody, "kind" | "spin">) {
   return body.kind === "wreck" ? (body.spin ?? WRECK_SPIN) : 0.8;
 }
+interface PendingPlasmaKick {
+  offset: number;
+  angle: number;
+  head: PlasmaStream;
+}
+interface PendingPlasmaVent {
+  mount: BuildMount;
+  sample: Pick<GameObject, "pos" | "rotation">;
+  startSample: Pick<GameObject, "pos" | "rotation">;
+  endSample: Pick<GameObject, "pos" | "rotation">;
+  start: number;
+  duration: number;
+  intensity: number;
+}
+/** A body's linear start pose and velocity for one combat substep. */
+function plasmaBodyMotion(body: SalvageBody, dt: number) {
+  let x = body.previousX,
+    y = body.previousY,
+    vx = body.vx,
+    vy = body.vy;
+  if (
+    body.kind === "ship" &&
+    body.sweepEndX !== undefined &&
+    body.sweepEndY !== undefined &&
+    dt > 0
+  ) {
+    const dx = body.sweepEndX - x,
+      dy = body.sweepEndY - y;
+    if (Math.hypot(dx, dy) > 1200) {
+      x = body.sweepEndX - vx * dt;
+      y = body.sweepEndY - vy * dt;
+    } else {
+      vx = dx / dt;
+      vy = dy / dt;
+    }
+  }
+  return { x, y, vx, vy };
+}
+function plasmaBodyPose(
+  body: SalvageBody,
+  dt: number,
+  offset: number,
+  integrated: boolean,
+) {
+  const motion = plasmaBodyMotion(body, dt);
+  return {
+    ...motion,
+    x: motion.x + motion.vx * offset,
+    y: motion.y + motion.vy * offset,
+    rotation:
+      body.kind === "ship"
+        ? body.rotation
+        : (integrated
+            ? (body.previousRotation ?? body.rotation)
+            : body.rotation) +
+          spinOf(body) * offset,
+  };
+}
 function angleDifference(a: number, b: number) {
   return Math.atan2(Math.sin(a - b), Math.cos(a - b));
+}
+/** Interpolate a mounted emitter's pose without drawing a chord across wrap. */
+function mountedPoseAt(
+  ship: GameObject,
+  previous: { x: number; y: number; rotation: number } | undefined,
+  dt: number,
+  elapsed: number,
+) {
+  if (!previous) return ship;
+  const fraction = dt > 0 ? elapsed / dt : 1;
+  const wrapped =
+    Math.hypot(ship.pos.x - previous.x, ship.pos.y - previous.y) > 1200;
+  const x = wrapped ? ship.pos.x - ship.vel.x * dt : previous.x;
+  const y = wrapped ? ship.pos.y - ship.vel.y * dt : previous.y;
+  return {
+    pos: new Vec2(
+      x + (ship.pos.x - x) * fraction,
+      y + (ship.pos.y - y) * fraction,
+    ),
+    rotation:
+      previous.rotation +
+      angleDifference(ship.rotation, previous.rotation) * fraction,
+  };
 }
 function outside(x: number, y: number) {
   return (
@@ -148,18 +279,35 @@ function outside(x: number, y: number) {
 
 /**
  * The one firing gate for every weapon: the ship must hold at least the floor
- * fraction of its capacity (so exactly 10% may fire) and afford the shot.
+ * fraction of its capacity and afford the shot, with more than 10 power available.
  * A refused shot takes no power and starts no cooldown.
  */
 function canFire(resources: Resources, capacity: number, cost: number) {
   return (
+    resources.power > 10 &&
     resources.power + 1e-9 >= capacity * WEAPONS.energyFloor &&
     resources.power + 1e-9 >= cost
   );
 }
 /** Bounded, deterministic gameplay. No Canvas, wall clock, or cosmetic randomness. */
 export class SalvageSystem {
+  targetingMetrics?: TargetingMetrics;
   private aimingBodies: readonly SalvageBody[] | null = null;
+  private activeBodies: readonly SalvageBody[] | null = null;
+  private get weaponBodies(): readonly SalvageBody[] {
+    return this.activeBodies ?? this.bodies;
+  }
+  private shooterId: number | null = null;
+  private aimId: number | null = null;
+  private acquisitionEligible(body: SalvageBody) {
+    return (
+      body.id !== this.shooterId &&
+      (this.aimId === null || body.id === this.aimId)
+    );
+  }
+  private contactEligible(body: SalvageBody) {
+    return body.id !== this.shooterId;
+  }
   readonly weapons: WeaponState[];
   readonly angles: Record<string, number> = {};
   bodies: SalvageBody[] = [];
@@ -173,10 +321,29 @@ export class SalvageSystem {
   shotsFired = 0;
   ionDischarges = 0;
   pointDefenceDischarges = 0;
+  plasmaReleases = 0;
+  plasmaVents = 0;
+  plasmaStreams: PlasmaStream[] = [];
+  plasmaContacts = 0;
+  plasmaAirbursts = 0;
+  readonly plasmaBurstEvents: PlasmaBurst[] = [];
+  lastPlasmaContact: PlasmaContact | null = null;
+  readonly plasmaContactEvents: PlasmaContact[] = [];
+  /** Translate local combat time to the containing simulation's clock. */
+  presentationTimeOffset = 0;
+  readonly plasmaVisualEvents: PlasmaVisualEvent[] = [];
+  private plasmaVisualSequence = 0;
+  readonly plasmaVentEvents: PlasmaVentEvent[] = [];
+  private plasmaVentSequence = 0;
+  readonly plasmaVentArea = new PlasmaVentArea();
+  get hasActivePlasma() {
+    return this.plasmaStreams.length > 0 || this.plasmaVentArea.active;
+  }
+  private readonly plasmaVentAcceleration: number;
+  private readonly plasmaKickVelocity: number;
   laserPulses = 0;
   hits = 0;
-  /** Point-defence and cannon hits on a wreck or a shard; they score in Survival. */
-  derelictIonHits = 0;
+  playerShardKills = 0;
   /** Derelict energy cells the ship has collected; each scores in Survival. */
   cellsCollected = 0;
   energySpent = 0;
@@ -189,12 +356,21 @@ export class SalvageSystem {
   private trajectoryState: number;
   private readonly recoilAcceleration: number;
   private readonly ionAcquisitionWidth: number;
+  readonly loadoutChassis: Loadout["chassis"];
   constructor(
     loadout: Loadout,
     seed: number,
     ion: AssembledIonSettings = ASSEMBLED_ION_DEFAULTS,
     private readonly encounter: EncounterConfig = ENCOUNTER,
   ) {
+    this.loadoutChassis = loadout.chassis;
+    this.plasmaKickVelocity =
+      (PARTS.plasma.thrust * PLASMA_RIFLE.kickSeconds) /
+      buildStats(loadout).mass;
+    this.plasmaVentAcceleration =
+      (PLASMA_RIFLE.ventReferenceAcceleration *
+        PLASMA_RIFLE_VENT_REFERENCE_MASS) /
+      buildStats(loadout).mass;
     this.ionAcquisitionWidth =
       CHASSIS[loadout.chassis].width * BUILD_FLIGHT_SCALE;
     this.randomState = seed >>> 0;
@@ -209,8 +385,8 @@ export class SalvageSystem {
     this.weapons = buildMounts(loadout).flatMap((mount): WeaponState[] =>
       mount.part === "light-ion-cannon" ||
       mount.part === "ion-point-defence" ||
-      mount.part === "rail" ||
-      mount.part === "laser"
+      mount.part === "laser" ||
+      mount.part === "plasma-rifle"
         ? [
             {
               mount,
@@ -218,6 +394,17 @@ export class SalvageSystem {
               angle: mount.angle,
               readyAt: 0,
               target: null,
+              ...(mount.part === "plasma-rifle"
+                ? {
+                    targetPoint: null,
+                    plasma: PlasmaRifleCycleSchema.parse({
+                      phase: "idle",
+                      charge: 0,
+                      remaining: 0,
+                      targetId: null,
+                    }),
+                  }
+                : {}),
               recoil: null,
             },
           ]
@@ -329,7 +516,11 @@ export class SalvageSystem {
       this.trajectoryRandom() < 0.5
         ? -encounter.wreckSpin.rate
         : encounter.wreckSpin.rate;
-    if (this.groups >= encounter.groups) return;
+    const occupied =
+      encounter.occupancy === "intact-wrecks"
+        ? this.bodies.some((body) => body.kind === "wreck" && body.hull > 0)
+        : this.groups >= encounter.groups;
+    if (occupied) return;
     this.passes++;
     const wreck = this.body(
       "wreck",
@@ -345,7 +536,7 @@ export class SalvageSystem {
       wreck.rotation = heading + Math.PI / 2;
     this.bodies.push(wreck);
   }
-  private cast(
+  cast(
     body: SalvageBody,
     x: number,
     y: number,
@@ -444,16 +635,16 @@ export class SalvageSystem {
     if (body.hull <= 0) return;
     body.hull = 0;
     if (cause === "expiry" || cause === "exit") return;
+    const playerRelease = cause === "player-weapon" || cause === "player-ram";
     if (body.kind !== "wreck") {
-      if (cause === "player-weapon" || cause === "player-ram")
-        this.emit("impact", body.x, body.y);
+      if (playerRelease && body.kind === "fragment") this.playerShardKills++;
+      if (playerRelease) this.emit("impact", body.x, body.y);
       return;
     }
-    if (cause === "player-weapon" || cause === "player-ram") {
+    if (playerRelease) {
       this.destroyed++;
       this.playerKills++;
     }
-    const playerRelease = cause === "player-weapon" || cause === "player-ram";
     if (!playerRelease) this.emit("break", body.x, body.y);
     for (let i = 0; i < DERELICT_SHARDS.length; i++)
       this.release(body, i, cause === "player-ram");
@@ -490,12 +681,7 @@ export class SalvageSystem {
       throw new Error("Damage target is not in this simulation");
     this.damage(body, damage);
   }
-  private damage(
-    body: SalvageBody,
-    amount: number,
-    time = this.time,
-    ionHit = false,
-  ) {
+  private damage(body: SalvageBody, amount: number, time = this.time) {
     if (body.hull <= 0) return;
     if (body.kind === "ship") {
       body.onDamage?.(amount);
@@ -504,7 +690,6 @@ export class SalvageSystem {
       return;
     }
     this.hits++;
-    if (ionHit && body.kind !== "cell") this.derelictIonHits++;
     if (body.kind === "wreck" && body.initialHull === undefined)
       body.initialHull = body.hull;
     if (body.hull <= amount) this.destroy(body, "player-weapon", time);
@@ -522,7 +707,7 @@ export class SalvageSystem {
       this.emit("impact", body.x, body.y);
     }
   }
-  private lineClear(
+  lineClear(
     x: number,
     y: number,
     endX: number,
@@ -553,54 +738,6 @@ export class SalvageSystem {
         ) === Infinity,
     );
   }
-  private targetLaser(
-    weapon: WeaponState,
-    ship: GameObject,
-    star: Star,
-    planets: readonly Planet[],
-  ) {
-    const pose = weaponPose(ship, weapon.mount, weapon.angle);
-    const candidates = (this.aimingBodies ?? this.bodies)
-      .flatMap((body) => {
-        const distance = Math.hypot(body.x - pose.x, body.y - pose.y);
-        if (
-          body.kind === "cell" ||
-          body.hull <= 0 ||
-          distance > WEAPONS.laser.range ||
-          !this.lineClear(pose.x, pose.y, body.x, body.y, star, planets)
-        )
-          return [];
-        const threat =
-          body.kind === "fragment"
-            ? this.cast(
-                body,
-                ship.pos.x,
-                ship.pos.y,
-                ship.vel.x - body.vx,
-                ship.vel.y - body.vy,
-                ship.radius,
-                WEAPONS.laser.threatHorizon,
-              )
-            : Infinity;
-        const priority = Number.isFinite(threat)
-          ? 0
-          : body.kind === "wreck"
-            ? 1
-            : 2;
-        return [{ body, priority, order: priority === 0 ? threat : distance }];
-      })
-      .sort(
-        (a, b) =>
-          a.priority - b.priority || a.order - b.order || a.body.id - b.body.id,
-      );
-    const first = candidates[0];
-    const retained = candidates.find(
-      (candidate) => candidate.body.id === weapon.target,
-    );
-    return retained && retained.priority === first?.priority
-      ? retained.body
-      : first?.body;
-  }
   /** Instant physical contact. Presentation may query this without applying damage. */
   ionContact(
     x: number,
@@ -629,8 +766,9 @@ export class SalvageSystem {
         blocked = true;
       }
     }
-    for (const body of this.bodies) {
-      if (body.kind === "cell" || body.hull <= 0) continue;
+    for (const body of this.weaponBodies) {
+      if (!this.contactEligible(body) || body.kind === "cell" || body.hull <= 0)
+        continue;
       const d = this.cast(body, x, y, dx, dy, 0, reach);
       if (d < distance || (d === distance && !blocked && !hit)) {
         distance = d;
@@ -641,7 +779,11 @@ export class SalvageSystem {
   }
   /** Forward ship-width by 300 rectangle; acquisition does not steer muzzle rays. */
   ionTrigger(ship: GameObject, star: Star, planets: readonly Planet[]) {
-    return (this.aimingBodies ?? this.bodies).some((body) => {
+    const started = this.targetingMetrics ? performance.now() : 0;
+    const triggered = (this.aimingBodies ?? this.weaponBodies).some((body) => {
+      if (this.targetingMetrics) this.targetingMetrics.bodyVisits++;
+      if (!this.acquisitionEligible(body)) return false;
+      if (this.targetingMetrics) this.targetingMetrics.comparisons++;
       if (body.kind === "cell" || body.hull <= 0) return false;
       if (body.kind === "ship") {
         const dx = body.x - ship.pos.x;
@@ -669,17 +811,9 @@ export class SalvageSystem {
         this.lineClear(ship.pos.x, ship.pos.y, p.x, p.y, star, planets),
       );
     });
-  }
-  /** Ready cannons and the trigger are captured once per update; hits cannot cancel this volley. */
-  private ionVolley(ship: GameObject, star: Star, planets: readonly Planet[]) {
-    const ready = new Set(
-      this.weapons.filter(
-        (w) => w.kind === "light-ion-cannon" && this.time + 1e-9 >= w.readyAt,
-      ),
-    );
-    return ready.size && this.ionTrigger(ship, star, planets)
-      ? ready
-      : new Set<WeaponState>();
+    if (this.targetingMetrics)
+      this.targetingMetrics.acquisitionMs += performance.now() - started;
+    return triggered;
   }
   /** One volley cannon; returns false once power cannot fund it, stopping the rest of the volley. */
   private fireIonCannon(
@@ -692,6 +826,7 @@ export class SalvageSystem {
   ) {
     if (!canFire(resources, capacity, ION_CANNON.energy)) return false;
     const pose = weaponPose(ship, weapon.mount);
+    const contactStarted = this.targetingMetrics ? performance.now() : 0;
     const { distance, hit } = this.ionContact(
       pose.muzzleX,
       pose.muzzleY,
@@ -699,6 +834,8 @@ export class SalvageSystem {
       star,
       planets,
     );
+    if (this.targetingMetrics)
+      this.targetingMetrics.contactMs += performance.now() - contactStarted;
     resources.power = Math.max(0, resources.power - ION_CANNON.energy);
     this.energySpent += ION_CANNON.energy;
     weapon.readyAt = this.time + ION_CANNON.cooldown;
@@ -721,7 +858,7 @@ export class SalvageSystem {
       }),
     );
     if (hit) {
-      this.damage(hit, ionCannonDamage(distance), this.time, true);
+      this.damage(hit, ionCannonDamage(distance));
       this.emit("collision", endX, endY);
     }
     return true;
@@ -757,9 +894,13 @@ export class SalvageSystem {
       bound: number;
       closest: { distance: number; x: number; y: number } | null;
     };
+    const started = this.targetingMetrics ? performance.now() : 0;
     // Visit bodies nearest-bound first so distant material is skipped cheaply.
-    const nearby = (this.aimingBodies ?? this.bodies)
+    const nearby = (this.aimingBodies ?? this.weaponBodies)
       .flatMap<CandidateOption>((body) => {
+        if (this.targetingMetrics) this.targetingMetrics.bodyVisits++;
+        if (!this.acquisitionEligible(body)) return [];
+        if (this.targetingMetrics) this.targetingMetrics.comparisons++;
         if (body.kind === "cell" || body.hull <= 0) return [];
         if (body.kind === "ship") {
           const dx = body.x - pivot.x;
@@ -830,6 +971,8 @@ export class SalvageSystem {
       )
         best = candidate;
     }
+    if (this.targetingMetrics)
+      this.targetingMetrics.acquisitionMs += performance.now() - started;
     return retained &&
       best &&
       best.distance > retained.distance - POINT_DEFENCE.retention
@@ -850,9 +993,10 @@ export class SalvageSystem {
     resources: Resources,
     capacity: number,
     planets: readonly Planet[],
+    acquisition: WeaponAcquisition,
   ) {
-    const target = this.pointDefenceTarget(weapon, ship, star, planets);
-    weapon.target = target?.body.id ?? null;
+    const target = acquisition.targets.get(weapon);
+    weapon.target = target?.id ?? null;
     if (!target) return funded;
     const pivot = weaponPose(ship, weapon.mount, weapon.angle);
     // Relative to the ship: a turning ship is cancelled within the turn-rate limit.
@@ -876,6 +1020,7 @@ export class SalvageSystem {
     )
       return funded;
     const pose = weaponPose(ship, weapon.mount, weapon.angle);
+    const contactStarted = this.targetingMetrics ? performance.now() : 0;
     const { distance, hit } = this.ionContact(
       pose.muzzleX,
       pose.muzzleY,
@@ -884,6 +1029,8 @@ export class SalvageSystem {
       planets,
       POINT_DEFENCE.reach,
     );
+    if (this.targetingMetrics)
+      this.targetingMetrics.contactMs += performance.now() - contactStarted;
     // World geometry first, or nothing within reach: no discharge, cost or cooldown.
     if (!hit || distance > POINT_DEFENCE.reach) return funded;
     if (!canFire(resources, capacity, POINT_DEFENCE.energy)) return false;
@@ -907,13 +1054,289 @@ export class SalvageSystem {
         distance,
       }),
     );
-    this.damage(hit, pointDefenceDamage(distance), this.time, true);
+    this.damage(hit, pointDefenceDamage(distance));
     this.emit("collision", endX, endY);
     return true;
   }
+  private startPlasmaVent(state: NonNullable<WeaponState["plasma"]>) {
+    state.phase = "venting";
+    state.remaining = PLASMA_RIFLE.ventSeconds;
+    state.targetId = null;
+    this.plasmaVents++;
+  }
+  /** Advance one mounted rifle with a single captured acquisition for this substep. */
+  private advancePlasma(
+    weapon: WeaponState,
+    dt: number,
+    resources: Resources,
+    capacity: number,
+    ship: GameObject,
+    previousShip: { x: number; y: number; rotation: number } | undefined,
+    vents: PendingPlasmaVent[],
+    kicks: PendingPlasmaKick[],
+  ) {
+    const state = weapon.plasma;
+    if (!state) return;
+    let left = dt;
+    const reserve = Math.max(10, capacity * WEAPONS.energyFloor);
+    while (true) {
+      if (state.phase === "charging" && state.targetId !== weapon.target) {
+        this.startPlasmaVent(state);
+      }
+      if (state.phase === "idle") {
+        if (weapon.target === null || left <= 0 || resources.power <= reserve)
+          break;
+        state.phase = "charging";
+        state.targetId = weapon.target;
+      }
+      if (state.phase === "charging") {
+        const chargeTime = (1 - state.charge) * PLASMA_RIFLE.chargeSeconds;
+        const affordableTime =
+          Math.max(0, resources.power - reserve) /
+          PLASMA_RIFLE.chargePowerPerSecond;
+        const consumed = Math.min(left, chargeTime, affordableTime);
+        if (consumed > 0) {
+          const energy = consumed * PLASMA_RIFLE.chargePowerPerSecond;
+          resources.power = Math.max(reserve, resources.power - energy);
+          this.energySpent += energy;
+          state.charge = Math.min(
+            1,
+            state.charge + consumed / PLASMA_RIFLE.chargeSeconds,
+          );
+          left -= consumed;
+        }
+        if (state.charge >= 1 - 1e-9) {
+          state.charge = 1;
+          if (resources.power + 1e-9 >= reserve + PLASMA_RIFLE.releasePower) {
+            resources.power = Math.max(
+              reserve,
+              resources.power - PLASMA_RIFLE.releasePower,
+            );
+            this.energySpent += PLASMA_RIFLE.releasePower;
+            this.plasmaReleases++;
+            const elapsed = dt - left;
+            const releaseShip = mountedPoseAt(ship, previousShip, dt, elapsed);
+            const pose = weaponPose(releaseShip, weapon.mount);
+            const head = PlasmaStreamSchema.parse({
+              mountKey: weapon.mount.key,
+              originX: pose.muzzleX,
+              originY: pose.muzzleY,
+              x: pose.muzzleX,
+              y: pose.muzzleY,
+              vx: ship.vel.x + Math.cos(pose.angle) * PLASMA_RIFLE.streamSpeed,
+              vy: ship.vel.y + Math.sin(pose.angle) * PLASMA_RIFLE.streamSpeed,
+              heading: pose.angle,
+              age: 0,
+              launchTime: this.time - dt + elapsed,
+            });
+            this.plasmaStreams.push(head);
+            kicks.push({ offset: elapsed, angle: pose.angle, head });
+            state.phase = "firing";
+            state.remaining = PLASMA_RIFLE.firingSeconds;
+          } else break;
+        } else break;
+      }
+      if (
+        state.phase === "firing" ||
+        state.phase === "venting" ||
+        state.phase === "cooldown"
+      ) {
+        const phase = state.phase;
+        const elapsed = Math.min(left, state.remaining);
+        if (phase === "venting" && elapsed > 0) {
+          const midpoint = dt - left + elapsed / 2;
+          const sample = mountedPoseAt(ship, previousShip, dt, midpoint);
+          vents.push({
+            mount: weapon.mount,
+            sample,
+            startSample: mountedPoseAt(ship, previousShip, dt, dt - left),
+            endSample: mountedPoseAt(
+              ship,
+              previousShip,
+              dt,
+              dt - left + elapsed,
+            ),
+            start: midpoint - elapsed / 2,
+            duration: elapsed,
+            intensity:
+              (state.remaining - elapsed / 2) / PLASMA_RIFLE.ventSeconds,
+          });
+          state.charge *= 1 - elapsed / state.remaining;
+        }
+        state.remaining = Math.max(0, state.remaining - elapsed);
+        left -= elapsed;
+        if (state.remaining > 1e-9) break;
+        if (phase === "firing") {
+          state.charge = 0;
+          this.startPlasmaVent(state);
+        } else if (phase === "cooldown") {
+          state.phase = "idle";
+          state.targetId = null;
+          state.charge = 0;
+        } else {
+          state.phase = "cooldown";
+          state.remaining = PLASMA_RIFLE.cooldownSeconds;
+          state.charge = 0;
+          state.targetId = null;
+        }
+        if (left <= 1e-9) break;
+      }
+    }
+  }
+  /** All simultaneous vents sample the same time-varying hull velocity. */
+  private resolvePlasmaForces(
+    ship: GameObject,
+    dt: number,
+    vents: PendingPlasmaVent[],
+    kicks: PendingPlasmaKick[],
+  ) {
+    const initialX = ship.vel.x,
+      initialY = ship.vel.y;
+    vents.sort((a, b) => a.start + a.duration / 2 - (b.start + b.duration / 2));
+    for (const vent of vents) {
+      const sampleOutlets = (
+        sample: PendingPlasmaVent["sample"],
+        at: number,
+        beforeKick = false,
+      ): PlasmaVentEvent["outlets"] => {
+        let vx = initialX,
+          vy = initialY;
+        for (const other of vents) {
+          const elapsed = Math.max(
+            0,
+            Math.min(other.duration, at - other.start),
+          );
+          vx -=
+            Math.cos(other.sample.rotation) *
+            this.plasmaVentAcceleration *
+            elapsed;
+          vy -=
+            Math.sin(other.sample.rotation) *
+            this.plasmaVentAcceleration *
+            elapsed;
+        }
+        for (const kick of kicks) {
+          if (beforeKick ? kick.offset < at - 1e-9 : kick.offset <= at + 1e-9) {
+            vx -= Math.cos(kick.angle) * this.plasmaKickVelocity;
+            vy -= Math.sin(kick.angle) * this.plasmaKickVelocity;
+          }
+        }
+        return plasmaVentOutlets(sample, vent.mount).map((port) => ({
+          x: port.x,
+          y: port.y,
+          vx: vx + Math.cos(port.angle) * PLASMA_RIFLE.ventExhaustSpeed,
+          vy: vy + Math.sin(port.angle) * PLASMA_RIFLE.ventExhaustSpeed,
+        })) as PlasmaVentEvent["outlets"];
+      };
+      const end = vent.start + vent.duration;
+      const cuts: number[] = [];
+      for (const kick of kicks)
+        if (kick.offset > vent.start + 1e-9 && kick.offset < end - 1e-9)
+          cuts.push(kick.offset);
+      if (!cuts.length) {
+        this.plasmaVentArea.emit(
+          vent.mount.key,
+          this.time - dt + vent.start,
+          vent.duration,
+          sampleOutlets(vent.startSample, vent.start),
+          sampleOutlets(vent.endSample, end, true),
+        );
+      } else {
+        cuts.sort((a, b) => a - b);
+        const poseAt = (at: number) => {
+          const f = (at - vent.start) / vent.duration;
+          return {
+            pos: new Vec2(
+              vent.startSample.pos.x +
+                (vent.endSample.pos.x - vent.startSample.pos.x) * f,
+              vent.startSample.pos.y +
+                (vent.endSample.pos.y - vent.startSample.pos.y) * f,
+            ),
+            rotation:
+              vent.startSample.rotation +
+              angleDifference(
+                vent.endSample.rotation,
+                vent.startSample.rotation,
+              ) *
+                f,
+          };
+        };
+        let begin = vent.start;
+        for (const next of [...cuts, end]) {
+          if (next - begin <= 1e-9) continue;
+          this.plasmaVentArea.emit(
+            vent.mount.key,
+            this.time - dt + begin,
+            next - begin,
+            sampleOutlets(poseAt(begin), begin),
+            sampleOutlets(poseAt(next), next, true),
+          );
+          begin = next;
+        }
+      }
+      const midpoint = vent.start + vent.duration / 2;
+      const time = this.time - dt + midpoint + this.presentationTimeOffset;
+      while (
+        this.plasmaVentEvents.length &&
+        this.plasmaVentEvents[0].time < time - 0.5
+      )
+        this.plasmaVentEvents.shift();
+      if (this.plasmaVentEvents.length >= 512) this.plasmaVentEvents.shift();
+      this.plasmaVentEvents.push({
+        id: ++this.plasmaVentSequence,
+        mountKey: vent.mount.key,
+        time,
+        duration: vent.duration,
+        intensity: vent.intensity,
+        outlets: sampleOutlets(vent.sample, midpoint),
+      });
+    }
+    for (const release of kicks) {
+      for (const earlier of kicks) {
+        if (earlier.offset < release.offset - 1e-9) {
+          release.head.vx -= Math.cos(earlier.angle) * this.plasmaKickVelocity;
+          release.head.vy -= Math.sin(earlier.angle) * this.plasmaKickVelocity;
+        }
+      }
+    }
+    // A different mount may release during the same substep. Its inherited
+    // drift includes only the vent impulse already delivered at that instant.
+    for (const head of this.plasmaStreams) {
+      if (head.age !== 0 || head.launchTime < this.time - dt - 1e-9) continue;
+      const launchOffset = head.launchTime - (this.time - dt);
+      for (const vent of vents) {
+        const elapsed = Math.max(
+          0,
+          Math.min(vent.duration, launchOffset - vent.start),
+        );
+        head.vx -=
+          Math.cos(vent.sample.rotation) *
+          this.plasmaVentAcceleration *
+          elapsed;
+        head.vy -=
+          Math.sin(vent.sample.rotation) *
+          this.plasmaVentAcceleration *
+          elapsed;
+      }
+    }
+    for (const kick of kicks) {
+      ship.vel.x -= Math.cos(kick.angle) * this.plasmaKickVelocity;
+      ship.vel.y -= Math.sin(kick.angle) * this.plasmaKickVelocity;
+    }
+    for (const vent of vents) {
+      ship.vel.x -=
+        Math.cos(vent.sample.rotation) *
+        this.plasmaVentAcceleration *
+        vent.duration;
+      ship.vel.y -=
+        Math.sin(vent.sample.rotation) *
+        this.plasmaVentAcceleration *
+        vent.duration;
+    }
+  }
   /**
    * Power after life support and engines goes to defence weapons (point
-   * defences, lasers), then guns (Light Ion Cannons, rails). `weapons` is in
+   * defences, lasers), then guns (Light Ion Cannons). `weapons` is in
    * build-mount order, so each class walks it once in that order, drawing on the
    * power and world the earlier shots left. The cannon volley is captured after
    * the defence class and before the first gun; a cannon power shortfall stops
@@ -926,10 +1349,16 @@ export class SalvageSystem {
     resources: Resources,
     capacity: number,
     planets: readonly Planet[],
+    acquisition: WeaponAcquisition,
+    previousShip?: { x: number; y: number; rotation: number },
   ) {
     let turretsFunded = true;
     for (const weapon of this.weapons)
-      if (weapon.kind === "ion-point-defence")
+      if (weapon.kind === "plasma-rifle") {
+        const target = acquisition.targets.get(weapon);
+        weapon.target = target?.id ?? null;
+        weapon.targetPoint = target ? { x: target.x, y: target.y } : null;
+      } else if (weapon.kind === "ion-point-defence")
         turretsFunded = this.firePointDefence(
           weapon,
           turretsFunded,
@@ -939,6 +1368,7 @@ export class SalvageSystem {
           resources,
           capacity,
           planets,
+          acquisition,
         );
       else if (weapon.kind === "laser")
         this.fireRailOrLaser(
@@ -949,12 +1379,18 @@ export class SalvageSystem {
           resources,
           capacity,
           planets,
+          acquisition,
         );
-    const volley = this.ionVolley(ship, star, planets);
     let cannonsFunded = true;
+    const vents: PendingPlasmaVent[] = [];
+    const kicks: PendingPlasmaKick[] = [];
     for (const weapon of this.weapons)
       if (weapon.kind === "light-ion-cannon") {
-        if (cannonsFunded && volley.has(weapon))
+        if (
+          cannonsFunded &&
+          acquisition.cannon &&
+          this.time + 1e-9 >= weapon.readyAt
+        )
           cannonsFunded = this.fireIonCannon(
             weapon,
             ship,
@@ -963,6 +1399,17 @@ export class SalvageSystem {
             capacity,
             planets,
           );
+      } else if (weapon.kind === "plasma-rifle") {
+        this.advancePlasma(
+          weapon,
+          dt,
+          resources,
+          capacity,
+          ship,
+          previousShip,
+          vents,
+          kicks,
+        );
       } else if (weapon.kind === "rail")
         this.fireRailOrLaser(
           weapon,
@@ -972,7 +1419,10 @@ export class SalvageSystem {
           resources,
           capacity,
           planets,
+          acquisition,
         );
+    if (vents.length || kicks.length)
+      this.resolvePlasmaForces(ship, dt, vents, kicks);
   }
   /** Laser and rail keep their own acquisition; the shared energy floor gates the shot. */
   private fireRailOrLaser(
@@ -983,12 +1433,13 @@ export class SalvageSystem {
     resources: Resources,
     capacity: number,
     planets: readonly Planet[],
+    acquisition: WeaponAcquisition,
   ) {
     if (weapon.kind !== "rail" && weapon.kind !== "laser") return;
     const config = WEAPONS[weapon.kind];
-    let target: SalvageBody | undefined;
+    let target: Pick<SalvageBody, "id" | "x" | "y"> | undefined;
     if (weapon.kind === "laser") {
-      target = this.targetLaser(weapon, ship, star, planets);
+      target = acquisition.targets.get(weapon);
       weapon.target = target?.id ?? null;
       if (target) {
         const base = weaponPose(ship, weapon.mount, weapon.angle);
@@ -1028,8 +1479,9 @@ export class SalvageSystem {
         star.radius,
         Infinity,
       );
-      for (const body of this.bodies) {
+      for (const body of this.weaponBodies) {
         if (
+          !this.contactEligible(body) ||
           body.kind === "cell" ||
           body.hull <= 0 ||
           Math.hypot(body.x - pose.x, body.y - pose.y) > config.range ||
@@ -1094,6 +1546,7 @@ export class SalvageSystem {
       this.emit("rail", pose.muzzleX, pose.muzzleY);
     } else {
       if (!target) return;
+      const contactStarted = this.targetingMetrics ? performance.now() : 0;
       // The visible pulse follows the barrel; its first physical hit owns damage.
       const dx = Math.cos(pose.angle),
         dy = Math.sin(pose.angle);
@@ -1118,8 +1571,13 @@ export class SalvageSystem {
           ),
         );
       let hit: SalvageBody | undefined;
-      for (const body of this.bodies) {
-        if (body.kind === "cell" || body.hull <= 0) continue;
+      for (const body of this.weaponBodies) {
+        if (
+          !this.contactEligible(body) ||
+          body.kind === "cell" ||
+          body.hull <= 0
+        )
+          continue;
         const distance = this.cast(
           body,
           pose.muzzleX,
@@ -1134,6 +1592,8 @@ export class SalvageSystem {
           hit = body;
         }
       }
+      if (this.targetingMetrics)
+        this.targetingMetrics.contactMs += performance.now() - contactStarted;
       if (!hit) return;
       this.emit(
         "laser",
@@ -1150,7 +1610,381 @@ export class SalvageSystem {
     this.energySpent += config.energy;
   }
 
-  /** Runs this ship's normal weapon pipeline against one temporary live ship. */
+  /** Advance surviving heads even when their emitter has been destroyed. */
+  stepPlasmaStreams(
+    dt: number,
+    star: Star,
+    planets: readonly Planet[],
+    roster: readonly SalvageBody[],
+    shooterId?: number,
+  ) {
+    this.time += dt;
+    this.plasmaContactEvents.length = 0;
+    this.plasmaBurstEvents.length = 0;
+    const births = new Map<SalvageBody, number>();
+    this.sweepPlasmaStreams(
+      dt,
+      star,
+      planets,
+      roster,
+      shooterId,
+      false,
+      undefined,
+      births,
+    );
+    this.sweepVentAreas(dt, roster, shooterId, false, undefined, births);
+  }
+  private plasmaVisual(
+    event:
+      | Omit<Extract<PlasmaVisualEvent, { kind: "segment" }>, "id">
+      | Omit<Extract<PlasmaVisualEvent, { kind: "impact" }>, "id">
+      | Omit<Extract<PlasmaVisualEvent, { kind: "absorb" }>, "id">,
+  ) {
+    if (this.plasmaVisualEvents.length >= 512) this.plasmaVisualEvents.shift();
+    this.plasmaVisualEvents.push({ ...event, id: ++this.plasmaVisualSequence });
+  }
+  private sweepVentAreas(
+    dt: number,
+    bodies: readonly SalvageBody[],
+    shooterId: number | undefined,
+    integrated: boolean,
+    terminal: ((body: SalvageBody) => number) | undefined,
+    births: Map<SalvageBody, number>,
+  ) {
+    const start = this.time - dt;
+    this.plasmaVentArea.sweep(
+      start,
+      dt,
+      bodies,
+      shooterId,
+      (body, offset, registerNewborn) => {
+        const pose = plasmaBodyPose(body, dt, offset, integrated);
+        const end = { x: body.x, y: body.y, rotation: body.rotation };
+        Object.assign(body, { x: pose.x, y: pose.y, rotation: pose.rotation });
+        const oldCount = this.bodies.length;
+        this.damage(body, PLASMA_RIFLE.ventDamage, start + offset);
+        for (let i = oldCount; i < this.bodies.length; i++) {
+          const newborn = this.bodies[i];
+          births.set(newborn, offset);
+          newborn.previousX = newborn.x - newborn.vx * offset;
+          newborn.previousY = newborn.y - newborn.vy * offset;
+          newborn.previousRotation =
+            newborn.rotation - spinOf(newborn) * offset;
+          if (integrated) {
+            newborn.x += newborn.vx * (dt - offset);
+            newborn.y += newborn.vy * (dt - offset);
+            if (newborn.kind !== "cell")
+              newborn.rotation += spinOf(newborn) * (dt - offset);
+          }
+          if (newborn.kind !== "cell" && newborn.hull > 0)
+            registerNewborn(newborn);
+        }
+        if (body.hull > 0) Object.assign(body, end);
+      },
+      (body, offset) => plasmaBodyPose(body, dt, offset, integrated),
+      (body) => ({ birth: births.get(body) ?? 0, end: terminal?.(body) ?? dt }),
+    );
+  }
+  private sweepPlasmaStreams(
+    dt: number,
+    star: Star,
+    planets: readonly Planet[],
+    bodies: readonly SalvageBody[],
+    shooterId?: number,
+    integrated = false,
+    terminal?: (body: SalvageBody) => number,
+    birthOffsets = new Map<SalvageBody, number>(),
+  ) {
+    const cutoff = this.time + this.presentationTimeOffset - 0.5;
+    while (
+      this.plasmaVisualEvents.length &&
+      this.plasmaVisualEvents[0].time < cutoff
+    )
+      this.plasmaVisualEvents.shift();
+    if (!this.plasmaStreams.length) return;
+    const started = this.targetingMetrics ? performance.now() : 0;
+    const intervalStart = this.time - dt;
+    const plan = (head: PlasmaStream) => {
+      const offset = Math.max(0, head.launchTime - intervalStart);
+      const horizon = Math.min(
+        Math.max(0, dt - offset),
+        Math.max(0, PLASMA_RIFLE.streamLifetime - head.age),
+      );
+      let first = Infinity;
+      for (const world of [star, ...planets]) {
+        // Planets have advanced to their substep end; recover their previous orbital pose.
+        const planet = world === star ? undefined : (world as Planet);
+        const previousAngle = planet
+          ? planet.orbitAngle - planet.orbitSpeed * dt
+          : 0;
+        const startX =
+          planet && planet.orbitSpeed !== 0
+            ? planet.orbitCenter.x +
+              planet.orbitRadius * Math.cos(previousAngle)
+            : world.pos.x;
+        const startY =
+          planet && planet.orbitSpeed !== 0
+            ? planet.orbitCenter.y +
+              planet.orbitRadius * Math.sin(previousAngle)
+            : world.pos.y;
+        const vx = planet && dt > 0 ? (world.pos.x - startX) / dt : 0;
+        const vy = planet && dt > 0 ? (world.pos.y - startY) / dt : 0;
+        first = Math.min(
+          first,
+          contactTime(
+            head.x - startX - vx * offset,
+            head.y - startY - vy * offset,
+            head.vx - vx,
+            head.vy - vy,
+            world.radius,
+            horizon,
+          ),
+        );
+      }
+      let hit: SalvageBody | undefined;
+      for (const body of bodies) {
+        if (body.id === shooterId || body.hull <= 0 || body.kind === "cell")
+          continue;
+        const begin = Math.max(offset, birthOffsets.get(body) ?? 0);
+        const delay = begin - offset;
+        if (delay > horizon) continue;
+        const pose = plasmaBodyPose(body, dt, begin, integrated);
+        const headX = head.x + head.vx * delay,
+          headY = head.y + head.vy * delay;
+        const remaining = horizon - delay;
+        const bx = pose.x,
+          by = pose.y,
+          bodyVx = pose.vx,
+          bodyVy = pose.vy;
+        let time: number;
+        if (body.kind === "ship") {
+          time = contactTime(
+            headX - bx,
+            headY - by,
+            head.vx - bodyVx,
+            head.vy - bodyVy,
+            body.radius,
+            remaining,
+          );
+        } else {
+          const shape = {
+            kind: body.kind,
+            x: bx,
+            y: by,
+            rotation: pose.rotation,
+            shardIndex: body.shardIndex ?? 0,
+            releasedMask: body.releasedMask ?? 0,
+          };
+          const vx = head.vx - bodyVx,
+            vy = head.vy - bodyVy;
+          time = Number.isFinite(
+            contactTime(
+              headX - bx,
+              headY - by,
+              vx,
+              vy,
+              getDerelictRadius(shape),
+              remaining,
+            ),
+          )
+            ? (castDerelict(
+                shape,
+                { x: headX, y: headY },
+                { x: vx, y: vy },
+                0,
+                remaining,
+                spinOf(body),
+              )?.time ?? Infinity)
+            : Infinity;
+        }
+        time += delay;
+        if (time + offset >= (terminal?.(body) ?? Infinity)) continue;
+        if (time < first || (hit && time === first && body.id < hit.id)) {
+          first = time;
+          hit = body;
+        }
+      }
+      return {
+        head,
+        offset,
+        horizon,
+        first,
+        hit,
+        eventTime: offset + Math.min(horizon, first),
+      };
+    };
+    const pending = [...this.plasmaStreams];
+    const survivors: PlasmaStream[] = [];
+    while (pending.length) {
+      let chosenIndex = 0;
+      let chosen = plan(pending[0]);
+      for (let i = 1; i < pending.length; i++) {
+        const candidate = plan(pending[i]);
+        if (candidate.eventTime < chosen.eventTime) {
+          chosen = candidate;
+          chosenIndex = i;
+        }
+      }
+      pending.splice(chosenIndex, 1);
+      const { head, offset, horizon, first, hit } = chosen;
+      const elapsed = Math.min(horizon, first);
+      const fromX = head.x,
+        fromY = head.y;
+      head.x += head.vx * elapsed;
+      head.y += head.vy * elapsed;
+      head.age += elapsed;
+      const visualTime =
+        intervalStart + offset + elapsed + this.presentationTimeOffset;
+      if (elapsed > 0)
+        this.plasmaVisual({
+          kind: "segment",
+          originX: head.originX,
+          originY: head.originY,
+          time: visualTime,
+          x: fromX,
+          y: fromY,
+          endX: head.x,
+          endY: head.y,
+        });
+      const reachedEnd =
+        first === Infinity && head.age >= PLASMA_RIFLE.streamLifetime - 1e-9;
+      if (hit || reachedEnd) {
+        const outcome = hit ? "material" : "airburst";
+        const time = intervalStart + offset + elapsed;
+        this.plasmaVisual({
+          kind: "impact",
+          outcome,
+          originX: head.originX,
+          originY: head.originY,
+          time: visualTime,
+          x: head.x,
+          y: head.y,
+        });
+        const burst = PlasmaBurstSchema.parse({
+          mountKey: head.mountKey,
+          outcome,
+          bodyId: hit?.id ?? null,
+          x: head.x,
+          y: head.y,
+          time,
+        });
+        this.plasmaBurstEvents.push(burst);
+        if (hit) {
+          const contact = PlasmaContactSchema.parse({
+            mountKey: head.mountKey,
+            bodyId: hit.id,
+            x: head.x,
+            y: head.y,
+            time,
+          });
+          this.lastPlasmaContact = contact;
+          this.plasmaContactEvents.push(contact);
+          this.plasmaContacts++;
+        } else this.plasmaAirbursts++;
+        // Snapshot recipients and their contact-time poses before any breakup.
+        const recipients: {
+          body: SalvageBody;
+          x: number;
+          y: number;
+          rotation: number;
+          damage: number;
+        }[] = [];
+        const burstOffset = offset + elapsed;
+        for (const body of bodies) {
+          if (
+            body.id === shooterId ||
+            body.hull <= 0 ||
+            body.kind === "cell" ||
+            burstOffset < (birthOffsets.get(body) ?? 0) ||
+            burstOffset >= (terminal?.(body) ?? Infinity)
+          )
+            continue;
+          const { x, y, rotation } = plasmaBodyPose(
+            body,
+            dt,
+            burstOffset,
+            integrated,
+          );
+          const centre = Math.hypot(x - head.x, y - head.y);
+          let distance: number;
+          if (body.kind === "ship")
+            distance = Math.max(0, centre - body.radius);
+          else {
+            const shape = {
+              kind: body.kind,
+              x,
+              y,
+              rotation,
+              shardIndex: body.shardIndex ?? 0,
+              releasedMask: body.releasedMask ?? 0,
+            };
+            const outerRadius = PLASMA_RIFLE.blastBands[2].radius;
+            if (centre - getDerelictRadius(shape) > outerRadius) continue;
+            distance = derelictClosestPoint(shape, head, outerRadius).distance;
+          }
+          const band = PLASMA_RIFLE.blastBands.find(
+            (candidate) => distance <= candidate.radius + 1e-9,
+          );
+          if (band)
+            recipients.push({ body, x, y, rotation, damage: band.damage });
+        }
+        for (const recipient of recipients) {
+          const body = recipient.body;
+          const end = { x: body.x, y: body.y, rotation: body.rotation };
+          body.x = recipient.x;
+          body.y = recipient.y;
+          body.rotation = recipient.rotation;
+          const oldCount = this.bodies.length;
+          this.damage(body, recipient.damage, time);
+          for (let i = oldCount; i < this.bodies.length; i++) {
+            const newborn = this.bodies[i];
+            birthOffsets.set(newborn, burstOffset);
+            newborn.previousX = newborn.x - newborn.vx * burstOffset;
+            newborn.previousY = newborn.y - newborn.vy * burstOffset;
+            newborn.previousRotation =
+              newborn.rotation - spinOf(newborn) * burstOffset;
+            if (integrated) {
+              const remaining = dt - burstOffset;
+              newborn.x += newborn.vx * remaining;
+              newborn.y += newborn.vy * remaining;
+              if (newborn.kind !== "cell")
+                newborn.rotation += spinOf(newborn) * remaining;
+            }
+          }
+          if (body.hull > 0) Object.assign(body, end);
+        }
+      } else if (first !== Infinity) {
+        this.plasmaVisual({
+          kind: "absorb",
+          originX: head.originX,
+          originY: head.originY,
+          time: visualTime,
+          x: head.x,
+          y: head.y,
+        });
+      }
+      if (first === Infinity && head.age < PLASMA_RIFLE.streamLifetime - 1e-9)
+        survivors.push(head);
+    }
+    this.plasmaStreams = survivors;
+    if (this.targetingMetrics)
+      this.targetingMetrics.contactMs += performance.now() - started;
+  }
+  /** Whether this substep needs encounter bodies for acquisition or a shot. */
+  needsWeaponRoster(dt: number) {
+    return (
+      this.shots.length > 0 ||
+      this.plasmaStreams.length > 0 ||
+      this.weapons.some(
+        (weapon) =>
+          weapon.kind === "ion-point-defence" ||
+          weapon.kind === "laser" ||
+          weapon.kind === "plasma-rifle" ||
+          this.time + dt + 1e-9 >= weapon.readyAt,
+      )
+    );
+  }
+  /** Runs this ship's normal weapon pipeline against shared live contacts. */
   stepWeapons(
     dt: number,
     ship: GameObject,
@@ -1160,71 +1994,132 @@ export class SalvageSystem {
     planets: readonly Planet[],
     targets: SalvageBody | readonly SalvageBody[],
     aimTargets?: readonly SalvageBody[],
+    policy?: { shooterId: number; aimId?: number },
+    acquisition?: WeaponAcquisition,
+    previousShip?: { x: number; y: number; rotation: number },
   ) {
     const targetList = Array.isArray(targets) ? targets : [targets];
     this.time += dt;
+    this.plasmaContactEvents.length = 0;
+    this.plasmaBurstEvents.length = 0;
     this.events = this.events.filter((event) => this.time - event.time <= 0.2);
-    this.bodies.push(...targetList);
+    const ownsBodies = this.bodies.length > 0;
+    const rosterOffset = this.bodies.length;
+    if (ownsBodies) this.bodies.push(...targetList);
+    this.activeBodies = ownsBodies ? this.bodies : targetList;
     this.aimingBodies = aimTargets ?? null;
+    this.shooterId = policy?.shooterId ?? null;
+    this.aimId = policy?.aimId ?? null;
     try {
-      this.fireWeapons(dt, ship, star, resources, capacity, [...planets]);
-    } finally {
-      this.aimingBodies = null;
-    }
-    this.bodies = this.bodies.filter((body) => !targetList.includes(body));
-
-    this.shots = this.shots.filter((shot) => {
-      let first = contactTime(
-        shot.x - star.pos.x,
-        shot.y - star.pos.y,
-        shot.vx,
-        shot.vy,
-        star.radius,
+      const selected =
+        acquisition ??
+        acquireFleetTargets(
+          this.weaponBodies,
+          [
+            {
+              system: this,
+              ship,
+              shooterId: policy?.shooterId,
+              aimId: policy?.aimId,
+              aimTargets,
+            },
+          ],
+          star,
+          planets,
+          0,
+          this.targetingMetrics,
+        ).get(this);
+      if (!selected) throw new Error("Missing weapon acquisition");
+      this.fireWeapons(
         dt,
+        ship,
+        star,
+        resources,
+        capacity,
+        planets,
+        selected,
+        previousShip,
       );
-      for (const planet of planets)
-        first = Math.min(
-          first,
-          contactTime(
-            shot.x - planet.pos.x,
-            shot.y - planet.pos.y,
-            shot.vx,
-            shot.vy,
-            planet.radius,
-            dt,
-          ),
-        );
-      let hitTarget: SalvageBody | undefined;
-      for (const target of targetList) {
-        if (target.hull <= 0) continue;
-        const targetTime = contactTime(
-          shot.x - target.previousX,
-          shot.y - target.previousY,
-          shot.vx - target.vx,
-          shot.vy - target.vy,
-          target.radius,
+      const births = new Map<SalvageBody, number>();
+      this.sweepPlasmaStreams(
+        dt,
+        star,
+        planets,
+        this.weaponBodies,
+        policy?.shooterId,
+        false,
+        undefined,
+        births,
+      );
+      this.sweepVentAreas(
+        dt,
+        this.weaponBodies,
+        policy?.shooterId,
+        false,
+        undefined,
+        births,
+      );
+      this.activeBodies = null;
+
+      this.shots = this.shots.filter((shot) => {
+        let first = contactTime(
+          shot.x - star.pos.x,
+          shot.y - star.pos.y,
+          shot.vx,
+          shot.vy,
+          star.radius,
           dt,
         );
-        if (targetTime < first) {
-          first = targetTime;
-          hitTarget = target;
+        for (const planet of planets)
+          first = Math.min(
+            first,
+            contactTime(
+              shot.x - planet.pos.x,
+              shot.y - planet.pos.y,
+              shot.vx,
+              shot.vy,
+              planet.radius,
+              dt,
+            ),
+          );
+        let hitTarget: SalvageBody | undefined;
+        for (const target of targetList) {
+          if (!this.contactEligible(target) || target.hull <= 0) continue;
+          const targetTime = contactTime(
+            shot.x - target.previousX,
+            shot.y - target.previousY,
+            shot.vx - target.vx,
+            shot.vy - target.vy,
+            target.radius,
+            dt,
+          );
+          if (targetTime < first) {
+            first = targetTime;
+            hitTarget = target;
+          }
         }
+        shot.x += shot.vx * Math.min(dt, first);
+        shot.y += shot.vy * Math.min(dt, first);
+        if (hitTarget)
+          this.damage(hitTarget, WEAPONS.rail.damage, this.time - dt + first);
+        if (first !== Infinity) this.emit("collision", shot.x, shot.y);
+        return first === Infinity && !outside(shot.x, shot.y);
+      });
+      for (const weapon of this.weapons) {
+        if (!weapon.recoil) continue;
+        const duration = Math.min(dt, weapon.recoil.remaining);
+        const impulse = this.recoilAcceleration * duration;
+        ship.vel.x -= Math.cos(weapon.recoil.angle) * impulse;
+        ship.vel.y -= Math.sin(weapon.recoil.angle) * impulse;
+        weapon.recoil.remaining -= duration;
+        if (weapon.recoil.remaining <= 1e-9) weapon.recoil = null;
       }
-      shot.x += shot.vx * Math.min(dt, first);
-      shot.y += shot.vy * Math.min(dt, first);
-      if (hitTarget)
-        this.damage(hitTarget, WEAPONS.rail.damage, this.time - dt + first);
-      if (first !== Infinity) this.emit("collision", shot.x, shot.y);
-      return first === Infinity && !outside(shot.x, shot.y);
-    });
-    for (const weapon of this.weapons) {
-      if (!weapon.recoil) continue;
-      const duration = Math.min(dt, weapon.recoil.remaining);
-      const impulse = this.recoilAcceleration * duration;
-      ship.vel.x -= Math.cos(weapon.recoil.angle) * impulse;
-      ship.vel.y -= Math.sin(weapon.recoil.angle) * impulse;
-      weapon.recoil.remaining -= duration;
-      if (weapon.recoil.remaining <= 1e-9) weapon.recoil = null;
+    } finally {
+      this.aimingBodies = null;
+      this.activeBodies = null;
+      if (ownsBodies) this.bodies.splice(rosterOffset, targetList.length);
+      this.shooterId = null;
+      this.aimId = null;
     }
   }
 
@@ -1238,8 +2133,12 @@ export class SalvageSystem {
     previousY: number,
     wrapped: boolean,
     planets: readonly Planet[] = [],
+    previousRotation = ship.rotation,
+    hostile?: SalvageBody,
   ) {
     this.time += dt;
+    this.plasmaContactEvents.length = 0;
+    this.plasmaBurstEvents.length = 0;
     this.events = this.events.filter(
       (event) =>
         this.time - event.time <=
@@ -1282,7 +2181,33 @@ export class SalvageSystem {
       )
         this.destroy(body, "environment");
     }
-    this.fireWeapons(dt, ship, star, resources, capacity, planets);
+    // Live ships participate in weapons queries only. Their flight and ram
+    // contacts are advanced by the opponent simulation.
+    const hostileIndex = this.bodies.length;
+    if (hostile) this.bodies.push(hostile);
+    const acquisition = acquireFleetTargets(
+      this.bodies,
+      [{ system: this, ship }],
+      star,
+      planets,
+      0,
+      this.targetingMetrics,
+    ).get(this);
+    if (!acquisition) throw new Error("Missing weapon acquisition");
+    this.fireWeapons(
+      dt,
+      ship,
+      star,
+      resources,
+      capacity,
+      planets,
+      acquisition,
+      {
+        x: wrapped ? ship.pos.x : previousX,
+        y: wrapped ? ship.pos.y : previousY,
+        rotation: previousRotation,
+      },
+    );
     for (const weapon of this.weapons) {
       if (!weapon.recoil) continue;
       const duration = Math.min(dt, weapon.recoil.remaining);
@@ -1404,6 +2329,28 @@ export class SalvageSystem {
       return time;
     };
 
+    const births = new Map<SalvageBody, number>();
+    const bodyEnd = (body: SalvageBody) =>
+      existingBodies.has(body)
+        ? Math.min(terminal(body).time, shipTime(body))
+        : Infinity;
+    this.sweepPlasmaStreams(
+      dt,
+      star,
+      planets,
+      this.bodies,
+      undefined,
+      true,
+      bodyEnd,
+      births,
+    );
+    this.sweepVentAreas(dt, this.bodies, undefined, true, bodyEnd, births);
+
+    if (hostile) this.bodies.splice(hostileIndex, 1);
+    const shotTargets =
+      hostile && this.shots.length
+        ? [...existingBodies, hostile]
+        : existingBodies;
     this.shots = this.shots.filter((shot) => {
       let first = contactTime(
         shot.x - star.pos.x,
@@ -1426,8 +2373,13 @@ export class SalvageSystem {
           ),
         );
       let hit: SalvageBody | undefined;
-      for (const body of existingBodies) {
-        if (body.kind === "cell" || body.hull <= 0) continue;
+      for (const body of shotTargets) {
+        if (
+          !this.contactEligible(body) ||
+          body.kind === "cell" ||
+          body.hull <= 0
+        )
+          continue;
         const time = this.cast(
           body,
           shot.x,
@@ -1440,8 +2392,8 @@ export class SalvageSystem {
         );
         if (
           time < first &&
-          time < terminal(body).time &&
-          time < shipTime(body)
+          (body === hostile ||
+            (time < terminal(body).time && time < shipTime(body)))
         ) {
           first = time;
           hit = body;

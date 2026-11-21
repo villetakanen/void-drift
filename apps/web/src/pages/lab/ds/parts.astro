@@ -1,0 +1,71 @@
+---
+import LabLayout from "../../../layouts/LabLayout.astro";
+---
+
+<LabLayout title="Parts" wide>
+  <article class="parts">
+    <section>
+      <h2>Part design</h2>
+      <p>
+        Parts suggest purposeful machinery and a world with history. Their
+        artwork and fictional details give them character; gameplay capabilities
+        belong to the catalog and game contracts.
+      </p>
+      <p>
+        Compare SVG masters with the shared rendered artwork on the
+        <a href="/lab/ds/engines">Engines</a>
+        and
+        <a href="/lab/ds/weapons">Weapons</a>
+        pages.
+      </p>
+    </section>
+    <section>
+      <h2>Testing-only marking</h2>
+      <p>
+        “Testing only” is pure fictional prose: an optional aesthetic extra, not
+        a required testing state. It has no gameplay, ranked, ruleset or
+        sanctioning meaning and creates no fitting penalty or restriction.
+      </p>
+      <p>
+        A designer may include the marking in a part's SVG master. The shared
+        artwork carries that decoration through the rendered poses and Hangar
+        card. The Service ion on the Engines page is an example.
+      </p>
+      <ul>
+        <li>
+          Parallel brand-colour lines rise right at 45° when the part is nose
+          up.
+        </li>
+        <li>
+          The gap is twice the line width; the master sets the width in part
+          units.
+        </li>
+        <li>
+          Lines cover the outer half of one side of the body, clipped inside it.
+          Rails, mounts and the nozzle stay bare.
+        </li>
+        <li>
+          Flight draws a cached stamp rather than stroking each line per frame.
+        </li>
+      </ul>
+    </section>
+  </article>
+</LabLayout>
+
+<style>
+.parts {
+  max-width: 70ch;
+  padding: var(--spacing-xl);
+  display: grid;
+  gap: var(--spacing-xl);
+  line-height: 1.6;
+}
+
+h2 {
+  font-size: var(--font-size-heading);
+}
+
+a {
+  color: var(--color-brand);
+}
+</style>

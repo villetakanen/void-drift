@@ -1,6 +1,5 @@
 ---
 import PotentialWellChambers from "../../../components/studies/PotentialWellChambers.astro";
-import PotentialWellHeavy from "../../../components/studies/PotentialWellHeavy.astro";
 import PotentialWellLongPairs from "../../../components/studies/PotentialWellLongPairs.astro";
 import PotentialWellNine from "../../../components/studies/PotentialWellNine.astro";
 import PotentialWellRefinements from "../../../components/studies/PotentialWellRefinements.astro";
@@ -387,7 +386,12 @@ const study = studies.find((s) => s.slug === "resource-capacity-2026-11-02");
       wells is selected; B and C remain comparison alternatives. Unit count and
       visible volume do not define new capacity arithmetic.
     </p>
-    <PotentialWellHeavy />
+    <img
+      class="heavy-options"
+      src="/studies/resource-capacity-2026-11-02/heavy-options.png"
+      alt="Heavy potential well options: accepted normal, A larger containment wells, B three-well bank and C broader chambers, each at 8 times and 1 times mounted scale"
+      loading="lazy"
+    >
     <p>
       <strong>Heavy selected: A / Larger containment wells.</strong>
       Two enlarged wells preserve the normal device’s construction and identity.
@@ -549,6 +553,11 @@ section {
 p {
   max-width: 70ch;
   margin-block: 1rem;
+}
+.heavy-options {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 details {
   margin-top: 2rem;

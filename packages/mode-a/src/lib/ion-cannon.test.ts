@@ -2,7 +2,7 @@ import { Vec2 } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { weaponPose } from "./build-renderer";
 import { createStar } from "./game-loop";
-import { type SalvageBody, SalvageSystem } from "./salvage";
+import { liveShipBody, type SalvageBody, SalvageSystem } from "./salvage";
 import { defaultLoadout, LoadoutSchema } from "./schemas/loadout";
 import { ION_CANNON, ionCannonDamage } from "./schemas/salvage";
 import { STEP } from "./simulation";
@@ -62,6 +62,27 @@ function fixture() {
   return { loadout, system, ship, star, resources, energy, step, target };
 }
 describe("Light Ion Cannon", () => {
+  it("keeps owned material and new fragments in the contact scene around a shared roster", () => {
+    const f = fixture();
+    const wreck = f.target(480, 400);
+    wreck.hull = 1;
+    const target = { ...f.ship, pos: new Vec2(550, 400), radius: 12 };
+    const contact = liveShipBody(900001, target, 100, () => {});
+    f.system.stepWeapons(
+      STEP / 4,
+      f.ship,
+      f.star,
+      f.resources,
+      f.energy.capacity,
+      [],
+      [contact],
+      undefined,
+      { shooterId: 900000 },
+    );
+    expect(wreck.hull).toBe(0);
+    expect(f.system.bodies.some((body) => body.kind === "fragment")).toBe(true);
+    expect(f.system.bodies).not.toContain(contact);
+  });
   it("does no damage beyond its range, and its far endpoint still damages", () => {
     expect(ionCannonDamage(ION_CANNON.range)).toBeGreaterThan(0);
     expect(ionCannonDamage(ION_CANNON.range + 0.001)).toBe(0);
@@ -86,11 +107,10 @@ describe("Light Ion Cannon", () => {
   });
   it("allocates scarce power in stable mount order", () => {
     const f = fixture();
-    // A two-shot capacity keeps the energy floor below the power left for a shot.
-    f.energy.capacity = 2 * ION_CANNON.energy;
+    f.energy.capacity = 50;
     f.target();
-    // Funds one shot, not two.
-    f.resources.power = 1.5 * ION_CANNON.energy;
+    // The first shot crosses the 10-power firing floor.
+    f.resources.power = 10 + ION_CANNON.energy / 2;
     f.step();
     expect(f.system.ionDischarges).toBe(1);
     expect(f.system.weapons[0].readyAt).toBeGreaterThan(0);

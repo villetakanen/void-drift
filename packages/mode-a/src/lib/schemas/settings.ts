@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const SettingsSchema = z.object({
   invertControls: z.boolean(),
+  combatHud: z.boolean().default(true),
   speedCamera: z.boolean().default(false),
 });
 
@@ -9,6 +10,7 @@ export type Settings = z.infer<typeof SettingsSchema>;
 
 export const DEFAULT_SETTINGS: Settings = {
   invertControls: true,
+  combatHud: true,
   speedCamera: false,
 };
 

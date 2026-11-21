@@ -2,6 +2,7 @@ export const LIFE_SUPPORT_DRAIN = 0.8;
 /** Light ion draw; Heavy ion draws 2× and full-duty stabilizers 0.25× this. */
 export const LIGHT_ION_DRAW = 1.75;
 
+import { BeamSchema } from "@void-drift/core";
 import { z } from "zod";
 import { CRUISER } from "../cruiser";
 import { FIDDLER } from "../fiddler";
@@ -17,9 +18,16 @@ import {
 } from "./ion";
 import { ShipProfileIdSchema } from "./ship-profile";
 
-export const EngineIdSchema = z.enum(["ion", "heavy-ion", "fusion", "plasma"]);
+export const EngineIdSchema = z.enum([
+  "ion",
+  "heavy-ion",
+  "service-ion",
+  "fusion",
+  "plasma",
+]);
 export const ReleaseClassSchema = z.enum(["scored", "preview"]);
 export const PartIdSchema = z.enum([
+  "plasma-rifle",
   "light-ion-cannon",
   "ion-point-defence",
   "rail",
@@ -30,29 +38,54 @@ export const PartIdSchema = z.enum([
   "gravity-coil",
   "ion",
   "heavy-ion",
+  "service-ion",
   "fusion",
   "plasma",
 ]);
 export type PartId = z.infer<typeof PartIdSchema>;
-export const PartSchema = z.object({
-  id: PartIdSchema,
-  releaseClass: ReleaseClassSchema,
-  description: z.string().max(220).default(""),
-  fluff: z.string().max(80).default(""),
-  solarMultiplier: z.number().nonnegative().default(0),
-  capacity: z.number().nonnegative().default(0),
-  name: z.string(),
-  category: z.enum(["G", "U", "E"]),
-  mass: z.number().positive(),
-  thrust: z.number().nonnegative(),
-  speedContribution: z.number().finite().nonnegative().default(0),
-  limit: z.number().nonnegative(),
-  draw: z.number().nonnegative(),
-  response: z.enum(["steady", "pulse", "delayed"]).default("steady"),
-  chargeSeconds: z.number().nonnegative().default(0),
-  pulsePeriod: z.number().positive().default(0.45),
-  pulseOn: z.number().positive().default(0.18),
-});
+/** One and a half stabilizer outlets: a third of a light ion. */
+const SERVICE_ION_STRENGTH = 1.5 * STABILIZER_STRENGTH;
+export const PartSchema = z
+  .object({
+    id: PartIdSchema,
+    releaseClass: ReleaseClassSchema,
+    description: z.string().max(220).default(""),
+    fluff: z.string().max(80).default(""),
+    solarMultiplier: z.number().nonnegative().default(0),
+    capacity: z.number().nonnegative().default(0),
+    name: z.string(),
+    category: z.enum(["G", "U", "E"]),
+    mass: z.number().positive(),
+    thrust: z.number().nonnegative(),
+    speedContribution: z.number().finite().nonnegative().default(0),
+    limit: z.number().nonnegative(),
+    draw: z.number().nonnegative(),
+    response: z.enum(["steady", "pulse", "delayed"]).default("steady"),
+    chargeSeconds: z.number().nonnegative().default(0),
+    pulsePeriod: z.number().positive().default(0.45),
+    pulseOn: z.number().positive().default(0.18),
+    /**
+     * Where the part's art sits along its slot's axis, in part units (+x
+     * forward). Applies on every hull.
+     */
+    mount: z.number().finite().default(0),
+    /** Made for testing: its art carries the testing-only marking. */
+    testingOnly: z.boolean().default(false),
+    /**
+     * Present on the ion engines, one family: strength is thrust as a multiple
+     * of the light ion's; beam is the plume's proportions and ink.
+     */
+    ion: z
+      .object({ strength: z.number().positive(), beam: BeamSchema })
+      .optional(),
+  })
+  .refine(
+    (part) =>
+      !part.ion || (part.category === "E" && part.response === "steady"),
+    {
+      message: "Ion engines are steady engines",
+    },
+  );
 export const SlotTypeSchema = z.enum([
   "engine",
   "weapon",
@@ -158,13 +191,26 @@ export const CHASSIS = {
   }),
 };
 export const PARTS = {
+  "plasma-rifle": PartSchema.parse({
+    id: "plasma-rifle",
+    name: "Plasma rifle",
+    fluff: "Floor is lava, jump!",
+    description:
+      "Charges on ships and wrecks ahead of its muzzle. Releases on a held target and vents if the target escapes.",
+    releaseClass: "scored",
+    category: "G",
+    mass: 24.3,
+    thrust: 0,
+    limit: 0,
+    draw: 0,
+  }),
   "light-ion-cannon": PartSchema.parse({
     id: "light-ion-cannon",
     fluff: "Shoots straight. Keep your expectations close.",
     releaseClass: "scored",
     name: "Light Ion Cannon",
     description:
-      "12–48 damage/s · 3 shots/s · 300-unit reach · 0.2p/shot (0.6p/s sustained). Ship-width forward acquisition; offset cannons may miss.",
+      "12–48 damage/s · 3 shots/s · 300-unit reach · 0.2p/shot (0.6p/s sustained). Ship-width forward acquisition; offset cannons may miss. Fires above 10 power and at least 10% capacity.",
     category: "G",
     mass: 9,
     thrust: 0,
@@ -177,7 +223,7 @@ export const PARTS = {
     releaseClass: "scored",
     name: "Ion Point Defence",
     description:
-      "8–24 damage/s · 3 shots/s · 200-unit reach · 0.1p/shot (0.3p/s sustained). Turns at 180°/s towards the closest target within 300 units.",
+      "8–24 damage/s · 3 shots/s · 200-unit reach · 0.1p/shot (0.3p/s sustained). Turns at 180°/s towards the closest target within 300 units. Fires above 10 power and at least 10% capacity.",
     category: "G",
     mass: 10,
     thrust: 0,
@@ -189,7 +235,7 @@ export const PARTS = {
     releaseClass: "preview",
     name: "Rail gun",
     description:
-      "Automatically fires along the slot when a target approaches its firing line. Heavy hits and recoil; shots can miss. Active in Test flight; fires only while energy is at least 10% of capacity.",
+      "Disabled. This saved fitting has no weapon effect and can be removed or replaced.",
     category: "G",
     mass: 15,
     thrust: 0,
@@ -201,7 +247,7 @@ export const PARTS = {
     releaseClass: "preview",
     name: "Laser",
     description:
-      "Short-range rotating pulse laser. Prioritizes incoming debris, then derelicts. Active in Test flight; fires only while energy is at least 10% of capacity.",
+      "Short-range rotating pulse laser. Prioritizes incoming debris, then derelicts. Active in Test flight; fires above 10 power and at least 10% capacity.",
     category: "G",
     mass: 9,
     thrust: 0,
@@ -273,6 +319,7 @@ export const PARTS = {
     speedContribution: 8,
     limit: ION_DEFAULTS.maxSpeed,
     draw: LIGHT_ION_DRAW,
+    ion: { strength: 1, beam: { length: 1, width: 1, ink: "112,255,226" } },
   }),
 
   "heavy-ion": PartSchema.parse({
@@ -291,6 +338,32 @@ export const PARTS = {
     draw: 2 * LIGHT_ION_DRAW,
     response: "steady",
     chargeSeconds: 0,
+    ion: {
+      strength: 1.75,
+      beam: { length: 1.4, width: 1.45, ink: "112,226,255" },
+    },
+  }),
+  "service-ion": PartSchema.parse({
+    id: "service-ion",
+    fluff: "Built for the yard. Flies, technically.",
+    releaseClass: "preview",
+    name: "Service ion",
+    description:
+      "+1 u/s to ship cruise ceiling. A third of a light ion’s thrust, for slow test flights.",
+    category: "E",
+    mass: 7,
+    thrust:
+      ION_DEFAULTS.acceleration * ION_REFERENCE_MASS * SERVICE_ION_STRENGTH,
+    speedContribution: 1,
+    limit: ION_DEFAULTS.maxSpeed * SERVICE_ION_STRENGTH,
+    draw: LIGHT_ION_DRAW * SERVICE_ION_STRENGTH,
+    response: "steady",
+    mount: -1,
+    testingOnly: true,
+    ion: {
+      strength: SERVICE_ION_STRENGTH,
+      beam: { length: 0.7, width: 0.7, ink: "112,255,226" },
+    },
   }),
   fusion: PartSchema.parse({
     id: "fusion",
@@ -308,7 +381,7 @@ export const PARTS = {
   }),
   plasma: PartSchema.parse({
     id: "plasma",
-    releaseClass: "preview",
+    releaseClass: "scored",
     name: "Plasma",
     description: "+9 u/s to ship cruise ceiling.",
     category: "E",
@@ -321,6 +394,20 @@ export const PARTS = {
     chargeSeconds: 0.2,
   }),
 };
+/** A part's ion strength: its thrust as a multiple of the light ion's; 0 for parts outside the ion family. */
+export function ionStrength(id: string) {
+  return (
+    (PARTS as Record<string, z.infer<typeof PartSchema>>)[id]?.ion?.strength ??
+    0
+  );
+}
+function ionEngine(id: PartId) {
+  const ion = PARTS[id].ion;
+  if (!ion) throw new Error(`${id} is not an ion engine`);
+  return ion;
+}
+/** The light ion's beam; stabilizer outlets draw it too. */
+export const LIGHT_ION_BEAM = ionEngine("ion").beam;
 export const LoadoutSchema = z
   .object({
     version: z.literal(2),

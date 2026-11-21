@@ -1,6 +1,19 @@
+---
+
+title: "Spec: Standard Sun"
+status: draft
+generated:
+  by: "codex/gpt-6"
+  at: "2026-11-19T19:21:23+02:00"
+verified: [{ by: "codex/gpt-6", at: "2026-11-19T19:21:23+02:00" }]
+
+---
+
 # Standard Sun
 
-## Intent
+## Blueprint
+
+### Context
 
 A steady G Sun offers collectable energy inside its gravitational well. The
 pilot trades income against the pull, exposure and terminal contact. Other
@@ -9,7 +22,7 @@ stellar families and further Sun effect design are deferred. The accepted
 retains experiments; the [closure](../../../../loop-evidence/2026-11-07-suns-closure.md)
 records acceptance, not production validation.
 
-### Yellow-family gameplay trial — unranked play
+#### Yellow-family gameplay profile
 
 The [stellar-characters study](../../../../../apps/web/src/pages/lab/studies/stellar-characters-2026-11-11.astro#03)
 closed accepted on 11 November 2026. Its final yellow-family reference has
@@ -20,29 +33,25 @@ hazard reach is `100s`, collection reach is `R₀s` and gravity reach is
 These are centre-distance boundaries; enlarged surfaces do not move them
 outward. The current inverse-square law gives mass `5250s^2.9`.
 
-Derelicts, Gauntlet and Survival with Playground On select the same
-continuous deterministic surface radius in 36–140 u from each run seed and
-apply the family appearance, gravity, collection and damage fields described
-above. This is an initial playable trial; the selected field profiles are
-hypotheses for play, not claims of balance. The title screen separately uses a
-cosmetic sample across the same surface range through its independent landing
-scene. Practice uses the G7 reference profile at a fixed 70 u surface radius
-and labels it `G7 Sun`: a star is named by its type, followed by its name
-if it has one. Ranked Survival retains the existing Sun.
-The study recommends retaining the existing decorative landing Sun; this trial
-supersedes that recommendation for the title scene only. Playground also enables this world-feature trial in Survival; with it Off,
-Survival retains the 0.6.0 launch-era ranked rules under `ion-storm`. The size distribution and field profiles are initial trial
-choices. Field boundaries and visual identity are accepted.
-See the study's parts 03 and 04 for gaps, ordered slices, verification and the
-version/challenge boundary. Low-yields and other stellar natures are outside
-this delivery.
+Survival, Derelicts and Gauntlet select the same continuous deterministic
+surface radius in 36–140 u from each run seed and apply the family appearance,
+gravity, collection and damage fields described above. The selected field
+profiles remain gameplay tuning, not claims of balance. The shared
+[DS game field backdrop](../../../factory/design-system/game-field-backdrop/spec.md)
+generates a separate system through the same
+[seeded system contract](../systems/spec.md), so its Sun uses the same radius
+and appearance rules without being the Sun or state of any active game.
+Practice uses the G7 reference profile at
+a fixed 70 u surface radius and labels it `G7 Sun`: a star is named by its type,
+followed by its name if it has one. Low-yield stars and other stellar natures
+are outside this contract.
 
-The production contract below describes the legacy Sun profile used in ranked
-Survival. Practice uses the same reference fields and radius as G7, with
-resource protection. Study acceptance and this trial do not claim gameplay
-balance or authorize a release.
+The production contract below records the legacy Sun profile for consumers that
+retain it. Practice uses the same reference fields and radius as G7, with
+resource protection. The seeded yellow-family profile used by Survival,
+Derelicts and Gauntlet is the default gameplay profile.
 
-Derelicts, Gauntlet and Playground Survival place the selected `G4`–`G14` denomination just above
+Survival, Derelicts and Gauntlet place the selected `G4`–`G14` denomination just above
 and to the right of the star surface in the World HUD. The integer is the
 surface radius in tens of world units, rounded to the nearest class; radius 70
 is G7 and radius 140 is G14. The label uses the World HUD's Android green and
@@ -57,12 +66,12 @@ denomination `G7`, and displays `G7 Sun`. Planet fallback names use the stored
 star name when present, otherwise its denomination or type; they never parse a
 display label.
 
-## Architecture
+### Architecture
 
-- `SUN_CONFIG.G` supplies the legacy radius-35 body and artwork. Ranked Survival uses
-  it directly; Practice applies the fixed G7 profile; Derelicts, Gauntlet and Playground Survival
-  apply the seed-selected yellow-family profile. The landing system starts from
-  it before applying its independent cosmetic yellow-family sample.
+- `SUN_CONFIG.G` supplies the legacy radius-35 body and artwork. Practice applies
+  the fixed G7 profile; Survival, Derelicts and Gauntlet apply the seed-selected
+  yellow-family profile. The shared [DS game field backdrop](../../../factory/design-system/game-field-backdrop/spec.md)
+  uses a separate system from the same seeded generator and profile rules.
 - `packages/core/src/lib/solar.ts` owns centre-distance field profiles.
   `EnergyFieldSchema` validates independent reach, shoulder, peak and outer
   fraction. `solarField` uses a star-specific collection profile when present;
@@ -79,9 +88,17 @@ display label.
 - [Gravity](../gravity-field/spec.md) retains its force, mass, reach and cutoff.
   There is no new gravity or friction tuning.
 
+### Constraints
+
+- Star-field distances are measured from the star's centre in world units.
+- Enlarged surfaces leave the generated centre-distance field boundaries unchanged.
+- Collection and damage changes follow the selected family profile; they do not change gravity or collision geometry.
+
 ## Contract
 
-Distances are measured from the centre, in world units.
+### Definition of Done
+
+The standard Sun keeps the following rates and boundaries:
 
 | Quantity                          | Through radius 55 | Beyond the shoulder                 | Outside reach |
 | --------------------------------- | ----------------- | ----------------------------------- | ------------- |
@@ -95,7 +112,7 @@ battery gain. Stored energy and depleted propulsion retain production feedback.
 Life support is 0.8 E/s; Light ion is 1.75 E/s per fully firing physical engine.
 Other engine-family draw, thrust, handling and collisions remain unchanged.
 
-### HUD
+#### HUD
 
 - Gravity: dim Android green, dashed 5/5 CSS px.
 - Solar: dim solid Android green; full brightness and 3.3% green fill while
@@ -110,14 +127,30 @@ Other engine-family draw, thrust, handling and collisions remain unchanged.
   for Lab proposals; omitted overrides preserve the standard Sun geometry.
 - Practice retains its resource protection: it cannot claim applied hull damage.
 
-### Verification scenarios
+### Regression guardrails
 
-- Profile values at 35, 55, midpoint, exact edge and immediately outside it.
-- Every chassis: starter/default/unfitted baseline plus additive fitted collectors;
-  legacy stock collection without equipment.
-- Full battery, net-draining collection, depleted reserves, lethal contact,
-  applied exposure and undamaged flight beyond 100.
-- Shared HUD stroke/dash/inset geometry across camera scales, CSS canvas sizes
-  and display density; actual collection and damage activation.
-- Lab inspected at 1280 px or wider. Human flight assessment is separate from
-  automated mechanics and presentation checks.
+- Collection and damage retain the existing gravity, collision and ship handling rules.
+- Decorative artwork never changes the field radii or the effect rates.
+- The DS game field backdrop uses the same seeded star profile in a separate generated system.
+
+### Scenarios
+
+```gherkin
+Scenario: Apply the standard Sun profile
+  Given a generated yellow-family Sun and a ship collecting energy or taking exposure
+  When the ship is at the surface, shoulder, exact field edge or beyond the field
+  Then collection and exposure follow the selected profile
+  And gravity and collision behavior retain their existing rules
+
+Scenario: Match the Sun field HUD to live effects
+  Given the shared Sun field HUD at any camera scale or display density
+  When collection or damage becomes active
+  Then the field strokes and fills show the corresponding live state
+  And the display geometry remains screen-readable
+
+Scenario: Keep the decorative Sun separate from a run
+  Given an active run and the shared DS game field backdrop
+  When the backdrop presents a generated Sun
+  Then it follows the same seeded radius and appearance rules
+  And the active run's Sun, fields and simulation remain unchanged
+```

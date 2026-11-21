@@ -9,15 +9,11 @@ export interface LandingHint {
 export const LANDING_HINTS = [
   {
     kind: "news",
-    text: "0.6.0 — ION STORM brings ion engines and weapons to the fleet.",
+    text: "0.7.0 — Fires in the Sky introduces a new ranked challenge.",
   },
   {
     kind: "hint",
     text: "Turn on Playground to fly more ships and parts.",
-  },
-  {
-    kind: "news",
-    text: "The global leaderboard resets with 0.6.0.",
   },
   {
     kind: "lore",
@@ -30,5 +26,21 @@ export const LANDING_HINTS = [
   {
     kind: "hint",
     text: "Turn with A / D or ← / →; thrust with W / ↑, A + D, or the touch pads.",
+  },
+  {
+    kind: "lore",
+    text: "The Samurai of Sirius are notorious for their Daeshan scout ships, oversized plasma rifles, and a reckless disregard for orbital mechanics.",
+  },
+  {
+    kind: "news",
+    text: "0.7.0 — Fires in the Sky brings plasma engines and rifles to the Hangar.",
+  },
+  {
+    kind: "news",
+    text: "Sometimes small is big. Try the new Service drive!",
+  },
+  {
+    kind: "hint",
+    text: "Change the camera mode or turn off Combat HUD in Settings.",
   },
 ] as const satisfies readonly LandingHint[];

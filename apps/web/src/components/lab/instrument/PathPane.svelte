@@ -5,10 +5,10 @@ import {
   niceCeil,
   type Track,
 } from "../../../lib/instrument";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 
 // The path tool (lab-instrument study, 02.8–02.9): a square display of every
-// vehicle's path with a marker at the current time, the scale switch in its
+// vehicle's path with a marker at the current time, the scale selector in its
 // top right and its numbers in its bottom right. It draws in its own
 // coordinates; the host scales it. Given bodies (the Gravity tuning bench's
 // well), it draws them under the paths and lets a well be dragged.
@@ -314,7 +314,7 @@ const sampleAt = (track: Track) =>
     <dd>{view.s.toFixed(3)} px/u</dd>
   </dl>
   <div class="tools">
-    <Toggle
+    <SegmentedControl
       label="Path scale"
       options={["Fit all", "Default scale"]}
       bind:value={

@@ -1,10 +1,19 @@
+---
+title: "Spec: Speed Camera"
+status: draft
+generated:
+  by: "codex/gpt-6"
+  at: "2026-11-19T20:46:07+00:00"
+verified: [{ by: "codex/gpt-6", at: "2026-11-19T20:46:07+00:00" }]
+---
+
 # Speed Camera
 
 ## Blueprint
 
 ### Context
 
-Speed camera is an experimental personal preference for live flight. It frames
+Speed camera is a personal preference for live flight. It frames
 the ship within a view whose scale responds to speed: slow flight brings the
 view closer; fast flight opens it. Velocity changes allow transient off-centre
 travel; following gradually matches actual motion and returns the ship to exact
@@ -12,12 +21,13 @@ screen centre during constant-velocity flight. The experiment asks whether this
 makes flight easier to read while preserving the sensation of speed.
 
 The star, enemies and other objects may leave the view. Only the player's ship
-is a required framing subject. The tradeoff is less arena awareness in exchange
+is a required framing subject, except in the entrance view at the start of a
+new run, which shows the star and the ship together. The tradeoff is less arena awareness in exchange
 for a speed-responsive view around the ship. This feature is experienced in the actual game;
 it requires no Lab study or study registry entry. Human playtesting stays outside
 the repository and is not an acceptance gate or evidence requirement.
 
-### Architecture and boundaries
+### Architecture
 
 - `packages/mode-a/src/lib/schemas/settings.ts` defines `speedCamera` as a
   boolean personal setting with default `false`. Changes to this data contract
@@ -34,7 +44,9 @@ the repository and is not an acceptance gate or evidence requirement.
   owns its appearance and interaction.
 - `packages/core/src/lib/physics/Camera.ts` owns framing and the shared camera
   transform. Speed camera consumes ship position, world velocity, elapsed
-  simulation time and the active-area geometry supplied by FlightDeck.
+  simulation time, the active-area geometry and the stage's CSS pixels per
+  logical unit supplied by FlightDeck. On a new run FlightDeck also supplies the
+  star's position and radius for the entrance view.
 - [Game screen](../../game-screen/spec.md) owns the active rectangle between
   gutters. It is not necessarily square. Camera offsets and safe bounds use
   this rectangle in logical units; rendering still fills the whole stage.
@@ -45,9 +57,11 @@ the repository and is not an acceptance gate or evidence requirement.
 - The preference is not a simulation setting, replay input, scoring field or
   Firestore field. It changes neither ranked eligibility nor submission.
 
-### Preference and access
+### Constraints
 
-- Options shows **Speed camera**, marked **Experimental**, with an On/Off
+#### Preference and access
+
+- Options shows **Speed camera** with an On/Off
   Switch and the explanation: “Zooms out with speed and shows more space ahead.”
 - A fresh device starts Off. Off selects standard ship-and-star framing;
   On selects speed framing. The choice survives reloads and subsequent runs.
@@ -62,20 +76,21 @@ the repository and is not an acceptance gate or evidence requirement.
 - The feature exposes one binary choice. Curve, zoom and smoothing parameters
   belong to implementation tuning, rather than player-facing sliders.
 
-### Zoom readout
+#### Zoom readout
 
 - While Speed camera is On in flight, the left gutter shows ZOOM below its
   hull and power readouts, using the existing deck instrument treatment.
-- The readout shows only `1×`, `2×`, `4×` or `8×`, relative to the widest
-  speed-camera view. During continuous outward zoom it holds the upper label:
+- The readout shows only `1×`, `2×`, `4×` or `8×`, naming the four inward
+  levels. During continuous outward zoom it holds the upper label:
   `8×` until `4×` is reached, then `4×` until `2×`, then `2×` until `1×`.
   Exact levels show their own label; intermediate or decimal values and
   nearest-level rounding are never shown. Inward cuts show the reached level.
+  The entrance view, which is wider than `1×`, shows `1×`.
 - This is a passive display. It changes neither the camera's actual scale nor
   its timing, follows the deck's pause visibility, and is absent when Speed
   camera is Off.
 
-### Speed and zoom
+#### Speed and zoom
 
 - Speed is the magnitude of the ship's world velocity. Heading, thrust input,
   angular velocity and distance from the star do not directly select zoom.
@@ -102,10 +117,12 @@ the repository and is not an acceptance gate or evidence requirement.
   stopped. The demand curve favours keeping close views available at propulsion
   speeds. During widening, screen-space travel rate may decrease as magnification
   falls; a monotonically increasing `speed × desired zoom` is not required.
-- Inward zoom uses four geometric levels relative to the widest speed-camera
-  view: `1×`, `2×`, `4×`, `8×`. These are relative magnifications, not absolute
-  renderer zoom values. The closest level shows one eighth of the widest view's
-  linear world extent, subject to hull containment.
+- Inward zoom uses four fixed levels, named `1×`, `2×`, `4×` and `8×`. They
+  are 0.5, 1, 2 and 4 CSS pixels per world unit on every screen; each is twice
+  the one before. The amount of world shown at a level follows the size of the
+  screen. Desired magnification in the speed points above is measured in these
+  levels: `1×` is 0.5 CSS pixels per world unit. The closest level is subject
+  to hull containment.
 - When speed demand permits a closer view, hold the current scale. The next
   candidate is the smallest inward level strictly above the current scale,
   including when outward zoom has left the camera between levels. A candidate
@@ -131,7 +148,7 @@ the repository and is not an acceptance gate or evidence requirement.
   loadout does not independently change framing at the same position and velocity,
   except where hull containment requires it.
 
-### Ship placement and motion
+#### Ship placement and motion
 
 - Speed selects zoom. Pan gradually matches the ship's actual motion while
   closing the remaining distance to screen centre. Heading does not select a
@@ -157,7 +174,8 @@ the repository and is not an acceptance gate or evidence requirement.
 - The active rectangle remains the containment boundary. There is no dead zone
   or permanently off-centre resting position. Safety corrections can move the
   view immediately to keep the hull in bounds.
-- A new run, reset or wrap initially centres the ship at its resulting position.
+- A reset or wrap initially centres the ship at its resulting position. A new
+  run starts from the entrance view, centred between the star and the ship.
   Subsequent changes of velocity can move the ship off-centre in any direction.
 - Outward zoom is smooth and frame-rate independent. Zoom changes anchor the
   ship's current screen position independently of ordinary pan; containment
@@ -174,7 +192,7 @@ the repository and is not an acceptance gate or evidence requirement.
   framing widens enough to fit before applying follow pan. Safety
   can override the ordinary close limit and pan placement.
 
-### Transitions and lifecycle
+#### Transitions and lifecycle
 
 - Changing the preference during a run preserves the current camera transform
   as the start of the transition. On the next active simulation steps, framing
@@ -189,8 +207,19 @@ the repository and is not an acceptance gate or evidence requirement.
   Resume continues any retained eligibility time unless the preference changed.
 - A new run, reset or arena wrap reframes immediately at the ship's resulting
   position and velocity, clearing stale pan history and inward eligibility time.
-  This discontinuity may initialise scale directly from continuous speed demand. It never sweeps across the
-  arena to catch up with a discontinuous position change.
+  It never sweeps across the arena to catch up with a discontinuous position
+  change. A reset or wrap sets scale directly from continuous speed demand.
+- A new run, when the ship enters a star system, starts with the entrance view.
+  Its first view shows the whole star and the whole ship within the safe active
+  bounds, whatever the system's size and the screen's size. Its scale is the
+  wider of the speed demand and the closest scale that contains both bodies.
+- When the entrance view is wider than `1×`, the camera holds it for 1.5
+  seconds of active simulation time and then cuts to `1×`. Speed always permits
+  `1×`, so neither speed nor acceleration delays or cancels this cut; Pause
+  freezes it. After the cut the ordinary rules apply: later levels follow speed
+  demand one inward cut at a time, and outward zoom never goes wider than `1×`.
+  When the entrance view is already `1×` or closer, there is no entrance cut,
+  and the normal speed rules apply from the start.
 - Resizing recomputes placement from the new active bounds and restores safe
   containment immediately and clears inward eligibility time. Leaving speed
   framing also clears that timer. The existing aspect gate remains authoritative.
@@ -198,14 +227,15 @@ the repository and is not an acceptance gate or evidence requirement.
   their positions and ages; the deck remains outside the transform. Background
   stars cover the full stage throughout outward zoom, inward cuts and transitions.
 
-### Tuning boundaries
+#### Tuning boundaries
 
-The widest world extent, safe clearance, outward easing, velocity-matching and
-residual-centring rates are implementation tuning choices within this contract.
+Safe clearance, outward easing, velocity-matching and residual-centring rates
+are implementation tuning choices within this contract.
 The speed-demand points are 8× through 100 u/s, 4× at 200 u/s, 2× at 300 u/s
 and 1× at 400 u/s, with geometric interpolation between them.
-Four relative levels spanning 1×–8× and 1.5 seconds of continuous eligibility per
-inward cut define this experiment; changing them requires updating this contract.
+Four levels of 0.5, 1, 2 and 4 CSS pixels per world unit, the entrance view and
+1.5 seconds of continuous eligibility per inward cut define this experiment;
+changing them requires updating this contract.
 Define tuning together with finite values and meaningful units. The initial
 velocity-matching and residual-centring rates are adjustable within the containment
 rule. These choices do not block implementation or add new settings. Changing
@@ -216,13 +246,12 @@ fixed world orientation or scoring independence changes the feature contract.
 
 ### Definition of Done
 
-- SC1: Options shows the shared, accessible Speed camera Switch, marked
-  Experimental, and reads and writes the persisted preference. The Pause dialog
+- SC1: Options shows the shared, accessible Speed camera Switch and reads and writes the persisted preference. The Pause dialog
   contains no settings controls.
 - SC2: Fresh and legacy settings select Off; a legacy valid Invert controls
   choice survives adding the missing field. Invalid storage cannot block flight.
 - SC3: On widens smoothly from continuous speed demand and tightens only through
-  the four specified relative levels. Each inward cut requires 1.5 continuous
+  the four specified levels. Each inward cut requires 1.5 continuous
   seconds of eligibility, advances one level and resets its timer. Acceleration
   cancels pending time; outward demand is never blocked by that timer.
 - SC4: Velocity changes let the ship move visibly off-centre. With any constant
@@ -251,6 +280,11 @@ fixed world orientation or scoring independence changes the feature contract.
 - SC14: Speed demand allows 8× through 100 u/s, 4× through 200 u/s and 2×
   through 300 u/s, reaching 1× at 400 u/s. The 600 u/s arrival uses widest demand
   without changing ship physics.
+- SC15: The levels are 0.5, 1, 2 and 4 CSS pixels per world unit, each twice
+  the one before, and do not depend on the stage's size.
+- SC16: The first view of a new run contains the star and the ship on small and
+  large stages. When that view is wider than 1×, it cuts to 1× after 1.5 seconds
+  of active time, whatever the speed does; otherwise no entrance cut occurs.
 
 ### Regression guardrails
 
@@ -272,13 +306,35 @@ Scenario: Accelerate and coast
   And scale and centred placement settle while velocity stays constant
 
 Scenario: Zoom labels hold until the next outward level
-  Given Speed camera is On and the relative scale is 8×
+  Given Speed camera is On and the scale is the 8× level
   When outward zoom passes through 6×
   Then the left gutter still shows ZOOM 8× below Hull and Power
   When actual scale reaches 4×
   Then the readout shows 4× until actual scale reaches 2×
   And it then shows 2× until actual scale reaches 1×
   And it never shows a decimal value or rounds to the nearest level
+
+Scenario: Enter a star system on a small screen
+  Given Speed camera is On
+  And the view that contains the star and the arriving ship is wider than 1×
+  When a new run starts
+  Then the first view shows the whole star and the whole ship
+  And ZOOM shows 1×
+  When 1.5 seconds of active time pass, even while the ship accelerates
+  Then the camera cuts to 1×, which is 0.5 CSS pixels per world unit
+
+Scenario: Enter a star system on a large screen
+  Given Speed camera is On
+  And the 1× view already contains the star and the arriving ship
+  When a new run starts
+  Then the first view shows the whole star and the whole ship
+  And there is no entrance cut
+
+Scenario: Levels are the same on every screen
+  Given Speed camera is On on two screens of different size
+  When each view settles at the 1×, 2×, 4× and 8× levels in turn
+  Then both show 0.5, 1, 2 and 4 CSS pixels per world unit
+  And the larger screen shows more of the world at each level
 
 Scenario: Constant diagonal travel settles at centre
   Given Speed camera is On and the ship travels at constant diagonal velocity
@@ -307,7 +363,7 @@ Scenario: Brief slowdown followed by acceleration
   And any demand for a wider view starts smooth outward zoom immediately
 
 Scenario: Outward zoom stops between inward levels
-  Given the current relative scale is 1.6× after outward zoom
+  Given the current scale is 1.6 times the 1× level after outward zoom
   And continuous speed demand permits 2× but not 4×
   When speed stays constant for 1.5 seconds
   Then the camera cuts directly to 2× and resets the timer

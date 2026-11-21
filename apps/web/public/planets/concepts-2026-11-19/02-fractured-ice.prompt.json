@@ -1,0 +1,11 @@
+{
+  "image": "02-fractured-ice.png",
+  "method": "built-in image_gen",
+  "created": "2026-11-19",
+  "prompt": "Use case: stylized-concept. Asset type: 2D planet concept portrait for Void Drift, one of five exploratory renditions. Reference images: image 1 Earth study globe is the globe composition, soft lighting and surface rendering reference; image 2 Cradle game screenshot is only a material/readability reference (never reproduce UI); image 3 Mercury surface atlas is the subdued mineral texture reference. Create ONE original fictional spherical planet in space, centered whole circular globe, occupying 82% of a square canvas, equal margins, solid near-black navy background. Match the references' restrained painted astronomical game art: broad coherent terrain masses, convincing fine mineral surface texture subordinate to large shapes, softly shaded volume, light from upper left, gentle shadow toward lower right with terrain still visible. 2D raster illustration, polished but not cinematic CGI, no chunky low-poly facets, no cartoon outlines, no oversaturated fantasy colours. This world has an atmosphere conceptually but its atmosphere will be added later: show ONLY the unobscured planetary surface, NO clouds, NO atmospheric haze, NO luminous rim or halo. Water or ice must read distinctly from rock. No stars, sun, moons, spacecraft, rings, floating objects, labels, text, borders, UI, watermarks. Do not copy Earth's continents. Subject: A frozen ocean world: pearl-grey and muted blue-white ice sheets broken into huge irregular tectonic rafts, wide deep blue-black water channels, sparse exposed charcoal rock ridges. Science-fiction idea: one long ancient straight subsurface thermal seam intersects organic branching fractures; very restrained cold turquoise visible deep in the water, not glowing neon. Broad asymmetric ice plates form the main identity, delicate fractures only secondarily.",
+  "references": [
+    "apps/web/public/studies/earth-2026-11-14/02-6-7.png",
+    "apps/web/public/studies/rock-atmospheres-2026-11-15/02-15-accepted-cirrus.png",
+    "apps/web/public/planets/outer-mercurial-highlands.png"
+  ]
+}

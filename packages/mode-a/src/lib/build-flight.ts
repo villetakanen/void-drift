@@ -4,7 +4,6 @@ import {
   ASSEMBLED_ION_DEFAULTS,
   type AssembledIonSettings,
   ION_REFERENCE_MASS,
-  ionStrength,
   STABILIZER_ENERGY,
   STABILIZER_STRENGTH,
 } from "./schemas/ion";
@@ -81,6 +80,7 @@ export function stabilizerBurn(
   spin: number,
   dt: number,
   settings: AssembledIonSettings = ASSEMBLED_ION_DEFAULTS,
+  mass?: number,
 ) {
   const command = Number(input.leftThruster) - Number(input.rightThruster);
   const isLhi = !!lhiStabilizers(build.chassis);
@@ -89,7 +89,8 @@ export function stabilizerBurn(
   const m = stabilizerMount(build.chassis);
   const direction = command || -Math.sign(spin);
   const acceleration =
-    (settings.acceleration * ION_REFERENCE_MASS) / buildStats(build).mass;
+    (settings.acceleration * ION_REFERENCE_MASS) /
+    (mass ?? buildStats(build).mass);
   const angularAcceleration =
     (acceleration * STABILIZER_STRENGTH * Math.abs(m.lever)) / m.inertiaPerMass;
   return {
@@ -123,11 +124,19 @@ export function applyBuildEngines(
   motion: AngularMotion = { velocity: 0 },
   settings: AssembledIonSettings = ASSEMBLED_ION_DEFAULTS,
   parts: typeof PARTS = PARTS,
+  stats = buildStats(build, parts),
 ) {
   const isWasp = build.chassis === "wasp";
   const isFiddler = build.chassis === "fiddler";
   const lhi = lhiStabilizers(build.chassis);
-  const burn = stabilizerBurn(build, input, motion.velocity, dt, settings);
+  const burn = stabilizerBurn(
+    build,
+    input,
+    motion.velocity,
+    dt,
+    settings,
+    parts === PARTS ? stats.mass : undefined,
+  );
   const drive = fiddlerDrive(build, input, burn);
   const output = {
     left: 0,
@@ -135,8 +144,7 @@ export function applyBuildEngines(
     aft: build.aft.map(() => 0),
     stabilizers: lhi ? [0, 0, 0, 0] : [0, 0],
   };
-  const stats = buildStats(build, parts),
-    chassis = CHASSIS[build.chassis];
+  const chassis = CHASSIS[build.chassis];
   const m = stabilizerMount(build.chassis);
   const angle = (chassis.angle * Math.PI) / 180;
   const mainLever =
@@ -171,7 +179,7 @@ export function applyBuildEngines(
     const part = parts[id];
     const duty =
       engineDuty(part, powered && held, dt, timers, key) * commandDuty;
-    const strength = ionStrength(id);
+    const strength = part.ion?.strength ?? 0;
     const thrust = strength
       ? settings.acceleration * ION_REFERENCE_MASS * strength
       : part.thrust;
@@ -338,10 +346,11 @@ export function buildDrain(
   dt = 1 / 240,
   settings: AssembledIonSettings = ASSEMBLED_ION_DEFAULTS,
   lightIonDrawScale = 1,
+  mass?: number,
 ) {
   const draw = (id: keyof typeof PARTS) =>
     PARTS[id].draw * (id === "ion" ? lightIonDrawScale : 1);
-  const burn = stabilizerBurn(build, input, spin, dt, settings);
+  const burn = stabilizerBurn(build, input, spin, dt, settings, mass);
   if (build.chassis === "fiddler") {
     const drive = fiddlerDrive(build, input, burn);
     return (

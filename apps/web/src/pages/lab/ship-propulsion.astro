@@ -1,9 +1,15 @@
 ---
-import { buildStats, CHASSIS, defaultLoadout, PARTS } from "@void-drift/mode-a";
+import {
+  buildStats,
+  CHASSIS,
+  defaultLoadout,
+  EngineIdSchema,
+  PARTS,
+} from "@void-drift/mode-a";
 import LabLayout from "../../layouts/LabLayout.astro";
 
 const chassisIds = ["scout", "wasp", "fighter", "corvette", "fiddler"] as const;
-const engines = ["ion", "heavy-ion", "fusion", "plasma"] as const;
+const engines = EngineIdSchema.options;
 const hullBases = chassisIds.map((id) => ({
   name: id[0].toUpperCase() + id.slice(1),
   base: CHASSIS[id].baseSpeed,
@@ -27,6 +33,19 @@ const examples = chassisIds.map((chassis) => {
     fission: fission.poweredCruiseCeiling,
   };
 });
+// The ion family's draw against its thrust, from the catalog.
+const ionDraw = engines
+  .flatMap((id) => {
+    const part = PARTS[id];
+    return part.ion
+      ? [{ name: part.name, strength: part.ion.strength, draw: part.draw }]
+      : [];
+  })
+  .sort((a, b) => a.strength - b.strength)
+  .map((row) => ({
+    ...row,
+    perThrust: row.draw / (row.strength * PARTS.ion.draw),
+  }));
 const mixed = defaultLoadout("fighter");
 mixed.side = "heavy-ion";
 mixed.aft = ["fusion", "plasma"];
@@ -191,6 +210,43 @@ const mixedParts = mixedStats.engineBreakdown
         Braking and transverse steering remain available. Existing speed above V
         is retained; propulsion does not clip it back. Gravity can add
         overspeed. Stabilizers do not affect V.
+      </p>
+    </section>
+
+    <section>
+      <h2>Ion engine draw</h2>
+      <p>
+        An ion engine's strength is its thrust as a multiple of the light ion's.
+        Up to the light ion, draw follows strength: a weaker ion engine costs
+        proportionally less energy. Above it, draw grows faster than thrust, so
+        each step up in strength costs more energy per unit of push. That curve
+        is intentional: stronger ion engines give diminishing returns. An ion
+        engine drawing three times the light ion's energy would push about two
+        and a half times as hard.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Engine</th>
+            <th>Strength (× light ion thrust)</th>
+            <th>Draw (energy/s)</th>
+            <th>Draw per thrust (× light ion)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {ionDraw.map((row) => (
+            <tr>
+              <td>{row.name}</td>
+              <td>{row.strength.toFixed(2)}</td>
+              <td>{row.draw.toFixed(2)}</td>
+              <td>{row.perThrust.toFixed(2)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p>
+        Draw is each engine's own catalog value; the table reads it from the
+        catalog. Engines draw only while they fire.
       </p>
     </section>
 

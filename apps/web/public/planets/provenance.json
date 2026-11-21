@@ -1,0 +1,26 @@
+{
+  "prepared": "2026-11-17",
+  "method": "node scripts/planet-maps.mjs, run against the dev server; unlit cylindrical atlases for StripSphericalSurface",
+  "maps": {
+    "mercury-ground.png": {
+      "use": "Practice Mercury ground",
+      "source": "/studies/mercury-2026-11-12/art-029-mineral.png (built-in image_gen, 2026-11-12; prompts in art-029-prompts.json)",
+      "preparation": "Framed 192px disc with broad baked light divided out (loadAuthoredRockMaterials), then the accepted seed-153 exemplar quilt (quiltMineralMaterial), 384 x 192"
+    },
+    "cradle-ground.png": {
+      "use": "Practice Cradle ground",
+      "source": "output/imagegen/earth-postwar/earth-postwar-plate.png (built-in image_gen, 2026-11-17; prompts in prompts.json beside it): the post-war Earth surface plate, unlit equirectangular",
+      "preparation": "Resampled from 1774 x 887 to 768 x 384; no other change"
+    },
+    "cradle-clouds.png": {
+      "use": "Practice Cradle clouds",
+      "source": "/studies/rock-atmospheres-2026-11-15/cloud-materials/cirrus.png (built-in image_gen, 2026-11-16; prompts in prompts.json beside it)",
+      "preparation": "Resampled to 768 x 384; luminance as density; opacity a smooth step from density 0.1 to 0.5; colour 94-100% white from density; no light"
+    },
+    "earth-ground.png": {
+      "use": "Earth, the Planet Inspector's copy of The Cradle; not in play",
+      "source": "output/imagegen/earth-2300-tryouts/earth-plate-b.png (built-in image_gen, 2026-11-17; prompt in earth-plate-b-prompt.json beside it): a speculative Earth 2300 surface plate, unlit equirectangular",
+      "preparation": "Resampled from 1774 x 887 to 768 x 384; no other change"
+    }
+  }
+}

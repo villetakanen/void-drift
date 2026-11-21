@@ -1,0 +1,59 @@
+---
+const glyphs = [
+  "M2 37V11L12 1H20L30 11V37M2 22H30",
+  "M30 7L24 1H9L2 8V30L9 37H24L30 31",
+  "M30 1H3V37H30M3 19H24",
+];
+---
+
+<div class="pair">
+  {["Open strokes", "Individual faces"].map((label, variant) => (
+    <figure>
+      <svg
+        viewBox="0 0 480 505"
+        role="img"
+        aria-label={`Ranked dialog with ACE in ${label.toLowerCase()}`}
+      >
+        <image
+          href="/studies/ranked-initials-2026-11-20/023-brackets.png"
+          width="480"
+          height="505"
+        />
+        <rect x="110" y="241" width="260" height="69" fill="#1c1c31" />
+        {glyphs.map((path, i) => (
+          <g transform={`translate(${170 + i * 54} 250)`}>
+            {variant === 1 && (
+              <path
+                d="M-6 -6H38V34L30 43H-8V-4Z"
+                fill="var(--color-elev-1)"
+                stroke="var(--color-bracket)"
+              />
+            )}
+            <path
+              d={path}
+              fill="none"
+              stroke="var(--color-text)"
+              stroke-width={variant ? 5 : 3}
+            />
+          </g>
+        ))}
+      </svg>
+      <figcaption>{label}</figcaption>
+    </figure>
+  ))}
+</div>
+<style>
+.pair {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.pair figure {
+  margin: 0;
+  width: min(100%, 480px);
+}
+svg {
+  display: block;
+  width: 100%;
+}
+</style>

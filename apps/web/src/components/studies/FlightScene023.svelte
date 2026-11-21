@@ -1,5 +1,9 @@
 <script lang="ts">
-import { type FlightLayerContexts, LoadoutSchema } from "@void-drift/mode-a";
+import {
+  type FlightLayerCanvases,
+  type FlightLayerContexts,
+  LoadoutSchema,
+} from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import {
   type BurnId,
@@ -9,8 +13,8 @@ import {
 } from "../../lib/instrument";
 import FlightLayers from "../FlightLayers.svelte";
 import RingSlider from "../inputs/RingSlider.svelte";
+import SegmentedControl from "../inputs/SegmentedControl.svelte";
 import Switch from "../inputs/Switch.svelte";
-import Toggle from "../inputs/Toggle.svelte";
 import BurnRow from "../lab/instrument/BurnRow.svelte";
 import OverlayPane from "../lab/instrument/OverlayPane.svelte";
 import {
@@ -55,9 +59,7 @@ let lost = $state<{ seconds: number; cause?: string | null } | null>(null);
 let hostW = $state(SCREEN.w);
 let hostH = $state(SCREEN.h);
 const scale = $derived(Math.min(hostW / SCREEN.w, hostH / SCREEN.h));
-let canvases = $state<
-  Partial<Record<"world" | "fx" | "lfx", HTMLCanvasElement>>
->({});
+let canvases = $state<FlightLayerCanvases>({});
 
 const build = studyStarterWasp();
 build.hull[0] = "light-ion-cannon";
@@ -98,7 +100,7 @@ onMount(() => {
   if (!world || !fx || !lfx) return;
   // Two wrecks ahead of the start heading, so the cannon has something to fire at.
   const scene = new FlightScene(
-    { world, fx, lfx } satisfies FlightLayerContexts,
+    { world, fx, lfx, fxGlow: canvases.fxGlow } satisfies FlightLayerContexts,
     config(),
   );
   let drawn = { burn: "", tick: -1, view: "", start, targets };
@@ -166,7 +168,11 @@ onMount(() => {
         visibility={shown}
       />
       <div class="view">
-        <Toggle label="View" options={Object.keys(VIEWS)} bind:value={view} />
+        <SegmentedControl
+          label="View"
+          options={Object.keys(VIEWS)}
+          bind:value={view}
+        />
       </div>
       {#if lost}
         <p class="lost" role="status">
@@ -221,14 +227,19 @@ onMount(() => {
   <OverlayPane>
     <div class="value">
       <p>Where the ship starts</p>
-      <Toggle
+      <SegmentedControl
         stretch
         label="Where the ship starts"
         options={Object.keys(STARTS)}
         bind:value={start}
       />
       <p>Targets</p>
-      <Toggle stretch label="Targets" options={TARGETS} bind:value={targets} />
+      <SegmentedControl
+        stretch
+        label="Targets"
+        options={TARGETS}
+        bind:value={targets}
+      />
       <p>Layers</p>
       <div class="layers">
         <label for={`${layerId}-world`}>World</label>

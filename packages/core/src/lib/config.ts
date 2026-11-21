@@ -17,6 +17,12 @@ export const PLANET_TYPES = {
   ocean: { id: "ocean", name: "Ocean", color: "#4A90C2" },
   desert: { id: "desert", name: "Desert", color: "#C4A35A" },
   ice: { id: "ice", name: "Ice", color: "#A8D8E8" },
+  habitable: { id: "habitable", name: "Habitable", color: "#4A90C2" },
+  outerMercurial: {
+    id: "outer-mercurial",
+    name: "Outer Mercurial",
+    color: "#77736C",
+  },
 } as const;
 
 export type PlanetTypeId = keyof typeof PLANET_TYPES;
@@ -90,15 +96,6 @@ export const SURVIVAL_CONFIG = {
       type: "rock",
     },
   ],
-
-  // Planet spawning configuration (PBI-038)
-  PLANET_SPAWN_CONFIG: {
-    minCount: 0,
-    maxCount: 5,
-    orbitRange: { min: 200, max: 1000 },
-    radiusRange: { min: 10, max: 100 },
-    speedRange: { min: 0.02, max: 0.15 },
-  },
 } as const;
 
 export const SUN_CONFIG = {

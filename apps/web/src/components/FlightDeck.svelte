@@ -1,9 +1,12 @@
 <script lang="ts">
 import {
   Camera,
+  createCloudedWorld,
+  createRockMaterial,
   Input,
   type InputAction,
   litPads,
+  PLANET_MAPS,
   paintCountdown,
   Renderer,
   type ThrustPad,
@@ -11,20 +14,17 @@ import {
 import {
   buildStats,
   CHALLENGE,
-  clearFlightLayer,
   type DerelictsResult,
-  drawFlightFrame,
   type ExperimentalSetting,
   ExperimentalSettingSchema,
   FlightFx,
+  type FlightLayerCanvases,
   type FlightLayerContexts,
-  type FlightLayerId,
   type FlightMode,
   type FlightTickInput,
   fittedParts,
   HighScoreSubmissionSchema,
   isScoredEligible,
-  LandingSystem,
   type Loadout,
   LoadoutSchema,
   resizeFlightLayers,
@@ -36,17 +36,29 @@ import {
   submitHighScore,
 } from "@void-drift/mode-a";
 import { onMount, type Snippet } from "svelte";
-import { practicePlanetAppearances } from "../lib/assets/practice-planet-appearances";
+import { HabitableMaterials } from "../lib/assets/habitable-materials";
+import { planetAppearances } from "../lib/assets/planet-appearances";
 import { createPracticeVenus } from "../lib/assets/practice-venus";
-import { loadPracticeMercury } from "../lib/assets/rock-planets/authored-materials";
+import { createOuterMercurialMaterial } from "../lib/assets/rock-planets/authored-materials";
 import { NO_SCORE_NOTICE } from "../lib/experimental";
+import { projectFlightContact } from "../lib/flight-contact-projection";
+import {
+  type FlightContactCue,
+  projectFlightContacts,
+} from "../lib/flight-contacts";
+import {
+  drawGameField,
+  PRACTICE_BACKGROUND,
+  systemBackground,
+} from "../lib/game-field";
 import { fitGameScreen, GAME_HEIGHT } from "../lib/game-screen";
 import { settings } from "../lib/stores/settings";
 import { initializeShipSetup, shipSetup } from "../lib/stores/ship-setup";
 import ThrustPads from "./controls/ThrustPads.svelte";
 import { PAD_ASSEMBLY_HEIGHT_PX } from "./controls/thrust-pads";
 import Dialog from "./Dialog.svelte";
-import FlightLayers from "./FlightLayers.svelte";
+import FlightContacts from "./FlightContacts.svelte";
+import GameFieldBackdrop from "./GameFieldBackdrop.svelte";
 import PreviewMarker from "./PreviewMarker.svelte";
 import TitleScreen from "./TitleScreen.svelte";
 
@@ -66,18 +78,27 @@ let {
 } = $props();
 // Practice skips the arrival countdown and labels itself; its screen is Survival's.
 const testFlight = $derived(mode === "practice");
-let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
+let canvases = $state<FlightLayerCanvases>({});
 let simulation: Simulation;
 let practiceVenus: ReturnType<typeof createPracticeVenus> | undefined;
-let practiceMercury:
-  | Awaited<ReturnType<typeof loadPracticeMercury>>
+let practiceCradle: Awaited<ReturnType<typeof createCloudedWorld>> | undefined;
+let mercurialMaterial:
+  | Awaited<ReturnType<typeof createRockMaterial>>
   | undefined;
-let practiceBodyAppearances:
-  | ReturnType<typeof practicePlanetAppearances>
+let outerMercurialMaterial:
+  | Awaited<ReturnType<typeof createOuterMercurialMaterial>>
   | undefined;
+const habitableMaterials = new HabitableMaterials();
+let bodyAppearances: ReturnType<typeof planetAppearances> | undefined;
 let input: Input;
 let renderer: Renderer;
 let camera: Camera;
+let skySeed = $state<number | undefined>();
+let skyCameraX = $state(960);
+let skyCameraY = $state(540);
+const background = $derived(
+  skySeed === undefined ? PRACTICE_BACKGROUND : systemBackground(skySeed),
+);
 const flightFx = new FlightFx();
 const currentLoadout = $derived(
   loadout ?? $shipSetup.builds[$shipSetup.builds.activeChassis],
@@ -111,9 +132,8 @@ let hull = $state(100);
 let power = $state(100);
 let x = $state(460);
 let y = $state(540);
-let hostileBearings = $state<
-  Array<{ id: string; x: number; y: number; angle: number }>
->([]);
+const noContacts: readonly FlightContactCue[] = [];
+let flightContacts = $state.raw(noContacts);
 let gauntletOpponentCount = $state(0);
 let zoom = $state(1);
 let zoomLevel = $state(0);
@@ -139,7 +159,7 @@ let salvageStats = $state({
 let engineFeedback = $state("");
 let activeLoadout = $state<Loadout>();
 let phase = $state<"menu" | "starting" | "playing">("menu");
-let landing = $state.raw<LandingSystem>();
+let landing = $state(false);
 let transitionTime = 0;
 let countTime = $state(-1);
 let lastFrameTime = 0;
@@ -151,15 +171,17 @@ const adaptive = $derived(!landing);
 let sceneOpacity = $state(1);
 let reducedMotion = false;
 let stage: HTMLElement;
-let landingFrame = { width: 1920, height: 1080, cardRight: 1200 };
 function enterMenu() {
   runLoadout = undefined;
   runExperimental = $shipSetup.experimental;
   launchBlocked = false;
-  landing = new LandingSystem();
+  landing = true;
   sceneOpacity = 1;
   phase = "menu";
   reset(false);
+  skyCameraX = 480;
+  skyCameraY = 270;
+  skySeed = (crypto.getRandomValues(new Uint32Array(1))[0] % 2147483646) + 1;
 }
 let spin = $state(0);
 let message = $state("");
@@ -177,6 +199,7 @@ const modeLabel = $derived(
 let saving = $state(false);
 let scoreSaved = $state(false);
 function reset(start = false) {
+  skySeed = undefined;
   if (phase !== "starting") phase = start ? "playing" : "menu";
   input?.reset();
   simulation = new Simulation(
@@ -202,28 +225,39 @@ function reset(start = false) {
     });
     countTime = 0;
     phase = "starting";
+    skySeed = simulation.settings.seed;
   } else countTime = -1;
-  refreshPracticeAppearances();
+  refreshPlanetAppearances();
+  void habitableMaterials
+    .prepare(simulation.planets)
+    .then(refreshPlanetAppearances)
+    .catch(() => {});
   if (start) simulation.start();
   paused = start && narrow;
   scoreSaved = false;
   message = "";
-  frameCamera(true);
+  // A new run enters the star system: the speed camera shows star and ship.
+  frameCamera(true, $settings.speedCamera, true);
   sync();
 }
-function refreshPracticeAppearances() {
-  practiceBodyAppearances =
-    mode === "practice"
-      ? practicePlanetAppearances(simulation.planets, {
-          mercury: practiceMercury,
-          venus: practiceVenus,
-        })
-      : undefined;
+function refreshPlanetAppearances() {
+  bodyAppearances = planetAppearances(simulation.planets, {
+    habitable: habitableMaterials.materials,
+    mercury: mercurialMaterial,
+    outerMercurial: outerMercurialMaterial,
+    venus: mode === "practice" ? practiceVenus : undefined,
+    cradle: mode === "practice" ? practiceCradle : undefined,
+  });
 }
-function frameCamera(snap = false, speedCamera = $settings.speedCamera) {
+function frameCamera(
+  snap = false,
+  speedCamera = $settings.speedCamera,
+  entrance = false,
+) {
   if (!camera || !simulation) return;
   const ship = simulation.ship;
   if (!landing && speedCamera) {
+    const star = simulation.star;
     camera.frameSpeed(
       ship.pos.x,
       ship.pos.y,
@@ -231,6 +265,7 @@ function frameCamera(snap = false, speedCamera = $settings.speedCamera) {
       ship.vel.y,
       ship.radius,
       snap,
+      entrance ? { x: star.pos.x, y: star.pos.y, radius: star.radius } : null,
     );
     return;
   }
@@ -276,44 +311,18 @@ function sync() {
   power = simulation.state.resources.power;
   x = simulation.ship.pos.x;
   y = simulation.ship.pos.y;
-  hostileBearings =
-    mode === "gauntlet"
-      ? simulation.opponents.flatMap((opponent) => {
-          if (opponent.lifecycle === "destroyed") return [];
-          const point = camera.worldToScreen(
-            opponent.ship.pos.x,
-            opponent.ship.pos.y,
-          );
-          if (
-            point.x < 0 ||
-            point.x > camera.viewportWidth ||
-            point.y < 0 ||
-            point.y > camera.viewportHeight
-          ) {
-            const centerX = screen.width / 2;
-            const centerY = screen.height / 2;
-            const targetX = (point.x / camera.viewportWidth) * screen.width;
-            const targetY = (point.y / camera.viewportHeight) * screen.height;
-            const dx = targetX - centerX;
-            const dy = targetY - centerY;
-            const scale = Math.min(
-              (centerX - 28) / Math.max(1, Math.abs(dx)),
-              (centerY - 28) / Math.max(1, Math.abs(dy)),
-            );
-            return [
-              {
-                id: opponent.id,
-                ...{
-                  x: centerX + dx * scale,
-                  y: centerY + dy * scale,
-                  angle: (Math.atan2(dy, dx) * 180) / Math.PI,
-                },
-              },
-            ];
-          }
-          return [];
-        })
-      : [];
+  flightContacts =
+    landing || !$settings.combatHud
+      ? noContacts
+      : projectFlightContacts(simulation, (worldX, worldY, worldDistance) => {
+          const point = camera.worldToScreen(worldX, worldY);
+          return projectFlightContact({
+            projectedX: point.x * screen.scale,
+            projectedY: point.y * screen.scale,
+            worldDistance,
+            active: screen.active.css,
+          });
+        });
   ticks = simulation.ticks;
   runSeed = simulation.settings.seed;
   cause = simulation.state.deathCause ?? "";
@@ -341,7 +350,7 @@ function start() {
     paused = narrow;
     input?.reset();
   } else {
-    landing = undefined;
+    landing = false;
     phase = "playing";
     transitionTime = 0.3;
     reset(true);
@@ -379,7 +388,7 @@ async function save() {
   const submission = HighScoreSubmissionSchema.safeParse({
     initials,
     seconds: Math.max(0.001, simulation.elapsedSeconds),
-    score: Math.max(1, simulation.survivalScore),
+    score: simulation.survivalScore,
     shipId: chosen,
     fitting: fittedParts(runLoadout),
     stabilizers: runLoadout.stabilizers,
@@ -407,29 +416,66 @@ function padPress(pointerId: number, pad: ThrustPad | null) {
   input?.setPointer(pointerId, pad);
 }
 onMount(() => {
+  let disposed = false;
+  void createRockMaterial(PLANET_MAPS.mercuryGround)
+    .then((asset) => {
+      if (disposed) {
+        asset.painter.dispose();
+        return;
+      }
+      mercurialMaterial = asset;
+      refreshPlanetAppearances();
+    })
+    .catch(() => {
+      /* Keep the stock body when the material is unavailable. */
+    });
+  void createOuterMercurialMaterial()
+    .then((asset) => {
+      if (disposed) {
+        asset.painter.dispose();
+        return;
+      }
+      outerMercurialMaterial = asset;
+      refreshPlanetAppearances();
+    })
+    .catch(() => {
+      /* Keep the stock body when the material is unavailable. */
+    });
+
   if (mode === "practice") {
     try {
       practiceVenus = createPracticeVenus(true);
-      refreshPracticeAppearances();
+      refreshPlanetAppearances();
     } catch {
       /* Use the stock body if Canvas material preparation fails. */
     }
-    void loadPracticeMercury(true)
+    void createCloudedWorld(PLANET_MAPS.cradleGround, PLANET_MAPS.cradleClouds)
       .then((asset) => {
-        practiceMercury = asset;
-        refreshPracticeAppearances();
+        if (disposed) {
+          asset.painter.dispose();
+          return;
+        }
+        practiceCradle = asset;
+        refreshPlanetAppearances();
       })
       .catch(() => {
-        /* Keep the stock body when the material is unavailable. */
+        /* Keep the stock body when the maps are unavailable. */
       });
   }
   const world = canvases.world?.getContext("2d"),
     fx = canvases.fx?.getContext("2d"),
     lfx = canvases.lfx?.getContext("2d");
   if (!world || !fx || !lfx) throw new Error("Flight layers require Canvas 2D");
-  const layers: FlightLayerContexts = { world, fx, lfx };
-  const context = layers.world,
-    canvas = context.canvas;
+  const layers: FlightLayerContexts = {
+    world,
+    fx,
+    lfx,
+    // The decorative landing field leaves out glow until flight begins.
+    get fxGlow() {
+      return canvases.fxGlow;
+    },
+  };
+  const canvas = layers.world.canvas;
   renderer = new Renderer(canvas);
   resizeFlightLayers(layers, renderer, 1920, 1080);
   camera = new Camera();
@@ -439,6 +485,26 @@ onMount(() => {
   });
   input = new Input();
   initializeShipSetup();
+  const fitStage = () => {
+    const available = viewport.getBoundingClientRect();
+    const css = getComputedStyle(viewport);
+    screen = fitGameScreen(
+      available.width -
+        parseFloat(css.paddingLeft) -
+        parseFloat(css.paddingRight),
+      available.height -
+        parseFloat(css.paddingTop) -
+        parseFloat(css.paddingBottom),
+    );
+    // Framing fits the active area; rendering still covers the whole stage.
+    camera.setActiveArea(
+      screen.active.logical.width,
+      screen.active.logical.height,
+      screen.scale,
+    );
+  };
+  // A new run's entrance view needs the stage geometry before it is framed.
+  fitStage();
   if (launchSource === "title") enterMenu();
   else {
     const selectedLoadout = LoadoutSchema.parse(currentLoadout);
@@ -459,30 +525,10 @@ onMount(() => {
   updateMotion();
   motion.addEventListener("change", updateMotion);
   const measure = () => {
-    const available = viewport.getBoundingClientRect();
-    const css = getComputedStyle(viewport);
-    screen = fitGameScreen(
-      available.width -
-        parseFloat(css.paddingLeft) -
-        parseFloat(css.paddingRight),
-      available.height -
-        parseFloat(css.paddingTop) -
-        parseFloat(css.paddingBottom),
-    );
+    fitStage();
     narrow = screen.narrow;
     if (narrow) suspend();
-    // Framing fits the active area; rendering still covers the whole stage.
-    camera.setActiveArea(
-      screen.active.logical.width,
-      screen.active.logical.height,
-    );
     frameCamera(false, camera.speedFraming);
-    const bounds = stage.getBoundingClientRect();
-    landingFrame = {
-      width: bounds.width,
-      height: bounds.height,
-      cardRight: bounds.width / 2,
-    };
   };
   const resize = new ResizeObserver(measure);
   resize.observe(stage);
@@ -511,7 +557,7 @@ onMount(() => {
     if (phase === "starting" && !blocked) {
       transitionTime += reducedMotion ? 0.3 : dt;
       if (transitionTime >= 0.15 && landing) {
-        landing = undefined;
+        landing = false;
         reset(true);
         accumulator = 0;
       }
@@ -543,52 +589,37 @@ onMount(() => {
       }
     } else accumulator = 0;
     sync();
-    if (landing) {
-      renderer.clear();
-      clearFlightLayer(layers.fx);
-      clearFlightLayer(layers.lfx);
-      if (!document.hidden && !reducedMotion) landing.step(dt);
-      // The title backdrop fills the viewport independently of the play stage.
-      renderer.drawBackground();
-      context.save();
-      context.scale(1920 / landingFrame.width, 1080 / landingFrame.height);
-      landing.draw(
-        context,
-        landingFrame.width,
-        landingFrame.height,
-        landingFrame.cardRight,
+    if (!landing) {
+      const countCentre = camera.getViewCentre();
+      skyCameraX = countCentre.x;
+      skyCameraY = countCentre.y;
+      drawGameField(
+        {
+          layers,
+          renderer,
+          camera,
+          sim: simulation,
+          fx: flightFx,
+          bodyAppearances: bodyAppearances,
+          stockShip: chosen === "fiddler" ? undefined : chosen,
+          lightTime: Math.max(0, countTime) + simulation.ticks * STEP,
+          lightOverlay:
+            countTime < 0
+              ? undefined
+              : (light, pass) =>
+                  paintCountdown(
+                    light,
+                    pass,
+                    countTime + simulation.ticks * STEP,
+                    countCentre.x,
+                    countCentre.y,
+                    camera.zoom,
+                    reducedMotion,
+                    mode === "gauntlet" ? "space-purple" : "standard",
+                  ),
+        },
+        background,
       );
-      context.restore();
-    } else {
-      const countCentre = camera.screenToWorld(
-        canvas.width / 2,
-        canvas.height / 2,
-      );
-      drawFlightFrame({
-        layers,
-        renderer,
-        camera,
-        sim: simulation,
-        fx: flightFx,
-        bodyAppearances:
-          mode === "practice" ? practiceBodyAppearances : undefined,
-        stockShip: chosen === "fiddler" ? undefined : chosen,
-        lightTime: Math.max(0, countTime) + simulation.ticks * STEP,
-        lightOverlay:
-          countTime < 0
-            ? undefined
-            : (light, pass) =>
-                paintCountdown(
-                  light,
-                  pass,
-                  countTime + simulation.ticks * STEP,
-                  countCentre.x,
-                  countCentre.y,
-                  camera.zoom,
-                  reducedMotion,
-                  mode === "gauntlet" ? "space-purple" : "standard",
-                ),
-      });
     }
     frame = requestAnimationFrame(draw);
   }
@@ -604,7 +635,13 @@ onMount(() => {
   document.addEventListener("visibilitychange", visibility);
   frame = requestAnimationFrame(draw);
   return () => {
+    disposed = true;
     cancelAnimationFrame(frame);
+    habitableMaterials.dispose();
+    mercurialMaterial?.painter.dispose();
+    outerMercurialMaterial?.painter.dispose();
+    practiceVenus?.painter.dispose();
+    practiceCradle?.painter.dispose();
     stopCameraPreference();
     playSurface?.removeEventListener("contextmenu", preventMenu);
     resize.disconnect();
@@ -648,7 +685,7 @@ onMount(() => {
   data-salvage-bodies={salvageStats.bodies}
   data-weapon-energy={salvageStats.spent}
   data-phase={phase}
-  data-landing-sun={landing?.star.type}
+  data-landing-sun={landing ? "G" : "none"}
   data-x={x.toFixed(4)}
   data-y={y.toFixed(4)}
   data-ticks={ticks}
@@ -683,14 +720,27 @@ onMount(() => {
         class:scrim-stage={Boolean(landing)}
         data-stage
       >
-        <FlightLayers
+        <GameFieldBackdrop
           bind:canvases
+          decorative={Boolean(landing)}
+          seed={skySeed}
+          {background}
+          cameraX={skyCameraX}
+          cameraY={skyCameraY}
+          width={screen.logicalWidth}
           label={landing
             ? "Decorative star and orbiting planets"
             : testFlight
               ? "Fitted ship, star and orbiting planets"
               : "Ship, star and orbiting planets"}
         />
+        {#if !landing && $settings.combatHud}
+          <FlightContacts
+            contacts={flightContacts}
+            width={screen.width}
+            height={screen.height}
+          />
+        {/if}
         <!-- The deck: screen-fixed parts in the gutters, clear of the active
              area. One grid holds both side gutters, so their rows and pads
              share a height. -->
@@ -766,18 +816,6 @@ onMount(() => {
           {/if}
         </div>
       </div>
-      {#if hostileBearings.length && !landing}
-        {#each hostileBearings as hostileBearing (hostileBearing.id)}
-          <div
-            class="hostile-bearing"
-            style:left={`${hostileBearing.x}px`}
-            style:top={`${hostileBearing.y}px`}
-            style:--bearing-angle={`${hostileBearing.angle}deg`}
-            aria-label="Hostile pirate offscreen"
-            role="img"
-          ></div>
-        {/each}
-      {/if}
       {#if narrow && (phase !== "menu" || !landing)}
         <Dialog
           label="Rotate to continue"
@@ -829,7 +867,6 @@ onMount(() => {
           </button>
         </Dialog>
       {:else if landing}
-        <div class="dialog-scrim" aria-hidden="true"></div>
         {#if menu}
           {@render menu()}
         {:else}
@@ -862,7 +899,7 @@ onMount(() => {
                   ? "Draw"
                   : "Defeat"}
             </h1>
-            <p>Unranked first pirate encounter · {gauntletResult.cause}</p>
+            <p>Unranked Gauntlet encounter · {gauntletResult.cause}</p>
           {:else}
             <p class="eyebrow">
               {cause === "STAR"
@@ -955,18 +992,6 @@ onMount(() => {
 .flight-stage.adaptive {
   flex: none;
   position: relative;
-}
-.hostile-bearing {
-  position: absolute;
-  z-index: 5;
-  width: 0;
-  height: 0;
-  border-top: 7px solid transparent;
-  border-bottom: 7px solid transparent;
-  border-left: 12px solid var(--color-space-purple, #b788ff);
-  filter: drop-shadow(0 0 5px #b788ff);
-  transform: translate(-50%, -50%) rotate(var(--bearing-angle));
-  pointer-events: none;
 }
 .flight-stage-layer {
   touch-action: none;

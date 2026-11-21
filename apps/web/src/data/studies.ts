@@ -10,25 +10,89 @@ export const studySchema = z.object({
 export type Study = z.infer<typeof studySchema>;
 export const studies = z.array(studySchema).parse([
   {
-    slug: "plasma-projector-fitting-2026-11-17",
-    title: "Plasma Projector · the fitting",
+    slug: "ranked-initials-2026-11-20",
+    title: "Signing a ranked score",
+    phase: "exploration",
     status: "open",
+    question:
+      "How should entering three initials after a ranked run feel like signing an arcade or pinball high-score table, while remaining an accessible web form control that works with keyboard, mouse or touch and looks at home in Void Drift?",
+  },
+  {
+    slug: "offscreen-information-2026-11-19",
+    title: "Offscreen contacts · beyond pirate bearings",
+    status: "accepted",
+    phase: "scope",
+    question:
+      "How should the existing pirate-location HUD extend into one offscreen layer that communicates target type, direction and distance?",
+  },
+  {
+    slug: "combat-hud-2026-11-19",
+    title: "Combat HUD",
+    status: "stopped",
     phase: "exploration",
     question:
-      "What physical form gives one heavy plasma weapon a distinctive presence, exposed or partly buried, and believable origins for its central strike and paired exhausts?",
+      "What information helps a pilot find and navigate toward relevant things outside the current view?",
+  },
+  {
+    slug: "milky-way-sky-2026-11-19",
+    title: "Inside the Milky Way",
+    status: "accepted",
+    phase: "scope",
+    question:
+      "What composition, texture and camera response make the flight sky feel like a view from inside the Milky Way?",
+  },
+  {
+    slug: "close-g-stars-2026-11-18",
+    title: "Eleven close stars",
+    status: "stopped",
+    phase: "exploration",
+    question:
+      "Which drawing techniques from 1990s game skies give a bright G-class background star a distinctive appearance in Void Drift?",
+  },
+  {
+    slug: "distant-flight-sky-2026-11-18",
+    title: "The distant flight sky",
+    status: "stopped",
+    phase: "exploration",
+    question:
+      "How do we create the first design-wise sound sky for Void Drift 0.7.0, Fires in the Sky?",
+  },
+  {
+    slug: "background-stars-2026-11-18",
+    title: "Flight starfield",
+    status: "stopped",
+    phase: "exploration",
+    question:
+      "How should Void Drift render its distant stars so the sky feels like part of the world, with a Sun-like minority you discover as you fly?",
+  },
+  {
+    slug: "plasma-rifle-operation-2026-11-18",
+    title: "Plasma rifle operation",
+    status: "accepted",
+    phase: "scope",
+    question:
+      "How should a fitted plasma rifle commit to a charge and resolve it when a target slips away or stays within reach?",
+  },
+  {
+    slug: "plasma-projector-fitting-2026-11-17",
+    title: "Plasma Projector · the fitting",
+    status: "accepted",
+    phase: "scope",
+    question:
+      "What physical construction gives the Plasma Projector a convincing identity within the game’s weapon language?",
   },
   {
     slug: "maintenance-drive-2026-11-17",
     title: "Maintenance drive",
-    status: "open",
-    phase: "exploration",
+    status: "accepted",
+    phase: "scope",
     question:
-      "What can change within the ion engines’ shared form and plume, and what name, to make a drive at a third of a light ion’s thrust read as the smallest ion engine rather than a stabilizer?",
+      "What can change within the ion engines’ shared form and plume, and what name, mass, energy draw and cruise contribution, make a drive at a third of a light ion’s thrust read as the smallest ion engine rather than a stabilizer?",
   },
   {
     slug: "plasma-projector-2026-11-16",
     title: "Plasma Projector",
-    status: "blocked",
+    status: "open",
     phase: "exploration",
     question:
       "What visual identity makes the Plasma Projector’s loading, close eruption and continuously thrusting residual vents read as one distinctive heavy weapon in the plasma family?",

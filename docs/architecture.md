@@ -16,10 +16,14 @@ Read for changes to structure, simulation, or data flow. Product intent belongs 
   outlets, not trail history. `/lab/fx` exercises six production simulations together.
   The [FX contract](specs/factory/effects/spec.md) owns lifecycle and performance acceptance.
 - The in-flight picture follows the [render model](specs/game/render/spec.md). It is a
-  stack of canvas layers the browser composites: World for everything solid and the
-  World HUD, FX for accumulated light, LFX for live light, with the Deck above them
-  as page elements. `packages/mode-a/src/lib/flight-frame.ts` lists the layers and the
-  ordered passes that draw on them. The method treats the browser as the machine a
+  browser-composited stack. A prepared Milky Way image sits beneath World. Practice decodes the fixed Sol tile.
+  Survival, Derelicts and Gauntlet prepare one image from the run seed during arrival.
+  The canvases hold World for everything solid and the
+  World HUD, FX for accumulated light, and LFX for live light. The browser
+  composites the [derived glow](specs/game/render/fx.md#low-res-css-glow) between
+  FX and LFX. The SVG flight contacts sit above LFX and the Deck above the
+  contacts. `packages/mode-a/src/lib/flight-frame.ts` lists the painted layers
+  and the ordered passes that draw on them. The method treats the browser as the machine a
   demo is written for: game code draws shapes, images and cached stamps, and the
   browser's own blending, scaling and filters do the rest. No game code loops over
   pixels per frame.
@@ -56,14 +60,15 @@ Read for changes to structure, simulation, or data flow. Product intent belongs 
 
 ## Canonical feature names
 
-Decision of 2026-11-09: the flight screen has two overlay layers, named by what
-they are attached to. Specs, code and Lab pages use these names.
+The flight screen has three kinds of overlay.
 
 - **World HUD:** markings drawn on the World layer and anchored to things in the
   world, such as the sun's field rings and a planet's orbit, gravity boundary and
   name. They move with the world; their strokes, dashes and text keep their size
   on screen as the world zooms. Decision of 2026-11-16: every planet has the same
   World HUD.
+- **Flight contacts** use one stage-fixed SVG for bearing, type and separation on the
+  invisible [arrow circle](specs/game/render/flight-contacts/spec.md).
 - **Deck:** the screen-fixed frame around the active area, outside the camera
   transform, drawn as page elements in the gutters. It holds:
   - **Instruments:** hull and power in the left gutter; time and score in the
@@ -79,7 +84,7 @@ The new `void-drift-alpha` project uses Spark, with no billing upgrade. Old SQL 
 migration documents remain historical; scores are not migrated.
 
 - Documents live at `artifacts/void-drift/scores/{CHALLENGE}_{uid}_{shipId}`; `CHALLENGE`
-  (`packages/mode-a/src/schemas/highscore.ts`) is currently `ion-storm`.
+  (`packages/mode-a/src/schemas/highscore.ts`) is `fires-in-the-sky` in the 0.7 release.
 - `CHALLENGE` names the client's ruleset: the simulation, its parameters, and the
   sanctioned ships and parts. A ruleset has one board and never changes once it has one.
   Clients that carry the same ruleset share its board; controls are the client's own.
@@ -183,3 +188,7 @@ validation retains the existing ranked fleet. Existing v3 Hangar stores gain a
 Fiddler starting build without replacing their other ships. See the
 [Hangar contract](specs/game/hangar/spec.md#fiddler-flight-trial--2026-11-03) for the
 accepted starting fit and remaining human flight review.
+
+## Shared development preview
+
+The shared checkout serves saved work from all active tasks through one Astro development process on port 4321. A per-checkout macOS launchd job owns that process. The controller serializes lifecycle requests with a file lock, checks listener ownership and probes the Lab route. Vite resolves the workspace sources directly and hot reloads edits. Browser verification owns separate processes, ports and caches. See the [development workflow](development.md#shared-preview).

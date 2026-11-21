@@ -33,7 +33,7 @@ where a first-commit date is used.
 ### What the contracts say
 
 - The design-studies specification asks part 01 for "an answerable question"
-  (`docs/specs/lab/design-studies/spec.md`, four-part outputs).
+  (`docs/specs/studies/spec.md`, four-part outputs).
 - The design-study skill advances from part 01 when "substantive agreement or
   a clear instruction to explore suffices"
   (`.agents/skills/design-study/SKILL.md`). Neither text tests whether the

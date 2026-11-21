@@ -49,6 +49,8 @@ export const SalvageBodySchema = SalvagePhysicalStateSchema.extend({
   y: z.number(),
   previousX: z.number(),
   previousY: z.number(),
+  sweepEndX: z.number().optional(),
+  sweepEndY: z.number().optional(),
   vx: z.number(),
   vy: z.number(),
   radius: z.number().positive(),
@@ -120,6 +122,145 @@ export function ionCannonDamage(distance: number) {
     Math.min(3, Math.floor(distance / (ION_CANNON.range / 4)))
   ];
 }
+/** Plasma rifle acquisition envelope and charge-cycle timing. */
+const PLASMA_STREAM_REACH = 130;
+const PLASMA_STREAM_SPEED = 7800;
+export const PlasmaRifleSchema = z.object({
+  range: z.literal(130),
+  halfAngle: z.literal(Math.PI / 12),
+  observationSeconds: z.literal(0.7),
+  chargeSeconds: z.literal(0.7),
+  chargePowerPerSecond: z.literal(5),
+  releasePower: z.literal(3.5),
+  firingSeconds: z.literal(0.7),
+  kickSeconds: z.literal(0.49),
+  ventSeconds: z.literal(0.3),
+  ventReferenceAcceleration: z.literal(125),
+  ventExhaustSpeed: z.literal(300),
+  ventDamageRadius: z.literal(6),
+  ventDamage: z.literal(3),
+  ventLifetime: z.literal(0.36),
+  cooldownSeconds: z.literal(2.1),
+  streamSpeed: z.literal(PLASMA_STREAM_SPEED),
+  streamReach: z.literal(PLASMA_STREAM_REACH),
+  streamLifetime: z.literal(PLASMA_STREAM_REACH / PLASMA_STREAM_SPEED),
+  blastBands: z.tuple([
+    z.object({ radius: z.literal(10), damage: z.literal(75) }),
+    z.object({ radius: z.literal(26), damage: z.literal(50) }),
+    z.object({ radius: z.literal(42), damage: z.literal(25) }),
+  ]),
+});
+export const PLASMA_RIFLE = PlasmaRifleSchema.parse({
+  range: 130,
+  halfAngle: Math.PI / 12,
+  observationSeconds: 0.7,
+  chargeSeconds: 0.7,
+  chargePowerPerSecond: 5,
+  releasePower: 3.5,
+  firingSeconds: 0.7,
+  kickSeconds: 0.49,
+  ventSeconds: 0.3,
+  ventReferenceAcceleration: 125,
+  ventExhaustSpeed: 300,
+  ventDamageRadius: 6,
+  ventDamage: 3,
+  ventLifetime: 0.36,
+  cooldownSeconds: 2.1,
+  streamSpeed: PLASMA_STREAM_SPEED,
+  streamReach: PLASMA_STREAM_REACH,
+  streamLifetime: PLASMA_STREAM_REACH / PLASMA_STREAM_SPEED,
+  blastBands: [
+    { radius: 10, damage: 75 },
+    { radius: 26, damage: 50 },
+    { radius: 42, damage: 25 },
+  ],
+});
+export const PlasmaRifleCycleSchema = z.object({
+  phase: z.enum(["idle", "charging", "firing", "venting", "cooldown"]),
+  charge: z.number().min(0).max(1),
+  remaining: z.number().nonnegative(),
+  targetId: z.number().int().nullable(),
+});
+export type PlasmaRifleCycle = z.infer<typeof PlasmaRifleCycleSchema>;
+export const PlasmaVentOutletSchema = z.object({
+  x: z.number().finite(),
+  y: z.number().finite(),
+  vx: z.number().finite(),
+  vy: z.number().finite(),
+});
+export const PlasmaVentEventSchema = z.object({
+  id: z.number().int().positive(),
+  mountKey: z.string(),
+  time: z.number().finite(),
+  duration: z.number().positive(),
+  intensity: z.number().min(0).max(1),
+  outlets: z.tuple([PlasmaVentOutletSchema, PlasmaVentOutletSchema]),
+});
+export type PlasmaVentEvent = z.infer<typeof PlasmaVentEventSchema>;
+export const PlasmaStreamSchema = z.object({
+  mountKey: z.string(),
+  originX: z.number().finite(),
+  originY: z.number().finite(),
+  x: z.number().finite(),
+  y: z.number().finite(),
+  vx: z.number().finite(),
+  vy: z.number().finite(),
+  heading: z.number().finite(),
+  age: z.number().nonnegative(),
+  launchTime: z.number().finite(),
+});
+export type PlasmaStream = z.infer<typeof PlasmaStreamSchema>;
+export const PlasmaContactSchema = z.object({
+  mountKey: z.string(),
+  bodyId: z.number().int(),
+  x: z.number().finite(),
+  y: z.number().finite(),
+  time: z.number().finite(),
+});
+export type PlasmaContact = z.infer<typeof PlasmaContactSchema>;
+export const PlasmaBurstSchema = z.object({
+  mountKey: z.string(),
+  outcome: z.enum(["material", "airburst"]),
+  bodyId: z.number().int().nullable(),
+  x: z.number().finite(),
+  y: z.number().finite(),
+  time: z.number().finite(),
+});
+export type PlasmaBurst = z.infer<typeof PlasmaBurstSchema>;
+/** Bounded presentation journal; world geometry and time only, never gameplay. */
+export const PlasmaVisualEventSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("segment"),
+    originX: z.number().finite(),
+    originY: z.number().finite(),
+    id: z.number().int().positive(),
+    time: z.number().finite(),
+    x: z.number().finite(),
+    y: z.number().finite(),
+    endX: z.number().finite(),
+    endY: z.number().finite(),
+  }),
+  z.object({
+    kind: z.literal("impact"),
+    outcome: z.enum(["material", "airburst"]),
+    originX: z.number().finite(),
+    originY: z.number().finite(),
+    id: z.number().int().positive(),
+    time: z.number().finite(),
+    x: z.number().finite(),
+    y: z.number().finite(),
+  }),
+  z.object({
+    kind: z.literal("absorb"),
+    id: z.number().int().positive(),
+    time: z.number().finite(),
+    originX: z.number().finite(),
+    originY: z.number().finite(),
+    x: z.number().finite(),
+    y: z.number().finite(),
+  }),
+]);
+export type PlasmaVisualEvent = z.infer<typeof PlasmaVisualEventSchema>;
 /** Ion Point Defence: closest-target turret with the cannon's instant ray family. */
 export const PointDefenceSchema = z.object({
   reach: z.literal(200),
@@ -216,6 +357,7 @@ export const EncounterConfigSchema = z
     intervalMin: z.number().positive(),
     intervalMax: z.number().positive(),
     groups: z.number().int().positive(),
+    occupancy: z.enum(["salvage-groups", "intact-wrecks"]).optional(),
     centerX: z.number(),
     centerY: z.number(),
     radius: z.number().positive(),
@@ -278,6 +420,13 @@ export const SURVIVAL_ENCOUNTER = EncounterConfigSchema.parse({
   entryAngle: { min: (40 * Math.PI) / 180, max: (50 * Math.PI) / 180 },
   orientation: "tip-first",
   wreckSpin: { rate: (1 * Math.PI) / 180, direction: "random" },
+});
+export const RANKED_SURVIVAL_ENCOUNTER = EncounterConfigSchema.parse({
+  ...SURVIVAL_ENCOUNTER,
+  firstPass: { min: 5, max: 40 },
+  intervalMin: 5,
+  intervalMax: 40,
+  occupancy: "intact-wrecks",
 });
 export const SalvageConfigSchema = z.object({
   wreck: z.object({

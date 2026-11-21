@@ -25,7 +25,7 @@ const accepts = (patch: Record<string, unknown>) =>
 describe("leaderboard rows", () => {
   it("excludes scores of other rulesets", () => {
     expect(
-      parseHighScores([score, { ...score, challenge: "arrival-1" }]),
+      parseHighScores([score, { ...score, challenge: "ion-storm" }]),
     ).toEqual([score]);
   });
   it("skips rows that fail the schema instead of failing the board", () => {
@@ -52,10 +52,12 @@ describe("score submission", () => {
     expect(accepts({ score: 10_000_000 })).toBe(true);
     expect(accepts({ seconds: 86_400.25 })).toBe(true);
   });
-  it("rejects a missing, fractional or non-positive score", () => {
+  it("rejects a missing, fractional or negative score", () => {
     const { score: _score, ...missing } = submission;
     expect(HighScoreSubmissionSchema.safeParse(missing).success).toBe(false);
-    for (const value of [0, 1.5]) expect(accepts({ score: value })).toBe(false);
+    expect(accepts({ seconds: 0.5, score: 0 })).toBe(true);
+    for (const value of [-1, 1.5])
+      expect(accepts({ score: value })).toBe(false);
   });
   it("keeps time to the millisecond", () => {
     expect(accepts({ seconds: 3.017 })).toBe(true);

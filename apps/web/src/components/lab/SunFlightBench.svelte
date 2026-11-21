@@ -1,4 +1,6 @@
 <script lang="ts">
+import Switch from "../inputs/Switch.svelte";
+
 let _props: { "client:load"?: boolean } = $props();
 
 import { drawStar, drawSunFields } from "@void-drift/core";
@@ -121,6 +123,7 @@ onMount(() => {
   frame = requestAnimationFrame(draw);
   return () => cancelAnimationFrame(frame);
 });
+const controlId = $props.id();
 </script>
 <div
   class="bench"
@@ -164,7 +167,10 @@ onMount(() => {
         digits={2}
       />
     </div>
-    <label><input type="checkbox" bind:checked={powered}> Both thrusters</label>
+    <label for={`${controlId}-0`}
+      ><Switch id={`${controlId}-0`} bind:checked={powered} />
+      Both thrusters</label
+    >
     <button class="btn btn-ghost" type="button" onclick={reset}>
       Reset flight
     </button>
@@ -215,9 +221,6 @@ input[type="number"] {
   color: var(--color-text);
   background: var(--color-elev-1);
   border: 1px solid var(--color-border);
-}
-input[type="checkbox"] {
-  accent-color: var(--color-action);
 }
 .zoom {
   width: 180px;

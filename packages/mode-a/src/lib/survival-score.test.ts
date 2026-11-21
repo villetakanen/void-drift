@@ -1,8 +1,7 @@
 import { Vec2 } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { createStar } from "./game-loop";
-import { type SalvageBody, SalvageSystem } from "./salvage";
-import { defaultLoadout, LoadoutSchema } from "./schemas/loadout";
+import type { SalvageBody } from "./salvage";
 import { gameSettings, Simulation, STEP } from "./simulation";
 
 const idle = { leftThruster: false, rightThruster: false, fire: false };
@@ -35,9 +34,66 @@ describe("survival score", () => {
     };
     expect(run()).toBe(run());
   });
+  it("scores a wreck and each destroyed shard once, including already detached shards", () => {
+    const sim = new Simulation(gameSettings("wasp"));
+    const salvage = sim.salvage;
+    if (!salvage) throw new Error("Expected salvage");
+    salvage.nextPass = 0;
+    sim.start();
+    sim.step(idle);
+    const wreck = salvage.bodies.find((body) => body.kind === "wreck");
+    if (!wreck) throw new Error("Expected wreck");
+    salvage.applyDamage(wreck, wreck.hull / 2);
+    expect(sim.survivalScore).toBe(0);
+    salvage.applyDamage(wreck, wreck.hull);
+    expect(sim.survivalScore).toBe(10);
+    const shards = salvage.bodies.filter((body) => body.kind === "fragment");
+    expect(shards).toHaveLength(8);
+    for (const shard of shards) {
+      salvage.applyDamage(shard, shard.hull);
+      salvage.applyDamage(shard, 1);
+    }
+    expect(sim.survivalScore).toBe(26);
+  });
+
+  it.each(["weapon", "ram", "power loss", "exit"])(
+    "credits a pirate finish by %s",
+    (cause) => {
+      const sim = new Simulation(gameSettings("wasp"));
+      sim.start();
+      sim.ticks = 45 * SECOND - 1;
+      sim.step(idle);
+      const pirate = sim.opponent;
+      if (!pirate) throw new Error("Expected a ranked pirate");
+      const baseline = sim.survivalScore;
+      pirate.resources.hull = 1;
+      if (cause === "power loss") pirate.resources.power = 0;
+      else if (cause === "exit") {
+        pirate.ship.pos.set(2159, 540);
+        pirate.ship.vel.set(600, 0);
+      } else {
+        pirate.ship.pos.set(
+          sim.ship.pos.x + (cause === "ram" ? 2 : 45),
+          sim.ship.pos.y,
+        );
+        pirate.ship.vel.set(0, 0);
+        sim.ship.rotation = 0;
+        for (const weapon of sim.playerWeapons)
+          weapon.readyAt = cause === "ram" ? Infinity : 0;
+      }
+      sim.step(idle);
+      expect(sim.opponent).toBeNull();
+      sim.step(idle);
+      expect(sim.survivalScore - baseline).toBe(
+        cause === "ram" || cause === "weapon" ? 50 : 0,
+      );
+    },
+  );
+
   it("counts a collected cell once", () => {
-    const loadout = defaultLoadout("fighter");
-    const system = new SalvageSystem(LoadoutSchema.parse(loadout), 2026);
+    const sim = new Simulation(gameSettings("fighter"));
+    const system = sim.salvage;
+    if (!system) throw new Error("Expected a salvage encounter");
     system.nextPass = Infinity;
     const ship = {
       pos: new Vec2(400, 400),
@@ -66,6 +122,6 @@ describe("survival score", () => {
     system.bodies.push(cell);
     for (let i = 0; i < 6; i++)
       system.step(STEP, ship, star, resources, 100, 400, 400, false, []);
-    expect(system.cellsCollected).toBe(1);
+    expect(sim.survivalScore).toBe(20);
   });
 });

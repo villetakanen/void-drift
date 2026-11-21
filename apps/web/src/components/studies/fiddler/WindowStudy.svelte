@@ -2,7 +2,7 @@
 import "@void-drift/core/styles/buttons.css";
 import { onMount } from "svelte";
 import RingSlider from "../../inputs/RingSlider.svelte";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import CapacityDrawing from "./CapacityDrawing.svelte";
 import WindowEditor from "./WindowEditor.svelte";
 import {
@@ -52,7 +52,7 @@ $effect(() => {
   stay locked.
 </p>
 <div class="toolbar">
-  <Toggle
+  <SegmentedControl
     label="Window study view"
     options={["Fitted", "Hull"]}
     bind:value={view}

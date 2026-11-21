@@ -1,10 +1,10 @@
-import { buildStats } from "@void-drift/mode-a";
+import { buildStats, Simulation, stockSettings } from "@void-drift/mode-a";
 import { describe, expect, it } from "vitest";
 import { ROCK_ATMOSPHERE_SCENE } from "../../components/studies/rock-atmospheres/fixture";
 import { FlightSceneDocumentSchema } from "./config";
 import { FlightRun } from "./flight";
 import { atmosphereSample } from "./planet";
-import { STARTER_FLIGHT_SCENE } from "./starter";
+import { PRACTICE_FLIGHT_SCENE, STARTER_FLIGHT_SCENE } from "./starter";
 
 const doc = FlightSceneDocumentSchema.parse(STARTER_FLIGHT_SCENE);
 // Everything a flight has made at an instant: the ship's pose and velocity, the
@@ -47,6 +47,25 @@ describe("flight scene document", () => {
 });
 
 describe("flight run", () => {
+  it("opens and reconstructs the complete production Practice system", () => {
+    const practice = FlightSceneDocumentSchema.parse(PRACTICE_FLIGHT_SCENE);
+    const run = new FlightRun(practice, "course");
+    const reference = new Simulation({
+      ...stockSettings(practice.loadout.chassis),
+      mode: "practice",
+      loadout: practice.loadout,
+    });
+    expect(run.sim.planets).toEqual(reference.planets);
+    run.seek(180);
+    run.seek(0);
+    expect(run.sim.planets).toEqual(reference.planets);
+    expect(
+      FlightSceneDocumentSchema.safeParse({
+        ...STARTER_FLIGHT_SCENE,
+        system: "practice",
+      }).success,
+    ).toBe(false);
+  });
   it("makes a backward jump equal to a fresh flight", () => {
     const jumped = new FlightRun(doc, "weave");
     jumped.seek(700);

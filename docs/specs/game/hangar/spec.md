@@ -1,4 +1,17 @@
-# Hangar
+---
+
+title: "Spec: Hangar"
+status: draft
+generated:
+  by: "openai-codex/gpt-6.1-sol"
+  at: "2026-11-20T19:48:58Z"
+verified:
+- by: "openai-codex/gpt-6.1-sol"
+  at: "2026-11-19T12:33:38+02:00"
+
+---
+
+# Spec: Hangar
 
 ## Blueprint
 
@@ -16,7 +29,7 @@ screen shows it and every launch flies it.
 Earning and buying parts is the intended direction for later. During alpha,
 [Playground](../experimental/spec.md) decides what the Hangar offers.
 
-### Architecture and boundaries
+### Architecture
 
 - **Route.** `apps/web/src/pages/hangar.astro` mounts
   `apps/web/src/components/ShipBuilder.svelte` at `/hangar`. `/builder`
@@ -31,16 +44,26 @@ Earning and buying parts is the intended direction for later. During alpha,
 - **Flight.** `apps/web/src/components/FlightDeck.svelte` receives the active
   ship, the mode and the return to the Hangar.
 - **Interface.** The opening uses the shared `Logo`, `Switch` for the binary Playground setting, and `Tabs`
-  for ship workspaces. Plan/View uses `Toggle`; controls and
+  for ship workspaces. Plan/View uses `SegmentedControl`; controls and
   visual tokens follow the [design system](../../factory/design-system/spec.md).
   Parts and flight-estimate panes use the shared `cut-surface` with large
   corner cuts and elevation-1 fill; the shared surface owns their edges.
 
-### Rules
 
+#### Plasma rifle
+
+The Plasma rifle uses the shared unlit weapon artwork on its card and ship, with
+the white-blue housing centred on its slot. It shows its approved fluff and mass;
+its unsanctioned description identifies it as inert. Existing slot compatibility,
+save/load and Playground launch gating apply.
+
+### Constraints
+
+- Shared controls and visual tokens follow the [choice-control contract](../../factory/design-system/choices/spec.md).
 - **Opening.** One compact row sits above the ship chooser: the linked logo
-  and one Hangar heading on the left, the labeled Playground Switch on the
-  right. The logo returns to `/`. The header does not wrap within supported
+  and one Hangar heading on the left, the labeled Playground Switch followed
+  by Settings as the last item on the right. Settings opens `/settings?from=hangar`
+  with a Return to Hangar action, as defined by [Options](../options/spec.md). The logo returns to `/`. The header does not wrap within supported
   landscape iPad widths, and switching Playground leaves its height unchanged.
   There is no duplicate return link, version label, routine save-status line,
   or scoring explanation in the header.
@@ -71,6 +94,7 @@ Earning and buying parts is the intended direction for later. During alpha,
   retaining catalog order within each class. Optional slots start with Keep
   empty; required or linked slots have no empty choice. Keep empty replaces
   Remove fitting and shows the fitted state when the slot is empty.
+- **Retired rail gun.** The rail gun is unavailable as a new fitting. A saved rail fitting remains visible on its selected mount as disabled, can be removed or replaced, and has no weapon behavior in flight. Its saved identifier remains readable.
 - **Card states.** Cards use the shared action frame with no raised fill or
   pressed underline. Fitted means black ground and lit brackets. Unsanctioned
   means a hatched closing band following the bracket colour, with an accessible
@@ -102,15 +126,18 @@ Earning and buying parts is the intended direction for later. During alpha,
   engine parts, and each engine shows its contribution.
 - **Flight actions.** The Hangar offers, in this order, Practice, Derelicts,
   Gauntlet and Survival. Survival is the primary action; the other actions are
-  normal actions. Gauntlet starts the first unranked pirate encounter. Every
-  launch flies the active ship, and Abort or game over returns to the Hangar
-  with the ship unchanged.
+  normal actions. Gauntlet launches its mode; the [Gauntlet contract](../gauntlet/spec.md)
+  owns its behaviour. Every launch flies the active ship, and Abort or game over
+  returns to the Hangar with the ship unchanged.
 - **Playground.** The Playground control is the only place the setting
   changes. What it locks, marks and blocks is owned by
   [Playground](../experimental/spec.md).
 - **Launch context.** With Playground On, the launch row uses the title screen's
   shared red `PlaygroundStatus`: “PLAYGROUND ACTIVE” and “UNRANKED PLAY” on
-  separate lines; with Off this notice is absent. This replaces the engine-key
+  separate lines. With Playground Off and an unsanctioned build, it instead
+  reads “PLAYGROUND OFF” and “UNSANCTIONED BUILD”, to the left of the flight
+  buttons and associated with each unavailable launch. With Off and an eligible
+  build this notice is absent. This replaces the engine-key
   explanation beside the flight actions. The current sticky launch-row behavior,
   including its overlap with scrolling content, is retained.
 - **Save status.** Loading, recovery and unavailable-storage messages appear in
@@ -126,7 +153,9 @@ Earning and buying parts is the intended direction for later. During alpha,
 - H1: `/hangar` shows the Hangar, and player-facing Hangar links target it.
 - H2: The logo reaches `/` by pointer and keyboard; its accessible name
   identifies Void Drift. One Hangar heading and the Playground Switch share a
-  compact header row whose height is unchanged by Playground.
+  compact header row whose height is unchanged by Playground, with Settings
+  last after Playground. Settings and Return to Hangar preserve the active ship,
+  its fitting and preferences; selected slot and Plan/View restoration are not promised.
 - H3: The setting uses the shared binary `Switch`, labeled Playground,
   with a visible Off/On state and checkbox semantics; pointer and Space change it.
 - H4: Switching Playground changes the Hangar and launch as
@@ -177,6 +206,15 @@ Feature: Hangar
     When I open the Hangar
     Then it shows that ship in its fitting
 
+  Scenario: Change preferences and return to the Hangar
+    Given I chose a ship and changed its fitting in the Hangar
+    When I activate Settings after Playground in the compact header
+    Then Options opens at /settings?from=hangar
+    When I change a preference and activate Return to Hangar
+    Then /hangar opens with the same active ship and fitting
+    And my preference is kept
+    And the header remains one row at supported landscape iPad widths
+
   Scenario: Fit an optional slot
     Given an optional slot selected in Plan
     When I fit a part the slot accepts
@@ -207,7 +245,17 @@ Feature: Hangar
     When I look at the flight actions
     Then I see Practice, Derelicts, Gauntlet and Survival in that order
     And Survival is the primary action
-    And Gauntlet starts an unranked pirate encounter with the active ship
+    When I launch Gauntlet
+    Then Gauntlet starts with the active ship
+
+  Scenario: Explain a blocked build beside the launch actions
+    Given Playground is Off and the active build is unsanctioned
+    When I view the Hangar launch row
+    Then “PLAYGROUND OFF” and “UNSANCTIONED BUILD” appear to the left of the buttons
+    And every flight launch is unavailable with the status as its description
+    When I restore eligibility by changing the build or enabling Playground
+    Then every flight launch becomes available without an automatic fitting change
+    And the blocked status is replaced by the appropriate Playground status
 
   Scenario: Storage is unavailable
     Given the browser cannot store data

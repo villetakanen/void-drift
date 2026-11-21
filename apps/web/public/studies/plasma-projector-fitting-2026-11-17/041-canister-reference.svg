@@ -1,0 +1,223 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="1056"
+  height="760"
+  viewBox="0 0 1056 760"
+>
+  <title>
+    Plasma engine canister and manual channel connector: existing artwork
+    reference
+  </title>
+  <style>
+  text {
+    font-family: system-ui, sans-serif;
+    fill: #edf0f4;
+  }
+  .h {
+    font-size: 17px;
+    font-weight: 600;
+  }
+  .n {
+    font-size: 12px;
+    fill: #b3bdc8;
+  }
+  </style>
+  <defs>
+    <g id="engine">
+      <polygon
+        points="10.0,-2.0 8.0,-5.0 -7.0,-5.0 -11.0,-3.3 -11.0,3.3 -7.0,5.0 8.0,5.0 10.0,2.0"
+        fill="rgb(33,38,44)"
+      />
+      <polygon
+        points="10.0,0.0 8.0,-3.8 -4.5,-3.8 -6.0,0.0"
+        fill="rgb(103,111,118)"
+      />
+      <polygon
+        points="10.0,0.0 8.0,3.8 -4.5,3.8 -6.0,0.0"
+        fill="rgb(17,19,21)"
+      />
+      <polygon
+        points="8.0,-5.0 -7.0,-5.0 -6.0,-3.8 8.0,-3.8"
+        fill="rgb(116,126,136)"
+      />
+      <polygon
+        points="-6.0,-4.4 -8.0,-4.4 -11.0,-3.3 -11.0,3.3 -8.0,4.4 -6.0,4.4"
+        fill="rgb(62,66,72)"
+      />
+      <polygon
+        points="-7.4,-4.4 -6.4,-4.4 -6.4,0.0 -7.4,0.0"
+        fill="rgb(118,128,138)"
+      />
+      <polygon
+        points="-7.4,0.0 -6.4,0.0 -6.4,4.4 -7.4,4.4"
+        fill="rgb(21,24,26)"
+      />
+      <polygon
+        points="-9.4,-3.9 -8.4,-3.9 -8.4,0.0 -9.4,0.0"
+        fill="rgb(118,128,139)"
+      />
+      <polygon
+        points="-9.4,0.0 -8.4,0.0 -8.4,3.9 -9.4,3.9"
+        fill="rgb(21,24,26)"
+      />
+      <polygon
+        points="-10.8,-2.7 -10.0,-2.7 -10.0,2.7 -10.8,2.7"
+        fill="rgb(12,16,21)"
+      />
+      <polygon
+        points="-10.5,-2.0 -10.0,-2.0 -10.0,2.0 -10.5,2.0"
+        fill="currentColor"
+      />
+    </g>
+    <g id="body">
+      <polygon
+        points="10.0,-2.0 8.0,-5.0 -7.0,-5.0 -11.0,-3.3 -11.0,3.3 -7.0,5.0 8.0,5.0 10.0,2.0"
+        fill="rgb(33,38,44)"
+      />
+      <polygon
+        points="10.0,0.0 8.0,-3.8 -4.5,-3.8 -6.0,0.0"
+        fill="rgb(103,111,118)"
+      />
+      <polygon
+        points="10.0,0.0 8.0,3.8 -4.5,3.8 -6.0,0.0"
+        fill="rgb(17,19,21)"
+      />
+      <polygon
+        points="8.0,-5.0 -7.0,-5.0 -6.0,-3.8 8.0,-3.8"
+        fill="rgb(116,126,136)"
+      />
+    </g>
+    <g id="planes">
+      <polygon
+        points="10.0,-2.0 8.0,-5.0 -7.0,-5.0 -11.0,-3.3 -11.0,3.3 -7.0,5.0 8.0,5.0 10.0,2.0"
+        fill="rgb(33,38,44)"
+      />
+      <polygon
+        points="10.0,0.0 8.0,-3.8 -4.5,-3.8 -6.0,0.0"
+        fill="rgb(103,111,118)"
+      />
+      <polygon
+        points="10.0,0.0 8.0,3.8 -4.5,3.8 -6.0,0.0"
+        fill="rgb(17,19,21)"
+      />
+    </g>
+    <g id="edge">
+      <polygon
+        points="10.0,-2.0 8.0,-5.0 -7.0,-5.0 -11.0,-3.3 -11.0,3.3 -7.0,5.0 8.0,5.0 10.0,2.0"
+        fill="rgb(33,38,44)"
+      />
+      <polygon
+        points="8.0,-5.0 -7.0,-5.0 -6.0,-3.8 8.0,-3.8"
+        fill="rgb(116,126,136)"
+      />
+    </g>
+    <g id="throat">
+      <polygon
+        points="-6.0,-4.4 -8.0,-4.4 -11.0,-3.3 -11.0,3.3 -8.0,4.4 -6.0,4.4"
+        fill="rgb(62,66,72)"
+      />
+      <polygon
+        points="-7.4,-4.4 -6.4,-4.4 -6.4,0.0 -7.4,0.0"
+        fill="rgb(118,128,138)"
+      />
+      <polygon
+        points="-7.4,0.0 -6.4,0.0 -6.4,4.4 -7.4,4.4"
+        fill="rgb(21,24,26)"
+      />
+      <polygon
+        points="-9.4,-3.9 -8.4,-3.9 -8.4,0.0 -9.4,0.0"
+        fill="rgb(118,128,139)"
+      />
+      <polygon
+        points="-9.4,0.0 -8.4,0.0 -8.4,3.9 -9.4,3.9"
+        fill="rgb(21,24,26)"
+      />
+      <polygon
+        points="-10.8,-2.7 -10.0,-2.7 -10.0,2.7 -10.8,2.7"
+        fill="rgb(12,16,21)"
+      />
+      <polygon
+        points="-10.5,-2.0 -10.0,-2.0 -10.0,2.0 -10.5,2.0"
+        fill="currentColor"
+      />
+    </g>
+    <g id="connector" transform="translate(-63.328584 -97.24)">
+      <path
+        d="m 63.328582,95.979365 h -1.989611 l -0.186087,0.700972 -0.510961,1.906934 2.686661,0.0099 z"
+        style="fill:#52575f;fill-opacity:1;stroke-width:1.05833;paint-order:stroke fill markers"
+      />
+      <path
+        d="m 63.328586,95.979365 h 1.989611 l 0.186087,0.700972 0.510961,1.906934 -2.686661,0.0099 z"
+        style="fill:#12171e;fill-opacity:1;stroke-width:1.05833;paint-order:stroke fill markers"
+      />
+      <path
+        d="m 61.525057,95.886322 h 1.803524 v 0.700972 h -1.98961 z"
+        style="fill:#3d4147;stroke-width:1.05833;paint-order:stroke fill markers"
+      />
+      <path
+        d="m 65.132105,95.886322 h -1.803524 v 0.700972 h 1.98961 z"
+        style="fill:#1b1d1f;fill-opacity:1;stroke-width:1.05833;paint-order:stroke fill markers"
+      />
+      <path
+        d="m 61.152885,97.288266 2.175698,2e-6 v 0.700972 l -2.361784,-2e-6 z"
+        style="fill:#3d4147;stroke-width:1.05833;paint-order:stroke fill markers"
+      />
+      <path
+        d="m 65.504281,97.288266 -2.175698,2e-6 v 0.700972 l 2.361784,-2e-6 z"
+        style="fill:#1b1d1f;fill-opacity:1;stroke-width:1.05833;paint-order:stroke fill markers"
+      />
+    </g>
+  </defs>
+  <rect width="1056" height="760" fill="#05070a" />
+  <text x="20" y="30" class="h">
+    Existing artwork / canister, throat and copied connector
+  </text>
+  <text x="20" y="52" class="n">
+    Exact source shapes. Panels enlarged independently for inspection; these are
+    not weapon-size proposals.
+  </text>
+  <g transform="translate(0 75)" color="#ffb52e">
+    <path d="M0 0H352M0 0V315" stroke="#26313c" />
+    <text x="18" y="28" class="h">01 / Complete engine</text>
+    <text x="18" y="49" class="n">Catalog pose; original amber outlet.</text>
+    <use href="#engine" transform="translate(176 178) scale(10) rotate(-90)" />
+  </g>
+  <g transform="translate(352 75)" color="#ffb52e">
+    <path d="M0 0H352M0 0V315" stroke="#26313c" />
+    <text x="18" y="28" class="h">02 / Canister body</text>
+    <text x="18" y="49" class="n">Broad faces and a narrow armor edge.</text>
+    <use href="#body" transform="translate(176 178) scale(10) rotate(-90)" />
+  </g>
+  <g transform="translate(704 75)" color="#ffb52e">
+    <path d="M0 0H352M0 0V315" stroke="#26313c" />
+    <text x="18" y="28" class="h">03 / Face construction</text>
+    <text x="18" y="49" class="n">Lit face, dark face, clipped ends.</text>
+    <use href="#planes" transform="translate(176 178) scale(10) rotate(-90)" />
+  </g>
+  <g transform="translate(0 400)" color="#ffb52e">
+    <path d="M0 0H352M0 0V315" stroke="#26313c" />
+    <text x="18" y="28" class="h">04 / Armor edge</text>
+    <text x="18" y="49" class="n">One long bright strip; no fine straps.</text>
+    <use href="#edge" transform="translate(176 178) scale(10) rotate(-90)" />
+  </g>
+  <g transform="translate(352 400)" color="#ffb52e">
+    <path d="M0 0H352M0 0V315" stroke="#26313c" />
+    <text x="18" y="28" class="h">05 / Engine end / grille</text>
+    <text x="18" y="49" class="n">
+      Two coarse bands across a tapered throat.
+    </text>
+    <use href="#throat" transform="translate(176 30) scale(20) rotate(-90)" />
+  </g>
+  <g transform="translate(704 400)" color="#ffb52e">
+    <path d="M0 0H352M0 0V315" stroke="#26313c" />
+    <text x="18" y="28" class="h">06 / Your channel connector</text>
+    <text x="18" y="49" class="n">
+      Stepped body; split-lit transverse bands.
+    </text>
+    <use href="#connector" transform="translate(176 195) scale(36)" />
+  </g>
+  <text x="20" y="743" class="n">
+    Engine: ENGINE_ART.plasma[0]. Connector: unchanged paths from the supplied
+    manual SVG. No new rear assembly drawn.
+  </text>
+</svg>

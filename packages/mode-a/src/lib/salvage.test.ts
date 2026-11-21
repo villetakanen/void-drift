@@ -289,6 +289,16 @@ describe("Derelicts weapons and salvage", () => {
       cells,
     );
   });
+  it("keeps a saved rail inert while a fitted laser fires", () => {
+    const f = fixture(["rail", "laser"]);
+    f.system.bodies.push(body("wreck", 550, 400));
+    f.step(120);
+    expect(f.system.weapons.map((weapon) => weapon.kind)).toEqual(["laser"]);
+    expect(f.system.shotsFired).toBe(0);
+    expect(f.system.energySpent).toBeGreaterThan(0);
+    expect(f.system.bodies[0]?.hull ?? 0).toBeLessThan(SALVAGE.wreck.hull);
+    expect(f.ship.vel.x).toBe(0);
+  });
   it("spends no energy below the weapon floor", () => {
     const f = fixture(["rail", "laser"]);
     f.system.bodies.push(body("wreck", 550, 400));

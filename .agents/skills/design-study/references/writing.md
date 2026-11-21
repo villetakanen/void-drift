@@ -154,5 +154,4 @@ An illustrative closure excerpt for a button comparison:
 This illustrates the form, not the button study's final decision or an existing
 capture. The actual record embeds the retained comparison and states its relevant
 conditions. After replacing the temporary comparison with that record, remove its
-unused study-specific controls and component code. An interactive example can remain
-for a named continuing purpose; the record explains why it is still needed.
+unused study-specific controls and component code.

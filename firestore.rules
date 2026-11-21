@@ -11,15 +11,15 @@ service cloud.firestore {
      && d.userId == request.auth.uid
      // One rule per ruleset. A new ruleset adds its own rule; this one stays
      // for as long as a released client carries it.
-     && d.challenge == 'ion-storm'
+     && d.challenge in ['ion-storm', 'fires-in-the-sky']
      && d.shipId is string && d.shipId.size() >= 1 && d.shipId.size() <= 32
-     && scoreId == 'ion-storm_' + request.auth.uid + '_' + d.shipId
+     && scoreId == d.challenge + '_' + request.auth.uid + '_' + d.shipId
      && d.initials is string && d.initials.matches('^[A-Z]{3}$')
      // Seconds hold at most three decimals and have no ceiling.
      && d.seconds is number && d.seconds > 0
      && math.abs(d.seconds * 1000 - math.round(d.seconds * 1000)) < 0.000001
      // Score counts whole seconds, so it is never below them and has no ceiling.
-     && d.score is int && d.score >= 1 && d.score > d.seconds - 1
+     && d.score is int && (d.score >= 1 || (d.challenge == 'fires-in-the-sky' && d.score == 0)) && d.score > d.seconds - 1
      && d.deathCause in ['STAR','HULL','POWER']
      // MAX_FITTING_PARTS in packages/mode-a/src/schemas/highscore.ts.
      && d.fitting is list && d.fitting.size() <= 16

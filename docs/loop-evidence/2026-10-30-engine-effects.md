@@ -47,7 +47,7 @@ collection, and wrapping never connects distant emissions. Area follows normaliz
 engine output independently of gravity. Existing study examples remain references.
 
 Traceable sources:
-[study](../../apps/web/src/pages/lab/studies/engine-effects.astro),
+[study](../../apps/web/src/pages/lab/studies/engine-effects.mdx),
 [plume](../../packages/core/src/lib/effects/engine-plume.ts),
 [physics](../../packages/core/src/lib/physics/Physics.ts),
 [simulation](../../packages/mode-a/src/lib/simulation.ts),

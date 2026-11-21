@@ -56,7 +56,7 @@ without a storage migration. The [Hangar](../hangar/spec.md) and
   energy is never a candidate. A candidate needs an unobstructed segment from the
   pivot to that closest point; star and planet circles block it.
 - The aim point is that closest point. The closest candidate is selected; equal
-  distances resolve to the lower object id.
+  distances resolve to the lower object id. The fleet acquisition pass captures the target identity and aim point for each pivot before any ship fires.
 - A turret retains its current target while it remains a candidate, unless another
   candidate is at least 10 units closer. Each turret chooses independently.
 - Candidates are tracked without firing until the barrel's first contact from the
@@ -77,9 +77,9 @@ without a storage migration. The [Hangar](../hangar/spec.md) and
 - Each discharge debits 0.1p and starts its own 1/3-second cooldown: three shots/s,
   0.3p/s continuous per turret, none while idle. The shared weapon energy floor
   gates every discharge: below 10% of the ship's energy capacity no turret fires,
-  takes power or starts a cooldown (tracking stays free); at exactly 10% it may fire.
+  takes power or starts a cooldown (tracking stays free); it also requires more than 10 power.
 - Power is drawn in this order: life support, engines, defence weapons, guns.
-  Defence weapons are point defences and lasers; guns are Light Ion Cannons and rails.
+  Defence weapons are point defences and lasers; guns are Light Ion Cannons. Saved rail guns are disabled and draw no weapon power.
   Within an update, defence weapons resolve before any gun, each class in stable
   build-mount order, each shot querying contact in the world left by earlier shots.
   Each class draws on the power the earlier classes leave. Insufficient power stops
@@ -115,7 +115,7 @@ without a storage migration. The [Hangar](../hangar/spec.md) and
 ### Regression guardrails
 
 Existing saves parse; a new device's Wasp is fitted with one point defence and no other chassis is by default; the laser's threat priority,
-the rail and the Light Ion Cannon keep their contracts. Keyboard and landscape touch
+the Light Ion Cannon keeps its contract and saved rail guns remain inert. Keyboard and landscape touch
 continue through the normal flight loop. Gravity and friction constants stay fixed.
 
 ### Scenarios

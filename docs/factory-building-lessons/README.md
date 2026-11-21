@@ -15,6 +15,7 @@ and [study-harness tasks in 002](002-phased-design-studies.md#done-tasks-and-evi
 Each links implementation and supporting evidence; completion does not imply empirical
 validation of workflow effectiveness.
 
-The optional [design-study evaluation protocol](design-study-evaluation.md) provides a
-bounded replay for a requested evaluation of improvement 002. Ordinary studies do not
-require it. No comparative model evaluation has been run yet.
+Subject-specific records:
+
+- [Top-down weapon references · 17 November 2026](2026-11-17-top-down-weapon-references.md):
+  distinguish reference character from viewing direction and handheld anatomy.

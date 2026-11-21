@@ -1,13 +1,17 @@
 import {
+  densestAirSample,
+  drawHeatGlow,
   FX_INK,
-  type FxPass,
+  FxPass,
   FxSparks,
   FxSurface,
   type GameObject,
   type Planet,
   paintArc,
   paintSpeedLine,
+  prepareAtmosphericHeat,
   type Star,
+  stampHeatBand,
 } from "@void-drift/core";
 import {
   BUILD_FLIGHT_SCALE,
@@ -15,6 +19,12 @@ import {
   buildMounts,
   weaponPose,
 } from "./build-renderer";
+import {
+  drawPlasmaEruption,
+  drawPlasmaSpew,
+  stampPlasmaSegment,
+} from "./plasma-stream-fx";
+import { drawPlasmaVent } from "./plasma-vent-fx";
 import type { SalvageSystem } from "./salvage";
 import {
   drawIonBeamMark,
@@ -24,6 +34,7 @@ import {
 import type { Loadout } from "./schemas/loadout";
 import { ION_CANNON, POINT_DEFENCE } from "./schemas/salvage";
 import type { Simulation } from "./simulation";
+import { STEP } from "./simulation";
 
 // Parsed loadouts are stable during a run. Mount geometry is shared with drawing.
 const coilMounts = new WeakMap<Loadout, readonly BuildMount[]>();
@@ -82,6 +93,11 @@ export class FlightFx {
   private readonly weaponSparks = new FxSparks();
   private weaponEvents = new WeakMap<Simulation, number>();
   private weaponTime = 0;
+  private plasmaSeen = new WeakMap<SalvageSystem, number>();
+  private readonly plasmaLivePass = new FxPass();
+  constructor() {
+    prepareAtmosphericHeat();
+  }
   get pass() {
     return this.surface.pass;
   }
@@ -90,6 +106,7 @@ export class FlightFx {
     this.weaponSparks.clear();
     this.weaponEvents = new WeakMap();
     this.weaponTime = 0;
+    this.plasmaSeen = new WeakMap();
   }
   drawShip(ctx: CanvasRenderingContext2D, sim: Simulation, fold = true) {
     if (sim.settings.arrival && sim.settings.mode !== "practice") {
@@ -104,10 +121,20 @@ export class FlightFx {
         fade,
       );
     }
+    if (sim.salvage) this.stampPlasma(ctx, sim.salvage, sim.ticks * STEP);
+    for (const actor of sim.opponents)
+      this.stampPlasma(ctx, actor.combat, sim.ticks * STEP);
     sim.plume.stamp(ctx, this.pass);
+    stampHeatBand(ctx, this.pass, sim.ship, sim.airSample);
     for (const opponent of sim.opponents)
       if (opponent.lifecycle !== "destroyed") {
         opponent.plume.stamp(ctx, this.pass);
+        stampHeatBand(
+          ctx,
+          this.pass,
+          opponent.ship,
+          densestAirSample(opponent.ship, sim.planets),
+        );
         stampWeaponLight(ctx, opponent.combat, this.pass);
         this.drawActorIonCannonLight(
           ctx,
@@ -151,6 +178,44 @@ export class FlightFx {
         sim.gravityFoldDirection,
         this.pass,
       );
+  }
+  private stampPlasma(
+    ctx: CanvasRenderingContext2D,
+    combat: SalvageSystem,
+    time: number,
+  ) {
+    drawPlasmaVent(ctx, this.pass, combat, time);
+    let seen = this.plasmaSeen.get(combat) ?? 0;
+    const last = combat.plasmaVisualEvents.at(-1);
+    if (!last || (last.id <= seen && time - last.time >= 0.5)) return;
+    for (const event of combat.plasmaVisualEvents) {
+      if (
+        event.kind === "segment" &&
+        event.id > seen &&
+        time - event.time <= 0.1
+      )
+        stampPlasmaSegment(ctx, this.pass, event);
+      if (event.kind === "impact")
+        drawPlasmaEruption(ctx, this.pass, event, time, false);
+      seen = Math.max(seen, event.id);
+    }
+    this.plasmaSeen.set(combat, seen);
+  }
+  private drawPlasmaLive(
+    ctx: CanvasRenderingContext2D,
+    combat: SalvageSystem,
+    time: number,
+  ) {
+    for (const head of combat.plasmaStreams)
+      drawPlasmaSpew(ctx, this.plasmaLivePass, head, 0);
+    const last = combat.plasmaVisualEvents.at(-1);
+    if (!last || time - last.time >= 0.5) return;
+    for (const event of combat.plasmaVisualEvents)
+      if (event.kind !== "segment") {
+        drawPlasmaSpew(ctx, this.plasmaLivePass, event, time - event.time);
+        if (event.kind === "impact")
+          drawPlasmaEruption(ctx, this.plasmaLivePass, event, time, true);
+      }
   }
   private drawActorIonCannonLight(
     ctx: CanvasRenderingContext2D,
@@ -208,10 +273,26 @@ export class FlightFx {
     }
   }
   drawLfx(ctx: CanvasRenderingContext2D, sim: Simulation) {
+    this.plasmaLivePass.begin(ctx, false);
+    try {
+      if (sim.salvage) this.drawPlasmaLive(ctx, sim.salvage, sim.ticks * STEP);
+      for (const actor of sim.opponents)
+        this.drawPlasmaLive(ctx, actor.combat, sim.ticks * STEP);
+    } finally {
+      this.plasmaLivePass.end(ctx);
+    }
     sim.plume.drawCharge(ctx);
     drawIonCannonLight(ctx, sim);
+    drawHeatGlow(ctx, sim.ship, sim.airSample);
     for (const opponent of sim.opponents)
-      if (opponent.lifecycle !== "destroyed") opponent.plume.drawCharge(ctx);
+      if (opponent.lifecycle !== "destroyed") {
+        opponent.plume.drawCharge(ctx);
+        drawHeatGlow(
+          ctx,
+          opponent.ship,
+          densestAirSample(opponent.ship, sim.planets),
+        );
+      }
   }
   drawParticles(ctx: CanvasRenderingContext2D) {
     this.weaponSparks.draw(ctx, this.pass);

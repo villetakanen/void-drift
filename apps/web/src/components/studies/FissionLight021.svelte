@@ -20,6 +20,7 @@ const _props: { "client:visible"?: boolean } = $props();
 </script>
 
 <FlightSceneInstrument
+  backgroundMode="historical"
   config={FISSION_SCENE_021}
   label="Fission light 02.1: a detonation left behind"
   light={lit ? detonation : undefined}

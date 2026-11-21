@@ -1,6 +1,9 @@
+export * from "./lib/assets/atmosphere-body";
 export * from "./lib/assets/cloud-body";
 export * from "./lib/assets/death-icons";
+export * from "./lib/assets/flight-sky";
 export * from "./lib/assets/planet";
+export * from "./lib/assets/planet-maps";
 export * from "./lib/assets/resource-bar";
 export * from "./lib/assets/rock-body";
 // Assets
@@ -18,9 +21,9 @@ export {
 } from "./lib/assets/world-hud";
 export * from "./lib/config";
 export * from "./lib/effects/arcade-fx";
+export * from "./lib/effects/atmospheric-heat";
 // Svelte Components
 export { paintCountdown } from "./lib/effects/countdown";
-export * from "./lib/effects/damage-feedback";
 export * from "./lib/effects/engine-plume";
 export * from "./lib/effects/fx-surface";
 export * from "./lib/effects/ion-beam";
@@ -29,10 +32,12 @@ export * from "./lib/effects/particles";
 export { paintSpeedLine } from "./lib/effects/speed-line";
 export * from "./lib/entities/Input";
 export * from "./lib/entities/Renderer";
+export * from "./lib/physics/atmosphere";
 export * from "./lib/physics/Camera";
 export * from "./lib/physics/Physics";
 export * from "./lib/physics/planets";
 export * from "./lib/schemas/common";
+export * from "./lib/schemas/flight-sky";
 export * from "./lib/schemas/rock-body-lighting";
 export * from "./lib/schemas/sun";
 export * from "./lib/solar";

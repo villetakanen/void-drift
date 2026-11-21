@@ -54,10 +54,10 @@ const tick = $derived(Math.round(time * TICK_RATE));
     <h2>Path pane</h2>
     <p>
       A square plan view of every vehicle's path. At the current time each path
-      has a marker and a short tick across it. The scale switch sits top right:
-      fit all paths, or the default scale (0.2 px/u), which pans by dragging.
-      The name, the area shown, the grid and the scale read on one line, bottom
-      right.
+      has a marker and a short tick across it. The scale selector sits top
+      right: fit all paths, or the default scale (0.2 px/u), which pans by
+      dragging. The name, the area shown, the grid and the scale read on one
+      line, bottom right.
       <a href="/lab/studies/lab-instrument-2026-11-01#readout">Study →</a>
     </p>
     <div class="example">

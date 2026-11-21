@@ -1,5 +1,10 @@
 import type { FxPass } from "@void-drift/core";
-import type { BuildMount, FlightPass, Simulation } from "@void-drift/mode-a";
+import type {
+  BuildMount,
+  FlightFrame,
+  FlightPass,
+  Simulation,
+} from "@void-drift/mode-a";
 
 /** Trusted local experiment code. The host supplies lifecycle, not its behaviour. */
 export interface FlightExperiment {
@@ -17,6 +22,8 @@ export interface FlightExperimentRun {
    * fitting there with a pass. Flight, mass and plumes are unchanged.
    */
   hiddenMounts?: readonly string[];
+  /** Experimental distant sky in screen space, at the stock starfield pass. */
+  drawSky?(frame: FlightFrame, ctx: CanvasRenderingContext2D): void;
   /** Extra native painters in the production frame's existing layers. */
   passes?: readonly (FlightPass & { layer: "world" | "lfx" })[];
   /** Fresh emission; the production persistent surface owns history and budgets. */

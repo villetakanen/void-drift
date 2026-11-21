@@ -1,5 +1,35 @@
 import { expect, test } from "../helpers/local-browser";
 
+test("title arrow navigation neither activates early nor traps keyboard focus", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const menu = page.getByRole("navigation", { name: "Title screen" });
+  const start = menu.getByRole("button", { name: "PRESS START" });
+  const hangar = menu.getByRole("link", { name: "HANGAR", exact: true });
+  const credits = menu.getByRole("link", { name: "CREDITS" });
+  await expect(start).toBeFocused();
+  await page.keyboard.press("ArrowDown");
+  await expect(hangar).toBeFocused();
+  await expect(page).toHaveURL("/");
+  await page.keyboard.press("Home");
+  await expect(start).toBeFocused();
+  await page.keyboard.press("ArrowUp");
+  await expect(credits).toBeFocused();
+  await page.keyboard.press("ArrowDown");
+  await expect(start).toBeFocused();
+  await page.keyboard.press("End");
+  await expect(credits).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(credits).not.toBeFocused();
+  expect(
+    await menu.evaluate((element) => element.contains(document.activeElement)),
+  ).toBe(false);
+  await hangar.focus();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/hangar$/);
+});
+
 test("a completed run returns to title and starts a fresh run", async ({
   page,
 }) => {

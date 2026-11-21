@@ -1,5 +1,6 @@
 <script lang="ts">
 import { EnergyAnalysis } from "../../../lib/instrument/energy";
+import Switch from "../../inputs/Switch.svelte";
 
 let { energy = $bindable() }: { energy: EnergyAnalysis | undefined } = $props();
 let error = $state("");
@@ -13,31 +14,33 @@ function edit(change: (draft: EnergyAnalysis) => void) {
     error = "";
   } else error = result.error.issues.map((i) => i.message).join("; ");
 }
+function setAnalysis(enabled: boolean) {
+  energy = enabled
+    ? EnergyAnalysis.parse({
+        fields: [
+          {
+            x: 400,
+            y: 0,
+            reach: 324,
+            shoulder: 55,
+            peak: 7.5,
+            outerFraction: 0.1,
+          },
+        ],
+      })
+    : undefined;
+}
 const keys = ["x", "y", "reach", "shoulder", "peak", "outerFraction"] as const;
+const controlId = $props.id();
 </script>
 <section aria-label="Energy fields">
   <h4>Collection fields</h4>
-  <label
-    ><input
-      type="checkbox"
-      checked={!!energy}
-      onchange={(e) =>
-        (energy = e.currentTarget.checked
-          ? EnergyAnalysis.parse({
-              fields: [
-                {
-                  x: 400,
-                  y: 0,
-                  reach: 324,
-                  shoulder: 55,
-                  peak: 7.5,
-                  outerFraction: 0.1,
-                },
-              ],
-            })
-          : undefined)}
-    >
-    Energy analysis</label
+  <label for={`${controlId}-0`}
+    >Energy analysis
+    <Switch
+      id={`${controlId}-0`}
+      bind:checked={() => !!energy, setAnalysis}
+    /></label
   >
   {#if energy}
     <p>

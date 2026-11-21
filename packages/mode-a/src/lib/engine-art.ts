@@ -1,3 +1,6 @@
+import { SERVICE_ION_ART, SERVICE_ION_ART_MARKING } from "./service-ion-art";
+import type { TestingMarking } from "./testing-marking";
+
 // Accepted 02.4 ion, 02.6 fusion and 02.9 plasma polygons, preserved from the reviewed SVG fixtures.
 // Pose 0 is catalog; 1/2 are side lighting; 3 is aft lighting.
 export type EngineFace = {
@@ -1620,4 +1623,10 @@ export const ENGINE_ART: Record<
       },
     ],
   },
+  // Converted from art/engines/service-ion.svg, its SVG master.
+  "service-ion": SERVICE_ION_ART,
+};
+/** Testing-only markings, from the masters of the parts that carry one. */
+export const ENGINE_MARKINGS: Record<string, TestingMarking | undefined> = {
+  "service-ion": SERVICE_ION_ART_MARKING,
 };

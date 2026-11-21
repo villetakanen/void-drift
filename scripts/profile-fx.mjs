@@ -102,7 +102,9 @@ try {
       duration,
       backing: [1920, 1080],
       viewport: page.viewportSize(),
-      displayedCanvas: await page.locator("canvas").boundingBox(),
+      displayedCanvas: await page
+        .locator('canvas[data-layer="world"]')
+        .boundingBox(),
       warmupSeconds: 5,
       samples,
       timing,

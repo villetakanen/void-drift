@@ -1,24 +1,37 @@
 <script lang="ts">
+import { onMount } from "svelte";
 import { settings } from "../lib/stores/settings";
 import FlightDeck from "./FlightDeck.svelte";
 import Switch from "./inputs/Switch.svelte";
 import Logo from "./Logo.svelte";
 
+// Accept Astro's hydration attribute without an empty-props integration mismatch.
+let _props: { "client:only"?: string } = $props();
 const id = $props.id();
+let fromHangar = $state(false);
+onMount(() => {
+  // Only this explicit context is allowed; never use a return URL or history.
+  fromHangar =
+    new URLSearchParams(window.location.search).get("from") === "hangar";
+});
 const groups = [
   {
     title: "Controls",
     key: "invertControls",
     name: "Invert controls",
     hint: "Swap left/right engine controls",
-    experimental: false,
   },
   {
     title: "Camera",
     key: "speedCamera",
     name: "Speed camera",
     hint: "Zooms out with speed and shows more space ahead.",
-    experimental: true,
+  },
+  {
+    title: "Display",
+    key: "combatHud",
+    name: "Combat HUD",
+    hint: "Show direction and distance cues for pirates, the sun, derelicts and energy cells.",
   },
 ] as const;
 </script>
@@ -42,9 +55,6 @@ const groups = [
                 <div class="setting-copy">
                   <label for={`${id}-${group.key}`}>{group.name}</label>
                   <p id={`${id}-${group.key}-hint`}>
-                    {#if group.experimental}
-                      <span class="experimental">Experimental</span>
-                    {/if}
                     {group.hint}
                   </p>
                 </div>
@@ -63,7 +73,9 @@ const groups = [
 
         <footer class="button-group-frame">
           <div class="button-group button-group--strip">
-            <a href="/" class="btn btn-normal">Return to title screen</a>
+            <a href={fromHangar ? "/hangar" : "/"} class="btn btn-normal"
+              >{fromHangar ? "Return to Hangar" : "Return to title screen"}</a
+            >
           </div>
         </footer>
       </main>
@@ -142,9 +154,5 @@ label {
 p {
   color: var(--color-text-muted);
   font-size: var(--font-size-caption);
-}
-
-.experimental {
-  display: block;
 }
 </style>

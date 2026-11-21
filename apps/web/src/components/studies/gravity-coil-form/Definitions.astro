@@ -11,7 +11,6 @@ import { WASP } from "../../../../../../packages/mode-a/src/lib/wasp";
 import { coil, type Face, points } from "./drawings";
 import references from "./references.svg?raw";
 import { surfaceCoil, surfaceStudies } from "./SurfaceRounds";
-import { underRing, underRings } from "./UnderRings";
 
 const fighter: Face[] = FIGHTER.hull.map((p, i) => {
   const next = FIGHTER.hull[(i + 1) % FIGHTER.hull.length];
@@ -40,7 +39,6 @@ const items = [
   "shell",
   "saddle",
   ...surfaceStudies,
-  ...underRings.map((ring) => ring.id),
 ];
 ---
 
@@ -68,16 +66,6 @@ const items = [
         {surfaceCoil(kind).map((f) => (
           <polygon points={points(f.points)} fill={f.color} />
         ))}
-      </g>
-    ))}
-    {underRings.map((ring) => (
-      <g id={`form-${ring.id}`}>
-        <g transform="scale(.5)" data-under-ring={ring.id}>
-          {underRing(ring.radius).map((f) => (
-            <polygon points={points(f.points)} fill={f.color} />
-          ))}
-        </g>
-        <use href="#form-shell" />
       </g>
     ))}
     <g id="form-well" transform={`scale(${POTENTIAL_WELL_SCALE})`}>

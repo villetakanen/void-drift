@@ -23,10 +23,10 @@ This project is a Monorepo managed by `pnpm`:
 2. **Run Development Server**
 
    ```bash
-   pnpm dev
+   pnpm dev:ensure
    ```
 
-   This starts the Astro dev server for `apps/web` at `http://localhost:4321`.
+   On the shared Mac checkout this starts or reuses the development service at `http://localhost:4321`.
 
 3. **Build**
 
@@ -42,6 +42,16 @@ This project is a Monorepo managed by `pnpm`:
 - **Styling**: Native CSS (No Tailwind)
 - **Linting**: Biome
 
+## Ranked Challenge Names
+
+| Release line | Challenge name     |
+| ------------ | ------------------ |
+| 0.5.x        | `alpha-1`          |
+| 0.6.x        | `ion-storm`        |
+| 0.7.x        | `fires-in-the-sky` |
+
+A challenge name is changed only by a release to production; there are no development, temporary or per-feature challenge names. See [Release](./docs/development.md#release) for the process.
+
 ## Documentation
 
 - [Vision](./docs/vision.md)
@@ -53,9 +63,6 @@ This project is a Monorepo managed by `pnpm`:
 Run `pnpm verify` for the combined checks and a local evidence report. The rebuild
 starts with known legacy lint/type debt; see the development guide for current coverage.
 
-## OpenCode Config
+## Providence
 
-This repo includes an OpenCode project config at `opencode.json`.
-
-- MCP server: `ASDLC` (remote)
-- URL: `https://asdlc.io/mcp`
+This project is a testbed for [ASDLC.io] pattern libary and for a select [Futurice.com] FAB harness tools. YMMV.

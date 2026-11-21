@@ -1,8 +1,8 @@
 <script lang="ts">
 import { onMount } from "svelte";
 import RingSlider from "../../inputs/RingSlider.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import Switch from "../../inputs/Switch.svelte";
-import Toggle from "../../inputs/Toggle.svelte";
 
 interface Props {
   label?: string;
@@ -282,7 +282,7 @@ function handleStagePointerUp(event: PointerEvent) {
           <code>L / R</code>
           tab
         </span>
-        <Toggle
+        <SegmentedControl
           label="Visual nesting style"
           options={[...NESTING_OPTIONS]}
           bind:value={nestingMode}
@@ -293,7 +293,7 @@ function handleStagePointerUp(event: PointerEvent) {
         <span class="control-caption">
           02.4B Visual nested shapes vs. end-to-end touch areas
         </span>
-        <Toggle
+        <SegmentedControl
           label="Overlay mode"
           options={[...OVERLAY_OPTIONS]}
           bind:value={overlayMode}
@@ -302,7 +302,7 @@ function handleStagePointerUp(event: PointerEvent) {
 
       <div class="control-block">
         <span class="control-caption">Viewport height context</span>
-        <Toggle
+        <SegmentedControl
           label="Viewport preset"
           options={[...VIEWPORT_OPTIONS]}
           bind:value={viewportPreset}

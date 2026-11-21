@@ -2,6 +2,10 @@
 
 Voice-led game design, and development development of a space shooter inspired by Star Control 2: Super melee, and 1990s indie games.
 
+## Default working practice
+
+In the main conversation, load and follow [first-mate](.agents/skills/first-mate/SKILL.md) before deciding how to act. An assigned worker follows its task and reports the result to the assigning agent.
+
 ## Repository map
 
 ```yaml
@@ -34,7 +38,12 @@ Voice-led game design, and development development of a space shooter inspired b
 
 ## ASDLC.io
 
-- We use ASDLC.io living specs methodology, and align with the principles presented in the site
+- Use the [write-spec skill](.agents/skills/write-spec/SKILL.md) for ASDLC living contracts in `docs/specs/`. Folder nesting expresses parentage. Run `pnpm check:specs` on a spec directory to check its format.
+
+## Shared preview
+
+- In the shared Mac checkout, run `pnpm dev:ensure` and use port 4321. Inspect ownership, readiness and the log path with `pnpm dev:status`.
+- Reload the surface you changed. If saved edits still appear stale, run `pnpm dev:restart` once and inspect that surface again. Use the reported log for compilation errors. Browser verification owns its own servers.
 
 ## Local Java
 
@@ -51,6 +60,14 @@ Voice-led game design, and development development of a space shooter inspired b
 - Never promote code from a study without planning, speccing, architectural review and explicit instruction.
 - A study's decisions hold only inside the study. To the project and its specs they are proposals: examine each claim, decide, and write the decision into a spec before changing code. A study names the spec changes it would need; the project decides them.
 - For each proposal taken from a study, settle two things before any spec or code changes: whether the project wants it, and what it applies to. A study examines one subject; the project decides whether the change is for that subject or for everything of its kind.
+
+## Ranked challenge names
+
+- 0.5.x: `alpha-1`
+- 0.6.x: `ion-storm`
+- 0.7.x: `fires-in-the-sky`
+- Change `CHALLENGE` (`packages/mode-a/src/schemas/highscore.ts`) and add a name to `firestore.rules` only in a release to production, following the Release section of `docs/development.md`.
+- Use the name of the current release line in all other work. There are no development, temporary or per-feature challenge names.
 
 ## Evidence and learning
 

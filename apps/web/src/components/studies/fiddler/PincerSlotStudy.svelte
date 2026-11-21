@@ -3,7 +3,7 @@ import "@void-drift/core/styles/buttons.css";
 import { PARTS } from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import RingSlider from "../../inputs/RingSlider.svelte";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import {
   FOUR_ENGINE_FIT,
   type FourEngineFit,
@@ -112,7 +112,7 @@ $effect(() => {
   mounting are the starting point; further placement edits are experiments.
 </p>
 <div class="toolbar">
-  <Toggle
+  <SegmentedControl
     label="Pincer view"
     options={["Slot editor", "Fitted view"]}
     bind:value={mode}
@@ -137,7 +137,7 @@ $effect(() => {
     />
   </div>
   <div class="adjustments">
-    <Toggle
+    <SegmentedControl
       label="Selected pincer slot"
       options={PINCER_SLOTS.map((slot) => slot.short)}
       bind:value={
@@ -188,7 +188,7 @@ $effect(() => {
     </p>
     <div class="mounting">
       <p>{descriptor.short} mounting</p>
-      <Toggle
+      <SegmentedControl
         label={`${descriptor.short} mounting layer`}
         options={["Above", "Below"]}
         bind:value={

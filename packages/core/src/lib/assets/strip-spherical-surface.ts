@@ -89,8 +89,9 @@ export class StripSphericalSurface {
     const step = diameter <= 128 ? 8 : diameter <= 512 ? 32 : 64;
     const size = Math.max(8, Math.ceil(diameter / step) * step);
     if (size !== this.canvas.width) this.resize(size);
-    // One bin moves the equator at most one buffer pixel. Absolute phase bins
-    // make the image independent of which ticks were actually drawn.
+    // Absolute phase bins make the image independent of which ticks were
+    // actually drawn. One bin moves the equator one buffer pixel; coarser
+    // bins make the turn visibly step.
     const tau = 2 * Math.PI;
     const bins = Math.ceil(Math.PI * size);
     const cycle = ((phase % tau) + tau) % tau;

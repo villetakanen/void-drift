@@ -13,6 +13,9 @@ were read from `docs/specs/game/camera/speed-camera/spec.md` and
 
 ### Zoom levels
 
+Applied 2026-11-17 in 6c06c1a8: the levels are 0.5, 1, 2 and 4 CSS pixels per
+world unit on every screen, stated in the speed camera spec.
+
 - Intent: the four inward levels, shown as 1×, 2×, 4× and 8×, are 0.5, 1, 2 and 4
   pixels per world unit.
 - Today: the levels are relative. `SPEED_CAMERA.wideExtent` is 2100, the widest view
@@ -26,6 +29,10 @@ were read from `docs/specs/game/camera/speed-camera/spec.md` and
   2× at 300 and 1× at 400.
 
 ### Entrance to a star system
+
+Applied 2026-11-17 in 6c06c1a8: a new run starts from a view that shows the star
+and the ship; when it is wider than 1×, the ordinary inward rule cuts it to 1×.
+Reset and wrap do not get it. Not checked in the browser.
 
 - Intent: when a run starts in a new star system, whatever the system's size, the
   first view shows the sun and the ship. After 1.5 seconds it cuts to 1×, if 1× is

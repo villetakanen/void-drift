@@ -16,7 +16,7 @@ import {
   setSetting,
   settingValue,
 } from "../../../lib/gravity-tuning";
-import Toggle from "../../inputs/Toggle.svelte";
+import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 
 // Gravity tuning's pane (docs/specs/gravity-tuning.md, "Views"): the
 // settings as value rows like the instrument's, the default shown once a value
@@ -115,7 +115,7 @@ function load() {
     class="param"
     class:changed={config.well.falloff !== DEFAULT_DOCUMENT.well.falloff}
   >
-    <Toggle
+    <SegmentedControl
       label="Falloff"
       options={["inverse-square", "inverse"]}
       bind:value={

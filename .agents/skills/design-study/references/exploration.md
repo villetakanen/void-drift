@@ -13,7 +13,8 @@ discoveries. Remove dedicated unused code after checking consumers; preserve sha
 systems and unrelated work. Do not archive the rejected attempt in collapsed content
 or create a retrospective unless requested.
 
-Briefly acknowledge feedback, then make the next proposal. Do not default to apologies,
+When the designer rejects a proposal as unusable, briefly acknowledge the rejection
+and present its replacement. Do not default to apologies,
 self-assessment, speculative explanations of failure, method repair in chat, or asking
 permission to try again. Rejection alone does not reopen the problem statement. When a
 reason in the skill's "Amend the question" holds, follow that section. Explicit
@@ -57,19 +58,22 @@ compares them. The step before the active one stays visible with its capture.
 
 ## Make the question inspectable
 
-Once purpose is shared, deliver the smallest concrete example that makes the current
-question inspectable in the active page section, in this exploration round. Described
-alternatives, research summaries, and plans to build later are insufficient. Use a
-sketch, sequence, interactive composition, or repeatable simulation suited to the claim;
-do not ask the designer to choose between experiences they must merely imagine.
-Define consumed objects and conditions. Keep prose brief: what to notice, limitations,
-and the uncertainty the example addresses. Put the review question in chat. Inspect the rendered example before presenting it. Report actual blockers as incomplete work; explicit requests for conceptual
-discussion override this default. Do not overbuild a final solution to provide evidence.
+State the design question and, after review, what the example revealed. Keep only
+conditions that explain the finding. Put operating instructions in captions; omit
+process commentary and next-step announcements.
+
+Build the smallest example that lets the designer judge the question. Inspect it
+before presenting it; put the review question in chat. Report blockers honestly.
+Stop at discussion when requested.
 
 ## Choose the move
 
-Each round makes one move. Choose it from the state of the question, and name the
-move to yourself before building. The designer sees the example, never the move name.
+Each round makes one move. Before building, identify what the next example would
+let the designer judge about section 01’s question. The designer sees the example,
+never the move name.
+
+When the designer voices a reservation, let it remain open unless investigating it
+would advance section 01’s question or the designer asks you to act on it.
 
 The question is open and no answer has been picked:
 
@@ -107,22 +111,12 @@ The question is about how the product behaves:
 
 ## Compare and carry forward
 
-Connect each alternative to agreed purpose, a hypothesis, a suitable investigation,
-and a decision the result could inform. Choose research, scenarios, sketches,
-interactive examples, or flight trials according to the uncertainty. Do not default
-to presets or a viewer. Explain what the chosen method cannot establish.
+While the question is open, try distinct answers; refine a direction only after
+the designer accepts it. Carry accepted qualities and their reasons forward.
+If the frame changes, revisit the question rather than polishing the example.
 
-Present a focused comparison for human judgment. Carry current-cycle agreed points and reasons
-forward each round; advance the next unknown. While the question is open, each new
-proposal gives a different answer to it, not a refinement of the last one; refine
-details only after the designer accepts a direction. Reopen an agreement only with an
-explicit reason. If the designer challenges the frame, return to purpose and identify
-what changed rather than polishing the same artifact. Recommend only with supporting
-reasoning; never manufacture evidence or acceptance.
-
-When an independently usable result is accepted within a broader study, recommend
-taking that result through parts 03 and 04 before exploring the next subject.
-Keep the remaining scope explicit and honor a direction to continue exploration.
+Accepting one quality of an example settles that quality. Continue exploring the
+study question unless the designer selects a result for independent delivery.
 
 When a visual example is accepted, identify its exact variant and the properties
 the designer settled. Carry that reference into the scope alongside anything still
@@ -136,11 +130,3 @@ first. Keep the diverting edit pending unless the designer explicitly overrides;
 ordinary repairs that make the current question answerable should proceed normally.
 Honor an explicit override, including one already given, without repeated resistance.
 Record the deliberate question change and any unresolved prior question.
-
-During active inquiry, preserve useful evidence and the conditions needed to interpret
-it when a question is answered or changes. Record observations and limits, not invented
-conclusions. Before a new question retunes the instrument, capture the earlier comparison with its
-conditions so it is not tuned away. Preserving evidence never requires keeping its
-tools running: earlier steps hold captures as above, and when ending the study the
-main skill's closing procedure retires what is still live. These retention
-instructions apply to useful evidence; discard unusable proposals as above.

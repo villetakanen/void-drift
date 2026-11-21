@@ -19,7 +19,7 @@ The designer supplied this explicit form after repeated attempts to correct the 
 >
 > 02 / ... to be filled after 01 is done
 
-The reference is [the button study](../apps/web/src/pages/lab/studies/buttons.astro),
+The reference is [the button study](../apps/web/src/pages/lab/studies/buttons.mdx),
 whose opening is “01 / Situations before styling.” Its
 [retrospective](factory-experiment-design-studies.md#explain-the-situations-before-proposing-appearance)
 records specific appreciation for explaining situations before proposing appearance.
@@ -74,7 +74,7 @@ agent self-blame or repeated explanations of agent behavior.
 
 ### The specification prescribes a different page
 
-The [current presentation contract](specs/lab/design-studies/spec.md#current-study-presentation)
+The [current presentation contract](specs/studies/spec.md#current-study-presentation)
 says “Use this outline” and enumerates purpose and phase, agreed foundation, current
 investigation, review focus, and decision history and integration. The
 [skill](../.agents/skills/design-study/SKILL.md#working-surface-and-evidence)

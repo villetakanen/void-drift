@@ -1,3 +1,12 @@
+---
+title: "Spec: Game Screen"
+status: draft
+generated:
+  by: "codex/gpt-6"
+  at: "2026-11-19T21:31:48+02:00"
+verified: []
+---
+
 # Game Screen
 
 ## Blueprint
@@ -9,7 +18,7 @@ self-contained game screen. Desktop and iPad landscape players receive a play ar
 and a deliberate way to pause and leave. Browser dimensions affect presentation,
 never the run.
 
-### Architecture and boundaries
+### Architecture
 
 - `apps/web/src/components/FlightDeck.svelte` composes the screen and connects its
   availability to the simulation loop, input and renderer.
@@ -20,6 +29,7 @@ never the run.
   [Render](../render/spec.md) owns that model.
 - `apps/web/src/pages/index.astro`, `apps/web/src/layouts/Layout.astro` and
   `packages/core/src/lib/styles/flight.css` provide viewport containment.
+- The [flight contact overlay](../render/flight-contacts/spec.md) uses the active CSS rectangle and sits between the field and deck.
 - This contract owns screen geometry, layer placement, browser interaction
   containment, the aspect gate and access to navigation during flight, in every
   mode and from either launch source (title screen or Hangar).
@@ -36,7 +46,16 @@ never the run.
   the Hangar through Pause.
 - Screen availability is transient UI state, not a saved game or scoring field.
 
-### Screen and interaction
+#### References
+
+- [In-game controllers study](../../../../apps/web/src/pages/lab/studies/in-game-controllers.astro)
+  supplies the CSS-pixel gutter model and the thrust-pad design that the
+  controls contract places in the side gutters.
+- [ASDLC Living Specs](https://asdlc.io/practices/living-specs/) and
+  [The Spec](https://asdlc.io/patterns/the-spec/) guide the separation of durable
+  screen behavior from implementation tasks and independently evolving features.
+
+### Constraints
 
 - The stage fills the safe viewport at any aspect ratio of 4:3 or wider,
   ultra-wide included. Its logical height is 1080; its logical width follows the
@@ -57,7 +76,8 @@ never the run.
   with Speed camera Off and follows the deck's visibility rules. Values are
   `1×`, `2×`, `4×` or `8×`: outward zoom holds `8×` until actual `4×`, then
   `4×` until actual `2×`, then `2×` until actual `1×`. Exact levels show their
-  own label; no decimal values or nearest-level rounding appear. The camera
+  own label; no decimal values or nearest-level rounding appear. The entrance
+  view at the start of a run, which is wider than `1×`, shows `1×`. The camera
   contract owns the scale and label calculation.
 - At a safe viewport height of 700 CSS px and above, the side gutters hold
   their instruments, deck buttons and full-height pads without overlap.
@@ -70,7 +90,7 @@ never the run.
   and the logo. The bottom gutter holds the mode label and the mode's status
   lines: `G CLASS / SHARED CHALLENGE` for a ranked run, `GOD MODE` for
   Practice, `UNRANKED` for any other run (which runs are ranked follows the
-  [game contract](../spec.md)), and engine feedback. No chrome covers the active area.
+  [game contract](../spec.md)), and engine feedback. Deck controls and info rows stay in the gutters.
 - Every flight mode fills the browser viewport with no header, footer, page
   navigation or page scrolling; the deck is the only
   chrome. Play works within ordinary browser chrome, with browser fullscreen
@@ -191,12 +211,3 @@ Scenario: Background during arrival
   When the page becomes visible at 4:3 or wider and the player resumes
   Then the countdown continues from its held position
 ```
-
-## References
-
-- [In-game controllers study](../../../../apps/web/src/pages/lab/studies/in-game-controllers.astro)
-  supplies the CSS-pixel gutter model and the thrust-pad design that the
-  controls contract places in the side gutters.
-- [ASDLC Living Specs](https://asdlc.io/practices/living-specs/) and
-  [The Spec](https://asdlc.io/patterns/the-spec/) guide the separation of durable
-  screen behavior from implementation tasks and independently evolving features.

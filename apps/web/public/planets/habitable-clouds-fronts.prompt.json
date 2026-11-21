@@ -1,0 +1,10 @@
+{
+  "image": "habitable-clouds-fronts.png",
+  "method": "built-in image_gen; deterministic offline atlas preparation",
+  "source": "apps/web/public/studies/rock-atmospheres-2026-11-15/cloud-materials/fronts.png",
+  "originalPromptSource": "apps/web/public/studies/rock-atmospheres-2026-11-15/cloud-materials/prompts.json",
+  "prompt": "Use case: photorealistic-natural. Asset type: high-resolution cloud density texture for wrapping onto a 3D planet in a game. Generate a single wide 2:1 rectangular full-frame flat overhead satellite-style cloud-only map, ideally 2048x1024 or larger. Monochrome white clouds on pure black empty gaps; black means clear sky, white means opaque cloud cores, gray only for cloud edge/density detail. No land, no ocean, no globe, no horizon, no atmosphere rim, no blue, no text, no borders. Orthographic top-down, no perspective. Even neutral illumination with NO directional shadows or baked day/night shading. Real Earth meteorological structures, crisp multiscale detail and coherent large formations, avoid uniform blurry noise. Across the map retain about 50% clear black openings; include substantial truly white opaque cores, finely structured feathered edges. Make left and right edges naturally wrap continuously; this is a longitude-latitude map not a photo of a sphere. Sweeping midlatitude weather fronts: long curved cloud bands, one subtle broad spiral weather system, branching fine filaments and large clear slots; avoid a giant central hurricane.",
+  "dimensions": [768, 384],
+  "preparation": "Native image resampling; 24px symmetric longitude edge blend; 6px polar cap blend; clouds use the Cradle density-to-alpha smoothstep (0.1–0.5).",
+  "script": "scripts/prepare-habitable-maps.mjs"
+}

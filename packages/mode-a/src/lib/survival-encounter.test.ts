@@ -1,16 +1,18 @@
 import { Vec2 } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { createStar } from "./game-loop";
+import { pirateLoadout } from "./gauntlet";
 import { type SalvageBody, SalvageSystem } from "./salvage";
 import { defaultLoadout } from "./schemas/loadout";
-import { SURVIVAL_ENCOUNTER } from "./schemas/salvage";
+import { RANKED_SURVIVAL_ENCOUNTER } from "./schemas/salvage";
+import { gameSettings, Simulation, STEP } from "./simulation";
 
 function scene(seed = 2026) {
   const system = new SalvageSystem(
     defaultLoadout("wasp"),
     seed,
     undefined,
-    SURVIVAL_ENCOUNTER,
+    RANKED_SURVIVAL_ENCOUNTER,
   );
   const ship = {
     pos: new Vec2(-10000, -10000),
@@ -40,10 +42,20 @@ function arrivals(count: number, seed?: number) {
 }
 
 describe("survival encounter", () => {
-  it("spaces every later arrival further apart than the first window", () => {
+  it("selects the ranked schedule for an eligible Survival launch", () => {
+    const settings = gameSettings("wasp");
+    const ranked = new Simulation(settings);
+    const playground = new Simulation({ ...settings, experimental: "On" });
+    expect(ranked.salvage?.nextPass).toBe(scene(settings.seed).system.nextPass);
+    expect(playground.salvage?.nextPass).not.toBe(ranked.salvage?.nextPass);
+  });
+  it("schedules the first and every subsequent attempt in 5–40 gameplay seconds", () => {
     const deadlines = arrivals(100).map((run) => run.deadline);
-    const gaps = deadlines.slice(1).map((time, i) => time - deadlines[i]);
-    expect(Math.min(...gaps)).toBeGreaterThan(SURVIVAL_ENCOUNTER.firstPass.max);
+    const intervals = deadlines.map(
+      (deadline, i) => deadline - (deadlines[i - 1] ?? 0),
+    );
+    expect(Math.min(...intervals)).toBeGreaterThanOrEqual(5);
+    expect(Math.max(...intervals)).toBeLessThanOrEqual(40);
   });
   it("is deterministic for a seed and varies across seeds", () => {
     const shape = (list: ReturnType<typeof arrivals>) =>
@@ -77,13 +89,88 @@ describe("survival encounter", () => {
     const wreck = s.system.bodies[0] as SalvageBody;
     const next = s.system.nextPass;
     while (s.system.time < next) {
-      wreck.x = wreck.previousX = SURVIVAL_ENCOUNTER.centerX + 400;
-      wreck.y = wreck.previousY = SURVIVAL_ENCOUNTER.centerY;
+      wreck.x = wreck.previousX = RANKED_SURVIVAL_ENCOUNTER.centerX + 400;
+      wreck.y = wreck.previousY = RANKED_SURVIVAL_ENCOUNTER.centerY;
       wreck.vx = wreck.vy = 0;
       wreck.life = 100000;
       s.advance(Math.min(1, next - s.system.time + 0.00001));
     }
     expect(s.system.passes).toBe(1);
     expect(s.system.groups).toBe(1);
+    s.system.applyDamage(wreck, wreck.hull);
+    expect(s.system.bodies.some((body) => body.kind === "fragment")).toBe(true);
+    expect(s.system.bodies.some((body) => body.kind === "cell")).toBe(true);
+    s.advance(STEP);
+    expect(s.system.passes).toBe(1);
+    s.advance(s.system.nextPass - s.system.time);
+    expect(s.system.passes).toBe(2);
+  });
+});
+
+describe("ranked pirate encounters", () => {
+  const idle = { leftThruster: false, rightThruster: false, fire: false };
+  const first = Math.round(45 / STEP);
+
+  it.each(["death", "departure"])("anchors the repeat to %s", (ending) => {
+    const sim = new Simulation(gameSettings("wasp"));
+    sim.start();
+    sim.ticks = first - 2;
+    sim.step(idle);
+    expect(sim.opponent).toBeNull();
+    sim.step(idle);
+    const pirate = sim.opponent;
+    if (!pirate) throw new Error("Expected first ranked Scout");
+    expect(pirate.loadout).toEqual(pirateLoadout());
+    sim.ticks += Math.round(65 / STEP);
+    sim.step(idle);
+    expect(sim.opponents).toEqual([pirate]);
+    if (ending === "death") pirate.resources.hull = 0;
+    else {
+      pirate.ship.pos.set(2159, 540);
+      pirate.ship.vel.set(600, 0);
+    }
+    sim.step(idle);
+    expect(sim.opponent).toBeNull();
+    expect(sim.gauntletResult).toBeNull();
+    const retired = sim.ticks;
+    sim.ticks += first - 2;
+    sim.step(idle);
+    expect(sim.opponent).toBeNull();
+    while (!sim.opponent && sim.ticks < retired + 60 / STEP) {
+      sim.ship.pos.set(500, 540);
+      sim.ship.vel.set(0, 0);
+      sim.state.resources.power = 100;
+      sim.step(idle);
+      expect(sim.state.status).toBe("PLAYING");
+    }
+    expect(sim.opponents).toHaveLength(1);
+    expect(sim.opponent).not.toBe(pirate);
+  });
+
+  it("resolves player weapons against the Scout while salvage advances once", () => {
+    const sim = new Simulation(gameSettings("wasp"));
+    sim.start();
+    sim.ticks = first - 1;
+    sim.step(idle);
+    const pirate = sim.opponent;
+    if (!pirate || !sim.salvage) throw new Error("Expected ranked encounter");
+    pirate.ship.pos.set(sim.ship.pos.x + 45, sim.ship.pos.y);
+    pirate.ship.vel.set(0, 0);
+    sim.ship.rotation = 0;
+    const time = sim.salvage.time;
+    for (const weapon of sim.salvage.weapons) weapon.readyAt = 0;
+    const hull = pirate.resources.hull;
+    sim.step(idle);
+    expect(pirate.resources.hull).toBeLessThan(hull);
+    expect(sim.salvage.time - time).toBeCloseTo(STEP);
+    expect(sim.salvage.bodies.every((body) => body.kind !== "ship")).toBe(true);
+  });
+
+  it("leaves Playground Survival pirate-free", () => {
+    const sim = new Simulation({ ...gameSettings("wasp"), experimental: "On" });
+    sim.start();
+    sim.ticks = first - 1;
+    sim.step(idle);
+    expect(sim.opponent).toBeNull();
   });
 });

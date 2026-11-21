@@ -1,0 +1,290 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="1056"
+  height="890"
+  viewBox="0 0 1056 890"
+  role="img"
+  aria-labelledby="title desc"
+>
+  <title id="title">Three rough plasma weapons on the Wasp</title>
+  <desc id="desc">
+    Spine, a narrow long emitter in a short saddle; Split crown, a short open
+    fork in a transverse receiver; and Offset breech, a stepped barrel beside an
+    asymmetric power housing. Each is drawn dark and loading, isolated, exposed
+    above the left Wasp wing, under the wing, and at one image pixel per world
+    unit.
+  </desc>
+  <rect width="1056" height="890" fill="#070711" />
+  <style>
+  text {
+    fill: #d5d8de;
+    font: 13px monospace;
+    text-anchor: middle;
+  }
+  .title {
+    font: 600 18px sans-serif;
+  }
+  .note {
+    fill: #9495a2;
+    font-size: 11px;
+  }
+  .lit {
+    --bed: #b97034;
+    --core: #efbd78;
+  }
+  .dark {
+    --bed: #493c30;
+    --core: #675038;
+  }
+  .line {
+    stroke: #2c303b;
+    stroke-width: 1;
+  }
+  </style>
+  <defs>
+    <!-- Source Wasp upright hull planes, copied from wasp.ts, then scaled once
+     by BUILD_FLIGHT_SCALE=.65. Flat cockpit, hull only; engine omitted.
+     Weapon coordinates: across, aft in world units; attachment at (0,0).
+     Left mount becomes (-7.8,-.975), without moving the mount. -->
+    <g id="wasp" transform="scale(.65)">
+      <path fill="#c8f4f0" d="M-3 -25H0V-16L-3 -10H-6Z" />
+      <path fill="#6193a9" d="M0 -25H3L6 -10H3L0 -16Z" />
+      <path fill="#437e99" d="M-6 -10 -13.5 12.5 -18 6.5Z" />
+      <path fill="#264d6b" d="M6 -10 18 6.5 13.5 12.5Z" />
+      <path fill="#6193a9" d="M-6 -10 -7.4 10.1 -9.5 11 -13.5 12.5Z" />
+      <path fill="#365d79" d="M6 -10 13.5 12.5 9.5 11 7.4 10.1Z" />
+      <path fill="#c8f4f0" d="M-6 -10H-3V-1L-5 9 -7.4 10.1Z" />
+      <path fill="#6193a9" d="M6 -10 7.4 10.1 5 9 3 -1V-10Z" />
+      <path fill="#6193a9" d="M-9.5 11 -7.4 10.1 -5 9 -4 17.4 -7.3 18.8Z" />
+      <path fill="#365d79" d="M9.5 11 7.3 18.8 4 17.4 5 9 7.4 10.1Z" />
+      <path fill="#c8f4f0" d="M-3 -1 -1.4 24.5H-3.3L-5 9Z" />
+      <path fill="#437e99" d="M3 -1 5 9 3.3 24.5H1.4Z" />
+      <path fill="#83c7d0" d="M-3 -1 0 3.5V24.5H-1.4Z" />
+      <path fill="#365d79" d="M0 3.5 3 -1 1.4 24.5H0Z" />
+      <path fill="#05090e" d="M0 -16 -3 -10V-1L0 3.5 3 -1V-10Z" />
+    </g>
+    <!-- A / Spine: a slender, continuous working solid. The pale saddle is
+     shorter than the head. Two small relief tips sit alongside the muzzle. -->
+    <g id="a">
+      <path fill="#141b23" d="M-1.7 -20H1.3V5H-1.7Z" />
+      <path fill="#66717a" d="M-1.7 -20 -1.1 -19.5V4.5L-1.7 5Z" />
+      <path fill="#303a44" d="M-1.7 -20H1.3L.8 -19.5H-1.1Z" />
+      <path fill="#0a1017" d="M-.9 -19H.6V-3H-.9Z" />
+      <path fill="var(--bed,#493c30)" d="M-.65 -18.8H.4V-3H-.65Z" />
+      <path fill="var(--core,#675038)" d="M-.65 -18.8H-.32V-3H-.65Z" />
+      <path
+        fill="#404c57"
+        d="M-1.1 -14H.8V-13.3H-1.1ZM-1.1 -8.5H.8V-7.8H-1.1Z"
+      />
+      <path
+        fill="#242e38"
+        d="M-1.7 -13 -2.9 -15.5 -3.5 -15.2 -2.4 -11ZM1.3 -13 2.5 -15.5 3.1 -15.2 2 -11Z"
+      />
+      <path fill="#6c7b86" d="M-2.9 -15.5 -3.5 -15.2 -3.25 -14.7 -2.65 -15Z" />
+      <path fill="#3d4c59" d="M2.5 -15.5 3.1 -15.2 2.85 -14.7 2.25 -15Z" />
+      <path fill="#bfd3d3" d="M-1.7 -2 -3.4 -.8V3L-1.7 4Z" />
+      <path fill="#4d7a8c" d="M1.3 -2 3 -.8V3L1.3 4Z" />
+      <path fill="#8fafb6" d="M-3.4 .5H3V1.6H-3.4Z" />
+    </g>
+    <!-- B / Split crown: short separated jaws define an open forward bed.
+     A transverse receiver sits behind them; this is one central weapon. -->
+    <g id="b">
+      <path
+        fill="#18232e"
+        d="M-2.4 -14 -4.5 -12 -4 -4 -2 3H2L4 -4 4.5 -12 2.4 -14 1.3 -7 -1.3 -7Z"
+      />
+      <path fill="#687985" d="M-2.4 -14 -4.5 -12 -4 -4 -3.1 -4 -3.5 -11.5Z" />
+      <path fill="#435868" d="M2.4 -14 4.5 -12 4 -4 3.1 -4 3.5 -11.5Z" />
+      <path fill="#090f17" d="M-2.9 -11 -1.5 -7H1.5L2.9 -11 2.2 -4H-2.2Z" />
+      <path
+        fill="var(--bed,#493c30)"
+        d="M-2.6 -10.5 -1.2 -7.8H1.2L2.6 -10.5 1.6 -4.5H-1.6Z"
+      />
+      <path
+        fill="var(--core,#675038)"
+        d="M-2.2 -9 -1.2 -7.8H1.2L2.2 -9 1 -5.5H-1Z"
+      />
+      <path
+        fill="#131b24"
+        d="M-4.2 -8 -5.6 -9.4 -6 -8.5 -4 -6ZM4.2 -8 5.6 -9.4 6 -8.5 4 -6Z"
+      />
+      <path fill="#647782" d="M-5.6 -9.4 -6 -8.5 -5.5 -8 -5.1 -8.9Z" />
+      <path fill="#3c5262" d="M5.6 -9.4 6 -8.5 5.5 -8 5.1 -8.9Z" />
+      <path fill="#c0d1ce" d="M-4 -2 -5.3 -.5 -4.5 3 -1.7 3V-.3Z" />
+      <path fill="#517386" d="M4 -2 5.3 -.5 4.5 3 1.7 3V-.3Z" />
+      <path fill="#8faab0" d="M-4 -2H4V-.3H-4Z" />
+      <path fill="#263745" d="M-1.7 -.3H1.7V5H-1.7Z" />
+      <path fill="#5d7380" d="M-1.7 -.3H-.9V5H-1.7Z" />
+    </g>
+    <!-- C / Offset breech: a stepped, one-sided receiver carries a separate
+     long barrel; a broad side window exposes the active working surface. -->
+    <g id="c">
+      <path fill="#1b222a" d="M-2 -17H1.3L2.7 -13V-5L1.4 -3V4H-2Z" />
+      <path fill="#61717d" d="M-2 -17 -1.35 -16.4V3.5L-2 4Z" />
+      <path fill="#3c4c5b" d="M-2 -17H1.3L1.7 -15.8H-1.35Z" />
+      <path fill="#0a111a" d="M-.8 -14.5H1.5V-6L.8 -4.5H-.8Z" />
+      <path fill="var(--bed,#493c30)" d="M-.5 -14.2H1.25V-6.3L.6 -4.8H-.5Z" />
+      <path fill="var(--core,#675038)" d="M-.5 -14.2H.05V-5.2L-.5 -4.8Z" />
+      <path
+        fill="#354a5b"
+        d="M1.3 -14.5 2.7 -13V-5L1.4 -3 .8 -4.5 1.5 -6V-14.5Z"
+      />
+      <path fill="#b7cdcd" d="M-2 -5.2 -4.5 -3.4 -4.5 3.8 -2 5.2Z" />
+      <path fill="#79949f" d="M-4.5 -3.4 -3.5 -2.8V3.1L-4.5 3.8Z" />
+      <path fill="#486778" d="M-3.5 -2.8 -2 -3.8V5.2L-3.5 3.1Z" />
+      <path fill="#9cb7ba" d="M-2 -.6H3.8L4.6 .8H-2Z" />
+      <path fill="#395463" d="M2.7 -3H4L4.6 .8H3.3Z" />
+      <path
+        fill="#192632"
+        d="M-2 -10 -4 -12 -4.6 -11.4 -2 -8ZM2.7 -10 4.3 -11.8 4.9 -11.2 2.7 -8Z"
+      />
+      <path fill="#687a84" d="M-4 -12 -4.6 -11.4 -4.2 -11 -3.6 -11.6Z" />
+      <path fill="#455b6c" d="M4.3 -11.8 4.9 -11.2 4.5 -10.8 3.9 -11.4Z" />
+    </g>
+  </defs>
+  <text x="176" y="28" class="title">A / Spine</text>
+  <text x="528" y="28" class="title">B / Split crown</text>
+  <text x="880" y="28" class="title">C / Offset breech</text>
+  <text x="176" y="49" class="note">Long head · short saddle</text>
+  <text x="528" y="49" class="note">Short fork · transverse receiver</text>
+  <text x="880" y="49" class="note">Stepped barrel · side housing</text>
+  <path
+    class="line"
+    d="M352 10V850M704 10V850M0 273H1056M0 448H1056M0 623H1056M0 798H1056"
+  />
+  <g class="dark" transform="translate(100 203) scale(6)"><use href="#a" /></g>
+  <text x="100" y="258" class="note">Dark</text>
+  <g class="lit" transform="translate(252 203) scale(6)"><use href="#a" /></g>
+  <text x="252" y="258" class="note">Loading</text>
+  <text x="176" y="296" class="note">Exposed above hull · 4 px/u</text>
+  <g class="dark" transform="translate(100 383) scale(4)">
+    <use href="#wasp" />
+    <g transform="translate(-7.8 -.975)"><use href="#a" /></g>
+  </g>
+  <g class="lit" transform="translate(252 383) scale(4)">
+    <use href="#wasp" />
+    <g transform="translate(-7.8 -.975)"><use href="#a" /></g>
+  </g>
+  <text x="176" y="471" class="note">Under hull · 4 px/u</text>
+  <g class="dark" transform="translate(100 558) scale(4)">
+    <g transform="translate(-7.8 -.975)"><use href="#a" /></g>
+    <use href="#wasp" />
+  </g>
+  <g class="lit" transform="translate(252 558) scale(4)">
+    <g transform="translate(-7.8 -.975)"><use href="#a" /></g>
+    <use href="#wasp" />
+  </g>
+  <text x="176" y="650" class="note">1 image px/u · dark / loading</text>
+  <g class="dark" transform="translate(95 720)">
+    <use href="#wasp" />
+    <g transform="translate(-7.8 -.975)"><use href="#a" /></g>
+  </g>
+  <g class="lit" transform="translate(143 720)">
+    <use href="#wasp" />
+    <g transform="translate(-7.8 -.975)"><use href="#a" /></g>
+  </g>
+  <g class="dark" transform="translate(223 720)">
+    <g transform="translate(-7.8 -.975)"><use href="#a" /></g>
+    <use href="#wasp" />
+  </g>
+  <g class="lit" transform="translate(271 720)">
+    <g transform="translate(-7.8 -.975)"><use href="#a" /></g>
+    <use href="#wasp" />
+  </g>
+  <text x="119" y="773" class="note">Exposed</text>
+  <text x="247" y="773" class="note">Under hull</text>
+  <g class="dark" transform="translate(452 203) scale(6)"><use href="#b" /></g>
+  <text x="452" y="258" class="note">Dark</text>
+  <g class="lit" transform="translate(604 203) scale(6)"><use href="#b" /></g>
+  <text x="604" y="258" class="note">Loading</text>
+  <text x="528" y="296" class="note">Exposed above hull · 4 px/u</text>
+  <g class="dark" transform="translate(452 383) scale(4)">
+    <use href="#wasp" />
+    <g transform="translate(-7.8 -.975)"><use href="#b" /></g>
+  </g>
+  <g class="lit" transform="translate(604 383) scale(4)">
+    <use href="#wasp" />
+    <g transform="translate(-7.8 -.975)"><use href="#b" /></g>
+  </g>
+  <text x="528" y="471" class="note">Under hull · 4 px/u</text>
+  <g class="dark" transform="translate(452 558) scale(4)">
+    <g transform="translate(-7.8 -.975)"><use href="#b" /></g>
+    <use href="#wasp" />
+  </g>
+  <g class="lit" transform="translate(604 558) scale(4)">
+    <g transform="translate(-7.8 -.975)"><use href="#b" /></g>
+    <use href="#wasp" />
+  </g>
+  <text x="528" y="650" class="note">1 image px/u · dark / loading</text>
+  <g class="dark" transform="translate(447 720)">
+    <use href="#wasp" />
+    <g transform="translate(-7.8 -.975)"><use href="#b" /></g>
+  </g>
+  <g class="lit" transform="translate(495 720)">
+    <use href="#wasp" />
+    <g transform="translate(-7.8 -.975)"><use href="#b" /></g>
+  </g>
+  <g class="dark" transform="translate(575 720)">
+    <g transform="translate(-7.8 -.975)"><use href="#b" /></g>
+    <use href="#wasp" />
+  </g>
+  <g class="lit" transform="translate(623 720)">
+    <g transform="translate(-7.8 -.975)"><use href="#b" /></g>
+    <use href="#wasp" />
+  </g>
+  <text x="471" y="773" class="note">Exposed</text>
+  <text x="599" y="773" class="note">Under hull</text>
+  <g class="dark" transform="translate(804 203) scale(6)"><use href="#c" /></g>
+  <text x="804" y="258" class="note">Dark</text>
+  <g class="lit" transform="translate(956 203) scale(6)"><use href="#c" /></g>
+  <text x="956" y="258" class="note">Loading</text>
+  <text x="880" y="296" class="note">Exposed above hull · 4 px/u</text>
+  <g class="dark" transform="translate(804 383) scale(4)">
+    <use href="#wasp" />
+    <g transform="translate(-7.8 -.975)"><use href="#c" /></g>
+  </g>
+  <g class="lit" transform="translate(956 383) scale(4)">
+    <use href="#wasp" />
+    <g transform="translate(-7.8 -.975)"><use href="#c" /></g>
+  </g>
+  <text x="880" y="471" class="note">Under hull · 4 px/u</text>
+  <g class="dark" transform="translate(804 558) scale(4)">
+    <g transform="translate(-7.8 -.975)"><use href="#c" /></g>
+    <use href="#wasp" />
+  </g>
+  <g class="lit" transform="translate(956 558) scale(4)">
+    <g transform="translate(-7.8 -.975)"><use href="#c" /></g>
+    <use href="#wasp" />
+  </g>
+  <text x="880" y="650" class="note">1 image px/u · dark / loading</text>
+  <g class="dark" transform="translate(799 720)">
+    <use href="#wasp" />
+    <g transform="translate(-7.8 -.975)"><use href="#c" /></g>
+  </g>
+  <g class="lit" transform="translate(847 720)">
+    <use href="#wasp" />
+    <g transform="translate(-7.8 -.975)"><use href="#c" /></g>
+  </g>
+  <g class="dark" transform="translate(927 720)">
+    <g transform="translate(-7.8 -.975)"><use href="#c" /></g>
+    <use href="#wasp" />
+  </g>
+  <g class="lit" transform="translate(975 720)">
+    <g transform="translate(-7.8 -.975)"><use href="#c" /></g>
+    <use href="#wasp" />
+  </g>
+  <text x="823" y="773" class="note">Exposed</text>
+  <text x="951" y="773" class="note">Under hull</text>
+  <text x="528" y="824" class="note">
+    Rough SVG drafts · isolated 6 px/u · same left Wasp slot: (0.975, −7.8)
+    world units
+  </text>
+  <text x="528" y="846" class="note">
+    Current Wasp hull facets × 0.65 · flat cockpit · engine omitted throughout ·
+    exposed changes layer order only
+  </text>
+  <text x="528" y="868" class="note">
+    All colour and dimensions provisional · loading light only · no firing, vent
+    effects or implementation
+  </text>
+</svg>

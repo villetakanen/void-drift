@@ -3,18 +3,41 @@ import { z } from "zod";
 
 /**
  * Gravity values in play: the mass well law's falloff and cut-off pull, the
- * play sun's mass and each configured planet's mass, by planet id. Spec:
- * docs/specs/gravity-field.md; reasoning: docs/gravity-model.md.
+ * Sun mass, fixed planet masses and the shared mercurial family profile. Spec:
+ * docs/specs/game/world/gravity-field/spec.md; reasoning: docs/gravity-model.md.
  */
 export const GravityTuningSchema = z
   .object({
     falloff: MassWellFalloffSchema,
     cutoff: z.number().finite().positive(),
     sunMass: z.number().finite().positive(),
-    planetMass: z.record(z.string(), z.number().finite().positive()),
-    /** Practice-only overrides preserve the ranked stock planet masses. */
+    mercurial: z
+      .object({
+        referenceRadius: z.literal(27),
+        referenceMass: z.number().finite().positive(),
+        coreFraction: z.number().finite().min(0).max(1),
+      })
+      .strict(),
+    habitable: z
+      .object({
+        referenceRadius: z.number().finite().positive(),
+        referenceMass: z.number().finite().positive(),
+        coreFraction: z.number().finite().min(0).max(1),
+      })
+      .strict(),
+    planetMass: z
+      .record(z.string(), z.number().finite().positive())
+      .refine(
+        (masses) => !("moon" in masses),
+        "Mercurial mass belongs to the family profile",
+      ),
+    /** Practice-only overrides for non-family planets. */
     practicePlanetMass: z
       .record(z.string(), z.number().finite().positive())
+      .refine(
+        (masses) => !("moon" in masses),
+        "Mercury uses the shared family profile",
+      )
       .optional(),
   })
   .strict();

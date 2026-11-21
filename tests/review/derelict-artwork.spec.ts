@@ -35,8 +35,8 @@ test("shared derelict hull in the production FX scene before weapon impacts", as
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/lab/fx?weapons=1");
   await expect(
-    page.getByRole("button", { name: "Weapons on" }),
-  ).toHaveAttribute("aria-pressed", "true");
+    page.getByRole("checkbox", { name: "Weapons", exact: true }),
+  ).toBeChecked();
   await page.clock.runFor(32);
   const path = info.outputPath("derelict-production-fx.png");
   await page.screenshot({ path });

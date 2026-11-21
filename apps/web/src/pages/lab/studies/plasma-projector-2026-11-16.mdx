@@ -6,11 +6,12 @@ import StudySection from '../../../components/studies/plasma-projector-2026-11-1
 
 <StudySection>
 
-**Parked · blocked on a provisional plasma-weapon fitting · 17 November 2026.**
-The study established useful behavior and exposed the missing visual foundation:
-the effects need a piece of equipment, with a form and a position on the ship,
-to belong to. A separate equipment-form study must supply that provisional
-reference before this effects inquiry resumes.
+**Physical reference received · 17 November 2026.** The fitting study has
+supplied the accepted Plasma rifle World drawing, a charged-LFX visual prototype
+and named geometric references. The missing-artwork dependency is resolved;
+02.4 records the handoff. This effects inquiry has not been resumed by the
+handoff, and its retained effects remain provisional. No production plasma
+weapon behaviour or damage has been implemented.
 
 ## 01 / A heavy discharge with a continuing consequence
 
@@ -216,9 +217,13 @@ was established. No production weapon, renderer or flight law changed here.
 
 </details>
 
-### Dependency and resumption
+### Dependency recorded before the handoff
 
-A separate study should provide a **provisional physical Plasma Projector fitting**:
+The following requirement records the dependency before the 02.4 handoff. The
+accepted fitting and its current scope below now supply the hardware; a heavy
+firing role does not require an engine-sized body.
+
+A separate study was to provide a **provisional physical Plasma Projector fitting**:
 one piece of equipment on an existing Wasp slot, readable in Preview, Plan and
 at flight scale, with an explicit mount anchor, primary opening and vent origins.
 It should look heavy and belong to the plasma engine's family. Its form must give
@@ -240,6 +245,42 @@ inquiry; their ion appearance and historical dimensions do not prescribe plasma.
 
 <StudySection>
 
-## 03 / To be developed after the equipment dependency is resolved
+## 02.4 / Physical reference received
+
+The [completed fitting study](/lab/studies/plasma-projector-fitting-2026-11-17#0230--plasma-rifle-and-charged-lfx-handoff)
+supplies the **Plasma rifle** as the physical reference for this projector
+inquiry, following the designer’s sufficient-fit judgment in its 02.29. It also
+supplies a static charged-LFX prototype. The name identifies the hardware here;
+it does not add a production weapon or replace this study’s unresolved action.
+
+<figure>
+  <img src="/studies/plasma-projector-fitting-2026-11-17/050-plasma-rifle-pair.png" alt="Supplied handoff: charged Plasma rifle prototype at left, unlit physical rifle at right" width="912" height="1128" style="max-width: 912px; margin-inline: auto;" />
+  <figcaption>Designer-supplied source, 17 November 2026. Static charged appearance and World artwork, not a replayed firing sequence. The charged version includes the central channel and two side-outlet gradients.</figcaption>
+</figure>
+
+- [Unlit rifle SVG](/studies/plasma-projector-fitting-2026-11-17/050-plasma-rifle.svg).
+- [Charged-LFX composite prototype](/studies/plasma-projector-fitting-2026-11-17/050-plasma-rifle-charged-prototype.svg).
+- [Original source document](/studies/plasma-projector-fitting-2026-11-17/050-plasma-rifle-source.svg).
+
+`docs/plans/2026-11-17-plasma-rifle-handoff.md` documents the common frame,
+source scale, receiver-centred provisional attachment, primary mouth, paired
+outlet mouths and source IDs for the three light gradients. Use these shared
+geometric references when reconstructing the fixture; the source’s small
+asymmetries remain intact. The charged composite preserves World occlusion in
+its source paint order and is not a drop-in isolated LFX layer.
+
+The fitting study’s possible integration is only a decorative Playground part
+with mass. It adds no damage, targeting, charge simulation, recoil, vent thrust,
+energy spending or LFX. The action and forces retained in this effects study
+remain study-local ideas, not properties of a delivered rifle. On resumption,
+judge charge, release and residual venting against this hardware through the
+shared flight/render model. Final timing, intensity, masking, emission offsets,
+costs, damage and balance remain open; this handoff implements none of them.
+
+</StudySection>
+
+<StudySection>
+
+## 03 / To be developed after the effects are judged on the supplied fitting
 
 </StudySection>

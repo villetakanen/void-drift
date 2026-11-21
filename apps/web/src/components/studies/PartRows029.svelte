@@ -11,7 +11,7 @@ let _props: { "client:load"?: boolean } = $props();
 // offers with Playground on. Text is the catalog's description, clipped. Still
 // a naive block: no states, and no claim about the row's look.
 import { PARTS, type PartId } from "@void-drift/mode-a";
-import Toggle from "../inputs/Toggle.svelte";
+import SegmentedControl from "../inputs/SegmentedControl.svelte";
 import PartDrawing from "./PartDrawing.svelte";
 import { FIGURE_GLYPH, partFigures } from "./part-figures";
 
@@ -61,7 +61,7 @@ $effect(() => {
 </script>
 
 <div class="bench">
-  <Toggle
+  <SegmentedControl
     options={Object.keys(frames)}
     bind:value={frameName}
     label="Width of the parts column"

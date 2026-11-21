@@ -263,7 +263,7 @@ releases or publish. Meaning and compatibility still require diff review.
 
 ## Design-study experiment — 2026-10-28
 
-Conversation can branch into an exploratory [design study](../lab/design-studies/spec.md) before
+Conversation can branch into an exploratory [design study](../studies/spec.md) before
 implementation. `/lab/studies` indexes stable review pages. The button pilot explores
 situations and action composition first. Designer acceptance and production integration
 are separate states; studies preserve decision rationale. The first iteration and
@@ -274,7 +274,7 @@ promotion remain to be exercised with the designer.
 Design studies develop purpose, explore solutions, then integrate accepted choices.
 Human judgment participates in framing and each substantive iteration as well as
 acceptance. Unknowns are investigation inputs, not necessarily missing requirements.
-The [study contract](../lab/design-studies/spec.md) owns this workflow;
+The [design-study skill](../../../.agents/skills/design-study/SKILL.md) owns this workflow;
 [factory building lessons](../../factory-building-lessons/README.md) record its rationale
 and pending evaluation. The button pilot is integrated; the planetary attempts failed
 and do not establish a validated replacement workflow.

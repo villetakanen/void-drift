@@ -41,13 +41,13 @@ without a storage migration.
 - Actual damageable material intersecting the acquisition rectangle triggers the ready cannon volley.
   Acquisition clips actual material to the rectangle and checks unobstructed
   ship-to-contact segments to its vertices and centroid. All
-  ready cannons are captured before its damage resolves. Each funded cannon fires
+  ready cannons on one ship share a trigger captured in the fleet acquisition pass, before defence or gun discharges resolve. Each funded cannon fires
   even if an earlier shot destroys the trigger; each then queries its own first
   contact in the resulting world. A side cannon can miss and still pays.
 - Allocation follows stable build-mount order. Each actual discharge debits 0.2p,
   including misses, and starts its own 1/3-second cooldown. The shared weapon energy
   floor gates every discharge: below 10% of the ship's energy capacity no cannon
-  fires, takes power or starts a cooldown; at exactly 10% it may fire. A shot the
+  fires, takes power or starts a cooldown; it also requires more than 10 power. A shot the
   remaining power cannot fund is refused the same way, and stops funding the
   remaining ready cannons.
   Guns draw power after defence weapons, as the

@@ -1,4 +1,12 @@
-import { Camera, type FxPass, type Planet, Renderer } from "@void-drift/core";
+import {
+  Camera,
+  createCloudedWorld,
+  createRockMaterial,
+  type FxPass,
+  PLANET_MAPS,
+  type Planet,
+  Renderer,
+} from "@void-drift/core";
 import {
   type BodyAppearance,
   BUILD_FLIGHT_SCALE,
@@ -13,6 +21,17 @@ import {
   resizeFlightLayers,
   STEP,
 } from "@void-drift/mode-a";
+import { HabitableMaterials } from "../assets/habitable-materials";
+import { planetAppearances } from "../assets/planet-appearances";
+import { createPracticeVenus } from "../assets/practice-venus";
+import { createOuterMercurialMaterial } from "../assets/rock-planets/authored-materials";
+import {
+  drawGameField,
+  type FieldBackground,
+  HISTORICAL_BACKGROUND,
+  PRACTICE_BACKGROUND,
+  systemBackground,
+} from "../game-field";
 import type { BurnId } from "../instrument/burns";
 import {
   type FlightSceneDocument,
@@ -28,6 +47,23 @@ import { readOnlyCopy } from "./read-only";
 
 /** A production simulation replay drawn through the same layers as play. */
 export class FlightScene {
+  backgroundMode: "production" | "historical" = "production";
+  get background(): FieldBackground {
+    const draw = this.run.experimentRun?.drawSky;
+    if (draw) return { kind: "experimental", draw };
+    if (this.backgroundMode === "historical") return HISTORICAL_BACKGROUND;
+    return this.skySeed === undefined
+      ? PRACTICE_BACKGROUND
+      : systemBackground(this.skySeed);
+  }
+  get skyCamera() {
+    return this.camera.getViewCentre();
+  }
+  get skySeed() {
+    return this.doc.system || this.doc.planet
+      ? undefined
+      : this.run.sim.settings.seed;
+  }
   private starAppearance?: StarAppearance;
   setStarAppearance(appearance?: StarAppearance) {
     this.starAppearance = appearance
@@ -65,6 +101,56 @@ export class FlightScene {
     this.restart(doc.opening.burn);
     this.setPlanetAppearance(this.planetAppearance);
   }
+  loadPracticeMaterials(redraw: () => void) {
+    let disposed = false;
+    const materials: Parameters<typeof planetAppearances>[1] = {};
+    const painters: Array<{ dispose(): void }> = [];
+    const habitable = new HabitableMaterials();
+    materials.habitable = habitable.materials;
+    const load = async <K extends Exclude<keyof typeof materials, "habitable">>(
+      key: K,
+      create: () => Promise<NonNullable<(typeof materials)[K]>>,
+    ) => {
+      try {
+        const material = await create();
+        if (disposed) {
+          material.painter.dispose();
+          return;
+        }
+        painters.push(material.painter);
+        materials[key] = material;
+        this.bodyAppearances = planetAppearances(
+          this.run.sim.planets,
+          materials,
+        );
+        redraw();
+      } catch {
+        // The production body pass supplies a fallback for unavailable material.
+      }
+    };
+    void habitable
+      .prepare(this.run.sim.planets)
+      .then(() => {
+        if (disposed) return;
+        this.bodyAppearances = planetAppearances(
+          this.run.sim.planets,
+          materials,
+        );
+        redraw();
+      })
+      .catch(() => {});
+    void load("venus", async () => createPracticeVenus(true));
+    void load("mercury", () => createRockMaterial(PLANET_MAPS.mercuryGround));
+    void load("outerMercurial", () => createOuterMercurialMaterial());
+    void load("cradle", () =>
+      createCloudedWorld(PLANET_MAPS.cradleGround, PLANET_MAPS.cradleClouds),
+    );
+    return () => {
+      disposed = true;
+      habitable.dispose();
+      for (const painter of painters) painter.dispose();
+    };
+  }
   private fly(burn: BurnId) {
     return new FlightRun(
       this.doc,
@@ -91,6 +177,7 @@ export class FlightScene {
     this.restart(this.run.burn);
   }
   setPlanetAppearance(appearance?: PlanetAppearance) {
+    if (this.doc.system === "practice") return;
     this.planetAppearance = appearance;
     const planet = this.doc.planet ? this.run.sim.planets[0] : undefined;
     if (!appearance || !planet) {
@@ -191,6 +278,7 @@ export class FlightScene {
   private light() {
     drawFlightFrame(this.frame(), {
       include: (pass) => pass.layer === "fx",
+      presentFx: false,
     });
   }
   /** The production frame; a study's FX light enters as the game's own overlay. */
@@ -279,7 +367,7 @@ export class FlightScene {
     }
     const extra = this.run.experimentRun?.passes;
     if (extra) passes = [...(passes ?? FLIGHT_PASSES), ...extra];
-    drawFlightFrame(this.frame(), { passes });
+    drawGameField(this.frame(), this.background, { passes });
     const paint = this.studyLight?.lfx;
     if (!paint) return;
     // After the game's LFX pass, under the same camera transform.

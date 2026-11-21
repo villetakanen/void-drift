@@ -94,7 +94,7 @@ they validate a general approach.
   limitations and the interpretations recorded at that time.
 - [Design-study retrospective](../docs/factory-experiment-design-studies.md): second-session
   report; this draft does not independently reverify its release claims.
-- [Design-study specification](../docs/specs/lab/design-studies/spec.md): workflow and promotion history.
+- [Design-study specification](../docs/specs/studies/spec.md): workflow and promotion history.
 - [Factory contract](../docs/specs/factory/spec.md) and
   [development guide](../docs/development.md): repository workflow context.
 - [First-loop CI run](https://github.com/villetakanen/void-drift/actions/runs/40675444224).

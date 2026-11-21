@@ -1,5 +1,9 @@
 <script lang="ts">
-import { type FlightLayerContexts, LoadoutSchema } from "@void-drift/mode-a";
+import {
+  type FlightLayerCanvases,
+  type FlightLayerContexts,
+  LoadoutSchema,
+} from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import {
   type BurnId,
@@ -9,7 +13,7 @@ import {
 } from "../../lib/instrument";
 import FlightLayers from "../FlightLayers.svelte";
 import RingSlider from "../inputs/RingSlider.svelte";
-import Toggle from "../inputs/Toggle.svelte";
+import SegmentedControl from "../inputs/SegmentedControl.svelte";
 import BurnRow from "../lab/instrument/BurnRow.svelte";
 import OverlayPane from "../lab/instrument/OverlayPane.svelte";
 import { FlightScene } from "./flight-scene";
@@ -48,9 +52,7 @@ let lost = $state<{ seconds: number; cause?: string | null } | null>(null);
 let hostW = $state(SCREEN.w);
 let hostH = $state(SCREEN.h);
 const scale = $derived(Math.min(hostW / SCREEN.w, hostH / SCREEN.h));
-let canvases = $state<
-  Partial<Record<"world" | "fx" | "lfx", HTMLCanvasElement>>
->({});
+let canvases = $state<FlightLayerCanvases>({});
 
 const build = studyStarterWasp();
 build.hull[0] = "light-ion-cannon";
@@ -63,7 +65,7 @@ onMount(() => {
   if (!world || !fx || !lfx) return;
   // Two wrecks ahead of the start heading, so the cannon has something to fire at.
   const scene = new FlightScene(
-    { world, fx, lfx } satisfies FlightLayerContexts,
+    { world, fx, lfx, fxGlow: canvases.fxGlow } satisfies FlightLayerContexts,
     {
       loadout,
       targets: [
@@ -176,7 +178,7 @@ onMount(() => {
   <OverlayPane>
     <div class="value">
       <p>Light shown after a jump in time</p>
-      <Toggle
+      <SegmentedControl
         stretch
         label="Light shown after a jump in time"
         options={Object.keys(HISTORY)}

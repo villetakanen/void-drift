@@ -37,6 +37,31 @@ export type LabPage = z.infer<typeof labPageSchema>;
 
 export const labPages = z.array(labPageSchema).parse([
   {
+    href: "/lab/ds/page-header",
+    title: "Page header",
+    purpose:
+      "Shared page identity, page-owned actions and container-responsive navigation.",
+    group: "design-system",
+    source: "production",
+    defines: ["apps/web/src/components/PageHeader.svelte"],
+    spec: "docs/specs/factory/design-system/page-header/spec.md#architecture",
+  },
+  {
+    href: "/lab/sky-instrument",
+    title: "Sky instrument",
+    purpose:
+      "Inspect the fixed Sol sky, seeded sightlines and the continuous galactic reach.",
+    group: "tools",
+    source: "production",
+  },
+  {
+    href: "/lab/system-instrument",
+    title: "System instrument",
+    purpose: "Generate and inspect the production solar system by seed.",
+    group: "tools",
+    source: "production",
+  },
+  {
     href: "/lab/planet-inspector",
     title: "Planet Inspector",
     purpose:
@@ -69,7 +94,7 @@ export const labPages = z.array(labPageSchema).parse([
       "packages/core/src/lib/styles/tokens.css",
       "packages/core/src/lib/ui/colors.ts",
     ],
-    spec: "docs/specs/factory/design-system/spec.md#colour",
+    spec: "docs/specs/factory/design-system/colour/spec.md#architecture",
   },
   {
     href: "/lab/typography",
@@ -82,7 +107,7 @@ export const labPages = z.array(labPageSchema).parse([
       "packages/core/src/lib/styles/fonts.css",
       "packages/core/src/lib/ui/typography.ts",
     ],
-    spec: "docs/specs/factory/design-system/spec.md#typography",
+    spec: "docs/specs/factory/design-system/typography/spec.md#architecture",
   },
   {
     href: "/lab/surfaces",
@@ -91,19 +116,36 @@ export const labPages = z.array(labPageSchema).parse([
     group: "design-system",
     source: "production",
     defines: ["packages/core/src/lib/styles/surfaces.css"],
-    spec: "docs/specs/factory/design-system/spec.md#surfaces-and-layers",
+    spec: "docs/specs/factory/design-system/surfaces/spec.md#architecture",
+  },
+  {
+    href: "/lab/ds/game-field-backdrop",
+    title: "Game field backdrop",
+    purpose:
+      "Generated decorative system, outer orbit composition and shared scrim.",
+    group: "design-system",
+    source: "production",
+    defines: [
+      "apps/web/src/components/GameFieldBackdrop.svelte",
+      "apps/web/src/lib/game-field.ts",
+      "packages/mode-a/src/lib/solar-system.ts",
+      "packages/mode-a/src/lib/flight-frame.ts",
+      "packages/core/src/lib/styles/surfaces.css",
+    ],
+    spec: "docs/specs/factory/design-system/game-field-backdrop/spec.md#architecture",
   },
   {
     href: "/lab/ds/choices",
     title: "Choices",
-    purpose: "Toggle and Switch for values and independent settings.",
+    purpose:
+      "SegmentedControl for values; Switch for independent on/off settings.",
     group: "design-system",
     source: "production",
     defines: [
-      "apps/web/src/components/inputs/Toggle.svelte",
+      "apps/web/src/components/inputs/SegmentedControl.svelte",
       "apps/web/src/components/inputs/Switch.svelte",
     ],
-    spec: "docs/specs/factory/design-system/spec.md#toggle-and-switch",
+    spec: "docs/specs/factory/design-system/choices/spec.md#architecture",
   },
   {
     href: "/lab/ds/slider",
@@ -112,25 +154,62 @@ export const labPages = z.array(labPageSchema).parse([
     group: "design-system",
     source: "production",
     defines: ["apps/web/src/components/inputs/RingSlider.svelte"],
-    spec: "docs/specs/factory/design-system/spec.md#ring-slider",
+    spec: "docs/specs/factory/design-system/inputs/spec.md#ring-slider",
   },
   {
     href: "/lab/ds/actions",
     title: "Actions",
-    purpose: "Normal button, call to action and link in every state.",
+    purpose:
+      "Action states and button groups with native or directional navigation.",
     group: "design-system",
     source: "production",
-    defines: ["packages/core/src/lib/styles/buttons.css"],
-    spec: "docs/specs/factory/design-system/spec.md#button-system",
+    defines: [
+      "packages/core/src/lib/styles/buttons.css",
+      "apps/web/src/components/inputs/ButtonGroup.svelte",
+    ],
+    spec: "docs/specs/factory/design-system/actions/spec.md#architecture",
   },
   {
     href: "/lab/ds/tabs",
     title: "Tabs",
-    purpose: "Tabs and their panels; when to use Tabs, Toggle or Switch.",
+    purpose:
+      "Tabs and their panels; when to use Tabs, SegmentedControl or Switch.",
     group: "design-system",
     source: "production",
     defines: ["apps/web/src/components/inputs/Tabs.svelte"],
-    spec: "docs/specs/factory/design-system/spec.md#tabs",
+    spec: "docs/specs/factory/design-system/inputs/spec.md#tabs",
+  },
+  {
+    href: "/lab/ds/parts",
+    title: "Parts",
+    purpose: "Part-design principles and optional fictional artwork markings.",
+    group: "design-system",
+    source: "production",
+    defines: ["packages/mode-a/src/lib/testing-marking.ts"],
+    spec: "docs/specs/factory/design-system/artwork/spec.md#testing-only-marking",
+  },
+  {
+    href: "/lab/ds/weapons",
+    title: "Weapons",
+    purpose:
+      "Unlit SVG master, shared catalog and Canvas artwork, and production fittings.",
+    group: "design-system",
+    source: "production",
+    defines: ["packages/mode-a/src/lib/plasma-rifle-art.ts"],
+    spec: "docs/specs/factory/design-system/artwork/spec.md#architecture",
+  },
+  {
+    href: "/lab/ds/engines",
+    title: "Engines",
+    purpose:
+      "Engine artwork: SVG masters, poses, plume and decorative markings.",
+    group: "design-system",
+    source: "production",
+    defines: [
+      "packages/mode-a/src/lib/art/engines/service-ion.svg",
+      "packages/mode-a/src/lib/testing-marking.ts",
+    ],
+    spec: "docs/specs/factory/design-system/artwork/spec.md#architecture",
   },
   {
     href: "/lab/logomark",
@@ -139,7 +218,7 @@ export const labPages = z.array(labPageSchema).parse([
     group: "design-system",
     source: "production",
     defines: ["apps/web/src/components/Logo.svelte"],
-    spec: "docs/specs/factory/design-system/spec.md#identity",
+    spec: "docs/specs/factory/design-system/identity/spec.md#architecture",
   },
   {
     href: "/lab/graphs",
@@ -221,10 +300,19 @@ export const labPages = z.array(labPageSchema).parse([
     source: "production",
   },
   {
+    href: "/lab/targeting",
+    title: "Targeting bench",
+    purpose:
+      "Measure mounted weapon acquisition and contact across three flight paths shared by eight Wasps and eight Fighters.",
+    group: "tools",
+    source: "production",
+    spec: "docs/specs/lab/targeting-bench/spec.md#measurement",
+  },
+  {
     href: "/lab/gauntlet",
     title: "Gauntlet",
     purpose:
-      "Play the first pirate encounter through the production simulation and render stack.",
+      "Play the seven-enemy Gauntlet through the production simulation and render stack.",
     group: "tools",
     source: "production",
     defines: [

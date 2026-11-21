@@ -267,6 +267,20 @@
   --btn-edge: var(--color-action);
 }
 
+/* A correctable prerequisite blocks this action, not a destructive command.
+   Alert brackets and a softened alert label belong to the tinted ground. */
+.btn-normal.btn-blocked:is(:disabled, [aria-disabled="true"]),
+.btn-filled.btn-blocked:is(:disabled, [aria-disabled="true"]) {
+  --btn-edge: color-mix(in srgb, var(--color-alert) 65%, transparent);
+  color: color-mix(in srgb, var(--color-alert) 65%, var(--color-text-muted));
+}
+.btn-normal.btn-blocked:is(:disabled, [aria-disabled="true"]) {
+  --_fill: color-mix(in lch, var(--color-alert) 12%, transparent);
+}
+.btn-filled.btn-blocked:is(:disabled, [aria-disabled="true"]) {
+  background: color-mix(in lch, var(--color-alert) 12%, transparent);
+}
+
 /* The link: lime words on a 1px lime line at 20%; under a pointer and on
    focus the line goes to full lime. On an anchor or on a .btn. */
 .text-link {
@@ -328,7 +342,7 @@
   margin-inline: auto;
   background: transparent;
 }
-.button-group--vertical > .button-group--vertical .btn {
+.button-group--vertical .btn {
   width: 100%;
   min-width: 0;
 }

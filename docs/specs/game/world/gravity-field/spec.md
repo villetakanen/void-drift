@@ -1,6 +1,17 @@
+---
+title: "Spec: Gravity field"
+status: draft
+generated:
+  by: "codex/gpt-6"
+  at: "2026-11-19T21:04:09+02:00"
+verified: [{ by: "codex/gpt-6", at: "2026-11-19T21:04:09+02:00" }]
+---
+
 # Gravity field
 
-## Context
+## Blueprint
+
+### Context
 
 Gravity is the game's terrain. The accepted intent (study `gravity-wells`,
 `/lab/studies/gravity-wells`) is that a close pass of a sun or planet is a
@@ -14,39 +25,69 @@ and loadout specs; gravity energy collection belongs to
 `packages/mode-a/src/lib/gravity-collection.ts` and only reads the bodies defined
 here.
 
-## Architecture
+### Architecture
 
-### Bodies in play
+#### Bodies in play
 
-- One G sun at (960, 540), created by `createStar` in
-  `packages/mode-a/src/lib/game-loop.ts` from `SUN_CONFIG.G`
-  (`packages/core/src/lib/config.ts`), radius 35.
-- Three planets from `SURVIVAL_CONFIG.PLANETS` (same file), each with its `id`,
-  built by `initializePlanets` (`packages/core/src/lib/physics/planets.ts`) on
-  circular orbits round the sun. In play the flight seed rotates every orbit's
-  starting phase by `(seed mod 360) / 180 · π` and changes nothing else (test
-  flights also seed their salvage).
-- `Simulation` (`packages/mode-a/src/lib/simulation.ts`) puts every body on the
-  mass law in its constructor (`applyGravityTuning`): the sun and each planet get
-  a `massWell` (`MassWellSchema`, `packages/core/src/lib/physics/Physics.ts`) of
-  their mass from the tuning file, with its cut-off pull and falloff; the sun's
-  `influenceRadius` is set to its reach. A configured planet without a mass in
-  the tuning file is an error.
+- Survival, Derelicts and Gauntlet receive their star and retained planets from
+  `generateSolarSystem` in `packages/mode-a/src/lib/solar-system.ts`, following
+  the [system contract](../systems/spec.md). The yellow-family Sun has radius
+  36–140u and size-linked fields; gameplay centers it at (960, 540).
+- The configured planet roster supplies source bodies. Generation replaces
+  `moon` with one seeded 16–36u mercurial planet and removes stock bodies whose
+  swept orbits conflict with it. Only retained bodies contribute gravity.
+  Circular orbits and starting phases follow the system contract.
+- Every retained body has a `massWell` (`MassWellSchema`,
+  `packages/core/src/lib/physics/Physics.ts`) using the tuning cut-off and
+  falloff. The Sun's mass and reach follow its yellow-family profile; planets
+  use identity-keyed tuning masses except `moon`, which uses the shared
+  mercurial family profile below. A retained non-family planet without a tuning
+  mass is an error. Both the mercurial body's mass and well mass follow its
+  actual radius; its gravity reach follows the common cutoff law.
 - Practice uses its fixed G7 Sun and roster: Mercury, Venus replacing the middle
-  gas planet, and the outer stock rock. Venus receives its own identity before
+  gas planet, and The Cradle replacing the outer stock rock. The Cradle's mass
+  is stored in `practicePlanetMass.cradle`, 3186.671024, and reaches 252.45u. Venus receives its own identity before
   mass lookup, using the independently stored `planetMass.venus`. The selected
   mass is now 2844.850581, recalculated from Mercury's reduced 870 mass using
   the study's selected one-third surface-gravity difference. Its reach is
   238.53u at the shared cut-off and contact pull is 0.899× the reference Fighter's
   thrust, within the existing 0.75–1.5× guardrail. Optional `practicePlanetMass`
-  overrides the stock `planetMass` only in Practice: Mercury uses 870 and reaches
-  131.91u, while the stock moon retains 1450 in other modes. Practice Mercury's
-  deliberately gentler contact pull is outside the stock planet tuning band;
-  that band continues to guard stock planets and Venus.
-  Fields may overlap; their accelerations continue to add as vectors. Practice
+  overrides the stock `planetMass` only in Practice for bodies such as The
+  Cradle. Mercury uses the shared mercurial family profile: at 27u its mass is
+  870 and reach is 131.91u, the same as a generated or inspected 27u specimen.
+  The mercurial family is calibrated independently of the stock planet contact
+  band; that band guards fixed non-family planet reference fixtures and Venus.
+  Fields may overlap; their accelerations continue to add as vectors. A
+  planet's [atmosphere](../planets/spec.md#atmosphere) adds drag in its air,
+  applied after the pull in each step; gravity and contact are unchanged. Practice
   contact and full resources follow [its contract](../../test-flight/spec.md).
 
-### The pull
+#### Mercurial family mass
+
+`gravity.mercurial` in the tuning file is the one profile for generated
+mercurials, Practice Mercury and Planet Inspector family specimens. Its strict
+Zod schema validates reference radius 27u, positive finite reference mass, and
+finite core fraction from 0 to 1. Current reference mass is 870 and core fraction
+is 0.75. `planetMass.moon` and `practicePlanetMass.moon` are absent; family
+mass is not selected through mode-specific overrides.
+
+For radius `R` in 16–36u, reference radius `R₀`, reference mass `M₀` and core
+fraction `f`, the shared production helper computes
+`M(R) = M₀ × [f + (1 − f) × (R / R₀)²]`.
+The core mass remains fixed while the smaller outer contribution varies with
+size. This changes mass moderately across the family rather than prescribing
+constant density or constant surface pull. Ship contact still occurs at body
+radius plus ship radius; mass does not derive from ship thrust or loadout.
+
+Body `mass` and `massWell.mass` both use this result, with the common cutoff and
+falloff. Any Inspector radius edit or backward reconstruction recomputes both;
+the normal gravity HUD reads that same well. At 27u the mass, reach and
+planet-only acceleration match Practice Mercury at every eligible distance for
+the same ship and gravity law. Other Suns' fields remain independent.
+Invalid radii are rejected before changing the body. The owning implementation
+is `packages/mode-a/src/lib/mercurial-rock.ts`.
+
+#### The pull
 
 The mass law (reasoning: [gravity-model.md](../../../../gravity-model.md)): a body pulls by
 its mass, `massWellPull` in `Physics.ts`,
@@ -76,7 +117,7 @@ In Derelicts mode every salvage body (derelict, piece, energy cell) takes the
 same sun and planet pulls each substep, with the planet's contact distance its
 surface alone (`planetPull` with radius 0). Only planets feel no gravity.
 
-### Motion
+#### Motion
 
 - Fixed tick `STEP = 1/60` s; `Simulation.step` runs four substeps of `STEP / 4`.
   Replays are input segments, each held for a number of ticks (`ReplaySchema`,
@@ -89,7 +130,7 @@ surface alone (`planetPull` with radius 0). Only planets feel no gravity.
 - The arena is a circle of radius 1200 round (960, 540); a ship that leaves it
   reappears at the opposite point, 1190 from the centre, with its velocity kept.
 
-### Contact
+#### Contact
 
 - Planet: whenever the ship is inside radius + ship radius, whichever way it is
   moving, it is pushed out to the surface, its velocity is reflected about the
@@ -101,7 +142,7 @@ surface alone (`planetPull` with radius 0). Only planets feel no gravity.
   (`highscore.ts` death causes: `STAR`, `HULL`, `POWER`). Heat damage near the sun
   is `updateHull`, outside this spec.
 
-### Tuning values
+#### Tuning values
 
 Gameplay tuning lives in one versioned file, `packages/mode-a/src/lib/tuning.json`,
 one section per area, parsed at load by `TuningSchema` (`packages/mode-a/src/lib/tuning.ts`)
@@ -109,15 +150,18 @@ into `TUNING`. This spec owns the `gravity` section, validated by
 `GravityTuningSchema` (`packages/mode-a/src/lib/schemas/gravity.ts`) and exported
 as `GRAVITY_TUNING`. Other areas add their own sections to the same file.
 
-| Value                | Range                       | Meaning                                   |
-| -------------------- | --------------------------- | ----------------------------------------- |
-| `falloff`            | `inverse-square`, `inverse` | the mass law's falloff                    |
-| `cutoff`             | > 0, u/s²                   | the pull at which every body's reach ends |
-| `sunMass`            | > 0                         | the play sun's mass                       |
-| `planetMass`         | > 0, by planet id           | each configured planet's mass             |
-| `practicePlanetMass` | optional > 0, by planet id  | Practice-only mass overrides              |
+| Value                       | Range                                 | Meaning                                   |
+| --------------------------- | ------------------------------------- | ----------------------------------------- |
+| `falloff`                   | `inverse-square`, `inverse`           | the mass law's falloff                    |
+| `cutoff`                    | > 0, u/s²                             | the pull at which every body's reach ends |
+| `sunMass`                   | > 0                                   | the play sun's mass                       |
+| `planetMass`                | > 0, by non-family planet id          | fixed planet masses                       |
+| `practicePlanetMass`        | optional > 0, by non-family planet id | Practice-only mass overrides              |
+| `mercurial.referenceRadius` | 27u                                   | family calibration radius                 |
+| `mercurial.referenceMass`   | finite > 0                            | mass at reference radius; 870             |
+| `mercurial.coreFraction`    | finite 0–1                            | fixed fraction of reference mass; 0.75    |
 
-Masses are absolute and chosen from a pull at contact distance (body radius +
+Non-family masses are absolute and chosen from a pull at contact distance (body radius +
 the reference ship's radius) relative to the reference ship's thrust: planets
 about 1×, the sun about 2×, the cut-off about 10 %. The reference ship is the
 Fighter's starter loadout; its thrust is its peak acceleration on the
@@ -133,7 +177,7 @@ Still fixed in code: four substeps. `createStar` gives suns without a mass well
 (studies) a reach of 9 × radius, and `getPlanetInfluenceRadius` keeps a reach
 rule for planets without one.
 
-### Engine taper
+#### Engine taper
 
 `updateShip` takes both `engineCutoff` and `engineSpeedScale`; when a cutoff is
 given it is applied and `engineSpeedScale` is ignored. Play passes
@@ -143,13 +187,14 @@ in play, receive no thrust input in `updateShip` at all; their thrust comes from
 `applyBuildEngines` (`build-flight.ts`) with each part's own `limit`. So
 `engineSpeedScale` affects no flight. It belongs to engine rules, not gravity.
 
-### Rules version
+#### Rules version
 
 Score documents carry the ranked Survival rules version `CHALLENGE`
-(`packages/mode-a/src/schemas/highscore.ts`, currently `ion-storm`), which also
-prefixes score document IDs. Its ranked baseline is the 0.6.0 launch-era
-rules. Playground Survival and other unranked modes may adopt experimental or
-upcoming features without changing that baseline or board. A release changes `CHALLENGE` only when changes to
+(`packages/mode-a/src/schemas/highscore.ts`, `fires-in-the-sky` in the 0.7
+release candidate), which also prefixes score document IDs. The candidate has a
+separate board from the published `ion-storm` ruleset. Playground Survival and
+other unranked modes may adopt experimental or upcoming features without
+changing the ranked rules or board. A release changes `CHALLENGE` only when changes to
 rules applied to score-eligible ranked Survival runs make scores from before and
 after the release unfair to compare. This includes changes to ranked Survival
 trajectories, survival conditions, scoring, or score eligibility. A tuning value
@@ -160,6 +205,10 @@ Decide once at release against the last published release, not against
 intermediate edits. When `CHALLENGE` changes, add a Firestore rule and document
 ID prefix for the new name, as the [scores contract](../../scores/spec.md)
 requires. Follow the release procedure in `docs/development.md`.
+
+### Constraints
+
+- Body mass and gravity-well mass use the same family calibration.
 
 ## Contract
 
@@ -183,12 +232,18 @@ requires. Follow the release procedure in `docs/development.md`.
   bodies equal those built from `GRAVITY_TUNING`, every configured planet has a
   mass, the sun's reach is where its pull meets the cut-off, and changing each
   value changes the bodies (`tuning.test.ts`).
-- Each planet pulls 0.75–1.5× and the sun 1.5–3× the reference ship's thrust
-  at contact; the cut-off is 5–20 % of it (`game-gravity.test.ts`).
+- Fixed non-family planet reference fixtures and Venus pull 0.75–1.5× and the
+  reference sun 1.5–3× the reference ship's thrust at contact; generated
+  mercurials follow their calibrated core-led mass profile rather than this
+  contact band.
+  The cut-off is 5–20 % of reference thrust (`game-gravity.test.ts`).
 - Planet contact bounces the ship with the shared `bounceOffSurface`
   (`MassWell.test.ts`; game planet contact unchanged by the extraction).
+- Mercurials at 16u, 27u and 36u follow the core-led profile, remain positive
+  and increase moderately with radius; a 27u specimen matches Practice Mercury's
+  well, acceleration and cutoff. Inspector edits and replay retain this parity.
 
-### Regression Guardrails
+### Regression guardrails
 
 - One gravity function serves play, replay and the Lab.
 - Gravity depends only on the ship's position and the bodies, never on its
@@ -235,7 +290,7 @@ Scenario: Planet contact bounces the ship
 
 ```
 
-## Open questions
+#### Unspecified cases
 
 - Does `engineSpeedScale` move to the engine rules or get removed? It affects no
   flight today.
@@ -243,3 +298,9 @@ Scenario: Planet contact bounces the ship
   position; harmless while the sun is fixed there.
 - Other sun types (O–M) have no mass in the tuning file; play uses only the G
   sun.
+
+#### Habitable family mass
+
+[Habitable worlds](../planets/habitable/spec.md) use the direct radius ratio:
+`M(R) = ME × [0.70 + 0.30 × R/RE]`. Body and well mass agree.
+This family profile is independent of Practice Cradle tuning.
