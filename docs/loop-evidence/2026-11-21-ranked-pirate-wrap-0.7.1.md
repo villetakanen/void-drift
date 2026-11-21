@@ -91,3 +91,37 @@ readiness claim follows from this closure.
 Closure changed only this record. Its local Markdown link targets and whitespace
 were validated; implementation checks were not rerun. Unrelated dirty changes were
 preserved.
+
+## Release closeout — 21 November 2026
+
+Candidate `b4a4a473` was pushed in PR #16 and merged to `main` at 19:51:10Z as
+`ac3d791311ddfe2bfec6133fd358f26a434607a5`. Tag `v0.7.1` was pushed at the exact
+deployed commit.
+
+The Survival spec frontmatter was normalized under the updated write-spec rules:
+title and status were removed, and verification was reset to empty because no
+human confirmation was recorded.
+
+Final full verification passed on `main` at that revision with Node 24.14.0,
+Darwin arm64 and Java 21. The retained report is
+`artifacts/verification/2026-11-21T19-51-30.447Z-2wMGNv/report.json`. Contracts,
+commit syntax, lint, types and build passed; unit tests passed (436 across 82
+files), browser checks passed (29), Firestore rules tests passed (14), and the
+competition journey passed (2). The candidate run first failed only because Java
+was absent from `PATH` (`19-42-02.626Z-zSUKuA`); it passed after the local Java 21
+runtime was added to `PATH` (`19-44-32.003Z-oJLDsq`), followed by the final main
+verification above.
+
+Initial release preparation failed with `EPERM` while binding locally in the
+sandbox (`artifacts/prepared-releases/2026-11-21T19-55-01.982Z-mkFHYx`). Preparation
+succeeded with loopback access in
+`artifacts/prepared-releases/2026-11-21T19-55-22.902Z-hckGR8`, and
+`release:check` passed. Its publication report records deployment complete at
+19:56:17.971Z: Firestore rules were already up to date and Hosting was released.
+
+Live verification passed at 19:57:44Z in Chromium 156.0.8078.4 at 1280×720;
+`artifacts/live-release-0.7.1/report.json` records the 0.7.1 version and matching
+published HTML/JavaScript hashes, keyboard flight and pause, FX Lab operation,
+anonymous authentication and score reads, with no page errors or score writes.
+Verification, preparation, publication and live reports are ignored local
+artifacts, not durable records. These checks do not imply human playtest approval.
