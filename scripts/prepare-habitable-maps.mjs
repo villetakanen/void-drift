@@ -109,7 +109,7 @@ try {
       : promptData.prompt;
     await writeFile(
       resolve(output, `${name}.prompt.json`),
-      JSON.stringify(
+      `${JSON.stringify(
         {
           image: `${name}.png`,
           method: "built-in image_gen; deterministic offline atlas preparation",
@@ -123,7 +123,7 @@ try {
         },
         null,
         2,
-      ) + "\n",
+      )}\n`,
     );
   }
   console.log(

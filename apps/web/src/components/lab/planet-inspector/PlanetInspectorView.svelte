@@ -25,7 +25,7 @@ import GameField from "../../GameField.svelte";
 import RingSlider from "../../inputs/RingSlider.svelte";
 import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import Switch from "../../inputs/Switch.svelte";
-import OverlayPane from "../instrument/OverlayPane.svelte";
+import SideSheet from "../instrument/SideSheet.svelte";
 import "@void-drift/core/styles/buttons.css";
 
 type PlanetName = PlanetInspectorDocument["planet"]["name"];
@@ -322,7 +322,7 @@ onMount(() => {
         bind:value={zoom}
       />
     </div>
-    <OverlayPane title="Inspector" label="Planet inspection options">
+    <SideSheet title="Inspector" label="Planet inspection options">
       <p>Named planet</p>
       <SegmentedControl
         label="Named planet"
@@ -477,7 +477,7 @@ onMount(() => {
       {#if pane}
         {@render pane(paneDoc)}
       {/if}
-    </OverlayPane>
+    </SideSheet>
     <div class="identity">
       <span>{PLANET_LABELS[doc.planet.name]}</span>
       <span class="caption"

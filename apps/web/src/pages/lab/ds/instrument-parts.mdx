@@ -1,0 +1,150 @@
+---
+generated:
+  by: "codex/gpt-6.2"
+  at: "2026-11-21T19:27:06+00:00"
+verified: []
+---
+
+import ComponentFrame from "../../../components/lab/ComponentFrame.svelte";
+import InstrumentPartsExample from "../../../components/lab/InstrumentPartsExample.svelte";
+import DesignSystemLayout from "../../../layouts/DesignSystemLayout.astro";
+
+<DesignSystemLayout title="Instrument parts" wide>
+<div className="instrument-parts-guide">
+
+# Instrument parts
+
+Parts used to compose Lab instrumentation views and study instruments. Their
+contracts belong together because they make sense in the context of a host
+instrument. They are instrument-scoped pieces, not app-wide controls.
+
+## Shared instrument parts
+
+These parts recur across different instrumentation views. The host supplies
+their data, content and placement.
+
+### Parameter side sheet
+
+`SideSheet` is the instrument's secondary surface for parameters, controls and
+readouts. It is shared by the Motion and Planet inspectors, the Flight Scene
+instrument, and study instruments. The host chooses what appears inside it.
+
+The sheet sits at the upper-right edge of a positioned instrument host. It
+covers the full height and 38.2% of the host width, above an 11% scrim. Its
+corner button opens it; the close button or Escape dismisses it and returns
+focus to the opener.
+
+<ComponentFrame>
+<InstrumentPartsExample client:load part="side-sheet" />
+</ComponentFrame>
+
+| Input | Purpose |
+| --- | --- |
+| `title` | Visible heading and the text used by the open and close buttons. |
+| `label` | Accessible name of the side sheet. |
+| children | Parameters, controls and readouts supplied by the host. |
+
+The host must be positioned. The side sheet owns opening, dismissal and focus
+return; the host owns the values and controls it contains.
+
+### Burn row
+
+`BurnRow` pairs a three-choice burn selector with the two engine-input lanes
+for the selected program. The active input brightens at the supplied time
+marker. Motion and Flight Scene use it; each host owns its time slider and
+playback controls.
+
+<ComponentFrame>
+<InstrumentPartsExample client:load part="burn-row" />
+</ComponentFrame>
+
+| Input | Purpose |
+| --- | --- |
+| `burn` | Bindable selection: course, turn or weave (B1–B3). |
+| `tick` | Current sample index, shared with the instrument's time display. |
+
+Each burn spans 14 seconds. B1 is Course, B2 is Turn and B3 is Weave.
+
+## Instrument display parts
+
+These display components read the same track data and time index, keeping
+paths, traces and vehicle colours aligned. They are used by the Motion
+instrument and comparison studies; `PathPane` also supports the Gravity tuning
+bench.
+
+### Path pane
+
+`PathPane` draws a square plan view of vehicle paths with a marker at the
+current time. The selector fits all paths or switches to the default scale
+(0.2 px/u), which can be panned by dragging. Gravity tuning can also supply
+field bodies and a callback for moving a well.
+
+<ComponentFrame>
+<InstrumentPartsExample client:load part="path-pane" />
+</ComponentFrame>
+
+| Input | Purpose |
+| --- | --- |
+| `tracks`, `tick` | Paths and the current sample marker. |
+| `size` | Side of the square in logical pixels. |
+| `scale` | Host scale, so pointer movement maps to world movement. |
+| `bodies`, `onmovewell` | Optional field bodies and well-drag callback for Gravity tuning. |
+
+### Time graph
+
+`TimeGraph` plots one measure for each vehicle over the 14-second run. It
+chooses a readable value range from the data; signed measures stay symmetric
+around zero. The measure, units and current values sit above the plot, with all
+labels outside the data area. Supported measures cover flight speed,
+acceleration and turn; resource collection, consumption, net charging and
+battery change; plus gravity and distance to a well.
+
+<ComponentFrame>
+<InstrumentPartsExample client:load part="time-graph" />
+</ComponentFrame>
+
+| Input | Purpose |
+| --- | --- |
+| `measure` | Speed, acceleration or turn acceleration. |
+| `tracks`, `tick` | Trace data and the current sample index. |
+| `width`, `height` | Drawing size in logical pixels; 672 × 208 in Motion. |
+
+The graph draws in its own coordinates; the host scales it with the rest of the
+instrument. Its plot margins are exported as `GRAPH_MARGIN` for lining up
+controls with the time axis.
+
+### Track legend
+
+`Legend` gives each vehicle a short line in its track colour and preserves that
+mapping across the instrument's diagrams.
+
+<ComponentFrame>
+<InstrumentPartsExample client:load part="legend" />
+</ComponentFrame>
+
+| Input | Purpose |
+| --- | --- |
+| `tracks` | Vehicles to name and their assigned colours. |
+
+## Composition boundary
+
+Instrument hosts own the experiment, layout and controls. These parts receive
+the values needed to display or edit that experiment, while the host decides
+which parts belong in its view. General controls such as
+[`RingSlider`](/lab/ds/slider) remain documented on their own design system pages.
+
+</div>
+</DesignSystemLayout>
+
+<style>{`
+.instrument-parts-guide { display: grid; gap: var(--spacing-lg); width: 100%; max-width: 1280px; box-sizing: border-box; margin-inline: auto; padding: var(--spacing-lg); }
+.instrument-parts-guide h1 { margin: 0; font-size: var(--font-size-heading); }
+.instrument-parts-guide h2 { margin: var(--spacing-lg) 0 0; font-size: var(--font-size-lead); }
+.instrument-parts-guide h3 { margin: var(--spacing-lg) 0 var(--spacing-sm); font-size: var(--font-size-body); }
+.instrument-parts-guide p { max-width: var(--measure-prose); margin: 0 0 var(--spacing-md); line-height: 1.6; color: var(--color-text-muted); }
+.instrument-parts-guide table { width: 100%; max-width: 900px; border-collapse: collapse; font-size: var(--font-size-body); }
+.instrument-parts-guide th, .instrument-parts-guide td { padding: var(--spacing-sm) var(--spacing-md); text-align: left; border-bottom: 1px solid var(--color-border-subtle); vertical-align: top; }
+.instrument-parts-guide th { color: var(--color-text-muted); font-weight: 400; }
+.instrument-parts-guide th:first-child, .instrument-parts-guide td:first-child { padding-left: 0; white-space: nowrap; }
+.instrument-parts-guide a { color: var(--color-action); }
+`}</style>

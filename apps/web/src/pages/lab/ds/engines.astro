@@ -1,6 +1,6 @@
 ---
 import LabEngines from "../../../components/lab/LabEngines.svelte";
-import LabLayout from "../../../layouts/LabLayout.astro";
+import DesignSystemLayout from "../../../layouts/DesignSystemLayout.astro";
 
 // Every engine's SVG master, keyed by the part id it names.
 const files = import.meta.glob(
@@ -16,6 +16,6 @@ const masters = Object.fromEntries(
 ---
 
 <!-- Engine artwork: each SVG master beside the art the game draws from it. -->
-<LabLayout title="Engines" wide>
+<DesignSystemLayout title="Engines" wide>
   <LabEngines masters={masters} client:load />
-</LabLayout>
+</DesignSystemLayout>

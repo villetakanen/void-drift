@@ -178,8 +178,6 @@ const earlierDesignSystemAddresses = [
   "/lab/typography",
   "/lab/surfaces",
   "/lab/logomark",
-  "/lab/graphs",
-  "/lab/instrument-parts",
 ];
 // Shared stylesheets that are page plumbing, not parts to demonstrate.
 const stylesWithoutPage = ["reset.css", "flight.css"];

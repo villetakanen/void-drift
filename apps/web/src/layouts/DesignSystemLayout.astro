@@ -1,0 +1,220 @@
+---
+import PageHeader from "../components/PageHeader.svelte";
+import { labGroups, labPages } from "../data/lab-pages";
+import "@void-drift/core/styles/reset.css";
+import "@void-drift/core/styles/tokens.css";
+import "@void-drift/core/styles/buttons.css";
+import "@void-drift/core/styles/surfaces.css";
+import "@void-drift/core/styles/typography.css";
+import "../styles.css";
+
+interface Props {
+  title: string;
+  wide?: boolean;
+}
+const { title = "Design system", wide = true } = Astro.props;
+const section = "Design system";
+const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
+const covers = (href: string) =>
+  currentPath === href || currentPath.startsWith(`${href}/`);
+// The deepest listed page that covers the path is the active one, so an
+// overview is not lit alongside the pages beneath it.
+const activeHref = labPages
+  .map((page) => page.href)
+  .filter(covers)
+  .sort((a, b) => b.length - a.length)[0];
+const isActive = (href: string) => href === activeHref;
+const groups = labGroups
+  .filter((group) => group.id === "design-system")
+  .map((group) => ({
+    ...group,
+    pages: labPages.filter((page) => page.group === group.id),
+  }));
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <title>{title} | Void Drift {section}</title>
+  </head>
+  <body>
+    <div class:list={["design-system-grid", { wide }]}>
+      <!-- Full-width page identity -->
+      <div class="page-header">
+        <PageHeader
+          title={section}
+          pageName={title === section ? undefined : title}
+          href="/lab/ds"
+          links={[
+            { href: "/lab", label: "lab" },
+            { href: "/lab/studies", label: "studies" },
+          ]}
+          navigationLabel="Development sites"
+        />
+      </div>
+
+      <!-- Navigation below the page identity -->
+      <aside class="nav-rail">
+        <nav class="tray" aria-label={section}>
+          <a href="/lab/ds" class:list={[{ active: currentPath === "/lab/ds" }]}
+            >Overview</a
+          >
+          {groups.map((group) => (
+            <section class="group" aria-label={group.label}>
+              <h2>Components</h2>
+              {group.pages
+                .filter((page) => page.href !== "/lab/ds")
+                .map((page) => (
+                  <a
+                    href={page.href}
+                    class:list={[{ active: isActive(page.href) }]}
+                    aria-current={isActive(page.href) ? "page" : undefined}
+                  >
+                    {page.title}
+                  </a>
+                ))}
+            </section>
+          ))}
+          <a href="/lab">← Lab</a>
+          <a href="/lab/studies">Design studies</a>
+          <a href="/">← Back to Game</a>
+        </nav>
+      </aside>
+
+      <!-- Column 2 Row 2: Main Stage -->
+      <main class="main-stage">
+        <slot />
+      </main>
+
+      <!-- Inspector beside the main stage -->
+      <aside class="inspector-rail" hidden={wide}>
+        <slot name="inspector" />
+      </aside>
+    </div>
+  </body>
+</html>
+
+<style>
+:global(body) {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--color-void);
+  color: var(--color-text);
+  font-family: var(--font-family-ui);
+}
+
+.design-system-grid {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr) 300px;
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    "header header header"
+    "nav main   inspector";
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* Column 1: Nav Rail */
+.nav-rail {
+  grid-area: nav;
+  background: var(--color-elev-1);
+  border-right: 1px solid var(--color-border-subtle);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tray {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 0.25rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: var(--spacing-sm);
+}
+
+.group h2 {
+  margin: 0;
+  padding: var(--spacing-xs) 1rem;
+  font-size: var(--font-size-caption);
+  font-weight: normal;
+  color: var(--color-text-muted);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* Full-width identity with the same inset as its live examples. */
+.page-header {
+  grid-area: header;
+  padding: var(--spacing-sm) var(--spacing-md);
+  min-width: 0;
+  background: var(--color-void);
+  display: flex;
+  align-items: center;
+}
+
+/* Column 2 Row 2: Main Stage */
+.main-stage {
+  grid-area: main;
+  overflow-y: auto;
+  background: var(--color-void);
+  border-right: 1px solid var(--color-border-subtle);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Column 3: Inspector */
+.inspector-rail {
+  grid-area: inspector;
+  background: var(--color-elev-1);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Link Styles */
+a {
+  text-decoration: none;
+  color: var(--color-text-muted);
+  padding: 0.6rem 1rem;
+  text-align: left;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  font-size: var(--font-size-caption);
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  display: block;
+}
+
+a:hover {
+  color: var(--color-text);
+  background: var(--color-surface-hover);
+}
+
+a.active {
+  color: var(--color-selected);
+  border: 1px solid color-mix(in lch, var(--color-selected) 30%, transparent);
+  background: color-mix(in lch, var(--color-selected) 10%, transparent);
+}
+.design-system-grid.wide {
+  grid-template-columns: 250px minmax(0, 1fr);
+  grid-template-areas: "header header" "nav main";
+}
+.wide .inspector-rail {
+  display: none;
+}
+</style>

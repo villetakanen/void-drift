@@ -3,8 +3,8 @@
 title: "Spec: Planet Inspector"
 status: draft
 generated:
-  by: "codex/gpt-6"
-  at: "2026-11-19T21:04:09+02:00"
+  by: "codex/gpt-6.2"
+  at: "2026-11-21T19:09:36+00:00"
 verified:
 - by: "openai-codex/gpt-6.1-sol"
   at: "2026-11-19T12:33:38+02:00"
@@ -194,7 +194,7 @@ Controls work by keyboard and pointer.
 
 #### Options and costs
 
-The top-right shared `OverlayPane` contains named-planet and planet-family
+The top-right shared `SideSheet` contains named-planet and planet-family
 choices, the family-only Radius slider, visibility controls, current scale,
 optional host pane snippet, and two live readouts:
 

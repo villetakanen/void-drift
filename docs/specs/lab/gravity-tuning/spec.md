@@ -116,7 +116,7 @@ Anything else is rejected with its issues listed in place of the view.
 
 The instrument's screen, `MotionInstrumentScreen`
 (`apps/web/src/components/lab/instrument/`, shared with Ship tuning), with its
-parts (`PathPane`, `BurnRow`, `TimeGraph`, `Legend`, `OverlayPane`), for
+parts (`PathPane`, `BurnRow`, `TimeGraph`, `Legend`, `SideSheet`), for
 viewports 1280px wide and up. The bench is `GravityTuning` with its pane
 `GravityPanel` (`apps/web/src/components/lab/gravity-tuning/`):
 

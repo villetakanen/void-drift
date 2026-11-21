@@ -3,6 +3,7 @@ import { SkySeedSchema } from "@void-drift/core";
 import { type SkySightline, SOL_SKY, systemSky } from "@void-drift/mode-a";
 import { prepare } from "../../../lib/assets/flight-sky/prepare";
 import RingSlider from "../../inputs/RingSlider.svelte";
+import SideSheet from "../instrument/SideSheet.svelte";
 import SkyView from "./SkyView.svelte";
 
 let _props: { "client:load"?: boolean } = $props();
@@ -141,112 +142,115 @@ $effect(() => {
       {/if}
     </section>
   </section>
-  <aside aria-label="Sky controls">
-    <h2>Sightline</h2>
-    <form
-      novalidate
-      onsubmit={(event) => {
-        event.preventDefault();
-        loadSystem();
-      }}
-    >
-      <label for={`${id}-system`}>System seed</label>
-      <div class="row">
-        <input
-          id={`${id}-system`}
-          type="number"
-          min="1"
-          max="2147483647"
-          step="1"
-          bind:value={systemInput}
-          aria-invalid={!!systemError}
-        ><button class="btn btn-normal" type="submit">Load</button>
-      </div>
-      {#if systemError}
-        <p role="alert">{systemError}</p>
-      {/if}
-    </form>
-    <button
-      type="button"
-      class="btn btn-normal"
-      onclick={() => setSightline(SOL_SKY, "Sol")}
-    >
-      Restore Sol
-    </button>
-    <section>
-      <h3>Galactic form</h3>
-      <RingSlider
-        label="Reach"
-        min={0}
-        max={1}
-        step={0.001}
-        digits={3}
-        bind:value={reach}
-      />
+  <SideSheet title="Sightline" label="Sky controls">
+    <div class="controls">
       <form
         novalidate
         onsubmit={(event) => {
           event.preventDefault();
-          applyDust();
+          loadSystem();
         }}
       >
-        <label for={`${id}-dust`}>Dust seed</label>
+        <label for={`${id}-system`}>System seed</label>
         <div class="row">
           <input
-            id={`${id}-dust`}
+            id={`${id}-system`}
             type="number"
             min="1"
             max="2147483647"
             step="1"
-            bind:value={dustInput}
-            aria-invalid={!!dustError}
-          ><button class="btn btn-normal" type="submit">Apply</button>
+            bind:value={systemInput}
+            aria-invalid={!!systemError}
+          ><button class="btn btn-normal" type="submit">Load</button>
         </div>
-        {#if dustError}
-          <p role="alert">{dustError}</p>
+        {#if systemError}
+          <p role="alert">{systemError}</p>
         {/if}
       </form>
-    </section>
-    <section>
-      <h3>View</h3>
-      <RingSlider
-        label="Heading"
-        min={0}
-        max={360}
-        step={1}
-        unit="°"
-        bind:value={heading}
-      />
-      <RingSlider
-        label="Pattern scale"
-        min={80}
-        max={120}
-        step={1}
-        unit="%"
-        bind:value={scale}
-      />
-      <RingSlider
-        label="Camera travel"
-        min={-500}
-        max={500}
-        step={10}
-        unit="u"
-        bind:value={travel}
-      />
-    </section>
-  </aside>
+      <button
+        type="button"
+        class="btn btn-normal"
+        onclick={() => setSightline(SOL_SKY, "Sol")}
+      >
+        Restore Sol
+      </button>
+      <section>
+        <h3>Galactic form</h3>
+        <RingSlider
+          label="Reach"
+          min={0}
+          max={1}
+          step={0.001}
+          digits={3}
+          bind:value={reach}
+        />
+        <form
+          novalidate
+          onsubmit={(event) => {
+            event.preventDefault();
+            applyDust();
+          }}
+        >
+          <label for={`${id}-dust`}>Dust seed</label>
+          <div class="row">
+            <input
+              id={`${id}-dust`}
+              type="number"
+              min="1"
+              max="2147483647"
+              step="1"
+              bind:value={dustInput}
+              aria-invalid={!!dustError}
+            ><button class="btn btn-normal" type="submit">Apply</button>
+          </div>
+          {#if dustError}
+            <p role="alert">{dustError}</p>
+          {/if}
+        </form>
+      </section>
+      <section>
+        <h3>View</h3>
+        <RingSlider
+          label="Heading"
+          min={0}
+          max={360}
+          step={1}
+          unit="°"
+          bind:value={heading}
+        />
+        <RingSlider
+          label="Pattern scale"
+          min={80}
+          max={120}
+          step={1}
+          unit="%"
+          bind:value={scale}
+        />
+        <RingSlider
+          label="Camera travel"
+          min={-500}
+          max={500}
+          step={10}
+          unit="u"
+          bind:value={travel}
+        />
+      </section>
+    </div>
+  </SideSheet>
 </div>
 <style>
 .instrument {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 260px;
-  min-height: 100%;
+  position: relative;
+  display: flex;
+  min-height: 0;
   flex: 1;
 }
 .main {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  flex: 1;
+  overflow: auto;
 }
 header {
   display: flex;
@@ -255,14 +259,16 @@ header {
   gap: var(--spacing-md);
 }
 .main > header,
-.spectrum,
-aside {
+.spectrum {
   padding: var(--spacing-lg);
 }
 h2,
 h3,
 p {
   margin: 0;
+}
+.main > header {
+  padding-right: calc(48px + 2 * var(--spacing-sm));
 }
 h2 {
   font-size: var(--font-size-lead);
@@ -322,16 +328,14 @@ small {
 .thumbnail {
   height: 58px;
 }
-aside {
-  padding-inline: var(--spacing-md);
+.controls {
+  padding-top: var(--spacing-md);
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: var(--spacing-md);
-  background: var(--color-elev-1);
-  border-left: 1px solid var(--color-border);
 }
-aside section {
+.controls section {
   display: grid;
   gap: var(--spacing-md);
   border-top: 1px solid var(--color-border);

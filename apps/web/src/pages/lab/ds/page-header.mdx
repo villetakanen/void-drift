@@ -1,13 +1,86 @@
 ---
 generated:
-  by: "codex/gpt-6.2-sol"
-  at: "2026-11-21T16:56:02Z"
+  by: "codex/gpt-6"
+  at: "2026-11-21T20:08:43+02:00"
 verified: []
 ---
 
 import LabPageHeader from "../../../components/lab/LabPageHeader.svelte";
-import LabLayout from "../../../layouts/LabLayout.astro";
+import DesignSystemLayout from "../../../layouts/DesignSystemLayout.astro";
 
-<LabLayout title="Page header" wide>
-  <LabPageHeader client:load />
-</LabLayout>
+<DesignSystemLayout title="Page header" wide>
+<div className="header-guide">
+
+# Page header
+
+Identifies the current site and page, with optional navigation and controls.
+
+<div className="identity-examples">
+<div>
+
+## Site only
+
+<LabPageHeader variant="site" />
+
+</div>
+<div>
+
+## Site and page
+
+<LabPageHeader variant="page" />
+
+</div>
+</div>
+
+The site name links to its overview when a page name is shown.
+
+## With controls
+
+The switch changes this example only. Your game settings stay unchanged.
+
+<div className="controls-example">
+<LabPageHeader client:load variant="controls" controlLabel="Example mode" />
+</div>
+
+## Inputs
+
+| Input | Purpose |
+| --- | --- |
+| `title` | Site name. |
+| `pageName`, `href` | Optional page name and the site's overview link. |
+| `actions` | Optional controls supplied by the page. |
+| `links`, `navigationLabel` | Navigation destinations and their accessible group name. |
+
+## Consumed tokens
+
+| Token | Value and use |
+| --- | --- |
+| `--font-size-lead` | `1.2rem` — Site name. |
+| `--font-size-body` | `0.95rem` — Page name, `//` prefix and example control label. |
+| `--font-weight-bold` | `700` — Site and page names. |
+| `--spacing-sm` | 2× base grid — Vertical padding supplied by the page layout and [Component frame](/lab/ds/component-frame). |
+| `--spacing-md` | 4× base grid — Header internal gaps; horizontal padding supplied by the layout and example frame. The header adds no padding. |
+| `--control-min-height` | `44px` — Minimum header height and brand link target size. |
+| `--color-text` | `lch(99.7% 7.45 104.72)` — Site and page names. |
+| `--color-brand` | `lch(96.42% 84.18 104.87)` — Brand link colour. |
+| `--focus-ring-width` | `2px` — Brand and site link focus outlines. |
+| `--focus-ring-offset-inset` | `-5px` — Focus outline inset. |
+| `--color-focus-ring` | `var(--color-text)` — Focus outline colour. |
+
+</div>
+</DesignSystemLayout>
+
+<style>{`
+.header-guide { padding: var(--spacing-lg); }
+.header-guide h1 { margin: 0 0 var(--spacing-sm); }
+.header-guide table + h2 { margin-top: var(--spacing-lg); }
+.header-guide h2 { margin: 0 0 var(--spacing-md); font-size: var(--font-size-body); }
+.header-guide p { margin: 0 0 var(--spacing-lg); line-height: 1.6; color: var(--color-text-muted); }
+.identity-examples { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); margin-bottom: var(--spacing-md); }
+.controls-example { margin-bottom: var(--spacing-lg); }
+.header-guide table { width: 100%; border-collapse: collapse; font-size: var(--font-size-body); }
+.header-guide th, .header-guide td { padding: var(--spacing-sm) var(--spacing-md); text-align: left; border-bottom: 1px solid var(--color-border-subtle); }
+.header-guide th:first-child, .header-guide td:first-child { padding-left: 0; white-space: nowrap; }
+.header-guide th { color: var(--color-text-muted); font-weight: 400; }
+.header-guide table a { color: var(--color-action); }
+`}</style>

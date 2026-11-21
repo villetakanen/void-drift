@@ -1,9 +1,9 @@
 ---
 import FieldBackdrop from "../../../components/GameFieldBackdrop.svelte";
-import LabLayout from "../../../layouts/LabLayout.astro";
+import DesignSystemLayout from "../../../layouts/DesignSystemLayout.astro";
 ---
 
-<LabLayout title="Game field backdrop" wide>
+<DesignSystemLayout title="Game field backdrop" wide>
   <section class="preview" aria-label="Game field backdrop example">
     <FieldBackdrop client:load />
     <div class="sample-panel panel">
@@ -13,7 +13,7 @@ import LabLayout from "../../../layouts/LabLayout.astro";
       <button type="button" class="btn btn-filled">PRESS START</button>
     </div>
   </section>
-</LabLayout>
+</DesignSystemLayout>
 
 <style>
 .preview {

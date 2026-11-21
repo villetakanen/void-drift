@@ -1,59 +1,48 @@
 <script lang="ts">
-import RingSlider from "../inputs/RingSlider.svelte";
 import Switch from "../inputs/Switch.svelte";
 import PageHeader from "../PageHeader.svelte";
+import ComponentFrame from "./ComponentFrame.svelte";
 
-let width = $state(48);
-let playground = $state(false);
-const switchId = $props.id();
+let {
+  variant = "site",
+  controlLabel = "",
+}: {
+  variant?: "site" | "page" | "controls";
+  controlLabel?: string;
+} = $props();
+let exampleMode = $state(false);
+const exampleId = $props.id();
 </script>
 
-<div class="catalog">
-  <p>
-    The shared header owns the home link, page title and layout. Each page
-    supplies its controls and destinations.
-  </p>
-  <div class="width-control">
-    <RingSlider
-      label="Example width"
-      unit="rem"
-      min={22}
-      max={48}
-      step={1}
-      bind:value={width}
-    />
-  </div>
-  <div class="example" style:max-width={`${width}rem`}>
+{#if variant === "controls"}
+  <ComponentFrame>
     <PageHeader
       title="Hangar"
-      level={2}
       navigationLabel="Example navigation"
       links={[{ href: "/settings?from=hangar", label: "Settings" }]}
     >
       {#snippet actions()}
-        <label for={switchId}>
-          Playground
-          <Switch id={switchId} bind:checked={playground} />
+        <label for={exampleId}>
+          {controlLabel}
+          <Switch id={exampleId} bind:checked={exampleMode} />
         </label>
       {/snippet}
     </PageHeader>
-  </div>
-</div>
+  </ComponentFrame>
+{:else}
+  <ComponentFrame>
+    <PageHeader
+      title="Design system"
+      pageName={variant === "page" ? "Page header" : undefined}
+      href="/lab/ds"
+    />
+  </ComponentFrame>
+{/if}
 
 <style>
-.catalog {
-  display: grid;
-  gap: var(--spacing-lg);
-  padding: var(--spacing-lg);
-}
-.width-control {
-  max-width: 24rem;
-}
-.example {
-  padding-inline: var(--spacing-md);
-  border: 1px solid var(--color-border-subtle);
-}
 label {
+  font-size: var(--font-size-body);
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: var(--spacing-md);

@@ -1,7 +1,7 @@
 <script lang="ts">
 import { onMount, type Snippet, tick as settled } from "svelte";
 
-// The pane overlay (lab-instrument study, 01 and 03). Placed on its container,
+// Shared parameter side sheet. Placed on its container,
 // unscaled: hidden at first; a menu button in the container's top-right corner
 // opens it; its close button takes that corner; Escape closes it when focus is
 // inside, returning focus to the menu. Elevation 3, the smaller golden-ratio
@@ -24,17 +24,17 @@ onMount(() => {
 });
 let menuEl = $state<HTMLButtonElement>();
 let closeEl = $state<HTMLButtonElement>();
-let paneEl = $state<HTMLElement>();
+let sheetEl = $state<HTMLElement>();
 function setOpen(next: boolean) {
   open = next;
   if (next) settled().then(() => closeEl?.focus());
   else menuEl?.focus();
 }
 function keydown(e: KeyboardEvent) {
-  if (e.key === "Escape" && open && paneEl?.contains(document.activeElement))
+  if (e.key === "Escape" && open && sheetEl?.contains(document.activeElement))
     setOpen(false);
 }
-const id = `pane-${Math.random().toString(36).slice(2, 8)}`;
+const id = `side-sheet-${Math.random().toString(36).slice(2, 8)}`;
 </script>
 
 <svelte:window onkeydown={keydown} />
@@ -51,8 +51,8 @@ const id = `pane-${Math.random().toString(36).slice(2, 8)}`;
 >
   ☰
 </button>
-<div class="backdrop" hidden={!open}></div>
-<aside bind:this={paneEl} {id} class="pane" hidden={!open} aria-label={label}>
+<div class="scrim" hidden={!open}></div>
+<aside bind:this={sheetEl} {id} class="sheet" hidden={!open} aria-label={label}>
   <div class="head">
     <h3>{title}</h3>
     <button
@@ -69,7 +69,7 @@ const id = `pane-${Math.random().toString(36).slice(2, 8)}`;
 </aside>
 
 <style>
-/* The menu button and the pane's close button share one corner. */
+/* The menu button and the sheet's close button share one corner. */
 .corner {
   width: 48px;
   min-height: 40px;
@@ -89,12 +89,12 @@ const id = `pane-${Math.random().toString(36).slice(2, 8)}`;
   top: var(--spacing-sm);
   right: var(--spacing-sm);
 }
-.backdrop {
+.scrim {
   position: absolute;
   inset: 0;
   background: var(--color-backdrop);
 }
-.pane {
+.sheet {
   position: absolute;
   inset-block: 0;
   right: 0;
@@ -108,8 +108,8 @@ const id = `pane-${Math.random().toString(36).slice(2, 8)}`;
   color: var(--color-text);
   font: 15px var(--font-family-ui);
 }
-.backdrop[hidden],
-.pane[hidden] {
+.scrim[hidden],
+.sheet[hidden] {
   display: none;
 }
 .head {

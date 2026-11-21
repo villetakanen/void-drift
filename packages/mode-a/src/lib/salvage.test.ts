@@ -105,6 +105,7 @@ describe("Derelicts weapons and salvage", () => {
     f.system.bodies = [damaged, expired, exited];
     f.system.shots = [];
     f.step();
+    expect(f.system.bodies).not.toContain(exited);
     expect(f.system.playerKills).toBe(2);
     expect(f.system.bodies.filter((b) => b.kind === "cell")).toHaveLength(0);
   });

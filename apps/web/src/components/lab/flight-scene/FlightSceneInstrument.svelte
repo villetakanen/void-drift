@@ -34,7 +34,7 @@ import GameField from "../../GameField.svelte";
 import RingSlider from "../../inputs/RingSlider.svelte";
 import SegmentedControl from "../../inputs/SegmentedControl.svelte";
 import BurnRow from "../instrument/BurnRow.svelte";
-import OverlayPane from "../instrument/OverlayPane.svelte";
+import SideSheet from "../instrument/SideSheet.svelte";
 import "@void-drift/core/styles/buttons.css";
 
 // Flight scene instrument (study flight-scene-instrument-2026-11-10): one ship
@@ -387,9 +387,9 @@ onMount(() => {
     </div>
 
     {#if pane && paneDoc}
-      <OverlayPane>
+      <SideSheet>
         <div class="value">{@render pane(paneDoc)}</div>
-      </OverlayPane>
+      </SideSheet>
     {/if}
   </figure>
 {:else}

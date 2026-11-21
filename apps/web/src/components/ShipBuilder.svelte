@@ -205,314 +205,330 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
   />
 {:else}
   <main class="builder">
-    <PageHeader
-      title="Hangar"
-      links={[{ href: "/settings?from=hangar", label: "Settings" }]}
-    >
-      {#snippet actions()}
-        <label class="experimental-control" for="hangar-experimental">
-          <span>Playground</span>
-          <Switch
-            id="hangar-experimental"
-            bind:checked={
-              () => experimental === "On",
-              (value) => setExperimentalSetting(value ? "On" : "Off")
-            }
-          />
-        </label>
-      {/snippet}
-    </PageHeader>
-    <Tabs
-      label="Choose chassis"
-      tabs={shipTabs}
-      stretch
-      activation="manual"
-      bind:value={
-        () => chosen,
-        (value) => {
+    <div class="header-host">
+      <PageHeader
+        title="Hangar"
+        links={[{ href: "/settings?from=hangar", label: "Settings" }]}
+        navigationLabel="Hangar navigation"
+      >
+        {#snippet actions()}
+          <label class="experimental-control" for="hangar-experimental">
+            <span>Playground</span>
+            <Switch
+              id="hangar-experimental"
+              bind:checked={
+                () => experimental === "On",
+                (value) => setExperimentalSetting(value ? "On" : "Off")
+              }
+            />
+          </label>
+        {/snippet}
+      </PageHeader>
+    </div>
+    <div class="builder-content">
+      <Tabs
+        label="Choose chassis"
+        tabs={shipTabs}
+        stretch
+        activation="manual"
+        bind:value={
+          () => chosen,
+          (value) => {
   const id = shipIds.find((id) => id === value);
   if (id) choose(id);
 }
-      }
-    >
-      {#snippet panel()}
-        <div class="workbench">
-          <div class="ship-column">
-            <section class="assembly" aria-label="Ship assembly">
-              <div
-                class="blueprint"
-                bind:clientWidth={previewWidth}
-                bind:clientHeight={previewHeight}
-              >
-                {#if previewMode === "Plan"}
-                  <div class="view-axes" aria-hidden="true"></div>
-                {/if}
-                <div class="preview-mode">
-                  <SegmentedControl
-                    label="Ship preview mode"
-                    options={["Plan", "View"]}
-                    bind:value={previewMode}
-                  />
-                </div>
-                <h2 class="ship-name" bind:clientHeight={titleHeight}>
-                  {SHIP_IDENTITY[chosen].longName}
-                </h2>
-                <span class="view-caption"
-                  >{previewMode === "Plan"
-                    ? "FIXED MOUNTS / TOP VIEW"
-                    : "IN-GAME / TOP VIEW"}</span
+        }
+      >
+        {#snippet panel()}
+          <div class="workbench">
+            <div class="ship-column">
+              <section class="assembly" aria-label="Ship assembly">
+                <div
+                  class="blueprint"
+                  bind:clientWidth={previewWidth}
+                  bind:clientHeight={previewHeight}
                 >
-                <canvas
-                  width="600"
-                  height="540"
-                  bind:this={canvas}
-                  aria-label="Ship preview with installed parts"
-                ></canvas>
-                {#each previewMode === "Plan" ? mounts : [] as slot}
+                  {#if previewMode === "Plan"}
+                    <div class="view-axes" aria-hidden="true"></div>
+                  {/if}
+                  <div class="preview-mode">
+                    <SegmentedControl
+                      label="Ship preview mode"
+                      options={["Plan", "View"]}
+                      bind:value={previewMode}
+                    />
+                  </div>
+                  <h2 class="ship-name" bind:clientHeight={titleHeight}>
+                    {SHIP_IDENTITY[chosen].longName}
+                  </h2>
+                  <span class="view-caption"
+                    >{previewMode === "Plan"
+                      ? "FIXED MOUNTS / TOP VIEW"
+                      : "IN-GAME / TOP VIEW"}</span
+                  >
+                  <canvas
+                    width="600"
+                    height="540"
+                    bind:this={canvas}
+                    aria-label="Ship preview with installed parts"
+                  ></canvas>
+                  {#each previewMode === "Plan" ? mounts : [] as slot}
+                    <button
+                      type="button"
+                      class="mount"
+                      disabled={Boolean(slot.linkedTo)}
+                      title={slot.linkedTo
+                        ? "Linked to the left engine slot; edit the pair there"
+                        : slot.label}
+                      style:left={`${((framing.x + slot.y * previewScale) / previewWidth) * 100}%`}
+                      style:top={`${((previewY - slot.x * previewScale) / previewHeight) * 100}%`}
+                      style:width={`${(((SLOT_STYLE.width + 2 * SLOT_STYLE.gap) / SLOT_STYLE.referenceScale) * previewScale * 100) / previewWidth}%`}
+                      style:height={`${(((SLOT_STYLE.height + 2 * SLOT_STYLE.gap) / SLOT_STYLE.referenceScale) * previewScale * 100) / previewHeight}%`}
+                      style:transform={`translate(-50%, -50%) rotate(${slot.angle}rad)`}
+                      aria-label={`${slot.label}: ${slot.part ? `${PARTS[slot.part].name}${slot.part === "rail" ? " (disabled)" : ""}` : "Empty"}`}
+                      aria-pressed={mount.key === slot.key}
+                      onclick={() => (selected = slot.key)}
+                    ></button>
+                  {/each}
+                </div>
+              </section>
+              <section
+                class="ship-systems cut-surface"
+                aria-label="Ship systems"
+              >
+                <label class="system-setting" for="hangar-stabilizers">
+                  <span
+                    >Ion stabilizers{chosen === "wasp" || chosen === "fiddler"
+                      ? " (forced on)"
+                      : ""}</span
+                  >
+                  <Switch
+                    id="hangar-stabilizers"
+                    bind:checked={
+                      () => build.stabilizers,
+                      (value) => saveFitting(LoadoutSchema.parse({ ...build, stabilizers: value }))
+                    }
+                    disabled={chosen === "wasp" || chosen === "fiddler"}
+                  />
+                </label>
+                <p class="assembly-note">
+                  0.22 Light-ion thrust · 0.25 Light-ion energy while firing.
+                  Assist turns and brake spin automatically.
+                </p>
+
+                <p class="assembly-note">
+                  {chosen === "fiddler"
+                    ? "Four engines in two required matching pairs. Five independent weapon/support fittings. Four turning stabilizers are forced on."
+                    : chosen === "wasp"
+                      ? "One rear center engine (fires on A+D) and two independent under-wing equipment slots. Four turning stabilizers are forced on."
+                      : "Side engines are a mirrored pair. Hull and aft fittings are independent."}
+                  <br>Every installed part adds mass. Weapons are static
+                  fittings in this alpha.
+                </p>
+              </section>
+              <section
+                class="ship-systems cut-surface"
+                aria-label="Linked engines"
+              >
+                <label class="system-setting" for="hangar-linked-engines">
+                  <span>Linked engines</span>
+                  <Switch
+                    id="hangar-linked-engines"
+                    bind:checked={
+                      () => build.linkedEngines ?? false,
+                      (value) => saveFitting(LoadoutSchema.parse({ ...build, linkedEngines: value }))
+                    }
+                  />
+                </label>
+                <p class="assembly-note">
+                  {chosen === "fiddler"
+                    ? "Turning or braking spin also fires the two main engines on the corresponding side. This adds forward thrust, without changing the turn. When off, mains require both controls."
+                    : "Left or right input also fires all fitted aft engines. When off, aft engines require both inputs."}
+                </p>
+              </section>
+            </div>
+            <section class="parts cut-surface" aria-label="Compatible parts">
+              <p class="eyebrow">SELECTED MOUNT</p>
+              <h2>{mount.label}</h2>
+              <div class="part-list">
+                {#if mount.group !== "side" && !mount.required}
                   <button
                     type="button"
-                    class="mount"
-                    disabled={Boolean(slot.linkedTo)}
-                    title={slot.linkedTo
-                      ? "Linked to the left engine slot; edit the pair there"
-                      : slot.label}
-                    style:left={`${((framing.x + slot.y * previewScale) / previewWidth) * 100}%`}
-                    style:top={`${((previewY - slot.x * previewScale) / previewHeight) * 100}%`}
-                    style:width={`${(((SLOT_STYLE.width + 2 * SLOT_STYLE.gap) / SLOT_STYLE.referenceScale) * previewScale * 100) / previewWidth}%`}
-                    style:height={`${(((SLOT_STYLE.height + 2 * SLOT_STYLE.gap) / SLOT_STYLE.referenceScale) * previewScale * 100) / previewHeight}%`}
-                    style:transform={`translate(-50%, -50%) rotate(${slot.angle}rad)`}
-                    aria-label={`${slot.label}: ${slot.part ? `${PARTS[slot.part].name}${slot.part === "rail" ? " (disabled)" : ""}` : "Empty"}`}
-                    aria-pressed={mount.key === slot.key}
-                    onclick={() => (selected = slot.key)}
-                  ></button>
+                    class="btn btn-normal btn-card empty-choice"
+                    class:fitted={!mount.part}
+                    aria-pressed={!mount.part}
+                    onclick={() => install(null)}
+                  >
+                    Keep empty
+                  </button>
+                {/if}
+                {#each compatible as part (part.id)}
+                  <PartCard
+                    retired={part.id === "rail"}
+                    id={part.id}
+                    fitted={mount.part === part.id}
+                    playground={experimental === "On"}
+                    onchoose={() => install(part.id)}
+                  />
                 {/each}
               </div>
             </section>
-            <section class="ship-systems cut-surface" aria-label="Ship systems">
-              <label class="system-setting" for="hangar-stabilizers">
-                <span
-                  >Ion stabilizers{chosen === "wasp" || chosen === "fiddler"
-                    ? " (forced on)"
-                    : ""}</span
-                >
-                <Switch
-                  id="hangar-stabilizers"
-                  bind:checked={
-                    () => build.stabilizers,
-                    (value) => saveFitting(LoadoutSchema.parse({ ...build, stabilizers: value }))
-                  }
-                  disabled={chosen === "wasp" || chosen === "fiddler"}
-                />
-              </label>
-              <p class="assembly-note">
-                0.22 Light-ion thrust · 0.25 Light-ion energy while firing.
-                Assist turns and brake spin automatically.
-              </p>
-
-              <p class="assembly-note">
+            <aside class="numbers cut-surface" aria-label="Build statistics">
+              <h2>Flight estimates</h2>
+              <dl>
+                <div>
+                  <dt>Powered cruise ceiling</dt>
+                  <dd>{stats.poweredCruiseCeiling} u/s</dd>
+                </div>
+                <div>
+                  <dt>Hull base + installed engines</dt>
+                  <dd>
+                    {stats.hullBaseSpeed}
+                    + {stats.installedEngineContribution} u/s
+                  </dd>
+                </div>
+                <div>
+                  <dt>Total mass</dt>
+                  <dd>{stats.mass}</dd>
+                </div>
+                <div>
+                  <dt>Energy capacity</dt>
+                  <dd>{stats.capacity}%</dd>
+                </div>
+                <div>
+                  <dt>Solar charging</dt>
+                  <dd>{stats.coils}×</dd>
+                </div>
+                <div>
+                  <dt>Charging zones¹</dt>
+                  <dd>
+                    {4 * stats.coils}
+                    / {2 * stats.coils} / {0.5 * stats.coils}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Life support</dt>
+                  <dd>{LIFE_SUPPORT_DRAIN} /s</dd>
+                </div>
+                <div>
+                  <dt>All engines + life support</dt>
+                  <dd>{stats.drain} /s</dd>
+                </div>
+                <div>
+                  <dt>Coasting endurance²</dt>
+                  <dd>{stats.endurance.toFixed(1)} s</dd>
+                </div>
+                <div>
+                  <dt>Full thrust endurance²</dt>
+                  <dd>{stats.fullEndurance.toFixed(1)} s</dd>
+                </div>
+                <div>
+                  <dt>Peak forward acceleration³</dt>
+                  <dd>{stats.acceleration.toFixed(1)}</dd>
+                </div>
+                <div>
+                  <dt>Single-side angular acceleration</dt>
+                  <dd>
+                    {((Math.abs(stats.turnRate) * 180) / Math.PI).toFixed(1)}
+                    °/s²
+                  </dd>
+                </div>
+                <div>
+                  <dt>Side mount angle / arm</dt>
+                  <dd>
+                    {CHASSIS[chosen].angle.toFixed(1)}° / {CHASSIS[chosen].arm}
+                  </dd>
+                </div>
+              </dl>
+              <p class="footnote">
+                ¹ Energy/s, near → far, G-class sun.<br>² Full batteries, no
+                solar charging.<br>³ At rest, both controls, world units/s²;
+                full power and all fitted engines active. Instantaneous peak
+                before pulse/charge timing. Intrinsic battery and coil included.
+                More mass slows acceleration and turning.
                 {chosen === "fiddler"
-                  ? "Four engines in two required matching pairs. Five independent weapon/support fittings. Four turning stabilizers are forced on."
-                  : chosen === "wasp"
-                    ? "One rear center engine (fires on A+D) and two independent under-wing equipment slots. Four turning stabilizers are forced on."
-                    : "Side engines are a mirrored pair. Hull and aft fittings are independent."}
-                <br>Every installed part adds mass. Weapons are static fittings
-                in this alpha.
+                  ? "Stabilizers provide turning; linked mains add forward speed only."
+                  : "The side mounts turn left-engine input clockwise and right-engine input counterclockwise."}
               </p>
-            </section>
-            <section
-              class="ship-systems cut-surface"
-              aria-label="Linked engines"
-            >
-              <label class="system-setting" for="hangar-linked-engines">
-                <span>Linked engines</span>
-                <Switch
-                  id="hangar-linked-engines"
-                  bind:checked={
-                    () => build.linkedEngines ?? false,
-                    (value) => saveFitting(LoadoutSchema.parse({ ...build, linkedEngines: value }))
-                  }
-                />
-              </label>
-              <p class="assembly-note">
-                {chosen === "fiddler"
-                  ? "Turning or braking spin also fires the two main engines on the corresponding side. This adds forward thrust, without changing the turn. When off, mains require both controls."
-                  : "Left or right input also fires all fitted aft engines. When off, aft engines require both inputs."}
-              </p>
-            </section>
+            </aside>
           </div>
-          <section class="parts cut-surface" aria-label="Compatible parts">
-            <p class="eyebrow">SELECTED MOUNT</p>
-            <h2>{mount.label}</h2>
-            <div class="part-list">
-              {#if mount.group !== "side" && !mount.required}
-                <button
-                  type="button"
-                  class="btn btn-normal btn-card empty-choice"
-                  class:fitted={!mount.part}
-                  aria-pressed={!mount.part}
-                  onclick={() => install(null)}
-                >
-                  Keep empty
-                </button>
-              {/if}
-              {#each compatible as part (part.id)}
-                <PartCard
-                  retired={part.id === "rail"}
-                  id={part.id}
-                  fitted={mount.part === part.id}
-                  playground={experimental === "On"}
-                  onchoose={() => install(part.id)}
-                />
-              {/each}
-            </div>
-          </section>
-          <aside class="numbers cut-surface" aria-label="Build statistics">
-            <h2>Flight estimates</h2>
-            <dl>
-              <div>
-                <dt>Powered cruise ceiling</dt>
-                <dd>{stats.poweredCruiseCeiling} u/s</dd>
-              </div>
-              <div>
-                <dt>Hull base + installed engines</dt>
-                <dd>
-                  {stats.hullBaseSpeed}
-                  + {stats.installedEngineContribution} u/s
-                </dd>
-              </div>
-              <div>
-                <dt>Total mass</dt>
-                <dd>{stats.mass}</dd>
-              </div>
-              <div>
-                <dt>Energy capacity</dt>
-                <dd>{stats.capacity}%</dd>
-              </div>
-              <div>
-                <dt>Solar charging</dt>
-                <dd>{stats.coils}×</dd>
-              </div>
-              <div>
-                <dt>Charging zones¹</dt>
-                <dd>
-                  {4 * stats.coils}
-                  / {2 * stats.coils} / {0.5 * stats.coils}
-                </dd>
-              </div>
-              <div>
-                <dt>Life support</dt>
-                <dd>{LIFE_SUPPORT_DRAIN} /s</dd>
-              </div>
-              <div>
-                <dt>All engines + life support</dt>
-                <dd>{stats.drain} /s</dd>
-              </div>
-              <div>
-                <dt>Coasting endurance²</dt>
-                <dd>{stats.endurance.toFixed(1)} s</dd>
-              </div>
-              <div>
-                <dt>Full thrust endurance²</dt>
-                <dd>{stats.fullEndurance.toFixed(1)} s</dd>
-              </div>
-              <div>
-                <dt>Peak forward acceleration³</dt>
-                <dd>{stats.acceleration.toFixed(1)}</dd>
-              </div>
-              <div>
-                <dt>Single-side angular acceleration</dt>
-                <dd>
-                  {((Math.abs(stats.turnRate) * 180) / Math.PI).toFixed(1)}
-                  °/s²
-                </dd>
-              </div>
-              <div>
-                <dt>Side mount angle / arm</dt>
-                <dd>
-                  {CHASSIS[chosen].angle.toFixed(1)}° / {CHASSIS[chosen].arm}
-                </dd>
-              </div>
-            </dl>
-            <p class="footnote">
-              ¹ Energy/s, near → far, G-class sun.<br>² Full batteries, no solar
-              charging.<br>³ At rest, both controls, world units/s²; full power
-              and all fitted engines active. Instantaneous peak before
-              pulse/charge timing. Intrinsic battery and coil included. More
-              mass slows acceleration and turning.
-              {chosen === "fiddler"
-                ? "Stabilizers provide turning; linked mains add forward speed only."
-                : "The side mounts turn left-engine input clockwise and right-engine input counterclockwise."}
-            </p>
-          </aside>
+        {/snippet}
+      </Tabs>
+      <footer>
+        <div class="launch-context">
+          <PlaygroundStatus
+            id="hangar-playground-status"
+            active={experimental === "On"}
+            blocked={!canLaunch}
+          />
+          {#if !$shipSetupStatus.ready}
+            <p role="status">Loading saved ships…</p>
+          {:else if $shipSetupStatus.message}
+            <p role="status">{$shipSetupStatus.message}</p>
+          {/if}
         </div>
-      {/snippet}
-    </Tabs>
-    <footer>
-      <div class="launch-context">
-        <PlaygroundStatus
-          id="hangar-playground-status"
-          active={experimental === "On"}
-          blocked={!canLaunch}
-        />
-        {#if !$shipSetupStatus.ready}
-          <p role="status">Loading saved ships…</p>
-        {:else if $shipSetupStatus.message}
-          <p role="status">{$shipSetupStatus.message}</p>
-        {/if}
-      </div>
-      <div class="actions">
-        <button
-          type="button"
-          class="btn btn-normal"
-          disabled={!canLaunch}
-          aria-describedby={!canLaunch ? "hangar-playground-status" : undefined}
-          onclick={() => launch("test")}
-        >
-          Practice
-        </button>
-        <button
-          type="button"
-          class="btn btn-normal"
-          disabled={!canLaunch}
-          aria-describedby={!canLaunch ? "hangar-playground-status" : undefined}
-          onclick={() => launch("derelicts")}
-        >
-          Derelicts
-        </button>
-        <button
-          type="button"
-          class="btn btn-normal"
-          disabled={!canLaunch}
-          aria-describedby={!canLaunch ? "hangar-playground-status" : undefined}
-          onclick={() => launch("gauntlet")}
-        >
-          Gauntlet
-        </button>
-        <button
-          type="button"
-          class="btn btn-filled"
-          disabled={!canLaunch}
-          aria-describedby={!canLaunch ? "hangar-playground-status" : undefined}
-          onclick={() => launch("survival")}
-        >
-          Survival
-        </button>
-      </div>
-    </footer>
-    <p class="footnote">
-      Practice: fly a repeatable star system with full health and energy.
-      Derelicts: survive, destroy wrecks and collect energy. Gauntlet: an
-      unranked seven-enemy encounter. Survival is ranked while Playground is Off
-      and your active setup is eligible. Pause to resume or abort back to the
-      Hangar.
-    </p>
+        <div class="actions">
+          <button
+            type="button"
+            class="btn btn-normal"
+            disabled={!canLaunch}
+            aria-describedby={!canLaunch
+              ? "hangar-playground-status"
+              : undefined}
+            onclick={() => launch("test")}
+          >
+            Practice
+          </button>
+          <button
+            type="button"
+            class="btn btn-normal"
+            disabled={!canLaunch}
+            aria-describedby={!canLaunch
+              ? "hangar-playground-status"
+              : undefined}
+            onclick={() => launch("derelicts")}
+          >
+            Derelicts
+          </button>
+          <button
+            type="button"
+            class="btn btn-normal"
+            disabled={!canLaunch}
+            aria-describedby={!canLaunch
+              ? "hangar-playground-status"
+              : undefined}
+            onclick={() => launch("gauntlet")}
+          >
+            Gauntlet
+          </button>
+          <button
+            type="button"
+            class="btn btn-filled"
+            disabled={!canLaunch}
+            aria-describedby={!canLaunch
+              ? "hangar-playground-status"
+              : undefined}
+            onclick={() => launch("survival")}
+          >
+            Survival
+          </button>
+        </div>
+      </footer>
+      <p class="footnote">
+        Practice: fly a repeatable star system with full health and energy.
+        Derelicts: survive, destroy wrecks and collect energy. Gauntlet: an
+        unranked seven-enemy encounter. Survival is ranked while Playground is
+        Off and your active setup is eligible. Pause to resume or abort back to
+        the Hangar.
+      </p>
+    </div>
   </main>
 {/if}
 <style>
 .builder {
+  padding: 24px 36px;
   height: 100dvh;
   overflow: auto;
-  padding: 24px 36px;
   color: var(--color-text);
   background: var(--color-void);
 }
@@ -523,10 +539,16 @@ footer,
   align-items: center;
   gap: 20px;
 }
+.builder-content {
+  margin-top: 16px;
+}
 .experimental-control {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
+  flex-shrink: 0;
+}
+.experimental-control {
   font-size: var(--font-size-body);
   cursor: pointer;
 }

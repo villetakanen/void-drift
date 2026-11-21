@@ -4,7 +4,7 @@ title: "Spec: Studies"
 status: draft
 generated:
   by: "codex/gpt-6"
-  at: "2026-11-19T16:52:59+02:00"
+  at: "2026-11-21T18:32:27+00:00"
 verified: []
 ---
 
@@ -40,9 +40,13 @@ can use MDX or Astro and can embed interactive examples. Experimental styles
 are scoped to the example, and simulated or substituted conditions are labeled.
 
 [StudyLayout](../../../apps/web/src/layouts/StudyLayout.astro) supplies the
-study header and navigation back to the index and Lab. Prose has a bounded
+study header and navigation to the index and peer development sites. Prose has a bounded
 reading width. Figures and examples can use the wider page. The page supports
 keyboard navigation and a minimum viewport width of 1280 pixels.
+
+The shared [page header](../factory/design-system/page-header/spec.md) supplies
+Design studies identity, the available study title and peer-site navigation.
+The layout retains the article H1, status and question beneath it.
 
 #### Closed pages
 

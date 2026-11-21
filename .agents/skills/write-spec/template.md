@@ -1,5 +1,4 @@
 ---
-status: draft
 generated:
   by: "<producer>/<version>"
   at: "<RFC 3339 timestamp>"
@@ -9,8 +8,9 @@ verified: []
 # [Feature name]
 
 <!--
-status: draft | approved. A person approves a spec.
-verified: one { by, at } event per actual check against sources.
+verified: human verification only; one { by: "human:<id>", at: <actual confirmation date> }
+event per actual human confirmation. New specs start empty; model and source
+checks belong in the handover. No status or duplicate title metadata.
 
 A spec is the state: the durable truth for one feature. Edit it in place
 when the feature changes; git holds the history.

@@ -3,8 +3,8 @@
 title: "Spec: Motion instrument"
 status: draft
 generated:
-  by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-19T12:32:56+02:00"
+  by: "codex/gpt-6.2"
+  at: "2026-11-21T19:22:52+00:00"
 verified:
 - by: "openai-codex/gpt-6.1-sol"
   at: "2026-11-19T12:33:38+02:00"
@@ -153,13 +153,9 @@ One 1440 × 900 logical screen, scaled to fit its container, on the console
   672 × 208, 24px apart) and, 24px below, the time slider (44px), whose knob runs
   along the graphs' time axis.
 - Below both, 24px down: the legend, naming every vehicle in its colour.
-- The pane overlay, unscaled on the container: menu button in the top-right
-  corner, elevation 3, the smaller golden-ratio share of its positioned CSS
-  container (`1 / φ² ≈ 38.1966%` wide), over an 11% backdrop. Its border-box
-  width follows that container on resize; it stays full-height and internally
-  scrollable. Default
-  content: the experiment’s shared tuning values and Copy JSON for exporting the
-  current settings.
+- The shared [parameter side sheet](../../factory/design-system/side-sheet/spec.md)
+  sits unscaled on the container. Default content: the experiment’s shared
+  tuning values and Copy JSON for exporting the current settings.
 
 Every graph scales its value axis to its data: a nice tick step for about five
 ticks, the top one step above the peak, symmetric about zero for turn
@@ -179,8 +175,7 @@ and measurements. The time cursor selects a point in the existing results.
 | `ShipTuning`                             | `apps/web/src/components/lab/instrument/` | `/lab/instrument`         |
 | `InstrumentEmbed` (study pages)          | same folder                               | used in the design record |
 | `MotionInstrumentScreen` (shared screen) | same folder                               | `/lab/instrument`         |
-| `PathPane`, `TimeGraph`                  | same folder                               | `/lab/graphs`             |
-| `BurnRow`, `Legend`, `OverlayPane`       | same folder                               | `/lab/instrument-parts`   |
+| `PathPane`, `TimeGraph`, `BurnRow`, `Legend`, `SideSheet` | same folder | `/lab/ds/instrument-parts` |
 | `SegmentedControl`                       | `apps/web/src/components/inputs/`         | `/lab/ds/choices`         |
 | `RingSlider`                             | `apps/web/src/components/inputs/`         | `/lab/ds/slider`          |
 | Elevation and display tokens             | `packages/core/src/lib/styles/tokens.css` | `/lab/surfaces`           |

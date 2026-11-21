@@ -37,10 +37,18 @@ export type LabPage = z.infer<typeof labPageSchema>;
 
 export const labPages = z.array(labPageSchema).parse([
   {
+    href: "/lab/ds/component-frame",
+    title: "Component frame",
+    purpose: "A shared boundary and width container for live examples.",
+    group: "design-system",
+    source: "production",
+    defines: ["apps/web/src/components/lab/ComponentFrame.svelte"],
+    spec: "docs/specs/factory/design-system/component-frame/spec.md#architecture",
+  },
+  {
     href: "/lab/ds/page-header",
     title: "Page header",
-    purpose:
-      "Shared page identity, page-owned actions and container-responsive navigation.",
+    purpose: "Page identity, navigation and controls in a single row.",
     group: "design-system",
     source: "production",
     defines: ["apps/web/src/components/PageHeader.svelte"],
@@ -221,29 +229,20 @@ export const labPages = z.array(labPageSchema).parse([
     spec: "docs/specs/factory/design-system/identity/spec.md#architecture",
   },
   {
-    href: "/lab/graphs",
-    title: "Graphs",
-    purpose: "The Motion instrument's path and trace graphs.",
-    group: "design-system",
-    source: "production",
-    defines: [
-      "apps/web/src/components/lab/instrument/PathPane.svelte",
-      "apps/web/src/components/lab/instrument/TimeGraph.svelte",
-    ],
-    spec: "docs/specs/lab/motion-instrument/spec.md#components",
-  },
-  {
-    href: "/lab/instrument-parts",
-    title: "Motion instrument parts",
-    purpose: "The Motion instrument's panes and controls on their own.",
+    href: "/lab/ds/instrument-parts",
+    title: "Instrument parts",
+    purpose:
+      "Shared parts for instrumentation views, led by the parameter side sheet.",
     group: "design-system",
     source: "production",
     defines: [
       "apps/web/src/components/lab/instrument/BurnRow.svelte",
       "apps/web/src/components/lab/instrument/Legend.svelte",
-      "apps/web/src/components/lab/instrument/OverlayPane.svelte",
+      "apps/web/src/components/lab/instrument/PathPane.svelte",
+      "apps/web/src/components/lab/instrument/SideSheet.svelte",
+      "apps/web/src/components/lab/instrument/TimeGraph.svelte",
     ],
-    spec: "docs/specs/lab/motion-instrument/spec.md#components",
+    spec: "docs/specs/factory/design-system/side-sheet/spec.md#architecture",
   },
   {
     href: "/lab/entities/ship",

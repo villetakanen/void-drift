@@ -1,7 +1,7 @@
 ---
 import Controls from "../../components/Controls.svelte";
 import Logo from "../../components/Logo.svelte";
-import LabLayout from "../../layouts/LabLayout.astro";
+import DesignSystemLayout from "../../layouts/DesignSystemLayout.astro";
 
 const SIZES = ["sm", "md", "lg"] as const;
 const SURFACES = [
@@ -12,7 +12,7 @@ const SURFACES = [
 const FAVICON_SIZES = [16, 32, 64];
 ---
 
-<LabLayout title="Logomark">
+<DesignSystemLayout title="Logomark">
   <div class="logomark-lab">
     <section>
       <h2 class="section-title">Size steps</h2>
@@ -75,7 +75,7 @@ const FAVICON_SIZES = [16, 32, 64];
       rules are in <code>docs/specs/design-system-core.md</code> (Identity).
     </p>
   </Controls>
-</LabLayout>
+</DesignSystemLayout>
 
 <style>
 .logomark-lab {

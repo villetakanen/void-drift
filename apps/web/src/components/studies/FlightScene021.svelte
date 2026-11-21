@@ -15,7 +15,7 @@ import FlightLayers from "../FlightLayers.svelte";
 import RingSlider from "../inputs/RingSlider.svelte";
 import SegmentedControl from "../inputs/SegmentedControl.svelte";
 import BurnRow from "../lab/instrument/BurnRow.svelte";
-import OverlayPane from "../lab/instrument/OverlayPane.svelte";
+import SideSheet from "../lab/instrument/SideSheet.svelte";
 import { FlightScene } from "./flight-scene";
 import { studyStarterWasp } from "./starter-wasp-fixture";
 import "@void-drift/core/styles/buttons.css";
@@ -175,7 +175,7 @@ onMount(() => {
     </div>
   </div>
 
-  <OverlayPane>
+  <SideSheet>
     <div class="value">
       <p>Light shown after a jump in time</p>
       <SegmentedControl
@@ -190,7 +190,7 @@ onMount(() => {
         Playing always carries the light forward.
       </p>
     </div>
-  </OverlayPane>
+  </SideSheet>
 </figure>
 
 <style>

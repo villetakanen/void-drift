@@ -3,8 +3,8 @@
 title: "Spec: Design system"
 status: draft
 generated:
-  by: "codex/gpt-6"
-  at: "2026-11-19T19:21:23+02:00"
+  by: "codex/gpt-6.2"
+  at: "2026-11-21T19:22:52+00:00"
 verified:
 - by: "openai-codex/gpt-6.1-sol"
   at: "2026-11-19T12:33:38+02:00"
@@ -39,8 +39,10 @@ canonical examples; Lab and Studies consume them without acquiring ownership.
   `flight.css`. Shared input components live in `apps/web/src/components/inputs/`.
 - `apps/web/src/components/Logo.svelte` draws the logomark from SVG outlines;
   fonts are self-hosted.
-- The design system has one canonical home, `/lab/ds`. Each shared part has
-  one canonical page at `/lab/ds/<name>`, and the overview at `/lab/ds` lists
+- The design system has one canonical home, `/lab/ds`. Each app-wide shared
+  part has one canonical page at `/lab/ds/<name>`. Instrument-scoped parts are
+  grouped on one Instrument parts page because their contracts make sense in
+  the context of an instrument. The overview at `/lab/ds` lists
   every page with the files that define the part and the section of this
   contract that describes it. The list is the Design system group in
   `apps/web/src/data/lab-pages.ts`.
@@ -49,13 +51,15 @@ canonical examples; Lab and Studies consume them without acquiring ownership.
 - `scripts/check-contracts.mjs` keeps the home true: a design-system page is
   at `/lab/ds/<name>`, names its files and its section, and every shared
   input and stylesheet is named by a page. Pages at an earlier address
-  (`/lab/tokens`, `/lab/typography`, `/lab/surfaces`, `/lab/logomark`,
-  `/lab/graphs`, `/lab/instrument-parts`) are listed in that
-  check and move to `/lab/ds/<name>` in the change that next touches them.
+  (`/lab/tokens`, `/lab/typography`, `/lab/surfaces`, `/lab/logomark`) are listed in that
+  check and retain their addresses. These pages belong to the Design system
+  and use its own layout; their historical URLs do not imply Lab ownership.
 - Feature specs consume the system. Changing a definition is design work,
   recorded here and demonstrated on its design-system page in the same change.
 
+- [Side sheet](side-sheet/spec.md) owns shared instrument parameter surfaces.
 - [Page header](page-header/spec.md) owns shared page identity, navigation and container adaptation.
+- [Component frame](component-frame/spec.md) owns the shared boundary and width container for documentation examples.
 - [Typography](typography/spec.md) owns that domain's definitions and acceptance behavior.
 - [Colour roles](colour/spec.md) owns that domain's definitions and acceptance behavior.
 - [Surfaces and layers](surfaces/spec.md) owns that domain's definitions and acceptance behavior.
@@ -104,6 +108,13 @@ Scenario: Find a shared control's owner
   When I open Choices
   Then the registry names SegmentedControl and Switch source files
   And it links the choice-control contract
+
+Scenario: Open instrument parts
+  Given the design-system overview
+  When I open Instrument parts
+  Then its canonical address is /lab/ds/instrument-parts
+  And it documents instrument-scoped parts together on one page
+  And its examples distinguish shared instrument parts from specific displays
 
 Scenario: Cover a new shared primitive
   Given a shared input is added to the repository
