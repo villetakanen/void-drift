@@ -2,7 +2,7 @@
 status: draft
 generated:
   by: "codex/gpt-6"
-  at: "2026-11-21T20:23:15+02:00"
+  at: "2026-11-21T18:32:27+00:00"
 verified: []
 ---
 
@@ -14,8 +14,8 @@ verified: []
 
 The shared page header combines the brand mark, sub-site name, optional page name, controls
 and navigation. Its current consumers are the Design system at `/lab/ds`, including
-its component pages at earlier URLs, and Hangar at `/hangar`. Lab, Design Studies
-and other game screens retain their existing headers. Design system, Lab and Studies are peer sites; URL
+its component pages at earlier URLs, Hangar at `/hangar`, Lab at `/lab` and
+Design Studies at `/lab/studies`. Other game screens retain their existing headers. Design system, Lab and Studies are peer sites; URL
 nesting does not define ownership. Broader adoption requires a separate decision.
 
 ### Architecture
@@ -31,7 +31,18 @@ the shared header and a dedicated navigation list. Lab and Studies retain their
 independent layouts. Its header spans the full page above the navigation and main
 content, with `spacing-sm` (8px) vertical and `spacing-md` (16px) horizontal
 padding, matching its live examples, and no divider below it.
-Existing URLs and package boundaries remain unchanged.
+LabLayout composes the header in its existing content-column header cell, to the
+right of its navigation tray, preserving the tray logo and inspector columns.
+It supplies Lab identity and the current page name; the overview has no suffix.
+StudyLayout composes Design studies identity and the available study title,
+with peer-site navigation on the right. The sub-site name returns to the
+study index. Its host supplies the UI font while article prose keeps its family,
+H1, status and question. Both hosts provide 8px vertical and 16px horizontal
+padding with no divider below the header.
+Each development site supplies links to the other two through the shared header's
+links input: `DS` leads to `/lab/ds`, `lab` to `/lab`, and `studies` to
+`/lab/studies`. The current site is omitted from this navigation, labelled
+Development sites. Existing URLs and package boundaries remain unchanged.
 
 Hangar supplies the plain Hangar identity, its persisted Playground Switch as
 an actions snippet, and Settings linking to `/settings?from=hangar`. Its page
@@ -70,14 +81,14 @@ The controls example keeps its state local without changing game settings.
 
 ### Definition of Done
 
-- The Design system's own layout and Hangar compose the shared header.
+- Design system, Hangar, Lab and Studies layouts compose the shared header.
 - Its MDX overview lists the MDX header page, shared source and this contract.
 - The MDX component page introduces Page header and presents labelled live examples before its input reference.
 - Live examples show the single-row header at supported desktop widths.
 
 ### Regression guardrails
 
-- Credits, Lab and Design Studies retain their preceding headers.
+- Credits retains its preceding header.
 - Title and flight retain their existing composition.
 - Example controls preserve saved game settings.
 - Design-system pages retain their existing addresses and dedicated navigation.
@@ -112,10 +123,44 @@ Scenario: Read and navigate page identity
   When I follow the link
   Then the overview shows the plain Design system name without a page suffix
 
-Scenario: Keep peer sites independent
-  Given Lab at /lab and Design Studies at /lab/studies
-  When I open either site or Credits
-  Then its preceding header remains in place
+Scenario: Place Lab identity beside its tray
+  Given a Lab page at a viewport of at least 1280px
+  When I inspect the shared header
+  Then it occupies the content-column header cell to the right of the tray
+  And Lab links to /lab when a page name is present
+  And the overview shows Lab without a page suffix
+  And the tray logo, navigation and inspector arrangement remain in place
+  And the host supplies 8px vertical and 16px horizontal padding with no bottom divider
+
+Scenario: Navigate a study with shared identity
+  Given a registered study page at a viewport of at least 1280px
+  When I inspect the shared header
+  Then Design studies links to /lab/studies beside the study title
+  And peer-site navigation sits on the right
+  And the host supplies the UI font and 8px vertical and 16px horizontal padding
+  And no divider appears below the header
+  And the article retains its H1, status, question and prose font
+  When I follow Design studies
+  Then the index shows Design studies without a page suffix
+
+Scenario Outline: Navigate between peer development sites
+  Given a page using the <site> layout at a viewport of at least 1280px
+  When I inspect its header navigation labelled Development sites
+  Then it has exactly the links <first> to <firstRoute> and <second> to <secondRoute>
+  And it omits a navigation link to the current site
+  When I follow either link
+  Then the corresponding peer-site overview opens
+
+  Examples:
+    | site          | first | firstRoute | second  | secondRoute  |
+    | Design system | lab   | /lab       | studies | /lab/studies |
+    | Lab           | DS    | /lab/ds    | studies | /lab/studies |
+    | Studies       | DS    | /lab/ds    | lab     | /lab         |
+
+Scenario: Preserve other game headers
+  Given Credits, the title screen or flight
+  When I open that screen
+  Then its existing composition remains in place
 
 Scenario: Open Hangar with the shared header
   Given Hangar at /hangar

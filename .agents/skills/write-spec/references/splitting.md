@@ -50,7 +50,9 @@ Path: `docs/specs/<node>/attachments/<file>`.
 3. Link every attachment file from its spec. An unlinked file is invisible
    to a reader.
 
-Give Markdown and MDX attachments the same generated and verified fields as the spec.
+Give Markdown and MDX attachments their own generated provenance and `verified: []`.
+Record only actual human confirmations of that attachment; do not copy the parent’s
+verification events as approval of a new attachment.
 
 Material that already lives in the repository, such as a schema file the
 code reads, stays where it is. Link to it from the spec; a copy in

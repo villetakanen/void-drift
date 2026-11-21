@@ -11,8 +11,8 @@ import {
 import RingSlider from "../../inputs/RingSlider.svelte";
 import BurnRow from "./BurnRow.svelte";
 import Legend from "./Legend.svelte";
-import OverlayPane from "./OverlayPane.svelte";
 import PathPane from "./PathPane.svelte";
+import SideSheet from "./SideSheet.svelte";
 import TimeGraph from "./TimeGraph.svelte";
 import { GRAPH_MARGIN } from "./time-graph";
 
@@ -151,8 +151,8 @@ const scale = $derived(Math.min(hostW / SCREEN.w, hostH / SCREEN.h));
       </div>
     </div>
 
-    <!-- Unscaled: the menu, backdrop and pane sit on the container. -->
-    <OverlayPane> {@render children()} </OverlayPane>
+    <!-- Unscaled: the trigger, scrim and side sheet sit on the container. -->
+    <SideSheet> {@render children()} </SideSheet>
   {:else}
     <div class="invalid" role="alert">
       <h3>This configuration cannot be drawn</h3>

@@ -40,3 +40,37 @@ The table shows pooled animation callbacks per second. Safari's callback interva
 Both commits were made locally and pushed to `feat/0-7-0` during the loop. The session reported verifying the remote checkpoint, and the current remote-tracking ref contains it. The checkpoint smoke ran against local code using the game's launch path. Hosting deployment and live 0.7.0 verification were outside the checkpoint. The separate [0.7.0 publication record](../releases/0.7.0.md#publication-record) documents the later merge, fixture repair, full check and live deployment of `7ba2c76e`.
 
 The checked-in comparison retains the setup, pooled results and captures. The raw benchmark files in `artifacts/` are ignored, and probe logs and the isolated clone in `/private/tmp` can expire. The exploratory Scout and WebKit runs lack raw timing, the checkpoint lacks a completed full browser report, and the later release evidence describes a different revision.
+
+## Later live iPad capture · 21 November
+
+This addendum records a later run on the live web version labelled 0.7.0; it
+does not alter the earlier checkpoint observations above. The owner supplied
+the Render Performance bench output from an iPad Pro (12.9-inch, 5th generation)
+running Safari, with the hardware label `iPad-safari`. It used 25 scenarios,
+alternating ion and plasma main engines, Low-res CSS glow, and 1920 × 1080 World,
+FX and LFX backings. The supplied capture reports 97.82 seconds active time,
+60.0 callbacks/s, 17 ms median/p95 callback interval, and 1/2 ms median/p95
+synchronous JS and Canvas submission. Full setup and values are retained in the
+[iPad performance report](../reports/2026-11-21-0-7-0-ipad-render-performance.md).
+
+The owner asked, “to me this sounds, our new FX layer trick worked? the ipad has
+a lot smaller processor than my M4 max here”. The response interpreted the
+capture as strong target-device evidence for callback pacing and main-thread
+headroom, while noting the bench does not measure GPU completion. This was a
+question and interpretation, not a separately recorded acceptance decision.
+
+The stamp counters report 683,956 attempted, 652,848 accepted and 31,108 dropped
+requests. Per the Render Performance contract these are shared FX stamp-budget
+counts, not missed frames. The supplied browser user-agent identifies macOS even
+though the owner-labelled hardware is iPad Safari; the device identification
+therefore follows the owner's hardware label.
+
+This later capture is direct owner-supplied bench output, not an independently
+reproduced run. No raw export or device-side recording was provided separately.
+Its timing covers visible animation-frame callbacks and synchronous submission,
+not GPU completion or actual displayed-frame presentation. It is one run with
+Low-res CSS glow; there is no same-device comparison against another FX
+treatment. The owner said it was the live web version, but this session did not
+independently inspect the deployed site or identify the deployed revision. No
+code or production changes were made in this follow-up; the report and this
+evidence addendum are documentation only.

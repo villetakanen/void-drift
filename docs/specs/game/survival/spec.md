@@ -1,17 +1,11 @@
 ---
-title: "Spec: Survival"
-status: draft
 generated:
-  by: "codex/gpt-6"
-  at: "2026-11-19T20:34:27+00:00"
-verified:
-  - by: "codex/gpt-6"
-    at: "2026-11-19T20:35:41+00:00"
-  - by: "codex/gpt-6"
-    at: "2026-11-19T20:57:31+02:00"
+  by: "codex/gpt-6.2-sol"
+  at: "2026-11-21T19:41:06+00:00"
+verified: []
 ---
 
-# Spec: Survival
+# Survival
 
 ## Blueprint
 
@@ -69,8 +63,9 @@ Ranked Survival uses `RANKED_SURVIVAL_ENCOUNTER` and unranked Survival uses
   first window, longer repeat interval and salvage-group limit.
 - **Ranked pirate.** The first armed [Gauntlet Scout](../gauntlet/spec.md)
   arrives exactly 45 gameplay seconds after GO. Its fitting, pilot and entry
-  use the Gauntlet Scout behavior. Its death or outward crossing of the system
-  boundary starts a seeded 45–60 gameplay second wait for the next Scout.
+  use the Gauntlet Scout behavior. It wraps at the system boundary exactly
+  like the player, retaining its identity and active encounter. Only its
+  destruction starts a seeded 45–60 gameplay second wait for the next Scout.
   An arriving or active Scout occupies the single pirate slot independently
   of derelicts. The run continues until the player dies.
 - **Score.** Ranked Survival awards 1 point per whole gameplay second alive and
@@ -168,9 +163,18 @@ Feature: Survival
     When 45 gameplay seconds have elapsed
     Then the first Gauntlet Scout arrives
     And no other Scout arrives while it is present
-    When it dies or crosses the system boundary outward
+    When it is destroyed
     Then one replacement arrives 45 to 60 gameplay seconds later
     And replaying the same seed and inputs reproduces that timing
+
+  Scenario: Ranked Scout wraps and remains in play
+    Given a living Scout in a ranked Survival run
+    When it crosses the system boundary outward
+    Then that same Scout wraps to the opposite side like the player
+    And it remains active in the single pirate slot
+    And crossing starts no replacement countdown
+    When more than 60 gameplay seconds pass without its destruction
+    Then that same Scout still occupies the slot with no replacement
 
   Scenario: Ranked competition
     Given Playground is Off and my fitting is eligible for ranked play

@@ -75,11 +75,11 @@ try {
   await page.screenshot({ path: `${dir}atlas-wrap-check.png`, fullPage: true });
   await writeFile(
     `${dir}validation.json`,
-    JSON.stringify(
+    `${JSON.stringify(
       { renderer: "StripSphericalSurface", maps: report },
       null,
       2,
-    ) + "\n",
+    )}\n`,
   );
   console.log(JSON.stringify(report));
 } finally {

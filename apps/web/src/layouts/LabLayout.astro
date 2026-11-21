@@ -1,5 +1,6 @@
 ---
 import Logo from "../components/Logo.svelte";
+import PageHeader from "../components/PageHeader.svelte";
 import { labGroups, labPages } from "../data/lab-pages";
 import "@void-drift/core/styles/reset.css";
 import "@void-drift/core/styles/tokens.css";
@@ -19,10 +20,12 @@ const activeHref = labPages
   .filter(covers)
   .sort((a, b) => b.length - a.length)[0];
 const isActive = (href: string) => href === activeHref;
-const groups = labGroups.map((group) => ({
-  ...group,
-  pages: labPages.filter((page) => page.group === group.id),
-}));
+const groups = labGroups
+  .filter((group) => group.id !== "design-system")
+  .map((group) => ({
+    ...group,
+    pages: labPages.filter((page) => page.group === group.id),
+  }));
 ---
 
 <!doctype html>
@@ -62,9 +65,18 @@ const groups = labGroups.map((group) => ({
       </aside>
 
       <!-- Column 2 Row 1: Header -->
-      <header class="page-header">
-        <h1>Lab // {title}</h1>
-      </header>
+      <div class="page-header">
+        <PageHeader
+          title="Lab"
+          pageName={currentPath === "/lab" ? undefined : title}
+          href="/lab"
+          links={[
+            { href: "/lab/ds", label: "DS" },
+            { href: "/lab/studies", label: "studies" },
+          ]}
+          navigationLabel="Development sites"
+        />
+      </div>
 
       <!-- Column 2 Row 2: Main Stage -->
       <main class="main-stage">
@@ -149,19 +161,11 @@ const groups = labGroups.map((group) => ({
 /* Column 2 Row 1: Header */
 .page-header {
   grid-area: header;
-  padding: 1rem 2rem;
-  border-bottom: 1px solid var(--color-border-subtle);
+  padding: var(--spacing-sm) var(--spacing-md);
+  min-width: 0;
   background: var(--color-void);
   display: flex;
   align-items: center;
-}
-
-.page-header h1 {
-  margin: 0;
-  font-size: var(--font-size-caption);
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-eyebrow);
 }
 
 /* Column 2 Row 2: Main Stage */

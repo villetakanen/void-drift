@@ -16,7 +16,7 @@ import RingSlider from "../inputs/RingSlider.svelte";
 import SegmentedControl from "../inputs/SegmentedControl.svelte";
 import Switch from "../inputs/Switch.svelte";
 import BurnRow from "../lab/instrument/BurnRow.svelte";
-import OverlayPane from "../lab/instrument/OverlayPane.svelte";
+import SideSheet from "../lab/instrument/SideSheet.svelte";
 import {
   FlightScene,
   type FlightSceneConfig,
@@ -224,7 +224,7 @@ onMount(() => {
     </div>
   </div>
 
-  <OverlayPane>
+  <SideSheet>
     <div class="value">
       <p>Where the ship starts</p>
       <SegmentedControl
@@ -250,7 +250,7 @@ onMount(() => {
         <Switch id={`${layerId}-lfx`} bind:checked={shown.lfx} />
       </div>
     </div>
-  </OverlayPane>
+  </SideSheet>
 </figure>
 
 <style>

@@ -621,16 +621,6 @@ export class Simulation {
             this.planets,
             this.settings.ion,
           );
-          if (
-            this.settings.mode === "survival" &&
-            Math.hypot(
-              pirate.ship.pos.x - opponentPrevious[index].x,
-              pirate.ship.pos.y - opponentPrevious[index].y,
-            ) > 1200
-          ) {
-            pirate.lifecycle = "destroyed";
-            piratesCanFire[index] = false;
-          }
         }
         if (this.settings.loadout) {
           for (let index = 0; index < this.opponents.length; index++) {

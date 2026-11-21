@@ -56,7 +56,7 @@ describe("survival score", () => {
     expect(sim.survivalScore).toBe(26);
   });
 
-  it.each(["weapon", "ram", "power loss", "exit"])(
+  it.each(["weapon", "ram", "power loss"])(
     "credits a pirate finish by %s",
     (cause) => {
       const sim = new Simulation(gameSettings("wasp"));
@@ -68,10 +68,7 @@ describe("survival score", () => {
       const baseline = sim.survivalScore;
       pirate.resources.hull = 1;
       if (cause === "power loss") pirate.resources.power = 0;
-      else if (cause === "exit") {
-        pirate.ship.pos.set(2159, 540);
-        pirate.ship.vel.set(600, 0);
-      } else {
+      else {
         pirate.ship.pos.set(
           sim.ship.pos.x + (cause === "ram" ? 2 : 45),
           sim.ship.pos.y,
@@ -89,6 +86,25 @@ describe("survival score", () => {
       );
     },
   );
+
+  it("keeps a wrapped pirate alive without awarding destruction points", () => {
+    const sim = new Simulation(gameSettings("wasp"));
+    sim.start();
+    sim.ticks = 45 * SECOND - 1;
+    sim.step(idle);
+    const pirate = sim.opponent;
+    if (!pirate) throw new Error("Expected a ranked pirate");
+    const baseline = sim.survivalScore;
+    pirate.lifecycle = "active";
+    pirate.ship.pos.set(960, 1739);
+    pirate.ship.vel.set(0, 600);
+    sim.step(idle);
+    sim.step(idle);
+    expect(pirate.ship.pos.y).toBeLessThan(540);
+    expect(sim.opponent).toBe(pirate);
+    expect(pirate.lifecycle).toBe("active");
+    expect(sim.survivalScore).toBe(baseline);
+  });
 
   it("counts a collected cell once", () => {
     const sim = new Simulation(gameSettings("fighter"));

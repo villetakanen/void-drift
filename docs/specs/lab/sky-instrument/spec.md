@@ -1,12 +1,12 @@
 ---
 
-title: "Spec: Sky instrument"
-status: draft
-generated: { by: codex/gpt-6, at: "2026-11-19T11:13:02+00:00" }
-verified: [{ by: codex/gpt-6, at: "2026-11-19T11:17:49+00:00" }]
+generated: { by: codex/gpt-6.2, at: "2026-11-21T19:23:59+00:00" }
+verified:
+- by: "human:ville-takanen"
+  at: "2026-11-21T19:26:34+00:00"
 ---
 
-# Spec: Sky instrument
+# Sky instrument
 
 ## Blueprint
 
@@ -16,7 +16,9 @@ At `/lab/sky-instrument` a designer can compare intermediate reaches of the Milk
 
 ### Architecture
 
-The Lab Tools registry links the instrument. The page composes the shared sightline selector and procedural image generator. A worker prepares the selected sky and lower-resolution comparison images. Each preview uses a clipped, browser-scaled repeat of one prepared image. Controls inspect local parameters and report preparation status.
+The Lab Tools registry links the instrument. The screen composes existing standard instrument parts: [SideSheet](../../factory/design-system/side-sheet/spec.md) holds the Sightline controls over the full-width preview and comparison area, and [RingSlider](../../factory/design-system/inputs/spec.md) supplies the continuous parameter controls. The screen owns its local sightline and input state; these shared contracts own the parts’ interaction and presentation.
+
+Sky generation follows the [distant flight sky contract](../../game/render/flight-sky/spec.md): the shared [Sol recipe and system sightline selection](../../../../packages/mode-a/src/lib/flight-sky.ts), [seed schema](../../../../packages/core/src/lib/schemas/flight-sky.ts) and [tile generator](../../../../packages/core/src/lib/assets/flight-sky.ts) supply the sky material. The shared [preparation helper](../../../../apps/web/src/lib/assets/flight-sky/prepare.ts) runs its worker for the selected sky and lower-resolution comparison images. Each preview uses a clipped, browser-scaled repeat of one prepared image through the local SkyView and shared [tile presentation helper](../../../../apps/web/src/components/sky-tile.ts). Controls inspect local parameters and report preparation status.
 
 [Lab instrument](../../../../apps/web/src/components/lab/sky-instrument/SkyInstrument.svelte) · [Image preparation worker](../../../../apps/web/src/lib/assets/flight-sky/prepare.worker.ts)
 

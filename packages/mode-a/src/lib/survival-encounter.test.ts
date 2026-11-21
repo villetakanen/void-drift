@@ -111,7 +111,7 @@ describe("ranked pirate encounters", () => {
   const idle = { leftThruster: false, rightThruster: false, fire: false };
   const first = Math.round(45 / STEP);
 
-  it.each(["death", "departure"])("anchors the repeat to %s", (ending) => {
+  it("starts the seeded repeat wait only after destruction", () => {
     const sim = new Simulation(gameSettings("wasp"));
     sim.start();
     sim.ticks = first - 2;
@@ -124,19 +124,15 @@ describe("ranked pirate encounters", () => {
     sim.ticks += Math.round(65 / STEP);
     sim.step(idle);
     expect(sim.opponents).toEqual([pirate]);
-    if (ending === "death") pirate.resources.hull = 0;
-    else {
-      pirate.ship.pos.set(2159, 540);
-      pirate.ship.vel.set(600, 0);
-    }
+    pirate.resources.hull = 0;
     sim.step(idle);
     expect(sim.opponent).toBeNull();
     expect(sim.gauntletResult).toBeNull();
-    const retired = sim.ticks;
-    sim.ticks += first - 2;
+    const destroyed = sim.ticks;
+    sim.ticks = destroyed + first - 2;
     sim.step(idle);
     expect(sim.opponent).toBeNull();
-    while (!sim.opponent && sim.ticks < retired + 60 / STEP) {
+    while (!sim.opponent && sim.ticks < destroyed + Math.round(60 / STEP)) {
       sim.ship.pos.set(500, 540);
       sim.ship.vel.set(0, 0);
       sim.state.resources.power = 100;
@@ -145,6 +141,32 @@ describe("ranked pirate encounters", () => {
     }
     expect(sim.opponents).toHaveLength(1);
     expect(sim.opponent).not.toBe(pirate);
+    expect(sim.ticks - destroyed).toBeGreaterThanOrEqual(first);
+    expect(sim.ticks - destroyed).toBeLessThanOrEqual(Math.round(60 / STEP));
+  });
+
+  it("keeps the same live Scout after wrapping without starting a replacement wait", () => {
+    const sim = new Simulation(gameSettings("wasp"));
+    sim.start();
+    sim.ticks = first - 1;
+    sim.step(idle);
+    const pirate = sim.opponent;
+    if (!pirate) throw new Error("Expected first ranked Scout");
+    pirate.lifecycle = "active";
+    pirate.ship.pos.set(960, 1739);
+    pirate.ship.vel.set(0, 600);
+    sim.step(idle);
+    expect(pirate.ship.pos.y).toBeLessThan(540);
+    expect(pirate.lifecycle).toBe("active");
+    expect(sim.opponents).toEqual([pirate]);
+    const wrapped = sim.ticks;
+    for (const seconds of [45, 60, 61]) {
+      sim.ticks = wrapped + Math.round(seconds / STEP) - 1;
+      sim.step(idle);
+      expect(sim.state.status).toBe("PLAYING");
+      expect(sim.opponents).toEqual([pirate]);
+      expect(pirate.lifecycle).toBe("active");
+    }
   });
 
   it("resolves player weapons against the Scout while salvage advances once", () => {

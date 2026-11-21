@@ -70,18 +70,6 @@ function event(raw) {
   return data;
 }
 
-// Date.parse retains milliseconds. Compare any remaining fractional digits
-// when two RFC 3339 instants fall within the same millisecond.
-function atOrAfter(observed, generated) {
-  const delta = Date.parse(observed) - Date.parse(generated);
-  if (delta !== 0) return delta > 0;
-  const fraction = (value) => /\.(\d+)/.exec(value)?.[1] || "";
-  const left = fraction(observed);
-  const right = fraction(generated);
-  const width = Math.max(left.length, right.length);
-  return left.padEnd(width, "0") >= right.padEnd(width, "0");
-}
-
 export function provenance(text, spec = false) {
   const fm = fields(text);
   const generated = event(fm.get("generated") ?? "");
@@ -97,18 +85,16 @@ export function provenance(text, spec = false) {
     else entries = [value];
     verified = entries.map(event);
   }
-  const status = scalar(fm.get("status") || "");
-  if (spec) {
-    if (!["draft", "approved"].includes(status))
-      throw Error("expected draft or approved status");
-    if (
-      status === "approved" &&
-      !verified.some(
-        (v) => v.by.startsWith("human:") && atOrAfter(v.at, generated.at),
-      )
-    ) {
-      throw Error("approved spec requires a current human verification");
-    }
+  for (const verification of verified) {
+    if (!/^human:\S(?:[^\r\n]*\S)?$/.test(verification.by))
+      throw Error(
+        "verified events require a human:<id> actor with a nonempty identifier",
+      );
   }
-  return { generated, verified, status };
+  if (spec) {
+    if (fm.has("status")) throw Error("spec status metadata is forbidden");
+    if (fm.has("title"))
+      throw Error("spec title metadata is forbidden; use the H1 feature name");
+  }
+  return { generated, verified };
 }

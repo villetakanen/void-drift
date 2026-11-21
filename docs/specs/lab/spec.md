@@ -4,7 +4,7 @@ title: "Spec: Lab"
 status: draft
 generated:
   by: "codex/gpt-6"
-  at: "2026-11-19T16:59:28+02:00"
+  at: "2026-11-21T18:27:12+00:00"
 verified:
 - { by: "codex/gpt-6", at: "2026-11-19T16:50:31+02:00" }
 - { by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }
@@ -32,6 +32,10 @@ routing convention. Studies and the Design system are independent of the Lab.
 Lab tools live under `apps/web/src/pages/lab/`. The shared
 [page registry](../../../apps/web/src/data/lab-pages.ts) and navigation can
 connect all three development tools without establishing ownership between them.
+
+LabLayout uses the shared [page header](../factory/design-system/page-header/spec.md)
+in its content column to the right of the navigation tray. The tray, its logo
+and the inspector retain their arrangement.
 
 Game contracts and implementations own the simulation, ships, worlds, effects,
 camera transforms and rendering that the Lab hosts. The Design system owns
