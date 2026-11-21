@@ -1,7 +1,7 @@
 ---
 generated:
-  by: "codex/gpt-6"
-  at: "2026-11-21T17:30:50+00:00"
+  by: "openai-codex/gpt-6.1-sol"
+  at: "2026-11-21T21:39:12Z"
 verified: []
 ---
 
@@ -9,5 +9,16 @@ import DesignSystemLayout from "../../../layouts/DesignSystemLayout.astro";
 import DesignSystemCatalog from "../../../components/lab/DesignSystemCatalog.astro";
 
 <DesignSystemLayout title="Design system">
+  <section className="design-references" aria-labelledby="design-references-title">
+    <h2 id="design-references-title">Design references</h2>
+    <p><a href="/lab/ds/tray">Tray — selected design reference</a>. Base surface and neutral resting links. No shared Tray component; live navigation is unchanged. Separate from the implemented-component catalog below.</p>
+  </section>
   <DesignSystemCatalog />
 </DesignSystemLayout>
+
+<style>{`
+.design-references { padding: var(--spacing-lg); }
+.design-references h2 { margin: 0 0 var(--spacing-sm); font-size: var(--font-size-lead); }
+.design-references p { margin: 0; color: var(--color-text-muted); line-height: var(--line-height-prose); }
+.design-references a { color: var(--color-action); }
+`}</style>

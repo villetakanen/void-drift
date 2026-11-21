@@ -1,8 +1,8 @@
 # Void Drift
 
-**"Newtonian Chaos in a Shared Browser Tab"**
+**"Build a Ship. Survive the Newtonian Chaos."**
 
-Void Drift is a multiplayer, top-down space brawler that prioritizes "game feel" (drift, inertia) over complex controls. Features distinct, high-contrast neon vector aesthetics.
+Void Drift is a physics-driven, top-down space survival game played in the browser. Choose a ship, fit its parts and fly through drift, gravity and explosive fights in a procedural star system. Play without an account, and compete through optional shared scores. Its visual language is high-contrast neon on the void.
 
 ## Architecture
 

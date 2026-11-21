@@ -1,0 +1,121 @@
+---
+generated:
+  by: "openai-codex/gpt-6.1-sol"
+  at: "2026-11-21T21:39:12Z"
+verified: []
+---
+
+import ComponentFrame from "../../../components/lab/ComponentFrame.svelte";
+import DesignSystemLayout from "../../../layouts/DesignSystemLayout.astro";
+
+export const trayGroups = [
+  { id: "structure", label: "Structure", links: [
+    { href: "/lab/ds/page-header", label: "Page header" },
+    { href: "/lab/ds/tray", label: "Tray" },
+    { href: "/lab/ds/component-frame", label: "Component frame" },
+  ] },
+  { id: "controls", label: "Controls", links: [
+    { href: "/lab/ds/actions", label: "Actions" },
+    { href: "/lab/ds/choices", label: "Choices" },
+  ] },
+];
+
+<DesignSystemLayout title="Tray" wide>
+<div className="tray-guide">
+
+# Tray
+
+Selected design reference: **Option A — base surface, neutral resting links**.
+A quiet navigation column beneath the page header. This page defines the selected
+appearance, not a shared Tray component or API. Live Design system and Lab
+navigation have not been migrated.
+
+<ComponentFrame>
+<nav className="tray-reference" aria-label="Tray design reference">
+  <a href="/lab/ds">Overview</a>
+  {trayGroups.map((group) => (
+    <section aria-labelledby={`tray-reference-${group.id}`}>
+      <h3 id={`tray-reference-${group.id}`}>{group.label}</h3>
+      {group.links.map((link) => (
+        <a href={link.href} aria-current={link.href === "/lab/ds/tray" ? "page" : undefined}>{link.label}</a>
+      ))}
+    </section>
+  ))}
+</nav>
+</ComponentFrame>
+
+## Anatomy
+
+Overview is an ordinary first link. Noninteractive group headers introduce lists
+of destination links; their smaller, muted type and larger inter-group gap keep
+the hierarchy quiet. The example's Structure and Controls groups illustrate
+anatomy, not a required taxonomy for live navigation.
+
+The header and logo stay outside the tray, above it. This reference does not
+change header geometry, workspace switching, destination membership or live
+tray scrolling. The example is 256px wide, not a shared sizing API.
+
+## States and accessibility
+
+Resting links use neutral text on the base surface. The current page uses
+selected-colour text and a single leading edge, with `aria-current="page"`.
+Hover adds a light surface wash without replacing the selected cue.
+
+Every destination is a native link, reachable in document order with Tab and
+activated with Enter. Keyboard focus adds a separate inset outline, including
+on the current page. Group headings are not controls or tab stops. Rows retain
+a 44px minimum target height. Try focusing Overview and Tray in the example.
+
+## Consumed tokens
+
+Values come from `packages/core/src/lib/styles/tokens.css`; no tray-specific
+tokens are introduced. The surrounding boundary is the shared
+[Component frame](/lab/ds/component-frame).
+
+| Token | Value and use |
+| --- | --- |
+| `--color-void` | `lch(1.57% 4.76 285.25)` — Base surface, elevation 0. |
+| `--color-text` | `lch(99.7% 7.45 104.72)` — Resting links. |
+| `--color-text-muted` | `lch(56.7% 0 0)` — Group headers. |
+| `--color-selected` | `var(--color-brand)` → `lch(96.42% 84.18 104.87)` — Current-page text and edge. |
+| `--color-surface-hover` | `lch(100% 0 0 / 0.051)` — Hover wash. |
+| `--font-family-ui` | `"B612 Mono", ui-monospace, SFMono-Regular, Consolas, monospace` — Tray type. |
+| `--font-size-label`, `--font-size-caption` | `0.875rem`, `0.75rem` — Links and group headers. |
+| `--font-weight-regular`, `--line-height-ui` | `400`, `1.5` — Group weight and tray line height. |
+| `--spacing-sm`, `--spacing-md` | `8px`, `16px` — Row/header vertical and horizontal padding; tray inset and group separation use md. |
+| `--spacing-xl` | `64px` — Four units set this example's width. |
+| `--control-min-height` | `44px` — Minimum link height. |
+| `--state-selected-indicator-width` | `var(--spacing-xs)` → `4px` — Leading selected edge; reserved on resting rows. |
+| `--focus-ring-width`, `--focus-ring-offset-inset` | `2px`, `-5px` — Keyboard focus outline. |
+| `--color-focus-ring` | `var(--color-text)` — Keyboard focus colour. |
+
+## Implementation boundary
+
+The contract at `docs/specs/factory/design-system/tray/spec.md` owns
+this reference. Shared component ownership, its API and migration of live
+consumers require a separate implementation decision. The neutral resting-link
+exception applies to this tray reference only; it does not redefine links or
+other controls across the design system.
+
+</div>
+</DesignSystemLayout>
+
+<style>{`
+.tray-guide { padding: var(--spacing-lg); }
+.tray-guide h1 { margin: 0 0 var(--spacing-sm); }
+.tray-guide h2 { margin: var(--spacing-lg) 0 var(--spacing-md); font-size: var(--font-size-body); }
+.tray-guide p { max-inline-size: var(--measure-prose); margin: 0 0 var(--spacing-md); line-height: var(--line-height-prose); color: var(--color-text-muted); }
+.tray-guide strong { color: var(--color-text); }
+.tray-guide table { width: 100%; border-collapse: collapse; font-size: var(--font-size-body); }
+.tray-guide th, .tray-guide td { padding: var(--spacing-sm) var(--spacing-md); text-align: left; border-bottom: 1px solid var(--color-border-subtle); }
+.tray-guide th:first-child, .tray-guide td:first-child { padding-left: 0; }
+.tray-guide th { color: var(--color-text-muted); font-weight: var(--font-weight-regular); }
+.tray-guide a { color: var(--color-action); }
+.tray-guide .tray-reference { inline-size: calc(var(--spacing-xl) * 4); max-inline-size: 100%; box-sizing: border-box; padding: var(--spacing-md); background: var(--color-void); font-family: var(--font-family-ui); line-height: var(--line-height-ui); }
+.tray-guide .tray-reference section { margin-block-start: var(--spacing-md); }
+.tray-guide .tray-reference h3 { margin: 0; padding: var(--spacing-sm) var(--spacing-md); padding-inline-start: calc(var(--spacing-md) + var(--state-selected-indicator-width)); color: var(--color-text-muted); font-size: var(--font-size-caption); font-weight: var(--font-weight-regular); }
+.tray-guide .tray-reference a { display: flex; align-items: center; box-sizing: border-box; min-block-size: var(--control-min-height); padding: var(--spacing-sm) var(--spacing-md); border-inline-start: var(--state-selected-indicator-width) solid transparent; color: var(--color-text); font-size: var(--font-size-label); text-decoration: none; }
+.tray-guide .tray-reference a[aria-current="page"] { border-inline-start-color: var(--color-selected); color: var(--color-selected); }
+.tray-guide .tray-reference a:hover { background: var(--color-surface-hover); }
+.tray-guide .tray-reference a:focus-visible { outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: var(--focus-ring-offset-inset); }
+`}</style>

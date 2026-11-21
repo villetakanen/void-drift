@@ -1,19 +1,11 @@
 ---
-
-title: "Spec: Design system"
-status: draft
 generated:
-  by: "codex/gpt-6.2"
-  at: "2026-11-21T19:22:52+00:00"
-verified:
-- by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-19T12:33:38+02:00"
-- by: "codex/gpt-6"
-  at: "2026-11-19T19:21:23+02:00"
-
+  by: "openai-codex/gpt-6.1-sol"
+  at: "2026-11-21T21:39:12Z"
+verified: []
 ---
 
-# Spec: Design system
+# Design system
 
 ## Blueprint
 
@@ -60,6 +52,9 @@ canonical examples; Lab and Studies consume them without acquiring ownership.
 - [Side sheet](side-sheet/spec.md) owns shared instrument parameter surfaces.
 - [Page header](page-header/spec.md) owns shared page identity, navigation and container adaptation.
 - [Component frame](component-frame/spec.md) owns the shared boundary and width container for documentation examples.
+- [Tray](tray/spec.md) owns the selected design reference, discovered separately
+  under Design references on the overview. It is not an implemented shared part
+  or an entry in the shared-component registry; live tray migration is deferred.
 - [Typography](typography/spec.md) owns that domain's definitions and acceptance behavior.
 - [Colour roles](colour/spec.md) owns that domain's definitions and acceptance behavior.
 - [Surfaces and layers](surfaces/spec.md) owns that domain's definitions and acceptance behavior.
