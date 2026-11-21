@@ -1,0 +1,54 @@
+---
+generated:
+  by: "codex/gpt-6"
+  at: "2026-11-21T20:08:43+02:00"
+verified: []
+---
+
+import ComponentFrame from "../../../components/lab/ComponentFrame.svelte";
+import DesignSystemLayout from "../../../layouts/DesignSystemLayout.astro";
+
+<DesignSystemLayout title="Component frame" wide>
+<div className="frame-guide">
+
+## Component frame
+
+Marks the boundary of a live component example.
+
+<ComponentFrame><span>Example content</span></ComponentFrame>
+
+The dashed line and padding separate the example from its documentation.
+The frame fills its parent and leaves the page background visible.
+
+### Spacing
+
+Padding follows the [shared spacing grid](/lab/tokens), whose base unit is
+`--spacing-xs`. Horizontal padding is twice the vertical padding.
+
+| Direction | Base grid units | Token |
+| --- | --- | --- |
+| Top and bottom | 2 × | `--spacing-sm` |
+| Left and right | 4 × | `--spacing-md` |
+
+### Usage
+
+Place example content inside `ComponentFrame`. Svelte receives it as a `children`
+snippet; Astro and MDX pass it as nested content.
+
+The frame provides the named `component-frame` inline-size container for
+components that adapt to available width. Its parent sets that width.
+
+</div>
+</DesignSystemLayout>
+
+<style>{`
+.frame-guide { padding: var(--spacing-lg); }
+.frame-guide h2 { margin: 0 0 var(--spacing-sm); }
+.frame-guide h3 { margin: var(--spacing-lg) 0 var(--spacing-md); font-size: var(--font-size-body); }
+.frame-guide table { width: 100%; border-collapse: collapse; font-size: var(--font-size-body); }
+.frame-guide th, .frame-guide td { padding: var(--spacing-sm) var(--spacing-md); text-align: left; border-bottom: 1px solid var(--color-border-subtle); }
+.frame-guide th:first-child, .frame-guide td:first-child { padding-left: 0; white-space: nowrap; }
+.frame-guide th { color: var(--color-text-muted); font-weight: 400; }
+.frame-guide p { margin: var(--spacing-md) 0; line-height: 1.6; color: var(--color-text-muted); }
+.frame-guide a { color: var(--color-action); }
+`}</style>

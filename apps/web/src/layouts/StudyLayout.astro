@@ -1,7 +1,5 @@
 ---
-import PageHeader from "../components/PageHeader.svelte";
-import "@void-drift/core/styles/buttons.css";
-import "@void-drift/core/styles/surfaces.css";
+import Logo from "../components/Logo.svelte";
 import { type Study, studies } from "../data/studies";
 import "@void-drift/core/styles/reset.css";
 import "@void-drift/core/styles/tokens.css";
@@ -23,17 +21,10 @@ const study = Astro.props.study ?? studies.find((entry) => entry.slug === slug);
     <title>{study?.title ?? "Design studies"} | Void Drift</title>
   </head>
   <body>
-    <div class="study-navigation">
-      <PageHeader
-        title="Lab // Research"
-        level={2}
-        navigationLabel="Study navigation"
-        links={[
-          { href: "/lab", label: "Lab" },
-          { href: "/lab/studies", label: "Design studies" },
-        ]}
-      />
-    </div>
+    <nav aria-label="Study navigation">
+      <a href="/lab">← Lab</a><a href="/lab/studies">Design studies</a
+      ><span class="research"><Logo size="sm" /> / RESEARCH</span>
+    </nav>
     <main class="prose">
       <header>
         <p class="eyebrow">
@@ -57,9 +48,28 @@ const study = Astro.props.study ?? studies.find((entry) => entry.slug === slug);
   color: var(--color-text);
   font-family: var(--font-family-prose);
 }
-.study-navigation {
-  padding-inline: var(--spacing-lg);
+nav {
+  display: flex;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
   border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
+}
+nav span {
+  margin-left: auto;
+  color: var(--color-text-muted);
+  font: var(--font-size-caption) var(--font-family-ui);
+}
+.research {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+.research :global(.logomark) {
+  color: var(--color-brand);
+}
+a {
+  color: var(--color-action);
 }
 main {
   max-width: 1120px;

@@ -4,7 +4,7 @@ title: "Spec: Design system"
 status: draft
 generated:
   by: "codex/gpt-6"
-  at: "2026-11-19T19:21:23+02:00"
+  at: "2026-11-21T17:57:46+00:00"
 verified:
 - by: "openai-codex/gpt-6.1-sol"
   at: "2026-11-19T12:33:38+02:00"
@@ -51,11 +51,13 @@ canonical examples; Lab and Studies consume them without acquiring ownership.
   input and stylesheet is named by a page. Pages at an earlier address
   (`/lab/tokens`, `/lab/typography`, `/lab/surfaces`, `/lab/logomark`,
   `/lab/graphs`, `/lab/instrument-parts`) are listed in that
-  check and move to `/lab/ds/<name>` in the change that next touches them.
+  check and retain their addresses. These pages belong to the Design system
+  and use its own layout; their historical URLs do not imply Lab ownership.
 - Feature specs consume the system. Changing a definition is design work,
   recorded here and demonstrated on its design-system page in the same change.
 
 - [Page header](page-header/spec.md) owns shared page identity, navigation and container adaptation.
+- [Component frame](component-frame/spec.md) owns the shared boundary and width container for documentation examples.
 - [Typography](typography/spec.md) owns that domain's definitions and acceptance behavior.
 - [Colour roles](colour/spec.md) owns that domain's definitions and acceptance behavior.
 - [Surfaces and layers](surfaces/spec.md) owns that domain's definitions and acceptance behavior.

@@ -37,10 +37,18 @@ export type LabPage = z.infer<typeof labPageSchema>;
 
 export const labPages = z.array(labPageSchema).parse([
   {
+    href: "/lab/ds/component-frame",
+    title: "Component frame",
+    purpose: "A shared boundary and width container for live examples.",
+    group: "design-system",
+    source: "production",
+    defines: ["apps/web/src/components/lab/ComponentFrame.svelte"],
+    spec: "docs/specs/factory/design-system/component-frame/spec.md#architecture",
+  },
+  {
     href: "/lab/ds/page-header",
     title: "Page header",
-    purpose:
-      "Shared page identity, page-owned actions and container-responsive navigation.",
+    purpose: "Page identity, navigation and controls in a single row.",
     group: "design-system",
     source: "production",
     defines: ["apps/web/src/components/PageHeader.svelte"],

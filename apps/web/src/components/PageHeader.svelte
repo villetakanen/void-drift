@@ -4,13 +4,15 @@ import Logo from "./Logo.svelte";
 
 let {
   title,
-  level = 1,
+  pageName,
+  href = "/",
   links = [],
   navigationLabel = "Page navigation",
   actions,
 }: {
   title: string;
-  level?: 1 | 2 | 3;
+  pageName?: string;
+  href?: string;
   links?: { href: string; label: string }[];
   navigationLabel?: string;
   actions?: Snippet;
@@ -21,9 +23,15 @@ let {
   <header class="page-header">
     <div class="identity">
       <a class="brand" href="/" aria-label="Void Drift"><Logo size="sm" /></a>
-      <svelte:element this={`h${level}`} class="page-name"
-        >{title}</svelte:element
-      >
+      <div class="page-title">
+        {#if pageName}
+          <a class="site-name" {href}>{title}</a>{" "}<span class="page-name"
+            >// {pageName}</span
+          >
+        {:else}
+          <span class="site-name">{title}</span>
+        {/if}
+      </div>
     </div>
     {#if actions || links.length}
       <div class="trailing">
@@ -44,7 +52,6 @@ let {
 
 <style>
 .header-container {
-  container: page-header / inline-size;
   width: 100%;
   min-width: 0;
 }
@@ -53,8 +60,7 @@ let {
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing-md);
-  padding-block: var(--spacing-md);
-  font-family: var(--font-family-ui);
+  min-height: var(--control-min-height);
 }
 .identity {
   display: flex;
@@ -71,37 +77,35 @@ let {
   flex-shrink: 0;
   color: var(--color-brand);
 }
-.brand:focus-visible {
+.brand:focus-visible,
+a.site-name:focus-visible {
   outline: var(--focus-ring-width) solid var(--color-focus-ring);
   outline-offset: var(--focus-ring-offset-inset);
 }
-.page-name {
+.page-title {
   margin: 0;
   color: var(--color-text);
-  font-size: var(--font-size-heading);
+  font-size: var(--font-size-lead);
   font-weight: var(--font-weight-bold);
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+}
+.site-name {
+  color: inherit;
+  text-decoration: none;
+}
+.page-name {
+  font-size: var(--font-size-body);
 }
 .trailing,
 .actions,
 nav {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: var(--spacing-md);
 }
 .trailing {
   justify-content: flex-end;
   flex-shrink: 0;
-}
-@container page-header (width < 40rem) {
-  .page-header {
-    flex-wrap: wrap;
-  }
-  .trailing {
-    flex-basis: 100%;
-    justify-content: flex-start;
-    flex-shrink: 1;
-  }
 }
 </style>
