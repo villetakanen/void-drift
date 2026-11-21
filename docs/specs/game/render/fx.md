@@ -1,12 +1,8 @@
 # FX layer
 
 FX holds accumulated light history in a persistent, full-stage-resolution
-surface. It defaults to CSS `screen` with the shared static seeded Turbulent
-bloom presentation (12 CSS px glow, 16 CSS px distortion, 90% strength). Screen
-keeps black neutral over World; bloom preserves the source and screens an
-attenuated displaced and blurred copy. The browser filter changes presentation
-only; it does not alter the held canvas image, source marks or presentation
-clock. An explicit layer filter override, including `none`, replaces the default.
+surface. Its sharp image is shown unfiltered with CSS `screen`, which keeps
+black neutral over World.
 For each elapsed timestep the surface first fades the whole held image with a
 translucent black source-over fill, then adds fresh stamps. Its
 current half-life is 0.1 seconds. Fading and emission happen only when game time
@@ -25,6 +21,22 @@ cleanup pop.
 The aperture-cut pass deliberately removes light over derelict openings after
 the FX surface is composited into its canvas. It is a geometric reveal rule, not
 history cleanup.
+
+## Low-res CSS glow
+
+The shared flight layer host places one stage-wide decorative canvas above sharp
+FX and below LFX. Its backing is one eighth of the FX width and height, rounded
+to the nearest whole pixel per axis with a minimum of one (240 × 135 for 1920 ×
+1080 FX). A Canvas image draw downsamples the current FX image once after all
+its passes, including aperture cuts. The browser scales the result smoothly and
+composites it with CSS Screen blend, 90% opacity and native `blur(12px)`.
+
+The copy has no history of its own and never feeds back into FX or simulation.
+Pause holds the same light when the view is stationary. Camera movement,
+arena wrap, reset and resize show the glow of the resulting FX frame. A seek
+replays FX history and copies only the settled picture. When an instrument
+hides or shows FX, the glow follows its visibility. A backdrop or other field
+that only paints World and LFX can omit the glow.
 
 ## Plasma rifle fumes
 
@@ -59,7 +71,7 @@ into the simulation.
   inside, more density or relative speed gives more fresh band light.
 - The FX CSS blend remains screen by default in play and Lab.
 - Production play, the Render Model workbench and the render performance bench
-  use the same reusable Turbulent bloom filter definition and defaults. The
-  workbench may tune its values or select another filter for comparison.
+  open with shared Low-res CSS glow. Both Lab instruments offer comparisons,
+  including Turbulent bloom and [Low-res glow without blur](../../lab/render-model/spec.md#lab-glow-treatments).
 
 A funded plasma rifle release deposits a narrow amber discharge along its travelled path. An eruption at full reach or earlier material contact emits a connected expanding fireball at the recorded world position. Persistent FX carries its fading light after the live core clears. Repainting a paused frame deposits no additional light. On target loss the plasma rifle emits two widening, cooling sprays from its fitted outlets. Their world-space drift continues after the ports close. [Plasma rifle](../plasma-rifle/spec.md)

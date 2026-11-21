@@ -1,8 +1,20 @@
 <script lang="ts">
 import { type FxPass, FxSurface } from "@void-drift/core";
-import { FLIGHT_LAYERS, type FlightLayerId } from "@void-drift/mode-a";
+import {
+  FLIGHT_LAYERS,
+  type FlightLayerCanvases,
+  type FlightLayerId,
+  presentFlightFx,
+} from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import FlightLayers from "../FlightLayers.svelte";
+import {
+  DEFAULT_FX_GLOW,
+  describeFxGlow,
+  FX_GLOW_TREATMENTS,
+  type FxGlowTreatment,
+  fxGlowTreatment,
+} from "../fx-glow";
 import { TURBULENT_BLOOM_DEFAULTS } from "../turbulent-bloom";
 import {
   advanceRenderModelHeading,
@@ -20,6 +32,12 @@ import {
 let { label = "Render performance" }: { label?: string } = $props();
 const WIDTH = 1920;
 const HEIGHT = 1080;
+type FxFilter =
+  | "none"
+  | "blur"
+  | "distort"
+  | "turbulent-bloom"
+  | FxGlowTreatment["value"];
 const instanceId = $props.id();
 const DISTORT_FILTER_ID = `render-performance-distort-${instanceId}`;
 const baseline = createRenderModelFixture({ x: WIDTH / 2, y: HEIGHT / 2 });
@@ -32,12 +50,11 @@ const fixtures = Array.from({ length: 25 }, (_, index) =>
     index % 2 ? "plasma" : "ion",
   ),
 );
-let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
+let canvases = $state<FlightLayerCanvases>({});
 let workload = $state<1 | 25>(25);
 let running = $state(false);
-let fxFilter = $state<"none" | "blur" | "distort" | "turbulent-bloom">(
-  "turbulent-bloom",
-);
+let fxFilter = $state<FxFilter>(DEFAULT_FX_GLOW.value);
+let glowTreatment = $derived(fxGlowTreatment(fxFilter));
 let filters = $derived<Partial<Record<FlightLayerId, string>>>({
   ...(fxFilter === "turbulent-bloom"
     ? {}
@@ -132,6 +149,7 @@ function paintFx() {
     (ctx, pass) => emitFx(ctx, pass, isIonBeamPulseActive(time)),
     false,
   );
+  presentFlightFx(fx.canvas, canvases.fxGlow);
   return {
     accepted: surface.pass.budget.decoration + surface.pass.budget.essential,
     dropped: surface.pass.budget.dropped,
@@ -230,6 +248,15 @@ function handleVisibility() {
     frame = requestAnimationFrame(tick);
   }
 }
+function benchFilterLabel(filter: FxFilter) {
+  if (filter === "blur") return "blur(2px)";
+  if (filter === "distort") return "Distort · 2px";
+  if (filter === "turbulent-bloom") {
+    const { glowSize, distortion, strength } = TURBULENT_BLOOM_DEFAULTS;
+    return `Turbulent Bloom · ${glowSize}px glow, ${distortion}px distortion, ${strength}% strength`;
+  }
+  return "none";
+}
 function copyResults() {
   const stats = summarize(measurements);
   const sampledWindow = measurements.samples.reduce(
@@ -243,12 +270,19 @@ function copyResults() {
     (layer) =>
       `${layer.id} ${WIDTH * layer.resolution}×${HEIGHT * layer.resolution}`,
   ).join(", ");
+  const glowCanvas = canvases.fxGlow;
+  const glow = glowCanvas
+    ? `${glowCanvas.width}×${glowCanvas.height}`
+    : undefined;
+  const fxPresentation = glowTreatment
+    ? `${glowTreatment.label} · ${describeFxGlow(glowTreatment)}; FX canvas has no filter`
+    : benchFilterLabel(fxFilter);
   copied = [
     `Render performance bench · ${workload} scenario${workload === 1 ? "" : "s"} · ${workload === 1 ? "ion" : "alternating ion and plasma"} main engines`,
     `Measured active time: ${measurements.elapsed.toFixed(2)} s; rolling sampled interval span: ${sampledWindow.toFixed(2)} s; samples: ${measurements.samples.length}`,
-    `Viewport: ${innerWidth}×${innerHeight}; stage CSS: ${stage}; backings: ${backings}; DPR: ${devicePixelRatio}`,
+    `Viewport: ${innerWidth}×${innerHeight}; stage CSS: ${stage}; backings: ${backings}${glow ? `, glow ${glow}` : ""}; DPR: ${devicePixelRatio}`,
     `Browser: ${navigator.userAgent}; hardware label: ${hardware.trim() || "unspecified"}`,
-    `FX blend: Screen; filter: ${fxFilter === "blur" ? "blur(2px)" : fxFilter === "distort" ? "Distort · 2px" : fxFilter === "turbulent-bloom" ? `Turbulent Bloom · ${TURBULENT_BLOOM_DEFAULTS.glowSize}px glow, ${TURBULENT_BLOOM_DEFAULTS.distortion}px distortion, ${TURBULENT_BLOOM_DEFAULTS.strength}% strength` : "none"}; LFX: Hard light; no filter`,
+    `FX blend: Screen; filter: ${fxPresentation}; LFX: Hard light; no filter`,
     `FPS: ${stats.fps.toFixed(1)}; frame interval median/p95: ${(stats.intervalMedian * 1000).toFixed(2)}/${(stats.intervalP95 * 1000).toFixed(2)} ms; JS update + Canvas submission median/p95: ${stats.jsMedian.toFixed(2)}/${stats.jsP95.toFixed(2)} ms`,
     `Stamp totals: attempted ${measurements.stamps.attempted}; accepted ${measurements.stamps.accepted}; dropped ${measurements.stamps.dropped}`,
     "Timing measures visible requestAnimationFrame callbacks and synchronous JS/Canvas submission, not GPU completion. Use a visible ordinary browser on target hardware; automated/headless runs establish correctness only.",
@@ -272,8 +306,13 @@ function setFxFilter(value: string) {
     value === "blur" ||
     value === "distort" ||
     value === "turbulent-bloom"
-  )
+  ) {
     fxFilter = value;
+  } else {
+    const treatment = fxGlowTreatment(value);
+    if (!treatment) return;
+    fxFilter = treatment.value;
+  }
   measurements = emptyMetrics();
   publish();
   if (active) restartClock(false);
@@ -383,6 +422,10 @@ onMount(() => {
         label="Shared scene rendering performance workload"
         blends={{ world: "normal", fx: "screen", lfx: "hard-light" }}
         {filters}
+        bloom={fxFilter === "turbulent-bloom"
+          ? TURBULENT_BLOOM_DEFAULTS
+          : undefined}
+        fxGlow={glowTreatment ?? false}
       />
     </div>
     <aside>
@@ -401,6 +444,9 @@ onMount(() => {
             <option value="turbulent-bloom">
               Turbulent Bloom · 12px / 16px / 90%
             </option>
+            {#each FX_GLOW_TREATMENTS as treatment (treatment.value)}
+              <option value={treatment.value}>{treatment.label}</option>
+            {/each}
           </select></label
         ><label
           >Hardware label

@@ -37,6 +37,16 @@ export type LabPage = z.infer<typeof labPageSchema>;
 
 export const labPages = z.array(labPageSchema).parse([
   {
+    href: "/lab/ds/page-header",
+    title: "Page header",
+    purpose:
+      "Shared page identity, page-owned actions and container-responsive navigation.",
+    group: "design-system",
+    source: "production",
+    defines: ["apps/web/src/components/PageHeader.svelte"],
+    spec: "docs/specs/factory/design-system/page-header/spec.md#architecture",
+  },
+  {
     href: "/lab/sky-instrument",
     title: "Sky instrument",
     purpose:

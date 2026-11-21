@@ -386,6 +386,7 @@ function reset() {
   </div>
   <div class="stage">
     <FlightLayers
+      fxGlow={false}
       bind:canvases={layers}
       label="Rotating mineral Mercury orbiting a production yellow Sun with field boundaries"
     />

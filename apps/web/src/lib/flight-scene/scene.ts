@@ -278,6 +278,7 @@ export class FlightScene {
   private light() {
     drawFlightFrame(this.frame(), {
       include: (pass) => pass.layer === "fx",
+      presentFx: false,
     });
   }
   /** The production frame; a study's FX light enters as the game's own overlay. */

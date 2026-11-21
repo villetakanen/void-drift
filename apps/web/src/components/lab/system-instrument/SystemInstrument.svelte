@@ -126,6 +126,7 @@ onMount(() => {
       <p id={`${id}-error`} class="message" role="alert">{error}</p>
     {/if}
     <GameField
+      showFxGlow={false}
       bind:canvases
       background={systemBackground(activeSeed)}
       cameraX={skyX}

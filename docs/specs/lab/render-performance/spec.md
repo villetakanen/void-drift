@@ -3,11 +3,9 @@
 title: "Spec: Render performance bench"
 status: draft
 generated:
-  by: "openai-codex/gpt-6"
-  at: "2026-11-19T14:20:12+02:00"
-verified:
-- by: "openai-codex/gpt-6"
-  at: "2026-11-19T14:21:41+02:00"
+  by: "codex/gpt-6"
+  at: "2026-11-21T18:41:41+02:00"
+verified: [{ by: "codex/gpt-6", at: "2026-11-20T22:56:46+02:00" }, { by: "codex/gpt-6", at: "2026-11-21T18:48:57+02:00" }]
 
 ---
 
@@ -28,9 +26,12 @@ production emission budgets remain intact. It targets Lab viewports at least
 
 The bench composes `FlightLayers.svelte`: one World canvas, one FX canvas and
 one LFX canvas, with the Deck represented by ordinary DOM above the canvas
-stack. One animation clock and one production `FxSurface` serve the entire
-scene, including its scene-wide budget and bounded reusable history buffers.
-Scenario instances hold emitter state only. Shared fixture logic in
+stack. The shared host supplies the production [FX glow](../../game/render/fx.md#low-res-css-glow)
+between FX and LFX. Alternative treatments use the production host with explicit
+presentation overrides. One
+animation clock and one production `FxSurface` serve the entire scene, including
+its scene-wide budget and bounded reusable history buffers. Scenario instances
+hold emitter state only. Shared fixture logic in
 [`render-model-fixture.ts`](../../../../apps/web/src/components/lab/render-model-fixture.ts)
 supplies production Wasp geometry, mounts, direction-correct plumes and
 horizontal ion beam drawing to both instruments. The [render
@@ -54,16 +55,21 @@ the canvas resolution and CSS stage size do not change with the workload.
   scenario has three fixed horizontal right-pointing ion beams: centre, above
   and below the hull sweep. All begin synchronized, using the production 3 Hz
   cadence, 80 ms immediate LFX flash and persistent FX dispersal.
-- World blends normally. FX uses Screen and defaults to the shared Turbulent
-  Bloom preset: 12 CSS px glow, 16 CSS px distortion and 90% strength. Its
-  filter selector offers None, Blur 2px, Distort 2px and Turbulent Bloom.
-  Distort uses the Render model's static seeded SVG turbulence/displacement
-  treatment at displacement scale 2 CSS pixels. Turbulent Bloom uses the same
-  shared filter definition as the Render model: preserve the source and screen
-  an RGB-attenuated, statically displaced and blurred copy. Its three values
-  are included in copied results; the bench has no bloom editor. LFX uses Hard
-  light without a filter. FX history fades toward black with elapsed scene time,
-  with no periodic cleanup or residue threshold.
+- World blends normally. FX uses Screen and defaults to the shared Low-res
+  CSS glow. Its filter selector offers None, Blur 2px, Distort 2px,
+  Turbulent Bloom, Low-res glow and Low-res CSS glow. Distort uses the Render
+  model's static seeded SVG turbulence/displacement at 2 CSS pixels. Turbulent Bloom uses the same
+  shared filter definition as the Render model. It preserves the source and
+  screens an RGB-attenuated copy with 12 CSS px glow, 16 CSS px distortion and
+  90% strength. Its three values
+  are included in copied results. LFX uses Hard light without a filter. FX
+  history fades toward black with elapsed scene time, with no periodic cleanup
+  or residue threshold.
+- Low-res glow and Low-res CSS glow use the shared
+  [Lab glow treatments](../render-model/spec.md#lab-glow-treatments). The glow
+  backing stays fixed with the FX backing. The one downsample draw is inside
+  the measured JavaScript update and Canvas submission window, following the
+  FX draw. Selecting a glow treatment while paused copies the held FX image.
 - Controls are workload (1 or 25), Run, Pause, Reset, FX filter, hardware
   label and Copy results. There are no editor controls or budget overrides.
   The hardware label is metadata for identifying a copied run; editing it does
@@ -101,17 +107,19 @@ rolling ten-second active-time window:
   measured elapsed time, sample/window information, viewport and stage CSS
   size, every backing resolution, DPR, browser user-agent without
   fingerprinting, hardware label, blend/filter settings, timing statistics,
-  and stamp totals. Geometry/environment changes restart measurement to prevent
-  mixed summaries.
+  and stamp totals. For either low-res glow treatment, results also give the
+  glow backing resolution, blend, opacity and CSS filter. Geometry and
+  environment changes restart measurement to prevent mixed summaries.
 - Results explicitly require a visible ordinary browser on the target
   hardware. Automated/headless runs establish correctness only. One machine
-  cannot establish a universal result. No renderer optimization is part of
-  this bench.
+  cannot establish a universal result. Low-res glow and Low-res CSS glow are
+  available for comparison. The bench opens with production Low-res CSS glow.
 
 ### Constraints
 
 - The bench uses the shared production fixture, rendering layers, effects
-  surface, presentation defaults and unchanged emission budgets.
+  surface, unchanged emission budgets and, until the tester selects another
+  filter, the shared production presentation defaults.
 - Workload changes affect scenario count and cell placement; stage and backing
   dimensions remain fixed.
 - Measured callback and JavaScript/Canvas submission times describe browser
@@ -125,8 +133,9 @@ rolling ten-second active-time window:
 
 - Tools navigation and the Lab index link the dedicated URL; the Lab spec
   links this living spec.
-- Both workloads draw the real shared fixture using exactly three visible
-  canvases, one scene surface, one clock and unchanged backing sizes.
+- Both workloads draw the real shared fixture using three layer
+  canvases (World, FX and LFX), one scene surface, one clock and fixed backing
+  sizes. An additional glow canvas appears only with a low-res glow treatment.
 - Shared transforms align hulls, plumes and all three beams per scenario;
   production timing and default layer presentation are preserved.
 - Pause, reset, repeated Run, background suspension and unmount obey lifecycle.
@@ -135,13 +144,16 @@ rolling ten-second active-time window:
   bounded. Hardware-label edits leave measurements intact.
 - Stamp reports count real accepted and rejected production budget requests,
   including saturation, without increasing limits or thinning the workload.
-- Copyable results include reproducibility context and timing limitations.
+- Copyable results include reproducibility context and timing limitations,
+  name the selected filter and give the glow backing resolution, blend,
+  opacity and CSS filter for both low-res glow treatments.
 - Correctness checks, visible-browser measurements and visual judgement are
   reported separately; affected shared consumers are exercised.
 
 ### Regression guardrails
 
 - No per-cell canvases, history surfaces, frame loops or independent recipes.
+  The glow canvas is one stage-wide canvas holding no history.
 - No gameplay/tuning changes, new dependencies or silent performance
   adaptations.
 - No GPU-completion or universal performance claim from callback measurements.
@@ -156,6 +168,20 @@ Scenario: Compare scene density
   When the tester selects 1 scenario
   Then stage and backing dimensions stay unchanged
   And scene history and measurements restart using the same effect recipe
+
+Scenario Outline: Measure either low-res glow treatment
+  Given the running benchmark has completed warm-up with Turbulent Bloom selected
+  When the tester selects <treatment>
+  Then the scene is retained and measurements restart
+  And the glow canvas is drawn once per frame inside the measured update window
+  And copied results name <treatment> with its glow backing resolution, Screen blend, 90% opacity and <glow CSS filter>
+  When the tester selects Turbulent Bloom again
+  Then the bench returns to three layer canvases
+
+  Examples:
+    | treatment        | glow CSS filter |
+    | Low-res glow     | none            |
+    | Low-res CSS glow | blur(12px)      |
 
 Scenario: Hold and resume a burst
   Given a running synchronized flash

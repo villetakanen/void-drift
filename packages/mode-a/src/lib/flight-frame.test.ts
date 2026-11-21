@@ -31,9 +31,11 @@ function record() {
       resetTransform: () => {},
       clearRect: () => calls.push(`clear:${id}`),
     }) as unknown as CanvasRenderingContext2D;
-  const layers = Object.fromEntries(
-    FLIGHT_LAYERS.map(({ id }) => [id, layer(id)]),
-  ) as FlightLayerContexts;
+  const layers: FlightLayerContexts = {
+    world: layer("world"),
+    fx: layer("fx"),
+    lfx: layer("lfx"),
+  };
   const frame = {
     layers,
     renderer: {} as Renderer,
@@ -103,6 +105,33 @@ function getPass(id: string) {
 }
 
 describe("flight frame", () => {
+  it("copies the finalized FX image once and omits the copy during history replay", () => {
+    const { calls, frame } = record();
+    const source = frame.layers.fx.canvas;
+    source.width = 1920;
+    source.height = 1080;
+    const drawImage = vi.fn(() => calls.push("present:glow"));
+    frame.layers.fxGlow = {
+      width: 0,
+      height: 0,
+      getContext: () => ({ clearRect: vi.fn(), drawImage }),
+    } as unknown as HTMLCanvasElement;
+
+    drawFlightFrame(frame, {
+      include: (pass) => pass.layer === "fx",
+      presentFx: false,
+    });
+    expect(drawImage).not.toHaveBeenCalled();
+
+    calls.length = 0;
+    drawFlightFrame(frame);
+    expect(drawImage).toHaveBeenCalledExactlyOnceWith(source, 0, 0, 240, 135);
+    expect(
+      calls.filter(
+        (call) => call === "draw:aperture-cut" || call === "present:glow",
+      ),
+    ).toEqual(["draw:aperture-cut", "present:glow"]);
+  });
   it("draws the shared planet HUD once before every planet body", () => {
     expect(ids.filter((id) => id === "world-hud")).toHaveLength(1);
     expect(ids).not.toContain("mercury-hud");

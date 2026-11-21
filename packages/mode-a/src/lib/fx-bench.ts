@@ -168,6 +168,10 @@ export class FxBench {
           sim.salvage?.angles,
         );
     }
+    if (this.weapons) {
+      for (const sim of this.ships)
+        if (sim.salvage) drawSalvageApertures(ctx, sim.salvage);
+    }
   }
   drawFx(target: CanvasRenderingContext2D) {
     if (!this.enabled) {
@@ -211,9 +215,16 @@ export class FxBench {
         }
       }
     });
-    for (const sim of this.ships)
-      if (sim.salvage && this.weapons)
-        drawSalvageApertures(target, sim.salvage);
+    if (this.weapons) {
+      target.save();
+      target.globalCompositeOperation = "destination-out";
+      for (const sim of this.ships)
+        if (sim.salvage) drawSalvageApertures(target, sim.salvage);
+      target.restore();
+    }
+  }
+  drawLfx(target: CanvasRenderingContext2D) {
+    if (!this.enabled) return;
     for (const sim of this.ships) this.fx.drawLfx(target, sim);
   }
 }

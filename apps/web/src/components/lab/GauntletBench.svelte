@@ -3,8 +3,8 @@ import { Camera, Renderer } from "@void-drift/core";
 import {
   defaultLoadout,
   FlightFx,
+  type FlightLayerCanvases,
   type FlightLayerContexts,
-  type FlightLayerId,
   resizeFlightLayers,
   Simulation,
   STEP,
@@ -26,7 +26,7 @@ let _props: { "client:load"?: boolean } = $props();
 let skyX = $state(960),
   skyY = $state(540),
   background = $state<FieldBackground>(PENDING_BACKGROUND);
-let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
+let canvases = $state<FlightLayerCanvases>({});
 let hull = $state(100);
 type EnemyReadout = Pick<
   Simulation["opponents"][number],
@@ -62,6 +62,7 @@ onMount(() => {
     world,
     fx: fxContext,
     lfx: lfxContext,
+    fxGlow: canvases.fxGlow,
   };
   const renderer = new Renderer(world.canvas);
   const camera = new Camera({ viewportWidth: WIDTH, viewportHeight: HEIGHT });

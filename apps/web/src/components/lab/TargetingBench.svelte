@@ -2,7 +2,7 @@
 import { Camera, COLOR, Renderer } from "@void-drift/core";
 import {
   FlightFx,
-  type FlightLayerId,
+  type FlightLayerCanvases,
   type FlightPass,
   PARTS,
   PLASMA_RIFLE,
@@ -44,7 +44,7 @@ let mode = $state<TargetingConfig["mode"]>("sustained");
 let skyX = $state(960),
   skyY = $state(540),
   background = $state<FieldBackground>(PENDING_BACKGROUND);
-let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
+let canvases = $state<FlightLayerCanvases>({});
 let ready = $state(false);
 let running = $state(true);
 let trace = $state(false);
@@ -79,7 +79,7 @@ onMount(() => {
   const lfx = canvases.lfx?.getContext("2d");
   if (!world || !fxLayer || !lfx)
     throw new Error("Targeting bench needs Canvas 2D.");
-  const layers = { world, fx: fxLayer, lfx };
+  const layers = { world, fx: fxLayer, lfx, fxGlow: canvases.fxGlow };
   const renderer = new Renderer(world.canvas);
   const camera = new Camera({ viewportWidth: WIDTH, viewportHeight: HEIGHT });
   camera.pos.set(TARGETING_VIEW.x, TARGETING_VIEW.y);

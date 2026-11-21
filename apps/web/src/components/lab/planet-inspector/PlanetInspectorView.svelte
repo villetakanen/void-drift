@@ -306,6 +306,7 @@ onMount(() => {
     bind:clientHeight={sceneHeight}
   >
     <GameField
+      showFxGlow={false}
       bind:canvases
       {label}
       {visibility}

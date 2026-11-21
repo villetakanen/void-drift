@@ -1,5 +1,10 @@
 <script lang="ts">
-import { type FlightLayerId, SOL_SKY, systemSky } from "@void-drift/mode-a";
+import {
+  type FlightLayerCanvases,
+  type FlightLayerId,
+  SOL_SKY,
+  systemSky,
+} from "@void-drift/mode-a";
 import { prepare } from "../lib/assets/flight-sky/prepare";
 import { type FieldBackground, showsFieldSky } from "../lib/game-field";
 import FlightLayers from "./FlightLayers.svelte";
@@ -13,15 +18,17 @@ let {
   cameraY = 540,
   width = 1920,
   visibility = {},
+  showFxGlow = true,
   skyOnly = false,
 }: {
-  canvases?: Partial<Record<FlightLayerId, HTMLCanvasElement>>;
+  canvases?: FlightLayerCanvases;
   label: string;
   background: FieldBackground;
   cameraX?: number;
   cameraY?: number;
   width?: number;
   visibility?: Partial<Record<FlightLayerId, boolean>>;
+  showFxGlow?: boolean;
   skyOnly?: boolean;
 } = $props();
 let url = $state("");
@@ -69,6 +76,7 @@ $effect(() => {
     bind:canvases
     {label}
     {visibility}
+    fxGlow={showFxGlow ? undefined : false}
     sky={showsFieldSky(background)
       ? { url, cameraX, cameraY, width, sightline }
       : undefined}

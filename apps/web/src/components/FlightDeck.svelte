@@ -18,8 +18,8 @@ import {
   type ExperimentalSetting,
   ExperimentalSettingSchema,
   FlightFx,
+  type FlightLayerCanvases,
   type FlightLayerContexts,
-  type FlightLayerId,
   type FlightMode,
   type FlightTickInput,
   fittedParts,
@@ -78,7 +78,7 @@ let {
 } = $props();
 // Practice skips the arrival countdown and labels itself; its screen is Survival's.
 const testFlight = $derived(mode === "practice");
-let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
+let canvases = $state<FlightLayerCanvases>({});
 let simulation: Simulation;
 let practiceVenus: ReturnType<typeof createPracticeVenus> | undefined;
 let practiceCradle: Awaited<ReturnType<typeof createCloudedWorld>> | undefined;
@@ -466,7 +466,15 @@ onMount(() => {
     fx = canvases.fx?.getContext("2d"),
     lfx = canvases.lfx?.getContext("2d");
   if (!world || !fx || !lfx) throw new Error("Flight layers require Canvas 2D");
-  const layers: FlightLayerContexts = { world, fx, lfx };
+  const layers: FlightLayerContexts = {
+    world,
+    fx,
+    lfx,
+    // The decorative landing field leaves out glow until flight begins.
+    get fxGlow() {
+      return canvases.fxGlow;
+    },
+  };
   const canvas = layers.world.canvas;
   renderer = new Renderer(canvas);
   resizeFlightLayers(layers, renderer, 1920, 1080);

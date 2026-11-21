@@ -4,8 +4,8 @@ title: "Spec: Render"
 status: draft
 generated:
   by: "codex/gpt-6"
-  at: "2026-11-19T21:31:48+02:00"
-verified: [{ by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }, { by: "codex/gpt-6", at: "2026-11-19T19:21:23+02:00" }, { by: "codex/gpt-6", at: "2026-11-19T21:04:09+02:00" }]
+  at: "2026-11-21T18:41:41+02:00"
+verified: [{ by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }, { by: "codex/gpt-6", at: "2026-11-19T19:21:23+02:00" }, { by: "codex/gpt-6", at: "2026-11-19T21:04:09+02:00" }, { by: "codex/gpt-6", at: "2026-11-21T18:48:44+02:00" }]
 ---
 
 # Render
@@ -72,10 +72,10 @@ the picture's character.
 - **The browser composites:** a layer's blend mode, its scaling from its own
   resolution to the stage, its filter and its opacity are CSS on the layer's
   element.
-- **No game code blends, blurs, scales or distorts pixels.** The one thing
-  drawn code does to an existing image is fade the FX layer's history, because
-  the browser has no native that accumulates.
-- **A native changes how a layer is shown, never what the layer holds.**
+- **Use native operations on images.** The renderer fades FX history and
+  makes one [FX glow](fx.md#low-res-css-glow) downsample with Canvas operations.
+  CSS handles presentation blend, blur and scaling without changing backing
+  pixels. No game code loops over individual pixels.
 
 #### World bodies
 
@@ -225,7 +225,8 @@ layers blend with the layers beneath them in the stage and with nothing behind
 it. Every canvas layer covers the whole stage and declares:
 
 - **Blend:** the CSS blend mode it is composited with.
-- **Memory:** `immediate` or `persistent`.
+- **Memory:** immediate, persistent or derived presentation. A derived layer
+  takes its image from one completed frame.
 - **Resolution:** its canvas size as a fraction of the stage. The browser
   scales it to the stage.
 - **Filter:** an optional CSS filter.
@@ -237,6 +238,7 @@ The in-flight stack, bottom to top:
 | Distant sky | Repeating prepared sky image           | normal     | fixed per sightline |
 | World       | Everything solid, and the World HUD    | normal     | immediate           |
 | FX          | Accumulated light that fades           | screen     | persistent          |
+| FX glow     | Downsampled copy of the final FX image  | screen     | derived             |
 | LFX         | Live light, fresh every frame          | hard-light | immediate           |
 | Contacts    | Screen-fixed SVG contact cues          | normal     | none                |
 | Deck        | Page elements: instruments, pads, rows | normal     | none                |
@@ -247,9 +249,9 @@ Layer-specific contracts live in [World](world.md), [FX](fx.md), and
 [LFX](lfx.md). Blend and resolution defaults are declared in `FLIGHT_LAYERS`;
 presentation filters are owned by `apps/web/src/components/FlightLayers.svelte`
 and judged by looking. Changing them changes no pass behavior. World defaults
-to normal with no filter. FX defaults to CSS `screen` with the shared Turbulent
-bloom filter (12 CSS px glow, 16 CSS px distortion, 90% strength). LFX defaults
-to CSS `hard-light` with no filter. FX remains at full stage resolution.
+to normal with no filter. Full-resolution FX uses CSS `screen` with no filter.
+[FX glow](fx.md#low-res-css-glow) is derived presentation, outside the pass
+list. LFX defaults to CSS `hard-light` with no filter.
 
 Three rules follow from the stack:
 
@@ -322,7 +324,7 @@ neither: it draws every eligible production pass, unobserved.
   `drawFlightFrame`.
 - `FLIGHT_LAYERS` holds World, FX and LFX in stack order, each with its
   blend, memory and resolution, and every pass names one of them.
-- The stage hosts one canvas for each of World, FX and LFX, in stack order, with its declared CSS blend mode. The prepared sky image shares their isolated blending group.
+- The stage hosts one canvas for each of World, FX and LFX, in stack order, with its declared CSS blend mode. The prepared sky image and the single derived FX glow canvas share their isolated blending group.
 - No pass draws another layer's image onto its own, and no game code sets a
   canvas composite operation to blend one layer with another.
 - The FX layer is cut over derelict apertures, and no solid pass draws
@@ -361,8 +363,10 @@ neither: it draws every eligible production pass, unobserved.
 
 ### Regression guardrails
 
-- A layer and a pass exist in one place, `flight-frame.ts`. Nothing else in the
-  game draws onto the flight layers.
+- Every painted layer and pass is declared in `flight-frame.ts`. Flight
+  artwork reaches those layers through the ordered passes. After the passes,
+  the shared presenter copies FX into its derived glow.
+- The only cross-layer image copy is from finalized FX to the derived glow.
 - An immediate layer keeps no image, buffer or history between frames.
 - Persistent state is never read by the simulation.
 - Blend, scale and filter are CSS on a layer's element, never drawn code.
@@ -429,11 +433,18 @@ Scenario: A planet's visual edge touches the view
   When a frame is drawn
   Then the planet is drawn without clipping its visible edge
 
-Scenario: A layer's look is changed
-  Given the FX layer at full resolution with no filter
-  When its resolution is halved and a filter is set
-  Then the picture changes
-  And the image the FX layer holds follows the same rules as before
+Scenario: Present accumulated light
+  Given a flight frame with accumulated FX light and an aperture to cut
+  When the frame is presented
+  Then full-resolution FX remains sharp and shows the cut
+  And a single glow canvas between FX and LFX shows the downsample of the cut image
+  And the browser applies the shared glow blend, opacity and blur
+
+Scenario: Rebuild accumulated light on a seek
+  Given the Flight scene with a painted FX frame
+  When the viewer seeks to an earlier tick
+  Then replay rebuilds the FX history for that tick
+  And only the final FX image is copied to the glow canvas
 ```
 
 #### Configured Lab painters

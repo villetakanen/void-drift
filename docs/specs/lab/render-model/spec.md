@@ -4,8 +4,8 @@ title: "Spec: Render model"
 status: draft
 generated:
   by: "codex/gpt-6"
-  at: "2026-11-19T21:36:42+02:00"
-verified: [{ by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }]
+  at: "2026-11-21T18:41:41+02:00"
+verified: [{ by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }, { by: "codex/gpt-6", at: "2026-11-20T22:56:46+02:00" }, { by: "codex/gpt-6", at: "2026-11-21T18:48:57+02:00" }]
 ---
 
 # Render model
@@ -59,7 +59,8 @@ there is no external configuration or storage contract.
 `/lab/render-model` remains in the Lab's Tools group, for viewports 1280px wide
 and up. `apps/web/src/components/lab/RenderModel.svelte` composes the workbench.
 
-- One large pane shows World, FX and LFX in production stack order.
+- One large pane shows World, FX, its derived glow and LFX in production
+  composition order.
 - The pane stays in view while scrolling the controls.
 - Rotating Wasp is the default sample: one production-built Wasp at flight
   scale in World, production mounted engine and stabilizer plume stamps in FX,
@@ -72,7 +73,7 @@ and up. `apps/web/src/components/lab/RenderModel.svelte` composes the workbench.
 - Each layer has a visibility control and a blend selector: Normal, Add, Screen,
   Multiply and Hard light. Add maps to CSS `plus-lighter`. Initial settings use
   production layer blends, including FX screen and LFX hard-light. FX uses the
-  shared Turbulent bloom defaults; LFX has no filter. A blend or visibility
+  shared Low-res CSS glow; LFX has no filter. A blend or visibility
   change immediately affects the composite, even while paused, without clearing,
   repainting or advancing time.
 - FX and LFX each have an independent native presentation filter: None, Blur,
@@ -81,7 +82,7 @@ and up. `apps/web/src/components/lab/RenderModel.svelte` composes the workbench.
   and expand radius in CSS pixels; brightness shows its multiplier. CSS filters are used for
   blur/brightness; inline SVG filters provide static seeded turbulence,
   displacement, offsets, spread merge and morphology. Filter changes preserve
-  held pixels and do not advance time. FX initially uses Turbulent bloom,
+  held pixels and do not advance time. FX initially uses Low-res CSS glow,
   matching production; LFX defaults to None.
 - FX offers an optional Turbulent bloom presentation preset. It preserves
   the original FX image and screen-blends a static seeded, low-frequency
@@ -90,7 +91,8 @@ and up. `apps/web/src/components/lab/RenderModel.svelte` composes the workbench.
   attenuates only the copy's RGB while preserving alpha, so black remains
   neutral. The preset is FX-only; it changes held presentation pixels without
   repainting a canvas or advancing presentation time. Initial settings are
-  12px glow, 16px distortion and 90% strength.
+  12px glow, 16px distortion and 90% strength. The FX selector also offers
+  the two fixed low-res glow treatments described below.
 - Paint adds one fresh set of FX stamps and shows the World and LFX sample marks.
   It works while paused as an explicit painting action; subsequent paused frames
   add nothing. Repeated Paint actions can demonstrate accumulation.
@@ -106,9 +108,20 @@ and up. `apps/web/src/components/lab/RenderModel.svelte` composes the workbench.
   Labels distinguish a layer's blend with the layers beneath it from FX decay.
 
 Controls are deliberately limited to the questions above. Colour pickers, zoom,
-resolution and Deck overlays remain outside this experiment. All layers remain
-at production resolution. Timing tables and scripted flight are not part of the
-workbench.
+resolution and Deck overlays remain outside this experiment. World, FX and LFX
+remain at production resolution. The [Render performance bench](../render-performance/spec.md)
+provides timing measurements.
+
+#### Lab glow treatments
+
+Both workbenches open with production [Low-res CSS glow](../../game/render/fx.md#low-res-css-glow).
+The Low-res glow comparison uses the same copy, blend, opacity and scaling with
+no CSS blur. Both treatments use fixed settings.
+
+Selecting either treatment displays the held FX and its glow immediately,
+including while paused. Each subsequent FX draw refreshes the copy, and clearing
+FX clears the glow. Other choices, including Turbulent bloom, use the three
+painted canvases.
 
 #### The frame reference
 
@@ -120,11 +133,12 @@ as prepared presentation rather than a per-frame Canvas pass. Legacy void and
 starfield passes are labelled with the compositions in which they run.
 `apps/web/src/pages/lab/render-model.astro` places it directly after the workbench.
 
-- Layers appear in stack order, bottom to top, each with its blend and memory.
+- Layers appear in stack order, bottom to top, with their blend and memory.
+  The glow entry describes the derived image using the shared treatment settings.
 - Under each layer its passes appear in draw order, each with its name, its space,
   what it draws and the file that owns its drawing.
-- Every row comes from shared composition, layer or pass metadata. The reference holds no pass or layer text of
-  its own, so a pass added to the frame appears here without editing the page.
+- Pass rows come from shared pass metadata. A pass added to the frame appears
+  here without editing the page.
 - Above the listed canvas layers, a fixed four-contact example uses the production [contact projection and SVG](../../game/render/flight-contacts/spec.md).
 - The reference is static: it has no controls and runs no frame.
 - Collateral for the bench stays on this page with the bench. Replacing or
@@ -139,18 +153,21 @@ starfield passes are labelled with the compositions in which they run.
 
 ### Definition of Done
 
-- The page shows the production three-layer stack in one isolated pane,
-  with visible overlapping test marks and no game simulation.
+- The page shows the production stack with its three painted canvases and
+  derived glow in one isolated pane, with overlapping test marks and no game
+  simulation.
 - Each layer's visibility and all five blend choices affect CSS immediately
   while paused, preserving its backing pixels and other layer settings.
 - Artwork uses shared production painters; sample switching clears history and
   repaints while retaining presentation settings.
 - FX and LFX have independent native filters, initially using production
-  Turbulent bloom and LFX None; changing a filter changes presentation while paused without changing
+  Low-res CSS glow and LFX None. Changing a filter changes presentation while paused without changing
   backing pixels or time.
 - FX Turbulent bloom keeps the original light core, screens a static
   attenuated displaced/blurred copy, and exposes three bounded controls without
   changing backing pixels, LFX settings or presentation time.
+- Both fixed low-res glow choices are available on FX, show their presentation
+  settings, and follow FX visibility and picture lifecycle.
 - Paint emits into the shared FX surface; successive painting accumulates
   light, Run fades it, and Pause keeps its pixels stable.
 - World and LFX retain their current sample while FX fades; LFX retains no
@@ -212,6 +229,25 @@ Scenario: Paint and clear while paused
   And the selected blends remain unchanged
   When Paint is pressed
   Then a fresh sample appears without old history
+
+Scenario Outline: Compare low-res glow while paused
+  Given a painted, paused picture
+  When the tester selects <treatment> on FX
+  Then the held full-resolution FX image is unfiltered
+  And the visible glow canvas between FX and LFX is one eighth of the FX backing size per axis
+  And the glow uses Screen blend at 90% opacity and <glow CSS filter>
+  And the presentation time stays fixed
+  When the tester hides FX
+  Then both the FX image and the glow are hidden
+  When the tester shows FX and clears the picture
+  Then FX and the glow are empty
+  When the tester selects Turbulent bloom again
+  Then the picture returns to the standard three canvases
+
+  Examples:
+    | treatment        | glow CSS filter |
+    | Low-res glow     | none            |
+    | Low-res CSS glow | blur(12px)      |
 
 Scenario: Hide a fading layer
   Given a running picture with fresh FX light

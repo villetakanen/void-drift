@@ -1,12 +1,13 @@
 ---
 import GameFieldBackdrop from "../components/GameFieldBackdrop.svelte";
+import PageHeader from "../components/PageHeader.svelte";
 import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Credits | Void Drift">
   <GameFieldBackdrop standalone client:load />
   <main class="credits">
-    <h1>Credits</h1>
+    <PageHeader title="Credits" />
     <p>
       Void Drift uses the following typefaces, licensed under the SIL Open Font
       License 1.1:
@@ -28,7 +29,6 @@ import Layout from "../layouts/Layout.astro";
   padding: var(--spacing-xl);
   line-height: 1.6;
 }
-.credits h1,
 .credits p,
 .credits ul {
   margin-bottom: var(--spacing-lg);

@@ -1,8 +1,20 @@
 <script lang="ts">
 import { type FxPass, FxSurface } from "@void-drift/core";
-import { FLIGHT_LAYERS, type FlightLayerId } from "@void-drift/mode-a";
+import {
+  FLIGHT_LAYERS,
+  type FlightLayerCanvases,
+  type FlightLayerId,
+  presentFlightFx,
+} from "@void-drift/mode-a";
 import { onMount } from "svelte";
 import FlightLayers from "../FlightLayers.svelte";
+import {
+  DEFAULT_FX_GLOW,
+  describeFxGlow,
+  FX_GLOW_TREATMENTS,
+  type FxGlowTreatment,
+  fxGlowTreatment,
+} from "../fx-glow";
 import Switch from "../inputs/Switch.svelte";
 import { TURBULENT_BLOOM_DEFAULTS } from "../turbulent-bloom";
 import {
@@ -24,7 +36,8 @@ type FilterKind =
   | "offset"
   | "spread"
   | "expand"
-  | "turbulent-bloom";
+  | "turbulent-bloom"
+  | FxGlowTreatment["value"];
 const FILTERS: readonly { label: string; value: FilterKind }[] = [
   { label: "None", value: "none" },
   { label: "Blur", value: "blur" },
@@ -34,7 +47,11 @@ const FILTERS: readonly { label: string; value: FilterKind }[] = [
   { label: "Offset spread", value: "spread" },
   { label: "Expand", value: "expand" },
   { label: "Turbulent bloom", value: "turbulent-bloom" },
+  ...FX_GLOW_TREATMENTS,
 ];
+const LFX_FILTERS = FILTERS.filter(
+  ({ value }) => value !== "turbulent-bloom" && !fxGlowTreatment(value),
+);
 const VECTOR_FILTERS: readonly FilterKind[] = [
   "noise",
   "offset",
@@ -62,7 +79,7 @@ const COLORS = {
 const fixture = createRenderModelFixture();
 
 let { label = "Render model" }: { label?: string } = $props();
-let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
+let canvases = $state<FlightLayerCanvases>({});
 let blends = $state<Record<FlightLayerId, string>>(
   Object.fromEntries(
     FLIGHT_LAYERS.map(({ id, blend }) => [id, blend]),
@@ -74,7 +91,8 @@ let visible = $state<Record<FlightLayerId, boolean>>({
   lfx: true,
 });
 let sample = $state<"artwork" | "circles">("artwork");
-let fxFilter = $state<FilterKind>("turbulent-bloom");
+let fxFilter = $state<FilterKind>(DEFAULT_FX_GLOW.value);
+let glowTreatment = $derived(fxGlowTreatment(fxFilter));
 let lfxFilter = $state<FilterKind>("none");
 let fxAmount = $state(2);
 let lfxAmount = $state(10);
@@ -221,6 +239,7 @@ function paintFx() {
   if (!fx || !surface) return;
   clearLayer(fx);
   surface.draw(fx, presentationTime, stampFx);
+  presentFlightFx(fx.canvas, canvases.fxGlow);
 }
 function paint() {
   const world = context("world");
@@ -240,7 +259,7 @@ function chooseSample(next: "artwork" | "circles") {
   sample = next;
   heading = 0;
   presentationTime = 0;
-  clear();
+  surface?.clear();
   paint();
 }
 function clear() {
@@ -252,6 +271,7 @@ function clear() {
     }
   }
   surface?.clear();
+  if (canvases.fx) presentFlightFx(canvases.fx, canvases.fxGlow);
   hasSample = false;
 }
 function setRunning(next: boolean) {
@@ -264,6 +284,7 @@ function setRunning(next: boolean) {
       if (!running) return;
       if (last !== undefined) {
         carry += Math.min(0.1, Math.max(0, (now - last) / 1000));
+        const advancesFx = carry >= step;
         while (carry >= step) {
           carry -= step;
           presentationTime += step;
@@ -284,6 +305,8 @@ function setRunning(next: boolean) {
             surface?.draw(fx, presentationTime, () => {});
           }
         }
+        if (advancesFx && canvases.fx)
+          presentFlightFx(canvases.fx, canvases.fxGlow);
         const world = context("world");
         const lfx = context("lfx");
         if (world) clearLayer(world);
@@ -370,12 +393,15 @@ const controlId = instanceId;
         bind:canvases
         {blends}
         {filters}
-        bloom={{
-          glowSize: bloomGlowSize,
-          distortion: bloomDistortion,
-          strength: bloomStrength,
-        }}
+        bloom={fxFilter === "turbulent-bloom"
+          ? {
+              glowSize: bloomGlowSize,
+              distortion: bloomDistortion,
+              strength: bloomStrength,
+            }
+          : undefined}
         visibility={visible}
+        fxGlow={glowTreatment ?? false}
         label="Rotating Wasp across World, FX and LFX"
       />
     </div>
@@ -441,15 +467,16 @@ const controlId = instanceId;
                     event.currentTarget.value,
                   )}
               >
-                {#each FILTERS.filter(
-                  (filter) =>
-                    layer.id === "fx" || filter.value !== "turbulent-bloom",
-                ) as filter (filter.value)}
+                {#each layer.id === "fx"
+                  ? FILTERS
+                  : LFX_FILTERS as filter (filter.value)}
                   <option value={filter.value}>{filter.label}</option>
                 {/each}
               </select>
             </label>
-            {#if selectedFilter !== "none"}
+            {#if layer.id === "fx" && glowTreatment}
+              <p>{describeFxGlow(glowTreatment)}</p>
+            {:else if selectedFilter !== "none"}
               {#if layer.id === "fx" && selectedFilter === "turbulent-bloom"}
                 <label class="blend">
                   Glow size · CSS px

@@ -8,6 +8,7 @@ import {
 import { projectFlightContact } from "../../lib/flight-contact-projection";
 import type { FlightContactCue } from "../../lib/flight-contacts";
 import FlightContacts from "../FlightContacts.svelte";
+import { DEFAULT_FX_GLOW, describeFxGlow } from "../fx-glow";
 
 // Fixed bearings exercise the same projection and SVG as flight, including
 // a target that lies inside the example box but beyond the arrow circle.
@@ -101,6 +102,14 @@ const layers = FLIGHT_LAYERS.map((layer) => ({
         </tbody>
       </table>
     </section>
+    {#if layer.id === "fx"}
+      <section class="layer">
+        <h3>FX glow</h3>
+        <p class="holds">
+          Copy of the final FX image · {describeFxGlow(DEFAULT_FX_GLOW)}
+        </p>
+      </section>
+    {/if}
   {/each}
   <section class="layer">
     <h3>Flight contacts</h3>

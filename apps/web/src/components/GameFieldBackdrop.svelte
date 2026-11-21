@@ -10,8 +10,8 @@ import {
 import {
   FLIGHT_PASSES,
   FlightFx,
+  type FlightLayerCanvases,
   type FlightLayerContexts,
-  type FlightLayerId,
   resizeFlightLayers,
   Simulation,
   STEP,
@@ -41,7 +41,7 @@ let {
   cameraY = 270,
   width = 1920,
 }: {
-  canvases?: Partial<Record<FlightLayerId, HTMLCanvasElement>>;
+  canvases?: FlightLayerCanvases;
   decorative?: boolean;
   standalone?: boolean;
   background?: FieldBackground;
@@ -216,7 +216,17 @@ onMount(() => {
   class:standalone
   aria-hidden={decorative ? "true" : undefined}
 >
-  <GameField bind:canvases {background} {cameraX} {cameraY} {width} {label} />
+  <!-- Decorative passes paint World and LFX. -->
+  <GameField
+    bind:canvases
+    {background}
+    {cameraX}
+    {cameraY}
+    {width}
+    {label}
+    visibility={{ fx: !decorative }}
+    showFxGlow={!decorative}
+  />
   {#if decorative}
     <div class="dialog-scrim"></div>
   {/if}

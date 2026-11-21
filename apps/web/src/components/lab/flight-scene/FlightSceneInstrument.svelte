@@ -1,5 +1,8 @@
 <script lang="ts">
-import type { FlightLayerContexts } from "@void-drift/mode-a";
+import type {
+  FlightLayerCanvases,
+  FlightLayerContexts,
+} from "@void-drift/mode-a";
 import { onMount, type Snippet, untrack } from "svelte";
 import {
   type DeepReadonly,
@@ -165,9 +168,7 @@ let skyX = $state(960),
         : PENDING_BACKGROUND,
     ),
   );
-let canvases = $state<
-  Partial<Record<"world" | "fx" | "lfx", HTMLCanvasElement>>
->({});
+let canvases = $state<FlightLayerCanvases>({});
 
 onMount(() => {
   const world = canvases.world?.getContext("2d");
@@ -175,7 +176,7 @@ onMount(() => {
   const lfx = canvases.lfx?.getContext("2d");
   if (!doc || !world || !fx || !lfx) return;
   const scene = new FlightScene(
-    { world, fx, lfx } satisfies FlightLayerContexts,
+    { world, fx, lfx, fxGlow: canvases.fxGlow } satisfies FlightLayerContexts,
     untrack(() => activeDoc) ?? doc,
     RENDER_WIDTH,
     untrack(() => staged),

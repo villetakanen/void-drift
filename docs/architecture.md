@@ -19,9 +19,11 @@ Read for changes to structure, simulation, or data flow. Product intent belongs 
   browser-composited stack. A prepared Milky Way image sits beneath World. Practice decodes the fixed Sol tile.
   Survival, Derelicts and Gauntlet prepare one image from the run seed during arrival.
   The canvases hold World for everything solid and the
-  World HUD, FX for accumulated light, LFX for live light, with the SVG flight contacts above LFX
-  and the Deck above the contacts as page elements. `packages/mode-a/src/lib/flight-frame.ts` lists the layers and the
-  ordered passes that draw on them. The method treats the browser as the machine a
+  World HUD, FX for accumulated light, and LFX for live light. The browser
+  composites the [derived glow](specs/game/render/fx.md#low-res-css-glow) between
+  FX and LFX. The SVG flight contacts sit above LFX and the Deck above the
+  contacts. `packages/mode-a/src/lib/flight-frame.ts` lists the painted layers
+  and the ordered passes that draw on them. The method treats the browser as the machine a
   demo is written for: game code draws shapes, images and cached stamps, and the
   browser's own blending, scaling and filters do the rest. No game code loops over
   pixels per frame.

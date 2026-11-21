@@ -24,6 +24,10 @@ import { type Simulation, STEP } from "./simulation";
 
 export type FlightLayerId = "world" | "fx" | "lfx";
 
+export type FlightLayerCanvases = Partial<
+  Record<FlightLayerId | "fxGlow", HTMLCanvasElement>
+>;
+
 export interface FlightLayer {
   id: FlightLayerId;
   name: string;
@@ -67,7 +71,10 @@ export const FLIGHT_LAYERS: readonly FlightLayer[] = [
 export type FlightLayerContexts = Record<
   FlightLayerId,
   CanvasRenderingContext2D
->;
+> & {
+  /** Optional derived presentation output, with no passes or history of its own. */
+  fxGlow?: HTMLCanvasElement;
+};
 
 /** Inclusive axis-aligned bounds in world units. */
 export interface BodyAppearanceBounds {
@@ -404,6 +411,31 @@ function resolutionOf(id: FlightLayerId) {
   return FLIGHT_LAYERS.find((layer) => layer.id === id)?.resolution ?? 1;
 }
 
+export const FX_GLOW_BACKING_DIVISOR = 8;
+
+function sizeFlightFxGlow(source: HTMLCanvasElement, glow: HTMLCanvasElement) {
+  const width = Math.max(1, Math.round(source.width / FX_GLOW_BACKING_DIVISOR));
+  const height = Math.max(
+    1,
+    Math.round(source.height / FX_GLOW_BACKING_DIVISOR),
+  );
+  if (glow.width !== width) glow.width = width;
+  if (glow.height !== height) glow.height = height;
+}
+
+/** Copy finalized FX into its derived glow, after the last FX painter or cut. */
+export function presentFlightFx(
+  source: HTMLCanvasElement,
+  glow: HTMLCanvasElement | undefined,
+) {
+  if (!glow) return;
+  sizeFlightFxGlow(source, glow);
+  const ctx = glow.getContext("2d");
+  if (!ctx) return;
+  ctx.clearRect(0, 0, glow.width, glow.height);
+  ctx.drawImage(source, 0, 0, glow.width, glow.height);
+}
+
 /** Sizes every layer's canvas for a stage of `width` by `height` logical pixels. */
 export function resizeFlightLayers(
   layers: FlightLayerContexts,
@@ -420,6 +452,11 @@ export function resizeFlightLayers(
     else {
       canvas.width = w;
       canvas.height = h;
+      if (layer.id === "fx" && layers.fxGlow) {
+        const glow = layers.fxGlow;
+        sizeFlightFxGlow(canvas, glow);
+        glow.getContext("2d")?.clearRect(0, 0, glow.width, glow.height);
+      }
     }
   }
 }
@@ -439,6 +476,8 @@ export interface FlightFrameOptions {
   passes?: readonly FlightPass[];
   /** Which passes draw; every pass when omitted. */
   include?: (pass: FlightPass) => boolean;
+  /** Skip derived presentation when drawing an intermediate history replay tick. */
+  presentFx?: boolean;
   /** Receives each drawn pass and its draw time in milliseconds. */
   observe?: (pass: FlightPass, ms: number) => void;
 }
@@ -453,6 +492,7 @@ export function drawFlightFrame(
     include,
     observe,
     passes = FLIGHT_PASSES,
+    presentFx = true,
     preparedSky = false,
   }: FlightFrameOptions = {},
 ) {
@@ -474,6 +514,7 @@ export function drawFlightFrame(
     ctx.restore();
     observe?.(pass, performance.now() - start);
   }
+  if (presentFx) presentFlightFx(frame.layers.fx.canvas, frame.layers.fxGlow);
 }
 
 /** Body bounds only: orbit/HUD drawing retains its independent visibility. */

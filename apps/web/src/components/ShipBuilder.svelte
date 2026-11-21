@@ -36,7 +36,7 @@ import PartCard from "./hangar/PartCard.svelte";
 import SegmentedControl from "./inputs/SegmentedControl.svelte";
 import Switch from "./inputs/Switch.svelte";
 import Tabs from "./inputs/Tabs.svelte";
-import Logo from "./Logo.svelte";
+import PageHeader from "./PageHeader.svelte";
 import PlaygroundStatus from "./PlaygroundStatus.svelte";
 
 const shipIds = ["wasp", "scout", "fighter", "corvette", "fiddler"] as const;
@@ -205,12 +205,11 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
   />
 {:else}
   <main class="builder">
-    <header class="hangar-header">
-      <div class="brand-context">
-        <a class="brand" href="/" aria-label="Void Drift"><Logo size="sm" /></a>
-        <h1>Hangar</h1>
-      </div>
-      <div class="header-actions">
+    <PageHeader
+      title="Hangar"
+      links={[{ href: "/settings?from=hangar", label: "Settings" }]}
+    >
+      {#snippet actions()}
         <label class="experimental-control" for="hangar-experimental">
           <span>Playground</span>
           <Switch
@@ -221,9 +220,8 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
             }
           />
         </label>
-        <a class="btn btn-normal" href="/settings?from=hangar">Settings</a>
-      </div>
-    </header>
+      {/snippet}
+    </PageHeader>
     <Tabs
       label="Choose chassis"
       tabs={shipTabs}
@@ -518,7 +516,6 @@ function launch(mode: "test" | "derelicts" | "gauntlet" | "survival") {
   color: var(--color-text);
   background: var(--color-void);
 }
-header,
 footer,
 .actions {
   display: flex;
@@ -526,35 +523,12 @@ footer,
   align-items: center;
   gap: 20px;
 }
-header .brand {
-  color: var(--color-brand);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: var(--control-min-height);
-  min-height: var(--control-min-height);
-}
-.hangar-header {
-  min-height: var(--control-min-height);
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
-  flex-wrap: nowrap;
-}
-.brand-context,
-.header-actions,
 .experimental-control {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  flex-shrink: 0;
-}
-.experimental-control {
   font-size: var(--font-size-body);
   cursor: pointer;
-}
-h1 {
-  font-size: var(--font-size-heading);
-  margin: 0;
 }
 h2 {
   font-size: 20px;

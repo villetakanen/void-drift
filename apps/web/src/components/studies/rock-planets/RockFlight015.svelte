@@ -14,8 +14,8 @@ import {
   drawFlightFrame,
   FLIGHT_PASSES,
   FlightFx,
+  type FlightLayerCanvases,
   type FlightLayerContexts,
-  type FlightLayerId,
   type FlightPass,
   resizeFlightLayers,
   Simulation,
@@ -31,7 +31,7 @@ import "@void-drift/core/styles/buttons.css";
 
 let { label = "Rock worlds: playable candidate" }: { label?: string } =
   $props();
-let canvases = $state<Partial<Record<FlightLayerId, HTMLCanvasElement>>>({});
+let canvases = $state<FlightLayerCanvases>({});
 let running = $state(false),
   ready = $state(false),
   failed = $state("");
@@ -72,7 +72,12 @@ onMount(() => {
         lfx = canvases.lfx?.getContext("2d");
       if (!world || !fxContext || !lfx)
         throw new Error("Flight layers unavailable");
-      const layers: FlightLayerContexts = { world, fx: fxContext, lfx };
+      const layers: FlightLayerContexts = {
+        world,
+        fx: fxContext,
+        lfx,
+        fxGlow: canvases.fxGlow,
+      };
       const renderer = new Renderer(world.canvas);
       resizeFlightLayers(layers, renderer, 1728, 1080);
       const camera = new Camera({ viewportWidth: 1728, viewportHeight: 1080 });

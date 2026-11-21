@@ -3,11 +3,13 @@
 title: "Spec: Arcade effects layer"
 status: draft
 generated:
-  by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-19T12:32:56+02:00"
+  by: "codex/gpt-6"
+  at: "2026-11-21T18:41:41+02:00"
 verified:
 - by: "openai-codex/gpt-6.1-sol"
   at: "2026-11-19T12:33:38+02:00"
+- by: "codex/gpt-6"
+  at: "2026-11-21T18:48:57+02:00"
 
 ---
 
@@ -39,7 +41,8 @@ workload here; their gameplay implementation belongs to their own features.
   Dependency direction remains web → mode/core and mode → core.
 - **Web composes the scene.** `apps/web/src/components/FlightDeck.svelte` combines
   simulation, camera, world and effects. Play and Lab use shared production effects.
-  `/lab/fx` composes six production simulations through `mode-a/lib/fx-bench.ts`.
+  `/lab/fx` composes six production simulations through `mode-a/lib/fx-bench.ts`
+  and presents them through the same World, FX, glow and LFX stack as flight.
   The persistent light surface sits above world geometry and ships, below readable
   HUD and controls. Emitters stamp fresh light; overlapping light adds; one shared
   game-time decay fades the accumulated image. Engine trail marks are not retained
@@ -52,7 +55,8 @@ workload here; their gameplay implementation belongs to their own features.
   contracts in Zod before consumers; parse them on entry. Internal data is typed.
 - **Backend choice remains open.** The correction uses reusable Canvas 2D history
   buffers, cached complete ion stamps and phase-driven gravity arcs. Gradients are
-  generated only when building the stamp cache; there is no live blur pass.
+  generated only when building the stamp cache. The browser applies glow as
+  CSS presentation.
   JavaScript, GPU rendering, WASM/Rust and CSS alternatives remain judged by this contract. The FX exception to the
   current Canvas convention is recorded in [Architecture](../../../architecture.md).
   Implementation alternatives and their tradeoffs live in the investigation.
@@ -219,10 +223,10 @@ Weapons workload includes point-defence turrets firing beside twin cannons.
   placement. Arena wrap starts stamping at the new location without a connecting
   streak; previous light fades at its old location. Reset clears the whole surface.
 - **Layer presentation:** production and Lab use the shared render-layer stack.
-  World is normal with no filter, FX is screen with the shared static seeded
-  Turbulent bloom (12 CSS px glow, 16 CSS px distortion, 90% strength), and LFX
-  is hard-light with no filter. Explicit presentation overrides remain supported;
-  `none` removes a layer filter.
+  World is normal, sharp FX is Screen, and LFX is Hard light. The shared
+  [Low-res CSS glow](../../game/render/fx.md#low-res-css-glow) adds a derived
+  halo from the completed FX image. Each of the three painted canvases stays
+  unfiltered by default. Lab instruments can override presentation.
 - **Simulation authority:** gameplay results and input semantics are invariant under
   changes to effect density, appearance or backend. Replay reproduces game state;
   incidental sparkle patterns may vary.

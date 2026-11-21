@@ -55,6 +55,7 @@ canonical examples; Lab and Studies consume them without acquiring ownership.
 - Feature specs consume the system. Changing a definition is design work,
   recorded here and demonstrated on its design-system page in the same change.
 
+- [Page header](page-header/spec.md) owns shared page identity, navigation and container adaptation.
 - [Typography](typography/spec.md) owns that domain's definitions and acceptance behavior.
 - [Colour roles](colour/spec.md) owns that domain's definitions and acceptance behavior.
 - [Surfaces and layers](surfaces/spec.md) owns that domain's definitions and acceptance behavior.
