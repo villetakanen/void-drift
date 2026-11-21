@@ -9,15 +9,11 @@ export interface LandingHint {
 export const LANDING_HINTS = [
   {
     kind: "news",
-    text: "0.7.0 — FIRES IN THE SKY introduces a new ranked challenge.",
+    text: "0.7.0 — Fires in the Sky introduces a new ranked challenge.",
   },
   {
     kind: "hint",
     text: "Turn on Playground to fly more ships and parts.",
-  },
-  {
-    kind: "news",
-    text: "Fires in the Sky has its own leaderboard.",
   },
   {
     kind: "lore",
@@ -37,14 +33,14 @@ export const LANDING_HINTS = [
   },
   {
     kind: "news",
-    text: "Fires in the Sky brings plasma engines and rifles to the Hangar.",
+    text: "0.7.0 — Fires in the Sky brings plasma engines and rifles to the Hangar.",
   },
   {
     kind: "news",
-    text: "Sometimes small is big, try out the new Service drive!",
+    text: "Sometimes small is big. Try the new Service drive!",
   },
   {
     kind: "hint",
-    text: "You can change how the camera operates, and disable the combat hud in settings.",
+    text: "Change the camera mode or turn off Combat HUD in Settings.",
   },
 ] as const satisfies readonly LandingHint[];
