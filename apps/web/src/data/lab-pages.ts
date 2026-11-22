@@ -55,6 +55,15 @@ export const labPages = z.array(labPageSchema).parse([
     spec: "docs/specs/factory/design-system/page-header/spec.md#architecture",
   },
   {
+    href: "/lab/ds/tray",
+    title: "Tray",
+    purpose: "Grouped navigation with a quiet current-page indicator.",
+    group: "design-system",
+    source: "production",
+    defines: ["apps/web/src/components/Tray.svelte"],
+    spec: "docs/specs/factory/design-system/tray/spec.md#architecture",
+  },
+  {
     href: "/lab/sky-instrument",
     title: "Sky instrument",
     purpose:

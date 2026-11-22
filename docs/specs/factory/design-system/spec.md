@@ -1,7 +1,7 @@
 ---
 generated:
-  by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-21T21:39:12Z"
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-22T07:28:15Z"
 verified: []
 ---
 
@@ -52,9 +52,9 @@ canonical examples; Lab and Studies consume them without acquiring ownership.
 - [Side sheet](side-sheet/spec.md) owns shared instrument parameter surfaces.
 - [Page header](page-header/spec.md) owns shared page identity, navigation and container adaptation.
 - [Component frame](component-frame/spec.md) owns the shared boundary and width container for documentation examples.
-- [Tray](tray/spec.md) owns the selected design reference, discovered separately
-  under Design references on the overview. It is not an implemented shared part
-  or an entry in the shared-component registry; live tray migration is deferred.
+- [Tray](tray/spec.md) owns the shared navigation component used by the
+  Design system layout and its canonical demo. The overview lists Tray in its
+  component catalog.
 - [Typography](typography/spec.md) owns that domain's definitions and acceptance behavior.
 - [Colour roles](colour/spec.md) owns that domain's definitions and acceptance behavior.
 - [Surfaces and layers](surfaces/spec.md) owns that domain's definitions and acceptance behavior.
@@ -110,6 +110,13 @@ Scenario: Open instrument parts
   Then its canonical address is /lab/ds/instrument-parts
   And it documents instrument-scoped parts together on one page
   And its examples distinguish shared instrument parts from specific displays
+
+Scenario: Discover Tray as a shared component
+  Given the Design system overview at /lab/ds
+  When I inspect the component catalog
+  Then it lists Tray from the Design system registry with /lab/ds/tray as its canonical page
+  And the entry names apps/web/src/components/Tray.svelte and links the Tray contract
+  And Tray appears as a component rather than as a separate design reference
 
 Scenario: Cover a new shared primitive
   Given a shared input is added to the repository

@@ -1,6 +1,7 @@
 ---
 import PageHeader from "../components/PageHeader.svelte";
-import { labGroups, labPages } from "../data/lab-pages";
+import Tray from "../components/Tray.svelte";
+import { labPages } from "../data/lab-pages";
 import "@void-drift/core/styles/reset.css";
 import "@void-drift/core/styles/tokens.css";
 import "@void-drift/core/styles/buttons.css";
@@ -19,17 +20,16 @@ const covers = (href: string) =>
   currentPath === href || currentPath.startsWith(`${href}/`);
 // The deepest listed page that covers the path is the active one, so an
 // overview is not lit alongside the pages beneath it.
-const activeHref = labPages
+const designSystemPages = labPages.filter(
+  (page) => page.group === "design-system",
+);
+const activeHref = designSystemPages
   .map((page) => page.href)
   .filter(covers)
   .sort((a, b) => b.length - a.length)[0];
-const isActive = (href: string) => href === activeHref;
-const groups = labGroups
-  .filter((group) => group.id === "design-system")
-  .map((group) => ({
-    ...group,
-    pages: labPages.filter((page) => page.group === group.id),
-  }));
+const componentLinks = designSystemPages
+  .filter((page) => page.href !== "/lab/ds")
+  .map(({ href, title }) => ({ href, label: title }));
 ---
 
 <!doctype html>
@@ -59,30 +59,17 @@ const groups = labGroups
 
       <!-- Navigation below the page identity -->
       <aside class="nav-rail">
-        <nav class="tray" aria-label={section}>
-          <a href="/lab/ds" class:list={[{ active: currentPath === "/lab/ds" }]}
-            >Overview</a
-          >
-          {groups.map((group) => (
-            <section class="group" aria-label={group.label}>
-              <h2>Components</h2>
-              {group.pages
-                .filter((page) => page.href !== "/lab/ds")
-                .map((page) => (
-                  <a
-                    href={page.href}
-                    class:list={[{ active: isActive(page.href) }]}
-                    aria-current={isActive(page.href) ? "page" : undefined}
-                  >
-                    {page.title}
-                  </a>
-                ))}
-            </section>
-          ))}
-          <a href="/lab">← Lab</a>
-          <a href="/lab/studies">Design studies</a>
-          <a href="/">← Back to Game</a>
-        </nav>
+        <Tray
+          label={section}
+          links={[{ href: "/lab/ds", label: "Overview" }]}
+          groups={[{ label: "Components", links: componentLinks }]}
+          footerLinks={[
+            { href: "/lab", label: "Lab" },
+            { href: "/lab/studies", label: "Design studies" },
+            { href: "/", label: "Back to Game" },
+          ]}
+          activeHref={activeHref}
+        />
       </aside>
 
       <!-- Column 2 Row 2: Main Stage -->
@@ -123,38 +110,8 @@ const groups = labGroups
 /* Column 1: Nav Rail */
 .nav-rail {
   grid-area: nav;
-  background: var(--color-elev-1);
   border-right: 1px solid var(--color-border-subtle);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.tray {
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  gap: 0.25rem;
   overflow-y: auto;
-  flex: 1;
-}
-
-.group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  margin-top: var(--spacing-sm);
-}
-
-.group h2 {
-  margin: 0;
-  padding: var(--spacing-xs) 1rem;
-  font-size: var(--font-size-caption);
-  font-weight: normal;
-  color: var(--color-text-muted);
-  letter-spacing: var(--tracking-eyebrow);
-  text-transform: uppercase;
-  opacity: 0.7;
 }
 
 /* Full-width identity with the same inset as its live examples. */
@@ -186,30 +143,6 @@ const groups = labGroups
   flex-direction: column;
 }
 
-/* Link Styles */
-a {
-  text-decoration: none;
-  color: var(--color-text-muted);
-  padding: 0.6rem 1rem;
-  text-align: left;
-  border-radius: var(--radius-sm);
-  text-transform: uppercase;
-  font-size: var(--font-size-caption);
-  transition: all 0.2s;
-  border: 1px solid transparent;
-  display: block;
-}
-
-a:hover {
-  color: var(--color-text);
-  background: var(--color-surface-hover);
-}
-
-a.active {
-  color: var(--color-selected);
-  border: 1px solid color-mix(in lch, var(--color-selected) 30%, transparent);
-  background: color-mix(in lch, var(--color-selected) 10%, transparent);
-}
 .design-system-grid.wide {
   grid-template-columns: 250px minmax(0, 1fr);
   grid-template-areas: "header header" "nav main";
