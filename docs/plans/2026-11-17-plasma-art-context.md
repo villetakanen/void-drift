@@ -107,7 +107,7 @@ few meaningful relationships, without a scientific cutaway or exhaustive hardwar
 
 ### Coil: graphic connection is enough; face direction still matters
 
-The stopped [coil study 02.6–02.7](../../apps/web/src/pages/lab/studies/gravity-coil-2026-11-03.astro)
+The stopped [coil study 02.6–02.7](../../apps/web/src/pages/lab/studies/gravity-coil-2026-11-03.mdx)
 explicitly says the equipment must look convincing rather than physically
 realistic. Connections should read as deliberate paths; they need not explain a
 mechanically complete assembly. Narrow ribbons, swept paths and quiet returns
