@@ -296,7 +296,7 @@ test("Experimental On completes a stable ship run without submitting a score", a
     0,
   );
   await expect(result.getByText(/^Score /)).toHaveCount(0);
-  await expect(result.getByRole("link", { name: "Top Scores" })).toBeVisible();
+  await expect(result.getByText("Top Scores", { exact: true })).toHaveCount(0);
   await page.clock.runFor(1000);
   expect(commits).toEqual([]);
   await context.close();

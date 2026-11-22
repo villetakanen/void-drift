@@ -20,7 +20,19 @@ implementation.
 ## 0.8.0
 
 Release direction is being formed. No release theme or complete scope has been
-chosen. The feature below is a candidate for consideration.
+chosen.
+
+### Retry a run
+
+**Decision:** Selected; delivered.
+
+**Draft release note:** Choose Retry after a run to start fresh with a new random
+seed and the same ship, fittings, mode, and Playground setting. Choose Return
+for the title screen or Hangar if you launched from there. Saving a score still
+opens Top Scores.
+
+**Context:** [Game-over spec](specs/game/game-over/spec.md) and
+[Retry regression coverage](../tests/browser/launch-navigation.spec.ts).
 
 ### Revamp score-table and how scores are collected
 

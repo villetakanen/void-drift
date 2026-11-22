@@ -1,7 +1,7 @@
 ---
 generated:
-  by: "openai/gpt-6.1-terra"
-  at: "2026-11-22T17:33:32+02:00"
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-22T18:15:15+02:00"
 verified:
   - by: "human:ville-takanen"
     at: "2026-11-22"
@@ -13,31 +13,33 @@ verified:
 
 ### Context
 
-The game-over screen presents the results and statistics of a completed run. In ranked modes, it also provides a place to save a new personal best. From here, the player can retry with the same setup and a new random seed, or return to the title menu or Hangar according to where the run began.
+The game-over screen presents the results and statistics of a completed run. An eligible ranked Survival result can also be submitted to Top Scores. From here, the player can retry with the same setup and a new random seed, or return to the title menu or Hangar according to where the run began.
 
 ### Architecture
 
-The screen accepts a completed run's outcome and statistics from its caller; it does not determine which results a game mode supplies. It provides a slot for an optional result-related action. Ranked score saving supplies its own interface there, including its inputs and buttons, and owns submission and persistence through the [Scores contract](../scores/spec.md). The screen does not own score validation or Firestore access.
+The screen accepts a completed run's outcome and statistics from its caller; it does not determine which results a game mode supplies. It provides a slot for an optional result-related action. `FlightDeck.svelte` supplies the ranked Survival score fields and action to `GameOver.svelte` and handles submission through the [Scores contract](../scores/spec.md). The save action does not require a personal-best lookup; the score store decides whether the submission improves the stored best. The screen does not own score validation or Firestore access.
 
-The caller supplies the retry and return actions. The [game contract](../spec.md) and [landing page](../landing-page/spec.md) govern launch and return. `apps/web/src/components/FlightDeck.svelte` currently presents the dialog; the boundaries and retry behaviour described here are intended changes, not a claim that the current implementation already provides them.
+`FlightDeck.svelte` also supplies Retry and the launch-source action. It retains the mode, full validated loadout, Playground setting and launch source captured for the completed run. The [game contract](../spec.md) and [landing page](../landing-page/spec.md) govern launch and return.
 
 ### Constraints
 
 - The screen presents supplied results without branching on game mode.
-- The optional action slot is independent of Retry and Return.
-- Retry starts a fresh run with the same setup and a new random seed.
-- Return goes to the run's launch source, rather than offering multiple return destinations.
+- The optional action slot is independent of Retry and the launch-source action. Top Scores opens from Run complete only after a successful save.
+- Retry starts a fresh run with the captured setup and a random seed distinct from the completed run's. It uses the mode's normal arrival, countdown, pause and focus-loss rules, with fresh resources, time, score and input state. It does not replay a held key or touch from the previous run. New presses during the countdown work as on a normal launch.
+- Invert controls, Speed camera and Combat HUD follow the current [Options](../options/spec.md); they are not captured.
+- The launch-source action is labeled `Return` for a title launch and `Hangar` for a Hangar launch. It and Pause → Abort go to the original launch source, including after Retry.
+- A pending score save does not block Retry. Its submission may finish, but its completion only affects the UI while that result is current.
 
 ## Contract
 
 ### Definition of Done
 
-- The player can read the supplied outcome and statistics and choose Retry or Return.
+- The player can read the supplied outcome and statistics and choose Retry or the launch-source action.
 - An eligible ranked result can provide a save-score interface without the screen owning its behaviour.
 
 ### Regression guardrails
 
-- The game-over dialog retains keyboard focus behaviour as specified by the [game screen](../game-screen/spec.md).
+- The game-over dialog retains keyboard focus behaviour as specified by the [game screen](../game-screen/spec.md). Retry hands focus to flight rather than restoring a control from the completed run.
 - Score validation, availability and persistence follow the [Scores contract](../scores/spec.md).
 
 ### Scenarios
@@ -51,20 +53,50 @@ Scenario: Present a completed run
 Scenario: Present an optional result action
   Given the caller supplies a result-related action
   When the game-over screen opens
-  Then the action is available alongside Retry and Return
+  Then the action is available alongside Retry and the launch-source action
 
 Scenario: No result action is supplied
   Given the caller supplies no result-related action
   When the game-over screen opens
-  Then Retry and Return remain available
+  Then Retry and the launch-source action remain available
+
+Scenario: No standalone Top Scores action
+  Given any completed run
+  When the game-over screen opens
+  Then it offers no Top Scores button or link
 
 Scenario: Retry a run
   Given a run has ended
   When the player chooses Retry
-  Then a fresh run starts with the same setup and a new random seed
+  Then a fresh run starts in the same mode, with the full loadout and Playground setting that were flown
+  And its random seed differs from the completed run's
+  And it follows the mode's normal arrival and pause rules with fresh resources, score and time
+  And flight receives focus and needs new key or pad presses
 
-Scenario: Return from game over
-  Given a run was launched from the title screen or Hangar
-  When the player chooses Return
-  Then the player returns to that launch source
+Scenario: Options stay live on Retry
+  Given Options have changed since the run was launched
+  When the player chooses Retry
+  Then Invert controls, Speed camera and Combat HUD use the current preferences
+
+Scenario: Retry while saving a score
+  Given a score save is pending on the result
+  When the player chooses Retry and the save completes
+  Then it neither changes the new run or its result nor redirects the player
+
+Scenario: Stay on the result while saving a score
+  Given the player saves a score and stays on that result
+  When the save completes
+  Then success opens Top Scores and failure reports the error on that result
+
+Scenario Outline: Return to the original source after Retry
+  Given a run was launched from <source> and the player chose Retry
+  When the player uses <action> on the retried run
+  Then the player returns to <source>
+
+  Examples:
+    | source       | action           |
+    | title screen | Pause Abort      |
+    | Hangar       | Pause Abort      |
+    | title screen | game-over Return |
+    | Hangar       | game-over Hangar |
 ```

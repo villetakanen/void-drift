@@ -1,12 +1,8 @@
 ---
-title: "Spec: Game"
-status: draft
 generated:
-  by: "openai-codex/gpt-6-luna"
-  at: "2026-11-19T21:31:01+02:00"
-verified:
-  - by: "openai-codex/gpt-6.1-terra"
-    at: "2026-11-19T21:31:01+02:00"
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-22T18:15:15+02:00"
+verified: []
 ---
 
 # Game
@@ -56,7 +52,7 @@ with one meaning each.
 - The game and the Lab share the simulation, camera, configuration and drawing code.
 - The Lab is not part of the game. It holds game-designer tools that reuse game systems where they need them. Game specs describe the game only: they place no rule on the Lab, and nothing in them is changed by what the Lab does. The [Lab spec](../lab/spec.md) owns its own constraints.
 - This contract owns the game as a whole: its modes, launch and return, replay, ranking eligibility and the scoring boundary. Child contracts own the parts:
-  - **Flight screen:** [game screen](game-screen/spec.md), [render](render/spec.md), [camera](camera/spec.md), [controls](controls/spec.md), [dialogs](dialogs/spec.md)
+  - **Flight screen:** [game screen](game-screen/spec.md), [render](render/spec.md), [camera](camera/spec.md), [controls](controls/spec.md), [dialogs](dialogs/spec.md), [game over](game-over/spec.md)
   - **Modes:** [Survival](survival/spec.md), [Practice](test-flight/spec.md), [Derelicts](derelicts/spec.md), [Gauntlet](gauntlet/spec.md)
   - **Launch and ships:** [title screen](landing-page/spec.md), [Hangar](hangar/spec.md), [active ship](active-ship/spec.md), [Playground](experimental/spec.md), [ships](ships/spec.md), [parts](parts/spec.md)
   - **World:** [star](world/star/spec.md), [gravity](world/gravity-field/spec.md), [derelict](world/derelict/spec.md)
@@ -74,7 +70,7 @@ with one meaning each.
 - **Replay:** identical validated settings and inputs reproduce the same world state, step for step.
 - **Offline:** without Firebase the game stays fully playable, and score features explain why they are unavailable.
 - **Version labels:** the title screen and the leaderboard show the web package version, which is separate from the ruleset name.
-- **Run complete:** a ranked Survival run shows its score and the time survived; with Playground On it shows the scoring-off notice in place of the score, and the time. The dialog shows one vertical action group. On a ranked run, Save Score is primary when submission is available, and the dialog says why when it is not; unranked runs show no Save Score. Returning to where the run started is secondary, and so is Top Scores after a Survival run. Practice has no run complete.
+- **Run complete:** a ranked Survival run shows its score and the time survived; with Playground On it shows the scoring-off notice in place of the score, and the time. The dialog shows one vertical action group. On a ranked run, Save Score is primary when submission is available, and the dialog says why when it is not; unranked runs show no Save Score. [Retry](game-over/spec.md) is always available: it is secondary on ranked results and primary on unranked results. The launch-source action is secondary. Practice has no run complete.
 
 ## Contract
 
@@ -101,10 +97,9 @@ with one meaning each.
   unavailable.
 - The title screen and the leaderboard show the version from
   `apps/web/package.json`, independently of `CHALLENGE`.
-- A ranked run complete shows one vertical action group: Save Score filled
-  and first, then return to the launch source and Top Scores as ghost actions.
-- Every run complete offers return to the launch source, and a Survival run
-  complete also offers Top Scores.
+- A ranked run complete shows one vertical action group with Save Score first,
+  followed by Retry and the [launch-source action](game-over/spec.md).
+- Every run complete offers Retry and the launch-source action.
 - Screens name ships, slots, slot types, parts, fittings, builds and runs by
   the terms above.
 
@@ -157,7 +152,7 @@ Scenario Outline: Return to the launch source
     | title screen | pause Abort      |
     | Hangar       | pause Abort      |
     | title screen | game-over Return |
-    | Hangar       | game-over Return |
+    | Hangar       | game-over Hangar |
 
 Scenario: Playground run is unscored
   Given Playground is On

@@ -116,8 +116,11 @@ export class Input {
       return;
     if (!Object.hasOwn(KEY_DIRECTIONS, event.code)) return;
     event.preventDefault();
-    if (event.type === "keydown") this.keys.add(event.code);
-    else this.keys.delete(event.code);
+    if (event.type === "keydown") {
+      // An OS repeat cannot bring back a key cleared by a flight reset.
+      if (event.repeat) return;
+      this.keys.add(event.code);
+    } else this.keys.delete(event.code);
     this.sync();
   };
   private visibility = () => {
