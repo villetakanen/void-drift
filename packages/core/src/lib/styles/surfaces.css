@@ -8,9 +8,11 @@
    - ::after is the 1px edge and the shadow outside the shape. It paints the
      shape opaque, takes its drop shadow, then a clip with a hole removes
      everything inside the edge, so the shadow never shows through the fill.
-   The element itself is isolated and unclipped, so the shadow can spill. */
+   The element itself is isolated and unclipped, so the shadow can spill.
+   A document host can opt its direct asides into the standard panel. */
 .cut-surface,
-.panel {
+.panel,
+:where([data-panel-asides] > aside) {
   --_cut: var(--cut-size-md);
   --_edge-width: 1px;
   --_edge: var(--color-border);
@@ -25,8 +27,10 @@
 }
 .cut-surface::before,
 .panel::before,
+:where([data-panel-asides] > aside)::before,
 .cut-surface::after,
-.panel::after {
+.panel::after,
+:where([data-panel-asides] > aside)::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -34,7 +38,8 @@
   pointer-events: none;
 }
 .cut-surface::before,
-.panel::before {
+.panel::before,
+:where([data-panel-asides] > aside)::before {
   background: var(--_fill);
   clip-path: polygon(
     var(--_cut) 0,
@@ -46,7 +51,8 @@
   );
 }
 .cut-surface::after,
-.panel::after {
+.panel::after,
+:where([data-panel-asides] > aside)::after {
   --_shape-edge:
     transparent calc(var(--_cut) * 0.7071),
     var(--_edge) 0 calc(100% - var(--_cut) * 0.7071), transparent 0;
@@ -76,8 +82,9 @@
 }
 
 /* The panel: elevation 2 on the console form (cut lg, 1px border role, the
-   display's drop shadow). Use it for game menus and dialogs over the stage. */
-.panel {
+   display's drop shadow). Use it for game menus, dialogs and document asides. */
+.panel,
+:where([data-panel-asides] > aside) {
   --_cut: var(--cut-size-lg);
   --_fill: var(--panel-fill);
   --_shadow: var(--panel-shadow);

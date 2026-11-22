@@ -1,0 +1,69 @@
+---
+generated:
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-22T09:15:37Z"
+verified: []
+---
+
+import ComponentFrame from "../../../components/lab/ComponentFrame.svelte";
+import LabPageHeader from "../../../components/lab/LabPageHeader.svelte";
+import DesignSystemLayout from "../../../layouts/DesignSystemLayout.astro";
+
+<DesignSystemLayout title="Documents grid" documentProse>
+
+# Documents grid
+
+Keeps design-system prose at a readable width, with a gutter for notes and more room for tables and live examples.
+
+## Gutter note: page identity
+
+Name the current page in the header and link the site name back to its overview.
+
+<aside aria-label="Site-only header">
+  <p>On the overview itself, use the site-only header. It doesn't need a link back to itself.</p>
+</aside>
+
+## Two-column table: block placement
+
+| Direct child | Placement when wide |
+| --- | --- |
+| Headings (`h1`–`h6`), paragraphs, lists (`ul`, `ol`, `dl`), blockquotes and `pre` | Prose column |
+| `aside` | Gutter only |
+| `table` | Prose and gutter |
+| Everything else, including a component frame | All three columns |
+
+## Full-width frame: page header
+
+Give a [Page header](/lab/ds/page-header) example room for both the site link and the page name on one line.
+
+<LabPageHeader variant="page" />
+
+## Stacked note: narrow container
+
+This frame caps the example at 26rem, so the note stacks below the advice even on a wide screen.
+
+<div style={{ maxInlineSize: "26rem" }}>
+  <ComponentFrame>
+    <div className="documents-grid">
+      <div className="documents-grid__content document-prose" data-panel-asides="">
+        <p>Name the current page in the header and link the site name back to its overview.</p>
+        <aside aria-label="Site-only header">
+          <p>On the overview itself, use the site-only header. It doesn't need a link back to itself.</p>
+        </aside>
+      </div>
+    </div>
+  </ComponentFrame>
+</div>
+
+## Width and classes
+
+- `.documents-grid` fills its parent and measures that width, not the viewport.
+- `.documents-grid__content` adds 16px padding on every side and a 16px gap between items or tracks. It stacks children in source order until there is room for 67ch of prose, a smaller golden-section gutter (`67ch / φ`, about 41.4ch), and 64px for the two side padding edges and two column gaps. The outside column takes whatever width remains.
+
+## Authoring
+
+Use `<DesignSystemLayout title="…" documentProse>` for an MDX reference. The layout supplies both grid wrappers; `documentProse` opts into shared typography.
+
+Write Markdown directly inside the layout. Put an `<aside>` immediately after the paragraph it supports, as a direct sibling, so it can share that paragraph's row when wide. Don't wrap them together in a `div`: the grid would place the wrapper across all columns instead of placing the two blocks separately. The Design system layout supplies the aside's panel appearance; the grid only places it.
+
+</DesignSystemLayout>

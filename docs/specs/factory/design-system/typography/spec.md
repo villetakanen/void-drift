@@ -1,17 +1,11 @@
 ---
-
-title: "Spec: Typography"
-status: draft
 generated:
-  by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-19T12:32:56+02:00"
-verified:
-- by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-19T12:33:38+02:00"
-
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-22T08:00:02Z"
+verified: []
 ---
 
-# Spec: Typography
+# Typography
 
 ## Blueprint
 
@@ -58,6 +52,10 @@ there. Deprecated aliases remain until their last consumer migrates: `--font-fli
 
 - Page roots set the role: game pages (`body`, `.flight-page`) and the Lab shell use `ui`;
   `StudyLayout` puts `.prose` on its `main`.
+- `DesignSystemLayout` opts authored MDX documentation prose in its main content into the shared
+  prose styles. Headings, paragraphs, lists, blockquotes and other authored prose, including inline
+  links, use the shared reading treatment. Live examples and nested component UI keep their own
+  typography. The shell and Astro-authored Design system pages retain their existing typography.
 - `.prose` is global: family, line height, measure on section paragraphs, heading rhythm and link
   colour. Its descendant rules have zero specificity, so local component styles win.
 - Components name role tokens. Literal families are not allowed in shared CSS, layouts or canvas.
@@ -78,11 +76,14 @@ there. Deprecated aliases remain until their last consumer migrates: `--font-fli
 - Shared role fonts, sizes, weights and tracking resolve from tokens.
 - Canvas font construction matches the CSS UI family.
 - Study prose retains its intended role and measure.
+- MDX documentation inherits shared prose styling from `DesignSystemLayout`.
 
 ### Regression guardrails
 
 - Loading a page requests local fonts rather than a third-party font service.
 - Preserved studies retain their supported aliases.
+- The [Documents grid](../documents-grid/spec.md) retains its dimensions, width query and placement
+  when prose typography is applied.
 
 ### Scenarios
 
@@ -91,6 +92,23 @@ Scenario: Read a shared interface
   Given a game or Lab interface
   When its text renders
   Then interface text uses the UI role and prose uses its prose role
+
+Scenario: Read authored MDX documentation
+  Given a Design system MDX page with authored headings, paragraphs, lists, blockquotes and links in its main content
+  When the page renders through DesignSystemLayout
+  Then the authored prose uses the shared reading typography and its links use the shared prose link treatment
+  And the Documents grid retains its dimensions, width query and placement rules
+
+Scenario: Keep examples and shell separate from document prose
+  Given a Design system MDX page with a live example and nested component UI in its main content
+  When the page renders through DesignSystemLayout
+  Then example content and nested component UI keep their own typography, including their text and links
+  And the page header, navigation and inspector keep their shell typography
+
+Scenario: Keep Astro page typography
+  Given an Astro-authored Design system page
+  When it renders through DesignSystemLayout
+  Then its main content retains its existing typography
 
 Scenario: Match Canvas and CSS text
   Given an instrument with Canvas labels

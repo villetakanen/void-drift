@@ -8,8 +8,7 @@ verified: []
 import LabPageHeader from "../../../components/lab/LabPageHeader.svelte";
 import DesignSystemLayout from "../../../layouts/DesignSystemLayout.astro";
 
-<DesignSystemLayout title="Page header" wide>
-<div className="header-guide">
+<DesignSystemLayout title="Page header" contentClass="header-guide" documentProse wide>
 
 # Page header
 
@@ -67,20 +66,13 @@ The switch changes this example only. Your game settings stay unchanged.
 | `--focus-ring-offset-inset` | `-5px` — Focus outline inset. |
 | `--color-focus-ring` | `var(--color-text)` — Focus outline colour. |
 
-</div>
 </DesignSystemLayout>
 
 <style>{`
-.header-guide { padding: var(--spacing-lg); }
-.header-guide h1 { margin: 0 0 var(--spacing-sm); }
-.header-guide table + h2 { margin-top: var(--spacing-lg); }
-.header-guide h2 { margin: 0 0 var(--spacing-md); font-size: var(--font-size-body); }
-.header-guide p { margin: 0 0 var(--spacing-lg); line-height: 1.6; color: var(--color-text-muted); }
-.identity-examples { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); margin-bottom: var(--spacing-md); }
-.controls-example { margin-bottom: var(--spacing-lg); }
+.identity-examples { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); }
+.identity-examples h2 { font-size: var(--font-size-body); margin-bottom: var(--spacing-md); }
 .header-guide table { width: 100%; border-collapse: collapse; font-size: var(--font-size-body); }
 .header-guide th, .header-guide td { padding: var(--spacing-sm) var(--spacing-md); text-align: left; border-bottom: 1px solid var(--color-border-subtle); }
 .header-guide th:first-child, .header-guide td:first-child { padding-left: 0; white-space: nowrap; }
 .header-guide th { color: var(--color-text-muted); font-weight: 400; }
-.header-guide table a { color: var(--color-action); }
 `}</style>

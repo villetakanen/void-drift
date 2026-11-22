@@ -1,0 +1,55 @@
+/* Measure the full parent width; only the inner box adds padding. */
+.documents-grid {
+  container: documents-grid / inline-size;
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.documents-grid__content {
+  box-sizing: border-box;
+  min-inline-size: 0;
+  /* Keep the tracks and the container query on the same ch basis. */
+  font: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+.documents-grid__content > * {
+  min-inline-size: 0;
+}
+
+.documents-grid__content > pre {
+  overflow: auto;
+}
+
+/* 67ch + golden-section gutter + two padding edges and two gaps. */
+@container documents-grid (
+  inline-size >= calc(67ch + 67ch / 1.61803398875 + 64px)
+) {
+  .documents-grid__content {
+    display: grid;
+    grid-template-columns: 67ch calc(67ch / 1.61803398875) minmax(0, 1fr);
+    /* Sparse row flow lets a following aside share its prose row without backfilling. */
+    grid-auto-flow: row;
+    align-items: start;
+  }
+
+  .documents-grid__content > * {
+    grid-column: 1 / -1;
+  }
+
+  .documents-grid__content
+    > :is(p, h1, h2, h3, h4, h5, h6, ul, ol, dl, blockquote, pre) {
+    grid-column: 1;
+  }
+
+  .documents-grid__content > table {
+    grid-column: 1 / 3;
+  }
+
+  .documents-grid__content > aside {
+    grid-column: 2;
+  }
+}

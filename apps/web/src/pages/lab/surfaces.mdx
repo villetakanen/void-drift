@@ -1,0 +1,176 @@
+---
+generated:
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-22T11:11:30+02:00"
+verified: []
+---
+
+import LabSurfaces from "../../components/lab/LabSurfaces.svelte";
+import DesignSystemLayout from "../../layouts/DesignSystemLayout.astro";
+
+<DesignSystemLayout title="Surfaces" contentClass="surfaces-guide" documentProse wide>
+
+# Surfaces
+
+Cut panels frame menus and flight status, instrument surfaces distinguish displays from the console, and the dialog scrim dims the stage behind a dialog.
+
+## Menu panel and flight status
+
+Use `.panel` for a menu or dialog. Add `.panel--flat` for a status message over live flight: it keeps the same fill and cut edge, but removes the shadow and uses less padding.
+
+<aside aria-label="Panel appearance and interaction">
+  <p>A panel is visual only. Use <code>Dialog</code> to block stage input and keep focus inside the dialog.</p>
+</aside>
+
+<div className="surface-example panel-examples">
+  <div className="panel">
+    <strong>Pause menu</strong>
+    <p><code>.panel</code></p>
+  </div>
+  <div className="panel panel--flat">
+    <strong>Flight status</strong>
+    <p><code>{".panel.panel--flat"}</code></p>
+  </div>
+</div>
+
+Place a document-level `<aside>` after the paragraph it explains. It gets panel styling and sits below that paragraph when the gutter is too narrow.
+
+## Modal dialog over the stage
+
+Open the dialog to see the deck hide and the stage dim, blur and pick up scanlines. The panel itself stays clear.
+
+Focus starts on **Close**, stays inside the dialog as you Tab, and returns to **Open dialog** on close. Turn off **Escape closes the dialog** to try the run-complete behavior; pause allows Escape. The [title screen](/) uses the scrim without a modal dialog.
+
+<LabSurfaces client:load />
+
+## Console, display and overlay pane
+
+The void is the background. The three swatches step up in lightness and chroma without changing hue.
+
+<div className="elevation-examples">
+  <div style={{ background: "var(--color-elev-1)" }}><strong>Console</strong><code>{"--color-elev-1"}</code></div>
+  <div style={{ background: "var(--color-elev-2)" }}><strong>Display</strong><code>{"--color-elev-2"}</code></div>
+  <div style={{ background: "var(--color-elev-3)" }}><strong>Overlay pane</strong><code>{"--color-elev-3"}</code></div>
+</div>
+
+## Control and panel cuts
+
+Cuts remove the top-left and bottom-right corners. Text fields use `--radius-sm` instead; circular controls stay round.
+
+<div className="surface-example cut-examples">
+  <div><div className="cut-surface" style={{ "--_cut": "var(--cut-size-sm)" }}></div><p>Small controls · 6px</p></div>
+  <div><div className="cut-surface"></div><p>Buttons and segmented controls · 10px</p></div>
+  <div><div className="cut-surface" style={{ "--_cut": "var(--cut-size-lg)" }}></div><p>Panels · 16px</p></div>
+  <div><button type="button" className="btn btn-ghost">Button</button><p>Button using the 10px cut</p></div>
+</div>
+
+## Instrument display and Lab backdrop
+
+The instrument display uses scanlines, a darkened edge and a thin bezel. A Lab overlay pane dims what's behind it with `--color-backdrop`, shown on the right. Game dialogs use the stage scrim instead.
+
+<div className="display-examples">
+  <div className="surface-example">
+    <div className="display-sample"></div>
+    <p>Instrument display</p>
+  </div>
+  <div className="surface-example backdrop-example">
+    <div className="display-sample"></div>
+    <div className="backdrop-half" aria-hidden="true"></div>
+    <p>Right half: Lab backdrop</p>
+  </div>
+</div>
+
+## Classes and tokens
+
+| Class or token | Use |
+| --- | --- |
+| `.cut-surface` | Glass fill and 1px `--color-border` edge that follows the cut. Defaults to the medium cut, with no shadow. |
+| `.panel`, `.panel--flat` | Both use `--panel-fill` (elevation 2) and the large cut. Only the standard panel uses `--panel-shadow`. |
+| `--cut-size-sm`, `--cut-size-md`, `--cut-size-lg` | `6px` for small controls, `10px` for buttons and segmented controls, `16px` for panels. |
+| `--color-void`, `--color-elev-1` through `--color-elev-3` | Background, console, display and overlay pane, in order of increasing lightness. |
+| `--surface-display`, `--shadow-display` | Instrument display background, bezel and shadow. |
+| `--color-backdrop` | Black at 11% for Lab overlay panes. |
+| `.scrim-stage` | Dims, blurs and tints an opaque stage using `--scrim-filter` and `--scrim-tint`. |
+| `.dialog-scrim` | Adds scanlines, darkened edges and a screen blend over the stage using `--scrim-surface` and elevation 2. Neither scrim class makes the stage inert. |
+
+## Layer order
+
+Use layer tokens for shared `z-index` values. To put a fill behind its label without moving the whole control, isolate the control and use `--layer-under` on the fill.
+
+| Token | Value | Use |
+| --- | --- | --- |
+| `--layer-toast` | `200` | Status messages above other UI. |
+| `--layer-overlay` | `100` | Dialogs and their scrim. |
+| `--layer-hud` | `10` | Deck instruments and controls. |
+| `--layer-raised` | `1` | Sticky footers and Lab panes above their backdrops. |
+| `--layer-base` | `0` | Stage and page content. |
+| `--layer-under` | `-1` | Behind content within an isolated component. |
+
+</DesignSystemLayout>
+
+<style>{`
+.surfaces-guide .surface-example {
+  padding: var(--spacing-lg);
+  background: var(--color-elev-1);
+}
+.surfaces-guide :is(.panel-examples, .display-examples) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-md);
+}
+.surfaces-guide .panel-examples .panel p {
+  margin-block-start: var(--spacing-xs);
+}
+.surfaces-guide .elevation-examples {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-md);
+}
+.surfaces-guide .elevation-examples > div {
+  display: grid;
+  align-content: end;
+  gap: var(--spacing-xs);
+  min-block-size: 8rem;
+  padding: var(--spacing-md);
+}
+.surfaces-guide .cut-examples {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+  gap: var(--spacing-md);
+}
+.surfaces-guide .cut-examples .btn {
+  margin-block-start: calc(64px - var(--control-min-height));
+}
+.surfaces-guide .cut-examples .cut-surface {
+  inline-size: 148px;
+  max-inline-size: 100%;
+  block-size: 64px;
+}
+.surfaces-guide :is(.cut-examples, .display-examples) p {
+  margin-block-start: var(--spacing-sm);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+}
+.surfaces-guide .display-sample {
+  block-size: 12rem;
+  background: var(--surface-display);
+  box-shadow: var(--shadow-display);
+}
+.surfaces-guide .backdrop-example {
+  position: relative;
+}
+.surfaces-guide .backdrop-half {
+  position: absolute;
+  inset: 0 0 0 50%;
+  background: var(--color-backdrop);
+}
+.surfaces-guide .backdrop-example p {
+  position: relative;
+}
+.surfaces-guide table { width: 100%; border-collapse: collapse; font-size: var(--font-size-body); }
+.surfaces-guide th, .surfaces-guide td { padding: var(--spacing-sm) var(--spacing-md); text-align: left; vertical-align: top; border-bottom: 1px solid var(--color-border-subtle); }
+.surfaces-guide th:first-child, .surfaces-guide td:first-child { padding-left: 0; }
+.surfaces-guide th { color: var(--color-text-muted); font-weight: 400; }
+.surfaces-guide code { white-space: nowrap; }
+`}</style>

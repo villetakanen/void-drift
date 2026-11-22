@@ -7,13 +7,21 @@ import "@void-drift/core/styles/tokens.css";
 import "@void-drift/core/styles/buttons.css";
 import "@void-drift/core/styles/surfaces.css";
 import "@void-drift/core/styles/typography.css";
+import "@void-drift/core/styles/documents-grid.css";
 import "../styles.css";
 
 interface Props {
   title: string;
   wide?: boolean;
+  contentClass?: string;
+  documentProse?: boolean;
 }
-const { title = "Design system", wide = true } = Astro.props;
+const {
+  title = "Design system",
+  wide = true,
+  contentClass,
+  documentProse = false,
+} = Astro.props;
 const section = "Design system";
 const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
 const covers = (href: string) =>
@@ -74,7 +82,18 @@ const componentLinks = designSystemPages
 
       <!-- Column 2 Row 2: Main Stage -->
       <main class="main-stage">
-        <slot />
+        <div class="documents-grid">
+          <div
+            data-panel-asides
+            class:list={[
+              "documents-grid__content",
+              contentClass,
+              { "document-prose": documentProse },
+            ]}
+          >
+            <slot />
+          </div>
+        </div>
       </main>
 
       <!-- Inspector beside the main stage -->
@@ -130,6 +149,10 @@ const componentLinks = designSystemPages
   overflow-y: auto;
   background: var(--color-void);
   border-right: 1px solid var(--color-border-subtle);
+}
+
+/* A top-level island is one full-width example, even with multiple roots. */
+.documents-grid__content > :global(astro-island) {
   display: flex;
   flex-direction: column;
 }

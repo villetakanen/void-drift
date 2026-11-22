@@ -52,6 +52,7 @@ canonical examples; Lab and Studies consume them without acquiring ownership.
 - [Side sheet](side-sheet/spec.md) owns shared instrument parameter surfaces.
 - [Page header](page-header/spec.md) owns shared page identity, navigation and container adaptation.
 - [Component frame](component-frame/spec.md) owns the shared boundary and width container for documentation examples.
+- [Documents grid](documents-grid/spec.md) owns the responsive layout of Design system documentation.
 - [Tray](tray/spec.md) owns the shared navigation component used by the
   Design system layout and its canonical demo. The overview lists Tray in its
   component catalog.

@@ -46,6 +46,15 @@ export const labPages = z.array(labPageSchema).parse([
     spec: "docs/specs/factory/design-system/component-frame/spec.md#architecture",
   },
   {
+    href: "/lab/ds/documents-grid",
+    title: "Documents grid",
+    purpose: "A width-aware layout for prose, asides, tables and examples.",
+    group: "design-system",
+    source: "production",
+    defines: ["packages/core/src/lib/styles/documents-grid.css"],
+    spec: "docs/specs/factory/design-system/documents-grid/spec.md#architecture",
+  },
+  {
     href: "/lab/ds/page-header",
     title: "Page header",
     purpose: "Page identity, navigation and controls in a single row.",

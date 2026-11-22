@@ -21,8 +21,7 @@ export const trayGroups = [
   ] },
 ];
 
-<DesignSystemLayout title="Tray" wide>
-<div className="tray-guide">
+<DesignSystemLayout title="Tray" contentClass="tray-guide" documentProse wide>
 
 # Tray
 
@@ -109,19 +108,12 @@ shared component. Its neutral resting-link exception covers only the live
 Design system rail and this example; Lab, Design studies and the game retain
 their own navigation.
 
-</div>
 </DesignSystemLayout>
 
 <style>{`
-.tray-guide { padding: var(--spacing-lg); }
-.tray-guide h1 { margin: 0 0 var(--spacing-sm); }
-.tray-guide > h2 { margin: var(--spacing-lg) 0 var(--spacing-md); font-size: var(--font-size-body); }
-.tray-guide p { max-inline-size: var(--measure-prose); margin: 0 0 var(--spacing-md); line-height: var(--line-height-prose); color: var(--color-text-muted); }
-.tray-guide strong { color: var(--color-text); }
 .tray-guide table { width: 100%; border-collapse: collapse; font-size: var(--font-size-body); }
 .tray-guide th, .tray-guide td { padding: var(--spacing-sm) var(--spacing-md); text-align: left; border-bottom: 1px solid var(--color-border-subtle); }
 .tray-guide th:first-child, .tray-guide td:first-child { padding-left: 0; }
 .tray-guide th { color: var(--color-text-muted); font-weight: var(--font-weight-regular); }
-.tray-guide p a { color: var(--color-action); }
 .tray-example { inline-size: calc(var(--spacing-xl) * 4); max-inline-size: 100%; }
 `}</style>
