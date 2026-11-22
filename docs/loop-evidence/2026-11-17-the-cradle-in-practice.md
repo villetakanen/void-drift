@@ -6,7 +6,7 @@ On 17 November 2026 the designer asked to bring placeholder Earth, named "The
 Cradle" in the HUD, into Practice and the Planet Inspector Lab tool. The
 rock-atmospheres study (`rock-atmospheres-2026-11-15`) was to be read as
 designer-led fantasy and its intent mapped onto the game. The plan is
-[2026-11-17-the-cradle-in-practice.md](../plans/2026-11-17-the-cradle-in-practice.md).
+[2026-11-17-the-cradle-in-practice.md](https://github.com/villetakanen/void-drift/blob/9e1e7a2e861ba43db58b536339421da586e3e928/docs/plans/2026-11-17-the-cradle-in-practice.md).
 
 Decisions the designer stated in chat, 17 November 2026:
 

@@ -143,7 +143,7 @@ history are records; they are rewritten too, since a dead link serves no one.
    header in `FlightDeck.svelte` and the hangar, high scores and options
    headers go; navigation moves into the landing page; browser tests follow the
    new composition. `game/dialogs/spec.md` and the deferred
-   [dialog boundary plan](2026-11-03-opening-screen-dialog-boundary.md)
+   [dialog boundary plan](https://github.com/villetakanen/void-drift/blob/9e1e7a2e861ba43db58b536339421da586e3e928/docs/plans/2026-11-03-opening-screen-dialog-boundary.md)
    resolve at the same time, since the opening menu no longer depends on
    external navigation.
 5. **Content phase.** Rewrite the remaining moved specs one at a time, merging

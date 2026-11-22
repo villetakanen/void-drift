@@ -97,7 +97,7 @@ human visual approval or an additional correctness gate.
 
 The title screen is ordinary navigation. Actual dialogs trap focus and isolate the
 stage; see the [dialog contract](specs/game/dialogs/spec.md) and the resolved
-[composition plan](plans/2026-11-03-opening-screen-dialog-boundary.md).
+[composition plan](https://github.com/villetakanen/void-drift/blob/9e1e7a2e861ba43db58b536339421da586e3e928/docs/plans/2026-11-03-opening-screen-dialog-boundary.md).
 
 Flight and FX captures use explicit viewport, seed and simulation time for human
 review. Alpha 0.5.0 removes pixel equality gates for the combined flight canvas and
