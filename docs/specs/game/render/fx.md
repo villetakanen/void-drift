@@ -1,18 +1,31 @@
+---
+generated:
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-23T13:12:36+02:00"
+verified:
+  - by: "human:ville-takanen"
+    at: "2026-11-23"
+---
+
 # FX layer
 
 FX holds accumulated light history in a persistent, full-stage-resolution
-surface. Its sharp image is shown unfiltered with CSS `screen`, which keeps
-black neutral over World.
+surface. The frame composites that history onto a freshly cleared FX canvas.
+Its sharp image is shown unfiltered with CSS `screen`, which keeps black
+neutral over World.
 For each elapsed timestep the surface first fades the whole held image with a
 translucent black source-over fill, then adds fresh stamps. Its
 current half-life is 0.1 seconds. Fading and emission happen only when game time
-advances; empty or paused intervals preserve the image exactly.
+advances. A stationary pause holds the displayed light; changing the camera or
+render geometry can change its presentation without advancing game time.
 
 History remains at its painted world position through camera changes. Camera
 reprojection may use a bounded reusable spare buffer. Reprojection must preserve
 the full image domain, including newly exposed edges, and may not translate,
 erase, or join history incorrectly. Arena wrap starts fresh emission at the new
-position. Reset and explicit seek/replay lifecycle changes may clear history.
+position. Other emission discontinuities, such as a source turning on, also
+start a new mark instead of connecting to an earlier position. Reset and
+explicit seek/replay lifecycle changes may clear history.
 There are no age windows, quiet-time clears, alpha thresholds, or other periodic
 cleanup. 8-bit rounding may leave faint near-black residue or eventually settle
 at the darkest representable value; that is allowed and must not disappear in a
@@ -63,7 +76,9 @@ into the simulation.
 
 - Memory is persistent and owned by the FX presentation surface, never the
   simulation.
-- Equal elapsed game time gives equivalent decay within raster precision.
+- Continuous emission accounts for source motion across the whole interval,
+  not only its final position. The same tick samples produce equivalent light
+  whether presented in one frame or several, within raster precision.
 - Pause does not add light or fade it; reset clears the full history.
 - Fresh source stamps have priority over secondary decoration under the shared
   scene budget.
@@ -73,5 +88,30 @@ into the simulation.
 - Production play, the Render Model workbench and the render performance bench
   open with shared Low-res CSS glow. Both Lab instruments offer comparisons,
   including Turbulent bloom and [Low-res glow without blur](../../lab/render-model/spec.md#lab-glow-treatments).
+
+### Scenarios
+
+```gherkin
+Scenario: A continuous source travels between displayed frames
+  Given an engine stays lit while moving across several simulation ticks
+  When those ticks are presented in one frame
+  Then its fading trail covers the path and matches presenting the ticks separately within raster precision
+
+Scenario: An engine crosses the arena boundary
+  Given the ship wraps with its engine burning
+  When the next frame is presented
+  Then light remains at the old position and fresh light starts at the new position
+  And no trail joins the two
+
+Scenario: Present light over a derelict aperture
+  Given accumulated light covers a wreck's aperture
+  When the frame is presented
+  Then the aperture reveals World and the glow copies the FX image after the cut
+
+Scenario: Seek to an earlier tick
+  Given a Flight scene with painted FX history
+  When the viewer seeks backward
+  Then replay rebuilds the history and only the settled FX image is copied to glow
+```
 
 A funded plasma rifle release deposits a narrow amber discharge along its travelled path. An eruption at full reach or earlier material contact emits a connected expanding fireball at the recorded world position. Persistent FX carries its fading light after the live core clears. Repainting a paused frame deposits no additional light. On target loss the plasma rifle emits two widening, cooling sprays from its fitted outlets. Their world-space drift continues after the ports close. [Plasma rifle](../plasma-rifle/spec.md)

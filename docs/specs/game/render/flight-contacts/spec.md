@@ -1,10 +1,10 @@
 ---
-title: "Spec: Flight contacts"
-status: draft
 generated:
   by: "codex/gpt-6"
   at: "2026-11-19T20:41:21+00:00"
-verified: [{ by: "codex/gpt-6.1-terra", at: "2026-11-19T21:42:03+02:00" }]
+verified:
+  - by: "human:ville-takanen"
+    at: "2026-11-23"
 ---
 
 # Flight contacts
