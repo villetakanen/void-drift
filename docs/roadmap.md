@@ -17,10 +17,7 @@ steps belong in focused [plans](plans/), and agreed behaviour belongs in
 [specs](specs/). Adding a candidate here opens a discussion; it does not authorize
 implementation.
 
-## 0.8.0
-
-Release direction is being formed. No release theme or complete scope has been
-chosen.
+## 0.7.2 — Game over
 
 ### Retry a run
 
@@ -33,6 +30,24 @@ opens Top Scores.
 
 **Context:** [Game-over spec](specs/game/game-over/spec.md) and
 [Retry regression coverage](../tests/browser/launch-navigation.spec.ts).
+
+### See and save your ranked result
+
+**Decision:** Selected; delivered.
+
+**Draft release note:** See your final score and what ended your run at a glance.
+If you set a new ranked personal best, sign it with three initials and save it
+to the existing Fires in the Sky leaderboard. If your best stands, the game
+shows it without asking you to submit again.
+
+**Context:** [Ranked result spec](specs/game/game-over/ranked-result/spec.md) and
+[competition coverage](../tests/firebase/competition.spec.ts). See the
+[0.7.2 release record](releases/0.7.2.md) for both game-over changes.
+
+## 0.8.0
+
+Release direction is being formed. No release theme or complete scope has been
+chosen.
 
 ### Revamp score-table and how scores are collected
 

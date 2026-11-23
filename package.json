@@ -1,7 +1,7 @@
 {
   "name": "void-drift-monorepo",
   "private": true,
-  "version": "0.7.1",
+  "version": "0.7.2",
   "scripts": {
     "dev": "pnpm --filter web dev",
     "dev:ensure": "python3 scripts/shared-preview.py ensure",
