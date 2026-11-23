@@ -147,5 +147,5 @@ The final sustained software-rendered profile is
 no page errors, ~14.5 ms final rolling p95 submission and ~33.4 ms frame p95. It
 misses the performance target on that fallback. Final in-app observations span
 0.4–0.6 ms p95 submission and ~9.1–9.2 ms frame p95. Full GPU and phone acceptance
-remain open. See [the loop record](../loop-evidence/2026-11-03-fx-surface-repair.md)
+remain open. See [the loop record](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-11-03-fx-surface-repair.md)
 for evidence scope, failures and local publication status.

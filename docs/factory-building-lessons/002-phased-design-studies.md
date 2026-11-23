@@ -13,22 +13,22 @@ human effectiveness remains separate and is not inferred from document validatio
   [planet-purpose scope diagnosis](../factory-experiment-planet-purpose-scope.md#outcome-and-the-designers-diagnosis).
   Implementation: [problem procedure](../../.agents/skills/design-study/SKILL.md#01--develop-the-problem).
 - [x] Carry exact accepted variants and replay conditions into scope. Basis:
-  [engine-effects decisions](../loop-evidence/2026-10-30-engine-effects.md) and
-  [ion replay findings](../loop-evidence/2026-10-31-ion-engines.md).
+  [engine-effects decisions](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-10-30-engine-effects.md) and
+  [ion replay findings](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-10-31-ion-engines.md).
   Implementation: [reference retention](../../.agents/skills/design-study/references/exploration.md#make-the-question-inspectable).
 - [x] Judge readiness against the intended delivery. Basis:
-  [alpha-scope correction](../loop-evidence/2026-10-30-engine-effects.md).
+  [alpha-scope correction](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-10-30-engine-effects.md).
   Implementation: [readiness procedure](../../.agents/skills/design-study/SKILL.md#03--assess-readiness).
 - [x] Consolidate duplicated instructions (owner-approved 3 November).
   Implementation: [ownership map](../specs/studies/spec.md#context-and-ownership).
-  Evidence: [scope, changed files and validation](../loop-evidence/2026-11-03-factory-harness-amendments.md).
+  Evidence: [scope, changed files and validation](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-11-03-factory-harness-amendments.md).
 - [x] Make the quality rubric optional for ordinary studies (owner-approved amendment,
   3 November).
-  Evidence: [implementation and checks](../loop-evidence/2026-11-03-factory-harness-amendments.md#implementation-evidence).
+  Evidence: [implementation and checks](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-11-03-factory-harness-amendments.md#implementation-evidence).
 - [x] Clarify that a failed study can end successfully for the project (owner clarification,
   3 November), preserving its recorded failure. Implementation:
   [ending contract](../specs/studies/spec.md#ending-a-study).
-  Evidence: [owner decision and verification limits](../loop-evidence/2026-11-03-factory-harness-amendments.md#authorized-scope).
+  Evidence: [owner decision and verification limits](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-11-03-factory-harness-amendments.md#authorized-scope).
 
 ## Why we changed the factory
 
@@ -52,7 +52,7 @@ Agreement must accumulate so that every round has a foundation to build on.
 
 - [Button retrospective](../factory-experiment-design-studies.md) records the value
   of situation-first explanation, corrections, acceptance, and integration.
-- [Planetary evidence](../loop-evidence/2026-10-29-planetary-design-study.md) records
+- [Planetary evidence](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-10-29-planetary-design-study.md) records
   both failures, stated planetary intent, feedback, checks, and evidence gaps.
 - [Planetary retrospective](../factory-experiment-planetary-study.md) retains earlier
   explanations and the attempted repair. Its question-first restart failed too.
@@ -188,7 +188,7 @@ right reference for every future planetary question.
 
 ## Repair — protect the question, with explicit designer override
 
-The [stopped planet roles cycle](../loop-evidence/2026-10-29-planet-roles-cycle.md)
+The [stopped planet roles cycle](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-10-29-planet-roles-cycle.md)
 reached an accepted problem statement and a useful example, then drifted into fixture
 adjustments. In the subsequent factory discussion, the designer clarified what was
 useful: the original straight-flight demo showed the difference between free flight
@@ -230,7 +230,7 @@ The trial artifact is preserved. No new trial was run here; the designer will re
 ## Cleanup — failed study payloads removed
 
 After reviewing the [purpose/scope retrospective](../factory-experiment-planet-purpose-scope.md)
-and its [evidence](../loop-evidence/2026-10-29-planet-purpose-scope.md), the designer
+and its [evidence](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-10-29-planet-purpose-scope.md), the designer
 requested removal of all failed planetary studies from the application. Five pages,
 six dedicated demo components, catalogue entries, and the obsolete planetary browser
 test were deleted. The successful button study and shared study infrastructure remain.
@@ -263,11 +263,11 @@ closure evidence and requested that they be implemented and marked done.
 - [x] Recommend taking an independently usable accepted result through readiness
   and integration planning before exploring another subject; honor a direction to
   continue. Basis: accepted Fighter followed by unresolved Scout exploration in the
-  [silhouette evidence](../loop-evidence/2026-10-30-ship-silhouettes.md).
+  [silhouette evidence](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-10-30-ship-silhouettes.md).
 - [x] Identify the exact accepted visual variant and settled properties, and carry
   that reference and provisional choices into the plan. Basis: Fighter 02.9 and the
   lifecycle-versus-tuning distinction in the
-  [engine-effects evidence](../loop-evidence/2026-10-30-engine-effects.md).
+  [engine-effects evidence](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-10-30-engine-effects.md).
 - [x] Assess alpha readiness against the intended delivery, explaining concrete
   blockers while allowing tuning and configurability to remain provisional. Basis:
   the explicit alpha-scope correction in the engine-effects evidence.
@@ -293,8 +293,8 @@ owner approved three small repairs:
 - Verification uses a unique directory for each run's report and stage logs.
   `latest.json` remains a convenience copy; closure guidance links specific runs.
 
-Basis: [slot writing findings](../loop-evidence/2026-10-31-ship-slot-language.md)
-and [ion replay and artifact limits](../loop-evidence/2026-10-31-ion-engines.md).
+Basis: [slot writing findings](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-10-31-ship-slot-language.md)
+and [ion replay and artifact limits](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-10-31-ion-engines.md).
 These are approved repairs, not proof of a general cause or improved study outcomes.
 The ion reference still consumes shared physics and plume lifecycle code; the test
 is not an independent baseline for those systems. Run folders remain ignored local

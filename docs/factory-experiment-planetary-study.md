@@ -1,7 +1,7 @@
 # Planetary study retrospective: context before production
 
 29 October 2026. This cycle is closed as unsuccessful by the designer. The next
-cycle has not begun. [Evidence record](loop-evidence/2026-10-29-planetary-design-study.md).
+cycle has not begun. [Evidence record](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-10-29-planetary-design-study.md).
 
 This document contains analysis and lesson candidates from two failed cycles. It is
 not a skill update, an accepted process rule, or a planetary design decision. The
@@ -159,6 +159,6 @@ general prohibition from this cycle.
 
 The second cycle made local edits to `apps/web/src/pages/lab/studies/planetary-bodies.astro`
 and `apps/web/src/data/studies.ts`. No checks or browser review were run for them.
-No commit, push, or deployment occurred. See the [evidence record](loop-evidence/2026-10-29-planetary-design-study.md)
+No commit, push, or deployment occurred. See the [evidence record](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-10-29-planetary-design-study.md)
 for the event sequence and evidence gaps. This retrospective does not prescribe the
 next study workflow or modify standing instructions.

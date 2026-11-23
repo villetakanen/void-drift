@@ -1,7 +1,7 @@
 # Derelict correction loop — analysis for review
 
 Status: requested analysis and proposed safeguards; not adopted factory policy.
-Source: [closure evidence](../loop-evidence/2026-11-06-derelict-draft-two-closure.md)
+Source: [closure evidence](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-11-06-derelict-draft-two-closure.md)
 and the conversation it records. We can explain observable interaction patterns;
 we cannot establish internal model causes or guarantee future model behavior.
 

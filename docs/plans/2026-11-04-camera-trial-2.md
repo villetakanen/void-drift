@@ -9,7 +9,7 @@ flying it.
 
 ## Background
 
-- **Trial 1** ([record](../loop-evidence/2026-11-04-camera-framing-trial.md), branch
+- **Trial 1** ([record](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-11-04-camera-framing-trial.md), branch
   `claude/camera-framing-impl-5bd4f9`, commit `90c79e4`) framed the ship, the closest
   gravity source's centre and a target. The owner flew it: "It clearly shows this
   idea does not work at all."

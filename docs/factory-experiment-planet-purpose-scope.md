@@ -13,7 +13,7 @@ available as evidence, not as an active implementation assignment.
 This record concerns only the cycle at
 planet-purpose-2026-10-29 (removed source: `apps/web/src/pages/lab/studies/planet-purpose-2026-10-29.astro`).
 It does not revise the diagnoses of earlier planetary attempts. See the separate
-[evidence record](loop-evidence/2026-10-29-planet-purpose-scope.md).
+[evidence record](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-10-29-planet-purpose-scope.md).
 
 ## Outcome and the designer’s diagnosis
 
