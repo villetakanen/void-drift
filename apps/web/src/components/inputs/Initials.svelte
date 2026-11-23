@@ -3,7 +3,13 @@ let {
   value = $bindable(""),
   label = "Initials",
   host = 0,
-}: { value?: string; label?: string; host?: 0 | 1 | 2 } = $props();
+  disabled = false,
+}: {
+  value?: string;
+  label?: string;
+  host?: 0 | 1 | 2;
+  disabled?: boolean;
+} = $props();
 
 const id = $props.id();
 const SLOTS = [0, 1, 2];
@@ -19,6 +25,12 @@ let slots: HTMLElement;
    caret at the end of the letters for the first empty slot. */
 let selected = $state(0);
 let announced = $state("");
+
+/* Focuses the field on its first empty slot, or the third when full. */
+export function focus() {
+  input.focus();
+  select(last(text));
+}
 
 function select(index: number, letters = text) {
   selected = Math.max(0, Math.min(last(letters), index));
@@ -125,7 +137,11 @@ function onclick(event: MouseEvent) {
   onkeydown={(event) => (backwards = event.key === "Tab" && event.shiftKey)}
 />
 
-<span class="initials" data-host={host}>
+<span
+  class="initials"
+  data-host={host}
+  data-disabled={disabled ? "" : undefined}
+>
   <label>
     <span class="field" data-selected={selected}>
       <span class="slots" aria-hidden="true" bind:this={slots}>
@@ -140,6 +156,7 @@ function onclick(event: MouseEvent) {
         type="text"
         maxlength="3"
         value={text}
+        {disabled}
         autocomplete="off"
         autocapitalize="characters"
         spellcheck="false"
@@ -174,6 +191,9 @@ function onclick(event: MouseEvent) {
 }
 .initials[data-host="2"] {
   --_raised: var(--color-elev-3);
+}
+.initials[data-disabled] {
+  opacity: var(--state-disabled-opacity);
 }
 .initials,
 label {

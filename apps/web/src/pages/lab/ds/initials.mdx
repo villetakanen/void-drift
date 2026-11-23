@@ -26,6 +26,9 @@ Letters are typed or picked with the arrow keys: Up and Down change the letter, 
 | --- | --- | --- |
 | `label` | `"Initials"` | The label under the slots, and the field's accessible name. |
 | `host` | `0` | The elevation of the surface the field sits on: `0`, `1` or `2`. |
+| `disabled` | `false` | A placeholder: same size, slots dimmed, no focus or input. |
+
+A host moves focus into the field with `focus()`, which selects the first empty slot.
 
 ## Keys
 
@@ -64,6 +67,25 @@ Empty slots and the selected slot are black on every host. A slot that holds a l
     <span className="initials-caption">On a panel, elevation 2</span>
     <div className="panel">
       <Initials host={2} value="VT" client:load />
+    </div>
+  </div>
+</div>
+
+## Disabled
+
+A disabled field holds the place of the field while the host is not ready for entry. It keeps its size, shows its value dimmed and takes no focus or input.
+
+<div className="initials-hosts">
+  <div className="initials-host">
+    <span className="initials-caption">Enabled</span>
+    <div className="panel">
+      <Initials host={2} value="VT" client:load />
+    </div>
+  </div>
+  <div className="initials-host">
+    <span className="initials-caption">Disabled</span>
+    <div className="panel">
+      <Initials host={2} value="VT" disabled client:load />
     </div>
   </div>
 </div>
@@ -110,6 +132,7 @@ Empty slots and the selected slot are black on every host. A slot that holds a l
 | `--color-placeholder` | Dim A of an empty slot. |
 | `--font-size-caption` | Label size. |
 | `--spacing-sm` | Label spacing. |
+| `--state-disabled-opacity` | Dimming of a disabled field. |
 
 </DesignSystemLayout>
 

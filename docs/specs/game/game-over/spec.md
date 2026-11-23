@@ -17,13 +17,19 @@ The game-over screen presents the results and statistics of a completed run. An 
 
 ### Architecture
 
-The screen accepts a completed run's outcome and statistics from its caller; it does not determine which results a game mode supplies. It provides a slot for an optional result-related action. The [ranked result action](ranked-result/spec.md) supplies the ranked Survival score interface and handles its personal-best check and submission through the [Scores contract](../scores/spec.md). The screen does not own score validation or Firestore access.
+The screen accepts a completed run's outcome and statistics from its caller; it does not determine which results a game mode supplies. The outcome has a tag with a tone, a hero value, an optional label above the value and an optional caption below it. The caller chooses all of them. It provides a slot for an optional result-related action. The [ranked result action](ranked-result/spec.md) supplies the ranked Survival score interface and handles its personal-best check and submission through the [Scores contract](../scores/spec.md). The screen does not own score validation or Firestore access.
 
 `FlightDeck.svelte` also supplies Retry and the launch-source action. It retains the mode, full validated loadout, Playground setting and launch source captured for the completed run. The [game contract](../spec.md) and [landing page](../landing-page/spec.md) govern launch and return.
 
 ### Constraints
 
 - The screen presents supplied results without branching on game mode.
+- The tag sits at the top of the panel as a compact, prominent mark. Its tone is supplied: alert for a loss, a non-alert tone for a win or draw. A cleared Gauntlet is a win and never takes the alert tone.
+- The hero value is the largest text on the panel. It uses fixed-width figures, and a number carries thousands grouping. It holds a seven-digit score without overflowing the panel at iPad landscape size. The dialog's heading is the label and the value together, so a screen reader hears what the value is, such as "Score 35".
+- A ranked Survival run's hero is its score, labelled Score, with the time survived as the caption, such as "35.1 seconds survived". A Survival run with Playground On and a Derelicts run have the time survived as the hero, labelled Time survived, with no caption. A Gauntlet result's hero is Victory, Defeat or Draw.
+- A run that is not ranked shows `Unranked`, the same text for every such run, where a ranked run shows its result area, above the actions. Gauntlet, Derelicts, a Survival run with Playground On and a Survival result that cannot be submitted are all unranked. It replaces any scoring-off notice, cause line or reason; a ranked run never shows it. The caller supplies it, and the screen announces it as a status without taking focus.
+- In a short viewport the tag, the hero value and `Unranked` stay visible; the caption and other statistics may give way.
+- The panel carries no tagline or other copy beyond the supplied results, statistics and actions.
 - The optional action slot is independent of Retry and the launch-source action. Top Scores opens from Run complete only after a successful save.
 - Retry starts a fresh run with the captured setup and a random seed distinct from the completed run's. It uses the mode's normal arrival, countdown, pause and focus-loss rules, with fresh resources, time, score and input state. It does not replay a held key or touch from the previous run. New presses during the countdown work as on a normal launch.
 - Invert controls, Speed camera and Combat HUD follow the current [Options](../options/spec.md); they are not captured.
@@ -34,7 +40,7 @@ The screen accepts a completed run's outcome and statistics from its caller; it 
 
 ### Definition of Done
 
-- The player can read the supplied outcome and statistics and choose Retry or the launch-source action.
+- The player can read the supplied tag, hero value and statistics and choose Retry or the launch-source action.
 - An eligible ranked result can provide a save-score interface without the screen owning its behaviour.
 
 ### Regression guardrails
@@ -49,6 +55,45 @@ Scenario: Present a completed run
   Given a completed run supplies an outcome and statistics
   When the game-over screen opens
   Then it presents the supplied outcome and statistics
+
+Scenario: Ranked Survival score is the hero
+  Given a ranked Survival run ended with a score and a time survived
+  When the game-over screen opens
+  Then the score is the largest value, labelled Score
+  And the time survived appears directly beneath it as a caption
+
+Scenario: A large score fits
+  Given a ranked Survival run ended with a seven-digit score
+  When the game-over screen opens at iPad landscape size
+  Then the score shows with thousands grouping and the panel does not overflow
+
+Scenario: The cause is an alert tag
+  Given a run ended by a loss
+  When the game-over screen opens
+  Then the cause shows as a tag at the top of the panel in the alert tone
+
+Scenario Outline: Unranked runs say so
+  Given a <run> ended
+  When the game-over screen opens
+  Then it shows `Unranked` above the actions
+  And it shows no score entry, Save Score or scoring-off notice
+
+  Examples:
+    | run                                  |
+    | Gauntlet                             |
+    | Derelicts                            |
+    | Survival with Playground On          |
+    | Survival result that cannot be saved |
+
+Scenario: A ranked run is not marked unranked
+  Given a ranked Survival run ended with a valid result
+  When the game-over screen opens
+  Then it does not show `Unranked`
+
+Scenario: A win is not an alert
+  Given a Gauntlet run ended with the Gauntlet cleared
+  When the game-over screen opens
+  Then its tag does not use the alert tone
 
 Scenario: Present an optional result action
   Given the caller supplies a result-related action

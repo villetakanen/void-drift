@@ -32,7 +32,10 @@ the authority for the best; browser-local initials are a convenience only.
   new personal best; an equal or lower score keeps the existing best.
 - On opening the result, check the player's actual Firestore record, including
   when it is outside the top 30. While checking, explain that the check is in
-  progress. An absent record permits a first score; a failed, timed-out or
+  progress and show the initials field and Save Score in the slot a new best
+  uses, at the same size, disabled: they take no input, never submit and are
+  replaced in place, so the panel does not change height when the check
+  resolves. An absent record permits a first score; a failed, timed-out or
   unreadable lookup is not an absent record. Explain the failure and offer a
   retry of the check.
 - A new best shows the Initials field and Save Score. Require exactly three
@@ -42,6 +45,15 @@ the authority for the best; browser-local initials are a convenience only.
   Missing, invalid or inaccessible local storage leaves entry and saving usable;
   a failure to remember initials does not turn a successful score save into a
   failure. Local initials do not determine score eligibility.
+- When the player's own input makes the initials complete (three letters),
+  focus moves to Save Score so Enter saves. Remembered initials filling the
+  field on opening, and edits that leave it incomplete, never move focus.
+- While the check is pending, focus rests on the dialog itself and never on
+  Retry, the launch-source action or the disabled controls. When the check
+  resolves and focus is still on the dialog, a new best moves focus to the
+  first empty box of the initials field, or to Save Score when remembered
+  initials already fill it; any other result moves it to the dialog's default
+  control. Focus the player has already placed on a control stays there.
 - An equal or lower result shows the player's existing best for that ship and
   offers neither initials entry nor Save Score.
 - While saving, indicate progress and prevent duplicate submissions. Recheck
@@ -107,6 +119,45 @@ Scenario: A different ship or challenge has its own best
   And I have no record for this run's ship and challenge
   When the best check completes
   Then initials entry and Save Score are offered
+
+Scenario: A placeholder holds the save slot while checking
+  Given a ranked run whose best check is pending
+  Then the result indicates that it is checking
+  And it shows the initials field and Save Score disabled
+  When I press Enter or click Save Score
+  Then nothing is submitted
+  When the check finds a new best
+  Then the same field and button become usable in the same place
+  When the check finds that my best stands
+  Then the field and button are no longer shown
+
+Scenario: Focus waits for the check
+  Given a ranked run whose best check is pending
+  Then focus is on the dialog and on neither Retry nor the launch-source action
+  When the check finds a new best and I have not moved focus
+  Then focus is on the first empty box of the initials field
+  When remembered initials already fill the field
+  Then focus is on Save Score instead
+  When the check finds that my best stands, is unavailable or is offline
+  Then focus is on the dialog's default control
+
+Scenario: Focus I placed stays
+  Given a ranked run whose best check is pending
+  When I move focus to Retry and the check then resolves
+  Then focus is still on Retry
+
+Scenario: The third letter moves focus to Save Score
+  Given a new personal best with no remembered initials and focus in the field
+  When I type A, C and E
+  Then focus is on Save Score
+  When I press Enter
+  Then the score is saved
+  Given remembered initials that fill the field
+  When the result opens
+  Then focus is not moved to Save Score by the prefill
+  Given a focused field holding ACE
+  When I press Backspace and type nothing more
+  Then focus stays in the field
 
 Scenario: Best check is unavailable
   Given the personal-best check is pending

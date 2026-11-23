@@ -7,7 +7,7 @@ import {
   scoresAvailable,
   submitHighScore,
 } from "@void-drift/mode-a";
-import { onMount } from "svelte";
+import { onMount, tick } from "svelte";
 import { readInitials, rememberInitials } from "../lib/stores/initials";
 import Initials from "./inputs/Initials.svelte";
 
@@ -32,7 +32,9 @@ type View =
   | { step: "entry"; error?: string }
   | { step: "saving" }
   | { step: "saved" };
-let view = $state<View>({ step: "checking" });
+let view = $state<View>(
+  scoresAvailable() ? { step: "checking" } : { step: "offline" },
+);
 let initials = $state("");
 let current = true;
 let checking = false;
@@ -69,8 +71,7 @@ async function submit() {
 
 onMount(() => {
   initials = readInitials();
-  if (scoresAvailable()) void check();
-  else view = { step: "offline" };
+  if (view.step === "checking") void check();
   return () => {
     current = false;
   };
@@ -102,25 +103,42 @@ const entry = $derived(
   view.step === "entry" || view.step === "saving" || view.step === "saved",
 );
 const busy = $derived(view.step === "saving" || view.step === "saved");
+const placeholder = $derived(view.step === "checking");
 const complete = $derived(InitialsSchema.safeParse(initials).success);
 
 /* A control that held focus and is gone hands focus to the dialog's own
-   default control instead of dropping it to the page. */
+   default control instead of dropping it to the page; while a check is
+   pending that is the dialog itself. After a check, focus lands only if it
+   is still on the dialog: on the field of a new best, else the default. */
 let root: HTMLElement;
+let saveButton: HTMLButtonElement | undefined = $state();
+let fields: { focus: () => void } | undefined = $state();
 let held: Element | null = null;
+let wasChecking = true;
+const dialog = () => root.closest<HTMLElement>('[role="dialog"]');
+const defaultControl = () =>
+  dialog()?.querySelector<HTMLElement>("[data-autofocus]");
 $effect.pre(() => {
   void view;
   const focused = document.activeElement;
   held = root?.contains(focused) ? focused : null;
 });
 $effect(() => {
-  void view;
-  if (!held || held.isConnected) return;
+  const step = view.step;
+  const gone = held && !held.isConnected;
   held = null;
-  root
-    .closest<HTMLElement>('[role="dialog"]')
-    ?.querySelector<HTMLElement>("[data-autofocus]")
-    ?.focus();
+  const resolved = wasChecking && step !== "checking";
+  wasChecking = step === "checking";
+  if (step === "checking") {
+    if (gone) dialog()?.focus();
+    return;
+  }
+  if (resolved && document.activeElement === dialog()) {
+    if (step === "entry") {
+      if (complete) saveButton?.focus();
+      else fields?.focus();
+    } else defaultControl()?.focus();
+  } else if (gone) defaultControl()?.focus();
 });
 
 /* While a save is in flight the initials stay as submitted: keys, typing and
@@ -140,13 +158,17 @@ function save(event: SubmitEvent) {
 }
 </script>
 
-<div class="ranked-result" bind:this={root}>
+<div
+  class="ranked-result"
+  bind:this={root}
+  data-hold-focus={placeholder ? "" : undefined}
+>
   <p class="ranked-status" role="status">{status}</p>
   {#if view.step === "unavailable"}
     <button type="button" class="btn btn-filled" onclick={check}>
       Check Again
     </button>
-  {:else if entry}
+  {:else if entry || placeholder}
     <form class="ranked-entry" onsubmit={save}>
       <span
         class="ranked-initials"
@@ -155,11 +177,17 @@ function save(event: SubmitEvent) {
         onpastecapture={hold}
       >
         <Initials
+          bind:this={fields}
+          disabled={placeholder}
           bind:value={
             () => initials,
             (value) => {
   // The initials stay as submitted while a save is in flight.
-  if (!busy) initials = value;
+  if (busy) return;
+  const was = complete;
+  initials = value;
+  if (!was && InitialsSchema.safeParse(value).success)
+    void tick().then(() => saveButton?.focus());
 }
           }
           host={2}
@@ -168,7 +196,8 @@ function save(event: SubmitEvent) {
       <button
         type="submit"
         class="btn btn-filled"
-        disabled={!busy && !complete}
+        bind:this={saveButton}
+        disabled={placeholder || (!busy && !complete)}
         aria-disabled={busy ? "true" : undefined}
       >
         {view.step === "saving"

@@ -57,7 +57,7 @@ import { PAD_ASSEMBLY_HEIGHT_PX } from "./controls/thrust-pads";
 import Dialog from "./Dialog.svelte";
 import FlightContacts from "./FlightContacts.svelte";
 import GameFieldBackdrop from "./GameFieldBackdrop.svelte";
-import GameOver from "./GameOver.svelte";
+import GameOver, { type GameOverOutcome } from "./GameOver.svelte";
 import PreviewMarker from "./PreviewMarker.svelte";
 import RankedResult from "./RankedResult.svelte";
 import TitleScreen from "./TitleScreen.svelte";
@@ -157,15 +157,21 @@ let action = $state<InputAction | null>(null);
 const lit = $derived(litPads(action));
 let cause = $state("");
 const completedGauntlet = $derived(mode === "gauntlet" ? gauntletResult : null);
-const outcome = $derived.by(() => {
+const outcome = $derived.by((): GameOverOutcome => {
   if (completedGauntlet?.winner === "player") {
-    return { eyebrow: "PIRATE DESTROYED", heading: "Victory" };
+    return {
+      tag: { text: "GAUNTLET CLEARED", tone: "neutral" },
+      value: "Victory",
+    };
   }
   if (completedGauntlet?.winner === "mutual") {
-    return { eyebrow: "MUTUAL DESTRUCTION", heading: "Draw" };
+    return {
+      tag: { text: "MUTUAL DESTRUCTION", tone: "alert" },
+      value: "Draw",
+    };
   }
-  return {
-    eyebrow:
+  const tag = {
+    text:
       cause === "STAR"
         ? completedGauntlet
           ? "LOST TO THE STAR"
@@ -173,8 +179,19 @@ const outcome = $derived.by(() => {
         : cause === "HULL"
           ? "HULL LOST"
           : "POWER DEPLETED",
-    heading: completedGauntlet ? "Defeat" : `${seconds.toFixed(1)} seconds.`,
+    tone: "alert" as const,
   };
+  if (completedGauntlet) return { tag, value: "Defeat" };
+  const time = `${seconds.toFixed(1)} seconds`;
+  if (mode === "survival" && !experimentalRun) {
+    return {
+      tag,
+      label: "Score",
+      value: score.toLocaleString("en-US"),
+      caption: `${time} survived`,
+    };
+  }
+  return { tag, label: "Time survived", value: time };
 });
 let salvageFeedback = $state("");
 let salvageStats = $state({
@@ -908,29 +925,13 @@ onMount(() => {
         {/if}
       {:else if status === "GAME_OVER"}
         {#snippet statistics()}
-          {#if completedGauntlet}
-            <p>Unranked Gauntlet encounter · {completedGauntlet.cause}</p>
-          {:else if mode === "derelicts" && derelictsResult}
+          {#if !completedGauntlet && mode === "derelicts" && derelictsResult}
             <p>{derelictsResult.playerKills} derelicts destroyed</p>
-            {#if experimentalRun}
-              <PreviewMarker />
-              <p>{NO_SCORE_NOTICE}</p>
-            {/if}
-          {:else}
-            {#if mode === "survival"}
-              {#if experimentalRun}
-                <PreviewMarker />
-                <p>{NO_SCORE_NOTICE}</p>
-              {:else}
-                <p>Score {score}</p>
-              {/if}
-            {/if}
-            <p>Every orbit teaches you something.</p>
           {/if}
         {/snippet}
         {@const ranked = rankedRecord()}
-        {#snippet unrankable()}
-          <p role="status">This setup cannot be submitted for a score.</p>
+        {#snippet unranked()}
+          <p role="status" class="unranked">Unranked</p>
         {/snippet}
         {#snippet rankedAction()}
           {#if ranked?.success}
@@ -940,7 +941,7 @@ onMount(() => {
         <GameOver
           {outcome}
           {statistics}
-          resultFields={ranked && !ranked.success ? unrankable : undefined}
+          resultFields={ranked?.success ? undefined : unranked}
           resultAction={ranked?.success ? rankedAction : undefined}
         >
           {#snippet navigation()}

@@ -122,10 +122,16 @@ test("title and Hangar pilots complete ranked runs, retry a rejected write and s
       name: "Save Score",
       exact: true,
     });
+    const initialsField = page.getByRole("textbox", {
+      name: "Initials",
+      exact: true,
+    });
     await expect(submit).toBeVisible({ timeout: 15000 });
-    await page
-      .getByRole("textbox", { name: "Initials", exact: true })
-      .fill(pilot.initials);
+    await expect(initialsField).toBeEnabled({ timeout: 15000 });
+    // A new best puts focus in the field; the third typed letter moves it on.
+    await expect(initialsField).toBeFocused();
+    await page.keyboard.type(pilot.initials);
+    await expect(submit).toBeFocused();
     if (pilot.initials === "ONE") {
       let rejected = false;
       await page.route(

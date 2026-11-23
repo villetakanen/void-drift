@@ -61,6 +61,7 @@ function controls() {
   );
 }
 function focusFirst() {
+  if (panel.querySelector("[data-hold-focus]")) return panel.focus();
   (
     panel.querySelector<HTMLElement>("[data-autofocus]") ??
     controls()[0] ??
@@ -135,6 +136,7 @@ function keydown(event: KeyboardEvent) {
     } else if (
       event.shiftKey &&
       (document.activeElement === first ||
+        document.activeElement === panel ||
         !panel.contains(document.activeElement))
     ) {
       event.preventDefault();

@@ -95,7 +95,7 @@ The Plasma engine and [Plasma rifle](../plasma-rifle/spec.md) are sanctioned fit
   flight settings at launch and retained for reset and replay.
 - **On, runs.** No run is scored. In a Survival run the flight screen shows the
   time and, where the running score would be, the scoring-off notice. Run
-  complete shows the time survived and the same notice in place of the score,
+  complete shows the time survived and `Unranked` in place of the score,
   offers no Save Score, and never calls submission.
 - **Run status.** The title screen uses the red status slot below the menu
   panel, above the decorative ship. With Playground On it reads “PLAYGROUND
@@ -138,7 +138,7 @@ The Plasma engine and [Plasma rifle](../plasma-rifle/spec.md) are sanctioned fit
 - E6: With Playground On, every ship and active part is selectable and fittable,
   with ordinary ship tabs and marked unsanctioned parts.
 - E7: With Playground On, a Survival run shows the time and the
-  scoring-off notice in place of the score, in flight and on run complete,
+  scoring-off notice in place of the score in flight, and the time and `Unranked` on run complete,
   shows no Save Score, and never calls score submission, even when every fitted
   item is sanctioned.
 - E8: Before starting a new game, the title status slot shows “PLAYGROUND
@@ -216,7 +216,7 @@ Feature: Playground
     When I fly a Survival run
     Then the flight screen shows my time and the scoring-off notice, and no score
     When the run ends
-    Then run complete shows my time and the scoring-off notice, and no score
+    Then run complete shows my time and `Unranked`, and no score
     And no Save Score is offered
 
   Scenario: Playground status is visible before flight

@@ -29,7 +29,10 @@ records that in its own contract.
   of its own.
 - Inputs: `label` (default `"Initials"`), shown below the slots and the
   field's accessible name; `value`, bindable; `host` (`0`, `1` or `2`,
-  default `0`), the elevation of the surface the component sits on.
+  default `0`), the elevation of the surface the component sits on;
+  `disabled` (default false), a placeholder state.
+- `focus()` focuses the field with the first empty slot selected, or the third
+  slot when all three hold letters.
 - The value is one string of zero to three uppercase letters A–Z, filled from
   the left with no gaps. The host owns any further rule, such as requiring
   three letters before a score is submitted.
@@ -89,6 +92,12 @@ Appearance
   selected slot. Selection adds nothing and moves nothing.
 - Letters use `--font-family-ui` at `--font-size-display`; slots are
   `--spacing-gap` apart.
+
+Disabled
+
+- A disabled component keeps its size and layout and shows its value as
+  slots at `--state-disabled-opacity`. The field takes no focus, input or
+  selection, and its native text field is disabled.
 
 Accessibility
 
@@ -208,9 +217,20 @@ Scenario: Show state by ground and bracket colour
   And its brackets keep their position, width and shape
   And no focus ring is drawn
 
+Scenario: Hold a place while disabled
+  Given an enabled and a disabled Initials component holding "VT"
+  Then both have the same size
+  And the disabled one's native text field is disabled and cannot be focused or typed in
+  And its slots show "VT" dimmed
+
+Scenario: Focus the first empty slot
+  Given an Initials component holding "V"
+  When the host calls focus()
+  Then the field has focus and the second slot is selected
+
 Scenario: Inspect the canonical page
   Given the page at /lab/ds/initials
   When I read it
-  Then it shows the component on the void, on elevation 1 and on elevation 2
+  Then it shows the component on the void, on elevation 1 and on elevation 2, and disabled
   And it documents the inputs, the keys, both accepted losses of accessibility and the consumed tokens
 ```
