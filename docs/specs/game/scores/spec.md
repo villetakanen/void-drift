@@ -1,19 +1,13 @@
 ---
 
-title: "Spec: Scores"
-status: draft
 generated:
-  by: "codex/gpt-6"
-  at: "2026-11-19T19:21:23+02:00"
-verified:
-- by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-19T12:33:38+02:00"
-- by: "codex/gpt-6"
-  at: "2026-11-19T19:21:23+02:00"
+  by: "openai-codex/gpt-6.2"
+  at: "2026-11-23T08:40:39+02:00"
+verified: []
 
 ---
 
-# Spec: Scores
+# Scores
 
 ## Blueprint
 
@@ -43,6 +37,8 @@ for game design and is not shown to players.
   `apps/web/src/components/Leaderboard.svelte` shows it.
 - **Neighbours.** The [game contract](../spec.md) and
   [Playground](../experimental/spec.md) own which runs may be saved.
+  The [ranked result action](../game-over/ranked-result/spec.md) owns the
+  personal-best check, initials and submission experience at game over.
   [Survival](../survival/spec.md) owns the score and the time. The
   [active ship](../active-ship/spec.md) owns the ship and fitting that a run
   flew.

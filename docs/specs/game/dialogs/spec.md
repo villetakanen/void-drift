@@ -22,7 +22,7 @@ choose before the stage carries on. Today:
 | Dialog       | Screen                    | Label          | Escape           | Focus on open                                     |
 | ------------ | ------------------------- | -------------- | ---------------- | ------------------------------------------------- |
 | Paused       | game, builder test flight | "Paused"       | resumes (closes) | Resume                                            |
-| Run complete | game, custom survival     | "Run complete" | does nothing     | Initials when shown, else return to launch source |
+| Run complete | game, custom survival     | "Run complete" | does nothing     | Initials when shown on open, else return to launch source |
 
 Not dialogs:
 

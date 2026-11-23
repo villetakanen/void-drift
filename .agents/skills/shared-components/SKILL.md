@@ -21,7 +21,7 @@ not in whichever screen first needs the change.
   - Game primitives: ships, slots, fittings, effects and procedural rendering.
   - Composed instruments: explorers, editors and inspectors.
   - Screens: arrangement, supplied data, state and workflow wiring.
-- Resolve conflicting contracts explicitly; do not silently invent a convention.
+- Resolve conflicting specs explicitly; do not silently invent a convention.
 
 ## Reuse, extend or extract
 
@@ -36,7 +36,7 @@ not in whichever screen first needs the change.
 - Align consumers to the design system; changing the system is a separate decision.
 - If extraction exceeds the requested scope, explain the boundary and proposed slice.
 
-## Preserve the contract
+## Preserve intended behaviour
 
 - Before replacing a component, identify its information, states and interactions.
 - Preserve supporting facts, accessibility, persistence and input behavior.
@@ -52,6 +52,6 @@ not in whichever screen first needs the change.
 - Inspect the actual rendered page, meaningful states and responsive layouts.
 - Verify intentional variants, not just the screen where the change began.
 - Demonstrate shared-definition changes in the canonical Lab example.
-- Update the owning contract; keep historical evidence separate from current rules.
+- Update the owning spec; keep historical evidence separate from current rules.
 - Report behavioral checks, visual inspection and the designer's acceptance separately.
 - Leave ordinary design iteration open; passing tests do not establish visual fidelity.

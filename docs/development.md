@@ -1,7 +1,12 @@
 # Development and verification
 
 Develop through conversation and browser inspection; an IDE is optional.
-Product contracts live in the [game contract](specs/game/spec.md) and its child specs.
+Product behaviour is described by the [game spec](specs/game/spec.md) and its child specs.
+
+Use **spec** for intended behaviour and its observable checks, **schema** for a
+defined data shape and validation rules, and **constraint** or **invariant** for
+a rule that must hold. Reserve **contract** for an explicit boundary agreement
+with defined obligations on each side. Existing spec headings retain their format.
 
 ## Setup
 
@@ -31,7 +36,7 @@ failure or source change during verification. It never auto-fixes source.
 
 | Command                 | Evidence                                                                                                                                         |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `pnpm check:contracts`  | Context and Markdown links, CSS/Canvas parity, runner regressions; missing link targets fail; size/scope warnings are advisory                   |
+| `pnpm check:repo`       | Context and Markdown links, CSS/Canvas parity, runner regressions; missing link targets fail; size/scope warnings are advisory                   |
 | `pnpm check:commits`    | Conventional Commit syntax after the adoption baseline                                                                                           |
 | `pnpm lint`             | Biome formatting/imports/recommended rules, warnings fail                                                                                        |
 | `pnpm check:types`      | Astro, Svelte, workspace and browser-harness TypeScript; Astro/Svelte warnings fail                                                              |
@@ -41,7 +46,9 @@ failure or source change during verification. It never auto-fixes source.
 | `pnpm test:rules`       | Firestore emulator allowed/rejected access cases                                                                                                 |
 | `pnpm test:competition` | Two browser identities submit completed runs; third reads both scores via emulators                                                              |
 
-`pnpm verify:quick` runs contracts (including factory regression tests), lint, types
+`pnpm check:contracts` remains an alias for `pnpm check:repo` for existing references.
+
+`pnpm verify:quick` runs repository checks (including factory regression tests), lint, types
 and unit tests through the same recorded runner. It exits nonzero on failure or
 source changes, but is always **partial verification**, not a full pass. Reports
 include `mode`, `partial`, `skippedSteps` and `selectedChecksPassed`; `passed` is
@@ -96,7 +103,7 @@ screenshots and retained failure traces remain enabled. Capture completion is no
 human visual approval or an additional correctness gate.
 
 The title screen is ordinary navigation. Actual dialogs trap focus and isolate the
-stage; see the [dialog contract](specs/game/dialogs/spec.md) and the resolved
+stage; see the [dialog spec](specs/game/dialogs/spec.md) and the resolved
 [composition plan](https://github.com/villetakanen/void-drift/blob/9e1e7a2e861ba43db58b536339421da586e3e928/docs/plans/2026-11-03-opening-screen-dialog-boundary.md).
 
 Flight and FX captures use explicit viewport, seed and simulation time for human

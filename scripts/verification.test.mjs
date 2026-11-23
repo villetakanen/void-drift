@@ -114,7 +114,7 @@ test("quick success is explicitly partial, retains logs and records URLs", (t) =
   assert.deepEqual(
     report.steps.map((step) => step.command),
     [
-      "pnpm run check:contracts",
+      "pnpm run check:repo",
       "pnpm run lint",
       "pnpm run check:types",
       "pnpm run test",
@@ -159,7 +159,7 @@ test("full mode still requires every stage", (t) => {
   assert.deepEqual(
     report.steps.map((step) => step.command),
     [
-      "check:contracts",
+      "check:repo",
       "check:commits",
       "lint",
       "check:types",

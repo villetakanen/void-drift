@@ -17,17 +17,17 @@ Use a profile identified by the user or project; otherwise optionally look for `
 
 ### Void Drift sources
 
-Start with `AGENTS.md` and follow relevant context links. Product intent lives in `docs/vision.md`; active plans in `docs/plans/` are transient and may be stale. `docs/project-vision.md` is a historic artifact, while current architecture, design principles, setup, and behavior contracts live in `docs/architecture.md`, `docs/design.md`, `docs/development.md`, and `docs/specs/`. Code shows implementation, not necessarily intent.
+Start with `AGENTS.md` and follow relevant context links. Product intent lives in `docs/vision.md`; active plans in `docs/plans/` are transient and may be stale. `docs/project-vision.md` is a historic artifact, while current architecture, design principles, setup, and behaviour specs live in `docs/architecture.md`, `docs/design.md`, `docs/development.md`, and `docs/specs/`. Code shows implementation, not necessarily intent.
 
-For product questions, connect intended rivalry, flight, and ship identity to the actual game and its feature specs. For design questions, compare design principles and study decisions with the shared components and production/Lab consumers. For engineering questions, compare specs and schemas with implementation and tests; external data should follow the repository's Zod contract practices. For operations, use retained verification evidence and release records. `docs/loop-evidence/` records observations and outcomes; `docs/factory-building-lessons/` records deliberate factory changes, and neither turns every finding into standing guidance. The factory spec distinguishes automated correctness, human experience review, local commits, pushed revisions, and verified deployments.
+For product questions, connect intended rivalry, flight, and ship identity to the actual game and its feature specs. For design questions, compare design principles and study decisions with the shared components and production/Lab consumers. For engineering questions, compare specs and schemas with implementation and tests; external data should follow the repository's Zod schema practices. For operations, use retained verification evidence and release records. `docs/loop-evidence/` records observations and outcomes; `docs/factory-building-lessons/` records deliberate factory changes, and neither turns every finding into standing guidance. The factory spec distinguishes automated correctness, human experience review, local commits, pushed revisions, and verified deployments.
 
-These are optional lenses, not a checklist. Prefer a useful connection between sources over a list of isolated defects. Compare ticket ↔ implementation, specification ↔ contract, ADR ↔ architecture, design system ↔ UI, release note ↔ product promise, or operational learning ↔ test when evidence supports it. Check dates, superseding decisions, and intentional exceptions; do not assume a document is authoritative merely because it is formal. Correcting a specification can be better than changing code.
+These are optional lenses, not a checklist. Prefer a useful connection between sources over a list of isolated defects. Compare ticket ↔ implementation, specification ↔ implementation, ADR ↔ architecture, design system ↔ UI, release note ↔ product promise, or operational learning ↔ test when evidence supports it. Check dates, superseding decisions, and intentional exceptions; do not assume a document is authoritative merely because it is formal. Correcting a specification can be better than changing code.
 
 If structured sources are missing or inaccessible, use code, comments, tests, history, naming, or incidental documentation. State material access limits without inventing evidence. Do not require integrations, tickets, CI, formal SDLC maturity, or new process to run a Pop.
 
 ## Inherited from the core skill
 
-The following sections reproduce the core contract, with heading levels adjusted to fit this section.
+The following sections reproduce the core instructions, with heading levels adjusted to fit this section.
 
 ### Discover
 
@@ -43,7 +43,7 @@ Keep alternate candidates internal. Do not rank findings by severity or fill an 
 
 ### Ask
 
-Use this interaction contract:
+Use this interaction sequence:
 
 ```md
 ## Daily Pop — [one clear question]

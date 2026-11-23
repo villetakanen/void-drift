@@ -14,7 +14,7 @@ and repository. Use the existing loop record if one exists; otherwise create
 `docs/loop-evidence/<date>-<slug>.md`. Keep earlier observations attributable when
 adding later evidence. Do not rewrite prior interpretations as established facts.
 
-Inspect the relevant contracts, source changes, check reports, release records and
+Inspect the relevant specs, source changes, check reports, release records and
 human feedback. Distinguish direct inspection from a prior session's report.
 Missing artifacts remain unavailable evidence. Do not rerun tests, mutate production,
 or reproduce a failure solely to fill a historical gap unless separately requested.
@@ -48,7 +48,7 @@ do not endorse it through repetition. Temporal sequence alone does not establish
 
 Record accepted decisions as decisions, not proof that they generalize. Record stated
 uncertainty as uncertainty; do not replace it with confidence ratings unsupported by data.
-Do not rank findings, prescribe the next loop, edit skills/contracts to absorb lessons,
+Do not rank findings, prescribe the next loop, edit skills or specs to absorb lessons,
 mark unverified criteria complete, or send external feedback as part of closure.
 Those are separate analysis or implementation tasks requiring their own scope.
 

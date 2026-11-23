@@ -28,19 +28,19 @@ Work directly by default, following the relevant task skill. Load and follow [fi
   - components/FlightDeck.svelte  # A game loop, keyboard and touch input wiring
 - packages
   - core                          # Shared engine: physics, input, renderer, asset generators
-    - src/lib/schemas             # Shared Zod contracts
+    - src/lib/schemas             # Shared Zod schemas
     - src/lib/styles/tokens.css   # Visual token source of truth
     - src/lib/ui/colors.ts        # Canvas mirror of tokens; parity checked by scripts/check-contracts.mjs
   - mode-a                        # Game rules, ships, simulation, Firebase client
     - src/lib/game-loop.ts        # Death checks and loop rules
     - src/lib/flight-frame.ts     # The in-flight frame: its layers and ordered passes
-    - src/lib/schemas             # Game-state, flight, loadout, settings, ship Zod contracts
-    - src/schemas/highscore.ts    # Leaderboard contract
+    - src/lib/schemas             # Game-state, flight, loadout, settings, ship Zod schemas
+    - src/schemas/highscore.ts    # Leaderboard schema
 ```
 
 ## ASDLC.io
 
-- Use the [write-spec skill](.agents/skills/write-spec/SKILL.md) for ASDLC living contracts in `docs/specs/`. Folder nesting expresses parentage. Run `pnpm check:specs` on a spec directory to check its format.
+- Use the [write-spec skill](.agents/skills/write-spec/SKILL.md) for ASDLC living specs in `docs/specs/`. Folder nesting expresses parentage. Run `pnpm check:specs` on a spec directory to check its format.
 
 ## Shared preview
 
@@ -54,7 +54,7 @@ Work directly by default, following the relevant task skill. Load and follow [fi
 -
 ## Engineering essentials
 
-- Define or update Zod schemas before changing data contracts; parse external inputs.
+- Define or update Zod schemas before changing data shapes or validation rules; parse external inputs.
 - Use Svelte 5 Runes, native CSS and shared tokens. Game artwork is procedural Canvas drawing; authored raster art is allowed for planet surfaces.
 - Draw in flight only through the render model in `docs/specs/game/render/spec.md`: game code draws shapes, images and cached stamps onto layers and the browser blends, scales and filters them. Never loop over pixels per frame, and do no work for things outside the camera's view.
 - Connect controls to the game loop; retain keyboard and iPad landscape touch in play.

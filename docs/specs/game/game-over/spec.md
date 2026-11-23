@@ -1,7 +1,7 @@
 ---
 generated:
-  by: "openai-codex/gpt-6.2-sol"
-  at: "2026-11-22T18:15:15+02:00"
+  by: "openai-codex/gpt-6.2"
+  at: "2026-11-23T08:40:39+02:00"
 verified:
   - by: "human:ville-takanen"
     at: "2026-11-22"
@@ -17,7 +17,7 @@ The game-over screen presents the results and statistics of a completed run. An 
 
 ### Architecture
 
-The screen accepts a completed run's outcome and statistics from its caller; it does not determine which results a game mode supplies. It provides a slot for an optional result-related action. `FlightDeck.svelte` supplies the ranked Survival score fields and action to `GameOver.svelte` and handles submission through the [Scores contract](../scores/spec.md). The save action does not require a personal-best lookup; the score store decides whether the submission improves the stored best. The screen does not own score validation or Firestore access.
+The screen accepts a completed run's outcome and statistics from its caller; it does not determine which results a game mode supplies. It provides a slot for an optional result-related action. The [ranked result action](ranked-result/spec.md) supplies the ranked Survival score interface and handles its personal-best check and submission through the [Scores contract](../scores/spec.md). The screen does not own score validation or Firestore access.
 
 `FlightDeck.svelte` also supplies Retry and the launch-source action. It retains the mode, full validated loadout, Playground setting and launch source captured for the completed run. The [game contract](../spec.md) and [landing page](../landing-page/spec.md) govern launch and return.
 
@@ -40,7 +40,7 @@ The screen accepts a completed run's outcome and statistics from its caller; it 
 ### Regression guardrails
 
 - The game-over dialog retains keyboard focus behaviour as specified by the [game screen](../game-screen/spec.md). Retry hands focus to flight rather than restoring a control from the completed run.
-- Score validation, availability and persistence follow the [Scores contract](../scores/spec.md).
+- The [ranked result action](ranked-result/spec.md) governs its check, entry and submission; the [Scores contract](../scores/spec.md) governs score persistence.
 
 ### Scenarios
 
@@ -86,7 +86,7 @@ Scenario: Retry while saving a score
 Scenario: Stay on the result while saving a score
   Given the player saves a score and stays on that result
   When the save completes
-  Then success opens Top Scores and failure reports the error on that result
+  Then a successful write opens Top Scores and failure reports the error on that result
 
 Scenario Outline: Return to the original source after Retry
   Given a run was launched from <source> and the player chose Retry

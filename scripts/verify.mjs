@@ -20,7 +20,7 @@ if (args.length > 1 || (args.length === 1 && args[0] !== "--quick")) {
 const mode = args[0] === "--quick" ? "quick" : "full";
 const browserUrls = verificationUrls();
 const allSteps = [
-  "check:contracts",
+  "check:repo",
   "check:commits",
   "lint",
   "check:types",
@@ -31,9 +31,7 @@ const allSteps = [
   "test:competition",
 ];
 const selectedSteps =
-  mode === "quick"
-    ? ["check:contracts", "lint", "check:types", "test"]
-    : allSteps;
+  mode === "quick" ? ["check:repo", "lint", "check:types", "test"] : allSteps;
 
 function git(...args) {
   const result = spawnSync("git", args, { encoding: "utf8" });
