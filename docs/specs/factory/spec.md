@@ -65,6 +65,42 @@ Verification reports and stage logs are retained per invocation under
 convenience copy. Closure records link the specific run. This local retention does
 not back up artifacts or make browser traces immutable.
 
+### Verification matched to the change
+
+The checks run before a commit fit what differs from HEAD. A commit saves the whole
+shared tree, so the selection reads every changed path, whichever session wrote it.
+`pnpm verify:changed` makes the selection through the recorded verification runner:
+
+| Changed paths                                                                              | Checks selected                         |
+| ------------------------------------------------------------------------------------------ | --------------------------------------- |
+| Only documents: `docs/`, agent skills and instructions, top-level Markdown                 | repository checks and lint              |
+| Anything else                                                                              | adds strict types and unit tests        |
+| Browser tests, their helpers or `playwright.config.ts`                                     | adds the production build and browser suite |
+| Firestore rules or indexes, Firebase configuration, the Firebase client, the leaderboard schema, or the rules and competition tests | adds the emulator-backed rules and competition suites |
+
+The path rules live in `scripts/verify-selection.mjs`. A run with nothing changed
+selects no checks and exits zero. The report records `mode: "changed"`, the changed
+paths and the omitted stages, and is partial verification like a quick run: `passed`
+stays false. Full `pnpm verify` is the release gate; a commit does not require it.
+
+```gherkin
+Scenario: A document-only change skips code and emulator checks
+  Given only files under docs/ differ from HEAD
+  When pnpm verify:changed runs
+  Then it runs the repository checks and lint
+  And it starts no type check, unit test, browser or emulator stage
+
+Scenario: A backend change brings the emulator suites
+  Given firestore.rules differs from HEAD
+  When pnpm verify:changed runs
+  Then the rules and competition suites run in the owned emulator session
+
+Scenario: Another session's code change is checked with a document edit
+  Given one session edited a spec and another edited game code
+  When pnpm verify:changed runs before the commit
+  Then strict types and unit tests run for the whole tree
+```
+
 ### Quick verification and worktree browser ports
 
 `pnpm verify:quick` uses the recorded verification runner for contracts, lint, strict

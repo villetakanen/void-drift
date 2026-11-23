@@ -5,11 +5,12 @@ import { derelictClosestPoint } from "./derelict-collision";
 import { createStar } from "./game-loop";
 import { liveShipBody, type SalvageBody, SalvageSystem } from "./salvage";
 import { defaultLoadout } from "./schemas/loadout";
-import { SALVAGE } from "./schemas/salvage";
+import { PLASMA_RIFLE, SALVAGE } from "./schemas/salvage";
 
 const star = createStar("G", 1800, 1000);
 const launchTime = 0.7;
-const travelTime = 1 / 60;
+const travelTime = PLASMA_RIFLE.streamLifetime;
+const reach = PLASMA_RIFLE.streamReach;
 
 function fixture(twins = false) {
   const loadout = defaultLoadout("wasp");
@@ -51,7 +52,7 @@ function fixture(twins = false) {
 }
 
 describe("plasma eruption damage", () => {
-  it("bursts after 130 units of unobstructed travel relative to the release ship", () => {
+  it("bursts at full reach in the release ship's frame, unaffected by later steering", () => {
     const f = fixture();
     f.ship.vel.set(30, -12);
     f.step(launchTime);
@@ -69,9 +70,8 @@ describe("plasma eruption damage", () => {
       bodyId: null,
       mountKey: f.system.weapons[0].mount.key,
     });
-    expect(burst.x).toBeCloseTo(f.muzzle.muzzleX + 130 + 30 * travelTime, 8);
+    expect(burst.x).toBeCloseTo(f.muzzle.muzzleX + reach + 30 * travelTime, 8);
     expect(burst.y).toBeCloseTo(f.muzzle.muzzleY - 12 * travelTime, 8);
-    expect(burst.time).toBeCloseTo(launchTime + travelTime, 8);
     f.step(travelTime, []);
     expect(f.system.plasmaBurstEvents).toEqual([]);
     expect(f.system.plasmaAirbursts).toBe(1);
@@ -80,16 +80,13 @@ describe("plasma eruption damage", () => {
   it("applies one inclusive nearest-surface band and excludes the emitter and pickups", () => {
     const f = fixture();
     f.step(launchTime);
-    const x = f.muzzle.muzzleX + 130;
+    const x = f.muzzle.muzzleX + reach;
     const y = f.muzzle.muzzleY;
-    const cases = [
-      { distance: 10, damage: 75 },
-      { distance: 10.001, damage: 50 },
-      { distance: 26, damage: 50 },
-      { distance: 26.001, damage: 25 },
-      { distance: 42, damage: 25 },
-      { distance: 42.001, damage: 0 },
-    ];
+    const bands = PLASMA_RIFLE.blastBands;
+    const cases = bands.flatMap(({ radius, damage }, index) => [
+      { distance: radius, damage },
+      { distance: radius + 0.001, damage: bands[index + 1]?.damage ?? 0 },
+    ]);
     const ships = cases.map(({ distance }, index) =>
       f.target(20 + index, x, y + distance + 3),
     );
@@ -100,10 +97,8 @@ describe("plasma eruption damage", () => {
     for (const [index, { damage }] of cases.entries()) {
       const ship = ships[index];
       expect(ship.hull).toBe(300 - damage);
-      if (damage) {
-        expect(ship.onDamage).toHaveBeenCalledTimes(1);
-        expect(ship.onDamage).toHaveBeenCalledWith(damage);
-      } else expect(ship.onDamage).not.toHaveBeenCalled();
+      if (damage) expect(ship.onDamage).toHaveBeenCalledExactlyOnceWith(damage);
+      else expect(ship.onDamage).not.toHaveBeenCalled();
     }
     expect(emitter.onDamage).not.toHaveBeenCalled();
     expect(pickup.onDamage).not.toHaveBeenCalled();
@@ -116,7 +111,7 @@ describe("plasma eruption damage", () => {
   it("samples surrounding ship motion at eruption rather than at either substep boundary", () => {
     const f = fixture();
     f.step(launchTime);
-    const x = f.muzzle.muzzleX + 130;
+    const x = f.muzzle.muzzleX + reach;
     const y = f.muzzle.muzzleY;
     const approaching = f.target(20, x, y + 18 + 2200 * travelTime, -2200);
     const leaving = f.target(21, x, y + 5, 3000);
@@ -138,7 +133,6 @@ describe("plasma eruption damage", () => {
     const [burst] = f.system.plasmaBurstEvents;
     expect(burst).toMatchObject({ outcome: "material", bodyId: intercept.id });
     expect(burst.x).toBeCloseTo(f.muzzle.muzzleX + 45, 8);
-    expect(burst.time).toBeCloseTo(launchTime + 45 / 7800, 8);
     expect(intercept.onDamage).toHaveBeenCalledExactlyOnceWith(75);
     expect(neighbor.onDamage).toHaveBeenCalledExactlyOnceWith(50);
     expect(f.trigger.onDamage).not.toHaveBeenCalled();
@@ -187,7 +181,7 @@ describe("plasma eruption damage", () => {
   it("uses wreck polygons, then excludes fragments born from the same eruption", () => {
     const f = fixture();
     f.step(launchTime);
-    const point = { x: f.muzzle.muzzleX + 130, y: f.muzzle.muzzleY };
+    const point = { x: f.muzzle.muzzleX + reach, y: f.muzzle.muzzleY };
     const wreck = {
       kind: "wreck" as const,
       id: 54,

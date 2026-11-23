@@ -1,0 +1,119 @@
+---
+generated:
+  by: "claude-code/claude-fable-5-2"
+  at: "2026-11-23T07:50:16+02:00"
+verified: []
+---
+
+import Tray from "../../../components/Tray.svelte";
+import ComponentFrame from "../../../components/lab/ComponentFrame.svelte";
+import DesignSystemLayout from "../../../layouts/DesignSystemLayout.astro";
+
+export const trayGroups = [
+  { label: "Structure", links: [
+    { href: "/lab/ds/page-header", label: "Page header" },
+    { href: "/lab/ds/tray", label: "Tray" },
+    { href: "/lab/ds/component-frame", label: "Component frame" },
+  ] },
+  { label: "Controls", links: [
+    { href: "/lab/ds/actions", label: "Actions" },
+    { href: "/lab/ds/choices", label: "Choices" },
+  ] },
+];
+
+<DesignSystemLayout title="Tray" contentClass="tray-guide" documentProse wide>
+
+# Tray
+
+Tray is the quiet navigation column beneath the Design system page header.
+The live rail and the example below share the presentation selected in the
+original design reference: **Option A — base surface, neutral resting links**.
+
+<ComponentFrame>
+  <div className="tray-example">
+    <Tray
+      label="Tray example"
+      links={[{ href: "/lab/ds", label: "Overview" }]}
+      groups={trayGroups}
+      activeHref="/lab/ds/tray"
+    />
+  </div>
+</ComponentFrame>
+
+## Anatomy
+
+Overview is an ordinary first link. Noninteractive group headers introduce lists
+of destination links; their smaller, muted type and larger inter-group gap keep
+the hierarchy quiet. The example's Structure and Controls groups illustrate
+anatomy, not a required taxonomy for live navigation.
+
+The header and logo stay outside the tray, above it. The Design system layout
+owns the 250px independently scrolling rail; this example is 256px wide where
+the frame allows it.
+
+## States and accessibility
+
+Resting links use neutral text on the base surface. The current page uses
+selected-colour text and a single leading edge, with `aria-current="page"`.
+Hover adds a light surface wash without replacing the selected cue.
+
+Every destination is a native link, reachable in document order with Tab and
+activated with Enter. Keyboard focus adds a separate inset outline, including
+on the current page. Group headings are not controls or tab stops. Rows retain
+a 44px minimum target height. Try focusing Overview and Tray in the example.
+
+## Consumed tokens
+
+Values come from `packages/core/src/lib/styles/tokens.css`; no tray-specific
+tokens are introduced. The dashed line around the example is the shared
+[Component frame](/lab/ds/component-frame).
+
+| Token | Value and use |
+| --- | --- |
+| `--color-void` | `lch(1.57% 4.76 285.25)` — Base surface, elevation 0. |
+| `--color-text` | `lch(99.7% 7.45 104.72)` — Resting links. |
+| `--color-text-muted` | `lch(56.7% 0 0)` — Group headers. |
+| `--color-selected` | `var(--color-brand)` → `lch(96.42% 84.18 104.87)` — Current-page text and edge. |
+| `--color-surface-hover` | `lch(100% 0 0 / 0.051)` — Hover wash. |
+| `--font-family-ui` | `"B612 Mono", ui-monospace, SFMono-Regular, Consolas, monospace` — Tray type. |
+| `--font-size-label`, `--font-size-caption` | `0.875rem`, `0.75rem` — Links and group headers. |
+| `--font-weight-regular`, `--line-height-ui` | `400`, `1.5` — Group weight and tray line height. |
+| `--spacing-sm`, `--spacing-md` | `8px`, `16px` — Row/header vertical and horizontal padding; tray inset and group separation use md. |
+| `--spacing-xl` | `64px` — Four units set this example's width. |
+| `--control-min-height` | `44px` — Minimum link height. |
+| `--state-selected-indicator-width` | `var(--spacing-xs)` → `4px` — Leading selected edge; reserved on resting rows. |
+| `--focus-ring-width`, `--focus-ring-offset-inset` | `2px`, `-5px` — Keyboard focus outline. |
+| `--color-focus-ring` | `var(--color-text)` — Keyboard focus colour. |
+
+## Inputs and host responsibilities
+
+`apps/web/src/components/Tray.svelte` renders native links on the server without
+hydration. Its typed inputs are:
+
+| Input | Purpose |
+| --- | --- |
+| `label` | Accessible label for the navigation landmark. |
+| `links` | Ordered leading destinations, each with `label` and `href`. |
+| `groups` | Ordered groups, each with a `label` and ordered `links`. |
+| `footerLinks` | Optional ordered destinations after the groups. |
+| `activeHref` | Host-resolved href (or `undefined`); the matching link gets `aria-current="page"`. |
+
+The host owns routing, destination order, sizing and scrolling. The live layout
+selects the deepest matching destination from the Design system registry,
+including pages at earlier addresses such as `/lab/tokens`. The example supplies
+Tray as its current destination.
+
+The contract at `docs/specs/factory/design-system/tray/spec.md` governs the
+shared component. Its neutral resting-link exception covers only the live
+Design system rail and this example; Lab, Design studies and the game retain
+their own navigation.
+
+</DesignSystemLayout>
+
+<style>{`
+.tray-guide table { width: 100%; border-collapse: collapse; font-size: var(--font-size-body); }
+.tray-guide th, .tray-guide td { padding: var(--spacing-sm) var(--spacing-md); text-align: left; border-bottom: 1px solid var(--color-border-subtle); }
+.tray-guide th:first-child, .tray-guide td:first-child { padding-left: 0; }
+.tray-guide th { color: var(--color-text-muted); font-weight: var(--font-weight-regular); }
+.tray-example { inline-size: calc(var(--spacing-xl) * 4); max-inline-size: 100%; }
+`}</style>

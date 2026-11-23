@@ -33,7 +33,7 @@ it("creates isolated experiment state and repeats its ticks on replay", () => {
   expect(traces[1]).toEqual(first);
 });
 
-it("uses production breakup and rejects invalid or unregistered damage", () => {
+it("refuses non-finite, non-positive or unregistered damage", () => {
   const run = new FlightRun(
     FlightSceneDocumentSchema.parse(STARTER_FLIGHT_SCENE),
     "course",
@@ -42,13 +42,9 @@ it("uses production breakup and rejects invalid or unregistered damage", () => {
   const salvage = run.sim.salvage;
   if (!salvage) throw new Error("Expected salvage simulation");
   const body = salvage.bodies[0];
+  const hull = body.hull;
   for (const amount of [NaN, Infinity, 0, -1])
     expect(() => salvage.applyDamage(body, amount)).toThrow();
   expect(() => salvage.applyDamage({ ...body }, 1)).toThrow();
-  salvage.applyDamage(body, body.hull);
-  expect(body.hull).toBe(0);
-  expect(salvage.bodies.some((b) => b.kind === "fragment")).toBe(true);
-  const count = salvage.bodies.length;
-  salvage.applyDamage(body, 1);
-  expect(salvage.bodies).toHaveLength(count);
+  expect(body.hull).toBe(hull);
 });

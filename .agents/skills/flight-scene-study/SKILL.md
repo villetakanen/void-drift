@@ -19,7 +19,7 @@ require embedding the instrument.
 
 Rendering does not establish gameplay acceptance.
 
-Read the [Flight scene contract](../../../docs/specs/lab/flight-scene-instrument/spec.md) and inspect `/lab/flight-scene`. Follow [design-study](../design-study/SKILL.md) for framing, decisions and round retention. Use [Motion](../../../docs/specs/lab/motion-instrument/spec.md) for path/graph questions.
+Read the [Flight scene spec](../../../docs/specs/lab/flight-scene-instrument/spec.md) and inspect `/lab/flight-scene`. Follow [design-study](../design-study/SKILL.md) for framing, decisions and round retention. Use [Motion](../../../docs/specs/lab/motion-instrument/spec.md) for path/graph questions.
 
 ## Compose
 
@@ -32,7 +32,7 @@ When an in-flight scene is needed, mount `FlightSceneInstrument` with its standa
 
 Read `apps/web/src/lib/flight-scene/index.ts` and the Zod document schema. Follow supported reactive inputs and replay semantics; mounted `config` edits may not reconfigure it.
 
-Agree missing shared capabilities with the designer; existing authorization suffices. Update schema before consumers, then the contract and canonical example. Keep production simulation, geometry and layers shared; mark proposed behavior and appearance experimental.
+Agree missing shared capabilities with the designer; existing authorization suffices. Update schema before consumers, then the spec and canonical example. Keep production simulation, geometry and layers shared; mark proposed behavior and appearance experimental.
 
 ## Stage and check
 

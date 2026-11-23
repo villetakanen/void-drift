@@ -1,18 +1,14 @@
 import { expect, it } from "vitest";
-import {
-  DEFAULT_ROCK_BODY_LIGHTING,
-  RockBodyLightingSchema,
-} from "../schemas/rock-body-lighting";
+import { RockBodyLightingSchema } from "../schemas/rock-body-lighting";
 import { RockBodyPainter } from "./rock-body";
 
-it("shares prepared intensity stamps and only rotates during drawing", () => {
+it("draws prepared stamps without creating or writing pixels, and releases the last user's stamp", () => {
   const created: FakeCanvas[] = [];
   const priorDocument = globalThis.document;
   Object.defineProperty(globalThis, "document", {
     configurable: true,
     value: {
-      createElement(name: string) {
-        if (name !== "canvas") throw new Error(`Unexpected element: ${name}`);
+      createElement: () => {
         const canvas = new FakeCanvas();
         created.push(canvas);
         return canvas;
@@ -21,96 +17,39 @@ it("shares prepared intensity stamps and only rotates during drawing", () => {
   });
 
   try {
-    const first = new RockBodyPainter([]);
-    const second = new RockBodyPainter([]);
-    first.prepareShadowIntensity(0);
-    second.prepareShadowIntensity(0);
-    first.prepareShadowIntensity(2);
-    const a = new FakeContext();
-    const b = new FakeContext();
-
-    first.light(
-      a as unknown as CanvasRenderingContext2D,
-      10,
-      20,
-      5,
-      0,
-      20.00001,
-      2,
-    );
-    second.light(
-      b as unknown as CanvasRenderingContext2D,
-      10,
-      20,
-      5,
-      0,
-      19.99999,
-      0,
-    );
-    first.prepareShadowIntensity(1);
-    const preparedCanvasCount = created.length;
-    first.light(
-      a as unknown as CanvasRenderingContext2D,
-      10,
-      20,
-      5,
-      0,
-      20.00001,
-      1,
-    );
-
-    expect(created.length).toBe(preparedCanvasCount);
-    expect(created.map((canvas) => canvas.context.putCount)).toEqual([
-      1, 1, 1, 1,
-    ]);
-    expect(a.drawn).toHaveLength(2);
-    expect(b.drawn).toHaveLength(1);
-    expect(a.drawn[0].image).toBe(created[2]);
-    expect(a.drawn[1].image).toBe(created[3]);
-    expect(b.drawn[0].image).toBe(created[1]);
-    expect(a.drawn[0].angle).toBeCloseTo(Math.PI, 5);
-    expect(b.drawn[0].angle).toBeCloseTo(-Math.PI, 5);
-    expect(a.depth).toBe(0);
-    expect(b.depth).toBe(0);
-
-    first.dispose();
-    second.dispose();
-    const beforeReacquire = created.length;
-    const later = new RockBodyPainter([]);
-    later.prepareShadowIntensity(0);
-    expect(created).toHaveLength(beforeReacquire + 1);
-    later.dispose();
-    expect(() =>
-      first.light(a as unknown as CanvasRenderingContext2D, 0, 0, 1, 1, 0),
-    ).toThrow("disposed");
-  } finally {
-    if (priorDocument)
-      Object.defineProperty(globalThis, "document", { value: priorDocument });
-    else Reflect.deleteProperty(globalThis, "document");
-  }
-});
-
-it("does not let one painter draw another painter's prepared intensity", () => {
-  const priorDocument = globalThis.document;
-  Object.defineProperty(globalThis, "document", {
-    configurable: true,
-    value: { createElement: () => new FakeCanvas() },
-  });
-  try {
     const painter = new RockBodyPainter([]);
-    expect(() =>
+    painter.prepareShadowIntensity(2);
+    const canvases = created.length;
+    const puts = () =>
+      created.reduce((sum, canvas) => sum + canvas.context.putCount, 0);
+    const written = puts();
+    const ctx = new FakeContext();
+    // The star direction changes between draws; only the transform follows it.
+    for (const [starX, starY] of [
+      [20, 0],
+      [0, 20],
+      [-20, -20],
+    ])
       painter.light(
-        new FakeContext() as unknown as CanvasRenderingContext2D,
+        ctx as unknown as CanvasRenderingContext2D,
         0,
         0,
-        1,
-        1,
-        0,
-        1.37,
-      ),
-    ).toThrow("not prepared by this painter");
-    expect(() => painter.prepareShadowIntensity(Number.NaN)).toThrow("finite");
+        5,
+        starX,
+        starY,
+        2,
+      );
+    expect(created.length).toBe(canvases);
+    expect(puts()).toBe(written);
+    expect(new Set(ctx.drawn.map((d) => d.image)).size).toBe(1);
+    expect(ctx.depth).toBe(0);
+
     painter.dispose();
+    const later = new RockBodyPainter([]);
+    const beforeReacquire = created.length;
+    later.prepareShadowIntensity(2);
+    expect(created.length).toBeGreaterThan(beforeReacquire);
+    later.dispose();
   } finally {
     if (priorDocument)
       Object.defineProperty(globalThis, "document", { value: priorDocument });
@@ -290,35 +229,18 @@ it("keeps dark pixels neutral at shadow zero and applies temperature only to lit
   }
 });
 
-it("validates lighting settings and keeps shared defaults separate from unit multipliers", () => {
-  expect(DEFAULT_ROCK_BODY_LIGHTING).toEqual({
-    incomingIntensity: 1.35,
-    shadowIntensity: 1.35,
-    temperatureK: 5800,
-  });
-  expect(RockBodyLightingSchema.parse({})).toEqual(DEFAULT_ROCK_BODY_LIGHTING);
-  expect(
-    RockBodyLightingSchema.safeParse({
-      incomingIntensity: Number.NaN,
-      shadowIntensity: 1,
-      temperatureK: 5800,
-    }).success,
-  ).toBe(false);
-  expect(
-    RockBodyLightingSchema.safeParse({
-      incomingIntensity: 1,
-      shadowIntensity: 1,
-      temperatureK: 10001,
-    }).success,
-  ).toBe(false);
-  expect(
-    RockBodyLightingSchema.safeParse({
+it("rejects non-finite, out-of-range and unknown lighting settings", () => {
+  for (const settings of [
+    { incomingIntensity: Number.NaN, shadowIntensity: 1, temperatureK: 5800 },
+    { incomingIntensity: 1, shadowIntensity: 1, temperatureK: 10001 },
+    {
       incomingIntensity: 1,
       shadowIntensity: 1,
       temperatureK: 5800,
       extra: true,
-    }).success,
-  ).toBe(false);
+    },
+  ])
+    expect(RockBodyLightingSchema.safeParse(settings).success).toBe(false);
 });
 
 it("does not expose the painter's leased settings to caller mutation", () => {

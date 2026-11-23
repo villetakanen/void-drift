@@ -1,3 +1,12 @@
+---
+generated:
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-23T13:17:26+02:00"
+verified:
+  - by: "human:ville-takanen"
+    at: "2026-11-23"
+---
+
 # LFX layer
 
 LFX holds fresh light redrawn each frame, above World and accumulated FX. It
@@ -8,7 +17,7 @@ point-defence beams occupy this layer for their active 80 ms window; dispersed
 light is separately emitted into FX. A ship in a planet's air carries the
 [atmospheric heat](fx.md#atmospheric-heat) glow on its planet-facing side.
 
-A [world body's](spec.md#world-bodies) light and dark side is also drawn here, as
+A [world body's](world-bodies/spec.md) light and dark side is also drawn here, as
 one stamp per body through the shared `body-light` pass. It is the first thing
 drawn on the layer, and its dark half may darken World and FX beneath it.
 

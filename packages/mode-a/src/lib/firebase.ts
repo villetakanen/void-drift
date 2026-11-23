@@ -4,6 +4,7 @@ import {
   collection,
   connectFirestoreEmulator,
   doc,
+  getDocFromServer,
   getDocs,
   getFirestore,
   limit,
@@ -19,8 +20,13 @@ import {
   HighScoreSchema,
   type HighScoreSubmission,
   HighScoreSubmissionSchema,
+  type PersonalBestLookup,
   parseHighScores,
+  readPersonalBest,
+  type SaveOutcome,
+  settleScore,
 } from "../schemas/highscore";
+import type { ShipProfileId } from "./schemas/ship-profile";
 
 export const LEADERBOARD_UNAVAILABLE =
   "Shared scores are unavailable in this local session.";
@@ -90,42 +96,80 @@ export async function loadHighScores(): Promise<HighScore[]> {
     })(),
   );
 }
+/** The one row a player keeps for a ship on the client's board. */
+function scoreReference(userId: string, shipId: string) {
+  const { db } = getServices();
+  return doc(
+    db,
+    "artifacts",
+    "void-drift",
+    "scores",
+    `${CHALLENGE}_${userId}_${shipId}`,
+  );
+}
+const message = (error: unknown, fallback: string) =>
+  error instanceof Error && error.message ? error.message : fallback;
+/**
+ * Reads the player's own stored best for a ship on the client's board, from
+ * the server, wherever it ranks. A failed, timed-out or unreadable read is
+ * unavailable, never absent.
+ */
+export async function loadPersonalBest(
+  shipId: ShipProfileId,
+): Promise<PersonalBestLookup> {
+  try {
+    const best = await withTimeout(
+      (async () => {
+        const user = await ensureAnonymousSession();
+        const row = await getDocFromServer(scoreReference(user.uid, shipId));
+        return readPersonalBest(row.exists() ? row.data() : undefined);
+      })(),
+    );
+    return (
+      best ?? { status: "unavailable", error: "Your saved best is unreadable." }
+    );
+  } catch (error) {
+    return {
+      status: "unavailable",
+      error: message(error, "Unable to check your best."),
+    };
+  }
+}
+/**
+ * Saves a run as the player's best for its ship. The transaction rechecks
+ * the stored row, so an equal or higher best stays and is reported as kept.
+ * After a timeout, a retry finds a row this run already wrote and reports it
+ * as saved.
+ */
 export async function submitHighScore(
   submission: HighScoreSubmission,
-): Promise<
-  { success: true; scoreId: string } | { success: false; error: string }
-> {
+): Promise<SaveOutcome> {
   try {
     const valid = HighScoreSubmissionSchema.parse(submission);
-    const scoreId = await withTimeout(
-      (async () => {
+    return await withTimeout(
+      (async (): Promise<SaveOutcome> => {
         const user = await ensureAnonymousSession();
         const { db } = getServices();
         const score = HighScoreSchema.parse({ ...valid, userId: user.uid });
-        const reference = doc(
-          db,
-          "artifacts",
-          "void-drift",
-          "scores",
-          `${score.challenge}_${user.uid}_${score.shipId}`,
-        );
-        await runTransaction(db, async (transaction) => {
+        const reference = scoreReference(user.uid, score.shipId);
+        const settled = await runTransaction(db, async (transaction) => {
           const previous = await transaction.get(reference);
-          // An unreadable stored row is left to the rules to judge.
-          const stored = z
-            .object({ score: z.number() })
-            .safeParse(previous.data());
-          if (stored.success && stored.data.score >= score.score) return;
-          transaction.set(reference, score);
+          const decision = settleScore(
+            previous.exists() ? previous.data() : undefined,
+            score,
+          );
+          if (decision.write) transaction.set(reference, score);
+          return decision;
         });
-        return reference.id;
+        return settled.write || settled.outcome === "saved"
+          ? { outcome: "saved", scoreId: reference.id }
+          : { outcome: "kept", best: settled.best };
       })(),
     );
-    return { success: true, scoreId };
   } catch (error) {
     return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unable to submit score.",
+      outcome: "failed",
+      error: message(error, "Unable to submit score."),
     };
   }
 }

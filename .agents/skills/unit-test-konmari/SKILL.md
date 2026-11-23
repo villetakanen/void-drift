@@ -37,7 +37,7 @@ change that touches it.
 ## Three questions per test
 
 1. Silent: would this regression ship unnoticed without the test?
-2. Contract: does a spec state the behaviour, rather than the code happening to do it?
+2. Spec: does a spec state the behaviour, rather than the code happening to do it?
 3. Fee: has it been edited by changes that fixed no bug?
 
 Keep a test when 1 and 2 are yes. When 3 is yes, reduce it to the one relation that guards.

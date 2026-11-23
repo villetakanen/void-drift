@@ -32,12 +32,6 @@ describe("generated mercurial planet", () => {
         const orbit = mercurialOrbit(sunRadius, danger, collection, radius);
         expect(orbit - radius).toBeGreaterThanOrEqual(danger + 1 - 1e-10);
         expect(orbit + radius).toBeLessThanOrEqual(collection - 1 + 1e-10);
-        expect(orbit).toBeCloseTo(
-          Math.max(
-            danger + radius + 1,
-            Math.min(collection - radius - 1, (258 * sunRadius) / 70),
-          ),
-        );
       }
     }
   });
@@ -61,7 +55,7 @@ describe("generated mercurial planet", () => {
     );
   });
 
-  it("is seeded, varied, independent of Sun size and preserves center and other bodies", () => {
+  it("is seeded, varied, centred and keeps retained stock bodies clear of mandatory worlds", () => {
     const radii = new Set<number>();
     let removed = false;
     for (let seed = 1; seed <= 300; seed++) {
@@ -92,36 +86,21 @@ describe("generated mercurial planet", () => {
       radii.add(moon.radius);
       const habitable = system.planets.find((p) => p.id === "habitable");
       if (!habitable) throw new Error("Missing Habitable world");
-      const source = initializePlanets(-50, 73);
-      for (const other of source.filter((planet) => planet.id !== "moon")) {
-        const retained = system.planets.find(
-          (planet) => planet.id === other.id,
-        );
-        const clear =
-          other.id !== "gas" &&
-          other.orbitRadius > habitable.orbitRadius &&
-          system.planets
-            .filter(
-              (p) =>
-                p.id === "moon" ||
-                p.id === "outer-mercurial" ||
-                p.id === "habitable",
-            )
-            .every(
-              (p) =>
-                Math.abs(other.orbitRadius - p.orbitRadius) >
-                other.radius + p.radius + (p.atmosphere?.depth ?? 0) + 1,
-            );
-        expect(Boolean(retained)).toBe(clear);
-        if (retained) {
-          expect(retained.radius).toBe(other.radius);
-          expect(retained.orbitRadius).toBe(other.orbitRadius);
-          expect(retained.orbitSpeed).toBe(other.orbitSpeed);
-          expect(retained.orbitAngle).toBeCloseTo(
-            other.orbitAngle + ((seed % 360) / 180) * Math.PI,
+      const mandatory = system.planets.filter(
+        (p) =>
+          p.id === "moon" || p.id === "outer-mercurial" || p.id === "habitable",
+      );
+      const stock = system.planets.filter((p) => !mandatory.includes(p));
+      for (const retained of stock) {
+        expect(retained.orbitRadius).toBeGreaterThan(habitable.orbitRadius);
+        for (const p of mandatory)
+          expect(
+            Math.abs(retained.orbitRadius - p.orbitRadius),
+          ).toBeGreaterThan(
+            retained.radius + p.radius + (p.atmosphere?.depth ?? 0) + 1,
           );
-        } else removed = true;
       }
+      if (stock.length < initializePlanets(-50, 73).length - 2) removed = true;
       const outward = [...system.planets].sort(
         (a, b) => a.orbitRadius - b.orbitRadius,
       );

@@ -1,10 +1,10 @@
 ---
-title: "Spec: Feature: Planet Entity"
-status: draft
 generated:
   by: "codex/gpt-6"
   at: "2026-11-19T21:13:02+02:00"
-verified: [{ by: "codex/gpt-6", at: "2026-11-19T21:04:09+02:00" }, { by: "codex/gpt-6", at: "2026-11-19T21:14:06+02:00" }]
+verified:
+  - by: "human:ville-takanen"
+    at: "2026-11-23"
 ---
 
 # Feature: Planet Entity
@@ -56,7 +56,7 @@ interface Planet {
 #### Physics and rendering
 
 - **Physics:**
-  - Gravity: [gravity-field.md](../gravity-field/spec.md#bodies-in-play).
+  - Gravity: [gravity field](../gravity-field/spec.md).
   - Collision: Elastic bounce (restitution 0.8).
   - Motion: Planets orbit the central star.
 - **Rendering:** Prepared cylindrical maps, sphere projection and shared light follow
@@ -98,7 +98,7 @@ Every planet in every mode has the same World HUD: orbit, gravity boundary and
 upright name. Its shared `world-hud` pass runs once for the full system before
 any planet body is drawn, independent of material readiness. Strokes are 1 CSS
 px and text is 14 CSS px at every zoom. The
-[render contract](../../render/spec.md#world-bodies) defines pass order and
+[world-body rendering contract](../../render/world-bodies/spec.md) defines pass order and
 screen sizing. Planets have no separate decorative ring system. Collision and
 gravity use the planet body radius and mass.
 
@@ -241,7 +241,7 @@ depth in world units, moving with the planet's orbit. The Cradle and generated H
 A planet without a surface map is drawn as a flat disc. The flat-vector
 descriptions elsewhere in this document describe that disc, not Mercury or Venus.
 All planets are drawn under the render contract's
-[world bodies](../../render/spec.md#world-bodies) rules.
+[world-body rendering](../../render/world-bodies/spec.md) rules.
 
 ### Definition of Done
 

@@ -5,9 +5,9 @@ description: Implement, tune or diagnose Void Drift game effects and their share
 # FX development
 
 Read the [render model](../../../docs/specs/game/render/spec.md),
-[FX contract](../../../docs/specs/game/render/fx.md),
-[LFX contract](../../../docs/specs/game/render/lfx.md) and
-[effects contract](../../../docs/specs/factory/effects/spec.md).
+[FX spec](../../../docs/specs/game/render/fx.md),
+[LFX spec](../../../docs/specs/game/render/lfx.md) and
+[effects spec](../../../docs/specs/factory/effects/spec.md).
 Inspect the current layer configuration for blending, filters and persistence.
 Use [shared-components](../shared-components/SKILL.md) for ownership and composition.
 
@@ -29,7 +29,7 @@ sprites or cached stamps as needed. Let the browser blend, scale and filter;
 never loop over pixels per frame.
 
 Existing effects offer examples, not a required recipe. When changing an
-existing effect, check its specific appearance contract. Ion's accepted core,
+existing effect, check its specific appearance spec. Ion's accepted core,
 halo and transparent end belong to one emitted mark; that treatment does not
 prescribe other engines or weapons.
 
@@ -83,7 +83,7 @@ Check activity, placement, shared decay, pause/reset/wrap/seek behavior,
 bounded work and unchanged gameplay.
 
 For performance work, exercise the production path in the mixed-effects Lab
-and in play. Use the workload and budget in the effects contract, including
+and in play. Use the workload and budget in the effects spec, including
 sustained movement, turns, overlaps and bursts. Report browser, hardware,
 backing resolution, sample duration, frame intervals, update/submission costs
 and raster/compositor evidence. A frozen frame or short callback measurement
@@ -92,5 +92,5 @@ cannot establish sustained performance.
 Keep automated correctness, measured performance and visual judgment separate.
 Correctness checks do not establish appearance or designer acceptance.
 
-Change shared contracts only within the authorized scope. Keep experimental
+Change shared specs only within the authorized scope. Keep experimental
 choices and historical findings in the study.

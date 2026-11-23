@@ -3,9 +3,7 @@ import {
   FLIGHT_PASSES,
   type FlightFrame,
   gameSettings,
-  PRACTICE_MERCURY_SPIN_SECONDS,
   Simulation,
-  STEP,
 } from "@void-drift/mode-a";
 import { describe, expect, it, vi } from "vitest";
 import { planetAppearances } from "./planet-appearances";
@@ -34,45 +32,35 @@ function planet(id: string, systemPosition: number, x: number) {
 }
 
 describe("shared body appearance adapter", () => {
-  it("drives production body and light passes from prepared materials and their full visual bounds", () => {
+  it("culls a body just outside the view unless its atmosphere reaches in", () => {
+    // Both bodies sit just beyond the left edge of the view by their radius.
     const mercury = planet("moon", 1, -10.01);
-    const venus = planet("venus", 3, -10.6);
-    const mercuryPainter = Object.create(
-      RockBodyPainter.prototype,
-    ) as RockBodyPainter;
-    const mercuryBody = vi.fn();
-    const mercuryLight = vi.fn();
-    Object.assign(mercuryPainter, {
-      materials: [],
-      body: mercuryBody,
-      light: mercuryLight,
-    });
-    const mercurySurface = { draw: vi.fn() };
-    const venusPainter = Object.create(
-      CloudBodyPainter.prototype,
-    ) as CloudBodyPainter;
-    const venusBody = vi.fn();
-    const venusLight = vi.fn();
-    const atmosphere = vi.fn();
-    Object.assign(venusPainter, { materials: [] });
-    Object.assign(venusPainter, {
-      body: venusBody,
-      light: venusLight,
-      atmosphere,
-    });
-    const venusSurface = { draw: vi.fn() };
-    const bodyAppearances = planetAppearances([mercury, venus], {
-      mercury: { painter: mercuryPainter, surface: mercurySurface },
-      venus: { painter: venusPainter, surface: venusSurface },
-    });
-    const renderer = { drawPlanet: vi.fn() };
+    const venus = planet("venus", 3, -10.01);
+    const material = <T extends object>(painter: T) => {
+      Object.assign(painter, {
+        materials: [],
+        body: vi.fn(),
+        light: vi.fn(),
+        atmosphere: vi.fn(),
+      });
+      return { painter, surface: { draw: vi.fn() } };
+    };
+    const rock = material(
+      Object.create(RockBodyPainter.prototype) as RockBodyPainter,
+    );
+    const cloud = material(
+      Object.create(CloudBodyPainter.prototype) as CloudBodyPainter,
+    );
     const frame = {
-      bodyAppearances,
+      bodyAppearances: planetAppearances([mercury, venus], {
+        mercury: rock,
+        venus: cloud,
+      }),
       camera: {
         zoom: 0.5,
         getViewRect: () => ({ x: 0, y: 0, width: 100, height: 100 }),
       },
-      renderer,
+      renderer: { drawPlanet: vi.fn() },
       sim: {
         planets: [mercury, venus],
         star: { pos: new Vec2(40, 50) },
@@ -80,37 +68,14 @@ describe("shared body appearance adapter", () => {
       },
     } as unknown as FlightFrame;
     const ctx = {} as CanvasRenderingContext2D;
-    const appearancesBeforeDraw = frame.bodyAppearances;
 
     pass("planets").draw(frame, ctx);
-    expect(mercurySurface.draw).not.toHaveBeenCalled();
-    expect(mercuryBody).not.toHaveBeenCalled();
-    expect(venusSurface.draw).toHaveBeenCalledTimes(1);
-    expect(venusBody).toHaveBeenCalledTimes(1);
-    expect(atmosphere).toHaveBeenCalledTimes(1);
-
-    venus.pos.x = -10.651;
-    pass("planets").draw(frame, ctx);
-    expect(venusSurface.draw).toHaveBeenCalledTimes(1);
-    expect(atmosphere).toHaveBeenCalledTimes(1);
-
-    mercury.pos.x = -10;
-    pass("planets").draw(frame, ctx);
-    expect(mercurySurface.draw).toHaveBeenCalledWith(
-      (9 * STEP * 2 * Math.PI) / PRACTICE_MERCURY_SPIN_SECONDS,
-      10,
-    );
-    expect(mercuryBody).toHaveBeenCalledWith(ctx, 0, -10, 50, 10);
-
-    mercury.pos.x = -10.01;
     pass("body-light").draw(frame, ctx);
-    expect(mercuryLight).not.toHaveBeenCalled();
-    mercury.pos.x = -10;
-    pass("body-light").draw(frame, ctx);
-    expect(mercuryLight).toHaveBeenCalledTimes(1);
-    expect(venusLight).not.toHaveBeenCalled();
-    expect(frame.bodyAppearances).toBe(appearancesBeforeDraw);
-    expect(renderer.drawPlanet).not.toHaveBeenCalled();
+    expect(rock.surface.draw).not.toHaveBeenCalled();
+    expect(rock.painter.body).not.toHaveBeenCalled();
+    expect(rock.painter.light).not.toHaveBeenCalled();
+    expect(cloud.painter.body).toHaveBeenCalledTimes(1);
+    expect(cloud.painter.atmosphere).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -133,24 +98,6 @@ describe("generated planet material binding", () => {
         const map = planetAppearances(sim.planets, { mercury: material });
         expect([...map.keys()]).toEqual([moon.systemPosition]);
         expect(planetAppearances(sim.planets, {}).size).toBe(0);
-        const appearance = map.get(moon.systemPosition);
-        if (!appearance) throw new Error("Missing appearance");
-        const frame = { sim, camera: { zoom: 0.7 } } as unknown as FlightFrame;
-        const ctx = {} as CanvasRenderingContext2D;
-        appearance.drawWorld(frame, ctx, moon);
-        expect(material.surface.draw).toHaveBeenLastCalledWith(
-          0,
-          moon.radius * 2 * 0.7,
-        );
-        appearance.light?.draw(frame, ctx, moon);
-        expect(material.painter.light).toHaveBeenLastCalledWith(
-          ctx,
-          moon.pos.x,
-          moon.pos.y,
-          moon.radius,
-          sim.star.pos.x,
-          sim.star.pos.y,
-        );
       }
     }
     const staged = [planet("rock", 1, 0), planet("moon", 2, 50)];

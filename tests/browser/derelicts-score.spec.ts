@@ -34,7 +34,7 @@ test("Derelicts shows frozen time and destruction facts without a score", async 
   const result = page.getByRole("dialog", { name: "Run complete" });
   await expect(result).toBeVisible();
   const heading = result.getByRole("heading");
-  await expect(heading).toHaveText(/\d+\.\d seconds\./);
+  await expect(heading).toHaveText(/\d+\.\d seconds/);
   await expect(result.getByText(/\d+ derelicts destroyed/)).toBeVisible();
   await expect(result.getByText(/points\.|^Score /)).toHaveCount(0);
   const final = (await heading.textContent()) ?? "";
@@ -47,7 +47,7 @@ test("Derelicts shows frozen time and destruction facts without a score", async 
       JSON.stringify(Object.entries(localStorage).sort()),
     ),
   ).toBe(saved);
-  await result.getByRole("button", { name: "Return to Hangar" }).click();
+  await result.getByRole("button", { name: "Hangar", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Derelicts", exact: true }),
   ).toBeVisible();

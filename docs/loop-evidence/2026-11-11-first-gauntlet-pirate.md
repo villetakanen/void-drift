@@ -32,7 +32,7 @@ The Lab consumes production simulation and rendering and exposes pilot diagnosti
 Inspect the one-pirate contract at that revision with
 `git show 335da098:docs/specs/game/gauntlet/spec.md`; the current
 [Gauntlet contract](../specs/game/gauntlet/spec.md) has since changed.
-The retained [plan](../plans/2026-11-11-gauntlet-first-pirate.md) records the proposed
+The retained [plan](https://github.com/villetakanen/void-drift/blob/9e1e7a2e861ba43db58b536339421da586e3e928/docs/plans/2026-11-11-gauntlet-first-pirate.md) records the proposed
 scope; it is not completion evidence.
 
 Under the repository's whole-checkout snapshot rule, the same commit also includes

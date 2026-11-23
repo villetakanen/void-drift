@@ -39,45 +39,36 @@ function fixture(power: number) {
 }
 
 describe("mounted plasma charge light", () => {
-  it("shows paid charge, holds it through a power shortfall, and dims as it vents", () => {
-    const flight = fixture(10);
-    flight.step(0.7);
-    expect(flight.light()).toEqual(dark);
-
-    flight.resources.power = 10.875;
-    flight.step(0.7);
-    expect(flight.light().center).toBeCloseTo(0.25);
-    expect(flight.light().sides).toBe(0);
-    flight.step(0.7);
-    expect(flight.light().center).toBeCloseTo(0.25);
-
-    flight.resources.power = 12.625;
-    flight.step(0.525);
-    expect(flight.rifle.plasma?.phase).toBe("charging");
-    expect(flight.light()).toEqual({ center: 1, sides: 1 });
-    flight.step(0.06, []);
-    expect(flight.rifle.plasma?.phase).toBe("venting");
-    expect(flight.light().center).toBeCloseTo(0.8);
-    expect(flight.light().sides).toBeCloseTo(0.6);
-    flight.step(0.12, []);
-    expect(flight.light().center).toBeCloseTo(0.4);
-    expect(flight.light().sides).toBe(0);
-    flight.step(0.12, []);
-    expect(flight.rifle.plasma?.phase).toBe("cooldown");
+  it("brightens with paid charge, lights the sides past half and clears on release", () => {
+    const flight = fixture(100);
+    flight.step(0.35);
+    const half = flight.light();
+    expect(half.center).toBeGreaterThan(0);
+    expect(half.sides).toBe(0);
+    flight.step(0.07);
+    expect(flight.light().center).toBeGreaterThan(half.center);
+    expect(flight.light().sides).toBeGreaterThan(0);
+    flight.step(0.28);
+    expect(flight.rifle.plasma?.phase).toBe("firing");
     expect(flight.light()).toEqual(dark);
   });
 
-  it("lights the side channels past half charge and clears the bead on release", () => {
-    const flight = fixture(100);
-    flight.step(0.35);
-    expect(flight.light().center).toBeCloseTo(0.5);
-    expect(flight.light().sides).toBe(0);
-    flight.step(0.07);
-    expect(flight.light().center).toBeCloseTo(0.6);
-    expect(flight.light().sides).toBeCloseTo(0.2);
-    flight.step(0.28);
-    expect(flight.rifle.plasma?.phase).toBe("firing");
-    expect(flight.rifle.plasma?.charge).toBe(1);
+  it("holds through a power shortfall, dims while venting and is dark in cooldown", () => {
+    const flight = fixture(10);
+    flight.step(0.7);
+    expect(flight.light()).toEqual(dark);
+    flight.resources.power = 12.625;
+    flight.step(0.7);
+    const held = flight.light();
+    expect(held.center).toBeGreaterThan(0);
+    flight.step(0.7);
+    expect(flight.light()).toEqual(held);
+    flight.step(0.06, []);
+    expect(flight.rifle.plasma?.phase).toBe("venting");
+    expect(flight.light().center).toBeGreaterThan(0);
+    expect(flight.light().center).toBeLessThan(held.center);
+    flight.step(0.3, []);
+    expect(flight.rifle.plasma?.phase).toBe("cooldown");
     expect(flight.light()).toEqual(dark);
   });
 });

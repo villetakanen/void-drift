@@ -1,19 +1,11 @@
 ---
-
-title: "Spec: Design system"
-status: draft
 generated:
-  by: "codex/gpt-6.2"
-  at: "2026-11-21T19:22:52+00:00"
-verified:
-- by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-19T12:33:38+02:00"
-- by: "codex/gpt-6"
-  at: "2026-11-19T19:21:23+02:00"
-
+  by: "claude-code/claude-fable-5-2"
+  at: "2026-11-23T07:50:16+02:00"
+verified: []
 ---
 
-# Spec: Design system
+# Design system
 
 ## Blueprint
 
@@ -59,7 +51,11 @@ canonical examples; Lab and Studies consume them without acquiring ownership.
 
 - [Side sheet](side-sheet/spec.md) owns shared instrument parameter surfaces.
 - [Page header](page-header/spec.md) owns shared page identity, navigation and container adaptation.
-- [Component frame](component-frame/spec.md) owns the shared boundary and width container for documentation examples.
+- [Component frame](component-frame/spec.md) owns the dashed line that traces a documentation example's own box, and the example's width container.
+- [Documents grid](documents-grid/spec.md) owns the responsive layout of Design system documentation.
+- [Tray](tray/spec.md) owns the shared navigation component used by the
+  Design system layout and its canonical demo. The overview lists Tray in its
+  component catalog.
 - [Typography](typography/spec.md) owns that domain's definitions and acceptance behavior.
 - [Colour roles](colour/spec.md) owns that domain's definitions and acceptance behavior.
 - [Surfaces and layers](surfaces/spec.md) owns that domain's definitions and acceptance behavior.
@@ -68,6 +64,7 @@ canonical examples; Lab and Studies consume them without acquiring ownership.
 - [Actions](actions/spec.md) owns that domain's definitions and acceptance behavior.
 - [Input presentation](inputs/spec.md) owns Tabs, RingSlider and thrust-pad presentation.
 - [Choice controls](choices/spec.md) owns SegmentedControl, Switch and their usage boundaries.
+- [Initials](initials/spec.md) owns the three-letter entry for a player's tag.
 - [Game field backdrop](game-field-backdrop/spec.md) owns the shared generated
   decorative field and scrim used by the Title Screen, Settings, Top Scores and
   Credits.
@@ -115,6 +112,13 @@ Scenario: Open instrument parts
   Then its canonical address is /lab/ds/instrument-parts
   And it documents instrument-scoped parts together on one page
   And its examples distinguish shared instrument parts from specific displays
+
+Scenario: Discover Tray as a shared component
+  Given the Design system overview at /lab/ds
+  When I inspect the component catalog
+  Then it lists Tray from the Design system registry with /lab/ds/tray as its canonical page
+  And the entry names apps/web/src/components/Tray.svelte and links the Tray contract
+  And Tray appears as a component rather than as a separate design reference
 
 Scenario: Cover a new shared primitive
   Given a shared input is added to the repository

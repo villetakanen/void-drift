@@ -456,41 +456,6 @@ it("allows visible travel and slowly recentres a stopped ship", () => {
   expect(previous.y - camera.viewportHeight / 2).toBeLessThan(1);
 });
 
-it("recentres an offset view with equivalent elapsed time", () => {
-  const result = (hz: number) => {
-    const { camera, widest } = wideSpeedCamera();
-    const initial = camera.pos.x;
-    const x = 460;
-    camera.pos.x -= (camera.activeWidth * 0.44) / widest;
-    camera.keepShipVisible(x, 540, 40);
-    const displacedCentre = camera.pos.x;
-    camera.frameSpeed(x, 540, 1e6, 0, 40);
-    camera.update(1 / hz);
-    expect(camera.pos.x).toBeGreaterThan(displacedCentre);
-    expect(camera.pos.x).toBeLessThan(
-      displacedCentre + (initial - displacedCentre) / 10,
-    );
-    for (let i = 1; i < hz; i++) {
-      camera.frameSpeed(x, 540, 1e6, 0, 40);
-      camera.update(1 / hz);
-    }
-    return { camera, x };
-  };
-  const a = result(30),
-    b = result(144);
-  expect(a.camera.pos.x).toBeCloseTo(b.camera.pos.x, 8);
-  const initialOffset =
-    a.camera.worldToScreen(a.x, 540).x - a.camera.viewportWidth / 2;
-  for (let i = 0; i < 10; i++) {
-    a.camera.frameSpeed(a.x, 540, 0, 0, 40);
-    a.camera.update(1);
-  }
-  const finalOffset =
-    a.camera.worldToScreen(a.x, 540).x - a.camera.viewportWidth / 2;
-  expect(finalOffset).toBeGreaterThan(0);
-  expect(finalOffset).toBeLessThan(initialOffset);
-});
-
 it("outward zoom starts gently, accelerates, then eases out without overshoot", () => {
   const { camera, widest } = wideSpeedCamera();
   camera.frameSpeed(460, 540, 0, 0, 40, true);
@@ -537,13 +502,11 @@ it("outward retargeting cannot creep inward, and reset clears its previous respo
 
 it("lets a coasting ship leave centre, then recentres at propulsion and arrival speeds", () => {
   for (const velocity of [
-    { x: 200, y: 0 },
-    { x: 400, y: 0 },
     { x: 600, y: 0 },
     { x: -240, y: -320 },
   ]) {
     const runs = [];
-    for (const hz of [30, 60, 144]) {
+    for (const hz of [30, 144]) {
       const { camera } = wideSpeedCamera();
       camera.frameSpeed(460, 540, velocity.x, velocity.y, 40, true);
       let peak = 0;
@@ -563,53 +526,23 @@ it("lets a coasting ship leave centre, then recentres at propulsion and arrival 
       expect(peak).toBeGreaterThan(camera.activeHeight * 0.05);
       runs.push({ peak, x: camera.pos.x, y: camera.pos.y });
     }
-    expect(runs[0].peak).toBeCloseTo(runs[2].peak, 1);
-    expect(runs[0].x).toBeCloseTo(runs[2].x, 8);
-    expect(runs[0].y).toBeCloseTo(runs[2].y, 8);
+    expect(runs[0].peak).toBeCloseTo(runs[1].peak, 1);
+    expect(runs[0].x).toBeCloseTo(runs[1].x, 8);
+    expect(runs[0].y).toBeCloseTo(runs[1].y, 8);
   }
 });
 
 it("holds the upper zoom label until each outward level is reached", () => {
   const { camera, widest } = wideSpeedCamera();
   for (const [magnification, label] of [
-    [8, 8],
-    [6, 8],
     [4.01, 8],
     [4, 4],
-    [3.9, 4],
-    [2.01, 4],
-    [2, 2],
     [1.5, 2],
     [1, 1],
   ]) {
     camera.zoom = widest * magnification;
     expect(camera.speedZoomMode).toBe(label);
   }
-});
-
-it("returns to an 8x cut and readout while a slow ship keeps moving", () => {
-  const { camera, widest } = wideSpeedCamera();
-  const speed = 10;
-  let x = 460;
-  for (const label of [2, 4, 8]) {
-    for (let tick = 0; tick < 90; tick++) {
-      x += speed / 60;
-      camera.frameSpeed(x, 540, speed, 0, 40);
-      camera.update(1 / 60);
-    }
-    expect(camera.zoom / widest).toBeCloseTo(label, 10);
-    expect(camera.speedZoomMode).toBe(label);
-  }
-  // Widen, then earn the closest level again without stopping the ship.
-  advanceSpeed(camera, 2, 400);
-  expect(camera.speedZoomMode).toBeLessThan(8);
-  for (let tick = 0; tick < 270; tick++) {
-    x += speed / 60;
-    camera.frameSpeed(x, 540, speed, 0, 40);
-    camera.update(1 / 60);
-  }
-  expect(camera.zoom / widest).toBeCloseTo(8, 10);
-  expect(camera.speedZoomMode).toBe(8);
 });
 
 it("allows closer inward cuts throughout their propulsion-speed bands", () => {

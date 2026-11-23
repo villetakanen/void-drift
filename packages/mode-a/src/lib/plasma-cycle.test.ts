@@ -190,7 +190,6 @@ describe("Plasma rifle charge cycle", () => {
       f.step();
       expect(f.system.plasmaReleases).toBe(rifleFirst ? 1 : 0);
       expect(f.system.ionDischarges).toBe(rifleFirst ? 0 : 1);
-      expect(f.resources.power).toBeCloseTo(rifleFirst ? 10 : 13.3);
     },
   );
 

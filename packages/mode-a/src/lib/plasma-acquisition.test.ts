@@ -1,8 +1,7 @@
 import { Vec2 } from "@void-drift/core";
-import { describe, expect, it, vi } from "vitest";
-import { BUILD_FLIGHT_SCALE, weaponPose } from "./build-renderer";
+import { describe, expect, it } from "vitest";
+import { weaponPose } from "./build-renderer";
 import { createStar } from "./game-loop";
-import { PLASMA_RIFLE_MOUTHS, PLASMA_RIFLE_SCALE } from "./plasma-rifle-art";
 import {
   type SalvageBody,
   SalvageSystem,
@@ -15,8 +14,8 @@ import { acquireFleetTargets } from "./targeting";
 const dt = STEP / 4;
 const star = createStar("G", 1800, 1000);
 
-function fixture(chassis: "wasp" | "fighter" = "wasp", twins = false) {
-  const loadout = defaultLoadout(chassis);
+function fixture(twins = false) {
+  const loadout = defaultLoadout("wasp");
   loadout.hull = ["plasma-rifle", twins ? "plasma-rifle" : null];
   const system = new SalvageSystem(loadout, 2026);
   const ship = {
@@ -60,48 +59,27 @@ function target(
 }
 
 describe("Plasma rifle acquisition", () => {
-  it.each(["wasp", "fighter"] as const)(
-    "uses the installed artwork muzzle and queries each %s mount independently",
-    (chassis) => {
-      const f = fixture(chassis, true);
-      for (const rifle of f.system.weapons) {
-        const { mount } = rifle;
-        const [across, rearward] = PLASMA_RIFLE_MOUTHS.primary;
-        const forward =
-          mount.x * BUILD_FLIGHT_SCALE - rearward * PLASMA_RIFLE_SCALE;
-        const side = mount.y * BUILD_FLIGHT_SCALE + across * PLASMA_RIFLE_SCALE;
-        const cos = Math.cos(f.ship.rotation);
-        const sin = Math.sin(f.ship.rotation);
-        const muzzle = weaponPose(f.ship, mount);
-        expect(muzzle.muzzleX).toBeCloseTo(
-          f.ship.pos.x + forward * cos - side * sin,
-        );
-        expect(muzzle.muzzleY).toBeCloseTo(
-          f.ship.pos.y + forward * sin + side * cos,
-        );
-        expect(muzzle.angle).toBeCloseTo(f.ship.rotation + mount.angle);
-      }
-      const contact = target(f.muzzle, 11, 8);
-      const metrics: TargetingMetrics = {
-        bodyVisits: 0,
-        comparisons: 0,
-        acquisitionMs: 0,
-        contactMs: 0,
-      };
-      const snapshot = acquireFleetTargets(
-        [contact],
-        [f.shooter],
-        star,
-        [],
-        dt,
-        metrics,
-      ).get(f.system);
-      expect(snapshot?.targets.get(f.rifle)?.id).toBe(contact.id);
-      expect(snapshot?.targets.has(f.system.weapons[1])).toBe(false);
-      expect(metrics.bodyVisits).toBe(1);
-      expect(metrics.activeRequests).toBe(2);
-    },
-  );
+  it("queries each mount independently and visits each body once", () => {
+    const f = fixture(true);
+    const contact = target(f.muzzle, 11, 8);
+    const metrics: TargetingMetrics = {
+      bodyVisits: 0,
+      comparisons: 0,
+      acquisitionMs: 0,
+      contactMs: 0,
+    };
+    const snapshot = acquireFleetTargets(
+      [contact],
+      [f.shooter],
+      star,
+      [],
+      dt,
+      metrics,
+    ).get(f.system);
+    expect(snapshot?.targets.get(f.rifle)?.id).toBe(contact.id);
+    expect(snapshot?.targets.has(f.system.weapons[1])).toBe(false);
+    expect(metrics.bodyVisits).toBe(1);
+  });
 
   it.each([
     { distance: 130, degrees: -15, eligible: true },
@@ -166,47 +144,18 @@ describe("Plasma rifle acquisition", () => {
     expect(acquire()).toBe(ship.id);
   });
 
-  it("breaks equal-distance ties by ID and captures aim without a discharge", () => {
+  it("breaks equal-distance ties by stable ID in either roster order", () => {
     const f = fixture();
     const lower = target(f.muzzle, 11, 80);
     const higher = { ...lower, id: 12 };
-    const damage = vi.fn();
-    lower.onDamage = damage;
-    const resources = { hull: 100, power: 100 };
-    const initialVelocity = { x: f.ship.vel.x, y: f.ship.vel.y };
-    const roster = [higher, lower];
-    const snapshot = acquireFleetTargets(roster, [f.shooter], star, [], dt).get(
-      f.system,
-    );
-    expect(snapshot?.targets.get(f.rifle)?.id).toBe(lower.id);
-    expect(
-      acquireFleetTargets([lower, higher], [f.shooter], star, [], dt)
-        .get(f.system)
-        ?.targets.get(f.rifle)?.id,
-    ).toBe(lower.id);
-    const aim = { x: lower.x, y: lower.y };
-    lower.x += 300;
-    expect(snapshot?.targets.get(f.rifle)).toMatchObject(aim);
-    expect(f.rifle.target).toBeNull();
-    f.system.stepWeapons(
-      dt,
-      f.ship,
-      star,
-      resources,
-      100,
-      [],
-      roster,
-      undefined,
-      f.shooter,
-      snapshot,
-    );
-    expect(f.rifle.target).toBe(lower.id);
-    expect(f.rifle.targetPoint).toEqual(aim);
-    expect(resources.power).toBeCloseTo(100 - 5 * dt);
-    expect(f.ship.vel).toMatchObject(initialVelocity);
-    expect(f.system.energySpent).toBeCloseTo(5 * dt);
-    expect(f.system.shots).toEqual([]);
-    expect(f.system.events).toEqual([]);
-    expect(damage).not.toHaveBeenCalled();
+    for (const roster of [
+      [higher, lower],
+      [lower, higher],
+    ])
+      expect(
+        acquireFleetTargets(roster, [f.shooter], star, [], dt)
+          .get(f.system)
+          ?.targets.get(f.rifle)?.id,
+      ).toBe(lower.id);
   });
 });

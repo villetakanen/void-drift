@@ -1,12 +1,8 @@
 ---
-title: "Spec: Game"
-status: draft
 generated:
-  by: "openai-codex/gpt-6-luna"
-  at: "2026-11-19T21:31:01+02:00"
-verified:
-  - by: "openai-codex/gpt-6.1-terra"
-    at: "2026-11-19T21:31:01+02:00"
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-22T18:15:15+02:00"
+verified: []
 ---
 
 # Game
@@ -56,7 +52,7 @@ with one meaning each.
 - The game and the Lab share the simulation, camera, configuration and drawing code.
 - The Lab is not part of the game. It holds game-designer tools that reuse game systems where they need them. Game specs describe the game only: they place no rule on the Lab, and nothing in them is changed by what the Lab does. The [Lab spec](../lab/spec.md) owns its own constraints.
 - This contract owns the game as a whole: its modes, launch and return, replay, ranking eligibility and the scoring boundary. Child contracts own the parts:
-  - **Flight screen:** [game screen](game-screen/spec.md), [render](render/spec.md), [camera](camera/spec.md), [controls](controls/spec.md), [dialogs](dialogs/spec.md)
+  - **Flight screen:** [game screen](game-screen/spec.md), [render](render/spec.md), [camera](camera/spec.md), [controls](controls/spec.md), [dialogs](dialogs/spec.md), [game over](game-over/spec.md)
   - **Modes:** [Survival](survival/spec.md), [Practice](test-flight/spec.md), [Derelicts](derelicts/spec.md), [Gauntlet](gauntlet/spec.md)
   - **Launch and ships:** [title screen](landing-page/spec.md), [Hangar](hangar/spec.md), [active ship](active-ship/spec.md), [Playground](experimental/spec.md), [ships](ships/spec.md), [parts](parts/spec.md)
   - **World:** [star](world/star/spec.md), [gravity](world/gravity-field/spec.md), [derelict](world/derelict/spec.md)
@@ -69,12 +65,12 @@ with one meaning each.
 - **Launch and return:** a run starts from the title screen or the Hangar, independently of its mode. Abort and game over return to the place it started from.
 - **PRESS START:** it launches a Survival run with the [active ship](active-ship/spec.md) in a fresh seeded G-class system. Every other launch flies the active ship too. The Hangar owns ship choice.
 - **Rulesets:** a ruleset never changes once it has a board. A change to the simulation, its parameters, or the sanctioned ships and parts that affects ranked Survival is a new ruleset with a new name and a new board. A client is ranked only when its Survival runs a named ruleset exactly; `CHALLENGE` in `packages/mode-a/src/schemas/highscore.ts` holds that name. Clients that carry the same ruleset share its board, whatever their controls. A client reads and writes the board of its own ruleset and no other. Boards do not close.
-- **Ranked runs:** a Survival run under the client's ruleset, started from the title screen or the Hangar while [Playground](experimental/spec.md) is Off, is scored and ranked. A Survival run while Playground is On is not scored: it shows its time and the scoring-off notice in place of the score. Practice, Derelicts and Gauntlet have no score. Every run while Playground is On, and every Practice, Derelicts and Gauntlet run, is unranked and cannot submit.
+- **Ranked runs:** a Survival run under the client's ruleset, started from the title screen or the Hangar while [Playground](experimental/spec.md) is Off, is scored and ranked. A Survival run while Playground is On is not scored: it shows its time in place of the score, and `Unranked` on run complete. Practice, Derelicts and Gauntlet have no score. Every run while Playground is On, and every Practice, Derelicts and Gauntlet run, is unranked and cannot submit.
 - **Scores:** a ranked run can be saved to the shared board. The [scores contract](scores/spec.md) owns what is saved, the board and its rules.
 - **Replay:** identical validated settings and inputs reproduce the same world state, step for step.
 - **Offline:** without Firebase the game stays fully playable, and score features explain why they are unavailable.
 - **Version labels:** the title screen and the leaderboard show the web package version, which is separate from the ruleset name.
-- **Run complete:** a ranked Survival run shows its score and the time survived; with Playground On it shows the scoring-off notice in place of the score, and the time. The dialog shows one vertical action group. On a ranked run, Save Score is primary when submission is available, and the dialog says why when it is not; unranked runs show no Save Score. Returning to where the run started is secondary, and so is Top Scores after a Survival run. Practice has no run complete.
+- **Run complete:** a ranked Survival run shows its score as the hero value with the time survived beneath it; with Playground On it shows the time as the hero value. A run that is not ranked shows `Unranked`. The cause of the loss shows as a tag. The dialog shows one vertical action group. On a ranked run, Save Score is primary when submission is available, and the dialog says why when it is not; unranked runs show no Save Score. [Retry](game-over/spec.md) is always available: it is secondary on ranked results and primary on unranked results. The launch-source action is secondary. Practice has no run complete.
 
 ## Contract
 
@@ -91,7 +87,7 @@ with one meaning each.
   submission.
 - A Survival run launched from the Hangar with Playground Off is ranked
   like a title-screen run; with Playground On, no run shows a score or Save
-  Score, and a Survival run shows its time and the scoring-off notice.
+  Score, and a Survival run shows its time, and `Unranked` on run complete.
 - Two simulations given the same validated settings and replay inputs end
   with identical ship and world state; invalid replay input is rejected.
 - With Firebase unconfigured, title and Hangar runs start, finish and return
@@ -101,10 +97,9 @@ with one meaning each.
   unavailable.
 - The title screen and the leaderboard show the version from
   `apps/web/package.json`, independently of `CHALLENGE`.
-- A ranked run complete shows one vertical action group: Save Score filled
-  and first, then return to the launch source and Top Scores as ghost actions.
-- Every run complete offers return to the launch source, and a Survival run
-  complete also offers Top Scores.
+- A ranked run complete shows one vertical action group with Save Score first,
+  followed by Retry and the [launch-source action](game-over/spec.md).
+- Every run complete offers Retry and the launch-source action.
 - Screens name ships, slots, slot types, parts, fittings, builds and runs by
   the terms above.
 
@@ -157,13 +152,13 @@ Scenario Outline: Return to the launch source
     | title screen | pause Abort      |
     | Hangar       | pause Abort      |
     | title screen | game-over Return |
-    | Hangar       | game-over Return |
+    | Hangar       | game-over Hangar |
 
 Scenario: Playground run is unscored
   Given Playground is On
   And a Survival run launched from the Hangar
   When the run ends
-  Then run complete shows the time and the scoring-off notice
+  Then run complete shows the time and `Unranked`
   And it shows no score and no Save Score
   And no score is submitted
 

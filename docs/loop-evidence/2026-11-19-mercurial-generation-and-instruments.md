@@ -26,7 +26,7 @@ fixed generated mass 1450 is superseded, not a surviving mode distinction.
   and Inspector radius edits/seeks, removes duplicate moon-mass settings, and
   adds mass/pull parity tests. It also fixes Inspector selection details,
   System normal-action buttons, overlay layout and full warp-boundary framing.
-- The [completed plan](../plans/2026-11-19-generated-mercurial-planet.md)
+- The [completed plan](https://github.com/villetakanen/void-drift/blob/9e1e7a2e861ba43db58b536339421da586e3e928/docs/plans/2026-11-19-generated-mercurial-planet.md)
   summarizes final scope and links the owning contracts. It supersedes the
   earlier plan's pending-slice wording; Git retains its delivery notes.
 

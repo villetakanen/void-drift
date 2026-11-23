@@ -27,9 +27,12 @@ describe("Input", () => {
   let win: EventTarget;
   let doc: EventTarget & { hidden: boolean };
   let input: Input;
-  const key = (type: "keydown" | "keyup", code: string) => {
+  const key = (type: "keydown" | "keyup", code: string, repeat = false) => {
     const event = new Event(type, { cancelable: true });
-    Object.defineProperty(event, "code", { value: code });
+    Object.defineProperties(event, {
+      code: { value: code },
+      repeat: { value: repeat },
+    });
     win.dispatchEvent(event);
   };
 
@@ -44,6 +47,17 @@ describe("Input", () => {
   afterEach(() => {
     input.destroy();
     vi.unstubAllGlobals();
+  });
+
+  it("requires a fresh key press after a reset even if the old key repeats", () => {
+    key("keydown", "KeyA");
+    expect(input.getAction()).toBe("L");
+    input.reset();
+    key("keydown", "KeyA", true);
+    expect(input.getAction()).toBeNull();
+    key("keyup", "KeyA");
+    key("keydown", "KeyA");
+    expect(input.getAction()).toBe("L");
   });
 
   it("clears every key and press on blur and a hidden page", () => {

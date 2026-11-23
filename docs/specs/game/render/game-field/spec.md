@@ -1,17 +1,13 @@
 ---
-
-title: "Spec: Game field"
-status: draft
 generated:
   by: "codex/gpt-6"
   at: "2026-11-19T21:42:03+02:00"
 verified:
-- { by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }
 - { by: "human:ville.takanen", at: "2026-11-19T17:24:03+02:00" }
-
+- { by: "human:ville-takanen", at: "2026-11-23" }
 ---
 
-# Spec: Game field
+# Game field
 
 ## Blueprint
 

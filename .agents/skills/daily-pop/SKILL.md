@@ -27,7 +27,7 @@ Keep alternate candidates internal. Do not rank findings by severity or fill an 
 
 ## Ask
 
-Use this interaction contract:
+Use this interaction sequence:
 
 ```md
 ## Daily Pop — [one clear question]

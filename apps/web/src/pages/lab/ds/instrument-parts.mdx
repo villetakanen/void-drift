@@ -9,8 +9,7 @@ import ComponentFrame from "../../../components/lab/ComponentFrame.svelte";
 import InstrumentPartsExample from "../../../components/lab/InstrumentPartsExample.svelte";
 import DesignSystemLayout from "../../../layouts/DesignSystemLayout.astro";
 
-<DesignSystemLayout title="Instrument parts" wide>
-<div className="instrument-parts-guide">
+<DesignSystemLayout title="Instrument parts" contentClass="instrument-parts-guide" documentProse wide>
 
 # Instrument parts
 
@@ -133,18 +132,11 @@ the values needed to display or edit that experiment, while the host decides
 which parts belong in its view. General controls such as
 [`RingSlider`](/lab/ds/slider) remain documented on their own design system pages.
 
-</div>
 </DesignSystemLayout>
 
 <style>{`
-.instrument-parts-guide { display: grid; gap: var(--spacing-lg); width: 100%; max-width: 1280px; box-sizing: border-box; margin-inline: auto; padding: var(--spacing-lg); }
-.instrument-parts-guide h1 { margin: 0; font-size: var(--font-size-heading); }
-.instrument-parts-guide h2 { margin: var(--spacing-lg) 0 0; font-size: var(--font-size-lead); }
-.instrument-parts-guide h3 { margin: var(--spacing-lg) 0 var(--spacing-sm); font-size: var(--font-size-body); }
-.instrument-parts-guide p { max-width: var(--measure-prose); margin: 0 0 var(--spacing-md); line-height: 1.6; color: var(--color-text-muted); }
-.instrument-parts-guide table { width: 100%; max-width: 900px; border-collapse: collapse; font-size: var(--font-size-body); }
+.instrument-parts-guide > table { width: 100%; border-collapse: collapse; font-size: var(--font-size-body); }
 .instrument-parts-guide th, .instrument-parts-guide td { padding: var(--spacing-sm) var(--spacing-md); text-align: left; border-bottom: 1px solid var(--color-border-subtle); vertical-align: top; }
 .instrument-parts-guide th { color: var(--color-text-muted); font-weight: 400; }
 .instrument-parts-guide th:first-child, .instrument-parts-guide td:first-child { padding-left: 0; white-space: nowrap; }
-.instrument-parts-guide a { color: var(--color-action); }
 `}</style>

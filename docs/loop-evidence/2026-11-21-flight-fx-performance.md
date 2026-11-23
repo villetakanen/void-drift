@@ -74,3 +74,23 @@ treatment. The owner said it was the live web version, but this session did not
 independently inspect the deployed site or identify the deployed revision. No
 code or production changes were made in this follow-up; the report and this
 evidence addendum are documentation only.
+
+## Later Windows Firefox capture · 21 November
+
+The owner supplied a second Render Performance bench capture, attributed to
+Antti L. It used 25 scenarios with alternating ion and plasma main engines,
+Low-res CSS glow, and a 1920 × 1080 backing for World, FX and LFX. The report
+identifies Firefox 158.0 on Windows 10, with hardware label unspecified. It
+reports 350.04 seconds of active measurement, 60.0 callbacks/s, 16.66 ms median
+and 16.68 ms p95 callback intervals, and 2/3 ms median/p95 synchronous JS and
+Canvas submission. Full reported values are retained in the
+[Firefox performance report](../reports/2026-11-21-firefox-render-performance.md).
+
+The owner said, “seems we got the perf fixed”. This records the owner's
+interpretation of the capture, not an independently established conclusion.
+The timing statistics cover the reported rolling 10-second interval and 600
+samples; the longer active duration does not extend that statistics window.
+This is user-supplied output without a separate raw export or device-side
+recording. The bench does not measure GPU completion or actual displayed-frame
+presentation. Hardware is unspecified, and this run has no same-machine
+comparison against another FX treatment.

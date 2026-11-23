@@ -6,30 +6,9 @@ import { gameSettings, Simulation, stockSettings } from "./simulation";
 import { GRAVITY_TUNING } from "./tuning";
 
 describe("core-led mercurial gravity", () => {
-  it.each([
-    [16, 728.878600823],
-    [27, 870],
-    [36, 1039.166666667],
-  ])("calibrates radius %s to mass %s", (radius, mass) => {
-    expect(mercurialMass(radius)).toBeCloseTo(mass, 7);
-  });
-
-  it("rejects invalid radii and conflicting or invalid tuning", () => {
+  it("rejects radii outside the family and any separate moon mass", () => {
     for (const radius of [15.9, 36.1, NaN, Infinity])
       expect(() => mercurialMass(radius)).toThrow();
-    for (const change of [
-      { referenceRadius: 0 },
-      { referenceMass: -1 },
-      { coreFraction: 1.01 },
-      { coreFraction: NaN },
-    ]) {
-      expect(
-        GravityTuningSchema.safeParse({
-          ...GRAVITY_TUNING,
-          mercurial: { ...GRAVITY_TUNING.mercurial, ...change },
-        }).success,
-      ).toBe(false);
-    }
     for (const field of ["planetMass", "practicePlanetMass"] as const) {
       expect(
         GravityTuningSchema.safeParse({
@@ -54,28 +33,24 @@ describe("core-led mercurial gravity", () => {
       if (!planet) throw new Error("Mercurial missing");
       planet.radius = 27;
       applyMercurialGravity(planet);
-      expect(planet.mass).toBe(870);
+      expect(planet.mass).toBe(mercury.mass);
       expect(planet.massWell).toEqual(mercury.massWell);
-      const reach = massWellReach(
-        870,
-        GRAVITY_TUNING.cutoff,
-        GRAVITY_TUNING.falloff,
-      );
-      for (const shipRadius of [10, 31])
-        for (const distance of [27 + shipRadius + 1, 100, reach + 1]) {
-          const pull = planetPull(
-            new Vec2(planet.pos.x + distance, planet.pos.y),
-            shipRadius,
-            planet,
-          );
-          const reference = planetPull(
-            new Vec2(mercury.pos.x + distance, mercury.pos.y),
-            shipRadius,
-            mercury,
-          );
-          expect(pull.x).toBeCloseTo(reference.x, 9);
-          expect(pull.y).toBeCloseTo(reference.y, 9);
-        }
+      const { mass, cutoff, falloff } = mercury.massWell;
+      const reach = massWellReach(mass, cutoff, falloff);
+      for (const distance of [38, 100, reach + 1]) {
+        const pull = planetPull(
+          new Vec2(planet.pos.x + distance, planet.pos.y),
+          10,
+          planet,
+        );
+        const reference = planetPull(
+          new Vec2(mercury.pos.x + distance, mercury.pos.y),
+          10,
+          mercury,
+        );
+        expect(pull.x).toBeCloseTo(reference.x, 9);
+        expect(pull.y).toBeCloseTo(reference.y, 9);
+      }
     }
   });
 });

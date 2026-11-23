@@ -4,7 +4,8 @@ description: Prepare meaningful Conventional Commit messages when committing or 
 ---
 # Commit messages
 - Stage the whole checkout; other sessions' in-flight work belongs to the snapshot.
-- Format and check the whole tree first; fix forward when another session's work fails the hook.
+- Run `pnpm verify:changed` first; it picks the checks that fit the changed paths. Fix forward when another session's work fails it or the hook.
+- Leave full `pnpm verify`, the browser suite and the emulators to a release unless `verify:changed` selects them.
 - Name the headline change; the type describes it, not every hunk.
 - Follow the repository's commitlint configuration for message syntax.
 - Use feat for capabilities and fix for corrected behavior.

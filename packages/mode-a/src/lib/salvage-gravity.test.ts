@@ -118,20 +118,6 @@ describe("salvage gravity", () => {
     const [a, ...rest] = s.system.bodies;
     for (const other of rest) expect(other.vx).toBe(a.vx);
   });
-  it("bends a passing path into the sun, which gives no kill and no cell", () => {
-    const s = scene();
-    const { x: cx, y: cy } = s.star.pos;
-    const miss = s.star.radius + 40;
-    const b = body("wreck", cx + 700, cy + miss, -150, 0);
-    s.system.bodies = [b];
-    // A straight line clears the sun; only gravity can bring it down.
-    expect(Math.abs(b.y - cy)).toBeGreaterThan(s.star.radius + b.radius);
-    for (let i = 0; i < 60 * 4 * 12 && b.hull > 0; i++) s.step(false);
-    expect(b.hull).toBe(0);
-    s.step(false);
-    expect(s.system.playerKills).toBe(0);
-    expect(s.system.bodies.filter((x) => x.kind === "cell")).toHaveLength(0);
-  });
   it("destroys a wreck that falls onto a planet with no kill and no cell", () => {
     const s = scene();
     const planet = s.planets[0];

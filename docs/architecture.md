@@ -14,7 +14,7 @@ Read for changes to structure, simulation, or data flow. Product intent belongs 
   game time. Core owns buffers, stamp caches, bounded moving sparks and scene budgets;
   mode supplies actual engine and collector activity. Engines retain only current
   outlets, not trail history. `/lab/fx` exercises six production simulations together.
-  The [FX contract](specs/factory/effects/spec.md) owns lifecycle and performance acceptance.
+  The [FX spec](specs/factory/effects/spec.md) owns lifecycle and performance acceptance.
 - The in-flight picture follows the [render model](specs/game/render/spec.md). It is a
   browser-composited stack. A prepared Milky Way image sits beneath World. Practice decodes the fixed Sol tile.
   Survival, Derelicts and Gauntlet prepare one image from the run seed during arrival.
@@ -30,7 +30,7 @@ Read for changes to structure, simulation, or data flow. Product intent belongs 
 - Replay takes validated settings and ordered input/tick chunks. Rendering reads state;
   simulation time drives orbits and animation. Camera zoom frames the ship and star,
   with an explicit snap when crossing the circular arena boundary.
-- `packages/mode-a/src/schemas/highscore.ts` defines the strict score contract.
+- `packages/mode-a/src/schemas/highscore.ts` defines the strict score schema.
 - Production is a static Astro build; package manifests own dependency versions.
 
 ## Agreed boundaries
@@ -50,13 +50,13 @@ Read for changes to structure, simulation, or data flow. Product intent belongs 
 - The target simulation accepts explicit time, randomness, configuration, and input
   so scenarios can be replayed. Rendering consumes simulation state.
 - Lab and game consume the same simulation, camera, configuration, and drawing code.
-- Zod schemas define changed data contracts before their consumers are implemented.
+- Zod schemas define changed data shapes and validation rules before their consumers are implemented.
   Parse network data at the boundary; keep internal computation strictly typed.
 - Use Svelte 5 Runes for new reactive component state. Existing store integration
   is migration context. Use Astro routes for pages and local state for game screens.
 - Controls update the simulation immediately. If networked moving entities are
   introduced, interpolate snapshots and reconcile meaningful disagreement; send
-  essential state. Arena wraps and resets have explicit transition contracts.
+  essential state. Arena wraps and resets have explicit transition rules.
 
 ## Canonical feature names
 
@@ -110,7 +110,7 @@ historical roadmaps do not define current architecture requirements.
 ## Design tokens and component-private values
 
 Decision of 2026-10-28: public design-system tokens express shared visual
-contracts (palette, spacing, typography, control accessibility, motion and states).
+rules (palette, spacing, typography, control accessibility, motion and states).
 Components may also own private custom properties named `--_name`. These are not
 part of the public design-token API and need not be promoted merely because they
 are CSS variables.
@@ -122,7 +122,7 @@ gap. A button's radius alias or pseudo-element inset may be private while its sh
 shape or border foundation remains public. Component-only constants can be private
 when they encode implementation rather than a cross-application design decision.
 Do not hide shared color, spacing, typography, focus or accessibility choices behind
-private literals to avoid defining their system contract.
+private literals to avoid defining their system rules.
 
 CSS does not enforce privacy: custom properties still inherit and can be overridden.
 The underscore is an ownership convention. Consumers must not depend on or override
@@ -186,7 +186,7 @@ schema boundary, so they cannot fall through to legacy stock physics or art.
 It enters the main menu as 05 and the Hangar as an unranked flight trial. Score
 validation retains the existing ranked fleet. Existing v3 Hangar stores gain a
 Fiddler starting build without replacing their other ships. See the
-[Hangar contract](specs/game/hangar/spec.md#fiddler-flight-trial--2026-11-03) for the
+[Hangar spec](specs/game/hangar/spec.md#fiddler-flight-trial--2026-11-03) for the
 accepted starting fit and remaining human flight review.
 
 ## Shared development preview

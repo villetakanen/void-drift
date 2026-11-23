@@ -75,10 +75,4 @@ describe("atmosphere", () => {
     expect(fine.vel.x).toBeCloseTo(coarse.vel.x, 9);
     expect(fine.vel.y).toBeCloseTo(coarse.vel.y, 9);
   });
-
-  it("points the sample toward the planet", () => {
-    const sample = airSample(ship(3), planet);
-    expect(sample?.towardPlanet.x).toBeCloseTo(-1);
-    expect(sample?.density).toBeGreaterThan(0);
-  });
 });

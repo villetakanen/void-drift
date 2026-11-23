@@ -1,16 +1,26 @@
 /* Long-form reading surface: studies, help and docs.
-   Descendant rules use :where() so local component styles still win. */
+   Descendant rules use :where() so local component styles still win.
+   Document prose starts at authored blocks, not the host: example wrappers
+   and the host's inherited font and ch metrics stay in the UI role. */
 .prose {
-  font-family: var(--font-family-prose);
   font-size: 1rem;
+}
+
+.prose,
+:where(
+  .document-prose
+    > :is(h1, h2, h3, h4, h5, h6, p, ul, ol, dl, blockquote, table, aside)
+) {
+  font-family: var(--font-family-prose);
   line-height: var(--line-height-prose);
 }
 
-:where(.prose) :where(p, li) {
+:where(.prose) :where(p, li),
+:where(.document-prose > pre) {
   line-height: var(--line-height-prose);
 }
 
-:where(.prose) :where(h1) {
+:where(.prose h1, .document-prose > h1) {
   font-family: var(--font-family-display);
   font-weight: var(--font-weight-display);
   font-size: var(--font-size-display);
@@ -19,13 +29,13 @@
   margin-block: var(--spacing-md);
 }
 
-:where(.prose) :where(h2) {
+:where(.prose h2, .document-prose > h2) {
   font-size: var(--font-size-heading);
   line-height: var(--line-height-heading);
   margin-bottom: var(--spacing-md);
 }
 
-:where(.prose) :where(section > h3) {
+:where(.prose section > h3, .document-prose > h3) {
   margin-block: var(--spacing-lg) var(--spacing-sm);
 }
 
@@ -43,6 +53,11 @@
   line-height: 1.6;
 }
 
-:where(.prose) :where(a) {
+:where(
+  .prose a,
+  .document-prose
+    > :is(h1, h2, h3, h4, h5, h6, p, ul, ol, dl, blockquote, table, aside)
+    a
+) {
   color: var(--color-action);
 }

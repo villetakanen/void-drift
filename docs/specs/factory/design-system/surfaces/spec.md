@@ -1,17 +1,11 @@
 ---
-
-title: "Spec: Surfaces and layers"
-status: draft
 generated:
-  by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-19T12:32:56+02:00"
-verified:
-- by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-19T12:33:38+02:00"
-
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-22T08:54:39Z"
+verified: []
 ---
 
-# Spec: Surfaces and layers
+# Surfaces and layers
 
 ## Blueprint
 
@@ -55,7 +49,7 @@ fill can be translucent while the edge and shadow follow the cut:
 
 | Class          | Fill                    | Edge             | Corners | Shadow                             | Use                                   |
 | -------------- | ----------------------- | ---------------- | ------- | ---------------------------------- | ------------------------------------- |
-| `.panel`       | `--panel-fill` (elev-2) | `--color-border` | `lg`    | `--panel-shadow` (0 8px 24px, 70%) | Game menus and dialogs over the stage |
+| `.panel`       | `--panel-fill` (elev-2) | `--color-border` | `lg`    | `--panel-shadow` (0 8px 24px, 70%) | Game menus and dialogs; Design system page asides |
 | `.panel--flat` | the same                | `--color-border` | `lg`    | none                               | Status messages on the live game      |
 - Panels give game menus and dialogs the same surface treatment. The host
   owns content and arrangement; using a panel or scrim does not make a menu
@@ -63,6 +57,13 @@ fill can be translucent while the edge and shadow follow the cut:
 - The panel is elevation 2 on the console form: the instrument display's edge and shadow.
 - Consumers: the title and Options menus, pause and run complete (`.flight-card` on the panel) and the flight
   status message (`.flight-message`, flat).
+- In `DesignSystemLayout`, a plain authored `<aside>` that is a direct child of the
+  main content container automatically gets the shared standard `.panel` treatment,
+  including its fill, cut edge, shadow and padding. Authors supply only the aside
+  and its content. The [Documents grid](../documents-grid/spec.md) owns placement:
+  the treatment is the same in the wide gutter and the narrow source-order stack.
+- Shell navigation and inspector rails retain their shell styling. Asides nested
+  inside live examples retain their component's styling.
 
 #### Scrim (the offline feed)
 
@@ -115,7 +116,8 @@ The only `z-index` values in shared UI. Gaps leave room for a later layer.
 - Cut fills, edges and shadows follow one geometry.
 - Game panels and flat status messages use the specified shared treatments.
 - Dialog and stage scrims compose independently of modality.
-- The canonical Lab demonstrates cut surfaces and layer order.
+- `/lab/surfaces` demonstrates cut surfaces and layer order, and includes a direct
+  authored `<aside>` showing the automatic standard panel treatment.
 
 ### Regression guardrails
 
@@ -136,4 +138,17 @@ Scenario: Cover the stage without changing modality
   When the scrim is shown
   Then the stage receives the shared offline-feed treatment
   And the screen's interaction owner determines modality
+
+Scenario: Render the canonical authored aside as a panel
+  Given /lab/surfaces has a plain aside authored directly in DesignSystemLayout's main content
+  When the document has room for three columns
+  Then the aside sits in the gutter with the standard panel fill, cut edge, shadow and padding
+  When the content container switches to the narrow stack at a supported Lab viewport width
+  Then the aside keeps the same treatment in its source-order position
+
+Scenario: Keep automatic panel styling inside the authored document
+  Given a Design system page has shell navigation and inspector rails and a live example with a nested aside
+  When the page renders
+  Then the rails keep their shell styling
+  And the nested aside keeps its component styling
 ```

@@ -22,7 +22,7 @@ choose before the stage carries on. Today:
 | Dialog       | Screen                    | Label          | Escape           | Focus on open                                     |
 | ------------ | ------------------------- | -------------- | ---------------- | ------------------------------------------------- |
 | Paused       | game, builder test flight | "Paused"       | resumes (closes) | Resume                                            |
-| Run complete | game, custom survival     | "Run complete" | does nothing     | Initials when shown, else return to launch source |
+| Run complete | game, custom survival     | "Run complete" | does nothing     | Return to launch source; for a ranked result, the dialog until its best check resolves, then Initials for a new best, else the launch source |
 
 Not dialogs:
 
@@ -68,7 +68,9 @@ In FlightDeck the stage is `.flight-stage-layer`: the canvas and the deck.
    blend, and the scrim layer carries `--scrim-surface`: the game reads as an offline feed behind
    the panel, its colours kept but pulled toward hue 290.
 5. **Focus moves in.** On open, focus moves to the element marked `data-autofocus`, else the
-   first control in the panel, else the panel itself.
+   first control in the panel, else the panel itself. Content that is still loading may mark itself
+   `data-hold-focus`: focus then rests on the panel, and the content places it when it is ready,
+   only if the player has not moved it.
 6. **Focus returns.** On close, focus returns to the element that had it when the dialog opened,
    if it is still in the page and not inert; otherwise it stays where the page puts it. The stage
    is released before focus returns, so a control inside the stage can take it back.

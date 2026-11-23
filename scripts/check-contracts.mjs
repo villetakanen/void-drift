@@ -169,7 +169,7 @@ assert.equal(labGameModes.length, 0, "Lab files must not import a game mode");
 console.log(`Lab: ${labFiles.length} files; none imports a game mode.`);
 
 // The design system has one home in the Lab. Its pages live at /lab/ds/<name>;
-// each names the shared files it demonstrates and the section of its contract;
+// each names the shared files it demonstrates and the section of its spec;
 // and every shared input and stylesheet is demonstrated by one of them.
 // Pages still at an earlier address are listed here. The list only shrinks:
 // a page moves when it is next changed, and its line goes with it.
@@ -227,7 +227,7 @@ for (const page of designSystemPages) {
       );
   const [specFile, section] = (page.spec ?? "").split("#");
   if (!specFile || !existsSync(specFile)) {
-    designSystemFailures.push(`${page.href}: "spec" must name its contract`);
+    designSystemFailures.push(`${page.href}: "spec" must name its spec`);
   } else if (
     !readFileSync(specFile, "utf8")
       .split("\n")

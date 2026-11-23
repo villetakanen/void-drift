@@ -11,10 +11,18 @@
   /* The resting bracket of a quiet button: a dim step of the elevation hue,
 	   lit to the action colour under a pointer and on focus. */
   --color-bracket: lch(25% 32 290);
+  /* The line of a bracket drawn around a slot: half a grid unit. */
+  --bracket-width: calc(var(--spacing-xs) * 0.5);
+  /* How far a bracket stands in from the edge of a slot: the distance a
+	   focused call to action keeps between its edge and its bracket. */
+  --bracket-inset: 3px;
 
   /* Text */
   --color-text: lch(99.7% 7.45 104.72);
   --color-text-muted: lch(56.7% 0 0);
+  /* The letter an empty field shows before one is entered: a step of the
+	   elevation hue between the resting bracket and the text. */
+  --color-placeholder: lch(42% 28 290);
 
   /* Borders: white at fixed strengths, so they read on every surface. */
   --color-border: lch(100% 0 0 / 0.141);
@@ -40,6 +48,8 @@
   --spacing-md: 16px;
   --spacing-lg: 32px;
   --spacing-xl: 64px;
+  /* The gap between sibling items in a row or stack: four grid units. */
+  --spacing-gap: calc(var(--spacing-xs) * 4);
 
   /* Text fields only; surfaces and controls cut their corners. */
   --radius-sm: 2px;

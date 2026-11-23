@@ -1,14 +1,13 @@
 ---
-
-title: "Spec: Distant flight sky"
-status: draft
 generated:
   by: "codex/gpt-6"
   at: "2026-11-19T19:21:23+02:00"
-verified: [{ by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }, { by: codex/gpt-6, at: "2026-11-19T11:17:49+00:00" }, { by: codex/gpt-6, at: "2026-11-19T13:23:32+00:00" }, { by: codex/gpt-6, at: "2026-11-19T13:37:03+00:00" }, { by: codex/gpt-6, at: "2026-11-19T13:55:56+00:00" }, { by: "codex/gpt-6", at: "2026-11-19T19:21:23+02:00" }]
+verified:
+  - by: "human:ville-takanen"
+    at: "2026-11-23"
 ---
 
-# Spec: Distant flight sky
+# Distant flight sky
 
 ## Blueprint
 

@@ -301,7 +301,7 @@
     padding: var(--spacing-sm);
     gap: var(--spacing-sm);
   }
-  .flight-card p:not(.eyebrow) {
+  .flight-card p:not(.eyebrow, .tag, .unranked) {
     display: none;
   }
 }

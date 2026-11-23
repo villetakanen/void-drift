@@ -1,7 +1,12 @@
 # Development and verification
 
 Develop through conversation and browser inspection; an IDE is optional.
-Product contracts live in the [game contract](specs/game/spec.md) and its child specs.
+Product behaviour is described by the [game spec](specs/game/spec.md) and its child specs.
+
+Use **spec** for intended behaviour and its observable checks, **schema** for a
+defined data shape and validation rules, and **constraint** or **invariant** for
+a rule that must hold. Reserve **contract** for an explicit boundary agreement
+with defined obligations on each side. Existing spec headings retain their format.
 
 ## Setup
 
@@ -31,7 +36,7 @@ failure or source change during verification. It never auto-fixes source.
 
 | Command                 | Evidence                                                                                                                                         |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `pnpm check:contracts`  | Context and Markdown links, CSS/Canvas parity, runner regressions; missing link targets fail; size/scope warnings are advisory                   |
+| `pnpm check:repo`       | Context and Markdown links, CSS/Canvas parity, runner regressions; missing link targets fail; size/scope warnings are advisory                   |
 | `pnpm check:commits`    | Conventional Commit syntax after the adoption baseline                                                                                           |
 | `pnpm lint`             | Biome formatting/imports/recommended rules, warnings fail                                                                                        |
 | `pnpm check:types`      | Astro, Svelte, workspace and browser-harness TypeScript; Astro/Svelte warnings fail                                                              |
@@ -41,7 +46,26 @@ failure or source change during verification. It never auto-fixes source.
 | `pnpm test:rules`       | Firestore emulator allowed/rejected access cases                                                                                                 |
 | `pnpm test:competition` | Two browser identities submit completed runs; third reads both scores via emulators                                                              |
 
-`pnpm verify:quick` runs contracts (including factory regression tests), lint, types
+`pnpm check:contracts` remains an alias for `pnpm check:repo` for existing references.
+
+### Which checks to run
+
+Before a commit, run `pnpm verify:changed`. It reads every path that differs from
+HEAD and selects the checks that fit, through the same recorded runner:
+
+| Changed paths                                                                   | Checks                                    | Typical time |
+| ------------------------------------------------------------------------------- | ----------------------------------------- | ------------ |
+| Only documents (`docs/`, agent skills and instructions, top-level Markdown)     | `check:repo`, `lint`                      | 6 s          |
+| Anything else                                                                   | adds `check:types`, `test`                | 25 s         |
+| Browser tests, their helpers, `playwright.config.ts`                            | adds `build`, `test:browser`              | 2 min        |
+| Firestore rules/indexes, Firebase config or client, leaderboard schema, backend tests | adds `test:rules`, `test:competition` (Java emulators) | 1.5 min |
+
+Full `pnpm verify` is for a release, following the Release section. Do not run it,
+or the emulator and browser suites, for a commit that `verify:changed` did not
+select them for. A changed-mode report is partial verification, like a quick run.
+Spec edits also run `pnpm check:specs` on the edited subtree.
+
+`pnpm verify:quick` runs repository checks (including factory regression tests), lint, types
 and unit tests through the same recorded runner. It exits nonzero on failure or
 source changes, but is always **partial verification**, not a full pass. Reports
 include `mode`, `partial`, `skippedSteps` and `selectedChecksPassed`; `passed` is
@@ -96,8 +120,8 @@ screenshots and retained failure traces remain enabled. Capture completion is no
 human visual approval or an additional correctness gate.
 
 The title screen is ordinary navigation. Actual dialogs trap focus and isolate the
-stage; see the [dialog contract](specs/game/dialogs/spec.md) and the resolved
-[composition plan](plans/2026-11-03-opening-screen-dialog-boundary.md).
+stage; see the [dialog spec](specs/game/dialogs/spec.md) and the resolved
+[composition plan](https://github.com/villetakanen/void-drift/blob/9e1e7a2e861ba43db58b536339421da586e3e928/docs/plans/2026-11-03-opening-screen-dialog-boundary.md).
 
 Flight and FX captures use explicit viewport, seed and simulation time for human
 review. Alpha 0.5.0 removes pixel equality gates for the combined flight canvas and
@@ -149,8 +173,8 @@ add a rule for the new name and document ID prefix to `firestore.rules`; this
 starts a new board. Keep the rule of every ruleset that a released client still
 carries, so that client keeps its board.
 Record the ranked Survival comparison decision and its reason in the release note.
-Make the decision against the last published release, not intermediate edits
-([gravity-field.md](specs/game/world/gravity-field/spec.md#rules-version)).
+Make the decision against the last published release, not intermediate edits.
+See the [scores contract](specs/game/scores/spec.md).
 
 After the full verification gates pass on a stable candidate, prepare the production
 artifact locally:

@@ -39,11 +39,20 @@ export const labPages = z.array(labPageSchema).parse([
   {
     href: "/lab/ds/component-frame",
     title: "Component frame",
-    purpose: "A shared boundary and width container for live examples.",
+    purpose: "Shows a component's own box and spacing, isolated from the page.",
     group: "design-system",
     source: "production",
     defines: ["apps/web/src/components/lab/ComponentFrame.svelte"],
     spec: "docs/specs/factory/design-system/component-frame/spec.md#architecture",
+  },
+  {
+    href: "/lab/ds/documents-grid",
+    title: "Documents grid",
+    purpose: "A width-aware layout for prose, asides, tables and examples.",
+    group: "design-system",
+    source: "production",
+    defines: ["packages/core/src/lib/styles/documents-grid.css"],
+    spec: "docs/specs/factory/design-system/documents-grid/spec.md#architecture",
   },
   {
     href: "/lab/ds/page-header",
@@ -53,6 +62,15 @@ export const labPages = z.array(labPageSchema).parse([
     source: "production",
     defines: ["apps/web/src/components/PageHeader.svelte"],
     spec: "docs/specs/factory/design-system/page-header/spec.md#architecture",
+  },
+  {
+    href: "/lab/ds/tray",
+    title: "Tray",
+    purpose: "Grouped navigation with a quiet current-page indicator.",
+    group: "design-system",
+    source: "production",
+    defines: ["apps/web/src/components/Tray.svelte"],
+    spec: "docs/specs/factory/design-system/tray/spec.md#architecture",
   },
   {
     href: "/lab/sky-instrument",
@@ -154,6 +172,15 @@ export const labPages = z.array(labPageSchema).parse([
       "apps/web/src/components/inputs/Switch.svelte",
     ],
     spec: "docs/specs/factory/design-system/choices/spec.md#architecture",
+  },
+  {
+    href: "/lab/ds/initials",
+    title: "Initials",
+    purpose: "The three-letter leaderboard input.",
+    group: "design-system",
+    source: "production",
+    defines: ["apps/web/src/components/inputs/Initials.svelte"],
+    spec: "docs/specs/factory/design-system/initials/spec.md#architecture",
   },
   {
     href: "/lab/ds/slider",

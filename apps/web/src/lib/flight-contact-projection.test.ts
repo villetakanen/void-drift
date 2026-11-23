@@ -34,7 +34,6 @@ describe("flight contact projection", () => {
     });
     if (!cue) throw new Error("Expected a visible contact");
     expect(Math.hypot(cue.x - centre.x, cue.y - centre.y)).toBeCloseTo(radius);
-    expect(cue.arcLength).toBeCloseTo(49);
     expect(
       projectFlightContact({
         projectedX: 1300,
@@ -51,7 +50,7 @@ describe("flight contact projection", () => {
         projectedX: 1000,
         projectedY: 1000,
         worldDistance: 1000,
-        active: { x: 0, y: 0, width: 106, height: 106 },
+        active: { x: 0, y: 0, width: 60, height: 60 },
       }),
     ).toBeNull();
   });

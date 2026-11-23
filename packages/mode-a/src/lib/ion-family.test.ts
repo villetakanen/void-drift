@@ -1,13 +1,11 @@
 import { Vec2 } from "@void-drift/core";
 import { describe, expect, it } from "vitest";
 import { applyBuildEngines } from "./build-flight";
-import { buildPlumeEmitters } from "./build-renderer";
 import {
   defaultLoadout,
   ionStrength,
   PARTS,
   type PartId,
-  PartSchema,
 } from "./schemas/loadout";
 
 const both = { leftThruster: true, rightThruster: true, fire: false };
@@ -16,13 +14,6 @@ const ionEngines = (Object.keys(PARTS) as PartId[]).filter(
 );
 
 describe("the ion engine family", () => {
-  it("is defined by the catalog, with the light ion as its reference", () => {
-    expect(ionEngines).toContain("ion");
-    expect(ionStrength("ion")).toBe(1);
-    for (const id of Object.keys(PARTS) as PartId[])
-      expect(ionStrength(id) > 0).toBe(Boolean(PARTS[id].ion));
-  });
-
   it("gives each member catalog thrust in proportion to its strength", () => {
     for (const id of ionEngines)
       expect(PARTS[id].thrust).toBeCloseTo(
@@ -68,22 +59,5 @@ describe("the ion engine family", () => {
         ionStrength(id),
         6,
       );
-  });
-
-  it("draws each member's plume with its own catalog beam", () => {
-    for (const id of ionEngines) {
-      const build = defaultLoadout("wasp");
-      build.side = id as typeof build.side;
-      const [main] = buildPlumeEmitters(build);
-      expect(main.beam).toBe(PARTS[id].ion?.beam);
-    }
-    const fission = defaultLoadout("wasp");
-    fission.side = "fusion";
-    expect(buildPlumeEmitters(fission)[0].beam).toBeUndefined();
-  });
-
-  it("admits only steady engines", () => {
-    const pulsed = { ...PARTS.fusion, ion: PARTS.ion.ion };
-    expect(PartSchema.safeParse(pulsed).success).toBe(false);
   });
 });

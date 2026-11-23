@@ -23,19 +23,17 @@ import {
   type FlightMode,
   type FlightTickInput,
   fittedParts,
-  HighScoreSubmissionSchema,
   isScoredEligible,
   type Loadout,
   LoadoutSchema,
+  RankedRunSchema,
   resizeFlightLayers,
   type ShipProfileId,
   Simulation,
   STEP,
-  scoresAvailable,
   stockSettings,
-  submitHighScore,
 } from "@void-drift/mode-a";
-import { onMount, type Snippet } from "svelte";
+import { onMount, type Snippet, tick } from "svelte";
 import { HabitableMaterials } from "../lib/assets/habitable-materials";
 import { planetAppearances } from "../lib/assets/planet-appearances";
 import { createPracticeVenus } from "../lib/assets/practice-venus";
@@ -59,13 +57,15 @@ import { PAD_ASSEMBLY_HEIGHT_PX } from "./controls/thrust-pads";
 import Dialog from "./Dialog.svelte";
 import FlightContacts from "./FlightContacts.svelte";
 import GameFieldBackdrop from "./GameFieldBackdrop.svelte";
+import GameOver, { type GameOverOutcome } from "./GameOver.svelte";
 import PreviewMarker from "./PreviewMarker.svelte";
+import RankedResult from "./RankedResult.svelte";
 import TitleScreen from "./TitleScreen.svelte";
 
 let {
   loadout,
-  launchSource = "title",
-  mode = "survival",
+  launchSource: requestedSource = "title",
+  mode: requestedMode = "survival",
   onReturn,
   menu,
 }: {
@@ -76,6 +76,14 @@ let {
   /** A nonmodal menu foreground over the existing landing scene and scrim. */
   menu?: Snippet;
 } = $props();
+let runSetup = $state.raw<{
+  loadout: Loadout;
+  experimental: ExperimentalSetting;
+  mode: FlightMode;
+  source: "title" | "hangar";
+}>();
+const mode = $derived(runSetup?.mode ?? requestedMode);
+const launchSource = $derived(runSetup?.source ?? requestedSource);
 // Practice skips the arrival countdown and labels itself; its screen is Survival's.
 const testFlight = $derived(mode === "practice");
 let canvases = $state<FlightLayerCanvases>({});
@@ -103,8 +111,10 @@ const flightFx = new FlightFx();
 const currentLoadout = $derived(
   loadout ?? $shipSetup.builds[$shipSetup.builds.activeChassis],
 );
-let runLoadout = $state<Loadout>();
-let runExperimental = $state<ExperimentalSetting>("Off");
+const runLoadout = $derived(runSetup?.loadout);
+const runExperimental = $derived(
+  runSetup?.experimental ?? $shipSetup.experimental,
+);
 let launchBlocked = $state(false);
 let chosen = $derived<ShipProfileId>((runLoadout ?? currentLoadout).chassis);
 const currentLaunchAvailable = $derived(
@@ -146,6 +156,43 @@ let runSeed = $state(0);
 let action = $state<InputAction | null>(null);
 const lit = $derived(litPads(action));
 let cause = $state("");
+const completedGauntlet = $derived(mode === "gauntlet" ? gauntletResult : null);
+const outcome = $derived.by((): GameOverOutcome => {
+  if (completedGauntlet?.winner === "player") {
+    return {
+      tag: { text: "GAUNTLET CLEARED", tone: "neutral" },
+      value: "Victory",
+    };
+  }
+  if (completedGauntlet?.winner === "mutual") {
+    return {
+      tag: { text: "MUTUAL DESTRUCTION", tone: "alert" },
+      value: "Draw",
+    };
+  }
+  const tag = {
+    text:
+      cause === "STAR"
+        ? completedGauntlet
+          ? "LOST TO THE STAR"
+          : "TOO CLOSE TO THE STAR"
+        : cause === "HULL"
+          ? "HULL LOST"
+          : "POWER DEPLETED",
+    tone: "alert" as const,
+  };
+  if (completedGauntlet) return { tag, value: "Defeat" };
+  const time = `${seconds.toFixed(1)} seconds`;
+  if (mode === "survival" && !experimentalRun) {
+    return {
+      tag,
+      label: "Score",
+      value: score.toLocaleString("en-US"),
+      caption: `${time} survived`,
+    };
+  }
+  return { tag, label: "Time survived", value: time };
+});
 let salvageFeedback = $state("");
 let salvageStats = $state({
   passes: 0,
@@ -163,6 +210,7 @@ let landing = $state(false);
 let transitionTime = 0;
 let countTime = $state(-1);
 let lastFrameTime = 0;
+let accumulator = 0;
 let narrow = $state(false);
 let viewport: HTMLElement;
 let screen = $state(fitGameScreen(1920, 1080));
@@ -171,9 +219,9 @@ const adaptive = $derived(!landing);
 let sceneOpacity = $state(1);
 let reducedMotion = false;
 let stage: HTMLElement;
+let pauseButton: HTMLButtonElement;
 function enterMenu() {
-  runLoadout = undefined;
-  runExperimental = $shipSetup.experimental;
+  runSetup = undefined;
   launchBlocked = false;
   landing = true;
   sceneOpacity = 1;
@@ -184,8 +232,12 @@ function enterMenu() {
   skySeed = (crypto.getRandomValues(new Uint32Array(1))[0] % 2147483646) + 1;
 }
 let spin = $state(0);
-let message = $state("");
-let initials = $state("AAA");
+// Once a saved score is opening Top Scores, the result offers nothing else.
+let leaving = false;
+function openTopScores() {
+  leaving = true;
+  window.location.assign("/leaderboard");
+}
 // The bottom gutter describes the captured run, independently of launch source.
 const modeLabel = $derived(
   testFlight
@@ -196,46 +248,43 @@ const modeLabel = $derived(
         ? "G CLASS / SHARED CHALLENGE"
         : "UNRANKED",
 );
-let saving = $state(false);
-let scoreSaved = $state(false);
-function reset(start = false) {
-  skySeed = undefined;
-  if (phase !== "starting") phase = start ? "playing" : "menu";
+function freshSeed(previous?: number) {
+  const max = 2147483647;
+  const random = crypto.getRandomValues(new Uint32Array(1))[0];
+  if (previous === undefined) return (random % max) + 1;
+  // Sample the same range with the previous seed excluded.
+  const next = (random % (max - 1)) + 1;
+  return next >= previous ? next + 1 : next;
+}
+function reset(start = false, previousSeed?: number) {
+  const arrival = start && !testFlight;
+  const loadout = runLoadout ?? currentLoadout;
+  const stock = stockSettings(loadout.chassis);
   input?.reset();
-  simulation = new Simulation(
-    runLoadout
-      ? {
-          ...stockSettings(runLoadout.chassis),
-          loadout: runLoadout,
-          experimental: runExperimental,
-          mode,
-        }
-      : {
-          ...stockSettings(currentLoadout.chassis),
-          loadout: currentLoadout,
-          experimental: runExperimental,
-          mode,
-        },
-  );
-  if (start && !testFlight) {
-    simulation = new Simulation({
-      ...simulation.settings,
-      arrival: true,
-      seed: (crypto.getRandomValues(new Uint32Array(1))[0] % 2147483647) + 1,
-    });
-    countTime = 0;
-    phase = "starting";
-    skySeed = simulation.settings.seed;
-  } else countTime = -1;
+  action = null;
+  accumulator = 0;
+  lastFrameTime = performance.now();
+  simulation = new Simulation({
+    ...stock,
+    loadout,
+    experimental: runExperimental,
+    mode,
+    arrival,
+    seed:
+      arrival || previousSeed !== undefined
+        ? freshSeed(previousSeed)
+        : stock.seed,
+  });
+  phase = arrival ? "starting" : start ? "playing" : "menu";
+  countTime = arrival ? 0 : -1;
+  skySeed = arrival ? simulation.settings.seed : undefined;
   refreshPlanetAppearances();
   void habitableMaterials
     .prepare(simulation.planets)
     .then(refreshPlanetAppearances)
     .catch(() => {});
   if (start) simulation.start();
-  paused = start && narrow;
-  scoreSaved = false;
-  message = "";
+  paused = start && (narrow || document.hidden);
   // A new run enters the star system: the speed camera shows star and ship.
   frameCamera(true, $settings.speedCamera, true);
   sync();
@@ -333,29 +382,50 @@ function sync() {
   cameraFitHeight = camera?.activeHeight ?? 0;
   activeZoomSteps = simulation.settings.camera.zoomSteps;
 }
-function start() {
-  if (phase === "starting") return;
-  const selectedLoadout = LoadoutSchema.parse(currentLoadout);
-  const selectedExperimental = ExperimentalSettingSchema.parse(
+function captureSetup() {
+  const loadout = LoadoutSchema.parse(currentLoadout);
+  const experimental = ExperimentalSettingSchema.parse(
     shipSetup.get().experimental,
   );
-  if (selectedExperimental === "Off" && !isScoredEligible(selectedLoadout))
-    return;
-  runLoadout = selectedLoadout;
-  runExperimental = selectedExperimental;
+  if (experimental === "Off" && !isScoredEligible(loadout)) return false;
+  runSetup = {
+    loadout,
+    experimental,
+    mode: requestedMode,
+    source: requestedSource,
+  };
+  return true;
+}
+function beginFlight(previousSeed?: number) {
+  landing = false;
+  sceneOpacity = 1;
+  transitionTime = launchSource === "hangar" ? 0 : 0.3;
+  reset(true, previousSeed);
+}
+function start() {
+  if (phase === "starting" || !captureSetup()) return;
   launchBlocked = false;
   if (launchSource === "title" && !reducedMotion && landing) {
     phase = "starting";
     transitionTime = 0;
     paused = narrow;
     input?.reset();
-  } else {
-    landing = false;
-    phase = "playing";
-    transitionTime = 0.3;
-    reset(true);
-  }
+  } else beginFlight();
   (document.activeElement as HTMLElement)?.blur();
+}
+async function retry() {
+  if (!runSetup || status !== "GAME_OVER" || leaving) return;
+  beginFlight(simulation.settings.seed);
+  // Let GameOver release the deck. A replacement dialog keeps it inert.
+  await tick();
+  if (pauseButton?.isConnected && !pauseButton.closest("[inert]")) {
+    pauseButton.focus({ preventScroll: true });
+  }
+}
+function returnToSource() {
+  if (leaving) return;
+  if (launchSource === "hangar" && onReturn) onReturn();
+  else enterMenu();
 }
 function suspend() {
   input?.reset();
@@ -375,18 +445,10 @@ function advance(state: FlightTickInput) {
   frameCamera(before !== simulation.wraps);
   camera.update(STEP);
 }
-async function save() {
-  if (
-    mode !== "survival" ||
-    !rankedRun ||
-    !runLoadout ||
-    status !== "GAME_OVER" ||
-    saving ||
-    scoreSaved
-  )
-    return;
-  const submission = HighScoreSubmissionSchema.safeParse({
-    initials,
+/* The completed ranked run as its score record, without initials. */
+function rankedRecord() {
+  if (!rankedRun || !runLoadout) return undefined;
+  return RankedRunSchema.safeParse({
     seconds: Math.max(0.001, simulation.elapsedSeconds),
     score: simulation.survivalScore,
     shipId: chosen,
@@ -396,23 +458,11 @@ async function save() {
     challenge: CHALLENGE,
     deathCause: simulation.state.deathCause ?? "POWER",
   });
-  if (!submission.success) {
-    message = "This setup cannot be submitted for a score.";
-    return;
-  }
-  saving = true;
-  const result = await submitHighScore(submission.data);
-  saving = false;
-  scoreSaved = result.success;
-  if (result.success) {
-    window.location.assign("/leaderboard");
-  } else {
-    message = result.error;
-  }
 }
 // Pad presses count only while flight runs; releases always clear.
 function padPress(pointerId: number, pad: ThrustPad | null) {
-  if (pad && (paused || narrow || document.hidden)) return;
+  if (pad && (status !== "PLAYING" || paused || narrow || document.hidden))
+    return;
   input?.setPointer(pointerId, pad);
 }
 onMount(() => {
@@ -506,17 +556,10 @@ onMount(() => {
   // A new run's entrance view needs the stage geometry before it is framed.
   fitStage();
   if (launchSource === "title") enterMenu();
+  else if (captureSetup()) beginFlight();
   else {
-    const selectedLoadout = LoadoutSchema.parse(currentLoadout);
-    const selectedExperimental = shipSetup.get().experimental;
-    if (selectedExperimental === "Off" && !isScoredEligible(selectedLoadout)) {
-      launchBlocked = true;
-      reset(false);
-    } else {
-      runLoadout = selectedLoadout;
-      runExperimental = selectedExperimental;
-      reset(true);
-    }
+    launchBlocked = true;
+    reset(false);
   }
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const updateMotion = () => {
@@ -536,7 +579,6 @@ onMount(() => {
   window.addEventListener("resize", measure);
   measure();
   lastFrameTime = performance.now();
-  let accumulator = 0;
   let frame = 0;
   const playSurface = canvas.closest(".flight-stage-layer");
   const preventMenu = (event: Event) => event.preventDefault();
@@ -559,7 +601,6 @@ onMount(() => {
       if (transitionTime >= 0.15 && landing) {
         landing = false;
         reset(true);
-        accumulator = 0;
       }
       sceneOpacity =
         transitionTime < 0.15
@@ -791,6 +832,7 @@ onMount(() => {
             type="button"
             class="deck-button left"
             class:standby={status !== "PLAYING"}
+            bind:this={pauseButton}
             onclick={togglePause}
           >
             Pause
@@ -799,12 +841,15 @@ onMount(() => {
           <button type="button" class="deck-button right" disabled>
             Weapons
           </button>
-          <div class="deck-pads left">
-            <ThrustPads side="left" {lit} onpress={padPress} />
-          </div>
-          <div class="deck-pads right">
-            <ThrustPads side="right" {lit} onpress={padPress} />
-          </div>
+          <!-- A new run also drops pointer captures held by the old pads. -->
+          {#key runSeed}
+            <div class="deck-pads left">
+              <ThrustPads side="left" {lit} onpress={padPress} />
+            </div>
+            <div class="deck-pads right">
+              <ThrustPads side="right" {lit} onpress={padPress} />
+            </div>
+          {/key}
         </div>
         <div class="deck-info" data-deck>
           <small class="mode-label">{modeLabel}</small>
@@ -843,7 +888,7 @@ onMount(() => {
             <button
               type="button"
               class="btn btn-normal"
-              onclick={() => (onReturn ? onReturn() : enterMenu())}
+              onclick={returnToSource}
             >
               Abort
             </button>
@@ -861,7 +906,7 @@ onMount(() => {
             type="button"
             class="btn btn-filled"
             data-autofocus
-            onclick={() => (onReturn ? onReturn() : enterMenu())}
+            onclick={returnToSource}
           >
             Return to Hangar
           </button>
@@ -879,102 +924,44 @@ onMount(() => {
           />
         {/if}
       {:else if status === "GAME_OVER"}
-        <Dialog label="Run complete" class="flight-card">
-          {#if mode === "gauntlet" && gauntletResult}
-            <p class="eyebrow">
-              {gauntletResult.winner === "player"
-                ? "PIRATE DESTROYED"
-                : gauntletResult.winner === "mutual"
-                  ? "MUTUAL DESTRUCTION"
-                  : cause === "STAR"
-                    ? "LOST TO THE STAR"
-                    : cause === "HULL"
-                      ? "HULL LOST"
-                      : "POWER DEPLETED"}
-            </p>
-            <h1>
-              {gauntletResult.winner === "player"
-                ? "Victory"
-                : gauntletResult.winner === "mutual"
-                  ? "Draw"
-                  : "Defeat"}
-            </h1>
-            <p>Unranked Gauntlet encounter · {gauntletResult.cause}</p>
-          {:else}
-            <p class="eyebrow">
-              {cause === "STAR"
-                ? "TOO CLOSE TO THE STAR"
-                : cause === "HULL"
-                  ? "HULL LOST"
-                  : "POWER DEPLETED"}
-            </p>
-            {#if mode === "derelicts" && derelictsResult}
-              <h1>{seconds.toFixed(1)} seconds.</h1>
-              <p>{derelictsResult.playerKills} derelicts destroyed</p>
-              {#if experimentalRun}
-                <PreviewMarker />
-                <p>{NO_SCORE_NOTICE}</p>
-              {/if}
-            {:else}
-              <h1>{seconds.toFixed(1)} seconds.</h1>
-              {#if mode === "survival"}
-                {#if experimentalRun}
-                  <PreviewMarker />
-                  <p>{NO_SCORE_NOTICE}</p>
-                {:else}
-                  <p>Score {score}</p>
-                {/if}
-              {/if}
-              <p>Every orbit teaches you something.</p>
-            {/if}
+        {#snippet statistics()}
+          {#if !completedGauntlet && mode === "derelicts" && derelictsResult}
+            <p>{derelictsResult.playerKills} derelicts destroyed</p>
           {/if}
-          {#if rankedRun}
-            <label for="initials">Your initials</label>
-            <input
-              id="initials"
-              data-autofocus
-              maxlength="3"
-              bind:value={initials}
-              oninput={() => {
-                initials = initials.toUpperCase().replace(/[^A-Z]/g, "");
-              }}
+        {/snippet}
+        {@const ranked = rankedRecord()}
+        {#snippet unranked()}
+          <p role="status" class="unranked">Unranked</p>
+        {/snippet}
+        {#snippet rankedAction()}
+          {#if ranked?.success}
+            <RankedResult run={ranked.data} onsaved={openTopScores} />
+          {/if}
+        {/snippet}
+        <GameOver
+          {outcome}
+          {statistics}
+          resultFields={ranked?.success ? undefined : unranked}
+          resultAction={ranked?.success ? rankedAction : undefined}
+        >
+          {#snippet navigation()}
+            <button
+              type="button"
+              class={rankedRun ? "btn btn-normal" : "btn btn-filled"}
+              onclick={retry}
             >
-          {/if}
-          {#if message}
-            <p role="status" class="flight-message">{message}</p>
-          {/if}
-          <div class="button-group button-group--vertical">
-            {#if rankedRun}
-              <button
-                type="button"
-                class="btn btn-filled"
-                disabled={saving ||
-                  scoreSaved ||
-                  !scoresAvailable() ||
-                  !/^[A-Z]{3}$/.test(initials)}
-                onclick={save}
-              >
-                {saving ? "Saving…" : scoreSaved ? "Saved" : "Save Score"}
-              </button>
-              {#if !scoresAvailable()}
-                <p role="status">Score submission is currently unavailable.</p>
-              {/if}
-            {/if}
+              Retry
+            </button>
             <button
               type="button"
               class="btn btn-normal"
               data-autofocus
-              onclick={() => (onReturn ? onReturn() : enterMenu())}
+              onclick={returnToSource}
             >
-              {launchSource === "hangar"
-                ? "Return to Hangar"
-                : "Return to title screen"}
+              {launchSource === "hangar" ? "Hangar" : "Return"}
             </button>
-            {#if mode === "survival"}
-              <a class="btn btn-normal" href="/leaderboard">Top Scores</a>
-            {/if}
-          </div>
-        </Dialog>
+          {/snippet}
+        </GameOver>
       {/if}
     </section>
   </div>
@@ -1004,9 +991,6 @@ onMount(() => {
   padding: 0;
 }
 
-.flight-message {
-  position: static;
-}
 .title-active {
   padding: 0;
 }

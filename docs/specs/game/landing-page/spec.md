@@ -1,11 +1,8 @@
 ---
-
-title: "Spec: Title screen"
-status: draft
 generated:
-  by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-20T10:31:54Z"
-verified: [{ by: codex/gpt-6, at: "2026-11-19T13:55:56+00:00" }, { by: "codex/gpt-6", at: "2026-11-19T19:21:23+02:00" }, { by: "openai-codex/gpt-6.1-sol", at: "2026-11-20T11:13:45+02:00" }]
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-22T18:15:15+02:00"
+verified: []
 ---
 
 # Title screen
@@ -111,9 +108,8 @@ game's home and Hangar is an alternative launch point.
   the title screen or Pause also returns to title screen; its explicit Hangar
   context returns to Hangar as defined by [Options](../options/spec.md).
 - Pause provides Abort, returning to the run's launch source.
-- Every game over provides return to the run's launch source; a Survival game
-  over also provides Top Scores.
-- Top Scores returns to title screen even when entered from game over.
+- [Game over](../game-over/spec.md) provides return to the run's launch source.
+- Top Scores returns to title screen even when opened by a successful score save.
 - Shared procedural artwork and interface primitives supply the presentation.
   Keyboard operation and reduced-motion support remain part of the experience.
 
@@ -205,8 +201,8 @@ Scenario: Title-screen Settings returns home
   And no prior Hangar visit changes this destination
 
 Scenario: Scores after a Hangar run
-  Given a run launched from Hangar has ended
-  When the player opens Top Scores from game over
+  Given a ranked run launched from Hangar has ended
+  When the player saves their score successfully and Top Scores opens
   And uses its return action
   Then the title screen opens with PRESS START ready to launch the active ship
 ```

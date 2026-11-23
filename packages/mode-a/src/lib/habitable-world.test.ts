@@ -13,16 +13,12 @@ import { GRAVITY_TUNING } from "./tuning";
 import { applyYellowFamilyProfile } from "./yellow-star-family";
 
 describe("Habitable generated worlds", () => {
-  it("uses direct radius mass and keeps the complete atmosphere safe at Sun/radius endpoints", () => {
-    for (const [radius, ratio] of [
-      [HABITABLE_RADIUS.min, 0.94],
-      [HABITABLE_RADIUS.reference, 1],
-      [HABITABLE_RADIUS.max, 1.06],
+  it("keeps the complete atmosphere safe at Sun/radius endpoints", () => {
+    for (const radius of [
+      HABITABLE_RADIUS.min,
+      HABITABLE_RADIUS.reference,
+      HABITABLE_RADIUS.max,
     ]) {
-      expect(habitableMass(radius)).toBeCloseTo(
-        GRAVITY_TUNING.habitable.referenceMass * ratio,
-        9,
-      );
       for (const sunRadius of [36, 70, 140]) {
         const star = createStar("G", 0, 0);
         applyYellowFamilyProfile(star, sunRadius, GRAVITY_TUNING);

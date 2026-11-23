@@ -33,12 +33,12 @@ Path: `docs/specs/<node>/<child>/spec.md`. Depth stays at most 3.
    numbered PDF and send it to the customer.
    ```
 
-4. Remove the moved rules from the parent. The folder structure shows the relationship. Keep a reference only where the text depends on a specific contract.
+4. Remove the moved rules from the parent. The folder structure shows the relationship. Keep a reference only where the text depends on a specific spec.
 
 5. Move the parent's scenarios and guardrails for that part into the child.
    The parent stops describing what the child owns, so each fact has one
    source of truth.
-6. Check both Contracts for complete coverage. A concise parent can stand alone.
+6. Check both specs for complete coverage. A concise parent can stand alone.
 
 ## Attachment
 

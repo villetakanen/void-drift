@@ -117,11 +117,21 @@ test("title and Hangar pilots complete ranked runs, retry a rejected write and s
       String(predicted.ticks),
     );
     await page.clock.resume();
-    await page.getByLabel("Your initials").fill(pilot.initials);
+    // Saving is offered only once the player's own stored best is checked.
     const submit = page.getByRole("button", {
       name: "Save Score",
       exact: true,
     });
+    const initialsField = page.getByRole("textbox", {
+      name: "Initials",
+      exact: true,
+    });
+    await expect(submit).toBeVisible({ timeout: 15000 });
+    await expect(initialsField).toBeEnabled({ timeout: 15000 });
+    // A new best puts focus in the field; the third typed letter moves it on.
+    await expect(initialsField).toBeFocused();
+    await page.keyboard.type(pilot.initials);
+    await expect(submit).toBeFocused();
     if (pilot.initials === "ONE") {
       let rejected = false;
       await page.route(
@@ -289,14 +299,12 @@ test("Experimental On completes a stable ship run without submitting a score", a
   await page.clock.runFor((predicted.ticks * 1000) / 60 + 40);
   const result = page.getByRole("dialog", { name: "Run complete" });
   await expect(result).toBeVisible();
-  await expect(
-    result.getByText("No score for this run.", { exact: true }),
-  ).toBeVisible();
+  await expect(result.getByRole("status")).toHaveText("Unranked");
   await expect(result.getByRole("button", { name: "Save Score" })).toHaveCount(
     0,
   );
   await expect(result.getByText(/^Score /)).toHaveCount(0);
-  await expect(result.getByRole("link", { name: "Top Scores" })).toBeVisible();
+  await expect(result.getByText("Top Scores", { exact: true })).toHaveCount(0);
   await page.clock.runFor(1000);
   expect(commits).toEqual([]);
   await context.close();

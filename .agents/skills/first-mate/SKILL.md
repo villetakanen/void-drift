@@ -1,6 +1,6 @@
 ---
 name: first-mate
-description: Understand the user's goal and coordinate authorized work through subagents. Use in the main conversation when coordinating work or when project guidance calls for first mate.
+description: Coordinate authorized work through subagents when the user explicitly summons a conductor or first mate. Do not activate for ordinary tasks or other skills merely because they involve multiple steps.
 generated:
   by: codex/gpt-6.2-sol
   at: "2026-11-20T09:43:07Z"
