@@ -23,17 +23,15 @@ import {
   type FlightMode,
   type FlightTickInput,
   fittedParts,
-  HighScoreSubmissionSchema,
   isScoredEligible,
   type Loadout,
   LoadoutSchema,
+  RankedRunSchema,
   resizeFlightLayers,
   type ShipProfileId,
   Simulation,
   STEP,
-  scoresAvailable,
   stockSettings,
-  submitHighScore,
 } from "@void-drift/mode-a";
 import { onMount, type Snippet, tick } from "svelte";
 import { HabitableMaterials } from "../lib/assets/habitable-materials";
@@ -61,6 +59,7 @@ import FlightContacts from "./FlightContacts.svelte";
 import GameFieldBackdrop from "./GameFieldBackdrop.svelte";
 import GameOver from "./GameOver.svelte";
 import PreviewMarker from "./PreviewMarker.svelte";
+import RankedResult from "./RankedResult.svelte";
 import TitleScreen from "./TitleScreen.svelte";
 
 let {
@@ -216,8 +215,12 @@ function enterMenu() {
   skySeed = (crypto.getRandomValues(new Uint32Array(1))[0] % 2147483646) + 1;
 }
 let spin = $state(0);
-let message = $state("");
-let initials = $state("AAA");
+// Once a saved score is opening Top Scores, the result offers nothing else.
+let leaving = false;
+function openTopScores() {
+  leaving = true;
+  window.location.assign("/leaderboard");
+}
 // The bottom gutter describes the captured run, independently of launch source.
 const modeLabel = $derived(
   testFlight
@@ -228,9 +231,6 @@ const modeLabel = $derived(
         ? "G CLASS / SHARED CHALLENGE"
         : "UNRANKED",
 );
-let pendingSave = $state.raw<ReturnType<typeof submitHighScore>>();
-const saving = $derived(pendingSave !== undefined);
-let scoreSaved = $state(false);
 function freshSeed(previous?: number) {
   const max = 2147483647;
   const random = crypto.getRandomValues(new Uint32Array(1))[0];
@@ -268,9 +268,6 @@ function reset(start = false, previousSeed?: number) {
     .catch(() => {});
   if (start) simulation.start();
   paused = start && (narrow || document.hidden);
-  pendingSave = undefined;
-  scoreSaved = false;
-  message = "";
   // A new run enters the star system: the speed camera shows star and ship.
   frameCamera(true, $settings.speedCamera, true);
   sync();
@@ -400,8 +397,7 @@ function start() {
   (document.activeElement as HTMLElement)?.blur();
 }
 async function retry() {
-  if (!runSetup || status !== "GAME_OVER") return;
-  initials = "AAA";
+  if (!runSetup || status !== "GAME_OVER" || leaving) return;
   beginFlight(simulation.settings.seed);
   // Let GameOver release the deck. A replacement dialog keeps it inert.
   await tick();
@@ -410,7 +406,7 @@ async function retry() {
   }
 }
 function returnToSource() {
-  pendingSave = undefined;
+  if (leaving) return;
   if (launchSource === "hangar" && onReturn) onReturn();
   else enterMenu();
 }
@@ -432,18 +428,10 @@ function advance(state: FlightTickInput) {
   frameCamera(before !== simulation.wraps);
   camera.update(STEP);
 }
-async function save() {
-  if (
-    mode !== "survival" ||
-    !rankedRun ||
-    !runLoadout ||
-    status !== "GAME_OVER" ||
-    saving ||
-    scoreSaved
-  )
-    return;
-  const submission = HighScoreSubmissionSchema.safeParse({
-    initials,
+/* The completed ranked run as its score record, without initials. */
+function rankedRecord() {
+  if (!rankedRun || !runLoadout) return undefined;
+  return RankedRunSchema.safeParse({
     seconds: Math.max(0.001, simulation.elapsedSeconds),
     score: simulation.survivalScore,
     shipId: chosen,
@@ -453,22 +441,6 @@ async function save() {
     challenge: CHALLENGE,
     deathCause: simulation.state.deathCause ?? "POWER",
   });
-  if (!submission.success) {
-    message = "This setup cannot be submitted for a score.";
-    return;
-  }
-  const request = submitHighScore(submission.data);
-  pendingSave = request;
-  const result = await request;
-  // A save may finish after Retry, Return or unmount. Only its result owns the UI.
-  if (pendingSave !== request) return;
-  pendingSave = undefined;
-  scoreSaved = result.success;
-  if (result.success) {
-    window.location.assign("/leaderboard");
-  } else {
-    message = result.error;
-  }
 }
 // Pad presses count only while flight runs; releases always clear.
 function padPress(pointerId: number, pad: ThrustPad | null) {
@@ -688,7 +660,6 @@ onMount(() => {
   frame = requestAnimationFrame(draw);
   return () => {
     disposed = true;
-    pendingSave = undefined;
     cancelAnimationFrame(frame);
     habitableMaterials.dispose();
     mercurialMaterial?.painter.dispose();
@@ -957,44 +928,20 @@ onMount(() => {
             <p>Every orbit teaches you something.</p>
           {/if}
         {/snippet}
-        {#snippet scoreFields()}
-          {#if rankedRun}
-            <label for="initials">Your initials</label>
-            <input
-              id="initials"
-              data-autofocus
-              maxlength="3"
-              bind:value={initials}
-              oninput={() => {
-                initials = initials.toUpperCase().replace(/[^A-Z]/g, "");
-              }}
-            >
-          {/if}
-          {#if message}
-            <p role="status" class="flight-message">{message}</p>
-          {/if}
+        {@const ranked = rankedRecord()}
+        {#snippet unrankable()}
+          <p role="status">This setup cannot be submitted for a score.</p>
         {/snippet}
-        {#snippet scoreAction()}
-          <button
-            type="button"
-            class="btn btn-filled"
-            disabled={saving ||
-              scoreSaved ||
-              !scoresAvailable() ||
-              !/^[A-Z]{3}$/.test(initials)}
-            onclick={save}
-          >
-            {saving ? "Saving…" : scoreSaved ? "Saved" : "Save Score"}
-          </button>
-          {#if !scoresAvailable()}
-            <p role="status">Score submission is currently unavailable.</p>
+        {#snippet rankedAction()}
+          {#if ranked?.success}
+            <RankedResult run={ranked.data} onsaved={openTopScores} />
           {/if}
         {/snippet}
         <GameOver
           {outcome}
           {statistics}
-          resultFields={rankedRun || message ? scoreFields : undefined}
-          resultAction={rankedRun ? scoreAction : undefined}
+          resultFields={ranked && !ranked.success ? unrankable : undefined}
+          resultAction={ranked?.success ? rankedAction : undefined}
         >
           {#snippet navigation()}
             <button
@@ -1043,9 +990,6 @@ onMount(() => {
   padding: 0;
 }
 
-.flight-message {
-  position: static;
-}
 .title-active {
   padding: 0;
 }

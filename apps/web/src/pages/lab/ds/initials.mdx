@@ -3,7 +3,7 @@ verified: []
 ---
 
 import ComponentFrame from "../../../components/lab/ComponentFrame.svelte";
-import InitialsExample from "../../../components/lab/InitialsExample.svelte";
+import Initials from "../../../components/inputs/Initials.svelte";
 import DesignSystemLayout from "../../../layouts/DesignSystemLayout.astro";
 
 <DesignSystemLayout title="Initials" documentProse>
@@ -14,7 +14,7 @@ import DesignSystemLayout from "../../../layouts/DesignSystemLayout.astro";
 
 <div className="initials-stage">
   <div className="panel initials-card">
-    <InitialsExample host={2} client:load />
+    <Initials host={2} client:load />
   </div>
 </div>
 
@@ -51,19 +51,19 @@ Empty slots and the selected slot are black on every host. A slot that holds a l
   <div className="initials-host">
     <span className="initials-caption">On the void</span>
     <ComponentFrame fit>
-      <InitialsExample value="VT" client:load />
+      <Initials value="VT" client:load />
     </ComponentFrame>
   </div>
   <div className="initials-host">
     <span className="initials-caption">On a console, elevation 1</span>
     <div className="initials-console">
-      <InitialsExample host={1} value="VT" client:load />
+      <Initials host={1} value="VT" client:load />
     </div>
   </div>
   <div className="initials-host">
     <span className="initials-caption">On a panel, elevation 2</span>
     <div className="panel">
-      <InitialsExample host={2} value="VT" client:load />
+      <Initials host={2} value="VT" client:load />
     </div>
   </div>
 </div>

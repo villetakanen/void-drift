@@ -117,11 +117,15 @@ test("title and Hangar pilots complete ranked runs, retry a rejected write and s
       String(predicted.ticks),
     );
     await page.clock.resume();
-    await page.getByLabel("Your initials").fill(pilot.initials);
+    // Saving is offered only once the player's own stored best is checked.
     const submit = page.getByRole("button", {
       name: "Save Score",
       exact: true,
     });
+    await expect(submit).toBeVisible({ timeout: 15000 });
+    await page
+      .getByRole("textbox", { name: "Initials", exact: true })
+      .fill(pilot.initials);
     if (pilot.initials === "ONE") {
       let rejected = false;
       await page.route(

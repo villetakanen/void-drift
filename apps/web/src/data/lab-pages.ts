@@ -179,7 +179,7 @@ export const labPages = z.array(labPageSchema).parse([
     purpose: "The three-letter leaderboard input.",
     group: "design-system",
     source: "production",
-    defines: ["apps/web/src/components/lab/InitialsExample.svelte"],
+    defines: ["apps/web/src/components/inputs/Initials.svelte"],
     spec: "docs/specs/factory/design-system/initials/spec.md#architecture",
   },
   {

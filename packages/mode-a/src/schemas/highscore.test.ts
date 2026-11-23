@@ -2,8 +2,12 @@ import { describe, expect, it } from "vitest";
 import { ShipProfileIdSchema } from "../lib/schemas/ship-profile";
 import {
   CHALLENGE,
+  HighScoreSchema,
   HighScoreSubmissionSchema,
+  isNewPersonalBest,
   parseHighScores,
+  readPersonalBest,
+  settleScore,
 } from "./highscore";
 
 const score = {
@@ -78,5 +82,63 @@ describe("score submission", () => {
       expect(HighScoreSubmissionSchema.safeParse(missing).success).toBe(false);
     }
     expect(accepts({ fitting: ["not-a-part"] })).toBe(false);
+  });
+});
+
+describe("personal best", () => {
+  it("lets a first score or a strictly higher one replace the best", () => {
+    expect(isNewPersonalBest({ status: "absent" }, 0)).toBe(true);
+    expect(isNewPersonalBest({ status: "found", score: 420 }, 421)).toBe(true);
+    for (const value of [420, 419])
+      expect(isNewPersonalBest({ status: "found", score: 420 }, value)).toBe(
+        false,
+      );
+  });
+  it("reads a missing row as absent and an unreadable one as no answer", () => {
+    expect(readPersonalBest(undefined)).toEqual({ status: "absent" });
+    expect(readPersonalBest(score)?.status).toBe("found");
+    for (const row of [{}, { score: "57" }, { score: -1 }, null])
+      expect(readPersonalBest(row)).toBeUndefined();
+  });
+});
+
+describe("settling a score in its transaction", () => {
+  const record = HighScoreSchema.parse({
+    ...score,
+    initials: "ACE",
+    score: 421,
+  });
+  it("writes a first score and a higher one", () => {
+    expect(settleScore(undefined, record).write).toBe(true);
+    expect(settleScore({ ...score, score: 420 }, record).write).toBe(true);
+  });
+  it("keeps an equal or higher stored best and reports it", () => {
+    // Another run, flown for a different time, stored the best.
+    for (const best of [421, 500])
+      expect(
+        settleScore({ ...score, score: best, seconds: 99.5 }, record),
+      ).toMatchObject({
+        write: false,
+        outcome: "kept",
+        best,
+      });
+  });
+  it("recognises this run already stored by an earlier attempt", () => {
+    expect(settleScore({ ...record }, record)).toMatchObject({
+      write: false,
+      outcome: "saved",
+    });
+    // Retried under other initials after a lost reply: still this run.
+    expect(settleScore({ ...record, initials: "BOB" }, record)).toMatchObject({
+      write: false,
+      outcome: "saved",
+    });
+    // Another run with the same score is not this one.
+    expect(
+      settleScore({ ...record, seconds: record.seconds + 1 }, record),
+    ).toMatchObject({ write: false, outcome: "kept" });
+  });
+  it("leaves an unreadable stored row to the rules", () => {
+    expect(settleScore({ broken: true }, record).write).toBe(true);
   });
 });

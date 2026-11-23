@@ -34,6 +34,8 @@ for game design and is not shown to players.
   enforces the same shape as the schemas and who may write.
 - **Client.** `packages/mode-a/src/lib/firebase.ts` signs the player in
   anonymously, saves a score and loads the board.
+  It also reads the player's own best (`loadPersonalBest`) for the
+  [ranked result action](../game-over/ranked-result/spec.md).
   `apps/web/src/components/Leaderboard.svelte` shows it.
 - **Neighbours.** The [game contract](../spec.md) and
   [Playground](../experimental/spec.md) own which runs may be saved.

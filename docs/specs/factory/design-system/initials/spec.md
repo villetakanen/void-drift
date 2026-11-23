@@ -19,7 +19,7 @@ records that in its own contract.
 
 ### Architecture
 
-- `apps/web/src/components/lab/InitialsExample.svelte` owns the component, its
+- `apps/web/src/components/inputs/Initials.svelte` owns the component, its
   key handling and its styles. `apps/web/src/pages/lab/ds/initials.mdx` owns
   the canonical page at `/lab/ds/initials`, and the Design system registry
   names both the source and this contract.

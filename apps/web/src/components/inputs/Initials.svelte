@@ -125,7 +125,7 @@ function onclick(event: MouseEvent) {
   onkeydown={(event) => (backwards = event.key === "Tab" && event.shiftKey)}
 />
 
-<span class="example" data-host={host}>
+<span class="initials" data-host={host}>
   <label>
     <span class="field" data-selected={selected}>
       <span class="slots" aria-hidden="true" bind:this={slots}>
@@ -159,23 +159,23 @@ function onclick(event: MouseEvent) {
 </span>
 
 <style>
-.example {
+.initials {
   position: relative;
   width: fit-content;
   font-family: var(--font-family-ui);
 }
 /* The ground of a slot that holds a letter: one elevation step above the
    host the field sits on. */
-.example {
+.initials {
   --_raised: var(--color-elev-1);
 }
-.example[data-host="1"] {
+.initials[data-host="1"] {
   --_raised: var(--color-elev-2);
 }
-.example[data-host="2"] {
+.initials[data-host="2"] {
   --_raised: var(--color-elev-3);
 }
-.example,
+.initials,
 label {
   display: grid;
   gap: var(--spacing-sm);
@@ -262,10 +262,13 @@ label {
   background: var(--color-void);
 }
 /* The field lies over the slots with its own text, caret and selection
-   unpainted; one letter advances one slot and one gap. */
-input {
+   unpainted; one letter advances one slot and one gap. Scoped through the
+   field, so a host's own field styles never repaint it. */
+.field input {
   position: absolute;
   inset: 0;
+  min-height: 0;
+  border-radius: 0;
   /* Room for the spacing after the last letter, so the text never scrolls. */
   width: calc(100% + 1ch + var(--spacing-gap));
   box-sizing: border-box;
@@ -278,7 +281,7 @@ input {
   letter-spacing: calc(1ch + var(--spacing-gap));
   outline: none;
 }
-input::selection {
+.field input::selection {
   color: transparent;
   background: none;
 }
