@@ -260,8 +260,10 @@ or breaking-change declaration accurately describes the diff.
 `pnpm check:commits` checks all commits after adoption baseline
 `841c975deee6f53db6b663f6a08047f8f8704e06` through HEAD. Older history is
 grandfathered. `pnpm verify` runs the same check over full history, including
-commits that bypassed local hooks. A shallow checkout must fetch the missing
-history before this check can pass.
+commits that bypassed local hooks. The only exception after the baseline is
+`80ad5972c6b096087f584d0fe90d113e44ed2a72`, the 0.7.2 merge commit with an
+overlong body line. Both its parents and subsequent commits are checked.
+A shallow checkout must fetch the missing history before this check can pass.
 The hook does not run the full game suite, bump versions, tag, or publish.
 
 ## Button study promotion — 2026-10-28
