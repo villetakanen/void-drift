@@ -48,6 +48,23 @@ failure or source change during verification. It never auto-fixes source.
 
 `pnpm check:contracts` remains an alias for `pnpm check:repo` for existing references.
 
+### Which checks to run
+
+Before a commit, run `pnpm verify:changed`. It reads every path that differs from
+HEAD and selects the checks that fit, through the same recorded runner:
+
+| Changed paths                                                                   | Checks                                    | Typical time |
+| ------------------------------------------------------------------------------- | ----------------------------------------- | ------------ |
+| Only documents (`docs/`, agent skills and instructions, top-level Markdown)     | `check:repo`, `lint`                      | 6 s          |
+| Anything else                                                                   | adds `check:types`, `test`                | 25 s         |
+| Browser tests, their helpers, `playwright.config.ts`                            | adds `build`, `test:browser`              | 2 min        |
+| Firestore rules/indexes, Firebase config or client, leaderboard schema, backend tests | adds `test:rules`, `test:competition` (Java emulators) | 1.5 min |
+
+Full `pnpm verify` is for a release, following the Release section. Do not run it,
+or the emulator and browser suites, for a commit that `verify:changed` did not
+select them for. A changed-mode report is partial verification, like a quick run.
+Spec edits also run `pnpm check:specs` on the edited subtree.
+
 `pnpm verify:quick` runs repository checks (including factory regression tests), lint, types
 and unit tests through the same recorded runner. It exits nonzero on failure or
 source changes, but is always **partial verification**, not a full pass. Reports

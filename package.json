@@ -20,6 +20,7 @@
     "test:backend": "node scripts/verify-backend.mjs",
     "verify": "node scripts/verify.mjs",
     "verify:quick": "node scripts/verify.mjs --quick",
+    "verify:changed": "node scripts/verify.mjs --changed",
     "test:factory": "node --test scripts/verification.test.mjs scripts/release.test.mjs scripts/spec-lint/check.test.mjs",
     "release:prepare": "node scripts/release.mjs prepare",
     "release:check": "node scripts/release.mjs check",

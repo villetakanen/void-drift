@@ -66,7 +66,7 @@ Direct inspection of commit `08dc6a23e8077a485a2c8aadd334d8f3d7126e62`
 (`feat(design-system): add the Initials entry and its contract`, parent
 `75ba5605`, branch `feat/0-7-0`): 15 files, 831 insertions, 81 deletions.
 
-- [Initials component](../../apps/web/src/components/lab/InitialsExample.svelte)
+- [Initials component](../../apps/web/src/components/inputs/Initials.svelte)
   (new, 293 lines): one native text field in one `label` over three
   `aria-hidden` slots; props `value` (bindable), `label`, `host`; a hidden hint
   and a polite live region.

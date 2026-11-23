@@ -12,12 +12,14 @@ import {
 
 import { verificationUrls } from "../packages/core/src/lib/schemas/verification-ports.mjs";
 import { runBackend } from "./verify-backend.mjs";
+import { selectSteps } from "./verify-selection.mjs";
 
+const modes = { "--quick": "quick", "--changed": "changed" };
 const args = process.argv.slice(2);
-if (args.length > 1 || (args.length === 1 && args[0] !== "--quick")) {
-  throw new Error("Usage: node scripts/verify.mjs [--quick]");
+if (args.length > 1 || (args.length === 1 && !modes[args[0]])) {
+  throw new Error("Usage: node scripts/verify.mjs [--quick | --changed]");
 }
-const mode = args[0] === "--quick" ? "quick" : "full";
+const mode = modes[args[0]] ?? "full";
 const browserUrls = verificationUrls();
 const allSteps = [
   "check:repo",
@@ -30,8 +32,6 @@ const allSteps = [
   "test:rules",
   "test:competition",
 ];
-const selectedSteps =
-  mode === "quick" ? ["check:repo", "lint", "check:types", "test"] : allSteps;
 
 function git(...args) {
   const result = spawnSync("git", args, { encoding: "utf8" });
@@ -67,6 +67,29 @@ function fingerprint() {
   return hash.digest("hex");
 }
 
+function list(...args) {
+  return git(...args)
+    .split("\0")
+    .filter(Boolean);
+}
+
+// Every path that differs from HEAD: staged, unstaged, deleted and untracked.
+const changedPaths =
+  mode === "changed"
+    ? [
+        ...new Set([
+          ...list("diff", "--name-only", "--no-renames", "-z", "HEAD"),
+          ...list("ls-files", "-z", "--others", "--exclude-standard"),
+        ]),
+      ].sort()
+    : undefined;
+const selectedSteps =
+  mode === "quick"
+    ? ["check:repo", "lint", "check:types", "test"]
+    : mode === "changed"
+      ? selectSteps(changedPaths, allSteps)
+      : allSteps;
+
 const root = "artifacts/verification";
 mkdirSync(root, { recursive: true });
 const directory = mkdtempSync(
@@ -74,7 +97,8 @@ const directory = mkdtempSync(
 );
 const report = {
   mode,
-  partial: mode === "quick",
+  partial: mode !== "full",
+  changedPaths,
   browserUrls,
   skippedSteps: allSteps.filter((name) => !selectedSteps.includes(name)),
   startedAt: new Date().toISOString(),
@@ -88,8 +112,14 @@ const report = {
 };
 
 console.log(
-  `Verification mode: ${mode}${mode === "quick" ? " (PARTIAL; not full verification)" : ""}`,
+  `Verification mode: ${mode}${mode === "full" ? "" : " (PARTIAL; not full verification)"}`,
 );
+if (mode === "changed")
+  console.log(
+    changedPaths.length === 0
+      ? "Nothing differs from HEAD; no checks selected."
+      : `${changedPaths.length} changed path(s) select: ${selectedSteps.join(", ")}`,
+  );
 for (const name of selectedSteps) {
   if (name === "test:competition") continue;
   if (name === "test:rules") {
@@ -139,6 +169,6 @@ const latestTemporary = `${directory}/latest.tmp`;
 writeFileSync(latestTemporary, serialized);
 renameSync(latestTemporary, `${root}/latest.json`);
 console.log(
-  `${mode === "quick" ? "Partial verification" : "Verification"} ${report.selectedChecksPassed ? "PASSED" : "FAILED"}${mode === "quick" ? " (not a full pass)" : ""}. Evidence: ${directory}/report.json`,
+  `${mode === "full" ? "Verification" : "Partial verification"} ${report.selectedChecksPassed ? "PASSED" : "FAILED"}${mode === "full" ? "" : " (not a full pass)"}. Evidence: ${directory}/report.json`,
 );
 process.exitCode = report.selectedChecksPassed ? 0 : 1;

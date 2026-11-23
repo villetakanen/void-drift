@@ -13,6 +13,7 @@ import { tmpdir } from "node:os";
 import { delimiter, join, resolve } from "node:path";
 import { test } from "node:test";
 import { verificationUrls } from "../packages/core/src/lib/schemas/verification-ports.mjs";
+import { selectSteps } from "./verify-selection.mjs";
 
 const runner = resolve("scripts/verify.mjs");
 const backendRunner = resolve("scripts/verify-backend.mjs");
@@ -266,6 +267,10 @@ test("a command error fails even when the child exits zero", (t) => {
     )
     .replace('"./verify-backend.mjs"', JSON.stringify(backendRunner))
     .replace(
+      '"./verify-selection.mjs"',
+      JSON.stringify(resolve("scripts/verify-selection.mjs")),
+    )
+    .replace(
       "const log =",
       'if (name === "lint") result.error = new Error("spawnSync pnpm ETIMEDOUT");\n\tconst log =',
     );
@@ -275,4 +280,55 @@ test("a command error fails even when the child exits zero", (t) => {
   const step = report.steps.find((step) => step.command === "pnpm run lint");
   assert.equal(step.exitCode, 0);
   assert.equal(step.status, "failed");
+});
+
+const stages = [
+  "check:repo",
+  "check:commits",
+  "lint",
+  "check:types",
+  "test",
+  "build",
+  "test:browser",
+  "test:rules",
+  "test:competition",
+];
+
+test("changed paths select the checks that fit them", () => {
+  const select = (...paths) => selectSteps(paths, stages);
+  const documents = select("docs/specs/game/spec.md", "README.md");
+  const code = select("docs/roadmap.md", "packages/core/src/lib/physics.ts");
+  const backend = select("firestore.rules");
+  const journeys = select("tests/browser/alpha.spec.ts");
+
+  assert.deepEqual(select(), []);
+  assert.deepEqual(documents, ["check:repo", "lint"]);
+  // One code path among documents brings the code checks for the whole tree.
+  assert.deepEqual(code, ["check:repo", "lint", "check:types", "test"]);
+  for (const name of ["test:rules", "test:competition"]) {
+    assert(backend.includes(name));
+    assert(!code.includes(name));
+  }
+  for (const name of ["build", "test:browser"]) {
+    assert(journeys.includes(name));
+    assert(!code.includes(name));
+  }
+  for (const selection of [documents, code, backend, journeys])
+    assert(!selection.includes("check:commits"));
+});
+
+test("changed mode records its paths and stays partial", (t) => {
+  const { result, report } = trial(t, ["--changed"]);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(report.mode, "changed");
+  assert.equal(report.partial, true);
+  assert.equal(report.passed, false);
+  assert.equal(report.selectedChecksPassed, true);
+  // The fixture's untracked command stub is the tree's only change.
+  assert.deepEqual(report.changedPaths, ["bin/pnpm"]);
+  assert.deepEqual(
+    report.steps.map((step) => step.command),
+    selectSteps(report.changedPaths, stages).map((name) => `pnpm run ${name}`),
+  );
+  assert.match(result.stdout, /not a full pass/);
 });
