@@ -5,11 +5,9 @@ import {
   CHASSIS,
   defaultBuilds,
   defaultLoadout,
-  fittedParts,
   isScoredEligible,
   LoadoutSchema,
   PARTS,
-  type PartId,
   PartIdSchema,
   starterLoadout,
 } from "./schemas/loadout";
@@ -27,39 +25,26 @@ it("starts each starter ship with full energy, unaffected by edits to a returned
   }
 });
 
-it("lists each installed part once per mount", () => {
-  const fighter = LoadoutSchema.parse({
-    ...defaultLoadout("fighter"),
-    side: "fusion",
-    hull: ["battery", null],
-    aft: ["fusion", "laser"],
-  });
-  expect(fittedParts(fighter)).toEqual([
-    "fusion",
-    "fusion",
-    "battery",
-    "fusion",
-    "laser",
-  ]);
-});
-
-it("derives scored eligibility from the hull and every fitted part", () => {
-  const scored = (id: PartId) => PARTS[id].releaseClass === "scored";
+it("makes a build ineligible for scored play when any unsanctioned hull or part is fitted", () => {
+  expect(
+    ShipProfileIdSchema.options.some((c) =>
+      isScoredEligible(starterLoadout(c)),
+    ),
+  ).toBe(true);
+  let checked = 0;
   for (const chassis of ShipProfileIdSchema.options) {
     const build = starterLoadout(chassis);
-    expect(isScoredEligible(build), chassis).toBe(
-      CHASSIS[chassis].releaseClass === "scored" &&
-        fittedParts(build).every(scored),
-    );
-    const without = { ...build, hull: [null, ...build.hull.slice(1)] };
+    if (CHASSIS[chassis].releaseClass !== "scored")
+      expect(isScoredEligible(build), chassis).toBe(false);
     for (const part of PartIdSchema.options) {
-      const fitted = { ...without, hull: [part, ...without.hull.slice(1)] };
+      if (PARTS[part].releaseClass === "scored") continue;
+      const fitted = { ...build, hull: [part, ...build.hull.slice(1)] };
       if (!LoadoutSchema.safeParse(fitted).success) continue;
-      expect(isScoredEligible(fitted), `${chassis} ${part}`).toBe(
-        isScoredEligible(without) && scored(part),
-      );
+      expect(isScoredEligible(fitted), `${chassis} ${part}`).toBe(false);
+      checked++;
     }
   }
+  expect(checked).toBeGreaterThan(0);
 });
 
 it("migrates a v3 build store with Wasp active and preserves the fittings", () => {

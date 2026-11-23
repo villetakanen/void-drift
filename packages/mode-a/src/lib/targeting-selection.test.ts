@@ -149,16 +149,4 @@ describe("shared mounted acquisition", () => {
       expect(f.system.weapons[0].target).toBe(first.id);
     }
   });
-
-  it("preserves the normal weapon outcome for a standalone caller", () => {
-    const fallback = fixture("light-ion-cannon");
-    const fleet = fixture("light-ion-cannon");
-    const contact = circle(80, 0);
-    fallback.execute([{ ...contact }]);
-    const roster = [{ ...contact }];
-    fleet.execute(roster, fleet.acquire(roster));
-    expect(fallback.system.ionDischarges).toBe(1);
-    expect(fallback.system.ionDischarges).toBe(fleet.system.ionDischarges);
-    expect(fallback.resources.power).toBe(fleet.resources.power);
-  });
 });

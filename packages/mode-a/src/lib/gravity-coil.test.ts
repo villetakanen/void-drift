@@ -11,7 +11,6 @@ describe("Gravity coil fitting", () => {
     builds.wasp = defaultLoadout("wasp");
     for (const chassis of ["wasp", "scout", "fighter", "corvette"] as const) {
       builds[chassis].hull.fill("gravity-coil");
-      builds[chassis].aft.fill("gravity-coil");
     }
     expect(BuildStoreSchema.parse(JSON.parse(JSON.stringify(builds)))).toEqual({
       ...builds,

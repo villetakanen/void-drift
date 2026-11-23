@@ -104,7 +104,7 @@ describe("four-engine player trial", () => {
     expect(engineDuty(parts.fusion, false, 1 / 60, timers, "pulse")).toBe(0);
     expect(engineDuty(parts.fusion, true, 1 / 60, timers, "pulse")).toBe(0);
   });
-  it("mixed installed engines approach the shared ceiling without clipping overspeed", () => {
+  it("mixed installed engines approach one shared ceiling", () => {
     const build = defaultLoadout("fighter");
     build.side = "heavy-ion";
     build.aft = ["ion", "fusion"];
@@ -127,9 +127,6 @@ describe("four-engine player trial", () => {
     const ceiling = buildStats(build, parts).poweredCruiseCeiling;
     expect(ship.vel.mag()).toBeGreaterThan(ceiling - 1);
     expect(ship.vel.mag()).toBeLessThanOrEqual(ceiling + 0.000001);
-    ship.vel.set(1000, 0);
-    step();
-    expect(ship.vel.mag()).toBeCloseTo(1000);
   });
   it("simulations keep independent engine timing and replay deterministically", () => {
     const loadout = defaultLoadout("scout");

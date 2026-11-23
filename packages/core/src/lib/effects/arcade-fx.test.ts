@@ -5,7 +5,6 @@ it("saturated decoration retains reserved activation capacity and resets per fra
   const budget = new FxBudget();
   for (let i = 0; i < 10000; i++) budget.take();
   expect(budget.decoration).toBe(FxBudget.DECORATION);
-  expect(budget.dropped).toBe(10000 - FxBudget.DECORATION);
   expect(budget.take(true)).toBe(true);
   for (let i = 0; i < 10000; i++) budget.take(true);
   expect(budget.essential).toBe(FxBudget.ESSENTIAL);

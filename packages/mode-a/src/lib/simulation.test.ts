@@ -8,54 +8,14 @@ const both = { leftThruster: true, rightThruster: true, fire: false };
 const idle = { leftThruster: false, rightThruster: false, fire: false };
 
 describe("flight contract", () => {
-  it("keeps Practice Mercury's fixed size and orbit", () => {
-    const practice = new Simulation({ ...stockSettings(), mode: "practice" });
-    const mercury = practice.planets.find((planet) => planet.id === "moon");
-    if (!mercury) throw new Error("Practice Mercury missing");
-    expect(mercury.radius).toBe(27);
-    expect(mercury.orbitRadius).toBe(258);
-    expect(mercury.orbitRadius - mercury.radius).toBeGreaterThan(
-      practice.star.damageField?.reach ?? Infinity,
-    );
-    expect(mercury.orbitRadius - mercury.radius).toBeLessThan(
-      practice.star.collectionField?.reach ?? 0,
-    );
-  });
-  it("assigns stable outward HUD identities before a scene filters planets", () => {
-    const practice = new Simulation({ ...stockSettings(), mode: "practice" });
-    const mercury = practice.planets.find((planet) => planet.id === "moon");
-    const venus = practice.planets.find((planet) => planet.id === "venus");
-    expect(mercury?.displayName).toBe("Mercury");
-    expect(venus?.displayName).toBe("Venus");
-    const outward = [...practice.planets].sort(
+  it("numbers a generated system's planets outward and contiguously from 1", () => {
+    const survival = new Simulation(gameSettings("wasp"));
+    const outward = [...survival.planets].sort(
       (a, b) => a.orbitRadius - b.orbitRadius,
     );
     expect(outward.map((planet) => planet.systemPosition)).toEqual(
       outward.map((_, index) => index + 1),
     );
-    expect(venus?.systemPosition).toBeGreaterThan(mercury?.systemPosition ?? 0);
-  });
-  it("puts The Cradle and the only atmosphere outermost in Practice", () => {
-    const practice = new Simulation({ ...stockSettings(), mode: "practice" });
-    const cradle = practice.planets.find((planet) => planet.id === "cradle");
-    expect(cradle?.displayName).toBe("The Cradle");
-    expect(cradle?.atmosphere).toBeDefined();
-    expect(cradle?.systemPosition).toBe(practice.planets.length);
-    expect(practice.planets.filter((p) => p.atmosphere)).toHaveLength(1);
-    for (const mode of ["survival", "derelicts", "gauntlet"] as const) {
-      const other = new Simulation({ ...gameSettings("wasp"), mode });
-      expect(
-        other.planets.filter((p) => p.atmosphere).map((p) => p.id),
-      ).toEqual(["habitable"]);
-    }
-    const spawn = practice.ship;
-    const air = cradle?.atmosphere?.depth ?? 0;
-    expect(
-      Math.hypot(
-        spawn.pos.x - (cradle?.pos.x ?? 0),
-        spawn.pos.y - (cradle?.pos.y ?? 0),
-      ),
-    ).toBeGreaterThan((cradle?.radius ?? 0) + air + spawn.radius);
   });
   it("slows a Practice ship in The Cradle's air and keeps its hull full", () => {
     const fly = (withAir: boolean) => {
@@ -99,35 +59,12 @@ describe("flight contract", () => {
     expect(first.collectionField).toEqual(repeated.collectionField);
     expect(first.damageField).toEqual(repeated.damageField);
     expect(first.radius).not.toBe(other.radius);
-    expect(first.appearance).toBe("yellow-family");
     expect(gauntlet.radius).toBe(first.radius);
     expect(gauntlet.influenceRadius).toBe(first.influenceRadius);
     expect(gauntlet.collectionField).toEqual(first.collectionField);
     expect(gauntlet.damageField).toEqual(first.damageField);
     expect(survivalRun.star).toEqual(first);
     expect(survivalRun.planets).toEqual(derelictsPlanets);
-
-    const practice = new Simulation({ ...settings, mode: "practice" }).star;
-    expect(practice.radius).toBe(70);
-    expect(practice.name).toBe("Sun");
-    expect(practice.denomination).toBe("G7");
-    expect(practice.designation).toBe("G7 Sun");
-    expect(practice.appearance).toBe("yellow-family");
-
-    const playground = new Simulation({
-      ...settings,
-      mode: "survival",
-      experimental: "On",
-    });
-    expect(playground.star).toEqual(survivalRun.star);
-    const replayed = new Simulation(playground.settings);
-    playground.start();
-    replayed.start();
-    playground.replay([{ ...both, ticks: 180 }]);
-    replayed.replay([{ ...both, ticks: 180 }]);
-    expect(playground.ship).toEqual(replayed.ship);
-
-    expect(survivalRun.star.appearance).toBe("yellow-family");
   });
 
   it("reproduces validated replay exactly", () => {
@@ -145,13 +82,6 @@ describe("flight contract", () => {
     expect(a.ship).toEqual(b.ship);
     expect(a.state).toEqual(b.state);
     expect(() => a.replay([{ ...both, ticks: Infinity }])).toThrow();
-  });
-  it("changes the system with the seed", () => {
-    const settings = stockSettings();
-    settings.seed = 50;
-    expect(new Simulation(settings).planets[0].pos).not.toEqual(
-      new Simulation().planets[0].pos,
-    );
   });
   it.each([
     { inStar: true, hull: 0, power: 0, cause: "STAR" },

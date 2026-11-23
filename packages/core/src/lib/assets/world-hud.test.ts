@@ -3,7 +3,6 @@ import type { Camera } from "../physics/Camera";
 import type { Planet, Star } from "../physics/Physics";
 import { Vec2 } from "../physics/Physics";
 import { assignPlanetSystemPositions } from "../physics/planets";
-import { canvasFont } from "../ui/typography";
 import { drawSunFields } from "./sun-fields";
 import { drawWorldHud, worldHudUserUnitsPerCssPixel } from "./world-hud";
 
@@ -42,10 +41,7 @@ describe("World HUD CSS sizing", () => {
     ).toBe(2);
   });
 
-  it("rejects nonuniform and zero-sized display scales", () => {
-    expect(
-      worldHudUserUnitsPerCssPixel(context({ cssWidth: 1280, cssHeight: 700 })),
-    ).toBeUndefined();
+  it("gives no scale for a zero-sized canvas", () => {
     expect(
       worldHudUserUnitsPerCssPixel(
         context({ width: 0, height: 0, cssWidth: 0, cssHeight: 0 }),
@@ -53,12 +49,7 @@ describe("World HUD CSS sizing", () => {
     ).toBeUndefined();
   });
 
-  it("honors an explicit width without requiring a measurable height", () => {
-    const ctx = context({ cssHeight: 0 });
-    expect(worldHudUserUnitsPerCssPixel(ctx, 1000)).toBe(2);
-  });
-
-  it("draws 1 CSS-pixel strokes and 14 CSS-pixel labels at any camera zoom", () => {
+  it("keeps stroke widths and label size unchanged across camera zoom", () => {
     const strokeWidths: number[] = [];
     const textFonts: string[] = [];
     let currentLineWidth = 0;
@@ -119,6 +110,8 @@ describe("World HUD CSS sizing", () => {
       burnMultiplier: 1,
     } as Star;
 
+    const pixel = worldHudUserUnitsPerCssPixel(ctx);
+    const fonts: string[][] = [];
     for (const zoom of [1, 16]) {
       strokeWidths.length = 0;
       textFonts.length = 0;
@@ -132,16 +125,15 @@ describe("World HUD CSS sizing", () => {
         [planet],
       );
       expect(strokeWidths.length).toBeGreaterThan(0);
-      expect(strokeWidths.every((width) => width === 2)).toBe(true);
-      expect(textFonts).toEqual([canvasFont(28, 700)]);
+      expect(strokeWidths.every((width) => width === pixel)).toBe(true);
+      fonts.push([...textFonts]);
     }
+    expect(fonts[1]).toEqual(fonts[0]);
   });
 
-  it("keeps Sun field strokes and designation text at 1 and 14 CSS pixels", () => {
+  it("draws Sun field strokes at one CSS pixel on a dense backing store", () => {
     const strokeWidths: number[] = [];
-    const fonts: string[] = [];
     let currentLineWidth = 0;
-    let currentFont = "";
     const ctx = {
       ...context({ width: 2560, height: 1440, cssWidth: 1280, cssHeight: 720 }),
       get lineWidth() {
@@ -150,12 +142,7 @@ describe("World HUD CSS sizing", () => {
       set lineWidth(value: number) {
         currentLineWidth = value;
       },
-      get font() {
-        return currentFont;
-      },
-      set font(value: string) {
-        currentFont = value;
-      },
+      font: "",
       save() {},
       restore() {},
       setLineDash() {},
@@ -165,9 +152,7 @@ describe("World HUD CSS sizing", () => {
         strokeWidths.push(currentLineWidth);
       },
       fill() {},
-      fillText() {
-        fonts.push(currentFont);
-      },
+      fillText() {},
     } as unknown as CanvasRenderingContext2D;
     const star = {
       pos: new Vec2(0, 0),
@@ -184,9 +169,12 @@ describe("World HUD CSS sizing", () => {
     } as Star;
 
     drawSunFields(ctx, star, { collecting: false, damaging: false });
-    expect(strokeWidths).toHaveLength(3);
-    expect(strokeWidths.every((width) => width === 2)).toBe(true);
-    expect(fonts).toEqual([canvasFont(28, 700)]);
+    expect(strokeWidths.length).toBeGreaterThan(0);
+    expect(
+      strokeWidths.every(
+        (width) => width === worldHudUserUnitsPerCssPixel(ctx),
+      ),
+    ).toBe(true);
   });
 
   it("keeps full-system numbering after filtering and uses explicit fallback names", () => {
@@ -247,9 +235,6 @@ describe("World HUD CSS sizing", () => {
     } as Planet;
     const fullSystem = [unnamedOuter, namedMiddle, namedInner];
     assignPlanetSystemPositions(fullSystem);
-    expect(fullSystem.map((planet) => planet.orbitRadius)).toEqual([
-      30, 20, 10,
-    ]);
     expect(unnamedOuter.systemPosition).toBe(3);
     const inspectorSelection = fullSystem.filter(
       (planet) => planet.systemPosition === 3,

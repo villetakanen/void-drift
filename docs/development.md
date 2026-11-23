@@ -173,8 +173,8 @@ add a rule for the new name and document ID prefix to `firestore.rules`; this
 starts a new board. Keep the rule of every ruleset that a released client still
 carries, so that client keeps its board.
 Record the ranked Survival comparison decision and its reason in the release note.
-Make the decision against the last published release, not intermediate edits
-([gravity-field.md](specs/game/world/gravity-field/spec.md#rules-version)).
+Make the decision against the last published release, not intermediate edits.
+See the [scores contract](specs/game/scores/spec.md).
 
 After the full verification gates pass on a stable candidate, prepare the production
 artifact locally:

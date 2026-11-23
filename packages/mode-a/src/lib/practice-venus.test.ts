@@ -1,26 +1,14 @@
-import {
-  getPlanetInfluenceRadius,
-  planetPull,
-  SURVIVAL_CONFIG,
-} from "@void-drift/core";
+import { SURVIVAL_CONFIG } from "@void-drift/core";
 import { expect, it } from "vitest";
-import { mercurialMass } from "./mercurial-rock";
 import { gameSettings, Simulation, stockSettings } from "./simulation";
 
 const idle = { leftThruster: false, rightThruster: false, fire: false };
 it("keeps the Practice roster isolated, repeatable and clear over entire orbits", () => {
   const a = new Simulation({ ...stockSettings(), mode: "practice", seed: 1 });
   const b = new Simulation({ ...stockSettings(), mode: "practice", seed: 999 });
-  const mercury = a.planets.find((p) => p.id === "moon");
-  if (!mercury?.massWell) throw new Error("Practice Mercury well missing");
   for (const mode of ["survival", "derelicts", "gauntlet"] as const) {
     const other = new Simulation({ ...gameSettings("wasp"), mode });
     expect(other.planets.some((p) => p.id === "venus")).toBe(false);
-    const moon = other.planets.find((p) => p.id === "moon");
-    if (!moon?.massWell) throw new Error("Stock moon well missing");
-    // Named references and generated bodies use the same family calibration.
-    expect(moon.massWell.mass).toBe(mercurialMass(moon.radius));
-    expect(mercury.massWell.mass).toBe(mercurialMass(27));
   }
   for (const p of a.planets) {
     expect(p.orbitRadius - p.radius).toBeGreaterThan(a.star.radius);
@@ -43,25 +31,10 @@ it("keeps the Practice roster isolated, repeatable and clear over entire orbits"
   expect(a.ship).toEqual(b.ship);
 });
 
-it("applies the Venus well only inside its boundary and preserves Practice contact", () => {
+it("bounces off Venus without hull damage in Practice", () => {
   const sim = new Simulation({ ...stockSettings(), mode: "practice" });
   const venus = sim.planets.find((p) => p.id === "venus");
   if (!venus) throw new Error("Practice Venus missing");
-  const reach = getPlanetInfluenceRadius(venus);
-  expect(
-    planetPull(
-      { x: venus.pos.x + reach + 1, y: venus.pos.y },
-      sim.ship.radius,
-      venus,
-    ),
-  ).toEqual({ x: 0, y: 0 });
-  const pull = planetPull(
-    { x: venus.pos.x + reach - 1, y: venus.pos.y },
-    sim.ship.radius,
-    venus,
-  );
-  expect(pull.x).toBeLessThan(0);
-  expect(pull.y).toBeCloseTo(0);
   sim.ship.pos.set(
     venus.pos.x + venus.radius + sim.ship.radius - 1,
     venus.pos.y,

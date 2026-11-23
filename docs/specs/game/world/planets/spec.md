@@ -56,7 +56,7 @@ interface Planet {
 #### Physics and rendering
 
 - **Physics:**
-  - Gravity: [gravity-field.md](../gravity-field/spec.md#bodies-in-play).
+  - Gravity: [gravity field](../gravity-field/spec.md).
   - Collision: Elastic bounce (restitution 0.8).
   - Motion: Planets orbit the central star.
 - **Rendering:** Prepared cylindrical maps, sphere projection and shared light follow

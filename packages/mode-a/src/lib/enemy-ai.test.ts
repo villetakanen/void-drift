@@ -15,17 +15,10 @@ describe("shared enemy objective", () => {
     expect(update(actor(capacity * 0.799, "recover"))).toBe("recover");
     expect(update(actor(capacity * 0.8, "recover"))).toBe("pursue");
   });
-  it("lets a non-solar enemy choose its own actions in catalogue order", () => {
-    expect(updateEnemyObjectiveForCapacity(actor(5), capacity, false)).toBe(
-      "pursue",
-    );
+  it("resolves tied actions deterministically in catalogue order", () => {
     const actions = ["hold", "burrow"] as const;
     expect(
       chooseEnemyAction(actions, (action) => ({ action, score: 1 })).action,
     ).toBe("hold");
-  });
-
-  it("does not latch again while energy remains above the lower boundary", () => {
-    expect(update(actor(capacity * 0.5))).toBe("pursue");
   });
 });

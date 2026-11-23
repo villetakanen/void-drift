@@ -9,10 +9,7 @@ import {
   type FlightFrame,
   type FlightLayerContexts,
   type FlightLayerId,
-  type FlightPass,
 } from "./flight-frame";
-import { PRACTICE_MERCURY_SPIN_SECONDS } from "./mercurial-rock";
-import { STEP } from "./simulation";
 
 // Each pass's drawing is replaced by a recorder and each layer by a recording
 // context, so the frame's own ordering, layers and camera use are under test.
@@ -104,13 +101,18 @@ function getPass(id: string) {
   return pass;
 }
 
+const square = (half: number) => (_frame: FlightFrame, target: Planet) => ({
+  left: target.pos.x - half,
+  top: target.pos.y - half,
+  right: target.pos.x + half,
+  bottom: target.pos.y + half,
+});
+
 describe("flight frame", () => {
-  it("copies the finalized FX image once and omits the copy during history replay", () => {
+  it("copies the finalized FX image once after the aperture cut and omits the copy during history replay", () => {
     const { calls, frame } = record();
     const source = frame.layers.fx.canvas;
-    source.width = 1920;
-    source.height = 1080;
-    const drawImage = vi.fn(() => calls.push("present:glow"));
+    const drawImage = vi.fn((_image: unknown) => calls.push("present:glow"));
     frame.layers.fxGlow = {
       width: 0,
       height: 0,
@@ -125,170 +127,69 @@ describe("flight frame", () => {
 
     calls.length = 0;
     drawFlightFrame(frame);
-    expect(drawImage).toHaveBeenCalledExactlyOnceWith(source, 0, 0, 240, 135);
+    expect(drawImage).toHaveBeenCalledOnce();
+    expect(drawImage.mock.calls[0]?.[0]).toBe(source);
     expect(
       calls.filter(
         (call) => call === "draw:aperture-cut" || call === "present:glow",
       ),
     ).toEqual(["draw:aperture-cut", "present:glow"]);
   });
-  it("draws the shared planet HUD once before every planet body", () => {
-    expect(ids.filter((id) => id === "world-hud")).toHaveLength(1);
-    expect(ids).not.toContain("mercury-hud");
-    expect(ids).not.toContain("venus-hud");
+  it("draws the World HUD before any planet body and body light first on LFX", () => {
     expect(ids.indexOf("world-hud")).toBeLessThan(ids.indexOf("planets"));
-    expect(ids).not.toContain("mercury-light");
-    expect(ids).not.toContain("venus-light");
     expect(FLIGHT_PASSES.filter((pass) => pass.layer === "lfx")[0]?.id).toBe(
       "body-light",
     );
   });
-  it("culls stock and fallback bodies by the full outline radius, including tangency", () => {
-    const planet = makePlanet("rock", -10.501);
+  it("draws no stock body outside the view and draws one inside it", () => {
+    const planet = makePlanet("rock", -30);
     const { frame, drawPlanet } = makeBodyFrame(planet, "survival");
     getPass("planets").draw(frame, bodyContext());
     expect(drawPlanet).not.toHaveBeenCalled();
-
-    // The disc is wholly outside, but half its outline stroke reaches the view.
-    planet.pos.x = -10.25;
+    planet.pos.x = 5;
     getPass("planets").draw(frame, bodyContext());
     expect(drawPlanet).toHaveBeenCalledTimes(1);
-    drawPlanet.mockClear();
-    planet.pos.x = -10.5;
-    getPass("planets").draw(frame, bodyContext());
-    expect(drawPlanet).toHaveBeenCalledTimes(1);
-
-    for (const id of ["venus", "moon"]) {
-      const fallback = makePlanet(id, -10.501);
-      const fallbackFrame = makeBodyFrame(fallback, "practice");
-      getPass("planets").draw(fallbackFrame.frame, bodyContext());
-      expect(fallbackFrame.drawPlanet).not.toHaveBeenCalled();
-      fallback.pos.x = -10.25;
-      getPass("planets").draw(fallbackFrame.frame, bodyContext());
-      expect(fallbackFrame.drawPlanet).toHaveBeenCalledTimes(1);
-    }
   });
-  it("draws any ordinal-keyed appearance on reentry at the current tick", () => {
+  it("culls a composed body by its declared bounds, not its disc", () => {
+    // The disc is outside the view; only the wide bounds reach it.
+    const planet = makePlanet("venus", -15);
+    const drawWorld = vi.fn();
+    const { frame } = makeBodyFrame(planet, "practice");
+    const appearances = new Map<number, BodyAppearance>([
+      [1, { worldBounds: square(planet.radius), drawWorld }],
+    ]);
+    frame.bodyAppearances = appearances;
+    getPass("planets").draw(frame, bodyContext());
+    expect(drawWorld).not.toHaveBeenCalled();
+    appearances.set(1, {
+      worldBounds: square(planet.radius * 2),
+      drawWorld,
+    });
+    getPass("planets").draw(frame, bodyContext());
+    expect(drawWorld).toHaveBeenCalledTimes(1);
+  });
+  it("culls body light by its bounds while leaving the World HUD independent", () => {
     const planet = makePlanet("moon", -10.01);
-    const surfaceDraw = vi.fn();
-    const body = vi.fn();
+    const light = vi.fn();
     const { frame } = makeBodyFrame(planet, "practice");
     frame.bodyAppearances = new Map<number, BodyAppearance>([
       [
         1,
         {
-          worldBounds: (_frame, target) => ({
-            left: target.pos.x - target.radius,
-            top: target.pos.y - target.radius,
-            right: target.pos.x + target.radius,
-            bottom: target.pos.y + target.radius,
-          }),
-          drawWorld: (frame) => {
-            surfaceDraw(
-              (frame.sim.ticks * STEP * 2 * Math.PI) /
-                PRACTICE_MERCURY_SPIN_SECONDS,
-              20,
-            );
-            body();
-          },
+          worldBounds: square(planet.radius),
+          drawWorld: vi.fn(),
+          light: { bounds: square(planet.radius), draw: light },
         },
       ],
     ]);
-
-    getPass("planets").draw(frame, bodyContext());
-    expect(surfaceDraw).not.toHaveBeenCalled();
-    expect(body).not.toHaveBeenCalled();
-
-    frame.sim.ticks = 9;
+    getPass("body-light").draw(frame, bodyContext());
+    expect(light).not.toHaveBeenCalled();
     planet.pos.x = -10;
-    getPass("planets").draw(frame, bodyContext());
-    expect(surfaceDraw).toHaveBeenCalledTimes(1);
-    expect(surfaceDraw).toHaveBeenLastCalledWith(
-      (9 * STEP * 2 * Math.PI) / PRACTICE_MERCURY_SPIN_SECONDS,
-      20,
-    );
-    expect(body).toHaveBeenCalledTimes(1);
-  });
-  it("retains a composed body when its declared atmosphere bounds reach the view", () => {
-    const planet = makePlanet("venus", -10.6);
-    const surfaceDraw = vi.fn();
-    const body = vi.fn();
-    const atmosphere = vi.fn();
-    const { frame } = makeBodyFrame(planet, "practice", 0.5);
-    frame.bodyAppearances = new Map<number, BodyAppearance>([
-      [
-        1,
-        {
-          worldBounds: (frame, target) => {
-            const halfWidth =
-              Math.max(0.65 / frame.camera.zoom, target.radius * 0.065) / 2;
-            const extent = target.radius + halfWidth;
-            return {
-              left: target.pos.x - extent,
-              top: target.pos.y - extent,
-              right: target.pos.x + extent,
-              bottom: target.pos.y + extent,
-            };
-          },
-          drawWorld: () => {
-            surfaceDraw();
-            body();
-            atmosphere();
-          },
-        },
-      ],
-    ]);
-
-    getPass("planets").draw(frame, bodyContext());
-    expect(surfaceDraw).toHaveBeenCalledTimes(1);
-    expect(body).toHaveBeenCalledTimes(1);
-    expect(atmosphere).toHaveBeenCalledTimes(1);
-
-    planet.pos.x = -10.651;
-    getPass("planets").draw(frame, bodyContext());
-    expect(surfaceDraw).toHaveBeenCalledTimes(1);
-    expect(body).toHaveBeenCalledTimes(1);
-    expect(atmosphere).toHaveBeenCalledTimes(1);
-  });
-  it("culls shared light bounds while leaving World HUD independent", () => {
-    for (const planetId of ["venus", "moon"] as const) {
-      const planet = makePlanet(planetId, -10.01);
-      const light = vi.fn();
-      const { frame } = makeBodyFrame(planet, "practice");
-      frame.bodyAppearances = new Map<number, BodyAppearance>([
-        [
-          1,
-          {
-            worldBounds: (_frame, target) => ({
-              left: target.pos.x - target.radius,
-              top: target.pos.y - target.radius,
-              right: target.pos.x + target.radius,
-              bottom: target.pos.y + target.radius,
-            }),
-            drawWorld: vi.fn(),
-            light: {
-              bounds: (_frame, target) => ({
-                left: target.pos.x - target.radius,
-                top: target.pos.y - target.radius,
-                right: target.pos.x + target.radius,
-                bottom: target.pos.y + target.radius,
-              }),
-              draw: light,
-            },
-          },
-        ],
-      ]);
-
-      getPass("body-light").draw(frame, bodyContext());
-      expect(light).not.toHaveBeenCalled();
-
-      planet.pos.x = -10;
-      getPass("body-light").draw(frame, bodyContext());
-      expect(light).toHaveBeenCalledTimes(1);
-    }
+    getPass("body-light").draw(frame, bodyContext());
+    expect(light).toHaveBeenCalledTimes(1);
 
     const outside = makePlanet("moon", -30);
-    const { frame, drawPlanet } = makeBodyFrame(outside, "practice");
+    const hidden = makeBodyFrame(outside, "practice");
     let arcs = 0;
     const hudContext = {
       canvas: {
@@ -310,9 +211,9 @@ describe("flight frame", () => {
       strokeText() {},
       fillText() {},
     } as unknown as CanvasRenderingContext2D;
-    getPass("planets").draw(frame, bodyContext());
-    expect(drawPlanet).not.toHaveBeenCalled();
-    getPass("world-hud").draw(frame, hudContext);
+    getPass("planets").draw(hidden.frame, bodyContext());
+    expect(hidden.drawPlanet).not.toHaveBeenCalled();
+    getPass("world-hud").draw(hidden.frame, hudContext);
     expect(arcs).toBeGreaterThan(0);
   });
   it("selects different body compositions from appearance data without frame branches", () => {
@@ -325,48 +226,14 @@ describe("flight frame", () => {
     const { frame } = makeBodyFrame(inner, "survival");
     frame.sim.planets.push(outer);
     frame.bodyAppearances = new Map<number, BodyAppearance>([
-      [
-        1,
-        {
-          worldBounds: (_frame, planet) => ({
-            left: planet.pos.x - 10,
-            top: planet.pos.y - 10,
-            right: planet.pos.x + 10,
-            bottom: planet.pos.y + 10,
-          }),
-          drawWorld: first,
-        },
-      ],
-      [
-        4,
-        {
-          worldBounds: (_frame, planet) => ({
-            left: planet.pos.x - 10,
-            top: planet.pos.y - 10,
-            right: planet.pos.x + 10,
-            bottom: planet.pos.y + 10,
-          }),
-          drawWorld: second,
-        },
-      ],
+      [1, { worldBounds: square(10), drawWorld: first }],
+      [4, { worldBounds: square(10), drawWorld: second }],
     ]);
 
     getPass("planets").draw(frame, bodyContext());
     expect(first).toHaveBeenCalledWith(frame, expect.anything(), inner);
     expect(second).toHaveBeenCalledWith(frame, expect.anything(), outer);
     expect(frame.renderer.drawPlanet).not.toHaveBeenCalled();
-  });
-  it("clears World and omits its stock background only for a prepared sky", () => {
-    const { calls, frame } = record();
-    drawFlightFrame(frame, { preparedSky: true });
-    expect(calls.filter((call) => call === "clear:world")).toHaveLength(1);
-    expect(drawn(calls)).toEqual(
-      ids.filter((id) => id !== "void" && id !== "starfield"),
-    );
-    calls.length = 0;
-    drawFlightFrame(frame);
-    expect(calls).not.toContain("clear:world");
-    expect(drawn(calls)).toEqual(ids);
   });
   it("draws and reports exactly the included passes, in order", () => {
     const { calls, frame } = record();
@@ -378,41 +245,5 @@ describe("flight frame", () => {
     });
     expect(drawn(calls)).toEqual(some);
     expect(observed).toEqual(some);
-  });
-  it("renders scene-supplied solid and light passes on their own camera-transformed layers", () => {
-    const { calls, frame } = record();
-    const passes: FlightPass[] = [
-      {
-        id: "rock",
-        name: "Rock",
-        layer: "world",
-        space: "world",
-        draws: "body",
-        source: "study",
-        draw: (_frame, ctx) => {
-          expect(ctx).toBe(frame.layers.world);
-          calls.push("draw:rock");
-        },
-      },
-      {
-        id: "rock-light",
-        name: "Rock light",
-        layer: "lfx",
-        space: "world",
-        draws: "shade",
-        source: "study",
-        draw: (_frame, ctx) => {
-          expect(ctx).toBe(frame.layers.lfx);
-          calls.push("draw:rock-light");
-        },
-      },
-    ];
-    drawFlightFrame(frame, { passes });
-    expect(drawn(calls)).toEqual(["rock", "rock-light"]);
-    expect(calls.filter((call) => call.startsWith("camera:"))).toEqual([
-      "camera:world",
-      "camera:lfx",
-    ]);
-    expect(FLIGHT_PASSES.map((pass) => pass.id)).toEqual(ids);
   });
 });

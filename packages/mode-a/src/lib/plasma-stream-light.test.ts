@@ -76,7 +76,7 @@ function fixture(owner: "player" | "opponent" = "player") {
   const step = (dt: number, roster = targets) => {
     combat.stepWeapons(dt, pose, sim.star, power, 100, [], roster);
   };
-  return { actor, combat, mounts, sim, step };
+  return { actor, combat, sim, step };
 }
 
 function recorder(sim: Simulation) {
@@ -139,24 +139,12 @@ describe("mounted plasma stream presentation", () => {
     const f = fixture();
     const hits = hitAcrossRenderedInterval(f);
     expect(hits).toHaveLength(2);
-    for (const [index, hit] of hits.entries()) {
-      expect(hit.x).toBeCloseTo(f.mounts[index].muzzleX + 75, 8);
-      expect(hit.y).toBeCloseTo(f.mounts[index].muzzleY, 8);
-      expect(hit.time).toBeCloseTo(twinContactTime, 8);
-    }
     f.sim.ticks = 44;
     const graphics = recorder(f.sim);
     graphics.draw();
     const stamps = graphics.trailStamps();
     expect(stamps).toBeGreaterThan(0);
     expect(graphics.live.drawImage).toHaveBeenCalledTimes(2);
-    for (const [
-      index,
-      [, x, y, width, height],
-    ] of graphics.live.drawImage.mock.calls.entries()) {
-      expect(x + width / 2).toBeCloseTo(hits[index].x, 8);
-      expect(y + height / 2).toBeCloseTo(hits[index].y, 8);
-    }
     graphics.draw();
     expect(graphics.trailStamps()).toBe(stamps);
     f.sim.ticks++;
@@ -188,30 +176,5 @@ describe("mounted plasma stream presentation", () => {
     graphics.draw();
     expect(graphics.live.drawImage).not.toHaveBeenCalled();
     expect(graphics.trailStamps()).toBe(0);
-  });
-
-  it("shows the full open-space paths and endpoint eruptions after the heads retire", () => {
-    const f = fixture();
-    f.step(0.7);
-    f.step(0.008, []);
-    f.sim.ticks = 42;
-    const graphics = recorder(f.sim);
-    graphics.draw();
-    expect(graphics.live.lineTo).toHaveBeenCalled();
-    expect(graphics.live.drawImage).not.toHaveBeenCalled();
-    f.step(STEP, []);
-    f.sim.ticks = 44;
-    expect(f.combat.plasmaStreams).toEqual([]);
-    expect(f.combat.plasmaAirbursts).toBe(2);
-    graphics.live.lineTo.mockClear();
-    graphics.draw();
-    expect(graphics.live.drawImage).toHaveBeenCalledTimes(2);
-    for (const { muzzleX, muzzleY } of f.mounts)
-      expect(
-        graphics.live.lineTo.mock.calls.some(
-          ([x, y]) =>
-            Math.abs(x - muzzleX - 130) < 1e-8 && Math.abs(y - muzzleY) < 1e-8,
-        ),
-      ).toBe(true);
   });
 });

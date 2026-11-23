@@ -27,7 +27,7 @@ concurrent controls and rock-planet study work. Relevant changes:
   Playground's seeded star and deterministic replay alongside legacy Survival.
 - [Playground](../specs/game/experimental/spec.md),
   [star](../specs/game/world/star/spec.md) and
-  [rules-version](../specs/game/world/gravity-field/spec.md#rules-version)
+  [release rules](../development.md#release)
   contracts describe the selection and ranked boundary.
 
 No gravity/friction constants, challenge identifier or Firestore rules were
