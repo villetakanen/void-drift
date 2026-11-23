@@ -299,9 +299,7 @@ test("Experimental On completes a stable ship run without submitting a score", a
   await page.clock.runFor((predicted.ticks * 1000) / 60 + 40);
   const result = page.getByRole("dialog", { name: "Run complete" });
   await expect(result).toBeVisible();
-  await expect(
-    result.getByText("No score for this run.", { exact: true }),
-  ).toBeVisible();
+  await expect(result.getByRole("status")).toHaveText("Unranked");
   await expect(result.getByRole("button", { name: "Save Score" })).toHaveCount(
     0,
   );
