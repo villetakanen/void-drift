@@ -21,6 +21,7 @@ const surfaces = [
 const textRoles = [
   { token: "--color-text", use: "Headings, values, body" },
   { token: "--color-text-muted", use: "Eyebrows, tags, captions" },
+  { token: "--color-placeholder", use: "Letter shown by an empty field" },
   { token: "--color-action", use: "Links and control labels" },
 ];
 const borders = [
@@ -41,6 +42,14 @@ const data = [
   "--color-android-green",
   "--color-caution-tape",
   "--color-red",
+];
+const spacing = [
+  { token: "--spacing-xs", units: 1, use: "The grid unit" },
+  { token: "--spacing-sm", units: 2, use: "Tight padding and label spacing" },
+  { token: "--spacing-md", units: 4, use: "Padding inside a control or frame" },
+  { token: "--spacing-lg", units: 8, use: "Panel padding" },
+  { token: "--spacing-xl", units: 16, use: "Section separation" },
+  { token: "--spacing-gap", units: 4, use: "Gap between sibling items" },
 ];
 const deprecated = [
   ["--color-acid-lime", "--color-brand"],
@@ -287,6 +296,24 @@ const fmt = (ratio: number | undefined) =>
   </section>
 
   <section>
+    <h2>Spacing</h2>
+    <p>
+      Spacing steps are multiples of a 4px grid unit. The size steps set padding
+      and separation; <code>--spacing-gap</code> names the space between sibling
+      items, such as the slots of the <a href="/lab/ds/initials">initials</a>
+      input.
+    </p>
+    <div class="spacing">
+      {#each spacing as s}
+        <code>{s.token}</code>
+        <span class="muted">{s.units} × · {s.units * 4}px</span>
+        <span class="bar" style={`inline-size: var(${s.token})`}></span>
+        <span class="muted">{s.use}</span>
+      {/each}
+    </div>
+  </section>
+
+  <section>
     <h2>Deprecated names</h2>
     <p>These alias a role until the last preserved study stops using them.</p>
     <ul>
@@ -298,6 +325,16 @@ const fmt = (ratio: number | undefined) =>
 </section>
 
 <style>
+.spacing {
+  display: grid;
+  grid-template-columns: max-content max-content var(--spacing-xl) 1fr;
+  align-items: center;
+  gap: var(--spacing-sm) var(--spacing-md);
+}
+.bar {
+  block-size: var(--spacing-md);
+  background: var(--color-text-muted);
+}
 .roles {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));

@@ -1,7 +1,7 @@
 ---
 generated:
-  by: "openai-codex/gpt-6.2-sol"
-  at: "2026-11-22T07:28:15Z"
+  by: "claude-code/claude-fable-5-2"
+  at: "2026-11-23T07:50:16+02:00"
 verified: []
 ---
 
@@ -51,7 +51,7 @@ canonical examples; Lab and Studies consume them without acquiring ownership.
 
 - [Side sheet](side-sheet/spec.md) owns shared instrument parameter surfaces.
 - [Page header](page-header/spec.md) owns shared page identity, navigation and container adaptation.
-- [Component frame](component-frame/spec.md) owns the shared boundary and width container for documentation examples.
+- [Component frame](component-frame/spec.md) owns the dashed line that traces a documentation example's own box, and the example's width container.
 - [Documents grid](documents-grid/spec.md) owns the responsive layout of Design system documentation.
 - [Tray](tray/spec.md) owns the shared navigation component used by the
   Design system layout and its canonical demo. The overview lists Tray in its
@@ -64,6 +64,7 @@ canonical examples; Lab and Studies consume them without acquiring ownership.
 - [Actions](actions/spec.md) owns that domain's definitions and acceptance behavior.
 - [Input presentation](inputs/spec.md) owns Tabs, RingSlider and thrust-pad presentation.
 - [Choice controls](choices/spec.md) owns SegmentedControl, Switch and their usage boundaries.
+- [Initials](initials/spec.md) owns the three-letter entry for a player's tag.
 - [Game field backdrop](game-field-backdrop/spec.md) owns the shared generated
   decorative field and scrim used by the Title Screen, Settings, Top Scores and
   Credits.

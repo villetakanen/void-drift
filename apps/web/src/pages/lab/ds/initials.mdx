@@ -1,0 +1,124 @@
+---
+verified: []
+---
+
+import ComponentFrame from "../../../components/lab/ComponentFrame.svelte";
+import InitialsExample from "../../../components/lab/InitialsExample.svelte";
+import DesignSystemLayout from "../../../layouts/DesignSystemLayout.astro";
+
+<DesignSystemLayout title="Initials" documentProse>
+
+# Initials
+
+<p className="initials-lede">Arcade-style entry for a player's tag.</p>
+
+<div className="initials-stage">
+  <div className="panel initials-card">
+    <InitialsExample host={2} client:load />
+  </div>
+</div>
+
+Used in the run-complete dialog, for the tag shown next to a score on Top Scores.
+
+Letters are typed or picked with the arrow keys: Up and Down change the letter, Left and Right move between slots. For the host it is one text field with a `label` and a `value`.
+
+| Prop | Default | Use |
+| --- | --- | --- |
+| `label` | `"Initials"` | The label under the slots, and the field's accessible name. |
+| `host` | `0` | The elevation of the surface the field sits on: `0`, `1` or `2`. |
+
+## Keys
+
+One text field holds up to three letters, A–Z, filled from the left. It starts
+empty, and each empty slot shows a dim A.
+
+| Key | Effect |
+| --- | --- |
+| Up, Down | Next or previous letter, wrapping at A and Z. On an empty slot the first press enters A. |
+| Left, Right | Select the previous or next slot. Right stops at the first empty slot. |
+| A letter | Enters it in uppercase and selects the next slot. On a filled slot it replaces the letter. |
+| Backspace | On the empty slot or the last letter, removes the last letter. On an earlier letter, selects the previous slot. |
+| Delete | Removes the last letter when it is selected. |
+| Home, End | Select the first slot, or the last selectable one. |
+| Tab, Shift+Tab | Select the next or previous slot. From the last or first slot, leave the field. |
+| Paste | Enters the pasted letters, at most three. Other characters are dropped. |
+
+## Elevation
+
+Empty slots and the selected slot are black on every host. A slot that holds a letter and is not selected is one elevation step above its host.
+
+<div className="initials-hosts">
+  <div className="initials-host">
+    <span className="initials-caption">On the void</span>
+    <ComponentFrame fit>
+      <InitialsExample value="VT" client:load />
+    </ComponentFrame>
+  </div>
+  <div className="initials-host">
+    <span className="initials-caption">On a console, elevation 1</span>
+    <div className="initials-console">
+      <InitialsExample host={1} value="VT" client:load />
+    </div>
+  </div>
+  <div className="initials-host">
+    <span className="initials-caption">On a panel, elevation 2</span>
+    <div className="panel">
+      <InitialsExample host={2} value="VT" client:load />
+    </div>
+  </div>
+</div>
+
+## Accessibility
+
+- One native text field with one label, "Initials" by default. Tab stops at
+  each selectable slot before it leaves, so passing the field takes up to
+  three presses.
+- Accepted loss of accessibility: Tab moving inside a single text field
+  departs from standard text-field behaviour, and from the ARIA practice of
+  one tab stop per composite control with arrow keys inside. Focus is not
+  trapped (WCAG 2.1.2 holds).
+- A polite live region announces the letter after each Up or Down.
+- Accepted loss of accessibility: the only focus cue is a colour change of
+  the selected slot's brackets, from the resting bracket colour to the selected
+  colour. Nothing moves and nothing is added. The brackets are 2px lines set
+  3px in from the slot's edge in every state. The selected colour is at 10.0:1
+  against the resting bracket colour and 18.4:1 against the black slot ground
+  of a selected slot; the resting bracket colour is at 1.8:1 against a black
+  slot and at 1.7:1, 1.5:1 and 1.3:1 against a raised slot on host 0, 1 and 2.
+  This is less
+  than WCAG 2.2 Focus Appearance (2.4.13) and the design system's focus ring
+  provide: the brackets are open across the middle 40% of the top and bottom,
+  and they mark one slot, covering less than a third of a 2px line around the
+  field.
+
+## Consumed tokens
+
+| Token | Use |
+| --- | --- |
+| `--font-family-ui` | Letter typeface. |
+| `--font-size-display` | Letter size. |
+| `--line-height-ui` | Slot height. |
+| `--spacing-gap` | Space between slots. |
+| `--color-void` | Ground of an empty slot and of the selected slot. |
+| `--color-elev-1`, `--color-elev-2`, `--color-elev-3` | Ground of a slot that holds a letter and is not selected, on host 0, 1 and 2. |
+| `--cut-size-md` | Slot corner cuts. |
+| `--bracket-width` | Bracket line width. |
+| `--color-bracket` | Resting brackets. |
+| `--color-selected` | Brackets of the selected slot. |
+| `--bracket-inset` | Distance of the brackets from the slot's edge. |
+| `--color-text` | Letter colour. |
+| `--color-placeholder` | Dim A of an empty slot. |
+| `--font-size-caption` | Label size. |
+| `--spacing-sm` | Label spacing. |
+
+</DesignSystemLayout>
+
+<style>{`
+.initials-lede { font-size: var(--font-size-lead); }
+.initials-stage { display: grid; justify-items: center; margin: var(--spacing-md) 0; }
+.initials-card { box-sizing: border-box; inline-size: min(100%, var(--flight-card-width)); display: grid; justify-items: center; text-align: center; }
+.initials-hosts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-lg); align-items: start; }
+.initials-host { display: grid; gap: var(--spacing-sm); }
+.initials-console { padding: var(--spacing-lg); background: var(--color-elev-1); }
+.initials-caption { font-family: var(--font-family-ui); font-size: var(--font-size-caption); color: var(--color-text-muted); }
+`}</style>

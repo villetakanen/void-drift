@@ -1,8 +1,7 @@
 ---
-status: draft
 generated:
-  by: "codex/gpt-6"
-  at: "2026-11-21T18:32:27+00:00"
+  by: "claude-code/claude-fable-5-2"
+  at: "2026-11-23T07:50:16+02:00"
 verified: []
 ---
 
@@ -30,7 +29,7 @@ Svelte actions snippet. The header has no game state or persistence of its own.
 the shared header and a dedicated navigation list. Lab and Studies retain their
 independent layouts. Its header spans the full page above the navigation and main
 content, with `spacing-sm` (8px) vertical and `spacing-md` (16px) horizontal
-padding, matching its live examples, and no divider below it.
+padding and no divider below it.
 LabLayout composes the header in its existing content-column header cell, to the
 right of its navigation tray, preserving the tray logo and inspector columns.
 It supplies Lab identity and the current page name; the overview has no suffix.
@@ -59,8 +58,10 @@ The controls example keeps its state local without changing game settings.
 - Shared tokens and Logo, Switch and button definitions govern presentation.
 - The existing Hangar is the visual reference: a 44px minimum header height,
   no internal vertical padding and no external margin. Host pages own outer
-  spacing. The Design system layout and live examples use `spacing-sm` (8px)
-  vertical and `spacing-md` (16px) horizontal padding.
+  spacing. The Design system layout uses `spacing-sm` (8px) vertical and
+  `spacing-md` (16px) horizontal padding. In a live example the header sits
+  directly on the dashed line of its
+  [Component frame](../component-frame/spec.md), with no padding between them.
 - Sub-site names use `font-size-lead`; the optional page name and its `// `
   prefix use `font-size-body`. Both retain bold weight and inherited UI family
   and line height. Optional control labels use body size; navigation uses buttons.
@@ -102,12 +103,11 @@ Scenario: Browse the design system
   Then the MDX Page header page opens in the Design system layout
   And both pages use the shared header with Design system identity
 
-Scenario: Match the live header examples
+Scenario: Place the Design system header
   Given the Design system at a viewport of at least 1280px
-  When I inspect its page header and the live examples
+  When I inspect its page header
   Then the page header spans above both navigation and content
   And the layout provides 8px vertical and 16px horizontal padding around the header
-  And this padding matches the live examples
   And no divider appears below the page header
   And the sub-site name uses font-size-lead
   And optional control labels use font-size-body
@@ -180,7 +180,7 @@ Scenario: Preserve the single-row layout
   Given the Page header component page at a viewport of at least 1280px
   When I inspect its identity and controls examples
   Then each header occupies one line
-  And each example has 8px vertical and 16px horizontal padding
+  And each header sits directly on the dashed line of its Component frame with no padding between them
   And identity, controls and navigation keep the same row layout
 
 Scenario: Keep example state local

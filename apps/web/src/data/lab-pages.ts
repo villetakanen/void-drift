@@ -39,7 +39,7 @@ export const labPages = z.array(labPageSchema).parse([
   {
     href: "/lab/ds/component-frame",
     title: "Component frame",
-    purpose: "A shared boundary and width container for live examples.",
+    purpose: "Shows a component's own box and spacing, isolated from the page.",
     group: "design-system",
     source: "production",
     defines: ["apps/web/src/components/lab/ComponentFrame.svelte"],
@@ -172,6 +172,15 @@ export const labPages = z.array(labPageSchema).parse([
       "apps/web/src/components/inputs/Switch.svelte",
     ],
     spec: "docs/specs/factory/design-system/choices/spec.md#architecture",
+  },
+  {
+    href: "/lab/ds/initials",
+    title: "Initials",
+    purpose: "The three-letter leaderboard input.",
+    group: "design-system",
+    source: "production",
+    defines: ["apps/web/src/components/lab/InitialsExample.svelte"],
+    spec: "docs/specs/factory/design-system/initials/spec.md#architecture",
   },
   {
     href: "/lab/ds/slider",

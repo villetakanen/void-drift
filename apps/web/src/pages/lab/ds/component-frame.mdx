@@ -1,7 +1,7 @@
 ---
 generated:
-  by: "codex/gpt-6"
-  at: "2026-11-21T20:08:43+02:00"
+  by: "claude-code/claude-fable-5-2"
+  at: "2026-11-23T07:50:16+02:00"
 verified: []
 ---
 
@@ -10,38 +10,45 @@ import DesignSystemLayout from "../../../layouts/DesignSystemLayout.astro";
 
 <DesignSystemLayout title="Component frame" contentClass="frame-guide" documentProse wide>
 
-## Component frame
+# Component frame
 
-Marks the boundary of a live component example.
+Shows a component's own box and spacing, isolated from the page around it.
 
-<ComponentFrame><span>Example content</span></ComponentFrame>
+## Default
 
-The dashed line and padding separate the example from its documentation.
-The frame fills its parent and leaves the page background visible.
+The frame fills its parent's width. The grey block has a margin, so the gap between it and the dashed line is the block's own.
 
-### Spacing
+<ComponentFrame>
+  <div className="frame-sample">Margin 16px · padding 8px 16px</div>
+</ComponentFrame>
 
-Padding follows the [shared spacing grid](/lab/tokens), whose base unit is
-`--spacing-xs`. Horizontal padding is twice the vertical padding.
+## Fit
 
-| Direction | Base grid units | Token |
-| --- | --- | --- |
-| Top and bottom | 2 × | `--spacing-sm` |
-| Left and right | 4 × | `--spacing-md` |
+With `fit`, the frame takes the width of its content.
 
-### Usage
+<ComponentFrame fit>
+  <div className="frame-sample">Margin 16px · padding 8px 16px</div>
+</ComponentFrame>
 
-Place example content inside `ComponentFrame`. Svelte receives it as a `children`
-snippet; Astro and MDX pass it as nested content.
+## Usage
 
-The frame provides the named `component-frame` inline-size container for
-components that adapt to available width. Its parent sets that width.
+- Use the default for a component that adapts to the width it is given. It is the named `component-frame` inline-size container.
+- Use `fit` for a component with a width of its own, so the line shows that width. A `fit` frame is not a size container.
+- The frame adds no padding, margin or background. The page owns the space around it.
+- The frame is not a stage for host surfaces and not a separator between examples and text.
+
+## Consumed tokens
+
+| Token | Use |
+| --- | --- |
+| `--color-border` | Dashed line colour. |
 
 </DesignSystemLayout>
 
 <style>{`
 .frame-guide table { width: 100%; border-collapse: collapse; font-size: var(--font-size-body); }
 .frame-guide th, .frame-guide td { padding: var(--spacing-sm) var(--spacing-md); text-align: left; border-bottom: 1px solid var(--color-border-subtle); }
-.frame-guide th:first-child, .frame-guide td:first-child { padding-left: 0; white-space: nowrap; }
-.frame-guide th { color: var(--color-text-muted); font-weight: 400; }
+.frame-guide th:first-child, .frame-guide td:first-child { padding-left: 0; }
+.frame-guide th { color: var(--color-text-muted); font-weight: var(--font-weight-regular); }
+.frame-sample { margin: var(--spacing-md); padding: var(--spacing-sm) var(--spacing-md); background: var(--color-elev-1); font-size: var(--font-size-body); }
 `}</style>
