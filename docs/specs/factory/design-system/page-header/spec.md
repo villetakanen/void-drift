@@ -1,7 +1,7 @@
 ---
 generated:
-  by: "claude-code/claude-fable-5-2"
-  at: "2026-11-23T07:50:16+02:00"
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-23T14:50:01+02:00"
 verified: []
 ---
 
@@ -26,17 +26,14 @@ Pages supply the sub-site name (`title`), optional `pageName`, sub-site destinat
 Svelte actions snippet. The header has no game state or persistence of its own.
 
 `DesignSystemLayout.astro` is the Design system's own Astro layout. It composes
-the shared header and a dedicated navigation list. Lab and Studies retain their
-independent layouts. Its header spans the full page above the navigation and main
-content, with `spacing-sm` (8px) vertical and `spacing-md` (16px) horizontal
-padding and no divider below it.
-LabLayout composes the header in its existing content-column header cell, to the
-right of its navigation tray, preserving the tray logo and inspector columns.
-It supplies Lab identity and the current page name; the overview has no suffix.
+the shared header and Tray. Lab and Studies retain their independent layouts.
+DesignSystemLayout and LabLayout place the header across the full width above
+the tray, main content and any inspector. LabLayout supplies Lab identity and
+the current page name; the overview has no suffix.
 StudyLayout composes Design studies identity and the available study title,
 with peer-site navigation on the right. The sub-site name returns to the
 study index. Its host supplies the UI font while article prose keeps its family,
-H1, status and question. Both hosts provide 8px vertical and 16px horizontal
+H1, status and question. All three hosts provide 8px vertical and 16px horizontal
 padding with no divider below the header.
 Each development site supplies links to the other two through the shared header's
 links input: `DS` leads to `/lab/ds`, `lab` to `/lab`, and `studies` to
@@ -123,13 +120,13 @@ Scenario: Read and navigate page identity
   When I follow the link
   Then the overview shows the plain Design system name without a page suffix
 
-Scenario: Place Lab identity beside its tray
+Scenario: Place Lab identity above its tray
   Given a Lab page at a viewport of at least 1280px
   When I inspect the shared header
-  Then it occupies the content-column header cell to the right of the tray
+  Then it spans the tray, main stage and inspector when present
+  And the brand mark appears in the header
   And Lab links to /lab when a page name is present
   And the overview shows Lab without a page suffix
-  And the tray logo, navigation and inspector arrangement remain in place
   And the host supplies 8px vertical and 16px horizontal padding with no bottom divider
 
 Scenario: Navigate a study with shared identity

@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm exec tsc --noEmit *)",
+      "Bash(pnpm check:specs *)",
+      "Bash(pnpm check:specs)",
+      "Bash(shasum *)",
+      "Bash(pnpm check:types)",
+      "Bash(pnpm lint)",
+      "Bash(pnpm check:contracts)",
+      "Bash(pnpm test)",
+      "mcp__linear__get_issue",
+      "mcp__linear__list_issues"
+    ]
+  }
+}

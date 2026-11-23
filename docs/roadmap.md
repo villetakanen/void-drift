@@ -22,6 +22,17 @@ implementation.
 Release direction is being formed. No release theme or complete scope has been
 chosen.
 
+### Known regressions carried forward
+
+At 0.8.0 scope review, explicitly select each regression for a fix or carry it
+forward again.
+
+**Ranked results survive rotation.** Turning the screen after a run no longer
+clears typed initials or hides a successful score save.
+
+**Status:** Known 0.7.x regression; deferred to 0.8.0 scope review.
+[Reproduction and findings](specs/game/game-screen/rotate-findings.md).
+
 ### Retry a run
 
 **Decision:** Selected; delivered.
@@ -33,25 +44,3 @@ opens Top Scores.
 
 **Context:** [Game-over spec](specs/game/game-over/spec.md) and
 [Retry regression coverage](../tests/browser/launch-navigation.spec.ts).
-
-### Revamp score-table and how scores are collected
-
-**Decision:** Candidate.
-
-**Draft release note:** A revamped score-table makes it clearer how you rank
-against other pilots. After submitting a run, you can see whether it was saved
-and which of your results stays on the board.
-
-The ranking and retention choices remain to be decided.
-
-**Ideas to consider:**
-
-- Explain when an equal or lower submission keeps the pilot's existing best: today it silently succeeds and opens the score-table, even though the new run and initials were not saved. One possibility is to show “Your best stands: 420” with a link to the table.
-
-**Context:** The [scores contract](specs/game/scores/spec.md) currently retains
-one best score per pilot and ship, replacing it only for a higher score. The
-[initials study](../apps/web/src/pages/lab/studies/ranked-initials-2026-11-20.mdx)
-explores signing a run; its proposals have not been adopted by this roadmap.
-The example above comes from the
-[submission transaction](../packages/mode-a/src/lib/firebase.ts) and
-[run-complete save flow](../apps/web/src/components/FlightDeck.svelte).

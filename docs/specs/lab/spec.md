@@ -1,13 +1,8 @@
 ---
-
-title: "Spec: Lab"
-status: draft
 generated:
-  by: "codex/gpt-6"
-  at: "2026-11-21T18:27:12+00:00"
-verified:
-- { by: "codex/gpt-6", at: "2026-11-19T16:50:31+02:00" }
-- { by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-23T14:50:01+02:00"
+verified: []
 
 ---
 
@@ -33,9 +28,10 @@ Lab tools live under `apps/web/src/pages/lab/`. The shared
 [page registry](../../../apps/web/src/data/lab-pages.ts) and navigation can
 connect all three development tools without establishing ownership between them.
 
-LabLayout uses the shared [page header](../factory/design-system/page-header/spec.md)
-in its content column to the right of the navigation tray. The tray, its logo
-and the inspector retain their arrangement.
+LabLayout places the shared [page header](../factory/design-system/page-header/spec.md)
+across the full width, as in the Design system. The header carries the brand
+mark. Below it, the shared [Tray](../factory/design-system/tray/spec.md) sits
+to the left of the main stage, with the inspector on the right when enabled.
 
 Game contracts and implementations own the simulation, ships, worlds, effects,
 camera transforms and rendering that the Lab hosts. The Design system owns
@@ -128,6 +124,13 @@ Scenario: Navigate between development tools
   When a reader opens Studies or Design system
   Then the destination follows its own contract
   And its route does not make it a Lab-owned feature
+
+Scenario: Navigate Lab tools
+  Given a Lab page at a viewport of at least 1280px
+  When I inspect the navigation beneath the full-width header
+  Then the shared Tray shows Index, the Lab's registry groups in order, and Back to Game
+  And only the deepest listed destination covering the current path is marked current, with Index current only at /lab
+  And the tray scrolls independently of the main stage
 
 Scenario: Change a hosted game feature
   Given a Lab inspector hosts a game effect
