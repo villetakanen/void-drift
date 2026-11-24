@@ -12,6 +12,7 @@ const verificationPort = process.env.VOID_DRIFT_VERIFY_PORT;
 
 // https://astro.build/config
 export default defineConfig({
+  site: "https://void-drift-alpha.web.app",
   devToolbar: { enabled: false },
   envDir: "../../",
   integrations: [svelte(), mdx()],

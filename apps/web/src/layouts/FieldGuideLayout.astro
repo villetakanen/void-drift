@@ -1,0 +1,94 @@
+---
+import "@void-drift/core/styles/reset.css";
+import "@void-drift/core/styles/tokens.css";
+import "@void-drift/core/styles/buttons.css";
+import "@void-drift/core/styles/typography.css";
+import type { CollectionEntry } from "astro:content";
+import PageHeader from "../components/PageHeader.svelte";
+import Tray from "../components/Tray.svelte";
+
+interface Props {
+  title: string;
+  description: string;
+  entries: CollectionEntry<"fieldGuide">[];
+}
+const { title, description, entries } = Astro.props;
+const canonical = new URL(
+  Astro.url.pathname.replace(/\/$/, "") || "/",
+  Astro.site,
+);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{title} | Void Drift</title>
+    <meta name="description" content={description}>
+    <link rel="canonical" href={canonical}>
+    <link rel="icon" href="/favicon.svg">
+  </head>
+  <body>
+    <div class="shell">
+      <PageHeader title="Void Drift" pageName="Field Guide" href="/" />
+      <div class="layout">
+        <aside>
+          <Tray
+            label="Field Guide navigation"
+            links={[
+              { href: "/field-guide", label: "Field Guide" },
+              { href: "/", label: "Title screen" },
+            ]}
+            groups={[
+              {
+                label: "Articles",
+                links: entries.map((e) => ({
+                  href: `/field-guide/${e.data.slug}`,
+                  label: e.data.title,
+                })),
+              },
+            ]}
+            activeHref={Astro.url.pathname.replace(/\/$/, "")}
+          />
+        </aside>
+        <main><slot /></main>
+      </div>
+    </div>
+  </body>
+</html>
+<style>
+:global(body) {
+  margin: 0;
+  background: var(--color-void);
+  color: var(--color-text);
+  font-family: var(--font-family-ui);
+}
+.shell {
+  max-width: 1200px;
+  margin: auto;
+  padding: var(--spacing-lg);
+}
+.layout {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
+  gap: var(--spacing-xl);
+  margin-top: var(--spacing-xl);
+}
+main {
+  max-width: var(--measure-prose);
+  min-width: 0;
+  line-height: 1.7;
+}
+main :global(p),
+main :global(ul),
+main :global(ol) {
+  margin-block: var(--spacing-md);
+}
+@media (max-width: 700px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+}
+</style>

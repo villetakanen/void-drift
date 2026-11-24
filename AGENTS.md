@@ -58,6 +58,7 @@ Work directly by default, following the relevant task skill. Load and follow [fi
 - Use Svelte 5 Runes, native CSS and shared tokens. Game artwork is procedural Canvas drawing; authored raster art is allowed for planet surfaces.
 - Draw in flight only through the render model in `docs/specs/game/render/spec.md`: game code draws shapes, images and cached stamps onto layers and the browser blends, scales and filters them. Never loop over pixels per frame, and do no work for things outside the camera's view.
 - Connect controls to the game loop; retain keyboard and iPad landscape touch in play.
+- Format and fix lint with `pnpm lint:fix`, then check with `pnpm lint`. Don't call Biome through `pnpm exec`.
 - The Lab targets viewports 1280px wide and up; never design, test or fix it below that.
 - Never promote code from a study without planning, speccing, architectural review and explicit instruction.
 - A study's decisions hold only inside the study. To the project and its specs they are proposals: examine each claim, decide, and write the decision into a spec before changing code. A study names the spec changes it would need; the project decides them.

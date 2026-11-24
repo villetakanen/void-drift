@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-11-24T123159-claude-subagents",
+  "recorded_at": "2026-11-24T12:31:59Z",
+  "work_ref": "claude-subagents-developer-reviewer",
+  "intent": "User request in conversation (2026-11-24): provide Claude Code build and review subagents mirroring the PI agents .pi/agents/developer.md and .pi/agents/reviewer.md, with build on Sonnet and review on Opus. No written spec or acceptance criteria exist beyond the request.",
+  "result": "Added .claude/agents/developer.md (model: sonnet; tools Read, Grep, Glob, Bash, Edit, Write) and .claude/agents/reviewer.md (model: opus; tools Read, Grep, Glob). Bodies copied verbatim from the PI agents. .gitignore gains !.claude/agents so the agents are shared. The proposed single-source generator for PI and Claude agents was not built.",
+  "verification": "Observed: the harness announced developer and reviewer as available agent types with the expected tool lists after the files were written. Missing: no agent was invoked, so the model each runs on and its behaviour were not observed.",
+  "findings": [
+    {
+      "classification": "unverifiable_claim",
+      "summary": "The agents are configured to run on Sonnet and Opus, but no invocation confirmed the resolved models or that the agents behave as briefed.",
+      "evidence": [
+        {
+          "locator": ".claude/agents/developer.md",
+          "supports": "frontmatter sets model: sonnet and the build tool set",
+          "kind": "observed"
+        },
+        {
+          "locator": ".claude/agents/reviewer.md",
+          "supports": "frontmatter sets model: opus and a read-only tool set",
+          "kind": "observed"
+        },
+        {
+          "locator": "conversation harness notice 2026-11-24",
+          "supports": "both agent types loaded with the listed tools; model not shown",
+          "kind": "observed"
+        },
+        {
+          "locator": "expected: a trial run of each agent",
+          "supports": "resolved model and behaviour",
+          "kind": "missing"
+        }
+      ],
+      "prior_reports": [],
+      "evidence_status": "new"
+    },
+    {
+      "classification": "reusable_improvement",
+      "summary": "Agent definitions now exist twice (.pi/agents and .claude/agents) with identical bodies and no sync mechanism; any edit to one host's agent must be repeated by hand for the other. The same duplication already appears between .pi/agents/developer.md and .pi/agents/worker.md.",
+      "evidence": [
+        {
+          "locator": ".pi/agents/developer.md",
+          "supports": "source body duplicated in .claude/agents/developer.md",
+          "kind": "observed"
+        },
+        {
+          "locator": ".pi/agents/reviewer.md",
+          "supports": "source body duplicated in .claude/agents/reviewer.md",
+          "kind": "observed"
+        },
+        {
+          "locator": ".pi/agents/worker.md",
+          "supports": "largely overlaps developer.md within the PI set",
+          "kind": "observed"
+        }
+      ],
+      "prior_reports": [],
+      "evidence_status": "new"
+    }
+  ]
+}

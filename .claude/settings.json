@@ -9,8 +9,24 @@
       "Bash(pnpm lint)",
       "Bash(pnpm check:contracts)",
       "Bash(pnpm test)",
+      "Bash(pnpm verify:changed)",
+      "Bash(pnpm test:rules)",
+      "Bash(pnpm lint:fix)",
       "mcp__linear__get_issue",
       "mcp__linear__list_issues"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-direct-biome.sh\""
+          }
+        ]
+      }
     ]
   }
 }

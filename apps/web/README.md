@@ -38,6 +38,13 @@ All commands are run from the root of the project, from a terminal:
 | `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `pnpm astro -- --help` | Get help using the Astro CLI                     |
 
+## Field Guide authoring
+
+Field Guide timestamps accept RFC 3339 timestamps with normal seconds (00–59);
+leap seconds are not supported. When adding the first article to an empty
+collection during preview, restart the dev server so Astro watches the new
+content directory. Production builds discover articles without a restart.
+
 ## 👀 Want to learn more?
 
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
