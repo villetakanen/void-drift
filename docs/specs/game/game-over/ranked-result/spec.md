@@ -1,7 +1,7 @@
 ---
 generated:
-  by: "openai-codex/gpt-6.2"
-  at: "2026-11-23T08:40:39+02:00"
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-24T08:00:30+02:00"
 verified: []
 ---
 
@@ -58,10 +58,14 @@ the authority for the best; browser-local initials are a convenience only.
   offers neither initials entry nor Save Score.
 - While saving, indicate progress and prevent duplicate submissions. Recheck
   the best atomically in the score transaction: a concurrent equal or higher
-  save keeps the existing record and is reported as such, not as a successful
-  save of this run. On a failed or timed-out submission, explain the failure,
-  retain the entered initials and allow retry. A timeout does not establish
-  whether a write completed; a retry must safely resolve the stored result.
+  save keeps the existing record. If the stored record matches all submitted
+  fields except possibly initials, show the stored score as “Best with this
+  ship: 420” (using its actual value) and stay on game over without changing
+  the record or remembered initials. The match does not distinguish a separate run from a save whose
+  reply was lost. Otherwise, report the equal or higher best as standing.
+  On a failed or timed-out submission, explain the failure, retain the entered
+  initials and allow retry. A timeout does not establish whether a write
+  completed; a retry must safely resolve the stored result.
 - A successful save of this run opens the existing Top Scores page. That page
   owns loading and displaying the board, including its failure and retry state;
   saving a personal best does not guarantee a place in its top 30.
@@ -184,10 +188,22 @@ Scenario: Initials are incomplete
 
 Scenario: Another score wins the race
   Given this run was eligible when checked
-  And another submission saves an equal or higher best before this run is written
+  And another submission saves an equal or higher, nonmatching best before this run is written
   When I submit this run
   Then the existing best stands and is reported
   And this run is not reported as saved or opened on Top Scores
+
+Scenario Outline: A matching best is already stored
+  Given this run scored 420 and the stored best matches all its fields except possibly initials
+  And it was written by <writer>
+  When I submit this run
+  Then the result says "Best with this ship: 420"
+  And the stored record and remembered initials stay unchanged
+  And I stay on game over
+  Examples:
+    | writer                           |
+    | an earlier attempt that timed out |
+    | a separate run                    |
 
 Scenario: A save fails or times out
   Given I have entered valid initials on a qualifying result

@@ -138,8 +138,7 @@ export async function loadPersonalBest(
 /**
  * Saves a run as the player's best for its ship. The transaction rechecks
  * the stored row, so an equal or higher best stays and is reported as kept.
- * After a timeout, a retry finds a row this run already wrote and reports it
- * as saved.
+ * A matching best stays too, without assuming which attempt wrote it.
  */
 export async function submitHighScore(
   submission: HighScoreSubmission,
@@ -161,9 +160,9 @@ export async function submitHighScore(
           if (decision.write) transaction.set(reference, score);
           return decision;
         });
-        return settled.write || settled.outcome === "saved"
-          ? { outcome: "saved", scoreId: reference.id }
-          : { outcome: "kept", best: settled.best };
+        if (settled.write) return { outcome: "saved", scoreId: reference.id };
+        if (settled.outcome === "matching") return { outcome: "matching" };
+        return { outcome: "kept", best: settled.best };
       })(),
     );
   } catch (error) {

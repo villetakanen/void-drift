@@ -123,20 +123,15 @@ describe("settling a score in its transaction", () => {
         best,
       });
   });
-  it("recognises this run already stored by an earlier attempt", () => {
-    expect(settleScore({ ...record }, record)).toMatchObject({
+  it.each([
+    ["a lost reply with the same initials", record.initials],
+    ["a lost reply with edited initials", "BOB"],
+    ["a separate matching run", "CAT"],
+  ])("reports a matching best without writing: %s", (_case, initials) => {
+    expect(settleScore({ ...record, initials }, record)).toEqual({
       write: false,
-      outcome: "saved",
+      outcome: "matching",
     });
-    // Retried under other initials after a lost reply: still this run.
-    expect(settleScore({ ...record, initials: "BOB" }, record)).toMatchObject({
-      write: false,
-      outcome: "saved",
-    });
-    // Another run with the same score is not this one.
-    expect(
-      settleScore({ ...record, seconds: record.seconds + 1 }, record),
-    ).toMatchObject({ write: false, outcome: "kept" });
   });
   it("leaves an unreadable stored row to the rules", () => {
     expect(settleScore({ broken: true }, record).write).toBe(true);

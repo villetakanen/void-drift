@@ -59,8 +59,10 @@ export const PersonalBestLookupSchema = z.union([
 export type PersonalBestLookup = z.infer<typeof PersonalBestLookupSchema>;
 /** What a score submission established about the stored record. */
 export const SaveOutcomeSchema = z.discriminatedUnion("outcome", [
-  // This run is the stored record.
+  // This submission wrote the stored record.
   z.object({ outcome: z.literal("saved"), scoreId: z.string() }),
+  // A matching best is already stored; its origin is unknown.
+  z.object({ outcome: z.literal("matching") }),
   // An equal or higher best is stored and stays; this run was not written.
   z.object({ outcome: z.literal("kept"), best: ScoreValueSchema }),
   // The store could not be reached or refused the write; nothing is known.
@@ -85,18 +87,22 @@ const runOf = ({ initials: _initials, ...run }: HighScore) =>
   JSON.stringify(run);
 /**
  * Decides, inside the score transaction, what to do with a record given the
- * row stored under its id. A stored row that matches the record in every
- * field but the initials is this run, written by an earlier attempt whose
- * reply was lost, even if the player changed the initials before retrying.
+ * row stored under its id. A row matching apart from initials might be a
+ * separate run or a save whose reply was lost. Neither case writes again.
  * An unreadable row is written over, and so left to the rules to judge.
  */
 export function settleScore(
   stored: unknown,
   record: HighScore,
-): { write: true } | { write: false; outcome: "saved" | "kept"; best: number } {
+):
+  | { write: true }
+  | ({ write: false } & Extract<
+      SaveOutcome,
+      { outcome: "matching" | "kept" }
+    >) {
   const same = HighScoreSchema.safeParse(stored);
   if (same.success && runOf(same.data) === runOf(HighScoreSchema.parse(record)))
-    return { write: false, outcome: "saved", best: record.score };
+    return { write: false, outcome: "matching" };
   const best = readPersonalBest(stored);
   if (best?.status === "found" && !isNewPersonalBest(best, record.score))
     return { write: false, outcome: "kept", best: best.score };

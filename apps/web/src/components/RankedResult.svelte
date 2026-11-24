@@ -20,7 +20,7 @@ let {
   onsaved,
 }: {
   run: RankedRun;
-  /** Called once this run is the stored best. */
+  /** Called after this submission writes a new best. */
   onsaved: () => void;
 } = $props();
 
@@ -29,6 +29,7 @@ type View =
   | { step: "checking" }
   | { step: "unavailable"; error: string }
   | { step: "stands"; best: number; raced?: boolean }
+  | { step: "matching" }
   | { step: "entry"; error?: string }
   | { step: "saving" }
   | { step: "saved" };
@@ -64,7 +65,8 @@ async function submit() {
     rememberInitials(signed);
     view = { step: "saved" };
     onsaved();
-  } else if (result.outcome === "kept")
+  } else if (result.outcome === "matching") view = { step: "matching" };
+  else if (result.outcome === "kept")
     view = { step: "stands", best: result.best, raced: true };
   else view = { step: "entry", error: result.error };
 }
@@ -89,6 +91,8 @@ const status = $derived.by(() => {
       return view.raced
         ? `Your best with this ship is already ${view.best}. This run was not saved.`
         : `Your best with this ship stands at ${view.best}.`;
+    case "matching":
+      return `Best with this ship: ${run.score}`;
     case "entry":
       return view.error
         ? `Score not saved. ${view.error} Your initials are kept; save again.`

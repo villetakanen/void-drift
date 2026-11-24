@@ -26,7 +26,7 @@ test.beforeAll(async ({ request }) => {
   expect(response.ok(), "reset demo Firestore before competition").toBe(true);
 });
 
-test("title and Hangar pilots complete ranked runs, retry a rejected write and share a leaderboard", async ({
+test("title and Hangar pilots recover from failed score replies and share a leaderboard", async ({
   newLocalContext,
   request,
 }) => {
@@ -160,8 +160,47 @@ test("title and Hangar pilots complete ranked runs, retry a rejected write and s
       await expect(submit).toBeEnabled();
       expect(rejected).toBe(true);
     }
-    await submit.click();
-    await expect(page).toHaveURL(/\/leaderboard$/, { timeout: 15000 });
+    if (pilot.initials === "TWO") {
+      // Let the commit reach Firestore but hold its reply past the UI timeout.
+      // Retrying must not claim or re-sign the already stored row.
+      let releaseReply!: () => void;
+      const reply = new Promise<void>((resolve) => {
+        releaseReply = resolve;
+      });
+      await page.route(
+        (url) =>
+          url.origin === firestore &&
+          url.pathname.endsWith("/documents:commit"),
+        async (route) => {
+          const response = await route.fetch();
+          expect(response.ok()).toBe(true);
+          await reply;
+          await route.fulfill({ response });
+        },
+        { times: 1 },
+      );
+      const result = page.getByRole("dialog", { name: "Run complete" });
+      try {
+        await submit.click();
+        await expect(result.getByRole("status")).toContainText(
+          "Shared scores timed out.",
+          { timeout: 15000 },
+        );
+      } finally {
+        releaseReply();
+      }
+      await initialsField.fill("NEW");
+      await submit.click();
+      await expect(result.getByRole("status")).toHaveText(
+        `Best with this ship: ${predicted.score}`,
+      );
+      await expect(
+        result.getByRole("button", { name: "Retry", exact: true }),
+      ).toBeEnabled();
+    } else {
+      await submit.click();
+      await expect(page).toHaveURL(/\/leaderboard$/, { timeout: 15000 });
+    }
     await context.close();
   }
   // An additional row with a high score from a short run, so the two orders differ.
@@ -299,9 +338,7 @@ test("Experimental On completes a stable ship run without submitting a score", a
   await page.clock.runFor((predicted.ticks * 1000) / 60 + 40);
   const result = page.getByRole("dialog", { name: "Run complete" });
   await expect(result).toBeVisible();
-  await expect(
-    result.getByText("No score for this run.", { exact: true }),
-  ).toBeVisible();
+  await expect(result.getByRole("status")).toHaveText("Unranked");
   await expect(result.getByRole("button", { name: "Save Score" })).toHaveCount(
     0,
   );
