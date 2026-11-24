@@ -15,6 +15,9 @@ export default defineConfig({
   devToolbar: { enabled: false },
   envDir: "../../",
   integrations: [svelte(), mdx()],
+  redirects: {
+    "/lab/entities/ship": { destination: "/lab/mount-planner", status: 302 },
+  },
   vite: {
     // Verification owns a stable candidate; other local servers must not reload it.
     cacheDir: verificationPort

@@ -272,13 +272,6 @@ export const labPages = z.array(labPageSchema).parse([
     spec: "docs/specs/factory/design-system/side-sheet/spec.md#architecture",
   },
   {
-    href: "/lab/entities/ship",
-    title: "Ships",
-    purpose: "The fleet: drawings, identity and fitted chassis.",
-    group: "ships-and-world",
-    source: "production",
-  },
-  {
     href: "/lab/entities/star",
     title: "Suns",
     purpose: "The standard Sun: collection, exposure and live field feedback.",
@@ -367,7 +360,8 @@ export const labPages = z.array(labPageSchema).parse([
   {
     href: "/lab/mount-planner",
     title: "Mount planner",
-    purpose: "Place engine and weapon mounts; copy the plan.",
+    purpose:
+      "Inspect fitted ships, place engine and weapon mounts, and copy the plan.",
     group: "tools",
     source: "production",
   },

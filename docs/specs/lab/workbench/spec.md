@@ -1,87 +1,64 @@
-# Feature: Internal Asset Lab (Workbench)
+---
+generated:
+  by: "openai/gpt-6.2-sol"
+  at: "2026-11-24T12:58:19+02:00"
+verified: []
+---
 
-**Status:** ACTIVE  
-**Current Version:** 0.1.0
+# Lab workbench
 
 ## Blueprint
 
 ### Context
 
-To decouple asset development from gameplay logic, we have implemented a "Lab" route at `/lab`. This allows designers and developers to tune procedural generation parameters (like ship colors, star pulses, or particle physics) in real-time, in isolated environments, without navigating the game loop or networking stack.
-
-**Achievement:** Clean separation of developer tools from production game via Astro file-system routing, with granular addressability for each asset and a robust 3-column grid layout.
+The [Lab](../spec.md) workbench gives developers a consistent place to inspect
+and adjust game assets outside normal play. Each tool has its own address and
+uses shared game drawing and simulation where applicable.
 
 ### Architecture
 
-- **Base Route:** `/lab` (Index of all experiments).
-- **Sub-Routes:**
-  - **Entity Labs:** `/lab/entities/ship`, `/lab/entities/star`.
-  - **Planet instrument:** `/lab/planet-inspector`.
-  - **System Labs:** `/lab/resources`, `/lab/typography`, `/lab/ds/choices`,
-    `/lab/ds/slider`.
-  - **Control Lab:** `/lab/controls`.
-- **Location:**
-  - Entities: `apps/web/src/pages/lab/entities/*.astro`
-  - Systems: `apps/web/src/pages/lab/*.astro`
+- The Lab index at `/lab` and the shared navigation use the registry in
+  `apps/web/src/data/lab-pages.ts`. Astro pages under `apps/web/src/pages/lab/`
+  host the tools; entity pages such as `/lab/entities/star` live under `entities/`.
+- `apps/web/src/layouts/LabLayout.astro` places the full-width page header above
+  the [Tray](../../factory/design-system/tray/spec.md), main stage, and optional
+  inspector. The Tray, stage and inspector scroll independently. Wide tools can
+  omit the inspector rail. Interactive tools hydrate their controls and previews
+  on the client.
+- The former Ships workbench address, `/lab/entities/ship`, redirects to
+  [Mount Planner](../../game/hangar/mount-planner/spec.md) for inspecting hulls
+  and fitted parts. It has no separate entry in the Lab index or Tray.
+  [Ship Tuning](../motion-instrument/spec.md) remains the tool for comparing
+  fitted motion under controlled burns.
 
-### Entity Template
+### Constraints
 
-To ensure consistency, all **Entity Labs** follow a primary template:
-1.  **3-Column Grid**:
-    - **Nav Rail (SSG)**: Global navigation.
-    - **Stage (Mixed)**: Static Header + Interactive Svelte Main.
-    - **Inspector (CSR)**: Parameter controls and Real-time Stats.
-
-### Asset API
-
-Pure functions accepting `ctx` and `props`.
-- `drawShip(ctx, props)` → `packages/core/src/lib/assets/ship.ts`
-- `drawStar(ctx, props)` → `packages/core/src/lib/assets/star.ts`
-- `drawPlanet(ctx, props)` → `packages/core/src/lib/assets/planet.ts`
-- `drawResourceBar(ctx, props)` → `packages/core/src/lib/assets/resource-bar.ts`
-
-### Anti-Patterns
-
-- **Do NOT** use `LabStats` in System Labs (e.g., Resources). Systems should have their own tailored debug views.
-- **Do NOT** load the full `GameLoop` in the Lab. Only the `Renderer` or specific draw functions should run.
-- **Do NOT** bundle the Lab routes in production builds.
+- The workbench shares production drawing functions rather than duplicating them.
+- Tools use the game systems they need directly, outside the player-facing shell.
 
 ## Contract
 
 ### Definition of Done
 
-- Visiting `/lab` loads the Lab Index.
-- Visiting `/lab/entities/ship` loads the Ship Workbench.
-- Lab uses the same render functions as production game (no duplication).
-- Lab routes are completely separate from game route.
+- Visiting `/lab` loads the Lab index with links to the registered tools.
+- The old Ships address reaches Mount Planner without loading a second ship inspector.
 
-### Regression Guardrails
+### Regression guardrails
 
-- **Performance:** Inspector updates must not trigger full-page reloads (Isolated CSR).
-- **Isolation:** Crashes in the Lab must not affect the main Game Loop entry point.
-- **Build Safety:** Lab should not increase production bundle size.
+- Inspector updates stay local and do not reload the page.
+- Workbench tools and their interactive code remain separate from the game entry point.
 
-## UI Layout (The "workbench" Grid)
+### Scenarios
 
-The Lab uses a CSS Grid layout to maximize screen real estate and separate concerns.
+```gherkin
+Scenario: Follow a bookmark to the former Ships workbench
+  Given a bookmark to /lab/entities/ship
+  When I open it
+  Then I arrive at /lab/mount-planner
+  And the Lab Tray marks Mount planner current without listing a separate Ships destination
 
-**Grid Structure:**
-```text
-| logo (SSG)      | page-title (SSG)       | inspector (CSR) |
-| tray (SSG)      | main (CSR)             | inspector (CSR) |
+Scenario: Inspect an asset outside the game
+  Given a Lab asset tool with an interactive inspector
+  When I change an exposed parameter
+  Then the preview updates without reloading the page or starting a game
 ```
-
-**Columns:**
-1.  **Nav Rail (250px):** `logo` (Brand) + `tray` (Navigation Links).
-    -   _Tech:_ Astro (Static).
-2.  **Stage (1fr):** `page-title` (Header) + `main` (Interactive Canvas/Preview).
-    -   _Tech:_ Header is Astro (Static). Main is Svelte (Client-side).
-    -   _Scrolling:_ `main` scrolls-y if content overflows (unless it's a fixed Canvas).
-3.  **Inspector (300px):** `side-pane` (Controls + Stats).
-    -   _Tech:_ Svelte (Client-side) via isolated island.
-    -   _Scrolling:_ Scrolls-y independently.
-
----
-
-**Lab Status: ACTIVE** 🚀  
-**Access:** Navigate to `/lab` during development
