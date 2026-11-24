@@ -1,10 +1,8 @@
 ---
 
-title: "Spec: Options"
-status: draft
 generated:
-  by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-20T10:31:54Z"
+  by: "openai/gpt-6.1-terra"
+  at: "2026-11-24T14:37:17+02:00"
 verified: [{ by: "codex/gpt-6", at: "2026-11-19T19:21:23+02:00" }]
 
 ---
@@ -59,8 +57,7 @@ the [Speed camera](../camera/speed-camera/spec.md) preference. Combat HUD contro
   no settings controls; its Settings action navigates to Options. Speed camera
   is independent of Playground and scoring.
 - The Display section has a shared Combat HUD switch, On by default. It controls contact cues across all playable flight modes. Hull, power, score, flight controls and camera framing stay available independently. Older settings retain their existing choices.
-- Options uses the same game field backdrop as the Title Screen, Top Scores and
-  Credits.
+- Options uses the same game field backdrop as the Title Screen and Top Scores.
 
 ## Contract
 
@@ -74,7 +71,7 @@ the [Speed camera](../camera/speed-camera/spec.md) preference. Combat HUD contro
 - O4: A missing or invalid stored value reads as the default, and unavailable storage leaves the game playable.
 - O5: `SettingsSchema` holds no ship choice.
 - O6: Speed camera uses the shared Switch, defaults to Off, persists across reloads and is presented only in Options. Legacy settings retain a valid Invert controls choice when the Speed camera field is missing.
-- O7: Options renders the same game field backdrop as the Title Screen, Top Scores and Credits.
+- O7: Options renders the same game field backdrop as the Title Screen and Top Scores.
 
 ### Regression guardrails
 
@@ -131,5 +128,5 @@ Feature: Options
   Scenario: Options uses the shared backdrop
     Given I open Options
     When the page renders
-    Then it shows the same game field backdrop as the Title Screen, Top Scores and Credits
+    Then it shows the same game field backdrop as the Title Screen and Top Scores
 ```

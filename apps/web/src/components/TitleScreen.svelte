@@ -179,7 +179,7 @@ onMount(() => {
             >
             <a href="/leaderboard" class="btn btn-normal">TOP SCORES</a>
             <a href="/settings" class="btn btn-normal">SETTINGS</a>
-            <a href="/credits" class="btn btn-normal">CREDITS</a>
+            <a href="/field-guide/credits" class="btn btn-normal">CREDITS</a>
           </ButtonGroup>
         </nav>
         <p class="version">

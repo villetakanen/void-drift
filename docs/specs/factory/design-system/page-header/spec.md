@@ -1,7 +1,7 @@
 ---
 generated:
-  by: "openai-codex/gpt-6.2-sol"
-  at: "2026-11-23T14:50:01+02:00"
+  by: "openai/gpt-6.1-terra"
+  at: "2026-11-24T14:37:17+02:00"
 verified: []
 ---
 
@@ -86,7 +86,6 @@ The controls example keeps its state local without changing game settings.
 
 ### Regression guardrails
 
-- Credits retains its preceding header.
 - Title and flight retain their existing composition.
 - Example controls preserve saved game settings.
 - Design-system pages retain their existing addresses and dedicated navigation.
@@ -155,7 +154,7 @@ Scenario Outline: Navigate between peer development sites
     | Studies       | DS    | /lab/ds    | lab     | /lab         |
 
 Scenario: Preserve other game headers
-  Given Credits, the title screen or flight
+  Given the title screen or flight
   When I open that screen
   Then its existing composition remains in place
 

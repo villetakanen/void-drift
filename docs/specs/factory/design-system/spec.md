@@ -1,7 +1,7 @@
 ---
 generated:
-  by: "claude-code/claude-fable-5-2"
-  at: "2026-11-23T07:50:16+02:00"
+  by: "openai/gpt-6.1-terra"
+  at: "2026-11-24T14:37:17+02:00"
 verified: []
 ---
 
@@ -66,8 +66,7 @@ canonical examples; Lab and Studies consume them without acquiring ownership.
 - [Choice controls](choices/spec.md) owns SegmentedControl, Switch and their usage boundaries.
 - [Initials](initials/spec.md) owns the three-letter entry for a player's tag.
 - [Game field backdrop](game-field-backdrop/spec.md) owns the shared generated
-  decorative field and scrim used by the Title Screen, Settings, Top Scores and
-  Credits.
+  decorative field and scrim used by the Title Screen, Settings and Top Scores.
 
 #### Surfaces and layers
 

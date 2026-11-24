@@ -1,8 +1,8 @@
 ---
 
 generated:
-  by: "openai-codex/gpt-6.2-sol"
-  at: "2026-11-24T08:39:11+02:00"
+  by: "openai/gpt-6.1-terra"
+  at: "2026-11-24T14:37:17+02:00"
 verified: []
 
 ---
@@ -46,7 +46,7 @@ for game design and is not shown to players.
   flew.
 - **Presentation.** Top Scores uses the shared
   [game field backdrop](../../factory/design-system/game-field-backdrop/spec.md)
-  unchanged from the Title Screen, Settings and Credits. The backdrop owns its
+  unchanged from the Title Screen and Settings. The backdrop owns its
   decorative system and scrim; this page owns the score board.
 
 ### Constraints
@@ -120,7 +120,7 @@ for game design and is not shown to players.
   raised score keeps its ruleset; rows of a ruleset the rules do not name
   remain stored and readable.
 - C13: Top Scores renders the same shared game field backdrop as the Title
-  Screen, Settings and Credits.
+  Screen and Settings.
 
 ### Regression guardrails
 

@@ -40,7 +40,7 @@ All commands are run from the root of the project, from a terminal:
 
 ## Field Guide authoring
 
-Field Guide timestamps accept RFC 3339 timestamps with normal seconds (00–59);
+Quote timestamps in YAML frontmatter (for example, `at: "2026-11-24T12:34:42Z"`) so they remain strings. Field Guide timestamps accept RFC 3339 timestamps with normal seconds (00–59);
 leap seconds are not supported. When adding the first article to an empty
 collection during preview, restart the dev server so Astro watches the new
 content directory. Production builds discover articles without a restart.

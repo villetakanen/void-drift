@@ -1,10 +1,8 @@
 ---
 
-title: "Spec: Game field backdrop"
-status: draft
 generated:
-  by: "codex/gpt-6"
-  at: "2026-11-19T21:04:09+02:00"
+  by: "openai/gpt-6.1-terra"
+  at: "2026-11-24T14:37:17+02:00"
 verified: [{ by: "codex/gpt-6", at: "2026-11-19T20:34:26+02:00" }, { by: "codex/gpt-6", at: "2026-11-19T21:04:09+02:00" }]
 
 ---
@@ -17,7 +15,7 @@ verified: [{ by: "codex/gpt-6", at: "2026-11-19T20:34:26+02:00" }, { by: "codex/
 
 The game field backdrop is a shared player-facing decorative component. It
 composes the generated game field with the shared stage and dialog scrim for the
-Title Screen, Settings, Top Scores and Credits. Each screen uses the same
+Title Screen, Settings and Top Scores. Each screen uses the same
 backdrop; the component does not take its system from an active game.
 
 ### Architecture
@@ -40,7 +38,7 @@ backdrop; the component does not take its system from an active game.
   visible orbit passes through the upper corner of the Title Screen panel. The
   preferred radius is at least 885 world units at 1920×1080, preserving any
   larger safe generated orbit. The same value is used on
-  Settings, Top Scores and Credits; the host page does not change it.
+  Settings and Top Scores; the host page does not change it.
 - The backdrop presents the generated Sun and planets with their visible
   circular orbit paths over the prepared sky. It presents no ships, derelicts,
   flight effects, arena boundary or gameplay influence guides.
@@ -62,7 +60,7 @@ backdrop; the component does not take its system from an active game.
 
 ### Definition of Done
 
-- Title Screen, Settings, Top Scores and Credits show the same generated field and scrim composition.
+- Title Screen, Settings and Top Scores show the same generated field and scrim composition.
 - `/lab/ds/game-field-backdrop` demonstrates the component and names its source files and contract.
 - The backdrop uses the seeded solar-system generation rules without taking or changing an active game's system state.
 - The outermost planet's orbit path passes through the upper corner of the Title Screen panel using one shared orbit-radius value on every consumer.
@@ -79,7 +77,7 @@ backdrop; the component does not take its system from an active game.
 
 ```gherkin
 Scenario: Compose the shared player-facing backdrop
-  Given the Title Screen, Settings, Top Scores or Credits
+  Given the Title Screen, Settings and Top Scores
   When the page renders its backdrop
   Then the shared generated-system composition, orbit paths, prepared sky and scrim appear
   And the page content remains interactive above them
