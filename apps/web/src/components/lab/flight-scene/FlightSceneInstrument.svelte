@@ -58,7 +58,11 @@ let {
   starAppearance,
   start,
   loadout,
+  wreckSpin,
   backgroundMode = "production",
+  onTargetHull,
+  fixedBurn = false,
+  screenReadout,
 }: {
   /** The configuration document; parsed here, so it may come from anywhere. */
   config: unknown;
@@ -93,7 +97,12 @@ let {
   /** Validated initial pose/velocity override; replays the selected burn/time. */
   start?: unknown;
   loadout?: unknown;
+  /** Validated placed-wreck spin override in radians per second. */
+  wreckSpin?: unknown;
   backgroundMode?: "production" | "historical";
+  onTargetHull?: (hull: { current: number; maximum: number } | null) => void;
+  fixedBurn?: boolean;
+  screenReadout?: Snippet;
 } = $props();
 
 // The document is read once; the designer's changes are view state. The engine
@@ -110,15 +119,20 @@ const activeParsed = $derived(
         loadout: loadout ?? doc.loadout,
         planet: planet ?? doc.planet,
         start: start ?? doc.start,
+        wreckSpin: wreckSpin === undefined ? doc.wreckSpin : wreckSpin,
       })
     : null,
 );
 const activeDoc = $derived(activeParsed?.success ? activeParsed.data : null);
+$effect(() => {
+  if (!activeDoc) onTargetHull?.(null);
+});
 const stagingKey = $derived(
   JSON.stringify({
     planet: activeDoc?.planet,
     start: activeDoc?.start,
     loadout: activeDoc?.loadout,
+    wreckSpin: activeDoc?.wreckSpin,
   }),
 );
 
@@ -133,7 +147,6 @@ const sceneSummary = $derived(
       .join(" · "),
 );
 
-const SCREEN = { w: 1440, h: 900 };
 // 16:10 at the game's 1080 height; the game varies its render width the same way.
 const RENDER_WIDTH = 1728;
 
@@ -156,9 +169,6 @@ let drawnTick = $state(-1);
 let drawnView = $state("");
 let drawnBurn = $state("");
 let lost = $state<{ seconds: number; cause?: string | null } | null>(null);
-let hostW = $state(SCREEN.w);
-let hostH = $state(SCREEN.h);
-const scale = $derived(Math.min(hostW / SCREEN.w, hostH / SCREEN.h));
 let skyX = $state(960),
   skyY = $state(540),
   background = $state<FieldBackground>(
@@ -221,6 +231,8 @@ onMount(() => {
     const shownLight = light;
     const tuned = JSON.stringify(tuning ?? {});
     const targets = staged;
+    // Force a fresh readout even if a corrected override matches the last valid scene.
+    if (!activeDoc) drawn.tick = -1;
     if (
       activeDoc &&
       (drawn.experiment !== experiment ||
@@ -245,6 +257,7 @@ onMount(() => {
         scene.setPlanetAppearance(planetAppearance);
       if (drawn.view !== view) scene.restart(burn, view);
       scene.seek(burn, tick, Infinity);
+      onTargetHull?.(scene.targetHull(0));
       const centre = scene.skyCamera;
       skyX = centre.x;
       skyY = centre.y;
@@ -291,14 +304,9 @@ onMount(() => {
     data-planet={activeDoc?.planet?.reference}
     data-planet-appearance={planetAppearance?.label}
     data-study-light={light ? "true" : undefined}
-    bind:clientWidth={hostW}
-    bind:clientHeight={hostH}
     aria-label={label}
   >
-    <div
-      class="screen"
-      style={`width:${SCREEN.w}px;height:${SCREEN.h}px;transform:translate(-50%,-50%) scale(${scale})`}
-    >
+    <div class="screen">
       <div class="slot scene">
         <GameField
           {background}
@@ -325,6 +333,9 @@ onMount(() => {
               }
             />
           </div>
+          {#if screenReadout}
+            <div class="screen-readout">{@render screenReadout()}</div>
+          {/if}
           {#if sceneSummary || measurements}
             <div class="study-light">
               {#if sceneSummary}
@@ -351,7 +362,9 @@ onMount(() => {
         {/if}
       </div>
       <div class="slot controls">
-        <div class="burns"><BurnRow bind:burn {tick} /></div>
+        {#if !fixedBurn}
+          <div class="burns"><BurnRow bind:burn {tick} /></div>
+        {/if}
         <div class="time">
           <button
             type="button"
@@ -410,6 +423,7 @@ onMount(() => {
 <style>
 .host {
   position: relative;
+  container-type: size;
   margin: 0;
   width: 100%;
   height: 100%;
@@ -437,9 +451,10 @@ onMount(() => {
 }
 .screen {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform-origin: center;
+  inset: 0;
+  width: min(100%, 160cqh);
+  height: min(100%, 62.5cqw);
+  margin: auto;
 }
 .slot {
   position: absolute;
@@ -462,6 +477,10 @@ onMount(() => {
   align-items: start;
   pointer-events: none;
 }
+.screen-readout {
+  grid-column: 1;
+  pointer-events: auto;
+}
 .view,
 .study-light {
   pointer-events: auto;
@@ -470,6 +489,8 @@ onMount(() => {
   margin: 0;
 }
 .study-light {
+  grid-column: 2;
+  grid-row: 1;
   justify-self: end;
   max-width: min(100%, 62ch);
   box-sizing: border-box;
@@ -503,6 +524,13 @@ onMount(() => {
   gap: 32px;
   padding: 12px 16px;
   background: rgb(0 0 0 / 65%);
+}
+@container (max-height: 600px) {
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
 }
 .burns,
 .time {

@@ -1,6 +1,7 @@
 import type { FlightLayerContexts, Loadout } from "@void-drift/mode-a";
 import {
   type FlightSceneDocument,
+  FlightSceneDocumentSchema,
   FlightScene as SharedScene,
   type TargetMode,
 } from "../../lib/flight-scene";
@@ -30,7 +31,7 @@ function toDocument(
   config: FlightSceneConfig,
   zoom: number,
 ): FlightSceneDocument {
-  return {
+  return FlightSceneDocumentSchema.parse({
     loadout: config.loadout,
     impulses: [],
     start: config.start,
@@ -41,7 +42,7 @@ function toDocument(
         : { distance: config.escort, shardLife: 2 },
     follow: { near: zoom, far: zoom + 1 },
     opening: { burn: "course", view: "follow", tick: 0 },
-  };
+  });
 }
 function mode(config: FlightSceneConfig): TargetMode {
   if (config.escort !== undefined) return "held";

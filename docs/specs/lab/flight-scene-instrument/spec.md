@@ -1,18 +1,15 @@
 ---
 
-title: "Spec: Flight scene instrument"
-status: draft
 generated:
-  by: "codex/gpt-6"
-  at: "2026-11-19T16:41:35+02:00"
+  by: "openai/gpt-6.1-terra"
+  at: "2026-11-24T12:30:43+02:00"
 verified:
-- { by: "codex/gpt-6", at: "2026-11-19T16:49:19+02:00" }
-- by: "openai-codex/gpt-6.1-sol"
-  at: "2026-11-19T12:33:38+02:00"
+  - by: "human:ville-takanen"
+    at: "2026-11-24"
 
 ---
 
-# Spec: Flight scene instrument
+# Flight scene instrument
 
 ## Blueprint
 
@@ -43,6 +40,8 @@ an agent-supplied document; the starter is `STARTER_FLIGHT_SCENE` in
 | `held`    | Optional `{distance, shardLife}`, both positive; defaults 140 units and 2 seconds.                               |
 | `follow`  | `{near, far}` zoom of the two follow views, positive with `near < far`; defaults 1.6 and 4.                      |
 | `opening` | `{burn, view, tick}`: what is shown on opening; defaults `course`, `follow`, 180. The tick lies within the burn. |
+
+The optional `encounter.restTicks` suppresses both thrusters for that many initial simulation ticks; other simulation systems continue to run. The component's `fixedBurn` hides burn selection, and `onTargetHull` reports the first placed target's current and maximum hull, or null when unavailable, as the scene updates.
 
 #### Full Practice system
 
@@ -178,6 +177,8 @@ sets the ship's start pose and keeps the next encounter from arriving. The
   weapon has a target for the whole burn.
 
 The default choice is Placed when targets exist, else Held ahead, else None.
+
+`wreckSpin` sets placed wrecks' spin in radians per second, finite and in the range 0..2 inclusive, default 0.3. It does not affect held wrecks. The optional reactive `wreckSpin` component prop overrides the document through the same validation; changing it rebuilds the scene and replays the selected burn to the current tick. Invalid values, including null, report an error and clear the target hull readout; undefined preserves the document value. A host may provide a screen readout below the view selector.
 
 #### Held target and shard expiry
 
@@ -422,6 +423,12 @@ Scenario: Open a configured scene
   When a study embeds the instrument
   Then the scene shows the opening burn, view and time in the game's layers
   And the menu holds only what the study put there
+
+Scenario: Change placed wreck spin
+  Given a placed wreck with the default spin
+  When its reactive spin override changes to zero
+  Then the scene replays to the selected time with the wreck stationary in rotation
+  And a backward seek reproduces the same rotation
 
 Scenario: Jump back in time
   Given a burn flown to 10 s

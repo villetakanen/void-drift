@@ -134,6 +134,8 @@ established references and useful current-cycle agreements; carry out supported
 conclusions and remaining uncertainties. The guide owns concrete proposals, feedback,
 retention and focus protection.
 
+Use [lab-instruments](../lab-instruments/SKILL.md) when choosing or composing an instrument.
+
 Choose an example that lets the designer judge the question at hand. Preserve the
 conditions that matter to that judgment. Record what the example revealed and what
 remains uncertain.

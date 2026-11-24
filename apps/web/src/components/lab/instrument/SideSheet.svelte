@@ -72,7 +72,7 @@ const id = `side-sheet-${Math.random().toString(36).slice(2, 8)}`;
 /* The menu button and the sheet's close button share one corner. */
 .corner {
   width: 48px;
-  min-height: 40px;
+  min-height: var(--control-min-height);
   padding: 0;
   background: transparent;
   color: var(--color-action);

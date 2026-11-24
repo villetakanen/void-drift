@@ -99,8 +99,8 @@ export const labPages = z.array(labPageSchema).parse([
     href: "/lab/entities/derelict",
     title: "Derelict",
     purpose:
-      "Damage-driven shedding, fitted collisions and shared derelict artwork.",
-    group: "ships-and-world",
+      "Watch a staged point-defence encounter, hull damage and derelict breakup in flight.",
+    group: "tools",
     source: "production",
   },
   {

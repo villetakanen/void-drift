@@ -12,7 +12,7 @@ A designer can arrive with a topic and still be working out the question. The ag
 | How an independent reviewer tests the opening question and reports findings | [Question test](references/question-test.md) |
 | How to express a design reason, show the extent of a decision, or preserve a finding at closure | [Annotated writing examples](references/writing.md) |
 
-Keep instrument-specific operating details with the instrument. For example, the [Flight scene skill](../flight-scene-study/SKILL.md) owns how to stage a flight comparison. The study author needs enough routing guidance to choose it for the right question.
+Keep instrument-specific operating details in the instrument specs. [Lab instruments](../lab-instruments/SKILL.md) owns choosing and composing instruments; this skill owns study decisions and evidence retention.
 
 ## Reviewing a proposed lesson
 
