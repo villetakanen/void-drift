@@ -10,18 +10,20 @@ const entries = await articles();
   description="Explore the Void Drift Field Guide."
   entries={entries}
 >
-  <h1>Field Guide</h1>
-  <p>Explore the world and workings of Void Drift.</p>
-  {entries.length === 0 ? (
-    <p>No articles published yet.</p>
-  ) : (
-    <ul>
-      {entries.map((entry) => (
-        <li>
-          <a href={`/field-guide/${entry.data.slug}`}>{entry.data.title}</a>
-          <p>{entry.data.summary}</p>
-        </li>
-      ))}
-    </ul>
-  )}
+  <div class="prose">
+    <h1>Field Guide</h1>
+    <p>Explore the world and workings of Void Drift.</p>
+    {entries.length === 0 ? (
+      <p>No articles published yet.</p>
+    ) : (
+      <ul>
+        {entries.map((entry) => (
+          <li>
+            <a href={`/field-guide/${entry.data.slug}`}>{entry.data.title}</a>
+            <p>{entry.data.summary}</p>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
 </FieldGuideLayout>

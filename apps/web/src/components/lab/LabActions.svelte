@@ -1,6 +1,6 @@
 <script lang="ts">
 import "./catalog.css";
-import ButtonGroup from "../inputs/ButtonGroup.svelte";
+import ActionGroup from "../inputs/ActionGroup.svelte";
 
 let { label = "Actions design system" }: { label?: string } = $props();
 
@@ -157,7 +157,7 @@ let message = $state("Interactive examples only; nothing is changed.");
       </div>
       <div class="ground panel" data-testid="actions-live-panel">
         <span class="caption">On a panel</span>
-        <ButtonGroup navigation="directional" label="Vertical game navigation">
+        <ActionGroup navigation="directional" label="Vertical game navigation">
           <button
             type="button"
             class="btn btn-filled"
@@ -179,22 +179,26 @@ let message = $state("Interactive examples only; nothing is changed.");
           >
             SETTINGS
           </button>
-          <button type="button" class="btn btn-normal" disabled>CREDITS</button>
-        </ButtonGroup>
+          <a href="/field-guide/credits" class="text-link action-link"
+            >CREDITS</a
+          >
+        </ActionGroup>
       </div>
     </div>
     <p role="status" id="scoring">{message}</p>
   </section>
 
   <section aria-labelledby="group-navigation">
-    <h2 id="group-navigation">Button groups and keyboard navigation</h2>
+    <h2 id="group-navigation">Action groups and keyboard navigation</h2>
     <p>
-      ButtonGroup owns arrangement and optional focus movement, not selection.
-      Its children remain native buttons and links styled with
-      <code>.btn</code>. Tab and Shift+Tab always follow DOM order and can leave
-      the group. Enter activates a focused button or link; Space retains native
-      button behavior. Clicking or touching activates directly. There is no
-      separate game cursor and no menu or application ARIA role.
+      ActionGroup owns arrangement and optional focus movement, not selection.
+      Its children remain native buttons and links. Standalone links use
+      <code>.text-link.action-link</code>
+      and occupy the same space as buttons. Tab and Shift+Tab always follow DOM
+      order and can leave the group. Enter activates a focused button or link;
+      Space retains native button behavior. Clicking or touching activates
+      directly. There is no separate game cursor and no menu or application ARIA
+      role.
     </p>
     <ul>
       <li><code>navigation="native"</code> (default): arrangement only.</li>
@@ -225,7 +229,7 @@ let message = $state("Interactive examples only; nothing is changed.");
       </li>
     </ul>
     <h3>Native group</h3>
-    <ButtonGroup layout="horizontal" label="Native navigation">
+    <ActionGroup layout="horizontal" label="Native navigation">
       <button
         type="button"
         class="btn btn-normal"
@@ -240,9 +244,9 @@ let message = $state("Interactive examples only; nothing is changed.");
       >
         Cancel
       </button>
-    </ButtonGroup>
+    </ActionGroup>
     <h3>Horizontal directional group, no wrapping</h3>
-    <ButtonGroup
+    <ActionGroup
       layout="horizontal"
       navigation="directional"
       wrap={false}
@@ -266,14 +270,14 @@ let message = $state("Interactive examples only; nothing is changed.");
       >
         Next
       </button>
-    </ButtonGroup>
+    </ActionGroup>
     <h3>Responsive strip</h3>
     <p>
       Resize this host to observe orientation changing without changing DOM
       order.
     </p>
     <div class="resizable-group">
-      <ButtonGroup
+      <ActionGroup
         layout="strip"
         navigation="directional"
         label="Responsive game navigation"
@@ -292,7 +296,7 @@ let message = $state("Interactive examples only; nothing is changed.");
         >
           Launch
         </button>
-      </ButtonGroup>
+      </ActionGroup>
     </div>
     <button
       type="button"
@@ -404,7 +408,7 @@ let message = $state("Interactive examples only; nothing is changed.");
   min-width: 8.5rem;
   cursor: default;
 }
-.text-link {
+.text-link:not(.action-link) {
   font-size: var(--font-size-label);
   line-height: var(--line-height-ui);
 }

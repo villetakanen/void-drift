@@ -1,7 +1,7 @@
 ---
 generated:
   by: "openai-codex/gpt-6.2-sol"
-  at: "2026-11-23T14:50:06+02:00"
+  at: "2026-11-24T15:56:39+00:00"
 verified: []
 ---
 
@@ -14,7 +14,8 @@ verified: []
 Tray is a quiet navigation column beneath the page header. It uses the base
 surface and neutral resting links selected in the original `/lab/ds/tray`
 design reference. The Design system and Lab layouts use it; Design studies
-and game layouts retain their own navigation.
+retain their own navigation. Field Guide also uses Tray for its index,
+article destinations and title-screen return link.
 
 ### Architecture
 

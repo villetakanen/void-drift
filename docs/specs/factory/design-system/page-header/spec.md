@@ -1,7 +1,7 @@
 ---
 generated:
-  by: "openai/gpt-6.1-terra"
-  at: "2026-11-24T14:37:17+02:00"
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-24T15:56:39+00:00"
 verified: []
 ---
 
@@ -15,7 +15,9 @@ The shared page header combines the brand mark, sub-site name, optional page nam
 and navigation. Its current consumers are the Design system at `/lab/ds`, including
 its component pages at earlier URLs, Hangar at `/hangar`, Lab at `/lab` and
 Design Studies at `/lab/studies`. Other game screens retain their existing headers. Design system, Lab and Studies are peer sites; URL
-nesting does not define ownership. Broader adoption requires a separate decision.
+nesting does not define ownership. Field Guide also composes this header with Field Guide identity linked to
+`/field-guide` on articles and the article title as its page name. Its host uses
+the same 8px vertical and 16px horizontal padding. Broader adoption requires a separate decision.
 
 ### Architecture
 

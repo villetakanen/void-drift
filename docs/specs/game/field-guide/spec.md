@@ -1,7 +1,7 @@
 ---
 generated:
   by: "openai-codex/gpt-6.2-sol"
-  at: "2026-11-24T14:12:38+02:00"
+  at: "2026-11-24T15:56:39+00:00"
 verified: []
 ---
 
@@ -45,6 +45,23 @@ are separate editorial work; Credits is the one known migration.
   and licensing information at the existing `/credits` page. `/credits`
   permanently redirects to the new address so old links still work.
 
+#### Presentation
+
+- The guide composes the shared Page header and Tray using the established
+  full-width page layout: header above a 250px navigation rail and main content.
+  The host provides 8px vertical and 16px horizontal header padding, a subtle
+  rail divider, and 16px main-content gutters. Navigation and main content
+  scroll independently on wide screens. The page has no centred width cap.
+- Field Guide is the site identity, linked to the index on articles; the article
+  title is the optional page name. The mark returns to the game.
+- Article and index prose use shared reading typography. Only the reading
+  column is limited by the shared prose measure. At widths up to 700px,
+  navigation stacks above the article and the document scrolls naturally.
+- Ordinary links consume the shared typography link defaults, including the
+  return links outside article prose.
+- Provenance retains its current presentation. A shared design-system metadata
+  treatment is future work tracked in the roadmap.
+
 ### Constraints
 
 - Readers can open, read, and navigate the encyclopedia without signing in,
@@ -72,6 +89,15 @@ are separate editorial work; Credits is the one known migration.
 ### Scenarios
 
 ```gherkin
+Scenario: Read the guide in the shared page layout
+  Given the Field Guide index or an article at a wide viewport
+  When the page renders
+  Then the full-width header sits above the navigation rail and main content
+  And the page has no centred shell width limit
+  And the reading column retains the shared prose measure
+  When the viewport is at most 700px wide
+  Then navigation stacks above the content and the document scrolls naturally
+
 Scenario: Browse without loading the game
   Given a published Field Guide article and a browser with JavaScript disabled
   When a reader opens /field-guide

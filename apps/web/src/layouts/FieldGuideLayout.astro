@@ -30,30 +30,37 @@ const canonical = new URL(
     <link rel="icon" href="/favicon.svg">
   </head>
   <body>
-    <div class="shell">
-      <PageHeader title="Void Drift" pageName="Field Guide" href="/" />
-      <div class="layout">
-        <aside>
-          <Tray
-            label="Field Guide navigation"
-            links={[
-              { href: "/field-guide", label: "Field Guide" },
-              { href: "/", label: "Title screen" },
-            ]}
-            groups={[
-              {
-                label: "Articles",
-                links: entries.map((e) => ({
-                  href: `/field-guide/${e.data.slug}`,
-                  label: e.data.title,
-                })),
-              },
-            ]}
-            activeHref={Astro.url.pathname.replace(/\/$/, "")}
-          />
-        </aside>
-        <main><slot /></main>
+    <div class="guide-grid">
+      <div class="page-header">
+        <PageHeader
+          title="Field Guide"
+          pageName={title === "Field Guide" ? undefined : title}
+          href="/field-guide"
+        />
       </div>
+
+      <aside class="nav-rail">
+        <Tray
+          label="Field Guide navigation"
+          links={[
+            { href: "/field-guide", label: "Field Guide" },
+            { href: "/", label: "Title screen" },
+          ]}
+          groups={[
+            {
+              label: "Articles",
+              links: entries.map((e) => ({
+                href: `/field-guide/${e.data.slug}`,
+                label: e.data.title,
+              })),
+            },
+          ]}
+          activeHref={Astro.url.pathname.replace(/\/$/, "")}
+        />
+      </aside>
+      <main>
+        <div class="reading-content"><slot /></div>
+      </main>
     </div>
   </body>
 </html>
@@ -64,21 +71,32 @@ const canonical = new URL(
   color: var(--color-text);
   font-family: var(--font-family-ui);
 }
-.shell {
-  max-width: 1200px;
-  margin: auto;
-  padding: var(--spacing-lg);
-}
-.layout {
+.guide-grid {
   display: grid;
-  grid-template-columns: 15rem minmax(0, 1fr);
-  gap: var(--spacing-xl);
-  margin-top: var(--spacing-xl);
+  grid-template-columns: 250px minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas: "header header" "nav main";
+  height: 100dvh;
+  overflow: hidden;
+}
+.page-header {
+  grid-area: header;
+  min-width: 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+.nav-rail {
+  grid-area: nav;
+  border-right: 1px solid var(--color-border-subtle);
+  overflow-y: auto;
 }
 main {
-  max-width: var(--measure-prose);
+  grid-area: main;
   min-width: 0;
-  line-height: 1.7;
+  overflow-y: auto;
+  padding: var(--spacing-md);
+}
+.reading-content {
+  max-width: var(--measure-prose);
 }
 main :global(p),
 main :global(ul),
@@ -86,9 +104,16 @@ main :global(ol) {
   margin-block: var(--spacing-md);
 }
 @media (max-width: 700px) {
-  .layout {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-md);
+  .guide-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    grid-template-areas: "header" "nav" "main";
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+  .nav-rail {
+    border-right: 0;
   }
 }
 </style>

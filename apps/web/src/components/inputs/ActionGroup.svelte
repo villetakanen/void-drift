@@ -43,7 +43,9 @@ function navigate(event: KeyboardEvent) {
     return;
 
   const actions = Array.from(
-    group.querySelectorAll<HTMLElement>("button.btn, a.btn[href]"),
+    group.querySelectorAll<HTMLElement>(
+      "button.btn, a.btn[href], a.action-link[href]",
+    ),
   ).filter(
     (action) =>
       action.closest("[data-button-group]") === group &&
@@ -56,7 +58,9 @@ function navigate(event: KeyboardEvent) {
       action.getClientRects().length > 0 &&
       getComputedStyle(action).visibility === "visible",
   );
-  const action = target.closest<HTMLElement>("button.btn, a.btn[href]");
+  const action = target.closest<HTMLElement>(
+    "button.btn, a.btn[href], a.action-link[href]",
+  );
   if (!action) return;
   const current = actions.indexOf(action);
   if (current < 0) return;

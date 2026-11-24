@@ -99,8 +99,8 @@ game's home and Hangar is an alternative launch point.
   associated with PRESS START and HANGAR. Ordinary transition-time disabling
   has no alert tint and does not promote HANGAR. Restoring eligibility restores
   PRESS START as the filled call to action and HANGAR as a normal action.
-- The menu uses the directional vertical ButtonGroup defined by the shared
-  [Actions contract](../../factory/design-system/actions/spec.md#button-group-navigation),
+- The menu uses the directional vertical ActionGroup defined by the shared
+  [Actions contract](../../factory/design-system/actions/spec.md#action-group-navigation),
   with wrapping enabled. Up/Down and Home/End move focus; native Tab navigation
   and button/link activation remain available.
 - PRESS START receives initial keyboard focus when available; when launch is

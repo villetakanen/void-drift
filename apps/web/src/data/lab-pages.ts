@@ -202,7 +202,7 @@ export const labPages = z.array(labPageSchema).parse([
     source: "production",
     defines: [
       "packages/core/src/lib/styles/buttons.css",
-      "apps/web/src/components/inputs/ButtonGroup.svelte",
+      "apps/web/src/components/inputs/ActionGroup.svelte",
     ],
     spec: "docs/specs/factory/design-system/actions/spec.md#architecture",
   },
