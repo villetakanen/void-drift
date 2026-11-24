@@ -10,7 +10,7 @@ What does a single shared instrument look like that every study and the Lab use 
 
 A study that varies engine thrust and a study that varies hull mass both end up drawing a path, a speed curve and a few figures. Each builds that drawing with its own axes, units and input program, so the two results cannot be laid side by side, and neither can be checked in the Lab. The work of measuring is repeated and the comparison is lost.
 
-The Lab instrument is one shared element that owns the measuring. A study hands it vehicle configurations and path sources; the instrument decides the views, scales, units, input program and controls. Paths are calculated, not flown, and drawn statically. The same element fills the container in the Lab and, in a study, takes the full column width and snaps to the centre of the reading flow. All controls sit in one collapsible pane that slides over the views.
+The Lab instrument is one shared element that owns the measuring. A study hands it vehicle configurations and path sources; the instrument decides the views, scales, units, input program and controls. Paths are calculated rather than flown, and drawn statically. The same element fills the container in the Lab and, in a study, takes the full column width and snaps to the centre of the reading flow. All controls sit in one collapsible pane that slides over the views.
 
 **The screen.** Two columns of equal width inside an even margin, with no header and no footer. The plan view takes the left column; the time-based diagrams take the right.
 
@@ -22,7 +22,7 @@ The Lab instrument is one shared element that owns the measuring. A study hands 
 - It always starts hidden. Hidden, only a menu button in the container's top-right corner remains; visible, the pane's own close button takes that corner. Escape also closes it.
 - Content taller than the screen scrolls inside the pane. Targets stay touch-sized.
 
-**A configuration that travels.** The instrument is only used if handing it work is easier than building a chart. That hand-over is a configuration: a small document an agent writes, the instrument draws, and the designer adjusts on screen. If a plasma study wants faster acceleration, the designer changes that one value in the pane, compares it with the stock ship, and copies the resulting document back to the agent, or the agent reads it from the page, as the decided values. Nothing in the document is mandatory; it names only what differs.
+**The configuration document.** The instrument is only used if handing it work is easier than building a chart. That hand-over is a configuration: a small document an agent writes, the instrument draws, and the designer adjusts on screen. If a plasma study wants faster acceleration, the designer changes that one value in the pane, compares it with the stock ship, and copies the resulting document back to the agent, or the agent reads it from the page, as the decided values. Nothing in the document is mandatory; it names only what differs.
 
 The open questions were about that document: what a vehicle in it is, which parameters can change, which ships can be used, and how many vehicles one screen can hold. The game already described ships as loadouts (a chassis with parts in fixed slots) and parts as parameter sets (mass, thrust, speed limit, response), which was a likely starting vocabulary. The default path scale, the slider as a design-system component and device readability checks sat outside this cycle.
 
@@ -54,7 +54,7 @@ Changes belong to one vehicle, so the stock part and a changed one can be compar
 
 ## 02.3 Reading tools on the diagrams, values in the pane
 
-Each kind of control sits where it acts. Time is scrubbed on the traces themselves (drag across them, or use the slider beneath); the plan view carries its own scale buttons; a vehicle is hidden or shown from its row in the readout. The pane opens to only the values under investigation and the document, so what it contains is exactly what gets copied back.
+Time is scrubbed on the traces themselves (drag across them, or use the slider beneath); the plan view carries its own scale buttons; a vehicle is hidden or shown from its row in the readout. The pane opens to only the values under investigation and the document, so what it contains is exactly what gets copied back.
 
 In a study the instrument takes the full width and height of the window and snaps into place as it is scrolled to. The working example started from a three-vehicle document: a Fighter with ion aft engines, the same with plasma, and plasma with more thrust. Changing a value in the pane moved the paths and readout.
 
@@ -70,21 +70,21 @@ The plan view's scale buttons choose one of two options, and the design system h
 
 Two treatments of the unselected half were compared: inside a ghost button's lime border, or with no border as a faint fill. The faint fill without a border was chosen. It keeps the control quiet beside the diagrams and leaves lime for the selection alone.
 
-The resting state worked; the hover state did not, because darkening the faint fill made the half sink into the surface instead of answering the pointer. Four hover treatments were compared: A, the fill brightens; B, the half previews a ghost button; C, the shared selected-indicator bar appears along its bottom edge; D, the lift is kept but the semi-transparent white becomes semi-transparent lime, so hover borrows the brand colour at low strength while the selection keeps it at full.
+The resting state worked; the hover state did not, because darkening the faint fill made the half blended into the surface and showed no response to the pointer. Four hover treatments were compared: A, the fill brightens; B, the half previews a ghost button; C, the shared selected-indicator bar appears along its bottom edge; D, the lift is kept but the semi-transparent white becomes semi-transparent lime, so hover uses the brand colour at low strength and the selection uses it at full strength.
 
 ![Four hover treatments of the unselected half of the two-option toggle](/studies/lab-instrument-2026-11-01/024-toggle-hover-comparison.jpg)
 
 *02.4, reconstruction from current code, captured 24 November 2026. Each treatment shown at rest and in the hover state drawn without a pointer, above the shared Filled and Ghost buttons for reference. The captions in the image name them Lift (A), Brand tint (D), Ghost edge (B) and Indicator bar (C).*
 
-**Accepted: D, brand tint.** One control with the shared cut corners outside and a straight split inside. The selected half is filled lime; the unselected half is a faint white fill with a white label; on hover that fill turns to the same strength of lime (28%). The plan view's scale toggle in 02.7 uses it. It was not in the shared button styles when the study was written. Hover exists only with a mouse or trackpad; on the iPad a touch selects directly, so the resting and selected states carry the control there. Toggles with more than two options and on/off toggles were outside this comparison.
+**Accepted: D, brand tint.** One control with the shared cut corners outside and a straight split inside. The selected half is filled lime; the unselected half is a faint white fill with a white label; on hover that fill turns to the same strength of lime (28%). The plan view's scale toggle in 02.7 uses it. It was not in the shared button styles when the study was written. Hover exists only with a mouse or trackpad; on the iPad a touch selects directly, so only the resting and selected states apply there. Toggles with more than two options and on/off toggles were outside this comparison.
 
 <h2 id="slider">02.5 An on-brand slider</h2>
 
-The instrument needs sliders in two places: time on the diagrams, and the values under investigation in the pane. Sliders elsewhere in the Lab were the browser's own, tinted lime, with a label and the value beside it. They work, but nothing about them belongs to the brand.
+The instrument needs sliders in two places: time on the diagrams, and the values under investigation in the pane. Sliders elsewhere in the Lab were the browser's own, tinted lime, with a label and the value beside it. They work but do not look like part of the brand.
 
 - A first round drew the slider in the brand's shapes: a cut-corner thumb on a tall rail, a filled gauge, and a ruler with a marker. Each lost what makes a slider recognisable, a thin track and a handle to drag, so it was set aside.
 - A second round kept that anatomy, with a lime fill and either a round or a cut-corner handle. The round handle was chosen, but lime on the fill, the value and the handle together was too much brand colour for a control that sits beside the diagrams.
-- A third round kept lime on the knob alone, with a grey fill and a white value. It was calm but lifeless: the slider stopped looking like part of the instrument.
+- A third round kept lime on the knob alone, with a grey fill and a white value. It was calm but flat, and the slider no longer looked like part of the instrument.
 - The fourth round used lime sparingly: the fill up to the value and the knob, and nothing else. The label and value stay neutral, and the unfilled track takes the accepted faint lime tint under a pointer. Both variants keep the native input underneath, so arrow keys, touch and screen readers behave as before, with a 44px touch height. A has a 4px fill and a solid knob; B has a 2px fill and a lime ring.
 
 ![Slider variants A (solid knob) and B (ring knob) with a hover state previewed](/studies/lab-instrument-2026-11-01/025-slider-comparison.jpg)
@@ -133,7 +133,7 @@ Within those, the step asked how the plot separates from what is around it. A fi
 
 Of five edges tried (white or brand border; white, brand or black shadow), the black shadow was accepted: the plot casts a soft shadow downwards, 8px down with a 24px blur.
 
-Lightness steps alone read as slightly lighter blue-black, not as anything in a space instrument. A switch above the path tool then changed the material of both levels, all on the background's hue of 290:
+Lightness steps alone read as a slightly lighter blue-black and gave no sense of a space instrument. A switch above the path tool then changed the material of both levels, all on the background's hue of 290:
 
 - **Tinted void:** the lch steps above, kept as the reference.
 - **Lit plate:** machined panels lit from the upper left, as the engine studies light their parts: a soft diagonal gradient and a thin highlight on each level's upper-left edge.
@@ -217,7 +217,7 @@ The accepted design is the composed view of 02.11 with the pane on top: the path
 **Risks and limits.**
 
 - Fidelity: gravity, power limits, and changes to part mass or chassis values are not in the calculation. A difference shown here may not exist in flight; the specification has to say so.
-- Comparison across studies: with every graph scaled to its data, two studies are compared by reading their axes, not by laying the lines over each other.
+- Comparison across studies: with every graph scaled to its data, two studies are compared by reading their axes instead of laying the lines over each other.
 - Readability: the whole screen scales with the window, so text gets small on small windows. Nothing had been checked on a physical iPad.
 - Elevation 3: its value is an assumed continuation of the progression and had not been seen.
 
@@ -237,6 +237,6 @@ Follow-ups, outside v1: add part mass, chassis values, gravity and power limits 
 
 ## Where it went
 
-The page ended with the shipped instrument ("v1 as built"), embedded from the starting document. It is the Lab component, not a study copy. Its reference pages are Inputs, Graphs, Instrument parts and Surfaces in the Lab, and its contract was given as `docs/specs/motion-instrument.md`. That path no longer exists: commit `2a751c21` (5 November 2026) removed it; the specification is now `docs/specs/lab/motion-instrument/spec.md`. The embed is not reproduced here; open the Lab's instrument page to see it.
+The page ended with the shipped instrument ("v1 as built"), embedded from the starting document. It is the Lab component itself. Its reference pages are Inputs, Graphs, Instrument parts and Surfaces in the Lab, and its contract was given as `docs/specs/motion-instrument.md`. That path no longer exists: commit `2a751c21` (5 November 2026) removed it; the specification is now `docs/specs/lab/motion-instrument/spec.md`. The embed is not reproduced here; open the Lab's instrument page to see it.
 
 The full study before conversion is in commit `4935fc5b`, at `apps/web/src/pages/lab/studies/lab-instrument-2026-11-01.astro`. Its retired study-only components and modules, all under `apps/web/src/components/studies/` in that commit, are `BrandSlider.svelte`, `BrandSliderComparison.svelte`, `BurnStripComparison.svelte`, `InputStrip.svelte`, `LabInstrument021.svelte`, `LabInstrument023.svelte`, `LabInstrument027.svelte`, `LabInstrumentConfigDemo023.svelte`, `LabInstrumentConfigDemo027.svelte`, `OptionToggle.svelte`, `OptionToggleComparison.svelte`, `burns.ts`, `lab-instrument.ts`, `lab-instrument-config.ts`, `path-instrument.ts`, `rotation-bench.ts` and `ceiling-bench.ts`.
