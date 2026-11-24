@@ -156,7 +156,8 @@ test("title and Hangar pilots recover from failed score replies and share a lead
       await submit.click();
       await expect(
         page.getByRole("dialog", { name: "Run complete" }).getByRole("status"),
-      ).toContainText("Verification fixture denied this write.");
+      ).toHaveText("Score upload failed.");
+      await expect(initialsField).toHaveValue(pilot.initials);
       await expect(submit).toBeEnabled();
       expect(rejected).toBe(true);
     }
@@ -182,13 +183,14 @@ test("title and Hangar pilots recover from failed score replies and share a lead
       const result = page.getByRole("dialog", { name: "Run complete" });
       try {
         await submit.click();
-        await expect(result.getByRole("status")).toContainText(
-          "Shared scores timed out.",
+        await expect(result.getByRole("status")).toHaveText(
+          "Score upload not confirmed.",
           { timeout: 15000 },
         );
       } finally {
         releaseReply();
       }
+      await expect(initialsField).toHaveValue(pilot.initials);
       await initialsField.fill("NEW");
       await submit.click();
       await expect(result.getByRole("status")).toHaveText(

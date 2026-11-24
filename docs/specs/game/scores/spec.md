@@ -1,8 +1,8 @@
 ---
 
 generated:
-  by: "openai-codex/gpt-6.2"
-  at: "2026-11-23T08:40:39+02:00"
+  by: "openai-codex/gpt-6.2-sol"
+  at: "2026-11-24T08:39:11+02:00"
 verified: []
 
 ---
@@ -114,8 +114,8 @@ for game design and is not shown to players.
   semantics, defaults to score, and reorders only the already loaded rows.
 - C9: The board shows no fitting and neither ship choice.
 - C10: Two anonymous players can each save a run and see both on the board.
-- C11: With Firebase unconfigured, the board explains that shared scores are
-  unavailable and offers Retry.
+- C11: If the board cannot load, including with Firebase unconfigured, it says
+  “Couldn’t load Top Scores.” and offers Retry.
 - C12: Firestore rules accept a write only for a ruleset they name, and a
   raised score keeps its ruleset; rows of a ruleset the rules do not name
   remain stored and readable.
@@ -187,8 +187,8 @@ Feature: Scores
     When I select By score
     Then the original score order returns
 
-  Scenario: Firebase is absent
-    Given Firebase is not configured
+  Scenario: Top Scores cannot load
+    Given shared scores are unavailable
     When I open Top Scores
-    Then it explains that shared scores are unavailable
+    Then it says "Couldn’t load Top Scores." and offers Retry
 ```

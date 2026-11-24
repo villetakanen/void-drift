@@ -1,7 +1,7 @@
 ---
 generated:
   by: "openai-codex/gpt-6.2-sol"
-  at: "2026-11-24T08:00:30+02:00"
+  at: "2026-11-24T08:39:11+02:00"
 verified: []
 ---
 
@@ -36,8 +36,8 @@ the authority for the best; browser-local initials are a convenience only.
   uses, at the same size, disabled: they take no input, never submit and are
   replaced in place, so the panel does not change height when the check
   resolves. An absent record permits a first score; a failed, timed-out or
-  unreadable lookup is not an absent record. Explain the failure and offer a
-  retry of the check.
+  unreadable lookup is not an absent record. Show “Couldn’t load your best
+  with this ship.” and offer Check Again.
 - A new best shows the Initials field and Save Score. Require exactly three
   uppercase A–Z letters to submit. Prefill the last successfully saved initials
   from this browser, or start with an empty field if none are available.
@@ -63,9 +63,10 @@ the authority for the best; browser-local initials are a convenience only.
   ship: 420” (using its actual value) and stay on game over without changing
   the record or remembered initials. The match does not distinguish a separate run from a save whose
   reply was lost. Otherwise, report the equal or higher best as standing.
-  On a failed or timed-out submission, explain the failure, retain the entered
-  initials and allow retry. A timeout does not establish whether a write
-  completed; a retry must safely resolve the stored result.
+  Show “Score upload failed.” when the upload is known not to have written
+  and “Score upload not confirmed.” when the write is uncertain, including on
+  timeout. Retain the entered initials and allow retry. Status messages do not
+  include technical diagnostics.
 - A successful save of this run opens the existing Top Scores page. That page
   owns loading and displaying the board, including its failure and retry state;
   saving a personal best does not guarantee a place in its top 30.
@@ -167,7 +168,7 @@ Scenario: Best check is unavailable
   Given the personal-best check is pending
   Then the result indicates that it is checking
   When the check fails, times out or returns an unreadable record
-  Then it explains the check could not be completed and offers retry
+  Then it says "Couldn’t load your best with this ship." and offers Check Again
   And it does not offer Save Score until a check establishes eligibility
 
 Scenario: Save and remember initials
@@ -205,11 +206,15 @@ Scenario Outline: A matching best is already stored
     | an earlier attempt that timed out |
     | a separate run                    |
 
-Scenario: A save fails or times out
+Scenario Outline: A save is rejected or unconfirmed
   Given I have entered valid initials on a qualifying result
-  When saving fails or times out
-  Then the result explains the failure and keeps my initials for retry
+  When <result>
+  Then the status shows "<message>" and keeps my initials for retry
   And retry resolves the stored score without lowering it or falsely reporting a save
+  Examples:
+    | result                     | message                     |
+    | the upload is rejected     | Score upload failed.        |
+    | the upload reply times out | Score upload not confirmed. |
 
 Scenario: Leave during an operation
   Given a best check or save is pending on a completed run

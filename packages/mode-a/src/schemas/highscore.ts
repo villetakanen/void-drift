@@ -54,7 +54,7 @@ export type PersonalBest = z.infer<typeof PersonalBestSchema>;
 /** A best check either establishes the stored best or could not complete. */
 export const PersonalBestLookupSchema = z.union([
   PersonalBestSchema,
-  z.object({ status: z.literal("unavailable"), error: z.string() }),
+  z.object({ status: z.literal("unavailable") }),
 ]);
 export type PersonalBestLookup = z.infer<typeof PersonalBestLookupSchema>;
 /** What a score submission established about the stored record. */
@@ -65,8 +65,10 @@ export const SaveOutcomeSchema = z.discriminatedUnion("outcome", [
   z.object({ outcome: z.literal("matching") }),
   // An equal or higher best is stored and stays; this run was not written.
   z.object({ outcome: z.literal("kept"), best: ScoreValueSchema }),
-  // The store could not be reached or refused the write; nothing is known.
-  z.object({ outcome: z.literal("failed"), error: z.string() }),
+  // This submission did not write (e.g. it was rejected).
+  z.object({ outcome: z.literal("failed") }),
+  // This submission may have written, but no result was confirmed.
+  z.object({ outcome: z.literal("unconfirmed") }),
 ]);
 export type SaveOutcome = z.infer<typeof SaveOutcomeSchema>;
 

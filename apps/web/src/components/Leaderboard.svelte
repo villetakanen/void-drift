@@ -25,14 +25,14 @@ const sorted = $derived(
 // Time is saved to the millisecond; the board shows up to three decimals without trailing zeros.
 const formatSeconds = (seconds: number) => String(Number(seconds.toFixed(3)));
 let loading = $state(true);
-let error = $state("");
+let loadFailed = $state(false);
 async function load() {
   loading = true;
-  error = "";
+  loadFailed = false;
   try {
     rows = await loadHighScores();
-  } catch (e) {
-    error = e instanceof Error ? e.message : "Unable to load scores.";
+  } catch {
+    loadFailed = true;
   } finally {
     loading = false;
   }
@@ -55,8 +55,8 @@ onMount(() => {
     <div class="score-results" aria-busy={loading}>
       {#if loading}
         <p role="status">Loading shared scores…</p>
-      {:else if error}
-        <p role="status">{error}</p>
+      {:else if loadFailed}
+        <p role="status">Couldn’t load Top Scores.</p>
       {:else if rows.length === 0}
         <p>No scores yet. Set the first mark.</p>
       {:else}
@@ -113,7 +113,7 @@ onMount(() => {
           onclick={load}
           disabled={loading}
         >
-          {error ? "Retry" : "Refresh"}
+          {loadFailed ? "Retry" : "Refresh"}
         </button><a class="btn btn-filled" href="/">Return to title screen</a>
       </div>
     </div>
