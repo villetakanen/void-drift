@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-11-24T132622-pop-merge-and-parts-plan",
+  "recorded_at": "2026-11-24T13:26:22Z",
+  "work_ref": "feat/0-7-0@438708de+parts-territory-plan",
+  "intent": "Session of 2026-11-24, from the user's chat requests (no brief or spec). (1) Daily Pop delivery, authorised 'as proposed': merge main into feat/0-7-0 so the 0.7.2 release is an ancestor, versions read 0.7.2, Retry is removed from 0.8.0 Done in docs/roadmap.md, one combined docs/releases/0.7.2.md; verify with pnpm lint and pnpm check:specs docs/specs. (2) Push, then a janitor run over three random files. (3) An open planning document in docs/plans/ mapping ship part art, placement and the /lab/utility-artwork page, with a part placement design tool as the first deliverable; 'Nothing else.' (4) A plan-writer skill of at most 20-30 lines that treats plans as maps, not to-do lists, using the plan as an example. (5) Remove 'decided' and 'owner' wording from the skill and plan.",
+  "result": "(1) Merge commit 438708de on feat/0-7-0, pushed to origin. (2) Janitor verdicts: keep for apps/web/src/components/lab/GravityCoilFleet.astro, packages/core/src/lib/styles/documents-grid.css and docs/specs/game/render/fx.md; no files changed. (3) docs/plans/2026-11-24-ship-parts-territory.md. (4) .agents/skills/plan-writer/SKILL.md, 22 lines. (5) Both files edited to use 'settles nothing', 'agreed', 'chosen', 'set' and 'assignees'.",
+  "verification": "Observed: git merge-base --is-ancestor v0.7.2 HEAD succeeded after the merge; all four package.json files read 0.7.2; grep found Retry only in docs/releases/0.7.2.md; pnpm lint passed (1096 files); pre-commit Biome and commit-msg hooks passed; git push reported ffaa51d4..438708de. pnpm check:specs docs/specs failed with 188 findings; the merge touched no file under docs/specs. pnpm check:specs docs/specs/game/render reported 0 findings. wc -l reported 22 lines for the skill; grep found no 'decid', 'decision' or 'owner' in either file after the edit. Missing: check:specs failure was not compared against the pre-merge commit; plan file paths and line references were read during writing but not re-verified afterwards; the skill has not been exercised on a new plan.",
+  "findings": [
+    {
+      "classification": "unverifiable_claim",
+      "summary": "pnpm check:specs over docs/specs fails with 188 findings. The claim that these predate the merge rests on the merge touching no spec file; the check was not run on ffaa51d4 to confirm.",
+      "evidence": [
+        {
+          "locator": "pnpm check:specs docs/specs at 438708de (staged merge)",
+          "supports": "188 findings, e.g. 'provenance: spec status metadata is forbidden' in docs/specs/studies/spec.md",
+          "kind": "observed"
+        },
+        {
+          "locator": "git diff --cached --name-only HEAD during merge 438708de",
+          "supports": "No path under docs/specs changed in the merge",
+          "kind": "observed"
+        },
+        {
+          "locator": "pnpm check:specs docs/specs at ffaa51d4",
+          "supports": "Would establish whether the findings predate the merge; not run",
+          "kind": "missing"
+        }
+      ],
+      "prior_reports": [
+        "docs/close-loop-reports/2026-11-24T142000-title-stray-clicks.json"
+      ],
+      "evidence_status": "unresolved"
+    },
+    {
+      "classification": "reusable_improvement",
+      "summary": "A release made on main was not merged back to the long-running feat/0-7-0 branch, which left the branch at an older version, a roadmap item listed as unreleased after it shipped, and two divergent records of one release. The same pattern can recur after any release cut from main while feature work continues on a release-line branch.",
+      "evidence": [
+        {
+          "locator": "git log HEAD..main before 438708de (7e611658, 80ad5972, 798dc745, 88d2be43)",
+          "supports": "Release commits on main absent from the branch; v0.7.2 not an ancestor",
+          "kind": "observed"
+        },
+        {
+          "locator": "docs/roadmap.md at ffaa51d4",
+          "supports": "Retry a run listed under 0.8.0 Done although commit 75ba5605 predates the fork and both 0.7.2 records list it",
+          "kind": "observed"
+        },
+        {
+          "locator": "git merge-tree --write-tree HEAD main at ffaa51d4",
+          "supports": "add/add conflict in docs/releases/0.7.2.md and content conflict in docs/roadmap.md",
+          "kind": "observed"
+        }
+      ],
+      "prior_reports": [],
+      "evidence_status": "new"
+    },
+    {
+      "classification": "no_finding",
+      "summary": "Plan and plan-writer skill match the requested shape: an open planning document whose first deliverable is the part placement design tool, and a skill under the line limit that treats plans as maps. Wording changes were applied to both files.",
+      "evidence": [
+        {
+          "locator": "docs/plans/2026-11-24-ship-parts-territory.md",
+          "supports": "Sections for where it started, working direction, first deliverable (part placement design tool) and later territory; no checkboxes or tasks",
+          "kind": "observed"
+        },
+        {
+          "locator": ".agents/skills/plan-writer/SKILL.md",
+          "supports": "22 lines; links the plan as an example; excludes checkboxes, steps, estimates, assignees, status and acceptance criteria",
+          "kind": "observed"
+        },
+        {
+          "locator": "User chat, 2026-11-24",
+          "supports": "User said the plan was the first plan they liked in the project and that they liked the skill apart from the wording since changed",
+          "kind": "reported"
+        }
+      ],
+      "prior_reports": [],
+      "evidence_status": "not_applicable"
+    }
+  ]
+}
