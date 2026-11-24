@@ -10,11 +10,13 @@ let {
   title = "Values",
   label = "Values under investigation",
   children,
+  side = "right",
 }: {
   title?: string;
   /** Accessible name of the pane. */
   label?: string;
   children: Snippet;
+  side?: "left" | "right";
 } = $props();
 
 let open = $state(false);
@@ -43,6 +45,7 @@ const id = `side-sheet-${Math.random().toString(36).slice(2, 8)}`;
   bind:this={menuEl}
   type="button"
   class="corner menu"
+  class:left={side === "left"}
   aria-label={`Open ${title.toLowerCase()}`}
   aria-expanded={open}
   disabled={!ready}
@@ -52,8 +55,15 @@ const id = `side-sheet-${Math.random().toString(36).slice(2, 8)}`;
   ☰
 </button>
 <div class="scrim" hidden={!open}></div>
-<aside bind:this={sheetEl} {id} class="sheet" hidden={!open} aria-label={label}>
-  <div class="head">
+<aside
+  bind:this={sheetEl}
+  {id}
+  class="sheet"
+  class:left={side === "left"}
+  hidden={!open}
+  aria-label={label}
+>
+  <div class="head" class:left={side === "left"}>
     <h3>{title}</h3>
     <button
       bind:this={closeEl}
@@ -89,6 +99,14 @@ const id = `side-sheet-${Math.random().toString(36).slice(2, 8)}`;
   top: var(--spacing-sm);
   right: var(--spacing-sm);
 }
+.menu.left {
+  right: auto;
+  left: var(--spacing-sm);
+}
+.sheet.left {
+  right: auto;
+  left: 0;
+}
 .scrim {
   position: absolute;
   inset: 0;
@@ -118,6 +136,11 @@ const id = `side-sheet-${Math.random().toString(36).slice(2, 8)}`;
   align-items: center;
   margin-right: calc(var(--spacing-sm) - var(--spacing-md));
   padding-top: var(--spacing-sm);
+}
+.head.left {
+  flex-direction: row-reverse;
+  margin-right: 0;
+  margin-left: calc(var(--spacing-sm) - var(--spacing-md));
 }
 h3 {
   margin: 0;

@@ -3,9 +3,10 @@
 Date: 29 October 2026.
 Status: designer approved the workflow changes; fresh-cycle effectiveness untested.
 
-## Done tasks and evidence — current implementation
+## Done tasks and evidence — historical implementation
 
-This index links completed harness changes to both their basis and their current owner.
+This index records the earlier workflow. The designer-led rewrite of 24 November
+2026 supersedes its procedural guidance; see the [current skill](../../.agents/skills/design-study/SKILL.md).
 Older sections below preserve the adoption history. Checked items mean implemented;
 human effectiveness remains separate and is not inferred from document validation.
 
@@ -15,10 +16,10 @@ human effectiveness remains separate and is not inferred from document validatio
 - [x] Carry exact accepted variants and replay conditions into scope. Basis:
   [engine-effects decisions](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-10-30-engine-effects.md) and
   [ion replay findings](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-10-31-ion-engines.md).
-  Implementation: [reference retention](../../.agents/skills/design-study/references/exploration.md#make-the-question-inspectable).
+  Implementation: former exploration guide (retained in Git history).
 - [x] Judge readiness against the intended delivery. Basis:
   [alpha-scope correction](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-10-30-engine-effects.md).
-  Implementation: [readiness procedure](../../.agents/skills/design-study/SKILL.md#03--assess-readiness).
+  Implementation: former readiness procedure (retained in Git history).
 - [x] Consolidate duplicated instructions (owner-approved 3 November).
   Implementation: [ownership map](../specs/studies/spec.md#context-and-ownership).
   Evidence: [scope, changed files and validation](https://github.com/villetakanen/void-drift/blob/fdc1772fbefef0394a386086ffd0f4eeb2f71b3d/docs/loop-evidence/2026-11-03-factory-harness-amendments.md).

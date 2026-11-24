@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-11-24T222000-designer-led-studies",
+  "recorded_at": "2026-11-24T22:20:00+02:00",
+  "work_ref": "docs/plans/2026-11-24-designer-led-studies.md",
+  "intent": "Trial a designer-led, agent-aided study on Flight Deck weapons, preserve exploration and game-design decisions, map adoption implications, and replace the tedious skill with a lean working agreement. Source: docs/plans/2026-11-24-designer-led-studies.md and user approval in this chat.",
+  "result": "The weapons study records 01 through 04 with versioned captures and selected configuration; its metadata comes from MDX. A reusable stationary instrument and optional left SideSheet support the trial. The design-study skill is now 775 words in one file; four superseded guidance files are removed. Game adoption remains separate and the study remains open. The commit includes concurrent Lab-instrument records under the whole-checkout commit policy.",
+  "verification": "Observed skill validation and git diff --check pass. Browser inspection during delivery verified the study sections; captures preserve selected visuals, not gameplay validation. In artifacts/verification/2026-11-24T20-18-35.274Z-IBFhaC/report.json all selected checks passed, but sourceUnchanged=false invalidated the overall run because the intentional rendered-text lint suppression was added during execution. A fresh unchanged-source verify:changed run is required before commit. Full release, browser suite and emulators were not run. No prior close-loop report for this study or method was found; the Lab-instruments report concerns different work. Follow-up artifacts/verification/2026-11-24T20-19-38.749Z-x22p9m/report.json passed all selected checks (check:repo, lint, check:types, test) with unchanged sources. The concurrent Lab-instrument cleanup also removed the temporary capture test. Only this verification account was updated after that successful run.",
+  "findings": [
+    {
+      "classification": "unverifiable_claim",
+      "summary": "The designer reports that useful tooling arrived much faster than under the previous study practice. This trial supports their preference but does not establish a measured speed improvement or general effectiveness of the rewritten skill.",
+      "evidence": [
+        {
+          "locator": "docs/plans/2026-11-24-designer-led-studies.md#trial-observation-basic-tooling-by-022",
+          "supports": "Designer assessment of reaching useful tooling by 02.2.",
+          "kind": "reported"
+        },
+        {
+          "locator": "apps/web/src/pages/lab/studies/flight-deck-weapons-2026-11-24.mdx",
+          "supports": "Retained experiments, decisions, captures and adoption map show the delivered trial.",
+          "kind": "observed"
+        },
+        {
+          "locator": "Future studies using .agents/skills/design-study/SKILL.md",
+          "supports": "No subsequent-use evidence yet establishes the rewritten skill\u2019s effectiveness.",
+          "kind": "missing"
+        }
+      ],
+      "prior_reports": [],
+      "evidence_status": "unresolved"
+    }
+  ]
+}

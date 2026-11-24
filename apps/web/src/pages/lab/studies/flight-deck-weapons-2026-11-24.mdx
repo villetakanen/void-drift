@@ -1,0 +1,297 @@
+---
+layout: ../../../layouts/StudyLayout.astro
+title: Flight Deck weapons toggle
+phase: scope
+status: open
+question: How can we give the pilot a weapons toggle that belongs to the Flight Deck, makes their choice clear, and signals when emergency energy prevents weapon operation?
+---
+
+
+<section>
+
+## 01 / Develop the problem
+
+The Flight Deck currently has a disabled Weapons placeholder beside the flight
+controls. It does not yet function as equipment the pilot can use, and its
+appearance needs to find a relationship with the angled controls and the space
+around the turning pads.
+
+The pilot needs to switch automatic weapon operation on or off using mouse,
+touch, or a keyboard binding. On allows each weapon to operate according to its
+normal behaviour; Off deliberately withholds fire. That choice will become more
+consequential with weapons such as a future drone launcher, where having a
+target may not mean the pilot wants to keep launching. The launcher itself is
+outside this study.
+
+Emergency energy temporarily prevents weapon operation and disables the toggle.
+During that interruption, the control must communicate unavailability and help
+alert the pilot to low energy. It remembers the pilot's On/Off choice, which
+takes effect again when sufficient energy returns. Deliberately switched off
+and temporarily unavailable must therefore remain understandable as different
+conditions.
+
+This study explores how that behaviour becomes a coherent Flight Deck control:
+its form, placement, interaction, and feedback. Angled geometry, spacing, orange
+or red colour, and line or texture treatments are possibilities to investigate.
+The keyboard binding is also open. The feature is intended for unranked play
+during the current 0.7 cycle, Fires in the Sky, and ranked play from 0.8.
+
+### Energy boundary
+
+The design intent is to preserve the pilot's choice through the existing
+emergency-energy interruption. The current weapon reserve is the greater of
+10 energy units and 10% of capacity; weapon operation requires energy above
+that reserve. This study does not propose changing that boundary. Its task is
+to make the interruption and recovery understandable through the control.
+
+</section>
+
+
+<section>
+
+## 02 / Discover
+
+<details>
+<summary>02.1 / The current Flight Deck</summary>
+
+<h3 id="021--the-current-flight-deck">The current Flight Deck</h3>
+
+The first experiment embedded the live Practice game with a stock Wasp, the
+current Flight Deck and an empty hamburger parameter pane. It supplied real
+scale and context, but the designer found that managing the ship and flight
+made the design surface too complicated to work with.
+
+**Finding, 24 November 2026:** this study needs a bespoke Flight Deck instrument.
+The game backdrop and controls provide useful context; flying does not. Pad
+states must be selectable and held for inspection, rather than requiring a
+continuous press. Instrument controls should float over the upper-left area,
+following the other Lab instruments. This was a useful experiment in choosing
+the apparatus, not a rejected weapons design.
+
+![The first instrument: a live Practice scene with the current Flight Deck and a hamburger menu.](/studies/flight-deck-weapons-2026-11-24/02-1-live-flight-deck.jpg)
+
+*Captured before retiring the live example, at 1280 × 720: stock Wasp in Practice,
+full hull and energy, pads at rest, Weapons disabled, parameter pane closed.
+The still preserves the composition; the difficulty of managing flight is the
+designer's assessment, not something demonstrated by this image.*
+
+</details>
+
+<details>
+<summary>02.2 / Hold the Flight Deck still</summary>
+
+<h3 id="022--hold-the-flight-deck-still">Hold the Flight Deck still</h3>
+
+The bespoke instrument uses the existing Practice PNG (`/skies/sol.png`) directly,
+with shared thrust pads,
+current deck button styling and fixed example hull and power readings. There
+is no ship, flight simulation, generated background or moving arena.
+
+Choose a **Hold pad state** option in the upper-left controls. The selected state
+stays visible until another is chosen: **0** clears it; **L**, **R**, **F**,
+**LF** and **RF** use the game's actual pad-lighting rules. F shows forward burn. The selector
+also supports arrow keys. Pressing the pads does not override the selected state.
+Pause is a visual specimen, and Weapons remains the existing disabled placeholder.
+The adjacent **On / Off / Alert** selector holds a selection but intentionally
+has no effect on the deck yet. The hamburger parameter pane remains empty.
+
+**Designer assessment, 24 November 2026:** this is the right direction and
+establishes the basic tooling. The compact **0 / L / R / F / LF / RF** selector
+holds the pad state; the adjacent **On / Off / Alert** selector is in place but
+intentionally has no effect yet. The weapons control's form and behaviour
+remain open.
+
+![Completed basic tooling with F and Alert selected.](/studies/flight-deck-weapons-2026-11-24/02-2-basic-tooling.jpg)
+
+*Captured at 1280 × 720 before moving the live instrument to 02.3. F lights both
+burn pads; Alert is selected but has no effect on the Weapons placeholder.
+The background is the existing Practice PNG and the parameter pane is closed.*
+
+</details>
+
+<details>
+<summary>02.3 / Shape a weapons flap</summary>
+
+<h3 id="023--shape-a-weapons-flap">Shape a weapons flap</h3>
+
+Assume the weapons control is a flap related to the engine controls. How do
+its proportions, connection, surface and markings make the three states read?
+The editor explores that form without adopting it for the game.
+
+The left-hand editor let the designer vary geometry, tint, border, stripes and
+two-line markings while keeping the right-hand flap visible.
+
+**Selected by the designer, 24 November 2026:** the
+[exported configuration](/studies/flight-deck-weapons-2026-11-24/02-3-selected.json)
+defines the weapons flap carried forward into 02.4. Its width is 172.3 px,
+height 128 px, gap 16 px and edge inset 4 px, with a 30° top edge. Auto and Off
+use Surface fills with distinct borders and stripe treatments. Alert uses the
+Warning role and reads “EMERGENCY / LOW ENERGY”. This selects the study's visual
+reference; it does not establish production interaction or project adoption.
+
+![Selected weapons flap in Auto.](/studies/flight-deck-weapons-2026-11-24/02-3-on.jpg)
+![Selected weapons flap switched Off.](/studies/flight-deck-weapons-2026-11-24/02-3-off.jpg)
+![Selected weapons flap showing emergency energy.](/studies/flight-deck-weapons-2026-11-24/02-3-alert.jpg)
+
+*Captured from the 02.3 editor before its retirement, using the supplied JSON
+at 1280 × 720, pads at rest and the pane closed. These are held visual states,
+not a simulated energy interruption.*
+
+</details>
+
+### 02.4 / A matching Pause flap
+
+The selected weapons design was paired with a mirrored Pause flap on the left.
+Pause shares its dimensions, spacing, Surface fill at 16% opacity and text
+geometry, with no border or stripes and a single “PAUSE” line.
+
+**Designer assessment, 24 November 2026:** the paired composition looks good;
+carry it into design alignment before considering specs or implementation.
+
+![Selected paired Pause and weapons flaps.](/studies/flight-deck-weapons-2026-11-24/02-4-paired-flaps.jpg)
+
+*Captured from 02.4 before moving to 03: weapons Auto, pads at rest, stationary
+Practice PNG, fixed example hull and power readings. The image records the
+visual composition, not functioning pause or weapons controls.*
+
+</section>
+
+<section>
+
+## 03 / Fit with the game
+
+The selected composition is ready for design discussion. This part assesses
+its role in the game, the pilot's understanding and the differences between
+modes. It does not begin technical readiness work or authorize implementation.
+
+### Mode scope under discussion
+
+**Designer proposal, 24 November 2026:** Pause's visual treatment can apply to
+all modes. The Auto and emergency-energy displays can also be shared across
+modes where those conditions occur. Deliberately disabling weapons belongs to
+Gauntlet and Derelicts in this cycle; Practice also exposes the real toggle even
+though its lack of targets gives it no combat consequence. Survival retains
+automatic weapons in this proposal, including its unranked runs. This narrows
+the earlier blanket description of unranked availability. Ranked availability
+in 0.8 remains a future direction, not a change to this cycle.
+
+### Design considerations to discuss
+
+The matching flaps make Pause and weapons feel like equipment within the same
+Flight Deck. Their relationship to the engine controls supplies visual coherence;
+their actions still differ: Pause interrupts play, whereas weapons chooses an
+ongoing operating state.
+
+Withholding fire introduces pilot discretion without asking for repeated firing
+input. Its value is deliberate restraint, especially with future weapons whose
+operation commits resources. The current study can establish that vocabulary
+before a drone launcher exists.
+
+The proposed mode split raises an affordance question: how does the pilot know
+when the weapons flap is an operable toggle and when it is only a status display?
+A ranked pilot should not have to press an apparently working control to discover
+that it does nothing. Mode restrictions should not look like low-energy failure.
+
+**Agreed, 24 November 2026:** Practice has the real On/Off toggle and remembers
+the choice. It rehearses the same equipment interaction even without targets;
+it is not a cosmetic imitation.
+
+**Agreed, 24 November 2026:** during emergency energy, show only the alert.
+Preserve the pilot's On/Off choice without displaying it during the interruption.
+When energy recovers, restore that choice and its corresponding appearance.
+Emergency remains a temporary restriction, not a third selectable mode.
+
+### Game-development assumption
+
+**Assumption supplied by the game developer, 24 November 2026:** switching
+weapons Off makes the plasma rifle eject/vent as though it lost its target.
+This is an assumption for the adoption discussion, not yet an adopted weapon
+rule. The existing rifle contract distinguishes loss of a charging target from
+a release already in progress; applying this assumption to that latter case
+still needs to be made explicit when the rule is settled.
+
+</section>
+
+
+<section>
+
+## 04 / Map the implications
+
+Surveyed 24 November 2026 against the current specs and development-page
+registry. This maps the adoption work; it does not amend those specs, promote
+study code or authorize implementation. The visual reference is 02.4 and the
+behavioural decisions and assumptions are in 03.
+
+### Existing feature specs to update
+
+| Owner | What needs to move |
+| --- | --- |
+| Game screen (`docs/specs/game/game-screen/spec.md`) | Replace the prescribed white outlined buttons and universally disabled Weapons placeholder with the paired flaps. Record shared Pause appearance, weapons status across modes, and the distinction between an available toggle and Survival's status-only display. Preserve pause semantics, gutter placement, touch targets and focus rules. The introductory mode list also omits Gauntlet. |
+| Controls (`docs/specs/game/controls/spec.md`) | Add the On/Off command through mouse, touch and keyboard; emergency disables interaction without clearing the remembered choice. Choose the keyboard binding, define activation and repeated-key behaviour, and distinguish held thrust from a latched weapons choice. Keep thrust mappings unchanged. |
+| Parts (`docs/specs/game/parts/spec.md`) | Revise the blanket automatic-weapons/no-control wording: enabling automatic operation is distinct from commanding a shot. Own the shared firing permission and its relationship to the existing energy reserve; no reserve rebalance is proposed. Define whether Off covers every fitted weapon, including defensive weapons. |
+| Plasma rifle (`docs/specs/game/plasma-rifle/spec.md`) | Resolve and adopt or revise the developer's eject/vent assumption from 03. Clarify its application to charging, a funded release already underway, and subsequent recovery. Avoid silently changing the existing energy-starvation behaviour, which can hold charge. |
+| Game modes (`docs/specs/game/spec.md`), Survival (`docs/specs/game/survival/spec.md`), Gauntlet (`docs/specs/game/gauntlet/spec.md`), Derelicts (`docs/specs/game/derelicts/spec.md`), Practice (`docs/specs/game/test-flight/spec.md`) | State one mode-availability rule and cross-reference it: this cycle permits the toggle in Gauntlet, Derelicts and Practice; Survival remains automatic, ranked or unranked. Practice retains its full-energy, no-target character. Gauntlet's entry weapon lock must remain distinct from energy emergency and the pilot's Off choice. |
+
+The Light Ion Cannon (`docs/specs/game/light-ion-cannon/spec.md`) and
+Ion Point Defence (`docs/specs/game/ion-point-defence/spec.md`) already
+refer to the shared energy floor. Check their automatic-operation wording and
+cross-references when adopting the shared permission, rather than duplicating
+the toggle rule in each weapon spec. The
+targeting contract (`docs/specs/game/targeting/spec.md`) only needs a change
+if Off is intended to alter target acquisition or retention, not merely firing.
+
+### Missing coverage and ownership
+
+There is no dedicated Flight Deck instrument spec in the current Lab spec tree.
+A proposed `docs/specs/lab/flight-deck-instrument/spec.md` would own its stationary
+backdrop, held pad states, weapons-state inspection, example readouts, sizing,
+and any retained authoring/export workflow. The
+Lab contract (`docs/specs/lab/spec.md`) already requires each tool to own
+that workflow separately from the game behaviour it displays.
+
+The game already has screen and controls owners. A new top-level Flight Deck
+feature spec is not necessary merely to adopt this composition. The lifecycle
+of the new weapons choice is missing, however: initial choice, new run/retry,
+mode changes and any persistence beyond an energy interruption need a clear
+home in the controls or shared weapon-operation contract. A controls child
+spec could be useful if that behaviour warrants its own document; its creation
+is not decided here.
+
+### Design system and Lab surfaces
+
+| Surface | Proposed change |
+| --- | --- |
+| Flight Deck Lab instrument | Evolve `/lab/controls`, which currently demonstrates thrust pads and resolved lighting, into the stationary Flight Deck instrument. This is the preferred existing home to discuss; a separate route is an alternative if the focused pad demonstration must remain independent. Preserve its useful input-resolution inspection. |
+| Design system flight-control page | Add a canonical presentation of the shared flap family: thrust, Pause and weapons, including Auto, Off, emergency, focus and unavailable interaction. A possible home is `/lab/ds/flight-controls`; appearance should not be documented only inside this study or the authoring instrument. |
+| Input presentation (`docs/specs/factory/design-system/inputs/spec.md`) and Design system overview (`docs/specs/factory/design-system/spec.md`) | Name the shared flap presentation and its relationship to the game Controls owner. Keep general menu buttons and command controls separate; this study does not redesign them. Update the component registry and overview with the canonical page and ownership links. |
+| Lab index and navigation | Register the adopted instrument and its contract; update the existing Flight controls entry rather than leaving two competing homes. The instrument should use shared production controls after adoption, with experimental values labelled when authoring. |
+| Study record | Preserve 02.3's selected JSON, 02.4's composition and the reasons in 03. Link to the adopted Lab tool when it exists. Decide whether the reusable editor is part of that tool or whether the first Lab version is inspection-only. |
+
+Existing colour tokens, typography, sliders, segmented controls and side sheets
+supply the required primitives. No new palette or general button redesign is
+established by this study. Review the intended semantic use of the chosen
+colour roles when naming the flap states. The left-hand sheet capability is
+already documented in its own contract (`docs/specs/factory/design-system/side-sheet/spec.md`);
+no additional pane work is implied unless the adopted tool retains an editor.
+
+### Remaining decisions before adoption
+
+- How does Survival communicate that its weapons flap is a status display,
+  while the other three modes offer a toggle?
+- Which keyboard key operates the toggle, and how is it communicated?
+- What is the initial choice and its lifetime outside emergency recovery?
+- Does Off cover all fitted weapons, including point defence? How does the
+  plasma vent assumption apply to a release already in progress?
+- Can the selected geometry keep the existing no-overlap promise at the game
+  screen's 700 px height floor and landscape touch sizes? The study's 1280 px
+  Lab minimum does not answer that production-layout question.
+- Does the Lab adopt a fixed state inspector, an authoring editor, or both?
+
+Pause's dialog and Escape behaviour remain with
+Dialogs (`docs/specs/game/dialogs/spec.md`) and Game screen. No changed
+camera, world rendering, ship fitting, score storage or challenge name is
+required by the selected visuals. The current cycle remains `fires-in-the-sky`;
+ranked toggle availability in 0.8 is later work. Any future adoption still
+requires project decisions and the corresponding spec amendments first.
+
+</section>
