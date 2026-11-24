@@ -48,6 +48,9 @@ game's home and Hangar is an alternative launch point.
 - The shared backdrop fills the viewport beneath the title content. The menu
   remains a normal game screen, not a modal dialog; focus is not trapped inside
   the panel, and the hints outside it remain accessible.
+- Only the menu controls respond to the pointer. A click, tap or drag elsewhere
+  on the title screen keeps keyboard focus where it was, selects no text, drags
+  nothing and opens no callout or context menu.
 - The identity and game menu sit inside a visible panel above the scrim, following
   the current start-and-ship panel treatment. The panel contains PRESS START and
   the secondary destinations; ship selection remains in Hangar.
@@ -128,6 +131,8 @@ game's home and Hangar is an alternative launch point.
   when the slot scales to iPad-sized and larger views.
 - Keyboard users can launch and reach each menu destination in the specified
   order, starting with focus on PRESS START and without a modal focus trap.
+- Clicking outside the menu controls keeps keyboard focus in place and selects
+  no text.
 - The title screen presents the content and behavior defined by
   [Title-screen hints](hints.md).
 - The Playground status slot appears below the menu panel, above the decorative
@@ -171,6 +176,15 @@ Scenario: Navigate the title menu with arrows
   When I press Up twice
   Then Credits receives focus by wrapping past PRESS START
   And Tab can leave the menu without a focus trap
+
+Scenario: Stray clicks leave the menu in place
+  Given the title screen with PRESS START focused
+  When I click the heading, the hint and empty space
+  And double-click the heading
+  Then PRESS START keeps keyboard focus
+  And no text is selected
+  When I press Down
+  Then Hangar receives focus
 
 Scenario: Immediate flight
   Given a fresh device

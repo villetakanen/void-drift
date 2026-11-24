@@ -4,7 +4,7 @@ Voice-led game design, and development development of a space shooter inspired b
 
 ## Default working practice
 
-Write [roadmap](docs/roadmap.md) feature outcomes as draft player-facing release notes, with possible issues and ideas alongside them.
+Keep the [roadmap](docs/roadmap.md) to one short, player-facing bullet per item under Maybe or Done. Link to details instead of embedding them. Done feeds the release notes.
 
 Work directly by default, following the relevant task skill. Load and follow [first-mate](.agents/skills/first-mate/SKILL.md) only when the user explicitly requests conductor or first-mate mode. An assigned worker follows its task and reports the result to the assigning agent.
 

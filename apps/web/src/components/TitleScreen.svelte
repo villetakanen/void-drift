@@ -104,6 +104,7 @@ function drawArrival() {
   }
   drawBuild(ctx, loadout, 0, 0, 0, scale);
 }
+const MENU_CONTROLS = "button, a[href], input, select, textarea";
 let hint = $state(0);
 let narrow = $state(false);
 
@@ -115,6 +116,17 @@ onMount(() => {
   };
   resize();
   window.addEventListener("resize", resize);
+  // Only menu controls take the pointer; elsewhere a press keeps focus and
+  // starts no selection, drag or context menu.
+  const ignoreStray = (event: Event) => {
+    const target = event.target;
+    if (!(target instanceof Element && target.closest(MENU_CONTROLS)))
+      event.preventDefault();
+  };
+  const ignore = (event: Event) => event.preventDefault();
+  window.addEventListener("mousedown", ignoreStray);
+  window.addEventListener("contextmenu", ignoreStray);
+  window.addEventListener("dragstart", ignore);
   if (disabled && blockedReason) hangarLink.focus();
   else startButton.focus();
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -123,6 +135,9 @@ onMount(() => {
   }, 8000);
   return () => {
     window.removeEventListener("resize", resize);
+    window.removeEventListener("mousedown", ignoreStray);
+    window.removeEventListener("contextmenu", ignoreStray);
+    window.removeEventListener("dragstart", ignore);
     window.clearInterval(timer);
   };
 });
@@ -213,6 +228,10 @@ onMount(() => {
   display: grid;
   place-items: center;
   pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
 }
 .title-slot {
   position: relative;

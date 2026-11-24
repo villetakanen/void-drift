@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-11-24T142000-title-stray-clicks",
+  "recorded_at": "2026-11-24T14:20:00+02:00",
+  "work_ref": "docs/specs/game/landing-page/spec.md#scenario-stray-clicks-leave-the-menu-in-place",
+  "intent": "Make the title screen click-safe: only the menu buttons respond to the pointer; clicks, taps and drags elsewhere keep keyboard focus and select nothing. Spec first, implementation second. Scope settled by the user in session (2026-11-24): title screen only; Settings, Top Scores and Credits are separate pages and out of scope. Acceptance: constraint, Definition of Done item and scenario 'Stray clicks leave the menu in place' in docs/specs/game/landing-page/spec.md.",
+  "result": "Spec gained the pointer constraint, a Definition of Done line and the scenario. apps/web/src/components/TitleScreen.svelte disables text selection, touch callout and tap highlight on the title screen, and while mounted cancels mousedown and contextmenu outside menu controls and all dragstart. tests/browser/launch-navigation.spec.ts adds 'stray clicks on the title keep menu focus and select nothing'.",
+  "verification": "Observed in session: before the change, a Playwright probe against the dev server showed clicks on the heading or backdrop moved focus to body and double-click selected 'VOID'. After the change, the three title tests in tests/browser/launch-navigation.spec.ts passed in Chromium; the new test failed with TitleScreen.svelte stashed (toBeFocused failure). pnpm check:specs on the landing-page directory reported 0 findings; biome check (after format) and svelte-check reported 0 errors. Missing: no iPad Safari or touch-device run, so long-press callout, tap highlight and tap-focus behaviour are untested; full browser suite not run.",
+  "findings": [
+    {
+      "classification": "unverifiable_claim",
+      "summary": "Touch behaviour on iPad (no long-press callout, no focus change on stray taps) is claimed by the spec and implemented through CSS and synthesized-mousedown cancellation, but was not exercised on a touch device or WebKit.",
+      "evidence": [
+        {
+          "locator": "apps/web/src/components/TitleScreen.svelte",
+          "supports": "-webkit-touch-callout, -webkit-tap-highlight-color and mousedown cancellation are present",
+          "kind": "observed"
+        },
+        {
+          "locator": "tests/browser/launch-navigation.spec.ts",
+          "supports": "Only desktop Chromium mouse clicks are covered",
+          "kind": "observed"
+        },
+        {
+          "locator": "expected: WebKit or iPad Safari run of the title scenario",
+          "supports": "Would establish the touch half of the constraint; not run",
+          "kind": "missing"
+        }
+      ],
+      "prior_reports": [],
+      "evidence_status": "unresolved"
+    },
+    {
+      "classification": "reusable_improvement",
+      "summary": "Scope proposals inferred from similar symptoms overreached: the agent recommended extending the rule to Settings, Top Scores and Credits because they showed the same selection and focus behaviour, but the user ruled them unrelated because they are separate pages, not part of the title game surface. Shared symptoms did not establish shared subject.",
+      "evidence": [
+        {
+          "locator": "session transcript 2026-11-24 (Playwright probe of /settings, /leaderboard, /credits)",
+          "supports": "Same focus-to-body and selection behaviour observed on those pages",
+          "kind": "observed"
+        },
+        {
+          "locator": "session transcript 2026-11-24 (user reply on scope)",
+          "supports": "User judged those pages unrelated: different URLs, not modal to the game",
+          "kind": "reported"
+        }
+      ],
+      "prior_reports": [],
+      "evidence_status": "new"
+    },
+    {
+      "classification": "reusable_improvement",
+      "summary": "Proposal prose was rejected as hard to read three times (mannered and repetitive, then over-simplified, then too dense) before a version of a few short plain sentences was accepted. The accepted form stated problem, affected screens, fix order and one question in under 80 words.",
+      "evidence": [
+        {
+          "locator": "session transcript 2026-11-24 (user feedback on four proposal drafts)",
+          "supports": "Sequence of readability rejections and final acceptance ('now it's very understandable')",
+          "kind": "reported"
+        }
+      ],
+      "prior_reports": [],
+      "evidence_status": "new"
+    }
+  ]
+}
