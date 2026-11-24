@@ -46,7 +46,7 @@ construction.
 
 ### Fiddler: copying polygons can lose the form they describe
 
-[Fiddler 02.3–02.7](../../apps/web/src/pages/lab/studies/lhi-fiddler-2026-11-03.astro)
+[Fiddler 02.3–02.7](../../apps/web/src/pages/lab/studies/lhi-fiddler-2026-11-03.mdx)
 contains a close precedent for the current problem. Its early volume comparisons
 could not be judged because surfaces did not explain raised body, thin wing,
 bevel or continuous deck. Copying Wasp’s bow and canopy outlines was insufficient.
@@ -59,7 +59,7 @@ An added return wall was rejected; the triangular root preserved resemblance.
 
 The study’s angled construction uses an **illustrative height**, not recovered
 Wasp measurements. Its purpose is to explain the top drawing. The
-[extracted side](../../apps/web/src/components/studies/fiddler/wasp-side.ts)
+[extracted side](https://github.com/villetakanen/void-drift/blob/ee2cc698/apps/web/src/components/studies/fiddler/wasp-side.ts)
 retains the original contours. This supplies a way to discuss implied sections
 without turning production artwork into a requirement for a fully specified 3D
 model.
