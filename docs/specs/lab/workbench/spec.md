@@ -1,7 +1,7 @@
 ---
 generated:
   by: "openai/gpt-6.2-sol"
-  at: "2026-11-24T12:58:19+02:00"
+  at: "2026-11-24T11:06:10Z"
 verified: []
 ---
 
@@ -20,6 +20,9 @@ uses shared game drawing and simulation where applicable.
 - The Lab index at `/lab` and the shared navigation use the registry in
   `apps/web/src/data/lab-pages.ts`. Astro pages under `apps/web/src/pages/lab/`
   host the tools; entity pages such as `/lab/entities/star` live under `entities/`.
+- The Tray and Lab index group tools for authoring design drafts under
+  **Design tools**, separate from **Tools** for inspection, measurement and
+  experimentation. Mount planner is a Design tool.
 - `apps/web/src/layouts/LabLayout.astro` places the full-width page header above
   the [Tray](../../factory/design-system/tray/spec.md), main stage, and optional
   inspector. The Tray, stage and inspector scroll independently. Wide tools can
@@ -51,6 +54,11 @@ uses shared game drawing and simulation where applicable.
 ### Scenarios
 
 ```gherkin
+Scenario: Find Mount planner in the Lab
+  Given I open the Lab index
+  Then Mount planner appears under Design tools in the index and the Tray
+  And it does not appear under Tools
+
 Scenario: Follow a bookmark to the former Ships workbench
   Given a bookmark to /lab/entities/ship
   When I open it

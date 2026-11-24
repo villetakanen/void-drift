@@ -7,6 +7,7 @@ const labGroupSchema = z.enum([
   "design-system",
   "ships-and-world",
   "tools",
+  "design-tools",
   "studies",
 ]);
 export const labGroups: {
@@ -16,6 +17,7 @@ export const labGroups: {
   { id: "design-system", label: "Design system" },
   { id: "ships-and-world", label: "Ships and world" },
   { id: "tools", label: "Tools" },
+  { id: "design-tools", label: "Design tools" },
   { id: "studies", label: "Studies" },
 ];
 
@@ -362,7 +364,7 @@ export const labPages = z.array(labPageSchema).parse([
     title: "Mount planner",
     purpose:
       "Inspect fitted ships, place engine and weapon mounts, and copy the plan.",
-    group: "tools",
+    group: "design-tools",
     source: "production",
   },
   {
