@@ -70,7 +70,7 @@ function event(raw) {
   return data;
 }
 
-export function provenance(text, spec = false) {
+export function provenance(text, spec = false, lean = false) {
   const fm = fields(text);
   const generated = event(fm.get("generated") ?? "");
   const value = fm.get("verified")?.trim();
@@ -85,6 +85,8 @@ export function provenance(text, spec = false) {
     else entries = [value];
     verified = entries.map(event);
   }
+  if (lean && verified.length > 1)
+    throw Error("verified must contain at most one human source check");
   for (const verification of verified) {
     if (!/^human:\S(?:[^\r\n]*\S)?$/.test(verification.by))
       throw Error(
@@ -95,6 +97,12 @@ export function provenance(text, spec = false) {
     if (fm.has("status")) throw Error("spec status metadata is forbidden");
     if (fm.has("title"))
       throw Error("spec title metadata is forbidden; use the H1 feature name");
+    if (lean) {
+      for (const key of fm.keys()) {
+        if (key !== "generated" && key !== "verified")
+          throw Error(`spec frontmatter must omit ${key}`);
+      }
+    }
   }
   return { generated, verified };
 }

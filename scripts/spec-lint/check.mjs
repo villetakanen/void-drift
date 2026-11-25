@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import { lintLeanSpec } from "./lean-spec.mjs";
 import { provenance } from "./provenance.mjs";
 
 const HEADINGS = [
@@ -40,17 +41,26 @@ function listFiles(dir, base = dir) {
 // Each line gets { n, text, fence, fm }: fence = inside or on a code fence, fm = frontmatter.
 function scan(text) {
   const ls = text.replaceAll("\r\n", "\n").split("\n");
-  let fence = false;
-  let fmEnd = -1;
-  if (ls[0] === "---") fmEnd = ls.indexOf("---", 1);
-  return ls.map((t, i) => {
-    const fm = i <= fmEnd;
-    if (!fm && /^\s*(```|~~~)/.test(t)) {
-      const was = fence;
-      fence = !fence;
-      return { n: i + 1, text: t, fence: true, fm, marker: true, open: !was };
+  let fence;
+  const fmEnd = ls[0] === "---" ? ls.indexOf("---", 1) : -1;
+  return ls.map((text, i) => {
+    const line = { n: i + 1, text, fm: i <= fmEnd, fence: Boolean(fence) };
+    if (line.fm) return line;
+    const marker = /^ {0,3}(`{3,}|~{3,})(.*)$/.exec(text);
+    if (!marker) return line;
+    if (!fence) {
+      fence = marker[1];
+      return { ...line, fence: true, open: true, language: marker[2].trim() };
     }
-    return { n: i + 1, text: t, fence, fm };
+    if (
+      marker[1][0] === fence[0] &&
+      marker[1].length >= fence.length &&
+      !marker[2].trim()
+    ) {
+      fence = undefined;
+      return { ...line, close: true };
+    }
+    return line;
   });
 }
 
@@ -67,23 +77,16 @@ function linkTargets(ls, fromFile) {
   return out;
 }
 
-function checkProvenance(file, relative, spec = false) {
+function checkProvenance(text, relative, spec = false, lean = false) {
   try {
-    provenance(fs.readFileSync(file, "utf8"), spec);
+    provenance(text, spec, lean);
     return [];
   } catch (error) {
     return [`${relative}: provenance: ${error.message}`];
   }
 }
 
-function lintFile(file, rel) {
-  const v = [];
-  const bad = (rule, msg) => v.push(`${rel}: ${rule}: ${msg}`);
-  const text = fs.readFileSync(file, "utf8").replaceAll("\r\n", "\n");
-  const ls = scan(text);
-
-  v.push(...checkProvenance(file, rel, true));
-
+function lintLegacySpec(ls, bad) {
   // 2 headings
   const heads = [];
   for (const l of ls) {
@@ -137,9 +140,8 @@ function lintFile(file, rel) {
   if (sc) {
     let cap = null;
     for (const l of sc) {
-      if (l.marker && l.open && /^\s*(```|~~~)\s*gherkin\b/.test(l.text))
-        cap = "";
-      else if (l.marker && !l.open) {
+      if (l.open && /^gherkin\b/.test(l.language)) cap = "";
+      else if (l.close) {
         if (cap !== null && /Scenario:/.test(cap)) okScenario = true;
         cap = null;
       } else if (cap !== null) cap += `${l.text}\n`;
@@ -173,9 +175,16 @@ function lintFile(file, rel) {
     const m = l.text.match(HISTORY);
     if (m) bad("living", `line ${l.n} has history wording "${m[0]}"`);
   }
+}
+
+function lintFile(text, lines, rel, lean) {
+  const v = checkProvenance(text, rel, true, lean);
+  const bad = (rule, msg) => v.push(`${rel}: ${rule}: ${msg}`);
+  if (lean) lintLeanSpec(lines, bad);
+  else lintLegacySpec(lines, bad);
 
   // 7 template leftovers
-  ls.forEach((l) => {
+  lines.forEach((l) => {
     if (/<!--/.test(l.text)) bad("template", `line ${l.n} has an HTML comment`);
     if (l.text.includes("[Feature name]"))
       bad("template", `line ${l.n} has [Feature name]`);
@@ -202,13 +211,17 @@ function lintTree(root) {
   const abs = (f) => path.resolve(root, f);
   const show = (f) => `${label}/${f}`;
 
-  for (const f of specs) v.push(...lintFile(abs(f), show(f)));
-
-  for (const f of files.filter(
-    (f) =>
-      f.split("/").slice(0, -1).includes("attachments") && /\.mdx?$/i.test(f),
-  )) {
-    v.push(...checkProvenance(abs(f), show(f)));
+  const specInfo = new Map();
+  for (const f of specs) {
+    const text = fs.readFileSync(abs(f), "utf8");
+    const lines = scan(text);
+    // Each spec declares its own layout, even in a mixed parent/child tree.
+    const lean = lines.some(
+      (line) =>
+        !line.fm && !line.fence && /^ {0,3}## Scenarios[ \t]*$/.test(line.text),
+    );
+    specInfo.set(f, { lean, links: linkTargets(lines, abs(f)) });
+    v.push(...lintFile(text, lines, show(f), lean));
   }
 
   // 9 attachments
@@ -223,23 +236,27 @@ function lintTree(root) {
   }
   for (const [node, atts] of byNode) {
     const spec = path.posix.join(node, "spec.md");
-    if (!specs.includes(spec)) {
+    const owner = specInfo.get(spec);
+    if (!owner) {
       v.push(`${show(atts[0])}: attachments: no ${spec} owns this attachment`);
-      continue;
     }
-    const links = linkTargets(
-      scan(fs.readFileSync(abs(spec), "utf8")),
-      abs(spec),
-    );
-    for (const a of atts)
-      if (!links.has(abs(a)))
+    for (const a of atts) {
+      if (/\.mdx?$/i.test(a)) {
+        v.push(
+          ...checkProvenance(
+            fs.readFileSync(abs(a), "utf8"),
+            show(a),
+            false,
+            owner?.lean,
+          ),
+        );
+      }
+      if (owner && !owner.links.has(abs(a)))
         v.push(`${show(spec)}: attachments: ${a} is not linked`);
+    }
   }
-  for (const f of specs) {
-    for (const t of linkTargets(
-      scan(fs.readFileSync(abs(f), "utf8")),
-      abs(f),
-    )) {
+  for (const [f, { links }] of specInfo) {
+    for (const t of links) {
       if (
         t.includes(`${path.sep}attachments${path.sep}`) &&
         !fs.existsSync(t)

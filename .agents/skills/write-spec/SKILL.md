@@ -1,39 +1,41 @@
 ---
 name: write-spec
-description: Create or update a living spec in docs/specs/ for one feature, or suggest a spec tree for a repository. Use when a feature is new, when its behaviour is about to change, when existing behaviour has no spec, or when asked which specs a repository should have.
-metadata:
-  upstream: "futurice/fab v0.1.0 (b97ac86), prefabs/skills/write-spec"
+description: Create or amend a living feature spec, resolve questions about expected behaviour, or propose how to organise a repository’s specs.
+generated:
+  by: openai-codex/gpt-6
+  at: "2026-11-25T16:49:17Z"
+verified: []
 ---
 
 # Write a living spec
 
-A feature spec describes intended behaviour. The Blueprint explains how the feature works. Its existing Contract section gives a reader observable ways to check it; the heading is part of the current format. A work item carries the change.
+A living spec tells a reader what one feature is for and how it should behave.
 
-## Decide what the request needs
+## Decide what to write
 
-Read the [project instructions](../../../AGENTS.md), the owner’s request, the relevant implementation and neighbouring specs in the folder tree. For study proposals, establish adoption and scope with the designer before changing the spec. Authoring covers specs and their attachments. Implementation belongs to the implementing task.
+Read the request, the governing spec and its neighbours, and enough of the implementation to understand what happens today.
 
-- **Suggest a tree.** Follow [the tree guide](references/spec-tree.md). Put the proposal in the reply unless the owner names a file. Wait for approval before creating any spec directory.
-- **Create.** For a feature with no governing spec, select a kebab-case node at `docs/specs/<node>/spec.md`. In an existing tree ask before adding a top-level node. Start from [the template](template.md).
-- **Update.** An explicit owner decision about changed behaviour authorizes rewriting the affected clauses and scenarios in place. Preserve actual prior human verification events; changed text needs its own human confirmation.
-- **Report.** If code and an established spec (including a legacy spec) disagree and intent is unsettled, give the starting condition, action and competing outcomes. Leave the spec and code intact for the owner’s decision. For maintenance already covered by the spec, identify it in the handover and leave the spec tree alone.
+- When the user changes the expected behaviour, amend the existing spec in place. If the spec already covers the request, point to the relevant passage.
+- For a new feature, start from [the template](template.md) at `specs/<feature>/spec.md`. Use a kebab-case directory name. Ask before adding a new top-level node to an existing tree.
+- When the code and spec disagree and intent is unclear, give a concrete example that distinguishes the outcomes. Ask which is intended. Preserve the disputed text and code until the user decides. Leave unsettled new rules unwritten.
+- When asked how to organise a repository’s specs, use the [guide to organising specs](references/spec-tree.md). Propose paths and explain what each spec would cover. Create the files once the user approves the layout.
 
-When reconstructing intent from an existing feature, trace its entry points, Zod validation, persistence and boundary behaviour. For Firestore, check the path and access rules in `firestore.rules`. Identify any intent inferred from implementation. Use concrete examples to resolve ambiguity. In unattended work, list assumptions in the handover. Refer unresolved conflicts to the owner.
+## Write the spec
 
-## Write the current state
+Use the feature name as the title. Open with a sentence explaining what the feature lets someone do. For a small feature, that sentence and one scenario can be the whole spec.
 
-Use the template headings in order. The feature name lives only in the H1 (`# Feature name`), without a `Spec:` prefix. Do not add duplicate frontmatter `title` metadata or a `status` field; remove these fields when updating a spec. Cover each rule from the owner’s brief with an independently checkable scenario in a fenced `gherkin` block. Use plain statements for Definition of Done. Keep implementation progress in delivery records. Write constraints as positive facts. Keep one canonical home for each rule, and link code-owned schemas where they live. Remove template comments and placeholders. Git carries history.
+Add **Architecture** when a reader needs to know who owns a responsibility or how parts fit together. Link to code and schemas where they live. Add **Constraints** for limits and rules that apply throughout the feature.
 
-A complete short spec stands alone. Around 120 lines, review duplication and ownership. Split independently changing behaviour into a child folder with its own spec. Folder nesting expresses parentage. Add a cross-reference when a specific rule or dependency needs one. Put bulky reference data in a linked attachment. Explain a necessary long spec at handover. Follow [the splitting guide](references/splitting.md).
+Under **Scenarios**, put all examples in one fenced `gherkin` block. Start with `Feature:` and repeat the spec title exactly. Give each `Scenario:` a name, a starting condition (`Given`), an action or event (`When`) and an observable outcome (`Then`). Keep a boundary example when it explains what happens at or beyond a limit. The template shows both sides of a 20-row limit.
 
-## Record authorship and review
+Use outcomes supported by the brief or an explicit decision. Keep acceptance criteria, checkboxes, task lists and test instructions out of specs. When amending an older spec, read each checklist item and guardrail for distinct promises. Carry those promises into constraints or scenario outcomes.
 
-On creation and substantive edits set `generated.by` to the actual producer (`producer/version` for a tool or model, `human:<id>` for a person) and `generated.at` to the current RFC 3339 timestamp with timezone. Use the actual clock. Formatting and link repairs preserve generation metadata. Use the same provenance on Markdown/MDX attachments and written proposals.
+Split out a part when it can change independently. Link parent and child both ways. Use the [guide to splitting specs](references/splitting.md) for child specs and bulky attachments.
 
-New documents start with `verified: []`. This field records human verification only: each event uses `by: human:<id>` and the actual confirmation date in `at`. Record an event only when that person actually confirmed the document. Retain actual prior human events; they do not automatically verify later edits. Model review, source inspection and automated checks belong in the handover, never in `verified`. Only an explicit human decision authorizes implementation; verification does not itself grant that authority, and no spec status field represents it.
+## Record and hand over the change
 
-For a legacy spec, migrate only dated, attributable human checks from `reviewed_by` to `verified`. Use `human:<id>` for the documented person and preserve the actual date at its known precision. Do not turn agent checks, source checks or ambiguous attributions into human verification. Preserve undated human attribution as legacy metadata and disclose the missing date in the handover. Preserve known legacy generation metadata on a migration-only edit; on a substantive edit record the new producer and actual time. Never invent a human confirmation or its date.
+Spec frontmatter contains only `generated` and `verified`. For a substantive change, record the actual producer and current RFC 3339 time. Formatting and link repairs preserve generation metadata. Use the same provenance on written proposals and Markdown attachments.
 
-## Hand over
+Start with `verified: []`. A human source check replaces the previous entry. After an edit, retain the latest human check. It covers the text when dated at or after generation. For older records, keep the latest attributable human check, including its original date precision. Report gaps in attribution.
 
-Check each scenario against the owner’s brief. Run `pnpm check:specs docs/specs/<node>` for the edited subtree and `pnpm check:repo` for repository references and Lab anchors. The full-tree spec check is advisory during migration. Give the changed paths, assumptions and any outstanding decision. Identify any human decision still needed before implementation. An authorized amendment lands in the same commit as the implementing change.
+Run host checks. Identify the changed spec, any open decision and text awaiting verification. Implementation requires explicit authorization. When implementing an agreed behaviour change, include its spec amendment in the same commit.

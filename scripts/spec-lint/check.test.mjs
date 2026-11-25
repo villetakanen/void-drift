@@ -163,3 +163,110 @@ verified: [{ by: human:ville, at: 2026-11-19 }]
     /attachments\/reference.md: provenance:.*human:<id>/,
   );
 });
+
+const leanSpec = `---
+generated: { by: codex/gpt-6, at: 2026-11-19T09:00:00Z }
+verified: []
+---
+# Export
+
+Readers can export selected rows.
+
+## Scenarios
+
+\`\`\`gherkin
+Feature: Export
+
+  Scenario: Export exactly twenty rows
+    Given I selected twenty rows
+    When I request an export
+    Then the file contains all twenty rows
+\`\`\`
+`;
+
+test("lean specs can have just a purpose and a feature, or optional sections", (t) => {
+  const lint = fixture(t);
+  for (const sections of [
+    "",
+    "## Architecture\n\nThe exporter owns the output.\n\n",
+    "## Constraints\n\nExports contain up to twenty rows.\n\n",
+  ]) {
+    const result = lint(
+      leanSpec.replace("## Scenarios", `${sections}## Scenarios`),
+    );
+    assert.equal(result.status, 0, result.stderr + result.stdout);
+  }
+});
+
+test("lean format enforces the feature name, scenario boundaries and single verification", (t) => {
+  const lint = fixture(t);
+  for (const [from, to, message] of [
+    ["Feature: Export", "Feature: Empty", /repeat the spec title/],
+    ["When I request", "And I request", /Given, When and Then/],
+    ["Then the file contains", "And the file contains", /Given, When and Then/],
+    ["\n```\n", "\n~~~\n", /one closed gherkin block/],
+    ["## Scenarios", "## Architecture\n\n## Scenarios", /empty section/],
+    [
+      "## Scenarios",
+      "## Constraints\n\n- [ ] Ship it.\n\n## Scenarios",
+      /checkbox/,
+    ],
+    [
+      "## Scenarios",
+      "## Constraints\n\n### Acceptance criteria\n\nShip it.\n\n## Scenarios",
+      /completion criteria/,
+    ],
+    [
+      "## Scenarios",
+      "## Blueprint\n\n## Scenarios",
+      /optional Architecture and Constraints/,
+    ],
+    [
+      "verified: []",
+      "verified: [{ by: human:a, at: 2026-11-19 }, { by: human:b, at: 2026-11-20 }]",
+      /at most one human/,
+    ],
+    [
+      "verified: []",
+      "verified: []\nrevision: 2",
+      /frontmatter must omit revision/,
+    ],
+  ]) {
+    const result = lint(leanSpec.replace(from, to));
+    assert.equal(result.status, 1, result.stderr + result.stdout);
+    assert.match(result.stdout, message);
+  }
+});
+
+test("format selection and attachment provenance follow each spec in a mixed tree", (t) => {
+  const root = mkdtempSync(join(tmpdir(), "void-drift-mixed-specs-"));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const child = join(root, "export");
+  mkdirSync(join(child, "attachments"), { recursive: true });
+  const reviews =
+    "verified: [{ by: human:a, at: 2026-11-19 }, { by: human:b, at: 2026-11-20 }]";
+  // A heading quoted inside a fence does not change the parent's format.
+  writeFileSync(
+    join(root, "spec.md"),
+    spec.replace("verified: []", reviews) +
+      "\n```markdown\n## Scenarios\n```\n",
+  );
+  writeFileSync(
+    join(child, "spec.md"),
+    leanSpec.replace(
+      "selected rows.",
+      "selected rows. [Columns](attachments/columns.md)",
+    ),
+  );
+  const attachment = join(child, "attachments", "columns.md");
+  const data = `${leanSpec.slice(0, leanSpec.indexOf("# Export"))}# Columns\n`;
+  writeFileSync(attachment, data);
+  const lint = () =>
+    spawnSync(process.execPath, [checker, root], { encoding: "utf8" });
+  const valid = lint();
+  assert.equal(valid.status, 0, valid.stderr + valid.stdout);
+  writeFileSync(attachment, data.replace("verified: []", reviews));
+  assert.match(lint().stdout, /columns\.md: provenance:.*at most one human/);
+  rmSync(attachment);
+  assert.match(lint().stdout, /columns\.md does not resolve/);
+});

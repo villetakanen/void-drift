@@ -1,7 +1,7 @@
 ---
 generated:
-  by: codex/gpt-6
-  at: "2026-11-19T09:52:56Z"
+  by: openai-codex/gpt-6.2
+  at: "2026-11-25T13:36:15Z"
 verified: []
 ---
 
@@ -25,9 +25,8 @@ Keep a candidate only when both answers are yes.
 
 ## Rules
 
-- Folder nesting expresses parentage, including through grouping folders. Each spec node is `docs/specs/<node>/spec.md`, with a kebab-case directory name.
-- Depth is at most 3: `docs/specs/a/spec.md`, `docs/specs/a/b/spec.md`,
-  `docs/specs/a/b/c/spec.md`.
+- Each node is `specs/<node>/spec.md`, with a kebab-case directory name.
+- Follow the host’s existing tree and add depth where it expresses feature relationships; there is no fixed depth limit.
 - Start small. Propose few top-level nodes; three to seven suits most
   repositories.
 - Add a child when it owns independently changing behaviour and scenarios.
@@ -51,7 +50,7 @@ Keep a candidate only when both answers are yes.
 One fenced tree of spec paths, one line of purpose per node:
 
 ```text
-docs/specs/
+specs/
   auth/spec.md               Sign-in, sign-out and sessions.
   billing/spec.md            Plans, invoices and payment status.
     billing/invoices/spec.md Invoice numbering, PDFs and delivery.
